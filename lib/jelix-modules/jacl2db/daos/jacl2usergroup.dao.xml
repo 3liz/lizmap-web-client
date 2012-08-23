@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<dao xmlns="http://jelix.org/ns/dao/1.0">
+    <datasources>
+       <primarytable name="ug" realname="jacl2_user_group" primarykey="login,id_aclgrp" />
+    </datasources>
+    <record>
+      <property name="login" fieldname="login" datatype="string" required="yes"/>
+      <property name="id_aclgrp" fieldname="id_aclgrp" datatype="string" required="yes"/>
+    </record>
+
+    <factory>
+       <method name="getGroupsUser" type="select">
+            <parameter name="login" />
+            <conditions>
+                <eq property="login" expr="$login" />
+            </conditions>
+        </method>
+        <method name="getUsersGroup" type="select">
+           <parameter name="grp" />
+           <parameter name="ordre" default="asc" />
+           <conditions>
+              <eq property="id_aclgrp" expr="$grp" />
+           </conditions>
+           <order>
+              <orderitem property="login" way="$ordre" />
+           </order>
+        </method>
+        <method name="getUsersGroupLimit" type="select">
+            <parameter name="grp" />
+            <parameter name="offset" />
+            <parameter name="count" />
+            <parameter name="ordre" default="asc" />
+            <conditions>
+                <eq property="id_aclgrp" expr="$grp" />
+            </conditions>
+            <order>
+                <orderitem property="login" way="$ordre" />
+            </order>
+            <limit offset="$offset" count="$count" />
+        </method>
+        <method name="getUsersGroupCount" type="count">
+            <parameter name="grp" />
+            <conditions>
+                <eq property="id_aclgrp" expr="$grp" />
+            </conditions>
+        </method>
+        <method name="deleteByUser" type="delete">
+           <parameter name="login" />
+           <conditions>
+              <eq property="login" expr="$login" />
+           </conditions>
+        </method>
+        <method name="deleteByGroup" type="delete">
+           <parameter name="grp" />
+           <conditions>
+              <eq property="id_aclgrp" expr="$grp" />
+           </conditions>
+        </method>
+    </factory>
+</dao>

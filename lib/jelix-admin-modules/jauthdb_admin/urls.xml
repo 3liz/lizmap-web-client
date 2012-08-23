@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<suburls xmlns="http://jelix.org/ns/suburls/1.0">
+    <url pathinfo="/users/"                  action="default:index"/>
+
+    <url pathinfo="/create-user"             action="default:create"
+          actionoverride="default:precreate,default:savecreate"/>
+
+    <url pathinfo="/user/:j_user_login"      action="default:view">
+      <param name="j_user_login"/>
+    </url>
+
+    <url pathinfo="/user/:j_user_login/edit" action="default:editupdate"
+        actionoverride="default:preupdate,default:saveupdate">
+      <param name="j_user_login"/>
+    </url>
+
+    <url pathinfo="/user/:j_user_login/confirmdelete" action="default:confirmdelete">
+      <param name="j_user_login"/>
+    </url>
+
+    <url pathinfo="/user/:j_user_login/delete"   action="default:delete">
+      <param name="j_user_login"/>
+    </url>
+
+    <url pathinfo="/user/:j_user_login/password" action="password:index">
+      <param name="j_user_login"/>
+    </url>
+
+    <url pathinfo="/user/:j_user_login/password-save" action="password:update">
+      <param name="j_user_login"/>
+    </url>
+
+    <url pathinfo="/profile/:j_user_login"       action="user:index">
+      <param name="j_user_login"/>
+    </url>
+
+    <url pathinfo="/profile/:j_user_login/edit"  action="user:editupdate"
+        actionoverride="user:preupdate,user:saveupdate">
+      <param name="j_user_login"/>
+    </url>
+
+</suburls>

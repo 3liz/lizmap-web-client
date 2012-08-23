@@ -1,0 +1,30 @@
+Credits
+=======
+
+Core team developers
+--------------------
+
+Laurent Jouanneau (laurentj):
+ - Conceptor and main developer of Jelix modules
+
+Contributors
+------------
+By alphabetic order on the name
+
+* Rahal Aboulfeth
+   bug fix in the controller of junittest (#284)
+
+* Chris
+    bug fix in jauth.listener.php ( ticket #221)
+
+* Eric Heunthep (neolao)
+    listener on auth events in acl module
+
+* Loic Mathaud (bbalizlife)
+    bug fix
+
+* Sylvain de Vathaire (sylvain261)
+   jWSDL module (#377)
+
+* Vincent Viaud
+  acl listener for jauth::logout (#1236)

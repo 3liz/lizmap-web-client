@@ -1,0 +1,21 @@
+
+; path related to the ini file. By default, the ini file is expected to be into the myapp/install/ directory.
+pagesPath = "../../lib/installwizard/pages/,pages/"
+customPath = "custom/"
+start = nom page de demarrage
+tempPath = "../../temp/myapp/"
+supportedLang = en
+
+[welcome.step]
+next=checkjelix
+;enctype
+
+[checkjelix.step]
+next=end
+
+[end.step]
+noprevious = on
+
+[foo.step]
+;enctype=
+;noprevious = on

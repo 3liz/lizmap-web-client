@@ -1,0 +1,185 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<grammar xmlns="http://relaxng.org/ns/structure/1.0"
+    datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes"
+    >
+
+   <define name="info">
+      <element name="info">
+         <!-- the id should be unique in the world, you can set an UUID or
+            a string like   name@mywebsite.com -->
+         <attribute name="id" />
+         <attribute name="name" />
+         <optional>
+            <attribute name="createdate">
+               <data type="date" />
+            </attribute>
+         </optional>
+         <element name="version">
+            <optional>
+               <attribute name="stability">
+                  <choice>
+                     <value>pre-alpha</value>
+                     <value>alpha</value>
+                     <value>beta</value>
+                     <value>stable</value>
+                     <value>mature</value>
+                  </choice>
+               </attribute>
+            </optional>
+            <attribute name="date">
+               <data type="date" />
+            </attribute>
+            <text />
+         </element>
+         <oneOrMore>
+            <element name="label">
+               <choice>
+                  <group>
+                     <attribute name="locale" />
+                     <empty/>
+                  </group>
+                  <group>
+                     <attribute name="lang">
+                        <data type="language" />
+                     </attribute>
+                     <text/>
+                  </group>
+               </choice>
+            </element>
+         </oneOrMore>
+         <zeroOrMore>
+            <element name="description">
+               <choice>
+                  <group>
+                     <attribute name="type"><value>text</value></attribute>
+                     <choice>
+                        <group>
+                           <attribute name="locale" />
+                           <empty/>
+                        </group>
+                        <group>
+                           <attribute name="lang">
+                              <data type="language" />
+                           </attribute>
+                           <text/>
+                        </group>
+                     </choice>
+                  </group>
+                  <group>
+                     <attribute name="type"><value>xhtml</value></attribute>
+                     <attribute name="lang" >
+                        <data type="language" />
+                     </attribute>
+                     <ref name="xhtml"/>
+                  </group>
+               </choice>
+            </element>
+         </zeroOrMore>
+         <element name="license">
+            <optional>
+               <attribute name="URL">
+                  <data type="anyURI" />
+               </attribute>
+            </optional>
+            <text />
+         </element>
+         <element name="copyright">
+            <text />
+         </element>
+         <oneOrMore>
+            <element name="creator">
+               <ref name="person" />
+            </element>
+         </oneOrMore>
+         <zeroOrMore>
+            <element name="contributor">
+               <ref name="person" />
+               <optional>
+                  <attribute name="since" />
+               </optional>
+               <optional>
+                  <attribute name="role" />
+               </optional>
+            </element>
+         </zeroOrMore>
+         <optional>
+            <element name="homepageURL">
+               <data type="anyURI"/>
+            </element>
+         </optional>
+         <optional>
+            <element name="updateURL">
+               <data type="anyURI"/>
+            </element>
+         </optional>
+      </element>      
+   </define>
+
+   <define name="notes">
+      <element name="notes">
+         <text />
+      </element>
+   </define>
+
+   <define name="dependencies">
+      <element name="dependencies">
+         <element name="jelix">
+            <attribute name="maxversion" />
+            <attribute name="minversion" />
+            <optional>
+               <attribute name="edition">
+                  <value>dev</value>
+                  <value>opt</value>
+                  <value>gold</value>
+               </attribute>
+            </optional>
+         </element>
+         <zeroOrMore>
+            <choice>
+               <element name="module">
+                  <attribute name="id" />
+                  <attribute name="name" />
+                  <optional><attribute name="maxversion" /></optional>
+                  <optional><attribute name="minversion" /></optional>
+               </element>
+               <element name="plugin">
+                  <attribute name="id" />
+                  <attribute name="name" />
+                  <optional><attribute name="maxversion" /></optional>
+                  <optional><attribute name="minversion" /></optional>
+               </element>
+            </choice>
+         </zeroOrMore>
+      </element>
+   </define>
+
+
+   <define name="person">
+      <attribute name="name" />
+      <optional>
+         <attribute name="nickname" />
+      </optional>
+      <optional>
+         <attribute name="email" />
+      </optional>
+      <optional>
+         <attribute name="active">
+            <data type="boolean" />
+         </attribute>
+      </optional>
+   </define>
+
+
+   <define name="xhtml">
+      <zeroOrMore>
+         <choice>
+            <text/>
+            <element ns="http://www.w3.org/1999/xhtml">
+               <anyName/>
+               <ref name="xhtml" />
+            </element>
+         </choice>
+      </zeroOrMore>
+   </define>
+
+</grammar>

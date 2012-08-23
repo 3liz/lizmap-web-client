@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<grammar xmlns="http://relaxng.org/ns/structure/1.0"
+    ns="http://jelix.org/ns/events/1.0"
+    datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes"
+    >
+
+   <start>
+      <element name="events">
+         <zeroOrMore>
+            <ref name="listener" />
+         </zeroOrMore>
+      </element>
+   </start>
+
+
+   <define name="listener">
+      <element name="listener">
+         <attribute name="name"/>
+         <oneOrMore>
+           <ref name="event" />
+         </oneOrMore>
+      </element>
+   </define>
+
+   <define name="event">
+      <element name="event">
+         <attribute name="name" />
+         <empty/>
+      </element>
+   </define>
+
+</grammar>

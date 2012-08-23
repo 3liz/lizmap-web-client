@@ -1,0 +1,527 @@
+body {
+  margin : 0;
+  font-size : 12px;
+  font-family : century gothic, arial, sans serif;
+}
+#header {
+  height : 100px;
+  background : #2B2B2B;
+  color : #FBFBFB;
+}
+#logo {
+  float : left;
+  height : 70px;
+  margin-top : 15px;
+  margin-bottom : 15px;
+  margin-left : 20px;
+  margin-right : 20px;
+  background : url('img/logo_car_70.png') no-repeat;
+}
+#logo h1 {
+  margin-left : 85px;
+  font-size : 2.7em;
+  margin-top : 0.75em;
+}
+#title {
+  float : right;
+  height : 80px;
+  margin-top : 10px;
+  margin-bottom : 10px;
+  margin-left : 20px;
+  margin-right : 20px;
+  text-align : right;
+}
+#title h1 {
+  color : #AAAAAA;
+}
+#title h2 {
+  color : #585858;
+}
+#title h2 a {
+  color : inherit;
+  text-decoration : none;
+}
+
+#content {
+  width : 100%;
+  overflow : hidden;
+  position : relative;
+}
+#content .ui-icon {
+  background-image : url("images/sprite_menu.png");
+}
+#content .ui-icon-open-menu {
+  background-position : -16px -80px;
+  position : absolute;
+  top : 0;
+  relative : 0;
+  z-index : 1000;
+  background-color : #F0F0F0;
+  cursor : pointer;
+}
+#content .ui-icon-close-menu {
+  background-position : 0px -96px;
+  cursor : pointer;
+}
+
+#menu {
+  float : left;
+  width : 300px;
+  background : #F0F0F0;
+}
+#menu .ui-icon-zoom-open {
+  background-position : -16px -16px;
+}
+#menu h3 {
+  margin : 1px;
+  background : #2B2B2B;
+  color : #FBFBFB;
+  line-height : 1.3;
+  border-bottom : solid 1px #DDDDDD;
+  border-top : solid 1px #DDDDDD;
+  font-size : 1.2em;
+}
+#menu h3 span.title {
+  display : block;
+  padding : 0.5em 0.5em 0.5em 0.7em;
+}
+#menu h3 span.ui-icon {
+  float : right;
+  margin-top : 0.5em;
+  margin-right : 0.5em;
+}
+
+#menu div.menu-content {
+  display : block;
+  padding : 1em 1em 1em 1em;
+}
+
+#map-content {
+  margin-left : 300px;
+  position : relative;
+  background : #F0F0F0;
+}
+
+#close-menu {
+  width :100%;
+  height : 16px; 
+  border-bottom : solid 1px #DDDDDD;
+}
+#close-menu span.ui-icon {
+  float : right;
+  margin-right : 0.5em;
+}
+#toolbar {
+  width :100%;
+  height : 50px; 
+}
+
+#baselayer-select {
+  width : 100%;
+  line-height : 2;
+  border : solid 1px #606060;
+  position : relative;
+  /*
+  display : block;
+  padding : 0.5em 0.5em 0.5em 0.7em;
+   */
+}
+
+#baselayer-select .label {
+  padding-left : 0.5em;
+  padding-right : 0.5em;
+}
+
+#baselayer-select .button {
+  width : 20px;
+  border-left : solid 1px #606060;
+  border-bottom : none;
+  border-top : none;
+  border-right : none;
+  position : absolute;
+  top : 0pt;
+  bottom : 0pt;
+  right : 0pt;
+  margin : 0pt;
+  background : #DDD;
+}
+
+#baselayer-select .button .ui-icon-triangle-1-e {
+  background-position : -32px -64px;
+}
+#baselayer-select .button .ui-icon-triangle-1-w {
+  background-position : -48px -64px;
+}
+
+#menu .ui-accordion-content {
+  background-color : white;
+  border : solid 1px rgb(251,216,80);
+}
+
+#switcher {
+  overflow : auto;
+  padding-left : 19px;
+  border : solid 1px #606060;
+}
+#switcher table {
+  width : 100%;
+}
+#switcher tr.liz-state-disabled span {
+  /*jquery-ui update*/
+  color:#AAA;
+}
+#switcher tr.liz-state-disabled button.ui-button-disabled {
+  cursor: default !important;
+  opacity:0.35;
+}
+#switcher tr.liz-layer.liz-state-disabled a.expander {
+  display:none;
+}
+#switcher button{
+  width:16px;
+  height:16px;
+  background: none;
+}
+#switcher button.checkbox{
+  /*
+  width : 14px;
+  height : 14px;
+   */
+}
+#switcher button.checkbox .ui-icon{
+  /*
+  border : solid 1px #606060;
+  width : 14px;
+  height : 14px;
+  margin-left : -7px;
+  margin-top : -7px;
+   */
+}
+#switcher button.link{
+  float:right;
+  border: none;
+}
+#switcher span.label{
+  padding-left: 0.5em;
+}
+#switcher div.legendGraphics{
+  overflow:auto;
+  margin:0px;
+  width:100%;
+  background:white;
+}
+#switcher div.legendGraphics img{
+  position: relative;
+}
+#switcher .treeTable td a.expander {
+  font-size : 14px;
+}
+#switcher .treeTable tr.expanded td a.expander {
+  background-image : url("images/sprite_menu.png");
+  background-position : -16px -48px;
+}
+#switcher .treeTable tr.collapsed td a.expander {
+  background-image : url("images/sprite_menu.png");
+  background-position : -32px -64px;
+}
+
+#baselayer-select-input {
+  position : absolute;
+  bottom : 0px;
+  left : 300px;
+  z-index : 1000;
+  background : none repeat scroll 0% 0% rgb(240, 240, 240);
+  border : solid 1px #DDD;
+  border-left : none;
+  padding : 1em;
+  line-height : 2;
+}
+
+/*navbar*/
+#navbar {
+  z-index :1000;
+  position :absolute;
+  right :10px;
+  top : 1em;
+}
+#navbar div.slider{
+  margin-top : 0.1em;
+  margin-bottom : 0.4em;
+  margin-left : 1.0em;
+  background : #C81F2D;
+  border : solid 1px white;
+  width : 0.2em;
+}
+#navbar div.slider a{
+  width : 2.0em;
+  height : 0.1em;
+  left : -1em;
+  background : black;
+  border : solid 1px black;
+  cursor : move;
+}
+#navbar button.ui-button-icon-only{
+  height : 2.5em;
+  width : 2.5em;
+  margin-bottom : 0.1em;
+  background : #CE1F2D;
+  border : solid 1px white;
+}
+#navbar button.ui-state-select{
+  background-color : #3A3C3D;
+  cursor : default;
+}
+#navbar .ui-button-icon-only .ui-icon {
+  margin-left : -10px;
+  margin-top : -10px;
+  width : 20px;
+  height : 20px;
+}
+#navbar .ui-state-default .ui-icon {
+  background-image : url("images/sprite_20.png");
+}
+#navbar .ui-icon-pan {
+  background-position : 0px -20px;
+}
+#navbar .ui-icon-zoom {
+  background-position : -20px -20px;
+}
+#navbar button.zoom-extent {
+  margin-bottom : 0.4em;
+}
+#navbar .ui-icon-zoom-extent {
+  background-position : -20px -40px;
+}
+#navbar .ui-icon-zoom-out {
+  background-position : -20px 0px;
+}
+#navbar .ui-icon-zoom-in {
+  background-position : 0px 0px;
+}
+
+#zoom-in-max-msg {
+  position: absolute;
+  right: 40px;
+  top: 110px;
+  white-space: nowrap;
+  padding: 4px;
+}
+
+/*Loading window*/
+#loading {
+  height: 100px; 
+  min-height: 100px; 
+  width: auto;
+}
+#loading p {
+  text-align:center;
+}
+
+/*Overview map*/
+#overview-box {
+  z-index:2000;
+  position:absolute;
+  right:10px;
+  bottom:2.5em;
+}
+#overview-bar {
+  position:relative;
+  width:220px;
+  background : none repeat scroll 0% 0% rgb(240, 240, 240);
+  border : solid 1px #606060;
+}
+
+#overview-bar .label {
+  padding-left : 0.5em;
+  padding-right : 0.5em;
+}
+
+#overview-bar .button {
+  width : 20px;
+  border-left : solid 1px #606060;
+  border-bottom : none;
+  border-top : none;
+  border-right : none;
+  position : absolute;
+  top : 0pt;
+  bottom : 0pt;
+  right : 0pt;
+  margin : 0pt;
+  background : #DDD;
+}
+#overview-bar .ui-icon {
+  background-image : url("images/sprite_menu.png");
+}
+
+#overview-bar .button .ui-icon-triangle-1-s {
+  background-position : -16px 0px;
+}
+#overview-bar .button .ui-icon-triangle-1-n {
+  background-position : 0px 0px;
+}
+
+.olControlScaleLineBottom {
+  margin-bottom : 0.2em;
+  border-width : 2px 1px medium;
+}
+.olControlScaleLineTop {
+  margin-top : 0.2em;
+  border-width : medium 1px 2px;
+}
+
+#overviewmap{
+  position:relative;
+  background : none repeat scroll 0% 0% rgb(240, 240, 240);
+  border : solid 1px #606060;
+  border-bottom : none;
+}
+.olControlOverviewMapContainer {
+  margin:0;
+  padding:0;
+  border:none;
+}
+.olControlOverviewMapElement {
+  padding:0;
+  border-radius:0;
+  /*jquery-ui update*/
+  background-color: rgb(240,240,240);
+}
+.olControlOverviewMapExtentRectangle {
+  /*jquery-ui update*/
+  border: 2px solid #59B4D4;
+}
+.olControlOverviewMapRectReplacement {
+  /*jquery-ui update*/
+  background-image:url(img/overview_replacement.gif);
+}
+
+.olControlAttribution {
+  bottom : 0;
+  right : 0;
+  padding : 0.5em;
+  background-color : rgba(255,255,255,0.7);
+}
+.olLayerGooglePoweredBy.olLayerGoogleV3.gmnoprint {
+  display:none;
+}
+
+/**
+ * Icones lizMap
+ */
+  .liz-icon-check {
+    /* sprite de 16x16 mais button de 14x14 */
+    background-position : -48px -80px;
+    background-color : #0094D6;
+  }
+  .liz-icon-partial-check {
+    /* sprite de 16x16 mais button de 14x14 */
+    background-position: -32px -80px;
+    background-color : #0094D6;
+  }
+  .liz-state-disabled .liz-icon-check {
+    background-color : #B3B3B3;
+  }
+  .liz-state-disabled .liz-icon-partial-check {
+    background-color : #B3B3B3;
+  }
+  .liz-icon-legend-collapsed {
+    background-position: -32px -16px;
+  }
+  .liz-icon-legend-open {
+    background-position: -64px -16px;
+  }
+  .liz-icon-info {
+    background-position: 0px -80px;
+  }
+
+  .liz-icon-overview {
+    background-position: -208px -128px;
+  }
+  .liz-icon-switcher-open {
+    background-position: -16px -96px;
+  }
+  .liz-icon-switcher-collapsed {
+    background-position: 0 -96px;
+  }
+
+/*Popup OpenLayers*/
+.lizmapPopup{
+  background: #F6F6F6 !important;
+  border: 1px solid #C9C9C9 !important;
+  color: black !important;
+}
+.lizmapPopupContent{
+  margin: 0px !important;
+  padding: 0px !important;
+  width: 100% !important;
+}
+.lizmapPopupContent h4{
+  margin: 0px;
+  background: #2B2B2B !important;
+  color : #FBFBFB !important;
+  font-size: 16px;
+  padding: 2px;
+  padding-left: 5px;
+}
+.lizmapPopupContent a{
+  color:black;
+}
+.lizmapPopupDiv{
+  padding:5px !important;
+  padding-right: 20px !important;
+  padding-left: 20px !important;
+}
+.lizmapPopupTable{
+  /*background:#333333 !important;*/
+  margin-bottom:10px; 
+  font-size:12px;
+  width:100%;
+  border: 1px solid #2B2B2B !important;
+  border-collapse: collapse;
+}
+.lizmapPopupTable thead {
+  color: white;
+  background-color: #81B00E;
+  font-size: 14px;
+  border-bottom: 1px solid #2B2B2B !important;
+}
+.lizmapPopupTable th{
+  width:50%;
+  text-align: right;
+  padding-right: 5px;
+}
+.lizmapPopupTable th.left{
+  border-right: 1px solid #C9C9C9 !important;
+}
+.lizmapPopupTable td{
+  padding-left: 5px;
+}
+.lizmapPopupTable thead th{
+  text-align: center;
+}
+.lizmapPopup .olPopupCloseBox{
+  width: 20px; height: 20px;
+  /*right:0px !important; top:0px !important;*/
+  background-color:#2B2B2B;
+  background-image: url(images/sprite_menu.png);
+  background-position: -48px -80px;
+}
+
+
+/*dialog wait*/
+.liz-dialog-wait {
+  background: #F6F6F6;
+  border: 1px solid #606060;
+  padding: 0;
+}
+.liz-dialog-wait .ui-dialog-titlebar{
+  background : #2B2B2B;
+  color : #FBFBFB;
+}
+.liz-dialog-wait .ui-dialog-titlebar-close{
+  display:none;
+}
+.ui-widget-overlay {
+  opacity : 0.8;
+  background : black;
+}

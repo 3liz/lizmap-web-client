@@ -1,0 +1,41 @@
+
+@namespace jx url("http://jelix.org/ns/jxbl/1.0");
+@namespace xul url("http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul");
+@namespace html url("http://www.w3.org/1999/xhtml");
+
+jx|submission {
+  display: -moz-box;
+  visibility:collapse;
+  -moz-binding: url("jxulform.xml#submission");
+}
+jx|submission[format="json-rpc"] {
+  display: -moz-box;
+  -moz-binding: url("jxulform.xml#submission-json-rpc");
+}
+/*jx|submission[format="urlencoded-post-php"] {
+  display: -moz-box;
+  -moz-binding: url("jxulform.xml#submission-post-php");
+}*/
+
+jx|submit {
+  display: -moz-box;
+  -moz-binding: url("jxulform.xml#submit");
+
+}
+
+jx|submit[loading=true]:not([nothrobber]) {
+  list-style-image:url(throbber.gif);
+}
+
+textbox[invalid] html|input {background-color:#ffc0c0;}
+
+
+vbox[submit], hbox[submit], box[submit] {
+    -moz-binding: url("jxulform.xml#submit-activate");
+}
+
+groupbox[submit] {
+    -moz-binding:url("jxulform.xml#grpbox-submit-activate");
+}
+
+/**[invalid] { background-color:red; border:1px solid red; -moz-appearance:none; }*/

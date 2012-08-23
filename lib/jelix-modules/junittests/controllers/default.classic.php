@@ -1,0 +1,166 @@
+<?php
+/**
+* @package     jelix
+* @subpackage  junittests
+* @author      Laurent Jouanneau
+* @contributor Rahal Aboulfeth
+* @copyright   2007 Laurent Jouanneau, 2007-2011 Rahal Aboulfeth
+* @link        http://www.jelix.org
+* @licence     GNU Lesser General Public Licence see LICENCE file or http://www.gnu.org/licenses/lgpl.html
+*/
+
+class defaultCtrl extends jController {
+
+    /**
+    *
+    */
+    function index() {
+        if(!isset($GLOBALS['gJConfig']->enableTests) || !$GLOBALS['gJConfig']->enableTests){
+            // security
+            $rep = $this->getResponse('html', true);
+            $rep->title = 'Error';
+            $rep->setHttpStatus('404', 'Not found');
+            $rep->addContent('<p>404 Not Found</p>');
+            return $rep;
+        }
+
+        $rep = $this->_prepareResponse();
+
+        return $this->_finishResponse($rep);
+    }
+
+    function all() {
+        if(!isset($GLOBALS['gJConfig']->enableTests) || !$GLOBALS['gJConfig']->enableTests){
+            // security
+            $rep = $this->getResponse('html', true);
+            $rep->title = 'Error';
+            $rep->setHttpStatus('404', 'Not found');
+            $rep->addContent('<p>404 Not Found</p>');
+            return $rep;
+        }
+
+        $rep = $this->_prepareResponse();
+        jClasses::inc("junittests~jhtmlrespreporter");
+        jClasses::inc('junittests~junittestcase');
+        jClasses::inc('junittests~junittestcasedb');
+        $category = $this->category ? ' ('.$this->category .')' : '';
+        if (count ($this->testsList)){
+            foreach($this->testsList as $module=>$tests){
+                $reporter = new jhtmlrespreporter();
+                $reporter->setResponse($rep);
+    
+                jContext::push($module);
+                $group = new TestSuite('Tests'.$category.' on module '.$module);
+                foreach($this->testsList[$module] as $test){
+                    $group->addFile($GLOBALS['gJConfig']->_modulesPathList[$module].'tests/'.$test[0]);
+                }
+                $group->run($reporter);
+                jContext::pop();
+            }
+        } else {
+                $rep->body->assign ('MAIN','<p>no'.$category.' tests available.</p>');
+        }
+        return $this->_finishResponse($rep);
+    }
+
+
+    function module() {
+        if(!isset($GLOBALS['gJConfig']->enableTests) || !$GLOBALS['gJConfig']->enableTests){
+            // security
+            $rep = $this->getResponse('html', true);
+            $rep->title = 'Error';
+            $rep->setHttpStatus('404', 'Not found');
+            $rep->addContent('<p>404 Not Found</p>');
+            return $rep;
+        }
+        $rep = $this->_prepareResponse();
+        $category = $this->category ? ' '.$this->category : '';
+        $module = $this->param('mod');
+        if(isset($this->testsList[$module])){
+            $reporter = jClasses::create("junittests~jhtmlrespreporter");
+            jClasses::inc('junittests~junittestcase');
+            jClasses::inc('junittests~junittestcasedb');
+            $reporter->setResponse($rep);
+
+            $group = new TestSuite('All'.$category.' tests in "'.$module. '" module');
+            foreach($this->testsList[$module] as $test){
+                $group->addFile($GLOBALS['gJConfig']->_modulesPathList[$module].'tests/'.$test[0]);
+            }
+            jContext::push($module);
+            $group->run($reporter);
+            jContext::pop();
+        } else {
+            $rep->body->assign ('MAIN','<p>no'.$category.' tests for "'.$module.'" module.</p>');
+        }
+        return $this->_finishResponse($rep);
+    }
+
+
+    function single() {
+        if(!isset($GLOBALS['gJConfig']->enableTests) || !$GLOBALS['gJConfig']->enableTests){
+            // security
+            $rep = $this->getResponse('html', true);
+            $rep->title = 'Error';
+            $rep->setHttpStatus('404', 'Not found');
+            $rep->addContent('<p>404 Not Found</p>');
+            return $rep;
+        }
+        $rep = $this->_prepareResponse();
+
+        $module = $this->param('mod');
+        $testname = $this->param('test');
+
+        if(isset($this->testsList[$module])){
+            $reporter = jClasses::create("junittests~jhtmlrespreporter");
+            jClasses::inc('junittests~junittestcase');
+            jClasses::inc('junittests~junittestcasedb');
+            $reporter->setResponse($rep);
+
+            foreach($this->testsList[$module] as $test){
+                if($test[1] == $testname){
+                    $group = new TestSuite('"'.$module. '" module , '.$test[2]);
+                    $group->addFile($GLOBALS['gJConfig']->_modulesPathList[$module].'tests/'.$test[0]);
+                    jContext::push($module);
+                    $group->run($reporter);
+                    jContext::pop();
+                    break;
+                }
+            }
+        }else
+            $rep->body->assign ('MAIN','<p>no tests for "'.$module.'" module.</p>');
+        return $this->_finishResponse($rep);
+    }
+    
+    protected $allTestsList = array();
+    protected $testsList = array();
+    protected $category =false;
+
+    protected function _prepareResponse(){
+        $rep = $this->getResponse('html', true);
+        $rep->bodyTpl = 'junittests~main';
+
+        $rep->body->assign('page_title', 'Unit Tests');
+        $rep->body->assign('versionphp',phpversion());
+        $rep->body->assign('versionjelix',JELIX_VERSION);
+        $rep->body->assign('basepath',$GLOBALS['gJConfig']->urlengine['basePath']);
+        $rep->body->assign('isurlsig', $GLOBALS['gJConfig']->urlengine['engine'] == 'significant');
+
+        $rep->addCSSLink($GLOBALS['gJConfig']->urlengine['basePath'].'tests/design.css');
+
+        $runnerPreparer = jClasses::create('junittests~jrunnerpreparer');
+        $this->allTestsList = $runnerPreparer->getTestsList('html');
+        $this->category = $this->param('categ' , false );
+        $this->testsList = $runnerPreparer->filterTestsByCategory($this->category , $this->allTestsList );
+        $rep->body->assign('modules', $this->allTestsList);
+
+        return $rep;
+    }
+
+    protected function _finishResponse($rep){
+
+        $rep->title .= ($rep->title !=''?' - ':'').' Unit Tests';
+        $rep->body->assignIfNone('MAIN','<p>Welcome to unit tests</p>');
+        return $rep;
+    }
+}
+?>

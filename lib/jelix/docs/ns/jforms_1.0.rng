@@ -1,0 +1,353 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<grammar 
+  xmlns="http://relaxng.org/ns/structure/1.0"
+  xmlns:ev="http://www.w3.org/2001/xml-events"
+  datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes"
+  ns="http://jelix.org/ns/forms/1.0">
+
+   <start>
+      <element name="form">
+         <ref name="form.controls" />
+      </element>
+   </start>
+
+  <!--  ==================  Controls  ==========================  -->
+
+   <define name="form.controls">
+      <oneOrMore>
+        <choice>
+            <ref name="input" />
+            <ref name="textarea" />
+            <ref name="secret" />
+            <ref name="output" />
+            <ref name="upload" />
+            <ref name="submit" />
+            <ref name="checkbox" />
+            <ref name="checkboxes" />
+            <ref name="listbox" />
+            <ref name="radiobuttons"/>
+            <ref name="menulist" />
+            <!--
+            <ref name="range" />
+            <ref name="trigger" />
+            -->
+        </choice>
+      </oneOrMore>
+      <optional>
+        <ref name="reset" />
+      </optional>
+  </define>
+
+
+  <define name="input">
+     <element name="input">
+       <ref name="control.common" />
+         <choice>
+            <group>
+                <attribute name="type"><value>string</value></attribute>
+                <ref name="attr.length" />
+                <ref name="attr.size" />
+            </group>
+            <attribute name="type">
+                <choice>
+                    <value>boolean</value>
+                    <value>decimal</value>
+                    <value>integer</value>
+                    <value>hexadecimal</value>
+                    <value>datetime</value>
+                    <value>date</value>
+                    <value>time</value>
+                    <value>localedatetime</value>
+                    <value>localedate</value>
+                    <value>localetime</value>
+                    <value>url</value>
+                    <value>email</value>
+                    <value>ipv4</value>
+                    <value>ipv6</value>
+                </choice>
+            </attribute>
+            <ref name="attr.length" />
+        </choice>
+       <ref name="UI.attr.readonly" />
+       <ref name="UI.attr.required" />
+       <ref name="UI.attr.defaultvalue" />
+     </element>
+  </define>
+
+  <define name="textarea">
+     <element name="textarea">
+       <ref name="control.common" />
+       <ref name="UI.attr.readonly" />
+       <ref name="UI.attr.required" />
+       <ref name="UI.attr.defaultvalue" />
+       <ref name="attr.length" />
+       <optional><attribute name="rows"><data type="integer" /></attribute></optional>
+       <optional><attribute name="cols"><data type="integer" /></attribute></optional>
+     </element>
+  </define>
+
+  <define name="secret">
+     <element name="secret">
+       <ref name="control.common" />
+       <ref name="UI.attr.readonly" />
+       <ref name="UI.attr.required" />
+       <ref name="attr.size" />
+       <optional>
+          <element name="confirm">
+            <choice>
+                <text />
+                <group>
+                    <emtpy/>
+                    <attribute name="labellocale" />
+                </group>
+            </choice>
+          </element>
+       </optional>
+     </element>
+  </define>
+
+
+  <define name="upload">
+     <element name="upload">
+       <ref name="control.common" />
+       <ref name="UI.attr.readonly" />
+       <ref name="UI.attr.required" />
+       <optional><attribute name="mimetype" /></optional>
+       <optional><attribute name="maxsize"><data type="integer" /></attribute></optional>
+       <!--<element name="storage">
+           <attribute name="type"><choice><value>file</value><value>blob</value></choice></attribute>
+           <attribute name="value" /> 
+       </element>
+       -->
+     </element>
+  </define>
+  
+  <define name="checkbox">
+     <element name="checkbox">
+       <ref name="control.common" />
+       <ref name="UI.attr.readonly" />
+       <ref name="UI.attr.required" />
+       <ref name="UI.attr.defaultvalue" />
+       <optional><attribute name="valueoncheck" /></optional>
+       <optional><attribute name="valueonuncheck" /></optional>
+     </element>
+  </define>
+
+  <define name="radiobuttons">
+     <element name="radiobuttons">
+       <ref name="control.common" />
+       <ref name="control.list.common" />
+     </element>
+  </define>
+
+  <define name="listbox">
+     <element name="listbox">
+       <ref name="control.common" />
+       <ref name="control.list.common" />
+       <ref name="attr.size" />
+       <optional>
+            <attribute name="multiple">
+                <choice><value>true</value><value>false</value></choice>
+            </attribute>
+       </optional>
+     </element>
+  </define>
+
+  <define name="menulist">
+     <element name="menulist">
+       <ref name="control.common" />
+       <ref name="control.list.common" />
+     </element>
+  </define>
+
+  <define name="checkboxes">
+     <element name="checkboxes">
+       <ref name="control.common" />
+       <ref name="control.list.common" />
+     </element>
+  </define>
+  
+  <define name="output">
+     <element name="output">
+       <ref name="control.common" />
+       <ref name="UI.attr.defaultvalue" />
+     </element>
+  </define>
+
+  <define name="submit">
+     <element name="submit">
+       <ref name="control.common" />
+       <ref name="datasources" />
+     </element>
+  </define>
+
+  <define name="control.common">
+     <attribute name="ref" />
+     <ref name="label" />
+     <optional>
+        <ref name="help" />
+     </optional>
+     <optional>
+        <ref name="hint" />
+     </optional>
+     <optional>
+        <ref name="alert" />
+     </optional>
+  </define>
+  
+  <define name="UI.attr.readonly">
+      <optional><attribute name="readonly"><choice><value>true</value><value>false</value></choice></attribute></optional>
+  </define>
+  <define name="UI.attr.required">
+      <optional><attribute name="required"><choice><value>true</value><value>false</value></choice></attribute></optional>
+  </define>
+  <define name="UI.attr.defaultvalue">
+      <optional><attribute name="defaultvalue" /></optional>
+  </define>
+  
+  <define name="attr.length">
+      <optional><attribute name="minlength"><data type="integer" /></attribute></optional>
+      <optional><attribute name="maxlength"><data type="integer" /></attribute></optional>
+  </define>
+
+  <define name="attr.size">
+      <optional><attribute name="size"><data type="integer" /></attribute></optional>
+  </define>
+
+
+  <define name="control.list.common">
+     <ref name="UI.attr.readonly" />
+     <ref name="UI.attr.required" />
+    <ref name="datasources" />
+    <optional>
+        <choice>
+            <attribute name="selectedvalue" />
+            <element name="selectedvalues">
+                <oneOrMore>
+                    <element name="value"><text/></element>
+                </oneOrMore>
+            </element>
+        </choice>
+    </optional>
+  </define>
+
+  <define name="datasources">
+     <optional><choice>
+        <ref name="datasources.items" />
+        <ref name="datasources.dao" />
+        <ref name="datasources.class" />
+    </choice></optional>
+  </define>
+
+  <define name="datasources.items">
+     <oneOrMore>
+        <element name="item">
+            <choice>
+                <text />
+                <empty />
+                <group>
+                    <attribute name="locale" />
+                    <empty/>
+                </group>
+            </choice>
+            <optional><attribute name="selected"><choice><value>true</value><value>false</value></choice></attribute></optional>
+            <attribute name="value" />
+        </element>
+    </oneOrMore>
+  </define>
+
+  <define name="datasources.dao">
+      <attribute name="dao" />
+      <attribute name="daomethod" />
+      <attribute name="daolabelproperty" />
+      <optional><attribute name="daovalueproperty" /></optional>
+  </define>
+
+  <define name="datasources.class">
+      <attribute name="dsclass" />
+  </define>
+
+  <define name="message.content">
+      <choice>
+          <text />
+          <attribute name="locale" />
+      </choice>
+  </define>
+
+  <define name="label">
+     <element name="label">
+        <ref name="message.content" />
+     </element>
+  </define>
+
+  <define name="help">
+     <element name="help">
+        <ref name="message.content" />
+     </element>
+  </define>
+
+  <define name="hint">
+     <element name="hint">
+        <ref name="message.content" />
+     </element>
+  </define>
+
+  <define name="alert">
+     <element name="alert">
+        <optional>
+           <attribute name="type">
+                <choice>
+                    <value>required</value>
+                    <value>invalid</value>
+                </choice>
+            </attribute>
+        </optional>
+        <ref name="message.content" />
+     </element>
+  </define>
+
+   <!--
+   <define name="any">
+      <element>
+         <anyName/>
+         <zeroOrMore>
+            <choice>
+               <attribute>
+                  <anyName/>
+               </attribute>
+               <text/>
+               <ref name="any"/>
+            </choice>
+         </zeroOrMore>
+      </element>
+   </define>
+-->
+
+  <define name="reset">
+     <element name="reset">
+       <ref name="control.common" />
+     </element>
+  </define>
+  
+  <!--
+      <define name="range">
+          <element name="range">
+              <ref name="control.common" />
+              <ref name="UI.Common.Attrs" />
+              <optional><attribute name="start"/></optional>
+              <optional><attribute name="end"/></optional>
+              <optional><attribute name="step"/></optional>
+              <optional><attribute name="incremental"><data type="boolean" /></attribute></optional>
+          </element>
+      </define>
+      
+      <define name="trigger">
+          <element name="trigger">
+              <ref name="control.common" />
+              <ref name="UI.Common.Attrs" />
+          </element>
+      </define>
+  -->
+  
+
+</grammar>

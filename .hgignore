@@ -1,0 +1,13 @@
+syntax: glob
+*.orig
+*.rej
+*~
+*.o
+*.swp
+*.log
+
+temp/lizmap/www/*
+
+
+syntax: regexp
+(^|/)\.DS_Store$

@@ -1,0 +1,20 @@
+
+table.jacl2-list tbody td,
+table.jacl2-list-user tbody td
+{ font-weight:bold; text-align:center;}
+
+table.jacl2-list-user tr td:last-child {
+   border-left: 1px solid #686868;
+   border-right: 1px solid #686868;
+}
+.aclres0 { color:#006700; }
+.aclres1 { color:#FF2F00; }
+
+
+table.records-list thead th.notingroup, table.rights tbody td.notingroup {color:#BBB}
+table.records-list tbody td.notingroup { font-weight:normal; color:#BBB}
+table.records-list thead th a.removegroup { text-decoration:none !important; border:1px solid #bbb; background-color:#F6DCDC; padding:0 2px; }
+table.records-list thead th a.addgroup { text-decoration:none !important; border:1px solid #bbb; background-color:#DEF6D5; padding:0 2px; }
+
+table.jacl2-list-user tbody tr.even td:last-child { background-color: #FCE8EA }
+table.jacl2-list-user tbody tr.odd td:last-child { background-color: #F7E1E4 }

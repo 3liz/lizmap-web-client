@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<dao xmlns="http://jelix.org/ns/dao/1.0">
+    <datasources>
+        <primarytable name="rvg" realname="jacl_right_values_group" primarykey="id_aclvalgrp" />
+    </datasources>
+    <record>
+
+      <property name="id_aclvalgrp" fieldname="id_aclvalgrp" datatype="int" required="yes"/>
+      <property name="label_key" fieldname="label_key" datatype="string" required="yes"/>
+      <property name="type" fieldname="type_aclvalgrp" datatype="int"/>
+    </record>
+</dao>

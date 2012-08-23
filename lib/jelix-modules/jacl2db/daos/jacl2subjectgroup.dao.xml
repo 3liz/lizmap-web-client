@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<dao xmlns="http://jelix.org/ns/dao/1.0">
+    <datasources>
+        <primarytable name="grpsbj" realname="jacl2_subject_group" primarykey="id_aclsbjgrp" />
+    </datasources>
+    <record>
+      <property name="id_aclsbjgrp" fieldname="id_aclsbjgrp" datatype="string" required="yes"/>
+      <property name="label_key" fieldname="label_key" datatype="string"/>
+    </record>
+    <factory>
+    </factory>
+</dao>

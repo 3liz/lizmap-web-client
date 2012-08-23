@@ -1,0 +1,50 @@
+
+
+
+
+table.records-list {
+ border-bottom: 1px solid #d7d7d7;
+ border-collapse: collapse;
+ border-spacing: 0;
+ margin:1em;
+}
+
+table.records-list th { text-align: left; padding: 0 1em .1em 0; font-size: 12px }
+table.records-list thead { background: #f7f7f0 }
+table.records-list thead th {
+ border: 1px solid #d7d7d7;
+ border-bottom-color: #999;
+ font-size: 11px;
+ font-weight: bold;
+ padding: 2px .5em;
+ vertical-align: middle;
+ text-align:center;
+}
+table.records-list thead th :link:hover, table.records-list thead th :visited:hover {
+ background-color: transparent;
+}
+table.records-list thead th a { border: none; padding-right: 12px }
+table.records-list tbody td, table.records-list tbody th {
+ border: 1px dotted #ddd;
+ padding: .33em .5em;
+ vertical-align: top;
+}
+table.records-list tbody td a:hover, table.records-list tbody th a:hover {
+ background-color: transparent;
+}
+table.records-list tbody tr { border-top: 1px solid #ddd }
+table.records-list tbody tr.even { background-color: #fcfcfc }
+table.records-list tbody tr.odd { background-color: #f7f7f7 }
+table.records-list tbody tr:hover { background: #eed !important }
+
+table.records-list tbody th h3 { background-color: #DAE9F7;}
+
+table.records-list tbody td { }
+table.records-list tbody td.colblank { background-color:#fff; border:0 none #fff!important;}
+table.records-list thead th.colblank { background-color:#fff; border-top:0 none #fff!important;border-bottom:0 none #fff!important;}
+table.records-list thead th.colreduced { width: 65px;}
+
+.pagelinks li { display:inline; border:1px solid gray; padding:4px; color:black; }
+.pagelinks li.pagelinks-disabled { color: gray;}
+.pagelinks li.pagelinks-current { font-weight:bold;}
+.pagelinks li a:hover, .pagelinks li:hover { background-color:#eee; }

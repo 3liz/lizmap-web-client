@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<grammar xmlns="http://relaxng.org/ns/structure/1.0"
+         ns="http://jelix.org/ns/plugin/1.0"
+    datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes"
+    >
+
+
+   <include href="item_infos.rng" />
+
+   <start>
+      <element name="plugin">
+         <ref name="info" />
+         <optional>
+            <ref name="notes" />
+         </optional>
+         <ref name="dependencies" />
+      </element>
+   </start>
+
+
+</grammar>

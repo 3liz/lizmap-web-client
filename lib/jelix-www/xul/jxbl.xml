@@ -1,0 +1,254 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+ @package     jelix
+ @subpackage  xul
+ @author   Laurent Jouanneau
+ @contributor
+ @copyright 2006-2007 Laurent Jouanneau
+ @link     http://www.jelix.org
+ @licence  GNU Lesser General Public Licence see LICENCE file or http://www.gnu.org/licenses/lgpl.html
+-->
+
+<bindings xmlns="http://www.mozilla.org/xbl"
+          xmlns:xbl="http://www.mozilla.org/xbl"
+          xmlns:xul="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
+          xmlns:html="http://www.w3.org/1999/xhtml"
+>
+
+<binding id="templatecriterion">
+    <content>
+        <children/>
+        <xul:button label="Afficher" xbl:inherits="label=buttonlabel,disabled" oncommand="this.parentNode.show()"/>
+    </content>
+    <implementation>
+        <constructor><![CDATA[
+
+        ]]>
+        </constructor>
+        <method name="show">
+            <body><![CDATA[
+                var uri =  this.constructUrl();
+
+                var target = document.getElementById(this.getAttribute('target'));
+
+                target.setAttribute('datasources', '');
+                target.setAttribute('datasources', uri);
+            ]]></body>
+        </method>
+        <method name="abort">
+            <body><![CDATA[
+
+            ]]></body>
+        </method>
+        <method name="constructUrl">
+            <body><![CDATA[
+                var tf = {
+                   acceptNode : function( node){
+                      if(node.hasAttribute('name')){
+                        return NodeFilter.FILTER_ACCEPT;
+                      }else
+                        return NodeFilter.FILTER_SKIP;
+                   }
+                }
+                var tw = document.createTreeWalker ( this , NodeFilter.SHOW_ELEMENT , tf , false );
+                var node;
+                var query='', value;
+                node=tw.nextNode()
+                while(node){
+                    value=null;
+                    switch(node.localName){
+                        case 'checkbox': value= (node.checked?'1':'0'); break;
+                        case 'textbox': value= node.value; break;
+                        case 'listbox':
+                        case 'radiogroup':
+                        case 'menulist':
+                           value = node.selectedItem.value; break;
+                    }
+                    if(value !== null){
+                        if(query != '') query+='&';
+                        query += node.getAttribute('name') +'='+encodeURIComponent(value);
+                    }
+                    node=tw.nextNode();
+                }
+                var uri = this.getAttribute('uri');
+                if(uri.indexOf('?') != -1){
+                    uri += '&'+query;
+                }else{
+                    uri += '?'+query;
+                }
+                uri+='&rnd='+Math.random();
+                return uri;
+            ]]></body>
+        </method>
+
+    </implementation>
+    <handlers>
+        <handler event="keypress" keycode="VK_RETURN">
+            this.show();
+        </handler>
+    </handlers>
+
+  </binding>
+
+
+
+
+
+  <binding id="templatepager">
+      <content>
+          <xul:button label="Premier" xbl:inherits="label=firstlabel"
+                      oncommand="this.parentNode.first()"
+                      anonid="first" disabled="true"/>
+          <xul:button label="Précédent" xbl:inherits="label=previouslabel"
+                      oncommand="this.parentNode.previous()"
+                      anonid="previous" disabled="true"/>
+          <xul:hbox flex="1" pack="center">
+             <xul:description anonid="count" />
+          </xul:hbox>
+          <xul:button label="Suivant" xbl:inherits="label=nextlabel"
+                      oncommand="this.parentNode.next()"
+                      anonid="next" disabled="true"/>
+          <xul:button label="Dernier" xbl:inherits="label=lastlabel"
+                      oncommand="this.parentNode.last()"
+                      anonid="last" disabled="true"/>
+      </content>
+      <implementation>
+          <constructor><![CDATA[
+              this.firstButton = document.getAnonymousElementByAttribute(this,"anonid","first");
+              this.previousButton = document.getAnonymousElementByAttribute(this,"anonid","previous");
+              this.nextButton = document.getAnonymousElementByAttribute(this,"anonid","next");
+              this.lastButton = document.getAnonymousElementByAttribute(this,"anonid","last");
+              this.loadCount();
+           ]]>
+          </constructor>
+          <field name="offset">0</field>
+          <field name="totalcount" >0</field>
+
+          <field name="firstButton">null</field>
+          <field name="previousButton">null</field>
+          <field name="nextButton">null</field>
+          <field name="lastButton">null</field>
+          <field name="httpreq" >null</field>
+
+          <property name="increment">
+              <getter>return parseInt(this.getAttribute('increment'));</getter>
+              <setter>this.setAttribute('increment',val);</setter>
+          </property>
+          <method name="show">
+              <body><![CDATA[
+                this.disableButtons();
+                this.showCount();
+                var target = document.getElementById(this.getAttribute('target'));
+                target.setAttribute('datasources', '');
+
+                if(this.totalcount == 0){
+                    return;
+                }
+
+                if(this.offset + this.increment < this.totalcount){
+                    this.lastButton.removeAttribute("disabled");
+                    this.nextButton.removeAttribute("disabled");
+                }
+                if(this.offset - this.increment > 0){
+                    this.firstButton.removeAttribute("disabled");
+                    this.previousButton.removeAttribute("disabled");
+                }
+
+                var uri = this.getAttribute('datasourceurl');
+                uri=uri.replace(/__OFFSET__/, this.offset);
+                uri=uri.replace(/__COUNT__/, this.increment);
+                target.setAttribute('datasources', uri);
+                ]]></body>
+          </method>
+          <method name="first">
+              <body><![CDATA[
+                 this.offset = 0;
+                 this.show();
+
+              ]]></body>
+          </method>
+          <method name="previous">
+              <body><![CDATA[
+                 if(this.offset > this.increment){
+                    this.offset -= this.increment;
+                 }else{
+                    this.offset = 0;
+                 }
+                 this.show();
+              ]]></body>
+          </method>
+          <method name="next">
+              <body><![CDATA[
+                 if(this.offset + this.increment <= this.totalcount){
+                     this.offset += this.increment;
+                     this.show();
+                  }
+
+              ]]></body>
+          </method>
+          <method name="last">
+              <body><![CDATA[
+                 this.offset=this.totalcount - this.increment;
+                 this.show();
+              ]]></body>
+          </method>
+          <method name="showCount">
+              <body><![CDATA[
+                 var str = this.offset + "/" + this.totalcount;
+                 document.getAnonymousElementByAttribute(this,"anonid","count").value=str;
+               ]]></body>
+          </method>
+          <method name="loadCount">
+              <body><![CDATA[
+                    this.disableButtons();
+                    var url = this.getAttribute("counturl");
+                    if(url == '') {
+                        this.offset=0;
+                        this.totalcount=0;
+                        this.show();
+                        return;
+                    }
+
+                    this.httpreq = new XMLHttpRequest();
+                    this.httpreq.pager = this;
+
+                    this.httpreq.onload = function() {
+                        if(this.status >=200 && this.status < 300){
+                            this.pager.totalcount = parseInt(this.responseText);
+                            this.pager.show();
+                        }
+                    }
+                    this.httpreq.onerror = function() {
+                    }
+                    this.httpreq.onprogress = function() {
+                    }
+
+                    this.httpreq.open("GET", url, true);
+                    this.httpreq.send(null);
+                    ]]>
+             </body>
+        </method>
+        <method name="disableButtons">
+            <body><![CDATA[
+                 this.nextButton.disabled = true;
+                 this.previousButton.disabled = true;
+                 this.firstButton.disabled = true;
+                 this.lastButton.disabled = true;
+            ]]></body>
+        </method>
+      </implementation>
+    </binding>
+
+    <binding id="jbox" extends="xul:box">
+        <content>
+            <xul:hbox class="jbox-title" align="center">
+                <xul:label class="jbox-title-label" xbl:inherits="value=title"/>
+            </xul:hbox>
+            <xul:box  class="jbox-content" orient="vertical" xbl:inherits="orient,align,pack" pack="start" flex="1">
+                <children/>
+            </xul:box>
+        </content>
+    </binding>
+
+
+</bindings>

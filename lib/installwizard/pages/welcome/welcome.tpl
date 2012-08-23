@@ -1,0 +1,2 @@
+
+<p>{@instruction@} {$appname}</p>

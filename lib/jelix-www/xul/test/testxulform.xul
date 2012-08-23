@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<?xml-stylesheet type="text/css" href="chrome://global/skin/"?>
+<?xml-stylesheet type="text/css" href="../jxulform.css"?>
+<window
+  xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
+  xmlns:xul="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
+  xmlns:xbl="http://www.mozilla.org/xbl"
+  xmlns:jxf="http://jelix.org/ns/jxulform/1.0"
+  >
+
+
+
+    <jxf:submission id="test" action="testxulform.php" method="POST" format="urlencoded-post"
+             onsubmit="document.getElementById('sendBox').value=this.formDatas.toSource()+'\n\net donc:\n'+this._prepareContent(); document.getElementById('receiveBox').value=''"
+             onresult="document.getElementById('receiveBox').value=this.httpreq.responseText"
+             onhttperror="alert('erreur http :' + event.errorCode)"
+             progressmeter="progression"
+             oninvalidate="alert('erreur dans les valeurs')"
+             />
+
+    <jxf:submission id="test2" action="testxulform_jsonrpc.php" format="json-rpc" rpcmethod="module.action"
+                    onsubmit="document.getElementById('sendBox').value=this.formDatas.toSource()+'\n\net donc:\n'+this._prepareContent(); document.getElementById('receiveBox').value=''"
+                    onresult="document.getElementById('receiveBox').value=this.jsonResponse.toSource()"
+                    onrpcerror="alert('erreur rpc :' + this.jsonResponse.error)"
+                    onhttperror="alert('erreur http :' + event.errorCode)"
+                    progressmeter="progression"
+                    oninvalidate="alert('erreur dans les valeurs')"
+                    />
+
+
+
+ <groupbox>
+     <hbox><label value="chaine"/><textbox label="toto" name="text" form="test test2" value="aaa" required="true"/></hbox>
+    <hbox><label value="un entier"/><textbox name="entier" form="test test2" value="123" required="true" datatype="integer"/></hbox>
+    <hbox><label value="un decimal"/><textbox name="decimal" form="test test2" value="45.65" required="true" datatype="float"/></hbox>
+    <hbox><label value="un entier entre 50 et 100"/><textbox name="entier" form="test test2" value="68" required="true" datatype="integer" constraint="return val&gt;50 &amp;&amp;val&lt;100;"/></hbox>
+    <checkbox name="checkbox" form="test test2" label="checkbox" checked="true"/>
+    <radiogroup id="radioGroup" name="radio" value="" form="test bar test2">
+      <radio value="one" label="one" selected="true"/>
+      <radio value="two" label="two"/>
+      <radio value="three" label="three"/>
+    </radiogroup>
+ </groupbox>
+ <hbox>
+     <jxf:submit form="test" label="Envoyer"/>
+     <jxf:submit form="test2" label="Envoyer en jsonrpc"/>
+     <progressmeter   id="progression"/>
+ </hbox>
+
+ <textbox multiline="true" rows="10" cols="80" id="sendBox"/>
+ <textbox multiline="true" rows="10" cols="80" id="receiveBox"/>
+
+</window>

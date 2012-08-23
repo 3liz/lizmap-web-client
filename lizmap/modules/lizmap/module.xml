@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module xmlns="http://jelix.org/ns/module/1.0">
+    <info id="info@3liz.com" name="lizmap" createdate="2011-06-15">
+        <version>0.1pre</version>
+        <label lang="en_EN">lizmap</label>
+        <description lang="en_EN" />
+        <license URL="http://www.mozilla.org/MPL/">Mozilla Public License</license>
+        <copyright>2011 3liz</copyright>
+        <creator name="3liz" email="info@3liz.com" active="true"/>
+        <!--<contributor name="hisname" email="hisemail@yoursite.undefined" active="true" since="" role=""/>-->
+        <homepageURL>http://www.3liz.com</homepageURL>
+        <!--<updateURL>http://www.yourwebsite.undefined/update.xml</updateURL>-->
+    </info>
+    <dependencies>
+        <jelix minversion="1.2" maxversion="1.3.*"/>
+    </dependencies>
+</module>

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<dao xmlns="http://jelix.org/ns/dao/1.0">
+    <datasources>
+        <primarytable name="sbj" realname="jacl_subject" primarykey="id_aclsbj" />
+    </datasources>
+    <record>
+      <property name="id_aclsbj" fieldname="id_aclsbj" datatype="string" required="yes"/>
+      <property name="id_aclvalgrp" fieldname="id_aclvalgrp" datatype="int" required="yes"/>
+      <property name="label_key" fieldname="label_key" datatype="string"/>
+    </record>
+</dao>

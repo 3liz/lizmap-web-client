@@ -1,0 +1,23 @@
+
+@namespace jx url("http://jelix.org/ns/jxbl/1.0");
+@namespace xul url("http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul");
+@namespace html url("http://www.w3.org/1999/xhtml");
+
+
+jx|templatecriterion {
+    display:-moz-box;
+    -moz-box-orient:horizontal;
+    -moz-binding: url("jxbl.xml#templatecriterion");
+}
+
+jx|templatepager {
+    display:-moz-box;
+    -moz-box-orient:horizontal;
+    -moz-binding: url("jxbl.xml#templatepager");
+}
+
+jx|jbox {
+    display:-moz-box;
+    -moz-box-orient:vertical;
+    -moz-binding: url("jxbl.xml#jbox");
+}

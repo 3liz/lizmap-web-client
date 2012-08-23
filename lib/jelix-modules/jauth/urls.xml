@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<suburls xmlns="http://jelix.org/ns/suburls/1.0">
+    <url pathinfo="/dologin" action="login:in" />
+    <url pathinfo="/dologout" action="login:out" />
+    <url pathinfo="/login" action="login:form"/>
+</suburls>

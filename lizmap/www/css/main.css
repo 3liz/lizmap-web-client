@@ -1,0 +1,84 @@
+body {
+  margin : 0;
+  font-size : 12px;
+  font-family : century gothic, arial, sans serif;
+  padding-top : 100px;
+  padding-bottom : 40px;
+  background : #EFEFEF;
+}
+#header {
+  height : 100px;
+  background : #2B2B2B;
+  color : #FBFBFB;
+}
+#logo {
+  float : left;
+  height : 70px;
+  margin-top : 15px;
+  margin-bottom : 15px;
+  margin-left : 20px;
+  margin-right : 20px;
+  background : url('img/logo_car_70.png') no-repeat;
+}
+#logo h1 {
+  margin-left : 85px;
+  font-size : 2.7em;
+  margin-top : 0.75em;
+}
+
+#content {
+}
+
+.liz-projects {
+  display:block;
+  padding-top: 20px;
+}
+
+.liz-project-img {
+  background-color : #92C01F;
+  border : solid 1px #4D4D4D;
+  width : 250px;
+  height : 250px;
+  line-height: 248px;
+  margin : auto;
+  text-align : center;
+  vertical-align : middle;
+  color : white;
+  font-size : 16px;
+  text-transform : uppercase;
+  position : relative;
+  cursor : pointer;
+}
+
+.liz-project-title {
+  color : #4D4D4D;
+  font-size : 16px;
+  text-align : center;
+  padding-top: 10px;
+  padding-bottom: 10px;
+  text-decoration : none;
+}
+
+.liz-project-title a{
+  color : #4D4D4D;
+}
+
+.liz-project-desc {
+  color : white;
+  font-size : 12px;
+  width : 250px;
+  line-height : 12px;
+  position : absolute;
+  bottom : 0;
+  text-align : left;
+  text-transform : none;
+  background-color : rgba(0,0,0,0.5);
+}
+
+.liz-project-desc > div {
+  padding : 8px;
+}
+
+.liz-project-desc .bold {
+  font-weight: bold;
+}

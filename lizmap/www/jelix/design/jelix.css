@@ -1,0 +1,75 @@
+
+body {  
+    font-family: Verdana, Arial, Sans; 
+    font-size:0.8em;
+    margin:0;
+    background-color:#eff4f6;
+    padding-left:1em;
+    padding-right:1em;
+}
+
+.logo {
+    height: 60px;
+    width: 180px;
+    position: relative;
+    top: -60px;
+    left: 740px;
+}
+
+a { color:#3f6f7a; text-decoration:underline; }
+a:visited {  color : #002830;}
+a:hover { color: #0f82af; background-color: #d7e7eb; }
+
+
+h1.apptitle {
+    font-size: 1.7em;
+    color: #002830;
+    margin: 32px auto 0px auto;
+    width: 800px;
+}
+
+h1.apptitle span.welcome { font-size:0.8em; font-style:italic; }
+
+/*
+ * checker
+ *********/
+ul.checkresults {
+    border:3px solid black;
+    margin: 2em;
+    padding:1em;
+    list-style-type:none;
+}
+ul.checkresults li { margin:0; padding:5px; border-top:1px solid black; }
+li.checkerror   { background-color:#ff6666;}
+li.checkok      { background-color:#a4ffa9;}
+li.checkwarning { background-color:#ffbc8f;}
+
+.nocss {
+    display: none;
+}
+
+#page {
+    margin: 0 auto;
+    width: 924px;
+}
+
+div.monbloc h2 {
+    background: transparent url('images/fond-bandeau.png') no-repeat top left;
+    color: white;
+    padding-left: 70px;
+    padding-top:3px;
+    height: 28px;
+    margin: 0;
+    font-weight: normal;
+}
+
+div.monbloc .blockcontent {
+    background: white url('images/fond-cellule.png') repeat-x top left;
+    padding: 1em 2em;
+    margin-bottom: 20px;
+}
+
+div#jelixpowered {
+    text-align:center;
+    margin: 0 auto;
+}

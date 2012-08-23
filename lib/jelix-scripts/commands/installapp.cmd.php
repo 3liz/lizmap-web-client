@@ -1,0 +1,63 @@
+<?php
+
+/**
+* @package     jelix-scripts
+* @author      Laurent Jouanneau
+* @contributor Julien Issler
+* @copyright   2008-2011 Laurent Jouanneau
+* @copyright   2009 Julien Issler
+* @link        http://jelix.org
+* @licence     GNU General Public Licence see LICENCE file or http://www.gnu.org/licenses/gpl.html
+*/
+
+class installappCommand extends JelixScriptCommand {
+
+    public  $name = 'installapp';
+    public  $allowed_options = array('-v'=>false);
+    public  $allowed_parameters = array();
+
+    public  $syntaxhelp = "[-v]";
+    public  $help = '';
+
+    function __construct(){
+        $this->help= array(
+            'fr'=>"
+    Installe ou met à jour tous les modules d'une application qui sont activés.
+
+    Option -v : mode verbeux.
+    ",
+            'en'=>"
+    Install or upgrade all activated modules of an application.
+
+    Option -v: verbose mode.
+    ",
+    );
+    }
+
+    public function run(){
+        require_once (JELIX_LIB_PATH.'installer/jInstaller.class.php');
+
+        jAppManager::close();
+        if ($this->getOption("-v"))
+            $reporter = new textInstallReporter();
+        else
+            $reporter = new textInstallReporter('error');
+
+        $installer = new jInstaller($reporter);
+
+        $installer->installApplication();
+        try {
+            jAppManager::clearTemp(jApp::tempBasePath());
+        }
+        catch(Exception $e) {
+            if ($e->getCode() == 2) {
+                echo "Error: bad path in jApp::tempBasePath(), it is equals to '".jApp::tempBasePath()."' !!\n";
+                echo "       Jelix cannot clear the content of the temp directory.\n";
+                echo "       you must clear it your self.\n";
+                echo "       Correct the path in the application.init.php or create the directory\n";
+            }
+            else echo "Error: ".$e->getMessage();
+        }
+        jAppManager::open();
+    }
+}

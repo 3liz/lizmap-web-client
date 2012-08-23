@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<dao xmlns="http://jelix.org/ns/dao/1.0">
+    <datasources>
+        <primarytable name="rv" realname="jacl_right_values" primarykey="value,id_aclvalgrp" />
+        <foreigntable name="g" realname="jacl_right_values_group" primarykey="id_aclvalgrp" onforeignkey="id_aclvalgrp"/>
+    </datasources>
+    <record>
+
+      <property name="id_aclvalgrp" fieldname="id_aclvalgrp" datatype="int" required="yes"/>
+      <property name="label_key" fieldname="label_key" datatype="string" required="yes"/>
+      <property name="value" fieldname="value" datatype="string" required="yes"/>
+      <property name="group_label_key" fieldname="label_key" table="g" datatype="string" required="yes"/>
+      <property name="type_group" fieldname="type_aclvalgrp" table="g" datatype="int"/>
+    </record>
+    <factory>
+        <method name="findAll" type="select">
+            <order>
+                <orderitem property="id_aclvalgrp" way="asc" />
+                <orderitem property="value" way="asc" />
+            </order>
+        </method>
+    </factory>
+</dao>

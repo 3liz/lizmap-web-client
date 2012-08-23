@@ -1,0 +1,1 @@
+Example of document linked from the "link" property (in Qgis Lizmap Plugin, Layers tab)

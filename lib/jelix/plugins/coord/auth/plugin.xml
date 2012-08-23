@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<plugin name="auth">
+   <version major="" minor="" status="" copixversion=""  date="" />
+   <author name="Gerald Croes" email="gcroes@aston.fr" website="http://www.phpside.org" role="creator" />
+   <contributor name="Laurent Jouanneau" />
+   <description></description>
+   <infos />
+</plugin>

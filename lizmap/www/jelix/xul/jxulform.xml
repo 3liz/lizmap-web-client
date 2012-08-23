@@ -1,0 +1,609 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+ @package     jelix
+ @subpackage  xul
+ @author   Jouanneau Laurent
+ @contributor
+ @copyright 2006-2007 Jouanneau laurent
+ @link     http://www.jelix.org
+ @licence  GNU Lesser General Public Licence see LICENCE file or http://www.gnu.org/licenses/lgpl.html
+-->
+
+<bindings xmlns="http://www.mozilla.org/xbl"
+          xmlns:xbl="http://www.mozilla.org/xbl"
+          xmlns:xul="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
+          xmlns:html="http://www.w3.org/1999/xhtml"
+>
+
+<binding id="submission">
+    <content>
+        <children/>
+    </content>
+    <implementation>
+        <field name="httpreq"/>
+        <field name="mRegAcceptNode" />
+        <field name="mTimeout">null</field>
+        <field name="mProgressMeter">null</field>
+        <field name="contentType">"application/x-www-form-urlencoded"</field>
+        <field name="formDatas">{}</field>
+        <field name="invalidDatas">{}</field>
+        <field name="hasInvalidDatas">false</field>
+        <field name="submitButton" />
+        <field name="INVALID_REQUIRED" readonly="true">1</field>
+        <field name="INVALID_CONSTRAINT" readonly="true">2</field>
+        <field name="INVALID_DATATYPE" readonly="true">4</field>
+
+        <property name="action"
+                  onget="return this.getAttribute('action');"
+                  onset="this.setAttribute('action', val); return val;"/>
+        <property name="method"
+                  onget="return this.getAttribute('method');"
+                  onset="this.setAttribute('method', val); return val;"/>
+        <property name="format"
+                  onget="return this.getAttribute('format');"
+                  onset="this.setAttribute('format', val); return val;"/>
+        <property name="encoding"
+                  onget="return this.getAttribute('encoding');"
+                  onset="this.setAttribute('encoding', val); return val;"/>
+        <property name="replace"
+                  onget="return this.getAttribute('replace');"
+                  onset="this.setAttribute('replace', val); return val;"/>
+        <property name="progressmeter">
+            <getter>
+                if(!this.mProgressMeter){
+                    this.mProgressMeter= this.getAttribute('progressmeter');
+                    if(this.mProgressMeter){
+                        this.mProgressMeter = document.getElementById(this.mProgressMeter);
+                    }
+                }
+                return this.mProgressMeter;
+            </getter>
+            <setter>
+                this.mProgressMeter = val;
+                return val;
+            </setter>
+        </property>
+        <property name="timeout">
+            <getter>
+                if (this.mTimeout === null ) {
+                   var t = this.getAttribute("timeout");
+                   if(t)
+                      this.mTimeout = parseInt(t);
+                   else
+                      this.mTimeout = 0;
+                }
+                return this.mTimeout;
+            </getter>
+            <setter>
+                this.mTimeout = parseInt(val);
+                return this.mTimeout;
+            </setter>
+        </property>
+        <constructor><![CDATA[
+
+        ]]>
+        </constructor>
+        <method name="submit">
+            <body><![CDATA[
+            // récuperation des données des contrôles
+            this._readDatas();
+            if(this.hasInvalidDatas){
+               return false;
+            }
+
+            // formatage des données
+            var content = this._prepareContent();
+            // appel de _submit
+            this._submit(this.method, this.contentType, content);
+            return true;
+            ]]></body>
+        </method>
+        <method name="abort">
+            <body><![CDATA[
+
+            ]]></body>
+        </method>
+
+        <method name="_onload">
+            <body><![CDATA[
+            if(this.httpreq.status >=200 && this.httpreq.status < 300) {
+                var evt = document.createEvent("HTMLEvents");
+                evt.initEvent("result", true, false);
+                this.dispatchEvent(evt);
+            }else{
+                var evt = document.createEvent("HTMLEvents");
+                evt.initEvent("badresult", true, false);
+                this.dispatchEvent(evt);
+            }
+            ]]>
+            </body>
+        </method>
+        <method name="_onerrorload">
+            <parameter name="httpcode"/>
+            <body><![CDATA[
+            var evt = document.createEvent("HTMLEvents");
+            evt.errorCode = httpcode;
+            evt.initEvent("httperror", true, false);
+            this.dispatchEvent(evt);
+            ]]>
+            </body>
+        </method>
+        <method name="_UIendofload">
+            <body><![CDATA[
+            if(this.submitButton){
+                this.submitButton.removeAttribute("disabled");
+                this.submitButton.removeAttribute("loading");
+            }
+            if(this.progressmeter){
+                this.progressmeter.mode='determined';
+                this.progressmeter.value=0;
+            }
+            ]]>
+            </body>
+        </method>
+
+
+        <method name="_submit">
+            <parameter name="method"/>
+            <parameter name="contentType"/>
+            <parameter name="datas"/>
+            <body><![CDATA[
+            this.httpreq = new XMLHttpRequest();
+            this.httpreq.submission = this;
+
+            this.httpreq.onload = function() {
+                this.submission._UIendofload();
+                this.submission._onload();
+            }
+            this.httpreq.onerror = function() {
+                this.submission._UIendofload();
+                this.submission._onerrorload();
+            }
+            this.httpreq.onprogress = function() {
+
+            }
+
+            this.httpreq.open(method, this.action, true);
+            this.httpreq.setRequestHeader("Content-type", contentType);
+            if(this.submitButton){
+                this.submitButton.setAttribute('disabled','true');
+                this.submitButton.setAttribute('loading','true');
+            }
+            if(this.progressmeter){
+                this.progressmeter.mode='undetermined';
+                this.progressmeter.value=100;
+            }
+            this.httpreq.send(datas);
+
+            ]]>
+            </body>
+        </method>
+
+        <method name="_acceptNodes">
+            <parameter name="aNode"/>
+            <body><![CDATA[
+                var str = aNode.getAttribute("name");
+                var frm = aNode.getAttribute("form");
+                if ((str) && (this.mRegAcceptNode.test(frm))) {
+                     if(aNode.namespaceURI == "http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
+                       || aNode.namespaceURI == "http://www.w3.org/1999/xhtml" ){
+                        if(!aNode.disabled){
+                            return NodeFilter.FILTER_ACCEPT;
+                        }
+                    }
+                }
+                return NodeFilter.FILTER_SKIP;
+                ]]>
+            </body>
+        </method>
+
+        <method name="_readDatas">
+            <body><![CDATA[
+             this._acceptNodes.mRegAcceptNode = new RegExp("(\\b|\,|^)" + this.getAttribute("id") + "(\\b|\,|$)", "");
+
+            var tw = document.createTreeWalker(document, NodeFilter.SHOW_ELEMENT, this._acceptNodes, true);
+            this.formDatas = {};
+            this.invalidDatas = {};
+            this.hasInvalidDatas = false;
+            var ctrl;
+            var dt;
+            while (tw.nextNode()) {
+                name = tw.currentNode.getAttribute("name");
+                dt = this._getValue(tw.currentNode);
+                if(dt === null)
+                    continue;
+                if(this.formDatas[name] != undefined){
+                    if(typeof(this.formDatas[name]) != "object" || !(this.formDatas[name] instanceof Array)){
+                        this.formDatas[name]= new Array(this.formDatas[name]);
+                    }
+                    if(typeof(dt) == "object" && dt instanceof Array){
+                        this.formDatas[name] = this.formDatas[name].concat(dt);
+                    }else{
+                        this.formDatas[name].push(dt);
+                    }
+                }else{
+                    this.formDatas[name] = dt;
+                }
+            }
+            ]]>
+            </body>
+        </method>
+        <method name="_getValue">
+            <parameter name="aNode" />
+            <body><![CDATA[
+               var value=null;
+               aNode.removeAttribute("invalid");
+
+               if(aNode.getAttribute('disabled') == 'true') return null;
+
+               if (aNode.namespaceURI == "http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul") {
+                   switch (aNode.localName) {
+                       case "textbox":
+                            value = aNode.value;
+                            this._checkConstraint(aNode,value);
+                            break;
+                       case "menulist":
+                            if(aNode.selectedIndex > -1)
+                                value = aNode.selectedItem.value;
+                            this._checkConstraint(aNode,value);
+                            break;
+                       case "radiogroup":
+                           value = aNode.value;
+                           break;
+                       case "checkbox":
+                           if (aNode.checked) {
+                              if(aNode.hasAttribute('value'))
+                                  value = aNode.getAttribute('value')
+                              else
+                                  value="on";
+                           }
+                           break;
+                       case "radio":
+                           if (aNode.selected) {
+                             value= "on";
+                           }
+                           break;
+                       case "listbox":
+                           break;
+                       case "tree":
+                           break;
+                       case "richlistbox":
+                           break;
+                   }
+               } else if (aNode.namespaceURI == "http://www.w3.org/1999/xhtml") {
+                   switch (aNode.localName) {
+                       case "input":
+                           switch (aNode.type) {
+                                case "text":
+                                case "password":
+                                case "hidden":
+                                    value = aNode.value;
+                                    this._checkConstraint(aNode,value);
+                                    break;
+                                case "checkbox":
+                                case "radio":
+                                    if (aNode.checked) {
+                                        value =  aNode.value;
+                                    }
+                                    break;
+                           }
+                           break;
+
+                      case "textarea":
+                            value= aNode.value;
+                            this._checkConstraint(aNode,value);
+
+                           break;
+                      case "select":
+                            if(aNode.hasAttribute("required") && aNode.getAttribute("required") == true && aNode.selectedItem == null){
+                                aNode.setAttribute("invalid","true");
+                                this.invalidDatas[aNode.getAttribute("name")]=this.INVALID_REQUIRED;
+                                this.hasInvalidDatas = true;
+                                break;
+                            }
+
+                           if (!aNode.multiple) {
+                              value =  aNode.value;
+                              break;
+                           }
+                           var options = aNode.getElementsByTagNameNS("http://www.w3.org/1999/xhtml", "option");
+                           var rep = [];
+                           for (i = 0; i < options.length; i++) {
+                               if (options[i].selected) {
+                                    rep.push(options[i].value);
+                               }
+                           }
+                           value =  rep;
+                   }
+               }
+               return  value;
+             ]]>
+            </body>
+        </method>
+        <method name="_checkConstraint">
+            <parameter name="aNode" />
+            <parameter name="aValue" />
+            <body><![CDATA[
+              var valuews = aValue.replace(/^(\b)+/,'');
+              valuews = aValue.replace(/(\b)+$/,'');
+
+              if(aNode.hasAttribute("required") && aNode.getAttribute("required") == "true" && valuews == ''){
+                    aNode.setAttribute("invalid","true");
+                    this.invalidDatas[aNode.getAttribute("name")]=this.INVALID_REQUIRED;
+                    this.hasInvalidDatas = true;
+                    return false;
+              }
+              if(valuews == '')
+                return true;
+
+              var dt = aNode.getAttribute("datatype");
+              if(dt){
+                 var result=false;
+                 switch(dt){
+                    case 'string':
+                       result=true;
+                       break;
+                    case 'integer':
+                       result=/^([0-9])+$/.test(valuews);
+                       break;
+                    case 'float':
+                        result=/^[0-9]+(\.[0-9]+)?$/.test(valuews);
+                       break;
+                    case 'date':
+                         break;
+                    case 'url':
+                    case 'uri':
+                        result = /^[a-z]+:\/\/((((25[0-5])|(2[0-4][0-9])|([0-1]?[0-9]?[0-9]))\.((25[0-5])|(2[0-4][0-9])|([0-1]?[0-9]?[0-9]))\.((25[0-5])|(2[0-4][0-9])|([0-1]?[0-9]?[0-9]))\.((25[0-5])|(2[0-4][0-9])|([0-1]?[0-9]?[0-9])))|((([A-Za-z0-9\-])+\.)+[A-Za-z\-]+))((\/)|$)/.test(valuews);
+                        break;
+                    case 'mail':
+                        result=/^((\"[^\"f\n\r\t\b]+\")|([\w\!\#\$\%\&\'\*\+\-\~\/\^\`\|\{\}]+(\.[\w\!\#\$\%\&\'\*\+\-\~\/\^\`\|\{\}]+)*))@((\[(((25[0-5])|(2[0-4][0-9])|([0-1]?[0-9]?[0-9]))\.((25[0-5])|(2[0-4][0-9])|([0-1]?[0-9]?[0-9]))\.((25[0-5])|(2[0-4][0-9])|([0-1]?[0-9]?[0-9]))\.((25[0-5])|(2[0-4][0-9])|([0-1]?[0-9]?[0-9])))\])|(((25[0-5])|(2[0-4][0-9])|([0-1]?[0-9]?[0-9]))\.((25[0-5])|(2[0-4][0-9])|([0-1]?[0-9]?[0-9]))\.((25[0-5])|(2[0-4][0-9])|([0-1]?[0-9]?[0-9]))\.((25[0-5])|(2[0-4][0-9])|([0-1]?[0-9]?[0-9])))|((([A-Za-z0-9\-])+\.)+[A-Za-z\-]+))$/.test(valuews);
+                        break;
+                    case 'boolean':
+                        result=/^(true|false|0|1)$/.test(valuews);
+                        break;
+                 }
+                 if(!result){
+                    this.invalidDatas[aNode.getAttribute("name")]=this.INVALID_DATATYPE;
+                    this.hasInvalidDatas = true;
+                    aNode.setAttribute("invalid","true");
+                    return false;
+                 }
+              }
+              var constr = aNode.getAttribute("constraint");
+              if(constr){
+                var func = new Function("val", constr+"\n return true;");
+                if(!func.call(this, aValue)){
+                    this.invalidDatas[aNode.getAttribute("name")]=this.INVALID_CONSTRAINT;
+                    this.hasInvalidDatas = true;
+                    aNode.setAttribute("invalid","true");
+                    return false;
+                }
+              }
+              return true;
+            ]]></body>
+        </method>
+        <method name="_prepareContent">
+            <body><![CDATA[
+
+            var content='';
+
+            for( dt in this.formDatas){
+                if(typeof(this.formDatas[dt]) == "object" && this.formDatas[dt] instanceof Array){
+                    for(dt2 in this.formDatas[dt]){
+                    content += "&" + dt +"="+ encodeURIComponent(this.formDatas[dt][dt2]);
+                    }
+                }else{
+                content += "&" +dt +"="+encodeURIComponent(this.formDatas[dt]);
+                }
+            }
+            return content.substr(1);
+            ]]></body>
+        </method>
+
+    </implementation>
+    <handlers>
+        <handler event="submit" phase="at-target">
+            this._readDatas();
+            if(this.hasInvalidDatas){
+                var oninvalidate = this.getAttribute("oninvalidate");
+                if( oninvalidate){
+                    var func = new Function("event", oninvalidate+"\n return true;");
+                    if(func.call(this, event))
+                        return false;
+                }
+            }
+            var onsubmit = this.getAttribute("onsubmit");
+            if( onsubmit){
+                var func = new Function("event", onsubmit+"\n return true;");
+                if (!func.call(this, event)) {
+                    return false;
+                }
+            }
+            //if(event.submitbutton) this.submitButton = event.submitbutton; else this.submitButton = null;
+            this._submit(this.method, this.contentType, this._prepareContent());
+            return true;
+
+        </handler>
+        <handler event="result" phase="at-target">
+            var onresult = this.getAttribute("onresult");
+            if( onresult){
+                var func = new Function("event", onresult+"\n return true;");
+                var retval = func.call(this, event);
+                this.httpreq = null;
+                return retval;
+            }else{
+                return true;
+            }
+        </handler>
+        <handler event="badresult" phase="at-target">
+            var onbadresult = this.getAttribute("onbadresult");
+            if( onbadresult){
+                var func = new Function("event", onbadresult+"\n return true;");
+                var retval = func.call(this, event);
+                this.httpreq = null;
+                return retval;
+            }else{
+                return true;
+            }
+        </handler>
+        <handler event="httperror" phase="at-target">
+            var onhttperror = this.getAttribute("onhttperror");
+            if( onhttperror){
+                var func = new Function("event", onhttperror+"\n return true;");
+                var retval = func.call(this, event);
+                this.httpreq = null;
+                return retval;
+            }else{
+                this.httpreq = null;
+                return false;
+            }
+        </handler>
+
+    </handlers>
+
+</binding>
+
+<binding id="submission-json-rpc" extends="#submission">
+    <implementation>
+        <field name="contentType">"text/plain"</field>
+        <field name="jsonResponse" />
+        <property name="rpcmethod"
+                  onget="return this.getAttribute('rpcmethod');"
+                  onset="this.setAttribute('rpcmethod', val); return val;"/>
+        <property name="method" onget="return 'POST';" onset="return val;" />
+        <method name="_prepareContent">
+            <body><![CDATA[
+                this.jsonReponse = null;
+                this.method="POST";
+                var datas = { method: this.rpcmethod, params:this.formDatas, id:1 };
+                var content= datas.toJSONString();
+                return content;
+            ]]></body>
+        </method>
+        <method name="_onload">
+            <body><![CDATA[
+                var evt = document.createEvent("HTMLEvents");
+                try{
+                    eval("this.jsonResponse="+this.httpreq.responseText);
+                }catch(e){
+                    var evt = document.createEvent("HTMLEvents");
+                    evt.errorCode = 1;
+                    evt.initEvent("error", true, false);
+                    this.dispatchEvent(evt);
+                    return;
+                }
+                var evtname;
+                if(this.jsonResponse.error == undefined || this.jsonResponse.error ==null){
+                   evtname="result";
+                }else{
+                   evtname="rpcerror";
+                }
+                evt.initEvent(evtname, true, false);
+                this.dispatchEvent(evt);
+                ]]>
+            </body>
+        </method>
+
+    </implementation>
+    <handlers>
+        <handler event="rpcerror" phase="at-target">
+            var onrpcerror = this.getAttribute("onrpcerror");
+            if( onrpcerror){
+                var func = new Function("event", onrpcerror+"\n return true;");
+                var retval = func.call(this, event);
+                this.httpreq = null;
+                return retval;
+            }else{
+                return true;
+            }
+        </handler>
+        <handler event="error" phase="at-target">
+            var onerror = this.getAttribute("onerror");
+            if( onerror){
+                var func = new Function("event", onerror+"\n return true;");
+                var retval = func.call(this, event);
+                this.httpreq = null;
+                return retval;
+            }else{
+                this.httpreq = null;
+                return false;
+            }
+        </handler>
+    </handlers>
+</binding>
+
+
+
+<binding id="submit" extends="chrome://global/content/bindings/general.xml#basetext">
+    <content>
+        <xul:button xbl:inherits="accesskey,command,crop,dir,disabled,icon,image,label,orient,tabindex" />
+    </content>
+    <implementation>
+        <property name="loading">
+            <getter>return this.getAttribute("loading");</getter>
+            <setter>this.setAttribute("loading",val); return val;</setter>
+        </property>
+    </implementation>
+    <handlers>
+        <handler event="command">
+            var submission= this.getAttribute("form");
+            submission = document.getElementById(submission);
+            if(submission){
+
+                var evt = document.createEvent("HTMLEvents");
+                submission.submitButton = this;
+                evt.initEvent("submit", true, true);
+                submission.dispatchEvent(evt);
+            }
+        </handler>
+    </handlers>
+</binding>
+
+<binding id="submit-activate">
+    <content>
+        <children/>
+    </content>
+    <handlers>
+        <handler event="keypress" keycode="VK_RETURN">
+            var submit= this.getAttribute("submit");
+            submit = document.getElementById(submit);
+            if(submit){
+                if(submit.hasAttribute('loading') || submit.hasAttribute('disabled')){
+                    return;
+                }
+                var submission= submit.getAttribute("form");
+                submission = document.getElementById(submission);
+                if(submission){
+                    var evt = document.createEvent("HTMLEvents");
+                    submission.submitButton = submit;
+                    evt.initEvent("submit", true, true);
+                    submission.dispatchEvent(evt);
+                }
+            }
+        </handler>
+    </handlers>
+</binding>
+
+<binding id="grpbox-submit-activate" extends="chrome://global/content/bindings/groupbox.xml#groupbox">
+    <handlers>
+        <handler event="keypress" keycode="VK_RETURN">
+            var submit= this.getAttribute("submit");
+            submit = document.getElementById(submit);
+            if(submit){
+                if(submit.hasAttribute('loading') || submit.hasAttribute('disabled')){
+                    return;
+                }
+                var submission= submit.getAttribute("form");
+                submission = document.getElementById(submission);
+                if(submission){
+                    var evt = document.createEvent("HTMLEvents");
+                    submission.submitButton = submit;
+                    evt.initEvent("submit", true, true);
+                    submission.dispatchEvent(evt);
+                }
+            }
+        </handler>
+    </handlers>
+</binding>
+
+</bindings>

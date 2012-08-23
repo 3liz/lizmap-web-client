@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://jelix.org/ns/project/1.0">
+    <info id="ct@yourwebsite.undefined" name="ct" createdate="2010-08-30">
+        <version>0.1pre</version>
+        <label lang="fr_FR">ct</label>
+        <description lang="fr_FR"/>
+        <license URL="">All right reserved</license>
+        <copyright>2011 3liz</copyright>
+        <creator name="3liz" email="info@3liz.com" active="true"/>
+        <!--<contributor name="hisname" email="hisemail@yoursite.undefined" active="true" since="" role=""/>-->
+        <homepageURL>http://3liz.com</homepageURL>
+        <!--<updateURL>http://3liz.com/update.xml</updateURL>-->
+    </info>
+    <dependencies>
+        <jelix minversion="1.1.6" maxversion="1.2.*"/>
+    </dependencies>
+    <directories>
+        <config>./var/config/</config>
+        <log>./var/log/</log>
+        <var>./var/</var>
+        <www>./www/</www>
+        <temp>../temp/lizmap/</temp>
+    </directories>
+    <entrypoints>
+        <entry file="index.php" config="index/config.ini.php"/>
+    </entrypoints>
+</project>

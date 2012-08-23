@@ -1,0 +1,40 @@
+.genericTitle{
+  color:palegreen;
+}
+#header {
+  color:palegreen;
+  background:#3C3C3C url(../img/logo-3liz.png) no-repeat right;
+}
+/*Layer switcher*/
+#switcherContainer {
+  background-color:#3C3C3C;
+  color:#2E3436;
+}
+#switcher{
+  background-color:palegreen;
+}
+#switcher li.qwc-state-disabled > span {
+  color:#CCC;
+}
+
+/*Toolbar*/
+#toolbar {
+  background-color:#3C3C3C;
+}
+/*Navigation bar*/
+#navbar {
+  background-color:#3C3C3C;
+}
+
+/*Overview map*/
+#overviewmap{
+  background-color:#3C3C3C;
+  color:grey;
+}
+.olControlOverviewMapElement {
+	background-color: #E4E4E4;
+}
+.olControlOverviewMapExtentRectangle {
+	border: 2px solid palegreen;
+}
+

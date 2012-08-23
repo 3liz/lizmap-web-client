@@ -1,0 +1,72 @@
+Changelog of WikiRenderer
+
+Version 3.1.2
+- fixed bug on dokuwiki_to_xhtml rules
+
+Version 3.1.1
+
+- better compatibility with PHP 5.3
+- fixed a notice on an undefined variable
+- fixed a bug: WR3 rule didn't generate good markup when </code> was on the same line of <code>
+
+Version 3.1
+
+- no more PHP4 version, only PHP5
+- fixed bug: / was not allowed in patterns for inline tags
+- new property WikiTagXhtml::additionnalAttributes, so we can specify static attributes to add on an xhtml element
+- new property WikiTagXhtml::ignoreAttribute
+- escape char is now configurable
+- inline parser now takes care about attribute which don't allow wiki tags in them
+- renamed WikiRendererConfig::$textLineContainer to WikiRendererConfig::$defaultTextLineContainer
+- new property WikiRendererConfig::$textLineContainers
+- property WikiRendererConfig::$inlineTag is deprecated
+- renamed WikiTag::$separator to WikiTag::$currentSeparator
+- WikiTag::addContent and WikiTag::addSeparator are no more final methods
+- WikiTag::addSeparator receive now the separator as  argument
+- renamed WikiTag::getCurrentSeparator() to WikiTag::isCurrentSeparator($token)
+- fixed a little bug when the content of a wiki tag contains only 0
+- fixed default values in WikiTag
+- CamelCaseWord can be ignored with a ! before the word
+- support of utf8 characters in CamelCaseWord
+- checkWikiWordFunction can be an array to indicate a method of an object
+- new rules: wr3_to_docbook, dokuwiki_to_docbook, dokuwiki_to_xhtml,
+  trac_to_xhtml, phpwiki_to_dokuwiki, jwiki_to_xhtml
+
+Version 3.0
+
+- fixed php5 syntax and deprecated properties
+- fixed bug : error when default rule is used (wrong class name)
+- fixed bug : callback function for CamelCase word was never called
+
+Version 3.0 RC1
+
+- Ajout d'une classe de base pour la configuration
+- La classe de configuration peut rédéfinir des hooks : onStart, onParse. Cela
+  permet de modifier le texte en entrée, mais aussi le texte en sortie.
+- Ajout d'une propriété pointant vers la config, dans les objets dérivant de wikitag ou
+  de WikiRendererBloc
+- le constructeur accepte maintenant un nom de config. Les objets de config de rêgles
+  doivent avoir le même nom que le fichier de rêgle. renommage en conséquences des noms
+  des objets de config existants.
+- Nouvelle syntaxe WR3, similaire à classicwr, mais avec la prise en charge de notes
+  de bas de page, de blocs type pre entouré de &lt;code&gt; au lieu de chaque ligne
+  commençant par un éspace.
+- ajout des rêgles classicwr_to_wr3, pour convertir un texte classicwr en syntaxe wr3.
+- ajout des rêgles wr3_to_text
+
+Version 3.0 beta
+
+Refonte complète du moteur pour résoudre certains problèmes :
+- bug sur les tags de lien : si il n'y avait que l'url et que celle-ci comportait par
+  inadvertance des balises wiki, cela générait du code invalide (des balises xhtml dans les attributs par
+  exemple)
+- Possiblité d'avoir une syntaxe de bloc utilisant un délimiteur de début et de fin, et non
+  pas qu'une syntaxe se reposant sur un caractère significatif en début de chaque ligne de bloc.
+- Modifications dans l'api des objets traitant les tags wiki de type blocs
+- On ne parle plus de "configuration", mais de "rêgles" de transformation (rules)
+- Il n'y a plus de fonctions de formatage pour les balises type inline : ce sont maintenant
+  des objets à part entière
+- Caractère de séparation d'attributs dans les tags inlines, paramètrables pour chaque tag</li>
+- Possibilité d'indiqué quel attribut servira de contenu, donc quel attribut accepte des
+  tag wiki
+- nombreux tests unitaires effectués

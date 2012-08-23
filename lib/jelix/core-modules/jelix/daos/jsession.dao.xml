@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<dao xmlns="http://jelix.org/ns/dao/1.0">
+    <datasources>
+        <primarytable name="jsessions" realname="jsessions" primarykey="id" />
+    </datasources>
+
+    <record>
+        <property name="id" fieldname="id" datatype="string"/>
+        <property name="creation" fieldname="creation" datatype="date" required="true"/>
+        <property name="access" fieldname="access" datatype="date" required="true"/>
+        <property name="data" fieldname="data" datatype="varbinary" required="true"/>
+    </record>
+
+    <factory>
+        <method name="deleteExpired" type="delete">
+            <parameter name="date" />
+            <conditions>
+                <lt property="access" expr="$date" />
+            </conditions>
+        </method>
+    </factory>
+</dao>
