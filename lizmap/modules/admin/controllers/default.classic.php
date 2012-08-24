@@ -9,13 +9,20 @@
 */
 
 class defaultCtrl extends jController {
-    /**
-    *
-    */
-    function index() {
-        $rep = $this->getResponse('htmladmin');
 
-        return $rep;
-    }
+  public $pluginParams = array(
+  '*' => array( 'jacl2.right'=>'lizadmin.access')
+  );
+
+  /**
+  * Administration home page.
+  * All component must notify themselves to appear in the lateral menu.
+  */
+  function index() {
+    $rep = $this->getResponse('htmladmin');
+
+    return $rep;
+  }
+    
 }
 

@@ -2,6 +2,7 @@
   <div id="logo">
     <h1>Admin</h1>
   </div>
+  <div id="auth">{zone 'admin~auth_status'}</div>
 </div>
 <div id="content" class="container-fluid">
   <div class="row-fluid">

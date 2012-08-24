@@ -1,6 +1,6 @@
 <?php
 /**
-* Classe avec des fonctions utilitaires.
+* Some generic methods.
 * @package   lizmap
 * @subpackage lizmap
 * @author    3liz
@@ -82,35 +82,6 @@ class tools{
 
     return $taille_fichier;
     
-  }
-  
-  
-  /**
-  * Recursive function to get all the .qgs files in a user directory, recursively.
-  * We check that the config file *.qgs.cfg is in the qgs project directory
-  *
-  * @param $extensionList Array of extensions to get (here only array('qgs') )
-  * @param $folder Current folder to search in
-  * @param $array The array in which add the information grabbed during the recursive search
-  * @return Add elements to $array when a qgs file is encountered
-  */
-  public function getProjectForUser($extensionList, $folder, &$array) {
-    if($handle = opendir($folder)) {
-	    while(($file = readdir($handle)) !== false) {
-	      $ext = pathinfo($file, PATHINFO_EXTENSION);
-	      // Check if the file has the extension
-		    if(in_array($ext, $extensionList)) {
-			    // Check if there is there is a config file nearby
-			    $pathinfo = pathinfo($file);
-			    if(file_exists($folder.'/'.$file.'.cfg'))
-  			    $array[][$folder.'/'.$file] = $pathinfo;
-		    } elseif(is_dir($folder.'/'.$file) && $file != '.' && $file != '..') {
-			    // Ran into a folder, we have to dig deeper now
-			    $this->getProjectForUser($extensionList, $folder.'/'.$file, $array);
-		    }
-	    }
-	    closedir($handle);
-    }
   }
 
 }

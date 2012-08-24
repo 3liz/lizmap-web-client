@@ -5,9 +5,18 @@
 ;for security reasons, don't remove or modify the first line
 
 ; name of the default profile to use for any connection
-default=myapp
+default=jauth
 
 usepdo=on
+
+
+jacl2_profile=jauth
+[jdb:jauth]
+driver=pdo
+dsn="sqlite:var:jauth.db"
+user=jauth
+password=jauth
+
 ; each section correspond to a connection
 ; the name of the section is the name of the connection, to use as an argument
 ; for jDb and jDao methods
@@ -148,4 +157,5 @@ cache_file_umask=
 ; Can be a list e.g
 ;servers = memcache_host1:11211,memcache_host2:11211,memcache_host3:11211 i.e HOST_NAME:PORT
 ;servers = 
+
 

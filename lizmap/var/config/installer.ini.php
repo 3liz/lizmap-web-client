@@ -10,12 +10,12 @@ junittests.installed=0
 junittests.version=
 jacldb.installed=0
 jacldb.version=
-jauthdb.installed=0
-jauthdb.version=
-jauth.installed=0
-jauth.version=
-jacl2db.installed=0
-jacl2db.version=
+jauthdb.installed=1
+jauthdb.version=1.2.1
+jauth.installed=1
+jauth.version=1.2.1
+jacl2db.installed=1
+jacl2db.version=1.3
 jWSDL.installed=1
 jWSDL.version=1.2.1
 lizmap.installed=1
@@ -27,3 +27,23 @@ admin.version=0.1pre
 
 jelix.version.date="2012-05-17 21:35"
 jWSDL.version.date=2011-10-18
+
+jauth.version.date=2011-10-18
+jauth.firstversion=1.2.1
+jauth.firstversion.date=2011-10-18
+jauthdb.version.date=2011-10-18
+jauthdb.firstversion=1.2.1
+jauthdb.firstversion.date=2011-10-18
+jacl2db.version.date=2011-10-18
+jacl2db.firstversion=1.3
+jacl2db.firstversion.date=2011-10-18
+[__modules_data]
+jauth.contexts="auth:index/auth.coord.ini.php"
+
+
+
+
+
+jauthdb.contexts="index/auth.coord.ini.php,db:jauth"
+
+jacl2db.contexts="jacl2:index/jacl2.coord.ini.php,db:jacl2_profile"

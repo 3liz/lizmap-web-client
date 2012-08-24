@@ -26,6 +26,18 @@ body {
   margin-top : 0.75em;
 }
 
+#auth {
+/*  background-color:grey;*/
+  position:absolute;
+  top:0px;
+  right:0px;
+  color:grey;
+}
+#auth a {
+/*  text-decoration:underline;*/
+  color:grey;
+}
+
 #content {
 }
 
