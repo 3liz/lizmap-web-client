@@ -24,7 +24,7 @@ class myHtmlResponse extends jResponseHtml {
     $this->title = 'LizMap list';
     
     // CSS
-    $this->addCSSLink($bp.'css/jquery-ui-1.8.custom.css');
+    $this->addCSSLink($bp.'css/jquery-ui-1.8.16.custom.css');
     $this->addCSSLink($bp.'css/bootstrap.css');
     $this->addCSSLink($bp.'css/bootstrap-responsive.css');
     $this->addCSSLink($bp.'css/main.css');
