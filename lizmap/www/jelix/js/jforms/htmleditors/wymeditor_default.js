@@ -1,0 +1,1 @@
+function jelix_wymeditor_default(textarea_id,form_id,skin,config){if(!skin)skin='default';jQuery(function(){jQuery("#"+textarea_id).wymeditor({skinPath:config.jelixWWWPath+'wymeditor/skins/'+skin+'/',updateSelector:"#"+form_id,updateEvent:'jFormsUpdateFields',jQueryPath:config.jqueryPath,lang:config.locale.substr(0,2).toLowerCase(),logoHtml:''})})}

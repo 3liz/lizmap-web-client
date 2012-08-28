@@ -17,7 +17,7 @@ class adminCtrl extends jController {
   * @return Administration backend for the repositories.
   */
   function index() {
-    $rep = $this->getResponse('htmladmin');
+    $rep = $this->getResponse('html');
     
     // Get repository data
     $repository = $this->param('repository');
@@ -75,7 +75,7 @@ class adminCtrl extends jController {
   * @return Display the form.
   */
   public function editServices(){
-    $rep = $this->getResponse('htmladmin');
+    $rep = $this->getResponse('html');
  
     // Get the form
     jClasses::inc('lizmap~lizmapConfig');
@@ -285,7 +285,7 @@ class adminCtrl extends jController {
   * @return Display the form.
   */
   public function editSection(){
-    $rep = $this->getResponse('htmladmin');
+    $rep = $this->getResponse('html');
  
     $repository = $this->param('repository');
     $new = (bool)$this->param('new');

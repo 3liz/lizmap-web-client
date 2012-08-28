@@ -62,6 +62,12 @@ fieldset {
     margin-left: 10px;
 }
 
+#info-box #info-user-login {
+    font-weight:bold;
+    color:#FAEDED;
+}
+#info-box a { text-decoration:underline;}
+
 #main {
     clear:both;
     background: white url('images/fond-cellule.png') repeat-x top left;
@@ -196,6 +202,33 @@ fieldset {
 }
 .dashboard-clear {clear:both;}
 
+.dashboard-widget {
+    background-color:#eff4f6;
+    border: 1px solid #B0C4CB;
+    -moz-border-radius:4px;
+    -webkit-border-radius:4px;
+    -o-border-radius:4px;
+    border-radius:4px;
+    margin-top: 1em;
+    padding:0;
+}
+
+.dashboard-widget h2 {
+    border-bottom: 1px solid #B0C4CB;
+    text-align:center;
+    margin:0;
+    background-color: #002830;
+    color:#eff4f6;
+    -moz-border-radius:4px 4px 0 0;
+    -o-border-radius:4px 4px 0 0;
+    border-radius:4px 4px 0 0;
+    -webkit-border-top-right-radius: 4px;
+    -webkit-border-top-left-radius: 4px;
+}
+
+.dashboard-widget-content {
+  padding:5px;   
+}
 
 #footer {
     clear:both;
@@ -224,6 +257,12 @@ table.jforms-table th {
     text-align:right;
     background-color: #f7f7f7
 }
+
+table.jforms-table th.jforms-group {
+    text-align: center;
+    font-size: 140%;
+}
+
 table.jforms-table td {
     background-color: #fcfcfc
 }

@@ -1,0 +1,65 @@
+.diff { background: white; border: 1px solid black; }
+table.diff {
+    border-collapse: collapse;
+    border: 1px solid #ddd;
+    border-spacing: 0;
+    empty-cells: show;
+    line-height: 130%;
+    padding: 0;
+    margin: 0 auto;
+    table-layout: fixed;
+    width: 100%;
+}
+
+.diff .block            { background: #cccccc; }
+.diff div.block         { padding-left: 1em; }
+table.diff tbody.block  { }
+
+.diff .lineno {background: #cccccc; font-family: monospace;  color: black;}
+table.sidebyside  col.lineno { width: 4em }
+table.inlinetable col.diffcontent {width:80%}
+
+.diff .block tt { font-weight: normal;  font-family: monospace;  white-space:pre; color: black; margin-left: 0; }
+
+.diff .context, .diff .original, .diff .final, .diff .deleted, .diff .added {
+    font-family: monospace;
+    white-space:pre;
+}
+
+.diff .context                  { background-color: white;}
+.diff .original, .diff .deleted { background-color: #fcc;}
+.diff .final,    .diff .added   { background-color: #cfc;}
+
+.diff del, .diff ins            { font-weight: bold; }
+.diff del                       { background-color: #f99; }
+.diff ins                       { background-color: #9f9; }
+.diff .modified                 { background-color: #eee; }
+
+table.diff th {
+ border-right: 1px solid #ddd;
+  color: #999;
+}
+table.sidebyside th {
+    border: 1px solid #ddd;
+}
+table.diff tbody th {
+ font-weight:normal;
+}
+table.diff tr.headblock th {
+    font-weight:bold;
+     color: #000;
+}
+
+table.diff  thead th {
+ background: #eee;
+ border-bottom: 1px solid #d7d7d7;
+ text-align: center;
+}
+
+table.sidebyside  thead th, table.sidebyside tbody td {
+    border: 1px solid #d7d7d7;
+}
+
+table.diff  tbody td {
+ vertical-align: top;
+}

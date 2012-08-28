@@ -12,7 +12,7 @@ theme=default
 
 pluginsPath="app:plugins/"
 
-modulesPath="lib:jelix-modules/,app:modules/,app:lizmap-modules"
+modulesPath="lib:jelix-admin-modules/,lib:jelix-modules/,app:modules/,app:lizmap-modules"
 
 
 
@@ -101,6 +101,8 @@ index=on
 xmlrpc=on
 jsonrpc=on
 rdf=on
+
+admin=on
 
 [fileLogger]
 default=messages.log

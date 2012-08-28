@@ -37,6 +37,8 @@ table.records-list tbody tr.even { background-color: #fcfcfc }
 table.records-list tbody tr.odd { background-color: #f7f7f7 }
 table.records-list tbody tr:hover { background: #eed !important }
 
+table.records-list tbody th h3 { background-color: #DAE9F7;}
+
 table.records-list tbody td { }
 table.records-list tbody td.colblank { background-color:#fff; border:0 none #fff!important;}
 table.records-list thead th.colblank { background-color:#fff; border-top:0 none #fff!important;border-bottom:0 none #fff!important;}
