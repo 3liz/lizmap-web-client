@@ -40,7 +40,6 @@ class translateCtrl extends jController {
         }
       }
     }
-    
     $rep->data = $data;
     return $rep;
   }

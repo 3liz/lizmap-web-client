@@ -11,32 +11,6 @@
 
 class serviceCtrl extends jController {
 
-  // Get the projects config file
-  protected $wmsServerURL = '';
-  
-  // User
-  protected $projectsPaths = '';
-  
-  function __construct ($request){
-    parent::__construct($request);
-    
-    // set the service url
-    $appConfigPath = jApp::varPath().'projects.json';
-    $configRead = jFile::read($appConfigPath);
-    $config = json_decode($configRead);
-    $this->wmsServerURL = $config->services->wmsServerURL;
-    
-    // set the 
-    $this->projectsPaths = $config->projectsPaths;
-    $defaultPathName = $this->projectsPaths->default;
-    if (is_string($this->projectsPaths->$defaultPathName))
-      $this->projectsPath = $this->projectsPaths->$defaultPathName; 
-    else
-      $this->projectsPath = $this->projectsPaths->$defaultPathName->path; 
-    
-  }
-  
-
   /**
   * Redirect to the appropriate action depending on the REQUEST parameter.
   * @param $PROJECT Name of the project
@@ -95,25 +69,18 @@ class serviceCtrl extends jController {
       return $rep;
     }
     
+    // Get repository data
     $repository = $this->param('repository');
-    $groupPath = $this->projectsPath;
-    if(isset($this->projectsPaths->$repository))
-      if (is_string($this->projectsPaths->$repository))
-        $groupPath = $this->projectsPaths->$repository;
-      else
-        $groupPath = $this->projectsPaths->$repository->path;
-    
-    if ($groupPath[0] != '/')
-      $groupPath = jApp::varPath().$groupPath;
+    jClasses::inc('lizmap~lizmapConfig');
+    $lizmapConfig = new lizmapConfig($repository);
 
     // Get the passed parameters
     global $gJCoord;
     $myParams = array_keys($gJCoord->request->params);
-#    print_r($myParams);
     
     // Construction of the request url
-    $querystring = $this->wmsServerURL."?";
-    $querystring.= "map=".$groupPath.$project.".qgs";
+    $querystring = $lizmapConfig->wmsServerURL."?";
+    $querystring.= "map=".$lizmapConfig->repositoryData['path'].$project.".qgs";
     
     // on garde les paramètres intéressants
     foreach($myParams as $param){
@@ -151,23 +118,17 @@ class serviceCtrl extends jController {
       return $rep;
     }
 
+    // Get repository data
     $repository = $this->param('repository');
-    $groupPath = $this->projectsPath;
-    if(isset($this->projectsPaths->$repository))
-      if (is_string($this->projectsPaths->$repository))
-        $groupPath = $this->projectsPaths->$repository;
-      else
-        $groupPath = $this->projectsPaths->$repository->path;
-
-    if ($groupPath[0] != '/')
-      $groupPath = jApp::varPath().$groupPath;
+    jClasses::inc('lizmap~lizmapConfig');
+    $lizmapConfig = new lizmapConfig($repository); 
         
     // Get the passed parameters
     global $gJCoord;
     $myParams = array_keys($gJCoord->request->params);
    
-    // paramètres de la requête
-    $data = array("map"=>$groupPath.$project.".qgs");
+    // Request parameters
+    $data = array("map"=>$lizmapConfig->repositoryData['path'].$project.".qgs");
     $cached = false;
     // on garde les paramètres intéressants
     foreach($myParams as $param){
@@ -177,7 +138,7 @@ class serviceCtrl extends jController {
     }
 
     // Construction of the request url : base url + parameters
-    $url = $this->wmsServerURL.'?';
+    $url = $lizmapConfig->wmsServerURL.'?';
     $params = http_build_query($data);
     // On remplace certains caractères (plus besoin si php 5.4, alors utiliser le 4ème paramètre de http_build_query) 
     $a = array('+', '_', '.', '-');
@@ -200,9 +161,6 @@ class serviceCtrl extends jController {
     $rep->content = $content;
     $rep->doDownload  =  false;
     $rep->outputFileName  =  'mapserver';
-
-#    $rep = $this->getResponse('text');
-#    $rep->content = $url . $params;
     
     return $rep;
   }
@@ -231,19 +189,13 @@ class serviceCtrl extends jController {
     global $gJCoord;
     $myParams = array_keys($gJCoord->request->params);
 
+    // Get repository data
     $repository = $this->param('repository');
-    $groupPath = $this->projectsPath;
-    if(isset($this->projectsPaths->$repository))
-      if (is_string($this->projectsPaths->$repository))
-        $groupPath = $this->projectsPaths->$repository;
-      else
-        $groupPath = $this->projectsPaths->$repository->path;
-
-    if ($groupPath[0] != '/')
-      $groupPath = jApp::varPath().$groupPath;
+    jClasses::inc('lizmap~lizmapConfig');
+    $lizmapConfig = new lizmapConfig($repository); 
    
     // paramètres de la requête
-    $data = array("map"=>$groupPath.$project.".qgs");
+    $data = array("map"=>$lizmapConfig->repositoryData['path'].$project.".qgs");
     // on garde les paramètres intéressants
     foreach($myParams as $param){
       if(!in_array($param, array('module', 'action', 'C', 'project'))){
@@ -252,7 +204,7 @@ class serviceCtrl extends jController {
     }
 
     // Construction of the request url : base url + parameters
-    $url = $this->wmsServerURL.'?';
+    $url = $lizmapConfig->wmsServerURL.'?';
     $params = http_build_query($data);
     // On remplace certains caractères (plus besoin si php 5.4, alors utiliser le 4ème paramètre de http_build_query) 
     $a = array('+', '_', '.', '-');
@@ -275,9 +227,6 @@ class serviceCtrl extends jController {
     $rep->content = $content;
     $rep->doDownload  =  false;
     $rep->outputFileName  =  'mapserver';
-
-#    $rep = $this->getResponse('text');
-#    $rep->content = $url . $params;
     
     return $rep;
   }
@@ -306,19 +255,13 @@ class serviceCtrl extends jController {
     global $gJCoord;
     $myParams = array_keys($gJCoord->request->params);
 
+    // Get repository data
     $repository = $this->param('repository');
-    $groupPath = $this->projectsPath;
-    if(isset($this->projectsPaths->$repository))
-      if (is_string($this->projectsPaths->$repository))
-        $groupPath = $this->projectsPaths->$repository;
-      else
-        $groupPath = $this->projectsPaths->$repository->path;
-
-    if ($groupPath[0] != '/')
-      $groupPath = jApp::varPath().$groupPath;
+    jClasses::inc('lizmap~lizmapConfig');
+    $lizmapConfig = new lizmapConfig($repository); 
    
-    // paramètres de la requête
-    $data = array("map"=>$groupPath.$project.".qgs");
+    // Request parameters
+    $data = array("map"=>$lizmapConfig->repositoryData['path'].$project.".qgs");
     // on garde les paramètres intéressants
     foreach($myParams as $param){
       if(!in_array($param, array('module', 'action', 'C', 'project'))){
@@ -327,7 +270,7 @@ class serviceCtrl extends jController {
     }
 
     // Construction of the request url : base url + parameters
-    $url = $this->wmsServerURL.'?';
+    $url = $lizmapConfig->wmsServerURL.'?';
     $params = http_build_query($data);
 #    // On remplace certains caractères (plus besoin si php 5.4, alors utiliser le 4ème paramètre de http_build_query) 
 #    $a = array('+', '_', '.', '-');
@@ -373,23 +316,17 @@ class serviceCtrl extends jController {
       return $rep;
     }
 
+    // Get repository data
     $repository = $this->param('repository');
-    $groupPath = $this->projectsPath;
-    if(isset($this->projectsPaths->$repository))
-      if (is_string($this->projectsPaths->$repository))
-        $groupPath = $this->projectsPaths->$repository;
-      else
-        $groupPath = $this->projectsPaths->$repository->path;
-
-    if ($groupPath[0] != '/')
-      $groupPath = jApp::varPath().$groupPath;
+    jClasses::inc('lizmap~lizmapConfig');
+    $lizmapConfig = new lizmapConfig($repository); 
         
     // Get the passed parameters
     global $gJCoord;
     $myParams = array_keys($gJCoord->request->params);
    
-    // paramètres de la requête
-    $data = array("map"=>$groupPath.$project.".qgs");
+    // Request parameters
+    $data = array("map"=>$lizmapConfig->repositoryData['path'].$project.".qgs");
     $cached = false;
     // on garde les paramètres intéressants
     foreach($myParams as $param){
@@ -399,7 +336,7 @@ class serviceCtrl extends jController {
     }
 
     // Construction of the request url : base url + parameters
-    $url = $this->wmsServerURL.'?';
+    $url = $lizmapConfig->wmsServerURL.'?';
     $params = http_build_query($data);
     // On remplace certains caractères (plus besoin si php 5.4, alors utiliser le 4ème paramètre de http_build_query) 
     $a = array('+', '_', '.', '-','%3A');
@@ -422,9 +359,6 @@ class serviceCtrl extends jController {
     $rep->content = $content;
     $rep->doDownload  =  false;
     $rep->outputFileName  =  'mapserver';
-
-#    $rep = $this->getResponse('text');
-#    $rep->content = $url . $params;
     
     return $rep;
   }  
@@ -448,19 +382,13 @@ class serviceCtrl extends jController {
       return $rep;
     }
 
+    // Get repository data
     $repository = $this->param('repository');
-    $groupPath = $this->projectsPath;
-    if(isset($this->projectsPaths->$repository))
-      if (is_string($this->projectsPaths->$repository))
-        $groupPath = $this->projectsPaths->$repository;
-      else
-        $groupPath = $this->projectsPaths->$repository->path;
+    jClasses::inc('lizmap~lizmapConfig');
+    $lizmapConfig = new lizmapConfig($repository); 
 
-    if ($groupPath[0] != '/')
-      $groupPath = jApp::varPath().$groupPath;
-    
     // Get the corresponding Qgis project configuration
-    $configPath = $groupPath.$project.'.qgs.cfg';
+    $configPath = $lizmapConfig->repositoryData['path'].$project.'.qgs.cfg';
 #print_r($configPath);
     
     $configRead = jFile::read($configPath);    
@@ -469,6 +397,5 @@ class serviceCtrl extends jController {
     return $rep;
   
   }
-  
 
 }

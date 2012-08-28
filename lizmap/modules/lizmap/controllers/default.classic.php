@@ -1,6 +1,6 @@
 <?php
 /**
-* Home page
+* Redirect to the default repository project list page.
 * @package   lizmap
 * @subpackage lizmap
 * @author    3liz
@@ -12,15 +12,21 @@
 class defaultCtrl extends jController {
 
   /**
-  * Redirect to the default project map
+  * Redirect to the default repository project list.
   * 
-  * @return Redirection to the default project map
+  * @return Redirection to the default repository list
   */
   function index() {
-  
     $rep = $this->getResponse('redirect');
-    $rep->params = array('project'=>'montpellier');
-    $rep->action = 'view~map:index';
+    
+    // Get repository data
+    $repository = $this->param('repository');
+    jClasses::inc('lizmap~lizmapConfig');
+    $lizmapConfig = new lizmapConfig($repository);
+    
+    // Set the redirection parameters
+    $rep->params = array('repository'=>$lizmapConfig->repositoryKey);
+    $rep->action = 'view~default:index';
     return $rep;
   }
   

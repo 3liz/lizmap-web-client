@@ -1,10 +1,10 @@
 <?php
 /**
-* Displaying a list of Qgis project file
+* Displays a list of project for a given repository.
 * @package   lizmap
 * @subpackage view
 * @author    3liz
-* @copyright 2011 3liz
+* @copyright 2012 3liz
 * @link      http://3liz.com
 * @license    Mozilla Public License : http://www.mozilla.org/MPL/
 */
@@ -12,48 +12,22 @@
 class defaultCtrl extends jController {
 
   /**
-  * Redirect to the default project map
+  * Displays a list of project for a given repository.
   * 
-  * @return Redirection to the default project map
+  * @param string $repository. Name of the repository.
+  * @return Html page with a list of projects.
   */
   function index() {
 
     $rep = $this->getResponse('html');
     
-    // Get the config
-    $appConfigPath = jApp::varPath().'projects.json';
-    $configRead = jFile::read($appConfigPath);
-    $config = json_decode($configRead);
-        
-    // Get the project path
-    $projectsPaths = $config->projectsPaths;
-    $groupName = $projectsPaths->default;
-    $groupLabel = 'LizMap';
-    $groupPath = '';
-    if (is_string($projectsPaths->$groupName)) {
-      $groupPath = $projectsPaths->$groupName;
-    } else {
-      $groupPath = $projectsPaths->$groupName->path;
-      $groupLabel = $projectsPaths->$groupName->label;
-    }
-
+    // Get repository data
     $repository = $this->param('repository');
-    if(isset($projectsPaths->$repository)) {
-      $groupName = $repository;
-      if (is_string($projectsPaths->$repository)) {
-        $groupPath = $projectsPaths->$repository;
-        $groupLabel = $groupName;
-      } else {
-        $groupPath = $projectsPaths->$repository->path;
-        $groupLabel = $projectsPaths->$repository->label;
-      }
-    }
-
-    if ($groupPath[0] != '/')
-      $groupPath = jApp::varPath().$groupPath;
+    jClasses::inc('lizmap~lizmapConfig');
+    $lizmapConfig = new lizmapConfig($repository); 
 
     $projects = Array();
-    if ($dh = opendir($groupPath)) {
+    if ($dh = opendir($lizmapConfig->repositoryData['path'])) {
       $cfgFiles = Array();
       $qgsFiles = Array();
       while (($file = readdir($dh)) !== false) {
@@ -65,12 +39,12 @@ class defaultCtrl extends jController {
       closedir($dh);
       foreach ($qgsFiles as $qgsFile) {
         if (in_array($qgsFile.'.cfg',$cfgFiles)) {
-          $configRead = jFile::read($groupPath.$qgsFile.'.cfg');
+          $configRead = jFile::read($lizmapConfig->repositoryData['path'].$qgsFile.'.cfg');
           $configOptions = json_decode($configRead)->options;
-          $qgsXML = simplexml_load_file($groupPath.$qgsFile);
+          $qgsXML = simplexml_load_file($lizmapConfig->repositoryData['path'].$qgsFile);
 
           $project = Array(
-            'repository'=>$groupName,
+            'repository'=>$lizmapConfig->repositoryKey,
             'id'=>substr($qgsFile,0,-4),
             'title'=>ucfirst(substr($qgsFile,0,-4)),
             'abstract'=>'',
@@ -90,7 +64,7 @@ class defaultCtrl extends jController {
       }
     }
 
-    $rep->body->assign('repositoryLabel', $groupLabel);
+    $rep->body->assign('repositoryLabel', $lizmapConfig->repositoryData['label']);
 
     $main = '<div class="row liz-projects">';
     $count = 0;

@@ -1,6 +1,6 @@
 <?php
 /**
-* Handling of one project among all the projects. Display a map based on one Qgis project
+* Displays a full featured map based on one Qgis project.
 * @package   lizmap
 * @subpackage view
 * @author    3liz
@@ -12,66 +12,59 @@
 class mapCtrl extends jController {
 
   /**
-  * Load the project page
-  * @param $project Name of the project
-  * @return Page with map and content for the chose Qgis project
+  * Load the project page for the given project.
+  * @param string $repository Name of the repository.
+  * @param string $project Name of the project.
+  * @return Page with map and content for the chose Qgis project.
   */
   function index() {
   
     $rep = $this->getResponse('htmlmap');
-       
+    $ok = true;
+    
     // Get the project
-    $project = $this->param('project');
-
+    $project = filter_var($this->param('project'), FILTER_SANITIZE_STRING);
+    
+    // Get repository data
+    $repository = $this->param('repository');
+    jClasses::inc('lizmap~lizmapConfig');
+    $lizmapConfig = new lizmapConfig($repository);
+    
+    // We must redirect to default repository project list if no project given
     if(!$project){
       jMessage::add('The parameter project is mandatory !', 'error');
-      // Redirection to the public project list
+      $ok = false;
+    }
+    
+    // Get the corresponding Qgis project configuration
+    $qgsPath = $lizmapConfig->repositoryData['path'].$project.'.qgs';
+    $configPath = $qgsPath.'.cfg';
+    
+    // We must redirect to default repository project list if no project found.
+    if(!file_exists($qgsPath)){
+      jMessage::add('The project '.strtoupper($project).' does not exist !', 'error');
+      $ok = false;
+    }
+    
+    // We must redirect to default repository project list if no project configuration found
+    if(!file_exists($configPath)){
+      jMessage::add('The configuration file does not exist for the project : '.strtoupper($project).' !', 'error');
+      $ok = false;
+    }    
+    
+    // Redirect if error encountered
+    if(!$ok){
       $rep = $this->getResponse('redirect');
-      $rep->params = array('project'=>'montpellier');
-      $rep->action = 'view~map:index';
+      $rep->params = array('repository'=>$lizmapConfig->repositoryKey);
+      $rep->action = 'view~default:index';
       return $rep;
     }
     
-    // Get the config
-    $appConfigPath = jApp::varPath().'projects.json';
-    $configRead = jFile::read($appConfigPath);
-    $config = json_decode($configRead);
-        
-    // Get the project path
-    $projectsPaths = $config->projectsPaths;
-    $groupName = $projectsPaths->default;
-    $groupLabel = 'LizMap';
-    $groupPath = '';
-    if (is_string($projectsPaths->$groupName)) {
-      $groupPath = $projectsPaths->$groupName;
-    } else {
-      $groupPath = $projectsPaths->$groupName->path;
-      $groupLabel = $projectsPaths->$groupName->label;
-    }
+    // Add the cache server url as Javascript var.
+    $rep->addJSCode("var cacheServerURL = '".$lizmapConfig->cacheServerURL."';");
 
-    $repository = $this->param('repository');
-    if(isset($projectsPaths->$repository)) {
-      if (is_string($projectsPaths->$repository)) {
-        $groupPath = $projectsPaths->$repository;
-        $groupLabel = $repository;
-      } else {
-        $groupPath = $projectsPaths->$repository->path;
-        $groupLabel = $projectsPaths->$repository->label;
-      }
-    }
-
-    if ($groupPath[0] != '/')
-      $groupPath = jApp::varPath().$groupPath;
     
-    // Get the corresponding Qgis project configuration
-    $configPath = $groupPath.$project.'.qgs.cfg';
-    
-    // Get the cache server
-    $cacheServerURL = $config->services->cacheServerURL;
-    $rep->addJSCode("var cacheServerURL = '".$cacheServerURL."';");
-
-   
-    $configRead = jFile::read($configPath); 
+    $configRead = jFile::read($configPath);
     $configOptions = json_decode($configRead)->options;
     if (property_exists($configOptions,'googleKey') && $configOptions->googleKey != '')
       $rep->addJSLink('http://maps.google.com/maps/api/js?v=3.5&sensor=false&'.$configOptions->googleKey != '');
@@ -88,7 +81,7 @@ class mapCtrl extends jController {
     $rep->addJSCode("var cfgUrl = '".jUrl::get('lizmap~service:getProjectConfig', array('repository'=>$repository, 'project'=>$project))."';");
     $rep->addJSCode("var wmsServerURL = '".jUrl::get('lizmap~service:index', array('repository'=>$repository, 'project'=>$project))."';");
 
-    $rep->body->assign('repositoryLabel', $groupLabel);
+    $rep->body->assign('repositoryLabel', $lizmapConfig->repositoryData['label']);
     return $rep;
   }
   
