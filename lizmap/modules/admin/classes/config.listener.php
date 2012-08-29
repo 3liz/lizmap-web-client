@@ -7,7 +7,7 @@ class configListener extends jEventListener{
     // Child for the configuration of lizmap repositories
     $bloc->childItems[] = new masterAdminMenuItem(
       'lizmap_configuration', 
-      jLocale::get("lizmap~admin.menu.configuration.main.label"), 
+      jLocale::get("admin~admin.menu.configuration.main.label"), 
       jUrl::get('admin~config:index'), 110, 'lizmap'
     );
     // Add the bloc

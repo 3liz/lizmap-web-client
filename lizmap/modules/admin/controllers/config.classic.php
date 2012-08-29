@@ -12,7 +12,7 @@
 class configCtrl extends jController {
 
   /**
-  * Display a summary of the information taken from the lizmap configuration file.
+  * Display a summary of the information taken from the ~ configuration file.
   * 
   * @return Administration backend for the repositories.
   */
@@ -54,7 +54,7 @@ class configCtrl extends jController {
       $mydata[$repo] = $repo;
     $dataSource->data = $mydata;
     $ctrl->datasource = $dataSource;
-    $ctrl->label = jLocale::get("lizmap~admin.form.admin_services.defaultRepository.label");
+    $ctrl->label = jLocale::get("admin~admin.form.admin_services.defaultRepository.label");
     $ctrl->required = true;
     $form->addControl($ctrl);
     $form->setData('defaultRepository', $lizmapConfig->defaultRepository);
@@ -89,7 +89,7 @@ class configCtrl extends jController {
       $mydata[$repo] = $repo;
     $dataSource->data = $mydata;
     $ctrl->datasource = $dataSource;
-    $ctrl->label = jLocale::get("lizmap~admin.form.admin_services.defaultRepository.label");
+    $ctrl->label = jLocale::get("admin~admin.form.admin_services.defaultRepository.label");
     $ctrl->required = true;
     $form->addControl($ctrl);
 
@@ -145,7 +145,7 @@ class configCtrl extends jController {
       $mydata[$repo] = $repo;
     $dataSource->data = $mydata;
     $ctrl->datasource = $dataSource;
-    $ctrl->label = jLocale::get("lizmap~admin.form.admin_services.defaultRepository.label");
+    $ctrl->label = jLocale::get("admin~admin.form.admin_services.defaultRepository.label");
     $ctrl->required = true;
     $form->addControl($ctrl);
     
@@ -173,7 +173,7 @@ class configCtrl extends jController {
     $isRepository=false;
     $modifySection = $lizmapConfig->modifyServices($data);
     if($modifySection)
-      jMessage::add(jLocale::get("lizmap~admin.form.admin_services.message.data.saved"));
+      jMessage::add(jLocale::get("admin~admin.form.admin_services.message.data.saved"));
  
     // Redirect to the validation page
     $rep= $this->getResponse("redirect");
@@ -391,7 +391,7 @@ class configCtrl extends jController {
     // Check paths
     if(in_array('path', $lizmapConfig->repositoryPropertyList))
       if(!file_exists($form->getData('path')) or !is_dir($form->getData('path')) ){
-        $form->setErrorOn('path', jLocale::get("lizmap~admin.form.admin_section.message.path.wrong"));
+        $form->setErrorOn('path', jLocale::get("admin~admin.form.admin_section.message.path.wrong"));
         $ok = false;
       }
  
@@ -414,7 +414,7 @@ class configCtrl extends jController {
       $data[$prop] = $form->getData($prop);
     $modifySection = $lizmapConfig->modifyRepository($data);
     if($modifySection)
-      jMessage::add(jLocale::get("lizmap~admin.form.admin_section.message.data.saved"));
+      jMessage::add(jLocale::get("admin~admin.form.admin_section.message.data.saved"));
 
     // Redirect to the validation page
     $rep= $this->getResponse("redirect");
@@ -465,7 +465,7 @@ class configCtrl extends jController {
     $lizmapConfig = new lizmapConfig("");
     // Remove the section
     if($lizmapConfig->removeRepository($repository))
-      jMessage::add(jLocale::get("lizmap~admin.form.admin_section.message.data.removed"));
+      jMessage::add(jLocale::get("admin~admin.form.admin_section.message.data.removed"));
  
     // Redirect to the index
     $rep= $this->getResponse("redirect");

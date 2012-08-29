@@ -2,15 +2,15 @@
 <form xmlns="http://jelix.org/ns/forms/1.1">
  
 <input ref="wmsServerURL" type="string" required="true" defaultvalue="http://127.0.0.1/cgi-bin/qgis_mapserv.fcgi">
-	<label locale="lizmap~admin.form.admin_services.wmsServerURL.label"/>
+	<label locale="admin~admin.form.admin_services.wmsServerURL.label"/>
 </input>
 
 <input ref="cacheServerURL" type="string" required="true" defaultvalue="/mapcache/">
-	<label locale="lizmap~admin.form.admin_services.cacheServerURL.label"/>
+	<label locale="admin~admin.form.admin_services.cacheServerURL.label"/>
 </input>
 
 
 <submit ref="_submit">
-	<label locale="lizmap~admin.form.admin_services.submit.label"/>
+	<label locale="admin~admin.form.admin_services.submit.label"/>
 </submit>
 </form>

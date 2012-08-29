@@ -4,10 +4,10 @@
 <hidden ref="new"/>
  
 <input ref="repository" type="string" required="true" pattern="/^[a-z0-9]+$/">
-	<label locale="lizmap~admin.form.admin_section.repository.label"/>
+	<label locale="admin~admin.form.admin_section.repository.label"/>
 </input>
  
 <submit ref="_submit">
-	<label locale="lizmap~admin.form.admin_section.submit.label"/>
+	<label locale="admin~admin.form.admin_section.submit.label"/>
 </submit>
 </form>
