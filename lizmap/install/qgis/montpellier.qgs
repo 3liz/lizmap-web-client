@@ -1,18 +1,18 @@
 <!DOCTYPE qgis PUBLIC 'http://mrcc.com/qgis.dtd' 'SYSTEM'>
-<qgis projectname="Montpellier - Transports" version="1.7.1-Wroclaw">
+<qgis projectname="Montpellier - Transports" version="1.8.0-Lisboa">
     <title>Montpellier - Transports</title>
     <mapcanvas>
         <units>degrees</units>
         <extent>
             <xmin>3.842437</xmin>
-            <ymin>43.592544</ymin>
+            <ymin>43.590989</ymin>
             <xmax>3.913439</xmax>
-            <ymax>43.634142</ymax>
+            <ymax>43.635697</ymax>
         </extent>
         <projections>1</projections>
         <destinationsrs>
             <spatialrefsys>
-                <proj4>+proj=longlat +ellps=WGS84 +towgs84=0,0,0,0,0,0,0 +no_defs</proj4>
+                <proj4>+proj=longlat +datum=WGS84 +no_defs</proj4>
                 <srsid>3452</srsid>
                 <srid>4326</srid>
                 <authid>EPSG:4326</authid>
@@ -23,27 +23,27 @@
             </spatialrefsys>
         </destinationsrs>
     </mapcanvas>
-    <legend>
+    <legend updateDrawingOrder="true">
         <legendgroup open="true" checked="Qt::Checked" name="datalayers">
             <legendgroup open="true" checked="Qt::Checked" name="Bus">
-                <legendlayer open="true" checked="Qt::Checked" name="bus_stops" showFeatureCount="0">
+                <legendlayer drawingOrder="-1" open="true" checked="Qt::Checked" name="bus_stops" showFeatureCount="0">
                     <filegroup open="true" hidden="false">
                         <legendlayerfile isInOverview="0" layerid="bus_stops20110923123319171" visible="1"/>
                     </filegroup>
                 </legendlayer>
-                <legendlayer open="false" checked="Qt::Checked" name="buses" showFeatureCount="0">
+                <legendlayer drawingOrder="-1" open="false" checked="Qt::Checked" name="buses" showFeatureCount="0">
                     <filegroup open="false" hidden="false">
                         <legendlayerfile isInOverview="0" layerid="buses20110923123319068" visible="1"/>
                     </filegroup>
                 </legendlayer>
             </legendgroup>
             <legendgroup open="true" checked="Qt::Checked" name="Tramway">
-                <legendlayer open="true" checked="Qt::Checked" name="tram_stops" showFeatureCount="0">
+                <legendlayer drawingOrder="-1" open="true" checked="Qt::Checked" name="tram_stops" showFeatureCount="0">
                     <filegroup open="true" hidden="false">
                         <legendlayerfile isInOverview="0" layerid="tram_stops20110923123319267" visible="1"/>
                     </filegroup>
                 </legendlayer>
-                <legendlayer open="true" checked="Qt::Checked" name="tramways" showFeatureCount="0">
+                <legendlayer drawingOrder="-1" open="true" checked="Qt::Checked" name="tramways" showFeatureCount="0">
                     <filegroup open="true" hidden="false">
                         <legendlayerfile isInOverview="0" layerid="trams20110923123319251" visible="1"/>
                     </filegroup>
@@ -51,14 +51,14 @@
             </legendgroup>
         </legendgroup>
         <legendgroup open="true" checked="Qt::Checked" name="baselayers">
-            <legendlayer open="true" checked="Qt::Checked" name="OSM_Basic" showFeatureCount="0">
+            <legendlayer drawingOrder="-1" open="true" checked="Qt::Checked" name="OSM_Basic" showFeatureCount="0">
                 <filegroup open="true" hidden="false">
                     <legendlayerfile isInOverview="0" layerid="OSM_Basic20110923140116428" visible="1"/>
                 </filegroup>
             </legendlayer>
         </legendgroup>
         <legendgroup open="true" checked="Qt::Checked" name="Overview">
-            <legendlayer open="true" checked="Qt::Checked" name="trams" showFeatureCount="0">
+            <legendlayer drawingOrder="-1" open="true" checked="Qt::Checked" name="trams" showFeatureCount="0">
                 <filegroup open="true" hidden="false">
                     <legendlayerfile isInOverview="0" layerid="trams20110923123415062" visible="1"/>
                 </filegroup>
@@ -72,7 +72,7 @@
             <Grid gridStyle="0" crossLength="3" penColorRed="0" penColorBlue="0" intervalX="0" offsetX="0" intervalY="0" offsetY="0" show="0" penWidth="0" penColorGreen="0">
                 <Annotation direction="0" precision="3" position="1" frameDistance="1" show="0" font="Ubuntu,11,-1,5,50,0,0,0,0,0"/>
             </Grid>
-            <ComposerItem width="281" x="7" y="5" rotation="0" height="201.501066098081" frame="true" outlineWidth="0.3" zValue="1" lastValidViewScaleFactor="2.222748815165877" positionLock="false">
+            <ComposerItem width="281" x="7" y="5" rotation="0" height="201.501066098081" frame="true" outlineWidth="0.3" zValue="1" lastValidViewScaleFactor="2.222748815165877" id="" positionLock="false">
                 <FrameColor alpha="255" red="0" blue="0" green="0"/>
                 <BackgroundColor alpha="255" red="255" blue="255" green="255"/>
             </ComposerItem>
@@ -83,10 +83,12 @@
         <maplayer minimumScale="0" maximumScale="1e+08" type="raster" hasScaleBasedVisibilityFlag="0">
             <id>OSM_Basic20110923140116428</id>
             <datasource>http://osm.wheregroup.com/cgi-bin/osm_basic.xml?VERSION=1.1.1</datasource>
+            <title>OpenStreetMap WMS</title>
+            <abstract>WMS based on OpenStreetMap</abstract>
             <layername>OSM_Basic</layername>
             <srs>
                 <spatialrefsys>
-                    <proj4>+proj=longlat +ellps=WGS84 +towgs84=0,0,0,0,0,0,0 +no_defs</proj4>
+                    <proj4>+proj=longlat +datum=WGS84 +no_defs</proj4>
                     <srsid>3452</srsid>
                     <srid>4326</srid>
                     <authid>EPSG:4326</authid>
@@ -136,10 +138,12 @@
         <maplayer minimumScale="0" maximumScale="15000" geometry="Point" type="vector" hasScaleBasedVisibilityFlag="1">
             <id>bus_stops20110923123319171</id>
             <datasource>./data/vector/bus_stops.geojson</datasource>
+            <title></title>
+            <abstract></abstract>
             <layername>bus_stops</layername>
             <srs>
                 <spatialrefsys>
-                    <proj4>+proj=longlat +ellps=WGS84 +towgs84=0,0,0,0,0,0,0 +no_defs</proj4>
+                    <proj4>+proj=longlat +datum=WGS84 +no_defs</proj4>
                     <srsid>3452</srsid>
                     <srid>4326</srid>
                     <authid>EPSG:4326</authid>
@@ -157,8 +161,11 @@
                     <symbol outputUnit="MM" alpha="1" type="marker" name="0">
                         <layer pass="0" class="SvgMarker" locked="0">
                             <prop k="angle" v="0"/>
+                            <prop k="fill" v="#000000"/>
                             <prop k="name" v="/transport/transport_bus_stop.svg"/>
                             <prop k="offset" v="0,0"/>
+                            <prop k="outline" v="#000000"/>
+                            <prop k="outline-width" v="1"/>
                             <prop k="size" v="4"/>
                         </layer>
                     </symbol>
@@ -211,10 +218,12 @@
         <maplayer minimumScale="0" maximumScale="40001" geometry="Line" type="vector" hasScaleBasedVisibilityFlag="1">
             <id>buses20110923123319068</id>
             <datasource>./data/vector/buses.geojson</datasource>
+            <title></title>
+            <abstract></abstract>
             <layername>buses</layername>
             <srs>
                 <spatialrefsys>
-                    <proj4>+proj=longlat +ellps=WGS84 +towgs84=0,0,0,0,0,0,0 +no_defs</proj4>
+                    <proj4>+proj=longlat +datum=WGS84 +no_defs</proj4>
                     <srsid>3452</srsid>
                     <srid>4326</srid>
                     <authid>EPSG:4326</authid>
@@ -696,10 +705,12 @@
         <maplayer minimumScale="0" maximumScale="50001" geometry="Point" type="vector" hasScaleBasedVisibilityFlag="1">
             <id>tram_stops20110923123319267</id>
             <datasource>./data/vector/tram_stops.geojson</datasource>
+            <title></title>
+            <abstract></abstract>
             <layername>tram_stops</layername>
             <srs>
                 <spatialrefsys>
-                    <proj4>+proj=longlat +ellps=WGS84 +towgs84=0,0,0,0,0,0,0 +no_defs</proj4>
+                    <proj4>+proj=longlat +datum=WGS84 +no_defs</proj4>
                     <srsid>3452</srsid>
                     <srid>4326</srid>
                     <authid>EPSG:4326</authid>
@@ -717,8 +728,11 @@
                     <symbol outputUnit="MM" alpha="1" type="marker" name="0">
                         <layer pass="0" class="SvgMarker" locked="0">
                             <prop k="angle" v="0"/>
+                            <prop k="fill" v="#000000"/>
                             <prop k="name" v="/transport/transport_train_station2.svg"/>
                             <prop k="offset" v="0,0"/>
+                            <prop k="outline" v="#000000"/>
+                            <prop k="outline-width" v="1"/>
                             <prop k="size" v="4"/>
                         </layer>
                     </symbol>
@@ -765,10 +779,12 @@
         <maplayer minimumScale="0" maximumScale="1e+08" geometry="Line" type="vector" hasScaleBasedVisibilityFlag="0">
             <id>trams20110923123319251</id>
             <datasource>./data/vector/trams.geojson</datasource>
+            <title></title>
+            <abstract></abstract>
             <layername>tramways</layername>
             <srs>
                 <spatialrefsys>
-                    <proj4>+proj=longlat +ellps=WGS84 +towgs84=0,0,0,0,0,0,0 +no_defs</proj4>
+                    <proj4>+proj=longlat +datum=WGS84 +no_defs</proj4>
                     <srsid>3452</srsid>
                     <srid>4326</srid>
                     <authid>EPSG:4326</authid>
@@ -888,10 +904,12 @@
         <maplayer minimumScale="0" maximumScale="1e+08" geometry="Line" type="vector" hasScaleBasedVisibilityFlag="0">
             <id>trams20110923123415062</id>
             <datasource>./data/vector/trams.geojson</datasource>
+            <title></title>
+            <abstract></abstract>
             <layername>trams</layername>
             <srs>
                 <spatialrefsys>
-                    <proj4>+proj=longlat +ellps=WGS84 +towgs84=0,0,0,0,0,0,0 +no_defs</proj4>
+                    <proj4>+proj=longlat +datum=WGS84 +no_defs</proj4>
                     <srsid>3452</srsid>
                     <srid>4326</srid>
                     <authid>EPSG:4326</authid>

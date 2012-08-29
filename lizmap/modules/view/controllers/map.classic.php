@@ -33,6 +33,13 @@ class mapCtrl extends jController {
     jClasses::inc('lizmap~lizmapConfig');
     $lizmapConfig = new lizmapConfig($repository);
     
+    if(!jacl2::check('lizmap.repositories.view', $lizmapConfig->repositoryKey)){
+      $rep = $this->getResponse('redirect');
+      $rep->action = 'view~default:error';
+      jMessage::add(jLocale::get('view~default.repository.access.denied'), 'error');
+      return $rep;
+    }    
+    
     // We must redirect to default repository project list if no project given
     if(!$project){
       jMessage::add('The parameter project is mandatory !', 'error');

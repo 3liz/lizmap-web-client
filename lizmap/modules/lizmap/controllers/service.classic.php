@@ -73,6 +73,13 @@ class serviceCtrl extends jController {
     $repository = $this->param('repository');
     jClasses::inc('lizmap~lizmapConfig');
     $lizmapConfig = new lizmapConfig($repository);
+    
+    if(!jacl2::check('lizmap.repositories.view', $lizmapConfig->repositoryKey)){
+      $rep = $this->getResponse('redirect');
+      $rep->action = 'view~default:error';
+      jMessage::add(jLocale::get('view~default.repository.access.denied'), 'error');
+      return $rep;
+    }    
 
     // Get the passed parameters
     global $gJCoord;
@@ -121,7 +128,15 @@ class serviceCtrl extends jController {
     // Get repository data
     $repository = $this->param('repository');
     jClasses::inc('lizmap~lizmapConfig');
-    $lizmapConfig = new lizmapConfig($repository); 
+    $lizmapConfig = new lizmapConfig($repository);
+    
+    // Redirect if no rights to access this repository
+    if(!jacl2::check('lizmap.repositories.view', $lizmapConfig->repositoryKey)){
+      $rep = $this->getResponse('redirect');
+      $rep->action = 'view~default:error';
+      jMessage::add(jLocale::get('view~default.repository.access.denied'), 'error');
+      return $rep;
+    }    
         
     // Get the passed parameters
     global $gJCoord;
@@ -193,6 +208,14 @@ class serviceCtrl extends jController {
     $repository = $this->param('repository');
     jClasses::inc('lizmap~lizmapConfig');
     $lizmapConfig = new lizmapConfig($repository); 
+    
+    // Redirect if no rights to access this repository
+    if(!jacl2::check('lizmap.repositories.view', $lizmapConfig->repositoryKey)){
+      $rep = $this->getResponse('redirect');
+      $rep->action = 'view~default:error';
+      jMessage::add(jLocale::get('view~default.repository.access.denied'), 'error');
+      return $rep;
+    }     
    
     // paramètres de la requête
     $data = array("map"=>$lizmapConfig->repositoryData['path'].$project.".qgs");
@@ -258,7 +281,15 @@ class serviceCtrl extends jController {
     // Get repository data
     $repository = $this->param('repository');
     jClasses::inc('lizmap~lizmapConfig');
-    $lizmapConfig = new lizmapConfig($repository); 
+    $lizmapConfig = new lizmapConfig($repository);
+    
+    // Redirect if no rights to access this repository
+    if(!jacl2::check('lizmap.repositories.view', $lizmapConfig->repositoryKey)){
+      $rep = $this->getResponse('redirect');
+      $rep->action = 'view~default:error';
+      jMessage::add(jLocale::get('view~default.repository.access.denied'), 'error');
+      return $rep;
+    }     
    
     // Request parameters
     $data = array("map"=>$lizmapConfig->repositoryData['path'].$project.".qgs");
@@ -320,6 +351,14 @@ class serviceCtrl extends jController {
     $repository = $this->param('repository');
     jClasses::inc('lizmap~lizmapConfig');
     $lizmapConfig = new lizmapConfig($repository); 
+    
+    // Redirect if no rights to access this repository
+    if(!jacl2::check('lizmap.repositories.view', $lizmapConfig->repositoryKey)){
+      $rep = $this->getResponse('redirect');
+      $rep->action = 'view~default:error';
+      jMessage::add(jLocale::get('view~default.repository.access.denied'), 'error');
+      return $rep;
+    }     
         
     // Get the passed parameters
     global $gJCoord;
@@ -386,6 +425,14 @@ class serviceCtrl extends jController {
     $repository = $this->param('repository');
     jClasses::inc('lizmap~lizmapConfig');
     $lizmapConfig = new lizmapConfig($repository); 
+    
+    // Redirect if no rights to access this repository
+    if(!jacl2::check('lizmap.repositories.view', $lizmapConfig->repositoryKey)){
+      $rep = $this->getResponse('redirect');
+      $rep->action = 'view~default:error';
+      jMessage::add(jLocale::get('view~default.repository.access.denied'), 'error');
+      return $rep;
+    }     
 
     // Get the corresponding Qgis project configuration
     $configPath = $lizmapConfig->repositoryData['path'].$project.'.qgs.cfg';

@@ -28,7 +28,14 @@ class defaultCtrl extends jController {
     // Get repository data
     $repository = $this->param('repository');
     jClasses::inc('lizmap~lizmapConfig');
-    $lizmapConfig = new lizmapConfig($repository); 
+    $lizmapConfig = new lizmapConfig($repository);
+    
+    if(!jacl2::check('lizmap.repositories.view', $lizmapConfig->repositoryKey)){
+      $rep = $this->getResponse('redirect');
+      $rep->action = 'view~default:error';
+      jMessage::add(jLocale::get('view~default.repository.access.denied'), 'error');
+      return $rep;
+    }
 
     $projects = Array();
     if ($dh = opendir($lizmapConfig->repositoryData['path'])) {
@@ -76,5 +83,20 @@ class defaultCtrl extends jController {
 
     return $rep;
   }
+  
+    /**
+  * Displays an error.
+  * 
+  * @return Html page with the error message.
+  */
+  function error() {
+  
+    $rep = $this->getResponse('html');
+    $tpl = new jTpl();
+    $rep->body->assign('MAIN', '');
+    return $rep;
+    
+  }
+  
 
 }

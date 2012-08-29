@@ -25,6 +25,13 @@ class mediaCtrl extends jController {
     $repository = $this->param('repository');
     jClasses::inc('lizmap~lizmapConfig');
     $lizmapConfig = new lizmapConfig($repository);
+    
+    if(!jacl2::check('lizmap.repositories.view', $lizmapConfig->repositoryKey)){
+      $rep = $this->getResponse('redirect');
+      $rep->action = 'view~default:error';
+      jMessage::add(jLocale::get('view~default.repository.access.denied'), 'error');
+      return $rep;
+    }    
 
     // Get the project
     $project = $this->param('project');

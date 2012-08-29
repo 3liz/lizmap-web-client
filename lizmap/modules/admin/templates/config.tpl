@@ -13,9 +13,11 @@
     
     <!-- Modify -->
     {ifacl2 'lizmap.admin.services.update'}
+    <div class="form-actions">
     <a class="btn" href="{jurl 'admin~config:modifyServices'}">
       {@admin~admin.configuration.button.modify.service.label@}
     </a>
+    </div>
     {/ifacl2}
   </div>
   {/ifacl2}
@@ -36,6 +38,10 @@
       </dl>
 
     <div class="form-actions">
+      <!-- View repository page -->
+      {ifacl2 'lizmap.repositories.view', $repo}
+      <a class="btn" href="{jurl 'view~default:index', array('repository'=>$repo)}" target="_blank">{@admin~admin.configuration.button.view.repository.label@}</a>
+      {/ifacl2}
       <!-- Modify -->
       {ifacl2 'lizmap.admin.repositories.update'}
       <a class="btn" href="{jurl 'admin~config:modifySection', array('repository'=>$repo)}">{@admin~admin.configuration.button.modify.repository.label@}</a>

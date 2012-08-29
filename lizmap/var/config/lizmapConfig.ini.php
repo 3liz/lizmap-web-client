@@ -10,10 +10,8 @@ defaultRepository=montpellier
 label="LizMap Demo"
 path="../install/qgis/"
 
-;Example of another repository. Modify it or remove it.
-[repository:joedalton]
-label="My Joe Dalton repository"
-path="/home/joedalton/myprojects/"
-
+[repository:intranet]
+label="Lizmap Demo - Intranet"
+path="../install/qgis_intranet/"
 
 
