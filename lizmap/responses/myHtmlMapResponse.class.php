@@ -28,6 +28,7 @@ class myHtmlMapResponse extends jResponseHtml {
     $this->addCSSLink($bp.'css/jquery-ui-1.8.16.custom.css');
     $this->addCSSLink($bp.'TreeTable/stylesheets/jquery.treeTable.css');
     $this->addCSSLink($bp.'OpenLayers-2.12/theme/default/style.css');
+    $this->addCSSLink($bp.'css/main.css');
     $this->addCSSLink($bp.'css/map.css');
 #    $this->addCSSLink($bp.'css/color1.css');
 #    $this->addCSSLink($bp.'css/color2.css');

@@ -28,7 +28,7 @@ class myHtmlResponse extends jResponseHtml {
     $this->addCSSLink($bp.'css/bootstrap.css');
     $this->addCSSLink($bp.'css/bootstrap-responsive.css');
     $this->addCSSLink($bp.'css/main.css');
-
+    $this->addCSSLink($bp.'css/view.css');
 
     // META
     $this->addMetaDescription('');
@@ -38,8 +38,9 @@ class myHtmlResponse extends jResponseHtml {
     $this->addHeadContent('<meta name="Rating" content="general" />');
     $this->addHeadContent('<meta name="Distribution" content="global" />');
 
-    $this->addJSLink($bp.'js/jquery-1.6.2.min.js');
+    $this->addJSLink($bp.'js/jquery-1.8.0.min.js');
     $this->addJSLink($bp.'js/jquery-ui-1.8.16.custom.min.js');
+    $this->addJSLink($bp.'js/bootstrap.js');
 
 
   }

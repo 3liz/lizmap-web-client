@@ -4,7 +4,7 @@
   </div>
 </div>
 <div id="content" class="container">
-{jmessage}
+{jmessage_bootstrap}
 {$MAIN}
 <footer class="footer">
   <p class="pull-right">

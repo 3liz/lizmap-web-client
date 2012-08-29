@@ -1,26 +1,5 @@
 body {
-  margin : 0;
-  font-size : 12px;
-  font-family : century gothic, arial, sans serif;
-}
-#header {
-  height : 100px;
-  background : #2B2B2B;
-  color : #FBFBFB;
-}
-#logo {
-  float : left;
-  height : 70px;
-  margin-top : 15px;
-  margin-bottom : 15px;
-  margin-left : 20px;
-  margin-right : 20px;
-  background : url('img/logo_car_70.png') no-repeat;
-}
-#logo h1 {
-  margin-left : 85px;
-  font-size : 2.7em;
-  margin-top : 0.75em;
+  padding : 0;
 }
 #title {
   float : right;
@@ -43,6 +22,7 @@ body {
 }
 
 #content {
+  padding-top : 0px;
   width : 100%;
   overflow : hidden;
   position : relative;
