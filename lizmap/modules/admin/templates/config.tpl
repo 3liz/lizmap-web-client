@@ -1,6 +1,7 @@
 {jmessage}
   <h1>{@admin~admin.configuration.h1@}</h1>
 
+  {ifacl2 'lizmap.admin.services.view'}
   <!--Services-->
   <div>
     <h2>{@admin~admin.configuration.services.label@}</h2>
@@ -11,11 +12,15 @@
     </dl>
     
     <!-- Modify -->
+    {ifacl2 'lizmap.admin.services.update'}
     <a class="btn" href="{jurl 'admin~config:modifyServices'}">
       {@admin~admin.configuration.button.modify.service.label@}
     </a>
+    {/ifacl2}
   </div>
+  {/ifacl2}
 
+  {ifacl2 'lizmap.admin.repositories.view'}
   <!--Repositories-->
   <div>
   <h2>{@admin~admin.configuration.repository.label@}</h2>
@@ -32,14 +37,21 @@
 
     <div class="form-actions">
       <!-- Modify -->
+      {ifacl2 'lizmap.admin.repositories.update'}
       <a class="btn" href="{jurl 'admin~config:modifySection', array('repository'=>$repo)}">{@admin~admin.configuration.button.modify.repository.label@}</a>
+      {/ifacl2}
       <!-- Remove -->
+      {ifacl2 'lizmap.admin.repositories.delete'}
       <a class="btn" href="{jurl 'admin~config:removeSection', array('repository'=>$repo)}" onclick="return confirm('{@admin~admin.configuration.button.remove.repository.confirm.label@}')">{@admin~admin.configuration.button.remove.repository.label@}</a>
+      {/ifacl2}
   </div>
     {/if}
   {/foreach}    
   </div>
+  {/ifacl2}
 
 <!--Add a repository-->
+{ifacl2 'lizmap.admin.repositories.create'}
 <a class="btn" href="{jurl 'admin~config:createSection'}">{@admin~admin.configuration.button.add.repository.label@}</a>
+{/ifacl2}
 

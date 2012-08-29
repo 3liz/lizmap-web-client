@@ -2,14 +2,30 @@
 /**
 * Lizmap administration
 * @package   lizmap
-* @subpackage lizmap
+* @subpackage admin
 * @author    3liz
-* @copyright 2011 3liz
+* @copyright 2012 3liz
 * @link      http://3liz.com
 * @license Mozilla Public License : http://www.mozilla.org/MPL/
 */
 
 class configCtrl extends jController {
+
+  // Configure access via jacl2 rights management
+  public $pluginParams = array(
+    '*' => array( 'jacl2.right'=>'lizmap.admin.access'),
+    'modifyServices' => array( 'jacl2.right'=>'lizmap.admin.services.update'),
+    'editServices' => array( 'jacl2.right'=>'lizmap.admin.services.update'),
+    'saveServices' => array( 'jacl2.right'=>'lizmap.admin.services.update'),
+    'validateServices' => array( 'jacl2.right'=>'lizmap.admin.services.update'),
+    'createSection' => array( 'jacl2.right'=>'lizmap.admin.repositories.create'),
+    'modifySection' => array( 'jacl2.right'=>'lizmap.admin.repositories.update'),
+    'editSection' => array( 'jacl2.rights.or'=>array('lizmap.admin.repositories.create', 'lizmap.admin.repositories.update')),
+    'saveSection' => array( 'jacl2.rights.or'=>array('lizmap.admin.repositories.create', 'lizmap.admin.repositories.update')),
+    'validateSection' => array( 'jacl2.rights.or'=>array('lizmap.admin.repositories.create', 'lizmap.admin.repositories.update')),
+    'removeSection' => array( 'jacl2.right'=>'lizmap.admin.repositories.delete')
+  );
+
 
   /**
   * Display a summary of the information taken from the ~ configuration file.
