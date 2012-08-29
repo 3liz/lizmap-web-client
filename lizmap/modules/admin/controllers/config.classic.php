@@ -9,7 +9,7 @@
 * @license Mozilla Public License : http://www.mozilla.org/MPL/
 */
 
-class adminCtrl extends jController {
+class configCtrl extends jController {
 
   /**
   * Display a summary of the information taken from the lizmap configuration file.
@@ -26,7 +26,7 @@ class adminCtrl extends jController {
     
     $tpl = new jTpl();
     $tpl->assign('lizmapConfig', $lizmapConfig);
-    $rep->body->assign('MAIN', $tpl->fetch('admin_configuration'));
+    $rep->body->assign('MAIN', $tpl->fetch('config'));
     $rep->body->assign('selectedMenuItem','lizmap_configuration');
     return $rep;
   }
@@ -44,7 +44,7 @@ class adminCtrl extends jController {
     $lizmapConfig = new lizmapConfig("");
     
     // Create the form
-    $form = jForms::create('lizmap~admin_services');
+    $form = jForms::create('admin~config_services');
     
     // Fill the default repository menu list with data from ini file
     $ctrl = new jFormsControlMenulist('defaultRepository');
@@ -65,7 +65,7 @@ class adminCtrl extends jController {
  
     // redirect to the form display action
     $rep= $this->getResponse("redirect");
-    $rep->action="lizmap~admin:editServices";
+    $rep->action="admin~config:editServices";
     return $rep;
   }
   
@@ -80,7 +80,7 @@ class adminCtrl extends jController {
     // Get the form
     jClasses::inc('lizmap~lizmapConfig');
     $lizmapConfig = new lizmapConfig($repository);
-    $form = jForms::get('lizmap~admin_services');
+    $form = jForms::get('admin~config_services');
     
     $ctrl = new jFormsControlMenulist('defaultRepository');
     $dataSource = new jFormsStaticDatasource();
@@ -97,14 +97,14 @@ class adminCtrl extends jController {
       // Display form
       $tpl = new jTpl();
       $tpl->assign('form', $form);
-      $rep->body->assign('MAIN', $tpl->fetch('lizmap~admin_services'));
+      $rep->body->assign('MAIN', $tpl->fetch('admin~config_services'));
       $rep->body->assign('selectedMenuItem','lizmap_configuration');
       return $rep;
     } else {
       // redirect to default page
       jMessage::add('error in editServices');
       $rep =  $this->getResponse('redirect');
-      $rep->action ='lizmap~admin:index';
+      $rep->action ='admin~config:index';
       return $rep;
     }
   }
@@ -119,21 +119,21 @@ class adminCtrl extends jController {
     // If the section does exists in the ini file : get the data
     jClasses::inc('lizmap~lizmapConfig');
     $lizmapConfig = new lizmapConfig($repository);   
-    $form = jForms::get('lizmap~admin_services');
+    $form = jForms::get('admin~config_services');
  
     // token
     $token = $this->param('__JFORMS_TOKEN__');
     if(!$token){
       // redirection vers la page d'erreur
       $rep= $this->getResponse("redirect");
-      $rep->action="lizmap~admin:index";
+      $rep->action="admin~config:index";
       return $rep;
     }
  
     // If the form is not defined, redirection
     if(!$form){
       $rep= $this->getResponse("redirect");
-      $rep->action="lizmap~admin:index";
+      $rep->action="admin~config:index";
       return $rep;
     }
  
@@ -161,7 +161,7 @@ class adminCtrl extends jController {
     if(!$ok){
       // Errors : redirection to the display action
       $rep = $this->getResponse('redirect');
-      $rep->action='lizmap~admin:editServices';
+      $rep->action='admin~config:editServices';
       $rep->params['repository']= $repository;
       return $rep;
     }
@@ -178,7 +178,7 @@ class adminCtrl extends jController {
     // Redirect to the validation page
     $rep= $this->getResponse("redirect");
     $rep->params['repository']= $repository;
-    $rep->action="lizmap~admin:validateServices";
+    $rep->action="admin~config:validateServices";
  
     return $rep;
   }
@@ -195,21 +195,21 @@ class adminCtrl extends jController {
     $lizmapConfig = new lizmapConfig($repository);   
     
     // Destroy the form
-    if($form = jForms::get('lizmap~admin_services')){
-      jForms::destroy('lizmap~admin_section');
+    if($form = jForms::get('admin~config_services')){
+      jForms::destroy('admin~config_services');
     }else{
       // undefined form : redirect
       $rep= $this->getResponse("redirect");
-      $rep->action="lizmap~admin:index";
+      $rep->action="admin~config:index";
       return $rep;
     }
  
     // Redirect to the index
     $rep= $this->getResponse("redirect");
-    $rep->action="lizmap~admin:index";
+    $rep->action="admin~config:index";
  
     return $rep;
-  }    
+  }
 
   
   
@@ -222,14 +222,14 @@ class adminCtrl extends jController {
   */
   public function createSection(){
     // Create the form
-    jForms::destroy('lizmap~admin_section');
-    $form = jForms::create('lizmap~admin_section');
+    jForms::destroy('admin~config_section');
+    $form = jForms::create('admin~config_section');
     $form->setData('new', "1");
     $form->setReadOnly('repository', false);
  
     // Redirect to the form display action.
     $rep= $this->getResponse("redirect");
-    $rep->action="lizmap~admin:editSection";
+    $rep->action="admin~config:editSection";
     return $rep;
   }
 
@@ -250,12 +250,12 @@ class adminCtrl extends jController {
     // Redirect if no repository with this key
     if($repository != $lizmapConfig->repositoryKey){
       $rep = $this->getResponse('redirect');
-      $rep->action = 'lizmap~admin:index';
+      $rep->action = 'admin~config:index';
       return $rep;
     }
     
     // Create and fill the form
-    $form = jForms::create('lizmap~admin_section');
+    $form = jForms::create('admin~config_section');
     $form->setData('new', "0");
     $form->setData('repository', (string)$lizmapConfig->repositoryKey);
     $form->setReadOnly('repository', true);
@@ -274,7 +274,7 @@ class adminCtrl extends jController {
     // redirect to the form display action
     $rep= $this->getResponse("redirect");
     $rep->params['repository']= $repository;
-    $rep->action="lizmap~admin:editSection";
+    $rep->action="admin~config:editSection";
     return $rep;
   }
   
@@ -295,7 +295,7 @@ class adminCtrl extends jController {
     $lizmapConfig = new lizmapConfig($repository);
        
     // Get the form
-    $form = jForms::get('lizmap~admin_section');
+    $form = jForms::get('admin~config_section');
     
     if ($form) {
       // reconstruct form fields based on repositoryPropertyList
@@ -317,14 +317,14 @@ class adminCtrl extends jController {
       // Display form
       $tpl = new jTpl();
       $tpl->assign('form', $form);
-      $rep->body->assign('MAIN', $tpl->fetch('lizmap~admin_section'));
+      $rep->body->assign('MAIN', $tpl->fetch('config_section'));
       $rep->body->assign('selectedMenuItem','lizmap_configuration');
       return $rep;
     } else {
       // Redirect to default page
       jMessage::add('error in editSection');
       $rep =  $this->getResponse('redirect');
-      $rep->action ='lizmap~admin:index';
+      $rep->action ='admin~config:index';
       return $rep;
     }
   }
@@ -349,7 +349,7 @@ class adminCtrl extends jController {
       $lizmapConfig = new lizmapConfig($repository);
       
     // Get the form
-    $form = jForms::get('lizmap~admin_section');
+    $form = jForms::get('admin~config_section');
  
     // token
     $token = $this->param('__JFORMS_TOKEN__');
@@ -365,7 +365,7 @@ class adminCtrl extends jController {
     // Redirection in case of errors
     if(!$ok){
       $rep= $this->getResponse("redirect");
-      $rep->action="lizmap~admin:index";
+      $rep->action="admin~config:index";
       return $rep;
     }
  
@@ -398,7 +398,7 @@ class adminCtrl extends jController {
     if(!$ok){
       // Errors : redirection to the display action
       $rep = $this->getResponse('redirect');
-      $rep->action='lizmap~admin:editSection';
+      $rep->action='admin~config:editSection';
       $rep->params['repository']= $repository;
 #      $rep->params['new']= $this->param('new');
       if($new)
@@ -419,7 +419,7 @@ class adminCtrl extends jController {
     // Redirect to the validation page
     $rep= $this->getResponse("redirect");
     $rep->params['repository']= $repository;
-    $rep->action="lizmap~admin:validateSection";
+    $rep->action="admin~config:validateSection";
  
     return $rep;
   }
@@ -434,18 +434,18 @@ class adminCtrl extends jController {
     $repository = $this->param('repository');
    
     // Destroy the form
-    if($form = jForms::get('lizmap~admin_section')){
-      jForms::destroy('lizmap~admin_section');
+    if($form = jForms::get('admin~config_section')){
+      jForms::destroy('admin~config_section');
     }else{
       // undefined form : redirect
       $rep= $this->getResponse("redirect");
-      $rep->action="lizmap~admin:index";
+      $rep->action="admin~config:index";
       return $rep;
     }
  
     // Redirect to the index
     $rep= $this->getResponse("redirect");
-    $rep->action="lizmap~admin:index";
+    $rep->action="admin~config:index";
  
     return $rep;
   }
@@ -469,7 +469,7 @@ class adminCtrl extends jController {
  
     // Redirect to the index
     $rep= $this->getResponse("redirect");
-    $rep->action="lizmap~admin:index";
+    $rep->action="admin~config:index";
  
     return $rep;
   }

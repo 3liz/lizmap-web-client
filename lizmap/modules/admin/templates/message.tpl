@@ -1,1 +1,1 @@
-{jmessage}
+{jmessage_bootstrap}

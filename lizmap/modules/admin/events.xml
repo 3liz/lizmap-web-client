@@ -1,5 +1,5 @@
 <events xmlns="http://jelix.org/ns/events/1.0">
-  <listener name="lizmapConfig">
+  <listener name="config">
        <event name="masteradminGetMenuContent" />
    </listener>
 </events>

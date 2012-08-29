@@ -1,5 +1,5 @@
 <?php
-class lizmapConfigListener extends jEventListener{
+class configListener extends jEventListener{
  
   function onmasteradminGetMenuContent ($event) {
     // Create the "lizmap" parent menu item
@@ -8,7 +8,7 @@ class lizmapConfigListener extends jEventListener{
     $bloc->childItems[] = new masterAdminMenuItem(
       'lizmap_configuration', 
       jLocale::get("lizmap~admin.menu.configuration.main.label"), 
-      jUrl::get('lizmap~admin:index'), 110, 'lizmap'
+      jUrl::get('admin~config:index'), 110, 'lizmap'
     );
     // Add the bloc
     $event->add($bloc);

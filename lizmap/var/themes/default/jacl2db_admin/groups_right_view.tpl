@@ -2,6 +2,8 @@
 
 <h1>{@jacl2db_admin~acl2.groups.rights.title@}</h1>
 
+<p><a href="{jurl 'jacl2db_admin~groups:index'}" class="btn">{@jacl2db_admin~acl2.menu.item.groups@}</a></p>
+
 <table class="records-list jacl2-list table-striped">
 <thead>
     <tr>

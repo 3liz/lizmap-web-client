@@ -13,8 +13,6 @@ jacl2="index/jacl2.coord.ini.php"
 
 [modules]
 lizmap.access=2
-admin.access=2
-
 
 jauth.access=2
 

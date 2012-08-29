@@ -2,6 +2,8 @@
 
 <h1>{@jacl2db_admin~acl2.groups.rights.title@}</h1>
 
+<p><a href="{jurl 'jacl2db_admin~groups:index'}" class="btn">{@jacl2db_admin~acl2.menu.item.groups@}</a></p>
+
 <form action="{formurl 'jacl2db_admin~groups:saverights'}" method="post">
 <fieldset><legend>{@jacl2db_admin~acl2.rights.title@}</legend>
 <div>{formurlparam 'jacl2db_admin~groups:saverights'}</div>
@@ -66,4 +68,3 @@
 <div class="form-actions"><input type="submit" value="{@jacl2db_admin~acl2.save.button@}" class="btn"/></div>
 </fieldset>
 </form>
-
