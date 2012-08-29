@@ -1,0 +1,10 @@
+body {
+  background : #EFEFEF;
+}
+#header {
+  background : #2B2B2B;
+  color : #FBFBFB;
+}
+#logo {
+  background : url('img/logo_car_70.png') no-repeat;
+}

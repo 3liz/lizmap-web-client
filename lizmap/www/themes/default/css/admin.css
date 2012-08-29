@@ -1,0 +1,14 @@
+.jforms-error-list {
+    margin-left: 0;
+    background-color: #C43C35;
+    background-image: -moz-linear-gradient(center top , #EE5F5B, #C43C35);
+    background-repeat: repeat-x;
+    border-color: rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.25);
+    text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.25);
+    border-radius: 4px 4px 4px 4px;
+    padding: 10px;
+}
+.jforms-error-list li {
+    list-style: none;
+    color: #FFF;
+}

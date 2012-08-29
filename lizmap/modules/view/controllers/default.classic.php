@@ -17,7 +17,11 @@ class defaultCtrl extends jController {
   * @param string $repository. Name of the repository.
   * @return Html page with a list of projects.
   */
-  function index() {
+  function index() {    
+  
+    if ($this->param('theme')) {
+      $GLOBALS['gJConfig']->theme = $this->param('theme');
+    }
 
     $rep = $this->getResponse('html');
     

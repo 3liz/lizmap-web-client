@@ -1,3 +1,6 @@
+{meta_html csstheme 'css/main.css'}
+{meta_html csstheme 'css/map.css'}
+
 <div id="header">
   <div id="logo">
     <h1>{$repositoryLabel}</h1>
@@ -58,6 +61,6 @@
 </div>
 <div id="loading" class="ui-dialog-content ui-widget-content" title="{@view~map.loading.title@}">
   <p>
-    {image 'css/img/loading.gif'}
+    {image $j_themepath.'css/img/loading.gif'}
   </p>
 </div>

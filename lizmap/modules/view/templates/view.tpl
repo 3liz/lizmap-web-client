@@ -1,3 +1,5 @@
+{meta_html csstheme 'css/view.css'}
+
 <ul class="thumbnails">
   {foreach $projects as $p}
   <li class="span3">
