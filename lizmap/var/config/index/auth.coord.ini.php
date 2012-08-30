@@ -45,11 +45,10 @@ bad_ip_action = "jauth~login:out"
 on_error_sleep = 3
 
 ; action to redirect after the login
-after_login = "admin~default:index"
+after_login = "view~default:index"
 
 ; action to redirect after a logout
-;after_logout = "view~default:index"
-after_logout = "jauth~login:form"
+after_logout = "view~default:index"
 
 ; says if after_login can be overloaded by a "auth_url_return" parameter in the url/form for the login
 enable_after_login_override = on
