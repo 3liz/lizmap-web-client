@@ -1,7 +1,9 @@
 {meta_html csstheme 'css/view.css'}
 
+{foreach $repositories as $r}
+<h2>{$r['title']}</h2>
 <ul class="thumbnails">
-  {foreach $projects as $p}
+  {foreach $r['projects'] as $p}
   <li class="span3">
     <div class="thumbnail">
       <img src="{jurl 'view~media:illustration', array("repository"=>$p['repository'],"project"=>$p['id'])}" alt="project image" class="img-polaroid liz-project-img">
@@ -18,3 +20,4 @@
   </li>
   {/foreach}
 </ul>
+{/foreach}
