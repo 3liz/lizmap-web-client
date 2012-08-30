@@ -24,7 +24,7 @@ class myHtmlResponse extends jResponseHtml {
     $this->title = 'LizMap list';
     
     // CSS
-    $this->addCSSLink($bp.'css/jquery-ui-1.8.16.custom.css');
+    $this->addCSSLink($bp.'css/jquery-ui-1.8.23.custom.css');
     $this->addCSSLink($bp.'css/bootstrap.css');
     $this->addCSSLink($bp.'css/bootstrap-responsive.css');
     $this->addCSSLink($bp.'css/main.css');
@@ -39,7 +39,7 @@ class myHtmlResponse extends jResponseHtml {
     $this->addHeadContent('<meta name="Distribution" content="global" />');
 
     $this->addJSLink($bp.'js/jquery-1.8.0.min.js');
-    $this->addJSLink($bp.'js/jquery-ui-1.8.16.custom.min.js');
+    $this->addJSLink($bp.'js/jquery-ui-1.8.23.custom.min.js');
     $this->addJSLink($bp.'js/bootstrap.js');
 
 

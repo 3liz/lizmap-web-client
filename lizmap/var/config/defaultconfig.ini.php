@@ -28,7 +28,6 @@ defaultJformsBuilder=html
 [responses]
 html=myHtmlResponse
 htmlmap=myHtmlMapResponse
-htmladmin=myHtmlAdminResponse
 
 [error_handling]
 messageLogFormat="%date%\t[%code%]\t%msg%\t%file%\t%line%\n"

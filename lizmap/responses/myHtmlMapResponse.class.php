@@ -25,7 +25,7 @@ class myHtmlMapResponse extends jResponseHtml {
     $this->title = '';
 	
     // CSS  
-    $this->addCSSLink($bp.'css/jquery-ui-1.8.16.custom.css');
+    $this->addCSSLink($bp.'css/jquery-ui-1.8.23.custom.css');
     $this->addCSSLink($bp.'TreeTable/stylesheets/jquery.treeTable.css');
     $this->addCSSLink($bp.'OpenLayers-2.12/theme/default/style.css');
     $this->addCSSLink($bp.'css/main.css');
@@ -41,8 +41,8 @@ class myHtmlMapResponse extends jResponseHtml {
     $this->addJSLink($bp.'OpenLayers-2.12/lib/OpenLayers/Control/Scale.js');
     $this->addJSLink($bp.'OpenLayers-2.12/lib/OpenLayers/Control/ScaleLine.js');
     $this->addJSLink($bp.'Proj4js/proj4js-compressed.js');
-    $this->addJSLink($bp.'js/jquery-1.6.2.min.js');
-    $this->addJSLink($bp.'js/jquery-ui-1.8.16.custom.min.js');
+    $this->addJSLink($bp.'js/jquery-1.8.0.min.js');
+    $this->addJSLink($bp.'js/jquery-ui-1.8.23.custom.min.js');
     $this->addJSLink($bp.'TreeTable/javascripts/jquery.treeTable.js');
     $this->addJSLink($bp.'js/map.js');
     
