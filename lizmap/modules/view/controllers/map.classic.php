@@ -35,7 +35,7 @@ class mapCtrl extends jController {
     
     if(!jacl2::check('lizmap.repositories.view', $lizmapConfig->repositoryKey)){
       $rep = $this->getResponse('redirect');
-      $rep->action = 'view~default:error';
+      $rep->action = 'view~default:index';
       jMessage::add(jLocale::get('view~default.repository.access.denied'), 'error');
       return $rep;
     }    

@@ -18,6 +18,9 @@ class serviceCtrl extends jController {
   * @return Redirect to the corresponding action depending on the request parameters
   */
   function index() {
+    if (isset($_SERVER['PHP_AUTH_USER'])) {
+      $ok = jAuth::login($_SERVER['PHP_AUTH_USER'], $_SERVER['PHP_AUTH_PW']);
+    }
   
     $rep = $this->getResponse('redirect');
     
@@ -25,12 +28,11 @@ class serviceCtrl extends jController {
     $project = $this->param('project');
     if(!$project){
       // Error message
-      $rep = $this->getResponse('text');
-      $rep->content = "Parameter project is mandatory !";
-      return $rep;
+      jMessage::add('The parameter project is mandatory !', 'ProjectNotDefind');
+      return $this->serviceException();
     }
     
-    // Redirection to the appropriate action
+    // Return the appropriate action
     $request = $this->param('REQUEST');
     if($request == "GetCapabilities")
       return $this->getCapabilities();
@@ -43,9 +45,8 @@ class serviceCtrl extends jController {
     elseif ($request == "GetMap")
       return $this->GetMap();
     else{
-      $rep = $this->getResponse('text');
-      $rep->content = "Wrong REQUEST parameter given";
-      return $rep;
+      jMessage::add('Wrong REQUEST parameter given', 'InvalidRequest');
+      return $this->serviceException();
     }
   }
   
@@ -62,11 +63,8 @@ class serviceCtrl extends jController {
     $project = $this->param('project');
 
     if(!$project){
-      jMessage::add('The parameter project is mandatory !', 'error');
-      // Redirection to the public project list
-      $rep = $this->getResponse('redirect');
-      $rep->action = 'project:index';
-      return $rep;
+      jMessage::add('The parameter project is mandatory !', 'ProjectNotDefind');
+      return $this->serviceException();
     }
     
     // Get repository data
@@ -75,10 +73,8 @@ class serviceCtrl extends jController {
     $lizmapConfig = new lizmapConfig($repository);
     
     if(!jacl2::check('lizmap.repositories.view', $lizmapConfig->repositoryKey)){
-      $rep = $this->getResponse('redirect');
-      $rep->action = 'view~default:error';
-      jMessage::add(jLocale::get('view~default.repository.access.denied'), 'error');
-      return $rep;
+      jMessage::add(jLocale::get('view~default.repository.access.denied'), 'AuthorizationRequired');
+      return $this->serviceException();
     }    
 
     // Get the passed parameters
@@ -118,11 +114,8 @@ class serviceCtrl extends jController {
     $project = $this->param('project');
 
     if(!$project){
-      jMessage::add('The parameter project is mandatory !', 'error');
-      // Redirection to the public project list
-      $rep = $this->getResponse('redirect');
-      $rep->action = 'project:index';
-      return $rep;
+      jMessage::add('The parameter project is mandatory !', 'ProjectNotDefind');
+      return $this->serviceException();
     }
 
     // Get repository data
@@ -132,10 +125,8 @@ class serviceCtrl extends jController {
     
     // Redirect if no rights to access this repository
     if(!jacl2::check('lizmap.repositories.view', $lizmapConfig->repositoryKey)){
-      $rep = $this->getResponse('redirect');
-      $rep->action = 'view~default:error';
-      jMessage::add(jLocale::get('view~default.repository.access.denied'), 'error');
-      return $rep;
+      jMessage::add(jLocale::get('view~default.repository.access.denied'), 'AuthorizationRequired');
+      return $this->serviceException();
     }    
         
     // Get the passed parameters
@@ -193,11 +184,8 @@ class serviceCtrl extends jController {
     $project = $this->param('project');
 
     if(!$project){
-      jMessage::add('The parameter project is mandatory !', 'error');
-      // Redirection to the public project list
-      $rep = $this->getResponse('redirect');
-      $rep->action = 'project:index';
-      return $rep;
+      jMessage::add('The parameter project is mandatory !', 'ProjectNotDefind');
+      return $this->serviceException();
     }
         
     // Get the passed parameters
@@ -211,10 +199,8 @@ class serviceCtrl extends jController {
     
     // Redirect if no rights to access this repository
     if(!jacl2::check('lizmap.repositories.view', $lizmapConfig->repositoryKey)){
-      $rep = $this->getResponse('redirect');
-      $rep->action = 'view~default:error';
-      jMessage::add(jLocale::get('view~default.repository.access.denied'), 'error');
-      return $rep;
+      jMessage::add(jLocale::get('view~default.repository.access.denied'), 'AuthorizationRequired');
+      return $this->serviceException();
     }     
    
     // paramètres de la requête
@@ -267,11 +253,8 @@ class serviceCtrl extends jController {
     $project = $this->param('project');
 
     if(!$project){
-      jMessage::add('The parameter project is mandatory !', 'error');
-      // Redirection to the public project list
-      $rep = $this->getResponse('redirect');
-      $rep->action = 'project:index';
-      return $rep;
+      jMessage::add('The parameter project is mandatory !', 'ProjectNotDefind');
+      return $this->serviceException();
     }
         
     // Get the passed parameters
@@ -285,10 +268,8 @@ class serviceCtrl extends jController {
     
     // Redirect if no rights to access this repository
     if(!jacl2::check('lizmap.repositories.view', $lizmapConfig->repositoryKey)){
-      $rep = $this->getResponse('redirect');
-      $rep->action = 'view~default:error';
-      jMessage::add(jLocale::get('view~default.repository.access.denied'), 'error');
-      return $rep;
+      jMessage::add(jLocale::get('view~default.repository.access.denied'), 'AuthorizationRequired');
+      return $this->serviceException();
     }     
    
     // Request parameters
@@ -340,11 +321,8 @@ class serviceCtrl extends jController {
     $project = $this->param('project');
 
     if(!$project){
-      jMessage::add('The parameter project is mandatory !', 'error');
-      // Redirection to the public project list
-      $rep = $this->getResponse('redirect');
-      $rep->action = 'project:index';
-      return $rep;
+      jMessage::add('The parameter project is mandatory !', 'ProjectNotDefind');
+      return $this->serviceException();
     }
 
     // Get repository data
@@ -354,10 +332,8 @@ class serviceCtrl extends jController {
     
     // Redirect if no rights to access this repository
     if(!jacl2::check('lizmap.repositories.view', $lizmapConfig->repositoryKey)){
-      $rep = $this->getResponse('redirect');
-      $rep->action = 'view~default:error';
-      jMessage::add(jLocale::get('view~default.repository.access.denied'), 'error');
-      return $rep;
+      jMessage::add(jLocale::get('view~default.repository.access.denied'), 'AuthorizationRequired');
+      return $this->serviceException();
     }     
         
     // Get the passed parameters
@@ -403,6 +379,21 @@ class serviceCtrl extends jController {
   }  
   
   /**
+  * Send an OGC service Exception
+  * @param $SERVICE the OGC service
+  * @return XML OGC Servcie Exception.
+  */
+  function serviceException(){
+    $messages = jMessage::getAll();
+
+    $rep = $this->getResponse('xml');
+    $rep->contentTpl = 'lizmap~wms_exception';
+    $rep->content->assign('messages', $messages);
+    
+    return $rep;
+  }  
+  
+  /**
   * Send the JSON configuration file for a specified project
   * @param $project Name of the project
   * @return JSON configuration file for the specified project.
@@ -414,11 +405,9 @@ class serviceCtrl extends jController {
     $project = $this->param('project');
 
     if(!$project){
-      jMessage::add('The parameter project is mandatory !', 'error');
-      // Redirection to the public project list
-      $rep = $this->getResponse('redirect');
-      $rep->action = 'project:index';
-      return $rep;
+      // Return the error in JSON
+      jMessage::add('The parameter project is mandatory !', 'ProjectNotDefind');
+      return $this->serviceException();
     }
 
     // Get repository data
@@ -428,10 +417,8 @@ class serviceCtrl extends jController {
     
     // Redirect if no rights to access this repository
     if(!jacl2::check('lizmap.repositories.view', $lizmapConfig->repositoryKey)){
-      $rep = $this->getResponse('redirect');
-      $rep->action = 'view~default:error';
-      jMessage::add(jLocale::get('view~default.repository.access.denied'), 'error');
-      return $rep;
+      jMessage::add(jLocale::get('view~default.repository.access.denied'), 'AuthorizationRequired');
+      return $this->serviceException();
     }     
 
     // Get the corresponding Qgis project configuration

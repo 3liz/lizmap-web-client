@@ -89,7 +89,6 @@ class defaultCtrl extends jController {
       }
     }
 
-    //$rep->body->assign('repositoryLabel', $lizmapConfig->repositoryData['label']);
     $title = jLocale::get("view~default.repository.list.title");
     $rep->body->assign('repositoryLabel', $title);
 
