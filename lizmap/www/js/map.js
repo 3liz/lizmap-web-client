@@ -655,6 +655,7 @@ var lizMap = function() {
           $('#baselayer-select .label').html(config.layers[val].title);
         else
           $('#baselayer-select .label').html(val);
+        $('#baselayer-select .button').click();
       }).first().attr('checked','true').change();
       $('#baselayer-select .button')
       .attr( "tabIndex", -1 )
