@@ -115,6 +115,41 @@ var lizMap = function() {
   }
 
   /**
+   * PRIVATE function: getLayerLegendGraphicUrl
+   * get the layer legend graphic
+   *
+   * Parameters:
+   * name - {text} the layer name
+   * withScale - {boolean} url with scale parameter
+   *
+   * Dependencies: 
+   * wmsServerUrl
+   *
+   * Returns:
+   * {text} the url
+   */
+  function getLayerLegendGraphicUrl(name, withScale) {
+    var layer = null
+    $.each(layers,function(i,l) {
+      if (layer == null && l.name == name)
+        layer = l;
+    });
+    var legendParams = {SERVICE: "WMS",
+                  VERSION: "1.3.0",
+                  REQUEST: "GetLegendGraphics",
+                  LAYERS: layer.params['LAYERS'],
+                  EXCEPTIONS: "application/vnd.ogc.se_inimage",
+                  FORMAT: "image/png",
+                  TRANSPARENT: "TRUE",
+                  WIDTH: 150,
+                  DPI: 96};
+    if (withScale)
+      legendParams['SCALE'] = map.getScale();
+    var legendParamsString = OpenLayers.Util.getParameterString(legendParams);
+    return OpenLayers.Util.urlAppend(wmsServerURL, legendParamsString);
+  }
+
+  /**
    * PRIVATE function: getLayerScale
    * get the layer scales based on children layer
    *
@@ -308,19 +343,9 @@ var lizMap = function() {
       html += '</tr>';
 
       if (childConfig.type == 'layer') {
-        var legendParams = {SERVICE: "WMS",
-                      VERSION: "1.3.0",
-                      REQUEST: "GetLegendGraphics",
-                      LAYERS: child.name,
-                      EXCEPTIONS: "application/vnd.ogc.se_inimage",
-                      FORMAT: "image/png",
-                      TRANSPARENT: "TRUE",
-                      WIDTH: 150,
-                      DPI: 72};
-          var legendParamsString = OpenLayers.Util.getParameterString(legendParams);
-          var url = OpenLayers.Util.urlAppend(wmsServerURL, legendParamsString);
+          var url = getLayerLegendGraphicUrl(child.name, false);
 
-          html += '<tr id="legend-'+child.name+'" class="child-of-layer-'+child.name+'">';
+          html += '<tr id="legend-'+child.name+'" class="child-of-layer-'+child.name+' legendGraphics">';
           html += '<td colspan="2"><div class="legendGraphics"><img src="'+url+'"/></div></td>';
           html += '</tr>';
       }
@@ -478,6 +503,12 @@ var lizMap = function() {
     $('#switcher-tree').treeTable({
       onNodeShow: function() {
         //updateSwitcherSize();
+        var self = $(this);
+        if (self.find('div.legendGraphics').length != 0) {
+          var name = self.attr('id').replace('legend-','');
+          var url = getLayerLegendGraphicUrl(name, true);
+          self.find('div.legendGraphics img').attr('src',url);
+        }
       },
       onNodeHide: function() {
         //updateSwitcherSize();
@@ -927,9 +958,9 @@ var lizMap = function() {
                     var data = xmlf.read(event.text).documentElement;
                     var text = '';
                     featureInfo = {};
-                    var layers = xmlf.getElementsByTagNameNS(data,'*','Layer');
-                    for (var i=0; i<layers.length; i++) {
-                      var layer = layers[i];
+                    var layerList = xmlf.getElementsByTagNameNS(data,'*','Layer');
+                    for (var i=0; i<layerList.length; i++) {
+                      var layer = layerList[i];
                       var layerName = layer.getAttribute('name');
                       featureInfo[layerName] = {};
                       var features = xmlf.getElementsByTagNameNS(layer,'*','Feature');
@@ -1153,6 +1184,16 @@ var lizMap = function() {
 
           var info = addFeatureInfo();
           $('#navbar div.slider').slider("value",map.getZoom());
+          map.events.on({
+            zoomend : function() {
+              $('#switcher-tree tr.legendGraphics.initialized').each(function() {
+                var self = $(this);
+                var name = self.attr('id').replace('legend-','');
+                var url = getLayerLegendGraphicUrl(name, true);
+                self.find('div.legendGraphics img').attr('src',url);
+              });
+            }
+          });
           self.events.triggerEvent("uicreated", self);
           
           $('body').css('cursor', 'auto');
