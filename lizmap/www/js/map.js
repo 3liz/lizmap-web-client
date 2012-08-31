@@ -485,7 +485,7 @@ var lizMap = function() {
        ,units:projection.proj.units
        ,allOverlays:(baselayers.length == 0)
     });
-    map.addControl(new OpenLayers.Control.Attribution());
+    map.addControl(new OpenLayers.Control.Attribution({div:document.getElementById('attribution')}));
 	
     // add handler to update the map size
     $(window).resize(function() {

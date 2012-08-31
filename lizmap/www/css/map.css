@@ -399,11 +399,18 @@ body {
   background-image:url(img/overview_replacement.gif);
 }
 
-.olControlAttribution {
+#attribution-box {
   bottom : 0;
   right : 0;
   padding : 0.5em;
+  position : absolute;
+  z-index : 1000;
   background-color : rgba(255,255,255,0.7);
+}
+#attribution {
+  line-height: 12px;
+  vertical-align : bottom;
+  margin-right : 0.5em;
 }
 .olLayerGooglePoweredBy.olLayerGoogleV3.gmnoprint {
   display:none;

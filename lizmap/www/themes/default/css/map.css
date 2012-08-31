@@ -220,11 +220,14 @@
   background-image:url(img/overview_replacement.gif);
 }
 
-.olControlAttribution {
+#attribution-box {
   bottom : 0;
   right : 0;
   padding : 0.5em;
   background-color : rgba(255,255,255,0.7);
+  -webkit-border-top-left-radius: 1em;
+  -moz-border-top-left-radius: 1em;
+  border-top-left-radius: 1em;
 }
 .olLayerGooglePoweredBy.olLayerGoogleV3.gmnoprint {
   display:none;

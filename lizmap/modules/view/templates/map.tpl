@@ -76,6 +76,10 @@
         <button class="button" title="{@view~map.overviewbar.displayoverview.hover@}"></button>
       </div>
     </div>
+    <div id="attribution-box">
+      <span id="attribution"></span>
+      {image 'css/img/logo_footer.png'}
+    </div>
   </div>
 </div>
 <div id="loading" class="ui-dialog-content ui-widget-content" title="{@view~map.loading.title@}">
