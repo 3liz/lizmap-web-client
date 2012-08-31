@@ -27,6 +27,12 @@ class configCtrl extends jController {
   );
 
 
+  // Prefix of jacl2 subjects corresponding to lizmap web client view interface
+  protected $lizmapClientPrefix = 'lizmap.repositories';
+  // Black list some non wanted groups
+  protected $blacklist = array('admins', 'lizadmins', 'users');
+
+
   /**
   * Display a summary of the information taken from the ~ configuration file.
   * 
@@ -41,16 +47,32 @@ class configCtrl extends jController {
     $lizmapConfig = new lizmapConfig($repository);
     
     // Get rights for repositories per subject and groups
-    $daoright = jDao::get('jacl2db~jacl2rights','jacl2_profile');
-    $conditions = jDao::createConditions();
-    $conditions->addCondition('id_aclgrp','NOT IN',$this->blacklist);
-    $rights = $daoright->findBy($conditions);
+    $cnx = jDb::getConnection('jacl2_profile');
+    $data = array();
+    foreach($lizmapConfig->repositoryList as $repo){
+      $sql = " SELECT r.id_aclsbj, group_concat(g.name, ' - ') AS group_names";
+      $sql.= " FROM jacl2_rights r";
+      $sql.= " INNER JOIN jacl2_group g ON r.id_aclgrp = g.id_aclgrp";
+      $sql.= " WHERE g.grouptype = 0 AND r.id_aclgrp NOT IN ('".implode("','", $this->blacklist)."')";
+      $sql.= " AND id_aclres=".$cnx->quote($repo);
+      $sql.= " GROUP BY r.id_aclsbj;";
+      $rights = $cnx->query($sql);
+      $data[$repo] = $rights;
+    }
+    
+    // Subjects labels
+    $labels = array();
+    $daosubject = jDao::get('jacl2db~jacl2subject','jacl2_profile');
+    foreach($daosubject->findAllSubject() as $subject)
+      $labels[$subject->id_aclsbj] = $this->getLabel($subject->id_aclsbj, $subject->label_key);
     
     $tpl = new jTpl();
     $tpl->assign('lizmapConfig', $lizmapConfig);
-    $tpl->assign('rights', $rights);
+    $tpl->assign('data', $data);
+    $tpl->assign('labels', $labels);
     $rep->body->assign('MAIN', $tpl->fetch('config'));
     $rep->body->assign('selectedMenuItem','lizmap_configuration');
+    
     return $rep;
   }
 
@@ -254,12 +276,6 @@ class configCtrl extends jController {
     }
     return $id;
   }
-
-
-  // Prefix of jacl2 subjects corresponding to lizmap web client view interface
-  protected $lizmapClientPrefix = 'lizmap.repositories';
-  // Black list some non wanted groups
-  protected $blacklist = array('admins', 'lizadmins', 'users');  
   
   /**
   * Add checkboxes controls to a repository form for each lizmap subject.
@@ -581,7 +597,7 @@ class configCtrl extends jController {
     jMessage::add(jLocale::get("admin~admin.form.admin_section.message.data.saved"));
     // group rights data
     $save = True;
-    $this->getRepositoryRightsFromRequest($form, $repository, $save);
+    $this->saveRepositoryRightsFromRequest($form, $repository, $save);
 
     // Redirect to the validation page
     $rep= $this->getResponse("redirect");

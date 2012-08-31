@@ -27,7 +27,9 @@
   <div>
   <h2>{@admin~admin.configuration.repository.label@}</h2>
   {foreach $lizmapConfig->repositoryList as $repo}
+   
     <legend>{$repo}</legend>
+    
     {if isset($lizmapConfig->lizmapConfigData['repository:'.$repo]) }
       {assign $section = 'repository:'.$repo}
       {assign $item = $lizmapConfig->lizmapConfigData[$section]}
@@ -37,20 +39,27 @@
       {/foreach}
       </dl>
 
-    <div class="form-actions">
-      <!-- View repository page -->
-      {ifacl2 'lizmap.repositories.view', $repo}
-      <a class="btn" href="{jurl 'view~default:index', array('repository'=>$repo)}" target="_blank">{@admin~admin.configuration.button.view.repository.label@}</a>
-      {/ifacl2}
-      <!-- Modify -->
-      {ifacl2 'lizmap.admin.repositories.update'}
-      <a class="btn" href="{jurl 'admin~config:modifySection', array('repository'=>$repo)}">{@admin~admin.configuration.button.modify.repository.label@}</a>
-      {/ifacl2}
-      <!-- Remove -->
-      {ifacl2 'lizmap.admin.repositories.delete'}
-      <a class="btn" href="{jurl 'admin~config:removeSection', array('repository'=>$repo)}" onclick="return confirm('{@admin~admin.configuration.button.remove.repository.confirm.label@}')">{@admin~admin.configuration.button.remove.repository.label@}</a>
-      {/ifacl2}
-  </div>
+<ul><b>{@admin~admin.form.admin_section.groups.label@}</b>
+{foreach $data[$repo] as $k}
+  <li><b>{$labels[$k->id_aclsbj]}</b> : {$k->group_names}
+{/foreach}
+</ul>
+
+      <div class="form-actions">
+        <!-- View repository page -->
+        {ifacl2 'lizmap.repositories.view', $repo}
+        <a class="btn" href="{jurl 'view~default:index', array('repository'=>$repo)}" target="_blank">{@admin~admin.configuration.button.view.repository.label@}</a>
+        {/ifacl2}
+        <!-- Modify -->
+        {ifacl2 'lizmap.admin.repositories.update'}
+        <a class="btn" href="{jurl 'admin~config:modifySection', array('repository'=>$repo)}">{@admin~admin.configuration.button.modify.repository.label@}</a>
+        {/ifacl2}
+        <!-- Remove -->
+        {ifacl2 'lizmap.admin.repositories.delete'}
+        <a class="btn" href="{jurl 'admin~config:removeSection', array('repository'=>$repo)}" onclick="return confirm('{@admin~admin.configuration.button.remove.repository.confirm.label@}')">{@admin~admin.configuration.button.remove.repository.label@}</a>
+        {/ifacl2}
+      </div>
+      
     {/if}
   {/foreach}    
   </div>
