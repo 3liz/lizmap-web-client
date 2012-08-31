@@ -7,3 +7,11 @@
   text-transform : uppercase;
   line-height: 248px;
 }
+.liz-project-desc {
+  color: white;
+  font-size: 12px;
+  line-height: 12px;
+  text-align: left;
+  text-transform: none;
+  background-color: rgba(0, 0, 0, 0.5);
+}

@@ -8,3 +8,31 @@ body {
 #logo {
   background : url('img/logo_car_70.png') no-repeat;
 }
+
+#auth {
+  bottom:0px;
+  right:0px;
+  background: transparent;
+}
+.navbar .nav > li > a {
+  color: #AAAAAA;
+  text-shadow : 0px -1px 0px rgba(0,0,0,0.75);
+}
+.navbar .nav .active > a,
+.navbar .nav > li > a:focus ,
+.navbar .nav > li > a:hover {
+  color: #FFF;
+  text-decoration : none;
+}
+.navbar .nav li.dropdown.open > .dropdown-toggle,
+.navbar .nav li.dropdown.active > .dropdown-toggle,
+.navbar .nav li.dropdown.open.active > .dropdown-toggle {
+  color : #585858;
+  text-shadow : 0px -1px 0px rgba(255,255,255,0.75);
+}
+.navbar .nav > li > .dropdown-menu:after {
+  border-bottom: 6px solid #F5F5F5;
+}
+.dropdown-menu {
+  background-color: #F5F5F5;
+}

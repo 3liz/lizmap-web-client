@@ -102,6 +102,22 @@ class defaultCtrl extends jController {
     $tpl->assign('repositories', $repositories);
     $rep->body->assign('MAIN', $tpl->fetch('view'));
 
+    $rep->addJSCode("
+      $(window).load(function() {
+        $('.liz-project-img').parent().mouseenter(function(){
+          var self = $(this);
+          self.find('.liz-project-desc').slideDown();
+          self.css('cursor','pointer');
+        }).mouseleave(function(){
+          var self = $(this);
+          self.find('.liz-project-desc').hide();
+        }).click(function(){
+          var self = $(this);
+          window.location = self.parent().find('a.liz-project-view').attr('href');
+        });
+      });
+      ");
+
     return $rep;
   }
   
