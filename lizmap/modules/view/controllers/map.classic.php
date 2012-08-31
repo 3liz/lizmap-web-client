@@ -92,6 +92,9 @@ class mapCtrl extends jController {
     $rep->addJSCode("var wmsServerURL = '".jUrl::get('lizmap~service:index', array('repository'=>$repository, 'project'=>$project))."';");
 
     $rep->body->assign('repositoryLabel', $lizmapConfig->repositoryData['label']);
+    $rep->body->assign('isConnected', jAuth::isConnected());
+    $rep->body->assign('user', jAuth::getUserSession());
+
     return $rep;
   }
   

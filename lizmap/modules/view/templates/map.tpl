@@ -1,13 +1,32 @@
 {meta_html csstheme 'css/main.css'}
 {meta_html csstheme 'css/map.css'}
 
-<div id="header">
+<div id="header" class="navbar navbar-fixed-top">
   <div id="logo">
     <h1>{$repositoryLabel}</h1>
   </div>
   <div id="title">
     <h1>{@view~map.title.h1@}</h1>
-    <h2>{@view~map.title.h2@}</h2>
+  </div>
+  <div id="auth" class="navbar-inner">
+    <ul class="nav pull-right">
+      <li><a href="{jurl 'view~default:index'}">{@view~default.repository.list.title@}</a></li>
+      {if $isConnected}
+      <li class="dropdown">
+        <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+          <b id="info-user-login">{$user->login|eschtml}</b>
+          <b class="caret"></b>
+        </a>
+        <ul class="dropdown-menu pull-right">
+          <li><a href="{jurl 'jauth~login:out'}">{@view~default.header.disconnect@}</a></li>
+        </ul>
+      </li>
+      {else}
+      <li>
+        <a href="{jurl 'jauth~login:form'}">{@view~default.header.connect@}</a>
+      </li>
+      {/if}
+    </ul>
   </div>
 </div>
 <div id="content">

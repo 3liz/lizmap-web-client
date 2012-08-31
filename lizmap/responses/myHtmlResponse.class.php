@@ -39,9 +39,8 @@ class myHtmlResponse extends jResponseHtml {
     $this->addHeadContent('<meta name="Distribution" content="global" />');
 
     $this->addJSLink($bp.'js/jquery-1.8.0.min.js');
-    $this->addJSLink($bp.'js/jquery-ui-1.8.23.custom.min.js');
     $this->addJSLink($bp.'js/bootstrap.js');
-
+    $this->addJSLink($bp.'js/jquery-ui-1.8.23.custom.min.js');
 
   }
 

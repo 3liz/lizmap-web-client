@@ -91,6 +91,8 @@ class defaultCtrl extends jController {
 
     $title = jLocale::get("view~default.repository.list.title");
     $rep->body->assign('repositoryLabel', $title);
+    $rep->body->assign('isConnected', jAuth::isConnected());
+    $rep->body->assign('user', jAuth::getUserSession());
 
     if (count($repositories) == 1)
       $title .= ' - '.$repositories[0]['title'];

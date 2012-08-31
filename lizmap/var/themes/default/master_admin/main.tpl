@@ -15,7 +15,7 @@
   <div id="logo">
     <h1>Admin</h1>
   </div>
-  <div id="auth">{$INFOBOX}</div>
+  <div id="auth" class="navbar-inner">{$INFOBOX}</div>
 </div>
 <div id="content" class="container-fluid">
   <div class="row-fluid">

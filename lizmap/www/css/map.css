@@ -1,5 +1,5 @@
 body {
-  padding : 0;
+  padding-bottom:0;
 }
 #title {
   float : right;
@@ -82,6 +82,10 @@ body {
   background : #F0F0F0;
 }
 
+#map-content img {
+  max-width : none;
+}
+
 #close-menu {
   width :100%;
   height : 16px; 
@@ -110,6 +114,9 @@ body {
 #baselayer-select .label {
   padding-left : 0.5em;
   padding-right : 0.5em;
+  color : rgb(51,51,51);
+  background: none;
+  text-shadow : none;
 }
 
 #baselayer-select .button {
@@ -161,6 +168,9 @@ body {
   width:16px;
   height:16px;
   background: none;
+  min-width:16px;
+  min-height:16px;
+  padding-left:0;
 }
 #switcher button.checkbox{
   /*
@@ -183,6 +193,10 @@ body {
 }
 #switcher span.label{
   padding-left: 0.5em;
+  color : rgb(51,51,51);
+  background: none;
+  text-shadow : none;
+  cursor : pointer;
 }
 #switcher div.legendGraphics{
   overflow:auto;
@@ -203,6 +217,11 @@ body {
 #switcher .treeTable tr.collapsed td a.expander {
   background-image : url("images/sprite_menu.png");
   background-position : -32px -64px;
+}
+#switcher .treeTable span.selected {
+  background-color : rgb(153,153,153);
+  text-shadow : 0px -1px 0px rgba(0,0,0,0.25);
+  color : white;
 }
 
 #baselayer-select-input {
@@ -309,11 +328,16 @@ body {
   width:220px;
   background : none repeat scroll 0% 0% rgb(240, 240, 240);
   border : solid 1px #606060;
+  line-height : 12px;
 }
 
 #overview-bar .label {
-  padding-left : 0.5em;
-  padding-right : 0.5em;
+  padding-left : 0.5em !important;
+  padding-right : 0.5em !important;
+  color : rgb(51,51,51);
+  background: none;
+  text-shadow : none;
+  font-size : 12px;
 }
 
 #overview-bar .button {
