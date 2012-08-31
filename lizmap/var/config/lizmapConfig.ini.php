@@ -13,5 +13,3 @@ path="../install/qgis/"
 [repository:intranet]
 label="Lizmap Demo - Intranet"
 path="../install/qgis_intranet/"
-
-

@@ -1,4 +1,4 @@
-{jmessage}
+{jmessage_bootstrap}
   <h1>{@admin~admin.configuration.h1@}</h1>
 
   {ifacl2 'lizmap.admin.services.view'}

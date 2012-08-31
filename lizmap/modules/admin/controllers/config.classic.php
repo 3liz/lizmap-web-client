@@ -40,8 +40,15 @@ class configCtrl extends jController {
     jClasses::inc('lizmap~lizmapConfig');
     $lizmapConfig = new lizmapConfig($repository);
     
+    // Get rights for repositories per subject and groups
+    $daoright = jDao::get('jacl2db~jacl2rights','jacl2_profile');
+    $conditions = jDao::createConditions();
+    $conditions->addCondition('id_aclgrp','NOT IN',$this->blacklist);
+    $rights = $daoright->findBy($conditions);
+    
     $tpl = new jTpl();
     $tpl->assign('lizmapConfig', $lizmapConfig);
+    $tpl->assign('rights', $rights);
     $rep->body->assign('MAIN', $tpl->fetch('config'));
     $rep->body->assign('selectedMenuItem','lizmap_configuration');
     return $rep;
@@ -179,6 +186,7 @@ class configCtrl extends jController {
       $rep = $this->getResponse('redirect');
       $rep->action='admin~config:editServices';
       $rep->params['repository']= $repository;
+      $rep->params['errors']= "1";
       return $rep;
     }
  
@@ -187,8 +195,8 @@ class configCtrl extends jController {
     foreach($lizmapConfig->servicesPropertyList as $prop)
       $data[$prop] = $form->getData($prop);
     $isRepository=false;
-    $modifySection = $lizmapConfig->modifyServices($data);
-    if($modifySection)
+    $modifyServices = $lizmapConfig->modifyServices($data);
+    if($modifyServices)
       jMessage::add(jLocale::get("admin~admin.form.admin_services.message.data.saved"));
  
     // Redirect to the validation page
@@ -230,7 +238,136 @@ class configCtrl extends jController {
   
   
 #  REPOSITORIES
+
+  /**
+  * Get label for a given subject corresponding to passed lablekey.
+  * @param string $id Id of the subject
+  * @param string $labelKey Label key of the subject
+  * @return string Label if found, else key.
+  */
+  protected function getLabel($id, $labelKey) {
+    if ($labelKey) {
+      try{
+        return jLocale::get($labelKey);
+      }
+      catch(Exception $e) { }
+    }
+    return $id;
+  }
+
+
+  // Prefix of jacl2 subjects corresponding to lizmap web client view interface
+  protected $lizmapClientPrefix = 'lizmap.repositories';
+  // Black list some non wanted groups
+  protected $blacklist = array('admins', 'lizadmins', 'users');  
   
+  /**
+  * Add checkboxes controls to a repository form for each lizmap subject.
+  * Used to manage rights for each subject and for each group of each repositories.
+  * @param object $form Jform object concerned.
+  * @param object $repository Repository key.
+  * @param boolean $load If true, load data from jacl2 database and set form control data.
+  * @return object Modified form.
+  */
+  protected function populateRepositoryRightsFormControl($form, $repository, $load='db') {
+    // Daos to use
+    $daosubject = jDao::get('jacl2db~jacl2subject','jacl2_profile');
+    $daogroup = jDao::get('jacl2db~jacl2group','jacl2_profile');
+    $daoright = jDao::get('jacl2db~jacl2rights','jacl2_profile');
+    // Loop through the jacl2 subjects
+    foreach($daosubject->findAllSubject() as $subject){
+      // Filter only lizmap subjects
+      if(preg_match('#^'.$this->lizmapClientPrefix.'#', $subject->id_aclsbj)){
+        // Create a new form control
+        $ctrl = new jFormsControlCheckboxes($subject->id_aclsbj);
+        $ctrl->label = $this->getLabel($subject->id_aclsbj, 'admin~jacl2.'.$subject->id_aclsbj);
+        $dataSource = new jFormsStaticDatasource();
+        $mydata = array();
+        // Initialize future values to set
+        $dataValues = array();
+        // Loop through each group
+        foreach($daogroup->findAll() as $group){
+          // Retrieve only normal groups wich are not blacklisted
+          if(!in_array($group->id_aclgrp, $this->blacklist) and $group->grouptype == 0){
+            $mydata[$group->id_aclgrp] = $group->name;
+            // Get rights with resources for the current group
+            if($load == 'db'){
+              $conditions = jDao::createConditions();
+              $conditions->addCondition('id_aclsbj','=',$subject->id_aclsbj);
+              $conditions->addCondition('id_aclgrp','=',$group->id_aclgrp);
+              $conditions->addCondition('id_aclres','=',$repository);
+              $res = $daoright->findBy($conditions);
+              foreach($res as $rec)
+                $dataValues[] = $rec->id_aclgrp;
+            }
+          }
+        }      
+        $dataSource->data = $mydata;
+        $ctrl->datasource = $dataSource; 
+        $form->addControl($ctrl);
+        // Get data from form on error if needed
+        if($load == 'request'){
+          global $gJCoord;
+          // Edit control ref to get request params
+          $param = str_replace('.', '_', $subject->id_aclsbj);
+          $dataValues = array_values($gJCoord->request->params[$param]); 
+        }
+        // Set the preselected data if needed
+        if($load){
+          $form->setData($subject->id_aclsbj, $dataValues);        
+        }
+      }
+    }
+    return $form;
+  }
+  
+  /**
+  * Save rights for a repository.
+  * Used to save rights for each subject and for each group of one repository.
+  * @param object $form Jform object concerned.
+  * @param object $repository Repository key.
+  * @return boolean Success or failure of the saving.
+  */
+  protected function saveRepositoryRightsFromRequest($form, $repository, $save=false) {
+    // Daos to use
+    $daoright = jDao::get('jacl2db~jacl2rights','jacl2_profile');
+    $daogroup = jDao::get('jacl2db~jacl2group','jacl2_profile');
+    // Set groups array if return needed
+    if(!$save)
+      $groups = array();
+    // Data from coordinator
+    global $gJCoord; 
+    // Loop through the form controls
+    foreach($form->getControls() as $ctrl){
+      // Filter controls corresponding to lizmap subjects
+      if(preg_match('#^'.$this->lizmapClientPrefix.'#', $ctrl->ref) and $ctrl->isContainer()){
+        $id_aclsbj = $ctrl->ref;
+        // Edit control ref to get request params
+        $param = str_replace('.', '_', $id_aclsbj);
+        // Get values for the selected subject
+        $values = array_values($gJCoord->request->params[$param]);
+        // Loop through the groups
+        foreach($daogroup->findAll() as $group){
+          // Retrieve only normal groups wich are not blacklisted
+          if(!in_array($group->id_aclgrp, $this->blacklist) and $group->grouptype == 0){
+            // Add the right if needed else remove it
+            if(in_array($group->id_aclgrp, $values)){
+              $groups[] = $group->id_aclgrp;
+              if($save)
+                jAcl2DbManager::addRight($group->id_aclgrp, $id_aclsbj, $repository);
+            }
+            else
+              if($save)
+                $daoright->delete($id_aclsbj, $group->id_aclgrp, $repository);
+          }
+        }
+      }
+    }
+    if(!$save)
+      return $groups;
+  }  
+
+
   /**
   * Creation of a new section.
   *
@@ -275,8 +412,9 @@ class configCtrl extends jController {
     $form->setData('new', "0");
     $form->setData('repository', (string)$lizmapConfig->repositoryKey);
     $form->setReadOnly('repository', true);
-    
+    // Create and fill form controls relatives to repository data
     foreach($lizmapConfig->repositoryData as $k=>$v){
+      // Create form control
       $ctrl = new jFormsControlInput($k);
       $ctrl->label = $k;
       $ctrl->required = true;
@@ -284,9 +422,12 @@ class configCtrl extends jController {
       $datatype = new jDatatypeString();
       $ctrl->datatype=$datatype;
       $form->addControl($ctrl);
+      // Set control data from repository data
       $form->setData($k, $v);
     }
- 
+    // Create and fill the form control relative to rights for each group for this repository
+    $form = $this->populateRepositoryRightsFormControl($form, $lizmapConfig->repositoryKey, 'db');
+
     // redirect to the form display action
     $rep= $this->getResponse("redirect");
     $rep->params['repository']= $repository;
@@ -325,11 +466,15 @@ class configCtrl extends jController {
         $form->addControl($ctrl);
         // if edition, set the form data with the data taken from the ini file
         if(($repository and $new))
-          if(array_key_exists($k, $lizmapConfig->repositoryData)){
-            $form->setData($k, $lizmapConfig->repositoryData[$k]);
-          }
+          if(array_key_exists($k, $lizmapConfig->repositoryData))
+            $form->setData($k, $lizmapConfig->repositoryData[$k]);   
       }
-            
+      // Create and fill the form control relative to rights for each group for this repository
+      if($this->intParam('errors'))
+        $form = $this->populateRepositoryRightsFormControl($form, $lizmapConfig->repositoryKey, 'request');
+      else
+        $form = $this->populateRepositoryRightsFormControl($form, $lizmapConfig->repositoryKey, false);
+
       // Display form
       $tpl = new jTpl();
       $tpl->assign('form', $form);
@@ -357,12 +502,9 @@ class configCtrl extends jController {
     
     $ok = true;
     
-    // Repository
+    // Repository (first take the default one)
     jClasses::inc('lizmap~lizmapConfig');
-    if($new)
-      $lizmapConfig = new lizmapConfig($repository);
-    else
-      $lizmapConfig = new lizmapConfig($repository);
+    $lizmapConfig = new lizmapConfig($repository);
       
     // Get the form
     $form = jForms::get('admin~config_section');
@@ -394,10 +536,11 @@ class configCtrl extends jController {
       $ctrl->datatype=$datatype;
       $form->addControl($ctrl);
     }
+    $form = $this->populateRepositoryRightsFormControl($form, $lizmapConfig->repositoryKey, false);
     
     // Set form data from request data
     $form->initFromRequest();
- 
+
     // Check the form
     $ok = true;
     if (!$form->check()) {
@@ -416,7 +559,12 @@ class configCtrl extends jController {
       $rep = $this->getResponse('redirect');
       $rep->action='admin~config:editSection';
       $rep->params['repository']= $repository;
-#      $rep->params['new']= $this->param('new');
+      $rep->params['errors']= "1";
+      global $gJCoord;
+      foreach($gJCoord->request->params as $k=>$v)
+        if(preg_match('#^'.$this->lizmapClientPrefix.'#', $k))
+          $rep->params[$k] = $v;
+          
       if($new)
         $form->setReadOnly('repository', false);
       return $rep;
@@ -425,12 +573,15 @@ class configCtrl extends jController {
     // Save the data
     if($new)
       $lizmapConfig = new lizmapConfig($repository, true);
+    // Repository data
     $data = array();
     foreach($lizmapConfig->repositoryPropertyList as $prop)
       $data[$prop] = $form->getData($prop);
     $modifySection = $lizmapConfig->modifyRepository($data);
-    if($modifySection)
-      jMessage::add(jLocale::get("admin~admin.form.admin_section.message.data.saved"));
+    jMessage::add(jLocale::get("admin~admin.form.admin_section.message.data.saved"));
+    // group rights data
+    $save = True;
+    $this->getRepositoryRightsFromRequest($form, $repository, $save);
 
     // Redirect to the validation page
     $rep= $this->getResponse("redirect");
@@ -480,9 +631,15 @@ class configCtrl extends jController {
     jClasses::inc('lizmap~lizmapConfig');
     $lizmapConfig = new lizmapConfig("");
     // Remove the section
-    if($lizmapConfig->removeRepository($repository))
-      jMessage::add(jLocale::get("admin~admin.form.admin_section.message.data.removed"));
- 
+    if($lizmapConfig->removeRepository($repository)){
+      // Remove rights on this resource
+      $daoright = jDao::get('jacl2db~jacl2rights','jacl2_profile');
+      $conditions = jDao::createConditions();
+      $conditions->addCondition('id_aclres','=',$repository);
+      $nbdeleted = $daoright->deleteBy($conditions);      
+      jMessage::add(jLocale::get("admin~admin.form.admin_section.message.data.removed")." ".jLocale::get("admin~admin.form.admin_section.message.data.removed.groups.concerned", array($nbdeleted)));
+    }
+    
     // Redirect to the index
     $rep= $this->getResponse("redirect");
     $rep->action="admin~config:index";
