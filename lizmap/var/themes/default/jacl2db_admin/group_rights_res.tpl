@@ -9,7 +9,7 @@
 
 <p><strong>{@jacl2db_admin~acl2.warning.deleting.rightres@}</strong></p>
 
-<table class="records-list jacl2-list">
+<table class="table table-hover records-list jacl2-list">
 <thead>
     <tr>
         <th>{@jacl2db_admin~acl2.col.subjects@}</th>
@@ -26,8 +26,9 @@
 {foreach $rightsWithResources as $subject=>$resources}
 <tr class="{cycle array('odd','even')}">
     <th>
+        <label for="{$subject|eschtml}" class="checkbox">
         <input type="checkbox" name="subjects[{$subject}]" id="{$subject|eschtml}" />
-        <label for="{$subject|eschtml}">{$subjects_localized[$subject]|eschtml}</label>
+        {$subjects_localized[$subject]|eschtml}</label>
     </th>
     <td>{assign $firstr=true}
         {foreach $resources as $r}{if !$firstr}, {else}{assign $firstr=false}{/if}
