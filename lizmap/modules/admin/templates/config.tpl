@@ -31,19 +31,31 @@
     <legend>{$repo}</legend>
     
     {if isset($lizmapConfig->lizmapConfigData['repository:'.$repo]) }
+    <dl><dt>{@admin~admin.form.admin_section.data.label@}</dt>
+      <dd>
+        <table class="table">
       {assign $section = 'repository:'.$repo}
       {assign $item = $lizmapConfig->lizmapConfigData[$section]}
-      <dl class="dl-horizontal">
       {foreach $item as $key=>$val}
-        <dt>{$key}</dt><dd>{$val}</dd>
+      <tr>
+        <th>{$key}</th><td>{$val}</td>
+      </tr>
       {/foreach}
-      </dl>
+        </table>
+      </dd>
+    </dl>
 
-<ul><b>{@admin~admin.form.admin_section.groups.label@}</b>
-{foreach $data[$repo] as $k}
-  <li><b>{$labels[$k->id_aclsbj]}</b> : {$k->group_names}
-{/foreach}
-</ul>
+    <dl><dt>{@admin~admin.form.admin_section.groups.label@}</dt>
+      <dd>
+        <table class="table">
+      {foreach $data[$repo] as $k}
+      <tr>
+        <th>{$labels[$k->id_aclsbj]}</th><td>{$k->group_names}</td>
+      </tr>
+      {/foreach}
+        </table>
+      </dd>
+    </dl>
 
       <div class="form-actions">
         <!-- View repository page -->

@@ -217,7 +217,7 @@ class htmlbootstrapJformsBuilder extends jFormsBuilderHtml {
         $id = $this->_name.'_'.$ctrl->ref;
         $idLabel = ' id="'.$id.'_label"';
         if($ctrl->type == 'output' || $ctrl->type == 'checkboxes' || $ctrl->type == 'radiobuttons' || $ctrl->type == 'date' || $ctrl->type == 'datetime' || $ctrl->type == 'choice'){
-            echo '<span class="jforms-label',$required,$inError,'"',$idLabel,$hint,'>',htmlspecialchars($ctrl->label),$reqhtml,"</span>\n";
+            echo '<label class="jforms-label control-label',$required,$inError,'"',$idLabel,$hint,'>',htmlspecialchars($ctrl->label),$reqhtml,"</label>\n";
         }else if($ctrl->type != 'submit' && $ctrl->type != 'reset'){
             echo '<label class="jforms-label control-label',$required,$inError,'" for="',$id,'"',$idLabel,$hint,'>',htmlspecialchars($ctrl->label),$reqhtml,"</label>\n";
         }
@@ -588,7 +588,8 @@ class htmlbootstrapJformsBuilder extends jFormsBuilderHtml {
             $this->_outputAttr($attr);
             if((is_array($value) && in_array((string) $v,$value,true)) || ($value === (string) $v))
                 echo ' checked="checked"';
-            echo $this->_endt,'<label for="',$id,$i,'">',htmlspecialchars($label),"</label></span>\n";
+            //echo $this->_endt,'<label for="',$id,$i,'">',htmlspecialchars($label),"</label></span>\n";
+            echo $this->_endt,'',htmlspecialchars($label),"</label>\n";
             $i++;
         }
     }
@@ -619,7 +620,7 @@ class htmlbootstrapJformsBuilder extends jFormsBuilderHtml {
         unset($attr['title']);
         if(is_array($value) && count($value) == 1)
             $value = $value[0];
-        $span ='<span class="jforms-chkbox jforms-ctl-'.$ctrl->ref.'"><input type="checkbox"';
+        $span ='<label class="checkbox jforms-chkbox jforms-ctl-'.$ctrl->ref.'"><input type="checkbox"';
 
         if(is_array($value)){
             $value = array_map(create_function('$v', 'return (string) $v;'),$value);
@@ -649,7 +650,7 @@ class htmlbootstrapJformsBuilder extends jFormsBuilderHtml {
                 $value = '';
         }
         $value = (string) $value;
-        $span ='<span class="jforms-radio jforms-ctl-'.$ctrl->ref.'"><input type="radio"';
+        $span ='<label class="radio jforms-radio jforms-ctl-'.$ctrl->ref.'"><input type="radio"';
         $this->showRadioCheck($ctrl, $attr, $value, $span);
     }
 
