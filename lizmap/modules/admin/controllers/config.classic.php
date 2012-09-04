@@ -30,7 +30,7 @@ class configCtrl extends jController {
   // Prefix of jacl2 subjects corresponding to lizmap web client view interface
   protected $lizmapClientPrefix = 'lizmap.repositories';
   // Black list some non wanted groups
-  protected $blacklist = array('admins', 'lizadmins', 'users');
+  protected $groupBlacklist = array('users');
 
 
   /**
@@ -53,7 +53,7 @@ class configCtrl extends jController {
       $sql = " SELECT r.id_aclsbj, group_concat(g.name, ' - ') AS group_names";
       $sql.= " FROM jacl2_rights r";
       $sql.= " INNER JOIN jacl2_group g ON r.id_aclgrp = g.id_aclgrp";
-      $sql.= " WHERE g.grouptype = 0 AND r.id_aclgrp NOT IN ('".implode("','", $this->blacklist)."')";
+      $sql.= " WHERE g.grouptype = 0 AND r.id_aclgrp NOT IN ('".implode("','", $this->groupBlacklist)."')";
       $sql.= " AND id_aclres=".$cnx->quote($repo);
       $sql.= " GROUP BY r.id_aclsbj;";
       $rights = $cnx->query($sql);
@@ -304,7 +304,7 @@ class configCtrl extends jController {
         // Loop through each group
         foreach($daogroup->findAll() as $group){
           // Retrieve only normal groups wich are not blacklisted
-          if(!in_array($group->id_aclgrp, $this->blacklist) and $group->grouptype == 0){
+          if(!in_array($group->id_aclgrp, $this->groupBlacklist) and $group->grouptype == 0){
             $mydata[$group->id_aclgrp] = $group->name;
             // Get rights with resources for the current group
             if($load == 'db'){
@@ -365,7 +365,7 @@ class configCtrl extends jController {
         // Loop through the groups
         foreach($daogroup->findAll() as $group){
           // Retrieve only normal groups wich are not blacklisted
-          if(!in_array($group->id_aclgrp, $this->blacklist) and $group->grouptype == 0){
+          if(!in_array($group->id_aclgrp, $this->groupBlacklist) and $group->grouptype == 0){
             // Add the right if needed else remove it
             if(in_array($group->id_aclgrp, $values)){
               $groups[] = $group->id_aclgrp;
