@@ -113,7 +113,10 @@ ACTION:
 
         $cnx->exec($sql);
         $id = $cnx->lastInsertId('jacl_group_id_aclgrp_seq'); // name of the sequence for pgsql
-        echo "OK. Group id is: ".$id."\n";
+        if ($this->verbose())
+            echo "OK. Group id is: ".$id."\n";
+        else
+            echo $id."\n";
     }
 
     protected function cmd_delete(){
@@ -145,7 +148,8 @@ ACTION:
         $sql.=intval($params[0]);
         $cnx->exec($sql);
 
-        echo "OK\n";
+        if ($this->verbose())
+            echo "OK\n";
     }
 
 
@@ -177,7 +181,8 @@ ACTION:
 
         $sql="UPDATE jacl_group SET grouptype=$def  WHERE id_aclgrp=".intval($params[0]);
         $cnx->exec($sql);
-        echo "OK\n";
+        if ($this->verbose())
+            echo "OK\n";
     }
 
     protected function cmd_changename(){
@@ -198,6 +203,7 @@ ACTION:
 
         $sql="UPDATE jacl_group SET name=".$cnx->quote($params[1])."  WHERE id_aclgrp=".intval($params[0]);
         $cnx->exec($sql);
-        echo "OK\n";
+        if ($this->verbose())
+            echo "OK\n";
     }
 }

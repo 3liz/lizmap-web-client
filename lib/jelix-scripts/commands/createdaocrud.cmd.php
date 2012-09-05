@@ -72,24 +72,23 @@ class createdaocrudCommand extends JelixScriptCommand {
         }
 
         $agcommand = JelixScript::getCommand('createdao', $this->config);
-        $options = array();
+        $options = $this->getCommonActiveOption();
+
         $profile = '';
         if ($this->getOption('-profile')) {
             $profile = $this->getOption('-profile');
-            $options = array('-profile'=>$profile);
+            $options['-profile']= $profile;
         }
         $agcommand->initOptParam($options,array('module'=>$module, 'name'=>$table,'table'=>$table));
         $agcommand->run();
 
         $agcommand = JelixScript::getCommand('createform', $this->config);
+        $options = $this->getCommonActiveOption();
          if ($this->getOption('-createlocales')) {
-            $options = array('-createlocales'=>true);
-        }
-        else {
-            $options = array();
+            $options['-createlocales'] = true;
         }
 
-        $agcommand->initOptParam($options,array('module'=>$module, 'form'=>$table,'dao'=>$table));
+        $agcommand->initOptParam($options, array('module'=>$module, 'form'=>$table,'dao'=>$table));
         $agcommand->run();
 
         $acl2rights = '';
@@ -115,8 +114,10 @@ class createdaocrudCommand extends JelixScriptCommand {
                 $subject = $module.".".$ctrlname.".".$subject;
                 $labelkey = $sel.'.'.$subject;
                 try {
+                    $options = $this->getCommonActiveOption();
+
                     $agcommand = JelixScript::getCommand('acl2right', $this->config);
-                    $agcommand->initOptParam(array(),array('action'=>'subject_create',
+                    $agcommand->initOptParam($options,array('action'=>'subject_create',
                                                    '...'=>array($subject, $labelkey, 'null', $label.' '.$ctrlname)));
                     $agcommand->run();
                 } catch (Exception $e) {}
@@ -133,14 +134,14 @@ class createdaocrudCommand extends JelixScriptCommand {
                 'profile'=>$profile,
                 'acl2rights'=>$pluginsParameters);
 
-        $this->createFile($path.'controllers/'.$ctrlname.'.classic.php','module/controller.daocrud.tpl',$params);
+        $this->createFile( $path.'controllers/'.$ctrlname.'.classic.php', 'module/controller.daocrud.tpl', $params, "Controller");
 
         if ($this->getOption('-masteradmin')) {
             if ($acl2)
                 $params['checkacl2'] = "if(jAcl2::check('$module.$ctrlname.view'))";
             else
                 $params['checkacl2'] = '';
-            $this->createFile($path.'classes/'.$ctrlname.'menu.listener.php', 'module/masteradminmenu.listener.php.tpl', $params);
+            $this->createFile($path.'classes/'.$ctrlname.'menu.listener.php', 'module/masteradminmenu.listener.php.tpl', $params, "Listener");
             if (file_exists($path.'events.xml')) {
                 $xml = simplexml_load_file($path.'events.xml');
                 $xml->registerXPathNamespace('j', 'http://jelix.org/ns/events/1.0');
@@ -156,15 +157,15 @@ class createdaocrudCommand extends JelixScriptCommand {
                     $event = $listener->addChild('event');
                     $event->addAttribute('name', 'masteradminGetMenuContent');
                     $result = $xml->asXML($path.'events.xml');
-                    if ($result)
-                        echo "Notice: events.xml in module '".$this->_parameters['module']."' has been updated.\n";
-                    else
+                    if ($this->verbose() && $result) {
+                        echo "Events.xml in module '".$this->_parameters['module']."' has been updated.\n";
+                    }
+                    else if (!$result)
                         echo "Warning: events.xml in module '".$this->_parameters['module']."' cannot be updated, check permissions or add the event manually.\n";
-                } else
-                    echo "Notice: events.xml in module '".$this->_parameters['module']."' is already up to date.\n";
+                } else if ($this->verbose())
+                    echo "events.xml in module '".$this->_parameters['module']."' is already updated.\n";
             } else {
                 $this->createFile($path.'events.xml', 'module/events_crud.xml.tpl', array('classname'=>$ctrlname.'menu'));
-                echo "Notice: events.xml in module '".$this->_parameters['module']."' has been created.\n";
             }
         }
 
@@ -172,8 +173,9 @@ class createdaocrudCommand extends JelixScriptCommand {
 
             if (!file_exists($path.'urls.xml')) {
                 $this->createFile($path.'urls.xml', 'module/urls.xml.tpl', array());
-                echo "Notice: urls.xml in the module '".$this->_parameters['module']."' has been created.\n";
-                echo "Notice: you should link it into the urls.xml in var/config.\n";
+                if ($this->verbose()) {
+                    echo "Notice: you should link the urls.xml of the module ".$this->_parameters['module']."', into the urls.xml in var/config.\n";
+                }
             }
 
             $xml = simplexml_load_file($path.'urls.xml');
@@ -244,9 +246,9 @@ class createdaocrudCommand extends JelixScriptCommand {
 
 
             $result = $xml->asXML($path.'urls.xml');
-            if ($result)
-                echo "Notice: urls.xml in module '".$this->_parameters['module']."' has been updated.\n";
-            else
+            if ($this->verbose() && $result)
+                echo "urls.xml in module '".$this->_parameters['module']."' has been updated.\n";
+            else if (!$result)
                 echo "Warning: urls.xml in module '".$this->_parameters['module']."' cannot be updated, check permissions or add the urls manually.\n";
         }
     }

@@ -43,22 +43,22 @@ class createformCommand extends JelixScriptCommand {
 
         $path = $this->getModulePath($this->_parameters['module']);
 
-        $filename = $path.'forms/';
-        $this->createDir($filename);
+        $formdir = $path.'forms/';
+        $this->createDir($formdir);
 
-        $filename.=strtolower($this->_parameters['form']).'.form.xml';
+        $formfile = strtolower($this->_parameters['form']).'.form.xml';
 
         if ($this->getOption('-createlocales')) {
 
             $locale_content = '';
             $locale_base = $this->_parameters['module'].'~'.strtolower($this->_parameters['form']).'.form.';
 
-            $locale_filename_fr = $path.'locales/fr_FR/';
-            $this->createDir($locale_filename_fr);
+            $locale_filename_fr = 'locales/fr_FR/';
+            $this->createDir($path.$locale_filename_fr);
             $locale_filename_fr.=strtolower($this->_parameters['form']).'.UTF-8.properties';
 
-            $locale_filename_en = $path.'locales/en_EN/';
-            $this->createDir($locale_filename_en);
+            $locale_filename_en = 'locales/en_EN/';
+            $this->createDir($path.$locale_filename_en);
             $locale_filename_en.=strtolower($this->_parameters['form']).'.UTF-8.properties';
             $submit="\n\n<submit ref=\"_submit\">\n\t<label locale='".$locale_base."ok' />\n</submit>";
         }
@@ -69,10 +69,10 @@ class createformCommand extends JelixScriptCommand {
         if ($dao === null) {
             if ($this->getOption('-createlocales')) {
                 $locale_content = "form.ok=OK\n";
-                $this->createFile($locale_filename_fr, 'locales.tpl', array('content'=>$locale_content));
-                $this->createFile($locale_filename_en, 'locales.tpl', array('content'=>$locale_content));
+                $this->createFile($path.$locale_filename_fr, 'locales.tpl', array('content'=>$locale_content), "Locales file");
+                $this->createFile($path.$locale_filename_en, 'locales.tpl', array('content'=>$locale_content), "Locales file");
             }
-            $this->createFile($filename,'module/form.xml.tpl', array('content'=>'<!-- add control declaration here -->'.$submit));
+            $this->createFile($formdir.$formfile, 'module/form.xml.tpl', array('content'=>'<!-- add control declaration here -->'.$submit), "Form");
             return;
         }
 
@@ -167,10 +167,10 @@ class createformCommand extends JelixScriptCommand {
 
         if ($this->getOption('-createlocales')) {
             $locale_content .= "form.ok=OK\n";
-            $this->createFile($locale_filename_fr, 'module/locales.tpl', array('content'=>$locale_content));
-            $this->createFile($locale_filename_en, 'module/locales.tpl', array('content'=>$locale_content));
+            $this->createFile($path.$locale_filename_fr, 'module/locales.tpl', array('content'=>$locale_content), "Locales file");
+            $this->createFile($path.$locale_filename_en, 'module/locales.tpl', array('content'=>$locale_content), "Locales file");
         }
 
-        $this->createFile($filename,'module/form.xml.tpl', array('content'=>$content.$submit));
+        $this->createFile($formdir.$formfile,'module/form.xml.tpl', array('content'=>$content.$submit), "Form file");
     }
 }

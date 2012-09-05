@@ -31,9 +31,9 @@ class pgsqlDbResultSet extends jDbResultSet {
     public function fetch() {
         if ($this->_fetchMode == jDbConnection::FETCH_CLASS) {
             if ($this->_fetchModeCtoArgs)
-                $res = pg_fetch_object ($this->_idResult, -1 , $this->_fetchModeParam, $this->_fetchModeCtoArgs);
+                $res = pg_fetch_object ($this->_idResult, null , $this->_fetchModeParam, $this->_fetchModeCtoArgs);
             else
-                $res = pg_fetch_object ($this->_idResult, -1 , $this->_fetchModeParam);
+                $res = pg_fetch_object ($this->_idResult, null , $this->_fetchModeParam);
         }
         else if ($this->_fetchMode == jDbConnection::FETCH_INTO) {
              $res = pg_fetch_object ($this->_idResult);

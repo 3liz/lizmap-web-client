@@ -267,11 +267,13 @@ class jTpl {
             $tpl = $sel->toString();
             $previousTpl = $this->_templateName;
             $this->_templateName = $tpl;
-            if (in_array($tpl, $this->processedMeta)) {
-                $callMeta = false;
+            if ($callMeta) {
+                if (in_array($tpl, $this->processedMeta)) {
+                    $callMeta = false;
+                }
+                else
+                    $this->processedMeta[] = $tpl;
             }
-            else
-                $this->processedMeta[] = $tpl;
             $this->recursiveTpl[] = $tpl;
             $md = $this->getTemplate ($sel, $outputtype, $trusted);
             if ($callMeta) {

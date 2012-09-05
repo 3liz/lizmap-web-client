@@ -104,7 +104,7 @@ class jResponseXul extends jResponse {
         $this->doAfterActions();
         if($this->bodyTpl != '') {
             $this->body->meta($this->bodyTpl);
-            $content = $this->body->fetch($this->bodyTpl);
+            $content = $this->body->fetch($this->bodyTpl, 'xul', true, false);
         }
         else
             $content = '';

@@ -39,26 +39,25 @@ class createzoneCommand extends JelixScriptCommand {
     public function run(){
        $path= $this->getModulePath($this->_parameters['module']);
 
-       $filename= $path.'zones/';
-       $this->createDir($filename);
+       $dirname = $path.'zones/';
+       $this->createDir($dirname);
 
-       $filename.=strtolower($this->_parameters['name']).'.zone.php';
+       $filename = strtolower($this->_parameters['name']).'.zone.php';
 
-       $param= array('name'=>$this->_parameters['name'] ,
+       $param = array('name'=>$this->_parameters['name'] ,
                      'module'=>$this->_parameters['module']);
 
-       if(!$this->getOption('-notpl')){
+       if (!$this->getOption('-notpl')) {
           if($tpl = $this->getParam('template')){
              $param['template'] = $tpl;
           }else{
              $param['template'] = strtolower($this->_parameters['name']);
           }
-          $this->createFile($path.'templates/'.$param['template'].'.tpl','module/template.tpl');
+          $this->createFile($path.'templates/'.$param['template'].'.tpl','module/template.tpl', "Template");
        }else{
           $param['template'] = '';
        }
-
-       $this->createFile($filename,'module/zone.tpl',$param);
+       $this->createFile($dirname.$filename,'module/zone.tpl',$param, "Zone");
     }
 }
 

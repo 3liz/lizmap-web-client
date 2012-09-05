@@ -112,6 +112,11 @@ class jelix_TextUI_Command extends PHPUnit_TextUI_Command {
         $appInstaller = new jInstallerApplication();
         $this->epInfo = $appInstaller->getEntryPointInfo($this->entryPoint);
 
+        // it will initialize global variables $gJCoord $gJConfig. it could be needed by tests
+        // (during load of their php files or during execution)
+        $config = jConfigCompiler::readAndCache($this->epInfo->configFile, null, $this->entryPoint);
+        $coord = new jCoordinator($config, false);
+
         if ($modulesTests == 0) {
             // we add all modules in the test list
             $suite = $this->getAllModulesTestSuites();
@@ -139,9 +144,6 @@ class jelix_TextUI_Command extends PHPUnit_TextUI_Command {
                 exit(PHPUnit_TextUI_TestRunner::FAILURE_EXIT);
             }
         }
-        // it will initialize global variables $gJCoord $gJConfig. it could be needed by tests
-        $config = jConfigCompiler::readAndCache($this->epInfo->configFile, null, $this->entryPoint);
-        $coord = new jCoordinator($config, false);
     }
 
     protected function getAllModulesTestSuites() {

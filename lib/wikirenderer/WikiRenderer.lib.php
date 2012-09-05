@@ -21,7 +21,7 @@
  *
  */
 define('WIKIRENDERER_PATH', dirname(__FILE__).'/');
-define('WIKIRENDERER_VERSION', '3.1.4');
+define('WIKIRENDERER_VERSION', '3.1.5');
 
 
 /**
@@ -774,7 +774,6 @@ class WikiTextLine extends WikiTag {
     public $isTextLineTag=true;
 }
 
-
 /**
  *
  */
@@ -786,6 +785,11 @@ class WikiHtmlTextLine extends WikiTag {
     }
 }
 
+class WikiXmlTextLine extends WikiHtmlTextLine {
+    protected function _doEscape($string){
+        return htmlspecialchars($string, ENT_NOQUOTES);
+    }
+}
 
 /**
  * a base class for wiki inline tag, to generate XHTML element.
@@ -829,4 +833,9 @@ abstract class WikiTagXhtml extends WikiTag {
 }
 
 
-?>
+class WikiTagXml extends WikiTagXhtml {
+   protected function _doEscape($string){
+       return htmlspecialchars($string, ENT_NOQUOTES);
+   }
+}
+

@@ -135,17 +135,17 @@ class jFile {
                 if ($exception)
                     continue;
             }
-        	// file deletion
+            // file deletion
             if ($dirContent->isFile() || $dirContent->isLink()) {
-        		unlink($dirContent->getPathName());
-        	} else {
-        		// recursive directory deletion
+                    unlink($dirContent->getPathName());
+            } else {
+                // recursive directory deletion
                 if (!$dirContent->isDot() && $dirContent->isDir()) {
                     $removed = self::removeDir($dirContent->getPathName(), true, $except);
                     if (!$removed)
                         $allIsDeleted = false;
-        		}
-        	}
+                }
+            }
         }
         unset($dir); // see bug #733
         unset($dirContent);

@@ -58,12 +58,14 @@ class createdaoCommand extends JelixScriptCommand {
 
        $this->loadAppConfig();
 
-       $path= $this->getModulePath($this->_parameters['module']);
+       $module = $this->_parameters['module'];
+       $path = $this->getModulePath($module);
 
        $filename= $path.'daos/';
        $this->createDir($filename);
 
-       $filename.=strtolower($this->_parameters['name']).'.dao.xml';
+       $daofile = strtolower($this->_parameters['name']).'.dao.xml';
+       $filename.= $daofile;
 
        $profile = $this->getOption('-profile');
 
@@ -73,7 +75,7 @@ class createdaoCommand extends JelixScriptCommand {
             $param['table'] = $param['name'];
 
        if($this->getOption('-empty')){
-          $this->createFile($filename,'module/dao_empty.xml.tpl',$param);
+          $this->createFile($filename, 'module/dao_empty.xml.tpl', $param, "Empty DAO");
        }else{
 
          $sequence = $this->getParam('sequence', '');
@@ -113,12 +115,12 @@ class createdaoCommand extends JelixScriptCommand {
          }
 
          if($primarykeys == '') {
-            throw new Exception("The table has no primary keys. A dao needs a primary key on the table to be defined.");
+            throw new Exception("The table ".$param['table']." has no primary keys. A dao needs a primary key on the table to be defined.");
          }
 
          $param['properties']=$properties;
          $param['primarykeys']=$primarykeys;
-         $this->createFile($filename,'module/dao.xml.tpl',$param);
+         $this->createFile($filename, 'module/dao.xml.tpl', $param, "DAO");
        }
     }
 }

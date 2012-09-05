@@ -120,7 +120,8 @@ ACTION:
         $sql.=intval($params[2]).')';
 
         $cnx->exec($sql);
-        echo "OK\n";
+        if ($this->verbose())
+            echo "OK\n";
     }
 
     protected function cmd_group_delete(){
@@ -149,7 +150,8 @@ ACTION:
         $sql.=intval($params[0]);
 
         $cnx->exec($sql);
-        echo "OK\n";
+        if ($this->verbose())
+            echo "OK\n";
     }
 
 
@@ -209,15 +211,14 @@ ACTION:
             throw new Exception("Unknown values group id.");
         }
 
-
-
         $sql="INSERT into jacl_right_values (value, label_key, id_aclvalgrp) VALUES (";
         $sql.=$cnx->quote($params[0]).',';
         $sql.=$cnx->quote($params[1]).',';
         $sql.=intval($params[2]).')';
 
         $cnx->exec($sql);
-        echo "OK\n";
+        if ($this->verbose())
+            echo "OK\n";
     }
 
     protected function cmd_delete(){
@@ -259,6 +260,7 @@ ACTION:
 
         $sql="DELETE FROM jacl_right_values WHERE id_aclvalgrp=".intval($params[1]).' AND value='.$cnx->quote($params[0]);
         $cnx->exec($sql);
-        echo "OK\n";
+        if ($this->verbose())
+            echo "OK\n";
     }
 }

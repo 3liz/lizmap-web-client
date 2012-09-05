@@ -30,5 +30,7 @@ class closeappCommand extends JelixScriptCommand {
 
     public function run(){
         jAppManager::close($this->getParam('message',''));
+        if ($this->verbose())
+            echo "Application is closed.\n";
     }
 }

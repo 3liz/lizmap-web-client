@@ -13,11 +13,10 @@ class initadminCommand extends JelixScriptCommand {
     public  $name = 'initadmin';
     public  $allowed_options=array('-noauthdb'=>false,
                                    '-noacl2db'=>false,
-                                   '-profile'=>true,
-                                   '-v'=>false);
+                                   '-profile'=>true);
     public  $allowed_parameters=array('entrypoint'=>true);
 
-    public  $syntaxhelp = "[-v] [-noauthdb] [-noacl2db] [-profile a_jdb_profile] entrypoint";
+    public  $syntaxhelp = "[-noauthdb] [-noacl2db] [-profile a_jdb_profile] entrypoint";
     public  $help='';
 
     function __construct($config){
@@ -77,10 +76,9 @@ class initadminCommand extends JelixScriptCommand {
         $inifile = new jIniMultiFilesModifier(jApp::configPath('defaultconfig.ini.php'),
                                           jApp::configPath($ep['config']));
 
-
         $params = array();
-        $this->createFile(jApp::appPath('responses/adminHtmlResponse.class.php'),'responses/adminHtmlResponse.class.php.tpl',$params);
-        $this->createFile(jApp::appPath('responses/adminLoginHtmlResponse.class.php'),'responses/adminLoginHtmlResponse.class.php.tpl',$params);
+        $this->createFile(jApp::appPath('responses/adminHtmlResponse.class.php'),'responses/adminHtmlResponse.class.php.tpl',$params, "Response for admin interface");
+        $this->createFile(jApp::appPath('responses/adminLoginHtmlResponse.class.php'),'responses/adminLoginHtmlResponse.class.php.tpl',$params, "Response for login page");
         $inifile->setValue('html', 'adminHtmlResponse', 'responses');
         $inifile->setValue('htmlauth', 'adminLoginHtmlResponse', 'responses');
 
@@ -139,7 +137,7 @@ class initadminCommand extends JelixScriptCommand {
         $inifile->save();
 
         require_once (JELIX_LIB_PATH.'installer/jInstaller.class.php');
-        $verbose = $this->getOption("-v");
+        $verbose = $this->verbose();
 
         $reporter = new textInstallReporter(($verbose? 'notice':'warning'));
         $installer = new jInstaller($reporter);

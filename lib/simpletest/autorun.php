@@ -3,7 +3,7 @@
  *  Autorunner which runs all tests cases found in a file
  *  that includes this module.
  *  @package    SimpleTest
- *  @version    $Id: autorun.php 2011 2011-04-29 08:22:48Z pp11 $
+ *  @version    $Id: autorun.php 2037 2011-11-30 17:58:21Z pp11 $
  */
 
 /**#@+
@@ -16,12 +16,14 @@ require_once dirname(__FILE__) . '/default_reporter.php';
 /**#@-*/
 
 $GLOBALS['SIMPLETEST_AUTORUNNER_INITIAL_CLASSES'] = get_declared_classes();
+$GLOBALS['SIMPLETEST_AUTORUNNER_INITIAL_PATH'] = getcwd();
 register_shutdown_function('simpletest_autorun');
 
 /**
  *    Exit handler to run all recent test cases and exit system if in CLI
  */
 function simpletest_autorun() {
+	chdir($GLOBALS['SIMPLETEST_AUTORUNNER_INITIAL_PATH']);
     if (tests_have_run()) {
         return;
     }

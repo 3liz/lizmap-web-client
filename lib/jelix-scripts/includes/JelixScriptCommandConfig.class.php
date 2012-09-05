@@ -103,6 +103,11 @@ class JelixScriptCommandConfig {
      */
     public $debugMode = false;
 
+    /**
+     * @var boolean true = verbose mode, -v flag is implicit.
+     */
+    public $verboseMode = false;
+
     public $layoutTempPath = '%appdir%/../temp/%appname%/';
     public $layoutWwwPath = '%appdir%/www/';
     public $layoutVarPath = '%appdir%/var/';

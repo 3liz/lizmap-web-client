@@ -86,7 +86,7 @@ class createclassfromdaoCommand extends JelixScriptCommand {
         foreach($properties as $name=>$property) {
             $classContent .= "    public \$$name;\n";     
         }
-        $this->createFile($targetClassPath,'module/classfromdao.class.tpl', array('properties'=>$classContent, 'name'=>$this->_parameters['classname']));
+        $this->createFile($targetClassPath,'module/classfromdao.class.tpl', array('properties'=>$classContent, 'name'=>$this->_parameters['classname']), "Class");
     }
 }
 

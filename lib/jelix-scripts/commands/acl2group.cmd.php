@@ -204,7 +204,8 @@ ACTION:
         catch(Exception $e) {
             throw new Exception("this group already exists");
         }
-        echo "OK\n";
+        if ($this->verbose())
+            echo "Rights: group $name ($id) is created.\n";
     }
 
     protected function cmd_delete(){
@@ -225,7 +226,8 @@ ACTION:
         $sql="DELETE FROM ".$cnx->prefixTable('jacl2_group')." WHERE id_aclgrp=".$id;
         $cnx->exec($sql);
 
-        echo "OK\n";
+        if ($this->verbose())
+            echo "Rights: group $id and all corresponding rights have been deleted.\n";
     }
 
     protected function cmd_setdefault(){
@@ -250,7 +252,8 @@ ACTION:
         $sql="UPDATE ".$cnx->prefixTable('jacl2_group')
             ." SET grouptype=$def  WHERE id_aclgrp=".$id;
         $cnx->exec($sql);
-        echo "OK\n";
+        if ($this->verbose())
+            echo "Rights: group $id is ".($def?' now a default group':' no more a default group')."\n";
     }
 
     protected function cmd_changename(){
@@ -264,7 +267,8 @@ ACTION:
         $sql="UPDATE ".$cnx->prefixTable('jacl2_group')
             ." SET name=".$cnx->quote($params[1])."  WHERE id_aclgrp=".$id;
         $cnx->exec($sql);
-        echo "OK\n";
+        if ($this->verbose())
+            echo "Rights: group $id is renamed to '".$params[1]."'.\n";
     }
 
     protected function cmd_adduser(){
@@ -294,7 +298,8 @@ ACTION:
         $sql="INSERT INTO ".$cnx->prefixTable('jacl2_user_group')
             ." (login, id_aclgrp) VALUES(".$cnx->quote($params[1]).", ".$id.")";
         $cnx->exec($sql);
-        echo "OK\n";
+        if ($this->verbose())
+            echo "Rights: user ".$params[1]." is added to the group $id\n";
     }
 
     protected function cmd_removeuser(){
@@ -309,7 +314,8 @@ ACTION:
         $sql="DELETE FROM ".$cnx->prefixTable('jacl2_user_group')
             ." WHERE login=".$cnx->quote($params[1])." AND id_aclgrp=$id";
         $cnx->exec($sql);
-        echo "OK\n";
+        if ($this->verbose())
+            echo "Rights: user ".$params[1]." is removed from the group $id\n";
     }
 
     protected function cmd_createuser(){
@@ -337,7 +343,8 @@ ACTION:
         $sql="INSERT INTO ".$cnx->prefixTable('jacl2_user_group')
             ." (login, id_aclgrp) VALUES(".$login.", ".$groupid.")";
         $cnx->exec($sql);
-        echo "OK\n";
+        if ($this->verbose())
+            echo "Rights: user $login is added into rights system and has a private group $groupid\n";
     }
 
     protected function cmd_destroyuser(){
@@ -354,7 +361,8 @@ ACTION:
         $sql="DELETE FROM ".$cnx->prefixTable('jacl2_user_group')
             ." WHERE login=".$cnx->quote($params[0]);
         $cnx->exec($sql);
-        echo "OK\n";
+        if ($this->verbose())
+            echo "Rights: user $login is removed from rights system.\n";
     }
 
     private function _getGrpId($param){

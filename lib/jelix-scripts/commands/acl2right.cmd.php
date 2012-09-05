@@ -172,7 +172,8 @@ ACTION:
         $sql.=$resource.')';
 
         $cnx->exec($sql);
-        echo "OK.\n";
+        if ($this->verbose())
+            echo "Right is added on subject $subject with group $group".(isset($params[2])?' and resource '.$resource:'')."\n";
     }
 
     protected function cmd_remove(){
@@ -207,7 +208,8 @@ ACTION:
             $sql.=" AND id_aclres=".$resource;
         $cnx->exec($sql);
 
-        echo "OK\n";
+        if ($this->verbose())
+            echo "Right on subject $subject with group $group ".(isset($resource)?' and resource '.$resource:'')." is deleted \n";
     }
 
     protected function cmd_subject_list(){
@@ -252,6 +254,10 @@ ACTION:
             $sql.=", NULL";
         $sql .= ')';
         $cnx->exec($sql);
+
+        if ($this->verbose())
+            echo "Rights: subject ".$params[0]." is created.";
+
         if (isset($params[3]) && preg_match("/^([a-zA-Z0-9_\.]+)~([a-zA-Z0-9_]+)\.([a-zA-Z0-9_\.]+)$/", $params[1], $m)) {
             $localestring = "\n".$m[3].'='.$params[3];
             $path = $this->getModulePath($m[1]);
@@ -261,8 +267,11 @@ ACTION:
                 $localestring = file_get_contents($file).$localestring;
             }
             file_put_contents($file, $localestring);
+            if ($this->verbose())
+                echo " and locale string ".$m[3]." is created into ".$file."\n";
         }
-        echo "OK.\n";
+        else if ($this->verbose())
+            echo "\n";
     }
 
     protected function cmd_subject_delete(){
@@ -287,7 +296,8 @@ ACTION:
         $sql.=$cnx->quote($params[0]);
         $cnx->exec($sql);
 
-        echo "OK\n";
+        if ($this->verbose())
+            echo "Rights: subject ".$params[0]." is deleted\n";
     }
 
     protected function cmd_subject_group_list(){
@@ -322,7 +332,8 @@ ACTION:
         $sql .= ')';
         $cnx->exec($sql);
 
-        echo "OK.\n";
+        if ($this->verbose())
+            echo "Rights: group '".$params[0]."' of subjects is created.\n";
     }
 
     protected function cmd_subject_group_delete(){
@@ -347,7 +358,8 @@ ACTION:
         $sql.=$cnx->quote($params[0]);
         $cnx->exec($sql);
 
-        echo "OK\n";
+        if ($this->verbose())
+            echo "Rights: group '".$params[0]."' of subjects is deleted.\n";
     }
 
 

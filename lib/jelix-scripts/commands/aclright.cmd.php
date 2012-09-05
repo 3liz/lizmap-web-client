@@ -151,7 +151,8 @@ ACTION:
         $sql.=$value.')';
 
         $cnx->exec($sql);
-        echo "OK.\n";
+        if ($this->verbose())
+            echo "OK\n";
     }
 
     protected function cmd_remove(){
@@ -189,7 +190,8 @@ ACTION:
             $sql.=" AND id_aclres=".$resource;
         $cnx->exec($sql);
 
-        echo "OK\n";
+        if ($this->verbose())
+            echo "OK\n";
     }
 
     protected function cmd_subject_list(){
@@ -235,7 +237,8 @@ ACTION:
         $sql.=intval($params[2]).')';
         $cnx->exec($sql);
 
-        echo "OK.\n";
+        if ($this->verbose())
+            echo "OK\n";
     }
 
     protected function cmd_subject_delete(){
@@ -259,7 +262,8 @@ ACTION:
         $sql.=$cnx->quote($params[0]);
         $cnx->exec($sql);
 
-        echo "OK\n";
+        if ($this->verbose())
+            echo "OK\n";
     }
 
 }

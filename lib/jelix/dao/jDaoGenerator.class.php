@@ -944,7 +944,7 @@ class jDaoGenerator {
                     $phpvalue = 'implode(\',\', array_map( '.$phpexpr.', '.$cond['value'].'))';
                     $value= '(\'.'.$phpvalue.'.\')';
                 }else{
-                    $value= '('.$cond['value'].')';
+                    $value= '('.str_replace("'", "\\'", $cond['value']).')';
                 }
                 $r.=$cond['operator'].' '.$value;
             }elseif($cond['operator'] == 'IS NULL' || $cond['operator'] == 'IS NOT NULL'){

@@ -317,9 +317,9 @@ class jDateTime {
                     if($match[8] != 'Z'){
                         $d = new jDuration(array('hour'=>$match[10],'minute'=>$match[11]));
                         if($match[9] == '+')
-                            $this->add($d);
-                        else
                             $this->sub($d);
+                        else
+                            $this->add($d);
                     }
                }
                break;

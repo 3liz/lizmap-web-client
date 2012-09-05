@@ -22,8 +22,10 @@ class JelixScript {
     static function loadConfig($appname='') {
         $config = new JelixScriptCommandConfig();
 
-        if ($appname == '')
+        if ($appname === '')
             $appname = $config->loadFromProject();
+        else if ($appname === false) // don't load from project..
+            $appname = '';
 
         $home = '';
 
@@ -84,7 +86,7 @@ class JelixScript {
             $commandfile = JELIX_SCRIPTS_PATH.'commands/'.$cmdName.'.cmd.php';
 
         if (!file_exists($commandfile)) {
-            throw new Exception("Error: unknown command");
+            throw new Exception("Error: unknown command $cmdName");
         }
 
         require_once($commandfile);

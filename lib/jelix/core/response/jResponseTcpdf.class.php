@@ -79,7 +79,7 @@ class jResponseTcpdf  extends jResponse {
     }
 
     /**
-    * Creates the TCPDF object in $this->fpdf
+    * Creates the TCPDF object in $this->tcpdf
     * @param string $orientation Orientation (portrait/landscape)
     * @param string $unit Page base unit (default to millimeters)
     * @param mixed $format Page size (defaults to A4)
@@ -94,7 +94,7 @@ class jResponseTcpdf  extends jResponse {
     * TCPDF methods never take more than 8 params)
     * @param string $method Method name
     * @param array $attr Method parameters
-    * @return mixed Value returned bu FPDF's method
+    * @return mixed Value returned by TCPDF's method
     */
     public function __call($method, $attr){
         if ($this->tcpdf !== null)

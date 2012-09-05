@@ -3,7 +3,7 @@
 * @package     jelix-scripts
 * @author      Laurent Jouanneau
 * @contributor
-* @copyright   2005-2009 Laurent Jouanneau
+* @copyright   2005-2012 Laurent Jouanneau
 * @link        http://www.jelix.org
 * @licence     GNU General Public Licence see LICENCE file or http://www.gnu.org/licenses/gpl.html
 */
@@ -12,7 +12,7 @@
 class helpCommand extends JelixScriptCommand {
 
     public  $name = 'help';
-    public  $allowed_options=array();
+    public  $allowed_options=array('-standalone'=>false);
     public  $allowed_parameters=array('command'=>false);
 
     public  $applicationRequirement = 3;
@@ -62,31 +62,36 @@ List of available commands:\n\t",
 
     public function run(){
 
-       if(isset($this->_parameters['command'])){
-          if($this->_parameters['command'] == 'help'){
-             $command=$this;
-          }else{
-             $command = JelixScript::getCommand($this->_parameters['command'], $this->config);
-          }
-          if($this->config->helpLang == 'fr'){
-              $this->disp("\nUtilisation de la commande ".$this->_parameters['command']." :\n");
-              $this->disp("# ".$_SERVER['argv'][0]."  ".$this->_parameters['command']." ". $command->syntaxhelp."\n\n");
-          }else{
-              $this->disp("\nUsage of ".$this->_parameters['command'].":\n");
-              $this->disp("# ".$_SERVER['argv'][0]." ".$this->_parameters['command']." ". $command->syntaxhelp."\n\n");
-          }
-          if(is_array($command->help)){
-             if(isset($command->help[$this->config->helpLang])){
-                $this->disp($command->help[$this->config->helpLang]."\n\n");
-             }elseif(isset($command->help['en'])){
-                $this->disp($command->help['en']."\n\n");
-             }else{
-                $this->disp(array_shift($command->help)."\n\n");
-             }
-          }else{
-              $this->disp($command->help."\n\n");
-          }
-       }else{
+        if(isset($this->_parameters['command'])){
+            if($this->_parameters['command'] == 'help'){
+                $command=$this;
+            }else{
+                $command = JelixScript::getCommand($this->_parameters['command'], $this->config, $this->getOption('-standalone'));
+            }
+            if($this->config->helpLang == 'fr'){
+                $this->disp("\nUtilisation de la commande ".$this->_parameters['command']." :\n");
+            }else{
+                $this->disp("\nUsage of ".$this->_parameters['command'].":\n");
+            }
+            $this->disp("# ".$_SERVER['argv'][0]."  ".$this->_parameters['command']." ". $this->commonSyntaxOptions.$command->syntaxhelp."\n\n");
+            if(is_array($command->help)){
+                if(isset($command->help[$this->config->helpLang])){
+                    $this->disp($command->help[$this->config->helpLang]);
+                }elseif(isset($command->help['en'])){
+                    $this->disp($command->help['en']);
+                }else{
+                    $this->disp(array_shift($command->help));
+                }
+            }else{
+                $this->disp($command->help);
+            }
+            if (isset($this->commonOptionsHelp[$this->config->helpLang])) {
+                $this->disp("\n".$this->commonOptionsHelp[$this->config->helpLang]);
+            }
+            else
+                $this->disp("\n".$this->commonOptionsHelp['en']);
+            $this->disp("\n\n");
+        }else{
           if(isset($this->mainhelp[$this->config->helpLang])){
               $help = $this->mainhelp[$this->config->helpLang];
           }else{

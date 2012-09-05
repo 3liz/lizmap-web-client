@@ -29,7 +29,7 @@ des fichiers d'une autre langue",
         $model_lang = $this->getParam('model_lang', $gJConfig->locale);
         $lang = $this->getParam('lang');
 
-        foreach($gJConfig->_modulesPathList as $module=>$dir){
+        foreach ($gJConfig->_modulesPathList as $module=>$dir) {
             $source_dir = $dir.'locales/'.$model_lang.'/';
             if (!file_exists($source_dir))
                 continue;
@@ -44,6 +44,9 @@ des fichiers d'une autre langue",
                         && strpos($fich, '.'.$gJConfig->charset.'.properties')
                         && !file_exists($target_dir.$fich)) {
                         copy ($source_dir.$fich, $target_dir.$fich);
+                        if ($this->verbose()) {
+                            echo "Copy Locales file $fich from $source_dir to $target_dir.\n";
+                        }
                     }
                 }
                 closedir($dir_r);

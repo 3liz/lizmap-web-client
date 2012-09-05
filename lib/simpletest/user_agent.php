@@ -3,7 +3,7 @@
  *  Base include file for SimpleTest
  *  @package    SimpleTest
  *  @subpackage WebTester
- *  @version    $Id: user_agent.php 2011 2011-04-29 08:22:48Z pp11 $
+ *  @version    $Id: user_agent.php 2039 2011-11-30 18:16:15Z pp11 $
  */
 
 /**#@+
@@ -244,14 +244,14 @@ class SimpleUserAgent {
                 return $response;
             }
             $headers = $response->getHeaders();
-            $location = new SimpleUrl($headers->getLocation());
-            $url = $location->makeAbsolute($url);
             if ($this->cookies_enabled) {
                 $headers->writeCookiesToJar($this->cookie_jar, $url);
             }
             if (! $headers->isRedirect()) {
                 break;
             }
+            $location = new SimpleUrl($headers->getLocation());
+            $url = $location->makeAbsolute($url);
             $encoding = new SimpleGetEncoding();
         } while (! $this->isTooManyRedirects(++$redirects));
         return $response;

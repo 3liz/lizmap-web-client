@@ -3,8 +3,8 @@
 * @package     jelix
 * @subpackage  forms
 * @author      Julien Issler
-* @contributor Thomas, Zeffyr
-* @copyright   2008 Julien Issler, 2009 Thomas, 2010 Zeffyr
+* @contributor Thomas, Zeffyr, Michgeek
+* @copyright   2008 Julien Issler, 2009 Thomas, 2010 Zeffyr, 2012 Michgeek
 * @link        http://www.jelix.org
 * @licence     http://www.gnu.org/licenses/lgpl.html GNU Lesser General Public Licence, see LICENCE file
 */
@@ -25,14 +25,15 @@ class jFormsControlDatetime extends jFormsControlDate {
 
     function setValueFromRequest($request) {
         $value = $request->getParam($this->ref,'');
-        if(!is_array($value))
-            $this->setData('');
-        elseif($value['year'] === '' && $value['month'] === '' && $value['day'] === '' && $value['hour'] === '' && $value['minutes'] === '' && (!$this->enableSeconds || $value['seconds'] === ''))
-            $this->setData('');
-        else{
-            if($value['seconds']==='')
-                $value['seconds'] = '00';
-            $this->setData($value['year'].'-'.$value['month'].'-'.$value['day'].' '.$value['hour'].':'.$value['minutes'].':'.$value['seconds']);
+        $this->setData($value);
+        if(is_array($value)) {
+            if($value['year'] === '' && $value['month'] === '' && $value['day'] === '' && $value['hour'] === '' && $value['minutes'] === '' && (!$this->enableSeconds || $value['seconds'] === ''))
+                $this->setData('');
+            else{
+                if($value['seconds']==='')
+                    $value['seconds'] = '00';
+                $this->setData($value['year'].'-'.$value['month'].'-'.$value['day'].' '.$value['hour'].':'.$value['minutes'].':'.$value['seconds']);
+            }
         }
     }
     

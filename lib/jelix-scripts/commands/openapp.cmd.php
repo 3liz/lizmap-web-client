@@ -30,5 +30,7 @@ class openappCommand extends JelixScriptCommand {
 
     public function run(){
         jAppManager::open();
+        if ($this->verbose())
+            echo "Application is opened.\n";
     }
 }

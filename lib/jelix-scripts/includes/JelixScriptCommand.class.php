@@ -3,7 +3,7 @@
 * @package     jelix-scripts
 * @author      Laurent Jouanneau
 * @contributor Loic Mathaud
-* @copyright   2005-2011 Laurent Jouanneau, 2008 Loic Mathaud
+* @copyright   2005-2012 Laurent Jouanneau, 2008 Loic Mathaud
 * @link        http://www.jelix.org
 * @licence     GNU General Public Licence see LICENCE file or http://www.gnu.org/licenses/gpl.html
 */
@@ -31,7 +31,7 @@ abstract class JelixScriptCommand {
    /**
     * common options to all commands
     */
-   protected $commonOptions = array('-ep'=>true);
+   protected $commonOptions = array('-ep'=>true, '-v'=>false);
 
    /**
     * parameters needed for the command
@@ -64,6 +64,20 @@ abstract class JelixScriptCommand {
     * @var array|string detailed help
     */
    public $help = 'No help for this command';
+
+   public $commonSyntaxOptions = '[-ep ENTRYPOINT] [-v] ';
+   public $commonOptionsHelp = array(
+        'en'=>"
+    Other options:
+    -ep ENTRYPOINT: indicate the entry point on which this command should be applied
+    -v: verbose mode
+",
+        'fr'=>"
+    Autres options:
+    -ep ENTRYPOINT: indique le point d'entrée sur lequel la commande doit s'appliquer
+    -v: mode verbeux. Affiche plus d'informations.
+"
+    );
 
    const APP_MUST_NOT_EXIST = 1;
    const APP_MUST_EXIST = 2;
@@ -116,9 +130,10 @@ abstract class JelixScriptCommand {
       //---------- get the switches
       while (count($argv) && $argv[0]{0} == '-') {
 
-         if (!isset($this->allowed_options[$argv[0]])) {
-            if (!isset($this->commonOptions[$argv[0]]))
+         if (!array_key_exists($argv[0], $this->allowed_options)) {
+            if (!array_key_exists($argv[0], $this->commonOptions)) {
                throw new Exception("unknown option '".$argv[0]."'");
+            }
             $needArgument = $this->commonOptions[$argv[0]];
          }
          else {
@@ -131,7 +146,7 @@ abstract class JelixScriptCommand {
                $this->_options[$sw] = array_shift($argv);
             }
             else {
-               throw new Exception("parameter missing for the '".$argv[0]."' option");
+               throw new Exception("value missing for the '".$argv[0]."' option");
             }
          }
          else {
@@ -194,6 +209,9 @@ abstract class JelixScriptCommand {
       }
    }
 
+   protected function verbose() {
+      return ($this->getOption('-v') || $this->config->verboseMode);
+   }
 
    /**
     * main method which execute the process for the command
@@ -251,7 +269,11 @@ abstract class JelixScriptCommand {
     * @param array  $param template values, which will replace some template variables
     * @return boolean true if it is ok
     */
-   protected function createFile($filename, $template, $tplparam=array()) {
+   protected function createFile($filename, $template, $tplparam=array(), $fileType = 'File') {
+      $parts = explode('/', $filename);
+      while(count($parts)>3)
+         array_shift($parts);
+      $displayedFilename = implode('/', $parts);
 
       $defaultparams = array (
          'default_website'       => $this->config->infoWebsite ,
@@ -276,13 +298,13 @@ abstract class JelixScriptCommand {
       $tplparam = array_merge($defaultparams, $tplparam);
 
       if (file_exists($filename)) {
-         echo "Warning: the file '".$filename."' already exists\n";
+         echo "Warning: $fileType ".$displayedFilename." already exists\n";
          return false;
       }
       $tplpath = JELIX_SCRIPTS_PATH.'templates/'.$template;
 
       if (!file_exists($tplpath)) {
-         echo "Error: template file '".$tplpath."' doesn't exist\n";
+         echo "Error: to create $displayedFilename, template file '".$tplpath."' doesn't exist\n";
          return false;
       }
       $tpl = file($tplpath);
@@ -306,6 +328,12 @@ abstract class JelixScriptCommand {
          chown($filename, $this->config->chownUser);
          chgrp($filename, $this->config->chownGroup);
       }
+      if (!file_exists($filename)) {
+         echo "Error: $fileType ".$displayedFilename." could not be created\n";
+         return false;
+      }
+      if ($this->verbose())
+         echo "$fileType $displayedFilename has been created.\n";
       return true;
    }
 
@@ -371,6 +399,15 @@ abstract class JelixScriptCommand {
       else {
          return false;
       }
+   }
+
+   protected function getCommonActiveOption() {
+      $options = array();
+      if ($ep = $this->getOption('-ep'))
+         $options['-ep'] = $ep;
+      if ($this->getOption('-v'))
+         $options['-v'] = true;
+      return $options;
    }
 
     protected function removeOption($name) {

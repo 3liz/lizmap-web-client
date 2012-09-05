@@ -19,23 +19,19 @@ class migrateModule {
 class migrateCommand extends JelixScriptCommand {
 
     public  $name = 'migrate';
-    public  $allowed_options = array('-v'=>false);
+    public  $allowed_options = array();
     public  $allowed_parameters = array();
 
-    public  $syntaxhelp = "[-v]";
+    public  $syntaxhelp = "";
     public  $help = '';
 
     function __construct($config){
         $this->help= array(
             'fr'=>"
     migre une application jelix 1.1  vers jelix 1.2
-
-    Option -v : mode verbeux.
     ",
             'en'=>"
     Migrate a jelix 1.1 application to jelix 1.2
-
-    Option -v: verbose mode.
     ",
     );
         parent::__construct($config);
