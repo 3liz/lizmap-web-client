@@ -1,10 +1,12 @@
 <?php
 /**
+* HTML Jelix response for full screen map.
 * @package   lizmap
+* @subpackage lizmap
 * @author    3liz
 * @copyright 2011 3liz
 * @link      http://3liz.com
-* @license    All right reserved
+* @license Mozilla Public License : http://www.mozilla.org/MPL/
 */
 
 

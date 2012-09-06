@@ -1,11 +1,12 @@
 <?php
 /**
-* @package   castries
-* @subpackage 
-* @author    yourname
-* @copyright 2010 yourname
-* @link      http://www.yourwebsite.undefined
-* @license    All right reserved
+* HTML Jelix response for full screen map.
+* @package   lizmap
+* @subpackage admin
+* @author    3liz
+* @copyright 2011 3liz
+* @link      http://3liz.com
+* @license Mozilla Public License : http://www.mozilla.org/MPL/
 */
 
 require_once (JELIX_LIB_CORE_PATH.'response/jResponseHtml.class.php');
