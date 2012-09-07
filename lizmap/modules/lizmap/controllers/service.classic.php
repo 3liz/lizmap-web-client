@@ -128,42 +128,19 @@ class serviceCtrl extends jController {
       jMessage::add(jLocale::get('view~default.repository.access.denied'), 'AuthorizationRequired');
       return $this->serviceException();
     }    
-        
+    
     // Get the passed parameters
     global $gJCoord;
-    $myParams = array_keys($gJCoord->request->params);
-   
-    // Request parameters
-    $data = array("map"=>$lizmapConfig->repositoryData['path'].$project.".qgs");
-    $cached = false;
-    // on garde les paramètres intéressants
-    foreach($myParams as $param){
-      if(!in_array($param, array('module', 'action', 'C', 'project'))){
-        $data[$param] = $gJCoord->request->params[$param];
-      }
-    }
-
-    // Construction of the request url : base url + parameters
-    $url = $lizmapConfig->wmsServerURL.'?';
-    $params = http_build_query($data);
-    // On remplace certains caractères (plus besoin si php 5.4, alors utiliser le 4ème paramètre de http_build_query) 
-    $a = array('+', '_', '.', '-');
-    $b = array('%20', '%5F', '%2E', '%2D');
-    $params = str_replace($a, $b, $params);
-
-    $ch = curl_init();
-    curl_setopt($ch, CURLOPT_HEADER, 0);
-    curl_setopt($ch, CURLOPT_URL, $url . $params);
-    curl_setopt( $ch, CURLOPT_SSL_VERIFYPEER, false );
-    curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-    curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
-
-    $content = curl_exec($ch);
-    $response = curl_getinfo($ch);
-    curl_close($ch);
+    $params = $gJCoord->request->params;
     
+    // Get data
+    $lizmapCache = jClasses::getService('lizmap~lizmapCache');
+    $cached = $this->intParam('cached');    
+    $content = $lizmapCache->getServiceData($repository, $project, $params, $lizmapConfig, $cached);
+    
+    // Return response
     $rep = $this->getResponse('binary');
-    $rep->mimeType = $response['content_type'];
+    $rep->mimeType = 'image/png';
     $rep->content = $content;
     $rep->doDownload  =  false;
     $rep->outputFileName  =  'mapserver';

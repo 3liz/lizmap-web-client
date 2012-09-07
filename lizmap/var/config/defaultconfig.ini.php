@@ -10,14 +10,13 @@ timeZone="Europe/Paris"
 
 theme=default
 
-pluginsPath="app:plugins/"
-
+pluginsPath="app:plugins/,lib:jelix-plugins/"
 modulesPath="lib:jelix-admin-modules/,lib:jelix-modules/,app:modules/,app:lizmap-modules"
 
 
 
 
-[coordplugins]
+[coord*s]
 ;name = file_ini_name or 1
 ;magicquotes = 1
 autolocale=autolocale.coord.ini.php

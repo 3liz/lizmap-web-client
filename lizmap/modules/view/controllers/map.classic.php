@@ -69,11 +69,7 @@ class mapCtrl extends jController {
       $rep->action = 'view~default:index';
       return $rep;
     }
-    
-    // Add the cache server url as Javascript var.
-    $rep->addJSCode("var cacheServerURL = '".$lizmapConfig->cacheServerURL."';");
-
-    
+      
     $configRead = jFile::read($configPath);
     $configOptions = json_decode($configRead)->options;
     if (property_exists($configOptions,'googleKey') && $configOptions->googleKey != '')
@@ -90,6 +86,7 @@ class mapCtrl extends jController {
     $rep->addJSCode("var dictionaryUrl = '".jUrl::get('view~translate:getDictionary', array('property'=>'map'))."';");
     $rep->addJSCode("var cfgUrl = '".jUrl::get('lizmap~service:getProjectConfig', array('repository'=>$repository, 'project'=>$project))."';");
     $rep->addJSCode("var wmsServerURL = '".jUrl::get('lizmap~service:index', array('repository'=>$repository, 'project'=>$project))."';");
+    $rep->addJSCode("var cacheServerURL = '".jUrl::get('lizmap~service:index', array('repository'=>$repository, 'project'=>$project, 'cached'=>1))."';");
 
     $rep->body->assign('repositoryLabel', $lizmapConfig->repositoryData['label']);
     $rep->body->assign('isConnected', jAuth::isConnected());

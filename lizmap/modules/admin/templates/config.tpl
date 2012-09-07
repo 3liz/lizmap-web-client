@@ -7,7 +7,7 @@
     <h2>{@admin~admin.configuration.services.label@}</h2>
     <dl>
       <dt>{@admin~admin.configuration.services.wmsServerURL.label@}</dt><dd>{$lizmapConfig->wmsServerURL}</dd>
-      <dt>{@admin~admin.configuration.services.cacheServerURL.label@}</dt><dd>{$lizmapConfig->cacheServerURL}</dd>
+      <dt>{@admin~admin.configuration.services.cacheStorageType.label@}</dt><dd>{$lizmapConfig->cacheStorageType}</dd>
       <dt>{@admin~admin.configuration.services.defaultRepository.label@}</dt><dd>{$lizmapConfig->defaultRepository}</dd>
     </dl>
     
@@ -69,6 +69,9 @@
         <!-- Remove -->
         {ifacl2 'lizmap.admin.repositories.delete'}
         <a class="btn" href="{jurl 'admin~config:removeSection', array('repository'=>$repo)}" onclick="return confirm('{@admin~admin.configuration.button.remove.repository.confirm.label@}')">{@admin~admin.configuration.button.remove.repository.label@}</a>
+        {/ifacl2}
+        {ifacl2 'lizmap.admin.repositories.delete'}
+        <a class="btn" href="{jurl 'admin~config:removeCache', array('repository'=>$repo)}" onclick="return confirm('{@admin~admin.cache.button.remove.repository.cache.confirm.label@}')">{@admin~admin.cache.button.remove.repository.cache.label@}</a>
         {/ifacl2}
       </div>
       

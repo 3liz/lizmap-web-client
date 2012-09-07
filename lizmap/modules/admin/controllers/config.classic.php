@@ -124,7 +124,7 @@ class configCtrl extends jController {
  
     // Get the form
     jClasses::inc('lizmap~lizmapConfig');
-    $lizmapConfig = new lizmapConfig($repository);
+    $lizmapConfig = new lizmapConfig('');
     $form = jForms::get('admin~config_services');
     
     $ctrl = new jFormsControlMenulist('defaultRepository');
@@ -163,7 +163,7 @@ class configCtrl extends jController {
  
     // If the section does exists in the ini file : get the data
     jClasses::inc('lizmap~lizmapConfig');
-    $lizmapConfig = new lizmapConfig($repository);   
+    $lizmapConfig = new lizmapConfig('');   
     $form = jForms::get('admin~config_services');
  
     // token
@@ -207,7 +207,6 @@ class configCtrl extends jController {
       // Errors : redirection to the display action
       $rep = $this->getResponse('redirect');
       $rep->action='admin~config:editServices';
-      $rep->params['repository']= $repository;
       $rep->params['errors']= "1";
       return $rep;
     }
@@ -223,7 +222,6 @@ class configCtrl extends jController {
  
     // Redirect to the validation page
     $rep= $this->getResponse("redirect");
-    $rep->params['repository']= $repository;
     $rep->action="admin~config:validateServices";
  
     return $rep;
@@ -235,10 +233,6 @@ class configCtrl extends jController {
   * @return Redirect to the index.
   */
   function validateServices(){
- 
-    // Get the form
-    jClasses::inc('lizmap~lizmapConfig');
-    $lizmapConfig = new lizmapConfig($repository);   
     
     // Destroy the form
     if($form = jForms::get('admin~config_services')){
@@ -645,7 +639,7 @@ class configCtrl extends jController {
 
     // Get config utility
     jClasses::inc('lizmap~lizmapConfig');
-    $lizmapConfig = new lizmapConfig("");
+    $lizmapConfig = new lizmapConfig(""); // !!! Here it is important to use an empty value !!!
     // Remove the section
     if($lizmapConfig->removeRepository($repository)){
       // Remove rights on this resource
@@ -662,5 +656,30 @@ class configCtrl extends jController {
  
     return $rep;
   }
+  
+  
+  
+  /**
+  * Empty a map service cache
+  * @param string $repository Repository for which to remove all tile cache
+  * @return Redirection to the index
+  */
+  function removeCache(){
+ 
+    $repository = $this->param('repository');
 
+    // Get config utility
+    jClasses::inc('lizmap~lizmapConfig');
+    $lizmapConfig = new lizmapConfig("");
+    
+    // Remove the cache for the repository
+    if(jFile::removeDir(sys_get_temp_dir().'/'.$lizmapConfig->repositoryKey));
+      jMessage::add(jLocale::get("admin~admin.cache.repository.removed", array($lizmapConfig->repositoryKey)));
+    
+    // Redirect to the index
+    $rep= $this->getResponse("redirect");
+    $rep->action="admin~config:index";
+ 
+    return $rep;
+  }
 }
