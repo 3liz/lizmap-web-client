@@ -135,8 +135,10 @@ class serviceCtrl extends jController {
     
     // Get data
     $lizmapCache = jClasses::getService('lizmap~lizmapCache');
-    $cached = $this->intParam('cached');    
-    $content = $lizmapCache->getServiceData($repository, $project, $params, $lizmapConfig, $cached);
+    $cached = $this->intParam('cached');
+    $cacheJpegCompression = $this->intParam('cacheJpegCompression');
+    $params = $lizmapCache->normalizeParams($params);
+    $content = $lizmapCache->getServiceData($repository, $project, $params, $lizmapConfig, $cached, $cacheJpegCompression);
     
     // Return response
     $rep = $this->getResponse('binary');

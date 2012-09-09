@@ -211,8 +211,13 @@ var lizMap = function() {
       if (layer.name!='Overview' && layerConfig) {
         var node = {name:layerName,config:layerConfig,parent:pNode};
         var service = wmsServerURL;
-        if (layerConfig.cached == 'True')
+        if (layerConfig.cached == 'True'){
           service = cacheServerURL;
+          if(layerConfig.cacheJpegCompression)
+            if (layerConfig.cacheJpegCompression == 'True')
+              service+= '&cacheJpegCompression=1';
+        }
+        
         if (layerConfig.baseLayer == 'True') {
         // creating the base layer
           baselayers.push(new OpenLayers.Layer.WMS(layerName,service

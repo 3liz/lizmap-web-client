@@ -23,7 +23,9 @@ class configCtrl extends jController {
     'editSection' => array( 'jacl2.rights.or'=>array('lizmap.admin.repositories.create', 'lizmap.admin.repositories.update')),
     'saveSection' => array( 'jacl2.rights.or'=>array('lizmap.admin.repositories.create', 'lizmap.admin.repositories.update')),
     'validateSection' => array( 'jacl2.rights.or'=>array('lizmap.admin.repositories.create', 'lizmap.admin.repositories.update')),
-    'removeSection' => array( 'jacl2.right'=>'lizmap.admin.repositories.delete')
+    'removeSection' => array( 'jacl2.right'=>'lizmap.admin.repositories.delete'),
+    'removeCache' => array( 'jacl2.right'=>'lizmap.admin.repositories.delete')
+    
   );
 
 
@@ -670,7 +672,7 @@ class configCtrl extends jController {
 
     // Get config utility
     jClasses::inc('lizmap~lizmapConfig');
-    $lizmapConfig = new lizmapConfig("");
+    $lizmapConfig = new lizmapConfig($repository);
     
     // Remove the cache for the repository
     if(jFile::removeDir(sys_get_temp_dir().'/'.$lizmapConfig->repositoryKey));
