@@ -219,7 +219,7 @@ var lizMap = function() {
         // creating the base layer
           baselayers.push(new OpenLayers.Layer.WMS(layerName,service
               ,{layers:layer.name,version:'1.3.0',exceptions:'application/vnd.ogc.se_inimage'
-                ,format:(layerConfig.imageFormat) ? 'image/png' : layerConfig.imageFormat
+                ,format:(layerConfig.imageFormat) ? layerConfig.imageFormat : 'image/png'
                 ,transparent:true,dpi:96}
               ,{isBaseLayer:true
                ,gutter:(layerConfig.cached == 'True') ? 0 : 5
@@ -236,7 +236,7 @@ var lizMap = function() {
           var scales = getLayerScale(layer,null,null);
           layers.push(new OpenLayers.Layer.WMS(layerName,service
               ,{layers:layer.name,version:'1.3.0',exceptions:'application/vnd.ogc.se_inimage'
-              ,format:(layerConfig.imageFormat) ? 'image/png' : layerConfig.imageFormat
+              ,format:(layerConfig.imageFormat) ? layerConfig.imageFormat : 'image/png'
               ,transparent:true,dpi:96}
               ,{isBaseLayer:false
                ,minScale:scales.maxScale
@@ -251,7 +251,7 @@ var lizMap = function() {
         // creating the layer because it's a layer and has no children
           layers.push(new OpenLayers.Layer.WMS(layerName,service
               ,{layers:layer.name,version:'1.3.0',exceptions:'application/vnd.ogc.se_inimage'
-              ,format:(layerConfig.imageFormat) ? 'image/png' : layerConfig.imageFormat
+              ,format:(layerConfig.imageFormat) ? layerConfig.imageFormat : 'image/png'
               ,transparent:true,dpi:96}
               ,{isBaseLayer:false
                ,minScale:layerConfig.maxScale
