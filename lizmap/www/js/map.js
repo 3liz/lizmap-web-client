@@ -213,15 +213,14 @@ var lizMap = function() {
         var service = wmsServerURL;
         if (layerConfig.cached == 'True'){
           service = cacheServerURL;
-          if(layerConfig.cacheJpegCompression)
-            if (layerConfig.cacheJpegCompression == 'True')
-              service+= '&cacheJpegCompression=1';
         }
         
         if (layerConfig.baseLayer == 'True') {
         // creating the base layer
           baselayers.push(new OpenLayers.Layer.WMS(layerName,service
-              ,{layers:layer.name,version:'1.3.0',exceptions:'application/vnd.ogc.se_inimage',format:'image/png',transparent:true,dpi:96}
+              ,{layers:layer.name,version:'1.3.0',exceptions:'application/vnd.ogc.se_inimage'
+                ,format:(layerConfig.imageFormat) ? 'image/png' : layerConfig.imageFormat
+                ,transparent:true,dpi:96}
               ,{isBaseLayer:true
                ,gutter:(layerConfig.cached == 'True') ? 0 : 5
                ,buffer:0
@@ -236,7 +235,9 @@ var lizMap = function() {
           // get the layer scale beccause, it has children
           var scales = getLayerScale(layer,null,null);
           layers.push(new OpenLayers.Layer.WMS(layerName,service
-              ,{layers:layer.name,version:'1.3.0',exceptions:'application/vnd.ogc.se_inimage',format:'image/png',transparent:true,dpi:96}
+              ,{layers:layer.name,version:'1.3.0',exceptions:'application/vnd.ogc.se_inimage'
+              ,format:(layerConfig.imageFormat) ? 'image/png' : layerConfig.imageFormat
+              ,transparent:true,dpi:96}
               ,{isBaseLayer:false
                ,minScale:scales.maxScale
                ,maxScale:scales.minScale
@@ -249,7 +250,9 @@ var lizMap = function() {
         else if (layerConfig.type == 'layer') {
         // creating the layer because it's a layer and has no children
           layers.push(new OpenLayers.Layer.WMS(layerName,service
-              ,{layers:layer.name,version:'1.3.0',exceptions:'application/vnd.ogc.se_inimage',format:'image/png',transparent:true,dpi:96}
+              ,{layers:layer.name,version:'1.3.0',exceptions:'application/vnd.ogc.se_inimage'
+              ,format:(layerConfig.imageFormat) ? 'image/png' : layerConfig.imageFormat
+              ,transparent:true,dpi:96}
               ,{isBaseLayer:false
                ,minScale:layerConfig.maxScale
                ,maxScale:layerConfig.minScale
@@ -746,7 +749,9 @@ var lizMap = function() {
    */
   function createOverview() {
     var ovLayer = new OpenLayers.Layer.WMS('overview',wmsServerURL
-              ,{layers:'Overview',version:'1.3.0',exceptions:'application/vnd.ogc.se_inimage',format:'image/png',transparent:true,dpi:96}
+              ,{layers:'Overview',version:'1.3.0',exceptions:'application/vnd.ogc.se_inimage'
+              ,format:'image/png'
+              ,transparent:true,dpi:96}
               ,{isBaseLayer:true
                ,gutter:5
                ,buffer:0

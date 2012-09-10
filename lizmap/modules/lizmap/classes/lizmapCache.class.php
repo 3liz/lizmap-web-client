@@ -39,10 +39,9 @@ class lizmapCache {
   * @param array $params Array of parameters.
   * @param object $lizmapConfig Lizmap configuration object.
   * @param boolean $dataFromCache If true, get data from the cache, else from the map server.
-  * @param boolean $cacheJpegCompression If true, compress tiles into jpeg.
   * @return array $data Normalized and filtered array.
   */
-  static public function getServiceData( $repository, $project, $params, $lizmapConfig, $dataFromCache=true, $cacheJpegCompression=false ) {
+  static public function getServiceData( $repository, $project, $params, $lizmapConfig, $dataFromCache=true ) {
 
 
     // Return cache if asked
@@ -114,7 +113,7 @@ class lizmapCache {
       
       return jCache::call( 
         array('lizmapCache', __FUNCTION__ ), 
-        array( $repository, $project, $params, $lizmapConfig, false, $cacheJpegCompression ),
+        array( $repository, $project, $params, $lizmapConfig, false ),
         null, 
         $cacheName
       );
@@ -146,94 +145,12 @@ class lizmapCache {
     $response = curl_getinfo($ch);
     $mimetype = $response['content_type'];
     curl_close($ch);
-    
-    // Compress the image before storing it if needed
-    if($cacheJpegCompression){
-      $lizmapCache = jClasses::getService('lizmap~lizmapCache');
-      $outputType = 'jpeg';
-      $content = $lizmapCache->compressImage($content, $mimetype, $outputType);
-    }
-    
+       
     return $content;  
   }
 
 
-  /**
-  * Compress an image.
-  * @param string $imageContent Content of the image (string).
-  * @param string $mimetype Mime type of the image.
-  * @return string Comressed image.
-  */
-  private function compressImage($imageContent, $mimetype, $outputType='jpeg'){
 
-    $content = $imageContent; // In case nothing is done in the following if statements
-
-    // Create instance image from content
-    $tmp = imagecreatefromstring($imageContent);
-
-    // Get image width and height
-    $width = imagesX($tmp);
-    $height = imagesY($tmp);
-    
-    // create an temporary image file to store future compressed image on disk
-    $tempImagePath = tempnam(sys_get_temp_dir(), 'lizmap');
-    
-    // Heavy compression by transforming into palette.
-    // Random results depending on tiles complexity (and 2 neighbour tiles colors originaly identical can be different after )
-    if($mimetype == 'image/png' and $outputType == 'png'){
-      // Options used to transform png into color palette image
-      $dither = true;
-      $colors1 = 256;
-      $colors2 = 256;
-      // Transform image into color palette image
-      imageTrueColorToPalette($tmp, $dither, $colors1);
-      // Save transparency
-      imagesavealpha($tmp, true);
-      imagecolortransparent($tmp, imagecolorat($tmp,0,0));      
-      // Create a second image 
-      $image = imageCreateTrueColor($width, $height);      
-      // Copy original image content into new image
-      imageCopy($image, $tmp, 0, 0, 0, 0, $width, $height);
-      // Destroy original image handler
-      imageDestroy($tmp);      
-      // Transform output image into true color palette image
-      imageTrueColorToPalette($image, $dither, $colors2);
-      // Save transparency
-      imagesavealpha($image, true);
-      imagecolortransparent($image, imagecolorat($image,0,0));
-      // Create the png image on disk
-      imagepng($image, $tempImagePath, 7);
-      // read output image
-      $content = jFile::read($tempImagePath);
-      // destroy output image handler
-      imageDestroy($image);
-      // destroy temp image
-      unlink($tempImagePath);
-    }
-    
-    // Compress into JPEG
-    if($mimetype == 'image/png' and $outputType == 'jpeg'){
-      // Create new image handler
-      $image = imagecreatetruecolor($width, $height);
-      // Trick to have a white color instead of black for replacement of the png transparency
-      $white = imagecolorallocate($image,  255, 255, 255);
-      imagefilledrectangle($image, 0, 0, $width, $height, $white);      
-      // Copy content from $tmp
-      imagecopy($image, $tmp, 0, 0, 0, 0, $width, $height);
-      // Destroy $tmp handler
-      imagedestroy($tmp);
-      // Create the new jpeg image
-      imagejpeg($image, $tempImagePath, 80);
-      // destroy output image handler
-      imageDestroy($image);      
-      // read output image
-      $content = jFile::read($tempImagePath);
-      // destroy temp image
-      unlink($tempImagePath);
-    }
-
-    return $content;
-  }
 
 
 
