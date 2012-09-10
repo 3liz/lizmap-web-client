@@ -22,7 +22,7 @@ timeout = 30
 ; for which a plugin parameter  auth.required is false
 ; If the value is "off", the authentification is not required for all actions, except those
 ; for which a plugin parameter  auth.required is true
-auth_required = off
+auth_required = on
 
 ; What to do if an authentification is required but the user is not authentificated
 ; 1 = generate an error. This value should be set for web services (xmlrpc, jsonrpc...)
