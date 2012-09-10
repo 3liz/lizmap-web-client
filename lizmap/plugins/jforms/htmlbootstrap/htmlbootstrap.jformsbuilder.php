@@ -936,7 +936,7 @@ class htmlbootstrapJformsBuilder extends jFormsBuilderHtml {
 
     protected function outputReset($ctrl, &$attr) {
         unset($attr['readonly']);
-        $attr['class'] = 'jforms-reset';
+        $attr['class'] = 'jforms-reset btn';
         $attr['type'] = 'reset';
         echo '<button';
         $this->_outputAttr($attr);
