@@ -214,13 +214,20 @@ var lizMap = function() {
         if (layerConfig.cached == 'True'){
           service = cacheServerURL;
         }
-        
+        var layerWmsParams = {
+          layers:layer.name
+          ,version:'1.3.0'
+          ,exceptions:'application/vnd.ogc.se_inimage'
+          ,format:(layerConfig.imageFormat) ? layerConfig.imageFormat : 'image/png'
+          ,dpi:96
+        };
+        if (layerWmsParams.format != 'image/jpeg')
+          layerWmsParams['transparent'] = true;
+          
         if (layerConfig.baseLayer == 'True') {
         // creating the base layer
           baselayers.push(new OpenLayers.Layer.WMS(layerName,service
-              ,{layers:layer.name,version:'1.3.0',exceptions:'application/vnd.ogc.se_inimage'
-                ,format:(layerConfig.imageFormat) ? layerConfig.imageFormat : 'image/png'
-                ,transparent:true,dpi:96}
+              ,layerWmsParams
               ,{isBaseLayer:true
                ,gutter:(layerConfig.cached == 'True') ? 0 : 5
                ,buffer:0
@@ -235,9 +242,7 @@ var lizMap = function() {
           // get the layer scale beccause, it has children
           var scales = getLayerScale(layer,null,null);
           layers.push(new OpenLayers.Layer.WMS(layerName,service
-              ,{layers:layer.name,version:'1.3.0',exceptions:'application/vnd.ogc.se_inimage'
-              ,format:(layerConfig.imageFormat) ? layerConfig.imageFormat : 'image/png'
-              ,transparent:true,dpi:96}
+              ,layerWmsParams
               ,{isBaseLayer:false
                ,minScale:scales.maxScale
                ,maxScale:scales.minScale
@@ -250,9 +255,7 @@ var lizMap = function() {
         else if (layerConfig.type == 'layer') {
         // creating the layer because it's a layer and has no children
           layers.push(new OpenLayers.Layer.WMS(layerName,service
-              ,{layers:layer.name,version:'1.3.0',exceptions:'application/vnd.ogc.se_inimage'
-              ,format:(layerConfig.imageFormat) ? layerConfig.imageFormat : 'image/png'
-              ,transparent:true,dpi:96}
+              ,layerWmsParams
               ,{isBaseLayer:false
                ,minScale:layerConfig.maxScale
                ,maxScale:layerConfig.minScale
