@@ -19,7 +19,7 @@ class lizmapConfig{
   
   // SERVICES
   // services properties
-  public $servicesPropertyList = array('wmsServerURL', 'cacheStorageType', 'defaultRepository');
+  public $servicesPropertyList = array('wmsServerURL', 'cacheStorageType', 'cacheExpiration', 'defaultRepository');
   // Wms map server
   public $wmsServerURL = '';
   // map cache server

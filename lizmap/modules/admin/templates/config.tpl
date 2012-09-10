@@ -8,6 +8,7 @@
     <dl>
       <dt>{@admin~admin.configuration.services.wmsServerURL.label@}</dt><dd>{$lizmapConfig->wmsServerURL}</dd>
       <dt>{@admin~admin.configuration.services.cacheStorageType.label@}</dt><dd>{$lizmapConfig->cacheStorageType}</dd>
+      <dt>{@admin~admin.configuration.services.cacheExpiration.label@}</dt><dd>{$lizmapConfig->cacheExpiration}</dd>
       <dt>{@admin~admin.configuration.services.defaultRepository.label@}</dt><dd>{$lizmapConfig->defaultRepository}</dd>
     </dl>
     

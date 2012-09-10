@@ -52,6 +52,7 @@ class lizmapCache {
       $crs = preg_replace('#[^a-zA-Z0-9_]#', '_', $params['crs']);
       $cacheName = 'lizmapCache_'.$repository.'_'.$project.'_'.$layers.'_'.$crs;
       $cacheStorageType = $lizmapConfig->cacheStorageType;
+      $cacheExpiration = $lizmapConfig->cacheExpiration;
       
       if($cacheStorageType == 'file'){
         // CACHE CONTENT INTO FILE SYSTEM
@@ -65,6 +66,7 @@ class lizmapCache {
         // Virtual cache profile parameter
         $cacheParams = array(
           "driver"=>"file",
+          "ttl"=>$cacheExpiration,
           "cache_dir"=>$cacheDirectory,
           "file_locking"=>True,
           "directory_level"=>"5",
@@ -93,6 +95,7 @@ class lizmapCache {
         // Virtual jdb profile corresponding to the layer database
         $jdbParams = array(
           "driver"=>"pdo",
+          "ttl"=>$cacheExpiration,
           "dsn"=>$cachePdoDsn,
           "user"=>"cache",
           "password"=>"cache"
