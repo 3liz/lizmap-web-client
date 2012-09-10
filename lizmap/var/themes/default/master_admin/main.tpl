@@ -8,8 +8,8 @@
 {meta_html csstheme 'css/admin.css'}
 
 {meta_html js $j_basepath.'js/jquery-1.8.0.min.js'}
-{meta_html js $j_basepath.'js/jquery-ui-1.8.23.custom.min.js'}
 {meta_html js $j_basepath.'js/bootstrap.js'}
+{meta_html js $j_basepath.'js/jquery-ui-1.8.23.custom.min.js'}
 
 <div id="header" class="navbar navbar-fixed-top">
   <div id="logo">
