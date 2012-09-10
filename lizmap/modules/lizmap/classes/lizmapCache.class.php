@@ -117,7 +117,7 @@ class lizmapCache {
       return jCache::call( 
         array('lizmapCache', __FUNCTION__ ), 
         array( $repository, $project, $params, $lizmapConfig, false ),
-        null, 
+        $cacheExpiration, 
         $cacheName
       );
     }
