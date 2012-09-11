@@ -16,7 +16,7 @@ modulesPath="lib:jelix-admin-modules/,lib:jelix-modules/,app:modules/,app:lizmap
 
 
 
-[coord*s]
+[coordplugins]
 ;name = file_ini_name or 1
 ;magicquotes = 1
 autolocale=autolocale.coord.ini.php
