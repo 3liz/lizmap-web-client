@@ -40,6 +40,26 @@ var lizMap = function() {
    * {object} The layer's tree
    */
   var tree = {config:{type:'group'}};
+
+  /**
+   * PRIVATE function: cleanName
+   * cleaning layerName for class and layer
+   */
+  function cleanName(aName){
+    var accentMap = {
+        "à": "a",    "á": "a",    "â": "a",    "ã": "a",    "ä": "a",    "ç": "c",    "è": "e",    "é": "e",    "ê": "e",    "ë": "e",    "ì": "i",    "í": "i",    "î": "i",    "ï": "i",    "ñ": "n",    "ò": "o",    "ó": "o",    "ô": "o",    "õ": "o",    "ö": "o",    "ù": "u",    "ú": "u",    "û": "u",    "ü": "u",    "ý": "y",    "ÿ": "y",
+        "À": "A",    "Á": "A",    "Â": "A",    "Ã": "A",    "Ä": "A",    "Ç": "C",    "È": "E",    "É": "E",    "Ê": "E",    "Ë": "E",    "Ì": "I",    "Í": "I",    "Î": "I",    "Ï": "I",    "Ñ": "N",    "Ò": "O",    "Ó": "O",    "Ô": "O",    "Õ": "O",    "Ö": "O",    "Ù": "U",    "Ú": "U",    "Û": "U",    "Ü": "U",    "Ý": "Y", 
+        "-":" ", "'": " ", "(": " ", ")": " "};
+    var normalize = function( term ) {
+        var ret = "";
+        for ( var i = 0; i < term.length; i++ ) {
+            ret += accentMap[ term.charAt(i) ] || term.charAt(i);
+        }
+        return ret;
+    };
+    aName = normalize(aName);
+    return aName.replace(' ', '_', 'gi');
+  }
  
   /**
    * PRIVATE function: updateContentSize
@@ -204,7 +224,7 @@ var lizMap = function() {
     for (var i = 0, len = nested.nestedLayers.length; i<len; i++) {
       var layer = nested.nestedLayers[i];
       var layerConfig = config.layers[layer.name];
-      var layerName = layer.name.replace(' ','_');
+      var layerName = cleanName(layer.name);
 
       // if the layer is not the Overview and had a config
       // creating the {<OpenLayers.Layer.WMS>} and the tree node
@@ -379,6 +399,7 @@ var lizMap = function() {
     var proj = config.options.projection;
     Proj4js.defs[proj.ref]=proj.proj4;
     var projection = new OpenLayers.Projection(proj.ref);
+    OpenLayers.Projection.defaults[proj.ref] = projection;
 
     // get and define the max extent
     var bbox = config.options.bbox;
@@ -1270,9 +1291,11 @@ lizMap.events.on({
    ,'mapcreated':function(evt){
        //alert('mapcreated')
        //adding baselayers
+       var maxExtent = new OpenLayers.Bounds(OpenLayers.Projection.defaults['EPSG:3857'].maxExtent);
        if (('osmMapnik' in evt.config.options) && evt.config.options.osmMapnik == 'True') {
          evt.map.allOverlays = false;
          var osm = new OpenLayers.Layer.OSM('osm');
+         osm.maxExtent = maxExtent;
          var osmCfg = {
            "name":"osm"
              ,"title":"OpenStreetMap"
@@ -1289,6 +1312,7 @@ lizMap.events.on({
              "http://otile4.mqcdn.com/tiles/1.0.0/osm/${z}/${x}/${y}.png"]
              , {numZoomLevels: 19}
             );
+         mapquest.maxExtent = maxExtent;
          var mapquestCfg = {
            "name":"mapquest"
           ,"title":"MapQuest OSM"
@@ -1303,6 +1327,7 @@ lizMap.events.on({
              "Google Terrain",
              {type: google.maps.MapTypeId.TERRAIN, numZoomLevels: 16}
              );
+         gphy.maxExtent = maxExtent;
          var gphyCfg = {
            "name":"gphy"
           ,"title":"Google Terrain"
@@ -1316,6 +1341,7 @@ lizMap.events.on({
              "Google Satellite",
              {type: google.maps.MapTypeId.SATELLITE, numZoomLevels: 21}
              );
+         gsat.maxExtent = maxExtent;
          var gsatCfg = {
            "name":"gsat"
           ,"title":"Google Satellite"
@@ -1329,6 +1355,7 @@ lizMap.events.on({
              "Google Hybrid",
              {type: google.maps.MapTypeId.HYBRID, numZoomLevels: 20}
              );
+         ghyb.maxExtent = maxExtent;
          var ghybCfg = {
            "name":"ghyb"
           ,"title":"Google Hybrid"
@@ -1342,6 +1369,7 @@ lizMap.events.on({
              "Google Streets", // the default
              {numZoomLevels: 20}
              );
+         gmap.maxExtent = maxExtent;
          var gmapCfg = {
            "name":"gmap"
           ,"title":"Google Streets"
