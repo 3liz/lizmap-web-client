@@ -2,7 +2,7 @@
 ;for security reasons , don't remove or modify the first line
 ;this file doesn't list all possible properties. See lib/jelix/core/defaultconfig.ini.php for that
 
-locale=en_EN
+locale=en_US
 charset=UTF-8
 
 ; see http://www.php.net/manual/en/timezones.php for supported values
