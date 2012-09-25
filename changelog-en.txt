@@ -1,3 +1,15 @@
+h1. Version 2.1.0 - 25 Septembre 2012
+
+h2. Improvements
+
+* Translation of the web application and the administration back-end in *Italian* (thanks to Salvatore Larosa @lrssvt)
+
+h2. Bug fixing
+
+* Better handling of accentuated layers and groups names
+* Better support for spatial projections
+
+
 h1. Version 2.0.0 - September 2012
 
 h2. Manage project map with repositories

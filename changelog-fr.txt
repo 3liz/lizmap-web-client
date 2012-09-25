@@ -1,3 +1,15 @@
+h1. Version 2.1.0 - 25 Septembre 2012
+
+h2. Améliorations
+
+* Traduction de l'application web et de l'interface admin en *italien* (merci à Salvatore Larosa @lrssvt)
+
+h2. Corrections de bugs
+
+* Meilleure prise en compte des accents dans le nom des couches
+* Meilleur support des projections
+
+
 h1. Version 2.0.0 - Septembre 2012
 
 h2. Gestion des cartes par répertoire 
