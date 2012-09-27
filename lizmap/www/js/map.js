@@ -231,9 +231,6 @@ var lizMap = function() {
       if (layer.name!='Overview' && layerConfig) {
         var node = {name:layerName,config:layerConfig,parent:pNode};
         var service = wmsServerURL;
-        if (layerConfig.cached == 'True'){
-          service = cacheServerURL;
-        }
         var layerWmsParams = {
           layers:layer.name
           ,version:'1.3.0'

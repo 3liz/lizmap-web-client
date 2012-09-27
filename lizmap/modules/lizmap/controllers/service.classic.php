@@ -135,10 +135,9 @@ class serviceCtrl extends jController {
     
     // Get data
     $lizmapCache = jClasses::getService('lizmap~lizmapCache');
-    $cached = $this->intParam('cached');
     $params = $lizmapCache->normalizeParams($params);
-    $content = $lizmapCache->getServiceData($repository, $project, $params, $lizmapConfig, $cached);
-    
+    $content = $lizmapCache->getServiceData($repository, $project, $params, $lizmapConfig);
+
     // Return response
     $rep = $this->getResponse('binary');
     $rep->mimeType = 'image/png';
@@ -320,7 +319,7 @@ class serviceCtrl extends jController {
    
     // Request parameters
     $data = array("map"=>$lizmapConfig->repositoryData['path'].$project.".qgs");
-    $cached = false;
+
     // on garde les paramètres intéressants
     foreach($myParams as $param){
       if(!in_array($param, array('module', 'action', 'C', 'project'))){

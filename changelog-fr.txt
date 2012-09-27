@@ -12,13 +12,13 @@ h2. Corrections de bugs
 
 h1. Version 2.0.0 - Septembre 2012
 
-h2. Gestion des cartes par répertoire 
+h2. Gestion des cartes par répertoire
 
 Cette fonctionnalité existait dans la version précédente et est reprise ici pour référence.
 
 * *Possibilité de créer sur le serveur un ou plusieurs "répertoires" de projets*.
-Un répertoire LizMap correspond exactement à un répertoire du serveur dans lequel on stocke un ou plusieurs projets QGIS (et les données liées). 
-On peut donner un titre à un répertoire (Par exemple "test" pour le chemin /home/donnees/rep_test/ qui contiendrait des projets QGIS). 
+Un répertoire LizMap correspond exactement à un répertoire du serveur dans lequel on stocke un ou plusieurs projets QGIS (et les données liées).
+On peut donner un titre à un répertoire (Par exemple "test" pour le chemin /home/donnees/rep_test/ qui contiendrait des projets QGIS).
 LizMap permet d'accéder à une carte pour chaque projet de chaque répertoire, via une URL unique. Il est donc possible de donner un lien direct à une carte LizMap.
 
 * *Un fichier de configuration décrit les répertoires LizMap* : chemin du répertoire sur le serveur, titre du répertoire
@@ -30,36 +30,36 @@ Cela offre 2 avantages, le premier est d'avoir des URLs simple, le second est de
 
 h2. Administration
 
-* *Ajout d'un module d'administration* qui centralise les menus de configuration de LizMap. 
+* *Ajout d'un module d'administration* qui centralise les menus de configuration de LizMap.
 Pour accéder à ce module, il faut être un utilisateur enregistré et utiliser son login et mot de passe. Ce module d'administration contient :
 
  * *Un menu "Lizmap"*, où il est possible de modifier la configuration directement via des formulaires.
- 
-  * *services* : URL du serveur QGIS, URL d'un serveur optionnel de cache de tuiles, 
+
+  * *services* : URL du serveur QGIS, URL d'un serveur optionnel de cache de tuiles,
   * *répertoires* : création, modification, suppression et gestion des droits d'accès.
-  
+
  * *Un menu "Système"*, qui centralise les pages de gestion des utilisateurs, des groupes et des droits associés.
 
 * *Plusieurs niveaux d'accès* :
 
- * *groupe "admins"* : 
- les utilisateurs de ce groupe ont tous les droits. Un utilisateur *admin* (mot de passe "admin") a été créé dans ce groupe. C'est en quelque sorte le super-administrateur. 
+ * *groupe "admins"* :
+ les utilisateurs de ce groupe ont tous les droits. Un utilisateur *admin* (mot de passe "admin") a été créé dans ce groupe. C'est en quelque sorte le super-administrateur.
 Il est possible pour les utilisateurs du groupe *admins* de créer autant de groupes que souhaité, de créer des utilisateurs, et de modifier les droits pour chaque groupe.
- 
- * *groupe "lizadmins"* : 
- les utilisateurs de ce groupe peuvent configurer LizMap : gestion des services et des répertoires de projets. 
+
+ * *groupe "lizadmins"* :
+ les utilisateurs de ce groupe peuvent configurer LizMap : gestion des services et des répertoires de projets.
 Un utilisateur *lizadmin* (mot de passe "lizadmin") a été créé dans ce groupe.
 
 
 h2. Gestion des accès aux répertoires par groupe
 
-Il est maintenant possible de protéger facilement l'accès aux projets QGIS d'un répertoire. 
+Il est maintenant possible de protéger facilement l'accès aux projets QGIS d'un répertoire.
 
-* Un répertoire peut être configuré via l'admin pour être visible par un ou plusieurs groupes d'utilisateur. 
+* Un répertoire peut être configuré via l'admin pour être visible par un ou plusieurs groupes d'utilisateur.
 * Un utilisateur ne peut voir que les cartes contenues dans les répertoires accessibles pour les groupes auxquels il appartient. Les autres cartes sont protégées et non accessibles.
 * Les services WMS et WFS ne sont pas accessibles aux clients externe (SIG, navigateur, etc.) en dehors de l'application LizMap.
 * Il reste possible d'utiliser le service WMS via un client externe en passant les paramètres d'authentification de l'utilisateur (par exemple avec le menu de QGIS *Ajouter une couche WMS* )
-* Un groupe *anonymous* représente les utilisateurs non connectés, c'est-à-dire les visiteurs sans login ni mot de passe qui vont sur l'application LizMap. 
+* Un groupe *anonymous* représente les utilisateurs non connectés, c'est-à-dire les visiteurs sans login ni mot de passe qui vont sur l'application LizMap.
 On peut donner l'accès à un ou plusieurs répertoire à ce groupe *anonymous*, ce qui revient à rendre ces répertoires accessibles à tous.
 
 Dans la version de Lizmap fournie avec l'archive, nous avons créé par exemple un groupe *Intranet Demo Group* et un utilisateur *logintranet* (mot de passe "logintranet") appartenant à ce groupe. Nous avons créé un répertoire *intranet* et configuré son accès pour que seuls les groupes administrateurs et le groupe *Intranet Demo Group* y aient accès. Pour voir la carte *montpellier_intranet*, il faut être connecté en tant que *logintranet*. Sinon on est redirigé vers la page qui liste les projets et on ne peut accéder qu'aux cartes du répertoire *montpellier*
@@ -92,7 +92,7 @@ h2. Internationalisation de l'application
 * *détection automatique de la langue* du navigateur (bascule sur l'anglais si la langue n'est pas trouvé)
 * *ajout aisé de nouvelles langues*, puisque les traductions sont enregistrées dans des fichiers textes regroupées par langue.
 * *basculer sur une autre langue* en passant un paramètre (lang=fr_FR ou lang=en_EN)
- 
+
 
 h2. Fonctionnalités de la carte en lien avec QGIS server
 

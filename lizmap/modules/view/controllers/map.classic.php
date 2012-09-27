@@ -86,7 +86,6 @@ class mapCtrl extends jController {
     $rep->addJSCode("var dictionaryUrl = '".jUrl::get('view~translate:getDictionary', array('property'=>'map'))."';");
     $rep->addJSCode("var cfgUrl = '".jUrl::get('lizmap~service:getProjectConfig', array('repository'=>$repository, 'project'=>$project))."';");
     $rep->addJSCode("var wmsServerURL = '".jUrl::get('lizmap~service:index', array('repository'=>$repository, 'project'=>$project))."';");
-    $rep->addJSCode("var cacheServerURL = '".jUrl::get('lizmap~service:index', array('repository'=>$repository, 'project'=>$project, 'cached'=>1))."';");
 
     $rep->body->assign('repositoryLabel', $lizmapConfig->repositoryData['label']);
     $rep->body->assign('isConnected', jAuth::isConnected());
