@@ -28,6 +28,7 @@ class lizmapCache {
         $data[strtolower($key)] = $val;
       }
     }
+    ksort($data);
     return $data;
   }
 
@@ -57,6 +58,7 @@ class lizmapCache {
       $dataFromCache = $string2bool[$configLayer->cached];
 
     if($dataFromCache) {
+
       // Set cache configuration
       $layers = str_replace(',', '_', $params['layers']);
       $crs = preg_replace('#[^a-zA-Z0-9_]#', '_', $params['crs']);
@@ -76,13 +78,13 @@ class lizmapCache {
         // Virtual cache profile parameter
         $cacheParams = array(
           "driver"=>"file",
-          "ttl"=>$cacheExpiration,
           "cache_dir"=>$cacheDirectory,
           "file_locking"=>True,
           "directory_level"=>"5",
           "directory_umask"=>"0750",
           "file_name_prefix"=>"lizmap_",
-          "cache_file_umask"=>"0650"
+          "cache_file_umask"=>"0650",
+          "ttl"=>$cacheExpiration
         );
 
         // Create the virtual cache profile
@@ -105,7 +107,6 @@ class lizmapCache {
         // Virtual jdb profile corresponding to the layer database
         $jdbParams = array(
           "driver"=>"pdo",
-          "ttl"=>$cacheExpiration,
           "dsn"=>$cachePdoDsn,
           "user"=>"cache",
           "password"=>"cache"
@@ -117,12 +118,15 @@ class lizmapCache {
         // Virtual cache profile parameter
         $cacheParams = array(
           "driver"=>"db",
-          "dbprofile"=>$cacheJdbName
+          "dbprofile"=>$cacheJdbName,
+          "ttl"=>$cacheExpiration,
         );
 
         // Create the virtual cache profile
         jProfiles::createVirtualProfile('jcache', $cacheName, $cacheParams);
       }
+
+#jLog::log("dataFromCache  : ".$params['bbox']);
 
       return jCache::call(
         array('lizmapCache', __FUNCTION__ ),
@@ -132,7 +136,7 @@ class lizmapCache {
       );
     }
 
-
+#jLog::log("ask Qgis : ".$params['bbox']);
 
     // Construction of the WMS url : base url + parameters
     $url = $lizmapConfig->wmsServerURL.'?';

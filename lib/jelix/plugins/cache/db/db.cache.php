@@ -11,7 +11,7 @@
 
 /**
 * cache driver for data stored in a database
-*   Warning : 
+*   Warning :
 *   Beware about the time returned by the DBMS of the server and the server PHP client : possible asynchronous time (particulary
 *   in case of use of multiple servers, incoherent data can be involved).
 * @package jelix
@@ -26,7 +26,7 @@ class dbCacheDriver implements jICacheDriver {
     */
     protected $_dao = 'jelix~jcache';
     /**
-    * connexion dbprofile 
+    * connexion dbprofile
     * @var string
     * @access protected
     */
@@ -94,7 +94,7 @@ class dbCacheDriver implements jICacheDriver {
             if (($rs = $dao->getDataList($key)) === FALSE) {
                 return false;
             }
-            
+
             $data = array();
             foreach($rs as $cache){
                 if(is_null($cache->date) || (strtotime($cache->date) > time())){
@@ -155,6 +155,7 @@ class dbCacheDriver implements jICacheDriver {
                 }
                 $date = date("Y-m-d H:i:s", $ttl);
                 $n = $dao->updateFullData($key, $var, $date);
+                jLog::log("ttl = $ttl - key= $key - date = $date");
                 break;
         }
         if ($n==0) {

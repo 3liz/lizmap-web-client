@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <form xmlns="http://jelix.org/ns/forms/1.1">
- 
+
 <input ref="wmsServerURL" type="string" required="true" defaultvalue="http://127.0.0.1/cgi-bin/qgis_mapserv.fcgi">
 	<label locale="admin~admin.form.admin_services.wmsServerURL.label"/>
 </input>
@@ -11,7 +11,7 @@
   <item value="file" locale="admin~admin.form.admin_services.cacheStorageType.file.label"/>
 </menulist>
 
-<input ref="cacheExpiration" type="integer" required="true" defaultvalue="0">
+<input ref="cacheExpiration" type="integer" required="true" defaultvalue="2592000">
 	<label locale="admin~admin.form.admin_services.cacheExpiration.label"/>
 </input>
 
