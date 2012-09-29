@@ -63,8 +63,12 @@ class lizmapCache {
       $layers = str_replace(',', '_', $params['layers']);
       $crs = preg_replace('#[^a-zA-Z0-9_]#', '_', $params['crs']);
       $cacheName = 'lizmapCache_'.$repository.'_'.$project.'_'.$layers.'_'.$crs;
+      // Storage type
       $cacheStorageType = $lizmapConfig->cacheStorageType;
+      // Expiration time : take default one or layer specified
       $cacheExpiration = (int)$lizmapConfig->cacheExpiration;
+      if(property_exists($configLayer, 'cacheExpiration'))
+        $cacheExpiration = (int)$configLayer->cacheExpiration;
 
       if($cacheStorageType == 'file'){
         // CACHE CONTENT INTO FILE SYSTEM
