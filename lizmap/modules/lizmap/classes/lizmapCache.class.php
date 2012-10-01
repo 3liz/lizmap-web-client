@@ -72,10 +72,21 @@ class lizmapCache {
 
     // Return cache if asked
     $dataFromCache = False;
-    // If the method has not been initiated by the jCache::call method
-    // Check if the user wants the cache for this layer
+    // If the method has not been initiated by the jCache::call method (with avoidCache=False):
+    // Test if the user wants the cache for this layer
     if(!$avoidCache)
       $dataFromCache = $string2bool[$configLayer->cached];
+
+    // Test if the client asks for small and square tiles
+    // if not it is a classical qgis -> avoid cache and metatile
+    $wmsClient = 'web';
+    if($params['width'] != $params['height'] and ($params['width'] > 300 or $params['height'] > 300)){
+      $wmsClient = 'gis';
+      // Avoid cache
+      if($dataFromCache)
+        $dataFromCache = False;
+    }
+
 
     if($dataFromCache) {
 
@@ -167,6 +178,7 @@ class lizmapCache {
         sys_get_temp_dir().'/'.$repository.'/'.$project.'/'.$layers.'_'.$crs.'.log'
       );
 
+
     // Construction of the WMS url : base url + parameters
     $url = $lizmapConfig->wmsServerURL.'?';
 
@@ -174,10 +186,11 @@ class lizmapCache {
     $params["map"] = $lizmapConfig->repositoryData['path'].$project.".qgs";
 
     // Metatile : if needed, change the bbox
+    // Avoid metatiling when the cache is not active for the layer
     $metatileSize = False;
     if(property_exists($configLayer, 'metatileSize'))
       $metatileSize = $configLayer->metatileSize;
-    if($metatileSize and $string2bool[$configLayer->cached]){
+    if($metatileSize and $string2bool[$configLayer->cached] and $wmsClient == 'web'){
       # Metatile Size
       $metatileSizeExp = explode(',', $metatileSize);
       $metatileSizeX = (int) $metatileSizeExp[0];
@@ -229,7 +242,7 @@ class lizmapCache {
     curl_close($ch);
 
     // Metatile : if needed, crop the metatile into a single tile
-    if($metatileSize and $string2bool[$configLayer->cached]){
+    if($metatileSize and $string2bool[$configLayer->cached] and $wmsClient == 'web'){
 
       # Save curl content into an image var
       $original = imagecreatefromstring($content);
