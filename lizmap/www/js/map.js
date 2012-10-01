@@ -8,7 +8,7 @@
 * @license    Mozilla Public License : http://www.mozilla.org/MPL/
 */
 
- 
+
 var lizMap = function() {
   /**
    * PRIVATE Property: config
@@ -48,7 +48,7 @@ var lizMap = function() {
   function cleanName(aName){
     var accentMap = {
         "à": "a",    "á": "a",    "â": "a",    "ã": "a",    "ä": "a",    "ç": "c",    "è": "e",    "é": "e",    "ê": "e",    "ë": "e",    "ì": "i",    "í": "i",    "î": "i",    "ï": "i",    "ñ": "n",    "ò": "o",    "ó": "o",    "ô": "o",    "õ": "o",    "ö": "o",    "ù": "u",    "ú": "u",    "û": "u",    "ü": "u",    "ý": "y",    "ÿ": "y",
-        "À": "A",    "Á": "A",    "Â": "A",    "Ã": "A",    "Ä": "A",    "Ç": "C",    "È": "E",    "É": "E",    "Ê": "E",    "Ë": "E",    "Ì": "I",    "Í": "I",    "Î": "I",    "Ï": "I",    "Ñ": "N",    "Ò": "O",    "Ó": "O",    "Ô": "O",    "Õ": "O",    "Ö": "O",    "Ù": "U",    "Ú": "U",    "Û": "U",    "Ü": "U",    "Ý": "Y", 
+        "À": "A",    "Á": "A",    "Â": "A",    "Ã": "A",    "Ä": "A",    "Ç": "C",    "È": "E",    "É": "E",    "Ê": "E",    "Ë": "E",    "Ì": "I",    "Í": "I",    "Î": "I",    "Ï": "I",    "Ñ": "N",    "Ò": "O",    "Ó": "O",    "Ô": "O",    "Õ": "O",    "Ö": "O",    "Ù": "U",    "Ú": "U",    "Û": "U",    "Ü": "U",    "Ý": "Y",
         "-":" ", "'": " ", "(": " ", ")": " "};
     var normalize = function( term ) {
         var ret = "";
@@ -60,7 +60,7 @@ var lizMap = function() {
     aName = normalize(aName);
     return aName.replace(' ', '_', 'gi');
   }
- 
+
   /**
    * PRIVATE function: updateContentSize
    * update the content size
@@ -80,7 +80,7 @@ var lizMap = function() {
 
     updateMapSize();
   }
- 
+
   /**
    * PRIVATE function: updateMapSize
    * update the map size
@@ -98,7 +98,7 @@ var lizMap = function() {
 
     updateSwitcherSize();
   }
-  
+
   /**
    * PRIVATE function: updateSwitcherSize
    * update the switcher size
@@ -142,7 +142,7 @@ var lizMap = function() {
    * name - {text} the layer name
    * withScale - {boolean} url with scale parameter
    *
-   * Dependencies: 
+   * Dependencies:
    * wmsServerUrl
    *
    * Returns:
@@ -178,7 +178,7 @@ var lizMap = function() {
    * minScale - {Float} the nested min scale
    * maxScale - {Float} the nested max scale
    *
-   * Dependencies: 
+   * Dependencies:
    * config
    *
    * Returns:
@@ -213,7 +213,7 @@ var lizMap = function() {
    * Parameters:
    * nested - {Object} a capability layer
    * pNode - {Object} the nested tree node
-   * 
+   *
    * Dependencies:
    * config
    * layers
@@ -240,7 +240,7 @@ var lizMap = function() {
         };
         if (layerWmsParams.format != 'image/jpeg')
           layerWmsParams['transparent'] = true;
-          
+
         if (layerConfig.baseLayer == 'True') {
         // creating the base layer
           baselayers.push(new OpenLayers.Layer.WMS(layerName,service
@@ -250,7 +250,7 @@ var lizMap = function() {
                ,buffer:0
                ,singleTile:(layerConfig.singleTile == 'True')
               }));
-        
+
         }
         else if (layerConfig.type == 'layer' && layer.nestedLayers.length != 0) {
         // creating the layer because it's a layer and has children
@@ -297,7 +297,7 @@ var lizMap = function() {
    * PRIVATE function: analyseNode
    * analyse Node Config
    * define if the node has to be a child of his parent node
-   * 
+   *
    * Parameters:
    * aNode - {Object} a node config
    *
@@ -363,7 +363,7 @@ var lizMap = function() {
       var legendLink = '';
       if (childConfig.link)
         legendLink = childConfig.link;
-      if (legendLink != '' )        
+      if (legendLink != '' )
         html += '<td><button class="link" name="link" title="'+dictionary['tree.button.link']+'" value="'+legendLink+'"/></td>';
       else
         html += '<td></td>';
@@ -409,6 +409,7 @@ var lizMap = function() {
     scales.sort();
 
     // creating the map
+    OpenLayers.Util.DEFAULT_PRECISION=20; // default is 14 : change needed to avoid rounding problem with cache
     map = new OpenLayers.Map('map'
       ,{controls:[new OpenLayers.Control.Navigation(),new OpenLayers.Control.ZoomBox({alwaysZoom:true})]
        ,eventListeners:{
@@ -491,20 +492,20 @@ var lizMap = function() {
                });
              }
            }
-		   
-	
+
+
            //slider
            $('#navbar div.slider').slider("value",this.getZoom());
-           
+
            //pan button
            $('#navbar button.pan').click();
 
            updateSwitcherSize();
-           
+
 //           alert('scale = ' + map.getScale() + '\nresolution=' + map.getResolution());
          }
         }
-		
+
        ,maxExtent:extent
        ,maxScale: scales.length == 0 ? config.options.minScale : "auto"
        ,minScale: scales.length == 0 ? config.options.maxScale : "auto"
@@ -515,7 +516,7 @@ var lizMap = function() {
        ,allOverlays:(baselayers.length == 0)
     });
     map.addControl(new OpenLayers.Control.Attribution({div:document.getElementById('attribution')}));
-	
+
     // add handler to update the map size
     $(window).resize(function() {
       updateContentSize();
@@ -554,7 +555,7 @@ var lizMap = function() {
       updateContentSize();
     });
 
-    
+
   // === Private functions
   var options = {
     childPrefix : "child-of-"
@@ -979,7 +980,7 @@ var lizMap = function() {
 
   function addFeatureInfo() {
       var info = new OpenLayers.Control.WMSGetFeatureInfo({
-            url: wmsServerURL, 
+            url: wmsServerURL,
             title: 'Identify features by clicking',
             queryVisible: true,
             infoFormat: 'text/xml',
@@ -1014,7 +1015,7 @@ var lizMap = function() {
                             var urlRegex = /(ftp|http|https):\/\/(\w+:{0,1}\w*@)?(\S+)(:[0-9]+)?(\/|\/([\w#!:.?+=&%@!\-\/]))?/
                             var emailRegex = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/;
                             var imageRegex = /\.(jpg|jpeg|png|gif|bmp)$/i;
-                            
+
                             var featText = '<tr><th class="left">'+attName+'</th><td>'+attValue+'</td></tr>';
                             if(urlRegex.test(attValue) && !imageRegex.test(attValue))
                               featText = '<tr><th class="left">'+attName+'</th><td><a href="'+attValue+'" target="_blank">'+attValue+'<a></td></tr>';
@@ -1030,7 +1031,7 @@ var lizMap = function() {
                         text += '</div>';
                       }
                     }
-                    
+
 
                     if (text != ''){
                       if (map.popups.length != 0)
@@ -1040,7 +1041,7 @@ var lizMap = function() {
                        	,'contentDisplayClass': 'olPopupContent lizmapPopupContent'
                       });
                       var popup = new OpenLayers.Popup.LizmapAnchored(
-                        "liz_layer_popup", 
+                        "liz_layer_popup",
                         map.getLonLatFromPixel(event.xy),
                         null,
                         text,
@@ -1090,7 +1091,7 @@ var lizMap = function() {
      info.activate();
      return info;
   }
-  
+
   /**
    * PRIVATE function: parseData
    * parsing capability
@@ -1136,7 +1137,7 @@ var lizMap = function() {
     baselayers: null,
     /**
      * Property: events
-     * {<OpenLayers.Events>} An events object that handles all 
+     * {<OpenLayers.Events>} An events object that handles all
      *                       events on the lizmap
      */
     events: null,
@@ -1226,7 +1227,7 @@ var lizMap = function() {
             }
           });
           self.events.triggerEvent("uicreated", self);
-          
+
           $('body').css('cursor', 'auto');
           $('#loading').dialog('close');
         });
@@ -1237,8 +1238,8 @@ var lizMap = function() {
   // initializing the lizMap events
   obj.events = new OpenLayers.Events(
       obj, null,
-      ['treecreated','mapcreated','layersadded','uicreated'], 
-      true, 
+      ['treecreated','mapcreated','layersadded','uicreated'],
+      true,
       {includeXY: true}
     );
   return obj;
@@ -1268,7 +1269,7 @@ lizMap.events.on({
          var extent = new OpenLayers.Bounds(Number(bbox[0]),Number(bbox[1]),Number(bbox[2]),Number(bbox[3]));
          extent = extent.transform(projection,projOSM);
          bbox = extent.toArray();
-         
+
          evt.config.options.projection = proj;
          evt.config.options.bbox = bbox;
          evt.config.options.zoomLevelNumber = 16;
@@ -1302,7 +1303,7 @@ lizMap.events.on({
        }
        if (('osmMapquest' in evt.config.options) && evt.config.options.osmMapquest == 'True') {
          evt.map.allOverlays = false;
-         var mapquest = new OpenLayers.Layer.OSM('mapquest', 
+         var mapquest = new OpenLayers.Layer.OSM('mapquest',
             ["http://otile1.mqcdn.com/tiles/1.0.0/osm/${z}/${x}/${y}.png",
              "http://otile2.mqcdn.com/tiles/1.0.0/osm/${z}/${x}/${y}.png",
              "http://otile3.mqcdn.com/tiles/1.0.0/osm/${z}/${x}/${y}.png",
@@ -1333,7 +1334,7 @@ lizMap.events.on({
          evt.baselayers.push(gphy);
        }
        if (('googleSatellite' in evt.config.options) && evt.config.options.googleSatellite == 'True') {
-         evt.map.allOverlays = false; 
+         evt.map.allOverlays = false;
          var gsat = new OpenLayers.Layer.Google(
              "Google Satellite",
              {type: google.maps.MapTypeId.SATELLITE, numZoomLevels: 21}
@@ -1386,7 +1387,7 @@ lizMap.events.on({
 $(document).ready(function () {
   // start waiting
   $('body').css('cursor', 'wait');
-  $('#loading').dialog({ 
+  $('#loading').dialog({
     modal: true
     , draggable: false
     , resizable: false

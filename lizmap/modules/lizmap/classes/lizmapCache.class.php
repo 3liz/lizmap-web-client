@@ -28,7 +28,20 @@ class lizmapCache {
         $data[strtolower($key)] = $val;
       }
     }
+
+    // Sort parameters by key
     ksort($data);
+
+    // Round bbox params to avoid rounding issues with cache
+    $bboxExp = explode(',', $data['bbox']);
+    $nBbox = array();
+    foreach($bboxExp as $val){
+      $val = (float)$val;
+      $val = round($val, 6);
+      $nBbox[] = (string)$val;
+    }
+    $data['bbox'] = implode(',', $nBbox);
+
     return $data;
   }
 
@@ -38,10 +51,10 @@ class lizmapCache {
   * @param string $project The project.
   * @param array $params Array of parameters.
   * @param object $lizmapConfig Lizmap configuration object.
-  * @param boolean $dataFromCache If true, get data from the cache, else from the map server.
+  * @param boolean $avoidCache If true, get data from Qgis server (used by the jCache::call method when cache not found ).
   * @return array $data Normalized and filtered array.
   */
-  static public function getServiceData( $repository, $project, $params, $lizmapConfig, $dataFromCache=true ) {
+  static public function getServiceData( $repository, $project, $params, $lizmapConfig, $avoidCache=false ) {
 
     // Read config file for the current project
     $configPath = $lizmapConfig->repositoryData['path'].$project.'.qgs.cfg';
@@ -53,15 +66,20 @@ class lizmapCache {
     // Table to transform boolean string into boolean
     $string2bool = array('false'=>False, 'False'=>False, 'True'=>True, 'true'=>True);
 
+    // request key data
+    $layers = str_replace(',', '_', $params['layers']);
+    $crs = preg_replace('#[^a-zA-Z0-9_]#', '_', $params['crs']);
+
     // Return cache if asked
-    if($dataFromCache)
+    $dataFromCache = False;
+    // If the method has not been initiated by the jCache::call method
+    // Check if the user wants the cache for this layer
+    if(!$avoidCache)
       $dataFromCache = $string2bool[$configLayer->cached];
 
     if($dataFromCache) {
 
       // Set cache configuration
-      $layers = str_replace(',', '_', $params['layers']);
-      $crs = preg_replace('#[^a-zA-Z0-9_]#', '_', $params['crs']);
       $cacheName = 'lizmapCache_'.$repository.'_'.$project.'_'.$layers.'_'.$crs;
       // Storage type
       $cacheStorageType = $lizmapConfig->cacheStorageType;
@@ -130,17 +148,24 @@ class lizmapCache {
         jProfiles::createVirtualProfile('jcache', $cacheName, $cacheParams);
       }
 
-#jLog::log("dataFromCache  : ".$params['bbox']);
-
+      // Call the cache : if not found, this method will use the method getServiceData with last param to false to force request to qgis
       return jCache::call(
         array('lizmapCache', __FUNCTION__ ),
-        array( $repository, $project, $params, $lizmapConfig, false ),
+        array( $repository, $project, $params, $lizmapConfig, true ),
         $cacheExpiration,
         $cacheName
       );
     }
 
-#jLog::log("ask Qgis : ".$params['bbox']);
+    // Log when no cache hit
+    $debug = False;
+    if($debug and $avoidCache)
+      error_log(
+        md5(serialize(array('lizmapCache', __FUNCTION__ )).serialize(array( $repository, $project, $params, $lizmapConfig, true ))).' : '.json_encode($params).'
+',
+        3,
+        sys_get_temp_dir().'/'.$repository.'/'.$project.'/'.$layers.'_'.$crs.'.log'
+      );
 
     // Construction of the WMS url : base url + parameters
     $url = $lizmapConfig->wmsServerURL.'?';

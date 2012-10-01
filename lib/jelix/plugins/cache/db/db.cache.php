@@ -155,7 +155,6 @@ class dbCacheDriver implements jICacheDriver {
                 }
                 $date = date("Y-m-d H:i:s", $ttl);
                 $n = $dao->updateFullData($key, $var, $date);
-                jLog::log("ttl = $ttl - key= $key - date = $date");
                 break;
         }
         if ($n==0) {
