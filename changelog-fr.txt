@@ -1,3 +1,24 @@
+h1. Version 2.2.0 - 1 Octobre 2012
+
+h2. Nouvelles fonctionnalités
+
+* *Cache : support du metatile*.
+On peut définir via le plugin Lizmap, pour chaque couche avec le cache activé, si on souhaite paramétrer le metatile. Le principe est de demander au serveur QGIS Server une image plus grande et de la redécouper ensuite. Cela permet d'éviter les problèmes d'étiquettes tronquées ou de hachures brisées aux limites de tuiles. On peut par exemple définir "5,5".
+
+h2. Améliorations
+
+* *Cache* : possibilité de définir la durée d'expiration du cache *pour chaque couche*.
+Si cette durée n'est pas définie au niveau de la couche, alors on utilise le paramètre par défaut (défini dans la configuration de Lizmap Web Client)
+* *Cache : Détection simple du client WMS*
+pour ne pas utiliser le cache et le metatile pour les clients de type logiciel SIG, car les emprises des tuiles sont alors uniques.
+* Meilleur support de sqlite 2, base de données utilisée pour le stockage des paramètres de groupes et d'utilisateurs (remplacement de "group_concat" par du code PHP)
+
+h2. Corrections de bugs
+
+* *Cache* : meilleure gestion des arrondis pour éviter une utilisation inadéquate du cache.
+
+
+
 h1. Version 2.1.0 - 25 Septembre 2012
 
 h2. Améliorations

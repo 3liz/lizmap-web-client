@@ -1,3 +1,24 @@
+h1. Version 2.2.0 - 1 octobre 2012
+
+h2. New features
+
+* *Cache: support metatile option*
+The user can now choose for each cached layer if he wants to use metatiling or not. Activating metatile will request larger tiles from QGIS Server, and split them up. This will avoid to have map tiles with truncated and redondent labels. The user defines the metatile size in Lizmap plugin, for example "5,5" which will ask for images 5 times larger.
+
+h2. Improvements
+
+* *Cache* : the cache expiration time can now be set *layer per layer*, by using the Lizmap plugin.
+If not set, Lizmap Web Client will use the default one set in lizmap configuration (Admin back-end -> Services)
+* *Cache : simple detection of wms client type*
+We try to avoid using cache and metatile options when the client is not a web client as OpenLayers, but a generic Gis software which will ask for image of arbitrary size. For now, cached layers shall preferentially not been requested by external WMS clients (or the cache size will increase unnecessarily in the server)
+* *Better support for sqlite2*, the database in which we store groups and users, by avoiding the use of "group_concat" method (available only for sqlite3)
+
+h2. Bug fixing
+
+* *Cache* : round bbox parameters with 6 digits after the comma to avoid double or triple cache for the same tiles.
+
+
+
 h1. Version 2.1.0 - 25 Septembre 2012
 
 h2. Improvements
@@ -49,7 +70,7 @@ The admins can create as many groups as needed, create users and modify the righ
  * *group "lizadmins"*
  The users of this group have access to Lizmap configuration menu. They can manage Lizmap services and repositories.
 A user *lizadmin* (password "lizadmin") has been created in this group.
- 
+
 h2. Access rights per repository
 
 Lizmap administrators can now easily restrict access to repositories' maps per group.
@@ -84,10 +105,10 @@ h2. Brand new interface
  * A small description of each project is written under the thumbnail: title, abstract, projection, extent, etc.
 
 
-h2. Internationalisation 
+h2. Internationalisation
 
 * *2 languages proposed* : English and French
-* *automatic detection of the browser language* 
+* *automatic detection of the browser language*
 * *easy addition of new languages* as the translations are stored in text files grouped by language.
 * *change language during a session* by adding a parameter: lang=fr_FR or lang=en_EN for example.
 
