@@ -136,7 +136,6 @@ class serviceCtrl extends jController {
     // Get data
     $lizmapCache = jClasses::getService('lizmap~lizmapCache');
     $params = $lizmapCache->normalizeParams($params);
-#jLog::log("request : ".$params['bbox']);
     $content = $lizmapCache->getServiceData($repository, $project, $params, $lizmapConfig);
 
     // Return response

@@ -13,6 +13,7 @@
 
 <input ref="cacheExpiration" type="integer" required="true" defaultvalue="2592000">
 	<label locale="admin~admin.form.admin_services.cacheExpiration.label"/>
+	<help locale="admin~admin.form.admin_services.cacheExpiration.help"/>
 </input>
 
 <submit ref="_submit">
