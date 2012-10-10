@@ -4,9 +4,9 @@
     <mapcanvas>
         <units>degrees</units>
         <extent>
-            <xmin>3.842437</xmin>
+            <xmin>3.842400</xmin>
             <ymin>43.590989</ymin>
-            <xmax>3.913439</xmax>
+            <xmax>3.913476</xmax>
             <ymax>43.635697</ymax>
         </extent>
         <projections>1</projections>
@@ -981,12 +981,14 @@
         </maplayer>
     </projectlayers>
     <properties>
-        <WMSServiceAbstract type="QString">Présentation des lignes de bus, de tramway et des arrêts enregistrés dans la base de données géographique libre OpenStreetMap</WMSServiceAbstract>
-        <WMSContactPerson type="QString"></WMSContactPerson>
+        <WMSServiceAbstract type="QString">Demo project with bus and tramway lines in Montpellier, France.
+Data is licensed under ODbl, OpenStreetMap contributors</WMSServiceAbstract>
+        <WMSOnlineResource type="QString">http://www.3liz.com/lizmap.html</WMSOnlineResource>
+        <WMSContactPerson type="QString">3liz</WMSContactPerson>
         <Identify>
             <disabledLayers type="QStringList"/>
         </Identify>
-        <WMSContactPhone type="QString"></WMSContactPhone>
+        <WMSContactPhone type="QString">+334 67 16 64 51</WMSContactPhone>
         <SpatialRefSys>
             <ProjectCRSProj4String type="QString">+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs +towgs84=0,0,0</ProjectCRSProj4String>
             <ProjectCrs type="QString">EPSG:4326</ProjectCrs>
@@ -1005,17 +1007,18 @@
         <Paths>
             <Absolute type="bool">false</Absolute>
         </Paths>
-        <WMSContactMail type="QString"></WMSContactMail>
+        <WMSContactMail type="QString">info@3liz.com</WMSContactMail>
         <WMSCrsList type="QStringList">
             <value>EPSG:4326</value>
             <value>EPSG:900913</value>
         </WMSCrsList>
+        <WFSLayers type="QStringList"/>
         <PositionPrecision>
             <DecimalPlaces type="int">2</DecimalPlaces>
             <Automatic type="bool">true</Automatic>
         </PositionPrecision>
         <WMSAddWktGeometry type="bool">false</WMSAddWktGeometry>
-        <WMSContactOrganization type="QString"></WMSContactOrganization>
+        <WMSContactOrganization type="QString">3liz</WMSContactOrganization>
         <WMSServiceCapabilities type="bool">true</WMSServiceCapabilities>
         <WMSServiceTitle type="QString">Montpellier - Transports</WMSServiceTitle>
         <WMSExtent type="QStringList">

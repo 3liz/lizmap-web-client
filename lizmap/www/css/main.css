@@ -23,7 +23,10 @@ body {
 #logo h1 {
   margin-left : 85px;
   font-size : 2.7em;
-  margin-top : 0.75em;
+/*  margin-top : 0.75em;*/
+  overflow:hidden;
+  white-space:nowrap;
+  text-overflow:ellipsis;
 }
 
 #auth {

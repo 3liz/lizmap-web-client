@@ -24,13 +24,13 @@ class myHtmlResponse extends jResponseHtml {
     $bp = $gJConfig->urlengine['basePath'];
 
     $this->title = 'LizMap list';
-    
+
     // CSS
     $this->addCSSLink($bp.'css/jquery-ui-1.8.23.custom.css');
     $this->addCSSLink($bp.'css/bootstrap.css');
-    $this->addCSSLink($bp.'css/bootstrap-responsive.css');
     $this->addCSSLink($bp.'css/main.css');
     $this->addCSSLink($bp.'css/view.css');
+    $this->addCSSLink($bp.'css/bootstrap-responsive.css');
 
     // META
     $this->addMetaDescription('');

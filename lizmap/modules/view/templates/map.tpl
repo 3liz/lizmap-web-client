@@ -11,6 +11,7 @@
   <div id="auth" class="navbar-inner">
     <ul class="nav pull-right">
       <li><a href="{jurl 'view~default:index'}">{@view~default.repository.list.title@}</a></li>
+      <li><a id="displayMetadata">{@view~map.metadata.link.label@}</a></li>
       {if $isConnected}
       <li class="dropdown">
         <a class="dropdown-toggle" data-toggle="dropdown" href="#">
@@ -30,7 +31,9 @@
   </div>
 </div>
 <div id="content">
+
   <span class="ui-icon ui-icon-open-menu" style="display:none;" title="{@view~map.menu.show.hover@}"></span>
+
   <div id="menu">
     <div id="close-menu" title="{@view~map.menu.close.hover@}">
       <span class="ui-icon ui-icon-close-menu"></span>
@@ -81,7 +84,76 @@
       {image 'css/img/logo_footer.png'}
     </div>
   </div>
+
+  <div id="metadata">
+    <div class="row">
+      <div class="span4 offset1">
+        <h2>{@view~map.metadata.h2.illustration@}</h2>
+        <p>
+          <img src="{jurl 'view~media:illustration', array('repository'=>$repository,'project'=>$project)}" alt="project image" class="img-polaroid liz-project-img">
+        </p>
+      </div>
+
+      <div class="span5 offset1">
+        <h2>{@view~map.metadata.h2.description@}</h2>
+        <p>
+          <dl class="dl-horizontal">
+            <dt>{@view~map.metadata.description.title@}</dt>
+            <dd>{$WMSServiceTitle}</dd>
+            <dt>{@view~map.metadata.description.abstract@}</dt>
+            <dd>{$WMSServiceAbstract}</dd>
+          </dl>
+        </p>
+      </div>
+
+      <div class="span4 offset1">
+        <h2>{@view~map.metadata.h2.properties@}</h2>
+        <p>
+          <dl class="dl-horizontal">
+            <dt>{@view~map.metadata.properties.projection@}</dt>
+            <dd><small>{$ProjectCrs}</small></dd>
+            <dt>{@view~map.metadata.properties.extent@}</dt>
+            <dd><small>{$WMSExtent}</small></dd>
+          </dl>
+        </p>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="span5 offset1">
+        <h2>{@view~map.metadata.h2.contact@}</h2>
+        <p>
+          <dl class="dl-horizontal">
+            <dt>{@view~map.metadata.contact.organization@}</dt>
+            <dd>{$WMSContactOrganization}</dd>
+            <dt>{@view~map.metadata.contact.person@}</dt>
+            <dd>{$WMSContactPerson}</dd>
+            <dt>{@view~map.metadata.contact.email@}</dt>
+            <dd>{$WMSContactMail|replace:'@':' (at) '}</dd>
+            <dt>{@view~map.metadata.contact.phone@}</dt>
+            <dd>{$WMSContactPhone}</dd>
+          </dl>
+        </p>
+      </div>
+      <div class="span7">
+        <h2>{@view~map.metadata.h2.resources@}</h2>
+        <p>
+          <dl class="dl-horizontal">
+            <dt>{@view~map.metadata.resources.website@}</dt>
+            <dd><a href="{$WMSOnlineResource}" target="_blank">{$WMSOnlineResource}</a></dd>
+          </dl>
+        </p>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="span4 offset12">
+        <span class="btn" id="hideMetadata">{@view~map.metadata.hide@}</span>
+      </div>
+    </div>
+  </div>
 </div>
+
 <div id="loading" class="ui-dialog-content ui-widget-content" title="{@view~map.loading.title@}">
   <p>
     {image $j_themepath.'css/img/loading.gif'}

@@ -20,17 +20,18 @@ class myHtmlMapResponse extends jResponseHtml {
     parent::__construct();
 
     global $gJConfig;
-    $bp = $gJConfig->urlengine['basePath'];    
+    $bp = $gJConfig->urlengine['basePath'];
 
     $this->title = '';
-	
-    // CSS  
+
+    // CSS
     $this->addCSSLink($bp.'css/jquery-ui-1.8.23.custom.css');
     $this->addCSSLink($bp.'css/bootstrap.css');
     $this->addCSSLink($bp.'TreeTable/stylesheets/jquery.treeTable.css');
     $this->addCSSLink($bp.'OpenLayers-2.12/theme/default/style.css');
     $this->addCSSLink($bp.'css/main.css');
     $this->addCSSLink($bp.'css/map.css');
+#    $this->addCSSLink($bp.'css/bootstrap-responsive.css');
 #    $this->addCSSLink($bp.'css/color1.css');
 #    $this->addCSSLink($bp.'css/color2.css');
     // META
@@ -47,12 +48,12 @@ class myHtmlMapResponse extends jResponseHtml {
     $this->addJSLink($bp.'js/jquery-ui-1.8.23.custom.min.js');
     $this->addJSLink($bp.'TreeTable/javascripts/jquery.treeTable.js');
     $this->addJSLink($bp.'js/map.js');
-    
+
     $generalJSConfig = '
       Proj4js.libPath = "'.$bp.'Proj4js/";
 	  ';
     $this->addJSCode($generalJSConfig);
-      
+
   }
 
   protected function doAfterActions() {
