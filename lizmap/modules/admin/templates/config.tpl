@@ -11,7 +11,7 @@
       <dt>{@admin~admin.configuration.services.cacheExpiration.label@}</dt><dd>{$lizmapConfig->cacheExpiration}</dd>
       <dt>{@admin~admin.configuration.services.defaultRepository.label@}</dt><dd>{$lizmapConfig->defaultRepository}</dd>
     </dl>
-    
+
     <!-- Modify -->
     {ifacl2 'lizmap.admin.services.update'}
     <div class="form-actions">
@@ -28,9 +28,9 @@
   <div>
   <h2>{@admin~admin.configuration.repository.label@}</h2>
   {foreach $lizmapConfig->repositoryList as $repo}
-   
+
     <legend>{$repo}</legend>
-    
+
     {if isset($lizmapConfig->lizmapConfigData['repository:'.$repo]) }
     <dl><dt>{@admin~admin.form.admin_section.data.label@}</dt>
       <dd>
@@ -49,9 +49,9 @@
     <dl><dt>{@admin~admin.form.admin_section.groups.label@}</dt>
       <dd>
         <table class="table">
-      {foreach $data[$repo] as $k}
+      {foreach $data[$repo] as $k=>$v}
       <tr>
-        <th>{$labels[$k->id_aclsbj]}</th><td>{$k->group_names}</td>
+        <th>{$labels[$k]}</th><td>{$v}</td>
       </tr>
       {/foreach}
         </table>
@@ -75,9 +75,9 @@
         <a class="btn" href="{jurl 'admin~config:removeCache', array('repository'=>$repo)}" onclick="return confirm('{@admin~admin.cache.button.remove.repository.cache.confirm.label@}')">{@admin~admin.cache.button.remove.repository.cache.label@}</a>
         {/ifacl2}
       </div>
-      
+
     {/if}
-  {/foreach}    
+  {/foreach}
   </div>
   {/ifacl2}
 
@@ -85,4 +85,3 @@
 {ifacl2 'lizmap.admin.repositories.create'}
 <a class="btn" href="{jurl 'admin~config:createSection'}">{@admin~admin.configuration.button.add.repository.label@}</a>
 {/ifacl2}
-

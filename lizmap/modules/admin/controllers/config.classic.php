@@ -63,17 +63,19 @@ class configCtrl extends jController {
 
       $group_names = array();
       foreach ($rights as $r) {
-	if (!array_key_exists($r->id_aclsbj,$group_names))
-          $group_names[$r->id_aclsbj] = array();
-	$group_names[$r->id_aclsbj][] = $r->group_name;
+	      if (!array_key_exists($r->id_aclsbj,$group_names)){
+	        $group_names[$r->id_aclsbj] = array();
+	      }
+        $group_names[$r->id_aclsbj][] = $r->group_name;
       }
       foreach ($group_names as $k => $v) {
-	$group_names[$k] = implode(' - ', $v);
+        $group_names[$k] = implode(' - ', $v);
       }
       $rights = (object) $group_names;
 
       $data[$repo] = $rights;
     }
+
 
     // Subjects labels
     $labels = array();
