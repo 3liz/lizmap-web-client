@@ -1230,7 +1230,7 @@ var lizMap = function() {
 
           $('body').css('cursor', 'auto');
           $('#loading').dialog('close');
-        });
+        }, "text");
       });
       });
     }

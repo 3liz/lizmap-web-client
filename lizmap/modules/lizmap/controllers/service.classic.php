@@ -58,7 +58,6 @@ class serviceCtrl extends jController {
   */
   function GetCapabilities(){
 
-    $rep = $this->getResponse('text');
     // Get the project
     $project = $this->param('project');
 
@@ -92,12 +91,33 @@ class serviceCtrl extends jController {
       }
     }
 
+    // Get remote data
+    $lizmapCache = jClasses::getService('lizmap~lizmapCache');
+    $withCurl = False;
+    $getRemoteData = $lizmapCache->getRemoteData($querystring, $withCurl);
+    $data = $getRemoteData[0];
+    $mime = $getRemoteData[1];
 
-    $sContent = jFile::read($querystring);
-    $sUrl = jUrl::getFull("lizmap~service:index", array("repository"=>$repository, "project"=>$project));
+    // Replace qgis server url in the XML (hide real location)
+    $sUrl = jUrl::getFull(
+      "lizmap~service:index",
+      array("repository"=>$repository, "project"=>$project),
+      0,
+      $_SERVER['SERVER_NAME']
+    );
     $sUrl = str_replace('&', '&amp;', $sUrl);
-    $sContent = preg_replace('/xlink\:href=".*"/', 'xlink:href="'.$sUrl.'&amp;"', $sContent);
-    $rep->content = $sContent;
+    $data = preg_replace('/xlink\:href=".*"/', 'xlink:href="'.$sUrl.'&amp;"', $data);
+
+    // Add XML header, because QGIS Server does not provide it
+    $data = '<?xml version="1.0" encoding="UTF-8" ?>
+'.$data;
+
+    // Return response
+    $rep = $this->getResponse('binary');
+    $rep->mimeType = $mime;
+    $rep->content = $data;
+    $rep->doDownload = false;
+    $rep->outputFileName  =  'qgis_server_getCapabilities';
 
     return $rep;
   }
@@ -200,22 +220,18 @@ class serviceCtrl extends jController {
     $b = array('%20', '%5F', '%2E', '%2D');
     $params = str_replace($a, $b, $params);
 
-    $ch = curl_init();
-    curl_setopt($ch, CURLOPT_HEADER, 0);
-    curl_setopt($ch, CURLOPT_URL, $url . $params);
-    curl_setopt( $ch, CURLOPT_SSL_VERIFYPEER, false );
-    curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-    curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
-
-    $content = curl_exec($ch);
-    $response = curl_getinfo($ch);
-    curl_close($ch);
+    // Get remote data
+    $lizmapCache = jClasses::getService('lizmap~lizmapCache');
+    $withCurl = False;
+    $getRemoteData = $lizmapCache->getRemoteData($url . $params, $withCurl);
+    $data = $getRemoteData[0];
+    $mime = $getRemoteData[1];
 
     $rep = $this->getResponse('binary');
-    $rep->mimeType = $response['content_type'];
-    $rep->content = $content;
-    $rep->doDownload  =  false;
-    $rep->outputFileName  =  'mapserver';
+    $rep->mimeType = $mime;
+    $rep->content = $data;
+    $rep->doDownload = false;
+    $rep->outputFileName  =  'qgis_server_legend';
 
     return $rep;
   }
@@ -269,22 +285,18 @@ class serviceCtrl extends jController {
 #    $b = array('%20', '%5F', '%2E', '%2D');
 #    $params = str_replace($a, $b, $params);
 
-    $ch = curl_init();
-    curl_setopt($ch, CURLOPT_HEADER, 0);
-    curl_setopt($ch, CURLOPT_URL, $url . $params);
-    curl_setopt( $ch, CURLOPT_SSL_VERIFYPEER, false );
-    curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-    curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
-
-    $content = curl_exec($ch);
-    $response = curl_getinfo($ch);
-    curl_close($ch);
+    // Get remote data
+    $lizmapCache = jClasses::getService('lizmap~lizmapCache');
+    $withCurl = False;
+    $getRemoteData = $lizmapCache->getRemoteData($url . $params, $withCurl);
+    $data = $getRemoteData[0];
+    $mime = $getRemoteData[1];
 
     $rep = $this->getResponse('binary');
-    $rep->mimeType = $response['content_type'];
-    $rep->content = $content;
-    $rep->doDownload  =  false;
-    $rep->outputFileName  =  'getFeatureInfo';
+    $rep->mimeType = $mime;
+    $rep->content = $data;
+    $rep->doDownload = false;
+    $rep->outputFileName = 'getFeatureInfo';
 
     return $rep;
   }

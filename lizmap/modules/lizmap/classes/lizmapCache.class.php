@@ -45,6 +45,62 @@ class lizmapCache {
     return $data;
   }
 
+
+  /**
+  * Get remote data from URL, with curl or internal php functions.
+  * @param string $url Url of the remote data to fetch.
+  * @param boolean $withCurl If true, use curl instead of php functions.
+  * @return array($data, $mime) Array containing the data and the mime type.
+  */
+  static public function getRemoteData($url, $withCurl=True, $debug=False){
+
+    $data = '';
+    $mime = '';
+    if($withCurl and extension_loaded("curl")){
+      # With curl
+      $ch = curl_init();
+      curl_setopt($ch, CURLOPT_HEADER, 0);
+      curl_setopt($ch, CURLOPT_URL, $url);
+      curl_setopt( $ch, CURLOPT_SSL_VERIFYPEER, false );
+      curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+      curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
+      $data = curl_exec($ch);
+      $info = curl_getinfo($ch);
+      $mime = $info['content_type'];
+      // Optionnal debug
+      if($debug or !curl_errno($ch))
+      {
+        error_log(json_encode($info).'
+', 3, sys_get_temp_dir().'/lizmap_get_remote.log' );
+      }
+
+      curl_close($ch);
+    }
+    else{
+      # With file_get_contents
+      $data = file_get_contents($url);
+      $mime = 'image/png';
+      $matches = array(); $info = '';
+      foreach ($http_response_header as $header){
+        if (preg_match( '#Content-Type:\s+([\w/+]+)(;\s+charset=(\S+))?#i', $header, $matches )){
+          $mime = $matches[1];
+        }
+        // optional debug
+        if($debug){
+          $info.= $header;
+        }
+      }
+      if($debug)
+      {
+        error_log(json_encode($info).'
+', 3, sys_get_temp_dir().'/lizmap_get_remote.log' );
+      }
+    }
+
+    return array($data, $mime);
+  }
+
+
   /**
   * Get data from map service or from the cache.
   * @param string $repository The repository.
@@ -190,7 +246,10 @@ class lizmapCache {
     $metatileSize = False;
     if(property_exists($configLayer, 'metatileSize'))
       $metatileSize = $configLayer->metatileSize;
-    if($metatileSize and $string2bool[$configLayer->cached] and $wmsClient == 'web'){
+
+    // Also checks if gd is installed
+    if($metatileSize and $string2bool[$configLayer->cached] and $wmsClient == 'web'
+    and extension_loaded('gd') && function_exists('gd_info')){
       # Metatile Size
       $metatileSizeExp = explode(',', $metatileSize);
       $metatileSizeX = (int) $metatileSizeExp[0];
@@ -228,24 +287,20 @@ class lizmapCache {
     $b = array('%20', '%5F', '%2E', '%2D');
     $builtParams = str_replace($a, $b, $builtParams);
 
-    // Get data from the map server using Curl
-    $ch = curl_init();
-    curl_setopt($ch, CURLOPT_HEADER, 0);
-    curl_setopt($ch, CURLOPT_URL, $url . $builtParams);
-    curl_setopt( $ch, CURLOPT_SSL_VERIFYPEER, false );
-    curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-    curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
-    $content = curl_exec($ch);
-#    $content = $url . $builtParams;
-    $response = curl_getinfo($ch);
-    $mimetype = $response['content_type'];
-    curl_close($ch);
+    // Get data from the map server
+    $lizmapCache = jClasses::getService('lizmap~lizmapCache');
+    $withCurl = False;
+    $getRemoteData = $lizmapCache->getRemoteData($url . $builtParams, $withCurl);
+    $data = $getRemoteData[0];
+    $mime = $getRemoteData[1];
 
     // Metatile : if needed, crop the metatile into a single tile
-    if($metatileSize and $string2bool[$configLayer->cached] and $wmsClient == 'web'){
+    // Also checks if gd is installed
+    if($metatileSize and $string2bool[$configLayer->cached] and $wmsClient == 'web'
+    and extension_loaded('gd') && function_exists('gd_info')){
 
-      # Save curl content into an image var
-      $original = imagecreatefromstring($content);
+      # Save original content into an image var
+      $original = imagecreatefromstring($data);
 
       # crop parameters
       $newWidth = (int)($originalParams["width"]); // px
@@ -274,7 +329,7 @@ class lizmapCache {
         imagepng($image, null);
       else
         imagejpeg($image, null, 80);
-      $content = ob_get_contents(); // read from buffer
+      $data = ob_get_contents(); // read from buffer
       ob_end_clean(); // delete buffer
 
       // Destroy image handlers
@@ -282,7 +337,7 @@ class lizmapCache {
       imagedestroy($image);
     }
 
-    return $content;
+    return $data;
   }
 
 
