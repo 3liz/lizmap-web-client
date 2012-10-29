@@ -102,6 +102,16 @@ rdf=on
 
 admin=on
 
+[logger]
+_all =
+default=syslog
+error=syslog
+warning=syslog
+notice=syslog
+;deprecated=syslog
+strict=syslog
+;sql=syslog
+
 [fileLogger]
 default=messages.log
 
