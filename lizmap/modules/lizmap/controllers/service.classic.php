@@ -159,7 +159,7 @@ class serviceCtrl extends jController {
     // Get data
     $lizmapCache = jClasses::getService('lizmap~lizmapCache');
     $params = $lizmapCache->normalizeParams($params);
-    $content = $lizmapCache->getServiceData($repository, $project, $params, $lizmapConfig);
+    $content = $lizmapCache->getServiceData($repository, $project, $params);
 
     // Return response
     $rep = $this->getResponse('binary');

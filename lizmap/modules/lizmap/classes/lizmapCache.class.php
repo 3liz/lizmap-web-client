@@ -108,11 +108,12 @@ class lizmapCache {
   * @param string $repository The repository.
   * @param string $project The project.
   * @param array $params Array of parameters.
-  * @param object $lizmapConfig Lizmap configuration object.
   * @param boolean $avoidCache If true, get data from Qgis server (used by the jCache::call method when cache not found ).
   * @return array $data Normalized and filtered array.
   */
-  static public function getServiceData( $repository, $project, $params, $lizmapConfig, $avoidCache=false ) {
+  static public function getServiceData( $repository, $project, $params, $avoidCache=false ) {
+
+    $lizmapConfig = new lizmapConfig($repository);
 
     // Change to true to put some information in debug files
     $debug = $lizmapConfig->debugMode;
@@ -223,7 +224,7 @@ class lizmapCache {
       // Call the cache : if not found, this method will use the method getServiceData with last param to false to force request to qgis
       return jCache::call(
         array('lizmapCache', __FUNCTION__ ),
-        array( $repository, $project, $params, $lizmapConfig, true ),
+        array( $repository, $project, $params, true ),
         $cacheExpiration,
         $cacheName
       );
@@ -232,7 +233,7 @@ class lizmapCache {
     // Log when no cache hit
     if($debug and $avoidCache){
       error_log(
-        date(DATE_RFC822).': '.md5(serialize(array('lizmapCache', __FUNCTION__ )).serialize(array( $repository, $project, $params, $lizmapConfig, true ))).', BBOX='.$params['bbox'].'
+        date(DATE_RFC822).': '.md5(serialize(array('lizmapCache', __FUNCTION__ )).serialize(array( $repository, $project, $params, true ))).', BBOX='.$params['bbox'].'
 ',
         3,
         sys_get_temp_dir().'/'.$repository.'/'.$project.'/'.$layers.'_'.$crs.'.log'
