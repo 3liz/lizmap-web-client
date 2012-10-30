@@ -92,7 +92,7 @@ class ldapAuthDriver extends jAuthDriverBase implements jIAuthDriver {
         if ($connect === false) {
             return false;
         }
-        $result = ldap_delete($connect, $this->_buildUserDn($user->login));
+        $result = ldap_delete($connect, $this->_buildUserDn($login));
         ldap_close($connect);
         return $result;
     }
@@ -195,9 +195,8 @@ class ldapAuthDriver extends jAuthDriverBase implements jIAuthDriver {
         if ($connect === false) {
             return false;
         }
-        $result = ldap_mod_replace($connect, $this->_buildUserDn($user->login), $entries);
+        $result = ldap_mod_replace($connect, $this->_buildUserDn($login), $entries);
         ldap_close($connect);
-
         return $result;
     }
 
@@ -282,6 +281,7 @@ class ldapAuthDriver extends jAuthDriverBase implements jIAuthDriver {
                         break;
                     case $this->_params['uidProperty']:
                         $user->login = $attributes[$attribute];
+                        break;
                     default:
                         $user->$attribute = $attributes[$attribute];
                         break;

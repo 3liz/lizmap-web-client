@@ -59,7 +59,8 @@ class jMailer extends PHPMailer {
         global $gJConfig;
         $this->defaultLang = $gJConfig->locale;
         $this->CharSet = $gJConfig->charset;
-        $this->Mailer = $gJConfig->mailer['mailerType'];
+        if ($gJConfig->mailer['mailerType'])
+            $this->Mailer = $gJConfig->mailer['mailerType'];
         $this->Hostname = $gJConfig->mailer['hostname'];
         $this->Sendmail = $gJConfig->mailer['sendmailPath'];
         $this->Host = $gJConfig->mailer['smtpHost'];

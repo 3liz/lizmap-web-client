@@ -328,7 +328,7 @@ abstract class jDaoFactoryBase  {
      */
     final public function deleteBy ($searchcond){
         if ($searchcond->isEmpty ()){
-            return;
+            return 0;
         }
 
         $query = 'DELETE FROM '.$this->_conn->encloseName($this->_tables[$this->_primaryTable]['realname']).' WHERE ';

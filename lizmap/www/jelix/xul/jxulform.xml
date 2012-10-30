@@ -154,14 +154,14 @@
             this.httpreq.onload = function() {
                 this.submission._UIendofload();
                 this.submission._onload();
-            }
+            };
             this.httpreq.onerror = function() {
                 this.submission._UIendofload();
                 this.submission._onerrorload();
-            }
+            };
             this.httpreq.onprogress = function() {
 
-            }
+            };
 
             this.httpreq.open(method, this.action, true);
             this.httpreq.setRequestHeader("Content-type", contentType);
@@ -253,7 +253,7 @@
                        case "checkbox":
                            if (aNode.checked) {
                               if(aNode.hasAttribute('value'))
-                                  value = aNode.getAttribute('value')
+                                  value = aNode.getAttribute('value');
                               else
                                   value="on";
                            }

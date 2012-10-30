@@ -248,6 +248,7 @@ class fileCacheDriver implements jICacheDriver {
             }
             return ( $this->set($key,(int)$data,filemtime($this->_getCacheFilePath($key))) ) ? (int)$data : false;
         }
+        return false;
     }
 
     /**

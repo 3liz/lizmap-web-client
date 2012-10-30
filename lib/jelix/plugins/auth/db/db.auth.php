@@ -18,7 +18,7 @@
 */
 class dbAuthDriver extends jAuthDriverBase implements jIAuthDriver {
 
-    function __construct($params){
+    function __construct($params) {
         parent::__construct($params);
         if(!isset($this->_params['profile'])) {
             if(isset($this->_params['profil']))
@@ -77,7 +77,21 @@ class dbAuthDriver extends jAuthDriverBase implements jIAuthDriver {
         if (trim($password) == '')
             return false;
         $daouser = jDao::get($this->_params['dao'], $this->_params['profile']);
-        $user = $daouser->getByLoginPassword($login, $this->cryptPassword($password));
-        return ($user?$user:false);
+        $user = $daouser->getByLogin($login);
+        if (!$user) {
+            return false;
+        }
+
+        $result = $this->checkPassword($password, $user->password);
+        if ($result === false)
+            return false;
+
+        if ($result !== true) {
+            // it is a new hash for the password, let's update it persistently
+            $user->password = $result;
+            $daouser->updatePassword($login, $result);
+        }
+
+        return $user;
     }
 }

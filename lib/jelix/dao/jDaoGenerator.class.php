@@ -686,7 +686,7 @@ class jDaoGenerator {
             $result[] = $start . $field->$info . $end;
         }
 
-        return implode ($beetween,$result);;
+        return implode ($beetween,$result);
     }
 
     /**
@@ -836,7 +836,11 @@ class jDaoGenerator {
             $value = $this->_preparePHPExpr('$'.$prefixfield.$fieldName, $field, true);
 
             if($pattern != ''){
-                $values[$field->name] = sprintf($field->$pattern,'\'.'.$value.'.\'');
+                if(strpos($field->$pattern, "'") !== false && strpos($field->$pattern, "\\'") === false) {
+                    $values[$field->name] = sprintf(str_replace("'", "\\'", $field->$pattern),'\'.'.$value.'.\'');
+                } else {
+                    $values[$field->name] = sprintf($field->$pattern,'\'.'.$value.'.\'');
+                }
             }else{
                 $values[$field->name] = '\'.'.$value.'.\'';
             }

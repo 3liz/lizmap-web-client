@@ -55,7 +55,7 @@ class jAclCoordPlugin implements jICoordPlugin {
         }
 
         if(!$aclok){
-            if($this->config['on_error'] == 1 
+            if($GLOBALS['gJCoord']->request->isAjax() || $this->config['on_error'] == 1 
                 || !$GLOBALS['gJCoord']->request->isAllowedResponse('jResponseRedirect')){
                 throw new jException($this->config['error_message']);
             }else{

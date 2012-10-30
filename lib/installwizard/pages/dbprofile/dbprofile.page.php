@@ -340,7 +340,6 @@ table_prefix=
 
     protected function check_oci($params) {
         throw new Exception('oci not supported');
-        return false;
     }
 
     protected function check_pgsql($params) {

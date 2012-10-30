@@ -49,11 +49,11 @@
                       }else
                         return NodeFilter.FILTER_SKIP;
                    }
-                }
+                };
                 var tw = document.createTreeWalker ( this , NodeFilter.SHOW_ELEMENT , tf , false );
                 var node;
                 var query='', value;
-                node=tw.nextNode()
+                node=tw.nextNode();
                 while(node){
                     value=null;
                     switch(node.localName){
@@ -217,11 +217,11 @@
                             this.pager.totalcount = parseInt(this.responseText);
                             this.pager.show();
                         }
-                    }
+                    };
                     this.httpreq.onerror = function() {
-                    }
+                    };
                     this.httpreq.onprogress = function() {
-                    }
+                    };
 
                     this.httpreq.open("GET", url, true);
                     this.httpreq.send(null);

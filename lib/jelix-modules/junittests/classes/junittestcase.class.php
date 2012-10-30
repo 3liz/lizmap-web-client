@@ -16,9 +16,15 @@ class jUnitTestCase extends UnitTestCase {
     protected $dbProfile ='';
     protected $needPDO = false;
 
-
+    /**
+     * method called before the execution of all tests of the class
+     */
     function setUpRun() {
     }
+
+    /**
+     * method called after the execution of all tests of the class
+     */
     function tearDownRun() {
     }
 

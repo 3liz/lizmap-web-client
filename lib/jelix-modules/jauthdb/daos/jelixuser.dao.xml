@@ -11,7 +11,7 @@
                 datatype="string" required="yes" maxlength="255" />
 
       <property name="password" fieldname="usr_password" datatype="string"
-                maxlength="50" selectpattern="%s" updatepattern="" insertpattern="%s" />
+                maxlength="120" selectpattern="%s" updatepattern="" insertpattern="%s" />
    </record>
    <factory>
      <method name="getByLoginPassword" type="selectfirst">

@@ -97,6 +97,7 @@ function jtpl_meta_html_html($tpl, $method, $param=null, $params=array())
             break;
         case 'generator':
             $gJCoord->response->addMetaGenerator($param);
+            break;
         case 'jquery':
             $gJCoord->response->addJSLink($gJConfig->urlengine['jqueryPath'].'jquery.js');
             break;

@@ -54,9 +54,9 @@ EOS
             $maxLevel = 0;
             $currentCount = array('error'=>0,'warning'=>0,'notice'=>0,'deprecated'=>0,'strict'=>0);
             foreach($messages as $msg) {
+                $cat = $msg->getCategory();
+                $currentCount[$cat]++;
                 if ($msg instanceOf jLogErrorMessage) {
-                    $cat = $msg->getCategory();
-                    $currentCount[$cat]++;
                     if ($cat == 'error')
                         $maxLevel = 1;
 
@@ -66,6 +66,11 @@ EOS
                     <div><p>Code: '.$msg->getCode().'<br/> File: '.htmlspecialchars($msg->getFile()).' '.htmlspecialchars($msg->getLine()).'</p>';
                     $info->popupContent .= $debugbarPlugin->formatTrace($msg->getTrace());
                     $info->popupContent .='</div></li>';
+                }
+                else {
+                    $info->popupContent .= '<li class="jxdb-msg-'.$cat.'">
+                    <h5><a href="#" onclick="jxdb.toggleDetails(this);return false;"><span>'.htmlspecialchars($msg->getMessage()).'</span></a></h5>
+                    <div><p>Not a real PHP '.$cat.',  logged directly by your code. <br />Details are not available.</p></div></li>';
                 }
             }
             if ($maxLevel) {

@@ -23,7 +23,7 @@ class jFormsCompiler_jf_1_1 extends jFormsCompiler_jf_1_0 {
     const NS = 'http://jelix.org/ns/forms/1.1';
 
     protected $allowedType = array('string','boolean','decimal','integer','hexadecimal',
-                                      'datetime','date','time','localedatetime','localedate','localetime',
+                                      'datetime','date','time','localetimeshort','localedatetime','localedate','localetime',
                                       'url','email','ipv4','ipv6','html','xhtml');
 
     protected function _compile ($xml, &$source) {

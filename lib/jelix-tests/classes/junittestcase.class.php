@@ -88,11 +88,11 @@ class jUnitTestCase extends PHPUnit_Framework_TestCase {
         $nodename  = dom_import_simplexml($xml)->nodeName;
         switch($nodename){
             case 'object':
-                if(isset($xml['class'])){
-                    $ok = $this->assertInternalType((string)$xml['class'], $value, $name.': not a '.(string)$xml['class'].' object'.$errormessage);
-                }else
-                    $ok = $this->assertTrue(is_object($value),  $name.': not an object'.$errormessage);
-                if(!$ok) return false;
+                if (isset($xml['class'])) {
+                    $this->assertInstanceOf((string)$xml['class'], $value, $name.': not a '.(string)$xml['class'].' object'.$errormessage);
+                } else {
+                    $this->assertTrue(is_object($value),  $name.': not an object'.$errormessage);
+                }
 
                 foreach ($xml->children() as $child) {
                     if(isset($child['property'])){
@@ -111,23 +111,18 @@ class jUnitTestCase extends PHPUnit_Framework_TestCase {
                         trigger_error('no method or attribute on '.(dom_import_simplexml($child)->nodeName), E_USER_WARNING);
                         continue;
                     }
-                    $ok &= $this->_checkIdentical($child, $v, $name.'->'.$n,$errormessage);
+                    $this->_checkIdentical($child, $v, $name.'->'.$n,$errormessage);
                 }
-
-                if(!$ok)
-                    $this->fail($name.' : non identical objects'.$errormessage);
-                return $ok;
+                return true;
 
             case 'array':
-                $ok = $this->assertInternalType('array', $value, $name.': not an array'.$errormessage);
-                if(!$ok) return false;
-
+                $this->assertInternalType('array', $value, $name.': not an array'.$errormessage);
                 if(trim((string)$xml) != ''){
                     if( false === eval('$v='.(string)$xml.';')){
                         $this->fail("invalid php array syntax");
                         return false;
                     }
-                    return $this->assertEquals($v,$value,'negative test on '.$name.': %s'.$errormessage);
+                    $this->assertEquals($v,$value,'negative test on '.$name.': %s'.$errormessage);
                 }else{
                     $key=0;
                     foreach ($xml->children() as $child) {
@@ -138,56 +133,52 @@ class jUnitTestCase extends PHPUnit_Framework_TestCase {
                         }else{
                             $n = $key ++;
                         }
-
-                        if($this->assertTrue(array_key_exists($n,$value),$name.'['.$n.'] doesn\'t exist arrrg'.$errormessage)){
-                            $v = $value[$n];
-                            $ok &= $this->_checkIdentical($child, $v, $name.'['.$n.']',$errormessage);
-                        }else $ok= false;
+                        $this->assertTrue(array_key_exists($n,$value),$name.'['.$n.'] doesn\'t exist arrrg'.$errormessage);
+                        $v = $value[$n];
+                        $this->_checkIdentical($child, $v, $name.'['.$n.']',$errormessage);
                     }
-                    return $ok;
                 }
-                break;
+                return true;
 
             case 'string':
-                $ok = $this->assertInternalType('string', $value,$name.': not a string'.$errormessage);
-                if(!$ok) return false;
+                $this->assertInternalType('string', $value, $name.': not a string'.$errormessage);
                 if(isset($xml['value'])){
-                    return $this->assertEquals((string)$xml['value'],$value, $name.': bad value. %s'.$errormessage);
+                    $this->assertEquals((string)$xml['value'],$value, $name.': bad value. %s'.$errormessage);
                 }
-                else
-                    return true;
+                return true;
             case 'int':
             case 'integer':
-                $ok = $this->assertTrue(is_integer($value), $name.': not an integer ('.$value.') '.$errormessage);
-                if(!$ok) return false;
-                if(isset($xml['value'])){
-                    return $this->assertEquals(intval((string)$xml['value']),$value, $name.': bad value. %s'.$errormessage);
-                }else
-                    return true;
+                $this->assertTrue(is_integer($value), $name.': not an integer ('.$value.') '.$errormessage);
+                if (isset($xml['value'])) {
+                    $this->assertEquals(intval((string)$xml['value']),$value, $name.': bad value. %s'.$errormessage);
+                }
+                return true;
             case 'float':
             case 'double':
-                $ok = $this->assertInternalType('float', $value,$name.': not a float ('.$value.') '.$errormessage);
-                if(!$ok) return false;
+                $this->assertInternalType('float', $value,$name.': not a float ('.$value.') '.$errormessage);
                 if(isset($xml['value'])){
-                    return $this->assertEquals( floatval((string)$xml['value']),$value,$name.': bad value. %s'.$errormessage);
-                }else
-                    return true;
+                    $this->assertEquals( floatval((string)$xml['value']),$value,$name.': bad value. %s'.$errormessage);
+                }
+                return true;
             case 'boolean':
-                $ok = $this->assertInternalType('boolean', $value,$name.': not a boolean ('.$value.') '.$errormessage);
-                if(!$ok) return false;
+                $this->assertInternalType('boolean', $value,$name.': not a boolean ('.$value.') '.$errormessage);
                 if(isset($xml['value'])){
                     $v = ((string)$xml['value'] == 'true');
-                    return $this->assertEquals($v ,$value, $name.': bad value. %s'.$errormessage);
-                }else
-                    return true;
+                    $this->assertEquals($v ,$value, $name.': bad value. %s'.$errormessage);
+                }
+                return true;
             case 'null':
-                return $this->assertNull($value, $name.': not null ('.$value.') '.$errormessage);
+                $this->assertNull($value, $name.': not null ('.$value.') '.$errormessage);
+                return true;
             case 'notnull':
-                return $this->assertNotNull($value, $name.' is null'.$errormessage);
+                $this->assertNotNull($value, $name.' is null'.$errormessage);
+                return true;
             case 'resource':
-                return $this->assertInternalType('resource', $value,$name.': not a resource'.$errormessage);
+                $this->assertInternalType('resource', $value,$name.': not a resource'.$errormessage);
+                return true;
             default:
                 $this->fail("_checkIdentical: balise inconnue ".$nodename.$errormessage);
+                return false;
         }
     }
 }

@@ -56,6 +56,7 @@ class soaplogDebugbarPlugin implements jIDebugbarPlugin {
                 $info->popupContent .= '<li>
                 <h5><a href="#" onclick="jxdb.toggleDetails(this);return false;"><span>'.htmlspecialchars($msg->getMessage()).'</span></a></h5>
                 <div>';
+                $info->popupContent .= "Duration: ".$msg->getDuration()."s<br />";
                 $info->popupContent .= "<h6>Headers</h6><pre>".$msg->getHeaders()."</pre>";
                 $info->popupContent .= "<h6>Request</h6><pre>".$this->xmlprettyprint($msg->getRequest())."</pre>";
                 $info->popupContent .= "<h6>Response</h6><pre>".$this->xmlprettyprint($msg->getResponse())."</pre>";
