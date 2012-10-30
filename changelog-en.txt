@@ -1,3 +1,34 @@
+h1. Version 2.3.0 - 30 October 2012
+
+h2. New features
+
+* *Information panel per project*: add a full screen information panel with project properties. To show it, just click on the link *Information* in the top right menu, or double-click on the header. All the information are taken from the QGIS project properties. You can edit them in the OWS tab of the project properties dialogue in QGIS.
+
+h2. Improvements
+
+* *Interface*: enhance interface for small screens. The header adapts better on small screens, like mobile devices (smart-phone, tablet computers, etc.)
+
+* *Proxy*: do not use CURL any more by default to send the requests to QGIS Server, but built-in PHP methods. Add an option in the admin panel to choose between curl and php.
+
+* *Proxy*: the GetCapabilities response is now sent as text/xml by Lizmap proxy instead of plain text
+
+* *Admin*: add an option *debug mode* to the services, in order to log some actions (proxy, cache) in files to help debugging. Set to off by default.
+
+h2. Bug fixing
+
+* *Admin Lizmap configuration* Correctly display rights for groups on each repository in the admin Lizmap configuration page.
+
+* *Proxy*: check that CURL (if used) and GD are installed before using them.
+
+* *Cache*: remove the lizmap config parameter in the cache method to avoid cache loss (or duplicate) every time the Lizmap configuration changed.
+
+h2. Engine
+
+* *Jelix*: upgrade to version 3.4.0.
+
+
+
+
 h1. Version 2.2.0 - 1 octobre 2012
 
 h2. New features

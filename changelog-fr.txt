@@ -1,3 +1,33 @@
+h1. Version 2.3.0 - 30 Octobre 2012
+
+h2. Nouvelles fonctionnalités
+
+* *Panneau d'information pour chaque projet*: Un lien, positionné en haut à droite de chaque carte, permet d'afficher une fenêtre présentant les informations détaillées de la carte. Toutes ces informations sont issues du projet Qgis. Vous pouvez les configurer via la fenêtre de propriétés du projet QGIS, onglet OWS.
+
+h2. Améliorations
+
+* *Interface*: l'interface a été améliorée pour les petits écrans : l'entête avec le titre de la carte réagit mieux à un redimensionnement de la fenêtre. Cela améliore la présentation générale sur les interface mobiles : smartphones et tablettes.
+
+* *Proxy*: Curl n'est plus utilisé par défaut pour envoyer les requêtes à QGIS Server. C'est maintenant les fonctions natives de php qui sont utilisées dans Lizmap. Il est possible de choisir dans l'administration l'outil à utiliser (curl ou php).
+
+* *Proxy*: la réponse de la requête GetCapabilities est maintenant envoyée au format XML et non au format texte. Cela améliore la compatibilité avec les clients WMS externes.
+
+* *Administration*: ajout d'une option *mode de débogage* dans la partie services. Elle est mise à off par défaut, mais peut être activé. Alors certaines requêtes (proxy, cache, etc.) seront enregistrées sur le serveur dans des fichiers de log de Lizmap.
+
+h2. Corrections de bugs.
+
+* *Configuration Lizmap (admin)* L'affichage des droits pour chaque répertoire Lizmap a été corrigé dans la liste (il n'apparaissait plus).
+
+* *Proxy*: vérification que Curl et GD (outils PHP) sont bien installés avant de les utiliser.
+
+* *Cache*: la configuration lizmap n'est plus passée dans la méthode de gestion du cache. Cela permet d'éviter de perdre le cache à chaque changement de la configuration Lizmap.
+
+h2. Moteur
+
+* *Jelix*: montée de version vers jelix 3.4.0.
+
+
+
 h1. Version 2.2.0 - 1 Octobre 2012
 
 h2. Nouvelles fonctionnalités
