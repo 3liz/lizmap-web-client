@@ -93,8 +93,11 @@ class serviceCtrl extends jController {
 
     // Get remote data
     $lizmapCache = jClasses::getService('lizmap~lizmapCache');
-    $withCurl = False;
-    $getRemoteData = $lizmapCache->getRemoteData($querystring, $withCurl);
+    $getRemoteData = $lizmapCache->getRemoteData(
+      $querystring,
+      $lizmapConfig->proxyMethod,
+      $lizmapConfig->debugMode
+    );
     $data = $getRemoteData[0];
     $mime = $getRemoteData[1];
 
@@ -222,8 +225,12 @@ class serviceCtrl extends jController {
 
     // Get remote data
     $lizmapCache = jClasses::getService('lizmap~lizmapCache');
-    $withCurl = False;
-    $getRemoteData = $lizmapCache->getRemoteData($url . $params, $withCurl);
+    $querystring = $url . $params;
+    $getRemoteData = $lizmapCache->getRemoteData(
+      $querystring,
+      $lizmapConfig->proxyMethod,
+      $lizmapConfig->debugMode
+    );
     $data = $getRemoteData[0];
     $mime = $getRemoteData[1];
 
@@ -287,8 +294,12 @@ class serviceCtrl extends jController {
 
     // Get remote data
     $lizmapCache = jClasses::getService('lizmap~lizmapCache');
-    $withCurl = False;
-    $getRemoteData = $lizmapCache->getRemoteData($url . $params, $withCurl);
+    $querystring = $url . $params;
+    $getRemoteData = $lizmapCache->getRemoteData(
+      $querystring,
+      $lizmapConfig->proxyMethod,
+      $lizmapConfig->debugMode
+    );
     $data = $getRemoteData[0];
     $mime = $getRemoteData[1];
 

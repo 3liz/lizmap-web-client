@@ -10,6 +10,8 @@
       <dt>{@admin~admin.configuration.services.cacheStorageType.label@}</dt><dd>{$lizmapConfig->cacheStorageType}</dd>
       <dt>{@admin~admin.configuration.services.cacheExpiration.label@}</dt><dd>{$lizmapConfig->cacheExpiration}</dd>
       <dt>{@admin~admin.configuration.services.defaultRepository.label@}</dt><dd>{$lizmapConfig->defaultRepository}</dd>
+      <dt>{@admin~admin.configuration.services.proxyMethod.label@}</dt><dd>{$lizmapConfig->proxyMethod}</dd>
+      <dt>{@admin~admin.configuration.services.debugMode.label@}</dt><dd>{$lizmapConfig->debugMode}</dd>
     </dl>
 
     <!-- Modify -->

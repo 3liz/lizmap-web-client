@@ -16,16 +16,27 @@ class lizmapConfig{
   private $lizmapConfigFile = 'config/lizmapConfig.ini.php';
   // Lizmap configuration data
   public $lizmapConfigData = array();
-  
+
   // SERVICES
   // services properties
-  public $servicesPropertyList = array('wmsServerURL', 'cacheStorageType', 'cacheExpiration', 'defaultRepository');
+  public $servicesPropertyList = array(
+    'wmsServerURL',
+    'cacheStorageType',
+    'cacheExpiration',
+    'defaultRepository',
+    'proxyMethod',
+    'debugMode'
+  );
   // Wms map server
   public $wmsServerURL = '';
   // map cache server
   public $cacheStorageType = '';
   // default repository
   public $defaultRepository = '';
+  // proxy method : use curl or file_get_contents
+  public $proxyMethod = '';
+  // debug mode : none or log
+  public $debugMode = '';
 
   // REPOSITORIES
   // repository list
@@ -47,40 +58,40 @@ class lizmapConfig{
   * @param boolean $new If true, create a new empty repository.
   */
   public function __construct ($repository, $new=false){
-    
+
     // read the lizmap configuration file
     $readConfigPath = parse_ini_file(jApp::varPath().$this->lizmapConfigFile, True);
     $this->lizmapConfigData = $readConfigPath;
-    
+
     // set generic parameters
     foreach($this->servicesPropertyList as $prop)
       $this->$prop = $readConfigPath['services'][$prop];
-      
+
     // Create the repository if needed
     if($new and $repository)
       $this->createRepository($repository);
-    
+
     // Get the repository data
     if(!$repository)
       $repository = $this->defaultRepository;
     $this->getRepositoryData($repository);
-    
+
     // Get the list of repositories
     $this->getRepositoryList();
-    
+
   }
 
-  
+
   /**
   * Get the data for one repository
   * @param string $repository Name of the repository.
   *
   */
   function getRepositoryData($repository){
-  
+
     // Section
     $repositorySection = 'repository:' . $repository;
-    
+
     // Check if repository exists in the ini file
     if(array_key_exists($repositorySection, $this->lizmapConfigData)){
       // set the repository
@@ -98,8 +109,8 @@ class lizmapConfig{
       $this->getRepositoryData($this->defaultRepository);
     }
   }
-  
-  
+
+
   /**
   * Get a list of repository names.
   *
@@ -113,80 +124,80 @@ class lizmapConfig{
     }
     $this->repositoryList = $repositoryList;
   }
-  
-  
-  
+
+
+
   /**
   * Modify the repository.
   * @param array $data Array containing the data of the repository.
   */
   function modifyRepository($data){
     $modified = false;
-    
+
     // Modify properties
     foreach($this->repositoryPropertyList as $prop)
       $this->repositoryData[$prop] = $data[$prop];
-      
+
     // Get access to the ini file
     $iniFile = jApp::configPath('lizmapConfig.ini.php');
     $ini = new jIniFileModifier($iniFile);
-    
+
     // Set section
     $section = 'repository:'.$this->repositoryKey;
-    
-    // Modify the ini data for the repository    
+
+    // Modify the ini data for the repository
     foreach($data as $k=>$v){
       if(in_array($k, $this->repositoryPropertyList)){
         // Set values in ini file
         $ini->setValue($k, $v, $section);
         // Modify lizmapConfigData
         $this->lizmapConfigData[$section][$k] = $v;
-        $modified = true;      
+        $modified = true;
       }
     }
-    
+
     // Save the ini file
     if($modified)
       $ini->save();
   }
-  
-  
+
+
   /**
   * Create a new empty repository.
   * @param string $key key of the repository.
   */
   function createRepository($key){
-    
+
     // Check if repository does not exists
     if(in_array($key, $this->repositoryList))
       return false;
-      
+
     // Set properties
     $this->repositoryKey = $key;
     $this->repositoryList[] = $key;
-      
+
     // Set empty data
     $data = array();
     foreach($this->repositoryPropertyList as $prop)
       $data[$prop] = "";
-      
+
     // Modify repository data
     $this->modifyRepository($data);
-    
+
   }
 
-  
+
   /**
   * Remove a repository.
   * @param string $key key of the repository.
   */
   static function removeRepository($key){
-    
+
     $return = false;
     // Get access to the ini file
     $iniFile = jApp::configPath('lizmapConfig.ini.php');
     $ini = new jIniFileModifier($iniFile);
-      
+
     // Remove the section corresponding to the repository
     $section = 'repository:'.$key;
     if($ini->isSection($section)){
@@ -195,25 +206,25 @@ class lizmapConfig{
       $return = true;
     }
     return $return;
-    
-  }  
-  
-  
+
+  }
+
+
   /**
   * Modify the services.
   * @param array $data Array containing the data of the services.
   */
   function modifyServices($data){
     $modified = false;
-      
+
     // Get access to the ini file
     $iniFile = jApp::configPath('lizmapConfig.ini.php');
     $ini = new jIniFileModifier($iniFile);
-    
+
     // Set section
     $section = 'services';
-    
-    // Modify the ini data for the section    
+
+    // Modify the ini data for the section
     foreach($data as $k=>$v){
       if(in_array($k, $this->servicesPropertyList)){
         // Set values in ini file
@@ -221,12 +232,12 @@ class lizmapConfig{
         // Modify lizmapConfigData
         $this->lizmapConfigData[$section][$k] = $v;
         $this->$k = $v;
-        $modified = true;      
+        $modified = true;
       }
     }
-    
+
     // Save the ini file
     if($modified)
       $ini->save();
-  }  
+  }
 }

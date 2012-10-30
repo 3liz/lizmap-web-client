@@ -49,14 +49,17 @@ class lizmapCache {
   /**
   * Get remote data from URL, with curl or internal php functions.
   * @param string $url Url of the remote data to fetch.
-  * @param boolean $withCurl If true, use curl instead of php functions.
+  * @param boolean $proxyMethod Method for the proxy : 'php' (default) or 'curl'.
   * @return array($data, $mime) Array containing the data and the mime type.
   */
-  static public function getRemoteData($url, $withCurl=True, $debug=False){
+  static public function getRemoteData($url, $proxyMethod='php', $debug=0){
 
+    // Initialize responses
     $data = '';
     $mime = '';
-    if($withCurl and extension_loaded("curl")){
+
+    // Proxy method : use curl or file_get_contents
+    if($proxyMethod == 'curl' and extension_loaded("curl")){
       # With curl
       $ch = curl_init();
       curl_setopt($ch, CURLOPT_HEADER, 0);
@@ -70,8 +73,7 @@ class lizmapCache {
       // Optionnal debug
       if($debug or !curl_errno($ch))
       {
-        error_log(json_encode($info).'
-', 3, sys_get_temp_dir().'/lizmap_get_remote.log' );
+        jLog::log('--> CURL: ' .json_encode($info));
       }
 
       curl_close($ch);
@@ -80,20 +82,20 @@ class lizmapCache {
       # With file_get_contents
       $data = file_get_contents($url);
       $mime = 'image/png';
-      $matches = array(); $info = '';
+      $matches = array();
+      $info = $url . ' --> PHP: ';
       foreach ($http_response_header as $header){
         if (preg_match( '#Content-Type:\s+([\w/+]+)(;\s+charset=(\S+))?#i', $header, $matches )){
           $mime = $matches[1];
         }
         // optional debug
         if($debug){
-          $info.= $header;
+          $info.= ' '.$header;
         }
       }
       if($debug)
       {
-        error_log(json_encode($info).'
-', 3, sys_get_temp_dir().'/lizmap_get_remote.log' );
+        jLog::log(json_encode($info));
       }
     }
 
@@ -111,6 +113,9 @@ class lizmapCache {
   * @return array $data Normalized and filtered array.
   */
   static public function getServiceData( $repository, $project, $params, $lizmapConfig, $avoidCache=false ) {
+
+    // Change to true to put some information in debug files
+    $debug = $lizmapConfig->debugMode;
 
     // Read config file for the current project
     $configPath = $lizmapConfig->repositoryData['path'].$project.'.qgs.cfg';
@@ -225,14 +230,15 @@ class lizmapCache {
     }
 
     // Log when no cache hit
-    $debug = False;
-    if($debug and $avoidCache)
+    if($debug and $avoidCache){
       error_log(
-        md5(serialize(array('lizmapCache', __FUNCTION__ )).serialize(array( $repository, $project, $params, $lizmapConfig, true ))).' : '.json_encode($params).'
+        date(DATE_RFC822).': '.md5(serialize(array('lizmapCache', __FUNCTION__ )).serialize(array( $repository, $project, $params, $lizmapConfig, true ))).', BBOX='.$params['bbox'].'
 ',
         3,
         sys_get_temp_dir().'/'.$repository.'/'.$project.'/'.$layers.'_'.$crs.'.log'
       );
+    }
+
 
 
     // Construction of the WMS url : base url + parameters
@@ -289,8 +295,8 @@ class lizmapCache {
 
     // Get data from the map server
     $lizmapCache = jClasses::getService('lizmap~lizmapCache');
-    $withCurl = False;
-    $getRemoteData = $lizmapCache->getRemoteData($url . $builtParams, $withCurl);
+    $proxyMethod = $lizmapConfig->proxyMethod;
+    $getRemoteData = $lizmapCache->getRemoteData($url . $builtParams, $proxyMethod, $debug);
     $data = $getRemoteData[0];
     $mime = $getRemoteData[1];
 

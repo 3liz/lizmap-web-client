@@ -144,6 +144,7 @@ class configCtrl extends jController {
     $lizmapConfig = new lizmapConfig('');
     $form = jForms::get('admin~config_services');
 
+    // default repository
     $ctrl = new jFormsControlMenulist('defaultRepository');
     $dataSource = new jFormsStaticDatasource();
     $mydata = array();
@@ -211,7 +212,7 @@ class configCtrl extends jController {
     $ctrl->required = true;
     $form->addControl($ctrl);
 
-    // Set form data from request data
+    // Set the other form data from the request data
     $form->initFromRequest();
 
     // Check the form

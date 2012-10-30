@@ -104,7 +104,7 @@ admin=on
 
 [logger]
 _all =
-default=syslog
+default=file
 error=syslog
 warning=syslog
 notice=syslog
