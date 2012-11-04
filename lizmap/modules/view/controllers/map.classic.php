@@ -87,6 +87,7 @@ class mapCtrl extends jController {
     $rep->addJSCode("var dictionaryUrl = '".jUrl::get('view~translate:getDictionary', array('property'=>'map'))."';");
     $rep->addJSCode("var cfgUrl = '".jUrl::get('lizmap~service:getProjectConfig', array('repository'=>$repository, 'project'=>$project))."';");
     $rep->addJSCode("var wmsServerURL = '".jUrl::get('lizmap~service:index', array('repository'=>$repository, 'project'=>$project))."';");
+    $rep->addJSCode("var mediaServerURL = '".jUrl::get('view~media:getMedia', array('repository'=>$repository, 'project'=>$project))."';");
 
     // Get project data from XML .qgs
     $use_errors = libxml_use_internal_errors(true);
@@ -99,7 +100,7 @@ class mapCtrl extends jController {
       }
       $go = false;
     }
-#    print_r($qgsLoad);
+
     // Default metadata
     $WMSServiceTitle = '';
     $WMSServiceAbstract = '';
