@@ -667,7 +667,13 @@ var lizMap = function() {
       var self = $(this);
       if (self.attr('aria-disabled')=='true')
         return false;
-      window.open(self.val());
+      var windowLink = self.val();
+      // Test if the link is internal
+      var mediaRegex = /^(\/)?media\//;
+      if(mediaRegex.test(windowLink))
+        windowLink = mediaServerURL+'&path=/'+windowLink;
+      // Open link in a new window
+      window.open(windowLink);
     });
 
     // activate the close button
