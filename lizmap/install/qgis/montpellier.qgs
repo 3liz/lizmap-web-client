@@ -4,10 +4,10 @@
     <mapcanvas>
         <units>degrees</units>
         <extent>
-            <xmin>3.842400</xmin>
-            <ymin>43.590989</ymin>
-            <xmax>3.913476</xmax>
-            <ymax>43.635697</ymax>
+            <xmin>3.800970</xmin>
+            <ymin>43.563846</ymin>
+            <xmax>3.947384</xmax>
+            <ymax>43.655943</ymax>
         </extent>
         <projections>1</projections>
         <destinationsrs>
@@ -31,9 +31,9 @@
                         <legendlayerfile isInOverview="0" layerid="bus_stops20110923123319171" visible="1"/>
                     </filegroup>
                 </legendlayer>
-                <legendlayer drawingOrder="-1" open="false" checked="Qt::Checked" name="buses" showFeatureCount="0">
+                <legendlayer drawingOrder="-1" open="false" checked="Qt::Checked" name="bus" showFeatureCount="0">
                     <filegroup open="false" hidden="false">
-                        <legendlayerfile isInOverview="0" layerid="buses20110923123319068" visible="1"/>
+                        <legendlayerfile isInOverview="0" layerid="bus20121102133611751" visible="1"/>
                     </filegroup>
                 </legendlayer>
             </legendgroup>
@@ -43,13 +43,18 @@
                         <legendlayerfile isInOverview="0" layerid="tram_stops20110923123319267" visible="1"/>
                     </filegroup>
                 </legendlayer>
-                <legendlayer drawingOrder="-1" open="true" checked="Qt::Checked" name="tramways" showFeatureCount="0">
-                    <filegroup open="true" hidden="false">
-                        <legendlayerfile isInOverview="0" layerid="trams20110923123319251" visible="1"/>
+                <legendlayer drawingOrder="-1" open="false" checked="Qt::Checked" name="tram" showFeatureCount="0">
+                    <filegroup open="false" hidden="false">
+                        <legendlayerfile isInOverview="0" layerid="tram20121031171456234" visible="1"/>
                     </filegroup>
                 </legendlayer>
             </legendgroup>
         </legendgroup>
+        <legendlayer drawingOrder="-1" open="false" checked="Qt::Checked" name="Quartiers" showFeatureCount="0">
+            <filegroup open="false" hidden="false">
+                <legendlayerfile isInOverview="0" layerid="VilleMTP_MTP_Quartiers_201120121102153736528" visible="1"/>
+            </filegroup>
+        </legendlayer>
         <legendgroup open="true" checked="Qt::Checked" name="baselayers">
             <legendlayer drawingOrder="-1" open="true" checked="Qt::Checked" name="OSM_Basic" showFeatureCount="0">
                 <filegroup open="true" hidden="false">
@@ -58,28 +63,48 @@
             </legendlayer>
         </legendgroup>
         <legendgroup open="true" checked="Qt::Checked" name="Overview">
-            <legendlayer drawingOrder="-1" open="true" checked="Qt::Checked" name="trams" showFeatureCount="0">
-                <filegroup open="true" hidden="false">
-                    <legendlayerfile isInOverview="0" layerid="trams20110923123415062" visible="1"/>
+            <legendlayer drawingOrder="-1" open="false" checked="Qt::Checked" name="VilleMTP_MTP_Quartiers_2011" showFeatureCount="0">
+                <filegroup open="false" hidden="false">
+                    <legendlayerfile isInOverview="0" layerid="VilleMTP_MTP_Quartiers_201120121102160529932" visible="1"/>
                 </filegroup>
             </legendlayer>
         </legendgroup>
     </legend>
     <Composer title="Composeur1" visible="0">
+        <ComposerLabel valign="128" labelText="LizMap&#xa;&#xa;An example PDF output from QGIS composer.&#xa;This PDF file will be available by clicling on the (i) link right to the tramway layer" halign="4" margin="1">
+            <LabelFont description="Ubuntu,12,-1,5,75,0,0,0,0,0"/>
+            <FontColor red="0" blue="0" green="0"/>
+            <ComposerItem width="180.6570665152423" x="52.50124069478908" y="3.307210031347962" rotation="0" height="44.64733542319749" frame="true" outlineWidth="0.3" zValue="5" lastValidViewScaleFactor="2.704697986577181" id="" positionLock="false">
+                <FrameColor alpha="255" red="0" blue="0" green="0"/>
+                <BackgroundColor alpha="255" red="255" blue="255" green="255"/>
+            </ComposerItem>
+        </ComposerLabel>
+        <ComposerPicture pictureWidth="38.06653468889289" file="/home/kimaidou/Documents/3liz/LOGOS/LOGOS/CARRE/WEB/Logo_car_coul.png" pictureHeight="39.62552019726657" mapId="-1">
+            <ComposerItem width="38.06653468889289" x="5.561256874382536" y="5.915632754342429" rotation="0" height="39.62552019726657" frame="false" outlineWidth="0.3" zValue="3" lastValidViewScaleFactor="2.704697986577181" id="" positionLock="false">
+                <FrameColor alpha="255" red="0" blue="0" green="0"/>
+                <BackgroundColor alpha="255" red="255" blue="255" green="255"/>
+            </ComposerItem>
+        </ComposerPicture>
         <ComposerMap keepLayerSet="false" id="0" previewMode="Cache" drawCanvasItems="true">
-            <Extent ymin="43.592544" xmin="3.842436859296482" ymax="43.64345871672211" xmax="3.913439140703518"/>
+            <Extent ymin="43.60164721352984" xmin="3.858432698450044" ymax="43.62135397716985" xmax="3.893970770937688"/>
             <LayerSet/>
             <Grid gridStyle="0" crossLength="3" penColorRed="0" penColorBlue="0" intervalX="0" offsetX="0" intervalY="0" offsetY="0" show="0" penWidth="0" penColorGreen="0">
                 <Annotation direction="0" precision="3" position="1" frameDistance="1" show="0" font="Ubuntu,11,-1,5,50,0,0,0,0,0"/>
             </Grid>
-            <ComposerItem width="281" x="7" y="5" rotation="0" height="201.501066098081" frame="true" outlineWidth="0.3" zValue="1" lastValidViewScaleFactor="2.222748815165877" id="" positionLock="false">
+            <ComposerItem width="278.435736677116" x="4" y="50.60031347962383" rotation="0" height="154.3996865203762" frame="true" outlineWidth="0.3" zValue="2" lastValidViewScaleFactor="2.704697986577181" id="" positionLock="false">
                 <FrameColor alpha="255" red="0" blue="0" green="0"/>
                 <BackgroundColor alpha="255" red="255" blue="255" green="255"/>
             </ComposerItem>
         </ComposerMap>
+        <ComposerPicture pictureWidth="41.41270798167349" file="./media/logo_osm.png" pictureHeight="35.38382585156778" mapId="-1">
+            <ComposerItem width="41.41270798167349" x="245.8684863523573" y="10.35235732009926" rotation="0" height="35.38382585156778" frame="false" outlineWidth="0.3" zValue="4" lastValidViewScaleFactor="2.704697986577181" id="" positionLock="false">
+                <FrameColor alpha="255" red="0" blue="0" green="0"/>
+                <BackgroundColor alpha="255" red="255" blue="255" green="255"/>
+            </ComposerItem>
+        </ComposerPicture>
         <Composition printResolution="300" paperWidth="297" snapGridOffsetX="0" snapGridResolution="0" snapGridOffsetY="0" snapping="0" paperHeight="210" printAsRaster="0"/>
     </Composer>
-    <projectlayers layercount="6">
+    <projectlayers layercount="7">
         <maplayer minimumScale="0" maximumScale="1e+08" type="raster" hasScaleBasedVisibilityFlag="0">
             <id>OSM_Basic20110923140116428</id>
             <datasource>http://osm.wheregroup.com/cgi-bin/osm_basic.xml?VERSION=1.1.1</datasource>
@@ -134,6 +159,858 @@
                     <pixelListEntry red="0.000000" blue="0.000000" green="0.000000" percentTransparent="100"/>
                 </threeValuePixelList>
             </rasterproperties>
+        </maplayer>
+        <maplayer minimumScale="0" maximumScale="1e+08" geometry="Polygon" type="vector" hasScaleBasedVisibilityFlag="0">
+            <id>VilleMTP_MTP_Quartiers_201120121102153736528</id>
+            <datasource>./data/vector/VilleMTP_MTP_Quartiers_2011.shp</datasource>
+            <title>Districts</title>
+            <abstract></abstract>
+            <layername>Quartiers</layername>
+            <srs>
+                <spatialrefsys>
+                    <proj4>+proj=lcc +lat_1=44 +lat_2=49 +lat_0=46.5 +lon_0=3 +x_0=700000 +y_0=6600000 +ellps=GRS80 +units=m +no_defs</proj4>
+                    <srsid>100008</srsid>
+                    <srid>0</srid>
+                    <authid>USER:100008</authid>
+                    <description> * SCR généré (+proj=lcc +lat_1=44 +lat_2=49 +lat_0=46.5 +lon_0=3 +x_0=700000 +y_0=6600000 +ellps=GRS80 +units=m +no_defs)</description>
+                    <projectionacronym>lcc</projectionacronym>
+                    <ellipsoidacronym>GRS80</ellipsoidacronym>
+                    <geographicflag>false</geographicflag>
+                </spatialrefsys>
+            </srs>
+            <transparencyLevelInt>255</transparencyLevelInt>
+            <provider encoding="UTF-8">ogr</provider>
+            <vectorjoins/>
+            <renderer-v2 attr="LIBQUART" symbollevels="0" type="categorizedSymbol">
+                <categories>
+                    <category symbol="0" value="CROIX D'ARGENT" label="CROIX D'ARGENT"/>
+                    <category symbol="1" value="HOPITAUX-FACULTES" label="HOPITAUX-FACULTES"/>
+                    <category symbol="2" value="LES CEVENNES" label="LES CEVENNES"/>
+                    <category symbol="3" value="MONTPELLIER CENTRE" label="MONTPELLIER CENTRE"/>
+                    <category symbol="4" value="MOSSON" label="MOSSON"/>
+                    <category symbol="5" value="PORT MARIANNE" label="PORT MARIANNE"/>
+                    <category symbol="6" value="PRES D'ARENE" label="PRES D'ARENE"/>
+                    <category symbol="7" value="" label=""/>
+                </categories>
+                <symbols>
+                    <symbol outputUnit="MM" alpha="0.4" type="fill" name="0">
+                        <layer pass="0" class="SimpleFill" locked="0">
+                            <prop k="color" v="166,206,227,102"/>
+                            <prop k="color_border" v="0,0,0,102"/>
+                            <prop k="offset" v="0,0"/>
+                            <prop k="style" v="solid"/>
+                            <prop k="style_border" v="dash"/>
+                            <prop k="width_border" v="0.5"/>
+                        </layer>
+                    </symbol>
+                    <symbol outputUnit="MM" alpha="0.4" type="fill" name="1">
+                        <layer pass="0" class="SimpleFill" locked="0">
+                            <prop k="color" v="31,120,180,102"/>
+                            <prop k="color_border" v="0,0,0,102"/>
+                            <prop k="offset" v="0,0"/>
+                            <prop k="style" v="solid"/>
+                            <prop k="style_border" v="dash"/>
+                            <prop k="width_border" v="0.5"/>
+                        </layer>
+                    </symbol>
+                    <symbol outputUnit="MM" alpha="0.4" type="fill" name="2">
+                        <layer pass="0" class="SimpleFill" locked="0">
+                            <prop k="color" v="178,223,138,102"/>
+                            <prop k="color_border" v="0,0,0,102"/>
+                            <prop k="offset" v="0,0"/>
+                            <prop k="style" v="solid"/>
+                            <prop k="style_border" v="dash"/>
+                            <prop k="width_border" v="0.5"/>
+                        </layer>
+                    </symbol>
+                    <symbol outputUnit="MM" alpha="0.4" type="fill" name="3">
+                        <layer pass="0" class="SimpleFill" locked="0">
+                            <prop k="color" v="251,154,153,102"/>
+                            <prop k="color_border" v="0,0,0,102"/>
+                            <prop k="offset" v="0,0"/>
+                            <prop k="style" v="solid"/>
+                            <prop k="style_border" v="dash"/>
+                            <prop k="width_border" v="0.5"/>
+                        </layer>
+                    </symbol>
+                    <symbol outputUnit="MM" alpha="0.4" type="fill" name="4">
+                        <layer pass="0" class="SimpleFill" locked="0">
+                            <prop k="color" v="227,26,28,102"/>
+                            <prop k="color_border" v="0,0,0,102"/>
+                            <prop k="offset" v="0,0"/>
+                            <prop k="style" v="solid"/>
+                            <prop k="style_border" v="dash"/>
+                            <prop k="width_border" v="0.5"/>
+                        </layer>
+                    </symbol>
+                    <symbol outputUnit="MM" alpha="0.4" type="fill" name="5">
+                        <layer pass="0" class="SimpleFill" locked="0">
+                            <prop k="color" v="255,127,0,102"/>
+                            <prop k="color_border" v="0,0,0,102"/>
+                            <prop k="offset" v="0,0"/>
+                            <prop k="style" v="solid"/>
+                            <prop k="style_border" v="dash"/>
+                            <prop k="width_border" v="0.5"/>
+                        </layer>
+                    </symbol>
+                    <symbol outputUnit="MM" alpha="0.4" type="fill" name="6">
+                        <layer pass="0" class="SimpleFill" locked="0">
+                            <prop k="color" v="202,178,214,102"/>
+                            <prop k="color_border" v="0,0,0,102"/>
+                            <prop k="offset" v="0,0"/>
+                            <prop k="style" v="solid"/>
+                            <prop k="style_border" v="dash"/>
+                            <prop k="width_border" v="0.5"/>
+                        </layer>
+                    </symbol>
+                    <symbol outputUnit="MM" alpha="0.4" type="fill" name="7">
+                        <layer pass="0" class="SimpleFill" locked="0">
+                            <prop k="color" v="106,61,154,102"/>
+                            <prop k="color_border" v="0,0,0,102"/>
+                            <prop k="offset" v="0,0"/>
+                            <prop k="style" v="solid"/>
+                            <prop k="style_border" v="dash"/>
+                            <prop k="width_border" v="0.5"/>
+                        </layer>
+                    </symbol>
+                </symbols>
+                <source-symbol>
+                    <symbol outputUnit="MM" alpha="0.4" type="fill" name="0">
+                        <layer pass="0" class="SimpleFill" locked="0">
+                            <prop k="color" v="190,151,107,102"/>
+                            <prop k="color_border" v="0,0,0,102"/>
+                            <prop k="offset" v="0,0"/>
+                            <prop k="style" v="solid"/>
+                            <prop k="style_border" v="dash"/>
+                            <prop k="width_border" v="0.5"/>
+                        </layer>
+                    </symbol>
+                </source-symbol>
+                <colorramp type="colorbrewer" name="[source]">
+                    <prop k="colors" v="10"/>
+                    <prop k="schemeName" v="Paired"/>
+                </colorramp>
+                <rotation field=""/>
+                <sizescale field=""/>
+            </renderer-v2>
+            <customproperties/>
+            <displayfield>QUARTIER</displayfield>
+            <label>0</label>
+            <labelattributes>
+                <label fieldname="" text="Étiquette"/>
+                <family fieldname="" name="Ubuntu"/>
+                <size fieldname="" units="pt" value="12"/>
+                <bold fieldname="" on="0"/>
+                <italic fieldname="" on="0"/>
+                <underline fieldname="" on="0"/>
+                <strikeout fieldname="" on="0"/>
+                <color fieldname="" red="0" blue="0" green="0"/>
+                <x fieldname=""/>
+                <y fieldname=""/>
+                <offset x="0" y="0" units="pt" yfieldname="" xfieldname=""/>
+                <angle fieldname="" value="0" auto="0"/>
+                <alignment fieldname="" value="center"/>
+                <buffercolor fieldname="" red="255" blue="255" green="255"/>
+                <buffersize fieldname="" units="pt" value="1"/>
+                <bufferenabled fieldname="" on=""/>
+                <multilineenabled fieldname="" on=""/>
+                <selectedonly on=""/>
+            </labelattributes>
+            <edittypes>
+                <edittype type="0" name="AREA"/>
+                <edittype type="0" name="COMMUNE"/>
+                <edittype type="0" name="LIBQUART"/>
+                <edittype type="0" name="LIBSQUART"/>
+                <edittype type="0" name="PERIMETER"/>
+                <edittype type="11" name="QUARTIER"/>
+                <edittype type="0" name="QUARTIER_"/>
+                <edittype type="0" name="QUARTIER_I"/>
+                <edittype type="11" name="QUARTMNO"/>
+                <edittype type="11" name="SQUARTMNO"/>
+                <edittype type="0" name="SYMBOL"/>
+                <edittype type="0" name="Shape_Area"/>
+                <edittype type="0" name="Shape_Leng"/>
+                <edittype type="0" name="photo"/>
+                <edittype type="0" name="url"/>
+            </edittypes>
+            <editform>.</editform>
+            <editforminit></editforminit>
+            <annotationform>.</annotationform>
+            <aliases>
+                <alias field="LIBQUART" index="2" name="Name"/>
+                <alias field="photo" index="4" name="Illustration"/>
+                <alias field="url" index="5" name="Website"/>
+            </aliases>
+            <attributeactions/>
+        </maplayer>
+        <maplayer minimumScale="0" maximumScale="1e+08" geometry="Polygon" type="vector" hasScaleBasedVisibilityFlag="1">
+            <id>VilleMTP_MTP_Quartiers_201120121102160529932</id>
+            <datasource>./data/vector/VilleMTP_MTP_Quartiers_2011.shp</datasource>
+            <title></title>
+            <abstract></abstract>
+            <layername>VilleMTP_MTP_Quartiers_2011</layername>
+            <srs>
+                <spatialrefsys>
+                    <proj4>+proj=lcc +lat_1=44 +lat_2=49 +lat_0=46.5 +lon_0=3 +x_0=700000 +y_0=6600000 +ellps=GRS80 +units=m +no_defs</proj4>
+                    <srsid>100008</srsid>
+                    <srid>0</srid>
+                    <authid>USER:100008</authid>
+                    <description> * SCR généré (+proj=lcc +lat_1=44 +lat_2=49 +lat_0=46.5 +lon_0=3 +x_0=700000 +y_0=6600000 +ellps=GRS80 +units=m +no_defs)</description>
+                    <projectionacronym>lcc</projectionacronym>
+                    <ellipsoidacronym>GRS80</ellipsoidacronym>
+                    <geographicflag>false</geographicflag>
+                </spatialrefsys>
+            </srs>
+            <transparencyLevelInt>255</transparencyLevelInt>
+            <provider encoding="UTF-8">ogr</provider>
+            <vectorjoins/>
+            <renderer-v2 attr="LIBQUART" symbollevels="0" type="categorizedSymbol">
+                <categories>
+                    <category symbol="0" value="CROIX D'ARGENT" label="CROIX D'ARGENT"/>
+                    <category symbol="1" value="HOPITAUX-FACULTES" label="HOPITAUX-FACULTES"/>
+                    <category symbol="2" value="LES CEVENNES" label="LES CEVENNES"/>
+                    <category symbol="3" value="MONTPELLIER CENTRE" label="MONTPELLIER CENTRE"/>
+                    <category symbol="4" value="MOSSON" label="MOSSON"/>
+                    <category symbol="5" value="PORT MARIANNE" label="PORT MARIANNE"/>
+                    <category symbol="6" value="PRES D'ARENE" label="PRES D'ARENE"/>
+                    <category symbol="7" value="" label=""/>
+                </categories>
+                <symbols>
+                    <symbol outputUnit="MM" alpha="1" type="fill" name="0">
+                        <layer pass="0" class="SimpleFill" locked="0">
+                            <prop k="color" v="166,206,227,255"/>
+                            <prop k="color_border" v="0,0,0,255"/>
+                            <prop k="offset" v="0,0"/>
+                            <prop k="style" v="solid"/>
+                            <prop k="style_border" v="dash"/>
+                            <prop k="width_border" v="0.3"/>
+                        </layer>
+                    </symbol>
+                    <symbol outputUnit="MM" alpha="1" type="fill" name="1">
+                        <layer pass="0" class="SimpleFill" locked="0">
+                            <prop k="color" v="31,120,180,255"/>
+                            <prop k="color_border" v="0,0,0,255"/>
+                            <prop k="offset" v="0,0"/>
+                            <prop k="style" v="solid"/>
+                            <prop k="style_border" v="dash"/>
+                            <prop k="width_border" v="0.3"/>
+                        </layer>
+                    </symbol>
+                    <symbol outputUnit="MM" alpha="1" type="fill" name="2">
+                        <layer pass="0" class="SimpleFill" locked="0">
+                            <prop k="color" v="178,223,138,255"/>
+                            <prop k="color_border" v="0,0,0,255"/>
+                            <prop k="offset" v="0,0"/>
+                            <prop k="style" v="solid"/>
+                            <prop k="style_border" v="dash"/>
+                            <prop k="width_border" v="0.3"/>
+                        </layer>
+                    </symbol>
+                    <symbol outputUnit="MM" alpha="1" type="fill" name="3">
+                        <layer pass="0" class="SimpleFill" locked="0">
+                            <prop k="color" v="251,154,153,255"/>
+                            <prop k="color_border" v="0,0,0,255"/>
+                            <prop k="offset" v="0,0"/>
+                            <prop k="style" v="solid"/>
+                            <prop k="style_border" v="dash"/>
+                            <prop k="width_border" v="0.3"/>
+                        </layer>
+                    </symbol>
+                    <symbol outputUnit="MM" alpha="1" type="fill" name="4">
+                        <layer pass="0" class="SimpleFill" locked="0">
+                            <prop k="color" v="227,26,28,255"/>
+                            <prop k="color_border" v="0,0,0,255"/>
+                            <prop k="offset" v="0,0"/>
+                            <prop k="style" v="solid"/>
+                            <prop k="style_border" v="dash"/>
+                            <prop k="width_border" v="0.3"/>
+                        </layer>
+                    </symbol>
+                    <symbol outputUnit="MM" alpha="1" type="fill" name="5">
+                        <layer pass="0" class="SimpleFill" locked="0">
+                            <prop k="color" v="255,127,0,255"/>
+                            <prop k="color_border" v="0,0,0,255"/>
+                            <prop k="offset" v="0,0"/>
+                            <prop k="style" v="solid"/>
+                            <prop k="style_border" v="dash"/>
+                            <prop k="width_border" v="0.3"/>
+                        </layer>
+                    </symbol>
+                    <symbol outputUnit="MM" alpha="1" type="fill" name="6">
+                        <layer pass="0" class="SimpleFill" locked="0">
+                            <prop k="color" v="202,178,214,255"/>
+                            <prop k="color_border" v="0,0,0,255"/>
+                            <prop k="offset" v="0,0"/>
+                            <prop k="style" v="solid"/>
+                            <prop k="style_border" v="dash"/>
+                            <prop k="width_border" v="0.3"/>
+                        </layer>
+                    </symbol>
+                    <symbol outputUnit="MM" alpha="1" type="fill" name="7">
+                        <layer pass="0" class="SimpleFill" locked="0">
+                            <prop k="color" v="106,61,154,255"/>
+                            <prop k="color_border" v="0,0,0,255"/>
+                            <prop k="offset" v="0,0"/>
+                            <prop k="style" v="solid"/>
+                            <prop k="style_border" v="dash"/>
+                            <prop k="width_border" v="0.3"/>
+                        </layer>
+                    </symbol>
+                </symbols>
+                <source-symbol>
+                    <symbol outputUnit="MM" alpha="1" type="fill" name="0">
+                        <layer pass="0" class="SimpleFill" locked="0">
+                            <prop k="color" v="207,209,136,255"/>
+                            <prop k="color_border" v="0,0,0,255"/>
+                            <prop k="offset" v="0,0"/>
+                            <prop k="style" v="solid"/>
+                            <prop k="style_border" v="dash"/>
+                            <prop k="width_border" v="0.3"/>
+                        </layer>
+                    </symbol>
+                </source-symbol>
+                <colorramp type="colorbrewer" name="[source]">
+                    <prop k="colors" v="10"/>
+                    <prop k="schemeName" v="Paired"/>
+                </colorramp>
+                <rotation field=""/>
+                <sizescale field=""/>
+            </renderer-v2>
+            <customproperties/>
+            <displayfield>QUARTIER</displayfield>
+            <label>0</label>
+            <labelattributes>
+                <label fieldname="" text="Étiquette"/>
+                <family fieldname="" name="Ubuntu"/>
+                <size fieldname="" units="pt" value="12"/>
+                <bold fieldname="" on="0"/>
+                <italic fieldname="" on="0"/>
+                <underline fieldname="" on="0"/>
+                <strikeout fieldname="" on="0"/>
+                <color fieldname="" red="0" blue="0" green="0"/>
+                <x fieldname=""/>
+                <y fieldname=""/>
+                <offset x="0" y="0" units="pt" yfieldname="" xfieldname=""/>
+                <angle fieldname="" value="0" auto="0"/>
+                <alignment fieldname="" value="center"/>
+                <buffercolor fieldname="" red="255" blue="255" green="255"/>
+                <buffersize fieldname="" units="pt" value="1"/>
+                <bufferenabled fieldname="" on=""/>
+                <multilineenabled fieldname="" on=""/>
+                <selectedonly on=""/>
+            </labelattributes>
+            <edittypes>
+                <edittype type="0" name="LIBQUART"/>
+                <edittype type="0" name="QUARTIER"/>
+                <edittype type="0" name="QUARTMNO"/>
+                <edittype type="0" name="SQUARTMNO"/>
+                <edittype type="0" name="photo"/>
+                <edittype type="0" name="url"/>
+            </edittypes>
+            <editform>.</editform>
+            <editforminit></editforminit>
+            <annotationform>.</annotationform>
+            <attributeactions/>
+        </maplayer>
+        <maplayer minimumScale="0" maximumScale="40001" geometry="Line" type="vector" hasScaleBasedVisibilityFlag="1">
+            <id>bus20121102133611751</id>
+            <datasource>./data/vector/bus.shp</datasource>
+            <title>Bus lines</title>
+            <abstract></abstract>
+            <layername>bus</layername>
+            <srs>
+                <spatialrefsys>
+                    <proj4>+proj=longlat +datum=WGS84 +no_defs</proj4>
+                    <srsid>3452</srsid>
+                    <srid>4326</srid>
+                    <authid>EPSG:4326</authid>
+                    <description>WGS 84</description>
+                    <projectionacronym>longlat</projectionacronym>
+                    <ellipsoidacronym>WGS84</ellipsoidacronym>
+                    <geographicflag>true</geographicflag>
+                </spatialrefsys>
+            </srs>
+            <transparencyLevelInt>255</transparencyLevelInt>
+            <provider encoding="UTF-8">ogr</provider>
+            <vectorjoins/>
+            <renderer-v2 attr="ref" symbollevels="0" type="categorizedSymbol">
+                <categories>
+                    <category symbol="0" value="11" label="11"/>
+                    <category symbol="1" value="12" label="12"/>
+                    <category symbol="2" value="14" label="14"/>
+                    <category symbol="3" value="15" label="15"/>
+                    <category symbol="4" value="16" label="16"/>
+                    <category symbol="5" value="17" label="17"/>
+                    <category symbol="6" value="18" label="18"/>
+                    <category symbol="7" value="20" label="20"/>
+                    <category symbol="8" value="21" label="21"/>
+                    <category symbol="9" value="22" label="22"/>
+                    <category symbol="10" value="23" label="23"/>
+                    <category symbol="11" value="24" label="24"/>
+                    <category symbol="12" value="25" label="25"/>
+                    <category symbol="13" value="29" label="29"/>
+                    <category symbol="14" value="30" label="30"/>
+                    <category symbol="15" value="302" label="302"/>
+                    <category symbol="16" value="31" label="31"/>
+                    <category symbol="17" value="32" label="32"/>
+                    <category symbol="18" value="33" label="33"/>
+                    <category symbol="19" value="34" label="34"/>
+                    <category symbol="20" value="35" label="35"/>
+                    <category symbol="21" value="36" label="36"/>
+                    <category symbol="22" value="37" label="37"/>
+                    <category symbol="23" value="38" label="38"/>
+                    <category symbol="24" value="5" label="5"/>
+                    <category symbol="25" value="6" label="6"/>
+                    <category symbol="26" value="7" label="7"/>
+                    <category symbol="27" value="8" label="8"/>
+                    <category symbol="28" value="9" label="9"/>
+                    <category symbol="29" value="La navette" label="La navette"/>
+                    <category symbol="30" value="La Ronde" label="La Ronde"/>
+                    <category symbol="31" value="" label=""/>
+                </categories>
+                <symbols>
+                    <symbol outputUnit="MM" alpha="1" type="line" name="0">
+                        <layer pass="0" class="SimpleLine" locked="0">
+                            <prop k="capstyle" v="square"/>
+                            <prop k="color" v="158,1,66,255"/>
+                            <prop k="customdash" v="5;2"/>
+                            <prop k="joinstyle" v="bevel"/>
+                            <prop k="offset" v="0"/>
+                            <prop k="penstyle" v="solid"/>
+                            <prop k="use_custom_dash" v="0"/>
+                            <prop k="width" v="1"/>
+                        </layer>
+                    </symbol>
+                    <symbol outputUnit="MM" alpha="1" type="line" name="1">
+                        <layer pass="0" class="SimpleLine" locked="0">
+                            <prop k="capstyle" v="square"/>
+                            <prop k="color" v="158,1,66,255"/>
+                            <prop k="customdash" v="5;2"/>
+                            <prop k="joinstyle" v="bevel"/>
+                            <prop k="offset" v="0"/>
+                            <prop k="penstyle" v="solid"/>
+                            <prop k="use_custom_dash" v="0"/>
+                            <prop k="width" v="1"/>
+                        </layer>
+                    </symbol>
+                    <symbol outputUnit="MM" alpha="1" type="line" name="10">
+                        <layer pass="0" class="SimpleLine" locked="0">
+                            <prop k="capstyle" v="square"/>
+                            <prop k="color" v="253,174,97,255"/>
+                            <prop k="customdash" v="5;2"/>
+                            <prop k="joinstyle" v="bevel"/>
+                            <prop k="offset" v="0"/>
+                            <prop k="penstyle" v="solid"/>
+                            <prop k="use_custom_dash" v="0"/>
+                            <prop k="width" v="1"/>
+                        </layer>
+                    </symbol>
+                    <symbol outputUnit="MM" alpha="1" type="line" name="11">
+                        <layer pass="0" class="SimpleLine" locked="0">
+                            <prop k="capstyle" v="square"/>
+                            <prop k="color" v="253,174,97,255"/>
+                            <prop k="customdash" v="5;2"/>
+                            <prop k="joinstyle" v="bevel"/>
+                            <prop k="offset" v="0"/>
+                            <prop k="penstyle" v="solid"/>
+                            <prop k="use_custom_dash" v="0"/>
+                            <prop k="width" v="1"/>
+                        </layer>
+                    </symbol>
+                    <symbol outputUnit="MM" alpha="1" type="line" name="12">
+                        <layer pass="0" class="SimpleLine" locked="0">
+                            <prop k="capstyle" v="square"/>
+                            <prop k="color" v="253,174,97,255"/>
+                            <prop k="customdash" v="5;2"/>
+                            <prop k="joinstyle" v="bevel"/>
+                            <prop k="offset" v="0"/>
+                            <prop k="penstyle" v="solid"/>
+                            <prop k="use_custom_dash" v="0"/>
+                            <prop k="width" v="1"/>
+                        </layer>
+                    </symbol>
+                    <symbol outputUnit="MM" alpha="1" type="line" name="13">
+                        <layer pass="0" class="SimpleLine" locked="0">
+                            <prop k="capstyle" v="square"/>
+                            <prop k="color" v="254,224,139,255"/>
+                            <prop k="customdash" v="5;2"/>
+                            <prop k="joinstyle" v="bevel"/>
+                            <prop k="offset" v="0"/>
+                            <prop k="penstyle" v="solid"/>
+                            <prop k="use_custom_dash" v="0"/>
+                            <prop k="width" v="1"/>
+                        </layer>
+                    </symbol>
+                    <symbol outputUnit="MM" alpha="1" type="line" name="14">
+                        <layer pass="0" class="SimpleLine" locked="0">
+                            <prop k="capstyle" v="square"/>
+                            <prop k="color" v="254,224,139,255"/>
+                            <prop k="customdash" v="5;2"/>
+                            <prop k="joinstyle" v="bevel"/>
+                            <prop k="offset" v="0"/>
+                            <prop k="penstyle" v="solid"/>
+                            <prop k="use_custom_dash" v="0"/>
+                            <prop k="width" v="1"/>
+                        </layer>
+                    </symbol>
+                    <symbol outputUnit="MM" alpha="1" type="line" name="15">
+                        <layer pass="0" class="SimpleLine" locked="0">
+                            <prop k="capstyle" v="square"/>
+                            <prop k="color" v="254,224,139,255"/>
+                            <prop k="customdash" v="5;2"/>
+                            <prop k="joinstyle" v="bevel"/>
+                            <prop k="offset" v="0"/>
+                            <prop k="penstyle" v="solid"/>
+                            <prop k="use_custom_dash" v="0"/>
+                            <prop k="width" v="1"/>
+                        </layer>
+                    </symbol>
+                    <symbol outputUnit="MM" alpha="1" type="line" name="16">
+                        <layer pass="0" class="SimpleLine" locked="0">
+                            <prop k="capstyle" v="square"/>
+                            <prop k="color" v="230,245,152,255"/>
+                            <prop k="customdash" v="5;2"/>
+                            <prop k="joinstyle" v="bevel"/>
+                            <prop k="offset" v="0"/>
+                            <prop k="penstyle" v="solid"/>
+                            <prop k="use_custom_dash" v="0"/>
+                            <prop k="width" v="1"/>
+                        </layer>
+                    </symbol>
+                    <symbol outputUnit="MM" alpha="1" type="line" name="17">
+                        <layer pass="0" class="SimpleLine" locked="0">
+                            <prop k="capstyle" v="square"/>
+                            <prop k="color" v="230,245,152,255"/>
+                            <prop k="customdash" v="5;2"/>
+                            <prop k="joinstyle" v="bevel"/>
+                            <prop k="offset" v="0"/>
+                            <prop k="penstyle" v="solid"/>
+                            <prop k="use_custom_dash" v="0"/>
+                            <prop k="width" v="1"/>
+                        </layer>
+                    </symbol>
+                    <symbol outputUnit="MM" alpha="1" type="line" name="18">
+                        <layer pass="0" class="SimpleLine" locked="0">
+                            <prop k="capstyle" v="square"/>
+                            <prop k="color" v="230,245,152,255"/>
+                            <prop k="customdash" v="5;2"/>
+                            <prop k="joinstyle" v="bevel"/>
+                            <prop k="offset" v="0"/>
+                            <prop k="penstyle" v="solid"/>
+                            <prop k="use_custom_dash" v="0"/>
+                            <prop k="width" v="1"/>
+                        </layer>
+                    </symbol>
+                    <symbol outputUnit="MM" alpha="1" type="line" name="19">
+                        <layer pass="0" class="SimpleLine" locked="0">
+                            <prop k="capstyle" v="square"/>
+                            <prop k="color" v="171,221,164,255"/>
+                            <prop k="customdash" v="5;2"/>
+                            <prop k="joinstyle" v="bevel"/>
+                            <prop k="offset" v="0"/>
+                            <prop k="penstyle" v="solid"/>
+                            <prop k="use_custom_dash" v="0"/>
+                            <prop k="width" v="1"/>
+                        </layer>
+                    </symbol>
+                    <symbol outputUnit="MM" alpha="1" type="line" name="2">
+                        <layer pass="0" class="SimpleLine" locked="0">
+                            <prop k="capstyle" v="square"/>
+                            <prop k="color" v="158,1,66,255"/>
+                            <prop k="customdash" v="5;2"/>
+                            <prop k="joinstyle" v="bevel"/>
+                            <prop k="offset" v="0"/>
+                            <prop k="penstyle" v="solid"/>
+                            <prop k="use_custom_dash" v="0"/>
+                            <prop k="width" v="1"/>
+                        </layer>
+                    </symbol>
+                    <symbol outputUnit="MM" alpha="1" type="line" name="20">
+                        <layer pass="0" class="SimpleLine" locked="0">
+                            <prop k="capstyle" v="square"/>
+                            <prop k="color" v="171,221,164,255"/>
+                            <prop k="customdash" v="5;2"/>
+                            <prop k="joinstyle" v="bevel"/>
+                            <prop k="offset" v="0"/>
+                            <prop k="penstyle" v="solid"/>
+                            <prop k="use_custom_dash" v="0"/>
+                            <prop k="width" v="1"/>
+                        </layer>
+                    </symbol>
+                    <symbol outputUnit="MM" alpha="1" type="line" name="21">
+                        <layer pass="0" class="SimpleLine" locked="0">
+                            <prop k="capstyle" v="square"/>
+                            <prop k="color" v="171,221,164,255"/>
+                            <prop k="customdash" v="5;2"/>
+                            <prop k="joinstyle" v="bevel"/>
+                            <prop k="offset" v="0"/>
+                            <prop k="penstyle" v="solid"/>
+                            <prop k="use_custom_dash" v="0"/>
+                            <prop k="width" v="1"/>
+                        </layer>
+                    </symbol>
+                    <symbol outputUnit="MM" alpha="1" type="line" name="22">
+                        <layer pass="0" class="SimpleLine" locked="0">
+                            <prop k="capstyle" v="square"/>
+                            <prop k="color" v="102,194,165,255"/>
+                            <prop k="customdash" v="5;2"/>
+                            <prop k="joinstyle" v="bevel"/>
+                            <prop k="offset" v="0"/>
+                            <prop k="penstyle" v="solid"/>
+                            <prop k="use_custom_dash" v="0"/>
+                            <prop k="width" v="1"/>
+                        </layer>
+                    </symbol>
+                    <symbol outputUnit="MM" alpha="1" type="line" name="23">
+                        <layer pass="0" class="SimpleLine" locked="0">
+                            <prop k="capstyle" v="square"/>
+                            <prop k="color" v="102,194,165,255"/>
+                            <prop k="customdash" v="5;2"/>
+                            <prop k="joinstyle" v="bevel"/>
+                            <prop k="offset" v="0"/>
+                            <prop k="penstyle" v="solid"/>
+                            <prop k="use_custom_dash" v="0"/>
+                            <prop k="width" v="1"/>
+                        </layer>
+                    </symbol>
+                    <symbol outputUnit="MM" alpha="1" type="line" name="24">
+                        <layer pass="0" class="SimpleLine" locked="0">
+                            <prop k="capstyle" v="square"/>
+                            <prop k="color" v="102,194,165,255"/>
+                            <prop k="customdash" v="5;2"/>
+                            <prop k="joinstyle" v="bevel"/>
+                            <prop k="offset" v="0"/>
+                            <prop k="penstyle" v="solid"/>
+                            <prop k="use_custom_dash" v="0"/>
+                            <prop k="width" v="1"/>
+                        </layer>
+                    </symbol>
+                    <symbol outputUnit="MM" alpha="1" type="line" name="25">
+                        <layer pass="0" class="SimpleLine" locked="0">
+                            <prop k="capstyle" v="square"/>
+                            <prop k="color" v="50,136,189,255"/>
+                            <prop k="customdash" v="5;2"/>
+                            <prop k="joinstyle" v="bevel"/>
+                            <prop k="offset" v="0"/>
+                            <prop k="penstyle" v="solid"/>
+                            <prop k="use_custom_dash" v="0"/>
+                            <prop k="width" v="1"/>
+                        </layer>
+                    </symbol>
+                    <symbol outputUnit="MM" alpha="1" type="line" name="26">
+                        <layer pass="0" class="SimpleLine" locked="0">
+                            <prop k="capstyle" v="square"/>
+                            <prop k="color" v="50,136,189,255"/>
+                            <prop k="customdash" v="5;2"/>
+                            <prop k="joinstyle" v="bevel"/>
+                            <prop k="offset" v="0"/>
+                            <prop k="penstyle" v="solid"/>
+                            <prop k="use_custom_dash" v="0"/>
+                            <prop k="width" v="1"/>
+                        </layer>
+                    </symbol>
+                    <symbol outputUnit="MM" alpha="1" type="line" name="27">
+                        <layer pass="0" class="SimpleLine" locked="0">
+                            <prop k="capstyle" v="square"/>
+                            <prop k="color" v="50,136,189,255"/>
+                            <prop k="customdash" v="5;2"/>
+                            <prop k="joinstyle" v="bevel"/>
+                            <prop k="offset" v="0"/>
+                            <prop k="penstyle" v="solid"/>
+                            <prop k="use_custom_dash" v="0"/>
+                            <prop k="width" v="1"/>
+                        </layer>
+                    </symbol>
+                    <symbol outputUnit="MM" alpha="1" type="line" name="28">
+                        <layer pass="0" class="SimpleLine" locked="0">
+                            <prop k="capstyle" v="square"/>
+                            <prop k="color" v="94,79,162,255"/>
+                            <prop k="customdash" v="5;2"/>
+                            <prop k="joinstyle" v="bevel"/>
+                            <prop k="offset" v="0"/>
+                            <prop k="penstyle" v="solid"/>
+                            <prop k="use_custom_dash" v="0"/>
+                            <prop k="width" v="1"/>
+                        </layer>
+                    </symbol>
+                    <symbol outputUnit="MM" alpha="1" type="line" name="29">
+                        <layer pass="0" class="SimpleLine" locked="0">
+                            <prop k="capstyle" v="square"/>
+                            <prop k="color" v="94,79,162,255"/>
+                            <prop k="customdash" v="5;2"/>
+                            <prop k="joinstyle" v="bevel"/>
+                            <prop k="offset" v="0"/>
+                            <prop k="penstyle" v="solid"/>
+                            <prop k="use_custom_dash" v="0"/>
+                            <prop k="width" v="1"/>
+                        </layer>
+                    </symbol>
+                    <symbol outputUnit="MM" alpha="1" type="line" name="3">
+                        <layer pass="0" class="SimpleLine" locked="0">
+                            <prop k="capstyle" v="square"/>
+                            <prop k="color" v="158,1,66,255"/>
+                            <prop k="customdash" v="5;2"/>
+                            <prop k="joinstyle" v="bevel"/>
+                            <prop k="offset" v="0"/>
+                            <prop k="penstyle" v="solid"/>
+                            <prop k="use_custom_dash" v="0"/>
+                            <prop k="width" v="1"/>
+                        </layer>
+                    </symbol>
+                    <symbol outputUnit="MM" alpha="1" type="line" name="30">
+                        <layer pass="0" class="SimpleLine" locked="0">
+                            <prop k="capstyle" v="square"/>
+                            <prop k="color" v="94,79,162,255"/>
+                            <prop k="customdash" v="5;2"/>
+                            <prop k="joinstyle" v="bevel"/>
+                            <prop k="offset" v="0"/>
+                            <prop k="penstyle" v="solid"/>
+                            <prop k="use_custom_dash" v="0"/>
+                            <prop k="width" v="1"/>
+                        </layer>
+                    </symbol>
+                    <symbol outputUnit="MM" alpha="1" type="line" name="31">
+                        <layer pass="0" class="SimpleLine" locked="0">
+                            <prop k="capstyle" v="square"/>
+                            <prop k="color" v="94,79,162,255"/>
+                            <prop k="customdash" v="5;2"/>
+                            <prop k="joinstyle" v="bevel"/>
+                            <prop k="offset" v="0"/>
+                            <prop k="penstyle" v="solid"/>
+                            <prop k="use_custom_dash" v="0"/>
+                            <prop k="width" v="1"/>
+                        </layer>
+                    </symbol>
+                    <symbol outputUnit="MM" alpha="1" type="line" name="4">
+                        <layer pass="0" class="SimpleLine" locked="0">
+                            <prop k="capstyle" v="square"/>
+                            <prop k="color" v="213,62,79,255"/>
+                            <prop k="customdash" v="5;2"/>
+                            <prop k="joinstyle" v="bevel"/>
+                            <prop k="offset" v="0"/>
+                            <prop k="penstyle" v="solid"/>
+                            <prop k="use_custom_dash" v="0"/>
+                            <prop k="width" v="1"/>
+                        </layer>
+                    </symbol>
+                    <symbol outputUnit="MM" alpha="1" type="line" name="5">
+                        <layer pass="0" class="SimpleLine" locked="0">
+                            <prop k="capstyle" v="square"/>
+                            <prop k="color" v="213,62,79,255"/>
+                            <prop k="customdash" v="5;2"/>
+                            <prop k="joinstyle" v="bevel"/>
+                            <prop k="offset" v="0"/>
+                            <prop k="penstyle" v="solid"/>
+                            <prop k="use_custom_dash" v="0"/>
+                            <prop k="width" v="1"/>
+                        </layer>
+                    </symbol>
+                    <symbol outputUnit="MM" alpha="1" type="line" name="6">
+                        <layer pass="0" class="SimpleLine" locked="0">
+                            <prop k="capstyle" v="square"/>
+                            <prop k="color" v="213,62,79,255"/>
+                            <prop k="customdash" v="5;2"/>
+                            <prop k="joinstyle" v="bevel"/>
+                            <prop k="offset" v="0"/>
+                            <prop k="penstyle" v="solid"/>
+                            <prop k="use_custom_dash" v="0"/>
+                            <prop k="width" v="1"/>
+                        </layer>
+                    </symbol>
+                    <symbol outputUnit="MM" alpha="1" type="line" name="7">
+                        <layer pass="0" class="SimpleLine" locked="0">
+                            <prop k="capstyle" v="square"/>
+                            <prop k="color" v="244,109,67,255"/>
+                            <prop k="customdash" v="5;2"/>
+                            <prop k="joinstyle" v="bevel"/>
+                            <prop k="offset" v="0"/>
+                            <prop k="penstyle" v="solid"/>
+                            <prop k="use_custom_dash" v="0"/>
+                            <prop k="width" v="1"/>
+                        </layer>
+                    </symbol>
+                    <symbol outputUnit="MM" alpha="1" type="line" name="8">
+                        <layer pass="0" class="SimpleLine" locked="0">
+                            <prop k="capstyle" v="square"/>
+                            <prop k="color" v="244,109,67,255"/>
+                            <prop k="customdash" v="5;2"/>
+                            <prop k="joinstyle" v="bevel"/>
+                            <prop k="offset" v="0"/>
+                            <prop k="penstyle" v="solid"/>
+                            <prop k="use_custom_dash" v="0"/>
+                            <prop k="width" v="1"/>
+                        </layer>
+                    </symbol>
+                    <symbol outputUnit="MM" alpha="1" type="line" name="9">
+                        <layer pass="0" class="SimpleLine" locked="0">
+                            <prop k="capstyle" v="square"/>
+                            <prop k="color" v="244,109,67,255"/>
+                            <prop k="customdash" v="5;2"/>
+                            <prop k="joinstyle" v="bevel"/>
+                            <prop k="offset" v="0"/>
+                            <prop k="penstyle" v="solid"/>
+                            <prop k="use_custom_dash" v="0"/>
+                            <prop k="width" v="1"/>
+                        </layer>
+                    </symbol>
+                </symbols>
+                <source-symbol>
+                    <symbol outputUnit="MM" alpha="1" type="line" name="0">
+                        <layer pass="0" class="SimpleLine" locked="0">
+                            <prop k="capstyle" v="square"/>
+                            <prop k="color" v="233,171,193,255"/>
+                            <prop k="customdash" v="5;2"/>
+                            <prop k="joinstyle" v="bevel"/>
+                            <prop k="offset" v="0"/>
+                            <prop k="penstyle" v="solid"/>
+                            <prop k="use_custom_dash" v="0"/>
+                            <prop k="width" v="1"/>
+                        </layer>
+                    </symbol>
+                </source-symbol>
+                <colorramp type="colorbrewer" name="[source]">
+                    <prop k="colors" v="10"/>
+                    <prop k="schemeName" v="Spectral"/>
+                </colorramp>
+                <rotation field=""/>
+                <sizescale field=""/>
+            </renderer-v2>
+            <customproperties/>
+            <displayfield>name</displayfield>
+            <label>0</label>
+            <labelattributes>
+                <label fieldname="" text="Étiquette"/>
+                <family fieldname="" name="Ubuntu"/>
+                <size fieldname="" units="pt" value="12"/>
+                <bold fieldname="" on="0"/>
+                <italic fieldname="" on="0"/>
+                <underline fieldname="" on="0"/>
+                <strikeout fieldname="" on="0"/>
+                <color fieldname="" red="0" blue="0" green="0"/>
+                <x fieldname=""/>
+                <y fieldname=""/>
+                <offset x="0" y="0" units="pt" yfieldname="" xfieldname=""/>
+                <angle fieldname="" value="0" auto="0"/>
+                <alignment fieldname="" value="center"/>
+                <buffercolor fieldname="" red="255" blue="255" green="255"/>
+                <buffersize fieldname="" units="pt" value="1"/>
+                <bufferenabled fieldname="" on=""/>
+                <multilineenabled fieldname="" on=""/>
+                <selectedonly on=""/>
+            </labelattributes>
+            <edittypes>
+                <edittype type="11" name="color"/>
+                <edittype type="11" name="name"/>
+                <edittype type="11" name="operator"/>
+                <edittype type="0" name="ref"/>
+                <edittype type="11" name="role"/>
+                <edittype type="11" name="route"/>
+                <edittype type="11" name="type"/>
+            </edittypes>
+            <editform>.</editform>
+            <editforminit></editforminit>
+            <annotationform>.</annotationform>
+            <attributeactions/>
         </maplayer>
         <maplayer minimumScale="0" maximumScale="15000" geometry="Point" type="vector" hasScaleBasedVisibilityFlag="1">
             <id>bus_stops20110923123319171</id>
@@ -215,12 +1092,12 @@
             <annotationform>.</annotationform>
             <attributeactions/>
         </maplayer>
-        <maplayer minimumScale="0" maximumScale="40001" geometry="Line" type="vector" hasScaleBasedVisibilityFlag="1">
-            <id>buses20110923123319068</id>
-            <datasource>./data/vector/buses.geojson</datasource>
-            <title></title>
+        <maplayer minimumScale="0" maximumScale="1e+08" geometry="Line" type="vector" hasScaleBasedVisibilityFlag="1">
+            <id>tram20121031171456234</id>
+            <datasource>./data/vector/tram.shp</datasource>
+            <title>Tramway lines</title>
             <abstract></abstract>
-            <layername>buses</layername>
+            <layername>tram</layername>
             <srs>
                 <spatialrefsys>
                     <proj4>+proj=longlat +datum=WGS84 +no_defs</proj4>
@@ -234,413 +1111,49 @@
                 </spatialrefsys>
             </srs>
             <transparencyLevelInt>255</transparencyLevelInt>
-            <provider encoding="System">ogr</provider>
+            <provider encoding="UTF-8">ogr</provider>
             <vectorjoins/>
             <renderer-v2 attr="ref" symbollevels="0" type="categorizedSymbol">
                 <categories>
-                    <category symbol="0" value="32" label="32"/>
-                    <category symbol="1" value="36" label="36"/>
-                    <category symbol="2" value="12" label="12"/>
-                    <category symbol="3" value="31" label="31"/>
-                    <category symbol="4" value="30" label="30"/>
-                    <category symbol="5" value="20" label="20"/>
-                    <category symbol="6" value="33" label="33"/>
-                    <category symbol="7" value="34" label="34"/>
-                    <category symbol="8" value="14" label="14"/>
-                    <category symbol="9" value="5" label="5"/>
-                    <category symbol="10" value="24" label="24"/>
-                    <category symbol="11" value="35" label="35"/>
-                    <category symbol="12" value="8" label="8"/>
-                    <category symbol="13" value="16" label="16"/>
-                    <category symbol="14" value="302" label="302"/>
-                    <category symbol="15" value="La Ronde" label="La Ronde"/>
-                    <category symbol="16" value="9" label="9"/>
-                    <category symbol="17" value="37" label="37"/>
-                    <category symbol="18" value="La navette" label="La navette"/>
-                    <category symbol="19" value="22" label="22"/>
-                    <category symbol="20" value="11" label="11"/>
-                    <category symbol="21" value="18" label="18"/>
-                    <category symbol="22" value="21" label="21"/>
-                    <category symbol="23" value="7" label="7"/>
-                    <category symbol="24" value="6" label="6"/>
-                    <category symbol="25" value="15" label="15"/>
-                    <category symbol="26" value="25" label="25"/>
-                    <category symbol="27" value="38" label="38"/>
-                    <category symbol="28" value="23" label="23"/>
-                    <category symbol="29" value="29" label="29"/>
-                    <category symbol="30" value="17" label="17"/>
+                    <category symbol="0" value="1" label="1"/>
+                    <category symbol="1" value="2" label="2"/>
+                    <category symbol="2" value="3" label="3"/>
                 </categories>
                 <symbols>
                     <symbol outputUnit="MM" alpha="1" type="line" name="0">
                         <layer pass="0" class="SimpleLine" locked="0">
                             <prop k="capstyle" v="square"/>
-                            <prop k="color" v="158,1,66,255"/>
+                            <prop k="color" v="0,0,255,255"/>
                             <prop k="customdash" v="5;2"/>
                             <prop k="joinstyle" v="bevel"/>
                             <prop k="offset" v="0"/>
                             <prop k="penstyle" v="solid"/>
                             <prop k="use_custom_dash" v="0"/>
-                            <prop k="width" v="0.7"/>
+                            <prop k="width" v="1.5"/>
                         </layer>
                     </symbol>
                     <symbol outputUnit="MM" alpha="1" type="line" name="1">
                         <layer pass="0" class="SimpleLine" locked="0">
                             <prop k="capstyle" v="square"/>
-                            <prop k="color" v="158,1,66,255"/>
+                            <prop k="color" v="255,85,0,255"/>
                             <prop k="customdash" v="5;2"/>
                             <prop k="joinstyle" v="bevel"/>
                             <prop k="offset" v="0"/>
                             <prop k="penstyle" v="solid"/>
                             <prop k="use_custom_dash" v="0"/>
-                            <prop k="width" v="0.7"/>
-                        </layer>
-                    </symbol>
-                    <symbol outputUnit="MM" alpha="1" type="line" name="10">
-                        <layer pass="0" class="SimpleLine" locked="0">
-                            <prop k="capstyle" v="square"/>
-                            <prop k="color" v="253,174,97,255"/>
-                            <prop k="customdash" v="5;2"/>
-                            <prop k="joinstyle" v="bevel"/>
-                            <prop k="offset" v="0"/>
-                            <prop k="penstyle" v="solid"/>
-                            <prop k="use_custom_dash" v="0"/>
-                            <prop k="width" v="0.7"/>
-                        </layer>
-                    </symbol>
-                    <symbol outputUnit="MM" alpha="1" type="line" name="11">
-                        <layer pass="0" class="SimpleLine" locked="0">
-                            <prop k="capstyle" v="square"/>
-                            <prop k="color" v="253,174,97,255"/>
-                            <prop k="customdash" v="5;2"/>
-                            <prop k="joinstyle" v="bevel"/>
-                            <prop k="offset" v="0"/>
-                            <prop k="penstyle" v="solid"/>
-                            <prop k="use_custom_dash" v="0"/>
-                            <prop k="width" v="0.7"/>
-                        </layer>
-                    </symbol>
-                    <symbol outputUnit="MM" alpha="1" type="line" name="12">
-                        <layer pass="0" class="SimpleLine" locked="0">
-                            <prop k="capstyle" v="square"/>
-                            <prop k="color" v="254,224,139,255"/>
-                            <prop k="customdash" v="5;2"/>
-                            <prop k="joinstyle" v="bevel"/>
-                            <prop k="offset" v="0"/>
-                            <prop k="penstyle" v="solid"/>
-                            <prop k="use_custom_dash" v="0"/>
-                            <prop k="width" v="0.7"/>
-                        </layer>
-                    </symbol>
-                    <symbol outputUnit="MM" alpha="1" type="line" name="13">
-                        <layer pass="0" class="SimpleLine" locked="0">
-                            <prop k="capstyle" v="square"/>
-                            <prop k="color" v="254,224,139,255"/>
-                            <prop k="customdash" v="5;2"/>
-                            <prop k="joinstyle" v="bevel"/>
-                            <prop k="offset" v="0"/>
-                            <prop k="penstyle" v="solid"/>
-                            <prop k="use_custom_dash" v="0"/>
-                            <prop k="width" v="0.7"/>
-                        </layer>
-                    </symbol>
-                    <symbol outputUnit="MM" alpha="1" type="line" name="14">
-                        <layer pass="0" class="SimpleLine" locked="0">
-                            <prop k="capstyle" v="square"/>
-                            <prop k="color" v="254,224,139,255"/>
-                            <prop k="customdash" v="5;2"/>
-                            <prop k="joinstyle" v="bevel"/>
-                            <prop k="offset" v="0"/>
-                            <prop k="penstyle" v="solid"/>
-                            <prop k="use_custom_dash" v="0"/>
-                            <prop k="width" v="0.7"/>
-                        </layer>
-                    </symbol>
-                    <symbol outputUnit="MM" alpha="1" type="line" name="15">
-                        <layer pass="0" class="SimpleLine" locked="0">
-                            <prop k="capstyle" v="square"/>
-                            <prop k="color" v="255,255,191,255"/>
-                            <prop k="customdash" v="5;2"/>
-                            <prop k="joinstyle" v="bevel"/>
-                            <prop k="offset" v="0"/>
-                            <prop k="penstyle" v="solid"/>
-                            <prop k="use_custom_dash" v="0"/>
-                            <prop k="width" v="0.7"/>
-                        </layer>
-                    </symbol>
-                    <symbol outputUnit="MM" alpha="1" type="line" name="16">
-                        <layer pass="0" class="SimpleLine" locked="0">
-                            <prop k="capstyle" v="square"/>
-                            <prop k="color" v="255,255,191,255"/>
-                            <prop k="customdash" v="5;2"/>
-                            <prop k="joinstyle" v="bevel"/>
-                            <prop k="offset" v="0"/>
-                            <prop k="penstyle" v="solid"/>
-                            <prop k="use_custom_dash" v="0"/>
-                            <prop k="width" v="0.7"/>
-                        </layer>
-                    </symbol>
-                    <symbol outputUnit="MM" alpha="1" type="line" name="17">
-                        <layer pass="0" class="SimpleLine" locked="0">
-                            <prop k="capstyle" v="square"/>
-                            <prop k="color" v="230,245,152,255"/>
-                            <prop k="customdash" v="5;2"/>
-                            <prop k="joinstyle" v="bevel"/>
-                            <prop k="offset" v="0"/>
-                            <prop k="penstyle" v="solid"/>
-                            <prop k="use_custom_dash" v="0"/>
-                            <prop k="width" v="0.7"/>
-                        </layer>
-                    </symbol>
-                    <symbol outputUnit="MM" alpha="1" type="line" name="18">
-                        <layer pass="0" class="SimpleLine" locked="0">
-                            <prop k="capstyle" v="square"/>
-                            <prop k="color" v="230,245,152,255"/>
-                            <prop k="customdash" v="5;2"/>
-                            <prop k="joinstyle" v="bevel"/>
-                            <prop k="offset" v="0"/>
-                            <prop k="penstyle" v="solid"/>
-                            <prop k="use_custom_dash" v="0"/>
-                            <prop k="width" v="0.7"/>
-                        </layer>
-                    </symbol>
-                    <symbol outputUnit="MM" alpha="1" type="line" name="19">
-                        <layer pass="0" class="SimpleLine" locked="0">
-                            <prop k="capstyle" v="square"/>
-                            <prop k="color" v="230,245,152,255"/>
-                            <prop k="customdash" v="5;2"/>
-                            <prop k="joinstyle" v="bevel"/>
-                            <prop k="offset" v="0"/>
-                            <prop k="penstyle" v="solid"/>
-                            <prop k="use_custom_dash" v="0"/>
-                            <prop k="width" v="0.7"/>
+                            <prop k="width" v="1.5"/>
                         </layer>
                     </symbol>
                     <symbol outputUnit="MM" alpha="1" type="line" name="2">
                         <layer pass="0" class="SimpleLine" locked="0">
                             <prop k="capstyle" v="square"/>
-                            <prop k="color" v="158,1,66,255"/>
+                            <prop k="color" v="221,195,44,255"/>
                             <prop k="customdash" v="5;2"/>
                             <prop k="joinstyle" v="bevel"/>
                             <prop k="offset" v="0"/>
                             <prop k="penstyle" v="solid"/>
                             <prop k="use_custom_dash" v="0"/>
-                            <prop k="width" v="0.7"/>
-                        </layer>
-                    </symbol>
-                    <symbol outputUnit="MM" alpha="1" type="line" name="20">
-                        <layer pass="0" class="SimpleLine" locked="0">
-                            <prop k="capstyle" v="square"/>
-                            <prop k="color" v="171,221,164,255"/>
-                            <prop k="customdash" v="5;2"/>
-                            <prop k="joinstyle" v="bevel"/>
-                            <prop k="offset" v="0"/>
-                            <prop k="penstyle" v="solid"/>
-                            <prop k="use_custom_dash" v="0"/>
-                            <prop k="width" v="0.7"/>
-                        </layer>
-                    </symbol>
-                    <symbol outputUnit="MM" alpha="1" type="line" name="21">
-                        <layer pass="0" class="SimpleLine" locked="0">
-                            <prop k="capstyle" v="square"/>
-                            <prop k="color" v="171,221,164,255"/>
-                            <prop k="customdash" v="5;2"/>
-                            <prop k="joinstyle" v="bevel"/>
-                            <prop k="offset" v="0"/>
-                            <prop k="penstyle" v="solid"/>
-                            <prop k="use_custom_dash" v="0"/>
-                            <prop k="width" v="0.7"/>
-                        </layer>
-                    </symbol>
-                    <symbol outputUnit="MM" alpha="1" type="line" name="22">
-                        <layer pass="0" class="SimpleLine" locked="0">
-                            <prop k="capstyle" v="square"/>
-                            <prop k="color" v="171,221,164,255"/>
-                            <prop k="customdash" v="5;2"/>
-                            <prop k="joinstyle" v="bevel"/>
-                            <prop k="offset" v="0"/>
-                            <prop k="penstyle" v="solid"/>
-                            <prop k="use_custom_dash" v="0"/>
-                            <prop k="width" v="0.7"/>
-                        </layer>
-                    </symbol>
-                    <symbol outputUnit="MM" alpha="1" type="line" name="23">
-                        <layer pass="0" class="SimpleLine" locked="0">
-                            <prop k="capstyle" v="square"/>
-                            <prop k="color" v="102,194,165,255"/>
-                            <prop k="customdash" v="5;2"/>
-                            <prop k="joinstyle" v="bevel"/>
-                            <prop k="offset" v="0"/>
-                            <prop k="penstyle" v="solid"/>
-                            <prop k="use_custom_dash" v="0"/>
-                            <prop k="width" v="0.7"/>
-                        </layer>
-                    </symbol>
-                    <symbol outputUnit="MM" alpha="1" type="line" name="24">
-                        <layer pass="0" class="SimpleLine" locked="0">
-                            <prop k="capstyle" v="square"/>
-                            <prop k="color" v="102,194,165,255"/>
-                            <prop k="customdash" v="5;2"/>
-                            <prop k="joinstyle" v="bevel"/>
-                            <prop k="offset" v="0"/>
-                            <prop k="penstyle" v="solid"/>
-                            <prop k="use_custom_dash" v="0"/>
-                            <prop k="width" v="0.7"/>
-                        </layer>
-                    </symbol>
-                    <symbol outputUnit="MM" alpha="1" type="line" name="25">
-                        <layer pass="0" class="SimpleLine" locked="0">
-                            <prop k="capstyle" v="square"/>
-                            <prop k="color" v="102,194,165,255"/>
-                            <prop k="customdash" v="5;2"/>
-                            <prop k="joinstyle" v="bevel"/>
-                            <prop k="offset" v="0"/>
-                            <prop k="penstyle" v="solid"/>
-                            <prop k="use_custom_dash" v="0"/>
-                            <prop k="width" v="0.7"/>
-                        </layer>
-                    </symbol>
-                    <symbol outputUnit="MM" alpha="1" type="line" name="26">
-                        <layer pass="0" class="SimpleLine" locked="0">
-                            <prop k="capstyle" v="square"/>
-                            <prop k="color" v="50,136,189,255"/>
-                            <prop k="customdash" v="5;2"/>
-                            <prop k="joinstyle" v="bevel"/>
-                            <prop k="offset" v="0"/>
-                            <prop k="penstyle" v="solid"/>
-                            <prop k="use_custom_dash" v="0"/>
-                            <prop k="width" v="0.7"/>
-                        </layer>
-                    </symbol>
-                    <symbol outputUnit="MM" alpha="1" type="line" name="27">
-                        <layer pass="0" class="SimpleLine" locked="0">
-                            <prop k="capstyle" v="square"/>
-                            <prop k="color" v="50,136,189,255"/>
-                            <prop k="customdash" v="5;2"/>
-                            <prop k="joinstyle" v="bevel"/>
-                            <prop k="offset" v="0"/>
-                            <prop k="penstyle" v="solid"/>
-                            <prop k="use_custom_dash" v="0"/>
-                            <prop k="width" v="0.7"/>
-                        </layer>
-                    </symbol>
-                    <symbol outputUnit="MM" alpha="1" type="line" name="28">
-                        <layer pass="0" class="SimpleLine" locked="0">
-                            <prop k="capstyle" v="square"/>
-                            <prop k="color" v="50,136,189,255"/>
-                            <prop k="customdash" v="5;2"/>
-                            <prop k="joinstyle" v="bevel"/>
-                            <prop k="offset" v="0"/>
-                            <prop k="penstyle" v="solid"/>
-                            <prop k="use_custom_dash" v="0"/>
-                            <prop k="width" v="0.7"/>
-                        </layer>
-                    </symbol>
-                    <symbol outputUnit="MM" alpha="1" type="line" name="29">
-                        <layer pass="0" class="SimpleLine" locked="0">
-                            <prop k="capstyle" v="square"/>
-                            <prop k="color" v="94,79,162,255"/>
-                            <prop k="customdash" v="5;2"/>
-                            <prop k="joinstyle" v="bevel"/>
-                            <prop k="offset" v="0"/>
-                            <prop k="penstyle" v="solid"/>
-                            <prop k="use_custom_dash" v="0"/>
-                            <prop k="width" v="0.7"/>
-                        </layer>
-                    </symbol>
-                    <symbol outputUnit="MM" alpha="1" type="line" name="3">
-                        <layer pass="0" class="SimpleLine" locked="0">
-                            <prop k="capstyle" v="square"/>
-                            <prop k="color" v="213,62,79,255"/>
-                            <prop k="customdash" v="5;2"/>
-                            <prop k="joinstyle" v="bevel"/>
-                            <prop k="offset" v="0"/>
-                            <prop k="penstyle" v="solid"/>
-                            <prop k="use_custom_dash" v="0"/>
-                            <prop k="width" v="0.7"/>
-                        </layer>
-                    </symbol>
-                    <symbol outputUnit="MM" alpha="1" type="line" name="30">
-                        <layer pass="0" class="SimpleLine" locked="0">
-                            <prop k="capstyle" v="square"/>
-                            <prop k="color" v="94,79,162,255"/>
-                            <prop k="customdash" v="5;2"/>
-                            <prop k="joinstyle" v="bevel"/>
-                            <prop k="offset" v="0"/>
-                            <prop k="penstyle" v="solid"/>
-                            <prop k="use_custom_dash" v="0"/>
-                            <prop k="width" v="0.7"/>
-                        </layer>
-                    </symbol>
-                    <symbol outputUnit="MM" alpha="1" type="line" name="4">
-                        <layer pass="0" class="SimpleLine" locked="0">
-                            <prop k="capstyle" v="square"/>
-                            <prop k="color" v="213,62,79,255"/>
-                            <prop k="customdash" v="5;2"/>
-                            <prop k="joinstyle" v="bevel"/>
-                            <prop k="offset" v="0"/>
-                            <prop k="penstyle" v="solid"/>
-                            <prop k="use_custom_dash" v="0"/>
-                            <prop k="width" v="0.7"/>
-                        </layer>
-                    </symbol>
-                    <symbol outputUnit="MM" alpha="1" type="line" name="5">
-                        <layer pass="0" class="SimpleLine" locked="0">
-                            <prop k="capstyle" v="square"/>
-                            <prop k="color" v="213,62,79,255"/>
-                            <prop k="customdash" v="5;2"/>
-                            <prop k="joinstyle" v="bevel"/>
-                            <prop k="offset" v="0"/>
-                            <prop k="penstyle" v="solid"/>
-                            <prop k="use_custom_dash" v="0"/>
-                            <prop k="width" v="0.7"/>
-                        </layer>
-                    </symbol>
-                    <symbol outputUnit="MM" alpha="1" type="line" name="6">
-                        <layer pass="0" class="SimpleLine" locked="0">
-                            <prop k="capstyle" v="square"/>
-                            <prop k="color" v="244,109,67,255"/>
-                            <prop k="customdash" v="5;2"/>
-                            <prop k="joinstyle" v="bevel"/>
-                            <prop k="offset" v="0"/>
-                            <prop k="penstyle" v="solid"/>
-                            <prop k="use_custom_dash" v="0"/>
-                            <prop k="width" v="0.7"/>
-                        </layer>
-                    </symbol>
-                    <symbol outputUnit="MM" alpha="1" type="line" name="7">
-                        <layer pass="0" class="SimpleLine" locked="0">
-                            <prop k="capstyle" v="square"/>
-                            <prop k="color" v="244,109,67,255"/>
-                            <prop k="customdash" v="5;2"/>
-                            <prop k="joinstyle" v="bevel"/>
-                            <prop k="offset" v="0"/>
-                            <prop k="penstyle" v="solid"/>
-                            <prop k="use_custom_dash" v="0"/>
-                            <prop k="width" v="0.7"/>
-                        </layer>
-                    </symbol>
-                    <symbol outputUnit="MM" alpha="1" type="line" name="8">
-                        <layer pass="0" class="SimpleLine" locked="0">
-                            <prop k="capstyle" v="square"/>
-                            <prop k="color" v="244,109,67,255"/>
-                            <prop k="customdash" v="5;2"/>
-                            <prop k="joinstyle" v="bevel"/>
-                            <prop k="offset" v="0"/>
-                            <prop k="penstyle" v="solid"/>
-                            <prop k="use_custom_dash" v="0"/>
-                            <prop k="width" v="0.7"/>
-                        </layer>
-                    </symbol>
-                    <symbol outputUnit="MM" alpha="1" type="line" name="9">
-                        <layer pass="0" class="SimpleLine" locked="0">
-                            <prop k="capstyle" v="square"/>
-                            <prop k="color" v="253,174,97,255"/>
-                            <prop k="customdash" v="5;2"/>
-                            <prop k="joinstyle" v="bevel"/>
-                            <prop k="offset" v="0"/>
-                            <prop k="penstyle" v="solid"/>
-                            <prop k="use_custom_dash" v="0"/>
-                            <prop k="width" v="0.7"/>
+                            <prop k="width" v="1.5"/>
                         </layer>
                     </symbol>
                 </symbols>
@@ -648,19 +1161,19 @@
                     <symbol outputUnit="MM" alpha="1" type="line" name="0">
                         <layer pass="0" class="SimpleLine" locked="0">
                             <prop k="capstyle" v="square"/>
-                            <prop k="color" v="159,178,117,255"/>
+                            <prop k="color" v="91,8,151,255"/>
                             <prop k="customdash" v="5;2"/>
                             <prop k="joinstyle" v="bevel"/>
                             <prop k="offset" v="0"/>
                             <prop k="penstyle" v="solid"/>
                             <prop k="use_custom_dash" v="0"/>
-                            <prop k="width" v="0.7"/>
+                            <prop k="width" v="1.5"/>
                         </layer>
                     </symbol>
                 </source-symbol>
                 <colorramp type="colorbrewer" name="[source]">
-                    <prop k="colors" v="11"/>
-                    <prop k="schemeName" v="Spectral"/>
+                    <prop k="colors" v="10"/>
+                    <prop k="schemeName" v="Paired"/>
                 </colorramp>
                 <rotation field=""/>
                 <sizescale field=""/>
@@ -689,17 +1202,25 @@
                 <selectedonly on=""/>
             </labelattributes>
             <edittypes>
-                <edittype type="0" name="color"/>
-                <edittype type="0" name="name"/>
-                <edittype type="0" name="operator"/>
-                <edittype type="0" name="ref"/>
-                <edittype type="0" name="role"/>
-                <edittype type="0" name="route"/>
+                <edittype type="11" name="color"/>
+                <edittype type="11" name="from"/>
+                <edittype type="0" name="html"/>
+                <edittype type="0" name="image"/>
+                <edittype type="11" name="name"/>
+                <edittype type="11" name="operator"/>
+                <edittype type="11" name="ref"/>
+                <edittype type="11" name="route"/>
+                <edittype type="11" name="to"/>
                 <edittype type="0" name="type"/>
+                <edittype type="0" name="website"/>
+                <edittype type="11" name="wheelchair"/>
             </edittypes>
             <editform>.</editform>
             <editforminit></editforminit>
             <annotationform>.</annotationform>
+            <aliases>
+                <alias field="html" index="3" name=""/>
+            </aliases>
             <attributeactions/>
         </maplayer>
         <maplayer minimumScale="0" maximumScale="50001" geometry="Point" type="vector" hasScaleBasedVisibilityFlag="1">
@@ -776,209 +1297,6 @@
             <annotationform>.</annotationform>
             <attributeactions/>
         </maplayer>
-        <maplayer minimumScale="0" maximumScale="1e+08" geometry="Line" type="vector" hasScaleBasedVisibilityFlag="0">
-            <id>trams20110923123319251</id>
-            <datasource>./data/vector/trams.geojson</datasource>
-            <title></title>
-            <abstract></abstract>
-            <layername>tramways</layername>
-            <srs>
-                <spatialrefsys>
-                    <proj4>+proj=longlat +datum=WGS84 +no_defs</proj4>
-                    <srsid>3452</srsid>
-                    <srid>4326</srid>
-                    <authid>EPSG:4326</authid>
-                    <description>WGS 84</description>
-                    <projectionacronym>longlat</projectionacronym>
-                    <ellipsoidacronym>WGS84</ellipsoidacronym>
-                    <geographicflag>true</geographicflag>
-                </spatialrefsys>
-            </srs>
-            <transparencyLevelInt>255</transparencyLevelInt>
-            <provider encoding="System">ogr</provider>
-            <vectorjoins/>
-            <renderer-v2 attr="ref" symbollevels="0" type="categorizedSymbol">
-                <categories>
-                    <category symbol="0" value="3" label="3"/>
-                    <category symbol="1" value="2" label="2"/>
-                    <category symbol="2" value="1" label="1"/>
-                </categories>
-                <symbols>
-                    <symbol outputUnit="MM" alpha="1" type="line" name="0">
-                        <layer pass="0" class="SimpleLine" locked="0">
-                            <prop k="capstyle" v="square"/>
-                            <prop k="color" v="0,170,127,255"/>
-                            <prop k="customdash" v="5;2"/>
-                            <prop k="joinstyle" v="bevel"/>
-                            <prop k="offset" v="0"/>
-                            <prop k="penstyle" v="solid"/>
-                            <prop k="use_custom_dash" v="0"/>
-                            <prop k="width" v="1"/>
-                        </layer>
-                    </symbol>
-                    <symbol outputUnit="MM" alpha="1" type="line" name="1">
-                        <layer pass="0" class="SimpleLine" locked="0">
-                            <prop k="capstyle" v="square"/>
-                            <prop k="color" v="255,85,0,255"/>
-                            <prop k="customdash" v="5;2"/>
-                            <prop k="joinstyle" v="bevel"/>
-                            <prop k="offset" v="0"/>
-                            <prop k="penstyle" v="solid"/>
-                            <prop k="use_custom_dash" v="0"/>
-                            <prop k="width" v="1"/>
-                        </layer>
-                    </symbol>
-                    <symbol outputUnit="MM" alpha="1" type="line" name="2">
-                        <layer pass="0" class="SimpleLine" locked="0">
-                            <prop k="capstyle" v="square"/>
-                            <prop k="color" v="85,85,255,255"/>
-                            <prop k="customdash" v="5;2"/>
-                            <prop k="joinstyle" v="bevel"/>
-                            <prop k="offset" v="0"/>
-                            <prop k="penstyle" v="solid"/>
-                            <prop k="use_custom_dash" v="0"/>
-                            <prop k="width" v="1"/>
-                        </layer>
-                    </symbol>
-                </symbols>
-                <source-symbol>
-                    <symbol outputUnit="MM" alpha="1" type="line" name="0">
-                        <layer pass="0" class="SimpleLine" locked="0">
-                            <prop k="capstyle" v="square"/>
-                            <prop k="color" v="174,231,246,255"/>
-                            <prop k="customdash" v="5;2"/>
-                            <prop k="joinstyle" v="bevel"/>
-                            <prop k="offset" v="0"/>
-                            <prop k="penstyle" v="solid"/>
-                            <prop k="use_custom_dash" v="0"/>
-                            <prop k="width" v="1"/>
-                        </layer>
-                    </symbol>
-                </source-symbol>
-                <colorramp type="colorbrewer" name="[source]">
-                    <prop k="colors" v="11"/>
-                    <prop k="schemeName" v="Spectral"/>
-                </colorramp>
-                <rotation field=""/>
-                <sizescale field=""/>
-            </renderer-v2>
-            <customproperties/>
-            <displayfield>name</displayfield>
-            <label>0</label>
-            <labelattributes>
-                <label fieldname="" text="Étiquette"/>
-                <family fieldname="" name="Ubuntu"/>
-                <size fieldname="" units="pt" value="12"/>
-                <bold fieldname="" on="0"/>
-                <italic fieldname="" on="0"/>
-                <underline fieldname="" on="0"/>
-                <strikeout fieldname="" on="0"/>
-                <color fieldname="" red="0" blue="0" green="0"/>
-                <x fieldname=""/>
-                <y fieldname=""/>
-                <offset x="0" y="0" units="pt" yfieldname="" xfieldname=""/>
-                <angle fieldname="" value="0" auto="0"/>
-                <alignment fieldname="" value="center"/>
-                <buffercolor fieldname="" red="255" blue="255" green="255"/>
-                <buffersize fieldname="" units="pt" value="1"/>
-                <bufferenabled fieldname="" on=""/>
-                <multilineenabled fieldname="" on=""/>
-                <selectedonly on=""/>
-            </labelattributes>
-            <edittypes>
-                <edittype type="0" name="color"/>
-                <edittype type="0" name="from"/>
-                <edittype type="0" name="name"/>
-                <edittype type="0" name="operator"/>
-                <edittype type="0" name="ref"/>
-                <edittype type="0" name="route"/>
-                <edittype type="0" name="to"/>
-                <edittype type="0" name="type"/>
-                <edittype type="0" name="wheelchair"/>
-            </edittypes>
-            <editform>.</editform>
-            <editforminit></editforminit>
-            <annotationform>.</annotationform>
-            <attributeactions/>
-        </maplayer>
-        <maplayer minimumScale="0" maximumScale="1e+08" geometry="Line" type="vector" hasScaleBasedVisibilityFlag="0">
-            <id>trams20110923123415062</id>
-            <datasource>./data/vector/trams.geojson</datasource>
-            <title></title>
-            <abstract></abstract>
-            <layername>trams</layername>
-            <srs>
-                <spatialrefsys>
-                    <proj4>+proj=longlat +datum=WGS84 +no_defs</proj4>
-                    <srsid>3452</srsid>
-                    <srid>4326</srid>
-                    <authid>EPSG:4326</authid>
-                    <description>WGS 84</description>
-                    <projectionacronym>longlat</projectionacronym>
-                    <ellipsoidacronym>WGS84</ellipsoidacronym>
-                    <geographicflag>true</geographicflag>
-                </spatialrefsys>
-            </srs>
-            <transparencyLevelInt>255</transparencyLevelInt>
-            <provider encoding="System">ogr</provider>
-            <vectorjoins/>
-            <renderer-v2 symbollevels="0" type="singleSymbol">
-                <symbols>
-                    <symbol outputUnit="MM" alpha="1" type="line" name="0">
-                        <layer pass="0" class="SimpleLine" locked="0">
-                            <prop k="capstyle" v="square"/>
-                            <prop k="color" v="90,90,90,255"/>
-                            <prop k="customdash" v="5;2"/>
-                            <prop k="joinstyle" v="bevel"/>
-                            <prop k="offset" v="0"/>
-                            <prop k="penstyle" v="solid"/>
-                            <prop k="use_custom_dash" v="0"/>
-                            <prop k="width" v="0.4"/>
-                        </layer>
-                    </symbol>
-                </symbols>
-                <rotation field=""/>
-                <sizescale field=""/>
-            </renderer-v2>
-            <customproperties/>
-            <displayfield>name</displayfield>
-            <label>0</label>
-            <labelattributes>
-                <label fieldname="" text="Étiquette"/>
-                <family fieldname="" name="Ubuntu"/>
-                <size fieldname="" units="pt" value="12"/>
-                <bold fieldname="" on="0"/>
-                <italic fieldname="" on="0"/>
-                <underline fieldname="" on="0"/>
-                <strikeout fieldname="" on="0"/>
-                <color fieldname="" red="0" blue="0" green="0"/>
-                <x fieldname=""/>
-                <y fieldname=""/>
-                <offset x="0" y="0" units="pt" yfieldname="" xfieldname=""/>
-                <angle fieldname="" value="0" auto="0"/>
-                <alignment fieldname="" value="center"/>
-                <buffercolor fieldname="" red="255" blue="255" green="255"/>
-                <buffersize fieldname="" units="pt" value="1"/>
-                <bufferenabled fieldname="" on=""/>
-                <multilineenabled fieldname="" on=""/>
-                <selectedonly on=""/>
-            </labelattributes>
-            <edittypes>
-                <edittype type="0" name="color"/>
-                <edittype type="0" name="from"/>
-                <edittype type="0" name="name"/>
-                <edittype type="0" name="operator"/>
-                <edittype type="0" name="ref"/>
-                <edittype type="0" name="route"/>
-                <edittype type="0" name="to"/>
-                <edittype type="0" name="type"/>
-                <edittype type="0" name="wheelchair"/>
-            </edittypes>
-            <editform>.</editform>
-            <editforminit></editforminit>
-            <annotationform>.</annotationform>
-            <attributeactions/>
-        </maplayer>
     </projectlayers>
     <properties>
         <WMSServiceAbstract type="QString">Demo project with bus and tramway lines in Montpellier, France.
@@ -1019,7 +1337,6 @@ Data is licensed under ODbl, OpenStreetMap contributors</WMSServiceAbstract>
         </PositionPrecision>
         <WMSAddWktGeometry type="bool">false</WMSAddWktGeometry>
         <WMSContactOrganization type="QString">3liz</WMSContactOrganization>
-        <WMSServiceCapabilities type="bool">true</WMSServiceCapabilities>
         <WMSServiceTitle type="QString">Montpellier - Transports</WMSServiceTitle>
         <WMSExtent type="QStringList">
             <value>3.78300108</value>
@@ -1027,5 +1344,6 @@ Data is licensed under ODbl, OpenStreetMap contributors</WMSServiceAbstract>
             <value>3.97065725</value>
             <value>43.67333749</value>
         </WMSExtent>
+        <WMSServiceCapabilities type="QString">True</WMSServiceCapabilities>
     </properties>
 </qgis>
