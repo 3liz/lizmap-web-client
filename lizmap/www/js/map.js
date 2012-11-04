@@ -844,7 +844,7 @@ var lizMap = function() {
     map.addControl(new OpenLayers.Control.ScaleLine({div:document.getElementById('scaleline')}));
 
     if (config.options.hasOverview)
-      $('#overviewmap').toggle();
+      $('#overviewmap').show();
     else
       $('#toolbar button.overview').hide();
   }

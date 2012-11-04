@@ -4,9 +4,9 @@
     <mapcanvas>
         <units>degrees</units>
         <extent>
-            <xmin>3.802055</xmin>
+            <xmin>3.801980</xmin>
             <ymin>43.564102</ymin>
-            <xmax>3.946873</xmax>
+            <xmax>3.946948</xmax>
             <ymax>43.655289</ymax>
         </extent>
         <projections>1</projections>
@@ -45,8 +45,6 @@
                 </legendlayer>
             </legendgroup>
         </legendgroup>
-        <legendgroup open="true" checked="Qt::PartiallyChecked" name="baselayers"/>
-        <legendgroup open="true" checked="Qt::PartiallyChecked" name="Overview"/>
     </legend>
     <Composer title="Composeur1" visible="0">
         <ComposerMap keepLayerSet="false" id="0" previewMode="Cache" drawCanvasItems="true">
@@ -142,9 +140,9 @@
                 <edittype type="0" name="SECTEUR"/>
                 <edittype type="0" name="SUJET"/>
             </edittypes>
-            <editform></editform>
+            <editform>.</editform>
             <editforminit></editforminit>
-            <annotationform></annotationform>
+            <annotationform>.</annotationform>
             <attributeactions/>
         </maplayer>
         <maplayer minimumScale="0" maximumScale="1e+08" geometry="Polygon" type="vector" hasScaleBasedVisibilityFlag="0">
@@ -229,9 +227,9 @@
                 <edittype type="0" name="Shape_Area"/>
                 <edittype type="0" name="Shape_Leng"/>
             </edittypes>
-            <editform></editform>
+            <editform>.</editform>
             <editforminit></editforminit>
-            <annotationform></annotationform>
+            <annotationform>.</annotationform>
             <attributeactions/>
         </maplayer>
         <maplayer minimumScale="0" maximumScale="1e+08" geometry="Line" type="vector" hasScaleBasedVisibilityFlag="0">
@@ -688,9 +686,9 @@
                 <edittype type="0" name="TYPVOI"/>
                 <edittype type="0" name="ZAC"/>
             </edittypes>
-            <editform></editform>
+            <editform>.</editform>
             <editforminit></editforminit>
-            <annotationform></annotationform>
+            <annotationform>.</annotationform>
             <attributeactions/>
         </maplayer>
     </projectlayers>
@@ -732,7 +730,6 @@
         </PositionPrecision>
         <WMSAddWktGeometry type="bool">false</WMSAddWktGeometry>
         <WMSContactOrganization type="QString"></WMSContactOrganization>
-        <WMSServiceCapabilities type="bool">true</WMSServiceCapabilities>
         <WMSServiceTitle type="QString">Montpellier - Intranet map example</WMSServiceTitle>
         <WMSExtent type="QStringList">
             <value>3.78300108</value>
@@ -740,5 +737,6 @@
             <value>3.97065725</value>
             <value>43.67333749</value>
         </WMSExtent>
+        <WMSServiceCapabilities type="QString">True</WMSServiceCapabilities>
     </properties>
 </qgis>
