@@ -1,13 +1,16 @@
 {meta_html csstheme 'css/main.css'}
 {meta_html csstheme 'css/map.css'}
 
-<div id="header" class="navbar navbar-fixed-top">
+<div id="header">
   <div id="logo">
     <h1>{$repositoryLabel}</h1>
   </div>
   <div id="title">
     <h1>{@view~map.title.h1@}</h1>
   </div>
+</div>
+
+<div id="headermenu" class="navbar navbar-fixed-top">
   <div id="auth" class="navbar-inner">
     <ul class="nav pull-right">
       <li><a href="{jurl 'view~default:index'}">{@view~default.repository.list.title@}</a></li>
@@ -29,7 +32,9 @@
       {/if}
     </ul>
   </div>
+
 </div>
+
 <div id="content">
 
   <span class="ui-icon ui-icon-open-menu" style="display:none;" title="{@view~map.menu.show.hover@}"></span>

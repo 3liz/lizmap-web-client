@@ -18,6 +18,15 @@
   cursor : pointer;
 }
 
+#metadata {
+  background-color:#EFEFEF;
+  color:grey;
+}
+
+#metadata h2{
+  color:#80B219;
+}
+
 #menu {
   background : #F0F0F0;
 }
@@ -169,8 +178,8 @@
 
 /*Loading window*/
 #loading {
-  height: 100px; 
-  min-height: 100px; 
+  height: 100px;
+  min-height: 100px;
 }
 
 /*Overview map*/
@@ -301,7 +310,7 @@
 }
 .lizmapPopupTable{
   /*background:#333333 !important;*/
-  margin-bottom:10px; 
+  margin-bottom:10px;
   font-size:12px;
   width:100%;
   border: 1px solid #2B2B2B !important;

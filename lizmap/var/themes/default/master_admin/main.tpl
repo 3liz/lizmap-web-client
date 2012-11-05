@@ -11,12 +11,16 @@
 {meta_html js $j_basepath.'js/bootstrap.js'}
 {meta_html js $j_basepath.'js/jquery-ui-1.8.23.custom.min.js'}
 
-<div id="header" class="navbar navbar-fixed-top">
+<div id="header">
   <div id="logo">
     <h1>Admin</h1>
   </div>
+</div>
+
+<div id="headermenu" class="navbar navbar-fixed-top">
   <div id="auth" class="navbar-inner">{$INFOBOX}</div>
 </div>
+
 <div id="content" class="container-fluid">
   <div class="row-fluid">
     <div id="menu" class="span3">

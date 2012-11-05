@@ -1,22 +1,35 @@
 body {
   background : #EFEFEF;
+  padding-top:100px;/*  needed here because of bootstrap responsive css wich override lizmap main.css*/
 }
 #header {
   background : #2B2B2B;
   color : #FBFBFB;
 }
 #logo {
-  background : url('img/logo_car_70.png') no-repeat;
+  background : url('img/logo.png') no-repeat;
 }
 
 #auth {
-  bottom:0px;
-  right:0px;
   background: transparent;
 }
+
+#headermenu {
+  background-color:#93C01F;
+  /*  background-color: #AAAAAA;*/
+}
+
+.navbar-inner {
+  min-height:25px;
+  padding: 0px 10px;
+}
+.navbar-fixed-top .navbar-inner, .navbar-fixed-bottom .navbar-inner {
+  padding: 0px 10px;
+}
 .navbar .nav > li > a {
-  color: #AAAAAA;
-  text-shadow : 0px -1px 0px rgba(0,0,0,0.75);
+  color: #2B2B2B;
+  text-shadow:none;
+/*  text-shadow : 0px -1px 0px rgba(0,0,0,0.75);*/
 }
 .navbar .nav .active > a,
 .navbar .nav > li > a:focus ,
@@ -28,7 +41,8 @@ body {
 .navbar .nav li.dropdown.active > .dropdown-toggle,
 .navbar .nav li.dropdown.open.active > .dropdown-toggle {
   color : #585858;
-  text-shadow : 0px -1px 0px rgba(255,255,255,0.75);
+/*  text-shadow : 0px -1px 0px rgba(255,255,255,0.75);*/
+  text-shadow:none;
 }
 .navbar .nav > li > .dropdown-menu:after {
   border-bottom: 6px solid #F5F5F5;

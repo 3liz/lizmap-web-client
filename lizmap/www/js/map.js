@@ -66,7 +66,10 @@ var lizMap = function() {
    * update the content size
    */
  function updateContentSize(){
-   var h = $('body').parent()[0].clientHeight-$('#header').height();
+   var h = $('body').parent()[0].clientHeight;
+   h = h - $('#header').height();
+   h = h - $('#headermenu').height();
+
    $('#menu').height(h);
    $('#map').height(h);
    var w = $('body').parent()[0].offsetWidth;
@@ -110,7 +113,9 @@ var lizMap = function() {
     if ($('#switcher').outerHeight() > switcherMaxHeight)
       $('#switcher').height(switcherMaxHeight).css('overflow','auto');
       */
-    var h = $('body').parent()[0].clientHeight-$('#header').height();
+    var h = $('body').parent()[0].clientHeight;
+    h = h - $('#header').height();
+    h = h - $('#headermenu').height();
     $('#menu').height(h);
     //var h = $('#menu').height();
     h -= $('#close-menu').outerHeight(true);
@@ -401,8 +406,10 @@ var lizMap = function() {
     // get and define the max extent
     var bbox = config.options.bbox;
     var extent = new OpenLayers.Bounds(Number(bbox[0]),Number(bbox[1]),Number(bbox[2]),Number(bbox[3]));
-
-    $('#map').height($('body').parent()[0].clientHeight-$('#header').height());
+    var mapHeight = $('body').parent()[0].clientHeight;
+    mapHeight = mapHeight - $('#header').height();
+    mapHeight = mapHeight - $('#headermenu').height();
+    $('#map').height(mapHeight);
     var res = extent.getHeight()/$('#map').height();
 
     var scales = config.options.mapScales;

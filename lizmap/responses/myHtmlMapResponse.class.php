@@ -32,8 +32,7 @@ class myHtmlMapResponse extends jResponseHtml {
     $this->addCSSLink($bp.'css/main.css');
     $this->addCSSLink($bp.'css/map.css');
 #    $this->addCSSLink($bp.'css/bootstrap-responsive.css');
-#    $this->addCSSLink($bp.'css/color1.css');
-#    $this->addCSSLink($bp.'css/color2.css');
+
     // META
     $this->addMetaDescription('');
     $this->addMetaKeywords('');
