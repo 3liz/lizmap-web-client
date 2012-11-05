@@ -741,8 +741,10 @@ var lizMap = function() {
 			})
 			.removeClass( "ui-corner-all" )
 			.addClass( "ui-autocomplete-button ui-button-icon" )
+      $('#baselayer-select')
+      .css('cursor', 'pointer')
       .click(function() {
-        var self = $(this);
+        var self = $('#baselayer-select .button');
         var icons = self.button('option','icons');
         if (icons.primary == 'ui-icon-triangle-1-e')
           self.button('option','icons',{primary:'ui-icon-triangle-1-w'});
