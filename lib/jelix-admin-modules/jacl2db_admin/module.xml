@@ -2,15 +2,15 @@
 <module xmlns="http://jelix.org/ns/module/1.0">
     <info id="jacl2db_admin@modules.jelix.org" name="jacl2db_admin" createdate="2008-12-27">
         <version stability="stable" date="2011-10-18">1.3</version>
-        <label lang="en-EN">jAcl2.db administration</label>
-        <description lang="en-EN">Web interface to manage rights with jAcl2 and its driver 'db'</description>
+        <label lang="en_US">jAcl2.db administration</label>
+        <description lang="en_US">Web interface to manage rights with jAcl2 and its driver 'db'</description>
         <license URL="http://www.gnu.org/licenses/old-licenses/gpl-2.0.html">GPL 2.0</license>
         <copyright>2008-2011 Laurent Jouanneau and other contributors</copyright>
         <creator name="Laurent Jouanneau" email="laurent@jelix.org" active="true"/>
         <homepageURL>http://jelix.org</homepageURL>
     </info>
     <dependencies>
-        <jelix minversion="1.3" maxversion="1.3.*"/>
+       <jelix minversion="1.3" maxversion="1.4.*"/>
         <module name="jacl2db"/>
     </dependencies>
 </module>

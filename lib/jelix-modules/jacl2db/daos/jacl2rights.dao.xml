@@ -15,30 +15,21 @@
             <parameter name="groups" />
             <conditions >
                <eq property="id_aclsbj" expr="$subject" />
-                <conditions logic="OR">
-                    <eq property="id_aclres" expr="''"/>
-                    <isnull property="id_aclres"/>
-                </conditions>
+               <eq property="id_aclres" value="-"/>
                <in property="id_aclgrp" expr="$groups" />
             </conditions>
         </method>
         <method name="getRightsByGroups" type="select">
             <parameter name="groups" />
             <conditions >
-                <conditions logic="OR">
-                    <eq property="id_aclres" expr="''"/>
-                    <isnull property="id_aclres"/>
-                </conditions>
+                <eq property="id_aclres" value="-"/>
                 <in property="id_aclgrp" expr="$groups" />
             </conditions>
         </method>
         <method name="getRightsByGroup" type="select">
             <parameter name="group" />
             <conditions >
-                <conditions logic="OR">
-                    <eq property="id_aclres" expr="''"/>
-                    <isnull property="id_aclres"/>
-                </conditions>
+                <eq property="id_aclres" value="-"/>
                 <eq property="id_aclgrp" expr="$group" />
             </conditions>
         </method>
@@ -58,8 +49,7 @@
         <method name="getRightsHavingRes" type="select">
            <parameter name="group" />
            <conditions >
-              <neq property="id_aclres" expr="''" />
-              <isnotnull property="id_aclres"/>
+              <neq property="id_aclres" value="-" />
               <eq property="id_aclgrp" expr="$group" />
            </conditions>
             <order>
@@ -70,10 +60,7 @@
             <parameter name="subject" />
             <conditions >
                 <eq property="id_aclsbj" expr="$subject" />
-                <conditions logic="OR">
-                    <eq property="id_aclres" expr="''"/>
-                    <isnull property="id_aclres"/>
-                </conditions>
+                <eq property="id_aclres" value="-"/>
                 <eq property="id_aclgrp" value="__anonymous" />
             </conditions>
         </method>
@@ -88,10 +75,7 @@
         </method>
         <method name="getAllAnonymousRights" type="select">
             <conditions >
-                <conditions logic="OR">
-                    <eq property="id_aclres" expr="''"/>
-                    <isnull property="id_aclres"/>
-                </conditions>
+                <eq property="id_aclres" value="-"/>
                 <eq property="id_aclgrp" value="__anonymous" />
             </conditions>
         </method>
@@ -121,10 +105,7 @@
            <conditions>
               <eq property="id_aclgrp" expr="$group" />
               <in property="id_aclsbj" expr="$subjects" />
-                <conditions logic="OR">
-                    <eq property="id_aclres" expr="''"/>
-                    <isnull property="id_aclres"/>
-                </conditions>
+              <eq property="id_aclres" value="-"/>
            </conditions>
         </method>
         <method name="deleteRightsOnResource" type="delete">
@@ -133,8 +114,7 @@
            <conditions>
               <eq property="id_aclgrp" expr="$group" />
               <in property="id_aclsbj" expr="$subjects" />
-              <neq property="id_aclres" expr="''"/>
-              <isnotnull property="id_aclres"/>
+              <neq property="id_aclres" value="-"/>
            </conditions>
         </method>
     </factory>

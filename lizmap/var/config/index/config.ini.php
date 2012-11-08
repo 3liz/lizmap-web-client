@@ -4,6 +4,7 @@
 startModule=view
 startAction="default:index"
 
+pluginsPath="app:plugins/,lib:jelix-plugins/,module:jacl2db/plugins"
 [coordplugins]
 ;name = file_ini_name or 1
 
@@ -24,3 +25,4 @@ jacl2db.access=2
 jacl2db.installparam=defaultuser
 [acl2]
 driver=db
+

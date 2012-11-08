@@ -4,7 +4,7 @@
 * @subpackage core
 * @author     Julien Issler
 * @contributor Laurent Jouanneau
-* @copyright  2007-2009 Julien Issler, 2008 Laurent Jouanneau
+* @copyright  2007-2009 Julien Issler, 2008-2012 Laurent Jouanneau
 * @link       http://www.jelix.org
 * @licence    GNU Lesser General Public Licence see LICENCE file or http://www.gnu.org/licenses/lgpl.html
 * @since 1.0
@@ -26,16 +26,16 @@ class jSession {
      */
     public static function start(){
 
-        $params = & $GLOBALS['gJConfig']->sessions;
+        $params = & jApp::config()->sessions;
 
         // do not start the session if the request is made from the command line or if sessions are disabled in configuration
-        if ($GLOBALS['gJCoord']->request instanceof jCmdLineRequest || !$params['start']) {
+        if (jApp::coord()->request instanceof jCmdLineRequest || !$params['start']) {
             return false;
         }
 
         //make sure that the session cookie is only for the current application
         if (!$params['shared_session'])
-            session_set_cookie_params ( 0 , $GLOBALS['gJConfig']->urlengine['basePath']);
+            session_set_cookie_params ( 0 , jApp::config()->urlengine['basePath']);
 
         if ($params['storage'] != '') {
 

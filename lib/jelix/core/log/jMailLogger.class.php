@@ -3,7 +3,7 @@
 * @package    jelix
 * @subpackage core
 * @author     Laurent Jouanneau
-* @copyright  2006-2010 Laurent Jouanneau
+* @copyright  2006-2012 Laurent Jouanneau
 * @link       http://www.jelix.org
 * @licence    GNU Lesser General Public Licence see LICENCE file or http://www.gnu.org/licenses/lgpl.html
 */
@@ -29,12 +29,12 @@ class jMailLogger implements jILogger {
      * @param jResponse $response
      */
     function output($response) {
-        global $gJCoord, $gJConfig;
-        if (!$gJCoord->request)
+
+        if (!jApp::coord()->request)
             return;
 
-        $email = $gJConfig->mailLogger['email'];
-        $headers = str_replace(array('\\r','\\n'),array("\r","\n"),$gJConfig->mailLogger['emailHeaders']);
+        $email = jApp::config()->mailLogger['email'];
+        $headers = str_replace(array('\\r','\\n'),array("\r","\n"),jApp::config()->mailLogger['emailHeaders']);
         $message = '';
         foreach($this->messages as $msg) {
             $message.= "\n\n".$msg->getFormatedMessage();

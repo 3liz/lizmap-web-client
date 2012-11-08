@@ -28,7 +28,7 @@ class jUrlAction extends jUrlBase {
     function __construct ($params=array(),$request=''){
         $this->params=$params;
         if($request == ''){
-            $this->requestType = $GLOBALS['gJCoord']->request->type;
+            $this->requestType = jApp::coord()->request->type;
         }
         else
             $this->requestType = $request;

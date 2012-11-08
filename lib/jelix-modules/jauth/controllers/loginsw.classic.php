@@ -22,7 +22,7 @@ class loginswCtrl extends jController {
     *
     */
     function in (){
-        $conf = $GLOBALS['gJCoord']->getPlugin('auth')->config;
+        $conf = jApp::coord()->getPlugin('auth')->config;
 
         if (!jAuth::login($this->param('login'), $this->param('password'))){
             sleep (intval($conf['on_error_sleep']));

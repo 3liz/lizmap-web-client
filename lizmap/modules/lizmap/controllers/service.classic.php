@@ -77,8 +77,7 @@ class serviceCtrl extends jController {
     }
 
     // Get the passed parameters
-    global $gJCoord;
-    $myParams = array_keys($gJCoord->request->params);
+    $myParams = array_keys(jApp::coord()->request->params);
 
     // Construction of the request url
     $querystring = $lizmapConfig->wmsServerURL."?";
@@ -87,7 +86,7 @@ class serviceCtrl extends jController {
     // on garde les paramètres intéressants
     foreach($myParams as $param){
       if(!in_array($param, array('module', 'action', 'C', 'project'))){
-          $querystring .= "&".$param."=".$gJCoord->request->params[$param];
+          $querystring .= "&".$param."=".jApp::coord()->request->params[$param];
       }
     }
 
@@ -153,8 +152,7 @@ class serviceCtrl extends jController {
     }
 
     // Get the passed parameters
-    global $gJCoord;
-    $params = $gJCoord->request->params;
+    $params = jApp::coord()->request->params;
 
     // Get data
     $lizmapCache = jClasses::getService('lizmap~lizmapCache');
@@ -192,8 +190,7 @@ class serviceCtrl extends jController {
     }
 
     // Get the passed parameters
-    global $gJCoord;
-    $myParams = array_keys($gJCoord->request->params);
+    $myParams = array_keys(jApp::coord()->request->params);
 
     // Get repository data
     $repository = $this->param('repository');
@@ -211,7 +208,7 @@ class serviceCtrl extends jController {
     // on garde les paramètres intéressants
     foreach($myParams as $param){
       if(!in_array($param, array('module', 'action', 'C', 'project'))){
-        $data[$param] = $gJCoord->request->params[$param];
+        $data[$param] = jApp::coord()->request->params[$param];
       }
     }
 
@@ -261,8 +258,7 @@ class serviceCtrl extends jController {
     }
 
     // Get the passed parameters
-    global $gJCoord;
-    $myParams = array_keys($gJCoord->request->params);
+    $myParams = array_keys(jApp::coord()->request->params);
 
     // Get repository data
     $repository = $this->param('repository');
@@ -280,7 +276,7 @@ class serviceCtrl extends jController {
     // on garde les paramètres intéressants
     foreach($myParams as $param){
       if(!in_array($param, array('module', 'action', 'C', 'project'))){
-        $data[$param] = $gJCoord->request->params[$param];
+        $data[$param] = jApp::coord()->request->params[$param];
       }
     }
 
@@ -340,8 +336,7 @@ class serviceCtrl extends jController {
     }
 
     // Get the passed parameters
-    global $gJCoord;
-    $myParams = array_keys($gJCoord->request->params);
+    $myParams = array_keys(jApp::coord()->request->params);
 
     // Request parameters
     $data = array("map"=>$lizmapConfig->repositoryData['path'].$project.".qgs");
@@ -349,7 +344,7 @@ class serviceCtrl extends jController {
     // on garde les paramètres intéressants
     foreach($myParams as $param){
       if(!in_array($param, array('module', 'action', 'C', 'project'))){
-        $data[$param] = $gJCoord->request->params[$param];
+        $data[$param] = jApp::coord()->request->params[$param];
       }
     }
 

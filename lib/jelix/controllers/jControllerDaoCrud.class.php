@@ -152,8 +152,8 @@ class jControllerDaoCrud extends jController {
      * @return string an action selector
      */
     protected function _getAction($method){
-        global $gJCoord;
-        return $gJCoord->action->module.'~'.$gJCoord->action->controller.':'.$method;
+        $act = jApp::coord()->action;
+        return $act->module.'~'.$act->controller.':'.$method;
     }
 
     /**

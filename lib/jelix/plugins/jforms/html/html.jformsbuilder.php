@@ -4,7 +4,7 @@
 * @subpackage  forms
 * @author      Laurent Jouanneau
 * @contributor Julien Issler, Dominique Papin, Olivier Demah
-* @copyright   2006-2010 Laurent Jouanneau
+* @copyright   2006-2012 Laurent Jouanneau
 * @copyright   2008 Julien Issler, 2008 Dominique Papin
 * @copyright   2009 Olivier Demah
 * @link        http://www.jelix.org
@@ -23,14 +23,18 @@ class htmlJformsBuilder extends jFormsBuilderHtml {
     protected $jFormsJsVarName = 'jFormsJQ';
 
     public function outputMetaContent($t) {
-        global $gJCoord, $gJConfig;
-        $resp= $gJCoord->response;
+
+        $resp= jApp::coord()->response;
         if($resp === null || $resp->getType() !='html'){
             return;
         }
-        $www = $gJConfig->urlengine['jelixWWWPath'];
-        $jq = $gJConfig->urlengine['jqueryPath'];
-        $bp = $gJConfig->urlengine['basePath'];
+        $confUrlEngine = &jApp::config()->urlengine;
+        $confHtmlEditor = &jApp::config()->htmleditors;
+        $confDate = &jApp::config()->datepickers;
+        $confWikiEditor = &jApp::config()->wikieditors;
+        $www = $confUrlEngine['jelixWWWPath'];
+        $jq = $confUrlEngine['jqueryPath'];
+        $bp = $confUrlEngine['basePath'];
         $resp->addJSLink($jq.'jquery.js');
         $resp->addJSLink($jq.'include/jquery.include.js');
         $resp->addJSLink($www.'js/jforms_jquery.js');
@@ -39,52 +43,57 @@ class htmlJformsBuilder extends jFormsBuilderHtml {
             if(!$v instanceof jFormsBase)
                 continue;
             foreach($v->getHtmlEditors() as $ed) {
-                if(isset($gJConfig->htmleditors[$ed->config.'.engine.file'])){
-                    if(is_array($gJConfig->htmleditors[$ed->config.'.engine.file'])){
-                        foreach($gJConfig->htmleditors[$ed->config.'.engine.file'] as $url) {
+                if(isset($confHtmlEditor[$ed->config.'.engine.file'])){
+                    if(is_array($confHtmlEditor[$ed->config.'.engine.file'])){
+                        foreach($confHtmlEditor[$ed->config.'.engine.file'] as $url) {
                             $resp->addJSLink($bp.$url);
                         }
                     }else
-                        $resp->addJSLink($bp.$gJConfig->htmleditors[$ed->config.'.engine.file']);
+                        $resp->addJSLink($bp.$confHtmlEditor[$ed->config.'.engine.file']);
                 }
-                if(isset($gJConfig->htmleditors[$ed->config.'.config']))
-                    $resp->addJSLink($bp.$gJConfig->htmleditors[$ed->config.'.config']);
+                
+                if(isset($confHtmlEditor[$ed->config.'.config']))
+                    $resp->addJSLink($bp.$confHtmlEditor[$ed->config.'.config']);
+
                 $skin = $ed->config.'.skin.'.$ed->skin;
-                if(isset($gJConfig->htmleditors[$skin]) && $gJConfig->htmleditors[$skin] != '')
-                    $resp->addCSSLink($bp.$gJConfig->htmleditors[$skin]);
+
+                if(isset($confHtmlEditor[$skin]) && $confHtmlEditor[$skin] != '')
+                    $resp->addCSSLink($bp.$confHtmlEditor[$skin]);
             }
-            $datepicker_default_config = $gJConfig->forms['datepicker'];
+
+            $datepicker_default_config = jApp::config()->forms['datepicker'];
+            
             foreach($v->getControls() as $ctrl){
                 if($ctrl instanceof jFormsControlDate || get_class($ctrl->datatype) == 'jDatatypeDate' || get_class($ctrl->datatype) == 'jDatatypeLocaleDate'){
                     $config = isset($ctrl->datepickerConfig)?$ctrl->datepickerConfig:$datepicker_default_config;
-                    $resp->addJSLink($bp.$gJConfig->datepickers[$config]);
+                    $resp->addJSLink($bp.$confDate[$config]);
                 }
             }
 
             foreach($v->getWikiEditors() as $ed) {
-                if(isset($gJConfig->wikieditors[$ed->config.'.engine.file']))
-                    $resp->addJSLink($bp.$gJConfig->wikieditors[$ed->config.'.engine.file']);
-                if(isset($gJConfig->wikieditors[$ed->config.'.config.path'])) {
-                    $p = $bp.$gJConfig->wikieditors[$ed->config.'.config.path'];
-                    $resp->addJSLink($p.$GLOBALS['gJConfig']->locale.'.js');
+                if(isset($confWikiEditor[$ed->config.'.engine.file']))
+                    $resp->addJSLink($bp.$confWikiEditor[$ed->config.'.engine.file']);
+                if(isset($confWikiEditor[$ed->config.'.config.path'])) {
+                    $p = $bp.$confWikiEditor[$ed->config.'.config.path'];
+                    $resp->addJSLink($p.jApp::config()->locale.'.js');
                     $resp->addCSSLink($p.'style.css');
                 }
-                if(isset($gJConfig->wikieditors[$ed->config.'.skin']))
-                    $resp->addCSSLink($bp.$gJConfig->wikieditors[$ed->config.'.skin']);
+                if(isset($confWikiEditor[$ed->config.'.skin']))
+                    $resp->addCSSLink($bp.$confWikiEditor[$ed->config.'.skin']);
             }
         }
     }
 
     protected function outputHeaderScript(){
-        global $gJConfig;
+        $conf = jApp::config()->urlengine;
         // no scope into an anonymous js function, because jFormsJQ.tForm is used by other generated source code
         echo '<script type="text/javascript">
 //<![CDATA[
 jFormsJQ.selectFillUrl=\''.jUrl::get('jelix~jforms:getListData').'\';
-jFormsJQ.config = {locale:'.$this->escJsStr($gJConfig->locale).
-    ',basePath:'.$this->escJsStr($gJConfig->urlengine['basePath']).
-    ',jqueryPath:'.$this->escJsStr($gJConfig->urlengine['jqueryPath']).
-    ',jelixWWWPath:'.$this->escJsStr($gJConfig->urlengine['jelixWWWPath']).'};
+jFormsJQ.config = {locale:'.$this->escJsStr(jApp::config()->locale).
+    ',basePath:'.$this->escJsStr($conf['basePath']).
+    ',jqueryPath:'.$this->escJsStr($conf['jqueryPath']).
+    ',jelixWWWPath:'.$this->escJsStr($conf['jelixWWWPath']).'};
 jFormsJQ.tForm = new jFormsJQForm(\''.$this->_name.'\',\''.$this->_form->getSelector().'\',\''.$this->_form->getContainer()->formId.'\');
 jFormsJQ.tForm.setErrorDecorator(new '.$this->options['errorDecorator'].'());
 jFormsJQ.declareForm(jFormsJQ.tForm);
@@ -112,7 +121,7 @@ jFormsJQ.declareForm(jFormsJQ.tForm);
         }
 
         if($ctrl instanceof jFormsControlDate || get_class($ctrl->datatype) == 'jDatatypeDate' || get_class($ctrl->datatype) == 'jDatatypeLocaleDate'){
-            $config = isset($ctrl->datepickerConfig)?$ctrl->datepickerConfig:$GLOBALS['gJConfig']->forms['datepicker'];
+            $config = isset($ctrl->datepickerConfig)?$ctrl->datepickerConfig:jApp::config()->forms['datepicker'];
             $this->jsContent .= 'jelix_datepicker_'.$config."(c, jFormsJQ.config);\n";
         }
 
@@ -136,7 +145,7 @@ jFormsJQ.declareForm(jFormsJQ.tForm);
 
     protected function jsWikieditor($ctrl) {
         $this->jsTextarea($ctrl);
-        $engine = $GLOBALS['gJConfig']->wikieditors[$ctrl->config.'.engine.name'];
+        $engine = jApp::config()->wikieditors[$ctrl->config.'.engine.name'];
         $this->jsContent .= '$("#'.$this->_name.'_'.$ctrl->ref.'").markItUp(markitup_'.$engine.'_settings);'."\n";
     }
 

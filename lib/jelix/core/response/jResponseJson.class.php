@@ -27,7 +27,12 @@ final class jResponseJson extends jResponse {
 
 
     public function output(){
-        global $gJCoord;
+        
+        if($this->_outputOnlyHeaders){
+            $this->sendHttpHeaders();
+            return true;
+        }
+        
         $this->_httpHeaders['Content-Type'] = "application/json";
         $content = json_encode($this->data);
         $this->_httpHeaders['Content-length'] = strlen($content);
@@ -37,10 +42,10 @@ final class jResponseJson extends jResponse {
     }
 
     public function outputErrors(){
-        global $gJCoord;
+
         $message = array();
-        $message['errorMessage'] = $gJCoord->getGenericErrorMessage();
-        $e = $gJCoord->getErrorMessage();
+        $message['errorMessage'] = jApp::coord()->getGenericErrorMessage();
+        $e = jApp::coord()->getErrorMessage();
         if($e){
             $message['errorCode'] = $e->getCode();
         }else{

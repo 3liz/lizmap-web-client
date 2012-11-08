@@ -5,7 +5,7 @@
 * @author      Laurent Jouanneau
 * @contributor Yann, Dominique Papin
 * @contributor Warren Seine, Alexis Métaireau, Julien Issler, Olivier Demah, Brice Tence
-* @copyright   2005-2010 Laurent Jouanneau, 2006 Yann, 2007 Dominique Papin
+* @copyright   2005-2012 Laurent Jouanneau, 2006 Yann, 2007 Dominique Papin
 * @copyright   2008 Warren Seine, Alexis Métaireau
 * @copyright   2009 Julien Issler, Olivier Demah
 * @copyright   2010 Brice Tence
@@ -170,6 +170,11 @@ class jResponseHtml extends jResponseBasicHtml {
      * @return boolean    true if the generated content is ok
      */
     public function output(){
+    
+        if($this->_outputOnlyHeaders){
+            $this->sendHttpHeaders();
+            return true;
+        }
 
         foreach($this->plugins as $name=>$plugin)
             $plugin->afterAction();
@@ -422,7 +427,6 @@ class jResponseHtml extends jResponseBasicHtml {
      * generate the content of the <head> content
      */
     protected function outputHtmlHeader (){
-        global $gJConfig;
 
         echo '<head>'."\n";
         if($this->_isXhtml && $this->xhtmlContentType && strstr($_SERVER['HTTP_ACCEPT'],'application/xhtml+xml')){      
@@ -507,11 +511,11 @@ class jResponseHtml extends jResponseBasicHtml {
             echo "<style type=\"text/css\">\n";
             foreach ($this->_Styles as $selector=>$value){
                 if (strlen ($value)){
-                    //il y a une paire clef valeur.
+                    // there is a key/value
                     echo $selector.' {'.$value."}\n";
                 }else{
-                    //il n'y a pas de valeur, c'est peut être simplement une commande.
-                    //par exemple @import qqchose, ...
+                    // no value, it could be simply a command
+                    //for example @import something, ...
                     echo $selector, "\n";
                 }
             }

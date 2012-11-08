@@ -3,7 +3,8 @@
 * @package    jelix
 * @subpackage auth_driver
 * @author      Laurent Jouanneau
-* @copyright   2011 Laurent Jouanneau
+* @contributor Florian Lonqueu-Brochard
+* @copyright   2011 Laurent Jouanneau, 2011 Florian Lonqueu-Brochard
 * @licence  http://www.gnu.org/licenses/lgpl.html GNU Lesser General Public Licence, see LICENCE file
 */
 
@@ -92,4 +93,21 @@ class jAuthDriverBase {
  */
 function sha1WithSalt($salt, $password) {
     return sha1($salt.':'.$password);
+}
+
+/**
+ * hash password with blowfish algorithm. use the password_salt value in the config file of the plugin
+ */
+function bcrypt($salt, $password, $iteration_count = 12) {
+    
+    if (CRYPT_BLOWFISH != 1)
+        throw new jException('jelix~auth.error.bcrypt.inexistant');
+    
+    if(empty($salt) || !ctype_alnum($salt) || strlen($salt) != 22)
+        throw new jException('jelix~auth.error.bcrypt.bad.salt');
+
+    $hash = crypt($password, '$2a$'.$iteration_count.'$'.$salt.'$');
+    
+    return substr($hash, strrpos($hash, '$')+strlen($salt));
+ 
 }

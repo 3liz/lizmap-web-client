@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<suburls xmlns="http://jelix.org/ns/suburls/1.0">
+    
+    <url pathinfo="/preferences" action="prefs:index"/>
+    
+    <url pathinfo="/pref/edit/:id" action="prefs:edit">
+        <param name="id"/>
+    </url>
+    
+    <url pathinfo="/pref/reset/:id" action="prefs:reset">
+        <param name="id"/>
+    </url>
+    
+</suburls>

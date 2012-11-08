@@ -4,7 +4,7 @@
 * @subpackage utils
 * @author     Gérald Croes, Laurent Jouanneau
 * @contributor Laurent Jouanneau, Laurent Raufaste, Pulsation
-* @copyright  2001-2005 CopixTeam, 2005-2011 Laurent Jouanneau, 2008 Laurent Raufaste, 2008 Pulsation
+* @copyright  2001-2005 CopixTeam, 2005-2012 Laurent Jouanneau, 2008 Laurent Raufaste, 2008 Pulsation
 *
 * This class was get originally from the Copix project (CopixZone, Copix 2.3dev20050901, http://www.copix.org)
 * Some lines of code are copyrighted 2001-2005 CopixTeam (LGPL licence).
@@ -158,9 +158,8 @@ class jZone {
     * @return string  zone content
     */
     public function getContent (){
-    	global $gJConfig;
 
-        if ($this->_useCache && !$gJConfig->zones['disableCache']){
+        if ($this->_useCache && !jApp::config()->zones['disableCache']){
             $f = $this->_getCacheFile();
             if(file_exists($f)){
                 if($this->_cacheTimeout > 0){

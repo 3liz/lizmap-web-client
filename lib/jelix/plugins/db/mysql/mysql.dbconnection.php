@@ -5,7 +5,7 @@
 * @author     Gérald Croes, Laurent Jouanneau
 * @contributor Laurent Jouanneau
 * @contributor Sylvain de Vathaire, Julien Issler
-* @copyright  2001-2005 CopixTeam, 2005-2010 Laurent Jouanneau
+* @copyright  2001-2005 CopixTeam, 2005-2012 Laurent Jouanneau
 * @copyright  2009 Julien Issler
 * This class was get originally from the Copix project (CopixDbConnectionMysql, Copix 2.3dev20050901, http://www.copix.org)
 * Few lines of code are still copyrighted 2001-2005 CopixTeam (LGPL licence).
@@ -88,8 +88,8 @@ class mysqlDbConnection extends jDbConnection {
         $funcconnect= ($this->profile['persistent']? 'mysql_pconnect':'mysql_connect');
         if($cnx = @$funcconnect ($this->profile['host'], $this->profile['user'], $this->profile['password'])){
             if(isset($this->profile['force_encoding']) && $this->profile['force_encoding'] == true
-              && isset($this->_charsets[$GLOBALS['gJConfig']->charset])){
-                mysql_query("SET NAMES '".$this->_charsets[$GLOBALS['gJConfig']->charset]."'", $cnx);
+              && isset($this->_charsets[jApp::config()->charset])){
+                mysql_query("SET NAMES '".$this->_charsets[jApp::config()->charset]."'", $cnx);
             }
             return $cnx;
         }else{

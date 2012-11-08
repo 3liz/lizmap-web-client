@@ -4,7 +4,7 @@
 * @subpackage  junittests
 * @author     Laurent Jouanneau
 * @contributor
-* @copyright  2005-2007 Laurent Jouanneau
+* @copyright  2005-2012 Laurent Jouanneau
 * @link        http://www.jelix.org
 * @licence    GNU Lesser General Public Licence see LICENCE file or http://www.gnu.org/licenses/lgpl.html
 */
@@ -116,8 +116,7 @@ $this->_response->body->append('MAIN','<!--B:'.$stringB.'-->');
    }
 
    function _htmlEntities($message) {
-      global $gJConfig;
-      return htmlentities($message, ENT_COMPAT, $gJConfig->charset);
+      return htmlentities($message, ENT_COMPAT, jApp::config()->charset);
    }
 }
 

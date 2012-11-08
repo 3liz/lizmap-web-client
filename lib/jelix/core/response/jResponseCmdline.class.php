@@ -101,7 +101,7 @@ class jResponseCmdline extends jResponse {
      */
     public function outputErrors(){
         $this->flushContent();
-        foreach($GLOBALS['gJCoord']->allErrorMessages as $msg)
+        foreach(jApp::coord()->allErrorMessages as $msg)
             fwrite(STDERR, $msg->getFormatedMessage()."\n");
         $this->setExitCode(self::EXIT_CODE_ERROR);
     }

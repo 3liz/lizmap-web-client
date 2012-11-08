@@ -4,7 +4,7 @@
 * @subpackage utils
 * @author     Loic Mathaud
 * @contributor Laurent Jouanneau
-* @copyright  2006 Loic Mathaud, 2008 Laurent Jouanneau
+* @copyright  2006 Loic Mathaud, 2008-2012 Laurent Jouanneau
 * @link        http://www.jelix.org
 * @licence  http://www.gnu.org/licenses/lgpl.html GNU Lesser General Public Licence, see LICENCE file
 */
@@ -56,10 +56,9 @@ class jIniFile {
             fwrite($f, $header.$result);
             fclose($f);
         } else {
-            // jIniFile is used by the configs compiler
-            // there is no $gJConfig in that case:
-            // we need to generate an error without using jLocale
-            if(isset($GLOBALS['gJConfig'])){
+            // jIniFile is used by the configs compiler. There is no configuration
+            // object in that case. we need to generate an error without using jLocale
+            if(jApp::config()){
                 throw new jException('jelix~errors.inifile.write.error', array ($filename));
             }else{
                 throw new Exception('(24)Error while writing ini file '.$filename);

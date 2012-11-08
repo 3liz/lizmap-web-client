@@ -4,7 +4,7 @@
 * @subpackage  utils
 * @author      Laurent Jouanneau
 * @contributor Yannick Le Guédart, Julien Issler
-* @copyright   2011 Laurent Jouanneau, 2007 Yannick Le Guédart, 2011 Julien Issler
+* @copyright   2011-2012 Laurent Jouanneau, 2007 Yannick Le Guédart, 2011 Julien Issler
 * @link        http://jelix.org
 * @licence     GNU Lesser General Public Licence see LICENCE file or http://www.gnu.org/licenses/lgpl.html
 */
@@ -165,7 +165,6 @@ class jProfiles {
      *                      we can also indicate a name of an other profile, to create an alias
      */
     public static function createVirtualProfile ($category, $name, $params) {
-        global $gJConfig;
         if ($name == '') {
            throw new jException('jelix~errors.profile.virtual.no.name', $category);
         }

@@ -1,364 +1,74 @@
 Credits
 =======
 
-By alphabetic order on the name
+See all contributors to the project here: https://github.com/jelix/jelix/graphs/contributors
+
+Here are some of them:
 
 Arnall
- - bug in jReponseRedirectUrl (#894)
-
 Yoan Blanc (aka Greut)
- - bug fix in jDaoFactoryBase::findBy : it should not ignore limit=0 (#665)
-
 Vincent Bonnard
- - bug fix in jXmlRpc.class.php (#190)
-
 Brunto
- - bug fix in the formdatafull plugin (#1027)
- - bug fix in jImageModifier (#1161)
- - improvement in crud controllers (#1189)
-
 Cedric
- - bug fix in jFile::read
-
 Uriel Corfa
- - Support of class datasources in jForms (#323)
- - contribution à jResponseTcpdf (#131)
-
 Dandelionmood
- - added counter_records tpl plugin (#370)
-
 Olivier Demah (aka FoxMaSk)
- - bug fix in jFile::removeDir (#733)
- - little improvement in jtpl_function_html_diff(#720)
- - remove deprecated "value" attribute in breadcrumb function (#800)
- - fix charset in htmlfragment (#948)
- - jResponseHtml, balise meta content xhtml+xml (#984)
- - fixed issues in the sql script of jacl2db_admin, about the anonymous groups storage (#915)
- - little improvements on date_format tpl plugins (#654)
- - improvements in jInstallChecker.class.php (#1022)
- - tpl plugin hook (#1019)
- - tpl plugin gravatar (#993)
- - meta supplementaires (author,generator) (#1063)
- - install jacl2db sans prefix de table (#1119)
- - $ should not be allowed in parameters of dao methods  (#1129)
- - format of date / hour too permissive (#1046)
- - missing method groups:setdefault in ursl.xml jacl2db_admin (#1187)
- - jForms type email et chaine vide (#1401)
-
 Antoine Detante (aka antoinefr)
- - support of persistant authentification in jAuth and auth plugin (#229)
-
+Sid-Ali Djenadid
 DSDenes
- - fix little thing in crud template (#844)
- - added a native modifier in jtpl (#845)
- - little improvement in formdatafull (#847)
-
- Thibaud Fabre (aka fatbeard)
-  - little improvements to ldap auth driver (#1145)
-
+Thibaud Fabre (aka fatbeard)
 F. Fernandez (aka e-media)
- - little improvement in jLog.(#344)
- - little improvement in formcontrols plugin (#353)
-
 Mickaël Fradin (aka mike/kewix)
- - improvements in the jtpl plugin: formcontrols (#223)
- - added style feature in the meta_html plugin (#553)
- - little other improvements (#835)
- - fixed bugs (#884)
- - correct _generateCondition doesn't handle some operators with NULL values (#992)
- - added jfullurl tpl plugin (#938)
- - bug fixed on number_format (#995)
-
 Olivier Gambier (aka d-m-p)
- - code reviewer, bug fixes on jelix 1.0 beta-
-
 Geekbay
- - fixed bug in jMailer about the support of html plugins into the template (#898)
- - fixed bug in jImageModifier (#945)
- - improved the simple url engine (#917)
-
 Gildas Givaja (aka Giviz)
- - testor, bug fixes
- - bug fix in jXmlRpc.class.php (#192)
-
+Flav
 Frédéric Guillot (aka fg)
- - patch for multiple authentification in a same session (#207)
- - bug fixes in support of XML-RPC request and response
-
 Florian Hatat (aka flh)
- - improvements on jDateTime + RFC2822 support (#379)
- - Fix bugs on duration calculation + new jDuration class (#425, #453)
-
 Vincent Herr
- - fixed a bug in jDbPDOConnection related to the mssql support (#1389)
-
 Emmanuel Hesry (aka m@noo)
- - improvement on jDateTime plugin for full date format (#796)
-
 Didier Huguet (aka isepman)
- - tpl plugin: modifier truncatehtml (#760)
- - jDaoFactoryBase: methods getTables, getPrimaryTable (#1263)
-
-
 Charles R. (aka Hugokernel)
- - fixed a bug in meta_html, about jquery effects
-
 Julien Issler
- - updated JSON class (#231)
- - table prefix support in jDb and jDao (#293)
- - fixed a bug with jAuthDummyUser (#352)
- - jSession implementation (#354)
- - jResponsePdf and jTcpdf classes (#131)
- - fixed various bugs (ex: #451)
- - added Session Name support in jSession (#417)
- - fixed bug about infinite loop with non-existent charset (#442)
- - some enhancement in jSession (#445, #504, #506)
- - localization system should work with language code without country (#95)
- - jForms html shouldn't generate readonly attribute on select (#550)
- - jResponseZip: on windows files are view like folders (#538)
- - form plugin create always a form with method post (#592)
- - jDao: attribute groupby for method selectfirst (#447)
- - jDao: fixed bug with jDaoConditions and IN operator (#572)
- - jZipCreator: empty dirs are not included in the archive (#570)
- - jForms: fixed bugs in jforms.js based on Martus' report (#554)
- - jLocale: support multiline rendering in strings (#569)
- - some errors and missing help for jAcl2 command line scripts (#622)
- - jSession: old sessions are not purged with some PHP configurations (#645)
- - linebreaks in textareas in jtpl plugin (#646)
- - jForms: HTML builder does not generate right datatype in javascript (#686)
- - jForms: wymeditor fields don't get updated before javascript form check (#687)
- - jTpl plugins: number_format modifier (#679)
- - jForms: Javascript error handling does not work for element <checkboxes> (#636)
- - jForms: Add support of the required attribute on <checkbox> (#635)
- - fixes about table_prefix in jDb (#702, #703)
- - jForms: radiobutton with value 0 should not get selected by default (#691)
- - jTcpdf: added default font for header and footer (#693)
- - jDao: autoremove of empty groups in jDaoConditions (#724)
- - jForms: new addControlBefore() method (#728)
- - jForms: server side check for <input type="url"> doesn't work (#743)
- - jForms: date and datetime controls + jQuery UI datepicker (#196)
- - jForms: javascript check of secret control's confirmation does not work (#751)
- - jForms: some controls are selected by default if their values are "0" (#757)
- - jForms: patch for empty items (#977)
- - jCoordinator: exception loop when response's constructor fails (#749)
- - jAuth: update usersession when needed (#461)
- - jSession: cannot use NOW() in dao storage because sqlite doesn't support it (#949)
- - jDbPDOConnection: syntax error when setting utf-8 charset in mysql driver
- - fixed also #1331, #1334, #1335, #1338
-
 Julien Jacottet
- - tpl plugin link_to_remote (#30)
-
 Bastien Jaillot (aka bastnic)
- - bug fix in jDaoGenerator (#282)
- - little improvement in the jControllerDaoCrud API (#330, #487, #618)
- - fixed minor bugs
- - default template and response generated by createapp (#496, #480, #515)
- - fixed bug in jFile::removeDir which crash if they are link inside (#519)
- - add a jFormBase prepareDaoFromControls which return a DAO filled by form (#497)
- - jforms tpl plugins : choice of builder (#583)
- - fixed bug in jacl2 events : conflict with jacl (#621)
- - fixed regression in createform jelix-script with optimized sources (#896)
-
 Steven Jehannet (aka Catsoup)
- - bug fixed in jEvent for multi entry point (#1004)
- - invalid error locale in jMailer class  (#983)
- - meta_html plugin should allow additionnal parameters (#996)
- - fixed issue with history plugin and session (#1068)
- - fixed issue in the gravatar plugin (#1172)
- - fixed bug in jdao for sqlite + count+ distinct (#1225)
- - jforms, fixed bad detection in modified controls (#1234)
- - jforms, javascript, fixed bug with grouped data in ajax context (#1325)
- - fixed build in jFile for jFile::getMimeTypeForFilename
-
 Nicolas Jeudy (aka njeudy)
- - auth driver: jAuthDriverLDS (pour les annuaires ldap LDS)
- - jResponseCss
-
 Johannb
- - fixed issue in jResponseLatexToPdf (#1070)
-
 Laurent Jouanneau (laurentj):
- - Conceptor and main developer of Jelix. Too many tickets to list them here :-)
-
 Gwendal Jouannic (aka obewan)
- - oracle support with PDO-OCI (#615)
-
 Xavier L. (aka afroxav)
- - improved the conformance with HTTP specification in redirections (#957)
-
 Denis Lallement (dlalleme)
- - tpl plugin break (#808)
-
 Hadrien Lanneau
- - jDateTime::substract() (#623)
- - jDateTime::isNull() (#1179)
- - bug on jDateTime::now() (#1164)
- - jCrypt : default key in configuration (#1137)
- - jUrl::getFull() (#1186)
- - fixed an error in jLog with jRequest (#1273)
- - better length check in datatype (#1377)
-
 Nicolas Lassalle
- - bug fix in jResponseBinary (#188)
-
 Yann Lecommandoux (aka YannL)
- - mssql driver for jDb (#799)
-
 Yannick Le Guédart (aka Torgan)
- - auth driver: jAuthDriverClass
- - jtpl plugin: date_format
- - some bug fixes and little improvements
- - Contribution on jResponseRss and jResponseAtom
- - jdb driver for Intuition
- - resolved memory exhausted errors in truncate modifier (#511)
- - fixed bug on jBundle (#639)
- - fixed bug on jDaoConditions (#906)
- - created jKVDb (#1048)
- - fixed bug on jDaoFactoryBase (#1192)
- - headers on jRequest (#1201)
-
 Kévin Lepeltier (aka Lipki)
- - plugin image for jtpl (#474, #502, #558, #559, #560)
- - bug fixed in firebug support (#500)
- - trois plugin swf (#498)
- - plugin coord history (#507)
- - improvement in jMailer (#530)
-
+Florian Lonqueu-Brochard (FlorianLB)
 Vincent Viaud (aka Litchi)
- - bug fix in jforms_jquery.js (#1132)
- - fixed misprint in ldap plugin (#1219)
- - acl listener for jauth::logout (#1236)
- - modifier round (#1206)
- - fixed auth_url_return transmission during a logout (#1258)
- - fixed issues in ckeditor bindings (#1329)
-
 Hugues Magnier (aka BaGroN)
- - tpl plugin stripws (#140)
-
 Aurélien Marcel
- - fixed bad variable name in jDbSchema (#1420)
-
 Loic Mathaud (bballizlife):
- - testor, many bug fixes and many patches on jelix
- - jtpl contributor: standalone edition of jTpl, tag for comments, {for}, stripslashes modifier
- - sqlite driver for jdb
- - operators in jDao
- - features to run Jelix application from a command line
- - implementation of jResponseXML, jResponseRss20
- - documentation
- - many improvements (jClasses::inc(), jIniFile, jAppManager, jelix-scripts etc )
- - coord plugin for Zend Framework (#651)
- - added title feature in the meta_html plugin (#810)
- - translations in the config file (#940)
- - jelix-script createdao should'nt validate fieldname with '-' (#980)
-
 Alexis Métaireau
- - improvements on jtpl plugin formcontrol (#652)
- - added jResponseHtml::addLink(#657)
-
 Aubanel Monnier
- - jResponseLatexToPdf and jtpl plugins for latex
- - patch for anchors support in jResponseRedirect
-
 Dominique Papin (aka bibo)
- - added j_themepath variable in jtpl (#346)
- - improved addCssLink usability for IE (#348)
- - added support of 'else' keyword for block plugin in jtpl (#349)
- - added support of <reset> in jforms (#258)
- - fixed some bugs (#362,#585,#718,#713,#822,#872)
- - jforms dao datasource : enhancements (#581,#582)
- - added ifctrl block plugin (#601)
- - added addContent method to jResponseHtmlFragment (#610)
- - added config option to define default form builder (#696)
-
 Thibault Piront (aka nuks)
- - fixed bug in significant url engine (#364)
- - big part of the patch about new action selectors (#317)
- - counter* plugins for jtpl (#375)
- - fixed bug in jAcl2 pgsql install file (#631)
-
 Pulsation
-  - possibility to disable zone caching (#717)
-
 Rahal
- - improvement on locale selectors : possibility to overload locales (#358)
-
 Tahina Ramaroson
- - ldap driver for jAuth (#787)
- - jCache (#540)
-
 Laurent Raufaste (aka analogue)
- - patches on postgresql driver (#123, #671, #672, #674)
- - replaced getParam (deprecated) with param in jZone (#680)
-
 Rob2
-  - image plugin: alt attribute is not generated when it is empty (#1240)
-
 Philippe Schelté (aka dubphil)
- - plugin tpl cycle (#149)
- - error in checkTrustedModules function (#715)
-
 Warren Seine (aka SooW)
- - <script /> tags don't end with a newline (#536)
-
 Brice G. (aka briceg)
- - short format in jDateTime (#1400)
-
 Brice Tence (aka brayce/bricet)
- - small testapp bug solved about missing tables (#1064)
- - fixed bug in jInstallChecker (#1087)
- - introduced optional jMinifier for jResponseHtml for JS/CSS concatenation and minification (#860)
- - type attribut on link tag should be optional (#1188)
- - added lock on jCache::call to prevent multiple calls on CPU high-consuming functions (ticket #1237)
- - fixed the support of meta in included template (#1196)
- - http version setting (#1411)
- - support of referer in error lof messages (#1421)
-
 Christophe Thiriot (aka Doubleface)
- - testor
- - bug fixes on PDO support in jDb
- - fixed minor bugs (#668, #1010...)
- - Added enhanced service handling (dependency injection) in jClasses (#523, #602)
- - implementation of "live" exit in command line (#406)
- - automatic timezone setting (#600)
- - bug in jFilter tests (#842)
- - fixed php bug on jtpl about ?>+line feed (#1025)
-
 Thomas
- - fixed bugs in jDao (#576, #643)
- - jDaoFactoryBase::countBy : allowing to do count on distinct fields (#580)
- - JDaoConditions::addItemGroup : add clause group by (#579)
- - jDbPDOConnection : fixed bug in query method with 3 arguments (#839)
- - better display of date/datetime values with jforms (#866)
- - jforms: attribute type on output control (#855)
- - Improvements on jResponseLatexPdf (#864)
-
 Baptiste Toinot (aka Surfoo)
- - double / in path for locale selector
- - fixed little bugs in jForms (#789, #790)
- - little improvement in number_format modifier (#875)
- - support of sitemap (#12)
-
 Christian Tritten
- - improvements on pagelinks plugin (#340)
-
 Yann
- - improvements in jResponseHtml (description and keywords)
-
 Sylvain de Vathaire (aka sylvain261)
- - Soap support : jSoapRequest, jResponseSoap etc... (#377)
- - little bug fix in exception handler (#356)
- - little improvement in exception handler and error handler (#357)
- - little improvement in jResponseXml (#465)
- - little bug fix in jZone (#508)
- - jResponseHtmlFragment for Ajax content response (#501)
- - little bug fix in mysql.dbconnection.php (#97bis)
- - jCache (#540)
- - additional generated events by jAuth (#1051)
-
 Zeffyr
-  - fixed jFormsControlDate and jFormsControlDatetime (#1139)
 
 Thanks for all users, especially those who reported bugs. :-)
 

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module xmlns="http://jelix.org/ns/module/1.0">
+    <info id="jacl@modules.jelix.org" name="jacl" createdate="2012-02-08">
+        <version stability="stable" date="2012-02-08">1.2.1</version>
+        <label lang="en_US">jAcl</label>
+        <description lang="en_US">Old API for jAcl</description>
+        <license URL="http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html">LGPL 2.1</license>
+        <copyright>2008-2012 Laurent Jouanneau and other contributors</copyright>
+        <creator name="Laurent Jouanneau" email="laurent@jelix.org" active="true"/>
+        <homepageURL>http://jelix.org</homepageURL>
+    </info>
+    <dependencies>
+       <jelix minversion="1.4pre" maxversion="1.4.*"/>
+    </dependencies>
+    <autoload>
+        <class name="jAcl" file="classes/jAcl.class.php" />
+    </autoload>
+</module>

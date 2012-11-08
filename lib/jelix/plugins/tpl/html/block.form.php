@@ -4,7 +4,7 @@
 * @subpackage  jtpl_plugin
 * @author      Laurent Jouanneau
 * @contributor Julien Issler, Bastien Jaillot, Dominique Papin
-* @copyright   2006-2008 Laurent Jouanneau
+* @copyright   2006-2012 Laurent Jouanneau
 * @copyright   2008 Julien Issler, 2008 Bastien Jaillot, 2008 Dominique Papin
 * @link        http://www.jelix.org
 * @licence     GNU Lesser General Public Licence see LICENCE file or http://www.gnu.org/licenses/lgpl.html
@@ -37,8 +37,6 @@
 function jtpl_block_html_form($compiler, $begin, $param=array())
 {
 
-    global $gJConfig;
-
     if(!$begin){
         return '$t->_privateVars[\'__formbuilder\']->outputFooter();
 unset($t->_privateVars[\'__form\']);
@@ -57,7 +55,7 @@ unset($t->_privateVars[\'__displayed_ctrl\']);';
     if(isset($param[3]) && trim($param[3]) != '""'  && trim($param[3]) != "''")
         $builder = $param[3];
     else
-        $builder = "'".$gJConfig->tplplugins['defaultJformsBuilder']."'";
+        $builder = "'".jApp::config()->tplplugins['defaultJformsBuilder']."'";
 
     if(isset($param[4]))
         $options = $param[4];

@@ -19,8 +19,7 @@ class myHtmlMapResponse extends jResponseHtml {
   function __construct() {
     parent::__construct();
 
-    global $gJConfig;
-    $bp = $gJConfig->urlengine['basePath'];
+    $bp = jApp::config()->urlengine['basePath'];
 
     $this->title = '';
 

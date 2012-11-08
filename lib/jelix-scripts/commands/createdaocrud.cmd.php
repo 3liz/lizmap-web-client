@@ -5,7 +5,7 @@
 * @contributor Bastien Jaillot
 * @contributor Loic Mathaud
 * @contributor Mickael Fradin
-* @copyright   2007-2011 Laurent Jouanneau, 2008 Loic Mathaud, 2010 Mickael Fradin
+* @copyright   2007-2012 Laurent Jouanneau, 2008 Loic Mathaud, 2010 Mickael Fradin
 * @link        http://www.jelix.org
 * @licence     GNU General Public Licence see LICENCE file or http://www.gnu.org/licenses/gpl.html
 */
@@ -59,7 +59,6 @@ class createdaocrudCommand extends JelixScriptCommand {
     public function run(){
 
         $this->loadAppConfig();
-        global $gJConfig;
         $module = $this->_parameters['module'];
         $path= $this->getModulePath($module);
 
@@ -169,7 +168,7 @@ class createdaocrudCommand extends JelixScriptCommand {
             }
         }
 
-        if ($gJConfig->urlengine['engine'] == 'significant') {
+        if (jApp::config()->urlengine['engine'] == 'significant') {
 
             if (!file_exists($path.'urls.xml')) {
                 $this->createFile($path.'urls.xml', 'module/urls.xml.tpl', array());

@@ -3,7 +3,7 @@
 * @package     jelix-scripts
 * @author      Florian Lonqueu-Brochard
 * @contributor Laurent Jouanneau
-* @copyright   2011 Florian Lonqueu-Brochard, 2011 Laurent Jouanneau
+* @copyright   2011 Florian Lonqueu-Brochard, 2011-2012 Laurent Jouanneau
 * @link        http://www.jelix.org
 * @licence     GNU General Public Licence see LICENCE file or http://www.gnu.org/licenses/gpl.html
 */
@@ -24,12 +24,12 @@ des fichiers d'une autre langue",
 
     public function run(){
         $this->loadAppConfig();
-        global $gJConfig;
+        $config = jApp::config();
 
-        $model_lang = $this->getParam('model_lang', $gJConfig->locale);
+        $model_lang = $this->getParam('model_lang', $config->locale);
         $lang = $this->getParam('lang');
 
-        foreach ($gJConfig->_modulesPathList as $module=>$dir) {
+        foreach ($config->_modulesPathList as $module=>$dir) {
             $source_dir = $dir.'locales/'.$model_lang.'/';
             if (!file_exists($source_dir))
                 continue;
@@ -41,7 +41,7 @@ des fichiers d'une autre langue",
                 while( FALSE !== ($fich = readdir($dir_r)) ) {
                     if ($fich != "." && $fich != ".."
                         && is_file($source_dir.$fich)
-                        && strpos($fich, '.'.$gJConfig->charset.'.properties')
+                        && strpos($fich, '.'.$config->charset.'.properties')
                         && !file_exists($target_dir.$fich)) {
                         copy ($source_dir.$fich, $target_dir.$fich);
                         if ($this->verbose()) {

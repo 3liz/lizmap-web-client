@@ -51,6 +51,8 @@ class jacl2dbModuleInstaller extends jInstallerModule {
             $cf->save();
         }
 
+        $this->declarePluginsPath('module:jacl2db');
+
         if (!$this->firstDbExec())
             return;
 

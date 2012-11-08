@@ -4,7 +4,7 @@
  * @subpackage  utils
  * @author      Christophe Thiriot
  * @contributor Laurent Jouanneau
- * @copyright   2008 Christophe Thiriot, 2008-2010 Laurent Jouanneau
+ * @copyright   2008 Christophe Thiriot, 2008-2012 Laurent Jouanneau
  * @link        http://www.jelix.org
  * @licence     GNU Lesser General Public Licence see LICENCE file or http://www.gnu.org/licenses/lgpl.html
  * @since 1.1
@@ -126,9 +126,9 @@ class jClassBinding {
             $str_selector_long = $this->fromSelector->toString(true);
 
             // 1) verify that a default implementation is specified in the jelix config file
-            global $gJConfig;
-            if (isset($gJConfig->classbindings) && count($gJConfig->classbindings)) {
-                $conf = $gJConfig->classbindings;
+            $config = jApp::config();
+            if (isset($config->classbindings) && count($config->classbindings)) {
+                $conf = $config->classbindings;
 
                 // No '~' allowed as key of a ini file, we use '-' instead
                 $conf_selector      = str_replace('~', '-', $str_selector);

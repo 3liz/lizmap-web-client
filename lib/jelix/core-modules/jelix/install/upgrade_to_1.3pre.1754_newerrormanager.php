@@ -62,7 +62,7 @@ class jelixModuleUpgrader_newerrormanager extends jInstallerModule {
                     $ini->setValue($typerr, $errorlog,'fileLogger');
                     $this->addValue($ini, $typerr, 'logger', 'file');
                 }
-                if(strpos($toDo , 'MAIL') !== false && $gJConfig){
+                if(strpos($toDo , 'MAIL') !== false && jApp::config()){
                     $this->addValue($ini, $typerr, 'logger', 'mail');
                 }
                 if(strpos($toDo , 'SYSLOG') !== false){

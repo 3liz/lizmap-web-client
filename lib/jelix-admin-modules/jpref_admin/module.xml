@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module xmlns="http://jelix.org/ns/module/1.0">
+    <info id="jpref_admin@jelix.org" name="jpref_admin" createdate="2012-01-21">
+        <version stability="stable" date="2012-01-21">1.0</version>
+        <label lang="en_US">jPref</label>
+        <description lang="en_US" />
+        <license URL="http://www.gnu.org/licenses/lgpl.html">GNU Lesser General Public Licence</license>
+        <copyright>2011 Florian Lonqueu-Brochard</copyright>
+        <creator name="Florian Lonqueu-Brochard" email="dev@florianlb.fr" active="true"/>
+        <!--<contributor name="hisname" email="hisemail@yoursite.undefined" active="true" since="" role=""/>-->
+        <homepageURL>http://jelix.org</homepageURL>
+    </info>
+    <dependencies>
+       <jelix minversion="1.4pre.*" maxversion="1.4.*"/>
+        <module name="jacl2db"/>
+    </dependencies>
+</module>

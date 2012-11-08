@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<plugin xmlns="http://jelix.org/ns/plugin/1.0">
+    <info id="traceexec@jelix.org">
+        <version stability="stable" date="2012-03-12"/>
+        <label lang="en_US">TraceExecution</label>
+        <description lang="en_US">Trace execution of an action into a log file</description>
+        <label lang="fr_FR">TraceExecution</label>
+        <description lang="fr_FR">Trace l'execution d'une action dans un fichier log</description>
+        <licence URL="http://www.gnu.org/licenses/lgpl.html">GNU Lesser General Public Licence</licence>
+        <creator name="FlorianLB" active="true" />
+    </info>
+    <dependencies/>
+</plugin>

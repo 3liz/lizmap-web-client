@@ -32,12 +32,12 @@
 
 function jtpl_function_html_link_to_remote($tpl, $label, $element_id, $action_selector, $action_parameters, $option) {
 
-    global $gJCoord, $gJConfig;
+    $resp = jApp::coord()->response;
     static $id_link_to_remote = 0;
 
-    if($gJCoord->response->getFormatType() == 'html'){
+    if($resp && $resp->getFormatType() == 'html'){
         // Add js link
-        $gJCoord->response->addJSLink($gJConfig->urlengine['jqueryPath'].'jquery.js');
+        $resp->addJSLink(jApp::config()->urlengine['jqueryPath'].'jquery.js');
     }
 
     $id_link_to_remote++;

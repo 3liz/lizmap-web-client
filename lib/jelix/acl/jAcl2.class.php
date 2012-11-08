@@ -3,7 +3,7 @@
 * @package     jelix
 * @subpackage  acl
 * @author      Laurent Jouanneau
-* @copyright   2006-2010 Laurent Jouanneau
+* @copyright   2006-2012 Laurent Jouanneau
 * @link        http://www.jelix.org
 * @licence     http://www.gnu.org/licenses/lgpl.html GNU Lesser General Public Licence, see LICENCE file
 * @since 1.1
@@ -34,12 +34,12 @@ class jAcl2 {
     protected static function _getDriver(){
         static $driver = null;
         if($driver == null){
-            global $gJConfig;
-            $db = strtolower($gJConfig->acl2['driver']);
+            $config = jApp::config();
+            $db = strtolower($config->acl2['driver']);
             if ($db == '')
                 throw new jException('jelix~errors.acl.driver.notfound',$db);
 
-            $driver = jApp::loadPlugin($db, 'acl2', '.acl2.php', $gJConfig->acl2['driver'].'Acl2Driver', $gJConfig->acl2);
+            $driver = jApp::loadPlugin($db, 'acl2', '.acl2.php', $config->acl2['driver'].'Acl2Driver', $config->acl2);
             if (is_null($driver)) {
                 throw new jException('jelix~errors.acl.driver.notfound',$db);
             }

@@ -122,7 +122,7 @@ class jUnitTestCase extends PHPUnit_Framework_TestCase {
                         $this->fail("invalid php array syntax");
                         return false;
                     }
-                    $this->assertEquals($v,$value,'negative test on '.$name.': %s'.$errormessage);
+                    $this->assertEquals($v,$value,'negative test on '.$name.': '.$errormessage);
                 }else{
                     $key=0;
                     foreach ($xml->children() as $child) {
@@ -143,28 +143,28 @@ class jUnitTestCase extends PHPUnit_Framework_TestCase {
             case 'string':
                 $this->assertInternalType('string', $value, $name.': not a string'.$errormessage);
                 if(isset($xml['value'])){
-                    $this->assertEquals((string)$xml['value'],$value, $name.': bad value. %s'.$errormessage);
+                    $this->assertEquals((string)$xml['value'],$value, $name.': bad value. '.$errormessage);
                 }
                 return true;
             case 'int':
             case 'integer':
                 $this->assertTrue(is_integer($value), $name.': not an integer ('.$value.') '.$errormessage);
                 if (isset($xml['value'])) {
-                    $this->assertEquals(intval((string)$xml['value']),$value, $name.': bad value. %s'.$errormessage);
+                    $this->assertEquals(intval((string)$xml['value']),$value, $name.': bad value. '.$errormessage);
                 }
                 return true;
             case 'float':
             case 'double':
                 $this->assertInternalType('float', $value,$name.': not a float ('.$value.') '.$errormessage);
                 if(isset($xml['value'])){
-                    $this->assertEquals( floatval((string)$xml['value']),$value,$name.': bad value. %s'.$errormessage);
+                    $this->assertEquals( floatval((string)$xml['value']),$value,$name.': bad value. '.$errormessage);
                 }
                 return true;
             case 'boolean':
                 $this->assertInternalType('boolean', $value,$name.': not a boolean ('.$value.') '.$errormessage);
                 if(isset($xml['value'])){
                     $v = ((string)$xml['value'] == 'true');
-                    $this->assertEquals($v ,$value, $name.': bad value. %s'.$errormessage);
+                    $this->assertEquals($v ,$value, $name.': bad value. '.$errormessage);
                 }
                 return true;
             case 'null':

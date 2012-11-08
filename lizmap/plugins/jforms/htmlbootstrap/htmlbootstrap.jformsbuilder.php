@@ -60,31 +60,30 @@ class htmlbootstrapJformsBuilder extends jFormsBuilderHtml {
     }
 
     public function outputMetaContent($t) {
-        global $gJCoord, $gJConfig;
-        $resp= $gJCoord->response;
+        $resp= jApp::coord()->response;
         if($resp === null || $resp->getType() !='html'){
             return;
         }
-        $www =$gJConfig->urlengine['jelixWWWPath'];
-        $bp =$gJConfig->urlengine['basePath'];
+        $www =jApp::config()->urlengine['jelixWWWPath'];
+        $bp =jApp::config()->urlengine['basePath'];
         $resp->addJSLink($www.'js/jforms_light.js');
         $resp->addCSSLink($www.'design/jform.css');
         foreach($t->_vars as $k=>$v){
             if($v instanceof jFormsBase && count($edlist = $v->getHtmlEditors())) {
                 foreach($edlist as $ed) {
-                    if(isset($gJConfig->htmleditors[$ed->config.'.engine.file'])){
-                        if(is_array($gJConfig->htmleditors[$ed->config.'.engine.file'])){
-                            foreach($gJConfig->htmleditors[$ed->config.'.engine.file'] as $url) {
+                    if(isset(jApp::config()->htmleditors[$ed->config.'.engine.file'])){
+                        if(is_array(jApp::config()->htmleditors[$ed->config.'.engine.file'])){
+                            foreach(jApp::config()->htmleditors[$ed->config.'.engine.file'] as $url) {
                                 $resp->addJSLink($bp.$url);
                             }
                         }else
-                            $resp->addJSLink($bp.$gJConfig->htmleditors[$ed->config.'.engine.file']);
+                            $resp->addJSLink($bp.jApp::config()->htmleditors[$ed->config.'.engine.file']);
                     }
-                    if(isset($gJConfig->htmleditors[$ed->config.'.config']))
-                        $resp->addJSLink($bp.$gJConfig->htmleditors[$ed->config.'.config']);
+                    if(isset(jApp::config()->htmleditors[$ed->config.'.config']))
+                        $resp->addJSLink($bp.jApp::config()->htmleditors[$ed->config.'.config']);
                     $skin = $ed->config.'.skin.'.$ed->skin;
-                    if(isset($gJConfig->htmleditors[$skin]) && $gJConfig->htmleditors[$skin] != '')
-                        $resp->addCSSLink($bp.$gJConfig->htmleditors[$skin]);
+                    if(isset(jApp::config()->htmleditors[$skin]) && jApp::config()->htmleditors[$skin] != '')
+                        $resp->addCSSLink($bp.jApp::config()->htmleditors[$skin]);
                 }
             }
         }
@@ -317,7 +316,7 @@ class htmlbootstrapJformsBuilder extends jFormsBuilderHtml {
 
         $this->jsContent .="c = new ".$this->jFormsJsVarName."Control".$dt."('".$ctrl->ref."', ".$this->escJsStr($ctrl->label).");\n";
         if ($isLocale)
-            $this->jsContent .="c.lang='".$GLOBALS['gJConfig']->locale."';\n";
+            $this->jsContent .="c.lang='".jApp::config()->locale."';\n";
 
         $maxl= $ctrl->datatype->getFacet('maxLength');
         if($maxl !== null)
@@ -336,7 +335,7 @@ class htmlbootstrapJformsBuilder extends jFormsBuilderHtml {
     protected function _outputDateControlDay($ctrl, $attr, $value){
         $attr['name'] = $ctrl->ref.'[day]';
         $attr['id'] .= 'day';
-        if($GLOBALS['gJConfig']->forms['controls.datetime.input'] == 'textboxes'){
+        if(jApp::config()->forms['controls.datetime.input'] == 'textboxes'){
             $attr['value'] = $value;
             echo '<input type="text" size="2" maxlength="2"';
             $this->_outputAttr($attr);
@@ -357,14 +356,14 @@ class htmlbootstrapJformsBuilder extends jFormsBuilderHtml {
     protected function _outputDateControlMonth($ctrl, $attr, $value){
         $attr['name'] = $ctrl->ref.'[month]';
         $attr['id'] .= 'month';
-        if($GLOBALS['gJConfig']->forms['controls.datetime.input'] == 'textboxes') {
+        if(jApp::config()->forms['controls.datetime.input'] == 'textboxes') {
             $attr['value'] = $value;
             echo '<input type="text" size="2" maxlength="2"';
             $this->_outputAttr($attr);
             echo $this->_endt;
         }
         else{
-            $monthLabels = $GLOBALS['gJConfig']->forms['controls.datetime.months.labels'];
+            $monthLabels = jApp::config()->forms['controls.datetime.months.labels'];
             echo '<select';
             $this->_outputAttr($attr);
             echo '><option value="">'.htmlspecialchars(jLocale::get('jelix~jforms.date.month.label')).'</option>';
@@ -385,7 +384,7 @@ class htmlbootstrapJformsBuilder extends jFormsBuilderHtml {
     protected function _outputDateControlYear($ctrl, $attr, $value){
         $attr['name'] = $ctrl->ref.'[year]';
         $attr['id'] .= 'year';
-        if($GLOBALS['gJConfig']->forms['controls.datetime.input'] == 'textboxes') {
+        if(jApp::config()->forms['controls.datetime.input'] == 'textboxes') {
             $attr['value'] = $value;
             echo '<input type="text" size="4" maxlength="4"';
             $this->_outputAttr($attr);
@@ -414,7 +413,7 @@ class htmlbootstrapJformsBuilder extends jFormsBuilderHtml {
     protected function _outputDateControlHour($ctrl, $attr, $value){
         $attr['name'] = $ctrl->ref.'[hour]';
         $attr['id'] .= 'hour';
-        if($GLOBALS['gJConfig']->forms['controls.datetime.input'] == 'textboxes') {
+        if(jApp::config()->forms['controls.datetime.input'] == 'textboxes') {
             $attr['value'] = $value;
             echo '<input type="text" size="2" maxlength="2"';
             $this->_outputAttr($attr);
@@ -435,7 +434,7 @@ class htmlbootstrapJformsBuilder extends jFormsBuilderHtml {
     protected function _outputDateControlMinutes($ctrl, $attr, $value){
         $attr['name'] = $ctrl->ref.'[minutes]';
         $attr['id'] .= 'minutes';
-        if($GLOBALS['gJConfig']->forms['controls.datetime.input'] == 'textboxes') {
+        if(jApp::config()->forms['controls.datetime.input'] == 'textboxes') {
             $attr['value'] = $value;
             echo '<input type="text" size="2" maxlength="2"';
             $this->_outputAttr($attr);
@@ -458,7 +457,7 @@ class htmlbootstrapJformsBuilder extends jFormsBuilderHtml {
         $attr['id'] .= 'seconds';
         if(!$ctrl->enableSeconds)
             echo '<input type="hidden" id="'.$attr['id'].'" name="'.$attr['name'].'" value="'.$value.'"'.$this->_endt;
-        else if($GLOBALS['gJConfig']->forms['controls.datetime.input'] == 'textboxes') {
+        else if(jApp::config()->forms['controls.datetime.input'] == 'textboxes') {
             $attr['value'] = $value;
             echo '<input type="text"';
             $this->_outputAttr($attr);
@@ -814,7 +813,7 @@ class htmlbootstrapJformsBuilder extends jFormsBuilderHtml {
     protected function jsHtmleditor($ctrl) {
         $this->jsContent .="c = new ".$this->jFormsJsVarName."ControlHtml('".$ctrl->ref."', ".$this->escJsStr($ctrl->label).");\n";
         $this->jsTextarea($ctrl, false);
-        $engine = $GLOBALS['gJConfig']->htmleditors[$ctrl->config.'.engine.name'];
+        $engine = jApp::config()->htmleditors[$ctrl->config.'.engine.name'];
         $this->jsContent .= 'jelix_'.$engine.'_'.$ctrl->config.'("'.$this->_name.'_'.$ctrl->ref.'","'.$this->_name.'","'.$ctrl->skin."\",".$this->jFormsJsVarName.".config);\n";
     }
 

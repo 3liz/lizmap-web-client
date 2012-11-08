@@ -138,11 +138,18 @@
       </element>
    </define>
 
-
    <define name="static">
       <element name="static">
          <attribute name="name" />
          <attribute name="value" />
+         <optional>
+            <attribute name="type">
+               <choice>
+                  <value>lang</value>
+                  <value>locale</value>
+               </choice>
+            </attribute>
+         </optional>
          <empty />
       </element>
    </define>

@@ -4,7 +4,7 @@
  * @subpackage db_driver
  * @author     Yann Lecommandoux
  * @contributor Laurent Jouanneau, Louis S.
- * @copyright  2008 Yann Lecommandoux, 2011 Laurent Jouanneau, Louis S.
+ * @copyright  2008 Yann Lecommandoux, 2011-2012 Laurent Jouanneau, Louis S.
  * @link     http://www.jelix.org
  * @licence  http://www.gnu.org/licenses/lgpl.html GNU Lesser General Public Licence, see LICENCE file
  */
@@ -74,7 +74,7 @@ class mssqlDbConnection extends jDbConnection {
         $funcconnect = ($this->profile['persistent']? 'mssql_pconnect':'mssql_connect');
         if($cnx = @$funcconnect ($this->profile['host'], $this->profile['user'], $this->profile['password'])){
             /*if(isset($this->profile['force_encoding']) && $this->profile['force_encoding'] == true
-            && isset($this->_charsets[$GLOBALS['gJConfig']->charset])){
+            && isset($this->_charsets[jApp::config()->charset])){
                 mssql_query("SET ANSI_DEFAULTS ON", $cnx);
             }*/
             return $cnx;

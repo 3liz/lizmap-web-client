@@ -344,10 +344,9 @@ class configCtrl extends jController {
         $form->addControl($ctrl);
         // Get data from form on error if needed
         if($load == 'request'){
-          global $gJCoord;
           // Edit control ref to get request params
           $param = str_replace('.', '_', $subject->id_aclsbj);
-          $dataValues = array_values($gJCoord->request->params[$param]);
+          $dataValues = array_values(jApp::coord()->request->params[$param]);
         }
         // Set the preselected data if needed
         if($load){
@@ -372,8 +371,7 @@ class configCtrl extends jController {
     // Set groups array if return needed
     if(!$save)
       $groups = array();
-    // Data from coordinator
-    global $gJCoord;
+
     // Loop through the form controls
     foreach($form->getControls() as $ctrl){
       // Filter controls corresponding to lizmap subjects
@@ -382,7 +380,7 @@ class configCtrl extends jController {
         // Edit control ref to get request params
         $param = str_replace('.', '_', $id_aclsbj);
         // Get values for the selected subject
-        $values = array_values($gJCoord->request->params[$param]);
+        $values = array_values(jApp::coord()->request->params[$param]);
         // Loop through the groups
         foreach($daogroup->findAll() as $group){
           // Retrieve only normal groups wich are not blacklisted
@@ -597,8 +595,8 @@ class configCtrl extends jController {
       $rep->action='admin~config:editSection';
       $rep->params['repository']= $repository;
       $rep->params['errors']= "1";
-      global $gJCoord;
-      foreach($gJCoord->request->params as $k=>$v)
+
+      foreach(jApp::coord()->request->params as $k=>$v)
         if(preg_match('#^'.$this->lizmapClientPrefix.'#', $k))
           $rep->params[$k] = $v;
 

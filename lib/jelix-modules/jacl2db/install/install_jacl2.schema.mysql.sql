@@ -18,7 +18,7 @@ CREATE TABLE IF NOT EXISTS `%%PREFIX%%jacl2_user_group` (
 
 -- liste des sujets, avec leur appartenance à un groupe de valeurs de droits
 CREATE TABLE IF NOT EXISTS `%%PREFIX%%jacl2_subject` (
-  `id_aclsbj` varchar(100) NOT NULL default '',
+  `id_aclsbj` varchar(100) NOT NULL,
   `label_key` varchar(100) default NULL,
   `id_aclsbjgrp` VARCHAR( 50 ) default NULL ,
   PRIMARY KEY  (`id_aclsbj`)
@@ -29,7 +29,7 @@ CREATE TABLE IF NOT EXISTS `%%PREFIX%%jacl2_subject` (
 CREATE TABLE IF NOT EXISTS `%%PREFIX%%jacl2_rights` (
   `id_aclsbj` varchar(100) NOT NULL,
   `id_aclgrp` varchar(50) NOT NULL,
-  `id_aclres` varchar(100) NOT NULL default '',
+  `id_aclres` varchar(100) NOT NULL default '-',
   canceled boolean NOT NULL default 0,
   PRIMARY KEY  (`id_aclsbj`,`id_aclgrp`,`id_aclres`)
 ) ENGINE=MyISAM;

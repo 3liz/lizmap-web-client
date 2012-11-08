@@ -5,7 +5,7 @@
 * @author     Laurent Jouanneau
 * @author     Gerald Croes
 * @contributor Julien Issler, Yannick Le Guédart, Dominique Papin
-* @copyright  2001-2005 CopixTeam, 2005-2010 Laurent Jouanneau
+* @copyright  2001-2005 CopixTeam, 2005-2012 Laurent Jouanneau
 * Some parts of this file are took from Copix Framework v2.3dev20050901, CopixI18N.class.php, http://www.copix.org.
 * copyrighted by CopixTeam and released under GNU Lesser General Public Licence.
 * initial authors : Gerald Croes, Laurent Jouanneau.
@@ -46,7 +46,7 @@ class jBundle {
     public function get ($key, $charset = null){
 
         if($charset == null){
-            $charset = $GLOBALS['gJConfig']->charset;
+            $charset = jApp::config()->charset;
         }
         if (!in_array ($charset, $this->_loadedCharset)){
             $this->_loadLocales ($this->locale, $charset);
@@ -65,7 +65,7 @@ class jBundle {
     * @param string $charset    the charset
     */
     protected function _loadLocales ($locale, $charset){
-        global $gJConfig;
+
         $this->_loadedCharset[] = $charset;
 
         $source = $this->fic->getPath();
@@ -76,10 +76,10 @@ class jBundle {
         if (is_readable ($cache)){
             $okcompile = true;
 
-            if ($gJConfig->compilation['force']){
+            if (jApp::config()->compilation['force']){
                $okcompile = false;
             }else{
-                if ($gJConfig->compilation['checkCacheFiletime']){
+                if (jApp::config()->compilation['checkCacheFiletime']){
                     if (is_readable ($source) && filemtime($source) > filemtime($cache)){
                         $okcompile = false;
                     }

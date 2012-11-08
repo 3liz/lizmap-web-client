@@ -5,7 +5,7 @@
 * @subpackage  core_selector
 * @author      Laurent Jouanneau
 * @contributor Loic Mathaud
-* @copyright   2005-2011 Laurent Jouanneau, 2007 Loic Mathaud
+* @copyright   2005-2012 Laurent Jouanneau, 2007 Loic Mathaud
 * @link        http://www.jelix.org
 * @licence    GNU Lesser General Public Licence see LICENCE file or http://www.gnu.org/licenses/lgpl.html
 */
@@ -43,8 +43,8 @@ class jSelectorDao extends jSelectorModule {
     }
 
     protected function _createPath(){
-        global $gJConfig;
-        if(!isset($gJConfig->_modulesPathList[$this->module])){
+
+        if(!isset(jApp::config()->_modulesPathList[$this->module])){
             throw new jExceptionSelector('jelix~errors.selector.module.unknown', $this->toString());
         }
 
@@ -55,8 +55,9 @@ class jSelectorDao extends jSelectorModule {
            $this->_where = 'overloaded/';
            return;
         }
+
         // else check if the module exists in the current module
-        $this->_path = $gJConfig->_modulesPathList[$this->module].$this->_dirname.$this->resource.$this->_suffix;
+        $this->_path = jApp::config()->_modulesPathList[$this->module].$this->_dirname.$this->resource.$this->_suffix;
 
         if (!is_readable ($this->_path)){
             throw new jExceptionSelector('jelix~errors.selector.invalid.target', array($this->toString(), "dao"));

@@ -20,7 +20,7 @@ class mapCtrl extends jController {
   function index() {
 
     if ($this->param('theme')) {
-      $GLOBALS['gJConfig']->theme = $this->param('theme');
+      jApp::config()->theme = $this->param('theme');
     }
     $rep = $this->getResponse('htmlmap');
     $ok = true;

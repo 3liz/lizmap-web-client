@@ -12,11 +12,10 @@
 * @licence     GNU Lesser General Public Licence see LICENCE file or http://www.gnu.org/licenses/lgpl.html
 */
 
-/**
-*
-*/
 require_once(JELIX_LIB_PATH.'tpl/jTpl.class.php');
 require_once(JELIX_LIB_CORE_PATH.'response/jResponseXmlFeed.class.php');
+require_once(JELIX_LIB_PATH.'utils/jRSS20Info.class.php');
+require_once(JELIX_LIB_PATH.'utils/jRSS20Item.class.php');
 
 /**
 * Rss2.0 response
@@ -47,7 +46,12 @@ class jResponseRss20 extends jResponseXMLFeed {
      * @return boolean true if generation is ok, else false
      */
     final public function output (){
-
+    
+        if($this->_outputOnlyHeaders){
+            $this->sendHttpHeaders();
+            return true;
+        }
+        
         $this->_httpHeaders['Content-Type'] =
                 'application/xml;charset=' . $this->charset;
 
@@ -72,147 +76,10 @@ class jResponseRss20 extends jResponseXMLFeed {
      * @return jXMLFeedItem
      */
     public function createItem($title,$link, $date){
-        $item = new jRSSItem();
+        $item = new jRSS20Item();
         $item->title = $title;
         $item->id = $item->link = $link;
         $item->published = $date;
         return $item;
     }
-}
-
-/**
- * meta data of the channel
- * @package    jelix
- * @subpackage core_response
- * @since 1.0b1
- */
-class jRSS20Info extends jXMLFeedInfo{
-    /**
-     * lang of the channel
-     * @var string
-     */
-    public $language;
-    /**
-     * email of the content manager
-     * @var string
-     */
-    public $managingEditor;
-    /**
-     * email of technical responsible
-     * @var string
-     */
-    public $webMaster;
-    /**
-     * publication date
-     * format:  yyyy-mm-dd hh:mm:ss
-     * @var string
-     */
-    public $published;
-    /**
-     * specification url
-     * example : http://blogs.law.harvard.edu/tech/rss
-     * @var string
-     */
-    public $docs='';
-    /**
-     * not implemented
-     * @var string
-     */
-    public $cloud; // indicates a webservice from which the user can register to the server
-                  // to be aware of modifications
-                  //=array('domain'=>'','path'=>'','port'=>'','registerProcedure'=>'', 'protocol'=>'');
-    /**
-     * time to live of the cache, in minutes
-     * @var string
-     */
-    public $ttl;
-    /**
-     * image title
-     * @var string
-     */
-    public $imageTitle;
-    /**
-     * web site url corresponding to the image
-     * @var string
-     */
-    public $imageLink;
-    /**
-     * width of the image
-     * @var string
-     */
-    public $imageWidth;
-    /**
-     * height of the image
-     * @var string
-     */
-    public $imageHeight;
-    /**
-     * Description of the image (= title attribute for the img tag)
-     * @var string
-     */
-    public $imageDescription;
-
-    /**
-     * Pics rate for this channel
-     * @var string
-     */
-    public $rating;
-    /**
-     * field form for the channel
-     * it is an array('title'=>'','description'=>'','name'=>'','link'=>'')
-     * @var array
-     */
-    public $textInput;
-    /**
-     * list of hours that agregator should ignore
-     * ex (10, 21)
-     * @var array
-     */
-    public $skipHours;
-    /**
-     * list of day that agregator should ignore
-     * ex ('monday', 'tuesday')
-     * @var array
-     */
-    public $skipDays;
-
-    function __construct () {
-            $this->_mandatory = array ( 'title', 'webSiteUrl', 'description');
-    }
-}
-
-/**
- * content of an item in a syndication channel
- * @package    jelix
- * @subpackage core_response
- * @since 1.0b1
- */
-class jRSSItem extends jXMLFeedItem {
-
-    /**
-     * comments url
-     * @var string
-     */
-    public $comments;
-    /**
-     * media description, attached to the item
-     * the array should contain this keys :  'url', 'size', 'mimetype'
-     * @var array
-     */
-    public $enclosure;
-    /**
-     * says if the id is a permanent link
-     * @var boolean
-     */
-    public $idIsPermalink;
-    /**
-     * url of  rss channel of the information source
-     * @var string
-     */
-    public $sourceUrl;
-    /**
-     * Title of the information source
-     * @var string
-     */
-    public $sourceTitle;
 }

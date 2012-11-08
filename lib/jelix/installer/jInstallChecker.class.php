@@ -354,9 +354,6 @@ class jInstallCheck {
         if(ini_get('asp_tags') == 1){
             $this->notice('ini.asp_tags');
         }
-        if(ini_get('short_open_tag') == 1){
-            $this->notice('ini.short_open_tag');
-        }
         if($ok){
             $this->ok('ini.ok');
         }

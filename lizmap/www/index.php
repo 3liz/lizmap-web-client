@@ -1,7 +1,7 @@
 <?php
 /**
 * @package   lizmap
-* @subpackage
+* @subpackage lizmap
 * @author    3liz
 * @copyright 2011 3liz
 * @link      http://3liz.com
@@ -11,9 +11,13 @@
 require ('../application.init.php');
 require (JELIX_LIB_CORE_PATH.'request/jClassicRequest.class.php');
 
-$config_file = 'index/config.ini.php';
+checkAppOpened();
 
-$jelix = new jCoordinator($config_file);
-$jelix->process(new jClassicRequest());
+// Charge la configuration
+jApp::loadConfig('index/config.ini.php');
 
+// nouveau coordinateur, que l'on indique à jApp
+jApp::setCoord(new jCoordinator());
 
+// Nouvel objet request, que l'on passe au coordinateur, pour traiter le routage.
+jApp::coord()->process(new jClassicRequest());

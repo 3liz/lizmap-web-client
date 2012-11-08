@@ -4,7 +4,7 @@
 * @subpackage  junittests
 * @author      Laurent Jouanneau
 * @contributor Rahal Aboulfeth
-* @copyright   2007 Laurent Jouanneau, 2007-2011 Rahal Aboulfeth
+* @copyright   2007-2012 Laurent Jouanneau, 2007-2011 Rahal Aboulfeth
 * @link        http://www.jelix.org
 * @licence     GNU Lesser General Public Licence see LICENCE file or http://www.gnu.org/licenses/lgpl.html
 */
@@ -15,7 +15,8 @@ class defaultCtrl extends jController {
     *
     */
     function index() {
-        if(!isset($GLOBALS['gJConfig']->enableTests) || !$GLOBALS['gJConfig']->enableTests){
+        $conf = jApp::config();
+        if(!isset($conf->enableTests) || !$conf->enableTests){
             // security
             $rep = $this->getResponse('html', true);
             $rep->title = 'Error';
@@ -30,7 +31,8 @@ class defaultCtrl extends jController {
     }
 
     function all() {
-        if(!isset($GLOBALS['gJConfig']->enableTests) || !$GLOBALS['gJConfig']->enableTests){
+        $conf = jApp::config();
+        if(!isset($conf->enableTests) || !$conf->enableTests){
             // security
             $rep = $this->getResponse('html', true);
             $rep->title = 'Error';
@@ -52,7 +54,7 @@ class defaultCtrl extends jController {
                 jContext::push($module);
                 $group = new TestSuite('Tests'.$category.' on module '.$module);
                 foreach($this->testsList[$module] as $test){
-                    $group->addFile($GLOBALS['gJConfig']->_modulesPathList[$module].'tests/'.$test[0]);
+                    $group->addFile($conf->_modulesPathList[$module].'tests/'.$test[0]);
                 }
                 $group->run($reporter);
                 jContext::pop();
@@ -65,7 +67,8 @@ class defaultCtrl extends jController {
 
 
     function module() {
-        if(!isset($GLOBALS['gJConfig']->enableTests) || !$GLOBALS['gJConfig']->enableTests){
+        $conf = jApp::config();
+        if(!isset($conf->enableTests) || !$conf->enableTests){
             // security
             $rep = $this->getResponse('html', true);
             $rep->title = 'Error';
@@ -84,7 +87,7 @@ class defaultCtrl extends jController {
 
             $group = new TestSuite('All'.$category.' tests in "'.$module. '" module');
             foreach($this->testsList[$module] as $test){
-                $group->addFile($GLOBALS['gJConfig']->_modulesPathList[$module].'tests/'.$test[0]);
+                $group->addFile($conf->_modulesPathList[$module].'tests/'.$test[0]);
             }
             jContext::push($module);
             $group->run($reporter);
@@ -97,7 +100,8 @@ class defaultCtrl extends jController {
 
 
     function single() {
-        if(!isset($GLOBALS['gJConfig']->enableTests) || !$GLOBALS['gJConfig']->enableTests){
+        $conf = jApp::config();
+        if(!isset($conf->enableTests) || !$conf->enableTests){
             // security
             $rep = $this->getResponse('html', true);
             $rep->title = 'Error';
@@ -119,7 +123,7 @@ class defaultCtrl extends jController {
             foreach($this->testsList[$module] as $test){
                 if($test[1] == $testname){
                     $group = new TestSuite('"'.$module. '" module , '.$test[2]);
-                    $group->addFile($GLOBALS['gJConfig']->_modulesPathList[$module].'tests/'.$test[0]);
+                    $group->addFile($conf->_modulesPathList[$module].'tests/'.$test[0]);
                     jContext::push($module);
                     $group->run($reporter);
                     jContext::pop();
@@ -142,10 +146,8 @@ class defaultCtrl extends jController {
         $rep->body->assign('page_title', 'Unit Tests');
         $rep->body->assign('versionphp',phpversion());
         $rep->body->assign('versionjelix',JELIX_VERSION);
-        $rep->body->assign('basepath',$GLOBALS['gJConfig']->urlengine['basePath']);
-        $rep->body->assign('isurlsig', $GLOBALS['gJConfig']->urlengine['engine'] == 'significant');
-
-        $rep->addCSSLink($GLOBALS['gJConfig']->urlengine['basePath'].'tests/design.css');
+        $rep->body->assign('basepath',jApp::config()->urlengine['basePath']);
+        $rep->body->assign('isurlsig', jApp::config()->urlengine['engine'] == 'significant');
 
         $runnerPreparer = jClasses::create('junittests~jrunnerpreparer');
         $this->allTestsList = $runnerPreparer->getTestsList('html');

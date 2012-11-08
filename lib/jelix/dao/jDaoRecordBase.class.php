@@ -3,9 +3,9 @@
  * @package     jelix
  * @subpackage  dao
  * @author      Laurent Jouanneau
- * @contributor Loic Mathaud, Olivier Demah
- * @copyright   2005-2007 Laurent Jouanneau
- * @copyright   2007 Loic Mathaud
+ * @contributor Loic Mathaud, Olivier Demah, Sid-Ali Djenadi
+ * @copyright   2005-2012 Laurent Jouanneau
+ * @copyright   2007 Loic Mathau, 2012 Sid-Ali Djenadid
  * @copyright   2010 Olivier Demah
  * @link        http://www.jelix.org
  * @licence     http://www.gnu.org/licenses/lgpl.html GNU Lesser General Public Licence, see LICENCE file
@@ -24,6 +24,11 @@ abstract class jDaoRecordBase {
     const ERROR_MAXLENGTH = 4;
     const ERROR_MINLENGTH = 5;
 
+    /**
+     * return the dao selector
+     */
+    abstract public function getSelector();
+    
     /**
      * @return array informations on all properties
      * @see jDaoFactoryBase::getProperties()
@@ -66,7 +71,7 @@ abstract class jDaoRecordBase {
                 }
 
                 //  test maxlength et minlength
-                $len = iconv_strlen($value, $GLOBALS['gJConfig']->charset);
+                $len = iconv_strlen($value, jApp::config()->charset);
                 if($infos['maxlength'] !== null && $len > intval($infos['maxlength'])){
                     $errors[$prop][] = self::ERROR_MAXLENGTH;
                 }
@@ -140,5 +145,20 @@ abstract class jDaoRecordBase {
             return $list;
         }
     }
-}
+    
+    /**
+     * save the record
+     * @return integer  1 if success (the number of affected rows). False if the query has failed. 
+     * @since 1.4
+     */
+    function save() {
+        $dao = jDao::get($this->getSelector());
+        $pkFields = $this->getPrimaryKeyNames();
 
+        if ($this->{$pkFields[0]} == null)
+            return $dao->insert($this);
+        else
+            return $dao->update($this);
+    }
+
+}

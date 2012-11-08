@@ -1,0 +1,125 @@
+
+body {  font-family: Verdana, Arial, Sans; font-size:0.8em;}
+
+a img { border:0;}
+
+
+pre {
+  padding-left:1em;
+  border-left:4px solid #efe03b;
+  color:black;
+}
+
+
+#header {
+   margin:20px 0 0 250px;
+   padding:15px;
+   background-color: #002830;
+   -moz-border-radius: 10px 10px 0 0;
+   color:white;
+   font-weight:bold;
+   font-size:1.5em;
+}
+
+#main {clear:both;
+   margin:0 0 0 250px;
+   padding:30px 15px 15px 15px;
+   color : #002830;
+   border-left:1px solid #d8e1e4;
+   border-right:1px solid #d8e1e4;
+}
+
+#main a { color:#0594c8; text-decoration:underline; }
+#main a:visited {  color : #002830;}
+#main a:hover { color: white; background-color: #0594c8; text-decoration:none;}
+#main a.wikilink2 { color:#ed5a02;}
+#main h1 { color: #3c90af; border-bottom:4px solid #ed5a02; margin:0; }
+#main h2 { color: #3c90af; border-bottom:2px solid #002830; margin:1em 0 0.5em 0; }
+#main h3 { color: #002830; border-bottom:1px solid #002830; margin:1em 0 0.5em 0; }
+#main h4 { color: #002830; }
+#main input.button{
+   background-color:#4397b6;
+   border-left: 1px solid #99cbde;
+   border-right: 1px solid  #225365;
+   border-top: 1px solid #99cbde ;
+   border-bottom: 1px solid  #225365;
+   -moz-border-radius:3px;
+   color:white;
+   cursor: pointer;
+}
+
+
+.fail { color: red; }
+.pass { color: green; }
+pre { background-color: lightgray; }
+
+
+.resultfail {
+  padding: 8px; margin-top: 1em; background-color: red; color: white;
+}
+
+.resultsuccess {
+  padding: 8px; margin-top: 1em; background-color: green; color: white;
+}
+
+div.exception { margin-top:4px; margin-bottom:4px;
+    background-color: #ff9186;
+    border: 1px solid red; }
+
+div.exception strong {color: red;}
+div.exception p { font-size:0.9em; }
+
+.diff { background: white; border: 1px solid black; }
+.diff .block { background: #ccc; padding-left: 1em; }
+.diff .context { background: white; border: none; }
+.diff .block tt { font-weight: normal;  font-family: monospace;  color: black;
+        margin-left: 0;  border: none; }
+.diff del, .diff ins {  font-weight: bold; text-decoration: none; }
+.diff .original, .diff .deleted,
+.diff .final, .diff .added {  background: white; font-family: sans-serif;
+    white-space: pre;}
+.diff .original, .diff .deleted {  background: #fcc;  border: none; }
+.diff .final, .diff .added {  background: #cfc; border: none; }
+.diff del { background: #f99; }
+.diff ins { background: #9f9; }
+
+
+
+#sidemenu {
+   position:absolute;
+   top:0;
+   left:0;
+   width:245px;
+   padding-left:10px;
+}
+
+
+#sidemenu a {color:#0594c8; text-decoration:none;}
+#sidemenu a:hover { text-decoration: underline; }
+#sidemenu h1 { text-align:center; }
+#sidemenu h1 a {text-decoration:none;}
+#sidemenu h1 a:hover { text-decoration:none; }
+#sidemenu ul { margin:0 0 0 1em;
+               padding:0 0 0 1em;
+               color: #3c90af;
+             }
+#sidemenu ul li { margin:0; padding:0 0 0 0em; }
+#sidemenu .userinfo { margin:2em 0; }
+#sidemenu p { text-align:center;}
+
+
+
+#footer {
+   clear:both;
+   margin:0 0 0 250px;
+   padding:15px;
+   color : #002830;
+   text-align:center;
+   min-height:2em;
+   background-color:#d8e1e4;
+   border-left:1px solid #d8e1e4;
+   border-right:1px solid #d8e1e4;
+   border-bottom:1px solid #d8e1e4;
+   -moz-border-radius:0px 0px 15px 15px;
+}
+

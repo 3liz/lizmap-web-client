@@ -4,7 +4,7 @@
 * @subpackage  responsehtml_plugin
 * @author      Laurent Jouanneau
 * @contributor Julien Issler
-* @copyright   2010-2011 Laurent Jouanneau
+* @copyright   2010-2012 Laurent Jouanneau
 * @copyright   2011 Julien Issler
 * @link        http://jelix.org
 * @licence     GNU Lesser General Public Licence see LICENCE file or http://www.gnu.org/licenses/lgpl.html
@@ -118,8 +118,7 @@ class debugbarHTMLResponsePlugin implements jIHTMLResponsePlugin {
      * the main content (if any) is already generated.
      */
     public function beforeOutput() {
-        global $gJConfig;
-        $plugins = $gJConfig->debugbar['plugins'];
+        $plugins = jApp::config()->debugbar['plugins'];
         $css = "
 ul.jxdb-list li h5 a {background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAQAAAC1+jfqAAAABGdBTUEAAK/INwWK6QAAABl0RVh0U29mdHdhcmUAQWRvYmUgSW1hZ2VSZWFkeXHJZTwAAABjSURBVCjPY/jPgB8y0FHBkb37/+/6v+X/+v8r/y/ei0XB3v+H4HDWfywKtgAl1v7/D8SH/k/ApmANUAICDv1vx6ZgMZIJ9dgUzEJyQxk2BRPWdf1vAeqt/F/yP3/dwIQk2QoAfUogHsamBmcAAAAASUVORK5CYII=');}
 ul.jxdb-list li.jxdb-opened  h5 a {background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAQAAAC1+jfqAAAABGdBTUEAAK/INwWK6QAAABl0RVh0U29mdHdhcmUAQWRvYmUgSW1hZ2VSZWFkeXHJZTwAAABhSURBVCjPY/jPgB8y0FHBkb37/+/6v+X/+v8r/y/ei0XB3v+H4HDWfywKtgAl1oLhof8TsClYA5SAgEP/27EpWIxkQj02BbOQ3FCGTcGEdV3/W4B6K/+X/M9fNzAhSbYCAMiTH3pTNa+FAAAAAElFTkSuQmCC');}
@@ -230,7 +229,6 @@ var jxdb={plugins:{},init:function(event){for(var i in jxdb.plugins)jxdb.plugins
      * directly some contents.
      */
     public function atBottom() {
-        global $gJConfig;
 
         foreach($this->plugins as $plugin) {
             $plugin->show($this);

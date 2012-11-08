@@ -4,6 +4,7 @@
 startModule=master_admin
 startAction="default:index"
 
+pluginsPath="app:plugins/,lib:jelix-plugins/,module:jacl2db/plugins"
 [responses]
 html=adminHtmlResponse
 htmlauth=adminLoginHtmlResponse
@@ -29,4 +30,5 @@ auth="admin/auth.coord.ini.php"
 jacl2="admin/jacl2.coord.ini.php"
 [acl2]
 driver=db
+
 

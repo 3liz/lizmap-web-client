@@ -5,7 +5,7 @@
 * @author      Antoine Detante
 * @contributor Laurent Jouanneau
 * @contributor Hadrien Lanneau <hadrien at over-blog dot com>
-* @copyright   2007 Antoine Detante, 2009 Laurent Jouanneau
+* @copyright   2007 Antoine Detante, 2009-2012 Laurent Jouanneau
 * @link        http://www.jelix.org
 * @licence     GNU Lesser General Public Licence see LICENCE file or http://www.gnu.org/licenses/lgpl.html
 **/
@@ -133,9 +133,9 @@ class jCrypt {
      * @author Hadrien Lanneau <hadrien at over-blog dot com>
      **/
     private static function _getDefaultKey() {
-        global $gJConfig;
-        if (isset($gJConfig->jcrypt['defaultkey']) && $gJConfig->jcrypt['defaultkey'] !='') {
-            return $gJConfig->jcrypt['defaultkey'];
+        $conf = jApp::config()->jcrypt;
+        if (isset($conf['defaultkey']) && $conf['defaultkey'] !='') {
+            return $conf['defaultkey'];
         }
         throw new jException('jelix~auth.error.key.empty');
     }

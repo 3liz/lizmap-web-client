@@ -86,6 +86,12 @@ password_crypt_function = sha1
 ;password_crypt_function = "1:sha1WithSalt"
 ;password_salt = "here_your_salt"
 
+; if you want to use bcrypt algorithm (more secured but time expensive)
+;password_crypt_function = "1:bcrypt"
+; salt for bcrypt algorithm, must be alphanumeric and 22 characters in length
+;password_salt = "salt_of_22_alphanumeric_characters_for_bcrypt_algo"
+
+
 ; name of the form for the jauthdb_admin module
 form = ""
 
@@ -103,6 +109,11 @@ password_crypt_function = sha1
 ; if you want to use a salt with sha1:
 ;password_crypt_function = "1:sha1WithSalt"
 ;password_salt = "here_your_salt"
+
+; if you want to use bcrypt algorithm (more secured but time expensive)
+;password_crypt_function = "1:bcrypt"
+; salt for bcrypt algorithm, must be alphanumeric and 22 characters in length
+;password_salt = "salt_of_22_alphanumeric_characters_for_bcrypt_algo"
 
 ;------- parameters for the "LDS" driver
 [LDS]

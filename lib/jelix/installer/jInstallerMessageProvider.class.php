@@ -46,10 +46,10 @@ class jInstallerMessageProvider {
         'extension.required.installed'=>'L\'extension %s obligatoire est disponible',
         'extensions.required.ok'=>'Toutes les extensions PHP obligatoires sont disponibles',
         'extension.opcode.cache'=>'Cette édition de Jelix a besoin d\'une extension de cache d\'opcode (apc, eaccelerator...)',
-        'extension.database.ok'=>'L\'application utilisera une base de donnée SQL',
-        'extension.database.ok2'=>'L\'application pourra utiliser une base de donnée SQL',
-        'extension.database.missing'=>'L\'application a besoin d\'une base de donnée SQL',
-        'extension.database.missing2'=>'L\'application ne pourra pas utiliser de base de donnée SQL',
+        'extension.database.ok'=>'L\'application utilisera une base de données SQL',
+        'extension.database.ok2'=>'L\'application pourra utiliser une base de données SQL',
+        'extension.database.missing'=>'L\'application a besoin d\'une base de données SQL',
+        'extension.database.missing2'=>'L\'application ne pourra pas utiliser de base de données SQL',
         'path.core'             =>'Le fichier init.php  de jelix ou le fichier application.ini.php de votre application n\'est pas chargé',
         'path.temp'             =>'Le repertoire temporaire n\'est pas accessible en écriture ou alors le chemin du répertoire temp n\'est pas configurée comme il faut',
         'path.log'              =>'Le repertoire var/log dans votre application n\'est pas accessible en écriture ou alors le chemin du répertoire de log n\'est pas configurée comme il faut',
@@ -78,7 +78,6 @@ class jInstallerMessageProvider {
         'ini.safe_mode'         =>'php.ini : le safe_mode n\'est pas recommandé.',
         'ini.register_globals'  =>'php.ini : il faut désactiver register_globals, pour des raisons de sécurité et parce que cette option n\'est pas nécessaire.',
         'ini.asp_tags'          =>'php.ini : il est conseillé de désactiver asp_tags. Cette option n\'est pas nécessaire.',
-        'ini.short_open_tag'    =>'php.ini : il est conseillé de désactiver short_open_tag. Cette option n\'est pas nécessaire.',
         'ini.ok'                =>'Les paramètres de php sont ok',
 
         'module.unknown'        =>'Module inconnu',
@@ -163,7 +162,6 @@ class jInstallerMessageProvider {
         'ini.safe_mode'         =>'php.ini: safe_mode is not recommended.',
         'ini.register_globals'  =>'php.ini: you must deactivate register_globals, for security reasons, and because this option is not needed.',
         'ini.asp_tags'          =>'php.ini: you should deactivate asp_tags. No need to have this option.',
-        'ini.short_open_tag'    =>'php.ini: you should deactivate short_open_tag. No need to have this option.',
         'ini.ok'                =>'php settings are ok',
 
         'module.unknown'        =>'Unknown module %s',
@@ -198,12 +196,12 @@ class jInstallerMessageProvider {
             $languages = explode(',', $_SERVER['HTTP_ACCEPT_LANGUAGE']);
             foreach($languages as $bl){
                 // pour les user-agents qui livrent un code internationnal
-                if(preg_match("/^([a-zA-Z]{2})(?:[-_]([a-zA-Z]{2}))?(;q=[0-9]\\.[0-9])?$/",$bl,$match)){
+                if(preg_match("/^([a-zA-Z]{2,3})(?:[-_]([a-zA-Z]{2,3}))?(;q=[0-9]\\.[0-9])?$/",$bl,$match)){
                     $lang = strtolower($match[1]);
                     break;
                 }
             }
-        }elseif(preg_match("/^([a-zA-Z]{2})(?:[-_]([a-zA-Z]{2}))?$/",$lang,$match)){
+        }elseif(preg_match("/^([a-zA-Z]{2,3})(?:[-_]([a-zA-Z]{2,3}))?$/",$lang,$match)){
             $lang = strtolower($match[1]);
         }
         if($lang == '' || !isset($this->messages[$lang])){

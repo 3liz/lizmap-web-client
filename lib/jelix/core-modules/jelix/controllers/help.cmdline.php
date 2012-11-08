@@ -24,7 +24,6 @@ class helpCtrl extends jControllerCmdLine {
     *
     */
     public function index() {
-        global $gJConfig;
 
         $rep = $this->getResponse();
 
@@ -41,7 +40,7 @@ General purpose:
 ");
         } else {
             if (!preg_match('/(?:([\w\.]+)~)/', $cmd_name)) {
-                $cmd_name = $gJConfig->startModule.'~'.$cmd_name;
+                $cmd_name = jApp::config()->startModule.'~'.$cmd_name;
             }
             $selector = new jSelectorAct($cmd_name);
 

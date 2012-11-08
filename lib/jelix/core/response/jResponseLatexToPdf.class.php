@@ -115,6 +115,12 @@ class jResponseLatexToPdf extends jResponse {
      * @return boolean    true if the generated content is ok
      */
     function output(){
+        
+        if($this->_outputOnlyHeaders){
+            $this->sendHttpHeaders();
+            return true;
+        }
+        
         $this->_commonProcess();
         if (count($this->_commands) <= 0) //No commands, likewise we need some...
             $this->addDefaultCommands();

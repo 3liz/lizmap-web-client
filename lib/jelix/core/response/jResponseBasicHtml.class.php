@@ -4,7 +4,7 @@
  * @subpackage  core_response
  * @author      Laurent Jouanneau
  * @contributor Julien Issler, Brice Tence
- * @copyright   2010 Laurent Jouanneau
+ * @copyright   2010-2012 Laurent Jouanneau
  * @copyright   2011 Julien Issler, 2011 Brice Tence
  * @link        http://www.jelix.org
  * @licence     GNU Lesser General Public Licence see LICENCE file or http://www.gnu.org/licenses/lgpl.html
@@ -99,6 +99,7 @@ class jResponseBasicHtml extends jResponse {
      * - $HEADBOTTOM: content before th </head> tag
      * - $BODYTOP: content just after the <body> tag, at the top of the page
      * - $BODYBOTTOM: content just before the </body> tag, at the bottom of the page
+     * - $BASEPATH: base path of the application, for links of your style sheets etc..
      * @var string
      */
     public $htmlFile = '';
@@ -115,12 +116,12 @@ class jResponseBasicHtml extends jResponse {
     * setup the charset, the lang
     */
     function __construct (){
-        global $gJConfig;
-        $this->_charset = $gJConfig->charset;
-        $this->_lang = $gJConfig->locale;
+
+        $this->_charset = jApp::config()->charset;
+        $this->_lang = jApp::config()->locale;
 
         // load plugins
-        $plugins = $gJConfig->jResponseHtml['plugins'];
+        $plugins = jApp::config()->jResponseHtml['plugins'];
         if ($plugins) {
             $plugins = preg_split('/ *, */', $plugins);
             foreach ($plugins as $name) {
@@ -190,6 +191,11 @@ class jResponseBasicHtml extends jResponse {
      */
     public function output(){
 
+        if($this->_outputOnlyHeaders){
+            $this->sendHttpHeaders();
+            return true;
+        }
+    
         foreach($this->plugins as $name=>$plugin)
             $plugin->afterAction();
 
@@ -208,6 +214,7 @@ class jResponseBasicHtml extends jResponse {
         $HEADBOTTOM = implode("\n", $this->_headBottom);
         $BODYTOP = implode("\n", $this->_bodyTop);
         $BODYBOTTOM = implode("\n", $this->_bodyBottom);
+        $BASEPATH = jApp::config()->urlengine['basePath'];
 
         ob_start();
         foreach($this->plugins as $name=>$plugin)
@@ -252,7 +259,7 @@ class jResponseBasicHtml extends jResponse {
         $HEADBOTTOM = implode("\n", $this->_headBottom);
         $BODYTOP = implode("\n", $this->_bodyTop);
         $BODYBOTTOM = implode("\n", $this->_bodyBottom);
-        $basePath = $GLOBALS['gJConfig']->urlengine['basePath'];
+        $BASEPATH = jApp::config()->urlengine['basePath'];
 
         header("HTTP/{$this->httpVersion} 500 Internal jelix error");
         header('Content-Type: text/html;charset='.$this->_charset);

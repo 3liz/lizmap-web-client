@@ -1,11 +1,11 @@
 <?php
 /**
-* @package   castries
-* @subpackage 
-* @author    yourname
-* @copyright 2010 yourname
-* @link      http://www.yourwebsite.undefined
-* @license    All right reserved
+* @package   lizmap
+* @subpackage admin
+* @author    3liz
+* @copyright 2011 3liz
+* @link      http://3liz.com
+* @license    Mozilla Public License : http://www.mozilla.org/MPL/
 */
 
 require ('../application.init.php');
@@ -13,9 +13,11 @@ require (JELIX_LIB_CORE_PATH.'request/jClassicRequest.class.php');
 
 checkAppOpened();
 
-$config_file = 'admin/config.ini.php';
+// Charge la configuration
+jApp::loadConfig('admin/config.ini.php');
 
-$jelix = new jCoordinator($config_file);
-$jelix->process(new jClassicRequest());
+// nouveau coordinateur, que l'on indique à jApp
+jApp::setCoord(new jCoordinator());
 
-
+// Nouvel objet request, que l'on passe au coordinateur, pour traiter le routage.
+jApp::coord()->process(new jClassicRequest());

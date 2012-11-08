@@ -86,7 +86,7 @@ class dbKVDriver extends jKVDriver implements jIKVttl, jIKVPersistent {
             $sql = 'UPDATE '.$table.' SET k_value= '.$value.',  k_expire = '.$expire.'
             WHERE k_key='.$key;
         }
-        return (bool)$this->_connection->exec($sql);
+        return (bool) $this->_connection->exec($sql);
     }
 
     public function insert ($key, $value) {

@@ -3,7 +3,7 @@
 * @package    jelix
 * @subpackage core
 * @author     Laurent Jouanneau
-* @copyright  2006-2010 Laurent Jouanneau
+* @copyright  2006-2012 Laurent Jouanneau
 * @link       http://www.jelix.org
 * @licence    GNU Lesser General Public Licence see LICENCE file or http://www.gnu.org/licenses/lgpl.html
 */
@@ -18,9 +18,8 @@ class jSyslogLogger implements jILogger {
     function logMessage($message) {
         $type = $message->getCategory();
 
-        global $gJCoord;
-        if ($gJCoord->request)
-            $ip = $gJCoord->request->getIP();
+        if (jApp::coord()->request)
+            $ip = jApp::coord()->request->getIP();
         else
             $ip = isset($_SERVER['REMOTE_ADDR']) ? $_SERVER['REMOTE_ADDR'] : '127.0.0.1';
 

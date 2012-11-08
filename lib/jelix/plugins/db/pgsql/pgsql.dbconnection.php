@@ -7,7 +7,7 @@
 * @contributor Yannick Le Guédart
 * @contributor Laurent Raufaste
 * @contributor Julien Issler
-* @copyright  2001-2005 CopixTeam, 2005-2010 Laurent Jouanneau, 2007-2008 Laurent Raufaste
+* @copyright  2001-2005 CopixTeam, 2005-2012 Laurent Jouanneau, 2007-2008 Laurent Raufaste
 * @copyright  2009 Julien Issler
 * This class was get originally from the Copix project (CopixDBConnectionPostgreSQL, Copix 2.3dev20050901, http://www.copix.org)
 * Few lines of code are still copyrighted 2001-2005 CopixTeam (LGPL licence).
@@ -124,8 +124,8 @@ class pgsqlDbConnection extends jDbConnection {
         // let's do the connection
         if ($cnx = @$funcconnect ($str)) {
             if (isset($this->profile['force_encoding']) && $this->profile['force_encoding'] == true
-               && isset($this->_charsets[$GLOBALS['gJConfig']->charset])) {
-                pg_set_client_encoding($cnx, $this->_charsets[$GLOBALS['gJConfig']->charset]);
+               && isset($this->_charsets[jApp::config()->charset])) {
+                pg_set_client_encoding($cnx, $this->_charsets[jApp::config()->charset]);
             }
         }
 		else {

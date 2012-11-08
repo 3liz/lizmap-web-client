@@ -81,7 +81,7 @@ class ldapAuthDriver extends jAuthDriverBase implements jIAuthDriver {
             return false;
         }
         $result = ldap_add($connect, $this->_buildUserDn($user->login), $entries);
-        ldapd_close($connect);
+        ldap_close($connect);
         return $result;
 
     }

@@ -50,7 +50,7 @@ class defaultCtrl extends jController {
 
     function __construct ($request){
         parent::__construct($request);
-        $plugin = $GLOBALS['gJCoord']->getPlugin('auth');
+        $plugin = jApp::coord()->getPlugin('auth');
         if ($plugin->config['driver'] == 'Db') {
             $this->authConfig = $plugin->config['Db'];
             $this->dao = $this->authConfig['dao'];

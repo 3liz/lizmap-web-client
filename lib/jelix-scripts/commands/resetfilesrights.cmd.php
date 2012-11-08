@@ -79,5 +79,6 @@ class resetfilesrightsCommand extends JelixScriptCommand {
         }
         unset($dir);
         unset($dirContent);
+		return true;
     }
 }

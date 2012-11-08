@@ -4,7 +4,7 @@
 * @subpackage   core
 * @author       Christophe Thiriot
 * @contributor  Laurent Jouanneau
-* @copyright    2008 Christophe Thiriot, 2011 Laurent Jouanneau
+* @copyright    2008 Christophe Thiriot, 2011-2012 Laurent Jouanneau
 * @link         http://www.jelix.org
 * @licence      GNU Lesser General Public Licence see LICENCE file or http://www.gnu.org/licenses/lgpl.html
 */
@@ -34,6 +34,7 @@ class jCmdlineCoordinator extends jCoordinator {
     * @param  jRequestCmdline  $request the command line request object
     */
     public function process($request){
+        $this->allErrorMessages = jBasicErrorHandler::$initErrorMessages;
         parent::process($request);
         exit($this->response->getExitCode());
     }
@@ -51,48 +52,31 @@ class jCmdlineCoordinator extends jCoordinator {
      * @since 1.1
      */
     public function handleError($type, $code, $message, $file, $line, $trace){
-        global $gJConfig;
 
         $errorLog = new jLogErrorMessage($type, $code, $message, $file, $line, $trace);
 
-        if ($this->request) {
-            // we have config, so we can process "normally"
-            $errorLog->setFormat($gJConfig->error_handling['messageLogFormat']);
-            jLog::log($errorLog, $type);
-            $this->allErrorMessages[] = $errorLog;
+        // we have config, so we can process "normally"
+        $errorLog->setFormat(jApp::config()->error_handling['messageLogFormat']);
+        jLog::log($errorLog, $type);
+        $this->allErrorMessages[] = $errorLog;
 
-            // if non fatal error, it is finished
-            if ($type != 'error')
-                return;
-
-            $this->errorMessage = $errorLog;
-
-            while (ob_get_level() && @ob_end_clean());
-
-            if($this->response) {
-                $resp = $this->response;
-            }
-            else {
-                require_once(JELIX_LIB_CORE_PATH.'response/jResponseCmdline.class.php');
-                $resp = $this->response = new jResponseCmdline();
-            }
-            $resp->outputErrors();
-            jSession::end();
-        }
-        // for non fatal error appeared during init, let's just store it for loggers later
-        elseif ($type != 'error') {
-            $this->allErrorMessages[] = $errorLog;
-            $this->initErrorMessages[] = $errorLog;
+        // if non fatal error, it is finished
+        if ($type != 'error')
             return;
+
+        $this->errorMessage = $errorLog;
+
+        while (ob_get_level() && @ob_end_clean());
+
+        if($this->response) {
+            $resp = $this->response;
         }
         else {
-            // fatal error appeared during init, let's display a single message
-            while (ob_get_level() && @ob_end_clean());
-            // log into file
-            @error_log($errorLog->getFormatedMessage()."\n",3, jApp::logPath('errors.log'));
-            // output text response
-            echo 'Error during initialization: '.$message.' ('.$file.' '.$line.")\n";
+            require_once(JELIX_LIB_CORE_PATH.'response/jResponseCmdline.class.php');
+            $resp = $this->response = new jResponseCmdline();
         }
+        $resp->outputErrors();
+        jSession::end();
         exit(1);
     }
 }

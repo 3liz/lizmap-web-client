@@ -3,7 +3,7 @@
 * @package     jelix-scripts
 * @author      Laurent Jouanneau
 * @contributor Loic Mathaud
-* @copyright   2007 Laurent Jouanneau, 2008 Loic Mathaud, 2009 Bastien Jaillot
+* @copyright   2007-2012 Laurent Jouanneau, 2008 Loic Mathaud, 2009 Bastien Jaillot
 * @link        http://www.jelix.org
 * @licence     GNU General Public Licence see LICENCE file or http://www.gnu.org/licenses/gpl.html
 */
@@ -57,9 +57,10 @@ class createformCommand extends JelixScriptCommand {
             $this->createDir($path.$locale_filename_fr);
             $locale_filename_fr.=strtolower($this->_parameters['form']).'.UTF-8.properties';
 
-            $locale_filename_en = 'locales/en_EN/';
-            $this->createDir($path.$locale_filename_en);
+            $locale_filename_en = $path.'locales/en_US/';
+            $this->createDir($locale_filename_en);
             $locale_filename_en.=strtolower($this->_parameters['form']).'.UTF-8.properties';
+
             $submit="\n\n<submit ref=\"_submit\">\n\t<label locale='".$locale_base."ok' />\n</submit>";
         }
         else
@@ -76,8 +77,7 @@ class createformCommand extends JelixScriptCommand {
             return;
         }
 
-        global $gJConfig;
-        $gJConfig->startModule = $this->_parameters['module'];
+        jApp::config()->startModule = $this->_parameters['module'];
         jContext::push($this->_parameters['module']);
 
         $tools = jDb::getConnection()->tools();

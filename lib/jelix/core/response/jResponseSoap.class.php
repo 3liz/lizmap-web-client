@@ -4,7 +4,7 @@
 * @subpackage  core_response
 * @author      Sylvain de Vathaire
 * @contributor Laurent Jouanneau
-* @copyright   2008 Sylvain de Vathaire, 2009-2010 Laurent Jouanneau
+* @copyright   2008 Sylvain de Vathaire, 2009-2012 Laurent Jouanneau
 * @link        http://www.jelix.org
 * @licence     GNU Lesser General Public Licence see LICENCE file or http://www.gnu.org/licenses/lgpl.html
 */
@@ -33,27 +33,27 @@ final class jResponseSoap extends jResponse {
     }
 
     public function outputErrors(){
-        global $gJCoord, $gJConfig;
+        $coord = jApp::coord();
  
-        $e = $gJCoord->getErrorMessage();
+        $e = $coord->getErrorMessage();
         if ($e) {
             $errorCode = $e->getCode();
             if ($errorCode > 5000)
                 $errorMessage = $e->getMessage();
             else
-                $errorMessage = $gJCoord->getGenericErrorMessage();
+                $errorMessage = $coord->getGenericErrorMessage();
         }
         else {
             $errorCode = -1;
-            $errorMessage = $gJCoord->getGenericErrorMessage();
+            $errorMessage = $coord->getGenericErrorMessage();
         }
 
         //soapFault param have to be UTF-8 encoded (soapFault seems to not use the encoding param of the SoapServer)
-        if($gJConfig->charset != 'UTF-8'){
+        if(jApp::config()->charset != 'UTF-8'){
             $errorCode  = utf8_encode($errorCode);
             $errorMessage = utf8_encode($errorMessage);
         }
-        $soapServer = $gJCoord->getSoapServer();
+        $soapServer = $coord->getSoapServer();
         $soapServer->fault($errorCode, $errorMessage);
     }
 }

@@ -46,8 +46,11 @@ class jacldbModuleInstaller extends jInstallerModule {
             $cf->save();
         }
 
+        $this->declarePluginsPath('module:jacldb');
+
         if (!$this->firstDbExec())
             return;
+
 
         $this->declareDbProfile('jacl_profile', null, false);
         $driver = $this->config->getValue('driver','acl');

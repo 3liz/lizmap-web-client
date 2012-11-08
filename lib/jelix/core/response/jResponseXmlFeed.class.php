@@ -5,7 +5,7 @@
 * @author     Yannick Le Guédart
 * @contributor Laurent Jouanneau
 * @copyright  2006 Yannick Le Guédart
-* @copyright  2006-2009 Laurent Jouanneau
+* @copyright  2006-2012 Laurent Jouanneau
 * @link        http://www.jelix.org
 * @licence    GNU Lesser General Public Licence see LICENCE file or http://www.gnu.org/licenses/lgpl.html
 */
@@ -62,11 +62,9 @@ abstract class jResponseXMLFeed extends jResponse {
      * Class constructor
      */
     function __construct (){
-        global $gJConfig;
 
-        $this->charset  = $gJConfig->charset;
-        list($lang,$country ) = explode('_', $gJConfig->locale);
-        $this->lang       = $lang;
+        $this->charset  = jApp::config()->charset;
+        $this->lang     = jLocale::getCurrentLang();
 
         parent::__construct ();
     }
@@ -123,124 +121,3 @@ abstract class jResponseXMLFeed extends jResponse {
 
 
 }
-
-/**
- * meta data of the channel
- * @package    jelix
- * @subpackage core_response
- * @since 1.0b1
- */
-abstract class jXMLFeedInfo {
-    /**
-     * title of the channel (only text, no html)
-     * @var string
-     */
-    public $title;
-    /**
-     * url of the web site
-     * @var string
-     */
-    public $webSiteUrl;
-    /**
-     * copyright
-     * @var string
-     */
-    public $copyright;
-    /**
-     * list of category names
-     * @var array
-     */
-    public $categories=array();
-    /**
-     * the name of the generator
-     * @var string
-     */
-    public $generator='Jelix php framework http://jelix.org';
-    /**
-     * url of the image channel
-     * @var string
-     */
-    public $image;
-    /**
-     * description of the channel. could be pure text or html
-     * @var string
-     */
-    public $description;
-    /**
-     * says the type of description : text or html (or xhtml for atom)
-     * Values : 'text','html','xhtml'
-     * @var string
-     */
-    public $descriptionType='text';
-    /**
-     * date of the last update of the channel
-     * format : yyyy-mm-dd hh:mm:ss
-     * @var string
-     */
-    public $updated;
-
-
-    protected $_mandatory = array ();
-}
-
-/**
- * content of an item in a syndication channel
- * @package    jelix
- * @subpackage core_response
- * @since 1.0b1
- */
-abstract class jXMLFeedItem {
-    /**
-     * identifiant of the item (its url for example)
-     * @var string
-     */
-    public $id;
-    /**
-     * title
-     * @var string
-     */
-    public $title;
-    /**
-     * url of the item
-     * @var string
-     */
-    public $link;
-    /**
-     * publication date of the item
-     * format : yyyy-mm-dd hh:mm:ss
-     * @var string
-     */
-    public $published;
-    /**
-     * author name
-     * @var string
-     */
-    public $authorName;
-    /**
-     * author email
-     * @var string
-     */
-    public $authorEmail;
-    /**
-     * list of category names
-     * @var array
-     */
-    public $categories=array();
-    /**
-     * content of the item.  could be pure text or html
-     * @var string
-     */
-    public $content;
-    /**
-     * says the type of content : text or html (or xhtml for atom)
-     * Values : 'text','html','xhtml'
-     * @var string
-     */
-    public $contentType='text';
-    /**
-     *
-     * @var string
-     */
-    protected $_mandatory = array ();
-}
-

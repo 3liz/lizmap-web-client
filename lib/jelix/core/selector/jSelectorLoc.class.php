@@ -7,7 +7,7 @@
 * @contributor Rahal
 * @contributor Julien Issler
 * @contributor Baptiste Toinot
-* @copyright   2005-2007 Laurent Jouanneau
+* @copyright   2005-2012 Laurent Jouanneau
 * @copyright   2007 Rahal
 * @copyright   2008 Julien Issler
 * @copyright   2008 Baptiste Toinot
@@ -36,15 +36,15 @@ class jSelectorLoc extends jSelectorModule {
     protected $_where;
 
     function __construct($sel, $locale=null, $charset=null){
-        global $gJConfig;
+
         if ($locale === null){
-            $locale = $gJConfig->locale;
+            $locale = jApp::config()->locale;
         }
         if ($charset === null){
-            $charset = $gJConfig->charset;
+            $charset = jApp::config()->charset;
         }
-        if(strpos($locale,'_') === false){
-            $locale.='_'.strtoupper($locale);
+        if (strpos($locale,'_') === false) {
+            $locale = jLocale::langToLocale($locale);
         }
         $this->locale = $locale;
         $this->charset = $charset;
@@ -68,15 +68,17 @@ class jSelectorLoc extends jSelectorModule {
     }
 
     protected function _createPath(){
-        global $gJConfig;
-        if(!isset($gJConfig->_modulesPathList[$this->module])){
+
+        if (!isset(jApp::config()->_modulesPathList[$this->module])) {
             if ($this->module == 'jelix')
                 throw new Exception('jelix module is not enabled !!');
             throw new jExceptionSelector('jelix~errors.selector.module.unknown', $this->toString());
         }
 
         $locales = array($this->locale);
-        $lang = substr($this->locale,0,2);
+        $lang = substr($this->locale, 0, strpos($this->locale,'_'));
+        // FIXME we should drop support of such locales 'en_EN', and supports directory with lang name 'en'
+        // study impact of such changes
         $generic_locale = $lang.'_'.strtoupper($lang);
         if($this->locale !== $generic_locale)
             $locales[] = $generic_locale;
@@ -91,7 +93,7 @@ class jSelectorLoc extends jSelectorModule {
                 return;
             }
             // else check for the original locale file
-            $path = $gJConfig->_modulesPathList[$this->module].'locales/'.$locale.'/'.$this->resource.$this->_suffix;
+            $path = jApp::config()->_modulesPathList[$this->module].'locales/'.$locale.'/'.$this->resource.$this->_suffix;
             if (is_readable ($path)){
                 $this->_where = 'modules/';
                 $this->_path = $path;
@@ -105,7 +107,7 @@ class jSelectorLoc extends jSelectorModule {
         // and if it is this message, it means that the error message doesn't exist
         // in the specific lang or charset, so we retrieve it in en_EN language and UTF-8 charset
         if($this->toString() == 'jelix~errors.selector.invalid.target'){
-            $l = 'en_EN';
+            $l = 'en_US';
             $c = 'UTF-8';
         }
         else{

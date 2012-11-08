@@ -13,18 +13,18 @@ class defaultCtrl extends jController {
 
   /**
   * Displays a list of project for a given repository.
-  * 
+  *
   * @param string $repository. Name of the repository.
   * @return Html page with a list of projects.
   */
-  function index() {    
-  
+  function index() {
+
     if ($this->param('theme')) {
-      $GLOBALS['gJConfig']->theme = $this->param('theme');
+      jApp::config()->theme = $this->param('theme');
     }
 
     $rep = $this->getResponse('html');
-    
+
     // Get repository data
     $repository = $this->param('repository');
     jClasses::inc('lizmap~lizmapConfig');
@@ -120,20 +120,20 @@ class defaultCtrl extends jController {
 
     return $rep;
   }
-  
+
     /**
   * Displays an error.
-  * 
+  *
   * @return Html page with the error message.
   */
   function error() {
-  
+
     $rep = $this->getResponse('html');
     $tpl = new jTpl();
     $rep->body->assign('MAIN', '');
     return $rep;
-    
+
   }
-  
+
 
 }

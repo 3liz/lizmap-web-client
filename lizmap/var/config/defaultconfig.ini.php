@@ -16,6 +16,7 @@ modulesPath="lib:jelix-admin-modules/,lib:jelix-modules/,app:modules/,app:lizmap
 
 
 
+availableLocales="fr_FR,en_US,it_IT"
 [coordplugins]
 ;name = file_ini_name or 1
 ;magicquotes = 1
@@ -103,7 +104,7 @@ rdf=on
 admin=on
 
 [logger]
-_all =
+_all=
 default=file
 error=syslog
 warning=syslog
@@ -195,3 +196,4 @@ admin.access=2
 [mailLogger]
 email="root@localhost"
 emailHeaders="Content-Type: text/plain; charset=UTF-8\nFrom: webmaster@yoursite.com\nX-Mailer: Jelix\nX-Priority: 1 (Highest)\n"
+

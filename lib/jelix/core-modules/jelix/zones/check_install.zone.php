@@ -6,6 +6,7 @@
 * @contributor Laurent Jouanneau, Julien Issler
 * @copyright  2008 Bastien Jaillot
 * @copyright  2009 Julien Issler
+* @copyright 2012 Laurent Jouanneau
 * @licence    http://www.gnu.org/licenses/gpl.html GNU General Public Licence, see LICENCE file
 */
 
@@ -68,21 +69,12 @@ class check_installZone extends jZone {
     protected $_tplname='check_install';
 
     protected function _prepareTpl() {
-        $lang = $GLOBALS['gJConfig']->locale;
-        if(!$this->getParam('no_lang_check')) {
-            $languages = explode(',', $_SERVER['HTTP_ACCEPT_LANGUAGE']);
-            foreach($languages as $bl){
-                if(preg_match("/^([a-zA-Z]{2})(?:[-_]([a-zA-Z]{2}))?(;q=[0-9]\\.[0-9])?$/",$bl,$match)){
-                    if(isset($match[2]))
-                        $lang = strtolower($match[1]).'_'.strtoupper($match[2]);
-                    else
-                        $lang = strtolower($match[1]).'_'.strtoupper($match[1]);
-                    break;
-                }
-            }
-            if($lang!='fr_FR' && $lang != 'en_EN' && $lang != 'en_US')
-                $lang = 'en_EN';
-            $GLOBALS['gJConfig']->locale = $lang;
+        $lang = jApp::config()->locale;
+        if (!$this->getParam('no_lang_check')) {
+            $locale = jLocale::getPreferedLocaleFromRequest();
+            if (!$locale)
+                $locale = 'en_US';
+            jApp::config()->locale = $locale;
         }
 
         $reporter = new checkZoneInstallReporter();

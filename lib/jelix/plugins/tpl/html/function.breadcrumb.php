@@ -36,9 +36,7 @@
  */
 function jtpl_function_html_breadcrumb($tpl, $nb=null, $separator = '') {
 
-
-    global $gJCoord;
-    $plugin = $gJCoord->getPlugin('history', true);
+    $plugin = jApp::coord()->getPlugin('history', true);
     if($plugin === null){
         return;
     }

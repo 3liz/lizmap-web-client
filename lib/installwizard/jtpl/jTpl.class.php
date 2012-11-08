@@ -4,7 +4,7 @@
 * @subpackage  jtpl
 * @author      Laurent Jouanneau
 * @contributor Dominique Papin
-* @copyright   2005-2009 Laurent Jouanneau, 2007 Dominique Papin
+* @copyright   2005-2012 Laurent Jouanneau, 2007 Dominique Papin
 * @link        http://www.jelix.org
 * @licence     GNU Lesser General Public Licence see LICENCE file or http://www.gnu.org/licenses/lgpl.html
 */
@@ -264,6 +264,53 @@ class jTpl {
             $content = ob_get_clean();
 
         } catch(Exception $e) {
+            ob_end_clean();
+            throw $e;
+        }
+        return $content;
+    }
+
+     /**
+     * Return the generated content from the given string template (virtual)
+     * @param string $tpl template content
+     * @param string $outputtype the type of output (html, text etc..)
+     * @param boolean $trusted  says if the template file is trusted or not
+     * @param boolean $callMeta false if meta should not be called
+     * @return string the generated content
+     */
+    public function fetchFromString ($tpl, $outputtype='', $trusted = true, $callMeta=true){
+        $content = '';
+        ob_start ();
+        try{
+            $cachePath = jTplConfig::$cachePath . '/virtuals/';
+            require_once(JTPL_PATH . 'jTplCompiler.class.php');
+            $previousTpl = $this->_templateName;
+            $md = 'virtual_'.md5($tpl).($trusted?'_t':'');
+            $this->_templateName = $md;
+
+            if ($outputtype == '')
+                $outputtype = 'html';
+
+            $cachePath .= $outputtype.'_'.$this->_templateName.'.php';
+            $mustCompile = jTplConfig::$compilationForce || !file_exists($cachePath);
+
+            if ($mustCompile && !function_exists('template_'.$md)) {
+                $compiler = new jTplCompiler();
+                $compiler->outputType = $outputtype;
+                $compiler->trusted = $trusted;
+                $compiler->compileString($tpl, $cachePath, $this->userModifiers, $this->userFunctions, $md);
+            }
+            require_once($cachePath);
+
+            if ($callMeta) {
+                $fct = 'template_meta_'.$md;
+                $fct($this);
+            }
+            $fct = 'template_'.$md;
+            $fct($this);
+            $content = ob_get_clean();
+            $this->_templateName = $previousTpl;
+        }catch(exception $e){
             ob_end_clean();
             throw $e;
         }

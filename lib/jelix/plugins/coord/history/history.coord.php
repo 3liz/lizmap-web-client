@@ -31,12 +31,12 @@ class historyCoordPlugin implements jICoordPlugin {
 
             $history = & $_SESSION[$sname];
 
-            global $gJCoord;
-            $page['params'] = $gJCoord->request->params;
+            $coord = jApp::coord();
+            $page['params'] = $coord->request->params;
             unset( $page['params']['module'] );
             unset( $page['params']['action'] );
 
-            $page['action'] = $gJCoord->action->toString();
+            $page['action'] = $coord->action->toString();
             $page['label'] = ( !empty($params['history.label']) )? $params['history.label']:'';
             $page['title'] = ( !empty($params['history.title']) )? $params['history.title']:'';
 

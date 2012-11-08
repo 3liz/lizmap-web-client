@@ -5,7 +5,7 @@
 * @author     Laurent Jouanneau
 * @contributor Loic Mathaud, Dominique Papin, Julien Issler
 * @contributor Uriel Corfa (Emotic SARL), Thomas
-* @copyright   2006-2009 Laurent Jouanneau
+* @copyright   2006-2012 Laurent Jouanneau
 * @copyright   2007 Loic Mathaud, 2007 Dominique Papin
 * @copyright   2007 Emotic SARL
 * @copyright   2008 Julien Issler, 2009 Thomas
@@ -29,8 +29,6 @@ class jFormsCompiler_jf_1_0  {
     }
 
     public function compile ($doc, &$source) {
-
-        global $gJConfig;
 
         $xml = simplexml_import_dom($doc);
 

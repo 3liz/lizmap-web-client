@@ -10,11 +10,10 @@
 * @licence     GNU Lesser General Public Licence see LICENCE file or http://www.gnu.org/licenses/lgpl.html
 */
 
-/**
-*
-*/
 require_once(JELIX_LIB_PATH.'tpl/jTpl.class.php');
 require_once(JELIX_LIB_CORE_PATH.'response/jResponseXmlFeed.class.php');
+require_once(JELIX_LIB_PATH.'utils/jAtom10Info.class.php');
+require_once(JELIX_LIB_PATH.'utils/jAtom10Item.class.php');
 
 /**
 * Atom 1.0 response
@@ -50,6 +49,11 @@ class jResponseAtom10 extends jResponseXMLFeed {
      */
     final public function output (){
 
+        if($this->_outputOnlyHeaders){
+            $this->sendHttpHeaders();
+            return true;
+        }
+    
         $this->_httpHeaders['Content-Type'] =
                 'application/atom+xml;charset=' . $this->charset;
 
@@ -87,124 +91,3 @@ class jResponseAtom10 extends jResponseXMLFeed {
     }
 
 }
-
-/**
- * meta data of the channel
- * @package    jelix
- * @subpackage core_response
- * @since 1.0b1
- */
-class jAtom10Info extends jXMLFeedInfo{
-    /**
-     * unique id of the channel
-     * @var string
-     */
-    public $id;
-    /**
-     * channel url
-     * @var string
-     */
-    public $selfLink;
-    /**
-     * author's list
-     * each author is an array('name'=>'','email'=>'','uri'=>'')
-     * @var array
-     */
-    public $authors = array();
-    /**
-     * related links to the channel
-     * each link is an array with this keys : href rel type hreflang title length
-     * @var array
-     */
-    public $otherLinks = array();
-    /**
-     * list of contributors
-     * each contributor is an array('name'=>'','email'=>'','uri'=>'')
-     * @var array
-     */
-    public $contributors= array();
-    /**
-     * icon url
-     * @var string
-     */
-    public $icon;
-
-    /**
-     * version of the generator
-     * @var string
-     * @see $generator
-     */
-    public $generatorVersion;
-    /**
-     * url of the generator
-     * @var string
-     * @see $generator
-     */
-    public $generatorUrl;
-
-    function __construct ()
-    {
-        $this->_mandatory = array ('title', 'id', 'updated');
-    }
-}
-
-/**
- * content of an item in a syndication channel
- * @package    jelix
- * @subpackage core_response
- * @since 1.0b1
- */
-class jAtom10Item extends jXMLFeedItem {
-    /**
-     * the url of the main author
-     * @var string
-     */
-    public $authorUri;
-    /**
-     * list of other authors
-     * each author is an array('name'=>'','email'=>'','uri'=>'')
-     * @var array
-     */
-    public $otherAuthors = array();
-    /**
-     * list of contributors
-     * each contributor is an array('name'=>'','email'=>'','uri'=>'')
-     * @var string
-     */
-    public $contributors= array();
-    /**
-     * related links to the item
-     * each link is an array with this keys : href rel type hreflang title length
-     * @var array
-     */
-    public $otherLinks= array();
-    /**
-     * summary of the content
-     * @var string
-     */
-    public $summary;
-    /**
-     * type of the summary
-     * possible values are 'text', 'html', 'xhtml'
-     * @var string
-     */
-    public $summaryType;
-    /**
-     * atom content of the source of the item
-     * @var xml
-     */
-    public $source;
-    /**
-     * Copyright
-     * @var string
-     */
-    public $copyright;
-    /**
-     * date of the last update of the item
-     * date format is yyyy-mm-dd hh:mm:ss
-     * @var string
-     */
-    public $updated;
-
-}
-

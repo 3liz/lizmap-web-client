@@ -61,7 +61,6 @@ $locales = array(
         'ini.safe_mode'         =>'php.ini: safe_mode is not recommended.',
         'ini.register_globals'  =>'php.ini: you must deactivate register_globals, for security reasons, and because this option is not needed.',
         'ini.asp_tags'          =>'php.ini: you should deactivate asp_tags. No need to have this option.',
-        'ini.short_open_tag'    =>'php.ini: you should deactivate short_open_tag. No need to have this option.',
         'ini.ok'                =>'php settings are ok',
 
         'module.unknown'        =>'Unknown module %s',

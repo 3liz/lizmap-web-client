@@ -32,11 +32,16 @@ final class jResponseJsonRpc extends jResponse {
 
 
     public function output(){
-        global $gJCoord;
-
+        
+        if($this->_outputOnlyHeaders){
+            $this->sendHttpHeaders();
+            return true;
+        }
+        
         $this->_httpHeaders['Content-Type'] = "application/json";
-        if($gJCoord->request->jsonRequestId !== null){
-            $content = jJsonRpc::encodeResponse($this->response, $gJCoord->request->jsonRequestId);
+        $req = jApp::coord()->request;
+        if($req->jsonRequestId !== null){
+            $content = jJsonRpc::encodeResponse($this->response, $req->jsonRequestId);
             $this->_httpHeaders['Content-length'] = strlen($content);
             $this->sendHttpHeaders();
             echo $content;
@@ -49,24 +54,24 @@ final class jResponseJsonRpc extends jResponse {
     }
 
     public function outputErrors(){
-        global $gJCoord;
-        $e = $gJCoord->getErrorMessage();
+        $coord = jApp::coord();
+        $e = $coord->getErrorMessage();
         if ($e) {
             $errorCode = $e->getCode();
             if ($errorCode > 5000)
                 $errorMessage = $e->getMessage();
             else
-                $errorMessage = $gJCoord->getGenericErrorMessage();
+                $errorMessage = $coord->getGenericErrorMessage();
         }
         else {
             $errorCode = -1;
-            $errorMessage = $gJCoord->getGenericErrorMessage();
+            $errorMessage = $coord->getGenericErrorMessage();
         }
         $this->clearHttpHeaders();
         $this->_httpStatusCode ='500';
         $this->_httpStatusMsg ='Internal Server Error';
         $this->_httpHeaders['Content-Type'] = "application/json";
-        $content = jJsonRpc::encodeFaultResponse($errorCode, $errorMessage, $gJCoord->request->jsonRequestId);
+        $content = jJsonRpc::encodeFaultResponse($errorCode, $errorMessage, $coord->request->jsonRequestId);
         $this->_httpHeaders['Content-length'] = strlen($content);
         $this->sendHttpHeaders();
         echo $content;

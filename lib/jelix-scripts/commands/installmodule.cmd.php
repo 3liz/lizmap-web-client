@@ -14,6 +14,7 @@ class installmoduleCommand extends JelixScriptCommand {
     public  $allowed_parameters=array('module'=>true,'...'=>false);
 
     public  $syntaxhelp = '[-p "param1;param2=value;..."] MODULE [MODULE [....]]';
+
     public  $help = '';
 
     function __construct($config){

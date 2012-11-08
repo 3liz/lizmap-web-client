@@ -4,7 +4,7 @@
 * @subpackage  db
 * @author      Laurent Jouanneau
 * @contributor Julien Issler
-* @copyright   2005-2011 Laurent Jouanneau
+* @copyright   2005-2012 Laurent Jouanneau
 * @copyright   2007-2009 Julien Issler
 *
 * This class was get originally from the Copix project (CopixDbConnection, Copix 2.3dev20050901, http://www.copix.org)
@@ -49,9 +49,17 @@ abstract class jDbConnection {
 
     /**
      * The database type name (mysql, pgsql ...)
+     * It is not the driver name. Several drivers could connect to the same database
+     * type. This type name is often used to know whish SQL language we should use.
      * @var string
      */
     public $dbms;
+
+    /**
+     * driver name
+     * @var string
+     */
+    public $driverName = '';
 
     /**
     * The last error message if any
@@ -81,7 +89,7 @@ abstract class jDbConnection {
     */
     function __construct($profile) {
         $this->profile = & $profile;
-        $this->dbms = $profile['driver'];
+        $this->dbms = $this->driverName = $profile['driver'];
         $this->_connection = $this->_connect();
     }
 
@@ -352,9 +360,8 @@ abstract class jDbConnection {
      */
     public function tools () {
         if (!$this->_tools) {
-            global $gJConfig;
-            require_once($gJConfig->_pluginsPathList_db[$this->dbms].$this->dbms.'.dbtools.php');
-            $class = $this->dbms.'DbTools';
+            require_once(jApp::config()->_pluginsPathList_db[$this->driverName].$this->driverName.'.dbtools.php');
+            $class = $this->driverName.'DbTools';
             $this->_tools = new $class($this);
         }
 
@@ -374,9 +381,8 @@ abstract class jDbConnection {
      */
     public function schema () {
         if (!$this->_schema) {
-            global $gJConfig;
-            require_once($gJConfig->_pluginsPathList_db[$this->dbms].$this->dbms.'.dbschema.php');
-            $class = $this->dbms.'DbSchema';
+            require_once(jApp::config()->_pluginsPathList_db[$this->driverName].$this->driverName.'.dbschema.php');
+            $class = $this->driverName.'DbSchema';
             $this->_schema = new $class($this);
         }
 

@@ -6,7 +6,7 @@
 * @subpackage core
 * @author   Laurent Jouanneau
 * @contributor Loic Mathaud, Julien Issler
-* @copyright 2005-2011 Laurent Jouanneau
+* @copyright 2005-2012 Laurent Jouanneau
 * @copyright 2007 Julien Issler
 * @link     http://www.jelix.org
 * @licence  GNU Lesser General Public Licence see LICENCE file or http://www.gnu.org/licenses/lgpl.html
@@ -17,7 +17,7 @@
  * Version number of Jelix
  * @name  JELIX_VERSION
  */
-define ('JELIX_VERSION', '1.3.4');
+define ('JELIX_VERSION', '1.4.1');
 
 /**
  * base of namespace path used in xml files of jelix
@@ -42,10 +42,11 @@ require (JELIX_LIB_CORE_PATH . 'jApp.class.php');
 require (JELIX_LIB_CORE_PATH . 'jICoordPlugin.iface.php');
 require (JELIX_LIB_CORE_PATH . 'jISelector.iface.php');
 require (JELIX_LIB_CORE_PATH . 'jIUrlEngine.iface.php');
-require (JELIX_LIB_CORE_PATH . 'jErrorHandler.lib.php');
-require (JELIX_LIB_CORE_PATH . 'jException.lib.php');
+require (JELIX_LIB_CORE_PATH . 'jBasicErrorHandler.class.php');
+require (JELIX_LIB_CORE_PATH . 'jException.class.php');
 require (JELIX_LIB_CORE_PATH . 'jContext.class.php');
 require (JELIX_LIB_CORE_PATH . 'jConfig.class.php');
+require (JELIX_LIB_CORE_PATH . 'jConfigAutoloader.class.php');
 require (JELIX_LIB_CORE_PATH . 'jSelector.class.php');
 require (JELIX_LIB_CORE_PATH . 'jServer.class.php');
 require (JELIX_LIB_CORE_PATH . 'selector/jSelectorModule.class.php');
@@ -77,6 +78,7 @@ require (JELIX_LIB_CORE_PATH . 'jSession.class.php');
  * The main object of Jelix which process all things
  * @global jCoordinator $gJCoord
  * @name $gJCoord
+ * @deprecated use jApp::coord() instead
  */
 $gJCoord = null;
 
@@ -84,6 +86,7 @@ $gJCoord = null;
  * Object that contains all configuration values
  * @global stdobject $gJConfig
  * @name $gJConfig
+ * @deprecated use jApp::config() instead
  */
 $gJConfig = null;
 
@@ -95,20 +98,24 @@ $gJConfig = null;
  */
 $gLibPath=array('Db'=>JELIX_LIB_PATH.'db/', 'Dao'=>JELIX_LIB_PATH.'dao/',
  'Forms'=>JELIX_LIB_PATH.'forms/', 'Event'=>JELIX_LIB_PATH.'events/',
- 'Tpl'=>JELIX_LIB_PATH.'tpl/', 'Acl'=>JELIX_LIB_PATH.'acl/', 'Controller'=>JELIX_LIB_PATH.'controllers/',
+ 'Tpl'=>JELIX_LIB_PATH.'tpl/', 'Controller'=>JELIX_LIB_PATH.'controllers/',
  'Auth'=>JELIX_LIB_PATH.'auth/', 'Installer'=>JELIX_LIB_PATH.'installer/',
- 'KV'=>JELIX_LIB_PATH.'kvdb/');
+ 'KV'=>JELIX_LIB_PATH.'kvdb/', 'Pref'=>JELIX_LIB_PATH.'pref/');
 
 /**
  * function used by php to try to load an unknown class
  */
 function jelix_autoload($class) {
-    if(preg_match('/^j(Dao|Tpl|Acl|Event|Db|Controller|Forms|Auth|Installer|KV).*/i', $class, $m)){
+    if(preg_match('/^j(Dao|Tpl|Event|Db|Controller|Forms|Auth|Installer|KV|Pref).*/i', $class, $m)){
         $f=$GLOBALS['gLibPath'][$m[1]].$class.'.class.php';
-    }elseif(preg_match('/^cDao(?:Record)?_(.+)_Jx_(.+)_Jx_(.+)$/', $class, $m)){
+    }
+    elseif($class == 'jAcl2'){
+        $f = JELIX_LIB_PATH.'acl/jAcl2.class.php';
+    }
+    elseif(preg_match('/^cDao(?:Record)?_(.+)_Jx_(.+)_Jx_(.+)$/', $class, $m)){
         // for DAO which are stored in sessions for example
         $s = new jSelectorDao($m[1].'~'.$m[2], $m[3], false);
-        if($GLOBALS['gJConfig']->compilation['checkCacheFiletime']){
+        if(jApp::config()->compilation['checkCacheFiletime']){
             // if it is needed to check the filetime, then we use jIncluder
             // because perhaps we will have to recompile the dao before the include
             jIncluder::inc($s);

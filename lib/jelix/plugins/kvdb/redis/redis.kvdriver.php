@@ -83,11 +83,11 @@ class redisKVDriver extends jKVDriver implements jIKVSet, jIKVttl {
     }
 
     public function delete($key) {
-        return ($this->_connection->delete($key) >0);
+        return ($this->_connection->delete($key) > 0);
     }
 
     public function flush() {
-        return ($this->_connection->flushall()=='OK');
+        return ($this->_connection->flushall()  == 'OK');
     }
 
     public function append($key, $value) {

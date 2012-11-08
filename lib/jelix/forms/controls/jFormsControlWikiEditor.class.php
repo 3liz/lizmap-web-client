@@ -4,7 +4,7 @@
 * @subpackage  forms
 * @author      Olivier Demah
 * @contributor Laurent Jouanneau
-* @copyright   2009 Olivier Demah, 2010 Laurent Jouanneau
+* @copyright   2009 Olivier Demah, 2010-2012 Laurent Jouanneau
 * @link        http://www.jelix.org
 * @licence     http://www.gnu.org/licenses/lgpl.html GNU Lesser General Public Licence, see LICENCE file
 */
@@ -30,7 +30,7 @@ class jFormsControlWikiEditor extends jFormsControl {
     }
 
     public function getDisplayValue($value) {
-        $engine = $GLOBALS['gJConfig']->wikieditors[$this->config.'.wiki.rules'];
+        $engine = jApp::config()->wikieditors[$this->config.'.wiki.rules'];
         $wiki = new jWiki($engine);
         return $wiki->render($value);
     }

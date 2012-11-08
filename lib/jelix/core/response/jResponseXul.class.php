@@ -101,6 +101,12 @@ class jResponseXul extends jResponse {
      * @return boolean    true if it's ok
      */
     public function output(){
+        
+        if($this->_outputOnlyHeaders){
+            $this->sendHttpHeaders();
+            return true;
+        }
+        
         $this->doAfterActions();
         if($this->bodyTpl != '') {
             $this->body->meta($this->bodyTpl);
@@ -112,7 +118,7 @@ class jResponseXul extends jResponse {
         // retrieve errors messages and log messages
         jLog::outputLog($this);
 
-        $this->_httpHeaders['Content-Type']='application/vnd.mozilla.xul+xml;charset='.$GLOBALS['gJConfig']->charset;
+        $this->_httpHeaders['Content-Type']='application/vnd.mozilla.xul+xml;charset='.jApp::config()->charset;
         $this->sendHttpHeaders();
         $this->outputHeader();
         echo implode('',$this->_bodyTop);
@@ -124,12 +130,12 @@ class jResponseXul extends jResponse {
 
     public function outputErrors(){
         header("HTTP/1.0 500 Internal Server Error");
-        header('Content-Type: application/vnd.mozilla.xul+xml;charset='.$GLOBALS['gJConfig']->charset);
-        echo '<?xml version="1.0" encoding="'.$GLOBALS['gJConfig']->charset.'" ?>'."\n";
+        header('Content-Type: application/vnd.mozilla.xul+xml;charset='.jApp::config()->charset);
+        echo '<?xml version="1.0" encoding="'.jApp::config()->charset.'" ?>'."\n";
         echo '<',$this->_root,' title="Errors" xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">';
         echo '<vbox>';
-        $message = $GLOBALS['gJCoord']->getGenericErrorMessage();
-        echo "<description style=\"color:#FF0000;\">".htmlspecialchars($message, ENT_NOQUOTES, $GLOBALS['gJConfig']->charset)."</description>";
+        $message = jApp::coord()->getGenericErrorMessage();
+        echo "<description style=\"color:#FF0000;\">".htmlspecialchars($message, ENT_NOQUOTES, jApp::config()->charset)."</description>";
         echo '</vbox></',$this->_root,'>';
     }
 
@@ -181,7 +187,7 @@ class jResponseXul extends jResponse {
     }
 
     protected function outputHeader (){
-        $charset = $GLOBALS['gJConfig']->charset;
+        $charset = jApp::config()->charset;
 
         echo '<?xml version="1.0" encoding="'.$charset.'" ?>'."\n";
 

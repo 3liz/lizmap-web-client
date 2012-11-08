@@ -98,7 +98,7 @@ class jDatatypeString extends jDatatype {
         if($this->hasFacets){
             $len = iconv_strlen(
                 trim(preg_replace( '@\s+@', ' ', $value)),
-                $GLOBALS['gJConfig']->charset
+                jApp::config()->charset
             );
             if($this->length !== null && $len != $this->length)
                 return false;
@@ -143,9 +143,9 @@ class jDatatypeHtml extends jDatatype implements jIFilteredDatatype {
     public function check($value){
         if($this->hasFacets){
             if ($this->fromWysiwyg)
-                $len = iconv_strlen(strip_tags($value,'<img><img/><object><embed><video><video/><svg>'), $GLOBALS['gJConfig']->charset);
+                $len = iconv_strlen(strip_tags($value,'<img><img/><object><embed><video><video/><svg>'), jApp::config()->charset);
             else
-                $len = iconv_strlen($value, $GLOBALS['gJConfig']->charset);
+                $len = iconv_strlen($value, jApp::config()->charset);
             if($this->length !== null && $len != $this->length)
                 return false;
             if($this->minLength !== null && $len < $this->minLength)

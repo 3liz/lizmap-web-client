@@ -20,8 +20,7 @@ class myHtmlResponse extends jResponseHtml {
 
     parent::__construct();
 
-    global $gJConfig;
-    $bp = $gJConfig->urlengine['basePath'];
+    $bp = jApp::config()->urlengine['basePath'];
 
     $this->title = 'LizMap list';
 

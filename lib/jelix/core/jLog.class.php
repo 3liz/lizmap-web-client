@@ -4,7 +4,7 @@
 * @subpackage core
 * @author     Laurent Jouanneau
 * @contributor F. Fernandez, Hadrien Lanneau
-* @copyright  2006-2010 Laurent Jouanneau, 2007 F. Fernandez, 2011 Hadrien Lanneau
+* @copyright  2006-2012 Laurent Jouanneau, 2007 F. Fernandez, 2011 Hadrien Lanneau
 * @link       http://www.jelix.org
 * @licence    GNU Lesser General Public Licence see LICENCE file or http://www.gnu.org/licenses/lgpl.html
 */
@@ -121,15 +121,15 @@ class jLog {
     }
 
     protected static function _dispatchLog($message) {
-        global $gJConfig;
+        $confLoggers = &jApp::config()->logger;
         $category = $message->getCategory();
-        if (!isset($gJConfig->logger[$category])
-            || strpos($category, 'option_') === 0) { // option_* ar not some type of log messages
+        if (!isset($confLoggers[$category])
+            || strpos($category, 'option_') === 0) { // option_* are not some type of log messages
             $category = 'default';
         }
 
-        $all = $gJConfig->logger['_all'];
-        $loggers = preg_split('/[\s,]+/', $gJConfig->logger[$category]);
+        $all = $confLoggers['_all'];
+        $loggers = preg_split('/[\s,]+/', $confLoggers[$category]);
 
         if ($all != '') {
             $allLoggers = preg_split('/[\s,]+/', $all);
@@ -147,12 +147,12 @@ class jLog {
             if ($loggername == '')
                 continue;
             if ($loggername == 'memory') {
-                global $gJConfig;
+                $confLog = &jApp::config()->memorylogger;
                 $cat = $message->getCategory();
-                if (isset($gJConfig->memorylogger[$cat]))
-                    $max = intval($gJConfig->memorylogger[$cat]);
+                if (isset($confLog[$cat]))
+                    $max = intval($confLog[$cat]);
                 else {
-                    $max = intval($gJConfig->memorylogger['default']);
+                    $max = intval($confLog['default']);
                 }
                 if (!isset(self::$messagesCount[$cat])) {
                     self::$messagesCount[$cat] = 0;
@@ -232,16 +232,16 @@ class jLog {
      * @return boolean true if it is activated
      */
     public static function isPluginActivated($logger, $category) {
-        global $gJConfig;
+        $confLog = &jApp::config()->logger;
 
-        $loggers = preg_split('/[\s,]+/', $gJConfig->logger['_all']);
+        $loggers = preg_split('/[\s,]+/', $confLog['_all']);
         if (in_array($logger, $loggers))
             return true;
 
-        if (!isset($gJConfig->logger[$category]))
+        if (!isset($confLog[$category]))
             return false;
 
-        $loggers = preg_split('/[\s,]+/', $gJConfig->logger[$category]);
+        $loggers = preg_split('/[\s,]+/', $confLog[$category]);
         return in_array($logger, $loggers);
     }
 

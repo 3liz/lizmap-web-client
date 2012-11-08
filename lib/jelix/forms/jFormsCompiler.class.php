@@ -5,7 +5,7 @@
 * @author     Laurent Jouanneau
 * @contributor Loic Mathaud, Dominique Papin
 * @contributor Uriel Corfa (Emotic SARL), Julien Issler
-* @copyright   2006-2008 Laurent Jouanneau
+* @copyright   2006-2012 Laurent Jouanneau
 * @copyright   2007 Loic Mathaud, 2007 Dominique Papin
 * @copyright   2007 Emotic SARL
 * @copyright   2008 Julien Issler
@@ -23,8 +23,7 @@ class jFormsCompiler implements jISimpleCompiler {
     protected $sourceFile;
 
     public function compile($selector){
-        global $gJCoord;
-        global $gJConfig;
+
         $sel = clone $selector;
 
         $this->sourceFile = $selector->getPath();

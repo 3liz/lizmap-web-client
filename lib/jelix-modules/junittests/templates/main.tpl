@@ -1,3 +1,4 @@
+{meta_htmlmodule css 'junittests', 'design.css'}
 <div id="header">
 {$page_title}
 </div>

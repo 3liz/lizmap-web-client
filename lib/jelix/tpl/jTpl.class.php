@@ -4,7 +4,7 @@
 * @subpackage  jtpl
 * @author      Laurent Jouanneau
 * @contributor Dominique Papin
-* @copyright   2005-2009 Laurent Jouanneau, 2007 Dominique Papin
+* @copyright   2005-2012 Laurent Jouanneau, 2007 Dominique Papin
 * @link        http://www.jelix.org
 * @licence     GNU Lesser General Public Licence see LICENCE file or http://www.gnu.org/licenses/lgpl.html
 */
@@ -43,12 +43,12 @@ class jTpl {
     public $_meta = array();
 
     public function __construct () {
-        global $gJConfig;
-        $this->_vars['j_basepath'] = $gJConfig->urlengine['basePath'];
-        $this->_vars['j_jelixwww'] = $gJConfig->urlengine['jelixWWWPath'];
-        $this->_vars['j_jquerypath'] = $gJConfig->urlengine['jqueryPath'];
-        $this->_vars['j_themepath'] = $gJConfig->urlengine['basePath'].'themes/'.$gJConfig->theme.'/';
-        $this->_vars['j_locale'] = $gJConfig->locale;
+        $config = jApp::config();
+        $this->_vars['j_basepath'] = $config->urlengine['basePath'];
+        $this->_vars['j_jelixwww'] = $config->urlengine['jelixWWWPath'];
+        $this->_vars['j_jquerypath'] = $config->urlengine['jqueryPath'];
+        $this->_vars['j_themepath'] = $config->urlengine['basePath'].'themes/'.$config->theme.'/';
+        $this->_vars['j_locale'] = $config->locale;
         $this->_vars['j_datenow'] = date('Y-m-d');
         $this->_vars['j_timenow'] = date('H:i:s');
     }
@@ -293,6 +293,53 @@ class jTpl {
         return $content;
     }
 
+     /**
+     * Return the generated content from the given string template (virtual)
+     * @param string $tpl template content
+     * @param string $outputtype the type of output (html, text etc..)
+     * @param boolean $trusted  says if the template file is trusted or not
+     * @param boolean $callMeta false if meta should not be called
+     * @return string the generated content
+     */
+    public function fetchFromString ($tpl, $outputtype='', $trusted = true, $callMeta=true){
+        $content = '';
+        ob_start ();
+        try{
+            $cachePath = jApp::tempPath('compiled/templates/virtuals/');
+            require_once(JELIX_LIB_PATH.'tpl/jTplCompiler.class.php');
+            $previousTpl = $this->_templateName;
+            $md = 'virtual_'.md5($tpl).($trusted?'_t':'');
+            $this->_templateName = $md;
+
+            if ($outputtype == '')
+                $outputtype = 'html';
+
+            $cachePath .= $outputtype.'_'.$this->_templateName.'.php';
+            $mustCompile = jApp::config()->compilation['force'] || !file_exists($cachePath);
+
+            if ($mustCompile && !function_exists('template_'.$md)) {
+                $compiler = new jTplCompiler();
+                $compiler->outputType = $outputtype;
+                $compiler->trusted = $trusted;
+                $compiler->compileString($tpl, $cachePath, $this->userModifiers, $this->userFunctions, $md);
+            }
+            require_once($cachePath);
+
+            if ($callMeta) {
+                $fct = 'template_meta_'.$md;
+                $fct($this);
+            }
+            $fct = 'template_'.$md;
+            $fct($this);
+            $content = ob_get_clean();
+            $this->_templateName = $previousTpl;
+        }catch(exception $e){
+            ob_end_clean();
+            throw $e;
+        }
+        return $content;
+    }
+
     protected $userModifiers = array();
 
     /**
@@ -326,7 +373,7 @@ class jTpl {
      * @since 1.0b2
      */
     public static function getEncoding () {
-        return $GLOBALS['gJConfig']->charset;
+        return jApp::config()->charset;
     }
 
 }

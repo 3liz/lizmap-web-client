@@ -4,7 +4,7 @@
 * @subpackage  utils
 * @author      Julien Issler
 * @contributor Laurent Jouanneau
-* @copyright   2007-2009 Julien Issler, 2007-2011 Laurent Jouanneau
+* @copyright   2007-2009 Julien Issler, 2007-2012 Laurent Jouanneau
 * @link        http://www.jelix.org
 * @licence     GNU Lesser General Public Licence see LICENCE file or http://www.gnu.org/licenses/lgpl.html
 * @since 1.0
@@ -13,8 +13,8 @@
 define('K_TCPDF_EXTERNAL_CONFIG',true);
 define('K_PATH_MAIN', LIB_PATH.'tcpdf/');
 define('K_PATH_URL',
-       $GLOBALS['gJCoord']->request->getServerURI() .
-       $GLOBALS['gJConfig']->urlengine['basePath']);
+       jApp::coord()->request->getServerURI() .
+       jApp::config()->urlengine['basePath']);
 define('K_PATH_FONTS', LIB_PATH.'pdf-fonts/');
 define('K_PATH_CACHE', jApp::tempPath());
 define('K_PATH_IMAGES', jApp::appPath());
@@ -34,7 +34,7 @@ class jTcpdf extends TCPDF {
     public function __construct($orientation='P', $unit='mm', $format='A4', $encoding=null) {
 
         if($encoding === null)
-            $encoding = $GLOBALS['gJConfig']->charset;
+            $encoding = jApp::config()->charset;
 
         if(!is_dir(K_PATH_FONTS)) {
             throw new jException('jelix~errors.tcpdf.fonts_missing', array(K_PATH_FONTS));

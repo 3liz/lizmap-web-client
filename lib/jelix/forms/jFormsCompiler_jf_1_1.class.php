@@ -5,7 +5,7 @@
 * @author     Laurent Jouanneau
 * @contributor Loic Mathaud, Dominique Papin, Julien Issler
 * @contributor Uriel Corfa (Emotic SARL), Thomas, Olivier Demah
-* @copyright   2006-2010 Laurent Jouanneau
+* @copyright   2006-2012 Laurent Jouanneau
 * @copyright   2007 Loic Mathaud, 2007-2008 Dominique Papin
 * @copyright   2007 Emotic SARL
 * @copyright   2008 Julien Issler, 2009 Thomas, 2009 Olivier Demah
@@ -278,7 +278,7 @@ class jFormsCompiler_jf_1_1 extends jFormsCompiler_jf_1_0 {
         if($itemname != '')
             $itemname = ",'$itemname'";
         $ctrlcount = 0;
-        global $gJConfig;
+
         foreach($xml->children() as $ctrltype=>$control){
             if(in_array($ctrltype, $ignore))
                 continue;

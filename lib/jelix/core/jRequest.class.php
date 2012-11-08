@@ -90,13 +90,13 @@ abstract class jRequest {
      * init the url* properties
      */
     protected function _initUrlData(){
-        global $gJConfig;
+        $conf = &jApp::config()->urlengine;
 
-        $this->urlScript = $gJConfig->urlengine['urlScript'];
-        $this->urlScriptPath = $gJConfig->urlengine['urlScriptPath'];
-        $this->urlScriptName = $gJConfig->urlengine['urlScriptName'];
+        $this->urlScript = $conf['urlScript'];
+        $this->urlScriptPath = $conf['urlScriptPath'];
+        $this->urlScriptName = $conf['urlScriptName'];
 
-        $piiqp = $gJConfig->urlengine['pathInfoInQueryParameter'];
+        $piiqp = $conf['pathInfoInQueryParameter'];
         if ($piiqp) {
             if (isset($_GET[$piiqp])) {
                 $pathinfo = $_GET[$piiqp];
@@ -115,7 +115,7 @@ abstract class jRequest {
             $pathinfo = '';
         }
 
-        if ($gJConfig->isWindows && $pathinfo && strpos($pathinfo, $this->urlScript) !== false){
+        if (jApp::config()->isWindows && $pathinfo && strpos($pathinfo, $this->urlScript) !== false){
             //under IIS, we may get  /subdir/index.php/mypath/myaction as PATH_INFO, so we fix it
             $pathinfo = substr ($pathinfo, strlen ($this->urlScript));
         }
@@ -161,23 +161,24 @@ abstract class jRequest {
      * @return jResponse the response object
      */
     public function getResponse($type='', $useOriginal = false){
-        global $gJCoord, $gJConfig;
+
         if($type == ''){
             $type = $this->defaultResponseType;
         }
 
         if ($useOriginal)
-            $responses = &$gJConfig->_coreResponses;
+            $responses = &jApp::config()->_coreResponses;
         else
-            $responses = &$gJConfig->responses;
+            $responses = &jApp::config()->responses;
 
+        $coord = jApp::coord();
         if(!isset($responses[$type])){
-            if ($gJCoord->action) {
-               $action = $gJCoord->action->resource;
-               $path = $gJCoord->action->getPath();
+            if ($coord->action) {
+               $action = $coord->action->resource;
+               $path = $coord->action->getPath();
             }
             else {
-               $action = $gJCoord->moduleName.'~'.$gJCoord->actionName;
+               $action = $coord->moduleName.'~'.$coord->actionName;
                $path = '';
             }
             if ($type == $this->defaultResponseType)
@@ -194,10 +195,10 @@ abstract class jRequest {
         $response = new $respclass();
 
         if (!$this->isAllowedResponse($response)){
-            throw new jException('jelix~errors.ad.response.type.notallowed',array($gJCoord->action->resource, $type, $gJCoord->action->getPath()));
+            throw new jException('jelix~errors.ad.response.type.notallowed',array($coord->action->resource, $type, $coord->action->getPath()));
         }
 
-        $gJCoord->response = $response;
+        $coord->response = $response;
 
         return $response;
     }
@@ -276,9 +277,8 @@ abstract class jRequest {
     * @since 1.2.3
     */
    function getDomainName() {
-      global $gJConfig;
-      if ($gJConfig->domainName != '') {
-         return $gJConfig->domainName;
+      if (jApp::config()->domainName != '') {
+         return jApp::config()->domainName;
       }
       elseif (isset($_SERVER['SERVER_NAME'])) {
          return $_SERVER['SERVER_NAME'];
@@ -324,8 +324,7 @@ abstract class jRequest {
       else
          $https = $forceHttps;
 
-      global $gJConfig;
-      $forcePort = ($https ? $gJConfig->forceHTTPSPort : $gJConfig->forceHTTPPort);
+      $forcePort = ($https ? jApp::config()->forceHTTPSPort : jApp::config()->forceHTTPPort);
       if ($forcePort === true) {
          return '';
       }

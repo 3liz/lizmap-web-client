@@ -20,7 +20,7 @@ CREATE TABLE %%PREFIX%%jacl2_group (
 CREATE TABLE %%PREFIX%%jacl2_rights (
     id_aclsbj character varying(255) NOT NULL,
     id_aclgrp character varying(50) NOT NULL,
-    id_aclres character varying(100) NOT NULL,
+    id_aclres character varying(100) NOT NULL DEFAULT '-',
     canceled smallint NOT NULL default '0',
     CONSTRAINT %%PREFIX%%jacl2_rights_id_aclsbj_id_aclgrp_id_aclres_pk PRIMARY KEY (id_aclsbj, id_aclgrp, id_aclres)
 );

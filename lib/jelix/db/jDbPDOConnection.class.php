@@ -4,7 +4,7 @@
 * @subpackage db
 * @author     Laurent Jouanneau
 * @contributor Gwendal Jouannic, Thomas, Julien Issler, Vincent Herr
-* @copyright  2005-2010 Laurent Jouanneau
+* @copyright  2005-2012 Laurent Jouanneau
 * @copyright  2008 Gwendal Jouannic, 2009 Thomas
 * @copyright  2009 Julien Issler
 * @copyright  2011 Vincent Herr
@@ -35,6 +35,12 @@ class jDbPDOConnection extends PDO {
     public $dbms;
 
     /**
+     * driver name
+     * @var string
+     */
+    public $driverName = '';
+
+    /**
      * Use a profile to do the connection
      * @param array $profile the profile data readed from the ini file
      */
@@ -45,14 +51,14 @@ class jDbPDOConnection extends PDO {
         $password = '';
         $dsn = '';
         if (isset($profile['dsn'])) {
-            $this->dbms = substr($profile['dsn'],0,strpos($profile['dsn'],':'));
+            $this->dbms = $this->driverName = substr($profile['dsn'],0,strpos($profile['dsn'],':'));
             $dsn = $profile['dsn'];
             unset($prof['dsn']);
             if ($this->dbms == 'sqlite')
                 $dsn = str_replace(array('app:','lib:','var:'), array(jApp::appPath(), LIB_PATH, jApp::varPath()), $dsn);
         }
         else {
-            $this->dbms = $profile['driver'];
+            $this->dbms = $this->driverName = $profile['driver'];
             $db = $profile['database'];
             $dsn = $this->dbms.':host='.$profile['host'].';dbname='.$db;
             if($this->dbms != 'sqlite')
@@ -97,11 +103,12 @@ class jDbPDOConnection extends PDO {
             $this->setAttribute(PDO::ATTR_CASE, PDO::CASE_LOWER);
 
         if (isset($prof['force_encoding']) && $prof['force_encoding']==true) {
-            if ($this->dbms == 'mysql' && isset($this->_mysqlCharsets[$GLOBALS['gJConfig']->charset])) {
-                $this->exec("SET NAMES '".$this->_mysqlCharsets[$GLOBALS['gJConfig']->charset]."'");
+            $charset = jApp::config()->charset;
+            if ($this->dbms == 'mysql' && isset($this->_mysqlCharsets[$charset])) {
+                $this->exec("SET NAMES '".$this->_mysqlCharsets[$charset]."'");
             }
-            elseif($this->dbms == 'pgsql' && isset($this->_pgsqlCharsets[$GLOBALS['gJConfig']->charset])) {
-                $this->exec("SET client_encoding to '".$this->_pgsqlCharsets[$GLOBALS['gJConfig']->charset]."'");
+            elseif($this->dbms == 'pgsql' && isset($this->_pgsqlCharsets[$charset])) {
+                $this->exec("SET client_encoding to '".$this->_pgsqlCharsets[$charset]."'");
             }
         }
     }

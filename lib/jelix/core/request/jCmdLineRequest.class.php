@@ -6,7 +6,7 @@
 * @contributor Loic Mathaud
 * @contributor Thibault Piront (nuKs)
 * @contributor Christophe Thiriot
-* @copyright   2005-2011 Laurent Jouanneau, 2006-2007 Loic Mathaud
+* @copyright   2005-2012 Laurent Jouanneau, 2006-2007 Loic Mathaud
 * @copyright   2007 Thibault Piront
 * @copyright   2008 Christophe Thiriot
 * @link        http://www.jelix.org
@@ -46,18 +46,17 @@ class jCmdLineRequest extends jRequest {
     }
 
     protected function _initParams(){
-        global $gJConfig;
-
         $argv = $_SERVER['argv'];
         $scriptName = array_shift($argv); // shift the script name
 
+        $mod = jApp::config()->startModule;
+        $act = jApp::config()->startAction;
+
         if ($this->onlyDefaultAction) {
-            $mod = $gJConfig->startModule;
-            $act = $gJConfig->startAction;
             if ($_SERVER['argc'] > 1 && $argv[0] == 'help') {
+                $argv[0] = $mod.'~'.$act;
                 $mod = 'jelix';
                 $act = 'help:index';
-                $argv[0] = $gJConfig->startModule.'~'.$gJConfig->startAction;
             }
         }
         else {
@@ -65,10 +64,7 @@ class jCmdLineRequest extends jRequest {
             // because in the opt edition, jSelectorAct needs an initialized jCoordinator
             // and this is not the case here. see bug #725.
     
-            if ($_SERVER['argc'] == 1) {
-                $mod = $gJConfig->startModule;
-                $act = $gJConfig->startAction;
-            } else {
+            if ($_SERVER['argc'] != 1) {
                 $argsel = array_shift($argv); // get the module~action selector
                 if ($argsel == 'help') {
                     $mod = 'jelix';
@@ -77,7 +73,6 @@ class jCmdLineRequest extends jRequest {
                     $mod = substr($argsel,0,$pos);
                     $act = substr($argsel,$pos+1);
                 }else {
-                    $mod= $gJConfig->startModule;
                     $act= $argsel;
                 }
             }

@@ -4,7 +4,7 @@
 * @subpackage  events
 * @author      Gérald Croes, Patrice Ferlet
 * @contributor Laurent Jouanneau, Dominique Papin, Steven Jehannet
-* @copyright 2001-2005 CopixTeam, 2005-2009 Laurent Jouanneau, 2009 Dominique Papin
+* @copyright 2001-2005 CopixTeam, 2005-2012 Laurent Jouanneau, 2009 Dominique Papin
 * This classes were get originally from the Copix project
 * (CopixEvent*, CopixListener* from Copix 2.3dev20050901, http://www.copix.org)
 * Some lines of code are copyrighted 2001-2005 CopixTeam (LGPL licence).
@@ -165,14 +165,14 @@ class jEvent {
     */
     protected static function loadListenersFor ($eventName) {
         if (!isset($GLOBALS['JELIX_EVENTS'])) {
-            self::$compilerData[3] = $GLOBALS['gJConfig']->urlengine['urlScriptId'].'.'.self::$compilerData[3];
+            self::$compilerData[3] = jApp::config()->urlengine['urlScriptId'].'.'.self::$compilerData[3];
             jIncluder::incAll(self::$compilerData);
         }
 
         $inf = & $GLOBALS['JELIX_EVENTS'];
         self::$hashListened[$eventName] = array();
         if(isset($inf[$eventName])){
-            $modules = & $GLOBALS['gJConfig']->_modulesPathList;
+            $modules = & jApp::config()->_modulesPathList;
             foreach ($inf[$eventName] as $listener){
                 list($module,$listenerName) = $listener;
                 if (! isset($modules[$module]))  // some modules could be unused

@@ -11,7 +11,7 @@ require_once ('../application.init.php');
 
 require_once (JELIX_LIB_CORE_PATH.'request/jCmdLineRequest.class.php');
 
-$config_file = 'cmdline/configtests.ini.php';
+jApp::loadConfig('cmdline/configtests.ini.php');
 
-$jelix = new jCoordinator($config_file);
+$jelix = new jCoordinator();
 $jelix->process(new jCmdLineRequest());

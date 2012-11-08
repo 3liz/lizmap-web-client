@@ -1,0 +1,8 @@
+;<?php die(''); ?>
+;for security reasons , don't remove or modify the first line
+
+enable_trace = on
+
+;dump of the session in the trace (on|off)
+log_session = on
+

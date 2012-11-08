@@ -4,7 +4,7 @@
 * @author      Laurent Jouanneau
 * @contributor Loic Mathaud
 * @contributor Bastien Jaillot
-* @copyright   2005-2011 Laurent Jouanneau, 2007 Loic Mathaud, 2008 Bastien Jaillot
+* @copyright   2005-2012 Laurent Jouanneau, 2007 Loic Mathaud, 2008 Bastien Jaillot
 * @link        http://jelix.org
 * @licence     GNU General Public Licence see LICENCE file or http://www.gnu.org/licenses/gpl.html
 */
@@ -60,7 +60,6 @@ class createmoduleCommand extends JelixScriptCommand {
 
     public function run(){
         $this->loadAppConfig();
-        global $gJConfig;
 
         $module = $this->getParam('module');
         $initialVersion = $this->getOption('-ver');
@@ -106,7 +105,7 @@ class createmoduleCommand extends JelixScriptCommand {
             if (!$ini) {
                 throw new Exception("entry point is unknown");
             }
-            $this->updateModulePath($ini, $gJConfig->modulesPath, $repository, $repositoryPath);
+            $this->updateModulePath($ini, jApp::config()->modulesPath, $repository, $repositoryPath);
             if ($this->verbose())
                 echo "modulePath updated in the configuration ".$entryPoint['config']."\n";
         }
@@ -114,7 +113,7 @@ class createmoduleCommand extends JelixScriptCommand {
         $path = $repositoryPath.$module.'/';
         $this->createDir($path);
 
-        $gJConfig = null;
+        jApp::setConfig(null);
 
         if ($this->getOption('-admin')) {
             $this->removeOption('-nosubdir');
@@ -138,7 +137,7 @@ class createmoduleCommand extends JelixScriptCommand {
             $this->createDir($path.'daos/');
             $this->createDir($path.'forms/');
             $this->createDir($path.'locales/');
-            $this->createDir($path.'locales/en_EN/');
+            $this->createDir($path.'locales/en_US/');
             $this->createDir($path.'locales/fr_FR/');
             $this->createDir($path.'install/');
             if ($this->verbose())
@@ -217,8 +216,7 @@ class createmoduleCommand extends JelixScriptCommand {
         if ($this->getOption('-admin')) {
             $this->createFile($path.'classes/admin'.$module.'.listener.php', 'module/admin.listener.php.tpl', $param, "Listener");
             $this->createFile($path.'events.xml', 'module/events.xml.tpl', $param);
-
-            file_put_contents($path.'locales/en_EN/interface.UTF-8.properties', 'menu.item='.$module);
+            file_put_contents($path.'locales/en_US/interface.UTF-8.properties', 'menu.item='.$module);
             file_put_contents($path.'locales/fr_FR/interface.UTF-8.properties', 'menu.item='.$module);
         }
     }

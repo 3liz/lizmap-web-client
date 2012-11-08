@@ -71,7 +71,13 @@ final class jResponseRdf extends jResponse {
     public $asElement=array();
 
     public function output(){
-        $this->_httpHeaders['Content-Type']='text/xml;charset='.$GLOBALS['gJConfig']->charset;
+        
+        if($this->_outputOnlyHeaders){
+            $this->sendHttpHeaders();
+            return true;
+        }
+        
+        $this->_httpHeaders['Content-Type']='text/xml;charset='.jApp::config()->charset;
 
         if ($this->template !='') {
             $tpl= new jTpl();
@@ -83,7 +89,7 @@ final class jResponseRdf extends jResponse {
         }
         
         $this->sendHttpHeaders();
-        echo '<?xml version="1.0" encoding="'.$GLOBALS['gJConfig']->charset.'"?>';
+        echo '<?xml version="1.0" encoding="'.jApp::config()->charset.'"?>';
         echo $content;
         return true;
     }
