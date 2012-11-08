@@ -110,10 +110,6 @@ class serviceCtrl extends jController {
     $sUrl = str_replace('&', '&amp;', $sUrl);
     $data = preg_replace('/xlink\:href=".*"/', 'xlink:href="'.$sUrl.'&amp;"', $data);
 
-    // Add XML header, because QGIS Server does not provide it
-    $data = '<?xml version="1.0" encoding="UTF-8" ?>
-'.$data;
-
     // Return response
     $rep = $this->getResponse('binary');
     $rep->mimeType = $mime;
