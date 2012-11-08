@@ -17,8 +17,8 @@ debugMode=0
 ; on = print debug messages in lizmap/var/log/messages.log
 ; off = no lizmap debug messages
 
-;Repositories
 
+;Repositories
 ;Each repository must be set in a separate section
 ;The section name must begin with the prefix "repository:"
 
@@ -31,7 +31,3 @@ path="../install/qgis/"
 [repository:intranet]
 label="Lizmap Demo - Intranet"
 path="../install/qgis_intranet/"
-
-
-
-

@@ -204,25 +204,25 @@ class serviceCtrl extends jController {
     }
 
     // paramètres de la requête
-    $data = array("map"=>$lizmapConfig->repositoryData['path'].$project.".qgs");
+    $params = array("map"=>$lizmapConfig->repositoryData['path'].$project.".qgs");
     // on garde les paramètres intéressants
     foreach($myParams as $param){
       if(!in_array($param, array('module', 'action', 'C', 'project'))){
-        $data[$param] = jApp::coord()->request->params[$param];
+        $params[$param] = jApp::coord()->request->params[$param];
       }
     }
 
     // Construction of the request url : base url + parameters
     $url = $lizmapConfig->wmsServerURL.'?';
-    $params = http_build_query($data);
+    $bparams = http_build_query($params);
     // On remplace certains caractères (plus besoin si php 5.4, alors utiliser le 4ème paramètre de http_build_query)
     $a = array('+', '_', '.', '-');
     $b = array('%20', '%5F', '%2E', '%2D');
-    $params = str_replace($a, $b, $params);
+    $bparams = str_replace($a, $b, $bparams);
 
     // Get remote data
     $lizmapCache = jClasses::getService('lizmap~lizmapCache');
-    $querystring = $url . $params;
+    $querystring = $url . $bparams;
     $getRemoteData = $lizmapCache->getRemoteData(
       $querystring,
       $lizmapConfig->proxyMethod,
@@ -272,25 +272,35 @@ class serviceCtrl extends jController {
     }
 
     // Request parameters
-    $data = array("map"=>$lizmapConfig->repositoryData['path'].$project.".qgs");
+    $params = array("map"=>$lizmapConfig->repositoryData['path'].$project.".qgs");
     // on garde les paramètres intéressants
     foreach($myParams as $param){
       if(!in_array($param, array('module', 'action', 'C', 'project'))){
-        $data[$param] = jApp::coord()->request->params[$param];
+        $params[$param] = jApp::coord()->request->params[$param];
       }
+    }
+
+    // Normalize params
+    $lizmapCache = jClasses::getService('lizmap~lizmapCache');
+    $params = $lizmapCache->normalizeParams($params);
+
+    // Deactivate info_format to use Lizmap instead of QGIS
+    $toHtml = False;
+    if($params['info_format'] == 'text/html'){
+      $toHtml = True;
+      $params['info_format'] = 'text/xml';
     }
 
     // Construction of the request url : base url + parameters
     $url = $lizmapConfig->wmsServerURL.'?';
-    $params = http_build_query($data);
+    $bparams = http_build_query($params);
 #    // On remplace certains caractères (plus besoin si php 5.4, alors utiliser le 4ème paramètre de http_build_query)
 #    $a = array('+', '_', '.', '-');
 #    $b = array('%20', '%5F', '%2E', '%2D');
-#    $params = str_replace($a, $b, $params);
+#    $bparams = str_replace($a, $b, $bparams);
 
     // Get remote data
-    $lizmapCache = jClasses::getService('lizmap~lizmapCache');
-    $querystring = $url . $params;
+    $querystring = $url . $bparams;
     $getRemoteData = $lizmapCache->getRemoteData(
       $querystring,
       $lizmapConfig->proxyMethod,
@@ -298,6 +308,12 @@ class serviceCtrl extends jController {
     );
     $data = $getRemoteData[0];
     $mime = $getRemoteData[1];
+
+    // Get HTML content if needed
+    if($toHtml and preg_match('#/xml$#', $mime)){
+      $data = $this->getFeatureInfoHtml($params, $data, $lizmapConfig, $project);
+      $mime = 'text/html';
+    }
 
     $rep = $this->getResponse('binary');
     $rep->mimeType = $mime;
@@ -307,6 +323,103 @@ class serviceCtrl extends jController {
 
     return $rep;
   }
+
+
+  /**
+  * GetFeatureInfoHtml : return HTML for the getFeatureInfo.
+  * @param $project Name of the project : mandatory
+  * @return Feature Info in HTML format.
+  */
+  function getFeatureInfoHtml($params, $xmldata, $lizmapConfig, $project){
+
+    // Get data from XML
+    $use_errors = libxml_use_internal_errors(true);
+    $go = true; $errorlist = array();
+    // Create a DOM instance
+    $xml = simplexml_load_string($xmldata);
+    if(!$xml) {
+      foreach(libxml_get_errors() as $error) {
+        $errorlist[] = $error;
+      }
+      $go = false;
+    }
+
+    // Get json configuration for the project
+    $qgsPath = $lizmapConfig->repositoryData['path'].$project.'.qgs';
+    $configRead = jFile::read($qgsPath.'.cfg');
+    $configLayers = json_decode($configRead)->layers;
+
+    // Loop through the layers
+    $content = '';
+    $ptemplate = 'view~popup';
+    $lizmapCache = jClasses::getService('lizmap~lizmapCache');
+    $popupClass = jClasses::getService('view~popup');
+
+    foreach($xml->Layer as $layer){
+      $layername = $layer['name'];
+
+      // Avoir layer if no popup asked for the user for it
+      if($configLayers->$layername->popup != 'True'){
+        continue;
+      }
+
+      // Get the template for the popup content
+      $templateConfigured = False;
+      if(property_exists($configLayers->$layername, 'popupTemplate')){
+        // Get template content
+        $popupTemplate = (string)trim($configLayers->$layername->popupTemplate);
+        // Use it if not empty
+        if(!empty($popupTemplate))
+          $templateConfigured = True;
+      }
+
+      // Loop through the features
+      foreach($layer->Feature as $feature){
+        $id = $feature['id'];
+        // Specific template for the layer has been configured
+        if($templateConfigured){
+
+          $popupFeatureContent = $popupTemplate;
+
+          foreach($feature->Attribute as $attribute){
+            // Get the name
+            $attributeName = (string)$attribute['name'];
+
+            // Get and process the value if needed
+            $attributeValue = (string)$attribute['value'];
+
+            // Replace #col and $col by colomn name and value
+            $popupFeatureContent = $popupClass->getHtmlFeatureAttribute(
+              $attributeName,
+              $attributeValue,
+              $lizmapConfig->repositoryKey,
+              $project,
+              $popupFeatureContent
+            );
+          }
+        }
+        // Use default template if needed
+        else{
+          $tpl = new jTpl();
+          $tpl->assign('attributes', $feature->Attribute);
+          $tpl->assign('repository', $lizmapConfig->repositoryKey);
+          $tpl->assign('project', $project);
+          $popupFeatureContent = $tpl->fetch('view~popupDefaultContent');
+        }
+
+        $tpl = new jTpl();
+        $tpl->assign('layername', $layername);
+        $tpl->assign('popupContent', $popupFeatureContent);
+        $content.= $tpl->fetch('view~popup');
+
+      } // loop features
+
+    } // loop layers
+
+    return $content;
+  }
+
+
 
   /**
   * GetPrint
@@ -379,7 +492,7 @@ class serviceCtrl extends jController {
   /**
   * Send an OGC service Exception
   * @param $SERVICE the OGC service
-  * @return XML OGC Servcie Exception.
+  * @return XML OGC Service Exception.
   */
   function serviceException(){
     $messages = jMessage::getAll();

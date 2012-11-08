@@ -994,107 +994,15 @@ var lizMap = function() {
   }
 
 
-  function getMediaContent( aFeat, attributeRow, path ) {
-      $.get(mediaServerURL
-        , {path: path}
-        , function(data){
-          if(data){
-            // Replace image source attribute
-            var pReg = new RegExp( 'src="(.+(jpg|jpeg|gif|png))"?', "gi" );
-            var newdata = data.replace(pReg, 'src="'+mediaServerURL+'&path='+'/$1"');
-            // Replace attribute text with the content
-            var html = '<td colspan="2">'+newdata+'</td>';
-            var atTr = $('#popupAttributeTr_'+aFeat.getAttribute('id')+'_'+attributeRow);
-            atTr.html(html);
-            // Hide the table header
-            atTr.parent().prev().hide();
-          }
-      });
-  }
-
   function addFeatureInfo() {
       var info = new OpenLayers.Control.WMSGetFeatureInfo({
             url: wmsServerURL,
             title: 'Identify features by clicking',
             queryVisible: true,
-            infoFormat: 'text/xml',
+            infoFormat: 'text/html',
             eventListeners: {
                 getfeatureinfo: function(event) {
-                    var xmlf = new OpenLayers.Format.XML();
-                    var data = xmlf.read(event.text).documentElement;
-                    var text = '';
-                    featureInfo = {};
-                    var layerList = xmlf.getElementsByTagNameNS(data,'*','Layer');
-                    for (var i=0; i<layerList.length; i++) {
-                      var layer = layerList[i];
-                      var layerName = layer.getAttribute('name');
-                      featureInfo[layerName] = {};
-                      var features = xmlf.getElementsByTagNameNS(layer,'*','Feature');
-                      for (var j=0; j<features.length; j++) {
-                        text += '<h4>'+layerName+'</h4>';
-                        text += '<div class="lizmapPopupDiv">';
-                        text += '<table class="lizmapPopupTable">';
-                        text += '<thead><tr><th class="left">'+dictionary['popup.table.th.data']+'</th><th>'+dictionary['popup.table.th.value']+'</th></tr></thead>';
-                        text += '<tbody>';
-                        var feature = features[j];
-                        var featureId = feature.getAttribute('id');
-                        featureInfo[layerName][featureId] = {};
-                        var attributes = xmlf.getElementsByTagNameNS(feature,'*','Attribute');
-                        for (var k=0; k<attributes.length; k++) {
-                          var att = attributes[k];
-                          var attName = att.getAttribute('name');
-                          // For non geometric columns, display the content
-                          if (attName != 'geometry') {
-                            // Get attribute value
-                            var attValue = att.getAttribute('value');
-                            featureInfo[layerName][featureId][attName] = attValue;
-                            // In order to display the attribute based on its content
-                            // use regular expression to determine content type
-                            var urlRegex = /(ftp|http|https):\/\/(\w+:{0,1}\w*@)?(\S+)(:[0-9]+)?(\/|\/([\w#!:.?+=&%@!\-\/]))?/
-                            var emailRegex = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/;
-                            var imageRegex = /\.(jpg|jpeg|png|gif|bmp)$/i;
-                            var mediaRegex = /^(\/)?media\//;
-                            var mediaTextRegex = /\.(txt|htm|html)$/i;
-
-                            // Default content
-                            var featText = '<tr id="popupAttributeTr_'+featureId+'_'+k+'"><th class="left">'+attName+'</th><td>'+attValue+'</td></tr>';
-                            // Remote URL
-                            if(urlRegex.test(attValue))
-                              if(imageRegex.test(attValue))
-                                featText = '<tr><th>'+attName+'</th><td><img src="'+attValue+'" width="300" border="0"/></td></tr>';
-                              else
-                                featText = '<tr><th class="left">'+attName+'</th><td><a href="'+attValue+'" target="_blank">'+attValue+'<a></td></tr>';
-                            // Email
-                            if(emailRegex.test(attValue))
-                              featText = '<tr><th>'+attName+'</th><td><a href="mailto:'+attValue+'"</td></tr>' ;
-                            // Media
-                            if(mediaRegex.test(attValue)){
-                              // Display if it is an image
-                              if(imageRegex.test(attValue)){
-                                featText = '<tr><th>'+attName+'</th><td><img src="'+mediaServerURL+'&path=/'+attValue+'" width="300" border="0"/></td></tr>';
-                              }
-                              // If a file containing text or html
-                              else if(mediaTextRegex.test(attValue)){
-                                // Get media content
-                                getMediaContent(feature, k, attValue);
-                              }
-                              // Else just write a link to the file
-                              else{
-                                featText = '<tr><th class="left">'+attName+'</th><td><a href="'+mediaServerURL+'&path=/'+attValue+'" target="_blank">'+attValue+'<a></td></tr>';
-                              }
-                            }
-
-                            // Append the content to the complete feature text
-                            text += featText
-                          }
-                        }
-                        text += '</tbody>';
-                        text += '</table>';
-                        text += '</div>';
-                      }
-                    }
-
-
+                    var text = event.text;
                     if (text != ''){
                       if (map.popups.length != 0)
                         map.removePopup(map.popups[0]);
