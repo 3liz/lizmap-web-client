@@ -41,6 +41,7 @@ var lizMap = function() {
    */
   var tree = {config:{type:'group'}};
 
+
   /**
    * PRIVATE function: cleanName
    * cleaning layerName for class and layer
@@ -61,11 +62,63 @@ var lizMap = function() {
     return aName.replace(' ', '_', 'gi');
   }
 
+
+  /**
+   * PRIVATE function: updateMobile
+   * Determine if we should display the mobile version.
+   */
+  function updateMobile(){
+    mobileContext = lizMap.checkMobile();
+
+    if(mobileContext){
+      // Change menu and map content width
+      $('#menu').css('width', '100%');
+
+      // hide overview map
+      if (config.options.hasOverview)
+        $('#overviewmap').hide();
+
+      // Display baselayer choice 100%
+      $('#baselayer-select-input').css('bottom','50px').css('left','0px').css('right','0px')
+
+      if( !$('#toggleLegend').is(':visible'))
+        $('#menu').hide();
+
+      // activate Legend menu
+      $('#toggleLegend')
+      .css('cursor', 'pointer')
+      .show();
+
+    }
+    else{
+      // Change menu and map content width
+      $('#menu').css('width', '300px');
+
+      // Display baselayer choice 100%
+      $('#baselayer-select-input').css('bottom','0px').css('left','300px').css('right','')
+
+      // Display overview map
+      if (config.options.hasOverview)
+        $('#overviewmap').show();
+
+      if( $('#toggleLegend').is(':visible'))
+        $('#menu').show();
+
+      // Hide legend menu
+      $('#toggleLegend').hide();
+
+    }
+  }
+
+
   /**
    * PRIVATE function: updateContentSize
    * update the content size
    */
- function updateContentSize(){
+  function updateContentSize(){
+
+   updateMobile();
+
    var h = $('body').parent()[0].clientHeight;
    h = h - $('#header').height();
    h = h - $('#headermenu').height();
@@ -73,6 +126,7 @@ var lizMap = function() {
    $('#menu').height(h);
    $('#map').height(h);
    var w = $('body').parent()[0].offsetWidth;
+
    if ($('#menu').is(':hidden')) {
      $('#map-content').css('margin-left',0);
    } else {
@@ -82,7 +136,9 @@ var lizMap = function() {
    $('#map').width(w);
 
     updateMapSize();
+
   }
+
 
   /**
    * PRIVATE function: updateMapSize
@@ -94,7 +150,7 @@ var lizMap = function() {
     map.setCenter(center);
     map.baseLayer.redraw();
 
-    if ($('#navbar').height()+150 > $('#map').height())
+    if ($('#navbar').height()+150 > $('#map').height() || mCheckMobile())
       $('#navbar .slider').hide();
     else
       $('#navbar .slider').show();
@@ -137,7 +193,9 @@ var lizMap = function() {
     h -= parseInt(swp.css('padding-bottom'));
 
     $('#switcher').height(h);
+
   }
+
 
   /**
    * PRIVATE function: getLayerLegendGraphicUrl
@@ -553,11 +611,17 @@ var lizMap = function() {
     });
     $('#close-menu .ui-icon-close-menu').click(function(){
       $('#menu').hide();
+      if(lizMap.checkMobile())
+        $('#map-content').show();
       $('#content .ui-icon-open-menu').show();
+      $('#toggleLegend').html($('#toggleLegendOn').attr('value'));
       updateContentSize();
     });
     $('#content .ui-icon-open-menu').click(function(){
       $('#menu').show();
+      if(lizMap.checkMobile())
+        $('#map-content').hide();
+      $('#toggleLegend').html($('#toggleMapOn').attr('value'));
       $(this).hide();
       updateContentSize();
     });
@@ -853,7 +917,8 @@ var lizMap = function() {
     map.addControl(new OpenLayers.Control.ScaleLine({div:document.getElementById('scaleline')}));
 
     if (config.options.hasOverview)
-      $('#overviewmap').show();
+      if(!mCheckMobile())
+        $('#overviewmap').show();
     else
       $('#toolbar button.overview').hide();
   }
@@ -1095,6 +1160,26 @@ var lizMap = function() {
     return true;
   }
 
+
+  /**
+   * PRIVATE function: mCheckMobile
+   * Check wether in mobile context.
+   *
+   *
+   * Returns:
+   * {Boolean} True if in mobile context.
+   */
+  function mCheckMobile() {
+    var minMapSize = 300;
+    var w = $('body').parent()[0].offsetWidth;
+    var leftW = w - minMapSize;
+    if(leftW < minMapSize || w < minMapSize)
+        return true;
+    return false;
+  }
+
+
+
   // creating the lizMap object
   var obj = {
     /**
@@ -1133,6 +1218,14 @@ var lizMap = function() {
      * {Object} The map tree
      */
     tree: null,
+
+    /**
+     * Method: checkMobile
+     */
+    checkMobile: function() {
+      return mCheckMobile();
+    },
+
     /**
      * Method: init
      */
@@ -1167,6 +1260,10 @@ var lizMap = function() {
           self.config = config;
           self.tree = tree;
           self.events.triggerEvent("treecreated", self);
+          if(self.checkMobile()){
+            $('#menu').hide();
+            $('#map-content').css('margin-left','0');
+          }
 
           // create the map
           createMap();
@@ -1262,6 +1359,7 @@ lizMap.events.on({
          evt.config.options.minScale = 2257.0000851534865;
          evt.config.options.mapScales = [];
        }
+
     }
    ,'mapcreated':function(evt){
        //alert('mapcreated')
@@ -1355,9 +1453,21 @@ lizMap.events.on({
        } catch(e) {
          //problems with google
        }
+
      }
    ,'uicreated':function(evt){
-     //alert('uicreated')
+  //alert('uicreated')
+
+    // Toggle legend
+    $('#toggleLegend').click(function(){
+      if ($('#menu').is(':visible')) {
+        $('.ui-icon-close-menu').click();
+      }
+      else{
+        $('.ui-icon-open-menu').click();
+      }
+    });
+
    }
 });
 

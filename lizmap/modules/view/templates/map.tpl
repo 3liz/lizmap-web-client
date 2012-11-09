@@ -14,6 +14,11 @@
 <div id="headermenu" class="navbar navbar-fixed-top">
   <div id="auth" class="navbar-inner">
     <ul class="nav pull-right">
+      <li>
+        <a id="toggleLegend">{@view~map.legend@}</a>
+        <span id="toggleLegendOn" value="{@view~map.legend@}"/>
+        <span id="toggleMapOn" value="{@view~map.map@}"/>
+      </li>
       <li><a href="{jurl 'view~default:index'}">{@view~default.repository.list.title@}</a></li>
       <li><a id="displayMetadata">{@view~map.metadata.link.label@}</a></li>
       {if $isConnected}

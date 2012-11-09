@@ -128,21 +128,17 @@ class mapCtrl extends jController {
 
     $rep->addJSCode("
       $(window).load(function() {
-        $('#header').dblclick(function(){
-          $('#metadata').css('display', 'block');
-        })
         $('#displayMetadata').click(function(){
           //$('#metadata').css('display', 'block');
           $('#metadata').toggle();
-        })
-        $('#metadata').dblclick(function(){
-          $('#metadata').css('display', 'none');
+          return false;
         })
         $('#hideMetadata').click(function(){
           $('#metadata').css('display', 'none');
         });
       });
     ");
+
 
     // Assign some properties to the body template
     $assign = array(

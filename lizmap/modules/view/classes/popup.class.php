@@ -17,8 +17,8 @@ class popup{
   * @param string $attributeName Feature Attribute name.
   * @param string $attributeValue Feature Attribute value.
   * @param string $repository Lizmap Repository.
-  * @param string $popupFeatureContent Content of the popup template (created by lizmap plugin) and passed several times.
   * @param string $project Name of the project.
+  * @param string $popupFeatureContent Content of the popup template (created by lizmap plugin) and passed several times. IF false, return only modified attribute.
   * @return string The html for the feature attribute.
   */
   public function getHtmlFeatureAttribute($attributeName, $attributeValue, $repository, $project, $popupFeatureContent=Null){
