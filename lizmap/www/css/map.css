@@ -2,23 +2,19 @@ body {
   padding-bottom:0;
 }
 #title {
-/*  float : right;*/
   position:absolute;
   right:0px;
   top:0px;
   max-width:90%;
   height : 65px;
   margin-top : 10px;
-/*  margin-bottom : 10px;*/
   margin-left : 30px;
-/*  margin-right : 20px;*/
   padding-right:20px;
   text-align : right;
   overflow:hidden;
   white-space:nowrap;
   text-overflow:ellipsis;
   background:inherit;
-
 }
 #title h1 {
   color : #AAAAAA;
@@ -68,13 +64,12 @@ body {
   background-color:#EFEFEF;
   color:grey;
   overflow:auto;
-  font-size:1.1em;
+  font-size:0.85em;
 }
 
 #metadata h2{
   color:#80B219;
   font-weight:normal;
-  font-size:1.5em;
 }
 
 #menu {
@@ -92,7 +87,7 @@ body {
   line-height : 1.3;
   border-bottom : solid 1px #DDDDDD;
   border-top : solid 1px #DDDDDD;
-  font-size : 1.2em;
+  font-size : 0.9em;
 }
 #menu h3 span.title {
   display : block;
@@ -230,6 +225,7 @@ body {
   background: none;
   text-shadow : none;
   cursor : pointer;
+  font-size:0.8em;
 }
 #switcher div.legendGraphics{
   overflow:auto;
@@ -241,7 +237,7 @@ body {
   position: relative;
 }
 #switcher .treeTable td a.expander {
-  font-size : 14px;
+  font-size : 1em;
 }
 #switcher .treeTable tr.expanded td a.expander {
   background-image : url("images/sprite_menu.png");
@@ -340,10 +336,15 @@ body {
 }
 
 /*Loading window*/
+#ui-dialog-title-loading {
+  font-size:0.8em;
+}
+
 #loading {
   height: 100px;
   min-height: 100px;
   width: auto;
+  font-size:0.9em;
 }
 #loading p {
   text-align:center;
@@ -351,7 +352,7 @@ body {
 
 /*Overview map*/
 #overview-box {
-  z-index:2000;
+  z-index:999;
   position:absolute;
   right:10px;
   bottom:2.5em;
@@ -370,7 +371,7 @@ body {
   color : rgb(51,51,51);
   background: none;
   text-shadow : none;
-  font-size : 12px;
+  font-size : 0.8em;
 }
 
 #overview-bar .button {
@@ -435,13 +436,13 @@ body {
 #attribution-box {
   bottom : 0;
   right : 0;
-  padding : 0.5em;
+  padding : 0 0.5em;
   position : absolute;
   z-index : 1000;
   background-color : rgba(255,255,255,0.7);
 }
 #attribution {
-  line-height: 12px;
+  line-height: 10px;
   vertical-align : bottom;
   margin-right : 0.5em;
 }
@@ -489,6 +490,10 @@ body {
   }
 
 /*Popup OpenLayers*/
+#liz_layer_popup {
+  z-index:2000;
+}
+
 .lizmapPopup{
   background: #F6F6F6 !important;
   border: 1px solid #C9C9C9 !important;
@@ -503,7 +508,7 @@ body {
   margin: 0px;
   background: #2B2B2B !important;
   color : #FBFBFB !important;
-  font-size: 16px;
+  font-size: 1em;
   padding: 2px;
   padding-left: 5px;
 }
@@ -518,7 +523,7 @@ body {
 .lizmapPopupTable{
   /*background:#333333 !important;*/
   margin-bottom:10px;
-  font-size:12px;
+  font-size:0.8em;
   width:100%;
   border: 1px solid #2B2B2B !important;
   border-collapse: collapse;
@@ -526,7 +531,7 @@ body {
 .lizmapPopupTable thead {
   color: white;
   background-color: #81B00E;
-  font-size: 14px;
+  font-size: 1em;
   border-bottom: 1px solid #2B2B2B !important;
 }
 .lizmapPopupTable th{

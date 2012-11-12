@@ -3,13 +3,11 @@
   height : 250px;
   text-align : center;
   vertical-align : middle;
-  font-size : 16px;
   text-transform : uppercase;
   line-height: 248px;
 }
 .liz-project-desc {
   color: white;
-  font-size: 12px;
   line-height: 12px;
   text-align: left;
   text-transform: none;

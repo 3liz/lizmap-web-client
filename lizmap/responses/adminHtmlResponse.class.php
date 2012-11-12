@@ -18,6 +18,8 @@ class adminHtmlResponse extends jResponseHtml {
     function __construct() {
         parent::__construct();
 
+
+        $this->addHeadContent('<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />');
     }
 
     protected function doAfterActions() {

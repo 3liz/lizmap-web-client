@@ -232,7 +232,6 @@
 #attribution-box {
   bottom : 0;
   right : 0;
-  padding : 0.5em;
   background-color : rgba(255,255,255,0.7);
   -webkit-border-top-left-radius: 1em;
   -moz-border-top-left-radius: 1em;
@@ -296,7 +295,6 @@
   margin: 0px;
   background: #2B2B2B !important;
   color : #FBFBFB !important;
-  font-size: 16px;
   padding: 2px;
   padding-left: 5px;
 }
@@ -311,7 +309,6 @@
 .lizmapPopupTable{
   /*background:#333333 !important;*/
   margin-bottom:10px;
-  font-size:12px;
   width:100%;
   border: 1px solid #2B2B2B !important;
   border-collapse: collapse;
@@ -319,7 +316,6 @@
 .lizmapPopupTable thead {
   color: white;
   background-color: #81B00E;
-  font-size: 14px;
   border-bottom: 1px solid #2B2B2B !important;
 }
 .lizmapPopupTable th{

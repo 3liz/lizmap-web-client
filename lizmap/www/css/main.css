@@ -1,6 +1,6 @@
 body {
   margin : 0;
-  font-size : 12px;
+  font-size : 1em;
   font-family : century gothic, arial, sans serif;
   padding-top : 100px;
   padding-bottom : 40px;
@@ -17,6 +17,7 @@ body {
   overflow: visible;
   background : #2B2B2B;
   color : #FBFBFB;
+  font-size:0.8em;
 }
 #logo {
   float : left;
@@ -29,7 +30,7 @@ body {
 }
 #logo h1 {
   margin-left : 85px;
-  font-size : 2.7em;
+  font-size : 2.5em;
 /*  margin-top : 0.75em;*/
   overflow:hidden;
   white-space:nowrap;
@@ -50,6 +51,7 @@ body {
   margin-bottom: 0px;
   overflow: visible;
   background-color:#93C01F;
+  font-size:0.8em;
 }
 
 .navbar-inner {

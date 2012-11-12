@@ -30,12 +30,15 @@ class myHtmlMapResponse extends jResponseHtml {
     $this->addCSSLink($bp.'OpenLayers-2.12/theme/default/style.css');
     $this->addCSSLink($bp.'css/main.css');
     $this->addCSSLink($bp.'css/map.css');
+    $this->addCSSLink($bp.'css/media.css');
 #    $this->addCSSLink($bp.'css/bootstrap-responsive.css');
 
     // META
     $this->addMetaDescription('');
     $this->addMetaKeywords('');
     $this->addHeadContent('<meta name="Revisit-After" content="10 days" />');
+    $this->addHeadContent('<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />');
+
     // JS
     $this->addJSLink($bp.'OpenLayers-2.12/OpenLayers.js');
     $this->addJSLink($bp.'OpenLayers-2.12/lib/OpenLayers/Control/Scale.js');

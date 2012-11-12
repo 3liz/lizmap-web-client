@@ -38,6 +38,7 @@ class myHtmlResponse extends jResponseHtml {
     $this->addHeadContent('<meta name="Robots" content="all" />');
     $this->addHeadContent('<meta name="Rating" content="general" />');
     $this->addHeadContent('<meta name="Distribution" content="global" />');
+    $this->addHeadContent('<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />');
 
     $this->addJSLink($bp.'js/jquery-1.8.0.min.js');
     $this->addJSLink($bp.'js/bootstrap.js');

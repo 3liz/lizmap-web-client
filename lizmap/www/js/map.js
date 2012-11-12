@@ -75,8 +75,10 @@ var lizMap = function() {
       $('#menu').css('width', '100%');
 
       // hide overview map
-      if (config.options.hasOverview)
+      if (config.options.hasOverview){
+        $('#overview-bar button').hide();
         $('#overviewmap').hide();
+      }
 
       // Display baselayer choice 100%
       $('#baselayer-select-input').css('bottom','50px').css('left','0px').css('right','0px')
@@ -98,8 +100,10 @@ var lizMap = function() {
       $('#baselayer-select-input').css('bottom','0px').css('left','300px').css('right','')
 
       // Display overview map
-      if (config.options.hasOverview)
+      if (config.options.hasOverview){
         $('#overviewmap').show();
+        $('#overview-bar button').show();
+      }
 
       if( $('#toggleLegend').is(':visible'))
         $('#menu').show();
@@ -776,9 +780,9 @@ var lizMap = function() {
         select += '<option value="'+baselayer.name+'">'+baselayer.name+'</option>';
         */
       if (blConfig)
-        select.push('<input type="radio" name="baselayers" value="'+blConfig.name+'">'+blConfig.title+'</input>');
+        select.push('<input type="radio" name="baselayers" value="'+blConfig.name+'"><span class="baselayer-radio-label">'+blConfig.title+'</span></input>');
       else
-        select.push('<input type="radio" name="baselayers" value="'+baselayer.name+'">'+baselayer.name+'</input>');
+        select.push('<input type="radio" name="baselayers" value="'+baselayer.name+'"><span class="baselayer-radio-label">'+baselayer.name+'</span></input>');
     }
     //select += '</select>';
     select = select.join('<br/>');
@@ -786,6 +790,11 @@ var lizMap = function() {
     if (baselayers.length!=0) {
       // active the select element for baselayers
       $('#baselayer-select-input').append(select);
+      $('.baselayer-radio-label')
+      .css('cursor', 'pointer')
+      .click(function(){
+        $(this).prev().click();
+      });
       $('#baselayer-select-input input').change(function(){
         var val = $(this).val();
         map.setBaseLayer(map.getLayersByName(val)[0]);
@@ -1091,6 +1100,12 @@ var lizMap = function() {
                         true,
                         function() {
                           map.removePopup(this);
+                          if(mCheckMobile()){
+                            $('#navbar').show();
+                            $('#overview-box').show();
+                          }
+
+
                         }
                         );
                       popup.panMapIfOutOfView = true;
@@ -1104,6 +1119,13 @@ var lizMap = function() {
                       if($('#liz_layer_popup').height()<contentDivHeight) {
                         $('#liz_layer_popup .olPopupCloseBox').css('right','14px');
                       }
+                      // Hide navbar and overview in mobile mode
+                      if(mCheckMobile()){
+                        $('#navbar').hide();
+                        $('#overview-box').hide();
+                      }
+
+
                     }
                 }
             }
@@ -1170,7 +1192,7 @@ var lizMap = function() {
    * {Boolean} True if in mobile context.
    */
   function mCheckMobile() {
-    var minMapSize = 300;
+    var minMapSize = 450;
     var w = $('body').parent()[0].offsetWidth;
     var leftW = w - minMapSize;
     if(leftW < minMapSize || w < minMapSize)
