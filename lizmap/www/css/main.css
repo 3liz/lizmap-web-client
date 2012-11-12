@@ -49,9 +49,10 @@ body {
   top: 75px;
   z-index: 1030;
   margin-bottom: 0px;
-  overflow: visible;
+  overflow: auto;
+  white-space:nowrap;
   background-color:#93C01F;
-  font-size:0.8em;
+  font-size:0.75em;
 }
 .navbar-fixed-top .navbar-inner, .navbar-fixed-bottom .navbar-inner {padding: 0px 10px;}
 .navbar-inner {
