@@ -20,7 +20,9 @@ only screen and (   min--moz-device-pixel-ratio: 2),
 only screen and (     -o-min-device-pixel-ratio: 2/1),
 only screen and (        min-device-pixel-ratio: 2),
 only screen and (                min-resolution: 192dpi),
-only screen and (                min-resolution: 2dppx) {
+only screen and (                min-resolution: 2dppx),
+only screen and (                   max-height : 640px) ,
+only screen and (                   max-device-height : 640px) {
 
   /* Retina-specific stuff here */
   body{
