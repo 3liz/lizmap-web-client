@@ -1,3 +1,50 @@
+h1. Version 2.4.0 - 12 novembre 2012
+
+h2. Nouvelles fonctionnalités
+
+* *Gestion des documents* :
+Il est maintenant possible de *mettre à disposition des documents* à part de Lizmap. Tous les fichiers stockés dans le *répertoire media/* de chaque répertoire LizMap sont accessibles sur l'application Web. Cela permet par exemple de fournir un *lien vers un document* pdf en remplissant la propriété *Lien* d'une couche, ou bien d' *afficher des images ou du contenu HTML* dans les popups à partir des données d'une couche.
+
+* *Popups enrichies* :
+LizMap permet maintenant de configurer des popups riches à partir des couches vectorielles du projet QGIS:
+
+ * *Choix des couches* :
+Le plugin Lizmap permet de choisir pour quelles couches on souhaite proposer une fenêtre d'information (popup) sur la carte web. Une *case à cocher* permet d'activer ou de désactiver la popup pour chaque couche.
+ * *Gestion des documents* :
+la popup est construite avec les *valeurs des colonnes* de la couche pour l'élément cliqué. Pour chaque objet de la couche, si une colonne contient *un chemin relatif vers un document ou un fichier média* stocké dans le *répertoire /media* du répertoire LizMap, cette valeur sera remplacée par le contenu approprié : affichage d'une image, affichage du contenu d'un fichier texte ou d'un fichier HTML, affichage d'un lien vers un document pdf, etc. Cela permet de proposer des popup riches avec des colonnes créées spécifiquement dans ce but. Voir l'exemple de la couche *Tramway lines* "du projet de démonstration Montpellier":http://demo.3liz.com/lizmap/index.php/view/map?repository=montpellier&project=montpellier
+ * *Modèles d'affichage de la popup* :
+Pour aller plus loin, il est possible de configurer pour chaque couche *un modèle d'affichage, appelé aussi template*. Une fenêtre du plugin permet d'écrire un contenu en texte simple ou au format HTML). Les variables représentant les *noms des colonnes*, par exemple {$ma_colonne}, seront *remplacées par le contenu adéquate* : valeur de la colonne, ou contenu du fichier si la valeur est un chemin vers un fichier média ou un document. Ainsi l'utilisateur peut créer des *popups dynamiques enrichies* à partir des données de la couche. Voir l'exemple des couches *Districts* et *Bus lines* du "projet de démonstration Montpellier":http://demo.3liz.com/lizmap/index.php/view/map?repository=montpellier&project=montpellier
+ * *Modèle par défaut*
+Si aucun modèle d'affichage n'a été défini via le plugin, alors la popup affiche un tableau avec le nom et les valeurs des colonnes pour l'objet cliqué.
+
+
+* *Interface mobile* :
+L'interface de Lizmap s'adapte automatiquement aux écrans des *smartphones standards* et aux *smartphone avec écrans à haute définition* : Iphone 4 ou 5, Samsung Note, Nexus, etc.. On peut donc maintenant utiliser Lizmap pour *publier des cartes pour les appareils nomades*.
+Voici les changements majeurs qui ont été apportés:
+
+ * *mode "responsive"* : l'interface s'adapte de manière automatique lorsque on modifie la dimension de l'écran (notamment tourne l'écran d'une tablette ou d'un smartphone)
+ * *une entête plus petite* pour laisser plus de place à la carte
+ * *le menu légende est en plein écran*
+ * *le menu légende est caché par défaut* et un lien dans la barre horizontale de menu permet de basculer entre la carte et la légende.
+ * *les popups sont en quasi plein écran*. La barre d'échelle et les boutons de navigation sont masqués lorsqu'une popup est affichée
+ * *la carte miniature est masquée*
+
+h2. Améliorations
+
+* *Carte miniature* : La carte miniature est affichée par défaut au chargement de la carte. Il est bien sûr toujours possible de la masquer en cliquant sur la flèche située à droite de la barre d'échelle.
+
+* *Fonds de carte* : Cliquer sur le nom de la couche de fond actuelle ouvre le menu de choix du fond de carte. Il n'est plus nécessaire de cliquer sur la petite flèche située à droite. De même, pour sélectionner une couche de fond dans ce menu, un clic sur le nom d'une des couches suffit.
+
+h2. Corrections de bugs
+
+* *GetCapabilities* : Suppression d'un doublon dans l'entête de la réponse XML fournie par Lizmap, corrigeant un bug apparu dans la version 2.3.0.
+
+h2. Moteur
+
+* *Jelix*: montée de version de jelix 1.3.4 vers jelix 1.4.1.
+
+
+
 h1. Version 2.3.0 - 30 Octobre 2012
 
 h2. Nouvelles fonctionnalités
