@@ -1484,9 +1484,11 @@ lizMap.events.on({
     $('#toggleLegend').click(function(){
       if ($('#menu').is(':visible')) {
         $('.ui-icon-close-menu').click();
+        $('#metadata').hide();
       }
       else{
         $('.ui-icon-open-menu').click();
+        $('#metadata').hide();
       }
     });
 

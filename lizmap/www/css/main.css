@@ -53,7 +53,7 @@ body {
   background-color:#93C01F;
   font-size:0.8em;
 }
-
+.navbar-fixed-top .navbar-inner, .navbar-fixed-bottom .navbar-inner {padding: 0px 10px;}
 .navbar-inner {
   min-height:25px;
   padding: 0px 10px;

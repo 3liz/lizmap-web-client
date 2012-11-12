@@ -3,6 +3,7 @@
 {meta_html css $j_basepath.'css/bootstrap-responsive.css'}
 {meta_html css $j_basepath.'css/main.css'}
 {meta_html css $j_basepath.'css/admin.css'}
+{meta_html css $j_basepath.'css/media.css'}
 
 {meta_html csstheme 'css/main.css'}
 {meta_html csstheme 'css/admin.css'}
