@@ -1,3 +1,30 @@
+h1. Version 2.4.0 - 12 november 2012
+
+h2. New features
+
+* *Rich and configurable popups*:
+
+* *Media management*: Add a method which provides web acces to documents and media files stored in the media/ folder of each repository. The files stored in this folder can be used in the layer link property, and in the layer columns values to display text content or local images in the popup.
+
+h2. Improvements
+
+* *Responsive design*: Lizmap Web Client interface has been adapted to fit well on high definition smartphone screens (Samsung Note, Samsung Nexus, Iphone 4+, etc.). You can now use your smartphone to display full featured maps.
+
+* *Overview Map*: The overview map is displayed by default when loading the map. You can still hide it via the small arrow right to the scale bar.
+
+
+h2. Bug fixing
+
+* *GetCapabilities*: Remove duplicated XML header introduced in version 2.3.0
+
+h2. Engine
+
+* *Jelix (php framework)*: Upgrade to version 1.4.1
+
+
+
+
+
 h1. Version 2.3.0 - 30 October 2012
 
 h2. New features

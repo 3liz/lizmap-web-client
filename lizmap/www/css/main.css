@@ -49,8 +49,8 @@ body {
   top: 75px;
   z-index: 1030;
   margin-bottom: 0px;
-  overflow: auto;
-  white-space:nowrap;
+  overflow: visible;
+/*  white-space:nowrap;*/
   background-color:#93C01F;
   font-size:0.75em;
 }
