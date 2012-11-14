@@ -174,6 +174,9 @@ var lizMap = function() {
       $('#switcher').height(switcherMaxHeight).css('overflow','auto');
       */
     var h = $('body').parent()[0].clientHeight;
+    if(!h)
+        h = $('window').innerHeight();
+
     h = h - $('#header').height();
     h = h - $('#headermenu').height();
     $('#menu').height(h);
@@ -185,18 +188,19 @@ var lizMap = function() {
     h -= $('#switcher-menu').children().first().outerHeight(true);
 
     var sw = $('#switcher');
-    h -= parseInt(sw.css('margin-top'));
-    h -= parseInt(sw.css('margin-bottom'));
-    h -= parseInt(sw.css('padding-top'));
-    h -= parseInt(sw.css('padding-bottom'));
-    h -= parseInt(sw.css('border-top-width'));
-    h -= parseInt(sw.css('border-bottom-width'));
 
+    h -= (parseInt(sw.css('margin-top')) ? parseInt(sw.css('margin-top')) : 0 ) ;
+    h -= (parseInt(sw.css('margin-bottom')) ? parseInt(sw.css('margin-bottom')) : 0 ) ;
+    h -= (parseInt(sw.css('padding-top')) ? parseInt(sw.css('padding-top')) : 0 ) ;
+    h -= (parseInt(sw.css('padding-bottom')) ? parseInt(sw.css('padding-bottom')) : 0 ) ;
+    h -= (parseInt(sw.css('border-top-width')) ? parseInt(sw.css('border-top-width')) : 0 ) ;
+    h -= (parseInt(sw.css('border-bottom-width')) ? parseInt(sw.css('border-bottom-width')) : 0 ) ;
     var swp = sw.parent();
-    h -= parseInt(swp.css('padding-top'));
-    h -= parseInt(swp.css('padding-bottom'));
+    h -= (parseInt(swp.css('padding-top')) ? parseInt(swp.css('padding-top')) : 0 ) ;
+    h -= (parseInt(swp.css('padding-bottom')) ? parseInt(swp.css('padding-bottom')) : 0 ) ;
 
     $('#switcher').height(h);
+
 
   }
 
@@ -1194,6 +1198,8 @@ var lizMap = function() {
   function mCheckMobile() {
     var minMapSize = 450;
     var w = $('body').parent()[0].offsetWidth;
+    if($.browser.msie)
+        w = $('body').width();
     var leftW = w - minMapSize;
     if(leftW < minMapSize || w < minMapSize)
         return true;

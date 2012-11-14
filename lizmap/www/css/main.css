@@ -6,6 +6,20 @@ body {
   padding-bottom : 40px;
   background : #EFEFEF;
 }
+
+/* for ie 8*/
+a {
+  color: #2B2B2B\9;
+  text-decoration:none\9;
+}
+.active > a,
+a:focus,
+a:hover {
+  color:white\9;
+  text-decoration:none\9;
+}
+/* END for ie 8*/
+
 #header {
   height : 75px;
   position: fixed;
@@ -37,9 +51,6 @@ body {
   text-overflow:ellipsis;
 }
 
-#auth {
-  background: transparent;
-}
 
 #headermenu {
   height:25px;
@@ -54,11 +65,30 @@ body {
   background-color:#93C01F;
   font-size:0.75em;
 }
+
+#auth {
+  background: transparent;
+}
+
+
 .navbar-fixed-top .navbar-inner, .navbar-fixed-bottom .navbar-inner {padding: 0px 10px;}
 .navbar-inner {
   min-height:25px;
+  height:25px;
   padding: 0px 10px;
 }
+
+
+/*  for ie 8*/
+.navbar-inner ul {
+  height:25px\9;
+}
+/*  for ie 8*/
+.navbar-inner ul li{
+  display:inline\9;
+  padding: 0px 5px\9;
+}
+
 .navbar .nav > li > a {
   padding: 0px 10px;
 /*  color: #AAAAAA;*/
