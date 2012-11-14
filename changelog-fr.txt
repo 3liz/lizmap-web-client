@@ -1,4 +1,4 @@
-h1. Version 2.4.0 - 12 novembre 2012
+h1. Version 2.4.0 - 14 novembre 2012
 
 h2. Nouvelles fonctionnalités
 
@@ -38,6 +38,8 @@ h2. Améliorations
 h2. Corrections de bugs
 
 * *GetCapabilities* : Suppression d'un doublon dans l'entête de la réponse XML fournie par Lizmap, corrigeant un bug apparu dans la version 2.3.0.
+
+* *Interface sur Internet Explorer 8* : modification des CSS et du JavaScript pour corriger les problèmes d'affichage de la légende et du menu.
 
 h2. Moteur
 

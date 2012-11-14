@@ -1,4 +1,5 @@
-h1. Version 2.4.0 - 12 november 2012
+
+h1. Version 2.4.0 - 14 november 2012
 
 h2. New features
 
@@ -7,9 +8,12 @@ Add a method which provides web acces to *documents and media files stored in th
 
 * *Rich and configurable popups*:
 
- * *Choose the layers with popups*: The user can configure via Lizmap Plugin for which layers of the project a popup will be shown when clicking on the map. *Only the user defined layers* respond to a clic on the map.
- * *Media management*: If a path to a local media file has been defined as the content of a column for each layer feature, it will be automatically replaced by the appropriate content depending of the media type : images are displayed, documents are linked, the content of text files with plain text or with html content is displayed in the popup. See the layer *Tramway lines* for an example of how to configure this option.
- * *Full customisation of popup throug the plugin*: For each layer of the QGIS project, the user can write a template which will be used by Lizmap Web Client to display the popup content. The popup content will be dynamically created by replacing each column variable (e.g. {$mycolumn}) by the appropriate content (column value, or media content if the value of the column is a path to a local media file). See the layers *Districts* and *Bus lines* in the Montpellier example project provided.
+ * *Choose the layers with popups*:
+The user can configure via Lizmap Plugin for which layers of the project a popup will be shown when clicking on the map. *Only the user defined layers* respond to a clic on the map.
+ * *Media management*:
+If a path to a local media file has been defined as the content of a column for each layer feature, it will be automatically replaced by the appropriate content depending of the media type : images are displayed, documents are linked, the content of text files with plain text or with html content is displayed in the popup. See the layer *Tramway lines* for an example of how to configure this option.
+ * *Full customisation of popup throug the plugin*:
+For each layer of the QGIS project, the user can write a template which will be used by Lizmap Web Client to display the popup content. The popup content will be dynamically created by replacing each column variable (e.g. {$mycolumn}) by the appropriate content (column value, or media content if the value of the column is a path to a local media file). See the layers *Districts* and *Bus lines* in the Montpellier example project provided.
 
 * *Responsive design*:
 Lizmap Web Client interface has been adapted to fit well on *classical smartphones* with small screens and *high definition smartphone screens* (Samsung Note, Samsung Nexus, Iphone 4+, etc.). You can now use Lizmap Web Client to *publish maps for mobile devices*. Here are the major changes made to achieve this goal:
@@ -33,6 +37,8 @@ h2. Improvements
 h2. Bug fixing
 
 * *GetCapabilities*: Remove duplicated XML header introduced in version 2.3.0 which prevented Lizmap to work on some systems.
+
+* *Interface on Internet Explorer 8*: Adapt CSS and javascript to correct some bugs under IE8
 
 h2. Engine
 
