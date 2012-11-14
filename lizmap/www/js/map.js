@@ -1140,17 +1140,21 @@ var lizMap = function() {
         var layer, url;
         for(var i=0, len=candidates.length; i<len; ++i) {
             layer = candidates[i];
-            if(layer instanceof OpenLayers.Layer.WMS &&
+            if(layer instanceof OpenLayers.Layer.WMS  &&
                (!this.queryVisible || (layer.getVisibility() && layer.calculateInRange()))) {
-                url = OpenLayers.Util.isArray(layer.url) ? layer.url[0] : layer.url;
-                // if the control was not configured with a url, set it
-                // to the first layer url
-                if(this.drillDown === false && !this.url) {
-                    this.url = url;
-                }
-                if(this.drillDown === true || this.urlMatches(url)) {
-                    layers.push(layer);
-                }
+                 var configLayer = config.layers[layer.params['LAYERS']];
+                 if( configLayer && configLayer.popup && configLayer.popup == 'True'){
+                    url = OpenLayers.Util.isArray(layer.url) ? layer.url[0] : layer.url;
+                    // if the control was not configured with a url, set it
+                    // to the first layer url
+                    if(this.drillDown === false && !this.url) {
+                        this.url = url;
+                    }
+                    if(this.drillDown === true || this.urlMatches(url)) {
+                        layers.push(layer);
+                    }
+
+                 }
             }
         }
         return layers;

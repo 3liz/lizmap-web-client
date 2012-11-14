@@ -354,10 +354,18 @@ class serviceCtrl extends jController {
     foreach($xml->Layer as $layer){
       $layername = $layer['name'];
 
-      // Avoir layer if no popup asked for the user for it
-      if($configLayers->$layername->popup != 'True'){
+      // Avoid layer if no popup asked by the user for it
+      // or if no popup property
+      if(property_exists($configLayers->$layername, 'popup')){
+        if($configLayers->$layername->popup != 'True'){
+          continue;
+        }
+      }
+      else{
         continue;
       }
+
+
 
       // Get the template for the popup content
       $templateConfigured = False;

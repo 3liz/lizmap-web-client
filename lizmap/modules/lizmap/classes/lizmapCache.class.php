@@ -320,7 +320,7 @@ class lizmapCache {
 
       # save transparency if needed
       if(preg_match('#png#', $params['format'])){
-        imagesavealpha($orginal, true);
+        imagesavealpha($original, true);
         imagealphablending($image, false);
         $color = imagecolortransparent($image, imagecolorallocatealpha($image, 0, 0, 0, 127));
         imagefill($image, 0, 0, $color);
