@@ -3,7 +3,7 @@
 [services]
 wmsServerURL="http://127.0.0.1/cgi-bin/qgis_mapserv.fcgi"
 defaultRepository=montpellier
-cacheStorageType=sqlite
+cacheStorageType=file
 ;cacheStorageType=sqlite => store cached images in one sqlite file per repo/project/layer
 ;cacheStorageType=file => store cached images in one folder per repo/project/layer. The root folder is /tmp/
 cacheExpiration=0
@@ -26,6 +26,7 @@ debugMode=0
 [repository:montpellier]
 label="LizMap Demo"
 path="../install/qgis/"
+
 
 ; Example of a repository wich will have access control
 [repository:intranet]
