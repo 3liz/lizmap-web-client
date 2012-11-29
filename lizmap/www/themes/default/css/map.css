@@ -113,6 +113,9 @@
 }
 
 /*navbar*/
+#navbar {
+  font-size:0.9em;
+}
 #navbar div.slider{
   margin-top : 0.1em;
   margin-bottom : 0.4em;
