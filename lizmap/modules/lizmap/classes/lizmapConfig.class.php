@@ -25,7 +25,8 @@ class lizmapConfig{
     'cacheExpiration',
     'defaultRepository',
     'proxyMethod',
-    'debugMode'
+    'debugMode',
+    'cacheRootDirectory'
   );
   // Wms map server
   public $wmsServerURL = '';
@@ -37,6 +38,8 @@ class lizmapConfig{
   public $proxyMethod = '';
   // debug mode : none or log
   public $debugMode = '';
+  // debug mode : none or log
+  public $cacheRootDirectory = '';
 
   // REPOSITORIES
   // repository list
@@ -65,7 +68,8 @@ class lizmapConfig{
 
     // set generic parameters
     foreach($this->servicesPropertyList as $prop)
-      $this->$prop = $readConfigPath['services'][$prop];
+      if(isset($readConfigPath['services'][$prop]))
+        $this->$prop = $readConfigPath['services'][$prop];
 
     // Create the repository if needed
     if($new and $repository)

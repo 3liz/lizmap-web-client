@@ -16,12 +16,13 @@ debugMode=0
 ; debug mode
 ; on = print debug messages in lizmap/var/log/messages.log
 ; off = no lizmap debug messages
-
+cacheRootDirectory="/tmp/"
+; cache root directory where cache files will be stored
+; must be writable
 
 ;Repositories
 ;Each repository must be set in a separate section
 ;The section name must begin with the prefix "repository:"
-
 ; Example of public repository
 [repository:montpellier]
 label="LizMap Demo"
@@ -32,3 +33,6 @@ path="../install/qgis/"
 [repository:intranet]
 label="Lizmap Demo - Intranet"
 path="../install/qgis_intranet/"
+
+
+

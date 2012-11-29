@@ -160,11 +160,16 @@ class lizmapCache {
       $cacheExpiration = (int)$lizmapConfig->cacheExpiration;
       if(property_exists($configLayer, 'cacheExpiration'))
         $cacheExpiration = (int)$configLayer->cacheExpiration;
-
+      // Cache root directory
+      $cacheRootDirectory = $lizmapConfig->cacheRootDirectory;
+      if(!is_writable($cacheRootDirectory) or !is_dir($cacheRootDirectory)){
+        $cacheRootDirectory = sys_get_temp_dir();
+      }      
+      
       if($cacheStorageType == 'file'){
         // CACHE CONTENT INTO FILE SYSTEM
         // Directory where to store the cached files
-        $cacheDirectory = sys_get_temp_dir().'/'.$repository.'/'.$project.'/'.$layers.'/'.$crs.'/';
+        $cacheDirectory = $cacheRootDirectory.'/'.$repository.'/'.$project.'/'.$layers.'/'.$crs.'/';
 
         // Create directory if needed
         if(!file_exists($cacheDirectory))
@@ -189,7 +194,7 @@ class lizmapCache {
         // CACHE CONTENT INTO SQLITE DATABASE
 
         // Directory where to store the sqlite database
-        $cacheDirectory = sys_get_temp_dir().'/'.$repository.'/'.$project.'/';
+        $cacheDirectory = $cacheRootDirectory.'/'.$repository.'/'.$project.'/';
         if(!file_exists($cacheDirectory))
           mkdir($cacheDirectory, 0750, true); // Create directory if needed
         $cacheDatabase = $cacheDirectory.$layers.'_'.$crs.'.db';
