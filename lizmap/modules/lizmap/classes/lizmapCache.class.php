@@ -71,7 +71,7 @@ class lizmapCache {
       $info = curl_getinfo($ch);
       $mime = $info['content_type'];
       // Optionnal debug
-      if($debug or !curl_errno($ch))
+      if($debug or curl_errno($ch))
       {
         jLog::log('--> CURL: ' .json_encode($info));
       }
