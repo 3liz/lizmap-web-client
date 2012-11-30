@@ -58,14 +58,16 @@ class popup{
 
       // If a file containing text or html : get its content
       else if(preg_match($mediaTextRegex, $attributeValue)){
-        $lizmapCache = jClasses::getService('lizmap~lizmapCache');
-        $getRemoteData = $lizmapCache->getRemoteData(
-          $mediaUrl,
-          'curl',
-          0
-        );
-        $data = $getRemoteData[0];
-        $mime = $getRemoteData[1];
+        $data = '';
+        // Get full path to the file
+        jClasses::inc('lizmap~lizmapConfig');
+        $lizmapConfig = new lizmapConfig($repository);
+        $repositoryPath = realpath($lizmapConfig->repositoryData['path']);
+        $abspath = realpath($repositoryPath.'/'.$attributeValue);
+        if(preg_match("#^$repositoryPath/media/#", $abspath) and file_exists($abspath)){
+          $data = jFile::read($abspath);
+        }
+
         // Replace images src by full path
         $iUrl = jUrl::get(
           'view~media:getMedia',
