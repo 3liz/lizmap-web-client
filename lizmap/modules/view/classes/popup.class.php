@@ -23,6 +23,10 @@ class popup{
   */
   public function getHtmlFeatureAttribute($attributeName, $attributeValue, $repository, $project, $popupFeatureContent=Null){
 
+    // Force $attributeValue to be a string
+    $$attributeName = (string)$$attributeName;
+    $attributeValue = (string)$attributeValue;
+    
     // Regex to replace links, medias and images
     $urlRegex = '/(ftp|http|https):\/\/(\w+:{0,1}\w*@)?(\S+)(:[0-9]+)?(\/|\/([\w#!:.?+=&%@!\-\/]))?/';
     $emailRegex = '/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/';
@@ -98,6 +102,7 @@ class popup{
       );
       return $popupFeatureContent;
     }else{
+      // Return the modified attributeValue
       return $attributeValue;
     }
 

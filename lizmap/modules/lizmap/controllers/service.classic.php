@@ -386,16 +386,10 @@ class serviceCtrl extends jController {
           $popupFeatureContent = $popupTemplate;
 
           foreach($feature->Attribute as $attribute){
-            // Get the name
-            $attributeName = (string)$attribute['name'];
-
-            // Get and process the value if needed
-            $attributeValue = (string)$attribute['value'];
-
             // Replace #col and $col by colomn name and value
             $popupFeatureContent = $popupClass->getHtmlFeatureAttribute(
-              $attributeName,
-              $attributeValue,
+              $attribute['name'],
+              $attribute['value'],
               $lizmapConfig->repositoryKey,
               $project,
               $popupFeatureContent
