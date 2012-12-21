@@ -714,7 +714,8 @@ class configCtrl extends jController {
     $lizmapConfig = new lizmapConfig($repository);
 
     // Remove the cache for the repository
-    if(jFile::removeDir(sys_get_temp_dir().'/'.$lizmapConfig->repositoryKey));
+    $cacheRootDirectory = $lizmapConfig->cacheRootDirectory;
+    if(jFile::removeDir($cacheRootDirectory.'/'.$lizmapConfig->repositoryKey));
       jMessage::add(jLocale::get("admin~admin.cache.repository.removed", array($lizmapConfig->repositoryKey)));
 
     // Redirect to the index
