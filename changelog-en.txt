@@ -1,3 +1,17 @@
+h1. Version 2.4.1 - 21 november 2012
+
+h2. New features
+
+* *Cache* The directory where Lizmap stores the tiles cache can be configured in the Admin pannel, Lizmap Configuration > Services. The Apache user must have write access to the chosen cache root directory.
+
+h2. Bug fixing
+
+* *Admin interface* The font size is back to normal.
+
+* *Logs* No log are written for curl requests when there is no errors.
+
+* *Popups* : fixed 2 bugs which prevented Lizmap to display images in the popups when using */media/my/path/one_image/png* as a value in one of the column of the attribute table of a vector layer.
+
 
 h1. Version 2.4.0 - 14 november 2012
 

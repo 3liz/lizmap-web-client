@@ -1,3 +1,19 @@
+h1. Version 2.4.1 - 21 décembre 2012
+
+h2. Nouvelles fonctionnalités
+
+* *Cache* Le répertoire dans lequel le cache des tuiles de Lizmap est stocké peut être configuré via le panneau d'administration. Il faut choisir un répertoire dans lequel l'utilisateur Apache peut écrire.
+
+h2. Correction de bugs
+
+* *Interface admin* La taille des polices est de nouveau celle par défaut dans toute l'application. (Depuis la 2.4.0 les polices étaient trop grandes)
+
+* *Logs* Pas de log écrit dans lizmap/var/log/messages.log lorsque curl ne renvoit pas d'erreur, sauf si le mode debug est activé dans la configuration
+
+* *Popups* Correction de 2 bugs qui empêchaient d'afficher des images issues d'une valeur de type */media/mon/chemin/image.png* dans une colonne des attributs de la couche vectorielle.
+
+
+
 h1. Version 2.4.0 - 14 novembre 2012
 
 h2. Nouvelles fonctionnalités
