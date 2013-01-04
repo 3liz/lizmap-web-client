@@ -14,15 +14,17 @@ jacl2="index/jacl2.coord.ini.php"
 
 [modules]
 lizmap.access=2
-
 jauth.access=2
-
+master_admin.access=2
 jauthdb.access=2
-
 jauthdb.installparam=defaultuser
-
+jauthdb_admin.access=2
 jacl2db.access=2
 jacl2db.installparam=defaultuser
+jacl2db_admin.access=2
+admin.access=2
+[simple_urlengine_entrypoints]
+admin="jacl2db~*@classic, jauth~*@classic, jacl2db_admin~*@classic, jauthdb_admin~*@classic, master_admin~*@classic, admin~*@classic"
 [acl2]
 driver=db
 
