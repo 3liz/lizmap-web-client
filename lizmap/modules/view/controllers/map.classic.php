@@ -74,14 +74,14 @@ class mapCtrl extends jController {
     $configRead = jFile::read($configPath);
     $configOptions = json_decode($configRead)->options;
     if (property_exists($configOptions,'googleKey') && $configOptions->googleKey != '')
-      $rep->addJSLink('http://maps.google.com/maps/api/js?v=3.5&sensor=false&'.$configOptions->googleKey != '');
+      $rep->addJSLink('https://maps.google.com/maps/api/js?v=3.5&sensor=false&'.$configOptions->googleKey != '');
     elseif (
       (property_exists($configOptions,'googleStreets') && $configOptions->googleStreets == 'True') ||
       (property_exists($configOptions,'googleSatellite') && $configOptions->googleSatellite == 'True') ||
       (property_exists($configOptions,'googleHybrid') && $configOptions->googleHybrid == 'True') ||
       (property_exists($configOptions,'googleTerrain') && $configOptions->googleTerrain == 'True')
     )
-      $rep->addJSLink('http://maps.google.com/maps/api/js?v=3.5&sensor=false');
+      $rep->addJSLink('https://maps.google.com/maps/api/js?v=3.5&sensor=false');
 
     // Pass some configuration options to the web page through javascript var
     $rep->addJSCode("var dictionaryUrl = '".jUrl::get('view~translate:getDictionary', array('property'=>'map'))."';");

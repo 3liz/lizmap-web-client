@@ -1357,7 +1357,7 @@ var lizMap = function() {
  */
 lizMap.events.on({
     'treecreated':function(evt){
-       //alert('treecreated');
+       //console.log('treecreated');
        if ((('osmMapnik' in evt.config.options) && evt.config.options.osmMapnik == 'True') ||
            (('osmMapquest' in evt.config.options) && evt.config.options.osmMapquest == 'True') ||
            (('googleStreets' in evt.config.options) && evt.config.options.googleStreets == 'True') ||
@@ -1394,7 +1394,7 @@ lizMap.events.on({
 
     }
    ,'mapcreated':function(evt){
-       //alert('mapcreated')
+       //console.log('mapcreated');
        //adding baselayers
        var maxExtent = new OpenLayers.Bounds(OpenLayers.Projection.defaults['EPSG:3857'].maxExtent);
        if (('osmMapnik' in evt.config.options) && evt.config.options.osmMapnik == 'True') {
@@ -1427,7 +1427,6 @@ lizMap.events.on({
        }
        try {
        if (('googleTerrain' in evt.config.options) && evt.config.options.googleTerrain == 'True') {
-         evt.map.allOverlays = false;
          var gphy = new OpenLayers.Layer.Google(
              "Google Terrain",
              {type: google.maps.MapTypeId.TERRAIN, numZoomLevels: 16}
@@ -1439,9 +1438,9 @@ lizMap.events.on({
          };
          evt.config.layers['gphy'] = gphyCfg;
          evt.baselayers.push(gphy);
+         evt.map.allOverlays = false;
        }
        if (('googleSatellite' in evt.config.options) && evt.config.options.googleSatellite == 'True') {
-         evt.map.allOverlays = false;
          var gsat = new OpenLayers.Layer.Google(
              "Google Satellite",
              {type: google.maps.MapTypeId.SATELLITE, numZoomLevels: 21}
@@ -1453,9 +1452,9 @@ lizMap.events.on({
          };
          evt.config.layers['gsat'] = gsatCfg;
          evt.baselayers.push(gsat);
+         evt.map.allOverlays = false;
        }
        if (('googleHybrid' in evt.config.options) && evt.config.options.googleHybrid == 'True') {
-         evt.map.allOverlays = false;
          var ghyb = new OpenLayers.Layer.Google(
              "Google Hybrid",
              {type: google.maps.MapTypeId.HYBRID, numZoomLevels: 20}
@@ -1467,9 +1466,9 @@ lizMap.events.on({
          };
          evt.config.layers['ghyb'] = ghybCfg;
          evt.baselayers.push(ghyb);
+         evt.map.allOverlays = false;
        }
        if (('googleStreets' in evt.config.options) && evt.config.options.googleStreets == 'True') {
-         evt.map.allOverlays = false;
          var gmap = new OpenLayers.Layer.Google(
              "Google Streets", // the default
              {numZoomLevels: 20}
@@ -1481,9 +1480,12 @@ lizMap.events.on({
          };
          evt.config.layers['gmap'] = gmapCfg;
          evt.baselayers.push(gmap);
+         evt.map.allOverlays = false;
        }
        } catch(e) {
          //problems with google
+         var myError = e;
+         //console.log(myError);
        }
 
      }
