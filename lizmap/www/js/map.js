@@ -233,7 +233,17 @@ var lizMap = function() {
                   FORMAT: "image/png",
                   TRANSPARENT: "TRUE",
                   WIDTH: 150,
+                  LAYERFONTSIZE: 9,
+                  ITEMFONTSIZE: 9,
+                  SYMBOLSPACE: 1,
                   DPI: 96};
+    var layerConfig = config.layers[layer.name];
+    if (layerConfig.id==layerConfig.name)
+      legendParams['LAYERFONTBOLD'] = "TRUE";
+    else {
+      legendParams['LAYERFONTSIZE'] = 0;
+      legendParams['LAYERSPACE'] = 0;
+    }
     if (withScale)
       legendParams['SCALE'] = map.getScale();
     var legendParamsString = OpenLayers.Util.getParameterString(legendParams);
