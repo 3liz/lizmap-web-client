@@ -237,7 +237,7 @@ var lizMap = function() {
                   ITEMFONTSIZE: 9,
                   SYMBOLSPACE: 1,
                   DPI: 96};
-    var layerConfig = config.layers[layer.name];
+    var layerConfig = config.layers[layer.params['LAYERS']];
     if (layerConfig.id==layerConfig.name)
       legendParams['LAYERFONTBOLD'] = "TRUE";
     else {
