@@ -552,7 +552,7 @@ class serviceCtrl extends jController {
     if($go){
       $layers =  $qgsLoad->xpath('//legendlayer');
       foreach($layers as $layer){
-        if($layer->attributes()->drawingOrder and $layer->attributes()->drawingOrder > 0){
+        if($layer->attributes()->drawingOrder and $layer->attributes()->drawingOrder >= 0){
           $layersOrder[(string)$layer->attributes()->name] = (integer)$layer->attributes()->drawingOrder;
         }
       }

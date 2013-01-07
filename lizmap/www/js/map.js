@@ -286,6 +286,50 @@ var lizMap = function() {
   }
 
   /**
+   * PRIVATE function: getLayerOrder
+   * get the layer order and calculate it if it's a QGIS group
+   *
+   * Parameters:
+   * nested - {Object} a capability layer
+   *
+   * Dependencies:
+   * config
+   *
+   * Returns:
+   * {Integer} the layer's order
+   */
+  function getLayerOrder(nested) {
+    // there is no layersOrder in the project
+    if (!('layersOrder' in config))
+      return -1;
+
+    // the nested is a layer and not a group
+    if (nested.nestedLayers.length == 0)
+      if (nested.name in config.layersOrder)
+        return config.layersOrder[nested.name];
+      else
+        return -1;
+
+    // the nested is a group
+    var order = -1;
+    for (var i = 0, len = nested.nestedLayers.length; i<len; i++) {
+      var layer = nested.nestedLayers[i];
+      var lOrder = -1;
+      if (layer.nestedLayers.length != 0)
+        lOrder = getLayerScale(layer);
+      else if (layer.name in config.layersOrder)
+        lOrder = config.layersOrder[layer.name];
+      else
+        lOrder = -1;
+      if (lOrder != -1) {
+        if (order == -1 || lOrder < order)
+          order = lOrder;
+      }
+    }
+    return order;
+  }
+
+  /**
    * PRIVATE function: getLayerTree
    * get the layer tree
    * create OpenLayers WMS base or not layer {<OpenLayers.Layer.WMS>}
@@ -348,6 +392,7 @@ var lizMap = function() {
                ,gutter:5
                ,buffer:0
                ,singleTile:(layerConfig.singleTile == 'True')
+               ,order:getLayerOrder(layer)
               }));
         }
         else if (layerConfig.type == 'layer') {
@@ -361,6 +406,7 @@ var lizMap = function() {
                ,gutter:5
                ,buffer:0
                ,singleTile:(layerConfig.singleTile == 'True')
+               ,order:getLayerOrder(layer)
               }));
         }
         // creating the layer tre because it's a group, has children and is not a base layer
@@ -855,6 +901,9 @@ var lizMap = function() {
     }
 
     // adding layers to the map
+    layers.sort(function(a, b) {
+      return a.order > b.order ? 1 : -1;
+    });
     layers.reverse();
     for (var i=0,len=layers.length; i<len; i++) {
       var l = layers[i];
