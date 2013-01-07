@@ -533,9 +533,36 @@ class serviceCtrl extends jController {
 
     // Get the corresponding Qgis project configuration
     $configPath = $lizmapConfig->repositoryData['path'].$project.'.qgs.cfg';
-#print_r($configPath);
-
+    // Read Json content from config file
     $configRead = jFile::read($configPath);
+
+    // Read the QGIS project file to get the layer drawing order
+    // Get project data from XML .qgs
+    $layersOrder = array();    
+    $use_errors = libxml_use_internal_errors(true);
+    $go = true; $errorlist = array();
+    // Create a DOM instance
+    $qgsLoad = simplexml_load_file($lizmapConfig->repositoryData['path'].$project.'.qgs');
+    if(!$qgsLoad) {
+      foreach(libxml_get_errors() as $error) {
+        $errorlist[] = $error;
+      }
+      $go = false;
+    }
+    if($go){
+      $layers =  $qgsLoad->xpath('//legendlayer');
+      foreach($layers as $layer){
+        if($layer->attributes()->drawingOrder and $layer->attributes()->drawingOrder > 0){
+          $layersOrder[(string)$layer->attributes()->name] = (integer)$layer->attributes()->drawingOrder;
+        }
+      }
+    }
+    if(!empty($layersOrder)){
+      $configJson = json_decode($configRead);
+      $configJson->layersOrder = $layersOrder;
+      $configRead = json_encode($configJson);
+    }
+        
     $rep->content = $configRead;
 
     return $rep;
