@@ -24,7 +24,8 @@ jacl2db.installparam=defaultuser
 jacl2db_admin.access=2
 admin.access=2
 [simple_urlengine_entrypoints]
-admin="jacl2db~*@classic, jauth~*@classic, jacl2db_admin~*@classic, jauthdb_admin~*@classic, master_admin~*@classic, admin~*@classic"
+index="jauth~*@classic"
+admin="jacl2db~*@classic, jacl2db_admin~*@classic, jauthdb_admin~*@classic, master_admin~*@classic, admin~*@classic"
 [acl2]
 driver=db
 
