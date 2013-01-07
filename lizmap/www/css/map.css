@@ -499,6 +499,13 @@ body {
   border: 1px solid #C9C9C9 !important;
   color: black !important;
 }
+
+.lizmapPopup img{
+  border:none;
+  max-width: 300px;
+  width: expression(this.width > 300 ? "300px" : true);
+}
+
 .lizmapPopupContent{
   margin: 0px !important;
   padding: 0px !important;

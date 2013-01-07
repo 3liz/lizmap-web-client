@@ -37,14 +37,16 @@ class popup{
     // Remote urls and images
     if(preg_match($urlRegex, $attributeValue)){
       if(preg_match($imageRegex, $attributeValue))
-        $attributeValue = '<img src="'.$attributeValue.'" width="300" border="0"/>';
+        $attributeValue = '<img src="'.$attributeValue.'" border="0"/>';
       else
-        $attributeValue = '<a href="'.$attributeValue.'" target="_blank">'.$attributeValue.'</a>';
+        if(!$popupFeatureContent) // only if no template is passed by the user
+          $attributeValue = '<a href="'.$attributeValue.'" target="_blank">'.$attributeValue.'</a>';
     }
 
     // E-mail
     if(preg_match($emailRegex, $attributeValue))
-      $attributeValue = '<a href="mailto:'.$attributeValue.'"</td></tr>';
+      if(!$popupFeatureContent) // only if no template is passed by the user
+        $attributeValue = '<a href="mailto:'.$attributeValue.'"</td></tr>';
 
     // Media = file stored in the repository media folder
     if(preg_match($mediaRegex, $attributeValue)){
@@ -57,7 +59,10 @@ class popup{
 
       // Display if it is an image
       if(preg_match($imageRegex, $attributeValue)){
-        $attributeValue = '<img src="'.$mediaUrl.'" width="300" border="0"/>';
+        if(!$popupFeatureContent) // only if no template is passed by the user
+          $attributeValue = '<img src="'.$mediaUrl.'" border="0"/>';
+        else
+          $attributeValue = $mediaUrl;
       }
 
       // If a file containing text or html : get its content
