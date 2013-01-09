@@ -485,7 +485,11 @@ var lizMap = function() {
       html += '">'
 
       html += '<td><button class="checkbox" name="'+childConfig.type+'" value="'+child.name+'" title="'+dictionary['tree.button.checkbox']+'"></button>';
-      html += '<span class="label" title="'+childConfig.abstract+'">'+childConfig.title+'</span></td>';
+      html += '<span class="label" title="'+childConfig.abstract+'">'+childConfig.title+'</span>';
+
+      if (childConfig.type == 'layer')
+        html += '<span class="loading">&nbsp;</span>';
+      html += '</td>';
 
       var legendLink = '';
       if (childConfig.link)
@@ -908,6 +912,14 @@ var lizMap = function() {
     for (var i=0,len=layers.length; i<len; i++) {
       var l = layers[i];
       l.units = projection.proj.units;
+      l.events.on({
+        loadstart: function(evt) {
+          $('#layer-'+evt.object.name+' span.loading').addClass('loadstart');
+        },
+        loadend: function(evt) {
+          $('#layer-'+evt.object.name+' span.loading').removeClass('loadstart');
+        }
+      });
       map.addLayer(l);
       if (!l.isVisible)
         $('#switcher button.checkbox[name="layer"][value="'+l.name+'"]').click();

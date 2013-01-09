@@ -106,6 +106,22 @@
   background-position : -32px -64px;
 }
 
+#switcher .treeTable span.loading {
+  /*jquery-ui update*/
+  display: none;
+  line-height: 6px;
+  vertical-align: sub;
+  width: 19px;
+  height: 6px;
+  background-image : url("images/download_layer.gif");
+}
+#switcher .treeTable tr.liz-state-disabled span.loading {
+  display:none;
+}
+#switcher .treeTable span.loading.loadstart {
+  display:inline-block;
+}
+
 #baselayer-select-input {
   background : none repeat scroll 0% 0% rgb(240, 240, 240);
   border : solid 1px #DDD;
