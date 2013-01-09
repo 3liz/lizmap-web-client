@@ -308,23 +308,42 @@ body {
 #navbar .ui-state-default .ui-icon {
   background-image : url("images/sprite_20.png");
 }
-#navbar .ui-icon-pan {
+#navbar .ui-button-icon-only .ui-icon-pan {
   background-position : 0px -20px;
 }
-#navbar .ui-icon-zoom {
+#navbar .ui-button-icon-only .ui-icon-zoom {
   background-position : -20px -20px;
 }
 #navbar button.zoom-extent {
   margin-bottom : 0.4em;
 }
-#navbar .ui-icon-zoom-extent {
+#navbar .ui-button-icon-only .ui-icon-zoom-extent {
   background-position : -20px -40px;
 }
-#navbar .ui-icon-zoom-out {
+#navbar .ui-button-icon-only .ui-icon-zoom-out {
   background-position : -20px 0px;
 }
-#navbar .ui-icon-zoom-in {
+#navbar .ui-button-icon-only .ui-icon-zoom-in {
   background-position : 0px 0px;
+}
+#navbar div.history  button {
+  width : 1.2em;
+}
+#navbar .ui-button-icon-only .ui-icon-previous {
+  background-position : 0px -60px;
+  margin-left : -5px;
+  width : 15px;
+}
+#navbar .ui-button-icon-only.ui-state-usable .ui-icon-previous {
+  background-position : 0px -80px;
+}
+#navbar .ui-button-icon-only .ui-icon-next {
+  background-position : -25px -60px;
+  margin-left : -10px;
+  width : 15px;
+}
+#navbar .ui-button-icon-only.ui-state-usable .ui-icon-next {
+  background-position : -25px -80px;
 }
 
 #zoom-in-max-msg {

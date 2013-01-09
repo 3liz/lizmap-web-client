@@ -82,6 +82,7 @@
       <button class="zoom-in" title="{@view~map.navbar.zoomin.hover@}"></button><br/>
       <div class="slider" title="{@view~map.navbar.slider.hover@}"></div>
       <button class="zoom-out" title="{@view~map.navbar.zoomout.hover@}"></button>
+      <div class="history"><button class="previous" title="previous"/><button class="next" title="next"/></div>
       <span id="zoom-in-max-msg" class="ui-widget-content ui-corner-all" style="display:none;">{@view~map.message.zoominmax@}</span>
     </span>
     <div id="overview-box">

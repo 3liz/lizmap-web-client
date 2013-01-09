@@ -540,7 +540,7 @@ var lizMap = function() {
     // creating the map
     OpenLayers.Util.DEFAULT_PRECISION=20; // default is 14 : change needed to avoid rounding problem with cache
     map = new OpenLayers.Map('map'
-      ,{controls:[new OpenLayers.Control.Navigation(),new OpenLayers.Control.ZoomBox({alwaysZoom:true})]
+      ,{controls:[new OpenLayers.Control.Navigation(),new OpenLayers.Control.ZoomBox({alwaysZoom:true}), new OpenLayers.Control.NavigationHistory()]
        ,eventListeners:{
          zoomend: function(evt){
   // private treeTable
@@ -1065,6 +1065,53 @@ var lizMap = function() {
     }).removeClass("ui-corner-all")
     .click(function(){
       map.zoomOut();
+    });
+    $('#navbar div.history button.previous').button({
+      text:false,
+      icons:{primary: "ui-icon-previous"}
+    }).removeClass("ui-corner-all")
+    .click(function(){
+      var ctrl = map.getControlsByClass('OpenLayers.Control.NavigationHistory')[0];
+      if (ctrl && ctrl.previousStack.length != 0)
+        ctrl.previousTrigger();
+      if (ctrl && ctrl.previous.active)
+        $(this).addClass('ui-state-usable');
+      else
+        $(this).removeClass('ui-state-usable');
+      if (ctrl && ctrl.next.active)
+        $('#navbar div.history button.next').addClass('ui-state-usable');
+      else
+        $('#navbar div.history button.next').removeClass('ui-state-usable');
+    });
+    $('#navbar div.history button.next').button({
+      text:false,
+      icons:{primary: "ui-icon-next"}
+    }).removeClass("ui-corner-all")
+    .click(function(){
+      var ctrl = map.getControlsByClass('OpenLayers.Control.NavigationHistory')[0];
+      if (ctrl && ctrl.nextStack.length != 0)
+        ctrl.nextTrigger();
+      if (ctrl && ctrl.next.active)
+        $(this).addClass('ui-state-usable');
+      else
+        $(this).removeClass('ui-state-usable');
+      if (ctrl && ctrl.previous.active)
+        $('#navbar div.history button.previous').addClass('ui-state-usable');
+      else
+        $('#navbar div.history button.previous').removeClass('ui-state-usable');
+    });
+    map.events.on({
+      moveend : function() {
+        var ctrl = map.getControlsByClass('OpenLayers.Control.NavigationHistory')[0];
+        if (ctrl && ctrl.previousStack.length > 1)
+          $('#navbar div.history button.previous').addClass('ui-state-usable');
+        else
+          $('#navbar div.history button.previous').removeClass('ui-state-usable');
+        if (ctrl && ctrl.nextStack.length > 0)
+          $('#navbar div.history button.next').addClass('ui-state-usable');
+        else
+          $('#navbar div.history button.next').removeClass('ui-state-usable');
+      }
     });
   }
 
