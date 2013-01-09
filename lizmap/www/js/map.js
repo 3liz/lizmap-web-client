@@ -1194,8 +1194,8 @@ var lizMap = function() {
                         {
                          	'displayClass': 'olPopup lizmapPopup'
                           ,"autoSize": true
-	                        ,"size": new OpenLayers.Size(200, 200)
-	                        ,"minSize": new OpenLayers.Size(300, 300)
+//	                        ,"size": new OpenLayers.Size(200, 200)
+//	                        ,"minSize": new OpenLayers.Size(300, 300)
 	                        ,"maxSize": new OpenLayers.Size(500, 500)
 	                        ,"keepInMap": true
                          	,'contentDisplayClass': 'olPopupContent lizmapPopupContent'
