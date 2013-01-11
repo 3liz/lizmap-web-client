@@ -1,4 +1,6 @@
+{meta_html csstheme 'css/main.css'}
 {meta_html csstheme 'css/view.css'}
+{meta_html csstheme 'css/media.css'}
 
 {foreach $repositories as $r}
 <h2>{$r['title']}</h2>

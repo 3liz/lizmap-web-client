@@ -1,300 +1,123 @@
-#title h1 {
-  color : #AAAAAA;
+body {
+  margin : 0;
+  font-size : 1em;
+  font-family : century gothic, arial, sans serif;
+  padding-top : 100px;
+  padding-bottom : 40px;
+  background : #EFEFEF;
 }
-#title h2 {
+
+/* for ie 8*/
+a {
+  color: #2B2B2B\9;
+  text-decoration:none\9;
+}
+.active > a,
+a:focus,
+a:hover {
+  color:white\9;
+  text-decoration:none\9;
+}
+/* END for ie 8*/
+
+#header {
+  height : 75px;
+  position: fixed;
+  right: 0px;
+  left: 0px;
+  top: 0px;
+  z-index: 1030;
+  margin-bottom: 0px;
+  overflow: visible;
+  background : #2B2B2B;
+  color : #FBFBFB;
+  font-size:0.8em;
+}
+#logo {
+  float : left;
+  height : 60px;
+  margin-top : 10px;
+  margin-bottom : 10px;
+  margin-left : 20px;
+  margin-right : 20px;
+  background : url('img/logo.png') no-repeat;
+}
+#logo h1 {
+  margin-left : 85px;
+  font-size : 2.5em;
+/*  margin-top : 0.75em;*/
+  overflow:hidden;
+  white-space:nowrap;
+  text-overflow:ellipsis;
+}
+
+
+#headermenu {
+  height:25px;
+  position: fixed;
+  right: 0px;
+  left: 0px;
+  top: 75px;
+  z-index: 1030;
+  margin-bottom: 0px;
+  overflow: visible;
+/*  white-space:nowrap;*/
+  background-color:#93C01F;
+  font-size:0.75em;
+}
+
+#auth {
+  background: transparent;
+}
+
+
+.navbar-fixed-top .navbar-inner, .navbar-fixed-bottom .navbar-inner {padding: 0px 10px;}
+.navbar-inner {
+  min-height:25px;
+  height:25px;
+  padding: 0px 10px;
+}
+
+
+/*  for ie 8*/
+.navbar-inner ul {
+  height:25px\9;
+}
+/*  for ie 8*/
+.navbar-inner ul li{
+  display:inline\9;
+  padding: 0px 5px\9;
+}
+
+.navbar .nav > li > a {
+  padding: 0px 10px;
+/*  color: #AAAAAA;*/
+/*  text-shadow : 0px -1px 0px rgba(0,0,0,0.75);*/
+  color: #2B2B2B;
+  text-shadow:none;
+}
+.navbar .nav .active > a,
+.navbar .nav > li > a:focus ,
+.navbar .nav > li > a:hover {
+  text-decoration : none;
+  color: white;
+/*  text-shadow : 0px -1px 0px rgba(0,0,0,0.75);*/
+  text-shadow:none;
+}
+.navbar .nav li.dropdown.open > .dropdown-toggle,
+.navbar .nav li.dropdown.active > .dropdown-toggle,
+.navbar .nav li.dropdown.open.active > .dropdown-toggle {
   color : #585858;
+/*  text-shadow : 0px -1px 0px rgba(255,255,255,0.75);*/
+  text-shadow:none;
+}
+.navbar .nav > li > .dropdown-menu:after {
+  border-bottom: 6px solid #F5F5F5;
+}
+.dropdown-menu {
+  background-color: #F5F5F5;
 }
 
-#content .ui-icon {
-  background-image : url("images/sprite_menu.png");
-}
-#content .ui-icon-open-menu {
-  background-position : -16px -80px;
-  background-color : #F0F0F0;
-  cursor : pointer;
-}
-#content .ui-icon-close-menu {
-  background-position : 0px -96px;
-  cursor : pointer;
-}
-
-#metadata {
-  background-color:#EFEFEF;
-  color:grey;
-}
-
-#metadata h2{
-  color:#80B219;
-}
-
-#menu {
-  background : #F0F0F0;
-}
-#menu .ui-icon-zoom-open {
-  background-position : -16px -16px;
-}
-#menu h3 {
-  background : #2B2B2B;
-  color : #FBFBFB;
-  border-bottom : solid 1px #DDDDDD;
-  border-top : solid 1px #DDDDDD;
-}
-
-#map-content {
-  background : #F0F0F0;
-}
-
-#close-menu {
-  border-bottom : solid 1px #DDDDDD;
-}
-
-#baselayer-select {
-  border : solid 1px #606060;
-}
-
-#baselayer-select .button {
-  border-left : solid 1px #606060;
-  border-bottom : none;
-  border-top : none;
-  border-right : none;
-  background : #DDD;
-}
-
-#baselayer-select .button .ui-icon-triangle-1-e {
-  background-position : -32px -64px;
-}
-#baselayer-select .button .ui-icon-triangle-1-w {
-  background-position : -48px -64px;
-}
-
-#menu .ui-accordion-content {
-  background-color : white;
-  border : solid 1px rgb(251,216,80);
-}
-
-#switcher {
-  border : solid 1px #606060;
-}
-#switcher table {
-  width : 100%;
-}
-#switcher tr.liz-state-disabled span {
-  /*jquery-ui update*/
-  color:#AAA;
-}
-#switcher tr.liz-state-disabled button.ui-button-disabled {
-  cursor: default !important;
-  opacity:0.35;
-}
-#switcher tr.liz-layer.liz-state-disabled a.expander {
-  display:none;
-}
-#switcher button{
-  background: none;
-}
-
-#switcher div.legendGraphics{
-  background:white;
-}
-
-#switcher .treeTable tr.expanded td a.expander {
-  background-image : url("images/sprite_menu.png");
-  background-position : -16px -48px;
-}
-#switcher .treeTable tr.collapsed td a.expander {
-  background-image : url("images/sprite_menu.png");
-  background-position : -32px -64px;
-}
-
-#baselayer-select-input {
-  background : none repeat scroll 0% 0% rgb(240, 240, 240);
-  border : solid 1px #DDD;
-  border-left : none;
-}
-
-/*navbar*/
-#navbar div.slider{
-  margin-top : 0.1em;
-  margin-bottom : 0.4em;
-  margin-left : 1.0em;
-  background : #C81F2D;
-  border : solid 1px white;
-  width : 0.2em;
-}
-#navbar div.slider a{
-  width : 2.0em;
-  height : 0.1em;
-  left : -1em;
-  background : black;
-  border : solid 1px black;
-  cursor : move;
-}
-#navbar button.ui-button-icon-only{
-  height : 2.5em;
-  width : 2.5em;
-  margin-bottom : 0.1em;
-  background : #CE1F2D;
-  border : solid 1px white;
-}
-#navbar button.ui-state-select{
-  background-color : #3A3C3D;
-  cursor : default;
-}
-#navbar .ui-button-icon-only .ui-icon {
-  margin-left : -10px;
-  margin-top : -10px;
-  width : 20px;
-  height : 20px;
-}
-#navbar .ui-state-default .ui-icon {
-  background-image : url("images/sprite_20.png");
-}
-#navbar .ui-icon-pan {
-  background-position : 0px -20px;
-}
-#navbar .ui-icon-zoom {
-  background-position : -20px -20px;
-}
-#navbar button.zoom-extent {
-  margin-bottom : 0.4em;
-}
-#navbar .ui-icon-zoom-extent {
-  background-position : -20px -40px;
-}
-#navbar .ui-icon-zoom-out {
-  background-position : -20px 0px;
-}
-#navbar .ui-icon-zoom-in {
-  background-position : 0px 0px;
-}
-
-#zoom-in-max-msg {
-  position: absolute;
-  right: 40px;
-  top: 110px;
-  white-space: nowrap;
-  padding: 4px;
-}
-
-/*Loading window*/
-#loading {
-  height: 100px;
-  min-height: 100px;
-}
-
-/*Overview map*/
-#overview-bar {
-  width:220px;
-  background : none repeat scroll 0% 0% rgb(240, 240, 240);
-  border : solid 1px #606060;
-}
-
-#overview-bar .button {
-  border-left : solid 1px #606060;
-  border-bottom : none;
-  border-top : none;
-  border-right : none;
-  background : #DDD;
-}
-#overview-bar .ui-icon {
-  background-image : url("images/sprite_menu.png");
-}
-
-#overview-bar .button .ui-icon-triangle-1-s {
-  background-position : -16px 0px;
-}
-#overview-bar .button .ui-icon-triangle-1-n {
-  background-position : 0px 0px;
-}
-
-#overviewmap{
-  background : none repeat scroll 0% 0% rgb(240, 240, 240);
-  border : solid 1px #606060;
-  border-bottom : none;
-}
-.olControlOverviewMapContainer {
-  border:none;
-}
-.olControlOverviewMapElement {
-  border-radius:0;
-  /*jquery-ui update*/
-  background-color: rgb(240,240,240);
-}
-.olControlOverviewMapExtentRectangle {
-  /*jquery-ui update*/
-  border: 2px solid #59B4D4;
-}
-.olControlOverviewMapRectReplacement {
-  /*jquery-ui update*/
-  background-image:url(img/overview_replacement.gif);
-}
-
-#attribution-box {
-  bottom : 0;
-  right : 0;
-  background-color : rgba(255,255,255,0.7);
-  -webkit-border-top-left-radius: 1em;
-  -moz-border-top-left-radius: 1em;
-  border-top-left-radius: 1em;
-}
-.olLayerGooglePoweredBy.olLayerGoogleV3.gmnoprint {
-  display:none;
-}
-
-/**
- * Icones lizMap
- */
-  .liz-icon-check {
-    /* sprite de 16x16 mais button de 14x14 */
-    background-position : -48px -80px;
-    background-color : #0094D6;
-  }
-  .liz-icon-partial-check {
-    /* sprite de 16x16 mais button de 14x14 */
-    background-position: -32px -80px;
-    background-color : #0094D6;
-  }
-  .liz-state-disabled .liz-icon-check {
-    background-color : #B3B3B3;
-  }
-  .liz-state-disabled .liz-icon-partial-check {
-    background-color : #B3B3B3;
-  }
-  .liz-icon-legend-collapsed {
-    background-position: -32px -16px;
-  }
-  .liz-icon-legend-open {
-    background-position: -64px -16px;
-  }
-  .liz-icon-info {
-    background-position: 0px -80px;
-  }
-
-  .liz-icon-overview {
-    background-position: -208px -128px;
-  }
-  .liz-icon-switcher-open {
-    background-position: -16px -96px;
-  }
-  .liz-icon-switcher-collapsed {
-    background-position: 0 -96px;
-  }
-
-
-/*dialog wait*/
-.liz-dialog-wait {
-  background: #F6F6F6;
-  border: 1px solid #606060;
-  padding: 0;
-}
-.liz-dialog-wait .ui-dialog-titlebar{
-  background : #2B2B2B;
-  color : #FBFBFB;
-}
-.liz-dialog-wait .ui-dialog-titlebar-close{
-  display:none;
-}
-.ui-widget-overlay {
-  opacity : 0.8;
-  background : black;
+#content {
+  padding-top: 20px;
 }

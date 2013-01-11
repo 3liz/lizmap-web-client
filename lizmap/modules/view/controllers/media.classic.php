@@ -124,7 +124,8 @@ class mediaCtrl extends jController {
     // Get the project
     $project = $this->param('project');
     // default illustration
-    $rep->fileName = jApp::wwwPath().'css/img/250x250_mappemonde.png';
+    $themePath = jApp::wwwPath().'themes/'.jApp::config()->theme.'/';
+    $rep->fileName = $themePath.'css/img/250x250_mappemonde.png';    
     // get project illustration if exists
     if($project){
       $imageTypes = array('jpg', 'jpeg', 'png', 'gif');

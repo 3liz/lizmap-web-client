@@ -1,4 +1,5 @@
 {meta_html csstheme 'css/main.css'}
+{meta_html csstheme 'css/media.css'}
 
 <div id="header">
   <div id="logo">
