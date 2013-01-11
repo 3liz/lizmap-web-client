@@ -97,7 +97,7 @@
     </div>
     <div id="attribution-box">
       <span id="attribution"></span>
-      {image 'css/img/logo_footer.png'}
+      {image $j_themepath.'css/img/logo_footer.png'}
     </div>
   </div>
 
