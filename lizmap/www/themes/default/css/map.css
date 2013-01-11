@@ -109,10 +109,10 @@
 #switcher .treeTable span.loading {
   /*jquery-ui update*/
   display: none;
-  line-height: 6px;
+  line-height: 10px;
   vertical-align: sub;
-  width: 19px;
-  height: 6px;
+  width: 10px;
+  height: 10px;
   background-image : url("images/download_layer.gif");
 }
 #switcher .treeTable tr.liz-state-disabled span.loading {

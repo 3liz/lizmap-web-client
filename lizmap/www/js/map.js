@@ -486,7 +486,9 @@ var lizMap = function() {
 
       html += '<td><button class="checkbox" name="'+childConfig.type+'" value="'+child.name+'" title="'+dictionary['tree.button.checkbox']+'"></button>';
       html += '<span class="label" title="'+childConfig.abstract+'">'+childConfig.title+'</span>';
+      html += '</td>';
 
+      html += '<td>';
       if (childConfig.type == 'layer')
         html += '<span class="loading">&nbsp;</span>';
       html += '</td>';
