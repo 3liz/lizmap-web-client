@@ -175,8 +175,11 @@ body {
 
 #switcher {
   overflow : auto;
-  padding-left : 19px;
   border : solid 1px #606060;
+}
+#switcher > div {
+  padding-left : 19px;
+  margin-bottom:25px;
 }
 #switcher table {
   width : 100%;

@@ -458,6 +458,58 @@ var lizMap = function() {
   }
 
   /**
+   * PRIVATE function: getSwitcherLine
+   * get the html table line <tr> of a config node for the switcher
+   *
+   * Parameters:
+   * aNode - {Object} a config node
+   *
+   * Returns:
+   * {String} the <tr> html corresponding to the node
+   */
+  function getSwitcherLine(aNode, aParent) {
+    var html = '';
+
+    var nodeConfig = aNode.config;
+    html += '<tr id="'+nodeConfig.type+'-'+aNode.name+'"';
+    html += ' class="liz-'+nodeConfig.type;
+    if (aParent)
+      html += ' child-of-group-'+aParent.name;
+    if (('children' in aNode) && aNode['children'].length!=0)
+      html += ' expanded parent';
+    html += '">';
+
+    html += '<td><button class="checkbox" name="'+nodeConfig.type+'" value="'+aNode.name+'" title="'+dictionary['tree.button.checkbox']+'"></button>';
+    html += '<span class="label" title="'+nodeConfig.abstract+'">'+nodeConfig.title+'</span>';
+    html += '</td>';
+
+    html += '<td>';
+    if (nodeConfig.type == 'layer')
+      html += '<span class="loading">&nbsp;</span>';
+    html += '</td>';
+
+    var legendLink = '';
+    if (nodeConfig.link)
+      legendLink = nodeConfig.link;
+    if (legendLink != '' )
+      html += '<td><button class="link" name="link" title="'+dictionary['tree.button.link']+'" value="'+legendLink+'"/></td>';
+    else
+      html += '<td></td>';
+
+    html += '</tr>';
+
+    if (nodeConfig.type == 'layer') {
+      var url = getLayerLegendGraphicUrl(aNode.name, false);
+
+      html += '<tr id="legend-'+aNode.name+'" class="child-of-layer-'+aNode.name+' legendGraphics">';
+      html += '<td colspan="2"><div class="legendGraphics"><img src="'+url+'"/></div></td>';
+      html += '</tr>';
+    }
+
+    return html;
+  }
+
+  /**
    * PRIVATE function: getSwitcherNode
    * get the html of a config node for the switcher
    *
@@ -465,58 +517,70 @@ var lizMap = function() {
    * aNode - {Object} a config node
    *
    * Returns:
-   * {String} the <ul> html corresponding to the node
+   * {String} the html corresponding to the node
    */
   function getSwitcherNode(aNode,aLevel) {
     var html = '';
-    if (aLevel == 0)
-      html += '<table id="switcher-tree">';
+    if (aLevel == 0
+     && ('rootGroupsAsBlock' in config.options)
+     && config.options['rootGroupsAsBlock'] == 'True') {
+      var children = aNode.children;
+      var previousSibling;
+      for (var i=0, len=children.length; i<len; i++) {
+        var child = children[i];
+        if (('children' in child) && child['children'].length!=0) {
+          if (previousSibling && ( (('children' in previousSibling) && previousSibling['children'].length==0) || !('children' in previousSibling)) ) {
+            html += '</table>';
+            html += '</div>';
+          }
+          html += '<div class="'+child.name+'">';
+          html += '<table class="tree">';
+          var grandChildren = child.children;
+          for (var j=0, jlen=grandChildren.length; j<jlen; j++) {
+            var grandChild = grandChildren[j];
+            html += getSwitcherLine(grandChild);
+
+            if (('children' in grandChild) && grandChild['children'].length!=0)
+              html += getSwitcherNode(grandChild, aLevel+1);
+          }
+          html += '</table>';
+          html += '</div>';
+        } else {
+          if (previousSibling && ('children' in previousSibling) && previousSibling['children'].length!=0) {
+            html += '<div class="no-group">';
+            html += '<table class="tree">';
+          }
+          html += getSwitcherLine(child);
+        }
+        previousSibling = child;
+      }
+      if ((('children' in previousSibling) && previousSibling['children'].length==0) || !('children' in previousSibling)) {
+        html += '</table>';
+        html += '</div>';
+      }
+      return html;
+    }
+    if (aLevel == 0) {
+      html += '<div class="no-group">';
+      html += '<table class="tree">';
+    }
 
     var children = aNode.children;
     for (var i=0, len=children.length; i<len; i++) {
       var child = children[i];
-      var childConfig = child.config;
-      html += '<tr id="'+childConfig.type+'-'+child.name+'"';
-      html += ' class="liz-'+childConfig.type;
-      if (aLevel != 0)
-        html += ' child-of-group-'+aNode.name;
-      if (('children' in child) && child['children'].length!=0)
-        html += ' expanded parent';
-      html += '">'
-
-      html += '<td><button class="checkbox" name="'+childConfig.type+'" value="'+child.name+'" title="'+dictionary['tree.button.checkbox']+'"></button>';
-      html += '<span class="label" title="'+childConfig.abstract+'">'+childConfig.title+'</span>';
-      html += '</td>';
-
-      html += '<td>';
-      if (childConfig.type == 'layer')
-        html += '<span class="loading">&nbsp;</span>';
-      html += '</td>';
-
-      var legendLink = '';
-      if (childConfig.link)
-        legendLink = childConfig.link;
-      if (legendLink != '' )
-        html += '<td><button class="link" name="link" title="'+dictionary['tree.button.link']+'" value="'+legendLink+'"/></td>';
+      if (aLevel == 0)
+        html += getSwitcherLine(child);
       else
-        html += '<td></td>';
-
-      html += '</tr>';
-
-      if (childConfig.type == 'layer') {
-          var url = getLayerLegendGraphicUrl(child.name, false);
-
-          html += '<tr id="legend-'+child.name+'" class="child-of-layer-'+child.name+' legendGraphics">';
-          html += '<td colspan="2"><div class="legendGraphics"><img src="'+url+'"/></div></td>';
-          html += '</tr>';
-      }
+        html += getSwitcherLine(child,aNode);
 
       if (('children' in child) && child['children'].length!=0)
         html += getSwitcherNode(child, aLevel+1);
     }
 
-    if (aLevel == 0)
+    if (aLevel == 0) {
       html += '</table>';
+      html += '</div>';
+    }
     return html;
   }
 
@@ -659,13 +723,12 @@ var lizMap = function() {
   }
 
   /**
-   * PRIVATE function: createSwitcher
    * create the layer switcher
    */
   function createSwitcher() {
     // set the switcher content
     $('#switcher').html(getSwitcherNode(tree,0));
-    $('#switcher-tree').treeTable({
+    $('#switcher table.tree').treeTable({
       onNodeShow: function() {
         //updateSwitcherSize();
         var self = $(this);
@@ -1444,7 +1507,7 @@ var lizMap = function() {
           $('#navbar div.slider').slider("value",map.getZoom());
           map.events.on({
             zoomend : function() {
-              $('#switcher-tree tr.legendGraphics.initialized').each(function() {
+              $('#switcher table.tree tr.legendGraphics.initialized').each(function() {
                 var self = $(this);
                 var name = self.attr('id').replace('legend-','');
                 var url = getLayerLegendGraphicUrl(name, true);
