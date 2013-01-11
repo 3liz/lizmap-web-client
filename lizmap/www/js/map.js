@@ -351,9 +351,12 @@ var lizMap = function() {
       var layerConfig = config.layers[layer.name];
       var layerName = cleanName(layer.name);
 
+      if (layer.name.toLowerCase() == 'hidden')
+        continue;
+
       // if the layer is not the Overview and had a config
       // creating the {<OpenLayers.Layer.WMS>} and the tree node
-      if (layer.name!='Overview' && layerConfig) {
+      if (layer.name.toLowerCase() != 'Overview' && layerConfig) {
         var node = {name:layerName,config:layerConfig,parent:pNode};
         var service = wmsServerURL;
         var layerWmsParams = {
