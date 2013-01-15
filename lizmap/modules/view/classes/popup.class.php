@@ -60,7 +60,7 @@ class popup{
       // Display if it is an image
       if(preg_match($imageRegex, $attributeValue)){
         if(!$popupFeatureContent) // only if no template is passed by the user
-          $attributeValue = '<img src="'.$mediaUrl.'" border="0"/>';
+          $attributeValue = '<a href="'.$mediaUrl.'" target="_blank"><img src="'.$mediaUrl.'" border="0"/></a>';
         else
           $attributeValue = $mediaUrl;
       }

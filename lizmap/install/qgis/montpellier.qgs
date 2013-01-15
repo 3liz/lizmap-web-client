@@ -5,9 +5,9 @@
         <units>degrees</units>
         <extent>
             <xmin>3.378578</xmin>
-            <ymin>43.473373</ymin>
+            <ymin>43.250769</ymin>
             <xmax>4.371969</xmax>
-            <ymax>43.754406</ymax>
+            <ymax>43.977010</ymax>
         </extent>
         <projections>1</projections>
         <destinationsrs>
@@ -71,33 +71,33 @@
         </legendgroup>
     </legend>
     <Composer title="Composeur1" visible="0">
-        <ComposerLabel valign="128" labelText="LizMap&#xa;&#xa;An example PDF output from QGIS composer.&#xa;This PDF file will be available by clicling on the (i) link right to the tramway layer" halign="4" margin="1">
-            <LabelFont description="Ubuntu,12,-1,5,75,0,0,0,0,0"/>
-            <FontColor red="0" blue="0" green="0"/>
-            <ComposerItem width="180.6570665152423" x="52.50124069478908" y="3.307210031347962" rotation="0" height="44.64733542319749" frame="true" outlineWidth="0.3" zValue="5" lastValidViewScaleFactor="2.704697986577181" id="" positionLock="false">
-                <FrameColor alpha="255" red="0" blue="0" green="0"/>
-                <BackgroundColor alpha="255" red="255" blue="255" green="255"/>
-            </ComposerItem>
-        </ComposerLabel>
         <ComposerMap keepLayerSet="false" id="0" previewMode="Cache" drawCanvasItems="true">
-            <Extent ymin="43.60164721352984" xmin="3.858432698450044" ymax="43.62135397716985" xmax="3.893970770937688"/>
+            <Extent ymin="43.6016" xmin="3.85843" ymax="43.6214" xmax="3.89397"/>
             <LayerSet/>
             <Grid gridStyle="0" crossLength="3" penColorRed="0" penColorBlue="0" intervalX="0" offsetX="0" intervalY="0" offsetY="0" show="0" penWidth="0" penColorGreen="0">
                 <Annotation direction="0" precision="3" position="1" frameDistance="1" show="0" font="Ubuntu,11,-1,5,50,0,0,0,0,0"/>
             </Grid>
-            <ComposerItem width="278.435736677116" x="4" y="50.60031347962383" rotation="0" height="154.3996865203762" frame="true" outlineWidth="0.3" zValue="2" lastValidViewScaleFactor="2.704697986577181" id="" positionLock="false">
+            <ComposerItem width="278.436" x="4" y="50.6003" rotation="0" height="154.4" frame="true" outlineWidth="0.3" zValue="2" lastValidViewScaleFactor="2.7047" id="" positionLock="false">
                 <FrameColor alpha="255" red="0" blue="0" green="0"/>
                 <BackgroundColor alpha="255" red="255" blue="255" green="255"/>
             </ComposerItem>
         </ComposerMap>
-        <ComposerPicture pictureWidth="41.41270798167349" file="./media/logo_osm.png" pictureHeight="35.38382585156778" mapId="-1">
-            <ComposerItem width="41.41270798167349" x="245.8684863523573" y="10.35235732009926" rotation="0" height="35.38382585156778" frame="false" outlineWidth="0.3" zValue="4" lastValidViewScaleFactor="2.704697986577181" id="" positionLock="false">
+        <ComposerLabel valign="128" labelText="LizMap&#xa;&#xa;An example PDF output from QGIS composer.&#xa;This PDF file will be available by clicling on the (i) link right to the tramway layer" halign="4" margin="1">
+            <LabelFont description="Ubuntu,12,-1,5,75,0,0,0,0,0"/>
+            <FontColor red="0" blue="0" green="0"/>
+            <ComposerItem width="180.657" x="52.5012" y="3.30721" rotation="0" height="44.6473" frame="true" outlineWidth="0.3" zValue="5" lastValidViewScaleFactor="2.7047" id="" positionLock="false">
+                <FrameColor alpha="255" red="0" blue="0" green="0"/>
+                <BackgroundColor alpha="255" red="255" blue="255" green="255"/>
+            </ComposerItem>
+        </ComposerLabel>
+        <ComposerPicture pictureWidth="41.4127" file="./media/logo_osm.png" pictureHeight="35.3838" mapId="-1">
+            <ComposerItem width="41.4127" x="245.868" y="10.3524" rotation="0" height="35.3838" frame="false" outlineWidth="0.3" zValue="4" lastValidViewScaleFactor="2.7047" id="" positionLock="false">
                 <FrameColor alpha="255" red="0" blue="0" green="0"/>
                 <BackgroundColor alpha="255" red="255" blue="255" green="255"/>
             </ComposerItem>
         </ComposerPicture>
-        <ComposerPicture pictureWidth="38.06653468889289" file="/home/kimaidou/Documents/3liz/LOGOS/LOGOS/CARRE/WEB/Logo_car_coul.png" pictureHeight="39.62552019726657" mapId="-1">
-            <ComposerItem width="38.06653468889289" x="5.561256874382536" y="5.915632754342429" rotation="0" height="39.62552019726657" frame="false" outlineWidth="0.3" zValue="3" lastValidViewScaleFactor="2.704697986577181" id="" positionLock="false">
+        <ComposerPicture pictureWidth="38.0665" file="/home/kimaidou/Documents/3liz/LOGOS/LOGOS/CARRE/WEB/Logo_car_coul.png" pictureHeight="39.6255" mapId="-1">
+            <ComposerItem width="38.0665" x="5.56126" y="5.91563" rotation="0" height="39.6255" frame="false" outlineWidth="0.3" zValue="3" lastValidViewScaleFactor="2.7047" id="" positionLock="false">
                 <FrameColor alpha="255" red="0" blue="0" green="0"/>
                 <BackgroundColor alpha="255" red="255" blue="255" green="255"/>
             </ComposerItem>
