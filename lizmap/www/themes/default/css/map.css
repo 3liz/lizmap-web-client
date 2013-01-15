@@ -131,7 +131,6 @@ body {
 #locate div.locate-layer {
   width : 100%;
   overflow: hidden;
-  line-height : 2;
   border : solid 1px #606060;
   position : relative;
   background: url(images/123_click.png) no-repeat right;
@@ -140,13 +139,18 @@ body {
 #locate div.locate-layer select {
   background: transparent;
   width : 110%;
-  line-height : 2;
+  text-shadow: none;
   border: 0;
   border-radius: 0;
   padding : 0em 0.5em;
   margin :  0em;
   color : rgb(51,51,51);
   height: 20px;
+  cursor: pointer;
+}
+
+#locate div.locate-layer select option {
+  font-weight: normal;
 }
 
 #locate div.locate-layer .button {
@@ -169,13 +173,9 @@ body {
 
 #baselayer-select {
   width : 100%;
-  line-height : 2;
   border : solid 1px #606060;
   position : relative;
-  /*
-  display : block;
-  padding : 0.5em 0.5em 0.5em 0.7em;
-   */
+  cursor: pointer;
 }
 
 #baselayer-select .label {
@@ -184,6 +184,9 @@ body {
   color : rgb(51,51,51);
   background: none;
   text-shadow : none;
+  line-height: 16px;
+  height : 20px;
+  display:block;
 }
 
 #baselayer-select .button {

@@ -55,22 +55,9 @@
     </div>
     <div id="toolbar" style="height:0; display:none;"></div>
     <div id="locate-menu" style="display:none;">
-      <h3><span class="ui-icon ui-icon-locate-open"></span><span class="title">{@view~map.locatemenu.title@}</span></h3>
+      <h3><span class="title">{@view~map.locatemenu.title@}</span></h3>
       <div class="menu-content">
         <div id="locate">
-          <div class="locate-layer">
-          <select>
-            <option value="foo">Foo</option>
-            <option value="bar">Bar</option>
-          </select>
-          </div>
-          <br/>
-          <div class="locate-layer">
-          <select>
-            <option value="foo">Foo</option>
-            <option value="bar">Bar</option>
-          </select>
-          </div>
         </div>
       </div>
     </div>

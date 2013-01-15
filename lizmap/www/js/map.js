@@ -746,16 +746,19 @@ var lizMap = function() {
         return a.properties[locate.fieldName].localeCompare(b.properties[locate.fieldName]);
       });
       var lConfig = config.layers[aName];
-      var options = '<option value="0">'+lConfig.title+' layer</option>';
+      var options = '<option value="-1">'+lConfig.title+'</option>';
       for (var i=0, len=features.length; i<len; i++) {
         var feat = features[i];
         locate.features[feat.id.toString()] = feat;
         options += '<option value="'+feat.id+'">'+feat.properties[locate.fieldName]+'</option>';
       }
       $('#locate-layer-'+aName).html(options).change(function() {
+        var layer = map.getLayersByName('locatelayer')[0];
+        layer.destroyFeatures();
+        $('#locate select:not(#locate-layer-'+aName+')').val('-1');
         var proj = new OpenLayers.Projection(locate.crs);
         var val = parseInt($(this).val());
-        if (val == '0') {
+        if (val == '-1') {
           var bbox = new OpenLayers.Bounds(locate.bbox);
           bbox.transform(proj, map.getProjection());
           map.zoomToExtent(bbox);
@@ -765,6 +768,8 @@ var lizMap = function() {
           feat = format.read(feat)[0];
           feat.geometry.transform(proj, map.getProjection());
           map.zoomToExtent(feat.geometry.getBounds());
+          if (locate.displayGeom == 'True')
+            layer.addFeatures([feat]);
         }
         $(this).blur();
       });
@@ -1046,14 +1051,18 @@ var lizMap = function() {
       for (var lname in config.locateByLayer) {
         var lConfig = config.layers[lname];
         var html = '<div class="locate-layer">';
-        html += '<select id="locate-layer-'+lname+'">';
-        html += '<option>'+lConfig.title+' loading...</option>';
+        html += '<select id="locate-layer-'+lname+'" class="label">';
+        html += '<option>'+lConfig.title+'...</option>';
         html += '</select>';
         html += '</div>';
         //constructing the select
         locateContent.push(html);
       }
+      if (locateContent.length != 0)
+        locateContent.push('<button class="btn-locate-clear btn btn-small" type="button">Clear!</button>');
       $('#locate').html(locateContent.join('<br/>'));
+      map.addLayer(new OpenLayers.Layer.Vector('locatelayer',{
+      }));
       $.get(wmsServerURL,{
           'SERVICE':'WFS'
          ,'VERSION':'1.0.0'
@@ -1078,6 +1087,11 @@ var lizMap = function() {
         for (var lname in config.locateByLayer) {
           getLocateFeature(lname);
         }
+        $('#locate button.btn-locate-clear').click(function() {
+          var layer = map.getLayersByName('locatelayer')[0];
+          layer.destroyFeatures();
+          $('#locate select').val('-1');
+        });
       },'xml');
       $('#locate-menu').show();
     }
