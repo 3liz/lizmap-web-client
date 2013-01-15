@@ -1713,20 +1713,6 @@ lizMap.events.on({
          evt.baselayers.push(mapquest);
        }
        try {
-       if (('googleTerrain' in evt.config.options) && evt.config.options.googleTerrain == 'True') {
-         var gphy = new OpenLayers.Layer.Google(
-             "Google Terrain",
-             {type: google.maps.MapTypeId.TERRAIN, numZoomLevels: 16}
-             );
-         gphy.maxExtent = maxExtent;
-         var gphyCfg = {
-           "name":"gphy"
-          ,"title":"Google Terrain"
-         };
-         evt.config.layers['gphy'] = gphyCfg;
-         evt.baselayers.push(gphy);
-         evt.map.allOverlays = false;
-       }
        if (('googleSatellite' in evt.config.options) && evt.config.options.googleSatellite == 'True') {
          var gsat = new OpenLayers.Layer.Google(
              "Google Satellite",
@@ -1753,6 +1739,20 @@ lizMap.events.on({
          };
          evt.config.layers['ghyb'] = ghybCfg;
          evt.baselayers.push(ghyb);
+         evt.map.allOverlays = false;
+       }
+       if (('googleTerrain' in evt.config.options) && evt.config.options.googleTerrain == 'True') {
+         var gphy = new OpenLayers.Layer.Google(
+             "Google Terrain",
+             {type: google.maps.MapTypeId.TERRAIN, numZoomLevels: 16}
+             );
+         gphy.maxExtent = maxExtent;
+         var gphyCfg = {
+           "name":"gphy"
+          ,"title":"Google Terrain"
+         };
+         evt.config.layers['gphy'] = gphyCfg;
+         evt.baselayers.push(gphy);
          evt.map.allOverlays = false;
        }
        if (('googleStreets' in evt.config.options) && evt.config.options.googleStreets == 'True') {
