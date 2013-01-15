@@ -1041,10 +1041,6 @@ var lizMap = function() {
 
     $('#switcherContainer').toggle();
 
-    config['locateByLayer'] = {
-      'tram_stops':{'fieldName':'name','displayGeom':'True'},
-      'Quartiers':{'fieldName':'LIBQUART','displayGeom':'True'}
-    };
     if ('locateByLayer' in config) {
       var locateContent = [];
       for (var lname in config.locateByLayer) {
