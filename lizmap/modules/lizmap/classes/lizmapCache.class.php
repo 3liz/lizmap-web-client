@@ -33,14 +33,16 @@ class lizmapCache {
     ksort($data);
 
     // Round bbox params to avoid rounding issues with cache
-    $bboxExp = explode(',', $data['bbox']);
-    $nBbox = array();
-    foreach($bboxExp as $val){
-      $val = (float)$val;
-      $val = round($val, 6);
-      $nBbox[] = (string)$val;
+    if (array_key_exists('bbox', $data)) {
+      $bboxExp = explode(',', $data['bbox']);
+      $nBbox = array();
+      foreach($bboxExp as $val){
+        $val = (float)$val;
+        $val = round($val, 6);
+        $nBbox[] = (string)$val;
+      }
+      $data['bbox'] = implode(',', $nBbox);
     }
-    $data['bbox'] = implode(',', $nBbox);
 
     return $data;
   }

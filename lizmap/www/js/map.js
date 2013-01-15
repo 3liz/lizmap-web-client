@@ -183,7 +183,7 @@ var lizMap = function() {
     //var h = $('#menu').height();
     h -= $('#close-menu').outerHeight(true);
     h -= $('#toolbar').outerHeight(true);
-    h -= $('#zoom-menu').outerHeight(true);
+    h -= $('#locate-menu').outerHeight(true);
     h -= $('#baselayer-menu').outerHeight(true);
     h -= $('#switcher-menu').children().first().outerHeight(true);
 
@@ -356,7 +356,7 @@ var lizMap = function() {
 
       // if the layer is not the Overview and had a config
       // creating the {<OpenLayers.Layer.WMS>} and the tree node
-      if (layer.name.toLowerCase() != 'Overview' && layerConfig) {
+      if (layer.name != 'Overview' && layerConfig) {
         var node = {name:layerName,config:layerConfig,parent:pNode};
         var service = wmsServerURL;
         var layerWmsParams = {
@@ -945,7 +945,7 @@ var lizMap = function() {
 				 text: false
 			})
 			.removeClass( "ui-corner-all" )
-			.addClass( "ui-autocomplete-button ui-button-icon" )
+			.addClass( "ui-autocomplete-button ui-button-icon" );
       $('#baselayer-select')
       .css('cursor', 'pointer')
       .click(function() {
@@ -994,6 +994,83 @@ var lizMap = function() {
     }
 
     $('#switcherContainer').toggle();
+
+    if ('locateByLayer' in config) {
+      var locateContent = [];
+      for (var lname in config.locateByLayer) {
+        var lConfig = config.layers[lname];
+        var html = '<div class="locate-layer">';
+        html += '<select id="locate-layer-'+lname+'">';
+        html += '<option>'+lConfig.title+' loading...</option>';
+        html += '</select>';
+        html += '</div>';
+        //constructing the select
+        locateContent.push(html);
+      }
+      $('#locate').html(locateContent.join('<br/>'));
+      $.get(wmsServerURL,{
+          'SERVICE':'WFS'
+         ,'VERSION':'1.0.0'
+         ,'REQUEST':'GetCapabilities'
+      }, function(xml) {
+        $(xml).find('FeatureType').each( function(){
+          var self = $(this);
+          var lname = self.find('Name').text();
+          if (lname in config.locateByLayer) {
+            var locate = config.locateByLayer[lname];
+            locate['crs'] = self.find('SRS').text();
+            var bbox = self.find('LatLongBoundingBox');
+            locate['bbox'] = [
+              parseFloat(bbox.attr('minx'))
+             ,parseFloat(bbox.attr('miny'))
+             ,parseFloat(bbox.attr('maxx'))
+             ,parseFloat(bbox.attr('maxy'))
+            ];
+          }
+        } );
+        for (var lname in config.locateByLayer) {
+          var locate = config.locateByLayer[lname];
+          var wfsOptions = {
+            'SERVICE':'WFS'
+           ,'VERSION':'1.0.0'
+           ,'REQUEST':'GetFeature'
+           ,'TYPENAME':lname
+           ,'PROPERTYNAME':'geometry,'+locate.fieldName
+           ,'OUTPUTFORMAT':'GeoJSON'
+          };
+          $.get(wmsServerURL,wfsOptions,function(data) {
+            locate['features'] = {};
+            var features = data.features;
+            features.sort(function(a, b) {
+              return a.properties[locate.fieldName].localeCompare(b.properties[locate.fieldName]);
+            });
+            var lConfig = config.layers[lname];
+            var options = '<option value="0">'+lConfig.title+' layer</option>';
+            for (var i=0, len=features.length; i<len; i++) {
+              var feat = features[i];
+              locate.features[feat.id.toString()] = feat;
+              options += '<option value="'+feat.id+'">'+feat.properties[locate.fieldName]+'</option>';
+            }
+            $('#locate-layer-'+lname).html(options).change(function() {
+              var proj = new OpenLayers.Projection(locate.crs);
+              var val = parseInt($(this).val());
+              if (val == '0') {
+                var bbox = new OpenLayers.Bounds(locate.bbox);
+                bbox.transform(proj, map.getProjection());
+                map.zoomToExtent(bbox);
+              } else {
+                var feat = locate.features[val];
+                var format = new OpenLayers.Format.GeoJSON();
+                feat = format.read(feat)[0];
+                feat.geometry.transform(proj, map.getProjection());
+                map.zoomToExtent(feat.geometry.getBounds());
+              }
+            });
+          },'json');
+        }
+      },'xml');
+      $('#locate-menu').show();
+    }
   }
 
   /**

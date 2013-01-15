@@ -54,8 +54,25 @@
       <span class="ui-icon ui-icon-close-menu"></span>
     </div>
     <div id="toolbar" style="height:0; display:none;"></div>
-    <div id="zoom-menu" style="height:0; display:none;">
-      <h3><span class="ui-icon ui-icon-zoom-open"></span><span class="title">{@view~map.zoommenu.title@}</span></h3>
+    <div id="locate-menu" style="display:none;">
+      <h3><span class="ui-icon ui-icon-locate-open"></span><span class="title">{@view~map.locatemenu.title@}</span></h3>
+      <div class="menu-content">
+        <div id="locate">
+          <div class="locate-layer">
+          <select>
+            <option value="foo">Foo</option>
+            <option value="bar">Bar</option>
+          </select>
+          </div>
+          <br/>
+          <div class="locate-layer">
+          <select>
+            <option value="foo">Foo</option>
+            <option value="bar">Bar</option>
+          </select>
+          </div>
+        </div>
+      </div>
     </div>
     <div id="switcher-menu">
       <h3><span class="title">{@view~map.switchermenu.title@}</span></h3>
@@ -83,7 +100,7 @@
       <button class="zoom-in" title="{@view~map.navbar.zoomin.hover@}"></button><br/>
       <div class="slider" title="{@view~map.navbar.slider.hover@}"></div>
       <button class="zoom-out" title="{@view~map.navbar.zoomout.hover@}"></button>
-      <div class="history"><button class="previous" title="previous"/><button class="next" title="next"/></div>
+      <div class="history"><button class="previous" title="{@view~map.navbar.previous.hover@}"/><button class="next" title="{@view~map.navbar.next.hover@}"/></div>
       <span id="zoom-in-max-msg" class="ui-widget-content ui-corner-all" style="display:none;">{@view~map.message.zoominmax@}</span>
     </span>
     <div id="overview-box">

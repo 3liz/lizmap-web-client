@@ -44,6 +44,8 @@ class serviceCtrl extends jController {
       return $this->GetPrint();
     elseif ($request == "GetMap")
       return $this->GetMap();
+    elseif ($request == "GetFeature")
+      return $this->GetFeature();
     else{
       jMessage::add('Wrong REQUEST parameter given', 'InvalidRequest');
       return $this->serviceException();
@@ -567,6 +569,80 @@ class serviceCtrl extends jController {
 
     return $rep;
 
+  }
+
+  /**
+  * GetFeature
+  * @param $project Name of the project : mandatory
+  * @return Image rendered by the Map Server.
+  */
+  function GetFeature(){
+
+    $rep = $this->getResponse('text');
+    // Get the project
+    $project = $this->param('project');
+
+    if(!$project){
+      jMessage::add('The parameter project is mandatory !', 'ProjectNotDefind');
+      return $this->serviceException();
+    }
+
+    // Get the passed parameters
+    $myParams = array_keys(jApp::coord()->request->params);
+
+    // Get repository data
+    $repository = $this->param('repository');
+    jClasses::inc('lizmap~lizmapConfig');
+    $lizmapConfig = new lizmapConfig($repository);
+
+    // Redirect if no rights to access this repository
+    if(!jacl2::check('lizmap.repositories.view', $lizmapConfig->repositoryKey)){
+      jMessage::add(jLocale::get('view~default.repository.access.denied'), 'AuthorizationRequired');
+      return $this->serviceException();
+    }
+
+    // Request parameters
+    $params = array("map"=>$lizmapConfig->repositoryData['path'].$project.".qgs");
+    // on garde les paramètres intéressants
+    foreach($myParams as $param){
+      if(!in_array($param, array('module', 'action', 'C', 'project'))){
+        $params[$param] = jApp::coord()->request->params[$param];
+      }
+    }
+
+    // Get data
+    $lizmapCache = jClasses::getService('lizmap~lizmapCache');
+    $params = $lizmapCache->normalizeParams($params);
+
+    // Construction of the request url : base url + parameters
+    $url = $lizmapConfig->wmsServerURL.'?';
+    $bparams = http_build_query($params);
+#    // On remplace certains caractères (plus besoin si php 5.4, alors utiliser le 4ème paramètre de http_build_query)
+#    $a = array('+', '_', '.', '-');
+#    $b = array('%20', '%5F', '%2E', '%2D');
+#    $bparams = str_replace($a, $b, $bparams);
+
+    // Get remote data
+    $querystring = $url . $bparams;
+    $getRemoteData = $lizmapCache->getRemoteData(
+      $querystring,
+      $lizmapConfig->proxyMethod,
+      $lizmapConfig->debugMode
+    );
+    $data = $getRemoteData[0];
+    $mime = $getRemoteData[1];
+
+    // Return response
+    $rep = $this->getResponse('binary');
+    if(preg_match('#^GML#', $params['outputformat']))
+      $rep->mimeType = 'text/xml';
+    else
+      $rep->mimeType = 'text/json';
+    $rep->content = $data;
+    $rep->doDownload  =  false;
+    $rep->outputFileName  =  'qgis_server_wfs';
+
+    return $rep;
   }
 
 }
