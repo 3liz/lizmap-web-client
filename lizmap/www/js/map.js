@@ -183,7 +183,8 @@ var lizMap = function() {
     //var h = $('#menu').height();
     h -= $('#close-menu').outerHeight(true);
     h -= $('#toolbar').outerHeight(true);
-    h -= $('#locate-menu').outerHeight(true);
+    if ($('#locate-menu').is(':visible'))
+      h -= $('#locate-menu').outerHeight(true);
     h -= $('#baselayer-menu').outerHeight(true);
     h -= $('#switcher-menu').children().first().outerHeight(true);
 
@@ -728,6 +729,51 @@ var lizMap = function() {
   /**
    * create the layer switcher
    */
+  function getLocateFeature(aName) {
+    var locate = config.locateByLayer[aName];
+    var wfsOptions = {
+      'SERVICE':'WFS'
+     ,'VERSION':'1.0.0'
+     ,'REQUEST':'GetFeature'
+     ,'TYPENAME':aName
+     ,'PROPERTYNAME':'geometry,'+locate.fieldName
+     ,'OUTPUTFORMAT':'GeoJSON'
+    };
+    $.get(wmsServerURL,wfsOptions,function(data) {
+      locate['features'] = {};
+      var features = data.features;
+      features.sort(function(a, b) {
+        return a.properties[locate.fieldName].localeCompare(b.properties[locate.fieldName]);
+      });
+      var lConfig = config.layers[aName];
+      var options = '<option value="0">'+lConfig.title+' layer</option>';
+      for (var i=0, len=features.length; i<len; i++) {
+        var feat = features[i];
+        locate.features[feat.id.toString()] = feat;
+        options += '<option value="'+feat.id+'">'+feat.properties[locate.fieldName]+'</option>';
+      }
+      $('#locate-layer-'+aName).html(options).change(function() {
+        var proj = new OpenLayers.Projection(locate.crs);
+        var val = parseInt($(this).val());
+        if (val == '0') {
+          var bbox = new OpenLayers.Bounds(locate.bbox);
+          bbox.transform(proj, map.getProjection());
+          map.zoomToExtent(bbox);
+        } else {
+          var feat = locate.features[val];
+          var format = new OpenLayers.Format.GeoJSON();
+          feat = format.read(feat)[0];
+          feat.geometry.transform(proj, map.getProjection());
+          map.zoomToExtent(feat.geometry.getBounds());
+        }
+        $(this).blur();
+      });
+    },'json');
+  }
+
+  /**
+   * create the layer switcher
+   */
   function createSwitcher() {
     // set the switcher content
     $('#switcher').html(getSwitcherNode(tree,0));
@@ -995,6 +1041,10 @@ var lizMap = function() {
 
     $('#switcherContainer').toggle();
 
+    config['locateByLayer'] = {
+      'tram_stops':{'fieldName':'name','displayGeom':'True'},
+      'Quartiers':{'fieldName':'LIBQUART','displayGeom':'True'}
+    };
     if ('locateByLayer' in config) {
       var locateContent = [];
       for (var lname in config.locateByLayer) {
@@ -1019,6 +1069,7 @@ var lizMap = function() {
           if (lname in config.locateByLayer) {
             var locate = config.locateByLayer[lname];
             locate['crs'] = self.find('SRS').text();
+            new OpenLayers.Projection(locate.crs);
             var bbox = self.find('LatLongBoundingBox');
             locate['bbox'] = [
               parseFloat(bbox.attr('minx'))
@@ -1029,44 +1080,7 @@ var lizMap = function() {
           }
         } );
         for (var lname in config.locateByLayer) {
-          var locate = config.locateByLayer[lname];
-          var wfsOptions = {
-            'SERVICE':'WFS'
-           ,'VERSION':'1.0.0'
-           ,'REQUEST':'GetFeature'
-           ,'TYPENAME':lname
-           ,'PROPERTYNAME':'geometry,'+locate.fieldName
-           ,'OUTPUTFORMAT':'GeoJSON'
-          };
-          $.get(wmsServerURL,wfsOptions,function(data) {
-            locate['features'] = {};
-            var features = data.features;
-            features.sort(function(a, b) {
-              return a.properties[locate.fieldName].localeCompare(b.properties[locate.fieldName]);
-            });
-            var lConfig = config.layers[lname];
-            var options = '<option value="0">'+lConfig.title+' layer</option>';
-            for (var i=0, len=features.length; i<len; i++) {
-              var feat = features[i];
-              locate.features[feat.id.toString()] = feat;
-              options += '<option value="'+feat.id+'">'+feat.properties[locate.fieldName]+'</option>';
-            }
-            $('#locate-layer-'+lname).html(options).change(function() {
-              var proj = new OpenLayers.Projection(locate.crs);
-              var val = parseInt($(this).val());
-              if (val == '0') {
-                var bbox = new OpenLayers.Bounds(locate.bbox);
-                bbox.transform(proj, map.getProjection());
-                map.zoomToExtent(bbox);
-              } else {
-                var feat = locate.features[val];
-                var format = new OpenLayers.Format.GeoJSON();
-                feat = format.read(feat)[0];
-                feat.geometry.transform(proj, map.getProjection());
-                map.zoomToExtent(feat.geometry.getBounds());
-              }
-            });
-          },'json');
+          getLocateFeature(lname);
         }
       },'xml');
       $('#locate-menu').show();
