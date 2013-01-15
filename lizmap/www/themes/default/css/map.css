@@ -578,13 +578,13 @@ body {
   z-index:2000;
 }
 
-.lizmapPopup{
+#map-content .lizmapPopup{
   background: #F6F6F6 !important;
   border: 1px solid #C9C9C9 !important;
   color: black !important;
 }
 
-.lizmapPopup img{
+#map-content .lizmapPopup img{
   border:none;
   max-width: 300px;
   width: expression(this.width > 300 ? "300px" : true);
