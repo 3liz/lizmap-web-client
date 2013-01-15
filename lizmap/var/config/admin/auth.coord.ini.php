@@ -16,7 +16,7 @@ secure_with_ip = 0
 
 ;Timeout. After the given time (in minutes) without activity, the user is disconnected.
 ; If the value is 0 : no timeout
-timeout = 180
+timeout = 240
 
 ; If the value is "on", the user must be authentificated for all actions, except those
 ; for which a plugin parameter  auth.required is false
