@@ -68,9 +68,15 @@ var lizMap = function() {
    * Determine if we should display the mobile version.
    */
   function updateMobile(){
-    mobileContext = lizMap.checkMobile();
+    var isMobile = mCheckMobile();
+    var contentIsMobile = $('#content').hasClass('mobile');
+    if (isMobile == contentIsMobile)
+      return;
 
-    if(mobileContext){
+    if (isMobile) {
+      // Add mobile class to content
+      $('#content').addClass('mobile');
+
       // Change menu and map content width
       $('#menu').css('width', '100%');
 
@@ -83,16 +89,16 @@ var lizMap = function() {
       // Display baselayer choice 100%
       $('#baselayer-select-input').css('bottom','50px').css('left','0px').css('right','0px')
 
-      if( !$('#toggleLegend').is(':visible'))
+      if( $('#menu').is(':visible'))
         $('#menu').hide();
 
-      // activate Legend menu
-      $('#toggleLegend')
-      .css('cursor', 'pointer')
-      .show();
-
+      $('#toggleLegend').html($('#toggleLegendOn').attr('value'));
     }
-    else{
+    else
+    {
+      // Remove mobile class to content
+      $('#content').removeClass('mobile');
+
       // Change menu and map content width
       $('#menu').css('width', '300px');
 
@@ -105,12 +111,12 @@ var lizMap = function() {
         $('#overview-bar button').show();
       }
 
-      if( $('#toggleLegend').is(':visible'))
-        $('#menu').show();
+      if( !$('#menu').is(':visible'))
+        $('#content span.ui-icon-open-menu').click();
+      else
+        $('#map-content').show();
 
-      // Hide legend menu
-      $('#toggleLegend').hide();
-
+      $('#toggleLegend').html($('#toggleMapOnlyOn').attr('value'));
     }
   }
 
@@ -181,7 +187,8 @@ var lizMap = function() {
     h = h - $('#headermenu').height();
     $('#menu').height(h);
     //var h = $('#menu').height();
-    h -= $('#close-menu').outerHeight(true);
+    if ($('#close-menu').is(':visible'))
+      h -= $('#close-menu').outerHeight(true);
     h -= $('#toolbar').outerHeight(true);
     if ($('#locate-menu').is(':visible'))
       h -= $('#locate-menu').outerHeight(true);
@@ -803,17 +810,21 @@ var lizMap = function() {
     });
     $('#close-menu .ui-icon-close-menu').click(function(){
       $('#menu').hide();
-      if(lizMap.checkMobile())
+      if($('#content').hasClass('mobile')) {
         $('#map-content').show();
+        $('#toggleLegend').html($('#toggleLegendOn').attr('value'));
+      } else
+        $('#toggleLegend').html($('#toggleLegendMapOn').attr('value'));
       $('#content .ui-icon-open-menu').show();
-      $('#toggleLegend').html($('#toggleLegendOn').attr('value'));
       updateContentSize();
     });
     $('#content .ui-icon-open-menu').click(function(){
       $('#menu').show();
-      if(lizMap.checkMobile())
+      if($('#content').hasClass('mobile')) {
         $('#map-content').hide();
-      $('#toggleLegend').html($('#toggleMapOn').attr('value'));
+        $('#toggleLegend').html($('#toggleMapOn').attr('value'));
+      } else
+        $('#toggleLegend').html($('#toggleMapOnlyOn').attr('value'));
       $(this).hide();
       updateContentSize();
     });
@@ -1799,7 +1810,9 @@ lizMap.events.on({
         $('.ui-icon-open-menu').click();
         $('#metadata').hide();
       }
-    });
+    })
+    .css('cursor', 'pointer')
+    .show();
 
    }
 });

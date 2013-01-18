@@ -16,9 +16,11 @@
   <div id="auth" class="navbar-inner">
     <ul class="nav pull-right">
       <li>
-        <a id="toggleLegend">{@view~map.legend@}</a>
+        <a id="toggleLegend">{@view~map.map.only@}</a>
         <span id="toggleLegendOn" value="{@view~map.legend@}"/>
         <span id="toggleMapOn" value="{@view~map.map@}"/>
+        <span id="toggleLegendMapOn" value="{@view~map.legend.map@}"/>
+        <span id="toggleMapOnlyOn" value="{@view~map.map.only@}"/>
       </li>
       <li><a href="{jurl 'view~default:index'}">{@view~default.repository.list.title@}</a></li>
       <li><a id="displayMetadata">{@view~map.metadata.link.label@}</a></li>
@@ -50,7 +52,7 @@
   <span class="ui-icon ui-icon-open-menu" style="display:none;" title="{@view~map.menu.show.hover@}"></span>
 
   <div id="menu">
-    <div id="close-menu" title="{@view~map.menu.close.hover@}">
+    <div id="close-menu" style="display:none;" title="{@view~map.menu.close.hover@}">
       <span class="ui-icon ui-icon-close-menu"></span>
     </div>
     <div id="toolbar" style="height:0; display:none;"></div>
