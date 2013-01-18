@@ -1063,10 +1063,15 @@ var lizMap = function() {
         //constructing the select
         locateContent.push(html);
       }
-      if (locateContent.length != 0)
-        locateContent.push('<button class="btn-locate-clear btn btn-small" type="button">Clear!</button>');
       $('#locate').html(locateContent.join('<br/>'));
       map.addLayer(new OpenLayers.Layer.Vector('locatelayer',{
+        styleMap: new OpenLayers.StyleMap({
+          pointRadius: 6,
+          fill: false,
+          stroke: true,
+          strokeWidth: 3,
+          strokeColor: 'yellow'
+        })
       }));
       $.get(wmsServerURL,{
           'SERVICE':'WFS'
@@ -1092,7 +1097,7 @@ var lizMap = function() {
         for (var lname in config.locateByLayer) {
           getLocateFeature(lname);
         }
-        $('#locate button.btn-locate-clear').click(function() {
+        $('#locate-menu button.btn-locate-clear').click(function() {
           var layer = map.getLayersByName('locatelayer')[0];
           layer.destroyFeatures();
           $('#locate select').val('-1');
