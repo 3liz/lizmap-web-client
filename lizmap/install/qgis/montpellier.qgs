@@ -4,10 +4,10 @@
     <mapcanvas>
         <units>degrees</units>
         <extent>
-            <xmin>3.790745</xmin>
-            <ymin>43.567549</ymin>
-            <xmax>3.948483</xmax>
-            <ymax>43.682867</ymax>
+            <xmin>3.796181</xmin>
+            <ymin>43.527218</ymin>
+            <xmax>3.990027</xmax>
+            <ymax>43.668934</ymax>
         </extent>
         <projections>1</projections>
         <destinationsrs>
@@ -23,61 +23,69 @@
             </spatialrefsys>
         </destinationsrs>
     </mapcanvas>
-    <legend updateDrawingOrder="true">
+    <legend updateDrawingOrder="false">
+        <legendgroup open="true" checked="Qt::Checked" name="hidden">
+            <legendlayer drawingOrder="-1" open="false" checked="Qt::Checked" name="annotation_point" showFeatureCount="0">
+                <filegroup open="false" hidden="false">
+                    <legendlayerfile isInOverview="0" layerid="annotation_point20130118171631518" visible="1"/>
+                </filegroup>
+            </legendlayer>
+        </legendgroup>
         <legendgroup open="true" checked="Qt::Checked" name="datalayers">
             <legendgroup open="true" checked="Qt::Checked" name="Bus">
-                <legendlayer drawingOrder="-1" open="false" checked="Qt::Checked" name="bus_stops" showFeatureCount="0">
+                <legendlayer drawingOrder="2" open="false" checked="Qt::Checked" name="bus_stops" showFeatureCount="0">
                     <filegroup open="false" hidden="false">
                         <legendlayerfile isInOverview="0" layerid="bus_stops20121106170806413" visible="1"/>
                     </filegroup>
                 </legendlayer>
-                <legendlayer drawingOrder="-1" open="false" checked="Qt::Checked" name="bus" showFeatureCount="0">
+                <legendlayer drawingOrder="3" open="false" checked="Qt::Checked" name="bus" showFeatureCount="0">
                     <filegroup open="false" hidden="false">
                         <legendlayerfile isInOverview="0" layerid="bus20121102133611751" visible="1"/>
                     </filegroup>
                 </legendlayer>
             </legendgroup>
             <legendgroup open="true" checked="Qt::Checked" name="Tramway">
-                <legendlayer drawingOrder="-1" open="true" checked="Qt::Checked" name="tram_stops" showFeatureCount="0">
+                <legendlayer drawingOrder="1" open="true" checked="Qt::Checked" name="tram_stops" showFeatureCount="0">
                     <filegroup open="true" hidden="false">
                         <legendlayerfile isInOverview="0" layerid="tram_stops20110923123319267" visible="1"/>
                     </filegroup>
                 </legendlayer>
-                <legendlayer drawingOrder="-1" open="false" checked="Qt::Checked" name="tram" showFeatureCount="0">
+                <legendlayer drawingOrder="4" open="false" checked="Qt::Checked" name="tram" showFeatureCount="0">
                     <filegroup open="false" hidden="false">
                         <legendlayerfile isInOverview="0" layerid="tram20121031171456234" visible="1"/>
                     </filegroup>
                 </legendlayer>
             </legendgroup>
         </legendgroup>
-        <legendlayer drawingOrder="-1" open="false" checked="Qt::Checked" name="Quartiers" showFeatureCount="0">
+        <legendlayer drawingOrder="5" open="false" checked="Qt::Unchecked" name="Quartiers" showFeatureCount="0">
             <filegroup open="false" hidden="false">
-                <legendlayerfile isInOverview="0" layerid="VilleMTP_MTP_Quartiers_2011_432620130116112610876" visible="1"/>
+                <legendlayerfile isInOverview="0" layerid="VilleMTP_MTP_Quartiers_2011_432620130116112610876" visible="0"/>
             </filegroup>
         </legendlayer>
         <legendgroup open="true" checked="Qt::Checked" name="baselayers">
-            <legendlayer drawingOrder="-1" open="true" checked="Qt::Checked" name="OSM_Basic" showFeatureCount="0">
+            <legendlayer drawingOrder="6" open="true" checked="Qt::Checked" name="OSM_Basic" showFeatureCount="0">
                 <filegroup open="true" hidden="false">
                     <legendlayerfile isInOverview="0" layerid="OSM_Basic20110923140116428" visible="1"/>
                 </filegroup>
             </legendlayer>
         </legendgroup>
         <legendgroup open="true" checked="Qt::Unchecked" name="Overview">
-            <legendlayer drawingOrder="-1" open="false" checked="Qt::Unchecked" name="VilleMTP_MTP_Quartiers_2011_4326" showFeatureCount="0">
+            <legendlayer drawingOrder="7" open="false" checked="Qt::Unchecked" name="VilleMTP_MTP_Quartiers_2011_4326" showFeatureCount="0">
                 <filegroup open="false" hidden="false">
                     <legendlayerfile isInOverview="0" layerid="VilleMTP_MTP_Quartiers_2011_432620130116112351546" visible="0"/>
                 </filegroup>
             </legendlayer>
         </legendgroup>
-        <legendgroup open="true" checked="Qt::Checked" name="hidden">
-            <legendlayer drawingOrder="-1" open="false" checked="Qt::Checked" name="annotation_point" showFeatureCount="0">
-                <filegroup open="false" hidden="false">
-                    <legendlayerfile isInOverview="0" layerid="annotation_point20130116111838849" visible="1"/>
-                </filegroup>
-            </legendlayer>
-        </legendgroup>
     </legend>
     <Composer title="Composeur1" visible="0">
+        <ComposerLabel valign="128" labelText="LizMap&#xa;&#xa;An example PDF output from QGIS composer.&#xa;This PDF file will be available by clicling on the (i) link right to the tramway layer" halign="4" margin="1">
+            <LabelFont description="Ubuntu,12,-1,5,75,0,0,0,0,0"/>
+            <FontColor red="0" blue="0" green="0"/>
+            <ComposerItem width="180.657" x="52.5012" y="3.30721" rotation="0" height="44.6473" frame="true" outlineWidth="0.3" zValue="5" lastValidViewScaleFactor="2.7047" id="" positionLock="false">
+                <FrameColor alpha="255" red="0" blue="0" green="0"/>
+                <BackgroundColor alpha="255" red="255" blue="255" green="255"/>
+            </ComposerItem>
+        </ComposerLabel>
         <ComposerMap keepLayerSet="false" id="0" previewMode="Cache" drawCanvasItems="true">
             <Extent ymin="43.6016" xmin="3.85843" ymax="43.6213" xmax="3.89397"/>
             <LayerSet/>
@@ -101,14 +109,6 @@
                 <BackgroundColor alpha="255" red="255" blue="255" green="255"/>
             </ComposerItem>
         </ComposerPicture>
-        <ComposerLabel valign="128" labelText="LizMap&#xa;&#xa;An example PDF output from QGIS composer.&#xa;This PDF file will be available by clicling on the (i) link right to the tramway layer" halign="4" margin="1">
-            <LabelFont description="Ubuntu,12,-1,5,75,0,0,0,0,0"/>
-            <FontColor red="0" blue="0" green="0"/>
-            <ComposerItem width="180.657" x="52.5012" y="3.30721" rotation="0" height="44.6473" frame="true" outlineWidth="0.3" zValue="5" lastValidViewScaleFactor="2.7047" id="" positionLock="false">
-                <FrameColor alpha="255" red="0" blue="0" green="0"/>
-                <BackgroundColor alpha="255" red="255" blue="255" green="255"/>
-            </ComposerItem>
-        </ComposerLabel>
         <Composition printResolution="300" paperWidth="297" snapGridOffsetX="0" snapGridResolution="0" snapGridOffsetY="0" snapping="0" paperHeight="210" printAsRaster="0"/>
     </Composer>
     <projectlayers layercount="8">
@@ -145,7 +145,7 @@
                 <mRedBandName>Not Set</mRedBandName>
                 <mGreenBandName>Not Set</mGreenBandName>
                 <mBlueBandName>Not Set</mBlueBandName>
-                <mGrayBandName>Bande 1</mGrayBandName>
+                <mGrayBandName>Band 1</mGrayBandName>
                 <mStandardDeviations>0</mStandardDeviations>
                 <mUserDefinedRGBMinimumMaximum boolean="false"/>
                 <mRGBMinimumMaximumEstimated boolean="true"/>
@@ -331,7 +331,7 @@
                 <edittype type="0" name="photo"/>
                 <edittype type="0" name="url"/>
             </edittypes>
-            <editform></editform>
+            <editform>.</editform>
             <editforminit></editforminit>
             <annotationform>.</annotationform>
             <attributeactions/>
@@ -509,7 +509,7 @@
                 <edittype type="0" name="photo"/>
                 <edittype type="0" name="url"/>
             </edittypes>
-            <editform></editform>
+            <editform>.</editform>
             <editforminit></editforminit>
             <annotationform>.</annotationform>
             <aliases>
@@ -520,47 +520,143 @@
             <attributeactions/>
         </maplayer>
         <maplayer minimumScale="0" maximumScale="1e+08" geometry="Point" type="vector" hasScaleBasedVisibilityFlag="0">
-            <id>annotation_point20130116111838849</id>
+            <id>annotation_point20130118171631518</id>
             <datasource>dbname='./annotations/annotation_db.sqlite' table="annotation_point" (geometry) sql=</datasource>
             <title></title>
             <abstract></abstract>
             <layername>annotation_point</layername>
             <srs>
                 <spatialrefsys>
-                    <proj4>+proj=lcc +lat_1=30.7 +lat_2=29.3 +lat_0=28.5 +lon_0=-91.33333333333333 +x_0=999999.9999898402 +y_0=0 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=us-ft +no_defs</proj4>
-                    <srsid>1410</srsid>
-                    <srid>3452</srid>
-                    <authid>EPSG:3452</authid>
-                    <description>NAD83 / Louisiana South (ftUS)</description>
-                    <projectionacronym>lcc</projectionacronym>
-                    <ellipsoidacronym>GRS80</ellipsoidacronym>
-                    <geographicflag>false</geographicflag>
+                    <proj4>+proj=longlat +datum=WGS84 +no_defs</proj4>
+                    <srsid>3452</srsid>
+                    <srid>4326</srid>
+                    <authid>EPSG:4326</authid>
+                    <description>WGS 84</description>
+                    <projectionacronym>longlat</projectionacronym>
+                    <ellipsoidacronym>WGS84</ellipsoidacronym>
+                    <geographicflag>true</geographicflag>
                 </spatialrefsys>
             </srs>
             <transparencyLevelInt>255</transparencyLevelInt>
             <provider encoding="UTF-8">spatialite</provider>
             <vectorjoins/>
-            <renderer-v2 symbollevels="0" type="singleSymbol">
+            <renderer-v2 attr="importance" symbollevels="0" type="categorizedSymbol">
+                <categories>
+                    <category symbol="0" value="1" label="low"/>
+                    <category symbol="1" value="2" label="medium"/>
+                    <category symbol="2" value="3" label="high"/>
+                </categories>
                 <symbols>
                     <symbol outputUnit="MM" alpha="1" type="marker" name="0">
                         <layer pass="0" class="SimpleMarker" locked="0">
                             <prop k="angle" v="0"/>
+                            <prop k="color" v="255,255,0,255"/>
+                            <prop k="color_border" v="0,0,0,255"/>
+                            <prop k="name" v="circle"/>
+                            <prop k="offset" v="0,0"/>
+                            <prop k="size" v="3"/>
+                        </layer>
+                    </symbol>
+                    <symbol outputUnit="MM" alpha="1" type="marker" name="1">
+                        <layer pass="0" class="SimpleMarker" locked="0">
+                            <prop k="angle" v="0"/>
+                            <prop k="color" v="255,170,0,255"/>
+                            <prop k="color_border" v="0,0,0,255"/>
+                            <prop k="name" v="circle"/>
+                            <prop k="offset" v="0,0"/>
+                            <prop k="size" v="3"/>
+                        </layer>
+                    </symbol>
+                    <symbol outputUnit="MM" alpha="1" type="marker" name="2">
+                        <layer pass="0" class="SimpleMarker" locked="0">
+                            <prop k="angle" v="0"/>
                             <prop k="color" v="255,0,0,255"/>
-                            <prop k="color_border" v="255,0,0,255"/>
+                            <prop k="color_border" v="0,0,0,255"/>
                             <prop k="name" v="circle"/>
                             <prop k="offset" v="0,0"/>
                             <prop k="size" v="3"/>
                         </layer>
                     </symbol>
                 </symbols>
+                <source-symbol>
+                    <symbol outputUnit="MM" alpha="1" type="marker" name="0">
+                        <layer pass="0" class="SimpleMarker" locked="0">
+                            <prop k="angle" v="0"/>
+                            <prop k="color" v="91,198,110,255"/>
+                            <prop k="color_border" v="0,0,0,255"/>
+                            <prop k="name" v="circle"/>
+                            <prop k="offset" v="0,0"/>
+                            <prop k="size" v="2"/>
+                        </layer>
+                    </symbol>
+                </source-symbol>
+                <colorramp type="random" name="[source]">
+                    <prop k="count" v="10"/>
+                    <prop k="hueMax" v="359"/>
+                    <prop k="hueMin" v="0"/>
+                    <prop k="satMax" v="255"/>
+                    <prop k="satMin" v="0"/>
+                    <prop k="valMax" v="255"/>
+                    <prop k="valMin" v="0"/>
+                </colorramp>
                 <rotation field=""/>
                 <sizescale field=""/>
             </renderer-v2>
-            <customproperties/>
+            <customproperties>
+                <property key="labeling" value="pal"/>
+                <property key="labeling/addDirectionSymbol" value="false"/>
+                <property key="labeling/bufferColorB" value="255"/>
+                <property key="labeling/bufferColorG" value="255"/>
+                <property key="labeling/bufferColorR" value="255"/>
+                <property key="labeling/bufferSize" value="0.4"/>
+                <property key="labeling/dataDefinedProperty0" value=""/>
+                <property key="labeling/dataDefinedProperty1" value=""/>
+                <property key="labeling/dataDefinedProperty10" value=""/>
+                <property key="labeling/dataDefinedProperty11" value=""/>
+                <property key="labeling/dataDefinedProperty12" value=""/>
+                <property key="labeling/dataDefinedProperty13" value=""/>
+                <property key="labeling/dataDefinedProperty14" value=""/>
+                <property key="labeling/dataDefinedProperty2" value=""/>
+                <property key="labeling/dataDefinedProperty3" value=""/>
+                <property key="labeling/dataDefinedProperty4" value=""/>
+                <property key="labeling/dataDefinedProperty5" value=""/>
+                <property key="labeling/dataDefinedProperty6" value=""/>
+                <property key="labeling/dataDefinedProperty7" value=""/>
+                <property key="labeling/dataDefinedProperty8" value=""/>
+                <property key="labeling/dataDefinedProperty9" value=""/>
+                <property key="labeling/decimals" value="0"/>
+                <property key="labeling/dist" value="1"/>
+                <property key="labeling/distInMapUnits" value="false"/>
+                <property key="labeling/enabled" value="true"/>
+                <property key="labeling/fieldName" value="name"/>
+                <property key="labeling/fontFamily" value="Ubuntu"/>
+                <property key="labeling/fontItalic" value="false"/>
+                <property key="labeling/fontSize" value="10"/>
+                <property key="labeling/fontSizeInMapUnits" value="false"/>
+                <property key="labeling/fontStrikeout" value="false"/>
+                <property key="labeling/fontUnderline" value="false"/>
+                <property key="labeling/fontWeight" value="50"/>
+                <property key="labeling/formatNumbers" value="false"/>
+                <property key="labeling/isExpression" value="false"/>
+                <property key="labeling/labelPerPart" value="false"/>
+                <property key="labeling/mergeLines" value="false"/>
+                <property key="labeling/minFeatureSize" value="0"/>
+                <property key="labeling/obstacle" value="true"/>
+                <property key="labeling/placement" value="0"/>
+                <property key="labeling/placementFlags" value="0"/>
+                <property key="labeling/plussign" value="true"/>
+                <property key="labeling/priority" value="5"/>
+                <property key="labeling/scaleMax" value="0"/>
+                <property key="labeling/scaleMin" value="0"/>
+                <property key="labeling/textColorB" value="0"/>
+                <property key="labeling/textColorG" value="0"/>
+                <property key="labeling/textColorR" value="0"/>
+                <property key="labeling/wrapChar" value=""/>
+            </customproperties>
             <displayfield>name</displayfield>
             <label>0</label>
             <labelattributes>
-                <label fieldname="" text="Étiquette"/>
+                <label fieldname="" text="Label"/>
                 <family fieldname="" name="Ubuntu"/>
                 <size fieldname="" units="pt" value="12"/>
                 <bold fieldname="" on="0"/>
@@ -580,20 +676,17 @@
                 <selectedonly on=""/>
             </labelattributes>
             <edittypes>
-                <edittype type="0" name="date"/>
-                <edittype type="0" name="description"/>
-                <edittype type="3" name="importance">
-                    <valuepair key="high" value="3"/>
-                    <valuepair key="low" value="1"/>
-                    <valuepair key="medium" value="2"/>
-                </edittype>
+                <edittype type="13" name="date"/>
+                <edittype type="12" name="description"/>
+                <edittype type="0" name="height"/>
+                <edittype type="4" name="importance"/>
                 <edittype type="0" name="name"/>
                 <edittype type="10" name="pkuid"/>
-                <edittype type="0" name="user"/>
+                <edittype type="11" name="user"/>
             </edittypes>
-            <editform></editform>
+            <editform>.</editform>
             <editforminit></editforminit>
-            <annotationform></annotationform>
+            <annotationform>.</annotationform>
             <attributeactions/>
         </maplayer>
         <maplayer minimumScale="0" maximumScale="40001" geometry="Line" type="vector" hasScaleBasedVisibilityFlag="1">

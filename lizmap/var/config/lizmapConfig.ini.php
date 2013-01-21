@@ -32,7 +32,9 @@ path="../install/qgis/"
 ; Example of a repository wich will have access control
 [repository:intranet]
 label="Lizmap Demo - Intranet"
-path="../install/qgis_intranet/"
+path="/var/www/LIZMAP/lizmap/var/../install/qgis_intranet/"
+
+
 
 
 

@@ -30,7 +30,7 @@ class configCtrl extends jController {
 
 
   // Prefix of jacl2 subjects corresponding to lizmap web client view interface
-  protected $lizmapClientPrefix = 'lizmap.repositories';
+  protected $lizmapClientPrefix = 'lizmap.repositories|lizmap.tools';
   // Black list some non wanted groups
   protected $groupBlacklist = array('users');
 
@@ -59,6 +59,7 @@ class configCtrl extends jController {
       $sql.= " WHERE g.grouptype = 0 AND r.id_aclgrp NOT IN ('".implode("','", $this->groupBlacklist)."')";
       $sql.= " AND id_aclres=".$cnx->quote($repo);
       //$sql.= " GROUP BY r.id_aclsbj;";
+      $sql.= " ORDER BY g.name";
       $rights = $cnx->query($sql);
 
       $group_names = array();

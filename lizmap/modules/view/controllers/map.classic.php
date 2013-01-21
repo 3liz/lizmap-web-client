@@ -89,17 +89,9 @@ class mapCtrl extends jController {
     $rep->addJSCode("var wmsServerURL = '".jUrl::get('lizmap~service:index', array('repository'=>$repository, 'project'=>$project))."';");
     $rep->addJSCode("var mediaServerURL = '".jUrl::get('view~media:getMedia', array('repository'=>$repository, 'project'=>$project))."';");
 
-    // Get project data from XML .qgs
-    $use_errors = libxml_use_internal_errors(true);
-    $go = true; $errorlist = array();
-    // Create a DOM instance
-    $qgsLoad = simplexml_load_file($qgsPath);
-    if(!$qgsLoad) {
-      foreach(libxml_get_errors() as $error) {
-        $errorlist[] = $error;
-      }
-      $go = false;
-    }
+    // Read the QGIS project file to get the layer drawing order
+    $qgisProjectClass = jClasses::getService('lizmap~qgisProject');
+    list($go, $qgsLoad, $xpathItems, $errorlist) = $qgisProjectClass->readQgisProject($lizmapConfig, $project);
 
     // Default metadata
     $WMSServiceTitle = '';

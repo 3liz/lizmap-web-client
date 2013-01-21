@@ -54,12 +54,12 @@ class serviceCtrl extends jController {
 
 
   /**
-  * GetCapabilities
-  * @param $project Name of the project : mandatory.
-  * @return JSON configuration file for the specified project.
+  * Get parameters and set lizmapConfig for the project and repository given.
+  *
+  * @return array List of needed variables : $params, $lizmapConfig, $lizmapCache.
   */
-  function GetCapabilities(){
-
+  function getServiceParameters(){
+  
     // Get the project
     $project = $this->param('project');
 
@@ -73,27 +73,38 @@ class serviceCtrl extends jController {
     jClasses::inc('lizmap~lizmapConfig');
     $lizmapConfig = new lizmapConfig($repository);
 
+    // Redirect if no rights to access this repository
     if(!jacl2::check('lizmap.repositories.view', $lizmapConfig->repositoryKey)){
       jMessage::add(jLocale::get('view~default.repository.access.denied'), 'AuthorizationRequired');
       return $this->serviceException();
     }
+    
+    // Get and normalize the passed parameters
+    $pParams = jApp::coord()->request->params;
+    $pParams['map'] = $lizmapConfig->repositoryData['path'].$project.".qgs";  
+    $lizmapCache = jClasses::getService('lizmap~lizmapCache');
+    $params = $lizmapCache->normalizeParams($pParams);
+    
+    return array($project, $repository, $params, $lizmapConfig, $lizmapCache);
+  }
 
-    // Get the passed parameters
-    $myParams = array_keys(jApp::coord()->request->params);
 
-    // Construction of the request url
-    $querystring = $lizmapConfig->wmsServerURL."?";
-    $querystring.= "map=".$lizmapConfig->repositoryData['path'].$project.".qgs";
+  /**
+  * GetCapabilities
+  * @param string $repository Lizmap Repository
+  * @param string $project Name of the project : mandatory.
+  * @return JSON configuration file for the specified project.
+  */
+  function GetCapabilities(){
 
-    // on garde les paramètres intéressants
-    foreach($myParams as $param){
-      if(!in_array($param, array('module', 'action', 'C', 'project'))){
-          $querystring .= "&".$param."=".jApp::coord()->request->params[$param];
-      }
-    }
+    // Get parameters
+    list($project, $repository, $params, $lizmapConfig, $lizmapCache) = $this->getServiceParameters();
+    $url = $lizmapConfig->wmsServerURL.'?';
+
+    $bparams = http_build_query($params);
+    $querystring = $url . $bparams;
 
     // Get remote data
-    $lizmapCache = jClasses::getService('lizmap~lizmapCache');
     $getRemoteData = $lizmapCache->getRemoteData(
       $querystring,
       $lizmapConfig->proxyMethod,
@@ -124,42 +135,20 @@ class serviceCtrl extends jController {
 
   /**
   * GetMap
-  * @param $project Name of the project : mandatory
+  * @param string $repository Lizmap Repository
+  * @param string $project Name of the project : mandatory
   * @return Image rendered by the Map Server.
   */
   function GetMap(){
 
-    $rep = $this->getResponse('text');
-    // Get the project
-    $project = $this->param('project');
-
-    if(!$project){
-      jMessage::add('The parameter project is mandatory !', 'ProjectNotDefind');
-      return $this->serviceException();
-    }
-
-    // Get repository data
-    $repository = $this->param('repository');
-    jClasses::inc('lizmap~lizmapConfig');
-    $lizmapConfig = new lizmapConfig($repository);
-
-    // Redirect if no rights to access this repository
-    if(!jacl2::check('lizmap.repositories.view', $lizmapConfig->repositoryKey)){
-      jMessage::add(jLocale::get('view~default.repository.access.denied'), 'AuthorizationRequired');
-      return $this->serviceException();
-    }
-
-    // Get the passed parameters
-    $params = jApp::coord()->request->params;
-
-    // Get data
-    $lizmapCache = jClasses::getService('lizmap~lizmapCache');
-    $params = $lizmapCache->normalizeParams($params);
+    // Get parameters
+    list($project, $repository, $params, $lizmapConfig, $lizmapCache) = $this->getServiceParameters();
+    
     $content = $lizmapCache->getServiceData($repository, $project, $params);
 
     // Return response
     $rep = $this->getResponse('binary');
-    if(preg_match('#png#', $params['format']))
+    if(preg_match('#png#', $pParams['format']))
       $rep->mimeType = 'image/png';
     else
       $rep->mimeType = 'image/jpeg';
@@ -173,54 +162,23 @@ class serviceCtrl extends jController {
 
   /**
   * GetLegendGraphics
-  * @param $project Name of the project : mandatory
+  * @param string $repository Lizmap Repository
+  * @param string $project Name of the project : mandatory
   * @return Image of the legend for 1 to n layers, returned by the Map Server
   */
   function GetLegendGraphics(){
 
-    $rep = $this->getResponse('text');
-    // Get the project
-    $project = $this->param('project');
-
-    if(!$project){
-      jMessage::add('The parameter project is mandatory !', 'ProjectNotDefind');
-      return $this->serviceException();
-    }
-
-    // Get the passed parameters
-    $myParams = array_keys(jApp::coord()->request->params);
-
-    // Get repository data
-    $repository = $this->param('repository');
-    jClasses::inc('lizmap~lizmapConfig');
-    $lizmapConfig = new lizmapConfig($repository);
-
-    // Redirect if no rights to access this repository
-    if(!jacl2::check('lizmap.repositories.view', $lizmapConfig->repositoryKey)){
-      jMessage::add(jLocale::get('view~default.repository.access.denied'), 'AuthorizationRequired');
-      return $this->serviceException();
-    }
-
-    // paramètres de la requête
-    $params = array("map"=>$lizmapConfig->repositoryData['path'].$project.".qgs");
-    // on garde les paramètres intéressants
-    foreach($myParams as $param){
-      if(!in_array($param, array('module', 'action', 'C', 'project'))){
-        $params[$param] = jApp::coord()->request->params[$param];
-      }
-    }
-
-    // Construction of the request url : base url + parameters
+    // Get parameters
+    list($project, $repository, $params, $lizmapConfig, $lizmapCache) = $this->getServiceParameters();
     $url = $lizmapConfig->wmsServerURL.'?';
     $bparams = http_build_query($params);
-    // On remplace certains caractères (plus besoin si php 5.4, alors utiliser le 4ème paramètre de http_build_query)
+    // replace some chars (not needed in php 5.4, use the 4th parameter of http_build_query)
     $a = array('+', '_', '.', '-');
     $b = array('%20', '%5F', '%2E', '%2D');
-    $bparams = str_replace($a, $b, $bparams);
+    $bparams = str_replace($a, $b, $bparams); 
+    $querystring = $url . $bparams;
 
     // Get remote data
-    $lizmapCache = jClasses::getService('lizmap~lizmapCache');
-    $querystring = $url . $bparams;
     $getRemoteData = $lizmapCache->getRemoteData(
       $querystring,
       $lizmapConfig->proxyMethod,
@@ -241,46 +199,15 @@ class serviceCtrl extends jController {
 
   /**
   * GetFeatureInfo
-  * @param $project Name of the project : mandatory
+  * @param string $repository Lizmap Repository
+  * @param string $project Name of the project : mandatory
   * @return Feature Info.
   */
   function GetFeatureInfo(){
 
-    $rep = $this->getResponse('text');
-    // Get the project
-    $project = $this->param('project');
-
-    if(!$project){
-      jMessage::add('The parameter project is mandatory !', 'ProjectNotDefind');
-      return $this->serviceException();
-    }
-
-    // Get the passed parameters
-    $myParams = array_keys(jApp::coord()->request->params);
-
-    // Get repository data
-    $repository = $this->param('repository');
-    jClasses::inc('lizmap~lizmapConfig');
-    $lizmapConfig = new lizmapConfig($repository);
-
-    // Redirect if no rights to access this repository
-    if(!jacl2::check('lizmap.repositories.view', $lizmapConfig->repositoryKey)){
-      jMessage::add(jLocale::get('view~default.repository.access.denied'), 'AuthorizationRequired');
-      return $this->serviceException();
-    }
-
-    // Request parameters
-    $params = array("map"=>$lizmapConfig->repositoryData['path'].$project.".qgs");
-    // on garde les paramètres intéressants
-    foreach($myParams as $param){
-      if(!in_array($param, array('module', 'action', 'C', 'project'))){
-        $params[$param] = jApp::coord()->request->params[$param];
-      }
-    }
-
-    // Normalize params
-    $lizmapCache = jClasses::getService('lizmap~lizmapCache');
-    $params = $lizmapCache->normalizeParams($params);
+    // Get parameters
+    list($project, $repository, $params, $lizmapConfig, $lizmapCache) = $this->getServiceParameters();
+    $url = $lizmapConfig->wmsServerURL.'?';
 
     // Deactivate info_format to use Lizmap instead of QGIS
     $toHtml = False;
@@ -289,16 +216,10 @@ class serviceCtrl extends jController {
       $params['info_format'] = 'text/xml';
     }
 
-    // Construction of the request url : base url + parameters
-    $url = $lizmapConfig->wmsServerURL.'?';
     $bparams = http_build_query($params);
-#    // On remplace certains caractères (plus besoin si php 5.4, alors utiliser le 4ème paramètre de http_build_query)
-#    $a = array('+', '_', '.', '-');
-#    $b = array('%20', '%5F', '%2E', '%2D');
-#    $bparams = str_replace($a, $b, $bparams);
+    $querystring = $url . $bparams;
 
     // Get remote data
-    $querystring = $url . $bparams;
     $getRemoteData = $lizmapCache->getRemoteData(
       $querystring,
       $lizmapConfig->proxyMethod,
@@ -324,7 +245,10 @@ class serviceCtrl extends jController {
 
 
   /**
-  * GetFeatureInfoHtml : return HTML for the getFeatureInfo.
+  * GetFeatureInfoHtml : return HTML for the getFeatureInfo.  
+  * @param array $params Array of parameters
+  * @param string $xmldata XML data from getFeatureInfo
+  * @param object $lizmapConfig Lizmap configuration for the repository
   * @param $project Name of the project : mandatory
   * @return Feature Info in HTML format.
   */
@@ -440,68 +364,36 @@ class serviceCtrl extends jController {
 
   /**
   * GetPrint
-  * @param $project Name of the project : mandatory
+  * @param string $repository Lizmap Repository
+  * @param string $project Name of the project : mandatory
   * @return Image rendered by the Map Server.
   */
   function GetPrint(){
 
-    $rep = $this->getResponse('text');
-    // Get the project
-    $project = $this->param('project');
-
-    if(!$project){
-      jMessage::add('The parameter project is mandatory !', 'ProjectNotDefind');
-      return $this->serviceException();
-    }
-
-    // Get repository data
-    $repository = $this->param('repository');
-    jClasses::inc('lizmap~lizmapConfig');
-    $lizmapConfig = new lizmapConfig($repository);
-
-    // Redirect if no rights to access this repository
-    if(!jacl2::check('lizmap.repositories.view', $lizmapConfig->repositoryKey)){
-      jMessage::add(jLocale::get('view~default.repository.access.denied'), 'AuthorizationRequired');
-      return $this->serviceException();
-    }
-
-    // Get the passed parameters
-    $myParams = array_keys(jApp::coord()->request->params);
-
-    // Request parameters
-    $data = array("map"=>$lizmapConfig->repositoryData['path'].$project.".qgs");
-
-    // on garde les paramètres intéressants
-    foreach($myParams as $param){
-      if(!in_array($param, array('module', 'action', 'C', 'project'))){
-        $data[$param] = jApp::coord()->request->params[$param];
-      }
-    }
-
-    // Construction of the request url : base url + parameters
+    // Get parameters
+    list($project, $repository, $params, $lizmapConfig, $lizmapCache) = $this->getServiceParameters();
     $url = $lizmapConfig->wmsServerURL.'?';
-    $params = http_build_query($data);
-    // On remplace certains caractères (plus besoin si php 5.4, alors utiliser le 4ème paramètre de http_build_query)
-    $a = array('+', '_', '.', '-','%3A');
-    $b = array('%20', '%5F', '%2E', '%2D',':');
-    $params = str_replace($a, $b, $params);
+    $bparams = http_build_query($params);
+    // replace some chars (not needed in php 5.4, use the 4th parameter of http_build_query)
+    $a = array('+', '_', '.', '-');
+    $b = array('%20', '%5F', '%2E', '%2D');
+    $bparams = str_replace($a, $b, $bparams); 
+    $querystring = $url . $bparams;
 
-    $ch = curl_init();
-    curl_setopt($ch, CURLOPT_HEADER, 0);
-    curl_setopt($ch, CURLOPT_URL, $url . $params);
-    curl_setopt( $ch, CURLOPT_SSL_VERIFYPEER, false );
-    curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-    curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
-
-    $content = curl_exec($ch);
-    $response = curl_getinfo($ch);
-    curl_close($ch);
+    // Get remote data
+    $getRemoteData = $lizmapCache->getRemoteData(
+      $querystring,
+      $lizmapConfig->proxyMethod,
+      $lizmapConfig->debugMode
+    );
+    $data = $getRemoteData[0];
+    $mime = $getRemoteData[1];
 
     $rep = $this->getResponse('binary');
-    $rep->mimeType = $response['content_type'];
-    $rep->content = $content;
+    $rep->mimeType = $mime;
+    $rep->content = $data;
     $rep->doDownload  =  false;
-    $rep->outputFileName  =  'mapserver';
+    $rep->outputFileName  =  'getPrint';
 
     return $rep;
   }
@@ -524,123 +416,63 @@ class serviceCtrl extends jController {
 
   /**
   * Send the JSON configuration file for a specified project
-  * @param $project Name of the project
+  * @param string $repository Lizmap Repository
+  * @param string $project Name of the project
   * @return JSON configuration file for the specified project.
   */
   function getProjectConfig(){
 
-    $rep = $this->getResponse('text');
-    // Get the project
-    $project = $this->param('project');
-
-    if(!$project){
-      // Return the error in JSON
-      jMessage::add('The parameter project is mandatory !', 'ProjectNotDefind');
-      return $this->serviceException();
-    }
-
-    // Get repository data
-    $repository = $this->param('repository');
-    jClasses::inc('lizmap~lizmapConfig');
-    $lizmapConfig = new lizmapConfig($repository);
-
-    // Redirect if no rights to access this repository
-    if(!jacl2::check('lizmap.repositories.view', $lizmapConfig->repositoryKey)){
-      jMessage::add(jLocale::get('view~default.repository.access.denied'), 'AuthorizationRequired');
-      return $this->serviceException();
-    }
-
-    // Get the corresponding Qgis project configuration
-    $configPath = $lizmapConfig->repositoryData['path'].$project.'.qgs.cfg';
-    // Read Json content from config file
-    $configRead = jFile::read($configPath);
+    // Get parameters
+    list($project, $repository, $params, $lizmapConfig, $lizmapCache) = $this->getServiceParameters();
 
     // Read the QGIS project file to get the layer drawing order
-    // Get project data from XML .qgs
-    $layersOrder = array();    
-    $use_errors = libxml_use_internal_errors(true);
-    $go = true; $errorlist = array();
-    // Create a DOM instance
-    $qgsLoad = simplexml_load_file($lizmapConfig->repositoryData['path'].$project.'.qgs');
-    if(!$qgsLoad) {
-      foreach(libxml_get_errors() as $error) {
-        $errorlist[] = $error;
-      }
-      $go = false;
-    }
+    $qgisProjectClass = jClasses::getService('lizmap~qgisProject');
+    $xpath = '//legendlayer';
+    list($go, $qgsLoad, $xpathItems, $errorlist) = $qgisProjectClass->readQgisProject($lizmapConfig, $project, $xpath);
+    
+    $layersOrder = array();  
     if($go){
-      $layers =  $qgsLoad->xpath('//legendlayer');
+      $layers =  $xpathItems;
       foreach($layers as $layer){
         if($layer->attributes()->drawingOrder and $layer->attributes()->drawingOrder >= 0){
           $layersOrder[(string)$layer->attributes()->name] = (integer)$layer->attributes()->drawingOrder;
         }
       }
     }
+    
+    // Get the corresponding Qgis project configuration
+    $configPath = $lizmapConfig->repositoryData['path'].$project.'.qgs.cfg';
+    // Read Json content from config file
+    $configRead = jFile::read($configPath);    
     if(!empty($layersOrder)){
       $configJson = json_decode($configRead);
       $configJson->layersOrder = $layersOrder;
       $configRead = json_encode($configJson);
     }
-        
+    
+    $rep = $this->getResponse('text');
     $rep->content = $configRead;
-
     return $rep;
 
   }
 
   /**
   * GetFeature
-  * @param $project Name of the project : mandatory
+  * @param string $repository Lizmap Repository
+  * @param string $project Name of the project : mandatory
   * @return Image rendered by the Map Server.
   */
   function GetFeature(){
 
-    $rep = $this->getResponse('text');
-    // Get the project
-    $project = $this->param('project');
-
-    if(!$project){
-      jMessage::add('The parameter project is mandatory !', 'ProjectNotDefind');
-      return $this->serviceException();
-    }
-
-    // Get the passed parameters
-    $myParams = array_keys(jApp::coord()->request->params);
-
-    // Get repository data
-    $repository = $this->param('repository');
-    jClasses::inc('lizmap~lizmapConfig');
-    $lizmapConfig = new lizmapConfig($repository);
-
-    // Redirect if no rights to access this repository
-    if(!jacl2::check('lizmap.repositories.view', $lizmapConfig->repositoryKey)){
-      jMessage::add(jLocale::get('view~default.repository.access.denied'), 'AuthorizationRequired');
-      return $this->serviceException();
-    }
-
-    // Request parameters
-    $params = array("map"=>$lizmapConfig->repositoryData['path'].$project.".qgs");
-    // on garde les paramètres intéressants
-    foreach($myParams as $param){
-      if(!in_array($param, array('module', 'action', 'C', 'project'))){
-        $params[$param] = jApp::coord()->request->params[$param];
-      }
-    }
-
-    // Get data
-    $lizmapCache = jClasses::getService('lizmap~lizmapCache');
-    $params = $lizmapCache->normalizeParams($params);
+    // Get parameters
+    list($project, $repository, $params, $lizmapConfig, $lizmapCache) = $this->getServiceParameters();
 
     // Construction of the request url : base url + parameters
     $url = $lizmapConfig->wmsServerURL.'?';
     $bparams = http_build_query($params);
-#    // On remplace certains caractères (plus besoin si php 5.4, alors utiliser le 4ème paramètre de http_build_query)
-#    $a = array('+', '_', '.', '-');
-#    $b = array('%20', '%5F', '%2E', '%2D');
-#    $bparams = str_replace($a, $b, $bparams);
+    $querystring = $url . $bparams;
 
     // Get remote data
-    $querystring = $url . $bparams;
     $getRemoteData = $lizmapCache->getRemoteData(
       $querystring,
       $lizmapConfig->proxyMethod,
