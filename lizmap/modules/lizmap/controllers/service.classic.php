@@ -375,8 +375,24 @@ class serviceCtrl extends jController {
         // Get template content
         $popupTemplate = (string)trim($configLayers->$layername->popupTemplate);
         // Use it if not empty
-        if(!empty($popupTemplate))
+        if(!empty($popupTemplate)){
           $templateConfigured = True;
+          // first replace all "media/bla/bla/llkjk.ext" by full url       
+          $popupTemplate = preg_replace_callback(
+            '#(["\']){1}(media/.+\.\w{3,10})(["\']){1}#', 
+            create_function(
+              '$matches',
+              'return jUrl::getFull(
+                \'view~media:getMedia\',
+                array(\'repository\'=>$repository, \'project\'=>$project, \'path\'=>$matches[2]),
+                0,
+                $_SERVER[\'SERVER_NAME\']
+                );'
+            ),
+            $popupTemplate
+          );        
+        }
+
       }
 
       // Loop through the features
@@ -386,7 +402,8 @@ class serviceCtrl extends jController {
         if($templateConfigured){
 
           $popupFeatureContent = $popupTemplate;
-
+          
+          // then replace all column data by appropriate content
           foreach($feature->Attribute as $attribute){
             // Replace #col and $col by colomn name and value
             $popupFeatureContent = $popupClass->getHtmlFeatureAttribute(
