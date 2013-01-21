@@ -190,9 +190,10 @@ var lizMap = function() {
     if ($('#close-menu').is(':visible'))
       h -= $('#close-menu').outerHeight(true);
     h -= $('#toolbar').outerHeight(true);
-    if ($('#locate-menu').is(':visible'))
+    if ($('#locate-menu').is(':visible') && $('#menu #locate-menu').length != 0)
       h -= $('#locate-menu').outerHeight(true);
-    h -= $('#baselayer-menu').outerHeight(true);
+    if ($('#baselayer-menu').is(':visible'))
+      h -= $('#baselayer-menu').outerHeight(true);
     h -= $('#switcher-menu').children().first().outerHeight(true);
 
     var sw = $('#switcher');
@@ -1024,6 +1025,9 @@ var lizMap = function() {
           self.button('option','icons',{primary:'ui-icon-triangle-1-e'});
         $('#baselayer-select-input').toggle();
       });
+      // Hide baselayer-menu if only one base layer inside
+      if (baselayers.length==1)
+        $('#baselayer-menu').hide();
     } else {
       // hide elements for baselayers
       //$('#baselayerContainer').hide().prev().hide();
