@@ -78,9 +78,6 @@ var lizMap = function() {
       // Add mobile class to content
       $('#content').addClass('mobile');
 
-      // Change menu and map content width
-      $('#menu').css('width', '100%');
-
       // hide overview map
       if (config.options.hasOverview){
         $('#overview-bar button').hide();
@@ -99,9 +96,6 @@ var lizMap = function() {
     {
       // Remove mobile class to content
       $('#content').removeClass('mobile');
-
-      // Change menu and map content width
-      $('#menu').css('width', '300px');
 
       // Display baselayer choice 100%
       $('#baselayer-select-input').css('bottom','0px').css('left','300px').css('right','')

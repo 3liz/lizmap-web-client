@@ -77,6 +77,11 @@ body {
   width : 300px;
   background : #F0F0F0;
 }
+
+#content.mobile #menu{
+  width:100%;
+}
+
 #menu .ui-icon-locate-open {
   background-position : -16px -16px;
 }
