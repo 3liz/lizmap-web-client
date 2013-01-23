@@ -122,23 +122,27 @@ var lizMap = function() {
    */
   function updateContentSize(){
 
-   updateMobile();
+    updateMobile();
 
-   var h = $('body').parent()[0].clientHeight;
-   h = h - $('#header').height();
-   h = h - $('#headermenu').height();
+    // calculate height height
+    var h = $('body').parent()[0].clientHeight;
+    if(!h)
+      h = $('window').innerHeight();
+    h = h - $('#header').height();
+    h = h - $('#headermenu').height();
 
-   $('#menu').height(h);
-   $('#map').height(h);
-   var w = $('body').parent()[0].offsetWidth;
+    $('#map').height(h);
 
-   if ($('#menu').is(':hidden')) {
-     $('#map-content').css('margin-left',0);
-   } else {
-     w -= $('#menu').width();
-     $('#map-content').css('margin-left',$('#menu').width());
-   }
-   $('#map').width(w);
+    // calculate map width
+    var w = $('body').parent()[0].offsetWidth;
+
+    if ($('#menu').is(':hidden')) {
+      $('#map-content').css('margin-left',0);
+    } else {
+      w -= $('#menu').width();
+      $('#map-content').css('margin-left',$('#menu').width());
+    }
+    $('#map').width(w);
 
     updateMapSize();
 
@@ -147,7 +151,7 @@ var lizMap = function() {
 
   /**
    * PRIVATE function: updateMapSize
-   * update the map size
+   * query OpenLayers to update the map size
    */
  function updateMapSize(){
     var center = map.getCenter();
@@ -168,44 +172,38 @@ var lizMap = function() {
    * update the switcher size
    */
   function updateSwitcherSize(){
-    /*
-    switcherMaxHeight = $('body').parent()[0].clientHeight - $('#header').height() - 20 - $('#switcherContainer').outerHeight() + $('#switcher').outerHeight();
-    $('#switcher').css('height','auto').css('overflow','visible');
-    if ($('#switcher').outerHeight() > switcherMaxHeight)
-      $('#switcher').height(switcherMaxHeight).css('overflow','auto');
-      */
-    var h = $('body').parent()[0].clientHeight;
-    if(!h)
-        h = $('window').innerHeight();
-
-    h = h - $('#header').height();
-    h = h - $('#headermenu').height();
-    $('#menu').height(h);
-    //var h = $('#menu').height();
+    // calculate switcher height
+    // based on map height
+    h = $('#map').height();
+    // depending on element in #menu div
     if ($('#close-menu').is(':visible'))
       h -= $('#close-menu').outerHeight(true);
     h -= $('#toolbar').outerHeight(true);
-    if ($('#locate-menu').is(':visible') && $('#menu #locate-menu').length != 0)
-      h -= $('#locate-menu').outerHeight(true);
-    if ($('#baselayer-menu').is(':visible'))
-      h -= $('#baselayer-menu').outerHeight(true);
+    if ($('#locate-menu').is(':visible') && $('#menu #locate-menu').length != 0) {
+      h -= $('#locate-menu').children().first().outerHeight(true);
+      h -= $('#locate-menu').children().last().outerHeight(true);
+    }
+    if ($('#baselayer-menu').is(':visible')) {
+      h -= $('#baselayer-menu').children().first().outerHeight(true);
+      h -= $('#baselayer-menu').children().last().outerHeight(true);
+    }
     h -= $('#switcher-menu').children().first().outerHeight(true);
 
     var sw = $('#switcher');
-
+    // depending on it's own css box parameters
     h -= (parseInt(sw.css('margin-top')) ? parseInt(sw.css('margin-top')) : 0 ) ;
     h -= (parseInt(sw.css('margin-bottom')) ? parseInt(sw.css('margin-bottom')) : 0 ) ;
     h -= (parseInt(sw.css('padding-top')) ? parseInt(sw.css('padding-top')) : 0 ) ;
     h -= (parseInt(sw.css('padding-bottom')) ? parseInt(sw.css('padding-bottom')) : 0 ) ;
     h -= (parseInt(sw.css('border-top-width')) ? parseInt(sw.css('border-top-width')) : 0 ) ;
     h -= (parseInt(sw.css('border-bottom-width')) ? parseInt(sw.css('border-bottom-width')) : 0 ) ;
+
+    //depending on it's parent padding
     var swp = sw.parent();
     h -= (parseInt(swp.css('padding-top')) ? parseInt(swp.css('padding-top')) : 0 ) ;
     h -= (parseInt(swp.css('padding-bottom')) ? parseInt(swp.css('padding-bottom')) : 0 ) ;
 
     $('#switcher').height(h);
-
-
   }
 
 
@@ -610,10 +608,15 @@ var lizMap = function() {
     // get and define the max extent
     var bbox = config.options.bbox;
     var extent = new OpenLayers.Bounds(Number(bbox[0]),Number(bbox[1]),Number(bbox[2]),Number(bbox[3]));
+
+    // calculate the map height
     var mapHeight = $('body').parent()[0].clientHeight;
+    if(!mapHeight)
+        mapHeight = $('window').innerHeight();
     mapHeight = mapHeight - $('#header').height();
     mapHeight = mapHeight - $('#headermenu').height();
     $('#map').height(mapHeight);
+
     var res = extent.getHeight()/$('#map').height();
 
     var scales = config.options.mapScales;
@@ -711,7 +714,7 @@ var lizMap = function() {
            //pan button
            $('#navbar button.pan').click();
 
-           updateSwitcherSize();
+           //updateSwitcherSize();
 
 //           alert('scale = ' + map.getScale() + '\nresolution=' + map.getResolution());
          }
