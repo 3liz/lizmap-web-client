@@ -133,14 +133,15 @@ var lizMap = function() {
 
     $('#map').height(h);
 
-    // calculate map width
+    // calculate map width depending on theme configuration 
+    // (fullscreen map or not, mobile or not)
     var w = $('body').parent()[0].offsetWidth;
 
-    if ($('#menu').is(':hidden')) {
+    if ($('#menu').is(':hidden') || $('#map-content').hasClass('fullscreen')) {
       $('#map-content').css('margin-left',0);
     } else {
       w -= $('#menu').width();
-      $('#map-content').css('margin-left',$('#menu').width());
+      $('#map-content').css('margin-left', $('#menu').width());
     }
     $('#map').width(w);
 
@@ -203,7 +204,16 @@ var lizMap = function() {
     h -= (parseInt(swp.css('padding-top')) ? parseInt(swp.css('padding-top')) : 0 ) ;
     h -= (parseInt(swp.css('padding-bottom')) ? parseInt(swp.css('padding-bottom')) : 0 ) ;
 
-    $('#switcher').height(h);
+    // If map if fullscreen, get #menu position : bottom or top
+    h -= 2 * (parseInt($('#menu').css('bottom')) ? parseInt($('#menu').css('bottom')) : 0 ) ;
+
+    if($('#map-content').hasClass('fullscreen')){
+        $('#switcher').css('max-height', h);
+    }
+    else
+        $('#switcher').height(h);
+    
+    
   }
 
 
@@ -246,6 +256,7 @@ var lizMap = function() {
       legendParams['LAYERFONTSIZE'] = 0;
       legendParams['LAYERSPACE'] = 0;
     }
+    legendParams['LAYERFONTBOLD'] = "FALSE";
     if (withScale)
       legendParams['SCALE'] = map.getScale();
     var legendParamsString = OpenLayers.Util.getParameterString(legendParams);
