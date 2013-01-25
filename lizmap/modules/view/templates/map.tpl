@@ -17,7 +17,6 @@
   </div>
 </div>
 
-
 <div id="headermenu" class="navbar navbar-fixed-top">
   <div id="auth" class="navbar-inner">
     <ul class="nav pull-right">
@@ -95,7 +94,7 @@
       <button class="zoom-in" title="{@view~map.navbar.zoomin.hover@}"></button><br/>
       <div class="slider" title="{@view~map.navbar.slider.hover@}"></div>
       <button class="zoom-out" title="{@view~map.navbar.zoomout.hover@}"></button>
-      <div class="history"><button class="previous" title="{@view~map.navbar.previous.hover@}"/><button class="next" title="{@view~map.navbar.next.hover@}"/></div>
+      <div class="history"><button class="previous" title="{@view~map.navbar.previous.hover@}"></button><button class="next" title="{@view~map.navbar.next.hover@}"></button></div>
       <span id="zoom-in-max-msg" class="ui-widget-content ui-corner-all" style="display:none;">{@view~map.message.zoominmax@}</span>
     </span>
     <div id="overview-box">
