@@ -76,6 +76,7 @@ a:hover {
   min-height:25px;
   height:25px;
   padding: 0px 10px;
+  filter:none\9;
 }
 
 

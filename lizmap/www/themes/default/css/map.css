@@ -144,6 +144,7 @@ body {
 #locate div.locate-layer select {
   background: transparent;
   width : 110%;
+  width: 102%\9;
   text-shadow: none;
   border: 0;
   border-radius: 0;
