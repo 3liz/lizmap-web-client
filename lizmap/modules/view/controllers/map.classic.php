@@ -118,6 +118,12 @@ class mapCtrl extends jController {
       $WMSContactPerson= (string)$qgsLoad->properties->WMSContactPerson;
       $WMSContactPhone = (string)$qgsLoad->properties->WMSContactPhone;
     }
+    
+    // Set page title from projet title
+    if($WMSServiceTitle)
+      $rep->title = $WMSServiceTitle;
+    else
+      $rep->title = "$repository - $project";
 
     $rep->addJSCode("
       $(window).load(function() {

@@ -1600,8 +1600,8 @@ var lizMap = function() {
             return true;
 
           //set title and abstract coming from capabilities
-          document.title = capabilities.title ? capabilities.title : capabilities.service.title;
-          $('#title').html('<h1>'+(capabilities.title ? capabilities.title : capabilities.service.title)+'</h1>');
+//          document.title = capabilities.title ? capabilities.title : capabilities.service.title;
+//          $('#title').html('<h1>'+(capabilities.title ? capabilities.title : capabilities.service.title)+'</h1>');
           //$('#abstract').html(capabilities.abstract ? capabilities.abstract : capabilities.service.abstract);
           $('#abstract').html(capabilities.abstract ? capabilities.abstract : '');
 

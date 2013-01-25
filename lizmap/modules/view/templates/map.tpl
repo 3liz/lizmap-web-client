@@ -7,7 +7,13 @@
     <h1>{$repositoryLabel}</h1>
   </div>
   <div id="title">
-    <h1>{@view~map.title.h1@}</h1>
+    <h1>
+    {if $WMSServiceTitle}
+      {$WMSServiceTitle}
+    {else}
+      {@view~map.title.h1@}
+    {/if}
+    </h1>
   </div>
 </div>
 
