@@ -118,7 +118,44 @@ a:hover {
 .dropdown-menu {
   background-color: #F5F5F5;
 }
-
+.navbar .nav > li.dropdown > a.dropdown-toggle:hover .caret {
+  border-top-color:white;
+  border-bottom-color:white;
+}
+.navbar .nav .icon {
+  display:inline-block;
+  vertical-align:middle;
+  background-image:url("images/sprite_20_tools.png");
+  background-repeat:no-repeat;
+  width:20px;
+  height:20px;
+}
+.navbar .nav .caret {
+  display:inline-block;
+  vertical-align:text-top;
+}
+.navbar .nav .text {
+  display:inline-block;
+  vertical-align:middle;
+}
+.navbar .nav .login .icon {
+  background-position: -20px -80px;
+}
+.navbar .nav .login a:hover .icon {
+  background-position: 0px -80px;
+}
+.navbar .nav .user .icon {
+  background-position: -20px -80px;
+}
+.navbar .nav .user a:hover .icon {
+  background-position: 0px -80px;
+}
+.navbar .nav .home .icon {
+  background-position: -20px -100px;
+}
+.navbar .nav .home a:hover .icon {
+  background-position: 0px -100px;
+}
 #content {
   padding-top: 20px;
 }

@@ -90,7 +90,9 @@ var lizMap = function() {
       if( $('#menu').is(':visible'))
         $('#menu').hide();
 
-      $('#toggleLegend').html($('#toggleLegendOn').attr('value'));
+      $('#toggleLegend')
+        .attr('data-original-title',$('#toggleLegendOn').attr('value'))
+        .parent().attr('class','legend');
     }
     else
     {
@@ -111,7 +113,9 @@ var lizMap = function() {
       else
         $('#map-content').show();
 
-      $('#toggleLegend').html($('#toggleMapOnlyOn').attr('value'));
+      $('#toggleLegend')
+        .attr('data-original-title',$('#toggleMapOnlyOn').attr('value'))
+        .parent().attr('class','map');
     }
   }
 
@@ -822,9 +826,14 @@ var lizMap = function() {
       $('#menu').hide();
       if($('#content').hasClass('mobile')) {
         $('#map-content').show();
-        $('#toggleLegend').html($('#toggleLegendOn').attr('value'));
-      } else
-        $('#toggleLegend').html($('#toggleLegendMapOn').attr('value'));
+        $('#toggleLegend')
+          .attr('data-original-title',$('#toggleLegendOn').attr('value'))
+          .parent().attr('class','legend');
+      } else {
+        $('#toggleLegend')
+          .attr('data-original-title',$('#toggleLegendMapOn').attr('value'))
+          .parent().attr('class','legend');
+      }
       $('#content .ui-icon-open-menu').show();
       updateContentSize();
     });
@@ -832,9 +841,14 @@ var lizMap = function() {
       $('#menu').show();
       if($('#content').hasClass('mobile')) {
         $('#map-content').hide();
-        $('#toggleLegend').html($('#toggleMapOn').attr('value'));
-      } else
-        $('#toggleLegend').html($('#toggleMapOnlyOn').attr('value'));
+        $('#toggleLegend')
+          .attr('data-original-title',$('#toggleMapOn').attr('value'))
+          .parent().attr('class','map');
+      } else {
+        $('#toggleLegend')
+          .attr('data-original-title',$('#toggleMapOn').attr('value'))
+          .parent().attr('class','map');
+      }
       $(this).hide();
       updateContentSize();
     });
@@ -1826,6 +1840,7 @@ lizMap.events.on({
     })
     .css('cursor', 'pointer')
     .show();
+    $('#headermenu .navbar-inner .nav a[rel="tooltip"]').tooltip();
 
    }
 });

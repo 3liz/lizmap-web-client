@@ -11,10 +11,11 @@
   <div id="auth" class="navbar-inner">
     <ul class="nav pull-right">
       {if $isConnected}
-      <li class="dropdown">
+      <li class="user dropdown">
         <a class="dropdown-toggle" data-toggle="dropdown" href="#">
-          <b id="info-user-login">{$user->login|eschtml}</b>
-          <b class="caret"></b>
+          <span class="icon"></span>
+          <b id="info-user-login" class="text">{$user->login|eschtml}</b>
+          <span class="caret"></span>
         </a>
         <ul class="dropdown-menu pull-right">
           {ifacl2 'auth.user.view'}
@@ -24,8 +25,11 @@
         </ul>
       </li>
       {else}
-      <li>
-        <a href="{jurl 'jauth~login:form'}">{@view~default.header.connect@}</a>
+      <li class="login">
+        <a href="{jurl 'jauth~login:form'}">
+          <span class="icon"></span>
+          <span class="text">{@view~default.header.connect@}</span>
+        </a>
       </li>
       {/if}
     </ul>

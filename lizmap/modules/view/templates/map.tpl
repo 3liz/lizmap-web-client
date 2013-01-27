@@ -20,20 +20,31 @@
 <div id="headermenu" class="navbar navbar-fixed-top">
   <div id="auth" class="navbar-inner">
     <ul class="nav pull-right">
-      <li>
-        <a id="toggleLegend">{@view~map.map.only@}</a>
+      <li class="map">
+        <a id="toggleLegend" rel="tooltip" data-original-title="{@view~map.map.only@}" data-placement="bottom" href="#">
+          <span class="icon"></span>
+        </a>
         <span id="toggleLegendOn" value="{@view~map.legend@}"/>
         <span id="toggleMapOn" value="{@view~map.map@}"/>
         <span id="toggleLegendMapOn" value="{@view~map.legend.map@}"/>
         <span id="toggleMapOnlyOn" value="{@view~map.map.only@}"/>
       </li>
-      <li><a href="{jurl 'view~default:index'}">{@view~default.repository.list.title@}</a></li>
-      <li><a id="displayMetadata">{@view~map.metadata.link.label@}</a></li>
+      <li class="information">
+        <a id="displayMetadata" rel="tooltip" data-original-title="{@view~map.metadata.link.label@}" data-placement="bottom" href="#">
+          <span class="icon"></span>
+        </a>
+      </li>
+      <li class="home">
+        <a href="{jurl 'view~default:index'}" rel="tooltip" data-original-title="{@view~default.repository.list.title@}" data-placement="bottom" href="#">
+          <span class="icon"></span>
+        </a>
+      </li>
       {if $isConnected}
-      <li class="dropdown">
+      <li class="user dropdown">
         <a class="dropdown-toggle" data-toggle="dropdown" href="#">
-          <b id="info-user-login">{$user->login|eschtml}</b>
-          <b class="caret"></b>
+          <span class="icon"></span>
+          <span class="text"><b id="info-user-login">{$user->login|eschtml}</b></span>
+          <span class="caret"></span>
         </a>
         <ul class="dropdown-menu pull-right">
           {ifacl2 'auth.user.view'}
@@ -43,8 +54,11 @@
         </ul>
       </li>
       {else}
-      <li>
-        <a href="{jurl 'jauth~login:form'}">{@view~default.header.connect@}</a>
+      <li class="login">
+        <a href="{jurl 'jauth~login:form'}">
+          <span class="icon"></span>
+          <span class="text"><b>{@view~default.header.connect@}</b></span>
+        </a>
       </li>
       {/if}
     </ul>
@@ -62,7 +76,7 @@
     </div>
     <div id="toolbar" style="height:0; display:none;"></div>
     <div id="locate-menu" style="display:none;">
-      <h3><span class="title"><button class="btn-locate-clear btn btn-mini btn-link" style="float:right; text-shadow:none;" type="button">Clear!</button>{@view~map.locatemenu.title@}</span></h3>
+      <h3><span class="title"><button class="btn-locate-clear btn btn-mini btn-link" style="float:right; text-shadow:none;" type="button"></button>{@view~map.locatemenu.title@}</span></h3>
       <div class="menu-content">
         <div id="locate">
         </div>
