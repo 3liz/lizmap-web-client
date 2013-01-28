@@ -6,10 +6,11 @@
      {else}<p class="navbar-text">{$item->content}</p>{/if}
     </li>
   {/foreach}
-  <li class="dropdown">
+  <li class="user dropdown">
     <a class="dropdown-toggle" data-toggle="dropdown" href="#" id="info-user">{*<strong>{@master_admin~gui.header.user@}</strong>*}
-     <b id="info-user-login">{$user->login|eschtml}</b>
-     <b class="caret"></b>
+      <span class="icon"></span>
+      <span class="text"><b id="info-user-login">{$user->login|eschtml}</b></span>
+      <span class="caret"></span>
     </a>
     <ul class="dropdown-menu pull-right">
       {ifacl2 'auth.user.view'}

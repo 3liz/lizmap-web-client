@@ -41,7 +41,7 @@
       </li>
       {if $isConnected}
       <li class="user dropdown">
-        <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+        <a class="dropdown-toggle" data-toggle="dropdown" href="#" id="user-info">
           <span class="icon"></span>
           <span class="text"><b id="info-user-login">{$user->login|eschtml}</b></span>
           <span class="caret"></span>
