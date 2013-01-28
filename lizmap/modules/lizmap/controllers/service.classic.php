@@ -429,7 +429,8 @@ class serviceCtrl extends jController {
     $qgisProjectClass = jClasses::getService('lizmap~qgisProject');
     $xpath = '//legendlayer';
     list($go, $qgsLoad, $xpathItems, $errorlist) = $qgisProjectClass->readQgisProject($lizmapConfig, $project, $xpath);
-    $updateDrawingOrder = (string)$qgsLoad->xpath('//legend')[0]->attributes()->updateDrawingOrder;
+    $legend = $qgsLoad->xpath('//legend');
+    $updateDrawingOrder = (string)$legend[0]->attributes()->updateDrawingOrder;
     
     $layersOrder = array();  
     if($go and $updateDrawingOrder == 'false'){
