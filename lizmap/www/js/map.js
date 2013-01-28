@@ -1667,6 +1667,39 @@ var lizMap = function() {
               });
             }
           });
+
+          // Toggle legend
+          $('#toggleLegend').click(function(){
+            if ($('#menu').is(':visible')) {
+              $('.ui-icon-close-menu').click();
+              $('#metadata').hide();
+            }
+            else{
+              $('.ui-icon-open-menu').click();
+              $('#metadata').hide();
+            }
+            return false;
+          });
+
+          // Toggle locate
+          $('#toggleLocate').click(function(){
+            $('#locate-menu').toggle();
+            $('#metadata').hide();
+            updateSwitcherSize();
+            return false;
+          });
+
+          // Toggle Metadata
+          $('#displayMetadata').click(function(){
+            $('#metadata').toggle();
+            return false;
+          });
+          $('#hideMetadata').click(function(){
+            $('#metadata').hide();
+            return false;
+          });
+
+          $('#headermenu .navbar-inner .nav a[rel="tooltip"]').tooltip();
           self.events.triggerEvent("uicreated", self);
 
           $('body').css('cursor', 'auto');
@@ -1826,21 +1859,6 @@ lizMap.events.on({
      }
    ,'uicreated':function(evt){
   //alert('uicreated')
-
-    // Toggle legend
-    $('#toggleLegend').click(function(){
-      if ($('#menu').is(':visible')) {
-        $('.ui-icon-close-menu').click();
-        $('#metadata').hide();
-      }
-      else{
-        $('.ui-icon-open-menu').click();
-        $('#metadata').hide();
-      }
-    })
-    .css('cursor', 'pointer')
-    .show();
-    $('#headermenu .navbar-inner .nav a[rel="tooltip"]').tooltip();
 
    }
 });

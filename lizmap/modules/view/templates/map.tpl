@@ -20,6 +20,11 @@
 <div id="headermenu" class="navbar navbar-fixed-top">
   <div id="auth" class="navbar-inner">
     <ul class="nav pull-right">
+      <li class="home">
+        <a href="{jurl 'view~default:index'}" rel="tooltip" data-original-title="{@view~default.repository.list.title@}" data-placement="bottom" href="#">
+          <span class="icon"></span>
+        </a>
+      </li>
       <li class="map">
         <a id="toggleLegend" rel="tooltip" data-original-title="{@view~map.map.only@}" data-placement="bottom" href="#">
           <span class="icon"></span>
@@ -29,13 +34,13 @@
         <span id="toggleLegendMapOn" value="{@view~map.legend.map@}"/>
         <span id="toggleMapOnlyOn" value="{@view~map.map.only@}"/>
       </li>
-      <li class="information">
-        <a id="displayMetadata" rel="tooltip" data-original-title="{@view~map.metadata.link.label@}" data-placement="bottom" href="#">
+      <li class="locate">
+        <a id="toggleLocate" rel="tooltip" data-original-title="{@view~map.locatemenu.title@}" data-placement="bottom" href="#">
           <span class="icon"></span>
         </a>
       </li>
-      <li class="home">
-        <a href="{jurl 'view~default:index'}" rel="tooltip" data-original-title="{@view~default.repository.list.title@}" data-placement="bottom" href="#">
+      <li class="information">
+        <a id="displayMetadata" rel="tooltip" data-original-title="{@view~map.metadata.link.label@}" data-placement="bottom" href="#">
           <span class="icon"></span>
         </a>
       </li>

@@ -51,6 +51,12 @@ body {
 .navbar .nav .legend a:hover .icon {
   background-position: 0px -240px;
 }
+.navbar .nav .locate .icon {
+  background-position: -20px -160px;
+}
+.navbar .nav .locate a:hover .icon {
+  background-position: 0px -160px;
+}
 
 #content {
   padding-top : 0px;

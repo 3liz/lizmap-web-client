@@ -125,20 +125,6 @@ class mapCtrl extends jController {
     else
       $rep->title = "$repository - $project";
 
-    $rep->addJSCode("
-      $(window).load(function() {
-        $('#displayMetadata').click(function(){
-          //$('#metadata').css('display', 'block');
-          $('#metadata').toggle();
-          return false;
-        })
-        $('#hideMetadata').click(function(){
-          $('#metadata').css('display', 'none');
-        });
-      });
-    ");
-
-
     // Assign some properties to the body template
     $assign = array(
       'repositoryLabel'=>$lizmapConfig->repositoryData['label'],
