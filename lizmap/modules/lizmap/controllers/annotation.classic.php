@@ -115,9 +115,10 @@ class annotationCtrl extends jController {
     // and create a form control if needed
     jClasses::inc('lizmap~qgisFormControl');
     $controls = array();
-    
+
     while($record = $rs->fetchArray()){
 		  $ref = $record['name'];
+
 		  // store fields and pk
 		  $fields[] = $ref;
 		  // detect primary key column
@@ -131,7 +132,10 @@ class annotationCtrl extends jController {
 		  if($xpathItems[0]->aliases)
   		  $aliasXml = $xpathItems[0]->aliases[0]->xpath("alias[@field='$ref']");
 		  $dataType = $record['type'];
-		  $edittype = $edittypesXml->xpath("edittype[@name='$ref']");
+		  $edittype = null;
+		  if($edittypesXml)
+		    $edittype = $edittypesXml->xpath("edittype[@name='$ref']");
+    
 		  $controls[$ref] = new qgisFormControl($ref, $edittype, $aliasXml, $categoriesXml, $dataType);
 		  $form->addControl($controls[$ref]->ctrl);
 	    $form->setReadOnly($ref, $controls[$ref]->isReadOnly);
@@ -140,7 +144,7 @@ class annotationCtrl extends jController {
 		if(!$pk)
 		  $pk = $fields[0];
 		  
-    // Optionnaly query for the feature    
+    // Optionnaly query for the feature
     
     if($save){
       // Set the form from request

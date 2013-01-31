@@ -115,11 +115,18 @@ class qgisFormControl{
       'blob'=>'blob',
       'bytea'=>'blob',
       'geometry'=>'geometry',
+      'geometrycollection'=>'geometry',
       'point'=>'geometry',
+      'multipoint'=>'geometry',
       'line'=>'geometry',
+      'linestring'=>'geometry',
+      'multilinestring'=>'geometry',
       'polygon'=>'geometry',
+      'multipolygon'=>'geometry',
       'bool'=>'boolean',
-      'boolean'=>'boolean'
+      'boolean'=>'boolean',
+      'date'=>'text',
+      'datetime'=>'text'
     );
     
 
@@ -148,7 +155,10 @@ class qgisFormControl{
       $this->rendererCategories = $rendererCategories;
 
       // Get qgis edittype data
-      $this->fieldEditType = (integer)$this->edittype[0]->attributes()->type;   
+      if($this->edittype)
+        $this->fieldEditType = (integer)$this->edittype[0]->attributes()->type;   
+      else
+        $this->fieldEditType = 0;
 
       // Get jform control type
       $markup = $this->qgisEdittypeMap[$this->fieldEditType]['jform']['markup'];
