@@ -30,6 +30,7 @@ class configCtrl extends jController {
 
 
   // Prefix of jacl2 subjects corresponding to lizmap web client view interface
+  // used to get only non admin subjects
   protected $lizmapClientPrefix = 'lizmap.repositories|lizmap.tools';
   // Black list some non wanted groups
   protected $groupBlacklist = array('users');
@@ -83,11 +84,17 @@ class configCtrl extends jController {
     $daosubject = jDao::get('jacl2db~jacl2subject','jacl2_profile');
     foreach($daosubject->findAllSubject() as $subject)
       $labels[$subject->id_aclsbj] = $this->getLabel($subject->id_aclsbj, $subject->label_key);
+      
+    // Get Lizmap version from project.xml
+    $xmlPath = jApp::appPath('project.xml');
+    $xmlLoad = simplexml_load_file($xmlPath);
+    $version = (string)$xmlLoad->info->version;
 
     $tpl = new jTpl();
     $tpl->assign('lizmapConfig', $lizmapConfig);
     $tpl->assign('data', $data);
     $tpl->assign('labels', $labels);
+    $tpl->assign('version', $version);
     $rep->body->assign('MAIN', $tpl->fetch('config'));
     $rep->body->assign('selectedMenuItem','lizmap_configuration');
 

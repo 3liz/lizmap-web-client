@@ -1,5 +1,14 @@
 {jmessage_bootstrap}
+
   <h1>{@admin~admin.configuration.h1@}</h1>
+
+
+  <div>
+    <h2>{@admin~admin.generic.h2@}</h2>
+    <dl>
+      <dt>{@admin~admin.generic.version.number.label@}</dt><dd>{$version}</dd>
+    </dl>
+  </div>
 
   {ifacl2 'lizmap.admin.services.view'}
   <!--Services-->
