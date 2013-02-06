@@ -42,11 +42,13 @@ class mediaCtrl extends jController {
     $path = $this->param('path');
     $repositoryPath = realpath($lizmapConfig->repositoryData['path']);
     $abspath = realpath($repositoryPath.'/'.$path);
+    $n_repositoryPath = str_replace('\\', '/', $repositoryPath);
+    $n_abspath = str_replace('\\', '/', $abspath);
 
     $ok = True;
     // Only allow files within the repository for safety reasons
-    // and in the media folder
-    if(!preg_match("#^$repositoryPath/media/#", $abspath)){
+    // and in the media folder    
+    if(!preg_match("#^".$n_repositoryPath."(/)?media/#", $n_abspath)){
       $ok = False;
     }
 

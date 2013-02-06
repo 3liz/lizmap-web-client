@@ -73,7 +73,10 @@ class popup{
         $lizmapConfig = new lizmapConfig($repository);
         $repositoryPath = realpath($lizmapConfig->repositoryData['path']);
         $abspath = realpath($repositoryPath.'/'.$attributeValue);
-        if(preg_match("#^$repositoryPath/media/#", $abspath) and file_exists($abspath)){
+        $n_repositoryPath = str_replace('\\', '/', $repositoryPath);
+        $n_abspath = str_replace('\\', '/', $abspath);
+        
+        if(preg_match("#^".$n_repositoryPath."(/)?media/#", $n_abspath) and file_exists($abspath)){
           $data = jFile::read($abspath);
         }
 
