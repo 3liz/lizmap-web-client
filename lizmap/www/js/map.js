@@ -974,16 +974,6 @@ var lizMap = function() {
       window.open(windowLink);
     });
 
-    // activate the close button
-    $('#switcherContainer .ui-dialog-titlebar-close').button({
-      text:false,
-      icons:{primary: "ui-icon-closethick"}
-    }).click(function(){
-      $('#toolbar button.switcher').button('option','icons',{primary:'liz-icon-switcher-collapsed'});
-      $('#switcherContainer').toggle();
-      return false;
-    });
-
     var projection = map.projection;
 
     // get the baselayer select content
@@ -1086,8 +1076,6 @@ var lizMap = function() {
       if (!l.isVisible)
         $('#switcher button.checkbox[name="layer"][value="'+l.name+'"]').click();
     }
-
-    $('#switcherContainer').toggle();
 
     if ('locateByLayer' in config) {
       var locateContent = [];
@@ -1349,28 +1337,6 @@ var lizMap = function() {
    * create the tool bar (collapse overview and switcher, etc)
    */
   function createToolbar() {
-    $('#toolbar button.switcher').button({
-      text:false,
-      icons:{primary: "liz-icon-switcher-open"}
-    }).click(function(){
-      var self = $(this);
-      var icons = self.button('option','icons');
-      if (icons.primary == 'liz-icon-switcher-open') {
-        self.button('option','icons',{primary:'liz-icon-switcher-collapsed'});
-        $('#switcherContainer').toggle();
-      } else {
-        self.button('option','icons',{primary:'liz-icon-switcher-open'});
-        $('#switcherContainer').toggle();
-      }
-      return false;
-    });
-    $('#toolbar button.overview').button({
-      text:false,
-      icons:{primary: "liz-icon-overview"}
-    }).click(function(){
-      $('#overviewmap').toggle();
-      return false;
-    });
     /*
     $('#toolbar button.print').button({
       text:false,
@@ -1400,10 +1366,8 @@ var lizMap = function() {
       window.open(url);
       return false;
     });
-    */
     $('#toolbar button.print').hide();
-
-    map.addControl(new OpenLayers.Control.Scale(document.getElementById('scalebar')));
+    */
   }
 
 
