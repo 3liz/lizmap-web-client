@@ -1688,6 +1688,8 @@ var lizMap = function() {
             updateSwitcherSize();
             return false;
           });
+          if ( !('locateByLayer' in config) )
+            $('#toggleLocate').parent().hide();
 
           // Toggle Metadata
           $('#displayMetadata').click(function(){
