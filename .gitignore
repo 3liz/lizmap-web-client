@@ -1,13 +1,9 @@
-syntax: glob
 *.orig
 *.rej
 *~
+*.DS_Store
 *.o
 *.swp
 *.log
 
 temp/lizmap/www/*
-
-
-syntax: regexp
-(^|/)\.DS_Store$
