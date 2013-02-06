@@ -84,9 +84,6 @@ var lizMap = function() {
         $('#overviewmap').hide();
       }
 
-      // Display baselayer choice 100%
-      $('#baselayer-select-input').css('bottom','50px').css('left','0px').css('right','0px')
-
       if( $('#menu').is(':visible'))
         $('#menu').hide();
 
@@ -98,9 +95,6 @@ var lizMap = function() {
     {
       // Remove mobile class to content
       $('#content').removeClass('mobile');
-
-      // Display baselayer choice 100%
-      $('#baselayer-select-input').css('bottom','0px').css('left','300px').css('right','')
 
       // Display overview map
       if (config.options.hasOverview){
@@ -986,64 +980,34 @@ var lizMap = function() {
       baselayer.units = projection.proj.units;
       map.addLayer(baselayer);
       var blConfig = config.layers[baselayer.name];
-      /*
       if (blConfig)
         select += '<option value="'+blConfig.name+'">'+blConfig.title+'</option>';
       else
         select += '<option value="'+baselayer.name+'">'+baselayer.name+'</option>';
-        */
+      /*
       if (blConfig)
         select.push('<input type="radio" name="baselayers" value="'+blConfig.name+'"><span class="baselayer-radio-label">'+blConfig.title+'</span></input>');
       else
         select.push('<input type="radio" name="baselayers" value="'+baselayer.name+'"><span class="baselayer-radio-label">'+baselayer.name+'</span></input>');
+        */
     }
     //select += '</select>';
-    select = select.join('<br/>');
+    //select = select.join('<br/>');
 
     if (baselayers.length!=0) {
       // active the select element for baselayers
-      $('#baselayer-select-input').append(select);
-      $('.baselayer-radio-label')
-      .css('cursor', 'pointer')
-      .click(function(){
-        $(this).prev().click();
-      });
-      $('#baselayer-select-input input').change(function(){
-        var val = $(this).val();
-        map.setBaseLayer(map.getLayersByName(val)[0]);
-        if (val in config.layers)
-          $('#baselayer-select .label').html(config.layers[val].title);
-        else
-          $('#baselayer-select .label').html(val);
-        $('#baselayer-select .button').click();
-      }).first().attr('checked','true').change();
-      $('#baselayer-select .button')
-      .attr( "tabIndex", -1 )
-      .button({
-			   icons: {
-				   primary: "ui-icon-triangle-1-e"
-				 },
-				 text: false
-			})
-			.removeClass( "ui-corner-all" )
-			.addClass( "ui-autocomplete-button ui-button-icon" );
+      $('#baselayer-select').append(select);
       $('#baselayer-select')
-      .css('cursor', 'pointer')
-      .click(function() {
-        var self = $('#baselayer-select .button');
-        var icons = self.button('option','icons');
-        if (icons.primary == 'ui-icon-triangle-1-e')
-          self.button('option','icons',{primary:'ui-icon-triangle-1-w'});
-        else
-          self.button('option','icons',{primary:'ui-icon-triangle-1-e'});
-        $('#baselayer-select-input').toggle();
-      });
+        .change(function() {
+          var val = $(this).val();
+          map.setBaseLayer(map.getLayersByName(val)[0]);
+          $(this).blur();
+        });
       // Hide baselayer-menu if only one base layer inside
       if (baselayers.length==1)
         $('#baselayer-menu').hide();
     } else {
       // hide elements for baselayers
-      //$('#baselayerContainer').hide().prev().hide();
       $('#baselayer-menu').hide();
       map.addLayer(new OpenLayers.Layer.Vector('baselayer',{
         maxExtent:map.maxExtent

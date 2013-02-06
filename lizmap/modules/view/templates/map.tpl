@@ -81,7 +81,7 @@
     </div>
     <div id="toolbar" style="height:0; display:none;"></div>
     <div id="locate-menu" style="display:none;">
-      <h3><span class="title"><button class="btn-locate-clear btn btn-mini btn-link" style="float:right; text-shadow:none;" type="button"></button>{@view~map.locatemenu.title@}</span></h3>
+      <h3><span class="title"><button class="btn-locate-clear btn btn-mini btn-link" type="button"></button>{@view~map.locatemenu.title@}</span></h3>
       <div class="menu-content">
         <div id="locate">
         </div>
@@ -96,13 +96,11 @@
     <div id="baselayer-menu">
       <h3><span class="title">{@view~map.baselayermenu.title@}</span></h3>
       <div class="menu-content">
-        <div id="baselayer-select">
-           <span class="label"></span>
-           <button class="button" title="{@view~map.baselayer.select.hover@}"></button>
+        <div class="baselayer-select">
+          <select id="baselayer-select" class="label"></select>
         </div>
       </div>
     </div>
-    <div id="baselayer-select-input" style="display:none;"></div>
   </div>
   <div id="map-content">
     <div id="map"></div>

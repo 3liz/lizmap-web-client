@@ -177,8 +177,10 @@ body {
 }
 #locate-menu .btn-locate-clear:hover {
   background-position : 0px 0px;
+  transition: none;
 }
 
+#baselayer-menu div.baselayer-select,
 #locate div.locate-layer {
   width : 100%;
   overflow: hidden;
@@ -187,6 +189,7 @@ body {
   background: url(images/123_click.png) no-repeat right;
 }
 
+#baselayer-menu div.baselayer-select select,
 #locate div.locate-layer select {
   background: transparent;
   width : 110%;
@@ -201,65 +204,9 @@ body {
   cursor: pointer;
 }
 
+#baselayer-menu div.baselayer-select select option,
 #locate div.locate-layer select option {
   font-weight: normal;
-}
-
-#locate div.locate-layer .button {
-  width : 20px;
-  border-left : solid 1px #606060;
-  border-bottom : none;
-  border-top : none;
-  border-right : none;
-  position : absolute;
-  top : 0pt;
-  bottom : 0pt;
-  right : 0pt;
-  margin : 0pt;
-  background : #DDD;
-}
-
-#locate div.locate-layer .button .ui-icon-triangle-1-s {
-  background-position : -16px -64px;
-}
-
-#baselayer-select {
-  width : 100%;
-  border : solid 1px #606060;
-  position : relative;
-  cursor: pointer;
-}
-
-#baselayer-select .label {
-  padding-left : 0.5em;
-  padding-right : 0.5em;
-  color : rgb(51,51,51);
-  background: none;
-  text-shadow : none;
-  line-height: 16px;
-  height : 20px;
-  display:block;
-}
-
-#baselayer-select .button {
-  width : 20px;
-  border-left : solid 1px #606060;
-  border-bottom : none;
-  border-top : none;
-  border-right : none;
-  position : absolute;
-  top : 0pt;
-  bottom : 0pt;
-  right : 0pt;
-  margin : 0pt;
-  background : #DDD;
-}
-
-#baselayer-select .button .ui-icon-triangle-1-e {
-  background-position : -32px -64px;
-}
-#baselayer-select .button .ui-icon-triangle-1-w {
-  background-position : -48px -64px;
 }
 
 #menu .ui-accordion-content {
