@@ -592,12 +592,12 @@ body {
   width: expression(this.width > 300 ? "300px" : true);
 }
 
-.lizmapPopupContent{
+#map-content .olPopup .lizmapPopupContent{
   margin: 0px !important;
   padding: 0px !important;
   width: 100% !important;
 }
-.lizmapPopupContent h4{
+#map-content .lizmapPopupContent h4{
   margin: 0px;
   background: #2B2B2B !important;
   color : #FBFBFB !important;
@@ -605,15 +605,15 @@ body {
   padding: 2px;
   padding-left: 5px;
 }
-.lizmapPopupContent a{
+#map-content .lizmapPopupContent a{
   color:black;
 }
-.lizmapPopupDiv{
+#map-content .lizmapPopupDiv{
   padding:5px !important;
   padding-right: 20px !important;
   padding-left: 20px !important;
 }
-.lizmapPopupTable{
+#map-content .lizmapPopupTable{
   /*background:#333333 !important;*/
   margin-bottom:10px;
   font-size:0.8em;
@@ -621,27 +621,28 @@ body {
   border: 1px solid #2B2B2B !important;
   border-collapse: collapse;
 }
-.lizmapPopupTable thead {
+#map-content .lizmapPopupTable thead {
   color: white;
   background-color: #81B00E;
   font-size: 1em;
   border-bottom: 1px solid #2B2B2B !important;
 }
-.lizmapPopupTable th{
+#map-content .lizmapPopupTable th{
   width:50%;
   text-align: right;
+  vertical-align: top;
   padding-right: 5px;
 }
-.lizmapPopupTable th.left{
+#map-content .lizmapPopupTable th.left{
   border-right: 1px solid #C9C9C9 !important;
 }
-.lizmapPopupTable td{
+#map-content .lizmapPopupTable td{
   padding-left: 5px;
 }
-.lizmapPopupTable thead th{
+#map-content .lizmapPopupTable thead th{
   text-align: center;
 }
-.lizmapPopup .olPopupCloseBox{
+#map-content .lizmapPopup .olPopupCloseBox{
   width: 20px; height: 20px;
   /*right:0px !important; top:0px !important;*/
   background-color:#2B2B2B;

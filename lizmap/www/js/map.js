@@ -1381,8 +1381,12 @@ var lizMap = function() {
                       map.addPopup(popup);
                       var contentDivHeight = 0;
                       $('#liz_layer_popup_contentDiv').children().each(function(i,e) {
-                        contentDivHeight += $(e).height();
+                        contentDivHeight += $(e).outerHeight(true);
                       });
+                      if ( $('#liz_layer_popup_contentDiv').height() > contentDivHeight ) {
+                        $('#liz_layer_popup_contentDiv').height(contentDivHeight)
+                          $('#liz_layer_popup').height(contentDivHeight)
+                      }
                       if($('#liz_layer_popup').height()<contentDivHeight) {
                         $('#liz_layer_popup .olPopupCloseBox').css('right','14px');
                       }
