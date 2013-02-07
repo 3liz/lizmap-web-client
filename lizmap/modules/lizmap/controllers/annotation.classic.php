@@ -12,12 +12,21 @@
 class annotationCtrl extends jController {
 
 
+  private $project = '';
+  private $repository = '';
+  private $layerId = '';
+  private $lizmapConfig = '';
+  private $qgsLoad = '';
+  private $xpathItems = '';
+
+
   /**
   * Send an OGC service Exception
   * @param $SERVICE the OGC service
   * @return XML OGC Service Exception.
   */
   function serviceException(){
+
     $messages = jMessage::getAll();
 
     $rep = $this->getResponse('xml');
@@ -35,7 +44,7 @@ class annotationCtrl extends jController {
   * @param boolean $save If true, we have to save the form. So take liz_repository and others instead of repository from request parameters.
   * @return array List of needed variables : $params, $lizmapConfig, etc.
   */
-  function getAnnotationParameters($save=Null){
+  private function getAnnotationParameters($save=Null){
 
     // Get the project
     $project = $this->param('project');
@@ -47,10 +56,10 @@ class annotationCtrl extends jController {
       $repository = $this->param('liz_repository');
       $layerId = $this->param('liz_layerId');    
     }
-
+    
     if(!$project){
       jMessage::add('The parameter project is mandatory !', 'ProjectNotDefind');
-      return $this->serviceException();
+      return false;
     }
 
     // Get repository data
@@ -58,10 +67,15 @@ class annotationCtrl extends jController {
     $lizmapConfig = new lizmapConfig($repository);
 
     // Redirect if no rights to access this repository
-    if(!jacl2::check('lizmap.repositories.view', $lizmapConfig->repositoryKey)
-    or !jacl2::check('lizmap.tools.annotation.use', $lizmapConfig->repositoryKey)){
+    if(!jacl2::check('lizmap.repositories.view', $lizmapConfig->repositoryKey)){
       jMessage::add(jLocale::get('view~default.repository.access.denied'), 'AuthorizationRequired');
-      return $this->serviceException();
+      return false;
+    }
+
+    // Redirect if no rights to use the annotation tool
+    if(!jacl2::check('lizmap.tools.annotation.use', $lizmapConfig->repositoryKey)){
+      jMessage::add(jLocale::get('view~annotation.access.denied'), 'AuthorizationRequired');
+      return false;
     }
     
     // Read the QGIS project file to get the annotation layer(s) property
@@ -69,13 +83,22 @@ class annotationCtrl extends jController {
     $xpath = "//maplayer[id='$layerId']";
     
     list($go, $qgsLoad, $xpathItems, $errorlist) = $qgisProjectClass->readQgisProject($lizmapConfig, $project, $xpath);
-    
-    // Return error if no data found
+       
+    // Return error if no data found   
     if(!$go or !$xpathItems){
-      return $this->serviceException();
+      jMessage::add("No data found in the QGIS project file");
+      return false;
     }
-   
-    return array($project, $repository, $layerId, $lizmapConfig, $qgsLoad, $xpathItems);
+
+    // Define class private properties   
+    $this->project = $project;
+    $this->repository = $repository;
+    $this->layerId = $layerId;
+    $this->lizmapConfig = $lizmapConfig;
+    $this->qgsLoad = $qgsLoad;
+    $this->xpathItems = $xpathItems;
+    
+    return true;
   }
   
   
@@ -89,10 +112,13 @@ class annotationCtrl extends jController {
   * @param string $save If set, save the form data into the database : 'insert' or 'update'.
   * @return modified form.
   */
-  function addFormControls($lizmapConfig, $xpathItems, $form, $featureId=Null, $save=Null){
+  private function addFormControls($lizmapConfig, $xpathItems, $form, $featureId=Null, $save=Null){
   
-		// Get fields data from the sqlite annotation database
-		$datasource = (string)$xpathItems[0]->xpath('datasource')[0];
+    // Get fields data from the sqlite annotation database  
+    $xpathItemsZero = $xpathItems[0];
+    $_datasource = $xpathItemsZero->xpath('datasource');   
+    $datasource = (string)$_datasource[0];
+    
     $dbnameMatch = preg_match("#dbname='(.+)' table=\"(.+)\"#", $datasource, $matches);
     $dbname = $matches[1];
     $annotationTable = $matches[2];
@@ -102,8 +128,9 @@ class annotationCtrl extends jController {
     $db->loadExtension('libspatialite.so');
         
     // Get fields data from XML for the layer
-    $edittypesXml = $xpathItems[0]->edittypes[0];
-    $categoriesXml = $xpathItems[0]->xpath('renderer-v2/categories')[0];
+    $edittypesXml = $xpathItemsZero->edittypes[0];
+    $_categoriesXml = $xpathItemsZero->xpath('renderer-v2/categories');
+    $categoriesXml = $_categoriesXml[0];
     
     // Query the database to get the annotation table fields
     $sql = "PRAGMA table_info('$annotationTable');";
@@ -129,8 +156,10 @@ class annotationCtrl extends jController {
 		    $geocolumn = $ref;
 		  // Create new control from qgis edit type
 		  $aliasXml = Null;
-		  if($xpathItems[0]->aliases)
-  		  $aliasXml = $xpathItems[0]->aliases[0]->xpath("alias[@field='$ref']");
+		  if($xpathItemsZero->aliases){
+        $aliasesZero = $xpathItemsZero->aliases[0];
+        $aliasXml = $aliasesZero->xpath("alias[@field='$ref']");
+      }
 		  $dataType = $record['type'];
 		  $edittype = null;
 		  if($edittypesXml)
@@ -151,7 +180,8 @@ class annotationCtrl extends jController {
       $form->initFromRequest();
       
       // Get layer srid
-      $srid = (integer)$xpathItems[0]->srs->spatialrefsys->srid;
+      $xpathItemsZero = $xpathItems[0];
+      $srid = (integer)$xpathItemsZero->srs->spatialrefsys->srid;
 
       // Pop the primary key field
       $fields = array_diff($fields, array($pk));
@@ -225,19 +255,21 @@ jLog::log($sql);
   public function createAnnotation(){
   
     // Get repository, project data and do some right checking
-    list($project, $repository, $layerId, $lizmapConfig, $qgsLoad, $xpathItems) = $this->getAnnotationParameters();
-       
+    if(!$this->getAnnotationParameters())
+      return $this->serviceException();
+
 		// Create form instance
 		$form = jForms::create('view~annotation');
 		
 		// Redirect to the display action
 		$rep = $this->getResponse('redirect');
 		$rep->params = array(
-		  "project"=>$project, 
-		  "repository"=>$repository, 
-		  "layerId"=>$layerId
+		  "project"=>$this->project, 
+		  "repository"=>$this->repository, 
+		  "layerId"=>$this->layerId
 		);
     $rep->action="lizmap~annotation:editAnnotation";
+    
     return $rep;  
     
   }
@@ -254,7 +286,8 @@ jLog::log($sql);
   public function modifyAnnotation(){
   
     // Get repository, project data and do some right checking
-    list($project, $repository, $layerId, $lizmapConfig, $qgsLoad, $xpathItems) = $this->getAnnotationParameters();
+    if(!$this->getAnnotationParameters())
+      return $this->serviceException();
        
     // Get the annotation id
 		$featureId = $this->intParam('featureId');
@@ -272,14 +305,14 @@ jLog::log($sql);
 		
 		// Dynamically add form controls based on QGIS layer information
 		// And set form data from database content
-		$this->addFormControls($lizmapConfig, $xpathItems, $form, $featureId); 
+		$this->addFormControls($this->lizmapConfig, $this->xpathItems, $form, $featureId); 
 		
 		// Redirect to the display action
 		$rep = $this->getResponse('redirect');
 		$rep->params = array(
-		  "project"=>$project, 
-		  "repository"=>$repository, 
-		  "layerId"=>$layerId,
+		  "project"=>$this->project, 
+		  "repository"=>$this->repository, 
+		  "layerId"=>$this->layerId,
 		  "featureId"=>$featureId
 		);
     $rep->action="lizmap~annotation:editAnnotation";
@@ -295,7 +328,8 @@ jLog::log($sql);
   public function editAnnotation(){
   
     // Get repository, project data and do some right checking
-    list($project, $repository, $layerId, $lizmapConfig, $qgsLoad, $xpathItems) = $this->getAnnotationParameters();
+    if(!$this->getAnnotationParameters())
+      return $this->serviceException();
     
     // Get the annotation id
 		$featureId = $this->intParam('featureId');
@@ -309,13 +343,13 @@ jLog::log($sql);
     }
     
     // Set lizmap form controls
-		$form->setData('liz_repository', $repository);
-		$form->setData('liz_project', $project);
-		$form->setData('liz_layerId', $layerId);
+		$form->setData('liz_repository', $this->repository);
+		$form->setData('liz_project', $this->project);
+		$form->setData('liz_layerId', $this->layerId);
 		$form->setData('liz_featureId', $featureId);
     
 		// Dynamically add form controls based on QGIS layer information
-		$this->addFormControls($lizmapConfig, $xpathItems, $form, $featureId);  
+		$this->addFormControls($this->lizmapConfig, $this->xpathItems, $form, $featureId);  
   
 		// Use template to create html form content
 		$tpl = new jTpl();
@@ -343,7 +377,8 @@ jLog::log($sql);
   public function saveAnnotation(){
   
     // Get repository, project data and do some right checking
-    list($project, $repository, $layerId, $lizmapConfig, $qgsLoad, $xpathItems) = $this->getAnnotationParameters(True);
+    if(!$this->getAnnotationParameters())
+      return $this->serviceException();
     
     // Get the annotation id
 		$featureId = $this->intParam('liz_featureId');
@@ -359,14 +394,14 @@ jLog::log($sql);
 		// Dynamically add form controls based on QGIS layer information
 		// And save data into the annotation table (insert or update line)
     $save =True;
-		$this->addFormControls($lizmapConfig, $xpathItems, $form, $featureId, $save);
+		$this->addFormControls($this->lizmapConfig, $this->xpathItems, $form, $featureId, $save);
 		
 		// Redirect to the validation action
 		$rep = $this->getResponse('redirect');
 		$rep->params = array(
-		  "project"=>$project, 
-		  "repository"=>$repository, 
-		  "layerId"=>$layerId,
+		  "project"=>$this->project, 
+		  "repository"=>$this->repository, 
+		  "layerId"=>$this->layerId,
 		  "featureId"=>$featureId
 		);
     $rep->action="lizmap~annotation:validateAnnotation";
@@ -386,7 +421,8 @@ jLog::log($sql);
   public function validateAnnotation(){
   
     // Get repository, project data and do some right checking
-    list($project, $repository, $layerId, $lizmapConfig, $qgsLoad, $xpathItems) = $this->getAnnotationParameters();
+    if(!$this->getAnnotationParameters())
+      return $this->serviceException();
     
     // Get the annotation id
 		$featureId = $this->intParam('featureId');

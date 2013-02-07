@@ -19,6 +19,7 @@ class qgisProject{
   */
   public function readQgisProject($lizmapConfig, $project, $xpath=Null){
 
+    // Get QGIS project path
     $qgsPath = realpath($lizmapConfig->repositoryData['path'].$project.'.qgs');
     $pathKey = $lizmapConfig->repositoryKey.'|'.$project;
     $use_errors = libxml_use_internal_errors(true);

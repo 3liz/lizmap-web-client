@@ -11,6 +11,14 @@
 
 class serviceCtrl extends jController {
 
+
+  private $project = ''; 
+  private $repository = ''; 
+  private $params = ''; 
+  private $lizmapConfig = ''; 
+  private $lizmapCache = '';
+  
+
   /**
   * Redirect to the appropriate action depending on the REQUEST parameter.
   * @param $PROJECT Name of the project
@@ -54,18 +62,35 @@ class serviceCtrl extends jController {
 
 
   /**
+  * Send an OGC service Exception
+  * @param $SERVICE the OGC service
+  * @return XML OGC Service Exception.
+  */
+  function serviceException(){
+    $messages = jMessage::getAll();
+
+    $rep = $this->getResponse('xml');
+    $rep->contentTpl = 'lizmap~wms_exception';
+    $rep->content->assign('messages', $messages);
+    jMessage::clearAll();
+
+    return $rep;
+  }
+
+
+  /**
   * Get parameters and set lizmapConfig for the project and repository given.
   *
   * @return array List of needed variables : $params, $lizmapConfig, $lizmapCache.
   */
-  function getServiceParameters(){
+  private function getServiceParameters(){
   
     // Get the project
     $project = $this->param('project');
 
     if(!$project){
       jMessage::add('The parameter project is mandatory !', 'ProjectNotDefind');
-      return $this->serviceException();
+      return false;
     }
 
     // Get repository data
@@ -76,7 +101,7 @@ class serviceCtrl extends jController {
     // Redirect if no rights to access this repository
     if(!jacl2::check('lizmap.repositories.view', $lizmapConfig->repositoryKey)){
       jMessage::add(jLocale::get('view~default.repository.access.denied'), 'AuthorizationRequired');
-      return $this->serviceException();
+      return false;
     }
     
     // Get and normalize the passed parameters
@@ -85,7 +110,16 @@ class serviceCtrl extends jController {
     $lizmapCache = jClasses::getService('lizmap~lizmapCache');
     $params = $lizmapCache->normalizeParams($pParams);
     
-    return array($project, $repository, $params, $lizmapConfig, $lizmapCache);
+    // Define class private properties   
+    $this->project = $project;
+    $this->repository = $repository;
+    $this->params = $params;
+    $this->lizmapConfig = $lizmapConfig;
+    $this->lizmapCache = $lizmapCache;
+    
+    return true;
+    
+    
   }
 
 
@@ -98,17 +132,19 @@ class serviceCtrl extends jController {
   function GetCapabilities(){
 
     // Get parameters
-    list($project, $repository, $params, $lizmapConfig, $lizmapCache) = $this->getServiceParameters();
-    $url = $lizmapConfig->wmsServerURL.'?';
+    if(!$this->getServiceParameters())
+      return $this->serviceException();
+    
+    $url = $this->lizmapConfig->wmsServerURL.'?';
 
-    $bparams = http_build_query($params);
+    $bparams = http_build_query($this->params);
     $querystring = $url . $bparams;
 
     // Get remote data
-    $getRemoteData = $lizmapCache->getRemoteData(
+    $getRemoteData = $this->lizmapCache->getRemoteData(
       $querystring,
-      $lizmapConfig->proxyMethod,
-      $lizmapConfig->debugMode
+      $this->lizmapConfig->proxyMethod,
+      $this->lizmapConfig->debugMode
     );
     $data = $getRemoteData[0];
     $mime = $getRemoteData[1];
@@ -116,7 +152,7 @@ class serviceCtrl extends jController {
     // Replace qgis server url in the XML (hide real location)
     $sUrl = jUrl::getFull(
       "lizmap~service:index",
-      array("repository"=>$repository, "project"=>$project),
+      array("repository"=>$this->repository, "project"=>$this->project),
       0,
       $_SERVER['SERVER_NAME']
     );
@@ -142,13 +178,14 @@ class serviceCtrl extends jController {
   function GetMap(){
 
     // Get parameters
-    list($project, $repository, $params, $lizmapConfig, $lizmapCache) = $this->getServiceParameters();
+    if(!$this->getServiceParameters())
+      return $this->serviceException();
     
-    $content = $lizmapCache->getServiceData($repository, $project, $params);
+    $content = $this->lizmapCache->getServiceData($this->repository, $this->project, $this->params);
 
     // Return response
     $rep = $this->getResponse('binary');
-    if(preg_match('#png#', $pParams['format']))
+    if(preg_match('#png#', $this->params['format']))
       $rep->mimeType = 'image/png';
     else
       $rep->mimeType = 'image/jpeg';
@@ -169,9 +206,11 @@ class serviceCtrl extends jController {
   function GetLegendGraphics(){
 
     // Get parameters
-    list($project, $repository, $params, $lizmapConfig, $lizmapCache) = $this->getServiceParameters();
-    $url = $lizmapConfig->wmsServerURL.'?';
-    $bparams = http_build_query($params);
+    if(!$this->getServiceParameters())
+      return $this->serviceException();
+      
+    $url = $this->lizmapConfig->wmsServerURL.'?';
+    $bparams = http_build_query($this->params);
     // replace some chars (not needed in php 5.4, use the 4th parameter of http_build_query)
     $a = array('+', '_', '.', '-');
     $b = array('%20', '%5F', '%2E', '%2D');
@@ -179,10 +218,10 @@ class serviceCtrl extends jController {
     $querystring = $url . $bparams;
 
     // Get remote data
-    $getRemoteData = $lizmapCache->getRemoteData(
+    $getRemoteData = $this->lizmapCache->getRemoteData(
       $querystring,
-      $lizmapConfig->proxyMethod,
-      $lizmapConfig->debugMode
+      $this->lizmapConfig->proxyMethod,
+      $this->lizmapConfig->debugMode
     );
     $data = $getRemoteData[0];
     $mime = $getRemoteData[1];
@@ -206,31 +245,33 @@ class serviceCtrl extends jController {
   function GetFeatureInfo(){
 
     // Get parameters
-    list($project, $repository, $params, $lizmapConfig, $lizmapCache) = $this->getServiceParameters();
-    $url = $lizmapConfig->wmsServerURL.'?';
+    if(!$this->getServiceParameters())
+      return $this->serviceException();
+      
+    $url = $this->lizmapConfig->wmsServerURL.'?';
 
     // Deactivate info_format to use Lizmap instead of QGIS
     $toHtml = False;
-    if($params['info_format'] == 'text/html'){
+    if($this->params['info_format'] == 'text/html'){
       $toHtml = True;
-      $params['info_format'] = 'text/xml';
+      $this->params['info_format'] = 'text/xml';
     }
 
-    $bparams = http_build_query($params);
+    $bparams = http_build_query($this->params);
     $querystring = $url . $bparams;
 
     // Get remote data
-    $getRemoteData = $lizmapCache->getRemoteData(
+    $getRemoteData = $this->lizmapCache->getRemoteData(
       $querystring,
-      $lizmapConfig->proxyMethod,
-      $lizmapConfig->debugMode
+      $this->lizmapConfig->proxyMethod,
+      $this->lizmapConfig->debugMode
     );
     $data = $getRemoteData[0];
     $mime = $getRemoteData[1];
 
     // Get HTML content if needed
     if($toHtml and preg_match('#/xml$#', $mime)){
-      $data = $this->getFeatureInfoHtml($params, $data, $lizmapConfig, $project);
+      $data = $this->getFeatureInfoHtml($this->params, $data, $this->lizmapConfig, $this->project);
       $mime = 'text/html';
     }
 
@@ -371,9 +412,11 @@ class serviceCtrl extends jController {
   function GetPrint(){
 
     // Get parameters
-    list($project, $repository, $params, $lizmapConfig, $lizmapCache) = $this->getServiceParameters();
-    $url = $lizmapConfig->wmsServerURL.'?';
-    $bparams = http_build_query($params);
+    if(!$this->getServiceParameters())
+      return $this->serviceException();
+      
+    $url = $this->lizmapConfig->wmsServerURL.'?';
+    $bparams = http_build_query($this->params);
     // replace some chars (not needed in php 5.4, use the 4th parameter of http_build_query)
     $a = array('+', '_', '.', '-');
     $b = array('%20', '%5F', '%2E', '%2D');
@@ -381,10 +424,10 @@ class serviceCtrl extends jController {
     $querystring = $url . $bparams;
 
     // Get remote data
-    $getRemoteData = $lizmapCache->getRemoteData(
+    $getRemoteData = $this->lizmapCache->getRemoteData(
       $querystring,
-      $lizmapConfig->proxyMethod,
-      $lizmapConfig->debugMode
+      $this->lizmapConfig->proxyMethod,
+      $this->lizmapConfig->debugMode
     );
     $data = $getRemoteData[0];
     $mime = $getRemoteData[1];
@@ -398,21 +441,6 @@ class serviceCtrl extends jController {
     return $rep;
   }
 
-  /**
-  * Send an OGC service Exception
-  * @param $SERVICE the OGC service
-  * @return XML OGC Service Exception.
-  */
-  function serviceException(){
-    $messages = jMessage::getAll();
-
-    $rep = $this->getResponse('xml');
-    $rep->contentTpl = 'lizmap~wms_exception';
-    $rep->content->assign('messages', $messages);
-    jMessage::clearAll();
-
-    return $rep;
-  }
 
   /**
   * Send the JSON configuration file for a specified project
@@ -423,14 +451,16 @@ class serviceCtrl extends jController {
   function getProjectConfig(){
 
     // Get parameters
-    list($project, $repository, $params, $lizmapConfig, $lizmapCache) = $this->getServiceParameters();
-
+    if(!$this->getServiceParameters())
+      return $this->serviceException();
+      
     // Read the QGIS project file to get the layer drawing order
     $qgisProjectClass = jClasses::getService('lizmap~qgisProject');
     $xpath = '//legendlayer';
-    list($go, $qgsLoad, $xpathItems, $errorlist) = $qgisProjectClass->readQgisProject($lizmapConfig, $project, $xpath);
+    list($go, $qgsLoad, $xpathItems, $errorlist) = $qgisProjectClass->readQgisProject($this->lizmapConfig, $this->project, $xpath);
     $legend = $qgsLoad->xpath('//legend');
-    $updateDrawingOrder = (string)$legend[0]->attributes()->updateDrawingOrder;
+    $legendZero = $legend[0];
+    $updateDrawingOrder = (string)$legendZero->attributes()->updateDrawingOrder;
     
     $layersOrder = array();  
     if($go and $updateDrawingOrder == 'false'){
@@ -443,13 +473,31 @@ class serviceCtrl extends jController {
     }
     
     // Get the corresponding Qgis project configuration
-    $configPath = $lizmapConfig->repositoryData['path'].$project.'.qgs.cfg';
+    $configPath = $this->lizmapConfig->repositoryData['path'].$this->project.'.qgs.cfg';
+    
     // Read Json content from config file
-    $configRead = jFile::read($configPath);    
+    $configRead = jFile::read($configPath);   
+    
+    // Remove layerOrder option from config if not required 
     if(!empty($layersOrder)){
       $configJson = json_decode($configRead);
       $configJson->layersOrder = $layersOrder;
       $configRead = json_encode($configJson);
+    }
+    
+    // Remove annotationLayers from config if no right to access this tool
+    // Or if no ability to load spatialite extension
+    $spatial = false;
+    try{
+      $db = new SQLite3(':memory:');
+      $spatial = $db->loadExtension('libspatialite.so'); # loading SpatiaLite as an extension
+    }catch(Exception $e){
+      $spatial = False;
+    }    
+    if(!$spatial or !jacl2::check('lizmap.tools.annotation.use', $this->lizmapConfig->repositoryKey)){
+      $configJson = json_decode($configRead);
+      unset($configJson->annotationLayers);
+      $configRead = json_encode($configJson);      
     }
     
     $rep = $this->getResponse('text');
@@ -467,25 +515,26 @@ class serviceCtrl extends jController {
   function GetFeature(){
 
     // Get parameters
-    list($project, $repository, $params, $lizmapConfig, $lizmapCache) = $this->getServiceParameters();
+    if(!$this->getServiceParameters())
+      return $this->serviceException();
 
     // Construction of the request url : base url + parameters
-    $url = $lizmapConfig->wmsServerURL.'?';
-    $bparams = http_build_query($params);
+    $url = $this->lizmapConfig->wmsServerURL.'?';
+    $bparams = http_build_query($this->params);
     $querystring = $url . $bparams;
 
     // Get remote data
-    $getRemoteData = $lizmapCache->getRemoteData(
+    $getRemoteData = $this->lizmapCache->getRemoteData(
       $querystring,
-      $lizmapConfig->proxyMethod,
-      $lizmapConfig->debugMode
+      $this->lizmapConfig->proxyMethod,
+      $this->lizmapConfig->debugMode
     );
     $data = $getRemoteData[0];
     $mime = $getRemoteData[1];
 
     // Return response
     $rep = $this->getResponse('binary');
-    if(preg_match('#^GML#', $params['outputformat']))
+    if(preg_match('#^GML#', $this->params['outputformat']))
       $rep->mimeType = 'text/xml';
     else
       $rep->mimeType = 'text/json';
