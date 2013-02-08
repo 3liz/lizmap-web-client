@@ -71,10 +71,6 @@ only screen and (                   max-device-height : 640px) {
     display:inline\9;
   }
 
-  .navbar .nav li {
-    line-height:30px;
-  }
-
   #overview-box {
     right:10px;
     bottom:1em;

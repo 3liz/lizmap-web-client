@@ -2,8 +2,8 @@ body {
   margin : 0;
   font-size : 1em;
   font-family : century gothic, arial, sans serif;
-  padding-top : 100px;
-  padding-bottom : 40px;
+  padding-top : 105px;
+  padding-bottom : 50px;
   background : #EFEFEF;
 }
 
@@ -53,7 +53,7 @@ a:hover {
 
 
 #headermenu {
-  height:25px;
+  height:30px;
   position: fixed;
   right: 0px;
   left: 0px;
@@ -63,18 +63,17 @@ a:hover {
   overflow: visible;
 /*  white-space:nowrap;*/
   background-color:#93C01F;
-  font-size:0.75em;
+  font-size:0.7em;
 }
 
 #auth {
   background: transparent;
 }
 
-
 .navbar-fixed-top .navbar-inner, .navbar-fixed-bottom .navbar-inner {padding: 0px 10px;}
 .navbar-inner {
-  min-height:25px;
-  height:25px;
+  min-height:30px;
+  height:30px;
   padding: 0px 10px;
   filter:none\9;
 }
@@ -82,12 +81,16 @@ a:hover {
 
 /*  for ie 8*/
 .navbar-inner ul {
-  height:25px\9;
+  height:30px\9;
 }
 /*  for ie 8*/
 .navbar-inner ul li{
   display:inline\9;
   padding: 0px 5px\9;
+}
+
+.navbar .nav li {
+  line-height:28px;
 }
 
 .navbar .nav > li > a {
