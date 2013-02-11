@@ -26,7 +26,7 @@ cacheRootDirectory="/tmp/"
 ; Example of public repository
 [repository:montpellier]
 label="LizMap Demo"
-path="/var/www/LIZMAP/lizmap-web-client/lizmap/var/../install/qgis/"
+path="../install/qgis/"
 
 
 ; Example of a repository wich will have access control
