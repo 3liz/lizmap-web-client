@@ -11,13 +11,47 @@
 
 class annotationCtrl extends jController {
 
-
+  // project key
   private $project = '';
+  
+  // repository key
   private $repository = '';
+  
+  // layer id in the QGIS project file
   private $layerId = '';
+  
+  // table name
+  private $table = '';
+  
+  // featureIdParam : featureId parameter from the request
+  private $featureIdParam = Null;
+  
+  // featureId : an integer or a string whith coma separated integers
+  private $featureId = Null;
+  
+  // lizmapConfig object
   private $lizmapConfig = '';
-  private $qgsLoad = '';
-  private $xpathItems = '';
+  
+  // Layer date as simpleXml object
+  private $layerXml = '';
+  
+  // Fields information taken from database
+  private $dataFields = '';
+  
+  // Map data type as geometry type
+  private $geometryDatatypeMap = array(
+	  'point', 'linestring', 'polygon', 'multipoint', 
+		'multilinestring', 'multipolygon', 'geometrycollection', 'geometry'
+	);
+	
+	// Primary key
+	private $primaryKeys = '';
+	
+	// Geometry column
+	private $geometryColumn = '';
+	
+	// Form controls
+	private $formControls = '';
 
 
   /**
@@ -25,18 +59,17 @@ class annotationCtrl extends jController {
   * @param $SERVICE the OGC service
   * @return XML OGC Service Exception.
   */
-  function serviceException(){
+  function serviceAnswer(){
 
     $messages = jMessage::getAll();
-
-    $rep = $this->getResponse('xml');
-    $rep->contentTpl = 'lizmap~wms_exception';
-    $rep->content->assign('messages', $messages);
+		$rep = $this->getResponse('htmlfragment');
+    $tpl = new jTpl();
+		$content = $tpl->fetch('view~jmessage_answer');
+    $rep->addContent($content);
     jMessage::clearAll();
-
     return $rep;
   }
-  
+ 
   
   /**
   * Get parameters and set lizmapConfig for the project and repository given.
@@ -50,11 +83,13 @@ class annotationCtrl extends jController {
     $project = $this->param('project');
     $repository = $this->param('repository');
     $layerId = $this->param('layerId');
+    $featureIdParam = $this->param('featureId');
     
     if($save){
       $project = $this->param('liz_project');
       $repository = $this->param('liz_repository');
-      $layerId = $this->param('liz_layerId');    
+      $layerId = $this->param('liz_layerId'); 
+      $featureIdParam = $this->param('liz_featureId');   
     }
     
     if(!$project){
@@ -82,115 +117,182 @@ class annotationCtrl extends jController {
     $qgisProjectClass = jClasses::getService('lizmap~qgisProject');
     $xpath = "//maplayer[id='$layerId']";
     
-    list($go, $qgsLoad, $xpathItems, $errorlist) = $qgisProjectClass->readQgisProject($lizmapConfig, $project, $xpath);
+    list($go, $qgsLoad, $layerXml, $errorlist) = $qgisProjectClass->readQgisProject($lizmapConfig, $project, $xpath);
        
     // Return error if no data found   
-    if(!$go or !$xpathItems){
+    if(!$go or !$layerXml){
       jMessage::add("No data found in the QGIS project file");
       return false;
     }
+    
+    // feature Id (optionnal, only for edition and save)
+		if(preg_match('#,#', $featureIdParam))
+		  $featureId = preg_split('#,#', $featureIdParam);
+		else
+		  $featureId = $featureIdParam;
 
     // Define class private properties   
     $this->project = $project;
     $this->repository = $repository;
     $this->layerId = $layerId;
+    $this->featureId = $featureId;
+    $this->featureIdParam = $featureIdParam;
     $this->lizmapConfig = $lizmapConfig;
-    $this->qgsLoad = $qgsLoad;
-    $this->xpathItems = $xpathItems;
+    $this->layerXml = $layerXml;
     
     return true;
   }
   
+
+  
+
+  /**
+  * Get field data from a database layer corresponding to a QGIS layer
+  * @param string $provider 'sqlite' or 'postgres'
+  * @param string $datasource String corresponding to the QGIS <datasource> item for the layer
+  * @return object containing the sql fields information
+  */
+  private function getDataFields($provider, $datasource){
+
+    // Get datasource information from QGIS
+    $datasourceMatch = preg_match(
+      "#dbname='([^ ]+)' (?:host=([^ ]+) )?(?:port=([0-9]+) )?(?:user='([^ ]+)' )?(?:password='([^ ]+)' )?(?:sslmode=([^ ]+) )?(?:key='([^ ]+)' )?(?:estimatedmetadata=([^ ]+) )?(?:srid=([0-9]+) )?(?:type=([a-zA-Z]+) )?(?:table=\"(.+)\" )?#",
+      $datasource,
+      $dt
+    );
+   
+    $dbname = $dt[1];
+    $host = $dt[2]; $port = $dt[3];
+    $user = $dt[4]; $password = $dt[5];
+    $sslmode = $dt[6]; $key = $dt[7];
+    $estimatedmetadata = $dt[8]; 
+    $srid = $dt[9]; $type = $dt[10];
+    $table = $dt[11];
+    $this->table = $table;
+    
+    $providerDriverMap = array(
+      'spatialite'=>'sqlite3',
+      'postgres'=>'pgsql'
+    );
+    $driver = $providerDriverMap[$provider];
+    
+    // Build array of parameters for the virtual profile
+    if($driver == 'sqlite3'){
+      $jdbParams = array(
+        "driver" => $driver,
+        "database" => realpath($this->lizmapConfig->repositoryData['path'].$dbname),
+        "extensions"=>"libspatialite.so"
+      );
+    }
+    else{
+      $jdbParams = array(
+        "driver" => $driver,
+        "host" => $host,
+        "port" => (integer)$port,
+        "database" => $dbname,
+        "user" => $user,
+        "password" => $password
+      );
+    }
+
+    // Create the virtual jdb profile
+    $profile = $this->layerId;
+    jProfiles::createVirtualProfile('jdb', $profile, $jdbParams);
+
+    // Get the fields using jelix tools for this connection
+    $cnx = jDb::getConnection($profile);
+    $tools = $cnx->tools();
+    $sequence = null;
+    $fields = $tools->getFieldList($table, $sequence);
+    $this->dataFields = $fields;
+  }
+
   
   /**
   * Dynamically add controls to the form based on QGIS layer information
   * 
   * @param object $lizmapConfig Lizmap configuration instance
-  * @param object $xpathItems simplexml item containing layer information.
+  * @param object $layerXml simplexml item containing layer information.
   * @param object $form Jelix form to add controls to.
-  * @param integer $featureId ()Optionnal) If given, set the data for each form control from sqlite annotation table line.
   * @param string $save If set, save the form data into the database : 'insert' or 'update'.
   * @return modified form.
   */
-  private function addFormControls($lizmapConfig, $xpathItems, $form, $featureId=Null, $save=Null){
+  private function addFormControls($lizmapConfig, $layerXml, $form, $save=Null){
   
     // Get fields data from the sqlite annotation database  
-    $xpathItemsZero = $xpathItems[0];
-    $_datasource = $xpathItemsZero->xpath('datasource');   
+    $layerXmlZero = $layerXml[0];
+    $_datasource = $layerXmlZero->xpath('datasource');   
     $datasource = (string)$_datasource[0];
-    
-    $dbnameMatch = preg_match("#dbname='(.+)' table=\"(.+)\"#", $datasource, $matches);
-    $dbname = $matches[1];
-    $annotationTable = $matches[2];
-		$dbpath = realpath($lizmapConfig->repositoryData['path'].$dbname);
-    $db = new SQLite3($dbpath);
-    # loading SpatiaLite as an extension
-    $db->loadExtension('libspatialite.so');
-        
-    // Get fields data from XML for the layer
-    $edittypesXml = $xpathItemsZero->edittypes[0];
-    $_categoriesXml = $xpathItemsZero->xpath('renderer-v2/categories');
+    $s_provider = $layerXmlZero->xpath('provider');
+    $provider = (string)$s_provider[0];
+    $this->getDataFields($provider, $datasource);
+            
+    // Get QGIS fields data from XML for the layer
+    $edittypesXml = $layerXmlZero->edittypes[0];
+    $_categoriesXml = $layerXmlZero->xpath('renderer-v2/categories');
     $categoriesXml = $_categoriesXml[0];
-    
-    // Query the database to get the annotation table fields
-    $sql = "PRAGMA table_info('$annotationTable');";
-    $rs = $db->query($sql);
-    $pk = ''; $geocolumn = '';
-    $fields = array();
-    
+       
     // Loop through the table fields
     // and create a form control if needed
     jClasses::inc('lizmap~qgisFormControl');
-    $controls = array();
-
-    while($record = $rs->fetchArray()){
-		  $ref = $record['name'];
-
-		  // store fields and pk
-		  $fields[] = $ref;
-		  // detect primary key column
-		  if($record['pk'] == 1)
-		    $pk = $record['name'];
-		  // detect geometry column
-		  if(in_array($record['type'], array('POINT', 'LINESTRING', 'POLYGON', 'MULTIPOINT', 'MULTILINESTRING', 'MULTIPOLYGON', 'GEOMETRYCOLLECTION', 'GEOMETRY')))
-		    $geocolumn = $ref;
+    $this->formControls = array();
+    foreach($this->dataFields as $fieldName=>$prop){
+		  // Detect primary key column
+		  if($prop->primary){
+		    $this->primaryKeys[] = $fieldName;
+		  }
+		    
+		  // Detect geometry column
+		  if(in_array( strtolower($prop->type), $this->geometryDatatypeMap))
+		    $this->geometryColumn = $fieldName;
+		  
 		  // Create new control from qgis edit type
 		  $aliasXml = Null;
-		  if($xpathItemsZero->aliases){
-        $aliasesZero = $xpathItemsZero->aliases[0];
-        $aliasXml = $aliasesZero->xpath("alias[@field='$ref']");
+		  if($layerXmlZero->aliases){
+        $aliasesZero = $layerXmlZero->aliases[0];
+        $aliasXml = $aliasesZero->xpath("alias[@field='$fieldName']");
       }
-		  $dataType = $record['type'];
 		  $edittype = null;
 		  if($edittypesXml)
-		    $edittype = $edittypesXml->xpath("edittype[@name='$ref']");
+		    $edittype = $edittypesXml->xpath("edittype[@name='$fieldName']");
     
-		  $controls[$ref] = new qgisFormControl($ref, $edittype, $aliasXml, $categoriesXml, $dataType);
-		  $form->addControl($controls[$ref]->ctrl);
-	    $form->setReadOnly($ref, $controls[$ref]->isReadOnly);
-    }    
+		  $this->formControls[$fieldName] = new qgisFormControl($fieldName, $edittype, $aliasXml, $categoriesXml, $prop->type);
+		  $form->addControl($this->formControls[$fieldName]->ctrl);
+	    $form->setReadOnly($fieldName, $this->formControls[$fieldName]->isReadOnly);
+    }
     
-		if(!$pk)
-		  $pk = $fields[0];
+		if(!$this->primaryKeys){
+		  jMessage::add("The table ".$this->table." has no primary keys. The annotation tool needs a primary key on the table to be defined.");
+		  return false;
+		}
+		
 		  
     // Optionnaly query for the feature
+    $cnx = jDb::getConnection($this->layerId);
     
+    // INSERT OR UPDATE DATA
     if($save){
       // Set the form from request
       $form->initFromRequest();
       
       // Get layer srid
-      $xpathItemsZero = $xpathItems[0];
-      $srid = (integer)$xpathItemsZero->srs->spatialrefsys->srid;
-
-      // Pop the primary key field
-      $fields = array_diff($fields, array($pk));
+      $layerXmlZero = $layerXml[0];
+      $srid = (integer)$layerXmlZero->srs->spatialrefsys->srid;
       
-      // Loop through remaining fields to get data to store
+      // Get list of fields which are not primary keys
+      $fields = array();
+      foreach($this->dataFields as $fieldName=>$prop){
+        if(!$prop->primary)
+          $fields[] = $fieldName;
+      }
+      
+      // Loop though the fields and filter the form posted values
       $update = array(); $insert = array();
       foreach($fields as $ref){
+        // Get and filter the posted data foreach form control
         $value = $form->getData($ref);
-        switch($controls[$ref]->fieldDataType){
+
+        switch($this->formControls[$ref]->fieldDataType){
           case 'geometry':
             $value = "ST_GeomFromText('".filter_var($value, FILTER_SANITIZE_STRING, FILTER_FLAG_NO_ENCODE_QUOTES)."', $srid)";
             break;
@@ -201,46 +303,90 @@ class annotationCtrl extends jController {
             $value = (float)$value;
             break;
           default:
-            $value = "'".SQLite3::escapeString(filter_var($value, FILTER_SANITIZE_STRING, FILTER_FLAG_NO_ENCODE_QUOTES))."'";
+            $value = $cnx->quote(
+              filter_var($value, FILTER_SANITIZE_STRING, FILTER_FLAG_NO_ENCODE_QUOTES)
+            );
             break;
         }
+        // Build the SQL insert and update query
         $insert[]=$value;
         $update[]="$ref=$value";
       }
     
       $sql = '';
-      if($featureId){
+      // insert
+      if($this->featureId){
+        if(ctype_digit($this->featureId))
+          $featureId = array($this->featureId);
         // featureId is set
         // SQL for updating on line in the annotation table    
-        $sql = " UPDATE $annotationTable SET ";
+        $sql = " UPDATE $this->table SET ";
         $sql.= implode(',', $update);
-        $sql.= " WHERE $pk = $featureId ;";
-      }elseif($save == 'update'){
-        // SQL for insertion into the annotation table
-        $sql = " INSERT INTO $annotationTable (";
+        $v = ''; $i = 0;
+        $sql.= ' WHERE';
+        foreach($this->primaryKeys as $key){
+          $sql.= "$v $key = ".$featureId[$i];
+          $i++;
+          $v = " AND ";
+        }
+      }
+      // update
+      elseif($save == 'update'){
+        // SQL for insertion into the annotation this->table
+        $sql = " INSERT INTO $this->table (";
         $sql.= implode(', ', $fields);
         $sql.= " ) VALUES (";
         $sql.= implode(', ', $insert);
         $sql.= " );";
       }
-jLog::log($sql);      
-      $rs = $db->query($sql);
+      $rs = $cnx->query($sql);
     }
-    else{
-      if($featureId){
-        // Set form controls based on data
-        $sql = "SELECT *, ST_AsText(".$geocolumn.") AS astext FROM $annotationTable WHERE $pk = $featureId;";
-        $rs = $db->query($sql);
-        while($record = $rs->fetchArray()){
-          foreach($fields as $ref){
-            $form->setData($ref, $record[$ref]);
-          }
-          // geometry column
-          $form->setData($ref, $record['astext']);
-        }
+    
+    // SELECT data from the database and set the form data accordingly
+    if(!$save and $this->featureId)
+      $this->setFormDataFromFields($form);
+      
+    return True;
+  }
+
+
+  
+  /**
+  * Set the form controls data from the database value
+  * 
+  * @param object $form Jelix jForm object
+  * @return Filled form
+  */
+  public function setFormDataFromFields($form){
+  
+    // Get database connection object
+    $cnx = jDb::getConnection($this->layerId);
+    
+    // Get the array of feature ids
+    if(ctype_digit($this->featureId))
+      $featureId = array($this->featureId);
+    
+    // Build the SQL query to retrieve data from the table
+    $sql = "SELECT *, ST_AsText(".$this->geometryColumn.") AS astext FROM ".$this->table;
+    $v = ''; $i = 0;
+    $sql.= ' WHERE';
+    foreach($this->primaryKeys as $key){
+      $sql.= "$v $key = ".$featureId[$i];
+      $i++;
+      $v = " AND ";
+    }
+    
+    // Run the query and loop through the result to set the form data
+    $rs = $cnx->query($sql);
+    foreach($rs as $record){
+      // Loop through the data fields
+      foreach($this->dataFields as $ref=>$prop){
+        $form->setData($ref, $record->$ref);
       }
+      // geometry column : override binary with text representation
+      $form->setData($this->geometryColumn, $record->astext);
     }
-    $db->close();
+    
   }
     
   
@@ -256,7 +402,7 @@ jLog::log($sql);
   
     // Get repository, project data and do some right checking
     if(!$this->getAnnotationParameters())
-      return $this->serviceException();
+      return $this->serviceAnswer();
 
 		// Create form instance
 		$form = jForms::create('view~annotation');
@@ -287,25 +433,19 @@ jLog::log($sql);
   
     // Get repository, project data and do some right checking
     if(!$this->getAnnotationParameters())
-      return $this->serviceException();
-       
-    // Get the annotation id
-		$featureId = $this->intParam('featureId');
-		if(!$featureId){
-      jMessage::add('No id has been given for the feature', 'noFeatureId');
-		  return $this->serviceException();
-		}
+      return $this->serviceAnswer();
        
 		// Create form instance		
-		$form = jForms::create('view~annotation', $featureId);    
+		$form = jForms::create('view~annotation', $this->featureId);    
     if(!$form){
       jMessage::add('An error has been raised when creating the form', 'formNotDefined');
-      return $this->serviceException();
+      return $this->serviceAnswer();
     }
 		
 		// Dynamically add form controls based on QGIS layer information
 		// And set form data from database content
-		$this->addFormControls($this->lizmapConfig, $this->xpathItems, $form, $featureId); 
+		if(!$this->addFormControls($this->lizmapConfig, $this->layerXml, $form))
+		  return $this->serviceAnswer();
 		
 		// Redirect to the display action
 		$rep = $this->getResponse('redirect');
@@ -313,8 +453,9 @@ jLog::log($sql);
 		  "project"=>$this->project, 
 		  "repository"=>$this->repository, 
 		  "layerId"=>$this->layerId,
-		  "featureId"=>$featureId
+		  "featureId"=>$this->featureIdParam
 		);
+
     $rep->action="lizmap~annotation:editAnnotation";
     return $rep;  
     
@@ -329,27 +470,25 @@ jLog::log($sql);
   
     // Get repository, project data and do some right checking
     if(!$this->getAnnotationParameters())
-      return $this->serviceException();
-    
-    // Get the annotation id
-		$featureId = $this->intParam('featureId');
-		
+      return $this->serviceAnswer();
+    	
     // Get the form instance
-    $form = jForms::get('view~annotation', $featureId);
+    $form = jForms::get('view~annotation', $this->featureId);
     
     if(!$form){
       jMessage::add('An error has been raised when getting the form', 'formNotDefined');
-      return $this->serviceException();
+      return $this->serviceAnswer();
     }
     
     // Set lizmap form controls
 		$form->setData('liz_repository', $this->repository);
 		$form->setData('liz_project', $this->project);
 		$form->setData('liz_layerId', $this->layerId);
-		$form->setData('liz_featureId', $featureId);
+		$form->setData('liz_featureId', $this->featureId);
     
 		// Dynamically add form controls based on QGIS layer information
-		$this->addFormControls($this->lizmapConfig, $this->xpathItems, $form, $featureId);  
+		if(!$this->addFormControls($this->lizmapConfig, $this->layerXml, $form) )
+		  return $this->serviceAnswer();  
   
 		// Use template to create html form content
 		$tpl = new jTpl();
@@ -377,24 +516,23 @@ jLog::log($sql);
   public function saveAnnotation(){
   
     // Get repository, project data and do some right checking
-    if(!$this->getAnnotationParameters())
-      return $this->serviceException();
+    $save = True;
+    if(!$this->getAnnotationParameters($save))
+      return $this->serviceAnswer();
     
-    // Get the annotation id
-		$featureId = $this->intParam('liz_featureId');
-		
     // Get the form instance
-    $form = jForms::get('view~annotation', $featureId);
+    $form = jForms::get('view~annotation', $this->featureId);
     
     if(!$form){
       jMessage::add('An error has been raised when getting the form', 'formNotDefined');
-      return $this->serviceException();
+      return $this->serviceAnswer();
     }
     
 		// Dynamically add form controls based on QGIS layer information
 		// And save data into the annotation table (insert or update line)
     $save =True;
-		$this->addFormControls($this->lizmapConfig, $this->xpathItems, $form, $featureId, $save);
+    if(!$this->addFormControls($this->lizmapConfig, $this->layerXml, $form, $save) )
+		  return $this->serviceAnswer();
 		
 		// Redirect to the validation action
 		$rep = $this->getResponse('redirect');
@@ -402,7 +540,7 @@ jLog::log($sql);
 		  "project"=>$this->project, 
 		  "repository"=>$this->repository, 
 		  "layerId"=>$this->layerId,
-		  "featureId"=>$featureId
+		  "featureId"=>$this->featureIdParam
 		);
     $rep->action="lizmap~annotation:validateAnnotation";
     return $rep;  
@@ -422,25 +560,23 @@ jLog::log($sql);
   
     // Get repository, project data and do some right checking
     if(!$this->getAnnotationParameters())
-      return $this->serviceException();
-    
-    // Get the annotation id
-		$featureId = $this->intParam('featureId');
-		
+      return $this->serviceAnswer();
+    		
     // Destroy the form
-    if($form = jForms::get('view~annotation', $featureId)){
-      jForms::destroy('view~annotation', $featureId);
+    if($form = jForms::get('view~annotation', $this->featureId)){
+      jForms::destroy('view~annotation', $this->featureId);
     }else{
       // undefined form : redirect to error
       jMessage::add('An error has been raised when getting the form', 'formNotDefined');
-      return $this->serviceException();
-    }      
+      return $this->serviceAnswer();
+    }
   
 		// Return html fragment response
-		$rep = $this->getResponse('htmlfragment');
-    $rep->addContent(jLocale::get('view~annotation.form.date.saved'));
-    return $rep;
+		jMessage::add(jLocale::get('view~annotation.form.date.saved'));
+    return $this->serviceAnswer();
       
   }
-  
+ 
+
+ 
 }

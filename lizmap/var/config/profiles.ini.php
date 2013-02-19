@@ -34,6 +34,12 @@ user=myuser
 password=mypassword
 
 
+[jdb:sup]
+driver=pdo
+dsn="pgsql:host=localhost;port=5432;dbname=sup"
+user=kimaidou
+password=tation
+
 
 ; when you have charset issues, enable force_encoding so the connection will be
 ; made with the charset indicated in jelix config
