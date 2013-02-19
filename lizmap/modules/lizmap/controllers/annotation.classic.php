@@ -505,6 +505,7 @@ class annotationCtrl extends jController {
         foreach($_SESSION['lizform_'.$token] as $ctrl=>$data){
           $form->setData($ctrl, $data);
         }
+        unset($_SESSION['lizform_'.$token]);
       }
     }
 
@@ -516,8 +517,8 @@ class annotationCtrl extends jController {
     // Return html fragment response
     $rep = $this->getResponse('htmlfragment');
     $rep->addContent($content);
-    		$rep = $this->getResponse('html');
-    		$rep->body->assign('MAIN', $content);
+#    		$rep = $this->getResponse('html');
+#    		$rep->body->assign('MAIN', $content);
     return $rep;
 
   }
