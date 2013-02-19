@@ -217,10 +217,10 @@ class annotationCtrl extends jController {
   * @param string $save If set, save the form data into the database : 'insert' or 'update'.
   * @return modified form.
   */
-  private function addFormControls($lizmapConfig, $layerXml, $form, $save=Null){
+  private function addFormControls($form){
   
     // Get fields data from the sqlite annotation database  
-    $layerXmlZero = $layerXml[0];
+    $layerXmlZero = $this->layerXml[0];
     $_datasource = $layerXmlZero->xpath('datasource');   
     $datasource = (string)$_datasource[0];
     $s_provider = $layerXmlZero->xpath('provider');
@@ -265,86 +265,6 @@ class annotationCtrl extends jController {
 		  jMessage::add("The table ".$this->table." has no primary keys. The annotation tool needs a primary key on the table to be defined.");
 		  return false;
 		}
-		
-		  
-    // Optionnaly query for the feature
-    $cnx = jDb::getConnection($this->layerId);
-    
-    // INSERT OR UPDATE DATA
-    if($save){
-      // Set the form from request
-      $form->initFromRequest();
-      
-      // Get layer srid
-      $layerXmlZero = $layerXml[0];
-      $srid = (integer)$layerXmlZero->srs->spatialrefsys->srid;
-      
-      // Get list of fields which are not primary keys
-      $fields = array();
-      foreach($this->dataFields as $fieldName=>$prop){
-        if(!$prop->primary)
-          $fields[] = $fieldName;
-      }
-      
-      // Loop though the fields and filter the form posted values
-      $update = array(); $insert = array();
-      foreach($fields as $ref){
-        // Get and filter the posted data foreach form control
-        $value = $form->getData($ref);
-
-        switch($this->formControls[$ref]->fieldDataType){
-          case 'geometry':
-            $value = "ST_GeomFromText('".filter_var($value, FILTER_SANITIZE_STRING, FILTER_FLAG_NO_ENCODE_QUOTES)."', $srid)";
-            break;
-          case 'integer':
-            $value = filter_var($value, FILTER_SANITIZE_NUMBER_INT);
-            break;
-          case 'float':
-            $value = (float)$value;
-            break;
-          default:
-            $value = $cnx->quote(
-              filter_var($value, FILTER_SANITIZE_STRING, FILTER_FLAG_NO_ENCODE_QUOTES)
-            );
-            break;
-        }
-        // Build the SQL insert and update query
-        $insert[]=$value;
-        $update[]="$ref=$value";
-      }
-    
-      $sql = '';
-      // insert
-      if($this->featureId){
-        if(ctype_digit($this->featureId))
-          $featureId = array($this->featureId);
-        // featureId is set
-        // SQL for updating on line in the annotation table    
-        $sql = " UPDATE $this->table SET ";
-        $sql.= implode(',', $update);
-        $v = ''; $i = 0;
-        $sql.= ' WHERE';
-        foreach($this->primaryKeys as $key){
-          $sql.= "$v $key = ".$featureId[$i];
-          $i++;
-          $v = " AND ";
-        }
-      }
-      // update
-      elseif($save == 'update'){
-        // SQL for insertion into the annotation this->table
-        $sql = " INSERT INTO $this->table (";
-        $sql.= implode(', ', $fields);
-        $sql.= " ) VALUES (";
-        $sql.= implode(', ', $insert);
-        $sql.= " );";
-      }
-      $rs = $cnx->query($sql);
-    }
-    
-    // SELECT data from the database and set the form data accordingly
-    if(!$save and $this->featureId)
-      $this->setFormDataFromFields($form);
       
     return True;
   }
@@ -355,7 +275,7 @@ class annotationCtrl extends jController {
   * Set the form controls data from the database value
   * 
   * @param object $form Jelix jForm object
-  * @return Filled form
+  * @return Boolean True if filled form
   */
   public function setFormDataFromFields($form){
   
@@ -386,135 +306,227 @@ class annotationCtrl extends jController {
       // geometry column : override binary with text representation
       $form->setData($this->geometryColumn, $record->astext);
     }
-    
+      
+    return True;
   }
-    
-  
   
   /**
-  * Create an annotation form based on the annotation layer.
-  * @param string $repository Lizmap Repository
-  * @param string $project Name of the project
-  * @param string $layerId Qgis id of the layer
-  * @return redirect to the display action.
+  * Save the form controls data to the database
+  * 
+  * @param object $form Jelix jForm object
+  * @return Boolean True if the has been saved
   */
+  public function saveFormDataToDb($form){
+    // Set the form from request
+    //$form->initFromRequest();
+
+    // Optionnaly query for the feature
+    $cnx = jDb::getConnection($this->layerId);
+
+    // Get layer srid
+    $layerXmlZero = $this->layerXml[0];
+    $srid = (integer)$layerXmlZero->srs->spatialrefsys->srid;
+
+    // Get list of fields which are not primary keys
+    $fields = array();
+    foreach($this->dataFields as $fieldName=>$prop){
+      if(!$prop->primary)
+        $fields[] = $fieldName;
+    }
+
+    // Loop though the fields and filter the form posted values
+    $update = array(); $insert = array();
+    foreach($fields as $ref){
+      // Get and filter the posted data foreach form control
+      $value = $form->getData($ref);
+
+      switch($this->formControls[$ref]->fieldDataType){
+      case 'geometry':
+        $value = "ST_GeomFromText('".filter_var($value, FILTER_SANITIZE_STRING, FILTER_FLAG_NO_ENCODE_QUOTES)."', $srid)";
+        break;
+      case 'integer':
+        $value = filter_var($value, FILTER_SANITIZE_NUMBER_INT);
+        break;
+      case 'float':
+        $value = (float)$value;
+        break;
+      default:
+        $value = $cnx->quote(
+          filter_var($value, FILTER_SANITIZE_STRING, FILTER_FLAG_NO_ENCODE_QUOTES)
+        );
+        break;
+      }
+      // Build the SQL insert and update query
+      $insert[]=$value;
+      $update[]="$ref=$value";
+    }
+
+    $sql = '';
+    // update
+    if($this->featureId){
+      if(ctype_digit($this->featureId))
+        $featureId = array($this->featureId);
+      // featureId is set
+      // SQL for updating on line in the annotation table    
+      $sql = " UPDATE $this->table SET ";
+      $sql.= implode(',', $update);
+      $v = ''; $i = 0;
+      $sql.= ' WHERE';
+      foreach($this->primaryKeys as $key){
+        $sql.= "$v $key = ".$featureId[$i];
+        $i++;
+        $v = " AND ";
+      }
+    }
+    // insert
+    else {
+      // SQL for insertion into the annotation this->table
+      $sql = " INSERT INTO $this->table (";
+      $sql.= implode(', ', $fields);
+      $sql.= " ) VALUES (";
+      $sql.= implode(', ', $insert);
+      $sql.= " );";
+    }
+    $rs = $cnx->query($sql);
+
+    return true;
+  }
+
+
+
+  /**
+   * Create an annotation form based on the annotation layer.
+   * @param string $repository Lizmap Repository
+   * @param string $project Name of the project
+   * @param string $layerId Qgis id of the layer
+   * @return redirect to the display action.
+   */
   public function createAnnotation(){
-  
+
     // Get repository, project data and do some right checking
     if(!$this->getAnnotationParameters())
       return $this->serviceAnswer();
 
-		// Create form instance
-		$form = jForms::create('view~annotation');
-		
-		// Redirect to the display action
-		$rep = $this->getResponse('redirect');
-		$rep->params = array(
-		  "project"=>$this->project, 
-		  "repository"=>$this->repository, 
-		  "layerId"=>$this->layerId
-		);
+    jForms::destroy('view~annotation');
+    // Create form instance
+    $form = jForms::create('view~annotation');
+
+    // Redirect to the display action
+    $rep = $this->getResponse('redirect');
+    $rep->params = array(
+      "project"=>$this->project, 
+      "repository"=>$this->repository, 
+      "layerId"=>$this->layerId
+    );
     $rep->action="lizmap~annotation:editAnnotation";
-    
+
     return $rep;  
-    
+
   }
-  
-  
+
+
   /**
-  * Modify an annotation.
-  * @param string $repository Lizmap Repository
-  * @param string $project Name of the project
-  * @param string $layerId Qgis id of the layer
-  * @param integer $featureId Id of the annotation.
-  * @return redirect to the display action.
-  */
+   * Modify an annotation.
+   * @param string $repository Lizmap Repository
+   * @param string $project Name of the project
+   * @param string $layerId Qgis id of the layer
+   * @param integer $featureId Id of the annotation.
+   * @return redirect to the display action.
+   */
   public function modifyAnnotation(){
-  
+
     // Get repository, project data and do some right checking
     if(!$this->getAnnotationParameters())
       return $this->serviceAnswer();
-       
-		// Create form instance		
-		$form = jForms::create('view~annotation', $this->featureId);    
+
+    // Create form instance		
+    $form = jForms::create('view~annotation', $this->featureId);    
     if(!$form){
       jMessage::add('An error has been raised when creating the form', 'formNotDefined');
       return $this->serviceAnswer();
     }
-		
-		// Dynamically add form controls based on QGIS layer information
-		// And set form data from database content
-		if(!$this->addFormControls($this->lizmapConfig, $this->layerXml, $form))
-		  return $this->serviceAnswer();
-		
-		// Redirect to the display action
-		$rep = $this->getResponse('redirect');
-		$rep->params = array(
-		  "project"=>$this->project, 
-		  "repository"=>$this->repository, 
-		  "layerId"=>$this->layerId,
-		  "featureId"=>$this->featureIdParam
-		);
+
+    // Dynamically add form controls based on QGIS layer information
+    // And set form data from database content
+    if(!$this->addFormControls($form))
+      return $this->serviceAnswer();
+
+    // Redirect to the display action
+    $rep = $this->getResponse('redirect');
+    $rep->params = array(
+      "project"=>$this->project, 
+      "repository"=>$this->repository, 
+      "layerId"=>$this->layerId,
+      "featureId"=>$this->featureIdParam
+    );
 
     $rep->action="lizmap~annotation:editAnnotation";
     return $rep;  
-    
+
   }  
-  
+
   /**
-  * Display the annotation form (output as html fragment)
-  *
-  * @return HTML code containing the form.
-  */
+   * Display the annotation form (output as html fragment)
+   *
+   * @return HTML code containing the form.
+   */
   public function editAnnotation(){
-  
+
     // Get repository, project data and do some right checking
     if(!$this->getAnnotationParameters())
       return $this->serviceAnswer();
-    	
+
     // Get the form instance
     $form = jForms::get('view~annotation', $this->featureId);
-    
+
     if(!$form){
       jMessage::add('An error has been raised when getting the form', 'formNotDefined');
       return $this->serviceAnswer();
     }
-    
+
     // Set lizmap form controls
-		$form->setData('liz_repository', $this->repository);
-		$form->setData('liz_project', $this->project);
-		$form->setData('liz_layerId', $this->layerId);
-		$form->setData('liz_featureId', $this->featureId);
+    $form->setData('liz_repository', $this->repository);
+    $form->setData('liz_project', $this->project);
+    $form->setData('liz_layerId', $this->layerId);
+    $form->setData('liz_featureId', $this->featureId);
+
+    // Dynamically add form controls based on QGIS layer information
+    if(!$this->addFormControls($form) )
+      return $this->serviceAnswer();  
     
-		// Dynamically add form controls based on QGIS layer information
-		if(!$this->addFormControls($this->lizmapConfig, $this->layerXml, $form) )
-		  return $this->serviceAnswer();  
-  
-		// Use template to create html form content
-		$tpl = new jTpl();
-		$tpl->assign(array('form'=>$form));
-		$content = $tpl->fetch('view~annotation_form');
-			
-		// Return html fragment response
-		$rep = $this->getResponse('htmlfragment');
+    // SELECT data from the database and set the form data accordingly
+    if($this->featureId)
+      $this->setFormDataFromFields($form);
+    // Get data from the request
+    // $form->initFromRequest();
+    // Check the form in case of redirection
+    // $form->check();
+
+    // Use template to create html form content
+    $tpl = new jTpl();
+    $tpl->assign(array('form'=>$form));
+    $content = $tpl->fetch('view~annotation_form');
+
+    // Return html fragment response
+    $rep = $this->getResponse('htmlfragment');
     $rep->addContent($content);
-#		$rep = $this->getResponse('html');
-#		$rep->body->assign('MAIN', $content);
+    #		$rep = $this->getResponse('html');
+    #		$rep->body->assign('MAIN', $content);
     return $rep;
-  
+
   }
-  
+
   /**
-  * Display the annotation form (output as html fragment)
-  *
-  * @param string $repository Lizmap Repository
-  * @param string $project Name of the project
-  * @param string $layerId Qgis id of the layer
-  * @param integer $featureId Id of the annotation.
-  * @return Redirect to the validation action.
-  */  
+   * Display the annotation form (output as html fragment)
+   *
+   * @param string $repository Lizmap Repository
+   * @param string $project Name of the project
+   * @param string $layerId Qgis id of the layer
+   * @param integer $featureId Id of the annotation.
+   * @return Redirect to the validation action.
+   */  
   public function saveAnnotation(){
-  
+
     // Get repository, project data and do some right checking
     $save = True;
     if(!$this->getAnnotationParameters($save))
@@ -531,10 +543,35 @@ class annotationCtrl extends jController {
 		// Dynamically add form controls based on QGIS layer information
 		// And save data into the annotation table (insert or update line)
     $save =True;
-    if(!$this->addFormControls($this->lizmapConfig, $this->layerXml, $form, $save) )
+    if(!$this->addFormControls($form) )
 		  return $this->serviceAnswer();
-		
-		// Redirect to the validation action
+    
+    // SELECT data from the database and set the form data accordingly
+    if($this->featureId)
+      $this->setFormDataFromFields($form);
+    $form->initFromRequest();
+
+    $check = $form->check();
+    if ( $form->getData( $this->geometryColumn ) == '' ) {
+      $check = False;
+      jMessage::add("Set the geometry");
+    }
+    if ( !$check ) {
+      // Redirect to the display action
+      $rep = $this->getResponse('redirect');
+      $rep->params = array(
+        "project"=>$this->project, 
+        "repository"=>$this->repository, 
+        "layerId"=>$this->layerId,
+        "featureId"=>$this->featureIdParam
+      );
+      $rep->action="lizmap~annotation:editAnnotation";
+
+      return $rep;
+    }
+    $this->saveFormDataToDb($form);
+
+    // Redirect to the validation action
 		$rep = $this->getResponse('redirect');
 		$rep->params = array(
 		  "project"=>$this->project, 
