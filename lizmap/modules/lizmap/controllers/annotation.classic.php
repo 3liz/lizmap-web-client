@@ -478,13 +478,12 @@ class annotationCtrl extends jController {
 
     // Get the form instance
     $form = jForms::get('view~annotation', $this->featureId);
-
     if(!$form){
       jMessage::add('An error has been raised when getting the form', 'formNotDefined');
       return $this->serviceAnswer();
     }
 
-    // Set lizmap form controls
+    // Set lizmap form controls (hard-coded in the form xml file)
     $form->setData('liz_repository', $this->repository);
     $form->setData('liz_project', $this->project);
     $form->setData('liz_layerId', $this->layerId);
@@ -493,14 +492,21 @@ class annotationCtrl extends jController {
     // Dynamically add form controls based on QGIS layer information
     if(!$this->addFormControls($form) )
       return $this->serviceAnswer();  
-    
+
     // SELECT data from the database and set the form data accordingly
     if($this->featureId)
       $this->setFormDataFromFields($form);
-    // Get data from the request
-    // $form->initFromRequest();
-    // Check the form in case of redirection
-    // $form->check();
+   
+    // If the user has been redirected here from the saveAnnotation method
+    // Set the form controls data from the request parameters
+    if($this->param('error')){
+      $token = $this->param('error');
+      if(isset($_SESSION['lizform_'.$token]) and $_SESSION['lizform_'.$token]){
+        foreach($_SESSION['lizform_'.$token] as $ctrl=>$data){
+          $form->setData($ctrl, $data);
+        }
+      }
+    }
 
     // Use template to create html form content
     $tpl = new jTpl();
@@ -510,8 +516,8 @@ class annotationCtrl extends jController {
     // Return html fragment response
     $rep = $this->getResponse('htmlfragment');
     $rep->addContent($content);
-    #		$rep = $this->getResponse('html');
-    #		$rep->body->assign('MAIN', $content);
+    		$rep = $this->getResponse('html');
+    		$rep->body->assign('MAIN', $content);
     return $rep;
 
   }
@@ -545,30 +551,42 @@ class annotationCtrl extends jController {
     $save =True;
     if(!$this->addFormControls($form) )
 		  return $this->serviceAnswer();
-    
-    // SELECT data from the database and set the form data accordingly
-    if($this->featureId)
-      $this->setFormDataFromFields($form);
+     
+    // Get data from the request and set the form controls data accordingly
     $form->initFromRequest();
 
+    // Check the form data and redirect if needed
     $check = $form->check();
     if ( $form->getData( $this->geometryColumn ) == '' ) {
       $check = False;
-      jMessage::add("Set the geometry");
+      jMessage::add("You must set the geometry");
     }
     if ( !$check ) {
       // Redirect to the display action
       $rep = $this->getResponse('redirect');
+      $token = time();
+      $token.= $this->layerId;
       $rep->params = array(
         "project"=>$this->project, 
         "repository"=>$this->repository, 
         "layerId"=>$this->layerId,
-        "featureId"=>$this->featureIdParam
+        "featureId"=>$this->featureIdParam,
+        "error"=>$token
       );
+      // Build array of data for all the controls
+      // And save it in session
+      $controlData = array();
+      foreach(array_keys($form->getControls()) as $ctrl) {
+        $controlData[$ctrl] = $form->getData($ctrl);
+      }
+      $_SESSION['lizform_'.$token] = $controlData;
       $rep->action="lizmap~annotation:editAnnotation";
+      
 
       return $rep;
     }
+    
+    // Save data into database
     $this->saveFormDataToDb($form);
 
     // Redirect to the validation action
