@@ -501,11 +501,11 @@ class annotationCtrl extends jController {
     // Set the form controls data from the request parameters
     if($this->param('error')){
       $token = $this->param('error');
-      if(isset($_SESSION['lizform_'.$token]) and $_SESSION['lizform_'.$token]){
-        foreach($_SESSION['lizform_'.$token] as $ctrl=>$data){
+      if(isset($_SESSION[$token.$this->layerId]) and $_SESSION[$token.$this->layerId]){
+        foreach($_SESSION[$token.$this->layerId] as $ctrl=>$data){
           $form->setData($ctrl, $data);
         }
-        unset($_SESSION['lizform_'.$token]);
+        unset($_SESSION[$token.$this->layerId]);
       }
     }
 
@@ -565,8 +565,7 @@ class annotationCtrl extends jController {
     if ( !$check ) {
       // Redirect to the display action
       $rep = $this->getResponse('redirect');
-      $token = time();
-      $token.= $this->layerId;
+      $token = uniqid('lizform_');
       $rep->params = array(
         "project"=>$this->project, 
         "repository"=>$this->repository, 
@@ -580,7 +579,7 @@ class annotationCtrl extends jController {
       foreach(array_keys($form->getControls()) as $ctrl) {
         $controlData[$ctrl] = $form->getData($ctrl);
       }
-      $_SESSION['lizform_'.$token] = $controlData;
+      $_SESSION[$token.$this->layerId] = $controlData;
       $rep->action="lizmap~annotation:editAnnotation";
       
 
