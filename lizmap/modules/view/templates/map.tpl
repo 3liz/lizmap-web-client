@@ -44,6 +44,17 @@
           <span class="icon"></span>
         </a>
       </li>
+      <li class="annotation dropdown">
+        <a class="dropdown-toggle" data-toggle="dropdown" href="#" id="annotation" data-original-title="Annotation" data-placement="bottom" rel="tooltip">
+          <span class="icon"></span>
+          <span class="caret"></span>
+        </a>
+        <ul class="dropdown-menu pull-right">
+          <li><a id="annotation-point" href="#">Point</a></li>
+          <li><a id="annotation-line" href="#">Line</a></li>
+          <li><a id="annotation-polygon" href="#">Polygon</a></li>
+        </ul>
+      </li>
       {if $isConnected}
       <li class="user dropdown">
         <a class="dropdown-toggle" data-toggle="dropdown" href="#" id="user-info">
@@ -79,11 +90,24 @@
     <div id="close-menu" style="display:none;" title="{@view~map.menu.close.hover@}">
       <span class="ui-icon ui-icon-close-menu"></span>
     </div>
-    <div id="toolbar" style="height:0; display:none;"></div>
-    <div id="locate-menu" style="display:none;">
-      <h3><span class="title"><button class="btn-locate-clear btn btn-mini btn-link" type="button"></button>{@view~map.locatemenu.title@}</span></h3>
-      <div class="menu-content">
-        <div id="locate">
+    <div id="toolbar">
+      <div id="annotation-point-menu" style="display:none;">
+        <h3><span class="title">Annotations point</span></h3>
+        <div class="menu-content">Vous êtes en train d'annoter</div>
+      </div>
+      <div id="annotation-line-menu" style="display:none;">
+        <h3><span class="title">Annotations line</span></h3>
+        <div class="menu-content">Vous êtes en train d'annoter</div>
+      </div>
+      <div id="annotation-polygon-menu" style="display:none;">
+        <h3><span class="title">Annotations polygon</span></h3>
+        <div class="menu-content">Vous êtes en train d'annoter</div>
+      </div>
+      <div id="locate-menu" style="display:none;">
+        <h3><span class="title"><button class="btn-locate-clear btn btn-mini btn-link" type="button"></button>{@view~map.locatemenu.title@}</span></h3>
+        <div class="menu-content">
+          <div id="locate">
+          </div>
         </div>
       </div>
     </div>
@@ -202,4 +226,7 @@
   <p>
     {image $j_themepath.'css/img/loading.gif'}
   </p>
+</div>
+
+<div id="annotation-modal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" data-show="false" data-keyboard="false" data-backdrop="static">
 </div>

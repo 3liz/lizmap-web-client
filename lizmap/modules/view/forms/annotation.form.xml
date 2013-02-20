@@ -5,10 +5,9 @@
 <hidden ref="liz_repository"/>
 <hidden ref="liz_layerId"/>
 <hidden ref="liz_featureId"/>
-
-<input type="integer" ref="test">
-    <label>test</label>
-</input>
+<hidden ref="liz_srid"/>
+<hidden ref="liz_proj4"/>
+<hidden ref="liz_geometryColumn"/>
 
 <submit ref="_submit">
 	<label locale="view~annotation.form.submit.label" />

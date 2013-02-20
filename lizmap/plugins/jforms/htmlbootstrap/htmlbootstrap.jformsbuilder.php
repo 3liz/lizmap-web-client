@@ -28,6 +28,9 @@ class htmlbootstrapJformsBuilder extends jFormsBuilderHtml {
 
     public function outputAllControls() {
 
+        $modal = False;
+        if ( isset($this->options['modal']) && $this->options['modal'] )
+          $modal = True;
         echo '<div class="jforms-table" border="0">';
         foreach( $this->_form->getRootControls() as $ctrlref=>$ctrl){
             if($ctrl->type == 'submit' || $ctrl->type == 'reset' || $ctrl->type == 'hidden') continue;
@@ -45,7 +48,13 @@ class htmlbootstrapJformsBuilder extends jFormsBuilderHtml {
                 echo "</div>\n";
             }
         }
-        echo '</div> <div class="jforms-submit-buttons form-actions">';
+        echo "</div>\n";
+        if ($modal)
+          echo "</div>\n";
+        if ($modal)
+          echo '<div class="modal-footer"><div class="jforms-submit-buttons">';
+        else
+          echo '<div class="jforms-submit-buttons form-actions">';
         if ( $ctrl = $this->_form->getReset() ) {
             if(!$this->_form->isActivated($ctrl->ref)) continue;
             $this->outputControl($ctrl);
@@ -56,7 +65,10 @@ class htmlbootstrapJformsBuilder extends jFormsBuilderHtml {
             $this->outputControl($ctrl);
             echo ' ';
         }
-        echo "</div>\n";
+        if ( isset($this->options['cancel']) && $this->options['cancel'] )
+          echo '<button class="btn" data-dismiss="modal" aria-hidden="true">Cancel</button>';
+        if ($modal)
+          echo "</div>\n";
     }
 
     public function outputMetaContent($t) {
@@ -135,6 +147,9 @@ class htmlbootstrapJformsBuilder extends jFormsBuilderHtml {
 
         $this->outputHeaderScript();
 
+        if ( isset($this->options['modal']) && $this->options['modal'] )
+          echo '<div class="modal-body">';
+
         $hiddens = '';
         foreach ($urlParams as $p_name => $p_value) {
             $hiddens .= '<input type="hidden" name="'. $p_name .'" value="'. htmlspecialchars($p_value). '"'.$this->_endt. "\n";
@@ -157,38 +172,38 @@ class htmlbootstrapJformsBuilder extends jFormsBuilderHtml {
         $errors = $this->_form->getContainer()->errors;
         if(count($errors)){
             $ctrls = $this->_form->getControls();
-            echo '<ul id="'.$this->_name.'_errors" class="jforms-error-list">';
+            echo '<div id="'.$this->_name.'_errors" class="alert alert-block alert-error jforms-error-list">';
             $errRequired='';
             foreach($errors as $cname => $err){
                 if(!$this->_form->isActivated($ctrls[$cname]->ref)) continue;
                 if ($err === jForms::ERRDATA_REQUIRED) {
                     if ($ctrls[$cname]->alertRequired){
-                        echo '<li>', $ctrls[$cname]->alertRequired,'</li>';
+                        echo '<p>', $ctrls[$cname]->alertRequired,'</p>';
                     }
                     else {
-                        echo '<li>', jLocale::get('jelix~formserr.js.err.required', $ctrls[$cname]->label),'</li>';
+                        echo '<p>', jLocale::get('jelix~formserr.js.err.required', $ctrls[$cname]->label),'</p>';
                     }
                 }else if ($err === jForms::ERRDATA_INVALID) {
                     if($ctrls[$cname]->alertInvalid){
-                        echo '<li>', $ctrls[$cname]->alertInvalid,'</li>';
+                        echo '<p>', $ctrls[$cname]->alertInvalid,'</p>';
                     }else{
-                        echo '<li>', jLocale::get('jelix~formserr.js.err.invalid', $ctrls[$cname]->label),'</li>';
+                        echo '<p>', jLocale::get('jelix~formserr.js.err.invalid', $ctrls[$cname]->label),'</p>';
                     }
                 }
                 elseif ($err === jForms::ERRDATA_INVALID_FILE_SIZE) {
-                    echo '<li>', jLocale::get('jelix~formserr.js.err.invalid.file.size', $ctrls[$cname]->label),'</li>';
+                    echo '<p>', jLocale::get('jelix~formserr.js.err.invalid.file.size', $ctrls[$cname]->label),'</p>';
                 }
                 elseif ($err === jForms::ERRDATA_INVALID_FILE_TYPE) {
-                    echo '<li>', jLocale::get('jelix~formserr.js.err.invalid.file.type', $ctrls[$cname]->label),'</li>';
+                    echo '<p>', jLocale::get('jelix~formserr.js.err.invalid.file.type', $ctrls[$cname]->label),'</p>';
                 }
                 elseif ($err === jForms::ERRDATA_FILE_UPLOAD_ERROR) {
-                    echo '<li>', jLocale::get('jelix~formserr.js.err.file.upload', $ctrls[$cname]->label),'</li>';
+                    echo '<p>', jLocale::get('jelix~formserr.js.err.file.upload', $ctrls[$cname]->label),'</p>';
                 }
                 elseif ($err != '') {
-                    echo '<li>', $err,'</li>';
+                    echo '<p>', $err,'</p>';
                 }
             }
-            echo '</ul>';
+            echo '</div>';
         }
     }
 

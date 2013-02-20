@@ -22,6 +22,15 @@ class annotationCtrl extends jController {
   
   // table name
   private $table = '';
+
+  // provider driver map
+  private $providerDriverMap = array(
+    'spatialite'=>'sqlite3',
+    'postgres'=>'pgsql'
+  );
+
+  // provider
+  private $provider = '';
   
   // featureIdParam : featureId parameter from the request
   private $featureIdParam = Null;
@@ -50,6 +59,12 @@ class annotationCtrl extends jController {
 	// Geometry column
 	private $geometryColumn = '';
 	
+	// Geometry srid
+	private $srid = '';
+	
+	// Geometry proj4 string
+	private $proj4 = '';
+	
 	// Form controls
 	private $formControls = '';
 
@@ -64,7 +79,7 @@ class annotationCtrl extends jController {
     $messages = jMessage::getAll();
 		$rep = $this->getResponse('htmlfragment');
     $tpl = new jTpl();
-		$content = $tpl->fetch('view~jmessage_answer');
+		$content = $tpl->fetch('view~jmessage_modal');
     $rep->addContent($content);
     jMessage::clearAll();
     return $rep;
@@ -148,11 +163,10 @@ class annotationCtrl extends jController {
 
   /**
   * Get field data from a database layer corresponding to a QGIS layer
-  * @param string $provider 'sqlite' or 'postgres'
   * @param string $datasource String corresponding to the QGIS <datasource> item for the layer
   * @return object containing the sql fields information
   */
-  private function getDataFields($provider, $datasource){
+  private function getDataFields($datasource){
 
     // Get datasource information from QGIS
     $datasourceMatch = preg_match(
@@ -168,13 +182,11 @@ class annotationCtrl extends jController {
     $estimatedmetadata = $dt[8]; 
     $srid = $dt[9]; $type = $dt[10];
     $table = $dt[11];
+    
+    // Set some private properties
     $this->table = $table;
     
-    $providerDriverMap = array(
-      'spatialite'=>'sqlite3',
-      'postgres'=>'pgsql'
-    );
-    $driver = $providerDriverMap[$provider];
+    $driver = $this->providerDriverMap[$this->provider];
     
     // Build array of parameters for the virtual profile
     if($driver == 'sqlite3'){
@@ -219,18 +231,27 @@ class annotationCtrl extends jController {
   */
   private function addFormControls($form){
   
-    // Get fields data from the sqlite annotation database  
+    // Get fields data from the annotation database  
     $layerXmlZero = $this->layerXml[0];
     $_datasource = $layerXmlZero->xpath('datasource');   
     $datasource = (string)$_datasource[0];
     $s_provider = $layerXmlZero->xpath('provider');
-    $provider = (string)$s_provider[0];
-    $this->getDataFields($provider, $datasource);
+    $this->provider = (string)$s_provider[0];
+    $this->getDataFields($datasource);
             
-    // Get QGIS fields data from XML for the layer
+    // Get QGIS fields extra information from XML for the layer
+    // edittypes and categories
     $edittypesXml = $layerXmlZero->edittypes[0];
     $_categoriesXml = $layerXmlZero->xpath('renderer-v2/categories');
     $categoriesXml = $_categoriesXml[0];
+    
+    // Get proj4 string
+    $proj4 = (string)$layerXmlZero->srs->spatialrefsys->proj4;
+    $this->proj4 = $proj4;
+
+    // Get layer srid
+    $srid = (integer)$layerXmlZero->srs->spatialrefsys->srid;
+    $this->srid = $srid;
        
     // Loop through the table fields
     // and create a form control if needed
@@ -323,10 +344,6 @@ class annotationCtrl extends jController {
     // Optionnaly query for the feature
     $cnx = jDb::getConnection($this->layerId);
 
-    // Get layer srid
-    $layerXmlZero = $this->layerXml[0];
-    $srid = (integer)$layerXmlZero->srs->spatialrefsys->srid;
-
     // Get list of fields which are not primary keys
     $fields = array();
     foreach($this->dataFields as $fieldName=>$prop){
@@ -342,10 +359,12 @@ class annotationCtrl extends jController {
 
       switch($this->formControls[$ref]->fieldDataType){
       case 'geometry':
-        $value = "ST_GeomFromText('".filter_var($value, FILTER_SANITIZE_STRING, FILTER_FLAG_NO_ENCODE_QUOTES)."', $srid)";
+        $value = "ST_GeomFromText('".filter_var($value, FILTER_SANITIZE_STRING, FILTER_FLAG_NO_ENCODE_QUOTES)."', ".$this->srid.")";
         break;
       case 'integer':
         $value = filter_var($value, FILTER_SANITIZE_NUMBER_INT);
+        if ( !$value )
+          $value = 'NULL';
         break;
       case 'float':
         $value = (float)$value;
@@ -491,7 +510,12 @@ class annotationCtrl extends jController {
 
     // Dynamically add form controls based on QGIS layer information
     if(!$this->addFormControls($form) )
-      return $this->serviceAnswer();  
+      return $this->serviceAnswer();
+      
+    // Set data for the layer geometry: srid, proj4 and geometryColumn
+    $form->setData('liz_srid', $this->srid);
+    $form->setData('liz_proj4', $this->proj4);
+    $form->setData('liz_geometryColumn', $this->geometryColumn);      
 
     // SELECT data from the database and set the form data accordingly
     if($this->featureId)
@@ -560,7 +584,7 @@ class annotationCtrl extends jController {
     $check = $form->check();
     if ( $form->getData( $this->geometryColumn ) == '' ) {
       $check = False;
-      jMessage::add("You must set the geometry");
+      $form->setErrorOn($this->geometryColumn, "You must set the geometry");
     }
     if ( !$check ) {
       // Redirect to the display action

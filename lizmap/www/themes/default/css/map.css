@@ -58,6 +58,12 @@ body {
 .navbar .nav .locate a:hover .icon {
   background-position: 0px -160px;
 }
+.navbar .nav .annotation .icon {
+  background-position: -20px 0px;
+}
+.navbar .nav .annotation a:hover .icon {
+  background-position: 0px 0px;
+}
 
 #content {
   padding-top : 0px;
@@ -160,10 +166,12 @@ body {
   float : right;
   margin-right : 0.5em;
 }
+/*
 #toolbar {
   width :100%;
   height : 50px;
 }
+*/
 
 #locate-menu .btn-locate-clear {
   width : 20px;
@@ -649,6 +657,11 @@ body {
   background-color:#2B2B2B;
   background-image: url(images/sprite_menu.png);
   background-position: -48px -80px;
+}
+
+#map-content .lizmapPopup .jforms-ctrl-date,
+#annotation-modal .jforms-ctrl-date{
+  width:auto;
 }
 
 

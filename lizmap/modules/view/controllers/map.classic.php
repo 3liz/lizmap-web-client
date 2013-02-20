@@ -83,11 +83,17 @@ class mapCtrl extends jController {
     )
       $rep->addJSLink('https://maps.google.com/maps/api/js?v=3.5&sensor=false');
 
+    // Add the jForms js
+    $bp = jApp::config()->urlengine['basePath'];
+    $rep->addJSLink($bp.'jelix/js/jforms_light.js');
+    $rep->addJSLink($bp.'js/bootstrapErrorDecoratorHtml.js');
+
     // Pass some configuration options to the web page through javascript var
     $rep->addJSCode("var dictionaryUrl = '".jUrl::get('view~translate:getDictionary', array('property'=>'map'))."';");
     $rep->addJSCode("var cfgUrl = '".jUrl::get('lizmap~service:getProjectConfig', array('repository'=>$repository, 'project'=>$project))."';");
     $rep->addJSCode("var wmsServerURL = '".jUrl::get('lizmap~service:index', array('repository'=>$repository, 'project'=>$project))."';");
     $rep->addJSCode("var mediaServerURL = '".jUrl::get('view~media:getMedia', array('repository'=>$repository, 'project'=>$project))."';");
+    $rep->addJSCode("var createAnnotationURL = '".jUrl::get('lizmap~annotation:createAnnotation', array('repository'=>$repository, 'project'=>$project))."';");
 
     // Read the QGIS project file to get the layer drawing order
     $qgisProjectClass = jClasses::getService('lizmap~qgisProject');
