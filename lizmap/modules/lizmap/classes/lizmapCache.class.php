@@ -39,7 +39,7 @@ class lizmapCache {
       foreach($bboxExp as $val){
         $val = (float)$val;
         $val = round($val, 6);
-        $nBbox[] = (string)$val;
+        $nBbox[] = str_replace(',', '.', (string)$val);
       }
       $data['bbox'] = implode(',', $nBbox);
     }
