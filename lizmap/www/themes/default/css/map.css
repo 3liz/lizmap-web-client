@@ -1,5 +1,7 @@
 body {
   padding-bottom:0;
+  padding-left:0;
+  padding-right:0;
 }
 #title {
   position:absolute;
@@ -123,6 +125,7 @@ body {
 #menu .ui-icon-locate-open {
   background-position : -16px -16px;
 }
+#toolbar h3,
 #menu h3 {
   margin : 1px;
   background : #2B2B2B;
@@ -132,16 +135,19 @@ body {
   border-top : solid 1px #DDDDDD;
   font-size : 0.9em;
 }
+#toolbar h3 span.title,
 #menu h3 span.title {
   display : block;
   padding : 0.5em 0.5em 0.5em 0.7em;
 }
+#toolbar h3 span.menu-content,
 #menu h3 span.ui-icon {
   float : right;
   margin-top : 0.5em;
   margin-right : 0.5em;
 }
 
+#toolbar div.menu-content,
 #menu div.menu-content {
   display : block;
   padding : 1em 1em 1em 1em;
@@ -172,6 +178,15 @@ body {
   height : 50px;
 }
 */
+
+
+#content.mobile #toolbar{
+  width: 100%;
+  position: absolute;
+  bottom: 0px;
+  z-index: 1001;
+  background : #F0F0F0;
+}
 
 #toolbar .annotation h3 .icon {
   display:inline-block;
@@ -675,6 +690,16 @@ body {
 #map-content .lizmapPopup .jforms-ctrl-date,
 #annotation-modal .jforms-ctrl-date{
   width:auto;
+}
+
+@media (max-width: 767px) {
+  .modal.fade.in {
+    top:30px;
+    bottom:30px;
+  }
+  .modal-body {
+    max-height: none;
+  }
 }
 
 

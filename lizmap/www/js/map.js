@@ -87,6 +87,8 @@ var lizMap = function() {
       if( $('#menu').is(':visible'))
         $('#menu').hide();
 
+      $('#map-content').append($('#toolbar'));
+
       $('#toggleLegend')
         .attr('data-original-title',$('#toggleLegendOn').attr('value'))
         .parent().attr('class','legend');
@@ -106,6 +108,8 @@ var lizMap = function() {
         $('#content span.ui-icon-open-menu').click();
       else
         $('#map-content').show();
+
+      $('#toolbar').insertBefore($('#switcher-menu'));
 
       $('#toggleLegend')
         .attr('data-original-title',$('#toggleMapOnlyOn').attr('value'))
@@ -183,13 +187,15 @@ var lizMap = function() {
       h -= $('#locate-menu').children().last().outerHeight(true);
     }
     */
-    $('#toolbar').children().each(function(){
-      var self = $(this);
-      if ( self.is(':visible') ) {
-        h -= self.children().first().outerHeight(true);
-        h -= self.children().last().outerHeight(true);
-      }
-    });
+    if ( $('#menu #toolbar').length != 0 ) {
+      $('#toolbar').children().each(function(){
+        var self = $(this);
+        if ( self.is(':visible') ) {
+          h -= self.children().first().outerHeight(true);
+          h -= self.children().last().outerHeight(true);
+        }
+      });
+    }
     if ($('#baselayer-menu').is(':visible')) {
       h -= $('#baselayer-menu').children().first().outerHeight(true);
       h -= $('#baselayer-menu').children().last().outerHeight(true);
@@ -1266,6 +1272,7 @@ var lizMap = function() {
           drawControls[keyId].deactivate();
           $('#annotation-'+keyId+'-menu').hide();
           updateSwitcherSize();
+          $('#annotation-modal').modal('hide');
         });
       }
       $('#annotation-modal').modal();
