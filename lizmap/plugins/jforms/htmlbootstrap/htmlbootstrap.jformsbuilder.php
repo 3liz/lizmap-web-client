@@ -66,7 +66,10 @@ class htmlbootstrapJformsBuilder extends jFormsBuilderHtml {
             echo ' ';
         }
         if ( isset($this->options['cancel']) && $this->options['cancel'] )
-          echo '<button class="btn" data-dismiss="modal" aria-hidden="true">Cancel</button>';
+          if ( isset($this->options['cancelLocale']) )
+            echo '<button class="btn" data-dismiss="modal" aria-hidden="true">', jLocale::get($this->options['cancelLocale']),'</button>';
+          else
+            echo '<button class="btn" data-dismiss="modal" aria-hidden="true">Cancel</button>';
         if ($modal)
           echo "</div>\n";
     }
