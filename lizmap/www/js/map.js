@@ -393,7 +393,7 @@ var lizMap = function() {
           baselayers.push(new OpenLayers.Layer.WMS(layerName,service
               ,layerWmsParams
               ,{isBaseLayer:true
-               ,gutter:(layerConfig.cached == 'True') ? 0 : 5
+               ,gutter:5
                ,buffer:0
                ,singleTile:(layerConfig.singleTile == 'True')
               }));
