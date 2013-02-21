@@ -4,10 +4,10 @@
     <mapcanvas>
         <units>degrees</units>
         <extent>
-            <xmin>3.757684</xmin>
-            <ymin>43.499881</ymin>
-            <xmax>4.015452</xmax>
-            <ymax>43.693134</ymax>
+            <xmin>3.804507</xmin>
+            <ymin>43.558144</ymin>
+            <xmax>3.951755</xmax>
+            <ymax>43.654770</ymax>
         </extent>
         <projections>1</projections>
         <destinationsrs>
@@ -24,58 +24,58 @@
         </destinationsrs>
     </mapcanvas>
     <legend updateDrawingOrder="false">
-        <legendgroup open="true" checked="Qt::Checked" name="hidden">
-            <legendlayer drawingOrder="-1" open="false" checked="Qt::Checked" name="annotation_line" showFeatureCount="0">
+        <legendgroup open="true" checked="Qt::Checked" name="Annotations">
+            <legendlayer drawingOrder="0" open="false" checked="Qt::Checked" name="annotation_line" showFeatureCount="0">
                 <filegroup open="false" hidden="false">
                     <legendlayerfile isInOverview="0" layerid="annotation_line20130131122136757" visible="1"/>
                 </filegroup>
             </legendlayer>
-            <legendlayer drawingOrder="-1" open="false" checked="Qt::Checked" name="annotation_point" showFeatureCount="0">
+            <legendlayer drawingOrder="1" open="false" checked="Qt::Checked" name="annotation_point" showFeatureCount="0">
                 <filegroup open="false" hidden="false">
                     <legendlayerfile isInOverview="0" layerid="annotation_point20130118171631518" visible="1"/>
                 </filegroup>
             </legendlayer>
         </legendgroup>
-        <legendgroup open="true" checked="Qt::Checked" name="datalayers">
+        <legendgroup open="true" checked="Qt::PartiallyChecked" name="datalayers">
             <legendgroup open="true" checked="Qt::Checked" name="Bus">
-                <legendlayer drawingOrder="2" open="false" checked="Qt::Checked" name="bus_stops" showFeatureCount="0">
+                <legendlayer drawingOrder="3" open="false" checked="Qt::Checked" name="bus_stops" showFeatureCount="0">
                     <filegroup open="false" hidden="false">
                         <legendlayerfile isInOverview="0" layerid="bus_stops20121106170806413" visible="1"/>
                     </filegroup>
                 </legendlayer>
-                <legendlayer drawingOrder="3" open="false" checked="Qt::Checked" name="bus" showFeatureCount="0">
+                <legendlayer drawingOrder="4" open="false" checked="Qt::Checked" name="bus" showFeatureCount="0">
                     <filegroup open="false" hidden="false">
                         <legendlayerfile isInOverview="0" layerid="bus20121102133611751" visible="1"/>
                     </filegroup>
                 </legendlayer>
             </legendgroup>
-            <legendgroup open="true" checked="Qt::Checked" name="Tramway">
-                <legendlayer drawingOrder="1" open="true" checked="Qt::Checked" name="tram_stops" showFeatureCount="0">
+            <legendgroup open="true" checked="Qt::Unchecked" name="Tramway">
+                <legendlayer drawingOrder="2" open="true" checked="Qt::Unchecked" name="tram_stops" showFeatureCount="0">
                     <filegroup open="true" hidden="false">
-                        <legendlayerfile isInOverview="0" layerid="tram_stops20110923123319267" visible="1"/>
+                        <legendlayerfile isInOverview="0" layerid="tram_stops20110923123319267" visible="0"/>
                     </filegroup>
                 </legendlayer>
-                <legendlayer drawingOrder="4" open="false" checked="Qt::Checked" name="tram" showFeatureCount="0">
+                <legendlayer drawingOrder="5" open="false" checked="Qt::Unchecked" name="tram" showFeatureCount="0">
                     <filegroup open="false" hidden="false">
-                        <legendlayerfile isInOverview="0" layerid="tram20121031171456234" visible="1"/>
+                        <legendlayerfile isInOverview="0" layerid="tram20121031171456234" visible="0"/>
                     </filegroup>
                 </legendlayer>
             </legendgroup>
         </legendgroup>
-        <legendlayer drawingOrder="5" open="false" checked="Qt::Unchecked" name="Quartiers" showFeatureCount="0">
+        <legendlayer drawingOrder="6" open="false" checked="Qt::Unchecked" name="Quartiers" showFeatureCount="0">
             <filegroup open="false" hidden="false">
                 <legendlayerfile isInOverview="0" layerid="VilleMTP_MTP_Quartiers_2011_432620130116112610876" visible="0"/>
             </filegroup>
         </legendlayer>
         <legendgroup open="true" checked="Qt::Unchecked" name="baselayers">
-            <legendlayer drawingOrder="6" open="true" checked="Qt::Unchecked" name="OSM_Basic" showFeatureCount="0">
+            <legendlayer drawingOrder="7" open="true" checked="Qt::Unchecked" name="OSM_Basic" showFeatureCount="0">
                 <filegroup open="true" hidden="false">
                     <legendlayerfile isInOverview="0" layerid="OSM_Basic20110923140116428" visible="0"/>
                 </filegroup>
             </legendlayer>
         </legendgroup>
         <legendgroup open="true" checked="Qt::Unchecked" name="Overview">
-            <legendlayer drawingOrder="7" open="false" checked="Qt::Unchecked" name="VilleMTP_MTP_Quartiers_2011_4326" showFeatureCount="0">
+            <legendlayer drawingOrder="8" open="false" checked="Qt::Unchecked" name="VilleMTP_MTP_Quartiers_2011_4326" showFeatureCount="0">
                 <filegroup open="false" hidden="false">
                     <legendlayerfile isInOverview="0" layerid="VilleMTP_MTP_Quartiers_2011_432620130116112351546" visible="0"/>
                 </filegroup>
@@ -102,14 +102,14 @@
                 <BackgroundColor alpha="255" red="255" blue="255" green="255"/>
             </ComposerItem>
         </ComposerMap>
-        <ComposerPicture pictureWidth="41.4127" file="./media/logo_osm.png" pictureHeight="35.3838" mapId="-1">
-            <ComposerItem width="41.4127" x="245.868" y="10.3524" rotation="0" height="35.3838" frame="false" outlineWidth="0.3" zValue="4" lastValidViewScaleFactor="2.7047" id="" positionLock="false">
+        <ComposerPicture pictureWidth="38.0665" file="/kimaidou/Documents/3liz/LOGOS/LOGOS/CARRE/WEB/Logo_car_coul.png" pictureHeight="39.6255" mapId="-1">
+            <ComposerItem width="38.0665" x="5.56126" y="5.91563" rotation="0" height="39.6255" frame="false" outlineWidth="0.3" zValue="3" lastValidViewScaleFactor="2.7047" id="" positionLock="false">
                 <FrameColor alpha="255" red="0" blue="0" green="0"/>
                 <BackgroundColor alpha="255" red="255" blue="255" green="255"/>
             </ComposerItem>
         </ComposerPicture>
-        <ComposerPicture pictureWidth="38.0665" file="/kimaidou/Documents/3liz/LOGOS/LOGOS/CARRE/WEB/Logo_car_coul.png" pictureHeight="39.6255" mapId="-1">
-            <ComposerItem width="38.0665" x="5.56126" y="5.91563" rotation="0" height="39.6255" frame="false" outlineWidth="0.3" zValue="3" lastValidViewScaleFactor="2.7047" id="" positionLock="false">
+        <ComposerPicture pictureWidth="41.4127" file="./media/logo_osm.png" pictureHeight="35.3838" mapId="-1">
+            <ComposerItem width="41.4127" x="245.868" y="10.3524" rotation="0" height="35.3838" frame="false" outlineWidth="0.3" zValue="4" lastValidViewScaleFactor="2.7047" id="" positionLock="false">
                 <FrameColor alpha="255" red="0" blue="0" green="0"/>
                 <BackgroundColor alpha="255" red="255" blue="255" green="255"/>
             </ComposerItem>
@@ -527,7 +527,7 @@
         <maplayer minimumScale="0" maximumScale="1e+08" geometry="Line" type="vector" hasScaleBasedVisibilityFlag="0">
             <id>annotation_line20130131122136757</id>
             <datasource>dbname='./annotations/annotation_db.sqlite' table="annotation_line" (geometry) sql=</datasource>
-            <title></title>
+            <title>Your best bicycle ride</title>
             <abstract></abstract>
             <layername>annotation_line</layername>
             <srs>
@@ -545,35 +545,127 @@
             <transparencyLevelInt>255</transparencyLevelInt>
             <provider encoding="UTF-8">spatialite</provider>
             <vectorjoins/>
-            <renderer-v2 symbollevels="0" type="singleSymbol">
+            <renderer-v2 attr="difficulty" symbollevels="0" type="categorizedSymbol">
+                <categories>
+                    <category symbol="0" value="1" label="Low"/>
+                    <category symbol="1" value="2" label="Medium"/>
+                    <category symbol="2" value="3" label="High"/>
+                </categories>
                 <symbols>
                     <symbol outputUnit="MM" alpha="1" type="line" name="0">
-                        <layer pass="0" class="SimpleLine" locked="1">
-                            <prop k="capstyle" v="flat"/>
-                            <prop k="color" v="229,80,80,255"/>
+                        <layer pass="0" class="SimpleLine" locked="0">
+                            <prop k="capstyle" v="square"/>
+                            <prop k="color" v="85,255,0,255"/>
                             <prop k="customdash" v="5;2"/>
                             <prop k="joinstyle" v="bevel"/>
                             <prop k="offset" v="0"/>
                             <prop k="penstyle" v="solid"/>
                             <prop k="use_custom_dash" v="0"/>
-                            <prop k="width" v="1.5"/>
+                            <prop k="width" v="1.2"/>
                         </layer>
-                        <layer pass="1" class="SimpleLine" locked="0">
-                            <prop k="capstyle" v="flat"/>
-                            <prop k="color" v="255,255,127,255"/>
+                    </symbol>
+                    <symbol outputUnit="MM" alpha="1" type="line" name="1">
+                        <layer pass="0" class="SimpleLine" locked="0">
+                            <prop k="capstyle" v="square"/>
+                            <prop k="color" v="255,170,0,255"/>
                             <prop k="customdash" v="5;2"/>
-                            <prop k="joinstyle" v="round"/>
+                            <prop k="joinstyle" v="bevel"/>
                             <prop k="offset" v="0"/>
                             <prop k="penstyle" v="solid"/>
                             <prop k="use_custom_dash" v="0"/>
-                            <prop k="width" v="1"/>
+                            <prop k="width" v="1.2"/>
+                        </layer>
+                    </symbol>
+                    <symbol outputUnit="MM" alpha="1" type="line" name="2">
+                        <layer pass="0" class="SimpleLine" locked="0">
+                            <prop k="capstyle" v="square"/>
+                            <prop k="color" v="255,0,0,255"/>
+                            <prop k="customdash" v="5;2"/>
+                            <prop k="joinstyle" v="bevel"/>
+                            <prop k="offset" v="0"/>
+                            <prop k="penstyle" v="solid"/>
+                            <prop k="use_custom_dash" v="0"/>
+                            <prop k="width" v="1.2"/>
                         </layer>
                     </symbol>
                 </symbols>
+                <source-symbol>
+                    <symbol outputUnit="MM" alpha="1" type="line" name="0">
+                        <layer pass="0" class="SimpleLine" locked="0">
+                            <prop k="capstyle" v="square"/>
+                            <prop k="color" v="18,128,253,255"/>
+                            <prop k="customdash" v="5;2"/>
+                            <prop k="joinstyle" v="bevel"/>
+                            <prop k="offset" v="0"/>
+                            <prop k="penstyle" v="solid"/>
+                            <prop k="use_custom_dash" v="0"/>
+                            <prop k="width" v="1.2"/>
+                        </layer>
+                    </symbol>
+                </source-symbol>
+                <colorramp type="random" name="[source]">
+                    <prop k="count" v="10"/>
+                    <prop k="hueMax" v="359"/>
+                    <prop k="hueMin" v="0"/>
+                    <prop k="satMax" v="255"/>
+                    <prop k="satMin" v="0"/>
+                    <prop k="valMax" v="255"/>
+                    <prop k="valMin" v="0"/>
+                </colorramp>
                 <rotation field=""/>
                 <sizescale field=""/>
             </renderer-v2>
-            <customproperties/>
+            <customproperties>
+                <property key="labeling" value="pal"/>
+                <property key="labeling/addDirectionSymbol" value="false"/>
+                <property key="labeling/bufferColorB" value="255"/>
+                <property key="labeling/bufferColorG" value="255"/>
+                <property key="labeling/bufferColorR" value="255"/>
+                <property key="labeling/bufferSize" value="0.3"/>
+                <property key="labeling/dataDefinedProperty0" value=""/>
+                <property key="labeling/dataDefinedProperty1" value=""/>
+                <property key="labeling/dataDefinedProperty10" value=""/>
+                <property key="labeling/dataDefinedProperty11" value=""/>
+                <property key="labeling/dataDefinedProperty12" value=""/>
+                <property key="labeling/dataDefinedProperty13" value=""/>
+                <property key="labeling/dataDefinedProperty14" value=""/>
+                <property key="labeling/dataDefinedProperty2" value=""/>
+                <property key="labeling/dataDefinedProperty3" value=""/>
+                <property key="labeling/dataDefinedProperty4" value=""/>
+                <property key="labeling/dataDefinedProperty5" value=""/>
+                <property key="labeling/dataDefinedProperty6" value=""/>
+                <property key="labeling/dataDefinedProperty7" value=""/>
+                <property key="labeling/dataDefinedProperty8" value=""/>
+                <property key="labeling/dataDefinedProperty9" value=""/>
+                <property key="labeling/decimals" value="0"/>
+                <property key="labeling/dist" value="0"/>
+                <property key="labeling/distInMapUnits" value="false"/>
+                <property key="labeling/enabled" value="true"/>
+                <property key="labeling/fieldName" value="name"/>
+                <property key="labeling/fontFamily" value="Ubuntu"/>
+                <property key="labeling/fontItalic" value="false"/>
+                <property key="labeling/fontSize" value="8"/>
+                <property key="labeling/fontSizeInMapUnits" value="false"/>
+                <property key="labeling/fontStrikeout" value="false"/>
+                <property key="labeling/fontUnderline" value="false"/>
+                <property key="labeling/fontWeight" value="50"/>
+                <property key="labeling/formatNumbers" value="false"/>
+                <property key="labeling/isExpression" value="false"/>
+                <property key="labeling/labelPerPart" value="false"/>
+                <property key="labeling/mergeLines" value="false"/>
+                <property key="labeling/minFeatureSize" value="0"/>
+                <property key="labeling/obstacle" value="true"/>
+                <property key="labeling/placement" value="2"/>
+                <property key="labeling/placementFlags" value="15"/>
+                <property key="labeling/plussign" value="true"/>
+                <property key="labeling/priority" value="5"/>
+                <property key="labeling/scaleMax" value="0"/>
+                <property key="labeling/scaleMin" value="0"/>
+                <property key="labeling/textColorB" value="127"/>
+                <property key="labeling/textColorG" value="0"/>
+                <property key="labeling/textColorR" value="255"/>
+                <property key="labeling/wrapChar" value=""/>
+            </customproperties>
             <displayfield>name</displayfield>
             <label>0</label>
             <labelattributes>
@@ -599,18 +691,26 @@
             <edittypes>
                 <edittype type="13" name="datetime"/>
                 <edittype type="12" name="description"/>
+                <edittype type="3" name="difficulty">
+                    <valuepair key="high" value="3"/>
+                    <valuepair key="low" value="1"/>
+                    <valuepair key="medium" value="2"/>
+                </edittype>
                 <edittype type="0" name="name"/>
                 <edittype type="11" name="pkuid"/>
             </edittypes>
             <editform>.</editform>
             <editforminit></editforminit>
             <annotationform>.</annotationform>
+            <aliases>
+                <alias field="difficulty" index="4" name=""/>
+            </aliases>
             <attributeactions/>
         </maplayer>
         <maplayer minimumScale="0" maximumScale="1e+08" geometry="Point" type="vector" hasScaleBasedVisibilityFlag="0">
             <id>annotation_point20130118171631518</id>
             <datasource>dbname='./annotations/annotation_db.sqlite' table="annotation_point" (geometry) sql=</datasource>
-            <title></title>
+            <title>Your poi</title>
             <abstract></abstract>
             <layername>annotation_point</layername>
             <srs>
@@ -628,41 +728,56 @@
             <transparencyLevelInt>255</transparencyLevelInt>
             <provider encoding="UTF-8">spatialite</provider>
             <vectorjoins/>
-            <renderer-v2 attr="importance" symbollevels="0" type="categorizedSymbol">
+            <renderer-v2 attr="type" symbollevels="0" type="categorizedSymbol">
                 <categories>
-                    <category symbol="0" value="1" label="low"/>
-                    <category symbol="1" value="2" label="medium"/>
-                    <category symbol="2" value="3" label="high"/>
+                    <category symbol="0" value="1" label="café"/>
+                    <category symbol="1" value="2" label="pharmacy"/>
+                    <category symbol="2" value="3" label="bus stop"/>
+                    <category symbol="3" value="4" label="park"/>
                 </categories>
                 <symbols>
                     <symbol outputUnit="MM" alpha="1" type="marker" name="0">
-                        <layer pass="0" class="SimpleMarker" locked="0">
+                        <layer pass="0" class="SvgMarker" locked="0">
                             <prop k="angle" v="0"/>
-                            <prop k="color" v="255,255,0,255"/>
-                            <prop k="color_border" v="0,0,0,255"/>
-                            <prop k="name" v="circle"/>
+                            <prop k="fill" v="#000000"/>
+                            <prop k="name" v="/entertainment/amenity=cafe.svg"/>
                             <prop k="offset" v="0,0"/>
-                            <prop k="size" v="3"/>
+                            <prop k="outline" v="#000000"/>
+                            <prop k="outline-width" v="1"/>
+                            <prop k="size" v="5"/>
                         </layer>
                     </symbol>
                     <symbol outputUnit="MM" alpha="1" type="marker" name="1">
-                        <layer pass="0" class="SimpleMarker" locked="0">
+                        <layer pass="0" class="SvgMarker" locked="0">
                             <prop k="angle" v="0"/>
-                            <prop k="color" v="255,170,0,255"/>
-                            <prop k="color_border" v="0,0,0,255"/>
-                            <prop k="name" v="circle"/>
+                            <prop k="fill" v="#000000"/>
+                            <prop k="name" v="/services/amenity=pharmacy,dispensing=yes.svg"/>
                             <prop k="offset" v="0,0"/>
-                            <prop k="size" v="3"/>
+                            <prop k="outline" v="#000000"/>
+                            <prop k="outline-width" v="1"/>
+                            <prop k="size" v="5"/>
                         </layer>
                     </symbol>
                     <symbol outputUnit="MM" alpha="1" type="marker" name="2">
-                        <layer pass="0" class="SimpleMarker" locked="0">
+                        <layer pass="0" class="SvgMarker" locked="0">
                             <prop k="angle" v="0"/>
-                            <prop k="color" v="255,0,0,255"/>
-                            <prop k="color_border" v="0,0,0,255"/>
-                            <prop k="name" v="circle"/>
+                            <prop k="fill" v="#000000"/>
+                            <prop k="name" v="/transport/highway=bus_stop.svg"/>
                             <prop k="offset" v="0,0"/>
-                            <prop k="size" v="3"/>
+                            <prop k="outline" v="#000000"/>
+                            <prop k="outline-width" v="1"/>
+                            <prop k="size" v="5"/>
+                        </layer>
+                    </symbol>
+                    <symbol outputUnit="MM" alpha="1" type="marker" name="3">
+                        <layer pass="0" class="SvgMarker" locked="0">
+                            <prop k="angle" v="0"/>
+                            <prop k="fill" v="#000000"/>
+                            <prop k="name" v="/biology/Deciduous.svg"/>
+                            <prop k="offset" v="0,0"/>
+                            <prop k="outline" v="#000000"/>
+                            <prop k="outline-width" v="1"/>
+                            <prop k="size" v="5"/>
                         </layer>
                     </symbol>
                 </symbols>
@@ -696,7 +811,7 @@
                 <property key="labeling/bufferColorB" value="255"/>
                 <property key="labeling/bufferColorG" value="255"/>
                 <property key="labeling/bufferColorR" value="255"/>
-                <property key="labeling/bufferSize" value="0.4"/>
+                <property key="labeling/bufferSize" value="0.3"/>
                 <property key="labeling/dataDefinedProperty0" value=""/>
                 <property key="labeling/dataDefinedProperty1" value=""/>
                 <property key="labeling/dataDefinedProperty10" value=""/>
@@ -713,11 +828,11 @@
                 <property key="labeling/dataDefinedProperty8" value=""/>
                 <property key="labeling/dataDefinedProperty9" value=""/>
                 <property key="labeling/decimals" value="0"/>
-                <property key="labeling/dist" value="1"/>
+                <property key="labeling/dist" value="2"/>
                 <property key="labeling/distInMapUnits" value="false"/>
                 <property key="labeling/enabled" value="true"/>
                 <property key="labeling/fieldName" value="name"/>
-                <property key="labeling/fontFamily" value="Ubuntu"/>
+                <property key="labeling/fontFamily" value="Arial"/>
                 <property key="labeling/fontItalic" value="false"/>
                 <property key="labeling/fontSize" value="10"/>
                 <property key="labeling/fontSizeInMapUnits" value="false"/>
@@ -736,10 +851,10 @@
                 <property key="labeling/priority" value="5"/>
                 <property key="labeling/scaleMax" value="0"/>
                 <property key="labeling/scaleMin" value="0"/>
-                <property key="labeling/textColorB" value="0"/>
-                <property key="labeling/textColorG" value="0"/>
-                <property key="labeling/textColorR" value="0"/>
-                <property key="labeling/wrapChar" value=""/>
+                <property key="labeling/textColorB" value="124"/>
+                <property key="labeling/textColorG" value="41"/>
+                <property key="labeling/textColorR" value="41"/>
+                <property key="labeling/wrapChar" value=" "/>
             </customproperties>
             <displayfield>name</displayfield>
             <label>0</label>
@@ -767,9 +882,9 @@
                 <edittype type="13" name="date"/>
                 <edittype type="12" name="description"/>
                 <edittype type="0" name="height"/>
-                <edittype type="4" name="importance"/>
                 <edittype type="0" name="name"/>
                 <edittype type="10" name="pkuid"/>
+                <edittype type="4" name="type"/>
                 <edittype type="11" name="user"/>
             </edittypes>
             <editform>.</editform>
