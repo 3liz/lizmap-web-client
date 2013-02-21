@@ -173,6 +173,19 @@ body {
 }
 */
 
+#toolbar .annotation h3 .icon {
+  display:inline-block;
+  vertical-align:middle;
+  background-image : url(images/sprite_20_tools.png);
+  background-repeat:no-repeat;
+  width:20px;
+  height:20px;
+  background-position : 0px 0px;
+}
+#toolbar .annotation h3 .text {
+  vertical-align : bottom;
+}
+
 #locate-menu .btn-locate-clear {
   width : 20px;
   height : 20px;

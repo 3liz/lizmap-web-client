@@ -45,14 +45,14 @@
         </a>
       </li>
       <li class="annotation dropdown">
-        <a class="dropdown-toggle" data-toggle="dropdown" href="#" id="annotation" data-original-title="Annotation" data-placement="bottom" rel="tooltip">
+        <a class="dropdown-toggle" data-toggle="dropdown" href="#" id="annotation" data-original-title="{@view~annotation.navbar.title@}" data-placement="bottom" rel="tooltip">
           <span class="icon"></span>
           <span class="caret"></span>
         </a>
         <ul class="dropdown-menu pull-right">
-          <li><a id="annotation-point" href="#">Point</a></li>
-          <li><a id="annotation-line" href="#">Line</a></li>
-          <li><a id="annotation-polygon" href="#">Polygon</a></li>
+          <li><a id="annotation-point" href="#">{@view~annotation.navbar.title.point@}</a></li>
+          <li><a id="annotation-line" href="#">{@view~annotation.navbar.title.line@}</a></li>
+          <li><a id="annotation-polygon" href="#">{@view~annotation.navbar.title.polygon@}</a></li>
         </ul>
       </li>
       {if $isConnected}
@@ -91,17 +91,17 @@
       <span class="ui-icon ui-icon-close-menu"></span>
     </div>
     <div id="toolbar">
-      <div id="annotation-point-menu" style="display:none;">
-        <h3><span class="title">Annotations point</span></h3>
-        <div class="menu-content">Vous êtes en train d'annoter</div>
+      <div id="annotation-point-menu" class="annotation" style="display:none;">
+        <h3><span class="title"><span class="icon"></span>&nbsp;<span class="text">{@view~annotation.toolbar.title.point@}</span></span></h3>
+        <div class="menu-content">{@view~annotation.toolbar.content.underway@} <button id="annotation-point-stop" class="btn btn-danger btn-small">{@view~annotation.toolbar.content.stop@}</button></div>
       </div>
-      <div id="annotation-line-menu" style="display:none;">
-        <h3><span class="title">Annotations line</span></h3>
-        <div class="menu-content">Vous êtes en train d'annoter</div>
+      <div id="annotation-line-menu" class="annotation" style="display:none;">
+        <h3><span class="title"><span class="icon"></span>&nbsp;<span class="text">{@view~annotation.toolbar.title.line@}</span></span></h3>
+        <div class="menu-content">{@view~annotation.toolbar.content.underway@} <button id="annotation-line-stop" class="btn btn-danger btn-small">{@view~annotation.toolbar.content.stop@}</button></div>
       </div>
-      <div id="annotation-polygon-menu" style="display:none;">
-        <h3><span class="title">Annotations polygon</span></h3>
-        <div class="menu-content">Vous êtes en train d'annoter</div>
+      <div id="annotation-polygon-menu" class="annotation" style="display:none;">
+        <h3><span class="title"><span class="icon"></span>&nbsp;<span class="text">{@view~annotation.toolbar.title.polygon@}</span></span></h3>
+        <div class="menu-content">{@view~annotation.toolbar.content.underway@}  <button id="annotation-polygon-stop" class="btn btn-danger btn-small">{@view~annotation.toolbar.content.stop@}</button></div>
       </div>
       <div id="locate-menu" style="display:none;">
         <h3><span class="title"><button class="btn-locate-clear btn btn-mini btn-link" type="button"></button>{@view~map.locatemenu.title@}</span></h3>

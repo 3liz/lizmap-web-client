@@ -76,9 +76,17 @@ class annotationCtrl extends jController {
   */
   function serviceAnswer(){
 
+    // Get title layer
+    $layerXmlZero = $this->layerXml[0];
+    $_title = $layerXmlZero->xpath('title');   
+    $title = (string)$_title[0];
+    if ( !$title )
+      $title = jLocale::get("view~annotation.modal.title.default");
+
     $messages = jMessage::getAll();
 		$rep = $this->getResponse('htmlfragment');
     $tpl = new jTpl();
+    $tpl->assign('title', $title);
 		$content = $tpl->fetch('view~jmessage_modal');
     $rep->addContent($content);
     jMessage::clearAll();
@@ -533,9 +541,17 @@ class annotationCtrl extends jController {
       }
     }
 
+    // Get title layer
+    $layerXmlZero = $this->layerXml[0];
+    $_title = $layerXmlZero->xpath('title');   
+    $title = (string)$_title[0];
+
     // Use template to create html form content
     $tpl = new jTpl();
-    $tpl->assign(array('form'=>$form));
+    $tpl->assign(array(
+      'title'=>$title,
+      'form'=>$form
+    ));
     $content = $tpl->fetch('view~annotation_form');
 
     // Return html fragment response

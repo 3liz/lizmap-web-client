@@ -1114,21 +1114,21 @@ var lizMap = function() {
         var al = config.annotationLayers[alName];
         if ( al.geometryType == "point" )
           pointLayer = new OpenLayers.Layer.Vector(al.layerId ,{
-            //geometryType: "OpenLayers.Geometry.Point"
+            geometryType: OpenLayers.Geometry.Point
           });
         else if ( al.geometryType == "line" )
           lineLayer = new OpenLayers.Layer.Vector(al.layerId ,{
-            //geometryType: "OpenLayers.Geometry.LineString"
+            geometryType: OpenLayers.Geometry.LineString
           });
         else if ( al.geometryType == "polygon" )
           polygonLayer = new OpenLayers.Layer.Vector(al.layerId ,{
-            //geometryType: "OpenLayers.Geometry.Polygon"
+            geometryType: OpenLayers.Geometry.Polygon
           });
       }
       var drawControls = {};
       var drawnFeat = null;
       function setAnnotationModal(aHtml) {
-        $('#annotation-modal').html('<div class="modal-header"><h3>Annotation</h3></div>'+aHtml);
+        $('#annotation-modal').html(aHtml);
         $('#annotation-modal form').submit(function(){
           var self = $(this);
           if (jForms.getForm(self.attr('id')).errorDecorator.message != '')
@@ -1142,6 +1142,7 @@ var lizMap = function() {
           return false;
         });
       }
+
       // add polygon annotation layer
       // and its drawing control
       if ( polygonLayer != null ) {
@@ -1168,8 +1169,11 @@ var lizMap = function() {
               },'text');
           }
         });
-      } else
+      } else {
         $('#annotation-polygon').parent().remove();
+        $('#annotation-polygon-menu').remove();
+      }
+
       // add line annotation layer
       // and its drawing control
       if ( lineLayer != null ) {
@@ -1196,8 +1200,11 @@ var lizMap = function() {
               },'text');
           }
         });
-      } else
+      } else {
         $('#annotation-line').parent().remove();
+        $('#annotation-line-menu').remove();
+      }
+
       // add point annotation layer
       // and its drawing control
       if ( pointLayer != null ) {
@@ -1224,13 +1231,16 @@ var lizMap = function() {
               },'text');
           }
         });
-      } else
+      } else {
         $('#annotation-point').parent().remove();
+        $('#annotation-point-menu').remove();
+      }
 
       if ( $('#annotation').next().children().length == 0 )
         $('#annotation').parent().remove();
       for(var key in drawControls) {
         map.addControl(drawControls[key]);
+        // click in the navbar
         $('#annotation-'+key).click(function() {
           var keyId = $(this).attr('id').replace('annotation-','');
           for ( var k in drawControls ) {
@@ -1248,6 +1258,13 @@ var lizMap = function() {
           $('#annotation').dropdown('toggle');
           updateSwitcherSize();
           return false;
+        });
+        // click to stop
+        $('#annotation-'+key+'-stop').click(function() {
+          var keyId = $(this).attr('id').replace('annotation-','');
+          keyId = keyId.replace('-stop','');
+          drawControls[keyId].deactivate();
+          $('#annotation-'+keyId+'-menu').hide();
         });
       }
       $('#annotation-modal').modal();
