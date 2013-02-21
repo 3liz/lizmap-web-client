@@ -259,7 +259,8 @@ class lizmapCache {
     // Avoid metatiling when the cache is not active for the layer
     $metatileSize = False;
     if(property_exists($configLayer, 'metatileSize'))
-      $metatileSize = $configLayer->metatileSize;
+      if(preg_match('#^[3579],[3579]$#', $configLayer->metatileSize))
+        $metatileSize = $configLayer->metatileSize;
 
     // Also checks if gd is installed
     if($metatileSize and $string2bool[$configLayer->cached] and $wmsClient == 'web'
