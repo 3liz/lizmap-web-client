@@ -1265,16 +1265,29 @@ var lizMap = function() {
           keyId = keyId.replace('-stop','');
           drawControls[keyId].deactivate();
           $('#annotation-'+keyId+'-menu').hide();
+          updateSwitcherSize();
         });
       }
       $('#annotation-modal').modal();
       $('#annotation-modal').on('hidden', function () {
         if (drawnFeat == null)
           return true;
+        var layerId = drawnFeat.layer.name;
         drawnFeat.layer.destroyFeatures([drawnFeat]);
         drawnfeat = null;
+        $.each(layers, function(i, l) {
+          if (config.layers[l.params['LAYERS']].id != layerId)
+            return true;
+          l.redraw(true);
+          return false;
+        });
       });
       config.annotationLayers['drawControls'] = drawControls;
+    } else {
+      $('#annotation').parent().remove();
+      $('#annotation-point-menu').remove();
+      $('#annotation-line-menu').remove();
+      $('#annotation-polygon-menu').remove();
     }
   }
 

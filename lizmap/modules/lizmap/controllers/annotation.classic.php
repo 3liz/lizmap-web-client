@@ -667,7 +667,7 @@ class annotationCtrl extends jController {
     }
   
 		// Return html fragment response
-		jMessage::add(jLocale::get('view~annotation.form.date.saved'));
+		jMessage::add(jLocale::get('view~annotation.form.data.saved'));
     return $this->serviceAnswer();
       
   }
