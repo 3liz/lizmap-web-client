@@ -1858,20 +1858,21 @@ var lizMap = function() {
  */
 lizMap.events.on({
     'treecreated':function(evt){
-       //console.log('treecreated');
+       console.log('treecreated');
        if ((('osmMapnik' in evt.config.options) && evt.config.options.osmMapnik == 'True') ||
            (('osmMapquest' in evt.config.options) && evt.config.options.osmMapquest == 'True') ||
            (('googleStreets' in evt.config.options) && evt.config.options.googleStreets == 'True') ||
            (('googleSatellite' in evt.config.options) && evt.config.options.googleSatellite == 'True') ||
            (('googleHybrid' in evt.config.options) && evt.config.options.googleHybrid == 'True') ||
            (('googleTerrain' in evt.config.options) && evt.config.options.googleTerrain == 'True')) {
+         Proj4js.defs['EPSG:3857'] = Proj4js.defs['EPSG:900913'];
          var proj = evt.config.options.projection;
          if ( !(proj.ref in Proj4js.defs) )
            Proj4js.defs[proj.ref]=proj.proj4;
          var projection = new OpenLayers.Projection(proj.ref);
-         var projOSM = new OpenLayers.Projection('EPSG:900913');
-         proj.ref = 'EPSG:900913';
-         proj.proj4 = Proj4js.defs['EPSG:900913'];
+         var projOSM = new OpenLayers.Projection('EPSG:3857');
+         proj.ref = 'EPSG:3857';
+         proj.proj4 = Proj4js.defs['EPSG:3857'];
 
          var bbox = evt.config.options.bbox;
          var extent = new OpenLayers.Bounds(Number(bbox[0]),Number(bbox[1]),Number(bbox[2]),Number(bbox[3]));
@@ -1898,7 +1899,11 @@ lizMap.events.on({
    ,'mapcreated':function(evt){
        //console.log('mapcreated');
        //adding baselayers
-       var maxExtent = new OpenLayers.Bounds(OpenLayers.Projection.defaults['EPSG:3857'].maxExtent);
+       var maxExtent = null;
+       if ( OpenLayers.Projection.defaults['EPSG:900913'].maxExtent )
+         maxExtent = new OpenLayers.Bounds(OpenLayers.Projection.defaults['EPSG:900913'].maxExtent);
+       else if ( OpenLayers.Projection.defaults['EPSG:3857'].maxExtent )
+         maxExtent = new OpenLayers.Bounds(OpenLayers.Projection.defaults['EPSG:3857'].maxExtent);
        if (('osmMapnik' in evt.config.options) && evt.config.options.osmMapnik == 'True') {
          evt.map.allOverlays = false;
          var osm = new OpenLayers.Layer.OSM('osm');
@@ -1992,7 +1997,7 @@ lizMap.events.on({
 
      }
    ,'uicreated':function(evt){
-  //alert('uicreated')
+  console.log('uicreated')
 
    }
 });

@@ -5,9 +5,9 @@
         <units>degrees</units>
         <extent>
             <xmin>3.804507</xmin>
-            <ymin>43.558144</ymin>
+            <ymin>43.551260</ymin>
             <xmax>3.951755</xmax>
-            <ymax>43.654770</ymax>
+            <ymax>43.661654</ymax>
         </extent>
         <projections>1</projections>
         <destinationsrs>
@@ -36,7 +36,7 @@
                 </filegroup>
             </legendlayer>
         </legendgroup>
-        <legendgroup open="true" checked="Qt::PartiallyChecked" name="datalayers">
+        <legendgroup open="true" checked="Qt::Checked" name="datalayers">
             <legendgroup open="true" checked="Qt::Checked" name="Bus">
                 <legendlayer drawingOrder="3" open="false" checked="Qt::Checked" name="bus_stops" showFeatureCount="0">
                     <filegroup open="false" hidden="false">
@@ -83,6 +83,12 @@
         </legendgroup>
     </legend>
     <Composer title="Composeur1" visible="0">
+        <ComposerPicture pictureWidth="38.0665" file="/kimaidou/Documents/3liz/LOGOS/LOGOS/CARRE/WEB/Logo_car_coul.png" pictureHeight="39.6255" mapId="-1">
+            <ComposerItem width="38.0665" x="5.56126" y="5.91563" rotation="0" height="39.6255" frame="false" outlineWidth="0.3" zValue="3" lastValidViewScaleFactor="2.7047" id="" positionLock="false">
+                <FrameColor alpha="255" red="0" blue="0" green="0"/>
+                <BackgroundColor alpha="255" red="255" blue="255" green="255"/>
+            </ComposerItem>
+        </ComposerPicture>
         <ComposerLabel valign="128" labelText="LizMap&#xa;&#xa;An example PDF output from QGIS composer.&#xa;This PDF file will be available by clicling on the (i) link right to the tramway layer" halign="4" margin="1">
             <LabelFont description="Ubuntu,12,-1,5,75,0,0,0,0,0"/>
             <FontColor red="0" blue="0" green="0"/>
@@ -102,12 +108,6 @@
                 <BackgroundColor alpha="255" red="255" blue="255" green="255"/>
             </ComposerItem>
         </ComposerMap>
-        <ComposerPicture pictureWidth="38.0665" file="/kimaidou/Documents/3liz/LOGOS/LOGOS/CARRE/WEB/Logo_car_coul.png" pictureHeight="39.6255" mapId="-1">
-            <ComposerItem width="38.0665" x="5.56126" y="5.91563" rotation="0" height="39.6255" frame="false" outlineWidth="0.3" zValue="3" lastValidViewScaleFactor="2.7047" id="" positionLock="false">
-                <FrameColor alpha="255" red="0" blue="0" green="0"/>
-                <BackgroundColor alpha="255" red="255" blue="255" green="255"/>
-            </ComposerItem>
-        </ComposerPicture>
         <ComposerPicture pictureWidth="41.4127" file="./media/logo_osm.png" pictureHeight="35.3838" mapId="-1">
             <ComposerItem width="41.4127" x="245.868" y="10.3524" rotation="0" height="35.3838" frame="false" outlineWidth="0.3" zValue="4" lastValidViewScaleFactor="2.7047" id="" positionLock="false">
                 <FrameColor alpha="255" red="0" blue="0" green="0"/>
@@ -1706,6 +1706,7 @@ Data is licensed under ODbl, OpenStreetMap contributors</WMSServiceAbstract>
         <WMSCrsList type="QStringList">
             <value>EPSG:4326</value>
             <value>EPSG:900913</value>
+            <value>EPSG:3857</value>
         </WMSCrsList>
         <WFSLayers type="QStringList">
             <value>VilleMTP_MTP_Quartiers_2011_432620130116112610876</value>
@@ -1716,6 +1717,7 @@ Data is licensed under ODbl, OpenStreetMap contributors</WMSServiceAbstract>
         </PositionPrecision>
         <WMSAddWktGeometry type="bool">false</WMSAddWktGeometry>
         <WMSContactOrganization type="QString">3liz</WMSContactOrganization>
+        <WMSServiceCapabilities type="bool">true</WMSServiceCapabilities>
         <WMSServiceTitle type="QString">Montpellier - Transports</WMSServiceTitle>
         <WMSExtent type="QStringList">
             <value>3.78300108</value>
@@ -1723,6 +1725,5 @@ Data is licensed under ODbl, OpenStreetMap contributors</WMSServiceAbstract>
             <value>3.97065725</value>
             <value>43.67333749</value>
         </WMSExtent>
-        <WMSServiceCapabilities type="QString">True</WMSServiceCapabilities>
     </properties>
 </qgis>

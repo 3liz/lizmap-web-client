@@ -5,9 +5,9 @@
         <units>degrees</units>
         <extent>
             <xmin>3.801980</xmin>
-            <ymin>43.564102</ymin>
+            <ymin>43.555353</ymin>
             <xmax>3.946948</xmax>
-            <ymax>43.655289</ymax>
+            <ymax>43.664038</ymax>
         </extent>
         <projections>1</projections>
         <destinationsrs>
@@ -48,12 +48,12 @@
     </legend>
     <Composer title="Composeur1" visible="0">
         <ComposerMap keepLayerSet="false" id="0" previewMode="Cache" drawCanvasItems="true">
-            <Extent ymin="43.592544" xmin="3.842436859296482" ymax="43.64345871672211" xmax="3.913439140703518"/>
+            <Extent ymin="43.5925" xmin="3.84244" ymax="43.6435" xmax="3.91344"/>
             <LayerSet/>
             <Grid gridStyle="0" crossLength="3" penColorRed="0" penColorBlue="0" intervalX="0" offsetX="0" intervalY="0" offsetY="0" show="0" penWidth="0" penColorGreen="0">
                 <Annotation direction="0" precision="3" position="1" frameDistance="1" show="0" font="Ubuntu,11,-1,5,50,0,0,0,0,0"/>
             </Grid>
-            <ComposerItem width="281" x="7" y="5" rotation="0" height="201.501066098081" frame="true" outlineWidth="0.3" zValue="1" lastValidViewScaleFactor="2.222748815165877" id="" positionLock="false">
+            <ComposerItem width="281" x="7" y="5" rotation="0" height="201.501" frame="true" outlineWidth="0.3" zValue="1" lastValidViewScaleFactor="2.22275" id="" positionLock="false">
                 <FrameColor alpha="255" red="0" blue="0" green="0"/>
                 <BackgroundColor alpha="255" red="255" blue="255" green="255"/>
             </ComposerItem>
@@ -153,11 +153,11 @@
             <layername>VilleMTP_MTP_EspacesVertsSurface_2011</layername>
             <srs>
                 <spatialrefsys>
-                    <proj4>+proj=lcc +lat_1=44 +lat_2=49 +lat_0=46.5 +lon_0=3 +x_0=700000 +y_0=6600000 +ellps=GRS80 +units=m +no_defs</proj4>
-                    <srsid>100008</srsid>
+                    <proj4>+proj=lcc +lat_1=49 +lat_2=44 +lat_0=46.5 +lon_0=3 +x_0=700000 +y_0=6600000 +ellps=GRS80 +units=m +no_defs</proj4>
+                    <srsid>100009</srsid>
                     <srid>0</srid>
-                    <authid>USER:100008</authid>
-                    <description> * SCR généré (+proj=lcc +lat_1=44 +lat_2=49 +lat_0=46.5 +lon_0=3 +x_0=700000 +y_0=6600000 +ellps=GRS80 +units=m +no_defs)</description>
+                    <authid>:</authid>
+                    <description> * SCR généré (+proj=lcc +lat_1=49 +lat_2=44 +lat_0=46.5 +lon_0=3 +x_0=700000 +y_0=6600000 +ellps=GRS80 +units=m +no_defs)</description>
                     <projectionacronym>lcc</projectionacronym>
                     <ellipsoidacronym>GRS80</ellipsoidacronym>
                     <geographicflag>false</geographicflag>
@@ -240,11 +240,11 @@
             <layername>VilleMTP_MTP_FilaireVoies_2011</layername>
             <srs>
                 <spatialrefsys>
-                    <proj4>+proj=lcc +lat_1=44 +lat_2=49 +lat_0=46.5 +lon_0=3 +x_0=700000 +y_0=6600000 +ellps=GRS80 +units=m +no_defs</proj4>
-                    <srsid>100008</srsid>
+                    <proj4>+proj=lcc +lat_1=49 +lat_2=44 +lat_0=46.5 +lon_0=3 +x_0=700000 +y_0=6600000 +ellps=GRS80 +units=m +no_defs</proj4>
+                    <srsid>100009</srsid>
                     <srid>0</srid>
-                    <authid>USER:100008</authid>
-                    <description> * SCR généré (+proj=lcc +lat_1=44 +lat_2=49 +lat_0=46.5 +lon_0=3 +x_0=700000 +y_0=6600000 +ellps=GRS80 +units=m +no_defs)</description>
+                    <authid>:</authid>
+                    <description> * SCR généré (+proj=lcc +lat_1=49 +lat_2=44 +lat_0=46.5 +lon_0=3 +x_0=700000 +y_0=6600000 +ellps=GRS80 +units=m +no_defs)</description>
                     <projectionacronym>lcc</projectionacronym>
                     <ellipsoidacronym>GRS80</ellipsoidacronym>
                     <geographicflag>false</geographicflag>
@@ -722,6 +722,7 @@
         <WMSCrsList type="QStringList">
             <value>EPSG:4326</value>
             <value>EPSG:900913</value>
+            <value>EPSG:3857</value>
         </WMSCrsList>
         <WFSLayers type="QStringList"/>
         <PositionPrecision>
@@ -730,6 +731,7 @@
         </PositionPrecision>
         <WMSAddWktGeometry type="bool">false</WMSAddWktGeometry>
         <WMSContactOrganization type="QString"></WMSContactOrganization>
+        <WMSServiceCapabilities type="bool">true</WMSServiceCapabilities>
         <WMSServiceTitle type="QString">Montpellier - Intranet map example</WMSServiceTitle>
         <WMSExtent type="QStringList">
             <value>3.78300108</value>
@@ -737,6 +739,5 @@
             <value>3.97065725</value>
             <value>43.67333749</value>
         </WMSExtent>
-        <WMSServiceCapabilities type="QString">True</WMSServiceCapabilities>
     </properties>
 </qgis>
