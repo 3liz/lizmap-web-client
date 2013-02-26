@@ -36,6 +36,11 @@ var lizMap = function() {
    */
   var layers = [];
   /**
+   * PRIVATE Property: controls
+   * {Object({key:<OpenLayers.Control>})} Dictionary of controls
+   */
+  var controls = {};
+  /**
    * PRIVATE Property: tree
    * {object} The layer's tree
    */
@@ -307,6 +312,8 @@ var lizMap = function() {
           maxScale=layerConfig.maxScale;
       }
     }
+    if ( minScale < 1 )
+      minScale = 1;
     return {minScale:minScale,maxScale:maxScale};
   }
 
@@ -429,7 +436,7 @@ var lizMap = function() {
               ,layerWmsParams
               ,{isBaseLayer:false
                ,minScale:layerConfig.maxScale
-               ,maxScale:layerConfig.minScale
+               ,maxScale:(layerConfig.minScale != null && layerConfig.minScale < 1) ? 1 : layerConfig.minScale
                ,isVisible:(layerConfig.toggled=='True')
                ,gutter:5
                ,buffer:0
@@ -507,7 +514,7 @@ var lizMap = function() {
       html += ' expanded parent';
     html += '">';
 
-    html += '<td><button class="checkbox" name="'+nodeConfig.type+'" value="'+aNode.name+'" title="'+dictionary['tree.button.checkbox']+'"></button>';
+    html += '<td><button class="checkbox" name="'+nodeConfig.type+'" value="'+aNode.name+'" title="'+lizDict['tree.button.checkbox']+'"></button>';
     html += '<span class="label" title="'+nodeConfig.abstract+'">'+nodeConfig.title+'</span>';
     html += '</td>';
 
@@ -520,7 +527,7 @@ var lizMap = function() {
     if (nodeConfig.link)
       legendLink = nodeConfig.link;
     if (legendLink != '' )
-      html += '<td><button class="link" name="link" title="'+dictionary['tree.button.link']+'" value="'+legendLink+'"/></td>';
+      html += '<td><button class="link" name="link" title="'+lizDict['tree.button.link']+'" value="'+legendLink+'"/></td>';
     else
       html += '<td></td>';
 
@@ -633,6 +640,8 @@ var lizMap = function() {
     var bbox = config.options.bbox;
     var extent = new OpenLayers.Bounds(Number(bbox[0]),Number(bbox[1]),Number(bbox[2]),Number(bbox[3]));
 
+    var restrictedExtent = extent.scale(3);
+
     // calculate the map height
     var mapHeight = $('body').parent()[0].clientHeight;
     if(!mapHeight)
@@ -644,7 +653,9 @@ var lizMap = function() {
     var res = extent.getHeight()/$('#map').height();
 
     var scales = config.options.mapScales;
-    scales.sort();
+    scales.sort(function(a, b) {
+      return Number(b) - Number(a);
+    });
 
     // creating the map
     OpenLayers.Util.DEFAULT_PRECISION=20; // default is 14 : change needed to avoid rounding problem with cache
@@ -745,6 +756,7 @@ var lizMap = function() {
         }
 
        ,maxExtent:extent
+       ,restrictedExtent: restrictedExtent
        ,maxScale: scales.length == 0 ? config.options.minScale : "auto"
        ,minScale: scales.length == 0 ? config.options.maxScale : "auto"
        ,numZoomLevels: scales.length == 0 ? config.options.zoomLevelNumber : scales.length
@@ -762,7 +774,7 @@ var lizMap = function() {
   }
 
   /**
-   * create the layer switcher
+   * Get features for locate by layer tool
    */
   function getLocateFeature(aName) {
     var locate = config.locateByLayer[aName];
@@ -1111,191 +1123,6 @@ var lizMap = function() {
       },'xml');
       $('#locate-menu').show();
     }
-    // Annotation layers
-    if ('annotationLayers' in config) {
-      var pointLayer = null;
-      var lineLayer = null;
-      var polygonLayer = null;
-      for (var alName in config.annotationLayers) {
-        var al = config.annotationLayers[alName];
-        if ( al.geometryType == "point" )
-          pointLayer = new OpenLayers.Layer.Vector(al.layerId ,{
-            geometryType: OpenLayers.Geometry.Point
-          });
-        else if ( al.geometryType == "line" )
-          lineLayer = new OpenLayers.Layer.Vector(al.layerId ,{
-            geometryType: OpenLayers.Geometry.LineString
-          });
-        else if ( al.geometryType == "polygon" )
-          polygonLayer = new OpenLayers.Layer.Vector(al.layerId ,{
-            geometryType: OpenLayers.Geometry.Polygon
-          });
-      }
-      var drawControls = {};
-      var drawnFeat = null;
-      function setAnnotationModal(aHtml) {
-        $('#annotation-modal').html(aHtml);
-        $('#annotation-modal form').submit(function(){
-          var self = $(this);
-          if (jForms.getForm(self.attr('id')).errorDecorator.message != '')
-            return false;
-          $.post(
-            self.attr('action'),
-            self.serialize(),
-            function(result) {
-              setAnnotationModal(result);
-            });
-          return false;
-        });
-      }
-
-      // add polygon annotation layer
-      // and its drawing control
-      if ( polygonLayer != null ) {
-        map.addLayer(polygonLayer);
-        drawControls['polygon'] = new OpenLayers.Control.DrawFeature(
-            polygonLayer,
-            OpenLayers.Handler.Polygon);
-        polygonLayer.events.on({
-          'featureadded': function(evt) {
-            drawnFeat = evt.feature;
-            $.get(createAnnotationURL
-              ,{layerId:drawnFeat.layer.name}
-              ,function (result) {
-                setAnnotationModal(result);
-                var formId = $('#annotation-modal form').attr('id');
-                var srid = $('#'+formId+'_liz_srid').val();
-                if ( !( ('EPSG:'+srid) in Proj4js.defs) )
-                  Proj4js.defs['EPSG:'+srid] = $('#'+formId+'_liz_proj4').val();
-                var geom = drawnFeat.geometry.clone();
-                geom.transform(map.getProjectionObject(), new OpenLayers.Projection('EPSG:'+srid));
-                var geomColumn = $('#'+formId+'_liz_geometryColumn').val();
-                $('#'+formId+'_'+geomColumn).val(geom);
-                $('#annotation-modal').modal('show');
-              },'text');
-          }
-        });
-      } else {
-        $('#annotation-polygon').parent().remove();
-        $('#annotation-polygon-menu').remove();
-      }
-
-      // add line annotation layer
-      // and its drawing control
-      if ( lineLayer != null ) {
-        map.addLayer(lineLayer);
-        drawControls['line'] = new OpenLayers.Control.DrawFeature(
-            lineLayer,
-            OpenLayers.Handler.Path);
-        lineLayer.events.on({
-          'featureadded': function(evt) {
-            drawnFeat = evt.feature;
-            $.get(createAnnotationURL
-              ,{layerId:drawnFeat.layer.name}
-              ,function (result) {
-                setAnnotationModal(result);
-                var formId = $('#annotation-modal form').attr('id');
-                var srid = $('#'+formId+'_liz_srid').val();
-                if ( !( ('EPSG:'+srid) in Proj4js.defs) )
-                  Proj4js.defs['EPSG:'+srid] = $('#'+formId+'_liz_proj4').val();
-                var geom = drawnFeat.geometry.clone();
-                geom.transform(map.getProjectionObject(), new OpenLayers.Projection('EPSG:'+srid));
-                var geomColumn = $('#'+formId+'_liz_geometryColumn').val();
-                $('#'+formId+'_'+geomColumn).val(geom);
-                $('#annotation-modal').modal('show');
-              },'text');
-          }
-        });
-      } else {
-        $('#annotation-line').parent().remove();
-        $('#annotation-line-menu').remove();
-      }
-
-      // add point annotation layer
-      // and its drawing control
-      if ( pointLayer != null ) {
-        map.addLayer(pointLayer);
-        drawControls['point'] = new OpenLayers.Control.DrawFeature(
-            pointLayer,
-            OpenLayers.Handler.Point);
-        pointLayer.events.on({
-          'featureadded': function(evt) {
-            drawnFeat = evt.feature;
-            $.get(createAnnotationURL
-              ,{layerId:drawnFeat.layer.name}
-              ,function (result) {
-                setAnnotationModal(result);
-                var formId = $('#annotation-modal form').attr('id');
-                var srid = $('#'+formId+'_liz_srid').val();
-                if ( !( ('EPSG:'+srid) in Proj4js.defs) )
-                  Proj4js.defs['EPSG:'+srid] = $('#'+formId+'_liz_proj4').val();
-                var geom = drawnFeat.geometry.clone();
-                geom.transform(map.getProjectionObject(), new OpenLayers.Projection('EPSG:'+srid));
-                var geomColumn = $('#'+formId+'_liz_geometryColumn').val();
-                $('#'+formId+'_'+geomColumn).val(geom);
-                $('#annotation-modal').modal('show');
-              },'text');
-          }
-        });
-      } else {
-        $('#annotation-point').parent().remove();
-        $('#annotation-point-menu').remove();
-      }
-
-      if ( $('#annotation').next().children().length == 0 )
-        $('#annotation').parent().remove();
-      for(var key in drawControls) {
-        map.addControl(drawControls[key]);
-        // click in the navbar
-        $('#annotation-'+key).click(function() {
-          var keyId = $(this).attr('id').replace('annotation-','');
-          for ( var k in drawControls ) {
-            if ( k == keyId && drawControls[k].active) {
-              drawControls[k].deactivate();
-              $('#annotation-'+k+'-menu').hide();
-            } else if ( k == keyId ) {
-              drawControls[k].activate();
-              $('#annotation-'+k+'-menu').show();
-            } else {
-              drawControls[k].deactivate();
-              $('#annotation-'+k+'-menu').hide();
-            }
-          }
-          $('#annotation').dropdown('toggle');
-          updateSwitcherSize();
-          return false;
-        });
-        // click to stop
-        $('#annotation-'+key+'-stop').click(function() {
-          var keyId = $(this).attr('id').replace('annotation-','');
-          keyId = keyId.replace('-stop','');
-          drawControls[keyId].deactivate();
-          $('#annotation-'+keyId+'-menu').hide();
-          updateSwitcherSize();
-          $('#annotation-modal').modal('hide');
-        });
-      }
-      $('#annotation-modal').modal();
-      $('#annotation-modal').on('hidden', function () {
-        if (drawnFeat == null)
-          return true;
-        var layerId = drawnFeat.layer.name;
-        drawnFeat.layer.destroyFeatures([drawnFeat]);
-        drawnfeat = null;
-        $.each(layers, function(i, l) {
-          if (config.layers[l.params['LAYERS']].id != layerId)
-            return true;
-          l.redraw(true);
-          return false;
-        });
-      });
-      config.annotationLayers['drawControls'] = drawControls;
-    } else {
-      $('#annotation').parent().remove();
-      $('#annotation-point-menu').remove();
-      $('#annotation-line-menu').remove();
-      $('#annotation-polygon-menu').remove();
-    }
   }
 
   /**
@@ -1533,11 +1360,22 @@ var lizMap = function() {
     */
   }
 
+  function deactivateToolControls( evt ) {
+    for (var id in controls) {
+      var ctrl = controls[id];
+      if (ctrl == evt.object)
+        continue;
+      if (ctrl.type == OpenLayers.Control.TYPE_TOOL)
+        ctrl.deactivate();
+    }
+    return true;
+  }
 
   function addFeatureInfo() {
       var info = new OpenLayers.Control.WMSGetFeatureInfo({
             url: wmsServerURL,
             title: 'Identify features by clicking',
+            type:OpenLayers.Control.TYPE_TOGGLE,
             queryVisible: true,
             infoFormat: 'text/html',
             eventListeners: {
@@ -1630,6 +1468,486 @@ var lizMap = function() {
      return info;
   }
 
+  function addAnnotationControls() {
+    // Annotation layers
+    if ('annotationLayers' in config) {
+      var pointLayer = null;
+      var lineLayer = null;
+      var polygonLayer = null;
+      for (var alName in config.annotationLayers) {
+        var al = config.annotationLayers[alName];
+        if ( al.geometryType == "point" )
+          pointLayer = new OpenLayers.Layer.Vector(al.layerId ,{
+            geometryType: OpenLayers.Geometry.Point
+          });
+        else if ( al.geometryType == "line" )
+          lineLayer = new OpenLayers.Layer.Vector(al.layerId ,{
+            geometryType: OpenLayers.Geometry.LineString
+          });
+        else if ( al.geometryType == "polygon" )
+          polygonLayer = new OpenLayers.Layer.Vector(al.layerId ,{
+            geometryType: OpenLayers.Geometry.Polygon
+          });
+      }
+      var drawControls = {};
+      var drawnFeat = null;
+      function setAnnotationModal(aHtml) {
+        $('#annotation-modal').html(aHtml);
+        $('#annotation-modal form').submit(function(){
+          var self = $(this);
+          if (jForms.getForm(self.attr('id')).errorDecorator.message != '')
+            return false;
+          $.post(
+            self.attr('action'),
+            self.serialize(),
+            function(result) {
+              setAnnotationModal(result);
+            });
+          return false;
+        });
+      }
+
+      // add polygon annotation layer
+      // and its drawing control
+      if ( polygonLayer != null ) {
+        map.addLayer(polygonLayer);
+        var polygonCtrl = new OpenLayers.Control.DrawFeature(
+            polygonLayer,
+            OpenLayers.Handler.Polygon,
+            {type:OpenLayers.Control.TYPE_TOOL});
+        polygonLayer.events.on({
+          'featureadded': function(evt) {
+            drawnFeat = evt.feature;
+            $.get(createAnnotationURL
+              ,{layerId:drawnFeat.layer.name}
+              ,function (result) {
+                setAnnotationModal(result);
+                var formId = $('#annotation-modal form').attr('id');
+                var srid = $('#'+formId+'_liz_srid').val();
+                if ( !( ('EPSG:'+srid) in Proj4js.defs) )
+                  Proj4js.defs['EPSG:'+srid] = $('#'+formId+'_liz_proj4').val();
+                var geom = drawnFeat.geometry.clone();
+                geom.transform(map.getProjectionObject(), new OpenLayers.Projection('EPSG:'+srid));
+                var geomColumn = $('#'+formId+'_liz_geometryColumn').val();
+                $('#'+formId+'_'+geomColumn).val(geom);
+                $('#annotation-modal').modal('show');
+              },'text');
+          }
+        });
+        polygonCtrl.events.on({
+          activate: function(evt) {
+            deactivateToolControls(evt);
+            $('#annotation-polygon-menu').show();
+            $('#annotation-modal').modal('hide');
+            updateSwitcherSize();
+          },
+          deactivate: function(evt) {
+            $('#annotation-polygon-menu').hide();
+            $('#annotation-modal').modal('hide');
+            updateSwitcherSize();
+          }
+        });
+        drawControls['polygon'] = polygonCtrl;
+      } else {
+        $('#annotation-polygon').parent().remove();
+        $('#annotation-polygon-menu').remove();
+      }
+
+      // add line annotation layer
+      // and its drawing control
+      if ( lineLayer != null ) {
+        map.addLayer(lineLayer);
+        var lineCtrl = new OpenLayers.Control.DrawFeature(
+            lineLayer,
+            OpenLayers.Handler.Path,
+            {type:OpenLayers.Control.TYPE_TOOL});
+        lineLayer.events.on({
+          'featureadded': function(evt) {
+            drawnFeat = evt.feature;
+            $.get(createAnnotationURL
+              ,{layerId:drawnFeat.layer.name}
+              ,function (result) {
+                setAnnotationModal(result);
+                var formId = $('#annotation-modal form').attr('id');
+                var srid = $('#'+formId+'_liz_srid').val();
+                if ( !( ('EPSG:'+srid) in Proj4js.defs) )
+                  Proj4js.defs['EPSG:'+srid] = $('#'+formId+'_liz_proj4').val();
+                var geom = drawnFeat.geometry.clone();
+                geom.transform(map.getProjectionObject(), new OpenLayers.Projection('EPSG:'+srid));
+                var geomColumn = $('#'+formId+'_liz_geometryColumn').val();
+                $('#'+formId+'_'+geomColumn).val(geom);
+                $('#annotation-modal').modal('show');
+              },'text');
+          }
+        });
+        lineCtrl.events.on({
+          activate: function(evt) {
+            deactivateToolControls(evt);
+            $('#annotation-line-menu').show();
+            $('#annotation-modal').modal('hide');
+            updateSwitcherSize();
+          },
+          deactivate: function(evt) {
+            $('#annotation-line-menu').hide();
+            $('#annotation-modal').modal('hide');
+            updateSwitcherSize();
+          }
+        });
+        drawControls['line'] = lineCtrl;
+      } else {
+        $('#annotation-line').parent().remove();
+        $('#annotation-line-menu').remove();
+      }
+
+      // add point annotation layer
+      // and its drawing control
+      if ( pointLayer != null ) {
+        map.addLayer(pointLayer);
+        var pointCtrl = new OpenLayers.Control.DrawFeature(
+            pointLayer,
+            OpenLayers.Handler.Point,
+            {type:OpenLayers.Control.TYPE_TOOL});
+        pointLayer.events.on({
+          'featureadded': function(evt) {
+            drawnFeat = evt.feature;
+            $.get(createAnnotationURL
+              ,{layerId:drawnFeat.layer.name}
+              ,function (result) {
+                setAnnotationModal(result);
+                var formId = $('#annotation-modal form').attr('id');
+                var srid = $('#'+formId+'_liz_srid').val();
+                if ( !( ('EPSG:'+srid) in Proj4js.defs) )
+                  Proj4js.defs['EPSG:'+srid] = $('#'+formId+'_liz_proj4').val();
+                var geom = drawnFeat.geometry.clone();
+                geom.transform(map.getProjectionObject(), new OpenLayers.Projection('EPSG:'+srid));
+                var geomColumn = $('#'+formId+'_liz_geometryColumn').val();
+                $('#'+formId+'_'+geomColumn).val(geom);
+                $('#annotation-modal').modal('show');
+              },'text');
+          }
+        });
+        pointCtrl.events.on({
+          activate: function(evt) {
+            deactivateToolControls(evt);
+            $('#annotation-point-menu').show();
+            $('#annotation-modal').modal('hide');
+            updateSwitcherSize();
+          },
+          deactivate: function(evt) {
+            $('#annotation-point-menu').hide();
+            $('#annotation-modal').modal('hide');
+            updateSwitcherSize();
+          }
+        });
+        drawControls['point'] = pointCtrl;
+      } else {
+        $('#annotation-point').parent().remove();
+        $('#annotation-point-menu').remove();
+      }
+
+      if ( $('#annotation').next().children().length == 0 )
+        $('#annotation').parent().remove();
+      for(var key in drawControls) {
+        map.addControl(drawControls[key]);
+        controls[key+'Annotations'] = drawControls[key];
+        // click in the navbar
+        $('#annotation-'+key).click(function() {
+          var keyId = $(this).attr('id').replace('annotation-','');
+          if ( drawControls[keyId].active )
+            drawControls[keyId].deactivate();
+          else
+            drawControls[keyId].activate();
+          $('#annotation').dropdown('toggle');
+          return false;
+        });
+        // click to stop
+        $('#annotation-'+key+'-stop').click(function() {
+          var keyId = $(this).attr('id').replace('annotation-','');
+          keyId = keyId.replace('-stop','');
+          drawControls[keyId].deactivate();
+        });
+      }
+      $('#annotation-modal').modal();
+      $('#annotation-modal').on('hidden', function () {
+        if (drawnFeat == null)
+          return true;
+        var layerId = drawnFeat.layer.name;
+        drawnFeat.layer.destroyFeatures([drawnFeat]);
+        drawnfeat = null;
+        $.each(layers, function(i, l) {
+          if (config.layers[l.params['LAYERS']].id != layerId)
+            return true;
+          l.redraw(true);
+          return false;
+        });
+      });
+      config.annotationLayers['drawControls'] = drawControls;
+    } else {
+      $('#annotation').parent().remove();
+      $('#annotation-point-menu').remove();
+      $('#annotation-line-menu').remove();
+      $('#annotation-polygon-menu').remove();
+    }
+  }
+
+  function addMeasureControls() {
+    // style the sketch fancy
+    var sketchSymbolizers = {
+      "Point": {
+        pointRadius: 4,
+        graphicName: "square",
+        fillColor: "white",
+        fillOpacity: 1,
+        strokeWidth: 1,
+        strokeOpacity: 1,
+        strokeColor: "#333333"
+      },
+      "Line": {
+        strokeWidth: 3,
+        strokeOpacity: 1,
+        strokeColor: "#666666",
+        strokeDashstyle: "dash"
+      },
+      "Polygon": {
+        strokeWidth: 2,
+        strokeOpacity: 1,
+        strokeColor: "#666666",
+        strokeDashstyle: "dash",
+        fillColor: "white",
+        fillOpacity: 0.3
+      }
+    };
+    var style = new OpenLayers.Style();
+    style.addRules([
+        new OpenLayers.Rule({symbolizer: sketchSymbolizers})
+        ]);
+    var styleMap = new OpenLayers.StyleMap({"default": style});
+
+    var measureControls = {
+      length: new OpenLayers.Control.Measure(
+        OpenLayers.Handler.Path, {
+          persist: true,
+          geodesic: true,
+          immediate: true,
+          handlerOptions: {
+            layerOptions: {
+              styleMap: styleMap
+            }
+          },
+          type:OpenLayers.Control.TYPE_TOOL
+        }
+      ),
+      area: new OpenLayers.Control.Measure(
+        OpenLayers.Handler.Polygon, {
+          persist: true,
+          geodesic: true,
+          immediate: true,
+          handlerOptions: {
+            layerOptions: {
+              styleMap: styleMap
+            }
+          },
+          type:OpenLayers.Control.TYPE_TOOL
+        }
+      ),
+      perimeter: new OpenLayers.Control.Measure(
+        OpenLayers.Handler.Polygon, {
+          persist: true,
+          geodesic: true,
+          immediate: true,
+          handlerOptions: {
+            layerOptions: {
+              styleMap: styleMap
+            }
+          },
+          type:OpenLayers.Control.TYPE_TOOL
+        }
+      )
+    };
+    measureControls.length.events.on({
+      activate: function(evt) {
+        deactivateToolControls(evt);
+        $('#measure-length-menu').show();
+        updateSwitcherSize();
+        mAddMessage(lizDict['measure.activate.length'],'info',true).attr('id','lizmap-measure-message');
+      },
+      deactivate: function(evt) {
+        $('#measure-length-menu').hide();
+        updateSwitcherSize();
+        $('#lizmap-measure-message').remove();
+      }
+    });
+    measureControls.area.events.on({
+      activate: function(evt) {
+        deactivateToolControls(evt);
+        $('#measure-area-menu').show();
+        updateSwitcherSize();
+        mAddMessage(lizDict['measure.activate.area'],'info',true).attr('id','lizmap-measure-message');
+      },
+      deactivate: function(evt) {
+        $('#measure-area-menu').hide();
+        updateSwitcherSize();
+        $('#lizmap-measure-message').remove();
+      }
+    });
+    measureControls.perimeter.measure = function(geometry, eventType) {
+        var stat, order;
+        if(geometry.CLASS_NAME.indexOf('LineString') > -1) {
+            stat = this.getBestLength(geometry);
+            order = 1;
+        } else {
+            stat = this.getBestLength(geometry.components[0]);
+            order = 1;
+        }
+        this.events.triggerEvent(eventType, {
+            measure: stat[0],
+            units: stat[1],
+            order: order,
+            geometry: geometry
+        });
+    };
+    measureControls.perimeter.events.on({
+      activate: function(evt) {
+        deactivateToolControls(evt);
+        $('#measure-perimeter-menu').show();
+        updateSwitcherSize();
+        mAddMessage(lizDict['measure.activate.perimeter'],'info',true).attr('id','lizmap-measure-message');
+      },
+      deactivate: function(evt) {
+        $('#measure-perimeter-menu').hide();
+        updateSwitcherSize();
+        $('#lizmap-measure-message').remove();
+      }
+    });
+
+    function handleMeasurements(evt) {
+      var geometry = evt.geometry;
+      var units = evt.units;
+      var order = evt.order;
+      var measure = evt.measure;
+      var out = "";
+      if(order == 1) {
+        out += lizDict['measure.handle']+" " + measure.toFixed(3) + " " + units;
+      } else {
+        out += lizDict['measure.handle']+" " + measure.toFixed(3) + " " + units + "<sup>2</" + "sup>";
+      }
+      var element = $('#lizmap-measure-message');
+      if ( element.length == 0 ) {
+        element = mAddMessage(out);
+        element.attr('id','lizmap-measure-message');
+      } else {
+        element.html('<p>'+out+'</p>');
+      }
+    }
+    for(var key in measureControls) {
+      var control = measureControls[key];
+      control.events.on({
+        "measure": handleMeasurements,
+        "measurepartial": handleMeasurements,
+        "activate": function(evt) {
+          deactivateToolControls(evt);
+        }
+      });
+      map.addControl(control);
+      controls[key+'Measure'] = control;
+      // click in the navbar
+      $('#measure-'+key).click(function() {
+        var keyId = $(this).attr('id').replace('measure-','');
+        if ( measureControls[keyId].active )
+          measureControls[keyId].deactivate();
+        else
+          measureControls[keyId].activate();
+        $('#measure').dropdown('toggle');
+        return false;
+      });
+      // click to stop
+      $('#measure-'+key+'-stop').click(function() {
+        var keyId = $(this).attr('id').replace('measure-','');
+        keyId = keyId.replace('-stop','');
+        measureControls[keyId].deactivate();
+      });
+    }
+    return measureControls;
+  }
+
+  function addGeolocationControl() {
+    var style = {
+      fillColor: '#0395D6',
+      fillOpacity: 0.1,
+      strokeColor: '#0395D6',
+      strokeWidth: 1
+    };
+    var vector = new OpenLayers.Layer.Vector('geolocation');
+    map.addLayer(vector);
+    var geolocate = new OpenLayers.Control.Geolocate({
+      type: OpenLayers.Control.TYPE_TOGGLE,
+      bind: false,
+      watch: true,
+      geolocationOptions: {
+        enableHighAccuracy: false,
+        maximumAge: 0,
+        timeout: 7000
+      }
+    });
+    map.addControl(geolocate);
+    var firstGeolocation = true;
+    geolocate.events.on({
+      "locationupdated": function(evt) {
+        vector.destroyFeatures();
+        var circle = new OpenLayers.Feature.Vector(
+          OpenLayers.Geometry.Polygon.createRegularPolygon(
+            evt.point.clone(),
+            evt.position.coords.accuracy/2,
+            40,
+            0
+          ),
+          {},
+          style
+        );
+        vector.addFeatures([
+          new OpenLayers.Feature.Vector(
+            evt.point,
+            {},
+            {
+              graphicName: 'circle',
+              strokeColor: '#0395D6',
+              strokeWidth: 1,
+              fillOpacity: 1,
+              fillColor: '#0395D6',
+              pointRadius: 3
+            }
+          ),
+          circle
+        ]);
+        if (firstGeolocation) {
+          map.zoomToExtent(vector.getDataExtent());
+          //pulsate(circle);
+          firstGeolocation = false;
+          this.bind = true;
+        }
+      },
+      "locationfailed": function(evt) {
+        if ( vector.features.length == 0 )
+          mAddMessage(lizDict['geolocation.failed'],'error',true);
+      },
+      "activate": function(evt) {
+        $('#toggleGeolocate').parent().addClass('active');
+      },
+      "deactivate": function(evt) {
+        vector.destroyFeatures();
+        $('#toggleGeolocate').parent().removeClass('active');
+      }
+    });
+    controls['geolocation'] = geolocate;
+    $('#toggleGeolocate').click(function() {
+      if (geolocate.active)
+        geolocate.deactivate();
+      else
+        geolocate.activate();
+      return false;
+    });
+  }
+
   /**
    * PRIVATE function: parseData
    * parsing capability
@@ -1669,11 +1987,41 @@ var lizMap = function() {
     var minMapSize = 450;
     var w = $('body').parent()[0].offsetWidth;
     if($.browser.msie)
-        w = $('body').width();
+      w = $('body').width();
     var leftW = w - minMapSize;
     if(leftW < minMapSize || w < minMapSize)
-        return true;
+      return true;
     return false;
+  }
+
+  /**
+   * PRIVATE function: mAddMessage
+   * Write message to the UI
+   *
+   *
+   * Returns:
+   * {jQuery Object} The message added.
+   */
+  function mAddMessage( aMessage, aType, aClose ) {
+    var mType = 'info';
+    var mTypeList = ['info', 'error', 'success'];
+    var mClose = false;
+
+    if ( $.inArray(aType, mTypeList) != -1 )
+      mType = aType;
+
+    if ( aClose )
+      mClose = true;
+      
+    var html = '<div class="alert alert-block alert-'+mType+' fade in" data-alert="alert">';
+    if ( mClose )
+      html += '<a class="close" data-dismiss="alert" href="#">×</a>';
+    html += '<p>'+aMessage+'</p>';
+    html += '</div>';
+
+    var elt = $(html);
+    $('#message').append(elt);
+    return elt;
   }
 
 
@@ -1725,6 +2073,13 @@ var lizMap = function() {
     },
 
     /**
+     * Method: checkMobile
+     */
+    addMessage: function( aMessage, aType, aClose ) {
+      return mAddMessage( aMessage, aType, aClose );
+    },
+
+    /**
      * Method: init
      */
     init: function() {
@@ -1733,10 +2088,6 @@ var lizMap = function() {
       $.getJSON(cfgUrl,function(cfgData) {
         config = cfgData;
         config.options.hasOverview = false;
-
-      //get dictionnary
-      $.getJSON(dictionaryUrl,function(dictData) {
-        dictionary = dictData;
 
          //get capabilities
         $.get(wmsServerURL,{SERVICE:'WMS',REQUEST:'GetCapabilities',VERSION:'1.3.0'},function(data) {
@@ -1768,6 +2119,7 @@ var lizMap = function() {
           self.map = map;
           self.layers = layers;
           self.baselayers = baselayers;
+          self.controls = controls;
           self.events.triggerEvent("mapcreated", self);
 
           // create the switcher
@@ -1787,6 +2139,10 @@ var lizMap = function() {
           //createToolbar();
 
           var info = addFeatureInfo();
+          controls['featureInfo'] = info;
+          addGeolocationControl();
+          addAnnotationControls();
+          addMeasureControls();
           $('#navbar div.slider').slider("value",map.getZoom());
           map.events.on({
             zoomend : function() {
@@ -1839,7 +2195,6 @@ var lizMap = function() {
           $('#loading').dialog('close');
         }, "text");
       });
-      });
     }
   };
   // initializing the lizMap events
@@ -1858,7 +2213,7 @@ var lizMap = function() {
  */
 lizMap.events.on({
     'treecreated':function(evt){
-       console.log('treecreated');
+       //console.log('treecreated');
        if ((('osmMapnik' in evt.config.options) && evt.config.options.osmMapnik == 'True') ||
            (('osmMapquest' in evt.config.options) && evt.config.options.osmMapquest == 'True') ||
            (('googleStreets' in evt.config.options) && evt.config.options.googleStreets == 'True') ||
@@ -1878,6 +2233,33 @@ lizMap.events.on({
          var extent = new OpenLayers.Bounds(Number(bbox[0]),Number(bbox[1]),Number(bbox[2]),Number(bbox[3]));
          extent = extent.transform(projection,projOSM);
          bbox = extent.toArray();
+
+         var scales = evt.config.options.mapScales;
+         if (scales.length != 0 ) {
+           scales.sort(function(a, b) {
+             return Number(b) - Number(a);
+           });
+           var maxScale = scales[0];
+           var maxRes = OpenLayers.Util.getResolutionFromScale(maxScale, projOSM.proj.units);
+           var minScale = scales[scales.length-1];
+           var minRes = OpenLayers.Util.getResolutionFromScale(minScale, projOSM.proj.units);
+           var res = OpenLayers.Util.getResolutionFromScale(591659030.3224756, projOSM.proj.units);
+           var nScales = [];
+           while ( res > minRes ) {
+             if ( res < maxRes ) {
+               if (nScales.length == 0)
+                 nScales.push(res*2);
+               nScales.push(res);
+             }
+             res = res/2;
+           }
+           maxRes = nScales[0];
+           nScales.push(res);
+           minRes = res;
+
+           maxScale = OpenLayers.Util.getScaleFromResolution(maxRes, projOSM.proj.units);
+           minScale = OpenLayers.Util.getScaleFromResolution(minRes, projOSM.proj.units);
+         }
 
          evt.config.options.projection = proj;
          evt.config.options.bbox = bbox;
@@ -1997,7 +2379,7 @@ lizMap.events.on({
 
      }
    ,'uicreated':function(evt){
-  console.log('uicreated')
+  //console.log('uicreated')
 
    }
 });

@@ -23,6 +23,7 @@ class mapCtrl extends jController {
       jApp::config()->theme = $this->param('theme');
     }
     $rep = $this->getResponse('htmlmap');
+    $rep->addJSLink(jUrl::get('view~translate:index'));
     $ok = true;
 
     // Get the project

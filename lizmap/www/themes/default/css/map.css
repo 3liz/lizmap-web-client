@@ -37,10 +37,12 @@ body {
   background-position: 0px -140px;
 }
 .navbar .nav .map .icon {
-  background-position: -20px -20px;
+  /*background-position: -20px -20px;*/
+  background-position: -20px -420px;
 }
 .navbar .nav .map a:hover .icon {
-  background-position: 0px -20px;
+  /*background-position: 0px -20px;*/
+  background-position: 0px -420px;
 }
 .navbar .nav .legendmap .icon {
   background-position: -20px -40px;
@@ -49,10 +51,12 @@ body {
   background-position: 0px -40px;
 }
 .navbar .nav .legend .icon {
-  background-position: -20px -240px;
+  /*background-position: -20px -240px;*/
+  background-position: -20px -400px;
 }
 .navbar .nav .legend a:hover .icon {
-  background-position: 0px -240px;
+  /*background-position: 0px -240px;*/
+  background-position: 0px -400px;
 }
 .navbar .nav .locate .icon {
   background-position: -20px -160px;
@@ -65,6 +69,18 @@ body {
 }
 .navbar .nav .annotation a:hover .icon {
   background-position: 0px 0px;
+}
+.navbar .nav .measure .icon {
+  background-position: -20px -480px;
+}
+.navbar .nav .measure a:hover .icon {
+  background-position: 0px -480px;
+}
+.navbar .nav .geolocate .icon {
+  background-position: -20px -120px;
+}
+.navbar .nav .geolocate a:hover .icon {
+  background-position: 0px -120px;
 }
 
 #content {
@@ -153,6 +169,34 @@ body {
   padding : 1em 1em 1em 1em;
 }
 
+#menu h3 .icon {
+  display:inline-block;
+  vertical-align:middle;
+  background-image : url(images/sprite_20_tools.png);
+  background-repeat:no-repeat;
+  width:20px;
+  height:20px;
+}
+#menu h3 .text {
+  vertical-align : bottom;
+}
+
+#menu .baselayer h3 .icon {
+  background-position : 0px -20px;
+}
+#menu .switcher h3 .icon {
+  background-position : 0px -60px;
+}
+#menu .locate h3 .icon {
+  background-position : 0px -160px;
+}
+#menu .measure h3 .icon {
+  background-position: 0px -480px;
+}
+#menu .annotation h3 .icon {
+  background-position : 0px 0px;
+}
+
 #map-content {
   margin-left : 300px;
   position : relative;
@@ -188,33 +232,29 @@ body {
   background : #F0F0F0;
 }
 
-#toolbar .annotation h3 .icon {
-  display:inline-block;
-  vertical-align:middle;
-  background-image : url(images/sprite_20_tools.png);
-  background-repeat:no-repeat;
-  width:20px;
-  height:20px;
-  background-position : 0px 0px;
-}
-#toolbar .annotation h3 .text {
-  vertical-align : bottom;
-}
-
-#locate-menu .btn-locate-clear {
+#menu .title .btn {
   width : 20px;
   height : 20px;
-  background : url(images/locate_clear.png) no-repeat right;
-  background-position : -20px 0px;
+  background : url(images/sprite_menu_tools.png) no-repeat right;
   transition: none;
   float : right;
   text-shadow : none;
   border : none;
   padding : none;
-}
-#locate-menu .btn-locate-clear:hover {
-  background-position : 0px 0px;
   transition: none;
+  -webkit-transition: none;
+}
+#menu .title .btn.btn-locate-clear {
+  background-position : -20px 0px;
+}
+#menu .title .btn.btn-locate-clear:hover {
+  background-position : 0px 0px;
+}
+#menu .title .btn.btn-stop {
+  background-position : -20px -40px;
+}
+#menu .title .btn.btn-stop:hover {
+  background-position : 0px -40px;
 }
 
 #baselayer-menu div.baselayer-select,
@@ -565,12 +605,26 @@ body {
   border-top-left-radius: 1em;
 }
 #attribution {
+  font-size: 0.75em;
   line-height: 10px;
-  vertical-align : bottom;
+  vertical-align : text-bottom;
   margin-right : 0.5em;
 }
 .olLayerGooglePoweredBy.olLayerGoogleV3.gmnoprint {
   display:none;
+}
+
+#message {
+  top : 0;
+  left : 0;
+  position : absolute;
+  z-index : 1000;
+}
+.alert-info {
+  background-color : #3a3c3d;
+  border-color : #fbfbfb;
+  color : #fbfbfb;
+  text-shadow : none;
 }
 
 /**

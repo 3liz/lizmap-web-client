@@ -55,6 +55,22 @@
           <li><a id="annotation-polygon" href="#">{@view~annotation.navbar.title.polygon@}</a></li>
         </ul>
       </li>
+      <li class="measure dropdown">
+        <a class="dropdown-toggle" data-toggle="dropdown" href="#" id="measure" data-original-title="{@view~map.measure.navbar.title@}" data-placement="bottom" rel="tooltip">
+          <span class="icon"></span>
+          <span class="caret"></span>
+        </a>
+        <ul class="dropdown-menu pull-right">
+          <li><a id="measure-length" href="#">{@view~map.measure.navbar.title.length@}</a></li>
+          <li><a id="measure-area" href="#">{@view~map.measure.navbar.title.area@}</a></li>
+          <li><a id="measure-perimeter" href="#">{@view~map.measure.navbar.title.perimeter@}</a></li>
+        </ul>
+      </li>
+      <li class="geolocate">
+        <a id="toggleGeolocate" rel="tooltip" data-original-title="{@view~map.geolocate.navbar.title@}" data-placement="bottom" href="#">
+          <span class="icon"></span>
+        </a>
+      </li>
       {if $isConnected}
       <li class="user dropdown">
         <a class="dropdown-toggle" data-toggle="dropdown" href="#" id="user-info">
@@ -92,33 +108,39 @@
     </div>
     <div id="toolbar">
       <div id="annotation-point-menu" class="annotation" style="display:none;">
-        <h3><span class="title"><span class="icon"></span>&nbsp;<span class="text">{@view~annotation.toolbar.title.point@}</span></span></h3>
-        <div class="menu-content">{@view~annotation.toolbar.content.underway@} <button id="annotation-point-stop" class="btn btn-danger btn-small">{@view~annotation.toolbar.content.stop@}</button></div>
+        <h3><span class="title"><button id="annotation-point-stop" class="btn btn-stop btn-mini btn-link" title="{@view~map.toolbar.content.stop@}"></button><span class="icon"></span>&nbsp;<span class="text">{@view~annotation.toolbar.title.point@}</span></span></h3>
       </div>
       <div id="annotation-line-menu" class="annotation" style="display:none;">
-        <h3><span class="title"><span class="icon"></span>&nbsp;<span class="text">{@view~annotation.toolbar.title.line@}</span></span></h3>
-        <div class="menu-content">{@view~annotation.toolbar.content.underway@} <button id="annotation-line-stop" class="btn btn-danger btn-small">{@view~annotation.toolbar.content.stop@}</button></div>
+        <h3><span class="title"><button id="annotation-line-stop" class="btn btn-stop btn-mini btn-link" title="{@view~map.toolbar.content.stop@}"></button><span class="icon"></span>&nbsp;<span class="text">{@view~annotation.toolbar.title.line@}</span></span></h3>
       </div>
       <div id="annotation-polygon-menu" class="annotation" style="display:none;">
-        <h3><span class="title"><span class="icon"></span>&nbsp;<span class="text">{@view~annotation.toolbar.title.polygon@}</span></span></h3>
-        <div class="menu-content">{@view~annotation.toolbar.content.underway@}  <button id="annotation-polygon-stop" class="btn btn-danger btn-small">{@view~annotation.toolbar.content.stop@}</button></div>
+        <h3><span class="title"><button id="annotation-polygon-stop" class="btn btn-stop btn-mini btn-link" title="{@view~map.toolbar.content.stop@}"></button><span class="icon"></span>&nbsp;<span class="text">{@view~annotation.toolbar.title.polygon@}</span></span></h3>
       </div>
-      <div id="locate-menu" style="display:none;">
-        <h3><span class="title"><button class="btn-locate-clear btn btn-mini btn-link" type="button"></button>{@view~map.locatemenu.title@}</span></h3>
+      <div id="measure-length-menu" class="measure" style="display:none;">
+        <h3><span class="title"><button id="measure-length-stop" class="btn btn-stop btn-mini btn-link" title="{@view~map.toolbar.content.stop@}"></button><span class="icon"></span>&nbsp;<span class="text">{@view~map.measure.toolbar.title.length@}</span></span></h3>
+      </div>
+      <div id="measure-area-menu" class="measure" style="display:none;">
+        <h3><span class="title"><button id="measure-area-stop" class="btn btn-stop btn-mini btn-link" title="{@view~map.toolbar.content.stop@}"></button><span class="icon"></span>&nbsp;<span class="text">{@view~map.measure.toolbar.title.area@}</span></span></h3>
+      </div>
+      <div id="measure-perimeter-menu" class="measure" style="display:none;">
+        <h3><span class="title"><button id="measure-perimeter-stop" class="btn btn-stop btn-mini btn-link" title="{@view~map.toolbar.content.stop@}"></button><span class="icon"></span>&nbsp;<span class="text">{@view~map.measure.toolbar.title.perimeter@}</span></span></h3>
+      </div>
+      <div id="locate-menu" class="locate" style="display:none;">
+        <h3><span class="title"><button class="btn-locate-clear btn btn-mini btn-link" type="button"></button><span class="icon"></span>&nbsp;{@view~map.locatemenu.title@}</span></span></h3>
         <div class="menu-content">
           <div id="locate">
           </div>
         </div>
       </div>
     </div>
-    <div id="switcher-menu">
-      <h3><span class="title">{@view~map.switchermenu.title@}</span></h3>
+    <div id="switcher-menu" class="switcher">
+      <h3><span class="title"><span class="icon"></span>&nbsp;<span class="text">{@view~map.switchermenu.title@}</span></span></h3>
       <div class="menu-content">
         <div id="switcher"></div>
       </div>
     </div>
-    <div id="baselayer-menu">
-      <h3><span class="title">{@view~map.baselayermenu.title@}</span></h3>
+    <div id="baselayer-menu" class="baselayer">
+      <h3><span class="title"><span class="icon"></span>&nbsp;<span class="text">{@view~map.baselayermenu.title@}</span></span></h3>
       <div class="menu-content">
         <div class="baselayer-select">
           <select id="baselayer-select" class="label"></select>
@@ -151,6 +173,7 @@
       <span id="attribution"></span>
       {image $j_basepath.'css/img/logo_footer.png'}
     </div>
+    <div id="message" class="span6">{jmessage_bootstrap}</div>
   </div>
 
   <div id="metadata">
@@ -215,7 +238,7 @@
     </div>
 
     <div class="row">
-      <div class="span4 offset12">
+      <div class="span4 offset8">
         <span class="btn" id="hideMetadata">{@view~map.metadata.hide@}</span>
       </div>
     </div>
