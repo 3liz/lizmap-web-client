@@ -634,7 +634,8 @@ var lizMap = function() {
     if ( !(proj.ref in Proj4js.defs) )
       Proj4js.defs[proj.ref]=proj.proj4;
     var projection = new OpenLayers.Projection(proj.ref);
-    OpenLayers.Projection.defaults[proj.ref] = projection;
+    if ( !(proj.ref in OpenLayers.Projection.defaults) )
+      OpenLayers.Projection.defaults[proj.ref] = projection;
 
     // get and define the max extent
     var bbox = config.options.bbox;
@@ -2235,6 +2236,7 @@ lizMap.events.on({
          bbox = extent.toArray();
 
          var scales = evt.config.options.mapScales;
+         var nScales = [];
          if (scales.length != 0 ) {
            scales.sort(function(a, b) {
              return Number(b) - Number(a);
@@ -2244,7 +2246,6 @@ lizMap.events.on({
            var minScale = scales[scales.length-1];
            var minRes = OpenLayers.Util.getResolutionFromScale(minScale, projOSM.proj.units);
            var res = OpenLayers.Util.getResolutionFromScale(591659030.3224756, projOSM.proj.units);
-           var nScales = [];
            while ( res > minRes ) {
              if ( res < maxRes ) {
                if (nScales.length == 0)
