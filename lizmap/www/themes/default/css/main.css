@@ -125,7 +125,7 @@ a:hover {
   border-top-color:white;
   border-bottom-color:white;
 }
-.navbar .nav .icon {
+.navbar .navbar-inner .icon {
   display:inline-block;
   vertical-align:middle;
   background-image:url("images/sprite_20_tools.png");
@@ -133,11 +133,11 @@ a:hover {
   width:20px;
   height:20px;
 }
-.navbar .nav .caret {
+.navbar .navbar-inner .caret {
   display:inline-block;
   vertical-align:text-top;
 }
-.navbar .nav .text {
+.navbar .navbar-inner .text {
   display:inline-block;
   vertical-align:middle;
 }

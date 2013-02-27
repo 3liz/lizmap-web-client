@@ -19,7 +19,25 @@
 
 <div id="headermenu" class="navbar navbar-fixed-top">
   <div id="auth" class="navbar-inner">
-    <ul class="nav pull-right">
+  <div class="pull-right">
+    <form id="nominatim-search" class="navbar-search pull-left dropdown">
+      <input id="search-query" type="text" class="search-query" placeholder="{@view~map.search.nominatim.placeholder@}"></input>
+      <span class="search-icon">
+        <button class="icon nav-search" type="submit" tabindex="-1">
+          <span>{@view~map.search.nominatim.button@}</span>
+        </button>
+      </span>
+      <div class="dropdown-menu pull-right">
+        <div class="dropdown-caret">
+          <div class="caret-outer"></div>
+          <div class="caret-inner"></div>
+        </div>
+        <div class="dropdown-inner">
+          <ul class="items"></ul>
+        </div>
+      </div>
+    </form>
+    <ul class="nav">
       <li class="home">
         <a href="{jurl 'view~default:index'}" rel="tooltip" data-original-title="{@view~default.repository.list.title@}" data-placement="bottom" href="#">
           <span class="icon"></span>
@@ -94,6 +112,7 @@
       </li>
       {/if}
     </ul>
+  </div>
   </div>
 
 </div>

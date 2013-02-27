@@ -90,10 +90,10 @@ class mapCtrl extends jController {
     $rep->addJSLink($bp.'js/bootstrapErrorDecoratorHtml.js');
 
     // Pass some configuration options to the web page through javascript var
-    $rep->addJSCode("var dictionaryUrl = '".jUrl::get('view~translate:getDictionary', array('property'=>'map'))."';");
     $rep->addJSCode("var cfgUrl = '".jUrl::get('lizmap~service:getProjectConfig', array('repository'=>$repository, 'project'=>$project))."';");
     $rep->addJSCode("var wmsServerURL = '".jUrl::get('lizmap~service:index', array('repository'=>$repository, 'project'=>$project))."';");
     $rep->addJSCode("var mediaServerURL = '".jUrl::get('view~media:getMedia', array('repository'=>$repository, 'project'=>$project))."';");
+    $rep->addJSCode("var nominatimURL = '".jUrl::get('lizmap~osm:nominatim')."';");
     $rep->addJSCode("var createAnnotationURL = '".jUrl::get('lizmap~annotation:createAnnotation', array('repository'=>$repository, 'project'=>$project))."';");
 
     // Read the QGIS project file to get the layer drawing order

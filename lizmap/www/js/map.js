@@ -1949,6 +1949,51 @@ var lizMap = function() {
     });
   }
 
+  function addNominatimSearch() {
+    if ( !nominatimURL ) {
+      $('#nominatim-search').remove();
+      return false;
+    }
+    // Search with nominatim
+    var wgs84 = new OpenLayers.Projection('EPSG:4326');
+    var extent = new OpenLayers.Bounds( map.maxExtent.toArray() );
+    extent.transform(map.getProjectionObject(), wgs84);
+    $('#nominatim-search').submit(function(){
+      $('#nominatim-search .dropdown-inner .items').html('');
+      $.get(nominatimURL
+        ,{"query":$('#search-query').val(),"bbox":extent.toBBOX()}
+        ,function(data) {
+          var text = '';
+          $.each(data, function(i, e){
+            var bbox = [
+              e.boundingbox[2],
+              e.boundingbox[0],
+              e.boundingbox[3],
+              e.boundingbox[1]
+            ];
+            bbox = new OpenLayers.Bounds(bbox);
+            if ( extent.intersectsBounds(bbox) )
+              text += '<li><a href="#'+bbox.toBBOX()+'">'+e.display_name+'</a></li>';
+          });
+          if (text != '') {
+            $('#nominatim-search .dropdown-inner .items').html(text);
+            $('#nominatim-search').addClass('open');
+            $('#nominatim-search .dropdown-inner .items li > a').click(function() {
+              var bbox = $(this).attr('href').replace('#','');
+              var extent = OpenLayers.Bounds.fromString(bbox);
+              extent.transform(wgs84, map.getProjectionObject());
+              map.zoomToExtent(extent);
+              $('#nominatim-search').removeClass('open');
+              return false;
+            });
+          } else {
+            mAddMessage('Nothing Found','info',true);
+          }
+        }, 'json');
+      return false;
+    });
+  }
+
   /**
    * PRIVATE function: parseData
    * parsing capability
@@ -2144,6 +2189,7 @@ var lizMap = function() {
           addGeolocationControl();
           addAnnotationControls();
           addMeasureControls();
+          addNominatimSearch();
           $('#navbar div.slider').slider("value",map.getZoom());
           map.events.on({
             zoomend : function() {
@@ -2278,6 +2324,14 @@ lizMap.events.on({
          evt.config.options.mapScales = [];
        }
 
+       /*
+       if (nScales.length != 0) {
+         evt.config.options.zoomLevelNumber = nScales.length;
+         evt.config.options.maxScale = maxScale;
+         evt.config.options.minScale = minScale;
+         evt.config.options.mapScales = nScales;
+       }
+       */
     }
    ,'mapcreated':function(evt){
        //console.log('mapcreated');
@@ -2291,6 +2345,12 @@ lizMap.events.on({
          evt.map.allOverlays = false;
          var osm = new OpenLayers.Layer.OSM('osm');
          osm.maxExtent = maxExtent;
+         /*
+         if (evt.config.options.mapScales.length != 0) {
+           osm.scales = evt.config.options.mapScales;
+           osm.zoomLevelNumber = evt.config.options.mapScales.length;
+         }
+         */
          var osmCfg = {
            "name":"osm"
              ,"title":"OpenStreetMap"
@@ -2308,6 +2368,12 @@ lizMap.events.on({
              , {numZoomLevels: 19}
             );
          mapquest.maxExtent = maxExtent;
+         /*
+         if (evt.config.options.mapScales.length != 0) {
+           osm.scales = evt.config.options.mapScales;
+           osm.zoomLevelNumber = evt.config.options.mapScales.length;
+         }
+         */
          var mapquestCfg = {
            "name":"mapquest"
           ,"title":"MapQuest OSM"
