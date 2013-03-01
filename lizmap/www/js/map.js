@@ -1469,6 +1469,113 @@ var lizMap = function() {
      return info;
   }
 
+  function addPrintControl() {
+    if (composers.length == 0 ) {
+      $('#togglePrint').parent().remove();
+      return false;
+    }
+    $('#togglePrint').click(function() {
+      var composer = composers[0];
+      var url = wmsServerURL+'&SERVICE=WMS';
+      //url += '&VERSION='+capabilities.version+'&REQUEST=GetPrint';
+      url += '&VERSION=1.3&REQUEST=GetPrint';
+      url += '&FORMAT=pdf&EXCEPTIONS=application/vnd.ogc.se_inimage&TRANSPARENT=true';
+      url += '&SRS='+map.projection;
+      url += '&DPI=300';
+      url += '&TEMPLATE='+composer.getAttribute('name');
+      url += '&'+composer.getElementsByTagName('ComposerMap')[0].getAttribute('name')+':extent='+map.getExtent();
+      url += '&'+composer.getElementsByTagName('ComposerMap')[0].getAttribute('name')+':rotation=0';
+      url += '&'+composer.getElementsByTagName('ComposerMap')[0].getAttribute('name')+':scale='+map.getScale();
+      var printLayers = []
+      $.each(map.layers, function(i, l) {
+        if (l.getVisibility() && l.CLASS_NAME == "OpenLayers.Layer.WMS")
+          printLayers.push(l.params['LAYERS']);
+      });
+      url += '&LAYERS='+printLayers.join(',');
+      window.open(url);
+      return false;
+    });
+  }
+
+  function addComplexPrintControl() {
+    var ptTomm = 0.35277; //conversion pt to mm
+    var printCapabilities = {scales:[],layouts:[]};
+    for (var i=0, len=composers.length; i<len; i++) {
+      var composer = composers[i];
+      var mapWidth = Number(composer.getElementsByTagName('ComposerMap')[0].getAttribute('width')) / ptTomm;
+      var mapHeight = Number(composer.getElementsByTagName('ComposerMap')[0].getAttribute('height')) / ptTomm;
+      //for some strange reason we need to provide a "map" and a "size" object with identical content
+      printCapabilities.layouts.push({
+        "name": composer.getAttribute('name'),
+        "map": {
+          "width": mapWidth,
+          "height": mapHeight
+        },
+        "size": {
+          "width": mapWidth,
+          "height": mapHeight
+        },
+        "rotation": true
+      });
+    }
+    var layer = new OpenLayers.Layer.Vector('Print');
+    map.addLayer(layer);
+    layer.setVisibility(false);
+    layer.addFeatures([
+        new OpenLayers.Feature.Vector(
+          new OpenLayers.Geometry.Polygon([
+                new OpenLayers.Geometry.LinearRing([
+                    new OpenLayers.Geometry.Point(-1, -1),
+                    new OpenLayers.Geometry.Point(1, -1),
+                    new OpenLayers.Geometry.Point(1, 1),
+                    new OpenLayers.Geometry.Point(-1, 1)
+                ])
+            ])
+          )
+        ]);
+    var transformCtrl = new OpenLayers.Control.TransformFeature(layer,{
+      preserveAspectRatio: true,
+      rotate: true,
+      eventListeners: {
+        "activate": function(e) {
+          var units = map.getUnits();
+          var res = map.getResolution()/2;
+          var scale = OpenLayers.Util.getScaleFromResolution(res, units);
+          var center = map.getCenter();
+          var size = printCapabilities.layouts[0].size;
+          var unitsRatio = OpenLayers.INCHES_PER_UNIT[units];
+          var w = size.width / 72 / unitsRatio * scale / 2;
+          var h = size.height / 72 / unitsRatio * scale / 2;
+          var bounds = new OpenLayers.Bounds(center.lon - w, center.lat - h,
+            center.lon + w, center.lat + h);
+          var geom = bounds.toGeometry();
+          var feat = layer.features[0];
+          geom.id = feat.geometry.id;
+          feat.geometry = geom;
+          layer.setVisibility(true);
+          //e.object.setFeature(feat);
+        },
+        "deactivate": function(e) {
+          //layer.destroyFeatures();
+          layer.setVisibility(false);
+        },
+        "beforesetfeature": function(e) {
+        },
+        "setfeature": function(e) {
+        },
+        "beforetransform": function(e) {
+        },
+        "transformcomplete": function(e) {
+        }
+      }
+    });
+    map.addControls([transformCtrl]);
+    controls['printTransform'] = transformCtrl;
+    //pour activer il suffit de faire un setFeature
+    //transformCtrl.setFeature(layer.features[0]);
+    return true;
+  }
+
   function addAnnotationControls() {
     // Annotation layers
     if ('annotationLayers' in config) {
@@ -2186,10 +2293,12 @@ var lizMap = function() {
 
           var info = addFeatureInfo();
           controls['featureInfo'] = info;
+          addPrintControl();
           addGeolocationControl();
           addAnnotationControls();
           addMeasureControls();
           addNominatimSearch();
+          addComplexPrintControl();
           $('#navbar div.slider').slider("value",map.getZoom());
           map.events.on({
             zoomend : function() {

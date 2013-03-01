@@ -143,6 +143,12 @@ body {
 .navbar .nav .locate a:hover .icon {
   background-position: 0px -160px;
 }
+.navbar .nav .print .icon {
+  background-position: -20px -260px;
+}
+.navbar .nav .print a:hover .icon {
+  background-position: 0px -260px;
+}
 .navbar .nav .annotation .icon {
   background-position: -20px 0px;
 }

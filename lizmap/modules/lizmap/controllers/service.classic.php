@@ -411,19 +411,39 @@ class serviceCtrl extends jController {
   */
   function GetPrint(){
 
+    /*
+    foreach($this->params as $key=>$val){
+      print $key. "=>". $val."\n";
+    }
+     */
+
     // Get parameters
     if(!$this->getServiceParameters())
       return $this->serviceException();
       
     $url = $this->lizmapConfig->wmsServerURL.'?';
+    /*
     $bparams = http_build_query($this->params);
     // replace some chars (not needed in php 5.4, use the 4th parameter of http_build_query)
     $a = array('+', '_', '.', '-');
     $b = array('%20', '%5F', '%2E', '%2D');
     $bparams = str_replace($a, $b, $bparams); 
     $querystring = $url . $bparams;
+    */
 
-    // Get remote data
+    // Filter the parameters of the request
+    // for querying GetPrint
+    $data = array();
+    $paramsBlacklist = array('module', 'action', 'C', 'repository','project');
+    foreach($this->params as $key=>$val){
+      if(!in_array($key, $paramsBlacklist)){
+        $data[] = strtolower($key).'='.urlencode($val);
+      }
+    }
+    $querystring = $url . implode('&', $data);
+
+    // Get remote data from cache
+    /*
     $getRemoteData = $this->lizmapCache->getRemoteData(
       $querystring,
       $this->lizmapConfig->proxyMethod,
@@ -431,6 +451,18 @@ class serviceCtrl extends jController {
     );
     $data = $getRemoteData[0];
     $mime = $getRemoteData[1];
+     */
+    // Get data form server
+    $ch = curl_init();
+    curl_setopt($ch, CURLOPT_HEADER, 0);
+    curl_setopt($ch, CURLOPT_URL, $querystring);
+    curl_setopt( $ch, CURLOPT_SSL_VERIFYPEER, false );
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+    curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
+    $data = curl_exec($ch);
+    $info = curl_getinfo($ch);
+    $mime = $info['content_type'];
+    curl_close($ch);
 
     $rep = $this->getResponse('binary');
     $rep->mimeType = $mime;

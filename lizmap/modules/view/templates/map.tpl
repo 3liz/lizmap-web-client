@@ -62,6 +62,11 @@
           <span class="icon"></span>
         </a>
       </li>
+      <li class="print">
+        <a id="togglePrint" rel="tooltip" data-original-title="{@view~map.print.navbar.title@}" data-placement="bottom" href="#">
+          <span class="icon"></span>
+        </a>
+      </li>
       <li class="annotation dropdown">
         <a class="dropdown-toggle" data-toggle="dropdown" href="#" id="annotation" data-original-title="{@view~annotation.navbar.title@}" data-placement="bottom" rel="tooltip">
           <span class="icon"></span>
