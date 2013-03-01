@@ -9,18 +9,18 @@
   <li class="span3">
     <div class="thumbnail">
       <div class="liz-project">
-        <img src="{jurl 'view~media:illustration', array("repository"=>$p['repository'],"project"=>$p['id'])}" alt="project image" class="img-polaroid liz-project-img">
+        <img src="{jurl 'view~media:illustration', array("repository"=>$p->getData('repository'),"project"=>$p->getData('id'))}" alt="project image" class="img-polaroid liz-project-img">
         <p class="liz-project-desc" style="display:none;">
-          <strong>{$p['title']}</strong>
+          <strong>{$p->getData('title')}</strong>
           <br/>
-          <br/><strong>{@default.project.abstract.label@}</strong>&nbsp;: {$p['abstract']}
-          <br/><strong>{@default.project.projection.label@}</strong>&nbsp;: {$p['proj']}
-          <br/><strong>{@default.project.bbox.label@}</strong>&nbsp;: {$p['bbox']}
+          <br/><strong>{@default.project.abstract.label@}</strong>&nbsp;: {$p->getData('abstract')}
+          <br/><strong>{@default.project.projection.label@}</strong>&nbsp;: {$p->getData('proj')}
+          <br/><strong>{@default.project.bbox.label@}</strong>&nbsp;: {$p->getData('bbox')}
         </p>
       </div>
-      <h5>{$p['title']}</h5>
+      <h5>{$p->getData('title')}</h5>
       <p>
-        <a class="btn liz-project-view" href="{jurl 'view~map:index', array("repository"=>$p['repository'],"project"=>$p['id'])}">{@default.project.open.map@}</a>
+        <a class="btn liz-project-view" href="{jurl 'view~map:index', array("repository"=>$p->getData('repository'),"project"=>$p->getData('id'))}">{@default.project.open.map@}</a>
       </p>
     </div>
   </li>

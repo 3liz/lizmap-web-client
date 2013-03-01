@@ -14,4 +14,7 @@
     <dependencies>
         <jelix minversion="1.3" maxversion="1.4.*"/>
     </dependencies>
+    <autoload>
+      <class name="lizmap" file="classes/lizmap.class.php" />
+    </autoload>
 </module>

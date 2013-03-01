@@ -21,11 +21,11 @@ class defaultCtrl extends jController {
     
     // Get repository data
     $repository = $this->param('repository');
-    jClasses::inc('lizmap~lizmapConfig');
-    $lizmapConfig = new lizmapConfig($repository);
+    // Get the corresponding repository
+    $lrep = lizmap::getRepository($repository);
     
     // Set the redirection parameters
-    $rep->params = array('repository'=>$lizmapConfig->repositoryKey);
+    $rep->params = array('repository'=>$lrep->getKey());
     $rep->action = 'view~default:index';
     return $rep;
   }

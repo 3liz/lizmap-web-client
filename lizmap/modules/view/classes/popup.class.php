@@ -24,7 +24,7 @@ class popup{
   public function getHtmlFeatureAttribute($attributeName, $attributeValue, $repository, $project, $popupFeatureContent=Null){
 
     // Force $attributeValue to be a string
-    $$attributeName = (string)$$attributeName;
+    $attributeName = (string)$attributeName;
     $attributeValue = (string)$attributeValue;
     
     // Regex to replace links, medias and images
@@ -69,9 +69,8 @@ class popup{
       else if(preg_match($mediaTextRegex, $attributeValue)){
         $data = '';
         // Get full path to the file
-        jClasses::inc('lizmap~lizmapConfig');
-        $lizmapConfig = new lizmapConfig($repository);
-        $repositoryPath = realpath($lizmapConfig->repositoryData['path']);
+        $lrep = lizmap::getRepository($repository);
+        $repositoryPath = realpath($lrep->getPath());
         $abspath = realpath($repositoryPath.'/'.$attributeValue);
         $n_repositoryPath = str_replace('\\', '/', $repositoryPath);
         $n_abspath = str_replace('\\', '/', $abspath);

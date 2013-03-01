@@ -22,13 +22,12 @@ class mediaCtrl extends jController {
   * @return binary object The media.
   */
   function getMedia() {
-
     // Get repository data
     $repository = $this->param('repository');
-    jClasses::inc('lizmap~lizmapConfig');
-    $lizmapConfig = new lizmapConfig($repository);
 
-    if(!jacl2::check('lizmap.repositories.view', $lizmapConfig->repositoryKey)){
+    $lrep = lizmap::getRepository($repository);
+
+    if(!jacl2::check('lizmap.repositories.view', $lrep->getKey())){
       $rep = $this->getResponse('redirect');
       $rep->action = 'view~default:error';
       jMessage::add(jLocale::get('view~default.repository.access.denied'), 'error');
@@ -40,7 +39,7 @@ class mediaCtrl extends jController {
 
     // Get the file
     $path = $this->param('path');
-    $repositoryPath = realpath($lizmapConfig->repositoryData['path']);
+    $repositoryPath = realpath($lrep->getPath());
     $abspath = realpath($repositoryPath.'/'.$path);
     $n_repositoryPath = str_replace('\\', '/', $repositoryPath);
     $n_abspath = str_replace('\\', '/', $abspath);
@@ -113,10 +112,14 @@ class mediaCtrl extends jController {
 
     // Get repository data
     $repository = $this->param('repository');
-    jClasses::inc('lizmap~lizmapConfig');
-    $lizmapConfig = new lizmapConfig($repository);
 
-    if(!jacl2::check('lizmap.repositories.view', $lizmapConfig->repositoryKey)){
+    $lrep = lizmap::getRepository($repository);
+    if (!$lrep) {
+      $ser = lizmap::getServices();
+      $lrep = lizmap::getRepository($ser->defaultRepository);
+    }
+
+    if(!jacl2::check('lizmap.repositories.view', $lrep->getKey())){
       $rep = $this->getResponse('redirect');
       $rep->action = 'view~default:error';
       jMessage::add(jLocale::get('view~default.repository.access.denied'), 'error');
@@ -132,8 +135,8 @@ class mediaCtrl extends jController {
     if($project){
       $imageTypes = array('jpg', 'jpeg', 'png', 'gif');
       foreach($imageTypes as $type){
-        if(file_exists($lizmapConfig->repositoryData['path'].$project.'.qgs.'.$type)){
-          $rep->fileName = $lizmapConfig->repositoryData['path'].$project.'.qgs.'.$type;
+        if(file_exists($lrep->getPath().$project.'.qgs.'.$type)){
+          $rep->fileName = $lrep->getPath().$project.'.qgs.'.$type;
           return $rep;
         }
       }

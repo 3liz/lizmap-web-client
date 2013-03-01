@@ -14,8 +14,8 @@ class serviceCtrl extends jController {
 
   private $project = ''; 
   private $repository = ''; 
+  private $services = '';
   private $params = ''; 
-  private $lizmapConfig = ''; 
   private $lizmapCache = '';
   
 
@@ -79,9 +79,9 @@ class serviceCtrl extends jController {
 
 
   /**
-  * Get parameters and set lizmapConfig for the project and repository given.
+  * Get parameters and set classes for the project and repository given.
   *
-  * @return array List of needed variables : $params, $lizmapConfig, $lizmapCache.
+  * @return array List of needed variables : $params, $lizmapProject, $lizmapRepository, $lizmapCache.
   */
   private function getServiceParameters(){
   
@@ -95,31 +95,31 @@ class serviceCtrl extends jController {
 
     // Get repository data
     $repository = $this->param('repository');
-    jClasses::inc('lizmap~lizmapConfig');
-    $lizmapConfig = new lizmapConfig($repository);
+
+    // Get the corresponding repository
+    $lrep = lizmap::getRepository($repository);
 
     // Redirect if no rights to access this repository
-    if(!jacl2::check('lizmap.repositories.view', $lizmapConfig->repositoryKey)){
+    if(!jacl2::check('lizmap.repositories.view', $lrep->getKey())){
       jMessage::add(jLocale::get('view~default.repository.access.denied'), 'AuthorizationRequired');
       return false;
     }
     
     // Get and normalize the passed parameters
     $pParams = jApp::coord()->request->params;
-    $pParams['map'] = $lizmapConfig->repositoryData['path'].$project.".qgs";  
+    $pParams['map'] = $lrep->getPath().$project.".qgs";  
     $lizmapCache = jClasses::getService('lizmap~lizmapCache');
     $params = $lizmapCache->normalizeParams($pParams);
     
     // Define class private properties   
-    $this->project = $project;
-    $this->repository = $repository;
+    $this->project = lizmap::getProject($repository.'~'.$project);
+    $this->repository = $lrep;
+    $this->services = lizmap::getServices();
     $this->params = $params;
-    $this->lizmapConfig = $lizmapConfig;
     $this->lizmapCache = $lizmapCache;
+
     
     return true;
-    
-    
   }
 
 
@@ -135,7 +135,7 @@ class serviceCtrl extends jController {
     if(!$this->getServiceParameters())
       return $this->serviceException();
     
-    $url = $this->lizmapConfig->wmsServerURL.'?';
+    $url = $this->services->wmsServerURL.'?';
 
     $bparams = http_build_query($this->params);
     $querystring = $url . $bparams;
@@ -143,8 +143,8 @@ class serviceCtrl extends jController {
     // Get remote data
     $getRemoteData = $this->lizmapCache->getRemoteData(
       $querystring,
-      $this->lizmapConfig->proxyMethod,
-      $this->lizmapConfig->debugMode
+      $this->services->proxyMethod,
+      $this->services->debugMode
     );
     $data = $getRemoteData[0];
     $mime = $getRemoteData[1];
@@ -152,7 +152,7 @@ class serviceCtrl extends jController {
     // Replace qgis server url in the XML (hide real location)
     $sUrl = jUrl::getFull(
       "lizmap~service:index",
-      array("repository"=>$this->repository, "project"=>$this->project),
+      array("repository"=>$this->repository->getKey(), "project"=>$this->project->getKey()),
       0,
       $_SERVER['SERVER_NAME']
     );
@@ -181,7 +181,7 @@ class serviceCtrl extends jController {
     if(!$this->getServiceParameters())
       return $this->serviceException();
     
-    $content = $this->lizmapCache->getServiceData($this->repository, $this->project, $this->params);
+    $content = $this->lizmapCache->getServiceData($this->repository->getKey(), $this->project->getKey(), $this->params);
 
     // Return response
     $rep = $this->getResponse('binary');
@@ -209,7 +209,7 @@ class serviceCtrl extends jController {
     if(!$this->getServiceParameters())
       return $this->serviceException();
       
-    $url = $this->lizmapConfig->wmsServerURL.'?';
+    $url = $this->services->wmsServerURL.'?';
     $bparams = http_build_query($this->params);
     // replace some chars (not needed in php 5.4, use the 4th parameter of http_build_query)
     $a = array('+', '_', '.', '-');
@@ -220,8 +220,8 @@ class serviceCtrl extends jController {
     // Get remote data
     $getRemoteData = $this->lizmapCache->getRemoteData(
       $querystring,
-      $this->lizmapConfig->proxyMethod,
-      $this->lizmapConfig->debugMode
+      $this->services->proxyMethod,
+      $this->services->debugMode
     );
     $data = $getRemoteData[0];
     $mime = $getRemoteData[1];
@@ -248,7 +248,7 @@ class serviceCtrl extends jController {
     if(!$this->getServiceParameters())
       return $this->serviceException();
       
-    $url = $this->lizmapConfig->wmsServerURL.'?';
+    $url = $this->services->wmsServerURL.'?';
 
     // Deactivate info_format to use Lizmap instead of QGIS
     $toHtml = False;
@@ -263,15 +263,15 @@ class serviceCtrl extends jController {
     // Get remote data
     $getRemoteData = $this->lizmapCache->getRemoteData(
       $querystring,
-      $this->lizmapConfig->proxyMethod,
-      $this->lizmapConfig->debugMode
+      $this->services->proxyMethod,
+      $this->services->debugMode
     );
     $data = $getRemoteData[0];
     $mime = $getRemoteData[1];
 
     // Get HTML content if needed
     if($toHtml and preg_match('#/xml$#', $mime)){
-      $data = $this->getFeatureInfoHtml($this->params, $data, $this->lizmapConfig, $this->project);
+      $data = $this->getFeatureInfoHtml($this->params, $data);
       $mime = 'text/html';
     }
 
@@ -289,11 +289,9 @@ class serviceCtrl extends jController {
   * GetFeatureInfoHtml : return HTML for the getFeatureInfo.  
   * @param array $params Array of parameters
   * @param string $xmldata XML data from getFeatureInfo
-  * @param object $lizmapConfig Lizmap configuration for the repository
-  * @param $project Name of the project : mandatory
   * @return Feature Info in HTML format.
   */
-  function getFeatureInfoHtml($params, $xmldata, $lizmapConfig, $project){
+  function getFeatureInfoHtml($params, $xmldata){
 
     // Get data from XML
     $use_errors = libxml_use_internal_errors(true);
@@ -308,14 +306,12 @@ class serviceCtrl extends jController {
     }
 
     // Get json configuration for the project
-    $qgsPath = $lizmapConfig->repositoryData['path'].$project.'.qgs';
-    $configRead = jFile::read($qgsPath.'.cfg');
-    $configLayers = json_decode($configRead)->layers;
+    $configLayers = $this->project->getLayers();
 
     // Loop through the layers
     $content = '';
     $ptemplate = 'view~popup';
-    $lizmapCache = jClasses::getService('lizmap~lizmapCache');
+    $lizmapCache = $this->lizmapCache;
     $popupClass = jClasses::getService('view~popup');
 
     foreach($xml->Layer as $layer){
@@ -374,8 +370,8 @@ class serviceCtrl extends jController {
             $popupFeatureContent = $popupClass->getHtmlFeatureAttribute(
               $attribute['name'],
               $attribute['value'],
-              $lizmapConfig->repositoryKey,
-              $project,
+              $this->repository->getKey(),
+              $this->project->getKey(),
               $popupFeatureContent
             );
           }
@@ -384,8 +380,8 @@ class serviceCtrl extends jController {
         else{
           $tpl = new jTpl();
           $tpl->assign('attributes', $feature->Attribute);
-          $tpl->assign('repository', $lizmapConfig->repositoryKey);
-          $tpl->assign('project', $project);
+          $tpl->assign('repository', $this->repository->getKey());
+          $tpl->assign('project', $this->project->getKey());
           $popupFeatureContent = $tpl->fetch('view~popupDefaultContent');
         }
 
@@ -421,7 +417,7 @@ class serviceCtrl extends jController {
     if(!$this->getServiceParameters())
       return $this->serviceException();
       
-    $url = $this->lizmapConfig->wmsServerURL.'?';
+    $url = $this->services->wmsServerURL.'?';
     /*
     $bparams = http_build_query($this->params);
     // replace some chars (not needed in php 5.4, use the 4th parameter of http_build_query)
@@ -446,8 +442,8 @@ class serviceCtrl extends jController {
     /*
     $getRemoteData = $this->lizmapCache->getRemoteData(
       $querystring,
-      $this->lizmapConfig->proxyMethod,
-      $this->lizmapConfig->debugMode
+      $this->services->proxyMethod,
+      $this->services->debugMode
     );
     $data = $getRemoteData[0];
     $mime = $getRemoteData[1];
@@ -485,55 +481,9 @@ class serviceCtrl extends jController {
     // Get parameters
     if(!$this->getServiceParameters())
       return $this->serviceException();
-      
-    // Read the QGIS project file to get the layer drawing order
-    $qgisProjectClass = jClasses::getService('lizmap~qgisProject');
-    $xpath = '//legendlayer';
-    list($go, $qgsLoad, $xpathItems, $errorlist) = $qgisProjectClass->readQgisProject($this->lizmapConfig, $this->project, $xpath);
-    $legend = $qgsLoad->xpath('//legend');
-    $legendZero = $legend[0];
-    $updateDrawingOrder = (string)$legendZero->attributes()->updateDrawingOrder;
-    
-    $layersOrder = array();  
-    if($go and $updateDrawingOrder == 'false'){
-      $layers =  $xpathItems;
-      foreach($layers as $layer){
-        if($layer->attributes()->drawingOrder and $layer->attributes()->drawingOrder >= 0){
-          $layersOrder[(string)$layer->attributes()->name] = (integer)$layer->attributes()->drawingOrder;
-        }
-      }
-    }
-    
-    // Get the corresponding Qgis project configuration
-    $configPath = $this->lizmapConfig->repositoryData['path'].$this->project.'.qgs.cfg';
-    
-    // Read Json content from config file
-    $configRead = jFile::read($configPath);   
-    
-    // Remove layerOrder option from config if not required 
-    if(!empty($layersOrder)){
-      $configJson = json_decode($configRead);
-      $configJson->layersOrder = $layersOrder;
-      $configRead = json_encode($configJson);
-    }
-    
-    // Remove annotationLayers from config if no right to access this tool
-    // Or if no ability to load spatialite extension
-    $spatial = false;
-    try{
-      $db = new SQLite3(':memory:');
-      $spatial = $db->loadExtension('libspatialite.so'); # loading SpatiaLite as an extension
-    }catch(Exception $e){
-      $spatial = False;
-    }    
-    if(!$spatial or !jacl2::check('lizmap.tools.annotation.use', $this->lizmapConfig->repositoryKey)){
-      $configJson = json_decode($configRead);
-      unset($configJson->annotationLayers);
-      $configRead = json_encode($configJson);      
-    }
     
     $rep = $this->getResponse('text');
-    $rep->content = $configRead;
+    $rep->content = $this->project->getUpdatedConfig();
     return $rep;
 
   }
@@ -551,15 +501,15 @@ class serviceCtrl extends jController {
       return $this->serviceException();
 
     // Construction of the request url : base url + parameters
-    $url = $this->lizmapConfig->wmsServerURL.'?';
+    $url = $this->services->wmsServerURL.'?';
     $bparams = http_build_query($this->params);
     $querystring = $url . $bparams;
 
     // Get remote data
     $getRemoteData = $this->lizmapCache->getRemoteData(
       $querystring,
-      $this->lizmapConfig->proxyMethod,
-      $this->lizmapConfig->debugMode
+      $this->services->proxyMethod,
+      $this->services->debugMode
     );
     $data = $getRemoteData[0];
     $mime = $getRemoteData[1];
