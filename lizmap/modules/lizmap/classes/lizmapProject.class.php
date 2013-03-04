@@ -51,12 +51,12 @@ class lizmapProject{
         $update_session = false;
 
         if ( isset($_SESSION['_LIZMAP_']) 
-          && isset($_SESSION['_LIZMAP_'][$key_path])
-          && isset($_SESSION['_LIZMAP_'][$key_path]['cfg'])
-          && isset($_SESSION['_LIZMAP_'][$key_path]['cfgmtime'])
-          && $_SESSION['_LIZMAP_'][$key_path]['cfgmtime'] >= filemtime($qgs_path.'.cfg')
+          && isset($_SESSION['_LIZMAP_'][$key_session])
+          && isset($_SESSION['_LIZMAP_'][$key_session]['cfg'])
+          && isset($_SESSION['_LIZMAP_'][$key_session]['cfgmtime'])
+          && $_SESSION['_LIZMAP_'][$key_session]['cfgmtime'] >= filemtime($qgs_path.'.cfg')
           )
-          $config = $_SESSION['_LIZMAP_'][$key_path]['cfg'];
+          $config = $_SESSION['_LIZMAP_'][$key_session]['cfg'];
         else {
           $config = jFile::read($qgs_path.'.cfg');
           $update_session = true;
@@ -65,12 +65,12 @@ class lizmapProject{
         $configOptions = $this->cfg->options;
 
         if ( isset($_SESSION['_LIZMAP_']) 
-          && isset($_SESSION['_LIZMAP_'][$key_path])
-          && isset($_SESSION['_LIZMAP_'][$key_path]['xml'])
-          && isset($_SESSION['_LIZMAP_'][$key_path]['xmlmtime'])
-          && $_SESSION['_LIZMAP_'][$key_path]['xmlmtime'] >= filemtime($qgs_path)
+          && isset($_SESSION['_LIZMAP_'][$key_session])
+          && isset($_SESSION['_LIZMAP_'][$key_session]['xml'])
+          && isset($_SESSION['_LIZMAP_'][$key_session]['xmlmtime'])
+          && $_SESSION['_LIZMAP_'][$key_session]['xmlmtime'] >= filemtime($qgs_path)
           )
-          $qgs_xml = simplexml_load_string($_SESSION['_LIZMAP_'][$key_path]['xml']);
+          $qgs_xml = simplexml_load_string($_SESSION['_LIZMAP_'][$key_session]['xml']);
         else {
           $qgs_xml = simplexml_load_file($qgs_path);
           $update_session = true;
@@ -119,6 +119,43 @@ class lizmapProject{
       return $this->data[$key];
     }
     
+    public function getOptions(){
+      return $this->cfg->options;
+    }
+    
+    public function getLayers(){
+      return $this->cfg->layers;
+    }
+    
+    public function hasLocateByLayer(){
+      if ( property_exists($this->cfg,'locateByLayer') ){
+        $count = 0;
+        foreach( $this->cfg->locateByLayer as $key=>$obj ){
+          $count += 1;
+        }
+        if ( $count != 0 )
+          return true;
+        return false;
+      }
+      return false;
+    }
+    
+    public function hasAnnotationLayers(){
+      if ( property_exists($this->cfg,'annotationLayers') ){
+        if(!jacl2::check('lizmap.tools.annotation.use', $this->repository->getKey()))
+          return false;
+
+        $count = 0;
+        foreach( $this->cfg->annotationLayers as $key=>$obj ){
+          $count += 1;
+        }
+        if ( $count != 0 )
+          return true;
+        return false;
+      }
+      return false;
+    }
+    
     public function needsGoogle(){
       $configOptions = $this->cfg->options;
       return (
@@ -148,10 +185,6 @@ class lizmapProject{
           && $configOptions->googleKey != '')
           $gkey = $configOptions->googleKey;
       return $gkey;
-    }
-    
-    public function getLayers(){
-      return $this->cfg->layers;
     }
 
     public function getWMSInformation(){
@@ -205,7 +238,7 @@ class lizmapProject{
 
       $layersOrder = array();  
       if($updateDrawingOrder == 'false'){
-        $layers =  $xpathItems;
+        $layers =  $qgsLoad->xpath('//legendlayer');
         foreach($layers as $layer){
           if($layer->attributes()->drawingOrder and $layer->attributes()->drawingOrder >= 0){
             $layersOrder[(string)$layer->attributes()->name] = (integer)$layer->attributes()->drawingOrder;

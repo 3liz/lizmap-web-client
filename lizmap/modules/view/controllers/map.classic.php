@@ -102,8 +102,6 @@ class mapCtrl extends jController {
       'repositoryLabel'=>$lrep->getData('label'),
       'repository'=>$lrep->getKey(),
       'project'=>$project,
-      'isConnected'=>jAuth::isConnected(),
-      'user'=>jAuth::getUserSession()
     ), $wmsInfo);
     $rep->body->assign($assign);
 

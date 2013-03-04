@@ -1373,37 +1373,6 @@ var lizMap = function() {
       $('#nominatim-search').remove();
 
     addComplexPrintControl();
-    /*
-    $('#toolbar button.print').button({
-      text:false,
-      icons:{primary: "ui-icon-print"}
-    }).click(function(){
-      var composer = composers[0];
-      var url = wmsServerURL+'&SERVICE=WMS';
-      //url += '&VERSION='+capabilities.version+'&REQUEST=GetPrint';
-      url += '&VERSION=1.3&REQUEST=GetPrint';
-      url += '&FORMAT=pdf&EXCEPTIONS=application/vnd.ogc.se_inimage&TRANSPARENT=true';
-      url += '&SRS='+map.projection;
-      url += '&DPI=300';
-      url += '&TEMPLATE='+composer.getAttribute('name');
-      url += '&'+composer.getElementsByTagName('ComposerMap')[0].getAttribute('name')+':extent='+map.getExtent();
-      url += '&'+composer.getElementsByTagName('ComposerMap')[0].getAttribute('name')+':rotation=0';
-      url += '&'+composer.getElementsByTagName('ComposerMap')[0].getAttribute('name')+':scale='+map.getScale();
-      var printLayers = []
-      $('#switcher button[name="layer"][aria-disabled="false"]').each(function(i,b){
-          b = $(b);
-          var icons = b.button('option','icons');
-          if (icons.primary == 'liz-icon-check')
-            printLayers.push(b.val());
-      });
-      printLayers.push($('#baselayerContainer select').val());
-      printLayers.reverse();
-      url += '&LAYERS='+printLayers.join(',');
-      window.open(url);
-      return false;
-    });
-    $('#toolbar button.print').hide();
-    */
   }
 
   function deactivateToolControls( evt ) {
