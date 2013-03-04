@@ -663,7 +663,7 @@ var lizMap = function() {
     // creating the map
     OpenLayers.Util.DEFAULT_PRECISION=20; // default is 14 : change needed to avoid rounding problem with cache
     map = new OpenLayers.Map('map'
-      ,{controls:[new OpenLayers.Control.Navigation(),new OpenLayers.Control.ZoomBox({alwaysZoom:true}), new OpenLayers.Control.NavigationHistory()]
+      ,{controls:[new OpenLayers.Control.Navigation(),new OpenLayers.Control.ZoomBox({alwaysZoom:true})]
        ,eventListeners:{
          zoomend: function(evt){
   // private treeTable
@@ -1276,53 +1276,60 @@ var lizMap = function() {
     .click(function(){
       map.zoomOut();
     });
-    $('#navbar div.history button.previous').button({
-      text:false,
-      icons:{primary: "ui-icon-previous"}
-    }).removeClass("ui-corner-all")
-    .click(function(){
-      var ctrl = map.getControlsByClass('OpenLayers.Control.NavigationHistory')[0];
-      if (ctrl && ctrl.previousStack.length != 0)
-        ctrl.previousTrigger();
-      if (ctrl && ctrl.previous.active)
-        $(this).addClass('ui-state-usable');
-      else
-        $(this).removeClass('ui-state-usable');
-      if (ctrl && ctrl.next.active)
-        $('#navbar div.history button.next').addClass('ui-state-usable');
-      else
-        $('#navbar div.history button.next').removeClass('ui-state-usable');
-    });
-    $('#navbar div.history button.next').button({
-      text:false,
-      icons:{primary: "ui-icon-next"}
-    }).removeClass("ui-corner-all")
-    .click(function(){
-      var ctrl = map.getControlsByClass('OpenLayers.Control.NavigationHistory')[0];
-      if (ctrl && ctrl.nextStack.length != 0)
-        ctrl.nextTrigger();
-      if (ctrl && ctrl.next.active)
-        $(this).addClass('ui-state-usable');
-      else
-        $(this).removeClass('ui-state-usable');
-      if (ctrl && ctrl.previous.active)
-        $('#navbar div.history button.previous').addClass('ui-state-usable');
-      else
-        $('#navbar div.history button.previous').removeClass('ui-state-usable');
-    });
-    map.events.on({
-      moveend : function() {
+    if ( ('zoomHistory' in config.options)
+        && config.options['zoomHistory'] == "True") {
+      var hCtrl =  new OpenLayers.Control.NavigationHistory();
+      map.addControls([hCtrl]);
+      $('#navbar div.history button.previous').button({
+        text:false,
+        icons:{primary: "ui-icon-previous"}
+      }).removeClass("ui-corner-all")
+      .click(function(){
         var ctrl = map.getControlsByClass('OpenLayers.Control.NavigationHistory')[0];
-        if (ctrl && ctrl.previousStack.length > 1)
-          $('#navbar div.history button.previous').addClass('ui-state-usable');
+        if (ctrl && ctrl.previousStack.length != 0)
+          ctrl.previousTrigger();
+        if (ctrl && ctrl.previous.active)
+          $(this).addClass('ui-state-usable');
         else
-          $('#navbar div.history button.previous').removeClass('ui-state-usable');
-        if (ctrl && ctrl.nextStack.length > 0)
+          $(this).removeClass('ui-state-usable');
+        if (ctrl && ctrl.next.active)
           $('#navbar div.history button.next').addClass('ui-state-usable');
         else
           $('#navbar div.history button.next').removeClass('ui-state-usable');
-      }
-    });
+      });
+      $('#navbar div.history button.next').button({
+        text:false,
+        icons:{primary: "ui-icon-next"}
+      }).removeClass("ui-corner-all")
+      .click(function(){
+        var ctrl = map.getControlsByClass('OpenLayers.Control.NavigationHistory')[0];
+        if (ctrl && ctrl.nextStack.length != 0)
+          ctrl.nextTrigger();
+        if (ctrl && ctrl.next.active)
+          $(this).addClass('ui-state-usable');
+        else
+          $(this).removeClass('ui-state-usable');
+        if (ctrl && ctrl.previous.active)
+          $('#navbar div.history button.previous').addClass('ui-state-usable');
+        else
+          $('#navbar div.history button.previous').removeClass('ui-state-usable');
+      });
+      map.events.on({
+        moveend : function() {
+          var ctrl = map.getControlsByClass('OpenLayers.Control.NavigationHistory')[0];
+          if (ctrl && ctrl.previousStack.length > 1)
+            $('#navbar div.history button.previous').addClass('ui-state-usable');
+          else
+            $('#navbar div.history button.previous').removeClass('ui-state-usable');
+          if (ctrl && ctrl.nextStack.length > 0)
+            $('#navbar div.history button.next').addClass('ui-state-usable');
+          else
+            $('#navbar div.history button.next').removeClass('ui-state-usable');
+        }
+      });
+    } else {
+      $('#navbar > .history').remove();
+    }
   }
 
   /**
@@ -1330,6 +1337,42 @@ var lizMap = function() {
    * create the tool bar (collapse overview and switcher, etc)
    */
   function createToolbar() {
+    var configOptions = config.options;
+
+    var info = addFeatureInfo();
+    controls['featureInfo'] = info;
+
+    if ( ('print' in configOptions)
+        && configOptions['print'] == 'True')
+      addPrintControl();
+    else
+      $('#togglePrint').parent().remove();
+
+    if ( ('geolocation' in configOptions)
+        && configOptions['geolocation'] == 'True')
+      addGeolocationControl();
+    else
+      $('#toggleGeolocate').parent().remove();
+
+    addAnnotationControls();
+
+    if ( ('measure' in configOptions)
+        && configOptions['measure'] == 'True')
+      addMeasureControls();
+    else {
+      $('#measure').parent().remove();
+      $('#measure-length-menu').remove();
+      $('#measure-area-menu').remove();
+      $('#measure-perimeter-menu').remove();
+    }
+
+    if ( ('externalSearch' in configOptions)
+        && configOptions['externalSearch'] == 'nominatim')
+      addNominatimSearch();
+    else
+      $('#nominatim-search').remove();
+
+    addComplexPrintControl();
     /*
     $('#toolbar button.print').button({
       text:false,
@@ -2291,16 +2334,8 @@ var lizMap = function() {
 
           // create navigation and toolbar
           createNavbar();
-          //createToolbar();
+          createToolbar();
 
-          var info = addFeatureInfo();
-          controls['featureInfo'] = info;
-          addPrintControl();
-          addGeolocationControl();
-          addAnnotationControls();
-          addMeasureControls();
-          addNominatimSearch();
-          addComplexPrintControl();
           $('#navbar div.slider').slider("value",map.getZoom());
           map.events.on({
             zoomend : function() {
