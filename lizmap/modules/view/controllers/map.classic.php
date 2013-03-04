@@ -31,10 +31,17 @@ class mapCtrl extends jController {
 
     // Get repository data
     $repository = $this->param('repository');
-    jClasses::inc('lizmap~lizmapConfig');
-    $lizmapConfig = new lizmapConfig($repository);
 
-    if(!jacl2::check('lizmap.repositories.view', $lizmapConfig->repositoryKey)){
+    // Get lizmapRepository class
+    // if repository not found get the default
+    $lrep = null;
+    if ( !$repository ){
+      $lser = lizmap::getServices();
+      $lrep = lizmap::getRepository($lser->defaultRepository);
+    } else
+      $lrep = lizmap::getRepository($repository);
+
+    if(!jacl2::check('lizmap.repositories.view', $lrep->getKey())){
       $rep = $this->getResponse('redirect');
       $rep->action = 'view~default:index';
       jMessage::add(jLocale::get('view~default.repository.access.denied'), 'error');
@@ -47,42 +54,29 @@ class mapCtrl extends jController {
       $ok = false;
     }
 
-    // Get the corresponding Qgis project configuration
-    $qgsPath = $lizmapConfig->repositoryData['path'].$project.'.qgs';
-    $configPath = $qgsPath.'.cfg';
-
-    // We must redirect to default repository project list if no project found.
-    if(!file_exists($qgsPath)){
-      jMessage::add('The project '.strtoupper($project).' does not exist !', 'error');
-      $ok = false;
-    }
-
-    // We must redirect to default repository project list if no project configuration found
-    if(!file_exists($configPath)){
-      jMessage::add('The configuration file does not exist for the project : '.strtoupper($project).' !', 'error');
+    // Get lizmapProject class
+    $lproj = lizmap::getProject($lrep->getKey().'~'.$project);
+    if(!$lproj){
+      jMessage::add('The lizmapProject '.strtoupper($project).' does not exist !', 'error');
       $ok = false;
     }
 
     // Redirect if error encountered
     if(!$ok){
       $rep = $this->getResponse('redirect');
-      $rep->params = array('repository'=>$lizmapConfig->repositoryKey);
+      $rep->params = array('repository'=>$lrep->getKey());
       $rep->action = 'view~default:index';
       return $rep;
     }
 
-    // Read json configuration file for the project.
-    $configRead = jFile::read($configPath);
-    $configOptions = json_decode($configRead)->options;
-    if (property_exists($configOptions,'googleKey') && $configOptions->googleKey != '')
-      $rep->addJSLink('https://maps.google.com/maps/api/js?v=3.5&sensor=false&'.$configOptions->googleKey != '');
-    elseif (
-      (property_exists($configOptions,'googleStreets') && $configOptions->googleStreets == 'True') ||
-      (property_exists($configOptions,'googleSatellite') && $configOptions->googleSatellite == 'True') ||
-      (property_exists($configOptions,'googleHybrid') && $configOptions->googleHybrid == 'True') ||
-      (property_exists($configOptions,'googleTerrain') && $configOptions->googleTerrain == 'True')
-    )
-      $rep->addJSLink('https://maps.google.com/maps/api/js?v=3.5&sensor=false');
+    // Add js link if google is needed
+    if ( $lproj->needsGoogle() ) {
+      $googleKey = $lproj->getGoogleKey();
+      if ( $googleKey != '' )
+        $rep->addJSLink('https://maps.google.com/maps/api/js?v=3.5&sensor=false&key='.$googleKey);
+      else
+        $rep->addJSLink('https://maps.google.com/maps/api/js?v=3.5&sensor=false');
+    }
 
     // Add the jForms js
     $bp = jApp::config()->urlengine['basePath'];
@@ -96,59 +90,21 @@ class mapCtrl extends jController {
     $rep->addJSCode("var nominatimURL = '".jUrl::get('lizmap~osm:nominatim')."';");
     $rep->addJSCode("var createAnnotationURL = '".jUrl::get('lizmap~annotation:createAnnotation', array('repository'=>$repository, 'project'=>$project))."';");
 
-    // Read the QGIS project file to get the layer drawing order
-    $qgisProjectClass = jClasses::getService('lizmap~qgisProject');
-    list($go, $qgsLoad, $xpathItems, $errorlist) = $qgisProjectClass->readQgisProject($lizmapConfig, $project);
-
-    // Default metadata
-    $WMSServiceTitle = '';
-    $WMSServiceAbstract = '';
-    $WMSExtent = '';
-    $ProjectCrs = '';
-    $WMSOnlineResource = '';
-    $WMSContactMail = '';
-    $WMSContactOrganization = '';
-    $WMSContactPerson = '';
-    $WMSContactPhone = '';
-    if($go){
-      $WMSServiceTitle = (string)$qgsLoad->properties->WMSServiceTitle;
-      $WMSServiceAbstract = (string)$qgsLoad->properties->WMSServiceAbstract;
-      $WMSServiceAbstract = nl2br($WMSServiceAbstract);
-      $WMSExtent = $qgsLoad->properties->WMSExtent->value[0];
-      $WMSExtent.= ", ".$qgsLoad->properties->WMSExtent->value[1];
-      $WMSExtent.= ", ".$qgsLoad->properties->WMSExtent->value[2];
-      $WMSExtent.= ", ".$qgsLoad->properties->WMSExtent->value[3];
-      $ProjectCrs = (string)$qgsLoad->properties->SpatialRefSys->ProjectCrs;
-      $WMSOnlineResource = (string)$qgsLoad->properties->WMSOnlineResource;
-      $WMSContactMail = (string)$qgsLoad->properties->WMSContactMail;
-      $WMSContactOrganization = (string)$qgsLoad->properties->WMSContactOrganization;
-      $WMSContactPerson= (string)$qgsLoad->properties->WMSContactPerson;
-      $WMSContactPhone = (string)$qgsLoad->properties->WMSContactPhone;
-    }
-    
+    // Get the WMS information
+    $wmsInfo = $lproj->getWMSInformation();
     // Set page title from projet title
-    if($WMSServiceTitle)
-      $rep->title = $WMSServiceTitle;
+    if( $wmsInfo['WMSServiceTitle'] != '' )
+      $rep->title = $wmsInfo['WMSServiceTitle'];
     else
-      $rep->title = "$repository - $project";
+      $rep->title = $repository.' - '.$project;
 
-    // Assign some properties to the body template
-    $assign = array(
-      'repositoryLabel'=>$lizmapConfig->repositoryData['label'],
-      'repository'=>$lizmapConfig->repositoryKey,
+    $assign = array_merge(array(
+      'repositoryLabel'=>$lrep->getData('label'),
+      'repository'=>$lrep->getKey(),
       'project'=>$project,
       'isConnected'=>jAuth::isConnected(),
-      'user'=>jAuth::getUserSession(),
-      'WMSServiceTitle'=>$WMSServiceTitle,
-      'WMSServiceAbstract'=>$WMSServiceAbstract,
-      'WMSExtent'=>$WMSExtent,
-      'ProjectCrs'=>$ProjectCrs,
-      'WMSOnlineResource'=>$WMSOnlineResource,
-      'WMSContactMail'=>$WMSContactMail,
-      'WMSContactOrganization'=>$WMSContactOrganization,
-      'WMSContactPerson'=>$WMSContactPerson,
-      'WMSContactPhone'=>$WMSContactPhone
-    );
+      'user'=>jAuth::getUserSession()
+    ), $wmsInfo);
     $rep->body->assign($assign);
 
     return $rep;

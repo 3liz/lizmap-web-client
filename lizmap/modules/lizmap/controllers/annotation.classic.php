@@ -11,11 +11,11 @@
 
 class annotationCtrl extends jController {
 
-  // project key
-  private $project = '';
+  // lizmapProject
+  private $project = null;
   
-  // repository key
-  private $repository = '';
+  // lizmapRepository
+  private $repository = null;
   
   // layer id in the QGIS project file
   private $layerId = '';
@@ -37,9 +37,6 @@ class annotationCtrl extends jController {
   
   // featureId : an integer or a string whith coma separated integers
   private $featureId = Null;
-  
-  // lizmapConfig object
-  private $lizmapConfig = '';
   
   // Layer date as simpleXml object
   private $layerXml = '';
@@ -95,10 +92,10 @@ class annotationCtrl extends jController {
  
   
   /**
-  * Get parameters and set lizmapConfig for the project and repository given.
+  * Get parameters and set classes for the project and repository given.
   *
   * @param boolean $save If true, we have to save the form. So take liz_repository and others instead of repository from request parameters.
-  * @return array List of needed variables : $params, $lizmapConfig, etc.
+  * @return array List of needed variables : $params, $lizmapRepository, lizmapProject, etc.
   */
   private function getAnnotationParameters($save=Null){
 
@@ -121,32 +118,22 @@ class annotationCtrl extends jController {
     }
 
     // Get repository data
-    jClasses::inc('lizmap~lizmapConfig');
-    $lizmapConfig = new lizmapConfig($repository);
+    $lrep = lizmap::getRepository($repository);
+    $lproj = lizmap::getProject($repository.'~'.$project);
 
     // Redirect if no rights to access this repository
-    if(!jacl2::check('lizmap.repositories.view', $lizmapConfig->repositoryKey)){
+    if(!jacl2::check('lizmap.repositories.view', $lrep->getKey())){
       jMessage::add(jLocale::get('view~default.repository.access.denied'), 'AuthorizationRequired');
       return false;
     }
 
     // Redirect if no rights to use the annotation tool
-    if(!jacl2::check('lizmap.tools.annotation.use', $lizmapConfig->repositoryKey)){
+    if(!jacl2::check('lizmap.tools.annotation.use', $lrep->getKey())){
       jMessage::add(jLocale::get('view~annotation.access.denied'), 'AuthorizationRequired');
       return false;
     }
     
-    // Read the QGIS project file to get the annotation layer(s) property
-    $qgisProjectClass = jClasses::getService('lizmap~qgisProject');
-    $xpath = "//maplayer[id='$layerId']";
-    
-    list($go, $qgsLoad, $layerXml, $errorlist) = $qgisProjectClass->readQgisProject($lizmapConfig, $project, $xpath);
-       
-    // Return error if no data found   
-    if(!$go or !$layerXml){
-      jMessage::add("No data found in the QGIS project file");
-      return false;
-    }
+    $layerXml = $lproj->getXmlLayer( $layerId );
     
     // feature Id (optionnal, only for edition and save)
 		if(preg_match('#,#', $featureIdParam))
@@ -155,12 +142,11 @@ class annotationCtrl extends jController {
 		  $featureId = $featureIdParam;
 
     // Define class private properties   
-    $this->project = $project;
-    $this->repository = $repository;
+    $this->project = $lproj;
+    $this->repository = $lrep;
     $this->layerId = $layerId;
     $this->featureId = $featureId;
     $this->featureIdParam = $featureIdParam;
-    $this->lizmapConfig = $lizmapConfig;
     $this->layerXml = $layerXml;
     
     return true;
@@ -200,7 +186,7 @@ class annotationCtrl extends jController {
     if($driver == 'sqlite3'){
       $jdbParams = array(
         "driver" => $driver,
-        "database" => realpath($this->lizmapConfig->repositoryData['path'].$dbname),
+        "database" => realpath($this->repository->getPath().$dbname),
         "extensions"=>"libspatialite.so"
       );
     }
@@ -231,8 +217,6 @@ class annotationCtrl extends jController {
   /**
   * Dynamically add controls to the form based on QGIS layer information
   * 
-  * @param object $lizmapConfig Lizmap configuration instance
-  * @param object $layerXml simplexml item containing layer information.
   * @param object $form Jelix form to add controls to.
   * @param string $save If set, save the form data into the database : 'insert' or 'update'.
   * @return modified form.
@@ -441,8 +425,8 @@ class annotationCtrl extends jController {
     // Redirect to the display action
     $rep = $this->getResponse('redirect');
     $rep->params = array(
-      "project"=>$this->project, 
-      "repository"=>$this->repository, 
+      "project"=>$this->project->getKey(), 
+      "repository"=>$this->repository->getKey(), 
       "layerId"=>$this->layerId
     );
     $rep->action="lizmap~annotation:editAnnotation";
@@ -481,8 +465,8 @@ class annotationCtrl extends jController {
     // Redirect to the display action
     $rep = $this->getResponse('redirect');
     $rep->params = array(
-      "project"=>$this->project, 
-      "repository"=>$this->repository, 
+      "project"=>$this->project->getKey(), 
+      "repository"=>$this->repository->getKey(), 
       "layerId"=>$this->layerId,
       "featureId"=>$this->featureIdParam
     );
@@ -511,8 +495,8 @@ class annotationCtrl extends jController {
     }
 
     // Set lizmap form controls (hard-coded in the form xml file)
-    $form->setData('liz_repository', $this->repository);
-    $form->setData('liz_project', $this->project);
+    $form->setData('liz_repository', $this->repository->getKey());
+    $form->setData('liz_project', $this->project->getKey());
     $form->setData('liz_layerId', $this->layerId);
     $form->setData('liz_featureId', $this->featureId);
 
@@ -607,8 +591,8 @@ class annotationCtrl extends jController {
       $rep = $this->getResponse('redirect');
       $token = uniqid('lizform_');
       $rep->params = array(
-        "project"=>$this->project, 
-        "repository"=>$this->repository, 
+        "project"=>$this->project->getKey(), 
+        "repository"=>$this->repository->getKey(), 
         "layerId"=>$this->layerId,
         "featureId"=>$this->featureIdParam,
         "error"=>$token
@@ -632,8 +616,8 @@ class annotationCtrl extends jController {
     // Redirect to the validation action
 		$rep = $this->getResponse('redirect');
 		$rep->params = array(
-		  "project"=>$this->project, 
-		  "repository"=>$this->repository, 
+		  "project"=>$this->project->getKey(), 
+		  "repository"=>$this->repository->getKey(), 
 		  "layerId"=>$this->layerId,
 		  "featureId"=>$this->featureIdParam
 		);

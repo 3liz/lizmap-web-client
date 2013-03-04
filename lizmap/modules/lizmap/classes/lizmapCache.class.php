@@ -114,18 +114,19 @@ class lizmapCache {
   * @return array $data Normalized and filtered array.
   */
   static public function getServiceData( $repository, $project, $params, $avoidCache=false ) {
-
-    $lizmapConfig = new lizmapConfig($repository);
+    
+    // Get repository data
+    $ser = lizmap::getServices();
+    $lrep = lizmap::getRepository($repository);
+    $lproj = lizmap::getProject($repository.'~'.$project);
 
     // Change to true to put some information in debug files
-    $debug = $lizmapConfig->debugMode;
+    $debug = $ser->debugMode;
 
     // Read config file for the current project
-    $configPath = $lizmapConfig->repositoryData['path'].$project.'.qgs.cfg';
-    $configRead = jFile::read($configPath);
-    $configOptions = json_decode($configRead)->options;
     $layername = $params["layers"];
-    $configLayer = json_decode($configRead)->layers->$layername;
+    $configLayers = $lproj->getLayers();
+    $configLayer = $configLayers->$layername;
 
     // Table to transform boolean string into boolean
     $string2bool = array('false'=>False, 'False'=>False, 'True'=>True, 'true'=>True);
@@ -157,13 +158,13 @@ class lizmapCache {
       // Set cache configuration
       $cacheName = 'lizmapCache_'.$repository.'_'.$project.'_'.$layers.'_'.$crs;
       // Storage type
-      $cacheStorageType = $lizmapConfig->cacheStorageType;
+      $cacheStorageType = $ser->cacheStorageType;
       // Expiration time : take default one or layer specified
-      $cacheExpiration = (int)$lizmapConfig->cacheExpiration;
+      $cacheExpiration = (int)$ser->cacheExpiration;
       if(property_exists($configLayer, 'cacheExpiration'))
         $cacheExpiration = (int)$configLayer->cacheExpiration;
       // Cache root directory
-      $cacheRootDirectory = $lizmapConfig->cacheRootDirectory;
+      $cacheRootDirectory = $ser->cacheRootDirectory;
       if(!is_writable($cacheRootDirectory) or !is_dir($cacheRootDirectory)){
         $cacheRootDirectory = sys_get_temp_dir();
       }      
@@ -250,10 +251,10 @@ class lizmapCache {
 
 
     // Construction of the WMS url : base url + parameters
-    $url = $lizmapConfig->wmsServerURL.'?';
+    $url = $ser->wmsServerURL.'?';
 
     // Add project path into map parameter
-    $params["map"] = $lizmapConfig->repositoryData['path'].$project.".qgs";
+    $params["map"] = $lrep->getPath().$lproj->getKey().".qgs";
 
     // Metatile : if needed, change the bbox
     // Avoid metatiling when the cache is not active for the layer
@@ -304,7 +305,7 @@ class lizmapCache {
 
     // Get data from the map server
     $lizmapCache = jClasses::getService('lizmap~lizmapCache');
-    $proxyMethod = $lizmapConfig->proxyMethod;
+    $proxyMethod = $ser->proxyMethod;
     $getRemoteData = $lizmapCache->getRemoteData($url . $builtParams, $proxyMethod, $debug);
     $data = $getRemoteData[0];
     $mime = $getRemoteData[1];
