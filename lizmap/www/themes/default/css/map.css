@@ -320,7 +320,7 @@ body {
   padding:0.5em;
 }
 
-#menu .title .btn {
+#toolbar .title .btn, #menu .title .btn {
   width : 20px;
   height : 20px;
   background : url(images/sprite_menu_tools.png) no-repeat right;
@@ -332,16 +332,16 @@ body {
   transition: none;
   -webkit-transition: none;
 }
-#menu .title .btn.btn-locate-clear {
+#toolbar .title .btn.btn-locate-clear {
   background-position : -20px 0px;
 }
-#menu .title .btn.btn-locate-clear:hover {
+#toolbar .title .btn.btn-locate-clear:hover {
   background-position : 0px 0px;
 }
-#menu .title .btn.btn-stop {
+#toolbar .title .btn.btn-stop {
   background-position : -20px -40px;
 }
-#menu .title .btn.btn-stop:hover {
+#toolbar .title .btn.btn-stop:hover {
   background-position : 0px -40px;
 }
 
@@ -367,6 +367,7 @@ body {
   color : rgb(51,51,51);
   height: 20px;
   cursor: pointer;
+  -webkit-appearance:none;
 }
 
 #baselayer-menu div.baselayer-select select option,
