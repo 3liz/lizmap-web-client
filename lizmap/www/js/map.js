@@ -137,8 +137,10 @@ var lizMap = function() {
       h = $('window').innerHeight();
     h = h - $('#header').height();
     h = h - $('#headermenu').height();
-
     $('#map').height(h);
+
+    // Update body padding top by summing up header+headermenu
+    $('body').css('padding-top', $('#header').outerHeight() + $('#headermenu').outerHeight() );
 
     // calculate map width depending on theme configuration 
     // (fullscreen map or not, mobile or not)

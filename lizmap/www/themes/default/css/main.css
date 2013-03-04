@@ -53,7 +53,7 @@ a:hover {
 
 
 #headermenu {
-  height:30px;
+/*  height:30px;*/
   position: fixed;
   right: 0px;
   left: 0px;
@@ -70,19 +70,25 @@ a:hover {
   background: transparent;
 }
 
-.navbar-fixed-top .navbar-inner, .navbar-fixed-bottom .navbar-inner {padding: 0px 10px;}
+
+
+.navbar-fixed-top .navbar-inner, .navbar-fixed-bottom .navbar-inner {
+    padding: 0px 10px;
+    box-shadow: none;
+}
+
 .navbar-inner {
   min-height:30px;
-  height:30px;
+/*  height:30px;*/
   padding: 0px 10px;
   filter:none\9;
 }
 
 
 /*  for ie 8*/
-.navbar-inner ul {
-  height:30px\9;
-}
+/*.navbar-inner ul {*/
+/*  height:30px\9;*/
+/*}*/
 /*  for ie 8*/
 .navbar-inner ul li{
   display:inline\9;

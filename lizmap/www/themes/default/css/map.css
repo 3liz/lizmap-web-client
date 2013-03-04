@@ -316,6 +316,9 @@ body {
   z-index: 1001;
   background : #F0F0F0;
 }
+#content.mobile #toolbar div.menu-content{
+  padding:0.5em;
+}
 
 #menu .title .btn {
   width : 20px;
