@@ -81,7 +81,7 @@ var lizMap = function() {
 
     if (isMobile) {
       // Add mobile class to content
-      $('#content').addClass('mobile');
+      $('#content, #headermenu').addClass('mobile');
 
       // hide overview map
       if (config.options.hasOverview){
@@ -101,7 +101,7 @@ var lizMap = function() {
     else
     {
       // Remove mobile class to content
-      $('#content').removeClass('mobile');
+      $('#content, #headermenu').removeClass('mobile');
 
       // Display overview map
       if (config.options.hasOverview){

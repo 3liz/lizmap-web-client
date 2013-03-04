@@ -73,7 +73,7 @@ a:hover {
 
 
 .navbar-fixed-top .navbar-inner, .navbar-fixed-bottom .navbar-inner {
-    padding: 0px 10px;
+    padding: 0px 0px;
     box-shadow: none;
 }
 

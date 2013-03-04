@@ -30,6 +30,10 @@ body {
   text-decoration : none;
 }
 
+#headermenu.mobile{
+  margin-left:-5px;
+  margin-right:-5px;
+}
 #headermenu .navbar-search {
   margin-top:1px;
   height:30px;
