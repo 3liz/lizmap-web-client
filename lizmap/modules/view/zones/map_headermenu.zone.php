@@ -26,7 +26,7 @@ class map_headermenuZone extends jZone {
       "annotation"=>true,
       "measure"=>true,
       "locate"=>true,
-      "geolocate"=>true,
+      "geolocation"=>true,
       "print"=>true,
     );
 
@@ -44,9 +44,9 @@ class map_headermenuZone extends jZone {
 
     $assign['annotation'] = $lproj->hasAnnotationLayers();
 
-    if ( !property_exists($configOptions,'geolocate')
-      || $configOptions->geolocate != 'True')
-      $assign['geolocate'] = false;
+    if ( !property_exists($configOptions,'geolocation')
+      || $configOptions->geolocation != 'True')
+      $assign['geolocation'] = false;
 
     if ( !property_exists($configOptions,'print')
       || $configOptions->print != 'True')

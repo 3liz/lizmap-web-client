@@ -79,7 +79,7 @@
         </ul>
       </li>
       {/if}
-      {if $geolocate}
+      {if $geolocation}
       <li class="geolocate">
         <a id="toggleGeolocate" rel="tooltip" data-original-title="{@view~map.geolocate.navbar.title@}" data-placement="bottom" href="#">
           <span class="icon"></span>
