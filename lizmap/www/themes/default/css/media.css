@@ -63,9 +63,10 @@ only screen and (                   max-device-height : 640px) {
   }
 
   /*  for ie*/
-  .navbar-inner ul {
-    height:30px\9;
-  }
+/*  .navbar-inner ul {*/
+/*    height:30px\9;*/
+/*  }*/
+  
   /*  for ie*/
   .navbar-inner ul li{
     display:inline\9;

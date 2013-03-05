@@ -4,10 +4,10 @@
     <mapcanvas>
         <units>degrees</units>
         <extent>
-            <xmin>3.804507</xmin>
-            <ymin>43.551260</ymin>
-            <xmax>3.951755</xmax>
-            <ymax>43.661654</ymax>
+            <xmin>3.789949</xmin>
+            <ymin>43.548591</ymin>
+            <xmax>3.966313</xmax>
+            <ymax>43.664323</ymax>
         </extent>
         <projections>1</projections>
         <destinationsrs>
@@ -83,33 +83,33 @@
         </legendgroup>
     </legend>
     <Composer title="Composeur1" visible="0">
+        <ComposerLabel valign="128" labelText="LizMap&#xa;&#xa;An example PDF output from QGIS composer." halign="4" margin="1">
+            <LabelFont description="Ubuntu,12,-1,5,75,0,0,0,0,0"/>
+            <FontColor red="0" blue="0" green="0"/>
+            <ComposerItem width="290.373" x="3.30721" y="3.30721" rotation="0" height="22.0131" frame="true" outlineWidth="0.3" zValue="5" lastValidViewScaleFactor="3.0237" id="" positionLock="false">
+                <FrameColor alpha="255" red="0" blue="0" green="0"/>
+                <BackgroundColor alpha="255" red="255" blue="255" green="255"/>
+            </ComposerItem>
+        </ComposerLabel>
+        <ComposerMap keepLayerSet="false" id="0" previewMode="Cache" drawCanvasItems="true">
+            <Extent ymin="43.6016" xmin="3.85843" ymax="43.6233" xmax="3.89397"/>
+            <LayerSet/>
+            <Grid gridStyle="0" crossLength="3" penColorRed="0" penColorBlue="0" intervalX="0" offsetX="0" intervalY="0" offsetY="0" show="0" penWidth="0" penColorGreen="0">
+                <Annotation direction="0" precision="3" position="1" frameDistance="1" show="0" font="Ubuntu,11,-1,5,50,0,0,0,0,0"/>
+            </Grid>
+            <ComposerItem width="289.35" x="4" y="28.2418" rotation="0" height="176.272" frame="true" outlineWidth="0.3" zValue="2" lastValidViewScaleFactor="3.0237" id="" positionLock="false">
+                <FrameColor alpha="255" red="0" blue="0" green="0"/>
+                <BackgroundColor alpha="255" red="255" blue="255" green="255"/>
+            </ComposerItem>
+        </ComposerMap>
         <ComposerPicture pictureWidth="38.0665" file="/kimaidou/Documents/3liz/LOGOS/LOGOS/CARRE/WEB/Logo_car_coul.png" pictureHeight="39.6255" mapId="-1">
             <ComposerItem width="38.0665" x="5.56126" y="5.91563" rotation="0" height="39.6255" frame="false" outlineWidth="0.3" zValue="3" lastValidViewScaleFactor="2.7047" id="" positionLock="false">
                 <FrameColor alpha="255" red="0" blue="0" green="0"/>
                 <BackgroundColor alpha="255" red="255" blue="255" green="255"/>
             </ComposerItem>
         </ComposerPicture>
-        <ComposerLabel valign="128" labelText="LizMap&#xa;&#xa;An example PDF output from QGIS composer.&#xa;This PDF file will be available by clicling on the (i) link right to the tramway layer" halign="4" margin="1">
-            <LabelFont description="Ubuntu,12,-1,5,75,0,0,0,0,0"/>
-            <FontColor red="0" blue="0" green="0"/>
-            <ComposerItem width="180.657" x="52.5012" y="3.30721" rotation="0" height="44.6473" frame="true" outlineWidth="0.3" zValue="5" lastValidViewScaleFactor="2.7047" id="" positionLock="false">
-                <FrameColor alpha="255" red="0" blue="0" green="0"/>
-                <BackgroundColor alpha="255" red="255" blue="255" green="255"/>
-            </ComposerItem>
-        </ComposerLabel>
-        <ComposerMap keepLayerSet="false" id="0" previewMode="Cache" drawCanvasItems="true">
-            <Extent ymin="43.6016" xmin="3.85843" ymax="43.6213" xmax="3.89397"/>
-            <LayerSet/>
-            <Grid gridStyle="0" crossLength="3" penColorRed="0" penColorBlue="0" intervalX="0" offsetX="0" intervalY="0" offsetY="0" show="0" penWidth="0" penColorGreen="0">
-                <Annotation direction="0" precision="3" position="1" frameDistance="1" show="0" font="Ubuntu,11,-1,5,50,0,0,0,0,0"/>
-            </Grid>
-            <ComposerItem width="278.436" x="4" y="50.6003" rotation="0" height="154.4" frame="true" outlineWidth="0.3" zValue="2" lastValidViewScaleFactor="2.7047" id="" positionLock="false">
-                <FrameColor alpha="255" red="0" blue="0" green="0"/>
-                <BackgroundColor alpha="255" red="255" blue="255" green="255"/>
-            </ComposerItem>
-        </ComposerMap>
         <ComposerPicture pictureWidth="41.4127" file="./media/logo_osm.png" pictureHeight="35.3838" mapId="-1">
-            <ComposerItem width="41.4127" x="245.868" y="10.3524" rotation="0" height="35.3838" frame="false" outlineWidth="0.3" zValue="4" lastValidViewScaleFactor="2.7047" id="" positionLock="false">
+            <ComposerItem width="41.4127" x="245.868" y="10.3524" rotation="0" height="35.3838" frame="false" outlineWidth="0.3" zValue="4" lastValidViewScaleFactor="2.05369" id="" positionLock="false">
                 <FrameColor alpha="255" red="0" blue="0" green="0"/>
                 <BackgroundColor alpha="255" red="255" blue="255" green="255"/>
             </ComposerItem>
@@ -150,7 +150,7 @@
                 <mRedBandName>Not Set</mRedBandName>
                 <mGreenBandName>Not Set</mGreenBandName>
                 <mBlueBandName>Not Set</mBlueBandName>
-                <mGrayBandName>Bande 1</mGrayBandName>
+                <mGrayBandName>Band 1</mGrayBandName>
                 <mStandardDeviations>0</mStandardDeviations>
                 <mUserDefinedRGBMinimumMaximum boolean="false"/>
                 <mRGBMinimumMaximumEstimated boolean="true"/>
@@ -1717,7 +1717,6 @@ Data is licensed under ODbl, OpenStreetMap contributors</WMSServiceAbstract>
         </PositionPrecision>
         <WMSAddWktGeometry type="bool">false</WMSAddWktGeometry>
         <WMSContactOrganization type="QString">3liz</WMSContactOrganization>
-        <WMSServiceCapabilities type="bool">true</WMSServiceCapabilities>
         <WMSServiceTitle type="QString">Montpellier - Transports</WMSServiceTitle>
         <WMSExtent type="QStringList">
             <value>3.78300108</value>
@@ -1725,5 +1724,6 @@ Data is licensed under ODbl, OpenStreetMap contributors</WMSServiceAbstract>
             <value>3.97065725</value>
             <value>43.67333749</value>
         </WMSExtent>
+        <WMSServiceCapabilities type="QString">True</WMSServiceCapabilities>
     </properties>
 </qgis>
