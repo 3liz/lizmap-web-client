@@ -279,6 +279,9 @@ body {
 #menu .locate h3 .icon {
   background-position : 0px -160px;
 }
+#menu .print h3 .icon {
+  background-position: 0px -260px;
+}
 #menu .measure h3 .icon {
   background-position: 0px -480px;
 }
@@ -341,6 +344,18 @@ body {
 }
 #toolbar .title .btn.btn-locate-clear:hover {
   background-position : 0px 0px;
+}
+#toolbar .title .btn.btn-print-clear {
+  background-position : -20px -120px;
+}
+#toolbar .title .btn.btn-print-clear:hover {
+  background-position : 0px -120px;
+}
+#toolbar .title .btn.btn-print-launch {
+  background-position : -20px -80px;
+}
+#toolbar .title .btn.btn-print-launch:hover {
+  background-position : 0px -80px;
 }
 #toolbar .title .btn.btn-stop {
   background-position : -20px -40px;

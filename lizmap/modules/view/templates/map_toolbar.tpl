@@ -20,6 +20,11 @@
   <h3><span class="title"><button id="measure-perimeter-stop" class="btn btn-stop btn-mini btn-link" title="{@view~map.toolbar.content.stop@}"></button><span class="icon"></span>&nbsp;<span class="text">{@view~map.measure.toolbar.title.perimeter@}</span></span></h3>
 </div>
 {/if}
+{if $print}
+<div id="print-menu" class="print" style="display:none;">
+  <h3><span class="title"><button class="btn-print-clear btn btn-mini btn-link" title="{@view~map.toolbar.content.stop@}"></button><button class="btn-print-launch btn btn-mini btn-link" title="{@view~map.print.toolbar.title@}"></button><span class="icon"></span>&nbsp;{@view~map.print.toolbar.title@}</span></span></h3>
+</div>
+{/if}
 {if $locate}
 <div id="locate-menu" class="locate" style="display:none;">
   <h3><span class="title"><button class="btn-locate-clear btn btn-mini btn-link" type="button"></button><span class="icon"></span>&nbsp;{@view~map.locatemenu.title@}</span></span></h3>

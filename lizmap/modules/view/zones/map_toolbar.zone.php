@@ -22,6 +22,7 @@ class map_toolbarZone extends jZone {
     $assign = array(
       "annotation"=>true,
       "measure"=>true,
+      "print"=>true,
       "locate"=>true,
     );
 
@@ -30,6 +31,10 @@ class map_toolbarZone extends jZone {
     if ( !property_exists($configOptions,'measure')
       || !$configOptions->measure == 'True')
       $assign['measure'] = false;
+    
+    if ( !property_exists($configOptions,'print')
+      || $configOptions->print != 'True')
+      $assign['print'] = false;
 
     $assign['locate'] = $lproj->hasLocateByLayer();
 
