@@ -2399,7 +2399,7 @@ lizMap.events.on({
          bbox = extent.toArray();
 
          var scales = [];
-         if ('mapScales' in config.options)
+         if ('mapScales' in evt.config.options)
            scales = evt.config.options.mapScales;
          var nScales = [];
          if (scales.length != 0 ) {
