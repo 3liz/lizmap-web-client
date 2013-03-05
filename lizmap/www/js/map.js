@@ -809,7 +809,7 @@ var lizMap = function() {
         layer.destroyFeatures();
         $('#locate select:not(#locate-layer-'+aName+')').val('-1');
         var proj = new OpenLayers.Projection(locate.crs);
-        var val = parseInt($(this).val());
+        var val = $(this).val();
         if (val == '-1') {
           var bbox = new OpenLayers.Bounds(locate.bbox);
           bbox.transform(proj, map.getProjection());
