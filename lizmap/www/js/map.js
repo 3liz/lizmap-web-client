@@ -655,7 +655,9 @@ var lizMap = function() {
 
     var res = extent.getHeight()/$('#map').height();
 
-    var scales = config.options.mapScales;
+    var scales = [];
+    if ('mapScales' in config.options)
+      scales = config.options.mapScales;
     scales.sort(function(a, b) {
       return Number(b) - Number(a);
     });
@@ -2396,7 +2398,9 @@ lizMap.events.on({
          extent = extent.transform(projection,projOSM);
          bbox = extent.toArray();
 
-         var scales = evt.config.options.mapScales;
+         var scales = [];
+         if ('mapScales' in config.options)
+           scales = evt.config.options.mapScales;
          var nScales = [];
          if (scales.length != 0 ) {
            scales.sort(function(a, b) {
