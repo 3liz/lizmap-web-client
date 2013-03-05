@@ -265,8 +265,10 @@ class lizmapProject{
         }
         if(!$spatial){
           foreach( $configJson->annotationLayers as $key=>$obj ){
-            $layerXml = $this->getXmlLayer( $obj->layerId )[0];
-            $provider = (string)$layerXml->xpath('provider')[0];
+            $layerXml = $this->getXmlLayer( $obj->layerId );
+            $layerXmlZero = $layerXml[0];
+            $provider = $layerXmlZero->xpath('provider');
+            $provider = (string)$provider[0];
             if ( $provider == 'spatialite' )
               unset($configJson->annotationLayers->$key);
           }
