@@ -247,31 +247,40 @@ class lizmapProject{
       }   
 
       $configRead = json_encode($this->cfg);
+      $configJson = json_decode($configRead);
       // Remove layerOrder option from config if not required 
       if(!empty($layersOrder)){
-        $configJson = json_decode($configRead);
         $configJson->layersOrder = $layersOrder;
-        $configRead = json_encode($configJson);
       }
 
       // Remove annotationLayers from config if no right to access this tool
       // Or if no ability to load spatialite extension
-      $spatial = false;
-      try{
-        $db = new SQLite3(':memory:');
-        $spatial = $db->loadExtension('libspatialite.so'); # loading SpatiaLite as an extension
-      }catch(Exception $e){
-        $spatial = False;
-      }    
-      if(!$spatial or !jacl2::check('lizmap.tools.annotation.use', $this->repository->getKey())){
-        $configJson = json_decode($configRead);
+      if(jacl2::check('lizmap.tools.annotation.use', $this->repository->getKey())){
+        $spatial = false;
+        try{
+          $db = new SQLite3(':memory:');
+          $spatial = $db->loadExtension('libspatialite.so'); # loading SpatiaLite as an extension
+        }catch(Exception $e){
+          $spatial = False;
+        }
+        if(!$spatial){
+          foreach( $configJson->annotationLayers as $key=>$obj ){
+            $layerXml = $this->getXmlLayer( $obj->layerId );
+            $layerXmlZero = $layerXml[0];
+            $provider = $layerXmlZero->xpath('provider');
+            $provider = (string)$provider[0];
+            if ( $provider == 'spatialite' )
+              unset($configJson->annotationLayers->$key);
+          }
+        }
+      } else {
         unset($configJson->annotationLayers);
-        $configRead = json_encode($configJson);      
       }
+      $configRead = json_encode($configJson);      
 
       return $configRead;
     }
-    
+
     public function getXmlLayer( $layerId ){
       return $this->xml->xpath( "//maplayer[id='$layerId']" );
     }
