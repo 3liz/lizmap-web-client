@@ -536,7 +536,7 @@ var lizMap = function() {
       html += '<td></td>';
       
     var removeCache = '';
-    if (nodeConfig.cached && nodeConfig.cached == 'True' && nodeConfig.type == 'layer')
+    if (nodeConfig.cached && nodeConfig.cached == 'True' && nodeConfig.type == 'layer' && ('removeCache' in config.options))
       html += '<td><button class="removeCache" name="removeCache" title="'+lizDict['tree.button.removeCache']+'" value="'+aNode.name+'"/></td>';
     else
       html += '<td></td>';      
@@ -2518,175 +2518,294 @@ var lizMap = function() {
 lizMap.events.on({
     'treecreated':function(evt){
        //console.log('treecreated');
-       if ((('osmMapnik' in evt.config.options) && evt.config.options.osmMapnik == 'True') ||
-           (('osmMapquest' in evt.config.options) && evt.config.options.osmMapquest == 'True') ||
-           (('googleStreets' in evt.config.options) && evt.config.options.googleStreets == 'True') ||
-           (('googleSatellite' in evt.config.options) && evt.config.options.googleSatellite == 'True') ||
-           (('googleHybrid' in evt.config.options) && evt.config.options.googleHybrid == 'True') ||
-           (('googleTerrain' in evt.config.options) && evt.config.options.googleTerrain == 'True')) {
-         Proj4js.defs['EPSG:3857'] = Proj4js.defs['EPSG:900913'];
-         var proj = evt.config.options.projection;
-         if ( !(proj.ref in Proj4js.defs) )
-           Proj4js.defs[proj.ref]=proj.proj4;
-         var projection = new OpenLayers.Projection(proj.ref);
-         var projOSM = new OpenLayers.Projection('EPSG:3857');
-         proj.ref = 'EPSG:3857';
-         proj.proj4 = Proj4js.defs['EPSG:3857'];
+ if (
+   (('osmMapnik' in evt.config.options)
+    && evt.config.options.osmMapnik == 'True') ||
+   (('osmMapquest' in evt.config.options)
+    && evt.config.options.osmMapquest == 'True') ||
+   (('googleStreets' in evt.config.options)
+    && evt.config.options.googleStreets == 'True') ||
+   (('googleSatellite' in evt.config.options)
+    && evt.config.options.googleSatellite == 'True') ||
+   (('googleHybrid' in evt.config.options)
+    && evt.config.options.googleHybrid == 'True') ||
+   (('googleTerrain' in evt.config.options)
+    && evt.config.options.googleTerrain == 'True')
+   ) {
+     Proj4js.defs['EPSG:3857'] = Proj4js.defs['EPSG:900913'];
+     var proj = evt.config.options.projection;
+     if ( !(proj.ref in Proj4js.defs) )
+       Proj4js.defs[proj.ref]=proj.proj4;
+     var projection = new OpenLayers.Projection(proj.ref);
+     var projOSM = new OpenLayers.Projection('EPSG:3857');
+     proj.ref = 'EPSG:3857';
+     proj.proj4 = Proj4js.defs['EPSG:3857'];
 
-         var bbox = evt.config.options.bbox;
-         var extent = new OpenLayers.Bounds(Number(bbox[0]),Number(bbox[1]),Number(bbox[2]),Number(bbox[3]));
-         extent = extent.transform(projection,projOSM);
-         bbox = extent.toArray();
+     var bbox = evt.config.options.bbox;
+     var extent = new OpenLayers.Bounds(Number(bbox[0]),Number(bbox[1]),Number(bbox[2]),Number(bbox[3]));
+     extent = extent.transform(projection,projOSM);
+     bbox = extent.toArray();
 
-         var scales = [];
-         if ('mapScales' in evt.config.options)
-           scales = evt.config.options.mapScales;
-         var nScales = [];
-         if (scales.length != 0 ) {
-           scales.sort(function(a, b) {
-             return Number(b) - Number(a);
-           });
-           var maxScale = scales[0];
-           var maxRes = OpenLayers.Util.getResolutionFromScale(maxScale, projOSM.proj.units);
-           var minScale = scales[scales.length-1];
-           var minRes = OpenLayers.Util.getResolutionFromScale(minScale, projOSM.proj.units);
-           var res = OpenLayers.Util.getResolutionFromScale(591659030.3224756, projOSM.proj.units);
-           while ( res > minRes ) {
-             if ( res < maxRes ) {
-               if (nScales.length == 0)
-                 nScales.push(res*2);
-               nScales.push(res);
-             }
-             res = res/2;
-           }
-           maxRes = nScales[0];
-           nScales.push(res);
-           minRes = res;
+     var scales = [];
+     if ('mapScales' in evt.config.options)
+       scales = evt.config.options.mapScales;
+     if ( scales.length == 0 )
+       scales = [evt.config.options.maxScale,evt.config.options.minScale];
 
-           maxScale = OpenLayers.Util.getScaleFromResolution(maxRes, projOSM.proj.units);
-           minScale = OpenLayers.Util.getScaleFromResolution(minRes, projOSM.proj.units);
+     evt.config.options.projection = proj;
+     evt.config.options.bbox = bbox;
+     evt.config.options.zoomLevelNumber = 16;
+     if ((('osmMapnik' in evt.config.options) && evt.config.options.osmMapnik == 'True') ||
+         (('osmMapquest' in evt.config.options) && evt.config.options.osmMapquest == 'True'))
+       evt.config.options.zoomLevelNumber = 19;
+     if ((('googleStreets' in evt.config.options) && evt.config.options.googleStreets == 'True') ||
+         (('googleHybrid' in evt.config.options) && evt.config.options.googleHybrid == 'True'))
+       evt.config.options.zoomLevelNumber = 20;
+     if ((('googleSatellite' in evt.config.options) && evt.config.options.googleSatellite == 'True'))
+       evt.config.options.zoomLevelNumber = 21;
+     evt.config.options.maxScale = 591659030.3224756;
+     evt.config.options.minScale = 2257.0000851534865;
+     evt.config.options.mapScales = [];
+
+     var resolutions = [];
+     if (scales.length != 0 ) {
+       scales.sort(function(a, b) {
+         return Number(b) - Number(a);
+       });
+       var maxScale = scales[0];
+       var maxRes = OpenLayers.Util.getResolutionFromScale(maxScale, projOSM.proj.units);
+       var minScale = scales[scales.length-1];
+       var minRes = OpenLayers.Util.getResolutionFromScale(minScale, projOSM.proj.units);
+       var res = 156543.03390625;
+       var n = 1;
+       while ( res > minRes && n < evt.config.options.zoomLevelNumber) {
+         if ( res < maxRes ) {
+           if (resolutions.length == 0 && res != 156543.03390625)
+             resolutions.push(res*2);
+           resolutions.push(res);
          }
-
-         evt.config.options.projection = proj;
-         evt.config.options.bbox = bbox;
-         evt.config.options.zoomLevelNumber = 16;
-         if ((('osmMapnik' in evt.config.options) && evt.config.options.osmMapnik == 'True') ||
-             (('osmMapquest' in evt.config.options) && evt.config.options.osmMapquest == 'True'))
-           evt.config.options.zoomLevelNumber = 19;
-         if ((('googleStreets' in evt.config.options) && evt.config.options.googleStreets == 'True') ||
-             (('googleHybrid' in evt.config.options) && evt.config.options.googleHybrid == 'True'))
-           evt.config.options.zoomLevelNumber = 20;
-         if ((('googleSatellite' in evt.config.options) && evt.config.options.googleSatellite == 'True'))
-           evt.config.options.zoomLevelNumber = 21;
-         evt.config.options.maxScale = 591659030.3224756;
-         evt.config.options.minScale = 2257.0000851534865;
-         evt.config.options.mapScales = [];
+         res = res/2;
+         n++;
        }
+       maxRes = resolutions[0];
+       minRes = res;
+       resolutions.push(res);
+       var maxScale = OpenLayers.Util.getScaleFromResolution(maxRes, projOSM.proj.units);
+       var minScale = OpenLayers.Util.getScaleFromResolution(minRes, projOSM.proj.units);
+     }
+     evt.config.options['resolutions'] = resolutions;
 
-       /*
-       if (nScales.length != 0) {
-         evt.config.options.zoomLevelNumber = nScales.length;
-         evt.config.options.maxScale = maxScale;
-         evt.config.options.minScale = minScale;
-         evt.config.options.mapScales = nScales;
-       }
-       */
+     if (resolutions.length != 0 ) {
+       evt.config.options.zoomLevelNumber = resolutions.length;
+       evt.config.options.maxScale = maxScale;
+       evt.config.options.minScale = minScale;
+     }
+   }
+
     }
-   ,'mapcreated':function(evt){
-       //console.log('mapcreated');
-       //adding baselayers
-       var maxExtent = null;
-       if ( OpenLayers.Projection.defaults['EPSG:900913'].maxExtent )
-         maxExtent = new OpenLayers.Bounds(OpenLayers.Projection.defaults['EPSG:900913'].maxExtent);
-       else if ( OpenLayers.Projection.defaults['EPSG:3857'].maxExtent )
-         maxExtent = new OpenLayers.Bounds(OpenLayers.Projection.defaults['EPSG:3857'].maxExtent);
-       if (('osmMapnik' in evt.config.options) && evt.config.options.osmMapnik == 'True') {
-         evt.map.allOverlays = false;
-         var osm = new OpenLayers.Layer.OSM('osm');
-         osm.maxExtent = maxExtent;
-         /*
-         if (evt.config.options.mapScales.length != 0) {
-           osm.scales = evt.config.options.mapScales;
-           osm.zoomLevelNumber = evt.config.options.mapScales.length;
-         }
-         */
-         var osmCfg = {
-           "name":"osm"
-             ,"title":"OpenStreetMap"
-         };
-         evt.config.layers['osm'] = osmCfg;
-         evt.baselayers.push(osm);
-       }
-       if (('osmMapquest' in evt.config.options) && evt.config.options.osmMapquest == 'True') {
-         evt.map.allOverlays = false;
-         var mapquest = new OpenLayers.Layer.OSM('mapquest',
-            ["http://otile1.mqcdn.com/tiles/1.0.0/osm/${z}/${x}/${y}.png",
-             "http://otile2.mqcdn.com/tiles/1.0.0/osm/${z}/${x}/${y}.png",
-             "http://otile3.mqcdn.com/tiles/1.0.0/osm/${z}/${x}/${y}.png",
-             "http://otile4.mqcdn.com/tiles/1.0.0/osm/${z}/${x}/${y}.png"]
-             , {numZoomLevels: 19}
+    ,'mapcreated':function(evt){
+      //console.log('mapcreated');
+  if (
+    (('osmMapnik' in evt.config.options)
+     && evt.config.options.osmMapnik == 'True') ||
+    (('osmMapquest' in evt.config.options)
+     && evt.config.options.osmMapquest == 'True') ||
+    (('googleStreets' in evt.config.options)
+     && evt.config.options.googleStreets == 'True') ||
+    (('googleSatellite' in evt.config.options)
+     && evt.config.options.googleSatellite == 'True') ||
+    (('googleHybrid' in evt.config.options)
+     && evt.config.options.googleHybrid == 'True') ||
+    (('googleTerrain' in evt.config.options)
+     && evt.config.options.googleTerrain == 'True')
+    ) {
+      //adding baselayers
+      var maxExtent = null;
+      if ( OpenLayers.Projection.defaults['EPSG:900913'].maxExtent )
+        maxExtent = new OpenLayers.Bounds(OpenLayers.Projection.defaults['EPSG:900913'].maxExtent);
+      else if ( OpenLayers.Projection.defaults['EPSG:3857'].maxExtent )
+        maxExtent = new OpenLayers.Bounds(OpenLayers.Projection.defaults['EPSG:3857'].maxExtent);
+
+      var lOptions = {zoomOffset:0,maxResolution:156543.03390625};
+      if (('resolutions' in evt.config.options)
+          && evt.config.options.resolutions.length != 0 ){
+        var resolutions = evt.config.options.resolutions;
+        var maxRes = resolutions[0];
+        var numZoomLevels = resolutions.length;
+        var zoomOffset = 0;
+        var res = 156543.03390625;
+        while ( res > maxRes ) {
+          zoomOffset += 1;
+          res = 156543.03390625 / Math.pow(2, zoomOffset);
+        }
+        lOptions['zoomOffset'] = zoomOffset;
+        lOptions['maxResolution'] = maxRes;
+        lOptions['numZoomLevels'] = numZoomLevels;
+      }
+
+      if (('osmMapnik' in evt.config.options) && evt.config.options.osmMapnik == 'True') {
+        evt.map.allOverlays = false;
+        var options = {
+          zoomOffset: 0,
+          maxResolution:156543.03390625,
+          numZoomLevels:19
+        };
+        if (lOptions.zoomOffset != 0) {
+          options.zoomOffset = lOptions.zoomOffset;
+          options.maxResolution = lOptions.maxResolution;
+        }
+        if (lOptions.zoomOffset+lOptions.numZoomLevels <= options.numZoomLevels)
+          options.numZoomLevels = lOptions.numZoomLevels;
+        else
+          options.numZoomLevels = options.numZoomLevels - lOptions.zoomOffset;
+        var osm = new OpenLayers.Layer.OSM('osm',
+            [
+            "http://a.tile.openstreetmap.org/${z}/${x}/${y}.png",
+            "http://b.tile.openstreetmap.org/${z}/${x}/${y}.png",
+            "http://c.tile.openstreetmap.org/${z}/${x}/${y}.png"
+            ]
+            ,options
             );
-         mapquest.maxExtent = maxExtent;
-         /*
-         if (evt.config.options.mapScales.length != 0) {
-           osm.scales = evt.config.options.mapScales;
-           osm.zoomLevelNumber = evt.config.options.mapScales.length;
-         }
-         */
-         var mapquestCfg = {
-           "name":"mapquest"
-          ,"title":"MapQuest OSM"
-         };
-         evt.config.layers['mapquest'] = mapquestCfg;
-         evt.baselayers.push(mapquest);
-       }
-       try {
-       if (('googleSatellite' in evt.config.options) && evt.config.options.googleSatellite == 'True') {
-         var gsat = new OpenLayers.Layer.Google(
-             "Google Satellite",
-             {type: google.maps.MapTypeId.SATELLITE, numZoomLevels: 21}
-             );
-         gsat.maxExtent = maxExtent;
-         var gsatCfg = {
-           "name":"gsat"
-          ,"title":"Google Satellite"
-         };
-         evt.config.layers['gsat'] = gsatCfg;
-         evt.baselayers.push(gsat);
-         evt.map.allOverlays = false;
-       }
-       if (('googleHybrid' in evt.config.options) && evt.config.options.googleHybrid == 'True') {
-         var ghyb = new OpenLayers.Layer.Google(
-             "Google Hybrid",
-             {type: google.maps.MapTypeId.HYBRID, numZoomLevels: 20}
-             );
-         ghyb.maxExtent = maxExtent;
-         var ghybCfg = {
-           "name":"ghyb"
-          ,"title":"Google Hybrid"
-         };
-         evt.config.layers['ghyb'] = ghybCfg;
-         evt.baselayers.push(ghyb);
-         evt.map.allOverlays = false;
-       }
-       if (('googleTerrain' in evt.config.options) && evt.config.options.googleTerrain == 'True') {
-         var gphy = new OpenLayers.Layer.Google(
-             "Google Terrain",
-             {type: google.maps.MapTypeId.TERRAIN, numZoomLevels: 16}
-             );
-         gphy.maxExtent = maxExtent;
-         var gphyCfg = {
-           "name":"gphy"
-          ,"title":"Google Terrain"
-         };
-         evt.config.layers['gphy'] = gphyCfg;
-         evt.baselayers.push(gphy);
-         evt.map.allOverlays = false;
+        osm.maxExtent = maxExtent;
+        var osmCfg = {
+          "name":"osm"
+            ,"title":"OpenStreetMap"
+        };
+        evt.config.layers['osm'] = osmCfg;
+        evt.baselayers.push(osm);
+      }
+      if (('osmMapquest' in evt.config.options) && evt.config.options.osmMapquest == 'True') {
+        evt.map.allOverlays = false;
+        var options = {
+          zoomOffset: 0,
+          maxResolution:156543.03390625,
+          numZoomLevels:19
+        };
+        if (lOptions.zoomOffset != 0) {
+          options.zoomOffset = lOptions.zoomOffset;
+          options.maxResolution = lOptions.maxResolution;
+        }
+        if (lOptions.zoomOffset+lOptions.numZoomLevels <= options.numZoomLevels)
+          options.numZoomLevels = lOptions.numZoomLevels;
+        else
+          options.numZoomLevels = options.numZoomLevels - lOptions.zoomOffset;
+        var mapquest = new OpenLayers.Layer.OSM('mapquest',
+            ["http://otile1.mqcdn.com/tiles/1.0.0/osm/${z}/${x}/${y}.png",
+            "http://otile2.mqcdn.com/tiles/1.0.0/osm/${z}/${x}/${y}.png",
+            "http://otile3.mqcdn.com/tiles/1.0.0/osm/${z}/${x}/${y}.png",
+            "http://otile4.mqcdn.com/tiles/1.0.0/osm/${z}/${x}/${y}.png"]
+            ,options
+            );
+        mapquest.maxExtent = maxExtent;
+        var mapquestCfg = {
+          "name":"mapquest"
+            ,"title":"MapQuest OSM"
+        };
+        evt.config.layers['mapquest'] = mapquestCfg;
+        evt.baselayers.push(mapquest);
+      }
+      try {
+        if (('googleSatellite' in evt.config.options) && evt.config.options.googleSatellite == 'True') {
+          var options = {
+            zoomOffset: 0,
+            maxResolution:156543.03390625,
+            numZoomLevels:21
+          };
+          if (lOptions.zoomOffset != 0) {
+            options.zoomOffset = lOptions.zoomOffset;
+            options.maxResolution = lOptions.maxResolution;
+          }
+          if (lOptions.zoomOffset+lOptions.numZoomLevels <= options.numZoomLevels)
+            options.numZoomLevels = lOptions.numZoomLevels;
+          else
+            options.numZoomLevels = options.numZoomLevels - lOptions.zoomOffset;
+          var gsat = new OpenLayers.Layer.Google(
+              "Google Satellite",
+              {type: google.maps.MapTypeId.SATELLITE
+                , numZoomLevels: options.numZoomLevels, maxResolution: options.maxResolution, minZoomLevel:options.zoomOffset}
+              );
+          gsat.maxExtent = maxExtent;
+          var gsatCfg = {
+            "name":"gsat"
+              ,"title":"Google Satellite"
+          };
+          evt.config.layers['gsat'] = gsatCfg;
+          evt.baselayers.push(gsat);
+          evt.map.allOverlays = false;
+        }
+        if (('googleHybrid' in evt.config.options) && evt.config.options.googleHybrid == 'True') {
+          var options = {
+            zoomOffset: 0,
+            maxResolution:156543.03390625,
+            numZoomLevels:20
+          };
+          if (lOptions.zoomOffset != 0) {
+            options.zoomOffset = lOptions.zoomOffset;
+            options.maxResolution = lOptions.maxResolution;
+          }
+          if (lOptions.zoomOffset+lOptions.numZoomLevels <= options.numZoomLevels)
+            options.numZoomLevels = lOptions.numZoomLevels;
+          else
+            options.numZoomLevels = options.numZoomLevels - lOptions.zoomOffset;
+          var ghyb = new OpenLayers.Layer.Google(
+              "Google Hybrid",
+              {type: google.maps.MapTypeId.HYBRID
+                , numZoomLevels: options.numZoomLevels, maxResolution: options.maxResolution, minZoomLevel:options.zoomOffset}
+              );
+          ghyb.maxExtent = maxExtent;
+          var ghybCfg = {
+            "name":"ghyb"
+              ,"title":"Google Hybrid"
+          };
+          evt.config.layers['ghyb'] = ghybCfg;
+          evt.baselayers.push(ghyb);
+          evt.map.allOverlays = false;
+        }
+        if (('googleTerrain' in evt.config.options) && evt.config.options.googleTerrain == 'True') {
+          var options = {
+            zoomOffset: 0,
+            maxResolution:156543.03390625,
+            numZoomLevels:16
+          };
+          if (lOptions.zoomOffset != 0) {
+            options.zoomOffset = lOptions.zoomOffset;
+            options.maxResolution = lOptions.maxResolution;
+          }
+          if (lOptions.zoomOffset+lOptions.numZoomLevels <= options.numZoomLevels)
+            options.numZoomLevels = lOptions.numZoomLevels;
+          else
+            options.numZoomLevels = options.numZoomLevels - lOptions.zoomOffset;
+          var gphy = new OpenLayers.Layer.Google(
+              "Google Terrain",
+              {type: google.maps.MapTypeId.TERRAIN
+              , numZoomLevels: options.numZoomLevels, maxResolution: options.maxResolution, minZoomLevel:options.zoomOffset}
+              );
+          gphy.maxExtent = maxExtent;
+          var gphyCfg = {
+            "name":"gphy"
+              ,"title":"Google Terrain"
+          };
+          evt.config.layers['gphy'] = gphyCfg;
+          evt.baselayers.push(gphy);
+          evt.map.allOverlays = false;
        }
        if (('googleStreets' in evt.config.options) && evt.config.options.googleStreets == 'True') {
+          var options = {
+            zoomOffset: 0,
+            maxResolution:156543.03390625,
+            numZoomLevels:20
+          };
+          if (lOptions.zoomOffset != 0) {
+            options.zoomOffset = lOptions.zoomOffset;
+            options.maxResolution = lOptions.maxResolution;
+          }
+          if (lOptions.zoomOffset+lOptions.numZoomLevels <= options.numZoomLevels)
+            options.numZoomLevels = lOptions.numZoomLevels;
+          else
+            options.numZoomLevels = options.numZoomLevels - lOptions.zoomOffset;
          var gmap = new OpenLayers.Layer.Google(
              "Google Streets", // the default
-             {numZoomLevels: 20}
+             {numZoomLevels: options.numZoomLevels, maxResolution: options.maxResolution, minZoomLevel:options.zoomOffset}
              );
          gmap.maxExtent = maxExtent;
          var gmapCfg = {
@@ -2702,6 +2821,7 @@ lizMap.events.on({
          var myError = e;
          //console.log(myError);
        }
+         }
 
      }
    ,'uicreated':function(evt){
