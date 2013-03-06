@@ -148,22 +148,22 @@ a:hover {
   vertical-align:middle;
 }
 .navbar .nav .login .icon {
-  background-position: -20px -80px;
+  background-position: -80px -60px;
 }
 .navbar .nav .login a:hover .icon {
-  background-position: 0px -80px;
+  background-position: -80px -40px;
 }
 .navbar .nav .user .icon {
-  background-position: -20px -340px;
+  background-position: 0px -60px;
 }
 .navbar .nav .user a:hover .icon {
-  background-position: 0px -340px;
+  background-position: 0px -40px;
 }
 .navbar .nav .home .icon {
-  background-position: -20px -100px;
+  background-position: -80px -20px;
 }
 .navbar .nav .home a:hover .icon {
-  background-position: 0px -100px;
+  background-position: -80px 0px;
 }
 #content {
   padding-top: 20px;

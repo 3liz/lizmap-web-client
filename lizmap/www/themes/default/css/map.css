@@ -58,7 +58,7 @@ body {
 }
 #headermenu .navbar-search .icon {
   background-color: transparent;
-  background-position: -20px -200px;
+  background-position: -100px -20px;
   border: none;
 }
 #headermenu .navbar-search .icon span {
@@ -114,62 +114,52 @@ body {
 }
 
 .navbar .nav .information .icon {
-  background-position: -20px -140px;
+  background-position: -120px -20px;
 }
 .navbar .nav .information a:hover .icon {
-  background-position: 0px -140px;
+  background-position: -120px 0px;
 }
 .navbar .nav .map .icon {
-  /*background-position: -20px -20px;*/
-  background-position: -20px -420px;
+  background-position: -40px -60px;
 }
 .navbar .nav .map a:hover .icon {
-  /*background-position: 0px -20px;*/
-  background-position: 0px -420px;
-}
-.navbar .nav .legendmap .icon {
-  background-position: -20px -40px;
-}
-.navbar .nav .legendmap a:hover .icon {
-  background-position: 0px -40px;
+  background-position: -40px -40px;
 }
 .navbar .nav .legend .icon {
-  /*background-position: -20px -240px;*/
-  background-position: -20px -400px;
+  background-position: -40px -100px;
 }
 .navbar .nav .legend a:hover .icon {
-  /*background-position: 0px -240px;*/
-  background-position: 0px -400px;
+  background-position: -40px -80px;
 }
 .navbar .nav .locate .icon {
-  background-position: -20px -160px;
+  background-position: -20px -100px;
 }
 .navbar .nav .locate a:hover .icon {
-  background-position: 0px -160px;
+  background-position: -20px -80px;
 }
 .navbar .nav .print .icon {
-  background-position: -20px -260px;
+  background-position: -160px -20px;
 }
 .navbar .nav .print a:hover .icon {
-  background-position: 0px -260px;
+  background-position: -160px 0px;
 }
 .navbar .nav .annotation .icon {
-  background-position: -20px 0px;
+  background-position: -200px -20px;
 }
 .navbar .nav .annotation a:hover .icon {
-  background-position: 0px 0px;
+  background-position: -200px 0px;
 }
 .navbar .nav .measure .icon {
-  background-position: -20px -480px;
+  background-position: -140px -20px;
 }
 .navbar .nav .measure a:hover .icon {
-  background-position: 0px -480px;
+  background-position: -140px 0px;
 }
 .navbar .nav .geolocate .icon {
-  background-position: -20px -120px;
+  background-position: -20px -60px;
 }
 .navbar .nav .geolocate a:hover .icon {
-  background-position: 0px -120px;
+  background-position: -20px -40px;
 }
 
 #content {
@@ -258,6 +248,7 @@ body {
   padding : 1em 1em 1em 1em;
 }
 
+#toolbar h3 .icon,
 #menu h3 .icon {
   display:inline-block;
   vertical-align:middle;
@@ -266,27 +257,34 @@ body {
   width:20px;
   height:20px;
 }
+#toolbar h3 .text,
 #menu h3 .text {
   vertical-align : bottom;
 }
 
+#toolbar .baselayer h3 .icon,
 #menu .baselayer h3 .icon {
-  background-position : 0px -20px;
+  background-position : -40px 0px;
 }
+#toolbar .switcher h3 .icon,
 #menu .switcher h3 .icon {
-  background-position : 0px -60px;
+  background-position : -40px -160px;
 }
+#toolbar .locate h3 .icon,
 #menu .locate h3 .icon {
-  background-position : 0px -160px;
+  background-position : -20px -80px;
 }
+#toolbar .print h3 .icon,
 #menu .print h3 .icon {
-  background-position: 0px -260px;
+  background-position: -160px 0px;
 }
+#toolbar .measure h3 .icon,
 #menu .measure h3 .icon {
-  background-position: 0px -480px;
+  background-position: -140px 0px;
 }
+#toolbar .annotation h3 .icon,
 #menu .annotation h3 .icon {
-  background-position : 0px 0px;
+  background-position : -200px 0px;
 }
 
 #map-content {
@@ -339,29 +337,51 @@ body {
   transition: none;
   -webkit-transition: none;
 }
-#toolbar .title .btn.btn-locate-clear {
-  background-position : -20px 0px;
+#toolbar .title .btn.btn-error {
+  background:none;
+  color:#DA4F49;
+  font-weight:bold;
+  font-size:20px;
+  opacity:0.6;
 }
-#toolbar .title .btn.btn-locate-clear:hover {
+#toolbar .title .btn.btn-error:hover {
+  text-decoration:none;
+  opacity:1;
+}
+#toolbar .title .btn.btn-locate-clear {
   background-position : 0px 0px;
 }
+#toolbar .title .btn.btn-locate-clear:hover {
+  background-position : -20px 0px;
+}
 #toolbar .title .btn.btn-print-clear {
-  background-position : -20px -120px;
+  background-position : -20px -100px;
 }
 #toolbar .title .btn.btn-print-clear:hover {
-  background-position : 0px -120px;
-}
-#toolbar .title .btn.btn-print-launch {
-  background-position : -20px -80px;
-}
-#toolbar .title .btn.btn-print-launch:hover {
-  background-position : 0px -80px;
+  background-position : 0px -100px;
 }
 #toolbar .title .btn.btn-stop {
-  background-position : -20px -40px;
+  background-position : 0px -20px;
 }
 #toolbar .title .btn.btn-stop:hover {
-  background-position : 0px -40px;
+  background-position : -20px -20px;
+}
+/*
+#toolbar .menu-content .btn.btn-print-launch .icon{
+  display:inline-block;
+  vertical-align:middle;
+  background : url(images/sprite_menu_tools.png) no-repeat right;
+  background-position : -20px -80px;
+  width : 20px;
+  height : 20px;
+}
+#toolbar .menu-content .btn.btn-print-launch:hover .icon{
+  background-position : 0px -80px;
+}
+*/
+#toolbar .menu-content .btn.btn-success{
+  background-color: #93C01F;
+  background-image: -moz-linear-gradient(center top, #9BC144, #93C01F);
 }
 
 #baselayer-menu div.baselayer-select,
