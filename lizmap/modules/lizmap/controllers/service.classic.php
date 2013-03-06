@@ -192,6 +192,18 @@ class serviceCtrl extends jController {
     $rep->content = $content;
     $rep->doDownload  =  false;
     $rep->outputFileName  =  'qgis_server';
+    
+    // HTTP browser cache expiration time
+    $layername = $this->params["layers"];
+    $lproj = lizmap::getProject($this->repository->getKey().'~'.$this->project->getKey());    
+    $configLayers = $lproj->getLayers();
+    if( property_exists($configLayers, $layername) ){
+      $configLayer = $configLayers->$layername;
+      if( property_exists($configLayer, 'clientCacheExpiration')){
+        $clientCacheExpiration = (int)$configLayer->clientCacheExpiration;
+        $rep->setExpires("+".$clientCacheExpiration." seconds");
+      }    
+    }
 
     return $rep;
   }
