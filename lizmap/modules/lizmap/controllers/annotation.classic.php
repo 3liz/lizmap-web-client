@@ -177,9 +177,19 @@ class annotationCtrl extends jController {
     $srid = $dt[9]; $type = $dt[10];
     $table = $dt[11];
     
+    // If table contains schema name, like "public"."mytable"
+    // We need to add double quotes around and find the real table name (without schema)
+    // to retrieve the columns with jelix tools.
+    $tableAlone = $table;
+    if(preg_match('#"."#', $table)){
+      $table = '"'.$table.'"';
+      $exp = explode('.', str_replace('"', '', $table));
+      $tableAlone = $exp[1];
+    }
+    
     // Set some private properties
     $this->table = $table;
-    
+        
     $driver = $this->providerDriverMap[$this->provider];
     
     // Build array of parameters for the virtual profile
@@ -209,7 +219,7 @@ class annotationCtrl extends jController {
     $cnx = jDb::getConnection($profile);
     $tools = $cnx->tools();
     $sequence = null;
-    $fields = $tools->getFieldList($table, $sequence);
+    $fields = $tools->getFieldList($tableAlone, $sequence);
     $this->dataFields = $fields;
   }
 
@@ -379,7 +389,7 @@ class annotationCtrl extends jController {
         $featureId = array($this->featureId);
       // featureId is set
       // SQL for updating on line in the annotation table    
-      $sql = " UPDATE $this->table SET ";
+      $sql = " UPDATE ".$this->table." SET ";
       $sql.= implode(',', $update);
       $v = ''; $i = 0;
       $sql.= ' WHERE';
@@ -392,7 +402,7 @@ class annotationCtrl extends jController {
     // insert
     else {
       // SQL for insertion into the annotation this->table
-      $sql = " INSERT INTO $this->table (";
+      $sql = " INSERT INTO ".$this->table." (";
       $sql.= implode(', ', $fields);
       $sql.= " ) VALUES (";
       $sql.= implode(', ', $insert);
