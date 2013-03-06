@@ -651,6 +651,9 @@ class configCtrl extends jController {
     // Redirect to the validation page
     $rep= $this->getResponse("redirect");
     $rep->params['repository']= $repository;
+    if( $new ){
+      $rep->params['new'] = 1;
+    }
     $rep->action="admin~config:validateSection";
 
     return $rep;
@@ -664,6 +667,7 @@ class configCtrl extends jController {
   function validateSection(){
 
     $repository = $this->param('repository');
+    $new = $this->intParam('new');
 
     // Destroy the form
     if($form = jForms::get('admin~config_section')){
@@ -677,7 +681,15 @@ class configCtrl extends jController {
 
     // Redirect to the index
     $rep= $this->getResponse("redirect");
-    $rep->action="admin~config:index";
+    
+    if($new){
+      jMessage::add(jLocale::get("admin~admin.form.admin_section.message.configure.rights"));
+      $rep->action="admin~config:modifySection";
+      $rep->params['repository']= $repository;
+    }else{
+      $rep->action="admin~config:index";
+    }
+    
 
     return $rep;
   }
