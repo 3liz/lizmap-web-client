@@ -24,7 +24,8 @@ class configCtrl extends jController {
     'saveSection' => array( 'jacl2.rights.or'=>array('lizmap.admin.repositories.create', 'lizmap.admin.repositories.update')),
     'validateSection' => array( 'jacl2.rights.or'=>array('lizmap.admin.repositories.create', 'lizmap.admin.repositories.update')),
     'removeSection' => array( 'jacl2.right'=>'lizmap.admin.repositories.delete'),
-    'removeCache' => array( 'jacl2.right'=>'lizmap.admin.repositories.delete')
+    'removeCache' => array( 'jacl2.right'=>'lizmap.admin.repositories.delete'),
+    'removeLayerCache' => array( 'jacl2.right'=>'lizmap.admin.repositories.delete')
 
   );
 
@@ -739,7 +740,7 @@ class configCtrl extends jController {
 
     // Remove the cache for the repository
     $cacheRootDirectory = $ser->cacheRootDirectory;
-    if(jFile::removeDir($cacheRootDirectory.'/'.$lrep->getKey()));
+    if(jFile::removeDir($cacheRootDirectory.'/'.$lrep->getKey()))
       jMessage::add(jLocale::get("admin~admin.cache.repository.removed", array($lrep->getKey())));
 
     // Redirect to the index
@@ -748,4 +749,57 @@ class configCtrl extends jController {
 
     return $rep;
   }
+  
+  /**
+  * Empty a map service cache
+  * @param string $repository Repository for which to remove all tile cache
+  * @return Redirection to the index
+  */
+  function removeLayerCache(){
+
+    $repository = $this->param('repository');
+    $project = $this->param('project');
+    $layer = $this->param('layer');
+
+    // Get config utility
+    $lrep = lizmap::getRepository($repository);
+    $ser = lizmap::getServices();
+    $lproj = lizmap::getProject($repository.'~'.$project);
+    $project = $lproj->getKey();
+
+    // Remove the cache for the layer
+    $cacheRootDirectory = $ser->cacheRootDirectory;
+    $cacheProjectDir = $cacheRootDirectory.'/'.$lrep->getKey().'/'.$project.'/';
+
+    $handle = opendir($cacheProjectDir);
+    $results = array();
+    // Open the directory and walk through the filenames
+    while (false !== ($entry = readdir($handle))) {
+      if ($entry != "." && $entry != "..") {
+        // Get directories and files corresponding to the layer
+        if(preg_match('#^'.$layer.'_#', $entry) or $entry == $layer) {
+          $results[] = $cacheProjectDir.$entry;
+        }
+      }
+    }
+    closedir($handle);
+    
+    // Remove layer files and folder cache
+    if($lrep && $lproj){
+      foreach($results as $rem){
+        if(is_dir($rem))
+          jFile::removeDir($rem);
+        else
+          unlink($rem);
+      }
+    }
+    jMessage::add(jLocale::get("admin~admin.cache.layer.removed", array($layer)));
+    
+    // Redirect to the index
+    $rep= $this->getResponse("redirect");
+    $rep->action="admin~config:index";
+
+    return $rep;
+  }  
+  
 }

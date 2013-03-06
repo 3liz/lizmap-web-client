@@ -248,6 +248,13 @@ class lizmapProject{
 
       $configRead = json_encode($this->cfg);
       $configJson = json_decode($configRead);
+      
+      // Add an option to display buttons to remove the cache for cached layer
+      // Only if appropriate right is found
+      if( jacl2::check('lizmap.admin.repositories.delete') ){
+        $configJson->options->removeCache = 'True';
+      }
+      
       // Remove layerOrder option from config if not required 
       if(!empty($layersOrder)){
         $configJson->layersOrder = $layersOrder;

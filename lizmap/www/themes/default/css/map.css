@@ -448,6 +448,12 @@ body {
   float:right;
   border: none;
 }
+#switcher button.removeCache{
+  float:right;
+  border: none;
+}
+
+
 #switcher span.label{
   padding-left: 0.5em;
   color : rgb(51,51,51);
@@ -770,6 +776,9 @@ body {
   }
   .liz-icon-info {
     background-position: 0px -80px;
+  }
+  .liz-remove-cache {
+    background-position: -48px -100px;
   }
 
   .liz-icon-overview {

@@ -89,6 +89,9 @@ class mapCtrl extends jController {
     $rep->addJSCode("var mediaServerURL = '".jUrl::get('view~media:getMedia', array('repository'=>$repository, 'project'=>$project))."';");
     $rep->addJSCode("var nominatimURL = '".jUrl::get('lizmap~osm:nominatim')."';");
     $rep->addJSCode("var createAnnotationURL = '".jUrl::get('lizmap~annotation:createAnnotation', array('repository'=>$repository, 'project'=>$project))."';");
+    
+    if(jacl2::check('lizmap.admin.repositories.delete'))
+      $rep->addJSCode("var removeCacheServerUrl = '".jUrl::get('admin~config:removeLayerCache', array('repository'=>$repository, 'project'=>$project))."';");
 
     // Get the WMS information
     $wmsInfo = $lproj->getWMSInformation();

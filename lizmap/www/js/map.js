@@ -534,6 +534,12 @@ var lizMap = function() {
       html += '<td><button class="link" name="link" title="'+lizDict['tree.button.link']+'" value="'+legendLink+'"/></td>';
     else
       html += '<td></td>';
+      
+    var removeCache = '';
+    if (nodeConfig.cached && nodeConfig.cached == 'True' && nodeConfig.type == 'layer')
+      html += '<td><button class="removeCache" name="removeCache" title="'+lizDict['tree.button.removeCache']+'" value="'+aNode.name+'"/></td>';
+    else
+      html += '<td></td>';      
 
     html += '</tr>';
 
@@ -988,7 +994,7 @@ var lizMap = function() {
       icons:{primary:'liz-icon-info'},
       text:false
     })
-	  .removeClass( "ui-corner-all" )
+	.removeClass( "ui-corner-all" )
     .click(function(){
       var self = $(this);
       if (self.attr('aria-disabled')=='true')
@@ -1001,6 +1007,22 @@ var lizMap = function() {
       // Open link in a new window
       window.open(windowLink);
     });
+    
+    // Activate removeCache button
+    $('#switcher button.removeCache').button({
+      icons:{primary:'liz-remove-cache'},
+      text:false
+    })
+	.removeClass( "ui-corner-all" )
+    .click(function(){
+      var self = $(this);
+      if (self.attr('aria-disabled')=='true')
+        return false;
+      var windowLink = removeCacheServerUrl + '&layer=' + self.val();
+      // Open link in a new window
+      if (confirm(lizDict['tree.button.removeCache'] + ' ?'))
+        window.open(windowLink);
+    });    
 
     var projection = map.projection;
 
