@@ -1534,7 +1534,16 @@ var lizMap = function() {
     });
     var layer = map.getLayersByName('Print');
     if ( layer.length == 0 ) {
-      layer = new OpenLayers.Layer.Vector('Print');
+      layer = new OpenLayers.Layer.Vector('Print',{
+        styleMap: new OpenLayers.StyleMap({
+          "default": new OpenLayers.Style({
+            fillColor: "#D43B19",
+            fillOpacity: 0.2,
+            strokeColor: "#CE1F2D",
+            strokeWidth: 1,
+          })
+        })
+      });
       map.addLayer(layer);
       layer.setVisibility(false);
     } else
@@ -1558,6 +1567,7 @@ var lizMap = function() {
       eventListeners: {
         "activate": function(evt) {
           deactivateToolControls(evt);
+          $('#togglePrint').parent().addClass('active');
           $('#print-menu').show();
           updateSwitcherSize();
           mAddMessage(lizDict['print.activate'],'info',true).addClass('print');
@@ -1581,6 +1591,7 @@ var lizMap = function() {
         },
         "deactivate": function(evt) {
           layer.setVisibility(false);
+          $('#togglePrint').parent().removeClass('active');
           $('#print-menu').hide();
           updateSwitcherSize();
           $('#message .print').remove();
@@ -1801,11 +1812,13 @@ var lizMap = function() {
         polygonCtrl.events.on({
           activate: function(evt) {
             deactivateToolControls(evt);
+            $('#annotation').parent().addClass('active');
             $('#annotation-polygon-menu').show();
             $('#annotation-modal').modal('hide');
             updateSwitcherSize();
           },
           deactivate: function(evt) {
+            $('#annotation').parent().removeClass('active');
             $('#annotation-polygon-menu').hide();
             $('#annotation-modal').modal('hide');
             updateSwitcherSize();
@@ -1847,11 +1860,13 @@ var lizMap = function() {
         lineCtrl.events.on({
           activate: function(evt) {
             deactivateToolControls(evt);
+            $('#annotation').parent().addClass('active');
             $('#annotation-line-menu').show();
             $('#annotation-modal').modal('hide');
             updateSwitcherSize();
           },
           deactivate: function(evt) {
+            $('#annotation').parent().removeClass('active');
             $('#annotation-line-menu').hide();
             $('#annotation-modal').modal('hide');
             updateSwitcherSize();
@@ -1893,11 +1908,13 @@ var lizMap = function() {
         pointCtrl.events.on({
           activate: function(evt) {
             deactivateToolControls(evt);
+            $('#annotation').parent().addClass('active');
             $('#annotation-point-menu').show();
             $('#annotation-modal').modal('hide');
             updateSwitcherSize();
           },
           deactivate: function(evt) {
+            $('#annotation').parent().removeClass('active');
             $('#annotation-point-menu').hide();
             $('#annotation-modal').modal('hide');
             updateSwitcherSize();
@@ -2031,11 +2048,13 @@ var lizMap = function() {
     measureControls.length.events.on({
       activate: function(evt) {
         deactivateToolControls(evt);
+        $('#measure').parent().addClass('active');
         $('#measure-length-menu').show();
         updateSwitcherSize();
         mAddMessage(lizDict['measure.activate.length'],'info',true).attr('id','lizmap-measure-message');
       },
       deactivate: function(evt) {
+        $('#measure').parent().removeClass('active');
         $('#measure-length-menu').hide();
         updateSwitcherSize();
         $('#lizmap-measure-message').remove();
@@ -2044,11 +2063,13 @@ var lizMap = function() {
     measureControls.area.events.on({
       activate: function(evt) {
         deactivateToolControls(evt);
+        $('#measure').parent().addClass('active');
         $('#measure-area-menu').show();
         updateSwitcherSize();
         mAddMessage(lizDict['measure.activate.area'],'info',true).attr('id','lizmap-measure-message');
       },
       deactivate: function(evt) {
+        $('#measure').parent().removeClass('active');
         $('#measure-area-menu').hide();
         updateSwitcherSize();
         $('#lizmap-measure-message').remove();
@@ -2073,11 +2094,13 @@ var lizMap = function() {
     measureControls.perimeter.events.on({
       activate: function(evt) {
         deactivateToolControls(evt);
+        $('#measure').parent().addClass('active');
         $('#measure-perimeter-menu').show();
         updateSwitcherSize();
         mAddMessage(lizDict['measure.activate.perimeter'],'info',true).attr('id','lizmap-measure-message');
       },
       deactivate: function(evt) {
+        $('#measure').parent().removeClass('active');
         $('#measure-perimeter-menu').hide();
         updateSwitcherSize();
         $('#lizmap-measure-message').remove();
@@ -2475,20 +2498,31 @@ var lizMap = function() {
           // Toggle locate
           $('#toggleLocate').click(function(){
             $('#locate-menu').toggle();
+            if ( $('#locate-menu').is(':visible') )
+              $('#toggleLocate').parent().addClass('active');
+            else
+              $('#toggleLocate').parent().removeClass('active');
             $('#metadata').hide();
             updateSwitcherSize();
             return false;
           });
           if ( !('locateByLayer' in config) )
             $('#toggleLocate').parent().hide();
+          else
+            $('#toggleLocate').parent().addClass('active');
 
           // Toggle Metadata
           $('#displayMetadata').click(function(){
             $('#metadata').toggle();
+            if ( $('#metadata').is(':visible') )
+              $('#displayMetadata').parent().addClass('active');
+            else
+              $('#displayMetadata').parent().removeClass('active');
             return false;
           });
           $('#hideMetadata').click(function(){
             $('#metadata').hide();
+            $('#displayMetadata').parent().removeClass('active');
             return false;
           });
 
