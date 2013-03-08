@@ -1398,7 +1398,7 @@ var lizMap = function() {
     else
       $('#nominatim-search').remove();
 
-    addComplexPrintControl();
+    //addComplexPrintControl();
   }
 
   function deactivateToolControls( evt ) {
@@ -1517,43 +1517,46 @@ var lizMap = function() {
     var ptTomm = 0.35277; //conversion pt to mm
     var printCapabilities = {scales:[],layouts:[]};
     var composer = composers[0];
-    var mapWidth = Number(composer.getElementsByTagName('ComposerMap')[0].getAttribute('width')) / ptTomm;
-    var mapHeight = Number(composer.getElementsByTagName('ComposerMap')[0].getAttribute('height')) / ptTomm;
-    //for some strange reason we need to provide a "map" and a "size" object with identical content
-    printCapabilities.layouts.push({
-      "name": composer.getAttribute('name'),
-      "map": {
-        "width": mapWidth,
-      "height": mapHeight
-      },
-      "size": {
-        "width": mapWidth,
-      "height": mapHeight
-      },
-      "rotation": true
-    });
-    var layer = map.getLayersByName('Print');
-    if ( layer.length == 0 ) {
-      layer = new OpenLayers.Layer.Vector('Print',{
-        styleMap: new OpenLayers.StyleMap({
-          "default": new OpenLayers.Style({
-            fillColor: "#D43B19",
-            fillOpacity: 0.2,
-            strokeColor: "#CE1F2D",
-            strokeWidth: 1,
-          })
-        })
+    var composerMap = composer.getElementsByTagName('ComposerMap');
+    if (composerMap.length != 0) {
+      composerMap = composerMap[0];
+      var mapWidth = Number(composerMap.getAttribute('width')) / ptTomm;
+      var mapHeight = Number(composerMap.getAttribute('height')) / ptTomm;
+      //for some strange reason we need to provide a "map" and a "size" object with identical content
+      printCapabilities.layouts.push({
+        "name": composer.getAttribute('name'),
+        "map": {
+          "width": mapWidth,
+          "height": mapHeight
+        },
+        "size": {
+          "width": mapWidth,
+          "height": mapHeight
+        },
+        "rotation": true
       });
-      map.addLayer(layer);
-      layer.setVisibility(false);
-    } else
-      layer = layer[0];
-    if ( layer.features.length == 0 )
-      layer.addFeatures([
-        new OpenLayers.Feature.Vector(
-          new OpenLayers.Geometry.Polygon([
+      var layer = map.getLayersByName('Print');
+      if ( layer.length == 0 ) {
+        layer = new OpenLayers.Layer.Vector('Print',{
+          styleMap: new OpenLayers.StyleMap({
+            "default": new OpenLayers.Style({
+              fillColor: "#D43B19",
+              fillOpacity: 0.2,
+              strokeColor: "#CE1F2D",
+              strokeWidth: 1,
+            })
+          })
+        });
+        map.addLayer(layer);
+        layer.setVisibility(false);
+      } else
+        layer = layer[0];
+      if ( layer.features.length == 0 )
+        layer.addFeatures([
+            new OpenLayers.Feature.Vector(
+              new OpenLayers.Geometry.Polygon([
                 new OpenLayers.Geometry.LinearRing([
-                    new OpenLayers.Geometry.Point(-1, -1),
+                  new OpenLayers.Geometry.Point(-1, -1),
                     new OpenLayers.Geometry.Point(1, -1),
                     new OpenLayers.Geometry.Point(1, 1),
                     new OpenLayers.Geometry.Point(-1, 1)
@@ -1561,6 +1564,7 @@ var lizMap = function() {
             ])
           )
         ]);
+    }
     var dragCtrl = new OpenLayers.Control.DragFeature(layer,{
       geometryTypes: ['OpenLayers.Geometry.Polygon'],
       type:OpenLayers.Control.TYPE_TOOL,
@@ -1613,26 +1617,28 @@ var lizMap = function() {
     });
     $('#print-menu button.btn-print-launch').click(function() {
       var composer = composers[0];
-      var composerMap = composer.getElementsByTagName('ComposerMap')[0];
-      composerMap = composerMap.getAttribute('name');
-      var extent = dragCtrl.layer.features[0].geometry.getBounds();
-      var url = wmsServerURL+'&SERVICE=WMS';
-      //url += '&VERSION='+capabilities.version+'&REQUEST=GetPrint';
-      url += '&VERSION=1.3&REQUEST=GetPrint';
-      url += '&FORMAT=pdf&EXCEPTIONS=application/vnd.ogc.se_inimage&TRANSPARENT=true';
-      url += '&SRS='+map.projection;
-      url += '&DPI=300';
-      url += '&TEMPLATE='+composer.getAttribute('name');
-      url += '&'+composerMap+':extent='+extent;
-      url += '&'+composerMap+':rotation=0';
-      url += '&'+composerMap+':scale='+map.getScale()/2;
-      var printLayers = []
-      $.each(map.layers, function(i, l) {
-        if (l.getVisibility() && l.CLASS_NAME == "OpenLayers.Layer.WMS")
+      var composerMap = composer.getElementsByTagName('ComposerMap');
+      if (composerMap.length != 0) {
+        composerMap = composerMap[0].getAttribute('name');
+        var extent = dragCtrl.layer.features[0].geometry.getBounds();
+        var url = wmsServerURL+'&SERVICE=WMS';
+        //url += '&VERSION='+capabilities.version+'&REQUEST=GetPrint';
+        url += '&VERSION=1.3&REQUEST=GetPrint';
+        url += '&FORMAT=pdf&EXCEPTIONS=application/vnd.ogc.se_inimage&TRANSPARENT=true';
+        url += '&SRS='+map.projection;
+        url += '&DPI=300';
+        url += '&TEMPLATE='+composer.getAttribute('name');
+        url += '&'+composerMap+':extent='+extent;
+        url += '&'+composerMap+':rotation=0';
+        url += '&'+composerMap+':scale='+map.getScale()/2;
+        var printLayers = [];
+        $.each(map.layers, function(i, l) {
+          if (l.getVisibility() && l.CLASS_NAME == "OpenLayers.Layer.WMS")
           printLayers.push(l.params['LAYERS']);
-      });
-      url += '&LAYERS='+printLayers.join(',');
-      window.open(url);
+        });
+        url += '&LAYERS='+printLayers.join(',');
+        window.open(url);
+      }
       return false;
     });
     map.events.on({
@@ -1663,21 +1669,25 @@ var lizMap = function() {
     var printCapabilities = {scales:[],layouts:[]};
     for (var i=0, len=composers.length; i<len; i++) {
       var composer = composers[i];
-      var mapWidth = Number(composer.getElementsByTagName('ComposerMap')[0].getAttribute('width')) / ptTomm;
-      var mapHeight = Number(composer.getElementsByTagName('ComposerMap')[0].getAttribute('height')) / ptTomm;
-      //for some strange reason we need to provide a "map" and a "size" object with identical content
-      printCapabilities.layouts.push({
-        "name": composer.getAttribute('name'),
-        "map": {
-          "width": mapWidth,
-          "height": mapHeight
-        },
-        "size": {
-          "width": mapWidth,
-          "height": mapHeight
-        },
-        "rotation": true
-      });
+      var composerMap = composer.getElementsByTagName('ComposerMap');
+      if (composerMap.length != 0) {
+        composerMap = composerMap[0];
+        var mapWidth = Number(composer.getElementsByTagName('ComposerMap')[0].getAttribute('width')) / ptTomm;
+        var mapHeight = Number(composer.getElementsByTagName('ComposerMap')[0].getAttribute('height')) / ptTomm;
+        //for some strange reason we need to provide a "map" and a "size" object with identical content
+        printCapabilities.layouts.push({
+          "name": composer.getAttribute('name'),
+          "map": {
+            "width": mapWidth,
+            "height": mapHeight
+          },
+          "size": {
+            "width": mapWidth,
+            "height": mapHeight
+          },
+          "rotation": true
+        });
+      }
     }
     var layer = map.getLayersByName('Print');
     if ( layer.length == 0 ) {
