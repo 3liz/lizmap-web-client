@@ -43,15 +43,18 @@ class annotationCtrl extends jController {
   
   // Fields information taken from database
   private $dataFields = '';
+	
+	// Primary key
+	private $primaryKeys = '';
   
   // Map data type as geometry type
   private $geometryDatatypeMap = array(
 	  'point', 'linestring', 'polygon', 'multipoint', 
 		'multilinestring', 'multipolygon', 'geometrycollection', 'geometry'
 	);
-	
-	// Primary key
-	private $primaryKeys = '';
+
+	// Geometry type
+	private $geometryType = '';
 	
 	// Geometry column
 	private $geometryColumn = '';
@@ -266,8 +269,10 @@ class annotationCtrl extends jController {
 		  }
 		    
 		  // Detect geometry column
-		  if(in_array( strtolower($prop->type), $this->geometryDatatypeMap))
+		  if(in_array( strtolower($prop->type), $this->geometryDatatypeMap)) {
 		    $this->geometryColumn = $fieldName;
+        $this->geometryType = strtolower($prop->type);
+      }
 		  
 		  // Create new control from qgis edit type
 		  $aliasXml = Null;
@@ -362,6 +367,15 @@ class annotationCtrl extends jController {
       switch($this->formControls[$ref]->fieldDataType){
       case 'geometry':
         $value = "ST_GeomFromText('".filter_var($value, FILTER_SANITIZE_STRING, FILTER_FLAG_NO_ENCODE_QUOTES)."', ".$this->srid.")";
+        $rs = $cnx->query('SELECT ST_GeometryType('.$value.') as geomtype');
+        $rs = $rs->fetch();
+        if ( !preg_match('/'.$this->geometryType.'/',strtolower($rs->geomtype)) )
+          if ( preg_match('/'.str_replace('multi','',$this->geometryType).'/',strtolower($rs->geomtype)) )
+            $value = 'ST_Multi('.$value.')';
+          else {
+            $form->setErrorOn($this->geometryColumn, "The geometry type doen't match!");
+            return false;
+          }
         break;
       case 'integer':
         $value = filter_var($value, FILTER_SANITIZE_NUMBER_INT);
@@ -408,7 +422,14 @@ class annotationCtrl extends jController {
       $sql.= implode(', ', $insert);
       $sql.= " );";
     }
-    $rs = $cnx->query($sql);
+
+    try {
+      $rs = $cnx->query($sql);
+    } catch (Exception $e) {
+      $form->setErrorOn($this->geometryColumn, 'An error has been raised when saving the form');
+      jLog::log("An error has been raised when saving form data annotation to db : ".$e->getMessage() ,'error');
+      return false;
+    }
 
     return true;
   }
@@ -596,6 +617,7 @@ class annotationCtrl extends jController {
       $check = False;
       $form->setErrorOn($this->geometryColumn, "You must set the geometry");
     }
+    /*
     if ( !$check ) {
       // Redirect to the display action
       $rep = $this->getResponse('redirect');
@@ -619,11 +641,8 @@ class annotationCtrl extends jController {
 
       return $rep;
     }
-    
-    // Save data into database
-    $this->saveFormDataToDb($form);
+     */
 
-    // Redirect to the validation action
 		$rep = $this->getResponse('redirect');
 		$rep->params = array(
 		  "project"=>$this->project->getKey(), 
@@ -631,6 +650,29 @@ class annotationCtrl extends jController {
 		  "layerId"=>$this->layerId,
 		  "featureId"=>$this->featureIdParam
 		);
+    
+    // Save data into database
+    if ($check)
+      $check = $this->saveFormDataToDb($form);
+
+    if ( !$check ) {
+      // Redirect to the display action
+      $token = uniqid('lizform_');
+      $params["error"] = $token;
+
+      // Build array of data for all the controls
+      // And save it in session
+      $controlData = array();
+      foreach(array_keys($form->getControls()) as $ctrl) {
+        $controlData[$ctrl] = $form->getData($ctrl);
+      }
+      $_SESSION[$token.$this->layerId] = $controlData;
+
+      $rep->action="lizmap~annotation:editAnnotation";
+      return $rep;
+    }
+
+    // Redirect to the validation action
     $rep->action="lizmap~annotation:validateAnnotation";
     return $rep;  
   
@@ -656,12 +698,12 @@ class annotationCtrl extends jController {
       jForms::destroy('view~annotation', $this->featureId);
     }else{
       // undefined form : redirect to error
-      jMessage::add('An error has been raised when getting the form', 'formNotDefined');
+      jMessage::add('An error has been raised when getting the form', 'error');
       return $this->serviceAnswer();
     }
   
 		// Return html fragment response
-		jMessage::add(jLocale::get('view~annotation.form.data.saved'));
+		jMessage::add(jLocale::get('view~annotation.form.data.saved'), 'success');
     return $this->serviceAnswer();
       
   }
