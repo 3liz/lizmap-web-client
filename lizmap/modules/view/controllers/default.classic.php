@@ -29,24 +29,12 @@ class defaultCtrl extends jController {
     $repository = $this->param('repository');
 
     $repositoryList = Array();
-    if ($repository != null) {
-      if(!jacl2::check('lizmap.repositories.view', $repository)){
+    if ( $repository ) {
+      if( !jacl2::check('lizmap.repositories.view', $repository )){
         $rep = $this->getResponse('redirect');
         $rep->action = 'view~default:index';
         jMessage::add(jLocale::get('view~default.repository.access.denied'), 'error');
         return $rep;
-      }
-      $repositoryList[] = $repository;
-    } else {
-      $repositoryList = lizmap::getRepositoryList();
-    }
-
-    $repositories = Array();
-    foreach ($repositoryList as $r) {
-      if(jacl2::check('lizmap.repositories.view', $r)){
-      $lrep = lizmap::getRepository($r);
-      $projects = $lrep->getProjects();
-      $repositories[] = Array('title'=> $lrep->getData('label'),'projects'=>$projects);
       }
     }
 
@@ -55,13 +43,13 @@ class defaultCtrl extends jController {
     $rep->body->assign('isConnected', jAuth::isConnected());
     $rep->body->assign('user', jAuth::getUserSession());
 
-    if (count($repositories) == 1)
-      $title .= ' - '.$repositories[0]['title'];
+    if ( $repository ) {
+      $lrep = lizmap::getRepository($repository);
+      $title .= ' - '.$lrep->getData('label');
+    }
     $rep->title = $title;
 
-    $tpl = new jTpl();
-    $tpl->assign('repositories', $repositories);
-    $rep->body->assign('MAIN', $tpl->fetch('view'));
+    $rep->body->assignZone('MAIN', 'main_view', array('repository'=>$repository));
 
     $rep->addJSCode("
       $(window).load(function() {
