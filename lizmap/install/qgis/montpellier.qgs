@@ -35,6 +35,11 @@
                     <legendlayerfile isInOverview="0" layerid="annotation_point20130118171631518" visible="1"/>
                 </filegroup>
             </legendlayer>
+            <legendlayer drawingOrder="-1" open="false" checked="Qt::Checked" name="annotation_polygon" showFeatureCount="0">
+                <filegroup open="false" hidden="false">
+                    <legendlayerfile isInOverview="0" layerid="annotation_polygon20130311211227451" visible="1"/>
+                </filegroup>
+            </legendlayer>
         </legendgroup>
         <legendgroup open="true" checked="Qt::Checked" name="datalayers">
             <legendgroup open="true" checked="Qt::Checked" name="Bus">
@@ -116,7 +121,7 @@
         </ComposerPicture>
         <Composition printResolution="300" paperWidth="297" snapGridOffsetX="0" snapGridResolution="0" snapGridOffsetY="0" snapping="0" paperHeight="210" printAsRaster="0"/>
     </Composer>
-    <projectlayers layercount="9">
+    <projectlayers layercount="10">
         <maplayer minimumScale="0" maximumScale="1e+08" type="raster" hasScaleBasedVisibilityFlag="0">
             <id>OSM_Basic20110923140116428</id>
             <datasource>http://osm.wheregroup.com/cgi-bin/osm_basic.xml?VERSION=1.1.1</datasource>
@@ -150,7 +155,7 @@
                 <mRedBandName>Not Set</mRedBandName>
                 <mGreenBandName>Not Set</mGreenBandName>
                 <mBlueBandName>Not Set</mBlueBandName>
-                <mGrayBandName>Band 1</mGrayBandName>
+                <mGrayBandName>Bande 1</mGrayBandName>
                 <mStandardDeviations>0</mStandardDeviations>
                 <mUserDefinedRGBMinimumMaximum boolean="false"/>
                 <mRGBMinimumMaximumEstimated boolean="true"/>
@@ -886,6 +891,123 @@
                 <edittype type="10" name="pkuid"/>
                 <edittype type="4" name="type"/>
                 <edittype type="11" name="user"/>
+            </edittypes>
+            <editform>.</editform>
+            <editforminit></editforminit>
+            <annotationform>.</annotationform>
+            <attributeactions/>
+        </maplayer>
+        <maplayer minimumScale="0" maximumScale="1e+08" geometry="Polygon" type="vector" hasScaleBasedVisibilityFlag="0">
+            <id>annotation_polygon20130311211227451</id>
+            <datasource>dbname='./annotations/annotation_db.sqlite' table="annotation_polygon" (geometry) sql=</datasource>
+            <title>Area of interest</title>
+            <abstract></abstract>
+            <layername>annotation_polygon</layername>
+            <srs>
+                <spatialrefsys>
+                    <proj4>+proj=lcc +lat_1=30.7 +lat_2=29.3 +lat_0=28.5 +lon_0=-91.33333333333333 +x_0=999999.9999898402 +y_0=0 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=us-ft +no_defs</proj4>
+                    <srsid>1410</srsid>
+                    <srid>3452</srid>
+                    <authid>EPSG:3452</authid>
+                    <description>NAD83 / Louisiana South (ftUS)</description>
+                    <projectionacronym>lcc</projectionacronym>
+                    <ellipsoidacronym>GRS80</ellipsoidacronym>
+                    <geographicflag>false</geographicflag>
+                </spatialrefsys>
+            </srs>
+            <transparencyLevelInt>255</transparencyLevelInt>
+            <provider encoding="UTF-8">spatialite</provider>
+            <vectorjoins/>
+            <renderer-v2 attr="fixed" symbollevels="0" type="categorizedSymbol">
+                <categories>
+                    <category symbol="0" value="0" label="0"/>
+                    <category symbol="1" value="1" label="1"/>
+                    <category symbol="2" value="" label=""/>
+                </categories>
+                <symbols>
+                    <symbol outputUnit="MM" alpha="0.694118" type="fill" name="0">
+                        <layer pass="0" class="SimpleFill" locked="0">
+                            <prop k="color" v="255,0,0,177"/>
+                            <prop k="color_border" v="70,70,70,177"/>
+                            <prop k="offset" v="0,0"/>
+                            <prop k="style" v="solid"/>
+                            <prop k="style_border" v="dot"/>
+                            <prop k="width_border" v="0.26"/>
+                        </layer>
+                    </symbol>
+                    <symbol outputUnit="MM" alpha="0.694118" type="fill" name="1">
+                        <layer pass="0" class="SimpleFill" locked="0">
+                            <prop k="color" v="0,255,127,177"/>
+                            <prop k="color_border" v="70,70,70,177"/>
+                            <prop k="offset" v="0,0"/>
+                            <prop k="style" v="solid"/>
+                            <prop k="style_border" v="dot"/>
+                            <prop k="width_border" v="0.26"/>
+                        </layer>
+                    </symbol>
+                    <symbol outputUnit="MM" alpha="0.694118" type="fill" name="2">
+                        <layer pass="0" class="SimpleFill" locked="0">
+                            <prop k="color" v="0,0,0,177"/>
+                            <prop k="color_border" v="70,70,70,177"/>
+                            <prop k="offset" v="0,0"/>
+                            <prop k="style" v="solid"/>
+                            <prop k="style_border" v="dot"/>
+                            <prop k="width_border" v="0.26"/>
+                        </layer>
+                    </symbol>
+                </symbols>
+                <source-symbol>
+                    <symbol outputUnit="MM" alpha="0.694118" type="fill" name="0">
+                        <layer pass="0" class="SimpleFill" locked="0">
+                            <prop k="color" v="228,191,23,177"/>
+                            <prop k="color_border" v="70,70,70,177"/>
+                            <prop k="offset" v="0,0"/>
+                            <prop k="style" v="solid"/>
+                            <prop k="style_border" v="dot"/>
+                            <prop k="width_border" v="0.26"/>
+                        </layer>
+                    </symbol>
+                </source-symbol>
+                <colorramp type="random" name="[source]">
+                    <prop k="count" v="10"/>
+                    <prop k="hueMax" v="359"/>
+                    <prop k="hueMin" v="0"/>
+                    <prop k="satMax" v="255"/>
+                    <prop k="satMin" v="0"/>
+                    <prop k="valMax" v="255"/>
+                    <prop k="valMin" v="0"/>
+                </colorramp>
+                <rotation field=""/>
+                <sizescale field=""/>
+            </renderer-v2>
+            <customproperties/>
+            <displayfield>description</displayfield>
+            <label>0</label>
+            <labelattributes>
+                <label fieldname="" text="Étiquette"/>
+                <family fieldname="" name="Ubuntu"/>
+                <size fieldname="" units="pt" value="12"/>
+                <bold fieldname="" on="0"/>
+                <italic fieldname="" on="0"/>
+                <underline fieldname="" on="0"/>
+                <strikeout fieldname="" on="0"/>
+                <color fieldname="" red="0" blue="0" green="0"/>
+                <x fieldname=""/>
+                <y fieldname=""/>
+                <offset x="0" y="0" units="pt" yfieldname="" xfieldname=""/>
+                <angle fieldname="" value="0" auto="0"/>
+                <alignment fieldname="" value="center"/>
+                <buffercolor fieldname="" red="255" blue="255" green="255"/>
+                <buffersize fieldname="" units="pt" value="1"/>
+                <bufferenabled fieldname="" on=""/>
+                <multilineenabled fieldname="" on=""/>
+                <selectedonly on=""/>
+            </labelattributes>
+            <edittypes>
+                <edittype type="12" name="description"/>
+                <edittype unchecked="0" type="7" checked="1" name="fixed"/>
+                <edittype type="0" name="label"/>
+                <edittype type="10" name="pkuid"/>
             </edittypes>
             <editform>.</editform>
             <editforminit></editforminit>
@@ -1676,20 +1798,48 @@
         </maplayer>
     </projectlayers>
     <properties>
+        <WMSContactPerson type="QString">3liz</WMSContactPerson>
+        <WMSOnlineResource type="QString">http://www.3liz.com/lizmap.html</WMSOnlineResource>
+        <WMSContactOrganization type="QString">3liz</WMSContactOrganization>
+        <WMSExtent type="QStringList">
+            <value>3.78300108</value>
+            <value>43.54854151</value>
+            <value>3.97065725</value>
+            <value>43.67333749</value>
+        </WMSExtent>
+        <TimeManager>
+            <timeFrameSize type="int">1</timeFrameSize>
+            <timeLayerManager type="QString"></timeLayerManager>
+            <active type="int">1</active>
+            <timeFrameType type="QString">days</timeFrameType>
+            <loopAnimation type="int">0</loopAnimation>
+            <currentMapTimePosition type="int">1363084799</currentMapTimePosition>
+            <animationFrameLength type="int">2000</animationFrameLength>
+            <timeLayerList type="QStringList"/>
+            <playBackwards type="int">0</playBackwards>
+        </TimeManager>
+        <Paths>
+            <Absolute type="bool">false</Absolute>
+        </Paths>
+        <WMSServiceTitle type="QString">Montpellier - Transports</WMSServiceTitle>
+        <WFSLayers type="QStringList">
+            <value>VilleMTP_MTP_Quartiers_2011_432620130116112610876</value>
+        </WFSLayers>
+        <WMSContactMail type="QString">info@3liz.com</WMSContactMail>
+        <PositionPrecision>
+            <DecimalPlaces type="int">2</DecimalPlaces>
+            <Automatic type="bool">true</Automatic>
+        </PositionPrecision>
+        <WMSContactPhone type="QString">+334 67 16 64 51</WMSContactPhone>
+        <WMSServiceCapabilities type="QString">True</WMSServiceCapabilities>
         <WMSServiceAbstract type="QString">Demo project with bus and tramway lines in Montpellier, France.
 Data is licensed under ODbl, OpenStreetMap contributors</WMSServiceAbstract>
-        <WMSOnlineResource type="QString">http://www.3liz.com/lizmap.html</WMSOnlineResource>
-        <WMSContactPerson type="QString">3liz</WMSContactPerson>
-        <Identify>
-            <disabledLayers type="QStringList"/>
-        </Identify>
-        <WMSContactPhone type="QString">+334 67 16 64 51</WMSContactPhone>
-        <SpatialRefSys>
-            <ProjectCRSProj4String type="QString">+proj=longlat +datum=WGS84 +no_defs</ProjectCRSProj4String>
-            <ProjectCrs type="QString">EPSG:4326</ProjectCrs>
-            <ProjectCRSID type="int">3452</ProjectCRSID>
-            <ProjectionsEnabled type="int">1</ProjectionsEnabled>
-        </SpatialRefSys>
+        <WMSAddWktGeometry type="bool">false</WMSAddWktGeometry>
+        <WMSCrsList type="QStringList">
+            <value>EPSG:4326</value>
+            <value>EPSG:900913</value>
+            <value>EPSG:3857</value>
+        </WMSCrsList>
         <Gui>
             <SelectionColorBluePart type="int">0</SelectionColorBluePart>
             <CanvasColorGreenPart type="int">255</CanvasColorGreenPart>
@@ -1699,31 +1849,14 @@ Data is licensed under ODbl, OpenStreetMap contributors</WMSServiceAbstract>
             <SelectionColorGreenPart type="int">255</SelectionColorGreenPart>
             <CanvasColorBluePart type="int">255</CanvasColorBluePart>
         </Gui>
-        <Paths>
-            <Absolute type="bool">false</Absolute>
-        </Paths>
-        <WMSContactMail type="QString">info@3liz.com</WMSContactMail>
-        <WMSCrsList type="QStringList">
-            <value>EPSG:4326</value>
-            <value>EPSG:900913</value>
-            <value>EPSG:3857</value>
-        </WMSCrsList>
-        <WFSLayers type="QStringList">
-            <value>VilleMTP_MTP_Quartiers_2011_432620130116112610876</value>
-        </WFSLayers>
-        <PositionPrecision>
-            <DecimalPlaces type="int">2</DecimalPlaces>
-            <Automatic type="bool">true</Automatic>
-        </PositionPrecision>
-        <WMSAddWktGeometry type="bool">false</WMSAddWktGeometry>
-        <WMSContactOrganization type="QString">3liz</WMSContactOrganization>
-        <WMSServiceTitle type="QString">Montpellier - Transports</WMSServiceTitle>
-        <WMSExtent type="QStringList">
-            <value>3.78300108</value>
-            <value>43.54854151</value>
-            <value>3.97065725</value>
-            <value>43.67333749</value>
-        </WMSExtent>
-        <WMSServiceCapabilities type="QString">True</WMSServiceCapabilities>
+        <Identify>
+            <disabledLayers type="QStringList"/>
+        </Identify>
+        <SpatialRefSys>
+            <ProjectCRSProj4String type="QString">+proj=longlat +datum=WGS84 +no_defs</ProjectCRSProj4String>
+            <ProjectCrs type="QString">EPSG:4326</ProjectCrs>
+            <ProjectCRSID type="int">3452</ProjectCRSID>
+            <ProjectionsEnabled type="int">1</ProjectionsEnabled>
+        </SpatialRefSys>
     </properties>
 </qgis>
