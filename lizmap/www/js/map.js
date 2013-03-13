@@ -132,9 +132,7 @@ var lizMap = function() {
     updateMobile();
 
     // calculate height height
-    var h = $('body').parent()[0].clientHeight;
-    if(!h)
-      h = $('window').innerHeight();
+    var h = $(window).innerHeight();
     h = h - $('#header').height();
     h = h - $('#headermenu').height();
     $('#map').height(h);
@@ -2469,8 +2467,9 @@ var lizMap = function() {
           self.events.triggerEvent("layersadded", self);
 
           // initialize the map
-          map.zoomToExtent(map.maxExtent);
+          $('#switcher').height(0);
           updateContentSize();
+          map.zoomToExtent(map.maxExtent);
           map.events.triggerEvent("zoomend",{"zoomChanged": true});
 
           // create overview if 'Overview' layer
