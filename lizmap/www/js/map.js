@@ -2468,8 +2468,8 @@ var lizMap = function() {
 
           // initialize the map
           $('#switcher').height(0);
-          updateContentSize();
           map.zoomToExtent(map.maxExtent);
+          updateContentSize();
           map.events.triggerEvent("zoomend",{"zoomChanged": true});
 
           // create overview if 'Overview' layer
