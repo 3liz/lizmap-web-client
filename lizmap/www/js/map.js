@@ -1455,17 +1455,20 @@ var lizMap = function() {
 //                      popup.autoSize = true; // disabled is better
 //                      popup.size = new OpenLayers.Size(400, 400);
                       map.addPopup(popup);
+                      window.setTimeout(function() {
                       var contentDivHeight = 0;
                       $('#liz_layer_popup_contentDiv').children().each(function(i,e) {
                         contentDivHeight += $(e).outerHeight(true);
                       });
+                      console.log(contentDivHeight+' '+$('#liz_layer_popup_contentDiv').height()+' '+$('#liz_layer_popup').height());
                       if ( $('#liz_layer_popup_contentDiv').height() > contentDivHeight ) {
-                        $('#liz_layer_popup_contentDiv').height(contentDivHeight)
-                          $('#liz_layer_popup').height(contentDivHeight)
+                        $('#liz_layer_popup_contentDiv').height(contentDivHeight);
+                        $('#liz_layer_popup').height(contentDivHeight);
                       }
                       if($('#liz_layer_popup').height()<contentDivHeight) {
                         $('#liz_layer_popup .olPopupCloseBox').css('right','14px');
                       }
+                      },100);
                       // Hide navbar and overview in mobile mode
                       if(mCheckMobile()){
                         $('#navbar').hide();

@@ -816,23 +816,27 @@ body {
   z-index:2000;
 }
 
+.lizmapPopup.olPopup,
 #map-content .lizmapPopup{
   background: #F6F6F6 !important;
   border: 1px solid #C9C9C9 !important;
   color: black !important;
 }
 
+.lizmapPopup.olPopup img,
 #map-content .lizmapPopup img{
   border:none;
   max-width: 300px;
   width: expression(this.width > 300 ? "300px" : true);
 }
 
+.lizmapPopup.olPopup .lizmapPopupContent,
 #map-content .olPopup .lizmapPopupContent{
   margin: 0px !important;
   padding: 0px !important;
   width: 100% !important;
 }
+.lizmapPopup.olPopup .lizmapPopupContent h4,
 #map-content .lizmapPopupContent h4{
   margin: 0px;
   background: #2B2B2B !important;
@@ -841,14 +845,17 @@ body {
   padding: 2px;
   padding-left: 5px;
 }
+.lizmapPopup.olPopup .lizmapPopupContent a,
 #map-content .lizmapPopupContent a{
   color:black;
 }
+.lizmapPopup.olPopup .lizmapPopupDiv,
 #map-content .lizmapPopupDiv{
   padding:5px !important;
   padding-right: 20px !important;
   padding-left: 20px !important;
 }
+.lizmapPopup.olPopup .lizmapPopupTable,
 #map-content .lizmapPopupTable{
   /*background:#333333 !important;*/
   margin-bottom:10px;
@@ -857,27 +864,33 @@ body {
   border: 1px solid #2B2B2B !important;
   border-collapse: collapse;
 }
+.lizmapPopup.olPopup .lizmapPopupTable thead,
 #map-content .lizmapPopupTable thead {
   color: white;
   background-color: #81B00E;
   font-size: 1em;
   border-bottom: 1px solid #2B2B2B !important;
 }
+.lizmapPopup.olPopup .lizmapPopupTable th,
 #map-content .lizmapPopupTable th{
   width:50%;
   text-align: right;
   vertical-align: top;
   padding-right: 5px;
 }
+.lizmapPopup.olPopup .lizmapPopupTable th.left,
 #map-content .lizmapPopupTable th.left{
   border-right: 1px solid #C9C9C9 !important;
 }
+.lizmapPopup.olPopup .lizmapPopupTable td,
 #map-content .lizmapPopupTable td{
   padding-left: 5px;
 }
+.lizmapPopup.olPopup .lizmapPopupTable thead th,
 #map-content .lizmapPopupTable thead th{
   text-align: center;
 }
+.lizmapPopup.olPopup .olPopupCloseBox,
 #map-content .lizmapPopup .olPopupCloseBox{
   width: 20px; height: 20px;
   /*right:0px !important; top:0px !important;*/
@@ -886,6 +899,7 @@ body {
   background-position: -48px -80px;
 }
 
+.lizmapPopup.olPopup .jforms-ctrl-date,
 #map-content .lizmapPopup .jforms-ctrl-date,
 #annotation-modal .jforms-ctrl-date{
   width:auto;
