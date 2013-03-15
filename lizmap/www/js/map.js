@@ -1460,7 +1460,7 @@ var lizMap = function() {
                       $('#liz_layer_popup_contentDiv').children().each(function(i,e) {
                         contentDivHeight += $(e).outerHeight(true);
                       });
-                      console.log(contentDivHeight+' '+$('#liz_layer_popup_contentDiv').height()+' '+$('#liz_layer_popup').height());
+//                      console.log(contentDivHeight+' '+$('#liz_layer_popup_contentDiv').height()+' '+$('#liz_layer_popup').height());
                       if ( $('#liz_layer_popup_contentDiv').height() > contentDivHeight ) {
                         $('#liz_layer_popup_contentDiv').height(contentDivHeight);
                         $('#liz_layer_popup').height(contentDivHeight);
