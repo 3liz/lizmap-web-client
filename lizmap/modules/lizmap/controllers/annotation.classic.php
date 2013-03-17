@@ -272,6 +272,14 @@ class annotationCtrl extends jController {
 		  if(in_array( strtolower($prop->type), $this->geometryDatatypeMap)) {
 		    $this->geometryColumn = $fieldName;
         $this->geometryType = strtolower($prop->type);
+        // If postgresql, get real geometryType from geometry_columns (jelix prop gives 'geometry')
+        if( $this->provider == 'postgres' and $this->geometryType == 'geometry' ){
+          $cnx = jDb::getConnection($this->layerId);
+          $res = $cnx->query('SELECT type FROM geometry_columns WHERE f_table_name = '.$cnx->quote($this->table));
+          $res = $res->fetch();
+          if( $res )
+            $this->geometryType = strtolower($res->type);
+        }
       }
 		  
 		  // Create new control from qgis edit type
@@ -367,7 +375,7 @@ class annotationCtrl extends jController {
       switch($this->formControls[$ref]->fieldDataType){
       case 'geometry':
         $value = "ST_GeomFromText('".filter_var($value, FILTER_SANITIZE_STRING, FILTER_FLAG_NO_ENCODE_QUOTES)."', ".$this->srid.")";
-        $rs = $cnx->query('SELECT ST_GeometryType('.$value.') as geomtype');
+        $rs = $cnx->query('SELECT GeometryType('.$value.') as geomtype');
         $rs = $rs->fetch();
         if ( !preg_match('/'.$this->geometryType.'/',strtolower($rs->geomtype)) )
           if ( preg_match('/'.str_replace('multi','',$this->geometryType).'/',strtolower($rs->geomtype)) )
