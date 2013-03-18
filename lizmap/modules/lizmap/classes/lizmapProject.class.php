@@ -264,11 +264,13 @@ class lizmapProject{
       // Or if no ability to load spatialite extension
       if(jacl2::check('lizmap.tools.annotation.use', $this->repository->getKey())){
         $spatial = false;
-        try{
-          $db = new SQLite3(':memory:');
-          $spatial = $db->loadExtension('libspatialite.so'); # loading SpatiaLite as an extension
-        }catch(Exception $e){
-          $spatial = False;
+        if ( class_exists('SQLite3') ) {
+          try{
+            $db = new SQLite3(':memory:');
+            $spatial = $db->loadExtension('libspatialite.so'); # loading SpatiaLite as an extension
+          }catch(Exception $e){
+            $spatial = False;
+          }
         }
         if(!$spatial){
           foreach( $configJson->annotationLayers as $key=>$obj ){
