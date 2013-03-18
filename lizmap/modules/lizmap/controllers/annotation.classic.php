@@ -23,6 +23,9 @@ class annotationCtrl extends jController {
   // table name
   private $table = '';
 
+  // table name without schema
+  private $tableName = '';
+
   // provider driver map
   private $providerDriverMap = array(
     'spatialite'=>'sqlite3',
@@ -192,7 +195,7 @@ class annotationCtrl extends jController {
     
     // Set some private properties
     $this->table = $table;
-        
+    $this->tableName = $tableAlone;
     $driver = $this->providerDriverMap[$this->provider];
     
     // Build array of parameters for the virtual profile
@@ -275,7 +278,7 @@ class annotationCtrl extends jController {
         // If postgresql, get real geometryType from geometry_columns (jelix prop gives 'geometry')
         if( $this->provider == 'postgres' and $this->geometryType == 'geometry' ){
           $cnx = jDb::getConnection($this->layerId);
-          $res = $cnx->query('SELECT type FROM geometry_columns WHERE f_table_name = '.$cnx->quote($this->table));
+          $res = $cnx->query('SELECT type FROM geometry_columns WHERE f_table_name = '.$cnx->quote($this->tableName));
           $res = $res->fetch();
           if( $res )
             $this->geometryType = strtolower($res->type);
@@ -435,6 +438,7 @@ class annotationCtrl extends jController {
       $rs = $cnx->query($sql);
     } catch (Exception $e) {
       $form->setErrorOn($this->geometryColumn, 'An error has been raised when saving the form');
+      jLog::log("SQL = ".$sql);
       jLog::log("An error has been raised when saving form data annotation to db : ".$e->getMessage() ,'error');
       return false;
     }
