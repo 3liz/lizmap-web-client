@@ -1423,17 +1423,7 @@ var lizMap = function() {
                     if (text != ''){
                       if (map.popups.length != 0)
                         map.removePopup(map.popups[0]);
-                      OpenLayers.Popup.LizmapAnchored = OpenLayers.Class(OpenLayers.Popup.Anchored,
-                        {
-                         	'displayClass': 'olPopup lizmapPopup'
-                          ,"autoSize": true
-//	                        ,"size": new OpenLayers.Size(200, 200)
-//	                        ,"minSize": new OpenLayers.Size(300, 300)
-	                        ,"maxSize": new OpenLayers.Size(500, 500)
-	                        ,"keepInMap": true
-                         	,'contentDisplayClass': 'olPopupContent lizmapPopupContent'
-                        }
-                      );
+
                       var popup = new OpenLayers.Popup.LizmapAnchored(
                         "liz_layer_popup",
                         map.getLonLatFromPixel(event.xy),
@@ -1447,35 +1437,16 @@ var lizMap = function() {
                             $('#navbar').show();
                             $('#overview-box').show();
                           }
-
-
                         }
                         );
                       popup.panMapIfOutOfView = true;
-//                      popup.autoSize = true; // disabled is better
-//                      popup.size = new OpenLayers.Size(400, 400);
                       map.addPopup(popup);
-                      window.setTimeout(function() {
-                      var contentDivHeight = 0;
-                      $('#liz_layer_popup_contentDiv').children().each(function(i,e) {
-                        contentDivHeight += $(e).outerHeight(true);
-                      });
-//                      console.log(contentDivHeight+' '+$('#liz_layer_popup_contentDiv').height()+' '+$('#liz_layer_popup').height());
-                      if ( $('#liz_layer_popup_contentDiv').height() > contentDivHeight ) {
-                        $('#liz_layer_popup_contentDiv').height(contentDivHeight);
-                        $('#liz_layer_popup').height(contentDivHeight);
-                      }
-                      if($('#liz_layer_popup').height()<contentDivHeight) {
-                        $('#liz_layer_popup .olPopupCloseBox').css('right','14px');
-                      }
-                      },100);
+                      popup.verifySize();
                       // Hide navbar and overview in mobile mode
                       if(mCheckMobile()){
                         $('#navbar').hide();
                         $('#overview-box').hide();
                       }
-
-
                     }
                 }
             }
