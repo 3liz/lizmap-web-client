@@ -116,49 +116,58 @@ body {
 .navbar .nav .information .icon {
   background-position: -120px -20px;
 }
-.navbar .nav .information a:hover .icon {
+.navbar .nav .information a:hover .icon,
+.navbar .nav .information.active a .icon {
   background-position: -120px 0px;
 }
+
 .navbar .nav .map .icon {
   background-position: -40px -60px;
 }
-.navbar .nav .map a:hover .icon {
+.navbar .nav .map a:hover .icon,
+.navbar .nav .map.active a .icon {
   background-position: -40px -40px;
 }
 .navbar .nav .legend .icon {
   background-position: -40px -100px;
 }
-.navbar .nav .legend a:hover .icon {
+.navbar .nav .legend a:hover .icon,
+.navbar .nav .legend.active a .icon {
   background-position: -40px -80px;
 }
 .navbar .nav .locate .icon {
   background-position: -20px -100px;
 }
-.navbar .nav .locate a:hover .icon {
+.navbar .nav .locate a:hover .icon,
+.navbar .nav .locate.active a .icon {
   background-position: -20px -80px;
 }
 .navbar .nav .print .icon {
   background-position: -160px -20px;
 }
-.navbar .nav .print a:hover .icon {
+.navbar .nav .print a:hover .icon,
+.navbar .nav .print.active a .icon {
   background-position: -160px 0px;
 }
 .navbar .nav .annotation .icon {
   background-position: -200px -20px;
 }
-.navbar .nav .annotation a:hover .icon {
+.navbar .nav .annotation a:hover .icon,
+.navbar .nav .annotation.active a .icon {
   background-position: -200px 0px;
 }
 .navbar .nav .measure .icon {
   background-position: -140px -20px;
 }
-.navbar .nav .measure a:hover .icon {
+.navbar .nav .measure a:hover .icon,
+.navbar .nav .measure.active a .icon {
   background-position: -140px 0px;
 }
 .navbar .nav .geolocate .icon {
   background-position: -20px -60px;
 }
-.navbar .nav .geolocate a:hover .icon {
+.navbar .nav .geolocate a:hover .icon,
+.navbar .nav .geolocate.active a .icon {
   background-position: -20px -40px;
 }
 

@@ -113,6 +113,7 @@ a:hover {
   color: white;
 /*  text-shadow : 0px -1px 0px rgba(0,0,0,0.75);*/
   text-shadow:none;
+  background:transparent !important;
 }
 .navbar .nav li.dropdown.open > .dropdown-toggle,
 .navbar .nav li.dropdown.active > .dropdown-toggle,
@@ -150,19 +151,22 @@ a:hover {
 .navbar .nav .login .icon {
   background-position: -80px -60px;
 }
-.navbar .nav .login a:hover .icon {
+.navbar .nav .login a:hover .icon,
+.navbar .nav .login.active a .icon {
   background-position: -80px -40px;
 }
 .navbar .nav .user .icon {
   background-position: 0px -60px;
 }
-.navbar .nav .user a:hover .icon {
+.navbar .nav .user a:hover .icon,
+.navbar .nav .user.active a .icon  {
   background-position: 0px -40px;
 }
 .navbar .nav .home .icon {
   background-position: -80px -20px;
 }
-.navbar .nav .home a:hover .icon {
+.navbar .nav .home a:hover .icon,
+.navbar .nav .home.active a .icon {
   background-position: -80px 0px;
 }
 #content {
