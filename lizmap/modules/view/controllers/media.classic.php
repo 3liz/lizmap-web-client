@@ -94,6 +94,7 @@ class mediaCtrl extends jController {
       $rep->fileName = Null;
       $rep->content = $content;
     }
+    $rep->setExpires(60);
 
     return $rep;
   }
