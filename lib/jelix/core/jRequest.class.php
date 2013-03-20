@@ -58,8 +58,11 @@ abstract class jRequest {
     public $urlScriptName;
 
     /**
-     * the path to the entry point in the url (basePath included)
-     * if the url is /foo/index.php/bar, its value is /foo/index.php
+     * the path to the entry point in the url
+     * if the url is /foo/index.php/bar, its value is /foo/index.php.
+     * Warning: if the app is behind a proxy, the path includes the backendBasePath,
+     * not the basePath. Use urlScriptPath and urlScriptName to have the
+     * "public" url, as needed for the frontend HTTP server
      * @var string
      */
     public $urlScript;

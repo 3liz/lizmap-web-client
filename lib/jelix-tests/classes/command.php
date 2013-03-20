@@ -129,7 +129,7 @@ class jelix_TextUI_Command extends PHPUnit_TextUI_Command {
                 exit(PHPUnit_TextUI_TestRunner::FAILURE_EXIT);
             }
         }
-        else if ($modulesTests == 1) {
+        else if ($modulesTests == 1 && !$this->version36) {
             $suite = $this->getModuleTestSuite($this->options[1][0]);
             if (count($suite)) {
                 $this->arguments['test'] = $suite;
@@ -138,6 +138,20 @@ class jelix_TextUI_Command extends PHPUnit_TextUI_Command {
                 } else {
                     $this->arguments['testFile'] = '';
                 }
+            }
+            else {
+                $this->showMessage("Error: no tests in the module\n");
+                exit(PHPUnit_TextUI_TestRunner::FAILURE_EXIT);
+            }
+        }
+        else if ($modulesTests == 1) {
+            if (isset($this->options[1][1])) { // a specifique test file
+                $suite = $this->getModuleTestSuite($this->options[1][0], $this->options[1][1]);
+            } else {
+                $suite = $this->getModuleTestSuite($this->options[1][0]);
+            }
+            if (count($suite)) {
+                $this->arguments['test'] = $suite;
             }
             else {
                 $this->showMessage("Error: no tests in the module\n");
@@ -180,7 +194,7 @@ class jelix_TextUI_Command extends PHPUnit_TextUI_Command {
     }
 
 
-    protected function getModuleTestSuite($module) {
+    protected function getModuleTestSuite($module, $testFile = '') {
 
         $moduleList = $this->epInfo->getModulesList();
 
@@ -190,12 +204,17 @@ class jelix_TextUI_Command extends PHPUnit_TextUI_Command {
             $type = ($this->testType?'.'.$this->testType: '').'.pu.php';
             $suite = new JelixTestSuite($module);
             if ($this->version36) {
-                $fileIteratorFacade = new File_Iterator_Facade;
-                $files = $fileIteratorFacade->getFilesAsArray(
-                  $moduleList[$module],
-                  $type
-                );
-                $suite->addTestFiles($files);
+                if ($testFile) {
+                    $suite->addTestFile($moduleList[$module].'tests/'.$testFile);
+                }
+                else {
+                    $fileIteratorFacade = new File_Iterator_Facade;
+                    $files = $fileIteratorFacade->getFilesAsArray(
+                      $moduleList[$module],
+                      $type
+                    );
+                    $suite->addTestFiles($files);
+                }
             }
             else {
                 $testCollector = new PHPUnit_Runner_IncludePathTestCollector(

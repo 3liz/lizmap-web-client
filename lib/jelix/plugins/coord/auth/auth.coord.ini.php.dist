@@ -10,6 +10,9 @@ driver = Db
 ; session variable name
 session_name = "JELIX_USER"
 
+; set to 'on' to destroy the session on logout
+session_destroy = 
+
 ; Says if there is a check on the ip address : verify if the ip
 ; is the same when the user has been connected
 secure_with_ip = 0
@@ -76,9 +79,9 @@ persistant_cookie_path =
 
 ;=========== parameters for password hashing
 
-; method of the hash. "" means old hashing behavior of jAuth
+; method of the hash. 0 or "" means old hashing behavior of jAuth
 ; (using password_* parameters in drivers ).
-; Prefer to choose "default" (or "bcrypt").
+; Prefer to choose 1, which is the default hash method (bcrypt).
 password_hash_method = 
 
 ; options for the hash method. list of "name:value" separated by a ";"

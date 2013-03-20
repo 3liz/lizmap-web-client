@@ -17,5 +17,5 @@
 class jFormsControlMenulist extends jFormsControlRadiobuttons {
     public $type="menulist";
     public $defaultValue='';
-    public $emptyItemLabel='';
+    public $emptyItemLabel = null;
 }

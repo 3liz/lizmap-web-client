@@ -49,8 +49,11 @@ class jPref{
         }
         
         $type = $result[0];
-        $value = substr($result, 2);
-        
+        if (strlen($result) > 2 ) // check, else we'll have false has result
+            $value = substr($result, 2);
+        else
+            $value = "";
+
         if($type == 'i')//integer
             $value = (int) $value;
         elseif($type == 'b') //boolean

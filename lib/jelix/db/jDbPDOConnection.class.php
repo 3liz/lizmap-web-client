@@ -268,7 +268,7 @@ class jDbPDOConnection extends PDO {
      */
     public function tools () {
         if (!$this->_tools) {
-            $dbms = ($this->dbms === 'sqlite') ? 'sqlite3' : $this->dbms;
+            $dbms = ($this->dbms === 'sqlite') ? 'sqlite3' : $this->dbms; 
             $this->_tools = jApp::loadPlugin($dbms, 'db', '.dbtools.php', $dbms.'DbTools', $this);
             if (is_null($this->_tools))
                 throw new jException('jelix~db.error.driver.notfound', $dbms);
