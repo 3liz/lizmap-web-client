@@ -1123,30 +1123,38 @@ var lizMap = function() {
          ,'VERSION':'1.0.0'
          ,'REQUEST':'GetCapabilities'
       }, function(xml) {
-        $(xml).find('FeatureType').each( function(){
-          var self = $(this);
-          var lname = self.find('Name').text();
-          if (lname in config.locateByLayer) {
-            var locate = config.locateByLayer[lname];
-            locate['crs'] = self.find('SRS').text();
-            new OpenLayers.Projection(locate.crs);
-            var bbox = self.find('LatLongBoundingBox');
-            locate['bbox'] = [
-              parseFloat(bbox.attr('minx'))
-             ,parseFloat(bbox.attr('miny'))
-             ,parseFloat(bbox.attr('maxx'))
-             ,parseFloat(bbox.attr('maxy'))
-            ];
+        var featureTypes = $(xml).find('FeatureType');
+        if (featureTypes.length == 0 ){
+          config.locateByLayer = {};
+          $('#toggleLocate').parent().remove();
+          $('#locate-menu').remove();
+          updateSwitcherSize();
+        } else {
+          featureTypes.each( function(){
+            var self = $(this);
+            var lname = self.find('Name').text();
+            if (lname in config.locateByLayer) {
+              var locate = config.locateByLayer[lname];
+              locate['crs'] = self.find('SRS').text();
+              new OpenLayers.Projection(locate.crs);
+              var bbox = self.find('LatLongBoundingBox');
+              locate['bbox'] = [
+                parseFloat(bbox.attr('minx'))
+               ,parseFloat(bbox.attr('miny'))
+               ,parseFloat(bbox.attr('maxx'))
+               ,parseFloat(bbox.attr('maxy'))
+              ];
+            }
+          } );
+          for (var lname in config.locateByLayer) {
+            getLocateFeature(lname);
           }
-        } );
-        for (var lname in config.locateByLayer) {
-          getLocateFeature(lname);
+          $('#locate-menu button.btn-locate-clear').click(function() {
+            var layer = map.getLayersByName('locatelayer')[0];
+            layer.destroyFeatures();
+            $('#locate select').val('-1');
+          });
         }
-        $('#locate-menu button.btn-locate-clear').click(function() {
-          var layer = map.getLayersByName('locatelayer')[0];
-          layer.destroyFeatures();
-          $('#locate select').val('-1');
-        });
       },'xml');
       $('#locate-menu').show();
     }
