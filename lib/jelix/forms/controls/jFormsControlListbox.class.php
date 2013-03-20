@@ -17,7 +17,7 @@ class jFormsControlListbox extends jFormsControlDatasource {
     public $type="listbox";
     public $multiple = false;
     public $size = 4;
-    public $emptyItemLabel;
+    public $emptyItemLabel = null;
 
     function isContainer(){
         return $this->multiple;

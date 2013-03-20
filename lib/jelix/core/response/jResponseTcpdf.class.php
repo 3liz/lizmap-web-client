@@ -56,23 +56,24 @@ class jResponseTcpdf  extends jResponse {
 
         $pdf_data = $this->tcpdf->Output('','S');
 
-        header("Cache-Control: public, must-revalidate, max-age=0"); // HTTP/1.1
-        header("Pragma: public");
-        header("Expires: Sat, 26 Jul 1997 05:00:00 GMT"); // Date in the past
-        header("Last-Modified: ".gmdate("D, d M Y H:i:s")." GMT");
-        header('Content-Length: '.strlen($pdf_data));
+        // headers to disable cache
+        $this->addHttpHeader('Cache-Control', 'public, must-revalidate, max-age=0', false); // HTTP/1.1
+        $this->addHttpHeader('Pragma', 'public', false);
+        $this->addHttpHeader('Expires', 'Sat, 26 Jul 1997 05:00:00 GMT', false); // Date in the past
+        $this->addHttpHeader('Last-Modified', gmdate("D, d M Y H:i:s")." GMT", false);
+        $this->addHttpHeader('Content-Length', strlen($pdf_data));
         if($this->doDownload){
-            header("Content-Type: application/force-download");
-            header("Content-Type: application/octet-stream", false);
-            header("Content-Transfer-Encoding: binary");
-            header('Content-Disposition: attachment; filename="'.str_replace('"','\"',$this->outputFileName).'";');
-            echo $pdf_data;
+            $this->addHttpHeader("Content-Type","application/force-download");
+            $this->addHttpHeader("Content-Type","application/octet-stream", -1);
+            $this->addHttpHeader("Content-Transfer-Encoding", "binary");
+            $this->addHttpHeader('Content-Disposition','attachment; filename="'.str_replace('"','\"',$this->outputFileName).'";');
         }
         else{
-            header('Content-Type: application/pdf');
-            header('Content-Disposition: inline; filename="'.str_replace('"','\"',$this->outputFileName).'";');
-            echo $pdf_data;
+            $this->addHttpHeader('Content-Type', 'application/pdf');
+            $this->addHttpHeader('Content-Disposition', 'inline; filename="'.str_replace('"','\"',$this->outputFileName).'";');
         }
+        $this->sendHttpHeaders();
+        echo $pdf_data;
 
         flush();
         return true;

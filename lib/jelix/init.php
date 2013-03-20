@@ -17,7 +17,7 @@
  * Version number of Jelix
  * @name  JELIX_VERSION
  */
-define ('JELIX_VERSION', '1.4.1');
+define ('JELIX_VERSION', '1.4.3');
 
 /**
  * base of namespace path used in xml files of jelix
@@ -114,6 +114,10 @@ function jelix_autoload($class) {
     }
     elseif(preg_match('/^cDao(?:Record)?_(.+)_Jx_(.+)_Jx_(.+)$/', $class, $m)){
         // for DAO which are stored in sessions for example
+        if(!isset(jApp::config()->_modulesPathList[$m[1]])){
+            //this may happen if we have several entry points, but the current one does not have this module accessible
+            return;
+        }
         $s = new jSelectorDao($m[1].'~'.$m[2], $m[3], false);
         if(jApp::config()->compilation['checkCacheFiletime']){
             // if it is needed to check the filetime, then we use jIncluder

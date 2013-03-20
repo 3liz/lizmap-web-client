@@ -7,6 +7,7 @@
 <fieldset><legend>{@jacl2db_admin~acl2.rightres.title@}</legend>
 <div>{formurlparam 'jacl2db_admin~groups:saverightres',array('group'=>$groupid)}</div>
 
+{if count($rightsWithResources)}
 <p><strong>{@jacl2db_admin~acl2.warning.deleting.rightres@}</strong></p>
 
 <table class="records-list jacl2-list">
@@ -36,6 +37,9 @@
 {/foreach}
 </tbody>
 </table>
+{else}
+<p>{@jacl2db_admin~acl2.no.rightres@}</p>
+{/if}
 </fieldset>
 </form>
 

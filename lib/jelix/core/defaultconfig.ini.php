@@ -134,7 +134,7 @@ minifyCSS = off
 minifyJS = off
 ; list of filenames which shouldn't be minified. Path relative to basePath:
 minifyExcludeCSS = ""
-minifyExcludeJS = "jquery.wymeditor.js"
+minifyExcludeJS = "jelix/wymeditor/jquery.wymeditor.js"
 
 [debugbar]
 plugins = sqllog,sessiondata,defaultlog

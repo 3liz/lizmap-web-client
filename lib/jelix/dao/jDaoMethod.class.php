@@ -291,12 +291,12 @@ class jDaoMethod {
         if ($attr['property'] != ''){
             $prop =$this->_parser->getProperties();
             if(isset($prop[$attr['property']])){
-                $this->_conditions->addItemOrder($attr['property'], $way);
+                $this->_conditions->addItemOrder($attr['property'], $way, true);
             }elseif(substr ($attr['property'],0,1) == '$'){
                 if(!in_array (substr ($attr['property'],1),$this->_parameters)){
                     throw new jDaoXmlException ($this->_parser->selector, 'method.orderitem.parameter.unknown', array($this->name, $way));
                 }
-                $this->_conditions->addItemOrder($attr['property'], $way);
+                $this->_conditions->addItemOrder($attr['property'], $way, true);
             }else{
                 throw new jDaoXmlException ($this->_parser->selector, 'method.orderitem.bad', array($attr['property'], $this->name));
             }

@@ -3,7 +3,8 @@
 * @package    jelix
 * @subpackage db_driver
 * @author      Florian Lonqueu-Brochard
-* @copyright  2012 Florian Lonqueu-Brochard
+* @contributor Laurent Jouanneau
+* @copyright  2012 Florian Lonqueu-Brochard, 2012 Laurent Jouanneau
 * @link      http://www.jelix.org
 * @licence    http://www.gnu.org/licenses/lgpl.html GNU Lesser General Public Licence, see LICENCE file
 */
@@ -29,10 +30,7 @@ class mysqliDbStatement extends jDbStatement {
                     //with the MySQL native driver - mysqlnd (by default in php 5.3.0)
                     $res = new mysqliDbResultSet($this->_stmt->get_result());
                 } else {
-                    //this call to store_result() will buffer all results but is necessary for num_rows to have
-                    //its real value and thus for dbresultset's ->rowCount() to work fine :
-                    $this->_stmt->store_result(); 
-                    $res = new mysqliDbResultSet($this->_stmt);
+                    $res = new mysqliDbStmtResultSet($this->_stmt);
                 }
             }
             catch(Exception $e){

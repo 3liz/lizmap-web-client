@@ -47,27 +47,7 @@ class AuthCoordPlugin implements jICoordPlugin {
         $badip = false;
         $selector = null;
         // Check if auth cookie exist and user isn't logged on
-        if (isset($this->config['persistant_enable']) && $this->config['persistant_enable'] && !jAuth::isConnected()) {
-            if (isset($this->config['persistant_cookie_name']) && isset($this->config['persistant_crypt_key'])) {
-                $cookieName = $this->config['persistant_cookie_name'];
-                if (isset($_COOKIE[$cookieName]['auth']) && strlen($_COOKIE[$cookieName]['auth'])>0) {
-                    $decrypted = jCrypt::decrypt($_COOKIE[$cookieName]['auth'],$this->config['persistant_crypt_key']);
-                    $decrypted = @unserialize($decrypted);
-                    if ($decrypted && is_array($decrypted)) {
-                        list($login, $password) = $decrypted;
-                        jAuth::login($login,$password);
-                    }
-                }
-                if (isset($_COOKIE[$cookieName]['login'])) {
-                    // destroy deprecated cookies
-                    setcookie($cookieName.'[login]', '', time() - 3600, $this->config['persistant_cookie_path']);
-                    setcookie($cookieName.'[passwd]', '', time() - 3600, $this->config['persistant_cookie_path']);
-                }
-            }
-            else {
-                throw new jException('jelix~auth.error.persistant.incorrectconfig','persistant_cookie_name, persistant_crypt_key');
-            }
-        }
+        jAuth::checkCookieToken();
         //Do we check the ip ?
         if ($this->config['secure_with_ip']){
             if (! isset ($_SESSION['JELIX_AUTH_SECURE_WITH_IP'])){

@@ -19,20 +19,11 @@
     <tr>
         <th>{@jacl2db_admin~acl2.table.th.rights@}</th>
     {foreach $groups as $group}
-        <th>global</th>
-        <th>on res</th>
+        <th>{@jacl2db_admin~acl2.global.rights@}</th>
+        <th>{@jacl2db_admin~acl2.special.rights@}</th>
     {/foreach}
     </tr>
 </thead>
-<tfoot>
-    <tr>
-        <td></td>
-    {foreach $groups as $group}
-        <th></th>
-        <th><a href="{jurl 'jacl2db_admin~groups:rightres',array('group'=>$group->id_aclgrp)}">see</a></th>
-    {/foreach}
-    </tr>
-</tfoot>
 <tbody>
 {assign $currentsbjgroup = '---'}
 {foreach $rights as $subject=>$right}
@@ -50,7 +41,9 @@
         <option value="n" {if $r == 'n'}selected="selected"{/if}>no</option>
         </select>
     </td>
-    <td>{if isset($rightsWithResources[$subject][$group]) && $rightsWithResources[$subject][$group]}yes{/if}</td>
+    <td>{if isset($rightsWithResources[$subject][$group]) && $rightsWithResources[$subject][$group]}
+        <a href="{jurl 'jacl2db_admin~groups:rightres',array('group'=>$group)}">yes</a>
+    {/if}</td>
     {/foreach}
 </tr>
 {/foreach}

@@ -19,7 +19,7 @@ class installappCommand extends JelixScriptCommand {
     public  $syntaxhelp = "";
     public  $help = '';
 
-    function __construct(){
+    function __construct($config){
         $this->help= array(
             'fr'=>"
     Installe ou met à jour tous les modules d'une application qui sont activés.
@@ -28,6 +28,7 @@ class installappCommand extends JelixScriptCommand {
     Install or upgrade all activated modules of an application.
 ",
     );
+        parent::__construct($config);
     }
 
     public function run(){

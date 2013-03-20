@@ -95,6 +95,8 @@ class jFormsDataContainer {
         $this->errors = array();
         $this->originalData = array();
         $this->privateData = array();
+        $this->readOnly = array();
+        $this->deactivated = array();
     }
 
     public function deactivate($name, $deactivation=true) {

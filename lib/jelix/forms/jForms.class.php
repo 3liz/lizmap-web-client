@@ -139,7 +139,7 @@ class jForms {
         if(isset($_SESSION['JFORMS'][$formSel][$formId])){
             if (is_numeric($formId) && $formId == self::DEFAULT_ID) {
                 if((--$_SESSION['JFORMS'][$formSel][$formId]->refcount) > 0) {
-                  $_SESSION['JFORMS'][$formSel][$formId]->clear();
+                    $_SESSION['JFORMS'][$formSel][$formId]->clear();
                     return;
                 }
             }

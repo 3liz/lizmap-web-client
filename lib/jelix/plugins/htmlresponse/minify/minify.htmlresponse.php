@@ -37,10 +37,16 @@ class minifyHTMLResponsePlugin implements jIHTMLResponsePlugin {
     public function beforeOutput() {
         if (!($this->response instanceof jResponseHtml))
             return;
+
         $conf = &jApp::config()->jResponseHtml;
+        $basePath = jApp::config()->urlengine['basePath'];
         if ($conf['minifyCSS']) {
             if ($conf['minifyExcludeCSS']) {
-                $this->excludeCSS = explode( ',', $conf['minifyExcludeCSS'] );
+                $this->excludeCSS = preg_split( '!\s*/\s*!', $conf['minifyExcludeCSS'] );
+                foreach($this->excludeCSS as $k=>$url) {
+                    if (substr($url,0,1) != '/')
+                        $this->excludeCSS[$k]= $basePath.$url;
+                }
             }
 
             $this->response->setCSSLinks($this->generateMinifyList($this->response->getCSSLinks(), 'excludeCSS'));
@@ -49,7 +55,11 @@ class minifyHTMLResponsePlugin implements jIHTMLResponsePlugin {
 
         if ($conf['minifyJS']) {
             if($conf['minifyExcludeJS'] ) {
-                $this->excludeJS = explode( ',', $conf['minifyExcludeJS'] );
+                $this->excludeJS = preg_split( '!\s*/\s*!', $conf['minifyExcludeJS'] );
+                foreach($this->excludeJS as $k=>$url) {
+                    if (substr($url,0,1) != '/')
+                        $this->excludeJS[$k]= $basePath.$url;
+                }
             }
             $this->response->setJSLinks($this->generateMinifyList($this->response->getJSLinks(), 'excludeJS'));
             $this->response->setJSIELinks($this->generateMinifyList($this->response->getJSIELinks(), 'excludeJS'));

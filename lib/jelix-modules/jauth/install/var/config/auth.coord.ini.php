@@ -70,6 +70,18 @@ persistant_cookie_name=jelixAuthentificationCookie
 ; duration of the validity of the cookie (in days). default is 1 day.
 persistant_duration = 1
 
+;=========== parameters for password hashing
+
+; method of the hash. 0 or "" means old hashing behavior of jAuth
+; (using password_* parameters in drivers ).
+; Prefer to choose 1, which is the default hash method (bcrypt).
+password_hash_method = 
+
+; options for the hash method. list of "name:value" separated by a ";"
+password_hash_options = 
+
+
+
 ;=========== Parameters for drivers
 
 ;------- parameters for the "Db" driver
