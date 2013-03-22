@@ -4,7 +4,7 @@
 * @subpackage   core
 * @author       Laurent Jouanneau
 * @contributor  Thibault Piront (nuKs), Julien Issler, Dominique Papin, Flav
-* @copyright    2005-2012 laurent Jouanneau
+* @copyright    2005-2013 laurent Jouanneau
 * @copyright    2007 Thibault Piront
 * @copyright    2008 Julien Issler
 * @copyright    2008-2010 Dominique Papin, 2012 Flav
@@ -134,19 +134,7 @@ class jCoordinator {
         $this->request->init();
         jSession::start();
 
-        $this->moduleName = $request->getParam('module');
-        $this->actionName = $request->getParam('action');
-
-        if(empty($this->moduleName)){
-            $this->moduleName = $config->startModule;
-        }
-        if(empty($this->actionName)){
-            if($this->moduleName == $config->startModule)
-                $this->actionName = $config->startAction;
-            else {
-                $this->actionName = 'default:index';
-            }
-        }
+        list($this->moduleName, $this->actionName) = $request->getModuleAction();
 
         jContext::push ($this->moduleName);
         try{
