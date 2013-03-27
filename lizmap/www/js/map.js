@@ -1414,7 +1414,7 @@ var lizMap = function() {
     else
       $('#toggleGeolocate').parent().remove();
 
-    addAnnotationControls();
+    addEditionControls();
 
     if ( ('measure' in configOptions)
         && configOptions['measure'] == 'True')
@@ -1438,7 +1438,7 @@ var lizMap = function() {
   function deactivateToolControls( evt ) {
     for (var id in controls) {
       var ctrl = controls[id];
-      if (ctrl == evt.object)
+      if (evt && ('object' in evt) && ctrl == evt.object)
         continue;
       if (ctrl.type == OpenLayers.Control.TYPE_TOOL)
         ctrl.deactivate();
@@ -1766,234 +1766,583 @@ var lizMap = function() {
     return true;
   }
 
-  function addAnnotationControls() {
-    // Annotation layers
-    if ('annotationLayers' in config) {
-      var service = OpenLayers.Util.urlAppend(lizUrls.annotation
+  function addEditionControls() {
+    // Edition layers
+    if ('editionLayers' in config) {
+      //initialize edition
+      $('#edition-modal').modal();
+      var service = OpenLayers.Util.urlAppend(lizUrls.edition
         ,OpenLayers.Util.getParameterString(lizUrls.params)
       );
-      var pointLayer = null;
-      var lineLayer = null;
-      var polygonLayer = null;
-      for (var alName in config.annotationLayers) {
-        var al = config.annotationLayers[alName];
-        if ( al.geometryType == "point" )
-          pointLayer = new OpenLayers.Layer.Vector(al.layerId ,{
-            geometryType: OpenLayers.Geometry.Point
-          });
-        else if ( al.geometryType == "line" )
-          lineLayer = new OpenLayers.Layer.Vector(al.layerId ,{
-            geometryType: OpenLayers.Geometry.LineString
-          });
-        else if ( al.geometryType == "polygon" )
-          polygonLayer = new OpenLayers.Layer.Vector(al.layerId ,{
-            geometryType: OpenLayers.Geometry.Polygon
-          });
+      for (var alName in config.editionLayers) {
+        var al = config.editionLayers[alName];
+        if (al.capabilities.modifyGeometry == "False"
+         && al.capabilities.modifyAttribute == "False"
+         && al.capabilities.deleteFeature == "False"
+         && al.capabilities.createFeature == "False") {
+          delete config.editionLayers[alName];
+          continue;
+        }
+        if (alName in config.layers) {
+          var alConfig = config.layers[alName];
+          $('#edition ~ .dropdown-menu').append('<li><a href="#'+alName+'">'+alConfig.title+'</a></li>');
+        }
       }
-      var drawControls = {};
-      var drawnFeat = null;
-      function setAnnotationModal(aHtml) {
-        $('#annotation-modal').html(aHtml);
-        $('#annotation-modal form').submit(function(){
-          var self = $(this);
-          if (jForms.getForm(self.attr('id')).errorDecorator.message != '')
+
+      // initiatlize layer
+      // style the sketch fancy
+      var sketchSymbolizers = {
+        "Point": {
+          pointRadius: 6
+        },
+        "Line": {
+          strokeWidth: 4
+        },
+        "Polygon": {
+          strokeWidth: 2
+        }
+      };
+      var style = new OpenLayers.Style();
+      style.addRules([
+          new OpenLayers.Rule({symbolizer: sketchSymbolizers})
+          ]);
+      var styleMap = new OpenLayers.StyleMap({"default": style});
+      var editLayer = new OpenLayers.Layer.Vector('editLayer',{styleMap:styleMap});
+      map.addLayer(editLayer);
+
+      // initialize controls
+      OpenLayers.Control.EditionClick =
+        OpenLayers.Class(OpenLayers.Control, {                
+          defaultHandlerOptions: {
+            'single': true,
+            'double': false,
+            'pixelTolerance': 0,
+            'stopSingle': true,
+            'stopDouble': false
+          },
+          layerId: '',
+          clickTolerance: 5,
+          initialize: function(options) {
+            this.handlerOptions = OpenLayers.Util.extend(
+              {}, this.defaultHandlerOptions
+            );
+            OpenLayers.Control.prototype.initialize.apply(
+              this, arguments
+            ); 
+            this.handler = new OpenLayers.Handler.Click(
+              this, {
+                'click': this.trigger
+              }, this.handlerOptions
+            );
+          },
+          pixelToBounds: function(pixel) {
+            var llPx = pixel.add(-this.clickTolerance/2, this.clickTolerance/2);
+            var urPx = pixel.add(this.clickTolerance/2, -this.clickTolerance/2);
+            var ll = this.map.getLonLatFromPixel(llPx);
+            var ur = this.map.getLonLatFromPixel(urPx);
+            return new OpenLayers.Bounds(ll.lon, ll.lat, ur.lon, ur.lat);
+          },
+          trigger: function(e) {
+            var bounds = this.pixelToBounds(e.xy);
+            var crs = this.map.getProjectionObject().toString();
+            if ( crs == 'EPSG:900913' )
+              crs = 'EPSG:3857';
+            $.get(service,{
+              layerId: this.layerId,
+              bbox: bounds.toBBOX(),
+              crs: crs
+            }, function(data){
+              $('#edition-modal').html(data);
+              $('#edition-modal form').submit(function() {
+                var self = $(this);
+                var srid = self.find('input[name="liz_srid"]').val();
+                if ( !('EPSG:'+srid in Proj4js.defs) )
+                  Proj4js.defs['EPSG:'+srid] = self.find('input[name="liz_proj4"]').val();
+                var geom = self.find('input[name="liz_geometryColumn"]').val();
+                var wkt = self.find('input[name="'+geom+'"]').val();
+                var format = new OpenLayers.Format.WKT({
+                  externalProjection: 'EPSG:'+srid,
+                  internalProjection: editLayer.projection
+                });
+                var feat = format.read(wkt);
+                feat.fid = self.find('input[name="liz_featureId"]').val();
+                var form = $('#edition-menu form');
+                form.find('input[name="liz_srid"]').val(srid);
+                form.find('input[name="liz_geometryColumn"]').val(geom);
+                form.find('input[name="liz_wkt"]').val(feat.geometry);
+                form.find('input[name="liz_featureId"]').val(feat.fid);
+                editLayer.addFeatures([feat]);
+                $('#edition-modal').modal('hide');
+                return false;
+              });
+              $('#edition-modal').modal('show');
+            });
             return false;
-          $.post(
-            self.attr('action'),
+          }
+        });
+      var editCtrls = {
+        panel: new OpenLayers.Control({
+          type: OpenLayers.Control.TYPE_TOOL,
+          eventListeners: {
+            activate: function( evt ) {
+              deactivateToolControls( evt );
+            },
+            deactivate: function( evt ) {
+              for ( var c in editCtrls ) {
+                if ( editCtrls[c].active )
+                  editCtrls[c].deactivate();
+              }
+              $('#edition-menu').hide();
+            }
+          }
+        }),
+        click: new OpenLayers.Control.EditionClick(),
+        point: new OpenLayers.Control.DrawFeature(editLayer,
+                   OpenLayers.Handler.Point),
+        line: new OpenLayers.Control.DrawFeature(editLayer,
+            OpenLayers.Handler.Path),
+        polygon: new OpenLayers.Control.DrawFeature(editLayer,
+            OpenLayers.Handler.Polygon),
+        modify: new OpenLayers.Control.ModifyFeature(editLayer)
+      };
+      for ( var ctrl in editCtrls ) {
+        map.addControls([editCtrls[ctrl]]);
+      }
+      controls['edition'] = editCtrls.panel;
+
+      function manageEditionAdd(aData) {
+        $('#edition-modal').html(aData);
+        $('#edition-modal form').submit(function() {
+          var self = $(this);
+          $.post(self.attr('action'),
             self.serialize(),
-            function(result) {
-              setAnnotationModal(result);
+            function(data) {
+              manageEditionAdd(data);
             });
           return false;
         });
+        if ( $('#edition-modal form').length != 0 ) {
+          $('#edition-modal button[data-dismiss="modal"]').click(
+            function() {
+              editLayer.destroyFeatures();
+              $('#edition-draw-clear').addClass('disabled');
+              $('#edition-draw-save').addClass('disabled');
+            }
+          );
+        }
+        if ( $('#edition-modal form').length == 0 ) {
+          for ( var ctrl in editCtrls ) {
+            if ( ctrl !="panel" && editCtrls[ctrl].active)
+              editCtrls[ctrl].deactivate();
+          }
+          var layerId = editCtrls.click.layerId;
+          $.each(layers, function(i, l) {
+            if (config.layers[l.params['LAYERS']].id != layerId)
+              return true;
+            l.redraw(true);
+            return false;
+          });
+          editLayer.destroyFeatures();
+          editCtrls.modify.activate();
+          $('#edition-draw-clear').addClass('disabled');
+          $('#edition-draw-save').addClass('disabled');
+        }
       }
 
-      // add polygon annotation layer
-      // and its drawing control
-      if ( polygonLayer != null ) {
-        map.addLayer(polygonLayer);
-        var polygonCtrl = new OpenLayers.Control.DrawFeature(
-            polygonLayer,
-            OpenLayers.Handler.Polygon,
-            {type:OpenLayers.Control.TYPE_TOOL});
-        polygonLayer.events.on({
-          'featureadded': function(evt) {
-            drawnFeat = evt.feature;
-            $.get(service
-              ,{layerId:drawnFeat.layer.name}
-              ,function (result) {
-                setAnnotationModal(result);
-                var formId = $('#annotation-modal form').attr('id');
-                var srid = $('#'+formId+'_liz_srid').val();
-                if ( !( ('EPSG:'+srid) in Proj4js.defs) )
-                  Proj4js.defs['EPSG:'+srid] = $('#'+formId+'_liz_proj4').val();
-                var geom = drawnFeat.geometry.clone();
-                geom.transform(map.getProjectionObject(), new OpenLayers.Projection('EPSG:'+srid));
-                var geomColumn = $('#'+formId+'_liz_geometryColumn').val();
-                $('#'+formId+'_'+geomColumn).val(geom);
-                $('#annotation-modal').modal('show');
-              },'text');
-          }
-        });
-        polygonCtrl.events.on({
-          activate: function(evt) {
-            deactivateToolControls(evt);
-            $('#annotation').parent().addClass('active');
-            $('#annotation-polygon-menu').show();
-            $('#annotation-modal').modal('hide');
-            updateSwitcherSize();
-          },
-          deactivate: function(evt) {
-            $('#annotation').parent().removeClass('active');
-            $('#annotation-polygon-menu').hide();
-            $('#annotation-modal').modal('hide');
-            updateSwitcherSize();
-          }
-        });
-        drawControls['polygon'] = polygonCtrl;
-      } else {
-        $('#annotation-polygon').parent().remove();
-        $('#annotation-polygon-menu').remove();
-      }
-
-      // add line annotation layer
-      // and its drawing control
-      if ( lineLayer != null ) {
-        map.addLayer(lineLayer);
-        var lineCtrl = new OpenLayers.Control.DrawFeature(
-            lineLayer,
-            OpenLayers.Handler.Path,
-            {type:OpenLayers.Control.TYPE_TOOL});
-        lineLayer.events.on({
-          'featureadded': function(evt) {
-            drawnFeat = evt.feature;
-            $.get(service
-              ,{layerId:drawnFeat.layer.name}
-              ,function (result) {
-                setAnnotationModal(result);
-                var formId = $('#annotation-modal form').attr('id');
-                var srid = $('#'+formId+'_liz_srid').val();
-                if ( !( ('EPSG:'+srid) in Proj4js.defs) )
-                  Proj4js.defs['EPSG:'+srid] = $('#'+formId+'_liz_proj4').val();
-                var geom = drawnFeat.geometry.clone();
-                geom.transform(map.getProjectionObject(), new OpenLayers.Projection('EPSG:'+srid));
-                var geomColumn = $('#'+formId+'_liz_geometryColumn').val();
-                $('#'+formId+'_'+geomColumn).val(geom);
-                $('#annotation-modal').modal('show');
-              },'text');
-          }
-        });
-        lineCtrl.events.on({
-          activate: function(evt) {
-            deactivateToolControls(evt);
-            $('#annotation').parent().addClass('active');
-            $('#annotation-line-menu').show();
-            $('#annotation-modal').modal('hide');
-            updateSwitcherSize();
-          },
-          deactivate: function(evt) {
-            $('#annotation').parent().removeClass('active');
-            $('#annotation-line-menu').hide();
-            $('#annotation-modal').modal('hide');
-            updateSwitcherSize();
-          }
-        });
-        drawControls['line'] = lineCtrl;
-      } else {
-        $('#annotation-line').parent().remove();
-        $('#annotation-line-menu').remove();
-      }
-
-      // add point annotation layer
-      // and its drawing control
-      if ( pointLayer != null ) {
-        map.addLayer(pointLayer);
-        var pointCtrl = new OpenLayers.Control.DrawFeature(
-            pointLayer,
-            OpenLayers.Handler.Point,
-            {type:OpenLayers.Control.TYPE_TOOL});
-        pointLayer.events.on({
-          'featureadded': function(evt) {
-            drawnFeat = evt.feature;
-            $.get(service
-              ,{layerId:drawnFeat.layer.name}
-              ,function (result) {
-                setAnnotationModal(result);
-                var formId = $('#annotation-modal form').attr('id');
-                var srid = $('#'+formId+'_liz_srid').val();
-                if ( !( ('EPSG:'+srid) in Proj4js.defs) )
-                  Proj4js.defs['EPSG:'+srid] = $('#'+formId+'_liz_proj4').val();
-                var geom = drawnFeat.geometry.clone();
-                geom.transform(map.getProjectionObject(), new OpenLayers.Projection('EPSG:'+srid));
-                var geomColumn = $('#'+formId+'_liz_geometryColumn').val();
-                $('#'+formId+'_'+geomColumn).val(geom);
-                $('#annotation-modal').modal('show');
-              },'text');
-          }
-        });
-        pointCtrl.events.on({
-          activate: function(evt) {
-            deactivateToolControls(evt);
-            $('#annotation').parent().addClass('active');
-            $('#annotation-point-menu').show();
-            $('#annotation-modal').modal('hide');
-            updateSwitcherSize();
-          },
-          deactivate: function(evt) {
-            $('#annotation').parent().removeClass('active');
-            $('#annotation-point-menu').hide();
-            $('#annotation-modal').modal('hide');
-            updateSwitcherSize();
-          }
-        });
-        drawControls['point'] = pointCtrl;
-      } else {
-        $('#annotation-point').parent().remove();
-        $('#annotation-point-menu').remove();
-      }
-
-      if ( $('#annotation').next().children().length == 0 )
-        $('#annotation').parent().remove();
-      for(var key in drawControls) {
-        map.addControl(drawControls[key]);
-        controls[key+'Annotations'] = drawControls[key];
-        // click in the navbar
-        $('#annotation-'+key).click(function() {
-          var keyId = $(this).attr('id').replace('annotation-','');
-          if ( drawControls[keyId].active )
-            drawControls[keyId].deactivate();
-          else
-            drawControls[keyId].activate();
-          $('#annotation').dropdown('toggle');
+      function manageEditionGeom(aData) {
+        $('#edition-modal').html(aData);
+        $('#edition-modal form').submit(function() {
+          var self = $(this);
+          $.post(self.attr('action'),
+            self.serialize(),
+            function(data) {
+              manageEditionGeom(data);
+            });
           return false;
         });
-        // click to stop
-        $('#annotation-'+key+'-stop').click(function() {
-          var keyId = $(this).attr('id').replace('annotation-','');
-          keyId = keyId.replace('-stop','');
-          drawControls[keyId].deactivate();
-        });
+        if ( $('#edition-modal form').length != 0 ) {
+          $('#edition-modal button[data-dismiss="modal"]').click(
+            function() {
+              var format = new OpenLayers.Format.WKT();
+              var wkt = $('#edition-menu form input[name="liz_wkt"]').val();
+              var wktFeat = format.read(wkt);
+              var geom = wktFeat.geometry.clone();
+              var feat = editLayer.features[0];
+              geom.id = feat.geometry.id;
+              feat.geometry = geom;
+              editLayer.drawFeature(feat);
+              if (config.editionLayers[editCtrls.click.layerName].capabilities.modifyGeometry == "True")
+                editCtrls.modify.selectControl.select(feat);
+            }
+          );
+        }
+        if ( $('#edition-modal form').length == 0 ) {
+          var layerId = editCtrls.click.layerId;
+          $.each(layers, function(i, l) {
+            if (config.layers[l.params['LAYERS']].id != layerId)
+              return true;
+            l.redraw(true);
+            return false;
+          });
+          editLayer.drawFeature(editLayer.features[0]);
+          if (config.editionLayers[editCtrls.click.layerName].capabilities.modifyGeometry == "True")
+            editCtrls.modify.selectControl.select(editLayer.features[0]);
+        }
       }
-      $('#annotation-modal').modal();
-      $('#annotation-modal').on('hidden', function () {
-        if (drawnFeat == null)
-          return true;
-        var layerId = drawnFeat.layer.name;
-        drawnFeat.layer.destroyFeatures([drawnFeat]);
-        drawnfeat = null;
-        $.each(layers, function(i, l) {
-          if (config.layers[l.params['LAYERS']].id != layerId)
+
+      // edit layer events
+      editLayer.events.on({
+        featureadded: function(evt) {
+          if ( editCtrls.click.active ) {
+            editCtrls.click.deactivate();
+            $('#lizmap-edition-message').remove();
+            if (config.editionLayers[editCtrls.click.layerName].capabilities.modifyGeometry == "True") {
+              editCtrls.modify.activate();
+              editCtrls.modify.selectControl.select(evt.feature);
+              mAddMessage(lizDict['edition.select.modify.activate'],'info',true).attr('id','lizmap-edition-message');
+            }
+            $('#edition-select-unselect').removeClass('disabled');
+            $('#edition-select-attr').removeClass('disabled');
+            $('#edition-select-delete').removeClass('disabled');
+          } else {
+            $.get(service.replace('getFeature','createFeature'),{
+              layerId: editCtrls.click.layerId,
+            }, function(data){
+              manageEditionAdd(data);
+              var form = $('#edition-modal form');
+              var srid = form.find('input[name="liz_srid"]').val();
+              if ( !('EPSG:'+srid in Proj4js.defs) )
+                Proj4js.defs['EPSG:'+srid] = form.find('input[name="liz_proj4"]').val();
+              var gColumn = form.find('input[name="liz_geometryColumn"]').val();
+              var geom = editLayer.features[0].geometry.clone();
+              geom.transform(editLayer.projection,'EPSG:'+srid);
+              $('#edition-modal form input[name="'+gColumn+'"]').val(geom);
+              $('#edition-modal').modal('show');
+            });
+          }
+        },
+        featureselected: function(evt) {
+          $('#edition-menu form input[name="liz_wkt"]').val(evt.feature.geometry);
+        },
+        featureunselected: function(evt) {
+          var wkt = $('#edition-menu form input[name="liz_wkt"]').val();
+          $.get(service.replace('getFeature','modifyFeature'),{
+            layerId: editCtrls.click.layerId,
+            featureId: evt.feature.fid
+          }, function(data){
+            manageEditionGeom(data);
+            var form = $('#edition-modal form');
+            var srid = form.find('input[name="liz_srid"]').val();
+            if ( !('EPSG:'+srid in Proj4js.defs) )
+              Proj4js.defs['EPSG:'+srid] = form.find('input[name="liz_proj4"]').val();
+            var gColumn = form.find('input[name="liz_geometryColumn"]').val();
+            var geom = evt.feature.geometry.clone();
+            geom.transform(editLayer.projection,'EPSG:'+srid);
+            $('#edition-modal form input[name="'+gColumn+'"]').val(geom);
+            if (config.editionLayers[editCtrls.click.layerName].capabilities.modifyAttribute == "False") {
+              form.submit();
+              form.hide();
+            }
+            $('#edition-modal').modal('show');
+          });
+        },
+        sketchmodified: function(evt) {
+          if ( evt.vertex.parent == null )
             return true;
-          l.redraw(true);
+          var class_name = evt.vertex.parent.CLASS_NAME;
+          if ( $('#edition-draw-clear').hasClass('disabled') ) {
+            if ( class_name == 'OpenLayers.Geometry.LineString' ) {
+              if (evt.vertex.parent.components.length == 2 ) {
+                $('#edition-draw-clear').removeClass('disabled');
+              }
+            } else if ( class_name == 'OpenLayers.Geometry.LinearRing' ) {
+              if (evt.vertex.parent.components.length == 3 ) {
+                $('#edition-draw-clear').removeClass('disabled');
+              }
+            }
+          }
+          if ( $('#edition-draw-save').hasClass('disabled') ) {
+            if ( class_name == 'OpenLayers.Geometry.LineString' ) {
+              if (evt.vertex.parent.components.length > 2 ) {
+                $('#edition-draw-save').removeClass('disabled');
+              }
+            } else if ( class_name == 'OpenLayers.Geometry.LinearRing' ) {
+              if (evt.vertex.parent.components.length > 3 ) {
+                $('#edition-draw-save').removeClass('disabled');
+              }
+            }
+          }
+        },
+        vertexmodified: function(evt) {
+          if ( $('#edition-select-undo').hasClass('disabled') ) {
+            $('#edition-select-undo').removeClass('disabled');
+          }
+        }
+      });
+
+      $('#edition ~ .dropdown-menu').find('a').click(function() {
+        editCtrls.panel.activate();
+        var menu = $('#edition-menu');
+        var alName = $(this).attr('href').replace('#','');
+        if (alName in config.editionLayers) {
+          var al = config.editionLayers[alName];
+          if ( editCtrls.click.layerId == al.layerId) {
+            $('#edition-stop').click();
+          } else {
+            // update toolbar based on capabilities
+            if (al.capabilities.deleteFeature == "False")
+               $('#edition-select-delete').hide()
+            else
+               $('#edition-select-delete').show()
+            if (al.capabilities.modifyAttribute == "False")
+               $('#edition-select-attr').hide()
+            else
+               $('#edition-select-attr').show()
+            if (al.capabilities.modifyGeometry == "False")
+               $('#edition-select-undo').hide()
+            else
+               $('#edition-select-undo').show()
+
+            if ( $('#edition-menu-draw').is(':visible') )
+              $('#edition-draw-cancel').click();
+            if ( $('#edition-menu-select').is(':visible') )
+              $('#edition-select-cancel').click();
+
+            if (alName in config.layers)
+              $('#edition-menu h3 span.title span.text').html(config.layers[alName].title);
+            else
+              $('#edition-menu h3 span.title span.text').html(lizDict['edition.title']);
+            editCtrls.click.layerId = al.layerId;
+            editCtrls.click.layerName = alName;
+            menu.show();
+            if (al.capabilities.createFeature == "False") {
+              $('#edition-draw').hide();
+              $('#edition-select-cancel').hide();
+              $('#edition-select').click();
+            } else {
+              $('#edition-draw').show();
+              $('#edition-select-cancel').show();
+            }
+            if (al.capabilities.modifyGeometry == "False"
+             && al.capabilities.modifyAttribute == "False"
+             && al.capabilities.deleteFeature == "False") {
+              $('#edition-select').hide();
+              $('#edition-draw-cancel').hide();
+              $('#edition-draw').click();
+            } else {
+              $('#edition-select').show();
+              $('#edition-draw-cancel').show();
+            }
+          }
+        }
+        updateSwitcherSize();
+        if ( $('#edition ~ .dropdown-menu').is(':visible') )
+          $('#edition').dropdown('toggle');
+        return false;
+      });
+
+      $('#edition-stop').click(function(){
+        $('#edition-menu h3 span.title span.text').html(lizDict['edition.title']);
+        editCtrls.click.layerId = '';
+        editCtrls.click.layerName = '';
+        editCtrls.panel.deactivate();
+        editLayer.destroyFeatures();
+        $('#edition-menu-draw').hide();
+        $('#edition-draw-clear').addClass('disabled');
+        $('#edition-draw-save').addClass('disabled');
+        $('#edition-menu-select').hide();
+        $('#edition-select-unselect').addClass('disabled');
+        $('#edition-select-attr').addClass('disabled');
+        $('#edition-select-undo').addClass('disabled');
+        $('#edition-select-delete').addClass('disabled');
+        $('#edition-menu-start').show();
+        var form = $('#edition-menu form');
+        form.find('input[name="liz_srid"]').val('');
+        form.find('input[name="liz_geometryColumn"]').val('');
+        form.find('input[name="liz_wkt"]').val('');
+        form.find('input[name="liz_featureId"]').val('');
+        updateSwitcherSize();
+      });
+
+      $('#edition-select').click(function(){
+        if ( !$('#edition-menu-start').is(':visible') )
           return false;
+
+        $('#edition-menu-start').hide();
+        $('#edition-menu-select').show();
+        editCtrls.click.activate();
+        $('#lizmap-edition-message').remove();
+        mAddMessage(lizDict['edition.select.activate'],'info',true).attr('id','lizmap-edition-message');
+      });
+      $('#edition-select-cancel').click(function(){
+        $('#lizmap-edition-message').remove();
+        editLayer.destroyFeatures();
+        editCtrls.click.deactivate();
+        editCtrls.modify.deactivate();
+        $('#edition-select-unselect').addClass('disabled');
+        $('#edition-select-attr').addClass('disabled');
+        $('#edition-select-undo').addClass('disabled');
+        $('#edition-select-delete').addClass('disabled');
+        var form = $('#edition-menu form');
+        form.find('input[name="liz_srid"]').val('');
+        form.find('input[name="liz_geometryColumn"]').val('');
+        form.find('input[name="liz_wkt"]').val('');
+        form.find('input[name="liz_featureId"]').val('');
+        $('#edition-menu-select').hide();
+        $('#edition-menu-start').show();
+        updateSwitcherSize();
+      });
+      $('#edition-select-unselect').click(function(){
+        if ( $(this).hasClass('disabled') )
+          return false;
+
+        editLayer.destroyFeatures();
+        editCtrls.modify.deactivate();
+        editCtrls.click.activate();
+        $('#edition-select-unselect').addClass('disabled');
+        $('#edition-select-attr').addClass('disabled');
+        $('#edition-select-undo').addClass('disabled');
+        $('#edition-select-delete').addClass('disabled');
+        var form = $('#edition-menu form');
+        form.find('input[name="liz_srid"]').val('');
+        form.find('input[name="liz_geometryColumn"]').val('');
+        form.find('input[name="liz_wkt"]').val('');
+        form.find('input[name="liz_featureId"]').val('');
+      });
+      $('#edition-select-undo').click(function(){
+        if ( $(this).hasClass('disabled') )
+          return false;
+
+        var format = new OpenLayers.Format.WKT();
+        var wkt = $('#edition-menu form input[name="liz_wkt"]').val();
+        var wktFeat = format.read(wkt);
+        var geom = wktFeat.geometry.clone();
+        var feat = editLayer.features[0];
+        geom.id = feat.geometry.id;
+        feat.geometry = geom;
+        editLayer.drawFeature(feat);
+        if (config.editionLayers[editCtrls.click.layerName].capabilities.modifyGeometry == "True")
+          editCtrls.modify.selectControl.select(feat);
+      });
+      $('#edition-select-attr').click(function(){
+        if ( $(this).hasClass('disabled') )
+          return false;
+
+        editCtrls.modify.selectControl.unselect(editLayer.features[0]);
+      });
+      $('#edition-select-delete').click(function(){
+        if ( $(this).hasClass('disabled') )
+          return false;
+
+        var featureId = $('#edition-menu form input[name="liz_featureId"]').val();
+        if ( featureId == '' )
+         return false;
+        if ( !confirm( "Are you sure you want to delete the selected feature?" ) )
+          return false;
+        $.get(service.replace('getFeature','deleteFeature'),{
+          layerId: editCtrls.click.layerId,
+          featureId: featureId
+        }, function(data){
+          $('#edition-modal').html(data);
+          $('#edition-modal').modal('show');
+          editLayer.destroyFeatures();
+          $('#edition-select-unselect').click();
+          var layerId = editCtrls.click.layerId;
+          $.each(layers, function(i, l) {
+            if (config.layers[l.params['LAYERS']].id != layerId)
+              return true;
+            l.redraw(true);
+            return false;
+          });
         });
       });
-      config.annotationLayers['drawControls'] = drawControls;
+
+      $('#edition-draw').click(function(){
+        if ( !$('#edition-menu-start').is(':visible') )
+          return false;
+
+        var layerId = editCtrls.click.layerId;
+        var geomType = '';
+        for (var alName in config.editionLayers) {
+          var al = config.editionLayers[alName];
+          if ( alName in config.layers && al.layerId == layerId)
+            geomType = al.geometryType;
+        }
+        if ( geomType == '' )
+          return false;
+
+        var ctrl = editCtrls[geomType];
+        if ( ctrl.active ) {
+          return false;
+        } else {
+          ctrl.activate();
+          $('#edition-draw-clear').addClass('disabled');
+          $('#edition-draw-save').addClass('disabled');
+          $('#edition-menu-start').hide();
+          $('#edition-menu-draw').show();
+          updateSwitcherSize();
+          $('#lizmap-edition-message').remove();
+          mAddMessage(lizDict['edition.draw.activate'],'info',true).attr('id','lizmap-edition-message');
+        }
+      });
+      $('#edition-draw-cancel').click(function(){
+        $('#lizmap-edition-message').remove();
+        var layerId = editCtrls.click.layerId;
+        var geomType = '';
+        for (var alName in config.editionLayers) {
+          var al = config.editionLayers[alName];
+          if ( alName in config.layers && al.layerId == layerId)
+            geomType = al.geometryType;
+        }
+        if ( geomType != '' ) {
+          var ctrl = editCtrls[geomType];
+          ctrl.deactivate();
+        }
+        editLayer.destroyFeatures();
+        $('#edition-draw-clear').addClass('disabled');
+        $('#edition-draw-save').addClass('disabled');
+        $('#edition-menu-draw').hide();
+        $('#edition-menu-start').show();
+        updateSwitcherSize();
+      });
+      $('#edition-draw-save').click(function(){
+        if ( $(this).hasClass('disabled') )
+          return false;
+
+        var layerId = editCtrls.click.layerId;
+        var geomType = '';
+        for (var alName in config.editionLayers) {
+          var al = config.editionLayers[alName];
+          if ( alName in config.layers && al.layerId == layerId)
+            geomType = al.geometryType;
+        }
+        if ( geomType != '' ) {
+          var ctrl = editCtrls[geomType];
+          ctrl.finishSketch();
+        }
+      });
+      $('#edition-draw-clear').click(function(){
+        if ( $(this).hasClass('disabled') )
+          return false;
+
+        var layerId = editCtrls.click.layerId;
+        var geomType = '';
+        for (var alName in config.editionLayers) {
+          var al = config.editionLayers[alName];
+          if ( alName in config.layers && al.layerId == layerId)
+            geomType = al.geometryType;
+        }
+        if ( geomType != '' ) {
+          var ctrl = editCtrls[geomType];
+          ctrl.cancel();
+          $('#edition-draw-clear').addClass('disabled');
+          $('#edition-draw-save').addClass('disabled');
+        }
+      });
     } else {
-      $('#annotation').parent().remove();
-      $('#annotation-point-menu').remove();
-      $('#annotation-line-menu').remove();
-      $('#annotation-polygon-menu').remove();
+      $('#edition').parent().remove();
+      $('#edition-menu').remove();
+      $('#edition-modal').remove();
     }
   }
 

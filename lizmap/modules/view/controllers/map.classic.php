@@ -90,7 +90,7 @@ class mapCtrl extends jController {
       "wms" => jUrl::get('lizmap~service:index'),
       "media" => jUrl::get('lizmap~service:getMedia'),
       "nominatim" => jUrl::get('lizmap~osm:nominatim'),
-      "annotation" => jUrl::get('lizmap~annotation:createAnnotation'),
+      "edition" => jUrl::get('lizmap~edition:getFeature'),
     );
     
     if(jacl2::check('lizmap.admin.repositories.delete'))

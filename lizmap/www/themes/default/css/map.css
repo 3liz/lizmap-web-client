@@ -149,11 +149,11 @@ body {
 .navbar .nav .print.active a .icon {
   background-position: -160px 0px;
 }
-.navbar .nav .annotation .icon {
+.navbar .nav .edition .icon {
   background-position: -200px -20px;
 }
-.navbar .nav .annotation a:hover .icon,
-.navbar .nav .annotation.active a .icon {
+.navbar .nav .edition a:hover .icon,
+.navbar .nav .edition.active a .icon {
   background-position: -200px 0px;
 }
 .navbar .nav .measure .icon {
@@ -291,8 +291,8 @@ body {
 #menu .measure h3 .icon {
   background-position: -140px 0px;
 }
-#toolbar .annotation h3 .icon,
-#menu .annotation h3 .icon {
+#toolbar .edition h3 .icon,
+#menu .edition h3 .icon {
   background-position : -200px 0px;
 }
 
@@ -910,7 +910,7 @@ body {
 
 .lizmapPopup.olPopup .jforms-ctrl-date,
 #map-content .lizmapPopup .jforms-ctrl-date,
-#annotation-modal .jforms-ctrl-date{
+#edition-modal .jforms-ctrl-date{
   width:auto;
 }
 

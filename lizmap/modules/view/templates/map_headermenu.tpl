@@ -53,16 +53,13 @@
         </a>
       </li>
       {/if}
-      {if $annotation}
-      <li class="annotation dropdown">
-        <a class="dropdown-toggle" data-toggle="dropdown" href="#" id="annotation" data-original-title="{@view~annotation.navbar.title@}" data-placement="bottom" rel="tooltip">
+      {if $edition}
+      <li class="edition dropdown">
+        <a class="dropdown-toggle" data-toggle="dropdown" href="#" id="edition" data-original-title="{@view~edition.navbar.title@}" data-placement="bottom" rel="tooltip">
           <span class="icon"></span>
           <span class="caret"></span>
         </a>
         <ul class="dropdown-menu pull-right">
-          <li><a id="annotation-point" href="#">{@view~annotation.navbar.title.point@}</a></li>
-          <li><a id="annotation-line" href="#">{@view~annotation.navbar.title.line@}</a></li>
-          <li><a id="annotation-polygon" href="#">{@view~annotation.navbar.title.polygon@}</a></li>
         </ul>
       </li>
       {/if}

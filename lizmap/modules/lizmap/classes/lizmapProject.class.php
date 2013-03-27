@@ -140,13 +140,13 @@ class lizmapProject{
       return false;
     }
     
-    public function hasAnnotationLayers(){
-      if ( property_exists($this->cfg,'annotationLayers') ){
+    public function hasEditionLayers(){
+      if ( property_exists($this->cfg,'editionLayers') ){
         if(!jacl2::check('lizmap.tools.annotation.use', $this->repository->getKey()))
           return false;
 
         $count = 0;
-        foreach( $this->cfg->annotationLayers as $key=>$obj ){
+        foreach( $this->cfg->editionLayers as $key=>$obj ){
           $count += 1;
         }
         if ( $count != 0 )

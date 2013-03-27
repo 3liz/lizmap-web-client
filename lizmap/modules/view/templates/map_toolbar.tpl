@@ -1,12 +1,30 @@
-{if $annotation}
-<div id="annotation-point-menu" class="annotation" style="display:none;">
-  <h3><span class="title"><button id="annotation-point-stop" class="btn btn-stop btn-mini btn-link" title="{@view~map.toolbar.content.stop@}"></button><span class="icon"></span>&nbsp;<span class="text">{@view~annotation.toolbar.title.point@}</span></span></h3>
-</div>
-<div id="annotation-line-menu" class="annotation" style="display:none;">
-  <h3><span class="title"><button id="annotation-line-stop" class="btn btn-stop btn-mini btn-link" title="{@view~map.toolbar.content.stop@}"></button><span class="icon"></span>&nbsp;<span class="text">{@view~annotation.toolbar.title.line@}</span></span></h3>
-</div>
-<div id="annotation-polygon-menu" class="annotation" style="display:none;">
-  <h3><span class="title"><button id="annotation-polygon-stop" class="btn btn-stop btn-mini btn-link" title="{@view~map.toolbar.content.stop@}"></button><span class="icon"></span>&nbsp;<span class="text">{@view~annotation.toolbar.title.polygon@}</span></span></h3>
+{if $edition}
+<div id="edition-menu" class="edition" style="display:none;">
+  <h3><span class="title"><button id="edition-stop" class="btn btn-stop btn-mini btn-link" title="{@view~map.toolbar.content.stop@}"></button><span class="icon"></span>&nbsp;<span class="text">{@view~edition.toolbar.title@}</span></span></h3>
+  <div class="menu-content">
+    <div id="edition-menu-start" class="btn-group" data-toggle="buttons-checkbox">
+      <button id="edition-draw" class="btn btn-small">{@view~edition.toolbar.draw.title@}</button>
+      <button id="edition-select" class="btn btn-small">{@view~edition.toolbar.select.title@}</button>
+    </div>
+    <div id="edition-menu-draw" style="display:none;" class="btn-group" data-toggle="buttons-checkbox">
+      <button id="edition-draw-cancel" class="btn btn-small">{@view~edition.toolbar.cancel.title@}</button>
+      <button id="edition-draw-clear" class="btn btn-small disabled">{@view~edition.toolbar.draw.clear.title@}</button>
+      <button id="edition-draw-save" class="btn btn-small disabled">{@view~edition.toolbar.draw.save.title@}</button>
+    </div>
+    <div id="edition-menu-select" style="display:none;" class="btn-group" data-toggle="buttons-checkbox">
+      <button id="edition-select-cancel" class="btn btn-small">{@view~edition.toolbar.cancel.title@}</button>
+      <button id="edition-select-unselect" class="btn btn-small disabled">{@view~edition.toolbar.select.unselect.title@}</button>
+      <button id="edition-select-attr" class="btn btn-small disabled">{@view~edition.toolbar.select.attr.title@}</button>
+      <button id="edition-select-undo" class="btn btn-small disabled">{@view~edition.toolbar.select.undo.title@}</button>
+      <button id="edition-select-delete" class="btn btn-small disabled">{@view~edition.toolbar.select.delete.title@}</button>
+    </div>
+    <form style="display:none;">
+      <input type="hidden" name="liz_srid" value=""/>
+      <input type="hidden" name="liz_geometryColumn" value=""/>
+      <input type="hidden" name="liz_wkt" value=""/>
+      <input type="hidden" name="liz_featureId" value=""/>
+    </form>
+  </div>
 </div>
 {/if}
 {if $measure}

@@ -23,7 +23,7 @@ class map_headermenuZone extends jZone {
       'isConnected'=>jAuth::isConnected(),
       'user'=>jAuth::getUserSession(),
       "externalSearch"=>"",
-      "annotation"=>true,
+      "edition"=>true,
       "measure"=>true,
       "locate"=>true,
       "geolocation"=>true,
@@ -42,7 +42,7 @@ class map_headermenuZone extends jZone {
 
     $assign['locate'] = $lproj->hasLocateByLayer();
 
-    $assign['annotation'] = $lproj->hasAnnotationLayers();
+    $assign['edition'] = $lproj->hasEditionLayers();
 
     if ( !property_exists($configOptions,'geolocation')
       || $configOptions->geolocation != 'True')

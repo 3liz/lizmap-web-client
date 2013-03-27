@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<form xmlns="http://jelix.org/ns/forms/1.1">
+
+<hidden ref="liz_project"/>
+<hidden ref="liz_repository"/>
+<hidden ref="liz_layerId"/>
+<hidden ref="liz_featureId"/>
+<hidden ref="liz_srid"/>
+<hidden ref="liz_proj4"/>
+<hidden ref="liz_geometryColumn"/>
+
+<submit ref="_submit">
+	<label locale="view~edition.form.submit.label" />
+</submit>
+</form>

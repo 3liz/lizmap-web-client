@@ -20,7 +20,7 @@ class map_toolbarZone extends jZone {
 
     // Get lizmapProject class
     $assign = array(
-      "annotation"=>true,
+      "edition"=>true,
       "measure"=>true,
       "print"=>true,
       "locate"=>true,
@@ -38,7 +38,7 @@ class map_toolbarZone extends jZone {
 
     $assign['locate'] = $lproj->hasLocateByLayer();
 
-    $assign['annotation'] = $lproj->hasAnnotationLayers();
+    $assign['edition'] = $lproj->hasEditionLayers();
 
     $this->_tpl->assign($assign);
    }
