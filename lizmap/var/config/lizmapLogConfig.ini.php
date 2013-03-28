@@ -11,7 +11,7 @@ logIp=off
 [item:viewmap]
 label="View a map"
 logCounter=on
-logDetail=off
+logDetail=on
 logIp=off
 
 [item:print]

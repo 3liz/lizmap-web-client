@@ -140,7 +140,7 @@ class lizmapLogItem{
       }
       try{
         $dao->insert($rec);
-      }catch(exception $e){
+      }catch(Exception $e){
         jLog::log('Error while inserting a new line in log_detail :'.$e->getMessage());
       }
       
@@ -157,7 +157,7 @@ class lizmapLogItem{
         $rec->counter += 1;
         try{
           $dao->update($rec);
-        }catch(exception $e){
+        }catch(Exception $e){
           jLog::log('Error while updating a line in log_counter :'.$e->getMessage());
         }
         
@@ -171,7 +171,7 @@ class lizmapLogItem{
         $rec->counter = 1;
         try{
           $dao->insert($rec);
-        }catch(exception $e){
+        }catch(Exception $e){
           jLog::log('Error while inserting a new line in log_counter :'.$e->getMessage());
         }
         

@@ -16,6 +16,16 @@
         required="yes" maxlength="" minlength="" regexp="" sequence=""
         updatepattern="" insertpattern="" selectpattern=""/>-->
     </record>
-<!--    <factory>-->
-<!--    </factory>-->
+    <factory>
+    
+        <method name="getDetailRange" type="select">
+            <parameter name="offset"/>
+            <parameter name="limit"/>
+            <order>
+                <orderitem property="id" way="desc" />
+            </order>        
+            <limit offset="$offset" count="$limit"/>
+        </method>
+      
+    </factory>
 </dao>
