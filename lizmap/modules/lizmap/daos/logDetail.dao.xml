@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<dao xmlns="http://jelix.org/ns/dao/1.0">
+    <datasources>
+        <primarytable name="log_detail" realname="log_detail" primarykey="id" />
+    </datasources>
+    <record>
+        <property name="id" fieldname="id" datatype="integer" autoincrement="true" default=""/>
+        <property name="key" fieldname="log_key" datatype="string" required="true"/>
+        <property name="timestamp" fieldname="log_timestamp" datatype="datetime" insertpattern="DATETIME('now')"/>
+        <property name="user" fieldname="log_user" datatype="string"/>
+        <property name="content" fieldname="log_content" datatype="text"/>
+        <property name="repository" fieldname="log_repository" datatype="string"/>
+        <property name="project" fieldname="log_project" datatype="string"/>
+        <property name="ip" fieldname="log_ip" datatype="string"/>
+        <!--<property name="" fieldname="" datatype="string/int/float/date"
+        required="yes" maxlength="" minlength="" regexp="" sequence=""
+        updatepattern="" insertpattern="" selectpattern=""/>-->
+    </record>
+<!--    <factory>-->
+<!--    </factory>-->
+</dao>

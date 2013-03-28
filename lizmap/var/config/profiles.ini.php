@@ -34,11 +34,11 @@ user=myuser
 password=mypassword
 
 
-[jdb:sup]
+[jdb:lizlog]
 driver=pdo
-dsn="pgsql:host=localhost;port=5432;dbname=sup"
-user=kimaidou
-password=tation
+dsn="sqlite:var:logs.db"
+user=lizmap
+password=lizmap
 
 
 ; when you have charset issues, enable force_encoding so the connection will be

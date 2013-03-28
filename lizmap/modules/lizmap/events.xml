@@ -1,0 +1,6 @@
+<events xmlns="http://jelix.org/ns/events/1.0">
+   <listener name="lizmapLog">
+       <event name="LizLogItem" />
+       <event name="AuthCanLogin" />
+   </listener> 
+</events>

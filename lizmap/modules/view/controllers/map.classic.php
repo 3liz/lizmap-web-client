@@ -107,6 +107,15 @@ class mapCtrl extends jController {
       'project'=>$project,
     ), $wmsInfo);
     $rep->body->assign($assign);
+    
+   // Log
+   $eventParams = array(
+    'key' => 'viewmap',
+    'content' => '',
+    'repository' => $lrep->getKey(),
+    'project' => $project
+   );
+   jEvent::notify('LizLogItem', $eventParams);       
 
     return $rep;
   }

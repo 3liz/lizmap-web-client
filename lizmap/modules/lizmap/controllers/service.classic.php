@@ -286,6 +286,15 @@ class serviceCtrl extends jController {
       $data = $this->getFeatureInfoHtml($this->params, $data);
       $mime = 'text/html';
     }
+    
+   // Log
+   $eventParams = array(
+    'key' => 'popup',
+    'content' => '',
+    'repository' => $this->repository->getKey(),
+    'project' => $this->project->getKey()
+   );
+   jEvent::notify('LizLogItem', $eventParams);    
 
     $rep = $this->getResponse('binary');
     $rep->mimeType = $mime;
@@ -477,6 +486,15 @@ class serviceCtrl extends jController {
     $rep->content = $data;
     $rep->doDownload  =  false;
     $rep->outputFileName  =  'getPrint';
+    
+   // Log
+   $eventParams = array(
+    'key' => 'print',
+    'content' => $this->params['template'],
+    'repository' => $this->repository->getKey(),
+    'project' => $this->project->getKey()
+   );
+   jEvent::notify('LizLogItem', $eventParams);
 
     return $rep;
   }

@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<dao xmlns="http://jelix.org/ns/dao/1.0">
+    <datasources>
+        <primarytable name="log_counter" realname="log_counter" primarykey="id" />
+    </datasources>
+    <record>
+        <property name="id" fieldname="id" datatype="integer" autoincrement="true" default=""/>
+        <property name="key" fieldname="key" datatype="string" required="true"/>
+        <property name="counter" fieldname="counter" datatype="integer"/>
+        <property name="repository" fieldname="repository" datatype="string"/>
+        <property name="project" fieldname="project" datatype="string"/>
+        <!--<property name="" fieldname="" datatype="string/int/float/date"
+        required="yes" maxlength="" minlength="" regexp="" sequence=""
+        updatepattern="" insertpattern="" selectpattern=""/>-->
+    </record>
+    <factory>
+      <method name="getDistinctCounter" type="selectfirst">
+        <parameter name="key"/>
+        <parameter name="repository"/>
+        <parameter name="project"/>
+        <conditions logic="and">
+            <eq property="key" expr="$key" />
+            <eq property="repository" expr="$repository" />
+            <eq property="project" expr="$project" />
+        </conditions>
+      </method>
+    </factory>
+</dao>
