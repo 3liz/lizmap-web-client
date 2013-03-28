@@ -84,14 +84,19 @@ class mapCtrl extends jController {
     $rep->addJSLink($bp.'js/bootstrapErrorDecoratorHtml.js');
 
     // Pass some configuration options to the web page through javascript var
-    $rep->addJSCode("var cfgUrl = '".jUrl::get('lizmap~service:getProjectConfig', array('repository'=>$repository, 'project'=>$project))."';");
-    $rep->addJSCode("var wmsServerURL = '".jUrl::get('lizmap~service:index', array('repository'=>$repository, 'project'=>$project))."';");
-    $rep->addJSCode("var mediaServerURL = '".jUrl::get('view~media:getMedia', array('repository'=>$repository, 'project'=>$project))."';");
-    $rep->addJSCode("var nominatimURL = '".jUrl::get('lizmap~osm:nominatim')."';");
-    $rep->addJSCode("var createAnnotationURL = '".jUrl::get('lizmap~annotation:createAnnotation', array('repository'=>$repository, 'project'=>$project))."';");
+    $lizUrls = array(
+      "params" => array('repository'=>$repository, 'project'=>$project),
+      "config" => jUrl::get('lizmap~service:getProjectConfig'),
+      "wms" => jUrl::get('lizmap~service:index'),
+      "media" => jUrl::get('lizmap~service:getMedia'),
+      "nominatim" => jUrl::get('lizmap~osm:nominatim'),
+      "annotation" => jUrl::get('lizmap~annotation:createAnnotation'),
+    );
     
     if(jacl2::check('lizmap.admin.repositories.delete'))
-      $rep->addJSCode("var removeCacheServerUrl = '".jUrl::get('admin~config:removeLayerCache', array('repository'=>$repository, 'project'=>$project))."';");
+      $lizUrls['removeCache'] = jUrl::get('admin~config:removeLayerCache');
+
+    $rep->addJSCode("var lizUrls = ".json_encode($lizUrls).";");
 
     // Get the WMS information
     $wmsInfo = $lproj->getWMSInformation();

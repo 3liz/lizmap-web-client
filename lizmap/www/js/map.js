@@ -245,7 +245,7 @@ var lizMap = function() {
    * withScale - {boolean} url with scale parameter
    *
    * Dependencies:
-   * wmsServerUrl
+   * lizUrls.wms
    *
    * Returns:
    * {text} the url
@@ -278,8 +278,13 @@ var lizMap = function() {
     legendParams['LAYERFONTBOLD'] = "FALSE";
     if (withScale)
       legendParams['SCALE'] = map.getScale();
-    var legendParamsString = OpenLayers.Util.getParameterString(legendParams);
-    return OpenLayers.Util.urlAppend(wmsServerURL, legendParamsString);
+    var legendParamsString = OpenLayers.Util.getParameterString(
+         legendParams
+        );
+    var service = OpenLayers.Util.urlAppend(lizUrls.wms
+        ,OpenLayers.Util.getParameterString(lizUrls.params)
+    );
+    return OpenLayers.Util.urlAppend(service, legendParamsString);
   }
 
   /**
@@ -392,7 +397,9 @@ var lizMap = function() {
       // creating the {<OpenLayers.Layer.WMS>} and the tree node
       if (layer.name != 'Overview' && layerConfig) {
         var node = {name:layerName,config:layerConfig,parent:pNode};
-        var service = wmsServerURL;
+        var service = OpenLayers.Util.urlAppend(lizUrls.wms
+          ,OpenLayers.Util.getParameterString(lizUrls.params)
+        );
         var layerWmsParams = {
           layers:layer.name
           ,version:'1.3.0'
@@ -797,7 +804,12 @@ var lizMap = function() {
      ,'PROPERTYNAME':'geometry,'+locate.fieldName
      ,'OUTPUTFORMAT':'GeoJSON'
     };
-    $.get(wmsServerURL,wfsOptions,function(data) {
+    var service = OpenLayers.Util.urlAppend(lizUrls.wms
+        ,OpenLayers.Util.getParameterString(lizUrls.params)
+    );
+    $.get(service
+        ,wfsOptions
+        ,function(data) {
       locate['features'] = {};
       var features = data.features;
       features.sort(function(a, b) {
@@ -1016,6 +1028,10 @@ var lizMap = function() {
       var self = $(this);
       if (self.attr('aria-disabled')=='true')
         return false;
+      var removeCacheServerUrl = OpenLayers.Util.urlAppend(
+         lizUrls.removeCache
+        ,OpenLayers.Util.getParameterString(lizUrls.params)
+      );
       var windowLink = removeCacheServerUrl + '&layer=' + self.val();
       // Open link in a new window
       if (confirm(lizDict['tree.button.removeCache'] + ' ?'))
@@ -1118,7 +1134,10 @@ var lizMap = function() {
           strokeColor: 'yellow'
         })
       }));
-      $.get(wmsServerURL,{
+      var service = OpenLayers.Util.urlAppend(lizUrls.wms
+          ,OpenLayers.Util.getParameterString(lizUrls.params)
+      );
+      $.get(service, {
           'SERVICE':'WFS'
          ,'VERSION':'1.0.0'
          ,'REQUEST':'GetCapabilities'
@@ -1165,14 +1184,23 @@ var lizMap = function() {
    * create the overview
    */
   function createOverview() {
-    var ovLayer = new OpenLayers.Layer.WMS('overview',wmsServerURL
-              ,{layers:'Overview',version:'1.3.0',exceptions:'application/vnd.ogc.se_inimage'
-              ,format:'image/png'
-              ,transparent:true,dpi:96}
-              ,{isBaseLayer:true
-               ,gutter:5
-               ,buffer:0
-              });
+    var service = OpenLayers.Util.urlAppend(lizUrls.wms
+        ,OpenLayers.Util.getParameterString(lizUrls.params)
+    );
+    var ovLayer = new OpenLayers.Layer.WMS('overview'
+        ,service
+        ,{
+          layers:'Overview'
+         ,version:'1.3.0'
+         ,exceptions:'application/vnd.ogc.se_inimage'
+         ,format:'image/png'
+         ,transparent:true
+         ,dpi:96
+        },{
+          isBaseLayer:true
+         ,gutter:5
+         ,buffer:0
+        });
 
     if (config.options.hasOverview) {
       // get and define the max extent
@@ -1420,7 +1448,8 @@ var lizMap = function() {
 
   function addFeatureInfo() {
       var info = new OpenLayers.Control.WMSGetFeatureInfo({
-            url: wmsServerURL,
+            url: lizUrls.wms,
+            vendorParams: lizUrls.params,
             title: 'Identify features by clicking',
             type:OpenLayers.Control.TYPE_TOGGLE,
             queryVisible: true,
@@ -1601,7 +1630,10 @@ var lizMap = function() {
       if (composerMap.length != 0) {
         composerMap = composerMap[0].getAttribute('name');
         var extent = dragCtrl.layer.features[0].geometry.getBounds();
-        var url = wmsServerURL+'&SERVICE=WMS';
+        var url = OpenLayers.Util.urlAppend(lizUrls.wms
+          ,OpenLayers.Util.getParameterString(lizUrls.params)
+        );
+        url += '&SERVICE=WMS';
         //url += '&VERSION='+capabilities.version+'&REQUEST=GetPrint';
         url += '&VERSION=1.3&REQUEST=GetPrint';
         url += '&FORMAT=pdf&EXCEPTIONS=application/vnd.ogc.se_inimage&TRANSPARENT=true';
@@ -1736,6 +1768,9 @@ var lizMap = function() {
   function addAnnotationControls() {
     // Annotation layers
     if ('annotationLayers' in config) {
+      var service = OpenLayers.Util.urlAppend(lizUrls.annotation
+        ,OpenLayers.Util.getParameterString(lizUrls.params)
+      );
       var pointLayer = null;
       var lineLayer = null;
       var polygonLayer = null;
@@ -1783,7 +1818,7 @@ var lizMap = function() {
         polygonLayer.events.on({
           'featureadded': function(evt) {
             drawnFeat = evt.feature;
-            $.get(createAnnotationURL
+            $.get(service
               ,{layerId:drawnFeat.layer.name}
               ,function (result) {
                 setAnnotationModal(result);
@@ -1831,7 +1866,7 @@ var lizMap = function() {
         lineLayer.events.on({
           'featureadded': function(evt) {
             drawnFeat = evt.feature;
-            $.get(createAnnotationURL
+            $.get(service
               ,{layerId:drawnFeat.layer.name}
               ,function (result) {
                 setAnnotationModal(result);
@@ -1879,7 +1914,7 @@ var lizMap = function() {
         pointLayer.events.on({
           'featureadded': function(evt) {
             drawnFeat = evt.feature;
-            $.get(createAnnotationURL
+            $.get(service
               ,{layerId:drawnFeat.layer.name}
               ,function (result) {
                 setAnnotationModal(result);
@@ -2226,17 +2261,20 @@ var lizMap = function() {
   }
 
   function addNominatimSearch() {
-    if ( !nominatimURL ) {
+    if ( !('nominatim' in lizUrls) ) {
       $('#nominatim-search').remove();
       return false;
     }
+    var service = OpenLayers.Util.urlAppend(lizUrls.nominatim
+        ,OpenLayers.Util.getParameterString(lizUrls.params)
+    );
     // Search with nominatim
     var wgs84 = new OpenLayers.Projection('EPSG:4326');
     var extent = new OpenLayers.Bounds( map.maxExtent.toArray() );
     extent.transform(map.getProjectionObject(), wgs84);
     $('#nominatim-search').submit(function(){
       $('#nominatim-search .dropdown-inner .items').html('');
-      $.get(nominatimURL
+      $.get(service
         ,{"query":$('#search-query').val(),"bbox":extent.toBBOX()}
         ,function(data) {
           var text = '';
@@ -2407,12 +2445,17 @@ var lizMap = function() {
     init: function() {
       var self = this;
       //get config
-      $.getJSON(cfgUrl,function(cfgData) {
+      $.getJSON(lizUrls.config,lizUrls.params,function(cfgData) {
         config = cfgData;
         config.options.hasOverview = false;
 
          //get capabilities
-        $.get(wmsServerURL,{SERVICE:'WMS',REQUEST:'GetCapabilities',VERSION:'1.3.0'},function(data) {
+        var service = OpenLayers.Util.urlAppend(lizUrls.wms
+          ,OpenLayers.Util.getParameterString(lizUrls.params)
+        );
+        $.get(service
+          ,{SERVICE:'WMS',REQUEST:'GetCapabilities',VERSION:'1.3.0'}
+          ,function(data) {
           //parse capabilities
           if (!parseData(data))
             return true;
