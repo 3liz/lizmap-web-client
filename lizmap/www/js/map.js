@@ -1448,8 +1448,9 @@ var lizMap = function() {
 
   function addFeatureInfo() {
       var info = new OpenLayers.Control.WMSGetFeatureInfo({
-            url: lizUrls.wms,
-            vendorParams: lizUrls.params,
+            url: OpenLayers.Util.urlAppend(lizUrls.wms
+              ,OpenLayers.Util.getParameterString(lizUrls.params)
+            ),
             title: 'Identify features by clicking',
             type:OpenLayers.Control.TYPE_TOGGLE,
             queryVisible: true,
