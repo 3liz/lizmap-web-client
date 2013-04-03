@@ -45,6 +45,10 @@ class lizmapRepository{
     }
 
     public function getPath(){
+      // add a trailing slash if needed
+      if( !preg_match('#/$#', $this->data['path'] ))
+        $this->data['path'] .= '/';
+      // if path is relative, get full path
       if ($this->data['path'][0] != '/')
         return jApp::varPath().$this->data['path'];
       return $this->data['path'];

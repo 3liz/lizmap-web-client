@@ -636,8 +636,16 @@ class configCtrl extends jController {
 
     // Repository data
     $data = array();
-    foreach(lizmap::getRepositoryProperties() as $prop)
+    foreach(lizmap::getRepositoryProperties() as $prop){
       $data[$prop] = $form->getData($prop);
+      // Check paths
+      if( $prop == 'path' ) {
+        # add a trailing / if needed
+        if( !preg_match('#/$#', $data[$prop]) ){
+          $data[$prop].= '/';
+        }
+      }
+    }
 
     // Save the data
     if($new && !$lrep)
