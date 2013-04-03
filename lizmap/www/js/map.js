@@ -64,7 +64,7 @@ var lizMap = function() {
         return ret;
     };
     aName = normalize(aName);
-    var reg = new RegExp(' ', 'g');
+    var reg = new RegExp('\\W', 'g');
     return aName.replace(reg, '_');
   }
 
