@@ -131,9 +131,15 @@ class configCtrl extends jController {
     $form->setData('defaultRepository', $services->defaultRepository);
 
     // Set form data values
-    foreach($services->getProperties() as $ser)
+    foreach($services->getProperties() as $ser){
       $form->setData($ser, $services->$ser);
-      
+      if($ser == 'allowUserAccountRequests')
+        if($services->$ser)
+          $form->setData($ser, 'on');
+        else
+          $form->setData($ser, 'off');
+    }
+    
     // If wrong cacheRootDirectory, use the system temporary directory
     $cacheRootDirectory = $form->getData('cacheRootDirectory');
     if(!is_writable($cacheRootDirectory) or !is_dir($cacheRootDirectory)){

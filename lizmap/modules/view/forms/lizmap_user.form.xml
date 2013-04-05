@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<form xmlns="http://jelix.org/ns/forms/1.1">
+
+<input ref="login" required="true" minlength="3" maxlength="50">
+	<label locale="view~user.form.login.label"/>
+	<hint locale="view~user.form.login.help"/>
+	<help locale="view~user.form.login.help"/>
+</input>
+
+<input ref="email" required="true" type="email">
+	<label locale="view~user.form.email.label"/>
+</input>
+
+<secret ref="password" minlength="8" maxlength="120" required="true">
+   <label locale="view~user.form.password.label"/>
+   <hint locale="view~user.form.password.help"/>
+   <help locale="view~user.form.password.help"/>
+   <confirm locale="view~user.form.password.confirm.label"/>
+</secret>
+
+<input ref="firstname" required="true" maxlength="100">
+	<label locale="view~user.form.firstname.label"/>
+</input>
+
+<input ref="lastname" required="true" maxlength="100">
+	<label locale="view~user.form.lastname.label"/>
+</input>
+
+<input ref="organization" required="true" maxlength="100">
+	<label locale="view~user.form.organization.label"/>
+</input>
+
+<input ref="phonenumber" maxlength="20">
+	<label locale="view~user.form.phonenumber.label"/>
+</input>
+
+<input ref="street" required="true" maxlength="150">
+	<label locale="view~user.form.street.label"/>
+</input>
+
+<input ref="postcode" required="true" maxlength="10">
+	<label locale="view~user.form.postcode.label"/>
+</input>
+
+<input ref="city" required="true" maxlength="150">
+	<label locale="view~user.form.city.label"/>
+</input>
+
+<input ref="country" maxlength="100">
+	<label locale="view~user.form.country.label"/>
+</input>
+
+<textarea ref="comment" required="true" maxlength="300">
+	<label locale="view~user.form.comment.label"/>
+	<hint locale="view~user.form.comment.help"/>
+	<help locale="view~user.form.comment.help"/>
+</textarea>
+
+<captcha ref="antispam">
+  <label locale="view~user.form.antispam.label"/>
+</captcha>
+
+<hidden ref="name"/>
+
+<submit ref="_submit">
+	<label locale="view~user.form.submit.label"/>
+</submit>
+</form>

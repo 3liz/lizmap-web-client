@@ -33,6 +33,17 @@
   <item value="1" locale="admin~admin.form.admin_services.debugMode.1.label"/>
 </menulist>
 
+<menulist ref="allowUserAccountRequests">
+  <label locale="admin~admin.form.admin_services.allowUserAccountRequests.label"/>
+  <item value="off" selected="true">off</item>
+  <item value="on">on</item>
+</menulist>
+
+<input ref="adminContactEmail" type="email">
+	<label locale="admin~admin.form.admin_services.adminContactEmail.label"/>
+	<help locale="admin~admin.form.admin_services.adminContactEmail.help"/>
+</input>
+
 <submit ref="_submit">
 	<label locale="admin~admin.form.admin_services.submit.label"/>
 </submit>

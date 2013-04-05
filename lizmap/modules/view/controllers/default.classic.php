@@ -42,6 +42,11 @@ class defaultCtrl extends jController {
     $rep->body->assign('repositoryLabel', $title);
     $rep->body->assign('isConnected', jAuth::isConnected());
     $rep->body->assign('user', jAuth::getUserSession());
+    
+    // Get lizmap services
+    $services = lizmap::getServices();
+    if($services->allowUserAccountRequests)
+      $rep->body->assign('allowUserAccountRequests', True);
 
     if ( $repository ) {
       $lrep = lizmap::getRepository($repository);

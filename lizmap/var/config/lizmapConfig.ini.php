@@ -19,6 +19,8 @@ debugMode=0
 cacheRootDirectory="/tmp/"
 ; cache root directory where cache files will be stored
 ; must be writable
+allowUserAccountRequests=off
+adminContactEmail="none"
 
 ;Repositories
 ;Each repository must be set in a separate section
@@ -33,6 +35,10 @@ path="../install/qgis/"
 [repository:intranet]
 label="Lizmap Demo - Intranet"
 path="../install/qgis_intranet/"
+
+
+
+
 
 
 

@@ -25,7 +25,9 @@ class lizmapServices{
       'defaultRepository',
       'proxyMethod',
       'debugMode',
-      'cacheRootDirectory'
+      'cacheRootDirectory',
+      'allowUserAccountRequests',
+      'adminContactEmail'
     );
     // Wms map server
     public $wmsServerURL = '';
@@ -37,8 +39,12 @@ class lizmapServices{
     public $proxyMethod = '';
     // debug mode : none or log
     public $debugMode = '';
-    // debug mode : none or log
+    // Cache root directory
     public $cacheRootDirectory = '';
+    // if we allow to view the form to request an account
+    public $allowUserAccountRequests = '';
+    // admin contact email
+    public $adminContactEmail = '';
 
     public function __construct () {
       // read the lizmap configuration file

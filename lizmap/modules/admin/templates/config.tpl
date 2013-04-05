@@ -22,6 +22,8 @@
       <dt>{@admin~admin.configuration.services.defaultRepository.label@}</dt><dd>{$services->defaultRepository}</dd>
       <dt>{@admin~admin.configuration.services.proxyMethod.label@}</dt><dd>{$services->proxyMethod}</dd>
       <dt>{@admin~admin.configuration.services.debugMode.label@}</dt><dd>{$services->debugMode}</dd>
+      <dt>{@admin~admin.configuration.services.allowUserAccountRequests.label@}</dt><dd>{$services->allowUserAccountRequests}</dd>
+      <dt>{@admin~admin.configuration.services.adminContactEmail.label@}</dt><dd>{$services->adminContactEmail}</dd>
     </dl>
 
     <!-- Modify -->
