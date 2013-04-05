@@ -133,7 +133,7 @@ class editionCtrl extends jController {
     }
 
     // Redirect if no rights to use the annotation tool
-    if(!jacl2::check('lizmap.tools.annotation.use', $lrep->getKey())){
+    if(!jacl2::check('lizmap.tools.edition.use', $lrep->getKey())){
       jMessage::add(jLocale::get('view~edition.access.denied'), 'AuthorizationRequired');
       return false;
     }

@@ -7,3 +7,7 @@ ALTER TABLE jlx_user ADD COLUMN postcode TEXT NOT NULL DEFAULT '';
 ALTER TABLE jlx_user ADD COLUMN city TEXT NOT NULL DEFAULT '';
 ALTER TABLE jlx_user ADD COLUMN country TEXT;
 ALTER TABLE jlx_user ADD COLUMN comment TEXT;
+
+UPDATE jacl2_rights SET id_aclsbj = 'lizmap.tools.edition.use' WHERE id_aclsbj = 'lizmap.tools.annotation.use';
+UPDATE jacl2_subject SET id_aclsbj = 'lizmap.tools.edition.use' WHERE id_aclsbj = 'lizmap.tools.annotation.use';
+
