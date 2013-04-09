@@ -260,7 +260,7 @@ class lizmapProject{
         $configJson->layersOrder = $layersOrder;
       }
 
-      // Remove annotationLayers from config if no right to access this tool
+      // Remove editionLayers from config if no right to access this tool
       // Or if no ability to load spatialite extension
       if(jacl2::check('lizmap.tools.edition.use', $this->repository->getKey())){
         $spatial = false;
@@ -273,19 +273,19 @@ class lizmapProject{
           }
         }
         if(!$spatial){
-          foreach( $configJson->annotationLayers as $key=>$obj ){
+          foreach( $configJson->editionLayers as $key=>$obj ){
             $layerXml = $this->getXmlLayer( $obj->layerId );
             $layerXmlZero = $layerXml[0];
             $provider = $layerXmlZero->xpath('provider');
             $provider = (string)$provider[0];
             if ( $provider == 'spatialite' )
-              unset($configJson->annotationLayers->$key);
+              unset($configJson->editionLayers->$key);
           }
         }
       } else {
-        unset($configJson->annotationLayers);
+        unset($configJson->editionLayers);
       }
-      $configRead = json_encode($configJson);      
+      $configRead = json_encode($configJson);
 
       return $configRead;
     }

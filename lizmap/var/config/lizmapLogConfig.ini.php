@@ -3,10 +3,10 @@ active=true
 profile=lizlog
 
 [item:login]
-label="User logs in"
-logCounter=on
-logDetail=off
-logIp=off
+label="User logs in"    ;label of the action to log.
+logCounter=on           ;activate counter for this action
+logDetail=off           ;activate detailed log for this action = 1 new line per action
+logIp=off               ;log ip address for detailed log
 
 [item:viewmap]
 label="View a map"
@@ -26,9 +26,16 @@ logCounter=on
 logDetail=off
 logIp=off
 
-[item:annotationAdd]
-label="Add annotation"
+[item:editionSaveFeature]
+label="Save a feature (creation or modification)"
 logCounter=on
 logDetail=off
 logIp=off
+
+[item:editionDeleteFeature]
+label="Delete a feature"
+logCounter=on
+logDetail=off
+logIp=off
+
 

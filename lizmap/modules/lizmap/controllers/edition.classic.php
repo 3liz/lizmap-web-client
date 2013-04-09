@@ -132,7 +132,7 @@ class editionCtrl extends jController {
       return false;
     }
 
-    // Redirect if no rights to use the annotation tool
+    // Redirect if no rights to use the edition tool
     if(!jacl2::check('lizmap.tools.edition.use', $lrep->getKey())){
       jMessage::add(jLocale::get('view~edition.access.denied'), 'AuthorizationRequired');
       return false;
@@ -298,7 +298,7 @@ class editionCtrl extends jController {
 		  if($edittypesXml)
 		    $edittype = $edittypesXml->xpath("edittype[@name='$fieldName']");
     
-		  $this->formControls[$fieldName] = new qgisFormControl($fieldName, $edittype, $aliasXml, $categoriesXml, $prop->type);
+		  $this->formControls[$fieldName] = new qgisFormControl($fieldName, $edittype, $aliasXml, $categoriesXml, $prop);
 		  $form->addControl($this->formControls[$fieldName]->ctrl);
 	    $form->setReadOnly($fieldName, $this->formControls[$fieldName]->isReadOnly);
     }
@@ -795,6 +795,15 @@ class editionCtrl extends jController {
       $rep->action="lizmap~edition:editFeature";
       return $rep;
     }
+    
+    // Log
+    $eventParams = array(
+      'key' => 'editionSaveFeature',
+      'content' => "table=".$this->tableName.", id=".$this->featureId,
+      'repository' => $this->repository->getKey(),
+      'project' => $this->project->getKey()
+    );
+    jEvent::notify('LizLogItem', $eventParams);     
 
     // Redirect to the validation action
     $rep->action="lizmap~edition:validateFeature";
@@ -876,6 +885,16 @@ class editionCtrl extends jController {
     try {
       $rs = $cnx->query($sql);
       jMessage::add( jLocale::get('view~edition.message.success.delete'), 'success');
+      
+      // Log
+      $eventParams = array(
+        'key' => 'editionDeleteFeature',
+        'content' => "table=".$this->tableName.", id=".$this->featureId,
+        'repository' => $this->repository->getKey(),
+        'project' => $this->project->getKey()
+      );
+      jEvent::notify('LizLogItem', $eventParams);       
+      
     } catch (Exception $e) {
       jLog::log("SQL = ".$sql);
       jLog::log("An error has been raised when saving form data edition to db : ".$e->getMessage() ,'error');

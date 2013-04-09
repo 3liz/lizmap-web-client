@@ -7,7 +7,9 @@
   {/if}
 </div>
 <div class="modal-header">
+{assign $empty = True}
   {foreach $forms as $form}
+  {assign $empty = False}
   <div>
     <form>
     <dl class="dl-horizontal">
@@ -25,7 +27,15 @@
     </dl>
     </form>
   </div>
+  <hr>
   {/foreach}
+  
+  {if $empty}
+  <div>
+    <p>{@view~edition.modal.message.no.feature.found@}</p>
+  </div>
+  {/if}
+  
 </div>
 <div class="modal-footer">
 <a href="#" class="btn" data-dismiss="modal" aria-hidden="true">Close</a>

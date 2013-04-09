@@ -25,12 +25,12 @@ class logsCtrl extends jController {
   function index() {
     $rep = $this->getResponse('html');
     
-    // Get counter
+    // Get counter count
     $dao = jDao::get('lizmap~logCounter', 'lizlog');
     $conditions = jDao::createConditions();
     $counterNumber = $dao->countBy($conditions);
     
-    // Get details (only 100 first)
+    // Get details count
     $dao = jDao::get('lizmap~logDetail', 'lizlog');
     $conditions = jDao::createConditions();
     $detailNumber = $dao->countBy($conditions);
@@ -102,13 +102,13 @@ class logsCtrl extends jController {
   function detail() {
     $rep = $this->getResponse('html');
     
-    $maxvisible = 5;
+    $maxvisible = 50;
     $page = $this->intParam('page');
     if(!$page)
       $page = 1;
     $offset = $page * $maxvisible - $maxvisible;
         
-    // Get details (only 100 first)
+    // Get details
     $dao = jDao::get('lizmap~logDetail', 'lizlog');
     $detail = $dao->getDetailRange($offset, $maxvisible);
 

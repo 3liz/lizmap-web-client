@@ -2339,6 +2339,9 @@ var lizMap = function() {
           $('#edition-draw-save').addClass('disabled');
         }
       });
+      
+    $('#edition-menu a[rel="tooltip"]').tooltip();
+    
     } else {
       $('#edition').parent().remove();
       $('#edition-menu').remove();

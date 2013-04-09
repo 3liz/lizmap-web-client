@@ -38,6 +38,9 @@ class qgisFormControl{
     // Read-only
     public $isReadOnly = False;
     
+    // required
+    public $required = False;
+    
     // Table mapping QGIS and jelix forms
     public $qgisEdittypeMap = array(
       0 => array (
@@ -139,16 +142,19 @@ class qgisFormControl{
   * @param object $edittype simplexml object corresponding to the QGIS edittype for this field.
   * @param object $aliasXml simplexml object corresponding to the QGIS alias for this field.
   * @param object $rendererCategories simplexml object corresponding to the QGIS categories of the renderer.
-  * @param string $dataType Type of the column : 'integer', 'text', 'float', 'blob', 'geometry'
+  * @param object $prop Jelix object with field properties (datatype, required, etc.)
   */
-  public function __construct ($ref, $edittype, $aliasXml=Null, $rendererCategories=Null, $dataType='text'){
+  public function __construct ($ref, $edittype, $aliasXml=Null, $rendererCategories=Null, $prop){
   
     // Set class attributes
     $this->ref = $ref;
     $this->fieldName = $ref;
     if($aliasXml and $aliasXml[0])
       $this->fieldAlias = (string)$aliasXml[0]->attributes()->name;    
-    $this->fieldDataType = $this->castDataType[strtolower($dataType)];
+    $this->fieldDataType = $this->castDataType[strtolower($prop->type)];
+    
+    if($prop->notNull && !$prop->autoIncrement)
+      $this->required = True;
     
     if($this->fieldDataType != 'geometry'){
       $this->edittype = $edittype;
@@ -240,12 +246,14 @@ class qgisFormControl{
       $this->ctrl->datatype = $datatype;  
     }
     
-#    todo : set the regexp ?
-
     // Read-only
     if($this->fieldDataType != 'geometry')
       if(array_key_exists('readonly', $this->qgisEdittypeMap[$this->fieldEditType]['jform'] ))
         $this->isReadOnly = True;
+        
+    // Required
+    if( $this->required )
+      $this->ctrl->required = True;
 
   }
   
