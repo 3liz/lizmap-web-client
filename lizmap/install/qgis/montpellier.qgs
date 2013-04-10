@@ -81,6 +81,17 @@
         </legendgroup>
     </legend>
     <Composer title="Composeur1" visible="0">
+        <ComposerMap keepLayerSet="false" id="0" previewMode="Cache" drawCanvasItems="true">
+            <Extent ymin="43.6016" xmin="3.85843" ymax="43.6246" xmax="3.89397"/>
+            <LayerSet/>
+            <Grid gridStyle="0" crossLength="3" penColorRed="0" penColorBlue="0" intervalX="0" offsetX="0" intervalY="0" offsetY="0" show="0" penWidth="0" penColorGreen="0">
+                <Annotation direction="0" precision="3" position="1" frameDistance="1" show="0" font="Ubuntu,11,-1,5,50,0,0,0,0,0"/>
+            </Grid>
+            <ComposerItem width="291.054" x="2.97669" y="18.8524" rotation="0" height="188.524" frame="true" outlineWidth="0.3" zValue="2" lastValidViewScaleFactor="3.02349" id="" positionLock="false">
+                <FrameColor alpha="255" red="0" blue="0" green="0"/>
+                <BackgroundColor alpha="255" red="255" blue="255" green="255"/>
+            </ComposerItem>
+        </ComposerMap>
         <ComposerLabel valign="128" labelText="LizMap&#xa;An example PDF output from QGIS composer." halign="4" margin="1">
             <LabelFont description="Ubuntu,12,-1,5,75,0,0,0,0,0"/>
             <FontColor red="0" blue="0" green="0"/>
@@ -271,17 +282,6 @@
                 <BackgroundColor alpha="255" red="255" blue="255" green="255"/>
             </ComposerItem>
         </ComposerLegend>
-        <ComposerMap keepLayerSet="false" id="0" previewMode="Cache" drawCanvasItems="true">
-            <Extent ymin="43.6016" xmin="3.85843" ymax="43.6246" xmax="3.89397"/>
-            <LayerSet/>
-            <Grid gridStyle="0" crossLength="3" penColorRed="0" penColorBlue="0" intervalX="0" offsetX="0" intervalY="0" offsetY="0" show="0" penWidth="0" penColorGreen="0">
-                <Annotation direction="0" precision="3" position="1" frameDistance="1" show="0" font="Ubuntu,11,-1,5,50,0,0,0,0,0"/>
-            </Grid>
-            <ComposerItem width="291.054" x="2.97669" y="18.8524" rotation="0" height="188.524" frame="true" outlineWidth="0.3" zValue="2" lastValidViewScaleFactor="3.02349" id="" positionLock="false">
-                <FrameColor alpha="255" red="0" blue="0" green="0"/>
-                <BackgroundColor alpha="255" red="255" blue="255" green="255"/>
-            </ComposerItem>
-        </ComposerMap>
         <Composition printResolution="300" paperWidth="297" snapGridOffsetX="0" snapGridResolution="1" snapGridOffsetY="0" snapping="0" paperHeight="210" printAsRaster="0"/>
     </Composer>
     <projectlayers layercount="9">
@@ -1334,9 +1334,9 @@
                 <edittype type="0" name="label"/>
                 <edittype type="11" name="pkuid"/>
             </edittypes>
-            <editform></editform>
+            <editform>.</editform>
             <editforminit></editforminit>
-            <annotationform></annotationform>
+            <annotationform>.</annotationform>
             <attributeactions/>
         </maplayer>
         <maplayer minimumScale="0" maximumScale="1e+08" geometry="Point" type="vector" hasScaleBasedVisibilityFlag="0">
@@ -1853,7 +1853,7 @@
             <active type="int">1</active>
             <timeFrameType type="QString">days</timeFrameType>
             <loopAnimation type="int">0</loopAnimation>
-            <currentMapTimePosition type="int">1365514155</currentMapTimePosition>
+            <currentMapTimePosition type="int">1365537727</currentMapTimePosition>
             <animationFrameLength type="int">2000</animationFrameLength>
             <timeLayerList type="QStringList"/>
             <playBackwards type="int">0</playBackwards>
