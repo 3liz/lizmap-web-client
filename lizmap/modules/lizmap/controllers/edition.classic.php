@@ -466,7 +466,7 @@ class editionCtrl extends jController {
     if(!$this->getEditionParameters())
       return $this->serviceAnswer();
     $bbox = $this->param('bbox');
-    if( !preg_match('/\d+(\.\d+)?,\d+(\.\d+)?,\d+(\.\d+)?,\d+(\.\d+)?/',$bbox) ) {
+    if( !preg_match('#(-)?\d+(\.\d+)?,(-)?\d+(\.\d+)?,(-)?\d+(\.\d+)?,(-)?\d+(\.\d+)?#',$bbox) ) {
       jMessage::add( jLocale::get('view~edition.message.error.bbox'), 'error');
       return $this->serviceAnswer();
     }
