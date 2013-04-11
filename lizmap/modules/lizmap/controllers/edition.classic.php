@@ -272,7 +272,9 @@ class editionCtrl extends jController {
     // edittypes and categories
     $edittypesXml = $layerXmlZero->edittypes[0];
     $_categoriesXml = $layerXmlZero->xpath('renderer-v2/categories');
-    $categoriesXml = $_categoriesXml[0];
+    $categoriesXml = Null;
+    if( isset($_categoriesXml[0]) )
+      $categoriesXml = $_categoriesXml[0];
     
     // Get proj4 string
     $proj4 = (string)$layerXmlZero->srs->spatialrefsys->proj4;
@@ -499,7 +501,7 @@ class editionCtrl extends jController {
     if ( $this->provider == 'spatialite' )
       $sql .= " WHERE intersects( BuildMBR(".$bbox.", ".$crs." ), transform(".$this->geometryColumn.", ".$crs." ) );";
     else
-      $sql .= " WHERE intersects( makeEnvelope(".$bbox.", ".$crs." ), transform(".$this->geometryColumn.", ".$crs." ) );";
+      $sql .= " WHERE ST_Intersects( ST_MakeEnvelope(".$bbox.", ".$crs." ), ST_Transform(".$this->geometryColumn.", ".$crs." ) );";
 
     try {
       // Run the query and loop through the result to set an array
