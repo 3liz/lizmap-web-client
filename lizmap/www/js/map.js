@@ -1013,7 +1013,7 @@ var lizMap = function() {
       // Test if the link is internal
       var mediaRegex = /^(\/)?media\//;
       if(mediaRegex.test(windowLink))
-        windowLink = mediaServerURL+'&path=/'+windowLink;
+        windowLink = lizUrls.media+'&path=/'+windowLink;
       // Open link in a new window
       window.open(windowLink);
     });
