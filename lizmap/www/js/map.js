@@ -1012,8 +1012,12 @@ var lizMap = function() {
       var windowLink = self.val();
       // Test if the link is internal
       var mediaRegex = /^(\/)?media\//;
-      if(mediaRegex.test(windowLink))
-        windowLink = lizUrls.media+'&path=/'+windowLink;
+      if(mediaRegex.test(windowLink)){
+        var mediaLink = OpenLayers.Util.urlAppend(lizUrls.media
+          ,OpenLayers.Util.getParameterString(lizUrls.params)
+        )
+        windowLink = mediaLink+'&path=/'+windowLink;
+      }
       // Open link in a new window
       window.open(windowLink);
     });

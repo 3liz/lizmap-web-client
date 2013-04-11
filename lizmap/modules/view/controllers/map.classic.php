@@ -88,7 +88,7 @@ class mapCtrl extends jController {
       "params" => array('repository'=>$repository, 'project'=>$project),
       "config" => jUrl::get('lizmap~service:getProjectConfig'),
       "wms" => jUrl::get('lizmap~service:index'),
-      "media" => jUrl::get('lizmap~service:getMedia'),
+      "media" => jUrl::get('view~media:getMedia'),
       "nominatim" => jUrl::get('lizmap~osm:nominatim'),
       "edition" => jUrl::get('lizmap~edition:getFeature'),
     );
