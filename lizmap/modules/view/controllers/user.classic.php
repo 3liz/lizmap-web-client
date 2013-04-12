@@ -174,16 +174,24 @@ class userCtrl extends jController {
         $form->prepareObjectFromControls($user, $props);
         jAuth::saveNewUser($user);
         jMessage::add(jLocale::get("view~user.form.message.saved"));
-        
-        // Send email to admin contact        
-        $this->sendEmailToAdmin($user);
-        
+        $ok = true;
         $rep->action="view~user:validateAccount";
       }
       catch(exception $e){
+        $ok = false;
         jMessage::add(jLocale::get("view~user.form.message.not.saved"));
         $rep->action="view~user:editAccount";
-      }      
+      }
+
+      // Send email to the administrator
+      if($ok){
+        try{
+          $this->sendEmailToAdmin($user);
+        }
+        catch(Exception $e){
+          jLog::log('error while sending email to admin: '. $e->getMessage() );
+        }
+      }
 
     }
     return $rep;
