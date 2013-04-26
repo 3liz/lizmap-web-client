@@ -290,6 +290,13 @@ class lizmapProject{
       return $configRead;
     }
 
+    public function getCanvasColor(){
+      $red = $this->xml->xpath( "//properties/Gui/CanvasColorRedPart" );
+      $green = $this->xml->xpath( "//properties/Gui/CanvasColorGreenPart" );
+      $blue = $this->xml->xpath( "//properties/Gui/CanvasColorBluePart" );
+      return 'rgb('.$red[0].','.$green[0].','.$blue[0].')';
+    }
+
     public function getProj4( $authId ){
       return $this->xml->xpath( "//spatialrefsys/authid[.='".$authId."']/parent::*/proj4" );
     }
