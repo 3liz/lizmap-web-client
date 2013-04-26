@@ -14,7 +14,7 @@ Proj4js.Proj.stere = {
   OBLIQ:	2,
   EQUIT:	3,
 
-  init : function() {
+  init: function() {
   	this.phits = this.lat_ts ? this.lat_ts : Proj4js.common.HALF_PI;
     var t = Math.abs(this.lat0);
   	if ((Math.abs(t) - Proj4js.common.HALF_PI) < Proj4js.common.EPSLN) {
@@ -86,7 +86,7 @@ Proj4js.Proj.stere = {
     	case this.EQUIT:
     		y = 1. + cosphi * coslam;
     		if (y <= Proj4js.common.EPSLN) {
-          F_ERROR;
+            Proj4js.reportError("stere:forward:Equit");
         }
         y = this.akm1 / y;
     		x = y * cosphi * sinlam;
@@ -95,7 +95,7 @@ Proj4js.Proj.stere = {
     	case this.OBLIQ:
     		y = 1. + this.sinph0 * sinphi + this.cosph0 * cosphi * coslam;
     		if (y <= Proj4js.common.EPSLN) {
-          F_ERROR;
+            Proj4js.reportError("stere:forward:Obliq");
         }
         y = this.akm1 / y;
     		x = y * cosphi * sinlam;
@@ -107,7 +107,7 @@ Proj4js.Proj.stere = {
         //Note  no break here so it conitnues through S_POLE
     	case this.S_POLE:
     		if (Math.abs(lat - Proj4js.common.HALF_PI) < this.TOL) {
-          F_ERROR;
+            Proj4js.reportError("stere:forward:S_POLE");
         }
         y = this.akm1 * Math.tan(Proj4js.common.FORTPI + .5 * lat);
     		x = sinlam * y;
@@ -118,19 +118,20 @@ Proj4js.Proj.stere = {
     	coslam = Math.cos(lon);
     	sinlam = Math.sin(lon);
     	sinphi = Math.sin(lat);
+    	var sinX, cosX;
     	if (this.mode == this.OBLIQ || this.mode == this.EQUIT) {
-        X = 2. * Math.atan(this.ssfn_(lat, sinphi, this.e));
-    		sinX = Math.sin(X - Proj4js.common.HALF_PI);
-    		cosX = Math.cos(X);
+    	  var Xt = 2. * Math.atan(this.ssfn_(lat, sinphi, this.e));
+        sinX = Math.sin(Xt - Proj4js.common.HALF_PI);
+        cosX = Math.cos(Xt);
     	}
     	switch (this.mode) {
     	case this.OBLIQ:
-    		A = this.akm1 / (this.cosX1 * (1. + this.sinX1 * sinX + this.cosX1 * cosX * coslam));
+    		var A = this.akm1 / (this.cosX1 * (1. + this.sinX1 * sinX + this.cosX1 * cosX * coslam));
     		y = A * (this.cosX1 * sinX - this.sinX1 * cosX * coslam);
     		x = A * cosX;
     		break;
     	case this.EQUIT:
-    		A = 2. * this.akm1 / (1. + cosX * coslam);
+    		var A = 2. * this.akm1 / (1. + cosX * coslam);
     		y = A * sinX;
     		x = A * cosX;
     		break;
@@ -181,11 +182,11 @@ Proj4js.Proj.stere = {
     		if (Math.abs(rh) <= Proj4js.common.EPSLN) {
     			lat = this.phi0;
     		} else {
-    			lat = Math.asin(cosc * sinph0 + y * sinc * cosph0 / rh);
+    			lat = Math.asin(cosc * this.sinph0 + y * sinc * this.cosph0 / rh);
         }
-        c = cosc - sinph0 * Math.sin(lat);
+        c = cosc - this.sinph0 * Math.sin(lat);
     		if (c != 0. || x != 0.) {
-    			lon = Math.atan2(x * sinc * cosph0, c * rh);
+    			lon = Math.atan2(x * sinc * this.cosph0, c * rh);
         }
     		break;
     	case this.N_POLE:

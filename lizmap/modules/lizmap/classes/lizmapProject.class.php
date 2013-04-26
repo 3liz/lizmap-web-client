@@ -290,6 +290,10 @@ class lizmapProject{
       return $configRead;
     }
 
+    public function getProj4( $authId ){
+      return $this->xml->xpath( "//spatialrefsys/authid[.='".$authId."']/parent::*/proj4" );
+    }
+
     public function getXmlLayer( $layerId ){
       return $this->xml->xpath( "//maplayer[id='$layerId']" );
     }

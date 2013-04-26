@@ -54,6 +54,8 @@ class serviceCtrl extends jController {
       return $this->GetMap();
     elseif ($request == "GetFeature")
       return $this->GetFeature();
+    elseif ($request == "GetProj4")
+      return $this->GetProj4();
     else{
       jMessage::add('Wrong REQUEST parameter given', 'InvalidRequest');
       return $this->serviceException();
@@ -554,6 +556,25 @@ class serviceCtrl extends jController {
     $rep->doDownload  =  false;
     $rep->outputFileName  =  'qgis_server_wfs';
 
+    return $rep;
+  }
+
+  /**
+  * GetProj4
+  * @param string $repository Lizmap Repository
+  * @param string $project Name of the project : mandatory
+  * @param string $authid SRS or CRS authid like USER:*
+  * @return Image rendered by the Map Server.
+  */
+  function GetProj4(){
+
+    // Get parameters
+    if(!$this->getServiceParameters())
+      return $this->serviceException();
+
+    // Return response
+    $rep = $this->getResponse('text');
+    $rep->content = (string) $this->project->getProj4( $this->param('authid') )[0];
     return $rep;
   }
 

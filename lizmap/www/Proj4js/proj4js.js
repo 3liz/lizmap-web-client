@@ -45,7 +45,7 @@ $Id: Proj.js 2956 2007-07-09 12:17:52Z steven $
 /**
  * Global namespace object for Proj4js library
  */
-Proj4js = {
+var Proj4js = {
 
     /**
      * Property: defaultDatum
@@ -74,9 +74,10 @@ Proj4js = {
             return point;
         }
         
-        // Workaround for Spherical Mercator
-        if ((source.srsProjNumber =="900913" && dest.datumCode != "WGS84" && !dest.datum_params) ||
-            (dest.srsProjNumber == "900913" && source.datumCode != "WGS84" && !source.datum_params)) {
+        // Workaround for datum shifts towgs84, if either source or destination projection is not wgs84
+        if (source.datum && dest.datum && (
+            ((source.datum.datum_type == Proj4js.common.PJD_3PARAM || source.datum.datum_type == Proj4js.common.PJD_7PARAM) && dest.datumCode != "WGS84") ||
+            ((dest.datum.datum_type == Proj4js.common.PJD_3PARAM || dest.datum.datum_type == Proj4js.common.PJD_7PARAM) && source.datumCode != "WGS84"))) {
             var wgs84 = Proj4js.WGS84;
             this.transform(source, wgs84, point);
             source = wgs84;
@@ -152,29 +153,6 @@ Proj4js = {
           return point;
       }
 
-      // If this datum requires grid shifts, then apply it to geodetic coordinates.
-      if( source.datum_type == Proj4js.common.PJD_GRIDSHIFT )
-      {
-        alert("ERROR: Grid shift transformations are not implemented yet.");
-        /*
-          pj_apply_gridshift( pj_param(source.params,"snadgrids").s, 0,
-                              point_count, point_offset, x, y, z );
-          CHECK_RETURN;
-
-          src_a = SRS_WGS84_SEMIMAJOR;
-          src_es = 0.006694379990;
-        */
-      }
-
-      if( dest.datum_type == Proj4js.common.PJD_GRIDSHIFT )
-      {
-        alert("ERROR: Grid shift transformations are not implemented yet.");
-        /*
-          dst_a = ;
-          dst_es = 0.006694379990;
-        */
-      }
-
       // Do we need to go through geocentric coordinates?
       if( source.es != dest.es || source.a != dest.a
           || source.datum_type == Proj4js.common.PJD_3PARAM
@@ -203,13 +181,6 @@ Proj4js = {
           // CHECK_RETURN;
       }
 
-      // Apply grid shift to destination if required
-      if( dest.datum_type == Proj4js.common.PJD_GRIDSHIFT )
-      {
-        alert("ERROR: Grid shift transformations are not implemented yet.");
-        // pj_apply_gridshift( pj_param(dest.params,"snadgrids").s, 1, point);
-        // CHECK_RETURN;
-      }
       return point;
     }, // cs_datum_transform
 
@@ -250,7 +221,7 @@ Proj4js = {
                 if (point[t]!==undefined) { point.z= -v; }
                 break;
             default :
-                alert("ERROR: unknow axis ("+crs.axis[i]+") - check definition of "+src.projName);
+                alert("ERROR: unknow axis ("+crs.axis[i]+") - check definition of "+crs.projName);
                 return null;
             }
         }
@@ -869,9 +840,9 @@ Proj4js.Proj = Proj4js.Class({
         }
         if (!this.axis) { this.axis= "enu"; }
         switch(name) {
-          case 'X': this.axis=                         value + this.axis.substr(1,2); break;
-          case 'Y': this.axis= this.axis.substr(0,1) + value + this.axis.substr(2,1); break;
-          case 'Z': this.axis= this.axis.substr(0,2) + value                        ; break;
+          case 'x': this.axis=                         value + this.axis.substr(1,2); break;
+          case 'y': this.axis= this.axis.substr(0,1) + value + this.axis.substr(2,1); break;
+          case 'z': this.axis= this.axis.substr(0,2) + value                        ; break;
           default : break;
         }
       case 'MORE_HERE':
@@ -926,7 +897,7 @@ Proj4js.Proj = Proj4js.Class({
               case "k_0":    this.k0 = parseFloat(paramVal); break;  // projection scale factor
               case "k":      this.k0 = parseFloat(paramVal); break;  // both forms returned
               case "r_a":    this.R_A = true; break;                 // sphere--area of ellipsoid
-              case "zone":   this.zone = parseInt(paramVal); break;  // UTM Zone
+              case "zone":   this.zone = parseInt(paramVal,10); break;  // UTM Zone
               case "south":   this.utmSouth = true; break;  // UTM north/south
               case "towgs84":this.datum_params = paramVal.split(","); break;
               case "to_meter": this.to_meter = parseFloat(paramVal); break; // cartesian scaling
@@ -976,7 +947,7 @@ Proj4js.Proj = Proj4js.Class({
           Proj4js.extend(this, ellipse);
       }
       if (this.rf && !this.b) this.b = (1.0 - 1.0/this.rf) * this.a;
-      if (Math.abs(this.a - this.b)<Proj4js.common.EPSLN) {
+      if (this.rf === 0 || Math.abs(this.a - this.b)<Proj4js.common.EPSLN) {
         this.sphere = true;
         this.b= this.a;
       }
@@ -1034,11 +1005,12 @@ Proj4js.defs = {
   'WGS84': "+title=long/lat:WGS84 +proj=longlat +ellps=WGS84 +datum=WGS84 +units=degrees",
   'EPSG:4326': "+title=long/lat:WGS84 +proj=longlat +a=6378137.0 +b=6356752.31424518 +ellps=WGS84 +datum=WGS84 +units=degrees",
   'EPSG:4269': "+title=long/lat:NAD83 +proj=longlat +a=6378137.0 +b=6356752.31414036 +ellps=GRS80 +datum=NAD83 +units=degrees",
-  'EPSG:3785': "+title= Google Mercator +proj=merc +a=6378137 +b=6378137 +lat_ts=0.0 +lon_0=0.0 +x_0=0.0 +y_0=0 +k=1.0 +units=m +nadgrids=@null +no_defs"
+  'EPSG:3875': "+title= Google Mercator +proj=merc +a=6378137 +b=6378137 +lat_ts=0.0 +lon_0=0.0 +x_0=0.0 +y_0=0 +k=1.0 +units=m +nadgrids=@null +no_defs"
 };
-Proj4js.defs['GOOGLE'] = Proj4js.defs['EPSG:3785'];
-Proj4js.defs['EPSG:900913'] = Proj4js.defs['EPSG:3785'];
-Proj4js.defs['EPSG:102113'] = Proj4js.defs['EPSG:3785'];
+Proj4js.defs['EPSG:3785'] = Proj4js.defs['EPSG:3875'];  //maintain backward compat, official code is 3875
+Proj4js.defs['GOOGLE'] = Proj4js.defs['EPSG:3875'];
+Proj4js.defs['EPSG:900913'] = Proj4js.defs['EPSG:3875'];
+Proj4js.defs['EPSG:102113'] = Proj4js.defs['EPSG:3875'];
 
 Proj4js.common = {
   PI : 3.141592653589793238, //Math.PI,
@@ -1228,7 +1200,61 @@ Proj4js.common = {
   {
     var temp= e*sinphi;
     return a/Math.sqrt(1.0 - temp*temp);
-  }
+  },
+  
+  //code from the PROJ.4 pj_mlfn.c file;  this may be useful for other projections
+  pj_enfn: function(es) {
+    var en = new Array();
+    en[0] = this.C00 - es * (this.C02 + es * (this.C04 + es * (this.C06 + es * this.C08)));
+    en[1] = es * (this.C22 - es * (this.C04 + es * (this.C06 + es * this.C08)));
+    var t = es * es;
+    en[2] = t * (this.C44 - es * (this.C46 + es * this.C48));
+    t *= es;
+    en[3] = t * (this.C66 - es * this.C68);
+    en[4] = t * es * this.C88;
+    return en;
+  },
+  
+  pj_mlfn: function(phi, sphi, cphi, en) {
+    cphi *= sphi;
+    sphi *= sphi;
+    return(en[0] * phi - cphi * (en[1] + sphi*(en[2]+ sphi*(en[3] + sphi*en[4]))));
+  },
+  
+  pj_inv_mlfn: function(arg, es, en) {
+    var k = 1./(1.-es);
+    var phi = arg;
+    for (var i = Proj4js.common.MAX_ITER; i ; --i) { /* rarely goes over 2 iterations */
+      var s = Math.sin(phi);
+      var t = 1. - es * s * s;
+      //t = this.pj_mlfn(phi, s, Math.cos(phi), en) - arg;
+      //phi -= t * (t * Math.sqrt(t)) * k;
+      t = (this.pj_mlfn(phi, s, Math.cos(phi), en) - arg) * (t * Math.sqrt(t)) * k;
+      phi -= t;
+      if (Math.abs(t) < Proj4js.common.EPSLN)
+        return phi;
+    }
+    Proj4js.reportError("cass:pj_inv_mlfn: Convergence error");
+    return phi;
+  },
+
+/* meridinal distance for ellipsoid and inverse
+**	8th degree - accurate to < 1e-5 meters when used in conjuction
+**		with typical major axis values.
+**	Inverse determines phi to EPS (1e-11) radians, about 1e-6 seconds.
+*/
+  C00: 1.0,
+  C02: .25,
+  C04: .046875,
+  C06: .01953125,
+  C08: .01068115234375,
+  C22: .75,
+  C44: .46875,
+  C46: .01302083333333333333,
+  C48: .00712076822916666666,
+  C66: .36458333333333333333,
+  C68: .00569661458333333333,
+  C88: .3076171875  
 
 };
 
@@ -1270,7 +1296,7 @@ Proj4js.datum = Proj4js.Class({
 
   /****************************************************************/
   // cs_compare_datums()
-  //   Returns 1 (TRUE) if the two datums match, otherwise 0 (FALSE).
+  //   Returns TRUE if the two datums match, otherwise FALSE.
   compare_datums : function( dest ) {
     if( this.datum_type != dest.datum_type ) {
       return false; // false, datums are not equal
@@ -1290,9 +1316,10 @@ Proj4js.datum = Proj4js.Class({
               && this.datum_params[4] == dest.datum_params[4]
               && this.datum_params[5] == dest.datum_params[5]
               && this.datum_params[6] == dest.datum_params[6]);
-    } else if( this.datum_type == Proj4js.common.PJD_GRIDSHIFT ) {
-      return strcmp( pj_param(this.params,"snadgrids").s,
-                     pj_param(dest.params,"snadgrids").s ) == 0;
+    } else if ( this.datum_type == Proj4js.common.PJD_GRIDSHIFT ||
+                dest.datum_type == Proj4js.common.PJD_GRIDSHIFT ) {
+      alert("ERROR: Grid shift transformations are not implemented.");
+      return false
     } else {
       return true; // datums are equal
     }
@@ -1779,6 +1806,7 @@ Proj4js.wktProjections = {
   "Lambert Tangential Conformal Conic Projection": "lcc",
   "Mercator": "merc",
   "Popular Visualisation Pseudo Mercator": "merc",
+  "Mercator_1SP": "merc",
   "Transverse_Mercator": "tmerc",
   "Transverse Mercator": "tmerc",
   "Lambert Azimuthal Equal Area": "laea",

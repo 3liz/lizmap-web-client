@@ -837,6 +837,7 @@ var lizMap = function() {
           var format = new OpenLayers.Format.GeoJSON();
           feat = format.read(feat)[0];
           feat.geometry.transform(proj, map.getProjection());
+          console.log(feat.geometry.getBounds());
           map.zoomToExtent(feat.geometry.getBounds());
           if (locate.displayGeom == 'True')
             layer.addFeatures([feat]);
@@ -1159,7 +1160,16 @@ var lizMap = function() {
             if (lname in config.locateByLayer) {
               var locate = config.locateByLayer[lname];
               locate['crs'] = self.find('SRS').text();
-              new OpenLayers.Projection(locate.crs);
+              if ( locate.crs in Proj4js.defs )
+                new OpenLayers.Projection(locate.crs);
+              else
+                $.get(service, {
+                  'REQUEST':'GetProj4'
+                 ,'authid': locate.crs
+                }, function ( aText ) {
+                  Proj4js.defs[locate.crs] = aText;
+                  new OpenLayers.Projection(locate.crs);
+                }, 'text');
               var bbox = self.find('LatLongBoundingBox');
               locate['bbox'] = [
                 parseFloat(bbox.attr('minx'))
