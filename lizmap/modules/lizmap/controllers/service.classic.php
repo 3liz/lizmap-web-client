@@ -588,7 +588,9 @@ class serviceCtrl extends jController {
 
     // Return response
     $rep = $this->getResponse('text');
-    $rep->content = (string) $this->project->getProj4( $this->param('authid') )[0];
+    $content = $this->project->getProj4( $this->param('authid') );
+    $content = (string)$content[0];
+    $rep->content = $content;
     return $rep;
   }
 
