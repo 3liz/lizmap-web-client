@@ -307,6 +307,29 @@ class serviceCtrl extends jController {
     return $rep;
   }
 
+  /**
+  * replaceMediaPathByMediaUrl : replace all "/media/bla" in a text by the getMedia corresponding URL.
+  * This method is used as callback in GetFeatureInfoHtml method for the preg_replace_callback
+  * @param array $matches Array containing the preg matches
+  * @return Replaced text.
+  */
+  function replaceMediaPathByMediaUrl($matches){
+    $return = '';
+    $return.= '"';
+    $return.= jUrl::getFull(
+      'view~media:getMedia',
+      array(
+        'repository'=>$this->repository->getKey(),
+        'project'=>$this->project->getKey(),
+        'path'=>$matches[2]
+      ),
+      0,
+      $_SERVER['SERVER_NAME']
+    );
+    $return.= '"';
+    return $return;
+  }
+
 
   /**
   * GetFeatureInfoHtml : return HTML for the getFeatureInfo.  
@@ -351,8 +374,6 @@ class serviceCtrl extends jController {
         continue;
       }
 
-
-
       // Get the template for the popup content
       $templateConfigured = False;
       if(property_exists($configLayers->$layername, 'popupTemplate')){
@@ -364,19 +385,12 @@ class serviceCtrl extends jController {
           // first replace all "media/bla/bla/llkjk.ext" by full url       
           $popupTemplate = preg_replace_callback(
             '#(["\']){1}(media/.+\.\w{3,10})(["\']){1}#', 
-            create_function(
-              '$matches',
-              'return jUrl::getFull(
-                \'view~media:getMedia\',
-                array(\'repository\'=>$repository, \'project\'=>$project, \'path\'=>$matches[2]),
-                0,
-                $_SERVER[\'SERVER_NAME\']
-                );'
-            ),
+            Array($this, 'replaceMediaPathByMediaUrl'),
             $popupTemplate
-          );        
+          );
+          // Replace : html encoded chars to let further regexp_replace find attributes 
+          $popupTemplate = str_replace(array('%24', '%7B', '%7D'), array('$', '{', '}'), $popupTemplate);
         }
-
       }
 
       // Loop through the features
