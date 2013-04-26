@@ -25,6 +25,9 @@ class editionCtrl extends jController {
 
   // table name without schema
   private $tableName = '';
+  
+  // QGIS where clause
+  private $whereClause = '';
 
   // provider driver map
   private $providerDriverMap = array(
@@ -169,11 +172,10 @@ class editionCtrl extends jController {
 
     // Get datasource information from QGIS
     $datasourceMatch = preg_match(
-      "#dbname='([^ ]+)' (?:host=([^ ]+) )?(?:port=([0-9]+) )?(?:user='([^ ]+)' )?(?:password='([^ ]+)' )?(?:sslmode=([^ ]+) )?(?:key='([^ ]+)' )?(?:estimatedmetadata=([^ ]+) )?(?:srid=([0-9]+) )?(?:type=([a-zA-Z]+) )?(?:table=\"(.+)\" )?#",
+      "#dbname='([^ ]+)' (?:host=([^ ]+) )?(?:port=([0-9]+) )?(?:user='([^ ]+)' )?(?:password='([^ ]+)' )?(?:sslmode=([^ ]+) )?(?:key='([^ ]+)' )?(?:estimatedmetadata=([^ ]+) )?(?:srid=([0-9]+) )?(?:type=([a-zA-Z]+) )?(?:table=\"(.+)\" \()?(?:([^ ]+)\) )?(?:sql=(.*))?#",
       $datasource,
       $dt
     );
-   
     $dbname = $dt[1];
     $host = $dt[2]; $port = $dt[3];
     $user = $dt[4]; $password = $dt[5];
@@ -181,6 +183,8 @@ class editionCtrl extends jController {
     $estimatedmetadata = $dt[8]; 
     $srid = $dt[9]; $type = $dt[10];
     $table = $dt[11];
+    $geocol = $dt[12];
+    $sql = $dt[13]; 
     
     // If table contains schema name, like "public"."mytable"
     // We need to add double quotes around and find the real table name (without schema)
@@ -195,6 +199,7 @@ class editionCtrl extends jController {
     // Set some private properties
     $this->table = $table;
     $this->tableName = $tableAlone;
+    $this->whereClause = $sql;
     $driver = $this->providerDriverMap[$this->provider];
     
     // Build array of parameters for the virtual profile
@@ -246,6 +251,23 @@ class editionCtrl extends jController {
             $this->geometryType = strtolower($res->type);
         }
       }
+    }
+    
+    // For views : add key from datasource
+    if(!$this->primaryKeys and $key){
+      // check if layer is a view
+      $cnx = jDb::getConnection($this->layerId);
+      if($this->provider == 'postgres'){
+        $sql = " SELECT table_name FROM INFORMATION_SCHEMA.views WHERE table_schema = ANY (current_schemas(false))";
+        $sql.= " AND table_name=".$cnx->quote($tableAlone);
+      }
+      if($this->provider == 'spatialite'){
+        $sql = " SELECT name FROM sqlite_master WHERE type = 'view'";
+        $sql.= " AND name=".$cnx->quote($tableAlone);
+      }
+      $res = $cnx->query($sql);
+      if($res->rowCount() > 0)
+        $this->primaryKeys[] = $key;
     }
     return true;
   }
@@ -499,10 +521,15 @@ class editionCtrl extends jController {
 
     $sql = "SELECT *, ST_AsText(".$this->geometryColumn.") AS astext FROM ".$this->table;
     if ( $this->provider == 'spatialite' )
-      $sql .= " WHERE intersects( BuildMBR(".$bbox.", ".$crs." ), transform(".$this->geometryColumn.", ".$crs." ) );";
+      $sql .= " WHERE intersects( BuildMBR(".$bbox.", ".$crs." ), transform(".$this->geometryColumn.", ".$crs." ) )";
     else
-      $sql .= " WHERE ST_Intersects( ST_MakeEnvelope(".$bbox.", ".$crs." ), ST_Transform(".$this->geometryColumn.", ".$crs." ) );";
-
+      $sql .= " WHERE ST_Intersects( ST_MakeEnvelope(".$bbox.", ".$crs." ), ST_Transform(".$this->geometryColumn.", ".$crs." ) )";
+    
+    // Add the QGIS WHERE clause if needed
+    if($this->whereClause)
+      $sql.= " AND ".$this->whereClause;
+    
+    // Get the corresponding features
     try {
       // Run the query and loop through the result to set an array
       $forms = array();
