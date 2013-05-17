@@ -337,12 +337,16 @@ class qgisFormControl{
         $layer = (string)$this->edittype[0]->attributes()->layer;
         $key = (string)$this->edittype[0]->attributes()->key;
         $value = (string)$this->edittype[0]->attributes()->value;
+        $allowMulti = (string)$this->edittype[0]->attributes()->allowMulti;
+        $filterExpression = (string)$this->edittype[0]->attributes()->filterExpression;
         $this->valueRelationData = array(
           "allowNull" => $allowNull,
           "orderByValue" => $orderByValue,
           "layer" => $layer,
           "key" => $key,
-          "value" => $value
+          "value" => $value,
+          "allowMulti" => $allowMulti,
+          "filterExpression" => $filterExpression
         );
                 
         break;

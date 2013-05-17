@@ -366,6 +366,7 @@ class editionCtrl extends jController {
     $layerName = (string)$_layerName[0];        
     $valueColumn = $this->formControls[$fieldName]->valueRelationData['value'];
     $keyColumn = $this->formControls[$fieldName]->valueRelationData['key'];
+    $filterExpression = $this->formControls[$fieldName]->valueRelationData['filterExpression'];
     $params = array(
       'SERVICE' => 'WFS',
       'VERSION' => '1.0.0',
@@ -373,7 +374,8 @@ class editionCtrl extends jController {
       'TYPENAME' => $layerName,
       'PROPERTYNAME' => $valueColumn.','.$keyColumn,
       'OUTPUTFORMAT' => 'GeoJSON',
-      'map' => $this->repository->getPath().$this->project->getKey().".qgs"
+      'map' => $this->repository->getPath().$this->project->getKey().".qgs",
+      'EXP_FILTER' => $filterExpression
     );
 
     // Build query
