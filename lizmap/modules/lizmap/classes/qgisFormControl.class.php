@@ -41,6 +41,9 @@ class qgisFormControl{
     // required
     public $required = False;
     
+    // Value relation : one of the edittypes. We store information in an array
+    public $valueRelationData = Null;
+    
     // Table mapping QGIS and jelix forms
     public $qgisEdittypeMap = array(
       0 => array (
@@ -93,11 +96,11 @@ class qgisFormControl{
       ),
       15 => array (
             'qgis'=>array('name'=>'Value relation', 'description'=>'Select layer, key column and value column'), 
-            'jform'=>array('markup'=>'input')
+            'jform'=>array('markup'=>'menulist')
       ),
       16 => array (
             'qgis'=>array('name'=>'UUID generator', 'description'=>'Read-only field that generates a UUID if empty'), 
-            'jform'=>array('markup'=>'input')
+            'jform'=>array('markup'=>'input', 'readonly'=>true)
       )
     );
     
@@ -190,6 +193,7 @@ class qgisFormControl{
         
       case 'checkbox':
         $this->ctrl = new jFormsControlCheckbox($this->ref);
+        $this->fillCheckboxValues();
         break;
         
       case 'textarea':
@@ -259,6 +263,18 @@ class qgisFormControl{
   
   
   /*
+  * Define checked and unchecked values for a jForms control checkbox, based on Qgis edittype
+  * @return object Modified jForms control.
+  */
+  public function fillCheckboxValues(){
+    $checked = (string)$this->edittype[0]->attributes()->checked;
+    $unchecked = (string)$this->edittype[0]->attributes()->unchecked;  
+    $this->ctrl->valueOnCheck = $checked;
+    $this->ctrl->valueOnUncheck = $unchecked;
+    $this->required = False; // As there is only a value, even if the checkbox is unchecked
+  }
+  
+  /*
   * Create and populate a datasource for a jForms control based on Qgis edittype
   * @return object Modified jForms control.
   */
@@ -316,7 +332,19 @@ class qgisFormControl{
         
       // Value relation
       case 15:
-        $data[0] = '--qgis edit type not supported yet--';
+        $allowNull = (string)$this->edittype[0]->attributes()->allowNull;
+        $orderByValue = (string)$this->edittype[0]->attributes()->orderByValue;
+        $layer = (string)$this->edittype[0]->attributes()->layer;
+        $key = (string)$this->edittype[0]->attributes()->key;
+        $value = (string)$this->edittype[0]->attributes()->value;
+        $this->valueRelationData = array(
+          "allowNull" => $allowNull,
+          "orderByValue" => $orderByValue,
+          "layer" => $layer,
+          "key" => $key,
+          "value" => $value
+        );
+                
         break;
 
     }

@@ -49,30 +49,30 @@ class editionCtrl extends jController {
   
   // Fields information taken from database
   private $dataFields = '';
-	
-	// Primary key
-	private $primaryKeys = array();
+  
+  // Primary key
+  private $primaryKeys = array();
   
   // Map data type as geometry type
   private $geometryDatatypeMap = array(
-	  'point', 'linestring', 'polygon', 'multipoint', 
-		'multilinestring', 'multipolygon', 'geometrycollection', 'geometry'
-	);
+    'point', 'linestring', 'polygon', 'multipoint', 
+    'multilinestring', 'multipolygon', 'geometrycollection', 'geometry'
+  );
 
-	// Geometry type
-	private $geometryType = '';
-	
-	// Geometry column
-	private $geometryColumn = '';
-	
-	// Geometry srid
-	private $srid = '';
-	
-	// Geometry proj4 string
-	private $proj4 = '';
-	
-	// Form controls
-	private $formControls = '';
+  // Geometry type
+  private $geometryType = '';
+  
+  // Geometry column
+  private $geometryColumn = '';
+  
+  // Geometry srid
+  private $srid = '';
+  
+  // Geometry proj4 string
+  private $proj4 = '';
+  
+  // Form controls
+  private $formControls = '';
 
 
   /**
@@ -89,10 +89,10 @@ class editionCtrl extends jController {
       $title = jLocale::get("view~edition.modal.title.default");
 
     $messages = jMessage::getAll();
-		$rep = $this->getResponse('htmlfragment');
+    $rep = $this->getResponse('htmlfragment');
     $tpl = new jTpl();
     $tpl->assign('title', $title);
-		$content = $tpl->fetch('view~jmessage_modal');
+    $content = $tpl->fetch('view~jmessage_modal');
     $rep->addContent($content);
     jMessage::clearAll();
     return $rep;
@@ -144,10 +144,10 @@ class editionCtrl extends jController {
     $layerXml = $lproj->getXmlLayer( $layerId );
     
     // feature Id (optionnal, only for edition and save)
-		if(preg_match('#,#', $featureIdParam))
-		  $featureId = preg_split('#,#', $featureIdParam);
-		else
-		  $featureId = $featureIdParam;
+    if(preg_match('#,#', $featureIdParam))
+      $featureId = preg_split('#,#', $featureIdParam);
+    else
+      $featureId = $featureIdParam;
 
     // Define class private properties   
     $this->project = $lproj;
@@ -233,14 +233,14 @@ class editionCtrl extends jController {
     $this->dataFields = $fields;
 
     foreach($this->dataFields as $fieldName=>$prop){
-		  // Detect primary key column
-		  if($prop->primary && !in_array($fieldName, $this->primaryKeys)){
-		    $this->primaryKeys[] = $fieldName;
-		  }
-		    
-		  // Detect geometry column
-		  if(in_array( strtolower($prop->type), $this->geometryDatatypeMap)) {
-		    $this->geometryColumn = $fieldName;
+      // Detect primary key column
+      if($prop->primary && !in_array($fieldName, $this->primaryKeys)){
+        $this->primaryKeys[] = $fieldName;
+      }
+        
+      // Detect geometry column
+      if(in_array( strtolower($prop->type), $this->geometryDatatypeMap)) {
+        $this->geometryColumn = $fieldName;
         $this->geometryType = strtolower($prop->type);
         // If postgresql, get real geometryType from geometry_columns (jelix prop gives 'geometry')
         if( $this->provider == 'postgres' and $this->geometryType == 'geometry' ){
@@ -311,30 +311,111 @@ class editionCtrl extends jController {
     jClasses::inc('lizmap~qgisFormControl');
     $this->formControls = array();
     foreach($this->dataFields as $fieldName=>$prop){
-		  
-		  // Create new control from qgis edit type
-		  $aliasXml = Null;
-		  if($layerXmlZero->aliases){
+      
+      // Create new control from qgis edit type
+      $aliasXml = Null;
+      if($layerXmlZero->aliases){
         $aliasesZero = $layerXmlZero->aliases[0];
         $aliasXml = $aliasesZero->xpath("alias[@field='$fieldName']");
       }
-		  $edittype = null;
-		  if($edittypesXml)
-		    $edittype = $edittypesXml->xpath("edittype[@name='$fieldName']");
+      $edittype = null;
+      if($edittypesXml)
+        $edittype = $edittypesXml->xpath("edittype[@name='$fieldName']");
     
-		  $this->formControls[$fieldName] = new qgisFormControl($fieldName, $edittype, $aliasXml, $categoriesXml, $prop);
-		  $form->addControl($this->formControls[$fieldName]->ctrl);
-	    $form->setReadOnly($fieldName, $this->formControls[$fieldName]->isReadOnly);
+      $this->formControls[$fieldName] = new qgisFormControl($fieldName, $edittype, $aliasXml, $categoriesXml, $prop);
+
+      // Fill comboboxes of editType "Value relation" from relation layer
+      // Query QGIs Server via WFS
+      if($this->formControls[$fieldName]->fieldEditType == 15
+        and $this->formControls[$fieldName]->valueRelationData
+      ){
+        $this->fillComboboxFromValueRelationLayer($fieldName);
+      }
+      
+      // Add the control to the form
+      $form->addControl($this->formControls[$fieldName]->ctrl);
+      // Set readonly if needed
+      $form->setReadOnly($fieldName, $this->formControls[$fieldName]->isReadOnly);
+      
+
     }
     
-		if(!$this->primaryKeys){
-		  jMessage::add("The table ".$this->table." has no primary keys. The edition tool needs a primary key on the table to be defined.", "error");
-		  return false;
-		}
+    if(!$this->primaryKeys){
+      jMessage::add("The table ".$this->table." has no primary keys. The edition tool needs a primary key on the table to be defined.", "error");
+      return false;
+    }
       
     return True;
   }
 
+
+  /**
+  * Get WFS data from a "Value Relation" layer and fill the combobox form control for a specific field.
+  * @param string $fieldName Name of QGIS field 
+  *
+  * @return Modified form control
+  */
+  private function fillComboboxFromValueRelationLayer($fieldName){
+  
+    // Build WFS request parameters
+    //   Get layername via id
+    $relationLayerId = $this->formControls[$fieldName]->valueRelationData['layer'];
+    $_relationayerXml = $this->project->getXmlLayer($relationLayerId);
+    $relationayerXml = $_relationayerXml[0];
+    $_layerName = $relationayerXml->xpath('layername');
+    $layerName = (string)$_layerName[0];        
+    $valueColumn = $this->formControls[$fieldName]->valueRelationData['value'];
+    $keyColumn = $this->formControls[$fieldName]->valueRelationData['key'];
+    $params = array(
+      'SERVICE' => 'WFS',
+      'VERSION' => '1.0.0',
+      'REQUEST' => 'GetFeature',
+      'TYPENAME' => $layerName,
+      'PROPERTYNAME' => $valueColumn.','.$keyColumn,
+      'OUTPUTFORMAT' => 'GeoJSON',
+      'map' => $this->repository->getPath().$this->project->getKey().".qgs"
+    );
+
+    // Build query
+    $lizmapServices = lizmap::getServices();
+    $url = $lizmapServices->wmsServerURL.'?';
+    $bparams = http_build_query($params);
+    $querystring = $url . $bparams;
+
+    // Get remote data
+    $lizmapCache = jClasses::getService('lizmap~lizmapCache');
+    $getRemoteData = $lizmapCache->getRemoteData(
+      $querystring,
+      $lizmapServices->proxyMethod,
+      $lizmapServices->debugMode
+    );
+    $wfsData = $getRemoteData[0];
+    $mime = $getRemoteData[1];
+
+    if($wfsData and !in_array(strtolower($mime), array('text/html', 'text/xml')) ){
+      $wfsData = json_decode($wfsData);
+      // Get data from layer
+      $features = $wfsData->features;
+      $data = array();
+      foreach($features as $feat){
+        if(property_exists($feat, 'properties')){
+          $data[(string)$feat->properties->$keyColumn] = $feat->properties->$valueColumn;
+        }
+      }
+      $dataSource = new jFormsStaticDatasource();
+      // orderByValue
+      if(strtolower($this->formControls[$fieldName]->valueRelationData['orderByValue']) == 'true')
+        asort($data);
+      $dataSource->data = $data;
+      $this->formControls[$fieldName]->ctrl->datasource = $dataSource;
+      // required
+      if(strtolower($this->formControls[$fieldName]->valueRelationData['allowNull']) == 'false')
+        $this->formControls[$fieldName]->ctrl->required = True;
+    }else{
+      $this->formControls[$fieldName]->ctrl->hint = 'Problem : cannot get data to fill this combobox !';
+      $this->formControls[$fieldName]->ctrl->help = 'Problem : cannot get data to fill this combobox !';
+    }  
+  }
 
   
   /**
@@ -661,7 +742,7 @@ class editionCtrl extends jController {
     if(!$this->getEditionParameters())
       return $this->serviceAnswer();
 
-    // Create form instance		
+    // Create form instance    
     $form = jForms::create('view~edition', $this->featureId);    
     if(!$form){
       jMessage::add('An error has been raised when creating the form', 'formNotDefined');
@@ -780,11 +861,11 @@ class editionCtrl extends jController {
       return $this->serviceAnswer();
     }
     
-		// Dynamically add form controls based on QGIS layer information
-		// And save data into the edition table (insert or update line)
+    // Dynamically add form controls based on QGIS layer information
+    // And save data into the edition table (insert or update line)
     $save =True;
     if(!$this->addFormControls($form) )
-		  return $this->serviceAnswer();
+      return $this->serviceAnswer();
      
     // Get data from the request and set the form controls data accordingly
     $form->initFromRequest();
@@ -796,13 +877,13 @@ class editionCtrl extends jController {
       $form->setErrorOn($this->geometryColumn, "You must set the geometry");
     }
 
-		$rep = $this->getResponse('redirect');
-		$rep->params = array(
-		  "project"=>$this->project->getKey(), 
-		  "repository"=>$this->repository->getKey(), 
-		  "layerId"=>$this->layerId,
-		  "featureId"=>$this->featureIdParam
-		);
+    $rep = $this->getResponse('redirect');
+    $rep->params = array(
+      "project"=>$this->project->getKey(), 
+      "repository"=>$this->repository->getKey(), 
+      "layerId"=>$this->layerId,
+      "featureId"=>$this->featureIdParam
+    );
     
     // Save data into database
     if ($check)
@@ -854,7 +935,7 @@ class editionCtrl extends jController {
     // Get repository, project data and do some right checking
     if(!$this->getEditionParameters())
       return $this->serviceAnswer();
-    		
+        
     // Destroy the form
     if($form = jForms::get('view~edition', $this->featureId)){
       jForms::destroy('view~edition', $this->featureId);
@@ -864,8 +945,8 @@ class editionCtrl extends jController {
       return $this->serviceAnswer();
     }
   
-		// Return html fragment response
-		jMessage::add(jLocale::get('view~edition.form.data.saved'), 'success');
+    // Return html fragment response
+    jMessage::add(jLocale::get('view~edition.form.data.saved'), 'success');
     return $this->serviceAnswer();
       
   }

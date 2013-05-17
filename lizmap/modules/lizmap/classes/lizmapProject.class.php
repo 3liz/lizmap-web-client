@@ -259,6 +259,10 @@ class lizmapProject{
       if(!empty($layersOrder)){
         $configJson->layersOrder = $layersOrder;
       }
+      
+      // Remove FTP remote directory
+      if(property_exists($configJson->options, 'remoteDir'))
+        unset($configJson->options->remoteDir);
 
       // Remove editionLayers from config if no right to access this tool
       // Or if no ability to load spatialite extension
