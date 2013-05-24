@@ -374,9 +374,12 @@ class editionCtrl extends jController {
       'TYPENAME' => $layerName,
       'PROPERTYNAME' => $valueColumn.','.$keyColumn,
       'OUTPUTFORMAT' => 'GeoJSON',
-      'map' => $this->repository->getPath().$this->project->getKey().".qgs",
-      'EXP_FILTER' => $filterExpression
+      'map' => $this->repository->getPath().$this->project->getKey().".qgs"
     );
+    // add EXP_FILTER only if needed to avoid QGIS getPrint error
+    if($filterExpression){
+      $params['EXP_FILTER'] = $filterExpression;
+    }
 
     // Build query
     $lizmapServices = lizmap::getServices();
