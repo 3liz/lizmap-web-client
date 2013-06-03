@@ -762,7 +762,7 @@ var lizMap = function() {
 
 
            //slider
-           $('#navbar div.slider').slider("value",this.getZoom());
+           //$('#navbar div.slider').slider("value",this.getZoom());
 
            //pan button
            $('#navbar button.pan').click();
@@ -837,12 +837,23 @@ var lizMap = function() {
           var format = new OpenLayers.Format.GeoJSON();
           feat = format.read(feat)[0];
           feat.geometry.transform(proj, map.getProjection());
-          console.log(feat.geometry.getBounds());
+          //console.log(feat.geometry.getBounds());
           map.zoomToExtent(feat.geometry.getBounds());
           if (locate.displayGeom == 'True')
             layer.addFeatures([feat]);
         }
         $(this).blur();
+      });
+      $('#locate-layer-'+aName).combobox({
+        "select": function(evt, ui){
+          if ( ui.item ) {
+            var self = $(this);
+            var uiItem = $(ui.item);
+            window.setTimeout(function(){
+              self.val(uiItem.val()).change();
+            }, 1);
+          }
+        }
       });
     },'json');
   }
@@ -2713,8 +2724,10 @@ var lizMap = function() {
   function mCheckMobile() {
     var minMapSize = 450;
     var w = $('body').parent()[0].offsetWidth;
+    /*
     if($.browser.msie)
       w = $('body').width();
+      */
     var leftW = w - minMapSize;
     if(leftW < minMapSize || w < minMapSize)
       return true;
@@ -2870,7 +2883,6 @@ var lizMap = function() {
           // create navigation and toolbar
           createNavbar();
           createToolbar();
-
           $('#navbar div.slider').slider("value",map.getZoom());
           map.events.on({
             zoomend : function() {

@@ -418,6 +418,54 @@ body {
   -webkit-appearance:none;
 }
 
+#locate div.locate-layer .custom-combobox-toggle {
+  background: url(images/123_click.png) no-repeat right;
+  width: 20px;
+  height: 20px;
+  border: 0;
+  border-radius: 0;
+  margin: 0;
+  position: absolute;
+  top: 0;
+  right: 0;
+  cursor: pointer;
+}
+#locate div.locate-layer .custom-combobox-input {
+  background: none;
+  color : rgb(51,51,51);
+  height: 20px;
+  width: 90%;
+  border: 0;
+  border-radius: 0;
+  padding : 0em 0.5em;
+  margin :  0em;
+  text-shadow: none;
+}
+.ui-autocomplete.ui-menu {
+  border-radius: 0;
+  font-weight: normal;
+}
+.ui-autocomplete.ui-menu .ui-menu-item a {
+  background: none;
+  color : rgb(51,51,51);
+  height: 20px;
+  border: 0;
+  border-radius: 0;
+  padding : 0em 0.5em;
+  margin :  0em;
+  text-shadow: none;
+  font-weight: normal;
+  font-size: 11.844px;
+  white-space: nowrap;
+  vertical-align: baseline;
+}
+.ui-autocomplete.ui-menu .ui-menu-item a.ui-state-hover,
+.ui-autocomplete.ui-menu .ui-menu-item a.ui-state-active,
+.ui-autocomplete.ui-menu .ui-menu-item a.ui-state-focus {
+  font-weight: bold;
+  background: #0094D6;
+}
+
 #baselayer-menu div.baselayer-select select option,
 #locate div.locate-layer select option {
   font-weight: normal;

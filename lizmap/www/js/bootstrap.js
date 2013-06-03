@@ -233,6 +233,7 @@
  /* BUTTON DATA-API
   * =============== */
 
+    /*
   $(function () {
     $('body').on('click.button.data-api', '[data-toggle^=button]', function ( e ) {
       var $btn = $(e.target)
@@ -240,6 +241,7 @@
       $btn.button('toggle')
     })
   })
+  */
 
 }(window.jQuery);/* ==========================================================
  * bootstrap-carousel.js v2.1.0
