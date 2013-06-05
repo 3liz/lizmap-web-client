@@ -444,6 +444,9 @@ body {
 .ui-autocomplete.ui-menu {
   border-radius: 0;
   font-weight: normal;
+  max-height:150px;
+  overflow-x:hidden;
+  overflow-y:auto
 }
 .ui-autocomplete.ui-menu .ui-menu-item a {
   background: none;
@@ -688,7 +691,7 @@ body {
 
 /*Loading window*/
 #ui-dialog-title-loading {
-  font-size:0.8em;
+  font-size:0.7em;
 }
 
 #loading {
