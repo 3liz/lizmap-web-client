@@ -91,6 +91,7 @@ class mapCtrl extends jController {
       "media" => jUrl::get('view~media:getMedia'),
       "nominatim" => jUrl::get('lizmap~osm:nominatim'),
       "edition" => jUrl::get('lizmap~edition:getFeature'),
+      "permalink" => jUrl::getFull('view~map:index')
     );
     
     if(jacl2::check('lizmap.admin.repositories.delete'))
@@ -98,6 +99,16 @@ class mapCtrl extends jController {
 
     $rep->addJSCode("var lizUrls = ".json_encode($lizUrls).";");
     $rep->addStyle('#map','background-color:'.$lproj->getCanvasColor().';');
+    
+    // permalink
+    $lon = $this->floatParam('lon');
+    $lat = $this->floatParam('lat');
+    $zoom = $this->intParam('zoom');
+    if(!$lon or !$lat or !$zoom) {
+      $lon = "null";$lat = "null";$zoom = "null";
+    }
+    $rep->addJSCode('var lizPosition = {"lon":'.$lon.', "lat":'.$lat.', "zoom":'.$zoom.'};');
+      
 
     // Get the WMS information
     $wmsInfo = $lproj->getWMSInformation();

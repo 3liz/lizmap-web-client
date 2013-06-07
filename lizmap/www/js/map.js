@@ -1453,6 +1453,7 @@ var lizMap = function() {
     else
       $('#toggleGeolocate').parent().remove();
 
+
     addEditionControls();
 
     if ( ('measure' in configOptions)
@@ -2652,6 +2653,7 @@ var lizMap = function() {
     });
   }
 
+
   function addNominatimSearch() {
     if ( !('nominatim' in lizUrls) ) {
       $('#nominatim-search').remove();
@@ -2887,7 +2889,16 @@ var lizMap = function() {
 
           // initialize the map
           $('#switcher').height(0);
-          map.zoomToExtent(map.maxExtent);
+          // Set map extent depending on options
+          if(lizPosition['lon']!=null){
+            map.setCenter(
+              new OpenLayers.LonLat(lizPosition['lon'], lizPosition['lat']), 
+              lizPosition['zoom']
+            );
+          }else{
+            map.zoomToExtent(map.maxExtent);
+          }
+
           updateContentSize();
           map.events.triggerEvent("zoomend",{"zoomChanged": true});
 
@@ -2906,6 +2917,22 @@ var lizMap = function() {
                 var url = getLayerLegendGraphicUrl(name, true);
                 self.find('div.legendGraphics img').attr('src',url);
               });
+            }
+          });
+          
+          // Refresh permalink
+          map.events.on({
+            moveend : function(){
+                var permalinkParams = lizUrls.params;
+                var center = map.getCenter();
+                permalinkParams['lon'] = center.lon;
+                permalinkParams['lat'] = center.lat;
+                permalinkParams['zoom'] = map.getZoom();
+                var permalink = OpenLayers.Util.urlAppend(
+                  lizUrls.permalink,
+                  OpenLayers.Util.getParameterString(permalinkParams)
+                );
+                $('#permalink').attr('href', permalink);
             }
           });
 
@@ -3283,6 +3310,7 @@ lizMap.events.on({
          //console.log(myError);
        }
          }
+
 
      }
    ,'uicreated':function(evt){
