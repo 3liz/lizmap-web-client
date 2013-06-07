@@ -97,6 +97,10 @@ var lizMap = function() {
       $('#toggleLegend')
         .attr('data-original-title',$('#toggleLegendOn').attr('value'))
         .parent().attr('class','legend');
+
+      // autocompletion items for locatebylayer feature
+      $('div.locate-layer select').show();
+      $('span.custom-combobox input').hide();
     }
     else
     {
@@ -119,7 +123,12 @@ var lizMap = function() {
       $('#toggleLegend')
         .attr('data-original-title',$('#toggleMapOnlyOn').attr('value'))
         .parent().attr('class','map');
+
+      // autocompletion items for locatebylayer feature
+      $('div.locate-layer select').hide();
+      $('span.custom-combobox input').show();
     }
+    
   }
 
 
@@ -855,6 +864,11 @@ var lizMap = function() {
           }
         }
       });
+      if(mCheckMobile()){
+        // autocompletion items for locatebylayer feature
+        $('div.locate-layer select').show();
+        $('span.custom-combobox input').hide();
+      }
     },'json');
   }
 

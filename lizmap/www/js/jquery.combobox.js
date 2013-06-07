@@ -19,8 +19,16 @@
     .autocomplete({
       delay: 0,
       minLength: 0,
+      autoFocus: true,
       source: $.proxy( this, "_source" )
     })
+  .focus(
+    function() {
+        $(this).one('mouseup', function() {
+            $(this).select();
+        });
+    }
+  )
   .tooltip({
     tooltipClass: "ui-state-highlight"
   });
