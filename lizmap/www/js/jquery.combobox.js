@@ -11,7 +11,7 @@
   _createAutocomplete: function() {
     var selected = this.element.children( ":selected" ),
   value = selected.val() ? selected.text() : "";
-  originalValue = value;
+  this.originalValue = value;
   this.input = $( "<input>" )
     .appendTo( this.wrapper )
     .val( value )
@@ -105,7 +105,7 @@
     }
     // Remove invalid value
     this.input
-      .val( originalValue  )
+      .val( this.originalValue  )
       .attr( "title", value + " didn't match any item" )
       .tooltip( "open" );
     this.element.val( "" );
