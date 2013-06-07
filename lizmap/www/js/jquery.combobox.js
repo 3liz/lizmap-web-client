@@ -11,6 +11,7 @@
   _createAutocomplete: function() {
     var selected = this.element.children( ":selected" ),
   value = selected.val() ? selected.text() : "";
+  originalValue = value;
   this.input = $( "<input>" )
     .appendTo( this.wrapper )
     .val( value )
@@ -24,9 +25,9 @@
     })
   .focus(
     function() {
-        $(this).one('mouseup', function() {
-            $(this).select();
-        });
+      $(this).one('mouseup', function() {
+          $(this).select();
+      });
     }
   )
   .tooltip({
@@ -72,7 +73,7 @@
     });
   },
   _source: function( request, response ) {
-    var matcher = new RegExp( $.ui.autocomplete.escapeRegex(request.term), "i" );
+    var matcher = new RegExp( "^" + $.ui.autocomplete.escapeRegex(request.term), "i" );
     response( this.element.children( "option" ).map(function() {
       var text = $( this ).text();
       if ( this.value && ( !request.term || matcher.test(text) ) )
@@ -104,7 +105,7 @@
     }
     // Remove invalid value
     this.input
-      .val( "" )
+      .val( originalValue  )
       .attr( "title", value + " didn't match any item" )
       .tooltip( "open" );
     this.element.val( "" );
