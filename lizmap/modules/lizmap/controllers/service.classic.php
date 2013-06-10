@@ -12,12 +12,12 @@
 class serviceCtrl extends jController {
 
 
-  private $project = ''; 
-  private $repository = ''; 
-  private $services = '';
-  private $params = ''; 
-  private $lizmapCache = '';
-  
+  protected $project = '';
+  protected $repository = '';
+  protected $services = '';
+  protected $params = '';
+  protected $lizmapCache = '';
+
 
   /**
   * Redirect to the appropriate action depending on the REQUEST parameter.
@@ -85,8 +85,8 @@ class serviceCtrl extends jController {
   *
   * @return array List of needed variables : $params, $lizmapProject, $lizmapRepository, $lizmapCache.
   */
-  private function getServiceParameters(){
-  
+  protected function getServiceParameters(){
+
     // Get the project
     $project = $this->param('project');
 
