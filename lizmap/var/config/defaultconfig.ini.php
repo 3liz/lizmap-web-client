@@ -28,6 +28,7 @@ defaultJformsBuilder=html
 [responses]
 html=myHtmlResponse
 htmlmap=myHtmlMapResponse
+htmlsimple=simpleHtmlResponse
 
 [error_handling]
 messageLogFormat="%date%\t[%code%]\t%msg%\t%file%\t%line%\n"
@@ -196,4 +197,5 @@ admin.access=2
 [mailLogger]
 email="root@localhost"
 emailHeaders="Content-Type: text/plain; charset=UTF-8\nFrom: webmaster@yoursite.com\nX-Mailer: Jelix\nX-Priority: 1 (Highest)\n"
+
 
