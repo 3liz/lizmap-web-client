@@ -100,7 +100,7 @@ var lizMap = function() {
 
       // autocompletion items for locatebylayer feature
       $('div.locate-layer select').show();
-      $('span.custom-combobox input').hide();
+      $('span.custom-combobox').hide();
     }
     else
     {
@@ -126,7 +126,7 @@ var lizMap = function() {
 
       // autocompletion items for locatebylayer feature
       $('div.locate-layer select').hide();
-      $('span.custom-combobox input').show();
+      $('span.custom-combobox').show();
     }
     
   }
@@ -770,16 +770,8 @@ var lizMap = function() {
              }
            }
 
-
-           //slider
-           //$('#navbar div.slider').slider("value",this.getZoom());
-
            //pan button
            $('#navbar button.pan').click();
-
-           //updateSwitcherSize();
-
-//           alert('scale = ' + map.getScale() + '\nresolution=' + map.getResolution());
          }
         }
 
@@ -868,7 +860,7 @@ var lizMap = function() {
       if(mCheckMobile()){
         // autocompletion items for locatebylayer feature
         $('div.locate-layer select').show();
-        $('span.custom-combobox input').hide();
+        $('span.custom-combobox').hide();
       }
     },'json');
   }
@@ -2918,6 +2910,8 @@ var lizMap = function() {
                 var url = getLayerLegendGraphicUrl(name, true);
                 self.find('div.legendGraphics img').attr('src',url);
               });
+              // update slider position
+              $('#navbar div.slider').slider("value",this.getZoom());
             }
           });
           
@@ -3054,7 +3048,17 @@ lizMap.events.on({
        evt.config.options.zoomLevelNumber = 21;
      evt.config.options.maxScale = 591659030.3224756;
      evt.config.options.minScale = 2257.0000851534865;
-     evt.config.options.mapScales = [];
+     //evt.config.options.mapScales = [];
+     var hasBaselayers = false;
+     for ( var l in evt.layers ) {
+       if ( evt.layers[l]["baseLayer"] == "True" )
+         hasBaselayers = true;
+     }
+     // for minRes evaluating to scale 100
+     // zoomLevelNumber is equal to 24
+     if (hasBaselayers) {
+       evt.config.options.zoomLevelNumber = 24;
+     }
 
      var resolutions = [];
      if (scales.length != 0 ) {
@@ -3076,6 +3080,7 @@ lizMap.events.on({
          res = res/2;
          n++;
        }
+       console.log(n+' '+res);
        maxRes = resolutions[0];
        minRes = res;
        resolutions.push(res);
@@ -3094,9 +3099,9 @@ lizMap.events.on({
     }
     ,'mapcreated':function(evt){
       //console.log('mapcreated');
-  if (
-    (('osmMapnik' in evt.config.options)
-     && evt.config.options.osmMapnik == 'True') ||
+      if (
+          (('osmMapnik' in evt.config.options)
+           && evt.config.options.osmMapnik == 'True') ||
     (('osmMapquest' in evt.config.options)
      && evt.config.options.osmMapquest == 'True') ||
     (('googleStreets' in evt.config.options)
