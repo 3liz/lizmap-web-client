@@ -106,22 +106,87 @@ class serviceCtrl extends jController {
       jMessage::add(jLocale::get('view~default.repository.access.denied'), 'AuthorizationRequired');
       return false;
     }
-    
+
     // Get and normalize the passed parameters
     $pParams = jApp::coord()->request->params;
-    $pParams['map'] = $lrep->getPath().$project.".qgs";  
+    $pParams['map'] = $lrep->getPath().$project.".qgs";
     $lizmapCache = jClasses::getService('lizmap~lizmapCache');
     $params = $lizmapCache->normalizeParams($pParams);
-    
-    // Define class private properties   
+
+    // Define class private properties
     $this->project = lizmap::getProject($repository.'~'.$project);
     $this->repository = $lrep;
     $this->services = lizmap::getServices();
     $this->params = $params;
     $this->lizmapCache = $lizmapCache;
 
-    
+    // Optionnaly filter data by login
+    if(isset($params['request'])){
+      $request = strtolower($params['request']);
+      if(
+        in_array($request, array('getmap', 'getfeatureinfo', 'getfeature', 'getprint'))
+        and !jacl2::check('lizmap.tools.loginFilteredLayers.override', $lrep->getKey() )
+      ){
+        $this->filterDataByLogin();
+      }
+    }
+
     return true;
+  }
+
+  /**
+  * Filter data by login if necessary
+  * as configured in the plugin for login filtered layers.
+  */
+  protected function filterDataByLogin() {
+
+    // Optionnaly add a filter parameter
+    $lproj = lizmap::getProject($this->repository->getKey().'~'.$this->project->getKey());
+   
+    $request = strtolower($this->params['request']);
+    if( $request == 'getfeature' )
+      $layers = $this->params["typename"];
+    else
+      $layers = $this->params["layers"];
+    $pConfig = $lproj->getFullCfg();
+ 
+    // Filter only if needed
+    if( $lproj->hasLoginFilteredLayers()
+      and $pConfig->loginFilteredLayers
+    ){
+      $v='';
+      $filter='';
+      foreach(explode(',', $layers) as $layername){
+        if( property_exists($pConfig->loginFilteredLayers, $layername) ) {
+          $attribute = $pConfig->loginFilteredLayers->$layername->filterAttribute;
+
+          // Check if a user is authenticated
+          $isConnected = jAuth::isConnected();
+          $pre = "$layername:";
+          if($request == 'getfeature')
+            $pre = '';
+          if($isConnected){
+            $user = jAuth::getUserSession();
+            $login = $user->login;
+            $userGroups = jAcl2DbUserGroup::getGroups();
+            $flatGroups = implode("' , '", $userGroups);
+            $filter.= $v."$pre\"$attribute\" IN ( '".$flatGroups."' , 'all' )";
+            $v = ';';
+          }else{
+            // The user is not authenticated: only show data with attribute = 'all'
+            $filter.= $v."$pre\"$attribute\" = 'all'";
+            $v = ';';
+          }
+        }
+      }
+
+      // Set filter when multiple layers concerned
+      if($filter)
+        if( $request == 'getfeature' )
+          $this->params['exp_filter'] = $filter;
+        else
+          $this->params['filter'] = $filter;
+    }
   }
 
 

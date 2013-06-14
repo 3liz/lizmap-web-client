@@ -155,7 +155,20 @@ class lizmapProject{
       }
       return false;
     }
-    
+
+    public function hasLoginFilteredLayers(){
+      if ( property_exists($this->cfg,'loginFilteredLayers') ){
+        $count = 0;
+        foreach( $this->cfg->loginFilteredLayers as $key=>$obj ){
+          $count += 1;
+        }
+        if ( $count != 0 )
+          return true;
+        return false;
+      }
+      return false;
+    }
+
     public function needsGoogle(){
       $configOptions = $this->cfg->options;
       return (
@@ -303,6 +316,10 @@ class lizmapProject{
 
     public function getProj4( $authId ){
       return $this->xml->xpath( "//spatialrefsys/authid[.='".$authId."']/parent::*/proj4" );
+    }
+
+    public function getFullCfg(){
+      return $this->cfg;
     }
 
     public function getXmlLayer( $layerId ){

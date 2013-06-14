@@ -20,6 +20,8 @@ class editionCtrl extends jController {
   // layer id in the QGIS project file
   private $layerId = '';
   
+  // layer name (<layername> in QGIS project)
+  private $layerName = '';
   // table name
   private $table = '';
 
@@ -73,6 +75,9 @@ class editionCtrl extends jController {
   
   // Form controls
   private $formControls = '';
+  
+  // Filter by login flag
+  private $loginFilteredLayers = Null;
 
 
   /**
@@ -142,6 +147,9 @@ class editionCtrl extends jController {
     }
     
     $layerXml = $lproj->getXmlLayer( $layerId );
+    $layerXmlZero = $layerXml[0];
+    $_layerName = $layerXmlZero->xpath('layername');   
+    $layerName = (string)$_layerName[0];     
     
     // feature Id (optionnal, only for edition and save)
     if(preg_match('#,#', $featureIdParam))
@@ -156,12 +164,58 @@ class editionCtrl extends jController {
     $this->featureId = $featureId;
     $this->featureIdParam = $featureIdParam;
     $this->layerXml = $layerXml;
+    $this->layerName = $layerName;
+    
+    // Optionnaly filter data by login
+    if( !jacl2::check('lizmap.tools.loginFilteredLayers.override', $lrep->getKey()) ){
+      $this->loginFilteredLayers = True;
+    }    
     
     return true;
   }
   
 
-  
+  /**
+  * Filter data by login if necessary
+  * as configured in the plugin for login filtered layers.
+  */
+  protected function filterDataByLogin($layername) {
+
+    // Optionnaly add a filter parameter
+    $lproj = lizmap::getProject($this->repository->getKey().'~'.$this->project->getKey());
+    $pConfig = $lproj->getFullCfg();
+
+    if( $lproj->hasLoginFilteredLayers()
+      and $pConfig->loginFilteredLayers
+    ){
+      if( property_exists($pConfig->loginFilteredLayers, $layername) ) {
+        $v='';
+        $where='';
+        $attribute = $pConfig->loginFilteredLayers->$layername->filterAttribute;
+
+        // Check if a user is authenticated
+        $isConnected = jAuth::isConnected();
+        $cnx = jDb::getConnection();
+        if($isConnected){
+          $user = jAuth::getUserSession();              
+          $login = $user->login;
+          $userGroups = jAcl2DbUserGroup::getGroups();
+          // Set XML Filter if getFeature request
+          $flatGroups = implode("' , '", $userGroups);          
+          $where = ' "'.$attribute."\" IN ( '".$flatGroups."' , 'all' )";
+        }else{
+          // The user is not authenticated: only show data with attribute = 'all'
+          $where = ' "'.$attribute.'" = '.$cnx->quote("all");      
+        }
+        // Set filter when multiple layers concerned
+        if($where){
+          $this->loginFilteredLayers = array(
+            'where' => $where
+          );
+        }
+      }
+    }
+  }  
 
   /**
   * Get field data from a database layer corresponding to a QGIS layer
@@ -349,6 +403,8 @@ class editionCtrl extends jController {
   }
 
 
+
+
   /**
   * Get WFS data from a "Value Relation" layer and fill the combobox form control for a specific field.
   * @param string $fieldName Name of QGIS field 
@@ -363,7 +419,7 @@ class editionCtrl extends jController {
     $_relationayerXml = $this->project->getXmlLayer($relationLayerId);
     $relationayerXml = $_relationayerXml[0];
     $_layerName = $relationayerXml->xpath('layername');
-    $layerName = (string)$_layerName[0];        
+    $layerName = (string)$_layerName[0];
     $valueColumn = $this->formControls[$fieldName]->valueRelationData['value'];
     $keyColumn = $this->formControls[$fieldName]->valueRelationData['key'];
     $filterExpression = $this->formControls[$fieldName]->valueRelationData['filterExpression'];
@@ -376,17 +432,31 @@ class editionCtrl extends jController {
       'OUTPUTFORMAT' => 'GeoJSON',
       'map' => $this->repository->getPath().$this->project->getKey().".qgs"
     );
-    // add EXP_FILTER only if needed to avoid QGIS getPrint error
+    // add EXP_FILTER. Only for QGIS >=2.0
+    $expFilter = Null;
     if($filterExpression){
-      $params['EXP_FILTER'] = $filterExpression;
+      $expFilter = $filterExpression;
     }
+    // Filter by login
+    if( $this->loginFilteredLayers ) {
+      $this->filterDataByLogin($layerName);
+      if( is_array( $this->loginFilteredLayers )){
+        if($expFilter){
+          $expFilter = " ( ".$expFilter." ) AND ( ".$this->loginFilteredLayers['where']." ) ";
+        }else {
+          $expFilter = $this->loginFilteredLayers['where'];
+        }
+      }
+    }
+    if($expFilter)
+      $params['EXP_FILTER'] = $expFilter; 
 
     // Build query
     $lizmapServices = lizmap::getServices();
     $url = $lizmapServices->wmsServerURL.'?';
     $bparams = http_build_query($params);
     $querystring = $url . $bparams;
-
+    
     // Get remote data
     $lizmapCache = jClasses::getService('lizmap~lizmapCache');
     $getRemoteData = $lizmapCache->getRemoteData(
@@ -416,9 +486,15 @@ class editionCtrl extends jController {
       // required
       if(strtolower($this->formControls[$fieldName]->valueRelationData['allowNull']) == 'false')
         $this->formControls[$fieldName]->ctrl->required = True;
-    }else{
-      $this->formControls[$fieldName]->ctrl->hint = 'Problem : cannot get data to fill this combobox !';
-      $this->formControls[$fieldName]->ctrl->help = 'Problem : cannot get data to fill this combobox !';
+    }
+    else{
+      if(!preg_match('#No feature found error messages#', $wfsData)){
+        $this->formControls[$fieldName]->ctrl->hint = 'Problem : cannot get data to fill this combobox !';
+        $this->formControls[$fieldName]->ctrl->help = 'Problem : cannot get data to fill this combobox !';
+      }else{
+        $this->formControls[$fieldName]->ctrl->hint = 'No data to fill this combobox !';
+        $this->formControls[$fieldName]->ctrl->help = 'No data to fill this combobox !';      
+      }
     }  
   }
 
@@ -536,6 +612,13 @@ class editionCtrl extends jController {
         $i++;
         $v = " AND ";
       }
+      // Add login filter if needed
+      if( $this->loginFilteredLayers ) {
+        $this->filterDataByLogin($this->layerName);
+        if( is_array( $this->loginFilteredLayers ) ){
+          $sql.= ' AND '.$this->loginFilteredLayers['where'];
+        }
+      }      
     }
     // insert
     else {
@@ -613,7 +696,15 @@ class editionCtrl extends jController {
     
     // Add the QGIS WHERE clause if needed
     if($this->whereClause)
-      $sql.= " AND ".$this->whereClause;
+      $sql.= ' AND '.$this->whereClause;
+      
+    // Filter by login if needed
+    if( $this->loginFilteredLayers ) {     
+      $this->filterDataByLogin($this->layername);
+      if( is_array( $this->loginFilteredLayers )){
+        $sql .= ' AND '.$this->loginFilteredLayers['where'];
+      }
+    }
     
     // Get the corresponding features
     try {
@@ -995,6 +1086,13 @@ class editionCtrl extends jController {
       $sql.= "$v $key = ".$featureId[$i];
       $i++;
       $v = " AND ";
+    }
+    // Add login filter if needed
+    if( $this->loginFilteredLayers ) {
+      $this->filterDataByLogin($this->layerName);
+      if( is_array( $this->loginFilteredLayers ) ){
+        $sql.= ' AND '.$this->loginFilteredLayers['where'];
+      }
     }
 
     try {
