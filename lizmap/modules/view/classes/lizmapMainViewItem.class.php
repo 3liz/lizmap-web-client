@@ -44,7 +44,17 @@ class lizmapMainViewItem {
         $this->url = $item->url;
         $this->img = $item->img;
         $this->order = $item->order;
-        $this->childItems = array_merge($item->childItems, $this->childItems);
+        foreach( $item->childItems as $item ) {
+          $replaced = false;
+          foreach( $this->childItems as $k => $i ) {
+            if ( $i->id == $item->id ) {
+              $this->childItems[$k] = $item;
+              $replaced = true;
+            }
+          }
+          if( !$replaced )
+            $this->childItems[] = $item;
+        }
     }
 }
 

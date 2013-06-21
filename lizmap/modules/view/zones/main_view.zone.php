@@ -61,13 +61,21 @@ class main_viewZone extends jZone {
         foreach ($items as $item) {
             if($item->parentId) {
                 if(!isset($maps[$item->parentId])) {
-                    $maps[$item->parentId] = new masterAdminMenuItem($item->parentId, '', '');
+                  $maps[$item->parentId] = new lizmapMainViewItem($item->parentId, '', '');
                 }
-                $maps[$item->parentId]->childItems[] = $item;
+                $replaced = false;
+                foreach( $maps[$item->parentId]->childItems as $k => $i ) {
+                  if ( $i->id == $item->id ) {
+                    $maps[$item->parentId]->childItems[$k] = $item;
+                    $replaced = true;
+                  }
+                }
+                if( !$replaced )
+                  $maps[$item->parentId]->childItems[] = $item;
             }
             else {
                 if(isset($maps[$item->id])) {
-                    $maps[$item->id]->copyFrom($item);
+                  $maps[$item->id]->copyFrom($item);
                 }
                 else {
                     $maps[$item->id] = $item;
