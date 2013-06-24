@@ -308,4 +308,9 @@ class lizmapProject{
     public function getXmlLayer( $layerId ){
       return $this->xml->xpath( "//maplayer[id='$layerId']" );
     }
+
+    public function getXmlLayerByKeyword( $key ){
+      return $this->xml->xpath( "//maplayer/keywordList[value='$key']/parent::*" );
+      return null;
+    }
 }
