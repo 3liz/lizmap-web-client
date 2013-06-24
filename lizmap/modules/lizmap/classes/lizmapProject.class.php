@@ -109,6 +109,10 @@ class lizmapProject{
       return $this->key;
     }
     
+    public function getRepository(){
+      return $this->repository;
+    }
+    
     public function getProperties(){
       return $this->properties;
     }
@@ -328,6 +332,41 @@ class lizmapProject{
 
     public function getXmlLayerByKeyword( $key ){
       return $this->xml->xpath( "//maplayer/keywordList[value='$key']/parent::*" );
+    }
+
+    public function getComposer( $title ){
+      $xmlComposer = $this->xml->xpath( "//Composer[@title='$title']" );
+      if( $xmlComposer )
+        return $xmlComposer[0];
+      else
+        return null;
+    }
+
+    public function getLayer( $layerId ){
+      $xmlLayer = $this->xml->xpath( "//maplayer[id='$layerId']" );
+      if( $xmlLayer ) {
+        $xmlLayer = $xmlLayer[0];
+        jClasses::inc('lizmap~qgisMapLayer');
+        jClasses::inc('lizmap~qgisVectorLayer');
+        if( $xmlLayer->attributes()->type == 'vector' )
+          return new qgisVectorLayer( $this, $xmlLayer );
+        else
+          return new qgisMapLayer( $this, $xmlLayer );
+      }
+      return null;
+    }
+
+    public function getLayerByKeyword( $key ){
+      $xmlLayer = $this->xml->xpath( "//maplayer/keywordList[value='$key']/parent::*" );
+      if( $xmlLayer ) {
+        $xmlLayer = $xmlLayer[0];
+        jClasses::inc('lizmap~qgisMapLayer');
+        jClasses::inc('lizmap~qgisVectorLayer');
+        if( $xmlLayer->attributes()->type == 'vector' )
+          return new qgisVectorLayer( $this, $xmlLayer );
+        else
+          return new qgisMapLayer( $this, $xmlLayer );
+      }
       return null;
     }
 }
