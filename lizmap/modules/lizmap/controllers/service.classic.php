@@ -158,7 +158,8 @@ class serviceCtrl extends jController {
       $filter='';
       foreach(explode(',', $layers) as $layername){
         if( property_exists($pConfig->loginFilteredLayers, $layername) ) {
-          $attribute = $pConfig->loginFilteredLayers->$layername->filterAttribute;
+          $oAttribute = $pConfig->loginFilteredLayers->$layername->filterAttribute;
+          $attribute = strtolower($oAttribute);
 
           // Check if a user is authenticated
           $isConnected = jAuth::isConnected();
@@ -182,8 +183,10 @@ class serviceCtrl extends jController {
 
       // Set filter when multiple layers concerned
       if($filter)
-        if( $request == 'getfeature' )
+        if( $request == 'getfeature' ){
           $this->params['exp_filter'] = $filter;
+          $this->params["propertyname"].= ",$oAttribute";
+        }
         else
           $this->params['filter'] = $filter;
     }
