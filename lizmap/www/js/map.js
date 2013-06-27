@@ -3080,7 +3080,7 @@ lizMap.events.on({
          res = res/2;
          n++;
        }
-       console.log(n+' '+res);
+       //console.log(n+' '+res);
        maxRes = resolutions[0];
        minRes = res;
        resolutions.push(res);
