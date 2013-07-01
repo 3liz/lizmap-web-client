@@ -47,10 +47,13 @@
         </a>
       </li>
       {if $print}
-      <li class="print">
-        <a id="togglePrint" rel="tooltip" data-original-title="{@view~map.print.navbar.title@}" data-placement="bottom" href="#">
+      <li class="print dropdown">
+        <a class="dropdown-toggle" data-toggle="dropdown" id="togglePrint" rel="tooltip" data-original-title="{@view~map.print.navbar.title@}" data-placement="bottom" href="#">
           <span class="icon"></span>
+          <span class="caret"></span>
         </a>
+        <ul class="dropdown-menu pull-right">
+        </ul>
       </li>
       {/if}
       {if $edition}
