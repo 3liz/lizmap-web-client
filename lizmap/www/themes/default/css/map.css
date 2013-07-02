@@ -993,6 +993,7 @@ body {
   background: #F6F6F6;
   border: 1px solid #606060;
   padding: 0;
+  z-index:1050;
 }
 .liz-dialog-wait .ui-dialog-titlebar{
   background : #2B2B2B;
@@ -1004,5 +1005,6 @@ body {
 .ui-widget-overlay {
   opacity : 0.8;
   background : black;
+  z-index: 1040;
 }
 
