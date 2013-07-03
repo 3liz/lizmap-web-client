@@ -678,7 +678,10 @@ var lizMap = function() {
     var res = extent.getHeight()/$('#map').height();
 
     var scales = [];
-    if ('mapScales' in config.options)
+    var resolutions = [];
+    if ('resolutions' in config.options)
+      resolutions = config.options.resolutions;
+    else if ('mapScales' in config.options)
       scales = config.options.mapScales;
     scales.sort(function(a, b) {
       return Number(b) - Number(a);
@@ -781,6 +784,7 @@ var lizMap = function() {
        ,minScale: scales.length == 0 ? config.options.maxScale : "auto"
        ,numZoomLevels: scales.length == 0 ? config.options.zoomLevelNumber : scales.length
        ,scales: scales.length == 0 ? null : scales
+       ,resolutions: resolutions.length == 0 ? null : resolutions
        ,projection:projection
        ,units:projection.proj.units
        ,allOverlays:(baselayers.length == 0)
@@ -839,7 +843,6 @@ var lizMap = function() {
           var format = new OpenLayers.Format.GeoJSON();
           feat = format.read(feat)[0];
           feat.geometry.transform(proj, map.getProjection());
-          //console.log(feat.geometry.getBounds());
           map.zoomToExtent(feat.geometry.getBounds());
           if (locate.displayGeom == 'True')
             layer.addFeatures([feat]);
@@ -1309,8 +1312,8 @@ var lizMap = function() {
       change: function(evt,ui) {
         if (ui.value > map.baseLayer.numZoomLevels-1) {
           $('#navbar div.slider').slider('value',map.getZoom())
-          $('#zoom-in-max-msg').show('slide', {}, 500, function() {
-            window.setTimeout(function(){$('#zoom-in-max-msg').hide('slide', {}, 500)},1000)
+          $('#zoom-in-max-msg').show('slow', function() {
+            window.setTimeout(function(){$('#zoom-in-max-msg').hide('slow')},1000)
           });
         } else
           map.zoomTo(ui.value);
@@ -1355,9 +1358,9 @@ var lizMap = function() {
     }).removeClass("ui-corner-all")
     .click(function(){
       if (map.getZoom() == map.baseLayer.numZoomLevels-1)
-        $('#zoom-in-max-msg').show('slide', {}, 500, function() {
-          window.setTimeout(function(){$('#zoom-in-max-msg').hide('slide', {}, 500)},1000)
-        });
+          $('#zoom-in-max-msg').show('slow', function() {
+            window.setTimeout(function(){$('#zoom-in-max-msg').hide('slow')},1000)
+          });
       else
         map.zoomIn();
     });
@@ -3093,8 +3096,8 @@ lizMap.events.on({
      evt.config.options.minScale = 2257.0000851534865;
      //evt.config.options.mapScales = [];
      var hasBaselayers = false;
-     for ( var l in evt.layers ) {
-       if ( evt.layers[l]["baseLayer"] == "True" )
+     for ( var l in evt.config.layers ) {
+       if ( evt.config.layers[l]["baseLayer"] == "True" )
          hasBaselayers = true;
      }
      // for minRes evaluating to scale 100
@@ -3123,7 +3126,6 @@ lizMap.events.on({
          res = res/2;
          n++;
        }
-       //console.log(n+' '+res);
        maxRes = resolutions[0];
        minRes = res;
        resolutions.push(res);
