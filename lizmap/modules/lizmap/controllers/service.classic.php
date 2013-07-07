@@ -54,6 +54,8 @@ class serviceCtrl extends jController {
       return $this->GetMap();
     elseif ($request == "GetFeature")
       return $this->GetFeature();
+    elseif ($request == "DescribeFeatureType")
+      return $this->DescribeFeatureType();
     elseif ($request == "GetProj4")
       return $this->GetProj4();
     else{
@@ -640,6 +642,45 @@ class serviceCtrl extends jController {
 
     return $rep;
   }
+
+  /**
+  * DescribeFeatureType
+  * @param string $repository Lizmap Repository
+  * @param string $project Name of the project : mandatory
+  * @return Image rendered by the Map Server.
+  */
+  function DescribeFeatureType(){
+
+    // Get parameters
+    if(!$this->getServiceParameters())
+      return $this->serviceException();
+
+    // Construction of the request url : base url + parameters
+    $url = $this->services->wmsServerURL.'?';
+    $bparams = http_build_query($this->params);
+    $querystring = $url . $bparams;
+
+    // Get remote data
+    $getRemoteData = $this->lizmapCache->getRemoteData(
+      $querystring,
+      $this->services->proxyMethod,
+      $this->services->debugMode
+    );
+    $data = $getRemoteData[0];
+    $mime = $getRemoteData[1];
+
+    // Return response
+    $rep = $this->getResponse('binary');
+    $rep->mimeType = $mime;
+    $rep->content = $data;
+    $rep->doDownload  =  false;
+    $rep->outputFileName  =  'qgis_server_wfs';
+
+    return $rep;
+  }
+
+
+
 
   /**
   * GetProj4
