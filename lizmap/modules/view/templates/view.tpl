@@ -12,11 +12,12 @@
       <div class="liz-project">
         <img src="{$p->img}" alt="project image" class="img-polaroid liz-project-img">
         <p class="liz-project-desc" style="display:none;">
-          <strong>{$p->title}</strong>
+          <b>{$p->title}</b>
           <br/>
-          <br/><strong>{@default.project.abstract.label@}</strong>&nbsp;: {$p->abstract}
-          <br/><strong>{@default.project.projection.label@}</strong>&nbsp;: {$p->proj}
-          <br/><strong>{@default.project.bbox.label@}</strong>&nbsp;: {$p->bbox}
+          <br/><b>{@default.project.abstract.label@}</b>&nbsp;: {$p->abstract|truncate:100}
+          <br/>
+          <br/><b>{@default.project.projection.label@}</b>&nbsp;: {$p->proj}
+<!--          <br/><b>{@default.project.bbox.label@}</b>&nbsp;: {$p->bbox}-->
         </p>
       </div>
       <h5>{$p->title}</h5>

@@ -138,6 +138,7 @@ class mediaCtrl extends jController {
       foreach($imageTypes as $type){
         if(file_exists($lrep->getPath().$project.'.qgs.'.$type)){
           $rep->fileName = $lrep->getPath().$project.'.qgs.'.$type;
+#          $rep->mimeType = "image/$type";
           return $rep;
         }
       }
