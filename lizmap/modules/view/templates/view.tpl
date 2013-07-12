@@ -17,13 +17,39 @@
           <br/><b>{@default.project.abstract.label@}</b>&nbsp;: {$p->abstract|truncate:100}
           <br/>
           <br/><b>{@default.project.projection.label@}</b>&nbsp;: {$p->proj}
-<!--          <br/><b>{@default.project.bbox.label@}</b>&nbsp;: {$p->bbox}-->
         </p>
       </div>
       <h5>{$p->title}</h5>
       <p>
         <a class="btn liz-project-view" href="{$p->url}">{@default.project.open.map@}</a>
+        <a class="btn liz-project-show-desc" href="#" onclick="$('#liz-project-modal').modal('show');">{@default.project.open.map.metadata@}</a>
       </p>
+    </div>
+ 
+    <div id="liz-project-modal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" data-show="false" data-keyboard="false" data-backdrop="static">
+    
+      <div class="modal-header">  
+        <a class="close" data-dismiss="modal">×</a>  
+        <h3>{$p->title}</h3>  
+      </div>  
+      <div class="modal-body">
+        <dl class="dl-horizontal">
+          <dt>{@view~map.metadata.h2.illustration@}</dt>
+          <dd>{image $p->img, array('width'=>150, 'height'=>150, 'alt'=>'project image')}</dd>
+          <dt>{@default.project.title.label@}</dt>
+          <dd>{$p->title}</dd>
+          <dt>{@default.project.abstract.label@}</dt>
+          <dd>{$p->abstract}</dd>
+          <dt>{@default.project.projection.label@}</dt>
+          <dd>{$p->proj}</dd>
+          <dt>{@default.project.bbox.label@}</dt>
+          <dd>{$p->bbox}</dd>
+        </dl>       
+      </div>  
+      <div class="modal-footer">
+        <a class="btn liz-project-view" href="{$p->url}">{@default.project.open.map@}</a>
+        <a href="#" class="btn" data-dismiss="modal">{@default.project.close.map.metadata@}</a>  
+      </div>
     </div>
   </li>
   {/foreach}
