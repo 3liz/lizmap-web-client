@@ -25,7 +25,9 @@ class defaultCtrl extends jController {
     $lrep = lizmap::getRepository($repository);
     
     // Set the redirection parameters
-    $rep->params = array('repository'=>$lrep->getKey());
+    if($lrep)
+      $rep->params = array('repository'=>$lrep->getKey());
+
     $rep->action = 'view~default:index';
     return $rep;
   }
