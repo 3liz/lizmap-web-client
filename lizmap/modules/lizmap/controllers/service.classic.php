@@ -444,6 +444,9 @@ class serviceCtrl extends jController {
         continue;
       }
 
+      // Get layer title
+      $layerTitle = $configLayers->$layername->title;
+
       // Get the template for the popup content
       $templateConfigured = False;
       if(property_exists($configLayers->$layername, 'popupTemplate')){
@@ -493,7 +496,7 @@ class serviceCtrl extends jController {
         }
 
         $tpl = new jTpl();
-        $tpl->assign('layername', $layername);
+        $tpl->assign('layerTitle', $layerTitle);
         $tpl->assign('popupContent', $popupFeatureContent);
         $content.= $tpl->fetch('view~popup');
 
