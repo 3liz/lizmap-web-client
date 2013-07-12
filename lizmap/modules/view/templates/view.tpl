@@ -9,6 +9,7 @@
 <ul class="thumbnails">
   {foreach $mi->childItems as $p}
   {assign $idm = $idm + 1}
+  <a name="link-projet-{$idm}"></a>
   <li class="span3">
     <div class="thumbnail">
       <div class="liz-project">
@@ -24,7 +25,7 @@
       <h5>{$p->title}</h5>
       <p>
         <a class="btn liz-project-view" href="{$p->url}">{@default.project.open.map@}</a>
-        <a class="btn liz-project-show-desc" href="#" onclick="$('#liz-project-modal-{$idm}').modal('show');">{@default.project.open.map.metadata@}</a>
+        <a class="btn liz-project-show-desc" href="#link-projet-{$idm}" onclick="$('#liz-project-modal-{$idm}').modal('show');">{@default.project.open.map.metadata@}</a>
       </p>
     </div>
  
