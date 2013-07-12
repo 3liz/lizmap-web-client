@@ -2,11 +2,13 @@
 {meta_html csstheme 'css/view.css'}
 {meta_html csstheme 'css/media.css'}
 
+{assign $idm = 0}
 {foreach $mapitems as $mi}
 {if $mi->type == 'rep'}
 <h2>{$mi->title}</h2>
 <ul class="thumbnails">
   {foreach $mi->childItems as $p}
+  {assign $idm = $idm + 1}
   <li class="span3">
     <div class="thumbnail">
       <div class="liz-project">
@@ -22,11 +24,11 @@
       <h5>{$p->title}</h5>
       <p>
         <a class="btn liz-project-view" href="{$p->url}">{@default.project.open.map@}</a>
-        <a class="btn liz-project-show-desc" href="#" onclick="$('#liz-project-modal').modal('show');">{@default.project.open.map.metadata@}</a>
+        <a class="btn liz-project-show-desc" href="#" onclick="$('#liz-project-modal-{$idm}').modal('show');">{@default.project.open.map.metadata@}</a>
       </p>
     </div>
  
-    <div id="liz-project-modal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" data-show="false" data-keyboard="false" data-backdrop="static">
+    <div id="liz-project-modal-{$idm}" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" data-show="false" data-keyboard="false" data-backdrop="static">
     
       <div class="modal-header">  
         <a class="close" data-dismiss="modal">×</a>  
@@ -39,7 +41,7 @@
           <dt>{@default.project.title.label@}</dt>
           <dd>{$p->title}</dd>
           <dt>{@default.project.abstract.label@}</dt>
-          <dd>{$p->abstract}</dd>
+          <dd>{$p->abstract|nl2br}</dd>
           <dt>{@default.project.projection.label@}</dt>
           <dd>{$p->proj}</dd>
           <dt>{@default.project.bbox.label@}</dt>
