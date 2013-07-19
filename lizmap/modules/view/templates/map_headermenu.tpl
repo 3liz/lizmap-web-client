@@ -97,12 +97,12 @@
           {ifacl2 'auth.user.view'}
           <li><a href="{jurl 'jauthdb_admin~user:index', array('j_user_login'=>$user->login)}">{@master_admin~gui.header.your.account@}</a></li>
           {/ifacl2}
-          <li><a href="{jurl 'jauth~login:out'}">{@view~default.header.disconnect@}</a></li>
+          <li><a href="{jurl 'jauth~login:out', array('auth_url_return'=>$auth_url_return)}">{@view~default.header.disconnect@}</a></li>
         </ul>
       </li>
       {else}
       <li class="login">
-        <a href="{jurl 'jauth~login:form'}">
+        <a href="{jurl 'jauth~login:form', array('auth_url_return'=>$auth_url_return)}">
           <span class="icon"></span>
           <span class="text"><b>{@view~default.header.connect@}</b></span>
         </a>

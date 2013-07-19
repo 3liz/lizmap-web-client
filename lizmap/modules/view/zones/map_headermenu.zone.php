@@ -17,11 +17,17 @@ class map_headermenuZone extends jZone {
     // Get the project and repository params
     $project = $this->param('project');
     $repository = $this->param('repository');
+    $auth_url_return = jUrl::get('view~map:index',
+      array(
+        "repository"=>$repository,
+        "project"=>$project,
+      ));
 
     // Get lizmapProject class
     $assign = array(
       'isConnected'=>jAuth::isConnected(),
       'user'=>jAuth::getUserSession(),
+      'auth_url_return'=>$auth_url_return,
       "externalSearch"=>"",
       "edition"=>true,
       "measure"=>true,
