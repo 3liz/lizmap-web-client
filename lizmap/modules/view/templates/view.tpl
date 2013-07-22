@@ -38,7 +38,7 @@
       <div class="modal-body">
         <dl class="dl-horizontal">
           <dt>{@view~map.metadata.h2.illustration@}</dt>
-          <dd>{image $p->img, array('width'=>150, 'height'=>150, 'alt'=>'project image')}</dd>
+          <dd><img src="{$p->img}" alt="project image" width="150" height="150"></dd>
           <dt>{@default.project.title.label@}</dt>
           <dd>{$p->title}</dd>
           <dt>{@default.project.abstract.label@}</dt>

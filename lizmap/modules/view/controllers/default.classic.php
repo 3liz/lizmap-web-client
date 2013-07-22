@@ -68,6 +68,7 @@ class defaultCtrl extends jController {
         }).click(function(){
           var self = $(this);
           window.location = self.parent().find('a.liz-project-view').attr('href');
+          return false;
         });
       });
       ");

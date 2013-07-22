@@ -716,6 +716,9 @@ var lizMap = function() {
   };
 
   function parentOf(node) {
+    if (node.length == 0 )
+      return null;
+
     var classNames = node[0].className.split(' ');
 
     for(var key=0; key<classNames.length; key++) {
@@ -942,6 +945,9 @@ var lizMap = function() {
   };
 
   function parentOf(node) {
+    if (node.length == 0 )
+      return null;
+
     var classNames = node[0].className.split(' ');
 
     for(var key=0; key<classNames.length; key++) {
