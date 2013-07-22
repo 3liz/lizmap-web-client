@@ -88,16 +88,16 @@ class lizAjaxCtrl extends jController {
 
     $lizUrls = array(
       "params" => array('repository'=>$repository, 'project'=>$project),
-      "config" => jUrl::get('lizmap~service:getProjectConfig'),
-      "wms" => jUrl::get('lizmap~service:index'),
-      "media" => jUrl::get('view~media:getMedia'),
-      "nominatim" => jUrl::get('lizmap~osm:nominatim'),
-      "edition" => jUrl::get('lizmap~edition:getFeature'),
+      "config" => jUrl::getFull('lizmap~service:getProjectConfig'),
+      "wms" => jUrl::getFull('lizmap~service:index'),
+      "media" => jUrl::getFull('view~media:getMedia'),
+      "nominatim" => jUrl::getFull('lizmap~osm:nominatim'),
+      "edition" => jUrl::getFull('lizmap~edition:getFeature'),
       "permalink" => jUrl::getFull('view~map:index')
     );
     
     if(jacl2::check('lizmap.admin.repositories.delete'))
-      $lizUrls['removeCache'] = jUrl::get('admin~config:removeLayerCache');
+      $lizUrls['removeCache'] = jUrl::getFull('admin~config:removeLayerCache');
 
     $content = '<script type="text/javascript" src="'.jUrl::getFull('view~translate:index').'"/>'."\n";
     $content .= '<script type="text/javascript">// <![CDATA['."\n";
