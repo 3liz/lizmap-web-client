@@ -73,7 +73,7 @@
     </div>
     <div id="attribution-box">
       <span id="attribution"></span>
-      {image $j_basepath.'css/img/logo_footer.png'}
+      {image $j_themepath.'css/img/logo_footer.png'}
     </div>
     <div id="permalink-box">
       <a href="" target="_blank" id="permalink">{@view~map.permalink.title@}</a>
