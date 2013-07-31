@@ -27,6 +27,7 @@
 
     <div class="form-actions">
       <a class="btn" href="{jurl 'admin~logs:detail'}">{@admin~admin.logs.view.button@}</a>
+      <a class="btn" href="{jurl 'admin~logs:export'}">{@admin~admin.logs.export.button@}</a>
       <a class="btn" href="{jurl 'admin~logs:emptyDetail'}" onclick="return confirm('{@admin~admin.logs.empty.confirm@}')">{@admin~admin.logs.empty.button@}</a>
     </div>
 

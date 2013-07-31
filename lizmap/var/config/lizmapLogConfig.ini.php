@@ -5,7 +5,7 @@ profile=lizlog
 [item:login]
 label="User logs in"    ;label of the action to log.
 logCounter=on           ;activate counter for this action
-logDetail=off           ;activate detailed log for this action = 1 new line per action
+logDetail=on           ;activate detailed log for this action = 1 new line per action
 logIp=off               ;log ip address for detailed log
 
 [item:viewmap]
@@ -17,7 +17,7 @@ logIp=off
 [item:print]
 label="Print"
 logCounter=on
-logDetail=off
+logDetail=on
 logIp=off
 
 [item:popup]

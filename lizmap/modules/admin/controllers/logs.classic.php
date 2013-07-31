@@ -124,7 +124,57 @@ class logsCtrl extends jController {
 
     return $rep;
   }
-  
+
+  /**
+  * Export the detailed logs in CSV
+  *
+  * 
+  */
+  function export() {
+    
+    // Get logs
+    $dao = jDao::get('lizmap~logDetail', 'lizlog');
+    $nblogs = 0;
+    $logs = Null;
+    try{
+      $logs = $dao->findAll();
+      $conditions = jDao::createConditions();
+      $nblogs = $dao->countBy($conditions);  
+    }catch (Exception $e) {
+      $rep = $this->getResponse('redirect');
+      jMessage::add('Error : ' . $e->getMessage(), 'error') ;
+      $rep->action = 'admin~logs:index';
+      return $rep;
+    }
+    
+    // Récupération des colonnes
+    $fetch = $logs->fetch();    
+    $columns = array();
+    if($nblogs > 0){
+      $fetchArray = get_object_vars($fetch);
+      $columns = array_keys($fetchArray);    
+    }
+
+    $rep = $this->getResponse('binary');
+    $rep->mimeType = "text/csv";
+    $rep->addHttpHeader("charset","UTF-8");
+    $rep->doDownload = True;
+    $rep->fileName = "lizmap_logs.csv";
+
+    $data = array();
+    $data[] = '"'.implode('";"',$columns).'"';
+    foreach ($logs as $log) {
+      $row = array();
+      foreach ($columns as $column) {
+        $row[] = $log->$column;
+      }
+      $data[] = '"'.implode('";"',$row).'"';
+    }
+    $rep->content = implode("\r\n",$data);
+
+    return $rep;
+  }
+
   
   /**
   * Empty the detail logs table
