@@ -442,6 +442,7 @@ var lizMap = function() {
                ,minScale:scales.maxScale
                ,maxScale:scales.minScale
                ,isVisible:(layerConfig.toggled=='True')
+               ,visibility:false
                ,gutter:5
                ,buffer:0
                ,singleTile:(layerConfig.singleTile == 'True')
@@ -456,6 +457,7 @@ var lizMap = function() {
                ,minScale:layerConfig.maxScale
                ,maxScale:(layerConfig.minScale != null && layerConfig.minScale < 1) ? 1 : layerConfig.minScale
                ,isVisible:(layerConfig.toggled=='True')
+               ,visibility:false
                ,gutter:5
                ,buffer:0
                ,singleTile:(layerConfig.singleTile == 'True')
@@ -696,7 +698,11 @@ var lizMap = function() {
     OpenLayers.IMAGE_RELOAD_ATTEMPTS = 3; // Avoid some issues with tiles not displayed
     OpenLayers.Util.DEFAULT_PRECISION=20; // default is 14 : change needed to avoid rounding problem with cache
     map = new OpenLayers.Map('map'
-      ,{controls:[new OpenLayers.Control.Navigation(),new OpenLayers.Control.ZoomBox({alwaysZoom:true})]
+      ,{controls:[
+          new OpenLayers.Control.Navigation(),
+          new OpenLayers.Control.Permalink('permalink'),
+          new OpenLayers.Control.ZoomBox({alwaysZoom:true})
+        ]
        ,eventListeners:{
          zoomend: function(evt){
   // private treeTable
@@ -975,7 +981,8 @@ var lizMap = function() {
 
     // activate checkbox buttons
     $('#switcher button.checkbox').button({
-      icons:{primary:'liz-icon-check'},
+      //icons:{primary:'liz-icon-check'},
+      icons:{primary:''},
       text:false
     })
 	  .removeClass( "ui-corner-all" )
@@ -1145,7 +1152,7 @@ var lizMap = function() {
         }
       });
       map.addLayer(l);
-      if (!l.isVisible)
+      if (l.isVisible)
         $('#switcher button.checkbox[name="layer"][value="'+l.name+'"]').click();
     }
 
@@ -2941,6 +2948,7 @@ var lizMap = function() {
           // initialize the map
           $('#switcher').height(0);
           // Set map extent depending on options
+          /*
           if(lizPosition['lon']!=null){
             map.setCenter(
               new OpenLayers.LonLat(lizPosition['lon'], lizPosition['lat']), 
@@ -2948,6 +2956,12 @@ var lizMap = function() {
             );
           }else{
             map.zoomToExtent(map.initialExtent);
+          }
+          */
+          var verifyingVisibility = true;
+          if (!map.getCenter()) {
+            map.zoomToExtent(map.initialExtent);
+            verifyingVisibility = false;
           }
 
           updateContentSize();
@@ -2959,6 +2973,18 @@ var lizMap = function() {
           // create navigation and toolbar
           createNavbar();
           createToolbar();
+
+          // verifying the layer visibility for permalink
+          if (verifyingVisibility) {
+            for (var i=0,len=layers.length; i<len; i++) {
+              var l = layers[i];
+              if (l.getVisibility()) {
+                $('#switcher button.checkbox[name="layer"][value="'+l.name+'"]').click();
+              }
+            }
+          }
+          
+          // finalize slider
           $('#navbar div.slider').slider("value",map.getZoom());
           map.events.on({
             zoomend : function() {
@@ -2970,22 +2996,6 @@ var lizMap = function() {
               });
               // update slider position
               $('#navbar div.slider').slider("value",this.getZoom());
-            }
-          });
-          
-          // Refresh permalink
-          map.events.on({
-            moveend : function(){
-                var permalinkParams = lizUrls.params;
-                var center = map.getCenter();
-                permalinkParams['lon'] = center.lon;
-                permalinkParams['lat'] = center.lat;
-                permalinkParams['zoom'] = map.getZoom();
-                var permalink = OpenLayers.Util.urlAppend(
-                  lizUrls.permalink,
-                  OpenLayers.Util.getParameterString(permalinkParams)
-                );
-                $('#permalink').attr('href', permalink);
             }
           });
 
