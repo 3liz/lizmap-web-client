@@ -666,6 +666,11 @@ var lizMap = function() {
     var extent = new OpenLayers.Bounds(Number(bbox[0]),Number(bbox[1]),Number(bbox[2]),Number(bbox[3]));
 
     var restrictedExtent = extent.scale(3);
+    var initialExtent = extent.clone();
+    if ( 'initialExtent' in config.options && config.options.initialExtent.length == 4 ) {
+      var initBbox = config.options.initialExtent;
+      initialExtent = new OpenLayers.Bounds(Number(initBbox[0]),Number(initBbox[1]),Number(initBbox[2]),Number(initBbox[3]));
+    }
 
     // calculate the map height
     var mapHeight = $('body').parent()[0].clientHeight;
@@ -783,6 +788,7 @@ var lizMap = function() {
 
        ,maxExtent:extent
        ,restrictedExtent: restrictedExtent
+       ,initialExtent:initialExtent
        ,maxScale: scales.length == 0 ? config.options.minScale : "auto"
        ,minScale: scales.length == 0 ? config.options.maxScale : "auto"
        ,numZoomLevels: scales.length == 0 ? config.options.zoomLevelNumber : scales.length
@@ -1356,7 +1362,7 @@ var lizMap = function() {
       icons:{primary: "ui-icon-zoom-extent"}
     }).removeClass("ui-corner-all")
     .click(function(){
-      map.zoomToExtent(map.maxExtent);
+      map.zoomToExtent(map.initialExtent);
     });
     $('#navbar button.zoom-in').button({
       text:false,
@@ -2941,7 +2947,7 @@ var lizMap = function() {
               lizPosition['zoom']
             );
           }else{
-            map.zoomToExtent(map.maxExtent);
+            map.zoomToExtent(map.initialExtent);
           }
 
           updateContentSize();
@@ -3076,6 +3082,7 @@ lizMap.events.on({
      proj.ref = 'EPSG:3857';
      proj.proj4 = Proj4js.defs['EPSG:3857'];
 
+     // Transform the bbox
      var bbox = evt.config.options.bbox;
      var extent = new OpenLayers.Bounds(Number(bbox[0]),Number(bbox[1]),Number(bbox[2]),Number(bbox[3]));
      extent = extent.transform(projection,projOSM);
@@ -3090,6 +3097,16 @@ lizMap.events.on({
      evt.config.options.projection = proj;
      evt.config.options.bbox = bbox;
      evt.config.options.zoomLevelNumber = 16;
+
+     // Transform the initial bbox
+     if ( 'initialExtent' in evt.config.options && evt.config.options.initialExtent.length == 4 ) {
+       var initBbox = evt.config.options.initialExtent;
+       var initialExtent = new OpenLayers.Bounds(Number(initBbox[0]),Number(initBbox[1]),Number(initBbox[2]),Number(initBbox[3]));
+       initialExtent = initialExtent.transform(projection,projOSM);
+       evt.config.options.initialExtent = initialExtent.toArray();
+     }
+
+     // Specify zoom level number
      if ((('osmMapnik' in evt.config.options) && evt.config.options.osmMapnik == 'True') ||
          (('osmMapquest' in evt.config.options) && evt.config.options.osmMapquest == 'True'))
        evt.config.options.zoomLevelNumber = 19;
