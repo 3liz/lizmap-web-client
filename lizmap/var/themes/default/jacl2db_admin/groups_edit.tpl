@@ -10,7 +10,7 @@
 <fieldset><legend>{@jacl2db_admin~acl2.groups.new.users.title@}</legend>
 {formurlparam 'jacl2db_admin~groups:setdefault'}
     {foreach $groups as $group}
-       <label class="checkbox inline"><input type="checkbox" name="groups[]" value="{$group->id_aclgrp}" {if $group->grouptype > 0}checked="checked"{/if}/> {$group->name}</label>
+       <label class="checkbox inline"><input type="checkbox" name="groups[]" value="{$group->id_aclgrp}" {if $group->grouptype > 0}checked="checked"{/if}/> {$group->name} ({$group->id_aclgrp})</label>
     {/foreach}
   <div class="form-actions">
     <input type="submit" value="{@jacl2db_admin~acl2.setdefault.button@}" class="btn"/>
@@ -32,7 +32,7 @@
   </div>
 
   <div class="control-group">
-    <label class="control-label" for="newname">{@jacl2db_admin~acl2.new.name.label@}</label> 
+    <label class="control-label" for="newname">{@jacl2db_admin~acl2.new.name.label@}</label>
     <div class="controls">
     <input id="newname" name="newname" />
     </div>
