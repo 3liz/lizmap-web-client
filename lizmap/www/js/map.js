@@ -815,14 +815,34 @@ var lizMap = function() {
   /**
    * Get features for locate by layer tool
    */
+  function updateLocateFeature(aName, aJoinField, aJoinValue) {
+    var locate = config.locateByLayer[aName];
+    var lConfig = config.layers[aName];
+    var features = locate.features;
+    var options = '<option value="-1">'+lConfig.title+'</option>';
+    for (var fid in features) {
+      var feat = features[fid];
+      if (aJoinField && aJoinValue && feat.properties[aJoinField] != aJoinValue)
+        continue;
+      options += '<option value="'+feat.id+'">'+feat.properties[locate.fieldName]+'</option>';
+    }
+    $('#locate-layer-'+aName).html(options).val('-1');
+  }
+
+  /**
+   * Get features for locate by layer tool
+   */
   function getLocateFeature(aName) {
     var locate = config.locateByLayer[aName];
+    var fields = ['geometry',locate.fieldName];
+    if ('joinFieldName' in locate)
+      fields.push( locate.joinFieldName );
     var wfsOptions = {
       'SERVICE':'WFS'
      ,'VERSION':'1.0.0'
      ,'REQUEST':'GetFeature'
      ,'TYPENAME':aName
-     ,'PROPERTYNAME':'geometry,'+locate.fieldName
+     ,'PROPERTYNAME':fields.join(',')
      ,'OUTPUTFORMAT':'GeoJSON'
     };
     var service = OpenLayers.Util.urlAppend(lizUrls.wms
@@ -846,10 +866,22 @@ var lizMap = function() {
       $('#locate-layer-'+aName).html(options).change(function() {
         var layer = map.getLayersByName('locatelayer')[0];
         layer.destroyFeatures();
-        $('#locate select:not(#locate-layer-'+aName+')').val('-1');
         var proj = new OpenLayers.Projection(locate.crs);
-        var val = $(this).val();
+
+        var val = $(this).children(':selected').val();
         if (val == '-1') {
+          // update to join layer
+          if ('joinFieldName' in locate && 'joinLayer' in locate && 'vectorjoins' in locate) {
+            var jName = locate.joinLayer;
+            if ( jName in config.locateByLayer ) {
+              var jLocate = config.locateByLayer[jName];
+              if ( jLocate.joinLayer == aName ) {
+                $('#locate-layer-'+jName).change();
+                return true;
+              }
+            }
+          }
+
           var bbox = new OpenLayers.Bounds(locate.bbox);
           bbox.transform(proj, map.getProjection());
           map.zoomToExtent(bbox);
@@ -861,11 +893,26 @@ var lizMap = function() {
           map.zoomToExtent(feat.geometry.getBounds());
           if (locate.displayGeom == 'True')
             layer.addFeatures([feat]);
+          // update joined layer
+          if ('joinFieldName' in locate && 'joinLayer' in locate) {
+            var jName = locate.joinLayer;
+            if ( jName in config.locateByLayer ) {
+              var jLocate = config.locateByLayer[jName];
+              if ( jLocate.joinLayer == aName && 'vectorjoins' in jLocate ) {
+                // update joined select options
+                updateLocateFeature(jName, jLocate.joinFieldName, feat.attributes[locate.joinFieldName]);
+                // update joined input value
+                $('#locate-layer-'+jName).siblings().first().children('input').val($('#locate-layer-'+jName).children(':selected').text());
+              }
+            }
+          }
+
         }
         $(this).blur();
+        return true;
       });
       $('#locate-layer-'+aName).combobox({
-        "select": function(evt, ui){
+        "selected": function(evt, ui){
           if ( ui.item ) {
             var self = $(this);
             var uiItem = $(ui.item);
@@ -1219,6 +1266,25 @@ var lizMap = function() {
               ];
             }
           } );
+
+          // get joins
+          for (var lName in config.locateByLayer) {
+            var locate = config.locateByLayer[lName];
+            if ('vectorjoins' in locate) {
+              var vectorjoins = locate['vectorjoins'];
+              locate['joinFieldName'] = vectorjoins['targetFieldName'];
+              for (var jName in config.locateByLayer) {
+                var jLocate = config.locateByLayer[jName];
+                if (jLocate.layerId == vectorjoins.joinLayerId) {
+                  locate['joinLayer'] = jName;
+                  jLocate['joinFieldName'] = vectorjoins['joinFieldName'];
+                  jLocate['joinLayer'] = lName;
+                }
+              }
+            }
+          }
+
+          // get features
           for (var lname in config.locateByLayer) {
             getLocateFeature(lname);
           }

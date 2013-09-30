@@ -277,6 +277,26 @@ class lizmapProject{
         $configJson->layersOrder = $layersOrder;
       }
       
+      // Update locate by layer with vecctorjoins
+      if(property_exists($configJson, 'locateByLayer')) {
+        foreach( $configJson->locateByLayer as $k=>$v) {
+          $xmlLayer = $this->getXmlLayer( $v->layerId );
+          $xmlLayerZero = $xmlLayer[0];
+          $vectorjoins = $xmlLayerZero->xpath('vectorjoins/join');
+          if( count($vectorjoins) != 0 ) {
+            $vectorjoin = $vectorjoins[0];
+            $v->vectorjoins = array(
+              "joinFieldName"=>(string)$vectorjoin['joinFieldName'],
+              "targetFieldName"=>(string)$vectorjoin['targetFieldName'],
+              "joinLayerId"=>(string)$vectorjoin['joinLayerId'],
+            );
+            $configJson->$k = $v;
+          }
+          /*
+           */
+        }
+      }
+      
       // Remove FTP remote directory
       if(property_exists($configJson->options, 'remoteDir'))
         unset($configJson->options->remoteDir);

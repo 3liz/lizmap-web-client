@@ -36,7 +36,7 @@
       this._on( this.input, {
         autocompleteselect: function( event, ui ) {
           ui.item.option.selected = true;
-          this._trigger( "select", event, {
+          this._trigger( "selected", event, {
             item: ui.item.option
           });
         },
