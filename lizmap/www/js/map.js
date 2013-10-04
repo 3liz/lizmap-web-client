@@ -1416,6 +1416,7 @@ var lizMap = function() {
       self.addClass('ui-state-select');
       map.getControlsByClass('OpenLayers.Control.ZoomBox')[0].deactivate();
       map.getControlsByClass('OpenLayers.Control.Navigation')[0].activate();
+      map.getControlsByClass('OpenLayers.Control.WMSGetFeatureInfo')[0].activate();
     });
     $('#navbar button.zoom').button({
       text:false,
@@ -1428,6 +1429,7 @@ var lizMap = function() {
       $('#navbar button.pan').removeClass('ui-state-select');
       self.addClass('ui-state-select');
       map.getControlsByClass('OpenLayers.Control.Navigation')[0].deactivate();
+      map.getControlsByClass('OpenLayers.Control.WMSGetFeatureInfo')[0].deactivate();
       map.getControlsByClass('OpenLayers.Control.ZoomBox')[0].activate();
     });
     $('#navbar button.zoom-extent').button({
