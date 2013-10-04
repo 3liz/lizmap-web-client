@@ -4,10 +4,10 @@
     <mapcanvas>
         <units>degrees</units>
         <extent>
-            <xmin>3.78987600000000002</xmin>
-            <ymin>43.56070433870967662</ymin>
-            <xmax>3.96975999999999996</xmax>
-            <ymax>43.69416666129031768</ymax>
+            <xmin>3.78987599999999647</xmin>
+            <ymin>43.55735522145545247</ymin>
+            <xmax>3.96976000000000351</xmax>
+            <ymax>43.69751577854454183</ymax>
         </extent>
         <projections>1</projections>
         <destinationsrs>
@@ -899,7 +899,7 @@
             <excludeAttributesWFS/>
             <attributeactions/>
         </maplayer>
-        <maplayer minimumScale="0" maximumScale="1e+08" minLabelScale="0" maxLabelScale="1e+08" geometry="Polygon" type="vector" hasScaleBasedVisibilityFlag="0" scaleBasedLabelVisibilityFlag="0">
+        <maplayer minimumScale="-4.65661e-10" maximumScale="1e+08" minLabelScale="0" maxLabelScale="1e+08" geometry="Polygon" type="vector" hasScaleBasedVisibilityFlag="0" scaleBasedLabelVisibilityFlag="0">
             <id>VilleMTP_MTP_SousQuartiers_201120130929113137811</id>
             <datasource>./data/vector/VilleMTP_MTP_SousQuartiers_2011.shp</datasource>
             <title>Sous-Quartiers</title>
@@ -1118,7 +1118,6 @@
             <editorlayout>generatedlayout</editorlayout>
             <aliases>
                 <alias field="LIBSQUART" index="2" name="Name"/>
-                <alias field="Quartiers_LIBQUART" index="4" name="Parent name"/>
             </aliases>
             <excludeAttributesWMS>
                 <attribute>Quartiers_photo</attribute>

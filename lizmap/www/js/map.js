@@ -837,6 +837,8 @@ var lizMap = function() {
     var fields = ['geometry',locate.fieldName];
     if ('joinFieldName' in locate)
       fields.push( locate.joinFieldName );
+    if ('filterFieldName' in locate)
+      fields.push( locate.filterFieldName );
     var wfsOptions = {
       'SERVICE':'WFS'
      ,'VERSION':'1.0.0'
@@ -851,17 +853,60 @@ var lizMap = function() {
     $.get(service
         ,wfsOptions
         ,function(data) {
+      var lConfig = config.layers[aName];
       locate['features'] = {};
       var features = data.features;
+      if ('filterFieldName' in locate) {
+        // create filter combobox for the layer
+        features.sort(function(a, b) {
+          return a.properties[locate.filterFieldName].localeCompare(b.properties[locate.filterFieldName]);
+        });
+        var fOptions = '<option value="-1">'+lConfig.title+' '+locate.filterFieldName+'</option>';
+        var fValue = '-1';
+        for (var i=0, len=features.length; i<len; i++) {
+          var feat = features[i];
+          if ( fValue != feat.properties[locate.filterFieldName] ) {
+            fValue = feat.properties[locate.filterFieldName];
+            fOptions += '<option value="'+fValue+'">'+fValue+'</option>';
+          }
+        }
+        $('#locate-layer-'+aName).parent().before('<div class="locate-layer"><select id="locate-layer-'+aName+'-'+locate.filterFieldName+'">'+fOptions+'</select></div><br/>');
+        $('#locate-layer-'+aName+'-'+locate.filterFieldName).change(function(){
+          var filterValue = $(this).children(':selected').val();
+          console.log(filterValue);
+          var lOptions = '<option value="-1">'+lConfig.title+'</option>';
+          for (var fid in locate.features) {
+            var feat = locate.features[fid];
+            if (feat.properties[locate.filterFieldName] != filterValue)
+              continue;
+            lOptions += '<option value="'+feat.id+'">'+feat.properties[locate.fieldName]+'</option>';
+          }
+          $('#locate-layer-'+aName).html(lOptions).val('-1');
+        });
+        $('#locate-layer-'+aName+'-'+locate.filterFieldName).combobox({
+          "selected": function(evt, ui){
+            if ( ui.item ) {
+              var self = $(this);
+              var uiItem = $(ui.item);
+              window.setTimeout(function(){
+                self.val(uiItem.val()).change();
+              }, 1);
+            }
+          }
+        });
+        updateSwitcherSize();
+      }
+
+      // create combobox for the layer
       features.sort(function(a, b) {
         return a.properties[locate.fieldName].localeCompare(b.properties[locate.fieldName]);
       });
-      var lConfig = config.layers[aName];
       var options = '<option value="-1">'+lConfig.title+'</option>';
       for (var i=0, len=features.length; i<len; i++) {
         var feat = features[i];
         locate.features[feat.id.toString()] = feat;
-        options += '<option value="'+feat.id+'">'+feat.properties[locate.fieldName]+'</option>';
+        if ( !('filterFieldName' in locate) )
+          options += '<option value="'+feat.id+'">'+feat.properties[locate.fieldName]+'</option>';
       }
       $('#locate-layer-'+aName).html(options).change(function() {
         var layer = map.getLayersByName('locatelayer')[0];
