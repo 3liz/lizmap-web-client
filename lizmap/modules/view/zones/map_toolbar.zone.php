@@ -23,6 +23,7 @@ class map_toolbarZone extends jZone {
       "edition"=>true,
       "measure"=>true,
       "print"=>true,
+      "geolocation"=>true,
       "locate"=>true,
     );
 
@@ -35,6 +36,10 @@ class map_toolbarZone extends jZone {
     if ( !property_exists($configOptions,'print')
       || $configOptions->print != 'True')
       $assign['print'] = false;
+    
+    if ( !property_exists($configOptions,'geolocation')
+      || $configOptions->geolocation != 'True')
+      $assign['geolocation'] = false;
 
     $assign['locate'] = $lproj->hasLocateByLayer();
 

@@ -2713,9 +2713,9 @@ var lizMap = function() {
       bind: false,
       watch: true,
       geolocationOptions: {
-        enableHighAccuracy: false,
-        maximumAge: 0,
-        timeout: 7000
+        enableHighAccuracy: true,
+        maximumAge: 5000,
+        timeout: 30000
       }
     });
     map.addControl(geolocate);
@@ -2752,7 +2752,8 @@ var lizMap = function() {
           map.zoomToExtent(vector.getDataExtent());
           //pulsate(circle);
           firstGeolocation = false;
-          this.bind = true;
+          if ( $('#geolocate-menu-bind').hasClass('active') )
+            this.bind = true;
         }
       },
       "locationfailed": function(evt) {
@@ -2761,10 +2762,16 @@ var lizMap = function() {
       },
       "activate": function(evt) {
         $('#toggleGeolocate').parent().addClass('active');
+        $('#geolocate-menu').show();
+        updateSwitcherSize();
       },
       "deactivate": function(evt) {
         vector.destroyFeatures();
         $('#toggleGeolocate').parent().removeClass('active');
+        $('#geolocate-menu').hide();
+        updateSwitcherSize();
+        $('#geolocate-menu-bind').removeClass('btn-info active').addClass('btn-success');
+        geolocate.bind = false;
       }
     });
     controls['geolocation'] = geolocate;
@@ -2774,6 +2781,23 @@ var lizMap = function() {
       else
         geolocate.activate();
       return false;
+    });
+    $('#geolocate-menu-center').click(function(){
+      if (vector.features.length != 0 )
+        map.setCenter(vector.getDataExtent().getCenterLonLat());
+    });
+    $('#geolocate-menu-bind').click(function(){
+      var self = $(this);
+      if ( self.hasClass('active') ) {
+        self.removeClass('btn-info active').addClass('btn-success');
+        geolocate.bind = false;
+      } else {
+        self.removeClass('btn-success').addClass('btn-info active');
+        geolocate.bind = true;
+      }
+    });
+    $('#geolocate-menu button.btn-geolocate-clear').click(function(){
+      geolocate.deactivate();
     });
   }
 

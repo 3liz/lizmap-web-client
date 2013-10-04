@@ -283,6 +283,10 @@ body {
 #menu .locate h3 .icon {
   background-position : -20px -80px;
 }
+#toolbar .geolocate h3 .icon,
+#menu .geolocate h3 .icon {
+  background-position: -20px -60px;
+}
 #toolbar .print h3 .icon,
 #menu .print h3 .icon {
   background-position: -160px 0px;

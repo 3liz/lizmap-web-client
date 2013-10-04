@@ -38,6 +38,15 @@
   <h3><span class="title"><button id="measure-perimeter-stop" class="btn btn-stop btn-mini btn-link" title="{@view~map.toolbar.content.stop@}"></button><span class="icon"></span>&nbsp;<span class="text">{@view~map.measure.toolbar.title.perimeter@}</span></span></h3>
 </div>
 {/if}
+{if $geolocation}
+<div id="geolocate-menu" class="geolocate" style="display:none;">
+  <h3><span class="title"><button class="btn-geolocate-clear btn btn-mini btn-error btn-link" title="{@view~map.toolbar.content.stop@}">×</button><span class="icon"></span>&nbsp;{@view~map.geolocate.toolbar.title@}&nbsp;<span class="text"></span></span></span></h3>
+  <div class="menu-content">
+    <button id="geolocate-menu-center" class="btn-print-launch btn btn-small btn-success"><span class="icon"></span>&nbsp;{@view~map.geolocate.toolbar.center@}</button>
+    <button id="geolocate-menu-bind" class="btn-print-launch btn btn-small btn-success"><span class="icon"></span>&nbsp;{@view~map.geolocate.toolbar.bind@}</button>
+  </div>
+</div>
+{/if}
 {if $print}
 <div id="print-menu" class="print" style="display:none;">
   <h3><span class="title"><button class="btn-print-clear btn btn-mini btn-error btn-link" title="{@view~map.toolbar.content.stop@}">×</button><span class="icon"></span>&nbsp;{@view~map.print.toolbar.title@}&nbsp;<span class="text"></span></span></span></h3>
