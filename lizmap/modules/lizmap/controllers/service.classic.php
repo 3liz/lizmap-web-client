@@ -577,9 +577,12 @@ class serviceCtrl extends jController {
     $rep->outputFileName  =  'getPrint';
     
    // Log
+   $logContent ='
+     <a href="'.jUrl::get('lizmap~service:index',jApp::coord()->request->params).'" target="_blank">'.$this->params['template'].'<a>
+     ';
    $eventParams = array(
     'key' => 'print',
-    'content' => $this->params['template'],
+    'content' => $logContent,
     'repository' => $this->repository->getKey(),
     'project' => $this->project->getKey()
    );
