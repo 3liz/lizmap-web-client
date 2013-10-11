@@ -29,7 +29,7 @@
       </p>
     </div>
  
-    <div id="liz-project-modal-{$idm}" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" data-show="false" data-keyboard="false" data-backdrop="static">
+    <div id="liz-project-modal-{$idm}" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" data-show="false" data-keyboard="false" data-backdrop="static" style="top:10px;">
     
       <div class="modal-header">  
         <a class="close" data-dismiss="modal">×</a>  
