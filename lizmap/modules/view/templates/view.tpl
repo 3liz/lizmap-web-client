@@ -13,7 +13,7 @@
   <li class="span3">
     <div class="thumbnail">
       <div class="liz-project">
-        <img src="{$p->img}" alt="project image" class="img-polaroid liz-project-img">
+        <img src="{$p->img}" alt="project image" class="liz-project-img">
         <p class="liz-project-desc" style="display:none;">
           <b>{$p->title}</b>
           <br/>
@@ -29,7 +29,7 @@
       </p>
     </div>
  
-    <div id="liz-project-modal-{$idm}" class="modal hide" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" data-show="false" data-keyboard="false" data-backdrop="static">
+    <div id="liz-project-modal-{$idm}" class="modal fade hide" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" data-show="false" data-keyboard="false" data-backdrop="static">
     
       <div class="modal-header">  
         <a class="close" data-dismiss="modal">×</a>  

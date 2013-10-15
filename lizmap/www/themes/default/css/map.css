@@ -444,6 +444,7 @@ body {
   padding : 0em 0.5em;
   margin :  0em;
   text-shadow: none;
+  display:inline;
 }
 .ui-autocomplete.ui-menu {
   border-radius: 0;
@@ -975,19 +976,30 @@ body {
   background-position: -48px -80px;
 }
 
+#edition-modal form {
+  margin: 0;
+}
+
 .lizmapPopup.olPopup .jforms-ctrl-date,
 #map-content .lizmapPopup .jforms-ctrl-date,
 #edition-modal .jforms-ctrl-date{
   width:auto;
 }
 
-@media (max-width: 767px) {
+@media (max-height: 500px) {
   .modal.fade.in {
     top:30px;
-    bottom:30px;
   }
   .modal-body {
-    max-height: none;
+    max-height: 200px;
+  }
+}
+@media (max-height: 350px) {
+  .modal.fade.in {
+    top:10px;
+  }
+  .modal-body {
+    max-height: 150px;
   }
 }
 
