@@ -28,7 +28,7 @@ class myHtmlMapResponse extends jResponseHtml {
     $this->addCSSLink($bp.'css/bootstrap.css');
     $this->addCSSLink($bp.'css/bootstrap-responsive.css');
     $this->addCSSLink($bp.'TreeTable/stylesheets/jquery.treeTable.css');
-    $this->addCSSLink($bp.'OpenLayers-2.12/theme/default/style.css');
+    $this->addCSSLink($bp.'OpenLayers-2.13/theme/default/style.css');
     $this->addCSSLink($bp.'css/main.css');
     $this->addCSSLink($bp.'css/map.css');
     $this->addCSSLink($bp.'css/media.css');
@@ -42,11 +42,11 @@ class myHtmlMapResponse extends jResponseHtml {
     $this->addHeadContent('<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />');
 
     // JS
-    $this->addJSLink($bp.'OpenLayers-2.12/OpenLayers.js');
-    $this->addJSLink($bp.'OpenLayers-2.12/lib/OpenLayers/Format/SLD/v1_1_0.js');
-    $this->addJSLink($bp.'OpenLayers-2.12/lib/OpenLayers/Control/Scale.js');
-    $this->addJSLink($bp.'OpenLayers-2.12/lib/OpenLayers/Control/ScaleLine.js');
-    $this->addJSLink($bp.'OpenLayers-2.12/lib/OpenLayers/Popup/lizmapAnchored.js');
+    $this->addJSLink($bp.'OpenLayers-2.13/OpenLayers.js');
+    $this->addJSLink($bp.'OpenLayers-2.13/lib/OpenLayers/Format/SLD/v1_1_0.js');
+    $this->addJSLink($bp.'OpenLayers-2.13/lib/OpenLayers/Control/Scale.js');
+    $this->addJSLink($bp.'OpenLayers-2.13/lib/OpenLayers/Control/ScaleLine.js');
+    $this->addJSLink($bp.'OpenLayers-2.13/lib/OpenLayers/Popup/lizmapAnchored.js');
     $this->addJSLink($bp.'Proj4js/proj4js-compressed.js');
     $this->addJSLink($bp.'js/jquery-1.9.1.js');
     $this->addJSLink($bp.'js/bootstrap.js');

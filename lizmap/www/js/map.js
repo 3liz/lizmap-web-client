@@ -2291,7 +2291,7 @@ var lizMap = function() {
               feat.geometry = geom;
               editLayer.drawFeature(feat);
               if (config.editionLayers[editCtrls.click.layerName].capabilities.modifyGeometry == "True")
-                editCtrls.modify.selectControl.select(feat);
+                editCtrls.modify.selectFeature(feat);
             }
           );
         }
@@ -2305,7 +2305,7 @@ var lizMap = function() {
           });
           editLayer.drawFeature(editLayer.features[0]);
           if (config.editionLayers[editCtrls.click.layerName].capabilities.modifyGeometry == "True")
-            editCtrls.modify.selectControl.select(editLayer.features[0]);
+            editCtrls.modify.selectFeature(editLayer.features[0]);
         }
       }
 
@@ -2317,7 +2317,7 @@ var lizMap = function() {
             $('#lizmap-edition-message').remove();
             if (config.editionLayers[editCtrls.click.layerName].capabilities.modifyGeometry == "True") {
               editCtrls.modify.activate();
-              editCtrls.modify.selectControl.select(evt.feature);
+              editCtrls.modify.selectFeature(evt.feature);
               mAddMessage(lizDict['edition.select.modify.activate'],'info',true).attr('id','lizmap-edition-message');
             }
             $('#edition-select-unselect').removeClass('disabled');
@@ -2545,14 +2545,14 @@ var lizMap = function() {
         feat.geometry = geom;
         editLayer.drawFeature(feat);
         if (config.editionLayers[editCtrls.click.layerName].capabilities.modifyGeometry == "True")
-          editCtrls.modify.selectControl.select(feat);
+          editCtrls.modify.selectFeature(feat);
         return false;
       });
       $('#edition-select-attr').click(function(){
         if ( $(this).hasClass('disabled') )
           return false;
 
-        editCtrls.modify.selectControl.unselect(editLayer.features[0]);
+        editCtrls.modify.unselectFeature(editLayer.features[0]);
         return false;
       });
       $('#edition-select-delete').click(function(){
@@ -3285,6 +3285,10 @@ var lizMap = function() {
               $('.ui-icon-open-menu').click();
               $('#metadata').hide();
             }
+            console.log('toggleLegend');
+            map.updateSize();
+            map.baseLayer.redraw(true);
+            console.log('redraw');
             return false;
           });
 
