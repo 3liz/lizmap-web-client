@@ -1643,6 +1643,7 @@ var lizMap = function() {
                             $('#navbar').show();
                             $('#overview-box').show();
                           }
+                          return false;
                         }
                         );
                       popup.panMapIfOutOfView = true;
@@ -2373,6 +2374,7 @@ var lizMap = function() {
         form.find('input[name="liz_wkt"]').val('');
         form.find('input[name="liz_featureId"]').val('');
         updateSwitcherSize();
+        return false;
       });
 
       $('#edition-select').click(function(){
@@ -2384,6 +2386,7 @@ var lizMap = function() {
         editCtrls.click.activate();
         $('#lizmap-edition-message').remove();
         mAddMessage(lizDict['edition.select.activate'],'info',true).attr('id','lizmap-edition-message');
+        return false;
       });
       $('#edition-select-cancel').click(function(){
         $('#lizmap-edition-message').remove();
@@ -2402,6 +2405,7 @@ var lizMap = function() {
         $('#edition-menu-select').hide();
         $('#edition-menu-start').show();
         updateSwitcherSize();
+        return false;
       });
       $('#edition-select-unselect').click(function(){
         if ( $(this).hasClass('disabled') )
@@ -2419,6 +2423,7 @@ var lizMap = function() {
         form.find('input[name="liz_geometryColumn"]').val('');
         form.find('input[name="liz_wkt"]').val('');
         form.find('input[name="liz_featureId"]').val('');
+        return false;
       });
       $('#edition-select-undo').click(function(){
         if ( $(this).hasClass('disabled') )
@@ -2434,12 +2439,14 @@ var lizMap = function() {
         editLayer.drawFeature(feat);
         if (config.editionLayers[editCtrls.click.layerName].capabilities.modifyGeometry == "True")
           editCtrls.modify.selectControl.select(feat);
+        return false;
       });
       $('#edition-select-attr').click(function(){
         if ( $(this).hasClass('disabled') )
           return false;
 
         editCtrls.modify.selectControl.unselect(editLayer.features[0]);
+        return false;
       });
       $('#edition-select-delete').click(function(){
         if ( $(this).hasClass('disabled') )
@@ -2466,6 +2473,7 @@ var lizMap = function() {
             return false;
           });
         });
+        return false;
       });
 
       $('#edition-draw').click(function(){
@@ -2495,6 +2503,7 @@ var lizMap = function() {
           $('#lizmap-edition-message').remove();
           mAddMessage(lizDict['edition.draw.activate'],'info',true).attr('id','lizmap-edition-message');
         }
+        return false;
       });
       $('#edition-draw-cancel').click(function(){
         $('#lizmap-edition-message').remove();
@@ -2515,6 +2524,7 @@ var lizMap = function() {
         $('#edition-menu-draw').hide();
         $('#edition-menu-start').show();
         updateSwitcherSize();
+        return false;
       });
       $('#edition-draw-save').click(function(){
         if ( $(this).hasClass('disabled') )
@@ -2531,6 +2541,7 @@ var lizMap = function() {
           var ctrl = editCtrls[geomType];
           ctrl.finishSketch();
         }
+        return false;
       });
       $('#edition-draw-clear').click(function(){
         if ( $(this).hasClass('disabled') )
@@ -2549,6 +2560,7 @@ var lizMap = function() {
           $('#edition-draw-clear').addClass('disabled');
           $('#edition-draw-save').addClass('disabled');
         }
+        return false;
       });
       
     $('#edition-menu a[rel="tooltip"]').tooltip();
