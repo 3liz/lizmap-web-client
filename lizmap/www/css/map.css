@@ -113,6 +113,11 @@ body {
   white-space: normal;
 }
 
+.navbar-fixed-top .navbar-inner,
+.navbar-static-top .navbar-inner {
+  border: 0;
+}
+
 .navbar .nav .information .icon {
   background-position: -120px -20px;
 }
