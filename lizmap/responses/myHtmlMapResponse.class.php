@@ -29,6 +29,9 @@ class myHtmlMapResponse extends jResponseHtml {
     $this->addCSSLink($bp.'css/bootstrap-responsive.css');
     $this->addCSSLink($bp.'TreeTable/stylesheets/jquery.treeTable.css');
     $this->addCSSLink($bp.'OpenLayers-2.12/theme/default/style.css');
+    $this->addCSSLink($bp.'css/main.css');
+    $this->addCSSLink($bp.'css/map.css');
+    $this->addCSSLink($bp.'css/media.css');
 
 #    $this->addCSSLink($bp.'css/bootstrap-responsive.css');
 

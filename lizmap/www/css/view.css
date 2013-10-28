@@ -1,0 +1,51 @@
+.thumbnail {
+  background-color: white;
+}
+.thumbnail h5 {
+  text-align: center;
+}
+.liz-project {
+  position:relative;
+  text-align:center;
+}
+.liz-project-img {
+  width : 250px;
+  text-align : center;
+  vertical-align : middle;
+  font-size : 1em;
+  text-transform : uppercase;
+  line-height: 248px;
+  position:relative;
+  max-width:100%;
+}
+.liz-project-desc {
+  color: white;
+  font-size: 0.8em;
+  line-height: 0.8em;
+  position: absolute;
+  bottom:-1px;
+  right:0px;
+  left:0px;
+  text-align: left;
+  text-transform: none;
+  background-color: rgba(0, 0, 0, 0.5);
+  padding:5px;
+  margin:0px;
+}
+
+@media (max-height: 500px) {
+  .modal.fade.in {
+    top:30px;
+  }
+  .modal-body {
+    max-height: 200px;
+  }
+}
+@media (max-height: 350px) {
+  .modal.fade.in {
+    top:10px;
+  }
+  .modal-body {
+    max-height: 150px;
+  }
+}
