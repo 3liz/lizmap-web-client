@@ -5,6 +5,10 @@
   <label locale="admin~admin.form.admin_services.wmsServerURL.label"/>
 </input>
 
+<input ref="wmsPublicUrlList" type="string" required="false" defaultvalue="">
+  <label locale="admin~admin.form.admin_services.wmsPublicUrlList.label"/>
+</input>
+
 <menulist ref="cacheStorageType" required="true">
   <label locale="admin~admin.form.admin_services.cacheStorageType.label"/>
   <item value="sqlite" selected="true" locale="admin~admin.form.admin_services.cacheStorageType.sqlite.label"/>
@@ -12,13 +16,13 @@
 </menulist>
 
 <input ref="cacheRootDirectory" type="string" required="true">
-	<label locale="admin~admin.form.admin_services.cacheRootDirectory.label"/>
-	<help locale="admin~admin.form.admin_services.cacheRootDirectory.help"/>
+    <label locale="admin~admin.form.admin_services.cacheRootDirectory.label"/>
+    <help locale="admin~admin.form.admin_services.cacheRootDirectory.help"/>
 </input>
 
 <input ref="cacheExpiration" type="integer" required="true" defaultvalue="2592000">
-	<label locale="admin~admin.form.admin_services.cacheExpiration.label"/>
-	<help locale="admin~admin.form.admin_services.cacheExpiration.help"/>
+    <label locale="admin~admin.form.admin_services.cacheExpiration.label"/>
+    <help locale="admin~admin.form.admin_services.cacheExpiration.help"/>
 </input>
 
 <menulist ref="proxyMethod" required="true">
@@ -40,11 +44,11 @@
 </menulist>
 
 <input ref="adminContactEmail" type="email">
-	<label locale="admin~admin.form.admin_services.adminContactEmail.label"/>
-	<help locale="admin~admin.form.admin_services.adminContactEmail.help"/>
+    <label locale="admin~admin.form.admin_services.adminContactEmail.label"/>
+    <help locale="admin~admin.form.admin_services.adminContactEmail.help"/>
 </input>
 
 <submit ref="_submit">
-	<label locale="admin~admin.form.admin_services.submit.label"/>
+    <label locale="admin~admin.form.admin_services.submit.label"/>
 </submit>
 </form>

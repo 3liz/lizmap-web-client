@@ -93,7 +93,18 @@ class mapCtrl extends jController {
       "edition" => jUrl::get('lizmap~edition:getFeature'),
       "permalink" => jUrl::getFull('view~map:index')
     );
-    
+
+    // Get optionnal WMS public url list
+    $lser = lizmap::getServices();
+    if($lser->wmsPublicUrlList){
+        $publicUrlList = $lser->wmsPublicUrlList;
+        function f($x) {
+            return jUrl::getFull('lizmap~service:index', array(), 0, trim($x));
+        }
+        $pul = array_map('f', explode(',', $publicUrlList));
+        $lizUrls['publicUrlList'] = $pul;
+    }
+
     if(jacl2::check('lizmap.admin.repositories.delete'))
       $lizUrls['removeCache'] = jUrl::get('admin~config:removeLayerCache');
 
@@ -114,7 +125,7 @@ class mapCtrl extends jController {
       'project'=>$project,
     ), $wmsInfo);
     $rep->body->assign($assign);
-    
+
    // Log
    $eventParams = array(
     'key' => 'viewmap',
@@ -122,7 +133,7 @@ class mapCtrl extends jController {
     'repository' => $lrep->getKey(),
     'project' => $project
    );
-   jEvent::notify('LizLogItem', $eventParams);       
+   jEvent::notify('LizLogItem', $eventParams);
 
     return $rep;
   }

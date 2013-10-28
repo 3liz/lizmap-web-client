@@ -2,6 +2,7 @@
 ;list the different map services (servers, generic parameters, etc.)
 [services]
 wmsServerURL="http://127.0.0.1/cgi-bin/qgis_mapserv.fcgi"
+;List of URL available for the web client
 defaultRepository=montpellier
 cacheStorageType=file
 ;cacheStorageType=sqlite => store cached images in one sqlite file per repo/project/layer
@@ -20,12 +21,10 @@ cacheRootDirectory="/tmp/"
 ; cache root directory where cache files will be stored
 ; must be writable
 allowUserAccountRequests=off
-adminContactEmail="none"
 
-;Repositories
-;Each repository must be set in a separate section
-;The section name must begin with the prefix "repository:"
-; Example of public repository
+
+
+
 [repository:montpellier]
 label="LizMap Demo"
 path="../install/qgis/"
@@ -35,6 +34,14 @@ path="../install/qgis/"
 [repository:intranet]
 label="Lizmap Demo - Intranet"
 path="../install/qgis_intranet/"
+
+
+
+
+
+
+
+
 
 
 

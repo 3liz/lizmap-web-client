@@ -20,6 +20,7 @@ class lizmapServices{
     // services properties
     private $properties = array(
       'wmsServerURL',
+      'wmsPublicUrlList',
       'cacheStorageType',
       'cacheExpiration',
       'defaultRepository',
@@ -31,6 +32,8 @@ class lizmapServices{
     );
     // Wms map server
     public $wmsServerURL = '';
+    // Public Wms url list
+    public $wmsPublicUrlList = '';
     // map cache server
     public $cacheStorageType = '';
     // default repository
@@ -56,7 +59,7 @@ class lizmapServices{
         if(isset($readConfigPath['services'][$prop]))
           $this->$prop = $readConfigPath['services'][$prop];
     }
-    
+
     public function getProperties(){
       return $this->properties;
     }

@@ -128,7 +128,7 @@ var lizMap = function() {
       $('div.locate-layer select').hide();
       $('span.custom-combobox').show();
     }
-    
+
   }
 
 
@@ -149,7 +149,7 @@ var lizMap = function() {
     // Update body padding top by summing up header+headermenu
     $('body').css('padding-top', $('#header').outerHeight() + $('#headermenu').outerHeight() );
 
-    // calculate map width depending on theme configuration 
+    // calculate map width depending on theme configuration
     // (fullscreen map or not, mobile or not)
     var w = $('body').parent()[0].offsetWidth;
 
@@ -240,8 +240,8 @@ var lizMap = function() {
     }
     else
         $('#switcher').height(h);
-    
-    
+
+
   }
 
 
@@ -394,6 +394,22 @@ var lizMap = function() {
    */
   function getLayerTree(nested,pNode) {
     pNode.children = [];
+
+    var service = OpenLayers.Util.urlAppend(lizUrls.wms
+      ,OpenLayers.Util.getParameterString(lizUrls.params)
+    );
+    if (lizUrls.publicUrlList && lizUrls.publicUrlList.length > 1 ) {
+        service = [];
+        for (var j=0, jlen=lizUrls.publicUrlList.length; j<jlen; j++) {
+          service.push(
+            OpenLayers.Util.urlAppend(
+              lizUrls.publicUrlList[j],
+              OpenLayers.Util.getParameterString(lizUrls.params)
+            )
+          );
+        }
+    }
+
     for (var i = 0, len = nested.nestedLayers.length; i<len; i++) {
       var layer = nested.nestedLayers[i];
       var layerConfig = config.layers[layer.name];
@@ -406,9 +422,6 @@ var lizMap = function() {
       // creating the {<OpenLayers.Layer.WMS>} and the tree node
       if (layer.name != 'Overview' && layerConfig) {
         var node = {name:layerName,config:layerConfig,parent:pNode};
-        var service = OpenLayers.Util.urlAppend(lizUrls.wms
-          ,OpenLayers.Util.getParameterString(lizUrls.params)
-        );
         var layerWmsParams = {
           layers:layer.name
           ,version:'1.3.0'
@@ -550,12 +563,12 @@ var lizMap = function() {
       html += '<td><button class="link" name="link" title="'+lizDict['tree.button.link']+'" value="'+legendLink+'"/></td>';
     else
       html += '<td></td>';
-      
+
     var removeCache = '';
     if (nodeConfig.cached && nodeConfig.cached == 'True' && nodeConfig.type == 'layer' && ('removeCache' in config.options))
       html += '<td><button class="removeCache" name="removeCache" title="'+lizDict['tree.button.removeCache']+'" value="'+aNode.name+'"/></td>';
     else
-      html += '<td></td>';      
+      html += '<td></td>';
 
     html += '</tr>';
 
@@ -1077,7 +1090,7 @@ var lizMap = function() {
       icons:{primary:''},
       text:false
     })
-	  .removeClass( "ui-corner-all" )
+    .removeClass( "ui-corner-all" )
     .click(function(){
       var self = $(this);
       if (self.attr('aria-disabled')=='true')
@@ -1137,7 +1150,7 @@ var lizMap = function() {
       icons:{primary:'liz-icon-info'},
       text:false
     })
-	.removeClass( "ui-corner-all" )
+  .removeClass( "ui-corner-all" )
     .click(function(){
       var self = $(this);
       if (self.attr('aria-disabled')=='true')
@@ -1154,13 +1167,13 @@ var lizMap = function() {
       // Open link in a new window
       window.open(windowLink);
     });
-    
+
     // Activate removeCache button
     $('#switcher button.removeCache').button({
       icons:{primary:'liz-remove-cache'},
       text:false
     })
-	.removeClass( "ui-corner-all" )
+  .removeClass( "ui-corner-all" )
     .click(function(){
       var self = $(this);
       if (self.attr('aria-disabled')=='true')
@@ -1173,7 +1186,7 @@ var lizMap = function() {
       // Open link in a new window
       if (confirm(lizDict['tree.button.removeCache'] + ' ?'))
         window.open(windowLink);
-    });    
+    });
 
     var projection = map.projection;
 
@@ -1410,7 +1423,7 @@ var lizMap = function() {
       text:false,
       icons:{primary: "ui-icon-triangle-1-n"}
     })
-	  .removeClass( "ui-corner-all" )
+    .removeClass( "ui-corner-all" )
     .click(function(){
       var self = $(this);
       var icons = self.button('option','icons');
@@ -2024,7 +2037,7 @@ var lizMap = function() {
 
       // initialize controls
       OpenLayers.Control.EditionClick =
-        OpenLayers.Class(OpenLayers.Control, {                
+        OpenLayers.Class(OpenLayers.Control, {
           defaultHandlerOptions: {
             'single': true,
             'double': false,
@@ -2040,7 +2053,7 @@ var lizMap = function() {
             );
             OpenLayers.Control.prototype.initialize.apply(
               this, arguments
-            ); 
+            );
             this.handler = new OpenLayers.Handler.Click(
               this, {
                 'click': this.trigger
@@ -2562,9 +2575,9 @@ var lizMap = function() {
         }
         return false;
       });
-      
+
     $('#edition-menu a[rel="tooltip"]').tooltip();
-    
+
     } else {
       $('#edition').parent().remove();
       $('#edition-menu').remove();
@@ -2975,7 +2988,7 @@ var lizMap = function() {
 
     if ( aClose )
       mClose = true;
-      
+
     var html = '<div class="alert alert-block alert-'+mType+' fade in" data-alert="alert">';
     if ( mClose )
       html += '<a class="close" data-dismiss="alert" href="#">×</a>';
@@ -3100,7 +3113,7 @@ var lizMap = function() {
           /*
           if(lizPosition['lon']!=null){
             map.setCenter(
-              new OpenLayers.LonLat(lizPosition['lon'], lizPosition['lat']), 
+              new OpenLayers.LonLat(lizPosition['lon'], lizPosition['lat']),
               lizPosition['zoom']
             );
           }else{
@@ -3132,7 +3145,7 @@ var lizMap = function() {
               }
             }
           }
-          
+
           // finalize slider
           $('#navbar div.slider').slider("value",map.getZoom());
           map.events.on({

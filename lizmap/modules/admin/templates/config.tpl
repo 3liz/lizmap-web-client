@@ -16,6 +16,7 @@
     <h2>{@admin~admin.configuration.services.label@}</h2>
     <dl>
       <dt>{@admin~admin.configuration.services.wmsServerURL.label@}</dt><dd>{$services->wmsServerURL}</dd>
+      <dt>{@admin~admin.configuration.services.wmsPublicUrlList.label@}</dt><dd>{$services->wmsPublicUrlList}</dd>
       <dt>{@admin~admin.configuration.services.cacheStorageType.label@}</dt><dd>{$services->cacheStorageType}</dd>
       <dt>{@admin~admin.configuration.services.cacheRootDirectory.label@}</dt><dd>{$services->cacheRootDirectory}</dd>
       <dt>{@admin~admin.configuration.services.cacheExpiration.label@}</dt><dd>{$services->cacheExpiration}</dd>
