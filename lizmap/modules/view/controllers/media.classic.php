@@ -94,7 +94,7 @@ class mediaCtrl extends jController {
       $rep->fileName = Null;
       $rep->content = $content;
     }
-    $rep->setExpires(60);
+    $rep->setExpires('+60 seconds');
 
     return $rep;
   }
@@ -139,6 +139,7 @@ class mediaCtrl extends jController {
         if(file_exists($lrep->getPath().$project.'.qgs.'.$type)){
           $rep->fileName = $lrep->getPath().$project.'.qgs.'.$type;
           $rep->mimeType = "image/$type";
+          $rep->setExpires('+60 seconds');
           return $rep;
         }
       }
