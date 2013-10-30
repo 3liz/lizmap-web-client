@@ -95,6 +95,17 @@ class lizAjaxCtrl extends jController {
       "edition" => jUrl::getFull('lizmap~edition:getFeature'),
       "permalink" => jUrl::getFull('view~map:index')
     );
+
+    // Get optionnal WMS public url list
+    $lser = lizmap::getServices();
+    if($lser->wmsPublicUrlList){
+        $publicUrlList = $lser->wmsPublicUrlList;
+        function f($x) {
+            return jUrl::getFull('lizmap~service:index', array(), 0, trim($x));
+        }
+        $pul = array_map('f', explode(',', $publicUrlList));
+        $lizUrls['publicUrlList'] = $pul;
+    }
     
     if(jacl2::check('lizmap.admin.repositories.delete'))
       $lizUrls['removeCache'] = jUrl::getFull('admin~config:removeLayerCache');
