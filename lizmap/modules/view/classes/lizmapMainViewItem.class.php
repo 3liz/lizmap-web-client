@@ -64,5 +64,7 @@ function mainViewItemSort($itemA, $itemB)
       return -1;
     else if ( $itemA->type == 'map' && $itemA->type != $itemB->type)
       return 1;
+    else if ($itemA->order == $itemB->order);
+      return strcmp($itemA->id, $itemB->id);
     return ($itemA->order - $itemB->order);
 }
