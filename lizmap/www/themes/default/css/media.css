@@ -23,7 +23,60 @@ only screen and (                min-resolution: 192dpi),
 only screen and (                min-resolution: 2dppx),
 only screen and (                   max-height : 640px) ,
 only screen and (                   max-device-height : 640px) {
-  /* some CSS here */
+
+  /* Retina-specific stuff here */
+  body{
+    padding-top : 60px;
+  }
+  #header {
+    height : 30px;
+  }
+  #logo {
+    height : 30px;
+    margin: 0px 5px;
+    background : none;
+  }
+  #logo h1 {
+    font-size : 1.5em;
+    margin-left: 10px;
+    margin: 5px 5px;
+    line-height: 20px;
+  }
+  #title{
+    height : 30px;
+    margin : 0px 5px;
+    padding-right:5px;
+  }
+  #title h1 {
+    margin : 0px 5px;
+    font-size : 1.5em;
+    line-height: 30px;
+  }
+  #headermenu{
+/*    height:30px;*/
+    position: fixed;
+    top: 30px;
+  }
+  .navbar-inner {
+    min-height:30px;
+    padding: 0px 10px;
+  }
+
+  /*  for ie*/
+/*  .navbar-inner ul {*/
+/*    height:30px\9;*/
+/*  }*/
+  
+  /*  for ie*/
+  .navbar-inner ul li{
+    display:inline\9;
+  }
+
+  #overview-box {
+    right:10px;
+    bottom:1em;
+  }
+
 }
 
 /* #### Tablets Portrait or Landscape #### */
