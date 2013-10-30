@@ -1,9 +1,14 @@
 <ul class="nav pull-right">
   {foreach $infoboxitems  as $item}
-    <li>
-     {if $item->icon}<i style="background-image:url({$item->icon});"></i>{/if}
-     {if $item->type == 'url'}<a href="{$item->content|eschtml}">{$item->label|eschtml}</a>
-     {else}<p class="navbar-text">{$item->content}</p>{/if}
+    <li class="{$item->id}">
+     {if $item->type == 'url'}
+     <a href="{$item->content|eschtml}" title="{$item->label|eschtml}">
+       {if $item->icon}<span class="icon"></span>{/if}
+       <span class="text"><b>{$item->label|eschtml}</b></span>
+     </a>
+     {else}
+     <p class="navbar-text">{$item->content}</p>
+     {/if}
     </li>
   {/foreach}
   <li class="user dropdown">

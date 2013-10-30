@@ -3,7 +3,9 @@ class viewListener extends jEventListener{
 
    function onmasteradminGetInfoBoxContent ($event) {
 
-        $event->add(new masterAdminMenuItem('view', jLocale::get("view~default.repository.list.title"), jUrl::get('view~default:index')));
+        $home = new masterAdminMenuItem('home', jLocale::get("view~default.repository.list.title"), jUrl::get('view~default:index'));
+        $home->icon = True;
+        $event->add($home);
   
    }
 }
