@@ -816,6 +816,14 @@ body {
 .olLayerGooglePoweredBy.olLayerGoogleV3.gmnoprint {
   display:none;
 }
+.olBingAttribution {
+  color:#555;
+}
+.olBingAttribution > div {
+  float: left;
+  margin-top: 5px;
+  width:90px;
+}
 
 #permalink-box {
   top : 10px;

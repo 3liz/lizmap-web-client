@@ -3243,7 +3243,22 @@ lizMap.events.on({
    (('googleHybrid' in evt.config.options)
     && evt.config.options.googleHybrid == 'True') ||
    (('googleTerrain' in evt.config.options)
-    && evt.config.options.googleTerrain == 'True')
+    && evt.config.options.googleTerrain == 'True') ||
+   (('bingStreets' in evt.config.options)
+    && evt.config.options.bingStreets == 'True'
+    && ('bingKey' in evt.config.options)) ||
+   (('bingSatellite' in evt.config.options)
+    && evt.config.options.bingSatellite == 'True'
+    && ('bingKey' in evt.config.options)) ||
+   (('bingHybrid' in evt.config.options)
+    && evt.config.options.bingHybrid == 'True'
+    && ('bingKey' in evt.config.options)) ||
+   (('ignStreets' in evt.config.options)
+    && evt.config.options.ignStreets == 'True'
+    && ('ignKey' in evt.config.options)) ||
+   (('ignSatellite' in evt.config.options)
+    && evt.config.options.ignSatellite == 'True'
+    && ('ignKey' in evt.config.options))
    ) {
      Proj4js.defs['EPSG:3857'] = Proj4js.defs['EPSG:900913'];
      var proj = evt.config.options.projection;
@@ -3280,10 +3295,15 @@ lizMap.events.on({
 
      // Specify zoom level number
      if ((('osmMapnik' in evt.config.options) && evt.config.options.osmMapnik == 'True') ||
-         (('osmMapquest' in evt.config.options) && evt.config.options.osmMapquest == 'True'))
+         (('osmMapquest' in evt.config.options) && evt.config.options.osmMapquest == 'True') ||
+         (('bingStreets' in evt.config.options) && evt.config.options.bingStreets == 'True' && ('bingKey' in evt.config.options)) ||
+         (('bingSatellite' in evt.config.options) && evt.config.options.bingSatellite == 'True' && ('bingKey' in evt.config.options)) ||
+         (('bingHybrid' in evt.config.options) && evt.config.options.bingHybrid == 'True' && ('bingKey' in evt.config.options)) ||
+         (('ignStreets' in evt.config.options) && evt.config.options.ignStreets == 'True') && ('ignKey' in evt.config.options))
        evt.config.options.zoomLevelNumber = 19;
      if ((('googleStreets' in evt.config.options) && evt.config.options.googleStreets == 'True') ||
-         (('googleHybrid' in evt.config.options) && evt.config.options.googleHybrid == 'True'))
+         (('googleHybrid' in evt.config.options) && evt.config.options.googleHybrid == 'True') ||
+         (('ignSatellite' in evt.config.options) && evt.config.options.ignSatellite == 'True') && ('ignKey' in evt.config.options))
        evt.config.options.zoomLevelNumber = 20;
      if ((('googleSatellite' in evt.config.options) && evt.config.options.googleSatellite == 'True'))
        evt.config.options.zoomLevelNumber = 21;
@@ -3340,8 +3360,8 @@ lizMap.events.on({
     ,'mapcreated':function(evt){
       //console.log('mapcreated');
       if (
-          (('osmMapnik' in evt.config.options)
-           && evt.config.options.osmMapnik == 'True') ||
+    (('osmMapnik' in evt.config.options)
+    && evt.config.options.osmMapnik == 'True') ||
     (('osmMapquest' in evt.config.options)
      && evt.config.options.osmMapquest == 'True') ||
     (('googleStreets' in evt.config.options)
@@ -3351,7 +3371,22 @@ lizMap.events.on({
     (('googleHybrid' in evt.config.options)
      && evt.config.options.googleHybrid == 'True') ||
     (('googleTerrain' in evt.config.options)
-     && evt.config.options.googleTerrain == 'True')
+     && evt.config.options.googleTerrain == 'True') ||
+    (('bingStreets' in evt.config.options)
+     && evt.config.options.bingStreets == 'True'
+     && ('bingKey' in evt.config.options)) ||
+    (('bingSatellite' in evt.config.options)
+     && evt.config.options.bingSatellite == 'True'
+     && ('bingKey' in evt.config.options)) ||
+    (('bingHybrid' in evt.config.options)
+     && evt.config.options.bingHybrid == 'True'
+     && ('bingKey' in evt.config.options)) ||
+    (('ignStreets' in evt.config.options)
+     && evt.config.options.ignStreets == 'True'
+     && ('ignKey' in evt.config.options)) ||
+    (('ignSatellite' in evt.config.options)
+     && evt.config.options.ignSatellite == 'True'
+     && ('ignKey' in evt.config.options))
     ) {
       //adding baselayers
       var maxExtent = null;
@@ -3550,7 +3585,164 @@ lizMap.events.on({
          evt.baselayers.push(gmap);
          evt.map.allOverlays = false;
        }
-       } catch(e) {
+       if (('bingStreets' in evt.config.options) && evt.config.options.bingStreets == 'True' && ('bingKey' in evt.config.options))  {
+          var options = {
+            zoomOffset: 0,
+            maxResolution:156543.03390625,
+            numZoomLevels:19
+          };
+          if (lOptions.zoomOffset != 0) {
+            options.zoomOffset = lOptions.zoomOffset;
+            options.maxResolution = lOptions.maxResolution;
+          }
+          if (lOptions.zoomOffset+lOptions.numZoomLevels <= options.numZoomLevels)
+            options.numZoomLevels = lOptions.numZoomLevels;
+          else
+            options.numZoomLevels = options.numZoomLevels - lOptions.zoomOffset;
+          var bmap = new OpenLayers.Layer.Bing({
+             key: evt.config.options.bingKey,
+             type: "Road",
+             name: "Bing Road", // the default
+             numZoomLevels: options.numZoomLevels, maxResolution: options.maxResolution, minZoomLevel:options.zoomOffset
+          });
+          bmap.maxExtent = maxExtent;
+          var bmapCfg = {
+             "name":"bmap"
+            ,"title":"Bing Road"
+          };
+          evt.config.layers['bmap'] = bmapCfg;
+          evt.baselayers.push(bmap);
+          evt.map.allOverlays = false;
+       }
+       if (('bingSatellite' in evt.config.options) && evt.config.options.bingSatellite == 'True' && ('bingKey' in evt.config.options))  {
+          var options = {
+            zoomOffset: 0,
+            maxResolution:156543.03390625,
+            numZoomLevels:19
+          };
+          if (lOptions.zoomOffset != 0) {
+            options.zoomOffset = lOptions.zoomOffset;
+            options.maxResolution = lOptions.maxResolution;
+          }
+          if (lOptions.zoomOffset+lOptions.numZoomLevels <= options.numZoomLevels)
+            options.numZoomLevels = lOptions.numZoomLevels;
+          else
+            options.numZoomLevels = options.numZoomLevels - lOptions.zoomOffset;
+          var baerial = new OpenLayers.Layer.Bing({
+             key: evt.config.options.bingKey,
+             type: "Aerial",
+             name: "Bing Aerial", // the default
+             numZoomLevels: options.numZoomLevels, maxResolution: options.maxResolution, minZoomLevel:options.zoomOffset
+          });
+          baerial.maxExtent = maxExtent;
+          var baerialCfg = {
+             "name":"baerial"
+            ,"title":"Bing Aerial"
+          };
+          evt.config.layers['baerial'] = baerialCfg;
+          evt.baselayers.push(baerial);
+          evt.map.allOverlays = false;
+       }
+       if (('bingHybrid' in evt.config.options) && evt.config.options.bingHybrid == 'True' && ('bingKey' in evt.config.options))  {
+          var options = {
+            zoomOffset: 0,
+            maxResolution:156543.03390625,
+            numZoomLevels:19
+          };
+          if (lOptions.zoomOffset != 0) {
+            options.zoomOffset = lOptions.zoomOffset;
+            options.maxResolution = lOptions.maxResolution;
+          }
+          if (lOptions.zoomOffset+lOptions.numZoomLevels <= options.numZoomLevels)
+            options.numZoomLevels = lOptions.numZoomLevels;
+          else
+            options.numZoomLevels = options.numZoomLevels - lOptions.zoomOffset;
+          var bhybrid = new OpenLayers.Layer.Bing({
+             key: evt.config.options.bingKey,
+             type: "AerialWithLabels",
+             name: "Bing Hybrid", // the default
+             numZoomLevels: options.numZoomLevels, maxResolution: options.maxResolution, minZoomLevel:options.zoomOffset
+          });
+          bhybrid.maxExtent = maxExtent;
+          var bhybridCfg = {
+             "name":"bhybrid"
+            ,"title":"Bing Hybrid"
+          };
+          evt.config.layers['bhybrid'] = bhybridCfg;
+          evt.baselayers.push(bhybrid);
+          evt.map.allOverlays = false;
+       }
+       if (('ignStreets' in evt.config.options) && evt.config.options.ignStreets == 'True' && ('ignKey' in evt.config.options)) {
+          var options = {
+            zoomOffset: 0,
+            maxResolution:156543.03390625,
+            numZoomLevels:19
+          };
+          if (lOptions.zoomOffset != 0) {
+            options.zoomOffset = lOptions.zoomOffset;
+            options.maxResolution = lOptions.maxResolution;
+          }
+          if (lOptions.zoomOffset+lOptions.numZoomLevels <= options.numZoomLevels)
+            options.numZoomLevels = lOptions.numZoomLevels;
+          else
+            options.numZoomLevels = options.numZoomLevels - lOptions.zoomOffset;
+          var ignmap = new OpenLayers.Layer.WMTS({
+            name: "ignmap",
+            url: "http://gpp3-wxs.ign.fr/"+evt.config.options.ignKey+"/wmts",
+            layer: "GEOGRAPHICALGRIDSYSTEMS.MAPS",
+            matrixSet: "PM",
+            style: "normal",
+            projection: new OpenLayers.Projection("EPSG:3857"),
+            attribution: 'Fond&nbsp;: &copy;IGN <a href="http://www.geoportail.fr/" target="_blank"><img src="http://api.ign.fr/geoportail/api/js/2.0.0beta/theme/geoportal/img/logo_gp.gif"></a> <a href="http://www.geoportail.gouv.fr/depot/api/cgu/licAPI_CGUF.pdf" alt="TOS" title="TOS" target="_blank">Conditions d\'utilisation</a>'
+            , numZoomLevels: options.numZoomLevels, maxResolution: options.maxResolution, minZoomLevel:options.zoomOffset
+            ,zoomOffset: options.zoomOffset
+            
+          });
+          ignmap.maxExtent = maxExtent;
+          var ignmapCfg = {
+             "name":"ignmap"
+            ,"title":"IGN Map"
+          };
+          evt.config.layers['ignmap'] = ignmapCfg;
+          evt.baselayers.push(ignmap);
+          evt.map.allOverlays = false;
+       }
+       if (('ignSatellite' in evt.config.options) && evt.config.options.ignSatellite == 'True' && ('ignKey' in evt.config.options)) {
+          var options = {
+            zoomOffset: 0,
+            maxResolution:156543.03390625,
+            numZoomLevels:20
+          };
+          if (lOptions.zoomOffset != 0) {
+            options.zoomOffset = lOptions.zoomOffset;
+            options.maxResolution = lOptions.maxResolution;
+          }
+          if (lOptions.zoomOffset+lOptions.numZoomLevels <= options.numZoomLevels)
+            options.numZoomLevels = lOptions.numZoomLevels;
+          else
+            options.numZoomLevels = options.numZoomLevels - lOptions.zoomOffset;
+          var ignphoto = new OpenLayers.Layer.WMTS({
+            name: "ignphoto",
+            url: "http://gpp3-wxs.ign.fr/"+evt.config.options.ignKey+"/wmts",
+            layer: "ORTHOIMAGERY.ORTHOPHOTOS",
+            matrixSet: "PM",
+            style: "normal",
+            projection: new OpenLayers.Projection("EPSG:3857"),
+            attribution: 'Fond&nbsp;: &copy;IGN <a href="http://www.geoportail.fr/" target="_blank"><img src="http://api.ign.fr/geoportail/api/js/2.0.0beta/theme/geoportal/img/logo_gp.gif"></a> <a href="http://www.geoportail.gouv.fr/depot/api/cgu/licAPI_CGUF.pdf" alt="TOS" title="TOS" target="_blank">Conditions d\'utilisation</a>'
+            , numZoomLevels: options.numZoomLevels, maxResolution: options.maxResolution, minZoomLevel:options.zoomOffset
+            ,zoomOffset: options.zoomOffset
+            
+          });
+          ignphoto.maxExtent = maxExtent;
+          var ignphotoCfg = {
+             "name":"ignphoto"
+            ,"title":"IGN Photos"
+          };
+          evt.config.layers['ignphoto'] = ignphotoCfg;
+          evt.baselayers.push(ignphoto);
+          evt.map.allOverlays = false;
+       }
+      } catch(e) {
          //problems with google
          var myError = e;
          //console.log(myError);
