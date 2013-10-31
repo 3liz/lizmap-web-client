@@ -5,7 +5,7 @@ class lizmapCoordPlugin implements jICoordPlugin {
     *
     */
     function __construct($config){
-      if (in_array('wmsPublicUrlList', $config['services']) && $config['services']['wmsPublicUrlList'] !=  '') {
+      if (array_key_exists('wmsPublicUrlList', $config['services']) && $config['services']['wmsPublicUrlList'] !=  '') {
         $publicUrlList = explode(',', $config['services']['wmsPublicUrlList']);
         $publicUrl = trim($publicUrlList[0]);
         $pos = strpos( $publicUrl, '.' );
