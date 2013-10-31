@@ -257,6 +257,26 @@ class configCtrl extends jController {
         jLocale::get("admin~admin.form.admin_services.message.cacheExpiration.wrong")
       );
     }
+    // Check the wmsPublicUrlList : must sub-domain
+    $wmsPublicUrlList = $form->getData('wmsPublicUrlList');
+    if( $wmsPublicUrlList != '' ) {
+      $domain = jApp::coord()->request->getDomainName();
+      $pattern = '/.*\.'.$domain.'$/';
+      $publicUrlList = explode(',', $wmsPublicUrlList);
+      foreach( $publicUrlList as $publicUrl ) {
+        if ( preg_match($pattern,trim($publicUrl)) )
+          continue;
+        else {
+          $ok = false;
+          $form->setErrorOn(
+            'wmsPublicUrlList',
+            jLocale::get("admin~admin.form.admin_services.message.wmsPublicUrlList.wrong")
+          );
+          break;
+        }
+      }
+    }
+
 
     if(!$ok){
       // Errors : redirection to the display action

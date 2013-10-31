@@ -10,6 +10,7 @@ pluginsPath="app:plugins/,lib:jelix-plugins/,module:jacl2db/plugins"
 
 auth="index/auth.coord.ini.php"
 jacl2="index/jacl2.coord.ini.php"
+lizmap="lizmapConfig.ini.php"
 [responses]
 
 [modules]
