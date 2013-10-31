@@ -14,6 +14,11 @@ class ajax_viewZone extends jZone {
    protected $_tplname='view';
 
    protected function _prepareTpl(){
+        $protocol = jApp::coord()->request->getProtocol();
+        $this->_tpl->assign('protocol', $protocol);
+        $domain = jApp::coord()->request->getDomainName();
+        $this->_tpl->assign('domain', $domain);
+
         jClasses::inc('lizmapMainViewItem');
         $maps = array();
 
@@ -21,13 +26,7 @@ class ajax_viewZone extends jZone {
         $repository = $this->param('repository');
 
         $repositories = Array();
-        if ($repository != null) {
-          if(!jacl2::check('lizmap.repositories.view', $repository)){
-            $rep = $this->getResponse('redirect');
-            $rep->action = 'view~default:index';
-            jMessage::add(jLocale::get('view~default.repository.access.denied'), 'error');
-            return $rep;
-          }
+        if ($repository != null && jacl2::check('lizmap.repositories.view', $repository)){
           $repositories[] = $repository;
         } else {
           $repositories = lizmap::getRepositoryList();
