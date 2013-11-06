@@ -1242,6 +1242,8 @@ var lizMap = function() {
 
     // adding layers to the map
     layers.sort(function(a, b) {
+      if (a.order == b.order)
+        return 0;
       return a.order > b.order ? 1 : -1;
     });
     layers.reverse();
