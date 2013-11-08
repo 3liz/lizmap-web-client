@@ -3304,7 +3304,7 @@ lizMap.events.on({
          (('bingStreets' in evt.config.options) && evt.config.options.bingStreets == 'True' && ('bingKey' in evt.config.options)) ||
          (('bingSatellite' in evt.config.options) && evt.config.options.bingSatellite == 'True' && ('bingKey' in evt.config.options)) ||
          (('bingHybrid' in evt.config.options) && evt.config.options.bingHybrid == 'True' && ('bingKey' in evt.config.options)) ||
-         (('ignTerrain' in evt.config.options) && evt.config.options.ignTerrain == 'True') && ('ignKey' in evt.config.options))
+         (('ignTerrain' in evt.config.options) && evt.config.options.ignTerrain == 'True' && ('ignKey' in evt.config.options)) ||
          (('ignStreets' in evt.config.options) && evt.config.options.ignStreets == 'True') && ('ignKey' in evt.config.options))
        evt.config.options.zoomLevelNumber = 19;
      if ((('googleStreets' in evt.config.options) && evt.config.options.googleStreets == 'True') ||
