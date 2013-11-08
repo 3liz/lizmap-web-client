@@ -3255,6 +3255,9 @@ lizMap.events.on({
    (('bingHybrid' in evt.config.options)
     && evt.config.options.bingHybrid == 'True'
     && ('bingKey' in evt.config.options)) ||
+   (('ignTerrain' in evt.config.options)
+    && evt.config.options.ignTerrain == 'True'
+    && ('ignKey' in evt.config.options)) ||
    (('ignStreets' in evt.config.options)
     && evt.config.options.ignStreets == 'True'
     && ('ignKey' in evt.config.options)) ||
@@ -3301,6 +3304,7 @@ lizMap.events.on({
          (('bingStreets' in evt.config.options) && evt.config.options.bingStreets == 'True' && ('bingKey' in evt.config.options)) ||
          (('bingSatellite' in evt.config.options) && evt.config.options.bingSatellite == 'True' && ('bingKey' in evt.config.options)) ||
          (('bingHybrid' in evt.config.options) && evt.config.options.bingHybrid == 'True' && ('bingKey' in evt.config.options)) ||
+         (('ignTerrain' in evt.config.options) && evt.config.options.ignTerrain == 'True') && ('ignKey' in evt.config.options))
          (('ignStreets' in evt.config.options) && evt.config.options.ignStreets == 'True') && ('ignKey' in evt.config.options))
        evt.config.options.zoomLevelNumber = 19;
      if ((('googleStreets' in evt.config.options) && evt.config.options.googleStreets == 'True') ||
@@ -3383,6 +3387,9 @@ lizMap.events.on({
     (('bingHybrid' in evt.config.options)
      && evt.config.options.bingHybrid == 'True'
      && ('bingKey' in evt.config.options)) ||
+    (('ignTerrain' in evt.config.options)
+     && evt.config.options.ignTerrain == 'True'
+     && ('ignKey' in evt.config.options)) ||
     (('ignStreets' in evt.config.options)
      && evt.config.options.ignStreets == 'True'
      && ('ignKey' in evt.config.options)) ||
@@ -3674,7 +3681,7 @@ lizMap.events.on({
           evt.baselayers.push(bhybrid);
           evt.map.allOverlays = false;
        }
-       if (('ignStreets' in evt.config.options) && evt.config.options.ignStreets == 'True' && ('ignKey' in evt.config.options)) {
+       if (('ignTerrain' in evt.config.options) && evt.config.options.ignTerrain == 'True' && ('ignKey' in evt.config.options)) {
           var options = {
             zoomOffset: 0,
             maxResolution:156543.03390625,
@@ -3703,10 +3710,45 @@ lizMap.events.on({
           ignmap.maxExtent = maxExtent;
           var ignmapCfg = {
              "name":"ignmap"
-            ,"title":"IGN Map"
+            ,"title":"IGN SCAN"
           };
           evt.config.layers['ignmap'] = ignmapCfg;
           evt.baselayers.push(ignmap);
+          evt.map.allOverlays = false;
+       }
+       if (('ignStreets' in evt.config.options) && evt.config.options.ignStreets == 'True' && ('ignKey' in evt.config.options)) {
+          var options = {
+            zoomOffset: 0,
+            maxResolution:156543.03390625,
+            numZoomLevels:19
+          };
+          if (lOptions.zoomOffset != 0) {
+            options.zoomOffset = lOptions.zoomOffset;
+            options.maxResolution = lOptions.maxResolution;
+          }
+          if (lOptions.zoomOffset+lOptions.numZoomLevels <= options.numZoomLevels)
+            options.numZoomLevels = lOptions.numZoomLevels;
+          else
+            options.numZoomLevels = options.numZoomLevels - lOptions.zoomOffset;
+          var ignplan = new OpenLayers.Layer.WMTS({
+            name: "ignplan",
+            url: "http://gpp3-wxs.ign.fr/"+evt.config.options.ignKey+"/wmts",
+            layer: "GEOGRAPHICALGRIDSYSTEMS.PLAN",
+            matrixSet: "PM",
+            style: "normal",
+            projection: new OpenLayers.Projection("EPSG:3857"),
+            attribution: 'Fond&nbsp;: &copy;IGN <a href="http://www.geoportail.fr/" target="_blank"><img src="http://api.ign.fr/geoportail/api/js/2.0.0beta/theme/geoportal/img/logo_gp.gif"></a> <a href="http://www.geoportail.gouv.fr/depot/api/cgu/licAPI_CGUF.pdf" alt="TOS" title="TOS" target="_blank">Conditions d\'utilisation</a>'
+            , numZoomLevels: options.numZoomLevels, maxResolution: options.maxResolution, minZoomLevel:options.zoomOffset
+            ,zoomOffset: options.zoomOffset
+            
+          });
+          ignplan.maxExtent = maxExtent;
+          var ignplanCfg = {
+             "name":"ignplan"
+            ,"title":"IGN plan"
+          };
+          evt.config.layers['ignplan'] = ignplanCfg;
+          evt.baselayers.push(ignplan);
           evt.map.allOverlays = false;
        }
        if (('ignSatellite' in evt.config.options) && evt.config.options.ignSatellite == 'True' && ('ignKey' in evt.config.options)) {
