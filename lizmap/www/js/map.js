@@ -1630,6 +1630,9 @@ var lizMap = function() {
   }
 
   function addFeatureInfo() {
+      var infoUrl = lizUrls.wms;
+      if ( 'publicUrlList' in lizUrls )
+        infoUrl = lizUrls.publicUrlList[0];
       var info = new OpenLayers.Control.WMSGetFeatureInfo({
             url: OpenLayers.Util.urlAppend(lizUrls.wms
               ,OpenLayers.Util.getParameterString(lizUrls.params)
