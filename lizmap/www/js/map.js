@@ -1634,7 +1634,7 @@ var lizMap = function() {
       if ( 'publicUrlList' in lizUrls )
         infoUrl = lizUrls.publicUrlList[0];
       var info = new OpenLayers.Control.WMSGetFeatureInfo({
-            url: OpenLayers.Util.urlAppend(lizUrls.wms
+            url: OpenLayers.Util.urlAppend(infoUrl
               ,OpenLayers.Util.getParameterString(lizUrls.params)
             ),
             title: 'Identify features by clicking',
