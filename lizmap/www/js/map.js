@@ -3710,7 +3710,7 @@ lizMap.events.on({
           ignmap.maxExtent = maxExtent;
           var ignmapCfg = {
              "name":"ignmap"
-            ,"title":"IGN SCAN"
+            ,"title":"IGN Scan"
           };
           evt.config.layers['ignmap'] = ignmapCfg;
           evt.baselayers.push(ignmap);
@@ -3733,7 +3733,7 @@ lizMap.events.on({
           var ignplan = new OpenLayers.Layer.WMTS({
             name: "ignplan",
             url: "http://gpp3-wxs.ign.fr/"+evt.config.options.ignKey+"/wmts",
-            layer: "GEOGRAPHICALGRIDSYSTEMS.PLAN",
+            layer: "GEOGRAPHICALGRIDSYSTEMS.PLANIGN",
             matrixSet: "PM",
             style: "normal",
             projection: new OpenLayers.Projection("EPSG:3857"),
@@ -3745,7 +3745,7 @@ lizMap.events.on({
           ignplan.maxExtent = maxExtent;
           var ignplanCfg = {
              "name":"ignplan"
-            ,"title":"IGN plan"
+            ,"title":"IGN Plan"
           };
           evt.config.layers['ignplan'] = ignplanCfg;
           evt.baselayers.push(ignplan);
