@@ -1630,11 +1630,8 @@ var lizMap = function() {
   }
 
   function addFeatureInfo() {
-      var infoUrl = lizUrls.wms;
-      if ( 'publicUrlList' in lizUrls )
-        infoUrl = lizUrls.publicUrlList[0];
       var info = new OpenLayers.Control.WMSGetFeatureInfo({
-            url: OpenLayers.Util.urlAppend(infoUrl
+            url: OpenLayers.Util.urlAppend(lizUrls.wms
               ,OpenLayers.Util.getParameterString(lizUrls.params)
             ),
             title: 'Identify features by clicking',
@@ -1675,7 +1672,19 @@ var lizMap = function() {
                     }
                 }
             }
-     });
+     });     
+     if (lizUrls.publicUrlList && lizUrls.publicUrlList.length != 0 ) {
+        var layerUrls = [];
+        for (var j=0, jlen=lizUrls.publicUrlList.length; j<jlen; j++) {
+          layerUrls.push(
+            OpenLayers.Util.urlAppend(
+              lizUrls.publicUrlList[j],
+              OpenLayers.Util.getParameterString(lizUrls.params)
+            )
+          );
+        }
+        info.layerUrls = layerUrls;
+     }
      info.findLayers = function() {
         var candidates = this.layers || this.map.layers;
         var layers = [];
