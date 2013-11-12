@@ -33,6 +33,7 @@ class map_headermenuZone extends jZone {
       "measure"=>true,
       "locate"=>true,
       "geolocation"=>true,
+      "timemanager"=>true,
       "print"=>true,
     );
 
@@ -54,9 +55,11 @@ class map_headermenuZone extends jZone {
       || $configOptions->geolocation != 'True')
       $assign['geolocation'] = false;
 
-    if ( !property_exists($configOptions,'print')
-      || $configOptions->print != 'True')
-      $assign['print'] = false;
+    if ( !property_exists($configOptions,'geolocation')
+      || $configOptions->geolocation != 'True')
+      $assign['geolocation'] = false;
+
+    $assign['timemanager'] = $lproj->hasTimemanagerLayers();
 
     $this->_tpl->assign($assign);
    }

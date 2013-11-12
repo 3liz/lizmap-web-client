@@ -50,6 +50,8 @@ class serviceCtrl extends jController {
       return $this->GetFeatureInfo();
     elseif ($request == "GetPrint")
       return $this->GetPrint();
+    elseif ($request == "GetStyles")
+      return $this->GetStyles();
     elseif ($request == "GetMap")
       return $this->GetMap();
     elseif ($request == "GetFeature")
@@ -144,14 +146,14 @@ class serviceCtrl extends jController {
 
     // Optionnaly add a filter parameter
     $lproj = lizmap::getProject($this->repository->getKey().'~'.$this->project->getKey());
-   
+
     $request = strtolower($this->params['request']);
     if( $request == 'getfeature' )
       $layers = $this->params["typename"];
     else
       $layers = $this->params["layers"];
     $pConfig = $lproj->getFullCfg();
- 
+
     // Filter only if needed
     if( $lproj->hasLoginFilteredLayers()
       and $pConfig->loginFilteredLayers
@@ -206,7 +208,7 @@ class serviceCtrl extends jController {
     // Get parameters
     if(!$this->getServiceParameters())
       return $this->serviceException();
-    
+
     $url = $this->services->wmsServerURL.'?';
 
     $bparams = http_build_query($this->params);
@@ -252,7 +254,7 @@ class serviceCtrl extends jController {
     // Get parameters
     if(!$this->getServiceParameters())
       return $this->serviceException();
-    
+
     $content = $this->lizmapCache->getServiceData($this->repository->getKey(), $this->project->getKey(), $this->params);
 
     // Return response
@@ -264,17 +266,17 @@ class serviceCtrl extends jController {
     $rep->content = $content;
     $rep->doDownload  =  false;
     $rep->outputFileName  =  'qgis_server';
-    
+
     // HTTP browser cache expiration time
     $layername = $this->params["layers"];
-    $lproj = lizmap::getProject($this->repository->getKey().'~'.$this->project->getKey());    
+    $lproj = lizmap::getProject($this->repository->getKey().'~'.$this->project->getKey());
     $configLayers = $lproj->getLayers();
     if( property_exists($configLayers, $layername) ){
       $configLayer = $configLayers->$layername;
       if( property_exists($configLayer, 'clientCacheExpiration')){
         $clientCacheExpiration = (int)$configLayer->clientCacheExpiration;
         $rep->setExpires("+".$clientCacheExpiration." seconds");
-      }    
+      }
     }
 
     return $rep;
@@ -292,13 +294,13 @@ class serviceCtrl extends jController {
     // Get parameters
     if(!$this->getServiceParameters())
       return $this->serviceException();
-      
+
     $url = $this->services->wmsServerURL.'?';
     $bparams = http_build_query($this->params);
     // replace some chars (not needed in php 5.4, use the 4th parameter of http_build_query)
     $a = array('+', '_', '.', '-');
     $b = array('%20', '%5F', '%2E', '%2D');
-    $bparams = str_replace($a, $b, $bparams); 
+    $bparams = str_replace($a, $b, $bparams);
     $querystring = $url . $bparams;
 
     // Get remote data
@@ -331,7 +333,7 @@ class serviceCtrl extends jController {
     // Get parameters
     if(!$this->getServiceParameters())
       return $this->serviceException();
-      
+
     $url = $this->services->wmsServerURL.'?';
 
     // Deactivate info_format to use Lizmap instead of QGIS
@@ -358,7 +360,7 @@ class serviceCtrl extends jController {
       $data = $this->getFeatureInfoHtml($this->params, $data);
       $mime = 'text/html';
     }
-    
+
    // Log
    $eventParams = array(
     'key' => 'popup',
@@ -366,7 +368,7 @@ class serviceCtrl extends jController {
     'repository' => $this->repository->getKey(),
     'project' => $this->project->getKey()
    );
-   jEvent::notify('LizLogItem', $eventParams);    
+   jEvent::notify('LizLogItem', $eventParams);
 
     $rep = $this->getResponse('binary');
     $rep->mimeType = $mime;
@@ -402,7 +404,7 @@ class serviceCtrl extends jController {
 
 
   /**
-  * GetFeatureInfoHtml : return HTML for the getFeatureInfo.  
+  * GetFeatureInfoHtml : return HTML for the getFeatureInfo.
   * @param array $params Array of parameters
   * @param string $xmldata XML data from getFeatureInfo
   * @return Feature Info in HTML format.
@@ -455,13 +457,13 @@ class serviceCtrl extends jController {
         // Use it if not empty
         if(!empty($popupTemplate)){
           $templateConfigured = True;
-          // first replace all "media/bla/bla/llkjk.ext" by full url       
+          // first replace all "media/bla/bla/llkjk.ext" by full url
           $popupTemplate = preg_replace_callback(
-            '#(["\']){1}(media/.+\.\w{3,10})(["\']){1}#', 
+            '#(["\']){1}(media/.+\.\w{3,10})(["\']){1}#',
             Array($this, 'replaceMediaPathByMediaUrl'),
             $popupTemplate
           );
-          // Replace : html encoded chars to let further regexp_replace find attributes 
+          // Replace : html encoded chars to let further regexp_replace find attributes
           $popupTemplate = str_replace(array('%24', '%7B', '%7D'), array('$', '{', '}'), $popupTemplate);
         }
       }
@@ -473,7 +475,7 @@ class serviceCtrl extends jController {
         if($templateConfigured){
 
           $popupFeatureContent = $popupTemplate;
-          
+
           // then replace all column data by appropriate content
           foreach($feature->Attribute as $attribute){
             // Replace #col and $col by colomn name and value
@@ -526,14 +528,14 @@ class serviceCtrl extends jController {
     // Get parameters
     if(!$this->getServiceParameters())
       return $this->serviceException();
-      
+
     $url = $this->services->wmsServerURL.'?';
     /*
     $bparams = http_build_query($this->params);
     // replace some chars (not needed in php 5.4, use the 4th parameter of http_build_query)
     $a = array('+', '_', '.', '-');
     $b = array('%20', '%5F', '%2E', '%2D');
-    $bparams = str_replace($a, $b, $bparams); 
+    $bparams = str_replace($a, $b, $bparams);
     $querystring = $url . $bparams;
     */
 
@@ -575,7 +577,7 @@ class serviceCtrl extends jController {
     $rep->content = $data;
     $rep->doDownload  =  false;
     $rep->outputFileName  =  'getPrint';
-    
+
    // Log
    $logContent ='
      <a href="'.jUrl::get('lizmap~service:index',jApp::coord()->request->params).'" target="_blank">'.$this->params['template'].'<a>
@@ -587,6 +589,42 @@ class serviceCtrl extends jController {
     'project' => $this->project->getKey()
    );
    jEvent::notify('LizLogItem', $eventParams);
+
+    return $rep;
+  }
+
+  /**
+  * GetStyles
+  * @param string $repository Lizmap Repository
+  * @param string $project Name of the project : mandatory
+  * @return SLD Style XML
+  */
+  function GetStyles(){
+
+    // Get parameters
+    if(!$this->getServiceParameters())
+      return $this->serviceException();
+
+    // Construction of the request url : base url + parameters
+    $url = $this->services->wmsServerURL.'?';
+    $bparams = http_build_query($this->params);
+    $querystring = $url . $bparams;
+
+    // Get remote data
+    $getRemoteData = $this->lizmapCache->getRemoteData(
+      $querystring,
+      $this->services->proxyMethod,
+      $this->services->debugMode
+    );
+    $data = $getRemoteData[0];
+    $mime = $getRemoteData[1];
+
+    // Return response
+    $rep = $this->getResponse('binary');
+    $rep->mimeType = 'text/xml';
+    $rep->content = $data;
+    $rep->doDownload  =  false;
+    $rep->outputFileName  =  'qgis_server_wfs';
 
     return $rep;
   }
@@ -603,7 +641,7 @@ class serviceCtrl extends jController {
     // Get parameters
     if(!$this->getServiceParameters())
       return $this->serviceException();
-    
+
     $rep = $this->getResponse('text');
     $rep->content = $this->project->getUpdatedConfig();
     return $rep;

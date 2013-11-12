@@ -176,6 +176,44 @@ body {
   background-position: -20px -40px;
 }
 
+/*
+Timemanager
+*/
+#toolbar #timemanager-menu h3 .icon,
+#menu #timemanager-menu h3 .icon {
+  background-image : url(images/sprite_timemanager.png);
+}
+.navbar .navbar-inner .timemanager .icon {
+  background-image:url("images/sprite_timemanager.png");
+}
+.navbar .nav .timemanager .icon {
+  background-position: 0px 0px;
+}
+.navbar .nav .timemanager a:hover .icon,
+.navbar .nav .timemanager.active a .icon {
+  background-position: -20px 0px;
+}
+#toolbar .timemanager h3 .icon,
+#menu .timemanager h3 .icon {
+  background-position: -20px 0px;
+}
+#tmLayers button{
+  width:16px;
+  height:16px;
+  background: none;
+  min-width:16px;
+  min-height:16px;
+  padding-left:0;
+}
+#tmLayers span.label{
+  padding-left: 0.5em;
+  color : rgb(51,51,51);
+  background: none;
+  text-shadow : none;
+  cursor : pointer;
+  font-size:0.8em;
+}
+
 #content {
   padding-top : 0px;
   width : 100%;

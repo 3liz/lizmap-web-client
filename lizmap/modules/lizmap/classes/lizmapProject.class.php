@@ -50,7 +50,7 @@ class lizmapProject{
         $qgs_xml = null;
         $update_session = false;
 
-        if ( isset($_SESSION['_LIZMAP_']) 
+        if ( isset($_SESSION['_LIZMAP_'])
           && isset($_SESSION['_LIZMAP_'][$key_session])
           && isset($_SESSION['_LIZMAP_'][$key_session]['cfg'])
           && isset($_SESSION['_LIZMAP_'][$key_session]['cfgmtime'])
@@ -62,9 +62,10 @@ class lizmapProject{
           $update_session = true;
         }
         $this->cfg = json_decode($config);
+
         $configOptions = $this->cfg->options;
 
-        if ( isset($_SESSION['_LIZMAP_']) 
+        if ( isset($_SESSION['_LIZMAP_'])
           && isset($_SESSION['_LIZMAP_'][$key_session])
           && isset($_SESSION['_LIZMAP_'][$key_session]['xml'])
           && isset($_SESSION['_LIZMAP_'][$key_session]['xmlmtime'])
@@ -108,11 +109,11 @@ class lizmapProject{
     public function getKey(){
       return $this->key;
     }
-    
+
     public function getRepository(){
       return $this->repository;
     }
-    
+
     public function getProperties(){
       return $this->properties;
     }
@@ -122,15 +123,15 @@ class lizmapProject{
         return null;
       return $this->data[$key];
     }
-    
+
     public function getOptions(){
       return $this->cfg->options;
     }
-    
+
     public function getLayers(){
       return $this->cfg->layers;
     }
-    
+
     public function hasLocateByLayer(){
       if ( property_exists($this->cfg,'locateByLayer') ){
         $count = 0;
@@ -143,7 +144,21 @@ class lizmapProject{
       }
       return false;
     }
-    
+
+    public function hasTimemanagerLayers(){
+      if ( property_exists($this->cfg,'timemanagerLayers') ){
+        $count = 0;
+        foreach( $this->cfg->timemanagerLayers as $key=>$obj ){
+          $count += 1;
+        }
+        if ( $count != 0 )
+          return true;
+        return false;
+      }
+      return false;
+    }
+
+
     public function hasEditionLayers(){
       if ( property_exists($this->cfg,'editionLayers') ){
         if(!jacl2::check('lizmap.tools.edition.use', $this->repository->getKey()))
@@ -194,7 +209,7 @@ class lizmapProject{
         )
       );
     }
-    
+
     public function getGoogleKey(){
         $configOptions = $this->cfg->options;
         $gkey = '';
@@ -253,7 +268,7 @@ class lizmapProject{
       $legendZero = $legend[0];
       $updateDrawingOrder = (string)$legendZero->attributes()->updateDrawingOrder;
 
-      $layersOrder = array();  
+      $layersOrder = array();
       if($updateDrawingOrder == 'false'){
         $layers =  $qgsLoad->xpath('//legendlayer');
         foreach($layers as $layer){
@@ -261,22 +276,22 @@ class lizmapProject{
             $layersOrder[(string)$layer->attributes()->name] = (integer)$layer->attributes()->drawingOrder;
           }
         }
-      }   
+      }
 
       $configRead = json_encode($this->cfg);
       $configJson = json_decode($configRead);
-      
+
       // Add an option to display buttons to remove the cache for cached layer
       // Only if appropriate right is found
       if( jacl2::check('lizmap.admin.repositories.delete') ){
         $configJson->options->removeCache = 'True';
       }
-      
-      // Remove layerOrder option from config if not required 
+
+      // Remove layerOrder option from config if not required
       if(!empty($layersOrder)){
         $configJson->layersOrder = $layersOrder;
       }
-      
+
       // Update locate by layer with vecctorjoins
       if(property_exists($configJson, 'locateByLayer')) {
         foreach( $configJson->locateByLayer as $k=>$v) {
@@ -296,7 +311,7 @@ class lizmapProject{
            */
         }
       }
-      
+
       // Remove FTP remote directory
       if(property_exists($configJson->options, 'remoteDir'))
         unset($configJson->options->remoteDir);
@@ -326,6 +341,7 @@ class lizmapProject{
       } else {
         unset($configJson->editionLayers);
       }
+
       $configRead = json_encode($configJson);
 
       return $configRead;

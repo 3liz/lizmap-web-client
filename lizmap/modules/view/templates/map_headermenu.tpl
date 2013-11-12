@@ -86,6 +86,13 @@
         </a>
       </li>
       {/if}
+      {if $timemanager}
+      <li class="timemanager">
+        <a id="toggleTimemanager" rel="tooltip" data-original-title="{@view~map.timemanager.navbar.title@}" data-placement="bottom" href="#">
+          <span class="icon"></span>
+        </a>
+      </li>
+      {/if}
       {if $isConnected}
       <li class="user dropdown">
         <a class="dropdown-toggle" data-toggle="dropdown" href="#" id="user-info">

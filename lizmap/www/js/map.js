@@ -475,6 +475,7 @@ var lizMap = function() {
                ,buffer:0
                ,singleTile:(layerConfig.singleTile == 'True')
                ,order:getLayerOrder(layer)
+               ,wrapDateLine: true
               }));
         }
         // creating the layer tre because it's a group, has children and is not a base layer
@@ -3131,6 +3132,12 @@ var lizMap = function() {
       return mAddMessage( aMessage, aType, aClose );
     },
 
+    /**
+     * Method: updateSwitcherSize
+     */
+    updateSwitcherSize: function() {
+      return updateSwitcherSize();
+    },
     /**
      * Method: init
      */

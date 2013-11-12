@@ -25,6 +25,7 @@ class map_toolbarZone extends jZone {
       "print"=>true,
       "geolocation"=>true,
       "locate"=>true,
+      "timemanager"=>true
     );
 
     $lproj = lizmap::getProject($repository.'~'.$project);
@@ -32,14 +33,16 @@ class map_toolbarZone extends jZone {
     if ( !property_exists($configOptions,'measure')
       || !$configOptions->measure == 'True')
       $assign['measure'] = false;
-    
+
     if ( !property_exists($configOptions,'print')
       || $configOptions->print != 'True')
       $assign['print'] = false;
-    
+
     if ( !property_exists($configOptions,'geolocation')
       || $configOptions->geolocation != 'True')
       $assign['geolocation'] = false;
+
+    $assign['timemanager'] = $lproj->hasTimemanagerLayers();
 
     $assign['locate'] = $lproj->hasLocateByLayer();
 

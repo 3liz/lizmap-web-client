@@ -131,6 +131,12 @@ class mapCtrl extends jController {
     else
       $rep->title = $repository.' - '.$project;
 
+    // Add Timemanager
+    if( $lproj->hasTimemanagerLayers() ) {
+        $rep->addJSLink($bp.'js/date.js');
+        $rep->addJSLink($bp.'js/timemanager.js');
+    }
+
     $assign = array_merge(array(
       'repositoryLabel'=>$lrep->getData('label'),
       'repository'=>$lrep->getKey(),
@@ -138,14 +144,14 @@ class mapCtrl extends jController {
     ), $wmsInfo);
     $rep->body->assign($assign);
 
-   // Log
-   $eventParams = array(
-    'key' => 'viewmap',
-    'content' => '',
-    'repository' => $lrep->getKey(),
-    'project' => $project
-   );
-   jEvent::notify('LizLogItem', $eventParams);
+    // Log
+    $eventParams = array(
+        'key' => 'viewmap',
+        'content' => '',
+        'repository' => $lrep->getKey(),
+        'project' => $project
+    );
+    jEvent::notify('LizLogItem', $eventParams);
 
     return $rep;
   }

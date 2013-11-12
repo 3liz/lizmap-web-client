@@ -57,6 +57,22 @@
   </div>
 </div>
 {/if}
+{if $timemanager}
+<div id="timemanager-menu" class="timemanager" style="display:none;">
+  <h3><span class="title"><button class="btn-timemanager-clear btn btn-mini btn-error btn-link" title="{@view~map.toolbar.content.stop@}">×</button><span class="icon"></span>&nbsp;{@view~map.timemanager.toolbar.title@}&nbsp;<span class="text"></span></span></span></h3>
+  <div class="menu-content">
+    <div id="tmSlider"></div>
+    <div>
+        <span id="tmCurrentValue"></span><br/>
+        <button id="tmPrev" class="btn-print-launch btn btn-small btn-success">{@view~map.timemanager.toolbar.prev@}</button>
+        <button id="tmTogglePlay" class="btn-print-launch btn btn-small btn-success">{@view~map.timemanager.toolbar.play@}</button>
+        <button id="tmNext" class="btn-print-launch btn btn-small btn-success">{@view~map.timemanager.toolbar.next@}</button>
+    </div>
+    <div id="tmLayers"></div>
+  </div>
+</div>
+{/if}
+
 {if $locate}
 <div id="locate-menu" class="locate" style="display:none;">
   <h3><span class="title"><button class="btn-locate-clear btn btn-mini btn-link" type="button"></button><span class="icon"></span>&nbsp;{@view~map.locatemenu.title@}</span></span></h3>

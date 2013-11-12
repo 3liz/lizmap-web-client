@@ -144,6 +144,29 @@
   background-position : -200px 0px;
 }
 
+/*
+Timemanager
+*/
+#toolbar #timemanager-menu h3 .icon,
+#menu #timemanager-menu h3 .icon {
+  background-image : url(images/sprite_timemanager.png);
+}
+.navbar .navbar-inner .timemanager .icon {
+  background-image:url("images/sprite_timemanager.png");
+}
+.navbar .nav .timemanager .icon {
+  background-position: 0px 0px;
+}
+.navbar .nav .timemanager a:hover .icon,
+.navbar .nav .timemanager.active a .icon {
+  background-position: -20px 0px;
+}
+#toolbar .timemanager h3 .icon,
+#menu .timemanager h3 .icon {
+  background-position: -20px 0px;
+}
+
+
 #map-content {
   background : #F0F0F0;
 }
