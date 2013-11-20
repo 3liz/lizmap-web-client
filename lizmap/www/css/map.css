@@ -401,6 +401,12 @@ body {
   background-image: -moz-linear-gradient(center top, #9BC144, #93C01F);
 }
 
+#toolbar .print select.btn-print-scales {
+  width:auto; 
+  margin-bottom:0; 
+  text-align:right;
+}
+
 #baselayer-menu div.baselayer-select,
 #locate div.locate-layer {
   width : 100%;

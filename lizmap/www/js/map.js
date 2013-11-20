@@ -1724,6 +1724,25 @@ var lizMap = function() {
     var ptTomm = 0.35277; //conversion pt to mm
     var printCapabilities = {scales:[],layouts:[]};
 
+    var scaleOptions = '';
+    for( var i=0, len= map.resolutions.length; i<len; i++ ){
+      var units = map.getUnits();
+      var res = map.resolutions[i];
+      var scale = OpenLayers.Util.getScaleFromResolution(res, units);
+      printCapabilities.scales.push(scale);
+      var scaleText = scale;
+      if (scale >= 9500 && scale <= 950000) {
+        scaleText = Math.round(scale / 1000) + "&nbsp;000";
+      } else if (scale >= 950000) {
+        scaleText = Math.round(scale / 1000000) + "&nbsp;000&nbsp;000";
+      } else {
+        scaleText = Math.round(scale)+'';
+        scaleText = scaleText[0]+'&nbsp;'+scaleText.slice(1);
+      }
+      scaleOptions += '<option value="'+scale+'">'+scaleText+'</option>';
+    }
+    $('#print-menu select.btn-print-scales').html(scaleOptions);
+
     // creating printCapabilities layouts
     for( var i=0, len= composers.length; i<len; i++ ){
       var composer = composers[i];
@@ -1805,8 +1824,11 @@ var lizMap = function() {
 
           var layout = this.layout;
           var units = map.getUnits();
+          // get scale and update the select
           var res = map.getResolution()/2;
           var scale = OpenLayers.Util.getScaleFromResolution(res, units);
+          $('#print-menu select.btn-print-scales').val(scale);
+
           var center = map.getCenter();
           var size = layout.size;
           var unitsRatio = OpenLayers.INCHES_PER_UNIT[units];
@@ -1864,6 +1886,25 @@ var lizMap = function() {
       dragCtrl.deactivate();
       return false;
     });
+    $('#print-menu select.btn-print-scales').click(function() {
+      if ( dragCtrl.active && layer.getVisibility() ) {
+        var self = $(this);
+        var units = map.getUnits();
+        var scale = parseFloat(self.val());
+        var center = map.getCenter();
+        var size = printCapabilities.layouts[0].size;
+        var unitsRatio = OpenLayers.INCHES_PER_UNIT[units];
+        var w = size.width / 72 / unitsRatio * scale / 2;
+        var h = size.height / 72 / unitsRatio * scale / 2;
+        var bounds = new OpenLayers.Bounds(center.lon - w, center.lat - h,
+          center.lon + w, center.lat + h);
+        var geom = bounds.toGeometry();
+        var feat = layer.features[0];
+        geom.id = feat.geometry.id;
+        feat.geometry = geom;
+        layer.drawFeature(feat);
+      }
+    });
     $('#print-menu button.btn-print-launch').click(function() {
       var composer = dragCtrl.layout.composer;
       var composerMap = composer.getElementsByTagName('ComposerMap');
@@ -1882,7 +1923,7 @@ var lizMap = function() {
         url += '&TEMPLATE='+composer.getAttribute('name');
         url += '&'+composerMap+':extent='+extent;
         url += '&'+composerMap+':rotation=0';
-        url += '&'+composerMap+':scale='+map.getScale()/2;
+        url += '&'+composerMap+':scale='+$('#print-menu select.btn-print-scales').val();
         var printLayers = [];
         $.each(map.layers, function(i, l) {
           if (l.getVisibility() && l.CLASS_NAME == "OpenLayers.Layer.WMS")
@@ -1899,6 +1940,7 @@ var lizMap = function() {
           var units = map.getUnits();
           var res = map.getResolution()/2;
           var scale = OpenLayers.Util.getScaleFromResolution(res, units);
+          $('#print-menu select.btn-print-scales').val(scale);
           var center = map.getCenter();
           var size = printCapabilities.layouts[0].size;
           var unitsRatio = OpenLayers.INCHES_PER_UNIT[units];
