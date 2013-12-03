@@ -1724,11 +1724,24 @@ var lizMap = function() {
     var ptTomm = 0.35277; //conversion pt to mm
     var printCapabilities = {scales:[],layouts:[]};
 
+    var scales = map.scales;
+    if ( scales == null && map.resolutions != null ) {
+      scales = [];
+      for( var i=0, len=map.resolutions.length; i<len; i++ ){
+        var units = map.getUnits();
+        var res = map.resolutions[i];
+        var scale = OpenLayers.Util.getScaleFromResolution(res, units);
+        scales.push(scale);
+      }
+    } 
+    if ( scales == null ) {
+      $('#togglePrint').parent().remove();
+      return false;
+    }
+
     var scaleOptions = '';
-    for( var i=0, len= map.resolutions.length; i<len; i++ ){
-      var units = map.getUnits();
-      var res = map.resolutions[i];
-      var scale = OpenLayers.Util.getScaleFromResolution(res, units);
+    for( var i=0, len=scales.length; i<len; i++ ){
+      var scale = scales[i];
       printCapabilities.scales.push(scale);
       var scaleText = scale;
       if (scale >= 9500 && scale <= 950000) {
