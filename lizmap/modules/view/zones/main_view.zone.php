@@ -38,6 +38,13 @@ class main_viewZone extends jZone {
             $mrep = new lizmapMainViewItem($r, $lrep->getData('label'));
             $lprojects = $lrep->getProjects();
             foreach ($lprojects as $p) {
+              $pOptions = $p->getOptions();
+              if (
+                property_exists($pOptions,'hideProject')
+                && $pOptions->hideProject == 'True'
+              ){
+                continue;
+              }
               $mrep->childItems[] = new lizmapMainViewItem(
                 $p->getData('id'),
                 $p->getData('title'),

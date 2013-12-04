@@ -61,6 +61,18 @@ class mapCtrl extends jController {
       $ok = false;
     }
 
+    // Redirect if project is hidden (lizmap plugin option)
+    $pOptions = $lproj->getOptions();
+    if (
+        property_exists($pOptions,'hideProject')
+        && $pOptions->hideProject == 'True'
+    ){
+      $rep = $this->getResponse('redirect');
+      $rep->action = 'view~default:index';
+      jMessage::add(jLocale::get('view~default.project.access.denied'), 'error');
+      return $rep;
+    }
+
     // Redirect if error encountered
     if(!$ok){
       $rep = $this->getResponse('redirect');
