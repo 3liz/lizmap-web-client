@@ -54,9 +54,10 @@ class myHtmlMapResponse extends jResponseHtml {
     $this->addJSLink($bp.'TreeTable/javascripts/jquery.treeTable.js');
     $this->addJSLink($bp.'js/map.js');
 
+
     $generalJSConfig = '
       Proj4js.libPath = "'.$bp.'Proj4js/";
-	  ';
+      ';
     $this->addJSCode($generalJSConfig);
 
   }

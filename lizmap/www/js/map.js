@@ -1672,7 +1672,7 @@ var lizMap = function() {
                     }
                 }
             }
-     });     
+     });
      if (lizUrls.publicUrlList && lizUrls.publicUrlList.length != 0 ) {
         var layerUrls = [];
         for (var j=0, jlen=lizUrls.publicUrlList.length; j<jlen; j++) {
@@ -3118,6 +3118,13 @@ var lizMap = function() {
     },
 
     /**
+     * Method: cleanName
+     */
+    cleanName: function( aName ) {
+      return cleanName( aName );
+    },
+
+    /**
      * Method: checkMobile
      */
     addMessage: function( aMessage, aType, aClose ) {
@@ -3772,7 +3779,7 @@ lizMap.events.on({
             attribution: 'Fond&nbsp;: &copy;IGN <a href="http://www.geoportail.fr/" target="_blank"><img src="http://api.ign.fr/geoportail/api/js/2.0.0beta/theme/geoportal/img/logo_gp.gif"></a> <a href="http://www.geoportail.gouv.fr/depot/api/cgu/licAPI_CGUF.pdf" alt="TOS" title="TOS" target="_blank">Conditions d\'utilisation</a>'
             , numZoomLevels: options.numZoomLevels, maxResolution: options.maxResolution, minZoomLevel:options.zoomOffset
             ,zoomOffset: options.zoomOffset
-            
+
           });
           ignmap.maxExtent = maxExtent;
           var ignmapCfg = {
@@ -3807,7 +3814,7 @@ lizMap.events.on({
             attribution: 'Fond&nbsp;: &copy;IGN <a href="http://www.geoportail.fr/" target="_blank"><img src="http://api.ign.fr/geoportail/api/js/2.0.0beta/theme/geoportal/img/logo_gp.gif"></a> <a href="http://www.geoportail.gouv.fr/depot/api/cgu/licAPI_CGUF.pdf" alt="TOS" title="TOS" target="_blank">Conditions d\'utilisation</a>'
             , numZoomLevels: options.numZoomLevels, maxResolution: options.maxResolution, minZoomLevel:options.zoomOffset
             ,zoomOffset: options.zoomOffset
-            
+
           });
           ignplan.maxExtent = maxExtent;
           var ignplanCfg = {
@@ -3842,7 +3849,7 @@ lizMap.events.on({
             attribution: 'Fond&nbsp;: &copy;IGN <a href="http://www.geoportail.fr/" target="_blank"><img src="http://api.ign.fr/geoportail/api/js/2.0.0beta/theme/geoportal/img/logo_gp.gif"></a> <a href="http://www.geoportail.gouv.fr/depot/api/cgu/licAPI_CGUF.pdf" alt="TOS" title="TOS" target="_blank">Conditions d\'utilisation</a>'
             , numZoomLevels: options.numZoomLevels, maxResolution: options.maxResolution, minZoomLevel:options.zoomOffset
             ,zoomOffset: options.zoomOffset
-            
+
           });
           ignphoto.maxExtent = maxExtent;
           var ignphotoCfg = {
@@ -3858,10 +3865,69 @@ lizMap.events.on({
          var myError = e;
          //console.log(myError);
        }
-         }
-
-
      }
+
+      if('lizmapExternalBaselayers' in evt.config){
+
+        var externalService = OpenLayers.Util.urlAppend(lizUrls.wms
+          ,OpenLayers.Util.getParameterString(lizUrls.params)
+        );
+        if (lizUrls.publicUrlList && lizUrls.publicUrlList.length > 1 ) {
+            externalService = [];
+            for (var j=0, jlen=lizUrls.publicUrlList.length; j<jlen; j++) {
+              externalService.push(
+                OpenLayers.Util.urlAppend(
+                  lizUrls.publicUrlList[j],
+                  OpenLayers.Util.getParameterString(lizUrls.params)
+                )
+              );
+            }
+        }
+
+        for (id in evt.config['lizmapExternalBaselayers']) {
+
+          var layerConfig = evt.config['lizmapExternalBaselayers'][id];
+
+          if (!('repository' in layerConfig) || !('project' in layerConfig))
+            continue;
+
+          var layerName = evt.cleanName(layerConfig.layerName);
+
+          var layerWmsParams = {
+            layers:layerConfig.layerName
+            ,version:'1.3.0'
+            ,exceptions:'application/vnd.ogc.se_inimage'
+            ,format:(layerConfig.imageFormat) ? layerConfig.imageFormat : 'image/png'
+            ,dpi:96
+          };
+          if (layerWmsParams.format != 'image/jpeg')
+            layerWmsParams['transparent'] = true;
+
+          // Change repository and project in service URL
+          var reg = new RegExp('repository\=(.+)&project\=(.+)', 'g');
+          var url = externalService.replace(reg, 'repository='+layerConfig.repository+'&project='+layerConfig.project);
+
+          console.log(url);
+
+          // creating the base layer
+          layerConfig.title = layerConfig.layerTitle
+          layerConfig.name = layerConfig.layerName
+          layerConfig.baselayer = true;
+          layerConfig.singleTile = "False";
+          evt.config.layers[layerName] = layerConfig;
+          evt.baselayers.push(new OpenLayers.Layer.WMS(layerName,url
+            ,layerWmsParams
+            ,{isBaseLayer:true
+            ,gutter:5
+            ,buffer:0
+            ,singleTile:(layerConfig.singleTile == 'True')
+          }));
+          evt.map.allOverlays = false;
+
+        }
+      }
+
+    }
    ,'uicreated':function(evt){
   //console.log('uicreated')
 
