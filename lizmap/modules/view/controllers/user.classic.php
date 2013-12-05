@@ -84,6 +84,7 @@ class userCtrl extends jController {
       // redirect to default page
       $rep =  $this->getResponse('redirect');
       $rep->action ='view~user:createAccount';
+      return $rep;
     }    
     $rep->body->assign('isConnected', jAuth::isConnected());
     $rep->body->assign('user', jAuth::getUserSession());
