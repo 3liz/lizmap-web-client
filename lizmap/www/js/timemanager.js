@@ -315,10 +315,10 @@ var lizTimemanager = function() {
 
                 function sldComplete(req) {
                     var data = req.responseText;
-                    var reg = new RegExp('<Rotation>\\W*<ogc\:Filter>\\W*<ogc\:Add>', 'g');
-                    data = data.replace(reg, '<Rotation>');
-                    var reg = new RegExp('<ogc:Literal>0</ogc:Literal>\\W*</ogc\:Add>\\W*</ogc\:Filter>\\W*</Rotation>', 'g');
-                    data = data.replace(reg, '</Rotation>');
+                    var reg = new RegExp('<se\:Rotation>\\W*<ogc\:Filter>\\W*<ogc\:Add>', 'g');
+                    data = data.replace(reg, '<se\:Rotation>');
+                    var reg = new RegExp('<ogc:Literal>0</ogc:Literal>\\W*</ogc\:Add>\\W*</ogc\:Filter>\\W*</se\:Rotation>', 'g');
+                    data = data.replace(reg, '</se\:Rotation>');
                     sld = format_sld.read(data);
                     for (var l in sld.namedLayers) {
                         var styles = sld.namedLayers[l].userStyles, style;
