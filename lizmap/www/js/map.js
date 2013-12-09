@@ -475,7 +475,6 @@ var lizMap = function() {
                ,buffer:0
                ,singleTile:(layerConfig.singleTile == 'True')
                ,order:getLayerOrder(layer)
-               ,wrapDateLine: true
               }));
         }
         // creating the layer tre because it's a group, has children and is not a base layer
