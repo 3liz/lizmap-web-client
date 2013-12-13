@@ -61,6 +61,13 @@ class mapCtrl extends jController {
       $ok = false;
     }
 
+    // Redirect if needed
+    if (!$ok){
+      $rep = $this->getResponse('redirect');
+      $rep->action = 'view~default:index';
+      return $rep;
+    }
+
     // Redirect if project is hidden (lizmap plugin option)
     $pOptions = $lproj->getOptions();
     if (
