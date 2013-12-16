@@ -7,6 +7,8 @@ var lizTimemanager = function() {
             var config = lizMap.config
             var layers = lizMap.layers
             var tmActive = false;
+            var tmLayersNb = 0;
+            var tmLayerIndex = 0;
 
             if (!('timemanagerLayers' in config))
               return -1;
@@ -94,7 +96,13 @@ var lizTimemanager = function() {
             // Activate timemanager
             function activateTimemanager(){
 
+                // hourglass
                 $('#loading').dialog('open');
+
+                // Count layers
+                for (id in config.timemanagerLayers) {
+                    tmLayersNb++;
+                }
 
                 for (id in config.timemanagerLayers) {
 
@@ -157,7 +165,6 @@ var lizTimemanager = function() {
                         loadend: function(evt) {
                             setAnimationBoundariesFromLayer(evt.object.name);
                             setLayerStyleMap(evt.object.name);
-                            $('#loading').dialog('close');
                         }
 
                     });
@@ -346,7 +353,10 @@ var lizTimemanager = function() {
                         }
 
                     }
+                    tmLayerIndex++;
+                    if( tmLayerIndex == tmLayersNb ) $('#loading').dialog('close');
                 }
+
             }
 
 
