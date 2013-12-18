@@ -90,7 +90,8 @@ OpenLayers.Control.Scale = OpenLayers.Class(OpenLayers.Control, {
             scale = Math.round(scale / 1000000) + "&nbsp;000&nbsp;000";
         } else {
             scale = Math.round(scale)+'';
-            scale = scale[0]+'&nbsp;'+scale.slice(1);
+            if ( scale >= 1000 )
+              scale = scale[0]+'&nbsp;'+scale.slice(1);
         }    
         
         this.element.innerHTML = OpenLayers.i18n("1&nbsp;:&nbsp;${scaleDenom}", {'scaleDenom':scale});
