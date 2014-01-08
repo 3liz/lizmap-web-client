@@ -74,7 +74,7 @@ class serviceCtrl extends jController {
   * @param $param request parameter.
   * @return Request parameter value.
   */
-  private function iParam($param){
+  protected function iParam($param){
 
     $pParams = jApp::coord()->request->params;
     foreach($pParams as $k=>$v){
