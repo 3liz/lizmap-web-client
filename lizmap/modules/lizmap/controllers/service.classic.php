@@ -33,7 +33,7 @@ class serviceCtrl extends jController {
     $rep = $this->getResponse('redirect');
 
     // Get the project
-    $project = $this->param('project');
+    $project = $this->iParam('project');
     if(!$project){
       // Error message
       jMessage::add('The parameter project is mandatory !', 'ProjectNotDefind');
@@ -41,31 +41,49 @@ class serviceCtrl extends jController {
     }
 
     // Return the appropriate action
-    $request = $this->param('REQUEST');
-    if($request == "GetCapabilities")
+    $request = strtoupper($this->iParam('REQUEST'));
+    if($request == "GETCAPABILITIES")
       return $this->getCapabilities();
-    elseif ($request == "GetLegendGraphics")
+    elseif ($request == "GETLEGENDGRAPHICS")
       return $this->GetLegendGraphics();
-    elseif ($request == "GetFeatureInfo")
+    elseif ($request == "GETFEATUREINFO")
       return $this->GetFeatureInfo();
-    elseif ($request == "GetPrint")
+    elseif ($request == "GETPRINT")
       return $this->GetPrint();
-    elseif ($request == "GetStyles")
+    elseif ($request == "GETSTYLES")
       return $this->GetStyles();
-    elseif ($request == "GetMap")
+    elseif ($request == "GETMAP")
       return $this->GetMap();
-    elseif ($request == "GetFeature")
+    elseif ($request == "GETFEATURE")
       return $this->GetFeature();
-    elseif ($request == "DescribeFeatureType")
+    elseif ($request == "DESCRIBEFEATURETYPE")
       return $this->DescribeFeatureType();
-    elseif ($request == "GetProj4")
+    elseif ($request == "GETPROJ4")
       return $this->GetProj4();
     else{
-      jMessage::add('Wrong REQUEST parameter given', 'InvalidRequest');
+      jMessage::add('REQUEST '.$request.' not supported by Lizmap Web Client', 'InvalidRequest');
       return $this->serviceException();
     }
   }
 
+
+  /**
+  * Get a request parameter
+  * whatever its case
+  * and returns its value.
+  * @param $param request parameter.
+  * @return Request parameter value.
+  */
+  private function iParam($param){
+
+    $pParams = jApp::coord()->request->params;
+    foreach($pParams as $k=>$v){
+      if(strtolower($k) == strtolower($param)){
+        return $v;
+      }
+    }
+    return Null;
+  }
 
   /**
   * Send an OGC service Exception
@@ -92,7 +110,7 @@ class serviceCtrl extends jController {
   protected function getServiceParameters(){
 
     // Get the project
-    $project = $this->param('project');
+    $project = $this->iParam('project');
 
     if(!$project){
       jMessage::add('The parameter project is mandatory !', 'ProjectNotDefind');
@@ -100,7 +118,7 @@ class serviceCtrl extends jController {
     }
 
     // Get repository data
-    $repository = $this->param('repository');
+    $repository = $this->iParam('repository');
 
     // Get the corresponding repository
     $lrep = lizmap::getRepository($repository);
@@ -741,7 +759,7 @@ class serviceCtrl extends jController {
 
     // Return response
     $rep = $this->getResponse('text');
-    $content = $this->project->getProj4( $this->param('authid') );
+    $content = $this->project->getProj4( $this->iParam('authid') );
     $content = (string)$content[0];
     $rep->content = $content;
     return $rep;

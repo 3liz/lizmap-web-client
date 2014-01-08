@@ -22,9 +22,9 @@ class lizmapCache {
     $data = array();
 
     // Filter and normalize the parameters of the request
-    $paramsBlacklist = array('module', 'action', 'C', 'repository','project');
+    $paramsBlacklist = array('module', 'action', 'c', 'repository','project');
     foreach($params as $key=>$val){
-      if(!in_array($key, $paramsBlacklist)){
+      if(!in_array(strtolower($key), $paramsBlacklist)){
         $data[strtolower($key)] = $val;
       }
     }
@@ -114,7 +114,7 @@ class lizmapCache {
   * @return array $data Normalized and filtered array.
   */
   static public function getServiceData( $repository, $project, $params, $avoidCache=false ) {
-    
+
     // Get repository data
     $ser = lizmap::getServices();
     $lrep = lizmap::getRepository($repository);
@@ -167,8 +167,8 @@ class lizmapCache {
       $cacheRootDirectory = $ser->cacheRootDirectory;
       if(!is_writable($cacheRootDirectory) or !is_dir($cacheRootDirectory)){
         $cacheRootDirectory = sys_get_temp_dir();
-      }      
-      
+      }
+
       if($cacheStorageType == 'file'){
         // CACHE CONTENT INTO FILE SYSTEM
         // Directory where to store the cached files
