@@ -886,7 +886,7 @@ var lizMap = function() {
         $('#locate-layer-'+aName).parent().before('<div class="locate-layer"><select id="locate-layer-'+aName+'-'+locate.filterFieldName+'">'+fOptions+'</select></div><br/>');
         $('#locate-layer-'+aName+'-'+locate.filterFieldName).change(function(){
           var filterValue = $(this).children(':selected').val();
-          console.log(filterValue);
+          //console.log(filterValue);
           var lOptions = '<option value="-1">'+lConfig.title+'</option>';
           for (var fid in locate.features) {
             var feat = locate.features[fid];
@@ -1744,7 +1744,7 @@ var lizMap = function() {
         var scale = OpenLayers.Util.getScaleFromResolution(res, units);
         scales.push(scale);
       }
-    } 
+    }
     if ( scales == null ) {
       $('#togglePrint').parent().remove();
       return false;
@@ -3937,8 +3937,6 @@ lizMap.events.on({
           // Change repository and project in service URL
           var reg = new RegExp('repository\=(.+)&project\=(.+)', 'g');
           var url = externalService.replace(reg, 'repository='+layerConfig.repository+'&project='+layerConfig.project);
-
-          console.log(url);
 
           // creating the base layer
           layerConfig.title = layerConfig.layerTitle
