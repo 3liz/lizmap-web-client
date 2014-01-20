@@ -55,30 +55,26 @@ class mapCtrl extends jController {
     }
 
     // Get lizmapProject class
-    $lproj = lizmap::getProject($lrep->getKey().'~'.$project);
-    if(!$lproj){
-      jMessage::add('The lizmapProject '.strtoupper($project).' does not exist !', 'error');
-      $ok = false;
-    }
-
-    // Redirect if needed
-    if (!$ok){
-      $rep = $this->getResponse('redirect');
-      $rep->action = 'view~default:index';
-      return $rep;
+    if($ok){
+      $lproj = lizmap::getProject($lrep->getKey().'~'.$project);
+      if(!$lproj){
+        jMessage::add('The lizmapProject '.strtoupper($project).' does not exist !', 'error');
+        $ok = false;
+      }
     }
 
     // Redirect if project is hidden (lizmap plugin option)
-    $pOptions = $lproj->getOptions();
-    if (
-        property_exists($pOptions,'hideProject')
-        && $pOptions->hideProject == 'True'
-    ){
-      $rep = $this->getResponse('redirect');
-      $rep->action = 'view~default:index';
-      jMessage::add(jLocale::get('view~default.project.access.denied'), 'error');
-      return $rep;
+    if($ok){
+      $pOptions = $lproj->getOptions();
+      if (
+          property_exists($pOptions,'hideProject')
+          && $pOptions->hideProject == 'True'
+      ){
+        jMessage::add(jLocale::get('view~default.project.access.denied'), 'error');
+        $ok = false;
+      }
     }
+
 
     // Redirect if error encountered
     if(!$ok){
