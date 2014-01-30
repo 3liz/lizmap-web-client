@@ -3252,6 +3252,16 @@ var lizMap = function() {
               }
             }
           }
+          // verifying the layer visibility for permalink without layers
+          if (verifyingVisibility
+           && !OpenLayers.Util.getParameters(window.location.href).layers) {
+            for (var i=0,len=layers.length; i<len; i++) {
+              var l = layers[i];
+              if (l.isVisible) {
+                $('#switcher button.checkbox[name="layer"][value="'+l.name+'"]').click();
+              }
+            }
+          }
 
           // finalize slider
           $('#navbar div.slider').slider("value",map.getZoom());
