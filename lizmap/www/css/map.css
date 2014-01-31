@@ -603,6 +603,7 @@ Timemanager
 }
 #switcher div.legendGraphics img{
   position: relative;
+  max-width: none;
 }
 #switcher .treeTable td a.expander {
   font-size : 1em;
