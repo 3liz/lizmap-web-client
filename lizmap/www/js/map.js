@@ -3228,8 +3228,13 @@ var lizMap = function() {
           }
           */
           var verifyingVisibility = true;
+          var hrefParam = OpenLayers.Util.getParameters(window.location.href);
           if (!map.getCenter()) {
-            map.zoomToExtent(map.initialExtent);
+            if (hrefParam.bbox) {
+              map.zoomToExtent(OpenLayers.Bounds.fromArray(hrefParam.bbox));
+            } else {
+              map.zoomToExtent(map.initialExtent);
+            }
             verifyingVisibility = false;
           }
 
@@ -3247,17 +3252,9 @@ var lizMap = function() {
           if (verifyingVisibility) {
             for (var i=0,len=layers.length; i<len; i++) {
               var l = layers[i];
-              if (l.getVisibility()) {
-                $('#switcher button.checkbox[name="layer"][value="'+l.name+'"]').click();
-              }
-            }
-          }
-          // verifying the layer visibility for permalink without layers
-          if (verifyingVisibility
-           && !OpenLayers.Util.getParameters(window.location.href).layers) {
-            for (var i=0,len=layers.length; i<len; i++) {
-              var l = layers[i];
-              if (l.isVisible) {
+              if ( (hrefParam.layers && l.getVisibility())
+                || (!hrefParam.layers && l.isVisible) )
+              {
                 $('#switcher button.checkbox[name="layer"][value="'+l.name+'"]').click();
               }
             }
