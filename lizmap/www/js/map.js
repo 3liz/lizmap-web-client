@@ -2344,6 +2344,7 @@ var lizMap = function() {
           $('#edition-menu form input[name="liz_wkt"]').val(evt.feature.geometry);
         },
         featureunselected: function(evt) {
+          console.log('featureunselected');
           var wkt = $('#edition-menu form input[name="liz_wkt"]').val();
           $.get(service.replace('getFeature','modifyFeature'),{
             layerId: editCtrls.click.layerId,
@@ -2364,6 +2365,9 @@ var lizMap = function() {
             }
             $('#edition-modal').modal('show');
           });
+        },
+        afterfeaturemodified: function(evt) {
+          editLayer.events.triggerEvent("featureunselected", evt);
         },
         sketchmodified: function(evt) {
           if ( evt.vertex.parent == null )
