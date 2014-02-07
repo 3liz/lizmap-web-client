@@ -296,6 +296,76 @@ class lizmapProject{
         $configJson->layersOrder = $layersOrder;
       }
 
+      // Update print Capabilities
+      if( property_exists($configJson->options, 'print')
+        && $configJson->options->print == 'True' ) {
+        $printTemplates = array();
+        // get restricted composers
+        $rComposers = array();
+        $restrictedComposers = $this->xml->xpath( "//properties/WMSRestrictedComposers/value" );
+        foreach($restrictedComposers as $restrictedComposer){
+          $rComposers[] = (string)$restrictedComposer;
+        }
+        // get composer
+        $composers =  $qgsLoad->xpath('//Composer');
+        foreach($composers as $composer){
+          // test restriction
+          if( in_array((string)$composer['title'], $rComposers) )
+            continue;
+          // get composition element
+          $composition = $composer->xpath('Composition');
+          if( count($composition) == 0 )
+            continue;
+          $composition = $composition[0];
+
+          // init print template element
+          $printTemplate = array(
+            'title'=>(string)$composer['title'],
+            'width'=>(int)$composition['paperWidth'],
+            'height'=>(int)$composition['paperHeight'],
+            'maps'=>array(),
+            'labels'=>array()
+          );
+
+          // get composer maps
+          $cMaps = $composer->xpath('.//ComposerMap');
+          foreach( $cMaps as $cMap ) {
+            $cMapItem = $cMap->xpath('ComposerItem');
+            if( count($cMapItem) == 0 )
+              continue;
+            $cMapItem = $cMapItem[0];
+            $ptMap = array(
+              'id'=>'map'.(string)$cMap['id'],
+              'width'=>(int)$cMapItem['width'],
+              'height'=>(int)$cMapItem['height'],
+            );
+            if ( (string)$cMap['overviewFrameMap'] != '-1' )
+              $ptMap['overviewMap'] = 'map'.(string)$cMap['overviewFrameMap'];
+            $printTemplate['maps'][] = $ptMap;
+          }
+
+          // get composer labels
+          $cLabels = $composer->xpath('.//ComposerLabel');
+          foreach( $cLabels as $cLabel ) {
+            $cLabelItem = $cLabel->xpath('ComposerItem');
+            if( count($cLabelItem) == 0 )
+              continue;
+            $cLabelItem = $cLabelItem[0];
+            if( (string)$cLabelItem['id'] == '' )
+              continue;
+            $printTemplate['labels'][] = array(
+              'id'=>(string)$cLabelItem['id'],
+              'htmlState'=>(int)$cLabel['htmlState'],
+              'text'=>(string)$cLabel['labelText']
+            );
+          }
+          $printTemplates[] = $printTemplate;
+        }
+
+        // set printTemplates in config
+        $configJson->printTemplates = $printTemplates;
+      }
+
       // Update locate by layer with vecctorjoins
       if(property_exists($configJson, 'locateByLayer')) {
         foreach( $configJson->locateByLayer as $k=>$v) {

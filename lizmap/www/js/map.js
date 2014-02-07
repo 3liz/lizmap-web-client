@@ -1752,7 +1752,13 @@ var lizMap = function() {
 
   function addPrintControl() {
     // if no composers removed print
+    /*
     if (composers.length == 0 ) {
+      $('#togglePrint').parent().remove();
+      return false;
+    }
+    */
+    if ( !config['printTemplates'] || config.printTemplates.length == 0 ) {
       $('#togglePrint').parent().remove();
       return false;
     }
@@ -1792,28 +1798,40 @@ var lizMap = function() {
     $('#print-menu select.btn-print-scales').html(scaleOptions);
 
     // creating printCapabilities layouts
-    for( var i=0, len= composers.length; i<len; i++ ){
-      var composer = composers[i];
-      var composerMap = composer.getElementsByTagName('ComposerMap');
-      if (composerMap.length != 0) {
-        composerMap = composerMap[0];
-        var mapWidth = Number(composerMap.getAttribute('width')) / ptTomm;
-        var mapHeight = Number(composerMap.getAttribute('height')) / ptTomm;
-        //for some strange reason we need to provide a "map" and a "size" object with identical content
-        printCapabilities.layouts.push({
-          "name": composer.getAttribute('name'),
-          "map": {
-            "width": mapWidth,
-            "height": mapHeight
-          },
-          "size": {
-            "width": mapWidth,
-            "height": mapHeight
-          },
-          "rotation": false,
-          "composer": composer
-        });
+    var pTemplates = config.printTemplates;
+    for( var i=0, len=pTemplates.length; i<len; i++ ){
+      var pTemplate = pTemplates[i];
+      var pMap = null;
+      var pMapIdx = 0;
+      var pOverview = null;
+      while( pMap == null && pMapIdx < pTemplate.maps.length) {
+        pMap = pTemplate.maps[pMapIdx];
+        if( pMap['overviewMap'] ) {
+          pOverview = pTemplate.maps[pMapIdx];
+          pMap = null;
+          pMapIdx += 1;
+        }
       }
+      if ( pMap == null )
+        continue;
+      var mapWidth = Number(pMap.width) / ptTomm;
+      var mapHeight = Number(pMap.height) / ptTomm;
+      //for some strange reason we need to provide a "map" and a "size" object with identical content
+      printCapabilities.layouts.push({
+        "name": pTemplate.title,
+        "map": {
+          "width": mapWidth,
+          "height": mapHeight
+        },
+        "size": {
+          "width": mapWidth,
+          "height": mapHeight
+        },
+        "rotation": false,
+        "template": pTemplate,
+        "mapId": pMap.id,
+        "overviewId": pOverview != null ? pOverview.id : null
+      });
     }
 
     // if no printCapabilities layouts removed print
@@ -1921,7 +1939,24 @@ var lizMap = function() {
     $('#togglePrint ~ .dropdown-menu').find('a').click(function() {
       var self = $(this);
       var layout = printCapabilities.layouts[parseInt( self.attr('href').slice(1) )];
-    //$('#togglePrint').click(function() {
+      if ( layout.template.labels.length != 0 ) {
+        var labels = '';
+        for (var i=0, len=layout.template.labels.length; i<len; i++){
+          var tLabel = layout.template.labels[i];
+          var label = '';
+          if (tLabel.htmlState == 0) {
+            label = '<input name="'+tLabel.id+'" class="print-label" placeholder="'+tLabel.text+'" value="'+tLabel.text+'"></input>'
+          } else {
+            label = '<textarea name="'+tLabel.id+'" class="print-label" placeholder="'+tLabel.text+'">'+tLabel.text+'</textarea>'
+          }
+          labels += label;
+        }
+        $('#print-menu .print-labels').html(labels);
+        $('#print-menu .print-labels').show();
+      } else {
+        $('#print-menu .print-labels').html('');
+        $('#print-menu .print-labels').hide();
+      }
       if (dragCtrl.active && dragCtrl.layout == layout) {
         dragCtrl.deactivate();
       } else if (dragCtrl.active) {
@@ -1961,32 +1996,40 @@ var lizMap = function() {
       }
     });
     $('#print-menu button.btn-print-launch').click(function() {
-      var composer = dragCtrl.layout.composer;
-      var composerMap = composer.getElementsByTagName('ComposerMap');
-      if (composerMap.length != 0) {
-        composerMap = composerMap[0].getAttribute('name');
-        var extent = dragCtrl.layer.features[0].geometry.getBounds();
-        var url = OpenLayers.Util.urlAppend(lizUrls.wms
+      var pTemplate = dragCtrl.layout.template;
+      var extent = dragCtrl.layer.features[0].geometry.getBounds();
+      var url = OpenLayers.Util.urlAppend(lizUrls.wms
           ,OpenLayers.Util.getParameterString(lizUrls.params)
-        );
-        url += '&SERVICE=WMS';
-        //url += '&VERSION='+capabilities.version+'&REQUEST=GetPrint';
-        url += '&VERSION=1.3&REQUEST=GetPrint';
-        url += '&FORMAT=pdf&EXCEPTIONS=application/vnd.ogc.se_inimage&TRANSPARENT=true';
-        url += '&SRS='+map.projection;
-        url += '&DPI=300';
-        url += '&TEMPLATE='+composer.getAttribute('name');
-        url += '&'+composerMap+':extent='+extent;
-        url += '&'+composerMap+':rotation=0';
-        url += '&'+composerMap+':scale='+$('#print-menu select.btn-print-scales').val();
-        var printLayers = [];
-        $.each(map.layers, function(i, l) {
-          if (l.getVisibility() && l.CLASS_NAME == "OpenLayers.Layer.WMS")
-          printLayers.push(l.params['LAYERS']);
-        });
-        url += '&LAYERS='+printLayers.join(',');
-        window.open(url);
+          );
+      url += '&SERVICE=WMS';
+      //url += '&VERSION='+capabilities.version+'&REQUEST=GetPrint';
+      url += '&VERSION=1.3&REQUEST=GetPrint';
+      url += '&FORMAT=pdf&EXCEPTIONS=application/vnd.ogc.se_inimage&TRANSPARENT=true';
+      url += '&SRS='+map.projection;
+      url += '&DPI=300';
+      url += '&TEMPLATE='+pTemplate.title;
+      url += '&'+dragCtrl.layout.mapId+':extent='+extent;
+      //url += '&'+dragCtrl.layout.mapId+':rotation=0';
+      url += '&'+dragCtrl.layout.mapId+':scale='+$('#print-menu select.btn-print-scales').val();
+      var printLayers = [];
+      $.each(map.layers, function(i, l) {
+        if (l.getVisibility() && l.CLASS_NAME == "OpenLayers.Layer.WMS")
+        printLayers.push(l.params['LAYERS']);
+      });
+      url += '&'+dragCtrl.layout.mapId+':LAYERS='+printLayers.join(',');
+      if ( dragCtrl.layout.overviewId != null
+          && config.options.hasOverview ) {
+        var bbox = config.options.bbox;
+        var oExtent = new OpenLayers.Bounds(Number(bbox[0]),Number(bbox[1]),Number(bbox[2]),Number(bbox[3]));
+        url += '&'+dragCtrl.layout.overviewId+':extent='+oExtent;
+        url += '&'+dragCtrl.layout.overviewId+':LAYERS=Overview';
+        printLayers.unshift('Overview');
       }
+      url += '&LAYERS='+printLayers.join(',');
+      var labels = $('#print-menu .print-labels').find('input, textarea').serialize();
+      if ( labels != "" )
+        url += '&'+labels;
+      window.open(url);
       return false;
     });
     map.events.on({

@@ -54,6 +54,10 @@
     {@view~map.print.toolbar.scale@}
     <select class="btn-print-scales"></select>
     <button class="btn-print-launch btn btn-small btn-success"><span class="icon"></span>&nbsp;{@view~map.print.toolbar.title@}</button>
+    <div class="print-labels">
+      <input class="print-label"></input>
+      <textarea class="print-label"></textarea>
+    </div>
   </div>
 </div>
 {/if}

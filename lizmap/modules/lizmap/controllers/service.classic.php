@@ -262,6 +262,10 @@ class serviceCtrl extends jController {
     $sUrl = str_replace('&', '&amp;', $sUrl);
     $data = preg_replace('/xlink\:href=".*"/', 'xlink:href="'.$sUrl.'&amp;"', $data);
 
+    // Remove no standard elements
+    $data = preg_replace('@<GetPrint[^>]*?>.*?</GetPrint>@si', '', $data);
+    $data = preg_replace('@<ComposerTemplates[^>]*?>.*?</ComposerTemplates>@si', '', $data);
+
     // Return response
     $rep = $this->getResponse('binary');
     $rep->mimeType = $mime;

@@ -1,13 +1,14 @@
 <!DOCTYPE qgis PUBLIC 'http://mrcc.com/qgis.dtd' 'SYSTEM'>
-<qgis projectname="Montpellier - Transports" version="2.0.1-Dufour">
+<qgis projectname="Montpellier - Transports" version="2.2.0-Valmiera">
     <title>Montpellier - Transports</title>
+    <relations/>
     <mapcanvas>
         <units>degrees</units>
         <extent>
-            <xmin>3.78987599999999647</xmin>
-            <ymin>43.55735522145545247</ymin>
-            <xmax>3.96976000000000351</xmax>
-            <ymax>43.69751577854454183</ymax>
+            <xmin>3.7540574839443388</xmin>
+            <ymin>43.53239376749659328</ymin>
+            <xmax>3.99429656851634851</xmax>
+            <ymax>43.68739464926033378</ymax>
         </extent>
         <projections>1</projections>
         <destinationsrs>
@@ -22,6 +23,9 @@
                 <geographicflag>true</geographicflag>
             </spatialrefsys>
         </destinationsrs>
+        <layer_coordinate_transform_info>
+            <layer_coordinate_transform destAuthId="EPSG:4326" srcAuthId="EPSG:2154" srcDatumTransform="-1" destDatumTransform="-1" layerid="VilleMTP_MTP_SousQuartiers_201120130929113137811"/>
+        </layer_coordinate_transform_info>
     </mapcanvas>
     <legend updateDrawingOrder="true" activeLayer="VilleMTP_MTP_SousQuartiers_201120130929113137811">
         <legendgroup open="true" checked="Qt::Checked" name="Edition">
@@ -86,8 +90,20 @@
         </legendgroup>
     </legend>
     <Composer title="Composeur1" visible="0">
-        <Composition printResolution="300" paperWidth="297" snapGridOffsetX="0" snapGridResolution="1" snapGridOffsetY="0" alignmentSnap="1" snapping="0" numPages="1" paperHeight="210" alignmentSnapTolerance="2" printAsRaster="0">
-            <ComposerLegend symbolWidth="7" title="Legend" boxSpace="2" splitLayer="0" equalColumnWidth="0" map="0" symbolHeight="4" wrapChar="" fontColor="#000000" columnSpace="2" columnCount="1">
+        <Composition snapGridTolerance="2" gridVisible="0" printResolution="300" paperWidth="297" snapGridOffsetX="0" guidesVisible="1" snapGridResolution="1" snapGridOffsetY="0" alignmentSnap="1" snapping="0" numPages="1" paperHeight="210" alignmentSnapTolerance="2" smartGuides="1" printAsRaster="0" generateWorldFile="0">
+            <symbol alpha="1" type="fill" name="">
+                <layer pass="0" class="SimpleFill" locked="0">
+                    <prop k="border_width_unit" v="MM"/>
+                    <prop k="color" v="255,255,255,255"/>
+                    <prop k="color_border" v="0,0,0,255"/>
+                    <prop k="offset" v="0,0"/>
+                    <prop k="offset_unit" v="MM"/>
+                    <prop k="style" v="solid"/>
+                    <prop k="style_border" v="no"/>
+                    <prop k="width_border" v="0.26"/>
+                </layer>
+            </symbol>
+            <ComposerLegend symbolWidth="7" title="Legend" boxSpace="2" splitLayer="0" equalColumnWidth="0" map="0" symbolHeight="4" wmsLegendHeight="25" wrapChar="" fontColor="#000000" columnSpace="2" wmsLegendWidth="50" columnCount="1">
                 <styles>
                     <style marginBottom="2" name="title" font="Ubuntu,16,-1,5,50,0,0,0,0,0"/>
                     <style marginTop="2" name="group" font="Ubuntu,14,-1,5,50,0,0,0,0,0"/>
@@ -140,6 +156,7 @@
                                         <prop k="color" v="85,255,0,255"/>
                                         <prop k="customdash" v="5;2"/>
                                         <prop k="customdash_unit" v="MM"/>
+                                        <prop k="draw_inside_polygon" v="0"/>
                                         <prop k="joinstyle" v="bevel"/>
                                         <prop k="offset" v="0"/>
                                         <prop k="offset_unit" v="MM"/>
@@ -159,6 +176,7 @@
                                         <prop k="color" v="255,170,0,255"/>
                                         <prop k="customdash" v="5;2"/>
                                         <prop k="customdash_unit" v="MM"/>
+                                        <prop k="draw_inside_polygon" v="0"/>
                                         <prop k="joinstyle" v="bevel"/>
                                         <prop k="offset" v="0"/>
                                         <prop k="offset_unit" v="MM"/>
@@ -178,6 +196,7 @@
                                         <prop k="color" v="255,0,0,255"/>
                                         <prop k="customdash" v="5;2"/>
                                         <prop k="customdash_unit" v="MM"/>
+                                        <prop k="draw_inside_polygon" v="0"/>
                                         <prop k="joinstyle" v="bevel"/>
                                         <prop k="offset" v="0"/>
                                         <prop k="offset_unit" v="MM"/>
@@ -198,7 +217,8 @@
                                     <layer pass="0" class="SvgMarker" locked="0">
                                         <prop k="angle" v="0"/>
                                         <prop k="fill" v="#000000"/>
-                                        <prop k="name" v="/entertainment/amenity=cafe.svg"/>
+                                        <prop k="horizontal_anchor_point" v="1"/>
+                                        <prop k="name" v="entertainment/amenity=cafe.svg"/>
                                         <prop k="offset" v="0,0"/>
                                         <prop k="offset_unit" v="MM"/>
                                         <prop k="outline" v="#000000"/>
@@ -206,6 +226,7 @@
                                         <prop k="outline_width_unit" v="MM"/>
                                         <prop k="size" v="5"/>
                                         <prop k="size_unit" v="MM"/>
+                                        <prop k="vertical_anchor_point" v="1"/>
                                     </layer>
                                 </symbol>
                             </symbols>
@@ -216,7 +237,8 @@
                                     <layer pass="0" class="SvgMarker" locked="0">
                                         <prop k="angle" v="0"/>
                                         <prop k="fill" v="#000000"/>
-                                        <prop k="name" v="/services/amenity=pharmacy,dispensing=yes.svg"/>
+                                        <prop k="horizontal_anchor_point" v="1"/>
+                                        <prop k="name" v="services/amenity=pharmacy,dispensing=yes.svg"/>
                                         <prop k="offset" v="0,0"/>
                                         <prop k="offset_unit" v="MM"/>
                                         <prop k="outline" v="#000000"/>
@@ -224,6 +246,7 @@
                                         <prop k="outline_width_unit" v="MM"/>
                                         <prop k="size" v="5"/>
                                         <prop k="size_unit" v="MM"/>
+                                        <prop k="vertical_anchor_point" v="1"/>
                                     </layer>
                                 </symbol>
                             </symbols>
@@ -234,7 +257,8 @@
                                     <layer pass="0" class="SvgMarker" locked="0">
                                         <prop k="angle" v="0"/>
                                         <prop k="fill" v="#000000"/>
-                                        <prop k="name" v="/transport/highway=bus_stop.svg"/>
+                                        <prop k="horizontal_anchor_point" v="1"/>
+                                        <prop k="name" v="transport/highway=bus_stop.svg"/>
                                         <prop k="offset" v="0,0"/>
                                         <prop k="offset_unit" v="MM"/>
                                         <prop k="outline" v="#000000"/>
@@ -242,6 +266,7 @@
                                         <prop k="outline_width_unit" v="MM"/>
                                         <prop k="size" v="5"/>
                                         <prop k="size_unit" v="MM"/>
+                                        <prop k="vertical_anchor_point" v="1"/>
                                     </layer>
                                 </symbol>
                             </symbols>
@@ -252,7 +277,8 @@
                                     <layer pass="0" class="SvgMarker" locked="0">
                                         <prop k="angle" v="0"/>
                                         <prop k="fill" v="#000000"/>
-                                        <prop k="name" v=""/>
+                                        <prop k="horizontal_anchor_point" v="1"/>
+                                        <prop k="name" v="/"/>
                                         <prop k="offset" v="0,0"/>
                                         <prop k="offset_unit" v="MM"/>
                                         <prop k="outline" v="#000000"/>
@@ -260,6 +286,7 @@
                                         <prop k="outline_width_unit" v="MM"/>
                                         <prop k="size" v="5"/>
                                         <prop k="size_unit" v="MM"/>
+                                        <prop k="vertical_anchor_point" v="1"/>
                                     </layer>
                                 </symbol>
                             </symbols>
@@ -274,6 +301,7 @@
                                         <prop k="color" v="185,103,35,255"/>
                                         <prop k="customdash" v="5;2"/>
                                         <prop k="customdash_unit" v="MM"/>
+                                        <prop k="draw_inside_polygon" v="0"/>
                                         <prop k="joinstyle" v="bevel"/>
                                         <prop k="offset" v="0"/>
                                         <prop k="offset_unit" v="MM"/>
@@ -305,7 +333,7 @@
                         </VectorClassificationItemNg>
                     </LayerItem>
                 </Model>
-                <ComposerItem width="81.3625" x="252.331" transparency="0" y="84.0089" rotation="0" height="124.2" positionMode="0" frame="true" outlineWidth="0.3" zValue="6" lastValidViewScaleFactor="3.02349" uuid="{628b29bf-e618-468f-b6e7-190fe07de241}" id="" background="false" blendMode="0" positionLock="false">
+                <ComposerItem width="81.3625" x="252.331" transparency="0" y="84.0089" height="122.2" positionMode="0" frame="true" outlineWidth="0.3" zValue="5" itemRotation="0" lastValidViewScaleFactor="1.39597" uuid="{628b29bf-e618-468f-b6e7-190fe07de241}" id="" background="false" blendMode="0" positionLock="false">
                     <FrameColor alpha="255" red="0" blue="0" green="0"/>
                     <BackgroundColor alpha="255" red="255" blue="255" green="255"/>
                 </ComposerItem>
@@ -313,25 +341,25 @@
             <ComposerLabel valign="128" labelText="LizMap&#xa;An example PDF output from QGIS composer." htmlState="0" halign="4" margin="1">
                 <LabelFont description="Ubuntu,12,-1,5,75,0,0,0,0,0"/>
                 <FontColor red="0" blue="0" green="0"/>
-                <ComposerItem width="292.047" x="2.64595" transparency="0" y="3.30721" rotation="0" height="13.8915" positionMode="0" frame="true" outlineWidth="0.3" zValue="5" lastValidViewScaleFactor="3.02349" uuid="{261622e0-c68c-4809-a443-f61f4485fc0c}" id="" background="false" blendMode="0" positionLock="false">
+                <ComposerItem width="292.047" x="2.64595" transparency="0" y="3.30721" height="13.8915" positionMode="0" frame="true" outlineWidth="0.3" zValue="4" itemRotation="0" lastValidViewScaleFactor="3.02349" uuid="{261622e0-c68c-4809-a443-f61f4485fc0c}" id="" background="false" blendMode="0" positionLock="false">
                     <FrameColor alpha="255" red="0" blue="0" green="0"/>
                     <BackgroundColor alpha="255" red="255" blue="255" green="255"/>
                 </ComposerItem>
             </ComposerLabel>
-            <ComposerPicture pictureWidth="41.4127" file="./media/logo_osm.png" pictureHeight="35.3838" mapId="-1">
-                <ComposerItem width="41.4127" x="245.868" transparency="0" y="10.3524" rotation="0" height="35.3838" positionMode="0" frame="false" outlineWidth="0.3" zValue="4" lastValidViewScaleFactor="1.95973" uuid="{6b35eaa7-9f33-4cd3-a59c-04772b964ab8}" id="" background="false" blendMode="0" positionLock="false">
+            <ComposerPicture pictureRotation="0" pictureWidth="nan" file="./media/logo_osm.png" pictureHeight="nan" mapId="-1">
+                <ComposerItem width="41.4127" x="245.868" transparency="0" y="10.3524" height="35.3838" positionMode="0" frame="false" outlineWidth="0.3" zValue="3" itemRotation="0" lastValidViewScaleFactor="1.95973" uuid="{6b35eaa7-9f33-4cd3-a59c-04772b964ab8}" id="" background="false" blendMode="0" positionLock="false">
                     <FrameColor alpha="255" red="0" blue="0" green="0"/>
                     <BackgroundColor alpha="255" red="255" blue="255" green="255"/>
                 </ComposerItem>
             </ComposerPicture>
-            <ComposerPicture pictureWidth="38.0665" file="/kimaidou/Documents/3liz/LOGOS/LOGOS/CARRE/WEB/Logo_car_coul.png" pictureHeight="39.6255" mapId="-1">
-                <ComposerItem width="38.0665" x="5.56126" transparency="0" y="5.91563" rotation="0" height="39.6255" positionMode="0" frame="false" outlineWidth="0.3" zValue="3" lastValidViewScaleFactor="2.7047" uuid="{15a8899f-b857-4319-86bc-81c22ef664b2}" id="" background="false" blendMode="0" positionLock="false">
+            <ComposerPicture pictureRotation="0" pictureWidth="nan" file="/kimaidou/Documents/3liz/LOGOS/LOGOS/CARRE/WEB/Logo_car_coul.png" pictureHeight="nan" mapId="-1">
+                <ComposerItem width="38.0665" x="5.56126" transparency="0" y="5.91563" height="39.6255" positionMode="0" frame="false" outlineWidth="0.3" zValue="2" itemRotation="0" lastValidViewScaleFactor="2.7047" uuid="{15a8899f-b857-4319-86bc-81c22ef664b2}" id="" background="false" blendMode="0" positionLock="false">
                     <FrameColor alpha="255" red="0" blue="0" green="0"/>
                     <BackgroundColor alpha="255" red="255" blue="255" green="255"/>
                 </ComposerItem>
             </ComposerPicture>
-            <ComposerMap keepLayerSet="false" overviewFrameMap="-1" id="0" previewMode="Cache" drawCanvasItems="true">
-                <overviewFrame overviewBlendMode="0" overviewFrameMap="-1" overviewInverted="false">
+            <ComposerMap mapRotation="0" keepLayerSet="false" overviewFrameMap="-1" id="0" previewMode="Cache" drawCanvasItems="true">
+                <overviewFrame overviewBlendMode="0" overviewFrameMap="-1" overviewCentered="false" overviewInverted="false">
                     <symbol alpha="0.3" type="fill" name="">
                         <layer pass="0" class="SimpleFill" locked="0">
                             <prop k="border_width_unit" v="MM"/>
@@ -345,15 +373,19 @@
                         </layer>
                     </symbol>
                 </overviewFrame>
-                <Extent ymin="43.6016" xmin="3.85843" ymax="43.6246" xmax="3.89397"/>
+                <Extent ymin="43.60159999999999769" xmin="3.8584299999999998" ymax="43.62462027445078405" xmax="3.89396999999999993"/>
                 <LayerSet/>
-                <Grid gridStyle="0" crossLength="3" intervalX="0" offsetX="0" intervalY="0" offsetY="0" gridFrameStyle="0" gridFrameWidth="2" gridBlendMode="0" show="0">
+                <Grid gridStyle="0" crossLength="3" gridFramePenThickness="0.5" intervalX="0" offsetX="0" intervalY="0" offsetY="0" gridFrameStyle="0" gridFrameWidth="2" gridBlendMode="0" show="0">
+                    <framePenColor alpha="255" red="0" blue="0" green="0"/>
+                    <frameFillColor1 alpha="255" red="255" blue="255" green="255"/>
+                    <frameFillColor2 alpha="255" red="0" blue="0" green="0"/>
                     <symbol alpha="1" type="line" name="">
                         <layer pass="0" class="SimpleLine" locked="0">
                             <prop k="capstyle" v="square"/>
                             <prop k="color" v="0,0,0,255"/>
                             <prop k="customdash" v="5;2"/>
                             <prop k="customdash_unit" v="MM"/>
+                            <prop k="draw_inside_polygon" v="0"/>
                             <prop k="joinstyle" v="bevel"/>
                             <prop k="offset" v="0"/>
                             <prop k="offset_unit" v="MM"/>
@@ -364,10 +396,1130 @@
                         </layer>
                     </symbol>
                     <Annotation rightDirection="0" bottomDirection="0" format="0" topPosition="1" precision="3" leftDirection="0" rightPosition="1" bottomPosition="1" frameDistance="1" show="0" font="Ubuntu,11,-1,5,50,0,0,0,0,0" leftPosition="1" topDirection="0">
-                        <fontColor red="0" blue="0" green="0"/>
+                        <fontColor alpha="255" red="0" blue="0" green="0"/>
                     </Annotation>
                 </Grid>
-                <ComposerItem width="291.054" x="2.97669" transparency="0" y="18.8524" rotation="0" height="188.524" positionMode="0" frame="true" outlineWidth="0.3" zValue="2" lastValidViewScaleFactor="3.02349" uuid="{370e313a-d6da-4ab9-832f-3765b747d630}" id="" background="false" blendMode="0" positionLock="false">
+                <AtlasMap fixedScale="0" atlasDriven="0" margin="0.10000000000000001"/>
+                <ComposerItem width="291.054" x="2.97669" transparency="0" y="18.8524" height="188.524" positionMode="0" frame="true" outlineWidth="0.3" zValue="1" itemRotation="0" lastValidViewScaleFactor="1.39597" uuid="{370e313a-d6da-4ab9-832f-3765b747d630}" id="" background="false" blendMode="0" positionLock="false">
+                    <FrameColor alpha="255" red="0" blue="0" green="0"/>
+                    <BackgroundColor alpha="255" red="255" blue="255" green="255"/>
+                </ComposerItem>
+            </ComposerMap>
+        </Composition>
+    </Composer>
+    <Composer title="Composeur2" visible="0">
+        <Composition snapGridTolerance="2" gridVisible="0" printResolution="300" paperWidth="297" snapGridOffsetX="0" guidesVisible="1" snapGridResolution="10" snapGridOffsetY="0" alignmentSnap="1" snapping="0" numPages="1" paperHeight="210" alignmentSnapTolerance="2" smartGuides="1" printAsRaster="0" generateWorldFile="0">
+            <symbol alpha="1" type="fill" name="">
+                <layer pass="0" class="SimpleFill" locked="0">
+                    <prop k="border_width_unit" v="MM"/>
+                    <prop k="color" v="255,255,255,255"/>
+                    <prop k="color_border" v="0,0,0,255"/>
+                    <prop k="offset" v="0,0"/>
+                    <prop k="offset_unit" v="MM"/>
+                    <prop k="style" v="solid"/>
+                    <prop k="style_border" v="no"/>
+                    <prop k="width_border" v="0.26"/>
+                </layer>
+            </symbol>
+            <ComposerPicture pictureRotation="0" pictureWidth="30" file="/usr/share/qgis/svg/arrows/Arrow_05.svg" pictureHeight="30" mapId="0">
+                <ComposerItem width="30" x="5.25781" transparency="0" y="105" height="30" positionMode="0" frame="false" outlineWidth="0.3" zValue="6" itemRotation="0" lastValidViewScaleFactor="2.86256" uuid="{5fc27115-d5a9-44e3-aebe-e6199c6ac0fa}" id="" background="true" blendMode="0" positionLock="false">
+                    <FrameColor alpha="255" red="0" blue="0" green="0"/>
+                    <BackgroundColor alpha="255" red="255" blue="255" green="255"/>
+                </ComposerItem>
+            </ComposerPicture>
+            <ComposerLabel valign="32" labelText="Description" htmlState="0" halign="1" margin="1">
+                <LabelFont description="Cantarell,10,-1,5,50,0,0,0,0,0"/>
+                <FontColor red="0" blue="0" green="0"/>
+                <ComposerItem width="59" x="235" transparency="0" y="0" height="86" positionMode="0" frame="false" outlineWidth="0.3" zValue="5" itemRotation="0" lastValidViewScaleFactor="1.36982" uuid="{06e65314-c767-44f7-a174-12e1ae4baf0d}" id="description" background="true" blendMode="0" positionLock="false">
+                    <FrameColor alpha="255" red="0" blue="0" green="0"/>
+                    <BackgroundColor alpha="255" red="255" blue="255" green="255"/>
+                </ComposerItem>
+            </ComposerLabel>
+            <ComposerLabel valign="32" labelText="Map's title" htmlState="0" halign="4" margin="1">
+                <LabelFont description="Arial,24,-1,5,75,0,0,0,0,0"/>
+                <FontColor red="0" blue="0" green="0"/>
+                <ComposerItem width="227.768" x="9.43212" transparency="0" y="2.7947" height="15.2053" positionMode="0" frame="false" outlineWidth="0.3" zValue="4" itemRotation="0" lastValidViewScaleFactor="1.36982" uuid="{6307d78b-68bd-47ff-b870-f451e5e4e5eb}" id="title" background="true" blendMode="0" positionLock="false">
+                    <FrameColor alpha="255" red="0" blue="0" green="0"/>
+                    <BackgroundColor alpha="255" red="255" blue="255" green="255"/>
+                </ComposerItem>
+            </ComposerLabel>
+            <ComposerMap mapRotation="0" keepLayerSet="true" overviewFrameMap="0" id="1" previewMode="Cache" drawCanvasItems="true">
+                <overviewFrame overviewBlendMode="0" overviewFrameMap="0" overviewCentered="false" overviewInverted="false">
+                    <symbol alpha="1" type="fill" name="">
+                        <layer pass="0" class="SimpleFill" locked="0">
+                            <prop k="border_width_unit" v="MM"/>
+                            <prop k="color" v="255,0,0,70"/>
+                            <prop k="color_border" v="255,0,0,255"/>
+                            <prop k="offset" v="0,0"/>
+                            <prop k="offset_unit" v="MM"/>
+                            <prop k="style" v="solid"/>
+                            <prop k="style_border" v="solid"/>
+                            <prop k="width_border" v="0.46"/>
+                        </layer>
+                    </symbol>
+                </overviewFrame>
+                <Extent ymin="43.55700000000000216" xmin="3.78988000000000014" ymax="43.69419661016949163" xmax="3.96975999999999996"/>
+                <LayerSet>
+                    <Layer>VilleMTP_MTP_Quartiers_2011_432620130116112351546</Layer>
+                </LayerSet>
+                <Grid gridStyle="0" crossLength="3" gridFramePenThickness="0.5" intervalX="0" offsetX="0" intervalY="0" offsetY="0" gridFrameStyle="0" gridFrameWidth="2" gridBlendMode="0" show="0">
+                    <framePenColor alpha="255" red="0" blue="0" green="0"/>
+                    <frameFillColor1 alpha="255" red="255" blue="255" green="255"/>
+                    <frameFillColor2 alpha="255" red="0" blue="0" green="0"/>
+                    <symbol alpha="1" type="line" name="">
+                        <layer pass="0" class="SimpleLine" locked="0">
+                            <prop k="capstyle" v="flat"/>
+                            <prop k="color" v="0,0,0,255"/>
+                            <prop k="customdash" v="5;2"/>
+                            <prop k="customdash_unit" v="MM"/>
+                            <prop k="draw_inside_polygon" v="0"/>
+                            <prop k="joinstyle" v="bevel"/>
+                            <prop k="offset" v="0"/>
+                            <prop k="offset_unit" v="MM"/>
+                            <prop k="penstyle" v="solid"/>
+                            <prop k="use_custom_dash" v="0"/>
+                            <prop k="width" v="0.3"/>
+                            <prop k="width_unit" v="MM"/>
+                        </layer>
+                    </symbol>
+                    <Annotation rightDirection="0" bottomDirection="0" format="0" topPosition="1" precision="3" leftDirection="0" rightPosition="1" bottomPosition="1" frameDistance="1" show="0" font="Cantarell,11,-1,5,50,0,0,0,0,0" leftPosition="1" topDirection="0">
+                        <fontColor alpha="255" red="0" blue="0" green="0"/>
+                    </Annotation>
+                </Grid>
+                <AtlasMap fixedScale="0" atlasDriven="0" margin="0.10000000000000001"/>
+                <ComposerItem width="59" x="235" transparency="0" y="86" height="45" positionMode="0" frame="false" outlineWidth="0.3" zValue="3" itemRotation="0" lastValidViewScaleFactor="1.36982" uuid="{2ebf76e3-6f6b-4c34-95f1-3d642932cfb3}" id="" background="true" blendMode="0" positionLock="false">
+                    <FrameColor alpha="255" red="0" blue="0" green="0"/>
+                    <BackgroundColor alpha="255" red="255" blue="255" green="255"/>
+                </ComposerItem>
+            </ComposerMap>
+            <ComposerLegend symbolWidth="7" title="Légende" boxSpace="2" splitLayer="1" equalColumnWidth="1" map="1" symbolHeight="4" wmsLegendHeight="25" wrapChar="" fontColor="#000000" columnSpace="2" wmsLegendWidth="50" columnCount="5">
+                <styles>
+                    <style marginBottom="2" name="title" font="Cantarell,16,-1,5,50,0,0,0,0,0"/>
+                    <style marginTop="2" name="group" font="Cantarell,14,-1,5,50,0,0,0,0,0"/>
+                    <style marginTop="2" name="subgroup" font="Cantarell,12,-1,5,50,0,0,0,0,0"/>
+                    <style marginTop="2" name="symbol" font="Cantarell,11,-1,5,50,0,0,0,0,0"/>
+                    <style marginTop="2" marginLeft="2" name="symbolLabel" font="Cantarell,12,-1,5,50,0,0,0,0,0"/>
+                </styles>
+                <Model autoUpdate="1">
+                    <LayerItem layerId="edition_point20130118171631518" userText="Points of interest" style="subgroup" text="Points of interest" showFeatureCount="0">
+                        <VectorClassificationItemNg userText="" text="café">
+                            <symbols>
+                                <symbol alpha="1" type="marker" name="classificationSymbol">
+                                    <layer pass="0" class="SvgMarker" locked="0">
+                                        <prop k="angle" v="0"/>
+                                        <prop k="fill" v="#000000"/>
+                                        <prop k="horizontal_anchor_point" v="1"/>
+                                        <prop k="name" v="entertainment/amenity=cafe.svg"/>
+                                        <prop k="offset" v="0,0"/>
+                                        <prop k="offset_unit" v="MM"/>
+                                        <prop k="outline" v="#000000"/>
+                                        <prop k="outline-width" v="1"/>
+                                        <prop k="outline_width_unit" v="MM"/>
+                                        <prop k="size" v="5"/>
+                                        <prop k="size_unit" v="MM"/>
+                                        <prop k="vertical_anchor_point" v="1"/>
+                                    </layer>
+                                </symbol>
+                            </symbols>
+                        </VectorClassificationItemNg>
+                        <VectorClassificationItemNg userText="" text="pharmacy">
+                            <symbols>
+                                <symbol alpha="1" type="marker" name="classificationSymbol">
+                                    <layer pass="0" class="SvgMarker" locked="0">
+                                        <prop k="angle" v="0"/>
+                                        <prop k="fill" v="#000000"/>
+                                        <prop k="horizontal_anchor_point" v="1"/>
+                                        <prop k="name" v="services/amenity=pharmacy,dispensing=yes.svg"/>
+                                        <prop k="offset" v="0,0"/>
+                                        <prop k="offset_unit" v="MM"/>
+                                        <prop k="outline" v="#000000"/>
+                                        <prop k="outline-width" v="1"/>
+                                        <prop k="outline_width_unit" v="MM"/>
+                                        <prop k="size" v="5"/>
+                                        <prop k="size_unit" v="MM"/>
+                                        <prop k="vertical_anchor_point" v="1"/>
+                                    </layer>
+                                </symbol>
+                            </symbols>
+                        </VectorClassificationItemNg>
+                        <VectorClassificationItemNg userText="" text="bus stop">
+                            <symbols>
+                                <symbol alpha="1" type="marker" name="classificationSymbol">
+                                    <layer pass="0" class="SvgMarker" locked="0">
+                                        <prop k="angle" v="0"/>
+                                        <prop k="fill" v="#000000"/>
+                                        <prop k="horizontal_anchor_point" v="1"/>
+                                        <prop k="name" v="transport/highway=bus_stop.svg"/>
+                                        <prop k="offset" v="0,0"/>
+                                        <prop k="offset_unit" v="MM"/>
+                                        <prop k="outline" v="#000000"/>
+                                        <prop k="outline-width" v="1"/>
+                                        <prop k="outline_width_unit" v="MM"/>
+                                        <prop k="size" v="5"/>
+                                        <prop k="size_unit" v="MM"/>
+                                        <prop k="vertical_anchor_point" v="1"/>
+                                    </layer>
+                                </symbol>
+                            </symbols>
+                        </VectorClassificationItemNg>
+                        <VectorClassificationItemNg userText="" text="park">
+                            <symbols>
+                                <symbol alpha="1" type="marker" name="classificationSymbol">
+                                    <layer pass="0" class="SvgMarker" locked="0">
+                                        <prop k="angle" v="0"/>
+                                        <prop k="fill" v="#000000"/>
+                                        <prop k="horizontal_anchor_point" v="1"/>
+                                        <prop k="name" v="/"/>
+                                        <prop k="offset" v="0,0"/>
+                                        <prop k="offset_unit" v="MM"/>
+                                        <prop k="outline" v="#000000"/>
+                                        <prop k="outline-width" v="1"/>
+                                        <prop k="outline_width_unit" v="MM"/>
+                                        <prop k="size" v="5"/>
+                                        <prop k="size_unit" v="MM"/>
+                                        <prop k="vertical_anchor_point" v="1"/>
+                                    </layer>
+                                </symbol>
+                            </symbols>
+                        </VectorClassificationItemNg>
+                    </LayerItem>
+                    <LayerItem layerId="edition_line20130409161630329" userText="Bicycle rides" style="subgroup" text="Bicycle rides" showFeatureCount="0">
+                        <VectorClassificationItemNg userText="" text="easy">
+                            <symbols>
+                                <symbol alpha="1" type="line" name="classificationSymbol">
+                                    <layer pass="0" class="SimpleLine" locked="0">
+                                        <prop k="capstyle" v="square"/>
+                                        <prop k="color" v="0,255,0,255"/>
+                                        <prop k="customdash" v="5;2"/>
+                                        <prop k="customdash_unit" v="MM"/>
+                                        <prop k="draw_inside_polygon" v="0"/>
+                                        <prop k="joinstyle" v="bevel"/>
+                                        <prop k="offset" v="0"/>
+                                        <prop k="offset_unit" v="MM"/>
+                                        <prop k="penstyle" v="solid"/>
+                                        <prop k="use_custom_dash" v="0"/>
+                                        <prop k="width" v="1"/>
+                                        <prop k="width_unit" v="MM"/>
+                                    </layer>
+                                </symbol>
+                            </symbols>
+                        </VectorClassificationItemNg>
+                        <VectorClassificationItemNg userText="" text="normal">
+                            <symbols>
+                                <symbol alpha="1" type="line" name="classificationSymbol">
+                                    <layer pass="0" class="SimpleLine" locked="0">
+                                        <prop k="capstyle" v="square"/>
+                                        <prop k="color" v="255,255,0,255"/>
+                                        <prop k="customdash" v="5;2"/>
+                                        <prop k="customdash_unit" v="MM"/>
+                                        <prop k="draw_inside_polygon" v="0"/>
+                                        <prop k="joinstyle" v="bevel"/>
+                                        <prop k="offset" v="0"/>
+                                        <prop k="offset_unit" v="MM"/>
+                                        <prop k="penstyle" v="solid"/>
+                                        <prop k="use_custom_dash" v="0"/>
+                                        <prop k="width" v="1"/>
+                                        <prop k="width_unit" v="MM"/>
+                                    </layer>
+                                </symbol>
+                            </symbols>
+                        </VectorClassificationItemNg>
+                        <VectorClassificationItemNg userText="" text="difficult">
+                            <symbols>
+                                <symbol alpha="1" type="line" name="classificationSymbol">
+                                    <layer pass="0" class="SimpleLine" locked="0">
+                                        <prop k="capstyle" v="square"/>
+                                        <prop k="color" v="255,0,0,255"/>
+                                        <prop k="customdash" v="5;2"/>
+                                        <prop k="customdash_unit" v="MM"/>
+                                        <prop k="draw_inside_polygon" v="0"/>
+                                        <prop k="joinstyle" v="bevel"/>
+                                        <prop k="offset" v="0"/>
+                                        <prop k="offset_unit" v="MM"/>
+                                        <prop k="penstyle" v="solid"/>
+                                        <prop k="use_custom_dash" v="0"/>
+                                        <prop k="width" v="1"/>
+                                        <prop k="width_unit" v="MM"/>
+                                    </layer>
+                                </symbol>
+                            </symbols>
+                        </VectorClassificationItemNg>
+                    </LayerItem>
+                    <LayerItem layerId="edition_polygon20130409114333776" userText="" style="subgroup" text="areas of interest" showFeatureCount="0">
+                        <VectorClassificationItemNg userText="" text="checked">
+                            <symbols>
+                                <symbol alpha="0.690196" type="fill" name="classificationSymbol">
+                                    <layer pass="0" class="SimpleFill" locked="0">
+                                        <prop k="border_width_unit" v="MM"/>
+                                        <prop k="color" v="0,255,127,255"/>
+                                        <prop k="color_border" v="130,130,130,255"/>
+                                        <prop k="offset" v="0,0"/>
+                                        <prop k="offset_unit" v="MM"/>
+                                        <prop k="style" v="solid"/>
+                                        <prop k="style_border" v="solid"/>
+                                        <prop k="width_border" v="0.26"/>
+                                    </layer>
+                                </symbol>
+                            </symbols>
+                        </VectorClassificationItemNg>
+                        <VectorClassificationItemNg userText="" text="not checked">
+                            <symbols>
+                                <symbol alpha="0.690196" type="fill" name="classificationSymbol">
+                                    <layer pass="0" class="SimpleFill" locked="0">
+                                        <prop k="border_width_unit" v="MM"/>
+                                        <prop k="color" v="255,85,0,255"/>
+                                        <prop k="color_border" v="130,130,130,255"/>
+                                        <prop k="offset" v="0,0"/>
+                                        <prop k="offset_unit" v="MM"/>
+                                        <prop k="style" v="solid"/>
+                                        <prop k="style_border" v="solid"/>
+                                        <prop k="width_border" v="0.26"/>
+                                    </layer>
+                                </symbol>
+                            </symbols>
+                        </VectorClassificationItemNg>
+                    </LayerItem>
+                    <LayerItem layerId="bus_stops20121106170806413" userText="" style="hidden" text="bus_stops" showFeatureCount="0">
+                        <VectorClassificationItemNg userText="" text="bus_stops">
+                            <symbols>
+                                <symbol alpha="1" type="marker" name="classificationSymbol">
+                                    <layer pass="0" class="SvgMarker" locked="0">
+                                        <prop k="angle" v="0"/>
+                                        <prop k="fill" v="#000000"/>
+                                        <prop k="horizontal_anchor_point" v="1"/>
+                                        <prop k="name" v="transport/transport_bus_stop.svg"/>
+                                        <prop k="offset" v="0,0"/>
+                                        <prop k="offset_unit" v="MM"/>
+                                        <prop k="outline" v="#000000"/>
+                                        <prop k="outline-width" v="1"/>
+                                        <prop k="outline_width_unit" v="MM"/>
+                                        <prop k="size" v="4"/>
+                                        <prop k="size_unit" v="MM"/>
+                                        <prop k="vertical_anchor_point" v="1"/>
+                                    </layer>
+                                </symbol>
+                            </symbols>
+                        </VectorClassificationItemNg>
+                    </LayerItem>
+                    <LayerItem layerId="bus20121102133611751" userText="Bus lines" style="subgroup" text="Bus lines" showFeatureCount="0">
+                        <VectorClassificationItemNg userText="" text="La navette">
+                            <symbols>
+                                <symbol alpha="1" type="line" name="classificationSymbol">
+                                    <layer pass="0" class="SimpleLine" locked="0">
+                                        <prop k="capstyle" v="square"/>
+                                        <prop k="color" v="151,55,161,255"/>
+                                        <prop k="customdash" v="5;2"/>
+                                        <prop k="customdash_unit" v="MM"/>
+                                        <prop k="draw_inside_polygon" v="0"/>
+                                        <prop k="joinstyle" v="bevel"/>
+                                        <prop k="offset" v="0"/>
+                                        <prop k="offset_unit" v="MM"/>
+                                        <prop k="penstyle" v="solid"/>
+                                        <prop k="use_custom_dash" v="0"/>
+                                        <prop k="width" v="1"/>
+                                        <prop k="width_unit" v="MM"/>
+                                    </layer>
+                                </symbol>
+                            </symbols>
+                        </VectorClassificationItemNg>
+                        <VectorClassificationItemNg userText="" text="La Ronde">
+                            <symbols>
+                                <symbol alpha="1" type="line" name="classificationSymbol">
+                                    <layer pass="0" class="SimpleLine" locked="0">
+                                        <prop k="capstyle" v="square"/>
+                                        <prop k="color" v="192,31,50,255"/>
+                                        <prop k="customdash" v="5;2"/>
+                                        <prop k="customdash_unit" v="MM"/>
+                                        <prop k="draw_inside_polygon" v="0"/>
+                                        <prop k="joinstyle" v="bevel"/>
+                                        <prop k="offset" v="0"/>
+                                        <prop k="offset_unit" v="MM"/>
+                                        <prop k="penstyle" v="solid"/>
+                                        <prop k="use_custom_dash" v="0"/>
+                                        <prop k="width" v="1"/>
+                                        <prop k="width_unit" v="MM"/>
+                                    </layer>
+                                </symbol>
+                            </symbols>
+                        </VectorClassificationItemNg>
+                        <VectorClassificationItemNg userText="" text="Ligne 11">
+                            <symbols>
+                                <symbol alpha="1" type="line" name="classificationSymbol">
+                                    <layer pass="0" class="SimpleLine" locked="0">
+                                        <prop k="capstyle" v="square"/>
+                                        <prop k="color" v="153,223,249,255"/>
+                                        <prop k="customdash" v="5;2"/>
+                                        <prop k="customdash_unit" v="MM"/>
+                                        <prop k="draw_inside_polygon" v="0"/>
+                                        <prop k="joinstyle" v="bevel"/>
+                                        <prop k="offset" v="0"/>
+                                        <prop k="offset_unit" v="MM"/>
+                                        <prop k="penstyle" v="solid"/>
+                                        <prop k="use_custom_dash" v="0"/>
+                                        <prop k="width" v="1"/>
+                                        <prop k="width_unit" v="MM"/>
+                                    </layer>
+                                </symbol>
+                            </symbols>
+                        </VectorClassificationItemNg>
+                        <VectorClassificationItemNg userText="" text="Ligne 12">
+                            <symbols>
+                                <symbol alpha="1" type="line" name="classificationSymbol">
+                                    <layer pass="0" class="SimpleLine" locked="0">
+                                        <prop k="capstyle" v="square"/>
+                                        <prop k="color" v="246,128,198,255"/>
+                                        <prop k="customdash" v="5;2"/>
+                                        <prop k="customdash_unit" v="MM"/>
+                                        <prop k="draw_inside_polygon" v="0"/>
+                                        <prop k="joinstyle" v="bevel"/>
+                                        <prop k="offset" v="0"/>
+                                        <prop k="offset_unit" v="MM"/>
+                                        <prop k="penstyle" v="solid"/>
+                                        <prop k="use_custom_dash" v="0"/>
+                                        <prop k="width" v="1"/>
+                                        <prop k="width_unit" v="MM"/>
+                                    </layer>
+                                </symbol>
+                            </symbols>
+                        </VectorClassificationItemNg>
+                        <VectorClassificationItemNg userText="" text="Ligne 14">
+                            <symbols>
+                                <symbol alpha="1" type="line" name="classificationSymbol">
+                                    <layer pass="0" class="SimpleLine" locked="0">
+                                        <prop k="capstyle" v="square"/>
+                                        <prop k="color" v="153,223,249,255"/>
+                                        <prop k="customdash" v="5;2"/>
+                                        <prop k="customdash_unit" v="MM"/>
+                                        <prop k="draw_inside_polygon" v="0"/>
+                                        <prop k="joinstyle" v="bevel"/>
+                                        <prop k="offset" v="0"/>
+                                        <prop k="offset_unit" v="MM"/>
+                                        <prop k="penstyle" v="solid"/>
+                                        <prop k="use_custom_dash" v="0"/>
+                                        <prop k="width" v="1"/>
+                                        <prop k="width_unit" v="MM"/>
+                                    </layer>
+                                </symbol>
+                            </symbols>
+                        </VectorClassificationItemNg>
+                        <VectorClassificationItemNg userText="" text="Ligne 15">
+                            <symbols>
+                                <symbol alpha="1" type="line" name="classificationSymbol">
+                                    <layer pass="0" class="SimpleLine" locked="0">
+                                        <prop k="capstyle" v="square"/>
+                                        <prop k="color" v="192,210,21,255"/>
+                                        <prop k="customdash" v="5;2"/>
+                                        <prop k="customdash_unit" v="MM"/>
+                                        <prop k="draw_inside_polygon" v="0"/>
+                                        <prop k="joinstyle" v="bevel"/>
+                                        <prop k="offset" v="0"/>
+                                        <prop k="offset_unit" v="MM"/>
+                                        <prop k="penstyle" v="solid"/>
+                                        <prop k="use_custom_dash" v="0"/>
+                                        <prop k="width" v="1"/>
+                                        <prop k="width_unit" v="MM"/>
+                                    </layer>
+                                </symbol>
+                            </symbols>
+                        </VectorClassificationItemNg>
+                        <VectorClassificationItemNg userText="" text="Ligne 16">
+                            <symbols>
+                                <symbol alpha="1" type="line" name="classificationSymbol">
+                                    <layer pass="0" class="SimpleLine" locked="0">
+                                        <prop k="capstyle" v="square"/>
+                                        <prop k="color" v="238,25,152,255"/>
+                                        <prop k="customdash" v="5;2"/>
+                                        <prop k="customdash_unit" v="MM"/>
+                                        <prop k="draw_inside_polygon" v="0"/>
+                                        <prop k="joinstyle" v="bevel"/>
+                                        <prop k="offset" v="0"/>
+                                        <prop k="offset_unit" v="MM"/>
+                                        <prop k="penstyle" v="solid"/>
+                                        <prop k="use_custom_dash" v="0"/>
+                                        <prop k="width" v="1"/>
+                                        <prop k="width_unit" v="MM"/>
+                                    </layer>
+                                </symbol>
+                            </symbols>
+                        </VectorClassificationItemNg>
+                        <VectorClassificationItemNg userText="" text="Ligne 17">
+                            <symbols>
+                                <symbol alpha="1" type="line" name="classificationSymbol">
+                                    <layer pass="0" class="SimpleLine" locked="0">
+                                        <prop k="capstyle" v="square"/>
+                                        <prop k="color" v="230,242,72,255"/>
+                                        <prop k="customdash" v="5;2"/>
+                                        <prop k="customdash_unit" v="MM"/>
+                                        <prop k="draw_inside_polygon" v="0"/>
+                                        <prop k="joinstyle" v="bevel"/>
+                                        <prop k="offset" v="0"/>
+                                        <prop k="offset_unit" v="MM"/>
+                                        <prop k="penstyle" v="solid"/>
+                                        <prop k="use_custom_dash" v="0"/>
+                                        <prop k="width" v="1"/>
+                                        <prop k="width_unit" v="MM"/>
+                                    </layer>
+                                </symbol>
+                            </symbols>
+                        </VectorClassificationItemNg>
+                        <VectorClassificationItemNg userText="" text="Ligne 18">
+                            <symbols>
+                                <symbol alpha="1" type="line" name="classificationSymbol">
+                                    <layer pass="0" class="SimpleLine" locked="0">
+                                        <prop k="capstyle" v="square"/>
+                                        <prop k="color" v="153,223,249,255"/>
+                                        <prop k="customdash" v="5;2"/>
+                                        <prop k="customdash_unit" v="MM"/>
+                                        <prop k="draw_inside_polygon" v="0"/>
+                                        <prop k="joinstyle" v="bevel"/>
+                                        <prop k="offset" v="0"/>
+                                        <prop k="offset_unit" v="MM"/>
+                                        <prop k="penstyle" v="solid"/>
+                                        <prop k="use_custom_dash" v="0"/>
+                                        <prop k="width" v="1"/>
+                                        <prop k="width_unit" v="MM"/>
+                                    </layer>
+                                </symbol>
+                            </symbols>
+                        </VectorClassificationItemNg>
+                        <VectorClassificationItemNg userText="" text="Ligne 20">
+                            <symbols>
+                                <symbol alpha="1" type="line" name="classificationSymbol">
+                                    <layer pass="0" class="SimpleLine" locked="0">
+                                        <prop k="capstyle" v="square"/>
+                                        <prop k="color" v="153,223,249,255"/>
+                                        <prop k="customdash" v="5;2"/>
+                                        <prop k="customdash_unit" v="MM"/>
+                                        <prop k="draw_inside_polygon" v="0"/>
+                                        <prop k="joinstyle" v="bevel"/>
+                                        <prop k="offset" v="0"/>
+                                        <prop k="offset_unit" v="MM"/>
+                                        <prop k="penstyle" v="solid"/>
+                                        <prop k="use_custom_dash" v="0"/>
+                                        <prop k="width" v="1"/>
+                                        <prop k="width_unit" v="MM"/>
+                                    </layer>
+                                </symbol>
+                            </symbols>
+                        </VectorClassificationItemNg>
+                        <VectorClassificationItemNg userText="" text="Ligne 21">
+                            <symbols>
+                                <symbol alpha="1" type="line" name="classificationSymbol">
+                                    <layer pass="0" class="SimpleLine" locked="0">
+                                        <prop k="capstyle" v="square"/>
+                                        <prop k="color" v="153,223,249,255"/>
+                                        <prop k="customdash" v="5;2"/>
+                                        <prop k="customdash_unit" v="MM"/>
+                                        <prop k="draw_inside_polygon" v="0"/>
+                                        <prop k="joinstyle" v="bevel"/>
+                                        <prop k="offset" v="0"/>
+                                        <prop k="offset_unit" v="MM"/>
+                                        <prop k="penstyle" v="solid"/>
+                                        <prop k="use_custom_dash" v="0"/>
+                                        <prop k="width" v="1"/>
+                                        <prop k="width_unit" v="MM"/>
+                                    </layer>
+                                </symbol>
+                            </symbols>
+                        </VectorClassificationItemNg>
+                        <VectorClassificationItemNg userText="" text="Ligne 22">
+                            <symbols>
+                                <symbol alpha="1" type="line" name="classificationSymbol">
+                                    <layer pass="0" class="SimpleLine" locked="0">
+                                        <prop k="capstyle" v="square"/>
+                                        <prop k="color" v="153,223,249,255"/>
+                                        <prop k="customdash" v="5;2"/>
+                                        <prop k="customdash_unit" v="MM"/>
+                                        <prop k="draw_inside_polygon" v="0"/>
+                                        <prop k="joinstyle" v="bevel"/>
+                                        <prop k="offset" v="0"/>
+                                        <prop k="offset_unit" v="MM"/>
+                                        <prop k="penstyle" v="solid"/>
+                                        <prop k="use_custom_dash" v="0"/>
+                                        <prop k="width" v="1"/>
+                                        <prop k="width_unit" v="MM"/>
+                                    </layer>
+                                </symbol>
+                            </symbols>
+                        </VectorClassificationItemNg>
+                        <VectorClassificationItemNg userText="" text="Ligne 23">
+                            <symbols>
+                                <symbol alpha="1" type="line" name="classificationSymbol">
+                                    <layer pass="0" class="SimpleLine" locked="0">
+                                        <prop k="capstyle" v="square"/>
+                                        <prop k="color" v="153,223,249,255"/>
+                                        <prop k="customdash" v="5;2"/>
+                                        <prop k="customdash_unit" v="MM"/>
+                                        <prop k="draw_inside_polygon" v="0"/>
+                                        <prop k="joinstyle" v="bevel"/>
+                                        <prop k="offset" v="0"/>
+                                        <prop k="offset_unit" v="MM"/>
+                                        <prop k="penstyle" v="solid"/>
+                                        <prop k="use_custom_dash" v="0"/>
+                                        <prop k="width" v="1"/>
+                                        <prop k="width_unit" v="MM"/>
+                                    </layer>
+                                </symbol>
+                            </symbols>
+                        </VectorClassificationItemNg>
+                        <VectorClassificationItemNg userText="" text="Ligne 24">
+                            <symbols>
+                                <symbol alpha="1" type="line" name="classificationSymbol">
+                                    <layer pass="0" class="SimpleLine" locked="0">
+                                        <prop k="capstyle" v="square"/>
+                                        <prop k="color" v="153,223,249,255"/>
+                                        <prop k="customdash" v="5;2"/>
+                                        <prop k="customdash_unit" v="MM"/>
+                                        <prop k="draw_inside_polygon" v="0"/>
+                                        <prop k="joinstyle" v="bevel"/>
+                                        <prop k="offset" v="0"/>
+                                        <prop k="offset_unit" v="MM"/>
+                                        <prop k="penstyle" v="solid"/>
+                                        <prop k="use_custom_dash" v="0"/>
+                                        <prop k="width" v="1"/>
+                                        <prop k="width_unit" v="MM"/>
+                                    </layer>
+                                </symbol>
+                            </symbols>
+                        </VectorClassificationItemNg>
+                        <VectorClassificationItemNg userText="" text="Ligne 25">
+                            <symbols>
+                                <symbol alpha="1" type="line" name="classificationSymbol">
+                                    <layer pass="0" class="SimpleLine" locked="0">
+                                        <prop k="capstyle" v="square"/>
+                                        <prop k="color" v="153,223,249,255"/>
+                                        <prop k="customdash" v="5;2"/>
+                                        <prop k="customdash_unit" v="MM"/>
+                                        <prop k="draw_inside_polygon" v="0"/>
+                                        <prop k="joinstyle" v="bevel"/>
+                                        <prop k="offset" v="0"/>
+                                        <prop k="offset_unit" v="MM"/>
+                                        <prop k="penstyle" v="solid"/>
+                                        <prop k="use_custom_dash" v="0"/>
+                                        <prop k="width" v="1"/>
+                                        <prop k="width_unit" v="MM"/>
+                                    </layer>
+                                </symbol>
+                            </symbols>
+                        </VectorClassificationItemNg>
+                        <VectorClassificationItemNg userText="" text="Ligne 29">
+                            <symbols>
+                                <symbol alpha="1" type="line" name="classificationSymbol">
+                                    <layer pass="0" class="SimpleLine" locked="0">
+                                        <prop k="capstyle" v="square"/>
+                                        <prop k="color" v="153,223,249,255"/>
+                                        <prop k="customdash" v="5;2"/>
+                                        <prop k="customdash_unit" v="MM"/>
+                                        <prop k="draw_inside_polygon" v="0"/>
+                                        <prop k="joinstyle" v="bevel"/>
+                                        <prop k="offset" v="0"/>
+                                        <prop k="offset_unit" v="MM"/>
+                                        <prop k="penstyle" v="solid"/>
+                                        <prop k="use_custom_dash" v="0"/>
+                                        <prop k="width" v="1"/>
+                                        <prop k="width_unit" v="MM"/>
+                                    </layer>
+                                </symbol>
+                            </symbols>
+                        </VectorClassificationItemNg>
+                        <VectorClassificationItemNg userText="" text="Ligne 30">
+                            <symbols>
+                                <symbol alpha="1" type="line" name="classificationSymbol">
+                                    <layer pass="0" class="SimpleLine" locked="0">
+                                        <prop k="capstyle" v="square"/>
+                                        <prop k="color" v="153,223,249,255"/>
+                                        <prop k="customdash" v="5;2"/>
+                                        <prop k="customdash_unit" v="MM"/>
+                                        <prop k="draw_inside_polygon" v="0"/>
+                                        <prop k="joinstyle" v="bevel"/>
+                                        <prop k="offset" v="0"/>
+                                        <prop k="offset_unit" v="MM"/>
+                                        <prop k="penstyle" v="solid"/>
+                                        <prop k="use_custom_dash" v="0"/>
+                                        <prop k="width" v="1"/>
+                                        <prop k="width_unit" v="MM"/>
+                                    </layer>
+                                </symbol>
+                            </symbols>
+                        </VectorClassificationItemNg>
+                        <VectorClassificationItemNg userText="" text="Ligne 31">
+                            <symbols>
+                                <symbol alpha="1" type="line" name="classificationSymbol">
+                                    <layer pass="0" class="SimpleLine" locked="0">
+                                        <prop k="capstyle" v="square"/>
+                                        <prop k="color" v="153,223,249,255"/>
+                                        <prop k="customdash" v="5;2"/>
+                                        <prop k="customdash_unit" v="MM"/>
+                                        <prop k="draw_inside_polygon" v="0"/>
+                                        <prop k="joinstyle" v="bevel"/>
+                                        <prop k="offset" v="0"/>
+                                        <prop k="offset_unit" v="MM"/>
+                                        <prop k="penstyle" v="solid"/>
+                                        <prop k="use_custom_dash" v="0"/>
+                                        <prop k="width" v="1"/>
+                                        <prop k="width_unit" v="MM"/>
+                                    </layer>
+                                </symbol>
+                            </symbols>
+                        </VectorClassificationItemNg>
+                        <VectorClassificationItemNg userText="" text="Ligne 32">
+                            <symbols>
+                                <symbol alpha="1" type="line" name="classificationSymbol">
+                                    <layer pass="0" class="SimpleLine" locked="0">
+                                        <prop k="capstyle" v="square"/>
+                                        <prop k="color" v="153,223,249,255"/>
+                                        <prop k="customdash" v="5;2"/>
+                                        <prop k="customdash_unit" v="MM"/>
+                                        <prop k="draw_inside_polygon" v="0"/>
+                                        <prop k="joinstyle" v="bevel"/>
+                                        <prop k="offset" v="0"/>
+                                        <prop k="offset_unit" v="MM"/>
+                                        <prop k="penstyle" v="solid"/>
+                                        <prop k="use_custom_dash" v="0"/>
+                                        <prop k="width" v="1"/>
+                                        <prop k="width_unit" v="MM"/>
+                                    </layer>
+                                </symbol>
+                            </symbols>
+                        </VectorClassificationItemNg>
+                        <VectorClassificationItemNg userText="" text="Ligne 33">
+                            <symbols>
+                                <symbol alpha="1" type="line" name="classificationSymbol">
+                                    <layer pass="0" class="SimpleLine" locked="0">
+                                        <prop k="capstyle" v="square"/>
+                                        <prop k="color" v="153,223,249,255"/>
+                                        <prop k="customdash" v="5;2"/>
+                                        <prop k="customdash_unit" v="MM"/>
+                                        <prop k="draw_inside_polygon" v="0"/>
+                                        <prop k="joinstyle" v="bevel"/>
+                                        <prop k="offset" v="0"/>
+                                        <prop k="offset_unit" v="MM"/>
+                                        <prop k="penstyle" v="solid"/>
+                                        <prop k="use_custom_dash" v="0"/>
+                                        <prop k="width" v="1"/>
+                                        <prop k="width_unit" v="MM"/>
+                                    </layer>
+                                </symbol>
+                            </symbols>
+                        </VectorClassificationItemNg>
+                        <VectorClassificationItemNg userText="" text="Ligne 34">
+                            <symbols>
+                                <symbol alpha="1" type="line" name="classificationSymbol">
+                                    <layer pass="0" class="SimpleLine" locked="0">
+                                        <prop k="capstyle" v="square"/>
+                                        <prop k="color" v="153,223,249,255"/>
+                                        <prop k="customdash" v="5;2"/>
+                                        <prop k="customdash_unit" v="MM"/>
+                                        <prop k="draw_inside_polygon" v="0"/>
+                                        <prop k="joinstyle" v="bevel"/>
+                                        <prop k="offset" v="0"/>
+                                        <prop k="offset_unit" v="MM"/>
+                                        <prop k="penstyle" v="solid"/>
+                                        <prop k="use_custom_dash" v="0"/>
+                                        <prop k="width" v="1"/>
+                                        <prop k="width_unit" v="MM"/>
+                                    </layer>
+                                </symbol>
+                            </symbols>
+                        </VectorClassificationItemNg>
+                        <VectorClassificationItemNg userText="" text="Ligne 35">
+                            <symbols>
+                                <symbol alpha="1" type="line" name="classificationSymbol">
+                                    <layer pass="0" class="SimpleLine" locked="0">
+                                        <prop k="capstyle" v="square"/>
+                                        <prop k="color" v="153,223,249,255"/>
+                                        <prop k="customdash" v="5;2"/>
+                                        <prop k="customdash_unit" v="MM"/>
+                                        <prop k="draw_inside_polygon" v="0"/>
+                                        <prop k="joinstyle" v="bevel"/>
+                                        <prop k="offset" v="0"/>
+                                        <prop k="offset_unit" v="MM"/>
+                                        <prop k="penstyle" v="solid"/>
+                                        <prop k="use_custom_dash" v="0"/>
+                                        <prop k="width" v="1"/>
+                                        <prop k="width_unit" v="MM"/>
+                                    </layer>
+                                </symbol>
+                            </symbols>
+                        </VectorClassificationItemNg>
+                        <VectorClassificationItemNg userText="" text="Ligne 36">
+                            <symbols>
+                                <symbol alpha="1" type="line" name="classificationSymbol">
+                                    <layer pass="0" class="SimpleLine" locked="0">
+                                        <prop k="capstyle" v="square"/>
+                                        <prop k="color" v="153,223,249,255"/>
+                                        <prop k="customdash" v="5;2"/>
+                                        <prop k="customdash_unit" v="MM"/>
+                                        <prop k="draw_inside_polygon" v="0"/>
+                                        <prop k="joinstyle" v="bevel"/>
+                                        <prop k="offset" v="0"/>
+                                        <prop k="offset_unit" v="MM"/>
+                                        <prop k="penstyle" v="solid"/>
+                                        <prop k="use_custom_dash" v="0"/>
+                                        <prop k="width" v="1"/>
+                                        <prop k="width_unit" v="MM"/>
+                                    </layer>
+                                </symbol>
+                            </symbols>
+                        </VectorClassificationItemNg>
+                        <VectorClassificationItemNg userText="" text="Ligne 37">
+                            <symbols>
+                                <symbol alpha="1" type="line" name="classificationSymbol">
+                                    <layer pass="0" class="SimpleLine" locked="0">
+                                        <prop k="capstyle" v="square"/>
+                                        <prop k="color" v="153,223,249,255"/>
+                                        <prop k="customdash" v="5;2"/>
+                                        <prop k="customdash_unit" v="MM"/>
+                                        <prop k="draw_inside_polygon" v="0"/>
+                                        <prop k="joinstyle" v="bevel"/>
+                                        <prop k="offset" v="0"/>
+                                        <prop k="offset_unit" v="MM"/>
+                                        <prop k="penstyle" v="solid"/>
+                                        <prop k="use_custom_dash" v="0"/>
+                                        <prop k="width" v="1"/>
+                                        <prop k="width_unit" v="MM"/>
+                                    </layer>
+                                </symbol>
+                            </symbols>
+                        </VectorClassificationItemNg>
+                        <VectorClassificationItemNg userText="" text="Ligne 38">
+                            <symbols>
+                                <symbol alpha="1" type="line" name="classificationSymbol">
+                                    <layer pass="0" class="SimpleLine" locked="0">
+                                        <prop k="capstyle" v="square"/>
+                                        <prop k="color" v="153,223,249,255"/>
+                                        <prop k="customdash" v="5;2"/>
+                                        <prop k="customdash_unit" v="MM"/>
+                                        <prop k="draw_inside_polygon" v="0"/>
+                                        <prop k="joinstyle" v="bevel"/>
+                                        <prop k="offset" v="0"/>
+                                        <prop k="offset_unit" v="MM"/>
+                                        <prop k="penstyle" v="solid"/>
+                                        <prop k="use_custom_dash" v="0"/>
+                                        <prop k="width" v="1"/>
+                                        <prop k="width_unit" v="MM"/>
+                                    </layer>
+                                </symbol>
+                            </symbols>
+                        </VectorClassificationItemNg>
+                        <VectorClassificationItemNg userText="" text="Ligne 5">
+                            <symbols>
+                                <symbol alpha="1" type="line" name="classificationSymbol">
+                                    <layer pass="0" class="SimpleLine" locked="0">
+                                        <prop k="capstyle" v="square"/>
+                                        <prop k="color" v="251,189,9,255"/>
+                                        <prop k="customdash" v="5;2"/>
+                                        <prop k="customdash_unit" v="MM"/>
+                                        <prop k="draw_inside_polygon" v="0"/>
+                                        <prop k="joinstyle" v="bevel"/>
+                                        <prop k="offset" v="0"/>
+                                        <prop k="offset_unit" v="MM"/>
+                                        <prop k="penstyle" v="solid"/>
+                                        <prop k="use_custom_dash" v="0"/>
+                                        <prop k="width" v="1"/>
+                                        <prop k="width_unit" v="MM"/>
+                                    </layer>
+                                </symbol>
+                            </symbols>
+                        </VectorClassificationItemNg>
+                        <VectorClassificationItemNg userText="" text="Ligne 6">
+                            <symbols>
+                                <symbol alpha="1" type="line" name="classificationSymbol">
+                                    <layer pass="0" class="SimpleLine" locked="0">
+                                        <prop k="capstyle" v="square"/>
+                                        <prop k="color" v="0,166,80,255"/>
+                                        <prop k="customdash" v="5;2"/>
+                                        <prop k="customdash_unit" v="MM"/>
+                                        <prop k="draw_inside_polygon" v="0"/>
+                                        <prop k="joinstyle" v="bevel"/>
+                                        <prop k="offset" v="0"/>
+                                        <prop k="offset_unit" v="MM"/>
+                                        <prop k="penstyle" v="solid"/>
+                                        <prop k="use_custom_dash" v="0"/>
+                                        <prop k="width" v="1"/>
+                                        <prop k="width_unit" v="MM"/>
+                                    </layer>
+                                </symbol>
+                            </symbols>
+                        </VectorClassificationItemNg>
+                        <VectorClassificationItemNg userText="" text="Ligne 7">
+                            <symbols>
+                                <symbol alpha="1" type="line" name="classificationSymbol">
+                                    <layer pass="0" class="SimpleLine" locked="0">
+                                        <prop k="capstyle" v="square"/>
+                                        <prop k="color" v="179,144,207,255"/>
+                                        <prop k="customdash" v="5;2"/>
+                                        <prop k="customdash_unit" v="MM"/>
+                                        <prop k="draw_inside_polygon" v="0"/>
+                                        <prop k="joinstyle" v="bevel"/>
+                                        <prop k="offset" v="0"/>
+                                        <prop k="offset_unit" v="MM"/>
+                                        <prop k="penstyle" v="solid"/>
+                                        <prop k="use_custom_dash" v="0"/>
+                                        <prop k="width" v="1"/>
+                                        <prop k="width_unit" v="MM"/>
+                                    </layer>
+                                </symbol>
+                            </symbols>
+                        </VectorClassificationItemNg>
+                        <VectorClassificationItemNg userText="" text="Ligne 8">
+                            <symbols>
+                                <symbol alpha="1" type="line" name="classificationSymbol">
+                                    <layer pass="0" class="SimpleLine" locked="0">
+                                        <prop k="capstyle" v="square"/>
+                                        <prop k="color" v="162,73,42,255"/>
+                                        <prop k="customdash" v="5;2"/>
+                                        <prop k="customdash_unit" v="MM"/>
+                                        <prop k="draw_inside_polygon" v="0"/>
+                                        <prop k="joinstyle" v="bevel"/>
+                                        <prop k="offset" v="0"/>
+                                        <prop k="offset_unit" v="MM"/>
+                                        <prop k="penstyle" v="solid"/>
+                                        <prop k="use_custom_dash" v="0"/>
+                                        <prop k="width" v="1"/>
+                                        <prop k="width_unit" v="MM"/>
+                                    </layer>
+                                </symbol>
+                            </symbols>
+                        </VectorClassificationItemNg>
+                        <VectorClassificationItemNg userText="" text="Ligne 9">
+                            <symbols>
+                                <symbol alpha="1" type="line" name="classificationSymbol">
+                                    <layer pass="0" class="SimpleLine" locked="0">
+                                        <prop k="capstyle" v="square"/>
+                                        <prop k="color" v="102,199,89,255"/>
+                                        <prop k="customdash" v="5;2"/>
+                                        <prop k="customdash_unit" v="MM"/>
+                                        <prop k="draw_inside_polygon" v="0"/>
+                                        <prop k="joinstyle" v="bevel"/>
+                                        <prop k="offset" v="0"/>
+                                        <prop k="offset_unit" v="MM"/>
+                                        <prop k="penstyle" v="solid"/>
+                                        <prop k="use_custom_dash" v="0"/>
+                                        <prop k="width" v="1"/>
+                                        <prop k="width_unit" v="MM"/>
+                                    </layer>
+                                </symbol>
+                            </symbols>
+                        </VectorClassificationItemNg>
+                        <VectorClassificationItemNg userText="" text="">
+                            <symbols>
+                                <symbol alpha="1" type="line" name="classificationSymbol">
+                                    <layer pass="0" class="SimpleLine" locked="0">
+                                        <prop k="capstyle" v="square"/>
+                                        <prop k="color" v="0,0,0,255"/>
+                                        <prop k="customdash" v="5;2"/>
+                                        <prop k="customdash_unit" v="MM"/>
+                                        <prop k="draw_inside_polygon" v="0"/>
+                                        <prop k="joinstyle" v="bevel"/>
+                                        <prop k="offset" v="0"/>
+                                        <prop k="offset_unit" v="MM"/>
+                                        <prop k="penstyle" v="solid"/>
+                                        <prop k="use_custom_dash" v="0"/>
+                                        <prop k="width" v="1"/>
+                                        <prop k="width_unit" v="MM"/>
+                                    </layer>
+                                </symbol>
+                            </symbols>
+                        </VectorClassificationItemNg>
+                    </LayerItem>
+                    <LayerItem layerId="VilleMTP_MTP_Quartiers_2011_432620130116112610876" userText="" style="subgroup" text="Quartiers" showFeatureCount="0">
+                        <VectorClassificationItemNg userText="" text="CROIX D'ARGENT">
+                            <symbols>
+                                <symbol alpha="0.4" type="fill" name="classificationSymbol">
+                                    <layer pass="0" class="SimpleFill" locked="0">
+                                        <prop k="border_width_unit" v="MM"/>
+                                        <prop k="color" v="166,206,227,255"/>
+                                        <prop k="color_border" v="0,0,0,255"/>
+                                        <prop k="offset" v="0,0"/>
+                                        <prop k="offset_unit" v="MM"/>
+                                        <prop k="style" v="solid"/>
+                                        <prop k="style_border" v="dash"/>
+                                        <prop k="width_border" v="0.5"/>
+                                    </layer>
+                                </symbol>
+                            </symbols>
+                        </VectorClassificationItemNg>
+                        <VectorClassificationItemNg userText="" text="HOPITAUX-FACULTES">
+                            <symbols>
+                                <symbol alpha="0.4" type="fill" name="classificationSymbol">
+                                    <layer pass="0" class="SimpleFill" locked="0">
+                                        <prop k="border_width_unit" v="MM"/>
+                                        <prop k="color" v="31,120,180,255"/>
+                                        <prop k="color_border" v="0,0,0,255"/>
+                                        <prop k="offset" v="0,0"/>
+                                        <prop k="offset_unit" v="MM"/>
+                                        <prop k="style" v="solid"/>
+                                        <prop k="style_border" v="dash"/>
+                                        <prop k="width_border" v="0.5"/>
+                                    </layer>
+                                </symbol>
+                            </symbols>
+                        </VectorClassificationItemNg>
+                        <VectorClassificationItemNg userText="" text="LES CEVENNES">
+                            <symbols>
+                                <symbol alpha="0.4" type="fill" name="classificationSymbol">
+                                    <layer pass="0" class="SimpleFill" locked="0">
+                                        <prop k="border_width_unit" v="MM"/>
+                                        <prop k="color" v="178,223,138,255"/>
+                                        <prop k="color_border" v="0,0,0,255"/>
+                                        <prop k="offset" v="0,0"/>
+                                        <prop k="offset_unit" v="MM"/>
+                                        <prop k="style" v="solid"/>
+                                        <prop k="style_border" v="dash"/>
+                                        <prop k="width_border" v="0.5"/>
+                                    </layer>
+                                </symbol>
+                            </symbols>
+                        </VectorClassificationItemNg>
+                        <VectorClassificationItemNg userText="" text="MONTPELLIER CENTRE">
+                            <symbols>
+                                <symbol alpha="0.4" type="fill" name="classificationSymbol">
+                                    <layer pass="0" class="SimpleFill" locked="0">
+                                        <prop k="border_width_unit" v="MM"/>
+                                        <prop k="color" v="251,154,153,255"/>
+                                        <prop k="color_border" v="0,0,0,255"/>
+                                        <prop k="offset" v="0,0"/>
+                                        <prop k="offset_unit" v="MM"/>
+                                        <prop k="style" v="solid"/>
+                                        <prop k="style_border" v="dash"/>
+                                        <prop k="width_border" v="0.5"/>
+                                    </layer>
+                                </symbol>
+                            </symbols>
+                        </VectorClassificationItemNg>
+                        <VectorClassificationItemNg userText="" text="MOSSON">
+                            <symbols>
+                                <symbol alpha="0.4" type="fill" name="classificationSymbol">
+                                    <layer pass="0" class="SimpleFill" locked="0">
+                                        <prop k="border_width_unit" v="MM"/>
+                                        <prop k="color" v="227,26,28,255"/>
+                                        <prop k="color_border" v="0,0,0,255"/>
+                                        <prop k="offset" v="0,0"/>
+                                        <prop k="offset_unit" v="MM"/>
+                                        <prop k="style" v="solid"/>
+                                        <prop k="style_border" v="dash"/>
+                                        <prop k="width_border" v="0.5"/>
+                                    </layer>
+                                </symbol>
+                            </symbols>
+                        </VectorClassificationItemNg>
+                        <VectorClassificationItemNg userText="" text="PORT MARIANNE">
+                            <symbols>
+                                <symbol alpha="0.4" type="fill" name="classificationSymbol">
+                                    <layer pass="0" class="SimpleFill" locked="0">
+                                        <prop k="border_width_unit" v="MM"/>
+                                        <prop k="color" v="255,127,0,255"/>
+                                        <prop k="color_border" v="0,0,0,255"/>
+                                        <prop k="offset" v="0,0"/>
+                                        <prop k="offset_unit" v="MM"/>
+                                        <prop k="style" v="solid"/>
+                                        <prop k="style_border" v="dash"/>
+                                        <prop k="width_border" v="0.5"/>
+                                    </layer>
+                                </symbol>
+                            </symbols>
+                        </VectorClassificationItemNg>
+                        <VectorClassificationItemNg userText="" text="PRES D'ARENE">
+                            <symbols>
+                                <symbol alpha="0.4" type="fill" name="classificationSymbol">
+                                    <layer pass="0" class="SimpleFill" locked="0">
+                                        <prop k="border_width_unit" v="MM"/>
+                                        <prop k="color" v="202,178,214,255"/>
+                                        <prop k="color_border" v="0,0,0,255"/>
+                                        <prop k="offset" v="0,0"/>
+                                        <prop k="offset_unit" v="MM"/>
+                                        <prop k="style" v="solid"/>
+                                        <prop k="style_border" v="dash"/>
+                                        <prop k="width_border" v="0.5"/>
+                                    </layer>
+                                </symbol>
+                            </symbols>
+                        </VectorClassificationItemNg>
+                        <VectorClassificationItemNg userText="" text="">
+                            <symbols>
+                                <symbol alpha="0.4" type="fill" name="classificationSymbol">
+                                    <layer pass="0" class="SimpleFill" locked="0">
+                                        <prop k="border_width_unit" v="MM"/>
+                                        <prop k="color" v="106,61,154,255"/>
+                                        <prop k="color_border" v="0,0,0,255"/>
+                                        <prop k="offset" v="0,0"/>
+                                        <prop k="offset_unit" v="MM"/>
+                                        <prop k="style" v="solid"/>
+                                        <prop k="style_border" v="dash"/>
+                                        <prop k="width_border" v="0.5"/>
+                                    </layer>
+                                </symbol>
+                            </symbols>
+                        </VectorClassificationItemNg>
+                    </LayerItem>
+                    <LayerItem layerId="VilleMTP_MTP_SousQuartiers_201120130929113137811" userText="Sous-Quartiers" style="hidden" text="Sous-Quartiers" showFeatureCount="0">
+                        <VectorClassificationItemNg userText="" text="Sous-Quartiers">
+                            <symbols>
+                                <symbol alpha="1" type="fill" name="classificationSymbol">
+                                    <layer pass="0" class="SimpleFill" locked="0">
+                                        <prop k="border_width_unit" v="MM"/>
+                                        <prop k="color" v="103,21,162,255"/>
+                                        <prop k="color_border" v="0,0,0,255"/>
+                                        <prop k="offset" v="0,0"/>
+                                        <prop k="offset_unit" v="MM"/>
+                                        <prop k="style" v="solid"/>
+                                        <prop k="style_border" v="solid"/>
+                                        <prop k="width_border" v="0.26"/>
+                                    </layer>
+                                </symbol>
+                            </symbols>
+                        </VectorClassificationItemNg>
+                    </LayerItem>
+                </Model>
+                <ComposerItem width="286.484" x="5.25781" transparency="0" y="122.6" height="84" positionMode="0" frame="false" outlineWidth="0.3" zValue="2" itemRotation="0" lastValidViewScaleFactor="1.36982" uuid="{e5857829-a6bb-42db-aed6-70473177b9da}" id="" background="true" blendMode="0" positionLock="false">
+                    <FrameColor alpha="255" red="0" blue="0" green="0"/>
+                    <BackgroundColor alpha="255" red="255" blue="255" green="255"/>
+                </ComposerItem>
+            </ComposerLegend>
+            <ComposerMap mapRotation="0" keepLayerSet="false" overviewFrameMap="-1" id="0" previewMode="Cache" drawCanvasItems="true">
+                <overviewFrame overviewBlendMode="0" overviewFrameMap="-1" overviewCentered="false" overviewInverted="false">
+                    <symbol alpha="0.3" type="fill" name="">
+                        <layer pass="0" class="SimpleFill" locked="0">
+                            <prop k="border_width_unit" v="MM"/>
+                            <prop k="color" v="255,0,0,255"/>
+                            <prop k="color_border" v="0,0,0,255"/>
+                            <prop k="offset" v="0,0"/>
+                            <prop k="offset_unit" v="MM"/>
+                            <prop k="style" v="solid"/>
+                            <prop k="style_border" v="no"/>
+                            <prop k="width_border" v="0.26"/>
+                        </layer>
+                    </symbol>
+                </overviewFrame>
+                <Extent ymin="43.55210000000000292" xmin="3.77899999999999991" ymax="43.64302965944219181" xmax="3.98063000000000011"/>
+                <LayerSet/>
+                <Grid gridStyle="0" crossLength="3" gridFramePenThickness="0.5" intervalX="0" offsetX="0" intervalY="0" offsetY="0" gridFrameStyle="0" gridFrameWidth="2" gridBlendMode="0" show="0">
+                    <framePenColor alpha="255" red="0" blue="0" green="0"/>
+                    <frameFillColor1 alpha="255" red="255" blue="255" green="255"/>
+                    <frameFillColor2 alpha="255" red="0" blue="0" green="0"/>
+                    <symbol alpha="1" type="line" name="">
+                        <layer pass="0" class="SimpleLine" locked="0">
+                            <prop k="capstyle" v="flat"/>
+                            <prop k="color" v="0,0,0,255"/>
+                            <prop k="customdash" v="5;2"/>
+                            <prop k="customdash_unit" v="MM"/>
+                            <prop k="draw_inside_polygon" v="0"/>
+                            <prop k="joinstyle" v="bevel"/>
+                            <prop k="offset" v="0"/>
+                            <prop k="offset_unit" v="MM"/>
+                            <prop k="penstyle" v="solid"/>
+                            <prop k="use_custom_dash" v="0"/>
+                            <prop k="width" v="0.3"/>
+                            <prop k="width_unit" v="MM"/>
+                        </layer>
+                    </symbol>
+                    <Annotation rightDirection="0" bottomDirection="0" format="0" topPosition="1" precision="3" leftDirection="0" rightPosition="1" bottomPosition="1" frameDistance="1" show="0" font="Cantarell,11,-1,5,50,0,0,0,0,0" leftPosition="1" topDirection="0">
+                        <fontColor alpha="255" red="0" blue="0" green="0"/>
+                    </Annotation>
+                </Grid>
+                <AtlasMap fixedScale="0" atlasDriven="0" margin="0.10000000000000001"/>
+                <ComposerItem width="231.943" x="5.25781" transparency="0" y="18" height="104.6" positionMode="0" frame="false" outlineWidth="0.3" zValue="1" itemRotation="0" lastValidViewScaleFactor="2.86256" uuid="{2835ecbd-6089-4454-b22e-707b558ecef1}" id="" background="true" blendMode="0" positionLock="false">
                     <FrameColor alpha="255" red="0" blue="0" green="0"/>
                     <BackgroundColor alpha="255" red="255" blue="255" green="255"/>
                 </ComposerItem>
@@ -375,7 +1527,7 @@
         </Composition>
     </Composer>
     <projectlayers layercount="10">
-        <maplayer minimumScale="0" maximumScale="1e+08" minLabelScale="1" maxLabelScale="1e+08" geometry="Polygon" type="vector" hasScaleBasedVisibilityFlag="1" scaleBasedLabelVisibilityFlag="0">
+        <maplayer minimumScale="0" maximumScale="1e+08" simplifyDrawingHints="1" minLabelScale="1" maxLabelScale="1e+08" simplifyDrawingTol="1" geometry="Polygon" simplifyMaxScale="1" type="vector" hasScaleBasedVisibilityFlag="1" simplifyLocal="1" scaleBasedLabelVisibilityFlag="0">
             <id>VilleMTP_MTP_Quartiers_2011_432620130116112351546</id>
             <datasource>./data/vector/VilleMTP_MTP_Quartiers_2011_4326.shp</datasource>
             <title></title>
@@ -526,8 +1678,9 @@
                     <prop k="colors" v="10"/>
                     <prop k="schemeName" v="Paired"/>
                 </colorramp>
-                <rotation field=""/>
-                <sizescale field="" scalemethod="area"/>
+                <invertedcolorramp value="0"/>
+                <rotation/>
+                <sizescale scalemethod="area"/>
             </renderer-v2>
             <customproperties/>
             <blendMode>0</blendMode>
@@ -565,13 +1718,14 @@
             </edittypes>
             <editform>.</editform>
             <editforminit></editforminit>
+            <featformsuppress>0</featformsuppress>
             <annotationform>.</annotationform>
             <editorlayout>generatedlayout</editorlayout>
             <excludeAttributesWMS/>
             <excludeAttributesWFS/>
             <attributeactions/>
         </maplayer>
-        <maplayer minimumScale="-4.65661e-10" maximumScale="1e+08" minLabelScale="1" maxLabelScale="1e+08" geometry="Polygon" type="vector" hasScaleBasedVisibilityFlag="0" scaleBasedLabelVisibilityFlag="0">
+        <maplayer minimumScale="-4.65661e-10" maximumScale="1e+08" simplifyDrawingHints="1" minLabelScale="1" maxLabelScale="1e+08" simplifyDrawingTol="1" geometry="Polygon" simplifyMaxScale="1" type="vector" hasScaleBasedVisibilityFlag="0" simplifyLocal="1" scaleBasedLabelVisibilityFlag="0">
             <id>VilleMTP_MTP_Quartiers_2011_432620130116112610876</id>
             <datasource>./data/vector/VilleMTP_MTP_Quartiers_2011_4326.shp</datasource>
             <title></title>
@@ -722,8 +1876,9 @@
                     <prop k="colors" v="10"/>
                     <prop k="schemeName" v="Paired"/>
                 </colorramp>
-                <rotation field=""/>
-                <sizescale field="" scalemethod="area"/>
+                <invertedcolorramp value="0"/>
+                <rotation/>
+                <sizescale scalemethod="area"/>
             </renderer-v2>
             <customproperties>
                 <property key="labeling" value="pal"/>
@@ -888,6 +2043,7 @@
             </edittypes>
             <editform>.</editform>
             <editforminit></editforminit>
+            <featformsuppress>0</featformsuppress>
             <annotationform>.</annotationform>
             <editorlayout>generatedlayout</editorlayout>
             <aliases>
@@ -899,7 +2055,7 @@
             <excludeAttributesWFS/>
             <attributeactions/>
         </maplayer>
-        <maplayer minimumScale="-4.65661e-10" maximumScale="1e+08" minLabelScale="0" maxLabelScale="1e+08" geometry="Polygon" type="vector" hasScaleBasedVisibilityFlag="0" scaleBasedLabelVisibilityFlag="0">
+        <maplayer minimumScale="-4.65661e-10" maximumScale="1e+08" simplifyDrawingHints="1" minLabelScale="0" maxLabelScale="1e+08" simplifyDrawingTol="1" geometry="Polygon" simplifyMaxScale="1" type="vector" hasScaleBasedVisibilityFlag="0" simplifyLocal="1" scaleBasedLabelVisibilityFlag="0">
             <id>VilleMTP_MTP_SousQuartiers_201120130929113137811</id>
             <datasource>./data/vector/VilleMTP_MTP_SousQuartiers_2011.shp</datasource>
             <title>Sous-Quartiers</title>
@@ -940,8 +2096,8 @@
                         </layer>
                     </symbol>
                 </symbols>
-                <rotation field=""/>
-                <sizescale field="" scalemethod="area"/>
+                <rotation/>
+                <sizescale scalemethod="area"/>
             </renderer-v2>
             <customproperties>
                 <property key="labeling" value="pal"/>
@@ -1114,6 +2270,7 @@
             </edittypes>
             <editform>.</editform>
             <editforminit></editforminit>
+            <featformsuppress>0</featformsuppress>
             <annotationform>.</annotationform>
             <editorlayout>generatedlayout</editorlayout>
             <aliases>
@@ -1130,7 +2287,7 @@
             <excludeAttributesWFS/>
             <attributeactions/>
         </maplayer>
-        <maplayer minimumScale="0" maximumScale="40001" minLabelScale="1" maxLabelScale="1e+08" geometry="Line" type="vector" hasScaleBasedVisibilityFlag="1" scaleBasedLabelVisibilityFlag="0">
+        <maplayer minimumScale="0" maximumScale="40001" simplifyDrawingHints="1" minLabelScale="1" maxLabelScale="1e+08" simplifyDrawingTol="1" geometry="Line" simplifyMaxScale="1" type="vector" hasScaleBasedVisibilityFlag="1" simplifyLocal="1" scaleBasedLabelVisibilityFlag="0">
             <id>bus20121102133611751</id>
             <datasource>./data/vector/bus.shp</datasource>
             <title>Bus lines</title>
@@ -1195,6 +2352,7 @@
                             <prop k="color" v="151,55,161,255"/>
                             <prop k="customdash" v="5;2"/>
                             <prop k="customdash_unit" v="MM"/>
+                            <prop k="draw_inside_polygon" v="0"/>
                             <prop k="joinstyle" v="bevel"/>
                             <prop k="offset" v="0"/>
                             <prop k="offset_unit" v="MM"/>
@@ -1210,6 +2368,7 @@
                             <prop k="color" v="192,31,50,255"/>
                             <prop k="customdash" v="5;2"/>
                             <prop k="customdash_unit" v="MM"/>
+                            <prop k="draw_inside_polygon" v="0"/>
                             <prop k="joinstyle" v="bevel"/>
                             <prop k="offset" v="0"/>
                             <prop k="offset_unit" v="MM"/>
@@ -1225,6 +2384,7 @@
                             <prop k="color" v="153,223,249,255"/>
                             <prop k="customdash" v="5;2"/>
                             <prop k="customdash_unit" v="MM"/>
+                            <prop k="draw_inside_polygon" v="0"/>
                             <prop k="joinstyle" v="bevel"/>
                             <prop k="offset" v="0"/>
                             <prop k="offset_unit" v="MM"/>
@@ -1240,6 +2400,7 @@
                             <prop k="color" v="153,223,249,255"/>
                             <prop k="customdash" v="5;2"/>
                             <prop k="customdash_unit" v="MM"/>
+                            <prop k="draw_inside_polygon" v="0"/>
                             <prop k="joinstyle" v="bevel"/>
                             <prop k="offset" v="0"/>
                             <prop k="offset_unit" v="MM"/>
@@ -1255,6 +2416,7 @@
                             <prop k="color" v="153,223,249,255"/>
                             <prop k="customdash" v="5;2"/>
                             <prop k="customdash_unit" v="MM"/>
+                            <prop k="draw_inside_polygon" v="0"/>
                             <prop k="joinstyle" v="bevel"/>
                             <prop k="offset" v="0"/>
                             <prop k="offset_unit" v="MM"/>
@@ -1270,6 +2432,7 @@
                             <prop k="color" v="153,223,249,255"/>
                             <prop k="customdash" v="5;2"/>
                             <prop k="customdash_unit" v="MM"/>
+                            <prop k="draw_inside_polygon" v="0"/>
                             <prop k="joinstyle" v="bevel"/>
                             <prop k="offset" v="0"/>
                             <prop k="offset_unit" v="MM"/>
@@ -1285,6 +2448,7 @@
                             <prop k="color" v="153,223,249,255"/>
                             <prop k="customdash" v="5;2"/>
                             <prop k="customdash_unit" v="MM"/>
+                            <prop k="draw_inside_polygon" v="0"/>
                             <prop k="joinstyle" v="bevel"/>
                             <prop k="offset" v="0"/>
                             <prop k="offset_unit" v="MM"/>
@@ -1300,6 +2464,7 @@
                             <prop k="color" v="153,223,249,255"/>
                             <prop k="customdash" v="5;2"/>
                             <prop k="customdash_unit" v="MM"/>
+                            <prop k="draw_inside_polygon" v="0"/>
                             <prop k="joinstyle" v="bevel"/>
                             <prop k="offset" v="0"/>
                             <prop k="offset_unit" v="MM"/>
@@ -1315,6 +2480,7 @@
                             <prop k="color" v="153,223,249,255"/>
                             <prop k="customdash" v="5;2"/>
                             <prop k="customdash_unit" v="MM"/>
+                            <prop k="draw_inside_polygon" v="0"/>
                             <prop k="joinstyle" v="bevel"/>
                             <prop k="offset" v="0"/>
                             <prop k="offset_unit" v="MM"/>
@@ -1330,6 +2496,7 @@
                             <prop k="color" v="153,223,249,255"/>
                             <prop k="customdash" v="5;2"/>
                             <prop k="customdash_unit" v="MM"/>
+                            <prop k="draw_inside_polygon" v="0"/>
                             <prop k="joinstyle" v="bevel"/>
                             <prop k="offset" v="0"/>
                             <prop k="offset_unit" v="MM"/>
@@ -1345,6 +2512,7 @@
                             <prop k="color" v="153,223,249,255"/>
                             <prop k="customdash" v="5;2"/>
                             <prop k="customdash_unit" v="MM"/>
+                            <prop k="draw_inside_polygon" v="0"/>
                             <prop k="joinstyle" v="bevel"/>
                             <prop k="offset" v="0"/>
                             <prop k="offset_unit" v="MM"/>
@@ -1360,6 +2528,7 @@
                             <prop k="color" v="153,223,249,255"/>
                             <prop k="customdash" v="5;2"/>
                             <prop k="customdash_unit" v="MM"/>
+                            <prop k="draw_inside_polygon" v="0"/>
                             <prop k="joinstyle" v="bevel"/>
                             <prop k="offset" v="0"/>
                             <prop k="offset_unit" v="MM"/>
@@ -1375,6 +2544,7 @@
                             <prop k="color" v="153,223,249,255"/>
                             <prop k="customdash" v="5;2"/>
                             <prop k="customdash_unit" v="MM"/>
+                            <prop k="draw_inside_polygon" v="0"/>
                             <prop k="joinstyle" v="bevel"/>
                             <prop k="offset" v="0"/>
                             <prop k="offset_unit" v="MM"/>
@@ -1390,6 +2560,7 @@
                             <prop k="color" v="153,223,249,255"/>
                             <prop k="customdash" v="5;2"/>
                             <prop k="customdash_unit" v="MM"/>
+                            <prop k="draw_inside_polygon" v="0"/>
                             <prop k="joinstyle" v="bevel"/>
                             <prop k="offset" v="0"/>
                             <prop k="offset_unit" v="MM"/>
@@ -1405,6 +2576,7 @@
                             <prop k="color" v="153,223,249,255"/>
                             <prop k="customdash" v="5;2"/>
                             <prop k="customdash_unit" v="MM"/>
+                            <prop k="draw_inside_polygon" v="0"/>
                             <prop k="joinstyle" v="bevel"/>
                             <prop k="offset" v="0"/>
                             <prop k="offset_unit" v="MM"/>
@@ -1420,6 +2592,7 @@
                             <prop k="color" v="153,223,249,255"/>
                             <prop k="customdash" v="5;2"/>
                             <prop k="customdash_unit" v="MM"/>
+                            <prop k="draw_inside_polygon" v="0"/>
                             <prop k="joinstyle" v="bevel"/>
                             <prop k="offset" v="0"/>
                             <prop k="offset_unit" v="MM"/>
@@ -1435,6 +2608,7 @@
                             <prop k="color" v="153,223,249,255"/>
                             <prop k="customdash" v="5;2"/>
                             <prop k="customdash_unit" v="MM"/>
+                            <prop k="draw_inside_polygon" v="0"/>
                             <prop k="joinstyle" v="bevel"/>
                             <prop k="offset" v="0"/>
                             <prop k="offset_unit" v="MM"/>
@@ -1450,6 +2624,7 @@
                             <prop k="color" v="153,223,249,255"/>
                             <prop k="customdash" v="5;2"/>
                             <prop k="customdash_unit" v="MM"/>
+                            <prop k="draw_inside_polygon" v="0"/>
                             <prop k="joinstyle" v="bevel"/>
                             <prop k="offset" v="0"/>
                             <prop k="offset_unit" v="MM"/>
@@ -1465,6 +2640,7 @@
                             <prop k="color" v="251,189,9,255"/>
                             <prop k="customdash" v="5;2"/>
                             <prop k="customdash_unit" v="MM"/>
+                            <prop k="draw_inside_polygon" v="0"/>
                             <prop k="joinstyle" v="bevel"/>
                             <prop k="offset" v="0"/>
                             <prop k="offset_unit" v="MM"/>
@@ -1480,6 +2656,7 @@
                             <prop k="color" v="0,166,80,255"/>
                             <prop k="customdash" v="5;2"/>
                             <prop k="customdash_unit" v="MM"/>
+                            <prop k="draw_inside_polygon" v="0"/>
                             <prop k="joinstyle" v="bevel"/>
                             <prop k="offset" v="0"/>
                             <prop k="offset_unit" v="MM"/>
@@ -1495,6 +2672,7 @@
                             <prop k="color" v="179,144,207,255"/>
                             <prop k="customdash" v="5;2"/>
                             <prop k="customdash_unit" v="MM"/>
+                            <prop k="draw_inside_polygon" v="0"/>
                             <prop k="joinstyle" v="bevel"/>
                             <prop k="offset" v="0"/>
                             <prop k="offset_unit" v="MM"/>
@@ -1510,6 +2688,7 @@
                             <prop k="color" v="162,73,42,255"/>
                             <prop k="customdash" v="5;2"/>
                             <prop k="customdash_unit" v="MM"/>
+                            <prop k="draw_inside_polygon" v="0"/>
                             <prop k="joinstyle" v="bevel"/>
                             <prop k="offset" v="0"/>
                             <prop k="offset_unit" v="MM"/>
@@ -1525,6 +2704,7 @@
                             <prop k="color" v="102,199,89,255"/>
                             <prop k="customdash" v="5;2"/>
                             <prop k="customdash_unit" v="MM"/>
+                            <prop k="draw_inside_polygon" v="0"/>
                             <prop k="joinstyle" v="bevel"/>
                             <prop k="offset" v="0"/>
                             <prop k="offset_unit" v="MM"/>
@@ -1540,6 +2720,7 @@
                             <prop k="color" v="246,128,198,255"/>
                             <prop k="customdash" v="5;2"/>
                             <prop k="customdash_unit" v="MM"/>
+                            <prop k="draw_inside_polygon" v="0"/>
                             <prop k="joinstyle" v="bevel"/>
                             <prop k="offset" v="0"/>
                             <prop k="offset_unit" v="MM"/>
@@ -1555,6 +2736,7 @@
                             <prop k="color" v="0,0,0,255"/>
                             <prop k="customdash" v="5;2"/>
                             <prop k="customdash_unit" v="MM"/>
+                            <prop k="draw_inside_polygon" v="0"/>
                             <prop k="joinstyle" v="bevel"/>
                             <prop k="offset" v="0"/>
                             <prop k="offset_unit" v="MM"/>
@@ -1570,6 +2752,7 @@
                             <prop k="color" v="153,223,249,255"/>
                             <prop k="customdash" v="5;2"/>
                             <prop k="customdash_unit" v="MM"/>
+                            <prop k="draw_inside_polygon" v="0"/>
                             <prop k="joinstyle" v="bevel"/>
                             <prop k="offset" v="0"/>
                             <prop k="offset_unit" v="MM"/>
@@ -1585,6 +2768,7 @@
                             <prop k="color" v="192,210,21,255"/>
                             <prop k="customdash" v="5;2"/>
                             <prop k="customdash_unit" v="MM"/>
+                            <prop k="draw_inside_polygon" v="0"/>
                             <prop k="joinstyle" v="bevel"/>
                             <prop k="offset" v="0"/>
                             <prop k="offset_unit" v="MM"/>
@@ -1600,6 +2784,7 @@
                             <prop k="color" v="238,25,152,255"/>
                             <prop k="customdash" v="5;2"/>
                             <prop k="customdash_unit" v="MM"/>
+                            <prop k="draw_inside_polygon" v="0"/>
                             <prop k="joinstyle" v="bevel"/>
                             <prop k="offset" v="0"/>
                             <prop k="offset_unit" v="MM"/>
@@ -1615,6 +2800,7 @@
                             <prop k="color" v="230,242,72,255"/>
                             <prop k="customdash" v="5;2"/>
                             <prop k="customdash_unit" v="MM"/>
+                            <prop k="draw_inside_polygon" v="0"/>
                             <prop k="joinstyle" v="bevel"/>
                             <prop k="offset" v="0"/>
                             <prop k="offset_unit" v="MM"/>
@@ -1630,6 +2816,7 @@
                             <prop k="color" v="153,223,249,255"/>
                             <prop k="customdash" v="5;2"/>
                             <prop k="customdash_unit" v="MM"/>
+                            <prop k="draw_inside_polygon" v="0"/>
                             <prop k="joinstyle" v="bevel"/>
                             <prop k="offset" v="0"/>
                             <prop k="offset_unit" v="MM"/>
@@ -1645,6 +2832,7 @@
                             <prop k="color" v="153,223,249,255"/>
                             <prop k="customdash" v="5;2"/>
                             <prop k="customdash_unit" v="MM"/>
+                            <prop k="draw_inside_polygon" v="0"/>
                             <prop k="joinstyle" v="bevel"/>
                             <prop k="offset" v="0"/>
                             <prop k="offset_unit" v="MM"/>
@@ -1662,6 +2850,7 @@
                             <prop k="color" v="210,128,197,255"/>
                             <prop k="customdash" v="5;2"/>
                             <prop k="customdash_unit" v="MM"/>
+                            <prop k="draw_inside_polygon" v="0"/>
                             <prop k="joinstyle" v="bevel"/>
                             <prop k="offset" v="0"/>
                             <prop k="offset_unit" v="MM"/>
@@ -1681,8 +2870,9 @@
                     <prop k="valMax" v="255"/>
                     <prop k="valMin" v="0"/>
                 </colorramp>
-                <rotation field=""/>
-                <sizescale field="" scalemethod="area"/>
+                <invertedcolorramp value="0"/>
+                <rotation/>
+                <sizescale scalemethod="area"/>
             </renderer-v2>
             <customproperties/>
             <blendMode>0</blendMode>
@@ -1721,13 +2911,14 @@
             </edittypes>
             <editform>.</editform>
             <editforminit></editforminit>
+            <featformsuppress>0</featformsuppress>
             <annotationform>.</annotationform>
             <editorlayout>generatedlayout</editorlayout>
             <excludeAttributesWMS/>
             <excludeAttributesWFS/>
             <attributeactions/>
         </maplayer>
-        <maplayer minimumScale="0" maximumScale="15000" minLabelScale="1" maxLabelScale="1e+08" geometry="Point" type="vector" hasScaleBasedVisibilityFlag="1" scaleBasedLabelVisibilityFlag="0">
+        <maplayer minimumScale="0" maximumScale="15000" simplifyDrawingHints="1" minLabelScale="1" maxLabelScale="1e+08" simplifyDrawingTol="1" geometry="Point" simplifyMaxScale="1" type="vector" hasScaleBasedVisibilityFlag="1" simplifyLocal="1" scaleBasedLabelVisibilityFlag="0">
             <id>bus_stops20121106170806413</id>
             <datasource>./data/vector/bus_stops.shp</datasource>
             <title></title>
@@ -1757,7 +2948,8 @@
                         <layer pass="0" class="SvgMarker" locked="0">
                             <prop k="angle" v="0"/>
                             <prop k="fill" v="#000000"/>
-                            <prop k="name" v="/transport/transport_bus_stop.svg"/>
+                            <prop k="horizontal_anchor_point" v="1"/>
+                            <prop k="name" v="transport/transport_bus_stop.svg"/>
                             <prop k="offset" v="0,0"/>
                             <prop k="offset_unit" v="MM"/>
                             <prop k="outline" v="#000000"/>
@@ -1765,11 +2957,12 @@
                             <prop k="outline_width_unit" v="MM"/>
                             <prop k="size" v="4"/>
                             <prop k="size_unit" v="MM"/>
+                            <prop k="vertical_anchor_point" v="1"/>
                         </layer>
                     </symbol>
                 </symbols>
-                <rotation field=""/>
-                <sizescale field="" scalemethod="area"/>
+                <rotation/>
+                <sizescale scalemethod="area"/>
             </renderer-v2>
             <customproperties/>
             <blendMode>0</blendMode>
@@ -1813,6 +3006,7 @@
             </edittypes>
             <editform>.</editform>
             <editforminit></editforminit>
+            <featformsuppress>0</featformsuppress>
             <annotationform>.</annotationform>
             <editorlayout>generatedlayout</editorlayout>
             <aliases>
@@ -1824,7 +3018,7 @@
             <excludeAttributesWFS/>
             <attributeactions/>
         </maplayer>
-        <maplayer minimumScale="0" maximumScale="1e+08" minLabelScale="1" maxLabelScale="1e+08" geometry="Line" type="vector" hasScaleBasedVisibilityFlag="0" scaleBasedLabelVisibilityFlag="0">
+        <maplayer minimumScale="0" maximumScale="1e+08" simplifyDrawingHints="1" minLabelScale="1" maxLabelScale="1e+08" simplifyDrawingTol="1" geometry="Line" simplifyMaxScale="1" type="vector" hasScaleBasedVisibilityFlag="0" simplifyLocal="1" scaleBasedLabelVisibilityFlag="0">
             <id>edition_line20130409161630329</id>
             <datasource>dbname='./edition/edition_db.sqlite' table="edition_line" (geom) sql=</datasource>
             <title>Bicycle rides</title>
@@ -1861,6 +3055,7 @@
                             <prop k="color" v="0,255,0,255"/>
                             <prop k="customdash" v="5;2"/>
                             <prop k="customdash_unit" v="MM"/>
+                            <prop k="draw_inside_polygon" v="0"/>
                             <prop k="joinstyle" v="bevel"/>
                             <prop k="offset" v="0"/>
                             <prop k="offset_unit" v="MM"/>
@@ -1876,6 +3071,7 @@
                             <prop k="color" v="255,255,0,255"/>
                             <prop k="customdash" v="5;2"/>
                             <prop k="customdash_unit" v="MM"/>
+                            <prop k="draw_inside_polygon" v="0"/>
                             <prop k="joinstyle" v="bevel"/>
                             <prop k="offset" v="0"/>
                             <prop k="offset_unit" v="MM"/>
@@ -1891,6 +3087,7 @@
                             <prop k="color" v="255,0,0,255"/>
                             <prop k="customdash" v="5;2"/>
                             <prop k="customdash_unit" v="MM"/>
+                            <prop k="draw_inside_polygon" v="0"/>
                             <prop k="joinstyle" v="bevel"/>
                             <prop k="offset" v="0"/>
                             <prop k="offset_unit" v="MM"/>
@@ -1908,6 +3105,7 @@
                             <prop k="color" v="254,208,79,255"/>
                             <prop k="customdash" v="5;2"/>
                             <prop k="customdash_unit" v="MM"/>
+                            <prop k="draw_inside_polygon" v="0"/>
                             <prop k="joinstyle" v="bevel"/>
                             <prop k="offset" v="0"/>
                             <prop k="offset_unit" v="MM"/>
@@ -1927,8 +3125,9 @@
                     <prop k="valMax" v="255"/>
                     <prop k="valMin" v="0"/>
                 </colorramp>
-                <rotation field=""/>
-                <sizescale field="" scalemethod="area"/>
+                <invertedcolorramp value="0"/>
+                <rotation/>
+                <sizescale scalemethod="area"/>
             </renderer-v2>
             <customproperties/>
             <blendMode>0</blendMode>
@@ -1964,13 +3163,14 @@
             </edittypes>
             <editform>.</editform>
             <editforminit></editforminit>
+            <featformsuppress>0</featformsuppress>
             <annotationform>.</annotationform>
             <editorlayout>generatedlayout</editorlayout>
             <excludeAttributesWMS/>
             <excludeAttributesWFS/>
             <attributeactions/>
         </maplayer>
-        <maplayer minimumScale="0" maximumScale="1e+08" minLabelScale="1" maxLabelScale="1e+08" geometry="Point" type="vector" hasScaleBasedVisibilityFlag="0" scaleBasedLabelVisibilityFlag="0">
+        <maplayer minimumScale="0" maximumScale="1e+08" simplifyDrawingHints="1" minLabelScale="1" maxLabelScale="1e+08" simplifyDrawingTol="1" geometry="Point" simplifyMaxScale="1" type="vector" hasScaleBasedVisibilityFlag="0" simplifyLocal="1" scaleBasedLabelVisibilityFlag="0">
             <id>edition_point20130118171631518</id>
             <datasource>dbname='./edition/edition_db.sqlite' table="edition_point" (geometry) sql=</datasource>
             <title>Points of interest</title>
@@ -2006,7 +3206,8 @@
                         <layer pass="0" class="SvgMarker" locked="0">
                             <prop k="angle" v="0"/>
                             <prop k="fill" v="#000000"/>
-                            <prop k="name" v="/entertainment/amenity=cafe.svg"/>
+                            <prop k="horizontal_anchor_point" v="1"/>
+                            <prop k="name" v="entertainment/amenity=cafe.svg"/>
                             <prop k="offset" v="0,0"/>
                             <prop k="offset_unit" v="MM"/>
                             <prop k="outline" v="#000000"/>
@@ -2014,13 +3215,15 @@
                             <prop k="outline_width_unit" v="MM"/>
                             <prop k="size" v="5"/>
                             <prop k="size_unit" v="MM"/>
+                            <prop k="vertical_anchor_point" v="1"/>
                         </layer>
                     </symbol>
                     <symbol alpha="1" type="marker" name="1">
                         <layer pass="0" class="SvgMarker" locked="0">
                             <prop k="angle" v="0"/>
                             <prop k="fill" v="#000000"/>
-                            <prop k="name" v="/services/amenity=pharmacy,dispensing=yes.svg"/>
+                            <prop k="horizontal_anchor_point" v="1"/>
+                            <prop k="name" v="services/amenity=pharmacy,dispensing=yes.svg"/>
                             <prop k="offset" v="0,0"/>
                             <prop k="offset_unit" v="MM"/>
                             <prop k="outline" v="#000000"/>
@@ -2028,13 +3231,15 @@
                             <prop k="outline_width_unit" v="MM"/>
                             <prop k="size" v="5"/>
                             <prop k="size_unit" v="MM"/>
+                            <prop k="vertical_anchor_point" v="1"/>
                         </layer>
                     </symbol>
                     <symbol alpha="1" type="marker" name="2">
                         <layer pass="0" class="SvgMarker" locked="0">
                             <prop k="angle" v="0"/>
                             <prop k="fill" v="#000000"/>
-                            <prop k="name" v="/transport/highway=bus_stop.svg"/>
+                            <prop k="horizontal_anchor_point" v="1"/>
+                            <prop k="name" v="transport/highway=bus_stop.svg"/>
                             <prop k="offset" v="0,0"/>
                             <prop k="offset_unit" v="MM"/>
                             <prop k="outline" v="#000000"/>
@@ -2042,13 +3247,15 @@
                             <prop k="outline_width_unit" v="MM"/>
                             <prop k="size" v="5"/>
                             <prop k="size_unit" v="MM"/>
+                            <prop k="vertical_anchor_point" v="1"/>
                         </layer>
                     </symbol>
                     <symbol alpha="1" type="marker" name="3">
                         <layer pass="0" class="SvgMarker" locked="0">
                             <prop k="angle" v="0"/>
                             <prop k="fill" v="#000000"/>
-                            <prop k="name" v=""/>
+                            <prop k="horizontal_anchor_point" v="1"/>
+                            <prop k="name" v="/"/>
                             <prop k="offset" v="0,0"/>
                             <prop k="offset_unit" v="MM"/>
                             <prop k="outline" v="#000000"/>
@@ -2056,6 +3263,7 @@
                             <prop k="outline_width_unit" v="MM"/>
                             <prop k="size" v="5"/>
                             <prop k="size_unit" v="MM"/>
+                            <prop k="vertical_anchor_point" v="1"/>
                         </layer>
                     </symbol>
                 </symbols>
@@ -2065,14 +3273,17 @@
                             <prop k="angle" v="0"/>
                             <prop k="color" v="91,198,110,255"/>
                             <prop k="color_border" v="0,0,0,255"/>
+                            <prop k="horizontal_anchor_point" v="1"/>
                             <prop k="name" v="circle"/>
                             <prop k="offset" v="0,0"/>
                             <prop k="offset_unit" v="MM"/>
+                            <prop k="outline_style" v="solid"/>
                             <prop k="outline_width" v="0"/>
                             <prop k="outline_width_unit" v="MM"/>
                             <prop k="scale_method" v="area"/>
                             <prop k="size" v="2"/>
                             <prop k="size_unit" v="MM"/>
+                            <prop k="vertical_anchor_point" v="1"/>
                         </layer>
                     </symbol>
                 </source-symbol>
@@ -2085,8 +3296,9 @@
                     <prop k="valMax" v="255"/>
                     <prop k="valMin" v="0"/>
                 </colorramp>
-                <rotation field=""/>
-                <sizescale field="" scalemethod="area"/>
+                <invertedcolorramp value="0"/>
+                <rotation/>
+                <sizescale scalemethod="area"/>
             </renderer-v2>
             <customproperties>
                 <property key="labeling" value="pal"/>
@@ -2160,13 +3372,14 @@
             </edittypes>
             <editform>.</editform>
             <editforminit></editforminit>
+            <featformsuppress>0</featformsuppress>
             <annotationform>.</annotationform>
             <editorlayout>generatedlayout</editorlayout>
             <excludeAttributesWMS/>
             <excludeAttributesWFS/>
             <attributeactions/>
         </maplayer>
-        <maplayer minimumScale="0" maximumScale="1e+08" minLabelScale="1" maxLabelScale="1e+08" geometry="Polygon" type="vector" hasScaleBasedVisibilityFlag="0" scaleBasedLabelVisibilityFlag="0">
+        <maplayer minimumScale="0" maximumScale="1e+08" simplifyDrawingHints="1" minLabelScale="1" maxLabelScale="1e+08" simplifyDrawingTol="1" geometry="Polygon" simplifyMaxScale="1" type="vector" hasScaleBasedVisibilityFlag="0" simplifyLocal="1" scaleBasedLabelVisibilityFlag="0">
             <id>edition_polygon20130409114333776</id>
             <datasource>dbname='./edition/edition_db.sqlite' table="edition_polygon" (geom) sql=</datasource>
             <title></title>
@@ -2244,8 +3457,9 @@
                     <prop k="valMax" v="255"/>
                     <prop k="valMin" v="0"/>
                 </colorramp>
-                <rotation field=""/>
-                <sizescale field="" scalemethod="area"/>
+                <invertedcolorramp value="0"/>
+                <rotation/>
+                <sizescale scalemethod="area"/>
             </renderer-v2>
             <customproperties/>
             <blendMode>0</blendMode>
@@ -2282,13 +3496,14 @@
             </edittypes>
             <editform>.</editform>
             <editforminit></editforminit>
+            <featformsuppress>0</featformsuppress>
             <annotationform>.</annotationform>
             <editorlayout>generatedlayout</editorlayout>
             <excludeAttributesWMS/>
             <excludeAttributesWFS/>
             <attributeactions/>
         </maplayer>
-        <maplayer minimumScale="0" maximumScale="1e+08" minLabelScale="1" maxLabelScale="1e+08" geometry="Line" type="vector" hasScaleBasedVisibilityFlag="1" scaleBasedLabelVisibilityFlag="0">
+        <maplayer minimumScale="0" maximumScale="1e+08" simplifyDrawingHints="1" minLabelScale="1" maxLabelScale="1e+08" simplifyDrawingTol="1" geometry="Line" simplifyMaxScale="1" type="vector" hasScaleBasedVisibilityFlag="1" simplifyLocal="1" scaleBasedLabelVisibilityFlag="0">
             <id>tram20121031171456234</id>
             <datasource>./data/vector/tram.shp</datasource>
             <title>Tramway lines</title>
@@ -2325,6 +3540,7 @@
                             <prop k="color" v="0,0,255,255"/>
                             <prop k="customdash" v="5;2"/>
                             <prop k="customdash_unit" v="MM"/>
+                            <prop k="draw_inside_polygon" v="0"/>
                             <prop k="joinstyle" v="bevel"/>
                             <prop k="offset" v="0"/>
                             <prop k="offset_unit" v="MM"/>
@@ -2340,6 +3556,7 @@
                             <prop k="color" v="255,85,0,255"/>
                             <prop k="customdash" v="5;2"/>
                             <prop k="customdash_unit" v="MM"/>
+                            <prop k="draw_inside_polygon" v="0"/>
                             <prop k="joinstyle" v="bevel"/>
                             <prop k="offset" v="0"/>
                             <prop k="offset_unit" v="MM"/>
@@ -2355,6 +3572,7 @@
                             <prop k="color" v="221,195,44,255"/>
                             <prop k="customdash" v="5;2"/>
                             <prop k="customdash_unit" v="MM"/>
+                            <prop k="draw_inside_polygon" v="0"/>
                             <prop k="joinstyle" v="bevel"/>
                             <prop k="offset" v="0"/>
                             <prop k="offset_unit" v="MM"/>
@@ -2372,6 +3590,7 @@
                             <prop k="color" v="91,8,151,255"/>
                             <prop k="customdash" v="5;2"/>
                             <prop k="customdash_unit" v="MM"/>
+                            <prop k="draw_inside_polygon" v="0"/>
                             <prop k="joinstyle" v="bevel"/>
                             <prop k="offset" v="0"/>
                             <prop k="offset_unit" v="MM"/>
@@ -2386,8 +3605,9 @@
                     <prop k="colors" v="10"/>
                     <prop k="schemeName" v="Paired"/>
                 </colorramp>
-                <rotation field=""/>
-                <sizescale field="" scalemethod="area"/>
+                <invertedcolorramp value="0"/>
+                <rotation/>
+                <sizescale scalemethod="area"/>
             </renderer-v2>
             <customproperties/>
             <blendMode>0</blendMode>
@@ -2431,6 +3651,7 @@
             </edittypes>
             <editform>.</editform>
             <editforminit></editforminit>
+            <featformsuppress>0</featformsuppress>
             <annotationform>.</annotationform>
             <editorlayout>generatedlayout</editorlayout>
             <aliases>
@@ -2440,7 +3661,7 @@
             <excludeAttributesWFS/>
             <attributeactions/>
         </maplayer>
-        <maplayer minimumScale="0" maximumScale="50001" minLabelScale="1" maxLabelScale="1e+08" geometry="Point" type="vector" hasScaleBasedVisibilityFlag="1" scaleBasedLabelVisibilityFlag="0">
+        <maplayer minimumScale="0" maximumScale="50001" simplifyDrawingHints="1" minLabelScale="1" maxLabelScale="1e+08" simplifyDrawingTol="1" geometry="Point" simplifyMaxScale="1" type="vector" hasScaleBasedVisibilityFlag="1" simplifyLocal="1" scaleBasedLabelVisibilityFlag="0">
             <id>tram_stops20110923123319267</id>
             <datasource>./data/vector/tram_stops.geojson</datasource>
             <title></title>
@@ -2470,7 +3691,8 @@
                         <layer pass="0" class="SvgMarker" locked="0">
                             <prop k="angle" v="0"/>
                             <prop k="fill" v="#000000"/>
-                            <prop k="name" v="/transport/transport_train_station2.svg"/>
+                            <prop k="horizontal_anchor_point" v="1"/>
+                            <prop k="name" v="transport/transport_train_station2.svg"/>
                             <prop k="offset" v="0,0"/>
                             <prop k="offset_unit" v="MM"/>
                             <prop k="outline" v="#000000"/>
@@ -2478,11 +3700,12 @@
                             <prop k="outline_width_unit" v="MM"/>
                             <prop k="size" v="4"/>
                             <prop k="size_unit" v="MM"/>
+                            <prop k="vertical_anchor_point" v="1"/>
                         </layer>
                     </symbol>
                 </symbols>
-                <rotation field=""/>
-                <sizescale field="" scalemethod="area"/>
+                <rotation/>
+                <sizescale scalemethod="area"/>
             </renderer-v2>
             <customproperties/>
             <blendMode>0</blendMode>
@@ -2520,6 +3743,7 @@
             </edittypes>
             <editform>.</editform>
             <editforminit></editforminit>
+            <featformsuppress>0</featformsuppress>
             <annotationform>.</annotationform>
             <editorlayout>generatedlayout</editorlayout>
             <excludeAttributesWMS/>
@@ -2561,13 +3785,16 @@
             <value>VilleMTP_MTP_SousQuartiers_201120130929113137811</value>
         </WFSLayers>
         <WMSContactMail type="QString">info@3liz.com</WMSContactMail>
+        <WMSRestrictedComposers type="QStringList">
+            <value>Composeur1</value>
+        </WMSRestrictedComposers>
         <PositionPrecision>
             <DecimalPlaces type="int">2</DecimalPlaces>
             <Automatic type="bool">true</Automatic>
             <DegreeFormat type="QString">D</DegreeFormat>
         </PositionPrecision>
         <WMSContactPhone type="QString">+334 67 16 64 51</WMSContactPhone>
-        <WMSServiceCapabilities type="QString">True</WMSServiceCapabilities>
+        <WMSServiceCapabilities type="bool">true</WMSServiceCapabilities>
         <WMSServiceAbstract type="QString">Demo project with bus and tramway lines in Montpellier, France.
 Data is licensed under ODbl, OpenStreetMap contributors</WMSServiceAbstract>
         <WMSAddWktGeometry type="bool">false</WMSAddWktGeometry>
