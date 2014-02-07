@@ -445,7 +445,7 @@ class serviceCtrl extends jController {
     $configLayers = $this->project->getLayers();
 
     // Loop through the layers
-    $content = '';
+    $content = array();
     $ptemplate = 'view~popup';
     $lizmapCache = $this->lizmapCache;
     $popupClass = jClasses::getService('view~popup');
@@ -518,13 +518,14 @@ class serviceCtrl extends jController {
         $tpl = new jTpl();
         $tpl->assign('layerTitle', $layerTitle);
         $tpl->assign('popupContent', $popupFeatureContent);
-        $content.= $tpl->fetch('view~popup');
+        $content[] = $tpl->fetch('view~popup');
 
       } // loop features
 
     } // loop layers
 
-    return $content;
+    $content = array_reverse($content);
+    return implode( "\n", $content);
   }
 
 
