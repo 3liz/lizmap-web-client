@@ -206,6 +206,10 @@ class lizmapProject{
         (
           property_exists($configOptions,'googleTerrain')
           && $configOptions->googleTerrain == 'True'
+        ) ||
+        (
+          property_exists($configOptions,'externalSearch')
+          && $configOptions->externalSearch == 'google'
         )
       );
     }

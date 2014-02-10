@@ -1609,9 +1609,8 @@ var lizMap = function() {
       $('#measure-perimeter-menu').remove();
     }
 
-    if ( ('externalSearch' in configOptions)
-        && configOptions['externalSearch'] == 'nominatim')
-      addNominatimSearch();
+    if ( 'externalSearch' in configOptions )
+      addExternalSearch();
     else
       $('#nominatim-search').remove();
 
@@ -2344,7 +2343,6 @@ var lizMap = function() {
           $('#edition-menu form input[name="liz_wkt"]').val(evt.feature.geometry);
         },
         featureunselected: function(evt) {
-          console.log('featureunselected');
           var wkt = $('#edition-menu form input[name="liz_wkt"]').val();
           $.get(service.replace('getFeature','modifyFeature'),{
             layerId: editCtrls.click.layerId,
@@ -2971,53 +2969,176 @@ var lizMap = function() {
     });
   }
 
+  function updateExternalSearch( aHTML ) {
+    var wgs84 = new OpenLayers.Projection('EPSG:4326');
 
-  function addNominatimSearch() {
-    if ( !('nominatim' in lizUrls) ) {
-      $('#nominatim-search').remove();
+    $('#nominatim-search .dropdown-inner .items li > a').unbind('click');
+    $('#nominatim-search .dropdown-inner .items').html( aHTML );
+    $('#nominatim-search').addClass('open');
+    $('#nominatim-search .dropdown-inner .items li > a').click(function() {
+      var bbox = $(this).attr('href').replace('#','');
+      var bbox = OpenLayers.Bounds.fromString(bbox);
+      bbox.transform(wgs84, map.getProjectionObject());
+      map.zoomToExtent(bbox);
+
+      var locateLayer = map.getLayersByName('locatelayer');
+      if (locateLayer.length != 0) {
+        locateLayer = locateLayer[0];
+        locateLayer.destroyFeatures();
+        locateLayer.setVisibility(true);
+        locateLayer.addFeatures([
+          new OpenLayers.Feature.Vector(bbox.toGeometry().getCentroid())
+          ]);
+      }
+
+      $('#nominatim-search').removeClass('open');
       return false;
-    }
-    var service = OpenLayers.Util.urlAppend(lizUrls.nominatim
-        ,OpenLayers.Util.getParameterString(lizUrls.params)
-    );
+    });
+    $('#nominatim-search .dropdown-inner span.close').click(function() {
+      $('#nominatim-search').removeClass('open');
+      return false;
+    });
+  }
+
+  /**
+   * PRIVATE function: addExternalSearch
+   * add external search capability
+   *
+   * Returns:
+   * {Boolean} external search is in the user interface
+   */
+  function addExternalSearch() {
+    var configOptions = config.options;
+
     // Search with nominatim
     var wgs84 = new OpenLayers.Projection('EPSG:4326');
     var extent = new OpenLayers.Bounds( map.maxExtent.toArray() );
     extent.transform(map.getProjectionObject(), wgs84);
+
+    // define external search service
+    var service = null
+    switch (configOptions['externalSearch']) {
+      case 'nominatim':
+        if ( 'nominatim' in lizUrls )
+          service = OpenLayers.Util.urlAppend(lizUrls.nominatim
+              ,OpenLayers.Util.getParameterString(lizUrls.params)
+              );
+        break;
+      case 'ign':
+        if ( 'ign' in lizUrls )
+          service = OpenLayers.Util.urlAppend(lizUrls.ign
+              ,OpenLayers.Util.getParameterString(lizUrls.params)
+              );
+        break;
+      case 'google':
+        if ( 'maps' in google && 'Geocoder' in google.maps )
+          service = new google.maps.Geocoder();
+        break;
+    }
+    // if no external search service found
+    // update ui
+    if ( service == null ) {
+      $('#nominatim-search').remove();
+      return false;
+    }
+
     $('#nominatim-search').submit(function(){
-      $('#nominatim-search .dropdown-inner .items').html('');
-      $.get(service
-        ,{"query":$('#search-query').val(),"bbox":extent.toBBOX()}
-        ,function(data) {
-          var text = '';
-          $.each(data, function(i, e){
-            var bbox = [
-              e.boundingbox[2],
-              e.boundingbox[0],
-              e.boundingbox[3],
-              e.boundingbox[1]
-            ];
-            bbox = new OpenLayers.Bounds(bbox);
-            if ( extent.intersectsBounds(bbox) )
-              text += '<li><a href="#'+bbox.toBBOX()+'">'+e.display_name+'</a></li>';
+      updateExternalSearch( '<li>'+lizDict['externalsearch.search']+'</li>' );
+      switch (configOptions['externalSearch']) {
+        case 'nominatim':
+          $.get(service
+            ,{"query":$('#search-query').val(),"bbox":extent.toBBOX()}
+            ,function(data) {
+              var text = '';
+              var count = 0;
+              $.each(data, function(i, e){
+                if (count > 9)
+                  return false;
+                var bbox = [
+                  e.boundingbox[2],
+                  e.boundingbox[0],
+                  e.boundingbox[3],
+                  e.boundingbox[1]
+                ];
+                bbox = new OpenLayers.Bounds(bbox);
+                if ( extent.intersectsBounds(bbox) ) {
+                  text += '<li><a href="#'+bbox.toBBOX()+'">'+e.display_name+'</a></li>';
+                  count++;
+                }
+              });
+              if (count != 0 && text != '')
+                updateExternalSearch( text );
+              else
+                updateExternalSearch( '<li>'+lizDict['externalsearch.notfound']+'</li>' );
+            }, 'json');
+          break;
+        case 'ign':
+          $.get(service
+            ,{"query":$('#search-query').val(),"bbox":extent.toBBOX()}
+            ,function(results) {
+              var text = '';
+              var count = 0;
+              $.each(results, function(i, e){
+                if (count > 9)
+                  return false;
+                var bbox = [
+                  e.bbox[0],
+                  e.bbox[1],
+                  e.bbox[2],
+                  e.bbox[3]
+                ];
+                bbox = new OpenLayers.Bounds(bbox);
+                if ( extent.intersectsBounds(bbox) ) {
+                  text += '<li><a href="#'+bbox.toBBOX()+'">'+e.formatted_address+'</a></li>';
+                  count++;
+                }
+              });
+              if (count != 0 && text != '')
+                updateExternalSearch( text );
+              else
+                updateExternalSearch( '<li>'+lizDict['externalsearch.notfound']+'</li>' );
+            }, 'json');
+          break;
+        case 'google':
+          service.geocode( { 
+            'address': $('#search-query').val(),
+            'bounds': new google.maps.LatLngBounds(
+              new google.maps.LatLng(extent.top,extent.left),
+              new google.maps.LatLng(extent.bottom,extent.right)
+              )
+          }, function(results, status) {
+            if (status == google.maps.GeocoderStatus.OK) {
+              var text = '';
+              var count = 0;
+              $.each(results, function(i, e){
+                if (count > 9)
+                  return false;
+                var bbox = [
+                  e.geometry.viewport.ia.b,
+                  e.geometry.viewport.ea.b,
+                  e.geometry.viewport.ia.d,
+                  e.geometry.viewport.ea.d
+                ];
+                bbox = new OpenLayers.Bounds(bbox);
+                if ( extent.intersectsBounds(bbox) ) {
+                  text += '<li><a href="#'+bbox.toBBOX()+'">'+e.formatted_address+'</a></li>';
+                  count++;
+                }
+              });
+              if (count != 0 && text != '')
+                updateExternalSearch( text );
+              else
+                updateExternalSearch( '<li>'+lizDict['externalsearch.notfound']+'</li>' );
+                //mAddMessage('Nothing Found','info',true);
+            } else
+              updateExternalSearch( '<li>'+lizDict['externalsearch.notfound']+'</li>' );
+              //mAddMessage('Nothing Found','info',true);
           });
-          if (text != '') {
-            $('#nominatim-search .dropdown-inner .items').html(text);
-            $('#nominatim-search').addClass('open');
-            $('#nominatim-search .dropdown-inner .items li > a').click(function() {
-              var bbox = $(this).attr('href').replace('#','');
-              var extent = OpenLayers.Bounds.fromString(bbox);
-              extent.transform(wgs84, map.getProjectionObject());
-              map.zoomToExtent(extent);
-              $('#nominatim-search').removeClass('open');
-              return false;
-            });
-          } else {
-            mAddMessage('Nothing Found','info',true);
-          }
-        }, 'json');
+          break;
+      }
       return false;
     });
+    return true;
   }
 
   /**

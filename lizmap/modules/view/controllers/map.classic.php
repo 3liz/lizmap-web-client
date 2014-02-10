@@ -105,6 +105,7 @@ class mapCtrl extends jController {
       "wms" => jUrl::get('lizmap~service:index'),
       "media" => jUrl::get('view~media:getMedia'),
       "nominatim" => jUrl::get('lizmap~osm:nominatim'),
+      "ign" => jUrl::get('lizmap~ign:address'),
       "edition" => jUrl::get('lizmap~edition:getFeature'),
       "permalink" => jUrl::getFull('view~map:index')
     );

@@ -105,9 +105,11 @@ body {
   margin: 0px;
   overflow: hidden;
 }
+#headermenu .dropdown-inner .items li {
+  padding: 0px 4px;
+}
 #headermenu .dropdown-inner .items li > a {
   display: block;
-  padding: 4px;
   overflow: hidden;
   color: rgb(51,51,51);
   white-space: normal;

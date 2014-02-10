@@ -1,6 +1,6 @@
 <div id="auth" class="navbar-inner">
   <div class="pull-right">
-    {if $externalSearch == 'nominatim'}
+    {if $externalSearch != ''}
     <form id="nominatim-search" class="navbar-search pull-left dropdown">
       <input id="search-query" type="text" class="search-query" placeholder="{@view~map.search.nominatim.placeholder@}"></input>
       <span class="search-icon">
@@ -14,6 +14,7 @@
           <div class="caret-inner"></div>
         </div>
         <div class="dropdown-inner">
+          <span class="close">×</span>
           <ul class="items"></ul>
         </div>
       </div>
