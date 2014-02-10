@@ -3606,6 +3606,29 @@ lizMap.events.on({
     }
     ,'mapcreated':function(evt){
       //console.log('mapcreated');
+      // Add empty baselayer to the map
+      if ( ('emptyBaselayer' in evt.config.options)
+         && evt.config.options.emptyBaselayer == 'True') {
+        // creating the empty base layer
+        layerConfig = {};
+        layerConfig.title = lizDict['baselayer.empty.title'];
+        layerConfig.name = 'emptyBaselayer';
+        evt.config.layers['emptyBaselayer'] = layerConfig;
+
+        evt.baselayers.push(new OpenLayers.Layer.Vector('emptyBaselayer',{
+          maxExtent: evt.map.maxExtent
+         ,maxScale: evt.map.maxScale
+         ,minScale: evt.map.minScale
+         ,numZoomLevels: evt.map.numZoomLevels
+         ,scales: evt.map.scales
+         ,projection: evt.map.projection
+         ,units: evt.map.projection.proj.units
+        }));
+        evt.map.allOverlays = false;
+      }
+
+      // Add OpenStreetMap, Google Maps, Bing Maps, IGN Geoportail
+      // baselayers to the map
       if (
     (('osmMapnik' in evt.config.options)
     && evt.config.options.osmMapnik == 'True') ||
@@ -4051,6 +4074,7 @@ lizMap.events.on({
             }
         }
 
+        // Add lizmap external baselayers
         for (id in evt.config['lizmapExternalBaselayers']) {
 
           var layerConfig = evt.config['lizmapExternalBaselayers'][id];
