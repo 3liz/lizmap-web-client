@@ -411,6 +411,7 @@ var lizMap = function() {
     }
 
     for (var i = 0, len = nested.nestedLayers.length; i<len; i++) {
+      var serviceUrl = service
       var layer = nested.nestedLayers[i];
       var layerConfig = config.layers[layer.name];
       var layerName = cleanName(layer.name);
@@ -432,16 +433,28 @@ var lizMap = function() {
         if (layerWmsParams.format != 'image/jpeg')
           layerWmsParams['transparent'] = true;
 
+        // Override WMS url if external WMS server
+        if (layerConfig.externalAccess ) {
+          var extConfig = layerConfig.externalAccess;
+          serviceUrl = extConfig.url;
+          layerWmsParams = {
+            layers: extConfig.layers
+            ,styles:(extConfig.styles) ? extConfig.styles : ''
+            ,crs:(extConfig.crs) ? extConfig.crs : 'EPSG:3857'
+            ,format:(extConfig.format) ? extConfig.format : 'image/png'
+            ,exceptions:'application/vnd.ogc.se_inimage'
+          }
+        }
+
         if (layerConfig.baseLayer == 'True') {
         // creating the base layer
-          baselayers.push(new OpenLayers.Layer.WMS(layerName,service
+          baselayers.push(new OpenLayers.Layer.WMS(layerName,serviceUrl
               ,layerWmsParams
               ,{isBaseLayer:true
                ,gutter:5
                ,buffer:0
                ,singleTile:(layerConfig.singleTile == 'True')
               }));
-
         }
         else if (layerConfig.type == 'layer' && layer.nestedLayers.length != 0) {
         // creating the layer because it's a layer and has children
@@ -449,7 +462,7 @@ var lizMap = function() {
           var maxScale = layerConfig.maxScale;
           // get the layer scale beccause, it has children
           var scales = getLayerScale(layer,null,null);
-          layers.push(new OpenLayers.Layer.WMS(layerName,service
+          layers.push(new OpenLayers.Layer.WMS(layerName,serviceUrl
               ,layerWmsParams
               ,{isBaseLayer:false
                ,minScale:scales.maxScale
@@ -464,7 +477,7 @@ var lizMap = function() {
         }
         else if (layerConfig.type == 'layer') {
         // creating the layer because it's a layer and has no children
-          layers.push(new OpenLayers.Layer.WMS(layerName,service
+          layers.push(new OpenLayers.Layer.WMS(layerName,serviceUrl
               ,layerWmsParams
               ,{isBaseLayer:false
                ,minScale:layerConfig.maxScale
