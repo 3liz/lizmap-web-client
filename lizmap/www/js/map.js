@@ -585,7 +585,8 @@ var lizMap = function() {
 
     html += '</tr>';
 
-    if (nodeConfig.type == 'layer') {
+    if (nodeConfig.type == 'layer'
+    && (!nodeConfig.noLegendImage || nodeConfig.noLegendImage != 'True')) {
       var url = getLayerLegendGraphicUrl(aNode.name, false);
 
       html += '<tr id="legend-'+aNode.name+'" class="child-of-layer-'+aNode.name+' legendGraphics">';
@@ -3113,7 +3114,7 @@ var lizMap = function() {
             }, 'json');
           break;
         case 'google':
-          service.geocode( { 
+          service.geocode( {
             'address': $('#search-query').val(),
             'bounds': new google.maps.LatLngBounds(
               new google.maps.LatLng(extent.top,extent.left),
@@ -3423,10 +3424,10 @@ var lizMap = function() {
               $('.ui-icon-open-menu').click();
               $('#metadata').hide();
             }
-            console.log('toggleLegend');
+            //~ console.log('toggleLegend');
             map.updateSize();
             map.baseLayer.redraw(true);
-            console.log('redraw');
+            //~ console.log('redraw');
             return false;
           });
 
