@@ -153,6 +153,16 @@ class lizmapCache {
     }
 
 
+    // Set or get tile from the parent project in case of embedded layers
+    if(property_exists($configLayer, 'sourceRepository')){
+      $newRepository = (string)$configLayer->sourceRepository;
+      $newProject = (string)$configLayer->sourceProject;
+      $repository = $newRepository;
+      $project = $newProject;
+      $lrep = lizmap::getRepository($repository);
+      $lproj = lizmap::getProject($repository.'~'.$project);
+    }
+
     if($dataFromCache) {
 
       // Set cache configuration
@@ -230,6 +240,10 @@ class lizmapCache {
       }
 
       // Call the cache : if not found, this method will use the method getServiceData with last param to false to force request to qgis
+      // first remove undesired params
+      if(array_key_exists('map',$params)){
+        unset($params['map']);
+      }
       return jCache::call(
         array('lizmapCache', __FUNCTION__ ),
         array( $repository, $project, $params, true ),
@@ -241,13 +255,12 @@ class lizmapCache {
     // Log when no cache hit
     if($debug and $avoidCache){
       error_log(
-        date(DATE_RFC822).': '.md5(serialize(array('lizmapCache', __FUNCTION__ )).serialize(array( $repository, $project, $params, true ))).', BBOX='.$params['bbox'].'
+        date(DATE_RFC822).': '.md5(serialize(array('lizmapCache', __FUNCTION__ )).serialize(array( $repository, $project, $params, true ))).', params= '.json_encode($params).'
 ',
         3,
-        sys_get_temp_dir().'/'.$repository.'/'.$project.'/'.$layers.'_'.$crs.'.log'
+        sys_get_temp_dir().'/'.$repository.'_'.$project.'_'.$layers.'_'.$crs.'.log'
       );
     }
-
 
 
     // Construction of the WMS url : base url + parameters
