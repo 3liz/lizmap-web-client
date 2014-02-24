@@ -154,7 +154,8 @@ class lizmapCache {
 
 
     // Set or get tile from the parent project in case of embedded layers
-    if(property_exists($configLayer, 'sourceRepository')){
+    if(property_exists($configLayer, 'sourceRepository')
+      and property_exists($configLayer, 'sourceProject') ){
       $newRepository = (string)$configLayer->sourceRepository;
       $newProject = (string)$configLayer->sourceProject;
       $repository = $newRepository;
