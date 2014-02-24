@@ -722,7 +722,7 @@ var lizMap = function() {
     });
 
     // creating the map
-    OpenLayers.IMAGE_RELOAD_ATTEMPTS = 3; // Avoid some issues with tiles not displayed
+    OpenLayers.Util.IMAGE_RELOAD_ATTEMPTS = 3; // Avoid some issues with tiles not displayed
     OpenLayers.Util.DEFAULT_PRECISION=20; // default is 14 : change needed to avoid rounding problem with cache
     map = new OpenLayers.Map('map'
       ,{
