@@ -725,12 +725,14 @@ var lizMap = function() {
     OpenLayers.IMAGE_RELOAD_ATTEMPTS = 3; // Avoid some issues with tiles not displayed
     OpenLayers.Util.DEFAULT_PRECISION=20; // default is 14 : change needed to avoid rounding problem with cache
     map = new OpenLayers.Map('map'
-      ,{controls:[
+      ,{
+        controls:[
           new OpenLayers.Control.Navigation(),
           new OpenLayers.Control.Permalink('permalink'),
           new OpenLayers.Control.ZoomBox({alwaysZoom:true})
         ]
-       ,eventListeners:{
+        ,tileManager: null // prevent bug with OL 2.13 : white tiles on panning back
+        ,eventListeners:{
          zoomend: function(evt){
   // private treeTable
   var options = {
