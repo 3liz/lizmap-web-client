@@ -60,9 +60,20 @@ class serviceCtrl extends jController {
       return $this->DescribeFeatureType();
     elseif ($request == "GETPROJ4")
       return $this->GetProj4();
-    else{
-      jMessage::add('REQUEST '.$request.' not supported by Lizmap Web Client', 'InvalidRequest');
-      return $this->serviceException();
+    else {
+      global $HTTP_RAW_POST_DATA;
+      if(isset($HTTP_RAW_POST_DATA)){
+        $requestXml = $HTTP_RAW_POST_DATA;
+      }else{
+        $requestXml = file('php://input');
+        $requestXml = implode("\n",$requestXml);
+      }
+      $xml = simplexml_load_string( $requestXml );
+      if($xml == false){
+        jMessage::add('REQUEST '.$request.' not supported by Lizmap Web Client', 'InvalidRequest');
+        return $this->serviceException();
+      }
+      return $this->PostRequest( $requestXml );
     }
   }
 
@@ -643,7 +654,7 @@ class serviceCtrl extends jController {
     $rep->mimeType = 'text/xml';
     $rep->content = $data;
     $rep->doDownload  =  false;
-    $rep->outputFileName  =  'qgis_server_wfs';
+    $rep->outputFileName  =  'qgis_style';
 
     return $rep;
   }
@@ -665,6 +676,51 @@ class serviceCtrl extends jController {
     $rep->content = $this->project->getUpdatedConfig();
     return $rep;
 
+  }
+
+  /**
+  * PostRequest
+  * @param string $xml_post
+  * @return request.
+  */
+  protected function PostRequest( $xml_post ){
+    // Get parameters
+    if(!$this->getServiceParameters())
+      return $this->serviceException();
+
+    $url = $this->services->wmsServerURL.'?';
+
+    // Filter the parameters of the request
+    $data = array();
+    $paramsBlacklist = array('module', 'action', 'C', 'repository','project');
+    foreach($this->params as $key=>$val){
+      if(!in_array($key, $paramsBlacklist)){
+        $data[] = strtolower($key).'='.urlencode($val);
+      }
+    }
+    $querystring = $url . implode('&', $data);
+
+    // Get data form server
+    $ch = curl_init();
+    curl_setopt($ch, CURLOPT_HEADER, 0);
+    curl_setopt($ch, CURLOPT_URL, $querystring);
+    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false );
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+    curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
+    curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: text/xml'));
+    curl_setopt($ch, CURLOPT_POST, 1);
+    curl_setopt($ch, CURLOPT_POSTFIELDS, $xml_post);
+    $data = curl_exec($ch);
+    $info = curl_getinfo($ch);
+    $mime = $info['content_type'];
+    curl_close($ch);
+
+    $rep = $this->getResponse('binary');
+    $rep->mimeType = $mime;
+    $rep->content = $data;
+    $rep->doDownload = false;
+    $rep->outputFileName = 'post_request';
+    return $rep;
   }
 
   /**
