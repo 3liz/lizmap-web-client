@@ -131,7 +131,7 @@ class serviceCtrl extends jController {
 
     // Get and normalize the passed parameters
     $pParams = jApp::coord()->request->params;
-    $pParams['map'] = $lrep->getPath().$project.".qgs";
+    $pParams['map'] = realpath($lrep->getPath()) . '/' . $project . ".qgs";
     $lizmapCache = jClasses::getService('lizmap~lizmapCache');
     $params = $lizmapCache->normalizeParams($pParams);
 

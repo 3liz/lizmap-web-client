@@ -254,7 +254,7 @@ class lizmapCache {
     $url = $ser->wmsServerURL.'?';
 
     // Add project path into map parameter
-    $params["map"] = $lrep->getPath().$lproj->getKey().".qgs";
+    $params["map"] = realpath($lrep->getPath()) . '/' . $lproj->getKey() . ".qgs";
 
     // Metatile : if needed, change the bbox
     // Avoid metatiling when the cache is not active for the layer
