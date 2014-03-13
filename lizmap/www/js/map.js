@@ -720,6 +720,15 @@ var lizMap = function() {
     scales.sort(function(a, b) {
       return Number(b) - Number(a);
     });
+    // remove duplicate scales
+    nScales = [];
+    while (scales.length != 0){
+      var scale = scales.pop(0);
+      if (nScales.indexOf( scale ) == -1 )
+        nScales.push( scale );
+    }
+    scales = nScales;
+
 
     // creating the map
     OpenLayers.Util.IMAGE_RELOAD_ATTEMPTS = 3; // Avoid some issues with tiles not displayed
