@@ -474,7 +474,8 @@ class editionCtrl extends jController {
       $data = array();
       foreach($features as $feat){
         if(property_exists($feat, 'properties')){
-          $data[(string)$feat->properties->$keyColumn] = $feat->properties->$valueColumn;
+          if(property_exists($feat->properties,$keyColumn) && property_exists($feat->properties,$valueColumn))
+            $data[(string)$feat->properties->$keyColumn] = $feat->properties->$valueColumn;
         }
       }
       $dataSource = new jFormsStaticDatasource();
