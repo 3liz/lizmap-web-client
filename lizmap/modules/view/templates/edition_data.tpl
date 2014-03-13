@@ -6,7 +6,7 @@
   <h3>{@view~edition.modal.title.default@}</h3>
   {/if}
 </div>
-<div class="modal-header">
+<div class="modal-body">
 {assign $empty = True}
   {foreach $forms as $form}
   {assign $empty = False}
