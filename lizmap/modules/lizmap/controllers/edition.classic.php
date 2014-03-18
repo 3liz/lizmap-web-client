@@ -578,6 +578,13 @@ class editionCtrl extends jController {
             return false;
           }
         break;
+      case 'date':
+        $value = filter_var($value, FILTER_SANITIZE_STRING, FILTER_FLAG_NO_ENCODE_QUOTES);
+        if ( !$value )
+          $value = 'NULL';
+        else
+          $value = $cnx->quote( $value );
+        break;
       case 'integer':
         $value = filter_var($value, FILTER_SANITIZE_NUMBER_INT);
         if ( !$value )
