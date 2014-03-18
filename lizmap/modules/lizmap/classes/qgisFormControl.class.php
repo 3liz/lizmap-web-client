@@ -131,8 +131,8 @@ class qgisFormControl{
       'multipolygon'=>'geometry',
       'bool'=>'boolean',
       'boolean'=>'boolean',
-      'date'=>'text',
-      'datetime'=>'text'
+      'date'=>'date',
+      'datetime'=>'datetime'
     );
     
 
@@ -242,6 +242,14 @@ class qgisFormControl{
       
         case 'float':
           $datatype = new jDatatypeDecimal();
+          break;
+      
+        case 'date':
+          $datatype = new jDatatypeDate();
+          break;
+      
+        case 'datetime':
+          $datatype = new jDatatypeDateTime();
           break;
           
         default:
