@@ -5,10 +5,10 @@
     <mapcanvas>
         <units>degrees</units>
         <extent>
-            <xmin>3.7540574839443388</xmin>
-            <ymin>43.53239376749659328</ymin>
-            <xmax>3.99429656851634851</xmax>
-            <ymax>43.68739464926033378</ymax>
+            <xmin>3.74856305693125469</xmin>
+            <ymin>43.51652866841737222</ymin>
+            <xmax>3.99979099552943262</xmax>
+            <ymax>43.70325974833955485</ymax>
         </extent>
         <projections>1</projections>
         <destinationsrs>
@@ -3783,6 +3783,9 @@
         <WFSLayers type="QStringList">
             <value>VilleMTP_MTP_Quartiers_2011_432620130116112610876</value>
             <value>VilleMTP_MTP_SousQuartiers_201120130929113137811</value>
+            <value>edition_line20130409161630329</value>
+            <value>edition_point20130118171631518</value>
+            <value>edition_polygon20130409114333776</value>
         </WFSLayers>
         <WMSContactMail type="QString">info@3liz.com</WMSContactMail>
         <WMSRestrictedComposers type="QStringList">
@@ -3793,8 +3796,9 @@
             <Automatic type="bool">true</Automatic>
             <DegreeFormat type="QString">D</DegreeFormat>
         </PositionPrecision>
+        <WCSUrl type="QString"></WCSUrl>
         <WMSContactPhone type="QString">+334 67 16 64 51</WMSContactPhone>
-        <WMSServiceCapabilities type="bool">true</WMSServiceCapabilities>
+        <WMSServiceCapabilities type="QString">True</WMSServiceCapabilities>
         <WMSServiceAbstract type="QString">Demo project with bus and tramway lines in Montpellier, France.
 Data is licensed under ODbl, OpenStreetMap contributors</WMSServiceAbstract>
         <WMSAddWktGeometry type="bool">false</WMSAddWktGeometry>
@@ -3807,9 +3811,21 @@ Data is licensed under ODbl, OpenStreetMap contributors</WMSServiceAbstract>
             <value>EPSG:3857</value>
         </WMSCrsList>
         <WFSTLayers>
-            <Insert type="QStringList"/>
-            <Update type="QStringList"/>
-            <Delete type="QStringList"/>
+            <Insert type="QStringList">
+                <value>edition_line20130409161630329</value>
+                <value>edition_point20130118171631518</value>
+                <value>edition_polygon20130409114333776</value>
+            </Insert>
+            <Update type="QStringList">
+                <value>edition_line20130409161630329</value>
+                <value>edition_point20130118171631518</value>
+                <value>edition_polygon20130409114333776</value>
+            </Update>
+            <Delete type="QStringList">
+                <value>edition_line20130409161630329</value>
+                <value>edition_point20130118171631518</value>
+                <value>edition_polygon20130409114333776</value>
+            </Delete>
         </WFSTLayers>
         <Gui>
             <SelectionColorBluePart type="int">0</SelectionColorBluePart>
@@ -3827,6 +3843,7 @@ Data is licensed under ODbl, OpenStreetMap contributors</WMSServiceAbstract>
             <pythonCode type="QString"></pythonCode>
         </Macros>
         <WMSAccessConstraints type="QString"></WMSAccessConstraints>
+        <WCSLayers type="QStringList"/>
         <SpatialRefSys>
             <ProjectCRSProj4String type="QString">+proj=longlat +datum=WGS84 +no_defs</ProjectCRSProj4String>
             <ProjectCrs type="QString">EPSG:4326</ProjectCrs>
