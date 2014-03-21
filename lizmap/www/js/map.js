@@ -724,7 +724,7 @@ var lizMap = function() {
     nScales = [];
     while (scales.length != 0){
       var scale = scales.pop(0);
-      if (nScales.indexOf( scale ) == -1 )
+      if ($.inArray( scale, nScales ) == -1 )
         nScales.push( scale );
     }
     scales = nScales;
