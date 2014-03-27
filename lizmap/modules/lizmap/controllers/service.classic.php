@@ -735,6 +735,10 @@ class serviceCtrl extends jController {
     if(!$this->getServiceParameters())
       return $this->serviceException();
 
+    // add outputformat if not provided
+    if( !in_array( 'outputformat', $this->params ) )
+      $this->params['outputformat'] = 'GML2';
+
     // Construction of the request url : base url + parameters
     $url = $this->services->wmsServerURL.'?';
     $bparams = http_build_query($this->params);
