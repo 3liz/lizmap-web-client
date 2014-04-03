@@ -592,6 +592,8 @@ class editionCtrl extends jController {
         break;
       case 'float':
         $value = (float)$value;
+        if ( !$value )
+          $value = 'NULL';
         break;
       default:
         $value = $cnx->quote(
