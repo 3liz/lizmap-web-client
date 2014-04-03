@@ -736,7 +736,8 @@ class serviceCtrl extends jController {
       return $this->serviceException();
 
     // add outputformat if not provided
-    if( !in_array( 'outputformat', $this->params ) )
+    $output = $this->iParam('outputformat');
+    if(!$output)
       $this->params['outputformat'] = 'GML2';
 
     // Construction of the request url : base url + parameters
