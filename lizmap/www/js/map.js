@@ -3181,12 +3181,24 @@ var lizMap = function() {
               $.each(results, function(i, e){
                 if (count > 9)
                   return false;
-                var bbox = [
-                  e.geometry.viewport.ia.b,
-                  e.geometry.viewport.ea.b,
-                  e.geometry.viewport.ia.d,
-                  e.geometry.viewport.ea.d
-                ];
+                var bbox = [];
+                if (e.geometry.viewport) {
+                  bbox = [
+                    e.geometry.viewport.getSouthWest().lng(),
+                    e.geometry.viewport.getSouthWest().lat(),
+                    e.geometry.viewport.getNorthEast().lng(),
+                    e.geometry.viewport.getNorthEast().lat()
+                  ];
+                } else if (e.geometry.bounds) {
+                  bbox = [
+                    e.geometry.bounds.getSouthWest().lng(),
+                    e.geometry.bounds.getSouthWest().lat(),
+                    e.geometry.bounds.getNorthEast().lng(),
+                    e.geometry.bounds.getNorthEast().lat()
+                  ];
+                }
+                if ( bbox.length != 4 )
+                  return false;
                 bbox = new OpenLayers.Bounds(bbox);
                 if ( extent.intersectsBounds(bbox) ) {
                   text += '<li><a href="#'+bbox.toBBOX()+'">'+e.formatted_address+'</a></li>';
