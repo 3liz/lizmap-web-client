@@ -2016,6 +2016,7 @@ var lizMap = function() {
         if (l.getVisibility() && l.CLASS_NAME == "OpenLayers.Layer.WMS")
         printLayers.push(l.params['LAYERS']);
       });
+      printLayers.reverse();
       url += '&'+dragCtrl.layout.mapId+':LAYERS='+printLayers.join(',');
       if ( dragCtrl.layout.overviewId != null
           && config.options.hasOverview ) {
