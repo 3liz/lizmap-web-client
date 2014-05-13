@@ -110,6 +110,7 @@ class qgisFormControl{
       'real'=>'float',
       'double'=>'float',
       'double decimal'=>'float',
+      'numeric'=>'float',
       'int'=>'integer',
       'integer'=>'integer',
       'int4'=>'integer',
