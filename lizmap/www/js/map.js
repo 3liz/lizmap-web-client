@@ -864,7 +864,7 @@ var lizMap = function() {
         continue;
       options += '<option value="'+feat.id+'">'+feat.properties[locate.fieldName]+'</option>';
     }
-    $('#locate-layer-'+aName).html(options).val('-1');
+    $('#locate-layer-'+cleanName(aName)).html(options).val('-1');
   }
 
   /**
@@ -877,11 +877,13 @@ var lizMap = function() {
       fields.push( locate.joinFieldName );
     if ('filterFieldName' in locate)
       fields.push( locate.filterFieldName );
+    var typeName = aName.replace(' ','_');
+    var layerName = cleanName(aName);
     var wfsOptions = {
       'SERVICE':'WFS'
      ,'VERSION':'1.0.0'
      ,'REQUEST':'GetFeature'
-     ,'TYPENAME':aName
+     ,'TYPENAME':typeName
      ,'PROPERTYNAME':fields.join(',')
      ,'OUTPUTFORMAT':'GeoJSON'
     };
@@ -908,8 +910,8 @@ var lizMap = function() {
             fOptions += '<option value="'+fValue+'">'+fValue+'</option>';
           }
         }
-        $('#locate-layer-'+aName).parent().before('<div class="locate-layer"><select id="locate-layer-'+aName+'-'+locate.filterFieldName+'">'+fOptions+'</select></div><br/>');
-        $('#locate-layer-'+aName+'-'+locate.filterFieldName).change(function(){
+        $('#locate-layer-'+layerName).parent().before('<div class="locate-layer"><select id="locate-layer-'+layerName+'-'+locate.filterFieldName+'">'+fOptions+'</select></div><br/>');
+        $('#locate-layer-'+layerName+'-'+locate.filterFieldName).change(function(){
           var filterValue = $(this).children(':selected').val();
           //console.log(filterValue);
           var lOptions = '<option value="-1">'+lConfig.title+'</option>';
@@ -919,9 +921,9 @@ var lizMap = function() {
               continue;
             lOptions += '<option value="'+feat.id+'">'+feat.properties[locate.fieldName]+'</option>';
           }
-          $('#locate-layer-'+aName).html(lOptions).val('-1');
+          $('#locate-layer-'+layerName).html(lOptions).val('-1');
         });
-        $('#locate-layer-'+aName+'-'+locate.filterFieldName).combobox({
+        $('#locate-layer-'+layerName+'-'+locate.filterFieldName).combobox({
           "selected": function(evt, ui){
             if ( ui.item ) {
               var self = $(this);
@@ -946,7 +948,7 @@ var lizMap = function() {
         if ( !('filterFieldName' in locate) )
           options += '<option value="'+feat.id+'">'+feat.properties[locate.fieldName]+'</option>';
       }
-      $('#locate-layer-'+aName).html(options).change(function() {
+      $('#locate-layer-'+layerName).html(options).change(function() {
         var layer = map.getLayersByName('locatelayer')[0];
         layer.destroyFeatures();
         var proj = new OpenLayers.Projection(locate.crs);
@@ -959,7 +961,7 @@ var lizMap = function() {
             if ( jName in config.locateByLayer ) {
               var jLocate = config.locateByLayer[jName];
               if ( jLocate.joinLayer == aName ) {
-                $('#locate-layer-'+jName).change();
+                $('#locate-layer-'+cleanName(jName)).change();
                 return true;
               }
             }
@@ -985,7 +987,7 @@ var lizMap = function() {
                 // update joined select options
                 updateLocateFeature(jName, jLocate.joinFieldName, feat.attributes[locate.joinFieldName]);
                 // update joined input value
-                $('#locate-layer-'+jName).siblings().first().children('input').val($('#locate-layer-'+jName).children(':selected').text());
+                $('#locate-layer-'+cleanName(jName)).siblings().first().children('input').val($('#locate-layer-'+cleanName(jName)).children(':selected').text());
               }
             }
           }
@@ -994,7 +996,7 @@ var lizMap = function() {
         $(this).blur();
         return true;
       });
-      $('#locate-layer-'+aName).combobox({
+      $('#locate-layer-'+layerName).combobox({
         "selected": function(evt, ui){
           if ( ui.item ) {
             var self = $(this);
@@ -1294,7 +1296,7 @@ var lizMap = function() {
       for (var lname in config.locateByLayer) {
         var lConfig = config.layers[lname];
         var html = '<div class="locate-layer">';
-        html += '<select id="locate-layer-'+lname+'" class="label">';
+        html += '<select id="locate-layer-'+cleanName(lname)+'" class="label">';
         html += '<option>'+lConfig.title+'...</option>';
         html += '</select>';
         html += '</div>';
@@ -1328,8 +1330,17 @@ var lizMap = function() {
         } else {
           featureTypes.each( function(){
             var self = $(this);
-            var lname = self.find('Name').text();
-            if (lname in config.locateByLayer) {
+            var typeName = self.find('Name').text();
+            var lname = '';
+            if (typeName in config.locateByLayer)
+              lname = typeName
+            else {
+              for (lbl in config.locateByLayer) {
+                if (lbl.replace(' ','_') == typeName)
+                  lname = lbl;
+              }
+            }
+            if (lname != '') {
               var locate = config.locateByLayer[lname];
               locate['crs'] = self.find('SRS').text();
               if ( locate.crs in Proj4js.defs )
