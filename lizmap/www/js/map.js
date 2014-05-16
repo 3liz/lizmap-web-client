@@ -2634,7 +2634,13 @@ var lizMap = function() {
         if ( $(this).hasClass('disabled') )
           return false;
 
-        editCtrls.modify.unselectFeature(editLayer.features[0]);
+        if ( editLayer.selectedFeatures.length != 0 )
+          editCtrls.modify.unselectFeature(editLayer.features[0]);
+        else
+          editLayer.events.triggerEvent("afterfeaturemodified", {
+            feature: editLayer.features[0],
+            modified: false
+        });
         return false;
       });
       $('#edition-select-delete').click(function(){
