@@ -239,12 +239,11 @@ class lizmapProject{
       if($qgsLoad){
         $WMSServiceTitle = (string)$qgsLoad->properties->WMSServiceTitle;
         $WMSServiceAbstract = (string)$qgsLoad->properties->WMSServiceAbstract;
-        $WMSServiceAbstract = nl2br($WMSServiceAbstract);
         $WMSExtent = $qgsLoad->properties->WMSExtent->value[0];
         $WMSExtent.= ", ".$qgsLoad->properties->WMSExtent->value[1];
         $WMSExtent.= ", ".$qgsLoad->properties->WMSExtent->value[2];
         $WMSExtent.= ", ".$qgsLoad->properties->WMSExtent->value[3];
-        $ProjectCrs = (string)$qgsLoad->properties->SpatialRefSys->ProjectCrs;
+        $ProjectCrs = (string)$this->data['proj'];
         $WMSOnlineResource = (string)$qgsLoad->properties->WMSOnlineResource;
         $WMSContactMail = (string)$qgsLoad->properties->WMSContactMail;
         $WMSContactOrganization = (string)$qgsLoad->properties->WMSContactOrganization;

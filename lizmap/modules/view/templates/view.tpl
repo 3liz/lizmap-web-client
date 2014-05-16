@@ -40,11 +40,11 @@
           <dt>{@view~map.metadata.h2.illustration@}</dt>
           <dd><img src="{$p->img}" alt="project image" width="150" height="150"></dd>
           <dt>{@default.project.title.label@}</dt>
-          <dd>{$p->title}</dd>
+          <dd>{$p->title}&nbsp;</dd>
           <dt>{@default.project.abstract.label@}</dt>
-          <dd>{$p->abstract|nl2br}</dd>
+          <dd>{$p->abstract|nl2br}&nbsp;</dd>
           <dt>{@default.project.projection.label@}</dt>
-          <dd>{$p->proj}</dd>
+          <dd>{$p->proj}&nbsp;</dd>
           <dt>{@default.project.bbox.label@}</dt>
           <dd>{$p->bbox}</dd>
         </dl>       

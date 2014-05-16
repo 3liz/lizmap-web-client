@@ -95,9 +95,9 @@
         <p>
           <dl class="dl-horizontal">
             <dt>{@view~map.metadata.description.title@}</dt>
-            <dd>{$WMSServiceTitle}</dd>
+            <dd>{$WMSServiceTitle}&nbsp;</dd>
             <dt>{@view~map.metadata.description.abstract@}</dt>
-            <dd>{$WMSServiceAbstract}</dd>
+            <dd>{$WMSServiceAbstract|nl2br}&nbsp;</dd>
           </dl>
         </p>
       </div>
@@ -107,7 +107,7 @@
         <p>
           <dl class="dl-horizontal">
             <dt>{@view~map.metadata.properties.projection@}</dt>
-            <dd><small>{$ProjectCrs}</small></dd>
+            <dd><small>{$ProjectCrs}&nbsp;</small></dd>
             <dt>{@view~map.metadata.properties.extent@}</dt>
             <dd><small>{$WMSExtent}</small></dd>
           </dl>
@@ -121,13 +121,13 @@
         <p>
           <dl class="dl-horizontal">
             <dt>{@view~map.metadata.contact.organization@}</dt>
-            <dd>{$WMSContactOrganization}</dd>
+            <dd>{$WMSContactOrganization}&nbsp;</dd>
             <dt>{@view~map.metadata.contact.person@}</dt>
-            <dd>{$WMSContactPerson}</dd>
+            <dd>{$WMSContactPerson}&nbsp;</dd>
             <dt>{@view~map.metadata.contact.email@}</dt>
-            <dd>{$WMSContactMail|replace:'@':' (at) '}</dd>
+            <dd>{$WMSContactMail|replace:'@':' (at) '}&nbsp;</dd>
             <dt>{@view~map.metadata.contact.phone@}</dt>
-            <dd>{$WMSContactPhone}</dd>
+            <dd>{$WMSContactPhone}&nbsp;</dd>
           </dl>
         </p>
       </div>
