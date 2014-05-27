@@ -42,7 +42,7 @@ class defaultCtrl extends jController {
     $rep->body->assign('repositoryLabel', $title);
     $rep->body->assign('isConnected', jAuth::isConnected());
     $rep->body->assign('user', jAuth::getUserSession());
-    
+
     // Get lizmap services
     $services = lizmap::getServices();
     if($services->allowUserAccountRequests)
@@ -72,6 +72,9 @@ class defaultCtrl extends jController {
         });
       });
       ");
+    // Js hack to normalize the height of the project thumbnails to avoid line breaks with long project titles
+    $bp = jApp::config()->urlengine['basePath'];
+    $rep->addJSLink($bp.'js/view.js');
 
     return $rep;
   }
