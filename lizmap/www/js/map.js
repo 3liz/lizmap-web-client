@@ -1522,6 +1522,9 @@ var lizMap = function() {
 
     map.addControl(new OpenLayers.Control.Scale(document.getElementById('scaletext')));
     map.addControl(new OpenLayers.Control.ScaleLine({div:document.getElementById('scaleline')}));
+    
+    lonlatProjection = new OpenLayers.Projection("EPSG:4326");
+    map.addControl(new OpenLayers.Control.MousePosition({prefix: "UTM ", div:document.getElementById('mouseposition'), displayProjection: lonlatProjection}));
 
     if (config.options.hasOverview)
       if(!mCheckMobile())
