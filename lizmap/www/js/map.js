@@ -454,6 +454,7 @@ var lizMap = function() {
                ,gutter:5
                ,buffer:0
                ,singleTile:(layerConfig.singleTile == 'True')
+               ,attribution:layer.attribution
               }));
         }
         else if (layerConfig.type == 'layer' && layer.nestedLayers.length != 0) {
@@ -473,6 +474,7 @@ var lizMap = function() {
                ,buffer:0
                ,singleTile:(layerConfig.singleTile == 'True')
                ,order:getLayerOrder(layer)
+               ,attribution:layer.attribution
               }));
         }
         else if (layerConfig.type == 'layer') {
@@ -488,6 +490,7 @@ var lizMap = function() {
                ,buffer:0
                ,singleTile:(layerConfig.singleTile == 'True')
                ,order:getLayerOrder(layer)
+               ,attribution:layer.attribution
               }));
         }
         // creating the layer tre because it's a group, has children and is not a base layer
