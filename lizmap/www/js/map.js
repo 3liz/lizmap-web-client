@@ -1780,6 +1780,8 @@ var lizMap = function() {
     var printCapabilities = {scales:[],layouts:[]};
 
     var scales = map.scales;
+    if ( config.options.mapScales.length > 2 )
+      scales = config.options.mapScales;
     if ( scales == null && map.resolutions != null ) {
       scales = [];
       for( var i=0, len=map.resolutions.length; i<len; i++ ){
