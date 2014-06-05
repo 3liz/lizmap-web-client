@@ -2,6 +2,14 @@
 {meta_html csstheme 'css/map.css'}
 {meta_html csstheme 'css/media.css'}
 
+{meta_html css $customCssFiles[0]}
+{meta_html css $customCssFiles[1]}
+{meta_html css $customCssFiles[2]}
+{meta_html css $customCssFiles[3]}
+{meta_html css $customCssFiles[4]}
+{meta_html css $customCssFiles[5]}
+
+
 <div id="header">
   <div id="logo">
     <h1>{$repositoryLabel}</h1>

@@ -20,7 +20,7 @@ a:hover {
   color : #FBFBFB;
 }
 #logo {
-  background : url('img/logo.png') no-repeat;
+  background : url(img/logo.png) no-repeat;
 }
 
 #headermenu {
@@ -55,7 +55,7 @@ a:hover {
   border-bottom-color:white;
 }
 .navbar .navbar-inner .icon {
-  background-image:url("images/sprite_20_tools.png");
+  background-image:url(images/sprite_20_tools.png);
 }
 .navbar .nav .login .icon {
   background-position: -80px -60px;

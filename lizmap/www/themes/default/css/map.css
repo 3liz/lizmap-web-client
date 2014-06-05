@@ -85,7 +85,7 @@
 }
 
 #content .ui-icon {
-  background-image : url("images/sprite_menu.png");
+  background-image : url(images/sprite_menu.png);
 }
 #content .ui-icon-open-menu {
   background-position : -16px -80px;
@@ -152,7 +152,7 @@ Timemanager
   background-image : url(images/sprite_timemanager.png);
 }
 .navbar .navbar-inner .timemanager .icon {
-  background-image:url("images/sprite_timemanager.png");
+  background-image:url(images/sprite_timemanager.png);
 }
 .navbar .nav .timemanager .icon {
   background-position: 0px 0px;
@@ -255,11 +255,11 @@ Timemanager
   background: none;
 }
 #switcher .treeTable tr.expanded td a.expander {
-  background-image : url("images/sprite_menu.png");
+  background-image : url(images/sprite_menu.png);
   background-position : -16px -48px;
 }
 #switcher .treeTable tr.collapsed td a.expander {
-  background-image : url("images/sprite_menu.png");
+  background-image : url(images/sprite_menu.png);
   background-position : -32px -64px;
 }
 #switcher .treeTable span.selected {
@@ -268,7 +268,7 @@ Timemanager
   color : white;
 }
 #switcher .treeTable span.loading {
-  background-image : url("images/download_layer.gif");
+  background-image : url(images/download_layer.gif);
 }
 
 #baselayer-select-input {
@@ -294,7 +294,7 @@ Timemanager
   background-color : #3A3C3D;
 }
 #navbar .ui-state-default .ui-icon {
-  background-image : url("images/sprite_20.png");
+  background-image : url(images/sprite_20.png);
 }
 #navbar .ui-button-icon-only .ui-icon-pan {
   background-position : 0px -20px;
@@ -337,7 +337,7 @@ Timemanager
   background : #DDD;
 }
 #overview-bar .ui-icon {
-  background-image : url("images/sprite_menu.png");
+  background-image : url(images/sprite_menu.png);
 }
 
 #overview-bar .button .ui-icon-triangle-1-s {
