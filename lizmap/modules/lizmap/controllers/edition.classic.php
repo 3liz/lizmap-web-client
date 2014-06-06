@@ -13,13 +13,13 @@ class editionCtrl extends jController {
 
   // lizmapProject
   private $project = null;
-  
+
   // lizmapRepository
   private $repository = null;
-  
+
   // layer id in the QGIS project file
   private $layerId = '';
-  
+
   // layer name (<layername> in QGIS project)
   private $layerName = '';
   // table name
@@ -27,7 +27,7 @@ class editionCtrl extends jController {
 
   // table name without schema
   private $tableName = '';
-  
+
   // QGIS where clause
   private $whereClause = '';
 
@@ -39,43 +39,43 @@ class editionCtrl extends jController {
 
   // provider
   private $provider = '';
-  
+
   // featureIdParam : featureId parameter from the request
   private $featureIdParam = Null;
-  
+
   // featureId : an integer or a string whith coma separated integers
   private $featureId = Null;
-  
+
   // Layer date as simpleXml object
   private $layerXml = '';
-  
+
   // Fields information taken from database
   private $dataFields = '';
-  
+
   // Primary key
   private $primaryKeys = array();
-  
+
   // Map data type as geometry type
   private $geometryDatatypeMap = array(
-    'point', 'linestring', 'polygon', 'multipoint', 
+    'point', 'linestring', 'polygon', 'multipoint',
     'multilinestring', 'multipolygon', 'geometrycollection', 'geometry'
   );
 
   // Geometry type
   private $geometryType = '';
-  
+
   // Geometry column
   private $geometryColumn = '';
-  
+
   // Geometry srid
   private $srid = '';
-  
+
   // Geometry proj4 string
   private $proj4 = '';
-  
+
   // Form controls
   private $formControls = '';
-  
+
   // Filter by login flag
   private $loginFilteredLayers = Null;
 
@@ -88,7 +88,7 @@ class editionCtrl extends jController {
 
     // Get title layer
     $layerXmlZero = $this->layerXml[0];
-    $_title = $layerXmlZero->xpath('title');   
+    $_title = $layerXmlZero->xpath('title');
     $title = (string)$_title[0];
     if ( !$title )
       $title = jLocale::get("view~edition.modal.title.default");
@@ -102,8 +102,8 @@ class editionCtrl extends jController {
     jMessage::clearAll();
     return $rep;
   }
- 
-  
+
+
   /**
   * Get parameters and set classes for the project and repository given.
   *
@@ -117,14 +117,14 @@ class editionCtrl extends jController {
     $repository = $this->param('repository');
     $layerId = $this->param('layerId');
     $featureIdParam = $this->param('featureId');
-    
+
     if($save){
       $project = $this->param('liz_project');
       $repository = $this->param('liz_repository');
-      $layerId = $this->param('liz_layerId'); 
-      $featureIdParam = $this->param('liz_featureId');   
+      $layerId = $this->param('liz_layerId');
+      $featureIdParam = $this->param('liz_featureId');
     }
-    
+
     if(!$project){
       jMessage::add('The parameter project is mandatory !', 'ProjectNotDefind');
       return false;
@@ -145,19 +145,19 @@ class editionCtrl extends jController {
       jMessage::add(jLocale::get('view~edition.access.denied'), 'AuthorizationRequired');
       return false;
     }
-    
+
     $layerXml = $lproj->getXmlLayer( $layerId );
     $layerXmlZero = $layerXml[0];
-    $_layerName = $layerXmlZero->xpath('layername');   
-    $layerName = (string)$_layerName[0];     
-    
+    $_layerName = $layerXmlZero->xpath('layername');
+    $layerName = (string)$_layerName[0];
+
     // feature Id (optionnal, only for edition and save)
     if(preg_match('#,#', $featureIdParam))
       $featureId = preg_split('#,#', $featureIdParam);
     else
       $featureId = $featureIdParam;
 
-    // Define class private properties   
+    // Define class private properties
     $this->project = $lproj;
     $this->repository = $lrep;
     $this->layerId = $layerId;
@@ -165,15 +165,15 @@ class editionCtrl extends jController {
     $this->featureIdParam = $featureIdParam;
     $this->layerXml = $layerXml;
     $this->layerName = $layerName;
-    
+
     // Optionnaly filter data by login
     if( !jacl2::check('lizmap.tools.loginFilteredLayers.override', $lrep->getKey()) ){
       $this->loginFilteredLayers = True;
-    }    
-    
+    }
+
     return true;
   }
-  
+
 
   /**
   * Filter data by login if necessary
@@ -197,15 +197,15 @@ class editionCtrl extends jController {
         $isConnected = jAuth::isConnected();
         $cnx = jDb::getConnection();
         if($isConnected){
-          $user = jAuth::getUserSession();              
+          $user = jAuth::getUserSession();
           $login = $user->login;
           $userGroups = jAcl2DbUserGroup::getGroups();
           // Set XML Filter if getFeature request
-          $flatGroups = implode("' , '", $userGroups);          
+          $flatGroups = implode("' , '", $userGroups);
           $where = ' "'.$attribute."\" IN ( '".$flatGroups."' , 'all' )";
         }else{
           // The user is not authenticated: only show data with attribute = 'all'
-          $where = ' "'.$attribute.'" = '.$cnx->quote("all");      
+          $where = ' "'.$attribute.'" = '.$cnx->quote("all");
         }
         // Set filter when multiple layers concerned
         if($where){
@@ -215,7 +215,7 @@ class editionCtrl extends jController {
         }
       }
     }
-  }  
+  }
 
   /**
   * Get field data from a database layer corresponding to a QGIS layer
@@ -234,28 +234,30 @@ class editionCtrl extends jController {
     $host = $dt[2]; $port = $dt[3];
     $user = $dt[4]; $password = $dt[5];
     $sslmode = $dt[6]; $key = $dt[7];
-    $estimatedmetadata = $dt[8]; 
+    $estimatedmetadata = $dt[8];
     $srid = $dt[9]; $type = $dt[10];
     $table = $dt[11];
     $geocol = $dt[12];
-    $sql = $dt[13]; 
-    
+    $sql = $dt[13];
+
     // If table contains schema name, like "public"."mytable"
     // We need to add double quotes around and find the real table name (without schema)
     // to retrieve the columns with jelix tools.
     $tableAlone = $table;
+    $schema = '';
     if(preg_match('#"."#', $table)){
       $table = '"'.$table.'"';
       $exp = explode('.', str_replace('"', '', $table));
       $tableAlone = $exp[1];
+      $schema = $exp[0];
     }
-    
+
     // Set some private properties
     $this->table = $table;
     $this->tableName = $tableAlone;
     $this->whereClause = $sql;
     $driver = $this->providerDriverMap[$this->provider];
-    
+
     // Build array of parameters for the virtual profile
     if($driver == 'sqlite3'){
       $jdbParams = array(
@@ -291,7 +293,7 @@ class editionCtrl extends jController {
       if($prop->primary && !in_array($fieldName, $this->primaryKeys)){
         $this->primaryKeys[] = $fieldName;
       }
-        
+
       // Detect geometry column
       if(in_array( strtolower($prop->type), $this->geometryDatatypeMap)) {
         $this->geometryColumn = $fieldName;
@@ -306,13 +308,15 @@ class editionCtrl extends jController {
         }
       }
     }
-    
+
     // For views : add key from datasource
     if(!$this->primaryKeys and $key){
       // check if layer is a view
       $cnx = jDb::getConnection($this->layerId);
       if($this->provider == 'postgres'){
-        $sql = " SELECT table_name FROM INFORMATION_SCHEMA.views WHERE table_schema = ANY (current_schemas(false))";
+        $sql = " SELECT table_name FROM INFORMATION_SCHEMA.views";
+        $sql.= " WHERE 2>1";
+        $sql.= " AND (table_schema = ANY (current_schemas(false)) OR table_schema = " . $cnx->quote($schema) . ")";
         $sql.= " AND table_name=".$cnx->quote($tableAlone);
       }
       if($this->provider == 'spatialite'){
@@ -326,24 +330,24 @@ class editionCtrl extends jController {
     return true;
   }
 
-  
+
   /**
   * Dynamically add controls to the form based on QGIS layer information
-  * 
+  *
   * @param object $form Jelix form to add controls to.
   * @param string $save If set, save the form data into the database : 'insert' or 'update'.
   * @return modified form.
   */
   private function addFormControls($form){
-  
-    // Get fields data from the edition database  
+
+    // Get fields data from the edition database
     $layerXmlZero = $this->layerXml[0];
-    $_datasource = $layerXmlZero->xpath('datasource');   
+    $_datasource = $layerXmlZero->xpath('datasource');
     $datasource = (string)$_datasource[0];
     $s_provider = $layerXmlZero->xpath('provider');
     $this->provider = (string)$s_provider[0];
     $this->getDataFields($datasource);
-            
+
     // Get QGIS fields extra information from XML for the layer
     // edittypes and categories
     $edittypesXml = $layerXmlZero->edittypes[0];
@@ -351,7 +355,7 @@ class editionCtrl extends jController {
     $categoriesXml = Null;
     if( isset($_categoriesXml[0]) )
       $categoriesXml = $_categoriesXml[0];
-    
+
     // Get proj4 string
     $proj4 = (string)$layerXmlZero->srs->spatialrefsys->proj4;
     $this->proj4 = $proj4;
@@ -359,13 +363,13 @@ class editionCtrl extends jController {
     // Get layer srid
     $srid = (integer)$layerXmlZero->srs->spatialrefsys->srid;
     $this->srid = $srid;
-       
+
     // Loop through the table fields
     // and create a form control if needed
     jClasses::inc('lizmap~qgisFormControl');
     $this->formControls = array();
     foreach($this->dataFields as $fieldName=>$prop){
-      
+
       // Create new control from qgis edit type
       $aliasXml = Null;
       if($layerXmlZero->aliases){
@@ -375,7 +379,7 @@ class editionCtrl extends jController {
       $edittype = null;
       if($edittypesXml)
         $edittype = $edittypesXml->xpath("edittype[@name='$fieldName']");
-    
+
       $this->formControls[$fieldName] = new qgisFormControl($fieldName, $edittype, $aliasXml, $categoriesXml, $prop);
 
       // Fill comboboxes of editType "Value relation" from relation layer
@@ -385,20 +389,20 @@ class editionCtrl extends jController {
       ){
         $this->fillComboboxFromValueRelationLayer($fieldName);
       }
-      
+
       // Add the control to the form
       $form->addControl($this->formControls[$fieldName]->ctrl);
       // Set readonly if needed
       $form->setReadOnly($fieldName, $this->formControls[$fieldName]->isReadOnly);
-      
+
 
     }
-    
+
     if(!$this->primaryKeys){
       jMessage::add("The table ".$this->table." has no primary keys. The edition tool needs a primary key on the table to be defined.", "error");
       return false;
     }
-      
+
     return True;
   }
 
@@ -407,12 +411,12 @@ class editionCtrl extends jController {
 
   /**
   * Get WFS data from a "Value Relation" layer and fill the combobox form control for a specific field.
-  * @param string $fieldName Name of QGIS field 
+  * @param string $fieldName Name of QGIS field
   *
   * @return Modified form control
   */
   private function fillComboboxFromValueRelationLayer($fieldName){
-  
+
     // Build WFS request parameters
     //   Get layername via id
     $relationLayerId = $this->formControls[$fieldName]->valueRelationData['layer'];
@@ -449,14 +453,14 @@ class editionCtrl extends jController {
       }
     }
     if($expFilter)
-      $params['EXP_FILTER'] = $expFilter; 
+      $params['EXP_FILTER'] = $expFilter;
 
     // Build query
     $lizmapServices = lizmap::getServices();
     $url = $lizmapServices->wmsServerURL.'?';
     $bparams = http_build_query($params);
     $querystring = $url . $bparams;
-    
+
     // Get remote data
     $lizmapCache = jClasses::getService('lizmap~lizmapCache');
     $getRemoteData = $lizmapCache->getRemoteData(
@@ -494,27 +498,27 @@ class editionCtrl extends jController {
         $this->formControls[$fieldName]->ctrl->help = 'Problem : cannot get data to fill this combobox !';
       }else{
         $this->formControls[$fieldName]->ctrl->hint = 'No data to fill this combobox !';
-        $this->formControls[$fieldName]->ctrl->help = 'No data to fill this combobox !';      
+        $this->formControls[$fieldName]->ctrl->help = 'No data to fill this combobox !';
       }
-    }  
+    }
   }
 
-  
+
   /**
   * Set the form controls data from the database value
-  * 
+  *
   * @param object $form Jelix jForm object
   * @return Boolean True if filled form
   */
   public function setFormDataFromFields($form){
-  
+
     // Get database connection object
     $cnx = jDb::getConnection($this->layerId);
-    
+
     // Get the array of feature ids
     if(ctype_digit($this->featureId))
       $featureId = array($this->featureId);
-    
+
     // Build the SQL query to retrieve data from the table
     $sql = "SELECT *, ST_AsText(".$this->geometryColumn.") AS astext FROM ".$this->table;
     $v = ''; $i = 0;
@@ -524,7 +528,7 @@ class editionCtrl extends jController {
       $i++;
       $v = " AND ";
     }
-    
+
     // Run the query and loop through the result to set the form data
     $rs = $cnx->query($sql);
     foreach($rs as $record){
@@ -535,13 +539,13 @@ class editionCtrl extends jController {
       // geometry column : override binary with text representation
       $form->setData($this->geometryColumn, $record->astext);
     }
-      
+
     return True;
   }
-  
+
   /**
   * Save the form controls data to the database
-  * 
+  *
   * @param object $form Jelix jForm object
   * @return Boolean True if the has been saved
   */
@@ -612,7 +616,7 @@ class editionCtrl extends jController {
       if(ctype_digit($this->featureId))
         $featureId = array($this->featureId);
       // featureId is set
-      // SQL for updating on line in the edition table    
+      // SQL for updating on line in the edition table
       $sql = " UPDATE ".$this->table." SET ";
       $sql.= implode(',', $update);
       $v = ''; $i = 0;
@@ -628,7 +632,7 @@ class editionCtrl extends jController {
         if( is_array( $this->loginFilteredLayers ) ){
           $sql.= ' AND '.$this->loginFilteredLayers['where'];
         }
-      }      
+      }
     }
     // insert
     else {
@@ -679,14 +683,14 @@ class editionCtrl extends jController {
       return $this->serviceAnswer();
     }
 
-    // Get fields data from the edition database  
+    // Get fields data from the edition database
     $layerXmlZero = $this->layerXml[0];
-    $_datasource = $layerXmlZero->xpath('datasource');   
+    $_datasource = $layerXmlZero->xpath('datasource');
     $datasource = (string)$_datasource[0];
     $s_provider = $layerXmlZero->xpath('provider');
     $this->provider = (string)$s_provider[0];
     $this->getDataFields($datasource);
-    
+
     // Get proj4 string
     $proj4 = (string)$layerXmlZero->srs->spatialrefsys->proj4;
     $this->proj4 = $proj4;
@@ -703,19 +707,19 @@ class editionCtrl extends jController {
       $sql .= " WHERE intersects( BuildMBR(".$bbox.", ".$crs." ), transform(".$this->geometryColumn.", ".$crs." ) )";
     else
       $sql .= " WHERE ST_Intersects( ST_MakeEnvelope(".$bbox.", ".$crs." ), ST_Transform(".$this->geometryColumn.", ".$crs." ) )";
-    
+
     // Add the QGIS WHERE clause if needed
     if($this->whereClause)
       $sql.= ' AND '.$this->whereClause;
-      
+
     // Filter by login if needed
-    if( $this->loginFilteredLayers ) {     
+    if( $this->loginFilteredLayers ) {
       $this->filterDataByLogin($this->layername);
       if( is_array( $this->loginFilteredLayers )){
         $sql .= ' AND '.$this->loginFilteredLayers['where'];
       }
     }
-    
+
     // Get the corresponding features
     try {
       // Run the query and loop through the result to set an array
@@ -746,7 +750,7 @@ class editionCtrl extends jController {
         }
         // geometry column : override binary with text representation
         $form->setData($this->geometryColumn, $record->astext);
-        
+
         // redo some code for templating the data
         $controls = array();
         foreach($form->getControls() as $ctrlref=>$ctrl){
@@ -780,7 +784,7 @@ class editionCtrl extends jController {
       }
       // Get title layer
       $layerXmlZero = $this->layerXml[0];
-      $_title = $layerXmlZero->xpath('title');   
+      $_title = $layerXmlZero->xpath('title');
       $title = (string)$_title[0];
 
       // Use template to create html form content
@@ -823,13 +827,13 @@ class editionCtrl extends jController {
     // Redirect to the display action
     $rep = $this->getResponse('redirect');
     $rep->params = array(
-      "project"=>$this->project->getKey(), 
-      "repository"=>$this->repository->getKey(), 
+      "project"=>$this->project->getKey(),
+      "repository"=>$this->repository->getKey(),
       "layerId"=>$this->layerId
     );
     $rep->action="lizmap~edition:editFeature";
 
-    return $rep;  
+    return $rep;
 
   }
 
@@ -848,8 +852,8 @@ class editionCtrl extends jController {
     if(!$this->getEditionParameters())
       return $this->serviceAnswer();
 
-    // Create form instance    
-    $form = jForms::create('view~edition', $this->featureId);    
+    // Create form instance
+    $form = jForms::create('view~edition', $this->featureId);
     if(!$form){
       jMessage::add('An error has been raised when creating the form', 'formNotDefined');
       return $this->serviceAnswer();
@@ -863,16 +867,16 @@ class editionCtrl extends jController {
     // Redirect to the display action
     $rep = $this->getResponse('redirect');
     $rep->params = array(
-      "project"=>$this->project->getKey(), 
-      "repository"=>$this->repository->getKey(), 
+      "project"=>$this->project->getKey(),
+      "repository"=>$this->repository->getKey(),
       "layerId"=>$this->layerId,
       "featureId"=>$this->featureIdParam
     );
 
     $rep->action="lizmap~edition:editFeature";
-    return $rep;  
+    return $rep;
 
-  }  
+  }
 
   /**
    * Display the edition form (output as html fragment)
@@ -901,7 +905,7 @@ class editionCtrl extends jController {
     // Dynamically add form controls based on QGIS layer information
     if(!$this->addFormControls($form) )
       return $this->serviceAnswer();
-      
+
     // Set data for the layer geometry: srid, proj4 and geometryColumn
     $form->setData('liz_srid', $this->srid);
     $form->setData('liz_proj4', $this->proj4);
@@ -910,7 +914,7 @@ class editionCtrl extends jController {
     // SELECT data from the database and set the form data accordingly
     if($this->featureId)
       $this->setFormDataFromFields($form);
-   
+
     // If the user has been redirected here from the saveFeature method
     // Set the form controls data from the request parameters
     if($this->param('error')){
@@ -925,7 +929,7 @@ class editionCtrl extends jController {
 
     // Get title layer
     $layerXmlZero = $this->layerXml[0];
-    $_title = $layerXmlZero->xpath('title');   
+    $_title = $layerXmlZero->xpath('title');
     $title = (string)$_title[0];
 
     // Use template to create html form content
@@ -951,28 +955,28 @@ class editionCtrl extends jController {
    * @param string $layerId Qgis id of the layer
    * @param integer $featureId Id of the feature.
    * @return Redirect to the validation action.
-   */  
+   */
   public function saveFeature(){
 
     // Get repository, project data and do some right checking
     $save = True;
     if(!$this->getEditionParameters($save))
       return $this->serviceAnswer();
-    
+
     // Get the form instance
     $form = jForms::get('view~edition', $this->featureId);
-    
+
     if(!$form){
       jMessage::add('An error has been raised when getting the form', 'formNotDefined');
       return $this->serviceAnswer();
     }
-    
+
     // Dynamically add form controls based on QGIS layer information
     // And save data into the edition table (insert or update line)
     $save =True;
     if(!$this->addFormControls($form) )
       return $this->serviceAnswer();
-     
+
     // Get data from the request and set the form controls data accordingly
     $form->initFromRequest();
 
@@ -985,12 +989,12 @@ class editionCtrl extends jController {
 
     $rep = $this->getResponse('redirect');
     $rep->params = array(
-      "project"=>$this->project->getKey(), 
-      "repository"=>$this->repository->getKey(), 
+      "project"=>$this->project->getKey(),
+      "repository"=>$this->repository->getKey(),
       "layerId"=>$this->layerId,
       "featureId"=>$this->featureIdParam
     );
-    
+
     // Save data into database
     if ($check)
       $check = $this->saveFormDataToDb($form);
@@ -1011,7 +1015,7 @@ class editionCtrl extends jController {
       $rep->action="lizmap~edition:editFeature";
       return $rep;
     }
-    
+
     // Log
     $eventParams = array(
       'key' => 'editionSaveFeature',
@@ -1019,14 +1023,14 @@ class editionCtrl extends jController {
       'repository' => $this->repository->getKey(),
       'project' => $this->project->getKey()
     );
-    jEvent::notify('LizLogItem', $eventParams);     
+    jEvent::notify('LizLogItem', $eventParams);
 
     // Redirect to the validation action
     $rep->action="lizmap~edition:validateFeature";
     return $rep;
 
   }
-  
+
   /**
   * Form validation : destroy it and display a message
   *
@@ -1035,13 +1039,13 @@ class editionCtrl extends jController {
   * @param string $layerId Qgis id of the layer
   * @param integer $featureId Id of the feature.
   * @return Confirmation message that the form has been saved.
-  */  
+  */
   public function validateFeature(){
-  
+
     // Get repository, project data and do some right checking
     if(!$this->getEditionParameters())
       return $this->serviceAnswer();
-        
+
     // Destroy the form
     if($form = jForms::get('view~edition', $this->featureId)){
       jForms::destroy('view~edition', $this->featureId);
@@ -1050,11 +1054,11 @@ class editionCtrl extends jController {
       jMessage::add('An error has been raised when getting the form', 'error');
       return $this->serviceAnswer();
     }
-  
+
     // Return html fragment response
     jMessage::add(jLocale::get('view~edition.form.data.saved'), 'success');
     return $this->serviceAnswer();
-      
+
   }
 
   /**
@@ -1065,7 +1069,7 @@ class editionCtrl extends jController {
    * @param string $layerId Qgis id of the layer
    * @param integer $featureId Id of the feature.
    * @return Redirect to the validation action.
-   */  
+   */
   public function deleteFeature(){
     if(!$this->getEditionParameters($save))
       return $this->serviceAnswer();
@@ -1076,9 +1080,9 @@ class editionCtrl extends jController {
       return $this->serviceAnswer();
     }
 
-    // Get fields data from the edition database  
+    // Get fields data from the edition database
     $layerXmlZero = $this->layerXml[0];
-    $_datasource = $layerXmlZero->xpath('datasource');   
+    $_datasource = $layerXmlZero->xpath('datasource');
     $datasource = (string)$_datasource[0];
     $s_provider = $layerXmlZero->xpath('provider');
     $this->provider = (string)$s_provider[0];
@@ -1088,7 +1092,7 @@ class editionCtrl extends jController {
     if(ctype_digit($this->featureId))
       $featureId = array($this->featureId);
     // featureId is set
-    // SQL for deleting on line in the edition table    
+    // SQL for deleting on line in the edition table
     $sql = " DELETE FROM ".$this->table;
     $v = ''; $i = 0;
     $sql.= ' WHERE';
@@ -1108,7 +1112,7 @@ class editionCtrl extends jController {
     try {
       $rs = $cnx->query($sql);
       jMessage::add( jLocale::get('view~edition.message.success.delete'), 'success');
-      
+
       // Log
       $eventParams = array(
         'key' => 'editionDeleteFeature',
@@ -1116,8 +1120,8 @@ class editionCtrl extends jController {
         'repository' => $this->repository->getKey(),
         'project' => $this->project->getKey()
       );
-      jEvent::notify('LizLogItem', $eventParams);       
-      
+      jEvent::notify('LizLogItem', $eventParams);
+
     } catch (Exception $e) {
       jLog::log("SQL = ".$sql);
       jLog::log("An error has been raised when saving form data edition to db : ".$e->getMessage() ,'error');
@@ -1125,5 +1129,5 @@ class editionCtrl extends jController {
     }
     return $this->serviceAnswer();
   }
- 
+
 }
