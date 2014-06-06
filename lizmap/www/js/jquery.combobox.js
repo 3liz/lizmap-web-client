@@ -1,5 +1,8 @@
 (function( $ ) {
   $.widget( "custom.combobox", {
+	options: {
+		minLength: 0
+	},
     _create: function() {
       this.wrapper = $( "<span>" )
         .addClass( "custom-combobox" )
@@ -19,7 +22,7 @@
         .addClass( "custom-combobox-input ui-widget ui-widget-content ui-state-default ui-corner-left label" )
         .autocomplete({
           delay: 0,
-          minLength: 0,
+          minLength: this.options.minLength,
           autoFocus: true,
           source: $.proxy( this, "_source" )
         })
@@ -45,6 +48,8 @@
       this.input.autocomplete( "widget" ).css("z-index","1000");
     },
     _createShowAllButton: function() {
+	  if ( this.minLength > 0 )
+	    return;
       var input = this.input,
       wasOpen = false;
       $( "<a>" )
@@ -74,7 +79,7 @@
         });
     },
     _source: function( request, response ) {
-      var matcher = new RegExp( "^" + $.ui.autocomplete.escapeRegex(request.term), "i" );
+      var matcher = new RegExp( $.ui.autocomplete.escapeRegex(request.term), "i" );
       response( this.element.children( "option" ).map(function() {
         var text = $( this ).text();
         if ( this.value && ( !request.term || matcher.test(text) ) )
