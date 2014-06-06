@@ -1023,6 +1023,7 @@ var lizMap = function() {
         return true;
       });
       $('#locate-layer-'+layerName).combobox({
+		"minLength": ('minLength' in locate) ? locate.minLength : 0,
         "selected": function(evt, ui){
           if ( ui.item ) {
             var self = $(this);
@@ -1033,6 +1034,8 @@ var lizMap = function() {
           }
         }
       });
+      if ( ('minLength' in locate) && locate.minLength > 0 )
+        $('#locate-layer-'+layerName).parent().addClass('no-toggle');
       if(mCheckMobile()){
         // autocompletion items for locatebylayer feature
         $('div.locate-layer select').show();

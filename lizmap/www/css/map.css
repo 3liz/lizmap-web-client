@@ -455,6 +455,9 @@ Timemanager
   position : relative;
   background: url(images/123_click.png) no-repeat right;
 }
+#locate div.locate-layer.no-toggle {
+  background-image: none;
+}
 
 #baselayer-menu div.baselayer-select select,
 #locate div.locate-layer select {
@@ -483,6 +486,9 @@ Timemanager
   top: 0;
   right: 0;
   cursor: pointer;
+}
+#locate div.locate-layer.no-toggle .custom-combobox-toggle {
+  background-image: none;
 }
 #locate div.locate-layer .custom-combobox-input {
   background: none;
