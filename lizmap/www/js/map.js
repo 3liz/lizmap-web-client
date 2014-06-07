@@ -4191,7 +4191,7 @@ lizMap.events.on({
             layers:layerConfig.layerName
             ,version:'1.3.0'
             ,exceptions:'application/vnd.ogc.se_inimage'
-            ,format:(layerConfig.imageFormat) ? layerConfig.imageFormat : 'image/png'
+            ,format:(layerConfig.layerImageFormat) ? 'image/'+layerConfig.layerImageFormat : 'image/png'
             ,dpi:96
           };
           if (layerWmsParams.format != 'image/jpeg')
