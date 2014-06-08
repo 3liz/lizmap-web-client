@@ -610,6 +610,10 @@ Timemanager
 #switcher .treeTable td a.expander {
   font-size : 1em;
 }
+.label, .badge {
+  display:inline;
+}
+
 #switcher .treeTable tr.expanded td a.expander {
   background-image : url("images/sprite_menu.png");
   background-position : -16px -48px;
@@ -678,6 +682,9 @@ Timemanager
   background : black;
   border : solid 1px black;
   cursor : move;
+}
+.ui-slider-vertical .ui-slider-handle {
+  margin-bottom: -0.1em;
 }
 #navbar button.ui-button-icon-only{
   height : 2.5em;
