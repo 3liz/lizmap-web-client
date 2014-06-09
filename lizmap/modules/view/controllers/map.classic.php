@@ -149,6 +149,17 @@ class mapCtrl extends jController {
     ), $wmsInfo);
 
 
+    // WMS GetCapabilities Url
+    $wmsGetCapabilitiesUrl = jacl2::check(
+      'lizmap.tools.displayGetCapabilitiesLinks',
+      $lrep->getKey()
+    );
+    if ( $wmsGetCapabilitiesUrl ) {
+      $wmsGetCapabilitiesUrl = $lproj->getData('wmsGetCapabilitiesUrl');
+    }
+    $assign['wmsGetCapabilitiesUrl'] = $wmsGetCapabilitiesUrl;
+
+
     // Replace default theme by theme found in
     // the repository folder media/themes/default/
     $useCustomTheme = 0;

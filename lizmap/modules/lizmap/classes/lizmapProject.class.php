@@ -103,6 +103,17 @@ class lizmapProject{
           $_SESSION['_LIZMAP_'][$key_session]['cfg'] = $config;
           $_SESSION['_LIZMAP_'][$key_session]['cfgmtime'] = filemtime($qgs_path.'.cfg');
         }
+        # get WMS getCapabilities full URL
+        $this->data['wmsGetCapabilitiesUrl'] = jUrl::getFull(
+          'lizmap~service:index',
+          array(
+            'repository' => $rep->getKey(),
+            'project' => $key,
+            'SERVICE' => 'WMS',
+            'VERSION' => '1.3.0',
+            'REQUEST' => 'GetCapabilities'
+          )
+        );
       }
     }
 

@@ -145,6 +145,11 @@
           <dl class="dl-horizontal">
             <dt>{@view~map.metadata.resources.website@}</dt>
             <dd><a href="{$WMSOnlineResource}" target="_blank">{$WMSOnlineResource}</a></dd>
+
+            {if $wmsGetCapabilitiesUrl}
+            <dt>{@view~map.metadata.properties.wmsGetCapabilitiesUrl@}</dt>
+            <dd><small><a href="{$wmsGetCapabilitiesUrl}" target="_blank">WMS Url</a></small></dd>
+            {/if}
           </dl>
         </p>
       </div>
