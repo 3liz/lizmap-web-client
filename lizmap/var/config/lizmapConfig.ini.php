@@ -22,15 +22,11 @@ cacheRootDirectory="/tmp/"
 ; must be writable
 allowUserAccountRequests=off
 
-
-
-
 [repository:montpellier]
 label="LizMap Demo"
 path="../install/qgis/"
 
-
-; Example of a repository wich will have access control
+allowUserDefinedThemes=
 [repository:intranet]
 label="Lizmap Demo - Intranet"
 path="../install/qgis_intranet/"
@@ -57,6 +53,15 @@ path="../install/qgis_intranet/"
 
 
 
+
+
+
+
+
+
+
+
+allowUserDefinedThemes=
 
 
 

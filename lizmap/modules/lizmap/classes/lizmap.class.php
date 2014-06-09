@@ -11,24 +11,24 @@
 
 
 class lizmap{
-  
+
     // Lizmap configuration file path (relative to the path folder)
     protected static $lizmapConfig = 'config/lizmapConfig.ini.php';
     protected static $lizmapLogConfig = 'config/lizmapLogConfig.ini.php';
 
     // repositories
     protected static $repositories = array();
-    
+
     // log items
     protected static $logItems = array();
-    
+
     /**
      * this is a static class, so private constructor
      */
     private function __construct (){ }
 
     /**
-     * 
+     *
      */
     public static function getServices (){
       return jClasses::getService('lizmap~lizmapServices');
@@ -59,7 +59,16 @@ class lizmap{
       jClasses::inc('lizmap~lizmapRepository');
       return lizmapRepository::$properties;
     }
-    
+
+    /**
+     * Get the list of properties options for a generic repository.
+     *
+     */
+    public static function getRepositoryPropertiesOptions(){
+      jClasses::inc('lizmap~lizmapRepository');
+      return lizmapRepository::$propertiesOptions;
+    }
+
 
     /**
      * Get a repository
@@ -132,15 +141,15 @@ class lizmap{
         return null;
       return $proj;
     }
-    
-    
+
+
     /**
     * Get global configuration for logs
     */
     public static function getLogConfig(){
       return jClasses::getService('lizmap~lizmapLogConfig');
     }
-    
+
     /**
      * Get a list of log items names.
      *
@@ -166,7 +175,7 @@ class lizmap{
       jClasses::inc('lizmap~lizmapLogItem');
       return lizmapLogItem::$properties;
     }
-    
+
 
     /**
      * Get a log item
@@ -181,8 +190,8 @@ class lizmap{
       jClasses::inc('lizmap~lizmapLogItem');
       return new lizmapLogItem($key);
     }
-    
-        
-    
-    
+
+
+
+
 }

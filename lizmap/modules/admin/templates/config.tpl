@@ -40,8 +40,20 @@
 
   {ifacl2 'lizmap.admin.repositories.view'}
   <!--Repositories-->
+
+
+
   <div>
   <h2>{@admin~admin.configuration.repository.label@}</h2>
+
+  <!--Add a repository-->
+  {ifacl2 'lizmap.admin.repositories.create'}
+  <div style="margin:20px 0px;">
+  <a class="btn" href="{jurl 'admin~config:createSection'}">{@admin~admin.configuration.button.add.repository.label@}</a>
+  </div>
+  {/ifacl2}
+
+
   {foreach $repositories as $repo}
 
     <legend>{$repo->getKey()}</legend>
@@ -53,7 +65,7 @@
       {assign $properties = $repo->getProperties()}
       {foreach $properties as $prop}
       <tr>
-        <th>{$prop}</th><td>{$repo->getData($prop)}</td>
+        <th>{@admin~admin.form.admin_section.repository.$prop.label@}</th><td>{$repo->getData($prop)}</td>
       </tr>
       {/foreach}
         </table>

@@ -151,32 +151,33 @@ class mapCtrl extends jController {
 
     // Replace default theme by theme found in
     // the repository folder media/themes/default/
-    $repositoryPath = $lrep->getPath();
-    $cssArray = array('main', 'map', 'media');
-    $themeArray = array('default', $project);
     $useCustomTheme = 0;
     $customCssFiles = array();
-    foreach ( $cssArray as $k ) {
-      foreach ( $themeArray as $theme ) {
-        $cssRelPath = 'media/themes/'.$theme.'/css/'.$k.'.css';
-        $cssPath = $lrep->getPath().'/'.$cssRelPath;
-        if (file_exists($cssPath) ){
-          $cssUrl = jUrl::get(
-            'view~media:getCssFile',
-            array(
-              'repository'=>$lrep->getKey(),
-              'project'=>$project,
-              'path'=>$cssRelPath
-            )
-          );
-          $customCssFiles[] = $cssUrl;
-          $useCustomTheme = 1;
+    if ( $lrep->getData('allowUserDefinedThemes') ) {
+      $repositoryPath = $lrep->getPath();
+      $cssArray = array('main', 'map', 'media');
+      $themeArray = array('default', $project);
+      foreach ( $cssArray as $k ) {
+        foreach ( $themeArray as $theme ) {
+          $cssRelPath = 'media/themes/'.$theme.'/css/'.$k.'.css';
+          $cssPath = $lrep->getPath().'/'.$cssRelPath;
+          if (file_exists($cssPath) ){
+            $cssUrl = jUrl::get(
+              'view~media:getCssFile',
+              array(
+                'repository'=>$lrep->getKey(),
+                'project'=>$project,
+                'path'=>$cssRelPath
+              )
+            );
+            $customCssFiles[] = $cssUrl;
+            $useCustomTheme = 1;
+          }
         }
       }
     }
     $assign['useCustomTheme'] = $useCustomTheme;
-    if ($useCustomTheme)
-      $assign['customCssFiles'] = $customCssFiles;
+    $assign['customCssFiles'] = $customCssFiles;
     $rep->body->assign($assign);
 
     // Log
