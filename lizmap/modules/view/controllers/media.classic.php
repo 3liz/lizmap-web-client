@@ -243,4 +243,18 @@ class mediaCtrl extends jController {
     return $rep;
   }
 
+  /**
+  * Get default Lizmap theme as a ZIP file.
+  *
+  * @return Zip file containing the default theme
+  */
+  function getDefaultTheme() {
+    $rep = $this->getResponse('zip');
+    $rep->zipFilename='lizmapWebClient_default_theme.zip';
+    $rep->content->addDir(jApp::wwwPath().'/themes/default/', 'default', true);
+    return $rep;
+  }
+
+
+
 }

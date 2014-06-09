@@ -18,8 +18,24 @@ class lizmapRepository{
     // services properties
     public static $properties = array(
       'label',
-      'path'
+      'path',
+      'allowUserDefinedThemes'
     );
+    public static $propertiesOptions = array(
+        'label' => array(
+            'fieldType'=>'text',
+            'required'=> True
+        ),
+        'path' => array(
+            'fieldType'=>'text',
+            'required'=> True
+        ),
+        'allowUserDefinedThemes' => array(
+            'fieldType'=>'checkbox',
+            'required'=> False
+        )
+    );
+
     // Lizmap repository key
     private $key = '';
     // Lizmap repository configuration data
@@ -56,6 +72,10 @@ class lizmapRepository{
 
     public function getProperties(){
       return self::$properties;
+    }
+
+    public function getPropertiesOptions(){
+      return self::$propertiesOptions;
     }
 
     public function getData( $key ) {

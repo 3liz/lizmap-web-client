@@ -65,9 +65,9 @@ class configCtrl extends jController {
 
       $group_names = array();
       foreach ($rights as $r) {
-	      if (!array_key_exists($r->id_aclsbj,$group_names)){
-	        $group_names[$r->id_aclsbj] = array();
-	      }
+        if (!array_key_exists($r->id_aclsbj,$group_names)){
+          $group_names[$r->id_aclsbj] = array();
+        }
         $group_names[$r->id_aclsbj][] = $r->group_name;
       }
       foreach ($group_names as $k => $v) {
@@ -85,7 +85,7 @@ class configCtrl extends jController {
     $daosubject = jDao::get('jacl2db~jacl2subject','jacl2_profile');
     foreach($daosubject->findAllSubject() as $subject)
       $labels[$subject->id_aclsbj] = $this->getLabel($subject->id_aclsbj, $subject->label_key);
-      
+
     // Get Lizmap version from project.xml
     $xmlPath = jApp::appPath('project.xml');
     $xmlLoad = simplexml_load_file($xmlPath);
@@ -139,7 +139,7 @@ class configCtrl extends jController {
         else
           $form->setData($ser, 'off');
     }
-    
+
     // If wrong cacheRootDirectory, use the system temporary directory
     $cacheRootDirectory = $form->getData('cacheRootDirectory');
     if(!is_writable($cacheRootDirectory) or !is_dir($cacheRootDirectory)){
@@ -238,7 +238,7 @@ class configCtrl extends jController {
     if (!$form->check()) {
       $ok = false;
     }
-    
+
     // Check the cacheRootDirectory : must be writable
     $cacheRootDirectory = $form->getData('cacheRootDirectory');
     if(!is_writable($cacheRootDirectory) or !is_dir($cacheRootDirectory)){
@@ -494,12 +494,20 @@ class configCtrl extends jController {
     $form->setData('repository', (string)$lrep->getKey());
     $form->setReadOnly('repository', true);
     // Create and fill form controls relatives to repository data
-    foreach($lrep->getProperties() as $k){
+    $propertiesOptions = $lrep->getPropertiesOptions();
+
+    foreach ( $lrep->getProperties() as $k ) {
       $v = $lrep->getData($k);
+
       // Create form control
-      $ctrl = new jFormsControlInput($k);
-      $ctrl->label = $k;
-      $ctrl->required = true;
+      if ( $propertiesOptions[$k]['fieldType'] == 'checkbox' ) {
+          $ctrl = new jFormsControlCheckbox($k);
+      }
+      else {
+        $ctrl = new jFormsControlInput($k);
+      }
+      $ctrl->required = $propertiesOptions[$k]['required'];
+      $ctrl->label = jLocale::get("admin~admin.form.admin_section.repository.".$k.".label");
       $ctrl->size = 100;
       $datatype = new jDatatypeString();
       $ctrl->datatype=$datatype;
@@ -538,10 +546,17 @@ class configCtrl extends jController {
 
     if ($form) {
       // reconstruct form fields based on repositoryPropertyList
+      $propertiesOptions = lizmap::getRepositoryPropertiesOptions();
+
       foreach(lizmap::getRepositoryProperties() as $k){
-        $ctrl = new jFormsControlInput($k);
-        $ctrl->label = $k;
-        $ctrl->required = true;
+        if ( $propertiesOptions[$k]['fieldType'] == 'checkbox' ) {
+          $ctrl = new jFormsControlCheckbox($k);
+        }
+        else {
+          $ctrl = new jFormsControlInput($k);
+        }
+        $ctrl->required = $propertiesOptions[$k]['required'];
+        $ctrl->label = jLocale::get("admin~admin.form.admin_section.repository.".$k.".label");
         $ctrl->size = 100;
         $datatype = new jDatatypeString();
         $ctrl->datatype=$datatype;
@@ -610,9 +625,14 @@ class configCtrl extends jController {
 
     // Rebuild form fields
     foreach(lizmap::getRepositoryProperties() as $k){
-      $ctrl = new jFormsControlInput($k);
-      $ctrl->label = $k;
-      $ctrl->required = true;
+      if ( $propertiesOptions[$k]['fieldType'] == 'checkbox' ) {
+        $ctrl = new jFormsControlCheckbox($k);
+      }
+      else {
+        $ctrl = new jFormsControlInput($k);
+      }
+      $ctrl->required = $propertiesOptions[$k]['required'];
+      $ctrl->label = jLocale::get("admin~admin.form.admin_section.repository.".$k.".label");
       $datatype = new jDatatypeString();
       $ctrl->datatype=$datatype;
       $form->addControl($ctrl);
@@ -716,7 +736,7 @@ class configCtrl extends jController {
 
     // Redirect to the index
     $rep= $this->getResponse("redirect");
-    
+
     if($new){
       jMessage::add(jLocale::get("admin~admin.form.admin_section.message.configure.rights"));
       $rep->action="admin~config:modifySection";
@@ -724,7 +744,7 @@ class configCtrl extends jController {
     }else{
       $rep->action="admin~config:index";
     }
-    
+
 
     return $rep;
   }
@@ -783,7 +803,7 @@ class configCtrl extends jController {
 
     return $rep;
   }
-  
+
   /**
   * Empty a map service cache
   * @param string $repository Repository for which to remove all tile cache
@@ -817,7 +837,7 @@ class configCtrl extends jController {
       }
     }
     closedir($handle);
-    
+
     // Remove layer files and folder cache
     if($lrep && $lproj){
       foreach($results as $rem){
@@ -841,8 +861,8 @@ class configCtrl extends jController {
     $and = ' AND 1>2 ';
     $cnx = jDb::getConnection('jauthdb~jelixuser', 'jauth');
     $sql = "
-    SELECT u.usr_login, u.usr_password 
-    FROM jlx_user u INNER JOIN lizlogin l 
+    SELECT u.usr_login, u.usr_password
+    FROM jlx_user u INNER JOIN lizlogin l
     ON l.usr_password = u.usr_password AND l.usr_login = u.usr_login
     WHERE 2>1
     ";
