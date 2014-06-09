@@ -28,13 +28,13 @@
         <a class="btn liz-project-show-desc" href="#link-projet-{$idm}" onclick="$('#liz-project-modal-{$idm}').modal('show'); return false;">{@default.project.open.map.metadata@}</a>
       </p>
     </div>
- 
+
     <div id="liz-project-modal-{$idm}" class="modal fade hide" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" data-show="false" data-keyboard="false" data-backdrop="static">
-    
-      <div class="modal-header">  
-        <a class="close" data-dismiss="modal">×</a>  
-        <h3>{$p->title}</h3>  
-      </div>  
+
+      <div class="modal-header">
+        <a class="close" data-dismiss="modal">×</a>
+        <h3>{$p->title}</h3>
+      </div>
       <div class="modal-body">
         <dl class="dl-horizontal">
           <dt>{@view~map.metadata.h2.illustration@}</dt>
@@ -47,11 +47,15 @@
           <dd>{$p->proj}&nbsp;</dd>
           <dt>{@default.project.bbox.label@}</dt>
           <dd>{$p->bbox}</dd>
-        </dl>       
-      </div>  
+          {if $p->wmsGetCapabilitiesUrl}
+          <dt>{@view~map.metadata.properties.wmsGetCapabilitiesUrl@}</dt>
+          <dd><small><a href="{$p->wmsGetCapabilitiesUrl}" target="_blank">WMS Url</a></small></dd>
+          {/if}
+        </dl>
+      </div>
       <div class="modal-footer">
         <a class="btn liz-project-view" href="{$p->url}">{@default.project.open.map@}</a>
-        <a href="#" class="btn" data-dismiss="modal">{@default.project.close.map.metadata@}</a>  
+        <a href="#" class="btn" data-dismiss="modal">{@default.project.close.map.metadata@}</a>
       </div>
     </div>
   </li>

@@ -20,10 +20,11 @@ class lizmapMainViewItem {
     public $img = '';
     public $order = 0;
     public $type = '';
-    
+    public $wmsGetCapabilitiesUrl = '';
+
     public $childItems = array();
-    
-    public function __construct($id, $title, $abstract='', $proj='', $bbox='', $url='', $img='', $order=0, $parentId='', $type='rep') {
+
+    public function __construct($id, $title, $abstract='', $proj='', $bbox='', $url='', $img='', $order=0, $parentId='', $type='rep', $wmsGetCapabilitiesUrl='') {
         $this->id = $id;
         $this->parentId = $parentId;
         $this->title = $title;
@@ -34,8 +35,9 @@ class lizmapMainViewItem {
         $this->img = $img;
         $this->order = $order;
         $this->type = $type;
+        $this->wmsGetCapabilitiesUrl = $wmsGetCapabilitiesUrl;
     }
-    
+
     public function copyFrom($item) {
         $this->title = $item->title;
         $this->abstract = $item->abstract;

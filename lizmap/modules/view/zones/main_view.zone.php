@@ -37,6 +37,13 @@ class main_viewZone extends jZone {
             $lrep = lizmap::getRepository($r);
             $mrep = new lizmapMainViewItem($r, $lrep->getData('label'));
             $lprojects = $lrep->getProjects();
+
+            // WMS GetCapabilities Url
+            $wmsGetCapabilitiesUrl = jacl2::check(
+              'lizmap.tools.displayGetCapabilitiesLinks',
+              $lrep->getKey()
+            );
+
             foreach ($lprojects as $p) {
               $pOptions = $p->getOptions();
               if (
@@ -44,6 +51,9 @@ class main_viewZone extends jZone {
                 && $pOptions->hideProject == 'True'
               ){
                 continue;
+              }
+              if ( $wmsGetCapabilitiesUrl ) {
+                $wmsGetCapabilitiesUrl = $p->getData('wmsGetCapabilitiesUrl');
               }
               $mrep->childItems[] = new lizmapMainViewItem(
                 $p->getData('id'),
@@ -55,7 +65,8 @@ class main_viewZone extends jZone {
                 jUrl::get('view~media:illustration', array("repository"=>$p->getData('repository'),"project"=>$p->getData('id'))),
                 0,
                 $r,
-                'map'
+                'map',
+                $wmsGetCapabilitiesUrl
               );
             }
             $maps[$r] = $mrep;
