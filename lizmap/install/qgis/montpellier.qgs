@@ -5,10 +5,10 @@
     <mapcanvas>
         <units>degrees</units>
         <extent>
-            <xmin>3.7540574839443388</xmin>
-            <ymin>43.53239376749659328</ymin>
-            <xmax>3.99429656851634851</xmax>
-            <ymax>43.68739464926033378</ymax>
+            <xmin>3.75405748394433703</xmin>
+            <ymin>43.52758744508426503</ymin>
+            <xmax>3.99429656851635029</xmax>
+            <ymax>43.69220097167266204</ymax>
         </extent>
         <projections>1</projections>
         <destinationsrs>
@@ -24,10 +24,13 @@
             </spatialrefsys>
         </destinationsrs>
         <layer_coordinate_transform_info>
+            <layer_coordinate_transform destAuthId="EPSG:4326" srcAuthId="EPSG:3857" srcDatumTransform="-1" destDatumTransform="-1" layerid="Photographies_aériennes20140610155023520"/>
+            <layer_coordinate_transform destAuthId="EPSG:4326" srcAuthId="EPSG:3857" srcDatumTransform="-1" destDatumTransform="-1" layerid="frmt_wms_openstreetmap_mapquest_tms20140610162911446"/>
             <layer_coordinate_transform destAuthId="EPSG:4326" srcAuthId="EPSG:2154" srcDatumTransform="-1" destDatumTransform="-1" layerid="VilleMTP_MTP_SousQuartiers_201120130929113137811"/>
+            <layer_coordinate_transform destAuthId="EPSG:4326" srcAuthId="EPSG:3857" srcDatumTransform="-1" destDatumTransform="-1" layerid="frmt_wms_openstreetmap_mapnik_tms20140610162910636"/>
         </layer_coordinate_transform_info>
     </mapcanvas>
-    <legend updateDrawingOrder="true" activeLayer="VilleMTP_MTP_SousQuartiers_201120130929113137811">
+    <legend updateDrawingOrder="true" activeLayer="frmt_wms_openstreetmap_mapquest_tms20140610162911446">
         <legendgroup open="true" checked="Qt::Checked" name="Edition">
             <legendlayer drawingOrder="1" open="false" checked="Qt::Checked" name="points of interest" showFeatureCount="0">
                 <filegroup open="false" hidden="false">
@@ -87,6 +90,22 @@
                     <legendlayerfile isInOverview="0" layerid="VilleMTP_MTP_Quartiers_2011_432620130116112351546" visible="0"/>
                 </filegroup>
             </legendlayer>
+        </legendgroup>
+        <legendgroup open="true" checked="Qt::Unchecked" name="Hidden">
+            <legendgroup open="true" checked="Qt::Unchecked" name="osm-mapquest">
+                <legendlayer drawingOrder="-1" open="false" checked="Qt::Unchecked" name="frmt_wms_openstreetmap_mapquest_tms" showFeatureCount="0">
+                    <filegroup open="false" hidden="false">
+                        <legendlayerfile isInOverview="0" layerid="frmt_wms_openstreetmap_mapquest_tms20140610162911446" visible="0"/>
+                    </filegroup>
+                </legendlayer>
+            </legendgroup>
+            <legendgroup open="true" checked="Qt::Unchecked" name="osm-mapnik">
+                <legendlayer drawingOrder="-1" open="false" checked="Qt::Unchecked" name="frmt_wms_openstreetmap_mapnik_tms" showFeatureCount="0">
+                    <filegroup open="false" hidden="false">
+                        <legendlayerfile isInOverview="0" layerid="frmt_wms_openstreetmap_mapnik_tms20140610162910636" visible="0"/>
+                    </filegroup>
+                </legendlayer>
+            </legendgroup>
         </legendgroup>
     </legend>
     <Composer title="Composeur1" visible="0">
@@ -332,8 +351,10 @@
                             </symbols>
                         </VectorClassificationItemNg>
                     </LayerItem>
+                    <LayerItem layerId="frmt_wms_openstreetmap_mapnik_tms20140610162910636" userText="" style="subgroup" text="frmt_wms_openstreetmap_mapnik_tms" showFeatureCount="0"/>
+                    <LayerItem layerId="frmt_wms_openstreetmap_mapquest_tms20140610162911446" userText="" style="subgroup" text="frmt_wms_openstreetmap_mapquest_tms" showFeatureCount="0"/>
                 </Model>
-                <ComposerItem width="81.3625" x="252.331" transparency="0" y="84.0089" height="122.2" positionMode="0" frame="true" outlineWidth="0.3" zValue="5" itemRotation="0" lastValidViewScaleFactor="1.39597" uuid="{628b29bf-e618-468f-b6e7-190fe07de241}" id="" background="false" blendMode="0" positionLock="false">
+                <ComposerItem width="85.35" x="252.331" transparency="0" y="84.0089" height="137.2" positionMode="0" frame="true" outlineWidth="0.3" zValue="5" itemRotation="0" lastValidViewScaleFactor="1.39597" uuid="{628b29bf-e618-468f-b6e7-190fe07de241}" id="" background="false" blendMode="0" positionLock="false">
                     <FrameColor alpha="255" red="0" blue="0" green="0"/>
                     <BackgroundColor alpha="255" red="255" blue="255" green="255"/>
                 </ComposerItem>
@@ -1471,8 +1492,10 @@
                             </symbols>
                         </VectorClassificationItemNg>
                     </LayerItem>
+                    <LayerItem layerId="frmt_wms_openstreetmap_mapnik_tms20140610162910636" userText="" style="subgroup" text="frmt_wms_openstreetmap_mapnik_tms" showFeatureCount="0"/>
+                    <LayerItem layerId="frmt_wms_openstreetmap_mapquest_tms20140610162911446" userText="" style="subgroup" text="frmt_wms_openstreetmap_mapquest_tms" showFeatureCount="0"/>
                 </Model>
-                <ComposerItem width="286.484" x="5.25781" transparency="0" y="122.6" height="84" positionMode="0" frame="false" outlineWidth="0.3" zValue="2" itemRotation="0" lastValidViewScaleFactor="1.36982" uuid="{e5857829-a6bb-42db-aed6-70473177b9da}" id="" background="true" blendMode="0" positionLock="false">
+                <ComposerItem width="452.133" x="5.25781" transparency="0" y="122.6" height="86.2" positionMode="0" frame="false" outlineWidth="0.3" zValue="2" itemRotation="0" lastValidViewScaleFactor="1.36982" uuid="{e5857829-a6bb-42db-aed6-70473177b9da}" id="" background="true" blendMode="0" positionLock="false">
                     <FrameColor alpha="255" red="0" blue="0" green="0"/>
                     <BackgroundColor alpha="255" red="255" blue="255" green="255"/>
                 </ComposerItem>
@@ -1526,7 +1549,7 @@
             </ComposerMap>
         </Composition>
     </Composer>
-    <projectlayers layercount="10">
+    <projectlayers layercount="12">
         <maplayer minimumScale="0" maximumScale="1e+08" simplifyDrawingHints="1" minLabelScale="1" maxLabelScale="1e+08" simplifyDrawingTol="1" geometry="Polygon" simplifyMaxScale="1" type="vector" hasScaleBasedVisibilityFlag="1" simplifyLocal="1" scaleBasedLabelVisibilityFlag="0">
             <id>VilleMTP_MTP_Quartiers_2011_432620130116112351546</id>
             <datasource>./data/vector/VilleMTP_MTP_Quartiers_2011_4326.shp</datasource>
@@ -3503,6 +3526,76 @@
             <excludeAttributesWFS/>
             <attributeactions/>
         </maplayer>
+        <maplayer minimumScale="0" maximumScale="1e+08" type="raster" hasScaleBasedVisibilityFlag="0">
+            <id>frmt_wms_openstreetmap_mapnik_tms20140610162910636</id>
+            <datasource>./data/raster/frmt_wms_openstreetmap_mapnik_tms.xml</datasource>
+            <title></title>
+            <abstract></abstract>
+            <keywordList>
+                <value></value>
+            </keywordList>
+            <layername>frmt_wms_openstreetmap_mapnik_tms</layername>
+            <srs>
+                <spatialrefsys>
+                    <proj4>+proj=merc +a=6378137 +b=6378137 +lat_ts=0.0 +lon_0=0.0 +x_0=0.0 +y_0=0 +k=1.0 +units=m +nadgrids=@null +wktext  +no_defs</proj4>
+                    <srsid>3857</srsid>
+                    <srid>3857</srid>
+                    <authid>EPSG:3857</authid>
+                    <description>WGS 84 / Pseudo Mercator</description>
+                    <projectionacronym>merc</projectionacronym>
+                    <ellipsoidacronym>WGS84</ellipsoidacronym>
+                    <geographicflag>false</geographicflag>
+                </spatialrefsys>
+            </srs>
+            <customproperties>
+                <property key="identify/format" value="Value"/>
+            </customproperties>
+            <provider>gdal</provider>
+            <pipe>
+                <rasterrenderer opacity="1" alphaBand="-1" blueBand="3" greenBand="2" type="multibandcolor" redBand="1">
+                    <rasterTransparency/>
+                </rasterrenderer>
+                <brightnesscontrast brightness="0" contrast="0"/>
+                <huesaturation colorizeGreen="128" colorizeOn="0" colorizeRed="255" colorizeBlue="128" grayscaleMode="0" saturation="0" colorizeStrength="100"/>
+                <rasterresampler maxOversampling="2"/>
+            </pipe>
+            <blendMode>0</blendMode>
+        </maplayer>
+        <maplayer minimumScale="0" maximumScale="1e+08" type="raster" hasScaleBasedVisibilityFlag="0">
+            <id>frmt_wms_openstreetmap_mapquest_tms20140610162911446</id>
+            <datasource>./data/raster/frmt_wms_openstreetmap_mapquest_tms.xml</datasource>
+            <title></title>
+            <abstract></abstract>
+            <keywordList>
+                <value></value>
+            </keywordList>
+            <layername>frmt_wms_openstreetmap_mapquest_tms</layername>
+            <srs>
+                <spatialrefsys>
+                    <proj4>+proj=merc +a=6378137 +b=6378137 +lat_ts=0.0 +lon_0=0.0 +x_0=0.0 +y_0=0 +k=1.0 +units=m +nadgrids=@null +wktext  +no_defs</proj4>
+                    <srsid>3857</srsid>
+                    <srid>3857</srid>
+                    <authid>EPSG:3857</authid>
+                    <description>WGS 84 / Pseudo Mercator</description>
+                    <projectionacronym>merc</projectionacronym>
+                    <ellipsoidacronym>WGS84</ellipsoidacronym>
+                    <geographicflag>false</geographicflag>
+                </spatialrefsys>
+            </srs>
+            <customproperties>
+                <property key="identify/format" value="Value"/>
+            </customproperties>
+            <provider>gdal</provider>
+            <pipe>
+                <rasterrenderer opacity="1" alphaBand="-1" blueBand="3" greenBand="2" type="multibandcolor" redBand="1">
+                    <rasterTransparency/>
+                </rasterrenderer>
+                <brightnesscontrast brightness="0" contrast="0"/>
+                <huesaturation colorizeGreen="128" colorizeOn="0" colorizeRed="255" colorizeBlue="128" grayscaleMode="0" saturation="0" colorizeStrength="100"/>
+                <rasterresampler maxOversampling="2"/>
+            </pipe>
+            <blendMode>0</blendMode>
+        </maplayer>
         <maplayer minimumScale="0" maximumScale="1e+08" simplifyDrawingHints="1" minLabelScale="1" maxLabelScale="1e+08" simplifyDrawingTol="1" geometry="Line" simplifyMaxScale="1" type="vector" hasScaleBasedVisibilityFlag="1" simplifyLocal="1" scaleBasedLabelVisibilityFlag="0">
             <id>tram20121031171456234</id>
             <datasource>./data/vector/tram.shp</datasource>
@@ -3794,7 +3887,7 @@
             <DegreeFormat type="QString">D</DegreeFormat>
         </PositionPrecision>
         <WMSContactPhone type="QString">+334 67 16 64 51</WMSContactPhone>
-        <WMSServiceCapabilities type="bool">true</WMSServiceCapabilities>
+        <WMSServiceCapabilities type="QString">True</WMSServiceCapabilities>
         <WMSServiceAbstract type="QString">Demo project with bus and tramway lines in Montpellier, France.
 Data is licensed under ODbl, OpenStreetMap contributors</WMSServiceAbstract>
         <WMSAddWktGeometry type="bool">false</WMSAddWktGeometry>
