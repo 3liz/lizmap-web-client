@@ -45,6 +45,25 @@ var lizMap = function() {
    * {object} The layer's tree
    */
   var tree = {config:{type:'group'}};
+  /**
+   * PRIVATE Property: externalBaselayersReplacement
+   *
+   */
+  var externalBaselayersReplacement = {
+    'osm': 'osm-mapnik',
+    'mapquest': 'osm-mapquest',
+    'osm-cyclemap': 'osm-cyclemap',
+    'Google Satellite': 'google-satellite',
+    'Google Hybrid': 'google-hybrid',
+    'Google Terrain': 'google-terrain',
+    'Google Streets': 'google-street',
+    'Bing Road': 'bing-road',
+    'Bing Aerial': 'bing-aerial',
+    'Bing Hybrid': 'bing-hybrid',
+    'ignmap': 'ign-scan',
+    'ignplan': 'ign-plan',
+    'ignphoto': 'ign-photo'
+  }
 
 
   /**
@@ -2033,6 +2052,13 @@ var lizMap = function() {
         printLayers.push(l.params['LAYERS']);
       });
       printLayers.reverse();
+
+      // Get active baselayer, and add the corresponding QGIS layer if needed
+      var activeBaseLayerName = map.baseLayer.name;
+      if ( activeBaseLayerName in externalBaselayersReplacement ) {
+        printLayers.push(externalBaselayersReplacement[activeBaseLayerName]);
+      }
+
       url += '&'+dragCtrl.layout.mapId+':LAYERS='+printLayers.join(',');
       if ( dragCtrl.layout.overviewId != null
           && config.options.hasOverview ) {
