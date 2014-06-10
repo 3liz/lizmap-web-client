@@ -3608,6 +3608,8 @@ lizMap.events.on({
     && evt.config.options.osmMapnik == 'True') ||
    (('osmMapquest' in evt.config.options)
     && evt.config.options.osmMapquest == 'True') ||
+   (('osmCyclemap' in evt.config.options)
+    && evt.config.options.osmCyclemap == 'True') ||
    (('googleStreets' in evt.config.options)
     && evt.config.options.googleStreets == 'True') ||
    (('googleSatellite' in evt.config.options)
@@ -3671,6 +3673,7 @@ lizMap.events.on({
      // Specify zoom level number
      if ((('osmMapnik' in evt.config.options) && evt.config.options.osmMapnik == 'True') ||
          (('osmMapquest' in evt.config.options) && evt.config.options.osmMapquest == 'True') ||
+         (('osmCyclemap' in evt.config.options) && evt.config.options.osmCyclemap == 'True') ||
          (('bingStreets' in evt.config.options) && evt.config.options.bingStreets == 'True' && ('bingKey' in evt.config.options)) ||
          (('bingSatellite' in evt.config.options) && evt.config.options.bingSatellite == 'True' && ('bingKey' in evt.config.options)) ||
          (('bingHybrid' in evt.config.options) && evt.config.options.bingHybrid == 'True' && ('bingKey' in evt.config.options)) ||
@@ -3763,6 +3766,8 @@ lizMap.events.on({
     && evt.config.options.osmMapnik == 'True') ||
     (('osmMapquest' in evt.config.options)
      && evt.config.options.osmMapquest == 'True') ||
+    (('osmCyclemap' in evt.config.options)
+     && evt.config.options.osmCyclemap == 'True') ||
     (('googleStreets' in evt.config.options)
      && evt.config.options.googleStreets == 'True') ||
     (('googleSatellite' in evt.config.options)
@@ -3874,6 +3879,35 @@ lizMap.events.on({
         };
         evt.config.layers['mapquest'] = mapquestCfg;
         evt.baselayers.push(mapquest);
+      }
+      if (('osmCyclemap' in evt.config.options) && evt.config.options.osmCyclemap == 'True') {
+        evt.map.allOverlays = false;
+        var options = {
+          zoomOffset: 0,
+          maxResolution:156543.03390625,
+          numZoomLevels:19
+        };
+        if (lOptions.zoomOffset != 0) {
+          options.zoomOffset = lOptions.zoomOffset;
+          options.maxResolution = lOptions.maxResolution;
+        }
+        if (lOptions.zoomOffset+lOptions.numZoomLevels <= options.numZoomLevels)
+          options.numZoomLevels = lOptions.numZoomLevels;
+        else
+          options.numZoomLevels = options.numZoomLevels - lOptions.zoomOffset;
+        var cyclemap = new OpenLayers.Layer.OSM('osm-cyclemap',
+            ["http://a.tile.opencyclemap.org/cycle/${z}/${x}/${y}.png",
+            "http://b.tile.opencyclemap.org/cycle/${z}/${x}/${y}.png",
+            "http://c.tile.opencyclemap.org/cycle/${z}/${x}/${y}.png"]
+            ,options
+            );
+        cyclemap.maxExtent = maxExtent;
+        var cyclemapCfg = {
+          "name":"cyclemap"
+            ,"title":"OSM CycleMap"
+        };
+        evt.config.layers['osm-cyclemap'] = cyclemapCfg;
+        evt.baselayers.push(cyclemap);
       }
       try {
         if (('googleSatellite' in evt.config.options) && evt.config.options.googleSatellite == 'True') {
