@@ -442,8 +442,8 @@ Timemanager
 }
 
 #toolbar .print select.btn-print-scales {
-  width:auto; 
-  margin-bottom:0; 
+  width:auto;
+  margin-bottom:0;
   text-align:right;
 }
 
@@ -596,6 +596,9 @@ Timemanager
   text-shadow : none;
   cursor : pointer;
   font-size:0.8em;
+}
+#switcher tr.liz-hidden{
+  display:none;
 }
 #switcher div.legendGraphics{
   overflow:auto;
