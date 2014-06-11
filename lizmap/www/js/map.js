@@ -572,7 +572,6 @@ var lizMap = function() {
    */
   function getSwitcherLine(aNode, aParent) {
     var html = '';
-
     var nodeConfig = aNode.config;
     html += '<tr id="'+nodeConfig.type+'-'+aNode.name+'"';
     html += ' class="liz-'+nodeConfig.type;
@@ -580,6 +579,9 @@ var lizMap = function() {
       html += ' child-of-group-'+aParent.name;
     if (('children' in aNode) && aNode['children'].length!=0)
       html += ' expanded parent';
+    if ( 'displayInLegend' in nodeConfig && nodeConfig.displayInLegend == 'False' )
+      html += ' liz-hidden';
+
     html += '">';
 
     html += '<td><button class="checkbox" name="'+nodeConfig.type+'" value="'+aNode.name+'" title="'+lizDict['tree.button.checkbox']+'"></button>';
@@ -1415,6 +1417,8 @@ var lizMap = function() {
       },'xml');
       $('#locate-menu').show();
     }
+
+    $('#switcher span.label').tooltip();
   }
 
   /**
@@ -3603,6 +3607,7 @@ var lizMap = function() {
 lizMap.events.on({
     'treecreated':function(evt){
        //console.log('treecreated');
+
  if (
    (('osmMapnik' in evt.config.options)
     && evt.config.options.osmMapnik == 'True') ||
