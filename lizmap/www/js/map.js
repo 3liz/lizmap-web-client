@@ -295,6 +295,7 @@ var lizMap = function() {
                   LAYERFONTSIZE: 9,
                   ITEMFONTSIZE: 9,
                   SYMBOLSPACE: 1,
+                  ICONLABELSPACE: 2,
                   DPI: 96};
     var layerConfig = config.layers[layer.params['LAYERS']];
     if (layerConfig.id==layerConfig.name)
@@ -302,8 +303,9 @@ var lizMap = function() {
     else {
       legendParams['LAYERFONTSIZE'] = 0;
       legendParams['LAYERSPACE'] = 0;
+      legendParams['LAYERFONTBOLD'] = "FALSE";
+      legendParams['LAYERTITLE'] = "FALSE";
     }
-    legendParams['LAYERFONTBOLD'] = "FALSE";
     if (withScale)
       legendParams['SCALE'] = map.getScale();
     var legendParamsString = OpenLayers.Util.getParameterString(
