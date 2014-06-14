@@ -44,6 +44,8 @@ class serviceCtrl extends jController {
     $request = strtoupper($this->iParam('REQUEST'));
     if($request == "GETCAPABILITIES")
       return $this->getCapabilities();
+    elseif ($request == "GETCONTEXT")
+      return $this->GetContext();
     elseif ($request == "GETLEGENDGRAPHICS")
       return $this->GetLegendGraphics();
     elseif ($request == "GETLEGENDGRAPHIC")
@@ -278,6 +280,52 @@ class serviceCtrl extends jController {
     return $rep;
   }
 
+  /**
+  * GetContext
+  * @param string $repository Lizmap Repository
+  * @param string $project Name of the project : mandatory.
+  * @return JSON configuration file for the specified project.
+  */
+  function GetContext(){
+
+    // Get parameters
+    if(!$this->getServiceParameters())
+      return $this->serviceException();
+
+    $url = $this->services->wmsServerURL.'?';
+
+    $bparams = http_build_query($this->params);
+    $querystring = $url . $bparams;
+
+    // Get remote data
+    $getRemoteData = $this->lizmapCache->getRemoteData(
+      $querystring,
+      $this->services->proxyMethod,
+      $this->services->debugMode
+    );
+    $data = $getRemoteData[0];
+    $mime = $getRemoteData[1];
+
+    // Replace qgis server url in the XML (hide real location)
+    $sUrl = jUrl::getFull(
+      "lizmap~service:index",
+      array("repository"=>$this->repository->getKey(), "project"=>$this->project->getKey()),
+      0,
+      $_SERVER['SERVER_NAME']
+    );
+    $sUrl = str_replace('&', '&amp;', $sUrl);
+    $data = preg_replace('/xlink\:href=".*"/', 'xlink:href="'.$sUrl.'&amp;"', $data);
+
+    // Return response
+    $rep = $this->getResponse('binary');
+    $rep->mimeType = $mime;
+    $rep->content = $data;
+    $rep->doDownload = false;
+    $rep->outputFileName  =  'qgis_server_getContext';
+
+    return $rep;
+  }
+  
   /**
   * GetMap
   * @param string $repository Lizmap Repository
