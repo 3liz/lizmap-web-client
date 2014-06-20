@@ -46,6 +46,8 @@ class serviceCtrl extends jController {
       return $this->getCapabilities();
     elseif ($request == "GETLEGENDGRAPHICS")
       return $this->GetLegendGraphics();
+    elseif ($request == "GETLEGENDGRAPHIC")
+      return $this->GetLegendGraphics();
     elseif ($request == "GETFEATUREINFO")
       return $this->GetFeatureInfo();
     elseif ($request == "GETPRINT")

@@ -286,7 +286,7 @@ var lizMap = function() {
     });
     var legendParams = {SERVICE: "WMS",
                   VERSION: "1.3.0",
-                  REQUEST: "GetLegendGraphics",
+                  REQUEST: "GetLegendGraphic",
                   LAYERS: layer.params['LAYERS'],
                   EXCEPTIONS: "application/vnd.ogc.se_inimage",
                   FORMAT: "image/png",
