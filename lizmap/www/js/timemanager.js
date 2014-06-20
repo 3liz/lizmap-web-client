@@ -309,9 +309,9 @@ var lizTimemanager = function() {
                 // WFS parameters
                 var wmsOptions = {
                     'SERVICE':'WMS'
-                    ,'VERSION':'1.3.0'
+                    ,'VERSION':'1.1.1'
                     ,'REQUEST':'GetStyles'
-                    ,'LAYER': wmsLayer
+                    ,'LAYERS': wmsLayer
                     ,'STYLE': ''
                 };
                 OpenLayers.Request.GET({
