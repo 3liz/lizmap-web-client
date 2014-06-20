@@ -16,7 +16,7 @@ modulesPath="lib:jelix-admin-modules/,lib:jelix-modules/,app:modules/,app:lizmap
 
 
 
-availableLocales="fr_FR,en_US,it_IT,es_ES"
+availableLocales="fr_FR,en_US,it_IT,es_ES,pt_PT"
 [coordplugins]
 ;name = file_ini_name or 1
 ;magicquotes = 1
