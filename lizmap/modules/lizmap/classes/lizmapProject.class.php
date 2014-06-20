@@ -402,28 +402,30 @@ class lizmapProject{
 
       // Remove editionLayers from config if no right to access this tool
       // Or if no ability to load spatialite extension
-      if(jacl2::check('lizmap.tools.edition.use', $this->repository->getKey())){
-        $spatial = false;
-        if ( class_exists('SQLite3') ) {
-          try{
-            $db = new SQLite3(':memory:');
-            $spatial = $db->loadExtension('libspatialite.so'); # loading SpatiaLite as an extension
-          }catch(Exception $e){
-            $spatial = False;
+      if ( property_exists( $configJson, 'editionLayers' ) ) {
+        if( jacl2::check('lizmap.tools.edition.use', $this->repository->getKey()) ){
+          $spatial = false;
+          if ( class_exists('SQLite3') ) {
+            try{
+              $db = new SQLite3(':memory:');
+              $spatial = $db->loadExtension('libspatialite.so'); # loading SpatiaLite as an extension
+            }catch(Exception $e){
+              $spatial = False;
+            }
           }
-        }
-        if(!$spatial){
-          foreach( $configJson->editionLayers as $key=>$obj ){
-            $layerXml = $this->getXmlLayer( $obj->layerId );
-            $layerXmlZero = $layerXml[0];
-            $provider = $layerXmlZero->xpath('provider');
-            $provider = (string)$provider[0];
-            if ( $provider == 'spatialite' )
-              unset($configJson->editionLayers->$key);
+          if(!$spatial){
+            foreach( $configJson->editionLayers as $key=>$obj ){
+              $layerXml = $this->getXmlLayer( $obj->layerId );
+              $layerXmlZero = $layerXml[0];
+              $provider = $layerXmlZero->xpath('provider');
+              $provider = (string)$provider[0];
+              if ( $provider == 'spatialite' )
+                unset($configJson->editionLayers->$key);
+            }
           }
+        } else {
+          unset($configJson->editionLayers);
         }
-      } else {
-        unset($configJson->editionLayers);
       }
 
       $configRead = json_encode($configJson);
