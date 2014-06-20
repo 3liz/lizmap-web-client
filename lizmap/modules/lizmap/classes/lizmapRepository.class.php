@@ -50,7 +50,8 @@ class lizmapRepository{
       if(array_key_exists($section, $readConfigPath)){
         // Set each property
         foreach(self::$properties as $property){
-          $this->data[$property] = $readConfigPath[$section][$property];
+		  if ( array_key_exists( $property, $readConfigPath[$section] ) )
+            $this->data[$property] = $readConfigPath[$section][$property];
         }
       }
       $this->key = $key;
