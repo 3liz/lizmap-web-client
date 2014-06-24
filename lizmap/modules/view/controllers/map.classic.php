@@ -35,13 +35,14 @@ class mapCtrl extends jController {
     // Get lizmapRepository class
     // if repository not found get the default
     $lrep = null;
+    $lser = lizmap::getServices();
     if ( !$repository ){
-      $lser = lizmap::getServices();
       $lrep = lizmap::getRepository($lser->defaultRepository);
-    } else
+    } else {
       $lrep = lizmap::getRepository($repository);
+    }
 
-    if(!jacl2::check('lizmap.repositories.view', $lrep->getKey())){
+    if(!$lrep or !jacl2::check('lizmap.repositories.view', $lrep->getKey())){
       $rep = $this->getResponse('redirect');
       $rep->action = 'view~default:index';
       jMessage::add(jLocale::get('view~default.repository.access.denied'), 'error');
