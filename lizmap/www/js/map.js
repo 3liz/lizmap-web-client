@@ -3910,7 +3910,7 @@ lizMap.events.on({
             );
         cyclemap.maxExtent = maxExtent;
         var cyclemapCfg = {
-          "name":"cyclemap"
+          "name":"osm-cyclemap"
             ,"title":"OSM CycleMap"
         };
         evt.config.layers['osm-cyclemap'] = cyclemapCfg;
