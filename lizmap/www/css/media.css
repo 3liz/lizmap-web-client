@@ -66,7 +66,7 @@ only screen and (                   max-device-height : 640px) {
 /*  .navbar-inner ul {*/
 /*    height:30px\9;*/
 /*  }*/
-  
+
   /*  for ie*/
   .navbar-inner ul li{
     display:inline\9;
@@ -75,6 +75,15 @@ only screen and (                   max-device-height : 640px) {
   #overview-box {
     right:10px;
     bottom:1em;
+  }
+
+  #attribute-table-panel  {
+    width: 100%;
+    height: auto;
+  }
+  #attribute-table-panel.visible {
+    height: 95%;
+    opacity: 1;
   }
 
 }

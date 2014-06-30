@@ -99,6 +99,9 @@ class mapCtrl extends jController {
     $rep->addJSLink($bp.'jelix/js/jforms_light.js');
     $rep->addJSLink($bp.'js/bootstrapErrorDecoratorHtml.js');
 
+    // Add attributeTable js
+    $rep->addJSLink($bp.'js/attributeTable.js');
+
     // Pass some configuration options to the web page through javascript var
     $lizUrls = array(
       "params" => array('repository'=>$repository, 'project'=>$project),

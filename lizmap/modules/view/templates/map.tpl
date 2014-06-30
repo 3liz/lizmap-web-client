@@ -79,14 +79,28 @@
         <button class="button" title="{@view~map.overviewbar.displayoverview.hover@}"></button>
       </div>
     </div>
+
     <div id="attribution-box">
       <span id="attribution"></span>
       {image $j_themepath.'css/img/logo_footer.png'}
     </div>
+
     <div id="permalink-box">
       <a href="" target="_blank" id="permalink">{@view~map.permalink.title@}</a>
     </div>
+
     <div id="message" class="span6">{jmessage_bootstrap}</div>
+
+    <div id="attribute-table-panel" style="display:none;">
+      <h3>
+          <span class="title">
+              <button class="btn-attribute-clear btn btn-mini btn-link" type="button" title="{@view~map.attributeLayers.toolbar.btn.clear.title@}"></button>
+              <button class="btn-attribute-glue btn btn-mini btn-link" type="button" title="{@view~map.attributeLayers.toolbar.btn.glue.activate.title@}"></button>
+              <span class="icon"></span>&nbsp;{@view~map.attributeLayers.toolbar.title@}
+          </span>
+        </h3>
+        <div id="attribute-table-container"></div>
+    </div>
   </div>
 
   <div id="metadata">
@@ -171,3 +185,4 @@
 
 <div id="edition-modal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" data-show="false" data-keyboard="false" data-backdrop="static">
 </div>
+

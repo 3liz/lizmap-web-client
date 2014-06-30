@@ -894,6 +894,105 @@ Timemanager
   font-size: 0.75em;
 }
 
+#attribute-table-panel {
+  opacity:0.5;
+  position:absolute;
+  width:65%;
+  height:auto;
+  left:0px;
+  bottom:0px;
+  z-index:5000;
+  background-color:#F0F0F0;
+}
+#attribute-table-panel.visible {
+  opacity: 1;
+  height: 50%;
+}
+
+#attribute-table-panel h3 {
+  margin: 1px;
+  background: none repeat scroll 0% 0% #2B2B2B;
+  color: #FBFBFB;
+  line-height: 1.3;
+  border-bottom: 1px solid #DDD;
+  border-top: 1px solid #DDD;
+  font-size: 0.9em;
+}
+#attribute-table-panel .title .btn{
+  width : 16px;
+  height : 16px;
+  background : url(images/sprite_menu.png) no-repeat right;
+  transition: none;
+  float : right;
+  text-shadow : none;
+  border : none;
+  padding : none;
+  transition: none;
+  -webkit-transition: none;
+}
+#attribute-table-panel .title .btn.btn-attribute-clear {
+  background-position : -48px -96px;
+}
+#attribute-table-panel .title .btn.btn-attribute-clear:hover {
+  background-position : -48px -80px;
+}
+#attribute-table-panel .title .btn.btn-attribute-glue {
+  background-position : 0px -32px;
+}
+#attribute-table-panel .title .btn.btn-attribute-glue:hover {
+  background-position : 0px -16px;
+}
+#attribute-table-panel .title .btn.btn-attribute-glue.active {
+  background-position : 0px -16px;
+}
+#attribute-table-panel .title .btn.btn-attribute-glue.active:hover {
+  background-position : 0px -48px;
+}
+
+#attribute-table-panel h3 .icon {
+  background-image : url(images/sprite_20_tools.png);
+}
+.navbar .navbar-inner .attributeLayers .icon {
+  background-image: url("images/sprite_20_tools.png");
+}
+.navbar .nav .attributeLayers .icon {
+  background-position: -120px -100px;
+}
+.navbar .nav .attributeLayers a:hover .icon,
+.navbar .nav .attributeLayers.active a .icon {
+  background-position: -120px -80px;
+}
+#attribute-table-panel h3 .icon {
+  background-position: -120px -80px;
+  display:inline-block;
+  vertical-align:middle;
+  background-image : url(images/sprite_20_tools.png);
+  background-repeat:no-repeat;
+  width:20px;
+  height:20px;
+}
+
+#attribute-table-panel h3 span.title {
+  display: block;
+  padding: 0.5em 0.5em 0.5em 0.7em;
+}
+
+#attribute-table-container {
+  font-size:0.8em;
+  border: 1px solid #606060;
+  position:absolute;
+  top:50px;
+  right:10px;
+  bottom:10px;
+  left:10px;
+  overflow:auto;
+  padding:0.5em;
+}
+
+table.attribute-table-table tr td{
+  cursor:pointer;
+}
+
 #message {
   top : 0;
   left : 0;

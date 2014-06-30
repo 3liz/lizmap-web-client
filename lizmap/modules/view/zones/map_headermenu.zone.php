@@ -35,6 +35,7 @@ class map_headermenuZone extends jZone {
       "geolocation"=>true,
       "timemanager"=>true,
       "print"=>true,
+      "attributeLayers"=>true
     );
 
     $lproj = lizmap::getProject($repository.'~'.$project);
@@ -60,6 +61,8 @@ class map_headermenuZone extends jZone {
       $assign['geolocation'] = false;
 
     $assign['timemanager'] = $lproj->hasTimemanagerLayers();
+
+    $assign['attributeLayers'] = $lproj->hasAttributeLayers();
 
     $this->_tpl->assign($assign);
    }

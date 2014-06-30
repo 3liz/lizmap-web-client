@@ -94,6 +94,13 @@
         </a>
       </li>
       {/if}
+      {if $attributeLayers}
+      <li class="attributeLayers">
+        <a id="toggleAttributeLayers" rel="tooltip" data-original-title="{@view~map.attributeLayers.navbar.title@}" data-placement="bottom" href="#">
+          <span class="icon"></span>
+        </a>
+      </li>
+      {/if}
       {if $isConnected}
       <li class="user dropdown">
         <a class="dropdown-toggle" data-toggle="dropdown" href="#" id="user-info">

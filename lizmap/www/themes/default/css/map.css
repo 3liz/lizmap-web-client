@@ -370,6 +370,72 @@ Timemanager
   background : rgba(255,255,255,0.5);
 }
 
+
+
+#attribute-table-panel {
+  opacity:0.5;
+  width:65%;
+  background-color:#F0F0F0;
+}
+#attribute-table-panel.visible {
+  opacity: 1;
+  height: 50%;
+}
+
+#attribute-table-panel h3 {
+  background: none repeat scroll 0% 0% #2B2B2B;
+  color: #FBFBFB;
+  border-bottom: 1px solid #DDD;
+  border-top: 1px solid #DDD;
+}
+#attribute-table-panel .title .btn{
+  width : 16px;
+  height : 16px;
+  background : url(images/sprite_menu.png) no-repeat right;
+}
+#attribute-table-panel .title .btn.btn-attribute-clear {
+  background-position : -48px -96px;
+}
+#attribute-table-panel .title .btn.btn-attribute-clear:hover {
+  background-position : -48px -80px;
+}
+#attribute-table-panel .title .btn.btn-attribute-glue {
+  background-position : 0px -32px;
+}
+#attribute-table-panel .title .btn.btn-attribute-glue:hover {
+  background-position : 0px -16px;
+}
+#attribute-table-panel .title .btn.btn-attribute-glue.active {
+  background-position : 0px -16px;
+}
+#attribute-table-panel .title .btn.btn-attribute-glue.active:hover {
+  background-position : 0px -48px;
+}
+
+#attribute-table-panel h3 .icon {
+  background-image : url(images/sprite_20_tools.png);
+}
+.navbar .navbar-inner .attributeLayers .icon {
+  background-image: url("images/sprite_20_tools.png");
+}
+.navbar .nav .attributeLayers .icon {
+  background-position: -120px -100px;
+}
+.navbar .nav .attributeLayers a:hover .icon,
+.navbar .nav .attributeLayers.active a .icon {
+  background-position: -120px -80px;
+}
+#attribute-table-panel h3 .icon {
+  background-position: -120px -80px;
+  background-image : url(images/sprite_20_tools.png);
+  width:20px;
+  height:20px;
+}
+
+#attribute-table-container {
+  border: 1px solid #606060;
+}
+
 .alert-info {
   background-color : #3a3c3d;
   border-color : #fbfbfb;

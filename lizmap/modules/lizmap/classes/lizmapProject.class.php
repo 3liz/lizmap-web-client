@@ -169,6 +169,19 @@ class lizmapProject{
       return false;
     }
 
+    public function hasAttributeLayers(){
+      if ( property_exists($this->cfg,'attributeLayers') ){
+        $count = 0;
+        foreach( $this->cfg->attributeLayers as $key=>$obj ){
+          $count += 1;
+        }
+        if ( $count != 0 )
+          return true;
+        return false;
+      }
+      return false;
+    }
+
 
     public function hasEditionLayers(){
       if ( property_exists($this->cfg,'editionLayers') ){
