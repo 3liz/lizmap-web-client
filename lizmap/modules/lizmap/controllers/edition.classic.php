@@ -384,7 +384,9 @@ class editionCtrl extends jController {
 
       // Fill comboboxes of editType "Value relation" from relation layer
       // Query QGIs Server via WFS
-      if($this->formControls[$fieldName]->fieldEditType == 15
+
+      if( ($this->formControls[$fieldName]->fieldEditType == 15
+      or $this->formControls[$fieldName]->fieldEditType == 'ValueRelation')
         and $this->formControls[$fieldName]->valueRelationData
       ){
         $this->fillComboboxFromValueRelationLayer($fieldName);
