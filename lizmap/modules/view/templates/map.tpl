@@ -94,8 +94,10 @@
     <div id="attribute-table-panel" style="display:none;">
       <h3>
           <span class="title">
-              <button class="btn-attribute-clear btn btn-mini btn-link" type="button" title="{@view~map.attributeLayers.toolbar.btn.clear.title@}"></button>
-              <button class="btn-attribute-glue btn btn-mini btn-link" type="button" title="{@view~map.attributeLayers.toolbar.btn.glue.activate.title@}"></button>
+              <button class="btn-attribute-clear btn btn-mini" type="button" title="{@view~map.attributeLayers.toolbar.btn.clear.title@}">{@view~map.attributeLayers.toolbar.btn.clear.title@}</button>
+              &nbsp;
+              <button class="btn-attribute-glue btn btn-mini" type="button" title="{@view~map.attributeLayers.toolbar.btn.glue.activate.title@}">{@view~map.attributeLayers.toolbar.btn.glue.activate.title@}</button>
+              <button class="btn-attribute-size btn btn-mini" type="button" title="{@view~map.attributeLayers.toolbar.btn.size.maximize.title@}">{@view~map.attributeLayers.toolbar.btn.size.maximize.title@}</button>
               <span class="icon"></span>&nbsp;{@view~map.attributeLayers.toolbar.title@}
           </span>
         </h3>

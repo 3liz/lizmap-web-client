@@ -82,7 +82,7 @@ only screen and (                   max-device-height : 640px) {
     height: auto;
   }
   #attribute-table-panel.visible {
-    height: 95%;
+    height: 100%;
     opacity: 1;
   }
 

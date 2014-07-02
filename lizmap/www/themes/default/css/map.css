@@ -381,35 +381,16 @@ Timemanager
   opacity: 1;
   height: 50%;
 }
+#attribute-table-panel.fullsize {
+  height: 100%;
+  width:100%;
+}
 
 #attribute-table-panel h3 {
   background: none repeat scroll 0% 0% #2B2B2B;
   color: #FBFBFB;
   border-bottom: 1px solid #DDD;
   border-top: 1px solid #DDD;
-}
-#attribute-table-panel .title .btn{
-  width : 16px;
-  height : 16px;
-  background : url(images/sprite_menu.png) no-repeat right;
-}
-#attribute-table-panel .title .btn.btn-attribute-clear {
-  background-position : -48px -96px;
-}
-#attribute-table-panel .title .btn.btn-attribute-clear:hover {
-  background-position : -48px -80px;
-}
-#attribute-table-panel .title .btn.btn-attribute-glue {
-  background-position : 0px -32px;
-}
-#attribute-table-panel .title .btn.btn-attribute-glue:hover {
-  background-position : 0px -16px;
-}
-#attribute-table-panel .title .btn.btn-attribute-glue.active {
-  background-position : 0px -16px;
-}
-#attribute-table-panel .title .btn.btn-attribute-glue.active:hover {
-  background-position : 0px -48px;
 }
 
 #attribute-table-panel h3 .icon {
@@ -431,7 +412,16 @@ Timemanager
   width:20px;
   height:20px;
 }
-
+.attributeLayers-layer-div span.attribute-layer-msg {
+  text-decoration:italic;
+  font-size:0.8em;
+}
+.attributeLayers-layer-div span.attribute-layer-msg.success {
+  color:green;
+}
+.attributeLayers-layer-div span.attribute-layer-msg.failure {
+  color:red;
+}
 #attribute-table-container {
   border: 1px solid #606060;
 }
