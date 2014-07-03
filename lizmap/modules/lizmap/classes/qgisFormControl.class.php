@@ -300,7 +300,7 @@ class qgisFormControl{
         $this->isReadOnly = True;
       }
       // Also use "editable" property
-      if( property_exists($this->edittype[0]->attributes(), 'editable') ) {
+      if( $this->edittype and property_exists($this->edittype[0]->attributes(), 'editable') ) {
         $editable = (integer)$this->edittype[0]->attributes()->editable;
         if ( $editable == 0 ) {
           $this->isReadOnly = True;
