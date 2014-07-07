@@ -1678,7 +1678,6 @@ var lizMap = function() {
     else
       $('#nominatim-search').remove();
 
-    //addComplexPrintControl();
   }
 
   function deactivateToolControls( evt ) {
@@ -1778,25 +1777,44 @@ var lizMap = function() {
      return info;
   }
 
-  function getPrintScale( scale ) {
-    if (scale >= 9500 && scale <= 950000) {
-      scale = Math.round(scale / 1000) * 1000;
-    } else if (scale >= 950000) {
-      scale = Math.round(scale / 1000000) * 1000000;
-    } else {
-      scale = Math.round(scale);
-    }
-    return scale;
+  function getPrintScale( aScales ) {
+	  var scale = map.getScale();
+	  var scaleIdx = aScales.indexOf( scale );
+	  if ( scaleIdx == -1 ) {
+		var s=0, slen=aScales.length;
+		while ( scaleIdx == -1 && s<slen ) {
+			if ( scale > aScales[s] )
+			  scaleIdx = s;
+			else
+			 s++;
+		}
+		if( s == slen ) {
+		  scale = aScales[slen-1];
+		} else {
+		  scale = aScales[scaleIdx];
+		}
+	  }
+	  return scale;
+  }
+
+  function drawPrintBox( aLayout, aLayer, aScale ) {
+	  var center = map.getCenter();
+	  var size = aLayout.size;
+	  var units = map.getUnits();
+	  var unitsRatio = OpenLayers.INCHES_PER_UNIT[units];
+	  var w = size.width / 72 / unitsRatio * aScale / 2;
+	  var h = size.height / 72 / unitsRatio * aScale / 2;
+	  var bounds = new OpenLayers.Bounds(center.lon - w, center.lat - h,
+		center.lon + w, center.lat + h);
+	  var geom = bounds.toGeometry();
+	  var feat = aLayer.features[0];
+	  geom.id = feat.geometry.id;
+	  feat.geometry = geom;
+      aLayer.drawFeature(feat);
+	  return true;
   }
 
   function addPrintControl() {
-    // if no composers removed print
-    /*
-    if (composers.length == 0 ) {
-      $('#togglePrint').parent().remove();
-      return false;
-    }
-    */
     if ( !config['printTemplates'] || config.printTemplates.length == 0 ) {
       $('#togglePrint').parent().remove();
       return false;
@@ -1823,7 +1841,7 @@ var lizMap = function() {
 
     var scaleOptions = '';
     for( var i=0, len=scales.length; i<len; i++ ){
-      var scale = getPrintScale( scales[i] );
+      var scale = scales[i];
       printCapabilities.scales.push(scale);
       var scaleText = scale;
       if (scale >= 9500 && scale <= 950000) {
@@ -1930,30 +1948,12 @@ var lizMap = function() {
           deactivateToolControls(evt);
 
           var layout = this.layout;
-          var units = map.getUnits();
-          // get scale and update the select
-          var res = map.getResolution()/2;
-          var scale = OpenLayers.Util.getScaleFromResolution(res, units);
-          scale = getPrintScale( scale );
-          var scaleIdx = printCapabilities.scales.indexOf( scale );
-          if ( scaleIdx == -1 ) {
-            res = map.getResolution();
-            scale = OpenLayers.Util.getScaleFromResolution(res, units);
-            scale = getPrintScale( scale );
-          }
+          // get print scale
+          var scale = getPrintScale( printCapabilities.scales );
+          // update the select
           $('#print-menu select.btn-print-scales').val(scale);
-
-          var center = map.getCenter();
-          var size = layout.size;
-          var unitsRatio = OpenLayers.INCHES_PER_UNIT[units];
-          var w = size.width / 72 / unitsRatio * scale / 2;
-          var h = size.height / 72 / unitsRatio * scale / 2;
-          var bounds = new OpenLayers.Bounds(center.lon - w, center.lat - h,
-            center.lon + w, center.lat + h);
-          var geom = bounds.toGeometry();
-          var feat = layer.features[0];
-          geom.id = feat.geometry.id;
-          feat.geometry = geom;
+          // draw print box
+          drawPrintBox( layout, layer, scale );
 
           $('#togglePrint').parent().addClass('active');
           $('#print-menu .title .text').html(layout.name);
@@ -2020,20 +2020,9 @@ var lizMap = function() {
     $('#print-menu select.btn-print-scales').change(function() {
       if ( dragCtrl.active && layer.getVisibility() ) {
         var self = $(this);
-        var units = map.getUnits();
         var scale = parseFloat(self.val());
-        var center = map.getCenter();
-        var size = dragCtrl.layout.size;
-        var unitsRatio = OpenLayers.INCHES_PER_UNIT[units];
-        var w = size.width / 72 / unitsRatio * scale / 2;
-        var h = size.height / 72 / unitsRatio * scale / 2;
-        var bounds = new OpenLayers.Bounds(center.lon - w, center.lat - h,
-          center.lon + w, center.lat + h);
-        var geom = bounds.toGeometry();
-        var feat = layer.features[0];
-        geom.id = feat.geometry.id;
-        feat.geometry = geom;
-        layer.drawFeature(feat);
+        // draw print box
+        drawPrintBox( dragCtrl.layout, layer, scale );
       }
     });
     $('#print-menu button.btn-print-launch').click(function() {
@@ -2084,121 +2073,15 @@ var lizMap = function() {
     map.events.on({
       "zoomend": function() {
         if ( dragCtrl.active && layer.getVisibility() ) {
-          var units = map.getUnits();
-          var res = map.getResolution()/2;
-          var scale = OpenLayers.Util.getScaleFromResolution(res, units);
-          scale = getPrintScale( scale );
-          var scaleIdx = printCapabilities.scales.indexOf( scale );
-          if ( scaleIdx == -1 ) {
-            res = map.getResolution();
-            scale = OpenLayers.Util.getScaleFromResolution(res, units);
-            scale = getPrintScale( scale );
-          }
+	      // get scale
+		  var scale = getPrintScale( printCapabilities.scales );
+		  // update the select
           $('#print-menu select.btn-print-scales').val(scale);
-          var center = map.getCenter();
-          var size = printCapabilities.layouts[0].size;
-          var unitsRatio = OpenLayers.INCHES_PER_UNIT[units];
-          var w = size.width / 72 / unitsRatio * scale / 2;
-          var h = size.height / 72 / unitsRatio * scale / 2;
-          var bounds = new OpenLayers.Bounds(center.lon - w, center.lat - h,
-            center.lon + w, center.lat + h);
-          var geom = bounds.toGeometry();
-          var feat = layer.features[0];
-          geom.id = feat.geometry.id;
-          feat.geometry = geom;
-          layer.drawFeature(feat);
+          // draw print box
+          drawPrintBox( dragCtrl.layout, layer, scale );
         }
       }
     });
-  }
-
-  function addComplexPrintControl() {
-    var ptTomm = 0.35277; //conversion pt to mm
-    var printCapabilities = {scales:[],layouts:[]};
-    for (var i=0, len=composers.length; i<len; i++) {
-      var composer = composers[i];
-      var composerMap = composer.getElementsByTagName('ComposerMap');
-      if (composerMap.length != 0) {
-        composerMap = composerMap[0];
-        var mapWidth = Number(composer.getElementsByTagName('ComposerMap')[0].getAttribute('width')) / ptTomm;
-        var mapHeight = Number(composer.getElementsByTagName('ComposerMap')[0].getAttribute('height')) / ptTomm;
-        //for some strange reason we need to provide a "map" and a "size" object with identical content
-        printCapabilities.layouts.push({
-          "name": composer.getAttribute('name'),
-          "map": {
-            "width": mapWidth,
-            "height": mapHeight
-          },
-          "size": {
-            "width": mapWidth,
-            "height": mapHeight
-          },
-          "rotation": true
-        });
-      }
-    }
-    var layer = map.getLayersByName('Print');
-    if ( layer.length == 0 ) {
-      layer = new OpenLayers.Layer.Vector('Print');
-      map.addLayer(layer);
-      layer.setVisibility(false);
-    } else
-      layer = layer[0];
-    if ( layer.features.length == 0 )
-      layer.addFeatures([
-        new OpenLayers.Feature.Vector(
-          new OpenLayers.Geometry.Polygon([
-                new OpenLayers.Geometry.LinearRing([
-                    new OpenLayers.Geometry.Point(-1, -1),
-                    new OpenLayers.Geometry.Point(1, -1),
-                    new OpenLayers.Geometry.Point(1, 1),
-                    new OpenLayers.Geometry.Point(-1, 1)
-                ])
-            ])
-          )
-        ]);
-    var transformCtrl = new OpenLayers.Control.TransformFeature(layer,{
-      preserveAspectRatio: true,
-      rotate: true,
-      geometryTypes: ['OpenLayers.Geometry.Polygon'],
-      eventListeners: {
-        "activate": function(e) {
-          var units = map.getUnits();
-          var res = map.getResolution()/2;
-          var scale = OpenLayers.Util.getScaleFromResolution(res, units);
-          var center = map.getCenter();
-          var size = printCapabilities.layouts[0].size;
-          var unitsRatio = OpenLayers.INCHES_PER_UNIT[units];
-          var w = size.width / 72 / unitsRatio * scale / 2;
-          var h = size.height / 72 / unitsRatio * scale / 2;
-          var bounds = new OpenLayers.Bounds(center.lon - w, center.lat - h,
-            center.lon + w, center.lat + h);
-          var geom = bounds.toGeometry();
-          var feat = layer.features[0];
-          geom.id = feat.geometry.id;
-          feat.geometry = geom;
-          layer.setVisibility(true);
-          //e.object.setFeature(feat);
-        },
-        "deactivate": function(e) {
-          //layer.destroyFeatures();
-          layer.setVisibility(false);
-        },
-        "beforesetfeature": function(e) {
-        },
-        "setfeature": function(e) {
-        },
-        "beforetransform": function(e) {
-        },
-        "transformcomplete": function(e) {
-        }
-      }
-    });
-    map.addControls([transformCtrl]);
-    controls['printTransform'] = transformCtrl;
-    //pour activer il suffit de faire un setFeature
-    //transformCtrl.setFeature(layer.features[0]);
-    return true;
   }
 
   function addEditionControls() {

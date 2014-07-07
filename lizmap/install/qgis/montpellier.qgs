@@ -5,9 +5,9 @@
     <mapcanvas>
         <units>degrees</units>
         <extent>
-            <xmin>3.75405748394433703</xmin>
+            <xmin>3.7453773602525553</xmin>
             <ymin>43.52758744508426503</ymin>
-            <xmax>3.99429656851635029</xmax>
+            <xmax>4.00297669220813201</xmax>
             <ymax>43.69220097167266204</ymax>
         </extent>
         <projections>1</projections>
@@ -30,7 +30,7 @@
             <layer_coordinate_transform destAuthId="EPSG:4326" srcAuthId="EPSG:3857" srcDatumTransform="-1" destDatumTransform="-1" layerid="frmt_wms_openstreetmap_mapnik_tms20140610162910636"/>
         </layer_coordinate_transform_info>
     </mapcanvas>
-    <legend updateDrawingOrder="true" activeLayer="frmt_wms_openstreetmap_mapquest_tms20140610162911446">
+    <legend updateDrawingOrder="true">
         <legendgroup open="true" checked="Qt::Checked" name="Edition">
             <legendlayer drawingOrder="1" open="false" checked="Qt::Checked" name="points of interest" showFeatureCount="0">
                 <filegroup open="false" hidden="false">
@@ -442,6 +442,12 @@
                     <prop k="width_border" v="0.26"/>
                 </layer>
             </symbol>
+            <ComposerScaleBar penColor="#000000" style="Numeric" numMapUnitsPerScaleBarUnit="1" alignment="0" brushColor="#000000" numSegments="4" segmentMillimeters="11.5034" fontColor="#000000" font="Ubuntu,12,-1,5,50,0,0,0,0,0" numUnitsPerSegment="0.01" units="1" labelBarSpace="3" outlineWidth="1" numSegmentsLeft="2" height="3" mapId="0" boxContentSpace="1" unitLabel=" m">
+                <ComposerItem width="34.092" x="200.908" transparency="0" y="114.833" height="7.76667" positionMode="0" frame="false" outlineWidth="0.3" zValue="7" itemRotation="0" lastValidViewScaleFactor="3.77953" uuid="{e7959b14-6bc8-4be4-aeaf-ea7b23ea37f1}" id="" background="true" blendMode="0" positionLock="false">
+                    <FrameColor alpha="255" red="0" blue="0" green="0"/>
+                    <BackgroundColor alpha="255" red="255" blue="255" green="255"/>
+                </ComposerItem>
+            </ComposerScaleBar>
             <ComposerPicture pictureRotation="0" pictureWidth="30" file="/usr/share/qgis/svg/arrows/Arrow_05.svg" pictureHeight="30" mapId="0">
                 <ComposerItem width="30" x="5.25781" transparency="0" y="105" height="30" positionMode="0" frame="false" outlineWidth="0.3" zValue="6" itemRotation="0" lastValidViewScaleFactor="2.86256" uuid="{5fc27115-d5a9-44e3-aebe-e6199c6ac0fa}" id="" background="true" blendMode="0" positionLock="false">
                     <FrameColor alpha="255" red="0" blue="0" green="0"/>
@@ -451,7 +457,7 @@
             <ComposerLabel valign="32" labelText="Description" htmlState="0" halign="1" margin="1">
                 <LabelFont description="Cantarell,10,-1,5,50,0,0,0,0,0"/>
                 <FontColor red="0" blue="0" green="0"/>
-                <ComposerItem width="59" x="235" transparency="0" y="0" height="86" positionMode="0" frame="false" outlineWidth="0.3" zValue="5" itemRotation="0" lastValidViewScaleFactor="1.36982" uuid="{06e65314-c767-44f7-a174-12e1ae4baf0d}" id="description" background="true" blendMode="0" positionLock="false">
+                <ComposerItem width="59" x="235" transparency="0" y="0" height="70.3" positionMode="0" frame="false" outlineWidth="0.3" zValue="5" itemRotation="0" lastValidViewScaleFactor="3.77953" uuid="{06e65314-c767-44f7-a174-12e1ae4baf0d}" id="description" background="true" blendMode="0" positionLock="false">
                     <FrameColor alpha="255" red="0" blue="0" green="0"/>
                     <BackgroundColor alpha="255" red="255" blue="255" green="255"/>
                 </ComposerItem>
@@ -508,7 +514,7 @@
                     </Annotation>
                 </Grid>
                 <AtlasMap fixedScale="0" atlasDriven="0" margin="0.10000000000000001"/>
-                <ComposerItem width="59" x="235" transparency="0" y="86" height="45" positionMode="0" frame="false" outlineWidth="0.3" zValue="3" itemRotation="0" lastValidViewScaleFactor="1.36982" uuid="{2ebf76e3-6f6b-4c34-95f1-3d642932cfb3}" id="" background="true" blendMode="0" positionLock="false">
+                <ComposerItem width="59" x="238" transparency="0" y="77.6" height="45" positionMode="0" frame="false" outlineWidth="0.3" zValue="3" itemRotation="0" lastValidViewScaleFactor="0.972936" uuid="{2ebf76e3-6f6b-4c34-95f1-3d642932cfb3}" id="" background="true" blendMode="0" positionLock="false">
                     <FrameColor alpha="255" red="0" blue="0" green="0"/>
                     <BackgroundColor alpha="255" red="255" blue="255" green="255"/>
                 </ComposerItem>
@@ -1542,7 +1548,7 @@
                     </Annotation>
                 </Grid>
                 <AtlasMap fixedScale="0" atlasDriven="0" margin="0.10000000000000001"/>
-                <ComposerItem width="231.943" x="5.25781" transparency="0" y="18" height="104.6" positionMode="0" frame="false" outlineWidth="0.3" zValue="1" itemRotation="0" lastValidViewScaleFactor="2.86256" uuid="{2835ecbd-6089-4454-b22e-707b558ecef1}" id="" background="true" blendMode="0" positionLock="false">
+                <ComposerItem width="231.943" x="5.25781" transparency="0" y="18" height="104.6" positionMode="0" frame="false" outlineWidth="0.3" zValue="1" itemRotation="0" lastValidViewScaleFactor="3.77953" uuid="{2835ecbd-6089-4454-b22e-707b558ecef1}" id="" background="true" blendMode="0" positionLock="false">
                     <FrameColor alpha="255" red="0" blue="0" green="0"/>
                     <BackgroundColor alpha="255" red="255" blue="255" green="255"/>
                 </ComposerItem>
