@@ -215,10 +215,10 @@ class jFormsBuilderHtml extends jFormsBuilderBase {
         echo '</form>';
     }
 
-    public function outputControlLabel($ctrl){
+    public function outputControlLabel($ctrl, $editMode=true){
         if($ctrl->type == 'hidden' || $ctrl->type == 'group' || $ctrl->type == 'button') return;
         $required = ($ctrl->required == false || $ctrl->isReadOnly()?'':' jforms-required');
-        $reqhtml = ($required?'<span class="jforms-required-star">*</span>':'');
+        $reqhtml = ($required && $editMode?'<span class="jforms-required-star">*</span>':'');
         $inError = (isset($this->_form->getContainer()->errors[$ctrl->ref]) ?' jforms-error':'');
         $hint = ($ctrl->hint == ''?'':' title="'.htmlspecialchars($ctrl->hint).'"');
         $id = $this->_name.'_'.$ctrl->ref;
@@ -332,6 +332,14 @@ class jFormsBuilderHtml extends jFormsBuilderBase {
         $this->jsContent .="c = new ".$this->jFormsJsVarName."Control".$dt."('".$ctrl->ref."', ".$this->escJsStr($ctrl->label).");\n";
         if ($isLocale)
             $this->jsContent .="c.lang='".jApp::config()->locale."';\n";
+
+        $maxv= $ctrl->datatype->getFacet('maxValue');
+        if($maxv !== null)
+            $this->jsContent .="c.maxValue = '$maxv';\n";
+
+        $minv= $ctrl->datatype->getFacet('minValue');
+        if($minv !== null)
+            $this->jsContent .="c.minValue = '$minv';\n";
 
         $maxl= $ctrl->datatype->getFacet('maxLength');
         if($maxl !== null)

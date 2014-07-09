@@ -61,4 +61,22 @@ class group_htmlFormWidget extends \jelix\forms\HtmlWidget\WidgetBase
         }
         echo "</table></fieldset>\n";
     }
+
+    public function outputControlValue(){
+        $attr = $this->getValueAttributes();
+
+        echo '<fieldset id="',$attr['id'],'"><legend>',htmlspecialchars($this->ctrl->label),"</legend>\n";
+        echo '<table class="jforms-table-group" border="0">',"\n";
+        foreach( $this->ctrl->getChildControls() as $ctrlref=>$c){
+            if($c->type == 'submit' || $c->type == 'reset' || $c->type == 'hidden') continue;
+            if(!$this->builder->getForm()->isActivated($ctrlref)) continue;
+            $widget = $this->builder->getWidget($c, $this);
+            echo '<tr><th scope="row">';
+            $widget->outputLabel('', false);
+            echo "</th>\n<td>";
+            $widget->outputControlValue();
+            echo "</td></tr>\n";
+        }
+        echo "</table></fieldset>\n";
+    }
 }

@@ -118,12 +118,8 @@ class debugbarHTMLResponsePlugin implements jIHTMLResponsePlugin {
      * the main content (if any) is already generated.
      */
     public function beforeOutput() {
+        // load plugins
         $plugins = jApp::config()->debugbar['plugins'];
-        $css = "
-ul.jxdb-list li h5 a {background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAQAAAC1+jfqAAAABGdBTUEAAK/INwWK6QAAABl0RVh0U29mdHdhcmUAQWRvYmUgSW1hZ2VSZWFkeXHJZTwAAABjSURBVCjPY/jPgB8y0FHBkb37/+/6v+X/+v8r/y/ei0XB3v+H4HDWfywKtgAl1v7/D8SH/k/ApmANUAICDv1vx6ZgMZIJ9dgUzEJyQxk2BRPWdf1vAeqt/F/yP3/dwIQk2QoAfUogHsamBmcAAAAASUVORK5CYII=');}
-ul.jxdb-list li.jxdb-opened  h5 a {background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAQAAAC1+jfqAAAABGdBTUEAAK/INwWK6QAAABl0RVh0U29mdHdhcmUAQWRvYmUgSW1hZ2VSZWFkeXHJZTwAAABhSURBVCjPY/jPgB8y0FHBkb37/+/6v+X/+v8r/y/ei0XB3v+H4HDWfywKtgAl1oLhof8TsClYA5SAgEP/27EpWIxkQj02BbOQ3FCGTcGEdV3/W4B6K/+X/M9fNzAhSbYCAMiTH3pTNa+FAAAAAElFTkSuQmCC');}
-";
-        $js = '';
         if ($plugins) {
             $plugins = preg_split('/ *, */', $plugins);
             foreach ($plugins as $name) {
@@ -135,13 +131,21 @@ ul.jxdb-list li.jxdb-opened  h5 a {background-image: url('data:image/png;base64,
                     throw new jException('');*/
             }
         }
+    }
 
+    /**
+     * called when the content is generated, and potentially sent, except
+     * the body end tag and the html end tags. This method can output
+     * directly some contents.
+     */
+    public function atBottom() {
+        $css = "";
+        $js = '';
         foreach($this->plugins as $name => $plugin) {
             $css .= $plugin->getCSS();
             $js .= $plugin->getJavascript();
         }
-
-        $this->response->addHeadContent('
+        ?>
 <style type="text/css">
 #jxdb {position:absolute;right:10px;top:0px;left:auto;margin:0;padding:0px;z-index:1000;font-size:10pt;font-family:arial;font-weight:normal;color:black;}
 #jxdb-pjlx-a-right { display:none;}
@@ -150,7 +154,8 @@ ul.jxdb-list li.jxdb-opened  h5 a {background-image: url('data:image/png;base64,
 #jxdb.jxdb-position-l #jxdb-pjlx-a-right { display:inline;}
 #jxdb.jxdb-position-l #jxdb-pjlx-a-left { display:none;}
 #jxdb-header {
-    padding:3px;background:-moz-linear-gradient(top, #EFF4F6, #87CDEF);background-color: #EFF4F6;font-size:10pt;color:#797979;float:right;z-index:1200;position:relative;
+    padding:3px;font-size:10pt;color:#797979;float:right;z-index:1200;position:relative;
+    background:linear-gradient(top, #EFF4F6, #87CDEF);background:-moz-linear-gradient(top, #EFF4F6, #87CDEF);background:-webkit-linear-gradient(top, #EFF4F6, #87CDEF);background-color: #EFF4F6;
     border-radius:0px 0px  5px 5px ;-webkit-border-bottom-right-radius: 5px;-webkit-border-bottom-left-radius: 5px;-o-border-radius:0px 0px  5px 5px ;-moz-border-radius:0px 0px  5px 5px;
     box-shadow: #6B6F80 3px 3px 6px 0px;-moz-box-shadow: #969CB4 3px 3px 6px 0px;-webkit-box-shadow: #6B6F80 3px 3px 6px;-o-box-shadow: #6B6F80 3px 3px 6px 0px;
 }
@@ -182,22 +187,15 @@ ul.jxdb-list li.jxdb-opened  h5 a {background-image: url('data:image/png;base64,
 p.jxdb-msg-error { background-color:#FFD3D3;}
 p.jxdb-msg-warning { background-color:#FFB94E;}
 
-'.$css.'
+ul.jxdb-list li h5 a {background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAQAAAC1+jfqAAAABGdBTUEAAK/INwWK6QAAABl0RVh0U29mdHdhcmUAQWRvYmUgSW1hZ2VSZWFkeXHJZTwAAABjSURBVCjPY/jPgB8y0FHBkb37/+/6v+X/+v8r/y/ei0XB3v+H4HDWfywKtgAl1v7/D8SH/k/ApmANUAICDv1vx6ZgMZIJ9dgUzEJyQxk2BRPWdf1vAeqt/F/yP3/dwIQk2QoAfUogHsamBmcAAAAASUVORK5CYII=');}
+ul.jxdb-list li.jxdb-opened  h5 a {background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAQAAAC1+jfqAAAABGdBTUEAAK/INwWK6QAAABl0RVh0U29mdHdhcmUAQWRvYmUgSW1hZ2VSZWFkeXHJZTwAAABhSURBVCjPY/jPgB8y0FHBkb37/+/6v+X/+v8r/y/ei0XB3v+H4HDWfywKtgAl1oLhof8TsClYA5SAgEP/27EpWIxkQj02BbOQ3FCGTcGEdV3/W4B6K/+X/M9fNzAhSbYCAMiTH3pTNa+FAAAAAElFTkSuQmCC');}
+<?php echo $css ?>
 </style>
 <script type="text/javascript">//<![CDATA[
-var jxdb={plugins:{},init:function(event){for(var i in jxdb.plugins)jxdb.plugins[i].init()},me:function(){return document.getElementById(\'jxdb\')},close:function(){document.getElementById(\'jxdb\').style.display="none"},selectTab:function(tabPanelId){var close=(document.getElementById(tabPanelId).style.display==\'block\');this.hideTab();if(!close){document.getElementById(\'jxdb-tabpanels\').style.display=\'block\';document.getElementById(tabPanelId).style.display=\'block\'}},hideTab:function(){var panels=document.getElementById(\'jxdb-tabpanels\').childNodes;for(var i=0;i<panels.length;i++){var elt=panels[i];if(elt.nodeType==elt.ELEMENT_NODE){elt.style.display=\'none\'}}document.getElementById(\'jxdb-tabpanels\').style.display=\'none\'},moveTo:function(side){document.getElementById(\'jxdb\').setAttribute(\'class\',\'jxdb-position-\'+side);this.createCookie(\'jxdebugbarpos\',side)},createCookie:function(name,value){var date=new Date();date.setTime(date.getTime()+(7*24*60*60*1000));document.cookie=name+"="+value+"; expires="+date.toGMTString()+"; path=/"},toggleDetails:function(anchor){var item=anchor.parentNode.parentNode;var cssclass=item.getAttribute(\'class\');if(cssclass==null)cssclass=\'\';if(cssclass.indexOf(\'jxdb-opened\')==-1){item.setAttribute(\'class\',cssclass+" jxdb-opened");item.childNodes[3].style.display=\'block\'}else{item.setAttribute(\'class\',cssclass.replace("jxdb-opened",\'\'));item.childNodes[3].style.display=\'none\'}}};if(window.addEventListener)window.addEventListener("load",jxdb.init,false);
-'.$js.' //]]>
+var jxdb={plugins:{},init:function(event){for(var i in jxdb.plugins)jxdb.plugins[i].init()},me:function(){return document.getElementById('jxdb')},close:function(){document.getElementById('jxdb').style.display="none"},selectTab:function(tabPanelId){var close=(document.getElementById(tabPanelId).style.display=='block');this.hideTab();if(!close){document.getElementById('jxdb-tabpanels').style.display='block';document.getElementById(tabPanelId).style.display='block'}},hideTab:function(){var panels=document.getElementById('jxdb-tabpanels').childNodes;for(var i=0;i<panels.length;i++){var elt=panels[i];if(elt.nodeType==elt.ELEMENT_NODE){elt.style.display='none'}}document.getElementById('jxdb-tabpanels').style.display='none'},moveTo:function(side){document.getElementById('jxdb').setAttribute('class','jxdb-position-'+side);this.createCookie('jxdebugbarpos',side)},createCookie:function(name,value){var date=new Date();date.setTime(date.getTime()+(7*24*60*60*1000));document.cookie=name+"="+value+"; expires="+date.toGMTString()+"; path=/"},toggleDetails:function(anchor){var item=anchor.parentNode.parentNode;var cssclass=item.getAttribute('class');if(cssclass==null)cssclass='';if(cssclass.indexOf('jxdb-opened')==-1){item.setAttribute('class',cssclass+" jxdb-opened");item.childNodes[3].style.display='block'}else{item.setAttribute('class',cssclass.replace("jxdb-opened",''));item.childNodes[3].style.display='none'}}};if(window.addEventListener)window.addEventListener("load",jxdb.init,false);
+<?php echo $js ?> //]]>
 </script>
-');
-    }
-
-    /**
-     * called when the content is generated, and potentially sent, except
-     * the body end tag and the html end tags. This method can output
-     * directly some contents.
-     */
-    public function atBottom() {
-
+        <?php
         foreach($this->plugins as $plugin) {
             $plugin->show($this);
         }
@@ -227,6 +225,7 @@ var jxdb={plugins:{},init:function(event){for(var i in jxdb.plugins)jxdb.plugins
                 <li>Jelix version: <?php echo JELIX_VERSION?></li>
                 <li>Move the debug bar <a id="jxdb-pjlx-a-right" href="javascript:jxdb.moveTo('r')">to right</a>
                 <a href="javascript:jxdb.moveTo('l')" id="jxdb-pjlx-a-left">to left</a></li>
+                <li>To remove it definitively, deactivate the plugin "debugbar"<br/> into the configuration</li>
             </ul>
         </div>
         <?php
@@ -279,37 +278,7 @@ var jxdb={plugins:{},init:function(event){for(var i in jxdb.plugins)jxdb.plugins
         foreach($trace as $k=>$t) {
             if (isset($t['file'])) {
                 $file = $t['file'];
-                $path = '';
-                $shortcut = '';
-                if (strpos($file, LIB_PATH) === 0) {
-                    $path = LIB_PATH;
-                    $shortcut = 'lib:';
-                }
-                elseif (strpos($file, jApp::tempPath()) === 0) {
-                    $path = jApp::tempPath();
-                    $shortcut = 'temp:';
-                }
-                elseif (strpos($file, jApp::appPath()) === 0) {
-                    $path = jApp::appPath();
-                    $shortcut = 'app:';
-                }
-                else {
-                    $path = dirname(jApp::appPath());
-                    $shortcut = 'app:';
-                    while ($path != '.' && $path != '') {
-                        $shortcut .= '../';
-                        if (strpos($file, $path) === 0) {
-                            break;
-                        }
-                        $path = dirname($path);
-                    }
-                    if ($path =='.')
-                        $path = '';
-                }
-                if ($path != '') {
-                    $cut = ($path[0] == '/'?0:1);
-                    $file = '<i>'.$shortcut.'</i>'.substr($file, strlen($path)+$cut);
-                }
+                $path = jFile::unparseJelixPath( $file ,'<i>' , '</i>' );
             }
             else {
                 $file = '[php]';

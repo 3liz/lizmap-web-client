@@ -37,6 +37,9 @@ class jFormsControlDate extends jFormsControl {
             $dt->setFromString($value, jDateTime::DB_DFORMAT);
             $value = $dt->toString(jDateTime::LANG_DFORMAT);
         }
+        else if ($this->emptyValueLabel !== null) {
+            return $this->emptyValueLabel;
+        }
         return $value;
     }
 }

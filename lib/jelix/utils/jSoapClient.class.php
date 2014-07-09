@@ -3,7 +3,7 @@
 * @package     jelix
 * @subpackage  utils
 * @author      Laurent Jouanneau
-* @copyright   2011 Laurent Jouanneau
+* @copyright   2011-2014 Laurent Jouanneau
 * @link        http://jelix.org
 * @licence     GNU Lesser General Public Licence see LICENCE file or http://www.gnu.org/licenses/lgpl.html
 */
@@ -136,8 +136,12 @@ class jSoapClient {
         $client = 'SoapClient';
         if (isset($profile['wsdl'])) {
             $wsdl = $profile['wsdl'];
-            if ($wsdl == '')
-                $wsdl = null;
+            if ($wsdl == '') {
+                 $wsdl = null;
+            }
+            else if (!preg_match("!^https?\\://!", $wsdl)){
+                $wsdl = jFile::parseJelixPath($wsdl);
+            }
             unset ($profile['wsdl']);
         }
         if (isset($profile['trace'])) {

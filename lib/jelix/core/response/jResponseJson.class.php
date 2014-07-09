@@ -25,6 +25,11 @@ final class jResponseJson extends jResponse {
      */
     public $data = null;
 
+    /**
+     * options bitmask for json_encode()
+     * @var int
+     */
+    public $options = 0;
 
     public function output(){
         
@@ -34,7 +39,7 @@ final class jResponseJson extends jResponse {
         }
         
         $this->_httpHeaders['Content-Type'] = "application/json";
-        $content = json_encode($this->data);
+        $content = json_encode($this->data, $this->options);
         $this->_httpHeaders['Content-length'] = strlen($content);
         $this->sendHttpHeaders();
         echo $content;

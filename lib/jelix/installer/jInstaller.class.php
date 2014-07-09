@@ -214,7 +214,7 @@ class jInstaller {
      * the defaultconfig.ini.php content
      * @var jIniFileModifier
      */
-    public $defaultConfig;
+    public $mainConfig;
 
     /**
      * initialize the installation
@@ -227,7 +227,7 @@ class jInstaller {
     function __construct ($reporter, $lang='') {
         $this->reporter = $reporter;
         $this->messages = new jInstallerMessageProvider($lang);
-        $this->defaultConfig = new jIniFileModifier(jApp::configPath('defaultconfig.ini.php'));
+        $this->mainConfig = new jIniFileModifier(jApp::mainConfigFile());
         $this->installerIni = $this->getInstallerIni();
         $this->readEntryPointData(simplexml_load_file(jApp::appPath('project.xml')));
         $this->installerIni->save();
@@ -305,7 +305,7 @@ class jInstaller {
      * @internal for tests
      */
     protected function getEntryPointObject($configFile, $file, $type) {
-        return new jInstallerEntryPoint($this->defaultConfig, $configFile, $file, $type);
+        return new jInstallerEntryPoint($this->mainConfig, $configFile, $file, $type);
     }
 
     /**

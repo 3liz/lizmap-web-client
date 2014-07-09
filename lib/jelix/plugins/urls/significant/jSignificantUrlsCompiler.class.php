@@ -146,7 +146,8 @@ class jSignificantUrlsCompiler implements jISimpleCompiler{
         $this->createUrlContent .= "filemtime('".$sourceFile.'\') > '.filemtime($sourceFile);
         $this->createUrlContentInc = '';
         $this->readProjectXml();
-        $this->retrieveModulePaths(jApp::configPath('defaultconfig.ini.php'));
+        $this->retrieveModulePaths(jApp::mainConfigFile());
+
         // for an app on a simple http server behind an https proxy, we shouldn't check HTTPS
         $this->checkHttps = jApp::config()->urlengine['checkHttpsOnParsing'];
 
@@ -359,7 +360,7 @@ class jSignificantUrlsCompiler implements jISimpleCompiler{
 
         foreach($list as $k=>$path){
             if(trim($path) == '') continue;
-            $p = str_replace(array('lib:','app:'), array(LIB_PATH, jApp::appPath()), $path);
+            $p = jFile::parseJelixPath( $path );
             if (!file_exists($p)) {
                 continue;
             }
@@ -423,13 +424,13 @@ class jSignificantUrlsCompiler implements jISimpleCompiler{
     /**
      * extract all dynamic parts of a pathinfo, and read <param> elements
      * @param simpleXmlElement $url the url element
-     * @param string $regexppath  the path info
+     * @param string $path  the path info
      * @param significantUrlInfoParsing $u
      * @return string the correponding regular expression
      */
-    protected function extractDynamicParams($url, $regexppath, $u) {
-        $regexppath = preg_quote($regexppath , '!');
-        if (preg_match_all("/\\\:([a-zA-Z_0-9]+)/", $regexppath, $m, PREG_PATTERN_ORDER)) {
+    protected function extractDynamicParams($url, $pathinfo, $u) {
+        $regexppath = preg_quote($pathinfo , '!');
+        if (preg_match_all("/(?<!\\\\)\\\:([a-zA-Z_0-9]+)/", $regexppath, $m, PREG_PATTERN_ORDER)) {
             $u->params = $m[1];
 
             // process parameters which are declared in a <param> element
@@ -484,6 +485,7 @@ class jSignificantUrlsCompiler implements jISimpleCompiler{
                 $regexppath = str_replace('\:'.$name, '([^\/]+)', $regexppath);
             }
         }
+        $regexppath = str_replace("\\\\\\:", "\:", $regexppath);
         return $regexppath;
     }
 

@@ -3,7 +3,7 @@
  * @package    jelix
  * @subpackage core
  * @author     Laurent Jouanneau
- * @copyright  2005-2012 Laurent Jouanneau
+ * @copyright  2005-2014 Laurent Jouanneau
  *   Idea of this class was picked from the Copix project (CopixInclude, Copix 2.3dev20050901, http://www.copix.org)
  * @link       http://www.jelix.org
  * @licence    GNU Lesser General Public Licence see LICENCE file or http://www.gnu.org/licenses/lgpl.html
@@ -51,6 +51,7 @@ interface jIMultiFileCompiler {
      */
     public function endCompile($cachefile);
 }
+
 /**
  * This object is responsible to load cache files.
  * Some jelix files needs to be compiled in PHP (templates, daos etc..) and their

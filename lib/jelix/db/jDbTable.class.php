@@ -81,12 +81,12 @@ abstract class jDbTable {
         return null;
     }
 
-	public function addColumn(jDbColumn $column) {
+    public function addColumn(jDbColumn $column) {
         $this->_addColumn($column);
         $this->columns[$column->name] = $column;
-	}
+    }
 
-	public function alterColumn(jDbColumn $column, $oldName = '') {
+    public function alterColumn(jDbColumn $column, $oldName = '') {
         $oldColumn = $this->getColumn(($oldName?:$column->name));
         if (!$oldColumn) {
             $this->addColumn($column);
@@ -95,7 +95,7 @@ abstract class jDbTable {
     
         $this->_alterColumn($oldColumn, $column);
         $this->columns[$column->name] = $column;
-	}
+    }
 
     public function dropColumn($name) {
         $conn = $this->schema->getConn();
@@ -112,7 +112,7 @@ abstract class jDbTable {
         return $this->primaryKey;
     }
 
-	public function setPrimaryKey(jDbPrimaryKey $key) {
+    public function setPrimaryKey(jDbPrimaryKey $key) {
         $pk = $this->getPrimaryKey();
         if ($pk == $key)
             return;
@@ -120,7 +120,7 @@ abstract class jDbTable {
             $this->_removeIndex($pk);
         $this->_createIndex($key);
         $this->primaryKey = $key;
-	}
+    }
 
     public function dropPrimaryKey() {
         $pk = $this->getPrimaryKey();
@@ -133,11 +133,11 @@ abstract class jDbTable {
     /**
      *	@return array of jDbIndex
      */
-	public function getIndexes() {
+    public function getIndexes() {
         if ($this->indexes === null)
             $this->_loadIndexesAndKeys();
         return $this->indexes;
-	}
+    }
 
     public function getIndex($name) {
         if ($this->indexes === null)
@@ -147,18 +147,18 @@ abstract class jDbTable {
         return null;
     }
 
-	public function addIndex(jDbIndex $index) {
+    public function addIndex(jDbIndex $index) {
         $this->alterIndex($index);
-	}
+    }
 
-	public function alterIndex(jDbIndex $index) {
+    public function alterIndex(jDbIndex $index) {
         $idx = $this->getIndex($index->name);
         if ($idx) {
             $this->_dropIndex($idx);
         }
         $this->_createIndex($index);
         $this->indexes[$index->name] = $index;
-	}
+    }
     
     public function dropIndex($indexName) {
         $idx = $this->getIndex($indexName);
@@ -170,44 +170,44 @@ abstract class jDbTable {
     /**
      *	@return array of jDbUniqueKey
      */
-	public function getUniqueKeys() {
+    public function getUniqueKeys() {
         if ($this->uniqueKeys === null)
             $this->_loadIndexesAndKeys();
         return $this->uniqueKeys;
-	}
+    }
 
-	public function getUniqueKey($name) {
+    public function getUniqueKey($name) {
         if ($this->uniqueKeys === null)
             $this->_loadIndexesAndKeys();
         if (isset($this->uniqueKeys[$name]))
             return $this->uniqueKeys[$name];
         return null;
-	}
+    }
 
-	public function addUniqueKey(jDbUniqueKey $key) {
+    public function addUniqueKey(jDbUniqueKey $key) {
         $this->alterUniqueKey($key);
-	}
+    }
 
-	public function alterUniqueKey(jDbUniqueKey $key) {
+    public function alterUniqueKey(jDbUniqueKey $key) {
         $idx = $this->getUniqueKey($index->name);
         if ($idx) {
             $this->_dropIndex($idx);
         }
         $this->_createIndex($index);
         $this->uniqueKeys[$index->name] = $index;
-	}
+    }
 
-	public function dropUniqueKey($indexName) {
+    public function dropUniqueKey($indexName) {
         $idx = $this->getUniqueKey($indexName);
         if ($idx) {
             $this->_dropIndex($idx);
         }
-	}
+    }
 
     /**
      *	@return array of jDbReference
      */
-	public function getReferences() {
+    public function getReferences() {
         if ($this->references === null)
             $this->_loadReferences();
         return $this->references;

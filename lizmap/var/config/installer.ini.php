@@ -5,7 +5,7 @@
 
 [index]
 jelix.installed=1
-jelix.version=1.5.3
+jelix.version=1.6.0
 junittests.installed=0
 junittests.version=
 jacldb.installed=0
@@ -25,7 +25,7 @@ view.version=3.0pre
 admin.installed=1
 admin.version=3.0pre
 
-jelix.version.date="2013-09-19 10:56"
+jelix.version.date="2014-06-17 10:31"
 jWSDL.version.date=2011-10-18
 
 jauth.version.date=2011-10-18
@@ -76,7 +76,7 @@ jacl2db.contexts="jacl2:index/jacl2.coord.ini.php,db:jacl2_profile,jacl2:admin/j
 jacl2.contexts="cf:index/config.ini.php,cf:admin/config.ini.php"
 [admin]
 jelix.installed=1
-jelix.version=1.5.3
+jelix.version=1.6.0
 junittests.installed=0
 junittests.version=
 jacldb.installed=0
@@ -96,7 +96,7 @@ view.version=3.0pre
 admin.installed=1
 admin.version=3.0pre
 
-jelix.version.date="2013-09-19 10:56"
+jelix.version.date="2014-06-17 10:31"
 jWSDL.version.date=2011-10-18
 
 jauth.version.date=2011-10-18
@@ -135,3 +135,6 @@ jsoap.version=
 jacl2.version.date=2012-09-18
 jacl2.firstversion=1.5
 jacl2.firstversion.date=2012-09-18
+
+
+

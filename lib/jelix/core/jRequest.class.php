@@ -322,13 +322,13 @@ abstract class jRequest {
       if (jApp::config()->domainName != '') {
          return jApp::config()->domainName;
       }
-      elseif (isset($_SERVER['SERVER_NAME'])) {
-         return $_SERVER['SERVER_NAME'];
-      }
       elseif (isset($_SERVER['HTTP_HOST'])) {
          if (($pos = strpos($_SERVER['HTTP_HOST'], ':')) !== false)
             return substr($_SERVER['HTTP_HOST'],0, $pos);
          return $_SERVER['HTTP_HOST'];
+      }
+      elseif (isset($_SERVER['SERVER_NAME'])) {
+         return $_SERVER['SERVER_NAME'];
       }
       return '';
    }
@@ -395,11 +395,11 @@ abstract class jRequest {
       $input = file_get_contents("php://input");
       $values = array();
 
-      if (strpos($_SERVER["CONTENT_TYPE"], "application/x-www-url-encoded") == 0) {
+      if (strpos($_SERVER["CONTENT_TYPE"], "application/x-www-form-urlencoded") === 0) {
          parse_str($input, $values);
          return $values;
       }
-      else if (strpos($_SERVER["CONTENT_TYPE"], "multipart/form-data") == 0) {
+      else if (strpos($_SERVER["CONTENT_TYPE"], "multipart/form-data") === 0) {
 
          if (!preg_match("/boundary=([a-zA-Z0-9]+)/", $_SERVER["CONTENT_TYPE"], $m))
             return $input;

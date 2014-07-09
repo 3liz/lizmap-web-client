@@ -187,6 +187,68 @@ class jFile {
             return 'application/octet-stream';
     }
 
+    /**
+     * parse a path replacing Jelix shortcuts parts (var:, temp:, www:, app:, lib:)
+     *
+     * @param string $path the path with parts to replace
+     * @return string the path which is a system valid path
+     */
+    public static function parseJelixPath($path){
+        return str_replace(
+            array('lib:', 'app:', 'var:', 'temp:', 'www:'),
+            array(LIB_PATH, jApp::appPath(), jApp::varPath(), jApp::tempPath(), jApp::wwwPath()),
+            $path );
+    }
+
+    /**
+     * replace a path with Jelix shortcuts parts (var:, temp:, www: app:, lib:)
+     *
+     * @param string $path the system valid path
+     * @param string $beforeShortcut a string to be output before the Jelix shortcut
+     * @param string $afterShortcut a string to be output after the Jelix shortcut
+     * @return string the path with Jelix shortcuts parts
+     */
+    public static function unparseJelixPath($path, $beforeShortcut='', $afterShortcut=''){
+        $shortcutPath = '';
+        $shortcut = '';
+        if (strpos($path, LIB_PATH) === 0) {
+            $shortcutPath = LIB_PATH;
+            $shortcut = 'lib:';
+        }
+        elseif (strpos($path, jApp::tempPath()) === 0) {
+            $shortcutPath = jApp::tempPath();
+            $shortcut = 'temp:';
+        }
+        elseif (strpos($path, jApp::wwwPath()) === 0) {
+            $shortcutPath = jApp::wwwPath();
+            $shortcut = 'www:';
+        }
+        elseif (strpos($path, jApp::appPath()) === 0) {
+            $shortcutPath = jApp::appPath();
+            $shortcut = 'app:';
+        }
+        else {
+            $shortcutPath = dirname(jApp::appPath());
+            $shortcut = 'app:';
+            while ($shortcutPath != '.' && $shortcutPath != '') {
+                $shortcut .= '../';
+                if (strpos($path, $shortcutPath) === 0) {
+                    break;
+                }
+                $shortcutPath = dirname($shortcutPath);
+            }
+            if ($shortcutPath =='.')
+                $shortcutPath = '';
+        }
+        if ($shortcutPath != '') {
+            $cut = ($shortcutPath[0] == '/'?0:1);
+            $path = $beforeShortcut.$shortcut.$afterShortcut.substr($path, strlen($path)+$cut);
+        }
+
+        return $path;
+    }
+
+
     protected static $mimeTypes = array(
 
         'txt' => 'text/plain',

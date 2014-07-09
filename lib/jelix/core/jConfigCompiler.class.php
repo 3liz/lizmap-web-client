@@ -25,7 +25,7 @@ class jConfigCompiler {
 
     /**
      * read the given ini file, for the current entry point, or for the entrypoint given
-     * in $pseudoScriptName. Merge it with the content of defaultconfig.ini.php
+     * in $pseudoScriptName. Merge it with the content of mainconfig.ini.php
      * It also calculates some options.
      * If you are in a CLI script but you want to load a configuration file for a web entry point
      * or vice-versa, you need to indicate the $pseudoScriptName parameter with the name of the entry point
@@ -56,13 +56,20 @@ class jConfigCompiler {
         if(!is_writable(jApp::logPath())) {
             throw new Exception('Application log directory is not writable -- ('.jApp::logPath().')', 4);
         }
-
+        // this is the defaultconfig file of JELIX itself
         $config = jelix_read_ini(JELIX_LIB_CORE_PATH.'defaultconfig.ini.php');
         self::$commonConfig = clone $config;
 
-        @jelix_read_ini($configPath.'defaultconfig.ini.php', $config);
+        // read the main configuration of the app
+        @jelix_read_ini(jApp::mainConfigFile(), $config);
 
-        if($configFile != 'defaultconfig.ini.php'){
+        // read the local configuration of the app
+        if (file_exists($configPath.'localconfig.ini.php')) {
+            @jelix_read_ini($configPath.'localconfig.ini.php', $config);
+        }
+
+        // read the configuration specific to the entry point
+        if ($configFile != 'mainconfig.ini.php' && $configFile != 'defaultconfig.ini.php') {
             if(!file_exists($configPath.$configFile))
                 throw new Exception("Configuration file is missing -- $configFile", 5);
             if( false === @jelix_read_ini($configPath.$configFile, $config))
@@ -143,6 +150,10 @@ class jConfigCompiler {
     static protected function checkCoordPluginsPath($config) {
         $coordplugins = array();
         foreach ($config->coordplugins as $name=>$conf) {
+            if (strpos($name, '.') !== false)  {
+                $coordplugins[$name] = $conf;
+                continue;
+            }
             if (!isset($config->_pluginsPathList_coord[$name])) {
                 throw new Exception("Error in the main configuration. A plugin doesn't exist -- The coord plugin $name is unknown.", 7);
             }
@@ -230,7 +241,7 @@ class jConfigCompiler {
 
         foreach($list as $k=>$path){
             if(trim($path) == '') continue;
-            $p = str_replace(array('lib:','app:'), array(LIB_PATH, jApp::appPath()), $path);
+            $p = jFile::parseJelixPath( $path );
             if (!file_exists($p)) {
                 throw new Exception('Error in the configuration file -- The path, '.$path.' given in the jelix config, doesn\'t exist', 10);
             }
@@ -352,7 +363,7 @@ class jConfigCompiler {
                 }
             }
             else {
-                $p = str_replace(array('lib:','app:'), array(LIB_PATH, jApp::appPath()), $path);
+                $p = jFile::parseJelixPath( $path );
             }
             if(!file_exists($p)){
                 trigger_error('Error in main configuration on pluginsPath -- The path, '.$path.' given in the jelix config, doesn\'t exists !',E_USER_ERROR);
@@ -369,9 +380,11 @@ class jConfigCompiler {
                                $config->_allBasePath[]=$p.$f.'/';
                             while (false !== ($subf = readdir($subdir))) {
                                 if ($subf[0] != '.' && is_dir($p.$f.'/'.$subf)) {
-                                    if($f == 'tpl'){
+                                    if ($f == 'tpl') {
                                         $prop = '_tplpluginsPathList_'.$subf;
-                                        $config->{$prop}[] = $p.$f.'/'.$subf.'/';
+                                        if (!isset($config->{$prop}))
+                                            $config->{$prop} = array();
+                                        array_unshift($config->{$prop}, $p.$f.'/'.$subf.'/');
                                     }else{
                                         $prop = '_pluginsPathList_'.$f;
                                         $config->{$prop}[$subf] = $p.$f.'/'.$subf.'/';

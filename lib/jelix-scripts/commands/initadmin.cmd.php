@@ -73,8 +73,8 @@ class initadminCommand extends JelixScriptCommand {
 
         $installConfig = new jIniFileModifier(jApp::configPath('installer.ini.php'));
 
-        $inifile = new jIniMultiFilesModifier(jApp::configPath('defaultconfig.ini.php'),
-                                          jApp::configPath($ep['config']));
+        $inifile = new jIniMultiFilesModifier(jApp::mainConfigFile(),
+                                              jApp::configPath($ep['config']));
 
         $params = array();
         $this->createFile(jApp::appPath('responses/adminHtmlResponse.class.php'),'responses/adminHtmlResponse.class.php.tpl',$params, "Response for admin interface");
@@ -87,7 +87,7 @@ class initadminCommand extends JelixScriptCommand {
         $inifile->setValue('startAction', 'default:index');
         $modulePath = $inifile->getValue("modulesPath",0,null,true);
         if (strpos($modulePath, 'lib:jelix-admin-modules') === false) {
-            // we set it on defaultconfig.ini.php, so if the url engine is "significant"
+            // we set it on mainconfig.ini.php, so if the url engine is "significant"
             // it could know the admin modules during the parsing of modules
             $inifile->setValue('modulesPath', 'lib:jelix-admin-modules/,'.$modulePath, 0, null, true);
         }

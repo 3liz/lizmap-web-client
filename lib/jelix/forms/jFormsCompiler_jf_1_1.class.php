@@ -43,6 +43,34 @@ class jFormsCompiler_jf_1_1 extends jFormsCompiler_jf_1_0 {
         return parent::generateInput($source, $control, $attributes);
     }
 
+    protected function generateCheckbox(&$source, $control, &$attributes) {
+        $ret = parent::generateCheckbox($source, $control, $attributes);
+
+        if(isset($control->oncheckvalue)){
+            $check = $control->oncheckvalue;
+            if(isset($check['locale'])) {
+                $source[]='$ctrl->valueLabelOnCheck=jLocale::get(\''.$check['locale'].'\');';
+            }elseif (isset($check['label'])) {
+                $source[]='$ctrl->valueLabelOnCheck=\''.str_replace("'","\\'",(string)$check['label']).'\';';
+            }
+            if(isset($check['value'])){
+                $source[]='$ctrl->valueOnCheck=\''.str_replace("'","\\'", $check['value']) ."';";
+            }
+        }
+        if(isset($control->onuncheckvalue)){
+            $check = $control->onuncheckvalue;
+            if(isset($check['locale'])) {
+                $source[]='$ctrl->valueLabelOnUncheck=jLocale::get(\''.$check['locale'].'\');';
+            }elseif (isset($check['label'])) {
+                $source[]='$ctrl->valueLabelOnUncheck=\''.str_replace("'","\\'",(string)$check['label']).'\';';
+            }
+            if(isset($check['value'])){
+                $source[]='$ctrl->valueOnUncheck=\''.str_replace("'","\\'", $check['value']) ."';";
+            }
+        }
+        return $ret;
+    }
+
     protected function generateMenulist(&$source, $control, &$attributes) {
         parent::generateMenulist($source, $control, $attributes);
         if(isset($control->emptyitem)) {
@@ -62,6 +90,7 @@ class jFormsCompiler_jf_1_1 extends jFormsCompiler_jf_1_0 {
         $this->attrReadOnly($source, $attributes);
         $this->attrRequired($source, $attributes);
         $this->readLabel($source, $control, 'date');
+        $this->readEmptyValueLabel($source, $control);
         $this->readHelpHintAlert($source, $control);
         if(isset($attributes['mindate'])){
             $source[]='$ctrl->datatype->addFacet(\'minValue\',\''.$attributes['mindate'].'\');';
@@ -83,6 +112,7 @@ class jFormsCompiler_jf_1_1 extends jFormsCompiler_jf_1_0 {
         $this->attrReadOnly($source, $attributes);
         $this->attrRequired($source, $attributes);
         $this->readLabel($source, $control, 'datetime');
+        $this->readEmptyValueLabel($source, $control);
         $this->readHelpHintAlert($source, $control);
         if(isset($attributes['mindate'])){
             $source[]='$ctrl->datatype->addFacet(\'minValue\',\''.$attributes['mindate'].'\');';
@@ -130,6 +160,7 @@ class jFormsCompiler_jf_1_1 extends jFormsCompiler_jf_1_0 {
             unset($attributes['maxlength']);
         }
         $this->readLabel($source, $control, 'textarea');
+        $this->readEmptyValueLabel($source, $control);
         $this->readHelpHintAlert($source, $control);
         if (isset($attributes['rows'])) {
             $rows = intval($attributes['rows']);
@@ -225,6 +256,8 @@ class jFormsCompiler_jf_1_1 extends jFormsCompiler_jf_1_0 {
     protected function generateChoice(&$source, $control, &$attributes) {
         $this->attrRequired($source, $attributes);
         $this->readLabel($source, $control, 'choice');
+        $this->readEmptyValueLabel($source, $control);
+
         $this->attrReadOnly($source, $attributes);
         $this->readHelpHintAlert($source, $control);
         $source[]='$topctrl = $ctrl;';

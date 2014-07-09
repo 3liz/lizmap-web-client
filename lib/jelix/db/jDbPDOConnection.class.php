@@ -55,7 +55,7 @@ class jDbPDOConnection extends PDO {
             $dsn = $profile['dsn'];
             unset($prof['dsn']);
             if ($this->dbms == 'sqlite')
-                $dsn = str_replace(array('app:','lib:','var:'), array(jApp::appPath(), LIB_PATH, jApp::varPath()), $dsn);
+                $dsn = jFile::parseJelixPath( $dsn );
         }
         else {
             $this->dbms = $this->driverName = $profile['driver'];
@@ -65,7 +65,7 @@ class jDbPDOConnection extends PDO {
                 $dsn = $this->dbms.':host='.$profile['host'].';dbname='.$db;
             else {
                 if (preg_match('/^(app|lib|var)\:/', $db, $m))
-                    $dsn = 'sqlite:'.str_replace(array('app:','lib:','var:'), array(jApp::appPath(), LIB_PATH, jApp::varPath()), $db);
+                    $dsn = 'sqlite:' . jFile::parseJelixPath( $db );
                 else
                     $dsn = 'sqlite:'.jApp::varPath('db/sqlite/'.$db);
             }

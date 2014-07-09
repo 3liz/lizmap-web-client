@@ -3,7 +3,7 @@
  * @package     jelix
  * @subpackage  urls_engine
  * @author      Laurent Jouanneau
- * @copyright   2005-2012 Laurent Jouanneau
+ * @copyright   2005-2014 Laurent Jouanneau
  * @link        http://www.jelix.org
  * @licence     GNU Lesser General Public Licence see LICENCE file or http://www.gnu.org/licenses/lgpl.html
  */
@@ -54,6 +54,7 @@ class jSelectorUrlHandler extends jSelectorClass {
     }
 
 }
+
 /**
  * interface for user url handler
  * @package  jelix
@@ -76,6 +77,7 @@ interface jIUrlSignificantHandler {
     */
     public function create($urlact, $url);
 }
+
 /**
  * an url engine to parse,analyse and create significant url
  * it needs an urls.xml file in the config directory (see documentation)
@@ -264,7 +266,7 @@ class significantUrlEngine implements jIUrlEngine {
                 // let's merge static parameters
                 if ($staticValues) {
                     foreach ($staticValues as $n=>$v) {
-                        if ($v[0] == '$') { // special statique value
+                        if (!empty($v) && $v[0] == '$') { // special statique value
                             $typeStatic = $v[1];
                             $v = substr($v,2);
                             if ($typeStatic == 'l')
@@ -414,7 +416,7 @@ class significantUrlEngine implements jIUrlEngine {
                     // specialStatic are static values for which the url engine
                     // can compare not only with a given url parameter value, but
                     // also with a value stored some where (typically, a configuration value)
-                    $specialStatic = ($v[0] == '$');
+                    $specialStatic = (!empty($v) && $v[0] == '$');
                     $paramStatic = $url->getParam($n, null);
                     if ($specialStatic) { // special statique value
                         $typePS = $v[1];

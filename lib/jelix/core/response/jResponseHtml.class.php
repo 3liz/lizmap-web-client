@@ -254,6 +254,29 @@ class jResponseHtml extends jResponseBasicHtml {
             }
         }
     }
+    
+    /**
+    *  add a link to a javascript script stored into modules
+    *
+    * @param string $module  the module where file is stored
+    * @param mixed $src the relative path inside the {module}/www/ directory
+    * @params array $params additionnal parameters for the generated tag (a media attribute for stylesheet for example)
+    * @param boolean $forIE if true, the script sheet will be only for IE browser. string values possible (ex:'lt IE 7')
+    */
+    public function addJSLinkModule ($module, $src, $params=array(), $forIE=false){ 
+        $src = jUrl::get('jelix~www:getfile', array('targetmodule'=>$module, 'file'=>$src));
+        if($forIE){
+            if (!isset ($this->_JSIELink[$src])){
+                if (!is_bool($forIE) && !empty($forIE))
+                    $params['_ieCondition'] = $forIE;
+                $this->_JSIELink[$src] = $params;
+            }
+        }else{
+            if (!isset ($this->_JSLink[$src])){
+                $this->_JSLink[$src] = $params;
+            }
+        }
+    }
 
     /**
      * returns all JS links
@@ -325,6 +348,52 @@ class jResponseHtml extends jResponseBasicHtml {
             }
         }
     }
+    
+    /**
+    *  add a link to a css stylesheet  stored into modules
+    *
+    * @param string $module  the module where file is stored
+    * @param mixed $src the relative path inside the {module}/www/ directory
+    * @params array $params additionnal parameters for the generated tag (a media attribute for stylesheet for example)
+    * @param boolean $forIE if true, the script sheet will be only for IE browser. string values possible (ex:'lt IE 7')
+    */
+    public function addCSSLinkModule ($module, $src, $params=array(), $forIE=false){ 
+        $src = jUrl::get('jelix~www:getfile', array('targetmodule'=>$module, 'file'=>$src));
+        if($forIE){
+            if (!isset ($this->_CSSIELink[$src])){
+                if (!is_bool($forIE) && !empty($forIE))
+                    $params['_ieCondition'] = $forIE;
+                $this->_CSSIELink[$src] = $params;
+            }
+        }else{
+            if (!isset ($this->_CSSLink[$src])){
+                $this->_CSSLink[$src] = $params;
+            }
+        }
+    }
+
+    /**
+    *  add a link to a csstheme stylesheet  stored into modules
+    *
+    * @param string $module  the module where file is stored
+    * @param mixed $src the relative path inside the {module}/www/themes/{currenttheme}/ directory
+    * @params array $params additionnal parameters for the generated tag (a media attribute for stylesheet for example)
+    * @param boolean $forIE if true, the script sheet will be only for IE browser. string values possible (ex:'lt IE 7')
+    */
+    public function addCSSThemeLinkModule ($module, $src, $params=array(), $forIE=false){ 
+        $src =  $url = jUrl::get('jelix~www:getfile', array('targetmodule'=>$module, 'file'=>'themes/'.jApp::config()->theme.'/'.$src));
+        if($forIE){
+            if (!isset ($this->_CSSIELink[$src])){
+                if (!is_bool($forIE) && !empty($forIE))
+                    $params['_ieCondition'] = $forIE;
+                $this->_CSSIELink[$src] = $params;
+            }
+        }else{
+            if (!isset ($this->_CSSLink[$src])){
+                $this->_CSSLink[$src] = $params;
+            }
+        }
+    }  
 
     /**
      * add inline css style into the document (inside a <style> tag)

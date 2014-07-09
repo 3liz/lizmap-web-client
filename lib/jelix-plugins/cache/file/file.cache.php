@@ -99,8 +99,9 @@ class fileCacheDriver implements jICacheDriver {
 
         $this->_cache_dir = jApp::tempPath('cache/').$this->profil_name.'/';
         if(isset($params['cache_dir']) && $params['cache_dir']!=''){
-            if (is_dir($params['cache_dir']) && is_writable($params['cache_dir'])) {
-                $this->_cache_dir = rtrim(realpath($params['cache_dir']), '\\/') . DIRECTORY_SEPARATOR;
+            $cache_dir = jFile::parseJelixPath( $params['cache_dir'] );
+            if (is_dir($cache_dir) && is_writable($cache_dir)) {
+                $this->_cache_dir = rtrim(realpath($cache_dir), '\\/') . DIRECTORY_SEPARATOR;
             } else {
                 throw new jException('jelix~cache.directory.not.writable',$this->profil_name);
             }

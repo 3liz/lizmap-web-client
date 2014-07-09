@@ -64,7 +64,7 @@ class sqliteDbConnection extends jDbConnection {
         $funcconnect= (isset($this->profile['persistent']) && $this->profile['persistent']? 'sqlite_popen':'sqlite_open');
         $db = $this->profile['database'];
         if (preg_match('/^(app|lib|var)\:/', $db))
-            $path = str_replace(array('app:','lib:','var:'), array(jApp::appPath(), LIB_PATH, jApp::varPath()), $db);
+            $path = jFile::parseJelixPath( $db );
         else
             $path = jApp::varPath('db/sqlite/'.$db);
 

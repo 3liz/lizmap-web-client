@@ -171,8 +171,8 @@ class createappCommand extends JelixScriptCommand {
         $this->createFile($appPath.'.htaccess', 'htaccess_deny', $param, "Configuration file for Apache");
         $this->createFile($appPath.'project.xml','project.xml.tpl', $param, "Project description file");
         $this->createFile($appPath.'cmd.php','cmd.php.tpl', $param, "Script for developer commands");
-        $this->createFile($configPath.'defaultconfig.ini.php', 'var/config/defaultconfig.ini.php.tpl', $param, "Main configuration file");
-        $this->createFile($configPath.'defaultconfig.ini.php.dist', 'var/config/defaultconfig.ini.php.tpl', $param, "Main configuration file for your repository");
+        $this->createFile($configPath.'mainconfig.ini.php', 'var/config/mainconfig.ini.php.tpl', $param, "Main configuration file");
+        $this->createFile($configPath.'localconfig.ini.php.dist', 'var/config/localconfig.ini.php.tpl', $param, "Configuration file for specific environment");
         $this->createFile($configPath.'profiles.ini.php', 'var/config/profiles.ini.php.tpl', $param, "Profiles file");
         $this->createFile($configPath.'profiles.ini.php.dist', 'var/config/profiles.ini.php.tpl', $param, "Profiles file for your repository");
         $this->createFile($configPath.'preferences.ini.php', 'var/config/preferences.ini.php.tpl', $param, "Preferences file");

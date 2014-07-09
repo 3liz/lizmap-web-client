@@ -17,7 +17,7 @@ class sessionConfigCompilerPlugin implements \jelix\core\ConfigCompilerPluginInt
 
     function atStart($config) {
         if($config->sessions['storage'] == 'files'){
-            $config->sessions['files_path'] = str_replace(array('lib:','app:'), array(LIB_PATH, jApp::appPath()), $config->sessions['files_path']);
+            $config->sessions['files_path'] = jFile::parseJelixPath( $config->sessions['files_path'] );
         }
 
         $config->sessions['_class_to_load'] = array();

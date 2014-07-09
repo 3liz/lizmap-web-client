@@ -55,19 +55,28 @@ class IPReflectionCommentParser{
 		$lines = explode("\n", $this->comment);
 
 		//check lines for description or tags
-		foreach ($lines as $line) {
-			$pos = strpos($line,"* @");
-			if (trim($line) == "/**" || trim($line) == "*/") { //skip the start and end line
-			}elseif (!($pos === false)) { //comment
-				$this->parseTagLine(substr($line,$pos+3));
-				$descriptionDone=true;
-			}elseif(!$descriptionDone){
-				$this->parseDescription($line);
-			}
-		}
+		foreach ($lines as $l) {
+		    // new version of parser - optimisation and debug for indentation with tabs or multiples spaces
+		    // first we trim
+		    $line = trim($l);
+            //skip the start and end line
+            if (($line != "/**") && ($line != "*/")){
+                // is a param line?		                    
+                if (strpos($line,"* @") !== false) {
+			        $this->parseTagLine(substr($line,3));
+			        $descriptionDone=true;
+			    }elseif(!$descriptionDone){
+			        // if we do not already read a param, we are in the short or full description, starting with "* "
+			        // if $line is empty or less than 2 :
+			        // PHP 5.2.2 - 5.2.6  If the start parameter indicates the position of a negative truncation or beyond, false is returned. Other versions get the string from start.
+			        $this->parseDescription(substr($line,2));
+			    }
+			
+            }
+        }
 		//if full description is empty, put small description in full description
-		if (trim(str_replace(Array("\n","\r"), Array("", ""), $this->obj->fullDescription)) == "")
-			$this->obj->fullDescription = $this->obj->smallDescription;
+		if (trim($this->obj->fullDescription)=="")
+	    $this->obj->fullDescription = $this->obj->smallDescription;
 	}
 
 	/**
@@ -76,12 +85,9 @@ class IPReflectionCommentParser{
 	 * @param string The description line
 	 * @return void
 	 */
-
-	function parseDescription($descriptionLine) {
-		if(strpos($descriptionLine,"*") <= 2) $descriptionLine = substr($descriptionLine, (strpos($descriptionLine,"*") + 1));
-
+	function parseDescription($descriptionLine) {		
 	 	//geen lege comment regel indien al in grote omschrijving
-	 	if(trim(str_replace(Array("\n","\r"), Array("", ""), $descriptionLine)) == ""){
+	 	if($descriptionLine == ""){
 	 		if($this->obj->fullDescription == "")
 	 			$descriptionLine = "";
 			$this->smallDescriptionDone = true;

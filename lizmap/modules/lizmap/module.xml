@@ -12,7 +12,7 @@
         <!--<updateURL>http://www.yourwebsite.undefined/update.xml</updateURL>-->
     </info>
     <dependencies>
-        <jelix minversion="1.4" maxversion="1.5.*"/>
+        <jelix minversion="1.5" maxversion="1.6.*"/>
     </dependencies>
     <autoload>
       <class name="lizmap" file="classes/lizmap.class.php" />

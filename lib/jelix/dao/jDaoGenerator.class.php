@@ -6,6 +6,7 @@
 * @contributor Laurent Jouanneau
 * @contributor Bastien Jaillot (bug fix)
 * @contributor Julien Issler, Guillaume Dugas
+* @contributor Philippe Villiers
 * @copyright  2001-2005 CopixTeam, 2005-2012 Laurent Jouanneau
 * @copyright  2007-2008 Julien Issler
 * This class was get originally from the Copix project (CopixDAOGeneratorV1, Copix 2.3dev20050901, http://www.copix.org)
@@ -938,10 +939,20 @@ class jDaoGenerator {
 
             $prop = $fields[$cond['field_id']];
 
+            $pattern = (isset($cond['field_pattern']) && !empty($cond['field_pattern'])) ? $cond['field_pattern'] : '%s';
+
             if($withPrefix){
-                $f = $this->_encloseName($prop->table).'.'.$this->_encloseName($prop->fieldName);
+                if($pattern == '%s') {
+                    $f = $this->_encloseName($prop->table).'.'.$this->_encloseName($prop->fieldName);
+                } else {
+                    $f = str_replace(array("'", "%s"), array("\\'", $this->_encloseName($prop->table).'.'.$this->_encloseName($prop->fieldName)), $pattern);
+                }
             }else{
-                $f = $this->_encloseName($prop->fieldName);
+                if($pattern == '%s') {
+                    $f = $this->_encloseName($prop->fieldName);
+                } else {
+                    $f = str_replace(array("'", "%s"), array("\\'", $this->_encloseName($prop->fieldName)), $pattern);
+                }
             }
 
             $r .= $f.' ';

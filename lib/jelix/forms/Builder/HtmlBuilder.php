@@ -234,10 +234,10 @@ class HtmlBuilder extends BuilderBase {
         return $plugin;
     }
 
-    public function outputControlLabel($ctrl){
+    public function outputControlLabel($ctrl, $format='', $editMode=true){
         if($ctrl->type == 'hidden' || $ctrl->type == 'group' || $ctrl->type == 'button') return;
         $widget = $this->getWidget($ctrl, $this->rootWidget);
-        $widget->outputLabel();
+        $widget->outputLabel($format, $editMode);
     }
 
     public function outputControl($ctrl, $attributes=array()){
@@ -246,6 +246,13 @@ class HtmlBuilder extends BuilderBase {
         $widget->setAttributes($attributes);
         $widget->outputControl();
         $widget->outputHelp();
+    }
+
+    public function outputControlValue($ctrl, $attributes=array()){
+        if($ctrl->type == 'hidden') return;
+        $widget = $this->getWidget($ctrl, $this->rootWidget);
+        $widget->setAttributes($attributes);
+        $widget->outputControlValue();
     }
 
     protected function _outputAttr(&$attributes) {
