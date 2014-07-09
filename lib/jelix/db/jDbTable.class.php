@@ -87,7 +87,7 @@ abstract class jDbTable {
 	}
 
 	public function alterColumn(jDbColumn $column, $oldName = '') {
-        $oldColumn = $this->getColumn(($oldName?$oldName:$column->name));
+        $oldColumn = $this->getColumn(($oldName?:$column->name));
         if (!$oldColumn) {
             $this->addColumn($column);
             return;

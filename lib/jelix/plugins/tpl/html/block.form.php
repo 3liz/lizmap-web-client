@@ -64,11 +64,16 @@ unset($t->_privateVars[\'__displayed_ctrl\']);';
 
     $content = ' $t->_privateVars[\'__form\'] = '.$param[0].';
 $t->_privateVars[\'__formbuilder\'] = $t->_privateVars[\'__form\']->getBuilder('.$builder.');
+$t->_privateVars[\'__formbuilder\']->setOptions('.$options.');
 $t->_privateVars[\'__formbuilder\']->setAction('.$param[1].','.$param[2].');
-$t->_privateVars[\'__formbuilder\']->outputHeader('.$options.');
+$t->_privateVars[\'__formbuilder\']->outputHeader();
 $t->_privateVars[\'__displayed_ctrl\'] = array();
 ';
-    $compiler->addMetaContent('if(isset('.$param[0].')) { '.$param[0].'->getBuilder('.$builder.')->outputMetaContent($t);}');
+
+    $metacontent = 'if(isset('.$param[0].')) { $builder = '.$param[0].'->getBuilder('.$builder.');
+    $builder->setOptions('.$options.');
+    $builder->outputMetaContent($t);}';
+    $compiler->addMetaContent($metacontent);
 
     return $content;
 }

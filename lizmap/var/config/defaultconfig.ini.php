@@ -184,6 +184,7 @@ default="jelix/js/jforms/datepickers/default/init.js"
 
 [modules]
 jelix.access=2
+jacl2.access=1
 junittests.access=0
 jacldb.access=0
 jauthdb.access=0

@@ -66,23 +66,9 @@ class sqlite3DbConnection extends jDbConnection {
         if (preg_match('/^(app|lib|var)\:/', $db))
             $path = str_replace(array('app:','lib:','var:'), array(jApp::appPath(), LIB_PATH, jApp::varPath()), $db);
         else
-            $path = $db;
-            
-        $return = new SQLite3($path);
+            $path = jApp::varPath('db/sqlite3/'.$db);
 
-        // Load extensions if needed
-        if (isset($this->profile['extensions']) ) {
-            $list = preg_split('/ *, */',$this->profile['extensions']);
-            foreach($list as $ext){
-                try { 
-                    $return->loadExtension($ext); 
-                } catch(Exception $e) {
-                    throw new Exception('jDbPDOConnection: error while loading sqlite extension '.$ext);
-                }
-            }        
-        }
-
-        return $return;
+        return new SQLite3($path);
     }
 
     protected function _disconnect (){

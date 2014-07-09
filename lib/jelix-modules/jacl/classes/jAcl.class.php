@@ -57,11 +57,11 @@ class jAcl {
             $config = jApp::config();
             $db = strtolower($config->acl['driver']);
             if ($db == '')
-                throw new jException('jelix~errors.acl.driver.notfound',$db);
+                throw new jException('jacl~errors.driver.notfound',$db);
 
             $driver = jApp::loadPlugin($db, 'acl', '.acl.php', $config->acl['driver'].'AclDriver', $config->acl);
             if (is_null($driver)) {
-                throw new jException('jelix~errors.acl.driver.notfound',$db);
+                throw new jException('jacl~errors.driver.notfound',$db);
             }
         }
         return $driver;

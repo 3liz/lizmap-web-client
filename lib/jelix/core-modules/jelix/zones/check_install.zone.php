@@ -70,7 +70,7 @@ class check_installZone extends jZone {
 
     protected function _prepareTpl() {
         $lang = jApp::config()->locale;
-        if (!$this->getParam('no_lang_check')) {
+        if (!$this->param('no_lang_check')) {
             $locale = jLocale::getPreferedLocaleFromRequest();
             if (!$locale)
                 $locale = 'en_US';

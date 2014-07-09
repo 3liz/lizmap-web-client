@@ -165,21 +165,10 @@ class jFile {
      * @since 1.1.6
      */
     public static function getMimeType($file){
-        if (function_exists('finfo_open')) {
-            $finfo = finfo_open(FILEINFO_MIME_TYPE);
-            $type = finfo_file($finfo, $file);
-            finfo_close($finfo);
-            return $type;
-        }
-        else if (function_exists('mime_content_type')) {
-            return mime_content_type($file);
-        }
-        else {
-            // we know that it is not the ideal way to do it
-            // but don't want to spent time and resource to guess
-            // it from the file content.
-            return self::getMimeTypeFromFilename($file);
-        }
+        $finfo = finfo_open(FILEINFO_MIME_TYPE);
+        $type = finfo_file($finfo, $file);
+        finfo_close($finfo);
+        return $type;
     }
 
     /**

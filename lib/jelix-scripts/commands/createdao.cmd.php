@@ -84,6 +84,11 @@ class createdaoCommand extends JelixScriptCommand {
 
          $properties='';
          $primarykeys='';
+
+         if(empty($fields)) {
+            throw new Exception("The table ".$param['table']." does not exist.");
+         }
+
          foreach($fields as $fieldname=>$prop){
 
             $name = str_replace('-', '_', $fieldname);
@@ -109,6 +114,10 @@ class createdaoCommand extends JelixScriptCommand {
             }
             if ($prop->sequence) {
                  $properties.=' sequence="'.$prop->sequence.'"';
+            }
+            // form generator use this feature
+            if ($prop->comment) {
+                 $properties.=' comment="'.htmlspecialchars(utf8_encode($prop->comment)).'"';
             }
             $properties.='/>';
 

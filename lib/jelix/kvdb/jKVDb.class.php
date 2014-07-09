@@ -15,7 +15,7 @@
  */
 class jKVDb {
 
-	protected function __construct() { } // the class is only static
+    protected function __construct() { } // the class is only static
 
     /**
     * get the jKVConnection object associated to a given profile name
@@ -26,18 +26,6 @@ class jKVDb {
     public static function getConnection($name = null) {
         return jProfiles::getOrStoreInPool('jkvdb', $name, array('jKVDb', '_createConnector'));
     }
-
-    /**
-	 * get the profile from the INI file. If no $name paramter is given, then
-	 * the default profile is returned, if defined.
-	 *
-	 * @param string $name
-	 * @return array
-	 * @deprecated use jProfiles::get instead
-	 */
-	public static function getProfile($name = null) {
-		return jProfiles::get('jkvdb', $name);
-	}
 
     /**
      * callback method for jProfiles. internal use

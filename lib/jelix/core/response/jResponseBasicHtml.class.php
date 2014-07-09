@@ -71,7 +71,7 @@ class jResponseBasicHtml extends jResponse {
     /**
      * says if the document is in xhtml or html
      */
-    protected $_isXhtml = true;
+    protected $_isXhtml = false;
 
     /**
      * says if xhtml content type should be send or not.
@@ -81,7 +81,12 @@ class jResponseBasicHtml extends jResponse {
     public $xhtmlContentType = false;
 
     /**
-     * content for head
+     * top content for head
+     */
+    protected $_headTop  = array ();
+
+    /**
+     * bottom content for head
      */
     protected $_headBottom  = array ();
 
@@ -96,7 +101,8 @@ class jResponseBasicHtml extends jResponse {
     /**
      * full path of php file to output. it should content php instruction
      * to display these variables:
-     * - $HEADBOTTOM: content before th </head> tag
+     * - $HEADTOP: content added just after the opening <head> tag
+     * - $HEADBOTTOM: content before the closing </head> tag
      * - $BODYTOP: content just after the <body> tag, at the top of the page
      * - $BODYBOTTOM: content just before the </body> tag, at the bottom of the page
      * - $BASEPATH: base path of the application, for links of your style sheets etc..
@@ -152,10 +158,16 @@ class jResponseBasicHtml extends jResponse {
     /**
      * add additional content into the document head
      * @param string $content
+     * @param boolean $toTop true if you want to add it at the top of the head content, else false for the bottom
      * @since 1.0b1
      */
-    final public function addHeadContent ($content){
-        $this->_headBottom[] = $content;
+    final public function addHeadContent ($content, $toTop = false) {
+        if ($toTop) {
+            $this->_headTop[] = $content;
+        }
+        else {
+            $this->_headBottom[] = $content;
+        }
     }
 
     /**
@@ -211,6 +223,7 @@ class jResponseBasicHtml extends jResponse {
         foreach($this->plugins as $name=>$plugin)
             $plugin->beforeOutput();
 
+        $HEADTOP = implode("\n", $this->_headTop);
         $HEADBOTTOM = implode("\n", $this->_headBottom);
         $BODYTOP = implode("\n", $this->_bodyTop);
         $BODYBOTTOM = implode("\n", $this->_bodyBottom);
@@ -247,6 +260,7 @@ class jResponseBasicHtml extends jResponse {
         else
             $file = JELIX_LIB_CORE_PATH.'response/error.en_US.php';
         // we erase already generated content
+        $this->_headTop = array();
         $this->_headBottom = array();
         $this->_bodyBottom = array();
         $this->_bodyTop = array();
@@ -256,6 +270,7 @@ class jResponseBasicHtml extends jResponse {
         foreach($this->plugins as $name=>$plugin)
             $plugin->beforeOutputError();
 
+        $HEADTOP = implode("\n", $this->_headTop);
         $HEADBOTTOM = implode("\n", $this->_headBottom);
         $BODYTOP = implode("\n", $this->_bodyTop);
         $BODYBOTTOM = implode("\n", $this->_bodyBottom);

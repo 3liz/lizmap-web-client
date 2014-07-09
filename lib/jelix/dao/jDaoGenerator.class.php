@@ -5,7 +5,7 @@
 * @author     Gérald Croes, Laurent Jouanneau
 * @contributor Laurent Jouanneau
 * @contributor Bastien Jaillot (bug fix)
-* @contributor Julien Issler
+* @contributor Julien Issler, Guillaume Dugas
 * @copyright  2001-2005 CopixTeam, 2005-2012 Laurent Jouanneau
 * @copyright  2007-2008 Julien Issler
 * This class was get originally from the Copix project (CopixDAOGeneratorV1, Copix 2.3dev20050901, http://www.copix.org)
@@ -116,8 +116,16 @@ class jDaoGenerator {
         //-----------------------
         // Build the record class
         //-----------------------
+        $userRecord = $this->_dataParser->getUserRecord();
+        if ($userRecord) {
+            $src[] = ' require_once (\''.$userRecord->getPath().'\');';
+            $extendedObject = $userRecord->resource . 'DaoRecord';
+        }
+        else {
+            $extendedObject = 'jDaoRecordBase';
+        }
 
-        $src[] = "\nclass ".$this->_DaoRecordClassName.' extends jDaoRecordBase {';
+        $src[] = "\nclass ".$this->_DaoRecordClassName.' extends '.$extendedObject.' {';
 
         $properties=array();
 
@@ -131,7 +139,7 @@ class jDaoGenerator {
         }
 
         $src[] = '   public function getSelector() { return "'.$this->_daoId.'"; }';
-        // TODO PHP 5.3 : we could remove that
+
         $src[] = '   public function getProperties() { return '.$this->_DaoClassName.'::$_properties; }';
         $src[] = '   public function getPrimaryKeyNames() { return '.$this->_DaoClassName.'::$_pkFields; }';
         $src[] = '}';
@@ -171,11 +179,6 @@ class jDaoGenerator {
         $src[] = '   parent::__construct($conn);';
         $src[] = '   $this->_fromClause = \''.$this->sqlFromClause.'\';';
         $src[] = '}';
-
-        // cannot put this methods directly into jDaoBase because self cannot refer to a child class
-        // FIXME PHP53, we could use the static keyword instead of self
-        $src[] = '   public function getProperties() { return self::$_properties; }';
-        $src[] = '   public function getPrimaryKeyNames() { return self::$_pkFields;}';
 
         $src[] = ' ';
         $src[] = ' protected function _getPkWhereClauseForSelect($pk){';
@@ -1058,15 +1061,14 @@ class jDaoGenerator {
 
     protected function _preparePHPCallbackExpr($field){
         $type = strtolower($field->unifiedType);
-        // TODO PHP53: generate a closure instead of create_function
         switch($type){
             case 'integer':
-                return 'create_function(\'$__e\',\'return intval($__e);\')';
+                return 'function($__e){return intval($__e);}';
             case 'double':
             case 'float':
             case 'numeric':
             case 'decimal':
-                return 'create_function(\'$__e\',\'return jDb::floatToStr($__e);\')';
+                return 'function($__e){return jDb::floatToStr($__e);}';
             case 'boolean':
                 return 'array($this, \'_callbackBool\')';
             default:

@@ -4,16 +4,16 @@ Jelix Installation
 Server configuration
 ---------------------
 
-Jelix works only on PHP 5.2 and higher.
+Jelix works only on PHP 5.3 and higher.
 
 This php extensions should be installed : dom, simplexml, pcre, session, spl, tokenizer.
 
 Jelix supports mysql 4.0+ and postgresql 8.0+.
 
-php.ini : magic_quotes_gpc, magic_quotes_runtime, and session_auto_start should be off.
-It is recommanded to set register_globals, asp_tags to off.
+php.ini : magic_quotes_gpc, magic_quotes_runtime, session_auto_start, register_globals,
+  asp_tags must be off.
 
-Jelix could not work properly with safe_mode.
+Jelix could not work properly with safe_mode (which is deprecated since PHP 5.3)
 
 installation
 ------------
@@ -25,5 +25,5 @@ installation
 Details
 -------
 
-see http://docs.jelix.org/fr/manuel-1.4/mise-en-route
-or http://docs.jelix.org/en/manual-1.4/getting-started
+see http://docs.jelix.org/fr/manuel-1.5/mise-en-route
+or http://docs.jelix.org/en/manual-1.5/getting-started

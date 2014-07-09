@@ -308,11 +308,16 @@ abstract class JelixScriptCommand {
          return false;
       }
       $tpl = file($tplpath);
-      $this->tplparam = $tplparam;
 
+      $callback = function ($matches) use (&$tplparam) {
+        if (isset($tplparam[$matches[1]])) {
+           return $tplparam[$matches[1]];
+        } else
+           return '';
+      };
       foreach($tpl as $k=>$line){
          $tpl[$k]= preg_replace_callback('|\%\%([a-zA-Z0-9_]+)\%\%|',
-                                         array(&$this, 'replaceCallback'),
+                                         $callback,
                                          $line);
       }
 
@@ -359,16 +364,6 @@ abstract class JelixScriptCommand {
             chgrp($dirname, $this->config->chownGroup);
          }
       }
-   }
-
-   /**
-    * @internal callback function used by createFile
-    */
-   protected function replaceCallback($matches){
-      if (isset($this->tplparam[$matches[1]])) {
-         return $this->tplparam[$matches[1]];
-      } else
-         return '';
    }
 
    /**

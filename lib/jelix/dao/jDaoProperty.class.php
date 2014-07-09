@@ -84,6 +84,13 @@ class jDaoProperty {
     public $defaultValue = null;
 
     public $autoIncrement = false;
+
+    /**
+    * comment field / eg : use to form's label
+    * @var string
+    */
+    public $comment = '';
+
     /**
     * constructor.
     * @param array  $attributes  list of attributes of a simpleXmlElement
@@ -97,7 +104,7 @@ class jDaoProperty {
         // Allowed attributes names
         $allowed = array('name', 'fieldname', 'table', 'datatype', 'required',
                         'minlength', 'maxlength', 'regexp', 'sequence', 'default', 'autoincrement',
-                        'updatepattern', 'insertpattern', 'selectpattern');
+                        'updatepattern', 'insertpattern', 'selectpattern','comment');
 
         foreach($aAttributes as $attributeName => $attributeValue) {
             if(!in_array($attributeName, $allowed)) {
@@ -115,7 +122,6 @@ class jDaoProperty {
         if(!preg_match('/^[a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*$/', $this->name)){
             throw new jDaoXmlException ($parser->selector, 'property.invalid.name', $this->name);
         }
-
 
         $this->fieldName  = $params['fieldname'] !==null ? $params['fieldname'] : $this->name;
         $this->table      = $params['table'] !==null ? $params['table'] : $parser->getPrimaryTable();
@@ -203,6 +209,7 @@ class jDaoProperty {
             }
         }
 
+
         // no update and insert patterns for field of external tables
         if ($this->table != $parser->getPrimaryTable()) {
             $this->updatePattern = '';
@@ -214,5 +221,11 @@ class jDaoProperty {
         else {
             $this->ofPrimaryTable=true;
         }
+
+        // field comment
+        if(isset($aAttributes['comment'])) {
+            $this->comment=(string)$aAttributes['comment'];
+        }
+
     }
 }

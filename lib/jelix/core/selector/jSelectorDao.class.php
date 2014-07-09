@@ -68,7 +68,7 @@ class jSelectorDao extends jSelectorModule {
     protected function _createCachePath(){
         // don't share the same cache for all the possible dirs
         // in case of overload removal
-        $this->_cachePath = jApp::tempPath('compiled/daos/'.$this->_where.$this->module.'~'.$this->resource.'~'.$this->driver.$this->_cacheSuffix);
+        $this->_cachePath = jApp::tempPath('compiled/daos/'.$this->_where.$this->module.'~'.$this->resource.'~'.$this->driver.'_15'.$this->_cacheSuffix);
     }
 
     public function getDaoClass(){

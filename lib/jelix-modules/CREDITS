@@ -24,7 +24,7 @@ By alphabetic order on the name
     bug fix
 
 * Sylvain de Vathaire (sylvain261)
-   jWSDL module (#377)
+   jWSDL module (#377) (renamed to jsoap since jelix 1.5)
 
 * Vincent Viaud
   acl listener for jauth::logout (#1236)

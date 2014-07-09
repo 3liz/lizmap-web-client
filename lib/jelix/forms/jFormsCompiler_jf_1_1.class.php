@@ -203,6 +203,13 @@ class jFormsCompiler_jf_1_1 extends jFormsCompiler_jf_1_0 {
         return false;
     }
 
+    protected function generateButton(&$source, $control, &$attributes) {
+        $this->attrDefaultvalue($source, $attributes);
+        $this->readLabel($source, $control, 'button');
+        //$this->readHelpHintAlert($source, $control);
+        return false;
+    }
+
     protected function generateGroup(&$source, $control, &$attributes) {
         $this->readLabel($source, $control, 'group');
         $this->attrReadOnly($source, $attributes);
@@ -282,7 +289,7 @@ class jFormsCompiler_jf_1_1 extends jFormsCompiler_jf_1_0 {
         foreach($xml->children() as $ctrltype=>$control){
             if(in_array($ctrltype, $ignore))
                 continue;
-            if(!in_array($ctrltype, array('input','textarea', 'output','checkbox','checkboxes','radiobuttons',
+            if(!in_array($ctrltype, array('input','textarea', 'output','checkbox','checkboxes','radiobuttons','button',
                         'menulist','listbox','secret', 'upload', 'hidden','htmleditor','date','datetime','wikieditor'))) {
                 throw new jException('jelix~formserr.control.not.allowed',array($ctrltype, $controltype,$this->sourceFile));
             }

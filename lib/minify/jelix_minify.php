@@ -5,7 +5,7 @@
  * @author Laurent Jouanneau
  */
 
-define('MINIFY_MIN_DIR', dirname(__FILE__).'/min');
+define('MINIFY_MIN_DIR', __DIR__.'/min');
 
 function getDocumentRoot() {
     if (isset($_SERVER['DOCUMENT_ROOT']))
@@ -17,7 +17,7 @@ function getDocumentRoot() {
     $urlengine = $config['urlengine'];
 
     if($urlengine['scriptNameServerVariable'] == '') {
-        $urlengine['scriptNameServerVariable'] = jConfigCompiler::findServerName($urlengine['entrypointExtension']);
+        $urlengine['scriptNameServerVariable'] = jConfigCompiler::findServerName('.php');
     }
     $urlScript = $_SERVER[$urlengine['scriptNameServerVariable']];
     $lastslash = strrpos ($urlScript, '/');

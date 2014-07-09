@@ -125,35 +125,16 @@ class jDbPDOConnection extends PDO {
 
         switch (count($args)) {
         case 1:
-            $log = new jSQLLogMessage($args[0]);
             $rs = parent::query($args[0]);
-            $log->endQuery();
-            jLog::log($log,'sql');
             $rs->setFetchMode(PDO::FETCH_OBJ);
             return $rs;
         case 2:
-            $log = new jSQLLogMessage($args[0]);
-            $result = parent::query($args[0], $args[1]);
-            $log->endQuery();
-            jLog::log($log,'sql');
-            return $result;
+            return parent::query($args[0], $args[1]);
         case 3:
-            $log = new jSQLLogMessage($args[0]);
-            $result = parent::query($args[0], $args[1], $args[2]);
-            $log->endQuery();
-            jLog::log($log,'sql');
-            return $result;
+            return parent::query($args[0], $args[1], $args[2]);
         default:
             throw new Exception('jDbPDOConnection: bad argument number in query');
         }
-    }
-
-    public function exec($query) {
-        $log = new jSQLLogMessage($query);
-        $result = parent::exec($query);
-        $log->endQuery();
-        jLog::log($log,'sql');
-        return $result;
     }
 
     /**
@@ -294,3 +275,4 @@ class jDbPDOConnection extends PDO {
     }
 
 }
+

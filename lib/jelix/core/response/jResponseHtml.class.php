@@ -17,11 +17,11 @@
 /**
 *
 */
-require_once(JELIX_LIB_CORE_PATH.'response/jResponseBasicHtml.class.php');
+require_once(__DIR__.'/jResponseBasicHtml.class.php');
 require_once(JELIX_LIB_PATH.'tpl/jTpl.class.php');
 
 /**
-* HTML response
+* HTML5 response
 * @package  jelix
 * @subpackage core_response
 */
@@ -149,13 +149,6 @@ class jResponseHtml extends jResponseBasicHtml {
     protected $_endTag="/>\n";
 
     /**
-     * says if the document uses a Strict or Transitional Doctype
-     * @var boolean
-     * @since 1.1.3
-     */
-    protected $_strictDoctype = true;
-
-    /**
     * constructor;
     * setup the charset, the lang, the template engine
     */
@@ -216,6 +209,15 @@ class jResponseHtml extends jResponseBasicHtml {
 
         echo '</body></html>';
         return true;
+    }
+
+    /**
+     * set the title of the page
+     * 
+     * @param string $title
+     */ 
+    public function setTitle($title) {
+        $this->title = $title;
     }
 
     /**
@@ -336,6 +338,20 @@ class jResponseHtml extends jResponseBasicHtml {
     }
 
     /**
+     * set attributes on the body tag
+     * @param array $attrArray  an associative array of attributes and their values
+     */
+    public function setBodyAttributes ( $attrArray ){
+        if( is_array($attrArray) ) {
+            foreach( $attrArray as $attr => $value ) {
+                if(!is_numeric($attr)) {
+                    $this->bodyTagAttributes[$attr]=$value;
+                }
+            }
+        }
+    }
+
+    /**
      * add inline javascript code (inside a <script> tag)
      * @param string $code  javascript source code
      * @param boolean $before will insert the code before js links if true
@@ -388,13 +404,13 @@ class jResponseHtml extends jResponseBasicHtml {
      * @since 1.1
      */
     protected function outputDoctype (){
+        echo '<!DOCTYPE HTML>', "\n";
+        $lang = str_replace('_', '-', $this->_lang);
         if($this->_isXhtml){
-            echo '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 '.($this->_strictDoctype?'Strict':'Transitional').'//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-'.($this->_strictDoctype?'strict':'transitional').'.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="',$this->_lang,'" lang="',$this->_lang,'">
+            echo '<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="',$lang,'" lang="',$lang,'">
 ';
         }else{
-            echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01'.($this->_strictDoctype?'':' Transitional').'//EN" "http://www.w3.org/TR/html4/'.($this->_strictDoctype?'strict':'loose').'.dtd">', "\n";
-            echo '<html lang="',$this->_lang,'">';
+            echo '<html lang="',$lang,'">';
         }
     }
 
@@ -429,6 +445,7 @@ class jResponseHtml extends jResponseBasicHtml {
     protected function outputHtmlHeader (){
 
         echo '<head>'."\n";
+        echo implode ("\n", $this->_headTop);
         if($this->_isXhtml && $this->xhtmlContentType && strstr($_SERVER['HTTP_ACCEPT'],'application/xhtml+xml')){      
             echo '<meta content="application/xhtml+xml; charset='.$this->_charset.'" http-equiv="content-type"'.$this->_endTag;
         } else {
@@ -558,15 +575,6 @@ class jResponseHtml extends jResponseBasicHtml {
             $this->_endTag = "/>\n";
         else
             $this->_endTag = ">\n";
-    }
-
-    /**
-     * activate / deactivate the strict Doctype (activated by default)
-     * @param boolean $val true for strict, false for transitional
-     * @since 1.1.3
-     */
-    public function strictDoctype($val = true){
-        $this->_strictDoctype = $val;
     }
 
     /**

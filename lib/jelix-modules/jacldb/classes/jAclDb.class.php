@@ -23,22 +23,5 @@ class jAclDb {
      */
     private function __construct (){ }
 
-    /**
-     * return the profile name used for jacl connection
-     * @return string profile name
-     * @deprecated 1.2
-     */
-    public static function getProfile(){
-        return 'jacl_profile';
-    }
-
-    /**
-     * DEPRECATED. same as getProfile
-     * @deprecated 1.1
-     */
-    public static function getProfil (){
-        trigger_error("jAclDb::getProfil() is deprecated, you should use jAclDb::getProfile()", E_USER_DEPRECATED);
-        return 'jacl_profile';
-    }
 }
 

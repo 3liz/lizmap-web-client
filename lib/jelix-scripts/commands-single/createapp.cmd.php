@@ -94,7 +94,6 @@ class createappCommand extends JelixScriptCommand {
         $this->config->initAppPaths($appPath);
 
         jApp::setEnv('jelix-scripts');
-        jApp::initLegacy();
 
         JelixScript::checkTempPath();
 
@@ -179,7 +178,6 @@ class createappCommand extends JelixScriptCommand {
         $this->createFile($configPath.'preferences.ini.php', 'var/config/preferences.ini.php.tpl', $param, "Preferences file");
         $this->createFile($configPath.'urls.xml', 'var/config/urls.xml.tpl', $param, "URLs mapping file");
 
-        //$this->createFile(JELIX_APP_CONFIG_PATH.'installer.ini.php', 'var/config/installer.ini.php.tpl', $param);
         $this->createFile($configPath.'index/config.ini.php', 'var/config/index/config.ini.php.tpl', $param, "Entry point configuration file");
         $this->createFile($appPath.'responses/myHtmlResponse.class.php', 'responses/myHtmlResponse.class.php.tpl', $param, "Main response class");
         $this->createFile($appPath.'install/installer.php','installer/installer.php.tpl',$param, "Installer script");
@@ -247,7 +245,7 @@ class createappCommand extends JelixScriptCommand {
         if(strpos($rp, './') === 0)
             $rp = substr($rp, 2);
         if (strpos($rp, '../') !== false) {
-            return 'realpath($appPath.\''.$rp."').'/'";
+            return 'realpath(__DIR__.\'/'.$rp."').'/'";
         }
         else if (DIRECTORY_SEPARATOR == '/' && $rp[0] == '/') {
             return "'".$rp."'";
@@ -256,7 +254,7 @@ class createappCommand extends JelixScriptCommand {
             return "'".$rp."'";
         }
         else {
-            return '$appPath.\''.$rp."'";
+            return '__DIR__.\'/'.$rp."'";
         }
     }
 }

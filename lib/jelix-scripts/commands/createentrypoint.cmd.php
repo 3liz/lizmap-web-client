@@ -30,7 +30,7 @@ class createentrypointCommand extends JelixScriptCommand {
     modèle.
 
     L'option -type indique le type de point d'entrée : classic, jsonrpc,
-    xmlrpc, rdf, soap, cmdline.
+    xmlrpc, soap, cmdline.
 
     Le nom du point d'entrée peut être un chemin sous-repertoire/foo.php.
     ",
@@ -42,7 +42,7 @@ class createentrypointCommand extends JelixScriptCommand {
     a model.
 
     The -type option indicates the type of the entry point: classic, jsonrpc,
-    xmlrpc, rdf, soap, cmdline.
+    xmlrpc, soap, cmdline.
 
     The name of the entry point can contain a subdirectory.
     ",
@@ -56,7 +56,7 @@ class createentrypointCommand extends JelixScriptCommand {
         $type = $this->getOption('-type');
         if (!$type)
             $type = 'classic';
-        else if(!in_array($type, array('classic','jsonrpc','xmlrpc','rdf','soap','cmdline')))
+        else if(!in_array($type, array('classic','jsonrpc','xmlrpc','soap','cmdline')))
             throw new Exception("invalid type");
 
         // retrieve the name of the entry point

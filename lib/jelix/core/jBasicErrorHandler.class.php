@@ -131,6 +131,7 @@ class jBasicErrorHandler {
                     $file = jApp::appPath('responses/error.en_US.php');
                 else
                     $file = JELIX_LIB_CORE_PATH.'response/error.en_US.php';
+                $HEADTOP = '';
                 $HEADBOTTOM = '';
                 $BODYTOP = '';
                 $BODYBOTTOM = htmlspecialchars($msg);

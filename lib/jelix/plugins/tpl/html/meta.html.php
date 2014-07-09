@@ -3,9 +3,9 @@
 * @package      jelix
 * @subpackage   jtpl_plugin
 * @author       Laurent Jouanneau
-* @contributor  Yann (description and keywords), Dominique Papin (ie7 support), Mickaël Fradin (style), Loic Mathaud (title), Olivier Demah (auhor,generator), Julien Issler
+* @contributor  Yann (description and keywords), Dominique Papin (ie7 support), Mickaël Fradin (style), Loic Mathaud (title), Olivier Demah (auhor,generator), Julien Issler, Claudio Bernardes (include correction)
 * @copyright    2005-2012 Laurent Jouanneau, 2007 Dominique Papin, 2008 Mickaël Fradin, 2009 Loic Mathaud, 2010 Olivier Demah
-* @copyright    2010 Julien Issler
+* @copyright    2010 Julien Issler, 2012 Claudio Bernardes
 * @link         http://www.jelix.org
 * @licence      GNU Lesser General Public Licence see LICENCE file or http://www.gnu.org/licenses/lgpl.html
 */
@@ -31,7 +31,7 @@ function jtpl_meta_html_html($tpl, $method, $param=null, $params=array())
     }
     switch($method){
         case 'title':
-            $resp->title = $param;
+            $resp->setTitle($param);
             break;
         case 'js':
             $resp->addJSLink($param,$params);
@@ -86,9 +86,7 @@ function jtpl_meta_html_html($tpl, $method, $param=null, $params=array())
             break;
         case 'bodyattr':
             if(is_array($param)){
-                foreach($param as $p1=>$p2){
-                    if(!is_numeric($p1)) $resp->bodyTagAttributes[$p1]=$p2;
-                }
+                $resp->setBodyAttributes( $param );
             }
             break;
         case 'keywords':
@@ -121,9 +119,9 @@ function jtpl_meta_html_html($tpl, $method, $param=null, $params=array())
                 case 'effects':
                     $resp->addJSLink($base.'jquery.js');
                     $resp->addJSLink($base.'ui/jquery.ui.core.min.js');
-                    $resp->addJSLink($base.'ui/jquery.effects.core.min.js');
+                    $resp->addJSLink($base.'ui/jquery.ui.effect.min.js');
                     foreach($params as $f)
-                        $resp->addJSLink($base.'ui/jquery.effects.'.$f.'.min.js');
+                        $resp->addJSLink($base.'ui/jquery.ui.effect-'.$f.'.min.js');
                     break;
                 case 'theme':
                     $resp->addCSSLink($base.'themes/base/jquery.ui.all.css');

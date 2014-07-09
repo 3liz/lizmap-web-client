@@ -20,8 +20,10 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  */
+
 define('WIKIRENDERER_PATH', dirname(__FILE__).'/');
 define('WIKIRENDERER_VERSION', '3.1.5');
+
 
 
 /**

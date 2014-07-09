@@ -12,7 +12,7 @@
         <!--<updateURL>http://3liz.com/update.xml</updateURL>-->
     </info>
     <dependencies>
-        <jelix minversion="1.1.6" maxversion="1.4.*"/>
+        <jelix minversion="1.1.6" maxversion="1.5.*"/>
     </dependencies>
     <directories>
         <config>./var/config/</config>

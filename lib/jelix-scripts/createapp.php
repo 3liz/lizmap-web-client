@@ -9,4 +9,4 @@
 
 $commandName = 'createapp';
 
-require (dirname(__FILE__).'/includes/scripts.inc.php');
+require (__DIR__.'/includes/scripts.inc.php');

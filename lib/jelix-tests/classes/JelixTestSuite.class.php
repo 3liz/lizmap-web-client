@@ -10,10 +10,10 @@ class JelixTestSuite extends PHPUnit_Framework_TestSuite {
 
     protected function setUp() {
         parent::setUp();
-        jContext::push($this->module);
+        jApp::pushCurrentModule($this->module);
     }
 
     protected function tearDown() {
-        jContext::pop();
+        jApp::popCurrentModule();
     }
 }

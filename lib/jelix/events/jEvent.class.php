@@ -186,4 +186,14 @@ class jEvent {
             }
         }
     }
+
+    /**
+     * for tests
+     * @since 1.5
+     */
+    public static function clearCache() {
+        self::$hashListened = array();
+        self::$listenersSingleton = array ();
+        unset($GLOBALS['JELIX_EVENTS']);
+    }
 }

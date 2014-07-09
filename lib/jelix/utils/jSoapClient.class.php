@@ -119,6 +119,8 @@ class SoapClientDebug extends SoapClient {
 */
 class jSoapClient {
 
+    protected static $classmap = array();
+
     /**
      * @param string $profile  the profile name
      */
@@ -149,13 +151,41 @@ class jSoapClient {
         if (isset($profile['connection_timeout'])) {
             $profile['connection_timeout'] = intval($profile['connection_timeout']); // SoapClient recognize only true integer
         }
-        unset ($profile['_name']);
+
+        // deal with classmap
+        $classMap = array();
+        if (isset($profile['classmap_file']) && ($f = trim($profile['classmap_file'])) != '') {
+            if (!isset(self::$classmap[$f])) {
+                if (!file_exists(jApp::configPath($f))) {
+                    trigger_error("jSoapClient: classmap file ".$f." does not exists.", E_USER_WARNING);
+                    self::$classmap[$f] = array();
+                }
+                else {
+                    self::$classmap[$f] = parse_ini_file(jApp::configPath($f), true);
+                }
+            }
+            if (isset(self::$classmap[$f]['__common__'])) {
+                $classMap = array_merge($classMap, self::$classmap[$f]['__common__']);
+            }
+            if (isset(self::$classmap[$f][$profile['_name']])) {
+                $classMap = array_merge($classMap, self::$classmap[$f][$profile['_name']]);
+            }
+            unset($profile['classmap_file']);
+        }
+
         if (isset($profile['classmap']) && is_string ($profile['classmap']) && $profile['classmap'] != '') {
-            $profile['classmap'] = (array)json_decode(str_replace("'", '"',$profile['classmap']));
+            $map = (array)json_decode(str_replace("'", '"',$profile['classmap']));
+            $classMap = array_merge($classMap, $map);
+            unset($profile['classmap']);
+        }
+
+        if (count($classMap)) {
+            $profile['classmap'] = $classMap;
         }
 
         //$context = stream_context_create( array('http' => array('max_redirects' => 3)));
         //$profile['stream_context'] = $context;
+        unset ($profile['_name']);
 
         return new $client($wsdl, $profile);
     }

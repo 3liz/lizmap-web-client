@@ -3,7 +3,7 @@
 * @package     jelix-scripts
 * @author      Florian Lonqueu-Brochard
 * @contributor Laurent Jouanneau
-* @copyright   2011 Florian Lonqueu-Brochard, 2011-2012 Laurent Jouanneau
+* @copyright   2011 Florian Lonqueu-Brochard, 2011-2013 Laurent Jouanneau
 * @link        http://www.jelix.org
 * @licence     GNU General Public Licence see LICENCE file or http://www.gnu.org/licenses/gpl.html
 */
@@ -12,14 +12,13 @@
 class createlangpackageCommand extends JelixScriptCommand {
 
     public  $name = 'createlangpackage';
-    public  $allowed_options=array();
+    public  $allowed_options=array('-to-overload'=>false);
     public  $allowed_parameters=array('lang'=>true, 'model_lang'=>false);
 
     public  $syntaxhelp = "LANG [MODEL_LANG]";
     public  $help=array(
-        'fr'=>"Créer des fichiers properties pour tous les modules pour une langue spécifique, à partir
-des fichiers d'une autre langue",
-        'en'=>"Create properties file for all modules for a specific lang, from files of an existing locale"
+        'fr'=>"Créer des fichiers properties pour une nouvelle langue, à partir des fichiers de chaque modules d'une langue donnée",
+        'en'=>"Create properties file for a new lang, from locales stored in each modules, of a specific lang."
     );
 
     public function run(){
@@ -34,7 +33,13 @@ des fichiers d'une autre langue",
             if (!file_exists($source_dir))
                 continue;
 
-            $target_dir = jApp::varPath('overloads/'.$module.'/locales/'.$lang.'/');
+            if ($this->getOption('-to-overload')) {
+                $target_dir = jApp::varPath('overloads/'.$module.'/locales/'.$lang.'/');
+            }
+            else {
+                $target_dir = jApp::varPath('locales/'.$lang.'/'.$module.'/locales/');
+            }
+
             jFile::createDir($target_dir);
 
             if ($dir_r = opendir($source_dir)) {

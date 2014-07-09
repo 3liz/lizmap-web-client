@@ -42,7 +42,7 @@ class minifyHTMLResponsePlugin implements jIHTMLResponsePlugin {
         $basePath = jApp::config()->urlengine['basePath'];
         if ($conf['minifyCSS']) {
             if ($conf['minifyExcludeCSS']) {
-                $this->excludeCSS = preg_split( '!\s*/\s*!', $conf['minifyExcludeCSS'] );
+                $this->excludeCSS = preg_split( '/\s*,\s*/', $conf['minifyExcludeCSS'] );
                 foreach($this->excludeCSS as $k=>$url) {
                     if (substr($url,0,1) != '/')
                         $this->excludeCSS[$k]= $basePath.$url;
@@ -55,7 +55,7 @@ class minifyHTMLResponsePlugin implements jIHTMLResponsePlugin {
 
         if ($conf['minifyJS']) {
             if($conf['minifyExcludeJS'] ) {
-                $this->excludeJS = preg_split( '!\s*/\s*!', $conf['minifyExcludeJS'] );
+                $this->excludeJS = preg_split( '/\s*,\s*/', $conf['minifyExcludeJS'] );
                 foreach($this->excludeJS as $k=>$url) {
                     if (substr($url,0,1) != '/')
                         $this->excludeJS[$k]= $basePath.$url;
