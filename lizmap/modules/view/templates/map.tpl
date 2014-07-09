@@ -1,6 +1,5 @@
 <div id="header">
   <div id="logo">
-    <h1>{$repositoryLabel}</h1>
   </div>
   <div id="title">
     <h1>
@@ -10,6 +9,7 @@
       {@view~map.title.h1@}
     {/if}
     </h1>
+    <h2>{$repositoryLabel}</h2>
   </div>
 </div>
 

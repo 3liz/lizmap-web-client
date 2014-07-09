@@ -9,9 +9,9 @@ body {
   top:0px;
   max-width:90%;
   height : 65px;
-  margin-top : 10px;
+  margin-top : 0px;
   margin-left : 30px;
-  padding-right:20px;
+  padding-right:10px;
   text-align : right;
   overflow:hidden;
   white-space:nowrap;
@@ -21,9 +21,12 @@ body {
 #title h1 {
   color : #AAAAAA;
   font-size:2em;
+  line-height:1em;
 }
 #title h2 {
   color : #585858;
+  font-size:1em;
+  line-height:0.5em;
 }
 #title h2 a {
   color : inherit;
