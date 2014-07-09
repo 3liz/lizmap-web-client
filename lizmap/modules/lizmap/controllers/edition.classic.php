@@ -135,13 +135,13 @@ class editionCtrl extends jController {
     $lproj = lizmap::getProject($repository.'~'.$project);
 
     // Redirect if no rights to access this repository
-    if(!jacl2::check('lizmap.repositories.view', $lrep->getKey())){
+    if(!jAcl2::check('lizmap.repositories.view', $lrep->getKey())){
       jMessage::add(jLocale::get('view~default.repository.access.denied'), 'AuthorizationRequired');
       return false;
     }
 
     // Redirect if no rights to use the edition tool
-    if(!jacl2::check('lizmap.tools.edition.use', $lrep->getKey())){
+    if(!jAcl2::check('lizmap.tools.edition.use', $lrep->getKey())){
       jMessage::add(jLocale::get('view~edition.access.denied'), 'AuthorizationRequired');
       return false;
     }
@@ -167,7 +167,7 @@ class editionCtrl extends jController {
     $this->layerName = $layerName;
 
     // Optionnaly filter data by login
-    if( !jacl2::check('lizmap.tools.loginFilteredLayers.override', $lrep->getKey()) ){
+    if( !jAcl2::check('lizmap.tools.loginFilteredLayers.override', $lrep->getKey()) ){
       $this->loginFilteredLayers = True;
     }
 

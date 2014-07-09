@@ -30,7 +30,7 @@ class defaultCtrl extends jController {
 
     $repositoryList = Array();
     if ( $repository ) {
-      if( !jacl2::check('lizmap.repositories.view', $repository )){
+      if( !jAcl2::check('lizmap.repositories.view', $repository )){
         $rep = $this->getResponse('redirect');
         $rep->action = 'view~default:index';
         jMessage::add(jLocale::get('view~default.repository.access.denied'), 'error');

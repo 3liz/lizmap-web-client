@@ -42,7 +42,7 @@ class mapCtrl extends jController {
       $lrep = lizmap::getRepository($repository);
     }
 
-    if(!$lrep or !jacl2::check('lizmap.repositories.view', $lrep->getKey())){
+    if(!$lrep or !jAcl2::check('lizmap.repositories.view', $lrep->getKey())){
       $rep = $this->getResponse('redirect');
       $rep->action = 'view~default:index';
       jMessage::add(jLocale::get('view~default.repository.access.denied'), 'error');
@@ -125,7 +125,7 @@ class mapCtrl extends jController {
         $lizUrls['publicUrlList'] = $pul;
     }
 
-    if(jacl2::check('lizmap.admin.repositories.delete'))
+    if(jAcl2::check('lizmap.admin.repositories.delete'))
       $lizUrls['removeCache'] = jUrl::get('admin~config:removeLayerCache');
 
     $rep->addJSCode("var lizUrls = ".json_encode($lizUrls).";");
@@ -154,7 +154,7 @@ class mapCtrl extends jController {
 
 
     // WMS GetCapabilities Url
-    $wmsGetCapabilitiesUrl = jacl2::check(
+    $wmsGetCapabilitiesUrl = jAcl2::check(
       'lizmap.tools.displayGetCapabilitiesLinks',
       $lrep->getKey()
     );

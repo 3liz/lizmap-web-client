@@ -27,7 +27,7 @@ class mediaCtrl extends jController {
 
     $lrep = lizmap::getRepository($repository);
 
-    if(!jacl2::check('lizmap.repositories.view', $lrep->getKey())){
+    if(!jAcl2::check('lizmap.repositories.view', $lrep->getKey())){
       $rep = $this->getResponse('redirect');
       $rep->action = 'view~default:error';
       jMessage::add(jLocale::get('view~default.repository.access.denied'), 'error');
@@ -121,7 +121,7 @@ class mediaCtrl extends jController {
       $lrep = lizmap::getRepository($ser->defaultRepository);
     }
 
-    if(!jacl2::check('lizmap.repositories.view', $lrep->getKey())){
+    if(!jAcl2::check('lizmap.repositories.view', $lrep->getKey())){
       $rep = $this->getResponse('redirect');
       $rep->action = 'view~default:error';
       jMessage::add(jLocale::get('view~default.repository.access.denied'), 'error');
@@ -164,7 +164,7 @@ class mediaCtrl extends jController {
 
     $lrep = lizmap::getRepository($repository);
 
-    if(!jacl2::check('lizmap.repositories.view', $lrep->getKey())){
+    if(!jAcl2::check('lizmap.repositories.view', $lrep->getKey())){
       $rep = $this->getResponse('redirect');
       $rep->action = 'view~default:error';
       jMessage::add(jLocale::get('view~default.repository.access.denied'), 'error');

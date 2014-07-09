@@ -139,7 +139,7 @@ class serviceCtrl extends jController {
     $lrep = lizmap::getRepository($repository);
 
     // Redirect if no rights to access this repository
-    if(!jacl2::check('lizmap.repositories.view', $lrep->getKey())){
+    if(!jAcl2::check('lizmap.repositories.view', $lrep->getKey())){
       jMessage::add(jLocale::get('view~default.repository.access.denied'), 'AuthorizationRequired');
       return false;
     }
@@ -162,7 +162,7 @@ class serviceCtrl extends jController {
       $request = strtolower($params['request']);
       if(
         in_array($request, array('getmap', 'getfeatureinfo', 'getfeature', 'getprint'))
-        and !jacl2::check('lizmap.tools.loginFilteredLayers.override', $lrep->getKey() )
+        and !jAcl2::check('lizmap.tools.loginFilteredLayers.override', $lrep->getKey() )
       ){
         $this->filterDataByLogin();
       }

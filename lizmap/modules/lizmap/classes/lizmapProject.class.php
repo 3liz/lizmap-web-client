@@ -213,7 +213,7 @@ class lizmapProject{
 
     public function hasEditionLayers(){
       if ( property_exists($this->cfg,'editionLayers') ){
-        if(!jacl2::check('lizmap.tools.edition.use', $this->repository->getKey()))
+        if(!jAcl2::check('lizmap.tools.edition.use', $this->repository->getKey()))
           return false;
 
         $count = 0;
@@ -366,7 +366,7 @@ class lizmapProject{
 
       // Add an option to display buttons to remove the cache for cached layer
       // Only if appropriate right is found
-      if( jacl2::check('lizmap.admin.repositories.delete') ){
+      if( jAcl2::check('lizmap.admin.repositories.delete') ){
         $configJson->options->removeCache = 'True';
       }
 
@@ -497,7 +497,7 @@ class lizmapProject{
       // Remove editionLayers from config if no right to access this tool
       // Or if no ability to load spatialite extension
       if ( property_exists( $configJson, 'editionLayers' ) ) {
-        if( jacl2::check('lizmap.tools.edition.use', $this->repository->getKey()) ){
+        if( jAcl2::check('lizmap.tools.edition.use', $this->repository->getKey()) ){
           $spatial = false;
           if ( class_exists('SQLite3') ) {
             try{
