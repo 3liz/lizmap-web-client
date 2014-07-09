@@ -1,7 +1,6 @@
 <div id="auth" class="navbar-inner">
-  <div class="pull-right">
     {if $externalSearch != ''}
-    <form id="nominatim-search" class="navbar-search pull-left dropdown">
+    <form id="nominatim-search" class="navbar-search dropdown">
       <input id="search-query" type="text" class="search-query" placeholder="{@view~map.search.nominatim.placeholder@}"></input>
       <span class="search-icon">
         <button class="icon nav-search" type="submit" tabindex="-1">
@@ -20,7 +19,9 @@
       </div>
     </form>
     {/if}
+  <div class="pull-right">
     <ul class="nav">
+    <!--
       <li class="home">
         <a href="{jurl 'view~default:index'}" rel="tooltip" data-original-title="{@view~default.repository.list.title@}" data-placement="bottom" href="#">
           <span class="icon"></span>
@@ -101,6 +102,7 @@
         </a>
       </li>
       {/if}
+      -->
       {if $isConnected}
       <li class="user dropdown">
         <a class="dropdown-toggle" data-toggle="dropdown" href="#" id="user-info">

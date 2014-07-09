@@ -29,13 +29,13 @@ class map_headermenuZone extends jZone {
       'user'=>jAuth::getUserSession(),
       'auth_url_return'=>$auth_url_return,
       "externalSearch"=>"",
-      "edition"=>true,
-      "measure"=>true,
-      "locate"=>true,
-      "geolocation"=>true,
-      "timemanager"=>true,
-      "print"=>true,
-      "attributeLayers"=>true
+      "edition"=>false,
+      "measure"=>false,
+      "locate"=>false,
+      "geolocation"=>false,
+      "timemanager"=>false,
+      "print"=>false,
+      "attributeLayers"=>false
     );
 
     $lproj = lizmap::getProject($repository.'~'.$project);
@@ -43,7 +43,7 @@ class map_headermenuZone extends jZone {
 
     if ( property_exists($configOptions,'externalSearch') )
       $assign['externalSearch'] = $configOptions->externalSearch;
-
+/*
     if ( !property_exists($configOptions,'measure')
       || $configOptions->measure != 'True')
       $assign['measure'] = false;
@@ -63,6 +63,7 @@ class map_headermenuZone extends jZone {
     $assign['timemanager'] = $lproj->hasTimemanagerLayers();
 
     $assign['attributeLayers'] = $lproj->hasAttributeLayers();
+    */
 
     $this->_tpl->assign($assign);
    }

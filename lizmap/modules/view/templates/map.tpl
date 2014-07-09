@@ -11,20 +11,22 @@
     </h1>
     <h2>{$repositoryLabel}</h2>
   </div>
-</div>
-
-<div id="headermenu" class="navbar navbar-fixed-top">
-  <div id="auth" class="navbar-inner">
+  <div id="headermenu" class="navbar navbar-fixed-top">
     {zone 'view~map_headermenu', array('repository'=>$repository,'project'=>$project)}
   </div>
-
 </div>
 
 <div id="content">
 
   <span class="ui-icon ui-icon-open-menu" style="display:none;" title="{@view~map.menu.show.hover@}"></span>
+  
+  <div style="position:absolute; left:0px; top:0px; height:100%; width: 30px; z-index:1030; background:#2B2B2B;">
+    <div style="width:30px; height:30px; position:relative;">
+      <span style="position: absolute; display:block; width:20px; height:20px; top:50%; left:50%; margin-top:-10px; margin-left:-10px; background-image:url('/~dhont/lizmap/lizmap/www/css/images/sprite_20_tools.png')"></span>
+    </div>
+  </div>
 
-  <div id="menu">
+  <div id="menu" style="display:none;">
     <div id="close-menu" style="display:none;" title="{@view~map.menu.close.hover@}">
       <span class="ui-icon ui-icon-close-menu"></span>
     </div>

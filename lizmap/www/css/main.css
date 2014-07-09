@@ -2,7 +2,7 @@ body {
   margin : 0;
   font-size : 1em;
   font-family : century gothic, arial, sans serif;
-  padding-top : 105px;
+  padding-top : 75px;
   padding-bottom : 50px;
   background : #EFEFEF;
 }
@@ -51,6 +51,39 @@ a:hover {
   white-space:nowrap;
   text-overflow:ellipsis;
 }
+#title {
+  position:relative;
+  max-width:85%;
+  height : auto;
+  margin-top : 20px;
+  margin-left : 30px;
+  padding-right:10px;
+  text-align : left;
+  overflow:hidden;
+  white-space:normal;
+  text-overflow:ellipsis;
+  background:inherit;
+}
+#title h1 {
+  position:relative;
+  display:inline;
+  color : #AAAAAA;
+  font-size:2em;
+  line-height:1em;
+}
+#title h2 {
+  position:relative;
+  display:inline;
+  color : #585858;
+  font-size:1em;
+  line-height:0.5em;
+  margin-top:2em;
+  margin-left:0.5em;
+}
+#title h2 a {
+  color : inherit;
+  text-decoration : none;
+}
 
 
 #headermenu {
@@ -58,13 +91,14 @@ a:hover {
   position: fixed;
   right: 0px;
   left: 0px;
-  top: 75px;
+  top:3.5em;
   z-index: 1030;
   margin-bottom: 0px;
   overflow: visible;
 /*  white-space:nowrap;*/
-  background-color:#93C01F;
-  font-size:0.7em;
+/*  background-color:#93C01F; */
+  font-size:inherit;
+  background:transparent;
 }
 
 #auth {
