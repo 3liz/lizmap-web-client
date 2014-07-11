@@ -244,6 +244,33 @@ body {
   background-position: -20px -40px;
 }
 
+/* Dock */
+#dock {
+  position:absolute;
+  left:40px;
+  top:10px;
+  max-width:30%;
+  max-height:90%;
+  z-index:1030;
+  overflow:auto;
+  background-color: #F0F0F0;
+}
+
+/* Dock */
+#mini-dock {
+  position:absolute;
+  right:60px;
+  top:10px;
+  max-width:30%;
+  max-height:50%;
+  z-index:1030;
+  overflow:auto;
+  background-color: #F0F0F0;
+}
+#mini-dock .nav-tabs {
+  display:none;
+}
+
 /*
 Timemanager
 */
