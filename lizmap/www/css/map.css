@@ -94,6 +94,93 @@ body {
   white-space: normal;
 }
 
+/* mapmenu */
+#mapmenu .nav-list > li > a {
+  width: 20px;
+  height: 20px;
+  padding: 5px;
+}
+#mapmenu .nav-list > li > a .icon {
+  display:inline-block;
+  vertical-align:middle;
+  background-image:url("images/sprite_20_tools.png");
+  background-repeat:no-repeat;
+  width:20px;
+  height:20px;
+}
+#mapmenu .nav-list > li.home .icon {
+  background-position: -80px 0px;
+}
+#mapmenu .nav-list > li.home.active .icon,
+#mapmenu .nav-list > li.home a:hover .icon {
+  background-position: -80px -20px;
+}
+#mapmenu .nav-list > li.information .icon {
+  background-position: -120px 0px;
+}
+#mapmenu .nav-list > li.information.active .icon,
+#mapmenu .nav-list > li.information a:hover .icon {
+  background-position: -120px -20px;
+}
+#mapmenu .nav-list > li.map .icon {
+  background-position: -40px -40px;
+}
+#mapmenu .nav-list > li.map.active .icon,
+#mapmenu .nav-list > li.map a:hover .icon {
+  background-position: -40px -60px;
+}
+#mapmenu .nav-list > li.legend .icon {
+  background-position: -40px -80px;
+}
+#mapmenu .nav-list > li.legend.active .icon,
+#mapmenu .nav-list > li.legend a:hover .icon {
+  background-position: -40px -100px;
+}
+#mapmenu .nav-list > li.locate .icon {
+  background-position: -20px -80px;
+}
+#mapmenu .nav-list > li.locate.active .icon,
+#mapmenu .nav-list > li.locate a:hover .icon {
+  background-position: -20px -100px;
+}
+#mapmenu .nav-list > li.print .icon {
+  background-position: -160px 0px;
+}
+#mapmenu .nav-list > li.print.active .icon,
+#mapmenu .nav-list > li.print a:hover .icon {
+  background-position: -160px -20px;
+}
+#mapmenu .nav-list > li.measure .icon {
+  background-position: -140px 0px;
+}
+#mapmenu .nav-list > li.measure.active .icon,
+#mapmenu .nav-list > li.measure a:hover .icon {
+  background-position: -140px -20px;
+}
+#mapmenu .nav-list > li.edition .icon {
+  background-position: -200px 0px;
+}
+#mapmenu .nav-list > li.edition.active .icon,
+#mapmenu .nav-list > li.edition a:hover .icon {
+  background-position: -200px -20px;
+}
+#mapmenu .nav-list > li.geolocate .icon {
+  background-position: -20px -40px;
+}
+#mapmenu .nav-list > li.geolocate.active .icon,
+#mapmenu .nav-list > li.geolocate a:hover .icon {
+  background-position: -20px -60px;
+}
+#mapmenu .nav-list > li.attributeLayers .icon {
+  background-position: -120px -80px;
+}
+#mapmenu .nav-list > li.attributeLayers.active .icon,
+#mapmenu .nav-list > li.attributeLayers a:hover .icon {
+  background-position: -120px -100px;
+}
+
+
+/* navbar */
 .navbar-fixed-top .navbar-inner,
 .navbar-static-top .navbar-inner {
   border: 0;

@@ -20,10 +20,11 @@
 
   <span class="ui-icon ui-icon-open-menu" style="display:none;" title="{@view~map.menu.show.hover@}"></span>
   
-  <div style="position:absolute; left:0px; top:0px; height:100%; width: 30px; z-index:1030; background:#2B2B2B;">
-    <div style="width:30px; height:30px; position:relative;">
+  <div id="mapmenu" style="position:absolute; left:0px; top:0px; height:100%; width: 30px; z-index:1030; background:#2B2B2B;">
+    {zone 'view~map_menu', array('repository'=>$repository,'project'=>$project)}
+    <!--div style="width:30px; height:30px; position:relative;">
       <span style="position: absolute; display:block; width:20px; height:20px; top:50%; left:50%; margin-top:-10px; margin-left:-10px; background-image:url('/~dhont/lizmap/lizmap/www/css/images/sprite_20_tools.png')"></span>
-    </div>
+    </div-->
   </div>
 
   <div id="menu" style="display:none;">

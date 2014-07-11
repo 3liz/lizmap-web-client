@@ -15,19 +15,21 @@
 
 <div id="header" class="navbar navbar-fixed-top">
   <div id="logo">
+  </div>
+  <div id="title">
     <h1>{@auth.titlePage.login@}</h1>
   </div>
-</div>
 
-<div id="headermenu" class="navbar navbar-fixed-top">
-  <div id="auth" class="navbar-inner">
-    <ul class="nav pull-right">
-      <li class="home">
-        <a href="{jurl 'view~default:index'}" rel="tooltip" data-original-title="{@view~default.repository.list.title@}" data-placement="bottom" href="#">
-          <span class="icon"></span>
-          <span class="text"><b>{@view~default.repository.list.title@}</b></span>
-        </a>
+  <div id="headermenu" class="navbar navbar-fixed-top">
+    <div id="auth" class="navbar-inner">
+      <ul class="nav pull-right">
+        <li class="home">
+          <a href="{jurl 'view~default:index'}" rel="tooltip" data-original-title="{@view~default.repository.list.title@}" data-placement="bottom" href="#">
+            <span class="icon"></span>
+            <span class="text"><b>{@view~default.repository.list.title@}</b></span>
+          </a>
       </li>
+    </div>
   </div>
 </div>
 

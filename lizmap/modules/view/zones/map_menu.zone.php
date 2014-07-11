@@ -9,9 +9,9 @@
 * @license    Mozilla Public License : http://www.mozilla.org/MPL/
  */
 
-class map_headermenuZone extends jZone {
+class map_menuZone extends jZone {
 
-   protected $_tplname='map_headermenu';
+   protected $_tplname='map_menu';
 
    protected function _prepareTpl(){
     // Get the project and repository params
@@ -25,10 +25,6 @@ class map_headermenuZone extends jZone {
 
     // Get lizmapProject class
     $assign = array(
-      'isConnected'=>jAuth::isConnected(),
-      'user'=>jAuth::getUserSession(),
-      'auth_url_return'=>$auth_url_return,
-      "externalSearch"=>"",
       "edition"=>false,
       "measure"=>false,
       "locate"=>false,
@@ -41,8 +37,21 @@ class map_headermenuZone extends jZone {
     $lproj = lizmap::getProject($repository.'~'.$project);
     $configOptions = $lproj->getOptions();
 
-    if ( property_exists($configOptions,'externalSearch') )
-      $assign['externalSearch'] = $configOptions->externalSearch;
+    if ( property_exists($configOptions,'measure')
+      && $configOptions->measure == 'True')
+      $assign['measure'] = true;
+
+    $assign['locate'] = $lproj->hasLocateByLayer();
+
+    $assign['edition'] = $lproj->hasEditionLayers();
+
+    if ( property_exists($configOptions,'geolocation')
+      && $configOptions->geolocation == 'True')
+      $assign['geolocation'] = true;
+
+    $assign['timemanager'] = $lproj->hasTimemanagerLayers();
+
+    $assign['attributeLayers'] = $lproj->hasAttributeLayers();
 
     $this->_tpl->assign($assign);
    }
