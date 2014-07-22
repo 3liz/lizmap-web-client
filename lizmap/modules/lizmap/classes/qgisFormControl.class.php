@@ -320,8 +320,15 @@ class qgisFormControl{
   * @return object Modified jForms control.
   */
   public function fillCheckboxValues(){
-    $checked = (string)$this->edittype[0]->attributes()->checked;
-    $unchecked = (string)$this->edittype[0]->attributes()->unchecked;
+    $checked = null;
+    $unchecked = null;
+    if ( $this->fieldEditType == 'CheckBox'){
+      $checked = (string)$this->edittype[0]->widgetv2config->attributes()->CheckedState;
+      $unchecked = (string)$this->edittype[0]->widgetv2config->attributes()->UncheckedState;
+    } else {
+      $checked = (string)$this->edittype[0]->attributes()->checked;
+      $unchecked = (string)$this->edittype[0]->attributes()->unchecked;
+    }
     $this->ctrl->valueOnCheck = $checked;
     $this->ctrl->valueOnUncheck = $unchecked;
     $this->required = False; // As there is only a value, even if the checkbox is unchecked
