@@ -336,12 +336,12 @@ Timemanager
   cursor:pointer;
 }
 #metadata {
-  display:none;
-  position:absolute;
-  width:100%;
-  height:100%;
+/*display:none;
   bottom:0px;
   right:0px;
+  position:absolute;*/
+  width:100%;
+  height:100%;
   z-index:100000;
   background-color:#EFEFEF;
   color:grey;

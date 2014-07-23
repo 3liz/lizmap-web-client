@@ -25,7 +25,8 @@
   </div>
   
   <div id="dock">
-    <div class="tabbable tabs-below">
+      {zone 'view~map_dock', array('repository'=>$repository,'project'=>$project)}
+    <!--div class="tabbable tabs-below">
       <div class="tab-content">
         <div class="tab-pane active" id="tab1">
           <p>I'm in Section 1.</p>
@@ -42,7 +43,7 @@
         <li><a href="#tab2" data-toggle="tab">Légendes</a></li>
         <li><a href="#tab3" data-toggle="tab">Information</a></li>
       </ul>
-    </div>
+    </div-->
   </div>
   
   <div id="mini-dock">
@@ -73,7 +74,7 @@
     <div id="toolbar">
       {zone 'view~map_toolbar', array('repository'=>$repository,'project'=>$project)}
     </div>
-    <div id="switcher-menu" class="switcher">
+    <!--div id="switcher-menu" class="switcher">
       <h3><span class="title"><span class="icon"></span>&nbsp;<span class="text">{@view~map.switchermenu.title@}</span></span></h3>
       <div class="menu-content">
         <div id="switcher"></div>
@@ -86,7 +87,7 @@
           <select id="baselayer-select" class="label"></select>
         </div>
       </div>
-    </div>
+    </div-->
   </div>
   <div id="map-content">
     <div id="map"></div>
@@ -146,78 +147,6 @@
     </div>
   </div>
 
-  <div id="metadata">
-    <div class="row">
-      <div class="span4 offset1">
-        <h2>{@view~map.metadata.h2.illustration@}</h2>
-        <p>
-          <img src="{jurl 'view~media:illustration', array('repository'=>$repository,'project'=>$project)}" alt="project image" class="img-polaroid liz-project-img">
-        </p>
-      </div>
-
-      <div class="span5 offset1">
-        <h2>{@view~map.metadata.h2.description@}</h2>
-        <p>
-          <dl class="dl-horizontal">
-            <dt>{@view~map.metadata.description.title@}</dt>
-            <dd>{$WMSServiceTitle}&nbsp;</dd>
-            <dt>{@view~map.metadata.description.abstract@}</dt>
-            <dd>{$WMSServiceAbstract|nl2br}&nbsp;</dd>
-          </dl>
-        </p>
-      </div>
-
-      <div class="span4 offset1">
-        <h2>{@view~map.metadata.h2.properties@}</h2>
-        <p>
-          <dl class="dl-horizontal">
-            <dt>{@view~map.metadata.properties.projection@}</dt>
-            <dd><small>{$ProjectCrs}&nbsp;</small></dd>
-            <dt>{@view~map.metadata.properties.extent@}</dt>
-            <dd><small>{$WMSExtent}</small></dd>
-          </dl>
-        </p>
-      </div>
-    </div>
-
-    <div class="row">
-      <div class="span5 offset1">
-        <h2>{@view~map.metadata.h2.contact@}</h2>
-        <p>
-          <dl class="dl-horizontal">
-            <dt>{@view~map.metadata.contact.organization@}</dt>
-            <dd>{$WMSContactOrganization}&nbsp;</dd>
-            <dt>{@view~map.metadata.contact.person@}</dt>
-            <dd>{$WMSContactPerson}&nbsp;</dd>
-            <dt>{@view~map.metadata.contact.email@}</dt>
-            <dd>{$WMSContactMail|replace:'@':' (at) '}&nbsp;</dd>
-            <dt>{@view~map.metadata.contact.phone@}</dt>
-            <dd>{$WMSContactPhone}&nbsp;</dd>
-          </dl>
-        </p>
-      </div>
-      <div class="span7">
-        <h2>{@view~map.metadata.h2.resources@}</h2>
-        <p>
-          <dl class="dl-horizontal">
-            <dt>{@view~map.metadata.resources.website@}</dt>
-            <dd><a href="{$WMSOnlineResource}" target="_blank">{$WMSOnlineResource}</a></dd>
-
-            {if $wmsGetCapabilitiesUrl}
-            <dt>{@view~map.metadata.properties.wmsGetCapabilitiesUrl@}</dt>
-            <dd><small><a href="{$wmsGetCapabilitiesUrl}" target="_blank">WMS Url</a></small></dd>
-            {/if}
-          </dl>
-        </p>
-      </div>
-    </div>
-
-    <div class="row">
-      <div class="span4 offset8">
-        <span class="btn" id="hideMetadata">{@view~map.metadata.hide@}</span>
-      </div>
-    </div>
-  </div>
 </div>
 
 <div id="loading" class="ui-dialog-content ui-widget-content" title="{@view~map.loading.title@}">
