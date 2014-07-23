@@ -26,28 +26,11 @@
   
   <div id="dock">
       {zone 'view~map_dock', array('repository'=>$repository,'project'=>$project)}
-    <!--div class="tabbable tabs-below">
-      <div class="tab-content">
-        <div class="tab-pane active" id="tab1">
-          <p>I'm in Section 1.</p>
-        </div>
-        <div class="tab-pane" id="tab2">
-          <p>Howdy, I'm in Section 2.</p>
-        </div>
-        <div class="tab-pane" id="tab3">
-          <p>Howdy, I'm in Section 3.</p>
-        </div>
-      </div>
-      <ul class="nav nav-tabs">
-        <li class="active"><a href="#tab1" data-toggle="tab">Couches</a></li>
-        <li><a href="#tab2" data-toggle="tab">Légendes</a></li>
-        <li><a href="#tab3" data-toggle="tab">Information</a></li>
-      </ul>
-    </div-->
   </div>
   
   <div id="mini-dock">
-    <div class="tabbable tabs-below">
+    {zone 'view~map_minidock', array('repository'=>$repository,'project'=>$project)}
+    <!--div class="tabbable tabs-below">
       <div class="tab-content">
         <div class="tab-pane active" id="mtab1">
           <p>I'm in Section 1.</p>
@@ -64,7 +47,7 @@
         <li><a href="#mtab2" data-toggle="tab">Edition</a></li>
         <li><a href="#mtab3" data-toggle="tab">Mesure</a></li>
       </ul>
-    </div>
+    </div-->
   </div>
 
   <div id="menu" style="display:none;">
