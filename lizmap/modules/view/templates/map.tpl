@@ -20,7 +20,7 @@
 
   <span class="ui-icon ui-icon-open-menu" style="display:none;" title="{@view~map.menu.show.hover@}"></span>
   
-  <div id="mapmenu" style="position:absolute; left:0px; top:0px; height:100%; width: 30px; z-index:1030; background:#2B2B2B;">
+  <div id="mapmenu" style="">
     {zone 'view~map_menu', array('repository'=>$repository,'project'=>$project)}
   </div>
   
@@ -50,28 +50,6 @@
     </div-->
   </div>
 
-  <div id="menu" style="display:none;">
-    <div id="close-menu" style="display:none;" title="{@view~map.menu.close.hover@}">
-      <span class="ui-icon ui-icon-close-menu"></span>
-    </div>
-    <div id="toolbar">
-      {zone 'view~map_toolbar', array('repository'=>$repository,'project'=>$project)}
-    </div>
-    <!--div id="switcher-menu" class="switcher">
-      <h3><span class="title"><span class="icon"></span>&nbsp;<span class="text">{@view~map.switchermenu.title@}</span></span></h3>
-      <div class="menu-content">
-        <div id="switcher"></div>
-      </div>
-    </div>
-    <div id="baselayer-menu" class="baselayer">
-      <h3><span class="title"><span class="icon"></span>&nbsp;<span class="text">{@view~map.baselayermenu.title@}</span></span></h3>
-      <div class="menu-content">
-        <div class="baselayer-select">
-          <select id="baselayer-select" class="label"></select>
-        </div>
-      </div>
-    </div-->
-  </div>
   <div id="map-content">
     <div id="map"></div>
     <span id="navbar">

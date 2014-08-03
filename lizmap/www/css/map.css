@@ -95,6 +95,15 @@ body {
 }
 
 /* mapmenu */
+#mapmenu {
+  position:absolute;
+  left:0px;
+  top:0px;
+  height:100%;
+  width: 30px;
+  z-index:1050;
+  background:#2B2B2B;
+}
 #mapmenu .nav-list > li > a {
   width: 20px;
   height: 20px;
@@ -115,13 +124,14 @@ body {
 #mapmenu .nav-list > li.home a:hover .icon {
   background-position: -80px -20px;
 }
-#mapmenu .nav-list > li.information .icon {
+#mapmenu .nav-list > li.metadata .icon {
   background-position: -120px 0px;
 }
-#mapmenu .nav-list > li.information.active .icon,
-#mapmenu .nav-list > li.information a:hover .icon {
+#mapmenu .nav-list > li.metadata.active .icon,
+#mapmenu .nav-list > li.metadata a:hover .icon {
   background-position: -120px -20px;
 }
+/*
 #mapmenu .nav-list > li.map .icon {
   background-position: -40px -40px;
 }
@@ -135,6 +145,21 @@ body {
 #mapmenu .nav-list > li.legend.active .icon,
 #mapmenu .nav-list > li.legend a:hover .icon {
   background-position: -40px -100px;
+}
+*/
+#mapmenu .nav-list > li.switcher .icon {
+  background-position: -120px -80px;
+}
+#mapmenu .nav-list > li.switcher.active .icon,
+#mapmenu .nav-list > li.switcher a:hover .icon {
+  background-position: -120px -100px;
+}
+#mapmenu .nav-list > li.legend .icon {
+  background-position: -40px -160px;
+}
+#mapmenu .nav-list > li.legend.active .icon,
+#mapmenu .nav-list > li.legend a:hover .icon {
+  background-position: -40px -180px;
 }
 #mapmenu .nav-list > li.locate .icon {
   background-position: -20px -80px;
@@ -164,11 +189,11 @@ body {
 #mapmenu .nav-list > li.edition a:hover .icon {
   background-position: -200px -20px;
 }
-#mapmenu .nav-list > li.geolocate .icon {
+#mapmenu .nav-list > li.geolocation .icon {
   background-position: -20px -40px;
 }
-#mapmenu .nav-list > li.geolocate.active .icon,
-#mapmenu .nav-list > li.geolocate a:hover .icon {
+#mapmenu .nav-list > li.geolocation.active .icon,
+#mapmenu .nav-list > li.geolocation a:hover .icon {
   background-position: -20px -60px;
 }
 #mapmenu .nav-list > li.attributeLayers .icon {
@@ -186,11 +211,11 @@ body {
   border: 0;
 }
 
-.navbar .nav .information .icon {
+.navbar .nav .metadata .icon {
   background-position: -120px -20px;
 }
-.navbar .nav .information a:hover .icon,
-.navbar .nav .information.active a .icon {
+.navbar .nav .metadata a:hover .icon,
+.navbar .nav .metadata.active a .icon {
   background-position: -120px 0px;
 }
 
@@ -236,11 +261,11 @@ body {
 .navbar .nav .measure.active a .icon {
   background-position: -140px 0px;
 }
-.navbar .nav .geolocate .icon {
+.navbar .nav .geolocation .icon {
   background-position: -20px -60px;
 }
-.navbar .nav .geolocate a:hover .icon,
-.navbar .nav .geolocate.active a .icon {
+.navbar .nav .geolocation a:hover .icon,
+.navbar .nav .geolocation.active a .icon {
   background-position: -20px -40px;
 }
 
@@ -249,9 +274,10 @@ body {
   position:absolute;
   left:40px;
   top:10px;
-  max-width:30%;
-  max-height:90%;
-  z-index:1030;
+  bottom:10px;
+  /*max-width:30%;
+  max-height:90%;*/
+  z-index:1040;
   overflow:auto;
   background-color: #F0F0F0;
 }
@@ -368,7 +394,9 @@ Timemanager
   background-position : -16px -16px;
 }
 #toolbar h3,
-#menu h3 {
+#menu h3,
+#dock h3,
+#mini-dock h3 {
   margin : 1px;
   background : #2B2B2B;
   color : #FBFBFB;
@@ -378,25 +406,33 @@ Timemanager
   font-size : 0.9em;
 }
 #toolbar h3 span.title,
-#menu h3 span.title {
+#menu h3 span.title,
+#dock h3 span.title,
+#mini-dock h3 span.title {
   display : block;
   padding : 0.5em 0.5em 0.5em 0.7em;
 }
 #toolbar h3 span.menu-content,
-#menu h3 span.ui-icon {
+#menu h3 span.ui-icon,
+#dock h3 span.ui-icon,
+#mini-dock h3 span.ui-icon {
   float : right;
   margin-top : 0.5em;
   margin-right : 0.5em;
 }
 
 #toolbar div.menu-content,
-#menu div.menu-content {
+#menu div.menu-content,
+#dock div.menu-content,
+#mini-dock div.menu-content {
   display : block;
   padding : 0.5em;
 }
 
 #toolbar h3 .icon,
-#menu h3 .icon {
+#menu h3 .icon,
+#dock h3 .icon,
+#mini-dock h3 .icon {
   display:inline-block;
   vertical-align:middle;
   background-image : url(images/sprite_20_tools.png);
@@ -405,36 +441,52 @@ Timemanager
   height:20px;
 }
 #toolbar h3 .text,
-#menu h3 .text {
+#menu h3 .text,
+#dock h3 .text,
+#mini-dock h3 .text {
   vertical-align : bottom;
 }
 
 #toolbar .baselayer h3 .icon,
-#menu .baselayer h3 .icon {
+#menu .baselayer h3 .icon,
+#dock .baselayer h3 .icon,
+#mini-dock .baselayer h3 .icon {
   background-position : -40px 0px;
 }
 #toolbar .switcher h3 .icon,
-#menu .switcher h3 .icon {
-  background-position : -40px -160px;
+#menu .switcher h3 .icon,
+#dock .switcher h3 .icon,
+#mini-dock .switcher h3 .icon {
+  background-position : -120px -80px;
 }
 #toolbar .locate h3 .icon,
-#menu .locate h3 .icon {
+#menu .locate h3 .icon,
+#dock .locate h3 .icon,
+#mini-dock .locate h3 .icon {
   background-position : -20px -80px;
 }
-#toolbar .geolocate h3 .icon,
-#menu .geolocate h3 .icon {
-  background-position: -20px -60px;
+#toolbar .geolocation h3 .icon,
+#menu .geolocation h3 .icon,
+#dock .geolocation h3 .icon,
+#mini-dock .geolocation h3 .icon {
+  background-position: -20px -40px;
 }
 #toolbar .print h3 .icon,
-#menu .print h3 .icon {
+#menu .print h3 .icon,
+#dock .print h3 .icon,
+#mini-dock .print h3 .icon {
   background-position: -160px 0px;
 }
 #toolbar .measure h3 .icon,
-#menu .measure h3 .icon {
+#menu .measure h3 .icon,
+#dock .measure h3 .icon,
+#mini-dock .measure h3 .icon {
   background-position: -140px 0px;
 }
 #toolbar .edition h3 .icon,
-#menu .edition h3 .icon {
+#menu .edition h3 .icon,
+#dock .edition h3 .icon,
+#mini-dock .edition h3 .icon {
   background-position : -200px 0px;
 }
 
@@ -483,7 +535,10 @@ Timemanager
   padding:0.5em;
 }
 
-#toolbar .title .btn, #menu .title .btn {
+#toolbar .title .btn,
+#menu .title .btn,
+#dock .title .btn,
+#mini-dock .title .btn {
   width : 20px;
   height : 20px;
   background : url(images/sprite_menu_tools.png) no-repeat right;
@@ -495,33 +550,49 @@ Timemanager
   transition: none;
   -webkit-transition: none;
 }
-#toolbar .title .btn.btn-error {
+#toolbar .title .btn.btn-error,
+#dock .title .btn.btn-error,
+#mini-dock .title .btn.btn-error {
   background:none;
   color:#DA4F49;
   font-weight:bold;
   font-size:20px;
   opacity:0.6;
 }
-#toolbar .title .btn.btn-error:hover {
+#toolbar .title .btn.btn-error:hover,
+#dock .title .btn.btn-error:hover,
+#mini-dock .title .btn.btn-error:hover {
   text-decoration:none;
   opacity:1;
 }
-#toolbar .title .btn.btn-locate-clear {
+#toolbar .title .btn.btn-locate-clear,
+#dock .title .btn.btn-locate-clear,
+#mini-dock .title .btn.btn-locate-clear {
   background-position : 0px 0px;
 }
-#toolbar .title .btn.btn-locate-clear:hover {
+#toolbar .title .btn.btn-locate-clear:hover,
+#dock .title .btn.btn-locate-clear:hover,
+#mini-dock .title .btn.btn-locate-clear:hover {
   background-position : -20px 0px;
 }
-#toolbar .title .btn.btn-print-clear {
+#toolbar .title .btn.btn-print-clear,
+#dock .title .btn.btn-print-clear,
+#mini-dock .title .btn.btn-print-clear {
   background-position : -20px -100px;
 }
-#toolbar .title .btn.btn-print-clear:hover {
+#toolbar .title .btn.btn-print-clear:hover,
+#dock .title .btn.btn-print-clear:hover,
+#mini-dock .title .btn.btn-print-clear:hover {
   background-position : 0px -100px;
 }
-#toolbar .title .btn.btn-stop {
+#toolbar .title .btn.btn-stop,
+#dock .title .btn.btn-stop,
+#mini-dock .title .btn.btn-stop {
   background-position : 0px -20px;
 }
-#toolbar .title .btn.btn-stop:hover {
+#toolbar .title .btn.btn-stop:hover,
+#dock .title .btn.btn-stop:hover,
+#mini-dock .title .btn.btn-stop:hover {
   background-position : -20px -20px;
 }
 /*
@@ -537,18 +608,27 @@ Timemanager
   background-position : 0px -80px;
 }
 */
-#toolbar .menu-content .btn.btn-success{
+#toolbar .menu-content .btn.btn-success,
+#dock .menu-content .btn.btn-success,
+#mini-dock .menu-content .btn.btn-success{
   background-color: #93C01F;
   background-image: -moz-linear-gradient(center top, #9BC144, #93C01F);
 }
-
-#toolbar .print select.btn-print-scales {
+#dock .print select,
+#mini-dock .print select {
   width:auto;
   margin-bottom:0;
+}
+#toolbar .print select.btn-print-scales,
+#dock .print select.btn-print-scales,
+#mini-dock .print select.btn-print-scales,
+#dock .print select.btn-print-dpis,
+#mini-dock .print select.btn-print-dpis {
   text-align:right;
 }
 
 #baselayer-menu div.baselayer-select,
+#switcher div.baselayer-select,
 #locate div.locate-layer {
   width : 100%;
   overflow: hidden;
@@ -561,6 +641,7 @@ Timemanager
 }
 
 #baselayer-menu div.baselayer-select select,
+#switcher div.baselayer-select select,
 #locate div.locate-layer select {
   background: transparent;
   width : 110%;
@@ -645,9 +726,12 @@ Timemanager
   overflow : auto;
   border : solid 1px #606060;
 }
+#switcher-layers {
+  padding-left: 19px;
+}
 #switcher > div {
-  padding-left : 19px;
-  margin-bottom:25px;
+  /*padding-left : 19px;
+  margin-bottom:25px;*/
 }
 #switcher table {
   width : 100%;

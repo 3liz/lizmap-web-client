@@ -16,9 +16,9 @@
  * @subpackage  jelix-plugins
  */
 
-include_once(JELIX_LIB_PATH.'forms/jFormsBuilderHtml.class.php');
+//include_once(JELIX_LIB_PATH.'forms/Builder/HtmlBuilder.php');
 
-class htmlbootstrapJformsBuilder extends jFormsBuilderHtml {
+class htmlbootstrapFormBuilder extends \jelix\forms\Builder\HtmlBuilder {
 
     protected $jFormsJsVarName = 'jForms';
 
@@ -121,11 +121,11 @@ class htmlbootstrapJformsBuilder extends jFormsBuilderHtml {
      *      <li>"method" => "post" or "get". default is "post"</li>
      *      </ul>
      */
-    public function outputHeader($params){
+    public function outputHeader(){
         $this->options = array_merge(array('errorDecorator'=>$this->jFormsJsVarName.'ErrorDecoratorHtml',
-            'method'=>'post'), $params);
-        if (isset($params['attributes']))
-            $attrs = $params['attributes'];
+            'method'=>'post'), $this->options);
+        if (isset($this->options['attributes']))
+            $attrs = $this->options['attributes'];
         else
             $attrs = array();
 
@@ -225,7 +225,7 @@ class htmlbootstrapJformsBuilder extends jFormsBuilderHtml {
         echo '</form>';
     }
 
-    public function outputControlLabel($ctrl){
+    public function outputControlLabel($ctrl, $format='', $editMode=true){
         if($ctrl->type == 'hidden' || $ctrl->type == 'group') return;
         $required = ($ctrl->required == false || $ctrl->isReadOnly()?'':' jforms-required');
         $reqhtml = ($required?'<span class="jforms-required-star">*</span>':'');
@@ -274,7 +274,7 @@ class htmlbootstrapJformsBuilder extends jFormsBuilderHtml {
         }
     }
 
-    protected function escJsStr($str) {
+    public function escJsStr($str) {
         return '\''.str_replace(array("'","\n"),array("\\'", "\\n"), $str).'\'';
     }
 

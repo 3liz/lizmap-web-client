@@ -42,6 +42,10 @@ class map_menuZone extends jZone {
       $assign['measure'] = true;
 
     $assign['locate'] = $lproj->hasLocateByLayer();
+    
+    if ( property_exists($configOptions,'print')
+      && $configOptions->print == 'True')
+      $assign['print'] = true;
 
     $assign['edition'] = $lproj->hasEditionLayers();
 

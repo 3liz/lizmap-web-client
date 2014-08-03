@@ -26,11 +26,11 @@
   color: rgb(51,51,51);
 }
 
-.navbar .nav .information .icon {
+.navbar .nav .metadata .icon {
   background-position: -120px -20px;
 }
-.navbar .nav .information a:hover .icon,
-.navbar .nav .information.active a .icon {
+.navbar .nav .metadata a:hover .icon,
+.navbar .nav .metadata.active a .icon {
   background-position: -120px 0px;
 }
 
@@ -76,11 +76,11 @@
 .navbar .nav .measure.active a .icon {
   background-position: -140px 0px;
 }
-.navbar .nav .geolocate .icon {
+.navbar .nav .geolocation .icon {
   background-position: -20px -60px;
 }
-.navbar .nav .geolocate a:hover .icon,
-.navbar .nav .geolocate.active a .icon {
+.navbar .nav .geolocation a:hover .icon,
+.navbar .nav .geolocation.active a .icon {
   background-position: -20px -40px;
 }
 
@@ -127,8 +127,8 @@
 #menu .locate h3 .icon {
   background-position : -20px -80px;
 }
-#toolbar .geolocate h3 .icon,
-#menu .geolocate h3 .icon {
+#toolbar .geolocation h3 .icon,
+#menu .geolocation h3 .icon {
   background-position: -20px -60px;
 }
 #toolbar .print h3 .icon,

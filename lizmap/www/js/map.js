@@ -179,6 +179,12 @@ var lizMap = function() {
       $('#map-content').css('margin-left', $('#menu').width());
     }
     $('#map').width(w);
+    
+    $('#dock .tab-content').height($('#dock').height() - 2*$('#dock .nav-tabs > li').height());
+    $('#switcher-layers-container').css('height', 'auto' );
+    //console.log( $('#dock .tab-content').height()+' > '+$('#switcher').height() );
+    if ( $('#dock .tab-content').height() > $('#switcher').height() )
+      $('#switcher-layers-container').height( $('#switcher').height() );
 
     updateMapSize();
 
@@ -2223,7 +2229,7 @@ var lizMap = function() {
 	      // get scale
 		  var scale = getPrintScale( printCapabilities.scales );
 		  // update the select
-          $('#print-menu select.btn-print-scales').val(scale);
+          $('#print-scale').val(scale);
           // draw print box
           drawPrintBox( dragCtrl.layout, layer, scale );
         }
@@ -2554,53 +2560,43 @@ var lizMap = function() {
         var alName = $(this).attr('href').slice(1);
         if (alName in config.editionLayers) {
           var al = config.editionLayers[alName];
-          if ( editCtrls.click.layerId == al.layerId) {
-            $('#edition-stop').click();
+          // update menus based on capabilities
+          if (al.capabilities.deleteFeature == "False")
+            $('#edition-select-delete').addClass('disabled');
+          else
+            $('#edition-select-delete').removeClass('disabled');
+          if (al.capabilities.modifyAttribute == "False")
+            $('#edition-select-attr').addClass('disabled');
+          else
+            $('#edition-select-attr').removeClass('disabled');
+          if (al.capabilities.modifyGeometry == "False")
+            $('#edition-select-undo').addClass('disabled');
+          else
+            $('#edition-select-undo').removeClass('disabled');
+
+          if ( $('#edition-menu-draw').is(':visible') )
+            $('#edition-draw-cancel').click();
+          if ( $('#edition-menu-select').is(':visible') )
+            $('#edition-select-cancel').click();
+          
+          editCtrls.click.layerId = al.layerId;
+          editCtrls.click.layerName = alName;
+          
+          if (al.capabilities.createFeature == "False") {
+            $('#edition-draw').addClass('disabled');
+            $('#edition-select-cancel').addClass('disabled');
           } else {
-            // update toolbar based on capabilities
-            if (al.capabilities.deleteFeature == "False")
-               $('#edition-select-delete').hide()
-            else
-               $('#edition-select-delete').show()
-            if (al.capabilities.modifyAttribute == "False")
-               $('#edition-select-attr').hide()
-            else
-               $('#edition-select-attr').show()
-            if (al.capabilities.modifyGeometry == "False")
-               $('#edition-select-undo').hide()
-            else
-               $('#edition-select-undo').show()
-
-            if ( $('#edition-menu-draw').is(':visible') )
-              $('#edition-draw-cancel').click();
-            if ( $('#edition-menu-select').is(':visible') )
-              $('#edition-select-cancel').click();
-
-            if (alName in config.layers)
-              $('#edition-menu h3 span.title span.text').html(config.layers[alName].title);
-            else
-              $('#edition-menu h3 span.title span.text').html(lizDict['edition.title']);
-            editCtrls.click.layerId = al.layerId;
-            editCtrls.click.layerName = alName;
-            menu.show();
-            if (al.capabilities.createFeature == "False") {
-              $('#edition-draw').hide();
-              $('#edition-select-cancel').hide();
-              $('#edition-select').click();
-            } else {
-              $('#edition-draw').show();
-              $('#edition-select-cancel').show();
-            }
-            if (al.capabilities.modifyGeometry == "False"
-             && al.capabilities.modifyAttribute == "False"
-             && al.capabilities.deleteFeature == "False") {
-              $('#edition-select').hide();
-              $('#edition-draw-cancel').hide();
-              $('#edition-draw').click();
-            } else {
-              $('#edition-select').show();
-              $('#edition-draw-cancel').show();
-            }
+            $('#edition-draw').removeClass('disabled');
+            $('#edition-select-cancel').removeClass('disabled');
+          }
+          if (al.capabilities.modifyGeometry == "False"
+           && al.capabilities.modifyAttribute == "False"
+           && al.capabilities.deleteFeature == "False") {
+            $('#edition-select').addClass('disabled');
+            $('#edition-draw-cancel').addClass('disabled');
+          } else {
+            $('#edition-select').removeClass('disabled');
+            $('#edition-draw-cancel').removeClass('disabled');
           }
         }
         updateSwitcherSize();
@@ -2631,6 +2627,10 @@ var lizMap = function() {
         form.find('input[name="liz_featureId"]').val('');
         updateSwitcherSize();
         return false;
+      });
+      
+      $('#nav-tab-edition').click(function() {
+        $('#edition-layer').change();
       });
 
       $('#edition-select').click(function(){
@@ -3583,14 +3583,20 @@ var lizMap = function() {
           });
 
           // Toggle locate
-          $('#toggleLocate').click(function(){
-            $('#locate-menu').toggle();
-            if ( $('#locate-menu').is(':visible') )
-              $('#toggleLocate').parent().addClass('active');
-            else
-              $('#toggleLocate').parent().removeClass('active');
-            $('#metadata').hide();
-            updateSwitcherSize();
+          $('#mapmenu li.nav-minidock > a').click(function(){
+            var self = $(this);
+            var parent = self.parent();
+            var id = self.attr('href').substr(1);
+            var tab = $('#nav-tab-'+id);
+            if ( parent.hasClass('active') ) {
+              $('#'+id).removeClass('active');
+              tab.removeClass('active');
+              parent.removeClass('active');
+            } else {
+              self.parents('#mapmenu').find('.nav-minidock.active a').click();
+              tab.children('a').first().click();
+              parent.addClass('active');
+            }
             return false;
           });
           if ( !('locateByLayer' in config) )
@@ -3598,13 +3604,36 @@ var lizMap = function() {
           else
             $('#toggleLocate').parent().addClass('active');
 
-          // Toggle Metadata
-          $('#displayMetadata').click(function(){
-            $('#metadata').toggle();
-            if ( $('#metadata').is(':visible') )
-              $('#displayMetadata').parent().addClass('active');
-            else
-              $('#displayMetadata').parent().removeClass('active');
+          $('#mapmenu li.nav-dock > a').click(function(){
+            var self = $(this);
+            var parent = self.parent();
+            var id = self.attr('href').substr(1);
+            var tab = $('#nav-tab-'+id);
+            if ( parent.hasClass('active') ) {
+              if ( tab.hasClass('active') ) {
+                var nextActive = tab.next(':visible');
+                if ( nextActive.length != 0 ) {
+                  nextActive.first().children('a').first().click();
+                } else {
+                  var prevActive = tab.prev(':visible');
+                  if ( prevActive.length != 0 )
+                    prevActive.first().children('a').first().click();
+                }
+              }
+              tab.hide();
+              tab.removeClass('active');
+              parent.removeClass('active');
+            } else {
+              tab.show()
+              tab.children('a').first().click();
+              parent.addClass('active');
+            }
+            
+            var dock = $('#dock');
+            if ( dock.find('.nav-tabs .active').length == 0 )
+              dock.hide();
+            else if ( !dock.is(':visible') )
+              dock.show();
             return false;
           });
           $('#hideMetadata').click(function(){

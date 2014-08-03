@@ -40,17 +40,8 @@ class map_minidockZone extends jZone {
     $configOptions = $lproj->getOptions();
 
     /*
-    if ( property_exists($configOptions,'measure')
-      && $configOptions->measure == 'True')
-      $assign['measure'] = true;
-
-    $assign['locate'] = $lproj->hasLocateByLayer();
-
     $assign['edition'] = $lproj->hasEditionLayers();
 
-    if ( property_exists($configOptions,'geolocation')
-      && $configOptions->geolocation == 'True')
-      $assign['geolocation'] = true;
 
     $assign['timemanager'] = $lproj->hasTimemanagerLayers();
 
@@ -60,27 +51,34 @@ class map_minidockZone extends jZone {
     jClasses::inc('lizmapMapDockItem');
     $dockable = array();
     
+    
+    if ( property_exists($configOptions,'measure')
+      && $configOptions->measure == 'True') {
+      $tpl = new jTpl();
+      $dockable[] = new lizmapMapDockItem('measure', 'Measure', $tpl->fetch('map_measure'));
+  }
+    
     if ( property_exists($configOptions,'geolocation')
       && $configOptions->geolocation == 'True') {
-      $geolocationTpl = new jTpl();
-      $dockable[] = new lizmapMapDockItem('geolocation', 'Geolocalisation', $geolocationTpl->fetch('map_geolocation'));
+      $tpl = new jTpl();
+      $dockable[] = new lizmapMapDockItem('geolocation', 'Geolocalisation', $tpl->fetch('map_geolocation'));
     }
     
     if ( property_exists($configOptions,'print')
       || $configOptions->print == 'True') {
-      $printTpl = new jTpl();
-      $dockable[] = new lizmapMapDockItem('print', 'Impression', $printTpl->fetch('map_print'));
+      $tpl = new jTpl();
+      $dockable[] = new lizmapMapDockItem('print', 'Impression', $tpl->fetch('map_print'));
     }
     
     if ( $lproj->hasLocateByLayer() ) {
-      $printTpl = new jTpl();
-      $dockable[] = new lizmapMapDockItem('locate', 'localisation', $printTpl->fetch('map_locate'));
+      $tpl = new jTpl();
+      $dockable[] = new lizmapMapDockItem('locate', 'Localisation', $tpl->fetch('map_locate'));
     }
-      
-    /*
-    $switcherTpl = new jTpl();
-    $dockable[] = new lizmapMapDockItem('switcher', 'Couches', $switcherTpl->fetch('map_switcher'), 1);
-    */
+    
+    if ( $lproj->hasEditionLayers() ) {
+      $tpl = new jTpl();
+      $dockable[] = new lizmapMapDockItem('edition', 'Edition', $tpl->fetch('map_edition'));
+    }
 
     $assign = array(
       "dockable"=>$dockable
