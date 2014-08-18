@@ -179,12 +179,25 @@ var lizMap = function() {
       $('#map-content').css('margin-left', $('#menu').width());
     }
     $('#map').width(w);
-    
-    $('#dock .tab-content').height($('#dock').height() - 2*$('#dock .nav-tabs > li').height());
-    $('#switcher-layers-container').css('height', 'auto' );
-    //console.log( $('#dock .tab-content').height()+' > '+$('#switcher').height() );
-    if ( $('#dock .tab-content').height() > $('#switcher').height() )
-      $('#switcher-layers-container').height( $('#switcher').height() );
+
+    // Make the dock fill the max height to calculate its max size, then restore to auto height
+    $('#dock').css('bottom', '0px');
+    //$('#dock .tab-content').height($('#dock').height() - $('#dock .nav-tabs > li').height());
+
+    // Set the switcher content a max-height
+    $('#switcher-layers-container').css( 'height', 'auto' );
+    var mh = $('#dock').height() - 2*$('#dock .nav-tabs > li').height() - $('#switcher-layers-container h3').height() - $('#switcher-baselayer').height() ;
+    $('#switcher-layers-container .menu-content').css( 'max-height', mh );
+    $('#switcher-layers-container .menu-content').css('overflow-x', 'hidden').css('overflow-y', 'auto');
+
+    // Set the other tab-content max-height
+    $('#dock .tab-content').css('max-height', $('#dock').height() - $('#dock .nav-tabs > li').height());
+
+    $('#dock').css('overflow-y', 'hidden');
+
+
+
+
 
     updateMapSize();
 
@@ -2226,9 +2239,9 @@ var lizMap = function() {
     map.events.on({
       "zoomend": function() {
         if ( dragCtrl.active && layer.getVisibility() ) {
-	      // get scale
-		  var scale = getPrintScale( printCapabilities.scales );
-		  // update the select
+          // get scale
+          var scale = getPrintScale( printCapabilities.scales );
+          // update the select
           $('#print-scale').val(scale);
           // draw print box
           drawPrintBox( dragCtrl.layout, layer, scale );
@@ -2578,10 +2591,10 @@ var lizMap = function() {
             $('#edition-draw-cancel').click();
           if ( $('#edition-menu-select').is(':visible') )
             $('#edition-select-cancel').click();
-          
+
           editCtrls.click.layerId = al.layerId;
           editCtrls.click.layerName = alName;
-          
+
           if (al.capabilities.createFeature == "False") {
             $('#edition-draw').addClass('disabled');
             $('#edition-select-cancel').addClass('disabled');
@@ -2628,7 +2641,7 @@ var lizMap = function() {
         updateSwitcherSize();
         return false;
       });
-      
+
       $('#nav-tab-edition').click(function() {
         $('#edition-layer').change();
       });
@@ -3597,6 +3610,7 @@ var lizMap = function() {
               tab.children('a').first().click();
               parent.addClass('active');
             }
+            self.blur();
             return false;
           });
           if ( !('locateByLayer' in config) )
@@ -3624,11 +3638,13 @@ var lizMap = function() {
               tab.removeClass('active');
               parent.removeClass('active');
             } else {
+              $('#mapmenu li.nav-dock').removeClass('active');
               tab.show()
               tab.children('a').first().click();
               parent.addClass('active');
             }
-            
+            self.blur();
+
             var dock = $('#dock');
             if ( dock.find('.nav-tabs .active').length == 0 )
               dock.hide();
