@@ -22,7 +22,7 @@
       {foreach $form->hidden as $ref=>$val}
         <input type="hidden" name="{$ref}" value="{$val}"/>
       {/foreach}
-        <input type="submit" name="select" value="Select" class="btn"></input>
+        <input type="submit" name="select" value="{@view~edition.toolbar.select.title@}" class="btn"></input>
       </dd>
     </dl>
     </form>
@@ -38,5 +38,5 @@
   
 </div>
 <div class="modal-footer">
-<a href="#" class="btn" data-dismiss="modal" aria-hidden="true">Close</a>
+<a href="#" class="btn" data-dismiss="modal" aria-hidden="true">{@view~edition.form.btn.clear.title@}</a>
 </div>
