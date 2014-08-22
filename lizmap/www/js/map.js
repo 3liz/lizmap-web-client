@@ -2573,7 +2573,7 @@ var lizMap = function() {
         var featureId = $('#edition-menu form input[name="liz_featureId"]').val();
         if ( featureId == '' )
          return false;
-        if ( !confirm( "Are you sure you want to delete the selected feature?" ) )
+        if ( !confirm( lizDict['edition.confirm.delete'] ) )
           return false;
         $.get(service.replace('getFeature','deleteFeature'),{
           layerId: editCtrls.click.layerId,
