@@ -947,6 +947,8 @@ var lizMap = function() {
               continue;
             lOptions += '<option value="'+feat.id+'">'+feat.properties[locate.fieldName]+'</option>';
           }
+          if (val == '-1')
+            $('#locate-layer-'+layerName+'-'+locate.filterFieldName+' ~ span input').val('');
           $('#locate-layer-'+layerName).html(lOptions).val('-1');
         });
         $('#locate-layer-'+layerName+'-'+locate.filterFieldName).combobox({
@@ -960,6 +962,7 @@ var lizMap = function() {
             }
           }
         });
+        $('#locate-layer-'+layerName+'-'+locate.filterFieldName+' ~ span > input').attr('placeholder', lConfig.title+' '+locate.filterFieldName).val('');
         updateSwitcherSize();
       }
 
@@ -968,6 +971,7 @@ var lizMap = function() {
         return a.properties[locate.fieldName].localeCompare(b.properties[locate.fieldName]);
       });
       var options = '<option value="-1">'+lConfig.title+'</option>';
+      //var options = '<option value="-1"></option>';
       for (var i=0, len=features.length; i<len; i++) {
         var feat = features[i];
         locate.features[feat.id.toString()] = feat;
@@ -981,6 +985,7 @@ var lizMap = function() {
 
         var val = $(this).children(':selected').val();
         if (val == '-1') {
+          $('#locate-layer-'+layerName+' ~ span input').val('');
           // update to join layer
           if ('joinFieldName' in locate && 'joinLayer' in locate && 'vectorjoins' in locate) {
             var jName = locate.joinLayer;
@@ -1034,6 +1039,7 @@ var lizMap = function() {
           }
         }
       });
+      $('#locate-layer-'+layerName+' ~ span input').attr('placeholder', lConfig.title).val('');
       if ( ('minLength' in locate) && locate.minLength > 0 )
         $('#locate-layer-'+layerName).parent().addClass('no-toggle');
       if(mCheckMobile()){
