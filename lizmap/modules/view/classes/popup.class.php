@@ -26,7 +26,7 @@ class popup{
     // Force $attributeValue to be a string
     $attributeName = (string)$attributeName;
     $attributeValue = (string)$attributeValue;
-    
+
     // Regex to replace links, medias and images
     $urlRegex = '/(ftp|http|https):\/\/(\w+:{0,1}\w*@)?(\S+)(:[0-9]+)?(\/|\/([\w#!:.?+=&%@!\-\/]))?/';
     $emailRegex = '/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/';
@@ -50,12 +50,24 @@ class popup{
 
     // Media = file stored in the repository media folder
     if(preg_match($mediaRegex, $attributeValue)){
+      $sharps = array();
+      preg_match('/(.+)#(page=[0-9]+)$/i', $attributeValue, $sharps);
+      if( count($sharps) == 3) {
+        $pathVal = $sharps[1];
+        $sharp = $sharps[2];
+      }
+      else {
+        $pathVal = $attributeValue;
+        $sharp = '';
+      }
       $mediaUrl = jUrl::getFull(
         'view~media:getMedia',
-        array('repository'=>$repository, 'project'=>$project, 'path'=>$attributeValue),
+        array('repository'=>$repository, 'project'=>$project, 'path'=>$pathVal),
         0,
         $_SERVER['SERVER_NAME']
       );
+      if( $sharp )
+        $mediaUrl.= '#' . $sharp;
 
       // Display if it is an image
       if(preg_match($imageRegex, $attributeValue)){
@@ -74,7 +86,7 @@ class popup{
         $abspath = realpath($repositoryPath.'/'.$attributeValue);
         $n_repositoryPath = str_replace('\\', '/', $repositoryPath);
         $n_abspath = str_replace('\\', '/', $abspath);
-        
+
         if(preg_match("#^".$n_repositoryPath."(/)?media/#", $n_abspath) and file_exists($abspath)){
           $data = jFile::read($abspath);
         }
