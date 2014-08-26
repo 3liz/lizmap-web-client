@@ -840,7 +840,20 @@ Timemanager
   margin-top : 0.2em;
   border-width : medium 1px 2px;
 }
-
+/* Mouse position */
+#mouseposition-bar {
+  font-size: 10px;
+  position:relative;
+  background : none repeat scroll 0% 0% rgb(240, 240, 240);
+  border : solid 1px #606060;
+  border-top : none;
+}
+#mouseposition-bar > span {
+  display: inline-block;
+  width: 49%;
+  text-align: center;
+}
+/* Overview map */
 #overviewmap{
   position:relative;
   background : none repeat scroll 0% 0% rgb(240, 240, 240);

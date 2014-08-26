@@ -78,6 +78,10 @@
         <div id="scaletext" class="label" style="position:absolue; bottom:0; top:0; left:100px; right:20px; position:absolute; text-align:center; padding:0.7em 0 0 0;" title="{@view~map.overviewbar.scaletext.hover@}">{@view~map.overviewbar.scaletext.title@}</div>
         <button class="button" title="{@view~map.overviewbar.displayoverview.hover@}"></button>
       </div>
+      <div id="mouseposition-bar">
+        <span>{@view~map.mouseposition.hover@}</span>
+        <span id="mouseposition" title="{@view~map.mouseposition.hover@}"></span>
+      </div>
     </div>
 
     <div id="attribution-box">
