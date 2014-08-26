@@ -394,6 +394,20 @@ class lizmapProject{
         foreach( $configJson->locateByLayer as $k=>$v) {
           $xmlLayer = $this->getXmlLayer( $v->layerId );
           $xmlLayerZero = $xmlLayer[0];
+          // aliases
+          $alias = $xmlLayerZero->xpath("aliases/alias[@field='".$v->fieldName."']");
+          if( count($alias) != 0 ) {
+            $alias = $alias[0];
+            $v->fieldAlias = (string)$alias['name'];
+            $configJson->$k = $v;
+          }
+          $alias = $xmlLayerZero->xpath("aliases/alias[@field='".$v->filterFieldName."']");
+          if( count($alias) != 0 ) {
+            $alias = $alias[0];
+            $v->filterFieldAlias = (string)$alias['name'];
+            $configJson->$k = $v;
+          }
+          // vectorjoins
           $vectorjoins = $xmlLayerZero->xpath('vectorjoins/join');
           if( count($vectorjoins) != 0 ) {
             $vectorjoin = $vectorjoins[0];

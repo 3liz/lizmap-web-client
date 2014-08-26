@@ -927,7 +927,13 @@ var lizMap = function() {
         features.sort(function(a, b) {
           return a.properties[locate.filterFieldName].localeCompare(b.properties[locate.filterFieldName]);
         });
-        var fOptions = '<option value="-1">'+lConfig.title+' '+locate.filterFieldName+'</option>';
+        var filterPlaceHolder = '';
+        if ( 'filterFieldAlias' in locate )
+          filterPlaceHolder += locate.filterFieldAlias+' ';
+        else
+          filterPlaceHolder += locate.filterFieldName+' ';
+        filterPlaceHolder += lConfig.title;
+        var fOptions = '<option value="-1">'+filterPlaceHolder+'</option>';
         var fValue = '-1';
         for (var i=0, len=features.length; i<len; i++) {
           var feat = features[i];
@@ -962,7 +968,7 @@ var lizMap = function() {
             }
           }
         });
-        $('#locate-layer-'+layerName+'-'+locate.filterFieldName+' ~ span > input').attr('placeholder', lConfig.title+' '+locate.filterFieldName).val('');
+        $('#locate-layer-'+layerName+'-'+locate.filterFieldName+' ~ span > input').attr('placeholder', filterPlaceHolder).val('');
         updateSwitcherSize();
       }
 
@@ -970,7 +976,11 @@ var lizMap = function() {
       features.sort(function(a, b) {
         return a.properties[locate.fieldName].localeCompare(b.properties[locate.fieldName]);
       });
-      var options = '<option value="-1">'+lConfig.title+'</option>';
+      var placeHolder = '';
+      if ( 'fieldAlias' in locate )
+        placeHolder += locate.fieldAlias+' ';
+      placeHolder += lConfig.title;
+      var options = '<option value="-1">'+placeHolder+'</option>';
       //var options = '<option value="-1"></option>';
       for (var i=0, len=features.length; i<len; i++) {
         var feat = features[i];
@@ -1039,7 +1049,7 @@ var lizMap = function() {
           }
         }
       });
-      $('#locate-layer-'+layerName+' ~ span input').attr('placeholder', lConfig.title).val('');
+      $('#locate-layer-'+layerName+' ~ span input').attr('placeholder', placeHolder).val('');
       if ( ('minLength' in locate) && locate.minLength > 0 )
         $('#locate-layer-'+layerName).parent().addClass('no-toggle');
       if(mCheckMobile()){
