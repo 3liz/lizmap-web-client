@@ -350,9 +350,17 @@ Timemanager
   position : relative;
   background : #F0F0F0;
 }
-
+ /* avoid bootstrap collision*/
 #map-content img {
-  max-width : none; /* avoid bootstrap collision*/
+  max-width : none;
+}
+/* deactivate chrome effect */
+#map-content svg {
+-webkit-transform: none !important;
+}
+#map-content .olTileImage {
+-webkit-backface-visibility: visible !important;
+-webkit-transform: none !important;
 }
 
 #close-menu {
