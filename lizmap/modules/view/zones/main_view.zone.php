@@ -69,7 +69,8 @@ class main_viewZone extends jZone {
                 $wmsGetCapabilitiesUrl
               );
             }
-            $maps[$r] = $mrep;
+            if ( count($mrep->childItems) != 0 )
+              $maps[$r] = $mrep;
           }
         }
 
