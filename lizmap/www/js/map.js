@@ -1523,8 +1523,32 @@ var lizMap = function() {
     map.addControl(new OpenLayers.Control.Scale(document.getElementById('scaletext')));
     map.addControl(new OpenLayers.Control.ScaleLine({div:document.getElementById('scaleline')}));
     
-    var lonlatProjection = new OpenLayers.Projection("EPSG:4326");
-    map.addControl(new OpenLayers.Control.MousePosition({prefix: " ", div:document.getElementById('mouseposition'), displayProjection: lonlatProjection}));
+    var mpUnitSelect = $('#mouseposition-bar > select');
+    var mapUnits = map.projection.getUnits();
+    if ( mapUnits == 'degrees' ) {
+      mpUnitSelect.find('option[value="m"]').remove();
+      mpUnitSelect.find('option[value="f"]').remove();
+    } else if ( mapUnits == 'm' ) {
+      mpUnitSelect.find('option[value="f"]').remove();
+    } else {
+      mpUnitSelect.find('option[value="m"]').remove();
+    }
+    var mousePosition = new OpenLayers.Control.lizmapMousePosition({
+        displayUnit:mpUnitSelect.val(),
+        numDigits: 0,
+        prefix: '',
+        emptyString:$('#mouseposition').attr('title'),
+        div:document.getElementById('mouseposition')
+        });
+    map.addControl( mousePosition );
+    mpUnitSelect.change(function() {
+        var mpSelectVal = $(this).val();
+        if (mpSelectVal == 'm')
+          mousePosition.numDigits = 0;
+        else
+          mousePosition.numDigits = 5;
+        mousePosition.displayUnit = mpSelectVal;
+    });
 
     if (config.options.hasOverview)
       if(!mCheckMobile())

@@ -48,6 +48,7 @@ class myHtmlMapResponse extends jResponseHtml {
     $this->addJSLink($bp.'OpenLayers-2.13/lib/OpenLayers/Control/Attribution.js'); // Comes from OpenLayers master
     $this->addJSLink($bp.'OpenLayers-2.13/lib/OpenLayers/Control/Scale.js');
     $this->addJSLink($bp.'OpenLayers-2.13/lib/OpenLayers/Control/ScaleLine.js');
+    $this->addJSLink($bp.'OpenLayers-2.13/lib/OpenLayers/Control/lizmapMousePosition.js');
     $this->addJSLink($bp.'OpenLayers-2.13/lib/OpenLayers/Popup/lizmapAnchored.js');
     $this->addJSLink($bp.'Proj4js/proj4js-compressed.js');
     $this->addJSLink($bp.'js/jquery-1.9.1.js');

@@ -847,11 +847,23 @@ Timemanager
   background : none repeat scroll 0% 0% rgb(240, 240, 240);
   border : solid 1px #606060;
   border-top : none;
+  padding: 0.2em;
+  padding-right: 0.1em;
+  padding-left:0.1em;
 }
 #mouseposition-bar > span {
   display: inline-block;
-  width: 49%;
+  width: 150px;
   text-align: center;
+}
+#mouseposition-bar > select {
+  width: auto;
+  margin: 0px;
+  padding: 0px;
+  height: 20px;
+  line-height:20px;
+  font-size: 10px;
+  float:right;
 }
 /* Overview map */
 #overviewmap{
