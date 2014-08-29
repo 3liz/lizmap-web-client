@@ -162,6 +162,10 @@ class mapCtrl extends jController {
       $wmsGetCapabilitiesUrl = $lproj->getData('wmsGetCapabilitiesUrl');
     }
     $assign['wmsGetCapabilitiesUrl'] = $wmsGetCapabilitiesUrl;
+    
+    // Get dockable and minidockable element
+    $assign['dockable'] = $lproj->getDefaultDockable();
+    $assign['minidockable'] = $lproj->getDefaultMiniDockable();
 
     $themePath = jApp::config()->urlengine['basePath'].'themes/'.jApp::config()->theme.'/';
     $rep->addCssLink($themePath.'css/main.css');

@@ -1,5 +1,5 @@
     <div id="switcher-layers-container" class="switcher">
-      <h3><span class="title"><span class="icon"></span>&nbsp;<span class="text">{@view~map.switchermenu.title@}</span></span></h3>
+      <h3><span class="title"><span class="icon"></span>&nbsp;<span class="text">{@view~map.legendmenu.title@}</span></span></h3>
       <div class="menu-content">
         <div id="switcher-layers"></div>
       </div>
