@@ -953,7 +953,7 @@ var lizMap = function() {
               continue;
             lOptions += '<option value="'+feat.id+'">'+feat.properties[locate.fieldName]+'</option>';
           }
-          if (val == '-1')
+          if (filterValue == '-1')
             $('#locate-layer-'+layerName+'-'+locate.filterFieldName+' ~ span input').val('');
           $('#locate-layer-'+layerName).html(lOptions).val('-1');
         });
