@@ -32,10 +32,7 @@
               $(this).select();
             });
           }
-        )
-        .tooltip({
-          tooltipClass: "ui-state-highlight"
-        });
+        );
       this._on( this.input, {
         autocompleteselect: function( event, ui ) {
           ui.item.option.selected = true;
@@ -43,7 +40,8 @@
             item: ui.item.option
           });
         },
-        autocompletechange: "_removeIfInvalid"
+        autocompletechange: "_removeIfInvalid",
+        autocompleteclose: "_close"
       });
       this.input.autocomplete( "widget" ).css("z-index","1000");
     },
@@ -55,7 +53,6 @@
       $( "<a>" )
         .attr( "tabIndex", -1 )
         .attr( "title", "Show All Items" )
-        .tooltip()
         .appendTo( this.wrapper )
         .button({
           icons: {
@@ -98,27 +95,61 @@
       // Search for a match (case-insensitive)
       var value = this.input.val(),
           valueLowerCase = value.toLowerCase(),
+          option = null;
           valid = false;
       this.element.children( "option" ).each(function() {
         if ( $( this ).text().toLowerCase() === valueLowerCase ) {
           this.selected = valid = true;
+          option = this;
           return false;
         }
       });
       // Found a match, nothing to do
       if ( valid ) {
+        this.element.change();
         return;
       }
       // Remove invalid value
-      this.input
-        .val( this.originalValue  )
-        .attr( "title", value + " didn't match any item" )
-        .tooltip( "open" );
+      this.input.val( this.originalValue  );
+      // and select originalValue if not yet selected
+      var selected = this.element.children( ":selected" ),
+        originalValueLowerCase = this.originalValue.toLowerCase(),
+        found = false;
+      if ( selected.text().toLowerCase() != originalValueLowerCase ) {
+        this.element.children( "option" ).each(function() {
+          if ( $( this ).text().toLowerCase() === originalValueLowerCase ) {
+            this.selected = found = true;
+            return false;
+          }
+        });
+      }
+      if ( found ) {
+        this.element.change();
+        return;
+      }
       this.element.val( "" );
-      this._delay(function() {
-        this.input.tooltip( "close" ).attr( "title", "" );
-      }, 2500 );
       this.input.data( "ui-autocomplete" ).term = "";
+    },
+    _close: function() {
+        if ( this.input.val() == '') {
+          // Remove invalid value
+          this.input.val( this.originalValue  );
+          // and select originalValue if not yet selected
+          var selected = this.element.children( ":selected" ),
+            originalValueLowerCase = this.originalValue.toLowerCase(),
+            found = false;
+          if ( selected.text().toLowerCase() != originalValueLowerCase ) {
+            this.element.children( "option" ).each(function() {
+              if ( $( this ).text().toLowerCase() === originalValueLowerCase ) {
+                this.selected = found = true;
+                return false;
+              }
+            });
+          }
+          if ( found ) {
+            this.element.change();
+          }
+        }
     },
     _destroy: function() {
       this.wrapper.remove();
