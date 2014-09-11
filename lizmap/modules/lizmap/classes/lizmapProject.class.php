@@ -391,6 +391,12 @@ class lizmapProject{
 
       // Update locate by layer with vecctorjoins
       if(property_exists($configJson, 'locateByLayer')) {
+        // collect layerIds
+        $locateLayerIds = array();
+        foreach( $configJson->locateByLayer as $k=>$v) {
+            $locateLayerIds[] = $v->layerId;
+        }
+        // update locateByLayer with alias and filter information
         foreach( $configJson->locateByLayer as $k=>$v) {
           $xmlLayer = $this->getXmlLayer( $v->layerId );
           $xmlLayerZero = $xmlLayer[0];
@@ -410,16 +416,19 @@ class lizmapProject{
           // vectorjoins
           $vectorjoins = $xmlLayerZero->xpath('vectorjoins/join');
           if( count($vectorjoins) != 0 ) {
-            $vectorjoin = $vectorjoins[0];
-            $v->vectorjoins = array(
-              "joinFieldName"=>(string)$vectorjoin['joinFieldName'],
-              "targetFieldName"=>(string)$vectorjoin['targetFieldName'],
-              "joinLayerId"=>(string)$vectorjoin['joinLayerId'],
-            );
+            if ( !property_exists( $v, 'vectorjoins' ) )
+              $v->vectorjoins = array();
+            foreach( $vectorjoins as $vectorjoin ) {
+              $joinLayerId = (string)$vectorjoin['joinLayerId'];
+              if ( in_array($joinLayerId, $locateLayerIds ) )
+                $v->vectorjoins[] = (object) array(
+                  "joinFieldName"=>(string)$vectorjoin['joinFieldName'],
+                  "targetFieldName"=>(string)$vectorjoin['targetFieldName'],
+                  "joinLayerId"=>(string)$vectorjoin['joinLayerId'],
+                );
+            }
             $configJson->$k = $v;
           }
-          /*
-           */
         }
       }
 
