@@ -50,6 +50,7 @@ class popup{
 
     // Media = file stored in the repository media folder
     if(preg_match($mediaRegex, $attributeValue)){
+
       $sharps = array();
       preg_match('/(.+)#(page=[0-9]+)$/i', $attributeValue, $sharps);
       if( count($sharps) == 3) {
@@ -106,7 +107,10 @@ class popup{
 
       // Else just write a link to the file
       else{
-        $attributeValue = '<a href="'.$mediaUrl.'" target="_blank">'.$attributeValue.'</a>';
+        if(!$popupFeatureContent) // only if no template is passed by the user
+          $attributeValue = '<a href="'.$mediaUrl.'" target="_blank">'.$attributeValue.'</a>';
+        else
+          $attributeValue = $mediaUrl;
       }
 
     }
