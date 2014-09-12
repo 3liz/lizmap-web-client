@@ -493,6 +493,8 @@ var lizMap = function() {
                ,visibility:false
                ,gutter:5
                ,buffer:0
+               ,transitionEffect:(layerConfig.singleTile == 'True')?'resize':null
+               ,removeBackBufferDelay:250
                ,singleTile:(layerConfig.singleTile == 'True')
                ,order:getLayerOrder(layer)
                ,attribution:layer.attribution
@@ -509,6 +511,8 @@ var lizMap = function() {
                ,visibility:false
                ,gutter:5
                ,buffer:0
+               ,transitionEffect:(layerConfig.singleTile == 'True')?'resize':null
+               ,removeBackBufferDelay:250
                ,singleTile:(layerConfig.singleTile == 'True')
                ,order:getLayerOrder(layer)
                ,attribution:layer.attribution
