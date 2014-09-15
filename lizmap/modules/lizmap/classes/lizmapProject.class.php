@@ -394,11 +394,13 @@ class lizmapProject{
             $v->fieldAlias = (string)$alias['name'];
             $configJson->$k = $v;
           }
-          $alias = $xmlLayerZero->xpath("aliases/alias[@field='".$v->filterFieldName."']");
-          if( count($alias) != 0 ) {
-            $alias = $alias[0];
-            $v->filterFieldAlias = (string)$alias['name'];
-            $configJson->$k = $v;
+          if ( property_exists( $v, 'filterFieldName') ) {
+            $alias = $xmlLayerZero->xpath("aliases/alias[@field='".$v->filterFieldName."']");
+            if( count($alias) != 0 ) {
+              $alias = $alias[0];
+              $v->filterFieldAlias = (string)$alias['name'];
+              $configJson->$k = $v;
+            }
           }
           // vectorjoins
           $vectorjoins = $xmlLayerZero->xpath('vectorjoins/join');
