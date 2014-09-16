@@ -32,6 +32,8 @@ class lizmapProject{
     private $key = '';
     // Lizmap repository configuration data
     private $data = array();
+    // Version of QGIS which wrote the project
+    private $qgisProjectVersion = null;
 
     /**
      * constructor
@@ -90,6 +92,7 @@ class lizmapProject{
         if (property_exists($qgs_xml->properties, 'WMSServiceTitle'))
           if (!empty($qgs_xml->properties->WMSServiceTitle))
             $this->data['title'] = $qgs_xml->properties->WMSServiceTitle;
+
         # get abstract from WMS properties
         if (property_exists($qgs_xml->properties, 'WMSServiceAbstract'))
           $this->data['abstract'] = $qgs_xml->properties->WMSServiceAbstract;
@@ -103,6 +106,7 @@ class lizmapProject{
           $_SESSION['_LIZMAP_'][$key_session]['cfg'] = $config;
           $_SESSION['_LIZMAP_'][$key_session]['cfgmtime'] = filemtime($qgs_path.'.cfg');
         }
+
         # get WMS getCapabilities full URL
         $this->data['wmsGetCapabilitiesUrl'] = jUrl::getFull(
           'lizmap~service:index',
@@ -114,7 +118,31 @@ class lizmapProject{
             'REQUEST' => 'GetCapabilities'
           )
         );
+
+        // get QGIS project version
+        $qgisRoot = $this->xml->xpath('//qgis');
+        $qgisRootZero = $qgisRoot[0];
+        $qgisProjectVersion = (string)$qgisRootZero->attributes()->version;
+        $qgisProjectVersion = explode('-', $qgisProjectVersion);
+        $qgisProjectVersion = $qgisProjectVersion[0];
+        $qgisProjectVersion = explode('.', $qgisProjectVersion);
+        $a = '';
+        foreach( $qgisProjectVersion as $k ){
+          if( strlen($k) == 1 ){
+            $a.= $k . '0';
+          }
+          else {
+            $a.= $k;
+          }
+        }
+        $qgisProjectVersion = (integer)$a;
+        $this->qgisProjectVersion = $qgisProjectVersion;
+
       }
+    }
+
+    public function getQgisProjectVersion(){
+      return $this->qgisProjectVersion;
     }
 
     public function getKey(){
@@ -247,6 +275,16 @@ class lizmapProject{
       return $gkey;
     }
 
+    public function getLayerNameByIdFromConfig( $layerId ){
+      $layers = $this->getLayers();
+      $name = null;
+      foreach ($layers as $name=>$props){
+        if( $props->id == $layerId)
+          return $name;
+      }
+      return $name;
+    }
+
     public function getWMSInformation(){
       $qgsLoad = $this->xml;
 
@@ -294,13 +332,31 @@ class lizmapProject{
       $legend = $qgsLoad->xpath('//legend');
       $legendZero = $legend[0];
       $updateDrawingOrder = (string)$legendZero->attributes()->updateDrawingOrder;
-
       $layersOrder = array();
-      if($updateDrawingOrder == 'false'){
-        $layers =  $qgsLoad->xpath('//legendlayer');
-        foreach($layers as $layer){
-          if($layer->attributes()->drawingOrder and $layer->attributes()->drawingOrder >= 0){
-            $layersOrder[(string)$layer->attributes()->name] = (integer)$layer->attributes()->drawingOrder;
+
+      if( $updateDrawingOrder == 'false' ){
+        // For QGIS >=2.4, new item layer-tree-canvas
+        if( $this->qgisProjectVersion >= 204000){
+          $customeOrder = $qgsLoad->xpath('//layer-tree-canvas/custom-order');
+          $customeOrderZero = $customeOrder[0];
+          if( $customeOrderZero->attributes()->enabled == 1 ){
+            $items = $customeOrderZero->xpath('//item');
+            $lo = 0;
+            foreach( $items as $layerI ) {
+              # Get layer name from config instead of XML for possible embedded layers
+              $name = $this->getLayerNameByIdFromConfig($layerI);
+              if( $name ){
+                $layersOrder[$name] = $lo;
+              }
+              $lo+=1;
+            }
+          }
+        } else {
+          $layers =  $qgsLoad->xpath('//legendlayer');
+          foreach( $layers as $layer ){
+            if( $layer->attributes()->drawingOrder and $layer->attributes()->drawingOrder >= 0 ){
+              $layersOrder[(string)$layer->attributes()->name] = (integer)$layer->attributes()->drawingOrder;
+            }
           }
         }
       }
