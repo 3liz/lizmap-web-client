@@ -165,7 +165,10 @@ class mapCtrl extends jController {
     
     // Get dockable and minidockable element
     $assign['dockable'] = $lproj->getDefaultDockable();
+    $items = jEvent::notify('mapDockable',array('repository'=>$repository, 'project'=>$project))->getResponse();
+    
     $assign['minidockable'] = $lproj->getDefaultMiniDockable();
+    $items = jEvent::notify('mapMiniDockable',array('repository'=>$repository, 'project'=>$project))->getResponse();
 
     $themePath = jApp::config()->urlengine['basePath'].'themes/'.jApp::config()->theme.'/';
     $rep->addCssLink($themePath.'css/main.css');
