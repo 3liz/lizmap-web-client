@@ -35,3 +35,21 @@ function mapDockItemSort($itemA, $itemB)
       return strcmp($itemA->id, $itemB->id);
     return ($itemA->order - $itemB->order);
 }
+
+
+function mapDockItemsMerge($itemsA, $itemsB)
+{
+    $maps = array();
+    foreach( $itemsA as $item ) {
+        $maps[$item->id] = $item;
+    }
+    foreach( $itemsB as $item ) {
+        $maps[$item->id] = $item;
+    }
+    $items = array();
+    foreach( $maps as $id=>$item ) {
+        $items[] = $item;
+    }
+    usort($items, "mainDockItemSort");
+    return $items;
+}
