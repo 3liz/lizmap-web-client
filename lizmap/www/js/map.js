@@ -4149,7 +4149,7 @@ lizMap.events.on({
           var options = {
             zoomOffset: 0,
             maxResolution:156543.03390625,
-            numZoomLevels:19
+            numZoomLevels:18
           };
           if (lOptions.zoomOffset != 0) {
             options.zoomOffset = lOptions.zoomOffset;
@@ -4184,7 +4184,7 @@ lizMap.events.on({
           var options = {
             zoomOffset: 0,
             maxResolution:156543.03390625,
-            numZoomLevels:19
+            numZoomLevels:18
           };
           if (lOptions.zoomOffset != 0) {
             options.zoomOffset = lOptions.zoomOffset;
@@ -4219,7 +4219,7 @@ lizMap.events.on({
           var options = {
             zoomOffset: 0,
             maxResolution:156543.03390625,
-            numZoomLevels:20
+            numZoomLevels:19
           };
           if (lOptions.zoomOffset != 0) {
             options.zoomOffset = lOptions.zoomOffset;
