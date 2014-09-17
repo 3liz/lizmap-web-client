@@ -160,11 +160,12 @@ class mapCtrl extends jController {
     }
     $assign['wmsGetCapabilitiesUrl'] = $wmsGetCapabilitiesUrl;
 
-
+    $themePath = jApp::config()->urlengine['basePath'].'themes/'.jApp::config()->theme.'/';
+    $rep->addCssLink($themePath.'css/main.css');
+    $rep->addCssLink($themePath.'css/map.css');
+    $rep->addCssLink($themePath.'css/media.css');
     // Replace default theme by theme found in
     // the repository folder media/themes/default/
-    $useCustomTheme = 0;
-    $customCssFiles = array();
     if ( $lrep->getData('allowUserDefinedThemes') ) {
       $repositoryPath = $lrep->getPath();
       $cssArray = array('main', 'map', 'media');
@@ -182,14 +183,11 @@ class mapCtrl extends jController {
                 'path'=>$cssRelPath
               )
             );
-            $customCssFiles[] = $cssUrl;
-            $useCustomTheme = 1;
+            $rep->addCssLink( $cssUrl );
           }
         }
       }
     }
-    $assign['useCustomTheme'] = $useCustomTheme;
-    $assign['customCssFiles'] = $customCssFiles;
     $rep->body->assign($assign);
 
     // Log
