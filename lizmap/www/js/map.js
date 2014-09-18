@@ -183,7 +183,7 @@ var lizMap = function() {
 
     // Make the dock fill the max height to calculate its max size, then restore to auto height
     $('#dock').css('bottom', '0px');
-    //$('#dock .tab-content').height($('#dock').height() - $('#dock .nav-tabs > li').height());
+    //$('#dock-content').height($('#dock').height() - $('#dock .nav-tabs > li').height());
 
     // Set the switcher content a max-height
     $('#switcher-layers-container').css( 'height', 'auto' );
@@ -192,7 +192,7 @@ var lizMap = function() {
     $('#switcher-layers-container .menu-content').css('overflow-x', 'hidden').css('overflow-y', 'auto');
 
     // Set the other tab-content max-height
-    $('#dock .tab-content').css('max-height', $('#dock').height() - $('#dock .nav-tabs > li').height());
+    $('#dock-content').css('max-height', $('#dock').height() - $('#dock .nav-tabs > li').height());
 
     $('#dock').css('overflow-y', 'hidden');
 

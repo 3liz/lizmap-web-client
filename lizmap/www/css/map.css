@@ -324,14 +324,14 @@ ul.nav.nav-tabs {
   border-bottom:1px dashed #F0F0F0;
 }
 
-#dock ul.nav-tabs > li > a {
+#dock-tabs > li > a {
   display:none; /* hide unactive tab titles */
   border:none;
   background:none;
   font-weight:bold;
   color:white;
 }
-#dock ul.nav-tabs > .active > a, #dock ul.nav-tabs > .active > a:hover, #dock ul.nav-tabs > .active > a:focus {
+#dock-tabs > .active > a, #dock-tabs > .active > a:hover, #dock-tabs > .active > a:focus {
   display:block; /* show only active tab titles */
 }
 
@@ -353,12 +353,12 @@ ul.nav.nav-tabs {
   right:0px;
   left:30px;
 }
-#mini-dock .tab-content {
+#mini-dock-content {
   background-color: white;
   background-color: rgba(255, 255, 255, 0.8);
 }
 
-#mini-dock .nav-tabs {
+#mini-dock-tabs {
   display:none;
 }
 
