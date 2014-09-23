@@ -736,7 +736,7 @@
                     <BackgroundColor alpha="255" red="255" blue="255" green="255"/>
                 </ComposerItem>
             </ComposerMap>
-            <ComposerLegend symbolWidth="6" title="Légende" boxSpace="2" splitLayer="1" equalColumnWidth="1" map="1" titleAlignment="1" symbolHeight="3" wmsLegendHeight="25" wrapChar="" fontColor="#000000" columnSpace="2" wmsLegendWidth="50" columnCount="1">
+            <ComposerLegend symbolWidth="6" title="Légende" boxSpace="2" splitLayer="1" equalColumnWidth="1" map="0" titleAlignment="1" symbolHeight="3" wmsLegendHeight="25" wrapChar="" fontColor="#000000" columnSpace="2" wmsLegendWidth="50" columnCount="1">
                 <styles>
                     <style marginBottom="2" name="title" font="Ubuntu,14,-1,5,50,0,0,0,0,0"/>
                     <style marginTop="2" name="group" font="Ubuntu,12,-1,5,50,0,0,0,0,0"/>
@@ -1213,7 +1213,7 @@
                         </VectorClassificationItemNg>
                     </LayerItem>
                 </Model>
-                <ComposerItem pagey="0" page="1" id="" lastValidViewScaleFactor="3.44841" positionMode="0" positionLock="false" x="237.35" y="0" zValue="2" background="true" transparency="0" frameJoinStyle="miter" blendMode="0" width="45.7234" outlineWidth="0.3" uuid="{e5857829-a6bb-42db-aed6-70473177b9da}" height="146.8" itemRotation="0" frame="false" pagex="237.35">
+                <ComposerItem pagey="0" page="1" id="" lastValidViewScaleFactor="1.43937" positionMode="0" positionLock="false" x="237.35" y="0" zValue="2" background="true" transparency="0" frameJoinStyle="miter" blendMode="0" width="45.7234" outlineWidth="0.3" uuid="{e5857829-a6bb-42db-aed6-70473177b9da}" height="146.8" itemRotation="0" frame="false" pagex="237.35">
                     <FrameColor alpha="255" red="0" blue="0" green="0"/>
                     <BackgroundColor alpha="150" red="255" blue="255" green="255"/>
                 </ComposerItem>
@@ -1266,7 +1266,7 @@
                     </Annotation>
                 </Grid>
                 <AtlasMap scalingMode="2" atlasDriven="0" margin="0.10000000000000001"/>
-                <ComposerItem pagey="18" page="1" id="" lastValidViewScaleFactor="3.44841" positionMode="0" positionLock="false" x="0" y="18" zValue="1" background="true" transparency="0" frameJoinStyle="miter" blendMode="0" width="237.2" outlineWidth="0.3" uuid="{2835ecbd-6089-4454-b22e-707b558ecef1}" height="191.85" itemRotation="0" frame="true" pagex="0">
+                <ComposerItem pagey="18" page="1" id="" lastValidViewScaleFactor="1.43937" positionMode="0" positionLock="false" x="0" y="18" zValue="1" background="true" transparency="0" frameJoinStyle="miter" blendMode="0" width="237.2" outlineWidth="0.3" uuid="{2835ecbd-6089-4454-b22e-707b558ecef1}" height="191.85" itemRotation="0" frame="true" pagex="0">
                     <FrameColor alpha="255" red="0" blue="0" green="0"/>
                     <BackgroundColor alpha="255" red="255" blue="255" green="255"/>
                 </ComposerItem>
