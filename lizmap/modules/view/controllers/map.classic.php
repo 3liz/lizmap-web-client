@@ -176,6 +176,14 @@ class mapCtrl extends jController {
     $rep->addCssLink($themePath.'css/main.css');
     $rep->addCssLink($themePath.'css/map.css');
     $rep->addCssLink($themePath.'css/media.css');
+    
+    // Add dockable css
+    foreach( $assign['dockable'] as $d ) {
+        if ( $d->css != '' )
+          $rep->addCssLink( $d->css );
+    }
+    
+    
     // Replace default theme by theme found in
     // the repository folder media/themes/default/
     if ( $lrep->getData('allowUserDefinedThemes') ) {
