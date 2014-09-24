@@ -171,6 +171,12 @@ class mapCtrl extends jController {
     $assign['minidockable'] = $lproj->getDefaultMiniDockable();
     $items = jEvent::notify('mapMiniDockable',array('repository'=>$repository, 'project'=>$project))->getResponse();
     $assign['minidockable'] = mapDockItemsMerge( $assign['minidockable'], $items );
+    
+    // Add dockable js
+    foreach( $assign['dockable'] as $d ) {
+        if ( $d->js != '' )
+          $rep->addJsLink( $d->js );
+    }
 
     $themePath = jApp::config()->urlengine['basePath'].'themes/'.jApp::config()->theme.'/';
     $rep->addCssLink($themePath.'css/main.css');
@@ -182,7 +188,6 @@ class mapCtrl extends jController {
         if ( $d->css != '' )
           $rep->addCssLink( $d->css );
     }
-    
     
     // Replace default theme by theme found in
     // the repository folder media/themes/default/
