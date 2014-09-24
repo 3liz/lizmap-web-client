@@ -587,10 +587,10 @@ class lizmapProject{
     }
     
     public function getDefaultDockable() {
-        jClasses::inc('lizmapMapDockItem');
+        jClasses::inc('view~lizmapMapDockItem');
         $dockable = array();
         $switcherTpl = new jTpl();
-        $dockable[] = new lizmapMapDockItem('switcher', jLocale::get('map.switchermenu.title'), $switcherTpl->fetch('map_switcher'), 1);
+        $dockable[] = new lizmapMapDockItem('switcher', jLocale::get('view~map.switchermenu.title'), $switcherTpl->fetch('view~map_switcher'), 1);
         //$legendTpl = new jTpl();
         //$dockable[] = new lizmapMapDockItem('legend', 'Légende', $switcherTpl->fetch('map_legend'), 2);
         
@@ -611,48 +611,48 @@ class lizmapProject{
           'project'=>$project,
           'wmsGetCapabilitiesUrl' => $wmsGetCapabilitiesUrl
         ), $wmsInfo));
-        $dockable[] = new lizmapMapDockItem('metadata', jLocale::get('map.metadata.link.label'), $metadataTpl->fetch('map_metadata'), 2);
+        $dockable[] = new lizmapMapDockItem('metadata', jLocale::get('view~map.metadata.link.label'), $metadataTpl->fetch('view~map_metadata'), 2);
         
         return $dockable;
     }
     
     public function getDefaultMiniDockable() {
-        jClasses::inc('lizmapMapDockItem');
+        jClasses::inc('view~lizmapMapDockItem');
         $dockable = array();
         $configOptions = $this->getOptions();
         
         if ( $this->hasLocateByLayer() ) {
           $tpl = new jTpl();
-          $dockable[] = new lizmapMapDockItem('locate', jLocale::get('map.locatemenu.title'), $tpl->fetch('map_locate'), 1);
+          $dockable[] = new lizmapMapDockItem('locate', jLocale::get('view~map.locatemenu.title'), $tpl->fetch('view~map_locate'), 1);
         }
         
         if ( property_exists($configOptions,'geolocation')
           && $configOptions->geolocation == 'True') {
           $tpl = new jTpl();
-          $dockable[] = new lizmapMapDockItem('geolocation', jLocale::get('map.geolocate.navbar.title'), $tpl->fetch('map_geolocation'),2);
+          $dockable[] = new lizmapMapDockItem('geolocation', jLocale::get('view~map.geolocate.navbar.title'), $tpl->fetch('view~map_geolocation'),2);
         }
         
         if ( property_exists($configOptions,'print')
           || $configOptions->print == 'True') {
           $tpl = new jTpl();
-          $dockable[] = new lizmapMapDockItem('print', jLocale::get('map.print.navbar.title'), $tpl->fetch('map_print'),3);
+          $dockable[] = new lizmapMapDockItem('print', jLocale::get('view~map.print.navbar.title'), $tpl->fetch('view~map_print'),3);
         }
         
         if ( property_exists($configOptions,'measure')
           && $configOptions->measure == 'True') {
           $tpl = new jTpl();
-          $dockable[] = new lizmapMapDockItem('measure', jLocale::get('map.measure.navbar.title'), $tpl->fetch('map_measure'),4);
+          $dockable[] = new lizmapMapDockItem('measure', jLocale::get('view~map.measure.navbar.title'), $tpl->fetch('view~map_measure'),4);
         }
         
         
         if ( $this->hasEditionLayers() ) {
           $tpl = new jTpl();
-          $dockable[] = new lizmapMapDockItem('edition', jLocale::get('edition.navbar.title'), $tpl->fetch('map_edition'),5);
+          $dockable[] = new lizmapMapDockItem('edition', jLocale::get('view~edition.navbar.title'), $tpl->fetch('view~map_edition'),5);
         }
         
         if ( $this->hasTimemanagerLayers() ) {
           $tpl = new jTpl();
-          $dockable[] = new lizmapMapDockItem('timemanager', jLocale::get('map.timemanager.navbar.title'), $tpl->fetch('map_timemanager'),6);
+          $dockable[] = new lizmapMapDockItem('timemanager', jLocale::get('view~map.timemanager.navbar.title'), $tpl->fetch('view~map_timemanager'),6);
         }
         
         return $dockable;
