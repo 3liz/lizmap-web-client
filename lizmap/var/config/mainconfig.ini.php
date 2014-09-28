@@ -10,13 +10,11 @@ timeZone="Europe/Paris"
 
 theme=default
 
-pluginsPath="app:plugins/,lib:jelix-plugins/"
+pluginsPath="app:plugins/,lib:jelix-plugins/,module:jacl2db/plugins"
 modulesPath="lib:jelix-admin-modules/,lib:jelix-modules/,app:modules/,app:lizmap-modules"
 
-
-
-
 availableLocales="fr_FR,en_US,it_IT,es_ES,pt_PT,el_EL"
+
 [coordplugins]
 ;name = file_ini_name or 1
 ;magicquotes = 1
@@ -33,9 +31,6 @@ htmlsimple=simpleHtmlResponse
 [error_handling]
 messageLogFormat="%date%\t[%code%]\t%msg%\t%file%\t%line%\n"
 errorMessage="An error occured. Sorry for the inconvenience."
-
-
-
 
 [compilation]
 checkCacheFiletime=on
@@ -92,6 +87,8 @@ simple_urlengine_https=
 ;   @r       -> for all actions for the request of type "r"
 
 index="@classic"
+index="jauth~*@classic"
+admin="jacl2db~*@classic, jacl2db_admin~*@classic, jauthdb_admin~*@classic, master_admin~*@classic, admin~*@classic, jauth~*@classic"
 
 
 [basic_significant_urlengine_entrypoints]
@@ -149,8 +146,31 @@ smtpTimeout=10
 
 
 [acl2]
-; example of driver: "db"
-driver=
+driver=db
+
+[coordplugin_jacl2]
+; What to do if a right is required but the user has not this right
+; 1 = generate an error. This value should be set for web services (xmlrpc, jsonrpc...)
+; 2 = redirect to an action
+on_error = 2
+
+; locale key for the error message when on_error=1
+error_message = "jelix~errors.acl.action.right.needed"
+
+; action to execute on a missing authentification when on_error=2
+on_error_action = "jauth~login:form"
+
+
+[coordplugin_autolocale]
+; activate the detection from a parameter given in the url
+enableUrlDetection= on
+
+; indicate the parameter name indicating the language/locale to use
+urlParamNameLanguage=lang
+
+
+; if no url parameter found, indicate to use one of the prefered language given by the browser
+useDefaultLanguageBrowser = off
 
 [sessions]
 ; to disable sessions, set the following parameter to 0
@@ -184,16 +204,29 @@ default="jelix/js/jforms/datepickers/default/init.js"
 
 [modules]
 jelix.access=2
-jacl2.access=1
-junittests.access=0
+
+jacl.access=0
 jacldb.access=0
-jauthdb.access=0
-jauth.access=0
-jacl2db.access=0
-jWSDL.access=1
+jpref.access=0
+jsoap.access=0
+junittests.access=0
+
+
+jacl2.access=1
+jacl2db.access=2
+jacl2db.installparam=defaultuser
+jacl2db_admin.access=2
+jauth.access=2
+jauthdb.access=2
+jauthdb.installparam=defaultuser
+jauthdb_admin.access=2
+
+master_admin.access=2
+
 lizmap.access=2
 view.access=2
 admin.access=2
+
 
 [mailLogger]
 email="root@localhost"
