@@ -1671,7 +1671,7 @@ var lizMap = function() {
           $('#zoom-in-max-msg').show('slow', function() {
             window.setTimeout(function(){$('#zoom-in-max-msg').hide('slow')},1000)
           });
-        } else
+        } else if ( ui.value != map.zoom )
           map.zoomTo(ui.value);
       }
     });
@@ -1770,11 +1770,11 @@ var lizMap = function() {
       map.events.on({
         moveend : function() {
           var ctrl = map.getControlsByClass('OpenLayers.Control.NavigationHistory')[0];
-          if (ctrl && ctrl.previousStack.length > 1)
+          if (ctrl && ctrl.previousStack.length != 0)
             $('#navbar div.history button.previous').addClass('ui-state-usable');
           else
             $('#navbar div.history button.previous').removeClass('ui-state-usable');
-          if (ctrl && ctrl.nextStack.length > 0)
+          if (ctrl && ctrl.nextStack.length != 0)
             $('#navbar div.history button.next').addClass('ui-state-usable');
           else
             $('#navbar div.history button.next').removeClass('ui-state-usable');
