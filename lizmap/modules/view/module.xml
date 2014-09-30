@@ -13,5 +13,6 @@
     </info>
     <dependencies>
         <jelix minversion="1.5" maxversion="1.6.*"/>
+        <module name="lizmap" />
     </dependencies>
 </module>

@@ -13,5 +13,9 @@
     </info>
     <dependencies>
         <jelix minversion="1.5" maxversion="1.6.*"/>
+        <module name="jacl2db" />
+        <module name="master_admin" />
+        <module name="jauthdb_admin" />
+        <module name="jacl2db_admin" />
     </dependencies>
 </module>

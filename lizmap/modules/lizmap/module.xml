@@ -13,6 +13,8 @@
     </info>
     <dependencies>
         <jelix minversion="1.5" maxversion="1.6.*"/>
+        <module name="jauthdb" />
+        <module name="admin" />
     </dependencies>
     <autoload>
       <class name="lizmap" file="classes/lizmap.class.php" />

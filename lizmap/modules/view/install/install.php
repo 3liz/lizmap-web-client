@@ -9,16 +9,13 @@
 */
 
 
-class ctModuleInstaller extends jInstallerModule {
+class viewModuleInstaller extends jInstallerModule {
 
     function install() {
-        //if ($this->firstDbExec())
-        //    $this->execSQLScript('sql/install');
 
-        /*if ($this->firstExec('acl2')) {
-            jAcl2DbManager::addSubject('my.subject', 'view~acl.my.subject');
-            jAcl2DbManager::addRight(1, 'my.subject'); // for admin group
+        if ($this->firstDbExec()) {
+            $this->useDbProfile('auth');
+            $this->execSQLScript('sql/install');
         }
-        */
     }
 }
