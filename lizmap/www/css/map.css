@@ -855,49 +855,50 @@ Timemanager
 #switcher table {
   width : 100%;
 }
-#switcher tr.liz-state-disabled span {
+#switcher tr.disabled span {
   /*jquery-ui update*/
   color:#AAA;
 }
-#switcher tr.liz-state-disabled button.ui-button-disabled {
+#switcher tr.disabled button.ui-button-disabled {
   cursor: default !important;
   opacity:0.35;
 }
-#switcher tr.liz-layer.liz-state-disabled a.expander {
+#switcher tr.liz-layer.disabled a.expander {
   display:none;
 }
-#switcher button{
-  width:16px;
-  height:16px;
+#switcher button.btn{
+  width:18px;
+  height:18px;
   background: none;
-  min-width:16px;
-  min-height:16px;
-  padding-left:0;
+  min-width:18px;
+  min-height:18px;
+  padding:0;
+  background-image : url("images/sprite_menu.png");
+  background-position : -16px -94px;
+  transition: none;
 }
 #switcher button.checkbox{
-  /*
-  width : 14px;
-  height : 14px;
-   */
 }
-#switcher button.checkbox .ui-icon{
-  /*
-  border : solid 1px #606060;
-  width : 14px;
-  height : 14px;
-  margin-left : -7px;
-  margin-top : -7px;
-   */
+#switcher button.checkbox.checked{
+  background-color : #0094D6;
+  background-position : -48px -80px;
+}
+#switcher button.checkbox.checked.disabled {
+  background-color : #B3B3B3;
+}
+#switcher button.checkbox.partial.checked{
+    background-position: -32px -80px;
 }
 #switcher button.link{
   float:right;
   border: none;
+  background-position: 0px -80px;
 }
 #switcher button.removeCache{
   float:right;
   border: none;
+  background-position: -48px -100px;
 }
-
 
 #switcher span.label{
   padding-left: 0.5em;
@@ -949,7 +950,7 @@ Timemanager
   height: 10px;
   background-image : url("images/download_layer.gif");
 }
-#switcher .treeTable tr.liz-state-disabled span.loading {
+#switcher .treeTable tr.disabled span.loading {
   display:none;
 }
 #switcher .treeTable span.loading.loadstart {
@@ -984,16 +985,16 @@ Timemanager
 }
 #navbar div.slider{
   margin-top : 0.1em;
-  margin-bottom : 0.4em;
-  margin-left : 1.0em;
   background : #C81F2D;
   border : solid 1px white;
-  width : 0.2em;
+  width: 4px;
+  margin-left: 13px;
+  margin-bottom : 0.1em;
 }
 #navbar div.slider a{
-  width : 2.0em;
+  width: 30px;
+  left: -15px;
   height : 0.1em;
-  left : -1em;
   background : black;
   border : solid 1px black;
   cursor : move;
@@ -1001,62 +1002,55 @@ Timemanager
 .ui-slider-vertical .ui-slider-handle {
   margin-bottom: -0.1em;
 }
-#navbar button.ui-button-icon-only{
-  height : 2.5em;
-  width : 2.5em;
+#navbar button.btn{
+  height : 30px;
+  width : 30px;
   margin-bottom : 0.1em;
-  background : #CE1F2D;
   border : solid 1px white;
+  border-radius: 0;
+  padding: 0px;
+  background : #CE1F2D;
+  background-image : url("images/sprite_30.png");
+  transition: none;
 }
-#navbar button.ui-state-select{
+#navbar button.btn.active{
   background-color : #3A3C3D;
   cursor : default;
 }
-#navbar .ui-button-icon-only .ui-icon {
-  margin-left : -10px;
-  margin-top : -10px;
-  width : 20px;
-  height : 20px;
+#navbar .btn.pan {
+  background-position : 0px -30px;
 }
-#navbar .ui-state-default .ui-icon {
-  background-image : url("images/sprite_20.png");
+#navbar .btn.zoom {
+  background-position : -30px -30px;
 }
-#navbar .ui-button-icon-only .ui-icon-pan {
-  background-position : 0px -20px;
+#navbar .btn.zoom-extent {
+  background-position : -30px -60px;
 }
-#navbar .ui-button-icon-only .ui-icon-zoom {
-  background-position : -20px -20px;
+#navbar .btn.zoom-out {
+  background-position : -30px 0px;
 }
-#navbar button.zoom-extent {
-  margin-bottom : 0.4em;
-}
-#navbar .ui-button-icon-only .ui-icon-zoom-extent {
-  background-position : -20px -40px;
-}
-#navbar .ui-button-icon-only .ui-icon-zoom-out {
-  background-position : -20px 0px;
-}
-#navbar .ui-button-icon-only .ui-icon-zoom-in {
+#navbar .btn.zoom-in {
   background-position : 0px 0px;
 }
-#navbar div.history  button {
-  width : 1.2em;
+#navbar .history {
+  height : 30px;
+  width : 30px;
 }
-#navbar .ui-button-icon-only .ui-icon-previous {
-  background-position : 0px -60px;
-  margin-left : -5px;
-  width : 15px;
+#navbar .history button.btn {
+  width : 14px;
 }
-#navbar .ui-button-icon-only.ui-state-usable .ui-icon-previous {
-  background-position : 0px -80px;
+#navbar .btn.previous {
+  background-position : -5px -90px;
 }
-#navbar .ui-button-icon-only .ui-icon-next {
-  background-position : -25px -60px;
-  margin-left : -10px;
-  width : 15px;
+#navbar .btn.previous.disabled {
+  background-position : -5px -120px;
 }
-#navbar .ui-button-icon-only.ui-state-usable .ui-icon-next {
-  background-position : -25px -80px;
+#navbar .btn.next {
+  background-position : -44px -90px;
+  margin-left : -3px;
+}
+#navbar .btn.next.disabled {
+  background-position : -44px -120px;
 }
 
 #zoom-in-max-msg {
@@ -1106,18 +1100,24 @@ Timemanager
   font-size : 0.8em;
 }
 
-#overview-bar .button {
+#overview-toggle {
   width : 20px;
   border-left : solid 1px #606060;
   border-bottom : none;
   border-top : none;
   border-right : none;
   position : absolute;
-  top : 0pt;
-  bottom : 0pt;
-  right : 0pt;
-  margin : 0pt;
-  background : #DDD;
+  top : 0px;
+  bottom : 0px;
+  right : 0px;
+  margin : 0px;
+  padding: 0px;
+  border-radius: 0;
+  background : url('images/123_click.png') no-repeat scroll -1px 0px #DDD;
+  transition: none;
+}
+#overview-toggle.active {
+  background-position : -1px -30px;
 }
 #overview-bar .ui-icon {
   background-image : url("images/sprite_menu.png");
@@ -1164,7 +1164,7 @@ Timemanager
   float:right;
 }
 /* Overview map */
-#overviewmap{
+#overview-map{
   position:relative;
   background : none repeat scroll 0% 0% rgb(240, 240, 240);
   border : solid 1px #606060;
@@ -1350,33 +1350,11 @@ table.attribute-table-table tr td{
 /**
  * Icones lizMap
  */
-  .liz-icon-check {
-    /* sprite de 16x16 mais button de 14x14 */
-    background-position : -48px -80px;
-    background-color : #0094D6;
-  }
-  .liz-icon-partial-check {
-    /* sprite de 16x16 mais button de 14x14 */
-    background-position: -32px -80px;
-    background-color : #0094D6;
-  }
-  .liz-state-disabled .liz-icon-check {
-    background-color : #B3B3B3;
-  }
-  .liz-state-disabled .liz-icon-partial-check {
-    background-color : #B3B3B3;
-  }
   .liz-icon-legend-collapsed {
     background-position: -32px -16px;
   }
   .liz-icon-legend-open {
     background-position: -64px -16px;
-  }
-  .liz-icon-info {
-    background-position: 0px -80px;
-  }
-  .liz-remove-cache {
-    background-position: -48px -100px;
   }
 
   .liz-icon-overview {

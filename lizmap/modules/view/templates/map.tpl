@@ -35,22 +35,25 @@
   <div id="map-content">
     <div id="map"></div>
     <span id="navbar">
-      <button class="pan ui-state-select" title="{@view~map.navbar.pan.hover@}"></button><br/>
-      <button class="zoom" title="{@view~map.navbar.zoom.hover@}"></button><br/>
-      <button class="zoom-extent" title="{@view~map.navbar.zoomextent.hover@}"></button><br/>
-      <button class="zoom-in" title="{@view~map.navbar.zoomin.hover@}"></button><br/>
+      <button class="btn pan active" title="{@view~map.navbar.pan.hover@}"></button><br/>
+      <button class="btn zoom" title="{@view~map.navbar.zoom.hover@}"></button><br/>
+      <button class="btn zoom-extent" title="{@view~map.navbar.zoomextent.hover@}"></button><br/>
+      <button class="btn zoom-in" title="{@view~map.navbar.zoomin.hover@}"></button><br/>
       <div class="slider" title="{@view~map.navbar.slider.hover@}"></div>
-      <button class="zoom-out" title="{@view~map.navbar.zoomout.hover@}"></button>
-      <div class="history"><button class="previous" title="{@view~map.navbar.previous.hover@}"></button><button class="next" title="{@view~map.navbar.next.hover@}"></button></div>
+      <button class="btn zoom-out" title="{@view~map.navbar.zoomout.hover@}"></button><br/>
+      <span class="history">
+        <button class="btn previous disabled" title="{@view~map.navbar.previous.hover@}"></button>
+        <button class="btn next disabled" title="{@view~map.navbar.next.hover@}"></button>
+      </span>
       <span id="zoom-in-max-msg" class="ui-widget-content ui-corner-all" style="display:none;">{@view~map.message.zoominmax@}</span>
     </span>
     <div id="overview-box">
-      <div id="overviewmap" title="{@view~map.overviewmap.hover@}"></div>
+      <div id="overview-map" title="{@view~map.overviewmap.hover@}"></div>
       <div id="overview-bar">
         <div id="scaleline" class="olControlScaleLine" style="width:100px; position:relative; bottom:0; top:0; left:0;" title="{@view~map.overviewbar.scaleline.hover@}">
         </div>
         <div id="scaletext" class="label" style="position:absolue; bottom:0; top:0; left:100px; right:20px; position:absolute; text-align:center; padding:0.7em 0 0 0;" title="{@view~map.overviewbar.scaletext.hover@}">{@view~map.overviewbar.scaletext.title@}</div>
-        <button class="button" title="{@view~map.overviewbar.displayoverview.hover@}"></button>
+        <button id="overview-toggle" class="btn" title="{@view~map.overviewbar.displayoverview.hover@}"></button>
       </div>
       <div id="mouseposition-bar">
         <span style="display:none;">{@view~map.mouseposition.hover@}</span>

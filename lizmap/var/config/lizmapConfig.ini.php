@@ -1,7 +1,7 @@
 ;Services
 ;list the different map services (servers, generic parameters, etc.)
 [services]
-wmsServerURL="http://127.0.0.1/cgi-bin/qgis_mapserv.fcgi"
+wmsServerURL="http://127.0.0.1/cgi-bin/qgis_mapserv_24.fcgi"
 ;List of URL available for the web client
 defaultRepository=montpellier
 cacheStorageType=file

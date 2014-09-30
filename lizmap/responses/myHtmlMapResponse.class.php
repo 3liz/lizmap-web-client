@@ -52,9 +52,9 @@ class myHtmlMapResponse extends jResponseHtml {
     $this->addJSLink($bp.'OpenLayers-2.13/lib/OpenLayers/Popup/lizmapAnchored.js');
     $this->addJSLink($bp.'Proj4js/proj4js-compressed.js');
     $this->addJSLink($bp.'js/jquery-1.9.1.js');
-    $this->addJSLink($bp.'js/bootstrap.js');
     $this->addJSLink($bp.'js/jquery-ui-1.10.3.custom.min.js');
     $this->addJSLink($bp.'js/jquery.combobox.js');
+    $this->addJSLink($bp.'js/bootstrap.js');
     $this->addJSLink($bp.'TreeTable/javascripts/jquery.treeTable.js');
     $this->addJSLink($bp.'js/map.js');
 

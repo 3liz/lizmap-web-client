@@ -334,7 +334,8 @@ Timemanager
 
 #overview-bar .button {
   border-left : solid 1px #606060;
-  background : #DDD;
+  /*background : #DDD;*/
+  background : url('images/123_click.png') no-repeat scroll right center #DDD;
 }
 #overview-bar .ui-icon {
   background-image : url(images/sprite_menu.png);

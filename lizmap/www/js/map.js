@@ -104,8 +104,8 @@ var lizMap = function() {
 
       // hide overview map
       if (config.options.hasOverview){
-        $('#overview-bar button').hide();
-        $('#overviewmap').hide();
+        $('#overview-toggle').hide();
+        $('#overview-map').hide().removeClass('active');
       }
 
       if( $('#menu').is(':visible'))
@@ -128,8 +128,8 @@ var lizMap = function() {
 
       // Display overview map
       if (config.options.hasOverview){
-        $('#overviewmap').show();
-        $('#overview-bar button').show();
+        $('#overview-map').show();
+        $('#overview-toggle').show().addClass('active');
       }
 
       if( !$('#menu').is(':visible'))
@@ -612,7 +612,7 @@ var lizMap = function() {
 
     html += '">';
 
-    html += '<td><button class="checkbox" name="'+nodeConfig.type+'" value="'+aNode.name+'" title="'+lizDict['tree.button.checkbox']+'"></button>';
+    html += '<td><button class="btn checkbox" name="'+nodeConfig.type+'" value="'+aNode.name+'" title="'+lizDict['tree.button.checkbox']+'"></button>';
     html += '<span class="label" title="'+nodeConfig.abstract+'">'+nodeConfig.title+'</span>';
     html += '</td>';
 
@@ -625,13 +625,13 @@ var lizMap = function() {
     if (nodeConfig.link)
       legendLink = nodeConfig.link;
     if (legendLink != '' )
-      html += '<td><button class="link" name="link" title="'+lizDict['tree.button.link']+'" value="'+legendLink+'"/></td>';
+      html += '<td><button class="btn link" name="link" title="'+lizDict['tree.button.link']+'" value="'+legendLink+'"/></td>';
     else
       html += '<td></td>';
 
     var removeCache = '';
     if (nodeConfig.cached && nodeConfig.cached == 'True' && nodeConfig.type == 'layer' && ('removeCache' in config.options))
-      html += '<td><button class="removeCache" name="removeCache" title="'+lizDict['tree.button.removeCache']+'" value="'+aNode.name+'"/></td>';
+      html += '<td><button class="btn removeCache" name="removeCache" title="'+lizDict['tree.button.removeCache']+'" value="'+aNode.name+'"/></td>';
     else
       html += '<td></td>';
 
@@ -842,18 +842,19 @@ var lizMap = function() {
            for (var i=0,len=layers.length; i<len; i++) {
              var layer = layers[i];
              var b = $('#switcher button[name="layer"][value="'+layer.name+'"]').first();
+             /*
              if (layer.inRange && b.button('option','disabled')) {
                var tr = b.parents('tr').first();
-               tr.removeClass('liz-state-disabled').find('button').button('enable');
+               tr.removeClass('disabled').find('button').button('enable');
                var ancestors = ancestorsOf(tr);
                $.each(ancestors,function(i,a) {
-                 $(a).removeClass('liz-state-disabled').find('button').button('enable');
+                 $(a).removeClass('disabled').find('button').button('enable');
                });
                if (tr.find('button[name="layer"]').button('option','icons').primary == 'liz-icon-check')
                  layer.setVisibility(true);
              } else if (!layer.inRange && !b.button('option','disabled')) {
                var tr = b.parents('tr').first();
-               tr.addClass('liz-state-disabled').find('button').first().button('disable');
+               tr.addClass('disabled').find('button').first().button('disable');
                if (tr.hasClass('liz-layer'))
                  tr.collapse();
                var ancestors = ancestorsOf(tr);
@@ -870,9 +871,43 @@ var lizMap = function() {
           });
         });
                  if (count == checked)
-                   a.addClass('liz-state-disabled').find('button').first().button('disable');
+                   a.addClass('disabled').find('button').first().button('disable');
                  else
-                   a.removeClass('liz-state-disabled').find('button').button('enable');
+                   a.removeClass('disabled').find('button').button('enable');
+               });
+             }
+             * */
+             if (layer.inRange && b.hasClass('disabled')) {
+               var tr = b.parents('tr').first();
+               tr.removeClass('disabled').find('button').removeClass('disabled');
+               var ancestors = ancestorsOf(tr);
+               $.each(ancestors,function(i,a) {
+                 $(a).removeClass('disabled').find('button').removeClass('disabled');
+               });
+               if (tr.find('button[name="layer"]').hasClass('checked'))
+                 layer.setVisibility(true);
+             } else if (!layer.inRange && !b.hasClass('disabled')) {
+               var tr = b.parents('tr').first();
+               tr.addClass('disabled').find('button').addClass('disabled');
+               if (tr.hasClass('liz-layer'))
+                 tr.collapse();
+               var ancestors = ancestorsOf(tr);
+               $.each(ancestors,function(i,a) {
+                    a = $(a);
+                    var count = 0;
+                    var checked = 0;
+                    var aDesc = childrenOf(a);
+                    $.each(aDesc,function(j,trd) {
+                      $(trd).find('button.checkbox').each(function(i,b){
+                        if ($(b).hasClass('disabled'))
+                          checked++;
+                        count++;
+                      });
+                    });
+                 if (count == checked)
+                   a.addClass('disabled').find('button').addClass('disabled');
+                 else
+                   a.removeClass('disabled').find('button').removeClass('disabled');
                });
              }
            }
@@ -1534,38 +1569,33 @@ var lizMap = function() {
   };
 
     // activate checkbox buttons
-    $('#switcher button.checkbox').button({
-      //icons:{primary:'liz-icon-check'},
-      icons:{primary:''},
-      text:false
-    })
-    .removeClass( "ui-corner-all" )
+    $('#switcher button.checkbox')
     .click(function(){
       var self = $(this);
-      if (self.attr('aria-disabled')=='true')
+      if (self.hasClass('disabled'))
         return false;
-      var icons = self.button('option','icons');
       var descendants = [self.parents('tr').first()];
       descendants = descendants.concat(descendantsOf($(descendants[0])));
-      if (icons.primary != 'liz-icon-check') {
+      if ( !self.hasClass('checked') ) {
         $.each(descendants,function(i,tr) {
-          $(tr).find('button.checkbox').button('option','icons',{primary:'liz-icon-check'});
+          $(tr).find('button.checkbox').removeClass('partial').addClass('checked');
           $(tr).find('button.checkbox[name="layer"]').each(function(i,b){
             var name = $(b).val();
             var layer = map.getLayersByName(name)[0];
             layer.setVisibility(true);
           });
         });
+        self.removeClass('partial').addClass('checked');
       } else {
         $.each(descendants,function(i,tr) {
-          $(tr).find('button.checkbox').button('option','icons',{primary:''});
+          $(tr).find('button.checkbox').removeClass('partial').removeClass('checked');
           $(tr).find('button.checkbox[name="layer"]').each(function(i,b){
             var name = $(b).val();
             var layer = map.getLayersByName(name)[0];
             layer.setVisibility(false);
           });
         });
-        self.button('option','icons',{primary:''});
+        self.removeClass('partial').removeClass('checked');
       }
       var ancestors = ancestorsOf(self.parents('tr').first());
       $.each(ancestors,function(i,tr) {
@@ -1576,33 +1606,29 @@ var lizMap = function() {
         var trDesc = childrenOf(tr);
         $.each(trDesc,function(j,trd) {
           $(trd).find('button.checkbox').each(function(i,b){
-            var icons = $(b).button('option','icons');
-            if (icons.primary == 'liz-icon-check')
+            b = $(b);
+            if ( b.hasClass('checked') )
               checked++;
-            else if (icons.primary == 'liz-icon-partial-check')
+            else if ( b.hasClass('partial')&& b.hasClass('checked') )
               pchecked++;
             count++;
           });
         });
         var trButt = tr.find('button.checkbox');
         if (count==checked)
-          trButt.button('option','icons',{primary:'liz-icon-check'});
+          trButt.removeClass('partial').addClass('checked');
         else if (checked==0 && pchecked==0)
-          trButt.button('option','icons',{primary:''});
+          trButt.removeClass('partial').removeClass('checked');
         else
-          trButt.button('option','icons',{primary:'liz-icon-partial-check'});
+          trButt.addClass('partial').addClass('checked');
       });
     });
 
     // activate link buttons
-    $('#switcher button.link').button({
-      icons:{primary:'liz-icon-info'},
-      text:false
-    })
-  .removeClass( "ui-corner-all" )
+    $('#switcher button.link')
     .click(function(){
       var self = $(this);
-      if (self.attr('aria-disabled')=='true')
+      if (self.hasClass('disabled'))
         return false;
       var windowLink = self.val();
       // Test if the link is internal
@@ -1618,14 +1644,10 @@ var lizMap = function() {
     });
 
     // Activate removeCache button
-    $('#switcher button.removeCache').button({
-      icons:{primary:'liz-remove-cache'},
-      text:false
-    })
-  .removeClass( "ui-corner-all" )
+    $('#switcher button.removeCache')
     .click(function(){
       var self = $(this);
-      if (self.attr('aria-disabled')=='true')
+      if (self.hasClass('disabled'))
         return false;
       var removeCacheServerUrl = OpenLayers.Util.urlAppend(
          lizUrls.removeCache
@@ -1867,7 +1889,7 @@ var lizMap = function() {
         res = resW;
 
       map.addControl(new OpenLayers.Control.OverviewMap(
-        {div: document.getElementById("overviewmap"),
+        {div: document.getElementById("overview-map"),
          size : new OpenLayers.Size(220, 110),
          mapOptions:{maxExtent:map.maxExtent
                   ,maxResolution:"auto"
@@ -1883,32 +1905,39 @@ var lizMap = function() {
         }
       ));
     } else {
-      $('#overviewmap').hide();
-      $('#overview-bar button').hide();
+      $('#overview-map').hide();
+      $('#overview-toggle').hide().removeClass('active');
     }
 
     /*
-    $('#overviewmap .ui-dialog-titlebar-close').button({
+    $('#overview-map .ui-dialog-titlebar-close').button({
       text:false,
       icons:{primary: "ui-icon-closethick"}
     }).click(function(){
-      $('#overviewmap').toggle();
+      $('#overview-map').toggle();
       return false;
     });
     */
-    $('#overview-bar .button').button({
+    $('#overview-toggle')/*.button({
       text:false,
       icons:{primary: "ui-icon-triangle-1-n"}
     })
-    .removeClass( "ui-corner-all" )
+    .removeClass( "ui-corner-all" )*/
     .click(function(){
+      var self = $(this);
+      if ( self.hasClass('active') )
+        self.removeClass('active');
+      else
+        self.addClass('active');
+        /*
       var self = $(this);
       var icons = self.button('option','icons');
       if (icons.primary == 'ui-icon-triangle-1-n')
         self.button('option','icons',{primary:'ui-icon-triangle-1-s'});
       else
         self.button('option','icons',{primary:'ui-icon-triangle-1-n'});
-      $('#overviewmap').toggle();
+        * */
+      $('#overview-map').toggle();
       return false;
     });
 
@@ -1943,8 +1972,10 @@ var lizMap = function() {
     });
 
     if (config.options.hasOverview)
-      if(!mCheckMobile())
-        $('#overviewmap').show();
+      if(!mCheckMobile()) {
+        $('#overview-map').show();
+        $('#overview-toggle').show().addClass('active');
+      }
   }
 
   /**
@@ -1962,49 +1993,35 @@ var lizMap = function() {
           $('#zoom-in-max-msg').show('slow', function() {
             window.setTimeout(function(){$('#zoom-in-max-msg').hide('slow')},1000)
           });
-        } else
+        } else if ( ui.value != map.zoom )
           map.zoomTo(ui.value);
       }
     });
-    $('#navbar button.pan').button({
-      text:false,
-      icons:{primary: "ui-icon-pan"}
-    }).removeClass("ui-corner-all")
-    .click(function(){
+    $('#navbar button.pan').click(function(){
       var self = $(this);
-      if (self.hasClass('ui-state-select'))
+      if (self.hasClass('active'))
         return false;
-      $('#navbar button.zoom').removeClass('ui-state-select');
-      self.addClass('ui-state-select');
+      $('#navbar button.zoom').removeClass('active');
+      self.addClass('active');
       map.getControlsByClass('OpenLayers.Control.ZoomBox')[0].deactivate();
       map.getControlsByClass('OpenLayers.Control.Navigation')[0].activate();
       map.getControlsByClass('OpenLayers.Control.WMSGetFeatureInfo')[0].activate();
     });
-    $('#navbar button.zoom').button({
-      text:false,
-      icons:{primary: "ui-icon-zoom"}
-    }).removeClass("ui-corner-all")
-    .click(function(){
+    $('#navbar button.zoom').click(function(){
       var self = $(this);
-      if (self.hasClass('ui-state-select'))
+      if (self.hasClass('active'))
         return false;
-      $('#navbar button.pan').removeClass('ui-state-select');
-      self.addClass('ui-state-select');
+      $('#navbar button.pan').removeClass('active');
+      self.addClass('active');
       map.getControlsByClass('OpenLayers.Control.Navigation')[0].deactivate();
       map.getControlsByClass('OpenLayers.Control.WMSGetFeatureInfo')[0].deactivate();
       map.getControlsByClass('OpenLayers.Control.ZoomBox')[0].activate();
     });
-    $('#navbar button.zoom-extent').button({
-      text:false,
-      icons:{primary: "ui-icon-zoom-extent"}
-    }).removeClass("ui-corner-all")
+    $('#navbar button.zoom-extent')
     .click(function(){
       map.zoomToExtent(map.initialExtent);
     });
-    $('#navbar button.zoom-in').button({
-      text:false,
-      icons:{primary: "ui-icon-zoom-in"}
-    }).removeClass("ui-corner-all")
+    $('#navbar button.zoom-in')
     .click(function(){
       if (map.getZoom() == map.baseLayer.numZoomLevels-1)
           $('#zoom-in-max-msg').show('slow', function() {
@@ -2013,10 +2030,7 @@ var lizMap = function() {
       else
         map.zoomIn();
     });
-    $('#navbar button.zoom-out').button({
-      text:false,
-      icons:{primary: "ui-icon-zoom-out"}
-    }).removeClass("ui-corner-all")
+    $('#navbar button.zoom-out')
     .click(function(){
       map.zoomOut();
     });
@@ -2024,51 +2038,43 @@ var lizMap = function() {
         && config.options['zoomHistory'] == "True") {
       var hCtrl =  new OpenLayers.Control.NavigationHistory();
       map.addControls([hCtrl]);
-      $('#navbar div.history button.previous').button({
-        text:false,
-        icons:{primary: "ui-icon-previous"}
-      }).removeClass("ui-corner-all")
-      .click(function(){
+      $('#navbar button.previous').click(function(){
         var ctrl = map.getControlsByClass('OpenLayers.Control.NavigationHistory')[0];
         if (ctrl && ctrl.previousStack.length != 0)
           ctrl.previousTrigger();
         if (ctrl && ctrl.previous.active)
-          $(this).addClass('ui-state-usable');
+          $(this).removeClass('disabled');
         else
-          $(this).removeClass('ui-state-usable');
+          $(this).addClass('disabled');
         if (ctrl && ctrl.next.active)
-          $('#navbar div.history button.next').addClass('ui-state-usable');
+          $('#navbar button.next').removeClass('disabled');
         else
-          $('#navbar div.history button.next').removeClass('ui-state-usable');
+          $('#navbar button.next').addClass('disabled');
       });
-      $('#navbar div.history button.next').button({
-        text:false,
-        icons:{primary: "ui-icon-next"}
-      }).removeClass("ui-corner-all")
-      .click(function(){
+      $('#navbar button.next').click(function(){
         var ctrl = map.getControlsByClass('OpenLayers.Control.NavigationHistory')[0];
         if (ctrl && ctrl.nextStack.length != 0)
           ctrl.nextTrigger();
         if (ctrl && ctrl.next.active)
-          $(this).addClass('ui-state-usable');
+          $(this).removeClass('disabled');
         else
-          $(this).removeClass('ui-state-usable');
+          $(this).addClass('disabled');
         if (ctrl && ctrl.previous.active)
-          $('#navbar div.history button.previous').addClass('ui-state-usable');
+          $('#navbar button.previous').removeClass('disabled');
         else
-          $('#navbar div.history button.previous').removeClass('ui-state-usable');
+          $('#navbar button.previous').addClass('disabled');
       });
       map.events.on({
         moveend : function() {
           var ctrl = map.getControlsByClass('OpenLayers.Control.NavigationHistory')[0];
-          if (ctrl && ctrl.previousStack.length > 1)
-            $('#navbar div.history button.previous').addClass('ui-state-usable');
+          if (ctrl && ctrl.previousStack.length != 0)
+            $('#navbar button.previous').removeClass('disabled');
           else
-            $('#navbar div.history button.previous').removeClass('ui-state-usable');
-          if (ctrl && ctrl.nextStack.length > 0)
-            $('#navbar div.history button.next').addClass('ui-state-usable');
+            $('#navbar button.previous').addClass('disabled');
+          if (ctrl && ctrl.nextStack.length != 0)
+            $('#navbar button.next').removeClass('disabled');
           else
-            $('#navbar div.history button.next').removeClass('ui-state-usable');
+            $('#navbar button.next').addClass('disabled');
         }
       });
     } else {
