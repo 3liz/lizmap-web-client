@@ -7,7 +7,6 @@ startAction="default:index"
 [coordplugins]
 auth="index/auth.coord.ini.php"
 jacl2=1
-lizmap="lizmapConfig.ini.php"
 
 [modules]
 lizmap.access=2

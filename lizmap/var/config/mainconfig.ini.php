@@ -18,7 +18,7 @@ availableLocales="fr_FR,en_US,it_IT,es_ES,pt_PT,el_EL"
 [coordplugins]
 ;name = file_ini_name or 1
 ;magicquotes = 1
-autolocale=autolocale.coord.ini.php
+autolocale=1
 
 [tplplugins]
 defaultJformsBuilder=html

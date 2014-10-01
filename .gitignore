@@ -5,5 +5,9 @@
 *.o
 *.swp
 *.log
-
+*.pyc
+lizmap/var/config/lizmapConfig.ini.php
+lizmap/var/config/localconfig.ini.php
+lizmap/var/config/profiles.ini.php
+lizmap/var/db/*.db
 temp/lizmap/www/*

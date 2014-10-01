@@ -8,17 +8,12 @@ default=jauth
 jacl2_profile=jauth
 
 [jdb:jauth]
-driver=pdo
-dsn="sqlite:var:db/jauth.db"
-user=jauth
-password=jauth
+driver=sqlite
+database="var:db/jauth.db"
 
 [jdb:lizlog]
-driver=pdo
-dsn="sqlite:var:db/logs.db"
-user=lizmap
-password=lizmap
-
+driver=sqlite
+database="var:db/logs.db"
 
 ; when you have charset issues, enable force_encoding so the connection will be
 ; made with the charset indicated in jelix config

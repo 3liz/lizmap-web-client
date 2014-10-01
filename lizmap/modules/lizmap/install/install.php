@@ -24,6 +24,20 @@ class lizmapModuleInstaller extends jInstallerModule {
             }
         }
 
+        $localConfig = jApp::config('localconfig.ini.php');
+        if (!file_exist($localConfig)) {
+            $localConfigDist = jApp::config('localconfig.ini.php.dist');
+            if (file_exists($localConfigDist)) {
+                copy($localConfigDist, $localConfig);
+            }
+            else {
+                file_put_contents($localConfigDist, ';<'.'?php die(\'\');?'.'>');
+            }
+        }
+        $ini = new jIniFileModifier($localConfig);
+        $ini->setValue('lizmap', 'lizmapConfig.ini.php', 'coordplugins');
+        $ini->save();
+
         if ($this->firstDbExec()) {
             $this->useDbProfile('lizlog');
             $this->execSQLScript('sql/lizlog');
