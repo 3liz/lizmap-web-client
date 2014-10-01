@@ -210,6 +210,7 @@ jacldb.access=0
 jpref.access=0
 jsoap.access=0
 junittests.access=0
+jpref_admin.access=0
 
 
 jacl2.access=1

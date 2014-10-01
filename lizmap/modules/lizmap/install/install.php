@@ -13,7 +13,12 @@ class lizmapModuleInstaller extends jInstallerModule {
 
     function install() {
 
-        if ($this->firstExec('acl2') && $this->getParameter('demousers')) {
+        if ($this->firstDbExec()) {
+            $this->useDbProfile('lizlog');
+            $this->execSQLScript('sql/lizlog');
+        }
+
+        if ($this->firstExec('acl2') && $this->getParameter('demo')) {
             $this->useDbProfile('auth');
 
             // create group

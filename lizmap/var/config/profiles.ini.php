@@ -9,13 +9,13 @@ jacl2_profile=jauth
 
 [jdb:jauth]
 driver=pdo
-dsn="sqlite:var:jauth.db"
+dsn="sqlite:var:db/jauth.db"
 user=jauth
 password=jauth
 
 [jdb:lizlog]
 driver=pdo
-dsn="sqlite:var:logs.db"
+dsn="sqlite:var:db/logs.db"
 user=lizmap
 password=lizmap
 
