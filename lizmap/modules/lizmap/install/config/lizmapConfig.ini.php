@@ -48,10 +48,6 @@ allowUserAccountRequests=off
 
 
 
-
-
-
-
 allowUserDefinedThemes=
 
 

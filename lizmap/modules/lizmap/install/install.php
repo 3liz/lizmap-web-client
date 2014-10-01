@@ -13,6 +13,17 @@ class lizmapModuleInstaller extends jInstallerModule {
 
     function install() {
 
+        $lizmapConfFile = jApp::config('lizmapConfig.ini.php');
+        if (!file_exists($lizmapConfFile)) {
+            $lizmapConfFileDist = jApp::config('lizmapConfig.ini.php.dist');
+            if (file_exists($lizmapConfFileDist)) {
+                copy($lizmapConfFileDist, $lizmapConfFile);
+            }
+            else {
+                $this->copyFile('config/lizmapConfig.ini.php', $lizmapConfFile);
+            }
+        }
+
         if ($this->firstDbExec()) {
             $this->useDbProfile('lizlog');
             $this->execSQLScript('sql/lizlog');
@@ -98,6 +109,20 @@ class lizmapModuleInstaller extends jInstallerModule {
             jAcl2DbManager::addRight('__anonymous', 'lizmap.repositories.view', 'montpellier');
             jAcl2DbManager::addRight('__anonymous', 'lizmap.tools.loginFilteredLayers.override', 'montpellier');
             jAcl2DbManager::addRight('__anonymous', 'lizmap.tools.displayGetCapabilitiesLinks', 'montpellier');
+
+            // declare the repositories of demo in the configuration
+            $ini = jIniFileModifier($lizmapConfFile);
+            $ini->setValues(array(
+                'label'=>'LizMap Demo',
+                'path'=>'../install/qgis/',
+                'allowUserDefinedThemes'=>''
+                ), 'repository:montpellier');
+            $ini->setValues(array(
+                'label'=>'Lizmap Demo - Intranet',
+                'path'=>'../install/qgis_intranet/'
+                ), 'repository:intranet');
+            $ini->setValue('defaultRepository', 'montpellier', 'services');
+            $ini->save();
         }
     }
 }
