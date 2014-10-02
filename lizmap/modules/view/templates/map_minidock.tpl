@@ -2,7 +2,7 @@
       <div id="mini-dock-content" class="tab-content">
       {foreach $dockable as $dock}
         <div class="tab-pane{if $dock->order==1} active{/if}" id="{$dock->id}">
-          {$dock->content}
+          {$dock->fetchContent()}
         </div>
       {/foreach}
       </div>

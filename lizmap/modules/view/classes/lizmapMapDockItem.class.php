@@ -33,6 +33,22 @@ class lizmapMapDockItem {
         $this->css = $item->css;
         $this->css = $item->js;
     }
+
+    public function fetchContent() {
+        $content = $this->content;
+        if( is_string( $content ) ) {
+            return $content;
+        }
+        elseif ( is_array( $content ) ) {
+            $tpl = new jTpl();
+            $tplName = $content[0];
+            if ( count( $content ) > 1 ) {
+                $tpl->assign( $content[1] );
+            }
+            return $tpl->fetch( $tplName );
+        }
+        return '';
+    }
 }
 
 function mapDockItemSort($itemA, $itemB)
@@ -56,6 +72,6 @@ function mapDockItemsMerge($itemsA, $itemsB)
     foreach( $maps as $id=>$item ) {
         $items[] = $item;
     }
-    usort($items, "mainDockItemSort");
+    usort($items, "mapDockItemSort");
     return $items;
 }

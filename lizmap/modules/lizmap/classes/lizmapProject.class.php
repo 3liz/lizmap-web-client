@@ -607,8 +607,8 @@ class lizmapProject{
         }
         $metadataTpl->assign(array_merge(array(
           'repositoryLabel'=>$this->getData('label'),
-          'repository'=>$this->getKey(),
-          'project'=>$project,
+          'repository'=>$this->getrepository(),
+          'project'=>$this->getKey(),
           'wmsGetCapabilitiesUrl' => $wmsGetCapabilitiesUrl
         ), $wmsInfo));
         $dockable[] = new lizmapMapDockItem('metadata', jLocale::get('view~map.metadata.link.label'), $metadataTpl->fetch('view~map_metadata'), 2);
