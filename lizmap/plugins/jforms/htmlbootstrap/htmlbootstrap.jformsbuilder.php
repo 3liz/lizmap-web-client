@@ -50,7 +50,7 @@ class htmlbootstrapJformsBuilder extends jFormsBuilderHtml {
         }
         echo "</div>\n";
         if ($modal)
-          echo "</div>\n";
+          echo "<div>\n";
         if ($modal)
           echo '<div class="modal-footer"><div class="jforms-submit-buttons">';
         else
