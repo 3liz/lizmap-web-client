@@ -50,7 +50,7 @@ class htmlbootstrapFormBuilder extends \jelix\forms\Builder\HtmlBuilder {
         }
         echo "</div>\n";
         if ($modal)
-          echo "</div>\n";
+          echo "<div>\n";
         if ($modal)
           echo '<div class="modal-footer"><div class="jforms-submit-buttons">';
         else
