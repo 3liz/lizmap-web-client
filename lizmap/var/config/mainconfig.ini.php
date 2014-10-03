@@ -95,24 +95,24 @@ admin="jacl2db~*@classic, jacl2db_admin~*@classic, jauthdb_admin~*@classic, mast
 ; for each entry point, it indicates if the entry point name
 ; should be include in the url or not
 index=on
-xmlrpc=on
-jsonrpc=on
-rdf=on
-
 admin=on
 
 [logger]
 _all=
 default=file
-error=syslog
-warning=syslog
-notice=syslog
+error=file
+warning=file
+notice=file
 ;deprecated=syslog
-strict=syslog
+strict=file
 ;sql=syslog
 
 [fileLogger]
 default=messages.log
+error=error.log
+warning=error.log
+notice=error.log
+strict=error.log
 
 [mailer]
 webmasterEmail="root@localhost"
