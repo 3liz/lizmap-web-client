@@ -13,9 +13,9 @@ class lizmapModuleInstaller extends jInstallerModule {
 
     function install() {
 
-        $lizmapConfFile = jApp::config('lizmapConfig.ini.php');
+        $lizmapConfFile = jApp::configPath('lizmapConfig.ini.php');
         if (!file_exists($lizmapConfFile)) {
-            $lizmapConfFileDist = jApp::config('lizmapConfig.ini.php.dist');
+            $lizmapConfFileDist = jApp::configPath('lizmapConfig.ini.php.dist');
             if (file_exists($lizmapConfFileDist)) {
                 copy($lizmapConfFileDist, $lizmapConfFile);
             }
@@ -24,9 +24,9 @@ class lizmapModuleInstaller extends jInstallerModule {
             }
         }
 
-        $localConfig = jApp::config('localconfig.ini.php');
-        if (!file_exist($localConfig)) {
-            $localConfigDist = jApp::config('localconfig.ini.php.dist');
+        $localConfig = jApp::configPath('localconfig.ini.php');
+        if (!file_exists($localConfig)) {
+            $localConfigDist = jApp::configPath('localconfig.ini.php.dist');
             if (file_exists($localConfigDist)) {
                 copy($localConfigDist, $localConfig);
             }

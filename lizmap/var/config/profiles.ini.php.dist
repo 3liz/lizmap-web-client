@@ -8,11 +8,11 @@ default=jauth
 jacl2_profile=jauth
 
 [jdb:jauth]
-driver=sqlite
+driver=sqlite3
 database="var:db/jauth.db"
 
 [jdb:lizlog]
-driver=sqlite
+driver=sqlite3
 database="var:db/logs.db"
 
 ; when you have charset issues, enable force_encoding so the connection will be
