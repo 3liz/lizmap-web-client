@@ -129,11 +129,12 @@ class lizmapModuleInstaller extends jInstallerModule {
             $ini->setValues(array(
                 'label'=>'LizMap Demo',
                 'path'=>'../install/qgis/',
-                'allowUserDefinedThemes'=>''
+                'allowUserDefinedThemes'=>1
                 ), 'repository:montpellier');
             $ini->setValues(array(
                 'label'=>'Lizmap Demo - Intranet',
-                'path'=>'../install/qgis_intranet/'
+                'path'=>'../install/qgis_intranet/',
+                'allowUserDefinedThemes'=>''
                 ), 'repository:intranet');
             $ini->setValue('defaultRepository', 'montpellier', 'services');
             $ini->save();
