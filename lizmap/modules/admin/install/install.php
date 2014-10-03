@@ -32,16 +32,13 @@ class adminModuleInstaller extends jInstallerModule {
             jAcl2DbManager::addSubject("lizmap.tools.loginFilteredLayers.override","admin~jacl2.lizmap.tools.loginFilteredLayers.override","lizmap.grp");
             jAcl2DbManager::addSubject("lizmap.tools.displayGetCapabilitiesLinks","admin~jacl2.lizmap.tools.displayGetCapabilitiesLinks","lizmap.grp");
 
-            jAcl2DbManager::setRightsOnGroup('admins', array(
-                'lizmap.admin.repositories.view'=>true,
-                'lizmap.admin.services.view'=>true,
-                'lizmap.admin.access'=>true,
-                'lizmap.admin.repositories.create'=>true,
-                'lizmap.admin.repositories.delete'=>true,
-                'lizmap.admin.repositories.update'=>true,
-                'lizmap.admin.services.update'=>true
-            ));
-                
+            jAcl2DbManager::addRight('admins', 'lizmap.admin.repositories.view');
+            jAcl2DbManager::addRight('admins', 'lizmap.admin.services.view');
+            jAcl2DbManager::addRight('admins', 'lizmap.admin.access');
+            jAcl2DbManager::addRight('admins', 'lizmap.admin.repositories.create');
+            jAcl2DbManager::addRight('admins', 'lizmap.admin.repositories.delete');
+            jAcl2DbManager::addRight('admins', 'lizmap.admin.repositories.update');
+            jAcl2DbManager::addRight('admins', 'lizmap.admin.services.update');
         }
     }
 }

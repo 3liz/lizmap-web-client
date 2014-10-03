@@ -40,6 +40,7 @@ cd lizmap/var/config
 cp lizmapConfig.ini.php.dist lizmapConfig.ini.php
 cp localconfig.ini.php.dist localconfig.ini.php
 cp profiles.ini.php.dist profiles.ini.php
+cd ../../..
 ```
 
 Then you can launch the installer
