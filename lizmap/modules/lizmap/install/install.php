@@ -125,7 +125,7 @@ class lizmapModuleInstaller extends jInstallerModule {
             jAcl2DbManager::addRight('__anonymous', 'lizmap.tools.displayGetCapabilitiesLinks', 'montpellier');
 
             // declare the repositories of demo in the configuration
-            $ini = jIniFileModifier($lizmapConfFile);
+            $ini = new jIniFileModifier($lizmapConfFile);
             $ini->setValues(array(
                 'label'=>'LizMap Demo',
                 'path'=>'../install/qgis/',
