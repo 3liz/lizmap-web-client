@@ -7,7 +7,7 @@
       <div id="dock-content" class="tab-content">
       {foreach $dockable as $dock}
         <div class="tab-pane" id="{$dock->id}">
-          {$dock->content}
+          {$dock->fetchContent()}
         </div>
       {/foreach}
       </div>
