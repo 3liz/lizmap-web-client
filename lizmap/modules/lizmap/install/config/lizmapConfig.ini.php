@@ -22,37 +22,3 @@ cacheRootDirectory="/tmp/"
 ; must be writable
 allowUserAccountRequests=off
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-allowUserDefinedThemes=
-
-
-
-
-
-
-
