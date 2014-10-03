@@ -14,5 +14,7 @@ CREATE TABLE `log_counter` (
     `id` INTEGER AUTO_INCREMENT  NOT NULL ,
     `key` VARCHAR(100) NOT NULL ,
     `counter` INTEGER,
+    `repository` VARCHAR(100),
+    `project` VARCHAR(100),
     PRIMARY KEY  (`id`)
 );

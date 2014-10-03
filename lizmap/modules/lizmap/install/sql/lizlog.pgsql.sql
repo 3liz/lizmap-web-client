@@ -12,5 +12,7 @@ CREATE TABLE log_detail (
 CREATE TABLE log_counter (
     id SERIAL  PRIMARY KEY,
     key character varying(100) NOT NULL ,
-    counter INTEGER
+    counter INTEGER,
+    repository varchar,
+    project varchar
 );

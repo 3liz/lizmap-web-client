@@ -11,4 +11,6 @@ CREATE TABLE "log_detail" (
 CREATE TABLE "log_counter" (
     "id" INTEGER PRIMARY KEY  AUTOINCREMENT  NOT NULL ,
     "key" VARCHAR NOT NULL ,
-    "counter" INTEGER);
+    "counter" INTEGER,
+    "repository" VARCHAR,
+    "project" VARCHAR);
