@@ -36,9 +36,7 @@ class htmlbootstrapJformsBuilder extends jFormsBuilderHtml {
             if($ctrl->type == 'submit' || $ctrl->type == 'reset' || $ctrl->type == 'hidden') continue;
             if(!$this->_form->isActivated($ctrlref)) continue;
             if($ctrl->type == 'group') {
-                echo '<tr><td colspan="2">';
                 $this->outputControl($ctrl);
-                echo '</td></tr>';
             }else{
                 echo '<div class="control-group">';
                 $this->outputControlLabel($ctrl);
@@ -70,6 +68,7 @@ class htmlbootstrapJformsBuilder extends jFormsBuilderHtml {
             echo '<button class="btn" data-dismiss="modal" aria-hidden="true">', jLocale::get($this->options['cancelLocale']),'</button>';
           else
             echo '<button class="btn" data-dismiss="modal" aria-hidden="true">Cancel</button>';
+        echo "</div>\n";
         if ($modal)
           echo "</div>\n";
     }
@@ -982,17 +981,18 @@ class htmlbootstrapJformsBuilder extends jFormsBuilderHtml {
 
     protected function outputGroup($ctrl, &$attr) {
         echo '<fieldset id="',$attr['id'],'"><legend>',htmlspecialchars($ctrl->label),"</legend>\n";
-        echo '<table class="jforms-table-group" border="0">',"\n";
+        echo '<div class="jforms-table-group" border="0">',"\n";
         foreach( $ctrl->getChildControls() as $ctrlref=>$c){
             if($c->type == 'submit' || $c->type == 'reset' || $c->type == 'hidden') continue;
             if(!$this->_form->isActivated($ctrlref)) continue;
-            echo '<tr><th scope="row">';
+            echo '<div class="control-group">';
             $this->outputControlLabel($c);
-            echo "</th>\n<td>";
+            echo '<div class="controls">';
             $this->outputControl($c);
-            echo "</td></tr>\n";
+            echo "</div>\n";
+            echo "</div>\n";
         }
-        echo "</table></fieldset>";
+        echo "</div></fieldset>";
     }
 
     protected function jsGroup($ctrl) {
