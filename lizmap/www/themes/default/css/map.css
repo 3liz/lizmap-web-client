@@ -282,7 +282,7 @@ Timemanager
   background : #C81F2D;
   border : solid 1px white;
 }
-#navbar div.slider a{
+#navbar div.slider span{
   background : black;
   border : solid 1px black;
 }
