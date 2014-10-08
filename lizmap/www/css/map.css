@@ -991,7 +991,7 @@ Timemanager
   margin-left: 13px;
   margin-bottom : 0.1em;
 }
-#navbar div.slider a{
+#navbar div.slider span{
   width: 30px;
   left: -15px;
   height : 0.1em;
