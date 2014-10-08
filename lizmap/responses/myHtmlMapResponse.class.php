@@ -27,6 +27,7 @@ class myHtmlMapResponse extends jResponseHtml {
     $this->addCSSLink($bp.'css/jquery-ui-1.8.23.custom.css');
     $this->addCSSLink($bp.'css/bootstrap.css');
     $this->addCSSLink($bp.'css/bootstrap-responsive.css');
+    $this->addCSSLink($bp.'css/jquery.dataTables.bootstrap.css');
     $this->addCSSLink($bp.'TreeTable/stylesheets/jquery.treeTable.css');
     $this->addCSSLink($bp.'OpenLayers-2.13/theme/default/style.css');
     $this->addCSSLink($bp.'css/main.css');
@@ -51,11 +52,13 @@ class myHtmlMapResponse extends jResponseHtml {
     $this->addJSLink($bp.'OpenLayers-2.13/lib/OpenLayers/Control/lizmapMousePosition.js');
     $this->addJSLink($bp.'OpenLayers-2.13/lib/OpenLayers/Popup/lizmapAnchored.js');
     $this->addJSLink($bp.'Proj4js/proj4js-compressed.js');
-    $this->addJSLink($bp.'js/jquery-1.9.1.js');
-    $this->addJSLink($bp.'js/jquery-ui-1.10.3.custom.min.js');
+    $this->addJSLink($bp.'js/jquery-1.11.1.min.js');
+    $this->addJSLink($bp.'js/jquery-ui-1.11.1.custom.min.js');
     $this->addJSLink($bp.'js/jquery.combobox.js');
     $this->addJSLink($bp.'js/bootstrap.js');
     $this->addJSLink($bp.'TreeTable/javascripts/jquery.treeTable.js');
+    $this->addJSLink($bp.'js/jquery.dataTables.min.js');
+    $this->addJSLink($bp.'js/jquery.dataTables.bootstrap.js');
     $this->addJSLink($bp.'js/map.js');
 
 
