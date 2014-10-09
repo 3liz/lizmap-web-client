@@ -279,7 +279,7 @@ Timemanager
 
 /*navbar*/
 #navbar div.slider{
-  background : #0081C2;/* #C81F2D;*/
+  background : #C81F2D;/* #0081C2; */
   border : solid 1px white;
 }
 #navbar div.slider span{

@@ -505,6 +505,41 @@ Timemanager
   padding : 0.5em;
 }
 
+#dock div.menu-content {
+  background-color: #F0F0F0;
+  font-size: 12px;
+}
+
+#dock form {
+  margin: auto;
+}
+
+#dock legend { 
+  margin-bottom: 5px;
+  margin-top: 5px;
+  font-size: 14px;
+  line-height: 20px;
+}
+
+#dock div.control-group {
+  margin-bottom: 5px;
+}
+
+#dock .form-horizontal .control-label {
+  width: 90px;
+}
+
+#dock .form-horizontal .controls {
+  margin-left: 100px;
+  margin-right: 10px;
+}
+
+#dock div.form-actions {
+  margin-bottom: 0px;
+  margin-top: 0px;
+  padding-left: 100px;
+}
+
 #toolbar h3 .icon,
 #menu h3 .icon,
 #dock h3 .icon,
@@ -906,7 +941,7 @@ Timemanager
   background: none;
   text-shadow : none;
   cursor : pointer;
-  font-size:0.8em;
+  /*font-size:0.8em;*/
 }
 #switcher tr.liz-hidden{
   display:none;
