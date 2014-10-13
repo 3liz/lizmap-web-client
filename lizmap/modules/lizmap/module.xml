@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <module xmlns="http://jelix.org/ns/module/1.0">
     <info id="info@3liz.com" name="lizmap" createdate="2011-06-15">
-        <version>2.10RC1</version>
+        <version>2.10.0</version>
         <label lang="en_US">lizmap</label>
         <description lang="en_US" />
         <license URL="http://www.mozilla.org/MPL/">Mozilla Public License</license>
-        <copyright>2011 3liz</copyright>
+        <copyright>2014 3liz</copyright>
         <creator name="3liz" email="info@3liz.com" active="true"/>
         <!--<contributor name="hisname" email="hisemail@yoursite.undefined" active="true" since="" role=""/>-->
         <homepageURL>http://www.3liz.com</homepageURL>
