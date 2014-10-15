@@ -101,7 +101,7 @@ body {
   top:0px;
   height:100%;
   width: 30px;
-  z-index:1050;
+  z-index:1030;
   background:#4A4A4A;
   background:rgba(0,0,0,0.7);
 }
@@ -462,7 +462,8 @@ Timemanager
 #toolbar h3,
 #menu h3,
 #dock h3,
-#mini-dock h3
+#mini-dock h3,
+div.modal h3
 {
   margin : 0px;
 /*
@@ -480,61 +481,75 @@ Timemanager
   background-color:#4A4A4A;
   background-color:rgba(0,0,0,0.7);
 }
+div.modal h3 {
+  color : #333;
+}
 
 #toolbar h3 span.title,
 #menu h3 span.title,
 #dock h3 span.title,
-#mini-dock h3 span.title {
+#mini-dock h3 span.title,
+div.modal h3 span.title {
   display : block;
   padding : 0.5em 0.5em 0.5em 0.7em;
 }
 #toolbar h3 span.menu-content,
 #menu h3 span.ui-icon,
 #dock h3 span.ui-icon,
-#mini-dock h3 span.ui-icon {
+#mini-dock h3 span.ui-icon,
+div.modal h3 span.ui-icon {
   float : right;
   margin-top : 0.5em;
   margin-right : 0.5em;
 }
 
+
 #toolbar div.menu-content,
 #menu div.menu-content,
 #dock div.menu-content,
-#mini-dock div.menu-content {
+#mini-dock div.menu-content,
+div.modal div.menu-content {
   display : block;
   padding : 0.5em;
 }
 
-#dock div.menu-content {
+#dock div.menu-content,
+div.modal div.menu-content {
   background-color: #F0F0F0;
   font-size: 12px;
 }
 
-#dock form {
+#dock form,
+div.modal form {
   margin: auto;
 }
 
-#dock legend { 
+#dock legend,
+div.modal legend { 
   margin-bottom: 5px;
   margin-top: 5px;
   font-size: 14px;
   line-height: 20px;
 }
 
-#dock div.control-group {
+#dock div.control-group,
+div.modal div.control-group {
   margin-bottom: 5px;
 }
 
-#dock .form-horizontal .control-label {
+#dock .form-horizontal .control-label,
+div.modal .form-horizontal .control-label {
   width: 90px;
 }
 
-#dock .form-horizontal .controls {
+#dock .form-horizontal .controls,
+div.modal .form-horizontal .controls {
   margin-left: 100px;
   margin-right: 10px;
 }
 
-#dock div.form-actions {
+#dock div.form-actions,
+div.modal .form-actions {
   margin-bottom: 0px;
   margin-top: 0px;
   padding-left: 100px;
@@ -543,7 +558,8 @@ Timemanager
 #toolbar h3 .icon,
 #menu h3 .icon,
 #dock h3 .icon,
-#mini-dock h3 .icon {
+#mini-dock h3 .icon,
+div.modal h3 .icon {
   display:inline-block;
   vertical-align:middle;
   background-image : url(images/sprite_20_tools.png);
@@ -551,10 +567,14 @@ Timemanager
   width:20px;
   height:20px;
 }
+div.modal h3 .icon {
+  background-position: 0px -20px;
+}
 #toolbar h3 .text,
 #menu h3 .text,
 #dock h3 .text,
-#mini-dock h3 .text {
+#mini-dock h3 .text,
+div.modal h3 .text {
   vertical-align : bottom;
 }
 
