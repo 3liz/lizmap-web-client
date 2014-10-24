@@ -633,7 +633,7 @@ class lizmapProject{
         }
         
         if ( property_exists($configOptions,'print')
-          || $configOptions->print == 'True') {
+          && $configOptions->print == 'True') {
           $tpl = new jTpl();
           $dockable[] = new lizmapMapDockItem('print', jLocale::get('view~map.print.navbar.title'), $tpl->fetch('view~map_print'),3);
         }
