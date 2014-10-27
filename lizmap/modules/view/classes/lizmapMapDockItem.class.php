@@ -53,7 +53,7 @@ class lizmapMapDockItem {
 
 function mapDockItemSort($itemA, $itemB)
 {
-    if ($itemA->order == $itemB->order);
+    if ($itemA->order == $itemB->order)
       return strcmp($itemA->id, $itemB->id);
     return ($itemA->order - $itemB->order);
 }
