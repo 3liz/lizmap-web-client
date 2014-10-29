@@ -111,7 +111,8 @@ class lizMapCtrl extends jController {
       "nominatim" => jUrl::get('lizmap~osm:nominatim'),
       "ign" => jUrl::get('lizmap~ign:address'),
       "edition" => jUrl::get('lizmap~edition:getFeature'),
-      "permalink" => jUrl::getFull('view~map:index')
+      "permalink" => jUrl::getFull('view~map:index'),
+      "dataTableLanguage"=> $bp.'js/dataTables/'.jApp::config()->locale.'.json'
     );
 
     // Get optionnal WMS public url list
