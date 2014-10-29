@@ -405,8 +405,19 @@ class lizmapProject{
               'width'=>(int)$cMapItem['width'],
               'height'=>(int)$cMapItem['height'],
             );
-            if ( (string)$cMap['overviewFrameMap'] != '-1' )
+
+            // Before 2.6
+            if ( property_exists( $cMap->attributes(), 'overviewFrameMap' ) and (string)$cMap['overviewFrameMap'] != '-1' ){
               $ptMap['overviewMap'] = 'map'.(string)$cMap['overviewFrameMap'];
+            }
+            // >= 2.6
+            $cMapOverviews = $cMap->xpath('ComposerMapOverview');
+            foreach($cMapOverviews as $cMapOverview){
+              if ( $cMapOverview ){
+                $ptMap['overviewMap'] = 'map' . (string)$cMapOverview->attributes()->frameMap;
+              }
+            }
+
             $printTemplate['maps'][] = $ptMap;
           }
 
