@@ -1,4 +1,6 @@
 {
+    "decimal":       ",",
+    "thousands":     " ",
     "sProcessing":   "Επεξεργασία...",
     "sLengthMenu":   "Δείξε _MENU_ εγγραφές",
     "sZeroRecords":  "Δεν βρέθηκαν εγγραφές που να ταιριάζουν",
@@ -7,7 +9,6 @@
     "sInfoFiltered": "(φιλτραρισμένες από _MAX_ συνολικά εγγραφές)",
     "sInfoPostFix":  "",
     "sSearch":       "Αναζήτηση:",
-    "sUrl":          "",
     "oPaginate": {
         "sFirst":    "Πρώτη",
         "sPrevious": "Προηγούμενη",

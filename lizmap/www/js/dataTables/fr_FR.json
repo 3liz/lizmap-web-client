@@ -1,4 +1,6 @@
 {
+    "decimal":         ",",
+    "thousands":       " ",
     "sProcessing":     "Traitement en cours...",
     "sSearch":         "Rechercher&nbsp;:",
     "sLengthMenu":     "Afficher _MENU_ &eacute;l&eacute;ments",

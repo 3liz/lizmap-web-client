@@ -1,4 +1,6 @@
 {
+    "decimal":       ",",
+    "thousands":     " ",
     "sProcessing":   "A processar...",
     "sLengthMenu":   "Mostrar _MENU_ registos",
     "sZeroRecords":  "Não foram encontrados resultados",
