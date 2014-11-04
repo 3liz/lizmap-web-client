@@ -359,7 +359,7 @@ class htmlbootstrapFormBuilder extends \jelix\forms\Builder\HtmlBuilder {
             echo $this->_endt;
         }
         else{
-            echo '<select';
+            echo '<select style="width:auto;"';
             $this->_outputAttr($attr);
             echo '><option value="">'.htmlspecialchars(jLocale::get('jelix~jforms.date.day.label')).'</option>';
             for($i=1;$i<32;$i++){
@@ -381,7 +381,7 @@ class htmlbootstrapFormBuilder extends \jelix\forms\Builder\HtmlBuilder {
         }
         else{
             $monthLabels = jApp::config()->forms['controls.datetime.months.labels'];
-            echo '<select';
+            echo '<select style="width:auto;"';
             $this->_outputAttr($attr);
             echo '><option value="">'.htmlspecialchars(jLocale::get('jelix~jforms.date.month.label')).'</option>';
             for($i=1;$i<13;$i++){
@@ -403,7 +403,7 @@ class htmlbootstrapFormBuilder extends \jelix\forms\Builder\HtmlBuilder {
         $attr['id'] .= 'year';
         if(jApp::config()->forms['controls.datetime.input'] == 'textboxes') {
             $attr['value'] = $value;
-            echo '<input type="text" size="4" maxlength="4"';
+            echo '<input style="width:auto; max-width:35px;" type="text" size="4" maxlength="4"';
             $this->_outputAttr($attr);
             echo $this->_endt;
         }
@@ -411,7 +411,7 @@ class htmlbootstrapFormBuilder extends \jelix\forms\Builder\HtmlBuilder {
             $minDate = $ctrl->datatype->getFacet('minValue');
             $maxDate = $ctrl->datatype->getFacet('maxValue');
             if($minDate && $maxDate){
-                echo '<select';
+                echo '<select style="width:auto;"';
                 $this->_outputAttr($attr);
                 echo '><option value="">'.htmlspecialchars(jLocale::get('jelix~jforms.date.year.label')).'</option>';
                 for($i=$minDate->year;$i<=$maxDate->year;$i++)
@@ -420,7 +420,7 @@ class htmlbootstrapFormBuilder extends \jelix\forms\Builder\HtmlBuilder {
             }
             else{
                 $attr['value'] = $value;
-                echo '<input type="text" size="4" maxlength="4"';
+                echo '<input style="width:auto; max-width:35px;" type="text" size="4" maxlength="4"';
                 $this->_outputAttr($attr);
                 echo $this->_endt;
             }
