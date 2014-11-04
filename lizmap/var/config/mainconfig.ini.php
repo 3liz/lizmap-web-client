@@ -170,7 +170,7 @@ urlParamNameLanguage=lang
 
 
 ; if no url parameter found, indicate to use one of the prefered language given by the browser
-useDefaultLanguageBrowser = off
+useDefaultLanguageBrowser = on
 
 [sessions]
 ; to disable sessions, set the following parameter to 0
