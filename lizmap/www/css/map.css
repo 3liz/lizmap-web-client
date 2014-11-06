@@ -772,7 +772,7 @@ div.modal h3 .text {
   overflow: hidden;
   border : solid 1px #606060;
   position : relative;
-  background: url(images/123_click.png) no-repeat right;
+  background: url(images/123_click.png) no-repeat right -5px;
 }
 #locate div.locate-layer.no-toggle {
   background-image: none;
@@ -796,7 +796,7 @@ div.modal h3 .text {
 }
 
 #locate div.locate-layer .custom-combobox-toggle {
-  background: url(images/123_click.png) no-repeat right;
+  background: url(images/123_click.png) no-repeat right -5px;
   width: 20px;
   height: 20px;
   border: 0;

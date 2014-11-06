@@ -222,7 +222,7 @@ Timemanager
 }
 
 #locate div.locate-layer .custom-combobox-toggle {
-  background: url(images/123_click.png) no-repeat right;
+  background: url(images/123_click.png) no-repeat right -5px;
 }
 #locate div.locate-layer .custom-combobox-input {
   background: none;
