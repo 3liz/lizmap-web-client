@@ -4019,7 +4019,7 @@ var lizMap = function() {
             self.blur();
 
             var dock = $('#dock');
-            if ( dock.find('.nav-tabs .active').length == 0 )
+            if ( $('#dock-tabs .active').length == 0 )
               dock.hide();
             else if ( !dock.is(':visible') )
               dock.show();
