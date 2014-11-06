@@ -69,8 +69,10 @@ class main_viewZone extends jZone {
                 $wmsGetCapabilitiesUrl
               );
             }
-            if ( count($mrep->childItems) != 0 )
+            if ( count($mrep->childItems) != 0 ) {
+              usort($mrep->childItems, "mainViewItemSort");
               $maps[$r] = $mrep;
+            }
           }
         }
 
@@ -88,8 +90,10 @@ class main_viewZone extends jZone {
                     $replaced = true;
                   }
                 }
-                if( !$replaced )
+                if( !$replaced ) {
                   $maps[$item->parentId]->childItems[] = $item;
+		  usort($maps[$item->parentId]->childItems, "mainViewItemSort");
+                }
             }
             else {
                 if(isset($maps[$item->id])) {
