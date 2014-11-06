@@ -24,6 +24,7 @@
                         <br/>
                         <b>{@default.project.bbox.label@}</b>&nbsp;: <span class="bbox">{$p->bbox}</span>
                         {if $p->wmsGetCapabilitiesUrl}
+                        <br/>
                         <b>{@view~map.metadata.properties.wmsGetCapabilitiesUrl@}</b>&nbsp;:
                         <span><a href="{$p->wmsGetCapabilitiesUrl}" target="_blank">WMS Url</a></span>
                         {/if}
