@@ -116,20 +116,7 @@ class configCtrl extends jController {
 
     // Create the form
     $form = jForms::create('admin~config_services');
-
-    // Fill the default repository menu list with data from ini file
-    $ctrl = new jFormsControlMenulist('defaultRepository');
-    $dataSource = new jFormsStaticDatasource();
-    $mydata = array();
-    foreach(lizmap::getRepositoryList() as $repo)
-      $mydata[$repo] = $repo;
-    $dataSource->data = $mydata;
-    $ctrl->datasource = $dataSource;
-    $ctrl->label = jLocale::get("admin~admin.form.admin_services.defaultRepository.label");
-    $ctrl->required = true;
-    $form->addControl($ctrl);
-    $form->setData('defaultRepository', $services->defaultRepository);
-
+    
     // Set form data values
     foreach($services->getProperties() as $ser){
       $form->setData($ser, $services->$ser);
@@ -162,19 +149,7 @@ class configCtrl extends jController {
 
     // Get the form
     $form = jForms::get('admin~config_services');
-
-    // default repository
-    $ctrl = new jFormsControlMenulist('defaultRepository');
-    $dataSource = new jFormsStaticDatasource();
-    $mydata = array();
-    foreach(lizmap::getRepositoryList() as $repo)
-      $mydata[$repo] = $repo;
-    $dataSource->data = $mydata;
-    $ctrl->datasource = $dataSource;
-    $ctrl->label = jLocale::get("admin~admin.form.admin_services.defaultRepository.label");
-    $ctrl->required = true;
-    $form->addControl($ctrl);
-
+    
     if ($form) {
       // Display form
       $tpl = new jTpl();
@@ -217,18 +192,6 @@ class configCtrl extends jController {
       $rep->action="admin~config:index";
       return $rep;
     }
-
-    // Fill the default repository menu list with data from ini file
-    $ctrl = new jFormsControlMenulist('defaultRepository');
-    $dataSource = new jFormsStaticDatasource();
-    $mydata = array();
-    foreach(lizmap::getRepositoryList() as $repo)
-      $mydata[$repo] = $repo;
-    $dataSource->data = $mydata;
-    $ctrl->datasource = $dataSource;
-    $ctrl->label = jLocale::get("admin~admin.form.admin_services.defaultRepository.label");
-    $ctrl->required = true;
-    $form->addControl($ctrl);
 
     // Set the other form data from the request data
     $form->initFromRequest();

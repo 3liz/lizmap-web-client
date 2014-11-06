@@ -4,6 +4,8 @@
 wmsServerURL="http://127.0.0.1/cgi-bin/qgis_mapserv.fcgi"
 ;List of URL available for the web client
 defaultRepository=montpellier
+defaultProject=montpellier
+onlyMaps=0
 cacheStorageType=file
 ;cacheStorageType=sqlite => store cached images in one sqlite file per repo/project/layer
 ;cacheStorageType=file => store cached images in one folder per repo/project/layer. The root folder is /tmp/
