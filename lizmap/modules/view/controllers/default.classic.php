@@ -22,8 +22,24 @@ class defaultCtrl extends jController {
     if ($this->param('theme')) {
       jApp::config()->theme = $this->param('theme');
     }
-
+    
     $rep = $this->getResponse('html');
+    
+    // Get lizmap services
+    $services = lizmap::getServices();
+    
+    // only maps
+    if($services->onlyMaps) {
+      $repository = lizmap::getRepository($services->defaultRepository);
+      if ($repository && jAcl2::check('lizmap.repositories.view', $repository->getKey())) {
+        $project = lizmap::getProject($repository->getKey().'~'.$services->defaultProject);
+        if ($project) {
+          $rep = $this->getResponse('redirect');
+          $rep->action = 'view~map:index';
+          return $rep;
+        }
+      }
+    }
 
     // Get repository data
     $repository = $this->param('repository');
@@ -42,9 +58,7 @@ class defaultCtrl extends jController {
     $rep->body->assign('repositoryLabel', $title);
     $rep->body->assign('isConnected', jAuth::isConnected());
     $rep->body->assign('user', jAuth::getUserSession());
-
-    // Get lizmap services
-    $services = lizmap::getServices();
+    
     if($services->allowUserAccountRequests)
       $rep->body->assign('allowUserAccountRequests', True);
 
@@ -80,10 +94,10 @@ class defaultCtrl extends jController {
   }
 
     /**
-  * Displays an error.
-  *
-  * @return Html page with the error message.
-  */
+      * Displays an error.
+      *
+      * @return Html page with the error message.
+      */
   function error() {
 
     $rep = $this->getResponse('html');

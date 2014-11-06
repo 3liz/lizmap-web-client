@@ -92,7 +92,6 @@
         <div id="attribute-table-container"></div>
     </div>
   </div>
-
 </div>
 
 <div id="loading" class="ui-dialog-content ui-widget-content" title="{@view~map.loading.title@}">

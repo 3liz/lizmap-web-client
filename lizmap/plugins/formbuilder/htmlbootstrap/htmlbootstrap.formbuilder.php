@@ -20,7 +20,7 @@
 
 class htmlbootstrapFormBuilder extends \jelix\forms\Builder\HtmlBuilder {
 
-    protected $jFormsJsVarName = 'jForms';
+    protected $jFormsJsVarName = 'jFormsJQ';
 
     protected $options;
 
@@ -80,35 +80,66 @@ class htmlbootstrapFormBuilder extends \jelix\forms\Builder\HtmlBuilder {
         }
         $www =jApp::config()->urlengine['jelixWWWPath'];
         $bp =jApp::config()->urlengine['basePath'];
-        $resp->addJSLink($www.'js/jforms_light.js');
+        $resp->addJSLink($www.'js/jforms_jquery.js');
         $resp->addCSSLink($www.'design/jform.css');
         foreach($t->_vars as $k=>$v){
-            if($v instanceof jFormsBase && count($edlist = $v->getHtmlEditors())) {
-                foreach($edlist as $ed) {
-                    if(isset(jApp::config()->htmleditors[$ed->config.'.engine.file'])){
-                        if(is_array(jApp::config()->htmleditors[$ed->config.'.engine.file'])){
-                            foreach(jApp::config()->htmleditors[$ed->config.'.engine.file'] as $url) {
-                                $resp->addJSLink($bp.$url);
-                            }
-                        }else
-                            $resp->addJSLink($bp.jApp::config()->htmleditors[$ed->config.'.engine.file']);
-                    }
-                    if(isset(jApp::config()->htmleditors[$ed->config.'.config']))
-                        $resp->addJSLink($bp.jApp::config()->htmleditors[$ed->config.'.config']);
-                    $skin = $ed->config.'.skin.'.$ed->skin;
-                    if(isset(jApp::config()->htmleditors[$skin]) && jApp::config()->htmleditors[$skin] != '')
-                        $resp->addCSSLink($bp.jApp::config()->htmleditors[$skin]);
+            if(!$v instanceof jFormsBase)
+                continue;
+            foreach($v->getHtmlEditors() as $ed) {
+                if(isset($confHtmlEditor[$ed->config.'.engine.file'])){
+                    if(is_array($confHtmlEditor[$ed->config.'.engine.file'])){
+                        foreach($confHtmlEditor[$ed->config.'.engine.file'] as $url) {
+                            $resp->addJSLink($bp.$url);
+                        }
+                    }else
+                        $resp->addJSLink($bp.$confHtmlEditor[$ed->config.'.engine.file']);
                 }
+                
+                if(isset($confHtmlEditor[$ed->config.'.config']))
+                    $resp->addJSLink($bp.$confHtmlEditor[$ed->config.'.config']);
+
+                $skin = $ed->config.'.skin.'.$ed->skin;
+
+                if(isset($confHtmlEditor[$skin]) && $confHtmlEditor[$skin] != '')
+                    $resp->addCSSLink($bp.$confHtmlEditor[$skin]);
+            }
+
+            $datepicker_default_config = jApp::config()->forms['datepicker'];
+            
+            foreach($v->getControls() as $ctrl){
+                if($ctrl instanceof jFormsControlDate || get_class($ctrl->datatype) == 'jDatatypeDate' || get_class($ctrl->datatype) == 'jDatatypeLocaleDate'){
+                    $config = isset($ctrl->datepickerConfig)?$ctrl->datepickerConfig:$datepicker_default_config;
+                    $resp->addJSLink($bp.$confDate[$config]);
+                }
+            }
+
+            foreach($v->getWikiEditors() as $ed) {
+                if(isset($confWikiEditor[$ed->config.'.engine.file']))
+                    $resp->addJSLink($bp.$confWikiEditor[$ed->config.'.engine.file']);
+                if(isset($confWikiEditor[$ed->config.'.config.path'])) {
+                    $p = $bp.$confWikiEditor[$ed->config.'.config.path'];
+                    $resp->addJSLink($p.jApp::config()->locale.'.js');
+                    $resp->addCSSLink($p.'style.css');
+                }
+                if(isset($confWikiEditor[$ed->config.'.skin']))
+                    $resp->addCSSLink($bp.$confWikiEditor[$ed->config.'.skin']);
             }
         }
     }
 
     protected function outputHeaderScript(){
-                echo '<script type="text/javascript">
+        $conf = jApp::config()->urlengine;
+        // no scope into an anonymous js function, because jFormsJQ.tForm is used by other generated source code
+        echo '<script type="text/javascript">
 //<![CDATA[
-'.$this->jFormsJsVarName.'.tForm = new jFormsForm(\''.$this->_name.'\');
-'.$this->jFormsJsVarName.'.tForm.setErrorDecorator(new '.$this->options['errorDecorator'].'());
-'.$this->jFormsJsVarName.'.declareForm(jForms.tForm);
+jFormsJQ.selectFillUrl=\''.jUrl::get('jelix~jforms:getListData').'\';
+jFormsJQ.config = {locale:'.$this->escJsStr(jApp::config()->locale).
+    ',basePath:'.$this->escJsStr($conf['basePath']).
+    ',jqueryPath:'.$this->escJsStr($conf['jqueryPath']).
+    ',jelixWWWPath:'.$this->escJsStr($conf['jelixWWWPath']).'};
+jFormsJQ.tForm = new jFormsJQForm(\''.$this->_name.'\',\''.$this->_form->getSelector().'\',\''.$this->_form->getContainer()->formId.'\');
+jFormsJQ.tForm.setErrorDecorator(new '.$this->options['errorDecorator'].'());
+jFormsJQ.declareForm(jFormsJQ.tForm);
 //]]>
 </script>';
     }
@@ -278,6 +309,9 @@ class htmlbootstrapFormBuilder extends \jelix\forms\Builder\HtmlBuilder {
     }
 
     protected function commonJs($ctrl) {
+        if ($ctrl->isReadOnly()) {
+            $this->jsContent .="c.readOnly = true;\n";
+        }
 
         if($ctrl->required){
             $this->jsContent .="c.required = true;\n";
@@ -296,7 +330,12 @@ class htmlbootstrapFormBuilder extends \jelix\forms\Builder\HtmlBuilder {
             $this->jsContent .="c.errInvalid=".$this->escJsStr(jLocale::get('jelix~formserr.js.err.invalid', $ctrl->label)).";\n";
         }
 
-        if ($this->isRootControl) $this->jsContent .= $this->jFormsJsVarName.".tForm.addControl(c);\n";
+        if($ctrl instanceof jFormsControlDate || get_class($ctrl->datatype) == 'jDatatypeDate' || get_class($ctrl->datatype) == 'jDatatypeLocaleDate'){
+            $config = isset($ctrl->datepickerConfig)?$ctrl->datepickerConfig:jApp::config()->forms['datepicker'];
+            $this->jsContent .= 'jelix_datepicker_'.$config."(c, jFormsJQ.config);\n";
+        }
+
+        if ($this->isRootControl) $this->jsContent .="jFormsJQ.tForm.addControl(c);\n";
     }
 
     protected function outputInput($ctrl, &$attr) {
@@ -737,7 +776,15 @@ class htmlbootstrapFormBuilder extends \jelix\forms\Builder\HtmlBuilder {
 
     protected function jsMenulist($ctrl) {
 
-        $this->jsContent .="c = new ".$this->jFormsJsVarName."ControlString('".$ctrl->ref."', ".$this->escJsStr($ctrl->label).");\n";
+        $this->jsContent .="c = new jFormsJQControlString('".$ctrl->ref."', ".$this->escJsStr($ctrl->label).");\n";
+        if ($ctrl instanceof jFormsControlDatasource
+            && $ctrl->datasource instanceof jFormsDaoDatasource) {
+            $dependentControls = $ctrl->datasource->getDependentControls();
+            if ($dependentControls) {
+                $this->jsContent .="c.dependencies = ['".implode("','",$dependentControls)."'];\n";
+                $this->lastJsContent .= "jFormsJQ.tForm.declareDynamicFill('".$ctrl->ref."');\n";
+            }
+        }
 
         $this->commonJs($ctrl);
     }
@@ -839,7 +886,9 @@ class htmlbootstrapFormBuilder extends \jelix\forms\Builder\HtmlBuilder {
     }
 
     protected function jsWikieditor($ctrl) {
-
+        $this->jsTextarea($ctrl);
+        $engine = jApp::config()->wikieditors[$ctrl->config.'.engine.name'];
+        $this->jsContent .= '$("#'.$this->_name.'_'.$ctrl->ref.'").markItUp(markitup_'.$engine.'_settings);'."\n";
     }
 
     protected function outputSecret($ctrl, &$attr) {

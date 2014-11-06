@@ -1,10 +1,18 @@
 <div style="width:30px; height:30px; position:relative;">
     <ul class="nav nav-list">
+      {assign $onlyMaps=False}
+      {foreach $dockable as $dock}
+        {if $dock->id == 'home'}
+          {assign $onlyMaps=True}
+        {/if}
+      {/foreach}
+      {if !$onlyMaps}
       <li class="home">
         <a href="{jurl 'view~default:index'}" rel="tooltip" data-original-title="{@view~default.repository.list.title@}" data-placement="right">
           <span class="icon"></span>
         </a>
       </li>
+      {/if}
       <!--li class="switcher nav-dock">
         <a id="button-switcher" rel="tooltip" data-original-title="{@view~map.layers@}" data-placement="right" href="#switcher">
           <span class="icon"></span>

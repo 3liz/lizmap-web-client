@@ -24,6 +24,8 @@ class lizmapServices{
       'cacheStorageType',
       'cacheExpiration',
       'defaultRepository',
+      'defaultProject',
+      'onlyMaps',
       'proxyMethod',
       'debugMode',
       'cacheRootDirectory',
@@ -38,6 +40,10 @@ class lizmapServices{
     public $cacheStorageType = '';
     // default repository
     public $defaultRepository = '';
+    // default project in default repository
+    public $defaultProject = '';
+    // display all project in maps
+    public $allInMap = '';
     // proxy method : use curl or file_get_contents
     public $proxyMethod = '';
     // debug mode : none or log

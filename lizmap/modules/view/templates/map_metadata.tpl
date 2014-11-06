@@ -23,9 +23,9 @@
         <p>
           <dl class="dl-horizontal">
             <dt>{@view~map.metadata.properties.projection@}</dt>
-            <dd><small>{$ProjectCrs}&nbsp;</small></dd>
+            <dd><small class="proj">{$ProjectCrs}&nbsp;</small></dd>
             <dt>{@view~map.metadata.properties.extent@}</dt>
-            <dd><small>{$WMSExtent}</small></dd>
+            <dd><small class="bbox">{$WMSExtent}</small></dd>
           </dl>
         </p>
       </div>

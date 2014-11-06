@@ -38,6 +38,7 @@ class lizMapCtrl extends jController {
     $lser = lizmap::getServices();
     if ( !$repository ){
       $lrep = lizmap::getRepository($lser->defaultRepository);
+      $repository = $lser->defaultRepository;
     } else {
       $lrep = lizmap::getRepository($repository);
     }
@@ -51,8 +52,12 @@ class lizMapCtrl extends jController {
 
     // We must redirect to default repository project list if no project given
     if(!$project){
-      jMessage::add('The parameter project is mandatory !', 'error');
-      $ok = false;
+      $lproj = lizmap::getProject($lrep->getKey().'~'.$lser->defaultProject);
+      if (!$lproj) {
+        jMessage::add('The parameter project is mandatory !', 'error');
+        $ok = false;
+      } else
+        $project = $lser->defaultProject;
     }
 
     // Get lizmapProject class
@@ -151,6 +156,7 @@ class lizMapCtrl extends jController {
       'repositoryLabel'=>$lrep->getData('label'),
       'repository'=>$lrep->getKey(),
       'project'=>$project,
+      'onlyMaps'=>$lser->onlyMaps
     ), $wmsInfo);
 
 

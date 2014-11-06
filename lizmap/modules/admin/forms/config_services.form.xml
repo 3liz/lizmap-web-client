@@ -9,6 +9,22 @@
   <label locale="admin~admin.form.admin_services.wmsPublicUrlList.label"/>
 </input>
 
+<menulist ref="onlyMaps" required="true">
+  <label locale="admin~admin.form.admin_services.onlyMaps.label"/>
+  <item value="0" selected="true">off</item>
+  <item value="1">on</item>
+</menulist>
+
+<menulist ref="defaultRepository" required="true">
+  <label locale="admin~admin.form.admin_services.defaultRepository.label"/>
+  <datasource class="admin~listRepositoryDatasource" />
+</menulist>
+
+<menulist ref="defaultProject">
+  <label locale="admin~admin.form.admin_services.defaultRepository.label"/>
+  <datasource class="admin~listProjectDatasource" />
+</menulist>
+
 <menulist ref="cacheStorageType" required="true">
   <label locale="admin~admin.form.admin_services.cacheStorageType.label"/>
   <item value="sqlite" selected="true" locale="admin~admin.form.admin_services.cacheStorageType.sqlite.label"/>

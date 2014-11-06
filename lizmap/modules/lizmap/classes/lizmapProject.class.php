@@ -600,6 +600,16 @@ class lizmapProject{
     public function getDefaultDockable() {
         jClasses::inc('view~lizmapMapDockItem');
         $dockable = array();
+            
+        // Get lizmap services
+        $services = lizmap::getServices();
+        
+        // only maps
+        if($services->onlyMaps) {
+            $projectsTpl = new jTpl();
+            $dockable[] = new lizmapMapDockItem('home', jLocale::get('view~default.repository.list.title'), $projectsTpl->fetch('view~map_projects'), 0);
+        }
+        
         $switcherTpl = new jTpl();
         $dockable[] = new lizmapMapDockItem('switcher', jLocale::get('view~map.switchermenu.title'), $switcherTpl->fetch('view~map_switcher'), 1);
         //$legendTpl = new jTpl();
