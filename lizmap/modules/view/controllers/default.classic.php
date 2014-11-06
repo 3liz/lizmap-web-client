@@ -31,7 +31,7 @@ class defaultCtrl extends jController {
     // only maps
     if($services->onlyMaps) {
       $repository = lizmap::getRepository($services->defaultRepository);
-      if ($repository && jacl2::check('lizmap.repositories.view', $repository->getKey())) {
+      if ($repository && jAcl2::check('lizmap.repositories.view', $repository->getKey())) {
         $project = lizmap::getProject($repository->getKey().'~'.$services->defaultProject);
         if ($project) {
           $rep = $this->getResponse('redirect');
