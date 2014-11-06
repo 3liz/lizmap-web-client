@@ -31,7 +31,9 @@ class main_viewZone extends jZone {
         } else {
           $repositories = lizmap::getRepositoryList();
         }
-
+        
+        // Get excluded project
+        $excludedProject = $this->param('excludedProject');
         foreach ($repositories as $r) {
           if(jacl2::check('lizmap.repositories.view', $r)){
             $lrep = lizmap::getRepository($r);
@@ -55,19 +57,20 @@ class main_viewZone extends jZone {
               if ( $wmsGetCapabilitiesUrl ) {
                 $wmsGetCapabilitiesUrl = $p->getData('wmsGetCapabilitiesUrl');
               }
-              $mrep->childItems[] = new lizmapMainViewItem(
-                $p->getData('id'),
-                $p->getData('title'),
-                $p->getData('abstract'),
-                $p->getData('proj'),
-                $p->getData('bbox'),
-                jUrl::get('view~map:index', array("repository"=>$p->getData('repository'),"project"=>$p->getData('id'))),
-                jUrl::get('view~media:illustration', array("repository"=>$p->getData('repository'),"project"=>$p->getData('id'))),
-                0,
-                $r,
-                'map',
-                $wmsGetCapabilitiesUrl
-              );
+              if ( $lrep->getKey().'~'.$p->getData('id') != $excludedProject )
+                $mrep->childItems[] = new lizmapMainViewItem(
+                  $p->getData('id'),
+                  $p->getData('title'),
+                  $p->getData('abstract'),
+                  $p->getData('proj'),
+                  $p->getData('bbox'),
+                  jUrl::get('view~map:index', array("repository"=>$p->getData('repository'),"project"=>$p->getData('id'))),
+                  jUrl::get('view~media:illustration', array("repository"=>$p->getData('repository'),"project"=>$p->getData('id'))),
+                  0,
+                  $r,
+                  'map',
+                  $wmsGetCapabilitiesUrl
+                );
             }
             if ( count($mrep->childItems) != 0 ) {
               usort($mrep->childItems, "mainViewItemSort");
@@ -80,6 +83,8 @@ class main_viewZone extends jZone {
 
         foreach ($items as $item) {
             if($item->parentId) {
+                if ( $item->parentId().'~'.$item->id == $excludedProject )
+                  continue;
                 if(!isset($maps[$item->parentId])) {
                   $maps[$item->parentId] = new lizmapMainViewItem($item->parentId, '', '');
                 }

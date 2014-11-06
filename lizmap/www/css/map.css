@@ -242,6 +242,7 @@ Timemanager
 #displayMetadata {
   cursor:pointer;
 }
+#content .project-list,
 #metadata {
   display:none;
   position:absolute;

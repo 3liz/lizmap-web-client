@@ -3338,6 +3338,34 @@ var lizMap = function() {
     return true;
   }
 
+  /**
+   * PRIVATE function: loadProjDefinition
+   * load CRS definition and activate it
+   *
+   * Parameters:
+   * aCRS - {String}
+   * aCallbalck - {function ( proj )}
+   *
+   */
+  function loadProjDefinition( aCRS, aCallback ) {
+    var proj = aCRS.replace(/^\s+|\s+$/g, ''); // trim();
+    if ( proj in Proj4js.defs ) {
+      aCallback( proj );
+    } else {
+      $.get( OpenLayers.Util.urlAppend(
+          lizUrls.wms
+          ,OpenLayers.Util.getParameterString(lizUrls.params)
+        ), {
+          'REQUEST':'GetProj4'
+         ,'authid': proj
+        }, function ( aText ) {
+          Proj4js.defs[proj] = aText;
+          new OpenLayers.Projection(proj);
+          aCallback( proj );
+        }
+      );
+    }
+  }
 
   /**
    * PRIVATE function: mCheckMobile
@@ -3458,6 +3486,14 @@ var lizMap = function() {
     updateSwitcherSize: function() {
       return updateSwitcherSize();
     },
+
+    /**
+     * Method: transformBounds
+     */
+    loadProjDefinition: function( aCRS, aCallback ) {
+      return loadProjDefinition( aCRS, aCallback );
+    },
+    
     /**
      * Method: init
      */
@@ -3527,7 +3563,22 @@ var lizMap = function() {
           var hrefParam = OpenLayers.Util.getParameters(window.location.href);
           if (!map.getCenter()) {
             if (hrefParam.bbox) {
-              map.zoomToExtent(OpenLayers.Bounds.fromArray(hrefParam.bbox));
+                var hrefBbox = OpenLayers.Bounds.fromArray(hrefParam.bbox);
+                if( map.restrictedExtent.containsBounds( hrefBbox ) )
+                  map.zoomToExtent( hrefBbox );
+                else {
+                  var projBbox = $('#metadata .bbox').text();
+                  projBbox = OpenLayers.Bounds.fromString(projBbox);
+                  if( projBbox.containsBounds( hrefBbox ) ) {
+                      var projProj = $('#metadata .proj').text();
+                      loadProjDefinition( projProj, function( aProj ) {
+                          hrefBbox.transform( aProj, map.getProjection() );
+                          map.zoomToExtent( hrefBbox );
+                      });
+                  } else {
+                    map.zoomToExtent(map.initialExtent);
+                  }
+                }
             } else {
               map.zoomToExtent(map.initialExtent);
             }
