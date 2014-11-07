@@ -1166,6 +1166,13 @@ table.attribute-table-table tr td{
   width:auto;
 }
 
+#edition-modal .controls select.jforms-ctrl-date {
+  padding:0px;
+}
+#edition-modal .controls input.jforms-ctrl-date[size="4"] {
+  max-width:35px;
+}
+
 @media (max-height: 500px) {
   .modal.fade.in {
     top:30px;

@@ -78,8 +78,14 @@ class htmlbootstrapJformsBuilder extends jFormsBuilderHtml {
         if($resp === null || $resp->getType() !='html'){
             return;
         }
-        $www =jApp::config()->urlengine['jelixWWWPath'];
-        $bp =jApp::config()->urlengine['basePath'];
+        $confUrlEngine = &jApp::config()->urlengine;
+        $confHtmlEditor = &jApp::config()->htmleditors;
+        $confDate = &jApp::config()->datepickers;
+        $confWikiEditor = &jApp::config()->wikieditors;
+        $www = $confUrlEngine['jelixWWWPath'];
+        $jq = $confUrlEngine['jqueryPath'];
+        $bp = $confUrlEngine['basePath'];
+        $resp->addJSLink($jq.'include/jquery.include.js');
         $resp->addJSLink($www.'js/jforms_jquery.js');
         $resp->addCSSLink($www.'design/jform.css');
         foreach($t->_vars as $k=>$v){
