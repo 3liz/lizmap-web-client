@@ -1517,8 +1517,18 @@ table.attribute-table-table tr td{
 
 .lizmapPopup.olPopup .jforms-ctrl-date,
 #map-content .lizmapPopup .jforms-ctrl-date,
+#dock .jforms-ctrl-date,
 #edition-modal .jforms-ctrl-date{
   width:auto;
+}
+
+#dock .controls select.jforms-ctrl-date,
+#edition-modal .controls select.jforms-ctrl-date {
+  padding:0px;
+}
+#dock .controls input.jforms-ctrl-date[size="4"],
+#edition-modal .controls input.jforms-ctrl-date[size="4"] {
+  max-width:35px;
 }
 
 @media (max-height: 500px) {

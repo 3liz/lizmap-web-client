@@ -78,8 +78,14 @@ class htmlbootstrapFormBuilder extends \jelix\forms\Builder\HtmlBuilder {
         if($resp === null || $resp->getType() !='html'){
             return;
         }
-        $www =jApp::config()->urlengine['jelixWWWPath'];
-        $bp =jApp::config()->urlengine['basePath'];
+        $confUrlEngine = &jApp::config()->urlengine;
+        $confHtmlEditor = &jApp::config()->htmleditors;
+        $confDate = &jApp::config()->datepickers;
+        $confWikiEditor = &jApp::config()->wikieditors;
+        $www = $confUrlEngine['jelixWWWPath'];
+        $jq = $confUrlEngine['jqueryPath'];
+        $bp = $confUrlEngine['basePath'];
+        $resp->addJSLink($jq.'include/jquery.include.js');
         $resp->addJSLink($www.'js/jforms_jquery.js');
         $resp->addCSSLink($www.'design/jform.css');
         foreach($t->_vars as $k=>$v){
@@ -398,7 +404,7 @@ jFormsJQ.declareForm(jFormsJQ.tForm);
             echo $this->_endt;
         }
         else{
-            echo '<select style="width:auto;"';
+            echo '<select';
             $this->_outputAttr($attr);
             echo '><option value="">'.htmlspecialchars(jLocale::get('jelix~jforms.date.day.label')).'</option>';
             for($i=1;$i<32;$i++){
@@ -420,7 +426,7 @@ jFormsJQ.declareForm(jFormsJQ.tForm);
         }
         else{
             $monthLabels = jApp::config()->forms['controls.datetime.months.labels'];
-            echo '<select style="width:auto;"';
+            echo '<select';
             $this->_outputAttr($attr);
             echo '><option value="">'.htmlspecialchars(jLocale::get('jelix~jforms.date.month.label')).'</option>';
             for($i=1;$i<13;$i++){
@@ -442,7 +448,7 @@ jFormsJQ.declareForm(jFormsJQ.tForm);
         $attr['id'] .= 'year';
         if(jApp::config()->forms['controls.datetime.input'] == 'textboxes') {
             $attr['value'] = $value;
-            echo '<input style="width:auto; max-width:35px;" type="text" size="4" maxlength="4"';
+            echo '<input type="text" size="4" maxlength="4"';
             $this->_outputAttr($attr);
             echo $this->_endt;
         }
@@ -450,7 +456,7 @@ jFormsJQ.declareForm(jFormsJQ.tForm);
             $minDate = $ctrl->datatype->getFacet('minValue');
             $maxDate = $ctrl->datatype->getFacet('maxValue');
             if($minDate && $maxDate){
-                echo '<select style="width:auto;"';
+                echo '<select';
                 $this->_outputAttr($attr);
                 echo '><option value="">'.htmlspecialchars(jLocale::get('jelix~jforms.date.year.label')).'</option>';
                 for($i=$minDate->year;$i<=$maxDate->year;$i++)
@@ -459,7 +465,7 @@ jFormsJQ.declareForm(jFormsJQ.tForm);
             }
             else{
                 $attr['value'] = $value;
-                echo '<input style="width:auto; max-width:35px;" type="text" size="4" maxlength="4"';
+                echo '<input type="text" size="4" maxlength="4"';
                 $this->_outputAttr($attr);
                 echo $this->_endt;
             }

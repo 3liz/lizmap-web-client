@@ -101,7 +101,7 @@ class lizMapCtrl extends jController {
 
     // Add the jForms js
     $bp = jApp::config()->urlengine['basePath'];
-    $rep->addJSLink($bp.'jelix/js/jforms_light.js');
+    $rep->addJSLink($bp.'jelix/js/jforms_jquery.js');
     $rep->addJSLink($bp.'js/bootstrapErrorDecoratorHtml.js');
 
     // Add attributeTable js

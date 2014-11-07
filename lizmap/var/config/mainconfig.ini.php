@@ -195,7 +195,8 @@ start=1
 ; define input type for datetime widgets : "textboxes" or "menulists"
 controls.datetime.input=menulists
 ; define the way month labels are displayed widgets: "numbers", "names" or "shortnames"
-controls.datetime.months.labels=names
+; controls.datetime.months.labels=names
+controls.datetime.months.labels=numbers
 ; define the default config for datepickers in jforms
 datepicker=default
 
