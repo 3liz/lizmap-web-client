@@ -96,7 +96,7 @@ class mapCtrl extends jController {
 
     // Add the jForms js
     $bp = jApp::config()->urlengine['basePath'];
-    $rep->addJSLink($bp.'jelix/js/jforms_light.js');
+    $rep->addJSLink($bp.'jelix/js/jforms_jquery.js');
     $rep->addJSLink($bp.'js/bootstrapErrorDecoratorHtml.js');
 
     // Pass some configuration options to the web page through javascript var
