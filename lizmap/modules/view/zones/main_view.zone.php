@@ -18,6 +18,8 @@ class main_viewZone extends jZone {
         $this->_tpl->assign('protocol', $protocol);
         $domain = jApp::coord()->request->getDomainName();
         $this->_tpl->assign('domain', $domain);
+        
+        $this->_tpl->assign('isConnected', jAuth::isConnected());
 
         jClasses::inc('lizmapMainViewItem');
         $maps = array();
