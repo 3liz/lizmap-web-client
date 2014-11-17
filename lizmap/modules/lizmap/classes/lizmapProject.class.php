@@ -413,7 +413,7 @@ class lizmapProject{
             // >= 2.6
             $cMapOverviews = $cMap->xpath('ComposerMapOverview');
             foreach($cMapOverviews as $cMapOverview){
-              if ( $cMapOverview ){
+              if ( $cMapOverview and (string)$cMapOverview->attributes()->frameMap != '-1' ){
                 $ptMap['overviewMap'] = 'map' . (string)$cMapOverview->attributes()->frameMap;
               }
             }
