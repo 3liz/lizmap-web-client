@@ -314,6 +314,12 @@ var lizMap = function() {
     var service = OpenLayers.Util.urlAppend(lizUrls.wms
         ,OpenLayers.Util.getParameterString(lizUrls.params)
     );
+    if ( lizUrls.publicUrlList && lizUrls.publicUrlList.length > 1 ) {
+        service = OpenLayers.Util.urlAppend(
+              lizUrls.publicUrlList[Math.floor(Math.random()*lizUrls.publicUrlList.length)],
+              OpenLayers.Util.getParameterString(lizUrls.params)
+          );
+    }
     return OpenLayers.Util.urlAppend(service, legendParamsString);
   }
 
@@ -1001,6 +1007,11 @@ var lizMap = function() {
     var service = OpenLayers.Util.urlAppend(lizUrls.wms
         ,OpenLayers.Util.getParameterString(lizUrls.params)
     );
+    if ( lizUrls.publicUrlList && lizUrls.publicUrlList.length > 1 )
+      service = OpenLayers.Util.urlAppend(
+              lizUrls.publicUrlList[Math.floor(Math.random()*lizUrls.publicUrlList.length)],
+              OpenLayers.Util.getParameterString(lizUrls.params)
+            );
     $.get(service
         ,wfsOptions
         ,function(data) {
@@ -1454,7 +1465,12 @@ var lizMap = function() {
       }));
       var service = OpenLayers.Util.urlAppend(lizUrls.wms
           ,OpenLayers.Util.getParameterString(lizUrls.params)
-      );
+      );          
+      if ( lizUrls.publicUrlList && lizUrls.publicUrlList.length > 1 )
+          service = OpenLayers.Util.urlAppend(
+                  lizUrls.publicUrlList[Math.floor(Math.random()*lizUrls.publicUrlList.length)],
+                  OpenLayers.Util.getParameterString(lizUrls.params)
+                );
       $.get(service, {
           'SERVICE':'WFS'
          ,'VERSION':'1.0.0'
@@ -1551,6 +1567,16 @@ var lizMap = function() {
     var service = OpenLayers.Util.urlAppend(lizUrls.wms
         ,OpenLayers.Util.getParameterString(lizUrls.params)
     );
+    if ( lizUrls.publicUrlList && lizUrls.publicUrlList.length > 1 ) {
+      service = [];
+      for (var j=0, jlen = lizUrls.publicUrlList.length; j<jlen; j++) {
+        service.push( OpenLayers.Util.urlAppend(
+              lizUrls.publicUrlList[j],
+              OpenLayers.Util.getParameterString(lizUrls.params)
+            )
+        );
+      }
+    }
     var ovLayer = new OpenLayers.Layer.WMS('overview'
         ,service
         ,{
@@ -3305,7 +3331,6 @@ var lizMap = function() {
     return true;
   }
 
-
   /**
    * PRIVATE function: mCheckMobile
    * Check wether in mobile context.
@@ -3439,6 +3464,12 @@ var lizMap = function() {
         var service = OpenLayers.Util.urlAppend(lizUrls.wms
           ,OpenLayers.Util.getParameterString(lizUrls.params)
         );
+        if ( lizUrls.publicUrlList && lizUrls.publicUrlList.length > 1 ) {
+            service = OpenLayers.Util.urlAppend(
+                  lizUrls.publicUrlList[Math.floor(Math.random()*lizUrls.publicUrlList.length)],
+                  OpenLayers.Util.getParameterString(lizUrls.params)
+              );
+        }
         $.get(service
           ,{SERVICE:'WMS',REQUEST:'GetCapabilities',VERSION:'1.3.0'}
           ,function(data) {
