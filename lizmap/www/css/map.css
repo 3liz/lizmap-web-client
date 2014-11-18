@@ -282,7 +282,7 @@ body {
   bottom:10px;
   /*max-width:30%;
   max-height:90%;*/
-  z-index:1040;
+  z-index:1000;
   overflow:auto;
   /*background-color: #F0F0F0;*/
   background-color:#4A4A4A;
@@ -342,7 +342,7 @@ ul.nav.nav-tabs {
   top:10px;
   max-width:30%;
   max-height:50%;
-  z-index:1030;
+  z-index:1010;
   overflow:auto;
   /*background-color: #F0F0F0;*/
 }
@@ -1383,10 +1383,19 @@ table.attribute-table-table tr td{
 }
 
 #message {
-  top : 0;
-  left : 0;
+  bottom : 0;
+  left : 50%;
   position : absolute;
   z-index : 1000;
+}
+#message.span6 {
+  margin-left:-285px;
+}
+#message .alert {
+  margin-bottom: 0px;
+}
+#message .alert-error {
+  color: #555;
 }
 .alert-info {
   background-color : #3a3c3d;
