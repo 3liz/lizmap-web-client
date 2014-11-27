@@ -59,7 +59,7 @@ class main_viewZone extends jZone {
               if ( $wmsGetCapabilitiesUrl ) {
                 $wmsGetCapabilitiesUrl = $p->getData('wmsGetCapabilitiesUrl');
               }
-              if ( $lrep->getKey().'~'.$p->getData('id') != $excludedProject )
+              if ( $lrep->getKey().'~'.$p->getData('id') != $excludedProject ) {
                 $mrep->childItems[] = new lizmapMainViewItem(
                   $p->getData('id'),
                   $p->getData('title'),
@@ -73,6 +73,14 @@ class main_viewZone extends jZone {
                   'map',
                   $wmsGetCapabilitiesUrl
                 );
+              } else {
+                $this->_tpl->assign('auth_url_return', jUrl::get('view~map:index',
+                  array(
+                    "repository"=>$lrep->getKey(),
+                    "project"=>$p->getData('id'),
+                  )
+                ) );
+              }
             }
             if ( count($mrep->childItems) != 0 ) {
               usort($mrep->childItems, "mainViewItemSort");
@@ -85,7 +93,7 @@ class main_viewZone extends jZone {
 
         foreach ($items as $item) {
             if($item->parentId) {
-                if ( $item->parentId().'~'.$item->id == $excludedProject )
+                if ( $item->parentId.'~'.$item->id == $excludedProject )
                   continue;
                 if(!isset($maps[$item->parentId])) {
                   $maps[$item->parentId] = new lizmapMainViewItem($item->parentId, '', '');
