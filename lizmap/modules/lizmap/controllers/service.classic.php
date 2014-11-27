@@ -517,11 +517,17 @@ class serviceCtrl extends jController {
 
     foreach($xml->Layer as $layer){
       $layername = $layer['name'];
+      $configLayer = $this->project->findLayerByName( $layername );
+      // since 2.6 layer's name can be layer's title
+      if ( $configLayer == null )
+        $configLayer = $this->project->findLayerByTitle( $layername );
+      if ( $configLayer == null )
+        continue;
 
       // Avoid layer if no popup asked by the user for it
       // or if no popup property
-      if(property_exists($configLayers->$layername, 'popup')){
-        if($configLayers->$layername->popup != 'True'){
+      if(property_exists($configLayer, 'popup')){
+        if($configLayer->popup != 'True'){
           continue;
         }
       }
@@ -530,13 +536,13 @@ class serviceCtrl extends jController {
       }
 
       // Get layer title
-      $layerTitle = $configLayers->$layername->title;
+      $layerTitle = $configLayer->title;
 
       // Get the template for the popup content
       $templateConfigured = False;
-      if(property_exists($configLayers->$layername, 'popupTemplate')){
+      if(property_exists($configLayer, 'popupTemplate')){
         // Get template content
-        $popupTemplate = (string)trim($configLayers->$layername->popupTemplate);
+        $popupTemplate = (string)trim($configLayer->popupTemplate);
         // Use it if not empty
         if(!empty($popupTemplate)){
           $templateConfigured = True;
