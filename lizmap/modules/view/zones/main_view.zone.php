@@ -20,6 +20,11 @@ class main_viewZone extends jZone {
         $this->_tpl->assign('domain', $domain);
         
         $this->_tpl->assign('isConnected', jAuth::isConnected());
+        
+        // Get lizmap services
+        $services = lizmap::getServices();
+        if($services->allowUserAccountRequests)
+          $this->_tpl->assign('allowUserAccountRequests', True);
 
         jClasses::inc('lizmapMainViewItem');
         $maps = array();
