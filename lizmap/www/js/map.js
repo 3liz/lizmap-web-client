@@ -3564,6 +3564,8 @@ var lizMap = function() {
           if (!map.getCenter()) {
             if (hrefParam.bbox) {
                 var hrefBbox = OpenLayers.Bounds.fromArray(hrefParam.bbox);
+                if ( hrefParam.crs && hrefParam.crs != map.getProjection() )
+                  hrefBbox.transform( hrefParam.crs, map.getProjection() )
                 if( map.restrictedExtent.containsBounds( hrefBbox ) )
                   map.zoomToExtent( hrefBbox );
                 else {
