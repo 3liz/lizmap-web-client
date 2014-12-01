@@ -87,7 +87,7 @@ class lizmapCache {
       $matches = array();
       $info = $url . ' --> PHP: ';
       foreach ($http_response_header as $header){
-        if (preg_match( '#Content-Type:\s+([\w/+]+)(;\s+charset=(\S+))?#i', $header, $matches )){
+        if (preg_match( '#^Content-Type:\s+([\w/\.+]+)(;\s+charset=(\S+))?#i', $header, $matches )){
           $mime = $matches[1];
         }
         // optional debug
