@@ -112,7 +112,7 @@ class main_viewZone extends jZone {
                 }
                 if( !$replaced ) {
                   $maps[$item->parentId]->childItems[] = $item;
-		  usort($maps[$item->parentId]->childItems, "mainViewItemSort");
+                  usort($maps[$item->parentId]->childItems, "mainViewItemSort");
                 }
             }
             else {
@@ -120,7 +120,7 @@ class main_viewZone extends jZone {
                   $maps[$item->id]->copyFrom($item);
                 }
                 else {
-                    $maps[$item->id] = $item;
+                  $maps[$item->id] = $item;
                 }
             }
         }
