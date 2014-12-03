@@ -271,7 +271,7 @@ jFormsJQ.declareForm(jFormsJQ.tForm);
         $idLabel = ' id="'.$id.'_label"';
         if($ctrl->type == 'output' || $ctrl->type == 'checkboxes' || $ctrl->type == 'radiobuttons' || $ctrl->type == 'date' || $ctrl->type == 'datetime' || $ctrl->type == 'choice'){
             echo '<label class="jforms-label control-label',$required,$inError,'"',$idLabel,$hint,'>',htmlspecialchars($ctrl->label),$reqhtml,"</label>\n";
-        }else if($ctrl->type != 'submit' && $ctrl->type != 'reset'){
+        }else if($ctrl->type != 'submit' && $ctrl->type != 'reset' && $ctrl->type != 'checkbox'){
             echo '<label class="jforms-label control-label',$required,$inError,'" for="',$id,'"',$idLabel,$hint,'>',htmlspecialchars($ctrl->label),$reqhtml,"</label>\n";
         }
     }
@@ -622,6 +622,14 @@ jFormsJQ.declareForm(jFormsJQ.tForm);
     }
 
     protected function outputCheckbox($ctrl, &$attr) {
+        $required = ($ctrl->required == false || $ctrl->isReadOnly()?'':' jforms-required');
+        $reqhtml = ($required?'<span class="jforms-required-star">*</span>':'');
+        $inError = (isset($this->_form->getContainer()->errors[$ctrl->ref]) ?' jforms-error':'');
+        $hint = ($ctrl->hint == ''?'':' title="'.htmlspecialchars($ctrl->hint).'"');
+        $id = $this->_name.'_'.$ctrl->ref;
+        $idLabel = ' id="'.$id.'_label"';
+        echo '<label class="jforms-label checkbox',$required,$inError,'" for="',$id,'"',$idLabel,$hint,'>';
+        
         $value = $this->_form->getData($ctrl->ref);
 
         if($ctrl->valueOnCheck == $value){
@@ -632,6 +640,8 @@ jFormsJQ.declareForm(jFormsJQ.tForm);
         echo '<input';
         $this->_outputAttr($attr);
         echo $this->_endt;
+        
+        echo htmlspecialchars($ctrl->label),$reqhtml,"</label>\n";
     }
 
     protected function jsCheckbox($ctrl) {

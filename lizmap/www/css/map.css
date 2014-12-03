@@ -549,6 +549,12 @@ div.modal .form-horizontal .controls {
   margin-right: 10px;
 }
 
+#dock .form-horizontal .controls label.checkbox,
+div.modal .form-horizontal .controls label.checkbox {
+  max-width: 200px;
+  margin-bottom: 0px;
+}
+
 #dock div.form-actions,
 div.modal .form-actions {
   margin-bottom: 0px;
