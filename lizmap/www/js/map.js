@@ -3561,15 +3561,21 @@ var lizMap = function() {
           */
           var verifyingVisibility = true;
           var hrefParam = OpenLayers.Util.getParameters(window.location.href);
-          if (!map.getCenter()) {
-            if (hrefParam.bbox) {
-                var hrefBbox = OpenLayers.Bounds.fromArray(hrefParam.bbox);
+          if ( !map.getCenter() ) {
+            if ( hrefParam.bbox || hrefParam.BBOX ) {
+                var hrefBbox = null;
+                if ( hrefParam.bbox )
+                  hrefBbox = OpenLayers.Bounds.fromArray( hrefParam.bbox );
+                if ( hrefParam.BBOX )
+                  hrefBbox = OpenLayers.Bounds.fromArray( hrefParam.BBOX );
+                  
                 if ( hrefParam.crs && hrefParam.crs != map.getProjection() )
                   hrefBbox.transform( hrefParam.crs, map.getProjection() )
                 if ( hrefParam.CRS && hrefParam.CRS != map.getProjection() )
                   hrefBbox.transform( hrefParam.CRS, map.getProjection() )
+                  
                 if( map.restrictedExtent.containsBounds( hrefBbox ) )
-                  map.zoomToExtent( hrefBbox );
+                  map.zoomToExtent( hrefBbox, true );
                 else {
                   var projBbox = $('#metadata .bbox').text();
                   projBbox = OpenLayers.Bounds.fromString(projBbox);
