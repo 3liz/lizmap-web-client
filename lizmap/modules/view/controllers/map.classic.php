@@ -197,6 +197,110 @@ class mapCtrl extends jController {
         }
       }
     }
+
+    // optionnally hide some tools
+    // header
+    $jsCode = ''; $headerMenuCss = '';
+    $h = $this->intParam('h',1);
+    if(
+      $h == 0  or
+      (
+        property_exists($pOptions,'hideHeader')
+        && $pOptions->hideHeader == 'True'
+      )
+    ){
+      $h = 0;
+      $headerMenuCss.= 'top:0px !important;';
+      $jsCode.="
+      $( document ).ready( function() {
+        lizMap.events.on({
+          'uicreated':function(evt){
+            lizMap.updateContentSize();
+          }
+        });
+      });
+      ";
+    }
+    $assign['displayHeader'] = $h;
+
+    // header menu = green menu with icons
+    $hm = $this->intParam('hm', 1);
+    if(
+      $hm == 0  or
+      (
+        property_exists($pOptions,'hideMenu')
+        && $pOptions->hideMenu == 'True'
+      )
+    ){
+      $hm = 0;
+      $headerMenuCss.= 'display:none !important; height:0px;';
+      $jsCode.= "
+      $( document ).ready( function() {
+        lizMap.events.on({
+          'uicreated':function(evt){
+            lizMap.updateContentSize();
+          }
+        });
+      });
+      ";
+    }
+    $assign['displayHeaderMenu'] = $hm;
+
+    // menu = left panel
+    $l = $this->intParam('l', 1);
+    if(
+      $l == 0  or
+      (
+        property_exists($pOptions,'hideLegend')
+        && $pOptions->hideLegend == 'True'
+      )
+    ){
+      $l = 0;
+      $rep->addStyle('#menu', 'display:none;');
+      $jsCode.= "
+      $( document ).ready( function() {
+
+        lizMap.events.on({
+          'uicreated':function(evt){
+            $('#close-menu .ui-icon-close-menu').click();
+          }
+
+        });
+      });
+      ";
+    }
+
+    // navbar
+    $n = $this->intParam('n', 1);
+    if(
+      $n == 0  or
+      (
+        property_exists($pOptions,'hideNavbar')
+        && $pOptions->hideNavbar == 'True'
+      )
+    ){
+      $rep->addStyle('#navbar', 'display:none !important;');
+    }
+
+    // overview-box = scale & overview
+    $o = $this->intParam('o', 1);
+    if(
+      $o == 0  or
+      (
+        property_exists($pOptions,'hideOverview')
+        && $pOptions->hideOverview == 'True'
+      )
+    ){
+      $rep->addStyle('#overview-box', 'display:none !important;');
+    }
+
+    // Apply interface modifications
+    if( $headerMenuCss != '' )
+      $rep->addStyle('#headermenu', $headerMenuCss);
+    if( $jsCode != '')
+      $rep->addJSCode($jsCode);
+
+
     $rep->body->assign($assign);
 
     // Log

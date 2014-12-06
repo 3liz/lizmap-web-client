@@ -1,3 +1,4 @@
+{if $displayHeader > 0}
 <div id="header">
   <div id="logo">
     <h1>{$repositoryLabel}</h1>
@@ -12,13 +13,16 @@
     </h1>
   </div>
 </div>
+{/if}
+
 
 <div id="headermenu" class="navbar navbar-fixed-top">
   <div id="auth" class="navbar-inner">
     {zone 'view~map_headermenu', array('repository'=>$repository,'project'=>$project)}
   </div>
-
 </div>
+
+
 
 <div id="content">
 
