@@ -300,6 +300,15 @@ class mapCtrl extends jController {
     if( $jsCode != '')
       $rep->addJSCode($jsCode);
 
+    // Hide groups checkboxes
+    $hideGroupCheckbox = '';
+    if( property_exists($pOptions,'hideGroupCheckbox')
+        && $pOptions->hideGroupCheckbox == 'True'
+    ) {
+      $hideGroupCheckbox = 'hideGroupCheckbox';
+    }
+    $assign['hideGroupCheckbox'] = $hideGroupCheckbox;
+
 
     $rep->body->assign($assign);
 

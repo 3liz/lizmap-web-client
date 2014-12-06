@@ -38,7 +38,7 @@
     <div id="switcher-menu" class="switcher">
       <h3><span class="title"><span class="icon"></span>&nbsp;<span class="text">{@view~map.switchermenu.title@}</span></span></h3>
       <div class="menu-content">
-        <div id="switcher"></div>
+        <div id="switcher" class="{$hideGroupCheckbox}"></div>
       </div>
     </div>
     <div id="baselayer-menu" class="baselayer">

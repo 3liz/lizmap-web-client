@@ -1563,6 +1563,10 @@ var lizMap = function() {
     }
 
     $('#switcher span.label').tooltip();
+
+    if( $('#switcher').hasClass('hideGroupCheckbox') ) {
+      $('#switcher button[name="group"]').hide();
+    }
   }
 
   /**
