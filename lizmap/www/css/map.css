@@ -335,6 +335,15 @@ ul.nav.nav-tabs {
   display:block; /* show only active tab titles */
 }
 
+.dock-title{
+    padding:5px;
+    color:#FBFBFB;
+    font-weight:bold;
+    font-size:1em;
+    line-height:1.3;
+    border-bottom: 1px dashed #F0F0F0;
+}
+
 /* Dock */
 #mini-dock {
   position:absolute;
@@ -464,12 +473,14 @@ Timemanager
 #menu h3,
 #dock h3,
 #mini-dock h3,
-div.modal h3
+div.modal h3,
+.dock-subtitle
 {
   margin : 0px;
 /*
   background: #2B2B2B;
 */
+  background: none;
   color : #FBFBFB;
   line-height : 1.3;
 /*
@@ -515,10 +526,13 @@ div.modal div.menu-content {
 }
 
 #dock div.menu-content,
-div.modal div.menu-content {
+div.modal div.menu-content,
+.dock-content {
   background-color: #F0F0F0;
   font-size: 12px;
+  overflow:auto;
 }
+
 
 #dock form,
 div.modal form {
@@ -526,7 +540,7 @@ div.modal form {
 }
 
 #dock legend,
-div.modal legend { 
+div.modal legend {
   margin-bottom: 5px;
   margin-top: 5px;
   font-size: 14px;
