@@ -323,6 +323,7 @@ class jImageModifier {
             case 'image/jpeg' : imagejpeg($image, $targetPath.$targetName, $quality); break;
             default           : imagepng($image, $targetPath.$targetName);
         }
+        chmod($targetPath.$targetName, jApp::config()->chmodFile);
 
         // Destruction
         @imagedestroy($image);

@@ -32,15 +32,16 @@
  */
 function jtpl_modifier_common_datetime($date, $format_out = 'lang_datetime', $format_in='') {
     if (!($date instanceof DateTime)) {
-        if ($date == '' || $date == "0000/00/00")
+        if ($date == '' || $date == "0000/00/00") {
             return '';
+        }
         if ($format_in) {
             $date = date_create_from_format($format_in, $date);
         }
         else {
             $date = new DateTime($date);
         }
-        if(!$date)
+        if (!$date) {
             return '';
         }
     }

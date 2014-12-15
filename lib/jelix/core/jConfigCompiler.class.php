@@ -95,7 +95,7 @@ class jConfigCompiler {
 
         $config = self::read($configFile, false, $isCli, $pseudoScriptName);
         $tempPath = jApp::tempPath();
-        jFile::createDir($tempPath);
+        jFile::createDir($tempPath, $config->chmodDir);
         $filename = $tempPath.str_replace('/','~',$configFile);
 
         if(BYTECODE_CACHE_EXISTS){
@@ -103,11 +103,12 @@ class jConfigCompiler {
             if ($f = @fopen($filename, 'wb')) {
                 fwrite($f, '<?php $config = '.var_export(get_object_vars($config),true).";\n?>");
                 fclose($f);
+                chmod($f, $config->chmodFile);
             } else {
                 throw new Exception('Error while writing configuration cache file -- '.$filename);
             }
         }else{
-            jIniFile::write(get_object_vars($config), $filename.'.resultini.php', ";<?php die('');?>\n");
+            jIniFile::write(get_object_vars($config), $filename.'.resultini.php', ";<?php die('');?>\n", '', $config->chmodFile);
         }
         return $config;
     }
@@ -145,6 +146,9 @@ class jConfigCompiler {
 
         if ($config->urlengine['engine'] == 'simple')
             trigger_error("The 'simple' url engine is deprecated. use 'basic_significant' or 'significant' url engine", E_USER_NOTICE);
+
+        $config->chmodFile = octdec($config->chmodFile);
+        $config->chmodDir = octdec($config->chmodDir);
     }
 
     static protected function checkCoordPluginsPath($config) {

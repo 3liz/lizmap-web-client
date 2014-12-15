@@ -111,6 +111,15 @@ class jIncluder {
         if(!$compiler || !$compiler->compile($aSelector)){
             throw new jException('jelix~errors.includer.source.compile',array( $aSelector->toString(true)));
         }
+        // Because we did a require few lines ago, a second
+        // require load the file content from the opcode cache
+        // if it is existing. So we must invalidate the file.
+        if (function_exists('opcache_invalidate')) {
+            opcache_invalidate ( $cachefile, true );
+        }
+        else if (function_exists('apc_delete_file')) {
+            apc_delete_file($cachefile);
+        }
         require($cachefile);
         jIncluder::$_includedFiles[$cachefile]=true;
     }
@@ -159,6 +168,15 @@ class jIncluder {
 
             if($compileok){
                 $compiler->endCompile($cachefile);
+               // the require may load the file content from the
+               // opcode cache if it is existing.
+               // So we must invalidate the file.
+                if (function_exists('opcache_invalidate')) {
+                   opcache_invalidate ( $cachefile, true );
+                }
+                else if (function_exists('apc_delete_file')) {
+                   apc_delete_file($cachefile);
+                }
                 require($cachefile);
                 jIncluder::$_includedFiles[$cachefile]=true;
             }

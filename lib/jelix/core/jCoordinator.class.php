@@ -165,12 +165,17 @@ class jCoordinator {
             if ($request)
                 $this->setRequest($request);
 
+            jSession::start();
+
             $ctrl = $this->getController($this->action);
         }
         catch (jException $e) {
             $config = jApp::config();
             if ($config->urlengine['notfoundAct'] =='') {
                 throw $e;
+            }
+            if (!jSession::isStarted()) {
+                jSession::start();
             }
             try {
                 $this->action = new jSelectorAct($config->urlengine['notfoundAct']);
@@ -180,7 +185,6 @@ class jCoordinator {
                 throw $e;
             }
         }
-        jSession::start();
 
         jApp::pushCurrentModule ($this->moduleName);
 

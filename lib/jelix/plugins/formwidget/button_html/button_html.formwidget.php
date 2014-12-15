@@ -18,6 +18,7 @@
  */
 
 class button_htmlFormWidget extends \jelix\forms\HtmlWidget\WidgetBase {
+
     function outputControl() {
         $attr = $this->getControlAttributes();
         

@@ -90,6 +90,16 @@ class jSession {
         return true;
     }
 
+    public static function isStarted() {
+        if (php_sapi_name() !== 'cli') {
+            if (version_compare(phpversion(), '5.4.0', '>=') ) {
+                return (session_status() === PHP_SESSION_ACTIVE);
+            } else {
+                return session_id() === '' ? false : true;
+            }
+        }
+        return false;
+    }
 
     protected static function _getDao(){
         if(isset(self::$_params['dao_db_profile']) && self::$_params['dao_db_profile']){

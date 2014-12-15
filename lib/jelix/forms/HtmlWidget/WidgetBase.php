@@ -41,10 +41,13 @@ abstract class WidgetBase implements WidgetInterface {
 
     protected $valuesSeparator = ' ';
 
+    protected $_endt = '/>';
+
     public function __construct($args) {
         $this->ctrl = $args[0];
         $this->builder = $args[1];
         $this->parentWidget = $args[2];
+        $this->_endt = $this->builder->endOfTag();
     }
     
     /**
@@ -148,6 +151,7 @@ abstract class WidgetBase implements WidgetInterface {
 
     protected function commonJs() {
         $jsContent = '';
+
         if ($this->ctrl->isReadOnly()) {
             $jsContent .="c.readOnly = true;\n";
         }
@@ -169,8 +173,9 @@ abstract class WidgetBase implements WidgetInterface {
             $jsContent .= "c.errInvalid=".$this->escJsStr(\jLocale::get('jelix~formserr.js.err.invalid', $this->ctrl->label)).";\n";
         }
 
-        if (!$this->parentWidget->controlJsChild())
+        if (!$this->parentWidget->controlJsChild()) {
             $jsContent .= $this->builder->getJFormsJsVarName().".tForm.addControl(c);\n";
+        }
 
         $this->parentWidget->addJs($jsContent);
     }
@@ -211,17 +216,29 @@ abstract class WidgetBase implements WidgetInterface {
         else
             $label = $this->ctrl->label;
 
-        if($ctrl->type == 'output' || $ctrl->type == 'checkboxes' || $ctrl->type == 'radiobuttons' || $ctrl->type == 'date' || $ctrl->type == 'datetime' || $ctrl->type == 'choice'){
-            echo '<span class="',$attr['class'],'"',$attr['idLabel'],$attr['hint'],'>';
-            echo htmlspecialchars($label), $attr['reqHtml'];
-            echo "</span>\n";
-        }else if($ctrl->type != 'submit' && $ctrl->type != 'reset'){
-            echo '<label class="',$attr['class'],'" for="',$this->getId(),'"',$attr['idLabel'],$attr['hint'],'>';
-            echo htmlspecialchars($label), $attr['reqHtml'];
-            echo "</label>\n";
+        if ($ctrl->type == 'output' || $ctrl->type == 'checkboxes' ||
+            $ctrl->type == 'radiobuttons' || $ctrl->type == 'date' ||
+            $ctrl->type == 'datetime' || $ctrl->type == 'choice'){
+            $this->outputLabelAsTitle($label, $attr);
+        }
+        else if($ctrl->type != 'submit' && $ctrl->type != 'reset'){
+            $this->outputLabelAsFormLabel($label, $attr);
         }
     }
 
+    protected function outputLabelAsFormLabel($label, $attr) {
+        echo '<label class="',$attr['class'],'" for="',$this->getId(),'"',$attr['idLabel'],$attr['hint'],'>';
+        echo htmlspecialchars($label), $attr['reqHtml'];
+        echo "</label>\n";
+    }
+
+    protected function outputLabelAsTitle($label, $attr) {
+        echo '<span class="',$attr['class'],'"',$attr['idLabel'],$attr['hint'],'>';
+        echo htmlspecialchars($label), $attr['reqHtml'];
+        echo "</span>\n";
+    }
+    
+    
     // if this method is abstract, fatal error with PHP 5.3.3 (debian squeeze)
     // FIXME PHP54 : this function can be abstracted
     public function outputControl(){}

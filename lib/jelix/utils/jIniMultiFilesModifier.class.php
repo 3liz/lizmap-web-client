@@ -89,9 +89,9 @@ class jIniMultiFilesModifier {
     /**
      * save the ini files
      */
-    public function save() {
-        $this->master->save();
-        $this->overrider->save();
+    public function save($chmod=null) {
+        $this->master->save($chmod);
+        $this->overrider->save($chmod);
     }
 
     /**

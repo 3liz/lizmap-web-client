@@ -34,7 +34,7 @@ class jPrefManager{
         self::$_ini->setValue('write_acl_subject', $pref->write_acl_subject, $section);
         self::$_ini->setValue('default_value', $pref->default_value, $section);
         
-        self::$_ini->save();
+        self::$_ini->save(jApp::config()->chmodFile);
         
         if($pref->value !== null){
             jPref::set($pref->id, $pref->value);
@@ -57,7 +57,7 @@ class jPrefManager{
         self::$_ini->setValue('locale', $grp->locale, $section);
         self::$_ini->setValue('order', $grp->order, $section);
         
-        self::$_ini->save();
+        self::$_ini->save(jApp::config()->chmodFile);
     }
     
     

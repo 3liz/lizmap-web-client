@@ -27,6 +27,8 @@ abstract class jFormsControlGroups extends jFormsControl {
     function check(){
         $rv = null;
         foreach($this->childControls as $ctrl) {
+            if (!$ctrl->isActivated())
+                    continue;
             if(($rv2 = $ctrl->check())!==null) {
                 $rv = $rv2;
             }

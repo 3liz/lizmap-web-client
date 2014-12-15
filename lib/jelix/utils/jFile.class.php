@@ -40,7 +40,7 @@ class jFile {
     * @copyright  2001-2005 CopixTeam
     * @link http://www.copix.org
     */
-    public static function write ($file, $data){
+    public static function write ($file, $data, $chmod=null){
         $_dirname = dirname($file);
 
         //asking to create the directory structure if needed.
@@ -74,7 +74,12 @@ class jFile {
             unlink($file);
         }
         rename($_tmp_file, $file);
-        @chmod($file,  0664);
+        if ($chmod) {
+            chmod($file, $chmod);
+        }
+        else {
+            chmod($file, jApp::config()->chmodFile);
+        }
 
         return true;
     }
@@ -84,12 +89,12 @@ class jFile {
     * It creates also all necessary parent directory
     * @param string $dir the path of the directory
     */
-    public static function createDir ($dir){
+    public static function createDir ($dir, $chmod=null){
         // recursive feature on mkdir() is broken with PHP 5.0.4 for Windows
         // so should do own recursion
         if (!file_exists($dir)) {
-            self::createDir(dirname($dir));
-            mkdir($dir, 0775);
+            self::createDir(dirname($dir), $chmod);
+            mkdir($dir, ($chmod?$chmod:jApp::config()->chmodDir));
         }
     }
 

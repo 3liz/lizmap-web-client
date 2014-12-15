@@ -127,8 +127,7 @@ plugins = debugbar
 ; available loggers : file, syslog, firebug, mail, memory. see plugins for others
 
 ; _all category is the category containing loggers executed for any categories
-; /!\ remove the memory logger if you don't use the debugbar
-_all = memory
+_all =
 
 ; default category is the category used when a given category is not declared here
 default=file

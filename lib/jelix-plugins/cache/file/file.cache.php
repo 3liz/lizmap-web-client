@@ -125,6 +125,9 @@ class fileCacheDriver implements jICacheDriver {
         if (isset($params['directory_umask']) && is_string($params['directory_umask']) && $params['directory_umask']!='') {
             $this->_directory_umask = octdec($params['directory_umask']);
         }
+        else {
+            $this->_directory_umask = jApp::config()->chmodDir;
+        }
 
         if (isset($params['file_name_prefix'])) {
             $this->_file_name_prefix = $params['file_name_prefix'];
@@ -133,7 +136,9 @@ class fileCacheDriver implements jICacheDriver {
         if (isset($params['cache_file_umask']) && is_string($params['cache_file_umask']) && $params['cache_file_umask']!='') {
             $this->_cache_file_umask = octdec($params['cache_file_umask']);
         }
-
+        else {
+            $this->_cache_file_umask = jApp::config()->chmodFile;
+        }
     }
 
     /**

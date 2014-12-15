@@ -72,6 +72,8 @@ abstract class BuilderBase {
     
     public function getForm(){ return $this->_form; }
 
+    public function endOfTag() { return $this->_endt; }
+
     /**
      * set options
      * @param array $options associative array

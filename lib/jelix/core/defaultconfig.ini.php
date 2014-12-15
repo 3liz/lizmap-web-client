@@ -44,6 +44,9 @@ fallbackLocale =
 forceHTTPPort =
 forceHTTPSPort =
 
+; chmod for files created by Jelix
+chmodFile=0664
+chmodDir=0775
 
 ; ---  don't set the following options to on, except if you know what you do
 
@@ -375,11 +378,13 @@ default.engine.name = wymeditor
 default.engine.file[] = jelix/jquery/jquery.js
 default.engine.file[] = jelix/wymeditor/jquery.wymeditor.js
 default.config = jelix/js/jforms/htmleditors/wymeditor_default.js
+default.skin.default = jelix/wymeditor/skins/default/skin.css
 
 wymbasic.engine.name = wymeditor
 wymbasic.engine.file[] = jelix/jquery/jquery.js
 wymbasic.engine.file[] = jelix/wymeditor/jquery.wymeditor.js
 wymbasic.config = jelix/js/jforms/htmleditors/wymeditor_basic.js
+wymbasic.skin.default = jelix/wymeditor/skins/default/skin.css
 
 ckdefault.engine.name = ckeditor
 ckdefault.engine.file[] = jelix/ckeditor/ckeditor.js

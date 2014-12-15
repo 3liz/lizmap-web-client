@@ -45,7 +45,11 @@ class jFormsCompiler_jf_1_1 extends jFormsCompiler_jf_1_0 {
 
     protected function generateCheckbox(&$source, $control, &$attributes) {
         $ret = parent::generateCheckbox($source, $control, $attributes);
+        $this->readOnCheckValue($source, $control);
+        return $ret;
+    }
 
+    protected function readOnCheckValue(&$source, $control) {
         if(isset($control->oncheckvalue)){
             $check = $control->oncheckvalue;
             if(isset($check['locale'])) {
@@ -68,7 +72,6 @@ class jFormsCompiler_jf_1_1 extends jFormsCompiler_jf_1_0 {
                 $source[]='$ctrl->valueOnUncheck=\''.str_replace("'","\\'", $check['value']) ."';";
             }
         }
-        return $ret;
     }
 
     protected function generateMenulist(&$source, $control, &$attributes) {
@@ -244,8 +247,31 @@ class jFormsCompiler_jf_1_1 extends jFormsCompiler_jf_1_0 {
     protected function generateGroup(&$source, $control, &$attributes) {
         $this->readLabel($source, $control, 'group');
         $this->attrReadOnly($source, $attributes);
+        $hasCheckbox = false;
+        if(isset($attributes['withcheckbox'])){
+            if('true' == $attributes['withcheckbox']) {
+                $hasCheckbox = true;
+                $source[]='$ctrl->hasCheckbox=true;';
+            }
+            unset($attributes['withcheckbox']);
+        }
+        if (!$hasCheckbox) {
+            $tagtoIgnore = array('label');
+            if(isset($control->oncheckvalue)) {
+                throw new jException('jelix~formserr.control.not.allowed',array('oncheckvalue', 'group' , $this->sourceFile));
+            }
+            if(isset($control->onuncheckvalue)) {
+                throw new jException('jelix~formserr.control.not.allowed',array('onuncheckvalue', 'group' , $this->sourceFile));
+            }
+        }
+        else {
+            $tagtoIgnore = array('label', 'oncheckvalue', 'onuncheckvalue');
+            $this->readOnCheckValue($source, $control);
+            $this->attrDefaultvalue($source, $attributes);
+        }
+
         $source[]='$topctrl = $ctrl;';
-        $ctrlcount = $this->readChildControls($source, 'group', $control, array('label'));
+        $ctrlcount = $this->readChildControls($source, 'group', $control, $tagtoIgnore);
         /*if ($ctrlcount == 0) {
              throw new jException('jelix~formserr.no.child.control',array('group',$this->sourceFile));
         }*/

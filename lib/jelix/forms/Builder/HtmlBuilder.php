@@ -235,7 +235,7 @@ class HtmlBuilder extends BuilderBase {
     }
 
     public function outputControlLabel($ctrl, $format='', $editMode=true){
-        if($ctrl->type == 'hidden' || $ctrl->type == 'group' || $ctrl->type == 'button') return;
+        if($ctrl->type == 'hidden' || $ctrl->type == 'button') return;
         $widget = $this->getWidget($ctrl, $this->rootWidget);
         $widget->outputLabel($format, $editMode);
     }

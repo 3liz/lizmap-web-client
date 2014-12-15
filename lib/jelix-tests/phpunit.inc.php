@@ -40,9 +40,7 @@ if (strpos('/usr/bin/php', '@php_bin') === 0) {
     set_include_path(__DIR__ . PATH_SEPARATOR . get_include_path());
 }
 
-require_once 'PHPUnit/Autoload.php';
-
-if (version_compare(PHPUnit_Runner_Version::id(), '3.6')==-1) {
+if (version_compare(PHPUnit_Runner_Version::id(), '3.6', '<')) {
 
     if (extension_loaded('xdebug')) {
         xdebug_disable();

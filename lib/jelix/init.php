@@ -16,7 +16,7 @@
  * Version number of Jelix
  * @name  JELIX_VERSION
  */
-define ('JELIX_VERSION', '1.6.0');
+define ('JELIX_VERSION', '1.6.2');
 
 /**
  * base of namespace path used in xml files of jelix
@@ -30,7 +30,7 @@ define ('JELIX_LIB_UTILS_PATH',   JELIX_LIB_PATH.'utils/');
 define ('LIB_PATH',               dirname(JELIX_LIB_PATH).'/');
 
 
-define ('BYTECODE_CACHE_EXISTS', function_exists('apc_cache_info') || function_exists('eaccelerator_info') || function_exists('xcache_info'));
+define ('BYTECODE_CACHE_EXISTS', function_exists('opcache_compile_file') || function_exists('apc_cache_info') || function_exists('eaccelerator_info') || function_exists('xcache_info'));
 
 error_reporting (E_ALL | E_STRICT);
 
@@ -77,7 +77,7 @@ require (JELIX_LIB_CORE_PATH . 'jSession.class.php');
  * @name $gLibPath
  * @see __autoload()
  */
-$gLibPath=array('Db'=>JELIX_LIB_PATH.'db/', 'Dao'=>JELIX_LIB_PATH.'dao/',
+$GLOBALS['gLibPath']=array('Db'=>JELIX_LIB_PATH.'db/', 'Dao'=>JELIX_LIB_PATH.'dao/',
  'Forms'=>JELIX_LIB_PATH.'forms/', 'Event'=>JELIX_LIB_PATH.'events/',
  'Tpl'=>JELIX_LIB_PATH.'tpl/', 'Controller'=>JELIX_LIB_PATH.'controllers/',
  'Auth'=>JELIX_LIB_PATH.'auth/', 'Installer'=>JELIX_LIB_PATH.'installer/',
