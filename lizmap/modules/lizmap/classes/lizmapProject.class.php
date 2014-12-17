@@ -612,4 +612,20 @@ class lizmapProject{
       }
       return null;
     }
+
+    public function findLayersByKeyword( $key ){
+      $xmlLayers = $this->xml->xpath( "//maplayer/keywordList[value='$key']/parent::*" );
+      $layers = array();
+      if( $xmlLayers ) {
+        jClasses::inc('lizmap~qgisMapLayer');
+        jClasses::inc('lizmap~qgisVectorLayer');
+        foreach( $xmlLayers as $xmlLayer ) {
+          if( $xmlLayer->attributes()->type == 'vector' )
+            $layers[] = new qgisVectorLayer( $this, $xmlLayer );
+          else
+            $layers[] = new qgisMapLayer( $this, $xmlLayer );
+        }
+      }
+      return $layers;
+    }
 }
