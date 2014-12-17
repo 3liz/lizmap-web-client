@@ -3595,7 +3595,7 @@ var lizMap = function() {
                       var projProj = $('#metadata .proj').text();
                       loadProjDefinition( projProj, function( aProj ) {
                           hrefBbox.transform( aProj, map.getProjection() );
-                          map.zoomToExtent( hrefBbox );
+                          map.zoomToExtent( hrefBbox, true );
                       });
                   } else {
                     map.zoomToExtent(map.initialExtent);
