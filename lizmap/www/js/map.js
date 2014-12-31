@@ -1898,14 +1898,6 @@ var lizMap = function() {
   }
 
   function getPrintScale( aScales ) {
-<<<<<<< HEAD
-	  var scale = map.getScale();
-	  var scaleIdx = aScales.indexOf( scale );
-	  if ( scaleIdx == -1 ) {
-		var s=0, slen=aScales.length;
-		while ( scaleIdx == -1 && s<slen ) {
-			if ( scale > aScales[s] )
-=======
       var newScales = [];
       for ( var i=0, len = aScales.length; i<len; i++ ) {
           newScales.push( parseFloat(aScales[i]) );
