@@ -1935,40 +1935,81 @@ var lizMap = function() {
   }
 
   function getPrintScale( aScales ) {
-    var scale = map.getScale();
-    var scaleIdx = aScales.indexOf( scale );
-    if ( scaleIdx == -1 ) {
-    var s=0, slen=aScales.length;
-    while ( scaleIdx == -1 && s<slen ) {
-      if ( scale > aScales[s] )
-        scaleIdx = s;
-      else
-       s++;
-    }
-    if( s == slen ) {
-      scale = aScales[slen-1];
-    } else {
-      scale = aScales[scaleIdx];
-    }
-    }
-    return scale;
+      var newScales = [];
+      for ( var i=0, len = aScales.length; i<len; i++ ) {
+          newScales.push( parseFloat(aScales[i]) );
+      }
+      newScales.sort(function(a,b){return b-a;});
+	  var scale = map.getScale();
+	  var scaleIdx = newScales.indexOf( scale );
+	  if ( scaleIdx == -1 ) {
+		var s=0, slen=newScales.length;
+		while ( scaleIdx == -1 && s<slen ) {
+			if ( scale > newScales[s] )
+			  scaleIdx = s;
+			else
+			 s++;
+		}
+		if( s == slen ) {
+		  scale = newScales[slen-1];
+		} else {
+		  scale = newScales[scaleIdx];
+		}
+	  }
+	  return scale;
   }
 
   function drawPrintBox( aLayout, aLayer, aScale ) {
-    var center = map.getCenter();
-    var size = aLayout.size;
-    var units = map.getUnits();
-    var unitsRatio = OpenLayers.INCHES_PER_UNIT[units];
-    var w = size.width / 72 / unitsRatio * aScale / 2;
-    var h = size.height / 72 / unitsRatio * aScale / 2;
-    var bounds = new OpenLayers.Bounds(center.lon - w, center.lat - h,
-    center.lon + w, center.lat + h);
-    var geom = bounds.toGeometry();
-    var feat = aLayer.features[0];
-    geom.id = feat.geometry.id;
-    feat.geometry = geom;
-      aLayer.drawFeature(feat);
-    return true;
+	  var size = aLayout.size;
+	  var units = map.getUnits();
+	  var unitsRatio = OpenLayers.INCHES_PER_UNIT[units];
+	  var w = size.width / 72 / unitsRatio * aScale / 2;
+	  var h = size.height / 72 / unitsRatio * aScale / 2;
+      if ( aLayer.features.length == 0 ) {
+          var center = map.getCenter();
+          var bounds = new OpenLayers.Bounds(center.lon - w, center.lat - h,
+            center.lon + w, center.lat + h);
+          var geom = bounds.toGeometry();
+          aLayer.addFeatures([
+              new OpenLayers.Feature.Vector( geom )
+          ]);
+      } else {
+          var feat = aLayer.features[0];
+          var center = feat.geometry.getBounds().getCenterLonLat();
+          var bounds = new OpenLayers.Bounds(center.lon - w, center.lat - h,
+            center.lon + w, center.lat + h);
+          var geom = bounds.toGeometry();
+          geom.id = feat.geometry.id;
+          feat.geometry = geom;
+          aLayer.drawFeature(feat);
+      }
+	  return true;
+  }
+  
+  function getPrintGridInterval( aLayout, aScale, aScales ) {
+	  var size = aLayout.size;
+	  var units = map.getUnits();
+	  var unitsRatio = OpenLayers.INCHES_PER_UNIT[units];
+	  var w = size.width / 72 / unitsRatio * aScale;
+	  var h = size.height / 72 / unitsRatio * aScale;
+      
+      var refScale = w > h ? w : h;
+      var newScales = [];
+      for ( var i=0, len = aScales.length; i<len; i++ ) {
+          newScales.push( parseFloat(aScales[i]) );
+      }
+      newScales.sort(function(a,b){return b-a;});
+      var theScale = newScales[0];
+      console.log( 'theScale: '+theScale );
+      for ( var i=0, len=newScales.length; i<len; i++ ) {
+          var s = newScales[i];
+          console.log( 's: '+s );
+          if ( s > refScale )
+            theScale = s;
+          if ( s < refScale )
+            break;
+      }
+      return theScale/10;
   }
 
   function addPrintControl() {
@@ -2073,19 +2114,6 @@ var lizMap = function() {
       layer.setVisibility(false);
     } else
       layer = layer[0];
-    if ( layer.features.length == 0 )
-      layer.addFeatures([
-          new OpenLayers.Feature.Vector(
-            new OpenLayers.Geometry.Polygon([
-              new OpenLayers.Geometry.LinearRing([
-                new OpenLayers.Geometry.Point(-1, -1),
-                  new OpenLayers.Geometry.Point(1, -1),
-                  new OpenLayers.Geometry.Point(1, 1),
-                  new OpenLayers.Geometry.Point(-1, 1)
-              ])
-          ])
-        )
-      ]);
 
     // creating print menu
     for( var i=0, len= printCapabilities.layouts.length; i<len; i++ ){
@@ -2118,7 +2146,7 @@ var lizMap = function() {
           updateSwitcherSize();
           mAddMessage(lizDict['print.activate'],'info',true).addClass('print');
           layer.setVisibility(true);
-          evt.object.clickFeature(feat);
+          evt.object.clickFeature(layer.features[0]);
         },
         "deactivate": function(evt) {
           layer.setVisibility(false);
@@ -2127,6 +2155,7 @@ var lizMap = function() {
           updateSwitcherSize();
           $('#message .print').remove();
           this.layout = null;
+          layer.destroyFeatures();
         }
       }
     });
@@ -2197,7 +2226,11 @@ var lizMap = function() {
       url += '&TEMPLATE='+pTemplate.title;
       url += '&'+dragCtrl.layout.mapId+':extent='+extent;
       //url += '&'+dragCtrl.layout.mapId+':rotation=0';
-      url += '&'+dragCtrl.layout.mapId+':scale='+$('#print-menu select.btn-print-scales').val();
+      var scale = $('#print-menu select.btn-print-scales').val();
+      url += '&'+dragCtrl.layout.mapId+':scale='+scale;
+      var gridInterval = getPrintGridInterval( dragCtrl.layout, parseFloat(scale), printCapabilities.scales );
+      url += '&'+dragCtrl.layout.mapId+':grid_interval_x='+gridInterval;
+      url += '&'+dragCtrl.layout.mapId+':grid_interval_y='+gridInterval;
       var printLayers = [];
       $.each(map.layers, function(i, l) {
         if (l.getVisibility() && l.CLASS_NAME == "OpenLayers.Layer.WMS")
