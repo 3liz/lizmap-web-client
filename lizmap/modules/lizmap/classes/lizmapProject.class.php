@@ -170,6 +170,22 @@ class lizmapProject{
     public function getLayers(){
       return $this->cfg->layers;
     }
+    
+    public function findLayerByName( $name ){
+      if ( property_exists($this->cfg->layers, $name ) )
+        return $this->cfg->layers->$name;
+      return null;
+    }
+    
+    public function findLayerByTitle( $title ){
+      foreach ( $this->cfg->layers as $layer ) {
+          if ( !property_exists( $layer, 'title' ) )
+            continue;
+          if ( $layer->title == $title )
+            return $layer;
+      }
+      return null;
+    }
 
     public function hasLocateByLayer(){
       if ( property_exists($this->cfg,'locateByLayer') ){
@@ -426,7 +442,7 @@ class lizmapProject{
             // >= 2.6
             $cMapOverviews = $cMap->xpath('ComposerMapOverview');
             foreach($cMapOverviews as $cMapOverview){
-              if ( $cMapOverview ){
+              if ( $cMapOverview and (string)$cMapOverview->attributes()->frameMap != '-1' ){
                 $ptMap['overviewMap'] = 'map' . (string)$cMapOverview->attributes()->frameMap;
               }
             }
@@ -588,6 +604,7 @@ class lizmapProject{
       if( $xmlLayer ) {
         $xmlLayer = $xmlLayer[0];
         jClasses::inc('lizmap~qgisMapLayer');
+
         jClasses::inc('lizmap~qgisVectorLayer');
         if( $xmlLayer->attributes()->type == 'vector' )
           return new qgisVectorLayer( $this, $xmlLayer );
@@ -596,25 +613,41 @@ class lizmapProject{
       }
       return null;
     }
-    
+
+    public function findLayersByKeyword( $key ){
+      $xmlLayers = $this->xml->xpath( "//maplayer/keywordList[value='$key']/parent::*" );
+      $layers = array();
+      if( $xmlLayers ) {
+        jClasses::inc('lizmap~qgisMapLayer');
+        jClasses::inc('lizmap~qgisVectorLayer');
+        foreach( $xmlLayers as $xmlLayer ) {
+          if( $xmlLayer->attributes()->type == 'vector' )
+            $layers[] = new qgisVectorLayer( $this, $xmlLayer );
+          else
+            $layers[] = new qgisMapLayer( $this, $xmlLayer );
+        }
+      }
+      return $layers;
+    }
+
     public function getDefaultDockable() {
         jClasses::inc('view~lizmapMapDockItem');
         $dockable = array();
-            
+
         // Get lizmap services
         $services = lizmap::getServices();
-        
+
         // only maps
         if($services->onlyMaps) {
             $projectsTpl = new jTpl();
             $dockable[] = new lizmapMapDockItem('home', jLocale::get('view~default.repository.list.title'), $projectsTpl->fetch('view~map_projects'), 0);
         }
-        
+
         $switcherTpl = new jTpl();
         $dockable[] = new lizmapMapDockItem('switcher', jLocale::get('view~map.switchermenu.title'), $switcherTpl->fetch('view~map_switcher'), 1);
         //$legendTpl = new jTpl();
         //$dockable[] = new lizmapMapDockItem('legend', 'Légende', $switcherTpl->fetch('map_legend'), 2);
-        
+
         $metadataTpl = new jTpl();
         // Get the WMS information
         $wmsInfo = $this->getWMSInformation();
@@ -633,49 +666,49 @@ class lizmapProject{
           'wmsGetCapabilitiesUrl' => $wmsGetCapabilitiesUrl
         ), $wmsInfo));
         $dockable[] = new lizmapMapDockItem('metadata', jLocale::get('view~map.metadata.link.label'), $metadataTpl->fetch('view~map_metadata'), 2);
-        
+
         return $dockable;
     }
-    
+
     public function getDefaultMiniDockable() {
         jClasses::inc('view~lizmapMapDockItem');
         $dockable = array();
         $configOptions = $this->getOptions();
-        
+
         if ( $this->hasLocateByLayer() ) {
           $tpl = new jTpl();
           $dockable[] = new lizmapMapDockItem('locate', jLocale::get('view~map.locatemenu.title'), $tpl->fetch('view~map_locate'), 1);
         }
-        
+
         if ( property_exists($configOptions,'geolocation')
           && $configOptions->geolocation == 'True') {
           $tpl = new jTpl();
           $dockable[] = new lizmapMapDockItem('geolocation', jLocale::get('view~map.geolocate.navbar.title'), $tpl->fetch('view~map_geolocation'),2);
         }
-        
+
         if ( property_exists($configOptions,'print')
           && $configOptions->print == 'True') {
           $tpl = new jTpl();
           $dockable[] = new lizmapMapDockItem('print', jLocale::get('view~map.print.navbar.title'), $tpl->fetch('view~map_print'),3);
         }
-        
+
         if ( property_exists($configOptions,'measure')
           && $configOptions->measure == 'True') {
           $tpl = new jTpl();
           $dockable[] = new lizmapMapDockItem('measure', jLocale::get('view~map.measure.navbar.title'), $tpl->fetch('view~map_measure'),4);
         }
-        
-        
+
         if ( $this->hasEditionLayers() ) {
           $tpl = new jTpl();
           $dockable[] = new lizmapMapDockItem('edition', jLocale::get('view~edition.navbar.title'), $tpl->fetch('view~map_edition'),5);
         }
-        
+
         if ( $this->hasTimemanagerLayers() ) {
           $tpl = new jTpl();
           $dockable[] = new lizmapMapDockItem('timemanager', jLocale::get('view~map.timemanager.navbar.title'), $tpl->fetch('view~map_timemanager'),6);
         }
-        
+
         return $dockable;
     }
+
 }

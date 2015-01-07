@@ -1,3 +1,4 @@
+{if $displayHeader > 0}
 <div id="header">
   <div id="logo">
   </div>
@@ -15,6 +16,7 @@
     {zone 'view~map_headermenu', array('repository'=>$repository,'project'=>$project)}
   </div>
 </div>
+{/if}
 
 <div id="content">
 

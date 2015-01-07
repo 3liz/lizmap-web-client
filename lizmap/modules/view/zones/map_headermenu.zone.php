@@ -45,5 +45,10 @@ class map_headermenuZone extends jZone {
       $assign['externalSearch'] = $configOptions->externalSearch;
 
     $this->_tpl->assign($assign);
+    
+    // Get lizmap services
+    $services = lizmap::getServices();
+    if($services->allowUserAccountRequests)
+      $this->_tpl->assign('allowUserAccountRequests', True);
    }
 }

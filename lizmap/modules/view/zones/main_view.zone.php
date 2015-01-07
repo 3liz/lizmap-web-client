@@ -18,6 +18,13 @@ class main_viewZone extends jZone {
         $this->_tpl->assign('protocol', $protocol);
         $domain = jApp::coord()->request->getDomainName();
         $this->_tpl->assign('domain', $domain);
+        
+        $this->_tpl->assign('isConnected', jAuth::isConnected());
+        
+        // Get lizmap services
+        $services = lizmap::getServices();
+        if($services->allowUserAccountRequests)
+          $this->_tpl->assign('allowUserAccountRequests', True);
 
         jClasses::inc('lizmapMainViewItem');
         $maps = array();
@@ -57,7 +64,7 @@ class main_viewZone extends jZone {
               if ( $wmsGetCapabilitiesUrl ) {
                 $wmsGetCapabilitiesUrl = $p->getData('wmsGetCapabilitiesUrl');
               }
-              if ( $lrep->getKey().'~'.$p->getData('id') != $excludedProject )
+              if ( $lrep->getKey().'~'.$p->getData('id') != $excludedProject ) {
                 $mrep->childItems[] = new lizmapMainViewItem(
                   $p->getData('id'),
                   $p->getData('title'),
@@ -71,6 +78,14 @@ class main_viewZone extends jZone {
                   'map',
                   $wmsGetCapabilitiesUrl
                 );
+              } else {
+                $this->_tpl->assign('auth_url_return', jUrl::get('view~map:index',
+                  array(
+                    "repository"=>$lrep->getKey(),
+                    "project"=>$p->getData('id'),
+                  )
+                ) );
+              }
             }
             if ( count($mrep->childItems) != 0 ) {
               usort($mrep->childItems, "mainViewItemSort");
@@ -83,7 +98,7 @@ class main_viewZone extends jZone {
 
         foreach ($items as $item) {
             if($item->parentId) {
-                if ( $item->parentId().'~'.$item->id == $excludedProject )
+                if ( $item->parentId.'~'.$item->id == $excludedProject )
                   continue;
                 if(!isset($maps[$item->parentId])) {
                   $maps[$item->parentId] = new lizmapMainViewItem($item->parentId, '', '');
@@ -97,7 +112,7 @@ class main_viewZone extends jZone {
                 }
                 if( !$replaced ) {
                   $maps[$item->parentId]->childItems[] = $item;
-		  usort($maps[$item->parentId]->childItems, "mainViewItemSort");
+                  usort($maps[$item->parentId]->childItems, "mainViewItemSort");
                 }
             }
             else {
@@ -105,7 +120,7 @@ class main_viewZone extends jZone {
                   $maps[$item->id]->copyFrom($item);
                 }
                 else {
-                    $maps[$item->id] = $item;
+                  $maps[$item->id] = $item;
                 }
             }
         }

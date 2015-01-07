@@ -34,9 +34,19 @@ class defaultCtrl extends jController {
       if ($repository && jAcl2::check('lizmap.repositories.view', $repository->getKey())) {
         $project = lizmap::getProject($repository->getKey().'~'.$services->defaultProject);
         if ($project) {
-          $rep = $this->getResponse('redirect');
-          $rep->action = 'view~map:index';
-          return $rep;
+            // test redirection to an other controller
+            $items = jEvent::notify('mainviewGetMaps')->getResponse();
+            foreach ($items as $item) {
+                if($item->parentId == $repository->getKey() && $item->id == $services->defaultProject ) {
+                    $rep = $this->getResponse('redirectUrl');
+                    $rep->url = $item->url;
+                    return $rep;
+                }
+            }
+            // redirection to default controller
+            $rep = $this->getResponse('redirect');
+            $rep->action = 'view~map:index';
+            return $rep;
         }
       }
     }

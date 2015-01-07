@@ -46,6 +46,8 @@ class serviceCtrl extends jController {
       return $this->getCapabilities();
     elseif ($request == "GETCONTEXT")
       return $this->GetContext();
+    elseif ($request == "GETSCHEMAEXTENSION")
+      return $this->GetSchemaExtension();
     elseif ($request == "GETLEGENDGRAPHICS")
       return $this->GetLegendGraphics();
     elseif ($request == "GETLEGENDGRAPHIC")
@@ -266,9 +268,28 @@ class serviceCtrl extends jController {
     $sUrl = str_replace('&', '&amp;', $sUrl);
     $data = preg_replace('/xlink\:href=".*"/', 'xlink:href="'.$sUrl.'&amp;"', $data);
 
-    // Remove no standard elements
+    // Remove no interoparable elements
     $data = preg_replace('@<GetPrint[^>]*?>.*?</GetPrint>@si', '', $data);
     $data = preg_replace('@<ComposerTemplates[^>]*?>.*?</ComposerTemplates>@si', '', $data);
+    
+    if ( preg_match( '@WMS_Capabilities@i', $data) ) {
+        // Update namespace
+        $schemaLocation = "http://www.opengis.net/wms";
+        $schemaLocation .= " http://schemas.opengis.net/wms/1.3.0/capabilities_1_3_0.xsd";
+        $schemaLocation .= " http://www.opengis.net/sld";
+        $schemaLocation .= " http://schemas.opengis.net/sld/1.1.0/sld_capabilities.xsd";
+        $schemaLocation .= " http://www.qgis.org/wms";
+        $schemaLocation .= " ". $sUrl ."SERVICE=WMS&amp;REQUEST=GetSchemaExtension";
+        $data = preg_replace('@xsi:schemaLocation=".*?"@si', 'xsi:schemaLocation="'.$schemaLocation.'"', $data);
+        if ( !preg_match( '@xmlns:qgs@i', $data) ) {
+          $data = preg_replace('@xmlns="http://www.opengis.net/wms"@', 'xmlns="http://www.opengis.net/wms" xmlns:qgs="http://www.qgis.org/wms"', $data);
+          $data = preg_replace('@GetStyles@', 'qgs:GetStyles', $data);
+        }
+        if ( !preg_match( '@xmlns:sld@i', $data) ) {
+          $data = preg_replace('@xmlns="http://www.opengis.net/wms"@', 'xmlns="http://www.opengis.net/wms" xmlns:sld="http://www.opengis.net/sld"', $data);
+          $data = preg_replace('@GetLegendGraphic@', 'sld:GetLegendGraphic', $data);
+        }
+    }
 
     // Return response
     $rep = $this->getResponse('binary');
@@ -284,7 +305,7 @@ class serviceCtrl extends jController {
   * GetContext
   * @param string $repository Lizmap Repository
   * @param string $project Name of the project : mandatory.
-  * @return JSON configuration file for the specified project.
+  * @return text/xml Web Map Context.
   */
   function GetContext(){
 
@@ -323,6 +344,28 @@ class serviceCtrl extends jController {
     $rep->doDownload = false;
     $rep->outputFileName  =  'qgis_server_getContext';
 
+    return $rep;
+  }
+
+  /**
+  * GetSchemaExtension
+  * @param string $SERVICE mandatory, has to be WMS
+  * @param string $REQUEST mandatory, has to be GetSchemaExtension
+  * @return text/xml the WMS GEtCapabilities 1.3.0 Schema Extension.
+  */
+  function GetSchemaExtension(){
+    $data = '<?xml version="1.0" encoding="UTF-8"?>
+<schema xmlns="http://www.w3.org/2001/XMLSchema" xmlns:wms="http://www.opengis.net/wms" xmlns:qgs="http://www.qgis.org/wms" targetNamespace="http://www.qgis.org/wms" elementFormDefault="qualified" version="1.0.0">
+  <import namespace="http://www.opengis.net/wms" schemaLocation="http://schemas.opengis.net/wms/1.3.0/capabilities_1_3_0.xsd"/>
+  <element name="GetPrint" type="wms:OperationType" substitutionGroup="wms:_ExtendedOperation" />
+  <element name="GetStyles" type="wms:OperationType" substitutionGroup="wms:_ExtendedOperation" />
+</schema>';
+    // Return response
+    $rep = $this->getResponse('binary');
+    $rep->mimeType = 'text/xml';
+    $rep->content = $data;
+    $rep->doDownload = false;
+    $rep->outputFileName  =  'qgis_server_schema_extension';
     return $rep;
   }
   
@@ -517,11 +560,17 @@ class serviceCtrl extends jController {
 
     foreach($xml->Layer as $layer){
       $layername = $layer['name'];
+      $configLayer = $this->project->findLayerByName( $layername );
+      // since 2.6 layer's name can be layer's title
+      if ( $configLayer == null )
+        $configLayer = $this->project->findLayerByTitle( $layername );
+      if ( $configLayer == null )
+        continue;
 
       // Avoid layer if no popup asked by the user for it
       // or if no popup property
-      if(property_exists($configLayers->$layername, 'popup')){
-        if($configLayers->$layername->popup != 'True'){
+      if(property_exists($configLayer, 'popup')){
+        if($configLayer->popup != 'True'){
           continue;
         }
       }
@@ -530,13 +579,13 @@ class serviceCtrl extends jController {
       }
 
       // Get layer title
-      $layerTitle = $configLayers->$layername->title;
+      $layerTitle = $configLayer->title;
 
       // Get the template for the popup content
       $templateConfigured = False;
-      if(property_exists($configLayers->$layername, 'popupTemplate')){
+      if(property_exists($configLayer, 'popupTemplate')){
         // Get template content
-        $popupTemplate = (string)trim($configLayers->$layername->popupTemplate);
+        $popupTemplate = (string)trim($configLayer->popupTemplate);
         // Use it if not empty
         if(!empty($popupTemplate)){
           $templateConfigured = True;

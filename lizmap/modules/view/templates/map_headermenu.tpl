@@ -42,6 +42,14 @@
           <span class="text"><b>{@view~default.header.connect@}</b></span>
         </a>
       </li>
+        {if isset($allowUserAccountRequests)}
+        <li class="login">
+          <a href="{jurl 'view~user:createAccount'}">
+            <span class="icon"></span>
+            <span class="text">{@view~default.header.createAccount@}</span>
+          </a>
+        </li>
+        {/if}
       {/if}
     </ul>
   </div>

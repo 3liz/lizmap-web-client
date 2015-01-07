@@ -180,7 +180,6 @@ var lizMap = function() {
       $('#map-content').css('margin-left', $('#menu').width());
     }
     $('#map').width(w);
-
     // Make the dock fill the max height to calculate its max size, then restore to auto height
     $('#dock').css('bottom', '0px');
     //$('#dock-content').height($('#dock').height() - $('#dock .nav-tabs > li').height());
@@ -195,10 +194,6 @@ var lizMap = function() {
     $('#dock-content').css('max-height', $('#dock').height() - $('#dock .nav-tabs > li').height());
 
     $('#dock').css('overflow-y', 'hidden');
-
-
-
-
 
     updateMapSize();
 
@@ -221,8 +216,6 @@ var lizMap = function() {
       $('#navbar .slider').show();
 
     updateSwitcherSize();
-
-
   }
 
   /**
@@ -275,12 +268,14 @@ var lizMap = function() {
 
     // If map if fullscreen, get #menu position : bottom or top
     h -= 2 * (parseInt($('#menu').css('bottom')) ? parseInt($('#menu').css('bottom')) : 0 ) ;
+
 /*
     if($('#map-content').hasClass('fullscreen')){
         $('#switcher').css('max-height', h);
     }
     else
         $('#switcher').height(h);
+
 */
 
   }
@@ -1181,7 +1176,7 @@ var lizMap = function() {
         return;
       });
       $('#locate-layer-'+layerName).combobox({
-        "minLength": ('minLength' in locate) ? locate.minLength : 0,
+		"minLength": ('minLength' in locate) ? locate.minLength : 0,
         "selected": function(evt, ui){
           if ( ui.item ) {
             var self = $(this);
@@ -1687,8 +1682,8 @@ var lizMap = function() {
 
     if (baselayers.length!=0) {
       // active the select element for baselayers
-      $('#switcher-baselayer-select').append(select);
-      $('#switcher-baselayer-select')
+      $('#baselayer-select').append(select);
+      $('#baselayer-select')
         .change(function() {
           var val = $(this).val();
           map.setBaseLayer(map.getLayersByName(val)[0]);
@@ -1696,10 +1691,10 @@ var lizMap = function() {
         });
       // Hide baselayer-menu if only one base layer inside
       if (baselayers.length==1)
-        $('#switcher-baselayer').hide();
+        $('#baselayer-menu').hide();
     } else {
       // hide elements for baselayers
-      $('#switcher-baselayer').hide();
+      $('#baselayer-menu').hide();
       map.addLayer(new OpenLayers.Layer.Vector('baselayer',{
         maxExtent:map.maxExtent
        ,maxScale: map.maxScale
@@ -1854,6 +1849,9 @@ var lizMap = function() {
     }
 
     $('#switcher span.label').tooltip();
+    if( $('#switcher').hasClass('hideGroupCheckbox') ) {
+      $('#switcher button[name="group"]').hide();
+    }
   }
 
   /**
@@ -1894,7 +1892,7 @@ var lizMap = function() {
          mapOptions:{maxExtent:map.maxExtent
                   ,maxResolution:"auto"
                   ,minResolution:"auto"
-                  //mieux calculé le coef 64 pour units == "m" et 8 sinon ???
+        //mieux calculé le coef 64 pour units == "m" et 8 sinon ???
                   //,scales: map.scales == null ? [map.minScale*64] : [Math.max.apply(Math,map.scales)*8]
                   ,scales: [OpenLayers.Util.getScaleFromResolution(res, map.projection.proj.units)]
                   ,projection:map.projection
@@ -2222,42 +2220,83 @@ var lizMap = function() {
   }
 
   function getPrintScale( aScales ) {
-      var scale = map.getScale();
-      var scaleIdx = aScales.indexOf( scale );
-      if ( scaleIdx == -1 ) {
-        var s=0, slen=aScales.length;
-        while ( scaleIdx == -1 && s<slen ) {
-            if ( scale > aScales[s] )
-              scaleIdx = s;
-            else
-             s++;
-        }
-        if( s == slen ) {
-          scale = aScales[slen-1];
-        } else {
-          scale = aScales[scaleIdx];
-        }
+      var newScales = [];
+      for ( var i=0, len = aScales.length; i<len; i++ ) {
+          newScales.push( parseFloat(aScales[i]) );
       }
-      return scale;
+      newScales.sort(function(a,b){return b-a;});
+	  var scale = map.getScale();
+	  var scaleIdx = newScales.indexOf( scale );
+	  if ( scaleIdx == -1 ) {
+		var s=0, slen=newScales.length;
+		while ( scaleIdx == -1 && s<slen ) {
+			if ( scale > newScales[s] )
+			  scaleIdx = s;
+			else
+			 s++;
+		}
+		if( s == slen ) {
+		  scale = newScales[slen-1];
+		} else {
+		  scale = newScales[scaleIdx];
+		}
+	  }
+	  return scale;
   }
 
   function drawPrintBox( aLayout, aLayer, aScale ) {
-      var center = map.getCenter();
-      var size = aLayout.size;
-      var units = map.getUnits();
-      var unitsRatio = OpenLayers.INCHES_PER_UNIT[units];
-      var w = size.width / 72 / unitsRatio * aScale / 2;
-      var h = size.height / 72 / unitsRatio * aScale / 2;
-      var bounds = new OpenLayers.Bounds(center.lon - w, center.lat - h,
-        center.lon + w, center.lat + h);
-      var geom = bounds.toGeometry();
-      var feat = aLayer.features[0];
-      geom.id = feat.geometry.id;
-      feat.geometry = geom;
+	  var center = map.getCenter();
+	  var size = aLayout.size;
+	  var units = map.getUnits();
+	  var unitsRatio = OpenLayers.INCHES_PER_UNIT[units];
+	  var w = size.width / 72 / unitsRatio * aScale / 2;
+	  var h = size.height / 72 / unitsRatio * aScale / 2;
+      if ( aLayer.features.length == 0 ) {
+          var center = map.getCenter();
+	  var bounds = new OpenLayers.Bounds(center.lon - w, center.lat - h,
+		center.lon + w, center.lat + h);
+	  var geom = bounds.toGeometry();
+          aLayer.addFeatures([
+              new OpenLayers.Feature.Vector( geom )
+          ]);
+      } else {
+	  var feat = aLayer.features[0];
+          var center = feat.geometry.getBounds().getCenterLonLat();
+          var bounds = new OpenLayers.Bounds(center.lon - w, center.lat - h,
+            center.lon + w, center.lat + h);
+          var geom = bounds.toGeometry();
+	  geom.id = feat.geometry.id;
+	  feat.geometry = geom;
       aLayer.drawFeature(feat);
-      return true;
+      }
+	  return true;
   }
 
+  function getPrintGridInterval( aLayout, aScale, aScales ) {
+	  var size = aLayout.size;
+	  var units = map.getUnits();
+	  var unitsRatio = OpenLayers.INCHES_PER_UNIT[units];
+	  var w = size.width / 72 / unitsRatio * aScale;
+	  var h = size.height / 72 / unitsRatio * aScale;
+      
+      var refScale = w > h ? w : h;
+      var newScales = [];
+      for ( var i=0, len = aScales.length; i<len; i++ ) {
+          newScales.push( parseFloat(aScales[i]) );
+      }
+      newScales.sort(function(a,b){return b-a;});
+      var theScale = newScales[0];
+      console.log( 'theScale: '+theScale );
+      for ( var i=0, len=newScales.length; i<len; i++ ) {
+          var s = newScales[i];
+          console.log( 's: '+s );
+          if ( s > refScale )
+            theScale = s;
+          if ( s < refScale )
+            break;
+      }
+      return theScale/10;
+  }
   function addPrintControl() {
     if ( !config['printTemplates'] || config.printTemplates.length == 0 ) {
       $('#button-print').parent().remove();
@@ -2409,9 +2448,12 @@ var lizMap = function() {
         },
         "deactivate": function(evt) {
           layer.setVisibility(false);
+          //$('#togglePrint').parent().removeClass('active');
+          //$('#print-menu').hide();
           updateSwitcherSize();
           $('#message .print').remove();
           this.layout = null;
+          layer.destroyFeatures();
         }
       }
     });
@@ -2448,6 +2490,8 @@ var lizMap = function() {
         dragCtrl.layout = layout;
         dragCtrl.activate();
       }
+      //if ( $('#togglePrint ~ .dropdown-menu').is(':visible') )
+      //  $('#togglePrint').dropdown('toggle');
       return false;
     });
 
@@ -2478,7 +2522,11 @@ var lizMap = function() {
       url += '&TEMPLATE='+pTemplate.title;
       url += '&'+dragCtrl.layout.mapId+':extent='+extent;
       //url += '&'+dragCtrl.layout.mapId+':rotation=0';
-      url += '&'+dragCtrl.layout.mapId+':scale='+$('#print-scale').val();
+      var scale = $('#print-scale').val();
+      url += '&'+dragCtrl.layout.mapId+':scale='+scale;
+      var gridInterval = getPrintGridInterval( dragCtrl.layout, parseFloat(scale), printCapabilities.scales );
+      url += '&'+dragCtrl.layout.mapId+':grid_interval_x='+gridInterval;
+      url += '&'+dragCtrl.layout.mapId+':grid_interval_y='+gridInterval;
       var printLayers = [];
       $.each(map.layers, function(i, l) {
         if (l.getVisibility() && l.CLASS_NAME == "OpenLayers.Layer.WMS")
@@ -2511,9 +2559,9 @@ var lizMap = function() {
     map.events.on({
       "zoomend": function() {
         if ( dragCtrl.active && layer.getVisibility() ) {
-          // get scale
-          var scale = getPrintScale( printCapabilities.scales );
-          // update the select
+	      // get scale
+		  var scale = getPrintScale( printCapabilities.scales );
+		  // update the select
           $('#print-scale').val(scale);
           // draw print box
           drawPrintBox( dragCtrl.layout, layer, scale );
@@ -2856,44 +2904,45 @@ var lizMap = function() {
         if (alName in config.editionLayers) {
           var al = config.editionLayers[alName];
           // update menus based on capabilities
-          if (al.capabilities.deleteFeature == "False")
+            if (al.capabilities.deleteFeature == "False")
             $('#edition-select-delete').addClass('disabled');
-          else
+            else
             $('#edition-select-delete').removeClass('disabled');
-          if (al.capabilities.modifyAttribute == "False")
+            if (al.capabilities.modifyAttribute == "False")
             $('#edition-select-attr').addClass('disabled');
-          else
+            else
             $('#edition-select-attr').removeClass('disabled');
-          if (al.capabilities.modifyGeometry == "False")
+            if (al.capabilities.modifyGeometry == "False")
             $('#edition-select-undo').addClass('disabled');
-          else
+            else
             $('#edition-select-undo').removeClass('disabled');
 
-          if ( $('#edition-menu-draw').is(':visible') )
-            $('#edition-draw-cancel').click();
-          if ( $('#edition-menu-select').is(':visible') )
-            $('#edition-select-cancel').click();
+            if ( $('#edition-menu-draw').is(':visible') )
+              $('#edition-draw-cancel').click();
+            if ( $('#edition-menu-select').is(':visible') )
+              $('#edition-select-cancel').click();
 
-          editCtrls.click.layerId = al.layerId;
-          editCtrls.click.layerName = alName;
+            editCtrls.click.layerId = al.layerId;
+            editCtrls.click.layerName = alName;
 
-          if (al.capabilities.createFeature == "False") {
+            if (al.capabilities.createFeature == "False") {
             $('#edition-draw').addClass('disabled');
             $('#edition-select-cancel').addClass('disabled');
-          } else {
+            } else {
             $('#edition-draw').removeClass('disabled');
             $('#edition-select-cancel').removeClass('disabled');
-          }
-          if (al.capabilities.modifyGeometry == "False"
-           && al.capabilities.modifyAttribute == "False"
-           && al.capabilities.deleteFeature == "False") {
+            }
+            if (al.capabilities.modifyGeometry == "False"
+             && al.capabilities.modifyAttribute == "False"
+             && al.capabilities.deleteFeature == "False") {
             $('#edition-select').addClass('disabled');
             $('#edition-draw-cancel').addClass('disabled');
-          } else {
+            } else {
             $('#edition-select').removeClass('disabled');
             $('#edition-draw-cancel').removeClass('disabled');
+            }
           }
-        }
+
       });
 
       $('#edition-stop').click(function(){
@@ -3057,6 +3106,7 @@ var lizMap = function() {
           $('#edition-draw-save').addClass('disabled');
           $('#edition-menu-start').hide();
           $('#edition-menu-draw').show();
+
           $('#lizmap-edition-message').remove();
           mAddMessage(lizDict['edition.draw.activate'],'info',true).attr('id','lizmap-edition-message');
         }
@@ -3431,6 +3481,7 @@ var lizMap = function() {
     $('#geolocation-center').click(function(){
       if ( !geolocate.active )
         return false;
+
       if (vector.features.length != 0 )
         map.setCenter(vector.getDataExtent().getCenterLonLat());
       return false;
@@ -3450,7 +3501,7 @@ var lizMap = function() {
     });
     $('#geolocation-stop').click(function(){
       if ( geolocate.active )
-        geolocate.deactivate();
+      geolocate.deactivate();
       $('#button-geolocation').click();
       return false;
     });
@@ -3821,6 +3872,14 @@ var lizMap = function() {
     loadProjDefinition: function( aCRS, aCallback ) {
       return loadProjDefinition( aCRS, aCallback );
     },
+
+
+    /**
+     * Method: updateContentSize
+     */
+    updateContentSize: function() {
+      return updateContentSize();
+    },
     
     /**
      * Method: init
@@ -3890,10 +3949,19 @@ var lizMap = function() {
           var verifyingVisibility = true;
           var hrefParam = OpenLayers.Util.getParameters(window.location.href);
           if (!map.getCenter()) {
-            if (hrefParam.bbox) {
-                var hrefBbox = OpenLayers.Bounds.fromArray(hrefParam.bbox);
+            if ( hrefParam.bbox || hrefParam.BBOX ) {
+                var hrefBbox = null;
+                if ( hrefParam.bbox )
+                  hrefBbox = OpenLayers.Bounds.fromArray( hrefParam.bbox );
+                if ( hrefParam.BBOX )
+                  hrefBbox = OpenLayers.Bounds.fromArray( hrefParam.BBOX );
+
+                if ( hrefParam.crs && hrefParam.crs != map.getProjection() )
+                  hrefBbox.transform( hrefParam.crs, map.getProjection() )
+                if ( hrefParam.CRS && hrefParam.CRS != map.getProjection() )
+                  hrefBbox.transform( hrefParam.CRS, map.getProjection() )
                 if( map.restrictedExtent.containsBounds( hrefBbox ) )
-                  map.zoomToExtent( hrefBbox );
+                  map.zoomToExtent( hrefBbox, true );
                 else {
                   var projBbox = $('#metadata .bbox').text();
                   projBbox = OpenLayers.Bounds.fromString(projBbox);
@@ -3901,7 +3969,7 @@ var lizMap = function() {
                       var projProj = $('#metadata .proj').text();
                       loadProjDefinition( projProj, function( aProj ) {
                           hrefBbox.transform( aProj, map.getProjection() );
-                          map.zoomToExtent( hrefBbox );
+                          map.zoomToExtent( hrefBbox, true );
                       });
                   } else {
                     map.zoomToExtent(map.initialExtent);
@@ -3954,11 +4022,11 @@ var lizMap = function() {
           $('#toggleLegend').click(function(){
             if ($('#menu').is(':visible')) {
               $('.ui-icon-close-menu').click();
-              //$('#metadata').hide();
+              $('#metadata').hide();
             }
             else{
               $('.ui-icon-open-menu').click();
-              //$('#metadata').hide();
+              $('#metadata').hide();
             }
             //~ console.log('toggleLegend');
             map.updateSize();
