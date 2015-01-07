@@ -139,6 +139,7 @@ class lizMapCtrl extends jController {
 
     // Get the WMS information
     $wmsInfo = $lproj->getWMSInformation();
+
     // Set page title from projet title
     if( $wmsInfo['WMSServiceTitle'] != '' )
       $rep->title = $wmsInfo['WMSServiceTitle'];
@@ -169,16 +170,16 @@ class lizMapCtrl extends jController {
       $wmsGetCapabilitiesUrl = $lproj->getData('wmsGetCapabilitiesUrl');
     }
     $assign['wmsGetCapabilitiesUrl'] = $wmsGetCapabilitiesUrl;
-    
+
     // Get dockable and minidockable element
     $assign['dockable'] = $lproj->getDefaultDockable();
     $items = jEvent::notify('mapDockable',array('repository'=>$repository, 'project'=>$project))->getResponse();
     $assign['dockable'] = mapDockItemsMerge( $assign['dockable'], $items );
-    
+
     $assign['minidockable'] = $lproj->getDefaultMiniDockable();
     $items = jEvent::notify('mapMiniDockable',array('repository'=>$repository, 'project'=>$project))->getResponse();
     $assign['minidockable'] = mapDockItemsMerge( $assign['minidockable'], $items );
-    
+
     // Add dockable js
     foreach( $assign['dockable'] as $d ) {
         if ( $d->js != '' )
@@ -189,13 +190,13 @@ class lizMapCtrl extends jController {
     $rep->addCssLink($themePath.'css/main.css');
     $rep->addCssLink($themePath.'css/map.css');
     $rep->addCssLink($themePath.'css/media.css');
-    
+
     // Add dockable css
     foreach( $assign['dockable'] as $d ) {
         if ( $d->css != '' )
           $rep->addCssLink( $d->css );
     }
-    
+
     // Replace default theme by theme found in
     // the repository folder media/themes/default/
     if ( $lrep->getData('allowUserDefinedThemes') ) {
@@ -220,6 +221,95 @@ class lizMapCtrl extends jController {
         }
       }
     }
+
+    // optionnally hide some tools
+    // header
+    $jsCode = ''; $mapMenuCss = '';
+    $h = $this->intParam('h',1);
+    if(
+      $h == 0  or
+      (
+        property_exists($pOptions,'hideHeader')
+        && $pOptions->hideHeader == 'True'
+      )
+    ){
+      $h = 0;
+      $rep->addStyle('#body', 'padding-top:0px;');
+      $rep->addStyle('#header', 'display:none; height:0px;');
+    }
+
+    // menu = left vertical menu with icons
+    $m = $this->intParam('m', 1);
+    if(
+      $m == 0  or
+      (
+        property_exists($pOptions,'hideMenu')
+        && $pOptions->hideMenu == 'True'
+      )
+    ){
+      $m = 0;
+      $rep->addStyle('#mapmenu', 'display:none !important; width:0px;');
+      $rep->addStyle('#dock', 'left:0px; border-left:none;');
+    }
+
+    // legend = legend open at startup
+    $l = $this->intParam('l', 1);
+    if(
+      $l == 0  or
+      (
+        property_exists($pOptions,'hideLegend')
+        && $pOptions->hideLegend == 'True'
+      )
+    ){
+      $l = 0;
+      //~ $rep->addStyle('#dock', 'display:none;');
+      $jsCode.= "
+      $( document ).ready( function() {
+        lizMap.events.on({
+          'uicreated':function(evt){
+            $('#button-switcher').click();
+          }
+        });
+      });
+      ";
+    }
+
+    // navbar
+    $n = $this->intParam('n', 1);
+    if(
+      $n == 0  or
+      (
+        property_exists($pOptions,'hideNavbar')
+        && $pOptions->hideNavbar == 'True'
+      )
+    ){
+      $rep->addStyle('#navbar', 'display:none !important;');
+    }
+
+    // overview-box = scale & overview
+    $o = $this->intParam('o', 1);
+    if(
+      $o == 0  or
+      (
+        property_exists($pOptions,'hideOverview')
+        && $pOptions->hideOverview == 'True'
+      )
+    ){
+      $rep->addStyle('#overview-box', 'display:none !important;');
+    }
+
+    // Apply interface modifications
+    if( $jsCode != '')
+      $rep->addJSCode($jsCode);
+
+
+    // Hide groups checkboxes
+    if( property_exists($pOptions,'hideGroupCheckbox')
+        && $pOptions->hideGroupCheckbox == 'True'
+    ) {
+      $rep->addStyle('#switcher-layers button[name="group"]', 'display:none !important;');
+    }
+
     $rep->body->assign($assign);
 
     // Log

@@ -982,7 +982,7 @@ var lizMap = function() {
     // add option list
     $('#locate-layer-'+cleanName(aName)).html(options);
   }
-  
+
 
   /**
    * Zoom to locate feature
@@ -994,7 +994,7 @@ var lizMap = function() {
       return;
     layer = layer[0];
     layer.destroyFeatures();
-    
+
     // get locate by layer val
     var locate = config.locateByLayer[aName];
     var proj = new OpenLayers.Projection(locate.crs);
@@ -1059,7 +1059,7 @@ var lizMap = function() {
       var lConfig = config.layers[aName];
       locate['features'] = {};
       var features = data.features;
-      
+
       if ('filterFieldName' in locate) {
         // create filter combobox for the layer
         features.sort(function(a, b) {
@@ -1176,7 +1176,7 @@ var lizMap = function() {
         return;
       });
       $('#locate-layer-'+layerName).combobox({
-		"minLength": ('minLength' in locate) ? locate.minLength : 0,
+    "minLength": ('minLength' in locate) ? locate.minLength : 0,
         "selected": function(evt, ui){
           if ( ui.item ) {
             var self = $(this);
@@ -1249,7 +1249,7 @@ var lizMap = function() {
     */
 
     //html += '</tr>';
-    
+
     if (('children' in aNode) && aNode['children'].length!=0) {
       html += getSwitcherUl(aNode, aLevel+1);
     } else if (nodeConfig.type == 'layer'
@@ -1827,7 +1827,7 @@ var lizMap = function() {
                       'targetFieldName': vectorjoin['joinFieldName'],
                       'joinFieldName': vectorjoin['targetFieldName'],
                       'joinLayerId': locate.layerId,
-                      'joinLayer': lName 
+                      'joinLayer': lName
                   }];
                 }
               }
@@ -1849,9 +1849,7 @@ var lizMap = function() {
     }
 
     $('#switcher span.label').tooltip();
-    if( $('#switcher').hasClass('hideGroupCheckbox') ) {
-      $('#switcher button[name="group"]').hide();
-    }
+
   }
 
   /**
@@ -1941,7 +1939,7 @@ var lizMap = function() {
 
     map.addControl(new OpenLayers.Control.Scale(document.getElementById('scaletext')));
     map.addControl(new OpenLayers.Control.ScaleLine({div:document.getElementById('scaleline')}));
-    
+
     var mpUnitSelect = $('#mouseposition-bar > select');
     var mapUnits = map.projection.getUnits();
     if ( mapUnits == 'degrees' ) {
@@ -2225,60 +2223,60 @@ var lizMap = function() {
           newScales.push( parseFloat(aScales[i]) );
       }
       newScales.sort(function(a,b){return b-a;});
-	  var scale = map.getScale();
-	  var scaleIdx = newScales.indexOf( scale );
-	  if ( scaleIdx == -1 ) {
-		var s=0, slen=newScales.length;
-		while ( scaleIdx == -1 && s<slen ) {
-			if ( scale > newScales[s] )
-			  scaleIdx = s;
-			else
-			 s++;
-		}
-		if( s == slen ) {
-		  scale = newScales[slen-1];
-		} else {
-		  scale = newScales[scaleIdx];
-		}
-	  }
-	  return scale;
+    var scale = map.getScale();
+    var scaleIdx = newScales.indexOf( scale );
+    if ( scaleIdx == -1 ) {
+    var s=0, slen=newScales.length;
+    while ( scaleIdx == -1 && s<slen ) {
+      if ( scale > newScales[s] )
+        scaleIdx = s;
+      else
+       s++;
+    }
+    if( s == slen ) {
+      scale = newScales[slen-1];
+    } else {
+      scale = newScales[scaleIdx];
+    }
+    }
+    return scale;
   }
 
   function drawPrintBox( aLayout, aLayer, aScale ) {
-	  var center = map.getCenter();
-	  var size = aLayout.size;
-	  var units = map.getUnits();
-	  var unitsRatio = OpenLayers.INCHES_PER_UNIT[units];
-	  var w = size.width / 72 / unitsRatio * aScale / 2;
-	  var h = size.height / 72 / unitsRatio * aScale / 2;
+    var center = map.getCenter();
+    var size = aLayout.size;
+    var units = map.getUnits();
+    var unitsRatio = OpenLayers.INCHES_PER_UNIT[units];
+    var w = size.width / 72 / unitsRatio * aScale / 2;
+    var h = size.height / 72 / unitsRatio * aScale / 2;
       if ( aLayer.features.length == 0 ) {
           var center = map.getCenter();
-	  var bounds = new OpenLayers.Bounds(center.lon - w, center.lat - h,
-		center.lon + w, center.lat + h);
-	  var geom = bounds.toGeometry();
+    var bounds = new OpenLayers.Bounds(center.lon - w, center.lat - h,
+    center.lon + w, center.lat + h);
+    var geom = bounds.toGeometry();
           aLayer.addFeatures([
               new OpenLayers.Feature.Vector( geom )
           ]);
       } else {
-	  var feat = aLayer.features[0];
+    var feat = aLayer.features[0];
           var center = feat.geometry.getBounds().getCenterLonLat();
           var bounds = new OpenLayers.Bounds(center.lon - w, center.lat - h,
             center.lon + w, center.lat + h);
           var geom = bounds.toGeometry();
-	  geom.id = feat.geometry.id;
-	  feat.geometry = geom;
+    geom.id = feat.geometry.id;
+    feat.geometry = geom;
       aLayer.drawFeature(feat);
       }
-	  return true;
+    return true;
   }
 
   function getPrintGridInterval( aLayout, aScale, aScales ) {
-	  var size = aLayout.size;
-	  var units = map.getUnits();
-	  var unitsRatio = OpenLayers.INCHES_PER_UNIT[units];
-	  var w = size.width / 72 / unitsRatio * aScale;
-	  var h = size.height / 72 / unitsRatio * aScale;
-      
+    var size = aLayout.size;
+    var units = map.getUnits();
+    var unitsRatio = OpenLayers.INCHES_PER_UNIT[units];
+    var w = size.width / 72 / unitsRatio * aScale;
+    var h = size.height / 72 / unitsRatio * aScale;
+
       var refScale = w > h ? w : h;
       var newScales = [];
       for ( var i=0, len = aScales.length; i<len; i++ ) {
@@ -2559,9 +2557,9 @@ var lizMap = function() {
     map.events.on({
       "zoomend": function() {
         if ( dragCtrl.active && layer.getVisibility() ) {
-	      // get scale
-		  var scale = getPrintScale( printCapabilities.scales );
-		  // update the select
+        // get scale
+      var scale = getPrintScale( printCapabilities.scales );
+      // update the select
           $('#print-scale').val(scale);
           // draw print box
           drawPrintBox( dragCtrl.layout, layer, scale );
@@ -3880,7 +3878,7 @@ var lizMap = function() {
     updateContentSize: function() {
       return updateContentSize();
     },
-    
+
     /**
      * Method: init
      */

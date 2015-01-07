@@ -1,4 +1,3 @@
-{if $displayHeader > 0}
 <div id="header">
   <div id="logo">
   </div>
@@ -16,20 +15,19 @@
     {zone 'view~map_headermenu', array('repository'=>$repository,'project'=>$project)}
   </div>
 </div>
-{/if}
 
 <div id="content">
 
   <span class="ui-icon ui-icon-open-menu" style="display:none;" title="{@view~map.menu.show.hover@}"></span>
-  
+
   <div id="mapmenu" style="">
     {zone 'view~map_menu', array('repository'=>$repository,'project'=>$project,'dockable'=>$dockable,'minidockable'=>$minidockable)}
   </div>
-  
+
   <div id="dock">
       {zone 'view~map_dock', array('repository'=>$repository,'project'=>$project,'dockable'=>$dockable)}
   </div>
-  
+
   <div id="mini-dock">
     {zone 'view~map_minidock', array('repository'=>$repository,'project'=>$project,'dockable'=>$minidockable)}
   </div>
