@@ -246,9 +246,9 @@ var lizMap = function() {
         }
       });
     }
-    if ($('#baselayer-menu').is(':visible')) {
-      h -= $('#baselayer-menu').children().first().outerHeight(true);
-      h -= $('#baselayer-menu').children().last().outerHeight(true);
+    if ($('#switcher-baselayer').is(':visible')) {
+      h -= $('#switcher-baselayer').children().first().outerHeight(true);
+      h -= $('#switcher-baselayer').children().last().outerHeight(true);
     }
     h -= $('#switcher-menu').children().first().outerHeight(true);
 
@@ -1320,7 +1320,7 @@ var lizMap = function() {
           map.setBaseLayer(map.getLayersByName(val)[0]);
           $(this).blur();
         });
-      // Hide baselayer-menu if only one base layer inside
+      // Hide switcher-baselayer if only one base layer inside
       if (baselayers.length==1)
         $('#switcher-baselayer').hide();
     } else {
@@ -1682,19 +1682,19 @@ var lizMap = function() {
 
     if (baselayers.length!=0) {
       // active the select element for baselayers
-      $('#baselayer-select').append(select);
-      $('#baselayer-select')
+      $('#switcher-baselayer-select').append(select);
+      $('#switcher-baselayer-select')
         .change(function() {
           var val = $(this).val();
           map.setBaseLayer(map.getLayersByName(val)[0]);
           $(this).blur();
         });
-      // Hide baselayer-menu if only one base layer inside
+      // Hide switcher-baselayer if only one base layer inside
       if (baselayers.length==1)
-        $('#baselayer-menu').hide();
+        $('#switcher-baselayer').hide();
     } else {
       // hide elements for baselayers
-      $('#baselayer-menu').hide();
+      $('#switcher-baselayer').hide();
       map.addLayer(new OpenLayers.Layer.Vector('baselayer',{
         maxExtent:map.maxExtent
        ,maxScale: map.maxScale
