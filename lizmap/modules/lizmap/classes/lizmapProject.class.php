@@ -170,13 +170,13 @@ class lizmapProject{
     public function getLayers(){
       return $this->cfg->layers;
     }
-    
+
     public function findLayerByName( $name ){
       if ( property_exists($this->cfg->layers, $name ) )
         return $this->cfg->layers->$name;
       return null;
     }
-    
+
     public function findLayerByTitle( $title ){
       foreach ( $this->cfg->layers as $layer ) {
           if ( !property_exists( $layer, 'title' ) )
@@ -706,6 +706,27 @@ class lizmapProject{
         if ( $this->hasTimemanagerLayers() ) {
           $tpl = new jTpl();
           $dockable[] = new lizmapMapDockItem('timemanager', jLocale::get('view~map.timemanager.navbar.title'), $tpl->fetch('view~map_timemanager'),6);
+        }
+
+        return $dockable;
+    }
+
+    public function getDefaultBottomDockable() {
+        jClasses::inc('view~lizmapMapDockItem');
+        $dockable = array();
+        $configOptions = $this->getOptions();
+
+        $bp = jApp::config()->urlengine['basePath'];
+        if ( $this->hasAttributeLayers() ) {
+          $tpl = new jTpl();
+          $dockable[] = new lizmapMapDockItem(
+            'attributeLayers',
+            jLocale::get('view~map.attributeLayers.navbar.title'),
+            $tpl->fetch('view~map_attributeLayers'),
+            1,
+            '',
+            $bp.'js/attributeTable.js'
+          );
         }
 
         return $dockable;

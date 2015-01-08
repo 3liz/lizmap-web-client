@@ -21,7 +21,7 @@
   <span class="ui-icon ui-icon-open-menu" style="display:none;" title="{@view~map.menu.show.hover@}"></span>
 
   <div id="mapmenu" style="">
-    {zone 'view~map_menu', array('repository'=>$repository,'project'=>$project,'dockable'=>$dockable,'minidockable'=>$minidockable)}
+    {zone 'view~map_menu', array('repository'=>$repository,'project'=>$project,'dockable'=>$dockable,'minidockable'=>$minidockable, 'bottomdockable'=>$bottomdockable)}
   </div>
 
   <div id="dock">
@@ -30,6 +30,10 @@
 
   <div id="mini-dock">
     {zone 'view~map_minidock', array('repository'=>$repository,'project'=>$project,'dockable'=>$minidockable)}
+  </div>
+
+  <div id="bottom-dock" style="display:none;">
+    {zone 'view~map_bottomdock', array('repository'=>$repository,'project'=>$project,'dockable'=>$bottomdockable)}
   </div>
 
   <div id="map-content">
@@ -79,18 +83,6 @@
 
     <div id="message" class="span6">{jmessage_bootstrap}</div>
 
-    <div id="attribute-table-panel" style="display:none;">
-      <h3>
-          <span class="title">
-              <button class="btn-attribute-clear btn btn-mini" type="button" title="{@view~map.attributeLayers.toolbar.btn.clear.title@}">{@view~map.attributeLayers.toolbar.btn.clear.title@}</button>
-              &nbsp;
-              <button class="btn-attribute-glue btn btn-mini" type="button" title="{@view~map.attributeLayers.toolbar.btn.glue.activate.title@}">{@view~map.attributeLayers.toolbar.btn.glue.activate.title@}</button>
-              <button class="btn-attribute-size btn btn-mini" type="button" title="{@view~map.attributeLayers.toolbar.btn.size.maximize.title@}">{@view~map.attributeLayers.toolbar.btn.size.maximize.title@}</button>
-              <span class="icon"></span>&nbsp;{@view~map.attributeLayers.toolbar.title@}
-          </span>
-        </h3>
-        <div id="attribute-table-container"></div>
-    </div>
   </div>
 </div>
 

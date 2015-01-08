@@ -42,6 +42,13 @@
         </a>
       </li>
       {/foreach}
+      {foreach $bottomdockable as $dock}
+      <li class="{$dock->id} nav-bottomdock">
+        <a id="button-{$dock->id}" rel="tooltip" data-original-title="{$dock->title}" data-placement="right" href="#{$dock->id}">
+          <span class="icon"></span>
+        </a>
+      </li>
+      {/foreach}
       <!--
       {if $attributeLayers}
       <li class="attributeLayers">

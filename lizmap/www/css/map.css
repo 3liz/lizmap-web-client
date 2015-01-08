@@ -371,6 +371,119 @@ ul.nav.nav-tabs {
   display:none;
 }
 
+/* Dock */
+#bottom-dock {
+  opacity:0.5;
+  position:absolute;
+  left:300px;
+  width:80%;
+  height:auto;
+  bottom:0px;
+  z-index:5000;
+  overflow:auto;
+  background-color:#4A4A4A;
+  background-color:rgba(0,0,0,0.7);
+  padding:5px;
+  border-left: 1px solid #F0F0F0;
+}
+#content.mobile #bottom-dock{
+  max-width:100%;
+  top:auto;
+  bottom:0px;
+  right:0px;
+  left:30px;
+  width:auto;
+}
+
+#bottom-dock-window-buttons {
+  display:none;
+  position:absolute;
+  bottom:0px;
+  padding:2px;
+}
+#bottom-dock.visible #bottom-dock-window-buttons {
+  display:block;
+}
+
+
+#bottom-dock-tabs {
+  display:none;
+}
+
+#bottom-dock.visible {
+  opacity: 1;
+  height: 50%;
+}#bottom-dock.half-transparent {
+  opacity: 0.5;
+}
+#bottom-dock.fullsize {
+  left:0px;
+  height: 100%;
+  width:auto;
+  right:1px;
+}
+
+#bottom-dock h3 {
+  margin: 1px;
+/*
+  background: none repeat scroll 0% 0% #2B2B2B;
+  color: #FBFBFB;
+*/
+  line-height: 1.3;
+  border-bottom: 1px solid #DDD;
+  border-top: 1px solid #DDD;
+  font-size: 0.9em;
+}
+
+#bottom-dock .title .btn{
+  float : right;
+  margin-left: 5px;
+}
+#content.mobile .btn-bottomdock-glue,
+#content.mobile .btn-bottomdock-size {
+  display:none;
+}
+
+#bottom-dock div.bottom-content{
+  font-size:0.8em;
+  border: 1px solid #606060;
+  position:absolute;
+  top:50px;
+  right:10px;
+  bottom:30px;
+  left:10px;
+  overflow:auto;
+  padding:0.5em;
+  background-color: #F0F0F0;
+}
+
+#attributeLayers-tabs > li > a {
+  border:none;
+  background:none;
+  font-weight:bold;
+  color:white;
+}
+
+#attributeLayers .tab-content .attribute-content {
+  top:50px;
+}
+
+.attributeLayers-layer-div span.attribute-layer-msg {
+  text-decoration:italic;
+  font-size:0.8em;
+}
+.attributeLayers-layer-div span.attribute-layer-msg.success {
+  color:green;
+}
+.attributeLayers-layer-div span.attribute-layer-msg.failure {
+  color:red;
+}
+
+table.attribute-table-table tr td{
+  cursor:pointer;
+}
+
+
 /*
 Timemanager
 */
@@ -489,7 +602,7 @@ div.modal h3,
 */
   font-size : 0.9em;
 }
-#mini-dock h3 {
+#mini-dock h3, #bottom-dock h3 {
   background-color:#4A4A4A;
   background-color:rgba(0,0,0,0.7);
 }
@@ -501,6 +614,7 @@ div.modal h3 {
 #menu h3 span.title,
 #dock h3 span.title,
 #mini-dock h3 span.title,
+#bottom-dock h3 span.title,
 div.modal h3 span.title {
   display : block;
   padding : 0.5em 0.5em 0.5em 0.7em;
@@ -595,6 +709,7 @@ div.modal h3 .icon {
 #menu h3 .text,
 #dock h3 .text,
 #mini-dock h3 .text,
+#bottom-dock h3 .text,
 div.modal h3 .text {
   vertical-align : bottom;
 }
@@ -1307,99 +1422,6 @@ div.modal h3 .text {
 #permalink {
   padding:2px;
   font-size: 0.75em;
-}
-
-#attribute-table-panel {
-  opacity:0.5;
-  position:absolute;
-  width:65%;
-  height:auto;
-  left:0px;
-  bottom:0px;
-  z-index:5000;
-  background-color:#F0F0F0;
-}
-#attribute-table-panel.visible {
-  opacity: 1;
-  height: 50%;
-}
-#attribute-table-panel.fullsize {
-  height: 100%;
-  width:100%;
-}
-
-#attribute-table-panel h3 {
-  margin: 1px;
-  background: none repeat scroll 0% 0% #2B2B2B;
-  color: #FBFBFB;
-  line-height: 1.3;
-  border-bottom: 1px solid #DDD;
-  border-top: 1px solid #DDD;
-  font-size: 0.9em;
-}
-
-#attribute-table-panel .title .btn{
-  float : right;
-  margin-left: 5px;
-}
-#content.mobile .btn-attribute-glue,
-#content.mobile .btn-attribute-size {
-  display:none;
-}
-
-#attribute-table-panel h3 .icon {
-  background-image : url(images/sprite_20_tools.png);
-}
-.navbar .navbar-inner .attributeLayers .icon {
-  background-image: url("images/sprite_20_tools.png");
-}
-.navbar .nav .attributeLayers .icon {
-  background-position: -120px -100px;
-}
-.navbar .nav .attributeLayers a:hover .icon,
-.navbar .nav .attributeLayers.active a .icon {
-  background-position: -120px -80px;
-}
-#attribute-table-panel h3 .icon {
-  background-position: -120px -80px;
-  display:inline-block;
-  vertical-align:middle;
-  background-image : url(images/sprite_20_tools.png);
-  background-repeat:no-repeat;
-  width:20px;
-  height:20px;
-}
-
-#attribute-table-panel h3 span.title {
-  display: block;
-  padding: 0.5em 0.5em 0.5em 0.7em;
-}
-
-#attribute-table-container {
-  font-size:0.8em;
-  border: 1px solid #606060;
-  position:absolute;
-  top:50px;
-  right:10px;
-  bottom:10px;
-  left:10px;
-  overflow:auto;
-  padding:0.5em;
-}
-
-.attributeLayers-layer-div span.attribute-layer-msg {
-  text-decoration:italic;
-  font-size:0.8em;
-}
-.attributeLayers-layer-div span.attribute-layer-msg.success {
-  color:green;
-}
-.attributeLayers-layer-div span.attribute-layer-msg.failure {
-  color:red;
-}
-
-table.attribute-table-table tr td{
-  cursor:pointer;
 }
 
 #message {

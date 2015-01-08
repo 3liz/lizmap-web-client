@@ -8,8 +8,6 @@ var lizAttributeTable = function() {
         var layers = lizMap.layers;
         var hasAttributeTableLayers = false;
         var attributeLayersActive = false;
-        var attributeLayerGlued = false;
-        var attributeLayerFullsize = false;
         var attributeLayersDic = {};
 
         if (!('attributeLayers' in config))
@@ -18,20 +16,6 @@ var lizAttributeTable = function() {
         // Lizmap URL
         var service = OpenLayers.Util.urlAppend(lizUrls.wms
             ,OpenLayers.Util.getParameterString(lizUrls.params)
-        );
-
-        // Div content interactions
-        $('#attribute-table-panel').hover(
-          function(){
-            showAttributeLayersPanel();
-            return false;
-          }
-          ,
-          function(){
-            if ( !attributeLayerGlued &&!lizMap.checkMobile())
-              hideAttributeLayersPanel();
-            return false;
-          }
         );
 
         // Verifying WFS layers
@@ -92,137 +76,6 @@ var lizAttributeTable = function() {
                 }));
               }
 
-
-              // Bind attribute panel buttons actions
-              // Close button
-              $('#attribute-table-panel h3').click(function() {
-                hideAttributeLayersPanel();
-                return false;
-              });
-              $('#attribute-table-panel .btn-attribute-clear')
-              .click(function() {
-                deactivateAttributeLayers();
-                return false;
-              })
-              .hover(
-                function(){ $(this).addClass('btn-danger'); },
-                function(){ $(this).removeClass('btn-danger'); }
-              );
-
-              // Pin button
-              $('#attribute-table-panel .btn-attribute-glue')
-              .click(function() {
-                if ( attributeLayerGlued ) {
-                  attributeLayerGlued = false;
-                  $(this)
-                  .removeClass('active')
-                  .attr(
-                    'title',
-                    lizDict['attributeLayers.toolbar.btn.glue.activate.title']
-                  )
-                  .html(lizDict['attributeLayers.toolbar.btn.glue.activate.title']);
-                  hideAttributeLayersPanel();
-                }
-                else {
-                  attributeLayerGlued = true;
-                  $(this).addClass('active')
-                  .attr(
-                    'title',
-                    lizDict['attributeLayers.toolbar.btn.glue.deactivate.title']
-                  )
-                  .html(lizDict['attributeLayers.toolbar.btn.glue.glued.title']);
-                }
-                return false;
-              })
-              .hover(
-                function(){
-                  if( attributeLayerGlued ){
-                    $(this)
-                    .removeClass('btn-primary')
-                    .attr('title', lizDict['attributeLayers.toolbar.btn.glue.deactivate.title'])
-                    .html(lizDict['attributeLayers.toolbar.btn.glue.deactivate.title']);
-                  }
-                  else{
-                    $(this)
-                    .addClass('btn-primary')
-                    .attr('title', lizDict['attributeLayers.toolbar.btn.glue.activate.title'])
-                    .html(lizDict['attributeLayers.toolbar.btn.glue.activate.title']);
-                  }
-                },
-                function(){
-                  if (attributeLayerGlued ){
-                    $(this)
-                    .addClass('btn-primary')
-                    .attr('title', lizDict['attributeLayers.toolbar.btn.glue.deactivate.title'])
-                    .html(lizDict['attributeLayers.toolbar.btn.glue.deactivate.title']);
-                  }
-                  else{
-                    $(this)
-                    .removeClass('btn-primary')
-                    .attr('title', lizDict['attributeLayers.toolbar.btn.glue.activate.title'])
-                    .html(lizDict['attributeLayers.toolbar.btn.glue.activate.title']);
-                  }
-                }
-              );
-
-              // Size button
-              $('#attribute-table-panel .btn-attribute-size')
-              .click(function() {
-                if ( attributeLayerFullsize ) {
-                  attributeLayerFullsize = false;
-                  $(this)
-                  .removeClass('active')
-                  .attr(
-                    'title',
-                    lizDict['attributeLayers.toolbar.btn.size.maximize.title']
-                  )
-                  .html(lizDict['attributeLayers.toolbar.btn.size.maximize.title']);
-                  $('#attribute-table-panel').removeClass('fullsize');
-                }
-                else {
-                  attributeLayerFullsize = true;
-                  $(this).addClass('active')
-                  .attr(
-                    'title',
-                    lizDict['attributeLayers.toolbar.btn.size.minimize.title']
-                  )
-                  .html(lizDict['attributeLayers.toolbar.btn.size.minimize.title']);
-                  $('#attribute-table-panel').addClass('fullsize');
-                }
-                return false;
-              })
-              .hover(
-                function(){
-                  if( attributeLayerFullsize ){
-                    $(this)
-                    .removeClass('btn-primary')
-                    .attr('title', lizDict['attributeLayers.toolbar.btn.size.minimize.title'])
-                    .html(lizDict['attributeLayers.toolbar.btn.size.minimize.title']);
-                  }
-                  else{
-                    $(this)
-                    .addClass('btn-primary')
-                    .attr('title', lizDict['attributeLayers.toolbar.btn.size.maximize.title'])
-                    .html(lizDict['attributeLayers.toolbar.btn.size.maximize.title']);
-                  }
-                },
-                function(){
-                  if (attributeLayerFullsize ){
-                    $(this)
-                    .addClass('btn-primary')
-                    .attr('title', lizDict['attributeLayers.toolbar.btn.size.minimize.title'])
-                    .html(lizDict['attributeLayers.toolbar.btn.size.minimize.title']);
-                  }
-                  else{
-                    $(this)
-                    .removeClass('btn-primary')
-                    .attr('title', lizDict['attributeLayers.toolbar.btn.size.maximize.title'])
-                    .html(lizDict['attributeLayers.toolbar.btn.size.maximize.title']);
-                  }
-                }
-              );
-
-
               // Bind click on refresh buttons
               $('button.btn-refresh-attributeTable')
               .click(function(){
@@ -262,38 +115,28 @@ var lizAttributeTable = function() {
           }
         } );
 
-        $('#toggleAttributeLayers').click(function(){
-            if (attributeLayersActive){
-                deactivateAttributeLayers();
-                return false;
-            }else{
-                activateAttributeLayers();
-                return false;
-            }
-        });
-
         function activateAttributeLayers() {
-          $('#toggleAttributeLayers').parent().addClass('active');
+          //~ $('#toggleAttributeLayers').parent().addClass('active');
 
           // Show attribute panel title
-          $('#attribute-table-panel').show();
+          //~ $('#attribute-table-panel').show();
           // Open attribute panel
-          showAttributeLayersPanel();
+          //~ showAttributeLayersPanel();
           attributeLayersActive = true;
 
           // Deactivate locate-menu
           if ( $('#locate-menu').is(':visible') && lizMap.checkMobile()){
             $('#toggleLocate').parent().removeClass('active');
             $('#locate-menu').toggle();
-            lizMap.updateSwitcherSize();
+            //~ lizMap.updateSwitcherSize();
           }
           return false;
         }
 
         function deactivateAttributeLayers() {
-          $('#toggleAttributeLayers').parent().removeClass('active');
-          hideAttributeLayersPanel();
-          $('#attribute-table-panel').hide();
+          //~ $('#toggleAttributeLayers').parent().removeClass('active');
+          //~ hideAttributeLayersPanel();
+          //~ $('#attribute-table-panel').hide();
           attributeLayersActive = false;
           var locatelayerSearch = lizMap.map.getLayersByName('locatelayer');
           if ( locatelayerSearch.length > 0 ) {
@@ -302,14 +145,14 @@ var lizAttributeTable = function() {
           return false;
         }
 
-        function showAttributeLayersPanel(){
-          $('#attribute-table-panel').addClass('visible');
-          return false;
-        }
-        function hideAttributeLayersPanel(){
-          $('#attribute-table-panel').removeClass('visible');
-          return false;
-        }
+        //~ function showAttributeLayersPanel(){
+          //~ $('#attribute-table-panel').addClass('visible');
+          //~ return false;
+        //~ }
+        //~ function hideAttributeLayersPanel(){
+          //~ $('#attribute-table-panel').removeClass('visible');
+          //~ return false;
+        //~ }
 
 
         function addLayerDiv(lname) {
@@ -427,8 +270,6 @@ var lizAttributeTable = function() {
               // Display the hide/show button
               $('button.btn-toggle-attributeTable[value="'+lizMap.cleanName(aName)+'"]')
               .show();
-
-
 
             }
           });

@@ -104,8 +104,8 @@ class lizMapCtrl extends jController {
     $rep->addJSLink($bp.'jelix/js/jforms_jquery.js');
     $rep->addJSLink($bp.'js/bootstrapErrorDecoratorHtml.js');
 
-    // Add attributeTable js
-    $rep->addJSLink($bp.'js/attributeTable.js');
+    // Add botom dock js
+    $rep->addJSLink($bp.'js/bottom-dock.js');
 
     // Pass some configuration options to the web page through javascript var
     $lizUrls = array(
@@ -180,8 +180,12 @@ class lizMapCtrl extends jController {
     $items = jEvent::notify('mapMiniDockable',array('repository'=>$repository, 'project'=>$project))->getResponse();
     $assign['minidockable'] = mapDockItemsMerge( $assign['minidockable'], $items );
 
+    $assign['bottomdockable'] = $lproj->getDefaultBottomDockable();
+    $items = jEvent::notify('mapBottomDockable',array('repository'=>$repository, 'project'=>$project))->getResponse();
+    $assign['bottomdockable'] = mapDockItemsMerge( $assign['bottomdockable'], $items );
+
     // Add dockable js
-    foreach( $assign['dockable'] as $d ) {
+    foreach( array_merge($assign['dockable'], $assign['bottomdockable'] ) as $d ) {
         if ( $d->js != '' )
           $rep->addJsLink( $d->js );
     }
