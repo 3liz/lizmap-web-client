@@ -322,7 +322,7 @@ jFormsJQ.declareForm(jFormsJQ.tForm);
         }
     }
 
-    public function escJsStr($str) {
+    protected function escJsStr($str) {
         return '\''.str_replace(array("'","\n"),array("\\'", "\\n"), $str).'\'';
     }
 
