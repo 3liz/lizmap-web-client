@@ -671,6 +671,13 @@ div.modal .form-horizontal .control-label {
   width: 90px;
 }
 
+
+#dock .form-horizontal .jforms-choice .control-label,
+div.modal .form-horizontal .jforms-choice .control-label {
+  width: 220px;
+  text-align: left;
+}
+
 #dock .form-horizontal .controls,
 div.modal .form-horizontal .controls {
   margin-left: 100px;
