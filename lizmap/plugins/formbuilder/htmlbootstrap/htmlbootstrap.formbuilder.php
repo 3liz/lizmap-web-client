@@ -26,6 +26,18 @@ class htmlbootstrapFormBuilder extends \jelix\forms\Builder\HtmlBuilder {
 
     protected $isRootControl = true;
 
+    /**
+     * set options
+     * @param array $options some parameters <ul>
+     *      <li>"errDecorator"=>"name of your javascript object for error listener"</li>
+     *      <li>"method" => "post" or "get". default is "post"</li>
+     *      </ul>
+     */
+    public function setOptions($options) {
+        $this->options = array_merge(array('errorDecorator'=>$this->jFormsJsVarName.'ErrorDecoratorHtml',
+            'method'=>'post'), $options);
+    }
+
     public function outputAllControls() {
 
         $modal = False;
@@ -262,9 +274,9 @@ jFormsJQ.declareForm(jFormsJQ.tForm);
     }
 
     public function outputControlLabel($ctrl, $format='', $editMode=true){
-        if($ctrl->type == 'hidden' || $ctrl->type == 'group') return;
+        if($ctrl->type == 'hidden' || $ctrl->type == 'group' || $ctrl->type == 'button') return;
         $required = ($ctrl->required == false || $ctrl->isReadOnly()?'':' jforms-required');
-        $reqhtml = ($required?'<span class="jforms-required-star">*</span>':'');
+        $reqhtml = ($required && $editMode?'<span class="jforms-required-star">*</span>':'');
         $inError = (isset($this->_form->getContainer()->errors[$ctrl->ref]) ?' jforms-error':'');
         $hint = ($ctrl->hint == ''?'':' title="'.htmlspecialchars($ctrl->hint).'"');
         $id = $this->_name.'_'.$ctrl->ref;
@@ -314,6 +326,9 @@ jFormsJQ.declareForm(jFormsJQ.tForm);
         return '\''.str_replace(array("'","\n"),array("\\'", "\\n"), $str).'\'';
     }
 
+    /**
+     * @param jFormsControl $ctrl
+     */
     protected function commonJs($ctrl) {
         if ($ctrl->isReadOnly()) {
             $this->jsContent .="c.readOnly = true;\n";
@@ -379,6 +394,14 @@ jFormsJQ.declareForm(jFormsJQ.tForm);
         $this->jsContent .="c = new ".$this->jFormsJsVarName."Control".$dt."('".$ctrl->ref."', ".$this->escJsStr($ctrl->label).");\n";
         if ($isLocale)
             $this->jsContent .="c.lang='".jApp::config()->locale."';\n";
+
+        $maxv= $ctrl->datatype->getFacet('maxValue');
+        if($maxv !== null)
+            $this->jsContent .="c.maxValue = '$maxv';\n";
+
+        $minv= $ctrl->datatype->getFacet('minValue');
+        if($minv !== null)
+            $this->jsContent .="c.minValue = '$minv';\n";
 
         $maxl= $ctrl->datatype->getFacet('maxLength');
         if($maxl !== null)
@@ -772,7 +795,11 @@ jFormsJQ.declareForm(jFormsJQ.tForm);
     }
 
     protected function outputMenulist($ctrl, &$attr) {
-        unset($attr['readonly']);
+        if (isset($attr['readonly'])) {
+            $attr['disabled'] = 'disabled';
+            unset($attr['readonly']);
+        }
+
         $attr['size'] = '1';
         echo '<select';
         $this->_outputAttr($attr);
@@ -785,7 +812,8 @@ jFormsJQ.declareForm(jFormsJQ.tForm);
                 $value='';
         }
         $value = (string) $value;
-        echo '<option value=""',($value===''?' selected="selected"':''),'>',htmlspecialchars($ctrl->emptyItemLabel),"</option>\n";
+        if ($ctrl->emptyItemLabel !== null || !$ctrl->required)
+            echo '<option value=""',($value===''?' selected="selected"':''),'>',htmlspecialchars($ctrl->emptyItemLabel),"</option>\n";
         $this->fillSelect($ctrl, $value);
         echo '</select>';
     }
@@ -806,7 +834,10 @@ jFormsJQ.declareForm(jFormsJQ.tForm);
     }
 
     protected function outputListbox($ctrl, &$attr) {
-        unset($attr['readonly']);
+        if (isset($attr['readonly'])) {
+            $attr['disabled'] = 'disabled';
+            unset($attr['readonly']);
+        }
         $attr['size'] = $ctrl->size;
 
         if($ctrl->multiple){
@@ -970,6 +1001,18 @@ jFormsJQ.declareForm(jFormsJQ.tForm);
     protected function jsOutput($ctrl) {
     }
 
+    protected function outputButton($ctrl, &$attr) {
+        unset($attr['readonly']);
+        unset($attr['class']);
+        $attr['value'] = $this->_form->getData($ctrl->ref);
+        echo '<button ';
+        $this->_outputAttr($attr);
+        echo '>',htmlspecialchars($ctrl->label),'</button>';
+    }
+
+    protected function jsButton($ctrl) {
+    }
+
     protected function outputUpload($ctrl, &$attr) {
         /*if($ctrl->maxsize){
             echo '<input type="hidden" name="MAX_FILE_SIZE" value="',$ctrl->maxsize,'"',$this->_endt;
@@ -1088,7 +1131,7 @@ jFormsJQ.declareForm(jFormsJQ.tForm);
         foreach( $ctrl->items as $itemName=>$listctrl){
             if (!$ctrl->isItemActivated($itemName))
                 continue;
-            echo '<li><label><input';
+            echo '<li id="'.$id.$itemName.'_item"><label><input';
             $attr['id'] = $id.$i;
             $attr['value'] = $itemName;
             if ($itemName==$value)
