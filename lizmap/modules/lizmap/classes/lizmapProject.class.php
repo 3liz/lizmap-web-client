@@ -718,11 +718,13 @@ class lizmapProject{
 
         $bp = jApp::config()->urlengine['basePath'];
         if ( $this->hasAttributeLayers() ) {
+          $form = jForms::create( 'view~attribute_layers_option' );
+          $assign = array( 'form' => $form );
           $tpl = new jTpl();
           $dockable[] = new lizmapMapDockItem(
             'attributeLayers',
             jLocale::get('view~map.attributeLayers.navbar.title'),
-            $tpl->fetch('view~map_attributeLayers'),
+            array( 'view~map_attributeLayers', $assign ),
             1,
             '',
             $bp.'js/attributeTable.js'

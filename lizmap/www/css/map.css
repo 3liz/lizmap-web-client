@@ -413,9 +413,11 @@ ul.nav.nav-tabs {
 #bottom-dock.visible {
   opacity: 1;
   height: 50%;
+
 }#bottom-dock.half-transparent {
   opacity: 0.5;
 }
+
 #bottom-dock.fullsize {
   left:0px;
   height: 100%;
@@ -461,6 +463,12 @@ ul.nav.nav-tabs {
   border:none;
   background:none;
   font-weight:bold;
+  color:grey;
+}
+#attributeLayers-tabs > li.active > a, #attributeLayers-tabs > li > a:hover {
+  border:none;
+  background:none;
+  font-weight:bold;
   color:white;
 }
 
@@ -468,14 +476,14 @@ ul.nav.nav-tabs {
   top:50px;
 }
 
-.attributeLayers-layer-div span.attribute-layer-msg {
+.attribute-content span.attribute-layer-msg {
   text-decoration:italic;
   font-size:0.8em;
 }
-.attributeLayers-layer-div span.attribute-layer-msg.success {
+.attribute-content span.attribute-layer-msg.success {
   color:green;
 }
-.attributeLayers-layer-div span.attribute-layer-msg.failure {
+.attribute-content span.attribute-layer-msg.failure {
   color:red;
 }
 
