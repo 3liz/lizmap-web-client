@@ -472,18 +472,38 @@ ul.nav.nav-tabs {
   color:white;
 }
 
+
 #attributeLayers .tab-content .attribute-content {
   top:50px;
 }
 
-.attribute-content span.attribute-layer-msg {
+.attribute-layer-main {
+  float:left;
+  width:100%;
+  overflow:auto;
+  height:100%;
+}
+.attribute-layer-main.reduced {
+  width:70%;
+}
+
+.attribute-layer-feature-panel {
+  margin-left: 70%;
+  overflow: auto;
+  height: 100%;
+  padding-left: 10px;
+}
+.attribute-layer-feature-panel.visible {
+  width:auto;
+}
+.attribute-layer-main span.attribute-layer-msg {
   text-decoration:italic;
   font-size:0.8em;
 }
-.attribute-content span.attribute-layer-msg.success {
+.attribute-layer-main span.attribute-layer-msg.success {
   color:green;
 }
-.attribute-content span.attribute-layer-msg.failure {
+.attribute-layer-main span.attribute-layer-msg.failure {
   color:red;
 }
 
