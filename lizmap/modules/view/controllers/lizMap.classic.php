@@ -185,7 +185,7 @@ class lizMapCtrl extends jController {
     $assign['bottomdockable'] = mapDockItemsMerge( $assign['bottomdockable'], $items );
 
     // Add dockable js
-    foreach( array_merge($assign['dockable'], $assign['bottomdockable'] ) as $d ) {
+    foreach( array_merge($assign['dockable'], $assign['minidockable'], $assign['bottomdockable'] ) as $d ) {
         if ( $d->js != '' )
           $rep->addJsLink( $d->js );
     }
