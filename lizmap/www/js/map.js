@@ -41,6 +41,11 @@ var lizMap = function() {
    */
   var controls = {};
   /**
+   * PRIVATE Property: printCapabilities
+   * {Object({scales:[Float],layouts:[Object]})} Print capabilities
+   */
+  var printCapabilities = {scales:[],layouts:[]};
+  /**
    * PRIVATE Property: tree
    * {object} The layer's tree
    */
@@ -2301,7 +2306,6 @@ var lizMap = function() {
       return false;
     }
     var ptTomm = 0.35277; //conversion pt to mm
-    var printCapabilities = {scales:[],layouts:[]};
 
     var scales = map.scales;
     if ( config.options.mapScales.length > 2 )
@@ -3877,6 +3881,30 @@ var lizMap = function() {
      */
     updateContentSize: function() {
       return updateContentSize();
+    },
+
+
+    /**
+     * Method: getPrintGridInterval
+     */
+    getPrintGridInterval: function(aLayout, aScale, aScales) {
+      return getPrintGridInterval(aLayout, aScale, aScales);
+    },
+
+
+    /**
+     * Method: getPrintCapabilities
+     */
+    getPrintCapabilities: function() {
+      return printCapabilities;
+    },
+
+
+    /**
+     * Method: getExternalBaselayersReplacement
+     */
+    getExternalBaselayersReplacement: function() {
+      return externalBaselayersReplacement;
     },
 
     /**
