@@ -244,51 +244,74 @@ class serviceCtrl extends jController {
     if(!$this->getServiceParameters())
       return $this->serviceException();
 
-    $url = $this->services->wmsServerURL.'?';
+    $cacheId = $this->repository->getKey().'_'.$this->project->getKey().'_'.$this->params['service'];
+    $hash = jCache::get($cacheId . '_hash');
 
-    $bparams = http_build_query($this->params);
-    $querystring = $url . $bparams;
+    $cachedMime = jCache::get($cacheId . '_mime');
+    $cachedData = jCache::get($cacheId . '_data');
+    $newhash = md5_file( realpath($this->repository->getPath()) . '/' . $this->project->getKey() . ".qgs" );
 
-    // Get remote data
-    $getRemoteData = $this->lizmapCache->getRemoteData(
-      $querystring,
-      $this->services->proxyMethod,
-      $this->services->debugMode
-    );
-    $data = $getRemoteData[0];
-    $mime = $getRemoteData[1];
+    // Cache exists for the unchanged QGIS project file
+    if( $hash and $cachedMime and $cachedData and $hash == $newhash ) {
+        $mime = $cachedMime;
+        $data = $cachedData;
+    }
 
-    // Replace qgis server url in the XML (hide real location)
-    $sUrl = jUrl::getFull(
-      "lizmap~service:index",
-      array("repository"=>$this->repository->getKey(), "project"=>$this->project->getKey()),
-      0,
-      $_SERVER['SERVER_NAME']
-    );
-    $sUrl = str_replace('&', '&amp;', $sUrl);
-    $data = preg_replace('/xlink\:href=".*"/', 'xlink:href="'.$sUrl.'&amp;"', $data);
+    // No cache or the file content has changed
+    else {
 
-    // Remove no interoparable elements
-    $data = preg_replace('@<GetPrint[^>]*?>.*?</GetPrint>@si', '', $data);
-    $data = preg_replace('@<ComposerTemplates[^>]*?>.*?</ComposerTemplates>@si', '', $data);
-    
-    if ( preg_match( '@WMS_Capabilities@i', $data) ) {
-        // Update namespace
-        $schemaLocation = "http://www.opengis.net/wms";
-        $schemaLocation .= " http://schemas.opengis.net/wms/1.3.0/capabilities_1_3_0.xsd";
-        $schemaLocation .= " http://www.opengis.net/sld";
-        $schemaLocation .= " http://schemas.opengis.net/sld/1.1.0/sld_capabilities.xsd";
-        $schemaLocation .= " http://www.qgis.org/wms";
-        $schemaLocation .= " ". $sUrl ."SERVICE=WMS&amp;REQUEST=GetSchemaExtension";
-        $data = preg_replace('@xsi:schemaLocation=".*?"@si', 'xsi:schemaLocation="'.$schemaLocation.'"', $data);
-        if ( !preg_match( '@xmlns:qgs@i', $data) ) {
-          $data = preg_replace('@xmlns="http://www.opengis.net/wms"@', 'xmlns="http://www.opengis.net/wms" xmlns:qgs="http://www.qgis.org/wms"', $data);
-          $data = preg_replace('@GetStyles@', 'qgs:GetStyles', $data);
+        $url = $this->services->wmsServerURL.'?';
+
+        $bparams = http_build_query($this->params);
+        $querystring = $url . $bparams;
+
+        // Get remote data
+        $getRemoteData = $this->lizmapCache->getRemoteData(
+          $querystring,
+          $this->services->proxyMethod,
+          $this->services->debugMode
+        );
+        $data = $getRemoteData[0];
+        $mime = $getRemoteData[1];
+
+        // Replace qgis server url in the XML (hide real location)
+        $sUrl = jUrl::getFull(
+          "lizmap~service:index",
+          array("repository"=>$this->repository->getKey(), "project"=>$this->project->getKey()),
+          0,
+          $_SERVER['SERVER_NAME']
+        );
+        $sUrl = str_replace('&', '&amp;', $sUrl);
+        $data = preg_replace('/xlink\:href=".*"/', 'xlink:href="'.$sUrl.'&amp;"', $data);
+
+        // Remove no interoparable elements
+        $data = preg_replace('@<GetPrint[^>]*?>.*?</GetPrint>@si', '', $data);
+        $data = preg_replace('@<ComposerTemplates[^>]*?>.*?</ComposerTemplates>@si', '', $data);
+
+        if ( preg_match( '@WMS_Capabilities@i', $data) ) {
+            // Update namespace
+            $schemaLocation = "http://www.opengis.net/wms";
+            $schemaLocation .= " http://schemas.opengis.net/wms/1.3.0/capabilities_1_3_0.xsd";
+            $schemaLocation .= " http://www.opengis.net/sld";
+            $schemaLocation .= " http://schemas.opengis.net/sld/1.1.0/sld_capabilities.xsd";
+            $schemaLocation .= " http://www.qgis.org/wms";
+            $schemaLocation .= " ". $sUrl ."SERVICE=WMS&amp;REQUEST=GetSchemaExtension";
+            $data = preg_replace('@xsi:schemaLocation=".*?"@si', 'xsi:schemaLocation="'.$schemaLocation.'"', $data);
+            if ( !preg_match( '@xmlns:qgs@i', $data) ) {
+              $data = preg_replace('@xmlns="http://www.opengis.net/wms"@', 'xmlns="http://www.opengis.net/wms" xmlns:qgs="http://www.qgis.org/wms"', $data);
+              $data = preg_replace('@GetStyles@', 'qgs:GetStyles', $data);
+            }
+            if ( !preg_match( '@xmlns:sld@i', $data) ) {
+              $data = preg_replace('@xmlns="http://www.opengis.net/wms"@', 'xmlns="http://www.opengis.net/wms" xmlns:sld="http://www.opengis.net/sld"', $data);
+              $data = preg_replace('@GetLegendGraphic@', 'sld:GetLegendGraphic', $data);
+            }
         }
-        if ( !preg_match( '@xmlns:sld@i', $data) ) {
-          $data = preg_replace('@xmlns="http://www.opengis.net/wms"@', 'xmlns="http://www.opengis.net/wms" xmlns:sld="http://www.opengis.net/sld"', $data);
-          $data = preg_replace('@GetLegendGraphic@', 'sld:GetLegendGraphic', $data);
-        }
+
+        // Add response to cache
+        jCache::set($cacheId . '_hash', $newhash);
+        jCache::set($cacheId . '_mime', $mime);
+        jCache::set($cacheId . '_data', $data);
+
     }
 
     // Return response
@@ -368,7 +391,7 @@ class serviceCtrl extends jController {
     $rep->outputFileName  =  'qgis_server_schema_extension';
     return $rep;
   }
-  
+
   /**
   * GetMap
   * @param string $repository Lizmap Repository
