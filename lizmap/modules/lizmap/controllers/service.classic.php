@@ -208,9 +208,15 @@ class serviceCtrl extends jController {
           if($isConnected){
             $user = jAuth::getUserSession();
             $login = $user->login;
-            $userGroups = jAcl2DbUserGroup::getGroups();
-            $flatGroups = implode("' , '", $userGroups);
-            $filter.= $v."$pre\"$attribute\" IN ( '".$flatGroups."' , 'all' )";
+            if (property_exists($pConfig->loginFilteredLayers->$layername, 'filterPrivate')
+             && $pConfig->loginFilteredLayers->$layername->filterPrivate = 'True')
+            {
+              $filter.= $v."$pre\"$attribute\" IN ( '".$login."' , 'all' )";
+		    } else {
+              $userGroups = jAcl2DbUserGroup::getGroups();
+              $flatGroups = implode("' , '", $userGroups);
+              $filter.= $v."$pre\"$attribute\" IN ( '".$flatGroups."' , 'all' )";
+		    }
             $v = ';';
           }else{
             // The user is not authenticated: only show data with attribute = 'all'
