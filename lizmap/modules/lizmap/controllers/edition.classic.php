@@ -75,8 +75,11 @@ class editionCtrl extends jController {
 
   // Form controls
   private $formControls = '';
+  
+  // Filter override flag
+  private $loginFilteredOveride = False;
 
-  // Filter by login flag
+  // Filter by login information
   private $loginFilteredLayers = Null;
 
 
@@ -170,6 +173,7 @@ class editionCtrl extends jController {
     if( !jacl2::check('lizmap.tools.loginFilteredLayers.override', $lrep->getKey()) ){
       $this->loginFilteredLayers = True;
     }
+    $this->loginFilteredOveride = jacl2::check('lizmap.tools.loginFilteredLayers.override', $lrep->getKey());
 
     return true;
   }
@@ -191,7 +195,12 @@ class editionCtrl extends jController {
       if( property_exists($pConfig->loginFilteredLayers, $layername) ) {
         $v='';
         $where='';
+        $type='groups';
         $attribute = $pConfig->loginFilteredLayers->$layername->filterAttribute;
+        
+        if (property_exists($pConfig->loginFilteredLayers->$layername, 'filterPrivate')
+         && $pConfig->loginFilteredLayers->$layername->filterPrivate = 'True')
+          $type = 'login';
 
         // Check if a user is authenticated
         $isConnected = jAuth::isConnected();
@@ -199,10 +208,14 @@ class editionCtrl extends jController {
         if($isConnected){
           $user = jAuth::getUserSession();
           $login = $user->login;
-          $userGroups = jAcl2DbUserGroup::getGroups();
-          // Set XML Filter if getFeature request
-          $flatGroups = implode("' , '", $userGroups);
-          $where = ' "'.$attribute."\" IN ( '".$flatGroups."' , 'all' )";
+          if ( $type == 'login' ) {
+            $where = ' "'.$attribute."\" IN ( '".$login."' , 'all' )";
+		  } else {
+            $userGroups = jAcl2DbUserGroup::getGroups();
+            // Set XML Filter if getFeature request
+            $flatGroups = implode("' , '", $userGroups);
+            $where = ' "'.$attribute."\" IN ( '".$flatGroups."' , 'all' )";
+		  }
         }else{
           // The user is not authenticated: only show data with attribute = 'all'
           $where = ' "'.$attribute.'" = '.$cnx->quote("all");
@@ -210,7 +223,9 @@ class editionCtrl extends jController {
         // Set filter when multiple layers concerned
         if($where){
           $this->loginFilteredLayers = array(
-            'where' => $where
+            'where' => $where,
+            'type' => $type,
+            'attribute' => $attribute
           );
         }
       }
@@ -335,7 +350,6 @@ class editionCtrl extends jController {
   * Dynamically add controls to the form based on QGIS layer information
   *
   * @param object $form Jelix form to add controls to.
-  * @param string $save If set, save the form data into the database : 'insert' or 'update'.
   * @return modified form.
   */
   private function addFormControls($form){
@@ -383,8 +397,7 @@ class editionCtrl extends jController {
       $this->formControls[$fieldName] = new qgisFormControl($fieldName, $edittype, $aliasXml, $categoriesXml, $prop);
 
       // Fill comboboxes of editType "Value relation" from relation layer
-      // Query QGIs Server via WFS
-
+      // Query QGIS Server via WFS
       if( ($this->formControls[$fieldName]->fieldEditType == 15
       or $this->formControls[$fieldName]->fieldEditType == 'ValueRelation')
         and $this->formControls[$fieldName]->valueRelationData
@@ -405,6 +418,108 @@ class editionCtrl extends jController {
       return false;
     }
 
+    return True;
+  }
+
+
+  /**
+  * Dynamically update form by modifying the filter by login control
+  *
+  * @param object $form Jelix form to modify control.
+  * @param string $save does the form will be used for update or insert.
+  * @return modified form.
+  */
+  private function updateFormByLogin($form, $save) {
+    if( !is_array($this->loginFilteredLayers) ) //&& $this->loginFilteredOveride )
+        $this->filterDataByLogin($this->layerName);
+      
+	if ( is_array($this->loginFilteredLayers) ) {
+		$type = $this->loginFilteredLayers['type'];
+		$attribute = $this->loginFilteredLayers['attribute'];
+        //jLog::log('updateFormByLogin', 'error');
+    
+        // Check if a user is authenticated    
+        if ( !jAuth::isConnected() )
+            return True;
+    
+        $user = jAuth::getUserSession();
+        if( !$this->loginFilteredOveride ){
+            if ( $type == 'login' ) {
+                $user = jAuth::getUserSession();
+                $form->setData($attribute, $user->login);
+                $form->setReadOnly($attribute, True);
+            } else {
+                $oldCtrl = $form->getControl( $attribute );
+                $userGroups = jAcl2DbUserGroup::getGroups();
+                $userGroups[] = 'all';
+                $uGroups = array();
+                foreach( $userGroups as $uGroup ) {
+                    //jLog::log('updateFormByLogin '.$uGroup, 'error');
+                    if ($uGroup != 'users' and substr( $uGroup, 0, 7 ) != "__priv_")
+                        $uGroups[$uGroup] = $uGroup;
+                }
+                $dataSource = new jFormsStaticDatasource();
+                $dataSource->data = $uGroups;
+                $ctrl = new jFormsControlMenulist($attribute);
+                $ctrl->required = true;
+                if ( $oldCtrl != null )
+                    $ctrl->label = $oldCtrl->label;
+                else
+                    $ctrl->label = $attribute;
+                $ctrl->datasource = $dataSource;
+                $value = null;
+                if ( $oldCtrl != null ) {
+                    $value = $form->getData( $attribute );
+                    $form->removeControl( $attribute );
+                }
+                $form->addControl( $ctrl );
+                if ( $value != null )
+                    $form->setData( $attribute, $value );
+            }
+        } else {
+            $oldCtrl = $form->getControl( $attribute );
+            $value = null;
+            if ( $oldCtrl != null )
+                $value = $form->getData( $attribute );
+            
+            $data = array();
+            if ( $type == 'login' ) {
+                $plugin = jApp::coord()->getPlugin('auth');
+                if ($plugin->config['driver'] == 'Db') {
+                    $authConfig = $plugin->config['Db'];
+                    $dao = jDao::get($authConfig['dao'], $authConfig['profile']);
+                    $cond = jDao::createConditions();
+                    $cond->addItemOrder('login', 'asc');
+                    $us = $dao->findBy($cond);
+                    foreach($us as $u){
+                        $data[$u->login] = $u->login;
+                    }
+                }
+            } else {
+                $gp = jAcl2DbUserGroup::getGroupList();
+                foreach($gp as $g){
+                    if ( $g->id_aclgrp != 'users' )
+                        $data[$g->id_aclgrp] = $g->id_aclgrp;
+                }
+                $data['all'] = 'all';
+            }
+            $dataSource = new jFormsStaticDatasource();
+            $dataSource->data = $data;
+            $ctrl = new jFormsControlMenulist($attribute);
+            $ctrl->required = true;
+            if ( $oldCtrl != null )
+                $ctrl->label = $oldCtrl->label;
+            else
+                $ctrl->label = $attribute;
+            $ctrl->datasource = $dataSource;
+            $form->removeControl( $attribute );
+            $form->addControl( $ctrl );
+            if ( $value != null )
+                $form->setData( $attribute, $value );
+            else if ( $type == 'login' )
+              $form->setData( $attribute, $user->login );
+        }
+	}
     return True;
   }
 
@@ -444,7 +559,7 @@ class editionCtrl extends jController {
       $expFilter = $filterExpression;
     }
     // Filter by login
-    if( $this->loginFilteredLayers ) {
+    if( !$this->loginFilteredOveride ) {
       $this->filterDataByLogin($layerName);
       if( is_array( $this->loginFilteredLayers )){
         if($expFilter){
@@ -629,7 +744,7 @@ class editionCtrl extends jController {
         $v = " AND ";
       }
       // Add login filter if needed
-      if( $this->loginFilteredLayers ) {
+      if( !$this->loginFilteredOveride ) {
         $this->filterDataByLogin($this->layerName);
         if( is_array( $this->loginFilteredLayers ) ){
           $sql.= ' AND '.$this->loginFilteredLayers['where'];
@@ -715,8 +830,8 @@ class editionCtrl extends jController {
       $sql.= ' AND '.$this->whereClause;
 
     // Filter by login if needed
-    if( $this->loginFilteredLayers ) {
-      $this->filterDataByLogin($this->layername);
+    if( !$this->loginFilteredOveride ) {
+      $this->filterDataByLogin($this->layerName);
       if( is_array( $this->loginFilteredLayers )){
         $sql .= ' AND '.$this->loginFilteredLayers['where'];
       }
@@ -916,6 +1031,7 @@ class editionCtrl extends jController {
     // SELECT data from the database and set the form data accordingly
     if($this->featureId)
       $this->setFormDataFromFields($form);
+      
 
     // If the user has been redirected here from the saveFeature method
     // Set the form controls data from the request parameters
@@ -928,6 +1044,9 @@ class editionCtrl extends jController {
         unset($_SESSION[$token.$this->layerId]);
       }
     }
+    $this->updateFormByLogin($form, False);
+    $attribute = $this->loginFilteredLayers['attribute'];
+    //jLog::log('updateFormByLogin '.json_encode($this->loginFilteredLayers), 'error');
 
     // Get title layer
     $layerXmlZero = $this->layerXml[0];
@@ -1104,7 +1223,7 @@ class editionCtrl extends jController {
       $v = " AND ";
     }
     // Add login filter if needed
-    if( $this->loginFilteredLayers ) {
+    if( !$this->loginFilteredOveride ) {
       $this->filterDataByLogin($this->layerName);
       if( is_array( $this->loginFilteredLayers ) ){
         $sql.= ' AND '.$this->loginFilteredLayers['where'];
