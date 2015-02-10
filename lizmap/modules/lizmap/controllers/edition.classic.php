@@ -601,7 +601,8 @@ class editionCtrl extends jController {
       }
       $dataSource = new jFormsStaticDatasource();
       // orderByValue
-      if(strtolower($this->formControls[$fieldName]->valueRelationData['orderByValue']) == 'true')
+      if ( strtolower($this->formControls[$fieldName]->valueRelationData['orderByValue']) == 'true'
+        || strtolower($this->formControls[$fieldName]->valueRelationData['orderByValue']) == '1' )
         asort($data);
       $dataSource->data = $data;
       $this->formControls[$fieldName]->ctrl->datasource = $dataSource;
