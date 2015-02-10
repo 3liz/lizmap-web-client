@@ -607,7 +607,8 @@ class editionCtrl extends jController {
       $dataSource->data = $data;
       $this->formControls[$fieldName]->ctrl->datasource = $dataSource;
       // required
-      if(strtolower($this->formControls[$fieldName]->valueRelationData['allowNull']) == 'false')
+      if ( strtolower($this->formControls[$fieldName]->valueRelationData['allowNull']) == 'false' 
+        || strtolower($this->formControls[$fieldName]->valueRelationData['allowNull']) == '0' )
         $this->formControls[$fieldName]->ctrl->required = True;
     }
     else{
