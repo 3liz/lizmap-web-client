@@ -2036,6 +2036,8 @@ var lizMap = function() {
       $('#togglePrint').parent().remove();
       return false;
     }
+    if ( scales[0] < scales[scales.length-1] )
+      scales.reverse();
 
     var scaleOptions = '';
     for( var i=0, len=scales.length; i<len; i++ ){
