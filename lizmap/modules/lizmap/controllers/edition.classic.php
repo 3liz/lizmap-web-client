@@ -624,12 +624,28 @@ class editionCtrl extends jController {
 
 
   /**
+  * Set the form controls data from the database default value
+  *
+  * @param object $form Jelix jForm object
+  * @return Boolean True if filled form
+  */
+  public function setFormDataFromDefault( $form ) {
+      foreach ( $this->dataFields as $ref=>$prop ) {
+          if ( $prop->hasDefault )
+              $form->setData( $ref, $prop->default );
+      }
+      return true;
+  }
+
+
+  /**
   * Set the form controls data from the database value
   *
   * @param object $form Jelix jForm object
   * @return Boolean True if filled form
   */
-  public function setFormDataFromFields($form){
+  public function setFormDataFromFields( $form ) {
+      $this->setFormDataFromDefault($form);
 
     // Get database connection object
     $cnx = jDb::getConnection($this->layerId);
@@ -1033,6 +1049,8 @@ class editionCtrl extends jController {
     // SELECT data from the database and set the form data accordingly
     if($this->featureId)
       $this->setFormDataFromFields($form);
+    else
+      $this->setFormDataFromDefault($form);
       
 
     // If the user has been redirected here from the saveFeature method
