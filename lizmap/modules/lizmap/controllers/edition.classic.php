@@ -606,6 +606,7 @@ class editionCtrl extends jController {
         asort($data);
       $dataSource->data = $data;
       $this->formControls[$fieldName]->ctrl->datasource = $dataSource;
+      $this->formControls[$fieldName]->ctrl->emptyItemLabel = '';
       // required
       if ( strtolower($this->formControls[$fieldName]->valueRelationData['allowNull']) == 'false' 
         || strtolower($this->formControls[$fieldName]->valueRelationData['allowNull']) == '0' )
