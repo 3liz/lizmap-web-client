@@ -87,6 +87,20 @@ class qgisVectorLayer extends qgisMapLayer{
       return $fields;
   }
 
+  public function getAliasFields() {
+      $fields = $this->getFields();
+      $aliases = array();
+      foreach( $fields as $f ) {
+          $aliases[$f] = $f;
+          $alias = $this->xmlLayer->xpath("aliases/alias[@field='".$f."']");
+          if( count($alias) != 0 ) {
+            $alias = $alias[0];
+            $aliases[$f] = (string)$alias['name'];
+          }
+      }
+      return $aliases;
+  }
+
   public function getWfsFields() {
       $fields = $this->getFields();
       $excludeFields = $this->xmlLayer->xpath(".//excludeAttributesWFS/attribute");

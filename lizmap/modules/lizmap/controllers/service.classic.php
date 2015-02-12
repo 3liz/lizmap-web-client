@@ -888,10 +888,24 @@ class serviceCtrl extends jController {
 
     // Return response
     $rep = $this->getResponse('binary');
+    /*
     if(preg_match('#^GML#', $this->params['outputformat']))
       $rep->mimeType = 'text/xml';
     else
       $rep->mimeType = 'text/json';
+      * */
+    $rep->mimeType = $mime;
+    if ( $mime == 'text/plain' && strtolower( $this->params['outputformat'] ) == 'geojson' ) {
+        $rep->mimeType = 'text/json';
+        $layer = $this->project->findLayerByName( $this->params['typename'] );
+        if ( $layer != null ) {
+            $layer = $this->project->getLayer( $layer->id );
+            $aliases = $layer->getAliasFields();
+            $layer = json_decode( $data );
+            $layer->aliases = (object) $aliases;
+            $data = json_encode( $layer );
+        }
+    }
     $rep->content = $data;
     $rep->doDownload  =  false;
     $rep->outputFileName  =  'qgis_server_wfs';

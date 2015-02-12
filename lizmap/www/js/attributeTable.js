@@ -370,7 +370,10 @@ var lizAttributeTable = function() {
               config.attributeLayers[aName]['features'] = features;
               html+= '<tr>';
               for (var idx in features[0].properties){
-                html+='<th>' + idx + '</th>';
+                  if ( 'aliases' in data && idx in data.aliases )
+                    html+='<th>' + data.aliases[idx] + '</th>';
+                  else
+                    html+='<th>' + idx + '</th>';
               }
               html+='<th></th>';
               html+='</tr>';
