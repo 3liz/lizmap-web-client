@@ -463,6 +463,7 @@ var lizMap = function() {
             ,styles:(extConfig.styles) ? extConfig.styles : ''
             ,crs:(extConfig.crs) ? extConfig.crs : 'EPSG:3857'
             ,format:(extConfig.format) ? extConfig.format : 'image/png'
+            ,transparent:(extConfig.transparent) ? extConfig.transparent : 'true'
             ,exceptions:'application/vnd.ogc.se_inimage'
           }
         }
