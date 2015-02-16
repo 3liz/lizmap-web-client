@@ -34,6 +34,7 @@ class myHtmlMapResponse extends jResponseHtml {
     $this->addCSSLink($bp.'css/map.css');
     $this->addCSSLink($bp.'css/media.css');
     $this->addStyle('[class^="icon-"], [class*=" icon-"]','background-image: url(\''.$bp.'css/images/glyphicons-halflings.png\')');
+    $this->addStyle('.icon-white','background-image: url(\''.$bp.'css/images/glyphicons-halflings-white.png\')');
 
 #    $this->addCSSLink($bp.'css/bootstrap-responsive.css');
 
