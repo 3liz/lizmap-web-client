@@ -116,13 +116,17 @@ class lizmapCache {
     static public function getServiceData( $repository, $project, $params ) {
 
         // Get cache if exists
-        $key = md5( serialize( $params ) );
+        $keyParams = $params;
+        if( array_key_exists( 'map', $keyParams ) ){
+            unset($keyParams['map']);
+        }
+        $key = md5( serialize( $keyParams ) );
 
         $layers = str_replace(',', '_', $params['layers'] );
         $crs = preg_replace('#[^a-zA-Z0-9_]#', '_', $params['crs']);
 
         $profile = 'lizmapCache_'.$repository.'_'.$project.'_'.$layers.'_'.$crs;
-        lizmapCache::createVirtualProfile( $repository, $project, $layers, $crs);
+        lizmapCache::createVirtualProfile( $repository, $project, $layers, $crs );
         $tile = jCache::get( $key, $profile );
 
         if( $tile ){
@@ -280,7 +284,11 @@ class lizmapCache {
         // Store into cache if needed
         if( $useCache ) {
             //~ jLog::log( ' Store into cache');
-            jCache::set( $key, $data, null, $profile );
+            $cacheExpiration = (int)$ser->cacheExpiration;
+            if(property_exists($configLayer, 'cacheExpiration'))
+                $cacheExpiration = (int)$configLayer->cacheExpiration;
+
+            jCache::set( $key, $data, $cacheExpiration, $profile );
         }
 
         return $data;
@@ -294,10 +302,9 @@ class lizmapCache {
         // Storage type
         $ser = lizmap::getServices();
         $cacheStorageType = $ser->cacheStorageType;
-        // Expiration time : take default one or layer specified
+        // Expiration time : take default one
         $cacheExpiration = (int)$ser->cacheExpiration;
-        if(property_exists($configLayer, 'cacheExpiration'))
-            $cacheExpiration = (int)$configLayer->cacheExpiration;
+
         // Cache root directory
         $cacheRootDirectory = $ser->cacheRootDirectory;
         if(!is_writable($cacheRootDirectory) or !is_dir($cacheRootDirectory)){
