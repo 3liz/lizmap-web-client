@@ -84,6 +84,11 @@ class createdaoCommand extends JelixScriptCommand {
 
          $properties='';
          $primarykeys='';
+
+         if(empty($fields)) {
+            throw new Exception("The table ".$param['table']." does not exist.");
+         }
+
          foreach($fields as $fieldname=>$prop){
 
             $name = str_replace('-', '_', $fieldname);

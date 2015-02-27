@@ -58,4 +58,35 @@ class jSoapRequest extends jRequest {
 
     protected function _initParams(){}
 
+    /**
+    * Gets the value of a request parameter. If not defined, gets its default value.
+    * @param string  $name           the name of the request parameter
+    * @param mixed   $defaultValue   the default returned value if the parameter doesn't exists
+    * @param boolean $useDefaultIfEmpty true: says to return the default value if the parameter value is ""
+    * @return mixed the request parameter value
+    */
+    public function getParam($name, $defaultValue=null, $useDefaultIfEmpty=false){
+        if (!isset($this->params[$name])) {
+            return $defaultValue;
+        }
+        // we cannot use the empty() function because 0 returns true. And maybe we want 0
+        // as a normal value...
+        if (is_scalar($this->params[$name])) {
+            if ($useDefaultIfEmpty && trim($this->params[$name]) == '' ) {
+                return $defaultValue;
+            }
+            else {
+                return $this->params[$name];
+            }
+        }
+        else{
+            // array or object
+            if ( $useDefaultIfEmpty && empty($this->params[$name]) ) {
+                return $defaultValue;
+            }
+            else {
+                return $this->params[$name];
+            }
+        }
+    }
 }

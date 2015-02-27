@@ -101,7 +101,7 @@ class jBasicErrorHandler {
             echo 'Error during initialization: \n';
             foreach(self::$initErrorMessages as $err) {
                 @error_log($err->getFormatedMessage()."\n", 3, jApp::logPath('errors.log'));
-                echo '* '.$err->getMessage().' ('.$e->getFile().' '.$e->getLine().")\n";
+                echo '* '.$err->getMessage().' ('.$err->getFile().' '.$err->getLine().")\n";
             }
 
             @error_log($errorLog->getFormatedMessage()."\n", 3, jApp::logPath('errors.log'));

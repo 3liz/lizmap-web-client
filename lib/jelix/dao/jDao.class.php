@@ -3,7 +3,7 @@
 * @package    jelix
 * @subpackage dao
 * @author     Laurent Jouanneau
-* @copyright   2005-2006 Laurent Jouanneau
+* @copyright   2005-2014 Laurent Jouanneau
 * @link        http://www.jelix.org
 * @licence  http://www.gnu.org/licenses/lgpl.html GNU Lesser General Public Licence, see LICENCE file
 */
@@ -56,7 +56,7 @@ class jDao {
     public static function get ($DaoId, $profile='') {
 
        $sel = new jSelectorDao($DaoId, $profile);
-       $DaoId = $sel->toString ();
+       $DaoId = $sel->toString ().'#'.$profile;
 
         if (! isset (self::$_daoSingleton[$DaoId])){
             self::$_daoSingleton[$DaoId] = self::create ($sel,$profile);
