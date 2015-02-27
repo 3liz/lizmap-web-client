@@ -394,6 +394,7 @@ class jAuth {
     /**
      * generate a password with random letters, numbers and special characters
      * @param int $length the length of the generated password
+     * @param boolean $withoutSpecialChars (optional, default false) the generated password may be use this characters : !@#$%^&*?_,~
      * @return string the generated password
      */
     public static function getRandomPassword($length = 10, $withoutSpecialChars = false){

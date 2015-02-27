@@ -90,6 +90,8 @@ class jCoordinator {
 
         $config = jApp::config();
         foreach ($config->coordplugins as $name=>$conf) {
+            if (strpos($name, '.') !== false)
+                continue;
             // the config compiler has removed all deactivated plugins
             // so we don't have to check if the value $conf is empty or not
             if ($conf == '1') {
@@ -106,6 +108,8 @@ class jCoordinator {
             }
             include_once($config->_pluginsPathList_coord[$name].$name.'.coord.php');
             $class= $name.'CoordPlugin';
+            if (isset($config->coordplugins[$name.'.name']))
+                $name = $config->coordplugins[$name.'.name'];
             $this->plugins[strtolower($name)] = new $class($conf);
         }
     }

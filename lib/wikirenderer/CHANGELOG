@@ -1,6 +1,25 @@
 Changelog of WikiRenderer
 
+Version 3.1.6
+
+- Fixed issue with htmlspecialchars + PHP 5.4+: added a charset parameter in the configuration
+
+Version 3.1.5
+
+- improvements into the dokuwiki_to_docbook rules
+
+Version 3.1.4
+
+- Improved WikiRendererConfig::processLink. It returns now the url and the label
+
+Version 3.1.3
+
+- WikiRendererConfig contains now a processLink method so it is easier to reuse an existing rules with a different link process without redefining classes
+- fixed wr to wr3 convertion
+- wr3 rules: tags should be ignored inside the code tag, so we don't have to escape every reserved characters
+
 Version 3.1.2
+
 - fixed bug on dokuwiki_to_xhtml rules
 
 Version 3.1.1

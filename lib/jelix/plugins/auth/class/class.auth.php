@@ -63,14 +63,14 @@ interface jIAuthDriverClass {
     /**
     * change the password of a user
     * @param string $login the user login
-    * @param string $password the new encrypted password
+    * @param string $cryptedpassword the new encrypted password
     */
     public function updatePassword($login, $cryptedpassword);
 
     /**
     * get the user corresponding to the given login and encrypted password
     * @param string $login the user login
-    * @param string $password the new encrypted password
+    * @param string $cryptedpassword the new encrypted password
     * @return object user informations
     * @deprecated since 1.2.10
     */

@@ -147,7 +147,7 @@ class dkdbk_link extends WikiTagXml {
         list($href,$label) = $this->config->processLink($this->wikiContentArr[0], $this->name);
 
         if ($cnt == 1 ) {
-            $label = htmlspecialchars($label, ENT_NOQUOTES);
+            $label = $this->_doEscape($label);
         } else {
             $label = $this->contents[1];
         }
@@ -156,10 +156,10 @@ class dkdbk_link extends WikiTagXml {
             return $label;
         
         if(preg_match("/^\#(.+)$/", $href, $m)) {
-            return '<link linkterm="'.htmlspecialchars(trim($m[1])).'">'.$label.'</link>';
+            return '<link linkterm="'.$this->_doEscape(trim($m[1])).'">'.$label.'</link>';
         }
         else
-            return '<ulink url="'.htmlspecialchars(trim($href)).'">'.$label.'</ulink>';
+            return '<ulink url="'.$this->_doEscape(trim($href)).'">'.$label.'</ulink>';
     }
 }
 
@@ -176,7 +176,7 @@ class dkdbk_nowiki_inline extends WikiTagXml {
     public $beginTag='<nowiki>';
     public $endTag='</nowiki>';
     public function getContent(){
-        return '<phrase>'.htmlspecialchars($this->wikiContentArr[0], ENT_NOQUOTES).'</phrase>';
+        return '<phrase>'.$this->_doEscape($this->wikiContentArr[0]).'</phrase>';
     }
 }
 
@@ -220,7 +220,7 @@ class dkdbk_image extends WikiTagXml {
             $href= $m[2];
         }
         list($href, $label) = $this->config->processLink($href, $this->name);
-        $tag = '<inlinemediaobject><imageobject><imagedata fileref="'.htmlspecialchars($href, ENT_NOQUOTES).'"';
+        $tag = '<inlinemediaobject><imageobject><imagedata fileref="'.$this->_doEscape($href).'"';
         if($width != '')
             $tag.=' contentwidth="'.$width.'px"';
         if($height != '')
@@ -230,7 +230,7 @@ class dkdbk_image extends WikiTagXml {
 
         $tag .='/></imageobject>';
         if($title != '') 
-                $tag.='<textobject><phrase>'.htmlspecialchars($title, ENT_NOQUOTES).'</phrase></textobject>';
+                $tag.='<textobject><phrase>'.$this->_doEscape($title).'</phrase></textobject>';
 
         return $tag.'</inlinemediaobject>';
     }
@@ -446,7 +446,7 @@ class dkdbk_table_row extends WikiTag {
     protected $columns = array('');
 
     protected function _doEscape($string){
-        return htmlspecialchars($string, ENT_NOQUOTES);
+        return htmlspecialchars($string, ENT_NOQUOTES, $this->config->charset);
     }
 
     /**
@@ -591,7 +591,7 @@ class dkdbk_syntaxhighlight extends WikiRendererBloc {
    }
 
     public function getRenderedLine(){
-        return htmlspecialchars($this->_detectMatch, ENT_NOQUOTES);
+        return htmlspecialchars($this->_detectMatch, ENT_NOQUOTES, $this->engine->getConfig()->charset);
     }
 
     public function detect($string){

@@ -121,7 +121,7 @@ class DokuWikiTag extends WikiTagXhtml {
                 $str.= substr($string, $begin, $len);
                 $begin = $match[0][1] + strlen($match[0][0]);
                 list($href, $label) = $this->config->processLink($match[2][0], $this->name);
-                $str.='<a href="'.htmlspecialchars($href).'">'.htmlspecialchars($label).'</a>';
+                $str.='<a href="'.$this->_doEscape($href).'">'.$this->_doEscape($label).'</a>';
             }
             if($begin < strlen($string))
                 $str.= substr($string, $begin);
@@ -192,7 +192,7 @@ class dkxhtml_link extends WikiTagXhtml {
         $cnt=($this->separatorCount + 1 > $cntattr?$cntattr:$this->separatorCount+1);
         list($href, $label) = $this->config->processLink($this->wikiContentArr[0], $this->name);
         if($cnt == 1 ){
-            return '<a href="'.htmlspecialchars(trim($href)).'">'.htmlspecialchars($label).'</a>';
+            return '<a href="'.$this->_doEscape(trim($href)).'">'.$this->_doEscape($label).'</a>';
         }else{
             $this->wikiContentArr[0] = $href;
             return parent::getContent();
@@ -220,7 +220,7 @@ class dkxhtml_nowiki_inline extends WikiTagXhtml {
     public $beginTag='<nowiki>';
     public $endTag='</nowiki>';
     public function getContent(){
-        return '<div>'.htmlspecialchars($this->wikiContentArr[0]).'</div>';
+        return '<div>'.$this->_doEscape($this->wikiContentArr[0]).'</div>';
     }
 }
 
@@ -273,7 +273,7 @@ class dkxhtml_image extends WikiTagXhtml {
             $tag.=' align="'.$align.'"';
 
         if($title != '') 
-            $tag.=' title="'.htmlspecialchars($title).'"';
+            $tag.=' title="'.$this->_doEscape($title).'"';
 
         return $tag.' />';
     }
@@ -486,7 +486,7 @@ class dkxhtml_table_row extends WikiTag {
     protected $columns = array('');
 
     protected function _doEscape($string){
-        return htmlspecialchars($string);
+        return htmlspecialchars($string, ENT_COMPAT, $this->config->charset);
     }
 
     /**
@@ -631,7 +631,7 @@ class dkxhtml_syntaxhighlight extends WikiRendererBloc {
    }
 
     public function getRenderedLine(){
-        return htmlspecialchars($this->_detectMatch);
+        return htmlspecialchars($this->_detectMatch, ENT_COMPAT, $this->engine->getConfig()->charset);
     }
 
     public function detect($string){

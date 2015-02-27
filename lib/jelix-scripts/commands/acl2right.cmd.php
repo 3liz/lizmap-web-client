@@ -23,12 +23,16 @@ ACTION:
  * list
  * add groupid sujet [resource]
  * [-allres] remove groupid sujet [resource]
- * subject_create subject labelkey [grouplabelkey [label]]
+ * subject_create subject labelkey [grouplabelkey [subjectlabel]]
+        Si subjectlabel est donné, le label et sa clé labelkey sera
+        créé dans le fichier indiqué par la clé.
  * subject_delete subject
  * subject_list
  * subject_group_list
  * subject_group_create group labelkey
  * subject_group_delete group labelkey
+
+ labelkey est le selecteur d'une chaine pour jLocale.
 
 ",
         'en'=>"
@@ -38,12 +42,16 @@ ACTION:
  * list
  * add  groupid subject [resource]
  * [-allres] remove groupid subject [resource]
- * subject_create subject labelkey [grouplabelkey [label]]
+ * subject_create subject labelkey [grouplabelkey [subjectlabel]]
+    if subjectlabel is given, it will be stored in the properties file
+    indicated by the labelkey.
  * subject_delete subject
  * subject_list
  * subject_group_list
  * subject_group_create group labelkey
  * subject_group_delete group labelkey
+
+ labelkey is a jLocale selector of a label.
 ",
     );
 

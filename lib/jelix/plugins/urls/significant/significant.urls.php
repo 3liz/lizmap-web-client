@@ -264,7 +264,7 @@ class significantUrlEngine implements jIUrlEngine {
                 // let's merge static parameters
                 if ($staticValues) {
                     foreach ($staticValues as $n=>$v) {
-                        if ($v[0] == '$') { // special statique value
+                        if (!empty($v) && $v[0] == '$') { // special statique value
                             $typeStatic = $v[1];
                             $v = substr($v,2);
                             if ($typeStatic == 'l')
@@ -414,7 +414,7 @@ class significantUrlEngine implements jIUrlEngine {
                     // specialStatic are static values for which the url engine
                     // can compare not only with a given url parameter value, but
                     // also with a value stored some where (typically, a configuration value)
-                    $specialStatic = ($v[0] == '$');
+                    $specialStatic = (!empty($v) && $v[0] == '$');
                     $paramStatic = $url->getParam($n, null);
                     if ($specialStatic) { // special statique value
                         $typePS = $v[1];
