@@ -511,7 +511,7 @@ class serviceCtrl extends jController {
     $mime = $getRemoteData[1];
 
     // Get HTML content if needed
-    if($toHtml and preg_match('#/xml$#', $mime)){
+    if($toHtml and preg_match('#/xml#', $mime)){
       $data = $this->getFeatureInfoHtml($this->params, $data);
       $mime = 'text/html';
     }
