@@ -3655,13 +3655,12 @@ var lizMap = function() {
 
           // verifying the layer visibility for permalink
           if (verifyingVisibility) {
+            map.getControlsByClass('OpenLayers.Control.ArgParser')[0].configureLayers();
             for (var i=0,len=layers.length; i<len; i++) {
               var l = layers[i];
-              if ( (hrefParam.layers && l.getVisibility())
-                || (!hrefParam.layers && l.isVisible) )
-              {
+              var btn = $('#switcher button.checkbox[name="layer"][value="'+l.name+'"]');
+              if ( (hrefParam.layers && l.getVisibility() != btn.hasClass('checked') ) )
                 $('#switcher button.checkbox[name="layer"][value="'+l.name+'"]').click();
-              }
             }
           }
 
