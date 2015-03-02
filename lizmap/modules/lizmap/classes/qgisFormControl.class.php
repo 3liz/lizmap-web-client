@@ -306,6 +306,14 @@ class qgisFormControl{
           $this->isReadOnly = True;
         }
       }
+      // Also use "fieldEditable" property
+      else if( $this->edittype and property_exists($this->edittype[0]->attributes(), 'widgetv2type')
+       and property_exists($this->edittype[0]->widgetv2config->attributes(), 'fieldEditable') ) {
+        $editable = (integer)$this->edittype[0]->widgetv2config->attributes()->fieldEditable;
+        if ( $editable == 0 ) {
+          $this->isReadOnly = True;
+        }
+      }
     }
 
     // Required
