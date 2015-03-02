@@ -113,6 +113,8 @@ class popup{
           $attributeValue = $mediaUrl;
       }
 
+    } else {
+        $attributeValue = preg_replace('#\n#', '<br>', $attributeValue);
     }
 
     // Return the modified template or only the resulted attribute value
