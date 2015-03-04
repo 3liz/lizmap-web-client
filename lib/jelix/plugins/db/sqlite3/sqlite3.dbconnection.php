@@ -63,7 +63,10 @@ class sqlite3DbConnection extends jDbConnection {
 
     protected function _connect (){
         $db = $this->profile['database'];
-        if (preg_match('/^(app|lib|var)\:/', $db)) {
+        if (file_exists( $db )) {
+            $path = $db;
+        }
+        else if (preg_match('/^(app|lib|var)\:/', $db)) {
             $path = jFile::parseJelixPath( $db );
         }
         else {
