@@ -2248,30 +2248,29 @@ var lizMap = function() {
   }
 
   function drawPrintBox( aLayout, aLayer, aScale ) {
-    var center = map.getCenter();
     var size = aLayout.size;
     var units = map.getUnits();
     var unitsRatio = OpenLayers.INCHES_PER_UNIT[units];
     var w = size.width / 72 / unitsRatio * aScale / 2;
     var h = size.height / 72 / unitsRatio * aScale / 2;
-      if ( aLayer.features.length == 0 ) {
-          var center = map.getCenter();
-    var bounds = new OpenLayers.Bounds(center.lon - w, center.lat - h,
-    center.lon + w, center.lat + h);
-    var geom = bounds.toGeometry();
-          aLayer.addFeatures([
-              new OpenLayers.Feature.Vector( geom )
-          ]);
-      } else {
-    var feat = aLayer.features[0];
-          var center = feat.geometry.getBounds().getCenterLonLat();
-          var bounds = new OpenLayers.Bounds(center.lon - w, center.lat - h,
+    if ( aLayer.features.length == 0 ) {
+        var center = map.getCenter();
+        var bounds = new OpenLayers.Bounds(center.lon - w, center.lat - h,
             center.lon + w, center.lat + h);
-          var geom = bounds.toGeometry();
-    geom.id = feat.geometry.id;
-    feat.geometry = geom;
-      aLayer.drawFeature(feat);
-      }
+        var geom = bounds.toGeometry();
+        aLayer.addFeatures([
+            new OpenLayers.Feature.Vector( geom )
+        ]);
+    } else {
+        var feat = aLayer.features[0];
+        var center = feat.geometry.getBounds().getCenterLonLat();
+        var bounds = new OpenLayers.Bounds(center.lon - w, center.lat - h,
+            center.lon + w, center.lat + h);
+        var geom = bounds.toGeometry();
+        geom.id = feat.geometry.id;
+        feat.geometry = geom;
+        aLayer.drawFeature(feat);
+    }
     return true;
   }
 
@@ -2401,19 +2400,6 @@ var lizMap = function() {
       layer.setVisibility(false);
     } else
       layer = layer[0];
-    if ( layer.features.length == 0 )
-      layer.addFeatures([
-          new OpenLayers.Feature.Vector(
-            new OpenLayers.Geometry.Polygon([
-              new OpenLayers.Geometry.LinearRing([
-                new OpenLayers.Geometry.Point(-1, -1),
-                  new OpenLayers.Geometry.Point(1, -1),
-                  new OpenLayers.Geometry.Point(1, 1),
-                  new OpenLayers.Geometry.Point(-1, 1)
-              ])
-          ])
-        )
-      ]);
 
     // creating print menu
     for( var i=0, len= printCapabilities.layouts.length; i<len; i++ ){
@@ -2440,19 +2426,11 @@ var lizMap = function() {
           // draw print box
           drawPrintBox( layout, layer, scale );
 
-          //$('#button-print').parent().addClass('active');
-          //$('#print-menu .title .text').html(layout.name);
-          //$('#print-menu').show();
-          //updateSwitcherSize();
           mAddMessage(lizDict['print.activate'],'info',true).addClass('print');
           layer.setVisibility(true);
-          //evt.object.clickFeature(feat);
         },
         "deactivate": function(evt) {
           layer.setVisibility(false);
-          //$('#togglePrint').parent().removeClass('active');
-          //$('#print-menu').hide();
-          updateSwitcherSize();
           $('#message .print').remove();
           this.layout = null;
           layer.destroyFeatures();
@@ -2492,8 +2470,6 @@ var lizMap = function() {
         dragCtrl.layout = layout;
         dragCtrl.activate();
       }
-      //if ( $('#togglePrint ~ .dropdown-menu').is(':visible') )
-      //  $('#togglePrint').dropdown('toggle');
       return false;
     });
 
@@ -2561,23 +2537,26 @@ var lizMap = function() {
     map.events.on({
       "zoomend": function() {
         if ( dragCtrl.active && layer.getVisibility() ) {
-        // get scale
-      var scale = getPrintScale( printCapabilities.scales );
-      // update the select
-          $('#print-scale').val(scale);
-          // draw print box
-          drawPrintBox( dragCtrl.layout, layer, scale );
+            // get scale
+            var scale = getPrintScale( printCapabilities.scales );
+            // update the select
+            $('#print-scale').val(scale);
+            // draw print box
+            drawPrintBox( dragCtrl.layout, layer, scale );
         }
       }
     });
-    $('#button-print').click(function(){
-      var self = $(this);
-      if ( dragCtrl.active ) {
-          dragCtrl.deactivate();
-      } else {
-          $('#print-template').change();
-      }
-      return false;
+    lizMap.events.on({
+        minidockopened: function(e) {
+            if ( e.id == 'print' ) {
+                $('#print-template').change();
+            }
+        },
+        minidockclosed: function(e) {
+            if ( e.id == 'print' ) {
+                dragCtrl.deactivate();
+            }
+        }
     });
   }
 
@@ -2808,7 +2787,9 @@ var lizMap = function() {
 
       // edit layer events
       editLayer.events.on({
-        featureadded: function(evt) {
+            featureadded: function(evt) {
+                console.log('featureadded');
+                console.log('editCtrls.click.active: '+editCtrls.click.active);
           if ( editCtrls.click.active ) {
             editCtrls.click.deactivate();
             $('#lizmap-edition-message').remove();
@@ -2952,6 +2933,7 @@ var lizMap = function() {
           return false;
 
         //$('#edition-menu h3 span.title span.text').html(lizDict['edition.title']);
+        /*
         editCtrls.click.layerId = '';
         editCtrls.click.layerName = '';
         editCtrls.panel.deactivate();
@@ -2970,12 +2952,45 @@ var lizMap = function() {
         form.find('input[name="liz_geometryColumn"]').val('');
         form.find('input[name="liz_wkt"]').val('');
         form.find('input[name="liz_featureId"]').val('');
+        * */
         $('#button-edition').click();
         return false;
       });
 
+      /*
       $('#nav-tab-edition').click(function() {
         $('#edition-layer').change();
+      });
+      */
+      lizMap.events.on({
+            minidockopened: function(e) {
+                if ( e.id == 'edition' ) {
+                    $('#edition-layer').change();
+                }
+            },
+            minidockclosed: function(e) {
+                if ( e.id == 'edition' ) {
+                    editCtrls.click.layerId = '';
+                    editCtrls.click.layerName = '';
+                    editCtrls.panel.deactivate();
+                    editLayer.destroyFeatures();
+                    $('#edition-menu-draw').hide();
+                    $('#edition-draw-clear').addClass('disabled');
+                    $('#edition-draw-save').addClass('disabled');
+                    $('#edition-menu-select').hide();
+                    $('#edition-select-unselect').addClass('disabled');
+                    $('#edition-select-attr').addClass('disabled');
+                    $('#edition-select-undo').addClass('disabled');
+                    $('#edition-select-delete').addClass('disabled');
+                    $('#edition-menu-start').show();
+                    var form = $('#edition form');
+                    form.find('input[name="liz_srid"]').val('');
+                    form.find('input[name="liz_geometryColumn"]').val('');
+                    form.find('input[name="liz_wkt"]').val('');
+                    form.find('input[name="liz_featureId"]').val('');
+                    $('#lizmap-edition-message').remove();
+                }
+            }
       });
 
       $('#edition-select').click(function(){
@@ -3257,31 +3272,19 @@ var lizMap = function() {
     };
     measureControls.length.events.on({
       activate: function(evt) {
-        /*deactivateToolControls(evt);
-        $('#measure').parent().addClass('active');
-        $('#measure-length-menu').show();
-        updateSwitcherSize();*/
+        /*deactivateToolControls(evt);*/
         mAddMessage(lizDict['measure.activate.length'],'info',true).attr('id','lizmap-measure-message');
       },
       deactivate: function(evt) {
-        /*$('#measure').parent().removeClass('active');
-        $('#measure-length-menu').hide();
-        updateSwitcherSize();*/
         $('#lizmap-measure-message').remove();
       }
     });
     measureControls.area.events.on({
       activate: function(evt) {
-        /*deactivateToolControls(evt);
-        $('#measure').parent().addClass('active');
-        $('#measure-area-menu').show();
-        updateSwitcherSize();*/
+        /*deactivateToolControls(evt);*/
         mAddMessage(lizDict['measure.activate.area'],'info',true).attr('id','lizmap-measure-message');
       },
       deactivate: function(evt) {
-        /*$('#measure').parent().removeClass('active');
-        $('#measure-area-menu').hide();
-        updateSwitcherSize();*/
         $('#lizmap-measure-message').remove();
       }
     });
@@ -3303,16 +3306,10 @@ var lizMap = function() {
     };
     measureControls.perimeter.events.on({
       activate: function(evt) {
-        /*deactivateToolControls(evt);
-        $('#measure').parent().addClass('active');
-        $('#measure-perimeter-menu').show();
-        updateSwitcherSize();*/
+        /*deactivateToolControls(evt);*/
         mAddMessage(lizDict['measure.activate.perimeter'],'info',true).attr('id','lizmap-measure-message');
       },
       deactivate: function(evt) {
-        /*$('#measure').parent().removeClass('active');
-        $('#measure-perimeter-menu').hide();
-        updateSwitcherSize();*/
         $('#lizmap-measure-message').remove();
       }
     });
@@ -3347,24 +3344,6 @@ var lizMap = function() {
       });
       map.addControl(control);
       controls[key+'Measure'] = control;
-      /*
-      // click in the navbar
-      $('#measure-'+key).click(function() {
-        var keyId = $(this).attr('id').replace('measure-','');
-        if ( measureControls[keyId].active )
-          measureControls[keyId].deactivate();
-        else
-          measureControls[keyId].activate();
-        $('#measure').dropdown('toggle');
-        return false;
-      });
-      // click to stop
-      $('#measure-'+key+'-stop').click(function() {
-        var keyId = $(this).attr('id').replace('measure-','');
-        keyId = keyId.replace('-stop','');
-        measureControls[keyId].deactivate();
-      });
-      */
     }
     $('#measure-type').change(function() {
         var self = $(this);
@@ -3375,18 +3354,24 @@ var lizMap = function() {
         });
         measureControls[self.val()].activate();
     });
-    $('#button-measure').click(function() {
-        var activeCtrl = '';
-        $('#measure-type option').each(function() {
-            var val = $( this ).attr('value');
-            if ( val in measureControls && measureControls[val].active )
-              activeCtrl = val;
-        });
-        if ( activeCtrl == '' )
-          $('#measure-type').change();
-        else
-          measureControls[activeCtrl].deactivate();
-        return false;
+    lizMap.events.on({
+        minidockopened: function(e) {
+            if ( e.id == 'measure' ) {
+                $('#measure-type').change();
+            }
+        },
+        minidockclosed: function(e) {
+            if ( e.id == 'measure' ) {
+                var activeCtrl = '';
+                $('#measure-type option').each(function() {
+                    var val = $( this ).attr('value');
+                    if ( val in measureControls && measureControls[val].active )
+                        activeCtrl = val;
+                });
+                if ( activeCtrl != '' )
+                    measureControls[activeCtrl].deactivate();
+            }
+        }
     });
     return measureControls;
   }
@@ -3454,31 +3439,27 @@ var lizMap = function() {
           mAddMessage(lizDict['geolocation.failed'],'error',true);
       },
       "activate": function(evt) {
-        //$('#button-geolocation').parent().addClass('active');
-        //$('#geolocate-menu').show();
-        //updateSwitcherSize();
       },
       "deactivate": function(evt) {
         $('#geolocation .menu-content button').attr('disabled','disabled');
         vector.destroyFeatures();
-        //$('#button-geolocation').parent().removeClass('active');
-        //$('#geolocate-menu').hide();
-        //updateSwitcherSize();
-        //$('#geolocate-menu-bind').removeClass('btn-info active').addClass('btn-success');
-        //geolocate.bind = false;
       }
     });
     controls['geolocation'] = geolocate;
-    $('#nav-tab-geolocation').click(function() {
-        /*
-      if (geolocate.active)
-        geolocate.deactivate();
-      else
-        geolocate.activate();
-        */
-      if (!geolocate.active)
-        geolocate.activate();
-      return true;
+    lizMap.events.on({
+        minidockopened: function(e) {
+            if ( e.id == 'geolocation' ) {
+                if (!geolocate.active)
+                    geolocate.activate();
+            }
+        },
+        
+        minidockclosed: function(e) {
+            if ( e.id == 'geolocation' ) {
+                if (geolocate.active && !geolocate.getCurrentLocation() )
+                    geolocate.deactivate();
+            }
+        }
     });
     $('#geolocation-center').click(function(){
       if ( !geolocate.active )
@@ -3503,7 +3484,7 @@ var lizMap = function() {
     });
     $('#geolocation-stop').click(function(){
       if ( geolocate.active )
-      geolocate.deactivate();
+        geolocate.deactivate();
       $('#button-geolocation').click();
       return false;
     });
@@ -4068,13 +4049,20 @@ var lizMap = function() {
             var id = self.attr('href').substr(1);
             var tab = $('#nav-tab-'+id);
             if ( parent.hasClass('active') ) {
-              $('#'+id).removeClass('active');
-              tab.removeClass('active');
-              parent.removeClass('active');
+                $('#'+id).removeClass('active');
+                tab.removeClass('active');
+                parent.removeClass('active');
+                lizMap.events.triggerEvent( "minidockclosed", {'id':id} );
             } else {
-              self.parents('#mapmenu').find('.nav-minidock.active a').click();
-              tab.children('a').first().click();
-              parent.addClass('active');
+              //self.parents('#mapmenu').find('.nav-minidock.active a').click();
+                var oldActive = $('#mapmenu li.nav-minidock.active');
+                if ( oldActive.length != 0 ) {
+                    oldActive.removeClass('active');
+                    lizMap.events.triggerEvent( "minidockclosed", {'id': oldActive.children('a').first().attr('href').substr(1) } );
+                }
+                tab.children('a').first().click();
+                parent.addClass('active');
+                lizMap.events.triggerEvent( "minidockopened", {'id':id} );
             }
             self.blur();
             return false;
@@ -4091,24 +4079,30 @@ var lizMap = function() {
             var id = self.attr('href').substr(1);
             var tab = $('#nav-tab-'+id);
             if ( parent.hasClass('active') ) {
-              if ( tab.hasClass('active') ) {
-                var nextActive = tab.next(':visible');
-                if ( nextActive.length != 0 ) {
-                  nextActive.first().children('a').first().click();
-                } else {
-                  var prevActive = tab.prev(':visible');
-                  if ( prevActive.length != 0 )
-                    prevActive.first().children('a').first().click();
+                if ( tab.hasClass('active') ) {
+                    var nextActive = tab.next(':visible');
+                    if ( nextActive.length != 0 ) {
+                        nextActive.first().children('a').first().click();
+                    } else {
+                        var prevActive = tab.prev(':visible');
+                        if ( prevActive.length != 0 )
+                            prevActive.first().children('a').first().click();
+                    }
                 }
-              }
-              tab.hide();
-              tab.removeClass('active');
-              parent.removeClass('active');
+                tab.hide();
+                tab.removeClass('active');
+                parent.removeClass('active');
+                lizMap.events.triggerEvent( "dockclosed", {'id':id} );
             } else {
-              $('#mapmenu li.nav-dock').removeClass('active');
-              tab.show()
-              tab.children('a').first().click();
-              parent.addClass('active');
+                var oldActive = $('#mapmenu li.nav-dock.active');
+                if ( oldActive.length != 0 ) {
+                    oldActive.removeClass('active');
+                    lizMap.events.triggerEvent( "dockclosed", {'id': oldActive.children('a').first().attr('href').substr(1) } );
+                }
+                tab.show()
+                tab.children('a').first().click();
+                parent.addClass('active');
+                lizMap.events.triggerEvent( "dockopened", {'id':id} );
             }
             self.blur();
 
@@ -4146,7 +4140,8 @@ var lizMap = function() {
   // initializing the lizMap events
   obj.events = new OpenLayers.Events(
       obj, null,
-      ['treecreated','mapcreated','layersadded','uicreated'],
+      ['treecreated','mapcreated','layersadded','uicreated',
+       'dockopened','dockclosed'],
       true,
       {includeXY: true}
     );
