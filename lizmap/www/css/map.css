@@ -454,7 +454,7 @@ ul.nav.nav-tabs {
   right:10px;
   bottom:30px;
   left:10px;
-  overflow:auto;
+  overflow:hidden;
   padding:0.5em;
   background-color: #F0F0F0;
 }
