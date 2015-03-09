@@ -645,6 +645,14 @@ jFormsJQ.declareForm(jFormsJQ.tForm);
     }
 
     protected function outputCheckbox($ctrl, &$attr) {
+        $required = ($ctrl->required == false || $ctrl->isReadOnly()?'':' jforms-required');
+        $reqhtml = ($required?'<span class="jforms-required-star">*</span>':'');
+        $inError = (isset($this->_form->getContainer()->errors[$ctrl->ref]) ?' jforms-error':'');
+        $hint = ($ctrl->hint == ''?'':' title="'.htmlspecialchars($ctrl->hint).'"');
+        $id = $this->_name.'_'.$ctrl->ref;
+        $idLabel = ' id="'.$id.'_label"';
+        echo '<label class="jforms-label checkbox',$required,$inError,'" for="',$id,'"',$idLabel,$hint,'>';
+
         $value = $this->_form->getData($ctrl->ref);
 
         if($ctrl->valueOnCheck == $value){
@@ -655,6 +663,8 @@ jFormsJQ.declareForm(jFormsJQ.tForm);
         echo '<input';
         $this->_outputAttr($attr);
         echo $this->_endt;
+        
+        echo htmlspecialchars($ctrl->label),$reqhtml,"</label>\n";
     }
 
     protected function jsCheckbox($ctrl) {
