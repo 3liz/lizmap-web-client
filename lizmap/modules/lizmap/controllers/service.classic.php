@@ -970,6 +970,7 @@ class serviceCtrl extends jController {
     $content = $this->project->getProj4( $this->iParam('authid') );
     $content = (string)$content[0];
     $rep->content = $content;
+    $rep->setExpires("+300 seconds");
     return $rep;
   }
 
