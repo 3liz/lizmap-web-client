@@ -186,10 +186,13 @@ class lizmapCache {
 
         // Metatile : if needed, change the bbox
         // Avoid metatiling when the cache is not active for the layer
-        $metatileSize = False;
+        $metatileSize = '1,1';
         if(property_exists($configLayer, 'metatileSize'))
             if(preg_match('#^[3579],[3579]$#', $configLayer->metatileSize))
                 $metatileSize = $configLayer->metatileSize;
+        
+        # Metatile buffer
+        $metatileBuffer = 5;
 
         // Also checks if gd is installed
         if($metatileSize and $string2bool[$configLayer->cached] and $wmsClient == 'web'
@@ -199,9 +202,6 @@ class lizmapCache {
             $metatileSizeX = (int) $metatileSizeExp[0];
             $metatileSizeY = (int) $metatileSizeExp[1];
 
-            # Metatile buffer
-            $metatileBuffer = 0;
-
             # Get requested bbox
             $bboxExp = explode(',', $params['bbox']);
             $width = $bboxExp[2] - $bboxExp[0];
@@ -210,18 +210,18 @@ class lizmapCache {
             $xFactor = (int)($metatileSizeX / 2);
             $yFactor = (int)($metatileSizeY / 2);
             # Calculate the new bbox
-            $xmin = $bboxExp[0] - $xFactor * $width - $metatileBuffer;
-            $ymin = $bboxExp[1] - $yFactor * $height - $metatileBuffer;
-            $xmax = $bboxExp[2] + $xFactor * $width + $metatileBuffer;
-            $ymax = $bboxExp[3] + $yFactor * $height + $metatileBuffer;
+            $xmin = $bboxExp[0] - $xFactor * $width - $metatileBuffer * $width / $params["width"];
+            $ymin = $bboxExp[1] - $yFactor * $height - $metatileBuffer * $height / $params["height"];
+            $xmax = $bboxExp[2] + $xFactor * $width + $metatileBuffer * $width / $params["width"];
+            $ymax = $bboxExp[3] + $yFactor * $height + $metatileBuffer * $height / $params["height"];
             # Replace request bbox by metatile bbox
             $params["bbox"] = "$xmin,$ymin,$xmax,$ymax";
 
             # Keep original param value
             $originalParams = array("width"=>$params["width"], "height"=>$params["height"]);
             # Replace width and height before requesting the image from qgis
-            $params["width"] = $metatileSizeX * $params["width"];
-            $params["height"] = $metatileSizeY * $params["height"];
+            $params["width"] = $metatileSizeX * $params["width"] + 2 * $metatileBuffer;
+            $params["height"] = $metatileSizeY * $params["height"] + 2 * $metatileBuffer;
         }
 
         // Build params before send the request to Qgis
@@ -248,8 +248,8 @@ class lizmapCache {
             # crop parameters
             $newWidth = (int)($originalParams["width"]); // px
             $newHeight = (int)($originalParams["height"]); // px
-            $positionX = (int)($xFactor * $originalParams["width"]); // left translation of 30px
-            $positionY = (int)($yFactor * $originalParams["height"]); // top translation of 20px
+            $positionX = (int)($xFactor * $originalParams["width"]) + $metatileBuffer; // left translation of 30px
+            $positionY = (int)($yFactor * $originalParams["height"]) + $metatileBuffer; // top translation of 20px
 
             # create new gd image
             $image = imageCreateTrueColor($newWidth, $newHeight);

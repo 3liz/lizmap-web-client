@@ -494,7 +494,7 @@ var lizMap = function() {
           baselayers.push(new OpenLayers.Layer.WMS(layerName,serviceUrl
               ,layerWmsParams
               ,{isBaseLayer:true
-               ,gutter:5
+               ,gutter:(layerConfig.cached == 'True') ? 0 : 5
                ,buffer:0
                ,singleTile:(layerConfig.singleTile == 'True')
                ,attribution:layer.attribution
@@ -513,7 +513,7 @@ var lizMap = function() {
                ,maxScale:scales.minScale
                ,isVisible:(layerConfig.toggled=='True')
                ,visibility:false
-               ,gutter:5
+               ,gutter:(layerConfig.cached == 'True') ? 0 : 5
                ,buffer:0
                ,transitionEffect:(layerConfig.singleTile == 'True')?'resize':null
                ,removeBackBufferDelay:250
@@ -531,7 +531,7 @@ var lizMap = function() {
                ,maxScale:(layerConfig.minScale != null && layerConfig.minScale < 1) ? 1 : layerConfig.minScale
                ,isVisible:(layerConfig.toggled=='True')
                ,visibility:false
-               ,gutter:5
+               ,gutter:(layerConfig.cached == 'True') ? 0 : 5
                ,buffer:0
                ,transitionEffect:(layerConfig.singleTile == 'True')?'resize':null
                ,removeBackBufferDelay:250
@@ -4830,7 +4830,7 @@ lizMap.events.on({
           evt.baselayers.push(new OpenLayers.Layer.WMS(layerName,url
             ,layerWmsParams
             ,{isBaseLayer:true
-            ,gutter:5
+            ,gutter:(layerConfig.cached == 'True') ? 0 : 5
             ,buffer:0
             ,singleTile:(layerConfig.singleTile == 'True')
           }));
