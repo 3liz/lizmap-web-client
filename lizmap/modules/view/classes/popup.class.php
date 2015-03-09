@@ -26,6 +26,8 @@ class popup{
     // Force $attributeValue to be a string
     $attributeName = (string)$attributeName;
     $attributeValue = (string)$attributeValue;
+    if ( $attributeValue == 'NULL' )
+      $attributeValue = '';
 
     // Regex to replace links, medias and images
     $urlRegex = '/(ftp|http|https):\/\/(\w+:{0,1}\w*@)?(\S+)(:[0-9]+)?(\/|\/([\w#!:.?+=&%@!\-\/]))?/';
