@@ -430,7 +430,7 @@ var lizAttributeTable = function() {
                             feat.geometry.transform(proj, lizMap.map.getProjection());
 
                             var lonlat = feat.geometry.getBounds().getCenterLonLat()
-                            getFeatureInfoForLayerFeature( aTable, aName, lonlat );
+                            getFeatureInfoForLayerFeature( aTable, aName, lonlat, featId );
                             return false;
 
                         })
@@ -499,7 +499,7 @@ var lizAttributeTable = function() {
                 return getFeatureUrlData;
             }
 
-            function getFeatureInfoForLayerFeature( aTable, aName, lonlat) {
+            function getFeatureInfoForLayerFeature( aTable, aName, lonlat, featId) {
                 var parentLayerName = aTable.replace('#attribute-layer-table-', '').split('-');
                 parentLayerName = parentLayerName[0];
 
@@ -528,6 +528,9 @@ var lizAttributeTable = function() {
                     ,x: pixelxy.x
                     ,y: pixelxy.y
                 };
+                // Add feature id filter
+                wmsOptions['FILTER'] = parentLayerName + ':"FID" = ' + featId;
+
                 // Query the server
                 var service = OpenLayers.Util.urlAppend(lizUrls.wms
                     ,OpenLayers.Util.getParameterString(lizUrls.params)
