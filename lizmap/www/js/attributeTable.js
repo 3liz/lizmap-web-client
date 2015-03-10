@@ -289,16 +289,18 @@ var lizAttributeTable = function() {
                     if (dataLength > 0) {
                         config.attributeLayers[aName]['features'] = features;
                         html+= '<tr>';
-                        html+='<th>info</th>';
-                        html+='<th>zoom</th>';
+                        html+='<th>' + lizDict['attributeLayers.btn.info.title'] + '</th>';
+                        html+='<th>' + lizDict['attributeLayers.btn.zoom.title'] + '</th>';
+                        html+='<th>' + lizDict['attributeLayers.btn.center.title'] + '</th>';
                         for (var idx in features[0].properties){
                             html+='<th>' + idx + '</th>';
                         }
                         html+='</tr>';
                         for (var fid in features) {
                             html+='<tr>';
-                            html+='<td><button class="btn btn-mini attribute-layer-feature-info" value="'+fid+'">info</button></td>';
-                            html+='<td><button class="btn btn-mini attribute-layer-feature-zoom" value="'+fid+'">zoom</button></td>';
+                            html+='<td><button class="btn btn-mini attribute-layer-feature-info" value="'+fid+'">' + lizDict['attributeLayers.btn.info.title'] + '</button></td>';
+                            html+='<td><button class="btn btn-mini attribute-layer-feature-focus zoom" value="'+fid+'">' + lizDict['attributeLayers.btn.zoom.title'] + '</button></td>';
+                            html+='<td><button class="btn btn-mini attribute-layer-feature-focus center" value="'+fid+'">' + lizDict['attributeLayers.btn.center.title'] + '</button></td>';
                             var feat = features[fid];
                             for (var idx in feat.properties){
                                 var prop = feat.properties[idx];
@@ -318,17 +320,18 @@ var lizAttributeTable = function() {
                             $(aTable +' tr').removeClass('active');
                             $(this).addClass('active');
                             // Get corresponding feature
-                            var featId = $(this).find('button.attribute-layer-feature-zoom').val();
+                            var featId = $(this).find('button.attribute-layer-feature-focus').val();
                             // Send signal
                             lizMap.events.triggerEvent(
                                 "tablefeatureselected",
                                 { 'sourceTable': aTable, 'featureType': aName, 'fid': featId}
                             );
+                            return false;
 
                         });
 
                         // Zoom to selected feature on tr click
-                        $(aTable +' tr td button.attribute-layer-feature-zoom').click(function() {
+                        $(aTable +' tr td button.attribute-layer-feature-focus').click(function() {
 
                             // Add the feature to the layer
                             var layer = lizMap.map.getLayersByName('locatelayer')[0];
@@ -341,10 +344,14 @@ var lizAttributeTable = function() {
                             feat.geometry.transform(proj, lizMap.map.getProjection());
                             layer.addFeatures([feat]);
 
-                            // Zoom to selected feature
-                            //lizMap.map.zoomToExtent(feat.geometry.getBounds());
-                            var lonlat = feat.geometry.getBounds().getCenterLonLat()
-                            lizMap.map.setCenter(lonlat)
+                            // Zoom or center to selected feature
+                            if( $(this).hasClass('zoom') )
+                                lizMap.map.zoomToExtent(feat.geometry.getBounds());
+                            else{
+                                var lonlat = feat.geometry.getBounds().getCenterLonLat()
+                                lizMap.map.setCenter(lonlat);
+                            }
+                            return false;
 
                         })
                         .hover(
@@ -367,6 +374,7 @@ var lizAttributeTable = function() {
 
                             var lonlat = feat.geometry.getBounds().getCenterLonLat()
                             getFeatureInfoForLayerFeature( aTable, aName, lonlat );
+                            return false;
 
                         })
                         .hover(
