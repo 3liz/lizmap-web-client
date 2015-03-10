@@ -510,6 +510,9 @@ ul.nav.nav-tabs {
 table.attribute-table-table tr td{
   cursor:pointer;
 }
+table.attribute-table-table tr.selected td{
+  background-color: yellow;
+}
 
 
 /*
