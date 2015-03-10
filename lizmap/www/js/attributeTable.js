@@ -150,8 +150,21 @@ var lizAttributeTable = function() {
                 // Add content div
                 var html = '<div id="attribute-layer-' + layerName + '" class="tab-pane attribute-content bottom-content" >';
                 html+= '    <div class="attribute-layer-main" id="attribute-layer-main-' + layerName + '" >';
+
                 html+= '    <button class="btn-refresh-attributeTable btn btn-mini" value="' + layerName + '">'+lizDict['attributeLayers.toolbar.btn.data.refresh.title']+'</button>';
-                html+= '    <span class="attribute-layer-msg"></span>';
+
+                html+= '&nbsp;<div class="btn-group" role="group">';
+                html+= '    <button type="button" class="btn btn-mini dropdown-toggle" data-toggle="dropdown" aria-expanded="false">';
+                html+= lizDict['attributeLayers.toolbar.btn.data.export.title'];
+                html+= '      <span class="caret"></span>';
+                html+= '    </button>';
+                html+= '    <ul class="dropdown-menu" role="menu">';
+                html+= '        <li><a href="#" class="btn-export-attributeTable">GeoJSON</a></li>';
+                html+= '        <li><a href="#" class="btn-export-attributeTable">GML</a></li>';
+                html+= '    </ul>';
+                html+= '</div>';
+
+                html+= '    <br/><span class="attribute-layer-msg"></span>';
                 html+= '    <table id="attribute-layer-table-' + layerName + '" class="attribute-table-table table table-hover table-condensed table-stripped"></table>';
 
                 // Add child layers
@@ -169,13 +182,25 @@ var lizAttributeTable = function() {
                 .click(function(){
                     var aName = attributeLayersDic[ $(this).val() ];
                     var aTable = '#attribute-layer-main-'+lizMap.cleanName( aName )+' table:first';
-                    getAttributeTableFeature(aName, filter, aTable);
+                    var filter = null;
+                    getAttributeTableFeature( aName, filter, aTable );
                     return false;
                 })
                 .hover(
                     function(){ $(this).addClass('btn-primary'); },
                     function(){ $(this).removeClass('btn-primary'); }
                 );
+
+                // Bind click on export buttons
+                $('#attribute-layer-'+ layerName + ' a.btn-export-attributeTable')
+                .click(function(){
+                    var eFormat = $(this).text();
+                    if( eFormat == 'GML' )
+                        eFormat = 'GML3';
+                    var eName = $(this).parents('div.attribute-layer-main:first').attr('id').replace('attribute-layer-main-', '');
+                    exportAttributeTable( eName, eFormat );
+                    return false;
+                });
 
             }
 
@@ -214,7 +239,10 @@ var lizAttributeTable = function() {
             }
 
             function refreshChildrenLayersContent( sourceTable, featureType, featId ) {
+
                 var feat = config.attributeLayers[featureType]['features'][featId];
+                if(!feat)
+                    return false;
                 var fp = feat.properties;
 
                 var lConfig = config.layers[featureType];
@@ -249,34 +277,12 @@ var lizAttributeTable = function() {
 
                 $('body').css('cursor', 'wait');
 
-                // Build WFS request parameters
-                var atConfig = config.attributeLayers[aName];
-                var typeName = aName.replace(' ','_');
-                var layerName = lizMap.cleanName(aName);
-                var extent = lizMap.map.getExtent();
-                var proj = new OpenLayers.Projection(atConfig.crs);
-                var bbox = lizMap.map.getExtent().transform(lizMap.map.getProjection(), proj).toBBOX();
-                var wfsOptions = {
-                    'SERVICE':'WFS'
-                    ,'VERSION':'1.0.0'
-                    ,'REQUEST':'GetFeature'
-                    ,'TYPENAME':typeName
-                    ,'OUTPUTFORMAT':'GeoJSON'
-                    ,'BBOX': bbox
-                    ,'MAXFEATURES': 100
-                };
-                if( filter ){
-                    wfsOptions['EXP_FILTER'] = filter;
-                }
-                // Query the server
-                var service = OpenLayers.Util.urlAppend(lizUrls.wms
-                        ,OpenLayers.Util.getParameterString(lizUrls.params)
-                );
-                $.get(service, wfsOptions, function(data) {
+                var getFeatureUrlData = getAttributeFeatureUrlData( aName, filter );
+                $.get(getFeatureUrlData['url'], getFeatureUrlData['options'], function(data) {
 
                     // Get features and build attribute table content
                     var lConfig = config.layers[aName];
-                    atConfig['features'] = {};
+                    config.attributeLayers[aName]['features'] = [];
                     var features = data.features;
                     dataLength = features.length;
                     var html = '';
@@ -393,6 +399,36 @@ var lizAttributeTable = function() {
                 return false;
             }
 
+            function getAttributeFeatureUrlData( aName, filter ) {
+                var getFeatureUrlData = {};
+
+                // Build WFS request parameters
+                var atConfig = config.attributeLayers[aName];
+                var typeName = aName.replace(' ','_');
+                var layerName = lizMap.cleanName(aName);
+                var extent = lizMap.map.getExtent();
+                var proj = new OpenLayers.Projection(atConfig.crs);
+                var bbox = lizMap.map.getExtent().transform(lizMap.map.getProjection(), proj).toBBOX();
+                var wfsOptions = {
+                    'SERVICE':'WFS'
+                    ,'VERSION':'1.0.0'
+                    ,'REQUEST':'GetFeature'
+                    ,'TYPENAME':typeName
+                    ,'OUTPUTFORMAT':'GeoJSON'
+                    ,'BBOX': bbox
+                    ,'MAXFEATURES': 100
+                };
+                if( filter ){
+                    wfsOptions['EXP_FILTER'] = filter;
+                }
+
+                getFeatureUrlData['url'] = OpenLayers.Util.urlAppend(lizUrls.wms
+                        ,OpenLayers.Util.getParameterString(lizUrls.params)
+                );
+                getFeatureUrlData['options'] = wfsOptions;
+
+                return getFeatureUrlData;
+            }
 
             function getFeatureInfoForLayerFeature( aTable, aName, lonlat) {
                 var parentLayerName = aTable.replace('#attribute-layer-table-', '').split('-');
@@ -439,6 +475,22 @@ var lizAttributeTable = function() {
                 });
 
 
+            }
+
+            function exportAttributeTable( aName, format='GeoJSON', filter=null ) {
+                var getFeatureUrlData = getAttributeFeatureUrlData( aName, filter );
+                // Force download
+                getFeatureUrlData['options']['dl'] = 1;
+                // Set export format
+                getFeatureUrlData['options']['OUTPUTFORMAT'] = format;
+                // Build WFS url
+                var exportUrl = OpenLayers.Util.urlAppend(
+                    getFeatureUrlData['url'],
+                    OpenLayers.Util.getParameterString( getFeatureUrlData['options'] )
+                );
+                // Open in new window
+                window.open( exportUrl );
+                return false;
             }
 
 

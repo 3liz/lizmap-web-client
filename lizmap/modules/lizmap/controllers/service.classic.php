@@ -212,11 +212,11 @@ class serviceCtrl extends jController {
              && $pConfig->loginFilteredLayers->$layername->filterPrivate = 'True')
             {
               $filter.= $v."$pre\"$attribute\" IN ( '".$login."' , 'all' )";
-		    } else {
+        } else {
               $userGroups = jAcl2DbUserGroup::getGroups();
               $flatGroups = implode("' , '", $userGroups);
               $filter.= $v."$pre\"$attribute\" IN ( '".$flatGroups."' , 'all' )";
-		    }
+        }
             $v = ';';
           }else{
             // The user is not authenticated: only show data with attribute = 'all'
@@ -895,6 +895,17 @@ class serviceCtrl extends jController {
     $rep->content = $data;
     $rep->doDownload  =  false;
     $rep->outputFileName  =  'qgis_server_wfs';
+
+    // Export
+    $dl = $this->param('dl');
+    if( $dl ){
+      // force download
+      $rep->doDownload = true;
+      // debug 1st line blank from QGIS Server
+      $rep->content = preg_replace('/^[\n\r]/', '', $data);
+      // Change file name
+      $rep->outputFileName = 'export_' . $this->params['typename'] . '.' . strtolower( $this->params['outputformat'] );
+    }
 
     return $rep;
   }
