@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module xmlns="http://jelix.org/ns/module/1.0">
+    <info id="proj4php3liz.com" name="proj4php" createdate="2015-03-13">
+        <version date="2015-03-13">0.1pre</version>
+        <label lang="en_US">proj4php</label>
+        <description lang="en_US" />
+        <license URL="">All rights reserved</license>
+        <copyright>2011 3liz</copyright>
+        <creator name="your name" email="your-email@yourwebsite.undefined" active="true"/>
+        <!--<contributor name="hisname" email="hisemail@yoursite.undefined" active="true" since="" role=""/>-->
+        <homepageURL>http://3liz.com</homepageURL>
+    </info>
+    <dependencies>
+        <jelix minversion="1.6.2" maxversion="1.6.*"/>
+    </dependencies>
+</module>

@@ -24,5 +24,5 @@
     <entrypoints>
         <entry file="index.php" config="index/config.ini.php"/>
         <entry file="admin.php" config="admin/config.ini.php" type="classic"/>
-    </entrypoints>
+    <entry file="script.php" config="cmdline/script.ini.php" type="cmdline"/></entrypoints>
 </project>

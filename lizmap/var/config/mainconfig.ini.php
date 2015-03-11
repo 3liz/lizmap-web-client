@@ -228,6 +228,7 @@ master_admin.access=2
 lizmap.access=2
 view.access=2
 admin.access=2
+proj4php.access=1
 
 
 [mailLogger]

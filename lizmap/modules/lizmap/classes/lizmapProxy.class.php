@@ -1,6 +1,6 @@
 <?php
 /**
-* Handle cache for map services.
+* Proxy for map services.
 * @package   lizmap
 * @subpackage lizmap
 * @author    3liz
@@ -9,7 +9,7 @@
 * @license Mozilla Public License : http://www.mozilla.org/MPL/
 */
 
-class lizmapCache {
+class lizmapProxy {
 
 
     /**
@@ -52,7 +52,7 @@ class lizmapCache {
     * Get remote data from URL, with curl or internal php functions.
     * @param string $url Url of the remote data to fetch.
     * @param boolean $proxyMethod Method for the proxy : 'php' (default) or 'curl'.
-    * @return array($data, $mime) Array containing the data and the mime type.
+    * @return array($data, $mime, $http_code) Array containing the data and the mime type.
     */
     static public function getRemoteData($url, $proxyMethod='php', $debug=0){
 
@@ -119,7 +119,7 @@ class lizmapCache {
     * @param array $params Array of parameters.
     * @return array $data Normalized and filtered array.
     */
-    static public function getServiceData( $repository, $project, $params ) {
+    static public function getMap( $repository, $project, $params, $forced=False ) {
         // Get cache if exists
         $keyParams = $params;
         if( array_key_exists( 'map', $keyParams ) ){
@@ -130,14 +130,19 @@ class lizmapCache {
 
         $layers = str_replace(',', '_', $params['layers'] );
         $crs = preg_replace('#[^a-zA-Z0-9_]#', '_', $params['crs']);
-
         $profile = 'lizmapCache_'.$repository.'_'.$project.'_'.$layers.'_'.$crs;
-        lizmapCache::createVirtualProfile( $repository, $project, $layers, $crs );
-        $tile = jCache::get( $key, $profile );
+        lizmapProxy::createVirtualProfile( $repository, $project, $layers, $crs );
+        
+        if ( !$forced ) {
+            $tile = jCache::get( $key, $profile );
 
-        if( $tile ){
-            //~ jLog::log( 'cache hit !');
-            return $tile;
+            if( $tile ){
+                $mime = 'image/jpeg';
+                if(preg_match('#png#', $params['format'] ))
+                    $mime = 'image/png';
+                //~ jLog::log( 'cache hit !');
+                return array( $tile, $mime, 200);
+            }
         }
 
         // No cache hit, get more information about tile to grab
@@ -154,7 +159,7 @@ class lizmapCache {
         $configLayers = $lproj->getLayers();
         $configLayer = null;
         if ( property_exists( $configLayers, $layername ) )
-            $configLayers->$layername;
+            $configLayer = $configLayers->$layername;
 
         // Set or get tile from the parent project in case of embedded layers
         if( $configLayer 
@@ -173,7 +178,7 @@ class lizmapCache {
         $string2bool = array('false'=>False, 'False'=>False, 'True'=>True, 'true'=>True);
         $useCache = False;
         if ( $configLayer )
-            $string2bool[$configLayer->cached];
+            $useCache = $string2bool[$configLayer->cached];
         // Avoid using cache for requests concerning not square tiles or too big
         // Focus on real web square tiles
         $wmsClient = 'web';
@@ -244,9 +249,10 @@ class lizmapCache {
 
         // Get data from the map server
         $proxyMethod = $ser->proxyMethod;
-        $getRemoteData = lizmapCache::getRemoteData($url . $builtParams, $proxyMethod, $debug);
+        $getRemoteData = lizmapProxy::getRemoteData($url . $builtParams, $proxyMethod, $debug);
         $data = $getRemoteData[0];
         $mime = $getRemoteData[1];
+        $code = $getRemoteData[2];
         
         if ( $useCache && !preg_match('/^image/',$mime) )
             $useCache = False;
@@ -305,7 +311,7 @@ class lizmapCache {
             jCache::set( $key, $data, $cacheExpiration, $profile );
         }
 
-        return $data;
+        return array($data, $mime, $code);
     }
 
 

@@ -39,11 +39,16 @@ class serviceCtrl extends jController {
       jMessage::add('The parameter project is mandatory !', 'ProjectNotDefind');
       return $this->serviceException();
     }
+    
+    // Get parameters
+    if(!$this->getServiceParameters())
+      return $this->serviceException();
 
     // Return the appropriate action
+    $service = strtoupper($this->iParam('SERVICE'));
     $request = strtoupper($this->iParam('REQUEST'));
     if($request == "GETCAPABILITIES")
-      return $this->getCapabilities();
+      return $this->GetCapabilities();
     elseif ($request == "GETCONTEXT")
       return $this->GetContext();
     elseif ($request == "GETSCHEMAEXTENSION")
@@ -64,6 +69,8 @@ class serviceCtrl extends jController {
       return $this->GetFeature();
     elseif ($request == "DESCRIBEFEATURETYPE")
       return $this->DescribeFeatureType();
+    elseif ($request == "GETTILE")
+      return $this->GetTile();
     elseif ($request == "GETPROJ4")
       return $this->GetProj4();
     else {
@@ -251,111 +258,37 @@ class serviceCtrl extends jController {
   * @return JSON configuration file for the specified project.
   */
   function GetCapabilities(){
-
-    // Get parameters
-    if(!$this->getServiceParameters())
-      return $this->serviceException();
-
-    $cacheId = $this->repository->getKey().'_'.$this->project->getKey().'_'.$this->params['service'];
-    $hash = jCache::get($cacheId . '_hash');
-
-    $cachedMime = jCache::get($cacheId . '_mime');
-    $cachedData = jCache::get($cacheId . '_data');
-    $newhash = md5_file( realpath($this->repository->getPath()) . '/' . $this->project->getKey() . ".qgs" );
-
-    // Verifying cache content
-    if ( $cachedData && preg_match( '#ServiceExceptionReport#i', $cachedData ) ) {
-        $hash = null;
-        $cachedMime = null;
-        $cachedData = null;
-        jCache::delete($cacheId . '_hash');
-    }
-
-    // Cache exists for the unchanged QGIS project file
-    if( $hash and $cachedMime and $cachedData and $hash == $newhash ) {
-        $mime = $cachedMime;
-        $data = $cachedData;
-    }
-
-    // No cache or the file content has changed
-    else {
-
-        $url = $this->services->wmsServerURL.'?';
-
-        $bparams = http_build_query($this->params);
-        $querystring = $url . $bparams;
-
-        // Get remote data
-        $getRemoteData = $this->lizmapCache->getRemoteData(
-          $querystring,
-          $this->services->proxyMethod,
-          $this->services->debugMode
-        );
-        $data = $getRemoteData[0];
-        $mime = $getRemoteData[1];
-        $code = $getRemoteData[2];
-
-        if ( empty( $data ) or floor( $code / 100 ) >= 4 ) {
-            jMessage::add('Server Error !', 'Error');
-            return $this->serviceException();
+        $service = strtolower($this->params['service']);
+        $request = null;
+        if( $service == 'wms' ) {
+            jClasses::inc('lizmap~lizmapWMSRequest');
+            $request = new lizmapWMSRequest( $this->project, array(
+                    'service'=>'WMS',
+                    'request'=>'GetCapabilities'
+                )
+            );
+        } else if( $service == 'wfs' ) {
+            jClasses::inc('lizmap~lizmapWFSRequest');
+            $request = new lizmapWFSRequest( $this->project, array(
+                    'service'=>'WFS',
+                    'request'=>'GetCapabilities'
+                )
+            );
+        } else if( $service == 'wmts' ) {
+            jClasses::inc('lizmap~lizmapWMTSRequest');
+            $request = new lizmapWMTSRequest( $this->project, array(
+                    'service'=>'WFS',
+                    'request'=>'GetCapabilities'
+                )
+            );
         }
-
-        if ( preg_match( '#ServiceExceptionReport#i', $data ) ) {
-            $rep = $this->getResponse('binary');
-            $rep->mimeType = $mime;
-            $rep->content = $data;
-            $rep->doDownload = false;
-            $rep->outputFileName  =  'qgis_server_exception_report';
-
-            return $rep;
-        }
-
-        // Replace qgis server url in the XML (hide real location)
-        $sUrl = jUrl::getFull(
-          "lizmap~service:index",
-          array("repository"=>$this->repository->getKey(), "project"=>$this->project->getKey()),
-          0,
-          $_SERVER['SERVER_NAME']
-        );
-        $sUrl = str_replace('&', '&amp;', $sUrl);
-        $data = preg_replace('/xlink\:href=".*"/', 'xlink:href="'.$sUrl.'&amp;"', $data);
-
-        // Remove no interoparable elements
-        $data = preg_replace('@<GetPrint[^>]*?>.*?</GetPrint>@si', '', $data);
-        $data = preg_replace('@<ComposerTemplates[^>]*?>.*?</ComposerTemplates>@si', '', $data);
-
-        if ( preg_match( '@WMS_Capabilities@i', $data) ) {
-            // Update namespace
-            $schemaLocation = "http://www.opengis.net/wms";
-            $schemaLocation .= " http://schemas.opengis.net/wms/1.3.0/capabilities_1_3_0.xsd";
-            $schemaLocation .= " http://www.opengis.net/sld";
-            $schemaLocation .= " http://schemas.opengis.net/sld/1.1.0/sld_capabilities.xsd";
-            $schemaLocation .= " http://www.qgis.org/wms";
-            $schemaLocation .= " ". $sUrl ."SERVICE=WMS&amp;REQUEST=GetSchemaExtension";
-            $data = preg_replace('@xsi:schemaLocation=".*?"@si', 'xsi:schemaLocation="'.$schemaLocation.'"', $data);
-            if ( !preg_match( '@xmlns:qgs@i', $data) ) {
-              $data = preg_replace('@xmlns="http://www.opengis.net/wms"@', 'xmlns="http://www.opengis.net/wms" xmlns:qgs="http://www.qgis.org/wms"', $data);
-              $data = preg_replace('@GetStyles@', 'qgs:GetStyles', $data);
-            }
-            if ( !preg_match( '@xmlns:sld@i', $data) ) {
-              $data = preg_replace('@xmlns="http://www.opengis.net/wms"@', 'xmlns="http://www.opengis.net/wms" xmlns:sld="http://www.opengis.net/sld"', $data);
-              $data = preg_replace('@GetLegendGraphic@', 'sld:GetLegendGraphic', $data);
-            }
-        }
-
-        // Add response to cache
-        jCache::set($cacheId . '_hash', $newhash);
-        jCache::set($cacheId . '_mime', $mime);
-        jCache::set($cacheId . '_data', $data);
-
-    }
-
-    // Return response
-    $rep = $this->getResponse('binary');
-    $rep->mimeType = $mime;
-    $rep->content = $data;
-    $rep->doDownload = false;
-    $rep->outputFileName  =  'qgis_server_getCapabilities';
+        $result = $request->process();
+        
+        $rep = $this->getResponse('binary');
+        $rep->mimeType = $result->mime;
+        $rep->content = $result->data;
+        $rep->doDownload  =  false;
+        $rep->outputFileName  =  'qgis_server_'.$service.'_capabilities_'.$this->repository->getKey().'_'.$this->project->getKey();
 
     return $rep;
   }
@@ -435,36 +368,38 @@ class serviceCtrl extends jController {
   * @return Image rendered by the Map Server.
   */
   function GetMap(){
+      
+        // Get parameters
+        if(!$this->getServiceParameters())
+            return $this->serviceException();
+            
+        jClasses::inc('lizmap~lizmapWMSRequest');
+        $wmsRequest = new lizmapWMSRequest( $this->project, $this->params );
+        $result = $wmsRequest->process();
+        
+        $rep = $this->getResponse('binary');
+        $rep->mimeType = $result->mime;
+        $rep->content = $result->data;
+        $rep->doDownload  =  false;
+        $rep->outputFileName  =  'qgis_server_wms_map_'.$this->repository->getKey().'_'.$this->project->getKey();
+        $rep->setHttpStatus( $result->code, '' );
+        
+        if ( !preg_match('/^image/',$result->mime) )
+            return $rep;
 
-    // Get parameters
-    if(!$this->getServiceParameters())
-      return $this->serviceException();
+        // HTTP browser cache expiration time
+        $layername = $this->params["layers"];
+        $lproj = lizmap::getProject($this->repository->getKey().'~'.$this->project->getKey());
+        $configLayers = $lproj->getLayers();
+        if( property_exists($configLayers, $layername) ){
+            $configLayer = $configLayers->$layername;
+            if( property_exists($configLayer, 'clientCacheExpiration')){
+                $clientCacheExpiration = (int)$configLayer->clientCacheExpiration;
+                $rep->setExpires("+".$clientCacheExpiration." seconds");
+            }
+        }
 
-    $content = $this->lizmapCache->getServiceData($this->repository->getKey(), $this->project->getKey(), $this->params);
-
-    // Return response
-    $rep = $this->getResponse('binary');
-    if(preg_match('#png#', $this->params['format']))
-      $rep->mimeType = 'image/png';
-    else
-      $rep->mimeType = 'image/jpeg';
-    $rep->content = $content;
-    $rep->doDownload  =  false;
-    $rep->outputFileName  =  'qgis_server';
-
-    // HTTP browser cache expiration time
-    $layername = $this->params["layers"];
-    $lproj = lizmap::getProject($this->repository->getKey().'~'.$this->project->getKey());
-    $configLayers = $lproj->getLayers();
-    if( property_exists($configLayers, $layername) ){
-      $configLayer = $configLayers->$layername;
-      if( property_exists($configLayer, 'clientCacheExpiration')){
-        $clientCacheExpiration = (int)$configLayer->clientCacheExpiration;
-        $rep->setExpires("+".$clientCacheExpiration." seconds");
-      }
-    }
-
-    return $rep;
+        return $rep;
   }
 
 
@@ -1060,5 +995,35 @@ class serviceCtrl extends jController {
     $rep->setExpires("+300 seconds");
     return $rep;
   }
+  
+  function GetTile(){
+        jClasses::inc('lizmap~lizmapWMTSRequest');
+        $wmsRequest = new lizmapWMTSRequest( $this->project, $this->params );
+        $result = $wmsRequest->process();
+        
+        $rep = $this->getResponse('binary');
+        $rep->mimeType = $result->mime;
+        $rep->content = $result->data;
+        $rep->doDownload  =  false;
+        $rep->outputFileName  =  'qgis_server_wmts_tile_'.$this->repository->getKey().'_'.$this->project->getKey();
+        $rep->setHttpStatus( $result->code, '' );
+        
+        if ( !preg_match('/^image/',$result->mime) )
+            return $rep;
 
+        // HTTP browser cache expiration time
+        $layername = $this->params["layer"];
+        $lproj = lizmap::getProject($this->repository->getKey().'~'.$this->project->getKey());
+        $configLayers = $lproj->getLayers();
+        if( property_exists($configLayers, $layername) ){
+            $configLayer = $configLayers->$layername;
+            if( property_exists($configLayer, 'clientCacheExpiration')){
+                $clientCacheExpiration = (int)$configLayer->clientCacheExpiration;
+                $rep->setExpires("+".$clientCacheExpiration." seconds");
+            }
+        }
+
+        return $rep;
+  }
+  
 }
