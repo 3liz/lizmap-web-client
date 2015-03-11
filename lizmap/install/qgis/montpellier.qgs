@@ -1,5 +1,5 @@
 <!DOCTYPE qgis PUBLIC 'http://mrcc.com/qgis.dtd' 'SYSTEM'>
-<qgis projectname="Montpellier - Transports" version="2.8.0-Wien">
+<qgis projectname="Montpellier - Transports" version="2.8.1-Wien">
   <title>Montpellier - Transports</title>
   <layer-tree-group expanded="1" checked="Qt::PartiallyChecked" name="">
     <customproperties/>
@@ -1276,7 +1276,7 @@
           <geographicflag>false</geographicflag>
         </spatialrefsys>
       </srs>
-      <provider encoding="LATIN1">ogr</provider>
+      <provider encoding="UTF-8">ogr</provider>
       <previewExpression>coalesce(LIBSQUART, '&lt;NULL>')</previewExpression>
       <vectorjoins>
         <join joinFieldName="QUARTMNO" targetFieldName="QUARTMNO" memoryCache="1" joinLayerId="VilleMTP_MTP_Quartiers_2011_432620130116112610876"/>
@@ -3666,19 +3666,22 @@
     <WFSLayers type="QStringList">
       <value>VilleMTP_MTP_Quartiers_2011_432620130116112610876</value>
       <value>VilleMTP_MTP_SousQuartiers_201120130929113137811</value>
+      <value>bus20121102133611751</value>
+      <value>bus_stops20121106170806413</value>
     </WFSLayers>
     <WMSContactMail type="QString">info@3liz.com</WMSContactMail>
     <WMSRestrictedComposers type="QStringList">
       <value>Composeur1</value>
     </WMSRestrictedComposers>
+    <WMSRestrictedLayers type="QStringList"/>
     <PositionPrecision>
       <DecimalPlaces type="int">2</DecimalPlaces>
       <Automatic type="bool">true</Automatic>
       <DegreeFormat type="QString">D</DegreeFormat>
     </PositionPrecision>
     <WCSUrl type="QString"></WCSUrl>
-    <WMSContactPhone type="QString">+334 67 16 64 51</WMSContactPhone>
     <WMSServiceCapabilities type="bool">true</WMSServiceCapabilities>
+    <WMSContactPhone type="QString">+334 67 16 64 51</WMSContactPhone>
     <WMSServiceAbstract type="QString">Demo project with bus and tramway lines in Montpellier, France.
 Data is licensed under ODbl, OpenStreetMap contributors</WMSServiceAbstract>
     <WMSAddWktGeometry type="bool">false</WMSAddWktGeometry>
@@ -3706,6 +3709,7 @@ Data is licensed under ODbl, OpenStreetMap contributors</WMSServiceAbstract>
       <CanvasColorBluePart type="int">255</CanvasColorBluePart>
     </Gui>
     <Digitizing>
+      <DefaultSnapToleranceUnit type="int">1</DefaultSnapToleranceUnit>
       <LayerSnappingList type="QStringList">
         <value>VilleMTP_MTP_Quartiers_2011_432620130116112351546</value>
         <value>VilleMTP_MTP_Quartiers_2011_432620130116112610876</value>
@@ -3730,6 +3734,7 @@ Data is licensed under ODbl, OpenStreetMap contributors</WMSServiceAbstract>
         <value>enabled</value>
         <value>enabled</value>
       </LayerSnappingEnabledList>
+      <SnappingMode type="QString">advanced</SnappingMode>
       <AvoidIntersectionsList type="QStringList"/>
       <LayerSnappingToleranceUnitList type="QStringList">
         <value>1</value>
@@ -3755,6 +3760,8 @@ Data is licensed under ODbl, OpenStreetMap contributors</WMSServiceAbstract>
         <value>to_vertex_and_segment</value>
         <value>to_vertex_and_segment</value>
       </LayerSnapToList>
+      <DefaultSnapType type="QString">to vertex and segment</DefaultSnapType>
+      <DefaultSnapTolerance type="double">10</DefaultSnapTolerance>
       <LayerSnappingToleranceList type="QStringList">
         <value>10.000000</value>
         <value>10.000000</value>
@@ -3769,6 +3776,8 @@ Data is licensed under ODbl, OpenStreetMap contributors</WMSServiceAbstract>
       </LayerSnappingToleranceList>
     </Digitizing>
     <WFSLayersPrecision>
+      <bus20121102133611751 type="int">8</bus20121102133611751>
+      <bus_stops20121106170806413 type="int">8</bus_stops20121106170806413>
       <VilleMTP_MTP_SousQuartiers_201120130929113137811 type="int">8</VilleMTP_MTP_SousQuartiers_201120130929113137811>
       <VilleMTP_MTP_Quartiers_2011_432620130116112610876 type="int">8</VilleMTP_MTP_Quartiers_2011_432620130116112610876>
     </WFSLayersPrecision>

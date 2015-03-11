@@ -34,13 +34,16 @@ var lizAttributeTable = function() {
                         var self = $(this);
                         var lname = self.find('Name').text();
                         if (lname in config.attributeLayers) {
+
                             hasAttributeTableLayers = true;
 
                             // Get layers config information
-                            atConfig = config.attributeLayers[lname];
+                            var atConfig = config.attributeLayers[lname];
+
                             atConfig['crs'] = self.find('SRS').text();
-                            if ( atConfig.crs in Proj4js.defs )
+                            if ( atConfig.crs in Proj4js.defs ){
                                 new OpenLayers.Projection(atConfig.crs);
+                            }
                             else
                                 $.get(service, {
                                     'REQUEST':'GetProj4'
@@ -429,8 +432,20 @@ var lizAttributeTable = function() {
                             var proj = new OpenLayers.Projection(config.attributeLayers[aName].crs);
                             feat.geometry.transform(proj, lizMap.map.getProjection());
 
-                            var lonlat = feat.geometry.getBounds().getCenterLonLat()
-                            getFeatureInfoForLayerFeature( aTable, aName, lonlat, featId );
+                            var geomType = feat.geometry.CLASS_NAME;
+                            if (
+                                geomType == 'OpenLayers.Geometry.Polygon'
+                                || geomType == 'OpenLayers.Geometry.MultiPolygon'
+                                || geomType == 'OpenLayers.Geometry.Point'
+                            ) {
+                                var lonlat = feat.geometry.getBounds().getCenterLonLat()
+                            }
+                            else {
+                                var vert = feat.geometry.getVertices();
+                                var middlePoint = vert[Math.floor(vert.length/2)];
+                                var lonlat = new OpenLayers.LonLat(middlePoint.x, middlePoint.y);
+                            }
+                            getFeatureInfoForLayerFeature( aTable, aName, lonlat );
                             return false;
 
                         })
@@ -471,9 +486,11 @@ var lizAttributeTable = function() {
                 var atConfig = config.attributeLayers[aName];
                 var typeName = aName.replace(' ','_');
                 var layerName = lizMap.cleanName(aName);
-                var extent = lizMap.map.getExtent();
-                var proj = new OpenLayers.Projection(atConfig.crs);
-                var bbox = lizMap.map.getExtent().transform(lizMap.map.getProjection(), proj).toBBOX();
+                var extent = lizMap.map.getExtent().clone();
+                var projFeat = new OpenLayers.Projection(atConfig.crs);
+                extent = extent.transform( lizMap.map.getProjection(), projFeat );
+                var bbox = extent.toBBOX();
+
                 var wfsOptions = {
                     'SERVICE':'WFS'
                     ,'VERSION':'1.0.0'
@@ -499,7 +516,7 @@ var lizAttributeTable = function() {
                 return getFeatureUrlData;
             }
 
-            function getFeatureInfoForLayerFeature( aTable, aName, lonlat, featId) {
+            function getFeatureInfoForLayerFeature( aTable, aName, lonlat) {
                 var parentLayerName = aTable.replace('#attribute-layer-table-', '').split('-');
                 parentLayerName = parentLayerName[0];
 
@@ -507,29 +524,40 @@ var lizAttributeTable = function() {
                 var pixelxy = lizMap.map.getPixelFromLonLat( lonlat );
                 var atConfig = config.attributeLayers[aName];
                 var typeName = aName.replace(' ','_');
-
                 var extent = lizMap.map.getExtent();
                 var proj = new OpenLayers.Projection(atConfig.crs);
-                var bbox = lizMap.map.getExtent().toBBOX();
+
+                // Calculate fake bbox around the feature
+                var lConfig = config.layers[parentLayerName];
+                var units = lizMap.map.getUnits();
+                var scale = Math.max( lizMap.map.maxScale, lConfig.minScale );
+
+                var res = OpenLayers.Util.getResolutionFromScale(scale, units);
+                var bbox = new OpenLayers.Bounds(
+                    lonlat.lon - 5 * res,
+                    lonlat.lat - 5 * res,
+                    lonlat.lon + 5 * res,
+                    lonlat.lat + 5 * res
+                );
 
                 var layerName = lizMap.cleanName(parentLayerName);
-
                 var wmsOptions = {
-                    'SERVICE':'WMS'
-                    ,'VERSION':'1.3.0'
-                    ,'REQUEST':'GetFeatureInfo'
-                    ,'LAYERS':typeName
-                    ,'QUERY_LAYERS':typeName
-                    ,'BBOX': bbox
-                    ,'WIDTH': lizMap.map.size.w
-                    ,'HEIGHT': lizMap.map.size.h
-                    ,'INFO_FORMAT': 'text/html'
+                     'LAYERS': typeName
+                    ,'QUERY_LAYERS': typeName
+                    ,'STYLES': ''
+                    ,'SERVICE': 'WMS'
+                    ,'VERSION': '1.3.0'
+                    ,'REQUEST': 'GetFeatureInfo'
+                    ,'EXCEPTIONS': 'application/vnd.ogc.se_inimage'
+                    ,'BBOX': bbox.toBBOX()
                     ,'FEATURE_COUNT': 1
-                    ,x: pixelxy.x
-                    ,y: pixelxy.y
+                    ,'HEIGHT': 100
+                    ,'WIDTH': 100
+                    ,'INFO_FORMAT': 'text/html'
+                    ,'CRS': lizMap.map.getProjection()
+                    ,'I': 50
+                    ,'J': 50
                 };
-                // Add feature id filter
-                wmsOptions['FILTER'] = parentLayerName + ':"FID" = ' + featId;
 
                 // Query the server
                 var service = OpenLayers.Util.urlAppend(lizUrls.wms
