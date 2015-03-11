@@ -581,6 +581,18 @@ class serviceCtrl extends jController {
     // Get json configuration for the project
     $configLayers = $this->project->getLayers();
 
+    // Get optionnal parameter fid
+    $filterFid = null;
+    $fid = $this->param('fid');
+    if( $fid ){
+      $expFid = explode( '.', $fid );
+      if( count( $expFid ) == 2 ) {
+        $filterFid = array();
+        $filterFid[ $expFid[0] ] = $expFid[1];
+      }
+
+    }
+
     // Loop through the layers
     $content = array();
     $ptemplate = 'view~popup';
@@ -632,6 +644,12 @@ class serviceCtrl extends jController {
       // Loop through the features
       foreach($layer->Feature as $feature){
         $id = $feature['id'];
+        // Optionnally filter by feature id
+        if( $filterFid and $filterFid[$configLayer->name] and $filterFid[$configLayer->name] != $id ){
+          continue;
+        }
+
+
         // Specific template for the layer has been configured
         if($templateConfigured){
 

@@ -422,30 +422,12 @@ var lizAttributeTable = function() {
                         // Display popup for the feature
                         $(aTable +' tr td button.attribute-layer-feature-info').click(function() {
 
-                            // Add the feature to the layer
+                            // Get the layer feature
                             var layer = lizMap.map.getLayersByName('locatelayer')[0];
                             layer.destroyFeatures();
                             var featId = $(this).val();
                             var feat = config.attributeLayers[aName]['features'][featId];
-                            var format = new OpenLayers.Format.GeoJSON();
-                            feat = format.read(feat)[0];
-                            var proj = new OpenLayers.Projection(config.attributeLayers[aName].crs);
-                            feat.geometry.transform(proj, lizMap.map.getProjection());
-
-                            var geomType = feat.geometry.CLASS_NAME;
-                            if (
-                                geomType == 'OpenLayers.Geometry.Polygon'
-                                || geomType == 'OpenLayers.Geometry.MultiPolygon'
-                                || geomType == 'OpenLayers.Geometry.Point'
-                            ) {
-                                var lonlat = feat.geometry.getBounds().getCenterLonLat()
-                            }
-                            else {
-                                var vert = feat.geometry.getVertices();
-                                var middlePoint = vert[Math.floor(vert.length/2)];
-                                var lonlat = new OpenLayers.LonLat(middlePoint.x, middlePoint.y);
-                            }
-                            getFeatureInfoForLayerFeature( aTable, aName, lonlat );
+                            getFeatureInfoForLayerFeature( aTable, aName, feat );
                             return false;
 
                         })
@@ -516,23 +498,40 @@ var lizAttributeTable = function() {
                 return getFeatureUrlData;
             }
 
-            function getFeatureInfoForLayerFeature( aTable, aName, lonlat) {
+            function getFeatureInfoForLayerFeature( aTable, aName, feat) {
                 var parentLayerName = aTable.replace('#attribute-layer-table-', '').split('-');
                 parentLayerName = parentLayerName[0];
 
                 $('#attribute-table-panel-' + parentLayerName ).html('');
-                var pixelxy = lizMap.map.getPixelFromLonLat( lonlat );
+
                 var atConfig = config.attributeLayers[aName];
                 var typeName = aName.replace(' ','_');
-                var extent = lizMap.map.getExtent();
-                var proj = new OpenLayers.Projection(atConfig.crs);
 
                 // Calculate fake bbox around the feature
+                var proj = new OpenLayers.Projection(atConfig.crs);
                 var lConfig = config.layers[parentLayerName];
                 var units = lizMap.map.getUnits();
                 var scale = Math.max( lizMap.map.maxScale, lConfig.minScale );
-
                 var res = OpenLayers.Util.getResolutionFromScale(scale, units);
+
+                // Get coordinate to mimic click on the map
+                var format = new OpenLayers.Format.GeoJSON();
+                feat = format.read(feat)[0];
+                feat.geometry.transform(proj, lizMap.map.getProjection());
+                var geomType = feat.geometry.CLASS_NAME;
+                if (
+                    geomType == 'OpenLayers.Geometry.Polygon'
+                    || geomType == 'OpenLayers.Geometry.MultiPolygon'
+                    || geomType == 'OpenLayers.Geometry.Point'
+                ) {
+                    var lonlat = feat.geometry.getBounds().getCenterLonLat()
+                }
+                else {
+                    var vert = feat.geometry.getVertices();
+                    var middlePoint = vert[Math.floor(vert.length/2)];
+                    var lonlat = new OpenLayers.LonLat(middlePoint.x, middlePoint.y);
+                }
+                // Calculate fake bbox
                 var bbox = new OpenLayers.Bounds(
                     lonlat.lon - 5 * res,
                     lonlat.lat - 5 * res,
@@ -550,7 +549,7 @@ var lizAttributeTable = function() {
                     ,'REQUEST': 'GetFeatureInfo'
                     ,'EXCEPTIONS': 'application/vnd.ogc.se_inimage'
                     ,'BBOX': bbox.toBBOX()
-                    ,'FEATURE_COUNT': 1
+                    ,'FEATURE_COUNT': 10
                     ,'HEIGHT': 100
                     ,'WIDTH': 100
                     ,'INFO_FORMAT': 'text/html'
@@ -558,6 +557,10 @@ var lizAttributeTable = function() {
                     ,'I': 50
                     ,'J': 50
                 };
+
+                // Add lizmap specific fid parameter
+                var fidFilter = feat.fid;
+                wmsOptions['fid'] = fidFilter;
 
                 // Query the server
                 var service = OpenLayers.Util.urlAppend(lizUrls.wms

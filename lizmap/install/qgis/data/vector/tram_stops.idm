@@ -1,0 +1,8 @@
+<OGRMILayerAttrIndex>
+  <MIIDFilename>tram_stops.ind</MIIDFilename>
+  <OGRMIAttrIndex>
+    <FieldIndex>0</FieldIndex>
+    <FieldName>full_id</FieldName>
+    <IndexIndex>1</IndexIndex>
+  </OGRMIAttrIndex>
+</OGRMILayerAttrIndex>
