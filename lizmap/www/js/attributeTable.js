@@ -160,6 +160,9 @@ var lizAttributeTable = function() {
                 // Unselect button
                 html+= '    <button class="btn-unselect-attributeTable btn btn-mini" value="' + layerName + '">'+lizDict['attributeLayers.toolbar.btn.data.unselect.title']+'</button>';
 
+                // Filter button
+                html+= '    <button class="btn-filter-attributeTable btn btn-mini" value="' + layerName + '">'+lizDict['attributeLayers.toolbar.btn.data.filter.title']+'</button>';
+
                 html+= '&nbsp;<div class="btn-group" role="group">';
                 html+= '    <button type="button" class="btn btn-mini dropdown-toggle" data-toggle="dropdown" aria-expanded="false">';
                 html+= lizDict['attributeLayers.toolbar.btn.data.export.title'];
@@ -188,7 +191,7 @@ var lizAttributeTable = function() {
                 $('#attribute-layer-'+ layerName + ' button.btn-refresh-attributeTable')
                 .click(function(){
                     var aName = attributeLayersDic[ $(this).val() ];
-                    var aTable = '#attribute-layer-main-'+lizMap.cleanName( aName )+' table:first';
+                    var aTable = '#attribute-layer-table-'+lizMap.cleanName( aName );
                     getAttributeTableFeature( aName, aTable );
                     return false;
                 })
@@ -197,7 +200,7 @@ var lizAttributeTable = function() {
                     function(){ $(this).removeClass('btn-primary'); }
                 );
 
-                // Bind click on unselect buttons
+                // Bind click on unselect button
                 $('#attribute-layer-'+ layerName + ' button.btn-unselect-attributeTable')
                 .click(function(){
                     var aName = attributeLayersDic[ $(this).val() ];
@@ -206,6 +209,31 @@ var lizAttributeTable = function() {
                         "layerfeatureunselectall",
                         { 'featureType': aName}
                     );
+                    return false;
+                })
+                .hover(
+                    function(){ $(this).addClass('btn-primary'); },
+                    function(){ $(this).removeClass('btn-primary'); }
+                );
+
+                // Bind click on filter button
+                $('#attribute-layer-'+ layerName + ' button.btn-filter-attributeTable')
+                .click(function(){
+                    var aName = attributeLayersDic[ $(this).val() ];
+
+                    if( $(this).hasClass('active') ) {
+                        $(this).removeClass('active').removeClass('btn-warning');
+                        lizMap.events.triggerEvent(
+                            "layerfeatureremovefilter",
+                            { 'featureType': aName}
+                        );
+                    } else {
+                        $(this).addClass('active').addClass('btn-warning');
+                        lizMap.events.triggerEvent(
+                            "layerfeaturefilterselected",
+                            { 'featureType': aName}
+                        );
+                    }
                     return false;
                 })
                 .hover(
@@ -282,7 +310,7 @@ var lizAttributeTable = function() {
                                 filter = '"' + relation.referencingField + '" = ' + "'" + fp[relation.referencedField] + "'";
                             }
                             // Get child table id
-                            var childTable = sourceTable + '-' + lizMap.cleanName(childLayerName);
+                            var childTable = sourceTable.replace( ' table:first', '' ) + '-' + lizMap.cleanName(childLayerName);
                             getAttributeTableFeature( childLayerName, childTable, filter );
 
                         }
@@ -345,13 +373,13 @@ var lizAttributeTable = function() {
                         // unbind previous events
                         $(aTable +' tr').unbind('click');
                         $(aTable +' tr td button').unbind('click');
-
                         $(aTable).html(html);
 
                         // Select the line
                         $(aTable +' tr').click(function() {
                             $(aTable +' tr').removeClass('active');
                             $(this).addClass('active');
+
                             // Get corresponding feature
                             var featId = $(this).find('button.attribute-layer-feature-focus').val();
                             // Send signal
@@ -483,9 +511,17 @@ var lizAttributeTable = function() {
                     ,'MAXFEATURES': 100
                 };
                 //optionnal parameter exp_filter
+                var filterParam = [];
                 if( exp_filter ){
-                    wfsOptions['EXP_FILTER'] = exp_filter;
+                    filterParam.push( exp_filter );
                 }
+                if ( atConfig['filteredFeatures'] && atConfig['filteredFeatures'].length ){
+                    filterParam.push( '$id IN ( ' + atConfig['filteredFeatures'].join() + ' ) ' );
+                }
+                if( filterParam.length )
+                    wfsOptions['EXP_FILTER'] = filterParam.join( ' AND ' );
+
+
                 // optionnal parameter filterid
                 if( featureid )
                     wfsOptions['FEATUREID'] = featureid;
@@ -619,6 +655,7 @@ var lizAttributeTable = function() {
                 // Assure selectedFeatures property exists for the layer
                 if( !config.attributeLayers[featureType]['selectedFeatures'] )
                     config.attributeLayers[featureType]['selectedFeatures'] = [];
+
                 // Add or remove feature id from the selectedFeatures
                 if( config.attributeLayers[featureType]['selectedFeatures'].indexOf( featId ) == -1 ) {
                     config.attributeLayers[featureType]['selectedFeatures'].push( featId );
@@ -626,28 +663,116 @@ var lizAttributeTable = function() {
                     var idx = config.attributeLayers[featureType]['selectedFeatures'].indexOf( featId )
                     config.attributeLayers[featureType]['selectedFeatures'].splice( idx, 1 );
                 }
+
                 // Refresh layer renderding
                 refreshLayerRendering( featureType );
             }
 
-            function emptyLayerSelection( featureType ) {
+            function emptyLayerSelection( featureType, refresh=true ) {
                 // Empty array
                 config.attributeLayers[featureType]['selectedFeatures'] = [];
+
                 // Refresh layer renderding
-                refreshLayerRendering( featureType );
+                if (refresh)
+                    refreshLayerRendering( featureType );
+
                 // Remove selected class for the table
                 $('#attribute-layer-table-' + featureType + ' tr').removeClass('selected');
+                //~ $('button.btn-filter-attributeTable').deactivate();
             }
+
+            function refreshLayerFilter( featureType, featId ) {
+                // Assure filteredFeatures property exists for the layer
+                if( !config.attributeLayers[featureType]['filteredFeatures'] )
+                    config.attributeLayers[featureType]['filteredFeatures'] = [];
+                // Add or remove feature id from the filteredFeatures
+                if( config.attributeLayers[featureType]['filteredFeatures'].indexOf( featId ) == -1 ) {
+                    config.attributeLayers[featureType]['filteredFeatures'].push( featId );
+                }else{
+                    var idx = config.attributeLayers[featureType]['filteredFeatures'].indexOf( featId )
+                    config.attributeLayers[featureType]['filteredFeatures'].splice( idx, 1 );
+                }
+
+            }
+
+            function emptyLayerFilter( featureType ) {
+                // Empty array
+                config.attributeLayers[featureType]['filteredFeatures'] = [];
+
+                // Refresh layer renderding
+                refreshLayerRendering( featureType );
+
+                // Refresh table
+                var aTable = '#attribute-layer-table-'+lizMap.cleanName( featureType );
+                getAttributeTableFeature( featureType, aTable );
+            }
+
+            function filterLayerFromSelectedFeatures( featureType ) {
+                // Assure selectedFeatures property exists for the layer
+                if( !config.attributeLayers[featureType]['selectedFeatures'] )
+                    config.attributeLayers[featureType]['selectedFeatures'] = [];
+
+                // Copy selected features as filtered features
+                config.attributeLayers[featureType]['filteredFeatures'] = config.attributeLayers[featureType]['selectedFeatures'].slice();
+
+                // Remove selection
+                emptyLayerSelection( featureType, false );
+
+                // Refresh layer renderding
+                refreshLayerRendering( featureType );
+
+                // Refresh table
+                var aTable = '#attribute-layer-table-'+lizMap.cleanName( featureType );
+                getAttributeTableFeature( featureType, aTable );
+
+            }
+
 
             function refreshLayerRendering( featureType ){
                 // Modify layer wms options if needed
                 var layer = lizMap.map.getLayersByName( featureType )[0];
                 if( layer ) {
+
                     var layerN = attributeLayersDic[featureType];
-                    if( config.attributeLayers[featureType] && config.attributeLayers[featureType]['selectedFeatures'].length )
+
+                    // Selection parameter
+                    if( config.attributeLayers[featureType]
+                        && config.attributeLayers[featureType]['selectedFeatures']
+                        && config.attributeLayers[featureType]['selectedFeatures'].length
+                    ) {
                         layer.params['SELECTION'] = layerN + ':' + config.attributeLayers[featureType]['selectedFeatures'].join();
+                    }
                     else
                         delete layer.params['SELECTION'];
+
+
+
+                    // Filter parameter
+                    if( config.attributeLayers[featureType]
+                        && config.attributeLayers[featureType]['filteredFeatures']
+                        && config.attributeLayers[featureType]['filteredFeatures'].length
+                    ) {
+
+                        var fi = [];
+                        var features = config.attributeLayers[featureType]['features'];
+                        if (!features)
+                            return false;
+
+                        var primaryKey = config.attributeLayers[featureType]['primaryKey'];
+                        for( var x in config.attributeLayers[featureType]['filteredFeatures']) {
+                            var idFeat = config.attributeLayers[featureType]['filteredFeatures'][x];
+                            var afeat = features[idFeat];
+                            var pk = afeat.properties[primaryKey];
+                            if( !parseInt( pk ) )
+                                pk = " '" + pk + "' ";
+                            fi.push( pk );
+                        }
+                        layer.params['FILTER'] = layerN + ':"' + primaryKey + '" IN ( ' + fi.join( ' , ' ) + ' ) ';
+                    }
+                    else
+                        delete layer.params['FILTER'];
+
+
                     layer.redraw(true);
                 }
             }
@@ -665,6 +790,14 @@ var lizAttributeTable = function() {
 
                 layerfeatureunselectall: function(e) {
                     emptyLayerSelection( e.featureType );
+                },
+
+                layerfeaturefilterselected: function(e) {
+                    filterLayerFromSelectedFeatures( e.featureType );
+                },
+
+                layerfeatureremovefilter: function(e) {
+                    emptyLayerFilter( e.featureType );
                 }
             });
 

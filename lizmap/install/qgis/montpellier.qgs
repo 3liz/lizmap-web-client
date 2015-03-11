@@ -3435,7 +3435,7 @@
         </edittype>
       </edittypes>
     </maplayer>
-    <maplayer minimumScale="0" maximumScale="1e+08" simplifyDrawingHints="1" minLabelScale="1" maxLabelScale="1e+08" simplifyDrawingTol="1" geometry="Line" simplifyMaxScale="1" type="vector" hasScaleBasedVisibilityFlag="0" simplifyLocal="1" scaleBasedLabelVisibilityFlag="0">
+    <maplayer minimumScale="-4.65661e-10" maximumScale="1e+08" simplifyDrawingHints="1" minLabelScale="1" maxLabelScale="1e+08" simplifyDrawingTol="1" geometry="Line" simplifyMaxScale="1" type="vector" hasScaleBasedVisibilityFlag="0" simplifyLocal="1" scaleBasedLabelVisibilityFlag="0">
       <id>tram20150311115319564</id>
       <datasource>./data/vector/tram.shp</datasource>
       <title></title>
@@ -3804,7 +3804,6 @@
         <attribute>network</attribute>
         <attribute>osm_id</attribute>
         <attribute>route</attribute>
-        <attribute>full_id</attribute>
         <attribute>osm_type</attribute>
         <attribute>type</attribute>
         <attribute>html</attribute>
@@ -3853,7 +3852,7 @@
         </edittype>
       </edittypes>
     </maplayer>
-    <maplayer minimumScale="-4.65661e-10" maximumScale="1e+08" simplifyDrawingHints="0" minLabelScale="1" maxLabelScale="1e+08" simplifyDrawingTol="1" geometry="Point" simplifyMaxScale="1" type="vector" hasScaleBasedVisibilityFlag="0" simplifyLocal="1" scaleBasedLabelVisibilityFlag="0">
+    <maplayer minimumScale="0" maximumScale="1e+08" simplifyDrawingHints="0" minLabelScale="1" maxLabelScale="1e+08" simplifyDrawingTol="1" geometry="Point" simplifyMaxScale="1" type="vector" hasScaleBasedVisibilityFlag="0" simplifyLocal="1" scaleBasedLabelVisibilityFlag="0">
       <id>tram_stops20150311115247810</id>
       <datasource>./data/vector/tram_stops.shp</datasource>
       <title>Tramway stops</title>
@@ -4125,7 +4124,6 @@
       <excludeAttributesWFS>
         <attribute>osm_id</attribute>
         <attribute>public_tra</attribute>
-        <attribute>full_id</attribute>
         <attribute>osm_type</attribute>
         <attribute>tram</attribute>
         <attribute>railway</attribute>
