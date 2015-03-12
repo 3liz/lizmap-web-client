@@ -2721,8 +2721,8 @@ var lizMap = function() {
           $('#edition-modal button[data-dismiss="modal"]').click(
             function() {
               editLayer.destroyFeatures();
-              $('.edition-draw-clear').addClass('disabled');
-              $('.edition-draw-save').addClass('disabled');
+              $('#edition-draw-clear').addClass('disabled');
+              $('#edition-draw-save').addClass('disabled');
             }
           );
         }
@@ -2740,8 +2740,8 @@ var lizMap = function() {
           });
           editLayer.destroyFeatures();
           editCtrls.modify.activate();
-          $('.edition-draw-clear').addClass('disabled');
-          $('.edition-draw-save').addClass('disabled');
+          $('#edition-draw-clear').addClass('disabled');
+          $('#edition-draw-save').addClass('disabled');
         }
       }
 
@@ -2799,9 +2799,9 @@ var lizMap = function() {
               editCtrls.modify.selectFeature(evt.feature);
               mAddMessage(lizDict['edition.select.modify.activate'],'info',true).attr('id','lizmap-edition-message');
             }
-            $('.edition-select-unselect').removeClass('disabled');
-            $('.edition-select-attr').removeClass('disabled');
-            $('.edition-select-delete').removeClass('disabled');
+            $('#edition-select-unselect').removeClass('disabled');
+            $('#edition-select-attr').removeClass('disabled');
+            $('#edition-select-delete').removeClass('disabled');
           } else {
             $.get(service.replace('getFeature','createFeature'),{
               layerId: editCtrls.click.layerId,
@@ -2851,32 +2851,32 @@ var lizMap = function() {
           if ( evt.vertex.parent == null )
             return true;
           var class_name = evt.vertex.parent.CLASS_NAME;
-          if ( $('.edition-draw-clear').hasClass('disabled') ) {
+          if ( $('#edition-draw-clear').hasClass('disabled') ) {
             if ( class_name == 'OpenLayers.Geometry.LineString' ) {
               if (evt.vertex.parent.components.length == 2 ) {
-                $('.edition-draw-clear').removeClass('disabled');
+                $('#edition-draw-clear').removeClass('disabled');
               }
             } else if ( class_name == 'OpenLayers.Geometry.LinearRing' ) {
               if (evt.vertex.parent.components.length == 3 ) {
-                $('.edition-draw-clear').removeClass('disabled');
+                $('#edition-draw-clear').removeClass('disabled');
               }
             }
           }
-          if ( $('.edition-draw-save').hasClass('disabled') ) {
+          if ( $('#edition-draw-save').hasClass('disabled') ) {
             if ( class_name == 'OpenLayers.Geometry.LineString' ) {
               if (evt.vertex.parent.components.length > 2 ) {
-                $('.edition-draw-save').removeClass('disabled');
+                $('#edition-draw-save').removeClass('disabled');
               }
             } else if ( class_name == 'OpenLayers.Geometry.LinearRing' ) {
               if (evt.vertex.parent.components.length > 3 ) {
-                $('.edition-draw-save').removeClass('disabled');
+                $('#edition-draw-save').removeClass('disabled');
               }
             }
           }
         },
         vertexmodified: function(evt) {
-          if ( $('.edition-select-undo').hasClass('disabled') ) {
-            $('.edition-select-undo').removeClass('disabled');
+          if ( $('#edition-select-undo').hasClass('disabled') ) {
+            $('#edition-select-undo').removeClass('disabled');
           }
         }
       });
@@ -2889,48 +2889,48 @@ var lizMap = function() {
           var al = config.editionLayers[alName];
           // update menus based on capabilities
             if (al.capabilities.deleteFeature == "False")
-            $('.edition-select-delete').addClass('disabled');
+            $('#edition-select-delete').addClass('disabled');
             else
-            $('.edition-select-delete').removeClass('disabled');
+            $('#edition-select-delete').removeClass('disabled');
             if (al.capabilities.modifyAttribute == "False")
-            $('.edition-select-attr').addClass('disabled');
+            $('#edition-select-attr').addClass('disabled');
             else
-            $('.edition-select-attr').removeClass('disabled');
+            $('#edition-select-attr').removeClass('disabled');
             if (al.capabilities.modifyGeometry == "False")
-            $('.edition-select-undo').addClass('disabled');
+            $('#edition-select-undo').addClass('disabled');
             else
-            $('.edition-select-undo').removeClass('disabled');
+            $('#edition-select-undo').removeClass('disabled');
 
-            if ( $('.edition-menu-draw').is(':visible') )
-              $('.edition-draw-cancel').click();
-            if ( $('.edition-menu-select').is(':visible') )
-              $('.edition-select-cancel').click();
+            if ( $('#edition-menu-draw').is(':visible') )
+              $('#edition-draw-cancel').click();
+            if ( $('#edition-menu-select').is(':visible') )
+              $('#edition-select-cancel').click();
 
             editCtrls.click.layerId = al.layerId;
             editCtrls.click.layerName = alName;
 
             if (al.capabilities.createFeature == "False") {
-            $('.edition-draw').addClass('disabled');
-            $('.edition-select-cancel').addClass('disabled');
+            $('#edition-draw').addClass('disabled');
+            $('#edition-select-cancel').addClass('disabled');
             } else {
-            $('.edition-draw').removeClass('disabled');
-            $('.edition-select-cancel').removeClass('disabled');
+            $('#edition-draw').removeClass('disabled');
+            $('#edition-select-cancel').removeClass('disabled');
             }
             if (al.capabilities.modifyGeometry == "False"
              && al.capabilities.modifyAttribute == "False"
              && al.capabilities.deleteFeature == "False") {
-            $('.edition-select').addClass('disabled');
-            $('.edition-draw-cancel').addClass('disabled');
+            $('#edition-select').addClass('disabled');
+            $('#edition-draw-cancel').addClass('disabled');
             } else {
-            $('.edition-select').removeClass('disabled');
-            $('.edition-draw-cancel').removeClass('disabled');
+            $('#edition-select').removeClass('disabled');
+            $('#edition-draw-cancel').removeClass('disabled');
             }
           }
 
       });
 
-      $('.edition-stop').click(function(){
-        if ( !$('.edition-menu-start').is(':visible') )
+      $('#edition-stop').click(function(){
+        if ( !$('#edition-menu-start').is(':visible') )
           return false;
 
         //$('#edition-menu h3 span.title span.text').html(lizDict['edition.title']);
@@ -2975,15 +2975,15 @@ var lizMap = function() {
                     editCtrls.click.layerName = '';
                     editCtrls.panel.deactivate();
                     editLayer.destroyFeatures();
-                    $('.edition-menu-draw').hide();
-                    $('.edition-draw-clear').addClass('disabled');
-                    $('.edition-draw-save').addClass('disabled');
-                    $('.edition-menu-select').hide();
-                    $('.edition-select-unselect').addClass('disabled');
-                    $('.edition-select-attr').addClass('disabled');
-                    $('.edition-select-undo').addClass('disabled');
-                    $('.edition-select-delete').addClass('disabled');
-                    $('.edition-menu-start').show();
+                    $('#edition-menu-draw').hide();
+                    $('#edition-draw-clear').addClass('disabled');
+                    $('#edition-draw-save').addClass('disabled');
+                    $('#edition-menu-select').hide();
+                    $('#edition-select-unselect').addClass('disabled');
+                    $('#edition-select-attr').addClass('disabled');
+                    $('#edition-select-undo').addClass('disabled');
+                    $('#edition-select-delete').addClass('disabled');
+                    $('#edition-menu-start').show();
                     var form = $('#edition form');
                     form.find('input[name="liz_srid"]').val('');
                     form.find('input[name="liz_geometryColumn"]').val('');
@@ -2994,48 +2994,48 @@ var lizMap = function() {
             }
       });
 
-      $('.edition-select').click(function(){
-        if ( !$('.edition-menu-start').is(':visible') )
+      $('#edition-select').click(function(){
+        if ( !$('#edition-menu-start').is(':visible') )
           return false;
 
         $('#edition-layer').attr('disabled', 'disabled');
-        $('.edition-menu-start').hide();
-        $('.edition-menu-select').show();
+        $('#edition-menu-start').hide();
+        $('#edition-menu-select').show();
         editCtrls.click.activate();
         $('#lizmap-edition-message').remove();
         mAddMessage(lizDict['edition.select.activate'],'info',true).attr('id','lizmap-edition-message');
         return false;
       });
-      $('.edition-select-cancel').click(function(){
+      $('#edition-select-cancel').click(function(){
         $('#lizmap-edition-message').remove();
         editLayer.destroyFeatures();
         editCtrls.click.deactivate();
         editCtrls.modify.deactivate();
-        $('.edition-select-unselect').addClass('disabled');
-        $('.edition-select-attr').addClass('disabled');
-        $('.edition-select-undo').addClass('disabled');
-        $('.edition-select-delete').addClass('disabled');
+        $('#edition-select-unselect').addClass('disabled');
+        $('#edition-select-attr').addClass('disabled');
+        $('#edition-select-undo').addClass('disabled');
+        $('#edition-select-delete').addClass('disabled');
         var form = $('#edition form');
         form.find('input[name="liz_srid"]').val('');
         form.find('input[name="liz_geometryColumn"]').val('');
         form.find('input[name="liz_wkt"]').val('');
         form.find('input[name="liz_featureId"]').val('');
-        $('.edition-menu-select').hide();
-        $('.edition-menu-start').show();
+        $('#edition-menu-select').hide();
+        $('#edition-menu-start').show();
         $('#edition-layer').removeAttr('disabled');
         return false;
       });
-      $('.edition-select-unselect').click(function(){
+      $('#edition-select-unselect').click(function(){
         if ( $(this).hasClass('disabled') )
           return false;
 
         editLayer.destroyFeatures();
         editCtrls.modify.deactivate();
         editCtrls.click.activate();
-        $('.edition-select-unselect').addClass('disabled');
-        $('.edition-select-attr').addClass('disabled');
-        $('.edition-select-undo').addClass('disabled');
-        $('.edition-select-delete').addClass('disabled');
+        $('#edition-select-unselect').addClass('disabled');
+        $('#edition-select-attr').addClass('disabled');
+        $('#edition-select-undo').addClass('disabled');
+        $('#edition-select-delete').addClass('disabled');
         var form = $('#edition form');
         form.find('input[name="liz_srid"]').val('');
         form.find('input[name="liz_geometryColumn"]').val('');
@@ -3043,7 +3043,7 @@ var lizMap = function() {
         form.find('input[name="liz_featureId"]').val('');
         return false;
       });
-      $('.edition-select-undo').click(function(){
+      $('#edition-select-undo').click(function(){
         if ( $(this).hasClass('disabled') )
           return false;
 
@@ -3059,7 +3059,7 @@ var lizMap = function() {
           editCtrls.modify.selectFeature(feat);
         return false;
       });
-      $('.edition-select-attr').click(function(){
+      $('#edition-select-attr').click(function(){
         if ( $(this).hasClass('disabled') )
           return false;
 
@@ -3072,7 +3072,7 @@ var lizMap = function() {
         });
         return false;
       });
-      $('.edition-select-delete').click(function(){
+      $('#edition-select-delete').click(function(){
         if ( $(this).hasClass('disabled') )
           return false;
 
@@ -3088,7 +3088,7 @@ var lizMap = function() {
           $('#edition-modal').html(data);
           $('#edition-modal').modal('show');
           editLayer.destroyFeatures();
-          $('.edition-select-unselect').click();
+          $('#edition-select-unselect').click();
           var layerId = editCtrls.click.layerId;
           $.each(layers, function(i, l) {
             if (config.layers[l.params['LAYERS']].id != layerId)
@@ -3100,8 +3100,8 @@ var lizMap = function() {
         return false;
       });
 
-      $('.edition-draw').click(function(){
-        if ( !$('.edition-menu-start').is(':visible') )
+      $('#edition-draw').click(function(){
+        if ( !$('#edition-menu-start').is(':visible') )
           return false;
 
         $('#edition-layer').attr('disabled', 'disabled');
@@ -3120,17 +3120,17 @@ var lizMap = function() {
           return false;
         } else {
           ctrl.activate();
-          $('.edition-draw-clear').addClass('disabled');
-          $('.edition-draw-save').addClass('disabled');
-          $('.edition-menu-start').hide();
-          $('.edition-menu-draw').show();
+          $('#edition-draw-clear').addClass('disabled');
+          $('#edition-draw-save').addClass('disabled');
+          $('#edition-menu-start').hide();
+          $('#edition-menu-draw').show();
 
           $('#lizmap-edition-message').remove();
           mAddMessage(lizDict['edition.draw.activate'],'info',true).attr('id','lizmap-edition-message');
         }
         return false;
       });
-      $('.edition-draw-cancel').click(function(){
+      $('#edition-draw-cancel').click(function(){
         $('#lizmap-edition-message').remove();
         var layerId = editCtrls.click.layerId;
         var geomType = '';
@@ -3144,14 +3144,14 @@ var lizMap = function() {
           ctrl.deactivate();
         }
         editLayer.destroyFeatures();
-        $('.edition-draw-clear').addClass('disabled');
-        $('.edition-draw-save').addClass('disabled');
-        $('.edition-menu-draw').hide();
-        $('.edition-menu-start').show();
+        $('#edition-draw-clear').addClass('disabled');
+        $('#edition-draw-save').addClass('disabled');
+        $('#edition-menu-draw').hide();
+        $('#edition-menu-start').show();
         $('#edition-layer').removeAttr('disabled');
         return false;
       });
-      $('.edition-draw-save').click(function(){
+      $('#edition-draw-save').click(function(){
         if ( $(this).hasClass('disabled') )
           return false;
 
@@ -3168,7 +3168,7 @@ var lizMap = function() {
         }
         return false;
       });
-      $('.edition-draw-clear').click(function(){
+      $('#edition-draw-clear').click(function(){
         if ( $(this).hasClass('disabled') )
           return false;
 
@@ -3182,8 +3182,8 @@ var lizMap = function() {
         if ( geomType != '' ) {
           var ctrl = editCtrls[geomType];
           ctrl.cancel();
-          $('.edition-draw-clear').addClass('disabled');
-          $('.edition-draw-save').addClass('disabled');
+          $('#edition-draw-clear').addClass('disabled');
+          $('#edition-draw-save').addClass('disabled');
         }
         return false;
       });
@@ -3577,7 +3577,7 @@ var lizMap = function() {
                     geolocate.activate();
             }
         },
-
+        
         minidockclosed: function(e) {
             if ( e.id == 'geolocation' ) {
                 if (geolocate.active && !geolocate.getCurrentLocation() )
