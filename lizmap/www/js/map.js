@@ -196,7 +196,7 @@ var lizMap = function() {
     $('#switcher-layers-container .menu-content').css('overflow-x', 'hidden').css('overflow-y', 'auto');
 
     // Set the other tab-content max-height
-    $('#dock-content').css('max-height', $('#dock').height() - $('#dock .nav-tabs > li').height());
+    $('#dock-content').css('max-height', $('#dock').height() - $('#dock-tabs').height());
 
     $('#dock').css('overflow-y', 'hidden');
 
