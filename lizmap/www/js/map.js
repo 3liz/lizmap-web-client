@@ -2789,8 +2789,6 @@ var lizMap = function() {
       // edit layer events
       editLayer.events.on({
             featureadded: function(evt) {
-                console.log('featureadded');
-                console.log('editCtrls.click.active: '+editCtrls.click.active);
           if ( editCtrls.click.active ) {
             editCtrls.click.deactivate();
             $('#lizmap-edition-message').remove();
@@ -2823,6 +2821,8 @@ var lizMap = function() {
           $('#edition form input[name="liz_wkt"]').val(evt.feature.geometry);
         },
         featureunselected: function(evt) {
+          if ( evt.feature.geometry == null )
+            return;
           var wkt = $('#edition form input[name="liz_wkt"]').val();
           $.get(service.replace('getFeature','modifyFeature'),{
             layerId: editCtrls.click.layerId,
@@ -3199,17 +3199,19 @@ var lizMap = function() {
   
   function launchEdition( aLayerId, aFid) {
     // Edition layers
-    if ('editionLayers' in config) {
+    if ( !('editionLayers' in config) )
+        return false;
         
-      var service = OpenLayers.Util.urlAppend(lizUrls.edition
+    var service = OpenLayers.Util.urlAppend(lizUrls.edition
         ,OpenLayers.Util.getParameterString(lizUrls.params)
-      );
-      
+    );
+    // Get editLayer  
     var editLayer = map.getLayersByName( 'editLayer' );
     if ( editLayer.length == 0 )
         return false;
     editLayer = editLayer[0];
     
+    // Get needed controls
     var editCtrls = {};
     var clickCtrl = map.getControlsByClass('OpenLayers.Control.EditionClick');
     if ( clickCtrl.length == 0 )
@@ -3220,6 +3222,7 @@ var lizMap = function() {
         return false;
     editCtrls['modify'] = modifyCtrl[0];
     
+    // Initialize select feature
     var layerName = '';
     $.each(layers, function(i, l) {
         if (config.layers[l.params['LAYERS']].id != aLayerId)
@@ -3229,8 +3232,13 @@ var lizMap = function() {
     });
     if ( layerName == '' )
         return false;
-    editCtrls.click.layerId = aLayerId;
-    editCtrls.click.layerName = layerName; 
+    var btn = $('#button-edition');
+    if ( !btn.parent().hasClass('active') )
+        btn.click();
+    if ( $('#edition-menu-select').is(':visible') )
+        $('#edition-select-cancel').click();
+    $('#edition-layer').val(layerName);
+    $('#edition-select').click();
     
     function manageEditionGeom(aData) {
         $('#edition-modal').html(aData);
@@ -3273,18 +3281,11 @@ var lizMap = function() {
         }
     }
     
+    // get form and feature
     $.get(service.replace('getFeature','modifyFeature'),{
         layerId: aLayerId,
         featureId: aFid
     }, function(data){
-        var btn = $('#button-edition');
-        if ( !btn.parent().hasClass('active') )
-            btn.click();
-        if ( $('#edition-menu-select').is(':visible') )
-            $('#edition-select-cancel').click();
-        $('#edition-layer').val(editCtrls.click.layerName);
-        $('#edition-select').click();
-        //editCtrls.click.activate();
         var layerId = aLayerId;
           
         manageEditionGeom(data);
@@ -3317,7 +3318,7 @@ var lizMap = function() {
         }
         $('#edition-modal').modal('show');
     });
-}
+    return true;
   }
 
   function addMeasureControls() {
