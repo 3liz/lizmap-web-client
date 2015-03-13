@@ -253,10 +253,10 @@ var lizAttributeTable = function() {
 
             }
 
-            function getLayerConfigById( layerId) {
-                for ( var lx in config.layers ) {
-                    if ( config.layers[lx]['id'] == layerId )
-                        return [lx, config.layers[lx] ];
+            function getLayerConfigById( layerId, confObjet=config.layers, idAttribute='id') {
+                for ( var lx in confObjet ) {
+                    if ( confObjet[lx][idAttribute] == layerId )
+                        return [lx, confObjet[lx] ];
                 }
                 return null;
             }
@@ -270,7 +270,11 @@ var lizAttributeTable = function() {
                     var layerRelations = config.relations[parentLayerId];
                     for( var lid in layerRelations ) {
                         var relation = layerRelations[lid];
-                        var childLayerConfigA = getLayerConfigById( relation.referencingLayer );
+                        var childLayerConfigA = getLayerConfigById(
+                            relation.referencingLayer,
+                            config.layers,
+                            'id'
+                        );
                         if( childLayerConfigA ){
                             var childLayerConfig = childLayerConfigA[1];
                             childHtml+= '<div style="padding:20px;background-color:lightgrey;border:1px solid white;">';
@@ -299,7 +303,11 @@ var lizAttributeTable = function() {
                     var layerRelations = config.relations[parentLayerId];
                     for( var lid in layerRelations ) {
                         var relation = layerRelations[lid];
-                        var childLayerConfigA = getLayerConfigById( relation.referencingLayer );
+                        var childLayerConfigA = getLayerConfigById(
+                            relation.referencingLayer,
+                            config.layers,
+                            'id'
+                        );
                         if( childLayerConfigA ){
                             var childLayerName = childLayerConfigA[0];
                             var childLayerConfig = childLayerConfigA[1];
@@ -405,9 +413,11 @@ var lizAttributeTable = function() {
                             if( !tr.hasClass('selected') ){
                                 tr.addClass('selected');
                                 $(this).attr( 'title', lizDict['attributeLayers.btn.unselect.title'] );
+                                $(this).children('i').removeClass('icon-plus').addClass('icon-minus');
                             }else {
                                 tr.removeClass('selected');
                                 $(this).attr( 'title', lizDict['attributeLayers.btn.select.title'] );
+                                $(this).children('i').removeClass('icon-minus').addClass('icon-plus');
                             }
 
                             // Send signal
@@ -693,6 +703,8 @@ var lizAttributeTable = function() {
 
             function emptyLayerSelection( featureType, refresh=true ) {
                 // Empty array
+                if( !config.attributeLayers[featureType]['selectedFeatures'] )
+                    config.attributeLayers[featureType]['selectedFeatures'] = [];
                 config.attributeLayers[featureType]['selectedFeatures'] = [];
 
                 // Refresh layer renderding
@@ -821,6 +833,64 @@ var lizAttributeTable = function() {
 
                 layerfeatureremovefilter: function(e) {
                     emptyLayerFilter( e.featureType );
+                },
+
+                lizmappopupdisplayed: function(e) {
+                    var hasButton = false;
+                    // Add action buttons if needed
+                    $('#liz_layer_popup input.lizmap-popup-layer-feature-id').each(function(){
+                        eHtml = '';
+                        var fid = $(this).val().split('.').pop();
+                        var layerId = $(this).val().replace( '.' + fid, '' );
+
+                        // Select button
+                        var aConfig = getLayerConfigById(
+                            layerId,
+                            config.attributeLayers,
+                            'layerId'
+                        );
+                        if( aConfig ) {
+                            eHtml+= '<button class="btn btn-mini popup-layer-feature-select" value="';
+                            eHtml+= aConfig[0] + '.' + fid;
+                            eHtml+= '" title="' + lizDict['attributeLayers.btn.select.title'] + '"><i class="icon-plus"></i>&nbsp;' + lizDict['attributeLayers.btn.select.title'] + '</button>';
+                        }
+
+                        // Edit button
+                        var eConfig = getLayerConfigById(
+                            layerId,
+                            config.editionLayers,
+                            'layerId'
+                        );
+                        if( eConfig ) {
+                            eHtml+= '<button class="btn btn-mini popup-layer-feature-edit" value="';
+                            eHtml+= $(this).val();
+                            eHtml+= '" title="' + lizDict['attributeLayers.btn.edit.title'] + '"><i class="icon-pencil"></i>&nbsp;' + lizDict['attributeLayers.btn.edit.title'] + '</button>';
+                        }
+
+                        if( eHtml ){
+                            $(this).after(eHtml);
+                            hasButton = true;
+                        }
+                    });
+                    // Add interaction buttons
+                    if( hasButton ) {
+                        // select
+                        $('#liz_layer_popup button.popup-layer-feature-select').click(function(){
+                            var fid = $(this).val().split('.').pop();
+                            var featureType = $(this).val().replace( '.' + fid, '' );
+                            emptyLayerSelection( featureType, false )
+                            lizMap.events.triggerEvent('layerfeatureselected', {featureType, fid});
+                        });
+                        // edit
+                        $('#liz_layer_popup button.popup-layer-feature-edit').click(function(){
+                            var fid = $(this).val().split('.').pop();
+                            var layerId = $(this).val().replace( '.' + fid, '' );
+                            lizMap.launchEdition( layerId, fid );
+                        });
+                    }
+
+                    // Add children table if needed
+
                 }
             });
 

@@ -423,9 +423,7 @@ Timemanager
 .attributeLayers-layer-div span.attribute-layer-msg.failure {
   color:red;
 }
-#attribute-table-container {
-  border: 1px solid #606060;
-}
+
 
 .alert-info {
   background-color : #3a3c3d;

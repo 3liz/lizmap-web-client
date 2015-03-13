@@ -621,6 +621,7 @@ class serviceCtrl extends jController {
 
       // Get layer title
       $layerTitle = $configLayer->title;
+      $layerId = $configLayer->id;
 
       // Get the template for the popup content
       $templateConfigured = False;
@@ -649,11 +650,14 @@ class serviceCtrl extends jController {
           continue;
         }
 
+        // Hidden input containing layer id and feature id
+        $hiddenFeatureId = '<input type="hidden" value="' . $layerId . '.' .$id.'" class="lizmap-popup-layer-feature-id"/>
+        ';
 
         // Specific template for the layer has been configured
         if($templateConfigured){
 
-          $popupFeatureContent = $popupTemplate;
+          $popupFeatureContent = $hiddenFeatureId . $popupTemplate;
 
           // then replace all column data by appropriate content
           foreach($feature->Attribute as $attribute){
@@ -666,6 +670,7 @@ class serviceCtrl extends jController {
               $popupFeatureContent
             );
           }
+
         }
         // Use default template if needed
         else{
@@ -673,7 +678,7 @@ class serviceCtrl extends jController {
           $tpl->assign('attributes', $feature->Attribute);
           $tpl->assign('repository', $this->repository->getKey());
           $tpl->assign('project', $this->project->getKey());
-          $popupFeatureContent = $tpl->fetch('view~popupDefaultContent');
+          $popupFeatureContent = $hiddenFeatureId . $tpl->fetch('view~popupDefaultContent');
         }
 
         $tpl = new jTpl();
