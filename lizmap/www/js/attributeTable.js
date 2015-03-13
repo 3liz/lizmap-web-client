@@ -885,6 +885,7 @@ var lizAttributeTable = function() {
                         $('#liz_layer_popup button.popup-layer-feature-edit').click(function(){
                             var fid = $(this).val().split('.').pop();
                             var layerId = $(this).val().replace( '.' + fid, '' );
+                            // launch edition
                             lizMap.launchEdition( layerId, fid );
                         });
                     }

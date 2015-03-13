@@ -3323,6 +3323,10 @@ var lizMap = function() {
             form.submit();
             form.hide();
         }
+
+        // Hide bottom dock
+        $('#bottom-dock').trigger('mouseleave');
+
         $('#edition-modal').modal('show');
     });
     return true;

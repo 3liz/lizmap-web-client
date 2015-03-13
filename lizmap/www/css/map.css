@@ -829,6 +829,10 @@ div.modal h3 .text {
   margin-right : 0.5em;
 }
 
+#edition-modal{
+  z-index:10000;
+}
+
 #edition-menu div.menu-content {
   padding-left:0.2em;
   padding-right:0.2em;
