@@ -338,7 +338,7 @@ var lizAttributeTable = function() {
                         config.attributeLayers[aName]['features'] = {};
                         html+= '<tr>';
                         html+='<th></th>';
-                        html+='<th></th>';
+                        if( lConfig['popup'] == 'True' ) { html+='<th></th>'; }
                         if( aName in config.editionLayers ) { html+='<th></th>'; }
                         html+='<th></th>';
                         html+='<th></th>';
@@ -359,7 +359,9 @@ var lizAttributeTable = function() {
 
                             html+='<tr' + trClass + '>';
                             html+='<td><button class="btn btn-mini attribute-layer-feature-select" value="'+fid+'" title="' + lizDict['attributeLayers.btn.select.title'] + '"><i class="icon-plus"></i></button></td>';
-                            html+='<td><button class="btn btn-mini attribute-layer-feature-info" value="'+fid+'" title="' + lizDict['attributeLayers.btn.info.title'] + '"><i class="icon-info-sign"></i></button></td>';
+                            if( lConfig['popup'] == 'True' ) {
+                                html+='<td><button class="btn btn-mini attribute-layer-feature-info" value="'+fid+'" title="' + lizDict['attributeLayers.btn.info.title'] + '"><i class="icon-info-sign"></i></button></td>';
+                            }
                             if( aName in config.editionLayers ) {
                                 html+='<td><button class="btn btn-mini attribute-layer-feature-edit" value="'+fid+'" title="' + lizDict['attributeLayers.btn.edit.title'] + '"><i class="icon-pencil"></i></button></td>';
                             }
@@ -448,18 +450,20 @@ var lizAttributeTable = function() {
                         );
 
                         // Display popup for the feature
-                        $(aTable +' tr td button.attribute-layer-feature-info').click(function() {
+                        if( lConfig['popup'] == 'True' ) {
+                            $(aTable +' tr td button.attribute-layer-feature-info').click(function() {
 
-                            var featId = $(this).val();
-                            var feat = config.attributeLayers[aName]['features'][featId];
-                            getFeatureInfoForLayerFeature( aTable, aName, feat );
-                            return false;
+                                var featId = $(this).val();
+                                var feat = config.attributeLayers[aName]['features'][featId];
+                                getFeatureInfoForLayerFeature( aTable, aName, feat );
+                                return false;
 
-                        })
-                        .hover(
-                            function(){ $(this).addClass('btn-primary'); },
-                            function(){ $(this).removeClass('btn-primary'); }
-                        );
+                            })
+                            .hover(
+                                function(){ $(this).addClass('btn-primary'); },
+                                function(){ $(this).removeClass('btn-primary'); }
+                            );
+                        }
 
                         // Trigger edition for selected feature
                         if( aName in config.editionLayers ) {
