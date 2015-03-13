@@ -11,7 +11,7 @@
       <layer-tree-layer expanded="0" checked="Qt::Unchecked" id="edition_line20130409161630329" name="edition_line">
         <customproperties/>
       </layer-tree-layer>
-      <layer-tree-layer expanded="0" checked="Qt::Unchecked" id="edition_polygon20130409114333776" name="areas of interest">
+      <layer-tree-layer expanded="0" checked="Qt::Unchecked" id="edition_polygon20130409114333776" name="areas_of_interest">
         <customproperties/>
       </layer-tree-layer>
     </layer-tree-group>
@@ -148,7 +148,7 @@
           <legendlayerfile isInOverview="0" layerid="edition_line20130409161630329" visible="0"/>
         </filegroup>
       </legendlayer>
-      <legendlayer drawingOrder="-1" open="false" checked="Qt::Unchecked" name="areas of interest" showFeatureCount="0">
+      <legendlayer drawingOrder="-1" open="false" checked="Qt::Unchecked" name="areas_of_interest" showFeatureCount="0">
         <filegroup open="false" hidden="false">
           <legendlayerfile isInOverview="0" layerid="edition_polygon20130409114333776" visible="0"/>
         </filegroup>
@@ -246,7 +246,7 @@
         </styles>
         <layer-tree-group expanded="1" checked="Qt::Checked" name="">
           <customproperties/>
-          <layer-tree-layer expanded="1" checked="Qt::Checked" id="edition_polygon20130409114333776" name="areas of interest">
+          <layer-tree-layer expanded="1" checked="Qt::Checked" id="edition_polygon20130409114333776" name="areas_of_interest">
             <customproperties>
               <property key="legend/title-style" value="subgroup"/>
             </customproperties>
@@ -526,7 +526,7 @@
               <property key="legend/title-style" value="subgroup"/>
             </customproperties>
           </layer-tree-layer>
-          <layer-tree-layer expanded="1" checked="Qt::Checked" id="edition_polygon20130409114333776" name="areas of interest">
+          <layer-tree-layer expanded="1" checked="Qt::Checked" id="edition_polygon20130409114333776" name="areas_of_interest">
             <customproperties>
               <property key="legend/title-style" value="subgroup"/>
             </customproperties>
@@ -3086,12 +3086,12 @@
     <maplayer minimumScale="0" maximumScale="1e+08" simplifyDrawingHints="1" minLabelScale="1" maxLabelScale="1e+08" simplifyDrawingTol="1" geometry="Polygon" simplifyMaxScale="1" type="vector" hasScaleBasedVisibilityFlag="0" simplifyLocal="1" scaleBasedLabelVisibilityFlag="0">
       <id>edition_polygon20130409114333776</id>
       <datasource>dbname='./edition/edition_db.sqlite' table="edition_polygon" (geom) sql=</datasource>
-      <title></title>
+      <title>Areas of interest</title>
       <abstract></abstract>
       <keywordList>
         <value></value>
       </keywordList>
-      <layername>areas of interest</layername>
+      <layername>areas_of_interest</layername>
       <srs>
         <spatialrefsys>
           <proj4>+proj=longlat +datum=WGS84 +no_defs</proj4>
@@ -3394,10 +3394,10 @@
           <widgetv2config IsMultiline="0" fieldEditable="1" UseHtml="0" labelOnTop="0"/>
         </edittype>
       </edittypes>
-      <editform></editform>
+      <editform>.</editform>
       <editforminit/>
       <featformsuppress>0</featformsuppress>
-      <annotationform></annotationform>
+      <annotationform>.</annotationform>
       <editorlayout>generatedlayout</editorlayout>
       <excludeAttributesWMS/>
       <excludeAttributesWFS/>
@@ -4198,6 +4198,7 @@
     <WFSLayers type="QStringList">
       <value>VilleMTP_MTP_Quartiers_2011_432620130116112610876</value>
       <value>VilleMTP_MTP_SousQuartiers_201120130929113137811</value>
+      <value>edition_polygon20130409114333776</value>
       <value>jointure_tram_stop20150311122053595</value>
       <value>tram20150311115319564</value>
     </WFSLayers>
@@ -4317,6 +4318,7 @@ Data is licensed under ODbl, OpenStreetMap contributors</WMSServiceAbstract>
       <VilleMTP_MTP_SousQuartiers_201120130929113137811 type="int">8</VilleMTP_MTP_SousQuartiers_201120130929113137811>
       <VilleMTP_MTP_Quartiers_2011_432620130116112610876 type="int">8</VilleMTP_MTP_Quartiers_2011_432620130116112610876>
       <tram_stops20150311115247810 type="int">8</tram_stops20150311115247810>
+      <edition_polygon20130409114333776 type="int">8</edition_polygon20130409114333776>
     </WFSLayersPrecision>
     <Identify>
       <disabledLayers type="QStringList"/>
