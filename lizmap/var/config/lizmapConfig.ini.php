@@ -28,7 +28,7 @@ allowUserAccountRequests=off
 label="LizMap Demo"
 path="../install/qgis/"
 
-allowUserDefinedThemes=
+allowUserDefinedThemes=0
 [repository:intranet]
 label="Lizmap Demo - Intranet"
 path="../install/qgis_intranet/"
@@ -64,6 +64,7 @@ path="../install/qgis_intranet/"
 
 
 allowUserDefinedThemes=
+
 
 
 

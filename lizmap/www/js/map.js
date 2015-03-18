@@ -1883,6 +1883,12 @@ var lizMap = function() {
                         );
                       popup.panMapIfOutOfView = true;
                       map.addPopup(popup);
+
+                      // Trigger event
+                      lizMap.events.triggerEvent(
+                        "lizmappopupdisplayed"
+                      );
+
                       popup.verifySize();
                       // Hide navbar and overview in mobile mode
                       if(mCheckMobile()){
@@ -1941,31 +1947,31 @@ var lizMap = function() {
           newScales.push( parseFloat(aScales[i]) );
       }
       newScales.sort(function(a,b){return b-a;});
-	  var scale = map.getScale();
-	  var scaleIdx = newScales.indexOf( scale );
-	  if ( scaleIdx == -1 ) {
-		var s=0, slen=newScales.length;
-		while ( scaleIdx == -1 && s<slen ) {
-			if ( scale > newScales[s] )
-			  scaleIdx = s;
-			else
-			 s++;
-		}
-		if( s == slen ) {
-		  scale = newScales[slen-1];
-		} else {
-		  scale = newScales[scaleIdx];
-		}
-	  }
-	  return scale;
+    var scale = map.getScale();
+    var scaleIdx = newScales.indexOf( scale );
+    if ( scaleIdx == -1 ) {
+    var s=0, slen=newScales.length;
+    while ( scaleIdx == -1 && s<slen ) {
+      if ( scale > newScales[s] )
+        scaleIdx = s;
+      else
+       s++;
+    }
+    if( s == slen ) {
+      scale = newScales[slen-1];
+    } else {
+      scale = newScales[scaleIdx];
+    }
+    }
+    return scale;
   }
 
   function drawPrintBox( aLayout, aLayer, aScale ) {
-	  var size = aLayout.size;
-	  var units = map.getUnits();
-	  var unitsRatio = OpenLayers.INCHES_PER_UNIT[units];
-	  var w = size.width / 72 / unitsRatio * aScale / 2;
-	  var h = size.height / 72 / unitsRatio * aScale / 2;
+    var size = aLayout.size;
+    var units = map.getUnits();
+    var unitsRatio = OpenLayers.INCHES_PER_UNIT[units];
+    var w = size.width / 72 / unitsRatio * aScale / 2;
+    var h = size.height / 72 / unitsRatio * aScale / 2;
       if ( aLayer.features.length == 0 ) {
           var center = map.getCenter();
           var bounds = new OpenLayers.Bounds(center.lon - w, center.lat - h,
@@ -1984,16 +1990,16 @@ var lizMap = function() {
           feat.geometry = geom;
           aLayer.drawFeature(feat);
       }
-	  return true;
+    return true;
   }
-  
+
   function getPrintGridInterval( aLayout, aScale, aScales ) {
-	  var size = aLayout.size;
-	  var units = map.getUnits();
-	  var unitsRatio = OpenLayers.INCHES_PER_UNIT[units];
-	  var w = size.width / 72 / unitsRatio * aScale;
-	  var h = size.height / 72 / unitsRatio * aScale;
-      
+    var size = aLayout.size;
+    var units = map.getUnits();
+    var unitsRatio = OpenLayers.INCHES_PER_UNIT[units];
+    var w = size.width / 72 / unitsRatio * aScale;
+    var h = size.height / 72 / unitsRatio * aScale;
+
       var refScale = w > h ? w : h;
       var newScales = [];
       for ( var i=0, len = aScales.length; i<len; i++ ) {

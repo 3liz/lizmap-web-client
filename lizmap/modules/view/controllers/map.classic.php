@@ -198,6 +198,26 @@ class mapCtrl extends jController {
           }
         }
       }
+
+      // Add JS files found in media/js
+      $jsDirArray = array('default', $project);
+      foreach( $jsDirArray as $dir ){
+        $jsPathGlob = $repositoryPath . '/' . 'media/js/' . $dir .'/*.js';
+        foreach( glob( $jsPathGlob ) as $jsPath ){
+          $jsPath = realpath( $jsPath );
+          $jsRelPath = 'media/js/' . $dir .'/' . basename( $jsPath );
+          $jsUrl = jUrl::get(
+            'view~media:getMedia',
+            array(
+              'repository'=>$lrep->getKey(),
+              'project'=>$project,
+              'path'=>$jsRelPath
+            )
+          );
+          $rep->addJSLink( $jsUrl );
+        }
+      }
+
     }
 
     // optionnally hide some tools
