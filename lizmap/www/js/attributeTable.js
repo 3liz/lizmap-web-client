@@ -610,6 +610,10 @@ var lizAttributeTable = function() {
             }
 
             function getFeatureInfoForLayerFeature( aTable, aName, feat) {
+                // Remove map popup to avoid confusion
+                if (lizMap.map.popups.length != 0)
+                    lizMap.map.removePopup( lizMap.map.popups[0] );
+
                 var parentLayerName = aTable.replace('#attribute-layer-table-', '').split('-');
                 parentLayerName = parentLayerName[0];
 
