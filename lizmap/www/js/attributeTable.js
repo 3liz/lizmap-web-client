@@ -427,6 +427,7 @@ var lizAttributeTable = function() {
 
                                 // Select the line
                                 $(aTable +' tr').click(function() {
+
                                     $(aTable +' tr').removeClass('active');
                                     $(this).addClass('active');
 
@@ -650,6 +651,9 @@ var lizAttributeTable = function() {
                 );
 
                 var layerName = lizMap.cleanName(parentLayerName);
+                var gfiCrs = lizMap.map.getProjectionObject().toString();
+                if ( gfiCrs == 'EPSG:900913' )
+                    gfiCrs = 'EPSG:3857';
                 var wmsOptions = {
                      'LAYERS': typeName
                     ,'QUERY_LAYERS': typeName
@@ -663,7 +667,7 @@ var lizAttributeTable = function() {
                     ,'HEIGHT': 100
                     ,'WIDTH': 100
                     ,'INFO_FORMAT': 'text/html'
-                    ,'CRS': lizMap.map.getProjection()
+                    ,'CRS': gfiCrs
                     ,'I': 50
                     ,'J': 50
                 };
