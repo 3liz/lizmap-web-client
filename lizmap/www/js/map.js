@@ -3245,6 +3245,7 @@ var lizMap = function() {
     if ( $('#edition-menu-select').is(':visible') )
         $('#edition-select-cancel').click();
     $('#edition-layer').val(layerName);
+    $('#edition-layer').change();
     $('#edition-select').click();
 
     function manageEditionGeom(aData) {
