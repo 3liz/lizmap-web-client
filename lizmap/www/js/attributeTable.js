@@ -348,9 +348,7 @@ var lizAttributeTable = function() {
                         var columns = [];
 
                         columns.push( {"title": "Select"} );
-                        if( lConfig['popup'] == 'True' ) {
-                            columns.push( {"title": "Info"} );
-                        }
+
                         if( aName in config.editionLayers ) {
                             columns.push( {"title": "Edit"} );
                         }
@@ -377,10 +375,6 @@ var lizAttributeTable = function() {
                             var selectCol = '<td><button class="btn btn-mini attribute-layer-feature-select" value="'+fid+'" title="' + lizDict['attributeLayers.btn.select.title'] + '"><i class="icon-plus"></i></button></td>';
                             line.push( selectCol );
 
-                            if( lConfig['popup'] == 'True' ) {
-                                var infoCol = '<td><button class="btn btn-mini attribute-layer-feature-info" value="'+fid+'" title="' + lizDict['attributeLayers.btn.info.title'] + '"><i class="icon-info-sign"></i></button></td>';
-                                line.push( infoCol );
-                            }
                             if( aName in config.editionLayers ) {
                                 var editCol = '<td><button class="btn btn-mini attribute-layer-feature-edit" value="'+fid+'" title="' + lizDict['attributeLayers.btn.edit.title'] + '"><i class="icon-pencil"></i></button></td>';
                                 line.push( editCol );
@@ -433,11 +427,19 @@ var lizAttributeTable = function() {
 
                                     // Get corresponding feature
                                     var featId = $(this).find('button.attribute-layer-feature-focus').val();
+
                                     // Send signal
                                     lizMap.events.triggerEvent(
                                         "layerfeaturehighlighted",
                                         { 'sourceTable': aTable, 'featureType': aName, 'fid': featId}
                                     );
+
+                                    // Display popup for the feature
+                                    if( lConfig['popup'] == 'True' ) {
+                                        var feat = config.attributeLayers[aName]['features'][featId];
+                                        getFeatureInfoForLayerFeature( aTable, aName, feat );
+                                    }
+
                                     return false;
 
                                 });
@@ -496,22 +498,6 @@ var lizAttributeTable = function() {
                                     function(){ $(this).addClass('btn-primary'); },
                                     function(){ $(this).removeClass('btn-primary'); }
                                 );
-
-                                // Display popup for the feature
-                                if( lConfig['popup'] == 'True' ) {
-                                    $(aTable +' tr td button.attribute-layer-feature-info').click(function() {
-
-                                        var featId = $(this).val();
-                                        var feat = config.attributeLayers[aName]['features'][featId];
-                                        getFeatureInfoForLayerFeature( aTable, aName, feat );
-                                        return false;
-
-                                    })
-                                    .hover(
-                                        function(){ $(this).addClass('btn-primary'); },
-                                        function(){ $(this).removeClass('btn-primary'); }
-                                    );
-                                }
 
                                 // Trigger edition for selected feature
                                 if( config.editionLayers && aName in config.editionLayers ) {
