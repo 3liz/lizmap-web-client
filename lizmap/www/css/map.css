@@ -477,6 +477,10 @@ ul.nav.nav-tabs {
   top:50px;
 }
 
+#attribute-summary.attribute-content.bottom-content{
+  overflow:auto;
+}
+
 .attribute-layer-main {
   float:left;
   width:100%;
