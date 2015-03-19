@@ -349,9 +349,22 @@ var lizAttributeTable = function() {
 
                         columns.push( {"title": "Select"} );
 
+                        // Check edition capabilities
+                        var canEdit = false;
+                        var canDelete = false;
                         if( aName in config.editionLayers ) {
-                            columns.push( {"title": "Edit"} );
+                            var al = config.editionLayers[aName];
+                            if( al.capabilities.modifyAttribute == "True" )
+                                canEdit = true;
+                            if( al.capabilities.deleteFeature == "True" )
+                                canDelete = true;
                         }
+
+                        if( canEdit )
+                            columns.push( {"title": lizDict['attributeLayers.btn.edit.title']} );
+                        if( canDelete )
+                            columns.push( {"title": lizDict['attributeLayers.btn.delete.title']} );
+
                         columns.push( {"title": "Zoom"} );
                         columns.push( {"title": "Center"} );
                         for (var idx in features[0].properties){
@@ -375,9 +388,14 @@ var lizAttributeTable = function() {
                             var selectCol = '<td><button class="btn btn-mini attribute-layer-feature-select" value="'+fid+'" title="' + lizDict['attributeLayers.btn.select.title'] + '"><i class="icon-plus"></i></button></td>';
                             line.push( selectCol );
 
-                            if( aName in config.editionLayers ) {
+                            if( canEdit ) {
                                 var editCol = '<td><button class="btn btn-mini attribute-layer-feature-edit" value="'+fid+'" title="' + lizDict['attributeLayers.btn.edit.title'] + '"><i class="icon-pencil"></i></button></td>';
                                 line.push( editCol );
+                            }
+
+                            if( canDelete ) {
+                                var deleteCol = '<td><button class="btn btn-mini attribute-layer-feature-delete" value="'+fid+'" title="' + lizDict['attributeLayers.btn.delete.title'] + '"><i class="icon-remove"></i></button></td>';
+                                line.push( deleteCol );
                             }
 
                             var zoomCol = '<td><button class="btn btn-mini attribute-layer-feature-focus zoom" value="'+fid+'" title="' + lizDict['attributeLayers.btn.zoom.title'] + '"><i class="icon-zoom-in"></i></button></td>';
@@ -500,20 +518,14 @@ var lizAttributeTable = function() {
                                 );
 
                                 // Trigger edition for selected feature
-                                if( config.editionLayers && aName in config.editionLayers ) {
+                                if( canEdit ) {
                                     $(aTable +' tr td button.attribute-layer-feature-edit').click(function() {
-
-                                        // Get the layer feature
-                                        var layer = lizMap.map.getLayersByName('locatelayer')[0];
-                                        layer.destroyFeatures();
                                         var featId = $(this).val();
-
                                         // trigger edition
                                         var lid = config.layers[aName]['id'];
                                         lizMap.launchEdition( lid, featId );
 
                                         return false;
-
                                     })
                                     .hover(
                                         function(){ $(this).addClass('btn-primary'); },
@@ -521,7 +533,22 @@ var lizAttributeTable = function() {
                                     );
                                 }
 
-                                  return false;
+                                // Trigger delete for selected feature
+                                if( canDelete ) {
+                                    $(aTable +' tr td button.attribute-layer-feature-delete').click(function() {
+                                        var featId = $(this).val();
+                                        // trigger deletion
+                                        var lid = config.layers[aName]['id'];
+                                        deleteEditionFeature( lid, featId );
+                                        return false;
+                                    })
+                                    .hover(
+                                        function(){ $(this).addClass('btn-primary'); },
+                                        function(){ $(this).removeClass('btn-primary'); }
+                                    );
+                                }
+
+                                return false;
 
                             });
                         }
@@ -719,7 +746,7 @@ var lizAttributeTable = function() {
                 return false;
             }
 
-            function refreshLayerSelection( featureType, featId ) {
+            function refreshLayerSelection( featureType, featId, refresh=true ) {
                 // Assure selectedFeatures property exists for the layer
                 if( !config.attributeLayers[featureType]['selectedFeatures'] )
                     config.attributeLayers[featureType]['selectedFeatures'] = [];
@@ -733,7 +760,8 @@ var lizAttributeTable = function() {
                 }
 
                 // Refresh layer renderding
-                refreshLayerRendering( featureType );
+                if( refresh )
+                    refreshLayerRendering( featureType );
             }
 
             function emptyLayerSelection( featureType, refresh=true ) {
@@ -847,6 +875,49 @@ var lizAttributeTable = function() {
                 }
             }
 
+            function deleteEditionFeature( layerId, featureId ){
+
+                var deleteConfirm = lizDict['edition.confirm.delete'];
+                var eConfig = getLayerConfigById(
+                    layerId,
+                    config.editionLayers,
+                    'layerId'
+                );
+                if( eConfig )
+                    deleteConfirm+= '\n' + config.layers[eConfig[0]].title;
+                if( config.attributeLayers[eConfig[0]]
+                    && config.attributeLayers[eConfig[0]]['features']
+                    && config.attributeLayers[eConfig[0]]['features'][featureId]
+                ){
+                    var eProp = config.attributeLayers[eConfig[0]]['features'][featureId].properties;
+                    for( var y in eProp ){
+                        deleteConfirm+= '  \n"' + y + '": ' + eProp[y] ;
+                    }
+
+                }
+
+                if ( !confirm( deleteConfirm ) )
+                    return false;
+
+                var eService = OpenLayers.Util.urlAppend(lizUrls.edition
+                    ,OpenLayers.Util.getParameterString(lizUrls.params)
+                );
+                $.get(eService.replace('getFeature','deleteFeature'),{
+                    layerId: layerId,
+                    featureId: featureId
+                }, function(data){
+                    $('#edition-modal').html(data);
+                    $('#edition-modal').modal('show');
+                    $.each(lizMap.layers, function(i, l) {
+                        if (config.layers[l.params['LAYERS']].id != layerId)
+                            return true;
+                        l.redraw(true);
+                        return false;
+                    });
+                });
+
+            }
+
 
             lizMap.events.on({
 
@@ -896,16 +967,24 @@ var lizAttributeTable = function() {
                             config.editionLayers,
                             'layerId'
                         );
-                        if( eConfig ) {
+                        if( eConfig && eConfig[1].capabilities.modifyAttribute == "True") {
                             eHtml+= '<button class="btn btn-mini popup-layer-feature-edit" value="';
                             eHtml+= $(this).val();
                             eHtml+= '" title="' + lizDict['attributeLayers.btn.edit.title'] + '"><i class="icon-pencil"></i>&nbsp;' + lizDict['attributeLayers.btn.edit.title'] + '</button>';
+                        }
+
+                        // Delete feature button
+                        if( eConfig && eConfig[1].capabilities.deleteFeature == "True") {
+                            eHtml+= '<button class="btn btn-mini popup-layer-feature-delete" value="';
+                            eHtml+= $(this).val();
+                            eHtml+= '" title="' + lizDict['attributeLayers.btn.delete.title'] + '"><i class="icon-remove"></i>&nbsp;' + lizDict['attributeLayers.btn.delete.title'] + '</button>';
                         }
 
                         if( eHtml ){
                             $(this).after(eHtml);
                             hasButton = true;
                         }
+
                     });
                     // Add interaction buttons
                     if( hasButton ) {
@@ -915,6 +994,7 @@ var lizAttributeTable = function() {
                             var featureType = $(this).val().replace( '.' + fid, '' );
                             emptyLayerSelection( featureType, false )
                             lizMap.events.triggerEvent('layerfeatureselected', {featureType, fid});
+                            return false;
                         });
                         // edit
                         $('#liz_layer_popup button.popup-layer-feature-edit').click(function(){
@@ -922,6 +1002,20 @@ var lizAttributeTable = function() {
                             var layerId = $(this).val().replace( '.' + fid, '' );
                             // launch edition
                             lizMap.launchEdition( layerId, fid );
+                            return false;
+                        });
+                        // delete
+                        $('#liz_layer_popup button.popup-layer-feature-delete').click(function(){
+                            var fid = $(this).val().split('.').pop();
+                            var layerId = $(this).val().replace( '.' + fid, '' );
+                            // remove Feature
+                            deleteEditionFeature( layerId, fid );
+
+                            // Remove map popup to avoid confusion
+                            if (lizMap.map.popups.length != 0)
+                                lizMap.map.removePopup( lizMap.map.popups[0] );
+
+                            return false;
                         });
                     }
 
