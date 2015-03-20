@@ -347,7 +347,7 @@ var lizAttributeTable = function() {
                         config.attributeLayers[aName]['features'] = {};
                         var columns = [];
 
-                        columns.push( {"title": "Select"} );
+                        columns.push( { "width": "25px"} );
 
                         // Check edition capabilities
                         var canEdit = false;
@@ -361,12 +361,13 @@ var lizAttributeTable = function() {
                         }
 
                         if( canEdit )
-                            columns.push( {"title": lizDict['attributeLayers.btn.edit.title']} );
+                            columns.push( {"width": "25px"} );
                         if( canDelete )
-                            columns.push( {"title": lizDict['attributeLayers.btn.delete.title']} );
+                            columns.push( {"width": "25px"} );
 
-                        columns.push( {"title": "Zoom"} );
-                        columns.push( {"title": "Center"} );
+                        columns.push( {"width": "25px"} );
+                        columns.push( {"width": "25px"} );
+
                         for (var idx in features[0].properties){
                             columns.push( {"title": idx} );
                         }
