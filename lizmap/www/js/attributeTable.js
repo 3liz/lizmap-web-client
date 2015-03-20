@@ -601,7 +601,7 @@ var lizAttributeTable = function() {
                 if( exp_filter ){
                     filterParam.push( exp_filter );
                 }
-                if ( atConfig['filteredFeatures'] && atConfig['filteredFeatures'].length ){
+                if ( atConfig['filteredFeatures'] && atConfig['filteredFeatures'].length > 0 ){
                     filterParam.push( '$id IN ( ' + atConfig['filteredFeatures'].join() + ' ) ' );
                 }
                 if( filterParam.length )
@@ -832,6 +832,9 @@ var lizAttributeTable = function() {
             }
 
             function filterLayerFromSelectedFeatures( featureType ) {
+                if( !config.attributeLayers[featureType] )
+                    return false;
+
                 // Assure selectedFeatures property exists for the layer
                 if( !config.attributeLayers[featureType]['selectedFeatures'] )
                     config.attributeLayers[featureType]['selectedFeatures'] = [];
@@ -847,12 +850,13 @@ var lizAttributeTable = function() {
 
                 // Refresh table
                 var aTable = '#attribute-layer-table-'+lizMap.cleanName( featureType );
-                getAttributeTableFeature( featureType, aTable );
+                if( aTable )
+                    getAttributeTableFeature( featureType, aTable );
 
             }
 
 
-            function refreshLayerRendering( featureType ){
+            function refreshLayerRendering( featureType, filterParam=null ){
                 // Modify layer wms options if needed
                 var layer = lizMap.map.getLayersByName( featureType )[0];
                 if( layer ) {
@@ -893,11 +897,53 @@ var lizAttributeTable = function() {
                         }
                         layer.params['FILTER'] = layerN + ':"' + primaryKey + '" IN ( ' + fi.join( ' , ' ) + ' ) ';
                     }
+                    // Filter passed when cascading to children
+                    else if( filterParam ){
+                        layer.params['FILTER'] = filterParam;
+                    }
                     else
                         delete layer.params['FILTER'];
 
-
                     layer.redraw(true);
+
+                    // Cascade to childrens
+                    var ff = config.attributeLayers[featureType]['filteredFeatures'];
+                    var parentLayerId = config.attributeLayers[featureType]['layerId'];
+                    if( 'relations' in config && parentLayerId in config.relations) {
+                        var layerRelations = config.relations[parentLayerId];
+
+                        for( var lid in layerRelations ) {
+                            var relation = layerRelations[lid];
+
+                            // Get parent primary key values
+                            var parentKeys = [];
+                            for( var a in ff ){
+                                var cFeatureId = ff[a];
+                                var feat = config.attributeLayers[featureType]['features'][cFeatureId];
+                                parentKeys.push( "'" + feat.properties[ relation.referencedField ] + "'");
+                            }
+
+                            var childLayerConfigA = getLayerConfigById(
+                                relation.referencingLayer,
+                                config.layers,
+                                'id'
+                            );
+                            if( childLayerConfigA ){
+                                var childLayerKeyName = childLayerConfigA[0];
+                                var childLayerConfig = childLayerConfigA[1];
+
+                                // Add a Filter to children layers
+                                if( parentKeys.length > 0 )
+                                    var cFilter = childLayerKeyName + ':"' + relation.referencingField + '" IN ( ' + parentKeys.join() + ' )';
+                                else
+                                    var cFilter = null
+                                refreshLayerRendering( childLayerKeyName, cFilter );
+
+                            }
+                        }
+
+                    }
+
                 }
             }
 
