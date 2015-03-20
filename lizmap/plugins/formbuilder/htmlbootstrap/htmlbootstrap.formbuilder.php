@@ -1021,6 +1021,10 @@ jFormsJQ.declareForm(jFormsJQ.tForm);
         $attr['value'] = '';
         echo '<input';
         $this->_outputAttr($attr);
+        if ( property_exists( $ctrl, 'accept' ) )
+            echo ' accept="'.$ctrl->accept.'"';
+        if ( property_exists( $ctrl, 'capture' ) )
+            echo ' capture="'.$ctrl->capture.'"';
         echo $this->_endt;
     }
 
@@ -1108,7 +1112,7 @@ jFormsJQ.declareForm(jFormsJQ.tForm);
     }
 
     protected function outputChoice($ctrl, &$attr) {
-        echo '<ul class="jforms-choice jforms-ctl-'.$ctrl->ref.'" >',"\n";
+        echo '<ul class="jforms-choice jforms-ctl-'.$ctrl->ref.' form-inline" >',"\n";
 
         $value = $this->_form->getData($ctrl->ref);
         if(is_array($value)){
@@ -1131,7 +1135,7 @@ jFormsJQ.declareForm(jFormsJQ.tForm);
         foreach( $ctrl->items as $itemName=>$listctrl){
             if (!$ctrl->isItemActivated($itemName))
                 continue;
-            echo '<li id="'.$id.$itemName.'_item"><label><input';
+            echo '<li id="'.$id.$itemName.'_item"><label class="radio"><input';
             $attr['id'] = $id.$i;
             $attr['value'] = $itemName;
             if ($itemName==$value)

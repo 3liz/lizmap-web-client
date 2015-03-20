@@ -1612,6 +1612,13 @@ div.modal h3 .text {
   margin: 0;
 }
 
+#edition-modal form .jforms-choice .jforms-notselected {
+  background: #EEE;
+}
+#edition-modal form .jforms-choice .jforms-notselected .jforms-disabled{
+  color: #999;
+}
+
 .lizmapPopup.olPopup .jforms-ctrl-date,
 #map-content .lizmapPopup .jforms-ctrl-date,
 #dock .jforms-ctrl-date,

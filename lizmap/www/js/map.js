@@ -2714,17 +2714,49 @@ var lizMap = function() {
       controls['edition'] = editCtrls.panel;
 
       function manageEditionAdd(aData) {
+        var oldForm = $('#edition-modal form');
+        if ( oldForm.length != 0 ) {
+            /*
+            if ( oldForm.attr('enctype') == 'multipart/form-data' )
+                oldForm.fileupload('destroy');
+                * */
+            oldForm.unbind('submit');
+        }
         $('#edition-modal').html(aData);
-        $('#edition-modal form').submit(function() {
-          var self = $(this);
-          $.post(self.attr('action'),
-            self.serialize(),
-            function(data) {
-              manageEditionAdd(data);
-            });
-          return false;
-        });
-        if ( $('#edition-modal form').length != 0 ) {
+        var addForm = $('#edition-modal form');
+        if ( addForm.length != 0 ) {
+            if ( addForm.attr('enctype') == 'multipart/form-data' )
+                addForm.submit(function() {
+                  var fileInputs = addForm.find('input[type="file"]');
+                  fileInputs = fileInputs.filter( function( i, e ) {
+                      return $(e).val() != "";
+                  });
+                  if ( fileInputs.length != 0 ) {
+                      addForm.fileupload({
+                        dataType: 'html',
+                        done: function (e, data) {
+                            manageEditionAdd(data.result);
+                        }
+                      });
+                      addForm.fileupload('add', {fileInput:fileInputs});
+                  } else
+                  $.post(addForm.attr('action'),
+                    addForm.serialize(),
+                    function(data) {
+                      manageEditionGeom(data);
+                    });
+                  return false;
+                });
+            else
+                addForm.submit(function() {
+                  var self = $(this);
+                  $.post(self.attr('action'),
+                    self.serialize(),
+                    function(data) {
+                      manageEditionAdd(data);
+                    });
+                  return false;
+                });
           $('#edition-modal button[data-dismiss="modal"]').click(
             function() {
               editLayer.destroyFeatures();
@@ -2733,7 +2765,7 @@ var lizMap = function() {
             }
           );
         }
-        if ( $('#edition-modal form').length == 0 ) {
+        if ( addForm.length == 0 ) {
           for ( var ctrl in editCtrls ) {
             if ( ctrl !="panel" && editCtrls[ctrl].active)
               editCtrls[ctrl].deactivate();
@@ -2753,17 +2785,48 @@ var lizMap = function() {
       }
 
       function manageEditionGeom(aData) {
+        var oldForm = $('#edition-modal form');
+        if ( oldForm.length != 0 ) {
+            /*
+            if ( oldForm.attr('enctype') == 'multipart/form-data' )
+                oldForm.fileupload('destroy');
+                */
+            oldForm.unbind('submit');
+        }
         $('#edition-modal').html(aData);
-        $('#edition-modal form').submit(function() {
-          var self = $(this);
-          $.post(self.attr('action'),
-            self.serialize(),
-            function(data) {
-              manageEditionGeom(data);
-            });
-          return false;
-        });
-        if ( $('#edition-modal form').length != 0 ) {
+        var editForm = $('#edition-modal form');
+        if ( editForm.length != 0 ) {
+            if ( editForm.attr('enctype') == 'multipart/form-data' )
+                editForm.submit(function() {
+                  var fileInputs = editForm.find('input[type="file"]');
+                  fileInputs = fileInputs.filter( function( i, e ) {
+                      return $(e).val() != "";
+                  });
+                  if ( fileInputs.length != 0 ) {
+                      editForm.fileupload({
+                        dataType: 'html',
+                        done: function (e, data) {
+                            manageEditionGeom(data.result);
+                        }
+                      });
+                      editForm.fileupload('add', {fileInput:fileInputs});
+                  } else
+                  $.post(editForm.attr('action'),
+                    editForm.serialize(),
+                    function(data) {
+                      manageEditionGeom(data);
+                    });
+                  return false;
+                });
+            else
+                editForm.submit(function() {
+                  $.post(editForm.attr('action'),
+                    editForm.serialize(),
+                    function(data) {
+                      manageEditionGeom(data);
+                    });
+                  return false;
+                });
           $('#edition-modal button[data-dismiss="modal"]').click(
             function() {
               var format = new OpenLayers.Format.WKT();
@@ -2779,7 +2842,7 @@ var lizMap = function() {
             }
           );
         }
-        if ( $('#edition-modal form').length == 0 ) {
+        if ( editForm.length == 0 ) {
           var layerId = editCtrls.click.layerId;
           $.each(layers, function(i, l) {
             if (config.layers[l.params['LAYERS']].id != layerId)
@@ -3249,17 +3312,48 @@ var lizMap = function() {
     $('#edition-select').click();
 
     function manageEditionGeom(aData) {
+        var oldForm = $('#edition-modal form');
+        if ( oldForm.length != 0 ) {
+            /*
+            if ( oldForm.attr('enctype') == 'multipart/form-data' )
+                oldForm.fileupload('destroy');
+                */
+            oldForm.unbind('submit');
+        }
         $('#edition-modal').html(aData);
-        $('#edition-modal form').submit(function() {
-          var self = $(this);
-          $.post(self.attr('action'),
-            self.serialize(),
-            function(data) {
-              manageEditionGeom(data);
-            });
-          return false;
-        });
-        if ( $('#edition-modal form').length != 0 ) {
+        var editForm = $('#edition-modal form');
+        if ( editForm.length != 0 ) {
+            if ( editForm.attr('enctype') == 'multipart/form-data' )
+                editForm.submit(function() {
+                  var fileInputs = editForm.find('input[type="file"]');
+                  fileInputs = fileInputs.filter( function( i, e ) {
+                      return $(e).val() != "";
+                  });
+                  if ( fileInputs.length != 0 ) {
+                      editForm.fileupload({
+                        dataType: 'html',
+                        done: function (e, data) {
+                            manageEditionGeom(data.result);
+                        }
+                      });
+                      editForm.fileupload('add', {fileInput:fileInputs});
+                  } else
+                  $.post(editForm.attr('action'),
+                    editForm.serialize(),
+                    function(data) {
+                      manageEditionGeom(data);
+                    });
+                  return false;
+                });
+            else
+                editForm.submit(function() {
+                  $.post(editForm.attr('action'),
+                    editForm.serialize(),
+                    function(data) {
+                      manageEditionGeom(data);
+                    });
+                  return false;
+                });
           $('#edition-modal button[data-dismiss="modal"]').click(
             function() {
               var format = new OpenLayers.Format.WKT();
@@ -3275,7 +3369,7 @@ var lizMap = function() {
             }
           );
         }
-        if ( $('#edition-modal form').length == 0 ) {
+        if ( editForm.length == 0 ) {
           var layerId = editCtrls.click.layerId;
           $.each(layers, function(i, l) {
             if (config.layers[l.params['LAYERS']].id != layerId)
