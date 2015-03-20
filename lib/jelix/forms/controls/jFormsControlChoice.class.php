@@ -101,11 +101,11 @@ class jFormsControlChoice extends jFormsControlGroups {
     }
 
     function getDisplayValue($value){
-        if (isset($this->itemsNames[$value]) && $ctrl->isItemActivated($value)) {
+        if (isset($this->itemsNames[$value]) && $this->isItemActivated($value)) {
             return $this->itemsNames[$value];
         }
-        if ($ctrl->emptyValueLabel === null)
+        if ($this->emptyValueLabel === null)
             return $value;
-        return $ctrl->emptyValueLabel;
+        return $this->emptyValueLabel;
     }
 }
