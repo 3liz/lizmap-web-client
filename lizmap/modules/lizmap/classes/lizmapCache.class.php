@@ -59,6 +59,7 @@ class lizmapCache {
     // Initialize responses
     $data = '';
     $mime = '';
+    $http_code = null;
 
     // Proxy method : use curl or file_get_contents
     if($proxyMethod == 'curl' and extension_loaded("curl")){
@@ -66,12 +67,13 @@ class lizmapCache {
       $ch = curl_init();
       curl_setopt($ch, CURLOPT_HEADER, 0);
       curl_setopt($ch, CURLOPT_URL, $url);
-      curl_setopt( $ch, CURLOPT_SSL_VERIFYPEER, false );
+      curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false );
       curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
       curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
       $data = curl_exec($ch);
       $info = curl_getinfo($ch);
       $mime = $info['content_type'];
+      $http_code = (int) $info['http_code'];
       // Optionnal debug
       if($debug or curl_errno($ch))
       {
@@ -87,8 +89,13 @@ class lizmapCache {
       $matches = array();
       $info = $url . ' --> PHP: ';
       foreach ($http_response_header as $header){
-        if (preg_match( '#^Content-Type:\s+([\w/\.+]+)(;\s+charset=(\S+))?#i', $header, $matches )){
+        if ( preg_match( '#^Content-Type:\s+([\w/\.+]+)(;\s+charset=(\S+))?#i', $header, $matches ) ){
           $mime = $matches[1];
+          if ( count( $matches ) > 3 )
+            $mime .= '; charset='.$matches[3];
+        } else if ('HTTP/' === substr($header, 0, 5)) {
+            list($version, $code, $phrase) = explode(' ', $header, 3) + array('', FALSE, '');
+            $http_code = (int) $code;
         }
         // optional debug
         if($debug){
@@ -101,7 +108,7 @@ class lizmapCache {
       }
     }
 
-    return array($data, $mime);
+    return array($data, $mime, $http_code);
   }
 
 

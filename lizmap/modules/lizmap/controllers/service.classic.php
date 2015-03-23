@@ -256,6 +256,14 @@ class serviceCtrl extends jController {
     $cachedMime = jCache::get($cacheId . '_mime');
     $cachedData = jCache::get($cacheId . '_data');
     $newhash = md5_file( realpath($this->repository->getPath()) . '/' . $this->project->getKey() . ".qgs" );
+    
+    // Verifying cache content
+    if ( $cachedData && preg_match( '#ServiceExceptionReport#i', $cachedData ) ) {
+        $hash = null;
+        $cachedMime = null;
+        $cachedData = null;
+        jCache::delete($cacheId . '_hash');
+    }
 
     // Cache exists for the unchanged QGIS project file
     if( $hash and $cachedMime and $cachedData and $hash == $newhash ) {
@@ -279,6 +287,22 @@ class serviceCtrl extends jController {
         );
         $data = $getRemoteData[0];
         $mime = $getRemoteData[1];
+        $code = $getRemoteData[2];
+        
+        if ( empty( $data ) or floor( $code / 100 ) >= 4 ) {
+            jMessage::add('Server Error !', 'Error');
+            return $this->serviceException();
+        }
+        
+        if ( preg_match( '#ServiceExceptionReport#i', $data ) ) {
+            $rep = $this->getResponse('binary');
+            $rep->mimeType = $mime;
+            $rep->content = $data;
+            $rep->doDownload = false;
+            $rep->outputFileName  =  'qgis_server_exception_report';
+
+            return $rep;
+        }
 
         // Replace qgis server url in the XML (hide real location)
         $sUrl = jUrl::getFull(
