@@ -673,13 +673,29 @@ class serviceCtrl extends jController {
             );
           }
         }
-        // Use default template if needed
+       // Use default template if needed or maptip value if defined
         else{
-          $tpl = new jTpl();
-          $tpl->assign('attributes', $feature->Attribute);
-          $tpl->assign('repository', $this->repository->getKey());
-          $tpl->assign('project', $this->project->getKey());
-          $popupFeatureContent = $tpl->fetch('view~popupDefaultContent');
+          $isMaptip = false;
+          $maptipValue = '';
+
+          foreach($feature->Attribute as $attribute){
+            if($attribute['name'] == 'maptip'){
+              $isMaptip = true;
+              $maptipValue = $attribute['value'];
+            }
+          }
+          // If there is a maptip attribute we display its value
+          if($isMaptip){
+            $popupFeatureContent = $maptipValue;
+          }
+          // Use default template
+          else{
+            $tpl = new jTpl();
+            $tpl->assign('attributes', $feature->Attribute);
+            $tpl->assign('repository', $this->repository->getKey());
+            $tpl->assign('project', $this->project->getKey());
+            $popupFeatureContent = $tpl->fetch('view~popupDefaultContent');
+          }
         }
 
         $tpl = new jTpl();
