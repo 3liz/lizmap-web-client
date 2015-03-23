@@ -186,8 +186,8 @@
 
   {if $onlyMaps}
   <div id="projects">
-    {zone 'view~main_view', array('excludedProject'=>$repository.'~'.$project)}
-    <script>
+    {zone 'view~main_view', array('excludedProject'=>$repository.'~'.$project,'onlyMaps'=>$onlyMaps)}
+    <script type="text/javascript">
     {literal}
     $(document).ready(function () {
       $('#headermenu li.home a').click(function(){

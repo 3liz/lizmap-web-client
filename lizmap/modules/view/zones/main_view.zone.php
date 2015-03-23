@@ -129,7 +129,7 @@ class main_viewZone extends jZone {
         foreach($maps as $topitem) {
             usort($topitem->childItems, "mainViewItemSort");
         }
-        $this->_tpl->assign('mapitems', $maps);
-
+        $this->_tpl->assign( 'mapitems', $maps );
+        $this->_tpl->assign( 'onlyMaps', $this->param('onlyMaps', False) );
    }
 }
