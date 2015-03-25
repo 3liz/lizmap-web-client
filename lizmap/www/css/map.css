@@ -1673,3 +1673,7 @@ div.modal h3 .text {
   z-index: 1040;
 }
 
+/* Transparent images instead of pink tiles */
+.olImageLoadError {
+    display: none !important;
+}
