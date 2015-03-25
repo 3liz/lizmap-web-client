@@ -520,6 +520,13 @@ var lizMap = function() {
                ,singleTile:(layerConfig.singleTile == 'True')
                ,order:getLayerOrder(layer)
                ,attribution:layer.attribution
+               //~ ,tileOptions: {
+                  //~ eventListeners: {
+                    //~ 'loaderror': function(evt) {
+                      //~ console.log('Tile load error');
+                    //~ }
+                  //~ }
+                //~ }
               }));
         }
         else if (layerConfig.type == 'layer') {
@@ -538,6 +545,13 @@ var lizMap = function() {
                ,singleTile:(layerConfig.singleTile == 'True')
                ,order:getLayerOrder(layer)
                ,attribution:layer.attribution
+               //~ ,tileOptions: {
+                  //~ eventListeners: {
+                    //~ 'loaderror': function(evt) {
+                      //~ console.log('Tile load error');
+                    //~ }
+                  //~ }
+                //~ }
               }));
         }
         // creating the layer tre because it's a group, has children and is not a base layer
@@ -1322,7 +1336,15 @@ var lizMap = function() {
       $('#switcher-baselayer-select')
         .change(function() {
           var val = $(this).val();
-          map.setBaseLayer(map.getLayersByName(val)[0]);
+          var blName = map.getLayersByName(val)[0];
+          map.setBaseLayer( blName );
+
+          // Trigger event
+          lizMap.events.triggerEvent(
+            "lizmapbaselayerchanged",
+            { 'layer': blName}
+          );
+
           $(this).blur();
         });
       // Hide switcher-baselayer if only one base layer inside
@@ -1691,7 +1713,15 @@ var lizMap = function() {
       $('#switcher-baselayer-select')
         .change(function() {
           var val = $(this).val();
-          map.setBaseLayer(map.getLayersByName(val)[0]);
+          var blName = map.getLayersByName(val)[0];
+          map.setBaseLayer( blName );
+
+          // Trigger event
+          lizMap.events.triggerEvent(
+            "lizmapbaselayerchanged",
+            { 'layer': blName}
+          );
+
           $(this).blur();
         });
       // Hide switcher-baselayer if only one base layer inside
