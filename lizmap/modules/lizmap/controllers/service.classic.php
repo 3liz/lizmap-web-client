@@ -686,6 +686,14 @@ class serviceCtrl extends jController {
           }
           // If there is a maptip attribute we display its value
           if($isMaptip){
+            // first replace all "media/bla/bla/llkjk.ext" by full url
+            $maptipValue = preg_replace_callback(
+              '#(["\']){1}(media/.+\.\w{3,10})(["\']){1}#',
+              Array($this, 'replaceMediaPathByMediaUrl'),
+              $maptipValue
+            );
+            // Replace : html encoded chars to let further regexp_replace find attributes
+            $maptipValue = str_replace(array('%24', '%7B', '%7D'), array('$', '{', '}'), $maptipValue);
             $popupFeatureContent = $maptipValue;
           }
           // Use default template
