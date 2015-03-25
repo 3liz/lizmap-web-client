@@ -3,7 +3,8 @@
 * @package    jelix
 * @subpackage core
 * @author     Laurent Jouanneau
-* @copyright  2011-2012 Laurent Jouanneau
+* @contributor  Olivier Demah
+* @copyright  2011-2013 Laurent Jouanneau, 2012 Olivier Demah
 * @link       http://jelix.org
 * @licence    http://www.gnu.org/licenses/lgpl.html GNU Lesser General Public Licence, see LICENCE file
 */
@@ -60,6 +61,10 @@ class jApp {
         self::$configPath = (is_null($configPath)?self::$varPath.'config/':$configPath);
         self::$scriptPath = (is_null($scriptPath)?$appPath.'scripts/':$scriptPath);
         self::$_isInit = true;
+        self::$_coord = null;
+        self::$_config = null;
+        self::$configAutoloader = null;
+        self::$_mainConfigFile = null;
     }
 
     /**
@@ -67,44 +72,6 @@ class jApp {
      * @return boolean  true if it is ok
      */
     public static function isInit() { return self::$_isInit; }
-
-    /**
-     * init path from JELIX_APP_* defines or define JELIX_APP_*,
-     * depending of how the bootstrap has been initialized.
-     * The goal of this method is to support the transition
-     * between the old way of defining path, and the new way
-     * in jelix 1.3.
-     * @deprecated
-     */
-    public static function initLegacy() {
-        if (self::$_isInit) {
-            if (!defined('JELIX_APP_PATH')) {
-                define ('JELIX_APP_PATH',         self::$appPath);
-                define ('JELIX_APP_TEMP_PATH',    self::tempPath());
-                define ('JELIX_APP_VAR_PATH',     self::$varPath);
-                define ('JELIX_APP_LOG_PATH',     self::$logPath);
-                define ('JELIX_APP_CONFIG_PATH',  self::$configPath);
-                define ('JELIX_APP_WWW_PATH',     self::$wwwPath);
-                define ('JELIX_APP_CMD_PATH',     self::$scriptPath);
-            }
-        }
-        else if (defined('JELIX_APP_PATH')) {
-            self::initPaths(JELIX_APP_PATH,
-                            JELIX_APP_WWW_PATH,
-                            JELIX_APP_VAR_PATH,
-                            JELIX_APP_LOG_PATH,
-                            JELIX_APP_CONFIG_PATH,
-                            JELIX_APP_CMD_PATH);
-            self::setTempBasePath(JELIX_APP_TEMP_PATH);
-        }
-
-        global $gJConfig;
-        if (!$gJConfig)
-            $gJConfig = self::$_config;
-        global $gJCoord;
-        if (!$gJCoord)
-            $gJCoord = self::$_coord;
-    }
 
     public static function appPath($file='') { return self::$appPath.$file; }
     public static function varPath($file='') { return self::$varPath.$file; }
@@ -173,6 +140,27 @@ class jApp {
         self::$_config->enableErrorHandler = $enableErrorHandler;
     }
 
+    protected static $_mainConfigFile = null;
+
+    /**
+     * Main config file path
+     */
+    public static function mainConfigFile() {
+
+        if (self::$_mainConfigFile)
+            return self::$_mainConfigFile;
+
+        $configFileName = self::configPath('mainconfig.ini.php');
+        if (!file_exists ($configFileName) ) {
+            // support of legacy configuration file
+            // TODO: support of defaultconfig.ini.php should be dropped in version > 1.6
+            $configFileName = self::configPath('defaultconfig.ini.php');
+            trigger_error("the config file defaultconfig.ini.php is deprecated and will be removed in the next major release", E_USER_DEPRECATED);
+        }
+        self::$_mainConfigFile = $configFileName;
+        return $configFileName;
+    }
+
     protected static $_coord = null;
     
     public static function coord() {
@@ -180,7 +168,7 @@ class jApp {
     }
 
     public static function setCoord($coord) {
-        self::$_coord = $coord;
+        self::$_coord = $coord; 
     }
 
     protected static $contextBackup = array();
@@ -198,8 +186,11 @@ class jApp {
             $coord = clone self::$_coord;
         else
             $coord = null;
-        self::$contextBackup[] = array(self::$appPath, self::$varPath, self::$logPath, self::$configPath,
-                                       self::$wwwPath, self::$scriptPath, self::$tempBasePath, self::$env, $conf, $coord);
+        self::$contextBackup[] = array(self::$appPath, self::$varPath, self::$logPath,
+                                       self::$configPath, self::$wwwPath, self::$scriptPath,
+                                       self::$tempBasePath, self::$env, $conf, $coord,
+                                       self::$modulesContext, self::$configAutoloader,
+                                       self::$_mainConfigFile);
     }
 
     /**
@@ -210,7 +201,8 @@ class jApp {
             return;
         list(self::$appPath, self::$varPath, self::$logPath, self::$configPath,
              self::$wwwPath, self::$scriptPath, self::$tempBasePath, self::$env,
-             $conf, self::$_coord) = array_pop(self::$contextBackup);
+             $conf, self::$_coord, self::$modulesContext, self::$configAutoloader,
+            self::$_mainConfigFile) = array_pop(self::$contextBackup);
         self::setConfig($conf);
     }
 
@@ -276,5 +268,31 @@ class jApp {
             throw new Exception('getModulePath : invalid module name');
         }
         return self::$_config->_modulesPathList[$module];
+    }
+
+    static protected $modulesContext = array();
+
+    /**
+    * set the context to the given module
+    * @param string $module  the module name
+    */
+    static function pushCurrentModule ($module){
+        array_push (self::$modulesContext, $module);
+    }
+
+    /**
+    * cancel the current context and set the context to the previous module
+    * @return string the obsolet module name
+    */
+    static function popCurrentModule (){
+        return array_pop (self::$modulesContext);
+    }
+
+    /**
+    * get the module name of the current context
+    * @return string name of the current module
+    */
+    static function getCurrentModule (){
+        return end(self::$modulesContext);
     }
 }

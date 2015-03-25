@@ -5,7 +5,7 @@
  * @author Laurent Jouanneau
  */
 
-define('MINIFY_MIN_DIR', dirname(__FILE__).'/min');
+define('MINIFY_MIN_DIR', __DIR__.'/min');
 
 function getDocumentRoot() {
     if (isset($_SERVER['DOCUMENT_ROOT']))
@@ -13,11 +13,12 @@ function getDocumentRoot() {
 
     require_once(JELIX_LIB_PATH."core/jConfigCompiler.class.php");
 
-    $config = parse_ini_file(jApp::configPath('defaultconfig.ini.php'));
+    $config = parse_ini_file(jApp::mainConfigFile());
+
     $urlengine = $config['urlengine'];
 
     if($urlengine['scriptNameServerVariable'] == '') {
-        $urlengine['scriptNameServerVariable'] = jConfigCompiler::findServerName($urlengine['entrypointExtension']);
+        $urlengine['scriptNameServerVariable'] = jConfigCompiler::findServerName('.php');
     }
     $urlScript = $_SERVER[$urlengine['scriptNameServerVariable']];
     $lastslash = strrpos ($urlScript, '/');

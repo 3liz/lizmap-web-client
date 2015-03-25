@@ -56,6 +56,7 @@ class jSignificantUrlsCompiler implements jISimpleCompiler{
     protected $parseInfos;
     protected $createUrlInfos;
     protected $createUrlContent;
+    protected $createUrlContentInc;
     protected $checkHttps = true;
 
     protected $typeparam = array('string'=>'([^\/]+)','char'=>'([^\/])', 'letter'=>'(\w)',
@@ -141,9 +142,12 @@ class jSignificantUrlsCompiler implements jISimpleCompiler{
         */
 
         $this->createUrlInfos = array();
-        $this->createUrlContent = "<?php \n";
+        $this->createUrlContent = "<?php \nif (jApp::config()->compilation['checkCacheFiletime'] &&( \n";
+        $this->createUrlContent .= "filemtime('".$sourceFile.'\') > '.filemtime($sourceFile);
+        $this->createUrlContentInc = '';
         $this->readProjectXml();
-        $this->retrieveModulePaths(jApp::configPath('defaultconfig.ini.php'));
+        $this->retrieveModulePaths(jApp::mainConfigFile());
+
         // for an app on a simple http server behind an https proxy, we shouldn't check HTTPS
         $this->checkHttps = jApp::config()->urlengine['checkHttpsOnParsing'];
 
@@ -299,8 +303,11 @@ class jSignificantUrlsCompiler implements jISimpleCompiler{
 
             jFile::write(jApp::tempPath('compiled/urlsig/'.$aSelector->file.'.'.rawurlencode($this->defaultUrl->entryPoint).'.entrypoint.php'),$parseContent);
         }
-        $this->createUrlContent .= '$GLOBALS[\'SIGNIFICANT_CREATEURL\'] ='.var_export($this->createUrlInfos, true).";\n?>";
-        jFile::write(jApp::tempPath('compiled/urlsig/'.$aSelector->file.'.creationinfos.php'), $this->createUrlContent);
+        $this->createUrlContent .= ")) { return false; } else {\n";
+        $this->createUrlContent .= $this->createUrlContentInc;
+        $this->createUrlContent .= '$GLOBALS[\'SIGNIFICANT_CREATEURL\'] ='.var_export($this->createUrlInfos, true).";\nreturn true;";
+        $this->createUrlContent .= "\n}\n";
+        jFile::write(jApp::tempPath('compiled/urlsig/'.$aSelector->file.'.creationinfos_15.php'), $this->createUrlContent);
         return true;
     }
 
@@ -353,7 +360,7 @@ class jSignificantUrlsCompiler implements jISimpleCompiler{
 
         foreach($list as $k=>$path){
             if(trim($path) == '') continue;
-            $p = str_replace(array('lib:','app:'), array(LIB_PATH, jApp::appPath()), $path);
+            $p = jFile::parseJelixPath( $path );
             if (!file_exists($p)) {
                 continue;
             }
@@ -403,7 +410,7 @@ class jSignificantUrlsCompiler implements jISimpleCompiler{
             $regexp = '!^'.preg_quote($pathinfo, '!').'(/.*)?$!';
         }
 
-        $this->createUrlContent .= "include_once('".$s->getPath()."');\n";
+        $this->createUrlContentInc .= "include_once('".$s->getPath()."');\n";
         $this->parseInfos[] = array($u->module, $u->action, $regexp, $selclass, $u->actionOverride, ($this->checkHttps && $u->isHttps));
         $this->createUrlInfos[$u->getFullSel()] = array(0, $u->entryPointUrl, $u->isHttps, $selclass, $pathinfo);
         if ($u->actionOverride) {
@@ -417,13 +424,13 @@ class jSignificantUrlsCompiler implements jISimpleCompiler{
     /**
      * extract all dynamic parts of a pathinfo, and read <param> elements
      * @param simpleXmlElement $url the url element
-     * @param string $regexppath  the path info
+     * @param string $path  the path info
      * @param significantUrlInfoParsing $u
      * @return string the correponding regular expression
      */
-    protected function extractDynamicParams($url, $regexppath, $u) {
-        $regexppath = preg_quote($regexppath , '!');
-        if (preg_match_all("/\\\:([a-zA-Z_0-9]+)/", $regexppath, $m, PREG_PATTERN_ORDER)) {
+    protected function extractDynamicParams($url, $pathinfo, $u) {
+        $regexppath = preg_quote($pathinfo , '!');
+        if (preg_match_all("/(?<!\\\\)\\\:([a-zA-Z_0-9]+)/", $regexppath, $m, PREG_PATTERN_ORDER)) {
             $u->params = $m[1];
 
             // process parameters which are declared in a <param> element
@@ -478,6 +485,7 @@ class jSignificantUrlsCompiler implements jISimpleCompiler{
                 $regexppath = str_replace('\:'.$name, '([^\/]+)', $regexppath);
             }
         }
+        $regexppath = str_replace("\\\\\\:", "\:", $regexppath);
         return $regexppath;
     }
 
@@ -518,6 +526,8 @@ class jSignificantUrlsCompiler implements jISimpleCompiler{
 
         if (!file_exists($path.$file))
             throw new Exception ('urls.xml: include file '.$file.' of the module '.$uInfo->module.' does not exist');
+
+        $this->createUrlContent .= " || filemtime('".$path.$file.'\') > '.filemtime($path.$file)."\n";
 
         $xml = simplexml_load_file ($path.$file);
         if (!$xml) {

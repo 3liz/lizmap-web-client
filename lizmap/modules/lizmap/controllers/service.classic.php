@@ -141,7 +141,7 @@ class serviceCtrl extends jController {
     $lrep = lizmap::getRepository($repository);
 
     // Redirect if no rights to access this repository
-    if(!jacl2::check('lizmap.repositories.view', $lrep->getKey())){
+    if(!jAcl2::check('lizmap.repositories.view', $lrep->getKey())){
       jMessage::add(jLocale::get('view~default.repository.access.denied'), 'AuthorizationRequired');
       return false;
     }
@@ -164,7 +164,7 @@ class serviceCtrl extends jController {
       $request = strtolower($params['request']);
       if(
         in_array($request, array('getmap', 'getfeatureinfo', 'getfeature', 'getprint'))
-        and !jacl2::check('lizmap.tools.loginFilteredLayers.override', $lrep->getKey() )
+        and !jAcl2::check('lizmap.tools.loginFilteredLayers.override', $lrep->getKey() )
       ){
         $this->filterDataByLogin();
       }
@@ -212,11 +212,11 @@ class serviceCtrl extends jController {
              && $pConfig->loginFilteredLayers->$layername->filterPrivate = 'True')
             {
               $filter.= $v."$pre\"$attribute\" IN ( '".$login."' , 'all' )";
-		    } else {
+            } else {
               $userGroups = jAcl2DbUserGroup::getGroups();
               $flatGroups = implode("' , '", $userGroups);
               $filter.= $v."$pre\"$attribute\" IN ( '".$flatGroups."' , 'all' )";
-		    }
+            }
             $v = ';';
           }else{
             // The user is not authenticated: only show data with attribute = 'all'
@@ -535,7 +535,7 @@ class serviceCtrl extends jController {
     $mime = $getRemoteData[1];
 
     // Get HTML content if needed
-    if($toHtml and preg_match('#/xml#', $mime)){
+    if($toHtml and preg_match('#/xml$#', $mime)){
       $data = $this->getFeatureInfoHtml($this->params, $data);
       $mime = 'text/html';
     }
@@ -605,6 +605,18 @@ class serviceCtrl extends jController {
     // Get json configuration for the project
     $configLayers = $this->project->getLayers();
 
+    // Get optionnal parameter fid
+    $filterFid = null;
+    $fid = $this->param('fid');
+    if( $fid ){
+      $expFid = explode( '.', $fid );
+      if( count( $expFid ) == 2 ) {
+        $filterFid = array();
+        $filterFid[ $expFid[0] ] = $expFid[1];
+      }
+
+    }
+
     // Loop through the layers
     $content = array();
     $ptemplate = 'view~popup';
@@ -633,6 +645,7 @@ class serviceCtrl extends jController {
 
       // Get layer title
       $layerTitle = $configLayer->title;
+      $layerId = $configLayer->id;
 
       // Get the template for the popup content
       $templateConfigured = False;
@@ -656,10 +669,19 @@ class serviceCtrl extends jController {
       // Loop through the features
       foreach($layer->Feature as $feature){
         $id = $feature['id'];
+        // Optionnally filter by feature id
+        if( $filterFid and $filterFid[$configLayer->name] and $filterFid[$configLayer->name] != $id ){
+          continue;
+        }
+
+        // Hidden input containing layer id and feature id
+        $hiddenFeatureId = '<input type="hidden" value="' . $layerId . '.' .$id.'" class="lizmap-popup-layer-feature-id"/>
+        ';
+
         // Specific template for the layer has been configured
         if($templateConfigured){
 
-          $popupFeatureContent = $popupTemplate;
+          $popupFeatureContent = $hiddenFeatureId . $popupTemplate;
 
           // then replace all column data by appropriate content
           foreach($feature->Attribute as $attribute){
@@ -957,6 +979,17 @@ class serviceCtrl extends jController {
     $rep->content = $data;
     $rep->doDownload  =  false;
     $rep->outputFileName  =  'qgis_server_wfs';
+
+    // Export
+    $dl = $this->param('dl');
+    if( $dl ){
+      // force download
+      $rep->doDownload = true;
+      // debug 1st line blank from QGIS Server
+      $rep->content = preg_replace('/^[\n\r]/', '', $data);
+      // Change file name
+      $rep->outputFileName = 'export_' . $this->params['typename'] . '.' . strtolower( $this->params['outputformat'] );
+    }
 
     return $rep;
   }

@@ -43,7 +43,7 @@
         autocompletechange: "_removeIfInvalid",
         autocompleteclose: "_close"
       });
-      this.input.autocomplete( "widget" ).css("z-index","1000");
+      this.input.autocomplete( "widget" ).css("z-index","1050");
     },
     _createShowAllButton: function() {
 	  if ( this.minLength > 0 )

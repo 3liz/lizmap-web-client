@@ -449,10 +449,14 @@ class jIniFileModifier {
     /**
      * save the ini file
      */
-    public function save() {
+    public function save($chmod = null) {
         if ($this->modified) {
-            if (false === @file_put_contents($this->filename, $this->generateIni()))
+            if (false === @file_put_contents($this->filename, $this->generateIni())) {
                 throw new Exception("Impossible to write into ".$this->filename);
+            }
+            else if($chmod) {
+                chmod($this->filename, $chmod);
+            }
             $this->modified = false;
         }
     }

@@ -26,11 +26,11 @@
   color: rgb(51,51,51);
 }
 
-.navbar .nav .information .icon {
+.navbar .nav .metadata .icon {
   background-position: -120px -20px;
 }
-.navbar .nav .information a:hover .icon,
-.navbar .nav .information.active a .icon {
+.navbar .nav .metadata a:hover .icon,
+.navbar .nav .metadata.active a .icon {
   background-position: -120px 0px;
 }
 
@@ -76,11 +76,11 @@
 .navbar .nav .measure.active a .icon {
   background-position: -140px 0px;
 }
-.navbar .nav .geolocate .icon {
+.navbar .nav .geolocation .icon {
   background-position: -20px -60px;
 }
-.navbar .nav .geolocate a:hover .icon,
-.navbar .nav .geolocate.active a .icon {
+.navbar .nav .geolocation a:hover .icon,
+.navbar .nav .geolocation.active a .icon {
   background-position: -20px -40px;
 }
 
@@ -127,8 +127,8 @@
 #menu .locate h3 .icon {
   background-position : -20px -80px;
 }
-#toolbar .geolocate h3 .icon,
-#menu .geolocate h3 .icon {
+#toolbar .geolocation h3 .icon,
+#menu .geolocation h3 .icon {
   background-position: -20px -60px;
 }
 #toolbar .print h3 .icon,
@@ -222,7 +222,7 @@ Timemanager
 }
 
 #locate div.locate-layer .custom-combobox-toggle {
-  background: url(images/123_click.png) no-repeat right;
+  background: url(images/123_click.png) no-repeat right -5px;
 }
 #locate div.locate-layer .custom-combobox-input {
   background: none;
@@ -279,7 +279,7 @@ Timemanager
 
 /*navbar*/
 #navbar div.slider{
-  background : #C81F2D;
+  background : #C81F2D;/* #0081C2; */
   border : solid 1px white;
 }
 #navbar div.slider span{
@@ -287,7 +287,7 @@ Timemanager
   border : solid 1px black;
 }
 #navbar button.ui-button-icon-only{
-  background : #CE1F2D;
+  background : #0081C2;/* #CE1F2D;*/
   border : solid 1px white;
 }
 #navbar button.ui-state-select{
@@ -423,9 +423,7 @@ Timemanager
 .attributeLayers-layer-div span.attribute-layer-msg.failure {
   color:red;
 }
-#attribute-table-container {
-  border: 1px solid #606060;
-}
+
 
 .alert-info {
   background-color : #3a3c3d;

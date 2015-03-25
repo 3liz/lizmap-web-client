@@ -4,7 +4,7 @@
 * @subpackage auth
 * @author     Laurent Jouanneau
 * @contributor Frédéric Guillot, Antoine Detante, Julien Issler, Dominique Papin, Tahina Ramaroson, Sylvain de Vathaire, Vincent Viaud
-* @copyright  2001-2005 CopixTeam, 2005-2012 Laurent Jouanneau, 2007 Frédéric Guillot, 2007 Antoine Detante
+* @copyright  2001-2005 CopixTeam, 2005-2014 Laurent Jouanneau, 2007 Frédéric Guillot, 2007 Antoine Detante
 * @copyright  2007-2008 Julien Issler, 2008 Dominique Papin, 2010 NEOV, 2010 BP2I
 *
 * This classes were get originally from an experimental branch of the Copix project (Copix 2.3dev, http://www.copix.org)
@@ -14,10 +14,7 @@
 */
 
 require(JELIX_LIB_PATH.'auth/jIAuthDriver.iface.php');
-
 require(JELIX_LIB_PATH.'auth/jAuthDriverBase.class.php');
-
-
 
 /**
  * This is the main class for authentification process
@@ -78,7 +75,7 @@ class jAuth {
             }
 
             if ($password_hash_method > 0) {
-                require_once(dirname(__FILE__).'/password.php');
+                require_once(__DIR__.'/password.php');
                 if (!can_use_password_API()) {
                     $password_hash_method = 0;
                 }

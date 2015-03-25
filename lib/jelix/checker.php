@@ -15,9 +15,9 @@
 /**
  *
  */
-include dirname(__FILE__).'/installer/jIInstallReporter.iface.php';
-include dirname(__FILE__).'/installer/jInstallerMessageProvider.class.php';
-include dirname(__FILE__).'/installer/jInstallChecker.class.php';
+include __DIR__.'/installer/jIInstallReporter.iface.php';
+include __DIR__.'/installer/jInstallerMessageProvider.class.php';
+include __DIR__.'/installer/jInstallChecker.class.php';
 /**
  * an HTML reporter for jInstallChecker
  * @package jelix

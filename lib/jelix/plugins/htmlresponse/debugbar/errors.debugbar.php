@@ -52,13 +52,27 @@ EOS
         else {
             $info->popupContent = '<ul id="jxdb-errors" class="jxdb-list">';
             $maxLevel = 0;
+            $popupOpened = false;
             $currentCount = array('error'=>0,'warning'=>0,'notice'=>0,'deprecated'=>0,'strict'=>0);
+
+            $openOnString = jApp::config()->debugbar['errors_openon'];
+            $openOn = array();
+            if( $openOnString == '*' ) {
+                $popupOpened = true;
+            } else {
+                $openOn = preg_split("/\s*,\s*/", strtoupper($openOnString));
+            }
+
             foreach($messages as $msg) {
                 $cat = $msg->getCategory();
                 $currentCount[$cat]++;
                 if ($msg instanceOf jLogErrorMessage) {
                     if ($cat == 'error')
                         $maxLevel = 1;
+
+                    if( !$popupOpened && in_array( strtoupper($cat), $openOn ) !== FALSE ) {
+                        $popupOpened = true;
+                    }
 
                     // careful: if you change the position of the div, update debugbar.js
                     $info->popupContent .= '<li class="jxdb-msg-'.$cat.'">
@@ -75,11 +89,10 @@ EOS
             }
             if ($maxLevel) {
                 $info->htmlLabel = '<img src="'.$this->getErrorIcon().'" alt="Errors" title="'.$c.' errors"/> '.$c;
-                $info->popupOpened = true;
-            }
-            else {
+            } else {
                 $info->htmlLabel = '<img src="'.$this->getWarningIcon().'" alt="Warnings" title="There are '.$c.' warnings" /> '.$c;
             }
+            $info->popupOpened = $popupOpened;
             $info->popupContent .= '</ul>';
 
             foreach($currentCount as $type=>$count) {

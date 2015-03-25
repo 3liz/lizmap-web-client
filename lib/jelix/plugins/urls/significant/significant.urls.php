@@ -3,7 +3,7 @@
  * @package     jelix
  * @subpackage  urls_engine
  * @author      Laurent Jouanneau
- * @copyright   2005-2012 Laurent Jouanneau
+ * @copyright   2005-2014 Laurent Jouanneau
  * @link        http://www.jelix.org
  * @licence     GNU Lesser General Public Licence see LICENCE file or http://www.gnu.org/licenses/lgpl.html
  */
@@ -19,11 +19,11 @@ class jSelectorUrlCfgSig extends jSelectorCfg {
     public $type = 'urlcfgsig';
 
     public function getCompiler(){
-        require_once(dirname(__FILE__).'/jSignificantUrlsCompiler.class.php');
+        require_once(__DIR__.'/jSignificantUrlsCompiler.class.php');
         $o = new jSignificantUrlsCompiler();
         return $o;
     }
-    public function getCompiledFilePath (){ return jApp::tempPath('compiled/urlsig/'.$this->file.'.creationinfos.php');}
+    public function getCompiledFilePath (){ return jApp::tempPath('compiled/urlsig/'.$this->file.'.creationinfos_15.php');}
 }
 
 /**
@@ -54,6 +54,7 @@ class jSelectorUrlHandler extends jSelectorClass {
     }
 
 }
+
 /**
  * interface for user url handler
  * @package  jelix
@@ -76,6 +77,7 @@ interface jIUrlSignificantHandler {
     */
     public function create($urlact, $url);
 }
+
 /**
  * an url engine to parse,analyse and create significant url
  * it needs an urls.xml file in the config directory (see documentation)
@@ -148,7 +150,7 @@ class significantUrlEngine implements jIUrlEngine {
             else {
                 $snp = $scriptNamePath;
             }
-            $pos = strrpos($snp, $conf['entrypointExtension']);
+            $pos = strrpos($snp, '.php');
             if ($pos !== false) {
                 $snp = substr($snp,0,$pos);
             }
@@ -355,7 +357,7 @@ class significantUrlEngine implements jIUrlEngine {
 
         $url = new jUrl('', $urlact->params, '');
 
-        $module = $url->getParam('module', jContext::get());
+        $module = $url->getParam('module', jApp::getCurrentModule());
         $action = $url->getParam('action');
 
         // let's try to retrieve informations corresponding
@@ -461,7 +463,7 @@ class significantUrlEngine implements jIUrlEngine {
             $url->scriptName = jApp::coord()->request->getServerURI(true).$url->scriptName;
 
         if ($urlinfo[1] && !jApp::config()->urlengine['multiview']) {
-            $url->scriptName .= jApp::config()->urlengine['entrypointExtension'];
+            $url->scriptName .= '.php';
         }
 
         // for some request types, parameters aren't in the url

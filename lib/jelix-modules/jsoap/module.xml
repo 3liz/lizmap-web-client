@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module xmlns="http://jelix.org/ns/module/1.0">
+    <info id="jsoap@modules.jelix.org" name="jsoap" createdate="2008-04-13">
+        <version stability="stable" date="2012-08-23">1.5</version>
+        <label lang="en_US">jsoap</label>
+        <description lang="en_US">Provides soap features with WSDL generator for SOAP web services</description>
+        <license URL="http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html">LGPL 2.1</license>
+        <copyright>2008 Sylvain de Vathaire</copyright>
+        <creator name="Sylvain de Vathaire"/>
+        <contributor name="Laurent Jouanneau" />
+        <homepageURL>http://jelix.org</homepageURL>
+    </info>
+    <dependencies>
+       <jelix minversion="1.5pre" maxversion="1.6.*"/>
+    </dependencies>
+    <autoload>
+        <class name="jWSDL" file="classes/jWSDL.php" />
+    </autoload>
+</module>

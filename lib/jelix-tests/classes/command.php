@@ -9,9 +9,9 @@
  * @contributor  Christophe Thiriot (for some code imported from his jphpunit module)
  */
 
-require_once(dirname(__FILE__).'/JelixTestSuite.class.php');
-require_once(dirname(__FILE__).'/junittestcase.class.php');
-require_once(dirname(__FILE__).'/junittestcasedb.class.php');
+require_once(__DIR__.'/JelixTestSuite.class.php');
+require_once(__DIR__.'/junittestcase.class.php');
+require_once(__DIR__.'/junittestcasedb.class.php');
 require_once(JELIX_LIB_CORE_PATH.'jConfigCompiler.class.php');
 
 
@@ -59,11 +59,11 @@ class jelix_TextUI_Command extends PHPUnit_TextUI_Command {
         }
 
         $filter->addFileToBlacklist(__FILE__, 'PHPUNIT');
-        $dir = dirname(__FILE__);
-        $filter->addFileToBlacklist($dir.'/JelixTestSuite.class.php', 'PHPUNIT');
-        $filter->addFileToBlacklist($dir.'/junittestcase.class.php', 'PHPUNIT');
-        $filter->addFileToBlacklist($dir.'/junittestcasedb.class.php', 'PHPUNIT');
-        $filter->addFileToBlacklist(dirname($dir).'/phpunit.inc.php', 'PHPUNIT');
+
+        $filter->addFileToBlacklist(__DIR__.'/JelixTestSuite.class.php', 'PHPUNIT');
+        $filter->addFileToBlacklist(__DIR__.'/junittestcase.class.php', 'PHPUNIT');
+        $filter->addFileToBlacklist(__DIR__.'/junittestcasedb.class.php', 'PHPUNIT');
+        $filter->addFileToBlacklist(dirname(__DIR__).'/phpunit.inc.php', 'PHPUNIT');
 
         if ($this->version36) {
             return new PHPUnit_TextUI_TestRunner($this->arguments['loader'], $filter);
@@ -112,7 +112,7 @@ class jelix_TextUI_Command extends PHPUnit_TextUI_Command {
         $appInstaller = new jInstallerApplication();
         $this->epInfo = $appInstaller->getEntryPointInfo($this->entryPoint);
 
-        // it will initialize deprecated global variables $gJCoord $gJConfig. it could be needed by tests
+        // let's load configuration now, and coordinator. it could be needed by tests
         // (during load of their php files or during execution)
         jApp::setConfig(jConfigCompiler::readAndCache($this->epInfo->configFile, null, $this->entryPoint));
         jApp::setCoord(new jCoordinator('', false));

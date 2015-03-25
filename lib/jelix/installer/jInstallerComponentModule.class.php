@@ -246,19 +246,10 @@ class jInstallerComponentModule extends jInstallerComponentBase {
             $list[] = $upgrader;
         }
         // now let's sort upgrader, to execute them in the right order (oldest before newest)
-        usort($list, array($this, 'sortUpgraderList'));
+        usort($list, function ($upgA, $upgB) {
+                return jVersionComparator::compareVersion($upgA->version, $upgB->version);
+        });
         return $list;
-    }
-
-    /**
-     * internal use. callback function for the sort of the list of upgraders
-     * @param array $upgA  informations about the first upgrader
-     * @param array $upgB  informations about the second upgrader
-     * @return integer   0 if equal, -1 if $versionA < $versionB, 1 if $versionA > $versionB
-     * @private
-     */
-    function sortUpgraderList($upgA, $upgB) {
-        return jVersionComparator::compareVersion($upgA->version, $upgB->version);
     }
 
     public function installFinished($ep) {

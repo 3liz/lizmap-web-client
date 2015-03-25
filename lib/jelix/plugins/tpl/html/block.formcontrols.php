@@ -71,18 +71,18 @@ function jtpl_block_html_formcontrols($compiler, $begin, $param=array())
     }
     $_frmctrlInsideForm = $compiler->isInsideBlock('form');
     $content .= '
+if (!isset($t->_privateVars[\'__formbuilder\'])) {
+    $t->_privateVars[\'__formViewMode\'] = 1;
+    $t->_privateVars[\'__formbuilder\'] = $t->_privateVars[\'__form\']->getBuilder(\'html\');
+}
 if (!isset($t->_privateVars[\'__displayed_ctrl\'])) {
     $t->_privateVars[\'__displayed_ctrl\'] = array();
 }
 $t->_privateVars[\'__ctrlref\']=\'\';
 ';
-if($_frmctrlInsideForm){
-    $list = 'getRootControls()';
-}else{
-    $list = 'getControls()';
-}
+
 $content.='
-foreach($t->_privateVars[\'__form\']->'.$list.' as $ctrlref=>$ctrl){
+foreach($t->_privateVars[\'__form\']->getRootControls() as $ctrlref=>$ctrl){
     if(!$t->_privateVars[\'__form\']->isActivated($ctrlref)) continue;
     if($ctrl->type == \'reset\' || $ctrl->type == \'hidden\') continue;'."\n";
     if(!$_frmctrlInsideForm)

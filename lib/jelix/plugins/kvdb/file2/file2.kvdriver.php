@@ -101,6 +101,8 @@ class fileServer {
 
 					// rename the temporary file
 					$r = @rename("$fn.tmp", $fn);
+
+                    chmod($fn, jApp::config()->chmodFile);
 				}
 
 				// end of mutex zone

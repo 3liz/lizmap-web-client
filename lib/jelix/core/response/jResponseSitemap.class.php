@@ -219,9 +219,9 @@ class jResponseSitemap extends jResponse {
         $conf = &jApp::config()->urlengine;
         $significantFile = $conf['significantFile'];
         $basePath = $conf['basePath'];
-        $epExt = ($conf['multiview'] ? $conf['entrypointExtension']:'');
+        $epExt = ($conf['multiview'] ? '.php':'');
 
-        $file = jApp::tempPath('compiled/urlsig/' . $significantFile . '.creationinfos.php');
+        $file = jApp::tempPath('compiled/urlsig/' . $significantFile . '.creationinfos_15.php');
 
         if (file_exists($file)) {
             require $file;

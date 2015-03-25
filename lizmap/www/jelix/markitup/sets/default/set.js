@@ -9,7 +9,7 @@
 // ----------------------------------------------------------------------------
 // Basic set. Feel free to add more tags
 // ----------------------------------------------------------------------------
-markitup_default_settings = {
+var mySettings = {
 	onShiftEnter:  	{keepDefault:false, replaceWith:'<br />\n'},
 	onCtrlEnter:  	{keepDefault:false, openWith:'\n<p>', closeWith:'</p>'},
 	onTab:    		{keepDefault:false, replaceWith:'    '},

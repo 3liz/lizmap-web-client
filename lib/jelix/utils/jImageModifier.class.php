@@ -173,9 +173,7 @@ class jImageModifier {
             $srcUri = $config['src_url'];
             if ($srcUri[0] != '/' && strpos($srcUri, 'http:') !== 0)
                 $srcUri = $basePath.$srcUri;
-            $srcPath = str_replace(array('www:','app:'),
-                                     array(jApp::wwwPath(), jApp::appPath()),
-                                     $config['src_path']);
+            $srcPath = jFile::parseJelixPath( $config['src_path'] );
         }
         else {
             $srcUri = jApp::coord()->request->getServerURI().$basePath;
@@ -186,9 +184,7 @@ class jImageModifier {
             $cacheUri = $config['cache_url'];
             if ($cacheUri[0] != '/' && strpos($cacheUri, 'http:') !== 0)
                 $cacheUri = $basePath.$cacheUri;
-            $cachePath = str_replace(array('www:','app:'),
-                                     array(jApp::wwwPath(), jApp::appPath()),
-                                     $config['cache_path']);
+            $cachePath = jFile::parseJelixPath( $config['cache_path'] );
         }
         else {
             $cachePath = jApp::wwwPath('cache/images/');
@@ -327,6 +323,7 @@ class jImageModifier {
             case 'image/jpeg' : imagejpeg($image, $targetPath.$targetName, $quality); break;
             default           : imagepng($image, $targetPath.$targetName);
         }
+        chmod($targetPath.$targetName, jApp::config()->chmodFile);
 
         // Destruction
         @imagedestroy($image);

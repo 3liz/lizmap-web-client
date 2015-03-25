@@ -12,7 +12,7 @@
 // $commandName
 
 error_reporting(E_ALL);
-define ('JELIX_SCRIPTS_PATH', dirname(__FILE__).'/../');
+define ('JELIX_SCRIPTS_PATH', __DIR__.'/../');
 require (JELIX_SCRIPTS_PATH.'../jelix/init.php');
 require (JELIX_SCRIPTS_PATH.'includes/JelixScript.class.php');
 

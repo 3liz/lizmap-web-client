@@ -99,8 +99,9 @@ class fileCacheDriver implements jICacheDriver {
 
         $this->_cache_dir = jApp::tempPath('cache/').$this->profil_name.'/';
         if(isset($params['cache_dir']) && $params['cache_dir']!=''){
-            if (is_dir($params['cache_dir']) && is_writable($params['cache_dir'])) {
-                $this->_cache_dir = rtrim(realpath($params['cache_dir']), '\\/') . DIRECTORY_SEPARATOR;
+            $cache_dir = jFile::parseJelixPath( $params['cache_dir'] );
+            if (is_dir($cache_dir) && is_writable($cache_dir)) {
+                $this->_cache_dir = rtrim(realpath($cache_dir), '\\/') . DIRECTORY_SEPARATOR;
             } else {
                 throw new jException('jelix~cache.directory.not.writable',$this->profil_name);
             }
@@ -124,6 +125,9 @@ class fileCacheDriver implements jICacheDriver {
         if (isset($params['directory_umask']) && is_string($params['directory_umask']) && $params['directory_umask']!='') {
             $this->_directory_umask = octdec($params['directory_umask']);
         }
+        else {
+            $this->_directory_umask = jApp::config()->chmodDir;
+        }
 
         if (isset($params['file_name_prefix'])) {
             $this->_file_name_prefix = $params['file_name_prefix'];
@@ -132,7 +136,9 @@ class fileCacheDriver implements jICacheDriver {
         if (isset($params['cache_file_umask']) && is_string($params['cache_file_umask']) && $params['cache_file_umask']!='') {
             $this->_cache_file_umask = octdec($params['cache_file_umask']);
         }
-
+        else {
+            $this->_cache_file_umask = jApp::config()->chmodFile;
+        }
     }
 
     /**
@@ -293,10 +299,7 @@ class fileCacheDriver implements jICacheDriver {
         $filePath = $this->_getCacheFilePath($key);
         if(!file_exists($filePath))
             return false;
-        if (version_compare(PHP_VERSION, '5.3.0') >= 0)
-            clearstatcache(false, $filePath);
-        else
-            clearstatcache();
+        clearstatcache(false, $filePath);
         return (filemtime($filePath) > time() || filemtime($filePath) == 0) && is_readable ($filePath);
     }
 
@@ -432,10 +435,7 @@ class fileCacheDriver implements jICacheDriver {
                         if($all){
                             @unlink ($f);
                         }else{
-                            if (version_compare(PHP_VERSION, '5.3.0') >= 0)
-                                clearstatcache(false, $f);
-                            else
-                                clearstatcache();
+                            clearstatcache(false, $f);
                             if(time() > filemtime($f) && filemtime($f) != 0){
                                 @unlink ($dir.'/'.$file);
                             }

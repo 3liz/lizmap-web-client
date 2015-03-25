@@ -9,7 +9,7 @@
 */
 
 error_reporting(E_ALL);
-define ('JELIX_SCRIPTS_PATH', dirname(__FILE__).'/../');
+define ('JELIX_SCRIPTS_PATH', __DIR__.'/../');
 
 if(!class_exists('jCoordinator', false)) { // for old application.init.php which doesn't include init.php
     echo "Error: your application.init.php should include the lib/jelix/init.php";
@@ -53,7 +53,6 @@ if ($command->applicationRequirement == JelixScriptCommand::APP_MUST_NOT_EXIST) 
 }
 
 jApp::setEnv('jelix-scripts');
-jApp::initLegacy();
 
 JelixScript::checkTempPath();
 

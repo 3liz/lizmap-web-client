@@ -5,7 +5,7 @@
  * @contributor Laurent Jouanneau
  * @copyright 2008 Olivier Demah, 2009 Laurent Jouanneau
  */
-require_once(dirname(__FILE__).'/diffhtml.php');
+require_once(__DIR__.'/diffhtml.php');
 
 
 class _HtmlTableDiffFormatter extends DiffFormatter

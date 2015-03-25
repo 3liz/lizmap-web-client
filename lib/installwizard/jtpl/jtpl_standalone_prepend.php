@@ -9,7 +9,7 @@
 * @licence     GNU Lesser General Public Licence see LICENCE file or http://www.gnu.org/licenses/lgpl.html
 */
 
-define('JTPL_PATH', dirname(__FILE__) . '/');
+define('JTPL_PATH', __DIR__ . '/');
 
 function getDummyLocales($locale) {
     return $locale;

@@ -61,6 +61,7 @@
                <optional><attribute name="maxlength"><data type="int" /></attribute></optional>
                <optional><attribute name="regexp" /></optional>
                <optional><attribute name="sequence" /></optional>
+               <optional><attribute name="comment" /></optional>
                <optional><attribute name="updatepattern" /></optional>
                <optional><attribute name="insertpattern" /></optional>
                <optional><attribute name="selectpattern" /></optional>

@@ -4,7 +4,8 @@
 * @subpackage  db
 * @author      Laurent Jouanneau
 * @contributor Yannick Le Guédart, Laurent Raufaste, Julien Issler
-* @copyright   2005-2011 Laurent Jouanneau
+* @contributor Christophe Thiriot
+* @copyright   2005-2012 Laurent Jouanneau, 2008 Laurent Raufaste
 * @copyright   2011 Julien Issler
 *
 * API ideas of this class were get originally from the Copix project (CopixDbFactory, Copix 2.3dev20050901, http://www.copix.org)
@@ -131,36 +132,6 @@ class jDb {
     }
 
     /**
-    * instancy a jDbTools object. Use jDbConnection::tools() instead.
-    * @param string $name profile name to use. if empty, use the default one
-    * @return jDbTools
-    * @deprecated since 1.2
-    */
-    public static function getTools ($name = null) {
-        $cnx = self::getConnection ($name);
-        return $cnx->tools();
-    }
-
-    /**
-    * load properties of a connector profile
-    *
-    * a profile is a section in the profiles.ini.php file
-    *
-    * the given name can be a profile name (it should correspond to a section name
-    * in the ini file), or an alias of a profile. An alias is a parameter name
-    * in the global section of the ini file, and the value of this parameter
-    * should be a profile name.
-    *
-    * @param string   $name  profile name or alias of a profile name. if empty, use the default profile
-    * @param boolean  $noDefault  if true and if the profile doesn't exist, throw an error instead of getting the default profile
-    * @return array  properties
-    * @deprecated use jProfiles::get instead
-    */
-    public static function getProfile ($name='', $noDefault = false) {
-        return jProfiles::get('jdb', $name, $noDefault);
-    }
-
-    /**
      * call it to test a profile (during an install for example)
      * @param array  $profile  profile properties
      * @return boolean  true if properties are ok
@@ -183,7 +154,9 @@ class jDb {
     */
     public static function _createConnector ($profile) {
         if ($profile['driver'] == 'pdo' || (isset($profile['usepdo']) && $profile['usepdo'])) {
-            $dbh = new jDbPDOConnection($profile);
+            /*
+            */
+            $dbh = new jDbPDOConnectionDebug($profile);
             return $dbh;
         }
         else {
@@ -192,28 +165,6 @@ class jDb {
                 throw new jException('jelix~db.error.driver.notfound', $profile['driver']);
             return $dbh;
         }
-    }
-
-    /**
-     * create a temporary new profile
-     * @param string $name the name of the profile
-     * @param array|string $params parameters of the profile. key=parameter name, value=parameter value.
-     *                      same kind of parameters we found in profiles.ini.php
-     *                      we can also indicate a name of an other profile, to create an alias
-     * @deprecated since 1.3, use jProfiles::createVirtualProfile instead
-     */
-    public static function createVirtualProfile ($name, $params) {
-        jProfiles::createVirtualProfile('jdb',$name, $params);
-    }
-
-    /**
-     * clear the loaded profiles to force to reload the db profiles file.
-     * WARNING: it closes all opened connections !
-     * @since 1.2
-     * @deprecated since 1.3, use jProfiles::clear instead
-     */
-    public static function clearProfiles() {
-        jProfiles::clear();
     }
 
     /**

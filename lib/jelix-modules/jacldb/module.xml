@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <module xmlns="http://jelix.org/ns/module/1.0">
     <info id="jacldb@modules.jelix.org" name="jacldb" createdate="2008-01-15">
-        <version stability="stable" date="2012-02-10">1.4</version>
+        <version stability="stable" date="2012-02-10">1.5</version>
         <label lang="en_US">jAclDb</label>
         <description lang="en_US">ressources for the jacl db plugin</description>
         <license URL="http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html">LGPL 2.1</license>
@@ -10,8 +10,8 @@
         <homepageURL>http://jelix.org</homepageURL>
     </info>
     <dependencies>
-       <jelix minversion="1.4pre" maxversion="1.4.*"/>
-        <module name="jacl" minversion="1.2.1" maxversion="1.2.*" />
+       <jelix minversion="1.4pre" maxversion="1.6.*"/>
+        <module name="jacl" minversion="1.3.0" maxversion="1.3.*" />
     </dependencies>
     <autoload>
         <classPattern pattern="/^jAclDb/" dir="classes/" suffix=".class.php" />

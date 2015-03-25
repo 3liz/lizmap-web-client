@@ -90,12 +90,12 @@ class jInstallerApplication {
             return $this->entryPointList;
         }
 
-        $defaultConfig = new jIniFileModifier(jApp::configPath('defaultconfig.ini.php'));
+        $mainConfig = new jIniFileModifier(jApp::mainConfigFile());
 
         $this->entryPointList = array();
         for ($i=0; $i < $listEp->length; $i++) {
             $epElt = $listEp->item($i);
-            $ep = new jInstallerEntryPoint($defaultConfig,
+            $ep = new jInstallerEntryPoint($mainConfig,
                                            $epElt->getAttribute("config"),
                                            $epElt->getAttribute("file"),
                                            $epElt->getAttribute("type"));

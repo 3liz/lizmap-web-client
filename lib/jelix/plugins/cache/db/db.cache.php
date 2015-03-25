@@ -11,7 +11,7 @@
 
 /**
 * cache driver for data stored in a database
-*   Warning :
+*   Warning : 
 *   Beware about the time returned by the DBMS of the server and the server PHP client : possible asynchronous time (particulary
 *   in case of use of multiple servers, incoherent data can be involved).
 * @package jelix
@@ -26,7 +26,7 @@ class dbCacheDriver implements jICacheDriver {
     */
     protected $_dao = 'jelix~jcache';
     /**
-    * connexion dbprofile
+    * connexion dbprofile 
     * @var string
     * @access protected
     */
@@ -94,12 +94,12 @@ class dbCacheDriver implements jICacheDriver {
             if (($rs = $dao->getDataList($key)) === FALSE) {
                 return false;
             }
-
+            
             $data = array();
             foreach($rs as $cache){
                 if(is_null($cache->date) || (strtotime($cache->date) > time())){
                     try {
-                        $data[$cache->key] = unserialize(base64_decode($cache->data));
+                        $data[$cache->key] = unserialize($cache->data);
                     } catch(Exception $e) {
                         throw new jException('jelix~cache.error.unserialize.data',array($this->profil_name, $e->getMessage()));
                     }
@@ -111,7 +111,7 @@ class dbCacheDriver implements jICacheDriver {
             $rec = $dao->getData($key);
             if ($rec){
                 try {
-                    $data = unserialize(base64_decode($rec->data));
+                    $data = unserialize($rec->data);
                 } catch(Exception $e) {
                     throw new jException('jelix~cache.error.unserialize.data',array($this->profil_name, $e->getMessage()));
                 }
@@ -132,7 +132,7 @@ class dbCacheDriver implements jICacheDriver {
     public function set ($key, $var, $ttl=0){
 
         try{
-            $var = base64_encode(serialize($var));
+            $var = serialize($var);
         }
         catch(Exception $e) {
             throw new jException('jelix~cache.error.serialize.data',array($this->profil_name,$e->getMessage()));

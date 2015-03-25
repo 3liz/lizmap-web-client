@@ -138,13 +138,13 @@ class editionCtrl extends jController {
     $lproj = lizmap::getProject($repository.'~'.$project);
 
     // Redirect if no rights to access this repository
-    if(!jacl2::check('lizmap.repositories.view', $lrep->getKey())){
+    if(!jAcl2::check('lizmap.repositories.view', $lrep->getKey())){
       jMessage::add(jLocale::get('view~default.repository.access.denied'), 'AuthorizationRequired');
       return false;
     }
 
     // Redirect if no rights to use the edition tool
-    if(!jacl2::check('lizmap.tools.edition.use', $lrep->getKey())){
+    if(!jAcl2::check('lizmap.tools.edition.use', $lrep->getKey())){
       jMessage::add(jLocale::get('view~edition.access.denied'), 'AuthorizationRequired');
       return false;
     }
@@ -170,7 +170,7 @@ class editionCtrl extends jController {
     $this->layerName = $layerName;
 
     // Optionnaly filter data by login
-    if( !jacl2::check('lizmap.tools.loginFilteredLayers.override', $lrep->getKey()) ){
+    if( !jAcl2::check('lizmap.tools.loginFilteredLayers.override', $lrep->getKey()) ){
       $this->loginFilteredLayers = True;
     }
     $this->loginFilteredOveride = jacl2::check('lizmap.tools.loginFilteredLayers.override', $lrep->getKey());
@@ -396,13 +396,19 @@ class editionCtrl extends jController {
 
       $this->formControls[$fieldName] = new qgisFormControl($fieldName, $edittype, $aliasXml, $categoriesXml, $prop);
 
-      // Fill comboboxes of editType "Value relation" from relation layer
-      // Query QGIS Server via WFS
       if( ($this->formControls[$fieldName]->fieldEditType == 15
-      or $this->formControls[$fieldName]->fieldEditType == 'ValueRelation')
-        and $this->formControls[$fieldName]->valueRelationData
-      ){
-        $this->fillComboboxFromValueRelationLayer($fieldName);
+           or $this->formControls[$fieldName]->fieldEditType == 'ValueRelation')
+         and $this->formControls[$fieldName]->valueRelationData ){
+          // Fill comboboxes of editType "Value relation" from relation layer
+          // Query QGIS Server via WFS
+          $this->fillComboboxFromValueRelationLayer($fieldName);
+      } else if ( $this->formControls[$fieldName]->fieldEditType == 8
+               or $this->formControls[$fieldName]->fieldEditType == 'FileName'
+               or $this->formControls[$fieldName]->fieldEditType == 'Photo' ) {
+          // Add Hidden Control for upload
+          // help to retrieve file path
+          $hiddenCtrl = new jFormsControlHidden($fieldName.'_hidden');
+          $form->addControl($hiddenCtrl);
       }
 
       // Add the control to the form
@@ -601,15 +607,12 @@ class editionCtrl extends jController {
       }
       $dataSource = new jFormsStaticDatasource();
       // orderByValue
-      if ( strtolower($this->formControls[$fieldName]->valueRelationData['orderByValue']) == 'true'
-        || strtolower($this->formControls[$fieldName]->valueRelationData['orderByValue']) == '1' )
+      if(strtolower($this->formControls[$fieldName]->valueRelationData['orderByValue']) == 'true')
         asort($data);
       $dataSource->data = $data;
       $this->formControls[$fieldName]->ctrl->datasource = $dataSource;
-      $this->formControls[$fieldName]->ctrl->emptyItemLabel = '';
       // required
-      if ( strtolower($this->formControls[$fieldName]->valueRelationData['allowNull']) == 'false' 
-        || strtolower($this->formControls[$fieldName]->valueRelationData['allowNull']) == '0' )
+      if(strtolower($this->formControls[$fieldName]->valueRelationData['allowNull']) == 'false')
         $this->formControls[$fieldName]->ctrl->required = True;
     }
     else{
@@ -645,8 +648,7 @@ class editionCtrl extends jController {
   * @param object $form Jelix jForm object
   * @return Boolean True if filled form
   */
-  public function setFormDataFromFields( $form ) {
-      $this->setFormDataFromDefault($form);
+  public function setFormDataFromFields($form){
 
     // Get database connection object
     $cnx = jDb::getConnection($this->layerId);
@@ -671,6 +673,17 @@ class editionCtrl extends jController {
       // Loop through the data fields
       foreach($this->dataFields as $ref=>$prop){
         $form->setData($ref, $record->$ref);
+        if ( $this->formControls[$ref]->fieldEditType == 8
+          or $this->formControls[$ref]->fieldEditType == 'FileName'
+          or $this->formControls[$ref]->fieldEditType == 'Photo' ) {
+            $ctrl = $form->getControl($ref.'_choice');
+            if ($ctrl && $ctrl->type == 'choice' ) { 
+                $ctrl->itemsNames['keep'] = jLocale::get("view~edition.upload.choice.keep").' '.$record->$ref;
+                $ctrl->itemsNames['update'] = jLocale::get("view~edition.upload.choice.update");
+                $ctrl->itemsNames['delete'] = jLocale::get("view~edition.upload.choice.delete").' '.$record->$ref;
+            }
+            $form->setData($ref.'_hidden', $record->$ref);
+        }
       }
       // geometry column : override binary with text representation
       $form->setData($this->geometryColumn, $record->astext);
@@ -706,40 +719,65 @@ class editionCtrl extends jController {
       $value = $form->getData($ref);
 
       switch($this->formControls[$ref]->fieldDataType){
-      case 'geometry':
-        $value = "ST_GeomFromText('".filter_var($value, FILTER_SANITIZE_STRING, FILTER_FLAG_NO_ENCODE_QUOTES)."', ".$this->srid.")";
-        $rs = $cnx->query('SELECT GeometryType('.$value.') as geomtype');
-        $rs = $rs->fetch();
-        if ( !preg_match('/'.$this->geometryType.'/',strtolower($rs->geomtype)) )
-          if ( preg_match('/'.str_replace('multi','',$this->geometryType).'/',strtolower($rs->geomtype)) )
-            $value = 'ST_Multi('.$value.')';
-          else {
-            $form->setErrorOn($this->geometryColumn, "The geometry type doen't match!");
-            return false;
-          }
-        break;
-      case 'date':
-        $value = filter_var($value, FILTER_SANITIZE_STRING, FILTER_FLAG_NO_ENCODE_QUOTES);
+          case 'geometry':
+            $value = "ST_GeomFromText('".filter_var($value, FILTER_SANITIZE_STRING, FILTER_FLAG_NO_ENCODE_QUOTES)."', ".$this->srid.")";
+            $rs = $cnx->query('SELECT GeometryType('.$value.') as geomtype');
+            $rs = $rs->fetch();
+            if ( !preg_match('/'.$this->geometryType.'/',strtolower($rs->geomtype)) )
+              if ( preg_match('/'.str_replace('multi','',$this->geometryType).'/',strtolower($rs->geomtype)) )
+                $value = 'ST_Multi('.$value.')';
+              else {
+                $form->setErrorOn($this->geometryColumn, "The geometry type doen't match!");
+                return false;
+              }
+            break;
+          case 'date':
+            $value = filter_var($value, FILTER_SANITIZE_STRING, FILTER_FLAG_NO_ENCODE_QUOTES);
+            if ( !$value )
+              $value = 'NULL';
+            else
+              $value = $cnx->quote( $value );
+            break;
+          case 'integer':
+            $value = filter_var($value, FILTER_SANITIZE_NUMBER_INT);
+            if ( !$value )
+              $value = 'NULL';
+            break;
+          case 'float':
+            $value = (float)$value;
+            if ( !$value )
+              $value = 'NULL';
+            break;
+          default:
+            $value = $cnx->quote(
+              filter_var($value, FILTER_SANITIZE_STRING, FILTER_FLAG_NO_ENCODE_QUOTES)
+            );
+            break;
+      }
+      if ( $form->hasUpload() && array_key_exists( $ref, $form->getUploads() ) ) {
+        $value = $form->getData( $ref );
+        $choiceValue = $form->getData( $ref.'_choice' );
+        $hiddenValue = $form->getData( $ref.'_hidden' );
+        $repPath = $this->repository->getPath();
+        if ( $choiceValue == 'update' ) {
+            $refPath = realpath($repPath.'/media').'/'.$this->project->getKey().'/'.$this->table.'/'.$ref;
+            $form->saveFile( $ref, $refPath );
+            $value = 'media'.'/'.$this->project->getKey().'/'.$this->table.'/'.$ref.'/'.$value;
+            if ( $hiddenValue && file_exists( realPath( $repPath ).'/'.$hiddenValue ) )
+                unlink( realPath( $repPath ).'/'.$hiddenValue );
+        } else if ( $choiceValue == 'delete' ) {
+            if ( $hiddenValue && file_exists( realPath( $repPath ).'/'.$hiddenValue ) )
+                unlink( realPath( $repPath ).'/'.$hiddenValue );
+            $value = 'NULL';
+        } else {
+            $value = $hiddenValue;
+        }
         if ( !$value )
-          $value = 'NULL';
-        else
-          $value = $cnx->quote( $value );
-        break;
-      case 'integer':
-        $value = filter_var($value, FILTER_SANITIZE_NUMBER_INT);
-        if ( !$value )
-          $value = 'NULL';
-        break;
-      case 'float':
-        $value = (float)$value;
-        if ( !$value )
-          $value = 'NULL';
-        break;
-      default:
-        $value = $cnx->quote(
-          filter_var($value, FILTER_SANITIZE_STRING, FILTER_FLAG_NO_ENCODE_QUOTES)
-        );
-        break;
+            $value = 'NULL';
+        else if ( $value != 'NULL' )
+            $value = $cnx->quote(
+              filter_var($value, FILTER_SANITIZE_STRING, FILTER_FLAG_NO_ENCODE_QUOTES)
+            );
       }
       // Build the SQL insert and update query
       $insert[]=$value;
@@ -893,6 +931,7 @@ class editionCtrl extends jController {
           if($ctrl->type == 'reset' || $ctrl->type == 'hidden') continue;
           if($ctrl->type == 'submit' && $ctrl->standalone) continue;
           if($ctrl->type == 'captcha' || $ctrl->type == 'secretconfirm') continue;
+          if($ctrl->type == 'choice') continue; // for upload
           $value = $form->getData($ctrlref);
           $value = $ctrl->getDisplayValue($value);
           if(is_array($value)){
@@ -901,7 +940,9 @@ class editionCtrl extends jController {
               $s.=$sep.htmlspecialchars($v);
             }
             $value = substr($s, strlen($sep));
-          }elseif($ctrl->isHtmlContent())
+          } else if($ctrl->type == 'upload') { // for upload
+            $ctrl = $form->getControl( $ref.'_choice' );
+          } else if ( $ctrl->isHtmlContent() )
             $value = $value;
           else if($ctrl->type == 'textarea')
             $value = nl2br(htmlspecialchars($value));
@@ -1048,10 +1089,21 @@ class editionCtrl extends jController {
     $form->setData('liz_geometryColumn', $this->geometryColumn);
 
     // SELECT data from the database and set the form data accordingly
-    if($this->featureId)
+    $this->setFormDataFromDefault($form);
+    if( $this->featureId )
       $this->setFormDataFromFields($form);
-    else
-      $this->setFormDataFromDefault($form);
+    else if ( $form->hasUpload() ) {
+        foreach( $form->getUploads() as $upload ) {
+            $choiceRef = $upload->ref.'_choice';
+            $choiceCtrl = $form->getControl( $choiceRef );
+            if ( $choiceCtrl ) {
+                $form->setData( $choiceRef, 'update' );
+                $choiceCtrl->itemsNames['update'] = jLocale::get("view~edition.upload.choice.update");
+                $choiceCtrl->deactivateItem('keep');
+                $choiceCtrl->deactivateItem('delete');
+            }
+        }
+    }
       
 
     // If the user has been redirected here from the saveFeature method

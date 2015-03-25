@@ -11,7 +11,7 @@
 /**
 * utility class to read and modify two ini files at the same time :
 * one master file, and one file which overrides values of the master file,
-* like we have in jelix with defaultconfig.ini.php and config.ini.php of an entry point
+* like we have in jelix with mainconfig.ini.php and config.ini.php of an entry point
 * @package    jelix
 * @subpackage utils
 * @since 1.1
@@ -89,9 +89,9 @@ class jIniMultiFilesModifier {
     /**
      * save the ini files
      */
-    public function save() {
-        $this->master->save();
-        $this->overrider->save();
+    public function save($chmod=null) {
+        $this->master->save($chmod);
+        $this->overrider->save($chmod);
     }
 
     /**

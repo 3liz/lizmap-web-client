@@ -322,13 +322,13 @@ abstract class jRequest {
       if (jApp::config()->domainName != '') {
          return jApp::config()->domainName;
       }
-      elseif (isset($_SERVER['SERVER_NAME'])) {
-         return $_SERVER['SERVER_NAME'];
-      }
       elseif (isset($_SERVER['HTTP_HOST'])) {
          if (($pos = strpos($_SERVER['HTTP_HOST'], ':')) !== false)
             return substr($_SERVER['HTTP_HOST'],0, $pos);
          return $_SERVER['HTTP_HOST'];
+      }
+      elseif (isset($_SERVER['SERVER_NAME'])) {
+         return $_SERVER['SERVER_NAME'];
       }
       return '';
    }

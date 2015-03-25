@@ -26,7 +26,7 @@ class lizAjaxCtrl extends jController {
 
     $repositoryList = Array();
     if ( $repository ) {
-      if( !jacl2::check('lizmap.repositories.view', $repository )){
+      if( !jAcl2::check('lizmap.repositories.view', $repository )){
         jMessage::add(jLocale::get('view~default.repository.access.denied'), 'error');
         return $rep;
       }
@@ -69,7 +69,7 @@ class lizAjaxCtrl extends jController {
     } else
       $lrep = lizmap::getRepository($repository);
 
-    if(!jacl2::check('lizmap.repositories.view', $lrep->getKey())){
+    if(!jAcl2::check('lizmap.repositories.view', $lrep->getKey())){
       jMessage::add(jLocale::get('view~default.repository.access.denied'), 'error');
       return $rep;
     }
@@ -107,7 +107,7 @@ class lizAjaxCtrl extends jController {
         $lizUrls['publicUrlList'] = $pul;
     }
     
-    if(jacl2::check('lizmap.admin.repositories.delete'))
+    if(jAcl2::check('lizmap.admin.repositories.delete'))
       $lizUrls['removeCache'] = jUrl::getFull('admin~config:removeLayerCache');
 
     $content = '<script type="text/javascript" src="'.jUrl::getFull('view~translate:index').'"/>'."\n";

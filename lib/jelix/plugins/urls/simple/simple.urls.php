@@ -59,7 +59,7 @@ class simpleUrlEngine implements jIUrlEngine {
         $scriptName .= $this->getScript($urlact->requestType, $m, $a);
 
         if(!jApp::config()->urlengine['multiview']){
-            $scriptName .= jApp::config()->urlengine['entrypointExtension'];
+            $scriptName .= '.php';
         }
 
         $url = new jUrl($scriptName, $urlact->params, '');

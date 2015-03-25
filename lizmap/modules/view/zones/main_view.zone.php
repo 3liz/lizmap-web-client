@@ -33,7 +33,7 @@ class main_viewZone extends jZone {
         $repository = $this->param('repository');
 
         $repositories = Array();
-        if ($repository != null && jacl2::check('lizmap.repositories.view', $repository)) {
+        if ($repository != null && jAcl2::check('lizmap.repositories.view', $repository)) {
           $repositories[] = $repository;
         } else {
           $repositories = lizmap::getRepositoryList();
@@ -42,13 +42,13 @@ class main_viewZone extends jZone {
         // Get excluded project
         $excludedProject = $this->param('excludedProject');
         foreach ($repositories as $r) {
-          if(jacl2::check('lizmap.repositories.view', $r)){
+          if(jAcl2::check('lizmap.repositories.view', $r)){
             $lrep = lizmap::getRepository($r);
             $mrep = new lizmapMainViewItem($r, $lrep->getData('label'));
             $lprojects = $lrep->getProjects();
 
             // WMS GetCapabilities Url
-            $wmsGetCapabilitiesUrl = jacl2::check(
+            $wmsGetCapabilitiesUrl = jAcl2::check(
               'lizmap.tools.displayGetCapabilitiesLinks',
               $lrep->getKey()
             );

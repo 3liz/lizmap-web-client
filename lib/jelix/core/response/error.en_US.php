@@ -10,6 +10,7 @@
 ?><!DOCTYPE html>
 <html>
 <head>
+<?php echo $HEADTOP;?>
 <title>Application Error</title>
 <?php echo $HEADBOTTOM;?>
 </head>

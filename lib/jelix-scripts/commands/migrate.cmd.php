@@ -274,7 +274,7 @@ class migrateCommand extends JelixScriptCommand {
 
         foreach ($list as $k=>$path) {
             if (trim($path) == '') continue;
-            $p = str_replace(array('lib:','app:'), array(LIB_PATH, jApp::appPath()), $path);
+            $p = jFile::parseJelixPath( $path );
             if (!file_exists($p)) {
                 throw new Exception('The path, '.$path.' given in the jelix config, doesn\'t exists !',E_USER_ERROR);
             }

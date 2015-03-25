@@ -17,24 +17,72 @@
  */
 class sqlite3DbResultSet extends jDbResultSet {
 
-    protected function _fetch () {
+    /**
+     * number of rows
+     */
+    protected $numRows = 0;
 
+    /**
+     * when reaching the end of a result set, sqlite3 api do a rewind
+     * we don't want this behavior, to mimic the behavior of other drivers
+     * this property indicates that we reached the end.
+     */
+    protected $ended = false;
+
+    /**
+     * contains all unreaded records when
+     * rowCount() have been called
+     */
+    protected $buffer = array();
+
+    protected function _fetch () {
+        if (count($this->buffer)) {
+            return array_shift($this->buffer);
+        }
+        if ($this->ended) {
+            return false;
+        }
         $res = $this->_idResult->fetchArray(SQLITE3_ASSOC);
-        if ($res === false)
-            return $res;
+        if ($res === false) {
+            $this->ended = true;
+            return false;
+        }
+        $this->numRows++;
         return (object)$res;
     }
 
     protected function _free () {
+        $this->numRows = 0;
+        $this->buffer = array();
+        $this->ended = false;
         $this->_idResult->finalize();
     }
 
     protected function _rewind () {
+        $this->numRows = 0;
+        $this->buffer = array();
+        $this->ended = false;
         return $this->_idResult->reset();
     }
 
     public function rowCount() {
-        return -1; // no method or property in a SQLite3Result!!?
+        // the mysqlite3 api doesn't provide a numrows property like any other
+        // database. The only way to now the number of rows, is to
+        // fetch all rows :-/
+        // let's store it into a buffer
+        if ($this->ended)
+            return $this->numRows;
+
+        $res = $this->_idResult->fetchArray(SQLITE3_ASSOC);
+        if ($res !== false) {
+            while($res !== false) {
+                $this->buffer[] = (object)$res;
+                $res = $this->_idResult->fetchArray(SQLITE3_ASSOC);
+            }
+            $this->numRows += count($this->buffer);
+        }
+        $this->ended = true;
+        return $this->numRows;
     }
 
     public function bindColumn ($column, &$param , $type=null)

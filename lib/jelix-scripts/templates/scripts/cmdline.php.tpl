@@ -8,7 +8,7 @@
 * @license   %%default_license_url%% %%default_license%%
 */
 
-require_once (dirname(__FILE__).'/%%rp_app%%application.init.php');
+require_once (__DIR__.'/%%rp_app%%application.init.php');
 
 checkAppOpened();
 

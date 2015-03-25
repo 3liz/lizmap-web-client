@@ -7,11 +7,38 @@
 * @licence  http://www.gnu.org/licenses/lgpl.html GNU Lesser General Public Licence, see LICENCE file
 */
 
+/**
+ * Driver for jKVDB, that uses an SQL table to store key/value data.
+ */
 class dbKVDriver extends jKVDriver implements jIKVttl, jIKVPersistent {
+    /*
+    MySQL:
+        CREATE TABLE IF NOT EXISTS `mydb` (
+        `k_key` VARCHAR( 50 ) NOT NULL ,
+        `k_value` longblob NOT NULL ,
+        `k_expire` DATETIME NOT NULL ,
+        PRIMARY KEY ( `k_key` )
+        ) ENGINE = MYISAM;
+    
+    pgsql:
+        CREATE TABLE mydb (
+        k_key character varying(255) NOT NULL ,
+        k_value bytea NOT NULL ,
+        k_expire time with time zone NOT NULL ,
+        CONSTRAINT testkvdb_pkey PRIMARY KEY (k_key)
+        );
 
+    sqlite
+        CREATE TABLE IF NOT EXISTS mydb (
+        k_key varchar(255) NOT NULL,
+        k_value blob NOT NULL,
+        k_expire datetime default NULL,
+        PRIMARY KEY  (k_key)
+        );
+    */
     protected $table;
 
-   	protected function _connect() {
+    protected function _connect() {
 
         if (!isset($this->_profile['table']) || !isset($this->_profile['dbprofile'])) {
             throw new Exception("table and dbprofile is missing for the db kvdb driver");
@@ -21,9 +48,9 @@ class dbKVDriver extends jKVDriver implements jIKVttl, jIKVPersistent {
 
         $cnx = jDb::getConnection($this->_profile['dbprofile']);
         return $cnx;
-	}
+    }
 
-   	protected function _disconnect() {
+    protected function _disconnect() {
         $this->_connection = null;
     }
 
@@ -62,8 +89,8 @@ class dbKVDriver extends jKVDriver implements jIKVttl, jIKVPersistent {
     }
 
     public function set ($key, $value) {
-		if (is_resource($value))
-			return false;
+        if (is_resource($value))
+            return false;
         return $this->_set($key, $value, '2050-12-31 00:00:00');
     }
 
@@ -90,8 +117,8 @@ class dbKVDriver extends jKVDriver implements jIKVttl, jIKVPersistent {
     }
 
     public function insert ($key, $value) {
-		if (is_resource($value))
-			return false;
+        if (is_resource($value))
+            return false;
 
         $table = $this->_connection->prefixTable($this->table);
         $key = $this->_connection->quote($key);
@@ -108,8 +135,8 @@ class dbKVDriver extends jKVDriver implements jIKVttl, jIKVPersistent {
     }
 
     public function replace ($key, $value) {
-		if (is_resource($value))
-			return false;
+        if (is_resource($value))
+            return false;
 
         $table = $this->_connection->prefixTable($this->table);
         $key = $this->_connection->quote($key);
@@ -135,8 +162,8 @@ class dbKVDriver extends jKVDriver implements jIKVttl, jIKVPersistent {
     }
 
     public function append ($key, $value) {
-		if (is_resource($value))
-			return false;
+        if (is_resource($value))
+            return false;
 
         $table = $this->_connection->prefixTable($this->table);
         $key = $this->_connection->quote($key);
@@ -155,8 +182,8 @@ class dbKVDriver extends jKVDriver implements jIKVttl, jIKVPersistent {
     }
 
     public function prepend ($key, $value) {
-		if (is_resource($value))
-			return false;
+        if (is_resource($value))
+            return false;
 
         $table = $this->_connection->prefixTable($this->table);
         $key = $this->_connection->quote($key);
@@ -175,7 +202,9 @@ class dbKVDriver extends jKVDriver implements jIKVttl, jIKVPersistent {
     }
 
     public function increment ($key, $incr = 1) {
-
+        if (!is_numeric($incr)) {
+            return false;
+        }
         $table = $this->_connection->prefixTable($this->table);
         $key = $this->_connection->quote($key);
 
@@ -195,6 +224,9 @@ class dbKVDriver extends jKVDriver implements jIKVttl, jIKVPersistent {
     }
 
     public function decrement ($key, $decr = 1) {
+        if (!is_numeric($decr)) {
+            return false;
+        }
 
         $table = $this->_connection->prefixTable($this->table);
         $key = $this->_connection->quote($key);
@@ -223,7 +255,7 @@ class dbKVDriver extends jKVDriver implements jIKVttl, jIKVPersistent {
      */
     public function setWithTtl($key, $value, $ttl) {
         if (is_resource($value))
-			return false;
+            return false;
         if ($ttl > 0) {
             if ($ttl <= 2592000) {
                 $ttl += time();

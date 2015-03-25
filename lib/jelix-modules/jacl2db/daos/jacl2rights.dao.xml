@@ -33,6 +33,15 @@
                 <eq property="id_aclgrp" expr="$group" />
             </conditions>
         </method>
+        <method name="getResByRightByGroup" type="select">
+            <parameter name="group" />
+            <parameter name="subject" />
+            <conditions >
+                <eq property="id_aclsbj" expr="$subject" />
+                <eq property="id_aclgrp" expr="$group" />
+                <neq property="id_aclres" value="-" />
+            </conditions>
+        </method>
         <method name="getRightWithRes" type="selectfirst">
            <parameter name="subject" />
            <parameter name="groups" />

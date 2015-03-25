@@ -115,6 +115,10 @@ class createdaoCommand extends JelixScriptCommand {
             if ($prop->sequence) {
                  $properties.=' sequence="'.$prop->sequence.'"';
             }
+            // form generator use this feature
+            if ($prop->comment) {
+                 $properties.=' comment="'.htmlspecialchars(utf8_encode($prop->comment)).'"';
+            }
             $properties.='/>';
 
          }

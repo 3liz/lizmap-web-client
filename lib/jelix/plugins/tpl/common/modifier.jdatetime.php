@@ -58,12 +58,20 @@ function jtpl_modifier_common_jdatetime($date, $format_in = 'db_datetime',
         'rfc822'=> jDateTime::RFC822_FORMAT,
         'full_lang_date'=> jDateTime::FULL_LANG_DATE
         );
-    if(!isset($formats[$format_in]) | !isset($formats[$format_out])){
+
+    if (isset($formats[$format_in])) { $format_in = $formats[$format_in]; }
+    if (isset($formats[$format_out])) { $format_out = $formats[$format_out]; }
+    
+    $ret = false;
+    $dt = new jDateTime();
+    if ($dt->setFromString($date, $format_in)) {
+        $ret = $dt->toString($format_out);
+    }
+
+    if ($ret == false) {
         throw new jException("jelix~errors.tpl.tag.modifier.invalid", array('','jdatetime',''));
     }
 
-    $dt = new jDateTime();
-    $dt->setFromString($date, $formats[$format_in]);
-    return $dt->toString($formats[$format_out]);
+    return $ret;
 }
 

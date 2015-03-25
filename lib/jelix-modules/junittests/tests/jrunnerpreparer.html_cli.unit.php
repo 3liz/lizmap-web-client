@@ -11,7 +11,7 @@
 
 
 
-require_once( dirname(__FILE__).DIRECTORY_SEPARATOR.'../classes/jrunnerpreparer.class.php');
+require_once( __DIR__.DIRECTORY_SEPARATOR.'../classes/jrunnerpreparer.class.php');
 
 class TestableRunnerPreparer extends jRunnerPreparer{ 
 

@@ -22,7 +22,7 @@ class jelixModuleUpgrader_cmd extends jInstallerModule {
 * @link     http://jelix.org
 * @licence  http://www.gnu.org/licenses/gpl.html GNU General Public Licence, see LICENCE file
 */
-require (dirname(__FILE__).'/application.init.php');
+require (__DIR__.'/application.init.php');
 require(LIB_PATH.'jelix-scripts/includes/cmd.inc.php');
 ";
             file_put_contents($cmdFile, $content);

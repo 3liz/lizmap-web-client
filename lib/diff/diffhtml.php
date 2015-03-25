@@ -11,7 +11,7 @@
 //      this html formater doesn't use HTML lib...
 //      adaptation for PHP5
 
-require_once(dirname(__FILE__).'/difflib.php');
+require_once(__DIR__.'/difflib.php');
 
 class _HWLDF_WordAccumulator {
     function __construct () {

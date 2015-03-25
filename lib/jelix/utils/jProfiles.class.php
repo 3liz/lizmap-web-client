@@ -82,9 +82,6 @@ class jProfiles {
         }
         // if the profile doesn't exist, we take the default one
         elseif (!$noDefault) {
-#ifnot ENABLE_OPTIMIZED_SOURCE
-            //trigger_error(jLocale::get('jelix~errors.profile.use.default', $name), E_USER_NOTICE);
-#endif
             if (isset(self::$_profiles[$category.':default'])) {
                 self::$_profiles[$category.':default']['_name'] = 'default';
                 if ($common)
@@ -180,6 +177,8 @@ class jProfiles {
             self::$_profiles[$category.':'.$name] = $params;
         }
         unset (self::$_objectPool[$category][$name]); // close existing connection with the same pool name
+        if (gc_enabled())
+            gc_collect_cycles();
     }
 
     /**
@@ -189,5 +188,7 @@ class jProfiles {
     public static function clear() {
         self::$_profiles = null;
         self::$_objectPool = array();
+        if (gc_enabled())
+            gc_collect_cycles();
     }
 }

@@ -28,7 +28,7 @@ class passwordCtrl extends jController {
 
         $personalView = $this->isPersonalView();
         if ($personalView && $id != jAuth::getUserSession()->login) {
-            jMessage::add(jLocale::get('jelix~errors.acl.action.right.needed'), 'error');
+            jMessage::add(jLocale::get('jacl2~errors.action.right.needed'), 'error');
             $rep = $this->getResponse('redirect');
             $rep->action = 'master_admin~default:index';
             return $rep;
@@ -56,9 +56,10 @@ class passwordCtrl extends jController {
         $pwd = $this->param('pwd');
         $pwdconf = $this->param('pwd_confirm');
         $rep = $this->getResponse('redirect');
+
         $personalView = $this->isPersonalView();
         if ($personalView && $id != jAuth::getUserSession()->login) {
-            jMessage::add(jLocale::get('jelix~errors.acl.action.right.needed'), 'error');
+            jMessage::add(jLocale::get('jacl2~errors.action.right.needed'), 'error');
             $rep->action = 'master_admin~default:index';
             return $rep;
         }
@@ -69,7 +70,7 @@ class passwordCtrl extends jController {
             $rep->params['j_user_login'] = $id;
             return $rep;
         }
-        
+
         if(jAuth::changePassword($id, $pwd)) {
             jMessage::add(jLocale::get('crud.message.change.password.ok', $id), 'notice');
             if ($personalView)

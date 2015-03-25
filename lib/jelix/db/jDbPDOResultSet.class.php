@@ -46,7 +46,7 @@ class jDbPDOResultSet extends PDOStatement {
      */
     public function fetchAll ($fetch_style = null, $fetch_argument=null, $ctor_arg=null) {
         // if the user requested to override the style set with setFetchMode, use it
-        $final_style = ($fetch_style ? $fetch_style : $this->_fetchMode);
+        $final_style = ($fetch_style ?: $this->_fetchMode);
 
         // Check how many arguments, if available should be given
         if (!$final_style) {

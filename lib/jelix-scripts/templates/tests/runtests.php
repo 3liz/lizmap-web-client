@@ -1,5 +1,7 @@
 <?php
 
-require(dirname(__FILE__).'/../application.init.php');
+require(__DIR__.'/../application.init.php');
+
+//require_once 'PHPUnit/Autoload.php';
 
 require(LIB_PATH.'jelix-tests/phpunit.inc.php');

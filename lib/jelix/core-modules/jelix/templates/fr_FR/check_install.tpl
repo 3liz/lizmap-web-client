@@ -15,9 +15,9 @@
         </ul>
         <p>Si vous voulez utiliser un autre nom que jelix pour ce dossier,
            modifier le paramêtre <code>jelixWWWPath</code>
-           dans <em>{$configpath}defaultconfig.ini.php</em>.</p>
+           dans <em>{$configpath}mainconfig.ini.php</em>.</p>
         <p>Pour plus d'informations, consultez
-             <a href="http://docs.jelix.org/fr/manuel-1.4/configurer-server"
+             <a href="http://docs.jelix.org/fr/manuel-1.6/configurer-server"
              title="documentation officielle">la documentation sur l'installation de Jelix</a>.</p>
         <hr />
     </div>
@@ -45,7 +45,7 @@
             <ul>
                 <li><a href="http://jelix.org" title="Site officiel de Jelix">Visitez le site de Jelix</a></li>
                 <li><a href="http://jelix.org/articles/fr/tutoriels">Suivez les tutoriels</a></li>
-                <li><a href="http://docs.jelix.org/fr/manuel-1.4">Lisez la documentation de Jelix</a></li>
+                <li><a href="http://docs.jelix.org/fr/manuel-1.6">Lisez la documentation de Jelix</a></li>
                 <li><a href="http://jelix.org/forums/forum/cat/1-francais">Posez vos questions dans les forums</a></li>
             </ul>
         </div>

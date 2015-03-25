@@ -7,7 +7,7 @@
 * @contributor Rahal
 * @contributor Julien Issler
 * @contributor Baptiste Toinot
-* @copyright   2005-2012 Laurent Jouanneau
+* @copyright   2005-2013 Laurent Jouanneau
 * @copyright   2007 Rahal
 * @copyright   2008 Julien Issler
 * @copyright   2008 Baptiste Toinot
@@ -51,18 +51,14 @@ class jSelectorLoc extends jSelectorModule {
         $this->_suffix = '.'.$charset.'.properties';
         $this->_compilerPath=JELIX_LIB_CORE_PATH.'jLocalesCompiler.class.php';
 
-        if(preg_match("/^(([a-zA-Z0-9_\.]+)~)?([a-zA-Z0-9_]+)\.([a-zA-Z0-9_\.]+)$/", $sel, $m)){
-            if($m[1]!='' && $m[2]!=''){
-                $this->module = $m[2];
-            }else{
-                $this->module = jContext::get ();
+        if (jelix_scan_locale_sel($sel, $this)) {
+            if ($this->module =='') {
+                $this->module = jApp::getCurrentModule ();
             }
-            $this->resource = $m[3];
-            $this->fileKey = $m[3];
-            $this->messageKey = $m[4];
             $this->_createPath();
             $this->_createCachePath();
-        }else{
+        }
+        else {
             throw new jExceptionSelector('jelix~errors.selector.invalid.syntax', array($sel,$this->type));
         }
     }
@@ -92,7 +88,17 @@ class jSelectorLoc extends jSelectorModule {
                 $this->_cacheSuffix = '.'.$locale.'.'.$this->charset.'.php';
                 return;
             }
-            // else check for the original locale file
+
+            // check if the locale is available in the locales directory
+            $localesPath = jApp::varPath('locales/'.$locale.'/'.$this->module.'/locales/'.$this->resource.$this->_suffix);
+            if (is_readable ($localesPath)){
+                $this->_path = $localesPath;
+                $this->_where = 'locales/';
+                $this->_cacheSuffix = '.'.$locale.'.'.$this->charset.'.php';
+                return;
+            }
+
+            // else check for the original locale file in the module
             $path = jApp::config()->_modulesPathList[$this->module].'locales/'.$locale.'/'.$this->resource.$this->_suffix;
             if (is_readable ($path)){
                 $this->_where = 'modules/';

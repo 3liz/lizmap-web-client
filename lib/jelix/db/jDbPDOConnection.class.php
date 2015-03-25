@@ -55,7 +55,7 @@ class jDbPDOConnection extends PDO {
             $dsn = $profile['dsn'];
             unset($prof['dsn']);
             if ($this->dbms == 'sqlite')
-                $dsn = str_replace(array('app:','lib:','var:'), array(jApp::appPath(), LIB_PATH, jApp::varPath()), $dsn);
+                $dsn = jFile::parseJelixPath( $dsn );
         }
         else {
             $this->dbms = $this->driverName = $profile['driver'];
@@ -65,7 +65,7 @@ class jDbPDOConnection extends PDO {
                 $dsn = $this->dbms.':host='.$profile['host'].';dbname='.$db;
             else {
                 if (preg_match('/^(app|lib|var)\:/', $db, $m))
-                    $dsn = 'sqlite:'.str_replace(array('app:','lib:','var:'), array(jApp::appPath(), LIB_PATH, jApp::varPath()), $db);
+                    $dsn = 'sqlite:' . jFile::parseJelixPath( $db );
                 else
                     $dsn = 'sqlite:'.jApp::varPath('db/sqlite/'.$db);
             }
@@ -125,35 +125,16 @@ class jDbPDOConnection extends PDO {
 
         switch (count($args)) {
         case 1:
-            $log = new jSQLLogMessage($args[0]);
             $rs = parent::query($args[0]);
-            $log->endQuery();
-            jLog::log($log,'sql');
             $rs->setFetchMode(PDO::FETCH_OBJ);
             return $rs;
         case 2:
-            $log = new jSQLLogMessage($args[0]);
-            $result = parent::query($args[0], $args[1]);
-            $log->endQuery();
-            jLog::log($log,'sql');
-            return $result;
+            return parent::query($args[0], $args[1]);
         case 3:
-            $log = new jSQLLogMessage($args[0]);
-            $result = parent::query($args[0], $args[1], $args[2]);
-            $log->endQuery();
-            jLog::log($log,'sql');
-            return $result;
+            return parent::query($args[0], $args[1], $args[2]);
         default:
             throw new Exception('jDbPDOConnection: bad argument number in query');
         }
-    }
-
-    public function exec($query) {
-        $log = new jSQLLogMessage($query);
-        $result = parent::exec($query);
-        $log->endQuery();
-        jLog::log($log,'sql');
-        return $result;
     }
 
     /**
@@ -294,3 +275,4 @@ class jDbPDOConnection extends PDO {
     }
 
 }
+

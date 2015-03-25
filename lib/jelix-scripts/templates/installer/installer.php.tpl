@@ -7,7 +7,7 @@
 * @license   %%default_license_url%% %%default_license%%
 */
 
-require_once (dirname(__FILE__).'/../application.init.php');
+require_once (__DIR__.'/../application.init.php');
 
 jApp::setEnv('install');
 
