@@ -115,6 +115,12 @@ class serviceCtrl extends jController {
     $rep->content->assign('messages', $messages);
     jMessage::clearAll();
 
+    foreach( $messages as $code=>$msg ){
+      if( $code == 'AuthorizationRequired' )
+        $rep->setHttpStatus(401, $code);
+
+    }
+
     return $rep;
   }
 
