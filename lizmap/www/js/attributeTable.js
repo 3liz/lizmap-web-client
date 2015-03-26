@@ -188,6 +188,17 @@ var lizAttributeTable = function() {
                 html+= '    </ul>';
                 html+= '</div>';
 
+                // Create button
+                var canCreate = false;
+                if( layerName in config.editionLayers ) {
+                    var al = config.editionLayers[layerName];
+                    if( al.capabilities.createFeature == "True" )
+                        canCreate = true;
+                }
+                if( canCreate ){
+                    html+= '    <button class="btn-createFeature-attributeTable btn btn-mini" value="' + layerName + '" >'+lizDict['attributeLayers.toolbar.btn.data.createFeature.title']+'</button>';
+                }
+
                 //~ // Detail button
                 //~ html+= '    <button class="btn-detail-attributeTable btn btn-mini" value="' + layerName + '"  style="display:none;">'+lizDict['attributeLayers.toolbar.btn.data.detail.title']+'</button>';
 
@@ -254,6 +265,19 @@ var lizAttributeTable = function() {
                     exportAttributeTable( eName, eFormat );
                     return false;
                 });
+
+                // Bind click on createFeature button
+                $('#attribute-layer-'+ layerName + ' button.btn-createFeature-attributeTable')
+                .click(function(){
+                    var aName = attributeLayersDic[ $(this).val() ];
+                    var lid = config.layers[aName]['id'];
+                    lizMap.launchEdition( lid );
+                    return false;
+                })
+                .hover(
+                    function(){ $(this).addClass('btn-primary'); },
+                    function(){ $(this).removeClass('btn-primary'); }
+                );
 
             }
 
@@ -525,7 +549,6 @@ var lizAttributeTable = function() {
                                         // trigger edition
                                         var lid = config.layers[aName]['id'];
                                         lizMap.launchEdition( lid, featId );
-
                                         return false;
                                     })
                                     .hover(
@@ -981,10 +1004,9 @@ var lizAttributeTable = function() {
                     $('#edition-modal').modal('show');
 
                     lizMap.events.triggerEvent(
-                        "committedFeaturesRemoved",
+                        "lizmapeditionfeaturedeleted",
                         {
-                            'layerId': layerId,
-                            'featureIds': [featureId]
+                            'layerId': layerId
                         }
                     );
 
@@ -1036,6 +1058,13 @@ var lizAttributeTable = function() {
             function redrawAttributeTableContent( featureType, featureIds ){
                 var aTable = '#attribute-layer-table-'+lizMap.cleanName( featureType );
                 if ( $.fn.dataTable.isDataTable( aTable ) ) {
+                    // Get selected feature ids if not given
+                    if( !featureIds ){
+                        // Assure selectedFeatures property exists for the layer
+                        if( !config.attributeLayers[featureType]['selectedFeatures'] )
+                            config.attributeLayers[featureType]['selectedFeatures'] = [];
+                        featureIds = config.attributeLayers[featureType]['selectedFeatures'];
+                    }
                     if( featureIds.length > 0 ){
                         var rTable = $( aTable ).DataTable();
                         var indexes = featureIds.map(function(num){ return '#' + num;})
@@ -1191,6 +1220,24 @@ var lizAttributeTable = function() {
 
                     // Add children table if needed
 
+                },
+
+                lizmapeditionfeaturecreated: function(e){
+                    var getLayer = getLayerConfigById( e.layerId );
+                    if( getLayer )
+                        updateAttributeTableContent( getLayer[0] );
+                },
+
+                lizmapeditionfeaturemodified: function(e){
+                    var getLayer = getLayerConfigById( e.layerId );
+                    if( getLayer )
+                        updateAttributeTableContent( getLayer[0], null );
+                },
+
+                lizmapeditionfeaturedeleted: function(e){
+                    var getLayer = getLayerConfigById( e.layerId );
+                    if( getLayer )
+                        updateAttributeTableContent( getLayer[0], null );
                 }
             });
 

@@ -2326,10 +2326,10 @@ var lizMap = function() {
       }
       newScales.sort(function(a,b){return b-a;});
       var theScale = newScales[0];
-      console.log( 'theScale: '+theScale );
+      //~ console.log( 'theScale: '+theScale );
       for ( var i=0, len=newScales.length; i<len; i++ ) {
           var s = newScales[i];
-          console.log( 's: '+s );
+          //~ console.log( 's: '+s );
           if ( s > refScale )
             theScale = s;
           if ( s < refScale )
@@ -2804,12 +2804,20 @@ var lizMap = function() {
               editCtrls[ctrl].deactivate();
           }
           var layerId = editCtrls.click.layerId;
+
+          // Trigger event
+          lizMap.events.triggerEvent(
+            "lizmapeditionfeaturecreated",
+            { 'layerId': layerId}
+          );
+
           $.each(layers, function(i, l) {
             if (config.layers[l.params['LAYERS']].id != layerId)
               return true;
             l.redraw(true);
             return false;
           });
+
           editLayer.destroyFeatures();
           editCtrls.modify.activate();
           $('#edition-draw-clear').addClass('disabled');
@@ -2877,6 +2885,13 @@ var lizMap = function() {
         }
         if ( editForm.length == 0 ) {
           var layerId = editCtrls.click.layerId;
+
+          // Trigger event
+          lizMap.events.triggerEvent(
+            "lizmapeditionfeaturemodified",
+            { 'layerId': layerId}
+          );
+
           $.each(layers, function(i, l) {
             if (config.layers[l.params['LAYERS']].id != layerId)
               return true;
@@ -2884,6 +2899,7 @@ var lizMap = function() {
             return false;
           });
           editLayer.drawFeature(editLayer.features[0]);
+
           if (config.editionLayers[editCtrls.click.layerName].capabilities.modifyGeometry == "True")
             editCtrls.modify.selectFeature(editLayer.features[0]);
         }
@@ -3193,6 +3209,14 @@ var lizMap = function() {
           editLayer.destroyFeatures();
           $('#edition-select-unselect').click();
           var layerId = editCtrls.click.layerId;
+
+          // Trigger event
+          lizMap.events.triggerEvent(
+            "lizmapeditionfeaturedeleted",
+            { 'layerId': layerId}
+          );
+
+          // Redraw layers
           $.each(layers, function(i, l) {
             if (config.layers[l.params['LAYERS']].id != layerId)
               return true;
@@ -3342,6 +3366,14 @@ var lizMap = function() {
         $('#edition-select-cancel').click();
     $('#edition-layer').val(layerName);
     $('#edition-layer').change();
+
+    // Creation
+    if( !aFid ) {
+      $('#edition-draw').click();
+      // Hide bottom dock
+      $('#bottom-dock').trigger('mouseleave');
+      return true;
+    }
     $('#edition-select').click();
 
     function manageEditionGeom(aData) {
@@ -3404,12 +3436,20 @@ var lizMap = function() {
         }
         if ( editForm.length == 0 ) {
           var layerId = editCtrls.click.layerId;
+
+          // Trigger event
+          lizMap.events.triggerEvent(
+            "lizmapeditionfeaturemodified",
+            { 'layerId': layerId}
+          );
+
           $.each(layers, function(i, l) {
             if (config.layers[l.params['LAYERS']].id != layerId)
               return true;
             l.redraw(true);
             return false;
           });
+
           editLayer.drawFeature(editLayer.features[0]);
           if (config.editionLayers[editCtrls.click.layerName].capabilities.modifyGeometry == "True")
             editCtrls.modify.selectFeature(editLayer.features[0]);
