@@ -216,7 +216,7 @@ var lizAttributeTable = function() {
 
                 $('#attribute-table-container').append(html);
 
-                // Bind click on unselect button
+                // Bind click on "unselect all" button
                 $('#attribute-layer-'+ layerName + ' button.btn-unselect-attributeTable')
                 .click(function(){
                     var aName = attributeLayersDic[ $(this).val() ];
@@ -508,7 +508,6 @@ var lizAttributeTable = function() {
                                         "layerfeatureselected",
                                         { 'featureType': aName, 'fid': featId}
                                     );
-
                                     return false;
                                 })
                                 .hover(
@@ -1034,8 +1033,11 @@ var lizAttributeTable = function() {
                         // Assure selectedFeatures property exists for the layer
                         if( !config.attributeLayers[featureType]['selectedFeatures'] )
                             config.attributeLayers[featureType]['selectedFeatures'] = [];
-                        featureIds = config.attributeLayers[featureType]['selectedFeatures'];
+                        var featureIds = config.attributeLayers[featureType]['selectedFeatures'];
                     }
+                    // Remove class selected for all the lines
+                    $(aTable).find('tr').removeClass('selected');
+                    // Add class selected from featureIds
                     if( featureIds.length > 0 ){
                         var rTable = $( aTable ).DataTable();
                         var indexes = featureIds.map(function(num){ return '#' + num;})
@@ -1044,8 +1046,6 @@ var lizAttributeTable = function() {
                             .nodes()
                             .to$()
                             .addClass( 'selected' );
-                    }else{
-                        $(aTable).find('tr').removeClass('selected');
                     }
 
                 }
