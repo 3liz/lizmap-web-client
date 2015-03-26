@@ -262,7 +262,7 @@ class serviceCtrl extends jController {
     $cachedMime = jCache::get($cacheId . '_mime');
     $cachedData = jCache::get($cacheId . '_data');
     $newhash = md5_file( realpath($this->repository->getPath()) . '/' . $this->project->getKey() . ".qgs" );
-    
+
     // Verifying cache content
     if ( $cachedData && preg_match( '#ServiceExceptionReport#i', $cachedData ) ) {
         $hash = null;
@@ -294,12 +294,12 @@ class serviceCtrl extends jController {
         $data = $getRemoteData[0];
         $mime = $getRemoteData[1];
         $code = $getRemoteData[2];
-        
+
         if ( empty( $data ) or floor( $code / 100 ) >= 4 ) {
             jMessage::add('Server Error !', 'Error');
             return $this->serviceException();
         }
-        
+
         if ( preg_match( '#ServiceExceptionReport#i', $data ) ) {
             $rep = $this->getResponse('binary');
             $rep->mimeType = $mime;
@@ -541,7 +541,7 @@ class serviceCtrl extends jController {
     $mime = $getRemoteData[1];
 
     // Get HTML content if needed
-    if($toHtml and preg_match('#/xml$#', $mime)){
+    if($toHtml and preg_match('#/xml#', $mime)){
       $data = $this->getFeatureInfoHtml($this->params, $data);
       $mime = 'text/html';
     }
@@ -687,7 +687,7 @@ class serviceCtrl extends jController {
         // Specific template for the layer has been configured
         if($templateConfigured){
 
-          $popupFeatureContent = $hiddenFeatureId . $popupTemplate;
+          $popupFeatureContent = $popupTemplate;
 
           // then replace all column data by appropriate content
           foreach($feature->Attribute as $attribute){
@@ -736,7 +736,7 @@ class serviceCtrl extends jController {
 
         $tpl = new jTpl();
         $tpl->assign('layerTitle', $layerTitle);
-        $tpl->assign('popupContent', $popupFeatureContent);
+        $tpl->assign('popupContent', $hiddenFeatureId . $popupFeatureContent);
         $content[] = $tpl->fetch('view~popup');
 
       } // loop features
