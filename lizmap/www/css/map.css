@@ -514,10 +514,27 @@ ul.nav.nav-tabs {
 table.attribute-table-table tr td{
   cursor:pointer;
 }
-table.attribute-table-table tr.selected td{
-  background-color: yellow;
+
+table.attribute-table-table tr.active td,
+table.attribute-table-table tr.active:hover td {
+    background-color: inherit !important; /* Add !important to make sure override datables base styles */
+    color:black;
+    border-bottom:2px solid blue;
+    border-top:2px solid blue;
+}
+table.attribute-table-table tr.active td:first-child,
+table.attribute-table-table tr.active:hover td:first-child{
+    border-left:2px solid blue;
+}
+table.attribute-table-table tr.active td:last-child,
+table.attribute-table-table tr.active:hover td:last-child{
+    border-right:2px solid blue;
 }
 
+table.attribute-table-table tr.selected td,
+table.attribute-table-table tr.selected.active td{
+  background-color: yellow !important;
+}
 
 /*
 Timemanager
