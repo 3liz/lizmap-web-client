@@ -2599,6 +2599,64 @@ var lizMap = function() {
         }
     });
   }
+  
+  function getLayerConfigById( aLayerId, aConfObjet=config.layers, aIdAttribute='id') {
+    for ( var lx in aConfObjet ) {
+        if ( aConfObjet[lx][aIdAttribute] == aLayerId )
+            return [lx, aConfObjet[lx] ];
+    }
+    return null;
+  }
+  
+  function deleteEditionFeature( aLayerId, aFeatureId, aMessage, aCallback ){
+    // Edition layers
+    if ( !('editionLayers' in config) )
+      return false;
+      
+    var eConfig = getLayerConfigById(
+        aLayerId,
+        config.editionLayers,
+        'layerId'
+    );
+    if ( !eConfig || eConfig[1].capabilities.deleteFeature == "False" )
+      return false;
+
+    var deleteConfirm = lizDict['edition.confirm.delete'];
+    if ( aMessage )
+      deleteConfirm += '\n' + aMessage;
+
+    if ( !confirm( deleteConfirm ) )
+        return false;
+
+    var eService = OpenLayers.Util.urlAppend(lizUrls.edition
+        ,OpenLayers.Util.getParameterString(lizUrls.params)
+    );
+    $.get(eService.replace('getFeature','deleteFeature'),{
+        layerId: aLayerId,
+        featureId: aFeatureId
+    }, function(data){
+        $('#edition-modal').html(data);
+        $('#edition-modal').modal('show');
+        
+        if ( aCallback )
+          aCallback( aLayerId, aFeatureId );
+        lizMap.events.triggerEvent(
+            "lizmapeditionfeaturedeleted",
+            {
+                'layerId': aLayerId,
+                'featureId': aFeatureId
+            }
+        );
+
+        $.each(lizMap.layers, function(i, l) {
+            if (config.layers[l.params['LAYERS']].id != aLayerId)
+                return true;
+            l.redraw(true);
+            return false;
+        });
+    });
+    return false;
+  }
 
   function addEditionControls() {
     // Edition layers
@@ -2688,6 +2746,12 @@ var lizMap = function() {
               crs: crs
             }, function(data){
               $('#edition-modal').html(data);
+              $('#edition-modal form input[name="delete"]').click(function() {
+                  var form = $(this).parentsUntil( '#edition-modal', 'form' ).first();
+                  var fid = form.find('input[name="liz_featureId"]').val();
+                  deleteEditionFeature( editCtrls.click.layerId, fid, null, function( aLID, aFID ){});
+                  return false;
+              });
               $('#edition-modal form').submit(function() {
                 var self = $(this);
                 var srid = self.find('input[name="liz_srid"]').val();
@@ -3197,32 +3261,10 @@ var lizMap = function() {
 
         var featureId = $('#edition form input[name="liz_featureId"]').val();
         if ( featureId == '' )
-         return false;
-        if ( !confirm( lizDict['edition.confirm.delete'] ) )
           return false;
-        $.get(service.replace('getFeature','deleteFeature'),{
-          layerId: editCtrls.click.layerId,
-          featureId: featureId
-        }, function(data){
-          $('#edition-modal').html(data);
-          $('#edition-modal').modal('show');
+        return deleteEditionFeature( editCtrls.click.layerId, featureId, null, function( aLID, aFID ){
           editLayer.destroyFeatures();
           $('#edition-select-unselect').click();
-          var layerId = editCtrls.click.layerId;
-
-          // Trigger event
-          lizMap.events.triggerEvent(
-            "lizmapeditionfeaturedeleted",
-            { 'layerId': layerId}
-          );
-
-          // Redraw layers
-          $.each(layers, function(i, l) {
-            if (config.layers[l.params['LAYERS']].id != layerId)
-              return true;
-            l.redraw(true);
-            return false;
-          });
         });
         return false;
       });
@@ -4195,6 +4237,9 @@ var lizMap = function() {
 
     launchEdition: function( aLayerId, aFid) {
         return launchEdition( aLayerId, aFid);
+    },
+    deleteEditionFeature( aLayerId, aFid, aMessage, aCallback ){
+        return deleteEditionFeature( aLayerId, aFid, aMessage, aCallback );
     },
 
     /**

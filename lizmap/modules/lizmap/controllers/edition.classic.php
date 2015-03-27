@@ -153,6 +153,21 @@ class editionCtrl extends jController {
     $layerXmlZero = $layerXml[0];
     $_layerName = $layerXmlZero->xpath('layername');
     $layerName = (string)$_layerName[0];
+    
+    // Verifying if the layer is edtable
+    $eLayers  = $lproj->getEditionLayers();
+    if ( !property_exists( $eLayers, $layerName ) ) {
+      jMessage::add('The layer is not editable!', 'LayerNotEditable');
+      return false;
+    }
+    $eLayer = $eLayers->$layerName;
+    if ( $eLayer->capabilities->modifyGeometry != "True"
+         && $eLayer->capabilities->modifyAttribute != "True"
+         && $eLayer->capabilities->deleteFeature != "True"
+         && $eLayer->capabilities->createFeature != "True" ) {
+      jMessage::add('The layer is not editable!', 'LayerNotEditable');
+      return false;
+    }
 
     // feature Id (optionnal, only for edition and save)
     if(preg_match('#,#', $featureIdParam))
@@ -832,20 +847,21 @@ class editionCtrl extends jController {
 
 
 
-  /**
-   * Get features from the edition layer.
-   * @param string $repository Lizmap Repository
-   * @param string $project Name of the project
-   * @param string $layerId Qgis id of the layer
-   * @param string $bbox Bounding box for the query
-   * @param string $crs The CRS of the bounding box
-   * @return HTML fragment.
-   */
-  public function getFeature(){
+    /**
+     * Get features from the edition layer.
+     * @param string $repository Lizmap Repository
+     * @param string $project Name of the project
+     * @param string $layerId Qgis id of the layer
+     * @param string $bbox Bounding box for the query
+     * @param string $crs The CRS of the bounding box
+     * @return HTML fragment.
+     */
+    public function getFeature(){
 
-    // Get repository, project data and do some right checking
-    if(!$this->getEditionParameters())
-      return $this->serviceAnswer();
+        // Get repository, project data and do some right checking
+        if(!$this->getEditionParameters())
+            return $this->serviceAnswer();
+      
     $bbox = $this->param('bbox');
     if( !preg_match('#(-)?\d+(\.\d+)?,(-)?\d+(\.\d+)?,(-)?\d+(\.\d+)?,(-)?\d+(\.\d+)?#',$bbox) ) {
       jMessage::add( jLocale::get('view~edition.message.error.bbox'), 'error');
@@ -963,12 +979,18 @@ class editionCtrl extends jController {
       $layerXmlZero = $this->layerXml[0];
       $_title = $layerXmlZero->xpath('title');
       $title = (string)$_title[0];
+      
+      // Get editLayer capabilities
+        $eLayers  = $this->project->getEditionLayers();
+        $layerName = $this->layerName;
+        $eLayer = $eLayers->$layerName;
 
       // Use template to create html form content
       $tpl = new jTpl();
       $tpl->assign(array(
         'title'=>$title,
-        'forms'=>$forms
+        'forms'=>$forms,
+        'deleteAction'=>($eLayer->capabilities->deleteFeature == 'True')
       ));
       $content = $tpl->fetch('view~edition_data');
 
@@ -996,6 +1018,15 @@ class editionCtrl extends jController {
     // Get repository, project data and do some right checking
     if(!$this->getEditionParameters())
       return $this->serviceAnswer();
+      
+      // Get editLayer capabilities
+        $eLayers  = $this->project->getEditionLayers();
+        $layerName = $this->layerName;
+        $eLayer = $eLayers->$layerName;
+        if ( $eLayer->capabilities->createFeature != 'True' ) {
+            jMessage::add('Create feature for this layer is not in the capabilities!', 'LayerNotEditable');
+            return $this->serviceAnswer();
+        }
 
     jForms::destroy('view~edition');
     // Create form instance
@@ -1267,6 +1298,15 @@ class editionCtrl extends jController {
   public function deleteFeature(){
     if(!$this->getEditionParameters($save))
       return $this->serviceAnswer();
+      
+      // Get editLayer capabilities
+        $eLayers  = $this->project->getEditionLayers();
+        $layerName = $this->layerName;
+        $eLayer = $eLayers->$layerName;
+        if ( $eLayer->capabilities->deleteFeature != 'True' ) {
+            jMessage::add('Delete feature for this layer is not in the capabilities!', 'LayerNotEditable');
+            return $this->serviceAnswer();
+        }
 
     $featureId = $this->param('featureId');
     if( !$featureId ) {

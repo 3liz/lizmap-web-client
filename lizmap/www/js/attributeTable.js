@@ -970,15 +970,14 @@ var lizAttributeTable = function() {
             }
 
             function deleteEditionFeature( layerId, featureId ){
-
-                var deleteConfirm = lizDict['edition.confirm.delete'];
                 var eConfig = getLayerConfigById(
                     layerId,
                     config.editionLayers,
                     'layerId'
                 );
+                var deleteConfirm = '';
                 if( eConfig )
-                    deleteConfirm+= '\n' + config.layers[eConfig[0]].title;
+                    deleteConfirm += config.layers[eConfig[0]].title;
                 if( config.attributeLayers[eConfig[0]]
                     && config.attributeLayers[eConfig[0]]['features']
                     && config.attributeLayers[eConfig[0]]['features'][featureId]
@@ -989,35 +988,7 @@ var lizAttributeTable = function() {
                     }
 
                 }
-
-                if ( !confirm( deleteConfirm ) )
-                    return false;
-
-                var eService = OpenLayers.Util.urlAppend(lizUrls.edition
-                    ,OpenLayers.Util.getParameterString(lizUrls.params)
-                );
-                $.get(eService.replace('getFeature','deleteFeature'),{
-                    layerId: layerId,
-                    featureId: featureId
-                }, function(data){
-                    $('#edition-modal').html(data);
-                    $('#edition-modal').modal('show');
-
-                    lizMap.events.triggerEvent(
-                        "lizmapeditionfeaturedeleted",
-                        {
-                            'layerId': layerId
-                        }
-                    );
-
-                    $.each(lizMap.layers, function(i, l) {
-                        if (config.layers[l.params['LAYERS']].id != layerId)
-                            return true;
-                        l.redraw(true);
-                        return false;
-                    });
-                });
-
+                lizMap.deleteEditionFeature( layerId, featureId, deleteConfirm, function( aLID, aFID ){});
             }
 
 

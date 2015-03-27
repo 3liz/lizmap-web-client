@@ -226,7 +226,6 @@ class lizmapProject{
         return false;
     }
 
-
     public function hasEditionLayers(){
         if ( property_exists($this->cfg,'editionLayers') ){
             if(!jAcl2::check('lizmap.tools.edition.use', $this->repository->getKey()))
@@ -241,6 +240,10 @@ class lizmapProject{
             return false;
         }
         return false;
+    }
+
+    public function getEditionLayers(){
+        return $this->cfg->editionLayers;
     }
 
     public function hasLoginFilteredLayers(){

@@ -22,6 +22,9 @@
       {foreach $form->hidden as $ref=>$val}
         <input type="hidden" name="{$ref}" value="{$val}"/>
       {/foreach}
+      {if $deleteAction}
+        <input type="submit" name="delete" value="{@view~edition.toolbar.delete.title@}" class="btn"></input>
+      {/if}
         <input type="submit" name="select" value="{@view~edition.toolbar.select.title@}" class="btn"></input>
       </dd>
     </dl>
