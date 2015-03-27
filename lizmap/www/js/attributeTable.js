@@ -474,6 +474,9 @@ var lizAttributeTable = function() {
 
                             $( aTable ).on( 'draw.dt', function() {
 
+                                $(aTable +' tr').unbind('click');
+                                $(aTable +' tr td button').unbind('click');
+
                                 // Select the line
                                 $(aTable +' tr').click(function() {
 
@@ -502,7 +505,6 @@ var lizAttributeTable = function() {
                                 // Select feature
                                 $(aTable +' tr td button.attribute-layer-feature-select').click(function() {
                                     var featId = $(this).val();
-
                                     // Send signal
                                     lizMap.events.triggerEvent(
                                         "layerfeatureselected",
@@ -894,8 +896,6 @@ var lizAttributeTable = function() {
                     else
                         delete layer.params['SELECTION'];
 
-
-
                     // Filter parameter
                     if( config.attributeLayers[featureType]
                         && config.attributeLayers[featureType]['filteredFeatures']
@@ -1027,6 +1027,7 @@ var lizAttributeTable = function() {
 
             function redrawAttributeTableContent( featureType, featureIds ){
                 var aTable = '#attribute-layer-table-'+lizMap.cleanName( featureType );
+
                 if ( $.fn.dataTable.isDataTable( aTable ) ) {
                     // Get selected feature ids if not given
                     if( !featureIds ){
@@ -1035,12 +1036,14 @@ var lizAttributeTable = function() {
                             config.attributeLayers[featureType]['selectedFeatures'] = [];
                         var featureIds = config.attributeLayers[featureType]['selectedFeatures'];
                     }
+
                     // Remove class selected for all the lines
                     $(aTable).find('tr').removeClass('selected');
                     // Add class selected from featureIds
                     if( featureIds.length > 0 ){
                         var rTable = $( aTable ).DataTable();
                         var indexes = featureIds.map(function(num){ return '#' + num;})
+
                         // Add a class to those rows using an index selector
                         rTable.rows( indexes )
                             .nodes()
@@ -1074,6 +1077,7 @@ var lizAttributeTable = function() {
                 },
 
                 layerSelectionChanged: function(e) {
+
                     // Update openlayers layer drawing
                     updateMapLayerDrawing( e.featureType, e.featureIds );
 
