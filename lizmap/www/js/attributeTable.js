@@ -293,6 +293,8 @@ var lizAttributeTable = function() {
 
                 var childHtml = '';
                 var lConfig = config.layers[parentLayerName];
+                if ( !lConfig )
+                  return childHtml;
                 var parentLayerId = lConfig['id'];
                 if( 'relations' in config && parentLayerId in config.relations) {
                     var layerRelations = config.relations[parentLayerId];
@@ -326,6 +328,8 @@ var lizAttributeTable = function() {
                 var fp = feat.properties;
 
                 var lConfig = config.layers[featureType];
+                if ( !lConfig )
+                  return false;
                 var parentLayerId = lConfig['id'];
                 if( 'relations' in config && parentLayerId in config.relations) {
                     var layerRelations = config.relations[parentLayerId];
@@ -493,7 +497,7 @@ var lizAttributeTable = function() {
                                     );
 
                                     // Display popup for the feature
-                                    if( lConfig['popup'] == 'True' ) {
+                                    if( lConfig && lConfig['popup'] == 'True' ) {
                                         var feat = config.attributeLayers[aName]['features'][featId];
                                         getFeatureInfoForLayerFeature( aTable, aName, feat );
                                     }
