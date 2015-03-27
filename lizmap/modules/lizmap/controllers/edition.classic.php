@@ -256,7 +256,7 @@ class editionCtrl extends jController {
 
     // Get datasource information from QGIS
     $datasourceMatch = preg_match(
-      "#dbname='([^ ]+)' (?:host=([^ ]+) )?(?:port=([0-9]+) )?(?:user='([^ ]+)' )?(?:password='([^ ]+)' )?(?:sslmode=([^ ]+) )?(?:key='([^ ]+)' )?(?:estimatedmetadata=([^ ]+) )?(?:srid=([0-9]+) )?(?:type=([a-zA-Z]+) )?(?:table=\"(.+)\" \()?(?:([^ ]+)\) )?(?:sql=(.*))?#",
+      "#dbname='([^ ]+)' (?:host=([^ ]+) )?(?:port=([0-9]+) )?(?:user='([^ ]+)' )?(?:password='([^ ]+)' )?(?:sslmode=([^ ]+) )?(?:key='([^ ]+)' )?(?:estimatedmetadata=([^ ]+) )?(?:srid=([0-9]+) )?(?:type=([a-zA-Z]+) )?(?:table=\"(.+)\" )?(?:\()?(?:([^ ]+)\) )?(?:sql=(.*))?#",
       $datasource,
       $dt
     );
@@ -673,7 +673,10 @@ class editionCtrl extends jController {
       $featureId = array($this->featureId);
 
     // Build the SQL query to retrieve data from the table
-    $sql = "SELECT *, ST_AsText(".$this->geometryColumn.") AS astext FROM ".$this->table;
+    $sql = "SELECT *";
+    if ( $this->geometryColumn != '' )
+        $sql.= ", ST_AsText(".$this->geometryColumn.") AS astext";
+    $sql.= " FROM ".$this->table;
     $v = ''; $i = 0;
     $sql.= ' WHERE';
     foreach($this->primaryKeys as $key){
@@ -681,6 +684,7 @@ class editionCtrl extends jController {
       $i++;
       $v = " AND ";
     }
+    //jLog::log( $sql, 'error' );
 
     // Run the query and loop through the result to set the form data
     $rs = $cnx->query($sql);
@@ -701,7 +705,8 @@ class editionCtrl extends jController {
         }
       }
       // geometry column : override binary with text representation
-      $form->setData($this->geometryColumn, $record->astext);
+      if ( $this->geometryColumn != '' )
+        $form->setData($this->geometryColumn, $record->astext);
     }
 
     return True;
@@ -892,11 +897,16 @@ class editionCtrl extends jController {
     // Optionnaly query for the feature
     $cnx = jDb::getConnection($this->layerId);
 
-    $sql = "SELECT *, ST_AsText(".$this->geometryColumn.") AS astext FROM ".$this->table;
-    if ( $this->provider == 'spatialite' )
-      $sql .= " WHERE intersects( BuildMBR(".$bbox.", ".$crs." ), transform(".$this->geometryColumn.", ".$crs." ) )";
-    else
-      $sql .= " WHERE ST_Intersects( ST_MakeEnvelope(".$bbox.", ".$crs." ), ST_Transform(".$this->geometryColumn.", ".$crs." ) )";
+    $sql = "SELECT *";
+    if ( $this->geometryColumn != '' )
+        $sql.= ", ST_AsText(".$this->geometryColumn.") AS astext";
+    $sql.= " FROM ".$this->table;
+    if ( $this->geometryColumn != '' ) {
+        if ( $this->provider == 'spatialite' )
+          $sql .= " WHERE intersects( BuildMBR(".$bbox.", ".$crs." ), transform(".$this->geometryColumn.", ".$crs." ) )";
+        else
+          $sql .= " WHERE ST_Intersects( ST_MakeEnvelope(".$bbox.", ".$crs." ), ST_Transform(".$this->geometryColumn.", ".$crs." ) )";
+    }
 
     // Add the QGIS WHERE clause if needed
     if($this->whereClause)
@@ -939,7 +949,8 @@ class editionCtrl extends jController {
           $form->setData($ref, $record->$ref);
         }
         // geometry column : override binary with text representation
-        $form->setData($this->geometryColumn, $record->astext);
+        if ( $this->geometryColumn != '' )
+            $form->setData($this->geometryColumn, $record->astext);
 
         // redo some code for templating the data
         $controls = array();
@@ -970,9 +981,10 @@ class editionCtrl extends jController {
           'liz_srid'=>$form->getData('liz_srid'),
           'liz_proj4'=>$form->getData('liz_proj4'),
           'liz_geometryColumn'=>$form->getData('liz_geometryColumn'),
-          $form->getData('liz_geometryColumn')=>$form->getData( $form->getData('liz_geometryColumn') ),
           'liz_featureId'=>$form->getData('liz_featureId'),
         );
+        if ( $this->geometryColumn != '' )
+            $hidden[$form->getData('liz_geometryColumn')] = $form->getData( $form->getData('liz_geometryColumn') );
         $forms[] = (object) array('controls'=>$controls,'hidden'=>$hidden);
       }
       // Get title layer
@@ -1207,7 +1219,7 @@ class editionCtrl extends jController {
 
     // Check the form data and redirect if needed
     $check = $form->check();
-    if ( $form->getData( $this->geometryColumn ) == '' ) {
+    if ( $this->geometryColumn != '' && $form->getData( $this->geometryColumn ) == '' ) {
       $check = False;
       $form->setErrorOn($this->geometryColumn, "You must set the geometry");
     }

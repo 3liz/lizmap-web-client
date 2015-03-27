@@ -2754,24 +2754,28 @@ var lizMap = function() {
               });
               $('#edition-modal form').submit(function() {
                 var self = $(this);
-                var srid = self.find('input[name="liz_srid"]').val();
-                if ( !('EPSG:'+srid in Proj4js.defs) )
-                  Proj4js.defs['EPSG:'+srid] = self.find('input[name="liz_proj4"]').val();
                 var geom = self.find('input[name="liz_geometryColumn"]').val();
-                var wkt = self.find('input[name="'+geom+'"]').val();
-                var format = new OpenLayers.Format.WKT({
-                  externalProjection: 'EPSG:'+srid,
-                  internalProjection: editLayer.projection
-                });
-                var feat = format.read(wkt);
-                feat.fid = self.find('input[name="liz_featureId"]').val();
-                var form = $('#edition form');
-                form.find('input[name="liz_srid"]').val(srid);
-                form.find('input[name="liz_geometryColumn"]').val(geom);
-                form.find('input[name="liz_wkt"]').val(feat.geometry);
-                form.find('input[name="liz_featureId"]').val(feat.fid);
-                editLayer.addFeatures([feat]);
-                $('#edition-modal').modal('hide');
+                if ( geom != '' ) {
+                    var srid = self.find('input[name="liz_srid"]').val();
+                    if ( !('EPSG:'+srid in Proj4js.defs) )
+                      Proj4js.defs['EPSG:'+srid] = self.find('input[name="liz_proj4"]').val();
+                    var wkt = self.find('input[name="'+geom+'"]').val();
+                    var format = new OpenLayers.Format.WKT({
+                      externalProjection: 'EPSG:'+srid,
+                      internalProjection: editLayer.projection
+                    });
+                    var feat = format.read(wkt);
+                    feat.fid = self.find('input[name="liz_featureId"]').val();
+                    var form = $('#edition form');
+                    form.find('input[name="liz_srid"]').val(srid);
+                    form.find('input[name="liz_geometryColumn"]').val(geom);
+                    form.find('input[name="liz_wkt"]').val(feat.geometry);
+                    form.find('input[name="liz_featureId"]').val(feat.fid);
+                    editLayer.addFeatures([feat]);
+                    $('#edition-modal').modal('hide');
+                } else {
+                    launchEdition( editCtrls.click.layerId, self.find('input[name="liz_featureId"]').val() );
+                }
                 return false;
               });
               $('#edition-modal').modal('show');
@@ -2936,14 +2940,16 @@ var lizMap = function() {
             function() {
               var format = new OpenLayers.Format.WKT();
               var wkt = $('#edition form input[name="liz_wkt"]').val();
-              var wktFeat = format.read(wkt);
-              var geom = wktFeat.geometry.clone();
-              var feat = editLayer.features[0];
-              geom.id = feat.geometry.id;
-              feat.geometry = geom;
-              editLayer.drawFeature(feat);
-              if (config.editionLayers[editCtrls.click.layerName].capabilities.modifyGeometry == "True")
-                editCtrls.modify.selectFeature(feat);
+              if ( wkt != '' ) {
+                  var wktFeat = format.read(wkt);
+                  var geom = wktFeat.geometry.clone();
+                  var feat = editLayer.features[0];
+                  geom.id = feat.geometry.id;
+                  feat.geometry = geom;
+                  editLayer.drawFeature(feat);
+                  if (config.editionLayers[editCtrls.click.layerName].capabilities.modifyGeometry == "True")
+                    editCtrls.modify.selectFeature(feat);
+              }
             }
           );
         }
@@ -3463,16 +3469,20 @@ var lizMap = function() {
                 });
           $('#edition-modal button[data-dismiss="modal"]').click(
             function() {
-              var format = new OpenLayers.Format.WKT();
               var wkt = $('#edition form input[name="liz_wkt"]').val();
-              var wktFeat = format.read(wkt);
-              var geom = wktFeat.geometry.clone();
-              var feat = editLayer.features[0];
-              geom.id = feat.geometry.id;
-              feat.geometry = geom;
-              editLayer.drawFeature(feat);
-              if ( config.editionLayers[editCtrls.click.layerName].capabilities.modifyGeometry == "True" )
-                editCtrls.modify.selectFeature(feat);
+              if ( wkt != '' ) {
+                  var format = new OpenLayers.Format.WKT();
+                  var wktFeat = format.read(wkt);
+                  var geom = wktFeat.geometry.clone();
+                  var feat = editLayer.features[0];
+                  geom.id = feat.geometry.id;
+                  feat.geometry = geom;
+                  editLayer.drawFeature(feat);
+                  if ( config.editionLayers[editCtrls.click.layerName].capabilities.modifyGeometry == "True" )
+                    editCtrls.modify.selectFeature(feat);
+              } else {
+                  $('#edition-select-unselect').click();
+              }
             }
           );
         }
@@ -3491,10 +3501,13 @@ var lizMap = function() {
             l.redraw(true);
             return false;
           });
-
-          editLayer.drawFeature(editLayer.features[0]);
-          if (config.editionLayers[editCtrls.click.layerName].capabilities.modifyGeometry == "True")
-            editCtrls.modify.selectFeature(editLayer.features[0]);
+          if ( editLayer.features.length != 0 && editLayer.features[0].geometry ) {
+              editLayer.drawFeature(editLayer.features[0]);
+              if (config.editionLayers[editCtrls.click.layerName].capabilities.modifyGeometry == "True")
+                editCtrls.modify.selectFeature(editLayer.features[0]);
+          } else {
+            $('#edition-select-unselect').click();
+          }
         }
     }
 
@@ -3509,17 +3522,22 @@ var lizMap = function() {
 
         var form = $('#edition-modal form');
 
-        var srid = form.find('input[name="liz_srid"]').val();
-        if ( !('EPSG:'+srid in Proj4js.defs) )
-            Proj4js.defs['EPSG:'+srid] = form.find('input[name="liz_proj4"]').val();
-
+        var feat = null;
         var geom = form.find('input[name="liz_geometryColumn"]').val();
-        var wkt = form.find('input[name="'+geom+'"]').val();
-        var format = new OpenLayers.Format.WKT({
-          externalProjection: 'EPSG:'+srid,
-          internalProjection: editLayer.projection
-        });
-        var feat = format.read(wkt);
+        if ( geom != '' ) {
+            var srid = form.find('input[name="liz_srid"]').val();
+            if ( !('EPSG:'+srid in Proj4js.defs) )
+              Proj4js.defs['EPSG:'+srid] = form.find('input[name="liz_proj4"]').val();
+            var wkt = form.find('input[name="'+geom+'"]').val();
+            var format = new OpenLayers.Format.WKT({
+              externalProjection: 'EPSG:'+srid,
+              internalProjection: editLayer.projection
+            });
+            feat = format.read(wkt);
+        } else {
+            var center = map.getCenter();
+            feat = new OpenLayers.Feature.Vector( /*new OpenLayers.Geometry.Point( center.lon, center.lat )*/ );
+        }
         feat.fid = form.find('input[name="liz_featureId"]').val();
 
         var eform = $('#edition form');
