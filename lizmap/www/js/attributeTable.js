@@ -171,6 +171,7 @@ var lizAttributeTable = function() {
                     filClass = selClass
 
                 // Unselect button
+                html+= '<div class="attribute-layer-action-bar">';
                 html+= '    <button class="btn-unselect-attributeTable btn btn-mini' + selClass + '" value="' + layerName + '">'+lizDict['attributeLayers.toolbar.btn.data.unselect.title']+'</button>';
 
                 // Filter button
@@ -202,19 +203,70 @@ var lizAttributeTable = function() {
                 //~ // Detail button
                 //~ html+= '    <button class="btn-detail-attributeTable btn btn-mini" value="' + layerName + '"  style="display:none;">'+lizDict['attributeLayers.toolbar.btn.data.detail.title']+'</button>';
 
+                // Get children content
+                var childHtml = getChildrenHtmlContent( lname );
+                var alc='';
+
+                // Toggle children content
+                if( childHtml )
+                    html+= '    <button class="btn-toggle-children btn btn-mini" value="' + layerName + '" >'+lizDict['attributeLayers.toolbar.btn.toggle.children.title']+'</button>';
+
 
                 html+= '    <br/><span class="attribute-layer-msg"></span>';
+
+                html+= '</div>'; // attribute-layer-action-bar
+
+
+                if( childHtml )
+                    alc= ' showChildren';
+                html+= '<div class="attribute-layer-content'+alc+'">';
                 html+= '    <table id="attribute-layer-table-' + layerName + '" class="attribute-table-table table table-hover table-condensed table-striped"></table>';
 
-                // Add child layers
-                var childHtml = addChildrenContainer( lname );
-                html+= childHtml;
+                html+= '</div>';  // attribute-layer-content
 
-                html+= '    </div>';
+                // Add children content
+                if( childHtml ){
+                    // Add children content : one tab per childlayer
+                    html+= '<div class="tabbable attribute-layer-child-content">';
+                    // Ul content
+                    html+= '    <ul class="nav nav-tabs">';
+                    for( var i in childHtml['tab-li'] ){
+                        var cLi = childHtml['tab-li'][i];
+                        html+= cLi;
+                    }
+                    html+= '    </ul>';
+                    html+= '    <div class="tab-content">';
+                    // Tab content
+                    for( var i in childHtml['tab-content'] ){
+                        var cDiv = childHtml['tab-content'][i];
+                        html+= cDiv;
+                    }
+                    html+= '    </div>'; // tab-content
+                    html+= '</div>'; // tabbable
+                }
+
+                html+= '</div>';  // attribute-layer-main
+
+                // Right panel to show info
                 html+= '    <div class="attribute-layer-feature-panel" id="attribute-table-panel-' + layerName + '" ></div>';
-                html+= '</div>';
+
+                html+= '</div>'; // 'attribute-layer-' + layerName
 
                 $('#attribute-table-container').append(html);
+
+                if( childHtml ){
+                    $('#attribute-layer-'+ layerName + ' button.btn-toggle-children')
+                    .click(function(){
+                        var parentDir = $(this).parents('div.attribute-layer-main');
+                        parentDir.find('div.attribute-layer-content').toggleClass('showChildren');
+                        parentDir.find('div.tabbable.attribute-layer-child-content').toggle();
+                        return false;
+                    })
+                    .hover(
+                        function(){ $(this).addClass('btn-primary'); },
+                        function(){ $(this).removeClass('btn-primary'); }
+                    );
+                }
 
                 // Bind click on "unselect all" button
                 $('#attribute-layer-'+ layerName + ' button.btn-unselect-attributeTable')
@@ -289,9 +341,11 @@ var lizAttributeTable = function() {
                 return null;
             }
 
-            function addChildrenContainer( parentLayerName ) {
+            function getChildrenHtmlContent( parentLayerName ) {
 
-                var childHtml = '';
+                var childHtml = null;
+                var childDiv = [];
+                var childLi = [];
                 var lConfig = config.layers[parentLayerName];
                 if ( !lConfig )
                   return childHtml;
@@ -307,16 +361,23 @@ var lizAttributeTable = function() {
                         );
                         if( childLayerConfigA ){
                             var childLayerConfig = childLayerConfigA[1];
-                            childHtml+= '<div style="padding:20px;background-color:lightgrey;border:1px solid white;">';
-                            childHtml+= '<h4>' + childLayerConfig.name + '</h4>';
                             var childLayerName = childLayerConfigA[0];
+                            var tabId = 'attribute-child-tab-' + lizMap.cleanName(parentLayerName) + '-' + lizMap.cleanName(childLayerName);
+                            // Build Div content for tab
+                            var cDiv = '<div class="tab-pane attribute-layer-child-content active" id="'+ tabId +'" >';
                             var tId = 'attribute-layer-table-' + lizMap.cleanName(parentLayerName) + '-' + lizMap.cleanName(childLayerName);
-                            childHtml+= '<table id="' + tId  + '" class="attribute-table-table table table-hover table-condensed table-striped"></table>';
-                            childHtml+= '</div>';
+                            cDiv+= '    <table id="' + tId  + '" class="attribute-table-table table table-hover table-condensed table-striped"></table>';
+                            cDiv+= '</div>';
+                            childDiv.push(cDiv);
+                            // Build li content for tab
+                            var cLi = '<li id="nav-tab-'+ tabId +'" class="active"><a href="#'+ tabId +'" data-toggle="tab">'+ childLayerConfig.title +'</a></li>';
+                            childLi.push(cLi);
                         }
                     }
 
                 }
+                if( childLi.length )
+                    childHtml = { 'tab-content': childDiv, 'tab-li': childLi } ;
                 return childHtml;
             }
 

@@ -484,15 +484,43 @@ ul.nav.nav-tabs {
 .attribute-layer-main {
   float:left;
   width:100%;
-  overflow:auto;
   height:100%;
 }
 .attribute-layer-main.reduced {
-  width:70%;
+  width:65%;
+}
+
+.attribute-layer-action-bar{
+  height:50px;
+  border-bottom: 1px solid lightgrey;
+}
+.attribute-layer-content {
+  overflow:auto;
+  height: 90%;
+}
+
+.attribute-layer-content.showChildren {
+  height: 45%;
+}
+
+.tabbable.attribute-layer-child-content {
+  height:40%;
+  border:1px solid darkgrey;
+}
+
+.tabbable.attribute-layer-child-content div.tab-content{
+  height:90%;
+  overflow:auto;
+}
+
+.tabbable.attribute-layer-child-content ul li a {
+  padding: 1px;
+  font-weight:bold;
+  font-size:1.1em;
 }
 
 .attribute-layer-feature-panel {
-  margin-left: 70%;
+  margin-left: 65%;
   overflow: auto;
   height: 100%;
   padding-left: 10px;
@@ -519,16 +547,16 @@ table.attribute-table-table tr.active td,
 table.attribute-table-table tr.active:hover td {
     background-color: inherit !important; /* Add !important to make sure override datables base styles */
     color:black;
-    border-bottom:2px solid blue;
-    border-top:2px solid blue;
+    border-bottom:2px solid darkgrey;
+    border-top:2px solid darkgrey;
 }
 table.attribute-table-table tr.active td:first-child,
 table.attribute-table-table tr.active:hover td:first-child{
-    border-left:2px solid blue;
+    border-left:2px solid darkgrey;
 }
 table.attribute-table-table tr.active td:last-child,
 table.attribute-table-table tr.active:hover td:last-child{
-    border-right:2px solid blue;
+    border-right:2px solid darkgrey;
 }
 
 table.attribute-table-table tr.selected td,
