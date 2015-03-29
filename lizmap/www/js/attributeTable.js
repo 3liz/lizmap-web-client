@@ -208,8 +208,16 @@ var lizAttributeTable = function() {
                 var alc='';
 
                 // Toggle children content
-                if( childHtml )
+                if( childHtml ){
+                    // Add button to show/hide children tables
                     html+= '    <button class="btn-toggle-children btn btn-mini" value="' + layerName + '" >'+lizDict['attributeLayers.toolbar.btn.toggle.children.title']+'</button>';
+
+                    // Add buttons to create new children
+                    for( var i in childHtml['childCreateButton'] ){
+                        var bt = childHtml['childCreateButton'][i];
+                        html+= bt;
+                    }
+                }
 
 
                 html+= '    <br/><span class="attribute-layer-msg"></span>';
@@ -346,6 +354,7 @@ var lizAttributeTable = function() {
                 var childHtml = null;
                 var childDiv = [];
                 var childLi = [];
+                var childCreateButton = [];
                 var lConfig = config.layers[parentLayerName];
                 if ( !lConfig )
                   return childHtml;
@@ -362,6 +371,7 @@ var lizAttributeTable = function() {
                         if( childLayerConfigA ){
                             var childLayerConfig = childLayerConfigA[1];
                             var childLayerName = childLayerConfigA[0];
+
                             var tabId = 'attribute-child-tab-' + lizMap.cleanName(parentLayerName) + '-' + lizMap.cleanName(childLayerName);
                             // Build Div content for tab
                             var cDiv = '<div class="tab-pane attribute-layer-child-content active" id="'+ tabId +'" >';
@@ -369,15 +379,32 @@ var lizAttributeTable = function() {
                             cDiv+= '    <table id="' + tId  + '" class="attribute-table-table table table-hover table-condensed table-striped"></table>';
                             cDiv+= '</div>';
                             childDiv.push(cDiv);
+
                             // Build li content for tab
                             var cLi = '<li id="nav-tab-'+ tabId +'" class="active"><a href="#'+ tabId +'" data-toggle="tab">'+ childLayerConfig.title +'</a></li>';
                             childLi.push(cLi);
+
+                            // Add create child feature button
+                            var editionConfig = getLayerConfigById(
+                                relation.referencingLayer,
+                                config.editionLayers,
+                                'layerId'
+                            );
+                            var canCreateChild = false;
+                            if( childLayerName in config.editionLayers ) {
+                                var al = config.editionLayers[childLayerName];
+                                if( al.capabilities.createFeature == "True" )
+                                    canCreateChild = true;
+                            }
+                            if( canCreateChild ){
+                                childCreateButton.push( '<button class="btn-createFeature-attributeTable btn btn-mini" value="' + childLayerName + '" >'+lizDict['attributeLayers.toolbar.btn.data.createFeature.title']+ ' "' + childLayerConfig.title +'"</button>');
+                            }
                         }
                     }
 
                 }
                 if( childLi.length )
-                    childHtml = { 'tab-content': childDiv, 'tab-li': childLi } ;
+                    childHtml = { 'tab-content': childDiv, 'tab-li': childLi, 'childCreateButton': childCreateButton } ;
                 return childHtml;
             }
 
