@@ -1,0 +1,8 @@
+<OGRVRTDataSource>
+    <OGRVRTLayer name="tramway">
+	<GeometryType>wkbLineString</GeometryType>
+        <SrcDataSource relativeToVRT="1">tramway.csv</SrcDataSource>
+        <GeometryField encoding="WKT" field="WKT"/>
+	<LayerSRS>EPSG:4326</LayerSRS>        
+    </OGRVRTLayer>
+</OGRVRTDataSource> 
