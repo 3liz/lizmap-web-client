@@ -2599,7 +2599,7 @@ var lizMap = function() {
         }
     });
   }
-  
+
   function getLayerConfigById( aLayerId, aConfObjet=config.layers, aIdAttribute='id') {
     for ( var lx in aConfObjet ) {
         if ( aConfObjet[lx][aIdAttribute] == aLayerId )
@@ -2607,12 +2607,12 @@ var lizMap = function() {
     }
     return null;
   }
-  
+
   function deleteEditionFeature( aLayerId, aFeatureId, aMessage, aCallback ){
     // Edition layers
     if ( !('editionLayers' in config) )
       return false;
-      
+
     var eConfig = getLayerConfigById(
         aLayerId,
         config.editionLayers,
@@ -2637,7 +2637,7 @@ var lizMap = function() {
     }, function(data){
         $('#edition-modal').html(data);
         $('#edition-modal').modal('show');
-        
+
         if ( aCallback )
           aCallback( aLayerId, aFeatureId );
         lizMap.events.triggerEvent(
@@ -3282,12 +3282,13 @@ var lizMap = function() {
         $('#edition-layer').attr('disabled', 'disabled');
         var layerId = editCtrls.click.layerId;
         var geomType = '';
+
         for (var alName in config.editionLayers) {
           var al = config.editionLayers[alName];
           if ( alName in config.layers && al.layerId == layerId)
             geomType = al.geometryType;
         }
-        if ( geomType == '' )
+        if ( geomType == '' || geomType == 'none' )
           return false;
 
         var ctrl = editCtrls[geomType];
@@ -3416,13 +3417,27 @@ var lizMap = function() {
     $('#edition-layer').change();
 
     // Creation
-    if( !aFid ) {
-      $('#edition-draw').click();
-      // Hide bottom dock
-      $('#bottom-dock').trigger('mouseleave');
-      return true;
+    var geomType = '';
+    for (var alName in config.editionLayers) {
+      var al = config.editionLayers[alName];
+      if ( alName in config.layers && al.layerId == aLayerId){
+        geomType = al.geometryType;
+      }
     }
+
+    if( !aFid ) {
+      if ( geomType != '' && geomType != 'none'){
+        $('#edition-draw').click();
+        return true;
+      }
+    }
+
+    // Hide bottom dock
+    $('#bottom-dock').trigger('mouseleave');
+
+
     $('#edition-select').click();
+
 
     function manageEditionGeom(aData) {
         var oldForm = $('#edition-modal form');
