@@ -1148,11 +1148,11 @@ var lizAttributeTable = function() {
                                             return false;
                                         }
 
-                                        // Add a Filter to children layers
+                                        // Add a Filter to the "other parent" layers
                                         if( fParam['values'].length > 0 )
                                             var cFilter = fParam['name'] + ':"' + fParam['key'] + '" IN ( ' + fParam['values'].join() + ' )';
                                         else
-                                            var cFilter = null
+                                            var cFilter = fParam['name'] + ':"' + fParam['key'] + '" IN ( ' + "'-999999'" + ' )';
 
                                         config.layers[fParam['name']]['request_params']['filter'] = cFilter;
 
