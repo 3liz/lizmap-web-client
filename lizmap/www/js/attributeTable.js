@@ -1140,7 +1140,7 @@ var lizAttributeTable = function() {
                                     if( parentKeys.length > 0 )
                                         var pivotFilter = '"' + relation.referencingField + '" IN ( ' + parentKeys.join() + ' )';
                                     else
-                                        var pivotFilter = null
+                                        var pivotFilter = null;
 
                                     var getFeatureUrlData = getAttributeFeatureUrlData( childLayerKeyName, pivotFilter );
                                     var cOptions = getFeatureUrlData['options'];
@@ -1172,6 +1172,11 @@ var lizAttributeTable = function() {
                                             var cFilter = fParam['name'] + ':"' + fParam['key'] + '" IN ( ' + fParam['values'].join() + ' )';
                                         else
                                             var cFilter = fParam['name'] + ':"' + fParam['key'] + '" IN ( ' + "'-999999'" + ' )';
+
+                                        // Remove filter if no parentkeys which mean no filter for parent anymore
+                                        if( !pivotFilter ) {
+                                            var cFilter = null;
+                                        }
 
                                         config.layers[fParam['name']]['request_params']['filter'] = cFilter;
 
