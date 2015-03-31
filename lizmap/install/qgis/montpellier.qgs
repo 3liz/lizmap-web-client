@@ -4131,11 +4131,11 @@
       <value>tramstop20150328114203878</value>
       <value>tramway20150328114206278</value>
     </WFSLayers>
-    <WMSRestrictedLayers type="QStringList"/>
     <WMSContactMail type="QString">info@3liz.com</WMSContactMail>
     <WMSRestrictedComposers type="QStringList">
       <value>Composeur1</value>
     </WMSRestrictedComposers>
+    <WMSRestrictedLayers type="QStringList"/>
     <PositionPrecision>
       <DecimalPlaces type="int">2</DecimalPlaces>
       <Automatic type="bool">true</Automatic>
