@@ -1213,7 +1213,9 @@ var lizAttributeTable = function() {
                     }
 
                 }
-                lizMap.deleteEditionFeature( layerId, featureId, deleteConfirm, function( aLID, aFID ){});
+                lizMap.deleteEditionFeature( layerId, featureId, deleteConfirm, function( aLID, aFID ){
+                    updateAttributeTableContent( eConfig[0] );
+                });
             }
 
 
