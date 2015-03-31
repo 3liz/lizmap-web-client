@@ -764,7 +764,10 @@ var lizAttributeTable = function() {
                 var proj = new OpenLayers.Projection(config.layers[aName].crs);
                 var lConfig = config.layers[parentLayerName];
                 var units = lizMap.map.getUnits();
-                var scale = Math.max( lizMap.map.maxScale, lConfig.minScale );
+                if( lizMap.map.maxScale == 'auto' )
+                    var scale = lConfig.minScale;
+                else
+                    var scale = Math.max( lizMap.map.maxScale, lConfig.minScale );
                 var res = OpenLayers.Util.getResolutionFromScale(scale, units);
 
                 // Get coordinate to mimic click on the map
@@ -772,6 +775,7 @@ var lizAttributeTable = function() {
                 feat = format.read(feat)[0];
                 feat.geometry.transform(proj, lizMap.map.getProjection());
                 var geomType = feat.geometry.CLASS_NAME;
+
                 if (
                     geomType == 'OpenLayers.Geometry.Polygon'
                     || geomType == 'OpenLayers.Geometry.MultiPolygon'
@@ -784,6 +788,7 @@ var lizAttributeTable = function() {
                     var middlePoint = vert[Math.floor(vert.length/2)];
                     var lonlat = new OpenLayers.LonLat(middlePoint.x, middlePoint.y);
                 }
+
                 // Calculate fake bbox
                 var bbox = new OpenLayers.Bounds(
                     lonlat.lon - 5 * res,
