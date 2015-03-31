@@ -1035,6 +1035,14 @@ var lizAttributeTable = function() {
                         delete layer.params['FILTER'];
                         config.layers[featureType]['request_params']['filter'] = null;
                     }
+                    lizMap.events.triggerEvent(
+                        "layerFilterParamChanged",
+                        {
+                            'featureType': featureType,
+                            'filter': config.layers[featureType]['request_params']['filter'],
+                            'updateDrawing': true
+                        }
+                    );
 
                     if( config.layers[featureType]['geometryType'] != 'none'
                         && config.layers[featureType]['geometryType'] != 'unknown'
@@ -1169,6 +1177,14 @@ var lizAttributeTable = function() {
                                         refreshLayerRendering( fParam['name'], cFilter, true );
                                     }
                                 }
+                                lizMap.events.triggerEvent(
+                                    "layerFilterParamChanged",
+                                    {
+                                        'featureType': featureType,
+                                        'filter': config.layers[featureType]['request_params']['filter'],
+                                        'updateDrawing': true
+                                    }
+                                );
 
                             }
                         }

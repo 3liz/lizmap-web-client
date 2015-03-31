@@ -2255,6 +2255,29 @@ var lizMap = function() {
         }
         return layers;
      };
+     lizMap.events.on({
+        "layerFilterParamChanged": function( evt ) {
+            console.log( evt.featureType );
+            console.log( config.layers[evt.featureType] );
+            var filter = [];
+            for ( var  lName in config.layers ) {
+                var lConfig = config.layers[lName];
+                if ( lConfig.popup != 'True' )
+                    continue;
+                if ( !('request_params' in lConfig)
+                  || lConfig['request_params'] == null )
+                    continue;
+                var requestParams = lConfig['request_params'];
+                if ( ('filter' in lConfig['request_params'])
+                  && lConfig['request_params']['filter'] != null
+                  && lConfig['request_params']['filter'] != "" ) {
+                    console.log(lName +' "'+lConfig['request_params']['filter']+'"');
+                    filter.push( lConfig['request_params']['filter'] );
+                }
+            }
+            info.vendorParams['filter'] = filter.join(';');
+        }
+     });
      map.addControl(info);
      info.activate();
      return info;
