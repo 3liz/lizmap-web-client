@@ -208,6 +208,11 @@ var lizAttributeTable = function() {
                         var bt = childHtml['childCreateButton'][i];
                         html+= bt;
                     }
+                    // Add buttons to link parent and children
+                    for( var i in childHtml['pivotLinkButton'] ){
+                        var bt = childHtml['pivotLinkButton'][i];
+                        html+= bt;
+                    }
                 }
 
 
@@ -329,6 +334,72 @@ var lizAttributeTable = function() {
                     function(){ $(this).removeClass('btn-primary'); }
                 );
 
+                // Bind click on linkFeatures button
+                $('#attribute-layer-'+ layerName + ' button.btn-linkFeatures-attributeTable')
+                .click(function(){
+                    var cName = attributeLayersDic[ $(this).val() ];
+                    var lid = config.layers[cName]['id'];
+                    var attrConfig = config.attributeLayers[cName];
+                    var p = [];
+                    if( 'pivot' in attrConfig && 'parents' in attrConfig ) {
+                        for( var parId in attrConfig['parents'] ){
+                            var parKey = attrConfig['parents'][parId];
+                            par = { 'id': parId, 'fkey': parKey };
+
+                            var getP = getLayerConfigById( parId, config.attributeLayers, 'layerId' );
+                            if( !getP )
+                                return false;
+                            var idSelected = config.layers[ getP[0] ]['selectedFeatures'];
+
+                            if( !( idSelected.length > 0 ) )
+                                return false;
+
+                            var fi = [];
+                            var features = config.layers[ getP[0] ]['features'];
+                            if ( !features || features.length <= 0 )
+                                return false;
+                            var primaryKey = getP[1]['primaryKey'];
+                            for( var x in idSelected ) {
+                                var idFeat = idSelected[x];
+                                var afeat = features[idFeat];
+                                if( typeof afeat === "undefined" )
+                                    continue;
+                                var pk = afeat.properties[primaryKey];
+                                if( !parseInt( pk ) )
+                                    pk = " '" + pk + "' ";
+                                fi.push( pk );
+                            }
+                            par['selected'] = fi;
+
+                            p.push(par);
+                        }
+
+                        if( !( p.length == 2 )  )
+                            return false;
+
+                        var service = OpenLayers.Util.urlAppend(lizUrls.edition
+                            ,OpenLayers.Util.getParameterString(lizUrls.params)
+                        );
+                        $.get(service.replace('getFeature','linkFeatures'),{
+                          features1: p[0]['id'] + ':' + p[0]['fkey'] + ':' + p[0]['selected'].join(),
+                          features2: p[1]['id'] + ':' + p[1]['fkey'] + ':' + p[1]['selected'].join(),
+                          pivot: lid
+
+                        }, function(data){
+                            $('#edition-modal').html(data);
+                            $('#edition-modal').modal('show');
+                        });
+
+                    }
+
+                    return false;
+                })
+                .hover(
+                    function(){ $(this).addClass('btn-primary'); },
+                    function(){ $(this).removeClass('btn-primary'); }
+                );
+
+
             }
 
             function getLayerConfigById( layerId, confObjet=config.layers, idAttribute='id') {
@@ -345,6 +416,7 @@ var lizAttributeTable = function() {
                 var childDiv = [];
                 var childLi = [];
                 var childCreateButton = [];
+                var pivotLinkButton = [];
                 var lConfig = config.layers[parentLayerName];
                 if ( !lConfig )
                   return childHtml;
@@ -387,14 +459,25 @@ var lizAttributeTable = function() {
                                     canCreateChild = true;
                             }
                             if( canCreateChild ){
-                                childCreateButton.push( '<button class="btn-createFeature-attributeTable btn btn-mini" value="' + childLayerName + '" >'+lizDict['attributeLayers.toolbar.btn.data.createFeature.title']+ ' "' + childLayerConfig.title +'"</button>');
+                                // Button to create a new child : Usefull for both 1:n and n:m relation
+                                childCreateButton.push( '<button class="btn-createFeature-attributeTable btn btn-mini" value="' + childLayerName + '" >'+lizDict['attributeLayers.toolbar.btn.data.createFeature.title']+ ' "' + childLayerConfig.title +'"</button>' );
+
+                                // Button to link selected lines from 2 tables
+                                if('pivot' in config.attributeLayers[childLayerName] && 'parents' in config.attributeLayers[childLayerName]){
+                                    pivotLinkButton.push(  '<button class="btn-linkFeatures-attributeTable btn btn-mini" value="' + childLayerName + '" >'+lizDict['attributeLayers.toolbar.btn.data.linkFeatures.title']+ ' "' + childLayerConfig.title +'"</button>' );
+                                }
                             }
                         }
                     }
 
                 }
                 if( childLi.length )
-                    childHtml = { 'tab-content': childDiv, 'tab-li': childLi, 'childCreateButton': childCreateButton } ;
+                    childHtml = {
+                        'tab-content': childDiv,
+                        'tab-li': childLi,
+                        'childCreateButton': childCreateButton,
+                        'pivotLinkButton': pivotLinkButton
+                    } ;
                 return childHtml;
             }
 
@@ -1075,18 +1158,19 @@ var lizAttributeTable = function() {
                         && cascade
                     ) {
                         var layerRelations = config.relations[parentLayerId];
-
                         for( var lid in layerRelations ) {
                             var relation = layerRelations[lid];
 
                             // Get parent primary key values
                             var parentKeys = [];
-                            for( var a in ff ){
-                                var cFeatureId = ff[a];
-                                var feat = config.layers[featureType]['features'][cFeatureId];
-                                if( typeof feat === "undefined" )
-                                    continue;
-                                parentKeys.push( "'" + feat.properties[ relation.referencedField ] + "'");
+                            if( config.layers[featureType]['features'] && config.layers[featureType]['features'] != {} > 0 ){
+                                for( var a in ff ){
+                                    var cFeatureId = ff[a];
+                                    var feat = config.layers[featureType]['features'][cFeatureId];
+                                    if( typeof feat === "undefined" )
+                                        continue;
+                                    parentKeys.push( "'" + feat.properties[ relation.referencedField ] + "'");
+                                }
                             }
 
                             var childLayerConfigA = getLayerConfigById(
@@ -1105,6 +1189,7 @@ var lizAttributeTable = function() {
                                 if( 'pivot' in childLayerConfig
                                     && childLayerConfig.pivot == 'True'
                                 ){
+
                                     isPivot = true;
                                     // Get other parent layer id
                                     var otherParentId = null;
@@ -1174,7 +1259,7 @@ var lizAttributeTable = function() {
                                             var cFilter = fParam['name'] + ':"' + fParam['key'] + '" IN ( ' + "'-999999'" + ' )';
 
                                         // Remove filter if no parentkeys which mean no filter for parent anymore
-                                        if( !pivotFilter ) {
+                                        if( parentKeys.length == 0 ) {
                                             var cFilter = null;
                                         }
 

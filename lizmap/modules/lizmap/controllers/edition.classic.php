@@ -22,8 +22,12 @@ class editionCtrl extends jController {
 
   // layer name (<layername> in QGIS project)
   private $layerName = '';
+
   // table name
   private $table = '';
+
+  // Schema
+  private $schema = '';
 
   // table name without schema
   private $tableName = '';
@@ -75,7 +79,7 @@ class editionCtrl extends jController {
 
   // Form controls
   private $formControls = '';
-  
+
   // Filter override flag
   private $loginFilteredOveride = False;
 
@@ -89,12 +93,15 @@ class editionCtrl extends jController {
   */
   function serviceAnswer(){
 
+    $title = jLocale::get("view~edition.modal.title.default");
+
     // Get title layer
-    $layerXmlZero = $this->layerXml[0];
-    $_title = $layerXmlZero->xpath('title');
-    $title = (string)$_title[0];
-    if ( !$title )
-      $title = jLocale::get("view~edition.modal.title.default");
+    if( $this->layerXml and $this->layerXml[0] ){
+        $layerXmlZero = $this->layerXml[0];
+        $_title = $layerXmlZero->xpath('title');
+        if( $_title and $_title[0] )
+            $title = (string)$_title[0];
+    }
 
     $messages = jMessage::getAll();
     $rep = $this->getResponse('htmlfragment');
@@ -153,7 +160,7 @@ class editionCtrl extends jController {
     $layerXmlZero = $layerXml[0];
     $_layerName = $layerXmlZero->xpath('layername');
     $layerName = (string)$_layerName[0];
-    
+
     // Verifying if the layer is edtable
     $eLayers  = $lproj->getEditionLayers();
     if ( !property_exists( $eLayers, $layerName ) ) {
@@ -212,7 +219,7 @@ class editionCtrl extends jController {
         $where='';
         $type='groups';
         $attribute = $pConfig->loginFilteredLayers->$layername->filterAttribute;
-        
+
         if (property_exists($pConfig->loginFilteredLayers->$layername, 'filterPrivate')
          && $pConfig->loginFilteredLayers->$layername->filterPrivate = 'True')
           $type = 'login';
@@ -225,12 +232,12 @@ class editionCtrl extends jController {
           $login = $user->login;
           if ( $type == 'login' ) {
             $where = ' "'.$attribute."\" IN ( '".$login."' , 'all' )";
-		  } else {
+          } else {
             $userGroups = jAcl2DbUserGroup::getGroups();
             // Set XML Filter if getFeature request
             $flatGroups = implode("' , '", $userGroups);
             $where = ' "'.$attribute."\" IN ( '".$flatGroups."' , 'all' )";
-		  }
+          }
         }else{
           // The user is not authenticated: only show data with attribute = 'all'
           $where = ' "'.$attribute.'" = '.$cnx->quote("all");
@@ -281,6 +288,7 @@ class editionCtrl extends jController {
       $tableAlone = $exp[1];
       $schema = $exp[0];
     }
+    $this->schema = $schema;
 
     // Set some private properties
     $this->table = $table;
@@ -453,16 +461,16 @@ class editionCtrl extends jController {
   private function updateFormByLogin($form, $save) {
     if( !is_array($this->loginFilteredLayers) ) //&& $this->loginFilteredOveride )
         $this->filterDataByLogin($this->layerName);
-      
-	if ( is_array($this->loginFilteredLayers) ) {
-		$type = $this->loginFilteredLayers['type'];
-		$attribute = $this->loginFilteredLayers['attribute'];
+
+    if ( is_array($this->loginFilteredLayers) ) {
+        $type = $this->loginFilteredLayers['type'];
+        $attribute = $this->loginFilteredLayers['attribute'];
         //jLog::log('updateFormByLogin', 'error');
-    
-        // Check if a user is authenticated    
+
+        // Check if a user is authenticated
         if ( !jAuth::isConnected() )
             return True;
-    
+
         $user = jAuth::getUserSession();
         if( !$this->loginFilteredOveride ){
             if ( $type == 'login' ) {
@@ -502,7 +510,7 @@ class editionCtrl extends jController {
             $value = null;
             if ( $oldCtrl != null )
                 $value = $form->getData( $attribute );
-            
+
             $data = array();
             if ( $type == 'login' ) {
                 $plugin = jApp::coord()->getPlugin('auth');
@@ -540,7 +548,7 @@ class editionCtrl extends jController {
             else if ( $type == 'login' )
               $form->setData( $attribute, $user->login );
         }
-	}
+    }
     return True;
   }
 
@@ -696,7 +704,7 @@ class editionCtrl extends jController {
           or $this->formControls[$ref]->fieldEditType == 'FileName'
           or $this->formControls[$ref]->fieldEditType == 'Photo' ) {
             $ctrl = $form->getControl($ref.'_choice');
-            if ($ctrl && $ctrl->type == 'choice' ) { 
+            if ($ctrl && $ctrl->type == 'choice' ) {
                 $ctrl->itemsNames['keep'] = jLocale::get("view~edition.upload.choice.keep").' '.$record->$ref;
                 $ctrl->itemsNames['update'] = jLocale::get("view~edition.upload.choice.update");
                 $ctrl->itemsNames['delete'] = jLocale::get("view~edition.upload.choice.delete").' '.$record->$ref;
@@ -866,7 +874,7 @@ class editionCtrl extends jController {
         // Get repository, project data and do some right checking
         if(!$this->getEditionParameters())
             return $this->serviceAnswer();
-      
+
     $bbox = $this->param('bbox');
     if( !preg_match('#(-)?\d+(\.\d+)?,(-)?\d+(\.\d+)?,(-)?\d+(\.\d+)?,(-)?\d+(\.\d+)?#',$bbox) ) {
       jMessage::add( jLocale::get('view~edition.message.error.bbox'), 'error');
@@ -991,7 +999,7 @@ class editionCtrl extends jController {
       $layerXmlZero = $this->layerXml[0];
       $_title = $layerXmlZero->xpath('title');
       $title = (string)$_title[0];
-      
+
       // Get editLayer capabilities
         $eLayers  = $this->project->getEditionLayers();
         $layerName = $this->layerName;
@@ -1030,7 +1038,7 @@ class editionCtrl extends jController {
     // Get repository, project data and do some right checking
     if(!$this->getEditionParameters())
       return $this->serviceAnswer();
-      
+
       // Get editLayer capabilities
         $eLayers  = $this->project->getEditionLayers();
         $layerName = $this->layerName;
@@ -1147,7 +1155,7 @@ class editionCtrl extends jController {
             }
         }
     }
-      
+
 
     // If the user has been redirected here from the saveFeature method
     // Set the form controls data from the request parameters
@@ -1310,7 +1318,7 @@ class editionCtrl extends jController {
   public function deleteFeature(){
     if(!$this->getEditionParameters($save))
       return $this->serviceAnswer();
-      
+
       // Get editLayer capabilities
         $eLayers  = $this->project->getEditionLayers();
         $layerName = $this->layerName;
@@ -1375,5 +1383,144 @@ class editionCtrl extends jController {
     }
     return $this->serviceAnswer();
   }
+
+  /**
+   * Link features between 2 tables via pivot table
+   *
+   * @param string $repository Lizmap Repository
+   * @param string $project Name of the project
+   * @param string $pivot Pivot layer id. Example : mypivot1234
+   * @param string $features1 Layer id + features. Example : mylayer456:1,2
+   * @param string $features2 Layer id + features. Example : otherlayer789:5
+   * @param integer $featureId Id of the feature.
+   * @return Redirect to the validation action.
+   */
+    public function linkFeatures(){
+
+        $features1 = $this->param('features1');
+        $features2 = $this->param('features2');
+        $pivotId = $this->param('pivot');
+        if( !$features1 or !$features2 or !$pivotId ) {
+            jMessage::add(jLocale::get("view~edition.link.error.missing.parameter"), 'error');
+            return $this->serviceAnswer();
+        }
+
+        // Cut layers id and features ids
+        $exp1 = explode(':', $features1);
+        $exp2 = explode(':', $features2);
+        if( count($exp1) != 3 or count($exp2) != 3 ){
+            jMessage::add(jLocale::get("view~edition.link.error.missing.parameter"), 'error');
+            return $this->serviceAnswer();
+        }
+
+        $ids1 = explode( ',', $exp1[2] );
+        $ids2 = explode( ',', $exp2[2] );
+        if( count($ids1) > 1 and count($ids2) > 1 ){
+            jMessage::add(jLocale::get("view~edition.link.error.multiple.ids"), 'error');
+            return $this->serviceAnswer();
+        }
+        if( count($ids1) == 0 or count($ids2) == 0 ){
+            jMessage::add( jLocale::get("view~edition.link.error.missing.id"), 'error');
+            return $this->serviceAnswer();
+        }
+
+        $project = $this->param('project');
+        $repository = $this->param('repository');
+        $lrep = lizmap::getRepository($repository);
+        $lproj = lizmap::getProject($repository.'~'.$project);
+        $this->project = $lproj;
+        $this->repository = $lrep;
+
+        // Get layer names
+        $layerXml1 = $lproj->getXmlLayer( $exp1[0] );
+        $layerXml2 = $lproj->getXmlLayer( $exp2[0] );
+
+        if ( !$layerXml1 or !$layerXml2 ) {
+            jMessage::add( jLocale::get("view~edition.link.error.wrong.layer"), 'error' );
+            return $this->serviceAnswer();
+        }
+
+        $layerXmlZero1 = $layerXml1[0];
+        $_layerName1 = $layerXmlZero1->xpath('layername');
+        $layerName1 = (string)$_layerName1[0];
+        $layerXmlZero2 = $layerXml2[0];
+        $_layerName2 = $layerXmlZero2->xpath('layername');
+        $layerName2 = (string)$_layerName2[0];
+
+        $pConfig = $lproj->getFullCfg();
+        if ( !$lproj->hasAttributeLayers()
+            or !property_exists($pConfig->attributeLayers, $layerName1)
+            or !property_exists($pConfig->attributeLayers, $layerName2)
+        ) {
+            jMessage::add( jLocale::get("view~edition.link.error.not.attribute.layer"), 'error' );
+            return $this->serviceAnswer();
+        }
+
+        $layerXml = $lproj->getXmlLayer( $pivotId );
+        $layerXmlZero = $layerXml[0];
+        $_layerName = $layerXmlZero->xpath('layername');
+        $layerNamePivot = (string)$_layerName[0];
+        $this->layerXml = $layerXml;
+
+        // Get editLayer capabilities
+        $eLayers  = $lproj->getEditionLayers();
+        $eLayer = $eLayers->$layerNamePivot;
+        if ( $eLayer->capabilities->createFeature != 'True' ) {
+            jMessage::add('Create feature for this layer ' . $layerNamePivot . ' is not in the capabilities!', 'LayerNotEditable');
+            return $this->serviceAnswer();
+        }
+
+        // Get fields data from the edition database
+        $_datasource = $layerXmlZero->xpath('datasource');
+        $datasource = (string)$_datasource[0];
+        $s_provider = $layerXmlZero->xpath('provider');
+        $this->provider = (string)$s_provider[0];
+        $this->layerId = $pivotId;
+        $this->layerName = $layerNamePivot;
+        $this->getDataFields($datasource);
+
+        if( !array_key_exists( $exp1[1], $this->dataFields ) or !array_key_exists( $exp2[1], $this->dataFields ) ){
+            jMessage::add('Given fields do not exists !', 'error');
+            return $this->serviceAnswer();
+        }
+        $key1 = $exp1[1];
+        $key2 = $exp2[1];
+
+        // Build SQL
+        $sql = '';
+        $cnx = jDb::getConnection($this->layerId);
+        foreach( $ids1 as $a ){
+            $one = (int) $a;
+            if( $this->dataFields[$key1]->type != 'int' )
+                $one = $cnx->quote( $one );
+            foreach( $ids2 as $b ){
+                $two = (int) $b;
+                if( $this->dataFields[$key2]->type != 'int' )
+                    $two = $cnx->quote( $two );
+                $sql.= ' INSERT INTO '.$this->table.' (';
+                $sql.= ' "' . $key1 . '" , ';
+                $sql.= ' "' . $key2 . '" )';
+                $sql.= ' SELECT '. $one . ', ' . $two ;
+                $sql.= ' WHERE NOT EXISTS';
+                $sql.= ' ( SELECT ';
+                $sql.= ' "' . $key1 . '" , ';
+                $sql.= ' "' . $key2 . '" ';
+                $sql.= ' FROM '.$this->table;
+                $sql.= ' WHERE "' . $key1 . '" = ' . $one ;
+                $sql.= ' AND "' . $key2 . '" = ' . $two . ')';
+                $sql.= ';';
+            }
+        }
+
+        try {
+            $rs = $cnx->query($sql);
+            jMessage::add( jLocale::get('view~edition.link.success'), 'success');
+        } catch (Exception $e) {
+            jLog::log("SQL = ".$sql);
+            jLog::log("An error has been raised when modifiying data : ".$e->getMessage() ,'error');
+            jMessage::add( jLocale::get('view~edition.link.error.sql'), 'error');
+        }
+        return $this->serviceAnswer();
+    }
 
 }
