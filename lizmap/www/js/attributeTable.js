@@ -1566,20 +1566,29 @@ var lizAttributeTable = function() {
 
                 lizmapeditionfeaturecreated: function(e){
                     var getLayer = getLayerConfigById( e.layerId );
-                    if( getLayer )
-                        getAttributeTableFeature( getLayer[0] );
+                    if( getLayer ){
+                        var zTable = '#attribute-layer-table-'+lizMap.cleanName( getLayer[0] );
+                        if( $(zTable).length )
+                            getAttributeTableFeature( getLayer[0], zTable );
+                    }
                 },
 
                 lizmapeditionfeaturemodified: function(e){
                     var getLayer = getLayerConfigById( e.layerId );
-                    if( getLayer )
-                        getAttributeTableFeature( getLayer[0], null );
+                    if( getLayer ){
+                        var zTable = '#attribute-layer-table-'+lizMap.cleanName( getLayer[0] );
+                        if( $(zTable).length )
+                            getAttributeTableFeature( getLayer[0], zTable );
+                    }
                 },
 
                 lizmapeditionfeaturedeleted: function(e){
                     var getLayer = getLayerConfigById( e.layerId );
-                    if( getLayer )
-                        getAttributeTableFeature( getLayer[0], null );
+                    if( getLayer ){
+                        var zTable = '#attribute-layer-table-'+lizMap.cleanName( getLayer[0] );
+                        if( $(zTable).length )
+                            getAttributeTableFeature( getLayer[0], zTable );
+                    }
                 }
             });
 
