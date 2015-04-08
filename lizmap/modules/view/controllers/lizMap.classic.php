@@ -231,20 +231,26 @@ class lizMapCtrl extends jController {
       // Add JS files found in media/js
       $jsDirArray = array('default', $project);
       foreach( $jsDirArray as $dir ){
-        $jsPathGlob = $repositoryPath . '/' . 'media/js/' . $dir .'/*.js';
-        foreach( glob( $jsPathGlob ) as $jsPath ){
-          $jsPath = realpath( $jsPath );
-          $jsRelPath = 'media/js/' . $dir .'/' . basename( $jsPath );
-          $jsUrl = jUrl::get(
-            'view~media:getMedia',
-            array(
-              'repository'=>$lrep->getKey(),
-              'project'=>$project,
-              'path'=>$jsRelPath
-            )
-          );
-          $rep->addJSLink( $jsUrl );
+        $jsPathRoot = realpath($repositoryPath . '/' . 'media/js/' . $dir);
+        if( is_dir( $jsPathRoot ) ) {
+          foreach (new RecursiveIteratorIterator(new RecursiveDirectoryIterator($jsPathRoot)) as $filename){
+            $path_parts = pathinfo($filename);
+            if( $path_parts['extension'] == 'js' ){
+              $jsPath = realpath( $filename );
+              $jsRelPath = 'media/js/' . $dir . str_replace( $jsPathRoot, '', $jsPath);
+              $jsUrl = jUrl::get(
+                'view~media:getMedia',
+                array(
+                  'repository'=>$lrep->getKey(),
+                  'project'=>$project,
+                  'path'=>$jsRelPath
+                )
+              );
+              $rep->addJSLink( $jsUrl );
+            }
+          }
         }
+
       }
 
     }
