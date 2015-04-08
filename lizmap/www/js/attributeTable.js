@@ -481,6 +481,7 @@ var lizAttributeTable = function() {
                 return childHtml;
             }
 
+            // Refresh attribute table content for all children of a given layer
             function refreshChildrenLayersContent( sourceTable, featureType, featId ) {
 
                 var feat = config.layers[featureType]['features'][featId];
@@ -774,6 +775,11 @@ var lizAttributeTable = function() {
                     }
 
                     if ( dataLength == 0 ){
+                        if ( $.fn.dataTable.isDataTable( aTable ) ) {
+                            var oTable = $( aTable ).dataTable();
+                            oTable.fnClearTable();
+                        }
+                        $(aTable).hide();
 
                         $('#attribute-layer-'+lizMap.cleanName(aName)+' span.attribute-layer-msg').html(
                             lizDict['attributeLayers.toolbar.msg.data.nodata'] + ' ' + lizDict['attributeLayers.toolbar.msg.data.extent']
