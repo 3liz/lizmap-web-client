@@ -226,7 +226,7 @@ jFormsJQ.declareForm(jFormsJQ.tForm);
             echo '<div id="'.$this->_name.'_errors" class="alert alert-block alert-error jforms-error-list">';
             $errRequired='';
             foreach($errors as $cname => $err){
-                if(!$this->_form->isActivated($ctrls[$cname]->ref)) continue;
+                if(array_key_exists( $cname, $ctrls ) && !$this->_form->isActivated($ctrls[$cname]->ref)) continue;
                 if ($err === jForms::ERRDATA_REQUIRED) {
                     if ($ctrls[$cname]->alertRequired){
                         echo '<p>', $ctrls[$cname]->alertRequired,'</p>';

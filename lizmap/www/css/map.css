@@ -7,6 +7,11 @@ body {
   margin-top : 10px;
 }
 
+.alert-danger, .alert-error {
+  color: #F00;
+  border: 1px solid #F00;
+}
+
 #headermenu.mobile{
   margin-left:-5px;
   margin-right:-5px;
