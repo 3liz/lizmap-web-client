@@ -593,8 +593,19 @@ var lizAttributeTable = function() {
                         var columns = [];
                         var firstDisplayedColIndex = 0;
 
+                        // QGIS Fields aliases
                         var atAlias = data.aliases;
 
+                        // Hidden fields
+                        var hiddenFields = [];
+                        if( 'hiddenFields' in config.attributeLayers[aName]
+                            && config.attributeLayers[aName]['hiddenFields']
+                        ){
+                            var hf = config.attributeLayers[aName]['hiddenFields'].trim();
+                            hiddenFields = hf.split(/[\s,]+/);
+                        }
+
+                        // Select tool
                         columns.push( { "data": "select", "width": "25px", "searchable": false, "sortable": false} );
                         firstDisplayedColIndex+=1;
 
@@ -628,6 +639,9 @@ var lizAttributeTable = function() {
 
                         // Add column for each field
                         for (var idx in atFeatures[0].properties){
+                            // Do not add hidden fields
+                            if( ($.inArray(idx, hiddenFields) > -1) )
+                                continue;
                             columns.push( {"data": idx, "title": atAlias[idx]} );
                         }
 
@@ -669,6 +683,8 @@ var lizAttributeTable = function() {
                             }
 
                             for (var idx in feat.properties){
+                                if( ($.inArray(idx, hiddenFields) > -1) )
+                                    continue;
                                 var prop = feat.properties[idx];
                                 line[idx] = prop;
                             }
