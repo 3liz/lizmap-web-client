@@ -79,6 +79,13 @@ var lizAttributeTable = function() {
                         for( var idx in attributeLayersDic) {
                             var cleanName = idx;
 
+                            // No button to show pivot table
+                            if( 'pivot' in config.attributeLayers[ attributeLayersDic[ cleanName ] ]
+                                && config.attributeLayers[ attributeLayersDic[ cleanName ] ]['pivot'] == 'True'
+                            ){
+                                continue;
+                            }
+
                             var title = config.layers[ attributeLayersDic[ cleanName ] ][ 'title' ];
                             tHtml+= '<tr>';
                             tHtml+= '   <td>' + title + '</td><td><button value=' + cleanName + ' class="btn-open-attribute-layer">Detail</button></td>';
