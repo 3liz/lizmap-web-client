@@ -239,8 +239,8 @@ var lizAttributeTable = function() {
                     }
                 }
 
-
-                html+= '    <br/><span class="attribute-layer-msg"></span>';
+                // Search input
+                html+= '<input type="text" placeholder="Search" class="pull-right" id="attribute-layer-search-' + layerName + '"/>';
 
                 html+= '</div>'; // attribute-layer-action-bar
 
@@ -670,7 +670,7 @@ var lizAttributeTable = function() {
                             line['DT_RowId'] = fid;
 
                             // Build table lines
-                            var selectCol = '<button class="btn btn-mini attribute-layer-feature-select" value="'+fid+'" title="' + lizDict['attributeLayers.btn.select.title'] + '"><i class="icon-ok"></i></button>';
+                            var selectCol = '<button class="btn btn-mini attribute-layer-feature-select checkbox" value="'+fid+'" title="' + lizDict['attributeLayers.btn.select.title'] + '"><i class="icon-ok"></i></button>';
                             line['select'] = selectCol;
 
                             if( canEdit ) {
@@ -723,16 +723,21 @@ var lizAttributeTable = function() {
                                 ,columns: columns
                                 ,order: [[ firstDisplayedColIndex, "asc" ]]
                                 ,language: { url:lizUrls["dataTableLanguage"] }
-                                ,pageLength: 100
                                 ,deferRender: true
-                                ,pagingType: "full"
                                 ,createdRow: function ( row, data, dataIndex ) {
                                     if ( config.layers[aName]['selectedFeatures'].indexOf( data.DT_RowId.toString() ) != -1 ) {
                                         $(row).addClass('selected');
                                     }
                                 }
+                                ,dom: '<<t>iplf>'
+                                ,pageLength: 100
 
                             } );
+                            var oTable = $( aTable ).dataTable();
+                            $('#attribute-layer-search-' + aName).on( 'keyup', function (){
+                                oTable.fnFilter( this.value );
+                            });
+
 
                             $( aTable ).on( 'page.dt', function() {
                                 // unbind previous events
@@ -876,10 +881,10 @@ var lizAttributeTable = function() {
                         config.attributeLayers[aName]['tableDisplayed'] = true;
                         $(aTable).show();
 
-                        // Information message
-                        $('#attribute-layer-'+lizMap.cleanName(aName)+' span.attribute-layer-msg').html(
-                            dataLength +' '+ lizDict['attributeLayers.toolbar.msg.data.lines'] + ' ' + lizDict['attributeLayers.toolbar.msg.data.extent']
-                        ).addClass('success');
+                        //~ // Information message
+                        //~ $('#attribute-layer-'+lizMap.cleanName(aName)+' span.attribute-layer-msg').html(
+                            //~ dataLength +' '+ lizDict['attributeLayers.toolbar.msg.data.lines'] + ' ' + lizDict['attributeLayers.toolbar.msg.data.extent']
+                        //~ ).addClass('success');
 
                     }
                 });
