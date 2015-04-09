@@ -245,7 +245,7 @@ var lizAttributeTable = function() {
                 if( childHtml )
                     alc= ' showChildren';
                 html+= '<div class="attribute-layer-content'+alc+'">';
-                html+= '    <table id="attribute-layer-table-' + layerName + '" class="attribute-table-table table table-hover table-condensed table-striped"></table>';
+                html+= '    <table id="attribute-layer-table-' + layerName + '" class="attribute-table-table table table-hover table-condensed table-striped order-column"></table>';
 
                 html+= '</div>';  // attribute-layer-content
 
@@ -591,8 +591,12 @@ var lizAttributeTable = function() {
                     if (dataLength > 0) {
                         var foundFeatures = {};
                         var columns = [];
+                        var firstDisplayedColIndex = 0;
+
+                        var atAlias = data.aliases;
 
                         columns.push( { "data": "select", "width": "25px", "searchable": false, "sortable": false} );
+                        firstDisplayedColIndex+=1;
 
                         // Check edition capabilities
                         var canEdit = false;
@@ -605,22 +609,28 @@ var lizAttributeTable = function() {
                                 canDelete = true;
                         }
 
-                        if( canEdit )
+                        if( canEdit ){
                             columns.push( {"data": "edit", "width": "25px", "searchable": false, "sortable": false} );
-                        if( canDelete )
+                            firstDisplayedColIndex+=1;
+                        }
+                        if( canDelete ){
                             columns.push( {"data": "delete", "width": "25px", "searchable": false, "sortable": false} );
+                            firstDisplayedColIndex+=1;
+                        }
 
                         if( lConfig['geometryType'] != 'none'
                             && lConfig['geometryType'] != 'unknown'
                         ){
                             columns.push( {"data": "zoom", "width": "25px", "searchable": false, "sortable": false} );
                             columns.push( {"data": "center", "width": "25px", "searchable": false, "sortable": false} );
+                            firstDisplayedColIndex+=2;
                         }
 
                         // Add column for each field
                         for (var idx in atFeatures[0].properties){
-                            columns.push( {"data": idx, "title": idx} );
+                            columns.push( {"data": idx, "title": atAlias[idx]} );
                         }
+
 
                         var dataSet = [];
                         for (var x in atFeatures) {
@@ -684,6 +694,7 @@ var lizAttributeTable = function() {
                            $( aTable ).dataTable( {
                                  data: dataSet
                                 ,columns: columns
+                                ,order: [[ firstDisplayedColIndex, "asc" ]]
                                 ,language: { url:lizUrls["dataTableLanguage"] }
                                 ,pageLength: 100
                                 ,deferRender: true
