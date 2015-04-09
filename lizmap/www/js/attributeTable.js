@@ -168,6 +168,21 @@ var lizAttributeTable = function() {
                 // Filter button
                 html+= '    <button class="btn-filter-attributeTable btn btn-mini' + filClass + '" value="' + layerName + '" >'+lizDict['attributeLayers.toolbar.btn.data.filter.title']+'</button>';
 
+                // Detail button
+                var canPopup = false
+                if( config.layers[lname]
+                    && config.layers[lname]['popup'] == 'True'
+                    && config.layers[lname]['geometryType'] != 'none'
+                    && config.layers[lname]['geometryType'] != 'unknown'
+                ){
+                    canPopup = true;
+                }
+                if( canPopup ){
+                    html+= '<button type="checkbox" class="btn-detail-attributeTable btn btn-mini" value="' + layerName + '" >';
+                    html+= lizDict['attributeLayers.toolbar.cb.data.detail.title'];
+                    html+= '</button>';
+                }
+
                 // Export tools
                 html+= '&nbsp;<div class="btn-group" role="group">';
                 html+= '    <button type="button" class="btn btn-mini dropdown-toggle" data-toggle="dropdown" aria-expanded="false">';
@@ -190,9 +205,6 @@ var lizAttributeTable = function() {
                 if( canCreate ){
                     html+= '    <button class="btn-createFeature-attributeTable btn btn-mini" value="' + layerName + '" >'+lizDict['attributeLayers.toolbar.btn.data.createFeature.title']+'</button>';
                 }
-
-                //~ // Detail button
-                //~ html+= '    <button class="btn-detail-attributeTable btn btn-mini" value="' + layerName + '"  style="display:none;">'+lizDict['attributeLayers.toolbar.btn.data.detail.title']+'</button>';
 
                 // Get children content
                 var childHtml = getChildrenHtmlContent( lname );
@@ -264,6 +276,29 @@ var lizAttributeTable = function() {
                         var parentDir = $(this).parents('div.attribute-layer-main');
                         parentDir.find('div.attribute-layer-content').toggleClass('showChildren');
                         parentDir.find('div.tabbable.attribute-layer-child-content').toggle();
+                        return false;
+                    })
+                    .hover(
+                        function(){ $(this).addClass('btn-primary'); },
+                        function(){ $(this).removeClass('btn-primary'); }
+                    );
+                }
+
+                // Bind click on detail button
+                if( canPopup ){
+                    $('#attribute-layer-'+ layerName + ' button.btn-detail-attributeTable')
+                    .click(function(){
+                        var aName = attributeLayersDic[ $(this).val() ];
+                        if( $(this).hasClass('active') ){
+                            $(this).removeClass('active btn-warning');
+                            $('#attribute-layer-main-' + aName ).removeClass('reduced');
+                            $('#attribute-table-panel-' + aName ).removeClass('visible');
+                        }
+                        else{
+                            $(this).addClass('active btn-warning');
+                            $('#attribute-layer-main-' + aName ).addClass('reduced');
+                            $('#attribute-table-panel-' + aName ).addClass('visible');
+                        }
                         return false;
                     })
                     .hover(
@@ -926,13 +961,17 @@ var lizAttributeTable = function() {
                     ,OpenLayers.Util.getParameterString(lizUrls.params)
                 );
                 $.get(service, wmsOptions, function(data) {
-                    $('#attribute-layer-main-' + layerName ).addClass('reduced');
-                    $('#attribute-table-panel-' + layerName ).addClass('visible').html(data);
+                    $('#attribute-table-panel-' + layerName ).html(data);
                     var closeButton = '<a class="close-attribute-feature-panel pull-right" href="#"><i class="icon-remove"></i></a>'
                     $('#attribute-table-panel-' + layerName + ' h4').append(closeButton);
+
                     $('#attribute-table-panel-' + layerName + ' h4 a.close-attribute-feature-panel').click(function(){
+                        // Hide panel
                         $('#attribute-layer-main-' + layerName ).removeClass('reduced');
                         $('#attribute-table-panel-' + layerName ).removeClass('visible').html('');
+                        // Deactivate Detail button
+                        $('#attribute-layer-'+ layerName + ' button.btn-detail-attributeTable').removeClass('active btn-warning');
+
                     });
                 });
 
