@@ -78,6 +78,7 @@ var lizAttributeTable = function() {
                         var tHtml = '<table id="attribute-layer-list-table" class="table table-condensed table-hover table-striped" style="width:auto;">';
                         for( var idx in attributeLayersDic) {
                             var cleanName = idx;
+
                             var title = config.layers[ attributeLayersDic[ cleanName ] ][ 'title' ];
                             tHtml+= '<tr>';
                             tHtml+= '   <td>' + title + '</td><td><button value=' + cleanName + ' class="btn-open-attribute-layer">Detail</button></td>';
@@ -138,6 +139,7 @@ var lizAttributeTable = function() {
                 // Add li to the tabs
                 var liHtml = '<li id="nav-tab-attribute-layer-' + layerName + '">';
                 liHtml+= '<a href="#attribute-layer-' + layerName + '" data-toggle="tab">' + config.layers[lname]['title'] + '</a></li>';
+
                 $('#attributeLayers-tabs').append( liHtml );
 
                 // Add content div
@@ -376,7 +378,10 @@ var lizAttributeTable = function() {
                     var lid = config.layers[cName]['id'];
                     var attrConfig = config.attributeLayers[cName];
                     var p = [];
-                    if( 'pivot' in attrConfig && 'parents' in attrConfig ) {
+                    if( 'pivot' in attrConfig
+                        && attrConfig['pivot'] == 'True'
+                        && 'parents' in attrConfig
+                    ){
                         for( var parId in attrConfig['parents'] ){
                             var parKey = attrConfig['parents'][parId];
                             par = { 'id': parId, 'fkey': parKey };
@@ -498,7 +503,10 @@ var lizAttributeTable = function() {
                                 childCreateButton.push( '<button class="btn-createFeature-attributeTable btn btn-mini" value="' + childLayerName + '" >'+lizDict['attributeLayers.toolbar.btn.data.createFeature.title']+ ' "' + childLayerConfig.title +'"</button>' );
 
                                 // Button to link selected lines from 2 tables
-                                if('pivot' in config.attributeLayers[childLayerName] && 'parents' in config.attributeLayers[childLayerName]){
+                                if('pivot' in config.attributeLayers[childLayerName]
+                                    && config.attributeLayers[childLayerName]['pivot'] == 'True'
+                                    && 'parents' in config.attributeLayers[childLayerName]
+                                ){
                                     pivotLinkButton.push(  '<button class="btn-linkFeatures-attributeTable btn btn-mini" value="' + childLayerName + '" >'+lizDict['attributeLayers.toolbar.btn.data.linkFeatures.title']+ ' "' + childLayerConfig.title +'"</button>' );
                                 }
                             }
@@ -724,7 +732,6 @@ var lizAttributeTable = function() {
                                 // Select feature
                                 $(aTable +' tr td button.attribute-layer-feature-select').click(function() {
                                     var featId = $(this).val();
-
                                     // Send signal
                                     lizMap.events.triggerEvent(
                                         "layerfeatureselected",
@@ -1402,40 +1409,39 @@ var lizAttributeTable = function() {
             }
 
             function redrawAttributeTableContent( featureType, featureIds ){
+                // Loo through all datatables to get the one concerning this featureType
+                $('.attribute-table-table').each(function(){
+                    var tableId = $(this).attr('id');
 
-                var aTable = '#attribute-layer-table-'+lizMap.cleanName( featureType );
-                if ( $.fn.dataTable.isDataTable( aTable ) ) {
-
-                    // Get selected feature ids if not given
-                    if( !featureIds ){
-                        // Assure selectedFeatures property exists for the layer
-                        if( !config.layers[featureType]['selectedFeatures'] )
-                            config.layers[featureType]['selectedFeatures'] = [];
-                        var featureIds = config.layers[featureType]['selectedFeatures'];
-                    }
-
-                    // Remove class selected for all the lines
-                    $(aTable).find('tr').removeClass('selected');
-
-                    // Add class selected from featureIds
-                    if( featureIds.length > 0 ){
-                        var rTable = $( aTable ).DataTable();
-                        // Add 'selected' class
-                        for( var i in featureIds ){
-                            var sfid = featureIds[i]
-                            $( aTable).find( '#' + sfid ).addClass( 'selected' );
+                    if ( $.fn.dataTable.isDataTable( $(this) )
+                        && ( tableId.indexOf( lizMap.cleanName( featureType ) ) > -1 )
+                    ){
+                        // Get selected feature ids if not given
+                        if( !featureIds ){
+                            // Assure selectedFeatures property exists for the layer
+                            if( !config.layers[featureType]['selectedFeatures'] )
+                                config.layers[featureType]['selectedFeatures'] = [];
+                            var featureIds = config.layers[featureType]['selectedFeatures'];
                         }
-                        //~ var indexes = featureIds.map(function(num){ return '#' + num;});
-                        // Add a class to those rows using an index selector
-                        //~ rTable.rows( indexes )
-                            //~ .nodes()
-                            //~ .to$()
-                            //~ .addClass( 'selected' );
 
+                        // Remove class selected for all the lines
+                        $(this).find('tr').removeClass('selected');
+
+                        // Add class selected from featureIds
+                        if( featureIds.length > 0 ){
+                            var rTable = $(this).DataTable();
+                            // Add 'selected' class
+                            for( var i in featureIds ){
+                                var sfid = featureIds[i]
+                                $(this).find( '#' + sfid ).addClass( 'selected' );
+                            }
+
+                        }
 
                     }
 
-                }
+                });
+
             }
 
             lizMap.events.on({
