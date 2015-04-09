@@ -145,7 +145,10 @@ var lizAttributeTable = function() {
 
                 // Add li to the tabs
                 var liHtml = '<li id="nav-tab-attribute-layer-' + layerName + '">';
-                liHtml+= '<a href="#attribute-layer-' + layerName + '" data-toggle="tab">' + config.layers[lname]['title'] + '</a></li>';
+                liHtml+= '<a href="#attribute-layer-' + layerName + '" data-toggle="tab">' + config.layers[lname]['title'] ;
+                liHtml+= '&nbsp;<i class="btn-close-attribute-tab icon-remove icon-white" style="cursor:pointer"></i>';
+                liHtml+= '</a>'
+                liHtml+= '</li>';
 
                 $('#attributeLayers-tabs').append( liHtml );
 
@@ -278,6 +281,14 @@ var lizAttributeTable = function() {
                 html+= '</div>'; // 'attribute-layer-' + layerName
 
                 $('#attribute-table-container').append(html);
+
+                $('.btn-close-attribute-tab').click(function(){
+                    //there are multiple elements which has .closeTab icon so close the tab whose close icon is clicked
+                    var tabContentId = $(this).parent().attr("href");
+                    $(this).parent().parent().remove(); //remove li of tab
+                    $('#attributeLayers-tabs a:last').tab('show'); // Select first tab
+                    $(tabContentId).remove(); //remove respective tab content
+                });
 
                 if( childHtml ){
                     $('#attribute-layer-'+ layerName + ' button.btn-toggle-children')
