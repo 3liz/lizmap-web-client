@@ -618,7 +618,6 @@ var lizAttributeTable = function() {
                 $('body').css('cursor', 'wait');
 
                 var getFeatureUrlData = getAttributeFeatureUrlData( aName, exp_filter );
-
                 $.get(getFeatureUrlData['url'], getFeatureUrlData['options'], function(data) {
 
                     // Get features and build attribute table content
@@ -627,6 +626,11 @@ var lizAttributeTable = function() {
 
                     var atFeatures = data.features;
                     dataLength = atFeatures.length;
+
+                    // Detect if table is parent or child
+                    var isChild = true;
+                    if( aTable.replace( lizMap.cleanName( aName ), '') == '#attribute-layer-table-' )
+                        isChild = false;
 
                     if (dataLength > 0) {
                         var foundFeatures = {};
@@ -643,6 +647,15 @@ var lizAttributeTable = function() {
                         ){
                             var hf = config.attributeLayers[aName]['hiddenFields'].trim();
                             hiddenFields = hf.split(/[\s,]+/);
+                        }
+
+                        // Pivot table ?
+                        var isPivot = false;
+                        if( isChild
+                            && 'pivot' in config.attributeLayers[aName]
+                            && config.attributeLayers[aName]['pivot'] == 'True'
+                        ){
+                            isPivot = true;
                         }
 
                         // Select tool
@@ -666,6 +679,11 @@ var lizAttributeTable = function() {
                         }
                         if( canDelete ){
                             columns.push( {"data": "delete", "width": "25px", "searchable": false, "sortable": false} );
+                            firstDisplayedColIndex+=1;
+                        }
+
+                        if( canEdit && isChild && !isPivot){
+                            columns.push( {"data": "unlink", "width": "25px", "searchable": false, "sortable": false} );
                             firstDisplayedColIndex+=1;
                         }
 
@@ -702,14 +720,31 @@ var lizAttributeTable = function() {
                             var selectCol = '<button class="btn btn-mini attribute-layer-feature-select checkbox" value="'+fid+'" title="' + lizDict['attributeLayers.btn.select.title'] + '"><i class="icon-ok"></i></button>';
                             line['select'] = selectCol;
 
+                            // Edit button
                             if( canEdit ) {
                                 var editCol = '<button class="btn btn-mini attribute-layer-feature-edit" value="'+fid+'" title="' + lizDict['attributeLayers.btn.edit.title'] + '"><i class="icon-pencil"></i></button>';
                                 line['edit'] = editCol;
                             }
 
+                            // Delete button
                             if( canDelete ) {
-                                var deleteCol = '<button class="btn btn-mini attribute-layer-feature-delete" value="'+fid+'" title="' + lizDict['attributeLayers.btn.delete.title'] + '"><i class="icon-remove"></i></button>';
+                                var delIcon = 'icon-trash';
+                                var delTitle = lizDict['attributeLayers.btn.delete.title'];
+                                if( isChild && isPivot ){
+                                    delIcon = 'icon-minus';
+                                    delTitle = lizDict['attributeLayers.btn.remove.link.title'];
+                                }
+                                var deleteCol = '<button class="btn btn-mini attribute-layer-feature-delete" value="'+fid+'" title="' + delTitle + '"><i class="'+delIcon+'"></i></button>';
                                 line['delete'] = deleteCol;
+                            }
+
+                            // Unlink button
+                            if( canEdit && isChild && !isPivot) {
+                                console.log('unlink for ' + aName );
+                                var unlinkIcon = 'icon-minus';
+                                var unlinkTitle = lizDict['attributeLayers.btn.remove.link.title'];
+                                var unlinkCol = '<button class="btn btn-mini attribute-layer-feature-unlink" value="'+fid+'" title="' + unlinkTitle + '"><i class="'+unlinkIcon+'"></i></button>';
+                                line['unlink'] = unlinkCol;
                             }
 
                             if( lConfig['geometryType'] != 'none'
