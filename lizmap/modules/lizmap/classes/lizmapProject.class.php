@@ -641,21 +641,37 @@ class lizmapProject{
     public function getRelations() {
         $xmlRelations = $this->xml->xpath( "//relations" );
         $relations = array();
+        $pivotGather = array();
+        $pivot = array();
         if( $xmlRelations ){
             foreach( $xmlRelations[0] as $relation ) {
                 $relationObj = $relation->attributes();
                 $fieldRefObj = $relation->fieldRef->attributes();
                 if( !array_key_exists( (string)$relationObj->referencedLayer, $relations ) )
-                    $relations[(string)$relationObj->referencedLayer] = array();
+                    $relations[ (string)$relationObj->referencedLayer ] = array();
 
-                $relations[(string)$relationObj->referencedLayer][] = array(
+                $relations[ (string)$relationObj->referencedLayer ][] = array(
                     'referencingLayer' =>  (string)$relationObj->referencingLayer,
                     'referencedField' => (string)$fieldRefObj->referencedField,
                     'referencingField' => (string)$fieldRefObj->referencingField
                 );
-            }
-            return $relations;
 
+                if( !array_key_exists( (string)$relationObj->referencingLayer, $pivotGather ) )
+                    $pivotGather[ (string)$relationObj->referencingLayer ] = array();
+
+                $pivotGather[ (string)$relationObj->referencingLayer ][(string)$relationObj->referencedLayer] = (string)$fieldRefObj->referencingField;
+
+            }
+
+            // Keep only child with at least to parents
+            foreach( $pivotGather as $pi=>$vo ){
+                if( count( $vo ) > 1 ){
+                    $pivot[$pi] = $vo;
+                }
+            }
+            $relations['pivot'] = $pivot;
+
+            return $relations;
         }
         else
             return null;
