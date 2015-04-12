@@ -612,7 +612,6 @@ var lizAttributeTable = function() {
 
             function getAttributeTableFeature(aName, aTable, exp_filter=null, aCallback=null ) {
                 var dataLength = 0;
-
                 config.attributeLayers[aName]['tableDisplayed'] = false;
 
                 $('body').css('cursor', 'wait');
@@ -740,7 +739,7 @@ var lizAttributeTable = function() {
 
                             // Unlink button
                             if( canEdit && isChild && !isPivot) {
-                                console.log('unlink for ' + aName );
+                                //~ console.log('unlink for ' + aName );
                                 var unlinkIcon = 'icon-minus';
                                 var unlinkTitle = lizDict['attributeLayers.btn.remove.link.title'];
                                 var unlinkCol = '<button class="btn btn-mini attribute-layer-feature-unlink" value="'+fid+'" title="' + unlinkTitle + '"><i class="'+unlinkIcon+'"></i></button>';
@@ -977,13 +976,24 @@ var lizAttributeTable = function() {
                     //~ ,'BBOX': bbox
                     //~ ,'MAXFEATURES': 100
                 };
-                //optionnal parameter exp_filter
+
                 var filterParam = [];
+
+                var layer = lizMap.map.getLayersByName( aName )[0];
+                if( layer
+                    && 'FILTER' in layer.params
+                    && layer.params['FILTER']
+                ){
+                    var wms2wfsFilter = layer.params['FILTER'].replace( aName + ':', '');
+                    filterParam.push( wms2wfsFilter );
+                }
+
                 if( exp_filter ){
                     filterParam.push( exp_filter );
                 }
                 if ( config.layers[aName]['filteredFeatures'] && config.layers[aName]['filteredFeatures'].length > 0 ){
-                    filterParam.push( '$id IN ( ' + config.layers[aName]['filteredFeatures'].join() + ' ) ' );
+                    var ffFilter = '$id IN ( ' + config.layers[aName]['filteredFeatures'].join() + ' ) ';
+                    filterParam.push( ffFilter );
                 }
 
                 if( filterParam.length )
@@ -1239,12 +1249,17 @@ var lizAttributeTable = function() {
             }
 
             function emptyLayerFilter( featureType ) {
-                //~ // Assure filteredFeatures property exists for the layer
-                //~ if( !config.layers[featureType]['filteredFeatures'] )
-                    //~ config.layers[featureType]['filteredFeatures'] = [];
 
                 // Empty array
                 config.layers[featureType]['filteredFeatures'] = [];
+
+                // Empty layer filter
+                var layer = lizMap.map.getLayersByName( featureType )[0];
+                if( layer ) {
+                    delete layer.params['FILTER'];
+                    config.layers[featureType]['request_params']['filter'] = null;
+                    config.layers[featureType]['request_params']['exp_filter'] = null;
+                }
 
                 lizMap.events.triggerEvent(
                     "layerFilteredFeaturesChanged",
@@ -1334,6 +1349,11 @@ var lizAttributeTable = function() {
                     else if( filterParam ){
                         layer.params['FILTER'] = filterParam;
                         config.layers[featureType]['request_params']['filter'] = filterParam;
+                    }
+                    else if( 'FILTER' in layer.params
+                        && layer.params['FILTER']
+                    ){
+                        config.layers[featureType]['request_params']['filter'] = layer.params['FILTER'];
                     }
                     else{
                         delete layer.params['FILTER'];
@@ -1468,7 +1488,15 @@ var lizAttributeTable = function() {
                                             var cFilter = null;
                                         }
 
+                                        // Save filter
                                         config.layers[fParam['name']]['request_params']['filter'] = cFilter;
+                                        var layer = lizMap.map.getLayersByName( fParam['name'] )[0];
+                                        if( layer
+                                            && 'FILTER' in layer.params
+                                            && layer.params['FILTER']
+                                        ){
+                                            layer.params['FILTER'] = cFilter;
+                                        }
 
                                         // do not cascade if pivot to avoid infinite loop
                                         if( cascade ){
@@ -1485,6 +1513,13 @@ var lizAttributeTable = function() {
                                         var cFilter = null
 
                                     config.layers[fParam['name']]['request_params']['filter'] = cFilter;
+                                    var layer = lizMap.map.getLayersByName( fParam['name'] )[0];
+                                    if( layer
+                                        && 'FILTER' in layer.params
+                                        && layer.params['FILTER']
+                                    ){
+                                        layer.params['FILTER'] = cFilter;
+                                    }
 
                                     // do not cascade if pivot to avoid infinite loop
                                     if( cascade ){
