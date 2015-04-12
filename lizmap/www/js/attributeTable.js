@@ -10,6 +10,11 @@ var lizAttributeTable = function() {
             var attributeLayersActive = false;
             var attributeLayersDic = {};
 
+            var startupFilter = false;
+            if( !( typeof lizLayerFilter === 'undefined' ) ){
+                startupFilter = true;
+            }
+
             if (!('attributeLayers' in config))
                 return -1;
 
@@ -43,7 +48,11 @@ var lizAttributeTable = function() {
                             config.layers[lname]['features'] = [];
                             config.layers[lname]['selectedFeatures'] = [];
                             config.layers[lname]['filteredFeatures'] = [];
-                            config.layers[lname]['request_params'] = { 'filter' : null, 'exp_filter': null };
+                            config.layers[lname]['request_params'] = {
+                                'filter' : null,
+                                'exp_filter': null,
+                                'selection': null
+                            };
 
                             // Add geometryType if not already present (backward compatibility)
                             if( typeof config.layers[lname]['geometryType'] === 'undefined' ) {
@@ -185,8 +194,10 @@ var lizAttributeTable = function() {
                 // Unselect button
                 html+= '    <button class="btn-unselect-attributeTable btn btn-mini' + selClass + '" value="' + layerName + '" title="'+lizDict['attributeLayers.toolbar.btn.data.unselect.title']+'"><i class="icon-star-empty"></i></button>';
 
-                // Filter button
-                html+= '    <button class="btn-filter-attributeTable btn btn-mini' + filClass + '" value="' + layerName + '" title="'+lizDict['attributeLayers.toolbar.btn.data.filter.title']+'"><i class="icon-filter"></i></button>';
+                // Filter button : only if no filter applied at startup
+                if( !startupFilter ){
+                    html+= '    <button class="btn-filter-attributeTable btn btn-mini' + filClass + '" value="' + layerName + '" title="'+lizDict['attributeLayers.toolbar.btn.data.filter.title']+'"><i class="icon-filter"></i></button>';
+                }
 
                 // Detail button
                 var canPopup = false
@@ -353,26 +364,28 @@ var lizAttributeTable = function() {
                 );
 
                 // Bind click on filter button
-                $('#attribute-layer-'+ layerName + ' button.btn-filter-attributeTable')
-                .click(function(){
-                    var aName = attributeLayersDic[ $(this).val() ];
-                    if( $(this).hasClass('active') ) {
-                        lizMap.events.triggerEvent(
-                            "layerfeatureremovefilter",
-                            { 'featureType': aName}
-                        );
-                    } else {
-                        lizMap.events.triggerEvent(
-                            "layerfeaturefilterselected",
-                            { 'featureType': aName}
-                        );
-                    }
-                    return false;
-                })
-                .hover(
-                    function(){ $(this).addClass('btn-primary'); },
-                    function(){ $(this).removeClass('btn-primary'); }
-                );
+                if( !startupFilter ){
+                    $('#attribute-layer-'+ layerName + ' button.btn-filter-attributeTable')
+                    .click(function(){
+                        var aName = attributeLayersDic[ $(this).val() ];
+                        if( $(this).hasClass('active') ) {
+                            lizMap.events.triggerEvent(
+                                "layerfeatureremovefilter",
+                                { 'featureType': aName}
+                            );
+                        } else {
+                            lizMap.events.triggerEvent(
+                                "layerfeaturefilterselected",
+                                { 'featureType': aName}
+                            );
+                        }
+                        return false;
+                    })
+                    .hover(
+                        function(){ $(this).addClass('btn-primary'); },
+                        function(){ $(this).removeClass('btn-primary'); }
+                    );
+                }
 
                 // Bind click on export buttons
                 $('#attribute-layer-'+ layerName + ' a.btn-export-attributeTable')
@@ -1726,12 +1739,14 @@ var lizAttributeTable = function() {
                             eHtml+= aConfig[0] + '.' + fid;
                             eHtml+= '" title="' + lizDict['attributeLayers.btn.select.title'] + '"><i class="icon-ok"></i>&nbsp;' + lizDict['attributeLayers.btn.select.title'] + '</button>';
 
-                            var filClass = '';
-                            if( layerConfig['filteredFeatures'].indexOf( fid ) != -1 )
-                                filClass = 'btn-warning';
-                            eHtml+= '<button class="btn btn-mini popup-layer-feature-filter '+filClass+'" value="';
-                            eHtml+= aConfig[0] + '.' + fid;
-                            eHtml+= '" title="' + lizDict['attributeLayers.toolbar.btn.data.filter.title'] + '"><i class="icon-filter"></i>&nbsp;' + lizDict['attributeLayers.toolbar.btn.data.filter.title'] + '</button>';
+                            if( !startupFilter ){
+                                var filClass = '';
+                                if( layerConfig['filteredFeatures'].indexOf( fid ) != -1 )
+                                    filClass = 'btn-warning';
+                                eHtml+= '<button class="btn btn-mini popup-layer-feature-filter '+filClass+'" value="';
+                                eHtml+= aConfig[0] + '.' + fid;
+                                eHtml+= '" title="' + lizDict['attributeLayers.toolbar.btn.data.filter.title'] + '"><i class="icon-filter"></i>&nbsp;' + lizDict['attributeLayers.toolbar.btn.data.filter.title'] + '</button>';
+                            }
                         }
 
                         // Edit button
@@ -1796,51 +1811,54 @@ var lizAttributeTable = function() {
                             function(){ $(this).removeClass('btn-primary'); }
                         );
 
+
                         // filter
-                        $('#liz_layer_popup button.popup-layer-feature-filter')
-                        .click(function(){
-                            var fid = $(this).val().split('.').pop();
-                            var featureType = $(this).val().replace( '.' + fid, '' );
+                        if( !startupFilter ){
+                            $('#liz_layer_popup button.popup-layer-feature-filter')
+                            .click(function(){
+                                var fid = $(this).val().split('.').pop();
+                                var featureType = $(this).val().replace( '.' + fid, '' );
 
-                            // Get already filtered items
-                            var layerConfig = config.layers[featureType];
-                            var wasFiltered = false;
-                            if( layerConfig['filteredFeatures'] && layerConfig['filteredFeatures'].indexOf( fid ) != -1 ){
-                                wasFiltered = true;
-                            }
+                                // Get already filtered items
+                                var layerConfig = config.layers[featureType];
+                                var wasFiltered = false;
+                                if( layerConfig['filteredFeatures'] && layerConfig['filteredFeatures'].indexOf( fid ) != -1 ){
+                                    wasFiltered = true;
+                                }
 
-                            // First deselect all features
-                            lizMap.events.triggerEvent(
-                                'layerfeatureunselectall',
-                                { 'featureType': featureType, 'updateDrawing': false}
+                                // First deselect all features
+                                lizMap.events.triggerEvent(
+                                    'layerfeatureunselectall',
+                                    { 'featureType': featureType, 'updateDrawing': false}
+                                );
+
+                                if( !wasFiltered ){
+                                    // Then select this feature only
+                                    lizMap.events.triggerEvent(
+                                        'layerfeatureselected',
+                                        { 'featureType': featureType, 'fid': fid, 'updateDrawing': false}
+                                    );
+                                    // Then filter for this selected feature
+                                    lizMap.events.triggerEvent(
+                                        'layerfeaturefilterselected',
+                                        { 'featureType': featureType, 'fid': fid, 'updateDrawing': true}
+                                    );
+                                    $(this).addClass('btn-warning');
+                                }else{
+                                    // Then remove filter for this selected feature
+                                    lizMap.events.triggerEvent(
+                                        'layerfeatureremovefilter',
+                                        { 'featureType': featureType }
+                                    );
+                                    $(this).removeClass('btn-warning');
+                                }
+                                return false;
+                            })
+                            .hover(
+                                function(){ $(this).addClass('btn-primary'); },
+                                function(){ $(this).removeClass('btn-primary'); }
                             );
-
-                            if( !wasFiltered ){
-                                // Then select this feature only
-                                lizMap.events.triggerEvent(
-                                    'layerfeatureselected',
-                                    { 'featureType': featureType, 'fid': fid, 'updateDrawing': false}
-                                );
-                                // Then filter for this selected feature
-                                lizMap.events.triggerEvent(
-                                    'layerfeaturefilterselected',
-                                    { 'featureType': featureType, 'fid': fid, 'updateDrawing': true}
-                                );
-                                $(this).addClass('btn-warning');
-                            }else{
-                                // Then remove filter for this selected feature
-                                lizMap.events.triggerEvent(
-                                    'layerfeatureremovefilter',
-                                    { 'featureType': featureType }
-                                );
-                                $(this).removeClass('btn-warning');
-                            }
-                            return false;
-                        })
-                        .hover(
-                            function(){ $(this).addClass('btn-primary'); },
-                            function(){ $(this).removeClass('btn-primary'); }
-                        );
+                        }
 
                         // edit
                         $('#liz_layer_popup button.popup-layer-feature-edit')

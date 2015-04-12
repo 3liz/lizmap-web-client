@@ -490,6 +490,13 @@ var lizMap = function() {
           }
         }
 
+        // Add optionnal filter at start
+        if( !( typeof lizLayerFilter === 'undefined' )
+          && layerName in lizLayerFilter
+          && lizLayerFilter[ layerName ]
+        ){
+          layerWmsParams['FILTER'] = layerName+':'+lizLayerFilter[ layerName ];
+        }
         if (layerConfig.baseLayer == 'True') {
         // creating the base layer
           baselayers.push(new OpenLayers.Layer.WMS(layerName,serviceUrl
@@ -800,11 +807,11 @@ var lizMap = function() {
     // creating the map
     OpenLayers.Util.IMAGE_RELOAD_ATTEMPTS = 3; // Avoid some issues with tiles not displayed
     OpenLayers.Util.DEFAULT_PRECISION=20; // default is 14 : change needed to avoid rounding problem with cache
+
     map = new OpenLayers.Map('map'
       ,{
         controls:[
           new OpenLayers.Control.Navigation(),
-          new OpenLayers.Control.Permalink('permalink'),
           new OpenLayers.Control.ZoomBox({alwaysZoom:true})
         ]
         ,tileManager: null // prevent bug with OL 2.13 : white tiles on panning back
@@ -2167,6 +2174,51 @@ var lizMap = function() {
     return true;
   }
 
+
+  /**
+   * PRIVATE function: createPermalink
+   * create the permalink tool
+   */
+  function createPermalink() {
+    var configOptions = config.options;
+
+    var pLink = new OpenLayers.Control.Permalink(
+      'permalink',
+      null,
+      {
+        "createParams": createPermalinkArgs
+      }
+    );
+    map.addControl( pLink );
+
+  }
+
+  function createPermalinkArgs(){
+
+    var args = OpenLayers.Control.Permalink.prototype.createParams.apply(
+        this, arguments
+    );
+
+    var filter = [];
+    for ( var  lName in config.layers ) {
+      var lConfig = config.layers[lName];
+      if ( !('request_params' in lConfig)
+        || lConfig['request_params'] == null )
+          continue;
+      var requestParams = lConfig['request_params'];
+      if ( ('filter' in lConfig['request_params'])
+        && lConfig['request_params']['filter'] != null
+        && lConfig['request_params']['filter'] != "" ) {
+          filter.push( lConfig['request_params']['filter'] );
+      }
+    }
+    if ( filter.length > 0 )
+      args['filter'] = filter.join(';');
+
+    return args;
+
+  }
+
   function addFeatureInfo() {
       var info = new OpenLayers.Control.WMSGetFeatureInfo({
             url: OpenLayers.Util.urlAppend(lizUrls.wms
@@ -2273,6 +2325,7 @@ var lizMap = function() {
                 }
             }
             info.vendorParams['filter'] = filter.join(';');
+
         }
      });
      map.addControl(info);
@@ -2592,6 +2645,7 @@ var lizMap = function() {
       if ( labels != "" )
         url += '&'+labels;
       var filter = [];
+      var selection = [];
       for ( var  lName in config.layers ) {
           var lConfig = config.layers[lName];
           if ( lConfig.popup != 'True' )
@@ -2605,9 +2659,16 @@ var lizMap = function() {
             && lConfig['request_params']['filter'] != "" ) {
               filter.push( lConfig['request_params']['filter'] );
           }
+          if ( ('selection' in lConfig['request_params'])
+            && lConfig['request_params']['selection'] != null
+            && lConfig['request_params']['selection'] != "" ) {
+              selection.push( lConfig['request_params']['selection'] );
+          }
       }
       if ( filter.length !=0 )
         url += '&FILTER='+ filter.join(';');
+      if ( selection.length !=0 )
+        url += '&SELECTION='+ filter.join(';');
       window.open(url);
       return false;
     });
@@ -2650,7 +2711,7 @@ var lizMap = function() {
     if ( oldForm.length != 0 ) {
         oldForm.unbind('submit');
     }
-    
+
     // Initialize select feature
     var layerName = '';
     $.each(layers, function(i, l) {
@@ -2659,7 +2720,7 @@ var lizMap = function() {
         layerName = l.params['LAYERS'];
         return false;
     });
-    
+
     // Get editLayer
     var editLayer = map.getLayersByName( 'editLayer' );
     if ( editLayer.length == 0 )
@@ -2676,9 +2737,9 @@ var lizMap = function() {
     if ( modifyCtrl.length == 0 )
         return false;
     editCtrls['modify'] = modifyCtrl[0];
-    
+
     $('#edition-modal').html(aData);
-    
+
     var createForm = $('#edition-modal form');
     if ( createForm.length != 0 ) {
         // Firstly update Geometry
@@ -2725,7 +2786,7 @@ var lizMap = function() {
                 });
               return false;
             });
-            
+
       $('#edition-modal button[data-dismiss="modal"]').click(
         function() {
           editLayer.destroyFeatures();
@@ -2733,7 +2794,7 @@ var lizMap = function() {
           $('#edition-draw-save').addClass('disabled');
         }
       );
-      
+
     }
     if ( createForm.length == 0 ) {
       controls['edition'].deactivate();
@@ -2764,7 +2825,7 @@ var lizMap = function() {
     // Edition layers
     if ( !('editionLayers' in config) )
       return false;
-      
+
     var eConfig = getLayerConfigById(
         aLayerId,
         config.editionLayers,
@@ -2772,7 +2833,7 @@ var lizMap = function() {
     );
     if ( !eConfig || eConfig[1].capabilities.createFeature == "False" )
       return false;
-      
+
     var geomType = eConfig[1].geometryType;
     if ( !aGeom
       && geomType != "none"
@@ -2786,7 +2847,7 @@ var lizMap = function() {
 
     var service = OpenLayers.Util.urlAppend(lizUrls.edition
         ,OpenLayers.Util.getParameterString(lizUrls.params)
-    );    
+    );
     $.get(service.replace('getFeature','createFeature'),{
       layerId: aLayerId,
     }, function(data){
@@ -2796,13 +2857,13 @@ var lizMap = function() {
           aCallback( aLayerId );
     });
   }
-  
+
   function manageUpdateFeatureForm( aLayerId, aData, aGeom ) {
     var oldForm = $('#edition-modal form');
     if ( oldForm.length != 0 ) {
         oldForm.unbind('submit');
     }
-    
+
     // Initialize select feature
     var layerName = '';
     $.each(layers, function(i, l) {
@@ -2811,7 +2872,7 @@ var lizMap = function() {
         layerName = l.params['LAYERS'];
         return false;
     });
-    
+
     // Get editLayer
     var editLayer = map.getLayersByName( 'editLayer' );
     if ( editLayer.length == 0 )
@@ -2828,9 +2889,9 @@ var lizMap = function() {
     if ( modifyCtrl.length == 0 )
         return false;
     editCtrls['modify'] = modifyCtrl[0];
-    
+
     $('#edition-modal').html(aData);
-    
+
     var updateForm = $('#edition-modal form');
     if ( updateForm.length != 0 ) {
         // Firstly manage Geometry
@@ -2936,7 +2997,7 @@ var lizMap = function() {
     // Edition layers
     if ( !('editionLayers' in config) )
       return false;
-      
+
     var eConfig = getLayerConfigById(
         aLayerId,
         config.editionLayers,
@@ -2953,7 +3014,7 @@ var lizMap = function() {
         layerName = l.params['LAYERS'];
         return false;
     });
-    
+
     var service = OpenLayers.Util.urlAppend(lizUrls.edition
         ,OpenLayers.Util.getParameterString(lizUrls.params)
     );
@@ -2974,7 +3035,7 @@ var lizMap = function() {
         }
 
         $('#edition-modal').modal('show');
-        
+
         if ( aCallback )
           aCallback( aLayerId );
     });
@@ -4389,6 +4450,9 @@ var lizMap = function() {
           // create navigation and toolbar
           createNavbar();
           createToolbar();
+
+          // create permalink
+          createPermalink();
 
           // verifying the layer visibility for permalink
           if (verifyingVisibility) {

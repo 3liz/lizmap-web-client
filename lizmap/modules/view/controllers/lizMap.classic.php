@@ -343,6 +343,21 @@ class lizMapCtrl extends jController {
       $rep->addStyle('#switcher-layers button[name="group"]', 'display:none !important;');
     }
 
+    // Add filter
+    $filterParam = $this->param('filter');
+    $filter = array();
+    if ( $filterParam ){
+      $fExp = explode( ';', $filterParam );
+      foreach( $fExp as $item ){
+        $iExp = explode( ':', $item );
+        if( count($iExp) == 2 ){
+          $filter[ $iExp[0] ] = $iExp[1];
+        }
+      }
+      if( count( $filter ) > 0 )
+        $rep->addJSCode( "var lizLayerFilter = " . json_encode($filter) . ";" );
+    }
+
     $rep->body->assign($assign);
 
     // Log
