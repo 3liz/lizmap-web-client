@@ -405,6 +405,8 @@ var lizAttributeTable = function() {
                     var lid = config.layers[cName]['id'];
                     var attrConfig = config.attributeLayers[cName];
                     var p = [];
+                    var lname = attributeLayersDic[layerName];
+                    var otherParentName = '';
 
                     if( 'pivot' in attrConfig
                         && attrConfig['pivot'] == 'True'
@@ -419,6 +421,9 @@ var lizAttributeTable = function() {
                             var getP = getLayerConfigById( parId, config.attributeLayers, 'layerId' );
                             if( !getP )
                                 return false;
+                            par['name'] = getP[0];
+                            if( getP[0] != lname )
+                                otherParentName = getP[0];
                             var idSelected = config.layers[ getP[0] ]['selectedFeatures'];
                             if( !( idSelected.length > 0 ) )
                                 return false;
@@ -456,8 +461,16 @@ var lizAttributeTable = function() {
                           pivot: lid
 
                         }, function(data){
+                            // Show response message
                             $('#edition-modal').html(data);
                             $('#edition-modal').modal('show');
+
+                            // Unselect features of other parent
+                            lizMap.events.triggerEvent(
+                                "layerfeatureunselectall",
+                                { 'featureType': otherParentName, 'updateDrawing': true}
+                            );
+
                         });
 
                     }
