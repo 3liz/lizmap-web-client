@@ -788,9 +788,9 @@ class editionCtrl extends jController {
         $hiddenValue = $form->getData( $ref.'_hidden' );
         $repPath = $this->repository->getPath();
         if ( $choiceValue == 'update' ) {
-            $refPath = realpath($repPath.'/media').'/'.$this->project->getKey().'/'.$this->table.'/'.$ref;
+            $refPath = realpath($repPath.'/media').'/'.$this->project->getKey().'/'.$this->tableName.'/'.$ref;
             $form->saveFile( $ref, $refPath );
-            $value = 'media'.'/'.$this->project->getKey().'/'.$this->table.'/'.$ref.'/'.$value;
+            $value = 'media'.'/'.$this->project->getKey().'/'.$this->tableName.'/'.$ref.'/'.$value;
             if ( $hiddenValue && file_exists( realPath( $repPath ).'/'.$hiddenValue ) )
                 unlink( realPath( $repPath ).'/'.$hiddenValue );
         } else if ( $choiceValue == 'delete' ) {
