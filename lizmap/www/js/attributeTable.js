@@ -534,7 +534,13 @@ var lizAttributeTable = function() {
 
             }
 
-            function getLayerConfigById( layerId, confObjet=config.layers, idAttribute='id') {
+            function getLayerConfigById( layerId, confObjet, idAttribute ) {
+
+                // Set function parameters if not given
+                confObjet = typeof confObjet !== 'undefined' ?  confObjet : config.layers;
+                idAttribute = typeof idAttribute !== 'undefined' ?  idAttribute : 'id';
+
+                // Loop through layers to get the one by id
                 for ( var lx in confObjet ) {
                     if ( confObjet[lx][idAttribute] == layerId )
                         return [lx, confObjet[lx] ];
@@ -655,13 +661,18 @@ var lizAttributeTable = function() {
                 }
             }
 
-            function getAttributeTableFeature(aName, aTable, exp_filter=null, aCallback=null ) {
+            function getAttributeTableFeature(aName, aTable, a_exp_filter, a_aCallback ) {
+
+                // Set function parameters if not given
+                a_exp_filter = typeof a_exp_filter !== 'undefined' ?  a_exp_filter : null;
+                a_aCallback = typeof a_aCallback !== 'undefined' ?  a_aCallback : null;
+
                 var dataLength = 0;
                 config.attributeLayers[aName]['tableDisplayed'] = false;
 
                 $('body').css('cursor', 'wait');
 
-                var getFeatureUrlData = getAttributeFeatureUrlData( aName, exp_filter );
+                var getFeatureUrlData = getAttributeFeatureUrlData( aName, a_exp_filter );
                 $.get(getFeatureUrlData['url'], getFeatureUrlData['options'], function(data) {
 
                     // Get features and build attribute table content
@@ -816,8 +827,8 @@ var lizAttributeTable = function() {
                         config.layers[aName]['features'] = foundFeatures;
 
                         // Callback
-                        if ( aCallback )
-                          aCallback( aName );
+                        if ( a_aCallback )
+                          a_aCallback( aName );
 
 
                         if ( $.fn.dataTable.isDataTable( aTable ) ) {
@@ -1001,8 +1012,12 @@ var lizAttributeTable = function() {
                 return false;
             }
 
-            function getAttributeFeatureUrlData( aName, exp_filter=null, featureId=null ) {
+            function getAttributeFeatureUrlData( aName, exp_filter, featureId ) {
                 var getFeatureUrlData = {};
+
+                // Set function parameters if not given
+                exp_filter = typeof exp_filter !== 'undefined' ?  exp_filter : null;
+                featureId = typeof featureId !== 'undefined' ?  featureId : null;
 
                 // Build WFS request parameters
                 var typeName = aName.replace(' ','_');
@@ -1169,7 +1184,10 @@ var lizAttributeTable = function() {
                 return featureidParameter;
             }
 
-            function exportAttributeTable( aName, format='GeoJSON' ) {
+            function exportAttributeTable( aName, eformat ) {
+
+                // Set function parameters if not given
+                eformat = typeof eformat !== 'undefined' ?  eformat : 'GeoJSON';
 
                 // Get selected features
                 var featureid = getSelectionFeatureId( aName );
@@ -1178,7 +1196,7 @@ var lizAttributeTable = function() {
                 // Force download
                 getFeatureUrlData['options']['dl'] = 1;
                 // Set export format
-                getFeatureUrlData['options']['OUTPUTFORMAT'] = format;
+                getFeatureUrlData['options']['OUTPUTFORMAT'] = eformat;
                 // Build WFS url
                 var exportUrl = OpenLayers.Util.urlAppend(
                     getFeatureUrlData['url'],
@@ -1189,7 +1207,10 @@ var lizAttributeTable = function() {
                 return false;
             }
 
-            function refreshLayerSelection( featureType, featId, updateDrawing=true ) {
+            function refreshLayerSelection( featureType, featId, rupdateDrawing ) {
+                // Set function parameters if not given
+                rupdateDrawing = typeof rupdateDrawing !== 'undefined' ?  rupdateDrawing : null;
+
                 // Assure selectedFeatures property exists for the layer
                 if( !config.layers[featureType]['selectedFeatures'] )
                     config.layers[featureType]['selectedFeatures'] = [];
@@ -1207,13 +1228,16 @@ var lizAttributeTable = function() {
                     {
                         'featureType': featureType,
                         'featureIds': config.layers[featureType]['selectedFeatures'],
-                        'updateDrawing': updateDrawing
+                        'updateDrawing': rupdateDrawing
                     }
                 );
 
             }
 
-            function setSelectedFeaturesFromSearchedFilter( featureType, updateDrawing=true ) {
+            function setSelectedFeaturesFromSearchedFilter( featureType, supdateDrawing ) {
+                // Set function parameters if not given
+                supdateDrawing = typeof supdateDrawing !== 'undefined' ?  supdateDrawing : true;
+
                 // Assure selectedFeatures property exists for the layer
                 if( !config.layers[featureType]['selectedFeatures'] )
                     config.layers[featureType]['selectedFeatures'] = [];
@@ -1244,14 +1268,17 @@ var lizAttributeTable = function() {
                         {
                             'featureType': featureType,
                             'featureIds': config.layers[featureType]['selectedFeatures'],
-                            'updateDrawing': updateDrawing
+                            'updateDrawing': supdateDrawing
                         }
                     );
                 }
 
             }
 
-            function emptyLayerSelection( featureType, refresh=true ) {
+            function emptyLayerSelection( featureType, arefresh ) {
+                // Set function parameters if not given
+                arefresh = typeof arefresh !== 'undefined' ?  arefresh : true;
+
                 // Empty array
                 if( !config.layers[featureType]['selectedFeatures'] )
                     config.layers[featureType]['selectedFeatures'] = [];
@@ -1262,7 +1289,7 @@ var lizAttributeTable = function() {
                     {
                         'featureType': featureType,
                         'featureIds': config.layers[featureType]['selectedFeatures'],
-                        'updateDrawing': refresh
+                        'updateDrawing': arefresh
                     }
                 );
 
@@ -1346,7 +1373,11 @@ var lizAttributeTable = function() {
             }
 
 
-            function refreshLayerRendering( featureType, filterParam=null, cascade=true ){
+            function refreshLayerRendering( featureType, rfilterParam, rcascade ){
+                // Set function parameters if not given
+                rfilterParam = typeof rfilterParam !== 'undefined' ?  rfilterParam : null;
+                rcascade = typeof rcascade !== 'undefined' ?  rcascade : true;
+
                 // Modify layer wms options if needed
                 var layer = lizMap.map.getLayersByName( featureType )[0];
 
@@ -1391,9 +1422,9 @@ var lizAttributeTable = function() {
                         config.layers[featureType]['request_params']['filter'] = layer.params['FILTER'];
                     }
                     // Filter passed when cascading to children
-                    else if( filterParam ){
-                        layer.params['FILTER'] = filterParam;
-                        config.layers[featureType]['request_params']['filter'] = filterParam;
+                    else if( rfilterParam ){
+                        layer.params['FILTER'] = rfilterParam;
+                        config.layers[featureType]['request_params']['filter'] = rfilterParam;
                     }
                     else if( 'FILTER' in layer.params
                         && layer.params['FILTER']
@@ -1424,7 +1455,7 @@ var lizAttributeTable = function() {
                     var parentLayerId = config.layers[featureType]['id'];
                     if( 'relations' in config
                         && parentLayerId in config.relations
-                        && cascade
+                        && rcascade
                     ) {
                         var layerRelations = config.relations[parentLayerId];
                         for( var lid in layerRelations ) {
@@ -1544,7 +1575,7 @@ var lizAttributeTable = function() {
                                         }
 
                                         // do not cascade if pivot to avoid infinite loop
-                                        if( cascade ){
+                                        if( rcascade ){
                                             refreshLayerRendering( fParam['name'], cFilter, false );
                                         }
 
@@ -1567,7 +1598,7 @@ var lizAttributeTable = function() {
                                     }
 
                                     // do not cascade if pivot to avoid infinite loop
-                                    if( cascade ){
+                                    if( rcascade ){
                                         refreshLayerRendering( fParam['name'], cFilter, true );
                                     }
                                 }

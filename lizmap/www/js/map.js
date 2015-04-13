@@ -2698,7 +2698,12 @@ var lizMap = function() {
     });
   }
 
-  function getLayerConfigById( aLayerId, aConfObjet=config.layers, aIdAttribute='id') {
+  function getLayerConfigById( aLayerId, aConfObjet, aIdAttribute ) {
+    // Set function parameters if not given
+    aConfObjet = typeof aConfObjet !== 'undefined' ?  aConfObjet : config.layers;
+    aIdAttribute = typeof aIdAttribute !== 'undefined' ?  aIdAttribute : 'id';
+
+    // Loop through layers to get the one by id
     for ( var lx in aConfObjet ) {
         if ( aConfObjet[lx][aIdAttribute] == aLayerId )
             return [lx, aConfObjet[lx] ];
@@ -4337,7 +4342,8 @@ var lizMap = function() {
     launchEdition: function( aLayerId, aFid) {
         return launchEdition( aLayerId, aFid);
     },
-    deleteEditionFeature( aLayerId, aFid, aMessage, aCallback ){
+
+    deleteEditionFeature: function( aLayerId, aFid, aMessage, aCallback ){
         return deleteEditionFeature( aLayerId, aFid, aMessage, aCallback );
     },
 
