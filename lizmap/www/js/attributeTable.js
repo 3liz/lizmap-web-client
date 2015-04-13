@@ -54,6 +54,25 @@ var lizAttributeTable = function() {
                                 'selection': null
                             };
 
+                            // Get existing filter if exists (via permalink)
+                            var layer = lizMap.map.getLayersByName(lname)[0];
+                            if( 'FILTER' in layer.params
+                                && layer.params['FILTER']
+                            ){
+                                config.layers[lname]['request_params']['filter'] = layer.params['FILTER'];
+
+                                // Send signal so that getFeatureInfo takes it into account
+                                lizMap.events.triggerEvent(
+                                    "layerFilterParamChanged",
+                                    {
+                                        'featureType': lname,
+                                        'filter': config.layers[lname]['request_params']['filter'],
+                                        'updateDrawing': false
+                                    }
+                                );
+
+                            }
+
                             // Add geometryType if not already present (backward compatibility)
                             if( typeof config.layers[lname]['geometryType'] === 'undefined' ) {
                                 config.layers[lname]['geometryType'] = 'unknown';
