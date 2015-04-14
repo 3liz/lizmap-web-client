@@ -2930,7 +2930,7 @@ var lizMap = function() {
         }
         if ( updateForm.attr('enctype') == 'multipart/form-data' )
             updateForm.submit(function() {
-              var fileInputs = editForm.find('input[type="file"]');
+              var fileInputs = updateForm.find('input[type="file"]');
               fileInputs = fileInputs.filter( function( i, e ) {
                   return $(e).val() != "";
               });
