@@ -16,12 +16,14 @@ class lizmapMapDockItem {
     public $order = 0;
     public $css = '';
     public $js = '';
+    public $icon = '';
 
     public function __construct($id, $title, $content, $order=0, $css='', $js='') {
         $this->id = $id;
         $this->title = $title;
         $this->content = $content;
         $this->order = $order;
+        $this->icon = '<span class="icon"></span>';
         $this->css = $css;
         $this->js = $js;
     }
@@ -30,8 +32,9 @@ class lizmapMapDockItem {
         $this->title = $item->title;
         $this->content = $item->content;
         $this->order = $item->order;
+        $this->icon = $item->icon;
         $this->css = $item->css;
-        $this->css = $item->js;
+        $this->js = $item->js;
     }
 
     public function fetchContent() {

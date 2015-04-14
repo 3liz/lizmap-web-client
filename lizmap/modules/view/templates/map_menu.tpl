@@ -31,21 +31,21 @@
       {foreach $dockable as $dock}
       <li class="{$dock->id} nav-dock">
         <a id="button-{$dock->id}" rel="tooltip" data-original-title="{$dock->title}" data-placement="right" href="#{$dock->id}">
-          <span class="icon"></span>
+          {$dock->icon}
         </a>
       </li>
       {/foreach}
       {foreach $minidockable as $dock}
       <li class="{$dock->id} nav-minidock">
         <a id="button-{$dock->id}" rel="tooltip" data-original-title="{$dock->title}" data-placement="right" href="#{$dock->id}">
-          <span class="icon"></span>
+          {$dock->icon}
         </a>
       </li>
       {/foreach}
       {foreach $bottomdockable as $dock}
       <li class="{$dock->id} nav-bottomdock">
         <a id="button-{$dock->id}" rel="tooltip" data-original-title="{$dock->title}" data-placement="right" href="#{$dock->id}">
-          <span class="icon"></span>
+          {$dock->icon}
         </a>
       </li>
       {/foreach}

@@ -207,11 +207,11 @@ body {
   background-position: -20px -60px;
 }
 #mapmenu .nav-list > li.attributeLayers .icon {
-  background-position: -120px -80px;
+  background-position: -40px -160px;
 }
 #mapmenu .nav-list > li.attributeLayers.active .icon,
 #mapmenu .nav-list > li.attributeLayers a:hover .icon {
-  background-position: -120px -100px;
+  background-position: -40px -180px;
 }
 
 
