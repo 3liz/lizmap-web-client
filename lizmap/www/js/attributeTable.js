@@ -1012,12 +1012,12 @@ var lizAttributeTable = function() {
                 return false;
             }
 
-            function getAttributeFeatureUrlData( aName, exp_filter, featureId ) {
+            function getAttributeFeatureUrlData( aName, b_exp_filter, b_featureId ) {
                 var getFeatureUrlData = {};
 
                 // Set function parameters if not given
-                exp_filter = typeof exp_filter !== 'undefined' ?  exp_filter : null;
-                featureId = typeof featureId !== 'undefined' ?  featureId : null;
+                b_exp_filter = typeof b_exp_filter !== 'undefined' ?  b_exp_filter : null;
+                b_featureId = typeof b_featureId !== 'undefined' ?  b_featureId : null;
 
                 // Build WFS request parameters
                 var typeName = aName.replace(' ','_');
@@ -1048,8 +1048,8 @@ var lizAttributeTable = function() {
                     filterParam.push( wms2wfsFilter );
                 }
 
-                if( exp_filter ){
-                    filterParam.push( exp_filter );
+                if( b_exp_filter ){
+                    filterParam.push( b_exp_filter );
                 }
                 if ( config.layers[aName]['filteredFeatures'] && config.layers[aName]['filteredFeatures'].length > 0 ){
                     var ffFilter = '$id IN ( ' + config.layers[aName]['filteredFeatures'].join() + ' ) ';
@@ -1060,8 +1060,8 @@ var lizAttributeTable = function() {
                     wfsOptions['EXP_FILTER'] = filterParam.join( ' AND ' );
 
                 // optionnal parameter filterid
-                if( featureId )
-                    wfsOptions['FEATUREID'] = featureId;
+                if( b_featureId )
+                    wfsOptions['FEATUREID'] = b_featureId;
 
                 getFeatureUrlData['url'] = OpenLayers.Util.urlAppend(lizUrls.wms
                         ,OpenLayers.Util.getParameterString(lizUrls.params)
@@ -1787,7 +1787,7 @@ var lizAttributeTable = function() {
                                 selClass = 'btn-warning';
                             eHtml+= '<button class="btn btn-mini popup-layer-feature-select '+selClass+'" value="';
                             eHtml+= aConfig[0] + '.' + fid;
-                            eHtml+= '" title="' + lizDict['attributeLayers.btn.select.title'] + '"><i class="icon-ok"></i>&nbsp;' + lizDict['attributeLayers.btn.select.title'] + '</button>';
+                            eHtml+= '" title="' + lizDict['attributeLayers.btn.select.title'] + '"><i class="icon-ok"></i>&nbsp;</button>';
 
                             if( !startupFilter ){
                                 var filClass = '';
@@ -1795,7 +1795,7 @@ var lizAttributeTable = function() {
                                     filClass = 'btn-warning';
                                 eHtml+= '<button class="btn btn-mini popup-layer-feature-filter '+filClass+'" value="';
                                 eHtml+= aConfig[0] + '.' + fid;
-                                eHtml+= '" title="' + lizDict['attributeLayers.toolbar.btn.data.filter.title'] + '"><i class="icon-filter"></i>&nbsp;' + lizDict['attributeLayers.toolbar.btn.data.filter.title'] + '</button>';
+                                eHtml+= '" title="' + lizDict['attributeLayers.toolbar.btn.data.filter.title'] + '"><i class="icon-filter"></i>&nbsp;</button>';
                             }
                         }
 
@@ -1808,18 +1808,19 @@ var lizAttributeTable = function() {
                         if( eConfig && eConfig[1].capabilities.modifyAttribute == "True") {
                             eHtml+= '<button class="btn btn-mini popup-layer-feature-edit" value="';
                             eHtml+= $(this).val();
-                            eHtml+= '" title="' + lizDict['attributeLayers.btn.edit.title'] + '"><i class="icon-pencil"></i>&nbsp;' + lizDict['attributeLayers.btn.edit.title'] + '</button>';
+                            eHtml+= '" title="' + lizDict['attributeLayers.btn.edit.title'] + '"><i class="icon-pencil"></i>&nbsp;</button>';
                         }
 
                         // Delete feature button
                         if( eConfig && eConfig[1].capabilities.deleteFeature == "True") {
                             eHtml+= '<button class="btn btn-mini popup-layer-feature-delete" value="';
                             eHtml+= $(this).val();
-                            eHtml+= '" title="' + lizDict['attributeLayers.btn.delete.title'] + '"><i class="icon-remove"></i>&nbsp;' + lizDict['attributeLayers.btn.delete.title'] + '</button>';
+                            eHtml+= '" title="' + lizDict['attributeLayers.btn.delete.title'] + '"><i class="icon-remove"></i>&nbsp;</button>';
                         }
 
                         if( eHtml ){
                             $(this).after(eHtml);
+                            $('#liz_layer_popup button.btn').tooltip( {placement: 'bottom'} );
                             hasButton = true;
                         }
 
