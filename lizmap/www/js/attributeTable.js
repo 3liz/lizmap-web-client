@@ -286,6 +286,7 @@ var lizAttributeTable = function() {
                 if( childHtml )
                     alc= ' showChildren';
                 html+= '<div class="attribute-layer-content'+alc+'">';
+                html+= '    <input type="hidden" class="attribute-table-hidden-layer" value="'+layerName+'"/>';
                 html+= '    <table id="attribute-layer-table-' + layerName + '" class="attribute-table-table table table-hover table-condensed table-striped order-column"></table>';
 
                 html+= '</div>';  // attribute-layer-content
@@ -558,6 +559,8 @@ var lizAttributeTable = function() {
                 var parentLayerId = lConfig['id'];
                 if( 'relations' in config && parentLayerId in config.relations) {
                     var layerRelations = config.relations[parentLayerId];
+                    var childCount = 0;
+                    var childActive = 'active';
                     for( var lid in layerRelations ) {
                         var relation = layerRelations[lid];
                         var childLayerConfigA = getLayerConfigById(
@@ -566,19 +569,25 @@ var lizAttributeTable = function() {
                             'id'
                         );
                         if( childLayerConfigA ){
+                            childCount+=1;
+                            if( childCount > 1)
+                                childActive = '';
                             var childLayerConfig = childLayerConfigA[1];
                             var childLayerName = childLayerConfigA[0];
 
+                            // Build child table id by concatenating parent and child layer names
                             var tabId = 'attribute-child-tab-' + lizMap.cleanName(parentLayerName) + '-' + lizMap.cleanName(childLayerName);
+
                             // Build Div content for tab
-                            var cDiv = '<div class="tab-pane attribute-layer-child-content active" id="'+ tabId +'" >';
+                            var cDiv = '<div class="tab-pane attribute-layer-child-content '+childActive+'" id="'+ tabId +'" >';
                             var tId = 'attribute-layer-table-' + lizMap.cleanName(parentLayerName) + '-' + lizMap.cleanName(childLayerName);
+                            cDiv+= '    <input type="hidden" class="attribute-table-hidden-layer" value="'+lizMap.cleanName(childLayerName)+'"/>';
                             cDiv+= '    <table id="' + tId  + '" class="attribute-table-table table table-hover table-condensed table-striped"></table>';
                             cDiv+= '</div>';
                             childDiv.push(cDiv);
 
                             // Build li content for tab
-                            var cLi = '<li id="nav-tab-'+ tabId +'" class="active"><a href="#'+ tabId +'" data-toggle="tab">'+ childLayerConfig.title +'</a></li>';
+                            var cLi = '<li id="nav-tab-'+ tabId +'" class="'+childActive+'"><a href="#'+ tabId +'" data-toggle="tab">'+ childLayerConfig.title +'</a></li>';
                             childLi.push(cLi);
 
                             // Add create child feature button
