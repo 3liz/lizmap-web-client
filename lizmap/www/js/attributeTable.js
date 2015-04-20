@@ -286,7 +286,7 @@ var lizAttributeTable = function() {
                 if( childHtml )
                     alc= ' showChildren';
                 html+= '<div class="attribute-layer-content'+alc+'">';
-                html+= '    <input type="hidden" class="attribute-table-hidden-layer" value="'+layerName+'"/>';
+                html+= '    <input type="hidden" class="attribute-table-hidden-layer" value="'+layerName+'">';
                 html+= '    <table id="attribute-layer-table-' + layerName + '" class="attribute-table-table table table-hover table-condensed table-striped order-column"></table>';
 
                 html+= '</div>';  // attribute-layer-content
@@ -581,7 +581,7 @@ var lizAttributeTable = function() {
                             // Build Div content for tab
                             var cDiv = '<div class="tab-pane attribute-layer-child-content '+childActive+'" id="'+ tabId +'" >';
                             var tId = 'attribute-layer-table-' + lizMap.cleanName(parentLayerName) + '-' + lizMap.cleanName(childLayerName);
-                            cDiv+= '    <input type="hidden" class="attribute-table-hidden-layer" value="'+lizMap.cleanName(childLayerName)+'"/>';
+                            cDiv+= '    <input type="hidden" class="attribute-table-hidden-layer" value="'+lizMap.cleanName(childLayerName)+'">';
                             cDiv+= '    <table id="' + tId  + '" class="attribute-table-table table table-hover table-condensed table-striped"></table>';
                             cDiv+= '</div>';
                             childDiv.push(cDiv);
@@ -640,6 +640,8 @@ var lizAttributeTable = function() {
                 if ( !lConfig )
                   return false;
                 var parentLayerId = lConfig['id'];
+
+                // Refresh recursively for direct children and other parent
                 if( 'relations' in config && parentLayerId in config.relations) {
                     var layerRelations = config.relations[parentLayerId];
                     for( var lid in layerRelations ) {
@@ -660,10 +662,8 @@ var lizAttributeTable = function() {
                             // Get child table id
                             var childTable = sourceTable.replace( ' table:first', '' ) + '-' + lizMap.cleanName(childLayerName);
                             getAttributeTableFeature( childLayerName, childTable, filter );
-
                         }
                     }
-
                 }
             }
 
@@ -1252,11 +1252,13 @@ var lizAttributeTable = function() {
                 // Add filtered featured
                 $('.attribute-table-table').each(function(){
                     var tableId = $(this).attr('id');
-
+                    var tableLayerName = $(this).parents('div.dataTables_wrapper:first').prev('input.attribute-table-hidden-layer').val()
                     // Get parent table for the feature type
-                    if ( $.fn.dataTable.isDataTable( $(this) )
-                        && tableId.replace( lizMap.cleanName( featureType ), '') == 'attribute-layer-table-'
+                    if ( tableLayerName
+                        && $.fn.dataTable.isDataTable( $(this) )
+                        && lizMap.cleanName( featureType ) == tableLayerName
                     ){
+
                         var sIds = []
                         var oTable = $( this ).dataTable();
                         var filteredrows = oTable.$( 'tr', {"filter":"applied"} );
@@ -1441,6 +1443,7 @@ var lizAttributeTable = function() {
                         delete layer.params['FILTER'];
                         config.layers[featureType]['request_params']['filter'] = null;
                     }
+                    // Send signal so that getFeatureInfo and getPrint can use it
                     lizMap.events.triggerEvent(
                         "layerFilterParamChanged",
                         {
@@ -1583,6 +1586,12 @@ var lizAttributeTable = function() {
                                         // do not cascade if pivot to avoid infinite loop
                                         if( rcascade ){
                                             refreshLayerRendering( fParam['name'], cFilter, false );
+
+                                            // Also refresh content of attribute table
+                                            var opTable = '#attribute-layer-table-'+lizMap.cleanName( fParam['name'] );
+                                            if( $( opTable ).length ){
+                                                getAttributeTableFeature( fParam['name'], opTable );
+                                            }
                                         }
 
                                     });
@@ -1682,9 +1691,11 @@ var lizAttributeTable = function() {
                 // Loo through all datatables to get the one concerning this featureType
                 $('.attribute-table-table').each(function(){
                     var tableId = $(this).attr('id');
+                    var tableLayerName = $(this).parents('div.dataTables_wrapper:first').prev('input.attribute-table-hidden-layer').val()
 
-                    if ( $.fn.dataTable.isDataTable( $(this) )
-                        && ( tableId.indexOf( lizMap.cleanName( featureType ) ) > -1 )
+                    if ( tableLayerName
+                        && $.fn.dataTable.isDataTable( $(this) )
+                        && lizMap.cleanName( featureType ) == tableLayerName
                     ){
                         // Get selected feature ids if not given
                         if( !featureIds ){
@@ -1707,7 +1718,6 @@ var lizAttributeTable = function() {
                             }
 
                         }
-
                     }
 
                 });
@@ -1768,6 +1778,7 @@ var lizAttributeTable = function() {
                         if( e.updateDrawing )
                             updateMapLayerDrawing( featureType, true );
                     });
+
                 },
 
                 lizmappopupdisplayed: function(e) {
