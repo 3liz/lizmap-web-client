@@ -56,7 +56,9 @@ var lizAttributeTable = function() {
 
                             // Get existing filter if exists (via permalink)
                             var layer = lizMap.map.getLayersByName(lname)[0];
-                            if( 'FILTER' in layer.params
+
+                            if( layer
+                                && 'FILTER' in layer.params
                                 && layer.params['FILTER']
                             ){
                                 config.layers[lname]['request_params']['filter'] = layer.params['FILTER'];
