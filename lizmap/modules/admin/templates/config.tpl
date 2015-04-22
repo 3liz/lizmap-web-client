@@ -19,7 +19,7 @@
       <dt>{@admin~admin.configuration.services.wmsPublicUrlList.label@}</dt><dd>{$services->wmsPublicUrlList}</dd>
       <dt>{@admin~admin.configuration.services.onlyMaps.label@}</dt><dd>{$services->onlyMaps}</dd>
       <dt>{@admin~admin.configuration.services.defaultRepository.label@}</dt><dd>{$services->defaultRepository}</dd>
-      <dt>{@admin~admin.configuration.services.defaultRepository.label@}</dt><dd>{$services->defaultProject}</dd>
+      <dt>{@admin~admin.configuration.services.defaultProject.label@}</dt><dd>{$services->defaultProject}</dd>
       <dt>{@admin~admin.configuration.services.cacheStorageType.label@}</dt><dd>{$services->cacheStorageType}</dd>
       <dt>{@admin~admin.configuration.services.cacheRootDirectory.label@}</dt><dd>{$services->cacheRootDirectory}</dd>
       <dt>{@admin~admin.configuration.services.cacheExpiration.label@}</dt><dd>{$services->cacheExpiration}</dd>
