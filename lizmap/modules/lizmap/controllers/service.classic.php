@@ -977,9 +977,9 @@ class serviceCtrl extends jController {
         if ( $layer != null ) {
             $layer = $this->project->getLayer( $layer->id );
             $aliases = $layer->getAliasFields();
-            $layer = json_decode( $data );
-            $layer->aliases = (object) $aliases;
-            $data = json_encode( $layer );
+            $aliases = (object) $aliases;
+            $aliases = json_encode( $aliases );
+            $data = preg_replace( '#\}$#', ', "aliases" : ' . $aliases . '}', $data);
         }
     }
     $rep->content = $data;
