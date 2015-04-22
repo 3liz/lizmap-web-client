@@ -21,7 +21,7 @@
 </menulist>
 
 <menulist ref="defaultProject">
-  <label locale="admin~admin.form.admin_services.defaultRepository.label"/>
+  <label locale="admin~admin.form.admin_services.defaultProject.label"/>
   <datasource class="admin~listProjectDatasource" />
 </menulist>
 
