@@ -63,11 +63,11 @@
         <customproperties/>
       </layer-tree-layer>
     </layer-tree-group>
-    <layer-tree-group expanded="1" checked="Qt::Unchecked" name="Hidden">
+    <layer-tree-group expanded="1" checked="Qt::PartiallyChecked" name="Hidden">
       <customproperties/>
-      <layer-tree-group expanded="1" checked="Qt::Unchecked" name="osm-mapquest">
+      <layer-tree-group expanded="1" checked="Qt::Checked" name="osm-mapquest">
         <customproperties/>
-        <layer-tree-layer expanded="0" checked="Qt::Unchecked" id="frmt_wms_openstreetmap_mapquest_tms20140610162911446" name="frmt_wms_openstreetmap_mapquest_tms">
+        <layer-tree-layer expanded="0" checked="Qt::Checked" id="frmt_wms_openstreetmap_mapquest_tms20140610162911446" name="frmt_wms_openstreetmap_mapquest_tms">
           <customproperties/>
         </layer-tree-layer>
       </layer-tree-group>
@@ -78,9 +78,6 @@
         </layer-tree-layer>
       </layer-tree-group>
     </layer-tree-group>
-    <layer-tree-layer expanded="1" checked="Qt::Checked" id="OSM_Mapnik20150420100141766" name="OSM Mapnik">
-      <customproperties/>
-    </layer-tree-layer>
   </layer-tree-group>
   <relations>
     <relation referencingLayer="VilleMTP_MTP_SousQuartiers_201120130929113137811" referencedLayer="VilleMTP_MTP_Quartiers_2011_432620130116112610876" id="VilleMTP_MTP_SousQuartiers_201120130929113137811_QUARTMNO_VilleMTP_MTP_Quartiers_2011_432620130116112610876_QUARTMNO" name="Quartiers -> Sous-Quartiers">
@@ -105,10 +102,10 @@
   <mapcanvas>
     <units>degrees</units>
     <extent>
-      <xmin>3.87334954700439527</xmin>
-      <ymin>43.59770045194402854</ymin>
-      <xmax>3.88699158624823271</xmax>
-      <ymax>43.61015033681457709</ymax>
+      <xmin>3.8747449095089288</xmin>
+      <ymin>43.60746798947576508</ymin>
+      <xmax>3.88838694875276625</xmax>
+      <ymax>43.61991787434631362</ymax>
     </extent>
     <rotation>0</rotation>
     <projections>1</projections>
@@ -170,7 +167,6 @@
       <item>jointure_tram_stop20150328114216806</item>
       <item>tram_stop_work20150416102656130</item>
       <item>publicbuildings_tramstop20150420095614071</item>
-      <item>OSM_Mapnik20150420100141766</item>
       <item>publicbuildings20150420100958543</item>
     </custom-order>
   </layer-tree-canvas>
@@ -257,11 +253,11 @@
         </filegroup>
       </legendlayer>
     </legendgroup>
-    <legendgroup open="true" checked="Qt::Unchecked" name="Hidden">
-      <legendgroup open="true" checked="Qt::Unchecked" name="osm-mapquest">
-        <legendlayer drawingOrder="-1" open="false" checked="Qt::Unchecked" name="frmt_wms_openstreetmap_mapquest_tms" showFeatureCount="0">
+    <legendgroup open="true" checked="Qt::PartiallyChecked" name="Hidden">
+      <legendgroup open="true" checked="Qt::Checked" name="osm-mapquest">
+        <legendlayer drawingOrder="-1" open="false" checked="Qt::Checked" name="frmt_wms_openstreetmap_mapquest_tms" showFeatureCount="0">
           <filegroup open="false" hidden="false">
-            <legendlayerfile isInOverview="0" layerid="frmt_wms_openstreetmap_mapquest_tms20140610162911446" visible="0"/>
+            <legendlayerfile isInOverview="0" layerid="frmt_wms_openstreetmap_mapquest_tms20140610162911446" visible="1"/>
           </filegroup>
         </legendlayer>
       </legendgroup>
@@ -273,11 +269,6 @@
         </legendlayer>
       </legendgroup>
     </legendgroup>
-    <legendlayer drawingOrder="-1" open="true" checked="Qt::Checked" name="OSM Mapnik" showFeatureCount="0">
-      <filegroup open="true" hidden="false">
-        <legendlayerfile isInOverview="0" layerid="OSM_Mapnik20150420100141766" visible="1"/>
-      </filegroup>
-    </legendlayer>
   </legend>
   <Composer title="Composeur1" visible="0">
     <Composition gridVisible="0" printResolution="300" paperWidth="297" snapGridOffsetX="0" guidesVisible="1" snapGridResolution="1" snapGridOffsetY="0" alignmentSnap="1" snapping="0" snapTolerancePixels="10" numPages="1" paperHeight="210" smartGuides="1" printAsRaster="0" generateWorldFile="0">
@@ -688,42 +679,7 @@
       </ComposerMap>
     </Composition>
   </Composer>
-  <projectlayers layercount="17">
-    <maplayer minimumScale="0" maximumScale="1e+08" type="plugin" hasScaleBasedVisibilityFlag="0" name="PyTiledLayer">
-      <id>OSM_Mapnik20150420100141766</id>
-      <datasource>.</datasource>
-      <title></title>
-      <abstract></abstract>
-      <keywordList>
-        <value></value>
-      </keywordList>
-      <attribution href="https://www.openstreetmap.org/copyright">© OpenStreetMap contributors, CC-BY-SA</attribution>
-      <layername>OSM Mapnik</layername>
-      <srs>
-        <spatialrefsys>
-          <proj4>+proj=merc +a=6378137 +b=6378137 +lat_ts=0.0 +lon_0=0.0 +x_0=0.0 +y_0=0 +k=1.0 +units=m +nadgrids=@null +wktext  +no_defs</proj4>
-          <srsid>3857</srsid>
-          <srid>3857</srid>
-          <authid>EPSG:3857</authid>
-          <description>WGS 84 / Pseudo Mercator</description>
-          <projectionacronym>merc</projectionacronym>
-          <ellipsoidacronym>WGS84</ellipsoidacronym>
-          <geographicflag>false</geographicflag>
-        </spatialrefsys>
-      </srs>
-      <customproperties>
-        <property key="blendMode" value="SourceOver"/>
-        <property key="credit" value="© OpenStreetMap contributors, CC-BY-SA"/>
-        <property key="creditVisibility" value="0"/>
-        <property key="serviceUrl" value="http://tile.openstreetmap.org/{z}/{x}/{y}.png"/>
-        <property key="smoothRender" value="1"/>
-        <property key="title" value="OSM Mapnik"/>
-        <property key="transparency" value="0"/>
-        <property key="yOriginTop" value="1"/>
-        <property key="zmax" value="19"/>
-        <property key="zmin" value="0"/>
-      </customproperties>
-    </maplayer>
+  <projectlayers layercount="16">
     <maplayer minimumScale="0" maximumScale="1e+08" simplifyDrawingHints="1" minLabelScale="1" maxLabelScale="1e+08" simplifyDrawingTol="1" geometry="Polygon" simplifyMaxScale="1" type="vector" hasScaleBasedVisibilityFlag="1" simplifyLocal="1" scaleBasedLabelVisibilityFlag="0">
       <id>VilleMTP_MTP_Quartiers_2011_432620130116112351546</id>
       <datasource>./data/vector/VilleMTP_MTP_Quartiers_2011_4326.shp</datasource>
@@ -4093,7 +4049,7 @@
         </edittype>
       </edittypes>
     </maplayer>
-    <maplayer minimumScale="0" maximumScale="1e+08" geometry="No geometry" type="vector" hasScaleBasedVisibilityFlag="0">
+    <maplayer minimumScale="-4.65661e-10" maximumScale="1e+08" geometry="No geometry" type="vector" hasScaleBasedVisibilityFlag="0">
       <id>publicbuildings_tramstop20150420095614071</id>
       <datasource>dbname='./edition/transport.sqlite' table="publicbuildings_tramstop" sql=</datasource>
       <title>Pivot tramstops / Buildings</title>
@@ -4140,8 +4096,8 @@
         <edittype widgetv2type="ValueRelation" name="b_id">
           <widgetv2config OrderByValue="1" AllowNull="0" FilterExpression="" fieldEditable="1" Key="b_id" Layer="publicbuildings20150420100958543" Value="b_name" labelOnTop="0" AllowMulti="0"/>
         </edittype>
-        <edittype widgetv2type="ValueRelation" name="stop_id">
-          <widgetv2config OrderByValue="1" AllowNull="0" FilterExpression="" fieldEditable="1" Key="osm_id" Layer="tramstop20150328114203878" Value="name" labelOnTop="0" AllowMulti="0"/>
+        <edittype widgetv2type="TextEdit" name="stop_id">
+          <widgetv2config IsMultiline="0" fieldEditable="1" UseHtml="0" labelOnTop="0"/>
         </edittype>
         <edittype widgetv2type="TextEdit" name="tramstop_name">
           <widgetv2config IsMultiline="0" fieldEditable="0" UseHtml="0" labelOnTop="0"/>
@@ -4170,8 +4126,8 @@
         <edittype widgetv2type="ValueRelation" name="b_id">
           <widgetv2config OrderByValue="1" AllowNull="0" FilterExpression="" fieldEditable="1" Key="b_id" Layer="publicbuildings20150420100958543" Value="b_name" labelOnTop="0" AllowMulti="0"/>
         </edittype>
-        <edittype widgetv2type="ValueRelation" name="stop_id">
-          <widgetv2config OrderByValue="1" AllowNull="0" FilterExpression="" fieldEditable="1" Key="osm_id" Layer="tramstop20150328114203878" Value="name" labelOnTop="0" AllowMulti="0"/>
+        <edittype widgetv2type="TextEdit" name="stop_id">
+          <widgetv2config IsMultiline="0" fieldEditable="1" UseHtml="0" labelOnTop="0"/>
         </edittype>
         <edittype widgetv2type="TextEdit" name="tramstop_name">
           <widgetv2config IsMultiline="0" fieldEditable="0" UseHtml="0" labelOnTop="0"/>
@@ -4260,7 +4216,7 @@
         </edittype>
       </edittypes>
     </maplayer>
-    <maplayer minimumScale="0" maximumScale="1e+08" simplifyDrawingHints="0" minLabelScale="1" maxLabelScale="1e+08" simplifyDrawingTol="1" geometry="Point" simplifyMaxScale="1" type="vector" hasScaleBasedVisibilityFlag="0" simplifyLocal="1" scaleBasedLabelVisibilityFlag="0">
+    <maplayer minimumScale="-4.65661e-10" maximumScale="1e+08" simplifyDrawingHints="0" minLabelScale="1" maxLabelScale="1e+08" simplifyDrawingTol="1" geometry="Point" simplifyMaxScale="1" type="vector" hasScaleBasedVisibilityFlag="0" simplifyLocal="1" scaleBasedLabelVisibilityFlag="0">
       <id>tramstop20150328114203878</id>
       <datasource>dbname='./edition/transport.sqlite' table="tramstop" (geometry) sql=</datasource>
       <title>Tram stops</title>
@@ -4517,7 +4473,6 @@
         <attribute>wkt</attribute>
       </excludeAttributesWMS>
       <excludeAttributesWFS>
-        <attribute>OGC_FID</attribute>
         <attribute>wkt</attribute>
       </excludeAttributesWFS>
       <attributeactions/>
