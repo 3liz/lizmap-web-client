@@ -1049,6 +1049,13 @@ var lizAttributeTable = function() {
                     // Remove layerName followed by :
                     b_exp_filter = b_exp_filter.replace( aName + ':', '');
                     filterParam.push( b_exp_filter );
+                }else{
+                    // If not filter passed, check if a filter does not exists for the layer
+                    var aFilter = config.layers[aName]['request_params']['filter'];
+                    if( aFilter ){
+                        aFilter = aFilter.replace( aName + ':', '');
+                        filterParam.push( aFilter );
+                    }
                 }
 
                 if( filterParam.length )
