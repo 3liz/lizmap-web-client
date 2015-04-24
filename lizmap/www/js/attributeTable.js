@@ -951,8 +951,7 @@ var lizAttributeTable = function() {
 
 
 
-                            if( config.layers[aName] && config.layers[aName]['popup'] == 'True'
-                                    && config.layers[aName]['geometryType'] != 'none'
+                            if(  config.layers[aName]['geometryType'] != 'none'
                                     && config.layers[aName]['geometryType'] != 'unknown'
                             ) {
                                 // Zoom to selected feature on tr click
