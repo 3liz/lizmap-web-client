@@ -209,7 +209,10 @@ var lizAttributeTable = function() {
                 html+= '<div class="attribute-layer-action-bar">';
 
                 // Search input
-                html+= '<input type="text" placeholder="Search" id="attribute-layer-search-' + layerName + '"/>';
+                html+= '<div class="btn-group">';
+                html+= '  <input id="attribute-layer-search-' + layerName + '" type="search" class="form-control" placeholder="'+lizDict['attributeLayers.toolbar.input.search.title']+'">';
+                html+= '  <i class="clear-layer-search icon-remove" style="position:absolute;right:4px;top:4px;cursor:pointer;"></i>';
+                html+= '</div>';
 
                 // Selected searched lines button
                 html+= '<button class="btn-select-searched btn btn-mini" value="'+layerName+'" title="'+lizDict['attributeLayers.toolbar.btn.select.searched.title']+'"><i class="icon-star"></i></button>';
@@ -919,6 +922,10 @@ var lizAttributeTable = function() {
                         var oTable = $( aTable ).dataTable();
                         $('#attribute-layer-search-' + aName).on( 'keyup', function (){
                             oTable.fnFilter( this.value );
+                        });
+
+                        $('#attribute-layer-search-' + aName).next('.clear-layer-search').click(function(){
+                            $('#attribute-layer-search-' + aName).val('').focus().keyup();
                         });
 
 
