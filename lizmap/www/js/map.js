@@ -3258,14 +3258,17 @@ var lizMap = function() {
           if ( editCtrls.click.active ) {
             editCtrls.click.deactivate();
             $('#lizmap-edition-message').remove();
-            if (config.editionLayers[editCtrls.click.layerName].capabilities.modifyGeometry == "True") {
+            eCapabilities = config.editionLayers[editCtrls.click.layerName].capabilities;
+            if (eCapabilities.modifyGeometry == "True") {
               editCtrls.modify.activate();
               editCtrls.modify.selectFeature(evt.feature);
               mAddMessage(lizDict['edition.select.modify.activate'],'info',true).attr('id','lizmap-edition-message');
             }
             $('#edition-select-unselect').removeClass('disabled');
-            $('#edition-select-attr').removeClass('disabled');
-            $('#edition-select-delete').removeClass('disabled');
+            if (eCapabilities.modifyAttribute == "True")
+                $('#edition-select-attr').removeClass('disabled');
+            if (eCapabilities.deleteFeature == "True")
+                $('#edition-select-delete').removeClass('disabled');
           } else {
               createEditionFeature( editCtrls.click.layerId, editLayer.features[0].geometry.clone() );
           }
@@ -3321,36 +3324,37 @@ var lizMap = function() {
         var alName = self.val();
         if (alName in config.editionLayers) {
           var al = config.editionLayers[alName];
+          console.log([alName,al]);
           // update menus based on capabilities
-            if (al.capabilities.deleteFeature == "False")
+          if (al.capabilities.deleteFeature == "False")
             $('#edition-select-delete').addClass('disabled');
-            else
+          else
             $('#edition-select-delete').removeClass('disabled');
-            if (al.capabilities.modifyAttribute == "False")
+          if (al.capabilities.modifyAttribute == "False")
             $('#edition-select-attr').addClass('disabled');
-            else
+          else
             $('#edition-select-attr').removeClass('disabled');
-            if (al.capabilities.modifyGeometry == "False")
+          if (al.capabilities.modifyGeometry == "False")
             $('#edition-select-undo').addClass('disabled');
-            else
+          else
             $('#edition-select-undo').removeClass('disabled');
 
-            if ( $('#edition-menu-draw').is(':visible') )
+          if ( $('#edition-menu-draw').is(':visible') )
               $('#edition-draw-cancel').click();
-            if ( $('#edition-menu-select').is(':visible') )
+          if ( $('#edition-menu-select').is(':visible') )
               $('#edition-select-cancel').click();
 
-            editCtrls.click.layerId = al.layerId;
-            editCtrls.click.layerName = alName;
+          editCtrls.click.layerId = al.layerId;
+          editCtrls.click.layerName = alName;
 
-            if (al.capabilities.createFeature == "False") {
+          if (al.capabilities.createFeature == "False") {
             $('#edition-draw').addClass('disabled');
             $('#edition-select-cancel').addClass('disabled');
-            } else {
+          } else {
             $('#edition-draw').removeClass('disabled');
             $('#edition-select-cancel').removeClass('disabled');
-            }
-            if (al.capabilities.modifyGeometry == "False"
+          }
+          if (al.capabilities.modifyGeometry == "False"
              && al.capabilities.modifyAttribute == "False"
              && al.capabilities.deleteFeature == "False") {
             $('#edition-select').addClass('disabled');
