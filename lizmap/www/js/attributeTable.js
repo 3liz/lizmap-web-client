@@ -49,6 +49,7 @@ var lizAttributeTable = function() {
                             // Add some properties to the lizMap.config
                             config.layers[lname]['features'] = [];
                             config.layers[lname]['selectedFeatures'] = [];
+                            config.layers[lname]['highlightedFeature'] = null;
                             config.layers[lname]['filteredFeatures'] = [];
                             config.layers[lname]['request_params'] = {
                                 'filter' : null,
@@ -510,6 +511,11 @@ var lizAttributeTable = function() {
                                 "layerfeatureunselectall",
                                 { 'featureType': lname, 'updateDrawing': true}
                             );
+                            // Send signal saying edition has been done on pivot
+                            lizMap.events.triggerEvent(
+                                "lizmapeditionfeaturecreated",
+                                { 'layerId': lid}
+                            );
 
                         });
 
@@ -898,6 +904,7 @@ var lizAttributeTable = function() {
                                 // Get corresponding feature
                                 var featId = $(this).find('button.attribute-layer-feature-focus').val();
 
+
                                 // Send signal
                                 lizMap.events.triggerEvent(
                                     "layerfeaturehighlighted",
@@ -919,11 +926,21 @@ var lizAttributeTable = function() {
 
                             // Select feature
                             $(aTable +' tr td button.attribute-layer-feature-select').click(function() {
+                                // Trigger click to highlight feature;
+                                $(this).parents('tr:first').click();
+
+                                // Get feature id
                                 var featId = $(this).val();
-                                // Send signal
+
+                                // Send signal to select the feature
                                 lizMap.events.triggerEvent(
                                     "layerfeatureselected",
                                     { 'featureType': aName, 'fid': featId, 'updateDrawing': true }
+                                );
+
+                                lizMap.events.triggerEvent(
+                                    "layerfeaturehighlighted",
+                                    { 'sourceTable': aTable, 'featureType': aName, 'fid': featId}
                                 );
                                 return false;
                             })
@@ -1871,9 +1888,45 @@ var lizAttributeTable = function() {
 
             }
 
+            function refreshTablesAfterEdition( featureType ){
+                // Loop through each datatable, and refresh if it corresponds to the layer edited
+                $('.attribute-table-table').each(function(){
+                    var tableId = $(this).attr('id');
+                    var tableLayerName = $(this).parents('div.dataTables_wrapper:first').prev('input.attribute-table-hidden-layer').val()
+
+                    if ( tableLayerName
+                        && $.fn.dataTable.isDataTable( $(this) )
+                        && lizMap.cleanName( featureType ) == tableLayerName
+                    ){
+                        var zTable = '#' + tableId;
+                        var parentLayerCleanName = zTable.replace('#attribute-layer-table-', '').split('-');
+                        var parentLayerCleanName = parentLayerCleanName[0];
+                        var parentTable = '#attribute-layer-table-' + parentLayerCleanName;
+                        var parentLayerName = attributeLayersDic[parentLayerCleanName]
+
+                        // If child, re-highlight parent feature to refresh all the children
+                        if( parentTable != zTable ){
+                            var parentHighlighted = config.layers[parentLayerName]['highlightedFeature'];
+                            if( parentHighlighted )
+                                $(parentTable +' tr#' + parentHighlighted).click();
+
+                        }
+                        // Else refresh main table with no filter
+                        else{
+                            // If not pivot
+                            var dFilter = null;
+                            getAttributeFeatureData( tableLayerName, dFilter, null, function(someName, someNameFilter, someNameFeatures){
+                                getAttributeTableFeature( someName, zTable, someNameFeatures );
+                            });
+                        }
+                    }
+                });
+            }
+
             lizMap.events.on({
 
                 layerfeaturehighlighted: function(e) {
+                    config.layers[e.featureType]['highlightedFeature'] = e.fid;
                     refreshChildrenLayersContent( e.sourceTable, e.featureType, e.fid );
                 },
 
@@ -2110,42 +2163,27 @@ var lizAttributeTable = function() {
                 },
 
                 lizmapeditionfeaturecreated: function(e){
-                    var getLayer = getLayerConfigById( e.layerId );
+                    var getLayer = getLayerConfigById( e.layerId, config.attributeLayers, 'layerId' );
                     if( getLayer ){
-                        var zTable = '#attribute-layer-table-'+lizMap.cleanName( getLayer[0] );
-                        if( $(zTable).length ){
-                            var dFilter = null;
-                            getAttributeFeatureData( getLayer[0], dFilter, null, function(someName, someNameFilter, someNameFeatures){
-                                getAttributeTableFeature( someName, zTable, someNameFeatures );
-                            });
-                        }
+                        var featureType = getLayer[0];
+                        refreshTablesAfterEdition( featureType );
                     }
                 },
 
                 lizmapeditionfeaturemodified: function(e){
                     var getLayer = getLayerConfigById( e.layerId );
                     if( getLayer ){
-                        var zTable = '#attribute-layer-table-'+lizMap.cleanName( getLayer[0] );
-                        if( $(zTable).length ){
-                            var dFilter = null;
-                            getAttributeFeatureData( getLayer[0], dFilter, null, function(someName, someNameFilter, someNameFeatures){
-                                getAttributeTableFeature( someName, zTable, someNameFeatures );
-                            });
-                        }
+                        var featureType = getLayer[0];
+                        refreshTablesAfterEdition( featureType );
                     }
                 },
 
                 lizmapeditionfeaturedeleted: function(e){
                     var getLayer = getLayerConfigById( e.layerId );
                     if( getLayer ){
-                        var zTable = '#attribute-layer-table-'+lizMap.cleanName( getLayer[0] );
-                        if( $(zTable).length ){
-                            var dFilter = null;
-                            getAttributeFeatureData( getLayer[0], dFilter, null, function(someName, someNameFilter, someNameFeatures){
-                                getAttributeTableFeature( someName, zTable, someNameFeatures );
-                            });
-                        }// todo: simplement supprimer le feature correspondant de features, et passer features à la place de someNameFeatures
-                    }
+                        var featureType = getLayer[0];
+                        refreshTablesAfterEdition( featureType );
+                    } // todo : only remove line corresponding to deleted feature ?
                 }
             });
 
