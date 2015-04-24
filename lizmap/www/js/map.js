@@ -2641,7 +2641,7 @@ var lizMap = function() {
         printLayers.unshift('Overview');
       }
       url += '&LAYERS='+printLayers.join(',');
-      var labels = $('#print-menu .print-labels').find('input, textarea').serialize();
+      var labels = $('#print .print-labels').find('input.print-label, textarea.print-label').serialize();
       if ( labels != "" )
         url += '&'+labels;
       var filter = [];
