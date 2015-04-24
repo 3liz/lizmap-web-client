@@ -191,9 +191,6 @@ var lizAttributeTable = function() {
                 var html = '<div id="attribute-layer-' + layerName + '" class="tab-pane attribute-content bottom-content" >';
                 html+= '    <div class="attribute-layer-main" id="attribute-layer-main-' + layerName + '" >';
 
-                //~ // Refresh button
-                //~ html+= '    <button class="btn-refresh-attributeTable btn btn-mini" value="' + layerName + '">'+lizDict['attributeLayers.toolbar.btn.data.refresh.title']+'</button>';
-
                 if( !config.layers[lname]['selectedFeatures'] )
                     config.layers[lname]['selectedFeatures'] = [];
                 if( !config.layers[lname]['filteredFeatures'] )
@@ -264,17 +261,13 @@ var lizAttributeTable = function() {
                     html+= '    <button class="btn-toggle-children btn btn-mini" value="' + layerName + '" >'+lizDict['attributeLayers.toolbar.btn.toggle.children.title']+'</button>';
 
                     // Add buttons to create new children
-                    for( var i in childHtml['childCreateButton'] ){
-                        var bt = childHtml['childCreateButton'][i];
-                        html+= bt;
-                    }
-                    // Add buttons to link parent and children
-                    for( var i in childHtml['pivotLinkButton'] ){
-                        var bt = childHtml['pivotLinkButton'][i];
-                        html+= bt;
-                    }
-                }
+                    if( childHtml['childCreateButton'] )
+                        html+= childHtml['childCreateButton'];
 
+                    // Add buttons to link parent and children
+                    if( childHtml['pivotLinkButton'] )
+                        html+= childHtml['pivotLinkButton'];
+                }
 
                 // Export tools
                 html+= '&nbsp;<div class="btn-group pull-right" role="group" >';
@@ -426,6 +419,7 @@ var lizAttributeTable = function() {
                         eFormat = 'GML3';
                     var eName = $(this).parents('div.attribute-layer-main:first').attr('id').replace('attribute-layer-main-', '');
                     exportAttributeTable( eName, eFormat );
+                    $(this).blur();
                     return false;
                 });
 
@@ -441,11 +435,27 @@ var lizAttributeTable = function() {
                     function(){ $(this).addClass('btn-primary'); },
                     function(){ $(this).removeClass('btn-primary'); }
                 );
+                // Bind click on createFeature button via dropDown
+                $('#attribute-layer-'+ layerName + ' a.btn-createFeature-attributeTable')
+                .click(function(){
+                    var selectedValue = $(this).attr('href').replace('#', '');
+                    var aName = attributeLayersDic[ selectedValue ];
+                    var lid = config.layers[aName]['id'];
+                    lizMap.launchEdition( lid );
+                    $(this).blur();
+                    return false;
+                })
+                .hover(
+                    function(){ $(this).addClass('btn-primary'); },
+                    function(){ $(this).removeClass('btn-primary'); }
+                );
 
                 // Bind click on linkFeatures button
-                $('#attribute-layer-'+ layerName + ' button.btn-linkFeatures-attributeTable')
+                $('#attribute-layer-'+ layerName + ' a.btn-linkFeatures-attributeTable')
                 .click(function(){
-                    var cName = attributeLayersDic[ $(this).val() ];
+                    var selectedValue = $(this).attr('href').replace('#', '');
+                    $(this).blur();
+                    var cName = attributeLayersDic[ selectedValue ];
                     var lid = config.layers[cName]['id'];
                     var attrConfig = config.attributeLayers[cName];
                     var p = [];
@@ -567,8 +577,8 @@ var lizAttributeTable = function() {
                 var childHtml = null;
                 var childDiv = [];
                 var childLi = [];
-                var childCreateButton = [];
-                var pivotLinkButton = [];
+                var childCreateButton = ''; var childCreateButtonItems = [];
+                var pivotLinkButton = ''; var pivotLinkButtonItems = [];
                 var lConfig = config.layers[parentLayerName];
                 if ( !lConfig )
                   return childHtml;
@@ -620,27 +630,56 @@ var lizAttributeTable = function() {
                             }
                             if( canCreateChild ){
                                 // Button to create a new child : Usefull for both 1:n and n:m relation
-                                childCreateButton.push( '<button class="btn-createFeature-attributeTable btn btn-mini" value="' + childLayerName + '" >'+lizDict['attributeLayers.toolbar.btn.data.createFeature.title']+ ' "' + childLayerConfig.title +'"</button>' );
+                                childCreateButtonItems.push( '<li><a href="#' + childLayerName + '" class="btn-createFeature-attributeTable">' + childLayerConfig.title +'</a></li>' );
 
                                 // Button to link selected lines from 2 tables
                                 if('pivot' in config.attributeLayers[childLayerName]
                                     && config.attributeLayers[childLayerName]['pivot'] == 'True'
                                     && childLayerConfig.id in config.relations.pivot
                                 ){
-                                    pivotLinkButton.push(  '<button class="btn-linkFeatures-attributeTable btn btn-mini" value="' + childLayerName + '" >'+lizDict['attributeLayers.toolbar.btn.data.linkFeatures.title']+ ' "' + childLayerConfig.title +'"</button>' );
+                                    pivotLinkButtonItems.push( '<li><a href="#' + childLayerName + '" class="btn-linkFeatures-attributeTable">' + childLayerConfig.title +'</a></li>' );
                                 }
                             }
                         }
                     }
 
                 }
-                if( childLi.length )
+                if( childLi.length ){
+                    if( childCreateButtonItems.length > 0 ){
+                        childCreateButton+= '&nbsp;<div class="btn-group" role="group" >';
+                        childCreateButton+= '    <button type="button" class="btn btn-mini dropdown-toggle" data-toggle="dropdown" aria-expanded="false">';
+                        childCreateButton+= lizDict['attributeLayers.toolbar.btn.data.createChildFeature.title'];
+                        childCreateButton+= '      <span class="caret"></span>';
+                        childCreateButton+= '    </button>';
+                        childCreateButton+= '    <ul class="dropdown-menu" role="menu">';
+                        for( var i in  childCreateButtonItems){
+                            var li = childCreateButtonItems[i];
+                            childCreateButton+= li;
+                        }
+                        childCreateButton+= '    </ul>';
+                        childCreateButton+= '</div>';
+                    }
+                    if( pivotLinkButtonItems.length > 0 ){
+                        pivotLinkButton+= '&nbsp;<div class="btn-group" role="group" >';
+                        pivotLinkButton+= '    <button type="button" class="btn btn-mini dropdown-toggle" data-toggle="dropdown" aria-expanded="false">';
+                        pivotLinkButton+= lizDict['attributeLayers.toolbar.btn.data.linkFeatures.title'];
+                        pivotLinkButton+= '      <span class="caret"></span>';
+                        pivotLinkButton+= '    </button>';
+                        pivotLinkButton+= '    <ul class="dropdown-menu" role="menu">';
+                        for( var i in  pivotLinkButtonItems){
+                            var li = pivotLinkButtonItems[i];
+                            pivotLinkButton+= li;
+                        }
+                        pivotLinkButton+= '    </ul>';
+                        pivotLinkButton+= '</div>';
+                    }
                     childHtml = {
                         'tab-content': childDiv,
                         'tab-li': childLi,
                         'childCreateButton': childCreateButton,
                         'pivotLinkButton': pivotLinkButton
                     } ;
+                }
                 return childHtml;
             }
 
