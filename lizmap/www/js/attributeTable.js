@@ -1191,6 +1191,7 @@ var lizAttributeTable = function() {
                     var scale = lConfig.minScale;
                 else
                     var scale = Math.max( lizMap.map.maxScale, lConfig.minScale );
+                scale = scale * 2;
                 var res = OpenLayers.Util.getResolutionFromScale(scale, units);
 
                 // Get coordinate to mimic click on the map
@@ -1199,9 +1200,8 @@ var lizAttributeTable = function() {
                     return false;
 
                 feat = format.read(feat)[0];
-                feat.geometry.transform(proj, lizMap.map.getProjection());
+                feat.geometry.transform( proj, lizMap.map.getProjection() );
                 var geomType = feat.geometry.CLASS_NAME;
-
 
                 if (
                     geomType == 'OpenLayers.Geometry.Polygon'
