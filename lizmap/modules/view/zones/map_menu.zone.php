@@ -11,52 +11,47 @@
 
 class map_menuZone extends jZone {
 
-   protected $_tplname='map_menu';
+    protected $_tplname='map_menu';
 
-   protected function _prepareTpl(){
-    // Get the project and repository params
-    $project = $this->param('project');
-    $repository = $this->param('repository');
-    $auth_url_return = jUrl::get('view~map:index',
-      array(
-        "repository"=>$repository,
-        "project"=>$project,
-      ));
+    protected function _prepareTpl(){
+        // Get the project and repository params
+        $project = $this->param('project');
+        $repository = $this->param('repository');
 
-    // Get lizmapProject class
-    $assign = array(
-      "edition"=>false,
-      "measure"=>false,
-      "locate"=>false,
-      "geolocation"=>false,
-      "timemanager"=>false,
-      "print"=>false,
-      "attributeLayers"=>false
-    );
+        // Get lizmapProject class
+        $assign = array(
+            "edition"=>false,
+            "measure"=>false,
+            "locate"=>false,
+            "geolocation"=>false,
+            "timemanager"=>false,
+            "print"=>false,
+            "attributeLayers"=>false
+        );
 
-    $lproj = lizmap::getProject($repository.'~'.$project);
-    $configOptions = $lproj->getOptions();
+        $lproj = lizmap::getProject($repository.'~'.$project);
+        $configOptions = $lproj->getOptions();
 
-    if ( property_exists($configOptions,'measure')
-      && $configOptions->measure == 'True')
-      $assign['measure'] = true;
+        if ( property_exists($configOptions,'measure')
+          && $configOptions->measure == 'True')
+            $assign['measure'] = true;
 
-    $assign['locate'] = $lproj->hasLocateByLayer();
+        $assign['locate'] = $lproj->hasLocateByLayer();
     
-    if ( property_exists($configOptions,'print')
-      && $configOptions->print == 'True')
-      $assign['print'] = true;
+        if ( property_exists($configOptions,'print')
+          && $configOptions->print == 'True')
+            $assign['print'] = true;
 
-    $assign['edition'] = $lproj->hasEditionLayers();
+        $assign['edition'] = $lproj->hasEditionLayers();
 
-    if ( property_exists($configOptions,'geolocation')
-      && $configOptions->geolocation == 'True')
-      $assign['geolocation'] = true;
+        if ( property_exists($configOptions,'geolocation')
+          && $configOptions->geolocation == 'True')
+            $assign['geolocation'] = true;
 
-    $assign['timemanager'] = $lproj->hasTimemanagerLayers();
+        $assign['timemanager'] = $lproj->hasTimemanagerLayers();
 
-    $assign['attributeLayers'] = $lproj->hasAttributeLayers();
+        $assign['attributeLayers'] = $lproj->hasAttributeLayers();
 
-    $this->_tpl->assign($assign);
+        $this->_tpl->assign($assign);
    }
 }

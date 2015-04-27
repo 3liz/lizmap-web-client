@@ -357,6 +357,8 @@ class lizMapCtrl extends jController {
       if( count( $filter ) > 0 )
         $rep->addJSCode( "var lizLayerFilter = " . json_encode($filter) . ";" );
     }
+    
+    //$assign['auth_url_return'] = jUrl::get('view~default:index');
 
     $rep->body->assign($assign);
 

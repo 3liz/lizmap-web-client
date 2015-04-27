@@ -12,7 +12,7 @@
     <h2>{$repositoryLabel}</h2>
   </div>
   <div id="headermenu" class="navbar navbar-fixed-top">
-    {zone 'view~map_headermenu', array('repository'=>$repository,'project'=>$project)}
+    {zone 'view~map_headermenu', array('repository'=>$repository,'project'=>$project,'auth_url_return'=>$auth_url_return)}
   </div>
 </div>
 
