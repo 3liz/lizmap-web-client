@@ -597,7 +597,9 @@ var lizAttributeTable = function() {
                             config.layers,
                             'id'
                         );
-                        if( childLayerConfigA ){
+                        if( childLayerConfigA
+                            &&  childLayerConfigA[0] in config.attributeLayers
+                        ){
                             childCount+=1;
                             if( childCount > 1)
                                 childActive = '';
@@ -688,7 +690,6 @@ var lizAttributeTable = function() {
 
             // Refresh attribute table content for all children of a given layer
             function refreshChildrenLayersContent( sourceTable, featureType, featId ) {
-
                 var feat = config.layers[featureType]['features'][featId];
                 if(!feat)
                     return false;
@@ -709,7 +710,9 @@ var lizAttributeTable = function() {
                             config.layers,
                             'id'
                         );
-                        if( childLayerConfigA ){
+                        if( childLayerConfigA
+                            && childLayerConfigA[0] in config.attributeLayers
+                        ){
                             var childLayerName = childLayerConfigA[0];
                             var childLayerConfig = childLayerConfigA[1];
                             // Generate filter
@@ -722,7 +725,8 @@ var lizAttributeTable = function() {
                             var childTable = sourceTable.replace( ' table:first', '' ) + '-' + lizMap.cleanName(childLayerName);
 
                             // Fill in attribute table for child
-                            getDirectChildData( childLayerName, filter, childTable);
+                            if( childLayerName in config.attributeLayers )
+                                getDirectChildData( childLayerName, filter, childTable);
 
                         }
                     }
@@ -752,8 +756,6 @@ var lizAttributeTable = function() {
                 var atFeatures = cFeatures;
                 dataLength = atFeatures.length;
 
-                config.attributeLayers[aName]['tableDisplayed'] = false;
-
                 // Get config
                 var lConfig = config.layers[aName];
 
@@ -769,7 +771,9 @@ var lizAttributeTable = function() {
 
                     // Hidden fields
                     var hiddenFields = [];
-                    if( 'hiddenFields' in config.attributeLayers[aName]
+
+                    if( aName in config.attributeLayers
+                        && 'hiddenFields' in config.attributeLayers[aName]
                         && config.attributeLayers[aName]['hiddenFields']
                     ){
                         var hf = config.attributeLayers[aName]['hiddenFields'].trim();
@@ -1000,7 +1004,7 @@ var lizAttributeTable = function() {
                             if(  config.layers[aName]['geometryType'] != 'none'
                                     && config.layers[aName]['geometryType'] != 'unknown'
                             ) {
-                                // Zoom to selected feature on tr click
+                                // Zoom or center to selected feature on zoom button click
                                 $(aTable +' tr td button.attribute-layer-feature-focus').click(function() {
 
                                     // Read feature
@@ -1077,9 +1081,7 @@ var lizAttributeTable = function() {
                     ).addClass('failure');
 
                 } else {
-                    config.attributeLayers[aName]['tableDisplayed'] = true;
                     $(aTable).show();
-
                 }
 
 
@@ -1096,10 +1098,12 @@ var lizAttributeTable = function() {
                 // Build WFS request parameters
                 var typeName = aName.replace(' ','_');
                 var layerName = lizMap.cleanName(aName);
-                var extent = lizMap.map.getExtent().clone();
-                var projFeat = new OpenLayers.Projection(config.layers[aName].crs);
-                extent = extent.transform( lizMap.map.getProjection(), projFeat );
-                var bbox = extent.toBBOX();
+
+                //~ // Calculate bbox from map extent
+                //~ var extent = lizMap.map.getExtent().clone();
+                //~ var projFeat = new OpenLayers.Projection(config.layers[aName].crs);
+                //~ extent = extent.transform( lizMap.map.getProjection(), projFeat );
+                //~ var bbox = extent.toBBOX();
 
                 var wfsOptions = {
                     'SERVICE':'WFS'
