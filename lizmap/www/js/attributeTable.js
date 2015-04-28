@@ -1677,11 +1677,13 @@ var lizAttributeTable = function() {
 
                 }
 
-                // **3** Apply filter to the typeName and redraw if necessayr
+                // **3** Apply filter to the typeName and redraw if necessary
                 config.layers[typeName]['features'] = foundFeatures;
                 config.layers[typeName]['alias'] = aNameAliases;
                 var layerN = attributeLayersDic[typeName];
                 var lFilter = null;
+                if( typeNamePkeyValues.length == 0 )
+                    typeNamePkeyValues.push('-99999');
                 if( aFilter )
                     var lFilter = layerN + ':"' + typeNamePkey + '" IN ( ' + typeNamePkeyValues.join( ' , ' ) + ' ) ';
                 config.layers[typeName]['request_params']['filter'] = lFilter;
