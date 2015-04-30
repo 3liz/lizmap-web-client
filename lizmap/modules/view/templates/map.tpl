@@ -77,10 +77,6 @@
       {image $j_themepath.'css/img/logo_footer.png'}
     </div>
 
-    <div id="permalink-box">
-      <a href="" target="_blank" id="permalink">{@view~map.permalink.title@}</a>
-    </div>
-
     <div id="message" class="span6">{jmessage_bootstrap}</div>
 
   </div>

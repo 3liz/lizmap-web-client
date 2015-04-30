@@ -800,6 +800,17 @@ class lizmapProject{
             );
         }
 
+        // Permalink
+        if ( true ) {
+            $tpl = new jTpl();
+            $dockable[] = new lizmapMapDockItem(
+                'permaLink',
+                jLocale::get('view~map.permalink.navbar.title'),
+                $tpl->fetch('view~map_permalink'),
+                6
+            );
+        }
+
         return $dockable;
     }
 
