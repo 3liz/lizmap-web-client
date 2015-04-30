@@ -285,6 +285,17 @@ var lizMap = function() {
 
   }
 
+  /**
+   * PRIVATE function: getDockRightPosition
+   * Calculate the position on the right side of the dock
+   */
+  function getDockRightPosition() {
+    var right = $('#mapmenu').width();
+    if( $('#dock').css('display') != 'none' && !lizMap.checkMobile() )
+      right+= $('#dock').width() + 11;
+    return right;
+  }
+
 
   /**
    * PRIVATE function: getLayerLegendGraphicUrl
@@ -1522,6 +1533,24 @@ var lizMap = function() {
         //updateSwitcherSize();
       }
     });
+    $("#switcher table.tree tbody").on("mousedown", "tr td span", function() {
+      var wasSelected = $(this).parents('tr:first').hasClass('selected');
+      var isSelected = !wasSelected;
+      $("#switcher table.tree tbody tr").removeClass('selected');
+      $(this).parents('tr:first').toggleClass("selected", isSelected);
+      $('#switcher-layers-actions').toggleClass('active', isSelected);
+
+      // Trigger event
+      var id = $(this).parents('tr:first').attr('id');
+      var itemType = id.split('-')[0];
+      var itemName = id.split('-')[1];
+      lizMap.events.triggerEvent(
+        "lizmapswitcheritemselected",
+        { 'name': itemName, 'type': itemType, 'selected': isSelected}
+      );
+
+    });
+
     $('#close-menu .ui-icon-close-menu').click(function(){
       $('#menu').hide();
       if($('#content').hasClass('mobile')) {
@@ -3324,7 +3353,7 @@ var lizMap = function() {
         var alName = self.val();
         if (alName in config.editionLayers) {
           var al = config.editionLayers[alName];
-          console.log([alName,al]);
+          //~ console.log([alName,al]);
           // update menus based on capabilities
           if (al.capabilities.deleteFeature == "False")
             $('#edition-select-delete').addClass('disabled');
@@ -4287,6 +4316,13 @@ var lizMap = function() {
      */
     cleanName: function( aName ) {
       return cleanName( aName );
+    },
+
+    /**
+     * Method: getDockRightPosition
+     */
+    getDockRightPosition: function( ) {
+      return getDockRightPosition( );
     },
 
     /**
@@ -5305,10 +5341,12 @@ lizMap.events.on({
       }
 
     }
-   ,'uicreated':function(evt){
-  //console.log('uicreated')
+   ,
+   'uicreated': function(evt){
+      console.log('uicreated')
 
    }
+
 });
 
 $(document).ready(function () {

@@ -11,7 +11,7 @@ var bottomDockFunction = function() {
         var bottomDockFullsize = false;
 
         // Initialize bottom dock position
-        $('#bottom-dock').css('left',  getBottomDockLeftPosition() );
+        $('#bottom-dock').css('left',  lizMap.getDockRightPosition() );
 
         // Div content interactions
         $('#bottom-dock').hover(
@@ -70,7 +70,7 @@ var bottomDockFunction = function() {
             )
             .html(lizDict['bottomdock.toolbar.btn.glue.glued.title']);
           }
-          $('#bottom-dock').css('left',  getBottomDockLeftPosition() );
+          $('#bottom-dock').css('left',  lizMap.getDockRightPosition() );
           return false;
         })
         .hover(
@@ -130,7 +130,7 @@ var bottomDockFunction = function() {
             .html(lizDict['bottomdock.toolbar.btn.size.minimize.title']);
             $('#bottom-dock').addClass('fullsize');
           }
-          $('#bottom-dock').css('left',  getBottomDockLeftPosition() );
+          $('#bottom-dock').css('left',  lizMap.getDockRightPosition() );
           return false;
         })
         .hover(
@@ -175,13 +175,6 @@ var bottomDockFunction = function() {
             return false
         });
 
-        function getBottomDockLeftPosition() {
-          var left = $('#mapmenu').width();
-          if( $('#dock').css('display') != 'none' && !lizMap.checkMobile() )
-            left+= $('#dock').width() + 11;
-          return left;
-        }
-
         function activateBottomDock() {
           $('#mapmenu li.nav-bottomdock > a').parent().addClass('active');
 
@@ -205,7 +198,7 @@ var bottomDockFunction = function() {
 
         function showBottomDockContent(){
           $('#bottom-dock').addClass('visible');
-          $('#bottom-dock').css('left',  getBottomDockLeftPosition() );
+          $('#bottom-dock').css('left',  lizMap.getDockRightPosition() );
           return false;
         }
         function hideBottomDockContent(){

@@ -360,7 +360,37 @@ ul.nav.nav-tabs {
     border-bottom: 1px dashed #F0F0F0;
 }
 
-/* Dock */
+
+/*
+SubDock
+*/
+#sub-dock{
+  display:none;
+  position:absolute;
+  left:30px;
+  top:0px;
+/*
+  bottom:0px;
+*/
+  /*max-width:30%;
+  max-height:90%;*/
+  z-index:1000;
+  overflow:auto;
+  background-color:#4A4A4A;
+  background-color:rgba(0,0,0,0.7);
+  padding:5px;
+  border-left: 1px solid #F0F0F0;
+  max-width:30%;
+  right:auto;
+}
+#content.mobile #sub-dock{
+  max-width:100%;
+  bottom:0px;
+  right:0px;
+  background-color:#4A4A4A;
+}
+
+/* Mini-Dock */
 #mini-dock {
   position:absolute;
   right:60px;
@@ -689,6 +719,7 @@ Timemanager
 #toolbar h3,
 #menu h3,
 #dock h3,
+#sub-dock h3,
 #mini-dock h3,
 div.modal h3,
 .dock-subtitle
@@ -706,6 +737,10 @@ div.modal h3,
 */
   font-size : 0.9em;
 }
+#sub-dock h3 {
+  margin-bottom: 5px;
+  border-bottom: 1px dashed #F0F0F0;
+}
 #mini-dock h3, #bottom-dock h3 {
   background-color:#4A4A4A;
   background-color:rgba(0,0,0,0.7);
@@ -717,6 +752,7 @@ div.modal h3 {
 #toolbar h3 span.title,
 #menu h3 span.title,
 #dock h3 span.title,
+#sub-dock h3 span.title,
 #mini-dock h3 span.title,
 #bottom-dock h3 span.title,
 div.modal h3 span.title {
@@ -726,6 +762,7 @@ div.modal h3 span.title {
 #toolbar h3 span.menu-content,
 #menu h3 span.ui-icon,
 #dock h3 span.ui-icon,
+#sub-dock h3 span.ui-icon,
 #mini-dock h3 span.ui-icon,
 div.modal h3 span.ui-icon {
   float : right;
@@ -737,10 +774,12 @@ div.modal h3 span.ui-icon {
 #toolbar div.menu-content,
 #menu div.menu-content,
 #dock div.menu-content,
+#sub-dock div.menu-content,
 #mini-dock div.menu-content,
 div.modal div.menu-content {
   display : block;
   padding : 0.5em;
+  background-color: #F0F0F0;
 }
 
 #dock div.menu-content,
@@ -804,7 +843,9 @@ div.modal .form-actions {
 #toolbar h3 .icon,
 #menu h3 .icon,
 #dock h3 .icon,
+#sub-dock h3 .icon,
 #mini-dock h3 .icon,
+#bottom-dock h3 .icon,
 div.modal h3 .icon {
   display:inline-block;
   vertical-align:middle;
@@ -819,6 +860,7 @@ div.modal h3 .icon {
 #toolbar h3 .text,
 #menu h3 .text,
 #dock h3 .text,
+#sub-dock h3 .text,
 #mini-dock h3 .text,
 #bottom-dock h3 .text,
 div.modal h3 .text {
@@ -841,6 +883,13 @@ div.modal h3 .text {
 #menu .legend h3 .icon,
 #dock .legend h3 .icon,
 #mini-dock .legend h3 .icon {
+  background-position: -75px 0px;
+}
+#toolbar .metadata h3 .icon,
+#menu .metadata h3 .icon,
+#dock .metadata h3 .icon,
+#sub-dock .metadata h3 .icon,
+#mini-dock .metadata h3 .icon {
   background-position: -75px 0px;
 }
 #toolbar .locate h3 .icon,
@@ -1004,6 +1053,7 @@ div.modal h3 .text {
 */
 #toolbar .menu-content .btn.btn-success,
 #dock .menu-content .btn.btn-success,
+#sub-dock .menu-content .btn.btn-success,
 #mini-dock .menu-content .btn.btn-success{
   background-color: #93C01F;
   background-image: -moz-linear-gradient(center top, #9BC144, #93C01F);
@@ -1125,6 +1175,15 @@ div.modal h3 .text {
 #switcher-layers {
   padding-left: 19px;/**/
 }
+
+#switcher-layers-actions {
+  background-color: inherit;
+  padding:0px 2px 2px 2px;
+}
+#switcher-layers-actions.active {
+  background-color:#E0E0E0;
+}
+
 
 #switcher > div {
   /*padding-left : 19px;
@@ -1270,6 +1329,11 @@ div.modal h3 .text {
 }
 #switcher span.label {
   white-space:normal;
+}
+
+#switcher .treeTable tr.selected, #switcher .treeTable tr.accept {
+  border: 1px solid #0094D6;
+  background-color:inherit;
 }
 
 #switcher-baselayer .menu-content  {

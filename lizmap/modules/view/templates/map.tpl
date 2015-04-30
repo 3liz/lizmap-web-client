@@ -28,6 +28,9 @@
       {zone 'view~map_dock', array('repository'=>$repository,'project'=>$project,'dockable'=>$dockable)}
   </div>
 
+  <div id="sub-dock">
+  </div>
+
   <div id="mini-dock">
     {zone 'view~map_minidock', array('repository'=>$repository,'project'=>$project,'dockable'=>$minidockable)}
   </div>
