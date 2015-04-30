@@ -42,7 +42,7 @@ body {
 }
 #headermenu .navbar-search .icon {
   background-color: transparent;
-  background-position: -100px -20px;
+  background-position: -400px 0px;
   border: none;
 }
 #headermenu .navbar-search .icon span {
@@ -127,19 +127,23 @@ body {
   width:20px;
   height:20px;
 }
+/*
+CSS Sprite ositions calculated via http://instantsprite.com/ or https://draeton.github.io/stitches/
+*/
+
 #mapmenu .nav-list > li.home .icon {
-  background-position: -80px 0px;
+  background-position: -25px 0px;
 }
 #mapmenu .nav-list > li.home.active .icon,
 #mapmenu .nav-list > li.home a:hover .icon {
-  background-position: -80px -20px;
+  background-position: -0px 0px;
 }
 #mapmenu .nav-list > li.metadata .icon {
-  background-position: -120px 0px;
+  background-position: -125px 0px;
 }
 #mapmenu .nav-list > li.metadata.active .icon,
 #mapmenu .nav-list > li.metadata a:hover .icon {
-  background-position: -120px -20px;
+  background-position: -100px 0px;
 }
 /*
 #mapmenu .nav-list > li.map .icon {
@@ -158,60 +162,67 @@ body {
 }
 */
 #mapmenu .nav-list > li.switcher .icon {
-  background-position: -120px -80px;
+  background-position: -75px 0px;
 }
 #mapmenu .nav-list > li.switcher.active .icon,
 #mapmenu .nav-list > li.switcher a:hover .icon {
-  background-position: -120px -100px;
+  background-position: -50px 0px;
 }
 #mapmenu .nav-list > li.legend .icon {
-  background-position: -40px -160px;
+  background-position: -75px 0px;
 }
 #mapmenu .nav-list > li.legend.active .icon,
 #mapmenu .nav-list > li.legend a:hover .icon {
-  background-position: -40px -180px;
+  background-position: -50px 0px;
 }
 #mapmenu .nav-list > li.locate .icon {
-  background-position: -20px -80px;
+  background-position: -175px 0px;
 }
 #mapmenu .nav-list > li.locate.active .icon,
 #mapmenu .nav-list > li.locate a:hover .icon {
-  background-position: -20px -100px;
+  background-position: -150px 0px;
 }
 #mapmenu .nav-list > li.print .icon {
-  background-position: -160px 0px;
+  background-position: -375px 0px;
 }
 #mapmenu .nav-list > li.print.active .icon,
 #mapmenu .nav-list > li.print a:hover .icon {
-  background-position: -160px -20px;
+  background-position: -350px 0px;
 }
 #mapmenu .nav-list > li.measure .icon {
-  background-position: -140px 0px;
+  background-position: -275px 0px;
 }
 #mapmenu .nav-list > li.measure.active .icon,
 #mapmenu .nav-list > li.measure a:hover .icon {
-  background-position: -140px -20px;
+  background-position: -250px 0px;
 }
 #mapmenu .nav-list > li.edition .icon {
-  background-position: -200px 0px;
+  background-position: -475px 0px;
 }
 #mapmenu .nav-list > li.edition.active .icon,
 #mapmenu .nav-list > li.edition a:hover .icon {
-  background-position: -200px -20px;
+  background-position: -450px 0px;
 }
 #mapmenu .nav-list > li.geolocation .icon {
-  background-position: -20px -40px;
+  background-position: -325px 0px;
 }
 #mapmenu .nav-list > li.geolocation.active .icon,
 #mapmenu .nav-list > li.geolocation a:hover .icon {
-  background-position: -20px -60px;
+  background-position: -300px 0px;
 }
 #mapmenu .nav-list > li.attributeLayers .icon {
-  background-position: -40px -160px;
+  background-position: -525px 0px;
 }
 #mapmenu .nav-list > li.attributeLayers.active .icon,
 #mapmenu .nav-list > li.attributeLayers a:hover .icon {
-  background-position: -40px -180px;
+  background-position: -500px 0px;
+}
+#mapmenu .nav-list > li.permaLink .icon {
+  background-position: -675px 0px;
+}
+#mapmenu .nav-list > li.permaLink.active .icon,
+#mapmenu .nav-list > li.permaLink a:hover .icon {
+  background-position: -650px 0px;
 }
 
 
@@ -222,61 +233,61 @@ body {
 }
 
 .navbar .nav .metadata .icon {
-  background-position: -120px -20px;
+  background-position: -125px 0px;
 }
 .navbar .nav .metadata a:hover .icon,
 .navbar .nav .metadata.active a .icon {
-  background-position: -120px 0px;
+  background-position: -100px 0px;
 }
 
 .navbar .nav .map .icon {
-  background-position: -40px -60px;
+  background-position: -75px 0px;
 }
 .navbar .nav .map a:hover .icon,
 .navbar .nav .map.active a .icon {
-  background-position: -40px -40px;
+  background-position: -50px 0px;
 }
 .navbar .nav .legend .icon {
-  background-position: -40px -100px;
+  background-position: -75px 0px;
 }
 .navbar .nav .legend a:hover .icon,
 .navbar .nav .legend.active a .icon {
-  background-position: -40px -80px;
+  background-position: -50px 0px;
 }
 .navbar .nav .locate .icon {
-  background-position: -20px -100px;
+  background-position: -175px 0px;
 }
 .navbar .nav .locate a:hover .icon,
 .navbar .nav .locate.active a .icon {
-  background-position: -20px -80px;
+  background-position: -150px 0px;
 }
 .navbar .nav .print .icon {
-  background-position: -160px -20px;
+  background-position: -375px 0px;
 }
 .navbar .nav .print a:hover .icon,
 .navbar .nav .print.active a .icon {
-  background-position: -160px 0px;
+  background-position: -350px 0px;
 }
 .navbar .nav .edition .icon {
-  background-position: -200px -20px;
+  background-position: -475px 0px;
 }
 .navbar .nav .edition a:hover .icon,
 .navbar .nav .edition.active a .icon {
-  background-position: -200px 0px;
+  background-position: -450px 0px;
 }
 .navbar .nav .measure .icon {
-  background-position: -140px -20px;
+  background-position: -275px 0px;
 }
 .navbar .nav .measure a:hover .icon,
 .navbar .nav .measure.active a .icon {
-  background-position: -140px 0px;
+  background-position: -250px 0px;
 }
 .navbar .nav .geolocation .icon {
-  background-position: -20px -60px;
+  background-position: -325px 0px;
 }
 .navbar .nav .geolocation a:hover .icon,
 .navbar .nav .geolocation.active a .icon {
-  background-position: -20px -40px;
+  background-position: -300px 0px;
 }
 
 /* Dock */
@@ -582,21 +593,21 @@ Timemanager
 */
 #toolbar #timemanager-menu h3 .icon,
 #menu #timemanager-menu h3 .icon {
-  background-image : url(images/sprite_timemanager.png);
+  background-image : url(images/sprite_20_tools.png);
 }
 .navbar .navbar-inner .timemanager .icon {
-  background-image:url("images/sprite_timemanager.png");
+  background-image:url("images/sprite_20_tools.png");
 }
 .navbar .nav .timemanager .icon {
-  background-position: 0px 0px;
+  background-position: -625px 0px;
 }
 .navbar .nav .timemanager a:hover .icon,
 .navbar .nav .timemanager.active a .icon {
-  background-position: -20px 0px;
+  background-position: -600px 0px;
 }
 #toolbar .timemanager h3 .icon,
 #menu .timemanager h3 .icon {
-  background-position: -20px 0px;
+  background-position: -625px 0px;
 }
 #tmLayers button{
   width:16px;
@@ -818,49 +829,55 @@ div.modal h3 .text {
 #menu .baselayer h3 .icon,
 #dock .baselayer h3 .icon,
 #mini-dock .baselayer h3 .icon {
-  background-position : -40px 0px;
+  background-position : -725px 0px;
 }
 #toolbar .switcher h3 .icon,
 #menu .switcher h3 .icon,
 #dock .switcher h3 .icon,
 #mini-dock .switcher h3 .icon {
-  background-position : -120px -80px;
+  background-position : -75px 0px;
 }
 #toolbar .legend h3 .icon,
 #menu .legend h3 .icon,
 #dock .legend h3 .icon,
 #mini-dock .legend h3 .icon {
-  background-position: -40px -160px;
+  background-position: -75px 0px;
 }
 #toolbar .locate h3 .icon,
 #menu .locate h3 .icon,
 #dock .locate h3 .icon,
 #mini-dock .locate h3 .icon {
-  background-position : -20px -80px;
+  background-position : -175px 0px;
 }
 #toolbar .geolocation h3 .icon,
 #menu .geolocation h3 .icon,
 #dock .geolocation h3 .icon,
 #mini-dock .geolocation h3 .icon {
-  background-position: -20px -40px;
+  background-position: -325px 0px;
 }
 #toolbar .print h3 .icon,
 #menu .print h3 .icon,
 #dock .print h3 .icon,
 #mini-dock .print h3 .icon {
-  background-position: -160px 0px;
+  background-position: -375px 0px;
 }
 #toolbar .measure h3 .icon,
 #menu .measure h3 .icon,
 #dock .measure h3 .icon,
 #mini-dock .measure h3 .icon {
-  background-position: -140px 0px;
+  background-position: -275px 0px;
 }
 #toolbar .edition h3 .icon,
 #menu .edition h3 .icon,
 #dock .edition h3 .icon,
 #mini-dock .edition h3 .icon {
-  background-position : -200px 0px;
+  background-position : -475px 0px;
+}
+#toolbar .permaLink h3 .icon,
+#menu .permaLink h3 .icon,
+#dock .permaLink h3 .icon,
+#mini-dock .permaLink h3 .icon {
+  background-position : -675px 0px;
 }
 
 #map-content {
@@ -1515,17 +1532,8 @@ div.modal h3 .text {
   width:90px;
 }
 
-#permalink-box {
-  top : 10px;
-  right : 60px;
-  position : absolute;
-  z-index : 1000;
-  background: white;
-  background: rgba(255,255,255,0.5);
-}
 #permalink {
   padding:2px;
-  font-size: 0.75em;
 }
 
 #message {
