@@ -5343,7 +5343,12 @@ lizMap.events.on({
     }
    ,
    'uicreated': function(evt){
-      console.log('uicreated')
+      //~ console.log('uicreated')
+      $('#sub-dock').hover(function(){
+        var sLeft = lizMap.getDockRightPosition();
+        $(this).css( 'left', sLeft );
+        console.log('left = ' + sLeft );
+      });
 
    }
 

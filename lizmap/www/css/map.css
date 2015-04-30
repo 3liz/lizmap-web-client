@@ -22,6 +22,19 @@ body {
   width:235px;
   margin-left:120px;
 }
+#headermenu.mobile .navbar-search {
+  margin-top:1px;
+  height:30px;
+  width:100px;
+  margin-left:10px;
+
+}
+#headermenu.mobile #auth {
+  position: absolute;
+  top: -30px;
+  right: 5px;
+}
+
 #headermenu .navbar-search .search-query {
   z-index:2;
   position: absolute;
@@ -313,6 +326,7 @@ CSS Sprite ositions calculated via http://instantsprite.com/ or https://draeton.
   bottom:0px;
   right:0px;
   background-color:#4A4A4A;
+  z-index:1100;
 }
 
 #dock.half {
@@ -387,7 +401,9 @@ SubDock
   max-width:100%;
   bottom:0px;
   right:0px;
+  left:0px;
   background-color:#4A4A4A;
+  z-index:1200;
 }
 
 /* Mini-Dock */
