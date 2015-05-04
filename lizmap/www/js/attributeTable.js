@@ -421,7 +421,7 @@ var lizAttributeTable = function() {
                     if( eFormat == 'GML' )
                         eFormat = 'GML3';
                     var eName = $(this).parents('div.attribute-layer-main:first').attr('id').replace('attribute-layer-main-', '');
-                    exportAttributeTable( eName, eFormat );
+                    lizMap.exportVectorLayer( eName, eFormat );
                     $(this).blur();
                     return false;
                 });
@@ -1088,62 +1088,7 @@ var lizAttributeTable = function() {
                 return false;
             }
 
-            function getAttributeFeatureUrlData( aName, b_exp_filter, b_featureId ) {
-                var getFeatureUrlData = {};
 
-                // Set function parameters if not given
-                b_exp_filter = typeof b_exp_filter !== 'undefined' ?  b_exp_filter : null;
-                b_featureId = typeof b_featureId !== 'undefined' ?  b_featureId : null;
-
-                // Build WFS request parameters
-                var typeName = aName.replace(' ','_');
-                var layerName = lizMap.cleanName(aName);
-
-                //~ // Calculate bbox from map extent
-                //~ var extent = lizMap.map.getExtent().clone();
-                //~ var projFeat = new OpenLayers.Projection(config.layers[aName].crs);
-                //~ extent = extent.transform( lizMap.map.getProjection(), projFeat );
-                //~ var bbox = extent.toBBOX();
-
-                var wfsOptions = {
-                    'SERVICE':'WFS'
-                    ,'VERSION':'1.0.0'
-                    ,'REQUEST':'GetFeature'
-                    ,'TYPENAME':typeName
-                    ,'OUTPUTFORMAT':'GeoJSON'
-                    //~ ,'BBOX': bbox
-                    //~ ,'MAXFEATURES': 100
-                };
-
-                var filterParam = [];
-
-                if( b_exp_filter ){
-                    // Remove layerName followed by :
-                    b_exp_filter = b_exp_filter.replace( aName + ':', '');
-                    filterParam.push( b_exp_filter );
-                }else{
-                    // If not filter passed, check if a filter does not exists for the layer
-                    var aFilter = config.layers[aName]['request_params']['filter'];
-                    if( aFilter ){
-                        aFilter = aFilter.replace( aName + ':', '');
-                        filterParam.push( aFilter );
-                    }
-                }
-
-                if( filterParam.length )
-                    wfsOptions['EXP_FILTER'] = filterParam.join( ' AND ' );
-
-                // optionnal parameter filterid
-                if( b_featureId )
-                    wfsOptions['FEATUREID'] = b_featureId;
-
-                getFeatureUrlData['url'] = OpenLayers.Util.urlAppend(lizUrls.wms
-                        ,OpenLayers.Util.getParameterString(lizUrls.params)
-                );
-                getFeatureUrlData['options'] = wfsOptions;
-
-                return getFeatureUrlData;
-            }
 
             function getAttributeFeatureData(aName, aFilter, aFeatureID, aCallBack){
 
@@ -1152,7 +1097,7 @@ var lizAttributeTable = function() {
                 aCallBack = typeof aCallBack !== 'undefined' ?  aCallBack : null;
 
                 $('body').css('cursor', 'wait');
-                var getFeatureUrlData = getAttributeFeatureUrlData( aName, aFilter, aFeatureID );
+                var getFeatureUrlData = lizMap.getVectorLayerWfsUrl( aName, aFilter, aFeatureID );
                 $.get( getFeatureUrlData['url'], getFeatureUrlData['options'], function(data) {
 
                     var cFeatures = data.features;
@@ -1270,44 +1215,6 @@ var lizAttributeTable = function() {
                 });
 
 
-            }
-
-            function getSelectionFeatureId( aName ) {
-                var featureidParameter = '';
-                var selectionLayer = attributeLayersDic[ aName ];
-                if( config.layers[selectionLayer]['selectedFeatures'] ){
-                    var fids = [];
-                    for( var id in config.layers[selectionLayer]['selectedFeatures'] ) {
-                        fids.push( selectionLayer + '.' + config.layers[selectionLayer]['selectedFeatures'][id] );
-                    }
-                    if( fids.length )
-                        featureidParameter = fids.join();
-                }
-
-                return featureidParameter;
-            }
-
-            function exportAttributeTable( aName, eformat ) {
-
-                // Set function parameters if not given
-                eformat = typeof eformat !== 'undefined' ?  eformat : 'GeoJSON';
-
-                // Get selected features
-                var featureid = getSelectionFeatureId( aName );
-                // Get WFS url and options
-                var getFeatureUrlData = getAttributeFeatureUrlData( aName, null, featureid );
-                // Force download
-                getFeatureUrlData['options']['dl'] = 1;
-                // Set export format
-                getFeatureUrlData['options']['OUTPUTFORMAT'] = eformat;
-                // Build WFS url
-                var exportUrl = OpenLayers.Util.urlAppend(
-                    getFeatureUrlData['url'],
-                    OpenLayers.Util.getParameterString( getFeatureUrlData['options'] )
-                );
-                // Open in new window
-                window.open( exportUrl );
-                return false;
             }
 
             function refreshLayerSelection( featureType, featId, rupdateDrawing ) {
@@ -1502,7 +1409,7 @@ var lizAttributeTable = function() {
             typeNameDone.push( typeName );
 
             // Get features to refresh attribute table AND build children filters
-            var getFeatureUrlData = getAttributeFeatureUrlData( typeName, aFilter );
+            var getFeatureUrlData = lizMap.getVectorLayerWfsUrl( typeName, aFilter );
 
             getAttributeFeatureData(typeName, aFilter, null, function(aName, aNameFilter, aNameFeatures, aNameAliases ){
 

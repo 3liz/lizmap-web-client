@@ -70,6 +70,12 @@ var lizMap = function() {
     'ignphoto': 'ign-photo'
   }
 
+  /**
+   * PRIVATE Property: layerCleanNames
+   *
+   */
+  var layerCleanNames = {};
+
 
   /**
    * PRIVATE function: cleanName
@@ -90,6 +96,13 @@ var lizMap = function() {
     aName = normalize(aName);
     var reg = new RegExp('\\W', 'g');
     return aName.replace(reg, '_');
+  }
+
+  function getLayerNameByCleanName( cleanName ){
+    var layerName = null;
+    if( cleanName in layerCleanNames )
+      layerName = layerCleanNames[cleanName];
+    return layerName;
   }
 
 
@@ -469,6 +482,7 @@ var lizMap = function() {
       var layer = nested.nestedLayers[i];
       var layerConfig = config.layers[layer.name];
       var layerName = cleanName(layer.name);
+      layerCleanNames[layerName] = layer.name;
 
       if (layer.name.toLowerCase() == 'hidden')
         continue;
@@ -4263,6 +4277,113 @@ var lizMap = function() {
     return elt;
   }
 
+  /**
+   * PRIVATE function: exportVectorLayer
+   * Write message to the UI
+   *
+   *
+   * Returns:
+   * {jQuery Object} The message added.
+   */
+  function exportVectorLayer( aName, eformat ) {
+
+      // Set function parameters if not given
+      eformat = typeof eformat !== 'undefined' ?  eformat : 'GeoJSON';
+
+      // Get selected features
+      var selectionLayer = getLayerNameByCleanName( aName );
+      var featureid = getVectorLayerSelectionFeatureIdsString( selectionLayer );
+
+      // Get WFS url and options
+      var getFeatureUrlData = getVectorLayerWfsUrl( aName, null, featureid );
+
+      // Force download
+      getFeatureUrlData['options']['dl'] = 1;
+
+      // Set export format
+      getFeatureUrlData['options']['OUTPUTFORMAT'] = eformat;
+
+      // Build WFS url
+      var exportUrl = OpenLayers.Util.urlAppend(
+          getFeatureUrlData['url'],
+          OpenLayers.Util.getParameterString( getFeatureUrlData['options'] )
+      );
+      // Open in new window
+      window.open( exportUrl );
+      return false;
+  }
+
+  function getVectorLayerSelectionFeatureIdsString( aName ) {
+      var featureidParameter = '';
+
+      if( config.layers[aName]['selectedFeatures'] ){
+          var fids = [];
+          for( var id in config.layers[aName]['selectedFeatures'] ) {
+              fids.push( aName + '.' + config.layers[aName]['selectedFeatures'][id] );
+          }
+          if( fids.length )
+              featureidParameter = fids.join();
+      }
+
+      return featureidParameter;
+  }
+
+  function getVectorLayerWfsUrl( aName, aFilter, aFeatureId ) {
+      var getFeatureUrlData = {};
+
+      // Set function parameters if not given
+      aFilter = typeof aFilter !== 'undefined' ?  aFilter : null;
+      aFeatureId = typeof aFeatureId !== 'undefined' ?  aFeatureId : null;
+
+      // Build WFS request parameters
+      var typeName = aName.replace(' ','_');
+      var layerName = cleanName(aName);
+
+      //~ // Calculate bbox from map extent
+      //~ var extent = map.getExtent().clone();
+      //~ var projFeat = new OpenLayers.Projection(config.layers[aName].crs);
+      //~ extent = extent.transform( map.getProjection(), projFeat );
+      //~ var bbox = extent.toBBOX();
+
+      var wfsOptions = {
+          'SERVICE':'WFS'
+          ,'VERSION':'1.0.0'
+          ,'REQUEST':'GetFeature'
+          ,'TYPENAME':typeName
+          ,'OUTPUTFORMAT':'GeoJSON'
+          //~ ,'BBOX': bbox
+          //~ ,'MAXFEATURES': 100
+      };
+
+      var filterParam = [];
+
+      if( aFilter ){
+          // Remove layerName followed by :
+          aFilter = aFilter.replace( aName + ':', '');
+          filterParam.push( aFilter );
+      }else{
+          // If not filter passed, check if a filter does not exists for the layer
+          var aFilter = config.layers[aName]['request_params']['filter'];
+          if( aFilter ){
+              aFilter = aFilter.replace( aName + ':', '');
+              filterParam.push( aFilter );
+          }
+      }
+
+      if( filterParam.length )
+          wfsOptions['EXP_FILTER'] = filterParam.join( ' AND ' );
+
+      // optionnal parameter filterid
+      if( aFeatureId )
+          wfsOptions['FEATUREID'] = aFeatureId;
+
+      getFeatureUrlData['url'] = OpenLayers.Util.urlAppend(lizUrls.wms
+              ,OpenLayers.Util.getParameterString(lizUrls.params)
+      );
+      getFeatureUrlData['options'] = wfsOptions;
+
+      return getFeatureUrlData;
+  }
 
 
   // creating the lizMap object
@@ -4316,6 +4437,13 @@ var lizMap = function() {
      */
     cleanName: function( aName ) {
       return cleanName( aName );
+    },
+
+    /**
+     * Method: getLayerNameByCleanName
+     */
+    getLayerNameByCleanName: function( cleanName ) {
+      return getLayerNameByCleanName( cleanName );
     },
 
     /**
@@ -4385,6 +4513,20 @@ var lizMap = function() {
 
     deleteEditionFeature: function( aLayerId, aFid, aMessage, aCallback ){
         return deleteEditionFeature( aLayerId, aFid, aMessage, aCallback );
+    },
+
+    /**
+     * Method: exportVectorLayer
+     */
+    exportVectorLayer: function( aName, eformat ) {
+      return exportVectorLayer( aName, eformat );
+    },
+
+    /**
+     * Method: exportVectorLayer
+     */
+    getVectorLayerWfsUrl: function( aName, aFilter, aFeatureId ) {
+      return getVectorLayerWfsUrl( aName, aFilter, aFeatureId );
     },
 
     /**
@@ -5347,7 +5489,6 @@ lizMap.events.on({
       $('#sub-dock').hover(function(){
         var sLeft = lizMap.getDockRightPosition();
         $(this).css( 'left', sLeft );
-        console.log('left = ' + sLeft );
       });
 
    }
