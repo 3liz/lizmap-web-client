@@ -26,6 +26,7 @@ var lizAttributeTable = function() {
             );
 
             // Verifying WFS layers
+            $('#bottom-dock-content').css('cursor', 'wait');
             $.get(service, {
                 'SERVICE':'WFS'
                 ,'VERSION':'1.0.0'
@@ -153,7 +154,8 @@ var lizAttributeTable = function() {
                         return -1;
                     }
                 }
-            } );
+                $('#bottom-dock-content').css('cursor', 'auto');
+            });
 
             function activateAttributeLayers() {
                 attributeLayersActive = true;
