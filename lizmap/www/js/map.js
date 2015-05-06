@@ -4316,7 +4316,7 @@ var lizMap = function() {
   function getVectorLayerSelectionFeatureIdsString( aName ) {
       var featureidParameter = '';
 
-      if( config.layers[aName]['selectedFeatures'] ){
+      if( 'selectedFeatures' in config.layers && config.layers[aName]['selectedFeatures'] ){
           var fids = [];
           for( var id in config.layers[aName]['selectedFeatures'] ) {
               fids.push( aName + '.' + config.layers[aName]['selectedFeatures'][id] );
@@ -4363,10 +4363,12 @@ var lizMap = function() {
           filterParam.push( aFilter );
       }else{
           // If not filter passed, check if a filter does not exists for the layer
-          var aFilter = config.layers[aName]['request_params']['filter'];
-          if( aFilter ){
-              aFilter = aFilter.replace( aName + ':', '');
-              filterParam.push( aFilter );
+          if( 'request_params' in config.layers[aName] && 'filter' in config.layers[aName]['request_params'] ){
+            var aFilter = config.layers[aName]['request_params']['filter'];
+            if( aFilter ){
+                aFilter = aFilter.replace( aName + ':', '');
+                filterParam.push( aFilter );
+            }
           }
       }
 

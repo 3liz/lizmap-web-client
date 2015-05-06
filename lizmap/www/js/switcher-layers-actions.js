@@ -114,13 +114,12 @@ var lizLayerActionButtons = function() {
             var eFormat = $(this).text();
             if( eFormat == 'GML' )
                 eFormat = 'GML3';
-            var eName = $(this).parents('div.attribute-layer-main:first').attr('id').replace('attribute-layer-main-', '');
+            var eName = $('#layerActionExport').val();
             if( !eName )
                 return false;
             lizMap.exportVectorLayer( eName, eFormat );
-            $(this).blur();
+            $('#switcher').click(); // blur dropdown
             return false;
-
         });
 
     },
@@ -162,6 +161,7 @@ var lizLayerActionButtons = function() {
         if(
             itemType == 'layer'
             && itemSelected
+            && 'attributeLayers' in lizMap.config
             && itemName in lizMap.config.attributeLayers
             && itemConfig['geometryType'] != 'none'
             && itemConfig['geometryType'] != 'unknown'
