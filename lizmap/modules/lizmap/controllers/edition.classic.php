@@ -1316,7 +1316,7 @@ class editionCtrl extends jController {
    * @return Redirect to the validation action.
    */
   public function deleteFeature(){
-    if(!$this->getEditionParameters($save))
+    if( !$this->getEditionParameters() )
       return $this->serviceAnswer();
 
       // Get editLayer capabilities
