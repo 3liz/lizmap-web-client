@@ -76,6 +76,12 @@ var lizMap = function() {
    */
   var layerCleanNames = {};
 
+  /**
+   * PRIVATE Property: lizmapLayerFilterActive. Contains layer name if filter is active
+   *
+   */
+  var lizmapLayerFilterActive = null;
+
 
   /**
    * PRIVATE function: cleanName
@@ -4426,6 +4432,11 @@ var lizMap = function() {
      * {Object} The map tree
      */
     tree: null,
+    /**
+     * Property: lizmapLayerFilterActive
+     * {Object} Contains main filtered layer if filter is active
+     */
+    lizmapLayerFilterActive: null,
 
     /**
      * Method: checkMobile

@@ -122,6 +122,21 @@ var lizLayerActionButtons = function() {
             return false;
         });
 
+
+        $('#layerActionUnfilter').click(function(){
+            var layerName = lizMap.lizmapLayerFilterActive;
+            if( !layerName )
+                return false;
+
+            lizMap.events.triggerEvent(
+                "layerfeatureremovefilter",
+                { 'featureType': layerName}
+            );
+            lizMap.lizmapLayerFilterActive = null;
+
+            return false;
+        });
+
     },
     'lizmapswitcheritemselected': function(evt){
 

@@ -20,6 +20,8 @@
                 </ul>
             </div>
 
+            <button class="btn btn-mini pull-right" id="layerActionUnfilter" style="display:none;" title="{@view~map.switcher.layer.unfilter.title@}"><i class="icon-filter"></i></button>
+
         </div>
         <div id="switcher-layers"></div>
     </div>

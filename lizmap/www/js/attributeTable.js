@@ -9,12 +9,11 @@ var lizAttributeTable = function() {
             var hasAttributeTableLayers = false;
             var attributeLayersActive = false;
             var attributeLayersDic = {};
-            var lizmapLayerFilterActive = false;
 
             var startupFilter = false;
             if( !( typeof lizLayerFilter === 'undefined' ) ){
                 startupFilter = true;
-                lizmapLayerFilterActive = true;
+                lizMap.lizmapLayerFilterActive = true;
             }
 
             if (!('attributeLayers' in config))
@@ -224,7 +223,7 @@ var lizAttributeTable = function() {
 
                 // Filter button : only if no filter applied at startup
                 if( !startupFilter
-                    && ( !lizmapLayerFilterActive || lizmapLayerFilterActive == layerName )
+                    && ( !lizMap.lizmapLayerFilterActive || lizMap.lizmapLayerFilterActive == layerName )
                 ){
                     html+= '    <button class="btn-filter-attributeTable btn btn-mini' + filClass + '" value="' + layerName + '" title="'+lizDict['attributeLayers.toolbar.btn.data.filter.title']+'"><i class="icon-filter"></i></button>';
                 }
@@ -400,13 +399,13 @@ var lizAttributeTable = function() {
                                 "layerfeatureremovefilter",
                                 { 'featureType': aName}
                             );
-                            lizmapLayerFilterActive = false;
+                            lizMap.lizmapLayerFilterActive = null;
                         } else {
                             lizMap.events.triggerEvent(
                                 "layerfeaturefilterselected",
                                 { 'featureType': aName}
                             );
-                            lizmapLayerFilterActive = aName;
+                            lizMap.lizmapLayerFilterActive = aName;
                         }
                         return false;
                     })
@@ -1339,7 +1338,7 @@ var lizAttributeTable = function() {
                 // Empty array
                 config.layers[featureType]['filteredFeatures'] = [];
 
-                lizmapLayerFilterActive = false;
+                lizMap.lizmapLayerFilterActive = null;
 
                 // Empty layer filter
                 var layer = lizMap.map.getLayersByName( featureType )[0];
@@ -1376,7 +1375,7 @@ var lizAttributeTable = function() {
                 // Remove selection
                 emptyLayerSelection( featureType, false );
 
-                lizmapLayerFilterActive = featureType;
+                lizMap.lizmapLayerFilterActive = featureType;
 
                 lizMap.events.triggerEvent(
                     "layerFilteredFeaturesChanged",
@@ -1402,6 +1401,16 @@ var lizAttributeTable = function() {
 
             // Apply filter and get children
             applyLayerFilter( typeName, aFilter, typeNamePile, typeNameFilter, typeNameDone, cascade );
+
+            // Change background in switcher
+            var trFilteredBgcolor = 'inherit'; var displayUnFilterSwitcherTool = false;
+            if( aFilter ){
+                trFilteredBgcolor = 'rgba(255, 171, 0, 0.4)';
+                displayUnFilterSwitcherTool = true;
+            }
+            $('#switcher .treeTable tr#group-' + typeName).css('background-color', trFilteredBgcolor );
+            $('#switcher .treeTable tr#layer-' + typeName).css('background-color', trFilteredBgcolor );
+            $('#layerActionUnfilter' ).toggle( displayUnFilterSwitcherTool ).css('background-color', trFilteredBgcolor );
 
         }
 
@@ -1799,8 +1808,8 @@ var lizAttributeTable = function() {
                 // Then display it only if:
                 // * no other features is active and selected items exists for this layer
                 // * or this is the layer for which it is active
-                if( ( !lizmapLayerFilterActive && selIds && selIds.length > 0)
-                    || lizmapLayerFilterActive == featureType
+                if( ( !lizMap.lizmapLayerFilterActive && selIds && selIds.length > 0)
+                    || lizMap.lizmapLayerFilterActive == featureType
                  ){
                     $('button.btn-filter-attributeTable[value="'+featureType+'"]').removeClass('hidden');
 
@@ -1960,7 +1969,7 @@ var lizAttributeTable = function() {
                             eHtml+= '" title="' + lizDict['attributeLayers.btn.select.title'] + '"><i class="icon-ok"></i>&nbsp;</button>';
 
                             if( !startupFilter
-                                && (lizmapLayerFilterActive == getLayerConfig[0] || !lizmapLayerFilterActive )
+                                && (lizMap.lizmapLayerFilterActive == getLayerConfig[0] || !lizMap.lizmapLayerFilterActive )
                             ){
                                 var filClass = '';
                                 if( layerConfig['filteredFeatures'].indexOf( fid ) != -1 )
@@ -2066,7 +2075,7 @@ var lizAttributeTable = function() {
                                         'layerfeaturefilterselected',
                                         { 'featureType': featureType, 'fid': fid, 'updateDrawing': true}
                                     );
-                                    lizmapLayerFilterActive = featureType;
+                                    lizMap.lizmapLayerFilterActive = featureType;
                                     $(this).addClass('btn-warning');
                                 }else{
                                     // Then remove filter for this selected feature
@@ -2075,7 +2084,7 @@ var lizAttributeTable = function() {
                                         { 'featureType': featureType }
                                     );
                                     $(this).removeClass('btn-warning');
-                                    lizmapLayerFilterActive = false;
+                                    lizMap.lizmapLayerFilterActive = null;
                                 }
                                 return false;
                             })
