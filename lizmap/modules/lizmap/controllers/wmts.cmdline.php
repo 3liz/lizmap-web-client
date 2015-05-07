@@ -71,7 +71,7 @@ class wmtsCtrl extends jControllerCmdLine {
         layer           the layer name for which you want to know capabilities
         TileMatrixSet   the TileMatrixSet for which you want to know capabilites
     Use:
-        php lizmap/scripts/script.php lizmap~wmts:capabilities [-v] [-f] repository project [layer] [TileMatrixSet]
+        php lizmap/scripts/script.php lizmap~wmts:capabilities [-v] repository project [layer] [TileMatrixSet]
         ',
         'seeding' => 'Generate cache for a layer
     options:
