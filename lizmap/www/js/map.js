@@ -1152,6 +1152,7 @@ var lizMap = function() {
         });
         // add combobox to the filter select
         $('#locate-layer-'+layerName+'-'+locate.filterFieldName).combobox({
+          position: { my : "right top", at: "right bottom" },
           "selected": function(evt, ui){
             if ( ui.item ) {
               var self = $(this);
@@ -1162,6 +1163,7 @@ var lizMap = function() {
             }
           }
         });
+
         // add place holder to the filter combobox input
         $('#locate-layer-'+layerName+'-'+locate.filterFieldName+' ~ span > input').attr('placeholder', filterPlaceHolder).val('');
         updateSwitcherSize();
