@@ -952,6 +952,14 @@ var lizMap = function() {
    * creating the map {<OpenLayers.Map>}
    */
   function createMap() {
+    // Insert or update projection liste
+    if ( lizProj4 ) {
+        for( var ref in lizProj4 ) {
+            if ( !(ref in Proj4js.defs) ) {
+              Proj4js.defs[ref]=lizProj4[ref];
+          }
+        }
+    }
     // get and define projection
     var proj = config.options.projection;
     if ( !(proj.ref in Proj4js.defs) )

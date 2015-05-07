@@ -573,6 +573,15 @@ class lizmapProject{
         return $this->xml->xpath( "//spatialrefsys/authid[.='".$authId."']/parent::*/proj4" );
     }
 
+    public function getAllProj4( ) {
+        $srsList = array();
+        $spatialrefsys = $this->xml->xpath( "//spatialrefsys" );
+        foreach ( $spatialrefsys as $srs ) {
+            $srsList[ (string) $srs->authid ] = (string) $srs->proj4;
+        }
+        return $srsList;
+    }
+
     public function getFullCfg(){
         return $this->cfg;
     }

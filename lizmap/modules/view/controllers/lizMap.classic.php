@@ -138,6 +138,7 @@ class lizMapCtrl extends jController {
       $lizUrls['removeCache'] = jUrl::get('admin~config:removeLayerCache');
 
     $rep->addJSCode("var lizUrls = ".json_encode($lizUrls).";");
+    $rep->addJSCode("var lizProj4 = ".json_encode($lproj->getAllProj4()).";");
     $rep->addStyle('#map','background-color:'.$lproj->getCanvasColor().';');
 
     // Get the WMS information
