@@ -456,7 +456,7 @@ var lizMap = function() {
     }
     return order;
   }
-  
+
   function beforeLayerTreeCreated() {
      if (
        (('osmMapnik' in config.options)
@@ -625,7 +625,7 @@ var lizMap = function() {
           );
         }
     }
-    
+
     var wmtsFormat = new OpenLayers.Format.WMTSCapabilities({});
 
     for (var i = 0, len = nested.nestedLayers.length; i<len; i++) {
@@ -647,7 +647,7 @@ var lizMap = function() {
       // if the layer is not the Overview and had a config
       // creating the {<OpenLayers.Layer.WMS>} and the tree node
       var node = {name:layerName,config:layerConfig,parent:pNode};
-      
+
       var layerWmsParams = {
           layers:layer.name
           ,version:'1.3.0'
@@ -657,7 +657,7 @@ var lizMap = function() {
       };
       if (layerWmsParams.format != 'image/jpeg')
           layerWmsParams['transparent'] = true;
-      
+
       var wmtsLayer = null;
       if ( layerConfig.cached == 'True' && wmtsCapabilities ) {
           $.each(wmtsCapabilities.contents.layers, function(i, l) {
@@ -671,8 +671,10 @@ var lizMap = function() {
                 params: layerWmsParams,
                 attribution:layer.attribution,
                 isBaseLayer: (layerConfig.baseLayer == 'True'),
-                alwaysInRange: false
+                alwaysInRange: false,
+                url: serviceUrl
             });
+            console.log( wmtsLayer );
             //console.log( wmtsLayer.projection );
             return false;
           });
@@ -699,7 +701,7 @@ var lizMap = function() {
         ){
           layerWmsParams['FILTER'] = layerName+':'+lizLayerFilter[ layerName ];
         }
-       
+
       if (layerConfig.baseLayer == 'True' && wmtsLayer != null) {
           // creating the base layer
           baselayers.push( wmtsLayer );
@@ -765,7 +767,7 @@ var lizMap = function() {
           getLayerTree(layer,node);
       if (layerConfig.baseLayer != 'True')
           pNode.children.push(node);
-      
+
     }
   }
 
