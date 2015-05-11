@@ -92,10 +92,10 @@ class lizmapProxy {
                 if ( preg_match( '#^Content-Type:\s+([\w/\.+]+)(;\s+charset=(\S+))?#i', $header, $matches ) ){
                     $mime = $matches[1];
                     if ( count( $matches ) > 3 )
-		        $mime .= '; charset='.$matches[3];
+                $mime .= '; charset='.$matches[3];
                 } else if ('HTTP/' === substr($header, 0, 5)) {
                     list($version, $code, $phrase) = explode(' ', $header, 3) + array('', FALSE, '');
-		    $http_code = (int) $code;
+            $http_code = (int) $code;
                 }
                 // optional debug
                 if($debug){
@@ -130,22 +130,7 @@ class lizmapProxy {
 
         $layers = str_replace(',', '_', $params['layers'] );
         $crs = preg_replace('#[^a-zA-Z0-9_]#', '_', $params['crs']);
-        $profile = 'lizmapCache_'.$repository.'_'.$project.'_'.$layers.'_'.$crs;
-        lizmapProxy::createVirtualProfile( $repository, $project, $layers, $crs );
-        
-        if ( !$forced ) {
-            $tile = jCache::get( $key, $profile );
 
-            if( $tile ){
-                $mime = 'image/jpeg';
-                if(preg_match('#png#', $params['format'] ))
-                    $mime = 'image/png';
-                //~ jLog::log( 'cache hit !');
-                return array( $tile, $mime, 200);
-            }
-        }
-
-        // No cache hit, get more information about tile to grab
         // Get repository data
         $ser = lizmap::getServices();
         $lrep = lizmap::getRepository( $repository );
@@ -162,7 +147,7 @@ class lizmapProxy {
             $configLayer = $configLayers->$layername;
 
         // Set or get tile from the parent project in case of embedded layers
-        if( $configLayer 
+        if( $configLayer
             and property_exists($configLayer, 'sourceRepository')
             and property_exists($configLayer, 'sourceProject')
         ){
@@ -173,6 +158,26 @@ class lizmapProxy {
             $lrep = lizmap::getRepository($repository);
             $lproj = lizmap::getProject($repository.'~'.$project);
         }
+
+        // Get tile cache virtual profile (tile storage)
+        // And get tile if already in cache
+        // --> must be done after checking that parent project is involved
+        $profile = 'lizmapCache_'.$repository.'_'.$project.'_'.$layers.'_'.$crs;
+        lizmapProxy::createVirtualProfile( $repository, $project, $layers, $crs );
+
+        if ( !$forced ) {
+            $tile = jCache::get( $key, $profile );
+
+            if( $tile ){
+                $mime = 'image/jpeg';
+                if(preg_match('#png#', $params['format'] ))
+                    $mime = 'image/png';
+                //~ jLog::log( 'cache hit !');
+                return array( $tile, $mime, 200);
+            }
+        }
+
+        // No cache hit, get more information about tile to grab
 
         // Has the user asked for cache for this layer ?
         $string2bool = array('false'=>False, 'False'=>False, 'True'=>True, 'true'=>True);
@@ -206,7 +211,7 @@ class lizmapProxy {
         if($configLayer and property_exists($configLayer, 'metatileSize'))
             if(preg_match('#^[3579],[3579]$#', $configLayer->metatileSize))
                 $metatileSize = $configLayer->metatileSize;
-        
+
         # Metatile buffer
         $metatileBuffer = 5;
 
@@ -253,7 +258,7 @@ class lizmapProxy {
         $data = $getRemoteData[0];
         $mime = $getRemoteData[1];
         $code = $getRemoteData[2];
-        
+
         if ( $useCache && !preg_match('/^image/',$mime) )
             $useCache = False;
 
