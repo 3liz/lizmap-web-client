@@ -69,6 +69,35 @@ var lizLayerActionButtons = function() {
         return html;
     }
 
+    // Bind click on layer style selector
+    function onStyleSelection( bindClick ){
+        $('#switcher-layers-actions a.btn-style-layer').unbind('click');
+
+        if( !bindClick )
+            return false;
+
+        $('#switcher-layers-actions a.btn-style-layer').click(function(){
+            var eStyle = $(this).text();
+
+            var eName = $('#layerActionStyle').val();
+            if( !eName )
+                return false;
+
+            var getLayer = lizMap.map.getLayersByName( eName );
+            if( !getLayer )
+                return false;
+
+            var oLayer = lizMap.map.getLayersByName( eName )[0];
+            if( oLayer && eStyle != ''){
+                oLayer.params['STYLES'] = eStyle;
+                oLayer.redraw( true );
+            }
+
+            $('#switcher').click(); // blur dropdown
+            return false;
+        });
+    }
+
     lizMap.events.on({
 
     'uicreated': function(evt){
@@ -128,7 +157,7 @@ var lizLayerActionButtons = function() {
             return false;
         });
 
-
+        // Export action
         $('#switcher-layers-actions a.btn-export-layer').click(function(){
             var eFormat = $(this).text();
             if( eFormat == 'GML' )
@@ -186,7 +215,7 @@ var lizLayerActionButtons = function() {
         // Metadata
         $('#layerActionMetadata').attr( 'disable', !itemSelected ).toggleClass( 'disabled', !itemSelected );
 
-        //~ // Zoom to layer
+        // Zoom to layer
         $('#layerActionZoom').attr( 'disable', (itemType == 'group' || !itemSelected) || !('extent' in itemConfig) ).toggleClass( 'disabled', (itemType == 'group' || !itemSelected || !('extent' in itemConfig) ) );
 
         // Export layer
@@ -203,6 +232,27 @@ var lizLayerActionButtons = function() {
             showExport = true;
         }
         $('#layerActionExport').attr( 'disable', !showExport ).toggleClass( 'disabled', !showExport );
+
+
+        // Layer style
+        // Only if layer has styles defined
+        var showStyles = false;
+        var styleHtml = '';
+        if(
+            itemType == 'layer'
+            && itemSelected
+            && 'styles' in itemConfig
+        ){
+            showStyles = true;
+            for( var st in itemConfig.styles ){
+                styleHtml += '<li><a href="#" class="btn-style-layer">'+itemConfig.styles[st]+'</a></li>';
+            }
+        }
+        $('#layerActionStyle').next('ul:first').html( styleHtml );
+        onStyleSelection(showStyles);
+        $('#layerActionStyle').attr( 'disable', !showStyles ).toggleClass( 'disabled', !showStyles );
+
+
 
         // Refresh sub-dock content
         if( $('#sub-dock .sub-metadata').length ){

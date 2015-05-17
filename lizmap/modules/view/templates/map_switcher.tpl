@@ -8,6 +8,15 @@
         <button class="btn btn-mini disabled" id="layerActionZoom" title="{@view~map.switcher.layer.zoomToExtent.title@}"><i class="icon-zoom-in icon-white"></i></button>
 
         <div class="btn-group" role="group" >
+            <button type="button" id="layerActionStyle" class="btn btn-mini dropdown-toggle disabled" data-toggle="dropdown" aria-expanded="false" title="{@view~map.switcher.layer.style.title@}">
+                <i class="icon-adjust icon-white"></i>
+              <span class="caret"></span>
+            </button>
+            <ul class="dropdown-menu" role="menu">
+            </ul>
+        </div>
+
+        <div class="btn-group" role="group" >
             <button type="button" id="layerActionExport" class="btn btn-mini dropdown-toggle disabled" data-toggle="dropdown" aria-expanded="false" title="{@view~map.switcher.layer.export.title@}">
                 <i class="icon-download icon-white"></i>
               <span class="caret"></span>
