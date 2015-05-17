@@ -5,9 +5,7 @@
             <button class="btn btn-mini disabled" id="layerActionMetadata" title="{@view~map.switcher.layer.metadata.title@}"><i class=
             "icon-info-sign"></i></button>
 
-<!--
-            <button class="btn btn-mini ui-state-disabled" id="layerActionZoom"><i class="icon-zoom-in"></i></button>
--->
+            <button class="btn btn-mini disabled" id="layerActionZoom"><i class="icon-zoom-in"></i></button>
 
             <div class="btn-group" role="group" >
                 <button type="button" id="layerActionExport" class="btn btn-mini dropdown-toggle disabled" data-toggle="dropdown" aria-expanded="false" title="{@view~map.switcher.layer.export.title@}">

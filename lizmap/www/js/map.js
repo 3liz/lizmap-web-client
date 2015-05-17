@@ -674,7 +674,7 @@ var lizMap = function() {
                 alwaysInRange: false,
                 url: serviceUrl
             });
-            console.log( wmtsLayer );
+            // console.log( wmtsLayer );
             //console.log( wmtsLayer.projection );
             return false;
           });

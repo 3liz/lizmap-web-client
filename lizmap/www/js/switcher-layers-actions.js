@@ -106,6 +106,25 @@ var lizLayerActionButtons = function() {
             if( !layerName )
                 return false;
 
+            itemConfig = lizMap.config.layers[layerName];
+            if( itemConfig.type == 'group' || !( 'extent' in itemConfig ) || !( 'crs' in itemConfig ) )
+                return false;
+
+            var lex = itemConfig['extent'];
+            var lBounds = new OpenLayers.Bounds(
+                lex[0],
+                lex[1],
+                lex[2],
+                lex[3]
+            );
+            var layerProj = new OpenLayers.Projection( itemConfig.crs );
+            var mapProj = lizMap.map.getProjectionObject();
+            mapProj = new OpenLayers.Projection( 'EPSG:3857' );
+            lBounds.transform(
+                layerProj,
+                mapProj
+            );
+            lizMap.map.zoomToExtent( lBounds );
             return false;
         });
 
@@ -168,7 +187,7 @@ var lizLayerActionButtons = function() {
         $('#layerActionMetadata').attr( 'disable', !itemSelected ).toggleClass( 'disabled', !itemSelected );
 
         //~ // Zoom to layer
-        //~ $('#layerActionZoom').attr( 'disable', (itemType == 'group' || !itemSelected) ).toggleClass( 'disabled', (itemType == 'group' || !itemSelected) );
+        $('#layerActionZoom').attr( 'disable', (itemType == 'group' || !itemSelected) || !('extent' in itemConfig) ).toggleClass( 'disabled', (itemType == 'group' || !itemSelected || !('extent' in itemConfig) ) );
 
         // Export layer
         // Only if layer is in attribute table
