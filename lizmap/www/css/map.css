@@ -1194,10 +1194,14 @@ div.modal h3 .text {
 
 #switcher-layers-actions {
   background-color: inherit;
-  padding:0px 2px 2px 2px;
+  margin-bottom: 1px;
+  border-top: 1px solid rgba(255,255,255,0.4);
 }
 #switcher-layers-actions.active {
-  background-color:#E0E0E0;
+  border-top: 1px solid rgba(255,255,255,0.6);
+}
+#switcher-layers-actions button{
+  border: none;
 }
 
 
