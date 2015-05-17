@@ -1,15 +1,15 @@
-    <div class="row">
-      <div class="span4 offset1">
+    <div>
+      <div>
         <h2>{@view~map.metadata.h2.illustration@}</h2>
         <p>
           <img src="{jurl 'view~media:illustration', array('repository'=>$repository,'project'=>$project)}" alt="project image" class="img-polaroid liz-project-img">
         </p>
       </div>
 
-      <div class="span5 offset1">
+      <div>
         <h2>{@view~map.metadata.h2.description@}</h2>
         <p>
-          <dl class="dl-horizontal">
+          <dl class="dl-vertical">
             <dt>{@view~map.metadata.description.title@}</dt>
             <dd>{$WMSServiceTitle}&nbsp;</dd>
             <dt>{@view~map.metadata.description.abstract@}</dt>
@@ -18,10 +18,10 @@
         </p>
       </div>
 
-      <div class="span4 offset1">
+      <div>
         <h2>{@view~map.metadata.h2.properties@}</h2>
         <p>
-          <dl class="dl-horizontal">
+          <dl class="dl-vertical">
             <dt>{@view~map.metadata.properties.projection@}</dt>
             <dd><small class="proj">{$ProjectCrs}&nbsp;</small></dd>
             <dt>{@view~map.metadata.properties.extent@}</dt>
@@ -29,13 +29,11 @@
           </dl>
         </p>
       </div>
-    </div>
 
-    <div class="row">
-      <div class="span5 offset1">
+      <div>
         <h2>{@view~map.metadata.h2.contact@}</h2>
         <p>
-          <dl class="dl-horizontal">
+          <dl class="dl-vertical">
             <dt>{@view~map.metadata.contact.organization@}</dt>
             <dd>{$WMSContactOrganization}&nbsp;</dd>
             <dt>{@view~map.metadata.contact.person@}</dt>
@@ -47,10 +45,10 @@
           </dl>
         </p>
       </div>
-      <div class="span7">
+      <div>
         <h2>{@view~map.metadata.h2.resources@}</h2>
         <p>
-          <dl class="dl-horizontal">
+          <dl class="dl-vertical">
             <dt>{@view~map.metadata.resources.website@}</dt>
             <dd><a href="{$WMSOnlineResource}" target="_blank">{$WMSOnlineResource}</a></dd>
 
@@ -62,8 +60,4 @@
         </p>
       </div>
     </div>
-    <!--div class="row">
-      <div class="span4 offset8">
-        <span class="btn" id="hideMetadata">{@view~map.metadata.hide@}</span>
-      </div>
-    </div-->
+
