@@ -2851,7 +2851,7 @@ var lizMap = function() {
         if (l.getVisibility()
           && (
             l.CLASS_NAME == "OpenLayers.Layer.WMS"
-            || ( l.CLASS_NAME == "OpenLayers.Layer.WMTS" && (l.name.lastIndexOf('ign', 0) === 0 ) )
+            || ( l.CLASS_NAME == "OpenLayers.Layer.WMTS" && !(l.name.lastIndexOf('ign', 0) === 0 ) )
           )
         ){
           // Add layer to the list of printed layers
