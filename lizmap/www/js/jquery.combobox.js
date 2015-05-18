@@ -1,8 +1,8 @@
 (function( $ ) {
   $.widget( "custom.combobox", {
-	options: {
-		minLength: 0
-	},
+  options: {
+    minLength: 0
+  },
     _create: function() {
       this.wrapper = $( "<span>" )
         .addClass( "custom-combobox" )
@@ -22,6 +22,7 @@
         .addClass( "custom-combobox-input ui-widget ui-widget-content ui-state-default ui-corner-left label" )
         .autocomplete({
           delay: 0,
+          position: this.options.position,
           minLength: this.options.minLength,
           autoFocus: true,
           source: $.proxy( this, "_source" )
@@ -46,8 +47,8 @@
       this.input.autocomplete( "widget" ).css("z-index","1050");
     },
     _createShowAllButton: function() {
-	  if ( this.minLength > 0 )
-	    return;
+    if ( this.minLength > 0 )
+      return;
       var input = this.input,
       wasOpen = false;
       $( "<a>" )

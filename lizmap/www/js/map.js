@@ -1412,6 +1412,7 @@ var lizMap = function() {
       });
       $('#locate-layer-'+layerName).combobox({
     "minLength": ('minLength' in locate) ? locate.minLength : 0,
+        "position": { my : "right top", at: "right bottom" },
         "selected": function(evt, ui){
           if ( ui.item ) {
             var self = $(this);
