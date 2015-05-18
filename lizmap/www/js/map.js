@@ -2846,11 +2846,25 @@ var lizMap = function() {
       url += '&'+dragCtrl.layout.mapId+':grid_interval_x='+gridInterval;
       url += '&'+dragCtrl.layout.mapId+':grid_interval_y='+gridInterval;
       var printLayers = [];
+      var styleLayers = [];
       $.each(map.layers, function(i, l) {
-        if (l.getVisibility() && l.CLASS_NAME == "OpenLayers.Layer.WMS")
-        printLayers.push(l.params['LAYERS']);
+        if (l.getVisibility()
+          && (
+            l.CLASS_NAME == "OpenLayers.Layer.WMS"
+            || ( l.CLASS_NAME == "OpenLayers.Layer.WMTS" && (l.name.lastIndexOf('ign', 0) === 0 ) )
+          )
+        ){
+          // Add layer to the list of printed layers
+          printLayers.push(l.params['LAYERS']);
+          // Optionnaly add layer style if needed (same order as layers )
+          var lst = 'default';
+          if( 'STYLES' in l.params && l.params['STYLES'].length > 0 )
+            lst = l.params['STYLES'];
+          styleLayers.push( lst );
+        }
       });
       printLayers.reverse();
+      styleLayers.reverse();
 
       // Get active baselayer, and add the corresponding QGIS layer if needed
       var activeBaseLayerName = map.baseLayer.name;
@@ -2859,6 +2873,7 @@ var lizMap = function() {
       }
 
       url += '&'+dragCtrl.layout.mapId+':LAYERS='+printLayers.join(',');
+      url += '&'+dragCtrl.layout.mapId+':STYLES='+styleLayers.join(',');
       if ( dragCtrl.layout.overviewId != null
           && config.options.hasOverview ) {
         var bbox = config.options.bbox;
@@ -2866,8 +2881,10 @@ var lizMap = function() {
         url += '&'+dragCtrl.layout.overviewId+':extent='+oExtent;
         url += '&'+dragCtrl.layout.overviewId+':LAYERS=Overview';
         printLayers.unshift('Overview');
+        styleLayers.unshift('Overview');
       }
       url += '&LAYERS='+printLayers.join(',');
+      url += '&STYLES='+styleLayers.join(',');
       var labels = $('#print .print-labels').find('input.print-label, textarea.print-label').serialize();
       if ( labels != "" )
         url += '&'+labels;
