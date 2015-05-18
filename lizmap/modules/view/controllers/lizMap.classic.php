@@ -224,7 +224,9 @@ class lizMapCtrl extends jController {
                 'path'=>$cssRelPath
               )
             );
-            $rep->addCssLink( $cssUrl );
+            //~ $rep->addCssLink( $cssUrl );
+              // Use addHeadContent and not addCssLink to be sure it will be loaded after minified code
+            $rep->addHeadContent('<link type="text/css" href="'.$cssUrl.'" rel="stylesheet" />');
           }
         }
       }
@@ -247,7 +249,11 @@ class lizMapCtrl extends jController {
                   'path'=>$jsRelPath
                 )
               );
-              $rep->addJSLink( $jsUrl );
+              //~ $rep->addJSLink( $jsUrl );
+              // Use addHeadContent and not addJSLink to be sure it will be loaded after minified code
+              $rep->addContent('<script type="text/javascript" src="'.$jsUrl.'" ></script>');
+
+
             }
           }
         }
