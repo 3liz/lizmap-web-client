@@ -90,8 +90,9 @@ class minifyHTMLResponsePlugin implements jIHTMLResponsePlugin {
         $resultList = array();
 
         foreach ($list as $url=>$parameters) {
-            $pathAbsolute = (strpos($url,'http://') !== false);
-            if( $pathAbsolute || in_array($url, $this->$exclude) ) {
+            $pathAbsolute = (strpos($url,'http://') !== false );
+            $pathAbsolute_s = (strpos($url,'https://') !== false );
+            if( $pathAbsolute || $pathAbsolute_s || in_array($url, $this->$exclude) ) {
                 // for absolute or exculded url, we put directly in the result
                 // we won't try to minify it or combine it with an other file
                 $resultList[$url] = $parameters;
