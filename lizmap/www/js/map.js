@@ -650,6 +650,7 @@ var lizMap = function() {
 
       var layerWmsParams = {
           layers:layer.name
+          ,styles:('styles' in layerConfig) ? layerConfig.styles[0] : 'default'
           ,version:'1.3.0'
           ,exceptions:'application/vnd.ogc.se_inimage'
           ,format:(layerConfig.imageFormat) ? layerConfig.imageFormat : 'image/png'
