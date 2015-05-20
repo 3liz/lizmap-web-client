@@ -49,9 +49,12 @@ class lizmapWMSRequest extends lizmapOGCRequest {
           array("repository"=>$this->repository->getKey(), "project"=>$this->project->getKey())
         );
         $sUrl = str_replace('&', '&amp;', $sUrl);
-        preg_match('/Request.*Request/s', $data, $matches);
-        $matches[0] = preg_replace('/xlink\:href=".*"/', 'xlink:href="'.$sUrl.'&amp;"', $matches[0]);
-        $data = preg_replace('/Request.*Request/s', $matches[0], $data);
+        preg_match('/<get>.*\n*.+xlink\:href="(.+)"/i', $data, $matches);
+        if ( count( $matches ) < 2 )
+            preg_match('/get onlineresource="(.+)"/i', $data, $matches);
+        if ( count( $matches ) > 1 )
+            $data = str_replace($matches[1], $sUrl, $data);
+        $data = str_replace('&amp;&amp;', '&amp;', $data);
 
         if ( preg_match( '@WMS_Capabilities@i', $data) ) {
             // Update namespace
