@@ -311,8 +311,13 @@ class serviceCtrl extends jController {
           0,
           $_SERVER['SERVER_NAME']
         );
-        $sUrl = str_replace('&', '&amp;', $sUrl);
-        $data = preg_replace('/xlink\:href=".*"/', 'xlink:href="'.$sUrl.'&amp;"', $data);
+        $sUrl = str_replace('&', '&amp;', $sUrl.'&');
+        preg_match('/<get>.*\n*.+xlink\:href="(.+)"/i', $data, $matches);
+        if ( count( $matches ) < 2 )
+            preg_match('/get onlineresource="(.+)"/i', $data, $matches);
+        if ( count( $matches ) > 1 )
+            $data = str_replace($matches[1], $sUrl, $data);
+        $data = str_replace('&amp;&amp;', '&amp;', $data);
 
         // Remove no interoparable elements
         $data = preg_replace('@<GetPrint[^>]*?>.*?</GetPrint>@si', '', $data);
