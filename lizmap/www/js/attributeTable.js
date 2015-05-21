@@ -245,7 +245,7 @@ var lizAttributeTable = function() {
 
                 // Create button
                 var canCreate = false;
-                if( layerName in config.editionLayers ) {
+                if( 'editionLayers' in config && layerName in config.editionLayers ) {
                     var al = config.editionLayers[layerName];
                     if( al.capabilities.createFeature == "True" )
                         canCreate = true;
@@ -623,17 +623,20 @@ var lizAttributeTable = function() {
                             childLi.push(cLi);
 
                             // Add create child feature button
-                            var editionConfig = getLayerConfigById(
-                                relation.referencingLayer,
-                                config.editionLayers,
-                                'layerId'
-                            );
                             var canCreateChild = false;
-                            if( childLayerName in config.editionLayers ) {
-                                var al = config.editionLayers[childLayerName];
-                                if( al.capabilities.createFeature == "True" )
-                                    canCreateChild = true;
+                            if( 'editionLayers' in config ){
+                                var editionConfig = getLayerConfigById(
+                                    relation.referencingLayer,
+                                    config.editionLayers,
+                                    'layerId'
+                                );
+                                if( childLayerName in config.editionLayers ) {
+                                    var al = config.editionLayers[childLayerName];
+                                    if( al.capabilities.createFeature == "True" )
+                                        canCreateChild = true;
+                                }
                             }
+
                             if( canCreateChild ){
                                 // Button to create a new child : Usefull for both 1:n and n:m relation
                                 childCreateButtonItems.push( '<li><a href="#' + childLayerName + '" class="btn-createFeature-attributeTable">' + childLayerConfig.title +'</a></li>' );
@@ -797,7 +800,7 @@ var lizAttributeTable = function() {
                     // Check edition capabilities
                     var canEdit = false;
                     var canDelete = false;
-                    if( aName in config.editionLayers ) {
+                    if( 'editionLayers' in config && aName in config.editionLayers ) {
                         var al = config.editionLayers[aName];
                         if( al.capabilities.modifyAttribute == "True" )
                             canEdit = true;
@@ -1981,11 +1984,14 @@ var lizAttributeTable = function() {
                         }
 
                         // Edit button
-                        var eConfig = getLayerConfigById(
-                            layerId,
-                            config.editionLayers,
-                            'layerId'
-                        );
+                        var econfig = null;
+                        if( 'editionLayers' in config ) {
+                            eConfig = getLayerConfigById(
+                                layerId,
+                                config.editionLayers,
+                                'layerId'
+                            );
+                        }
                         if( eConfig && eConfig[1].capabilities.modifyAttribute == "True") {
                             eHtml+= '<button class="btn btn-mini popup-layer-feature-edit" value="';
                             eHtml+= $(this).val();
