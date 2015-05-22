@@ -48,7 +48,7 @@ class wmtsCtrl extends jControllerCmdLine {
         'seeding' => array(
             'repository'=>True,
             'project'=>True,
-            'layer'=>True,
+            'layers'=>True,
             'TileMatrixSet'=>True,
             'TileMatrixMin'=>True,
             'TileMatrixMax'=>True
@@ -80,7 +80,7 @@ class wmtsCtrl extends jControllerCmdLine {
     parameters:
         repository      the repository id
         project         the project name
-        layer           the layer name for which you want to generate the cache
+        layers          the layer name list for which you want to generate the cache
         TileMatrixSet   the TileMatrixSet for which you want to generate the cache. The TileMatrixSet is a CRS
         TileMatrixMin   the min zoom level to generate
         TileMatrixMax   the min zoom level to generate
@@ -183,94 +183,94 @@ class wmtsCtrl extends jControllerCmdLine {
         }
         
         $layers = $tileMatrixSetList = jCache::get($cacheId . '_layers');
-        $layerId = $this->param('layer');
-        $layer = null;
+        $layerIds = explode( ',', $this->param('layers') );
+        $selectedLayers = array();
         foreach( $layers as $l ) {
-            if ( $l->name == $layerId ) {
-                $layer = $l;
-                break;
+            if ( in_array( '*', $layerIds) || in_array( $l->name, $layerIds) ) {
+                $selectedLayers[] = $l;
             }
         }
         // Layer not found
-        if ( !$layer ) {
-            $rep->addContent("The layer '".$layerId."' has not be found!\n");
+        if ( count( $selectedLayers ) == 0 ) {
+            $rep->addContent("The layers '".implode( ',', $layerIds )."' have not be found!\n");
             return $rep;
         }
         
-        $TileMatrixSetId = $this->param('TileMatrixSet');
-        $tileMatrixSetLink = null;
-        foreach( $layer->tileMatrixSetLinkList as $tms ) {
-            if ( $tms->ref == $TileMatrixSetId ) {
-                $tileMatrixSetLink = $tms;
-                break;
-            }
-        }
-        // TileMatrixSet not found
-        if ( !$tileMatrixSetLink ) {
-            $rep->addContent("The TileMatrixSet '".$TileMatrixSetId."' has not be found!\n");
-            return $rep;
-        }
-        
-        $TileMatrixMin = (int)$this->param('TileMatrixMin');
-        $TileMatrixMax = (int)$this->param('TileMatrixMax');
-        // count tiles
-        $tileCount = 0;
-        foreach ( $tileMatrixSetLink->tileMatrixLimits as $tileMatrixLimit ) {
-            if ( $tileMatrixLimit->id >= $TileMatrixMin && $tileMatrixLimit->id <= $TileMatrixMax ) {
-                $tmCount = ($tileMatrixLimit->maxRow - $tileMatrixLimit->minRow + 1) * ($tileMatrixLimit->maxCol - $tileMatrixLimit->minCol + 1);
-                if ( $verbose )
-                    $rep->addContent($tmCount.' tiles to generate for "'.$layerId.'" "'.$TileMatrixSetId.'" "'. $tileMatrixLimit->id.'"'."\n");
-                $tileCount += $tmCount;
-            }
-        }
-        if ( $verbose ) {
-            $rep->addContent($tileCount.' tiles to generate for "'.$layerId.'" "'.$TileMatrixSetId.'" between "'. $TileMatrixMin.'" and "'. $TileMatrixMax.'"'."\n");
-        }
-        
-        // generate tiles
-        $rep->addContent("Start generation\n");
-        $rep->addContent("================\n");
-        $tileProgress = 0;
-        $tileStepHeight = max( 5.0, floor(5*100/$tileCount) ) ;
-        $tileStep = $tileStepHeight;
-        foreach ( $tileMatrixSetLink->tileMatrixLimits as $tileMatrixLimit ) {
-            if ( $tileMatrixLimit->id >= $TileMatrixMin && $tileMatrixLimit->id <= $TileMatrixMax ) {
-                $row = (int) $tileMatrixLimit->minRow;
-                //$rep->addContent( $tileMatrixLimit->id.' '.$tileMatrixLimit->minRow.' '.$tileMatrixLimit->maxRow.' '.$tileMatrixLimit->minCol.' '.$tileMatrixLimit->maxCol."\n");
-                while ( $row <= $tileMatrixLimit->maxRow ) {
-                    $col = (int) $tileMatrixLimit->minCol;
-                    while ( $col <= $tileMatrixLimit->maxCol ) {
-                        $request = new lizmapWMTSRequest( $project, array(
-                                'service'=>'WMTS',
-                                'version'=>'1.0.0',
-                                'request'=>'GetTile',
-                                'layer'=>$layerId,
-                                'format'=>$layer->imageFormat,
-                                'TileMatrixSet'=>$TileMatrixSetId,
-                                'TileMatrix'=>$tileMatrixLimit->id,
-                                'TileRow'=>$row,
-                                'TileCol'=>$col
-                            )
-                        );
-                        if ( $forced )
-                            $request->setForceRequest( True );
-                        $result = $request->process();
-                        //$rep->addContent($layerId.' '.$layer->imageFormat.' '.$TileMatrixSetId.' '.$tileMatrixLimit->id.' '.$row.' '.$col.' '.$result->code."\n");
-                        $col += 1;
-                        $tileProgress += 1;
-                        if ( $verbose && $tileProgress * 100 / $tileCount >= $tileStep ) {
-                            $tileStep = floor($tileProgress * 100 / $tileCount);
-                            $rep->addContent('Progression: '.$tileStep.'%, '.$tileProgress.' tiles generated on '.$tileCount.' tiles'."\n");
-                            $tileStep = $tileStep + $tileStepHeight;
-                        }
-                    }
-                    $row += 1;
+        foreach( $selectedLayers as $layer ) {
+            $TileMatrixSetId = $this->param('TileMatrixSet');
+            $tileMatrixSetLink = null;
+            foreach( $layer->tileMatrixSetLinkList as $tms ) {
+                if ( $tms->ref == $TileMatrixSetId ) {
+                    $tileMatrixSetLink = $tms;
+                    break;
                 }
             }
+            // TileMatrixSet not found
+            if ( !$tileMatrixSetLink ) {
+                $rep->addContent("The TileMatrixSet '".$TileMatrixSetId."' has not be found!\n");
+                continue;
+            }
+            
+            $TileMatrixMin = (int)$this->param('TileMatrixMin');
+            $TileMatrixMax = (int)$this->param('TileMatrixMax');
+            // count tiles
+            $tileCount = 0;
+            foreach ( $tileMatrixSetLink->tileMatrixLimits as $tileMatrixLimit ) {
+                if ( $tileMatrixLimit->id >= $TileMatrixMin && $tileMatrixLimit->id <= $TileMatrixMax ) {
+                    $tmCount = ($tileMatrixLimit->maxRow - $tileMatrixLimit->minRow + 1) * ($tileMatrixLimit->maxCol - $tileMatrixLimit->minCol + 1);
+                    if ( $verbose )
+                        $rep->addContent($tmCount.' tiles to generate for "'.$layer->name.'" "'.$TileMatrixSetId.'" "'. $tileMatrixLimit->id.'"'."\n");
+                    $tileCount += $tmCount;
+                }
+            }
+            if ( $verbose ) {
+                $rep->addContent($tileCount.' tiles to generate for "'.$layer->name.'" "'.$TileMatrixSetId.'" between "'. $TileMatrixMin.'" and "'. $TileMatrixMax.'"'."\n");
+            }
+            
+            // generate tiles
+            $rep->addContent("Start generation\n");
+            $rep->addContent("================\n");
+            $tileProgress = 0;
+            $tileStepHeight = max( 5.0, floor(5*100/$tileCount) ) ;
+            $tileStep = $tileStepHeight;
+            foreach ( $tileMatrixSetLink->tileMatrixLimits as $tileMatrixLimit ) {
+                if ( $tileMatrixLimit->id >= $TileMatrixMin && $tileMatrixLimit->id <= $TileMatrixMax ) {
+                    $row = (int) $tileMatrixLimit->minRow;
+                    //$rep->addContent( $tileMatrixLimit->id.' '.$tileMatrixLimit->minRow.' '.$tileMatrixLimit->maxRow.' '.$tileMatrixLimit->minCol.' '.$tileMatrixLimit->maxCol."\n");
+                    while ( $row <= $tileMatrixLimit->maxRow ) {
+                        $col = (int) $tileMatrixLimit->minCol;
+                        while ( $col <= $tileMatrixLimit->maxCol ) {
+                            $request = new lizmapWMTSRequest( $project, array(
+                                    'service'=>'WMTS',
+                                    'version'=>'1.0.0',
+                                    'request'=>'GetTile',
+                                    'layer'=>$layer->name,
+                                    'format'=>$layer->imageFormat,
+                                    'TileMatrixSet'=>$TileMatrixSetId,
+                                    'TileMatrix'=>$tileMatrixLimit->id,
+                                    'TileRow'=>$row,
+                                    'TileCol'=>$col
+                                )
+                            );
+                            if ( $forced )
+                                $request->setForceRequest( True );
+                            $result = $request->process();
+                            //$rep->addContent($layer->name.' '.$layer->imageFormat.' '.$TileMatrixSetId.' '.$tileMatrixLimit->id.' '.$row.' '.$col.' '.$result->code."\n");
+                            $col += 1;
+                            $tileProgress += 1;
+                            if ( $verbose && $tileProgress * 100 / $tileCount >= $tileStep ) {
+                                $tileStep = floor($tileProgress * 100 / $tileCount);
+                                $rep->addContent('Progression: '.$tileStep.'%, '.$tileProgress.' tiles generated on '.$tileCount.' tiles'."\n");
+                                $tileStep = $tileStep + $tileStepHeight;
+                            }
+                        }
+                        $row += 1;
+                    }
+                }
+            }
+            $rep->addContent("================\n");
+            $rep->addContent("End generation\n");
         }
-        $rep->addContent("================\n");
-        $rep->addContent("End generation\n");
-        
         return $rep;
     }
 }
