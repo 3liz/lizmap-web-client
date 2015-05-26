@@ -1714,14 +1714,22 @@ var lizAttributeTable = function() {
 
                 }
                 lizMap.deleteEditionFeature( layerId, featureId, deleteConfirm, function( aLID, aFID ){
-                    var dTable = '#attribute-layer-table-'+lizMap.cleanName( eConfig[0] );
-                    // todo simplement supprimer la lignes des features et raffraîchir
-                    if( $(dTable).length ){
-                        var dFilter = null;
-                        getAttributeFeatureData( eConfig[0], dFilter, null, function(someName, someNameFilter, someNameFeatures, someNameAliases){
-                            getAttributeTableFeature( someName, dTable, someNameFeatures, someNameAliases);
-                        });
+                    // Check if the map and tables must be refreshed after this deletion
+                    var featureType = eConfig[0];
+                    var cascadeToChildren = $('#jforms_view_attribute_layers_option_cascade_label input[name="cascade"]').prop('checked');
+                    // Get filter status for the layer concerned by the edition
+                    var hasFilter = false;
+                    if( config.layers[featureType]['filteredFeatures'].length > 0
+                        || config.layers[featureType]['request_params']['filter']
+                        || config.layers[featureType]['request_params']['exp_filter']
+                    ){
+                       hasFilter = true;
                     }
+                    if( hasFilter && lizMap.lizmapLayerFilterActive && cascadeToChildren ){
+                        var parentFeatureType = lizMap.lizmapLayerFilterActive;
+                        updateMapLayerDrawing( parentFeatureType, cascadeToChildren )
+                    }
+
                 });
             }
 
