@@ -154,7 +154,7 @@ var lizAttributeTable = function() {
                     }
                 }
                 $('#bottom-dock-content').css('cursor', 'auto');
-            });
+            },'xml');
 
             function activateAttributeLayers() {
                 attributeLayersActive = true;
@@ -1112,7 +1112,7 @@ var lizAttributeTable = function() {
 
                     $('body').css('cursor', 'auto');
 
-                });
+                },'json'));
 
                 return false;
 

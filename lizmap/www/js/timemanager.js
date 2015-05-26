@@ -84,7 +84,7 @@ var lizTimemanager = function() {
                   }
                 });
               }
-            } );
+            },'xml' );
 
             // Vector layers popup
             var tmHighlightedLayers = [];
