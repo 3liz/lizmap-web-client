@@ -1112,7 +1112,7 @@ var lizAttributeTable = function() {
 
                     $('body').css('cursor', 'auto');
 
-                },'json'));
+                },'json');
 
                 return false;
 
