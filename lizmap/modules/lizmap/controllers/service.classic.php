@@ -39,7 +39,7 @@ class serviceCtrl extends jController {
       jMessage::add('The parameter project is mandatory !', 'ProjectNotDefind');
       return $this->serviceException();
     }
-    
+
     // Get parameters
     if(!$this->getServiceParameters())
       return $this->serviceException();
@@ -283,7 +283,7 @@ class serviceCtrl extends jController {
             );
         }
         $result = $request->process();
-        
+
         $rep = $this->getResponse('binary');
         $rep->mimeType = $result->mime;
         $rep->content = $result->data;
@@ -368,22 +368,22 @@ class serviceCtrl extends jController {
   * @return Image rendered by the Map Server.
   */
   function GetMap(){
-      
+
         // Get parameters
         if(!$this->getServiceParameters())
             return $this->serviceException();
-            
+
         jClasses::inc('lizmap~lizmapWMSRequest');
         $wmsRequest = new lizmapWMSRequest( $this->project, $this->params );
         $result = $wmsRequest->process();
-        
+
         $rep = $this->getResponse('binary');
         $rep->mimeType = $result->mime;
         $rep->content = $result->data;
         $rep->doDownload  =  false;
         $rep->outputFileName  =  'qgis_server_wms_map_'.$this->repository->getKey().'_'.$this->project->getKey();
         $rep->setHttpStatus( $result->code, '' );
-        
+
         if ( !preg_match('/^image/',$result->mime) )
             return $rep;
 
@@ -906,7 +906,7 @@ class serviceCtrl extends jController {
       $rep->mimeType = 'text/json';
       * */
     $rep->mimeType = $mime;
-    if ( $mime == 'text/plain' && strtolower( $this->params['outputformat'] ) == 'geojson' ) {
+    if (   preg_match('#^text/plain#', $mime) && strtolower( $this->params['outputformat'] ) == 'geojson' ) {
         $rep->mimeType = 'text/json';
         $layer = $this->project->findLayerByName( $this->params['typename'] );
         if ( $layer != null ) {
@@ -995,19 +995,19 @@ class serviceCtrl extends jController {
     $rep->setExpires("+300 seconds");
     return $rep;
   }
-  
+
   function GetTile(){
         jClasses::inc('lizmap~lizmapWMTSRequest');
         $wmsRequest = new lizmapWMTSRequest( $this->project, $this->params );
         $result = $wmsRequest->process();
-        
+
         $rep = $this->getResponse('binary');
         $rep->mimeType = $result->mime;
         $rep->content = $result->data;
         $rep->doDownload  =  false;
         $rep->outputFileName  =  'qgis_server_wmts_tile_'.$this->repository->getKey().'_'.$this->project->getKey();
         $rep->setHttpStatus( $result->code, '' );
-        
+
         if ( !preg_match('/^image/',$result->mime) )
             return $rep;
 
@@ -1025,5 +1025,5 @@ class serviceCtrl extends jController {
 
         return $rep;
   }
-  
+
 }
