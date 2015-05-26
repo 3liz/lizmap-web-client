@@ -7,10 +7,8 @@
 
       <div id="attribute-layer-list"></div>
 
-<!--
       <b>Options</b>
       {formfull $form, 'view~index:default', array(), 'htmlbootstrap'}
--->
     </div>
 
 

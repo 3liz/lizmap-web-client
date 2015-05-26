@@ -1941,7 +1941,7 @@ var lizAttributeTable = function() {
                     updateAttributeTableTools( e.featureType );
 
                     // Update layer
-                    var cascadeToChildren = true;
+                    var cascadeToChildren = $('#jforms_view_attribute_layers_option_cascade_label input[name="cascade"]').prop('checked');
                     updateMapLayerDrawing( e.featureType, cascadeToChildren );
 
                 },

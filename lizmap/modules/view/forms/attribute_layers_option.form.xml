@@ -3,8 +3,8 @@
 
 <hidden ref="liz_project"/>
 
-  <checkbox ref="autorefresh">
-     <label locale="view~map.attributeLayers.options.input.autorefresh.label" />
+  <checkbox ref="cascade" defaultvalue="1">
+     <label locale="view~map.attributeLayers.options.input.cascade.label" />
   </checkbox>
 
 </form>
