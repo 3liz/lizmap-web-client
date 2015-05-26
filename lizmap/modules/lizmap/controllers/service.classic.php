@@ -948,7 +948,7 @@ class serviceCtrl extends jController {
       $rep->mimeType = 'text/json';
       * */
     $rep->mimeType = $mime;
-    if ( $mime == 'text/plain' && strtolower( $this->params['outputformat'] ) == 'geojson' ) {
+    if (   preg_match('#^text/plain#', $mime) && strtolower( $this->params['outputformat'] ) == 'geojson' ) {
         $rep->mimeType = 'text/json';
         $layer = $this->project->findLayerByName( $this->params['typename'] );
         if ( $layer != null ) {
