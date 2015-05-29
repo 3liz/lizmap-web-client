@@ -202,7 +202,7 @@ var bottomDockFunction = function() {
           return false;
         }
         function hideBottomDockContent(){
-          $('#bottom-dock').removeClass('visible');
+          $('#bottom-dock').removeClass('visible').focus();
           return false;
         }
 
