@@ -181,6 +181,7 @@ var lizLayerActionButtons = function() {
                 { 'featureType': layerName}
             );
             lizMap.lizmapLayerFilterActive = null;
+            $(this).hide();
 
             return false;
         });

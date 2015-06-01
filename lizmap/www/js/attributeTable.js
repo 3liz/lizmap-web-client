@@ -146,6 +146,28 @@ var lizAttributeTable = function() {
                             function(){ $(this).removeClass('btn-primary'); }
                         );
 
+                        // Bind change on options checkboxes
+                        $('#jforms_view_attribute_layers_option_cascade_label input[name="cascade"]').change(function(){
+                            var doCascade = $('#jforms_view_attribute_layers_option_cascade_label input[name="cascade"]').prop('checked');
+                            // refresh filtered layers if any active
+                            if( lizMap.lizmapLayerFilterActive ){
+                                var featureType = lizMap.lizmapLayerFilterActive;
+                                var layerConfig = config.layers[featureType];
+                                if( layerConfig['filteredFeatures'] ){
+
+                                    // Update attribute table tools
+                                    updateAttributeTableTools( featureType );
+
+                                    // Update layer
+                                    var cascadeToChildren = true;
+                                    if( !doCascade )
+                                        cascadeToChildren = 'removeChildrenFilter';
+                                    updateMapLayerDrawing( featureType, cascadeToChildren );
+
+                                }
+                            }
+                        });
+
 
                     } else {
                         // Hide navbar menu
@@ -1406,14 +1428,15 @@ var lizAttributeTable = function() {
             applyLayerFilter( typeName, aFilter, typeNamePile, typeNameFilter, typeNameDone, cascade );
 
             // Change background in switcher
-            var trFilteredBgcolor = 'inherit'; var displayUnFilterSwitcherTool = false;
+            var trFilteredBgcolor = 'inherit';
+            var displayUnFilterSwitcherTool = false;
             if( aFilter ){
                 trFilteredBgcolor = 'rgba(255, 171, 0, 0.4)';
                 displayUnFilterSwitcherTool = true;
             }
             $('#switcher .treeTable tr#group-' + typeName).css('background-color', trFilteredBgcolor );
             $('#switcher .treeTable tr#layer-' + typeName).css('background-color', trFilteredBgcolor );
-            $('#layerActionUnfilter' ).toggle( displayUnFilterSwitcherTool ).css('background-color', trFilteredBgcolor );
+            $('#layerActionUnfilter' ).toggle( ( lizMap.lizmapLayerFilterActive !== null ) ).css( 'background-color', 'rgba(255, 171, 0, 0.4)');
 
         }
 
@@ -1654,7 +1677,7 @@ var lizAttributeTable = function() {
                         // Build filter for children
                         // and add child to the typeNameFilter and typeNamePile objects
                         // only if typeName filter aFilter was originally set
-                        if( aFilter && cData['parentValues'].length > 0 )
+                        if( aFilter && cData['parentValues'].length > 0 && cascade != 'removeChildrenFilter' )
                             cFilter = cName + ':"' + cData['fieldToFilter'] + '" IN ( ' + cData['parentValues'].join() + ' )';
 
                         config.layers[cName]['request_params']['filter'] = cFilter;
@@ -1678,6 +1701,7 @@ var lizAttributeTable = function() {
                         else
                             cFilter = pivotParam['otherParentTypeName'] + ':"' + pivotParam['otherParentRelation'].referencedField + '" IN ( ' + "'-999999'" + ' )';
                     }
+
                     config.layers[ pivotParam['otherParentTypeName'] ]['request_params']['filter'] = cFilter;
 
                     typeNameFilter[ pivotParam['otherParentTypeName'] ] = cFilter;
@@ -1727,7 +1751,7 @@ var lizAttributeTable = function() {
                     }
                     if( hasFilter && lizMap.lizmapLayerFilterActive && cascadeToChildren ){
                         var parentFeatureType = lizMap.lizmapLayerFilterActive;
-                        updateMapLayerDrawing( parentFeatureType, cascadeToChildren )
+                        updateMapLayerDrawing( parentFeatureType, cascadeToChildren );
                     }
 
                 });
@@ -2084,10 +2108,10 @@ var lizAttributeTable = function() {
                                         'layerfeatureselected',
                                         { 'featureType': featureType, 'fid': fid, 'updateDrawing': false}
                                     );
-                                    // Then filter for this selected feature
+                                    // Then filter for the selected features
                                     lizMap.events.triggerEvent(
                                         'layerfeaturefilterselected',
-                                        { 'featureType': featureType, 'fid': fid, 'updateDrawing': true}
+                                        { 'featureType': featureType}
                                     );
                                     lizMap.lizmapLayerFilterActive = featureType;
                                     $(this).addClass('btn-warning');
