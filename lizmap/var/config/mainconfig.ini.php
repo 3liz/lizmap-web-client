@@ -30,17 +30,17 @@ htmlsimple=simpleHtmlResponse
 
 
 [jResponseHtml]
-plugins = minify
+plugins=minify
 ;concatene et compress les fichier CSS
 minifyCSS=1
 ;concatene et compress les fichier JS
 minifyJS=1
 ; liste des fichiers CSS qui ne doivent pas être compressé
-minifyExcludeCSS = "OpenLayers-2.13/theme/default/style.css"
+minifyExcludeCSS="OpenLayers-2.13/theme/default/style.css"
 ; liste des fichiers JS qui ne doivent pas être compressé
-minifyExcludeJS = "/index.php/view/translate/,/OpenLayers-2.13/OpenLayers.js,/js/jquery-1.11.1.min.js,/js/jquery-ui-1.11.2.custom.min.js"
+minifyExcludeJS="/index.php/view/translate/,/OpenLayers-2.13/OpenLayers.js,/js/jquery-1.11.1.min.js,/js/jquery-ui-1.11.2.custom.min.js"
 ; chemin du point d'entrée de Minify, relatif au basePath
-minifyEntryPoint = minify.php
+minifyEntryPoint=minify.php
 
 [error_handling]
 messageLogFormat="%date%\t[%code%]\t%msg%\t%file%\t%line%\n"
@@ -166,25 +166,25 @@ driver=db
 ; What to do if a right is required but the user has not this right
 ; 1 = generate an error. This value should be set for web services (xmlrpc, jsonrpc...)
 ; 2 = redirect to an action
-on_error = 2
+on_error=2
 
 ; locale key for the error message when on_error=1
-error_message = "jelix~errors.acl.action.right.needed"
+error_message="jelix~errors.acl.action.right.needed"
 
 ; action to execute on a missing authentification when on_error=2
-on_error_action = "jauth~login:form"
+on_error_action="jauth~login:form"
 
 
 [coordplugin_autolocale]
 ; activate the detection from a parameter given in the url
-enableUrlDetection= on
+enableUrlDetection=on
 
 ; indicate the parameter name indicating the language/locale to use
 urlParamNameLanguage=lang
 
 
 ; if no url parameter found, indicate to use one of the prefered language given by the browser
-useDefaultLanguageBrowser = on
+useDefaultLanguageBrowser=on
 
 [sessions]
 ; to disable sessions, set the following parameter to 0
@@ -248,5 +248,6 @@ proj4php.access=1
 [mailLogger]
 email="root@localhost"
 emailHeaders="Content-Type: text/plain; charset=UTF-8\nFrom: webmaster@yoursite.com\nX-Mailer: Jelix\nX-Priority: 1 (Highest)\n"
+
 
 
