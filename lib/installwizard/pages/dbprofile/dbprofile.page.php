@@ -6,7 +6,7 @@
 * @package     InstallWizard
 * @subpackage  pages
 * @author      Laurent Jouanneau
-* @copyright   2010-2011 Laurent Jouanneau
+* @copyright   2010-2015 Laurent Jouanneau
 * @link        http://jelix.org
 * @licence     GNU General Public Licence see LICENCE file or http://www.gnu.org/licenses/gpl.html
 */
@@ -14,6 +14,11 @@
 
 /**
  * page for a wizard, to configure database access for a jelix application
+ *
+ * Configuration parameters:
+ * - ignoreProfiles: list of profile name to ignore from the existing profiles.ini.php(.dist)
+ * - availabledDrivers: list of jdb driver that are allowed
+ * - passwordRequired: if true, a password should be given
  */
 class dbprofileWizPage extends installWizardPage {
 
@@ -49,27 +54,30 @@ class dbprofileWizPage extends installWizardPage {
 
         //$preferPDO = isset($this->config['preferpdo'])?$this->config['preferpdo']:false;
 
-        $drivers = isset($this->config['availabledDrivers'])?$this->config['availabledDrivers']:'mysql,sqlite,pgsql';
+        $tpl->assign('drivers', $this->getDriversList());
+
+        return true;
+    }
+
+    protected function getDriversList(){
+        $driversInfos = jDbParameters::getDriversInfosList();
+
+        $drivers = isset($this->config['availabledDrivers'])?$this->config['availabledDrivers']:'mysqli,sqlite3,pgsql';
         $list = preg_split("/ *, */",$drivers);
         $drivers = array();
 
-        foreach ($list as $drv) {
-            if (extension_loaded($drv))
-                $drivers[$drv] = $drv;
-        }
-
-        if (class_exists('PDO')) {
-            $pdodrivers = PDO::getAvailableDrivers();
-            foreach($pdodrivers as $drv) {
-                if (in_array($drv, $list)) {
-                    $drivers[$drv.'_pdo'] = $drv.' (PDO)';
+        foreach($driversInfos as $drinfos) {
+            if (in_array($drinfos[3], $list)) {
+                $drv = $drinfos[3];
+                if (extension_loaded($drinfos[1])) {
+                    $drivers[$drv] = array($drv, $drinfos[0]) ;
+                }
+                if (class_exists('PDO') && extension_loaded($drinfos[2])) {
+                    $drivers[$drv.':pdo'] = array($drv.' (PDO)', $drinfos[0]);
                 }
             }
         }
-
-        $tpl->assign('drivers', $drivers);
-
-        return true;
+        return $drivers;
     }
 
     function process() {
@@ -83,7 +91,7 @@ class dbprofileWizPage extends installWizardPage {
             $params = array();
             $driver = $_POST['driver'][$profile];
             $usepdo = false;
-            if(substr($driver, -4) == '_pdo') {
+            if(substr($driver, -4) == ':pdo') {
                 $ini->setValue('usepdo', true, $profile);
                 $usepdo = true;
                 $realdriver = substr($driver, 0, -4);
@@ -118,7 +126,7 @@ class dbprofileWizPage extends installWizardPage {
 
             $params['driver'] = $realdriver;
             $ini->setValue('driver', $realdriver, $profile);
-            if ($realdriver != 'sqlite') {
+            if ($_POST['dbtype'][$profile] != 'sqlite') {
 
                 $host = trim($_POST['host'][$profile]);
                 if ($host == '' && $realdriver != 'pgsql') {
@@ -151,14 +159,14 @@ class dbprofileWizPage extends installWizardPage {
                 }
                 else {
                     $ini->setValue('password', $password, $profile);
-                     $params['password'] = $password;
+                    $params['password'] = $password;
                 }
 
                 if (trim($_POST['passwordconfirm'][$profile]) != $password) {
                     $errors[] = $this->locales['error.invalid.confirm.password'];
                 }
 
-                if ($realdriver == 'pgsql') {
+                if ($_POST['dbtype'][$profile] == 'pgsql') {
                     $search_path = trim($_POST['search_path'][$profile]);
                     $params['search_path'] = $search_path;
                     if ($search_path != '') {
@@ -168,14 +176,17 @@ class dbprofileWizPage extends installWizardPage {
             }
 
             if (!count($errors)) {
+                $options = $ini->getValues($profile);
+                $dbparam = new jDbParameters($options);
+                $options = $dbparam->getParameters();
                 try {
                     if ($usepdo) {
                         $m = 'check_PDO';
                     }
                     else {
-                        $m = 'check_'.$realdriver;
+                        $m = 'check_'.$options['driver'];
                     }
-                    $this->$m($params);
+                    $this->$m($options);
                 }
                 catch (Exception $e) {
                     $errors[] = $e->getMessage();
@@ -210,7 +221,7 @@ class dbprofileWizPage extends installWizardPage {
 ;for security reasons, don't remove or modify the first line
 
 [jdb:default]
-driver=mysql
+driver=mysqli
 database=
 host=localhost
 user=
@@ -224,6 +235,7 @@ table_prefix=
         $ini = new jIniFileModifier($file);
 
         $data = array(
+            'dbtype'=>array(),
             'driver'=>array(),
             'database'=>array(),
             'host'=>array(),
@@ -234,7 +246,8 @@ table_prefix=
             'persistent'=>array(),
             'table_prefix'=>array(),
             'force_encoding'=>array(),
-            'search_path'=>array()
+            'search_path'=>array(),
+            'errors'=>array()
         );
 
         $profiles = $ini->getSectionList();
@@ -243,11 +256,15 @@ table_prefix=
             if (strpos($profile,'jdb:') !== 0)
                 continue;
             $dbprofileslist[] = $profile;
+            $options = $ini->getValues($profile);
+            $dbparam = new jDbParameters($options);
+            $options = $dbparam->getParameters();
 
-            $driver = $ini->getValue('driver', $profile);
-            if ($driver == 'pdo') {
+            $data['dbtype'][$profile] = $options['dbtype'];
+            $driver =$options['driver'];
+            if ($options['usepdo']) {
                 $dsn = $ini->getValue('dsn', $profile);
-                $data['driver'][$profile] = substr($dsn,0,strpos($dsn,':')).'_pdo';
+                $data['driver'][$profile] = $driver.':pdo';
                 if (preg_match("/host=([^;]*)(;|$)/", $dsn, $m)) {
                     $data['host'][$profile] = $m[1];
                 }
@@ -271,8 +288,7 @@ table_prefix=
                 }
             }
             else {
-                $usepdo = (bool)$ini->getValue('usepdo', $profile);
-                $data['driver'][$profile] = $ini->getValue('driver', $profile).($usepdo?'_pdo':'');
+                $data['driver'][$profile] = $driver.($options['usepdo']?':pdo':'');
                 $data['database'][$profile] = $ini->getValue('database', $profile);
                 $data['host'][$profile] = $ini->getValue('host', $profile);
                 $data['port'][$profile] = $ini->getValue('port', $profile);
@@ -281,12 +297,8 @@ table_prefix=
             $data['user'][$profile] = $ini->getValue('user', $profile);
             $data['password'][$profile] = $ini->getValue('password', $profile);
             $data['passwordconfirm'][$profile] = $data['password'][$profile];
-            $data['persistent'][$profile] = $ini->getValue('persistent', $profile);
-
-            $force_encoding = $ini->getValue('force_encoding',$profile);
-            if ($force_encoding === null)
-                $force_encoding = true;
-            $data['force_encoding'][$profile]= $force_encoding;
+            $data['persistent'][$profile] = $options['persistent'];
+            $data['force_encoding'][$profile]= $options['force_encoding'];
 
             $data['table_prefix'][$profile] = $ini->getValue('table_prefix', $profile);
             $data['search_path'][$profile] = $ini->getValue('search_path', $profile);
@@ -335,6 +347,16 @@ table_prefix=
         else {
             throw new Exception($this->locales['error.no.connection']);
         }
+        return true;
+    }
+
+    protected function check_mysqli($params) {
+        $host = ($params['persistent']) ? 'p:'.$params['host'] : $params['host'];
+        $cnx = @new mysqli ($host, $params['user'], $params['password'], $params['database']);
+        if ($cnx->connect_errno) {
+            throw new Exception($this->locales['error.no.connection']);
+        }
+        $cnx->close();
         return true;
     }
 
@@ -397,9 +419,30 @@ table_prefix=
         return true;
     }
 
+    protected function check_sqlite3($params) {
+        $db = $params['database'];
+        if ($db[0] == '/') {
+            $path = $db;
+        }
+        else if (preg_match('/^(app|lib|var)\:/', $db)) {
+            $path = jFile::parseJelixPath( $db );
+        }
+        else {
+            $path = jApp::varPath('db/sqlite3/'.$db);
+        }
+
+        try {
+            $sqlite = new SQLite3($path, SQLITE3_OPEN_READWRITE | SQLITE3_OPEN_CREATE);
+            $sqlite->close();
+        }
+        catch(Exception $e) {
+            throw new Exception($this->locales['error.no.connection']);
+        }
+        return true;
+    }
+
     protected function check_PDO($params) {
-        $dsn = $params['driver'].':host='.$params['host'].';dbname='.$params['database'];
-        if ($params['driver'] == 'sqlite') {
+        if ($params['dbtype'] == 'sqlite') {
             $user = '';
             $password = '';
         }
@@ -410,14 +453,7 @@ table_prefix=
             $password = $params['password'];
         }
 
-        unset ($params['driver']);
-        unset ($params['host']);
-        unset ($params['port']);
-        unset ($params['database']);
-        unset ($params['user']);
-        unset ($params['password']);
-
-        $pdo = new PDO($dsn, $user, $password, $params);
+        $pdo = new PDO($params['dsn'], $user, $password, $params['pdooptions']);
         $pdo = null;
     }
 

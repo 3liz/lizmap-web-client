@@ -46,6 +46,7 @@ class jSoapCoordinator extends jCoordinator {
      * Init and return the soap server
      * Use wsdl mode or not depending of the wsdl object param
      * @param jWsdl $wsdl
+     * @return SoapServer
      */
     public function getSoapServer($wsdl = null){
 

@@ -17,6 +17,7 @@ class masterAdminMenuItem {
     public $type = 'url';
     public $order = 0;
     public $icon = '';
+    public $newWindow = false;
     
     public $childItems = array();
     

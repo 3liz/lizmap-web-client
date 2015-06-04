@@ -35,7 +35,7 @@ class jSession {
 
         //make sure that the session cookie is only for the current application
         if (!$params['shared_session'])
-            session_set_cookie_params ( 0 , jApp::config()->urlengine['basePath']);
+            session_set_cookie_params ( 0 , jApp::urlBasePath());
 
         if ($params['storage'] != '') {
 

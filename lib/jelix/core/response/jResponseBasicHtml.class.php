@@ -227,7 +227,7 @@ class jResponseBasicHtml extends jResponse {
         $HEADBOTTOM = implode("\n", $this->_headBottom);
         $BODYTOP = implode("\n", $this->_bodyTop);
         $BODYBOTTOM = implode("\n", $this->_bodyBottom);
-        $BASEPATH = jApp::config()->urlengine['basePath'];
+        $BASEPATH = jApp::urlBasePath();
 
         ob_start();
         foreach($this->plugins as $name=>$plugin)
@@ -274,7 +274,7 @@ class jResponseBasicHtml extends jResponse {
         $HEADBOTTOM = implode("\n", $this->_headBottom);
         $BODYTOP = implode("\n", $this->_bodyTop);
         $BODYBOTTOM = implode("\n", $this->_bodyBottom);
-        $BASEPATH = jApp::config()->urlengine['basePath'];
+        $BASEPATH = jApp::urlBasePath();
 
         header("HTTP/{$this->httpVersion} 500 Internal jelix error");
         header('Content-Type: text/html;charset='.$this->_charset);

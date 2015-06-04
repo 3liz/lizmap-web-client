@@ -146,7 +146,7 @@ class defaultCtrl extends jController {
         $rep->body->assign('page_title', 'Unit Tests');
         $rep->body->assign('versionphp',phpversion());
         $rep->body->assign('versionjelix',JELIX_VERSION);
-        $rep->body->assign('basepath',jApp::config()->urlengine['basePath']);
+        $rep->body->assign('basepath', jApp::urlBasePath());
         $rep->body->assign('isurlsig', jApp::config()->urlengine['engine'] == 'significant');
 
         $runnerPreparer = jClasses::create('junittests~jrunnerpreparer');

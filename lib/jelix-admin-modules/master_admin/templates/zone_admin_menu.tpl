@@ -6,7 +6,8 @@
                 <li {if $item->id == $selectedMenuItem} class="selected"{/if}>
                     {if $item->type == 'url'}
                         <a href="{$item->content|eschtml}"{if $item->icon}
-                        style="background-image:url({$item->icon});"{/if}>{$item->label|eschtml}</a>
+                        style="background-image:url({$item->icon});"{/if}{if $item->newWindow}
+                        target="_blank"{/if}>{$item->label|eschtml}</a>
                     {else}
                         {$item->content}
                     {/if}

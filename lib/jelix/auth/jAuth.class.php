@@ -58,7 +58,7 @@ class jAuth {
             if (!isset( $config['persistant_cookie_path'])
                 ||  $config['persistant_cookie_path'] == '') {
                 if (jApp::config())
-                    $config['persistant_cookie_path'] = jApp::config()->urlengine['basePath'];
+                    $config['persistant_cookie_path'] = jApp::urlBasePath();
                 else
                     $config['persistant_cookie_path'] = '/';
             }

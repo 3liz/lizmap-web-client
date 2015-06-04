@@ -19,7 +19,7 @@
 
 class date_htmlFormWidget extends \jelix\forms\HtmlWidget\WidgetBase {
     public function outputMetaContent($resp) {
-        $bp = jApp::config()->urlengine['basePath'];
+        $bp = jApp::urlBasePath();
         $confDate = &jApp::config()->datepickers;
         $datepicker_default_config = jApp::config()->forms['datepicker'];
 

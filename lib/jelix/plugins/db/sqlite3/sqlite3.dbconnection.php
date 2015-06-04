@@ -63,11 +63,18 @@ class sqlite3DbConnection extends jDbConnection {
 
     protected function _connect (){
         $db = $this->profile['database'];
-        if (file_exists( $db )) {
-            $path = $db;
-        }
-        else if (preg_match('/^(app|lib|var)\:/', $db)) {
+        if (preg_match('/^(app|lib|var|temp|www)\:/', $db)) {
             $path = jFile::parseJelixPath( $db );
+        }
+        else if ($db[0] == '/' || // *nix path
+                 preg_match('!^[a-z]\\:(\\\\|/)[a-z]!i', $db) // windows path
+                ) {
+            if (file_exists($db) || file_exists(dirname($db))) {
+                $path = $db;
+            }
+            else {
+                throw new Exception ('sqlite3 connector: unknown database path scheme');
+            }
         }
         else {
             $path = jApp::varPath('db/sqlite3/'.$db);
@@ -82,7 +89,7 @@ class sqlite3DbConnection extends jDbConnection {
                 try {
                     $sqlite->loadExtension($ext);
                 } catch(Exception $e) {
-                    throw new Exception('jDbPDOConnection: error while loading sqlite extension '.$ext);
+                    throw new Exception('sqlite3 connector: error while loading sqlite extension '.$ext);
                 }
             }
         }

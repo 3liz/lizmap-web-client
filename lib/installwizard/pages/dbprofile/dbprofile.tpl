@@ -1,15 +1,11 @@
 
-{foreach $profiles as $profile}
-<h3>{@title.profile@}: {$profile}</h3>
-{if count($errors[$profile])}
-<ul class="error">
-  {foreach $errors[$profile] as $err}<li>{$err|eschtml}</li>{/foreach}
-</ul>
-{/if}
 <script type="text/javascript">
 {literal}
 function driverChanged(select, profile) {
-  if (select.options[select.selectedIndex].value == 'sqlite') {
+  console.log(select.options[select.selectedIndex].getAttribute('data-dbtype'));
+  var dbtype = select.options[select.selectedIndex].getAttribute('data-dbtype') ;
+  document.getElementById('dbtype-'+profile).setAttribute('value', dbtype);
+  if (dbtype== 'sqlite') {
     document.getElementById('host-'+profile).style.display = 'none';
     document.getElementById('port-'+profile).style.display = 'none';
     document.getElementById('user-'+profile).style.display = 'none';
@@ -33,21 +29,30 @@ function driverChanged(select, profile) {
 }
 {/literal}
 </script>
+
+{foreach $profiles as $profile}
+<input type="hidden" id="dbtype[{$profile}]" name="dbtype[{$profile}]" value="{$dbtype[$profile]|eschtml}" />
+<h3>{@title.profile@}: {$profile}</h3>
+{if count($errors[$profile])}
+<ul class="error">
+  {foreach $errors[$profile] as $err}<li>{$err|eschtml}</li>{/foreach}
+</ul>
+{/if}
 <table>
   <tr>
     <th><label for="driver[{$profile}]">{@label.driver@}</label></th>
     <td><select id="driver[{$profile}]" name="driver[{$profile}]"
     onchange="driverChanged(this, '{$profile}')">
-    {foreach $drivers as $drv=>$drvname}
-      <option value="{$drv}" {if $driver[$profile] == $drv}selected="selected"{/if}>{$drvname}</option>
+    {foreach $drivers as $drv=>$drvinf}
+      <option value="{$drv}" {if $driver[$profile] == $drv}selected="selected"{/if} data-dbtype="{$drvinf[1]}">{$drvinf[0]}</option>
     {/foreach}
     </select></td>
   </tr>
-  <tr id="host-{$profile}" {if $driver[$profile] =='sqlite'}style="display:none"{/if}>
+  <tr id="host-{$profile}" {if $dbtype[$profile] =='sqlite'}style="display:none"{/if}>
     <th><label for="host[{$profile}]">{@label.host@}</label></th>
     <td><input id="host[{$profile}]" name="host[{$profile}]" value="{$host[$profile]|eschtml}" size=""/></td>
   </tr>
-  <tr id="port-{$profile}" {if $driver[$profile] =='sqlite'}style="display:none"{/if}>
+  <tr id="port-{$profile}" {if $dbtype[$profile] =='sqlite'}style="display:none"{/if}>
     <th><label for="port[{$profile}]">{@label.port@}</label></th>
     <td><input id="port[{$profile}]" name="port[{$profile}]" value="{$port[$profile]|eschtml}" size=""/></td>
   </tr>
@@ -55,15 +60,15 @@ function driverChanged(select, profile) {
     <th><label for="database[{$profile}]">{@label.database@}</label></th>
     <td><input id="database[{$profile}]" name="database[{$profile}]" value="{$database[$profile]|eschtml}" size=""/></td>
   </tr>
-  <tr id="user-{$profile}" {if $driver[$profile] =='sqlite'}style="display:none"{/if}>
+  <tr id="user-{$profile}" {if $dbtype[$profile] =='sqlite'}style="display:none"{/if}>
     <th><label for="user[{$profile}]">{@label.user@}</label></th>
     <td><input id="user[{$profile}]" name="user[{$profile}]" value="{$user[$profile]|eschtml}" size=""/></td>
   </tr>
-  <tr id="password-{$profile}" {if $driver[$profile] =='sqlite'}style="display:none"{/if}>
+  <tr id="password-{$profile}" {if $dbtype[$profile] =='sqlite'}style="display:none"{/if}>
     <th><label for="password[{$profile}]">{@label.password@}</label></th>
     <td><input type="password" id="password[{$profile}]" name="password[{$profile}]" value="{$password[$profile]|eschtml}" size=""/></td>
   </tr>
-  <tr id="passwordconfirm-{$profile}" {if $driver[$profile] =='sqlite'}style="display:none"{/if}>
+  <tr id="passwordconfirm-{$profile}" {if $dbtype[$profile] =='sqlite'}style="display:none"{/if}>
     <th><label for="passwordconfirm[{$profile}]">{@label.password.confirm@}</label></th>
     <td><input type="password" id="passwordconfirm[{$profile}]" name="passwordconfirm[{$profile}]" value="{$passwordconfirm[$profile]|eschtml}" size=""/></td>
   </tr>
@@ -72,7 +77,7 @@ function driverChanged(select, profile) {
     <td><input type="checkbox" id="persistent[{$profile}]" name="persistent[{$profile}]"
                {if $persistent[$profile]}checked="checked"{/if}/></td>
   </tr>
-  <tr id="force_encoding-{$profile}" {if $driver[$profile] =='sqlite'}style="display:none"{/if}>
+  <tr id="force_encoding-{$profile}" {if $dbtype[$profile] =='sqlite'}style="display:none"{/if}>
     <th><label for="force_encoding[{$profile}]">{@label.force_encoding@}</th>
     <td><input type="checkbox" id="force_encoding[{$profile}]" name="force_encoding[{$profile}]"
                {if $force_encoding[$profile]}checked="checked"{/if}/> {@help.force_encoding@}</td>
@@ -81,7 +86,7 @@ function driverChanged(select, profile) {
     <th><label for="table_prefix[{$profile}]">{@label.prefix@}</label></th>
     <td><input id="table_prefix[{$profile}]" name="table_prefix[{$profile}]" value="{$table_prefix[$profile]|eschtml}" size=""/></td>
   </tr>
-  <tr id="search_path-{$profile}" {if $driver[$profile] !='pgsql'}style="display:none"{/if}>
+  <tr id="search_path-{$profile}" {if $dbtype[$profile] !='pgsql'}style="display:none"{/if}>
     <th><label for="search_path[{$profile}]">{@label.search_path@}</label></th>
     <td><input id="search_path[{$profile}]" name="search_path[{$profile}]" value="{$search_path[$profile]|eschtml}" size=""/></td>
   </tr>

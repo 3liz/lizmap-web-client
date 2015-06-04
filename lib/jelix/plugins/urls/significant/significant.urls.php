@@ -458,7 +458,7 @@ class significantUrlEngine implements jIUrlEngine {
 
         // at this step, we have informations to build the url
 
-        $url->scriptName = jApp::config()->urlengine['basePath'].$urlinfo[1];
+        $url->scriptName = jApp::urlBasePath().$urlinfo[1];
         if ($urlinfo[2])
             $url->scriptName = jApp::coord()->request->getServerURI(true).$url->scriptName;
 
