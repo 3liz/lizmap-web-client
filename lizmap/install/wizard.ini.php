@@ -16,7 +16,7 @@ databases=sqlite,mysql,pgsql
 
 [dbprofile.step]
 next=demo
-availabledDrivers = sqlite,mysql,pgsql
+availabledDrivers = sqlite3,mysqli,pgsql
 
 [demo.step]
 next=installapp
