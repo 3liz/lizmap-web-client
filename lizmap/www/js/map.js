@@ -2894,8 +2894,6 @@ var lizMap = function() {
       var selection = [];
       for ( var  lName in config.layers ) {
           var lConfig = config.layers[lName];
-          if ( lConfig.popup != 'True' )
-              continue;
           if ( !('request_params' in lConfig)
             || lConfig['request_params'] == null )
               continue;
