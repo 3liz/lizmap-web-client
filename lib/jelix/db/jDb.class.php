@@ -174,15 +174,18 @@ class jDb {
      * @since 1.1.11
      */
     public static function floatToStr($value) {
-        if (is_float($value)) // this is a float
-            return rtrim(sprintf('%.20F', $value), '0'); // %F to not format with the local decimal separator
-        else if (is_integer($value))
+        if (is_float($value)) {// this is a float
+            return rtrim(rtrim(sprintf("%.20F", $value), "0"), '.'); // %F to not format with the local decimal separator
+        }
+        else if (is_integer($value)) {
             return sprintf('%d', $value);
+        }
         // this is probably a string, so we expect that it contains a numerical value
         // is_numeric is true if the separator is ok for SQL
         // (is_numeric doesn't accept thousand separators nor other character than '.' as decimal separator)
-        else if (is_numeric($value))
+        else if (is_numeric($value)) {
             return $value;
+        }
 
         // we probably have a malformed float number here
         // if so, floatval will ignore all character after an invalid character (a ',' for example)

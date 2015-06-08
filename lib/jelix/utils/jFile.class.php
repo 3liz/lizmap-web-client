@@ -228,6 +228,10 @@ class jFile {
             $shortcutPath = jApp::wwwPath();
             $shortcut = 'www:';
         }
+        elseif (strpos($path, jApp::varPath()) === 0) {
+            $shortcutPath = jApp::varPath();
+            $shortcut = 'var:';
+        }
         elseif (strpos($path, jApp::appPath()) === 0) {
             $shortcutPath = jApp::appPath();
             $shortcut = 'app:';

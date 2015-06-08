@@ -4,7 +4,7 @@
 * @subpackage   jtpl_plugin
 * @author       Laurent Jouanneau
 * @contributor  Dominique Papin, Julien Issler
-* @copyright    2007-2010 Laurent Jouanneau, 2007 Dominique Papin
+* @copyright    2007-2015 Laurent Jouanneau, 2007 Dominique Papin
 * @copyright    2008 Julien Issler
 * @link         http://www.jelix.org
 * @licence      GNU Lesser General Public Licence see LICENCE file or http://www.gnu.org/licenses/lgpl.html
@@ -38,7 +38,7 @@ function jtpl_function_html_ctrl_value($tpl, $ctrlname='', $sep =', '){
     if($ctrl->type == 'hidden' || $ctrl->type == 'captcha' || $ctrl->type == 'reset')
         return;
 
-    $editMode = !(isset ($t->_privateVars['__formViewMode']) && $t->_privateVars['__formViewMode']);
+    $editMode = !(isset ($tpl->_privateVars['__formViewMode']) && $tpl->_privateVars['__formViewMode']);
     if($ctrl->type == 'submit'  && ($ctrl->standalone || $editMode))
         return;
 

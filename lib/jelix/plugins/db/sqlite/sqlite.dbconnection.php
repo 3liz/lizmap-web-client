@@ -63,10 +63,22 @@ class sqliteDbConnection extends jDbConnection {
     protected function _connect (){
         $funcconnect= (isset($this->profile['persistent']) && $this->profile['persistent']? 'sqlite_popen':'sqlite_open');
         $db = $this->profile['database'];
-        if (preg_match('/^(app|lib|var)\:/', $db))
+        if (preg_match('/^(app|lib|var)\:/', $db)) {
             $path = jFile::parseJelixPath( $db );
-        else
+        }
+        else if ($db[0] == '/' || // *nix path
+                 preg_match('!^[a-z]\\:(\\\\|/)[a-z]!i', $db) // windows path
+                ) {
+            if (file_exists($db) || file_exists(dirname($db))) {
+                $path = $db;
+            }
+            else {
+                throw new Exception ('sqlite connector: unknown database path scheme');
+            }
+        }
+        else {
             $path = jApp::varPath('db/sqlite/'.$db);
+        }
 
         if ($cnx = @$funcconnect($path)) {
             return $cnx;

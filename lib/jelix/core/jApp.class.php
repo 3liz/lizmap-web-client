@@ -81,7 +81,7 @@ class jApp {
     public static function scriptsPath($file='') { return self::$scriptPath.$file; }
     public static function tempPath($file='') { return self::$tempBasePath.self::$env.$file; }
     public static function tempBasePath() { return self::$tempBasePath; }
-
+    
     public static function setTempBasePath($path) {
         self::$tempBasePath = $path;
     }
@@ -92,6 +92,12 @@ class jApp {
         self::$env = $env;
     }
 
+    public static function urlBasePath() {
+        if (!self::$_config || !isset(self::$_config->urlengine['basePath']))
+            return null;
+        return self::$_config->urlengine['basePath'];
+    }
+    
     /**
      * @var object  object containing all configuration options of the application
      */

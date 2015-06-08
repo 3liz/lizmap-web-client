@@ -76,11 +76,9 @@ class ociDaoBuilder extends jDaoGenerator {
         $pkai = $this->getAutoIncrementPKField();
 
         // Explicitly forbid auto-incement
-        if (is_object ($pkai)) {
-            if ($pkai->autoIncrement) {
-                throw new Exception ('Please don\'t use auto-increment and use a sequence instead for the table ' .
-                                            $this->tableRealName);
-            }
+        if (is_object ($pkai) && $pkai->autoIncrement && !$pkai->sequenceName) {
+            throw new Exception ('Please don\'t use auto-increment and use a sequence instead for the table ' .
+                                        $this->tableRealName);
         }
 
         $src = array();
@@ -154,9 +152,6 @@ class ociDaoBuilder extends jDaoGenerator {
 
         $src[] = "';";
 
-        if($pkai !== null)
-            $src[] = '}';
-
         // We have clob/string binds
         if(!empty($binds) || !empty($returningInto)) {
             $src[] = '   $prep = $this->_conn->prepare ($query);';
@@ -175,12 +170,13 @@ class ociDaoBuilder extends jDaoGenerator {
             $src[] = '   $result = $this->_conn->exec ($query);';
         }
 
-        if($pkai !== null){
-            $src[] = '   if(!$result)';
+        if($pkai !== null) {
+            $src[] = '   if (!$result) {';
             $src[] = '       return false;';
-
-            $src[] = '   if($record->'.$pkai->name.' < 1 ) ';
+            $src[] = '   }';
+            $src[] = '   if ($record->'.$pkai->name.' < 1 ) {';
             $src[] = $this->buildUpdateAutoIncrementPK($pkai);
+            $src[] = '   }';
         }
 
         // we generate a SELECT query to update field on the record object, which are autoincrement or calculated

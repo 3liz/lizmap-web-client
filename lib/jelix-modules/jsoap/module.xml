@@ -11,7 +11,7 @@
         <homepageURL>http://jelix.org</homepageURL>
     </info>
     <dependencies>
-       <jelix minversion="1.5pre" maxversion="1.6.*"/>
+       <jelix minversion="1.5pre" maxversion="1.6.5pre.*"/>
     </dependencies>
     <autoload>
         <class name="jWSDL" file="classes/jWSDL.php" />

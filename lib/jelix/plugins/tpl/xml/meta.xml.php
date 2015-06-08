@@ -31,7 +31,7 @@ function jtpl_meta_xml_xml($tpl, $method, $param)
             $resp->addCSSLink($param);
             break;
         case 'csstheme':
-            $resp->addCSSLink(jApp::config()->urlengine['basePath'].'themes/'.jApp::config()->theme.'/'.$param);
+            $resp->addCSSLink(jApp::urlBasePath().'themes/'.jApp::config()->theme.'/'.$param);
             break;
     }
 }

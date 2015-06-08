@@ -17,9 +17,12 @@ class admin_menuZone extends jZone {
         $menu = array();
         $menu['toplinks'] = new masterAdminMenuItem('toplinks', '', '');
 
-        $dashboard = new masterAdminMenuItem('dashboard', jLocale::get('gui.menu.item.dashboard'), jUrl::get('default:index'));
-        $dashboard->icon = jApp::config()->urlengine['jelixWWWPath'] . 'design/images/dashboard.png';
-        $menu['toplinks']->childItems[] = $dashboard;
+        if (!isset(jApp::config()->master_admin['disable_dashboard_menu']) ||
+            !jApp::config()->master_admin['disable_dashboard_menu']) {
+            $dashboard = new masterAdminMenuItem('dashboard', jLocale::get('gui.menu.item.dashboard'), jUrl::get('default:index'));
+            $dashboard->icon = jApp::config()->urlengine['jelixWWWPath'] . 'design/images/dashboard.png';
+            $menu['toplinks']->childItems[] = $dashboard;
+        }
 
         $menu['refdata'] =  new masterAdminMenuItem('refdata', jLocale::get('gui.menu.item.refdata'), '', 80);
 
@@ -32,7 +35,17 @@ class admin_menuZone extends jZone {
                 if(!isset($menu[$item->parentId])) {
                     $menu[$item->parentId] = new masterAdminMenuItem($item->parentId, '', '');
                 }
-                $menu[$item->parentId]->childItems[] = $item;
+                $isRedefining = false;
+                foreach($menu[$item->parentId]->childItems as $child) {
+                    if ($child->id == $item->id) {
+                        $child->copyFrom($item);
+                        $isRedefining = true;
+                        break;
+                    }
+                }
+                if (!$isRedefining) {
+                    $menu[$item->parentId]->childItems[] = $item;
+                }
             }
             else {
                 if(isset($menu[$item->id])) {

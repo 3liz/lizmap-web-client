@@ -163,8 +163,8 @@ class JelixScriptCommandConfig {
     public $appName = '';
 
     function initAppPaths($applicationDir) {
-        rtrim($applicationDir, '/');
-        rtrim($applicationDir, '\\');
+        $applicationDir = rtrim($applicationDir, '/');
+        $applicationDir = rtrim($applicationDir, '\\');
         $appname = basename($applicationDir);
         $search = array( '%appdir%', '%appname%');
         $replace = array($applicationDir, $appname);

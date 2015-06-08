@@ -103,7 +103,7 @@ class jConfigCompiler {
             if ($f = @fopen($filename, 'wb')) {
                 fwrite($f, '<?php $config = '.var_export(get_object_vars($config),true).";\n?>");
                 fclose($f);
-                chmod($f, $config->chmodFile);
+                chmod($filename, $config->chmodFile);
             } else {
                 throw new Exception('Error while writing configuration cache file -- '.$filename);
             }

@@ -31,7 +31,7 @@ class lizmapModuleInstaller extends jInstallerModule {
                 copy($localConfigDist, $localConfig);
             }
             else {
-                file_put_contents($localConfigDist, ';<'.'?php die(\'\');?'.'>');
+                file_put_contents($localConfig, ';<'.'?php die(\'\');?'.'>');
             }
         }
         $ini = new jIniFileModifier($localConfig);

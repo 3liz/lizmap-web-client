@@ -62,20 +62,20 @@ function jtpl_meta_html_html($tpl, $method, $param=null, $params=array())
             $resp->addCSSLink($param,$params,'lt IE '.substr($method,-1,1));
             break;
         case 'csstheme':
-            $resp->addCSSLink(jApp::config()->urlengine['basePath'].'themes/'.jApp::config()->theme.'/'.$param,$params);
+            $resp->addCSSLink(jApp::urlBasePath().'themes/'.jApp::config()->theme.'/'.$param,$params);
             break;
         case 'cssthemeie':
-            $resp->addCSSLink(jApp::config()->urlengine['basePath'].'themes/'.jApp::config()->theme.'/'.$param,$params,true);
+            $resp->addCSSLink(jApp::urlBasePath().'themes/'.jApp::config()->theme.'/'.$param,$params,true);
             break;
         case 'cssthemeie7':
         case 'cssthemeie8':
         case 'cssthemeie9':
-            $resp->addCSSLink(jApp::config()->urlengine['basePath'].'themes/'.jApp::config()->theme.'/'.$param,$params,'IE '.substr($method,-1,1));
+            $resp->addCSSLink(jApp::urlBasePath().'themes/'.jApp::config()->theme.'/'.$param,$params,'IE '.substr($method,-1,1));
             break;
         case 'cssthemeltie7':
         case 'cssthemeltie8':
         case 'cssthemeltie9':
-            $resp->addCSSLink(jApp::config()->urlengine['basePath'].'themes/'.jApp::config()->theme.'/'.$param,$params,'lt IE '.substr($method,-1,1));
+            $resp->addCSSLink(jApp::urlBasePath().'themes/'.jApp::config()->theme.'/'.$param,$params,'lt IE '.substr($method,-1,1));
             break;
         case 'style':
             if(is_array($param)){

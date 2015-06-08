@@ -19,7 +19,7 @@
 
 class htmleditor_htmlFormWidget extends \jelix\forms\HtmlWidget\WidgetBase {
     public function outputMetaContent($resp) {
-        $bp = jApp::config()->urlengine['basePath'];
+        $bp = jApp::urlBasePath();
         $confHtmlEditor = &jApp::config()->htmleditors;
 
         if(isset($confHtmlEditor[$this->ctrl->config.'.engine.file'])){

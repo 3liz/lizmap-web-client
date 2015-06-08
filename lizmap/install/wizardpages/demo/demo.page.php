@@ -24,10 +24,15 @@ class demoWizPage extends installWizardPage {
      */
     function process() {
 
-        $ini = new jIniFileModifier(jApp::mainConfigFile());
+        $configFile = jApp::configPath('localconfig.ini.php');
+        if (!file_exists($configFile)) {
+            copy(jApp::configPath('localconfig.ini.php.dist'), $configFile);
+        }
+
+        $ini = new jIniFileModifier($configFile);
         $_SESSION['installdemo'] = ($_POST['installdemo'] == 'on');
                
-        $parameters = $ini->getValue('lizmap.parameters','modules');
+        $parameters = $ini->getValue('lizmap.installparam','modules');
         
         if ($parameters === null) {
             $parameters = '';
@@ -35,7 +40,7 @@ class demoWizPage extends installWizardPage {
 
         if (strpos($parameters, 'demo') === false) {
             if ($_SESSION['installdemo']) {
-                $parameters .= 'demo';
+                $parameters .= (trim($parameters) == '' ? 'demo':',demo');
             }
         }
         else {
@@ -44,7 +49,7 @@ class demoWizPage extends installWizardPage {
             }
         }
 
-        $ini->setValue('lizmap.parameters', $parameters, 'modules');
+        $ini->setValue('lizmap.installparam', $parameters, 'modules');
         $ini->save();
         unset($_SESSION['installdemo']);
         return 0;

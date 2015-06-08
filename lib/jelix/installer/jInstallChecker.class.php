@@ -240,8 +240,8 @@ class jInstallCheck {
                 $this->error('path.profiles.writable');
                 $ok = false;
             }
-            if (file_exists(jApp::configPath('mainconfig.ini.php'))
-                && !is_writable(jApp::configPath('mainconfig.ini.php'))) {
+            if (file_exists(jApp::mainConfigFile())
+                && !is_writable(jApp::mainConfigFile())) {
                 $this->error('path.mainconfig.writable');
                 $ok = false;
             }
@@ -301,8 +301,8 @@ class jInstallCheck {
 
     function checkPhpSettings(){
         $ok = true;
-        if (file_exists(jApp::configPath("maintconfig.ini.php")))
-            $defaultconfig = parse_ini_file(jApp::configPath("maintconfig.ini.php"), true);
+        if (file_exists(jApp::configPath("mainconfig.ini.php")))
+            $defaultconfig = parse_ini_file(jApp::configPath("mainconfig.ini.php"), true);
         else
             $defaultconfig = array();
         if (file_exists(jApp::configPath("index/config.ini.php")))

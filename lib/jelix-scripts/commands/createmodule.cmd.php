@@ -203,12 +203,12 @@ class createmoduleCommand extends JelixScriptCommand {
         // create a default controller
         if(!$this->getOption('-nocontroller')){
             $agcommand = JelixScript::getCommand('createctrl', $this->config);
-            $options = array();
+            $options = $this->getCommonActiveOption();
             if ($this->getOption('-cmdline')) {
-               $options = array('-cmdline'=>true);
+                $options['-cmdline'] = true;
             }
             if ($this->getOption('-addinstallzone')) {
-                $options = array('-addinstallzone'=>true);
+                $options['-addinstallzone'] =true;
             }
             $agcommand->initOptParam($options,array('module'=>$module, 'name'=>'default','method'=>'index'));
             $agcommand->run();

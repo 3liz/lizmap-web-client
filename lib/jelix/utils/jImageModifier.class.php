@@ -89,7 +89,7 @@ class jImageModifier {
      **/
     static function get($src, $params = array(), $sendCachePath = true, $config = null) {
 
-        $basePath = jApp::config()->urlengine['basePath'];
+        $basePath = jApp::urlBasePath();
         if(strpos($src,$basePath) === 0) {
             // in the case where the path is constructed with $j_basepath or $j_themepath
             // in a template
@@ -163,7 +163,7 @@ class jImageModifier {
      */
     static public function computeUrlFilePath($config=null) {
         // paths & uri
-        $basePath = jApp::config()->urlengine['basePath'];
+        $basePath = jApp::urlBasePath();
 
         if (!$config)
             $config = & jApp::config()->imagemodifier;
