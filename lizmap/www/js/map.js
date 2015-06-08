@@ -87,6 +87,11 @@ var lizMap = function() {
    */
   var lizmapLayerFilterActive = null;
 
+  /**
+   * PRIVATE Property: editionPending. True when an edition form has already been displayed. Used to prevent double-click on launchEdition button
+   *
+   */
+  var editionPending = false;
 
   /**
    * PRIVATE function: cleanName
@@ -3243,6 +3248,12 @@ var lizMap = function() {
   }
 
   function updateEditionFeature( aLayerId, aFeatureId, aGeom, aCallback ){
+
+    if( editionPending ){
+      return false;
+    }
+    editionPending = true;
+
     // Edition layers
     if ( !('editionLayers' in config) )
       return false;
@@ -3285,6 +3296,7 @@ var lizMap = function() {
 
         $('#edition-modal').modal('show');
 
+        editionPending = false;
         if ( aCallback )
           aCallback( aLayerId );
     });
@@ -3841,6 +3853,7 @@ var lizMap = function() {
   }
 
   function launchEdition( aLayerId, aFid ) {
+
     // Edition layers
     if ( !('editionLayers' in config) )
         return false;
