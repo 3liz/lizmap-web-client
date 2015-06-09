@@ -243,6 +243,9 @@ var lizAttributeTable = function() {
                 // Unselect button
                 html+= '    <button class="btn-unselect-attributeTable btn btn-mini' + selClass + '" value="' + layerName + '" title="'+lizDict['attributeLayers.toolbar.btn.data.unselect.title']+'"><i class="icon-star-empty"></i></button>';
 
+                // Move selected to Top button
+                html+= '    <button class="btn-moveselectedtotop-attributeTable btn btn-mini' + selClass + '" value="' + layerName + '" title="'+lizDict['attributeLayers.toolbar.btn.data.moveselectedtotop.title']+'"><i class="icon-arrow-up"></i></button>';
+
                 // Filter button : only if no filter applied at startup
                 if( !startupFilter
                     && ( !lizMap.lizmapLayerFilterActive || lizMap.lizmapLayerFilterActive == layerName )
@@ -410,6 +413,27 @@ var lizAttributeTable = function() {
                     function(){ $(this).addClass('btn-primary'); },
                     function(){ $(this).removeClass('btn-primary'); }
                 );
+
+                // Bind click on "move selected to top" button
+                $('#attribute-layer-'+ layerName + ' button.btn-moveselectedtotop-attributeTable')
+                .click(function(){
+                    var aTable = '#attribute-layer-table-' + $(this).val();
+                    var rTable = $( aTable ).dataTable();
+                    var previousSorting = rTable.fnSettings().aaSorting;
+                    var selectedSorting = [ [0, 'asc'] ];
+                    var newSorting = selectedSorting.concat(previousSorting);
+                    rTable.fnSort( newSorting );
+
+                    // Scroll to top
+                    $(aTable).parents('div.attribute-layer-content').scrollTop(0);
+
+                    return false;
+                })
+                .hover(
+                    function(){ $(this).addClass('btn-primary'); },
+                    function(){ $(this).removeClass('btn-primary'); }
+                );
+
 
                 // Bind click on filter button
                 if( !startupFilter ){
@@ -815,6 +839,11 @@ var lizAttributeTable = function() {
                         isPivot = true;
                     }
 
+
+                    // Column with selected status
+                    columns.push( {"data": "lizSelected", "width": "25px", "searchable": false, "sortable": true, "visible": false} );
+                    firstDisplayedColIndex+=1;
+
                     // Select tool
                     columns.push( { "data": "select", "width": "25px", "searchable": false, "sortable": false} );
                     firstDisplayedColIndex+=1;
@@ -860,6 +889,7 @@ var lizAttributeTable = function() {
                         columns.push( {"data": idx, "title": cAliases[idx]} );
                     }
 
+
                     var dataSet = [];
                     for (var x in atFeatures) {
                         var line = {};
@@ -871,6 +901,7 @@ var lizAttributeTable = function() {
 
                         // Add row ID
                         line['DT_RowId'] = fid;
+                        line['lizSelected'] = 'z';
 
                         // Build table lines
                         var selectCol = '<button class="btn btn-mini attribute-layer-feature-select checkbox" value="'+fid+'" title="' + lizDict['attributeLayers.btn.select.title'] + '"><i class="icon-ok"></i></button>';
@@ -943,6 +974,7 @@ var lizAttributeTable = function() {
                             ,createdRow: function ( row, data, dataIndex ) {
                                 if ( config.layers[aName]['selectedFeatures'].indexOf( data.DT_RowId.toString() ) != -1 ) {
                                     $(row).addClass('selected');
+                                    data.lizSelected = 'a';
                                 }
                             }
                             ,dom: '<<t>iplf>'
@@ -971,7 +1003,7 @@ var lizAttributeTable = function() {
                             $(aTable +' tr').unbind('click');
                             $(aTable +' tr td button').unbind('click');
 
-                            // Select the line
+                            // Highlight the line
                             $(aTable +' tr').click(function() {
 
                                 $(aTable +' tr').removeClass('active');
@@ -1827,12 +1859,14 @@ var lizAttributeTable = function() {
                 var selIds = config.layers[featureType]['selectedFeatures'];
                 var filIds = config.layers[featureType]['filteredFeatures'];
 
-                // UnSelection button
+                // UnSelection button and move selection to top
                 if( selIds && selIds.length > 0 ){
                     $('button.btn-unselect-attributeTable[value="'+featureType+'"]').removeClass('hidden');
+                    $('button.btn-moveselectedtotop-attributeTable[value="'+featureType+'"]').removeClass('hidden');
                 }
                 else{
                     $('button.btn-unselect-attributeTable[value="'+featureType+'"]').addClass('hidden');
+                    $('button.btn-moveselectedtotop-attributeTable[value="'+featureType+'"]').addClass('hidden');
                 }
 
                 // Filter button
@@ -1873,19 +1907,43 @@ var lizAttributeTable = function() {
                             var featureIds = config.layers[featureType]['selectedFeatures'];
                         }
 
+                        // Get Datatable api
+                        var rTable = $(this).DataTable();
+
                         // Remove class selected for all the lines
-                        $(this).find('tr').removeClass('selected');
+                        rTable
+                        .rows( $(this).find('tr.selected') )
+                        .every(function(){
+                            var d = this.data();
+                            d.lizSelected = 'z';
+                            this.invalidate();
+                        })
+                        .nodes()
+                        .to$()
+                        .removeClass( 'selected' )
+                        ;
+
 
                         // Add class selected from featureIds
+                        // And change lizSelected column value to a
                         if( featureIds.length > 0 ){
-                            var rTable = $(this).DataTable();
-                            // Add 'selected' class
-                            for( var i in featureIds ){
-                                var sfid = featureIds[i]
-                                $(this).find( '#' + sfid ).addClass( 'selected' );
-                            }
 
+                            var rTable = $(this).DataTable();
+                            rTable
+                            .rows( function ( idx, data, node ) {
+                                return featureIds.indexOf( data.DT_RowId.toString() ) != -1 ? true : false;
+                            })
+                            .every(function(){
+                                var d = this.data();
+                                d.lizSelected = 'a';
+                                this.invalidate();
+                            })
+                            .nodes()
+                            .to$()
+                            .addClass( 'selected' )
+                            ;
                         }
+
                     }
 
                 });
