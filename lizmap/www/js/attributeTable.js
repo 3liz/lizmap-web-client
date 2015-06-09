@@ -1034,6 +1034,7 @@ var lizAttributeTable = function() {
 
                             // Select feature
                             $(aTable +' tr td button.attribute-layer-feature-select').click(function() {
+
                                 // Trigger click to highlight feature;
                                 $(this).parents('tr:first').click();
 
@@ -1909,19 +1910,20 @@ var lizAttributeTable = function() {
 
                         // Get Datatable api
                         var rTable = $(this).DataTable();
+                        var dTable = $(this).dataTable();
 
                         // Remove class selected for all the lines
                         rTable
                         .rows( $(this).find('tr.selected') )
                         .every(function(){
-                            var d = this.data();
-                            d.lizSelected = 'z';
-                            this.invalidate();
+                            dTable.fnUpdate( 'z', this, 0, false, false );
                         })
+                        //~ .draw()
                         .nodes()
                         .to$()
                         .removeClass( 'selected' )
                         ;
+
 
 
                         // Add class selected from featureIds
@@ -1934,15 +1936,16 @@ var lizAttributeTable = function() {
                                 return featureIds.indexOf( data.DT_RowId.toString() ) != -1 ? true : false;
                             })
                             .every(function(){
-                                var d = this.data();
-                                d.lizSelected = 'a';
-                                this.invalidate();
+                                dTable.fnUpdate( 'a', this, 0, false, false );
                             })
+                            //~ .draw()
                             .nodes()
                             .to$()
                             .addClass( 'selected' )
                             ;
+
                         }
+
 
                     }
 
