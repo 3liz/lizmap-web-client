@@ -42,6 +42,7 @@ a:hover {
   margin-left : 20px;
   margin-right : 20px;
   background : url('img/logo.png') no-repeat;
+  background-size: contain;
 }
 #logo h1 {
   margin-left : 85px;
@@ -67,14 +68,14 @@ a:hover {
 #title h1 {
   position:relative;
   display:inline;
-  color : #AAAAAA;
+  color : #E9E9E9;
   font-size:2em;
   line-height:1em;
 }
 #title h2 {
   position:relative;
   display:inline;
-  color : #585858;
+  color : lightgrey;
   font-size:1em;
   line-height:0.5em;
   margin-top:2em;
