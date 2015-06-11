@@ -652,6 +652,11 @@ var lizAttributeTable = function() {
                                 childActive = '';
                             var childLayerConfig = childLayerConfigA[1];
                             var childLayerName = childLayerConfigA[0];
+                            var childAttributeLayerConfig = config.attributeLayers[childLayerName];
+
+                            // Discard if the editor does not want this layer to be displayed in child table
+                            if( 'hideAsChild' in childAttributeLayerConfig && childAttributeLayerConfig['hideAsChild'] == 'True' )
+                                continue;
 
                             // Build child table id by concatenating parent and child layer names
                             var tabId = 'attribute-child-tab-' + lizMap.cleanName(parentLayerName) + '-' + lizMap.cleanName(childLayerName);
@@ -776,6 +781,9 @@ var lizAttributeTable = function() {
 
                             // Fill in attribute table for child
                             if( childLayerName in config.attributeLayers )
+                                // Discard if the editor does not want this layer to be displayed in child table
+                                if( 'hideAsChild' in config.attributeLayers[childLayerName] && config.attributeLayers[childLayerName]['hideAsChild'] == 'True' )
+                                    continue;
                                 getDirectChildData( childLayerName, filter, childTable);
 
                         }
