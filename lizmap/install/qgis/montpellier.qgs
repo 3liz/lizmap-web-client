@@ -1,5 +1,5 @@
 <!DOCTYPE qgis PUBLIC 'http://mrcc.com/qgis.dtd' 'SYSTEM'>
-<qgis projectname="Montpellier - Transports" version="2.8.1-Wien">
+<qgis projectname="Montpellier - Transports" version="2.8.2-Wien">
   <title>Montpellier - Transports</title>
   <layer-tree-group expanded="1" checked="Qt::PartiallyChecked" name="">
     <customproperties/>

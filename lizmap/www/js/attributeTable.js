@@ -881,12 +881,31 @@ var lizAttributeTable = function() {
                         firstDisplayedColIndex+=2;
                     }
 
+                    var mediaLinkPrefix = OpenLayers.Util.urlAppend(lizUrls.media
+                      ,OpenLayers.Util.getParameterString(lizUrls.params)
+                    )
+
                     // Add column for each field
                     for (var idx in atFeatures[0].properties){
                         // Do not add hidden fields
                         if( ($.inArray(idx, hiddenFields) > -1) )
                             continue;
-                        columns.push( {"data": idx, "title": cAliases[idx]} );
+                        var colConf = { "mData": idx, "title": cAliases[idx] };
+
+                        // Check if we need to replace url or media by link
+                        if( typeof atFeatures[0].properties[idx] == 'string' ){
+                            if( atFeatures[0].properties[idx].substr(0, 6) == 'media/' ){
+                                colConf['mRender'] = function( data, type, full ){
+                                    return '<a href="' + mediaLinkPrefix + '&path=/' + data + '" target="_blank">' + data + '</a>';
+                                }
+                            }
+                            else if( atFeatures[0].properties[idx].substr(0, 4) == 'http' ){
+                                colConf['mRender'] = function( data, type, full ){
+                                    return '<a href="' + data + '" target="_blank">' + data + '</a>';
+                                }
+                            }
+                        }
+                        columns.push( colConf );
                     }
 
 
@@ -1028,7 +1047,7 @@ var lizAttributeTable = function() {
                                     getFeatureInfoForLayerFeature( aTable, aName, feat );
                                 }
 
-                                return false;
+                                //~ return false; // disable to be able to click on a href link inside the line
 
                             });
 
