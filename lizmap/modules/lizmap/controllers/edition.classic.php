@@ -809,7 +809,7 @@ class editionCtrl extends jController {
       }
       // Build the SQL insert and update query
       $insert[]=$value;
-      $update[]="$ref=$value";
+      $update[]='"' . $ref .'" = ' . $value;
     }
 
     $sql = '';
@@ -839,8 +839,12 @@ class editionCtrl extends jController {
     // insert
     else {
       // SQL for insertion into the edition this->table
+      function dquote($n){
+          return '"' . $n . '"';
+      }
+      $dfields = array_map( "dquote", $fields );
       $sql = " INSERT INTO ".$this->table." (";
-      $sql.= implode(', ', $fields);
+      $sql.= implode(', ', $dfields);
       $sql.= " ) VALUES (";
       $sql.= implode(', ', $insert);
       $sql.= " );";
@@ -1351,7 +1355,7 @@ class editionCtrl extends jController {
     $v = ''; $i = 0;
     $sql.= ' WHERE';
     foreach($this->primaryKeys as $key){
-      $sql.= "$v $key = ".$featureId[$i];
+      $sql.= $v . ' "'. $key . '" = ' . $featureId[$i];
       $i++;
       $v = " AND ";
     }
