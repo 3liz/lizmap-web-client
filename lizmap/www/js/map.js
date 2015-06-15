@@ -1608,6 +1608,13 @@ var lizMap = function() {
         }
       });
       */
+      // Add only layers with geometry
+      var aConfig = config.layers[l.params['LAYERS']];
+      if( 'geometryType' in aConfig &&
+        ( aConfig.geometryType == "none" || aConfig.geometryType == "unknown" || aConfig.geometryType == "" )
+      ){
+        continue;
+      }
       map.addLayer(l);
       /*
       if (l.isVisible)
@@ -2001,6 +2008,13 @@ var lizMap = function() {
           $('#layer-'+evt.object.name+' span.loading').removeClass('loadstart');
         }
       });
+      // Add only layers with geometry
+      var aConfig = config.layers[l.params['LAYERS']];
+      if( 'geometryType' in aConfig &&
+        ( aConfig.geometryType == "none" || aConfig.geometryType == "unknown" || aConfig.geometryType == "" )
+      ){
+        continue;
+      }
       map.addLayer(l);
       if (l.isVisible)
         $('#switcher button.checkbox[name="layer"][value="'+l.name+'"]').click();
