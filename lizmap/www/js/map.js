@@ -352,6 +352,7 @@ var lizMap = function() {
                   VERSION: "1.3.0",
                   REQUEST: "GetLegendGraphic",
                   LAYERS: layer.params['LAYERS'],
+                  STYLES: layer.params['STYLES'],
                   EXCEPTIONS: "application/vnd.ogc.se_inimage",
                   FORMAT: "image/png",
                   TRANSPARENT: "TRUE",
@@ -652,10 +653,16 @@ var lizMap = function() {
       // if the layer is not the Overview and had a config
       // creating the {<OpenLayers.Layer.WMS>} and the tree node
       var node = {name:layerName,config:layerConfig,parent:pNode};
-
+      var styles = ('styles' in layerConfig) ? layerConfig.styles[0] : 'default' ;
+      if( !( typeof lizLayerStyles === 'undefined' )
+        && layerName in lizLayerStyles
+        && lizLayerStyles[ layerName ]
+      ){
+        styles = lizLayerStyles[ layerName ];
+      }
       var layerWmsParams = {
           layers:layer.name
-          ,styles:('styles' in layerConfig) ? layerConfig.styles[0] : 'default'
+          ,styles: styles
           ,version:'1.3.0'
           ,exceptions:'application/vnd.ogc.se_inimage'
           ,format:(layerConfig.imageFormat) ? layerConfig.imageFormat : 'image/png'
@@ -2448,7 +2455,9 @@ var lizMap = function() {
     );
 
     var filter = [];
+    var style = [];
     for ( var  lName in config.layers ) {
+
       var lConfig = config.layers[lName];
       if ( !('request_params' in lConfig)
         || lConfig['request_params'] == null )
@@ -2459,9 +2468,20 @@ var lizMap = function() {
         && lConfig['request_params']['filter'] != "" ) {
           filter.push( lConfig['request_params']['filter'] );
       }
+
     }
     if ( filter.length > 0 )
       args['filter'] = filter.join(';');
+
+    // Layers style
+    for (var i=0,len=layers.length; i<len; i++) {
+      var layer = layers[i];
+      if( layer.isVisible && layer.params['STYLES'] != 'default'){
+        style.push( layer.name + ':' + layer.params['STYLES'] );
+      }
+    }
+    if ( style.length > 0 )
+      args['layerStyles'] = style.join(';');
 
     return args;
 
@@ -4909,6 +4929,20 @@ var lizMap = function() {
               $('#navbar div.slider').slider("value",this.getZoom());
             }
           });
+
+          // Connect signal/slot when layer style is changed
+          lizMap.events.on({
+            'layerstylechanged': function(evt){
+              console.log( evt );
+              var name = evt.featureType;
+              var url = getLayerLegendGraphicUrl(name, true);
+              console.log( url );
+              var lSel = '#switcher table.tree tr#legend-' + name + ' div.legendGraphics img' ;
+              console.log( lSel );
+              $(lSel).attr('src',url);
+            }
+          });
+
 
           // Toggle legend
           $('#toggleLegend').click(function(){

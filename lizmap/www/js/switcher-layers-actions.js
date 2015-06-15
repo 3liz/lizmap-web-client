@@ -91,6 +91,11 @@ var lizLayerActionButtons = function() {
             if( oLayer && eStyle != ''){
                 oLayer.params['STYLES'] = eStyle;
                 oLayer.redraw( true );
+
+                lizMap.events.triggerEvent(
+                    "layerstylechanged",
+                    { 'featureType': eName}
+                );
             }
 
             $('#switcher').click(); // blur dropdown

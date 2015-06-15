@@ -365,6 +365,21 @@ class lizMapCtrl extends jController {
         $rep->addJSCode( "var lizLayerFilter = " . json_encode($filter) . ";" );
     }
 
+    // Add styles if needed
+    $stylesParam = $this->param('layerStyles');
+    $styles = array();
+    if ( $stylesParam ){
+      $fExp = explode( ';', $stylesParam );
+      foreach( $fExp as $item ){
+        $iExp = explode( ':', $item );
+        if( count($iExp) == 2 ){
+          $styles[ $iExp[0] ] = $iExp[1];
+        }
+      }
+      if( count( $styles ) > 0 )
+        $rep->addJSCode( "var lizLayerStyles = " . json_encode($styles) . ";" );
+    }
+
     //$assign['auth_url_return'] = jUrl::get('view~default:index');
 
     // switcher-layers-actions javascript
