@@ -323,6 +323,7 @@ class editionCtrl extends jController {
     $cnx = jDb::getConnection($profile);
     $tools = $cnx->tools();
     $sequence = null;
+
     $fields = $tools->getFieldList($tableAlone, $sequence);
     $this->dataFields = $fields;
 
@@ -1423,7 +1424,7 @@ class editionCtrl extends jController {
             jMessage::add(jLocale::get("view~edition.link.error.multiple.ids"), 'error');
             return $this->serviceAnswer();
         }
-        if( count($ids1) == 0 or count($ids2) == 0 ){
+        if( count($ids1) == 0 or count($ids2) == 0 or empty( $exp1[2] ) or empty( $exp2[2] ) ){
             jMessage::add( jLocale::get("view~edition.link.error.missing.id"), 'error');
             return $this->serviceAnswer();
         }
@@ -1490,40 +1491,90 @@ class editionCtrl extends jController {
         $key1 = $exp1[1];
         $key2 = $exp2[1];
 
-        // Build SQL
-        $sql = '';
-        $cnx = jDb::getConnection($this->layerId);
-        foreach( $ids1 as $a ){
-            $one = (int) $a;
-            if( $this->dataFields[$key1]->type != 'int' )
-                $one = $cnx->quote( $one );
-            foreach( $ids2 as $b ){
-                $two = (int) $b;
-                if( $this->dataFields[$key2]->type != 'int' )
-                    $two = $cnx->quote( $two );
-                $sql.= ' INSERT INTO '.$this->table.' (';
-                $sql.= ' "' . $key1 . '" , ';
-                $sql.= ' "' . $key2 . '" )';
-                $sql.= ' SELECT '. $one . ', ' . $two ;
-                $sql.= ' WHERE NOT EXISTS';
-                $sql.= ' ( SELECT ';
-                $sql.= ' "' . $key1 . '" , ';
-                $sql.= ' "' . $key2 . '" ';
-                $sql.= ' FROM '.$this->table;
-                $sql.= ' WHERE "' . $key1 . '" = ' . $one ;
-                $sql.= ' AND "' . $key2 . '" = ' . $two . ')';
-                $sql.= ';';
+        // Check if we need to insert a new row in a pivot table (n:m)
+        // or if we need to update a foreign key in a child table ( 1:n)
+        if( $layerNamePivot == $layerName2 ){
+            // 1:n relation
+
+            // Build SQL
+            $sql = '';
+            $cnx = jDb::getConnection($this->layerId);
+            $msg = false;
+            foreach( $ids1 as $a ){
+                $one = (int) $a;
+                if( $this->dataFields[$key1]->type != 'int' )
+                    $one = $cnx->quote( $one );
+                foreach( $ids2 as $b ){
+                    $two = (int) $b;
+                    if( $this->dataFields[$key2]->type != 'int' )
+                        $two = $cnx->quote( $two );
+                    $sql = ' UPDATE '.$this->table;
+                    $sql.= ' SET "' . $key2 . '" = ' . $one;
+                    $sql.= ' WHERE "' . $key1 . '" = ' . $two ;
+                    $sql.= ';';
+
+                    // Need to break SQL ( if sqlite
+                    try {
+                        $rs = $cnx->query($sql);
+                        if(!$msg){
+                            jMessage::add( jLocale::get('view~edition.link.success'), 'success');
+                        }
+                        $msg = true;
+                    } catch (Exception $e) {
+                        jLog::log("An error has been raised when modifiying data : ".$e->getMessage() ,'error');
+                        jLog::log("SQL = ".$sql);
+                        jMessage::add( jLocale::get('view~edition.link.error.sql'), 'error');
+                    }
+
+                }
+                break;
             }
+
+        }
+        else{
+            // pivot table ( n:m relation )
+
+            // Build SQL
+            $sql = '';
+            $cnx = jDb::getConnection($this->layerId);
+            foreach( $ids1 as $a ){
+                $one = (int) $a;
+                if( $this->dataFields[$key1]->type != 'int' )
+                    $one = $cnx->quote( $one );
+                foreach( $ids2 as $b ){
+                    $two = (int) $b;
+                    if( $this->dataFields[$key2]->type != 'int' )
+                        $two = $cnx->quote( $two );
+                    $sql.= ' INSERT INTO '.$this->table.' (';
+                    $sql.= ' "' . $key1 . '" , ';
+                    $sql.= ' "' . $key2 . '" )';
+                    $sql.= ' SELECT '. $one . ', ' . $two ;
+                    $sql.= ' WHERE NOT EXISTS';
+                    $sql.= ' ( SELECT ';
+                    $sql.= ' "' . $key1 . '" , ';
+                    $sql.= ' "' . $key2 . '" ';
+                    $sql.= ' FROM '.$this->table;
+                    $sql.= ' WHERE "' . $key1 . '" = ' . $one ;
+                    $sql.= ' AND "' . $key2 . '" = ' . $two . ')';
+                    $sql.= ';';
+                }
+                break;
+            }
+
+            try {
+                $rs = $cnx->query($sql);
+                jMessage::add( jLocale::get('view~edition.link.success'), 'success');
+            } catch (Exception $e) {
+                jLog::log("An error has been raised when modifiying data : ".$e->getMessage() ,'error');
+                jLog::log("SQL = ".$sql);
+                jMessage::add( jLocale::get('view~edition.link.error.sql'), 'error');
+            }
+
         }
 
-        try {
-            $rs = $cnx->query($sql);
-            jMessage::add( jLocale::get('view~edition.link.success'), 'success');
-        } catch (Exception $e) {
-            jLog::log("SQL = ".$sql);
-            jLog::log("An error has been raised when modifiying data : ".$e->getMessage() ,'error');
-            jMessage::add( jLocale::get('view~edition.link.error.sql'), 'error');
-        }
+
+
+
         return $this->serviceAnswer();
     }
 

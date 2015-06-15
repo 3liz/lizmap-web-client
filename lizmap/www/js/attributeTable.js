@@ -75,7 +75,6 @@ var lizAttributeTable = function() {
                                         'updateDrawing': false
                                     }
                                 );
-
                             }
 
                             // Add geometryType if not already present (backward compatibility)
@@ -294,8 +293,8 @@ var lizAttributeTable = function() {
                         html+= childHtml['childCreateButton'];
 
                     // Add buttons to link parent and children
-                    if( childHtml['pivotLinkButton'] )
-                        html+= childHtml['pivotLinkButton'];
+                    if( childHtml['layerLinkButton'] )
+                        html+= childHtml['layerLinkButton'];
                 }
 
                 // Export tools
@@ -500,85 +499,151 @@ var lizAttributeTable = function() {
                     function(){ $(this).removeClass('btn-primary'); }
                 );
 
+
+                function buildLinkParameters( layerId ){
+                    var lp  = {};
+
+                    // Get ids of selected feature
+                    var getP = getLayerConfigById( layerId, config.attributeLayers, 'layerId' );
+                    if( !getP )
+                        return false;
+
+                    lp['name'] = getP[0];
+
+                    var idSelected = config.layers[ getP[0] ]['selectedFeatures'];
+                    if( !( idSelected.length > 0 ) )
+                        return false;
+
+                    // Get corresponding values of parent primary key column for these ids
+                    var fi = [];
+                    var features = config.layers[ getP[0] ]['features'];
+                    if ( !features || features.length <= 0 )
+                        return false;
+
+                    var primaryKey = getP[1]['primaryKey'];
+                    for( var x in idSelected ) {
+                        var idFeat = idSelected[x];
+                        var afeat = features[idFeat];
+                        if( typeof afeat === "undefined" )
+                            continue;
+                        var pk = afeat.properties[primaryKey];
+                        if( !parseInt( pk ) )
+                            pk = " '" + pk + "' ";
+                        fi.push( pk );
+                    }
+                    lp['selected'] = fi;
+
+                    return lp;
+                }
+
                 // Bind click on linkFeatures button
                 $('#attribute-layer-'+ layerName + ' a.btn-linkFeatures-attributeTable')
                 .click(function(){
                     var selectedValue = $(this).attr('href').replace('#', '');
                     $(this).blur();
                     var cName = attributeLayersDic[ selectedValue ];
-                    var lid = config.layers[cName]['id'];
+                    var cId = config.layers[cName]['id'];
                     var attrConfig = config.attributeLayers[cName];
                     var p = [];
-                    var lname = attributeLayersDic[layerName];
+                    var pName = attributeLayersDic[layerName];
+                    var pId = config.layers[pName]['id'];
+                    var doQuery = false;
 
                     if( 'pivot' in attrConfig
                         && attrConfig['pivot'] == 'True'
-                        && lid in config.relations.pivot
+                        && cId in config.relations.pivot
                     ){
                         // Get parents info : layer id, fkey column in the pivot table for the parent, values of primary key for selected ids
-                        for( var parId in config.relations.pivot[lid] ){
-                            var parKey = config.relations.pivot[lid][parId];
-                            par = { 'id': parId, 'fkey': parKey };
+                        for( var parId in config.relations.pivot[cId] ){
+                            var par = buildLinkParameters( parId );
+                            if (!par)
+                                return false;
+                            par['id'] = parId;
+                            var parKey = config.relations.pivot[cId][parId];
+                            par['fkey'] = parKey;
 
-                            // Get ids of selected feature
-                            var getP = getLayerConfigById( parId, config.attributeLayers, 'layerId' );
-                            if( !getP )
-                                return false;
-                            par['name'] = getP[0];
-                            var idSelected = config.layers[ getP[0] ]['selectedFeatures'];
-                            if( !( idSelected.length > 0 ) )
-                                return false;
-                            // Get corresponding values of parent primary key column for these ids
-                            var fi = [];
-                            var features = config.layers[ getP[0] ]['features'];
-                            if ( !features || features.length <= 0 )
-                                return false;
-                            var primaryKey = getP[1]['primaryKey'];
-                            for( var x in idSelected ) {
-                                var idFeat = idSelected[x];
-                                var afeat = features[idFeat];
-                                if( typeof afeat === "undefined" )
-                                    continue;
-                                var pk = afeat.properties[primaryKey];
-                                if( !parseInt( pk ) )
-                                    pk = " '" + pk + "' ";
-                                fi.push( pk );
-                            }
-                            par['selected'] = fi;
                             // Add parent info to the table
                             p.push(par);
+
                         }
 
-                        if( !( p.length == 2 )  ){
+                        if( !( p.length == 2 )  )
                             return false;
-                        }
 
+                        doQuery = 'pivot';
+
+                    }else{
+
+                        var par = buildLinkParameters( pId );
+                        var chi = buildLinkParameters( cId );
+
+                        if (!par || !chi )
+                            return false;
+                        par['id'] = pId;
+                        // We take the primary key of the child layer (because 1:n relation )
+                        par['fkey'] = config.attributeLayers[cName]['primaryKey'];
+
+                        chi['id'] = cId;
+                        if( !( pId in config.relations ) )
+                            return false;
+                        for( var rp in config.relations[pId] ){
+                            var rpItem = config.relations[pId][rp];
+                            if( rpItem.referencingLayer == cId ){
+                                chi['fkey'] = rpItem.referencingField
+                            }else{
+                                continue;
+                            }
+                        }
+                        if( !('fkey' in chi ) )
+                            return false;
+
+                        p.push(par);
+                        p.push(chi);
+
+                        doQuery = '1n';
+
+                    }
+
+                    if( doQuery ){
                         var service = OpenLayers.Util.urlAppend(lizUrls.edition
                             ,OpenLayers.Util.getParameterString(lizUrls.params)
                         );
                         $.get(service.replace('getFeature','linkFeatures'),{
                           features1: p[0]['id'] + ':' + p[0]['fkey'] + ':' + p[0]['selected'].join(),
                           features2: p[1]['id'] + ':' + p[1]['fkey'] + ':' + p[1]['selected'].join(),
-                          pivot: lid
+                          pivot: cId
 
                         }, function(data){
                             // Show response message
                             $('#edition-modal').html(data);
                             $('#edition-modal').modal('show');
 
-                            // Unselect features of parent
-                            lizMap.events.triggerEvent(
-                                "layerfeatureunselectall",
-                                { 'featureType': lname, 'updateDrawing': true}
-                            );
-                            // Send signal saying edition has been done on pivot
-                            lizMap.events.triggerEvent(
-                                "lizmapeditionfeaturecreated",
-                                { 'layerId': lid}
-                            );
+                            // Unselect features of parent (or child)
+                            // And trigger table refresh
+                            if( doQuery == 'pivot' ){
+                                lizMap.events.triggerEvent(
+                                    "layerfeatureunselectall",
+                                    { 'featureType': lname, 'updateDrawing': true}
+                                );
+                                // Send signal saying edition has been done on pivot
+                                lizMap.events.triggerEvent(
+                                    "lizmapeditionfeaturecreated",
+                                    { 'layerId': cId}
+                                );
+                            }else{
+                                lizMap.events.triggerEvent(
+                                    "layerfeatureunselectall",
+                                    { 'featureType': cName, 'updateDrawing': true}
+                                );
+                                // Send signal saying edition has been done on pivot
+                                lizMap.events.triggerEvent(
+                                    "lizmapeditionfeaturemodified",
+                                    { 'layerId': cId}
+                                );
+                            }
+
 
                         });
-
                     }
 
                     return false;
@@ -628,7 +693,7 @@ var lizAttributeTable = function() {
                 var childDiv = [];
                 var childLi = [];
                 var childCreateButton = ''; var childCreateButtonItems = [];
-                var pivotLinkButton = ''; var pivotLinkButtonItems = [];
+                var layerLinkButton = ''; var layerLinkButtonItems = [];
                 var lConfig = config.layers[parentLayerName];
                 if ( !lConfig )
                   return childHtml;
@@ -693,12 +758,12 @@ var lizAttributeTable = function() {
                                 childCreateButtonItems.push( '<li><a href="#' + childLayerName + '" class="btn-createFeature-attributeTable">' + childLayerConfig.title +'</a></li>' );
 
                                 // Button to link selected lines from 2 tables
-                                if('pivot' in config.attributeLayers[childLayerName]
-                                    && config.attributeLayers[childLayerName]['pivot'] == 'True'
-                                    && childLayerConfig.id in config.relations.pivot
-                                ){
-                                    pivotLinkButtonItems.push( '<li><a href="#' + childLayerName + '" class="btn-linkFeatures-attributeTable">' + childLayerConfig.title +'</a></li>' );
-                                }
+                                //~ if('pivot' in config.attributeLayers[childLayerName]
+                                    //~ && config.attributeLayers[childLayerName]['pivot'] == 'True'
+                                    //~ && childLayerConfig.id in config.relations.pivot
+                                //~ ){
+                                    layerLinkButtonItems.push( '<li><a href="#' + childLayerName + '" class="btn-linkFeatures-attributeTable">' + childLayerConfig.title +'</a></li>' );
+                                //~ }
                             }
                         }
                     }
@@ -719,25 +784,25 @@ var lizAttributeTable = function() {
                         childCreateButton+= '    </ul>';
                         childCreateButton+= '</div>';
                     }
-                    if( pivotLinkButtonItems.length > 0 ){
-                        pivotLinkButton+= '&nbsp;<div class="btn-group" role="group" >';
-                        pivotLinkButton+= '    <button type="button" class="btn btn-mini dropdown-toggle" data-toggle="dropdown" aria-expanded="false">';
-                        pivotLinkButton+= lizDict['attributeLayers.toolbar.btn.data.linkFeatures.title'];
-                        pivotLinkButton+= '      <span class="caret"></span>';
-                        pivotLinkButton+= '    </button>';
-                        pivotLinkButton+= '    <ul class="dropdown-menu" role="menu">';
-                        for( var i in  pivotLinkButtonItems){
-                            var li = pivotLinkButtonItems[i];
-                            pivotLinkButton+= li;
+                    if( layerLinkButtonItems.length > 0 ){
+                        layerLinkButton+= '&nbsp;<div class="btn-group" role="group" >';
+                        layerLinkButton+= '    <button type="button" class="btn btn-mini dropdown-toggle" data-toggle="dropdown" aria-expanded="false">';
+                        layerLinkButton+= lizDict['attributeLayers.toolbar.btn.data.linkFeatures.title'];
+                        layerLinkButton+= '      <span class="caret"></span>';
+                        layerLinkButton+= '    </button>';
+                        layerLinkButton+= '    <ul class="dropdown-menu" role="menu">';
+                        for( var i in  layerLinkButtonItems){
+                            var li = layerLinkButtonItems[i];
+                            layerLinkButton+= li;
                         }
-                        pivotLinkButton+= '    </ul>';
-                        pivotLinkButton+= '</div>';
+                        layerLinkButton+= '    </ul>';
+                        layerLinkButton+= '</div>';
                     }
                     childHtml = {
                         'tab-content': childDiv,
                         'tab-li': childLi,
                         'childCreateButton': childCreateButton,
-                        'pivotLinkButton': pivotLinkButton
+                        'layerLinkButton': layerLinkButton
                     } ;
                 }
                 return childHtml;
@@ -746,6 +811,7 @@ var lizAttributeTable = function() {
             // Refresh attribute table content for all children of a given layer
             function refreshChildrenLayersContent( sourceTable, featureType, featId ) {
                 var feat = config.layers[featureType]['features'][featId];
+
                 if(!feat)
                     return false;
                 var fp = feat.properties;
@@ -846,7 +912,6 @@ var lizAttributeTable = function() {
                     ){
                         isPivot = true;
                     }
-
 
                     // Column with selected status
                     columns.push( {"data": "lizSelected", "width": "25px", "searchable": false, "sortable": true, "visible": false} );
@@ -953,7 +1018,7 @@ var lizAttributeTable = function() {
                         }
 
                         // Unlink button
-                        if( canEdit && isChild && !isPivot) {
+                        if( canEdit && isChild && !isPivot ) {
 
                             var unlinkIcon = 'icon-minus';
                             var unlinkTitle = lizDict['attributeLayers.btn.remove.link.title'];
@@ -983,7 +1048,10 @@ var lizAttributeTable = function() {
                     }
 
                     // Fill in the features object
-                    config.layers[aName]['features'] = foundFeatures;
+                    // only if not data yet OR if not child display
+                    if( config.layers[aName]['features'].length == 0 || !isChild ){
+                        config.layers[aName]['features'] = foundFeatures;
+                    }
                     config.layers[aName]['alias'] = cAliases;
 
                     if ( $.fn.dataTable.isDataTable( aTable ) ) {
@@ -1037,8 +1105,7 @@ var lizAttributeTable = function() {
                                 $(this).addClass('active');
 
                                 // Get corresponding feature
-                                var featId = $(this).find('button.attribute-layer-feature-focus').val();
-
+                                var featId = $(this).find('button.attribute-layer-feature-select').val();
 
                                 // Send signal
                                 lizMap.events.triggerEvent(
@@ -1141,6 +1208,45 @@ var lizAttributeTable = function() {
                                     // trigger deletion
                                     var lid = config.layers[aName]['id'];
                                     deleteEditionFeature( lid, featId );
+                                    return false;
+                                })
+                                .hover(
+                                    function(){ $(this).addClass('btn-primary'); },
+                                    function(){ $(this).removeClass('btn-primary'); }
+                                );
+                            }
+
+                            // Trigger unlink for selected feature
+                            if( canEdit && isChild && !isPivot ) {
+                                $(aTable +' tr td button.attribute-layer-feature-unlink').click(function() {
+                                    var featId = $(this).val();
+                                    var lid = config.layers[aName]['id'];
+
+                                    //~ $.get(service.replace('getFeature','unlinkChild'),{
+                                      //~ features1: p[0]['id'] + ':' + p[0]['fkey'] + ':' + p[0]['selected'].join(),
+                                      //~ features2: lid + ':' + p[1]['fkey'] + ':' + p[1]['selected'].join(),
+                                      //~ pivot: lid
+//~
+                                    //~ }, function(data){
+                                        //~ // Show response message
+                                        //~ $('#edition-modal').html(data);
+                                        //~ $('#edition-modal').modal('show');
+//~
+                                        //~ // Unselect features of parent
+                                        //~ lizMap.events.triggerEvent(
+                                            //~ "layerfeatureunselectall",
+                                            //~ { 'featureType': aName, 'updateDrawing': true}
+                                        //~ );
+//~
+                                        //~ // Send signal saying edition has been done on table
+                                        //~ lizMap.events.triggerEvent(
+                                            //~ "lizmapeditionfeaturemodified",
+                                            //~ { 'layerId': lid}
+                                        //~ );
+//~
+                                    //~ });
+
+
                                     return false;
                                 })
                                 .hover(

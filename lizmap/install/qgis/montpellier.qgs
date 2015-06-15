@@ -28,6 +28,9 @@
       </layer-tree-group>
       <layer-tree-group expanded="1" checked="Qt::Checked" name="Tramway">
         <customproperties/>
+        <layer-tree-layer expanded="1" checked="Qt::Checked" id="tramway_ref20150612171109044" name="tramway_ref">
+          <customproperties/>
+        </layer-tree-layer>
         <layer-tree-layer expanded="1" checked="Qt::Checked" id="jointure_tram_stop20150328114216806" name="tramway_pivot">
           <customproperties/>
         </layer-tree-layer>
@@ -97,6 +100,9 @@
     </relation>
     <relation referencingLayer="tram_stop_work20150416102656130" referencedLayer="tramstop20150328114203878" id="tram_stop_work20150416102656130_tram_stop_id_tramstop20150328114203878_osm_id" name="Tram stops -> tram stop works">
       <fieldRef referencedField="osm_id" referencingField="tram_stop_id"/>
+    </relation>
+    <relation referencingLayer="tramway20150328114206278" referencedLayer="tramway_ref20150612171109044" id="tramway20150328114206278_ref_tramway_ref20150612171109044_ref_id" name="Tramway Ref / tramway">
+      <fieldRef referencedField="ref_id" referencingField="ref"/>
     </relation>
   </relations>
   <mapcanvas>
@@ -168,6 +174,7 @@
       <item>tram_stop_work20150416102656130</item>
       <item>publicbuildings_tramstop20150420095614071</item>
       <item>publicbuildings20150420100958543</item>
+      <item>tramway_ref20150612171109044</item>
     </custom-order>
   </layer-tree-canvas>
   <legend updateDrawingOrder="true">
@@ -202,6 +209,11 @@
         </legendlayer>
       </legendgroup>
       <legendgroup open="true" checked="Qt::Checked" name="Tramway">
+        <legendlayer drawingOrder="-1" open="true" checked="Qt::Checked" name="tramway_ref" showFeatureCount="0">
+          <filegroup open="true" hidden="false">
+            <legendlayerfile isInOverview="0" layerid="tramway_ref20150612171109044" visible="1"/>
+          </filegroup>
+        </legendlayer>
         <legendlayer drawingOrder="-1" open="true" checked="Qt::Checked" name="tramway_pivot" showFeatureCount="0">
           <filegroup open="true" hidden="false">
             <legendlayerfile isInOverview="0" layerid="jointure_tram_stop20150328114216806" visible="1"/>
@@ -679,7 +691,7 @@
       </ComposerMap>
     </Composition>
   </Composer>
-  <projectlayers layercount="16">
+  <projectlayers layercount="17">
     <maplayer minimumScale="0" maximumScale="1e+08" simplifyDrawingHints="1" minLabelScale="1" maxLabelScale="1e+08" simplifyDrawingTol="1" geometry="Polygon" simplifyMaxScale="1" type="vector" hasScaleBasedVisibilityFlag="1" simplifyLocal="1" scaleBasedLabelVisibilityFlag="0">
       <id>VilleMTP_MTP_Quartiers_2011_432620130116112351546</id>
       <datasource>./data/vector/VilleMTP_MTP_Quartiers_2011_4326.shp</datasource>
@@ -1162,17 +1174,22 @@
         <property key="labeling/bufferNoFill" value="false"/>
         <property key="labeling/bufferSize" value="1"/>
         <property key="labeling/bufferSizeInMapUnits" value="false"/>
+        <property key="labeling/bufferSizeMapUnitMaxScale" value="0"/>
+        <property key="labeling/bufferSizeMapUnitMinScale" value="0"/>
         <property key="labeling/bufferTransp" value="0"/>
+        <property key="labeling/centroidInside" value="false"/>
         <property key="labeling/centroidWhole" value="false"/>
         <property key="labeling/decimals" value="3"/>
         <property key="labeling/displayAll" value="false"/>
         <property key="labeling/dist" value="0"/>
         <property key="labeling/distInMapUnits" value="false"/>
+        <property key="labeling/distMapUnitMaxScale" value="0"/>
+        <property key="labeling/distMapUnitMinScale" value="0"/>
         <property key="labeling/enabled" value="false"/>
         <property key="labeling/fieldName" value=""/>
-        <property key="labeling/fontBold" value="false"/>
+        <property key="labeling/fontBold" value="true"/>
         <property key="labeling/fontCapitals" value="0"/>
-        <property key="labeling/fontFamily" value="Cantarell"/>
+        <property key="labeling/fontFamily" value="Ubuntu"/>
         <property key="labeling/fontItalic" value="false"/>
         <property key="labeling/fontLetterSpacing" value="0"/>
         <property key="labeling/fontLimitPixelSize" value="false"/>
@@ -1180,13 +1197,17 @@
         <property key="labeling/fontMinPixelSize" value="3"/>
         <property key="labeling/fontSize" value="11"/>
         <property key="labeling/fontSizeInMapUnits" value="false"/>
+        <property key="labeling/fontSizeMapUnitMaxScale" value="0"/>
+        <property key="labeling/fontSizeMapUnitMinScale" value="0"/>
         <property key="labeling/fontStrikeout" value="false"/>
         <property key="labeling/fontUnderline" value="false"/>
-        <property key="labeling/fontWeight" value="50"/>
+        <property key="labeling/fontWeight" value="63"/>
         <property key="labeling/fontWordSpacing" value="0"/>
         <property key="labeling/formatNumbers" value="false"/>
-        <property key="labeling/isExpression" value="false"/>
+        <property key="labeling/isExpression" value="true"/>
         <property key="labeling/labelOffsetInMapUnits" value="true"/>
+        <property key="labeling/labelOffsetMapUnitMaxScale" value="0"/>
+        <property key="labeling/labelOffsetMapUnitMinScale" value="0"/>
         <property key="labeling/labelPerPart" value="false"/>
         <property key="labeling/leftDirectionSymbol" value="&lt;"/>
         <property key="labeling/limitNumLabels" value="false"/>
@@ -1197,7 +1218,7 @@
         <property key="labeling/minFeatureSize" value="0"/>
         <property key="labeling/multilineAlign" value="0"/>
         <property key="labeling/multilineHeight" value="1"/>
-        <property key="labeling/namedStyle" value=""/>
+        <property key="labeling/namedStyle" value="Medium"/>
         <property key="labeling/obstacle" value="true"/>
         <property key="labeling/placeDirectionSymbol" value="0"/>
         <property key="labeling/placement" value="0"/>
@@ -1207,6 +1228,10 @@
         <property key="labeling/previewBkgrdColor" value="#ffffff"/>
         <property key="labeling/priority" value="5"/>
         <property key="labeling/quadOffset" value="4"/>
+        <property key="labeling/repeatDistance" value="0"/>
+        <property key="labeling/repeatDistanceMapUnitMaxScale" value="0"/>
+        <property key="labeling/repeatDistanceMapUnitMinScale" value="0"/>
+        <property key="labeling/repeatDistanceUnit" value="1"/>
         <property key="labeling/reverseDirectionSymbol" value="false"/>
         <property key="labeling/rightDirectionSymbol" value=">"/>
         <property key="labeling/scaleMax" value="10000000"/>
@@ -1220,9 +1245,13 @@
         <property key="labeling/shadowOffsetAngle" value="135"/>
         <property key="labeling/shadowOffsetDist" value="1"/>
         <property key="labeling/shadowOffsetGlobal" value="true"/>
+        <property key="labeling/shadowOffsetMapUnitMaxScale" value="0"/>
+        <property key="labeling/shadowOffsetMapUnitMinScale" value="0"/>
         <property key="labeling/shadowOffsetUnits" value="1"/>
         <property key="labeling/shadowRadius" value="1.5"/>
         <property key="labeling/shadowRadiusAlphaOnly" value="false"/>
+        <property key="labeling/shadowRadiusMapUnitMaxScale" value="0"/>
+        <property key="labeling/shadowRadiusMapUnitMinScale" value="0"/>
         <property key="labeling/shadowRadiusUnits" value="1"/>
         <property key="labeling/shadowScale" value="100"/>
         <property key="labeling/shadowTransparency" value="30"/>
@@ -1233,6 +1262,8 @@
         <property key="labeling/shapeBorderColorG" value="128"/>
         <property key="labeling/shapeBorderColorR" value="128"/>
         <property key="labeling/shapeBorderWidth" value="0"/>
+        <property key="labeling/shapeBorderWidthMapUnitMaxScale" value="0"/>
+        <property key="labeling/shapeBorderWidthMapUnitMinScale" value="0"/>
         <property key="labeling/shapeBorderWidthUnits" value="1"/>
         <property key="labeling/shapeDraw" value="false"/>
         <property key="labeling/shapeFillColorA" value="255"/>
@@ -1240,15 +1271,21 @@
         <property key="labeling/shapeFillColorG" value="255"/>
         <property key="labeling/shapeFillColorR" value="255"/>
         <property key="labeling/shapeJoinStyle" value="64"/>
+        <property key="labeling/shapeOffsetMapUnitMaxScale" value="0"/>
+        <property key="labeling/shapeOffsetMapUnitMinScale" value="0"/>
         <property key="labeling/shapeOffsetUnits" value="1"/>
         <property key="labeling/shapeOffsetX" value="0"/>
         <property key="labeling/shapeOffsetY" value="0"/>
+        <property key="labeling/shapeRadiiMapUnitMaxScale" value="0"/>
+        <property key="labeling/shapeRadiiMapUnitMinScale" value="0"/>
         <property key="labeling/shapeRadiiUnits" value="1"/>
         <property key="labeling/shapeRadiiX" value="0"/>
         <property key="labeling/shapeRadiiY" value="0"/>
         <property key="labeling/shapeRotation" value="0"/>
         <property key="labeling/shapeRotationType" value="0"/>
         <property key="labeling/shapeSVGFile" value=""/>
+        <property key="labeling/shapeSizeMapUnitMaxScale" value="0"/>
+        <property key="labeling/shapeSizeMapUnitMinScale" value="0"/>
         <property key="labeling/shapeSizeType" value="0"/>
         <property key="labeling/shapeSizeUnits" value="1"/>
         <property key="labeling/shapeSizeX" value="0"/>
@@ -4494,7 +4531,7 @@
         </edittype>
       </edittypes>
     </maplayer>
-    <maplayer minimumScale="-4.65661e-10" maximumScale="1e+08" simplifyDrawingHints="1" minLabelScale="1" maxLabelScale="1e+08" simplifyDrawingTol="1" geometry="Line" simplifyMaxScale="1" type="vector" hasScaleBasedVisibilityFlag="0" simplifyLocal="1" scaleBasedLabelVisibilityFlag="0">
+    <maplayer minimumScale="0" maximumScale="1e+08" simplifyDrawingHints="1" minLabelScale="1" maxLabelScale="1e+08" simplifyDrawingTol="1" geometry="Line" simplifyMaxScale="1" type="vector" hasScaleBasedVisibilityFlag="0" simplifyLocal="1" scaleBasedLabelVisibilityFlag="0">
       <id>tramway20150328114206278</id>
       <datasource>dbname='./edition/transport.sqlite' table="tramway" (geometry) sql=</datasource>
       <title>Tram lines</title>
@@ -4795,11 +4832,11 @@
         <edittype widgetv2type="TextEdit" name="colour">
           <widgetv2config IsMultiline="0" fieldEditable="1" UseHtml="0" labelOnTop="0"/>
         </edittype>
-        <edittype widgetv2type="TextEdit" name="html">
-          <widgetv2config IsMultiline="0" fieldEditable="1" UseHtml="0" labelOnTop="0"/>
+        <edittype widgetv2type="Hidden" name="html">
+          <widgetv2config fieldEditable="1" labelOnTop="0"/>
         </edittype>
-        <edittype widgetv2type="TextEdit" name="wkt">
-          <widgetv2config IsMultiline="0" fieldEditable="1" UseHtml="0" labelOnTop="0"/>
+        <edittype widgetv2type="Hidden" name="wkt">
+          <widgetv2config fieldEditable="1" labelOnTop="0"/>
         </edittype>
       </edittypes>
       <renderer-v2 attr="ref" symbollevels="0" type="categorizedSymbol">
@@ -5101,6 +5138,7 @@
       <excludeAttributesWMS>
         <attribute>OGC_FID</attribute>
         <attribute>wkt</attribute>
+        <attribute>html</attribute>
       </excludeAttributesWMS>
       <excludeAttributesWFS>
         <attribute>OGC_FID</attribute>
@@ -5131,10 +5169,64 @@
         <edittype widgetv2type="TextEdit" name="colour">
           <widgetv2config IsMultiline="0" fieldEditable="1" UseHtml="0" labelOnTop="0"/>
         </edittype>
-        <edittype widgetv2type="TextEdit" name="html">
+        <edittype widgetv2type="Hidden" name="html">
+          <widgetv2config fieldEditable="1" labelOnTop="0"/>
+        </edittype>
+        <edittype widgetv2type="Hidden" name="wkt">
+          <widgetv2config fieldEditable="1" labelOnTop="0"/>
+        </edittype>
+      </edittypes>
+    </maplayer>
+    <maplayer minimumScale="0" maximumScale="1e+08" geometry="No geometry" type="vector" hasScaleBasedVisibilityFlag="0">
+      <id>tramway_ref20150612171109044</id>
+      <datasource>dbname='./edition/transport.sqlite' table="tramway_ref" sql=</datasource>
+      <title></title>
+      <abstract></abstract>
+      <keywordList>
+        <value></value>
+      </keywordList>
+      <layername>tramway_ref</layername>
+      <srs>
+        <spatialrefsys>
+          <proj4>+proj=longlat +datum=WGS84 +no_defs</proj4>
+          <srsid>3452</srsid>
+          <srid>4326</srid>
+          <authid>EPSG:4326</authid>
+          <description>WGS 84</description>
+          <projectionacronym>longlat</projectionacronym>
+          <ellipsoidacronym>WGS84</ellipsoidacronym>
+          <geographicflag>true</geographicflag>
+        </spatialrefsys>
+      </srs>
+      <customproperties/>
+      <provider encoding="UTF-8">spatialite</provider>
+      <previewExpression>COALESCE("ref_id", '&lt;NULL>')</previewExpression>
+      <vectorjoins/>
+      <expressionfields/>
+      <map-layer-style-manager current="">
+        <map-layer-style name=""/>
+      </map-layer-style-manager>
+      <edittypes>
+        <edittype widgetv2type="TextEdit" name="ref_id">
           <widgetv2config IsMultiline="0" fieldEditable="1" UseHtml="0" labelOnTop="0"/>
         </edittype>
-        <edittype widgetv2type="TextEdit" name="wkt">
+        <edittype widgetv2type="TextEdit" name="line_name">
+          <widgetv2config IsMultiline="0" fieldEditable="1" UseHtml="0" labelOnTop="0"/>
+        </edittype>
+      </edittypes>
+      <editform>.</editform>
+      <editforminit/>
+      <featformsuppress>0</featformsuppress>
+      <annotationform>.</annotationform>
+      <editorlayout>generatedlayout</editorlayout>
+      <excludeAttributesWMS/>
+      <excludeAttributesWFS/>
+      <attributeactions/>
+      <edittypes>
+        <edittype widgetv2type="TextEdit" name="ref_id">
+          <widgetv2config IsMultiline="0" fieldEditable="1" UseHtml="0" labelOnTop="0"/>
+        </edittype>
+        <edittype widgetv2type="TextEdit" name="line_name">
           <widgetv2config IsMultiline="0" fieldEditable="1" UseHtml="0" labelOnTop="0"/>
         </edittype>
       </edittypes>
@@ -5180,7 +5272,9 @@
       <value>tram_stop_work20150416102656130</value>
       <value>tramstop20150328114203878</value>
       <value>tramway20150328114206278</value>
+      <value>tramway_ref20150612171109044</value>
     </WFSLayers>
+    <WMSRestrictedLayers type="QStringList"/>
     <WMSContactMail type="QString">info@3liz.com</WMSContactMail>
     <WMSRestrictedComposers type="QStringList">
       <value>Composeur1</value>
@@ -5191,8 +5285,8 @@
       <DegreeFormat type="QString">D</DegreeFormat>
     </PositionPrecision>
     <WCSUrl type="QString"></WCSUrl>
-    <WMSContactPhone type="QString">+334 67 16 64 51</WMSContactPhone>
     <WMSServiceCapabilities type="bool">true</WMSServiceCapabilities>
+    <WMSContactPhone type="QString">+334 67 16 64 51</WMSContactPhone>
     <WMSServiceAbstract type="QString">Demo project with bus and tramway lines in Montpellier, France.
 Data is licensed under ODbl, OpenStreetMap contributors</WMSServiceAbstract>
     <WMSAddWktGeometry type="bool">false</WMSAddWktGeometry>
@@ -5295,6 +5389,7 @@ Data is licensed under ODbl, OpenStreetMap contributors</WMSServiceAbstract>
       <jointure_tram_stop20150311122053595 type="int">8</jointure_tram_stop20150311122053595>
       <route_tram20150311113518037 type="int">8</route_tram20150311113518037>
       <tramstop20150328114203878 type="int">8</tramstop20150328114203878>
+      <tramway_ref20150612171109044 type="int">8</tramway_ref20150612171109044>
       <tram20150311115319564 type="int">8</tram20150311115319564>
       <bus20121102133611751 type="int">8</bus20121102133611751>
       <bus_stops20121106170806413 type="int">8</bus_stops20121106170806413>
