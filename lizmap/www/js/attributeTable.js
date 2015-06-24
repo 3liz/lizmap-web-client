@@ -48,6 +48,7 @@ var lizAttributeTable = function() {
 
                             // Add some properties to the lizMap.config
                             config.layers[lname]['features'] = [];
+                            config.layers[lname]['featuresFullSet'] = false;
                             config.layers[lname]['selectedFeatures'] = [];
                             config.layers[lname]['highlightedFeature'] = null;
                             config.layers[lname]['filteredFeatures'] = [];
@@ -499,43 +500,6 @@ var lizAttributeTable = function() {
                     function(){ $(this).removeClass('btn-primary'); }
                 );
 
-
-                function buildLinkParameters( layerId ){
-                    var lp  = {};
-
-                    // Get ids of selected feature
-                    var getP = getLayerConfigById( layerId, config.attributeLayers, 'layerId' );
-                    if( !getP )
-                        return false;
-
-                    lp['name'] = getP[0];
-
-                    var idSelected = config.layers[ getP[0] ]['selectedFeatures'];
-                    if( !( idSelected.length > 0 ) )
-                        return false;
-
-                    // Get corresponding values of parent primary key column for these ids
-                    var fi = [];
-                    var features = config.layers[ getP[0] ]['features'];
-                    if ( !features || features.length <= 0 )
-                        return false;
-
-                    var primaryKey = getP[1]['primaryKey'];
-                    for( var x in idSelected ) {
-                        var idFeat = idSelected[x];
-                        var afeat = features[idFeat];
-                        if( typeof afeat === "undefined" )
-                            continue;
-                        var pk = afeat.properties[primaryKey];
-                        if( !parseInt( pk ) )
-                            pk = " '" + pk + "' ";
-                        fi.push( pk );
-                    }
-                    lp['selected'] = fi;
-
-                    return lp;
-                }
-
                 // Bind click on linkFeatures button
                 $('#attribute-layer-'+ layerName + ' a.btn-linkFeatures-attributeTable')
                 .click(function(){
@@ -673,11 +637,47 @@ var lizAttributeTable = function() {
 
             }
 
+            function buildLinkParameters( layerId ){
+                var lp  = {};
+
+                // Get ids of selected feature
+                var getP = getLayerConfigById( layerId, config.attributeLayers, 'layerId' );
+                if( !getP )
+                    return false;
+
+                lp['name'] = getP[0];
+
+                var idSelected = config.layers[ getP[0] ]['selectedFeatures'];
+                if( !( idSelected.length > 0 ) )
+                    return false;
+
+                // Get corresponding values of parent primary key column for these ids
+                var fi = [];
+                var features = config.layers[ getP[0] ]['features'];
+                if ( !features || features.length <= 0 )
+                    return false;
+
+                var primaryKey = getP[1]['primaryKey'];
+                for( var x in idSelected ) {
+                    var idFeat = idSelected[x];
+                    var afeat = features[idFeat];
+                    if( typeof afeat === "undefined" )
+                        continue;
+                    var pk = afeat.properties[primaryKey];
+                    if( !parseInt( pk ) )
+                        pk = " '" + pk + "' ";
+                    fi.push( pk );
+                }
+                lp['selected'] = fi;
+
+                return lp;
+            }
+
             function getLayerConfigById( layerId, confObjet, idAttribute ) {
 
                 // Set function parameters if not given
-                confObjet = typeof confObjet !== 'undefined' ?  confObjet : config.layers;
-                idAttribute = typeof idAttribute !== 'undefined' ?  idAttribute : 'id';
+                var confObjet = typeof confObjet !== 'undefined' ?  confObjet : config.layers;
+                var idAttribute = typeof idAttribute !== 'undefined' ?  idAttribute : 'id';
 
                 // Loop through layers to get the one by id
                 for ( var lx in confObjet ) {
@@ -1048,12 +1048,30 @@ var lizAttributeTable = function() {
                     }
 
                     // Fill in the features object
-                    // only if not data yet OR if not child display
-                    if( config.layers[aName]['features'].length == 0 || !isChild ){
-                        config.layers[aName]['features'] = foundFeatures;
+                    // only when necessary : object is empty or is not child or (is child and no full features list in the object)
+                    var refillFeatures = false;
+                    if( config.layers[aName]['features'].length == 0 ){
+                        refillFeatures = true;
+                        if( !isChild ){
+                            config.layers[aName]['featuresFullSet'] = true;
+                        }
                     }
+                    else{
+                        if( isChild ){
+                            if( !config.layers[aName]['featuresFullSet'] ){
+                                refillFeatures = true;
+                            }
+                        }else{
+                            config.layers[aName]['featuresFullSet'] = true;
+                            refillFeatures = true;
+                        }
+                    }
+                    if( refillFeatures  )
+                        config.layers[aName]['features'] = foundFeatures;
+
                     config.layers[aName]['alias'] = cAliases;
 
+                    // Datatable configuration
                     if ( $.fn.dataTable.isDataTable( aTable ) ) {
                         var oTable = $( aTable ).dataTable();
                         oTable.fnClearTable();
@@ -1219,32 +1237,71 @@ var lizAttributeTable = function() {
                             // Trigger unlink for selected feature
                             if( canEdit && isChild && !isPivot ) {
                                 $(aTable +' tr td button.attribute-layer-feature-unlink').click(function() {
+                                    // Get child feature id clicked
                                     var featId = $(this).val();
-                                    var lid = config.layers[aName]['id'];
+                                    // Get child layer id
+                                    var cId = config.layers[aName]['id'];
+                                    // Get parent layer name and id
+                                    var pName = $(aTable).parents('div.attribute-layer-main:first').attr('id').replace('attribute-layer-main-', '');
+                                    var pId = config.layers[pName]['id'];
 
-                                    //~ $.get(service.replace('getFeature','unlinkChild'),{
-                                      //~ features1: p[0]['id'] + ':' + p[0]['fkey'] + ':' + p[0]['selected'].join(),
-                                      //~ features2: lid + ':' + p[1]['fkey'] + ':' + p[1]['selected'].join(),
-                                      //~ pivot: lid
-//~
-                                    //~ }, function(data){
-                                        //~ // Show response message
-                                        //~ $('#edition-modal').html(data);
-                                        //~ $('#edition-modal').modal('show');
-//~
-                                        //~ // Unselect features of parent
-                                        //~ lizMap.events.triggerEvent(
-                                            //~ "layerfeatureunselectall",
-                                            //~ { 'featureType': aName, 'updateDrawing': true}
-                                        //~ );
-//~
-                                        //~ // Send signal saying edition has been done on table
-                                        //~ lizMap.events.triggerEvent(
-                                            //~ "lizmapeditionfeaturemodified",
-                                            //~ { 'layerId': lid}
-                                        //~ );
-//~
-                                    //~ });
+                                    // Get foreign key column
+                                    var cFkey = null;
+                                    if( !( pId in config.relations ) )
+                                        return false;
+                                    for( var rp in config.relations[pId] ){
+                                        var rpItem = config.relations[pId][rp];
+                                        if( rpItem.referencingLayer == cId ){
+                                            cFkey = rpItem.referencingField
+                                        }else{
+                                            continue;
+                                        }
+                                    }
+                                    if( !cFkey )
+                                        return false;
+
+                                    // Get features for the child layer
+                                    var features = config.layers[aName]['features'];
+                                    if ( !features || features.length <= 0 )
+                                        return false;
+
+                                    // Get primary key value for clicked child item
+                                    var cc = getLayerConfigById(
+                                        cId,
+                                        config.attributeLayers,
+                                        'layerId'
+                                    );
+
+                                    if( !cc )
+                                        return false;
+                                    var primaryKey = cc[1]['primaryKey'];
+                                    var afeat = features[featId];
+                                    if( typeof afeat === "undefined" )
+                                        return false;
+                                    var cPkeyVal = afeat.properties[primaryKey];
+                                    if( !parseInt( cPkeyVal ) )
+                                        cPkeyVal = " '" + cPkeyVal + "' ";
+                                    var eService = OpenLayers.Util.urlAppend(lizUrls.edition
+                                        ,OpenLayers.Util.getParameterString(lizUrls.params)
+                                    );
+
+                                    $.get(eService.replace('getFeature','unlinkChild'),{
+                                      lid: cId,
+                                      pkey: primaryKey,
+                                      pkeyval: cPkeyVal,
+                                      fkey: cFkey
+                                    }, function(data){
+                                        // Show response message
+                                        $('#edition-modal').html(data);
+                                        $('#edition-modal').modal('show');
+
+                                        // Send signal saying edition has been done on table
+                                        lizMap.events.triggerEvent(
+                                            "lizmapeditionfeaturemodified",
+                                            { 'layerId': cId}
+                                        );
+
+                                    });
 
 
                                     return false;

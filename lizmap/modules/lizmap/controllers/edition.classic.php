@@ -1470,9 +1470,18 @@ class editionCtrl extends jController {
         // Get editLayer capabilities
         $eLayers  = $lproj->getEditionLayers();
         $eLayer = $eLayers->$layerNamePivot;
-        if ( $eLayer->capabilities->createFeature != 'True' ) {
-            jMessage::add('Create feature for this layer ' . $layerNamePivot . ' is not in the capabilities!', 'LayerNotEditable');
-            return $this->serviceAnswer();
+        if( $layerNamePivot == $layerName2 ){
+            // pivot layer (n:m)
+            if ( $eLayer->capabilities->createFeature != 'True' ) {
+                jMessage::add('Create feature for this layer ' . $layerNamePivot . ' is not in the capabilities!', 'LayerNotEditable');
+                return $this->serviceAnswer();
+            }
+        }else{
+            // child layer (1:n)
+            if ( $eLayer->capabilities->modifyAttribute != 'True' ) {
+                jMessage::add('Modify attributes for this layer ' . $layerNamePivot . ' is not in the capabilities!', 'LayerNotEditable');
+                return $this->serviceAnswer();
+            }
         }
 
         // Get fields data from the edition database
@@ -1484,6 +1493,7 @@ class editionCtrl extends jController {
         $this->layerName = $layerNamePivot;
         $this->getDataFields($datasource);
 
+        // Check fields
         if( !array_key_exists( $exp1[1], $this->dataFields ) or !array_key_exists( $exp2[1], $this->dataFields ) ){
             jMessage::add('Given fields do not exists !', 'error');
             return $this->serviceAnswer();
@@ -1578,4 +1588,96 @@ class editionCtrl extends jController {
         return $this->serviceAnswer();
     }
 
+  /**
+   * Unlink child feature from their parent ( 1:n ) relation
+   * by setting the foreign key to NULL
+   *
+   * @param string $repository Lizmap Repository
+   * @param string $project Name of the project
+   * @param string $layerId Child layer id.
+   * @param string $pkey Child layer primary key value -> id of the line to update
+   * @param string $fkey Child layer foreign key column (pointing to the parent layer primary key)
+   * @return Redirect to the validation action.
+   */
+    function unlinkChild(){
+        $lid = $this->param('lid');
+        $fkey = $this->param('fkey');
+        $pkey = $this->param('pkey');
+        $pkeyval = $this->param('pkeyval');
+        $project = $this->param('project');
+        $repository = $this->param('repository');
+
+        if( !$lid or !$fkey or !$pkey or !$pkeyval or !$project or !$repository ) {
+            jMessage::add(jLocale::get("view~edition.link.error.missing.parameter"), 'error');
+            return $this->serviceAnswer();
+        }
+
+        // Get project configuration
+        $lrep = lizmap::getRepository($repository);
+        $lproj = lizmap::getProject($repository.'~'.$project);
+        $this->project = $lproj;
+        $this->repository = $lrep;
+
+        // Get child layer information
+        $layerXml = $lproj->getXmlLayer( $lid );
+        $layerXmlZero = $layerXml[0];
+        $_layerName = $layerXmlZero->xpath('layername');
+        $layerName = (string)$_layerName[0];
+        $this->layerXml = $layerXml;
+
+        // Get editLayer capabilities
+        $eLayers  = $lproj->getEditionLayers();
+        $eLayer = $eLayers->$layerName;
+        if ( $eLayer->capabilities->modifyAttribute != 'True' ) {
+            jMessage::add('Modify feature attributes for this layer ' . $layerName . ' is not in the capabilities!', 'LayerNotEditable');
+            return $this->serviceAnswer();
+        }
+
+        // Get fields data from the edition database
+        $_datasource = $layerXmlZero->xpath('datasource');
+        $datasource = (string)$_datasource[0];
+        $s_provider = $layerXmlZero->xpath('provider');
+        $this->provider = (string)$s_provider[0];
+        $this->layerId = $lid;
+        $this->layerName = $layerName;
+        $this->getDataFields($datasource);
+
+        // Check fields
+        if( !array_key_exists( $fkey, $this->dataFields ) or !array_key_exists( $pkey, $this->dataFields ) ){
+            jMessage::add('Given fields do not exists !', 'error');
+            return $this->serviceAnswer();
+        }
+
+
+        // Build SQL
+        $sql = '';
+        $cnx = jDb::getConnection( $this->layerId );
+        $msg = false;
+
+        $val = (int) $pkeyval;
+        if( $this->dataFields[$key2]->type != 'int' )
+            $val = $cnx->quote( $val );
+        $sql = ' UPDATE '.$this->table;
+        $sql.= ' SET "' . $fkey . '" = NULL';
+        $sql.= ' WHERE "' . $pkey . '" = ' . $val ;
+        $sql.= ';';
+
+        // Need to break SQL ( if sqlite
+        try {
+            $rs = $cnx->query($sql);
+            if(!$msg){
+                jMessage::add( jLocale::get('view~edition.unlink.success'), 'success');
+            }
+            $msg = true;
+        } catch (Exception $e) {
+            jLog::log("An error has been raised when modifiying data : ".$e->getMessage() ,'error');
+            jLog::log("SQL = ".$sql);
+            jMessage::add( jLocale::get('view~edition.unlink.error.sql'), 'error');
+        }
+
+
+
+        return $this->serviceAnswer();
+
+    }
 }
