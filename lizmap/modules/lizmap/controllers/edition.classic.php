@@ -107,7 +107,7 @@ class editionCtrl extends jController {
     $rep = $this->getResponse('htmlfragment');
     $tpl = new jTpl();
     $tpl->assign('title', $title);
-    $content = $tpl->fetch('view~jmessage_modal');
+    $content = $tpl->fetch('view~jmessage_answer');
     $rep->addContent($content);
     jMessage::clearAll();
     return $rep;
@@ -714,6 +714,7 @@ class editionCtrl extends jController {
         }
       }
       // geometry column : override binary with text representation
+      // jLog::log( 'geometryColumn = ' . $this->geometryColumn );
       if ( $this->geometryColumn != '' )
         $form->setData($this->geometryColumn, $record->astext);
     }
@@ -861,172 +862,6 @@ class editionCtrl extends jController {
     }
 
     return true;
-  }
-
-
-
-    /**
-     * Get features from the edition layer.
-     * @param string $repository Lizmap Repository
-     * @param string $project Name of the project
-     * @param string $layerId Qgis id of the layer
-     * @param string $bbox Bounding box for the query
-     * @param string $crs The CRS of the bounding box
-     * @return HTML fragment.
-     */
-    public function getFeature(){
-
-        // Get repository, project data and do some right checking
-        if(!$this->getEditionParameters())
-            return $this->serviceAnswer();
-
-    $bbox = $this->param('bbox');
-    if( !preg_match('#(-)?\d+(\.\d+)?,(-)?\d+(\.\d+)?,(-)?\d+(\.\d+)?,(-)?\d+(\.\d+)?#',$bbox) ) {
-      jMessage::add( jLocale::get('view~edition.message.error.bbox'), 'error');
-      return $this->serviceAnswer();
-    }
-    $crs = str_replace('EPSG:','',$this->param('crs'));
-    if (!preg_match('/^[1-9][0-9]*$/', $crs)) {
-      jMessage::add( jLocale::get('view~edition.message.error.crs'), 'error');
-      return $this->serviceAnswer();
-    }
-
-    // Get fields data from the edition database
-    $layerXmlZero = $this->layerXml[0];
-    $_datasource = $layerXmlZero->xpath('datasource');
-    $datasource = (string)$_datasource[0];
-    $s_provider = $layerXmlZero->xpath('provider');
-    $this->provider = (string)$s_provider[0];
-    $this->getDataFields($datasource);
-
-    // Get proj4 string
-    $proj4 = (string)$layerXmlZero->srs->spatialrefsys->proj4;
-    $this->proj4 = $proj4;
-
-    // Get layer srid
-    $srid = (integer)$layerXmlZero->srs->spatialrefsys->srid;
-    $this->srid = $srid;
-
-    // Optionnaly query for the feature
-    $cnx = jDb::getConnection($this->layerId);
-
-    $sql = "SELECT *";
-    if ( $this->geometryColumn != '' )
-        $sql.= ", ST_AsText(".$this->geometryColumn.") AS astext";
-    $sql.= " FROM ".$this->table;
-    if ( $this->geometryColumn != '' ) {
-        if ( $this->provider == 'spatialite' )
-          $sql .= " WHERE intersects( BuildMBR(".$bbox.", ".$crs." ), transform(".$this->geometryColumn.", ".$crs." ) )";
-        else
-          $sql .= " WHERE ST_Intersects( ST_MakeEnvelope(".$bbox.", ".$crs." ), ST_Transform(".$this->geometryColumn.", ".$crs." ) )";
-    }
-
-    // Add the QGIS WHERE clause if needed
-    if($this->whereClause)
-      $sql.= ' AND '.$this->whereClause;
-
-    // Filter by login if needed
-    if( !$this->loginFilteredOveride ) {
-      $this->filterDataByLogin($this->layerName);
-      if( is_array( $this->loginFilteredLayers )){
-        $sql .= ' AND '.$this->loginFilteredLayers['where'];
-      }
-    }
-
-    // Get the corresponding features
-    try {
-      // Run the query and loop through the result to set an array
-      $forms = array();
-      $rs = $cnx->query($sql);
-      foreach($rs as $record){
-        // featureId
-        $featureId = array();
-        foreach($this->primaryKeys as $pk) {
-          $featureId[] = $record->$pk;
-        }
-        //create form
-        $form = jForms::create('view~edition', implode(',',$featureId));
-        $form->setData('liz_repository', $this->repository->getKey());
-        $form->setData('liz_project', $this->project->getKey());
-        $form->setData('liz_layerId', $this->layerId);
-        $form->setData('liz_featureId', implode(',',$featureId) );
-
-        $this->addFormControls($form);
-
-        $form->setData('liz_srid', $this->srid);
-        $form->setData('liz_proj4', $this->proj4);
-        $form->setData('liz_geometryColumn', $this->geometryColumn);
-
-        // Loop through the data fields
-        foreach($this->dataFields as $ref=>$prop){
-          $form->setData($ref, $record->$ref);
-        }
-        // geometry column : override binary with text representation
-        if ( $this->geometryColumn != '' )
-            $form->setData($this->geometryColumn, $record->astext);
-
-        // redo some code for templating the data
-        $controls = array();
-        foreach($form->getControls() as $ctrlref=>$ctrl){
-          if($ctrl->type == 'reset' || $ctrl->type == 'hidden') continue;
-          if($ctrl->type == 'submit' && $ctrl->standalone) continue;
-          if($ctrl->type == 'captcha' || $ctrl->type == 'secretconfirm') continue;
-          if($ctrl->type == 'choice') continue; // for upload
-          $value = $form->getData($ctrlref);
-          $value = $ctrl->getDisplayValue($value);
-          if(is_array($value)){
-            $s ='';
-            foreach($value as $v){
-              $s.=$sep.htmlspecialchars($v);
-            }
-            $value = substr($s, strlen($sep));
-          } else if($ctrl->type == 'upload') { // for upload
-            $ctrl = $form->getControl( $ref.'_choice' );
-          } else if ( $ctrl->isHtmlContent() )
-            $value = $value;
-          else if($ctrl->type == 'textarea')
-            $value = nl2br(htmlspecialchars($value));
-          else
-            $value = htmlspecialchars($value);
-          $controls[] = (object) array("label"=>$ctrl->label,"value"=>$value);
-        }
-        $hidden = array(
-          'liz_srid'=>$form->getData('liz_srid'),
-          'liz_proj4'=>$form->getData('liz_proj4'),
-          'liz_geometryColumn'=>$form->getData('liz_geometryColumn'),
-          'liz_featureId'=>$form->getData('liz_featureId'),
-        );
-        if ( $this->geometryColumn != '' )
-            $hidden[$form->getData('liz_geometryColumn')] = $form->getData( $form->getData('liz_geometryColumn') );
-        $forms[] = (object) array('controls'=>$controls,'hidden'=>$hidden);
-      }
-      // Get title layer
-      $layerXmlZero = $this->layerXml[0];
-      $_title = $layerXmlZero->xpath('title');
-      $title = (string)$_title[0];
-
-      // Get editLayer capabilities
-        $eLayers  = $this->project->getEditionLayers();
-        $layerName = $this->layerName;
-        $eLayer = $eLayers->$layerName;
-
-      // Use template to create html form content
-      $tpl = new jTpl();
-      $tpl->assign(array(
-        'title'=>$title,
-        'forms'=>$forms,
-        'deleteAction'=>($eLayer->capabilities->deleteFeature == 'True')
-      ));
-      $content = $tpl->fetch('view~edition_data');
-
-      // Return html fragment response
-      $rep = $this->getResponse('htmlfragment');
-      $rep->addContent($content);
-      return $rep;
-    } catch (Exception $e) {
-      jMessage::add('An error occured for : \''.$sql.'\', the message:'.$e->getMessage(), 'error');
-    }
-    return $this->serviceAnswer();
   }
 
 

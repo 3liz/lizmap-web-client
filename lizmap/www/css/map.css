@@ -1621,13 +1621,22 @@ div.modal h3 .text {
 }
 
 #message {
-  bottom : 0;
+  top : 0;
   left : 50%;
   position : absolute;
-  z-index : 1000;
+  z-index : 6000;
 }
 #message.span6 {
   margin-left:-285px;
+}
+#content.mobile #message{
+  top: 0;
+  left:0;
+  right:0;
+  z-index:6000;
+}
+#content.mobile #message.span6{
+  margin-left:0px;
 }
 #message .alert {
   margin-bottom: 0px;

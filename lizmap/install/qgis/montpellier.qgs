@@ -3,9 +3,9 @@
   <title>Montpellier - Transports</title>
   <layer-tree-group expanded="1" checked="Qt::PartiallyChecked" name="">
     <customproperties/>
-    <layer-tree-group expanded="1" checked="Qt::Unchecked" name="Edition">
+    <layer-tree-group expanded="1" checked="Qt::PartiallyChecked" name="Edition">
       <customproperties/>
-      <layer-tree-layer expanded="0" checked="Qt::Unchecked" id="edition_point20130118171631518" name="points of interest">
+      <layer-tree-layer expanded="0" checked="Qt::Checked" id="edition_point20130118171631518" name="points of interest">
         <customproperties/>
       </layer-tree-layer>
       <layer-tree-layer expanded="0" checked="Qt::Unchecked" id="edition_line20130409161630329" name="edition_line">
@@ -108,10 +108,10 @@
   <mapcanvas>
     <units>degrees</units>
     <extent>
-      <xmin>3.82483347210526281</xmin>
-      <ymin>43.55411188657895138</ymin>
-      <xmax>3.98671995210526253</xmax>
-      <ymax>43.655965036578948</ymax>
+      <xmin>3.86205900148168046</xmin>
+      <ymin>43.62585796891212908</ymin>
+      <xmax>3.9456251332553447</xmax>
+      <ymax>43.6767845439121345</ymax>
     </extent>
     <rotation>0</rotation>
     <projections>1</projections>
@@ -178,10 +178,10 @@
     </custom-order>
   </layer-tree-canvas>
   <legend updateDrawingOrder="true">
-    <legendgroup open="true" checked="Qt::Unchecked" name="Edition">
-      <legendlayer drawingOrder="-1" open="false" checked="Qt::Unchecked" name="points of interest" showFeatureCount="0">
+    <legendgroup open="true" checked="Qt::PartiallyChecked" name="Edition">
+      <legendlayer drawingOrder="-1" open="false" checked="Qt::Checked" name="points of interest" showFeatureCount="0">
         <filegroup open="false" hidden="false">
-          <legendlayerfile isInOverview="0" layerid="edition_point20130118171631518" visible="0"/>
+          <legendlayerfile isInOverview="0" layerid="edition_point20130118171631518" visible="1"/>
         </filegroup>
       </legendlayer>
       <legendlayer drawingOrder="-1" open="false" checked="Qt::Unchecked" name="edition_line" showFeatureCount="0">
@@ -3020,7 +3020,7 @@
         </edittype>
       </edittypes>
     </maplayer>
-    <maplayer minimumScale="-4.65661e-10" maximumScale="1e+08" simplifyDrawingHints="0" minLabelScale="1" maxLabelScale="1e+08" simplifyDrawingTol="1" geometry="Point" simplifyMaxScale="1" type="vector" hasScaleBasedVisibilityFlag="0" simplifyLocal="1" scaleBasedLabelVisibilityFlag="0">
+    <maplayer minimumScale="0" maximumScale="1e+08" simplifyDrawingHints="0" minLabelScale="1" maxLabelScale="1e+08" simplifyDrawingTol="1" geometry="Point" simplifyMaxScale="1" type="vector" hasScaleBasedVisibilityFlag="0" simplifyLocal="1" scaleBasedLabelVisibilityFlag="0">
       <id>edition_point20130118171631518</id>
       <datasource>dbname='./edition/edition_db.sqlite' table="edition_point" (geometry) sql=</datasource>
       <title>Points of interest</title>
@@ -3042,7 +3042,7 @@
         </spatialrefsys>
       </srs>
       <provider encoding="UTF-8">spatialite</provider>
-      <previewExpression></previewExpression>
+      <previewExpression>COALESCE( "name", '&lt;NULL>' )</previewExpression>
       <vectorjoins/>
       <expressionfields/>
       <map-layer-style-manager current="">
@@ -3064,8 +3064,8 @@
         <edittype widgetv2type="DateTime" name="date">
           <widgetv2config fieldEditable="1" calendar_popup="0" allow_null="0" display_format="" field_format="yyyy-mm-dd" labelOnTop="0"/>
         </edittype>
-        <edittype widgetv2type="ValueRelation" name="type">
-          <widgetv2config OrderByValue="1" AllowNull="0" FilterExpression="" fieldEditable="1" Key="QUARTIER" Layer="VilleMTP_MTP_Quartiers_2011_432620130116112610876" Value="LIBQUART" labelOnTop="0" AllowMulti="0"/>
+        <edittype widgetv2type="Classification" name="type">
+          <widgetv2config fieldEditable="1" labelOnTop="0"/>
         </edittype>
         <edittype widgetv2type="Photo" name="photo">
           <widgetv2config Width="400" fieldEditable="1" Height="400" labelOnTop="0"/>
@@ -3300,10 +3300,10 @@
         <property key="labeling/distMapUnitMinScale" value="0"/>
         <property key="labeling/enabled" value="true"/>
         <property key="labeling/fieldName" value="name"/>
-        <property key="labeling/fontBold" value="false"/>
+        <property key="labeling/fontBold" value="true"/>
         <property key="labeling/fontCapitals" value="0"/>
         <property key="labeling/fontFamily" value="Ubuntu"/>
-        <property key="labeling/fontItalic" value="true"/>
+        <property key="labeling/fontItalic" value="false"/>
         <property key="labeling/fontLetterSpacing" value="0"/>
         <property key="labeling/fontLimitPixelSize" value="false"/>
         <property key="labeling/fontMaxPixelSize" value="10000"/>
@@ -3314,7 +3314,7 @@
         <property key="labeling/fontSizeMapUnitMinScale" value="0"/>
         <property key="labeling/fontStrikeout" value="false"/>
         <property key="labeling/fontUnderline" value="false"/>
-        <property key="labeling/fontWeight" value="50"/>
+        <property key="labeling/fontWeight" value="63"/>
         <property key="labeling/fontWordSpacing" value="0"/>
         <property key="labeling/formatNumbers" value="false"/>
         <property key="labeling/isExpression" value="false"/>
@@ -3464,8 +3464,8 @@
         <edittype widgetv2type="DateTime" name="date">
           <widgetv2config fieldEditable="1" calendar_popup="0" allow_null="0" display_format="" field_format="yyyy-mm-dd" labelOnTop="0"/>
         </edittype>
-        <edittype widgetv2type="ValueRelation" name="type">
-          <widgetv2config OrderByValue="1" AllowNull="0" FilterExpression="" fieldEditable="1" Key="QUARTIER" Layer="VilleMTP_MTP_Quartiers_2011_432620130116112610876" Value="LIBQUART" labelOnTop="0" AllowMulti="0"/>
+        <edittype widgetv2type="Classification" name="type">
+          <widgetv2config fieldEditable="1" labelOnTop="0"/>
         </edittype>
         <edittype widgetv2type="Photo" name="photo">
           <widgetv2config Width="400" fieldEditable="1" Height="400" labelOnTop="0"/>

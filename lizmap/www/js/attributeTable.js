@@ -1966,9 +1966,10 @@ var lizAttributeTable = function() {
                     var cascadeToChildren = $('#jforms_view_attribute_layers_option_cascade_label input[name="cascade"]').prop('checked');
                     // Get filter status for the layer concerned by the edition
                     var hasFilter = false;
-                    if( config.layers[featureType]['filteredFeatures'].length > 0
-                        || config.layers[featureType]['request_params']['filter']
-                        || config.layers[featureType]['request_params']['exp_filter']
+                    if(
+                        ('filteredFeatures' in config.layers[featureType] && config.layers[featureType]['filteredFeatures'].length > 0 )
+                        || ( 'request_params' in config.layers[featureType] && config.layers[featureType]['request_params']['filter'] )
+                        || ( 'request_params' in config.layers[featureType] && config.layers[featureType]['request_params']['exp_filter'] )
                     ){
                        hasFilter = true;
                     }
@@ -2424,6 +2425,8 @@ var lizAttributeTable = function() {
                     var getLayer = getLayerConfigById( e.layerId, config.attributeLayers, 'layerId' );
                     if( getLayer ){
                         var featureType = getLayer[0];
+                        if( !(featureType in config.attributeLayers) )
+                            return false;
                         refreshTablesAfterEdition( featureType );
                     }
                 },
@@ -2432,6 +2435,8 @@ var lizAttributeTable = function() {
                     var getLayer = getLayerConfigById( e.layerId );
                     if( getLayer ){
                         var featureType = getLayer[0];
+                        if( !(featureType in config.attributeLayers) )
+                            return false;
                         refreshTablesAfterEdition( featureType );
                     }
                 },
@@ -2440,6 +2445,8 @@ var lizAttributeTable = function() {
                     var getLayer = getLayerConfigById( e.layerId );
                     if( getLayer ){
                         var featureType = getLayer[0];
+                        if( !(featureType in config.attributeLayers) )
+                            return false;
                         refreshTablesAfterEdition( featureType );
                     } // todo : only remove line corresponding to deleted feature ?
                 }

@@ -738,6 +738,19 @@ class lizmapProject{
             2
         );
 
+
+        if ( $this->hasEditionLayers() ) {
+            $tpl = new jTpl();
+            $dockable[] = new lizmapMapDockItem(
+                'edition',
+                jLocale::get('view~edition.navbar.title'),
+                $tpl->fetch('view~map_edition'),
+                3,
+                '',
+                $bp.'js/edition.js'
+            );
+        }
+
         return $dockable;
     }
 
@@ -786,16 +799,6 @@ class lizmapProject{
                 jLocale::get('view~map.measure.navbar.title'),
                 $tpl->fetch('view~map_measure'),
                 4
-            );
-        }
-
-        if ( $this->hasEditionLayers() ) {
-            $tpl = new jTpl();
-            $dockable[] = new lizmapMapDockItem(
-                'edition',
-                jLocale::get('view~edition.navbar.title'),
-                $tpl->fetch('view~map_edition'),
-                5
             );
         }
 
