@@ -1404,7 +1404,6 @@ class editionCtrl extends jController {
                     $sql.= ' AND "' . $key2 . '" = ' . $two . ')';
                     $sql.= ';';
                 }
-                break;
             }
 
             try {

@@ -579,8 +579,7 @@ var lizAttributeTable = function() {
 
                         }, function(data){
                             // Show response message
-                            $('#edition-modal').html(data);
-                            $('#edition-modal').modal('show');
+                            lizMap.addMessage( data, 'info', true).attr('id','lizmap-edition-message');
 
                             // Unselect features of parent (or child)
                             // And trigger table refresh
@@ -1292,8 +1291,7 @@ var lizAttributeTable = function() {
                                       fkey: cFkey
                                     }, function(data){
                                         // Show response message
-                                        $('#edition-modal').html(data);
-                                        $('#edition-modal').modal('show');
+                                        lizMap.addMessage( data, 'info', true).attr('id','lizmap-edition-message');
 
                                         // Send signal saying edition has been done on table
                                         lizMap.events.triggerEvent(
