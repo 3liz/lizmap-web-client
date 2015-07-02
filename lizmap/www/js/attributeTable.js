@@ -925,7 +925,7 @@ var lizAttributeTable = function() {
                     var canDelete = false;
                     if( 'editionLayers' in config && aName in config.editionLayers ) {
                         var al = config.editionLayers[aName];
-                        if( al.capabilities.modifyAttribute == "True" )
+                        if( al.capabilities.modifyAttribute == "True" || al.capabilities.modifyGeometry == "True" )
                             canEdit = true;
                         if( al.capabilities.deleteFeature == "True" )
                             canDelete = true;
@@ -2274,7 +2274,9 @@ var lizAttributeTable = function() {
                                 'layerId'
                             );
                         }
-                        if( eConfig && eConfig[1].capabilities.modifyAttribute == "True") {
+                        if( eConfig &&
+                            ( eConfig[1].capabilities.modifyAttribute == "True" || eConfig[1].capabilities.modifyGeometry == "True" )
+                        ) {
                             eHtml+= '<button class="btn btn-mini popup-layer-feature-edit" value="';
                             eHtml+= $(this).val();
                             eHtml+= '" title="' + lizDict['attributeLayers.btn.edit.title'] + '"><i class="icon-pencil"></i>&nbsp;</button>';

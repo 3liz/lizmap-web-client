@@ -406,6 +406,11 @@ class editionCtrl extends jController {
     // and create a form control if needed
     jClasses::inc('lizmap~qgisFormControl');
     $this->formControls = array();
+
+    $layerName = $this->layerName;
+    $capabilities = $this->project->getEditionLayers()->$layerName->capabilities;
+    $toDeactivate = array();
+    $toSetReadOnly = array();
     foreach($this->dataFields as $fieldName=>$prop){
 
       // Create new control from qgis edit type
@@ -433,6 +438,7 @@ class editionCtrl extends jController {
           // help to retrieve file path
           $hiddenCtrl = new jFormsControlHidden($fieldName.'_hidden');
           $form->addControl($hiddenCtrl);
+          $toDeactivate[] = $fieldName.'_choice';
       }
 
       // Add the control to the form
@@ -440,7 +446,26 @@ class editionCtrl extends jController {
       // Set readonly if needed
       $form->setReadOnly($fieldName, $this->formControls[$fieldName]->isReadOnly);
 
+      // Hide when no modify capabilities, only for UPDATE cases ( when $this->featureId control exists )
+      if( !empty($this->featureId) and strtolower($capabilities->modifyAttribute) == 'false' and $fieldName != $this->geometryColumn ){
+            if( $prop->primary )
+                $toSetReadOnly[] = $fieldName;
+            else
+                $toDeactivate[] = $fieldName;
+      }
 
+    }
+
+    // Hide when no modify capabilities, only for UPDATE cases (  when $this->featureId control exists )
+    if( !empty($this->featureId) && strtolower($capabilities->modifyAttribute) == 'false'){
+        foreach( $toDeactivate as $de ){
+            if( $form->getControl( $de ) )
+                $form->deactivate( $de, true );
+        }
+        foreach( $toSetReadOnly as $de ){
+            if( $form->getControl( $de ) )
+                $form->setReadOnly( $de, true );
+        }
     }
 
     if(!$this->primaryKeys){
@@ -466,7 +491,6 @@ class editionCtrl extends jController {
     if ( is_array($this->loginFilteredLayers) ) {
         $type = $this->loginFilteredLayers['type'];
         $attribute = $this->loginFilteredLayers['attribute'];
-        //jLog::log('updateFormByLogin', 'error');
 
         // Check if a user is authenticated
         if ( !jAuth::isConnected() )
@@ -484,7 +508,6 @@ class editionCtrl extends jController {
                 $userGroups[] = 'all';
                 $uGroups = array();
                 foreach( $userGroups as $uGroup ) {
-                    //jLog::log('updateFormByLogin '.$uGroup, 'error');
                     if ($uGroup != 'users' and substr( $uGroup, 0, 7 ) != "__priv_")
                         $uGroups[$uGroup] = $uGroup;
                 }
@@ -735,12 +758,37 @@ class editionCtrl extends jController {
 
     // Optionnaly query for the feature
     $cnx = jDb::getConnection($this->layerId);
+    $layerName = $this->layerName;
+    $capabilities = $this->project->getEditionLayers()->$layerName->capabilities;
+
+    // Update or Insert
+    $updateAction = false; $insertAction = false;
+    if( $this->featureId )
+        $updateAction = true;
+    else
+        $insertAction = true;
 
     // Get list of fields which are not primary keys
     $fields = array();
     foreach($this->dataFields as $fieldName=>$prop){
-      if(!$prop->primary)
-        $fields[] = $fieldName;
+        // For update : And get only fields corresponding to edition capabilities
+        if(
+            !$prop->primary
+            and (
+                ( strtolower($capabilities->modifyAttribute) == 'true' and $fieldName != $this->geometryColumn )
+                or ( strtolower($capabilities->modifyGeometry) == 'true' and $fieldName == $this->geometryColumn )
+                or $insertAction
+            )
+        )
+            $fields[] = $fieldName;
+    }
+
+    if( count($fields) == 0){
+        jLog::log('Not enough capabilities for this layer ! SQL cannot be constructed: no fields available !' ,'error');
+        $form->setErrorOn($this->geometryColumn, 'An error has been raised when saving the form: Not enough capabilities for this layer !');
+        jMessage::clearAll();
+        jMessage::add( jLocale::get('view~edition.link.error.sql'), 'error');
+        return false;
     }
 
     // Loop though the fields and filter the form posted values
@@ -817,7 +865,7 @@ class editionCtrl extends jController {
 
     $sql = '';
     // update
-    if($this->featureId){
+    if( $updateAction ){
       if(ctype_digit($this->featureId))
         $featureId = array($this->featureId);
       // featureId is set
@@ -840,7 +888,7 @@ class editionCtrl extends jController {
       }
     }
     // insert
-    else {
+    if( $insertAction ) {
       // SQL for insertion into the edition this->table
       function dquote($n){
           return '"' . $n . '"';
@@ -855,6 +903,7 @@ class editionCtrl extends jController {
 
     try {
       $rs = $cnx->query($sql);
+//~ jLog::log($sql);
     } catch (Exception $e) {
       $form->setErrorOn($this->geometryColumn, 'An error has been raised when saving the form');
       jLog::log("SQL = ".$sql);
@@ -1011,7 +1060,6 @@ class editionCtrl extends jController {
     }
     $this->updateFormByLogin($form, False);
     $attribute = $this->loginFilteredLayers['attribute'];
-    //jLog::log('updateFormByLogin '.json_encode($this->loginFilteredLayers), 'error');
 
     // Get title layer
     $layerXmlZero = $this->layerXml[0];

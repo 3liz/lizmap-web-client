@@ -417,11 +417,6 @@ var lizEdition = function() {
      */
     function displayEditionForm( data ){
 
-        // Get editLayer
-        editLayer = editionLayer['ol'];
-        if( !editLayer )
-            return false;
-
         // Add data
         $('#edition-form-container').html(data);
         var form = $('#edition-form-container form');
@@ -459,6 +454,12 @@ var lizEdition = function() {
                 { 'layerId': layerId}
             );
 
+            // Deactivate edition
+            deactivateEdition();
+
+            // Display message via JS
+            lizMap.addMessage( data, 'info', true).attr('id','lizmap-edition-message');
+
             // Redraw layer
             if( editionLayer['spatial'] ){
                 $.each(layers, function(i, l) {
@@ -468,15 +469,8 @@ var lizEdition = function() {
                     return false;
                 });
             }
-
-            // Display message via JS
-            lizMap.addMessage( data, 'info', true).attr('id','lizmap-edition-message');
-
-            // Deactivate edition
-            deactivateEdition();
         }
 
-        // Make the form visible
         $('#edition-form-container').show();
 
         // Show the dock if needed
