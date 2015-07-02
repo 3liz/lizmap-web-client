@@ -19,7 +19,7 @@ var lizEdition = function() {
     // Edition type : createFeature or modifyFeature
     var editionType = null;
 
-    function deactivateEdition() {
+    function finishEdition() {
         // Lift the constraint on edition
         lizMap.editionPending = false;
 
@@ -237,7 +237,7 @@ var lizEdition = function() {
                 if( lizMap.editionPending){
                     if ( !confirm( lizDict['edition.confirm.cancel'] ) )
                         return false;
-                    deactivateEdition();
+                    finishEdition();
                 }
 
                 // Get layer id and set global property
@@ -259,7 +259,7 @@ var lizEdition = function() {
                 // Deactivate previous edition
                 if ( !confirm( lizDict['edition.confirm.cancel'] ) )
                     return false;
-                deactivateEdition();
+                finishEdition();
             });
 
             $('#edition-menu a[rel="tooltip"]').tooltip();
@@ -365,6 +365,10 @@ var lizEdition = function() {
             var geometryType = editionLayer['config'].geometryType;
 
 
+            // Hide drawfeature controls : they will go back when finishing edition or canceling
+            $('#edition-layer').hide();
+            $('#edition-draw').addClass('disabled').hide();
+
             // Creation
             if( action == 'createFeature' ){
 
@@ -384,10 +388,6 @@ var lizEdition = function() {
             }
             // Modification
             else{
-
-                // Hide drawfeature controls
-                $('#edition-layer').hide();
-                $('#edition-draw').addClass('disabled').hide();
 
                 // Activate modification control
                 if ( editionLayer['config'].capabilities.modifyGeometry == "True"
@@ -455,7 +455,7 @@ var lizEdition = function() {
             );
 
             // Deactivate edition
-            deactivateEdition();
+            finishEdition();
 
             // Display message via JS
             lizMap.addMessage( data, 'info', true).attr('id','lizmap-edition-message');
