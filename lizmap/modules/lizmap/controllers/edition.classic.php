@@ -706,9 +706,10 @@ class editionCtrl extends jController {
           or $this->formControls[$ref]->fieldEditType == 'Photo' ) {
             $ctrl = $form->getControl($ref.'_choice');
             if ($ctrl && $ctrl->type == 'choice' ) {
-                $ctrl->itemsNames['keep'] = jLocale::get("view~edition.upload.choice.keep").' '.$record->$ref;
+                $filename = array_pop( explode( '/', $record->$ref ) );
+                $ctrl->itemsNames['keep'] = jLocale::get("view~edition.upload.choice.keep") . ' ' . $filename;
                 $ctrl->itemsNames['update'] = jLocale::get("view~edition.upload.choice.update");
-                $ctrl->itemsNames['delete'] = jLocale::get("view~edition.upload.choice.delete").' '.$record->$ref;
+                $ctrl->itemsNames['delete'] = jLocale::get("view~edition.upload.choice.delete") . ' ' . $filename;
             }
             $form->setData($ref.'_hidden', $record->$ref);
         }
