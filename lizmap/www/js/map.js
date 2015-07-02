@@ -1728,6 +1728,10 @@ var lizMap = function() {
             layer.destroyFeatures();
             $('#locate select').val('-1');
           });
+          $('#locate button.btn-locate-clear').click(function() {
+            $('#button-locate').click();
+            return false;
+          });
         }
       },'xml');
       //$('#locate-menu').show();
@@ -2141,6 +2145,10 @@ var lizMap = function() {
             layer.destroyFeatures();
             $('#locate select').val('-1');
           });
+          $('#locate button.btn-locate-clear').click(function() {
+            $('#button-locate').click();
+            return false;
+          });
         }
       },'xml');
       //$('#locate-menu').show();
@@ -2446,6 +2454,11 @@ var lizMap = function() {
       }
     );
     map.addControl( pLink );
+
+    $('.btn-permalink-clear').click(function(){
+      $('#button-permaLink').click();
+      return false;
+    });
 
   }
 
@@ -2855,8 +2868,8 @@ var lizMap = function() {
       return false;
     });
 
-    $('#print-menu button.btn-print-clear').click(function() {
-      dragCtrl.deactivate();
+    $('#print button.btn-print-clear').click(function() {
+      $('#button-print').click();
       return false;
     });
     $('#print-scale').change(function() {
@@ -3173,6 +3186,12 @@ var lizMap = function() {
             }
         }
     });
+
+
+    $('#measure-stop').click(function(){
+      $('#button-measure').click();
+    });
+
     return measureControls;
   }
 
@@ -3282,11 +3301,17 @@ var lizMap = function() {
       }
       return false;
     });
-    $('#geolocation-stop').click(function(){
+    function stopGeolocation(){
       if ( geolocate.active )
         geolocate.deactivate();
       $('#button-geolocation').click();
       return false;
+    }
+    $('#geolocation-stop').click(function(){
+      stopGeolocation();
+    });
+    $('#geolocation button.btn-geolocation-clear').click(function(){
+      stopGeolocation();
     });
   }
 
