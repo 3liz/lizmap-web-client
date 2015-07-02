@@ -501,6 +501,13 @@ var lizEdition = function() {
         // Handle file uploads
         if ( form.attr('enctype') == 'multipart/form-data' ){
             form.submit(function() {
+                // Additionnal checks
+                var msg = checkFormBeforeSubmit();
+                if( msg != 'ok' ){
+                    lizMap.addMessage( msg, 'info', true).attr('id','lizmap-edition-message');
+                    return false;
+                }
+
                 var fileInputs = form.find('input[type="file"]');
                 fileInputs = fileInputs.filter( function( i, e ) {
                     return $(e).val() != "";
@@ -524,6 +531,12 @@ var lizEdition = function() {
         }
         else{
             form.submit(function() {
+                // Additionnal checks
+                var msg = checkFormBeforeSubmit();
+                if( msg != 'ok' ){
+                    lizMap.addMessage( msg, 'info', true).attr('id','lizmap-edition-message');
+                    return false;
+                }
                 $.post(form.attr('action'),
                     form.serialize(),
                     function(data) {
@@ -532,6 +545,23 @@ var lizEdition = function() {
                 return false;
             });
         }
+    }
+
+    // Perform some additionnal checking on form
+    function checkFormBeforeSubmit(){
+        var msg = 'ok';
+        var form = $('#edition-form-container form');
+
+        if( editionLayer['spatial'] ){
+
+            var gColumn = form.find('input[name="liz_geometryColumn"]').val();
+            var formGeom = form.find('input[name="'+gColumn+'"]').val();
+            if( formGeom.trim() == '' ){
+                msg = lizDict['edition.message.error.no.geometry'];
+            }
+
+        }
+        return msg;
     }
 
     function updateGeometryColumnFromFeature( feat ){

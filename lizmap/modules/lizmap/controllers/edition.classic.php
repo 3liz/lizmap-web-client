@@ -1070,7 +1070,7 @@ class editionCtrl extends jController {
     $check = $form->check();
     if ( $this->geometryColumn != '' && $form->getData( $this->geometryColumn ) == '' ) {
       $check = False;
-      $form->setErrorOn($this->geometryColumn, "You must set the geometry");
+      $form->setErrorOn($this->geometryColumn, jLocale::get("view~edition.message.error.no.geometry") );
     }
 
     $rep = $this->getResponse('redirect');

@@ -1800,6 +1800,11 @@ div.modal h3 .text {
   max-width:35px;
 }
 
+#dock .form-horizontal .jforms-choice .jforms-item-controls  .control-label{
+  width:0px;
+}
+
+
 @media (max-height: 500px) {
   .modal.fade.in {
     top:30px;
