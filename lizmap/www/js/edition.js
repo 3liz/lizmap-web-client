@@ -13,6 +13,7 @@ var lizEdition = function() {
         'id': null // QGIS layer id
         ,'config': null // QGIS layer name
         ,'spatial': null // If the layer is spatial or not
+        ,'drawControl': null // draw control
     };
 
     // Edition type : createFeature or modifyFeature
@@ -24,6 +25,8 @@ var lizEdition = function() {
 
         // Deactivate edition map controls
         if( editCtrls ){
+            if( editionLayer['drawControl'] && editionLayer['drawControl'].active )
+                editionLayer['drawControl'].deactivate();
             editCtrls.panel.deactivate();
         }
         // Destroy edition layer features
@@ -34,6 +37,7 @@ var lizEdition = function() {
         editionLayer['id'] = null;
         editionLayer['config'] = null;
         editionLayer['spatial'] = null;
+        editionLayer['drawControl'] = null;
 
         // Remove messages
         $('#lizmap-edition-message').remove();
@@ -280,6 +284,7 @@ var lizEdition = function() {
         editionLayer['id'] = null;
         editionLayer['config'] = null;
         editionLayer['spatial'] = null;
+        editionLayer['drawControl'] = null;
         editionLayer['ol'] = null;
 
         // Check if edition is configured in lizmap
@@ -306,8 +311,11 @@ var lizEdition = function() {
         editionLayer['config'] = getLayer[1];
 
         // Check if layer is spatial
-        if( editionLayer['config'].geometryType in editCtrls )
+        var geometryType = editionLayer['config'].geometryType;
+        if( geometryType in editCtrls ){
             editionLayer['spatial'] = true;
+            editionLayer['drawControl'] = editCtrls[geometryType];
+        }
 
         // Get form and display it
         getEditionForm( aFid, aCallback );
