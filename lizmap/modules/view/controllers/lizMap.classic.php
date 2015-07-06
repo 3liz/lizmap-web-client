@@ -11,6 +11,10 @@
 
 class lizMapCtrl extends jController {
 
+  // forceHiddenProjectVisible : Used to ovverride plugin configuration hideProject 
+  // ( helpfull for modules which maps are based on a hidden project )
+  protected $forceHiddenProjectVisible = false;
+
   /**
   * Load the map page for the given project.
   * @param string $repository Name of the repository.
@@ -70,7 +74,7 @@ class lizMapCtrl extends jController {
     }
 
     // Redirect if project is hidden (lizmap plugin option)
-    if($ok){
+    if($ok and !$this->forceHiddenProjectVisible ){
       $pOptions = $lproj->getOptions();
       if (
           property_exists($pOptions,'hideProject')
