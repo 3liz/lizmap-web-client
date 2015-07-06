@@ -967,12 +967,12 @@ var lizAttributeTable = function() {
                         // Check if we need to replace url or media by link
                         if( typeof atFeatures[0].properties[idx] == 'string' ){
                             if( atFeatures[0].properties[idx].substr(0, 6) == 'media/' ){
-                                colConf['mRender'] = function( data, type, full ){
-                                    return '<a href="' + mediaLinkPrefix + '&path=/' + data + '" target="_blank">' + data + '</a>';
+                                colConf['mRender'] = function( data, type, full, meta ){
+                                    return '<a href="' + mediaLinkPrefix + '&path=/' + data + '" target="_blank">' + columns[meta.col]['title'] + '</a>';
                                 }
                             }
                             else if( atFeatures[0].properties[idx].substr(0, 4) == 'http' ){
-                                colConf['mRender'] = function( data, type, full ){
+                                colConf['mRender'] = function( data, type, full, meta ){
                                     return '<a href="' + data + '" target="_blank">' + data + '</a>';
                                 }
                             }

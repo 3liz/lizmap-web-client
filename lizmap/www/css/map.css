@@ -634,6 +634,14 @@ table.attribute-table-table tr.selected td button.attribute-layer-feature-select
   background-color: #0094D6;
   background-image: none;
 }
+
+table.attribute-table-table tr.active a,
+table.attribute-table-table tr.active a:hover,
+table.attribute-table-table tr.selected a,
+table.attribute-table-table tr.selected a:hover{
+  color: #005580;
+}
+
 /*
 Timemanager
 */
