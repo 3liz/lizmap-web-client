@@ -688,7 +688,6 @@ var lizMap = function() {
                 url: serviceUrl
             });
             // console.log( wmtsLayer );
-            //console.log( wmtsLayer.projection );
             return false;
           });
       }
@@ -1864,7 +1863,8 @@ var lizMap = function() {
           $(tr).find('button.checkbox[name="layer"]').each(function(i,b){
             var name = $(b).val();
             var layer = map.getLayersByName(name)[0];
-            layer.setVisibility(true);
+            if( typeof layer !== 'undefined' )
+              layer.setVisibility(true);
           });
         });
         self.removeClass('partial').addClass('checked');
@@ -1874,7 +1874,8 @@ var lizMap = function() {
           $(tr).find('button.checkbox[name="layer"]').each(function(i,b){
             var name = $(b).val();
             var layer = map.getLayersByName(name)[0];
-            layer.setVisibility(false);
+            if( typeof layer !== 'undefined' )
+              layer.setVisibility(false);
           });
         });
         self.removeClass('partial').removeClass('checked');
@@ -4024,12 +4025,9 @@ var lizMap = function() {
           // Connect signal/slot when layer style is changed
           lizMap.events.on({
             'layerstylechanged': function(evt){
-              console.log( evt );
               var name = evt.featureType;
               var url = getLayerLegendGraphicUrl(name, true);
-              console.log( url );
               var lSel = '#switcher table.tree tr#legend-' + name + ' div.legendGraphics img' ;
-              console.log( lSel );
               $(lSel).attr('src',url);
             }
           });

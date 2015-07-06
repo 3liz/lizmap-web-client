@@ -2266,7 +2266,7 @@ var lizAttributeTable = function() {
                         }
 
                         // Edit button
-                        var econfig = null;
+                        var eConfig = null;
                         if( 'editionLayers' in config ) {
                             eConfig = getLayerConfigById(
                                 layerId,
@@ -2274,6 +2274,7 @@ var lizAttributeTable = function() {
                                 'layerId'
                             );
                         }
+
                         if( eConfig &&
                             ( eConfig[1].capabilities.modifyAttribute == "True" || eConfig[1].capabilities.modifyGeometry == "True" )
                         ) {
@@ -2389,6 +2390,7 @@ var lizAttributeTable = function() {
                         .click(function(){
                             var fid = $(this).val().split('.').pop();
                             var layerId = $(this).val().replace( '.' + fid, '' );
+
                             // launch edition
                             lizMap.launchEdition( layerId, fid );
                             return false;

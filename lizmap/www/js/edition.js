@@ -275,11 +275,13 @@ var lizEdition = function() {
     // Start edition of a new feature or an existing one
     function launchEdition( aLayerId, aFid, aCallback ) {
 
-        // Prevent multiple editions
-        if( lizMap.editionPending )
-            return false;
+        // Deactivate previous edition
+        if( lizMap.editionPending){
+            if ( !confirm( lizDict['edition.confirm.cancel'] ) )
+                return false;
+            finishEdition();
+        }
         lizMap.editionPending = true;
-
 
         editionLayer['id'] = null;
         editionLayer['config'] = null;
@@ -454,21 +456,22 @@ var lizEdition = function() {
                 { 'layerId': layerId}
             );
 
-            // Deactivate edition
-            finishEdition();
-
-            // Display message via JS
-            lizMap.addMessage( data, 'info', true).attr('id','lizmap-edition-message');
-
             // Redraw layer
             if( editionLayer['spatial'] ){
-                $.each(layers, function(i, l) {
+                $.each(lizMap.layers, function(i, l) {
                     if (config.layers[l.params['LAYERS']].id != layerId)
                         return true;
                     l.redraw(true);
                     return false;
                 });
             }
+
+            // Deactivate edition
+            finishEdition();
+
+            // Display message via JS
+            lizMap.addMessage( data, 'info', true).attr('id','lizmap-edition-message');
+
         }
 
         $('#edition-form-container').show();
