@@ -2469,6 +2469,14 @@ var lizMap = function() {
         this, arguments
     );
 
+    // Replace zoom, lat, lon by bbox
+    delete args['zoom'];
+    delete args['lat'];
+    delete args['lon'];
+    args['bbox'] = map.getExtent().toBBOX();
+    args['crs'] = map.projection.projCode;
+
+    // Add layer filter and style if needed
     var filter = [];
     var style = [];
     for ( var  lName in config.layers ) {
