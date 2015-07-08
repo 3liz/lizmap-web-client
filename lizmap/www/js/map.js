@@ -142,6 +142,10 @@ var lizMap = function() {
         $('#overview-map').hide().removeClass('active');
       }
 
+      // Hide switcher
+      if( $('#button-switcher').parent().hasClass('active') )
+        $('#button-switcher').click();
+
       if( $('#menu').is(':visible'))
         $('#menu').hide();
 
@@ -165,6 +169,9 @@ var lizMap = function() {
         $('#overview-map').show();
         $('#overview-toggle').show().addClass('active');
       }
+      // Show switcher
+      if( !( $('#button-switcher').parent().hasClass('active') ) )
+        $('#button-switcher').click();
 
       if( !$('#menu').is(':visible'))
         $('#content span.ui-icon-open-menu').click();
@@ -216,16 +223,14 @@ var lizMap = function() {
     $('#map').width(w);
     // Make the dock fill the max height to calculate its max size, then restore to auto height
     $('#dock').css('bottom', '0px');
-    //$('#dock-content').height($('#dock').height() - $('#dock .nav-tabs > li').height());
 
     // Set the switcher content a max-height
     $('#switcher-layers-container').css( 'height', 'auto' );
-    var mh = $('#dock').height() - 2*$('#dock .nav-tabs > li').height() - $('#switcher-layers-container h3').height() - $('#switcher-baselayer').height() ;
-    $('#switcher-layers-container .menu-content').css( 'max-height', mh );
-    $('#switcher-layers-container .menu-content').css('overflow-x', 'hidden').css('overflow-y', 'auto');
+    var mh = $('#dock').height() - 2*$('#dock-tabs').height() - $('#switcher-layers-container h3').height() - $('#switcher-layers-actions').height() - $('#switcher-baselayer').height() ;
+    $('#switcher-layers-container .menu-content').css( 'max-height', mh ).css('overflow-x', 'hidden').css('overflow-y', 'auto');
 
     // Set the other tab-content max-height
-    $('#dock-content').css('max-height', $('#dock').height() - $('#dock-tabs').height());
+    $('#dock-content').css( 'max-height', $('#dock').height() - $('#dock-tabs').height() );
 
     $('#dock').css('overflow-y', 'hidden');
 
@@ -309,7 +314,6 @@ var lizMap = function() {
     }
     else
         $('#switcher').height(h);
-
 */
 
   }
@@ -1257,8 +1261,10 @@ var lizMap = function() {
       feat = format.read(feat)[0];
       feat.geometry.transform(proj, map.getProjection());
       map.zoomToExtent(feat.geometry.getBounds());
+      // Show geometry if asked
       if (locate.displayGeom == 'True')
         layer.addFeatures([feat]);
+
     }
   }
 
@@ -3676,19 +3682,12 @@ var lizMap = function() {
       var typeName = aName.replace(' ','_');
       var layerName = cleanName(aName);
 
-      //~ // Calculate bbox from map extent
-      //~ var extent = map.getExtent().clone();
-      //~ var projFeat = new OpenLayers.Projection(config.layers[aName].crs);
-      //~ extent = extent.transform( map.getProjection(), projFeat );
-      //~ var bbox = extent.toBBOX();
-
       var wfsOptions = {
           'SERVICE':'WFS'
           ,'VERSION':'1.0.0'
           ,'REQUEST':'GetFeature'
           ,'TYPENAME':typeName
           ,'OUTPUTFORMAT':'GeoJSON'
-          //~ ,'BBOX': bbox
           //~ ,'MAXFEATURES': 100
       };
 
@@ -3927,7 +3926,6 @@ var lizMap = function() {
           self.tree = tree;
           self.events.triggerEvent("treecreated", self);
           if(self.checkMobile()){
-            $('#menu').hide();
             $('#map-content').css('margin-left','0');
           }
 
@@ -4727,10 +4725,19 @@ lizMap.events.on({
    ,
    'uicreated': function(evt){
       //~ console.log('uicreated')
+
+      // Make subdock always be at the left
       $('#sub-dock').hover(function(){
         var sLeft = lizMap.getDockRightPosition();
         $(this).css( 'left', sLeft );
       });
+
+      // Update legend if mobile
+      if( lizMap.checkMobile() ){
+        //~ lizMap.updateContentSize();
+        if( $('#button-switcher').parent().hasClass('active') )
+          $('#button-switcher').click();
+      }
 
    }
 
