@@ -12,29 +12,29 @@
 jClasses::inc('lizmap~lizmapOGCRequest');
 jClasses::inc('lizmap~lizmapWMSRequest');
 class lizmapWMTSRequest extends lizmapOGCRequest {
-    
+
     protected $tplExceptions = 'lizmap~wmts_exception';
-    
+
     private $forceRequest = False;
-    
-    public function getForceRequest ( ) {
+
+    public function getForceRequest( ) {
         return $this->forceRequest;
     }
-    
-    public function setForceRequest ( $forced ) {
+
+    public function setForceRequest( $forced ) {
         return $this->forceRequest = $forced;
     }
-    
-    protected function getcapabilities ( ) {
+
+    protected function getcapabilities( ) {
         //Get Cache
         $cacheId = $this->repository->getKey().'_'.$this->project->getKey().'_WMTS';
-      
         $hash = jCache::get($cacheId . '_hash');
         $newhash = md5_file( realpath($this->repository->getPath()) . '/' . $this->project->getKey() . ".qgs" );
-      
-        $tileMatrixSetList = null; //jCache::get($cacheId . '_tileMatrixSetList');
-        $layers = null; //jCache::get($cacheId . '_layers');
+        $tileMatrixSetList = jCache::get($cacheId . '_tilematrixsetlist');
+        $layers = jCache::get($cacheId . '_layers');
+
         if( !$tileMatrixSetList || !$layers || $hash != $newhash ) {
+
             $wmsRequest = new lizmapWMSRequest( $this->project, array(
                     'service'=>'WMS',
                     'request'=>'GetCapabilities'
@@ -42,14 +42,13 @@ class lizmapWMTSRequest extends lizmapOGCRequest {
             );
             $wmsResult = $wmsRequest->process();
             $wms = $wmsResult->data;
-            
+
             $wms_xml = simplexml_load_string( $wms );
             $wms_xml->registerXPathNamespace("wms", "http://www.opengis.net/wms");
             $wms_xml->registerXPathNamespace("xlink", "http://www.w3.org/1999/xlink");
-              
+
             jClasses::inc("lizmap~lizmapTiler");
             $tileMatrixSetList = lizmapTiler::getTileMatrixSetList( $this->project, $wms_xml );
-              
             $cfgLayers = $this->project->getLayers();
             $layers = array();
             foreach( $cfgLayers as $n=>$l ) {
@@ -58,21 +57,24 @@ class lizmapWMTSRequest extends lizmapOGCRequest {
                     $layers[] = lizmapTiler::getLayerTileInfo( $l->name, $this->project, $wms_xml, $tileMatrixSetList );
                 }
             }
-            jCache::set($cacheId . '_tileMatrixSetList', $tileMatrixSetList);
-            jCache::set($cacheId . '_layers', $layers);
+
+            jCache::set($cacheId . '_hash', $newhash, 3600);
+            jCache::set($cacheId . '_tilematrixsetlist', $tileMatrixSetList, 3600 );
+            jCache::set($cacheId . '_layers', $layers, 3600);
+
         }
         $sUrl = jUrl::getFull(
             "lizmap~service:index",
             array("repository"=>$this->repository->getKey(), "project"=>$this->project->getKey())
         );
-        
+
         $tpl = new jTpl();
         $tpl->assign( 'url', $sUrl );
         $tpl->assign( 'repository', $this->param('repository') );
         $tpl->assign( 'project', $this->param('project') );
         $tpl->assign( 'tileMatrixSetList', $tileMatrixSetList );
         $tpl->assign( 'layers', $layers );
-        
+
         return (object) array(
             'code' => 200,
             'mime' => 'text/xml',
@@ -80,7 +82,7 @@ class lizmapWMTSRequest extends lizmapOGCRequest {
             'cached' => False
         );
     }
-    
+
     function gettile(){
         //jLog::log('GetTile '.http_build_query($this->params));
         // Get the layer
@@ -120,15 +122,17 @@ class lizmapWMTSRequest extends lizmapOGCRequest {
             jMessage::add('The parameter TileCol is mandatory !', 'MissingParameter');
             return $this->serviceException();
         }
-        
+
         $cacheId = $this->repository->getKey().'_'.$this->project->getKey().'_WMTS';
-        $tileMatrixSetList = jCache::get($cacheId . '_tileMatrixSetList');
+        $tileMatrixSetList = jCache::get($cacheId . '_tilematrixsetlist');
+
         if( !$tileMatrixSetList ) {
             $this->getcapabilities();
-            $tileMatrixSetList = jCache::get($cacheId . '_tileMatrixSetList');
+            $tileMatrixSetList = jCache::get($cacheId . '_tilematrixsetlist');
         }
-        
+
         $tileMatrixSet = null;
+
         foreach( $tileMatrixSetList as $tms ) {
             if ( $tms->ref == $TileMatrixSetId ) {
                 $tileMatrixSet = $tms;
@@ -137,15 +141,15 @@ class lizmapWMTSRequest extends lizmapOGCRequest {
         }
         $tileWidth = 256.0;
         $tileHeight = 256.0;
-        
+
         $tileMatrix = $tileMatrixSet->tileMatrixList[ (int) $TileMatrixId ];
-        
+
         $res = $tileMatrix->resolution;
         $minx = $tileMatrix->left + ( (int) $TileCol ) * ($tileWidth * $res);
         $miny = $tileMatrix->top - ( (int) $TileRow ) * ($tileHeight * $res);
         $maxx = $tileMatrix->left + ( (int) $TileCol + 1) * ($tileWidth * $res);
         $maxy = $tileMatrix->top - ( (int) $TileRow +1 ) * ($tileHeight * $res);
-    
+
         $params['service'] = 'WMS';
         $params['version'] = '1.3.0';
         $params['request'] = 'GetMap';
@@ -159,10 +163,10 @@ class lizmapWMTSRequest extends lizmapOGCRequest {
         $params['dpi'] = '96';
         if(preg_match('#png#', $Format))
             $params['transparent'] = 'true';
-        
+
         $wmsRequest = new lizmapWMSRequest( $this->project, $params );
         $wmsRequest->setForceRequest( $this->forceRequest );
-        
+
         return $wmsRequest->process();
     }
 }
