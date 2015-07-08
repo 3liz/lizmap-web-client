@@ -1273,6 +1273,8 @@ var lizMap = function() {
    */
   function getLocateFeature(aName) {
     var locate = config.locateByLayer[aName];
+
+    // get fields to retrieve
     var fields = ['geometry',locate.fieldName];
     // if a filter field is defined
     if ('filterFieldName' in locate)
@@ -1292,22 +1294,16 @@ var lizMap = function() {
           fields.push( vectorjoin.targetFieldName );
       }
     }
-    var typeName = aName.replace(' ','_');
+
+    // Get WFS url and options
+    var getFeatureUrlData = getVectorLayerWfsUrl( aName, null, null, 'extent' );
+    getFeatureUrlData['options']['PROPERTYNAME'] = fields.join(',');
+
     var layerName = cleanName(aName);
-    var wfsOptions = {
-      'SERVICE':'WFS'
-     ,'VERSION':'1.0.0'
-     ,'REQUEST':'GetFeature'
-     ,'TYPENAME':typeName
-     ,'PROPERTYNAME':fields.join(',')
-     ,'OUTPUTFORMAT':'GeoJSON'
-    };
-    var service = OpenLayers.Util.urlAppend(lizUrls.wms
-        ,OpenLayers.Util.getParameterString(lizUrls.params)
-    );
-    $.get(service
-        ,wfsOptions
-        ,function(data) {
+
+    // Get data
+    $.get( getFeatureUrlData['url'], getFeatureUrlData['options'], function(data) {
+
       var lConfig = config.layers[aName];
       locate['features'] = {};
       var features = data.features;
@@ -1332,6 +1328,8 @@ var lizMap = function() {
             fOptions += '<option value="'+fValue+'">'+fValue+'</option>';
           }
         }
+
+
         // add filter values list
         $('#locate-layer-'+layerName).parent().before('<div class="locate-layer"><select id="locate-layer-'+layerName+'-'+locate.filterFieldName+'">'+fOptions+'</select></div><br/>');
         // listen to filter select changes
@@ -3635,6 +3633,9 @@ var lizMap = function() {
 
       // Get selected features
       var selectionLayer = getLayerNameByCleanName( aName );
+
+      if( !selectionLayer )
+        selectionLayer = aName;
       var featureid = getVectorLayerSelectionFeatureIdsString( selectionLayer );
 
       // Get WFS url and options
@@ -3651,6 +3652,7 @@ var lizMap = function() {
           getFeatureUrlData['url'],
           OpenLayers.Util.getParameterString( getFeatureUrlData['options'] )
       );
+
       // Open in new window
       window.open( exportUrl );
       return false;
@@ -3658,8 +3660,7 @@ var lizMap = function() {
 
   function getVectorLayerSelectionFeatureIdsString( aName ) {
       var featureidParameter = '';
-
-      if( 'selectedFeatures' in config.layers && config.layers[aName]['selectedFeatures'] ){
+      if( aName in config.layers && config.layers[aName]['selectedFeatures'] ){
           var fids = [];
           for( var id in config.layers[aName]['selectedFeatures'] ) {
               fids.push( aName + '.' + config.layers[aName]['selectedFeatures'][id] );
@@ -3671,12 +3672,14 @@ var lizMap = function() {
       return featureidParameter;
   }
 
-  function getVectorLayerWfsUrl( aName, aFilter, aFeatureId ) {
+  function getVectorLayerWfsUrl( aName, aFilter, aFeatureId, geometryName, restrictToMapExtent ) {
       var getFeatureUrlData = {};
 
       // Set function parameters if not given
       aFilter = typeof aFilter !== 'undefined' ?  aFilter : null;
       aFeatureId = typeof aFeatureId !== 'undefined' ?  aFeatureId : null;
+      geometryName = typeof geometryName !== 'undefined' ?  geometryName : null;
+      restrictToMapExtent = typeof restrictToMapExtent !== 'undefined' ?  restrictToMapExtent : false;
 
       // Build WFS request parameters
       var typeName = aName.replace(' ','_');
@@ -3714,6 +3717,22 @@ var lizMap = function() {
       // optionnal parameter filterid
       if( aFeatureId )
           wfsOptions['FEATUREID'] = aFeatureId;
+
+      // Calculate bbox from map extent if needed
+      if( restrictToMapExtent ) {
+          var extent = map.getExtent().clone();
+          var projFeat = new OpenLayers.Projection(config.layers[aName].crs);
+          extent = extent.transform( map.getProjection(), projFeat );
+          var bbox = extent.toBBOX();
+          wfsOptions['BBOX'] = bbox;
+      }
+
+      // Optionnal parameter geometryname
+      if( geometryName
+        && ['none', 'extent', 'centroid'].indexOf( geometryName ) != -1
+      ){
+          wfsOptions['GEOMETRYNAME'] = geometryName;
+      }
 
       getFeatureUrlData['url'] = OpenLayers.Util.urlAppend(lizUrls.wms
               ,OpenLayers.Util.getParameterString(lizUrls.params)
@@ -3872,8 +3891,8 @@ var lizMap = function() {
     /**
      * Method: getVectorLayerWfsUrl
      */
-    getVectorLayerWfsUrl: function( aName, aFilter, aFeatureId ) {
-      return getVectorLayerWfsUrl( aName, aFilter, aFeatureId );
+    getVectorLayerWfsUrl: function( aName, aFilter, aFeatureId, geometryName, restrictToMapExtent ) {
+      return getVectorLayerWfsUrl( aName, aFilter, aFeatureId, geometryName, restrictToMapExtent );
     },
 
     /**

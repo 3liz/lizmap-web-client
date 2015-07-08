@@ -1183,7 +1183,8 @@ var lizAttributeTable = function() {
                                     var format = new OpenLayers.Format.GeoJSON();
                                     feat = format.read(feat)[0];
                                     var proj = new OpenLayers.Projection(config.layers[aName].crs);
-                                    if( feat && feat.geometry ){
+
+                                    if( feat && 'geometry' in feat ){
                                         feat.geometry.transform(proj, lizMap.map.getProjection());
 
                                         // Zoom or center to selected feature
@@ -1344,7 +1345,8 @@ var lizAttributeTable = function() {
                 aCallBack = typeof aCallBack !== 'undefined' ?  aCallBack : null;
 
                 $('body').css('cursor', 'wait');
-                var getFeatureUrlData = lizMap.getVectorLayerWfsUrl( aName, aFilter, aFeatureID );
+                var geometryName = 'extent';
+                var getFeatureUrlData = lizMap.getVectorLayerWfsUrl( aName, aFilter, aFeatureID, geometryName );
                 $.get( getFeatureUrlData['url'], getFeatureUrlData['options'], function(data) {
 
                     var cFeatures = data.features;
@@ -1667,7 +1669,8 @@ var lizAttributeTable = function() {
             typeNameDone.push( typeName );
 
             // Get features to refresh attribute table AND build children filters
-            var getFeatureUrlData = lizMap.getVectorLayerWfsUrl( typeName, aFilter );
+            var geometryName = 'extent';
+            var getFeatureUrlData = lizMap.getVectorLayerWfsUrl( typeName, aFilter, null, geometryName );
 
             getAttributeFeatureData(typeName, aFilter, null, function(aName, aNameFilter, aNameFeatures, aNameAliases ){
 
@@ -2018,6 +2021,7 @@ var lizAttributeTable = function() {
             }
 
             function updateMapLayerSelection( featureType ) {
+
                 // Get layer
                 var layer = lizMap.map.getLayersByName( featureType )[0];
                 if( !layer )
