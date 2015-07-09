@@ -1179,22 +1179,11 @@ var lizAttributeTable = function() {
 
                                     // Read feature
                                     var featId = $(this).val();
-                                    var feat = config.layers[aName]['features'][featId];
-                                    var format = new OpenLayers.Format.GeoJSON();
-                                    feat = format.read(feat)[0];
-                                    var proj = new OpenLayers.Projection(config.layers[aName].crs);
+                                    var zoomAction = 'zoom';
+                                    if( $(this).hasClass('center') )
+                                        zoomAction = 'center';
+                                    zoomToFeature( aName, featId, zoomAction );
 
-                                    if( feat && 'geometry' in feat ){
-                                        feat.geometry.transform(proj, lizMap.map.getProjection());
-
-                                        // Zoom or center to selected feature
-                                        if( $(this).hasClass('zoom') )
-                                            lizMap.map.zoomToExtent(feat.geometry.getBounds());
-                                        else{
-                                            var lonlat = feat.geometry.getBounds().getCenterLonLat()
-                                            lizMap.map.setCenter(lonlat);
-                                        }
-                                    }
                                     return false;
 
                                 })
@@ -1463,6 +1452,49 @@ var lizAttributeTable = function() {
                     });
                 });
 
+
+            }
+
+
+            function zoomToOlFeature( feature, proj, zoomAction ){
+                zoomAction = typeof zoomAction !== 'undefined' ?  zoomAction : 'zoom';
+                var format = new OpenLayers.Format.GeoJSON();
+                var feat = format.read(feature)[0];
+                if( feat && 'geometry' in feat ){
+                    feat.geometry.transform( proj, lizMap.map.getProjection() );
+
+                    // Zoom or center to selected feature
+                    if( zoomAction == 'zoom' )
+                        lizMap.map.zoomToExtent(feat.geometry.getBounds());
+                    if( zoomAction == 'center' ){
+                        var lonlat = feat.geometry.getBounds().getCenterLonLat()
+                        lizMap.map.setCenter(lonlat);
+                    }
+                }
+            }
+
+            function zoomToFeature( featureType, fid, zoomAction ){
+                zoomAction = typeof zoomAction !== 'undefined' ?  zoomAction : 'zoom';
+
+                var layerConfig = config.layers[featureType];
+                var featureId = featureType + '.' + fid;
+                var proj = new OpenLayers.Projection(config.layers[featureType].crs);
+                var feat = null;
+
+                // Use already retrieved feature
+                if( layerConfig['features'] && fid in layerConfig['features'] ){
+                    feat = layerConfig['features'][fid];
+                    zoomToOlFeature( feat, proj, zoomAction );
+                }
+                // Or get the feature via WFS in needed
+                else{
+                    getAttributeFeatureData(featureType, null, featureId, function( aName, aFilter, cFeatures, cAliases ){
+                        if( cFeatures.length == 1 ){
+                            feat = cFeatures[0];
+                            zoomToOlFeature( feat, proj, zoomAction );
+                        }
+                    });
+                }
 
             }
 
@@ -2269,6 +2301,14 @@ var lizAttributeTable = function() {
                             }
                         }
 
+                        // Zoom button
+                        if( aConfig && getLayerConfig ) {
+                            var layerConfig = getLayerConfig[1];
+                            eHtml+= '<button class="btn btn-mini popup-layer-feature-zoom" value="';
+                            eHtml+= aConfig[0] + '.' + fid;
+                            eHtml+= '" title="' + lizDict['attributeLayers.btn.zoom.title'] + '"><i class="icon-zoom-in"></i>&nbsp;</button>';
+                        }
+
                         // Edit button
                         var eConfig = null;
                         if( 'editionLayers' in config ) {
@@ -2337,6 +2377,25 @@ var lizAttributeTable = function() {
                             function(){ $(this).addClass('btn-primary'); },
                             function(){ $(this).removeClass('btn-primary'); }
                         );
+
+                        // Zoom
+                        $('#liz_layer_popup button.popup-layer-feature-zoom')
+                        .click(function(){
+                            var fid = $(this).val().split('.').pop();
+                            var featureType = $(this).val().replace( '.' + fid, '' );
+
+                            // Remove map popup to avoid confusion
+                            if (lizMap.map.popups.length != 0)
+                                lizMap.map.removePopup( lizMap.map.popups[0] );
+
+                            zoomToFeature( featureType, fid, 'zoom' );
+                            return false;
+                        })
+                        .hover(
+                            function(){ $(this).addClass('btn-primary'); },
+                            function(){ $(this).removeClass('btn-primary'); }
+                        );
+
 
 
                         // filter

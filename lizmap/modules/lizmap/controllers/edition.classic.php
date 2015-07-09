@@ -631,7 +631,7 @@ class editionCtrl extends jController {
     $url = $lizmapServices->wmsServerURL.'?';
     $bparams = http_build_query($params);
     $querystring = $url . $bparams;
-jLog::log( $querystring );
+
     // Get remote data
     $lizmapCache = jClasses::getService('lizmap~lizmapCache');
     $getRemoteData = $lizmapCache->getRemoteData(
