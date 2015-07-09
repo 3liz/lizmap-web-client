@@ -741,6 +741,7 @@ class lizmapProject{
 
         if ( $this->hasEditionLayers() ) {
             $tpl = new jTpl();
+            $bp = jApp::config()->urlengine['basePath'];
             $dockable[] = new lizmapMapDockItem(
                 'edition',
                 jLocale::get('view~edition.navbar.title'),
