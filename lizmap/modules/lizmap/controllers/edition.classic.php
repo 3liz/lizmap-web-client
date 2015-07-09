@@ -604,6 +604,7 @@ class editionCtrl extends jController {
       'TYPENAME' => $layerName,
       'PROPERTYNAME' => $valueColumn.','.$keyColumn,
       'OUTPUTFORMAT' => 'GeoJSON',
+      'GEOMETRYNAME' => 'none',
       'map' => $this->repository->getPath().$this->project->getKey().".qgs"
     );
     // add EXP_FILTER. Only for QGIS >=2.0
@@ -630,7 +631,7 @@ class editionCtrl extends jController {
     $url = $lizmapServices->wmsServerURL.'?';
     $bparams = http_build_query($params);
     $querystring = $url . $bparams;
-
+jLog::log( $querystring );
     // Get remote data
     $lizmapCache = jClasses::getService('lizmap~lizmapCache');
     $getRemoteData = $lizmapCache->getRemoteData(
