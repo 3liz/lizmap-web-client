@@ -38,7 +38,7 @@ minifyJS=1
 ; liste des fichiers CSS qui ne doivent pas être compressé
 minifyExcludeCSS="OpenLayers-2.13/theme/default/style.css"
 ; liste des fichiers JS qui ne doivent pas être compressé
-minifyExcludeJS="/index.php/view/translate/,/OpenLayers-2.13/OpenLayers.js,/js/jquery-1.11.1.min.js,/js/jquery-ui-1.11.2.custom.min.js"
+minifyExcludeJS="index.php/view/translate/,OpenLayers-2.13/OpenLayers.js,js/jquery-1.11.1.min.js,js/jquery-ui-1.11.2.custom.min.js"
 ; chemin du point d'entrée de Minify, relatif au basePath
 minifyEntryPoint=minify.php
 
