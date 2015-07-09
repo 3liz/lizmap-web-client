@@ -438,7 +438,8 @@ SubDock
   opacity:0.5;
   position:absolute;
   left:300px;
-  width:80%;
+  right:10px;
+  width:auto;
   height:auto;
   bottom:0px;
   z-index:5000;
