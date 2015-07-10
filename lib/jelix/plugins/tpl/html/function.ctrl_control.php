@@ -22,7 +22,7 @@ function jtpl_function_html_ctrl_control($tpl, $ctrlname='', $attributes = array
         return;
     }
 
-    if($ctrlname =='') {
+    if ($ctrlname =='') {
         $ctrl = $tpl->_privateVars['__ctrl'];
         $ctrlname = $tpl->_privateVars['__ctrlref'];
     }

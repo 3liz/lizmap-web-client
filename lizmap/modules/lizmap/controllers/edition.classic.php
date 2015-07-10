@@ -22,8 +22,12 @@ class editionCtrl extends jController {
 
   // layer name (<layername> in QGIS project)
   private $layerName = '';
+
   // table name
   private $table = '';
+
+  // Schema
+  private $schema = '';
 
   // table name without schema
   private $tableName = '';
@@ -76,7 +80,10 @@ class editionCtrl extends jController {
   // Form controls
   private $formControls = '';
 
-  // Filter by login flag
+  // Filter override flag
+  private $loginFilteredOveride = False;
+
+  // Filter by login information
   private $loginFilteredLayers = Null;
 
 
@@ -86,18 +93,21 @@ class editionCtrl extends jController {
   */
   function serviceAnswer(){
 
+    $title = jLocale::get("view~edition.modal.title.default");
+
     // Get title layer
-    $layerXmlZero = $this->layerXml[0];
-    $_title = $layerXmlZero->xpath('title');
-    $title = (string)$_title[0];
-    if ( !$title )
-      $title = jLocale::get("view~edition.modal.title.default");
+    if( $this->layerXml and $this->layerXml[0] ){
+        $layerXmlZero = $this->layerXml[0];
+        $_title = $layerXmlZero->xpath('title');
+        if( $_title and $_title[0] )
+            $title = (string)$_title[0];
+    }
 
     $messages = jMessage::getAll();
     $rep = $this->getResponse('htmlfragment');
     $tpl = new jTpl();
     $tpl->assign('title', $title);
-    $content = $tpl->fetch('view~jmessage_modal');
+    $content = $tpl->fetch('view~jmessage_answer');
     $rep->addContent($content);
     jMessage::clearAll();
     return $rep;
@@ -135,13 +145,13 @@ class editionCtrl extends jController {
     $lproj = lizmap::getProject($repository.'~'.$project);
 
     // Redirect if no rights to access this repository
-    if(!jacl2::check('lizmap.repositories.view', $lrep->getKey())){
+    if(!jAcl2::check('lizmap.repositories.view', $lrep->getKey())){
       jMessage::add(jLocale::get('view~default.repository.access.denied'), 'AuthorizationRequired');
       return false;
     }
 
     // Redirect if no rights to use the edition tool
-    if(!jacl2::check('lizmap.tools.edition.use', $lrep->getKey())){
+    if(!jAcl2::check('lizmap.tools.edition.use', $lrep->getKey())){
       jMessage::add(jLocale::get('view~edition.access.denied'), 'AuthorizationRequired');
       return false;
     }
@@ -150,6 +160,21 @@ class editionCtrl extends jController {
     $layerXmlZero = $layerXml[0];
     $_layerName = $layerXmlZero->xpath('layername');
     $layerName = (string)$_layerName[0];
+
+    // Verifying if the layer is edtable
+    $eLayers  = $lproj->getEditionLayers();
+    if ( !property_exists( $eLayers, $layerName ) ) {
+      jMessage::add('The layer is not editable!', 'LayerNotEditable');
+      return false;
+    }
+    $eLayer = $eLayers->$layerName;
+    if ( $eLayer->capabilities->modifyGeometry != "True"
+         && $eLayer->capabilities->modifyAttribute != "True"
+         && $eLayer->capabilities->deleteFeature != "True"
+         && $eLayer->capabilities->createFeature != "True" ) {
+      jMessage::add('The layer is not editable!', 'LayerNotEditable');
+      return false;
+    }
 
     // feature Id (optionnal, only for edition and save)
     if(preg_match('#,#', $featureIdParam))
@@ -167,9 +192,10 @@ class editionCtrl extends jController {
     $this->layerName = $layerName;
 
     // Optionnaly filter data by login
-    if( !jacl2::check('lizmap.tools.loginFilteredLayers.override', $lrep->getKey()) ){
+    if( !jAcl2::check('lizmap.tools.loginFilteredLayers.override', $lrep->getKey()) ){
       $this->loginFilteredLayers = True;
     }
+    $this->loginFilteredOveride = jacl2::check('lizmap.tools.loginFilteredLayers.override', $lrep->getKey());
 
     return true;
   }
@@ -191,7 +217,12 @@ class editionCtrl extends jController {
       if( property_exists($pConfig->loginFilteredLayers, $layername) ) {
         $v='';
         $where='';
+        $type='groups';
         $attribute = $pConfig->loginFilteredLayers->$layername->filterAttribute;
+
+        if (property_exists($pConfig->loginFilteredLayers->$layername, 'filterPrivate')
+         && $pConfig->loginFilteredLayers->$layername->filterPrivate = 'True')
+          $type = 'login';
 
         // Check if a user is authenticated
         $isConnected = jAuth::isConnected();
@@ -199,10 +230,14 @@ class editionCtrl extends jController {
         if($isConnected){
           $user = jAuth::getUserSession();
           $login = $user->login;
-          $userGroups = jAcl2DbUserGroup::getGroups();
-          // Set XML Filter if getFeature request
-          $flatGroups = implode("' , '", $userGroups);
-          $where = ' "'.$attribute."\" IN ( '".$flatGroups."' , 'all' )";
+          if ( $type == 'login' ) {
+            $where = ' "'.$attribute."\" IN ( '".$login."' , 'all' )";
+          } else {
+            $userGroups = jAcl2DbUserGroup::getGroups();
+            // Set XML Filter if getFeature request
+            $flatGroups = implode("' , '", $userGroups);
+            $where = ' "'.$attribute."\" IN ( '".$flatGroups."' , 'all' )";
+          }
         }else{
           // The user is not authenticated: only show data with attribute = 'all'
           $where = ' "'.$attribute.'" = '.$cnx->quote("all");
@@ -210,7 +245,9 @@ class editionCtrl extends jController {
         // Set filter when multiple layers concerned
         if($where){
           $this->loginFilteredLayers = array(
-            'where' => $where
+            'where' => $where,
+            'type' => $type,
+            'attribute' => $attribute
           );
         }
       }
@@ -226,7 +263,7 @@ class editionCtrl extends jController {
 
     // Get datasource information from QGIS
     $datasourceMatch = preg_match(
-      "#dbname='([^ ]+)' (?:host=([^ ]+) )?(?:port=([0-9]+) )?(?:user='([^ ]+)' )?(?:password='([^ ]+)' )?(?:sslmode=([^ ]+) )?(?:key='([^ ]+)' )?(?:estimatedmetadata=([^ ]+) )?(?:srid=([0-9]+) )?(?:type=([a-zA-Z]+) )?(?:table=\"(.+)\" \()?(?:([^ ]+)\) )?(?:sql=(.*))?#",
+      "#dbname='([^ ]+)' (?:host=([^ ]+) )?(?:port=([0-9]+) )?(?:user='([^ ]+)' )?(?:password='([^ ]+)' )?(?:sslmode=([^ ]+) )?(?:key='([^ ]+)' )?(?:estimatedmetadata=([^ ]+) )?(?:srid=([0-9]+) )?(?:type=([a-zA-Z]+) )?(?:table=\"(.+)\" )?(?:\()?(?:([^ ]+)\) )?(?:sql=(.*))?#",
       $datasource,
       $dt
     );
@@ -251,6 +288,7 @@ class editionCtrl extends jController {
       $tableAlone = $exp[1];
       $schema = $exp[0];
     }
+    $this->schema = $schema;
 
     // Set some private properties
     $this->table = $table;
@@ -285,6 +323,7 @@ class editionCtrl extends jController {
     $cnx = jDb::getConnection($profile);
     $tools = $cnx->tools();
     $sequence = null;
+
     $fields = $tools->getFieldList($tableAlone, $sequence);
     $this->dataFields = $fields;
 
@@ -335,7 +374,6 @@ class editionCtrl extends jController {
   * Dynamically add controls to the form based on QGIS layer information
   *
   * @param object $form Jelix form to add controls to.
-  * @param string $save If set, save the form data into the database : 'insert' or 'update'.
   * @return modified form.
   */
   private function addFormControls($form){
@@ -368,6 +406,11 @@ class editionCtrl extends jController {
     // and create a form control if needed
     jClasses::inc('lizmap~qgisFormControl');
     $this->formControls = array();
+
+    $layerName = $this->layerName;
+    $capabilities = $this->project->getEditionLayers()->$layerName->capabilities;
+    $toDeactivate = array();
+    $toSetReadOnly = array();
     foreach($this->dataFields as $fieldName=>$prop){
 
       // Create new control from qgis edit type
@@ -382,14 +425,20 @@ class editionCtrl extends jController {
 
       $this->formControls[$fieldName] = new qgisFormControl($fieldName, $edittype, $aliasXml, $categoriesXml, $prop);
 
-      // Fill comboboxes of editType "Value relation" from relation layer
-      // Query QGIs Server via WFS
-
       if( ($this->formControls[$fieldName]->fieldEditType == 15
-      or $this->formControls[$fieldName]->fieldEditType == 'ValueRelation')
-        and $this->formControls[$fieldName]->valueRelationData
-      ){
-        $this->fillComboboxFromValueRelationLayer($fieldName);
+           or $this->formControls[$fieldName]->fieldEditType == 'ValueRelation')
+         and $this->formControls[$fieldName]->valueRelationData ){
+          // Fill comboboxes of editType "Value relation" from relation layer
+          // Query QGIS Server via WFS
+          $this->fillComboboxFromValueRelationLayer($fieldName);
+      } else if ( $this->formControls[$fieldName]->fieldEditType == 8
+               or $this->formControls[$fieldName]->fieldEditType == 'FileName'
+               or $this->formControls[$fieldName]->fieldEditType == 'Photo' ) {
+          // Add Hidden Control for upload
+          // help to retrieve file path
+          $hiddenCtrl = new jFormsControlHidden($fieldName.'_hidden');
+          $form->addControl($hiddenCtrl);
+          $toDeactivate[] = $fieldName.'_choice';
       }
 
       // Add the control to the form
@@ -397,7 +446,26 @@ class editionCtrl extends jController {
       // Set readonly if needed
       $form->setReadOnly($fieldName, $this->formControls[$fieldName]->isReadOnly);
 
+      // Hide when no modify capabilities, only for UPDATE cases ( when $this->featureId control exists )
+      if( !empty($this->featureId) and strtolower($capabilities->modifyAttribute) == 'false' and $fieldName != $this->geometryColumn ){
+            if( $prop->primary )
+                $toSetReadOnly[] = $fieldName;
+            else
+                $toDeactivate[] = $fieldName;
+      }
 
+    }
+
+    // Hide when no modify capabilities, only for UPDATE cases (  when $this->featureId control exists )
+    if( !empty($this->featureId) && strtolower($capabilities->modifyAttribute) == 'false'){
+        foreach( $toDeactivate as $de ){
+            if( $form->getControl( $de ) )
+                $form->deactivate( $de, true );
+        }
+        foreach( $toSetReadOnly as $de ){
+            if( $form->getControl( $de ) )
+                $form->setReadOnly( $de, true );
+        }
     }
 
     if(!$this->primaryKeys){
@@ -405,6 +473,106 @@ class editionCtrl extends jController {
       return false;
     }
 
+    return True;
+  }
+
+
+  /**
+  * Dynamically update form by modifying the filter by login control
+  *
+  * @param object $form Jelix form to modify control.
+  * @param string $save does the form will be used for update or insert.
+  * @return modified form.
+  */
+  private function updateFormByLogin($form, $save) {
+    if( !is_array($this->loginFilteredLayers) ) //&& $this->loginFilteredOveride )
+        $this->filterDataByLogin($this->layerName);
+
+    if ( is_array($this->loginFilteredLayers) ) {
+        $type = $this->loginFilteredLayers['type'];
+        $attribute = $this->loginFilteredLayers['attribute'];
+
+        // Check if a user is authenticated
+        if ( !jAuth::isConnected() )
+            return True;
+
+        $user = jAuth::getUserSession();
+        if( !$this->loginFilteredOveride ){
+            if ( $type == 'login' ) {
+                $user = jAuth::getUserSession();
+                $form->setData($attribute, $user->login);
+                $form->setReadOnly($attribute, True);
+            } else {
+                $oldCtrl = $form->getControl( $attribute );
+                $userGroups = jAcl2DbUserGroup::getGroups();
+                $userGroups[] = 'all';
+                $uGroups = array();
+                foreach( $userGroups as $uGroup ) {
+                    if ($uGroup != 'users' and substr( $uGroup, 0, 7 ) != "__priv_")
+                        $uGroups[$uGroup] = $uGroup;
+                }
+                $dataSource = new jFormsStaticDatasource();
+                $dataSource->data = $uGroups;
+                $ctrl = new jFormsControlMenulist($attribute);
+                $ctrl->required = true;
+                if ( $oldCtrl != null )
+                    $ctrl->label = $oldCtrl->label;
+                else
+                    $ctrl->label = $attribute;
+                $ctrl->datasource = $dataSource;
+                $value = null;
+                if ( $oldCtrl != null ) {
+                    $value = $form->getData( $attribute );
+                    $form->removeControl( $attribute );
+                }
+                $form->addControl( $ctrl );
+                if ( $value != null )
+                    $form->setData( $attribute, $value );
+            }
+        } else {
+            $oldCtrl = $form->getControl( $attribute );
+            $value = null;
+            if ( $oldCtrl != null )
+                $value = $form->getData( $attribute );
+
+            $data = array();
+            if ( $type == 'login' ) {
+                $plugin = jApp::coord()->getPlugin('auth');
+                if ($plugin->config['driver'] == 'Db') {
+                    $authConfig = $plugin->config['Db'];
+                    $dao = jDao::get($authConfig['dao'], $authConfig['profile']);
+                    $cond = jDao::createConditions();
+                    $cond->addItemOrder('login', 'asc');
+                    $us = $dao->findBy($cond);
+                    foreach($us as $u){
+                        $data[$u->login] = $u->login;
+                    }
+                }
+            } else {
+                $gp = jAcl2DbUserGroup::getGroupList();
+                foreach($gp as $g){
+                    if ( $g->id_aclgrp != 'users' )
+                        $data[$g->id_aclgrp] = $g->id_aclgrp;
+                }
+                $data['all'] = 'all';
+            }
+            $dataSource = new jFormsStaticDatasource();
+            $dataSource->data = $data;
+            $ctrl = new jFormsControlMenulist($attribute);
+            $ctrl->required = true;
+            if ( $oldCtrl != null )
+                $ctrl->label = $oldCtrl->label;
+            else
+                $ctrl->label = $attribute;
+            $ctrl->datasource = $dataSource;
+            $form->removeControl( $attribute );
+            $form->addControl( $ctrl );
+            if ( $value != null )
+                $form->setData( $attribute, $value );
+            else if ( $type == 'login' )
+              $form->setData( $attribute, $user->login );
+        }
+    }
     return True;
   }
 
@@ -436,6 +604,7 @@ class editionCtrl extends jController {
       'TYPENAME' => $layerName,
       'PROPERTYNAME' => $valueColumn.','.$keyColumn,
       'OUTPUTFORMAT' => 'GeoJSON',
+      'GEOMETRYNAME' => 'none',
       'map' => $this->repository->getPath().$this->project->getKey().".qgs"
     );
     // add EXP_FILTER. Only for QGIS >=2.0
@@ -444,7 +613,7 @@ class editionCtrl extends jController {
       $expFilter = $filterExpression;
     }
     // Filter by login
-    if( $this->loginFilteredLayers ) {
+    if( !$this->loginFilteredOveride ) {
       $this->filterDataByLogin($layerName);
       if( is_array( $this->loginFilteredLayers )){
         if($expFilter){
@@ -507,6 +676,21 @@ class editionCtrl extends jController {
 
 
   /**
+  * Set the form controls data from the database default value
+  *
+  * @param object $form Jelix jForm object
+  * @return Boolean True if filled form
+  */
+  public function setFormDataFromDefault( $form ) {
+      foreach ( $this->dataFields as $ref=>$prop ) {
+          if ( $prop->hasDefault )
+              $form->setData( $ref, $prop->default );
+      }
+      return true;
+  }
+
+
+  /**
   * Set the form controls data from the database value
   *
   * @param object $form Jelix jForm object
@@ -522,7 +706,10 @@ class editionCtrl extends jController {
       $featureId = array($this->featureId);
 
     // Build the SQL query to retrieve data from the table
-    $sql = "SELECT *, ST_AsText(".$this->geometryColumn.") AS astext FROM ".$this->table;
+    $sql = "SELECT *";
+    if ( $this->geometryColumn != '' )
+        $sql.= ", ST_AsText(".$this->geometryColumn.") AS astext";
+    $sql.= " FROM ".$this->table;
     $v = ''; $i = 0;
     $sql.= ' WHERE';
     foreach($this->primaryKeys as $key){
@@ -530,6 +717,7 @@ class editionCtrl extends jController {
       $i++;
       $v = " AND ";
     }
+    //jLog::log( $sql, 'error' );
 
     // Run the query and loop through the result to set the form data
     $rs = $cnx->query($sql);
@@ -537,9 +725,23 @@ class editionCtrl extends jController {
       // Loop through the data fields
       foreach($this->dataFields as $ref=>$prop){
         $form->setData($ref, $record->$ref);
+        if ( $this->formControls[$ref]->fieldEditType == 8
+          or $this->formControls[$ref]->fieldEditType == 'FileName'
+          or $this->formControls[$ref]->fieldEditType == 'Photo' ) {
+            $ctrl = $form->getControl($ref.'_choice');
+            if ($ctrl && $ctrl->type == 'choice' ) {
+                $filename = array_pop( explode( '/', $record->$ref ) );
+                $ctrl->itemsNames['keep'] = jLocale::get("view~edition.upload.choice.keep") . ' ' . $filename;
+                $ctrl->itemsNames['update'] = jLocale::get("view~edition.upload.choice.update");
+                $ctrl->itemsNames['delete'] = jLocale::get("view~edition.upload.choice.delete") . ' ' . $filename;
+            }
+            $form->setData($ref.'_hidden', $record->$ref);
+        }
       }
       // geometry column : override binary with text representation
-      $form->setData($this->geometryColumn, $record->astext);
+      // jLog::log( 'geometryColumn = ' . $this->geometryColumn );
+      if ( $this->geometryColumn != '' )
+        $form->setData($this->geometryColumn, $record->astext);
     }
 
     return True;
@@ -557,12 +759,37 @@ class editionCtrl extends jController {
 
     // Optionnaly query for the feature
     $cnx = jDb::getConnection($this->layerId);
+    $layerName = $this->layerName;
+    $capabilities = $this->project->getEditionLayers()->$layerName->capabilities;
+
+    // Update or Insert
+    $updateAction = false; $insertAction = false;
+    if( $this->featureId )
+        $updateAction = true;
+    else
+        $insertAction = true;
 
     // Get list of fields which are not primary keys
     $fields = array();
     foreach($this->dataFields as $fieldName=>$prop){
-      if(!$prop->primary)
-        $fields[] = $fieldName;
+        // For update : And get only fields corresponding to edition capabilities
+        if(
+            !$prop->primary
+            and (
+                ( strtolower($capabilities->modifyAttribute) == 'true' and $fieldName != $this->geometryColumn )
+                or ( strtolower($capabilities->modifyGeometry) == 'true' and $fieldName == $this->geometryColumn )
+                or $insertAction
+            )
+        )
+            $fields[] = $fieldName;
+    }
+
+    if( count($fields) == 0){
+        jLog::log('Not enough capabilities for this layer ! SQL cannot be constructed: no fields available !' ,'error');
+        $form->setErrorOn($this->geometryColumn, 'An error has been raised when saving the form: Not enough capabilities for this layer !');
+        jMessage::clearAll();
+        jMessage::add( jLocale::get('view~edition.link.error.sql'), 'error');
+        return false;
     }
 
     // Loop though the fields and filter the form posted values
@@ -572,49 +799,74 @@ class editionCtrl extends jController {
       $value = $form->getData($ref);
 
       switch($this->formControls[$ref]->fieldDataType){
-      case 'geometry':
-        $value = "ST_GeomFromText('".filter_var($value, FILTER_SANITIZE_STRING, FILTER_FLAG_NO_ENCODE_QUOTES)."', ".$this->srid.")";
-        $rs = $cnx->query('SELECT GeometryType('.$value.') as geomtype');
-        $rs = $rs->fetch();
-        if ( !preg_match('/'.$this->geometryType.'/',strtolower($rs->geomtype)) )
-          if ( preg_match('/'.str_replace('multi','',$this->geometryType).'/',strtolower($rs->geomtype)) )
-            $value = 'ST_Multi('.$value.')';
-          else {
-            $form->setErrorOn($this->geometryColumn, "The geometry type doen't match!");
-            return false;
-          }
-        break;
-      case 'date':
-        $value = filter_var($value, FILTER_SANITIZE_STRING, FILTER_FLAG_NO_ENCODE_QUOTES);
+          case 'geometry':
+            $value = "ST_GeomFromText('".filter_var($value, FILTER_SANITIZE_STRING, FILTER_FLAG_NO_ENCODE_QUOTES)."', ".$this->srid.")";
+            $rs = $cnx->query('SELECT GeometryType('.$value.') as geomtype');
+            $rs = $rs->fetch();
+            if ( !preg_match('/'.$this->geometryType.'/',strtolower($rs->geomtype)) )
+              if ( preg_match('/'.str_replace('multi','',$this->geometryType).'/',strtolower($rs->geomtype)) )
+                $value = 'ST_Multi('.$value.')';
+              else {
+                $form->setErrorOn($this->geometryColumn, "The geometry type doen't match!");
+                return false;
+              }
+            break;
+          case 'date':
+            $value = filter_var($value, FILTER_SANITIZE_STRING, FILTER_FLAG_NO_ENCODE_QUOTES);
+            if ( !$value )
+              $value = 'NULL';
+            else
+              $value = $cnx->quote( $value );
+            break;
+          case 'integer':
+            $value = filter_var($value, FILTER_SANITIZE_NUMBER_INT);
+            if ( !$value )
+              $value = 'NULL';
+            break;
+          case 'float':
+            $value = (float)$value;
+            if ( !$value )
+              $value = 'NULL';
+            break;
+          default:
+            $value = $cnx->quote(
+              filter_var($value, FILTER_SANITIZE_STRING, FILTER_FLAG_NO_ENCODE_QUOTES)
+            );
+            break;
+      }
+      if ( $form->hasUpload() && array_key_exists( $ref, $form->getUploads() ) ) {
+        $value = $form->getData( $ref );
+        $choiceValue = $form->getData( $ref.'_choice' );
+        $hiddenValue = $form->getData( $ref.'_hidden' );
+        $repPath = $this->repository->getPath();
+        if ( $choiceValue == 'update' ) {
+            $refPath = realpath($repPath.'/media').'/upload/'.$this->project->getKey().'/'.$this->tableName.'/'.$ref;
+            $form->saveFile( $ref, $refPath );
+            $value = 'media'.'/upload/'.$this->project->getKey().'/'.$this->tableName.'/'.$ref.'/'.$value;
+            if ( $hiddenValue && file_exists( realPath( $repPath ).'/'.$hiddenValue ) )
+                unlink( realPath( $repPath ).'/'.$hiddenValue );
+        } else if ( $choiceValue == 'delete' ) {
+            if ( $hiddenValue && file_exists( realPath( $repPath ).'/'.$hiddenValue ) )
+                unlink( realPath( $repPath ).'/'.$hiddenValue );
+            $value = 'NULL';
+        } else {
+            $value = $hiddenValue;
+        }
         if ( !$value )
-          $value = 'NULL';
-        else
-          $value = $cnx->quote( $value );
-        break;
-      case 'integer':
-        $value = filter_var($value, FILTER_SANITIZE_NUMBER_INT);
-        if ( !$value )
-          $value = 'NULL';
-        break;
-      case 'float':
-        $value = (float)$value;
-        if ( !$value )
-          $value = 'NULL';
-        break;
-      default:
-        $value = $cnx->quote(
-          filter_var($value, FILTER_SANITIZE_STRING, FILTER_FLAG_NO_ENCODE_QUOTES)
-        );
-        break;
+            $value = 'NULL';
+        else if ( $value != 'NULL' )
+            $value = $cnx->quote(
+              filter_var($value, FILTER_SANITIZE_STRING, FILTER_FLAG_NO_ENCODE_QUOTES)
+            );
       }
       // Build the SQL insert and update query
       $insert[]=$value;
-      $update[]="$ref=$value";
+      $update[]='"' . $ref .'" = ' . $value;
     }
 
     $sql = '';
     // update
-    if($this->featureId){
+    if( $updateAction ){
       if(ctype_digit($this->featureId))
         $featureId = array($this->featureId);
       // featureId is set
@@ -629,7 +881,7 @@ class editionCtrl extends jController {
         $v = " AND ";
       }
       // Add login filter if needed
-      if( $this->loginFilteredLayers ) {
+      if( !$this->loginFilteredOveride ) {
         $this->filterDataByLogin($this->layerName);
         if( is_array( $this->loginFilteredLayers ) ){
           $sql.= ' AND '.$this->loginFilteredLayers['where'];
@@ -637,10 +889,14 @@ class editionCtrl extends jController {
       }
     }
     // insert
-    else {
+    if( $insertAction ) {
       // SQL for insertion into the edition this->table
+      function dquote($n){
+          return '"' . $n . '"';
+      }
+      $dfields = array_map( "dquote", $fields );
       $sql = " INSERT INTO ".$this->table." (";
-      $sql.= implode(', ', $fields);
+      $sql.= implode(', ', $dfields);
       $sql.= " ) VALUES (";
       $sql.= implode(', ', $insert);
       $sql.= " );";
@@ -648,6 +904,7 @@ class editionCtrl extends jController {
 
     try {
       $rs = $cnx->query($sql);
+//~ jLog::log($sql);
     } catch (Exception $e) {
       $form->setErrorOn($this->geometryColumn, 'An error has been raised when saving the form');
       jLog::log("SQL = ".$sql);
@@ -656,155 +913,6 @@ class editionCtrl extends jController {
     }
 
     return true;
-  }
-
-
-
-  /**
-   * Get features from the edition layer.
-   * @param string $repository Lizmap Repository
-   * @param string $project Name of the project
-   * @param string $layerId Qgis id of the layer
-   * @param string $bbox Bounding box for the query
-   * @param string $crs The CRS of the bounding box
-   * @return HTML fragment.
-   */
-  public function getFeature(){
-
-    // Get repository, project data and do some right checking
-    if(!$this->getEditionParameters())
-      return $this->serviceAnswer();
-    $bbox = $this->param('bbox');
-    if( !preg_match('#(-)?\d+(\.\d+)?,(-)?\d+(\.\d+)?,(-)?\d+(\.\d+)?,(-)?\d+(\.\d+)?#',$bbox) ) {
-      jMessage::add( jLocale::get('view~edition.message.error.bbox'), 'error');
-      return $this->serviceAnswer();
-    }
-    $crs = str_replace('EPSG:','',$this->param('crs'));
-    if (!preg_match('/^[1-9][0-9]*$/', $crs)) {
-      jMessage::add( jLocale::get('view~edition.message.error.crs'), 'error');
-      return $this->serviceAnswer();
-    }
-
-    // Get fields data from the edition database
-    $layerXmlZero = $this->layerXml[0];
-    $_datasource = $layerXmlZero->xpath('datasource');
-    $datasource = (string)$_datasource[0];
-    $s_provider = $layerXmlZero->xpath('provider');
-    $this->provider = (string)$s_provider[0];
-    $this->getDataFields($datasource);
-
-    // Get proj4 string
-    $proj4 = (string)$layerXmlZero->srs->spatialrefsys->proj4;
-    $this->proj4 = $proj4;
-
-    // Get layer srid
-    $srid = (integer)$layerXmlZero->srs->spatialrefsys->srid;
-    $this->srid = $srid;
-
-    // Optionnaly query for the feature
-    $cnx = jDb::getConnection($this->layerId);
-
-    $sql = "SELECT *, ST_AsText(".$this->geometryColumn.") AS astext FROM ".$this->table;
-    if ( $this->provider == 'spatialite' )
-      $sql .= " WHERE intersects( BuildMBR(".$bbox.", ".$crs." ), transform(".$this->geometryColumn.", ".$crs." ) )";
-    else
-      $sql .= " WHERE ST_Intersects( ST_MakeEnvelope(".$bbox.", ".$crs." ), ST_Transform(".$this->geometryColumn.", ".$crs." ) )";
-
-    // Add the QGIS WHERE clause if needed
-    if($this->whereClause)
-      $sql.= ' AND '.$this->whereClause;
-
-    // Filter by login if needed
-    if( $this->loginFilteredLayers ) {
-      $this->filterDataByLogin($this->layername);
-      if( is_array( $this->loginFilteredLayers )){
-        $sql .= ' AND '.$this->loginFilteredLayers['where'];
-      }
-    }
-
-    // Get the corresponding features
-    try {
-      // Run the query and loop through the result to set an array
-      $forms = array();
-      $rs = $cnx->query($sql);
-      foreach($rs as $record){
-        // featureId
-        $featureId = array();
-        foreach($this->primaryKeys as $pk) {
-          $featureId[] = $record->$pk;
-        }
-        //create form
-        $form = jForms::create('view~edition', implode(',',$featureId));
-        $form->setData('liz_repository', $this->repository->getKey());
-        $form->setData('liz_project', $this->project->getKey());
-        $form->setData('liz_layerId', $this->layerId);
-        $form->setData('liz_featureId', implode(',',$featureId) );
-
-        $this->addFormControls($form);
-
-        $form->setData('liz_srid', $this->srid);
-        $form->setData('liz_proj4', $this->proj4);
-        $form->setData('liz_geometryColumn', $this->geometryColumn);
-
-        // Loop through the data fields
-        foreach($this->dataFields as $ref=>$prop){
-          $form->setData($ref, $record->$ref);
-        }
-        // geometry column : override binary with text representation
-        $form->setData($this->geometryColumn, $record->astext);
-
-        // redo some code for templating the data
-        $controls = array();
-        foreach($form->getControls() as $ctrlref=>$ctrl){
-          if($ctrl->type == 'reset' || $ctrl->type == 'hidden') continue;
-          if($ctrl->type == 'submit' && $ctrl->standalone) continue;
-          if($ctrl->type == 'captcha' || $ctrl->type == 'secretconfirm') continue;
-          $value = $form->getData($ctrlref);
-          $value = $ctrl->getDisplayValue($value);
-          if(is_array($value)){
-            $s ='';
-            foreach($value as $v){
-              $s.=$sep.htmlspecialchars($v);
-            }
-            $value = substr($s, strlen($sep));
-          }elseif($ctrl->isHtmlContent())
-            $value = $value;
-          else if($ctrl->type == 'textarea')
-            $value = nl2br(htmlspecialchars($value));
-          else
-            $value = htmlspecialchars($value);
-          $controls[] = (object) array("label"=>$ctrl->label,"value"=>$value);
-        }
-        $hidden = array(
-          'liz_srid'=>$form->getData('liz_srid'),
-          'liz_proj4'=>$form->getData('liz_proj4'),
-          'liz_geometryColumn'=>$form->getData('liz_geometryColumn'),
-          $form->getData('liz_geometryColumn')=>$form->getData( $form->getData('liz_geometryColumn') ),
-          'liz_featureId'=>$form->getData('liz_featureId'),
-        );
-        $forms[] = (object) array('controls'=>$controls,'hidden'=>$hidden);
-      }
-      // Get title layer
-      $layerXmlZero = $this->layerXml[0];
-      $_title = $layerXmlZero->xpath('title');
-      $title = (string)$_title[0];
-
-      // Use template to create html form content
-      $tpl = new jTpl();
-      $tpl->assign(array(
-        'title'=>$title,
-        'forms'=>$forms
-      ));
-      $content = $tpl->fetch('view~edition_data');
-
-      // Return html fragment response
-      $rep = $this->getResponse('htmlfragment');
-      $rep->addContent($content);
-      return $rep;
-    } catch (Exception $e) {
-      jMessage::add('An error occured for : \''.$sql.'\', the message:'.$e->getMessage(), 'error');
-    }
-    return $this->serviceAnswer();
   }
 
 
@@ -821,6 +929,15 @@ class editionCtrl extends jController {
     // Get repository, project data and do some right checking
     if(!$this->getEditionParameters())
       return $this->serviceAnswer();
+
+      // Get editLayer capabilities
+        $eLayers  = $this->project->getEditionLayers();
+        $layerName = $this->layerName;
+        $eLayer = $eLayers->$layerName;
+        if ( $eLayer->capabilities->createFeature != 'True' ) {
+            jMessage::add('Create feature for this layer is not in the capabilities!', 'LayerNotEditable');
+            return $this->serviceAnswer();
+        }
 
     jForms::destroy('view~edition');
     // Create form instance
@@ -914,8 +1031,22 @@ class editionCtrl extends jController {
     $form->setData('liz_geometryColumn', $this->geometryColumn);
 
     // SELECT data from the database and set the form data accordingly
-    if($this->featureId)
+    $this->setFormDataFromDefault($form);
+    if( $this->featureId )
       $this->setFormDataFromFields($form);
+    else if ( $form->hasUpload() ) {
+        foreach( $form->getUploads() as $upload ) {
+            $choiceRef = $upload->ref.'_choice';
+            $choiceCtrl = $form->getControl( $choiceRef );
+            if ( $choiceCtrl ) {
+                $form->setData( $choiceRef, 'update' );
+                $choiceCtrl->itemsNames['update'] = jLocale::get("view~edition.upload.choice.update");
+                $choiceCtrl->deactivateItem('keep');
+                $choiceCtrl->deactivateItem('delete');
+            }
+        }
+    }
+
 
     // If the user has been redirected here from the saveFeature method
     // Set the form controls data from the request parameters
@@ -928,6 +1059,8 @@ class editionCtrl extends jController {
         unset($_SESSION[$token.$this->layerId]);
       }
     }
+    $this->updateFormByLogin($form, False);
+    $attribute = $this->loginFilteredLayers['attribute'];
 
     // Get title layer
     $layerXmlZero = $this->layerXml[0];
@@ -984,9 +1117,9 @@ class editionCtrl extends jController {
 
     // Check the form data and redirect if needed
     $check = $form->check();
-    if ( $form->getData( $this->geometryColumn ) == '' ) {
+    if ( $this->geometryColumn != '' && $form->getData( $this->geometryColumn ) == '' ) {
       $check = False;
-      $form->setErrorOn($this->geometryColumn, "You must set the geometry");
+      $form->setErrorOn($this->geometryColumn, jLocale::get("view~edition.message.error.no.geometry") );
     }
 
     $rep = $this->getResponse('redirect');
@@ -1073,8 +1206,17 @@ class editionCtrl extends jController {
    * @return Redirect to the validation action.
    */
   public function deleteFeature(){
-    if(!$this->getEditionParameters($save))
+    if( !$this->getEditionParameters() )
       return $this->serviceAnswer();
+
+      // Get editLayer capabilities
+        $eLayers  = $this->project->getEditionLayers();
+        $layerName = $this->layerName;
+        $eLayer = $eLayers->$layerName;
+        if ( $eLayer->capabilities->deleteFeature != 'True' ) {
+            jMessage::add('Delete feature for this layer is not in the capabilities!', 'LayerNotEditable');
+            return $this->serviceAnswer();
+        }
 
     $featureId = $this->param('featureId');
     if( !$featureId ) {
@@ -1099,12 +1241,12 @@ class editionCtrl extends jController {
     $v = ''; $i = 0;
     $sql.= ' WHERE';
     foreach($this->primaryKeys as $key){
-      $sql.= "$v $key = ".$featureId[$i];
+      $sql.= $v . ' "'. $key . '" = ' . $featureId[$i];
       $i++;
       $v = " AND ";
     }
     // Add login filter if needed
-    if( $this->loginFilteredLayers ) {
+    if( !$this->loginFilteredOveride ) {
       $this->filterDataByLogin($this->layerName);
       if( is_array( $this->loginFilteredLayers ) ){
         $sql.= ' AND '.$this->loginFilteredLayers['where'];
@@ -1132,4 +1274,294 @@ class editionCtrl extends jController {
     return $this->serviceAnswer();
   }
 
+  /**
+   * Link features between 2 tables via pivot table
+   *
+   * @param string $repository Lizmap Repository
+   * @param string $project Name of the project
+   * @param string $pivot Pivot layer id. Example : mypivot1234
+   * @param string $features1 Layer id + features. Example : mylayer456:1,2
+   * @param string $features2 Layer id + features. Example : otherlayer789:5
+   * @param integer $featureId Id of the feature.
+   * @return Redirect to the validation action.
+   */
+    public function linkFeatures(){
+
+        $features1 = $this->param('features1');
+        $features2 = $this->param('features2');
+        $pivotId = $this->param('pivot');
+        if( !$features1 or !$features2 or !$pivotId ) {
+            jMessage::add(jLocale::get("view~edition.link.error.missing.parameter"), 'error');
+            return $this->serviceAnswer();
+        }
+
+        // Cut layers id and features ids
+        $exp1 = explode(':', $features1);
+        $exp2 = explode(':', $features2);
+        if( count($exp1) != 3 or count($exp2) != 3 ){
+            jMessage::add(jLocale::get("view~edition.link.error.missing.parameter"), 'error');
+            return $this->serviceAnswer();
+        }
+
+        $ids1 = explode( ',', $exp1[2] );
+        $ids2 = explode( ',', $exp2[2] );
+        if( count($ids1) > 1 and count($ids2) > 1 ){
+            jMessage::add(jLocale::get("view~edition.link.error.multiple.ids"), 'error');
+            return $this->serviceAnswer();
+        }
+        if( count($ids1) == 0 or count($ids2) == 0 or empty( $exp1[2] ) or empty( $exp2[2] ) ){
+            jMessage::add( jLocale::get("view~edition.link.error.missing.id"), 'error');
+            return $this->serviceAnswer();
+        }
+
+        $project = $this->param('project');
+        $repository = $this->param('repository');
+        $lrep = lizmap::getRepository($repository);
+        $lproj = lizmap::getProject($repository.'~'.$project);
+        $this->project = $lproj;
+        $this->repository = $lrep;
+
+        // Get layer names
+        $layerXml1 = $lproj->getXmlLayer( $exp1[0] );
+        $layerXml2 = $lproj->getXmlLayer( $exp2[0] );
+
+        if ( !$layerXml1 or !$layerXml2 ) {
+            jMessage::add( jLocale::get("view~edition.link.error.wrong.layer"), 'error' );
+            return $this->serviceAnswer();
+        }
+
+        $layerXmlZero1 = $layerXml1[0];
+        $_layerName1 = $layerXmlZero1->xpath('layername');
+        $layerName1 = (string)$_layerName1[0];
+        $layerXmlZero2 = $layerXml2[0];
+        $_layerName2 = $layerXmlZero2->xpath('layername');
+        $layerName2 = (string)$_layerName2[0];
+
+        $pConfig = $lproj->getFullCfg();
+        if ( !$lproj->hasAttributeLayers()
+            or !property_exists($pConfig->attributeLayers, $layerName1)
+            or !property_exists($pConfig->attributeLayers, $layerName2)
+        ) {
+            jMessage::add( jLocale::get("view~edition.link.error.not.attribute.layer"), 'error' );
+            return $this->serviceAnswer();
+        }
+
+        $layerXml = $lproj->getXmlLayer( $pivotId );
+        $layerXmlZero = $layerXml[0];
+        $_layerName = $layerXmlZero->xpath('layername');
+        $layerNamePivot = (string)$_layerName[0];
+        $this->layerXml = $layerXml;
+
+        // Get editLayer capabilities
+        $eLayers  = $lproj->getEditionLayers();
+        $eLayer = $eLayers->$layerNamePivot;
+        if( $layerNamePivot == $layerName2 ){
+            // pivot layer (n:m)
+            if ( $eLayer->capabilities->createFeature != 'True' ) {
+                jMessage::add('Create feature for this layer ' . $layerNamePivot . ' is not in the capabilities!', 'LayerNotEditable');
+                return $this->serviceAnswer();
+            }
+        }else{
+            // child layer (1:n)
+            if ( $eLayer->capabilities->modifyAttribute != 'True' ) {
+                jMessage::add('Modify attributes for this layer ' . $layerNamePivot . ' is not in the capabilities!', 'LayerNotEditable');
+                return $this->serviceAnswer();
+            }
+        }
+
+        // Get fields data from the edition database
+        $_datasource = $layerXmlZero->xpath('datasource');
+        $datasource = (string)$_datasource[0];
+        $s_provider = $layerXmlZero->xpath('provider');
+        $this->provider = (string)$s_provider[0];
+        $this->layerId = $pivotId;
+        $this->layerName = $layerNamePivot;
+        $this->getDataFields($datasource);
+
+        // Check fields
+        if( !array_key_exists( $exp1[1], $this->dataFields ) or !array_key_exists( $exp2[1], $this->dataFields ) ){
+            jMessage::add('Given fields do not exists !', 'error');
+            return $this->serviceAnswer();
+        }
+        $key1 = $exp1[1];
+        $key2 = $exp2[1];
+
+        // Check if we need to insert a new row in a pivot table (n:m)
+        // or if we need to update a foreign key in a child table ( 1:n)
+        if( $layerNamePivot == $layerName2 ){
+            // 1:n relation
+
+            // Build SQL
+            $sql = '';
+            $cnx = jDb::getConnection($this->layerId);
+            $msg = false;
+            foreach( $ids1 as $a ){
+                $one = (int) $a;
+                if( $this->dataFields[$key1]->type != 'int' )
+                    $one = $cnx->quote( $one );
+                foreach( $ids2 as $b ){
+                    $two = (int) $b;
+                    if( $this->dataFields[$key2]->type != 'int' )
+                        $two = $cnx->quote( $two );
+                    $sql = ' UPDATE '.$this->table;
+                    $sql.= ' SET "' . $key2 . '" = ' . $one;
+                    $sql.= ' WHERE "' . $key1 . '" = ' . $two ;
+                    $sql.= ';';
+
+                    // Need to break SQL ( if sqlite
+                    try {
+                        $rs = $cnx->query($sql);
+                        if(!$msg){
+                            jMessage::add( jLocale::get('view~edition.link.success'), 'success');
+                        }
+                        $msg = true;
+                    } catch (Exception $e) {
+                        jLog::log("An error has been raised when modifiying data : ".$e->getMessage() ,'error');
+                        jLog::log("SQL = ".$sql);
+                        jMessage::add( jLocale::get('view~edition.link.error.sql'), 'error');
+                    }
+
+                }
+                break;
+            }
+
+        }
+        else{
+            // pivot table ( n:m relation )
+
+            // Build SQL
+            $sql = '';
+            $cnx = jDb::getConnection($this->layerId);
+            foreach( $ids1 as $a ){
+                $one = (int) $a;
+                if( $this->dataFields[$key1]->type != 'int' )
+                    $one = $cnx->quote( $one );
+                foreach( $ids2 as $b ){
+                    $two = (int) $b;
+                    if( $this->dataFields[$key2]->type != 'int' )
+                        $two = $cnx->quote( $two );
+                    $sql.= ' INSERT INTO '.$this->table.' (';
+                    $sql.= ' "' . $key1 . '" , ';
+                    $sql.= ' "' . $key2 . '" )';
+                    $sql.= ' SELECT '. $one . ', ' . $two ;
+                    $sql.= ' WHERE NOT EXISTS';
+                    $sql.= ' ( SELECT ';
+                    $sql.= ' "' . $key1 . '" , ';
+                    $sql.= ' "' . $key2 . '" ';
+                    $sql.= ' FROM '.$this->table;
+                    $sql.= ' WHERE "' . $key1 . '" = ' . $one ;
+                    $sql.= ' AND "' . $key2 . '" = ' . $two . ')';
+                    $sql.= ';';
+                }
+            }
+
+            try {
+                $rs = $cnx->query($sql);
+                jMessage::add( jLocale::get('view~edition.link.success'), 'success');
+            } catch (Exception $e) {
+                jLog::log("An error has been raised when modifiying data : ".$e->getMessage() ,'error');
+                jLog::log("SQL = ".$sql);
+                jMessage::add( jLocale::get('view~edition.link.error.sql'), 'error');
+            }
+
+        }
+
+
+
+
+        return $this->serviceAnswer();
+    }
+
+  /**
+   * Unlink child feature from their parent ( 1:n ) relation
+   * by setting the foreign key to NULL
+   *
+   * @param string $repository Lizmap Repository
+   * @param string $project Name of the project
+   * @param string $layerId Child layer id.
+   * @param string $pkey Child layer primary key value -> id of the line to update
+   * @param string $fkey Child layer foreign key column (pointing to the parent layer primary key)
+   * @return Redirect to the validation action.
+   */
+    function unlinkChild(){
+        $lid = $this->param('lid');
+        $fkey = $this->param('fkey');
+        $pkey = $this->param('pkey');
+        $pkeyval = $this->param('pkeyval');
+        $project = $this->param('project');
+        $repository = $this->param('repository');
+
+        if( !$lid or !$fkey or !$pkey or !$pkeyval or !$project or !$repository ) {
+            jMessage::add(jLocale::get("view~edition.link.error.missing.parameter"), 'error');
+            return $this->serviceAnswer();
+        }
+
+        // Get project configuration
+        $lrep = lizmap::getRepository($repository);
+        $lproj = lizmap::getProject($repository.'~'.$project);
+        $this->project = $lproj;
+        $this->repository = $lrep;
+
+        // Get child layer information
+        $layerXml = $lproj->getXmlLayer( $lid );
+        $layerXmlZero = $layerXml[0];
+        $_layerName = $layerXmlZero->xpath('layername');
+        $layerName = (string)$_layerName[0];
+        $this->layerXml = $layerXml;
+
+        // Get editLayer capabilities
+        $eLayers  = $lproj->getEditionLayers();
+        $eLayer = $eLayers->$layerName;
+        if ( $eLayer->capabilities->modifyAttribute != 'True' ) {
+            jMessage::add('Modify feature attributes for this layer ' . $layerName . ' is not in the capabilities!', 'LayerNotEditable');
+            return $this->serviceAnswer();
+        }
+
+        // Get fields data from the edition database
+        $_datasource = $layerXmlZero->xpath('datasource');
+        $datasource = (string)$_datasource[0];
+        $s_provider = $layerXmlZero->xpath('provider');
+        $this->provider = (string)$s_provider[0];
+        $this->layerId = $lid;
+        $this->layerName = $layerName;
+        $this->getDataFields($datasource);
+
+        // Check fields
+        if( !array_key_exists( $fkey, $this->dataFields ) or !array_key_exists( $pkey, $this->dataFields ) ){
+            jMessage::add('Given fields do not exists !', 'error');
+            return $this->serviceAnswer();
+        }
+
+
+        // Build SQL
+        $sql = '';
+        $cnx = jDb::getConnection( $this->layerId );
+        $msg = false;
+
+        $val = (int) $pkeyval;
+        if( $this->dataFields[$key2]->type != 'int' )
+            $val = $cnx->quote( $val );
+        $sql = ' UPDATE '.$this->table;
+        $sql.= ' SET "' . $fkey . '" = NULL';
+        $sql.= ' WHERE "' . $pkey . '" = ' . $val ;
+        $sql.= ';';
+
+        // Need to break SQL ( if sqlite
+        try {
+            $rs = $cnx->query($sql);
+            if(!$msg){
+                jMessage::add( jLocale::get('view~edition.unlink.success'), 'success');
+            }
+            $msg = true;
+        } catch (Exception $e) {
+            jLog::log("An error has been raised when modifiying data : ".$e->getMessage() ,'error');
+            jLog::log("SQL = ".$sql);
+            jMessage::add( jLocale::get('view~edition.unlink.error.sql'), 'error');
+        }
+
+
+
+        return $this->serviceAnswer();
+
+    }
 }

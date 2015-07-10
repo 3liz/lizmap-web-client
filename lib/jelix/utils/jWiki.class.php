@@ -3,7 +3,7 @@
 * @package    jelix
 * @subpackage utils
 * @author     Laurent Jouanneau
-* @copyright  2006-2010 Laurent Jouanneau
+* @copyright  2006-2014 Laurent Jouanneau
 * @link       http://www.jelix.org
 * @licence    GNU Lesser General Public Licence see LICENCE file or http://www.gnu.org/licenses/lgpl.html
 */
@@ -34,11 +34,13 @@ class jWiki extends  WikiRenderer {
                 if (is_null($this->config))
                     throw new Exception('Rules "'.$config.'" not found for jWiki');
             }
+            $this->config->charset = jApp::config()->charset;
         }elseif(is_object($config)){
             $this->config=$config;
         }else{
             require_once(WIKIRENDERER_PATH . 'rules/wr3_to_xhtml.php');
             $this->config= new wr3_to_xhtml();
+            $this->config->charset = jApp::config()->charset;
         }
 
         $this->inlineParser = new WikiInlineParser($this->config);

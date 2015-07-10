@@ -20,6 +20,9 @@ class jFormsControlSecret extends jFormsControl {
     public $size=0;
 
     function getDisplayValue($value){
+        if ( $value == '' && $this->emptyValueLabel !== null) {
+            return $this->emptyValueLabel;
+        }
         return str_repeat("*", strlen($value));
     }
 }

@@ -60,7 +60,7 @@ class jSelectorForm extends jSelectorModule {
     protected function _createCachePath(){
         // don't share the same cache for all the possible dirs
         // in case of overload removal
-        $this->_cachePath = jApp::tempPath('compiled/'.$this->_dirname.$this->_where.$this->module.'~'.$this->resource.$this->_cacheSuffix);
+        $this->_cachePath = jApp::tempPath('compiled/'.$this->_dirname.$this->_where.$this->module.'~'.$this->resource.'_15'.$this->_cacheSuffix);
     }
 
     public function getCompiledBuilderFilePath ($type){

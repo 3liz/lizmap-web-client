@@ -46,12 +46,14 @@ class lizmapLogListener extends jEventListener{
     // Build data array from event params
     $logItem = lizmap::getLogItem($key);
     $data = array();
-    foreach($logItem->getRecordKeys() as $rk){
-      if($event->getParam($rk))
-        $data[$rk] = $event->getParam($rk);
-    }
+    if ( $logItem ) {
+      foreach($logItem->getRecordKeys() as $rk){
+        if($event->getParam($rk))
+          $data[$rk] = $event->getParam($rk);
+      }
     
-    $this->addLog($key, $data);
+      $this->addLog($key, $data);
+    }
 
   }
   

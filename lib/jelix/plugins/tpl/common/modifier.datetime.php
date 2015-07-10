@@ -3,6 +3,7 @@
 * @package    jelix
 * @subpackage jtpl_plugin
 * @author     Laurent Jouanneau
+* @contributor   Philippe Villiers
 * @copyright   2012 Laurent Jouanneau
 * @link        http://www.jelix.org
 * @licence    GNU Lesser General Public Licence see LICENCE file or http://www.gnu.org/licenses/lgpl.html
@@ -31,13 +32,17 @@
  */
 function jtpl_modifier_common_datetime($date, $format_out = 'lang_datetime', $format_in='') {
     if (!($date instanceof DateTime)) {
-        if ($date == '')
+        if ($date == '' || $date == "0000/00/00") {
             return '';
+        }
         if ($format_in) {
             $date = date_create_from_format($format_in, $date);
         }
         else {
             $date = new DateTime($date);
+        }
+        if (!$date) {
+            return '';
         }
     }
 

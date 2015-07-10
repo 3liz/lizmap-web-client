@@ -71,6 +71,18 @@ persistant_cookie_name=jelixAuthentificationCookie
 ; duration of the validity of the cookie (in days). default is 1 day.
 persistant_duration = 1
 
+
+;=========== parameters for password hashing
+
+; method of the hash. 0 or "" means old hashing behavior of jAuth
+; (using password_* parameters in drivers ).
+; Prefer to choose 1, which is the default hash method (bcrypt).
+password_hash_method = 
+
+; options for the hash method. list of "name:value" separated by a ";"
+password_hash_options = 
+
+
 ;=========== Parameters for drivers
 
 ;------- parameters for the "Db" driver
@@ -86,6 +98,11 @@ password_crypt_function = sha1
 ; if you want to use a salt with sha1:
 ;password_crypt_function = "1:sha1WithSalt"
 ;password_salt = "here_your_salt"
+
+; if you want to use bcrypt algorithm (more secured but time expensive)
+;password_crypt_function = "1:bcrypt"
+; salt for bcrypt algorithm, must be alphanumeric and 22 characters in length
+;password_salt = "salt_of_22_alphanumeric_characters_for_bcrypt_algo"
 
 ; name of the form for the jauthdb_admin module
 form = "jauthdb_admin~jelixuser"
@@ -105,8 +122,10 @@ password_crypt_function = sha1
 ;password_crypt_function = "1:sha1WithSalt"
 ;password_salt = "here_your_salt"
 
-;------- parameters for the "LDS" driver
-[LDS]
+; if you want to use bcrypt algorithm (more secured but time expensive)
+;password_crypt_function = "1:bcrypt"
+; salt for bcrypt algorithm, must be alphanumeric and 22 characters in length
+;password_salt = "salt_of_22_alphanumeric_characters_for_bcrypt_algo"
 
 ;------- parameters for the "ldap" driver
 [ldap]

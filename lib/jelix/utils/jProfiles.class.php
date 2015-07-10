@@ -54,8 +54,9 @@ class jProfiles {
             self::loadProfiles();
         }
 
-        if ($name == '')
+        if ($name == '') {
             $name = 'default';
+        }
         $section = $category.':'.$name;
         $targetName = $section;
 
@@ -71,8 +72,9 @@ class jProfiles {
 
         if (isset(self::$_profiles[$section])) {
             self::$_profiles[$section]['_name'] = $name;
-            if ($common)
+            if ($common) {
                 return array_merge($common, self::$_profiles[$section]);
+            }
             return self::$_profiles[$section];
         }
         else if (isset(self::$_profiles[$category][$name])) {
@@ -82,13 +84,11 @@ class jProfiles {
         }
         // if the profile doesn't exist, we take the default one
         elseif (!$noDefault) {
-#ifnot ENABLE_OPTIMIZED_SOURCE
-            //trigger_error(jLocale::get('jelix~errors.profile.use.default', $name), E_USER_NOTICE);
-#endif
             if (isset(self::$_profiles[$category.':default'])) {
                 self::$_profiles[$category.':default']['_name'] = 'default';
-                if ($common)
+                if ($common) {
                     return array_merge($common, self::$_profiles[$category.':default']);
+                }
                 return self::$_profiles[$category.':default'];
             }
             elseif (isset(self::$_profiles[$category]['default'])) {
@@ -125,7 +125,7 @@ class jProfiles {
     }
 
     /**
-     * store an object in the objects pool, corresponding to a profile
+     * get an object from the objects pool, corresponding to a profile
      * @param string $category the profile category
      * @param string $name the name of the profile (value of _name in the retrieved profile)
      * @return object|null the stored object
@@ -180,6 +180,8 @@ class jProfiles {
             self::$_profiles[$category.':'.$name] = $params;
         }
         unset (self::$_objectPool[$category][$name]); // close existing connection with the same pool name
+        if (gc_enabled())
+            gc_collect_cycles();
     }
 
     /**
@@ -189,5 +191,7 @@ class jProfiles {
     public static function clear() {
         self::$_profiles = null;
         self::$_objectPool = array();
+        if (gc_enabled())
+            gc_collect_cycles();
     }
 }

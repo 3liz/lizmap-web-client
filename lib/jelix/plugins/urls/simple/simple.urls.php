@@ -59,7 +59,7 @@ class simpleUrlEngine implements jIUrlEngine {
         $scriptName .= $this->getScript($urlact->requestType, $m, $a);
 
         if(!jApp::config()->urlengine['multiview']){
-            $scriptName .= jApp::config()->urlengine['entrypointExtension'];
+            $scriptName .= '.php';
         }
 
         $url = new jUrl($scriptName, $urlact->params, '');
@@ -102,9 +102,9 @@ class simpleUrlEngine implements jIUrlEngine {
         }
 
         if ($usehttps)
-          return jApp::coord()->request->getServerURI(true).jApp::config()->urlengine['basePath'];
+          return jApp::coord()->request->getServerURI(true).jApp::urlBasePath();
         else
-          return jApp::config()->urlengine['basePath'];
+          return jApp::urlBasePath();
     }
 
 

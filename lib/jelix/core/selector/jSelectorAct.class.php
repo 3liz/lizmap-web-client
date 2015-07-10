@@ -27,38 +27,31 @@ class jSelectorAct extends jSelectorActFast {
     /**
      * @param string $sel  the selector
      * @param boolean $enableRequestPart true if the selector can contain the request part
+     * @param boolean $toRetrieveUrl  true if the goal to have this selector is to generate an url
      */
     function __construct($sel, $enableRequestPart = false, $toRetrieveUrl = false){
         $coord = jApp::coord();
         $this->forUrl = $toRetrieveUrl;
-        if(preg_match("/^(?:([a-zA-Z0-9_\.]+|\#)~)?([a-zA-Z0-9_:]+|\#)?(?:@([a-zA-Z0-9_]+))?$/", $sel, $m)){
-            $m=array_pad($m,4,'');
-            if($m[1]!=''){
-                if($m[1] == '#')
-                    $this->module = $coord->moduleName;
-                else
-                    $this->module = $m[1];
-            }else{
-                $this->module = jContext::get ();
-            }
-            if($m[2] == '#')
-                $this->resource = $coord->actionName;
-            else
-                $this->resource = $m[2];
-            $r = explode(':',$this->resource);
-            if(count($r) == 1){
-                $this->controller = 'default';
-                $this->method = $r[0]==''?'index':$r[0];
-            }else{
-                $this->controller = $r[0]=='' ? 'default':$r[0];
-                $this->method = $r[1]==''?'index':$r[1];
-            }
-            $this->resource = $this->controller.':'.$this->method;
 
-            if($m[3] != '' && $enableRequestPart)
-                $this->request = $m[3];
-            else
+        // jSelectorAct is called by the significant url engine parser, before
+        // jcoordinator set its properties, so we set a value to avoid a
+        // parameter error on jelix_scan_action_sel. the value doesn't matter
+        // since the significant parser call jSelectorAct only for 404 page
+        if ($coord->actionName === null)
+            $coord->actionName = 'default:index';
+
+        if (jelix_scan_action_sel($sel, $this, $coord->actionName)) {
+
+            if ($this->module == '#') {
+                $this->module = $coord->moduleName;
+            }
+            elseif ($this->module =='') {
+                $this->module = jApp::getCurrentModule ();
+            }
+
+            if ($this->request == '' || !$enableRequestPart)
                 $this->request = $coord->request->type;
+
             $this->_createPath();
         }else{
             throw new jExceptionSelector('jelix~errors.selector.invalid.syntax', array($sel,$this->type));

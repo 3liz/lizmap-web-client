@@ -8,7 +8,7 @@
 * @licence     GNU Lesser General Public Licence see LICENCE file or http://www.gnu.org/licenses/lgpl.html
 */
 
-require_once (dirname(__FILE__).'/../simple/simple.urls.php');
+require_once (__DIR__.'/../simple/simple.urls.php');
 
 /**
  * basic significant url engine
@@ -85,7 +85,7 @@ class basic_significantUrlEngine extends simpleUrlEngine {
             && jApp::config()->basic_significant_urlengine_entrypoints[$script]) {
 
             if(!jApp::config()->urlengine['multiview']){
-                $script .= jApp::config()->urlengine['entrypointExtension'];
+                $script .= '.php';
             }
             $scriptName .= $script;
         }

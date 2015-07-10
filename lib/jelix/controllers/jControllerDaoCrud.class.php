@@ -167,14 +167,6 @@ class jControllerDaoCrud extends jController {
      * @return boolean true if it is ok.
      */
     protected function _checkData($form, $calltype){
-        return $this->_checkDatas($form, $calltype); // for compatibility
-    }
-
-    /**
-     * DEPRECATED, use _checkData instead
-     * @deprecated since 1.1
-     */
-    protected function _checkDatas($form, $calltype){
         return true;
     }
 

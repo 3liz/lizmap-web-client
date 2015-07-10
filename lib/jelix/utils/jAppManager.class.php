@@ -26,7 +26,11 @@ class jAppManager {
      * @since 1.2
      */
     public static function close($message='') {
-        file_put_contents(jApp::configPath('CLOSED'), $message);
+        $file = jApp::configPath('CLOSED');
+        file_put_contents($file, $message);
+        if (jApp::config()) {
+            chmod($file, jApp::config()->chmodFile);
+        }
     }
 
     /**

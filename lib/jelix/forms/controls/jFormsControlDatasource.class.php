@@ -29,10 +29,17 @@ abstract class jFormsControlDatasource extends jFormsControl {
             foreach($value as $val){
                 $labels[$val] = $this->_getLabel($val);
             }
+            if (count($labels) == 0  && $this->emptyValueLabel !== null) {
+                return $this->emptyValueLabel;
+            }
             return $labels;
-        }else{
-            return $this->_getLabel($value);
         }
+
+        $label = $this->_getLabel($value);
+        if ($label == '' && $this->emptyValueLabel !== null) {
+            return $this->emptyValueLabel;
+        }
+        return $label;
     }
 
     protected function _getLabel($value){

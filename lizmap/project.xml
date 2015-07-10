@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://jelix.org/ns/project/1.0">
     <info id="info@3liz.com" name="lizmap" createdate="2011-08-01">
-        <version>2.11pre</version>
+        <version>3.0pre</version>
         <label lang="en_US">Lizmap Web Client</label>
         <description lang="en_US"/>
         <license URL="http://www.mozilla.org/MPL/">Mozilla Public Licence</license>
@@ -12,7 +12,7 @@
         <!--<updateURL>http://3liz.com/update.xml</updateURL>-->
     </info>
     <dependencies>
-        <jelix minversion="1.1.6" maxversion="1.4.*"/>
+        <jelix minversion="1.1.6" maxversion="1.6.*"/>
     </dependencies>
     <directories>
         <config>./var/config/</config>
@@ -24,5 +24,5 @@
     <entrypoints>
         <entry file="index.php" config="index/config.ini.php"/>
         <entry file="admin.php" config="admin/config.ini.php" type="classic"/>
-    </entrypoints>
+    <entry file="script.php" config="cmdline/script.ini.php" type="cmdline"/></entrypoints>
 </project>

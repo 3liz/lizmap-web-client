@@ -63,26 +63,45 @@ class sqlite3DbConnection extends jDbConnection {
 
     protected function _connect (){
         $db = $this->profile['database'];
-        if (preg_match('/^(app|lib|var)\:/', $db))
-            $path = str_replace(array('app:','lib:','var:'), array(jApp::appPath(), LIB_PATH, jApp::varPath()), $db);
-        else
-            $path = $db;
-            
-        $return = new SQLite3($path);
+        if (preg_match('/^(app|lib|var|temp|www)\:/', $db)) {
+            $path = jFile::parseJelixPath( $db );
+        }
+        else if ($db[0] == '/' || // *nix path
+                 preg_match('!^[a-z]\\:(\\\\|/)[a-z]!i', $db) // windows path
+                ) {
+            if (file_exists($db) || file_exists(dirname($db))) {
+                $path = $db;
+            }
+            else {
+                throw new Exception ('sqlite3 connector: unknown database path scheme');
+            }
+        }
+        else {
+            $path = jApp::varPath('db/sqlite3/'.$db);
+        }
+
+        $sqlite = new SQLite3($path);
 
         // Load extensions if needed
         if (isset($this->profile['extensions']) ) {
             $list = preg_split('/ *, */',$this->profile['extensions']);
             foreach($list as $ext){
-                try { 
-                    $return->loadExtension($ext); 
+                try {
+                    $sqlite->loadExtension($ext);
                 } catch(Exception $e) {
-                    throw new Exception('jDbPDOConnection: error while loading sqlite extension '.$ext);
+                    throw new Exception('sqlite3 connector: error while loading sqlite extension '.$ext);
                 }
-            }        
+            }
         }
 
-        return $return;
+        // set timeout
+        if (isset($this->profile['busytimeout']) ) {
+            $timeout = intval($this->profile['busytimeout']);
+            if ($timeout) {
+                $sqlite->busyTimeout($timeout);
+            }
+        }
+        return $sqlite;
     }
 
     protected function _disconnect (){
@@ -150,7 +169,7 @@ class sqlite3DbConnection extends jDbConnection {
     }
 
     /**
-     * 
+     *
      * @param integer $id the attribut id
      * @param string $value the attribute value
      * @see PDO::setAttribute()

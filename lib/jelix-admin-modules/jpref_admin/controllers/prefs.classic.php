@@ -49,7 +49,7 @@ class prefsCtrl extends jController {
         if(!$pref->isWritable() ){
             $rep = $this->getResponse('redirect');
             $rep->action = 'jpref_admin~prefs:index';
-            jMessage::add(jLocale::get('jelix~errors.acl.action.right.needed'), 'error');
+            jMessage::add(jLocale::get('jacl2~errors.action.right.needed'), 'error');
             return $rep;
         }
         
@@ -138,7 +138,7 @@ class prefsCtrl extends jController {
         }
         
         if(!$pref->isWritable() ){
-            jMessage::add(jLocale::get('jelix~errors.acl.action.right.needed'), 'error');
+            jMessage::add(jLocale::get('jacl2~errors.action.right.needed'), 'error');
             return $rep;
         }
         

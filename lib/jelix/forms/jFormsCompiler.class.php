@@ -49,7 +49,8 @@ class jFormsCompiler implements jISimpleCompiler {
         }
 
         $source=array();
-        $source[]='<?php ';
+        $source[] = "<?php \nif (jApp::config()->compilation['checkCacheFiletime'] &&\n";
+        $source[] .= "filemtime('".$this->sourceFile.'\') > '.filemtime($this->sourceFile)."){ return false;\n}else{\n";
         $source[]='class '.$selector->getClass().' extends jFormsBase {';
         
         $source[]=' public function __construct($sel, &$container, $reset = false){';
@@ -57,7 +58,7 @@ class jFormsCompiler implements jISimpleCompiler {
 
         $compiler->compile($doc, $source);
 
-        $source[]="  }\n} ?>";
+        $source[]="  }\n}\n return true;}";
         jFile::write($selector->getCompiledFilePath(), implode("\n", $source));
 
         return true;

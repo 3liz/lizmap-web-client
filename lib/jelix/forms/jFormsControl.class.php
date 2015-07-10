@@ -15,24 +15,54 @@
  * @subpackage  forms
  */
 abstract class jFormsControl {
+    /** @var string a type name that identify the control type */
     public $type = null;
+    
+    /** @var string the identifiant of the control */
     public $ref='';
+
+    /** @var jDatatype  the object that manage constraints on the value */
     public $datatype;
+    
+    /** @var boolean true if the control should be filled by the user */
     public $required = false;
+
+    /** @var string the label */
     public $label='';
+
+    /** @var mixed the value when the form is created (and not initialized by a data source */
     public $defaultValue='';
+
+    /** @var string the message for the help on the control (typically help displayed in a popup)*/
     public $help = '';
+
+    /** @var string the message for tips on the control (typically the tooltip value) */
     public $hint='';
+
+    /** @var string the message when the value is invalid */
     public $alertInvalid='';
+
+    /** @var string the message when there is no value and it is required */
     public $alertRequired='';
 
+    /** @var boolean indicate if the control is in read only mode */
     public $initialReadOnly = false;
+
+    /** @var boolean */
     public $initialActivation = true;
 
+    /** @var string label displayed when only values are displayed, and when there is no value */
+    public $emptyValueLabel = null;
+
+    /** @var jFormsBase the form object*/
     protected $form;
+
+    /** @var jFormsDataContainer  content all values of the form */
     protected $container;
 
-
+    /**
+     * @param string $ref the identifiant of the control
+     */
     function __construct($ref){
         $this->ref = $ref;
         $this->datatype = new jDatatypeString();
@@ -87,6 +117,9 @@ abstract class jFormsControl {
     }
 
     function getDisplayValue($value){
+        if ($value == '' && $this->emptyValueLabel !== null) {
+            return $this->emptyValueLabel;
+        }
         return $value;
     }
 
@@ -122,6 +155,7 @@ abstract class jFormsControl {
 require(JELIX_LIB_PATH.'forms/controls/jFormsControlDatasource.class.php');
 require(JELIX_LIB_PATH.'forms/controls/jFormsControlGroups.class.php');
 
+require(JELIX_LIB_PATH.'forms/controls/jFormsControlButton.class.php');
 require(JELIX_LIB_PATH.'forms/controls/jFormsControlCaptcha.class.php');
 require(JELIX_LIB_PATH.'forms/controls/jFormsControlCheckbox.class.php');
 require(JELIX_LIB_PATH.'forms/controls/jFormsControlCheckboxes.class.php');

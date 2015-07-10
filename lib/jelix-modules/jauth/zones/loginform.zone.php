@@ -21,7 +21,7 @@ class LoginFormZone extends jZone {
          
         $this->_tpl->assign ('user', jAuth::getUserSession());
         $this->_tpl->assign ('isLogged', jAuth::isConnected());
-        $this->_tpl->assign ('showRememberMe', $this->getParam('showRememberMe'));
+        $this->_tpl->assign ('showRememberMe', $this->param('showRememberMe'));
     }
 }
-?>
+

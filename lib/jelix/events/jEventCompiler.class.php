@@ -25,15 +25,26 @@ class jEventCompiler implements jIMultiFileCompiler {
         if (is_readable ($sourceFile)){
             $xml = simplexml_load_file($sourceFile);
 
+            $config = jApp::config()->disabledListeners;
             if (isset ($xml->listener)){
                 foreach ($xml->listener as $listener){
 
                     $listenerName = (string)$listener['name'];
-
+                    $selector = $module.'~'.$listenerName;
                     foreach ($listener->event as $eventListened){
                         $name = (string) $eventListened['name'];
-                        // clé = nom de l'event, valeur = liste des fichiers listener
-                        $this->eventList[$name][] = array($module,$listenerName);
+                        if (isset($config[$name])) {
+                            if (is_array($config[$name])) {
+                                if (in_array($selector, $config[$name])) {
+                                    continue;
+                                }
+                            }
+                            else if ($config[$name] == $selector) {
+                                continue;
+                            }
+                        }
+                        // key = event name ,  value = list of file listener
+                        $this->eventList[$name][] = array($module, $listenerName);
                     }
                 }
             }
@@ -43,7 +54,6 @@ class jEventCompiler implements jIMultiFileCompiler {
 
     public function endCompile($cachefile){
         $content = '<?php $GLOBALS["JELIX_EVENTS"] = '.var_export($this->eventList,true).";\n?>";
-
         jFile::write($cachefile, $content);
     }
 }

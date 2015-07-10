@@ -4,7 +4,7 @@
 * @subpackage auth_driver
 * @author      Laurent Jouanneau
 * @contributor Yannick Le Guédart (adaptation de jAuthDriverDb pour une classe quelconque)
-* @copyright   2006-2011 Laurent Jouanneau, 2006 Yannick Le Guédart
+* @copyright   2006-2014 Laurent Jouanneau, 2006 Yannick Le Guédart
 * @licence  http://www.gnu.org/licenses/lgpl.html GNU Lesser General Public Licence, see LICENCE file
 */
 
@@ -63,20 +63,19 @@ interface jIAuthDriverClass {
     /**
     * change the password of a user
     * @param string $login the user login
-    * @param string $password the new encrypted password
+    * @param string $cryptedpassword the new encrypted password
     */
     public function updatePassword($login, $cryptedpassword);
 
     /**
     * get the user corresponding to the given login and encrypted password
     * @param string $login the user login
-    * @param string $password the new encrypted password
+    * @param string $cryptedpassword the new encrypted password
     * @return object user informations
     * @deprecated since 1.2.10
     */
     public function getByLoginPassword($login, $cryptedpassword);
 }
-
 
 /**
 * Driver for a class which implement an authentification

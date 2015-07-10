@@ -15,11 +15,7 @@
 /**
  *
  */
-require(JELIX_LIB_PATH.'dao/jDaoXmlException.class.php');
-require(JELIX_LIB_PATH.'dao/jDaoParser.class.php');
-require(JELIX_LIB_PATH.'dao/jDaoProperty.class.php');
-require(JELIX_LIB_PATH.'dao/jDaoMethod.class.php');
-require(JELIX_LIB_PATH.'dao/jDaoGenerator.class.php');
+require_once(JELIX_LIB_PATH.'dao/jDaoParser.class.php');
 
 /**
  * The compiler for the DAO xml files. it is used by jIncluder
@@ -59,7 +55,19 @@ class jDaoCompiler  implements jISimpleCompiler {
         $generator = new $class ($selector, $tools, $parser);
 
         // generation of PHP classes corresponding to the DAO definition
-        $compiled = '<?php '.$generator->buildClasses ()."\n?>";
+        $compiled = '<?php ';
+        $compiled .= "\nif (jApp::config()->compilation['checkCacheFiletime']&&(\n";
+        $compiled .= "\n filemtime('".$daoPath.'\') > '.filemtime($daoPath);
+        $importedDao = $parser->getImportedDao();
+        if ($importedDao) {
+            foreach($importedDao as $selimpdao) {
+                $path = $selimpdao->getPath();
+                $compiled .= "\n|| filemtime('".$path.'\') > '.filemtime($path);
+            }
+        }
+        $compiled .=")){ return false;\n}\nelse {\n";
+        $compiled .= $generator->buildClasses ()."\n return true; }";
+
         jFile::write ($selector->getCompiledFilePath(), $compiled);
         return true;
     }

@@ -133,7 +133,11 @@ class ociDbTools extends jDbTools {
                             AND UC.TABLE_NAME = UTC.TABLE_NAME
                             AND UCC.COLUMN_NAME = UTC.COLUMN_NAME
                             AND UC.CONSTRAINT_NAME = UCC.CONSTRAINT_NAME
-                            AND UC.CONSTRAINT_TYPE = \'P\') AS CONSTRAINT_TYPE
+                            AND UC.CONSTRAINT_TYPE = \'P\') AS CONSTRAINT_TYPE,  
+                        (SELECT COMMENTS 
+                         FROM USER_COL_COMMENTS UCCM
+                         WHERE UCCM.TABLE_NAME = UTC.TABLE_NAME
+                         AND UCCM.COLUMN_NAME = UTC.COLUMN_NAME) AS COLUMN_COMMENT
                     FROM USER_TAB_COLUMNS UTC 
                     WHERE UTC.TABLE_NAME = \''.strtoupper($tableName).'\'';
 
@@ -160,6 +164,10 @@ class ociDbTools extends jDbTools {
 
             $field->notNull = ($line->nullable == 'N');
             $field->primary = ($line->constraint_type == 'P');
+
+            if(isset($line->column_comment) && !empty($line->column_comment)) {
+                $field->comment = $line->column_comment;
+            }
 
             // FIXME, retrieve autoincrement property for other field than primary key
             if ($field->primary) {

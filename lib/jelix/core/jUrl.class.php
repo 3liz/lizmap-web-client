@@ -293,11 +293,11 @@ class jUrl extends jUrlBase {
             if( substr($rootUrl, 0, 7) !== 'http://' && substr($rootUrl, 0, 8) !== 'https://' // url is not absolute.
                 && substr($rootUrl, 0, 1) !== '/' ) { //and is not relative to root
                    // so let's prepend basePath :
-                    $rootUrl = jApp::config()->urlengine['basePath'] . $rootUrl;
+                    $rootUrl = jApp::urlBasePath() . $rootUrl;
             }
         } else {
             // basePath by default :
-            $rootUrl = jApp::config()->urlengine['basePath'];
+            $rootUrl = jApp::urlBasePath();
         }
 
         return $rootUrl;

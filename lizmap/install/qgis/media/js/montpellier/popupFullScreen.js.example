@@ -1,0 +1,24 @@
+lizMap.events.on({
+
+  lizmappopupdisplayed: function(e) {
+
+        var html = $('#liz_layer_popup').html();
+
+        $('#liz_layer_popup_close').click();
+
+        $('#map-content').append('<div style="background-color:white;position:absolute;width:100%;height:100%;bottom:0px;right:0px;z-index:100000;overflow:auto;" id="mypopup"></div>');
+        $('#mypopup').html(html);
+
+        $('.olPopupContent').each(function(){
+          $(this).css('width', '100%').css('height','100%');
+        });
+
+        $('#liz_layer_popup_close').click(function(){
+          $('#mypopup').remove();
+        }
+
+        );
+
+  }
+
+});

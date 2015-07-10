@@ -77,11 +77,15 @@ only screen and (                   max-device-height : 640px) {
     bottom:1em;
   }
 
-  #attribute-table-panel  {
+  #bottom-dock  {
     width: 100%;
     height: auto;
   }
-  #attribute-table-panel.visible {
+  #bottom-dock.visible {
+    height: 100%;
+    opacity: 1;
+  }
+  #bottom-dock.half-transparent {
     height: 100%;
     opacity: 1;
   }

@@ -8,11 +8,10 @@
 * @license   %%default_license_url%% %%default_license%%
 */
 
-$appPath = dirname (__FILE__).'/';
 require (%%php_rp_jelix%%.'init.php');
 
 jApp::initPaths(
-    $appPath,
+    __DIR__.'/',
     %%php_rp_www%%,
     %%php_rp_var%%,
     %%php_rp_log%%,

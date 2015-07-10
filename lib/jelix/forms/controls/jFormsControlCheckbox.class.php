@@ -18,8 +18,28 @@
 class jFormsControlCheckbox extends jFormsControl {
     public $type='checkbox';
     public $defaultValue='0';
+
+    /**
+     * value that is stored when the checkbox is checked
+     */
     public $valueOnCheck='1';
+
+    /**
+     * value that is stored when the checkbox is unchecked
+     */
     public $valueOnUncheck='0';
+
+    /**
+     * label that is displayed when the value has to be displayed, when the checkbox is checked.
+     * If empty, the value of valueOnCheck is displayed.
+     */
+    public $valueLabelOnCheck='';
+
+    /**
+     * label that is displayed when the value has to be displayed, when the checkbox is unchecked.
+     * If empty, the value of valueOnUncheck is displayed.
+     */
+    public $valueLabelOnUncheck='';
 
     function __construct($ref){
         $this->ref = $ref;
@@ -66,4 +86,13 @@ class jFormsControlCheckbox extends jFormsControl {
         $this->setData($value);
     }
 
+    function getDisplayValue($value){
+        if ($value == $this->valueOnCheck) {
+            return ($this->valueLabelOnCheck !== ''?$this->valueLabelOnCheck:$value);
+        }
+        else {
+            return ($this->valueLabelOnUncheck !== ''?$this->valueLabelOnUncheck:$value);
+        }
+        return $value;
+    }
 }

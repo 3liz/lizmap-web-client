@@ -1,4 +1,4 @@
-[![logo](icon.png "3Liz")][3liz]Lizmap Web Application 2.11pre
+[![logo](icon.png "3Liz")][3liz]Lizmap Web Application 3.0pre
 ==============================================================
 
 Lizmap web application, by 3LIZ.
@@ -21,6 +21,11 @@ The Initial Developer of the Original Code are René-Luc D'Hont <rldhont@3liz.co
 Contributors
 --------------
 Salvatore Larosa <lrssvtml@gmail.com>
+Giovanni Manghi <giovanni.manghi@gmail.com>
+Vitor Jorge
+Nicolas Boisteault
+Arno <ntelerm@yahoo.gr>
+vherreros
 
 Documentation
 --------------

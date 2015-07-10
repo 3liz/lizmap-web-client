@@ -51,13 +51,13 @@ class defaultCtrl extends jController {
                 $reporter = new jhtmlrespreporter();
                 $reporter->setResponse($rep);
     
-                jContext::push($module);
+                jApp::pushCurrentModule($module);
                 $group = new TestSuite('Tests'.$category.' on module '.$module);
                 foreach($this->testsList[$module] as $test){
                     $group->addFile($conf->_modulesPathList[$module].'tests/'.$test[0]);
                 }
                 $group->run($reporter);
-                jContext::pop();
+                jApp::popCurrentModule();
             }
         } else {
                 $rep->body->assign ('MAIN','<p>no'.$category.' tests available.</p>');
@@ -89,9 +89,9 @@ class defaultCtrl extends jController {
             foreach($this->testsList[$module] as $test){
                 $group->addFile($conf->_modulesPathList[$module].'tests/'.$test[0]);
             }
-            jContext::push($module);
+            jApp::pushCurrentModule($module);
             $group->run($reporter);
-            jContext::pop();
+            jApp::popCurrentModule();
         } else {
             $rep->body->assign ('MAIN','<p>no'.$category.' tests for "'.$module.'" module.</p>');
         }
@@ -124,9 +124,9 @@ class defaultCtrl extends jController {
                 if($test[1] == $testname){
                     $group = new TestSuite('"'.$module. '" module , '.$test[2]);
                     $group->addFile($conf->_modulesPathList[$module].'tests/'.$test[0]);
-                    jContext::push($module);
+                    jApp::pushCurrentModule($module);
                     $group->run($reporter);
-                    jContext::pop();
+                    jApp::popCurrentModule();
                     break;
                 }
             }
@@ -146,7 +146,7 @@ class defaultCtrl extends jController {
         $rep->body->assign('page_title', 'Unit Tests');
         $rep->body->assign('versionphp',phpversion());
         $rep->body->assign('versionjelix',JELIX_VERSION);
-        $rep->body->assign('basepath',jApp::config()->urlengine['basePath']);
+        $rep->body->assign('basepath', jApp::urlBasePath());
         $rep->body->assign('isurlsig', jApp::config()->urlengine['engine'] == 'significant');
 
         $runnerPreparer = jClasses::create('junittests~jrunnerpreparer');

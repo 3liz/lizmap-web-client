@@ -11,7 +11,7 @@
 * @licence     GNU General Public Licence see LICENCE file or http://www.gnu.org/licenses/gpl.html
 */
 
-$lib_jelix = dirname(__FILE__).'/../../../jelix/';
+$lib_jelix = __DIR__.'/../../../jelix/';
 include $lib_jelix.'/installer/jIInstallReporter.iface.php';
 include $lib_jelix.'/installer/jInstallerMessageProvider.class.php';
 include $lib_jelix.'/installer/jInstallChecker.class.php';

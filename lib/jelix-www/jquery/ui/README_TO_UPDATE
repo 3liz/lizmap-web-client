@@ -1,0 +1,8 @@
+The files of JQuery UI bundled into Jelix come from two packages:
+
+- the JQuery UI package with all components selected.
+  - minified files are taken, from the development-bundle/ui/minified directory.
+  - files from themes
+
+- the Jquery UI package with only UI Core selected (core, widget, mouse, position).
+   only the jquery-ui-1.9.2.custom.min.js is taken and renamed to jquery-ui-core-widg-mous-posi.custom.min.js

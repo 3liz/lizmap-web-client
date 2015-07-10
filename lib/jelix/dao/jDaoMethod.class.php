@@ -5,7 +5,8 @@
 * @author      Gérald Croes, Laurent Jouanneau
 * @contributor Laurent Jouanneau
 * @contributor Olivier Demah
-* @copyright   2001-2005 CopixTeam, 2005-2009 Laurent Jouanneau, 2010 Olivier Demah
+* @contributor Philippe Villiers
+* @copyright   2001-2005 CopixTeam, 2005-2009 Laurent Jouanneau, 2010 Olivier Demah, 2013 Philippe Villiers
 * This class was get originally from the Copix project (CopixDAODefinitionV1, Copix 2.3dev20050901, http://www.copix.org)
 * Few lines of code are still copyrighted 2001-2005 CopixTeam (LGPL licence).
 * Initial authors of this Copix class are Gerald Croes and Laurent Jouanneau,
@@ -201,7 +202,7 @@ class jDaoMethod {
         'binary_op'=>'dummy');
       // 'between'=>'BETWEEN',  'notbetween'=>'NOT BETWEEN',
 
-    private $_attrcond = array('property', 'expr', 'operator', 'driver'); //, 'min', 'max', 'exprmin', 'exprmax'
+    private $_attrcond = array('property', 'pattern', 'expr', 'operator', 'driver'); //, 'min', 'max', 'exprmin', 'exprmax'
 
     private function _addCondition($op, $cond){
 
@@ -220,6 +221,8 @@ class jDaoMethod {
         if (!isset ($props[$field_id])){
             throw new jDaoXmlException ($this->_parser->selector, 'method.property.unknown', array($this->name, $field_id));
         }
+
+        $field_pattern = ($attr['pattern']!==null? $attr['pattern']:'');
 
         if($this->type=='update'){
             if($props[$field_id]->table != $this->_parser->getPrimaryTable()){
@@ -249,7 +252,7 @@ class jDaoMethod {
                 }
                 $operator = $attr['operator'];
             }
-            $this->_conditions->addCondition ($field_id, $operator, $value);
+            $this->_conditions->addCondition ($field_id, $operator, $value, $field_pattern);
         }else if($attr['expr']!==null){
             if($op == 'isnull' || $op =='isnotnull'){
                 throw new jDaoXmlException ($this->_parser->selector, 'method.condition.valueexpr.notallowed', array($this->name, $op, $field_id));
@@ -268,12 +271,12 @@ class jDaoMethod {
                 }
                 $operator = $attr['operator'];
             }
-            $this->_conditions->addCondition ($field_id, $operator, $attr['expr'], true);
+            $this->_conditions->addCondition ($field_id, $operator, $attr['expr'], $field_pattern, true);
         }else{
             if($op != 'isnull' && $op !='isnotnull'){
                 throw new jDaoXmlException ($this->_parser->selector, 'method.condition.valueexpr.missing', array($this->name, $op, $field_id));
             }
-            $this->_conditions->addCondition ($field_id, $operator, '', false);
+            $this->_conditions->addCondition ($field_id, $operator, '', $field_pattern, false);
         }
     }
 

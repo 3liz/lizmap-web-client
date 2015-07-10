@@ -64,7 +64,7 @@ class qgisFormControl{
       ),
       8 => array (
             'qgis'=>array('name'=>'File name', 'description'=>'Simplifies file selection by adding a file chooser dialog.'),
-            'jform'=>array('markup'=>'input')
+            'jform'=>array('markup'=>'upload')
       ),
       3 => array (
             'qgis'=>array('name'=>'Value map', 'description'=>'Combo box with predefined items. Value is stored in the attribute, description is shown in the combobox'),
@@ -169,7 +169,7 @@ class qgisFormControl{
     $this->qgisEdittypeMap['DialRange'] = $this->qgisEdittypeMap[5];
     $this->qgisEdittypeMap['ValueRelation'] = $this->qgisEdittypeMap[15];
     $this->qgisEdittypeMap['UuidGenerator'] = $this->qgisEdittypeMap[16];
-    $this->qgisEdittypeMap['Photo'] = $this->qgisEdittypeMap[0];
+    $this->qgisEdittypeMap['Photo'] = $this->qgisEdittypeMap[8];
     $this->qgisEdittypeMap['WebView'] = $this->qgisEdittypeMap[0];
     $this->qgisEdittypeMap['Color'] = $this->qgisEdittypeMap[0];
 
@@ -240,6 +240,22 @@ class qgisFormControl{
         $this->ctrl = new jFormsControlDate($this->ref);
         break;
 
+      case 'upload':
+        $choice = new jFormsControlChoice($this->ref.'_choice');
+        $choice->createItem('keep','keep');
+        $choice->createItem('update','update');
+        $upload = new jFormsControlUpload($this->ref);
+        if( $this->fieldEditType == 'Photo' ) {
+          $upload->mimetype = array('image/jpg','image/jpeg','image/pjpeg','image/png','image/gif');
+          $upload->accept = 'image/*';
+          $upload->capture = 'camera';
+        }
+        $choice->addChildControl($upload, 'update');
+        $choice->createItem('delete','delete');
+        $choice->defaultValue = 'keep';
+        $this->ctrl = $choice;
+        break;
+
       default:
         $this->ctrl = new jFormsControlInput($this->ref);
         break;
@@ -302,6 +318,14 @@ class qgisFormControl{
       // Also use "editable" property
       if( $this->edittype and property_exists($this->edittype[0]->attributes(), 'editable') ) {
         $editable = (integer)$this->edittype[0]->attributes()->editable;
+        if ( $editable == 0 ) {
+          $this->isReadOnly = True;
+        }
+      }
+      // Also use "fieldEditable" property
+      else if( $this->edittype and property_exists($this->edittype[0]->attributes(), 'widgetv2type')
+       and property_exists($this->edittype[0]->widgetv2config->attributes(), 'fieldEditable') ) {
+        $editable = (integer)$this->edittype[0]->widgetv2config->attributes()->fieldEditable;
         if ( $editable == 0 ) {
           $this->isReadOnly = True;
         }

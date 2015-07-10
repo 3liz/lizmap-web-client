@@ -3,7 +3,7 @@
  * @package     jelix
  * @subpackage  urls_engine
  * @author      Laurent Jouanneau
- * @copyright   2005-2012 Laurent Jouanneau
+ * @copyright   2005-2014 Laurent Jouanneau
  * @link        http://www.jelix.org
  * @licence     GNU Lesser General Public Licence see LICENCE file or http://www.gnu.org/licenses/lgpl.html
  */
@@ -19,11 +19,11 @@ class jSelectorUrlCfgSig extends jSelectorCfg {
     public $type = 'urlcfgsig';
 
     public function getCompiler(){
-        require_once(dirname(__FILE__).'/jSignificantUrlsCompiler.class.php');
+        require_once(__DIR__.'/jSignificantUrlsCompiler.class.php');
         $o = new jSignificantUrlsCompiler();
         return $o;
     }
-    public function getCompiledFilePath (){ return jApp::tempPath('compiled/urlsig/'.$this->file.'.creationinfos.php');}
+    public function getCompiledFilePath (){ return jApp::tempPath('compiled/urlsig/'.$this->file.'.creationinfos_15.php');}
 }
 
 /**
@@ -54,6 +54,7 @@ class jSelectorUrlHandler extends jSelectorClass {
     }
 
 }
+
 /**
  * interface for user url handler
  * @package  jelix
@@ -76,6 +77,7 @@ interface jIUrlSignificantHandler {
     */
     public function create($urlact, $url);
 }
+
 /**
  * an url engine to parse,analyse and create significant url
  * it needs an urls.xml file in the config directory (see documentation)
@@ -148,7 +150,7 @@ class significantUrlEngine implements jIUrlEngine {
             else {
                 $snp = $scriptNamePath;
             }
-            $pos = strrpos($snp, $conf['entrypointExtension']);
+            $pos = strrpos($snp, '.php');
             if ($pos !== false) {
                 $snp = substr($snp,0,$pos);
             }
@@ -264,7 +266,7 @@ class significantUrlEngine implements jIUrlEngine {
                 // let's merge static parameters
                 if ($staticValues) {
                     foreach ($staticValues as $n=>$v) {
-                        if ($v[0] == '$') { // special statique value
+                        if (!empty($v) && $v[0] == '$') { // special statique value
                             $typeStatic = $v[1];
                             $v = substr($v,2);
                             if ($typeStatic == 'l')
@@ -355,7 +357,7 @@ class significantUrlEngine implements jIUrlEngine {
 
         $url = new jUrl('', $urlact->params, '');
 
-        $module = $url->getParam('module', jContext::get());
+        $module = $url->getParam('module', jApp::getCurrentModule());
         $action = $url->getParam('action');
 
         // let's try to retrieve informations corresponding
@@ -414,7 +416,7 @@ class significantUrlEngine implements jIUrlEngine {
                     // specialStatic are static values for which the url engine
                     // can compare not only with a given url parameter value, but
                     // also with a value stored some where (typically, a configuration value)
-                    $specialStatic = ($v[0] == '$');
+                    $specialStatic = (!empty($v) && $v[0] == '$');
                     $paramStatic = $url->getParam($n, null);
                     if ($specialStatic) { // special statique value
                         $typePS = $v[1];
@@ -456,12 +458,12 @@ class significantUrlEngine implements jIUrlEngine {
 
         // at this step, we have informations to build the url
 
-        $url->scriptName = jApp::config()->urlengine['basePath'].$urlinfo[1];
+        $url->scriptName = jApp::urlBasePath().$urlinfo[1];
         if ($urlinfo[2])
             $url->scriptName = jApp::coord()->request->getServerURI(true).$url->scriptName;
 
         if ($urlinfo[1] && !jApp::config()->urlengine['multiview']) {
-            $url->scriptName .= jApp::config()->urlengine['entrypointExtension'];
+            $url->scriptName .= '.php';
         }
 
         // for some request types, parameters aren't in the url

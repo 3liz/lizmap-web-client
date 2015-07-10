@@ -12,12 +12,12 @@ require_once ('%%rp_app%%application.init.php');
 
 checkAppOpened();
 
-require_once (JELIX_LIB_CORE_PATH.'jSoapCoordinator.class.php');
-require_once (JELIX_LIB_CORE_PATH.'request/jSoapRequest.class.php');
-
+jApp::loadConfig('%%config_file%%');
 ini_set("soap.wsdl_cache_enabled", "0"); // disabling PHP's WSDL cache
 
-jApp::loadConfig('%%config_file%%');
+jClasses::inc('jsoap~jSoapCoordinator');
+jClasses::inc('jsoap~jSoapRequest');
+
 $jelix = new jSoapCoordinator();
 jApp::setCoord($jelix);
 $jelix->request = new jSoapRequest();

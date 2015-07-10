@@ -17,11 +17,11 @@
 /**
 *
 */
-require_once(JELIX_LIB_CORE_PATH.'response/jResponseBasicHtml.class.php');
+require_once(__DIR__.'/jResponseBasicHtml.class.php');
 require_once(JELIX_LIB_PATH.'tpl/jTpl.class.php');
 
 /**
-* HTML response
+* HTML5 response
 * @package  jelix
 * @subpackage core_response
 */
@@ -149,13 +149,6 @@ class jResponseHtml extends jResponseBasicHtml {
     protected $_endTag="/>\n";
 
     /**
-     * says if the document uses a Strict or Transitional Doctype
-     * @var boolean
-     * @since 1.1.3
-     */
-    protected $_strictDoctype = true;
-
-    /**
     * constructor;
     * setup the charset, the lang, the template engine
     */
@@ -219,6 +212,15 @@ class jResponseHtml extends jResponseBasicHtml {
     }
 
     /**
+     * set the title of the page
+     * 
+     * @param string $title
+     */ 
+    public function setTitle($title) {
+        $this->title = $title;
+    }
+
+    /**
      * add a generic link to the head
      * 
      * @param string $href  url of the link
@@ -240,6 +242,29 @@ class jResponseHtml extends jResponseBasicHtml {
      * @param boolean $forIE if true, the script sheet will be only for IE browser. string values possible (ex:'lt IE 7')
      */
     public function addJSLink ($src, $params=array(), $forIE=false){
+        if($forIE){
+            if (!isset ($this->_JSIELink[$src])){
+                if (!is_bool($forIE) && !empty($forIE))
+                    $params['_ieCondition'] = $forIE;
+                $this->_JSIELink[$src] = $params;
+            }
+        }else{
+            if (!isset ($this->_JSLink[$src])){
+                $this->_JSLink[$src] = $params;
+            }
+        }
+    }
+    
+    /**
+    *  add a link to a javascript script stored into modules
+    *
+    * @param string $module  the module where file is stored
+    * @param mixed $src the relative path inside the {module}/www/ directory
+    * @params array $params additionnal parameters for the generated tag (a media attribute for stylesheet for example)
+    * @param boolean $forIE if true, the script sheet will be only for IE browser. string values possible (ex:'lt IE 7')
+    */
+    public function addJSLinkModule ($module, $src, $params=array(), $forIE=false){ 
+        $src = jUrl::get('jelix~www:getfile', array('targetmodule'=>$module, 'file'=>$src));
         if($forIE){
             if (!isset ($this->_JSIELink[$src])){
                 if (!is_bool($forIE) && !empty($forIE))
@@ -323,6 +348,52 @@ class jResponseHtml extends jResponseBasicHtml {
             }
         }
     }
+    
+    /**
+    *  add a link to a css stylesheet  stored into modules
+    *
+    * @param string $module  the module where file is stored
+    * @param mixed $src the relative path inside the {module}/www/ directory
+    * @params array $params additionnal parameters for the generated tag (a media attribute for stylesheet for example)
+    * @param boolean $forIE if true, the script sheet will be only for IE browser. string values possible (ex:'lt IE 7')
+    */
+    public function addCSSLinkModule ($module, $src, $params=array(), $forIE=false){ 
+        $src = jUrl::get('jelix~www:getfile', array('targetmodule'=>$module, 'file'=>$src));
+        if($forIE){
+            if (!isset ($this->_CSSIELink[$src])){
+                if (!is_bool($forIE) && !empty($forIE))
+                    $params['_ieCondition'] = $forIE;
+                $this->_CSSIELink[$src] = $params;
+            }
+        }else{
+            if (!isset ($this->_CSSLink[$src])){
+                $this->_CSSLink[$src] = $params;
+            }
+        }
+    }
+
+    /**
+    *  add a link to a csstheme stylesheet  stored into modules
+    *
+    * @param string $module  the module where file is stored
+    * @param mixed $src the relative path inside the {module}/www/themes/{currenttheme}/ directory
+    * @params array $params additionnal parameters for the generated tag (a media attribute for stylesheet for example)
+    * @param boolean $forIE if true, the script sheet will be only for IE browser. string values possible (ex:'lt IE 7')
+    */
+    public function addCSSThemeLinkModule ($module, $src, $params=array(), $forIE=false){ 
+        $src =  $url = jUrl::get('jelix~www:getfile', array('targetmodule'=>$module, 'file'=>'themes/'.jApp::config()->theme.'/'.$src));
+        if($forIE){
+            if (!isset ($this->_CSSIELink[$src])){
+                if (!is_bool($forIE) && !empty($forIE))
+                    $params['_ieCondition'] = $forIE;
+                $this->_CSSIELink[$src] = $params;
+            }
+        }else{
+            if (!isset ($this->_CSSLink[$src])){
+                $this->_CSSLink[$src] = $params;
+            }
+        }
+    }  
 
     /**
      * add inline css style into the document (inside a <style> tag)
@@ -332,6 +403,20 @@ class jResponseHtml extends jResponseBasicHtml {
     public function addStyle ($selector, $def=null){
         if (!isset ($this->_Styles[$selector])){
             $this->_Styles[$selector] = $def;
+        }
+    }
+
+    /**
+     * set attributes on the body tag
+     * @param array $attrArray  an associative array of attributes and their values
+     */
+    public function setBodyAttributes ( $attrArray ){
+        if( is_array($attrArray) ) {
+            foreach( $attrArray as $attr => $value ) {
+                if(!is_numeric($attr)) {
+                    $this->bodyTagAttributes[$attr]=$value;
+                }
+            }
         }
     }
 
@@ -388,13 +473,13 @@ class jResponseHtml extends jResponseBasicHtml {
      * @since 1.1
      */
     protected function outputDoctype (){
+        echo '<!DOCTYPE HTML>', "\n";
+        $lang = str_replace('_', '-', $this->_lang);
         if($this->_isXhtml){
-            echo '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 '.($this->_strictDoctype?'Strict':'Transitional').'//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-'.($this->_strictDoctype?'strict':'transitional').'.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="',$this->_lang,'" lang="',$this->_lang,'">
+            echo '<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="',$lang,'" lang="',$lang,'">
 ';
         }else{
-            echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01'.($this->_strictDoctype?'':' Transitional').'//EN" "http://www.w3.org/TR/html4/'.($this->_strictDoctype?'strict':'loose').'.dtd">', "\n";
-            echo '<html lang="',$this->_lang,'">';
+            echo '<html lang="',$lang,'">';
         }
     }
 
@@ -429,6 +514,7 @@ class jResponseHtml extends jResponseBasicHtml {
     protected function outputHtmlHeader (){
 
         echo '<head>'."\n";
+        echo implode ("\n", $this->_headTop);
         if($this->_isXhtml && $this->xhtmlContentType && strstr($_SERVER['HTTP_ACCEPT'],'application/xhtml+xml')){      
             echo '<meta content="application/xhtml+xml; charset='.$this->_charset.'" http-equiv="content-type"'.$this->_endTag;
         } else {
@@ -558,15 +644,6 @@ class jResponseHtml extends jResponseBasicHtml {
             $this->_endTag = "/>\n";
         else
             $this->_endTag = ">\n";
-    }
-
-    /**
-     * activate / deactivate the strict Doctype (activated by default)
-     * @param boolean $val true for strict, false for transitional
-     * @since 1.1.3
-     */
-    public function strictDoctype($val = true){
-        $this->_strictDoctype = $val;
     }
 
     /**

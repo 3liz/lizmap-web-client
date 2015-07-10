@@ -27,10 +27,15 @@ class dbAcl2Driver implements jIAcl2Driver {
     protected static $anonacl = null;
 
     /**
-     * return the value of the right on the given subject (and on the optional resource)
+     * return the value of the right on the given subject (and on the optional resource).
+     *
+     * The resource "-" (meaning 'all resources') has the priority over specific resources.
+     * It means that if you give a specific resource, it will be ignored if there is a positive right
+     * with "-". The right on the given resource will be checked if there is no rights for "-".
+     * 
      * @param string $subject the key of the subject
      * @param string $resource the id of a resource
-     * @return boolean true if the right is ok
+     * @return boolean true if the user has the right on the given subject
      */
     public function getRight($subject, $resource='-'){
         if (empty($resource))
@@ -63,7 +68,7 @@ class dbAcl2Driver implements jIAcl2Driver {
             }
         }
 
-        if(!isset(self::$acl[$subject])){
+        if (!isset(self::$acl[$subject])) {
             self::$acl[$subject] = false;
         }
 

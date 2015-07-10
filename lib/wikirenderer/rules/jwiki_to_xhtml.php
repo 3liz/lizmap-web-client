@@ -146,7 +146,7 @@ class jwxhtml_code extends jwikiTag {
                 $code = $this->wikiContentArr[0];
             }
         }
-        return $tag.htmlspecialchars($code).$endtag;
+        return $tag.$this->_doEscape($code).$endtag;
     }
     protected $code_types = array(
         'A'=>'attribute', 
@@ -199,7 +199,7 @@ class jwxhtml_link extends WikiTagXhtml {
         $cnt = ($this->separatorCount + 1 > $cntattr?$cntattr:$this->separatorCount+1);
         list($href, $label) = $this->config->processLink($this->wikiContentArr[0], $this->name);
         if ($cnt == 1 ) {
-            return '<a href="'.htmlspecialchars(trim($href)).'">'.htmlspecialchars($label).'</a>';
+            return '<a href="'.$this->_doEscape(trim($href)).'">'.$this->_doEscape($label).'</a>';
         }
         else {
             $this->wikiContentArr[0] = $href;
@@ -228,7 +228,7 @@ class jwxhtml_nowiki_inline extends WikiTagXhtml {
     public $beginTag='<nowiki>';
     public $endTag='</nowiki>';
     public function getContent(){
-        return '<div>'.htmlspecialchars($this->wikiContentArr[0]).'</div>';
+        return '<div>'.$this->_doEscape($this->wikiContentArr[0]).'</div>';
     }
 }
 
@@ -280,7 +280,7 @@ class jwxhtml_image extends WikiTagXhtml {
             $tag.=' align="'.$align.'"';
 
         if($title != '') 
-            $tag.=' title="'.htmlspecialchars($title).'"';
+            $tag.=' title="'.$this->_doEscape($title).'"';
 
         return $tag.' />';
     }
@@ -301,7 +301,7 @@ class jwxhtml_anchor extends jwikiTag {
     protected $attribute=array('name');
     public $separators=array('|');
     public function getContent(){
-        return '<a name="'.htmlspecialchars($this->wikiContentArr[0]).'"></a>';
+        return '<a name="'.$this->_doEscape($this->wikiContentArr[0]).'"></a>';
     }
 }
 
@@ -507,7 +507,7 @@ class jwxhtml_table_row extends WikiTag {
     protected $columns = array('');
 
     protected function _doEscape($string){
-        return htmlspecialchars($string);
+        return htmlspecialchars($string, ENT_COMPAT, $this->config->charset);
     }
 
     /**
@@ -651,7 +651,7 @@ class jwxhtml_syntaxhighlight extends WikiRendererBloc {
     }
 
     public function getRenderedLine(){
-        return htmlspecialchars($this->_detectMatch);
+        return htmlspecialchars($this->_detectMatch, ENT_COMPAT, $this->engine->getConfig()->charset);
     }
 
     public function detect($string){

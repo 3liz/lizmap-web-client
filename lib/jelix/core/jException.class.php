@@ -4,7 +4,7 @@
 * @subpackage  core
 * @author      Laurent Jouanneau
 * @contributor Sylvain de Vathaire, Julien Issler
-* @copyright   2005-2012 laurent Jouanneau, 2007 Sylvain de Vathaire
+* @copyright   2005-2014 laurent Jouanneau, 2007 Sylvain de Vathaire
 * @copyright   2008 Julien Issler
 * @link        http://www.jelix.org
 * @licence     GNU Lesser General Public Licence see LICENCE file or http://www.gnu.org/licenses/lgpl.html
@@ -49,7 +49,7 @@ class jException extends Exception {
         }catch(Exception $e){
             $message = $e->getMessage();
         }
-        if(preg_match('/^\s*\((\d+)\)(.+)$/m',$message,$m)){
+        if(preg_match('/^\s*\((\d+)\)(.+)$/ms',$message,$m)){
             $code = $m[1];
             $message = $m[2];
         }

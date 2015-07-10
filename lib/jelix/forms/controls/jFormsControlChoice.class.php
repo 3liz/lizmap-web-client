@@ -12,7 +12,15 @@
 
 
 /**
- * choice
+ * choice control.
+ *
+ * It has a list of choices, called choice items.
+ * Each item has a value and a list of child controls.
+ * The value of the choice control is the value of the selected item.
+ *
+ * $this->container->privateData contain the list of items that are deactivated.
+ * A deactivated item is not displayed.
+ * 
  * @package     jelix
  * @subpackage  forms
  */
@@ -84,11 +92,20 @@ class jFormsControlChoice extends jFormsControlGroups {
             return;
         }
         $this->setData($value);
-
-        if(isset($this->items[$this->container->data[$this->ref]])){
-            foreach($this->items[$this->container->data[$this->ref]] as $name=>$ctrl) {
+        $val = $this->container->data[$this->ref];
+        if(isset($this->items[$val])){
+            foreach($this->items[$val] as $name=>$ctrl) {
                 $ctrl->setValueFromRequest($request);
             }
         }
+    }
+
+    function getDisplayValue($value){
+        if (isset($this->itemsNames[$value]) && $this->isItemActivated($value)) {
+            return $this->itemsNames[$value];
+        }
+        if ($this->emptyValueLabel === null)
+            return $value;
+        return $this->emptyValueLabel;
     }
 }

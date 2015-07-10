@@ -8,7 +8,7 @@
 * @link        http://www.jelix.org
 * @licence     GNU Lesser General Public Licence see LICENCE file or http://www.gnu.org/licenses/lgpl.html
 */
-require_once(dirname(__FILE__).'/junittestcase.class.php');
+require_once(__DIR__.'/junittestcase.class.php');
 
 class jUnitTestCaseDb extends jUnitTestCase {
 

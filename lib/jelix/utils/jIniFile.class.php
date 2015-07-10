@@ -37,8 +37,9 @@ class jIniFile {
      * @param array $array the content of an ini file
      * @param string $filename the path and the name of the file use to store the content
      * @param string $header   some content to insert at the begining of the file
+     * @param integer $chmod   
      */
-    public static function write($array, $filename, $header='') {
+    public static function write($array, $filename, $header='', $chmod=null) {
         $result='';
         foreach ($array as $k => $v) {
             if (is_array($v)) {
@@ -55,6 +56,9 @@ class jIniFile {
         if ($f = @fopen($filename, 'wb')) {
             fwrite($f, $header.$result);
             fclose($f);
+            if ($chmod) {
+                chmod($f, $chmod);
+            }
         } else {
             // jIniFile is used by the configs compiler. There is no configuration
             // object in that case. we need to generate an error without using jLocale

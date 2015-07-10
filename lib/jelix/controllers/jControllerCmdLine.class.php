@@ -4,7 +4,7 @@
 * @subpackage  controllers
 * @author      Loic Mathaud
 * @contributor Christophe Thiriot, Laurent Jouanneau
-* @copyright   2006 Loic Mathaud, 2007 Christophe Thiriot, 2008 Laurent Jouanneau
+* @copyright   2006 Loic Mathaud, 2007 Christophe Thiriot, 2008-2013 Laurent Jouanneau
 * @link        http://www.jelix.org
 * @licence     http://www.gnu.org/licenses/lgpl.html GNU Lesser General Public Licence, see LICENCE file
 *
@@ -65,13 +65,13 @@ class jControllerCmdLine extends jController {
         unset($params['module']);
         unset($params['action']);
 
-        $action = new jSelectorAct($this->request->params['action']);
+        $method = jApp::coord()->action->method;
 
-        if( !in_array($action->method, get_class_methods(get_class($this)))) {
-            throw new jException('jelix~errors.cli.unknown.command', $action->method);
-        }
-        $opt = isset($this->allowed_options[$action->method]) ? $this->allowed_options[$action->method]: array();
-        $par = isset($this->allowed_parameters[$action->method]) ? $this->allowed_parameters[$action->method]: array();
+        if( !in_array($method, get_class_methods(get_class($this)))) {
+            throw new jException('jelix~errors.cli.unknown.command', $method);
+         }
+        $opt = isset($this->allowed_options[$method]) ? $this->allowed_options[$method]: array();
+        $par = isset($this->allowed_parameters[$method]) ? $this->allowed_parameters[$method]: array();
 
         list($this->_options,$this->_parameters) = jCmdUtils::getOptionsAndParams($params, $opt, $par);
 

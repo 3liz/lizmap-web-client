@@ -43,8 +43,10 @@ class userCtrl extends jController {
     function __construct ($request){
         parent::__construct($request);
         $plugin = jApp::coord()->getPlugin('auth');
-        if ($plugin->config['driver'] == 'Db') {
-            $this->authConfig = $plugin->config['Db'];
+        $driver = $plugin->config['driver'];
+        $hasDao = isset($plugin->config[$driver]['dao']) &&  isset($plugin->config[$driver]['compatiblewithdb']) && $plugin->config[$driver]['compatiblewithdb'];
+        if (($driver == 'Db') || $hasDao) {
+            $this->authConfig = $plugin->config[$driver];
             $this->dao = $this->authConfig['dao'];
             if(isset($this->authConfig['form']))
                 $this->form = $this->authConfig['form'];
@@ -66,7 +68,7 @@ class userCtrl extends jController {
         }
         
         if ($id != jAuth::getUserSession()->login) {
-            jMessage::add(jLocale::get('jelix~errors.acl.action.right.needed'), 'error');
+            jMessage::add(jLocale::get('jacl2~errors.action.right.needed'), 'error');
             $rep = $this->getResponse('redirect');
             $rep->action = 'master_admin~default:index';
             return $rep;
@@ -106,7 +108,7 @@ class userCtrl extends jController {
         }
 
         if ($id != jAuth::getUserSession()->login) {
-            jMessage::add(jLocale::get('jelix~errors.acl.action.right.needed'), 'error');
+            jMessage::add(jLocale::get('jacl2~errors.action.right.needed'), 'error');
             $rep->action = 'master_admin~default:index';
             return $rep;
         }
@@ -152,7 +154,7 @@ class userCtrl extends jController {
         }
 
         if ($id != jAuth::getUserSession()->login) {
-            jMessage::add(jLocale::get('jelix~errors.acl.action.right.needed'), 'error');
+            jMessage::add(jLocale::get('jacl2~errors.action.right.needed'), 'error');
             $rep = $this->getResponse('redirect');
             $rep->action = 'master_admin~default:index';
             return $rep;
@@ -181,7 +183,7 @@ class userCtrl extends jController {
         $id = $this->param('j_user_login');
 
         if ($id != jAuth::getUserSession()->login) {
-            jMessage::add(jLocale::get('jelix~errors.acl.action.right.needed'), 'error');
+            jMessage::add(jLocale::get('jacl2~errors.action.right.needed'), 'error');
             $rep = $this->getResponse('redirect');
             $rep->action = 'master_admin~default:index';
             return $rep;

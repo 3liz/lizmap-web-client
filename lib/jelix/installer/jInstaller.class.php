@@ -211,10 +211,16 @@ class jInstaller {
     public $nbNotice = 0;
 
     /**
-     * the defaultconfig.ini.php content
+     * the mainconfig.ini.php content
      * @var jIniFileModifier
      */
-    public $defaultConfig;
+    public $mainConfig;
+
+    /**
+     * the localconfig.ini.php content
+     * @var jIniFileModifier
+     */
+    public $localConfig;
 
     /**
      * initialize the installation
@@ -227,7 +233,19 @@ class jInstaller {
     function __construct ($reporter, $lang='') {
         $this->reporter = $reporter;
         $this->messages = new jInstallerMessageProvider($lang);
-        $this->defaultConfig = new jIniFileModifier(jApp::configPath('defaultconfig.ini.php'));
+        $this->mainConfig = new jIniFileModifier(jApp::mainConfigFile());
+
+        $localConfig = jApp::configPath('localconfig.ini.php');
+        if (!file_exists($localConfig)) {
+           $localConfigDist = jApp::configPath('localconfig.ini.php.dist');
+           if (file_exists($localConfigDist)) {
+              copy($localConfigDist, $localConfig);
+           }
+           else {
+              file_put_contents($localConfig, ';<'.'?php die(\'\');?'.'>');
+           }
+        }
+        $this->localConfig = new jIniMultiFilesModifier($this->mainConfig, $localConfig);
         $this->installerIni = $this->getInstallerIni();
         $this->readEntryPointData(simplexml_load_file(jApp::appPath('project.xml')));
         $this->installerIni->save();
@@ -277,6 +295,8 @@ class jInstaller {
 
             // we create an object corresponding to the entry point
             $ep = $this->getEntryPointObject($configFile, $file, $type);
+            // not to the constructor, to no break API. FIXME
+            $ep->localConfigIni =  new jIniMultiFilesModifier($this->localConfig, jApp::configPath($configFile));
             $epId = $ep->getEpId();
 
             $this->epId[$file] = $epId;
@@ -305,7 +325,7 @@ class jInstaller {
      * @internal for tests
      */
     protected function getEntryPointObject($configFile, $file, $type) {
-        return new jInstallerEntryPoint($this->defaultConfig, $configFile, $file, $type);
+        return new jInstallerEntryPoint($this->mainConfig, $configFile, $file, $type);
     }
 
     /**

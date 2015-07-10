@@ -16,33 +16,33 @@ a:hover {
 /* END for ie 8*/
 
 #header {
-  background : #2B2B2B;
+  background : url('img/header-background-medium.png') repeat fixed #2B2B2B;
   color : #FBFBFB;
 }
 #logo {
   background : url(img/logo.png) no-repeat;
+  background-size:contain;
 }
 
 #headermenu {
-  background-color:#93C01F;
+  background-color:transparent;
 }
 
 #auth {
   background: transparent;
 }
 .navbar .nav > li > a {
-  color: #2B2B2B;
 }
 .navbar .nav .active > a,
 .navbar .nav > li > a:focus ,
 .navbar .nav > li > a:hover {
-  color: white;
-  background:transparent !important;
+  background-color: #eeeeee;
 }
 .navbar .nav li.dropdown.open > .dropdown-toggle,
 .navbar .nav li.dropdown.active > .dropdown-toggle,
 .navbar .nav li.dropdown.open.active > .dropdown-toggle {
-  color : #585858;
+  color : #333;
+  background-color: #08C;
 }
 .navbar .nav > li > .dropdown-menu:after {
   border-bottom: 6px solid #F5F5F5;
@@ -51,30 +51,29 @@ a:hover {
   background-color: #F5F5F5;
 }
 .navbar .nav > li.dropdown > a.dropdown-toggle:hover .caret {
-  border-top-color:white;
-  border-bottom-color:white;
 }
 .navbar .navbar-inner .icon {
   background-image:url(images/sprite_20_tools.png);
 }
 .navbar .nav .login .icon {
-  background-position: -80px -60px;
+  background-position: -225px 0px;
 }
 .navbar .nav .login a:hover .icon,
 .navbar .nav .login.active a .icon {
-  background-position: -80px -40px;
+  background-position: -200px 0px;
 }
 .navbar .nav .user .icon {
-  background-position: 0px -60px;
+  background-position: -575px 0px;
 }
 .navbar .nav .user a:hover .icon,
-.navbar .nav .user.active a .icon  {
-  background-position: 0px -40px;
+.navbar .nav .user.active a .icon,
+.navbar .nav .user.open a .icon    {
+  background-position: -550px 0px;
 }
 .navbar .nav .home .icon {
-  background-position: -80px -20px;
+  background-position: -25px 0px;
 }
 .navbar .nav .home a:hover .icon,
 .navbar .nav .home.active a .icon {
-  background-position: -80px 0px;
+  background-position: 0px 0px;
 }

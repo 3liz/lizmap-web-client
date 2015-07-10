@@ -67,7 +67,6 @@ final class jResponseBinary  extends jResponse {
         }
 
         if($this->doDownload){
-            $this->mimeType = 'application/forcedownload';
             if (!strlen($this->outputFileName)){
                 $f = explode ('/', str_replace ('\\', '/', $this->fileName));
                 $this->outputFileName = $f[count ($f)-1];

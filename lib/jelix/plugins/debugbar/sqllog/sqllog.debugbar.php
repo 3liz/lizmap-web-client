@@ -50,7 +50,8 @@ class sqllogDebugbarPlugin implements jIDebugbarPlugin {
                 if ($realCount > $currentCount) {
                     $info->popupContent = '<p class="jxdb-msg-warning">Too many queries ('.$realCount.'). Only first '.$currentCount.' queries are shown.</p>';
                 }
-                $info->popupContent .= '<ul id="jxdb-sqllog" class="jxdb-list">';
+                $sqlDetailsContent = '<ul id="jxdb-sqllog" class="jxdb-list">';
+                $totalTime = 0;
                 foreach($messages as $msg) {
                     if (get_class($msg) != 'jSQLLogMessage')
                         continue;
@@ -60,17 +61,22 @@ class sqllogDebugbarPlugin implements jIDebugbarPlugin {
                     }
                     else $m = substr($msg->getMessage(), 0,50).' [...]';
 
-                    $info->popupContent .= '<li>
+                    $msgTime = $msg->getTime();
+                    $totalTime += $msgTime;
+                    $sqlDetailsContent .= '<li>
                     <h5><a href="#" onclick="jxdb.toggleDetails(this);return false;"><span>'.htmlspecialchars($m).'</span></a></h5>
                     <div>
-                    <p>Time: '.$msg->getTime().'s</p>';
-                    $info->popupContent.= '<pre style="white-space:pre-wrap">'.htmlspecialchars($msg->getMessage()).'</pre>';
+                    <p>Time: '.$msgTime.'s</p>';
+                    $sqlDetailsContent.= '<pre style="white-space:pre-wrap">'.htmlspecialchars($msg->getMessage()).'</pre>';
                     if ($msg->getMessage() != $msg->originalQuery)
-                        $info->popupContent.= '<p>Original query: </p><pre style="white-space:pre-wrap">'.htmlspecialchars($msg->originalQuery).'</pre>';
-                    $info->popupContent.= $debugbar->formatTrace($msg->getTrace());
-                    $info->popupContent .='</div></li>';
+                        $sqlDetailsContent .= '<p>Original query: </p><pre style="white-space:pre-wrap">'.htmlspecialchars($msg->originalQuery).'</pre>';
+                    $sqlDetailsContent.= $debugbar->formatTrace($msg->getTrace());
+                    $sqlDetailsContent .='</div></li>';
                 }
-                $info->popupContent .= '</ul>';
+                $sqlDetailsContent .= '</ul>';
+
+                $info->popupContent .= '<div>Total SQL time&nbsp;: '.$totalTime.'s</div>';
+                $info->popupContent .= $sqlDetailsContent;
             }
         }
 

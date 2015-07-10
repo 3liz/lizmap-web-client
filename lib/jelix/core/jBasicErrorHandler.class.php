@@ -101,7 +101,7 @@ class jBasicErrorHandler {
             echo 'Error during initialization: \n';
             foreach(self::$initErrorMessages as $err) {
                 @error_log($err->getFormatedMessage()."\n", 3, jApp::logPath('errors.log'));
-                echo '* '.$err->getMessage().' ('.$e->getFile().' '.$e->getLine().")\n";
+                echo '* '.$err->getMessage().' ('.$err->getFile().' '.$err->getLine().")\n";
             }
 
             @error_log($errorLog->getFormatedMessage()."\n", 3, jApp::logPath('errors.log'));
@@ -131,12 +131,14 @@ class jBasicErrorHandler {
                     $file = jApp::appPath('responses/error.en_US.php');
                 else
                     $file = JELIX_LIB_CORE_PATH.'response/error.en_US.php';
+                $HEADTOP = '';
                 $HEADBOTTOM = '';
                 $BODYTOP = '';
                 $BODYBOTTOM = htmlspecialchars($msg);
-                $BASEPATH = '/';
-                if (jApp::config() && isset(jApp::config()->urlengine['basePath']))
-                    $BASEPATH = jApp::config()->urlengine['basePath'];
+                $BASEPATH = jApp::urlBasePath();
+                if ($BASEPATH == '') {
+                    $BASEPATH = '/';
+                }
                 header("HTTP/1.1 500 Internal jelix error");
                 header('Content-type: text/html');
                 include($file);

@@ -7,7 +7,7 @@
 on_error = 2
 
 ; locale key for the error message when on_error=1
-error_message = "jelix~errors.acl.action.right.needed"
+error_message = "jacl2~errors.action.right.needed"
 
 ; action to execute on a missing authentification when on_error=2
 on_error_action = "jelix~error:badright"

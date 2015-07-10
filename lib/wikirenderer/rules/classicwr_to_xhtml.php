@@ -102,7 +102,7 @@ class cwrxhtml_anchor extends WikiTagXhtml {
     protected $attribute=array('name');
     public $separators=array('|');
     public function getContent(){
-        return '<a name="'.htmlspecialchars($this->wikiContentArr[0]).'"></a>';
+        return '<a name="'.$this->_doEscape($this->wikiContentArr[0]).'"></a>';
     }
 }
 
@@ -118,7 +118,7 @@ class cwrxhtml_link extends WikiTagXhtml {
         $cnt=($this->separatorCount + 1 > $cntattr?$cntattr:$this->separatorCount+1);
         if($cnt == 1 ){
             list($href, $label) = $this->config->processLink($this->wikiContentArr[0], $this->name);
-            return '<a href="'.htmlspecialchars($href).'">'.htmlspecialchars($label).'</a>';
+            return '<a href="'.$this->_doEscape($href).'">'.$this->_doEscape($label).'</a>';
         }else{
             list($href, $label) = $this->config->processLink($this->wikiContentArr[1], $this->name);
             $this->wikiContentArr[1] = $href;
@@ -154,7 +154,7 @@ class cwrxhtml_image extends WikiTagXhtml {
             case 1:
             default:
                 list($href,$label) = $this->config->processLink($contents[0], $this->name);
-                $attribut.=' src="'.htmlspecialchars($href).'"';
+                $attribut.=' src="'.$this->_doEscape($href).'"';
                 if($cnt == 1) $attribut.=' alt=""';
         }
         return '<img'.$attribut.'/>';
@@ -336,7 +336,7 @@ class cwrxhtml_pre extends WikiRendererBloc {
    protected $_closeTag='</pre>';
 
    public function getRenderedLine(){
-      return htmlspecialchars($this->_detectMatch[1]);
+      return htmlspecialchars($this->_detectMatch[1], ENT_COMPAT, $this->engine->getConfig()->charset);
    }
 
 }

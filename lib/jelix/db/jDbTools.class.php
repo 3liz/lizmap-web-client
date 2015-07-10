@@ -90,6 +90,11 @@
     public $minValue = null;
     
     public $maxValue = null;
+
+    /**
+     * dao and form use this feature
+     */
+     public $comment;
 }
 
 /**

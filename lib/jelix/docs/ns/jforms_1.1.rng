@@ -50,7 +50,7 @@
     <ref name="hidden" />
     <ref name="date" />
     <ref name="datetime" />
-  
+    <ref name="button"/>
   </define>
 
 
@@ -61,8 +61,16 @@
             <group>
                 <attribute name="type"><value>string</value></attribute>
                 <ref name="attr.length" />
-                <ref name="attr.size" />
+                
                 <optional><attribute name="pattern" /></optional>
+            </group>
+            <group>
+                <attribute name="type"><value>integer</value></attribute>
+                <ref name="attr.range" />
+            </group>
+            <group>
+                <attribute name="type"><value>decimal</value></attribute>
+                <ref name="attr.range" />
             </group>
             <group>
                 <attribute name="type"><value>html</value></attribute>
@@ -89,60 +97,55 @@
                 </choice>
             </attribute>
         </choice>
+        <ref name="attr.size" />
        <ref name="UI.attr.readonly" />
        <ref name="UI.attr.required" />
        <ref name="UI.attr.defaultvalue" />
+       <ref name="emptyvaluelabel" />
      </element>
   </define>
 
   <define name="textarea">
      <element name="textarea">
-       <ref name="control.common" />
-       <ref name="UI.attr.readonly" />
-       <ref name="UI.attr.required" />
-       <ref name="UI.attr.defaultvalue" />
-       <ref name="attr.length" />
+       <ref name="textarea.common" />
        <optional><attribute name="type">
             <choice>
               <value>html</value>
               <value>xhtml</value>
             </choice>
        </attribute></optional>
-       <optional><attribute name="rows"><data type="integer" /></attribute></optional>
-       <optional><attribute name="cols"><data type="integer" /></attribute></optional>
      </element>
   </define>
 
   <define name="htmleditor">
      <element name="htmleditor">
-       <ref name="control.common" />
-       <ref name="UI.attr.readonly" />
-       <ref name="UI.attr.required" />
-       <ref name="UI.attr.defaultvalue" />
-       <ref name="attr.length" />
+       <ref name="textarea.common" />
        <optional><attribute name="xhtml">
           <choice><value>true</value><value>false</value></choice>
        </attribute></optional>
        <optional><attribute name="config" /></optional>
        <optional><attribute name="skin" /></optional>
-       <optional><attribute name="rows"><data type="integer" /></attribute></optional>
-       <optional><attribute name="cols"><data type="integer" /></attribute></optional>
      </element>
   </define>
 
   <define name="wikieditor">
      <element name="wikieditor">
-       <ref name="control.common" />
-       <ref name="UI.attr.readonly" />
-       <ref name="UI.attr.required" />
-       <ref name="UI.attr.defaultvalue" />
-       <ref name="attr.length" />
+       <ref name="textarea.common" />
        <optional><attribute name="config" /></optional>
-       <optional><attribute name="rows"><data type="integer" /></attribute></optional>
-       <optional><attribute name="cols"><data type="integer" /></attribute></optional>
      </element>
   </define>
 
+  <define name="textarea.common">
+      <ref name="control.common" />
+      <ref name="UI.attr.readonly" />
+      <ref name="UI.attr.required" />
+      <ref name="UI.attr.defaultvalue" />
+      <ref name="attr.length" />
+      <ref name="emptyvaluelabel" />
+      <optional><attribute name="rows"><data type="integer" /></attribute></optional>
+      <optional><attribute name="cols"><data type="integer" /></attribute></optional>
+  </define>
+  
   <define name="secret">
      <element name="secret">
        <ref name="control.common" />
@@ -162,6 +165,7 @@
             </choice>
           </element>
        </optional>
+       <ref name="emptyvaluelabel" />
      </element>
   </define>
 
@@ -178,6 +182,7 @@
            <attribute name="value" /> 
        </element>
        -->
+       <ref name="emptyvaluelabel" />
      </element>
   </define>
 
@@ -187,8 +192,28 @@
        <ref name="UI.attr.readonly" />
        <ref name="UI.attr.required" />
        <ref name="UI.attr.defaultvalue" />
-       <optional><attribute name="valueoncheck" /></optional>
-       <optional><attribute name="valueonuncheck" /></optional>
+       <optional>
+          <choice>
+            <attribute name="valueoncheck" />
+            <element name="oncheckvalue">
+                 <choice>
+                     <attribute name="locale" />
+                     <attribute name="label" />
+                 </choice>
+            </element>
+          </choice>
+        </optional>
+       <optional>
+          <choice>
+            <attribute name="valueonuncheck" />
+            <element name="onuncheckvalue">
+                 <choice>
+                     <attribute name="locale" />
+                     <attribute name="label" />
+                 </choice>
+            </element>
+          </choice>
+        </optional>
      </element>
   </define>
 
@@ -197,11 +222,13 @@
        <ref name="control.common" />
        <ref name="control.list.common" />
        <ref name="attr.size" />
+       <ref name="emptyvaluelabel" />
        <optional>
             <attribute name="multiple">
                 <choice><value>true</value><value>false</value></choice>
             </attribute>
        </optional>
+       <optional><element name="emptyitem"><ref name="message.content" /></element></optional>
      </element>
   </define>
 
@@ -211,6 +238,7 @@
             <ref name="control.common" />
             <ref name="control.list.common" />
             <optional><element name="emptyitem"><ref name="message.content" /></element></optional>
+            <ref name="emptyvaluelabel" />
         </interleave>
      </element>
   </define>
@@ -219,6 +247,7 @@
      <element name="checkboxes">
        <ref name="control.common" />
        <ref name="control.list.common" />
+       <ref name="emptyvaluelabel" />
      </element>
   </define>
 
@@ -226,12 +255,14 @@
      <element name="radiobuttons">
        <ref name="control.common" />
        <ref name="control.list.common" />
+       <ref name="emptyvaluelabel" />
      </element>
   </define>
   <define name="output">
      <element name="output">
        <ref name="control.common" />
        <ref name="UI.attr.defaultvalue" />
+       <ref name="emptyvaluelabel" />
      </element>
   </define>
 
@@ -290,9 +321,7 @@
                 </optional>
                 <ref name="label" />
                 <zeroOrMore>
-                    <choice>
-                        <ref name="primary_controls" />
-                    </choice>
+                    <ref name="primary_controls" />
                 </zeroOrMore>
             </element>
         </oneOrMore>
@@ -308,6 +337,7 @@
       <optional><attribute name="mindate"/></optional>
       <optional><attribute name="maxdate"/></optional>
       <optional><attribute name="datepicker"/></optional>
+      <ref name="emptyvaluelabel" />
     </element>
   </define>
 
@@ -317,6 +347,7 @@
       <ref name="UI.attr.readonly" />
       <ref name="UI.attr.required" />
       <ref name="UI.attr.defaultvalue" />
+      <ref name="emptyvaluelabel" />
       <optional><attribute name="mindate"/></optional>
       <optional><attribute name="maxdate"/></optional>
       <optional><attribute name="datepicker"/></optional>
@@ -324,6 +355,11 @@
     </element>
   </define>
 
+  <define name="button">
+      <attribute name="ref" />
+      <ref name="label" />
+      <ref name="UI.attr.defaultvalue" />
+  </define>
 
   <define name="control.common">
      <attribute name="ref" />
@@ -355,9 +391,28 @@
       <optional><attribute name="minlength"><data type="integer" /></attribute></optional>
       <optional><attribute name="maxlength"><data type="integer" /></attribute></optional>
   </define>
+  <define name="attr.range">
+      <optional><attribute name="minvalue"><data type="integer" /></attribute></optional>
+      <optional><attribute name="maxvalue"><data type="integer" /></attribute></optional>
+  </define>
 
   <define name="attr.size">
       <optional><attribute name="size"><data type="integer" /></attribute></optional>
+  </define>
+
+  <define name="emptyvaluelabel">
+    <optional>
+        <element name="emptyvaluelabel">
+          <choice>
+              <text />
+              <empty />
+              <group>
+                  <attribute name="locale" />
+                  <empty/>
+              </group>
+          </choice>
+        </element>
+    </optional>
   </define>
 
 

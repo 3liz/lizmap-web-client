@@ -23,12 +23,4 @@ class jAcl2Db {
      */
     private function __construct (){ }
 
-    /**
-     * return the profile name used for jacl connection
-     * @return string  'jacl_profile'
-     * @deprecated 1.2
-     */
-    public static function getProfile(){
-        return 'jacl2_profile';
-    }
 }

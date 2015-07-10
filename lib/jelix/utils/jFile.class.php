@@ -40,7 +40,7 @@ class jFile {
     * @copyright  2001-2005 CopixTeam
     * @link http://www.copix.org
     */
-    public static function write ($file, $data){
+    public static function write ($file, $data, $chmod=null){
         $_dirname = dirname($file);
 
         //asking to create the directory structure if needed.
@@ -74,7 +74,12 @@ class jFile {
             unlink($file);
         }
         rename($_tmp_file, $file);
-        @chmod($file,  0664);
+        if ($chmod) {
+            chmod($file, $chmod);
+        }
+        else {
+            chmod($file, jApp::config()->chmodFile);
+        }
 
         return true;
     }
@@ -84,12 +89,12 @@ class jFile {
     * It creates also all necessary parent directory
     * @param string $dir the path of the directory
     */
-    public static function createDir ($dir){
+    public static function createDir ($dir, $chmod=null){
         // recursive feature on mkdir() is broken with PHP 5.0.4 for Windows
         // so should do own recursion
         if (!file_exists($dir)) {
-            self::createDir(dirname($dir));
-            mkdir($dir, 0775);
+            self::createDir(dirname($dir), $chmod);
+            mkdir($dir, ($chmod?$chmod:jApp::config()->chmodDir));
         }
     }
 
@@ -165,21 +170,10 @@ class jFile {
      * @since 1.1.6
      */
     public static function getMimeType($file){
-        if (function_exists('finfo_open')) {
-            $finfo = finfo_open(FILEINFO_MIME_TYPE);
-            $type = finfo_file($finfo, $file);
-            finfo_close($finfo);
-            return $type;
-        }
-        else if (function_exists('mime_content_type')) {
-            return mime_content_type($file);
-        }
-        else {
-            // we know that it is not the ideal way to do it
-            // but don't want to spent time and resource to guess
-            // it from the file content.
-            return self::getMimeTypeFromFilename($file);
-        }
+        $finfo = finfo_open(FILEINFO_MIME_TYPE);
+        $type = finfo_file($finfo, $file);
+        finfo_close($finfo);
+        return $type;
     }
 
     /**
@@ -197,6 +191,72 @@ class jFile {
         else
             return 'application/octet-stream';
     }
+
+    /**
+     * parse a path replacing Jelix shortcuts parts (var:, temp:, www:, app:, lib:)
+     *
+     * @param string $path the path with parts to replace
+     * @return string the path which is a system valid path
+     */
+    public static function parseJelixPath($path){
+        return str_replace(
+            array('lib:', 'app:', 'var:', 'temp:', 'www:'),
+            array(LIB_PATH, jApp::appPath(), jApp::varPath(), jApp::tempPath(), jApp::wwwPath()),
+            $path );
+    }
+
+    /**
+     * replace a path with Jelix shortcuts parts (var:, temp:, www: app:, lib:)
+     *
+     * @param string $path the system valid path
+     * @param string $beforeShortcut a string to be output before the Jelix shortcut
+     * @param string $afterShortcut a string to be output after the Jelix shortcut
+     * @return string the path with Jelix shortcuts parts
+     */
+    public static function unparseJelixPath($path, $beforeShortcut='', $afterShortcut=''){
+        $shortcutPath = '';
+        $shortcut = '';
+        if (strpos($path, LIB_PATH) === 0) {
+            $shortcutPath = LIB_PATH;
+            $shortcut = 'lib:';
+        }
+        elseif (strpos($path, jApp::tempPath()) === 0) {
+            $shortcutPath = jApp::tempPath();
+            $shortcut = 'temp:';
+        }
+        elseif (strpos($path, jApp::wwwPath()) === 0) {
+            $shortcutPath = jApp::wwwPath();
+            $shortcut = 'www:';
+        }
+        elseif (strpos($path, jApp::varPath()) === 0) {
+            $shortcutPath = jApp::varPath();
+            $shortcut = 'var:';
+        }
+        elseif (strpos($path, jApp::appPath()) === 0) {
+            $shortcutPath = jApp::appPath();
+            $shortcut = 'app:';
+        }
+        else {
+            $shortcutPath = dirname(jApp::appPath());
+            $shortcut = 'app:';
+            while ($shortcutPath != '.' && $shortcutPath != '') {
+                $shortcut .= '../';
+                if (strpos($path, $shortcutPath) === 0) {
+                    break;
+                }
+                $shortcutPath = dirname($shortcutPath);
+            }
+            if ($shortcutPath =='.')
+                $shortcutPath = '';
+        }
+        if ($shortcutPath != '') {
+            $cut = ($shortcutPath[0] == '/'?0:1);
+            $path = $beforeShortcut.$shortcut.$afterShortcut.substr($path, strlen($path)+$cut);
+        }
+
+        return $path;
+    }
+
 
     protected static $mimeTypes = array(
 

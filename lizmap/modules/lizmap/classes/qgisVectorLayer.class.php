@@ -77,4 +77,37 @@ class qgisVectorLayer extends qgisMapLayer{
     jProfiles::createVirtualProfile('jdb', $profile, $jdbParams);
     return jDb::getConnection($profile);
   }
+
+  public function getFields() {
+      $fields = array();
+      $edittypes = $this->xmlLayer->xpath(".//edittype");
+      foreach( $edittypes as $edittype ) {
+          $fields[] = (string) $edittype->attributes()->name;
+      }
+      return $fields;
+  }
+
+  public function getAliasFields() {
+      $fields = $this->getFields();
+      $aliases = array();
+      foreach( $fields as $f ) {
+          $aliases[$f] = $f;
+          $alias = $this->xmlLayer->xpath("aliases/alias[@field='".$f."']");
+          if( count($alias) != 0 ) {
+            $alias = $alias[0];
+            $aliases[$f] = (string)$alias['name'];
+          }
+      }
+      return $aliases;
+  }
+
+  public function getWfsFields() {
+      $fields = $this->getFields();
+      $excludeFields = $this->xmlLayer->xpath(".//excludeAttributesWFS/attribute");
+      foreach( $excludeFields as $eField ) {
+          $eField = (string) $eField;
+          array_splice( $fields, array_search( $eField, $fields ), 1 );
+      }
+      return $fields;
+  }
 }

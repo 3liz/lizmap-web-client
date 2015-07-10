@@ -54,6 +54,25 @@ class jEvent {
     }
 
     /**
+     * get a user param
+     * @param string $name the parameter name
+     * @return mixed
+     */
+    function __get($name) {
+        return $this->getParam($name);
+    }
+
+    /**
+     * set a user param
+     * @param string $name the parameter name
+     * @param mixed $value the value
+     * @return mixed
+     */
+    function __set($name, $value) {
+        return $this->_params[$name] = $value;
+    }
+
+    /**
     * gets the name of the event
     *    will be used internally for optimisations
     */
@@ -64,6 +83,7 @@ class jEvent {
     /**
     * gets the given param
     * @param string $name the param name
+    * @deprecated since Jelix 1.6
     */
     public function getParam ($name){
         if (isset ($this->_params[$name])){
@@ -185,5 +205,15 @@ class jEvent {
                 self::$hashListened[$eventName][] = self::$listenersSingleton[$module][$listenerName];
             }
         }
+    }
+
+    /**
+     * for tests
+     * @since 1.5
+     */
+    public static function clearCache() {
+        self::$hashListened = array();
+        self::$listenersSingleton = array ();
+        unset($GLOBALS['JELIX_EVENTS']);
     }
 }

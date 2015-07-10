@@ -178,14 +178,14 @@ Unit Tests        php version: '.phpversion().'   Jelix version: '.JELIX_VERSION
         if (count($this->testsList)){
             $reporter->paintSuiteStart();
             foreach($this->testsList as $module=>$tests){
-                jContext::push($module);
+                jApp::pushCurrentModule($module);
                 $group = new TestSuite('Tests'.$category.' on module '.$module);
                 foreach($this->testsList[$module] as $test){
                     $group->addFile(jApp::config()->_modulesPathList[$module].'tests/'.$test[0]);
                 }
                 $result = $group->run($reporter);
                 if (!$result) $rep->setExitCode(jResponseCmdline::EXIT_CODE_ERROR);
-                jContext::pop();
+                jApp::popCurrentModule();
             }
             $reporter->paintSuiteEnd();
         } else {
@@ -211,10 +211,10 @@ Unit Tests        php version: '.phpversion().'   Jelix version: '.JELIX_VERSION
             foreach($this->testsList[$module] as $test){
                 $group->addFile(jApp::config()->_modulesPathList[$module].'tests/'.$test[0]);
             }
-            jContext::push($module);
+            jApp::pushCurrentModule($module);
             $result = $group->run($reporter);
             if (!$result) $rep->setExitCode(jResponseCmdline::EXIT_CODE_ERROR);
-            jContext::pop();
+            jApp::popCurrentModule();
         } else {
             $this->output('No available'.$category.' tests for module '.$module);
         }
@@ -238,10 +238,10 @@ Unit Tests        php version: '.phpversion().'   Jelix version: '.JELIX_VERSION
                 if($test[1] == $testname){
                     $group = new TestSuite('"'.$module. '" module , '.$test[2]);
                     $group->addFile(jApp::config()->_modulesPathList[$module].'tests/'.$test[0]);
-                    jContext::push($module);
+                    jApp::pushCurrentModule($module);
                     $result = $group->run($reporter);
                     if (!$result) $rep->setExitCode(jResponseCmdline::EXIT_CODE_ERROR);
-                    jContext::pop();
+                    jApp::popCurrentModule();
                     break;
                 }
             }

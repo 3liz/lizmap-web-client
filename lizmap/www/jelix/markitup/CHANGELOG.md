@@ -1,6 +1,20 @@
-markItUp! 1.1.12
+markItUp! 1.1.14
 
 CHANGE LOG
+markItUp! 1.1.14 2013-02-04
+- Compatibility patch for jQuery 1.9+
+- Click on menu bubbles up so it could be reused (michilehr)
+- Fixed default selection after using a tag having either openBlockWith or closeBlockWith (r3c)
+
+markItUp! 1.1.13 2012-08-30
+- Added ability to render preview in a DOM element (ytjohn & jaysalvat)
+- Fixed Ctrl+Enter syntax error (UltCombo)
+- Added the previewHandler option to allow complete control over preview (lecterror)
+- Updated events to use namespace (JoyceBabu)
+- Added $(elm).markItUp('insert', { }) and $(elm).markItUp('remove');
+- Updated the demo
+- Added package.json
+
 markItUp! 1.1.12 2011-08-11
 - Fixed the insertion on empty selection
 - Enhanced the trailing space management

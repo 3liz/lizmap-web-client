@@ -73,7 +73,7 @@ List of available commands:\n\t",
             }else{
                 $this->disp("\nUsage of ".$this->_parameters['command'].":\n");
             }
-            $this->disp("# ".$_SERVER['argv'][0]."  ".$this->_parameters['command']." ". $this->commonSyntaxOptions.$command->syntaxhelp."\n\n");
+            $this->disp("# ".$_SERVER['argv'][0]."  ".$this->_parameters['command']." ". $command->commonSyntaxOptions.$command->syntaxhelp."\n\n");
             if(is_array($command->help)){
                 if(isset($command->help[$this->config->helpLang])){
                     $this->disp($command->help[$this->config->helpLang]);

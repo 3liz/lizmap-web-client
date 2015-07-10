@@ -85,7 +85,7 @@ class wr3dbk_code extends WikiTagXhtml {
     public $endTag='@@';
     public function getContent(){
         $code = $this->wikiContentArr[0];
-        return '<code>'.htmlspecialchars($code).'</code>';
+        return '<code>'.$this->_doEscape($code).'</code>';
     }
     public function isOtherTagAllowed() {
         return false;
@@ -128,7 +128,7 @@ class wr3dbk_anchor extends WikiTagXhtml {
     protected $attribute=array('id');
     public $separators=array('|');
     public function getContent(){
-        return '<anchor id="'.htmlspecialchars($this->wikiContentArr[0]).'"/>';
+        return '<anchor id="'.$this->_doEscape($this->wikiContentArr[0]).'"/>';
     }
 }
 
@@ -147,16 +147,16 @@ class wr3dbk_link extends WikiTagXhtml {
             list($href, $label) = $this->config->processLink($this->wikiContentArr[0], $this->name);
 
             if(preg_match("/^\#(.+)$/", $href, $m))
-                return '<link linkterm="'.htmlspecialchars($m[1]).'">'.htmlspecialchars($label).'</link>';
+                return '<link linkterm="'.$this->_doEscape($m[1]).'">'.$this->_doEscape($label).'</link>';
             else
-                return '<ulink url="'.htmlspecialchars($href).'">'.htmlspecialchars($label).'</ulink>';
+                return '<ulink url="'.$this->_doEscape($href).'">'.$this->_doEscape($label).'</ulink>';
 
         }else{
             list($href, $label) = $this->config->processLink($this->wikiContentArr[1], $this->name);
             if(preg_match("/^\#(.+)$/", $href, $m))
-                return '<link linkterm="'.htmlspecialchars($m[1]).'">'.$this->contents[0].'</link>';
+                return '<link linkterm="'.$this->_doEscape($m[1]).'">'.$this->contents[0].'</link>';
             else
-                return '<ulink url="'.htmlspecialchars($href).'">'.$this->contents[0].'</ulink>';
+                return '<ulink url="'.$this->_doEscape($href).'">'.$this->contents[0].'</ulink>';
         }
     }
 }
@@ -188,7 +188,7 @@ class wr3dbk_image extends WikiTagXhtml {
             case 1:
             default:
                list($href, $label) = $this->config->processLink($contents[0], $this->name);
-                $attribut.=' fileref="'.htmlspecialchars($href).'"';
+                $attribut.=' fileref="'.$this->_doEscape($href).'"';
         }
 
         return '<inlinemediaobject><imageobject><imagedata'.$attribut.'/></imageobject>'.$alt.'</inlinemediaobject>';
@@ -399,7 +399,7 @@ class wr3dbk_pre extends WikiRendererBloc {
    }
 
     public function getRenderedLine(){
-        return htmlspecialchars($this->_detectMatch);
+        return htmlspecialchars($this->_detectMatch, ENT_COMPAT, $this->engine->getConfig()->charset);
     }
 
     public function detect($string){

@@ -9,14 +9,16 @@
 * @copyright   2009 Olivier Demah
 * @link        http://www.jelix.org
 * @licence     http://www.gnu.org/licenses/lgpl.html GNU Lesser General Public Licence, see LICENCE file
+* @deprecated
 */
 
-include_once(JELIX_LIB_PATH.'forms/jFormsBuilderHtml.class.php');
+include_once(JELIX_LIB_PATH.'forms/legacy/jFormsBuilderHtml.class.php');
 
 /**
  * HTML form builder
  * @package     jelix
  * @subpackage  jelix-plugins
+ * @deprecated
  */
 class htmlJformsBuilder extends jFormsBuilderHtml {
 

@@ -132,7 +132,7 @@ abstract class JelixScriptCommand {
 
          if (!array_key_exists($argv[0], $this->allowed_options)) {
             if (!array_key_exists($argv[0], $this->commonOptions)) {
-               throw new Exception("unknown option '".$argv[0]."'");
+               throw new Exception($this->name.": unknown option '".$argv[0]."'");
             }
             $needArgument = $this->commonOptions[$argv[0]];
          }
@@ -146,7 +146,7 @@ abstract class JelixScriptCommand {
                $this->_options[$sw] = array_shift($argv);
             }
             else {
-               throw new Exception("value missing for the '".$argv[0]."' option");
+               throw new Exception($this->name.": value missing for the '".$argv[0]."' option");
             }
          }
          else {
@@ -160,7 +160,7 @@ abstract class JelixScriptCommand {
       foreach ($this->allowed_parameters as $pname => $needed) {
          if (count($argv)==0) {
             if ($needed) {
-               throw new Exception("'".$pname."' parameter missing");
+               throw new Exception($this->name.": '".$pname."' parameter missing");
             }
             else {
                break;
@@ -176,7 +176,7 @@ abstract class JelixScriptCommand {
       }
 
       if(count($argv)){
-         throw new Exception("too many parameters");
+         throw new Exception($this->name.": too many parameters");
       }
 
       $this->getEPOption();
@@ -235,7 +235,7 @@ abstract class JelixScriptCommand {
       }
 
       if ($configFile == '')
-         throw new Exception("Entry point is unknown");
+         throw new Exception($this->name.": Entry point is unknown");
 
       require_once(JELIX_LIB_PATH."core/jConfigCompiler.class.php");
       jApp::setConfig(jConfigCompiler::read($configFile, true, true, $this->entryPointName));
@@ -253,7 +253,7 @@ abstract class JelixScriptCommand {
       if (!isset($config->_modulesPathList[$module])) {
         if (isset($config->_externalModulesPathList[$module]))
             return $config->_externalModulesPathList[$module];
-        throw new Exception("The module $module doesn't exist");
+        throw new Exception($this->name.": The module $module doesn't exist");
       }
       return $config->_modulesPathList[$module];
    }
@@ -308,11 +308,16 @@ abstract class JelixScriptCommand {
          return false;
       }
       $tpl = file($tplpath);
-      $this->tplparam = $tplparam;
 
+      $callback = function ($matches) use (&$tplparam) {
+        if (isset($tplparam[$matches[1]])) {
+           return $tplparam[$matches[1]];
+        } else
+           return '';
+      };
       foreach($tpl as $k=>$line){
          $tpl[$k]= preg_replace_callback('|\%\%([a-zA-Z0-9_]+)\%\%|',
-                                         array(&$this, 'replaceCallback'),
+                                         $callback,
                                          $line);
       }
 
@@ -359,16 +364,6 @@ abstract class JelixScriptCommand {
             chgrp($dirname, $this->config->chownGroup);
          }
       }
-   }
-
-   /**
-    * @internal callback function used by createFile
-    */
-   protected function replaceCallback($matches){
-      if (isset($this->tplparam[$matches[1]])) {
-         return $this->tplparam[$matches[1]];
-      } else
-         return '';
    }
 
    /**
@@ -433,11 +428,11 @@ abstract class JelixScriptCommand {
       $doc = new DOMDocument();
 
       if (!$doc->load(jApp::appPath('project.xml'))){
-         throw new Exception("cannot load project.xml");
+         throw new Exception($this->name.": cannot load project.xml");
       }
 
       if ($doc->documentElement->namespaceURI != JELIX_NAMESPACE_BASE.'project/1.0'){
-         throw new Exception("bad namespace in project.xml");
+         throw new Exception($this->name.": bad namespace in project.xml");
       }
       $this->projectXml = $doc;
    }

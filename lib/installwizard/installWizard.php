@@ -10,8 +10,8 @@
 * @licence     GNU General Public Licence see LICENCE file or http://www.gnu.org/licenses/gpl.html
 */
 
-require(dirname(__FILE__).'/jtpl/jtpl_standalone_prepend.php');
-require(dirname(__FILE__).'/installWizardPage.php');
+require(__DIR__.'/jtpl/jtpl_standalone_prepend.php');
+require(__DIR__.'/installWizardPage.php');
 
 /**
  * main class of the wizard
@@ -272,7 +272,7 @@ class installWizard {
             if ($this->customPath && file_exists($this->customPath.'error.php'))
                 require($this->customPath.'error.php');
             else
-                require(dirname(__FILE__).'/error.php');
+                require(__DIR__.'/error.php');
             exit(1);
         }
     }
@@ -339,7 +339,7 @@ class installWizard {
         if ($stepname)
             $path = $this->pages[$stepname];
         else
-            $path = dirname(__FILE__)."/";
+            $path = __DIR__."/";
 
         if (file_exists($path.$fileName))
             return $path.$fileName;

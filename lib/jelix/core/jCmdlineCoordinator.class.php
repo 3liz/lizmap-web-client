@@ -3,8 +3,8 @@
 * @package      jelix
 * @subpackage   core
 * @author       Christophe Thiriot
-* @contributor  Laurent Jouanneau
-* @copyright    2008 Christophe Thiriot, 2011-2012 Laurent Jouanneau
+* @contributor  Laurent Jouanneau, Gaëtan MARROT
+* @copyright    2008 Christophe Thiriot, 2011-2013 Laurent Jouanneau, 2013 Gaëtan MARROT
 * @link         http://www.jelix.org
 * @licence      GNU Lesser General Public Licence see LICENCE file or http://www.gnu.org/licenses/lgpl.html
 */
@@ -27,14 +27,18 @@ class jCmdlineCoordinator extends jCoordinator {
         parent::__construct($configFile, $enableErrorHandler);
     }
 
+    protected function setRequest ($request) {
+        $this->allErrorMessages = jBasicErrorHandler::$initErrorMessages;
+        parent::setRequest($request);
+    }
+
     /**
     * main method : launch the execution of the action.
     *
     * This method should be called in a Command line entry point.
     * @param  jRequestCmdline  $request the command line request object
     */
-    public function process($request){
-        $this->allErrorMessages = jBasicErrorHandler::$initErrorMessages;
+    public function process($request=null){
         parent::process($request);
         exit($this->response->getExitCode());
     }

@@ -21,6 +21,11 @@ var lizMap = function() {
    */
   var capabilities = null;
   /**
+   * PRIVATE Property: capabilities
+   * {object} The wmts capabilities
+   */
+  var wmtsCapabilities = null;
+  /**
    * PRIVATE Property: map
    * {<OpenLayers.Map>} The map
    */
@@ -41,6 +46,11 @@ var lizMap = function() {
    */
   var controls = {};
   /**
+   * PRIVATE Property: printCapabilities
+   * {Object({scales:[Float],layouts:[Object]})} Print capabilities
+   */
+  var printCapabilities = {scales:[],layouts:[]};
+  /**
    * PRIVATE Property: tree
    * {object} The layer's tree
    */
@@ -53,18 +63,35 @@ var lizMap = function() {
     'osm': 'osm-mapnik',
     'mapquest': 'osm-mapquest',
     'osm-cyclemap': 'osm-cyclemap',
-    'Google Satellite': 'google-satellite',
-    'Google Hybrid': 'google-hybrid',
-    'Google Terrain': 'google-terrain',
-    'Google Streets': 'google-street',
-    'Bing Road': 'bing-road',
-    'Bing Aerial': 'bing-aerial',
-    'Bing Hybrid': 'bing-hybrid',
+    'gsat': 'google-satellite',
+    'ghyb': 'google-hybrid',
+    'gphy': 'google-terrain',
+    'gmap': 'google-street',
+    'bmap': 'bing-road',
+    'baerial': 'bing-aerial',
+    'bhybrid': 'bing-hybrid',
     'ignmap': 'ign-scan',
     'ignplan': 'ign-plan',
     'ignphoto': 'ign-photo'
   }
 
+  /**
+   * PRIVATE Property: layerCleanNames
+   *
+   */
+  var layerCleanNames = {};
+
+  /**
+   * PRIVATE Property: lizmapLayerFilterActive. Contains layer name if filter is active
+   *
+   */
+  var lizmapLayerFilterActive = null;
+
+  /**
+   * PRIVATE Property: editionPending. True when an edition form has already been displayed. Used to prevent double-click on launchEdition button
+   *
+   */
+  var editionPending = false;
 
   /**
    * PRIVATE function: cleanName
@@ -87,6 +114,13 @@ var lizMap = function() {
     return aName.replace(reg, '_');
   }
 
+  function getLayerNameByCleanName( cleanName ){
+    var layerName = null;
+    if( cleanName in layerCleanNames )
+      layerName = layerCleanNames[cleanName];
+    return layerName;
+  }
+
 
   /**
    * PRIVATE function: updateMobile
@@ -104,9 +138,13 @@ var lizMap = function() {
 
       // hide overview map
       if (config.options.hasOverview){
-        $('#overview-bar button').hide();
-        $('#overviewmap').hide();
+        $('#overview-toggle').hide();
+        $('#overview-map').hide().removeClass('active');
       }
+
+      // Hide switcher
+      if( $('#button-switcher').parent().hasClass('active') )
+        $('#button-switcher').click();
 
       if( $('#menu').is(':visible'))
         $('#menu').hide();
@@ -128,9 +166,12 @@ var lizMap = function() {
 
       // Display overview map
       if (config.options.hasOverview){
-        $('#overviewmap').show();
-        $('#overview-bar button').show();
+        $('#overview-map').show();
+        $('#overview-toggle').show().addClass('active');
       }
+      // Show switcher
+      if( !( $('#button-switcher').parent().hasClass('active') ) )
+        $('#button-switcher').click();
 
       if( !$('#menu').is(':visible'))
         $('#content span.ui-icon-open-menu').click();
@@ -162,23 +203,36 @@ var lizMap = function() {
     // calculate height height
     var h = $(window).innerHeight();
     h = h - $('#header').height();
-    h = h - $('#headermenu').height();
+    //h = h - $('#headermenu').height();
     $('#map').height(h);
 
     // Update body padding top by summing up header+headermenu
-    $('body').css('padding-top', $('#header').outerHeight() + $('#headermenu').outerHeight() );
+    //$('body').css('padding-top', $('#header').outerHeight() + $('#headermenu').outerHeight() );
+    $('body').css('padding-top', $('#header').outerHeight() );
 
     // calculate map width depending on theme configuration
     // (fullscreen map or not, mobile or not)
     var w = $('body').parent()[0].offsetWidth;
 
     if ($('#menu').is(':hidden') || $('#map-content').hasClass('fullscreen')) {
-      $('#map-content').css('margin-left',0);
+      $('#map-content').css('margin-left','auto');
     } else {
       w -= $('#menu').width();
       $('#map-content').css('margin-left', $('#menu').width());
     }
     $('#map').width(w);
+    // Make the dock fill the max height to calculate its max size, then restore to auto height
+    $('#dock').css('bottom', '0px');
+
+    // Set the switcher content a max-height
+    $('#switcher-layers-container').css( 'height', 'auto' );
+    var mh = $('#dock').height() - 2*$('#dock-tabs').height() - $('#switcher-layers-container h3').height() - $('#switcher-layers-actions').height() - $('#switcher-baselayer').height() ;
+    $('#switcher-layers-container .menu-content').css( 'max-height', mh ).css('overflow-x', 'hidden').css('overflow-y', 'auto');
+
+    // Set the other tab-content max-height
+    $('#dock-content').css( 'max-height', $('#dock').height() - $('#dock-tabs').height() );
+
+    $('#dock').css('overflow-y', 'hidden');
 
     updateMapSize();
 
@@ -231,9 +285,9 @@ var lizMap = function() {
         }
       });
     }
-    if ($('#baselayer-menu').is(':visible')) {
-      h -= $('#baselayer-menu').children().first().outerHeight(true);
-      h -= $('#baselayer-menu').children().last().outerHeight(true);
+    if ($('#switcher-baselayer').is(':visible')) {
+      h -= $('#switcher-baselayer').children().first().outerHeight(true);
+      h -= $('#switcher-baselayer').children().last().outerHeight(true);
     }
     h -= $('#switcher-menu').children().first().outerHeight(true);
 
@@ -254,13 +308,25 @@ var lizMap = function() {
     // If map if fullscreen, get #menu position : bottom or top
     h -= 2 * (parseInt($('#menu').css('bottom')) ? parseInt($('#menu').css('bottom')) : 0 ) ;
 
+/*
     if($('#map-content').hasClass('fullscreen')){
         $('#switcher').css('max-height', h);
     }
     else
         $('#switcher').height(h);
+*/
 
+  }
 
+  /**
+   * PRIVATE function: getDockRightPosition
+   * Calculate the position on the right side of the dock
+   */
+  function getDockRightPosition() {
+    var right = $('#mapmenu').width();
+    if( $('#dock').css('display') != 'none' && !lizMap.checkMobile() )
+      right+= $('#dock').width() + 11;
+    return right;
   }
 
 
@@ -284,10 +350,13 @@ var lizMap = function() {
       if (layer == null && l.name == name)
         layer = l;
     });
+    //if (layer == null )
+      //return null;
     var legendParams = {SERVICE: "WMS",
                   VERSION: "1.3.0",
                   REQUEST: "GetLegendGraphic",
                   LAYERS: layer.params['LAYERS'],
+                  STYLES: layer.params['STYLES'],
                   EXCEPTIONS: "application/vnd.ogc.se_inimage",
                   FORMAT: "image/png",
                   TRANSPARENT: "TRUE",
@@ -398,6 +467,142 @@ var lizMap = function() {
     return order;
   }
 
+  function beforeLayerTreeCreated() {
+     if (
+       (('osmMapnik' in config.options)
+        && config.options.osmMapnik == 'True') ||
+       (('osmMapquest' in config.options)
+        && config.options.osmMapquest == 'True') ||
+       (('osmCyclemap' in config.options)
+        && config.options.osmCyclemap == 'True') ||
+       (('googleStreets' in config.options)
+        && config.options.googleStreets == 'True') ||
+       (('googleSatellite' in config.options)
+        && config.options.googleSatellite == 'True') ||
+       (('googleHybrid' in config.options)
+        && config.options.googleHybrid == 'True') ||
+       (('googleTerrain' in config.options)
+        && config.options.googleTerrain == 'True') ||
+       (('bingStreets' in config.options)
+        && config.options.bingStreets == 'True'
+        && ('bingKey' in config.options)) ||
+       (('bingSatellite' in config.options)
+        && config.options.bingSatellite == 'True'
+        && ('bingKey' in config.options)) ||
+       (('bingHybrid' in config.options)
+        && config.options.bingHybrid == 'True'
+        && ('bingKey' in config.options)) ||
+       (('ignTerrain' in config.options)
+        && config.options.ignTerrain == 'True'
+        && ('ignKey' in config.options)) ||
+       (('ignStreets' in config.options)
+        && config.options.ignStreets == 'True'
+        && ('ignKey' in config.options)) ||
+       (('ignSatellite' in config.options)
+        && config.options.ignSatellite == 'True'
+        && ('ignKey' in config.options))
+       ) {
+         Proj4js.defs['EPSG:3857'] = Proj4js.defs['EPSG:900913'];
+         var proj = config.options.projection;
+         if ( !(proj.ref in Proj4js.defs) )
+           Proj4js.defs[proj.ref]=proj.proj4;
+         var projection = new OpenLayers.Projection(proj.ref);
+         var projOSM = new OpenLayers.Projection('EPSG:3857');
+         proj.ref = 'EPSG:3857';
+         proj.proj4 = Proj4js.defs['EPSG:3857'];
+
+         // Transform the bbox
+         var bbox = config.options.bbox;
+         var extent = new OpenLayers.Bounds(Number(bbox[0]),Number(bbox[1]),Number(bbox[2]),Number(bbox[3]));
+         extent = extent.transform(projection,projOSM);
+         bbox = extent.toArray();
+
+         var scales = [];
+         if ('mapScales' in config.options)
+           scales = config.options.mapScales;
+         if ( scales.length == 0 )
+           scales = [config.options.maxScale,config.options.minScale];
+
+         config.options.projection = proj;
+         config.options.bbox = bbox;
+         config.options.zoomLevelNumber = 16;
+
+         // Transform the initial bbox
+         if ( 'initialExtent' in config.options && config.options.initialExtent.length == 4 ) {
+           var initBbox = config.options.initialExtent;
+           var initialExtent = new OpenLayers.Bounds(Number(initBbox[0]),Number(initBbox[1]),Number(initBbox[2]),Number(initBbox[3]));
+           initialExtent = initialExtent.transform(projection,projOSM);
+           config.options.initialExtent = initialExtent.toArray();
+         }
+
+         // Specify zoom level number
+         if ((('osmMapnik' in config.options) && config.options.osmMapnik == 'True') ||
+             (('osmMapquest' in config.options) && config.options.osmMapquest == 'True') ||
+             (('osmCyclemap' in config.options) && config.options.osmCyclemap == 'True') ||
+             (('bingStreets' in config.options) && config.options.bingStreets == 'True' && ('bingKey' in config.options)) ||
+             (('bingSatellite' in config.options) && config.options.bingSatellite == 'True' && ('bingKey' in config.options)) ||
+             (('bingHybrid' in config.options) && config.options.bingHybrid == 'True' && ('bingKey' in config.options)) ||
+             (('ignTerrain' in config.options) && config.options.ignTerrain == 'True' && ('ignKey' in config.options)) ||
+             (('ignStreets' in config.options) && config.options.ignStreets == 'True') && ('ignKey' in config.options))
+           config.options.zoomLevelNumber = 19;
+         if ((('googleStreets' in config.options) && config.options.googleStreets == 'True') ||
+             (('googleHybrid' in config.options) && config.options.googleHybrid == 'True') ||
+             (('ignSatellite' in config.options) && config.options.ignSatellite == 'True') && ('ignKey' in config.options))
+           config.options.zoomLevelNumber = 20;
+         if ((('googleSatellite' in config.options) && config.options.googleSatellite == 'True'))
+           config.options.zoomLevelNumber = 21;
+         config.options.maxScale = 591659030.3224756;
+         config.options.minScale = 2257.0000851534865;
+         //config.options.mapScales = [];
+         var hasBaselayers = false;
+         for ( var l in config.layers ) {
+           if ( config.layers[l]["baseLayer"] == "True" )
+             hasBaselayers = true;
+         }
+         // for minRes evaluating to scale 100
+         // zoomLevelNumber is equal to 24
+         if (hasBaselayers) {
+           config.options.zoomLevelNumber = 24;
+         }
+
+         var resolutions = [];
+         if (scales.length != 0 ) {
+           scales.sort(function(a, b) {
+             return Number(b) - Number(a);
+           });
+           var maxScale = scales[0];
+           var maxRes = OpenLayers.Util.getResolutionFromScale(maxScale, projOSM.proj.units);
+           var minScale = scales[scales.length-1];
+           var minRes = OpenLayers.Util.getResolutionFromScale(minScale, projOSM.proj.units);
+           var res = 156543.03390625;
+           var n = 1;
+           while ( res > minRes && n < config.options.zoomLevelNumber) {
+             if ( res < maxRes ) {
+               if (resolutions.length == 0 && res != 156543.03390625)
+                 resolutions.push(res*2);
+               resolutions.push(res);
+             }
+             res = res/2;
+             n++;
+           }
+           maxRes = resolutions[0];
+           minRes = res;
+           resolutions.push(res);
+           var maxScale = OpenLayers.Util.getScaleFromResolution(maxRes, projOSM.proj.units);
+           var minScale = OpenLayers.Util.getScaleFromResolution(minRes, projOSM.proj.units);
+         }
+         config.options['resolutions'] = resolutions;
+
+         if (resolutions.length != 0 ) {
+           config.options.zoomLevelNumber = resolutions.length;
+           config.options.maxScale = maxScale;
+           config.options.minScale = minScale;
+         }
+         return true;
+      }
+      return false;
+  }
+
   /**
    * PRIVATE function: getLayerTree
    * get the layer tree
@@ -431,31 +636,68 @@ var lizMap = function() {
         }
     }
 
+    var wmtsFormat = new OpenLayers.Format.WMTSCapabilities({});
+
     for (var i = 0, len = nested.nestedLayers.length; i<len; i++) {
       var serviceUrl = service
       var layer = nested.nestedLayers[i];
       var layerConfig = config.layers[layer.name];
       var layerName = cleanName(layer.name);
+      layerCleanNames[layerName] = layer.name;
 
-      if (layer.name.toLowerCase() == 'hidden')
+      if ( layer.name.toLowerCase() == 'hidden' )
+        continue;
+      if ( layer.name == 'Overview' ) {
+        config.options.hasOverview = true;
+        continue;
+      }
+      if ( !layerConfig )
         continue;
 
       // if the layer is not the Overview and had a config
       // creating the {<OpenLayers.Layer.WMS>} and the tree node
-      if (layer.name != 'Overview' && layerConfig) {
-        var node = {name:layerName,config:layerConfig,parent:pNode};
-        var layerWmsParams = {
+      var node = {name:layerName,config:layerConfig,parent:pNode};
+      var styles = ('styles' in layerConfig) ? layerConfig.styles[0] : 'default' ;
+      if( !( typeof lizLayerStyles === 'undefined' )
+        && layerName in lizLayerStyles
+        && lizLayerStyles[ layerName ]
+      ){
+        styles = lizLayerStyles[ layerName ];
+      }
+      var layerWmsParams = {
           layers:layer.name
+          ,styles: styles
           ,version:'1.3.0'
           ,exceptions:'application/vnd.ogc.se_inimage'
           ,format:(layerConfig.imageFormat) ? layerConfig.imageFormat : 'image/png'
           ,dpi:96
-        };
-        if (layerWmsParams.format != 'image/jpeg')
+      };
+      if (layerWmsParams.format != 'image/jpeg')
           layerWmsParams['transparent'] = true;
 
-        // Override WMS url if external WMS server
-        if (layerConfig.externalAccess ) {
+      var wmtsLayer = null;
+      if ( layerConfig.cached == 'True' && wmtsCapabilities ) {
+          $.each(wmtsCapabilities.contents.layers, function(i, l) {
+            if ( l.identifier != layer.name)
+              return true;
+            //console.log( layer.name +' '+ config.options.projection.ref );
+            wmtsLayer = wmtsFormat.createLayer(wmtsCapabilities, {
+                layer: layer.name,
+                matrixSet: config.options.projection.ref,
+                name: layerName,
+                params: layerWmsParams,
+                attribution:layer.attribution,
+                isBaseLayer: (layerConfig.baseLayer == 'True'),
+                alwaysInRange: false,
+                url: serviceUrl
+            });
+            // console.log( wmtsLayer );
+            return false;
+          });
+      }
+
+      // Override WMS url if external WMS server
+      if (layerConfig.externalAccess ) {
           var extConfig = layerConfig.externalAccess;
           serviceUrl = extConfig.url;
           layerWmsParams = {
@@ -463,69 +705,85 @@ var lizMap = function() {
             ,styles:(extConfig.styles) ? extConfig.styles : ''
             ,crs:(extConfig.crs) ? extConfig.crs : 'EPSG:3857'
             ,format:(extConfig.format) ? extConfig.format : 'image/png'
+            ,transparent:(extConfig.transparent) ? extConfig.transparent : 'true'
             ,exceptions:'application/vnd.ogc.se_inimage'
           }
+      }
+
+        // Add optionnal filter at start
+        if( !( typeof lizLayerFilter === 'undefined' )
+          && layerName in lizLayerFilter
+          && lizLayerFilter[ layerName ]
+        ){
+          layerWmsParams['FILTER'] = layerName+':'+lizLayerFilter[ layerName ];
         }
 
-        if (layerConfig.baseLayer == 'True') {
+      if (layerConfig.baseLayer == 'True' && wmtsLayer != null) {
+          // creating the base layer
+          baselayers.push( wmtsLayer );
+      }
+      else if (layerConfig.type == 'layer' && wmtsLayer != null) {
+          wmtsLayer.options.minScale = layerConfig.maxScale;
+          wmtsLayer.options.maxScale =(layerConfig.minScale != null && layerConfig.minScale < 1) ? 1 : layerConfig.minScale;
+          if ( layer.nestedLayers.length != 0 ) {
+              var scales = getLayerScale(layer,null,null);
+              wmtsLayer.options.minScale = scales.maxScale;
+              wmtsLayer.options.maxScale = scales.minScale;
+          }
+          wmtsLayer.isVisible = (layerConfig.toggled=='True');
+          wmtsLayer.visibility = false;
+          wmtsLayer.transitionEffect = null;
+          wmtsLayer.removeBackBufferDelay = 250;
+          wmtsLayer.order = getLayerOrder(layer);
+          layers.push( wmtsLayer );
+      }
+      else if (layerConfig.baseLayer == 'True') {
         // creating the base layer
           baselayers.push(new OpenLayers.Layer.WMS(layerName,serviceUrl
               ,layerWmsParams
               ,{isBaseLayer:true
-               ,gutter:5
+               ,gutter:(layerConfig.cached == 'True') ? 0 : 5
                ,buffer:0
                ,singleTile:(layerConfig.singleTile == 'True')
                ,attribution:layer.attribution
               }));
-        }
-        else if (layerConfig.type == 'layer' && layer.nestedLayers.length != 0) {
-        // creating the layer because it's a layer and has children
-          var minScale = layerConfig.minScale;
-          var maxScale = layerConfig.maxScale;
-          // get the layer scale beccause, it has children
-          var scales = getLayerScale(layer,null,null);
-          layers.push(new OpenLayers.Layer.WMS(layerName,serviceUrl
-              ,layerWmsParams
-              ,{isBaseLayer:false
-               ,minScale:scales.maxScale
-               ,maxScale:scales.minScale
-               ,isVisible:(layerConfig.toggled=='True')
-               ,visibility:false
-               ,gutter:5
-               ,buffer:0
-               ,transitionEffect:(layerConfig.singleTile == 'True')?'resize':null
-               ,removeBackBufferDelay:250
-               ,singleTile:(layerConfig.singleTile == 'True')
-               ,order:getLayerOrder(layer)
-               ,attribution:layer.attribution
-              }));
-        }
-        else if (layerConfig.type == 'layer') {
-        // creating the layer because it's a layer and has no children
-          layers.push(new OpenLayers.Layer.WMS(layerName,serviceUrl
+      }
+      else if (layerConfig.type == 'layer') {
+          var wmsLayer = new OpenLayers.Layer.WMS(layerName,serviceUrl
               ,layerWmsParams
               ,{isBaseLayer:false
                ,minScale:layerConfig.maxScale
                ,maxScale:(layerConfig.minScale != null && layerConfig.minScale < 1) ? 1 : layerConfig.minScale
                ,isVisible:(layerConfig.toggled=='True')
                ,visibility:false
-               ,gutter:5
+               ,gutter:(layerConfig.cached == 'True') ? 0 : 5
                ,buffer:0
                ,transitionEffect:(layerConfig.singleTile == 'True')?'resize':null
                ,removeBackBufferDelay:250
                ,singleTile:(layerConfig.singleTile == 'True')
                ,order:getLayerOrder(layer)
                ,attribution:layer.attribution
-              }));
-        }
-        // creating the layer tre because it's a group, has children and is not a base layer
-        if (layerConfig.type == 'group' && layer.nestedLayers.length != 0 && layerConfig.baseLayer == 'False')
-          getLayerTree(layer,node);
-        if (layerConfig.baseLayer != 'True')
-          pNode.children.push(node);
-      } else if (layer.name == 'Overview'){
-        config.options.hasOverview = true;
+               //~ ,tileOptions: {
+                  //~ eventListeners: {
+                    //~ 'loaderror': function(evt) {
+                      //~ console.log('Tile load error');
+                    //~ }
+                  //~ }
+                //~ }
+              });
+          if ( layer.nestedLayers.length != 0 ) {
+              var scales = getLayerScale(layer,null,null);
+              wmsLayer.minScale = scales.maxScale;
+              wmsLayer.maxScale = scales.minScale;
+          }
+          layers.push( wmsLayer );
       }
+      // creating the layer tree because it's a group, has children and is not a base layer
+      if (layerConfig.type == 'group' && layer.nestedLayers.length != 0 && layerConfig.baseLayer == 'False')
+          getLayerTree(layer,node);
+      if (layerConfig.baseLayer != 'True')
+          pNode.children.push(node);
+
     }
   }
 
@@ -590,7 +848,7 @@ var lizMap = function() {
 
     html += '">';
 
-    html += '<td><button class="checkbox" name="'+nodeConfig.type+'" value="'+aNode.name+'" title="'+lizDict['tree.button.checkbox']+'"></button>';
+    html += '<td><button class="btn checkbox" name="'+nodeConfig.type+'" value="'+aNode.name+'" title="'+lizDict['tree.button.checkbox']+'"></button>';
     html += '<span class="label" title="'+nodeConfig.abstract+'">'+nodeConfig.title+'</span>';
     html += '</td>';
 
@@ -603,13 +861,13 @@ var lizMap = function() {
     if (nodeConfig.link)
       legendLink = nodeConfig.link;
     if (legendLink != '' )
-      html += '<td><button class="link" name="link" title="'+lizDict['tree.button.link']+'" value="'+legendLink+'"/></td>';
+      html += '<td><button class="btn link" name="link" title="'+lizDict['tree.button.link']+'" value="'+legendLink+'"/></td>';
     else
       html += '<td></td>';
 
     var removeCache = '';
     if (nodeConfig.cached && nodeConfig.cached == 'True' && nodeConfig.type == 'layer' && ('removeCache' in config.options))
-      html += '<td><button class="removeCache" name="removeCache" title="'+lizDict['tree.button.removeCache']+'" value="'+aNode.name+'"/></td>';
+      html += '<td><button class="btn removeCache" name="removeCache" title="'+lizDict['tree.button.removeCache']+'" value="'+aNode.name+'"/></td>';
     else
       html += '<td></td>';
 
@@ -712,6 +970,14 @@ var lizMap = function() {
    * creating the map {<OpenLayers.Map>}
    */
   function createMap() {
+    // Insert or update projection liste
+    if ( lizProj4 ) {
+        for( var ref in lizProj4 ) {
+            if ( !(ref in Proj4js.defs) ) {
+              Proj4js.defs[ref]=lizProj4[ref];
+          }
+        }
+    }
     // get and define projection
     var proj = config.options.projection;
     if ( !(proj.ref in Proj4js.defs) )
@@ -762,12 +1028,13 @@ var lizMap = function() {
 
     // creating the map
     OpenLayers.Util.IMAGE_RELOAD_ATTEMPTS = 3; // Avoid some issues with tiles not displayed
+    OpenLayers.IMAGE_RELOAD_ATTEMPTS = 3;
     OpenLayers.Util.DEFAULT_PRECISION=20; // default is 14 : change needed to avoid rounding problem with cache
+
     map = new OpenLayers.Map('map'
       ,{
         controls:[
           new OpenLayers.Control.Navigation(),
-          new OpenLayers.Control.Permalink('permalink'),
           new OpenLayers.Control.ZoomBox({alwaysZoom:true})
         ]
         ,tileManager: null // prevent bug with OL 2.13 : white tiles on panning back
@@ -820,18 +1087,19 @@ var lizMap = function() {
            for (var i=0,len=layers.length; i<len; i++) {
              var layer = layers[i];
              var b = $('#switcher button[name="layer"][value="'+layer.name+'"]').first();
+             /*
              if (layer.inRange && b.button('option','disabled')) {
                var tr = b.parents('tr').first();
-               tr.removeClass('liz-state-disabled').find('button').button('enable');
+               tr.removeClass('disabled').find('button').button('enable');
                var ancestors = ancestorsOf(tr);
                $.each(ancestors,function(i,a) {
-                 $(a).removeClass('liz-state-disabled').find('button').button('enable');
+                 $(a).removeClass('disabled').find('button').button('enable');
                });
                if (tr.find('button[name="layer"]').button('option','icons').primary == 'liz-icon-check')
                  layer.setVisibility(true);
              } else if (!layer.inRange && !b.button('option','disabled')) {
                var tr = b.parents('tr').first();
-               tr.addClass('liz-state-disabled').find('button').first().button('disable');
+               tr.addClass('disabled').find('button').first().button('disable');
                if (tr.hasClass('liz-layer'))
                  tr.collapse();
                var ancestors = ancestorsOf(tr);
@@ -848,9 +1116,43 @@ var lizMap = function() {
           });
         });
                  if (count == checked)
-                   a.addClass('liz-state-disabled').find('button').first().button('disable');
+                   a.addClass('disabled').find('button').first().button('disable');
                  else
-                   a.removeClass('liz-state-disabled').find('button').button('enable');
+                   a.removeClass('disabled').find('button').button('enable');
+               });
+             }
+             * */
+             if (layer.inRange && b.hasClass('disabled')) {
+               var tr = b.parents('tr').first();
+               tr.removeClass('disabled').find('button').removeClass('disabled');
+               var ancestors = ancestorsOf(tr);
+               $.each(ancestors,function(i,a) {
+                 $(a).removeClass('disabled').find('button').removeClass('disabled');
+               });
+               if (tr.find('button[name="layer"]').hasClass('checked'))
+                 layer.setVisibility(true);
+             } else if (!layer.inRange && !b.hasClass('disabled')) {
+               var tr = b.parents('tr').first();
+               tr.addClass('disabled').find('button').addClass('disabled');
+               if (tr.hasClass('liz-layer'))
+                 tr.collapse();
+               var ancestors = ancestorsOf(tr);
+               $.each(ancestors,function(i,a) {
+                    a = $(a);
+                    var count = 0;
+                    var checked = 0;
+                    var aDesc = childrenOf(a);
+                    $.each(aDesc,function(j,trd) {
+                      $(trd).find('button.checkbox').each(function(i,b){
+                        if ($(b).hasClass('disabled'))
+                          checked++;
+                        count++;
+                      });
+                    });
+                 if (count == checked)
+                   a.addClass('disabled').find('button').addClass('disabled');
+                 else
+                   a.removeClass('disabled').find('button').removeClass('disabled');
                });
              }
            }
@@ -930,7 +1232,7 @@ var lizMap = function() {
     // add option list
     $('#locate-layer-'+cleanName(aName)).html(options);
   }
-  
+
 
   /**
    * Zoom to locate feature
@@ -942,7 +1244,7 @@ var lizMap = function() {
       return;
     layer = layer[0];
     layer.destroyFeatures();
-    
+
     // get locate by layer val
     var locate = config.locateByLayer[aName];
     var proj = new OpenLayers.Projection(locate.crs);
@@ -959,8 +1261,10 @@ var lizMap = function() {
       feat = format.read(feat)[0];
       feat.geometry.transform(proj, map.getProjection());
       map.zoomToExtent(feat.geometry.getBounds());
+      // Show geometry if asked
       if (locate.displayGeom == 'True')
         layer.addFeatures([feat]);
+
     }
   }
 
@@ -969,6 +1273,8 @@ var lizMap = function() {
    */
   function getLocateFeature(aName) {
     var locate = config.locateByLayer[aName];
+
+    // get fields to retrieve
     var fields = ['geometry',locate.fieldName];
     // if a filter field is defined
     if ('filterFieldName' in locate)
@@ -988,26 +1294,20 @@ var lizMap = function() {
           fields.push( vectorjoin.targetFieldName );
       }
     }
-    var typeName = aName.replace(' ','_');
+
+    // Get WFS url and options
+    var getFeatureUrlData = getVectorLayerWfsUrl( aName, null, null, 'extent' );
+    getFeatureUrlData['options']['PROPERTYNAME'] = fields.join(',');
+
     var layerName = cleanName(aName);
-    var wfsOptions = {
-      'SERVICE':'WFS'
-     ,'VERSION':'1.0.0'
-     ,'REQUEST':'GetFeature'
-     ,'TYPENAME':typeName
-     ,'PROPERTYNAME':fields.join(',')
-     ,'OUTPUTFORMAT':'GeoJSON'
-    };
-    var service = OpenLayers.Util.urlAppend(lizUrls.wms
-        ,OpenLayers.Util.getParameterString(lizUrls.params)
-    );
-    $.get(service
-        ,wfsOptions
-        ,function(data) {
+
+    // Get data
+    $.get( getFeatureUrlData['url'], getFeatureUrlData['options'], function(data) {
+
       var lConfig = config.layers[aName];
       locate['features'] = {};
       var features = data.features;
-      
+
       if ('filterFieldName' in locate) {
         // create filter combobox for the layer
         features.sort(function(a, b) {
@@ -1028,6 +1328,8 @@ var lizMap = function() {
             fOptions += '<option value="'+fValue+'">'+fValue+'</option>';
           }
         }
+
+
         // add filter values list
         $('#locate-layer-'+layerName).parent().before('<div class="locate-layer"><select id="locate-layer-'+layerName+'-'+locate.filterFieldName+'">'+fOptions+'</select></div><br/>');
         // listen to filter select changes
@@ -1042,6 +1344,7 @@ var lizMap = function() {
         });
         // add combobox to the filter select
         $('#locate-layer-'+layerName+'-'+locate.filterFieldName).combobox({
+          position: { my : "right top", at: "right bottom" },
           "selected": function(evt, ui){
             if ( ui.item ) {
               var self = $(this);
@@ -1052,6 +1355,7 @@ var lizMap = function() {
             }
           }
         });
+
         // add place holder to the filter combobox input
         $('#locate-layer-'+layerName+'-'+locate.filterFieldName+' ~ span > input').attr('placeholder', filterPlaceHolder).val('');
         updateSwitcherSize();
@@ -1124,7 +1428,8 @@ var lizMap = function() {
         return;
       });
       $('#locate-layer-'+layerName).combobox({
-		"minLength": ('minLength' in locate) ? locate.minLength : 0,
+    "minLength": ('minLength' in locate) ? locate.minLength : 0,
+        "position": { my : "right top", at: "right bottom" },
         "selected": function(evt, ui){
           if ( ui.item ) {
             var self = $(this);
@@ -1149,9 +1454,297 @@ var lizMap = function() {
   /**
    * create the layer switcher
    */
+  function getSwitcherLi(aNode, aLevel) {
+    var nodeConfig = aNode.config;
+    var html = '<li id="'+nodeConfig.type+'-'+aNode.name+'">';
+    /*
+    html += ' class="liz-'+nodeConfig.type;
+    if (aParent)
+      html += ' child-of-group-'+aParent.name;
+    if (('children' in aNode) && aNode['children'].length!=0)
+      html += ' expanded parent';
+    if ( 'displayInLegend' in nodeConfig && nodeConfig.displayInLegend == 'False' )
+      html += ' liz-hidden';
+    html += '">';
+    */
+    // add checkbox to display children or legend image
+    html += '<input type="checkbox" id="open'+nodeConfig.type+aNode.name+'" name="open'+nodeConfig.type+aNode.name+'" checked="checked"></input><label for="open'+nodeConfig.type+aNode.name+'">&nbsp;</label>';
+    // add button to manage visibility
+    html += '<button class="checkbox" name="'+nodeConfig.type+'-'+aNode.name+'-visibility" value="0" title="'+lizDict['tree.button.checkbox']+'"></button>';
+    // add layer title
+    html += '<span class="label" title="'+nodeConfig.abstract+'">'+nodeConfig.title+'</span>';
+    /*
+    html += '<td><button class="checkbox" name="'+nodeConfig.type+'" value="'+aNode.name+'" title="'+lizDict['tree.button.checkbox']+'"></button>';
+    html += '<span class="label" title="'+nodeConfig.abstract+'">'+nodeConfig.title+'</span>';
+    html += '</td>';
+    */
+    /*
+    html += '<td>';
+    if (nodeConfig.type == 'layer')
+      html += '<span class="loading">&nbsp;</span>';
+    html += '</td>';
+    */
+    /*
+    var legendLink = '';
+    if (nodeConfig.link)
+      legendLink = nodeConfig.link;
+    if (legendLink != '' )
+      html += '<td><button class="link" name="link" title="'+lizDict['tree.button.link']+'" value="'+legendLink+'"/></td>';
+    else
+      html += '<td></td>';
+    */
+    /*
+    var removeCache = '';
+    if (nodeConfig.cached && nodeConfig.cached == 'True' && nodeConfig.type == 'layer' && ('removeCache' in config.options))
+      html += '<td><button class="removeCache" name="removeCache" title="'+lizDict['tree.button.removeCache']+'" value="'+aNode.name+'"/></td>';
+    else
+      html += '<td></td>';
+    */
+
+    //html += '</tr>';
+
+    if (('children' in aNode) && aNode['children'].length!=0) {
+      html += getSwitcherUl(aNode, aLevel+1);
+    } else if (nodeConfig.type == 'layer'
+           && (!nodeConfig.noLegendImage || nodeConfig.noLegendImage != 'True')) {
+      var url = getLayerLegendGraphicUrl(aNode.name, false);
+      html += '<ul id="legend-layer-'+aNode.name+'">';
+      html += '<li><div><img src="'+url+'"/></div></li>';
+      html += '</ul>';
+      /*
+      html += '<tr id="legend-'+aNode.name+'" class="child-of-layer-'+aNode.name+' legendGraphics">';
+      html += '<td colspan="2"><div class="legendGraphics"><img src="'+url+'"/></div></td>';
+      html += '</tr>';
+      */
+    }
+    html += '</li>';
+    return html;
+  }
+  function getSwitcherUl(aNode, aLevel) {
+    var html = '<ul class="level'+aLevel+'">';
+    var children = aNode.children;
+    for (var i=0, len=children.length; i<len; i++) {
+      var child = children[i];
+      html += getSwitcherLi(child,aLevel);
+      /*
+      if (aLevel == 0)
+        html += getSwitcherLi(child);
+      else
+        html += getSwitcherLi(child,aNode);
+      */
+    }
+    html += '</ul>';
+    return html;
+  }
+  function createSwitcherNew() {
+    $('#switcher-layers').html(getSwitcherUl(tree,0));
+    var projection = map.projection;
+
+    // get the baselayer select content
+    // and adding baselayers to the map
+    //var select = '<select class="baselayers">';
+    var select = [];
+    baselayers.reverse();
+    for (var i=0,len=baselayers.length; i<len; i++) {
+      var baselayer = baselayers[i]
+      baselayer.units = projection.proj.units;
+      map.addLayer(baselayer);
+      var blConfig = config.layers[baselayer.name];
+      if (blConfig)
+        select += '<option value="'+blConfig.name+'">'+blConfig.title+'</option>';
+      else
+        select += '<option value="'+baselayer.name+'">'+baselayer.name+'</option>';
+      /*
+      if (blConfig)
+        select.push('<input type="radio" name="baselayers" value="'+blConfig.name+'"><span class="baselayer-radio-label">'+blConfig.title+'</span></input>');
+      else
+        select.push('<input type="radio" name="baselayers" value="'+baselayer.name+'"><span class="baselayer-radio-label">'+baselayer.name+'</span></input>');
+        */
+    }
+    //select += '</select>';
+    //select = select.join('<br/>');
+
+    if (baselayers.length!=0) {
+      // active the select element for baselayers
+      $('#switcher-baselayer-select').append(select);
+      $('#switcher-baselayer-select')
+        .change(function() {
+          var val = $(this).val();
+          var blName = map.getLayersByName(val)[0];
+          map.setBaseLayer( blName );
+
+          // Trigger event
+          lizMap.events.triggerEvent(
+            "lizmapbaselayerchanged",
+            { 'layer': blName}
+          );
+
+          $(this).blur();
+        });
+      // Hide switcher-baselayer if only one base layer inside
+      if (baselayers.length==1)
+        $('#switcher-baselayer').hide();
+    } else {
+      // hide elements for baselayers
+      $('#switcher-baselayer').hide();
+      map.addLayer(new OpenLayers.Layer.Vector('baselayer',{
+        maxExtent:map.maxExtent
+       ,maxScale: map.maxScale
+       ,minScale: map.minScale
+       ,numZoomLevels: map.numZoomLevels
+       ,scales: map.scales
+       ,projection: map.projection
+       ,units: map.projection.proj.units
+      }));
+    }
+
+    // adding layers to the map
+    layers.sort(function(a, b) {
+      if (a.order == b.order)
+        return 0;
+      return a.order > b.order ? 1 : -1;
+    });
+    layers.reverse();
+    for (var i=0,len=layers.length; i<len; i++) {
+      var l = layers[i];
+      l.units = projection.proj.units;
+      /*
+      l.events.on({
+        loadstart: function(evt) {
+          $('#layer-'+evt.object.name+' span.loading').addClass('loadstart');
+        },
+        loadend: function(evt) {
+          $('#layer-'+evt.object.name+' span.loading').removeClass('loadstart');
+        }
+      });
+      */
+      // Add only layers with geometry
+      var aConfig = config.layers[l.params['LAYERS']];
+      if( 'geometryType' in aConfig &&
+        ( aConfig.geometryType == "none" || aConfig.geometryType == "unknown" || aConfig.geometryType == "" )
+      ){
+        continue;
+      }
+      map.addLayer(l);
+      /*
+      if (l.isVisible)
+        $('#switcher button.checkbox[name="layer"][value="'+l.name+'"]').click();
+      */
+    }
+
+    // Add Locate by layer
+    if ('locateByLayer' in config) {
+      var locateContent = [];
+      for (var lname in config.locateByLayer) {
+        var lConfig = config.layers[lname];
+        var html = '<div class="locate-layer">';
+        html += '<select id="locate-layer-'+cleanName(lname)+'" class="label">';
+        html += '<option>'+lConfig.title+'...</option>';
+        html += '</select>';
+        html += '</div>';
+        //constructing the select
+        locateContent.push(html);
+      }
+      $('#locate .menu-content').html(locateContent.join('<br/>'));
+      map.addLayer(new OpenLayers.Layer.Vector('locatelayer',{
+        styleMap: new OpenLayers.StyleMap({
+          pointRadius: 6,
+          fill: false,
+          stroke: true,
+          strokeWidth: 3,
+          strokeColor: 'yellow'
+        })
+      }));
+      var service = OpenLayers.Util.urlAppend(lizUrls.wms
+          ,OpenLayers.Util.getParameterString(lizUrls.params)
+      );
+      $.get(service, {
+          'SERVICE':'WFS'
+         ,'VERSION':'1.0.0'
+         ,'REQUEST':'GetCapabilities'
+      }, function(xml) {
+        var featureTypes = $(xml).find('FeatureType');
+        if (featureTypes.length == 0 ){
+          config.locateByLayer = {};
+          $('#button-locate').parent().remove();
+          $('#locate-menu').remove();
+          updateSwitcherSize();
+        } else {
+          featureTypes.each( function(){
+            var self = $(this);
+            var typeName = self.find('Name').text();
+            var lname = '';
+            if (typeName in config.locateByLayer)
+              lname = typeName
+            else {
+              for (lbl in config.locateByLayer) {
+                if (lbl.replace(' ','_') == typeName)
+                  lname = lbl;
+              }
+            }
+            if (lname != '') {
+              var locate = config.locateByLayer[lname];
+              locate['crs'] = self.find('SRS').text();
+              if ( locate.crs in Proj4js.defs )
+                new OpenLayers.Projection(locate.crs);
+              else
+                $.get(service, {
+                  'REQUEST':'GetProj4'
+                 ,'authid': locate.crs
+                }, function ( aText ) {
+                  Proj4js.defs[locate.crs] = aText;
+                  new OpenLayers.Projection(locate.crs);
+                }, 'text');
+              var bbox = self.find('LatLongBoundingBox');
+              locate['bbox'] = [
+                parseFloat(bbox.attr('minx'))
+               ,parseFloat(bbox.attr('miny'))
+               ,parseFloat(bbox.attr('maxx'))
+               ,parseFloat(bbox.attr('maxy'))
+              ];
+            }
+          } );
+
+          // get joins
+          for (var lName in config.locateByLayer) {
+            var locate = config.locateByLayer[lName];
+            if ('vectorjoins' in locate) {
+              var vectorjoins = locate['vectorjoins'];
+              locate['joinFieldName'] = vectorjoins['targetFieldName'];
+              for (var jName in config.locateByLayer) {
+                var jLocate = config.locateByLayer[jName];
+                if (jLocate.layerId == vectorjoins.joinLayerId) {
+                  locate['joinLayer'] = jName;
+                  jLocate['joinFieldName'] = vectorjoins['joinFieldName'];
+                  jLocate['joinLayer'] = lName;
+                }
+              }
+            }
+          }
+
+          // get features
+          for (var lname in config.locateByLayer) {
+            getLocateFeature(lname);
+          }
+          $('#locate-clear').click(function() {
+            var layer = map.getLayersByName('locatelayer')[0];
+            layer.destroyFeatures();
+            $('#locate select').val('-1');
+          });
+          $('#locate button.btn-locate-clear').click(function() {
+            $('#button-locate').click();
+            return false;
+          });
+        }
+      },'xml');
+      //$('#locate-menu').show();
+    }
+
+    $('#switcher span.label').tooltip();
+  }
   function createSwitcher() {
     // set the switcher content
-    $('#switcher').html(getSwitcherNode(tree,0));
+    $('#switcher-layers').html(getSwitcherNode(tree,0));
     $('#switcher table.tree').treeTable({
       onNodeShow: function() {
         //updateSwitcherSize();
@@ -1166,6 +1759,24 @@ var lizMap = function() {
         //updateSwitcherSize();
       }
     });
+    $("#switcher table.tree tbody").on("mousedown", "tr td span", function() {
+      var wasSelected = $(this).parents('tr:first').hasClass('selected');
+      var isSelected = !wasSelected;
+      $("#switcher table.tree tbody tr").removeClass('selected');
+      $(this).parents('tr:first').toggleClass("selected", isSelected);
+      $('#switcher-layers-actions').toggleClass('active', isSelected);
+
+      // Trigger event
+      var id = $(this).parents('tr:first').attr('id');
+      var itemType = id.split('-')[0];
+      var itemName = id.split('-')[1];
+      lizMap.events.triggerEvent(
+        "lizmapswitcheritemselected",
+        { 'name': itemName, 'type': itemType, 'selected': isSelected}
+      );
+
+    });
+
     $('#close-menu .ui-icon-close-menu').click(function(){
       $('#menu').hide();
       if($('#content').hasClass('mobile')) {
@@ -1243,38 +1854,35 @@ var lizMap = function() {
   };
 
     // activate checkbox buttons
-    $('#switcher button.checkbox').button({
-      //icons:{primary:'liz-icon-check'},
-      icons:{primary:''},
-      text:false
-    })
-    .removeClass( "ui-corner-all" )
+    $('#switcher button.checkbox')
     .click(function(){
       var self = $(this);
-      if (self.attr('aria-disabled')=='true')
+      if (self.hasClass('disabled'))
         return false;
-      var icons = self.button('option','icons');
       var descendants = [self.parents('tr').first()];
       descendants = descendants.concat(descendantsOf($(descendants[0])));
-      if (icons.primary != 'liz-icon-check') {
+      if ( !self.hasClass('checked') ) {
         $.each(descendants,function(i,tr) {
-          $(tr).find('button.checkbox').button('option','icons',{primary:'liz-icon-check'});
+          $(tr).find('button.checkbox').removeClass('partial').addClass('checked');
           $(tr).find('button.checkbox[name="layer"]').each(function(i,b){
             var name = $(b).val();
             var layer = map.getLayersByName(name)[0];
-            layer.setVisibility(true);
+            if( typeof layer !== 'undefined' )
+              layer.setVisibility(true);
           });
         });
+        self.removeClass('partial').addClass('checked');
       } else {
         $.each(descendants,function(i,tr) {
-          $(tr).find('button.checkbox').button('option','icons',{primary:''});
+          $(tr).find('button.checkbox').removeClass('partial').removeClass('checked');
           $(tr).find('button.checkbox[name="layer"]').each(function(i,b){
             var name = $(b).val();
             var layer = map.getLayersByName(name)[0];
-            layer.setVisibility(false);
+            if( typeof layer !== 'undefined' )
+              layer.setVisibility(false);
           });
         });
-        self.button('option','icons',{primary:''});
+        self.removeClass('partial').removeClass('checked');
       }
       var ancestors = ancestorsOf(self.parents('tr').first());
       $.each(ancestors,function(i,tr) {
@@ -1285,33 +1893,29 @@ var lizMap = function() {
         var trDesc = childrenOf(tr);
         $.each(trDesc,function(j,trd) {
           $(trd).find('button.checkbox').each(function(i,b){
-            var icons = $(b).button('option','icons');
-            if (icons.primary == 'liz-icon-check')
+            b = $(b);
+            if ( b.hasClass('checked') )
               checked++;
-            else if (icons.primary == 'liz-icon-partial-check')
+            else if ( b.hasClass('partial')&& b.hasClass('checked') )
               pchecked++;
             count++;
           });
         });
         var trButt = tr.find('button.checkbox');
         if (count==checked)
-          trButt.button('option','icons',{primary:'liz-icon-check'});
+          trButt.removeClass('partial').addClass('checked');
         else if (checked==0 && pchecked==0)
-          trButt.button('option','icons',{primary:''});
+          trButt.removeClass('partial').removeClass('checked');
         else
-          trButt.button('option','icons',{primary:'liz-icon-partial-check'});
+          trButt.addClass('partial').addClass('checked');
       });
     });
 
     // activate link buttons
-    $('#switcher button.link').button({
-      icons:{primary:'liz-icon-info'},
-      text:false
-    })
-  .removeClass( "ui-corner-all" )
+    $('#switcher button.link')
     .click(function(){
       var self = $(this);
-      if (self.attr('aria-disabled')=='true')
+      if (self.hasClass('disabled'))
         return false;
       var windowLink = self.val();
       // Test if the link is internal
@@ -1327,14 +1931,10 @@ var lizMap = function() {
     });
 
     // Activate removeCache button
-    $('#switcher button.removeCache').button({
-      icons:{primary:'liz-remove-cache'},
-      text:false
-    })
-  .removeClass( "ui-corner-all" )
+    $('#switcher button.removeCache')
     .click(function(){
       var self = $(this);
-      if (self.attr('aria-disabled')=='true')
+      if (self.hasClass('disabled'))
         return false;
       var removeCacheServerUrl = OpenLayers.Util.urlAppend(
          lizUrls.removeCache
@@ -1374,19 +1974,27 @@ var lizMap = function() {
 
     if (baselayers.length!=0) {
       // active the select element for baselayers
-      $('#baselayer-select').append(select);
-      $('#baselayer-select')
+      $('#switcher-baselayer-select').append(select);
+      $('#switcher-baselayer-select')
         .change(function() {
           var val = $(this).val();
-          map.setBaseLayer(map.getLayersByName(val)[0]);
+          var blName = map.getLayersByName(val)[0];
+          map.setBaseLayer( blName );
+
+          // Trigger event
+          lizMap.events.triggerEvent(
+            "lizmapbaselayerchanged",
+            { 'layer': blName}
+          );
+
           $(this).blur();
         });
-      // Hide baselayer-menu if only one base layer inside
+      // Hide switcher-baselayer if only one base layer inside
       if (baselayers.length==1)
-        $('#baselayer-menu').hide();
+        $('#switcher-baselayer').hide();
     } else {
       // hide elements for baselayers
-      $('#baselayer-menu').hide();
+      $('#switcher-baselayer').hide();
       map.addLayer(new OpenLayers.Layer.Vector('baselayer',{
         maxExtent:map.maxExtent
        ,maxScale: map.maxScale
@@ -1416,6 +2024,13 @@ var lizMap = function() {
           $('#layer-'+evt.object.name+' span.loading').removeClass('loadstart');
         }
       });
+      // Add only layers with geometry
+      var aConfig = config.layers[l.params['LAYERS']];
+      if( 'geometryType' in aConfig &&
+        ( aConfig.geometryType == "none" || aConfig.geometryType == "unknown" || aConfig.geometryType == "" )
+      ){
+        continue;
+      }
       map.addLayer(l);
       if (l.isVisible)
         $('#switcher button.checkbox[name="layer"][value="'+l.name+'"]').click();
@@ -1442,7 +2057,7 @@ var lizMap = function() {
         //constructing the select
         locateContent.push(html);
       }
-      $('#locate').html(locateContent.join('<br/>'));
+      $('#locate .menu-content').html(locateContent.join('<br/>'));
       map.addLayer(new OpenLayers.Layer.Vector('locatelayer',{
         styleMap: new OpenLayers.StyleMap({
           pointRadius: 6,
@@ -1463,7 +2078,7 @@ var lizMap = function() {
         var featureTypes = $(xml).find('FeatureType');
         if (featureTypes.length == 0 ){
           config.locateByLayer = {};
-          $('#toggleLocate').parent().remove();
+          $('#button-locate').parent().remove();
           $('#locate-menu').remove();
           updateSwitcherSize();
         } else {
@@ -1519,7 +2134,7 @@ var lizMap = function() {
                       'targetFieldName': vectorjoin['joinFieldName'],
                       'joinFieldName': vectorjoin['targetFieldName'],
                       'joinLayerId': locate.layerId,
-                      'joinLayer': lName 
+                      'joinLayer': lName
                   }];
                 }
               }
@@ -1530,17 +2145,22 @@ var lizMap = function() {
           for (var lname in config.locateByLayer) {
             getLocateFeature(lname);
           }
-          $('#locate-menu button.btn-locate-clear').click(function() {
+          $('#locate-clear').click(function() {
             var layer = map.getLayersByName('locatelayer')[0];
             layer.destroyFeatures();
             $('#locate select').val('-1');
           });
+          $('#locate button.btn-locate-clear').click(function() {
+            $('#button-locate').click();
+            return false;
+          });
         }
       },'xml');
-      $('#locate-menu').show();
+      //$('#locate-menu').show();
     }
 
     $('#switcher span.label').tooltip();
+
   }
 
   /**
@@ -1576,7 +2196,7 @@ var lizMap = function() {
         res = resW;
 
       map.addControl(new OpenLayers.Control.OverviewMap(
-        {div: document.getElementById("overviewmap"),
+        {div: document.getElementById("overview-map"),
          size : new OpenLayers.Size(220, 110),
          mapOptions:{maxExtent:map.maxExtent
                   ,maxResolution:"auto"
@@ -1592,38 +2212,45 @@ var lizMap = function() {
         }
       ));
     } else {
-      $('#overviewmap').hide();
-      $('#overview-bar button').hide();
+      $('#overview-map').hide();
+      $('#overview-toggle').hide().removeClass('active');
     }
 
     /*
-    $('#overviewmap .ui-dialog-titlebar-close').button({
+    $('#overview-map .ui-dialog-titlebar-close').button({
       text:false,
       icons:{primary: "ui-icon-closethick"}
     }).click(function(){
-      $('#overviewmap').toggle();
+      $('#overview-map').toggle();
       return false;
     });
     */
-    $('#overview-bar .button').button({
+    $('#overview-toggle')/*.button({
       text:false,
       icons:{primary: "ui-icon-triangle-1-n"}
     })
-    .removeClass( "ui-corner-all" )
+    .removeClass( "ui-corner-all" )*/
     .click(function(){
+      var self = $(this);
+      if ( self.hasClass('active') )
+        self.removeClass('active');
+      else
+        self.addClass('active');
+        /*
       var self = $(this);
       var icons = self.button('option','icons');
       if (icons.primary == 'ui-icon-triangle-1-n')
         self.button('option','icons',{primary:'ui-icon-triangle-1-s'});
       else
         self.button('option','icons',{primary:'ui-icon-triangle-1-n'});
-      $('#overviewmap').toggle();
+        * */
+      $('#overview-map').toggle();
       return false;
     });
 
     map.addControl(new OpenLayers.Control.Scale(document.getElementById('scaletext')));
     map.addControl(new OpenLayers.Control.ScaleLine({div:document.getElementById('scaleline')}));
-    
+
     var mpUnitSelect = $('#mouseposition-bar > select');
     var mapUnits = map.projection.getUnits();
     if ( mapUnits == 'degrees' ) {
@@ -1652,8 +2279,10 @@ var lizMap = function() {
     });
 
     if (config.options.hasOverview)
-      if(!mCheckMobile())
-        $('#overviewmap').show();
+      if(!mCheckMobile()) {
+        $('#overview-map').show();
+        $('#overview-toggle').show().addClass('active');
+      }
   }
 
   /**
@@ -1671,49 +2300,35 @@ var lizMap = function() {
           $('#zoom-in-max-msg').show('slow', function() {
             window.setTimeout(function(){$('#zoom-in-max-msg').hide('slow')},1000)
           });
-        } else
+        } else if ( ui.value != map.zoom )
           map.zoomTo(ui.value);
       }
     });
-    $('#navbar button.pan').button({
-      text:false,
-      icons:{primary: "ui-icon-pan"}
-    }).removeClass("ui-corner-all")
-    .click(function(){
+    $('#navbar button.pan').click(function(){
       var self = $(this);
-      if (self.hasClass('ui-state-select'))
+      if (self.hasClass('active'))
         return false;
-      $('#navbar button.zoom').removeClass('ui-state-select');
-      self.addClass('ui-state-select');
+      $('#navbar button.zoom').removeClass('active');
+      self.addClass('active');
       map.getControlsByClass('OpenLayers.Control.ZoomBox')[0].deactivate();
       map.getControlsByClass('OpenLayers.Control.Navigation')[0].activate();
       map.getControlsByClass('OpenLayers.Control.WMSGetFeatureInfo')[0].activate();
     });
-    $('#navbar button.zoom').button({
-      text:false,
-      icons:{primary: "ui-icon-zoom"}
-    }).removeClass("ui-corner-all")
-    .click(function(){
+    $('#navbar button.zoom').click(function(){
       var self = $(this);
-      if (self.hasClass('ui-state-select'))
+      if (self.hasClass('active'))
         return false;
-      $('#navbar button.pan').removeClass('ui-state-select');
-      self.addClass('ui-state-select');
+      $('#navbar button.pan').removeClass('active');
+      self.addClass('active');
       map.getControlsByClass('OpenLayers.Control.Navigation')[0].deactivate();
       map.getControlsByClass('OpenLayers.Control.WMSGetFeatureInfo')[0].deactivate();
       map.getControlsByClass('OpenLayers.Control.ZoomBox')[0].activate();
     });
-    $('#navbar button.zoom-extent').button({
-      text:false,
-      icons:{primary: "ui-icon-zoom-extent"}
-    }).removeClass("ui-corner-all")
+    $('#navbar button.zoom-extent')
     .click(function(){
       map.zoomToExtent(map.initialExtent);
     });
-    $('#navbar button.zoom-in').button({
-      text:false,
-      icons:{primary: "ui-icon-zoom-in"}
-    }).removeClass("ui-corner-all")
+    $('#navbar button.zoom-in')
     .click(function(){
       if (map.getZoom() == map.baseLayer.numZoomLevels-1)
           $('#zoom-in-max-msg').show('slow', function() {
@@ -1722,10 +2337,7 @@ var lizMap = function() {
       else
         map.zoomIn();
     });
-    $('#navbar button.zoom-out').button({
-      text:false,
-      icons:{primary: "ui-icon-zoom-out"}
-    }).removeClass("ui-corner-all")
+    $('#navbar button.zoom-out')
     .click(function(){
       map.zoomOut();
     });
@@ -1733,51 +2345,43 @@ var lizMap = function() {
         && config.options['zoomHistory'] == "True") {
       var hCtrl =  new OpenLayers.Control.NavigationHistory();
       map.addControls([hCtrl]);
-      $('#navbar div.history button.previous').button({
-        text:false,
-        icons:{primary: "ui-icon-previous"}
-      }).removeClass("ui-corner-all")
-      .click(function(){
+      $('#navbar button.previous').click(function(){
         var ctrl = map.getControlsByClass('OpenLayers.Control.NavigationHistory')[0];
         if (ctrl && ctrl.previousStack.length != 0)
           ctrl.previousTrigger();
         if (ctrl && ctrl.previous.active)
-          $(this).addClass('ui-state-usable');
+          $(this).removeClass('disabled');
         else
-          $(this).removeClass('ui-state-usable');
+          $(this).addClass('disabled');
         if (ctrl && ctrl.next.active)
-          $('#navbar div.history button.next').addClass('ui-state-usable');
+          $('#navbar button.next').removeClass('disabled');
         else
-          $('#navbar div.history button.next').removeClass('ui-state-usable');
+          $('#navbar button.next').addClass('disabled');
       });
-      $('#navbar div.history button.next').button({
-        text:false,
-        icons:{primary: "ui-icon-next"}
-      }).removeClass("ui-corner-all")
-      .click(function(){
+      $('#navbar button.next').click(function(){
         var ctrl = map.getControlsByClass('OpenLayers.Control.NavigationHistory')[0];
         if (ctrl && ctrl.nextStack.length != 0)
           ctrl.nextTrigger();
         if (ctrl && ctrl.next.active)
-          $(this).addClass('ui-state-usable');
+          $(this).removeClass('disabled');
         else
-          $(this).removeClass('ui-state-usable');
+          $(this).addClass('disabled');
         if (ctrl && ctrl.previous.active)
-          $('#navbar div.history button.previous').addClass('ui-state-usable');
+          $('#navbar button.previous').removeClass('disabled');
         else
-          $('#navbar div.history button.previous').removeClass('ui-state-usable');
+          $('#navbar button.previous').addClass('disabled');
       });
       map.events.on({
         moveend : function() {
           var ctrl = map.getControlsByClass('OpenLayers.Control.NavigationHistory')[0];
-          if (ctrl && ctrl.previousStack.length > 1)
-            $('#navbar div.history button.previous').addClass('ui-state-usable');
+          if (ctrl && ctrl.previousStack.length != 0)
+            $('#navbar button.previous').removeClass('disabled');
           else
-            $('#navbar div.history button.previous').removeClass('ui-state-usable');
-          if (ctrl && ctrl.nextStack.length > 0)
-            $('#navbar div.history button.next').addClass('ui-state-usable');
+            $('#navbar button.previous').addClass('disabled');
+          if (ctrl && ctrl.nextStack.length != 0)
+            $('#navbar button.next').removeClass('disabled');
           else
-            $('#navbar div.history button.next').removeClass('ui-state-usable');
+            $('#navbar button.next').addClass('disabled');
         }
       });
     } else {
@@ -1799,16 +2403,13 @@ var lizMap = function() {
         && configOptions['print'] == 'True')
       addPrintControl();
     else
-      $('#togglePrint').parent().remove();
+      $('#button-print').parent().remove();
 
     if ( ('geolocation' in configOptions)
         && configOptions['geolocation'] == 'True')
       addGeolocationControl();
     else
-      $('#toggleGeolocate').parent().remove();
-
-
-    addEditionControls();
+      $('#button-geolocation').parent().remove();
 
     if ( ('measure' in configOptions)
         && configOptions['measure'] == 'True')
@@ -1827,6 +2428,10 @@ var lizMap = function() {
 
   }
 
+  /**
+   * PRIVATE function: deactivateToolControls
+   * Deactivate Openlayers controls
+   */
   function deactivateToolControls( evt ) {
     for (var id in controls) {
       var ctrl = controls[id];
@@ -1836,6 +2441,77 @@ var lizMap = function() {
         ctrl.deactivate();
     }
     return true;
+  }
+
+
+  /**
+   * PRIVATE function: createPermalink
+   * create the permalink tool
+   */
+  function createPermalink() {
+    var configOptions = config.options;
+
+    var pLink = new OpenLayers.Control.Permalink(
+      'permalink',
+      null,
+      {
+        "createParams": createPermalinkArgs
+      }
+    );
+    map.addControl( pLink );
+
+    $('.btn-permalink-clear').click(function(){
+      $('#button-permaLink').click();
+      return false;
+    });
+
+  }
+
+  function createPermalinkArgs(){
+
+    var args = OpenLayers.Control.Permalink.prototype.createParams.apply(
+        this, arguments
+    );
+
+    // Replace zoom, lat, lon by bbox
+    delete args['zoom'];
+    delete args['lat'];
+    delete args['lon'];
+    args['bbox'] = map.getExtent().toBBOX();
+    args['crs'] = map.projection.projCode;
+
+    // Add layer filter and style if needed
+    var filter = [];
+    var style = [];
+    for ( var  lName in config.layers ) {
+
+      var lConfig = config.layers[lName];
+      if ( !('request_params' in lConfig)
+        || lConfig['request_params'] == null )
+          continue;
+      var requestParams = lConfig['request_params'];
+      if ( ('filter' in lConfig['request_params'])
+        && lConfig['request_params']['filter'] != null
+        && lConfig['request_params']['filter'] != "" ) {
+          filter.push( lConfig['request_params']['filter'] );
+      }
+
+    }
+    if ( filter.length > 0 )
+      args['filter'] = filter.join(';');
+
+    // Layers style
+    for (var i=0,len=layers.length; i<len; i++) {
+      var layer = layers[i];
+      if( layer.isVisible && layer.params['STYLES'] != 'default'){
+        style.push( layer.name + ':' + layer.params['STYLES'] );
+      }
+    }
+    if ( style.length > 0 )
+      args['layerStyles'] = style.join(';');
+
+    return args;
+
   }
 
   function addFeatureInfo() {
@@ -1872,12 +2548,19 @@ var lizMap = function() {
                         );
                       popup.panMapIfOutOfView = true;
                       map.addPopup(popup);
+
+                      // Trigger event
+                      lizMap.events.triggerEvent(
+                        "lizmappopupdisplayed"
+                      );
+
                       popup.verifySize();
                       // Hide navbar and overview in mobile mode
                       if(mCheckMobile()){
                         $('#navbar').hide();
                         $('#overview-box').hide();
                       }
+
                     }
                 }
             }
@@ -1919,55 +2602,115 @@ var lizMap = function() {
         }
         return layers;
      };
+     lizMap.events.on({
+        "layerFilterParamChanged": function( evt ) {
+            var filter = [];
+            for ( var  lName in config.layers ) {
+                var lConfig = config.layers[lName];
+                if ( lConfig.popup != 'True' )
+                    continue;
+                if ( !('request_params' in lConfig)
+                  || lConfig['request_params'] == null )
+                    continue;
+                var requestParams = lConfig['request_params'];
+                if ( ('filter' in lConfig['request_params'])
+                  && lConfig['request_params']['filter'] != null
+                  && lConfig['request_params']['filter'] != "" ) {
+                    filter.push( lConfig['request_params']['filter'] );
+                }
+            }
+            info.vendorParams['filter'] = filter.join(';');
+
+        }
+     });
      map.addControl(info);
      info.activate();
      return info;
   }
 
   function getPrintScale( aScales ) {
-	  var scale = map.getScale();
-	  var scaleIdx = aScales.indexOf( scale );
-	  if ( scaleIdx == -1 ) {
-		var s=0, slen=aScales.length;
-		while ( scaleIdx == -1 && s<slen ) {
-			if ( scale > aScales[s] )
-			  scaleIdx = s;
-			else
-			 s++;
-		}
-		if( s == slen ) {
-		  scale = aScales[slen-1];
-		} else {
-		  scale = aScales[scaleIdx];
-		}
-	  }
-	  return scale;
+      var newScales = [];
+      for ( var i=0, len = aScales.length; i<len; i++ ) {
+          newScales.push( parseFloat(aScales[i]) );
+      }
+      newScales.sort(function(a,b){return b-a;});
+    var scale = map.getScale();
+    var scaleIdx = newScales.indexOf( scale );
+    if ( scaleIdx == -1 ) {
+    var s=0, slen=newScales.length;
+    while ( scaleIdx == -1 && s<slen ) {
+      if ( scale > newScales[s] )
+        scaleIdx = s;
+      else
+       s++;
+    }
+    if( s == slen ) {
+      scale = newScales[slen-1];
+    } else {
+      scale = newScales[scaleIdx];
+    }
+    }
+    return scale;
   }
 
   function drawPrintBox( aLayout, aLayer, aScale ) {
-	  var center = map.getCenter();
-	  var size = aLayout.size;
-	  var units = map.getUnits();
-	  var unitsRatio = OpenLayers.INCHES_PER_UNIT[units];
-	  var w = size.width / 72 / unitsRatio * aScale / 2;
-	  var h = size.height / 72 / unitsRatio * aScale / 2;
-	  var bounds = new OpenLayers.Bounds(center.lon - w, center.lat - h,
-		center.lon + w, center.lat + h);
-	  var geom = bounds.toGeometry();
-	  var feat = aLayer.features[0];
-	  geom.id = feat.geometry.id;
-	  feat.geometry = geom;
-      aLayer.drawFeature(feat);
-	  return true;
+    var size = aLayout.size;
+    var units = map.getUnits();
+    var unitsRatio = OpenLayers.INCHES_PER_UNIT[units];
+    var w = size.width / 72 / unitsRatio * aScale / 2;
+    var h = size.height / 72 / unitsRatio * aScale / 2;
+    if ( aLayer.features.length == 0 ) {
+        var center = map.getCenter();
+        var bounds = new OpenLayers.Bounds(center.lon - w, center.lat - h,
+            center.lon + w, center.lat + h);
+        var geom = bounds.toGeometry();
+        aLayer.addFeatures([
+            new OpenLayers.Feature.Vector( geom )
+        ]);
+    } else {
+        var feat = aLayer.features[0];
+        var center = feat.geometry.getBounds().getCenterLonLat();
+        var bounds = new OpenLayers.Bounds(center.lon - w, center.lat - h,
+            center.lon + w, center.lat + h);
+        var geom = bounds.toGeometry();
+        geom.id = feat.geometry.id;
+        feat.geometry = geom;
+        aLayer.drawFeature(feat);
+    }
+    return true;
   }
 
+  function getPrintGridInterval( aLayout, aScale, aScales ) {
+    var size = aLayout.size;
+    var units = map.getUnits();
+    var unitsRatio = OpenLayers.INCHES_PER_UNIT[units];
+    var w = size.width / 72 / unitsRatio * aScale;
+    var h = size.height / 72 / unitsRatio * aScale;
+
+      var refScale = w > h ? w : h;
+      var newScales = [];
+      for ( var i=0, len = aScales.length; i<len; i++ ) {
+          newScales.push( parseFloat(aScales[i]) );
+      }
+      newScales.sort(function(a,b){return b-a;});
+      var theScale = newScales[0];
+      //~ console.log( 'theScale: '+theScale );
+      for ( var i=0, len=newScales.length; i<len; i++ ) {
+          var s = newScales[i];
+          //~ console.log( 's: '+s );
+          if ( s > refScale )
+            theScale = s;
+          if ( s < refScale )
+            break;
+      }
+      return theScale/10;
+  }
   function addPrintControl() {
     if ( !config['printTemplates'] || config.printTemplates.length == 0 ) {
-      $('#togglePrint').parent().remove();
+      $('#button-print').parent().remove();
       return false;
     }
     var ptTomm = 0.35277; //conversion pt to mm
-    var printCapabilities = {scales:[],layouts:[]};
 
     var scales = map.scales;
     if ( config.options.mapScales.length > 2 )
@@ -1982,9 +2725,11 @@ var lizMap = function() {
       }
     }
     if ( scales == null ) {
-      $('#togglePrint').parent().remove();
+      $('#button-print').parent().remove();
       return false;
     }
+    if ( scales[0] < scales[scales.length-1] )
+      scales.reverse();
 
     var scaleOptions = '';
     for( var i=0, len=scales.length; i<len; i++ ){
@@ -2001,7 +2746,7 @@ var lizMap = function() {
       }
       scaleOptions += '<option value="'+scale+'">'+scaleText+'</option>';
     }
-    $('#print-menu select.btn-print-scales').html(scaleOptions);
+    $('#print-scale').html(scaleOptions);
 
     // creating printCapabilities layouts
     var pTemplates = config.printTemplates;
@@ -2042,7 +2787,7 @@ var lizMap = function() {
 
     // if no printCapabilities layouts removed print
     if( printCapabilities.layouts.length == 0 ) {
-      $('#togglePrint').parent().remove();
+      $('#button-print').parent().remove();
       return false;
     }
 
@@ -2063,24 +2808,11 @@ var lizMap = function() {
       layer.setVisibility(false);
     } else
       layer = layer[0];
-    if ( layer.features.length == 0 )
-      layer.addFeatures([
-          new OpenLayers.Feature.Vector(
-            new OpenLayers.Geometry.Polygon([
-              new OpenLayers.Geometry.LinearRing([
-                new OpenLayers.Geometry.Point(-1, -1),
-                  new OpenLayers.Geometry.Point(1, -1),
-                  new OpenLayers.Geometry.Point(1, 1),
-                  new OpenLayers.Geometry.Point(-1, 1)
-              ])
-          ])
-        )
-      ]);
 
     // creating print menu
     for( var i=0, len= printCapabilities.layouts.length; i<len; i++ ){
       var layout = printCapabilities.layouts[i];
-      $('#togglePrint ~ .dropdown-menu').append('<li><a href="#'+i+'">'+layout.name+'</a></li>');
+      $('#print-template').append('<option value="'+i+'">'+layout.name+'</option>');
     }
 
     var dragCtrl = new OpenLayers.Control.DragFeature(layer,{
@@ -2098,35 +2830,28 @@ var lizMap = function() {
           // get print scale
           var scale = getPrintScale( printCapabilities.scales );
           // update the select
-          $('#print-menu select.btn-print-scales').val(scale);
+          $('#print-scale').val(scale);
           // draw print box
           drawPrintBox( layout, layer, scale );
 
-          $('#togglePrint').parent().addClass('active');
-          $('#print-menu .title .text').html(layout.name);
-          $('#print-menu').show();
-          updateSwitcherSize();
           mAddMessage(lizDict['print.activate'],'info',true).addClass('print');
           layer.setVisibility(true);
-          evt.object.clickFeature(feat);
         },
         "deactivate": function(evt) {
           layer.setVisibility(false);
-          $('#togglePrint').parent().removeClass('active');
-          $('#print-menu').hide();
-          updateSwitcherSize();
           $('#message .print').remove();
           this.layout = null;
+          layer.destroyFeatures();
         }
       }
     });
     map.addControls([dragCtrl]);
     controls['printDrag'] = dragCtrl;
 
-    // set event listener to togglePrint
-    $('#togglePrint ~ .dropdown-menu').find('a').click(function() {
+    // set event listener to button-print
+    $('#print-template').change(function() {
       var self = $(this);
-      var layout = printCapabilities.layouts[parseInt( self.attr('href').slice(1) )];
+      var layout = printCapabilities.layouts[parseInt( self.val() )];
       if ( layout.template.labels.length != 0 ) {
         var labels = '';
         for (var i=0, len=layout.template.labels.length; i<len; i++){
@@ -2139,15 +2864,13 @@ var lizMap = function() {
           }
           labels += label;
         }
-        $('#print-menu .print-labels').html(labels);
-        $('#print-menu .print-labels').show();
+        $('#print .print-labels').html(labels);
+        $('#print .print-labels').show();
       } else {
-        $('#print-menu .print-labels').html('');
-        $('#print-menu .print-labels').hide();
+        $('#print .print-labels').html('');
+        $('#print .print-labels').hide();
       }
-      if (dragCtrl.active && dragCtrl.layout == layout) {
-        dragCtrl.deactivate();
-      } else if (dragCtrl.active) {
+      if (dragCtrl.active) {
         dragCtrl.deactivate();
         dragCtrl.layout = layout;
         dragCtrl.activate();
@@ -2155,16 +2878,14 @@ var lizMap = function() {
         dragCtrl.layout = layout;
         dragCtrl.activate();
       }
-      if ( $('#togglePrint ~ .dropdown-menu').is(':visible') )
-        $('#togglePrint').dropdown('toggle');
       return false;
     });
 
-    $('#print-menu button.btn-print-clear').click(function() {
-      dragCtrl.deactivate();
+    $('#print button.btn-print-clear').click(function() {
+      $('#button-print').click();
       return false;
     });
-    $('#print-menu select.btn-print-scales').change(function() {
+    $('#print-scale').change(function() {
       if ( dragCtrl.active && layer.getVisibility() ) {
         var self = $(this);
         var scale = parseFloat(self.val());
@@ -2172,7 +2893,7 @@ var lizMap = function() {
         drawPrintBox( dragCtrl.layout, layer, scale );
       }
     });
-    $('#print-menu button.btn-print-launch').click(function() {
+    $('#print-launch').click(function() {
       var pTemplate = dragCtrl.layout.template;
       var extent = dragCtrl.layer.features[0].geometry.getBounds();
       var url = OpenLayers.Util.urlAppend(lizUrls.wms
@@ -2183,17 +2904,35 @@ var lizMap = function() {
       url += '&VERSION=1.3&REQUEST=GetPrint';
       url += '&FORMAT=pdf&EXCEPTIONS=application/vnd.ogc.se_inimage&TRANSPARENT=true';
       url += '&SRS='+map.projection;
-      url += '&DPI=300';
+      url += '&DPI='+$('#print-dpi').val();
       url += '&TEMPLATE='+pTemplate.title;
       url += '&'+dragCtrl.layout.mapId+':extent='+extent;
       //url += '&'+dragCtrl.layout.mapId+':rotation=0';
-      url += '&'+dragCtrl.layout.mapId+':scale='+$('#print-menu select.btn-print-scales').val();
+      var scale = $('#print-scale').val();
+      url += '&'+dragCtrl.layout.mapId+':scale='+scale;
+      var gridInterval = getPrintGridInterval( dragCtrl.layout, parseFloat(scale), printCapabilities.scales );
+      url += '&'+dragCtrl.layout.mapId+':grid_interval_x='+gridInterval;
+      url += '&'+dragCtrl.layout.mapId+':grid_interval_y='+gridInterval;
       var printLayers = [];
+      var styleLayers = [];
       $.each(map.layers, function(i, l) {
-        if (l.getVisibility() && l.CLASS_NAME == "OpenLayers.Layer.WMS")
-        printLayers.push(l.params['LAYERS']);
+        if (l.getVisibility()
+          && (
+            l.CLASS_NAME == "OpenLayers.Layer.WMS"
+            || ( l.CLASS_NAME == "OpenLayers.Layer.WMTS" && !(l.name.lastIndexOf('ign', 0) === 0 ) )
+          )
+        ){
+          // Add layer to the list of printed layers
+          printLayers.push(l.params['LAYERS']);
+          // Optionnaly add layer style if needed (same order as layers )
+          var lst = 'default';
+          if( 'STYLES' in l.params && l.params['STYLES'].length > 0 )
+            lst = l.params['STYLES'];
+          styleLayers.push( lst );
+        }
       });
       printLayers.reverse();
+      styleLayers.reverse();
 
       // Get active baselayer, and add the corresponding QGIS layer if needed
       var activeBaseLayerName = map.baseLayer.name;
@@ -2202,6 +2941,7 @@ var lizMap = function() {
       }
 
       url += '&'+dragCtrl.layout.mapId+':LAYERS='+printLayers.join(',');
+      url += '&'+dragCtrl.layout.mapId+':STYLES='+styleLayers.join(',');
       if ( dragCtrl.layout.overviewId != null
           && config.options.hasOverview ) {
         var bbox = config.options.bbox;
@@ -2209,630 +2949,78 @@ var lizMap = function() {
         url += '&'+dragCtrl.layout.overviewId+':extent='+oExtent;
         url += '&'+dragCtrl.layout.overviewId+':LAYERS=Overview';
         printLayers.unshift('Overview');
+        styleLayers.unshift('Overview');
       }
       url += '&LAYERS='+printLayers.join(',');
-      var labels = $('#print-menu .print-labels').find('input, textarea').serialize();
+      url += '&STYLES='+styleLayers.join(',');
+      var labels = $('#print .print-labels').find('input.print-label, textarea.print-label').serialize();
       if ( labels != "" )
         url += '&'+labels;
+      var filter = [];
+      var selection = [];
+      for ( var  lName in config.layers ) {
+          var lConfig = config.layers[lName];
+          if ( !('request_params' in lConfig)
+            || lConfig['request_params'] == null )
+              continue;
+          var requestParams = lConfig['request_params'];
+          if ( ('filter' in lConfig['request_params'])
+            && lConfig['request_params']['filter'] != null
+            && lConfig['request_params']['filter'] != "" ) {
+              filter.push( lConfig['request_params']['filter'] );
+          }
+          if ( ('selection' in lConfig['request_params'])
+            && lConfig['request_params']['selection'] != null
+            && lConfig['request_params']['selection'] != "" ) {
+              selection.push( lConfig['request_params']['selection'] );
+          }
+      }
+      if ( filter.length !=0 )
+        url += '&FILTER='+ filter.join(';');
+      if ( selection.length !=0 )
+        url += '&SELECTION='+ filter.join(';');
       window.open(url);
       return false;
     });
     map.events.on({
       "zoomend": function() {
         if ( dragCtrl.active && layer.getVisibility() ) {
-	      // get scale
-		  var scale = getPrintScale( printCapabilities.scales );
-		  // update the select
-          $('#print-menu select.btn-print-scales').val(scale);
-          // draw print box
-          drawPrintBox( dragCtrl.layout, layer, scale );
+            // get scale
+            var scale = getPrintScale( printCapabilities.scales );
+            // update the select
+            $('#print-scale').val(scale);
+            // draw print box
+            drawPrintBox( dragCtrl.layout, layer, scale );
         }
       }
     });
+    lizMap.events.on({
+        minidockopened: function(e) {
+            if ( e.id == 'print' ) {
+                $('#print-template').change();
+            }
+        },
+        minidockclosed: function(e) {
+            if ( e.id == 'print' ) {
+                dragCtrl.deactivate();
+            }
+        }
+    });
   }
 
-  function addEditionControls() {
-    // Edition layers
-    if ('editionLayers' in config) {
-      //initialize edition
-      $('#edition-modal').modal();
-      var service = OpenLayers.Util.urlAppend(lizUrls.edition
-        ,OpenLayers.Util.getParameterString(lizUrls.params)
-      );
-      for (var alName in config.editionLayers) {
-        var al = config.editionLayers[alName];
-        if (al.capabilities.modifyGeometry == "False"
-         && al.capabilities.modifyAttribute == "False"
-         && al.capabilities.deleteFeature == "False"
-         && al.capabilities.createFeature == "False") {
-          delete config.editionLayers[alName];
-          continue;
-        }
-        if (alName in config.layers) {
-          var alConfig = config.layers[alName];
-          $('#edition ~ .dropdown-menu').append('<li><a href="#'+alName+'">'+alConfig.title+'</a></li>');
-        }
-      }
+  function getLayerConfigById( aLayerId, aConfObjet, aIdAttribute ) {
+    // Set function parameters if not given
+    aConfObjet = typeof aConfObjet !== 'undefined' ?  aConfObjet : config.layers;
+    aIdAttribute = typeof aIdAttribute !== 'undefined' ?  aIdAttribute : 'id';
 
-      // initiatlize layer
-      // style the sketch fancy
-      var sketchSymbolizers = {
-        "Point": {
-          pointRadius: 6
-        },
-        "Line": {
-          strokeWidth: 4
-        },
-        "Polygon": {
-          strokeWidth: 2
-        }
-      };
-      var style = new OpenLayers.Style();
-      style.addRules([
-          new OpenLayers.Rule({symbolizer: sketchSymbolizers})
-          ]);
-      var styleMap = new OpenLayers.StyleMap({"default": style});
-      var editLayer = new OpenLayers.Layer.Vector('editLayer',{styleMap:styleMap});
-      map.addLayer(editLayer);
-
-      // initialize controls
-      OpenLayers.Control.EditionClick =
-        OpenLayers.Class(OpenLayers.Control, {
-          defaultHandlerOptions: {
-            'single': true,
-            'double': false,
-            'pixelTolerance': 0,
-            'stopSingle': true,
-            'stopDouble': false
-          },
-          layerId: '',
-          clickTolerance: 5,
-          initialize: function(options) {
-            this.handlerOptions = OpenLayers.Util.extend(
-              {}, this.defaultHandlerOptions
-            );
-            OpenLayers.Control.prototype.initialize.apply(
-              this, arguments
-            );
-            this.handler = new OpenLayers.Handler.Click(
-              this, {
-                'click': this.trigger
-              }, this.handlerOptions
-            );
-          },
-          pixelToBounds: function(pixel) {
-            var llPx = pixel.add(-this.clickTolerance/2, this.clickTolerance/2);
-            var urPx = pixel.add(this.clickTolerance/2, -this.clickTolerance/2);
-            var ll = this.map.getLonLatFromPixel(llPx);
-            var ur = this.map.getLonLatFromPixel(urPx);
-            return new OpenLayers.Bounds(ll.lon, ll.lat, ur.lon, ur.lat);
-          },
-          trigger: function(e) {
-            var bounds = this.pixelToBounds(e.xy);
-            var crs = this.map.getProjectionObject().toString();
-            if ( crs == 'EPSG:900913' )
-              crs = 'EPSG:3857';
-            $.get(service,{
-              layerId: this.layerId,
-              bbox: bounds.toBBOX(),
-              crs: crs
-            }, function(data){
-              $('#edition-modal').html(data);
-              $('#edition-modal form').submit(function() {
-                var self = $(this);
-                var srid = self.find('input[name="liz_srid"]').val();
-                if ( !('EPSG:'+srid in Proj4js.defs) )
-                  Proj4js.defs['EPSG:'+srid] = self.find('input[name="liz_proj4"]').val();
-                var geom = self.find('input[name="liz_geometryColumn"]').val();
-                var wkt = self.find('input[name="'+geom+'"]').val();
-                var format = new OpenLayers.Format.WKT({
-                  externalProjection: 'EPSG:'+srid,
-                  internalProjection: editLayer.projection
-                });
-                var feat = format.read(wkt);
-                feat.fid = self.find('input[name="liz_featureId"]').val();
-                var form = $('#edition-menu form');
-                form.find('input[name="liz_srid"]').val(srid);
-                form.find('input[name="liz_geometryColumn"]').val(geom);
-                form.find('input[name="liz_wkt"]').val(feat.geometry);
-                form.find('input[name="liz_featureId"]').val(feat.fid);
-                editLayer.addFeatures([feat]);
-                $('#edition-modal').modal('hide');
-                return false;
-              });
-              $('#edition-modal').modal('show');
-            });
-            return false;
-          }
-        });
-      var editCtrls = {
-        panel: new OpenLayers.Control({
-          type: OpenLayers.Control.TYPE_TOOL,
-          eventListeners: {
-            activate: function( evt ) {
-              deactivateToolControls( evt );
-            },
-            deactivate: function( evt ) {
-              for ( var c in editCtrls ) {
-                if ( editCtrls[c].active )
-                  editCtrls[c].deactivate();
-              }
-              $('#edition-menu').hide();
-            }
-          }
-        }),
-        click: new OpenLayers.Control.EditionClick(),
-        point: new OpenLayers.Control.DrawFeature(editLayer,
-                   OpenLayers.Handler.Point),
-        line: new OpenLayers.Control.DrawFeature(editLayer,
-            OpenLayers.Handler.Path),
-        polygon: new OpenLayers.Control.DrawFeature(editLayer,
-            OpenLayers.Handler.Polygon),
-        modify: new OpenLayers.Control.ModifyFeature(editLayer)
-      };
-      for ( var ctrl in editCtrls ) {
-        map.addControls([editCtrls[ctrl]]);
-      }
-      controls['edition'] = editCtrls.panel;
-
-      function manageEditionAdd(aData) {
-        $('#edition-modal').html(aData);
-        $('#edition-modal form').submit(function() {
-          var self = $(this);
-          $.post(self.attr('action'),
-            self.serialize(),
-            function(data) {
-              manageEditionAdd(data);
-            });
-          return false;
-        });
-        if ( $('#edition-modal form').length != 0 ) {
-          $('#edition-modal button[data-dismiss="modal"]').click(
-            function() {
-              editLayer.destroyFeatures();
-              $('#edition-draw-clear').addClass('disabled');
-              $('#edition-draw-save').addClass('disabled');
-            }
-          );
-        }
-        if ( $('#edition-modal form').length == 0 ) {
-          for ( var ctrl in editCtrls ) {
-            if ( ctrl !="panel" && editCtrls[ctrl].active)
-              editCtrls[ctrl].deactivate();
-          }
-          var layerId = editCtrls.click.layerId;
-          $.each(layers, function(i, l) {
-            if (config.layers[l.params['LAYERS']].id != layerId)
-              return true;
-            l.redraw(true);
-            return false;
-          });
-          editLayer.destroyFeatures();
-          editCtrls.modify.activate();
-          $('#edition-draw-clear').addClass('disabled');
-          $('#edition-draw-save').addClass('disabled');
-        }
-      }
-
-      function manageEditionGeom(aData) {
-        $('#edition-modal').html(aData);
-        $('#edition-modal form').submit(function() {
-          var self = $(this);
-          $.post(self.attr('action'),
-            self.serialize(),
-            function(data) {
-              manageEditionGeom(data);
-            });
-          return false;
-        });
-        if ( $('#edition-modal form').length != 0 ) {
-          $('#edition-modal button[data-dismiss="modal"]').click(
-            function() {
-              var format = new OpenLayers.Format.WKT();
-              var wkt = $('#edition-menu form input[name="liz_wkt"]').val();
-              var wktFeat = format.read(wkt);
-              var geom = wktFeat.geometry.clone();
-              var feat = editLayer.features[0];
-              geom.id = feat.geometry.id;
-              feat.geometry = geom;
-              editLayer.drawFeature(feat);
-              if (config.editionLayers[editCtrls.click.layerName].capabilities.modifyGeometry == "True")
-                editCtrls.modify.selectFeature(feat);
-            }
-          );
-        }
-        if ( $('#edition-modal form').length == 0 ) {
-          var layerId = editCtrls.click.layerId;
-          $.each(layers, function(i, l) {
-            if (config.layers[l.params['LAYERS']].id != layerId)
-              return true;
-            l.redraw(true);
-            return false;
-          });
-          editLayer.drawFeature(editLayer.features[0]);
-          if (config.editionLayers[editCtrls.click.layerName].capabilities.modifyGeometry == "True")
-            editCtrls.modify.selectFeature(editLayer.features[0]);
-        }
-      }
-
-      // edit layer events
-      editLayer.events.on({
-        featureadded: function(evt) {
-          if ( editCtrls.click.active ) {
-            editCtrls.click.deactivate();
-            $('#lizmap-edition-message').remove();
-            if (config.editionLayers[editCtrls.click.layerName].capabilities.modifyGeometry == "True") {
-              editCtrls.modify.activate();
-              editCtrls.modify.selectFeature(evt.feature);
-              mAddMessage(lizDict['edition.select.modify.activate'],'info',true).attr('id','lizmap-edition-message');
-            }
-            $('#edition-select-unselect').removeClass('disabled');
-            $('#edition-select-attr').removeClass('disabled');
-            $('#edition-select-delete').removeClass('disabled');
-          } else {
-            $.get(service.replace('getFeature','createFeature'),{
-              layerId: editCtrls.click.layerId,
-            }, function(data){
-              manageEditionAdd(data);
-              var form = $('#edition-modal form');
-              var srid = form.find('input[name="liz_srid"]').val();
-              if ( !('EPSG:'+srid in Proj4js.defs) )
-                Proj4js.defs['EPSG:'+srid] = form.find('input[name="liz_proj4"]').val();
-              var gColumn = form.find('input[name="liz_geometryColumn"]').val();
-              var geom = editLayer.features[0].geometry.clone();
-              geom.transform(editLayer.projection,'EPSG:'+srid);
-              $('#edition-modal form input[name="'+gColumn+'"]').val(geom);
-              $('#edition-modal').modal('show');
-            });
-          }
-        },
-        featureselected: function(evt) {
-          $('#edition-menu form input[name="liz_wkt"]').val(evt.feature.geometry);
-        },
-        featureunselected: function(evt) {
-          var wkt = $('#edition-menu form input[name="liz_wkt"]').val();
-          $.get(service.replace('getFeature','modifyFeature'),{
-            layerId: editCtrls.click.layerId,
-            featureId: evt.feature.fid
-          }, function(data){
-            manageEditionGeom(data);
-            var form = $('#edition-modal form');
-            var srid = form.find('input[name="liz_srid"]').val();
-            if ( !('EPSG:'+srid in Proj4js.defs) )
-              Proj4js.defs['EPSG:'+srid] = form.find('input[name="liz_proj4"]').val();
-            var gColumn = form.find('input[name="liz_geometryColumn"]').val();
-            var geom = evt.feature.geometry.clone();
-            geom.transform(editLayer.projection,'EPSG:'+srid);
-            $('#edition-modal form input[name="'+gColumn+'"]').val(geom);
-            if (config.editionLayers[editCtrls.click.layerName].capabilities.modifyAttribute == "False") {
-              form.submit();
-              form.hide();
-            }
-            $('#edition-modal').modal('show');
-          });
-        },
-        afterfeaturemodified: function(evt) {
-          editLayer.events.triggerEvent("featureunselected", evt);
-        },
-        sketchmodified: function(evt) {
-          if ( evt.vertex.parent == null )
-            return true;
-          var class_name = evt.vertex.parent.CLASS_NAME;
-          if ( $('#edition-draw-clear').hasClass('disabled') ) {
-            if ( class_name == 'OpenLayers.Geometry.LineString' ) {
-              if (evt.vertex.parent.components.length == 2 ) {
-                $('#edition-draw-clear').removeClass('disabled');
-              }
-            } else if ( class_name == 'OpenLayers.Geometry.LinearRing' ) {
-              if (evt.vertex.parent.components.length == 3 ) {
-                $('#edition-draw-clear').removeClass('disabled');
-              }
-            }
-          }
-          if ( $('#edition-draw-save').hasClass('disabled') ) {
-            if ( class_name == 'OpenLayers.Geometry.LineString' ) {
-              if (evt.vertex.parent.components.length > 2 ) {
-                $('#edition-draw-save').removeClass('disabled');
-              }
-            } else if ( class_name == 'OpenLayers.Geometry.LinearRing' ) {
-              if (evt.vertex.parent.components.length > 3 ) {
-                $('#edition-draw-save').removeClass('disabled');
-              }
-            }
-          }
-        },
-        vertexmodified: function(evt) {
-          if ( $('#edition-select-undo').hasClass('disabled') ) {
-            $('#edition-select-undo').removeClass('disabled');
-          }
-        }
-      });
-
-      $('#edition ~ .dropdown-menu').find('a').click(function() {
-        editCtrls.panel.activate();
-        var menu = $('#edition-menu');
-        var alName = $(this).attr('href').slice(1);
-        if (alName in config.editionLayers) {
-          var al = config.editionLayers[alName];
-          if ( editCtrls.click.layerId == al.layerId) {
-            $('#edition-stop').click();
-          } else {
-            // update toolbar based on capabilities
-            if (al.capabilities.deleteFeature == "False")
-               $('#edition-select-delete').hide()
-            else
-               $('#edition-select-delete').show()
-            if (al.capabilities.modifyAttribute == "False")
-               $('#edition-select-attr').hide()
-            else
-               $('#edition-select-attr').show()
-            if (al.capabilities.modifyGeometry == "False")
-               $('#edition-select-undo').hide()
-            else
-               $('#edition-select-undo').show()
-
-            if ( $('#edition-menu-draw').is(':visible') )
-              $('#edition-draw-cancel').click();
-            if ( $('#edition-menu-select').is(':visible') )
-              $('#edition-select-cancel').click();
-
-            if (alName in config.layers)
-              $('#edition-menu h3 span.title span.text').html(config.layers[alName].title);
-            else
-              $('#edition-menu h3 span.title span.text').html(lizDict['edition.title']);
-            editCtrls.click.layerId = al.layerId;
-            editCtrls.click.layerName = alName;
-            menu.show();
-            if (al.capabilities.createFeature == "False") {
-              $('#edition-draw').hide();
-              $('#edition-select-cancel').hide();
-              $('#edition-select').click();
-            } else {
-              $('#edition-draw').show();
-              $('#edition-select-cancel').show();
-            }
-            if (al.capabilities.modifyGeometry == "False"
-             && al.capabilities.modifyAttribute == "False"
-             && al.capabilities.deleteFeature == "False") {
-              $('#edition-select').hide();
-              $('#edition-draw-cancel').hide();
-              $('#edition-draw').click();
-            } else {
-              $('#edition-select').show();
-              $('#edition-draw-cancel').show();
-            }
-          }
-        }
-        updateSwitcherSize();
-        if ( $('#edition ~ .dropdown-menu').is(':visible') )
-          $('#edition').dropdown('toggle');
-        return false;
-      });
-
-      $('#edition-stop').click(function(){
-        $('#edition-menu h3 span.title span.text').html(lizDict['edition.title']);
-        editCtrls.click.layerId = '';
-        editCtrls.click.layerName = '';
-        editCtrls.panel.deactivate();
-        editLayer.destroyFeatures();
-        $('#edition-menu-draw').hide();
-        $('#edition-draw-clear').addClass('disabled');
-        $('#edition-draw-save').addClass('disabled');
-        $('#edition-menu-select').hide();
-        $('#edition-select-unselect').addClass('disabled');
-        $('#edition-select-attr').addClass('disabled');
-        $('#edition-select-undo').addClass('disabled');
-        $('#edition-select-delete').addClass('disabled');
-        $('#edition-menu-start').show();
-        var form = $('#edition-menu form');
-        form.find('input[name="liz_srid"]').val('');
-        form.find('input[name="liz_geometryColumn"]').val('');
-        form.find('input[name="liz_wkt"]').val('');
-        form.find('input[name="liz_featureId"]').val('');
-        updateSwitcherSize();
-        return false;
-      });
-
-      $('#edition-select').click(function(){
-        if ( !$('#edition-menu-start').is(':visible') )
-          return false;
-
-        $('#edition-menu-start').hide();
-        $('#edition-menu-select').show();
-        editCtrls.click.activate();
-        $('#lizmap-edition-message').remove();
-        mAddMessage(lizDict['edition.select.activate'],'info',true).attr('id','lizmap-edition-message');
-        return false;
-      });
-      $('#edition-select-cancel').click(function(){
-        $('#lizmap-edition-message').remove();
-        editLayer.destroyFeatures();
-        editCtrls.click.deactivate();
-        editCtrls.modify.deactivate();
-        $('#edition-select-unselect').addClass('disabled');
-        $('#edition-select-attr').addClass('disabled');
-        $('#edition-select-undo').addClass('disabled');
-        $('#edition-select-delete').addClass('disabled');
-        var form = $('#edition-menu form');
-        form.find('input[name="liz_srid"]').val('');
-        form.find('input[name="liz_geometryColumn"]').val('');
-        form.find('input[name="liz_wkt"]').val('');
-        form.find('input[name="liz_featureId"]').val('');
-        $('#edition-menu-select').hide();
-        $('#edition-menu-start').show();
-        updateSwitcherSize();
-        return false;
-      });
-      $('#edition-select-unselect').click(function(){
-        if ( $(this).hasClass('disabled') )
-          return false;
-
-        editLayer.destroyFeatures();
-        editCtrls.modify.deactivate();
-        editCtrls.click.activate();
-        $('#edition-select-unselect').addClass('disabled');
-        $('#edition-select-attr').addClass('disabled');
-        $('#edition-select-undo').addClass('disabled');
-        $('#edition-select-delete').addClass('disabled');
-        var form = $('#edition-menu form');
-        form.find('input[name="liz_srid"]').val('');
-        form.find('input[name="liz_geometryColumn"]').val('');
-        form.find('input[name="liz_wkt"]').val('');
-        form.find('input[name="liz_featureId"]').val('');
-        return false;
-      });
-      $('#edition-select-undo').click(function(){
-        if ( $(this).hasClass('disabled') )
-          return false;
-
-        var format = new OpenLayers.Format.WKT();
-        var wkt = $('#edition-menu form input[name="liz_wkt"]').val();
-        var wktFeat = format.read(wkt);
-        var geom = wktFeat.geometry.clone();
-        var feat = editLayer.features[0];
-        geom.id = feat.geometry.id;
-        feat.geometry = geom;
-        editLayer.drawFeature(feat);
-        if (config.editionLayers[editCtrls.click.layerName].capabilities.modifyGeometry == "True")
-          editCtrls.modify.selectFeature(feat);
-        return false;
-      });
-      $('#edition-select-attr').click(function(){
-        if ( $(this).hasClass('disabled') )
-          return false;
-
-        if ( editLayer.selectedFeatures.length != 0 )
-          editCtrls.modify.unselectFeature(editLayer.features[0]);
-        else
-          editLayer.events.triggerEvent("afterfeaturemodified", {
-            feature: editLayer.features[0],
-            modified: false
-        });
-        return false;
-      });
-      $('#edition-select-delete').click(function(){
-        if ( $(this).hasClass('disabled') )
-          return false;
-
-        var featureId = $('#edition-menu form input[name="liz_featureId"]').val();
-        if ( featureId == '' )
-         return false;
-        if ( !confirm( lizDict['edition.confirm.delete'] ) )
-          return false;
-        $.get(service.replace('getFeature','deleteFeature'),{
-          layerId: editCtrls.click.layerId,
-          featureId: featureId
-        }, function(data){
-          $('#edition-modal').html(data);
-          $('#edition-modal').modal('show');
-          editLayer.destroyFeatures();
-          $('#edition-select-unselect').click();
-          var layerId = editCtrls.click.layerId;
-          $.each(layers, function(i, l) {
-            if (config.layers[l.params['LAYERS']].id != layerId)
-              return true;
-            l.redraw(true);
-            return false;
-          });
-        });
-        return false;
-      });
-
-      $('#edition-draw').click(function(){
-        if ( !$('#edition-menu-start').is(':visible') )
-          return false;
-
-        var layerId = editCtrls.click.layerId;
-        var geomType = '';
-        for (var alName in config.editionLayers) {
-          var al = config.editionLayers[alName];
-          if ( alName in config.layers && al.layerId == layerId)
-            geomType = al.geometryType;
-        }
-        if ( geomType == '' )
-          return false;
-
-        var ctrl = editCtrls[geomType];
-        if ( ctrl.active ) {
-          return false;
-        } else {
-          ctrl.activate();
-          $('#edition-draw-clear').addClass('disabled');
-          $('#edition-draw-save').addClass('disabled');
-          $('#edition-menu-start').hide();
-          $('#edition-menu-draw').show();
-          updateSwitcherSize();
-          $('#lizmap-edition-message').remove();
-          mAddMessage(lizDict['edition.draw.activate'],'info',true).attr('id','lizmap-edition-message');
-        }
-        return false;
-      });
-      $('#edition-draw-cancel').click(function(){
-        $('#lizmap-edition-message').remove();
-        var layerId = editCtrls.click.layerId;
-        var geomType = '';
-        for (var alName in config.editionLayers) {
-          var al = config.editionLayers[alName];
-          if ( alName in config.layers && al.layerId == layerId)
-            geomType = al.geometryType;
-        }
-        if ( geomType != '' ) {
-          var ctrl = editCtrls[geomType];
-          ctrl.deactivate();
-        }
-        editLayer.destroyFeatures();
-        $('#edition-draw-clear').addClass('disabled');
-        $('#edition-draw-save').addClass('disabled');
-        $('#edition-menu-draw').hide();
-        $('#edition-menu-start').show();
-        updateSwitcherSize();
-        return false;
-      });
-      $('#edition-draw-save').click(function(){
-        if ( $(this).hasClass('disabled') )
-          return false;
-
-        var layerId = editCtrls.click.layerId;
-        var geomType = '';
-        for (var alName in config.editionLayers) {
-          var al = config.editionLayers[alName];
-          if ( alName in config.layers && al.layerId == layerId)
-            geomType = al.geometryType;
-        }
-        if ( geomType != '' ) {
-          var ctrl = editCtrls[geomType];
-          ctrl.finishSketch();
-        }
-        return false;
-      });
-      $('#edition-draw-clear').click(function(){
-        if ( $(this).hasClass('disabled') )
-          return false;
-
-        var layerId = editCtrls.click.layerId;
-        var geomType = '';
-        for (var alName in config.editionLayers) {
-          var al = config.editionLayers[alName];
-          if ( alName in config.layers && al.layerId == layerId)
-            geomType = al.geometryType;
-        }
-        if ( geomType != '' ) {
-          var ctrl = editCtrls[geomType];
-          ctrl.cancel();
-          $('#edition-draw-clear').addClass('disabled');
-          $('#edition-draw-save').addClass('disabled');
-        }
-        return false;
-      });
-
-    $('#edition-menu a[rel="tooltip"]').tooltip();
-
-    } else {
-      $('#edition').parent().remove();
-      $('#edition-menu').remove();
-      $('#edition-modal').remove();
+    // Loop through layers to get the one by id
+    for ( var lx in aConfObjet ) {
+        if ( aConfObjet[lx][aIdAttribute] == aLayerId )
+            return [lx, aConfObjet[lx] ];
     }
+    return null;
   }
+
 
   function addMeasureControls() {
     // style the sketch fancy
@@ -2910,31 +3098,19 @@ var lizMap = function() {
     };
     measureControls.length.events.on({
       activate: function(evt) {
-        deactivateToolControls(evt);
-        $('#measure').parent().addClass('active');
-        $('#measure-length-menu').show();
-        updateSwitcherSize();
+        /*deactivateToolControls(evt);*/
         mAddMessage(lizDict['measure.activate.length'],'info',true).attr('id','lizmap-measure-message');
       },
       deactivate: function(evt) {
-        $('#measure').parent().removeClass('active');
-        $('#measure-length-menu').hide();
-        updateSwitcherSize();
         $('#lizmap-measure-message').remove();
       }
     });
     measureControls.area.events.on({
       activate: function(evt) {
-        deactivateToolControls(evt);
-        $('#measure').parent().addClass('active');
-        $('#measure-area-menu').show();
-        updateSwitcherSize();
+        /*deactivateToolControls(evt);*/
         mAddMessage(lizDict['measure.activate.area'],'info',true).attr('id','lizmap-measure-message');
       },
       deactivate: function(evt) {
-        $('#measure').parent().removeClass('active');
-        $('#measure-area-menu').hide();
-        updateSwitcherSize();
         $('#lizmap-measure-message').remove();
       }
     });
@@ -2956,16 +3132,10 @@ var lizMap = function() {
     };
     measureControls.perimeter.events.on({
       activate: function(evt) {
-        deactivateToolControls(evt);
-        $('#measure').parent().addClass('active');
-        $('#measure-perimeter-menu').show();
-        updateSwitcherSize();
+        /*deactivateToolControls(evt);*/
         mAddMessage(lizDict['measure.activate.perimeter'],'info',true).attr('id','lizmap-measure-message');
       },
       deactivate: function(evt) {
-        $('#measure').parent().removeClass('active');
-        $('#measure-perimeter-menu').hide();
-        updateSwitcherSize();
         $('#lizmap-measure-message').remove();
       }
     });
@@ -2995,28 +3165,46 @@ var lizMap = function() {
         "measure": handleMeasurements,
         "measurepartial": handleMeasurements,
         "activate": function(evt) {
-          deactivateToolControls(evt);
+          //deactivateToolControls(evt);
         }
       });
       map.addControl(control);
       controls[key+'Measure'] = control;
-      // click in the navbar
-      $('#measure-'+key).click(function() {
-        var keyId = $(this).attr('id').replace('measure-','');
-        if ( measureControls[keyId].active )
-          measureControls[keyId].deactivate();
-        else
-          measureControls[keyId].activate();
-        $('#measure').dropdown('toggle');
-        return false;
-      });
-      // click to stop
-      $('#measure-'+key+'-stop').click(function() {
-        var keyId = $(this).attr('id').replace('measure-','');
-        keyId = keyId.replace('-stop','');
-        measureControls[keyId].deactivate();
-      });
     }
+    $('#measure-type').change(function() {
+        var self = $(this);
+        self.find('option').each(function() {
+            var val = $( this ).attr('value');
+            if ( val in measureControls && measureControls[val].active )
+              measureControls[val].deactivate();
+        });
+        measureControls[self.val()].activate();
+    });
+    lizMap.events.on({
+        minidockopened: function(e) {
+            if ( e.id == 'measure' ) {
+                $('#measure-type').change();
+            }
+        },
+        minidockclosed: function(e) {
+            if ( e.id == 'measure' ) {
+                var activeCtrl = '';
+                $('#measure-type option').each(function() {
+                    var val = $( this ).attr('value');
+                    if ( val in measureControls && measureControls[val].active )
+                        activeCtrl = val;
+                });
+                if ( activeCtrl != '' )
+                    measureControls[activeCtrl].deactivate();
+            }
+        }
+    });
+
+
+    $('#measure-stop').click(function(){
+      $('#button-measure').click();
+    });
+
     return measureControls;
   }
 
@@ -3076,38 +3264,46 @@ var lizMap = function() {
           if ( $('#geolocate-menu-bind').hasClass('active') )
             this.bind = true;
         }
+        $('#geolocation .menu-content button').removeAttr('disabled');
       },
       "locationfailed": function(evt) {
         if ( vector.features.length == 0 )
           mAddMessage(lizDict['geolocation.failed'],'error',true);
       },
       "activate": function(evt) {
-        $('#toggleGeolocate').parent().addClass('active');
-        $('#geolocate-menu').show();
-        updateSwitcherSize();
       },
       "deactivate": function(evt) {
+        $('#geolocation .menu-content button').attr('disabled','disabled');
         vector.destroyFeatures();
-        $('#toggleGeolocate').parent().removeClass('active');
-        $('#geolocate-menu').hide();
-        updateSwitcherSize();
-        $('#geolocate-menu-bind').removeClass('btn-info active').addClass('btn-success');
-        geolocate.bind = false;
       }
     });
     controls['geolocation'] = geolocate;
-    $('#toggleGeolocate').click(function() {
-      if (geolocate.active)
-        geolocate.deactivate();
-      else
-        geolocate.activate();
-      return false;
+    lizMap.events.on({
+        minidockopened: function(e) {
+            if ( e.id == 'geolocation' ) {
+                if (!geolocate.active)
+                    geolocate.activate();
+            }
+        },
+
+        minidockclosed: function(e) {
+            if ( e.id == 'geolocation' ) {
+                if (geolocate.active && !geolocate.getCurrentLocation() )
+                    geolocate.deactivate();
+            }
+        }
     });
-    $('#geolocate-menu-center').click(function(){
+    $('#geolocation-center').click(function(){
+      if ( !geolocate.active )
+        return false;
+
       if (vector.features.length != 0 )
         map.setCenter(vector.getDataExtent().getCenterLonLat());
+      return false;
     });
-    $('#geolocate-menu-bind').click(function(){
+    $('#geolocation-bind').click(function(){
+      if ( !geolocate.active )
+        return false;
       var self = $(this);
       if ( self.hasClass('active') ) {
         self.removeClass('btn-info active').addClass('btn-success');
@@ -3116,9 +3312,19 @@ var lizMap = function() {
         self.removeClass('btn-success').addClass('btn-info active');
         geolocate.bind = true;
       }
+      return false;
     });
-    $('#geolocate-menu button.btn-geolocate-clear').click(function(){
-      geolocate.deactivate();
+    function stopGeolocation(){
+      if ( geolocate.active )
+        geolocate.deactivate();
+      $('#button-geolocation').click();
+      return false;
+    }
+    $('#geolocation-stop').click(function(){
+      stopGeolocation();
+    });
+    $('#geolocation button.btn-geolocation-clear').click(function(){
+      stopGeolocation();
     });
   }
 
@@ -3332,6 +3538,34 @@ var lizMap = function() {
     return true;
   }
 
+  /**
+   * PRIVATE function: loadProjDefinition
+   * load CRS definition and activate it
+   *
+   * Parameters:
+   * aCRS - {String}
+   * aCallbalck - {function ( proj )}
+   *
+   */
+  function loadProjDefinition( aCRS, aCallback ) {
+    var proj = aCRS.replace(/^\s+|\s+$/g, ''); // trim();
+    if ( proj in Proj4js.defs ) {
+      aCallback( proj );
+    } else {
+      $.get( OpenLayers.Util.urlAppend(
+          lizUrls.wms
+          ,OpenLayers.Util.getParameterString(lizUrls.params)
+        ), {
+          'REQUEST':'GetProj4'
+         ,'authid': proj
+        }, function ( aText ) {
+          Proj4js.defs[proj] = aText;
+          new OpenLayers.Projection(proj);
+          aCallback( proj );
+        }
+      );
+    }
+  }
 
   /**
    * PRIVATE function: mCheckMobile
@@ -3384,6 +3618,129 @@ var lizMap = function() {
     return elt;
   }
 
+  /**
+   * PRIVATE function: exportVectorLayer
+   * Write message to the UI
+   *
+   *
+   * Returns:
+   * {jQuery Object} The message added.
+   */
+  function exportVectorLayer( aName, eformat ) {
+
+      // Set function parameters if not given
+      eformat = typeof eformat !== 'undefined' ?  eformat : 'GeoJSON';
+
+      // Get selected features
+      var selectionLayer = getLayerNameByCleanName( aName );
+
+      if( !selectionLayer )
+        selectionLayer = aName;
+      var featureid = getVectorLayerSelectionFeatureIdsString( selectionLayer );
+
+      // Get WFS url and options
+      var getFeatureUrlData = getVectorLayerWfsUrl( aName, null, featureid );
+
+      // Force download
+      getFeatureUrlData['options']['dl'] = 1;
+
+      // Set export format
+      getFeatureUrlData['options']['OUTPUTFORMAT'] = eformat;
+
+      // Build WFS url
+      var exportUrl = OpenLayers.Util.urlAppend(
+          getFeatureUrlData['url'],
+          OpenLayers.Util.getParameterString( getFeatureUrlData['options'] )
+      );
+
+      // Open in new window
+      window.open( exportUrl );
+      return false;
+  }
+
+  function getVectorLayerSelectionFeatureIdsString( aName ) {
+      var featureidParameter = '';
+      if( aName in config.layers && config.layers[aName]['selectedFeatures'] ){
+          var fids = [];
+          for( var id in config.layers[aName]['selectedFeatures'] ) {
+              fids.push( aName + '.' + config.layers[aName]['selectedFeatures'][id] );
+          }
+          if( fids.length )
+              featureidParameter = fids.join();
+      }
+
+      return featureidParameter;
+  }
+
+  function getVectorLayerWfsUrl( aName, aFilter, aFeatureId, geometryName, restrictToMapExtent ) {
+      var getFeatureUrlData = {};
+
+      // Set function parameters if not given
+      aFilter = typeof aFilter !== 'undefined' ?  aFilter : null;
+      aFeatureId = typeof aFeatureId !== 'undefined' ?  aFeatureId : null;
+      geometryName = typeof geometryName !== 'undefined' ?  geometryName : null;
+      restrictToMapExtent = typeof restrictToMapExtent !== 'undefined' ?  restrictToMapExtent : false;
+
+      // Build WFS request parameters
+      var typeName = aName.replace(' ','_');
+      var layerName = cleanName(aName);
+
+      var wfsOptions = {
+          'SERVICE':'WFS'
+          ,'VERSION':'1.0.0'
+          ,'REQUEST':'GetFeature'
+          ,'TYPENAME':typeName
+          ,'OUTPUTFORMAT':'GeoJSON'
+          //~ ,'MAXFEATURES': 100
+      };
+
+      var filterParam = [];
+
+      if( aFilter ){
+          // Remove layerName followed by :
+          aFilter = aFilter.replace( aName + ':', '');
+          filterParam.push( aFilter );
+      }else{
+          // If not filter passed, check if a filter does not exists for the layer
+          if( 'request_params' in config.layers[aName] && 'filter' in config.layers[aName]['request_params'] ){
+            var aFilter = config.layers[aName]['request_params']['filter'];
+            if( aFilter ){
+                aFilter = aFilter.replace( aName + ':', '');
+                filterParam.push( aFilter );
+            }
+          }
+      }
+
+      if( filterParam.length )
+          wfsOptions['EXP_FILTER'] = filterParam.join( ' AND ' );
+
+      // optionnal parameter filterid
+      if( aFeatureId )
+          wfsOptions['FEATUREID'] = aFeatureId;
+
+      // Calculate bbox from map extent if needed
+      if( restrictToMapExtent ) {
+          var extent = map.getExtent().clone();
+          var projFeat = new OpenLayers.Projection(config.layers[aName].crs);
+          extent = extent.transform( map.getProjection(), projFeat );
+          var bbox = extent.toBBOX();
+          wfsOptions['BBOX'] = bbox;
+      }
+
+      // Optionnal parameter geometryname
+      if( geometryName
+        && ['none', 'extent', 'centroid'].indexOf( geometryName ) != -1
+      ){
+          wfsOptions['GEOMETRYNAME'] = geometryName;
+      }
+
+      getFeatureUrlData['url'] = OpenLayers.Util.urlAppend(lizUrls.wms
+              ,OpenLayers.Util.getParameterString(lizUrls.params)
+      );
+      getFeatureUrlData['options'] = wfsOptions;
+
+      return getFeatureUrlData;
+  }
 
 
   // creating the lizMap object
@@ -3424,6 +3781,11 @@ var lizMap = function() {
      * {Object} The map tree
      */
     tree: null,
+    /**
+     * Property: lizmapLayerFilterActive
+     * {Object} Contains main filtered layer if filter is active
+     */
+    lizmapLayerFilterActive: null,
 
     /**
      * Method: checkMobile
@@ -3440,7 +3802,21 @@ var lizMap = function() {
     },
 
     /**
-     * Method: checkMobile
+     * Method: getLayerNameByCleanName
+     */
+    getLayerNameByCleanName: function( cleanName ) {
+      return getLayerNameByCleanName( cleanName );
+    },
+
+    /**
+     * Method: getDockRightPosition
+     */
+    getDockRightPosition: function( ) {
+      return getDockRightPosition( );
+    },
+
+    /**
+     * Method: addMessage
      */
     addMessage: function( aMessage, aType, aClose ) {
       return mAddMessage( aMessage, aType, aClose );
@@ -3452,6 +3828,80 @@ var lizMap = function() {
     updateSwitcherSize: function() {
       return updateSwitcherSize();
     },
+
+    /**
+     * Method: transformBounds
+     */
+    loadProjDefinition: function( aCRS, aCallback ) {
+      return loadProjDefinition( aCRS, aCallback );
+    },
+
+
+    /**
+     * Method: updateContentSize
+     */
+    updateContentSize: function() {
+      return updateContentSize();
+    },
+
+
+    /**
+     * Method: getPrintGridInterval
+     */
+    getPrintGridInterval: function(aLayout, aScale, aScales) {
+      return getPrintGridInterval(aLayout, aScale, aScales);
+    },
+
+
+    /**
+     * Method: getPrintCapabilities
+     */
+    getPrintCapabilities: function() {
+      return printCapabilities;
+    },
+
+
+    /**
+     * Method: getExternalBaselayersReplacement
+     */
+    getExternalBaselayersReplacement: function() {
+      return externalBaselayersReplacement;
+    },
+
+
+    launchEdition: function( aLayerId, aFid) {
+        return false;
+    },
+
+    deleteEditionFeature: function( aLayerId, aFid, aMessage, aCallback ){
+        return false;
+    },
+
+    deactivateToolControls: function( evt ) {
+      return deactivateToolControls( evt );
+    },
+
+    /**
+     * Method: exportVectorLayer
+     */
+    exportVectorLayer: function( aName, eformat ) {
+      return exportVectorLayer( aName, eformat );
+    },
+
+    /**
+     * Method: getVectorLayerWfsUrl
+     */
+    getVectorLayerWfsUrl: function( aName, aFilter, aFeatureId, geometryName, restrictToMapExtent ) {
+      return getVectorLayerWfsUrl( aName, aFilter, aFeatureId, geometryName, restrictToMapExtent );
+    },
+
+    /**
+     * Method: getLayerConfigById
+     */
+    getLayerConfigById: function( aLayerId, aConfObjet, aIdAttribute ) {
+      return getLayerConfigById( aLayerId, aConfObjet, aIdAttribute );
+    },
+
     /**
      * Method: init
      */
@@ -3467,6 +3917,12 @@ var lizMap = function() {
           ,OpenLayers.Util.getParameterString(lizUrls.params)
         );
         $.get(service
+          ,{SERVICE:'WMTS',REQUEST:'GetCapabilities',VERSION:'1.0.0'}
+          ,function(wmtsCapaData) {
+              var wmtsFormat = new OpenLayers.Format.WMTSCapabilities({});
+              wmtsCapabilities = wmtsFormat.read( wmtsCapaData );
+              //console.log( wmtsCapabilities );
+        $.get(service
           ,{SERVICE:'WMS',REQUEST:'GetCapabilities',VERSION:'1.3.0'}
           ,function(data) {
           //parse capabilities
@@ -3481,6 +3937,7 @@ var lizMap = function() {
 
           // get and analyse tree
           var capability = capabilities.capability;
+          beforeLayerTreeCreated();
           var firstLayer = capability.nestedLayers[0];
           getLayerTree(firstLayer,tree);
           analyseNode(tree);
@@ -3488,7 +3945,6 @@ var lizMap = function() {
           self.tree = tree;
           self.events.triggerEvent("treecreated", self);
           if(self.checkMobile()){
-            $('#menu').hide();
             $('#map-content').css('margin-left','0');
           }
 
@@ -3505,7 +3961,7 @@ var lizMap = function() {
           self.events.triggerEvent("layersadded", self);
 
           // initialize the map
-          $('#switcher').height(0);
+          //$('#switcher').height(0);
           // Set map extent depending on options
           /*
           if(lizPosition['lon']!=null){
@@ -3520,8 +3976,32 @@ var lizMap = function() {
           var verifyingVisibility = true;
           var hrefParam = OpenLayers.Util.getParameters(window.location.href);
           if (!map.getCenter()) {
-            if (hrefParam.bbox) {
-              map.zoomToExtent(OpenLayers.Bounds.fromArray(hrefParam.bbox));
+            if ( hrefParam.bbox || hrefParam.BBOX ) {
+                var hrefBbox = null;
+                if ( hrefParam.bbox )
+                  hrefBbox = OpenLayers.Bounds.fromArray( hrefParam.bbox );
+                if ( hrefParam.BBOX )
+                  hrefBbox = OpenLayers.Bounds.fromArray( hrefParam.BBOX );
+
+                if ( hrefParam.crs && hrefParam.crs != map.getProjection() )
+                  hrefBbox.transform( hrefParam.crs, map.getProjection() )
+                if ( hrefParam.CRS && hrefParam.CRS != map.getProjection() )
+                  hrefBbox.transform( hrefParam.CRS, map.getProjection() )
+                if( map.restrictedExtent.containsBounds( hrefBbox ) )
+                  map.zoomToExtent( hrefBbox, true );
+                else {
+                  var projBbox = $('#metadata .bbox').text();
+                  projBbox = OpenLayers.Bounds.fromString(projBbox);
+                  if( projBbox.containsBounds( hrefBbox ) ) {
+                      var projProj = $('#metadata .proj').text();
+                      loadProjDefinition( projProj, function( aProj ) {
+                          hrefBbox.transform( aProj, map.getProjection() );
+                          map.zoomToExtent( hrefBbox, true );
+                      });
+                  } else {
+                    map.zoomToExtent(map.initialExtent);
+                  }
+                }
             } else {
               map.zoomToExtent(map.initialExtent);
             }
@@ -3538,15 +4018,17 @@ var lizMap = function() {
           createNavbar();
           createToolbar();
 
+          // create permalink
+          createPermalink();
+
           // verifying the layer visibility for permalink
           if (verifyingVisibility) {
+            map.getControlsByClass('OpenLayers.Control.ArgParser')[0].configureLayers();
             for (var i=0,len=layers.length; i<len; i++) {
               var l = layers[i];
-              if ( (hrefParam.layers && l.getVisibility())
-                || (!hrefParam.layers && l.isVisible) )
-              {
+              var btn = $('#switcher button.checkbox[name="layer"][value="'+l.name+'"]');
+              if ( (hrefParam.layers && l.getVisibility() != btn.hasClass('checked') ) )
                 $('#switcher button.checkbox[name="layer"][value="'+l.name+'"]').click();
-              }
             }
           }
 
@@ -3564,6 +4046,17 @@ var lizMap = function() {
               $('#navbar div.slider').slider("value",this.getZoom());
             }
           });
+
+          // Connect signal/slot when layer style is changed
+          lizMap.events.on({
+            'layerstylechanged': function(evt){
+              var name = evt.featureType;
+              var url = getLayerLegendGraphicUrl(name, true);
+              var lSel = '#switcher table.tree tr#legend-' + name + ' div.legendGraphics img' ;
+              $(lSel).attr('src',url);
+            }
+          });
+
 
           // Toggle legend
           $('#toggleLegend').click(function(){
@@ -3583,41 +4076,97 @@ var lizMap = function() {
           });
 
           // Toggle locate
-          $('#toggleLocate').click(function(){
-            $('#locate-menu').toggle();
-            if ( $('#locate-menu').is(':visible') )
-              $('#toggleLocate').parent().addClass('active');
-            else
-              $('#toggleLocate').parent().removeClass('active');
-            $('#metadata').hide();
-            updateSwitcherSize();
+          $('#mapmenu li.nav-minidock > a').click(function(){
+            var self = $(this);
+            var parent = self.parent();
+            var id = self.attr('href').substr(1);
+            var tab = $('#nav-tab-'+id);
+            if ( parent.hasClass('active') ) {
+                $('#'+id).removeClass('active');
+                tab.removeClass('active');
+                parent.removeClass('active');
+                lizMap.events.triggerEvent( "minidockclosed", {'id':id} );
+            } else {
+              //self.parents('#mapmenu').find('.nav-minidock.active a').click();
+                var oldActive = $('#mapmenu li.nav-minidock.active');
+                if ( oldActive.length != 0 ) {
+                    oldActive.removeClass('active');
+                    lizMap.events.triggerEvent( "minidockclosed", {'id': oldActive.children('a').first().attr('href').substr(1) } );
+                }
+                tab.children('a').first().click();
+                parent.addClass('active');
+                lizMap.events.triggerEvent( "minidockopened", {'id':id} );
+            }
+            self.blur();
             return false;
           });
+          // Show locate by layer
           if ( !('locateByLayer' in config) )
-            $('#toggleLocate').parent().hide();
+            $('#button-locate').parent().hide();
           else
-            $('#toggleLocate').parent().addClass('active');
+            $('#button-locate').click();
+
+          $('#mapmenu li.nav-dock > a').click(function(){
+            var self = $(this);
+            var parent = self.parent();
+            var id = self.attr('href').substr(1);
+            var tab = $('#nav-tab-'+id);
+            if ( parent.hasClass('active') ) {
+                if ( tab.hasClass('active') ) {
+                    var nextActive = tab.next(':visible');
+                    if ( nextActive.length != 0 ) {
+                        nextActive.first().children('a').first().click();
+                    } else {
+                        var prevActive = tab.prev(':visible');
+                        if ( prevActive.length != 0 )
+                            prevActive.first().children('a').first().click();
+                    }
+                }
+                tab.hide();
+                tab.removeClass('active');
+                parent.removeClass('active');
+                lizMap.events.triggerEvent( "dockclosed", {'id':id} );
+            } else {
+                var oldActive = $('#mapmenu li.nav-dock.active');
+                if ( oldActive.length != 0 ) {
+                    oldActive.removeClass('active');
+                    lizMap.events.triggerEvent( "dockclosed", {'id': oldActive.children('a').first().attr('href').substr(1) } );
+                }
+                tab.show()
+                tab.children('a').first().click();
+                parent.addClass('active');
+                lizMap.events.triggerEvent( "dockopened", {'id':id} );
+            }
+            self.blur();
+
+            var dock = $('#dock');
+            if ( $('#dock-tabs .active').length == 0 )
+              dock.hide();
+            else if ( !dock.is(':visible') )
+              dock.show();
+            return false;
+          });
+          // Show layer switcher
+          $('#button-switcher').click();
+          updateContentSize();
 
           // Toggle Metadata
-          $('#displayMetadata').click(function(){
-            $('#metadata').toggle();
-            if ( $('#metadata').is(':visible') )
-              $('#displayMetadata').parent().addClass('active');
-            else
-              $('#displayMetadata').parent().removeClass('active');
-            return false;
-          });
+          //$('#displayMetadata').click(function(){
+          /*
           $('#hideMetadata').click(function(){
-            $('#metadata').hide();
+            //$('#metadata').hide();
             $('#displayMetadata').parent().removeClass('active');
             return false;
           });
+          */
 
           $('#headermenu .navbar-inner .nav a[rel="tooltip"]').tooltip();
+          $('#mapmenu .nav a[rel="tooltip"]').tooltip();
           self.events.triggerEvent("uicreated", self);
 
           $('body').css('cursor', 'auto');
           $('#loading').dialog('close');
+        }, "text");
         }, "text");
       });
     }
@@ -3625,7 +4174,8 @@ var lizMap = function() {
   // initializing the lizMap events
   obj.events = new OpenLayers.Events(
       obj, null,
-      ['treecreated','mapcreated','layersadded','uicreated'],
+      ['treecreated','mapcreated','layersadded','uicreated',
+       'dockopened','dockclosed'],
       true,
       {includeXY: true}
     );
@@ -3639,139 +4189,6 @@ var lizMap = function() {
 lizMap.events.on({
     'treecreated':function(evt){
        //console.log('treecreated');
-
- if (
-   (('osmMapnik' in evt.config.options)
-    && evt.config.options.osmMapnik == 'True') ||
-   (('osmMapquest' in evt.config.options)
-    && evt.config.options.osmMapquest == 'True') ||
-   (('osmCyclemap' in evt.config.options)
-    && evt.config.options.osmCyclemap == 'True') ||
-   (('googleStreets' in evt.config.options)
-    && evt.config.options.googleStreets == 'True') ||
-   (('googleSatellite' in evt.config.options)
-    && evt.config.options.googleSatellite == 'True') ||
-   (('googleHybrid' in evt.config.options)
-    && evt.config.options.googleHybrid == 'True') ||
-   (('googleTerrain' in evt.config.options)
-    && evt.config.options.googleTerrain == 'True') ||
-   (('bingStreets' in evt.config.options)
-    && evt.config.options.bingStreets == 'True'
-    && ('bingKey' in evt.config.options)) ||
-   (('bingSatellite' in evt.config.options)
-    && evt.config.options.bingSatellite == 'True'
-    && ('bingKey' in evt.config.options)) ||
-   (('bingHybrid' in evt.config.options)
-    && evt.config.options.bingHybrid == 'True'
-    && ('bingKey' in evt.config.options)) ||
-   (('ignTerrain' in evt.config.options)
-    && evt.config.options.ignTerrain == 'True'
-    && ('ignKey' in evt.config.options)) ||
-   (('ignStreets' in evt.config.options)
-    && evt.config.options.ignStreets == 'True'
-    && ('ignKey' in evt.config.options)) ||
-   (('ignSatellite' in evt.config.options)
-    && evt.config.options.ignSatellite == 'True'
-    && ('ignKey' in evt.config.options))
-   ) {
-     Proj4js.defs['EPSG:3857'] = Proj4js.defs['EPSG:900913'];
-     var proj = evt.config.options.projection;
-     if ( !(proj.ref in Proj4js.defs) )
-       Proj4js.defs[proj.ref]=proj.proj4;
-     var projection = new OpenLayers.Projection(proj.ref);
-     var projOSM = new OpenLayers.Projection('EPSG:3857');
-     proj.ref = 'EPSG:3857';
-     proj.proj4 = Proj4js.defs['EPSG:3857'];
-
-     // Transform the bbox
-     var bbox = evt.config.options.bbox;
-     var extent = new OpenLayers.Bounds(Number(bbox[0]),Number(bbox[1]),Number(bbox[2]),Number(bbox[3]));
-     extent = extent.transform(projection,projOSM);
-     bbox = extent.toArray();
-
-     var scales = [];
-     if ('mapScales' in evt.config.options)
-       scales = evt.config.options.mapScales;
-     if ( scales.length == 0 )
-       scales = [evt.config.options.maxScale,evt.config.options.minScale];
-
-     evt.config.options.projection = proj;
-     evt.config.options.bbox = bbox;
-     evt.config.options.zoomLevelNumber = 16;
-
-     // Transform the initial bbox
-     if ( 'initialExtent' in evt.config.options && evt.config.options.initialExtent.length == 4 ) {
-       var initBbox = evt.config.options.initialExtent;
-       var initialExtent = new OpenLayers.Bounds(Number(initBbox[0]),Number(initBbox[1]),Number(initBbox[2]),Number(initBbox[3]));
-       initialExtent = initialExtent.transform(projection,projOSM);
-       evt.config.options.initialExtent = initialExtent.toArray();
-     }
-
-     // Specify zoom level number
-     if ((('osmMapnik' in evt.config.options) && evt.config.options.osmMapnik == 'True') ||
-         (('osmMapquest' in evt.config.options) && evt.config.options.osmMapquest == 'True') ||
-         (('osmCyclemap' in evt.config.options) && evt.config.options.osmCyclemap == 'True') ||
-         (('bingStreets' in evt.config.options) && evt.config.options.bingStreets == 'True' && ('bingKey' in evt.config.options)) ||
-         (('bingSatellite' in evt.config.options) && evt.config.options.bingSatellite == 'True' && ('bingKey' in evt.config.options)) ||
-         (('bingHybrid' in evt.config.options) && evt.config.options.bingHybrid == 'True' && ('bingKey' in evt.config.options)) ||
-         (('ignTerrain' in evt.config.options) && evt.config.options.ignTerrain == 'True' && ('ignKey' in evt.config.options)) ||
-         (('ignStreets' in evt.config.options) && evt.config.options.ignStreets == 'True') && ('ignKey' in evt.config.options))
-       evt.config.options.zoomLevelNumber = 19;
-     if ((('googleStreets' in evt.config.options) && evt.config.options.googleStreets == 'True') ||
-         (('googleHybrid' in evt.config.options) && evt.config.options.googleHybrid == 'True') ||
-         (('ignSatellite' in evt.config.options) && evt.config.options.ignSatellite == 'True') && ('ignKey' in evt.config.options))
-       evt.config.options.zoomLevelNumber = 20;
-     if ((('googleSatellite' in evt.config.options) && evt.config.options.googleSatellite == 'True'))
-       evt.config.options.zoomLevelNumber = 21;
-     evt.config.options.maxScale = 591659030.3224756;
-     evt.config.options.minScale = 2257.0000851534865;
-     //evt.config.options.mapScales = [];
-     var hasBaselayers = false;
-     for ( var l in evt.config.layers ) {
-       if ( evt.config.layers[l]["baseLayer"] == "True" )
-         hasBaselayers = true;
-     }
-     // for minRes evaluating to scale 100
-     // zoomLevelNumber is equal to 24
-     if (hasBaselayers) {
-       evt.config.options.zoomLevelNumber = 24;
-     }
-
-     var resolutions = [];
-     if (scales.length != 0 ) {
-       scales.sort(function(a, b) {
-         return Number(b) - Number(a);
-       });
-       var maxScale = scales[0];
-       var maxRes = OpenLayers.Util.getResolutionFromScale(maxScale, projOSM.proj.units);
-       var minScale = scales[scales.length-1];
-       var minRes = OpenLayers.Util.getResolutionFromScale(minScale, projOSM.proj.units);
-       var res = 156543.03390625;
-       var n = 1;
-       while ( res > minRes && n < evt.config.options.zoomLevelNumber) {
-         if ( res < maxRes ) {
-           if (resolutions.length == 0 && res != 156543.03390625)
-             resolutions.push(res*2);
-           resolutions.push(res);
-         }
-         res = res/2;
-         n++;
-       }
-       maxRes = resolutions[0];
-       minRes = res;
-       resolutions.push(res);
-       var maxScale = OpenLayers.Util.getScaleFromResolution(maxRes, projOSM.proj.units);
-       var minScale = OpenLayers.Util.getScaleFromResolution(minRes, projOSM.proj.units);
-     }
-     evt.config.options['resolutions'] = resolutions;
-
-     if (resolutions.length != 0 ) {
-       evt.config.options.zoomLevelNumber = resolutions.length;
-       evt.config.options.maxScale = maxScale;
-       evt.config.options.minScale = minScale;
-     }
-   }
-
     }
     ,'mapcreated':function(evt){
       //console.log('mapcreated');
@@ -4314,7 +4731,7 @@ lizMap.events.on({
           evt.baselayers.push(new OpenLayers.Layer.WMS(layerName,url
             ,layerWmsParams
             ,{isBaseLayer:true
-            ,gutter:5
+            ,gutter:(layerConfig.cached == 'True') ? 0 : 5
             ,buffer:0
             ,singleTile:(layerConfig.singleTile == 'True')
           }));
@@ -4324,10 +4741,25 @@ lizMap.events.on({
       }
 
     }
-   ,'uicreated':function(evt){
-  //console.log('uicreated')
+   ,
+   'uicreated': function(evt){
+      //~ console.log('uicreated')
+
+      // Make subdock always be at the left
+      $('#sub-dock').hover(function(){
+        var sLeft = lizMap.getDockRightPosition();
+        $(this).css( 'left', sLeft );
+      });
+
+      // Update legend if mobile
+      if( lizMap.checkMobile() ){
+        //~ lizMap.updateContentSize();
+        if( $('#button-switcher').parent().hasClass('active') )
+          $('#button-switcher').click();
+      }
 
    }
+
 });
 
 $(document).ready(function () {

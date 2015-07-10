@@ -1,13 +1,13 @@
 
 #title h1 {
-  color : #AAAAAA;
+  color : #E9E9E9;
 }
 #title h2 {
-  color : #585858;
+  color : lightgrey;
 }
 #headermenu .navbar-search .icon {
   background-color: transparent;
-  background-position: -100px -20px;
+  background-position: -400px 0px;
 }
 #headermenu .dropdown-menu {
   background-color: rgb(255,255,255);
@@ -26,62 +26,62 @@
   color: rgb(51,51,51);
 }
 
-.navbar .nav .information .icon {
-  background-position: -120px -20px;
+.navbar .nav .metadata .icon {
+  background-position: -125px 0px;
 }
-.navbar .nav .information a:hover .icon,
-.navbar .nav .information.active a .icon {
-  background-position: -120px 0px;
+.navbar .nav .metadata a:hover .icon,
+.navbar .nav .metadata.active a .icon {
+  background-position: -100px 0px;
 }
 
 .navbar .nav .map .icon {
-  background-position: -40px -60px;
+  background-position: -75px 0px;
 }
 .navbar .nav .map a:hover .icon,
 .navbar .nav .map.active a .icon {
-  background-position: -40px -40px;
+  background-position: -50px 0px;
 }
 .navbar .nav .legend .icon {
-  background-position: -40px -100px;
+  background-position: -75px 0px;
 }
 .navbar .nav .legend a:hover .icon,
 .navbar .nav .legend.active a .icon {
-  background-position: -40px -80px;
+  background-position: -50px 0px;
 }
 .navbar .nav .locate .icon {
-  background-position: -20px -100px;
+  background-position: -175px 0px;
 }
 .navbar .nav .locate a:hover .icon,
 .navbar .nav .locate.active a .icon {
-  background-position: -20px -80px;
+  background-position: -150px 0px;
 }
 .navbar .nav .print .icon {
-  background-position: -160px -20px;
+  background-position: -375px 0px;
 }
 .navbar .nav .print a:hover .icon,
 .navbar .nav .print.active a .icon {
-  background-position: -160px 0px;
+  background-position: -350px 0px;
 }
 .navbar .nav .edition .icon {
-  background-position: -200px -20px;
+  background-position: -475px 0px;
 }
 .navbar .nav .edition a:hover .icon,
 .navbar .nav .edition.active a .icon {
-  background-position: -200px 0px;
+  background-position: -450px 0px;
 }
 .navbar .nav .measure .icon {
-  background-position: -140px -20px;
+  background-position: -275px 0px;
 }
 .navbar .nav .measure a:hover .icon,
 .navbar .nav .measure.active a .icon {
-  background-position: -140px 0px;
+  background-position: -250px 0px;
 }
-.navbar .nav .geolocate .icon {
-  background-position: -20px -60px;
+.navbar .nav .geolocation .icon {
+  background-position: -325px 0px;
 }
-.navbar .nav .geolocate a:hover .icon,
-.navbar .nav .geolocate.active a .icon {
-  background-position: -20px -40px;
+.navbar .nav .geolocation a:hover .icon,
+.navbar .nav .geolocation.active a .icon {
+  background-position: -300px 0px;
 }
 
 #content .ui-icon {
@@ -117,31 +117,31 @@
 }
 #toolbar .baselayer h3 .icon,
 #menu .baselayer h3 .icon {
-  background-position : -40px 0px;
+  background-position : -725px 0px;
 }
 #toolbar .switcher h3 .icon,
 #menu .switcher h3 .icon {
-  background-position : -40px -160px;
+  background-position : -75px 0px;
 }
 #toolbar .locate h3 .icon,
 #menu .locate h3 .icon {
-  background-position : -20px -80px;
+  background-position : -175px 0px;
 }
-#toolbar .geolocate h3 .icon,
-#menu .geolocate h3 .icon {
-  background-position: -20px -60px;
+#toolbar .geolocation h3 .icon,
+#menu .geolocation h3 .icon {
+  background-position: -325px 0px;
 }
 #toolbar .print h3 .icon,
 #menu .print h3 .icon {
-  background-position: -160px 0px;
+  background-position: -375px 0px;
 }
 #toolbar .measure h3 .icon,
 #menu .measure h3 .icon {
-  background-position: -140px 0px;
+  background-position: -275px 0px;
 }
 #toolbar .edition h3 .icon,
 #menu .edition h3 .icon {
-  background-position : -200px 0px;
+  background-position : -675px 0px;
 }
 
 /*
@@ -222,7 +222,7 @@ Timemanager
 }
 
 #locate div.locate-layer .custom-combobox-toggle {
-  background: url(images/123_click.png) no-repeat right;
+  background: url(images/123_click.png) no-repeat right -5px;
 }
 #locate div.locate-layer .custom-combobox-input {
   background: none;
@@ -279,15 +279,15 @@ Timemanager
 
 /*navbar*/
 #navbar div.slider{
-  background : #C81F2D;
+  background : #C81F2D;/* #0081C2; */
   border : solid 1px white;
 }
-#navbar div.slider a{
+#navbar div.slider span{
   background : black;
   border : solid 1px black;
 }
 #navbar button.ui-button-icon-only{
-  background : #CE1F2D;
+  background : #0081C2;/* #CE1F2D;*/
   border : solid 1px white;
 }
 #navbar button.ui-state-select{
@@ -334,7 +334,8 @@ Timemanager
 
 #overview-bar .button {
   border-left : solid 1px #606060;
-  background : #DDD;
+  /*background : #DDD;*/
+  background : url('images/123_click.png') no-repeat scroll right center #DDD;
 }
 #overview-bar .ui-icon {
   background-image : url(images/sprite_menu.png);
@@ -364,10 +365,6 @@ Timemanager
 
 #attribution-box {
   background-color : rgba(255,255,255,0.7);
-}
-
-#permalink-box {
-  background : rgba(255,255,255,0.5);
 }
 
 
@@ -422,9 +419,7 @@ Timemanager
 .attributeLayers-layer-div span.attribute-layer-msg.failure {
   color:red;
 }
-#attribute-table-container {
-  border: 1px solid #606060;
-}
+
 
 .alert-info {
   background-color : #3a3c3d;

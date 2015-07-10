@@ -36,6 +36,10 @@ abstract class jDbSchema {
 
     /**
      * create the given table
+     * @param string $name
+     * @param array $columns list of jDbColumn
+     * @param string|array $primaryKey the name of the column which contains the primary key
+     * @param array $attributes
      * @return jDbTable the object corresponding to the created table
      */
     function createTable($name, $columns, $primaryKey, $attributes = array()) {
@@ -97,6 +101,10 @@ abstract class jDbSchema {
 
     /**
      * create the given table into the database
+     * @param string $name
+     * @param array $columns list of jDbColumn
+     * @param string|array $primaryKey the name of the column which contains the primary key
+     * @param array $attributes
      * @return jDbTable the object corresponding to the created table
      */
     abstract protected function _createTable($name, $columns, $primaryKey, $attributes = array());
@@ -111,7 +119,6 @@ abstract class jDbSchema {
      * return the SQL string corresponding to the given column.
      * private method, should be used only by a jDbTable object
      * @param jDbColumn $col  the column
-     * @param jDbTools $tools
      * @return string the sql string
      * @access private
      */
