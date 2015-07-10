@@ -96,7 +96,7 @@ class qgisFormControl{
       ),
       15 => array (
             'qgis'=>array('name'=>'Value relation', 'description'=>'Select layer, key column and value column'),
-            'jform'=>array('markup'=>'menulist')
+            'jform'=>array('markup'=>array('menulist','checkboxes'))
       ),
       16 => array (
             'qgis'=>array('name'=>'UUID generator', 'description'=>'Read-only field that generates a UUID if empty'),
@@ -207,7 +207,15 @@ class qgisFormControl{
         $this->fieldEditType = 0;
 
       // Get jform control type
-      $markup = $this->qgisEdittypeMap[$this->fieldEditType]['jform']['markup'];
+      if($this->fieldEditType == 15){
+        $markup = $this->qgisEdittypeMap[$this->fieldEditType]['jform']['markup'][(int)$this->edittype[0]->attributes()->allowMulti];
+      }
+      else if($this->fieldEditType === 'ValueRelation'){
+        $markup = $this->qgisEdittypeMap[$this->fieldEditType]['jform']['markup'][(int)$this->edittype[0]->widgetv2config->attributes()->AllowMulti];
+      }
+      else{
+        $markup = $this->qgisEdittypeMap[$this->fieldEditType]['jform']['markup'];
+      }
     }else{
       $markup='hidden';
     }
