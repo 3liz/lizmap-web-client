@@ -230,6 +230,11 @@ class qgisFormControl{
         $this->ctrl = new jFormsControlMenulist($this->ref);
         $this->fillControlDatasource();
         break;
+        
+      case 'checkboxes':
+        $this->ctrl = new jFormsControlCheckboxes($this->ref);
+        $this->fillControlDatasource();
+        break;
 
       case 'hidden':
         $this->ctrl = new jFormsControlHidden($this->ref);
