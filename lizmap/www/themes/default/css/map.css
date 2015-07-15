@@ -475,29 +475,31 @@ Timemanager
 /*Popup OpenLayers*/
 .lizmapPopup.olPopup,
 #map-content .lizmapPopup{
-  background: #F6F6F6 !important;
+  background-color:#4A4A4A !important;
+  background-color:rgba(0,0,0,0.7) !important;
   border: 1px solid #C9C9C9 !important;
   color: black !important;
 }
 
 .lizmapPopup.olPopup .lizmapPopupContent h4,
 #map-content .lizmapPopupContent h4{
-  background: #2B2B2B !important;
-  color : #FBFBFB !important;
+  color : white !important;
+  border-bottom: 1px dashed white;
 }
 .lizmapPopup.olPopup .lizmapPopupContent a,
 #map-content .lizmapPopupContent a{
   color:black;
 }
+/*
 .lizmapPopup.olPopup .lizmapPopupTable,
 #map-content .lizmapPopupTable{
   border: 1px solid #2B2B2B !important;
 }
+*/
 .lizmapPopup.olPopup .lizmapPopupTable thead,
 #map-content .lizmapPopupTable thead {
-  color: white;
-  background-color: #81B00E;
-  border-bottom: 1px solid #2B2B2B !important;
+  color: black;
+  background-color: lightgrey;
 }
 .lizmapPopup.olPopup .lizmapPopupTable th.left,
 #map-content .lizmapPopupTable th.left{
