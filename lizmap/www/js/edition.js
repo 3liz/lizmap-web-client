@@ -216,18 +216,18 @@ var lizEdition = function() {
 
             });
 
-            lizMap.events.on({
-                dockopened: function(e) {
-                    if ( e.id == 'edition' ) {
-                        console.log('edition dock set visible');
-                    }
-                },
-                dockclosed: function(e) {
-                    if ( e.id == 'edition' ) {
-                        console.log('edition dock closed');
-                    }
-                }
-            });
+            //~ lizMap.events.on({
+                //~ dockopened: function(e) {
+                    //~ if ( e.id == 'edition' ) {
+                        //~ console.log('edition dock set visible');
+                    //~ }
+                //~ },
+                //~ dockclosed: function(e) {
+                    //~ if ( e.id == 'edition' ) {
+                        //~ console.log('edition dock closed');
+                    //~ }
+                //~ }
+            //~ });
 
             $('#edition-draw').click(function(){
                 // Do nothing if not enabled

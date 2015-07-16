@@ -11,7 +11,7 @@
 
 class lizMapCtrl extends jController {
 
-  // forceHiddenProjectVisible : Used to ovverride plugin configuration hideProject 
+  // forceHiddenProjectVisible : Used to ovverride plugin configuration hideProject
   // ( helpfull for modules which maps are based on a hidden project )
   protected $forceHiddenProjectVisible = false;
 
@@ -154,10 +154,9 @@ class lizMapCtrl extends jController {
     else
       $rep->title = $repository.' - '.$project;
 
-    // Add Timemanager
+    // Add date.js for timemanager
     if( $lproj->hasTimemanagerLayers() ) {
         $rep->addJSLink($bp.'js/date.js');
-        $rep->addJSLink($bp.'js/timemanager.js');
     }
 
     // Assign variables to template

@@ -237,6 +237,13 @@ CSS Sprite ositions calculated via http://instantsprite.com/ or https://draeton.
 #mapmenu .nav-list > li.permaLink a:hover .icon {
   background-position: -650px 0px;
 }
+#mapmenu .nav-list > li.timemanager .icon {
+  background-position: -625px 0px;
+}
+#mapmenu .nav-list > li.timemanager.active .icon,
+#mapmenu .nav-list > li.timemanager a:hover .icon {
+  background-position: -600px 0px;
+}
 
 
 /* navbar */
@@ -646,24 +653,7 @@ table.attribute-table-table tr.selected a:hover{
 /*
 Timemanager
 */
-#toolbar #timemanager-menu h3 .icon,
-#menu #timemanager-menu h3 .icon {
-  background-image : url(images/sprite_20_tools.png);
-}
-.navbar .navbar-inner .timemanager .icon {
-  background-image:url("images/sprite_20_tools.png");
-}
-.navbar .nav .timemanager .icon {
-  background-position: -625px 0px;
-}
-.navbar .nav .timemanager a:hover .icon,
-.navbar .nav .timemanager.active a .icon {
-  background-position: -600px 0px;
-}
-#toolbar .timemanager h3 .icon,
-#menu .timemanager h3 .icon {
-  background-position: -625px 0px;
-}
+
 #tmLayers button{
   width:16px;
   height:16px;
@@ -952,6 +942,12 @@ div.modal h3 .text {
 #dock .permaLink h3 .icon,
 #mini-dock .permaLink h3 .icon {
   background-position : -675px 0px;
+}
+#toolbar .timemanager h3 .icon,
+#menu .timemanager h3 .icon,
+#dock .timemanager h3 .icon,
+#mini-dock .timemanager h3 .icon {
+  background-position : -625px 0px;
 }
 
 #map-content {
@@ -1266,7 +1262,8 @@ div.modal h3 .text {
 #switcher tr.liz-layer.disabled a.expander {
   display:none;
 }
-#switcher button.btn{
+#switcher button.btn,
+#tmLayers button.btn{
   width:18px;
   height:18px;
   background: none;
@@ -1279,7 +1276,8 @@ div.modal h3 .text {
 }
 #switcher button.checkbox{
 }
-#switcher button.checkbox.checked{
+#switcher button.checkbox.checked,
+#tmLayers button.checkbox.checked{
   background-color : #0094D6;
   background-position : -48px -80px;
 }

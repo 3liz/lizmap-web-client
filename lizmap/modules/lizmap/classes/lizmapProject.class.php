@@ -689,6 +689,7 @@ class lizmapProject{
     public function getDefaultDockable() {
         jClasses::inc('view~lizmapMapDockItem');
         $dockable = array();
+        $bp = jApp::config()->urlengine['basePath'];
 
         // Get lizmap services
         $services = lizmap::getServices();
@@ -741,7 +742,6 @@ class lizmapProject{
 
         if ( $this->hasEditionLayers() ) {
             $tpl = new jTpl();
-            $bp = jApp::config()->urlengine['basePath'];
             $dockable[] = new lizmapMapDockItem(
                 'edition',
                 jLocale::get('view~edition.navbar.title'),
@@ -759,6 +759,7 @@ class lizmapProject{
         jClasses::inc('view~lizmapMapDockItem');
         $dockable = array();
         $configOptions = $this->getOptions();
+        $bp = jApp::config()->urlengine['basePath'];
 
         if ( $this->hasLocateByLayer() ) {
             $tpl = new jTpl();
@@ -809,7 +810,9 @@ class lizmapProject{
                 'timemanager',
                 jLocale::get('view~map.timemanager.navbar.title'),
                 $tpl->fetch('view~map_timemanager'),
-                6
+                6,
+                '',
+                $bp.'js/timemanager.js'
             );
         }
 
@@ -831,8 +834,8 @@ class lizmapProject{
         jClasses::inc('view~lizmapMapDockItem');
         $dockable = array();
         $configOptions = $this->getOptions();
-
         $bp = jApp::config()->urlengine['basePath'];
+
         if ( $this->hasAttributeLayers() ) {
             $form = jForms::create( 'view~attribute_layers_option' );
             $assign = array( 'form' => $form );

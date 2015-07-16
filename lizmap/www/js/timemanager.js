@@ -13,21 +13,31 @@ var lizTimemanager = function() {
             if (!('timemanagerLayers' in config))
               return -1;
 
-            $("#toggleTimemanager").tooltip();
             $('#timemanager-menu button.btn-timemanager-clear').click(function() {
-                deactivateTimemanager();
+                $('#button-timemanager').click();
             });
-            $('#toggleTimemanager').click(function(){
-                if (tmActive){
-                    deactivateTimemanager();
-                }else{
-                    $('#toggleTimemanager').parent().addClass('active');
-                    $('#timemanager-menu').show();
-                    lizMap.updateSwitcherSize();
-                    activateTimemanager();
-                    tmActive = true;
+
+            lizMap.events.on({
+                minidockopened: function(e) {
+                    if ( e.id == 'timemanager' ) {
+                        //~ console.log('timemanager dock set visible');
+                        if (!tmActive){
+                            $('#timemanager-menu').show();
+                            activateTimemanager();
+                            tmActive = true;
+                        }
+                    }
+                },
+                minidockclosed: function(e) {
+                    if ( e.id == 'timemanager' ) {
+                        //~ console.log('timemanager dock closed');
+                        if(tmActive)
+                            deactivateTimemanager();
+                    }
                 }
             });
+
+            $("#tmSlider").slider( );
 
             var filter = null;
             var tmAnimationTimer;
@@ -223,7 +233,7 @@ var lizTimemanager = function() {
                             }
                             var lonlat = evt.feature.geometry.getBounds().getCenterLonLat();
 
-                            var popup = new OpenLayers.Popup.AnchoredBubble(
+                            var popup = new OpenLayers.Popup.Anchored(
                                 'tmPopup',
                                 lonlat,
                                 new OpenLayers.Size(150,100),
@@ -249,36 +259,34 @@ var lizTimemanager = function() {
                   highlightControl.activate();
                 }
 
+
+                $('#tmLayers button.checkbox').addClass('checked');
+
                 if ($('#tmLayers').children().length == 0) {
                   for ( var g in tmGroups ) {
                     var tmGroup = tmGroups[g];
                     var div = '<div>';
-                    div += '<td><button class="checkbox" name="tm" value="'+tmGroup.id+'" title="'+lizDict['tree.button.checkbox']+'"></button>';
+                    div += '<td><button class="btn checkbox checked" name="tm" value="'+tmGroup.id+'" title="'+lizDict['tree.button.checkbox']+'"></button>';
                     div +=  '<span class="label" title="'+tmGroup.title+'">'+tmGroup.title+'</span>';
                     div += '</div>';
                     $('#tmLayers').append(div);
                   }
-                  $('#tmLayers button.checkbox').button({
-                    icons:{primary:'liz-icon-check'},
-                    text:false
-                  })
-                  .removeClass( "ui-corner-all" )
+                  $('#tmLayers button.checkbox')
                   .click(function(){
                     var self = $(this);
-                    var tmGroup = tmGroups[self.val()];
-                    var icons = self.button('option','icons');
-                    for (var i=0, len=tmGroup.layers.length; i<len; i++) {
-                      tmGroup.layers[i].setVisibility(icons.primary != 'liz-icon-check');
-                    }
-                    if (icons.primary != 'liz-icon-check') {
-                      self.button('option','icons',{primary:'liz-icon-check'});
+
+                    if ( self.hasClass('checked') ) {
+                      self.removeClass('checked');
                     } else {
-                      self.button('option','icons',{primary:''});
+                        self.addClass('checked');
+                    }
+
+                    var tmGroup = tmGroups[self.val()];
+                    for (var i=0, len=tmGroup.layers.length; i<len; i++) {
+                      tmGroup.layers[i].setVisibility( self.hasClass('checked') );
                     }
                   });
                 }
-
-                lizMap.updateSwitcherSize();
 
             }
 
@@ -296,10 +304,10 @@ var lizTimemanager = function() {
                     //~ lizMap.map.removeLayer(layer);
 
                 }
+                $('#tmLayers button.checkbox').removeClass('checked');
                 // Hide menu
-                $('#toggleTimemanager').parent().removeClass('active');
                 $('#timemanager-menu').hide();
-                lizMap.updateSwitcherSize();
+
                 tmActive = false;
             }
 
@@ -362,6 +370,7 @@ var lizTimemanager = function() {
 
             function setAnimationBoundariesFromLayer(aName) {
                 var layer = lizMap.map.getLayersByName(aName)[0];
+
                 var features = layer.features;
                 if (!features || features.length == 0){
                     if (tmActive){
@@ -369,19 +378,21 @@ var lizTimemanager = function() {
                         return null;
                     }
                 }
-                var minTime = Infinity, maxTime = -Infinity;
+                var minTime = Infinity, maxTime = -Infinity ;
                 wmsLayer = aName.split("@")[1];
                 var startAttribute = config.timemanagerLayers[wmsLayer]['startAttribute'];
+
                 for (var fid in features) {
                     var feat = features[fid];
-                    var featTime = Date.parse(feat.attributes[startAttribute]);
+                    var featTime = Date.parse( feat.attributes[startAttribute].toString()  );
+
                     feat.attributes[startAttribute] = featTime;
                     if (featTime && featTime < minTime) minTime = featTime;
                     if (featTime && featTime > maxTime) maxTime = featTime;
                 }
-                tmStartDate = new Date(minTime.getTime());
-                tmEndDate = new Date(maxTime.getTime());
-                tmCurrentDate = new Date(tmStartDate.getTime());
+                tmStartDate = new Date( minTime.getTime() );
+                tmEndDate = new Date( maxTime.getTime() );
+                tmCurrentDate = new Date( tmStartDate.getTime() );
 
                 config.timemanagerLayers[wmsLayer]['filter'] = new OpenLayers.Filter.Comparison({
                     type: OpenLayers.Filter.Comparison.BETWEEN,
@@ -400,7 +411,6 @@ var lizTimemanager = function() {
                     max: tmEndDate.getTime(),
                     value: tmStartDate.getTime()
                 });
-                lizMap.updateSwitcherSize();
             }
 
             $( "#tmSlider" ).on( "slide", function( event, ui ) {
@@ -411,7 +421,7 @@ var lizTimemanager = function() {
             });
 
             $("#tmTogglePlay").click(function(){
-                if($(this).html() == lizDict['timemanager.toolbar.play']){
+                if( $(this).html() == lizDict['timemanager.toolbar.play'] ){
                     startAnimation();
                 } else {
                     stopAnimation();
@@ -525,13 +535,6 @@ var lizTimemanager = function() {
 
             function onSliderUpdate() {
                 var sliderVal = $("#tmSlider").slider( "option", "value" );
-                //~ var lowerBoundary = new Date(sliderVal);
-                //~ var upperBoundary = getSideDate(
-                    //~ lowerBoundary, tmTimeFrameSize, tmTimeFrameType, 1, 1
-                //~ );
-                //~ setLayersFilterBoundaries(lowerBoundary, upperBoundary);
-                //~ tmCurrentDate = new Date(lowerBoundary.getTime());
-                //~ $('#tmCurrentValue').html(setDisplayedDate(tmCurrentDate));
             }
 
             function setSliderStep(sliderDate, type){
@@ -542,7 +545,6 @@ var lizTimemanager = function() {
                 if (type == 'weeks') sliderDate = sliderDate.monday();
                 if (type == 'months') sliderDate = sliderDate.set( {day : 1});
                 if (type == 'years') {
-                    //~ if(sliderDate.months() > 6) {sliderDate.addYears(1);}
                     sliderDate.set( {month : 0});
                 }
                 return sliderDate;
@@ -580,7 +582,7 @@ var lizTimemanager = function() {
                     highlightControl.activate();
                 // Reset current date to startDate if reset asked
                 if (reset === true) {
-                    tmCurrentDate = new Date(tmStartDate.getTime());
+                    tmCurrentDate = new Date( new Date(tmStartDate).getTime() );
                     $('#tmCurrentValue').html(setDisplayedDate(tmCurrentDate));
                     $("#tmSlider").slider( "option", "value", tmCurrentDate.getTime() );
                     var upperBoundary = getSideDate(
