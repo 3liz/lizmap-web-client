@@ -1200,7 +1200,10 @@ div.modal h3 .text {
 #switcher-layers-actions {
   background-color: inherit;
   margin-bottom: 1px;
+  padding-right: 10px;
+  text-align: right;
   border-top: 1px solid rgba(255,255,255,0.4);
+
 }
 #switcher-layers-actions.active {
   border-top: 1px solid rgba(255,255,255,0.6);
@@ -1856,3 +1859,12 @@ div.modal h3 .text {
 .olImageLoadError {
     display: none !important;
 }
+
+
+
+/* Tooltips */
+div.tooltip {
+  z-index: 2000 !important;
+  position:fixed !important;
+}
+

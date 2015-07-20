@@ -108,7 +108,10 @@ var lizLayerActionButtons = function() {
     'uicreated': function(evt){
 
         // title tooltip
-        $('#switcher-layers-actions .btn').tooltip( {placement: 'bottom'} );
+        $('#switcher-layers-actions .btn').tooltip( {
+            placement: 'bottom'
+
+        } );
 
         // Activate switcher-layers-actions button
         $('#layerActionMetadata').click(function(){

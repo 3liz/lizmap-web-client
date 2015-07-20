@@ -262,11 +262,9 @@ var lizEdition = function() {
                 finishEdition();
             });
 
-            $('#edition-menu a[rel="tooltip"]').tooltip();
-
         } else {
             $('#edition').parent().remove();
-            $('#edition-menu').remove();
+            $('#button-edition').remove();
             $('#edition-form-container').hide();
         }
     }

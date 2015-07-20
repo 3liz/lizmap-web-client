@@ -351,7 +351,9 @@ var lizAttributeTable = function() {
                 html+= '</div>'; // 'attribute-layer-' + layerName
 
                 $('#attribute-table-container').append(html);
-                $('#attribute-layer-' + layerName + ' button').tooltip( {placement: 'bottom'} );
+                $('#attribute-layer-' + layerName + ' button').tooltip( {
+                    placement: 'bottom'
+                } );
 
                 $('.btn-close-attribute-tab').click(function(){
                     //there are multiple elements which has .closeTab icon so close the tab whose close icon is clicked
@@ -2336,7 +2338,9 @@ var lizAttributeTable = function() {
 
                         if( eHtml ){
                             $(this).after(eHtml);
-                            $('#liz_layer_popup button.btn').tooltip( {placement: 'bottom'} );
+                            $('#liz_layer_popup button.btn').tooltip( {
+                                placement: 'bottom'
+                            } );
                             hasButton = true;
                         }
 

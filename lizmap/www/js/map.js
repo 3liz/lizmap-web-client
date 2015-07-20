@@ -1740,7 +1740,9 @@ var lizMap = function() {
       //$('#locate-menu').show();
     }
 
-    $('#switcher span.label').tooltip();
+    $('#switcher span.label').tooltip({
+      viewport: '#dock'
+    });
   }
   function createSwitcher() {
     // set the switcher content
@@ -2159,7 +2161,9 @@ var lizMap = function() {
       //$('#locate-menu').show();
     }
 
-    $('#switcher span.label').tooltip();
+    $('#switcher span.label').tooltip({
+      viewport: '#dock'
+    });
 
   }
 
