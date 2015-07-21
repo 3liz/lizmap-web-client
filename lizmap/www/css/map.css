@@ -20,19 +20,6 @@ body {
   margin-top:1px;
   height:30px;
   width:235px;
-  margin-left:120px;
-}
-#headermenu.mobile .navbar-search {
-  margin-top:1px;
-  height:30px;
-  width:100px;
-  margin-left:10px;
-
-}
-#headermenu.mobile #auth {
-  position: absolute;
-  top: -30px;
-  right: 5px;
 }
 
 #headermenu .navbar-search .search-query {
@@ -1867,4 +1854,6 @@ div.tooltip {
   z-index: 2000 !important;
   position:fixed !important;
 }
-
+.tooltip-inner{
+  display: inline-block;
+}
