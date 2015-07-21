@@ -680,8 +680,7 @@ var lizMap = function() {
           $.each(wmtsCapabilities.contents.layers, function(i, l) {
             if ( l.identifier != layer.name)
               return true;
-            //console.log( layer.name +' '+ config.options.projection.ref );
-            wmtsLayer = wmtsFormat.createLayer(wmtsCapabilities, {
+            var wmtsOptions = {
                 layer: layer.name,
                 matrixSet: config.options.projection.ref,
                 name: layerName,
@@ -690,7 +689,27 @@ var lizMap = function() {
                 isBaseLayer: (layerConfig.baseLayer == 'True'),
                 alwaysInRange: false,
                 url: serviceUrl
-            });
+            };
+            if ( ['EPSG:3857','EPSG:900913'].indexOf( config.options.projection.ref ) != -1
+              && ('resolutions' in config.options)
+              && config.options.resolutions.length != 0 ) {
+                var resolutions = config.options.resolutions;
+                var maxRes = resolutions[0];
+                var numZoomLevels = resolutions.length;
+                var zoomOffset = 0;
+                var res = 156543.03390625;
+                while ( res > maxRes ) {
+                    zoomOffset += 1;
+                    res = 156543.03390625 / Math.pow(2, zoomOffset);
+                }
+                wmtsOptions['zoomOffset'] = zoomOffset;
+                wmtsOptions['maxResolution'] = maxRes;
+                wmtsOptions['numZoomLevels'] = numZoomLevels;
+                wmtsOptions['minZoomLevel'] = zoomOffset;
+                wmtsOptions['resolutions'] = resolutions;
+            }
+            //console.log( layer.name +' '+ config.options.projection.ref );
+            wmtsLayer = wmtsFormat.createLayer(wmtsCapabilities, wmtsOptions);
             // console.log( wmtsLayer );
             return false;
           });
@@ -719,7 +738,7 @@ var lizMap = function() {
         }
 
       if (layerConfig.baseLayer == 'True' && wmtsLayer != null) {
-          // creating the base layer
+          // creating the base layer          
           baselayers.push( wmtsLayer );
       }
       else if (layerConfig.type == 'layer' && wmtsLayer != null) {
