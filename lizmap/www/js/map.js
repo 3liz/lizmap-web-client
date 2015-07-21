@@ -1254,6 +1254,14 @@ var lizMap = function() {
       var bbox = new OpenLayers.Bounds(locate.bbox);
       bbox.transform(proj, map.getProjection());
       map.zoomToExtent(bbox);
+
+      // Trigger event
+      lizMap.events.triggerEvent(
+        'lizmaplocatefeaturecanceled',
+        {
+          'featureType': aName
+        }
+      );
     } else {
       // zoom to val
       var feat = locate.features[val];
@@ -1261,10 +1269,20 @@ var lizMap = function() {
       feat = format.read(feat)[0];
       feat.geometry.transform(proj, map.getProjection());
       map.zoomToExtent(feat.geometry.getBounds());
+
+      var fid = val.split('.')[1];
       // Show geometry if asked
       if (locate.displayGeom == 'True')
         layer.addFeatures([feat]);
 
+      // Trigger event
+      lizMap.events.triggerEvent(
+        'lizmaplocatefeaturechanged',
+        {
+          'featureType': aName,
+          'featureId': fid
+        }
+      );
     }
   }
 
@@ -1727,11 +1745,24 @@ var lizMap = function() {
             getLocateFeature(lname);
           }
           $('#locate-clear').click(function() {
+
             var layer = map.getLayersByName('locatelayer')[0];
             layer.destroyFeatures();
             $('#locate select').val('-1');
+            $('div.locate-layer span input').val('');
+
+            if( lizMap.lizmapLayerFilterActive ){
+                lizMap.events.triggerEvent(
+                  'lizmaplocatefeaturecanceled',
+                  {'featureType': lizMap.lizmapLayerFilterActive}
+                );
+            }
+
+            return false;
+
           });
-          $('#locate button.btn-locate-clear').click(function() {
+          $('#locate-close').click(function() {
+            $('#locate-clear').click(); // deactivate locate feature and filter
             $('#button-locate').click();
             return false;
           });
@@ -2151,8 +2182,19 @@ var lizMap = function() {
             var layer = map.getLayersByName('locatelayer')[0];
             layer.destroyFeatures();
             $('#locate select').val('-1');
+            $('div.locate-layer span input').val('');
+
+            if( lizMap.lizmapLayerFilterActive ){
+                lizMap.events.triggerEvent(
+                  'lizmaplocatefeaturecanceled',
+                  {'featureType': lizMap.lizmapLayerFilterActive}
+                );
+            }
+            return false;
+
           });
-          $('#locate button.btn-locate-clear').click(function() {
+          $('#locate-close').click(function() {
+            $('#locate-clear').click(); // deactivate locate and filter
             $('#button-locate').click();
             return false;
           });

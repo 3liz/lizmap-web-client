@@ -1198,6 +1198,9 @@ div.modal h3 .text {
 #switcher-layers-actions button{
   border: none;
 }
+#switcher-layers-actions button#layerActionUnfilter{
+  margin-left: 15px;
+}
 
 
 #switcher > div {

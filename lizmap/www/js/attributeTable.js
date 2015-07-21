@@ -1646,7 +1646,6 @@ var lizAttributeTable = function() {
 
                 if( !config.attributeLayers[featureType] )
                     return false;
-
                 // Assure selectedFeatures property exists for the layer
                 if( !config.layers[featureType]['selectedFeatures'] )
                     config.layers[featureType]['selectedFeatures'] = [];
@@ -2518,8 +2517,42 @@ var lizAttributeTable = function() {
                             return false;
                         refreshTablesAfterEdition( featureType );
                     } // todo : only remove line corresponding to deleted feature ?
+                },
+
+                // Filter layer when using "Locate by layer" tool
+                lizmaplocatefeaturechanged: function(e){
+                    if( !( e.featureType in config.attributeLayers) || startupFilter )
+                        return false;
+
+                    var aConfig = config.locateByLayer[e.featureType];
+                    var triggerFilterOnLocate = false;
+
+                    if( 'filterOnLocate' in aConfig && aConfig.filterOnLocate == 'True' )
+                        triggerFilterOnLocate = true;
+                    if( !triggerFilterOnLocate )
+                        return false;
+
+                    // Select feature
+                    lizMap.events.triggerEvent(
+                        'layerfeatureselected',
+                        {'featureType': e.featureType, 'fid': e.featureId, 'updateDrawing': false}
+                    );
+                    // Filter selected feature
+                    lizMap.events.triggerEvent(
+                        'layerfeaturefilterselected',
+                        {'featureType': e.featureType}
+                    );
+                },
+
+                lizmaplocatefeaturecanceled: function(e){
+
+                    lizMap.events.triggerEvent(
+                        'layerfeatureremovefilter',
+                        {'featureType': e.featureType}
+                    );
                 }
-            });
+
+            }); // lizMap.events.on end
 
 
         } // uicreated
