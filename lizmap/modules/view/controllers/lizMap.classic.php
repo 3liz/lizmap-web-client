@@ -124,7 +124,8 @@ class lizMapCtrl extends jController {
       "ign" => jUrl::get('lizmap~ign:address'),
       "edition" => jUrl::get('lizmap~edition:getFeature'),
       "permalink" => jUrl::getFull('view~map:index'),
-      "dataTableLanguage"=> $bp.'js/dataTables/'.jApp::config()->locale.'.json'
+      "dataTableLanguage"=> $bp.'js/dataTables/'.jApp::config()->locale.'.json',
+      "basepath" => $bp
     );
 
     // Get optionnal WMS public url list

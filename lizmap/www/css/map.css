@@ -1192,6 +1192,10 @@ div.modal h3 .text {
   border-top: 1px solid rgba(255,255,255,0.4);
 
 }
+#switcher-layers-actions div.btn-group > ul{
+  left:auto;
+  right:0px;
+}
 #switcher-layers-actions.active {
   border-top: 1px solid rgba(255,255,255,0.6);
 }

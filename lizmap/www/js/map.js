@@ -738,7 +738,7 @@ var lizMap = function() {
         }
 
       if (layerConfig.baseLayer == 'True' && wmtsLayer != null) {
-          // creating the base layer          
+          // creating the base layer
           baselayers.push( wmtsLayer );
       }
       else if (layerConfig.type == 'layer' && wmtsLayer != null) {
@@ -897,7 +897,9 @@ var lizMap = function() {
       var url = getLayerLegendGraphicUrl(aNode.name, false);
 
       html += '<tr id="legend-'+aNode.name+'" class="child-of-layer-'+aNode.name+' legendGraphics">';
-      html += '<td colspan="2"><div class="legendGraphics"><img src="'+url+'"/></div></td>';
+      html += '<td colspan="2"><div class="legendGraphics">';
+      html += '<img data-src="'+url+'" src="'+lizUrls.basepath + 'css/images/download_layer.gif' + '"/>';
+      html += '</div></td>';
       html += '</tr>';
     }
 
@@ -1546,11 +1548,11 @@ var lizMap = function() {
            && (!nodeConfig.noLegendImage || nodeConfig.noLegendImage != 'True')) {
       var url = getLayerLegendGraphicUrl(aNode.name, false);
       html += '<ul id="legend-layer-'+aNode.name+'">';
-      html += '<li><div><img src="'+url+'"/></div></li>';
+      html += '<li><div><img data-src="'+url+'" src="'+lizUrls.basepath + 'css/images/download_layer.gif' + '"/></div></li>';
       html += '</ul>';
       /*
       html += '<tr id="legend-'+aNode.name+'" class="child-of-layer-'+aNode.name+' legendGraphics">';
-      html += '<td colspan="2"><div class="legendGraphics"><img src="'+url+'"/></div></td>';
+      html += '<td colspan="2"><div class="legendGraphics"><img data-src="'+url+'"/></div></td>';
       html += '</tr>';
       */
     }
@@ -1801,13 +1803,17 @@ var lizMap = function() {
       onNodeShow: function() {
         //updateSwitcherSize();
         var self = $(this);
+        self.addClass('visible');
         if (self.find('div.legendGraphics').length != 0) {
           var name = self.attr('id').replace('legend-','');
           var url = getLayerLegendGraphicUrl(name, true);
-          self.find('div.legendGraphics img').attr('src',url);
+          var limg = self.find('div.legendGraphics img');
+          limg.attr('src', limg.attr('data-src') );
         }
       },
       onNodeHide: function() {
+        var self = $(this);
+        self.removeClass('visible');
         //updateSwitcherSize();
       }
     });
@@ -4101,24 +4107,35 @@ var lizMap = function() {
           $('#navbar div.slider').slider("value",map.getZoom());
           map.events.on({
             zoomend : function() {
+              // Update legends
               $('#switcher table.tree tr.legendGraphics.initialized').each(function() {
                 var self = $(this);
                 var name = self.attr('id').replace('legend-','');
                 var url = getLayerLegendGraphicUrl(name, true);
-                self.find('div.legendGraphics img').attr('src',url);
+                // Change image attribute data-src
+                self.find('div.legendGraphics img').attr( 'data-src', url );
+                // Only change image attribute src if legend is displayed
+                if( self.hasClass('visible') ){
+                    self.find('div.legendGraphics img').attr( 'src', url );
+                }
               });
               // update slider position
-              $('#navbar div.slider').slider("value",this.getZoom());
+              $('#navbar div.slider').slider("value", this.getZoom());
             }
           });
 
           // Connect signal/slot when layer style is changed
           lizMap.events.on({
             'layerstylechanged': function(evt){
+
+              // Change legend data-src and legend src if legend is visible
               var name = evt.featureType;
               var url = getLayerLegendGraphicUrl(name, true);
               var lSel = '#switcher table.tree tr#legend-' + name + ' div.legendGraphics img' ;
-              $(lSel).attr('src',url);
+              $(lSel).attr('data-src',url);
+              if( $('#switcher table.tree tr#legend-' + name).hasClass('visible') )
+                  $(lSel).attr('src',url);
+
             }
           });
 
