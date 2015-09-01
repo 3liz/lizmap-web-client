@@ -3905,7 +3905,8 @@ lizMap.events.on({
         evt.config.layers['emptyBaselayer'] = layerConfig;
 
         evt.baselayers.push(new OpenLayers.Layer.Vector('emptyBaselayer',{
-          maxExtent: evt.map.maxExtent
+          isBaseLayer: true
+         ,maxExtent: evt.map.maxExtent
          ,maxScale: evt.map.maxScale
          ,minScale: evt.map.minScale
          ,numZoomLevels: evt.map.numZoomLevels
