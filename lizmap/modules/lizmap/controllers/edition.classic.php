@@ -17,7 +17,7 @@ class editionCtrl extends jController {
   // lizmapRepository
   private $repository = null;
 
-  // layer id in the QGIS project file
+  // layer id in the QGIS project filejo
   private $layerId = '';
 
   // layer name (<layername> in QGIS project)
@@ -808,7 +808,7 @@ class editionCtrl extends jController {
       $value = $form->getData($ref);
       
       if(is_array($value)){
-        $value = '{'.join($value,',').'}';
+        $value = '{'.implode(',',$value).'}';
       }
 
       switch($this->formControls[$ref]->fieldDataType){
