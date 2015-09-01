@@ -17,7 +17,7 @@ class editionCtrl extends jController {
   // lizmapRepository
   private $repository = null;
 
-  // layer id in the QGIS project filejo
+  // layer id in the QGIS project file
   private $layerId = '';
 
   // layer name (<layername> in QGIS project)
