@@ -430,7 +430,7 @@ class editionCtrl extends jController {
          and $this->formControls[$fieldName]->valueRelationData ){
           // Fill comboboxes of editType "Value relation" from relation layer
           // Query QGIS Server via WFS
-          $this->fillComboboxFromValueRelationLayer($fieldName);
+          $this->fillControlFromValueRelationLayer($fieldName);
       } else if ( $this->formControls[$fieldName]->fieldEditType == 8
                or $this->formControls[$fieldName]->fieldEditType == 'FileName'
                or $this->formControls[$fieldName]->fieldEditType == 'Photo' ) {
@@ -580,12 +580,12 @@ class editionCtrl extends jController {
 
 
   /**
-  * Get WFS data from a "Value Relation" layer and fill the combobox form control for a specific field.
+  * Get WFS data from a "Value Relation" layer and fill the form control for a specific field.
   * @param string $fieldName Name of QGIS field
   *
   * @return Modified form control
   */
-  private function fillComboboxFromValueRelationLayer($fieldName){
+  private function fillControlFromValueRelationLayer($fieldName){
 
     // Build WFS request parameters
     //   Get layername via id
@@ -665,11 +665,11 @@ class editionCtrl extends jController {
     }
     else{
       if(!preg_match('#No feature found error messages#', $wfsData)){
-        $this->formControls[$fieldName]->ctrl->hint = 'Problem : cannot get data to fill this combobox !';
-        $this->formControls[$fieldName]->ctrl->help = 'Problem : cannot get data to fill this combobox !';
+        $this->formControls[$fieldName]->ctrl->hint = 'Problem : cannot get data to fill this control !';
+        $this->formControls[$fieldName]->ctrl->help = 'Problem : cannot get data to fill this control !';
       }else{
-        $this->formControls[$fieldName]->ctrl->hint = 'No data to fill this combobox !';
-        $this->formControls[$fieldName]->ctrl->help = 'No data to fill this combobox !';
+        $this->formControls[$fieldName]->ctrl->hint = 'No data to fill this control !';
+        $this->formControls[$fieldName]->ctrl->help = 'No data to fill this control !';
       }
     }
   }
@@ -725,6 +725,15 @@ class editionCtrl extends jController {
       // Loop through the data fields
       foreach($this->dataFields as $ref=>$prop){
         $form->setData($ref, $record->$ref);
+        // ValueRelation can be an array (i.e. {1,2,3})
+        if( $this->formControls[$ref]->fieldEditType == 15
+          or $this->formControls[$ref]->fieldEditType === 'ValueRelation' ){
+            $value = $record->$ref;
+            if($value[0] == '{'){
+              $arrayValue = explode(",",trim($value, "{}"));
+              $form->setData($ref, $arrayValue);
+            }
+        }
         if ( $this->formControls[$ref]->fieldEditType == 8
           or $this->formControls[$ref]->fieldEditType == 'FileName'
           or $this->formControls[$ref]->fieldEditType == 'Photo' ) {
@@ -797,6 +806,10 @@ class editionCtrl extends jController {
     foreach($fields as $ref){
       // Get and filter the posted data foreach form control
       $value = $form->getData($ref);
+      
+      if(is_array($value)){
+        $value = '{'.implode(',',$value).'}';
+      }
 
       switch($this->formControls[$ref]->fieldDataType){
           case 'geometry':
