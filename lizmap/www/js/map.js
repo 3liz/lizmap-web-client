@@ -76,6 +76,11 @@ var lizMap = function() {
   }
 
   /**
+   * Permalink args
+   */
+  var permalinkArgs = null;
+
+  /**
    * PRIVATE Property: layerCleanNames
    *
    */
@@ -2536,7 +2541,31 @@ var lizMap = function() {
       return false;
     });
 
+    bindGeobookmarkEvents();
+
+    $('#geobookmark-form').submit(function(){
+      var bname = $('#geobookmark-form input[name="bname"]').val();
+      if( bname == '' ){
+        mAddMessage(lizDict['geobookmark.name.required'],'error',true);
+        return false;
+      }
+      var gburl = lizUrls.geobookmark;
+      var gbparams = JSON.parse(JSON.stringify(permalinkArgs));
+      gbparams['name'] = bname;
+      gbparams['q'] = 'add';
+      $.get(gburl,
+        gbparams,
+        function(data) {
+          setGeobookmarkContent(data);
+        }
+        ,'text'
+      );
+
+      return false;
+    });
+
   }
+
 
   function createPermalinkArgs(){
 
@@ -2581,8 +2610,90 @@ var lizMap = function() {
     if ( style.length > 0 )
       args['layerStyles'] = style.join(';');
 
+    // Add permalink args to Lizmap global variable
+    permalinkArgs = args;
+
     return args;
 
+  }
+
+  function bindGeobookmarkEvents(){
+
+    $('.btn-geobookmark-del').click(function(){
+      if (confirm(lizDict['geobookmark.confirm.delete'] )){
+        var gbid = $(this).val();
+        removeGeoBookmark(gbid);
+      }
+      return false;
+    });
+    $('.btn-geobookmark-run').click(function(){
+      var id = $(this).val();
+      runGeoBookmark( id );
+
+      return false;
+    });
+  }
+
+  function setGeobookmarkContent( gbData ){
+    // set content
+    $('div#geobookmark-container').html(gbData);
+    // unbind previous click events
+    $('div#geobookmark-container button').unbind('click');
+    // Bind events
+    bindGeobookmarkEvents();
+    // Remove bname val
+    $('#geobookmark-form input[name="bname"]').val('').blur();
+  }
+
+  function runGeoBookmark( id ){
+    var gburl = lizUrls.geobookmark;
+    var gbparams = {
+      id: id,
+      q: 'get'
+    };
+    $.get(gburl,
+      gbparams,
+      function(data) {
+
+        // Zoom to bbox
+        var bbox = OpenLayers.Bounds.fromString( data.bbox );
+        map.zoomToExtent( bbox );
+
+        // Activate layers
+        var players = data.layers;
+        for( var i=0; i < map.layers.length; i++){
+          var l = map.layers[i];
+          var lbase = l.isBaseLayer;
+          if( lbase ){
+            if( players[i] == 'B' )
+              $('#switcher-baselayer-select').val( l.name );
+          }else{
+            var btn = $('#switcher button.checkbox[name="layer"][value="'+l.name+'"]');
+            if ( ( (players[i] == 'T') != btn.hasClass('checked') ) )
+              $('#switcher button.checkbox[name="layer"][value="'+l.name+'"]').click();
+          }
+        }
+
+        // Filter
+
+      }
+      ,'json'
+    );
+  }
+
+  function removeGeoBookmark( id ){
+    var gburl = lizUrls.geobookmark;
+    var gbparams = {
+      id: id,
+      q: 'del'
+    };
+    $.get(gburl,
+      gbparams,
+      function(data) {
+        setGeobookmarkContent(data);
+      }
+      ,'text'
+    );
   }
 
   function addFeatureInfo() {

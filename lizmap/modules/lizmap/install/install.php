@@ -39,8 +39,13 @@ class lizmapModuleInstaller extends jInstallerModule {
         $ini->save();
 
         if ($this->firstDbExec()) {
+            // Add log table
             $this->useDbProfile('lizlog');
             $this->execSQLScript('sql/lizlog');
+
+            // Add geobookmark table
+            $this->useDbProfile('jauth');
+            $this->execSQLScript('sql/lizgeobookmark');
         }
 
         if ($this->firstExec('acl2') && $this->getParameter('demo')) {
@@ -68,7 +73,7 @@ class lizmapModuleInstaller extends jInstallerModule {
                         ('logintranet', ".$cn->quote($passwordHash2)." , 'logintranet@nomail.nomail')");
 
             // declare users in jAcl2
-            
+
             jAcl2DbUserGroup::createUser('lizadmin', true);
             jAcl2DbUserGroup::createUser('logintranet', true);
 
@@ -84,7 +89,7 @@ class lizmapModuleInstaller extends jInstallerModule {
                 'lizmap.admin.repositories.view'=>true,
                 'lizmap.admin.services.view'=>true
             ));
-                
+
             // admins
             jAcl2DbManager::addRight('admins', 'lizmap.tools.edition.use', 'intranet');
             jAcl2DbManager::addRight('admins', 'lizmap.repositories.view', 'intranet');
