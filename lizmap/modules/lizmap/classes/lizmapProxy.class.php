@@ -121,9 +121,11 @@ class lizmapProxy {
     */
     static public function getMap( $repository, $project, $params, $forced=False ) {
         // Get cache if exists
-        $keyParams = $params;
-        if( array_key_exists( 'map', $keyParams ) ){
-            unset($keyParams['map']);
+        $keyParams = array();
+        foreach ($params as $pk=>$value) {
+            if (in_array($pk, array("bbox", "format", "height", "layers", "transparent"))) {
+                $keyParams[$pk] = $value;
+            }
         }
         ksort( $keyParams );
         $key = md5( serialize( $keyParams ) );
