@@ -22,6 +22,7 @@
       <form id="geobookmark-form">
         <input type="text" name="bname" placeholder="{@view~map.permalink.geobookmark.name.placeholder@}">
         <input type="submit" class="btn-geobookmark-add btn btn-mini" title="{@view~map.permalink.geobookmark.button.add@}" value="{@view~map.permalink.geobookmark.button.add@}"/>
+      </form>
     </div>
     {/if}
 

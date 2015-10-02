@@ -2666,7 +2666,7 @@ var lizMap = function() {
           var lbase = l.isBaseLayer;
           if( lbase ){
             if( players[i] == 'B' )
-              $('#switcher-baselayer-select').val( l.name );
+              $('#switcher-baselayer-select').val( l.name ).change();
           }else{
             var btn = $('#switcher button.checkbox[name="layer"][value="'+l.name+'"]');
             if ( ( (players[i] == 'T') != btn.hasClass('checked') ) )
