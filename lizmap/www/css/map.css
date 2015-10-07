@@ -694,14 +694,14 @@ Timemanager
   height:100%;
   z-index:100000;
   background-color:#EFEFEF;
-  color:grey;
+  color:#333;
   overflow:auto;
   font-size:0.85em;
   padding:5px;
 }
 
 #metadata h2{
-  color:#80B219;
+  color:#333;
   font-weight:normal;
 }
 
