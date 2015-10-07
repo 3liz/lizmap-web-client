@@ -2,6 +2,7 @@ CREATE TABLE geobookmark(
   id serial,
   usr_login text NOT NULL,
   bname text NOT NULL,
+  bmap text NOT NULL,
   bparams text NOT NULL
 );
 ALTER TABLE geobookmark ADD PRIMARY KEY (id);

@@ -2553,6 +2553,10 @@ var lizMap = function() {
       var gbparams = JSON.parse(JSON.stringify(permalinkArgs));
       gbparams['name'] = bname;
       gbparams['q'] = 'add';
+      if( lizMap.lizmapLayerFilterActive ) {
+        var afilter = lizMap.lizmapLayerFilterActive + ':' + config.layers[lizMap.lizmapLayerFilterActive]['filteredFeatures'].join();
+        gbparams['filter'] =  afilter;
+      }
       $.get(gburl,
         gbparams,
         function(data) {
@@ -2675,6 +2679,30 @@ var lizMap = function() {
         }
 
         // Filter
+        if( data.filter != '' ){
+            var sp = data.filter.split(':');
+            if( sp.length == 2 ){
+              var flayer = sp[0];
+              var ffids = sp[1].split();
+              // Select feature
+              lizMap.events.triggerEvent(
+                  'layerfeatureselected',
+                  {'featureType': flayer, 'fid': ffids, 'updateDrawing': false}
+              );
+              // Filter selected feature
+              lizMap.events.triggerEvent(
+                  'layerfeaturefilterselected',
+                  {'featureType': flayer}
+              );
+            }
+        }else{
+          if( lizMap.lizmapLayerFilterActive ){
+            lizMap.events.triggerEvent(
+                'layerfeatureremovefilter',
+                {'featureType': lizMap.lizmapLayerFilterActive}
+            );
+          }
+        }
 
       }
       ,'json'
@@ -2685,7 +2713,9 @@ var lizMap = function() {
     var gburl = lizUrls.geobookmark;
     var gbparams = {
       id: id,
-      q: 'del'
+      q: 'del',
+      repository: lizUrls.params.repository,
+      project: lizUrls.params.project
     };
     $.get(gburl,
       gbparams,

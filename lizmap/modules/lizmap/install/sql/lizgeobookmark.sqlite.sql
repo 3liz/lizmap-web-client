@@ -2,6 +2,7 @@ CREATE TABLE geobookmark(
   id integer PRIMARY KEY AUTOINCREMENT,
   usr_login text NOT NULL,
   bname text NOT NULL,
+  bmap text NOT NULL,
   bparams text NOT NULL,
   FOREIGN KEY (usr_login) REFERENCES jlx_user (id_aclgrp)
 );

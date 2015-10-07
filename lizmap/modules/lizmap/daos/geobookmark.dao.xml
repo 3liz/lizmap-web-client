@@ -7,6 +7,7 @@
         <property name="id" fieldname="id" datatype="serial" required="true"/>
         <property name="login" fieldname="usr_login" datatype="text" required="true"/>
         <property name="name" fieldname="bname" datatype="text" required="true"/>
+        <property name="map" fieldname="bmap" datatype="text" required="true"/>
         <property name="params" fieldname="bparams" datatype="text" required="true"/>
         <!--<property name="" fieldname="" datatype="string/int/float/date"
         required="yes" maxlength="" minlength="" regexp="" sequence=""

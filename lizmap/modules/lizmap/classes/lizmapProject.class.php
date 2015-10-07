@@ -826,6 +826,11 @@ class lizmapProject{
                 $daogb = jDao::get('lizmap~geobookmark');
                 $conditions = jDao::createConditions();
                 $conditions->addCondition('login','=',$usr_login);
+                $conditions->addCondition(
+                    'map',
+                    '=',
+                    $this->repository->getKey().':'.$this->getKey()
+                );
                 $gbList = $daogb->findBy($conditions);
                 $gbCount = $daogb->countBy($conditions);
             }
