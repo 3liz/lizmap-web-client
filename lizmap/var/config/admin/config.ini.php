@@ -10,10 +10,12 @@ htmlauth=adminLoginHtmlResponse
 
 [modules]
 admin.access=2
+localiz.access=2
 
 [coordplugins]
 auth="admin/auth.coord.ini.php"
 jacl2=1
+
 
 
 

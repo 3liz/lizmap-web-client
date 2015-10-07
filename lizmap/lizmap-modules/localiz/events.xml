@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<events xmlns="http://jelix.org/ns/events/1.0">
+   <listener name="localizDockable">
+	<event name="mapMiniDockable"/>
+   </listener>
+
+</events>

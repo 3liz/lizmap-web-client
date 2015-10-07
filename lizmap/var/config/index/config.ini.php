@@ -12,3 +12,5 @@ jacl2=1
 lizmap.access=2
 admin.access=2
 
+
+localiz.access=2

@@ -1,0 +1,41 @@
+#mapmenu .nav-list > li.localiz .icon {
+  background-position: -725px 0px;
+}
+#mapmenu .nav-list > li.localiz.active .icon,
+#mapmenu .nav-list > li.localiz a:hover .icon {
+  background-position: -700px 0px;
+}
+
+#toolbar .localiz h3 .icon,
+#menu .localiz h3 .icon,
+#dock .localiz h3 .icon,
+#mini-dock .localiz h3 .icon {
+  background-position : -725px 0px;
+}
+
+#localiz_div_search {
+    display:block; 
+}
+
+#localiz_search {
+    width:300px;
+}
+
+.localiz_typ {
+    font-size:0.55em; 
+}
+
+li.localiz_typ_1 {
+    color: #9E714F;
+    font-weight:bold;
+}
+li.localiz_typ_2 {
+    color: #5A924D;
+}
+li.localiz_typ_3 {
+    color: #4775BB;
+    font-weight:bold;
+}
+li.localiz_typ_4 {
+    color: #4775BB;
+}

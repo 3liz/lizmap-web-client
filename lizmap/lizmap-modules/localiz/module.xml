@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module xmlns="http://jelix.org/ns/module/1.0">
+    <info id="localiz3liz.com" name="localiz" createdate="2015-09-16">
+        <version date="2015-09-16">0.1</version>
+        <label lang="en_US">Localiz</label>
+        <description lang="en_US" />
+        <license URL="">All rights reserved</license>
+        <copyright></copyright>
+        <creator name="AEAG" email="geocatalogue@eau-adour-garonne.fr" active="true"/>
+        <!--<contributor name="hisname" email="hisemail@yoursite.undefined" active="true" since="" role=""/>-->
+        <homepageURL>http://3liz.com</homepageURL>
+    </info>
+    <dependencies>
+        <jelix minversion="1.6.5pre.3192" maxversion="1.6.*"/>
+    </dependencies>
+</module>
