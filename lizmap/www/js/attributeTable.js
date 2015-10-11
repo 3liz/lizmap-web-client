@@ -9,6 +9,8 @@ var lizAttributeTable = function() {
             var hasAttributeTableLayers = false;
             var attributeLayersActive = false;
             var attributeLayersDic = {};
+            var tooltipControl = null;
+            var tooltipLayers = [];
 
             var startupFilter = false;
             if( !( typeof lizLayerFilter === 'undefined' ) ){
@@ -123,7 +125,129 @@ var lizAttributeTable = function() {
                             tHtml+= '<tr>';
                             tHtml+= '   <td>' + title + '</td><td><button value=' + cleanName + ' class="btn-open-attribute-layer">Detail</button></td>';
                             tHtml+= '</tr>';
+
+                            // Add the layer in the tooltip object if needed
+                            if( 'tooltip' in config.attributeLayers[ attributeLayersDic[ cleanName ] ]
+                                && config.attributeLayers[ attributeLayersDic[ cleanName ] ]['tooltip'] == 'True'
+                            ){
+
+                                // Define vector layer for tooltip
+                                var tooltipStyleMap = new OpenLayers.StyleMap({
+                                    'default': new OpenLayers.Style({
+                                        strokeColor: "blue",
+                                        strokeWidth: 0,
+                                        strokeOpacity: 0,
+                                        fillOpacity: 0
+                                    }),
+                                    'selected': new OpenLayers.Style({
+                                        strokeColor: "yellow",
+                                        strokeWidth: 0,
+                                        strokeOpacity: 0,
+                                        fillOpacity: 0
+                                    }),
+                                    'temporary': new OpenLayers.Style({
+                                        strokeColor: 'red',
+                                        strokeWidth: 0,
+                                        strokeOpacity: 0,
+                                        fillOpacity: 0
+                                    })
+                                });
+                                var tlayer = new OpenLayers.Layer.Vector('high@' + cleanName, {
+                                    projection: new OpenLayers.Projection(config.layers[ attributeLayersDic[ cleanName ] ][ 'crs' ]),
+                                    styleMap: tooltipStyleMap
+                                });
+                                lizMap.map.addLayer(tlayer);
+                                tlayer.setVisibility(true);
+                                tooltipLayers.push( tlayer );
+                                config.attributeLayers[ attributeLayersDic[ cleanName ] ]['tooltipLayer'] = tlayer;
+                            }
                         }
+
+                        if (tooltipLayers.length == 1 && !tooltipControl){
+
+                            tooltipControl = new OpenLayers.Control.SelectFeature(tooltipLayers, {
+                                hover: true,
+                                highlightOnly: true,
+                                renderIntent: "temporary",
+                                clickFeature: function (f) {
+                                    // Open feature info
+                                    //~ console.log(f);
+                                    lizMap.map.removePopup(f.popup);
+                                    f.popup.destroy();
+                                    f.popup = null;
+
+                                    f.geometry.transform( f.layer.projCode, lizMap.map.getProjection() );
+                                    var geomType = f.geometry.CLASS_NAME;
+                                    if (
+                                        geomType == 'OpenLayers.Geometry.Polygon'
+                                        || geomType == 'OpenLayers.Geometry.MultiPolygon'
+                                        || geomType == 'OpenLayers.Geometry.Point'
+                                    ) {
+                                        var lonlat = f.geometry.getBounds().getCenterLonLat()
+                                    }
+                                    else {
+                                        var vert = f.geometry.getVertices();
+                                        var middlePoint = vert[Math.floor(vert.length/2)];
+                                        var lonlat = new OpenLayers.LonLat(middlePoint.x, middlePoint.y);
+                                    }
+
+                                    var mypix = lizMap.map.getPixelFromLonLat( lonlat);
+                                    var winfos = lizMap.map.getControlsByClass(
+                                        'OpenLayers.Control.WMSGetFeatureInfo'
+                                    );
+                                    if( winfos.length == 1 ){
+                                        winfos[0].request(
+                                            mypix
+                                        )
+                                    }
+                                }
+                            });
+
+                            tooltipControl.events.on({
+                                featurehighlighted: function(evt) {
+                                    //~ console.log( "tooltip activated");
+                                    var lname = evt.feature.layer.name.split("@")[1];
+                                    var lconfig = config.attributeLayers[lname];
+                                    var hf = lconfig['hiddenFields'].trim();
+                                    hiddenFields = hf.split(/[\s,]+/);
+                                    var cAliases = config.layers[lname]['alias'];
+                                    var html = '<div style="background-color:#F0F0F0 !important;">';
+                                    html+= '<table class="lizmapPopupTable">';
+                                    for (a in evt.feature.attributes){
+                                        if( ($.inArray(a, hiddenFields) > -1) )
+                                            continue;
+                                        html+= '<tr><th>' + cAliases[a] + '</th><td>' + evt.feature.attributes[a] + '</td></tr>';
+                                    }
+                                    html+= '</table>';
+                                    html+= '</div>';
+                                    var lonlat = evt.feature.geometry.getBounds().getCenterLonLat();
+                                    var tpopup = new OpenLayers.Popup.Anchored('tPopup',
+                                        lonlat,
+                                        new OpenLayers.Size(250,300),
+                                        html,
+                                        {size: {w: 14, h: 14}, offset: {x: -7, y: -7}},
+                                        false
+                                    );
+                                    tpopup.autoSize = true;
+                                    tpopup.backgroundColor = 'rgba(0, 0, 0, 0.7)';
+
+                                    evt.feature.popup = tpopup;
+                                    lizMap.map.addPopup( tpopup );
+                                },
+                                featureunhighlighted: function(evt) {
+                                    //~ console.log( "tooltip deactivated");
+                                    lizMap.map.removePopup(evt.feature.popup);
+                                    evt.feature.popup.destroy();
+                                    evt.feature.popup = null;
+                                }
+                            });
+                            lizMap.map.addControl(tooltipControl);
+
+                        }
+                        if (tooltipControl) {
+                          tooltipControl.activate();
+                        }
+
                         tHtml+= '</table>';
                         $('#attribute-layer-list').html(tHtml);
 
@@ -1072,6 +1196,23 @@ var lizAttributeTable = function() {
 
                     config.layers[aName]['alias'] = cAliases;
 
+                    // Add features to the tooltip layer
+                    if( 'tooltip' in config.attributeLayers[ aName ]
+                        && config.attributeLayers[ aName ]['tooltip'] == 'True'
+                    ){
+                        var tlayer = config.attributeLayers[aName]['tooltipLayer'];
+                        tlayer.destroyFeatures();
+                        var tfeatures = new Array;
+                        var format = new OpenLayers.Format.GeoJSON();
+                        for(var o in config.layers[aName]['features']) {
+                            var tfeat = config.layers[aName]['features'][o];
+                            tfeat = format.read(tfeat)[0];
+                            //~ tfeat.geometry.transform(proj, map.getProjection());
+                            tfeatures.push(tfeat);
+                        }
+                        tlayer.addFeatures( tfeatures );
+                    }
+
                     // Datatable configuration
                     if ( $.fn.dataTable.isDataTable( aTable ) ) {
                         var oTable = $( aTable ).dataTable();
@@ -1117,7 +1258,7 @@ var lizAttributeTable = function() {
                             $(aTable +' tr').unbind('click');
                             $(aTable +' tr td button').unbind('click');
 
-                            // Highlight the line
+                            // Highlight the current clicked line
                             $(aTable +' tr').click(function() {
 
                                 $(aTable +' tr').removeClass('active');
