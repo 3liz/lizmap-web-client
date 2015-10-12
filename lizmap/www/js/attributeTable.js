@@ -163,9 +163,9 @@ var lizAttributeTable = function() {
                             }
                         }
 
-                        if (tooltipLayers.length == 1 && !tooltipControl){
+                        if (tooltipLayers.length >= 1 && !tooltipControl){
 
-                            tooltipControl = new OpenLayers.Control.SelectFeature(tooltipLayers, {
+                            tooltipControl = new OpenLayers.Control.SelectFeature([], {
                                 hover: true,
                                 highlightOnly: true,
                                 renderIntent: "temporary",
@@ -210,11 +210,17 @@ var lizAttributeTable = function() {
                                     var lconfig = config.attributeLayers[lname];
                                     var hf = lconfig['hiddenFields'].trim();
                                     hiddenFields = hf.split(/[\s,]+/);
+                                    var tf = lconfig['tooltipFields'].trim();
+                                    tooltipFields = tf.split(/[\s,]+/);
                                     var cAliases = config.layers[lname]['alias'];
                                     var html = '<div style="background-color:#F0F0F0 !important;">';
                                     html+= '<table class="lizmapPopupTable">';
                                     for (a in evt.feature.attributes){
+                                        // Do no show hiddenfields
                                         if( ($.inArray(a, hiddenFields) > -1) )
+                                            continue;
+                                        // show only tootlip fields if some fields given
+                                        if( tf != '' && !($.inArray(a, tooltipFields) > -1) )
                                             continue;
                                         html+= '<tr><th>' + cAliases[a] + '</th><td>' + evt.feature.attributes[a] + '</td></tr>';
                                     }
@@ -485,6 +491,23 @@ var lizAttributeTable = function() {
                     $(this).parent().parent().remove(); //remove li of tab
                     $('#attributeLayers-tabs a:last').tab('show'); // Select first tab
                     $(tabContentId).remove(); //remove respective tab content
+
+                    // Remove tooltip if needed
+                    var tlname = tabContentId.replace('#attribute-layer-', '');
+                    if( tooltipControl
+                        && 'tooltip' in config.attributeLayers[ attributeLayersDic[ tlname ] ]
+                        && config.attributeLayers[ attributeLayersDic[ tlname ] ]['tooltip'] == 'True'
+                    ){
+                        var tllayer = config.attributeLayers[ attributeLayersDic[ tlname ] ]['tooltipLayer'];
+                        var index = tooltipControl.layers.indexOf(tllayer);
+                        if( index > -1 ){
+                            tooltipControl.layers.splice( index, 1);
+                            tooltipControl.deactivate();
+                            if( tooltipControl.layers.length )
+                                tooltipControl.activate();
+                        }
+                    }
+
                 });
 
                 if( childHtml ){
@@ -1211,6 +1234,14 @@ var lizAttributeTable = function() {
                             tfeatures.push(tfeat);
                         }
                         tlayer.addFeatures( tfeatures );
+
+                        // Add layer to tooltipControl
+                        if( !($.inArray(tlayer, tooltipControl.layers) > -1))
+                            tooltipControl.layers.push( tlayer );
+
+                        // Refresh control
+                        tooltipControl.deactivate();
+                        tooltipControl.activate();
                     }
 
                     // Datatable configuration
