@@ -404,6 +404,16 @@ var lizEdition = function() {
                 lizMap.addMessage(lizDict['edition.select.modify.activate'],'info',true).attr('id','lizmap-edition-message');
             }
 
+            // Send signal
+            lizMap.events.triggerEvent(
+                "lizmapeditionformdisplayed",
+                {
+                    'layerId': editionLayer['id'],
+                    'featureId': featureId,
+                    'editionConfig': editionLayer['config']
+                }
+            );
+
             if( aCallback )
                 aCallback( editionLayer['id'], featureId );
 

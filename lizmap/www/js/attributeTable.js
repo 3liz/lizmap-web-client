@@ -250,9 +250,6 @@ var lizAttributeTable = function() {
                             lizMap.map.addControl(tooltipControl);
 
                         }
-                        if (tooltipControl) {
-                          tooltipControl.activate();
-                        }
 
                         tHtml+= '</table>';
                         $('#attribute-layer-list').html(tHtml);
@@ -299,9 +296,14 @@ var lizAttributeTable = function() {
                         });
 
 
+                        // Send signal
+                        lizMap.events.triggerEvent(
+                            "attributeLayersReady", {'layers': attributeLayersDic}
+                        );
+
                     } else {
                         // Hide navbar menu
-                        $('#auth li.attributeLayers').hide();
+                        $('#mapmenu li.attributeLayers').hide();
                         return -1;
                     }
                 }
