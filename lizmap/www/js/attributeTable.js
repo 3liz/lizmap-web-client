@@ -137,19 +137,22 @@ var lizAttributeTable = function() {
                                         strokeColor: "blue",
                                         strokeWidth: 0,
                                         strokeOpacity: 0,
-                                        fillOpacity: 0
+                                        fillOpacity: 0,
+                                        cursor: 'pointer'
                                     }),
                                     'selected': new OpenLayers.Style({
                                         strokeColor: "yellow",
                                         strokeWidth: 0,
                                         strokeOpacity: 0,
-                                        fillOpacity: 0
+                                        fillOpacity: 0,
+                                        cursor: 'pointer'
                                     }),
                                     'temporary': new OpenLayers.Style({
                                         strokeColor: 'red',
                                         strokeWidth: 0,
                                         strokeOpacity: 0,
-                                        fillOpacity: 0
+                                        fillOpacity: 0,
+                                        cursor: 'pointer'
                                     })
                                 });
                                 var tlayer = new OpenLayers.Layer.Vector('high@' + cleanName, {
