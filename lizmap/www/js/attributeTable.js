@@ -135,21 +135,21 @@ var lizAttributeTable = function() {
                                 var tooltipStyleMap = new OpenLayers.StyleMap({
                                     'default': new OpenLayers.Style({
                                         strokeColor: "blue",
-                                        strokeWidth: 0,
+                                        strokeWidth: 10,
                                         strokeOpacity: 0,
                                         fillOpacity: 0,
                                         cursor: 'pointer'
                                     }),
                                     'selected': new OpenLayers.Style({
                                         strokeColor: "yellow",
-                                        strokeWidth: 0,
+                                        strokeWidth: 10,
                                         strokeOpacity: 0,
                                         fillOpacity: 0,
                                         cursor: 'pointer'
                                     }),
                                     'temporary': new OpenLayers.Style({
                                         strokeColor: 'red',
-                                        strokeWidth: 0,
+                                        strokeWidth: 10,
                                         strokeOpacity: 0,
                                         fillOpacity: 0,
                                         cursor: 'pointer'
@@ -199,9 +199,14 @@ var lizAttributeTable = function() {
                                         'OpenLayers.Control.WMSGetFeatureInfo'
                                     );
                                     if( winfos.length == 1 ){
+                                        winfos[0].events.on({
+                                            getfeatureinfo: function(evt) {
+                                                // do something ?
+                                            }
+                                        });
                                         winfos[0].request(
                                             mypix
-                                        )
+                                        );
                                     }
                                 }
                             });
@@ -1235,7 +1240,7 @@ var lizAttributeTable = function() {
                         for(var o in config.layers[aName]['features']) {
                             var tfeat = config.layers[aName]['features'][o];
                             tfeat = format.read(tfeat)[0];
-                            //~ tfeat.geometry.transform(proj, map.getProjection());
+                            tfeat.geometry.transform(config.layers[aName]['crs'], lizMap.map.getProjection());
                             tfeatures.push(tfeat);
                         }
                         tlayer.addFeatures( tfeatures );
@@ -1618,6 +1623,12 @@ var lizAttributeTable = function() {
                 );
                 $.get(service, wmsOptions, function(data) {
                     $('#attribute-table-panel-' + layerName ).html(data);
+
+                    // Trigger event
+                    lizMap.events.triggerEvent(
+                        'lizmappopupdisplayed'
+                    );
+
                     var closeButton = '<a class="close-attribute-feature-panel pull-right" href="#"><i class="icon-remove"></i></a>'
                     $('#attribute-table-panel-' + layerName + ' h4').append(closeButton);
 
@@ -2513,6 +2524,7 @@ var lizAttributeTable = function() {
                         }
 
                         if( eHtml ){
+                            eHtml = '<span class="popupButtonBar">' + eHtml + '</span>';
                             $(this).after(eHtml);
                             $('#liz_layer_popup button.btn').tooltip( {
                                 placement: 'bottom'
