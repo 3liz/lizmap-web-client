@@ -132,12 +132,12 @@ class lizmapModuleInstaller extends jInstallerModule {
             // declare the repositories of demo in the configuration
             $ini = new jIniFileModifier($lizmapConfFile);
             $ini->setValues(array(
-                'label'=>'LizMap Demo',
+                'label'=>'Demo',
                 'path'=>'../install/qgis/',
                 'allowUserDefinedThemes'=>1
                 ), 'repository:montpellier');
             $ini->setValues(array(
-                'label'=>'Lizmap Demo - Intranet',
+                'label'=>'Demo - Intranet',
                 'path'=>'../install/qgis_intranet/',
                 'allowUserDefinedThemes'=>''
                 ), 'repository:intranet');
