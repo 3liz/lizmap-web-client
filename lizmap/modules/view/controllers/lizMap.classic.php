@@ -152,12 +152,14 @@ class lizMapCtrl extends jController {
 
     // Get the WMS information
     $wmsInfo = $lproj->getWMSInformation();
-
     // Set page title from projet title
+    $title = $project;
     if( $wmsInfo['WMSServiceTitle'] != '' )
-      $rep->title = $wmsInfo['WMSServiceTitle'];
-    else
-      $rep->title = $repository.' - '.$project;
+      $title = $wmsInfo['WMSServiceTitle'];
+    
+    $title .= ' - '.$lrep->getData('label');
+    $title .= ' - '. $lser->appName;
+    $rep->title = $title;
 
     // Add date.js for timemanager
     if( $lproj->hasTimemanagerLayers() ) {

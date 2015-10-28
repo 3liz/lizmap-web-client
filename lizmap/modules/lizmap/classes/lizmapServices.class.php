@@ -19,6 +19,7 @@ class lizmapServices{
 
     // services properties
     private $properties = array(
+      'appName',
       'wmsServerURL',
       'wmsPublicUrlList',
       'cacheStorageType',
@@ -32,6 +33,8 @@ class lizmapServices{
       'allowUserAccountRequests',
       'adminContactEmail'
     );
+    // Wms map server
+    public $appName = 'Lizmap';
     // Wms map server
     public $wmsServerURL = '';
     // Public Wms url list
