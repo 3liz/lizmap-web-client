@@ -83,6 +83,9 @@ class jAuth {
                     $password_hash_method = 0;
                 }
             }
+            else {
+                require_once(dirname(__FILE__).'/hash_equals.php');
+            }
 
             $password_hash_options = (isset($config['password_hash_options'])?$config['password_hash_options']:'');
             if ($password_hash_options != '') {

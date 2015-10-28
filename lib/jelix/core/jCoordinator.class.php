@@ -4,7 +4,7 @@
 * @subpackage   core
 * @author       Laurent Jouanneau
 * @contributor  Thibault Piront (nuKs), Julien Issler, Dominique Papin, Flav
-* @copyright    2005-2013 laurent Jouanneau
+* @copyright    2005-2015 laurent Jouanneau
 * @copyright    2007 Thibault Piront
 * @copyright    2008 Julien Issler
 * @copyright    2008-2010 Dominique Papin, 2012 Flav
@@ -46,6 +46,13 @@ class jCoordinator {
      * @var jSelectorAct
      */
     public $action = null;
+
+    /**
+     * the original action when there is an internal redirection to an action
+     * different from the one corresponding to the request
+     * @var jSelectorAct
+     */
+    public $originalAction = null;
 
     /**
      * the current module name
@@ -143,6 +150,7 @@ class jCoordinator {
         jContext::push ($this->moduleName);
         try{
             $this->action = new jSelectorActFast($this->request->type, $this->moduleName, $this->actionName);
+            $this->originalAction = $this->action;
 
             if($config->modules[$this->moduleName.'.access'] < 2){
                 throw new jException('jelix~errors.module.untrusted',$this->moduleName);
@@ -207,7 +215,7 @@ class jCoordinator {
      * get the controller corresponding to the selector
      * @param jSelectorAct $selector
      */
-    private function getController($selector){
+    protected function getController($selector){
 
         $ctrlpath = $selector->getPath();
         if(!file_exists($ctrlpath)){
@@ -245,6 +253,17 @@ class jCoordinator {
             else
                 throw $e;
         }
+    }
+
+    /**
+     * says if the currently executed action is the original one
+     * @return boolean  true if yes
+     */
+    public function execOriginalAction() {
+        if (!$this->originalAction) {
+            return false;
+        }
+        return $this->originalAction->isEqualTo($this->action);
     }
 
     /**
