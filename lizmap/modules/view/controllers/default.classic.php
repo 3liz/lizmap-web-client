@@ -64,7 +64,14 @@ class defaultCtrl extends jController {
       }
     }
 
-    $title = jLocale::get("view~default.repository.list.title");
+    $title = jLocale::get("view~default.repository.list.title").' - '.$services->appName;
+    
+    if ( $repository ) {
+      $lrep = lizmap::getRepository($repository);
+      $title = $lrep->getData('label') .' - '. $title;
+    }
+    $rep->title = $title;
+    
     $rep->body->assign('repositoryLabel', $title);
     $rep->body->assign('isConnected', jAuth::isConnected());
     $rep->body->assign('user', jAuth::getUserSession());
@@ -72,11 +79,6 @@ class defaultCtrl extends jController {
     if($services->allowUserAccountRequests)
       $rep->body->assign('allowUserAccountRequests', True);
 
-    if ( $repository ) {
-      $lrep = lizmap::getRepository($repository);
-      $title .= ' - '.$lrep->getData('label');
-    }
-    $rep->title = $title;
 
     $rep->body->assignZone('MAIN', 'main_view', array('repository'=>$repository));
 
