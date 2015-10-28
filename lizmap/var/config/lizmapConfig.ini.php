@@ -25,12 +25,12 @@ cacheRootDirectory="/tmp/"
 allowUserAccountRequests=off
 
 [repository:montpellier]
-label="LizMap Demo"
+label="Demo"
 path="../install/qgis/"
 
 allowUserDefinedThemes=0
 [repository:intranet]
-label="Lizmap Demo - Intranet"
+label="Demo - Intranet"
 path="../install/qgis_intranet/"
 
 
