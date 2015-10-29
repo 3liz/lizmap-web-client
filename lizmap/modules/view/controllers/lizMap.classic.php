@@ -105,8 +105,7 @@ class lizMapCtrl extends jController {
 
     // Add the jForms js
     $bp = jApp::config()->urlengine['basePath'];
-    $confUrlEngine = &jApp::config()->urlengine;
-    $jq = $confUrlEngine['jqueryPath'];
+    $jq = jApp::config()->urlengine['jqueryPath'];
     $rep->addJSLink($jq.'include/jquery.include.js');
     $rep->addJSLink($bp.'jelix/js/jforms_jquery.js');
     $rep->addJSLink($bp.'jelix/js/jforms/datepickers/default/init.js');
