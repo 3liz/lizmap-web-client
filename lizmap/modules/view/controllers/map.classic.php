@@ -336,6 +336,9 @@ class mapCtrl extends jController {
     }
     $assign['hideGroupCheckbox'] = $hideGroupCheckbox;
 
+    // Add Google Analytics ID
+    if($lser->googleAnalyticsID != '' && preg_match("/^UA-\d+-\d+$/", $lser->googleAnalyticsID) == 1 )
+      $assign['googleAnalyticsID'] = $lser->googleAnalyticsID;
 
     $rep->body->assign($assign);
 
