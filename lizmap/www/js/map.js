@@ -2945,18 +2945,15 @@ var lizMap = function() {
 
     var scaleOptions = '';
     for( var i=0, len=scales.length; i<len; i++ ){
-      var scale = scales[i];
-      printCapabilities.scales.push(scale);
-      var scaleText = scale;
-      if (scale >= 9500 && scale <= 950000) {
-        scaleText = Math.round(scale / 1000) + "&nbsp;000";
-      } else if (scale >= 950000) {
-        scaleText = Math.round(scale / 1000000) + "&nbsp;000&nbsp;000";
-      } else {
-        scaleText = Math.round(scale)+'';
-        scaleText = scaleText[0]+'&nbsp;'+scaleText.slice(1);
-      }
-      scaleOptions += '<option value="'+scale+'">'+scaleText+'</option>';
+        var scale = scales[i];
+        printCapabilities.scales.push(scale);
+        var scaleText = scale;
+        if (scaleText > 10)
+            scaleText = Math.round(scaleText)
+        else
+            scaleText = Math.round(scaleText*100)/100
+        scaleText = scaleText.toLocaleString()
+        scaleOptions += '<option value="'+scale+'">'+scaleText+'</option>';
     }
     $('#print-scale').html(scaleOptions);
 
