@@ -101,6 +101,8 @@ class mapCtrl extends jController {
 
     // Add the jForms js
     $bp = jApp::config()->urlengine['basePath'];
+    $jq = jApp::config()->urlengine['jqueryPath'];
+    $rep->addJSLink($jq.'include/jquery.include.js');
     $rep->addJSLink($bp.'jelix/js/jforms_jquery.js');
     $rep->addJSLink($bp.'jelix/js/jforms/datepickers/default/init.js');
     $rep->addJSLink($bp.'jelix/js/jforms/datepickers/default/ui.en.js');
