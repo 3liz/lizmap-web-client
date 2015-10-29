@@ -84,15 +84,11 @@ OpenLayers.Control.Scale = OpenLayers.Class(OpenLayers.Control, {
             return;
         }
 
-        if (scale >= 9500 && scale <= 950000) {
-            scale = Math.round(scale / 1000) + "&nbsp;000";
-        } else if (scale >= 950000) {
-            scale = Math.round(scale / 1000000) + "&nbsp;000&nbsp;000";
-        } else {
-            scale = Math.round(scale)+'';
-            if ( scale >= 1000 )
-              scale = scale[0]+'&nbsp;'+scale.slice(1);
-        }    
+        if (scale > 10)
+            scale = Math.round(scale)
+        else
+            scale = Math.round(scale*100)/100
+        scale = scale.toLocaleString()
         
         this.element.innerHTML = OpenLayers.i18n("1&nbsp;:&nbsp;${scaleDenom}", {'scaleDenom':scale});
     }, 
