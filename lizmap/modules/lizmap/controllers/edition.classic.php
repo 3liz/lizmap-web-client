@@ -802,7 +802,7 @@ class editionCtrl extends jController {
     }
 
     // Loop though the fields and filter the form posted values
-    $update = array(); $insert = array();
+    $update = array(); $insert = array(); $refs= array();
     foreach($fields as $ref){
       // Get and filter the posted data foreach form control
       $value = $form->getData($ref);
@@ -875,7 +875,8 @@ class editionCtrl extends jController {
       }
       // Build the SQL insert and update query
       $insert[]=$value;
-      $update[]='"' . $ref .'" = ' . $value;
+      $refs[]='"'.$ref.'"';
+      $update[]='"'.$ref.'"='.$value;
     }
 
     $sql = '';
@@ -886,7 +887,7 @@ class editionCtrl extends jController {
       // featureId is set
       // SQL for updating on line in the edition table
       $sql = " UPDATE ".$this->table." SET ";
-      $sql.= implode(',', $update);
+      $sql.= implode(', ', $update);
       $v = ''; $i = 0;
       $sql.= ' WHERE';
       foreach($this->primaryKeys as $key){
@@ -910,7 +911,11 @@ class editionCtrl extends jController {
       }
       $dfields = array_map( "dquote", $fields );
       $sql = " INSERT INTO ".$this->table." (";
+<<<<<<< HEAD
       $sql.= implode(', ', $dfields);
+=======
+      $sql.= implode(', ', $refs);
+>>>>>>> 3c317f7... [BUGFIX] Edition: all the fields must be between double quotes
       $sql.= " ) VALUES (";
       $sql.= implode(', ', $insert);
       $sql.= " );";
