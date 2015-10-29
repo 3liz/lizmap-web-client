@@ -700,7 +700,7 @@ class editionCtrl extends jController {
     }
 
     // Loop though the fields and filter the form posted values
-    $update = array(); $insert = array();
+    $update = array(); $insert = array(); $refs= array();
     foreach($fields as $ref){
       // Get and filter the posted data foreach form control
       $value = $form->getData($ref);
@@ -744,7 +744,8 @@ class editionCtrl extends jController {
       }
       // Build the SQL insert and update query
       $insert[]=$value;
-      $update[]="$ref=$value";
+      $refs[]='"'.$ref.'"';
+      $update[]='"'.$ref.'"='.$value;
     }
 
     $sql = '';
@@ -755,7 +756,7 @@ class editionCtrl extends jController {
       // featureId is set
       // SQL for updating on line in the edition table
       $sql = " UPDATE ".$this->table." SET ";
-      $sql.= implode(',', $update);
+      $sql.= implode(', ', $update);
       $v = ''; $i = 0;
       $sql.= ' WHERE';
       foreach($this->primaryKeys as $key){
@@ -775,7 +776,7 @@ class editionCtrl extends jController {
     else {
       // SQL for insertion into the edition this->table
       $sql = " INSERT INTO ".$this->table." (";
-      $sql.= implode(', ', $fields);
+      $sql.= implode(', ', $refs);
       $sql.= " ) VALUES (";
       $sql.= implode(', ', $insert);
       $sql.= " );";
