@@ -133,7 +133,8 @@ class qgisFormControl{
       'bool'=>'boolean',
       'boolean'=>'boolean',
       'date'=>'date',
-      'datetime'=>'datetime'
+      'datetime'=>'datetime',
+      'timestamp'=>'datetime'
     );
 
 
@@ -238,6 +239,10 @@ class qgisFormControl{
 
       case 'date':
         $this->ctrl = new jFormsControlDate($this->ref);
+        break;
+
+      case 'datetime':
+        $this->ctrl = new jFormsControlDatetime($this->ref);
         break;
 
       default:
