@@ -394,6 +394,10 @@ class lizMapCtrl extends jController {
 
     // switcher-layers-actions javascript
     $rep->addJSLink( $bp.'js/switcher-layers-actions.js' );
+    
+    // Add Google Analytics ID
+    if($lser->googleAnalyticsID != '' && preg_match("/^UA-\d+-\d+$/", $lser->googleAnalyticsID) == 1 )
+      $assign['googleAnalyticsID'] = $lser->googleAnalyticsID;
 
     $rep->body->assign($assign);
 

@@ -31,7 +31,8 @@ class lizmapServices{
       'debugMode',
       'cacheRootDirectory',
       'allowUserAccountRequests',
-      'adminContactEmail'
+      'adminContactEmail',
+      'googleAnalyticsID'
     );
     // Wms map server
     public $appName = 'Lizmap';
@@ -57,6 +58,8 @@ class lizmapServices{
     public $allowUserAccountRequests = '';
     // admin contact email
     public $adminContactEmail = '';
+    // admin contact email
+    public $googleAnalyticsID = '';
 
     public function __construct () {
       // read the lizmap configuration file

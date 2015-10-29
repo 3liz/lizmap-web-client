@@ -68,6 +68,11 @@
     <help locale="admin~admin.form.admin_services.adminContactEmail.help"/>
 </input>
 
+<input ref="googleAnalyticsID" type="string" pattern="/^UA-\d+-\d+$/">
+  <label locale="admin~admin.form.admin_services.googleAnalyticsID.label"/>
+    <help locale="admin~admin.form.admin_services.googleAnalyticsID.help"/>
+</input>
+
 <submit ref="_submit">
     <label locale="admin~admin.form.admin_services.submit.label"/>
 </submit>
