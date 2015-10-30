@@ -378,6 +378,9 @@ Timemanager
   padding-left:0.2em;
   padding-right:0.2em;
 }
+#edition-menu div.btn-group a.btn.btn-small {
+    float: left;
+}
 
 
 #content.mobile #toolbar{
