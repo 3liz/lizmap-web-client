@@ -13,7 +13,7 @@ theme=default
 pluginsPath="app:plugins/,lib:jelix-plugins/,module:jacl2db/plugins"
 modulesPath="lib:jelix-admin-modules/,lib:jelix-modules/,app:modules/,app:lizmap-modules"
 
-availableLocales="fr_FR,en_US,it_IT,es_ES,eu_ES,pt_PT,el_GR"
+availableLocales="fr_FR,en_US,it_IT,es_ES,eu_ES,pt_PT,el_GR,de_DE"
 
 [coordplugins]
 ;name = file_ini_name or 1
