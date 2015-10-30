@@ -2389,7 +2389,10 @@ var lizMap = function() {
                 $('#edition-modal').modal('hide');
                 return false;
               });
-              $('#edition-modal').modal('show');
+              if ( $('#edition-modal form').length == 1)
+                $('#edition-modal form').submit();
+              else
+                $('#edition-modal').modal('show');
             });
             return false;
           }
