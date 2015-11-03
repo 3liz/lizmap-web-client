@@ -728,7 +728,7 @@ class lizmapProject{
         }
         $metadataTpl->assign(array_merge(array(
             'repositoryLabel'=>$this->getData('label'),
-            'repository'=>$this->getrepository(),
+            'repository'=>$this->repository->getKey(),
             'project'=>$this->getKey(),
             'wmsGetCapabilitiesUrl' => $wmsGetCapabilitiesUrl
         ), $wmsInfo));
