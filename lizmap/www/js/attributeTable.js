@@ -360,80 +360,89 @@ var lizAttributeTable = function() {
               ,wfsOptions
               ,function(data) {
 
-            // Get features and build attribute table content
-            var lConfig = config.layers[aName];
-            atConfig['features'] = {};
-            var features = data.features;
-            dataLength = features.length;
-            var html = '';
-            if (dataLength > 0) {
-              config.attributeLayers[aName]['features'] = features;
-              html+= '<tr>';
-              for (var idx in features[0].properties){
-                  if ( 'aliases' in data && idx in data.aliases )
-                    html+='<th>' + data.aliases[idx] + '</th>';
-                  else
-                    html+='<th>' + idx + '</th>';
-              }
-              html+='<th></th>';
-              html+='</tr>';
-              for (var fid in features) {
-                html+='<tr>';
-                var feat = features[fid];
-                for (var idx in feat.properties){
-                  var prop = feat.properties[idx];
-                  html+='<td>' + prop + '</td>';
-                }
-                html+='<td><input type="hidden" value="'+fid+'"></td>';
-                html+='</tr>';
-              }
-              var aTable = '#attributeLayers-'+lizMap.cleanName(aName)+' table';
-              $(aTable).html(html);
+              $.get(service
+                  ,{
+                    'SERVICE':'WFS'
+                   ,'VERSION':'1.0.0'
+                   ,'REQUEST':'DescribeFeatureType'
+                   ,'TYPENAME':typeName
+                   ,'OUTPUTFORMAT':'JSON'
+                },function(describe) {
+                    // Get features and build attribute table content
+                    var lConfig = config.layers[aName];
+                    atConfig['features'] = {};
+                    var features = data.features;
+                    dataLength = features.length;
+                    var html = '';
+                    if (dataLength > 0) {
+                      config.attributeLayers[aName]['features'] = features;
+                      html+= '<tr>';
+                      for (var idx in features[0].properties){
+                          if ( 'aliases' in describe && idx in describe.aliases )
+                            html+='<th>' + describe.aliases[idx] + '</th>';
+                          else
+                            html+='<th>' + idx + '</th>';
+                      }
+                      html+='<th></th>';
+                      html+='</tr>';
+                      for (var fid in features) {
+                        html+='<tr>';
+                        var feat = features[fid];
+                        for (var idx in feat.properties){
+                          var prop = feat.properties[idx];
+                          html+='<td>' + prop + '</td>';
+                        }
+                        html+='<td><input type="hidden" value="'+fid+'"></td>';
+                        html+='</tr>';
+                      }
+                      var aTable = '#attributeLayers-'+lizMap.cleanName(aName)+' table';
+                      $(aTable).html(html);
 
-              // Zoom to selected feature on tr click
-              $(aTable +' tr').click(function() {
-                $(aTable + ' tr').removeClass('success');
-                $(this).addClass('success');
+                      // Zoom to selected feature on tr click
+                      $(aTable +' tr').click(function() {
+                        $(aTable + ' tr').removeClass('success');
+                        $(this).addClass('success');
 
-                // Add the feature to the layer
-                var layer = lizMap.map.getLayersByName('locatelayer')[0];
-                layer.destroyFeatures();
-                var featId = $(this).find('input').val();
-                var feat = config.attributeLayers[aName]['features'][featId];
-                var format = new OpenLayers.Format.GeoJSON();
-                feat = format.read(feat)[0];
-                var proj = new OpenLayers.Projection(config.attributeLayers[aName].crs);
-                feat.geometry.transform(proj, lizMap.map.getProjection());
-                layer.addFeatures([feat]);
+                        // Add the feature to the layer
+                        var layer = lizMap.map.getLayersByName('locatelayer')[0];
+                        layer.destroyFeatures();
+                        var featId = $(this).find('input').val();
+                        var feat = config.attributeLayers[aName]['features'][featId];
+                        var format = new OpenLayers.Format.GeoJSON();
+                        feat = format.read(feat)[0];
+                        var proj = new OpenLayers.Projection(config.attributeLayers[aName].crs);
+                        feat.geometry.transform(proj, lizMap.map.getProjection());
+                        layer.addFeatures([feat]);
 
-                // Zoom to selected feature
-                //lizMap.map.zoomToExtent(feat.geometry.getBounds());
-                lizMap.map.setCenter(feat.geometry.getBounds().getCenterLonLat())
+                        // Zoom to selected feature
+                        //lizMap.map.zoomToExtent(feat.geometry.getBounds());
+                        lizMap.map.setCenter(feat.geometry.getBounds().getCenterLonLat())
+                      });
+                    }
+
+                    if ( dataLength == 0 ){
+
+                      $('#attributeLayers-'+lizMap.cleanName(aName)+' span.attribute-layer-msg').html(
+                        lizDict['attributeLayers.toolbar.msg.data.nodata'] + ' ' + lizDict['attributeLayers.toolbar.msg.data.extent']
+                      ).addClass('failure');
+
+                    } else {
+                      config.attributeLayers[aName]['tableDisplayed'] = true;
+                      $(aTable).show();
+
+                      // Information message
+                      $('#attributeLayers-'+lizMap.cleanName(aName)+' span.attribute-layer-msg').html(
+                        dataLength +' '+ lizDict['attributeLayers.toolbar.msg.data.lines'] + ' ' + lizDict['attributeLayers.toolbar.msg.data.extent']
+                      ).addClass('success');
+
+                      // Display the hide/show button
+                      $('button.btn-toggle-attributeTable[value="'+lizMap.cleanName(aName)+'"]')
+                      .show();
+
+
+
+                    }
               });
-            }
-
-            if ( dataLength == 0 ){
-
-              $('#attributeLayers-'+lizMap.cleanName(aName)+' span.attribute-layer-msg').html(
-                lizDict['attributeLayers.toolbar.msg.data.nodata'] + ' ' + lizDict['attributeLayers.toolbar.msg.data.extent']
-              ).addClass('failure');
-
-            } else {
-              config.attributeLayers[aName]['tableDisplayed'] = true;
-              $(aTable).show();
-
-              // Information message
-              $('#attributeLayers-'+lizMap.cleanName(aName)+' span.attribute-layer-msg').html(
-                dataLength +' '+ lizDict['attributeLayers.toolbar.msg.data.lines'] + ' ' + lizDict['attributeLayers.toolbar.msg.data.extent']
-              ).addClass('success');
-
-              // Display the hide/show button
-              $('button.btn-toggle-attributeTable[value="'+lizMap.cleanName(aName)+'"]')
-              .show();
-
-
-
-            }
           });
 
           $('body').css('cursor', 'auto');
