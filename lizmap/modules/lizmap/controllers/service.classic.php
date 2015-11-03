@@ -206,15 +206,25 @@ class serviceCtrl extends jController {
     if( $lproj->hasLoginFilteredLayers()
       and $pConfig->loginFilteredLayers
     ){
+      // Add client side filter before changing it server side
       $v='';
       $filter='';
+      $clientExpFilter = Null;
+      if( array_key_exists('exp_filter', $this->params))
+        $clientExpFilter = $this->params['exp_filter'];
+      $clientFilter = Null;
+      if( array_key_exists('filter', $this->params))
+        $clientFilter = $this->params['filter'];
+
+      // Check if a user is authenticated
+      $isConnected = jAuth::isConnected();
+
+      // Check need for filter foreach layer
       foreach(explode(',', $layers) as $layername){
         if( property_exists($pConfig->loginFilteredLayers, $layername) ) {
           $oAttribute = $pConfig->loginFilteredLayers->$layername->filterAttribute;
           $attribute = strtolower($oAttribute);
 
-          // Check if a user is authenticated
-          $isConnected = jAuth::isConnected();
           $pre = "$layername:";
           if($request == 'getfeature')
             $pre = '';
@@ -222,7 +232,7 @@ class serviceCtrl extends jController {
             $user = jAuth::getUserSession();
             $login = $user->login;
             if (property_exists($pConfig->loginFilteredLayers->$layername, 'filterPrivate')
-             && $pConfig->loginFilteredLayers->$layername->filterPrivate = 'True')
+             && $pConfig->loginFilteredLayers->$layername->filterPrivate == 'True')
             {
               $filter.= $v."$pre\"$attribute\" IN ( '".$login."' , 'all' )";
             } else {
@@ -236,17 +246,30 @@ class serviceCtrl extends jController {
             $filter.= $v."$pre\"$attribute\" = 'all'";
             $v = ';';
           }
+          if( !empty( $clientFilter ) ){
+            $filter.= " AND " . str_replace( $pre, '', $clientFilter);
+          }
         }
       }
 
       // Set filter when multiple layers concerned
-      if($filter)
+      if($filter){
+        // WFS : EXP_FILTER
         if( $request == 'getfeature' ){
+          if( !empty($clientExpFilter) ){
+            $filter.= " AND ". $clientExpFilter;
+          }
           $this->params['exp_filter'] = $filter;
-          $this->params["propertyname"].= ",$oAttribute";
+          if( array_key_exists('propertyname', $this->params)  ){
+            if( !empty( trim($this->params["propertyname"]) ) )
+              $this->params["propertyname"].= ",$oAttribute";
+          }
         }
+        // WMS : FILTER
         else
           $this->params['filter'] = $filter;
+      }
+
     }
   }
 

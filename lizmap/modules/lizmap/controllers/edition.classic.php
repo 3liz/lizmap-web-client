@@ -221,7 +221,7 @@ class editionCtrl extends jController {
         $attribute = $pConfig->loginFilteredLayers->$layername->filterAttribute;
 
         if (property_exists($pConfig->loginFilteredLayers->$layername, 'filterPrivate')
-         && $pConfig->loginFilteredLayers->$layername->filterPrivate = 'True')
+         && $pConfig->loginFilteredLayers->$layername->filterPrivate == 'True')
           $type = 'login';
 
         // Check if a user is authenticated
@@ -806,7 +806,7 @@ class editionCtrl extends jController {
     foreach($fields as $ref){
       // Get and filter the posted data foreach form control
       $value = $form->getData($ref);
-      
+
       if(is_array($value)){
         $value = '{'.implode(',',$value).'}';
       }
@@ -825,7 +825,7 @@ class editionCtrl extends jController {
               }
             break;
           case 'date':
-	  case 'datetime':
+      case 'datetime':
             $value = filter_var($value, FILTER_SANITIZE_STRING, FILTER_FLAG_NO_ENCODE_QUOTES);
             if ( !$value )
               $value = 'NULL';
