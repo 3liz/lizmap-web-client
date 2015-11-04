@@ -21,10 +21,15 @@ var lizMap = function() {
    */
   var capabilities = null;
   /**
-   * PRIVATE Property: capabilities
+   * PRIVATE Property: wmtsCapabilities
    * {object} The wmts capabilities
    */
   var wmtsCapabilities = null;
+  /**
+   * PRIVATE Property: wfsCapabilities
+   * {object} The wfs capabilities
+   */
+  var wfsCapabilities = null;
   /**
    * PRIVATE Property: map
    * {<OpenLayers.Map>} The map
@@ -1699,15 +1704,13 @@ var lizMap = function() {
           strokeColor: 'yellow'
         })
       }));
-      var service = OpenLayers.Util.urlAppend(lizUrls.wms
-          ,OpenLayers.Util.getParameterString(lizUrls.params)
-      );
-      $.get(service, {
-          'SERVICE':'WFS'
-         ,'VERSION':'1.0.0'
-         ,'REQUEST':'GetCapabilities'
-      }, function(xml) {
-        var featureTypes = $(xml).find('FeatureType');
+      
+        // Lizmap URL
+        var service = OpenLayers.Util.urlAppend(lizUrls.wms
+                ,OpenLayers.Util.getParameterString(lizUrls.params)
+        );
+      
+        var featureTypes = getVectorLayerFeatureTypes();
         if (featureTypes.length == 0 ){
           config.locateByLayer = {};
           $('#button-locate').parent().remove();
@@ -1793,7 +1796,7 @@ var lizMap = function() {
             return false;
           });
         }
-      },'xml');
+        
       //$('#locate-menu').show();
     }
 
@@ -2130,15 +2133,13 @@ var lizMap = function() {
           strokeColor: 'yellow'
         })
       }));
-      var service = OpenLayers.Util.urlAppend(lizUrls.wms
-          ,OpenLayers.Util.getParameterString(lizUrls.params)
-      );
-      $.get(service, {
-          'SERVICE':'WFS'
-         ,'VERSION':'1.0.0'
-         ,'REQUEST':'GetCapabilities'
-      }, function(xml) {
-        var featureTypes = $(xml).find('FeatureType');
+      
+        // Lizmap URL
+        var service = OpenLayers.Util.urlAppend(lizUrls.wms
+                ,OpenLayers.Util.getParameterString(lizUrls.params)
+        );
+        
+        var featureTypes = getVectorLayerFeatureTypes();
         if (featureTypes.length == 0 ){
           config.locateByLayer = {};
           $('#button-locate').parent().remove();
@@ -2229,7 +2230,7 @@ var lizMap = function() {
             return false;
           });
         }
-      },'xml');
+        
       //$('#locate-menu').show();
     }
 
@@ -3951,6 +3952,12 @@ var lizMap = function() {
       return getFeatureUrlData;
   }
 
+  function getVectorLayerFeatureTypes() {
+      if ( wfsCapabilities == null )
+          return [];
+      return wfsCapabilities.find('FeatureType');
+  }
+
 
   // creating the lizMap object
   var obj = {
@@ -4105,6 +4112,13 @@ var lizMap = function() {
     },
 
     /**
+     * Method: getVectorLayerFeatureType
+     */
+    getVectorLayerFeatureTypes: function() {
+      return getVectorLayerFeatureTypes();
+    },
+
+    /**
      * Method: getLayerConfigById
      */
     getLayerConfigById: function( aLayerId, aConfObjet, aIdAttribute ) {
@@ -4126,17 +4140,24 @@ var lizMap = function() {
           ,OpenLayers.Util.getParameterString(lizUrls.params)
         );
         $.get(service
-          ,{SERVICE:'WMTS',REQUEST:'GetCapabilities',VERSION:'1.0.0'}
-          ,function(wmtsCapaData) {
-              var wmtsFormat = new OpenLayers.Format.WMTSCapabilities({});
-              wmtsCapabilities = wmtsFormat.read( wmtsCapaData );
-              //console.log( wmtsCapabilities );
-        $.get(service
           ,{SERVICE:'WMS',REQUEST:'GetCapabilities',VERSION:'1.3.0'}
           ,function(data) {
+        $.get(service
+          ,{SERVICE:'WMTS',REQUEST:'GetCapabilities',VERSION:'1.0.0'}
+          ,function(wmtsCapaData) {
+        $.get(service
+          ,{SERVICE:'WFS',REQUEST:'GetCapabilities',VERSION:'1.0.0'}
+          ,function(wfsCapaData) {
+          
           //parse capabilities
           if (!parseData(data))
             return true;
+          
+              var wmtsFormat = new OpenLayers.Format.WMTSCapabilities({});
+              wmtsCapabilities = wmtsFormat.read( wmtsCapaData );
+              //console.log( wmtsCapabilities );
+              
+              wfsCapabilities = $(wfsCapaData);
 
           //set title and abstract coming from capabilities
 //          document.title = capabilities.title ? capabilities.title : capabilities.service.title;
@@ -4386,6 +4407,7 @@ var lizMap = function() {
 
           $('body').css('cursor', 'auto');
           $('#loading').dialog('close');
+        }, "text");
         }, "text");
         }, "text");
       });

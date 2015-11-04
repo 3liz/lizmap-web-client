@@ -56,13 +56,8 @@ var lizTimemanager = function() {
             var service = OpenLayers.Util.urlAppend(lizUrls.wms
                 ,OpenLayers.Util.getParameterString(lizUrls.params)
             );
-            // Verifying features
-            $.get(service, {
-              'SERVICE':'WFS'
-              ,'VERSION':'1.0.0'
-              ,'REQUEST':'GetCapabilities'
-            }, function(xml) {
-              var featureTypes = $(xml).find('FeatureType');
+            
+              var featureTypes = lizMap.getVectorLayerFeatureTypes();
               if (featureTypes.length == 0 ){
                 //what to deactivate ?
               } else {
@@ -94,7 +89,6 @@ var lizTimemanager = function() {
                   }
                 });
               }
-            },'xml' );
 
             // Vector layers popup
             var tmHighlightedLayers = [];

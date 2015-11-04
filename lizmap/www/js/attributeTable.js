@@ -28,13 +28,8 @@ var lizAttributeTable = function() {
 
             // Verifying WFS layers
             $('#bottom-dock-content').css('cursor', 'wait');
-            $.get(service, {
-                'SERVICE':'WFS'
-                ,'VERSION':'1.0.0'
-                ,'REQUEST':'GetCapabilities'
-            }, function(xml) {
 
-                var featureTypes = $(xml).find('FeatureType');
+                var featureTypes = lizMap.getVectorLayerFeatureTypes();
                 if (featureTypes.length == 0 ){
                     //what to deactivate ?
                 } else {
@@ -316,7 +311,6 @@ var lizAttributeTable = function() {
                     }
                 }
                 $('#bottom-dock-content').css('cursor', 'auto');
-            },'xml');
 
             function activateAttributeLayers() {
                 attributeLayersActive = true;
