@@ -595,17 +595,25 @@ class serviceCtrl extends jController {
         $configLayer = $this->project->findLayerByTitle( $layername );
       if ( $configLayer == null )
         continue;
+        
 
       // Avoid layer if no popup asked by the user for it
       // or if no popup property
-      if(property_exists($configLayer, 'popup')){
-        if($configLayer->popup != 'True'){
-          continue;
-        }
+      // or if no edition
+      $returnPopup = False;
+      if( property_exists($configLayer, 'popup') && $configLayer->popup == 'True' )
+        $returnPopup = True;
+        
+      if ( !$returnPopup ){
+        $editionLayer = $this->project->findEditionLayerByLayerId( $configLayer->id );
+        if ( $editionLayer != null && ( $editionLayer->capabilities->modifyGeometry == 'True'
+                                     || $editionLayer->capabilities->modifyAttribute == 'True'
+                                     || $editionLayer->capabilities->deleteFeature == 'True') )
+          $returnPopup = True;
       }
-      else{
+      
+      if ( !$returnPopup )
         continue;
-      }
 
       // Get layer title
       $layerTitle = $configLayer->title;

@@ -187,6 +187,16 @@ class lizmapProject{
         return null;
     }
 
+    public function findLayerByLayerId( $layerId ){
+        foreach ( $this->cfg->layers as $layer ) {
+            if ( !property_exists( $layer, 'id' ) )
+                continue;
+            if ( $layer->id == $layerId )
+                return $layer;
+        }
+        return null;
+    }
+
     public function hasLocateByLayer(){
         if ( property_exists($this->cfg,'locateByLayer') ){
             $count = 0;
@@ -244,6 +254,28 @@ class lizmapProject{
 
     public function getEditionLayers(){
         return $this->cfg->editionLayers;
+    }
+
+    public function findEditionLayerByName( $name ){
+        if ( !$this->hasEditionLayers() )
+            return null;
+            
+        if ( property_exists($this->cfg->editionLayers, $name ) )
+            return $this->cfg->editionLayers->$name;
+        return null;
+    }
+
+    public function findEditionLayerByLayerId( $layerId ){
+        if ( !$this->hasEditionLayers() )
+            return null;
+            
+        foreach ( $this->cfg->editionLayers as $layer ) {
+            if ( !property_exists( $layer, 'layerId' ) )
+                continue;
+            if ( $layer->layerId == $layerId )
+                return $layer;
+        }
+        return null;
     }
 
     public function hasLoginFilteredLayers(){

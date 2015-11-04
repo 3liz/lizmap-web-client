@@ -793,7 +793,7 @@ var lizAttributeTable = function() {
                 var lp  = {};
 
                 // Get ids of selected feature
-                var getP = getLayerConfigById( layerId, config.attributeLayers, 'layerId' );
+                var getP = lizMap.getLayerConfigById( layerId, config.attributeLayers, 'layerId' );
                 if( !getP )
                     return false;
 
@@ -825,20 +825,6 @@ var lizAttributeTable = function() {
                 return lp;
             }
 
-            function getLayerConfigById( layerId, confObjet, idAttribute ) {
-
-                // Set function parameters if not given
-                var confObjet = typeof confObjet !== 'undefined' ?  confObjet : config.layers;
-                var idAttribute = typeof idAttribute !== 'undefined' ?  idAttribute : 'id';
-
-                // Loop through layers to get the one by id
-                for ( var lx in confObjet ) {
-                    if ( confObjet[lx][idAttribute] == layerId )
-                        return [lx, confObjet[lx] ];
-                }
-                return null;
-            }
-
             function getChildrenHtmlContent( parentLayerName ) {
 
                 var childHtml = null;
@@ -856,7 +842,7 @@ var lizAttributeTable = function() {
                     var childActive = 'active';
                     for( var lid in layerRelations ) {
                         var relation = layerRelations[lid];
-                        var childLayerConfigA = getLayerConfigById(
+                        var childLayerConfigA = lizMap.getLayerConfigById(
                             relation.referencingLayer,
                             config.layers,
                             'id'
@@ -893,7 +879,7 @@ var lizAttributeTable = function() {
                             // Add create child feature button
                             var canCreateChild = false;
                             if( 'editionLayers' in config ){
-                                var editionConfig = getLayerConfigById(
+                                var editionConfig = lizMap.getLayerConfigById(
                                     relation.referencingLayer,
                                     config.editionLayers,
                                     'layerId'
@@ -978,7 +964,7 @@ var lizAttributeTable = function() {
                     var layerRelations = config.relations[parentLayerId];
                     for( var lid in layerRelations ) {
                         var relation = layerRelations[lid];
-                        var childLayerConfigA = getLayerConfigById(
+                        var childLayerConfigA = lizMap.getLayerConfigById(
                             relation.referencingLayer,
                             config.layers,
                             'id'
@@ -1433,7 +1419,7 @@ var lizAttributeTable = function() {
                                         return false;
 
                                     // Get primary key value for clicked child item
-                                    var cc = getLayerConfigById(
+                                    var cc = lizMap.getLayerConfigById(
                                         cId,
                                         config.attributeLayers,
                                         'layerId'
@@ -1911,7 +1897,7 @@ var lizAttributeTable = function() {
                 var typeNamePkeyValues = [];
                 var typeNameChildren = {};
 
-                var getTypeNameConfig = getLayerConfigById(
+                var getTypeNameConfig = lizMap.getLayerConfigById(
                     typeNameId,
                     config.attributeLayers,
                     'layerId'
@@ -1930,7 +1916,7 @@ var lizAttributeTable = function() {
                     for( var lid in layerRelations ) {
 
                         var relation = layerRelations[lid];
-                        var childLayerConfigA = getLayerConfigById(
+                        var childLayerConfigA = lizMap.getLayerConfigById(
                             relation.referencingLayer,
                             config.attributeLayers,
                             'layerId'
@@ -1995,7 +1981,7 @@ var lizAttributeTable = function() {
                         if( rx == typeNameId)
                             continue;
                         // Do not get relation for parent to avoid ( infinite loop otherwise )
-                        var otherParentConfig = getLayerConfigById(
+                        var otherParentConfig = lizMap.getLayerConfigById(
                             rx,
                             config.attributeLayers,
                             'layerId'
@@ -2015,7 +2001,7 @@ var lizAttributeTable = function() {
                             otherParentId = rx;
                             otherParentRelation = aLayerRelations[xx];
 
-                            var otherParentConfig = getLayerConfigById(
+                            var otherParentConfig = lizMap.getLayerConfigById(
                                 rx,
                                 config.attributeLayers,
                                 'layerId'
@@ -2168,7 +2154,7 @@ var lizAttributeTable = function() {
 
 
             function deleteEditionFeature( layerId, featureId ){
-                var eConfig = getLayerConfigById(
+                var eConfig = lizMap.getLayerConfigById(
                     layerId,
                     config.editionLayers,
                     'layerId'
@@ -2461,17 +2447,19 @@ var lizAttributeTable = function() {
                     var hasButton = false;
                     // Add action buttons if needed
                     $('#liz_layer_popup input.lizmap-popup-layer-feature-id').each(function(){
-                        eHtml = '';
-                        var fid = $(this).val().split('.').pop();
-                        var layerId = $(this).val().replace( '.' + fid, '' );
+                        var self = $(this);
+                        var val = self.val(); 
+                        var eHtml = '';
+                        var fid = val.split('.').pop();
+                        var layerId = val.replace( '.' + fid, '' );
 
                         // Select button
-                        var aConfig = getLayerConfigById(
+                        var aConfig = lizMap.getLayerConfigById(
                             layerId,
                             config.attributeLayers,
                             'layerId'
                         );
-                        var getLayerConfig = getLayerConfigById( layerId );
+                        var getLayerConfig = lizMap.getLayerConfigById( layerId );
 
                         if( aConfig && getLayerConfig ) {
                             var layerConfig = getLayerConfig[1];
@@ -2502,35 +2490,15 @@ var lizAttributeTable = function() {
                             eHtml+= '" title="' + lizDict['attributeLayers.btn.zoom.title'] + '"><i class="icon-zoom-in"></i>&nbsp;</button>';
                         }
 
-                        // Edit button
-                        var eConfig = null;
-                        if( 'editionLayers' in config ) {
-                            eConfig = getLayerConfigById(
-                                layerId,
-                                config.editionLayers,
-                                'layerId'
-                            );
-                        }
-
-                        if( eConfig &&
-                            ( eConfig[1].capabilities.modifyAttribute == "True" || eConfig[1].capabilities.modifyGeometry == "True" )
-                        ) {
-                            eHtml+= '<button class="btn btn-mini popup-layer-feature-edit" value="';
-                            eHtml+= $(this).val();
-                            eHtml+= '" title="' + lizDict['attributeLayers.btn.edit.title'] + '"><i class="icon-pencil"></i>&nbsp;</button>';
-                        }
-
-                        // Delete feature button
-                        if( eConfig && eConfig[1].capabilities.deleteFeature == "True") {
-                            eHtml+= '<button class="btn btn-mini popup-layer-feature-delete" value="';
-                            eHtml+= $(this).val();
-                            eHtml+= '" title="' + lizDict['attributeLayers.btn.delete.title'] + '"><i class="icon-remove"></i>&nbsp;</button>';
-                        }
-
-                        if( eHtml ){
-                            eHtml = '<span class="popupButtonBar">' + eHtml + '</span>';
-                            $(this).after(eHtml);
-                            $('#liz_layer_popup button.btn').tooltip( {
+                        if( eHtml != '' ){
+                            var popupButtonBar = self.find('span.popupButtonBar');
+                            if ( popupButtonBar.length != 0 ) {
+                                popupButtonBar.append(eHtml);
+                            } else {
+                                eHtml = '<span class="popupButtonBar">' + eHtml + '</span>';
+                                self.after(eHtml);
+                            }
+                            self.find('button.btn').tooltip( {
                                 placement: 'bottom'
                             } );
                             hasButton = true;
@@ -2643,47 +2611,14 @@ var lizAttributeTable = function() {
                                 function(){ $(this).removeClass('btn-primary'); }
                             );
                         }
-
-                        // edit
-                        $('#liz_layer_popup button.popup-layer-feature-edit')
-                        .click(function(){
-                            var fid = $(this).val().split('.').pop();
-                            var layerId = $(this).val().replace( '.' + fid, '' );
-
-                            // launch edition
-                            lizMap.launchEdition( layerId, fid );
-                            return false;
-                        })
-                        .hover(
-                            function(){ $(this).addClass('btn-primary'); },
-                            function(){ $(this).removeClass('btn-primary'); }
-                        );
-
-                        // delete
-                        $('#liz_layer_popup button.popup-layer-feature-delete').click(function(){
-                            var fid = $(this).val().split('.').pop();
-                            var layerId = $(this).val().replace( '.' + fid, '' );
-
-                            // remove Feature
-                            deleteEditionFeature( layerId, fid );
-
-                            // Remove map popup to avoid confusion
-                            if (lizMap.map.popups.length != 0)
-                                lizMap.map.removePopup( lizMap.map.popups[0] );
-
-                            return false;
-                        })
-                        .hover(
-                            function(){ $(this).addClass('btn-primary'); },
-                            function(){ $(this).removeClass('btn-primary'); }
-                        );
+                        
                     }
 
 
                 },
 
                 lizmapeditionfeaturecreated: function(e){
-                    var getLayer = getLayerConfigById( e.layerId, config.attributeLayers, 'layerId' );
+                    var getLayer = lizMap.getLayerConfigById( e.layerId, config.attributeLayers, 'layerId' );
                     if( getLayer ){
                         var featureType = getLayer[0];
                         if( !(featureType in config.attributeLayers) )
@@ -2693,7 +2628,7 @@ var lizAttributeTable = function() {
                 },
 
                 lizmapeditionfeaturemodified: function(e){
-                    var getLayer = getLayerConfigById( e.layerId );
+                    var getLayer = lizMap.getLayerConfigById( e.layerId );
                     if( getLayer ){
                         var featureType = getLayer[0];
                         if( !(featureType in config.attributeLayers) )
@@ -2703,7 +2638,7 @@ var lizAttributeTable = function() {
                 },
 
                 lizmapeditionfeaturedeleted: function(e){
-                    var getLayer = getLayerConfigById( e.layerId );
+                    var getLayer = lizMap.getLayerConfigById( e.layerId );
                     if( getLayer ){
                         var featureType = getLayer[0];
                         if( !(featureType in config.attributeLayers) )

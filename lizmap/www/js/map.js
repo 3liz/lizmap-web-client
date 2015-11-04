@@ -2799,7 +2799,11 @@ var lizMap = function() {
             if(layer instanceof OpenLayers.Layer.WMS  &&
                (!this.queryVisible || (layer.getVisibility() && layer.calculateInRange()))) {
                  var configLayer = config.layers[layer.params['LAYERS']];
-                 if( configLayer && configLayer.popup && configLayer.popup == 'True'){
+                 var editionLayer = config.editionLayers[layer.params['LAYERS']];
+                 if( (configLayer && configLayer.popup && configLayer.popup == 'True')
+                  || (editionLayer && ( editionLayer.capabilities.modifyGeometry == 'True'
+                                     || editionLayer.capabilities.modifyAttribute == 'True'
+                                     || editionLayer.capabilities.deleteFeature == 'True') ) ){
                     url = OpenLayers.Util.isArray(layer.url) ? layer.url[0] : layer.url;
                     // if the control was not configured with a url, set it
                     // to the first layer url
