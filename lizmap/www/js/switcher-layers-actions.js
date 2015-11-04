@@ -1,5 +1,7 @@
 var lizLayerActionButtons = function() {
 
+    var featureTypes = null;
+
     function fillSubDock( html ){
         $('#sub-dock').html( html );
         $('#sub-dock i.close').click(function(){
@@ -106,6 +108,8 @@ var lizLayerActionButtons = function() {
     lizMap.events.on({
 
     'uicreated': function(evt){
+        
+        featureTypes = lizMap.getVectorLayerFeatureTypes();
 
         // title tooltip
         $('#switcher-layers-actions .btn').tooltip( {
@@ -230,15 +234,19 @@ var lizLayerActionButtons = function() {
         // Export layer
         // Only if layer is in attribute table
         var showExport = false;
-        if(
-            itemType == 'layer'
+        if( featureTypes.length != 0
+            && itemType == 'layer'
             && itemSelected
-            && 'attributeLayers' in lizMap.config
-            && itemName in lizMap.config.attributeLayers
-            && itemConfig['geometryType'] != 'none'
-            && itemConfig['geometryType'] != 'unknown'
+            && itemName
         ){
-            showExport = true;
+            featureTypes.each( function(){
+                var self = $(this);
+                var typeName = self.find('Name').text();
+                if ( typeName == itemName )
+                    showExport = true;
+                else if (typeName == itemName.replace(' ','_') )
+                    showExport = true;
+            });
         }
         $('#layerActionExport').attr( 'disable', !showExport ).toggleClass( 'disabled', !showExport );
 
