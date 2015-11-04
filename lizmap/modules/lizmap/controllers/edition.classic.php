@@ -911,11 +911,7 @@ class editionCtrl extends jController {
       }
       $dfields = array_map( "dquote", $fields );
       $sql = " INSERT INTO ".$this->table." (";
-<<<<<<< HEAD
-      $sql.= implode(', ', $dfields);
-=======
       $sql.= implode(', ', $refs);
->>>>>>> 3c317f7... [BUGFIX] Edition: all the fields must be between double quotes
       $sql.= " ) VALUES (";
       $sql.= implode(', ', $insert);
       $sql.= " );";
