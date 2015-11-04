@@ -1521,14 +1521,24 @@ var lizAttributeTable = function() {
                 var geometryName = 'extent';
                 var getFeatureUrlData = lizMap.getVectorLayerWfsUrl( aName, aFilter, aFeatureID, geometryName );
                 $.get( getFeatureUrlData['url'], getFeatureUrlData['options'], function(data) {
+                
+                    $.get(service, {
+                        'SERVICE':'WFS'
+                       ,'VERSION':'1.0.0'
+                       ,'REQUEST':'DescribeFeatureType'
+                       ,'TYPENAME':aName
+                       ,'OUTPUTFORMAT':'JSON'
+                    }, function(describe) {
 
-                    var cFeatures = data.features;
-                    var cAliases = data.aliases;
+                        var cFeatures = data.features;
+                        var cAliases = describe.aliases;
 
-                    if( aCallBack)
-                        aCallBack( aName, aFilter, cFeatures, cAliases );
+                        if( aCallBack)
+                            aCallBack( aName, aFilter, cFeatures, cAliases );
 
-                    $('body').css('cursor', 'auto');
+                        $('body').css('cursor', 'auto');
+                        
+                    },'json');
 
                 },'json');
 

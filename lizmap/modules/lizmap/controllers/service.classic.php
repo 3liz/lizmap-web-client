@@ -922,23 +922,9 @@ class serviceCtrl extends jController {
 
     // Return response
     $rep = $this->getResponse('binary');
-    /*
-    if(preg_match('#^GML#', $this->params['outputformat']))
-      $rep->mimeType = 'text/xml';
-    else
-      $rep->mimeType = 'text/json';
-      * */
     $rep->mimeType = $mime;
     if (   preg_match('#^text/plain#', $mime) && strtolower( $this->params['outputformat'] ) == 'geojson' ) {
         $rep->mimeType = 'text/json';
-        $layer = $this->project->findLayerByName( $this->params['typename'] );
-        if ( $layer != null ) {
-            $layer = $this->project->getLayer( $layer->id );
-            $aliases = $layer->getAliasFields();
-            $aliases = (object) $aliases;
-            $aliases = json_encode( $aliases );
-            $data = preg_replace( '#\}$#', ', "aliases" : ' . $aliases . '}', $data);
-        }
     }
     $rep->content = $data;
     $rep->doDownload  =  false;
@@ -969,6 +955,27 @@ class serviceCtrl extends jController {
     // Get parameters
     if(!$this->getServiceParameters())
       return $this->serviceException();
+    
+    // Extensions to get aliases
+    if ( strtolower( $this->params['outputformat'] ) == 'json' ) {
+        $data = array();
+        $layer = $this->project->findLayerByName( $this->params['typename'] );
+        if ( $layer != null ) {
+            $layer = $this->project->getLayer( $layer->id );
+            $aliases = $layer->getAliasFields();
+            $data['aliases'] = (object) $aliases;
+        }
+        $data = json_encode( (object) $data );
+        
+        // Return response
+        $rep = $this->getResponse('binary');
+        $rep->mimeType = 'text/json';
+        $rep->content = $data;
+        $rep->doDownload  =  false;
+        $rep->outputFileName  =  'qgis_server_wfs';
+
+        return $rep;
+    }
 
     // Construction of the request url : base url + parameters
     $url = $this->services->wmsServerURL.'?';
