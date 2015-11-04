@@ -924,7 +924,7 @@ class serviceCtrl extends jController {
     $rep = $this->getResponse('binary');
     $rep->mimeType = $mime;
     if (   preg_match('#^text/plain#', $mime) && strtolower( $this->params['outputformat'] ) == 'geojson' ) {
-        $rep->mimeType = 'text/json';
+        $rep->mimeType = 'text/json; charset=utf-8';
     }
     $rep->content = $data;
     $rep->doDownload  =  false;
@@ -969,7 +969,7 @@ class serviceCtrl extends jController {
         
         // Return response
         $rep = $this->getResponse('binary');
-        $rep->mimeType = 'text/json';
+        $rep->mimeType = 'text/json; charset=utf-8';
         $rep->content = $data;
         $rep->doDownload  =  false;
         $rep->outputFileName  =  'qgis_server_wfs';
