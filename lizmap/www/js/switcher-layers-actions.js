@@ -141,7 +141,6 @@ var lizLayerActionButtons = function() {
             return false;
         });
 
-
         $('#layerActionZoom').click(function(){
             var layerName = $(this).val();
             if( !layerName )
@@ -168,6 +167,17 @@ var lizLayerActionButtons = function() {
             lizMap.map.zoomToExtent( lBounds );
             return false;
         });
+        
+        var exportFormats = lizMap.getVectorLayerResultFormat();
+        var exportHTML = '';
+        for ( var i=0, len=exportFormats.length; i<len; i++ ) {
+            var format = exportFormats[i].tagName;
+            if ( format != 'GML2' && format != 'GML3' && format != 'GEOJSON' ) {
+                exportHTML += '        <li><a href="#" class="btn-export-layer">'+format+'</a></li>';
+            }
+        }
+        if ( exportHTML != '' )
+            $('#layerActionExport ~ ul.dropdown-menu').append(exportHTML);
 
         // Export action
         $('#switcher-layers-actions a.btn-export-layer').click(function(){

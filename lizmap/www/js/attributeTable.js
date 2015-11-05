@@ -441,6 +441,13 @@ var lizAttributeTable = function() {
                 html+= '    <ul class="dropdown-menu" role="menu">';
                 html+= '        <li><a href="#" class="btn-export-attributeTable">GeoJSON</a></li>';
                 html+= '        <li><a href="#" class="btn-export-attributeTable">GML</a></li>';
+                var exportFormats = lizMap.getVectorLayerResultFormat();
+                for ( var i=0, len=exportFormats.length; i<len; i++ ) {
+                    var format = exportFormats[i].tagName;
+                    if ( format != 'GML2' && format != 'GML3' && format != 'GEOJSON' ) {
+                        html += '        <li><a href="#" class="btn-export-attributeTable">'+format+'</a></li>';
+                    }
+                }
                 html+= '    </ul>';
                 html+= '</div>';
 

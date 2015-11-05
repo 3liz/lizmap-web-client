@@ -3961,6 +3961,12 @@ var lizMap = function() {
           return [];
       return wfsCapabilities.find('FeatureType');
   }
+  
+  function getVectorLayerResultFormat() {
+      if ( wfsCapabilities == null )
+          return [];
+      return wfsCapabilities.find('Capability > Request > GetFeature > ResultFormat > *');
+  }
 
 
   // creating the lizMap object
@@ -4120,6 +4126,13 @@ var lizMap = function() {
      */
     getVectorLayerFeatureTypes: function() {
       return getVectorLayerFeatureTypes();
+    },
+
+    /**
+     * Method: getVectorLayerResultFormat
+     */
+    getVectorLayerResultFormat: function() {
+      return getVectorLayerResultFormat();
     },
 
     /**
