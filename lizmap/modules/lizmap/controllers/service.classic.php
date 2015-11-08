@@ -230,7 +230,11 @@ class serviceCtrl extends jController {
       if($filter)
         if( $request == 'getfeature' ){
           $this->params['exp_filter'] = $filter;
-          $this->params["propertyname"].= ",$oAttribute";
+          if( array_key_exists('propertyname', $this->params)  ){
+            $propertyName = trim($this->params["propertyname"]);
+            if( !empty($propertyName) )
+         	$this->params["propertyname"].= ",$oAttribute";
+          }
         }
         else
           $this->params['filter'] = $filter;
