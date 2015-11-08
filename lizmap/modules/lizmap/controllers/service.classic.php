@@ -261,8 +261,9 @@ class serviceCtrl extends jController {
           }
           $this->params['exp_filter'] = $filter;
           if( array_key_exists('propertyname', $this->params)  ){
-            if( !empty( trim($this->params["propertyname"]) ) )
-              $this->params["propertyname"].= ",$oAttribute";
+            $propertyName = trim($this->params["propertyname"]);
+            if( !empty($propertyName) )
+         	$this->params["propertyname"].= ",$oAttribute";
           }
         }
         // WMS : FILTER
