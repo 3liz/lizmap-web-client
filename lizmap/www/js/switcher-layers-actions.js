@@ -1,5 +1,7 @@
 var lizLayerActionButtons = function() {
 
+    var tooltipControl = null;
+    var tooltipLayers = [];
     var featureTypes = null;
 
     function fillSubDock( html ){
@@ -108,7 +110,7 @@ var lizLayerActionButtons = function() {
     lizMap.events.on({
 
     'uicreated': function(evt){
-        
+
         featureTypes = lizMap.getVectorLayerFeatureTypes();
 
         // title tooltip
@@ -134,8 +136,10 @@ var lizLayerActionButtons = function() {
                 }
                 fillSubDock( html );
                 $('#sub-dock').show();
+                $(this).addClass('active');
             }else{
                 $('#sub-dock').hide().html( '' );
+                $(this).removeClass('active');
             }
 
             return false;
@@ -167,7 +171,7 @@ var lizLayerActionButtons = function() {
             lizMap.map.zoomToExtent( lBounds );
             return false;
         });
-        
+
         var exportFormats = lizMap.getVectorLayerResultFormat();
         var exportHTML = '';
         for ( var i=0, len=exportFormats.length; i<len; i++ ) {
@@ -288,6 +292,7 @@ var lizLayerActionButtons = function() {
                 fillSubDock( html );
             }else{
                 $('#sub-dock').hide();
+                $('#layerActionMetadata').removeClass('active');
             }
         }
 

@@ -9,8 +9,6 @@ var lizAttributeTable = function() {
             var hasAttributeTableLayers = false;
             var attributeLayersActive = false;
             var attributeLayersDic = {};
-            var tooltipControl = null;
-            var tooltipLayers = [];
 
             var startupFilter = false;
             if( !( typeof lizLayerFilter === 'undefined' ) ){
@@ -120,138 +118,6 @@ var lizAttributeTable = function() {
                             tHtml+= '<tr>';
                             tHtml+= '   <td>' + title + '</td><td><button value=' + cleanName + ' class="btn-open-attribute-layer">Detail</button></td>';
                             tHtml+= '</tr>';
-
-                            // Add the layer in the tooltip object if needed
-                            if( 'tooltip' in config.attributeLayers[ attributeLayersDic[ cleanName ] ]
-                                && config.attributeLayers[ attributeLayersDic[ cleanName ] ]['tooltip'] == 'True'
-                            ){
-
-                                // Define vector layer for tooltip
-                                var tooltipStyleMap = new OpenLayers.StyleMap({
-                                    'default': new OpenLayers.Style({
-                                        strokeColor: "blue",
-                                        strokeWidth: 10,
-                                        strokeOpacity: 0,
-                                        fillOpacity: 0,
-                                        cursor: 'pointer'
-                                    }),
-                                    'selected': new OpenLayers.Style({
-                                        strokeColor: "yellow",
-                                        strokeWidth: 10,
-                                        strokeOpacity: 0,
-                                        fillOpacity: 0,
-                                        cursor: 'pointer'
-                                    }),
-                                    'temporary': new OpenLayers.Style({
-                                        strokeColor: 'red',
-                                        strokeWidth: 10,
-                                        strokeOpacity: 0,
-                                        fillOpacity: 0,
-                                        cursor: 'pointer'
-                                    })
-                                });
-                                var tlayer = new OpenLayers.Layer.Vector('high@' + cleanName, {
-                                    projection: new OpenLayers.Projection(config.layers[ attributeLayersDic[ cleanName ] ][ 'crs' ]),
-                                    styleMap: tooltipStyleMap
-                                });
-                                lizMap.map.addLayer(tlayer);
-                                tlayer.setVisibility(true);
-                                tooltipLayers.push( tlayer );
-                                config.attributeLayers[ attributeLayersDic[ cleanName ] ]['tooltipLayer'] = tlayer;
-                            }
-                        }
-
-                        if (tooltipLayers.length >= 1 && !tooltipControl){
-
-                            tooltipControl = new OpenLayers.Control.SelectFeature([], {
-                                hover: true,
-                                highlightOnly: true,
-                                renderIntent: "temporary",
-                                clickFeature: function (f) {
-                                    // Open feature info
-                                    //~ console.log(f);
-                                    lizMap.map.removePopup(f.popup);
-                                    f.popup.destroy();
-                                    f.popup = null;
-
-                                    f.geometry.transform( f.layer.projCode, lizMap.map.getProjection() );
-                                    var geomType = f.geometry.CLASS_NAME;
-                                    if (
-                                        geomType == 'OpenLayers.Geometry.Polygon'
-                                        || geomType == 'OpenLayers.Geometry.MultiPolygon'
-                                        || geomType == 'OpenLayers.Geometry.Point'
-                                    ) {
-                                        var lonlat = f.geometry.getBounds().getCenterLonLat()
-                                    }
-                                    else {
-                                        var vert = f.geometry.getVertices();
-                                        var middlePoint = vert[Math.floor(vert.length/2)];
-                                        var lonlat = new OpenLayers.LonLat(middlePoint.x, middlePoint.y);
-                                    }
-
-                                    var mypix = lizMap.map.getPixelFromLonLat( lonlat);
-                                    var winfos = lizMap.map.getControlsByClass(
-                                        'OpenLayers.Control.WMSGetFeatureInfo'
-                                    );
-                                    if( winfos.length == 1 ){
-                                        winfos[0].events.on({
-                                            getfeatureinfo: function(evt) {
-                                                // do something ?
-                                            }
-                                        });
-                                        winfos[0].request(
-                                            mypix
-                                        );
-                                    }
-                                }
-                            });
-
-                            tooltipControl.events.on({
-                                featurehighlighted: function(evt) {
-                                    //~ console.log( "tooltip activated");
-                                    var lname = evt.feature.layer.name.split("@")[1];
-                                    var lconfig = config.attributeLayers[lname];
-                                    var hf = lconfig['hiddenFields'].trim();
-                                    hiddenFields = hf.split(/[\s,]+/);
-                                    var tf = lconfig['tooltipFields'].trim();
-                                    tooltipFields = tf.split(/[\s,]+/);
-                                    var cAliases = config.layers[lname]['alias'];
-                                    var html = '<div style="background-color:#F0F0F0 !important;">';
-                                    html+= '<table class="lizmapPopupTable">';
-                                    for (a in evt.feature.attributes){
-                                        // Do no show hiddenfields
-                                        if( ($.inArray(a, hiddenFields) > -1) )
-                                            continue;
-                                        // show only tootlip fields if some fields given
-                                        if( tf != '' && !($.inArray(a, tooltipFields) > -1) )
-                                            continue;
-                                        html+= '<tr><th>' + cAliases[a] + '</th><td>' + evt.feature.attributes[a] + '</td></tr>';
-                                    }
-                                    html+= '</table>';
-                                    html+= '</div>';
-                                    var lonlat = evt.feature.geometry.getBounds().getCenterLonLat();
-                                    var tpopup = new OpenLayers.Popup.Anchored('tPopup',
-                                        lonlat,
-                                        new OpenLayers.Size(250,300),
-                                        html,
-                                        {size: {w: 14, h: 14}, offset: {x: -7, y: -7}},
-                                        false
-                                    );
-                                    tpopup.autoSize = true;
-                                    tpopup.backgroundColor = 'rgba(0, 0, 0, 0.7)';
-
-                                    evt.feature.popup = tpopup;
-                                    lizMap.map.addPopup( tpopup );
-                                },
-                                featureunhighlighted: function(evt) {
-                                    //~ console.log( "tooltip deactivated");
-                                    lizMap.map.removePopup(evt.feature.popup);
-                                    evt.feature.popup.destroy();
-                                    evt.feature.popup = null;
-                                }
-                            });
-                            lizMap.map.addControl(tooltipControl);
-
                         }
 
                         tHtml+= '</table>';
@@ -502,23 +368,6 @@ var lizAttributeTable = function() {
                     $(this).parent().parent().remove(); //remove li of tab
                     $('#attributeLayers-tabs a:last').tab('show'); // Select first tab
                     $(tabContentId).remove(); //remove respective tab content
-
-                    // Remove tooltip if needed
-                    var tlname = tabContentId.replace('#attribute-layer-', '');
-                    if( tooltipControl
-                        && 'tooltip' in config.attributeLayers[ attributeLayersDic[ tlname ] ]
-                        && config.attributeLayers[ attributeLayersDic[ tlname ] ]['tooltip'] == 'True'
-                    ){
-                        var tllayer = config.attributeLayers[ attributeLayersDic[ tlname ] ]['tooltipLayer'];
-                        var index = tooltipControl.layers.indexOf(tllayer);
-                        if( index > -1 ){
-                            tooltipControl.layers.splice( index, 1);
-                            tooltipControl.deactivate();
-                            if( tooltipControl.layers.length )
-                                tooltipControl.activate();
-                        }
-                    }
-
                 });
 
                 if( childHtml ){
@@ -1214,33 +1063,9 @@ var lizAttributeTable = function() {
                     }
                     if( refillFeatures  )
                         config.layers[aName]['features'] = foundFeatures;
+                    // Event foundFeatures
 
                     config.layers[aName]['alias'] = cAliases;
-
-                    // Add features to the tooltip layer
-                    if( 'tooltip' in config.attributeLayers[ aName ]
-                        && config.attributeLayers[ aName ]['tooltip'] == 'True'
-                    ){
-                        var tlayer = config.attributeLayers[aName]['tooltipLayer'];
-                        tlayer.destroyFeatures();
-                        var tfeatures = new Array;
-                        var format = new OpenLayers.Format.GeoJSON();
-                        for(var o in config.layers[aName]['features']) {
-                            var tfeat = config.layers[aName]['features'][o];
-                            tfeat = format.read(tfeat)[0];
-                            tfeat.geometry.transform(config.layers[aName]['crs'], lizMap.map.getProjection());
-                            tfeatures.push(tfeat);
-                        }
-                        tlayer.addFeatures( tfeatures );
-
-                        // Add layer to tooltipControl
-                        if( !($.inArray(tlayer, tooltipControl.layers) > -1))
-                            tooltipControl.layers.push( tlayer );
-
-                        // Refresh control
-                        tooltipControl.deactivate();
-                        tooltipControl.activate();
-                    }
 
                     // Datatable configuration
                     if ( $.fn.dataTable.isDataTable( aTable ) ) {

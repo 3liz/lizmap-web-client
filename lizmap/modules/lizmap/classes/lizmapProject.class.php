@@ -223,6 +223,19 @@ class lizmapProject{
         return false;
     }
 
+    public function hasTooltipLayers(){
+        if ( property_exists($this->cfg,'tooltipLayers') ){
+            $count = 0;
+            foreach( $this->cfg->tooltipLayers as $key=>$obj ){
+                $count += 1;
+            }
+            if ( $count != 0 )
+                return true;
+            return false;
+        }
+        return false;
+    }
+
     public function hasAttributeLayers(){
         if ( property_exists($this->cfg,'attributeLayers') ){
             $count = 0;
@@ -259,7 +272,7 @@ class lizmapProject{
     public function findEditionLayerByName( $name ){
         if ( !$this->hasEditionLayers() )
             return null;
-            
+
         if ( property_exists($this->cfg->editionLayers, $name ) )
             return $this->cfg->editionLayers->$name;
         return null;
@@ -268,7 +281,7 @@ class lizmapProject{
     public function findEditionLayerByLayerId( $layerId ){
         if ( !$this->hasEditionLayers() )
             return null;
-            
+
         foreach ( $this->cfg->editionLayers as $layer ) {
             if ( !property_exists( $layer, 'layerId' ) )
                 continue;
@@ -833,6 +846,18 @@ class lizmapProject{
                 jLocale::get('view~map.measure.navbar.title'),
                 $tpl->fetch('view~map_measure'),
                 4
+            );
+        }
+
+        if ( $this->hasTooltipLayers() ) {
+            $tpl = new jTpl();
+            $dockable[] = new lizmapMapDockItem(
+                'tooltip-layer',
+                jLocale::get('view~map.tooltip.navbar.title'),
+                $tpl->fetch('view~map_tooltip'),
+                5,
+                '',
+                ''
             );
         }
 
