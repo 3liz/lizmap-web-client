@@ -817,13 +817,14 @@ var lizAttributeTable = function() {
                     return false;
 
                 var primaryKey = getP[1]['primaryKey'];
+                var intRegex = /^[0-9]+$/;
                 for( var x in idSelected ) {
                     var idFeat = idSelected[x];
                     var afeat = features[idFeat];
                     if( typeof afeat === "undefined" )
                         continue;
                     var pk = afeat.properties[primaryKey];
-                    if( !parseInt( pk ) )
+                    if( !( intRegex.test(pk) ) )
                         pk = " '" + pk + "' ";
                     fi.push( pk );
                 }
@@ -1439,7 +1440,9 @@ var lizAttributeTable = function() {
                                     if( typeof afeat === "undefined" )
                                         return false;
                                     var cPkeyVal = afeat.properties[primaryKey];
-                                    if( !parseInt( cPkeyVal ) )
+                                    // Check if pkey is integer
+                                    var intRegex = /^[0-9]+$/;
+                                    if( !( intRegex.test(cPkeyVal) ) )
                                         cPkeyVal = " '" + cPkeyVal + "' ";
                                     var eService = OpenLayers.Util.urlAppend(lizUrls.edition
                                         ,OpenLayers.Util.getParameterString(lizUrls.params)
@@ -1508,7 +1511,7 @@ var lizAttributeTable = function() {
                 var geometryName = 'extent';
                 var getFeatureUrlData = lizMap.getVectorLayerWfsUrl( aName, aFilter, aFeatureID, geometryName );
                 $.get( getFeatureUrlData['url'], getFeatureUrlData['options'], function(data) {
-                
+
                     $.get(service, {
                         'SERVICE':'WFS'
                        ,'VERSION':'1.0.0'
@@ -1524,7 +1527,7 @@ var lizAttributeTable = function() {
                             aCallBack( aName, aFilter, cFeatures, cAliases );
 
                         $('body').css('cursor', 'auto');
-                        
+
                     },'json');
 
                 },'json');
@@ -2037,7 +2040,8 @@ var lizAttributeTable = function() {
 
                     // Add primary keys values to build the WMS filter ( to be able to redraw layer)
                     var pk = feat.properties[typeNamePkey];
-                    if( !parseInt( pk ) )
+                    var intRegex = /^[0-9]+$/;
+                    if( !( intRegex.test(pk) ) )
                         pk = " '" + pk + "' ";
                     typeNamePkeyValues.push( pk );
 
@@ -2455,7 +2459,7 @@ var lizAttributeTable = function() {
                     // Add action buttons if needed
                     $('#liz_layer_popup input.lizmap-popup-layer-feature-id').each(function(){
                         var self = $(this);
-                        var val = self.val(); 
+                        var val = self.val();
                         var eHtml = '';
                         var fid = val.split('.').pop();
                         var layerId = val.replace( '.' + fid, '' );
@@ -2618,7 +2622,7 @@ var lizAttributeTable = function() {
                                 function(){ $(this).removeClass('btn-primary'); }
                             );
                         }
-                        
+
                     }
 
 
