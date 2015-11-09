@@ -2799,7 +2799,9 @@ var lizMap = function() {
             if(layer instanceof OpenLayers.Layer.WMS  &&
                (!this.queryVisible || (layer.getVisibility() && layer.calculateInRange()))) {
                  var configLayer = config.layers[layer.params['LAYERS']];
-                 var editionLayer = config.editionLayers[layer.params['LAYERS']];
+                 var editionLayer = null;
+                 if( 'editionLayers' in config )
+                     editionLayer = config.editionLayers[layer.params['LAYERS']];
                  if( (configLayer && configLayer.popup && configLayer.popup == 'True')
                   || (editionLayer && ( editionLayer.capabilities.modifyGeometry == 'True'
                                      || editionLayer.capabilities.modifyAttribute == 'True'
