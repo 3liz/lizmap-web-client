@@ -109,6 +109,14 @@ class defaultCtrl extends jController {
             $rep->action = 'default:index';
             return $rep;
         }
+        $dao = jDao::create($this->dao, $this->dbProfile);
+        $daorec = $dao->get($id);
+        if(!$daorec) {
+            $rep = $this->getResponse('redirect');
+            jMessage::add(jLocale::get('crud.message.bad.id', $id), 'error');
+            $rep->action = 'default:index';
+            return $rep;
+        }
         $rep = $this->getResponse('html');
 
         // we're using a form to display a record, to have the portunity to have
