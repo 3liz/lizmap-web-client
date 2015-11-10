@@ -5,7 +5,7 @@
 
 {formdatafull $form}
 
-<ul class="crud-links-list unstyled">
+<ul class="crud-links-list inline">
     {if $canUpdate}<li><a href="{jurl 'jauthdb_admin~default:preupdate', array('j_user_login'=>$id)}" class="crud-link btn">{@jauthdb_admin~crud.link.edit.record@}</a></li>{/if}
     {if $canChangePass}<li><a href="{jurl 'jauthdb_admin~password:index', array('j_user_login'=>$id)}" class="crud-link btn">{@jauthdb_admin~crud.link.change.password@}</a></li>{/if}
     {if $canDelete}<li><a href="{jurl 'jauthdb_admin~default:confirmdelete', array('j_user_login'=>$id)}" class="crud-link btn">{@jauthdb_admin~crud.link.delete.record@}</a></li>{/if}
