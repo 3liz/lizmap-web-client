@@ -25,158 +25,159 @@ var lizAttributeTable = function() {
             );
 
             // Verifying WFS layers
+            var featureTypes = lizMap.getVectorLayerFeatureTypes();
+            if (featureTypes.length == 0 )
+                return -1;
+
             $('#bottom-dock-content').css('cursor', 'wait');
+            for (var lname in config.attributeLayers) {
+                attributeLayersDic[lizMap.cleanName(lname)] = lname;
+            }
 
-                var featureTypes = lizMap.getVectorLayerFeatureTypes();
-                if (featureTypes.length == 0 ){
-                    //what to deactivate ?
-                } else {
+            featureTypes.each( function(){
+                var self = $(this);
+                var lname = self.find('Name').text();
+                if (lname in config.attributeLayers) {
+                    hasAttributeTableLayers = true;
 
-                    featureTypes.each( function(){
-                        var self = $(this);
-                        var lname = self.find('Name').text();
-                        if (lname in config.attributeLayers) {
-                            hasAttributeTableLayers = true;
+                    // Get layers config information
+                    var atConfig = config.attributeLayers[lname];
 
-                            // Get layers config information
-                            var atConfig = config.attributeLayers[lname];
+                    // Add some properties to the lizMap.config
+                    config.layers[lname]['features'] = [];
+                    config.layers[lname]['featuresFullSet'] = false;
+                    config.layers[lname]['selectedFeatures'] = [];
+                    config.layers[lname]['highlightedFeature'] = null;
+                    config.layers[lname]['filteredFeatures'] = [];
+                    config.layers[lname]['request_params'] = {
+                        'filter' : null,
+                        'exp_filter': null,
+                        'selection': null
+                    };
 
-                            // Add some properties to the lizMap.config
-                            config.layers[lname]['features'] = [];
-                            config.layers[lname]['featuresFullSet'] = false;
-                            config.layers[lname]['selectedFeatures'] = [];
-                            config.layers[lname]['highlightedFeature'] = null;
-                            config.layers[lname]['filteredFeatures'] = [];
-                            config.layers[lname]['request_params'] = {
-                                'filter' : null,
-                                'exp_filter': null,
-                                'selection': null
-                            };
+                    // Get existing filter if exists (via permalink)
+                    var layer = lizMap.map.getLayersByName(lname)[0];
 
-                            // Get existing filter if exists (via permalink)
-                            var layer = lizMap.map.getLayersByName(lname)[0];
+                    if( layer
+                        && 'FILTER' in layer.params
+                        && layer.params['FILTER']
+                    ){
+                        config.layers[lname]['request_params']['filter'] = layer.params['FILTER'];
 
-                            if( layer
-                                && 'FILTER' in layer.params
-                                && layer.params['FILTER']
-                            ){
-                                config.layers[lname]['request_params']['filter'] = layer.params['FILTER'];
-
-                                // Send signal so that getFeatureInfo takes it into account
-                                lizMap.events.triggerEvent(
-                                    "layerFilterParamChanged",
-                                    {
-                                        'featureType': lname,
-                                        'filter': config.layers[lname]['request_params']['filter'],
-                                        'updateDrawing': false
-                                    }
-                                );
-                            }
-
-                            // Add geometryType if not already present (backward compatibility)
-                            if( typeof config.layers[lname]['geometryType'] === 'undefined' ) {
-                                config.layers[lname]['geometryType'] = 'unknown';
-                            }
-
-                            config.layers[lname]['crs'] = self.find('SRS').text();
-                            if ( config.layers[lname].crs in Proj4js.defs ){
-                                new OpenLayers.Projection(config.layers[lname].crs);
-                            }
-                            else
-                                $.get(service, {
-                                    'REQUEST':'GetProj4'
-                                    ,'authid': config.layers[lname].crs
-                                }, function ( aText ) {
-                                    Proj4js.defs[config.layers[lname].crs] = aText;
-                                    new OpenLayers.Projection(config.layers[lname].crs);
-                                }, 'text');
-                            var bbox = self.find('LatLongBoundingBox');
-                            atConfig['bbox'] = [
-                                parseFloat(bbox.attr('minx'))
-                             ,parseFloat(bbox.attr('miny'))
-                             ,parseFloat(bbox.attr('maxx'))
-                             ,parseFloat(bbox.attr('maxy'))
-                            ];
-                            attributeLayersDic[lizMap.cleanName(lname)] = lname;
-                        }
-                    });
-                    if (hasAttributeTableLayers) {
-
-                        // Add the list of laers in the summary table
-                        var tHtml = '<table id="attribute-layer-list-table" class="table table-condensed table-hover table-striped" style="width:auto;">';
-                        for( var idx in attributeLayersDic) {
-                            var cleanName = idx;
-
-                            // Do not add a button for the pivot tables
-                            if( 'pivot' in config.attributeLayers[ attributeLayersDic[ cleanName ] ]
-                                && config.attributeLayers[ attributeLayersDic[ cleanName ] ]['pivot'] == 'True'
-                            ){
-                                continue;
-                            }
-
-                            var title = config.layers[ attributeLayersDic[ cleanName ] ][ 'title' ];
-                            tHtml+= '<tr>';
-                            tHtml+= '   <td>' + title + '</td><td><button value=' + cleanName + ' class="btn-open-attribute-layer">Detail</button></td>';
-                            tHtml+= '</tr>';
-                        }
-
-                        tHtml+= '</table>';
-                        $('#attribute-layer-list').html(tHtml);
-
-                        // Bind click on detail buttons
-                        $('button.btn-open-attribute-layer')
-                        .click(function(){
-                            var lname = attributeLayersDic[$(this).val()];
-                            if( !$('#nav-tab-attribute-layer-' + lname ).length )
-                                addLayerDiv(lname);
-                            var aTable = '#attribute-layer-table-'+lizMap.cleanName(lname);
-                            var dFilter = null;
-                            getAttributeFeatureData( lname, dFilter, null, function(someName, someNameFilter, someNameFeatures, someNameAliases){
-                                getAttributeTableFeature( someName, aTable, someNameFeatures, someNameAliases );
-                            });
-                            $('#nav-tab-attribute-layer-' + lname + ' a' ).tab('show');
-                            return false;
-                        })
-                        .hover(
-                            function(){ $(this).addClass('btn-primary'); },
-                            function(){ $(this).removeClass('btn-primary'); }
-                        );
-
-                        // Bind change on options checkboxes
-                        $('#jforms_view_attribute_layers_option_cascade_label input[name="cascade"]').change(function(){
-                            var doCascade = $('#jforms_view_attribute_layers_option_cascade_label input[name="cascade"]').prop('checked');
-                            // refresh filtered layers if any active
-                            if( lizMap.lizmapLayerFilterActive ){
-                                var featureType = lizMap.lizmapLayerFilterActive;
-                                var layerConfig = config.layers[featureType];
-                                if( layerConfig['filteredFeatures'] ){
-
-                                    // Update attribute table tools
-                                    updateAttributeTableTools( featureType );
-
-                                    // Update layer
-                                    var cascadeToChildren = true;
-                                    if( !doCascade )
-                                        cascadeToChildren = 'removeChildrenFilter';
-                                    updateMapLayerDrawing( featureType, cascadeToChildren );
-
-                                }
-                            }
-                        });
-
-
-                        // Send signal
+                        // Send signal so that getFeatureInfo takes it into account
                         lizMap.events.triggerEvent(
-                            "attributeLayersReady", {'layers': attributeLayersDic}
+                            "layerFilterParamChanged",
+                            {
+                                'featureType': lname,
+                                'filter': config.layers[lname]['request_params']['filter'],
+                                'updateDrawing': false
+                            }
                         );
-
-                    } else {
-                        // Hide navbar menu
-                        $('#mapmenu li.attributeLayers').hide();
-                        return -1;
                     }
+
+                    // Add geometryType if not already present (backward compatibility)
+                    if( typeof config.layers[lname]['geometryType'] === 'undefined' ) {
+                        config.layers[lname]['geometryType'] = 'unknown';
+                    }
+
+                    config.layers[lname]['crs'] = self.find('SRS').text();
+                    if ( config.layers[lname].crs in Proj4js.defs ){
+                        new OpenLayers.Projection(config.layers[lname].crs);
+                    }
+                    else
+                        $.get(service, {
+                            'REQUEST':'GetProj4'
+                            ,'authid': config.layers[lname].crs
+                        }, function ( aText ) {
+                            Proj4js.defs[config.layers[lname].crs] = aText;
+                            new OpenLayers.Projection(config.layers[lname].crs);
+                        }, 'text');
+                    var bbox = self.find('LatLongBoundingBox');
+                    atConfig['bbox'] = [
+                        parseFloat(bbox.attr('minx'))
+                     ,parseFloat(bbox.attr('miny'))
+                     ,parseFloat(bbox.attr('maxx'))
+                     ,parseFloat(bbox.attr('maxy'))
+                    ];
+                    attributeLayersDic[lizMap.cleanName(lname)] = lname;
                 }
-                $('#bottom-dock-content').css('cursor', 'auto');
+            });
+            if (hasAttributeTableLayers) {
+
+                // Add the list of laers in the summary table
+                var tHtml = '<table id="attribute-layer-list-table" class="table table-condensed table-hover table-striped" style="width:auto;">';
+                for( var idx in attributeLayersDic) {
+                    var cleanName = idx;
+
+                    // Do not add a button for the pivot tables
+                    if( 'pivot' in config.attributeLayers[ attributeLayersDic[ cleanName ] ]
+                        && config.attributeLayers[ attributeLayersDic[ cleanName ] ]['pivot'] == 'True'
+                    ){
+                        continue;
+                    }
+
+                    var title = config.layers[ attributeLayersDic[ cleanName ] ][ 'title' ];
+                    tHtml+= '<tr>';
+                    tHtml+= '   <td>' + title + '</td><td><button value=' + cleanName + ' class="btn-open-attribute-layer">Detail</button></td>';
+                    tHtml+= '</tr>';
+                }
+
+                tHtml+= '</table>';
+                $('#attribute-layer-list').html(tHtml);
+
+                // Bind click on detail buttons
+                $('button.btn-open-attribute-layer')
+                .click(function(){
+                    var lname = attributeLayersDic[$(this).val()];
+                    if( !$('#nav-tab-attribute-layer-' + lname ).length )
+                        addLayerDiv(lname);
+                    var aTable = '#attribute-layer-table-'+lizMap.cleanName(lname);
+                    var dFilter = null;
+                    getAttributeFeatureData( lname, dFilter, null, function(someName, someNameFilter, someNameFeatures, someNameAliases){
+                        getAttributeTableFeature( someName, aTable, someNameFeatures, someNameAliases );
+                    });
+                    $('#nav-tab-attribute-layer-' + lname + ' a' ).tab('show');
+                    return false;
+                })
+                .hover(
+                    function(){ $(this).addClass('btn-primary'); },
+                    function(){ $(this).removeClass('btn-primary'); }
+                );
+
+                // Bind change on options checkboxes
+                $('#jforms_view_attribute_layers_option_cascade_label input[name="cascade"]').change(function(){
+                    var doCascade = $('#jforms_view_attribute_layers_option_cascade_label input[name="cascade"]').prop('checked');
+                    // refresh filtered layers if any active
+                    if( lizMap.lizmapLayerFilterActive ){
+                        var featureType = lizMap.lizmapLayerFilterActive;
+                        var layerConfig = config.layers[featureType];
+                        if( layerConfig['filteredFeatures'] ){
+
+                            // Update attribute table tools
+                            updateAttributeTableTools( featureType );
+
+                            // Update layer
+                            var cascadeToChildren = true;
+                            if( !doCascade )
+                                cascadeToChildren = 'removeChildrenFilter';
+                            updateMapLayerDrawing( featureType, cascadeToChildren );
+
+                        }
+                    }
+                });
+
+
+                // Send signal
+                lizMap.events.triggerEvent(
+                    "attributeLayersReady", {'layers': attributeLayersDic}
+                );
+
+            } else {
+                // Hide navbar menu
+                $('#mapmenu li.attributeLayers').hide();
+                return -1;
+            }
+            $('#bottom-dock-content').css('cursor', 'auto');
 
             function activateAttributeLayers() {
                 attributeLayersActive = true;
