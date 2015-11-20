@@ -20,12 +20,16 @@ The Initial Developer of the Original Code are René-Luc D'Hont <rldhont@3liz.co
 
 Contributors
 --------------
+
+Paolo Cavallini <cavallini@faunalia.it>
 Salvatore Larosa <lrssvtml@gmail.com>
 Giovanni Manghi <giovanni.manghi@gmail.com>
 Vitor Jorge
 Nicolas Boisteault
 Arno <ntelerm@yahoo.gr>
 vherreros
+jaitor1
+Felix Kuehne
 
 Documentation
 --------------
