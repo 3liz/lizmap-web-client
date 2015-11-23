@@ -39,6 +39,7 @@ class lizmapModuleInstaller extends jInstallerModule {
         $ini->save();
 
         if ($this->firstDbExec()) {
+
             // Add log table
             $this->useDbProfile('lizlog');
             $this->execSQLScript('sql/lizlog');
@@ -46,6 +47,9 @@ class lizmapModuleInstaller extends jInstallerModule {
             // Add geobookmark table
             $this->useDbProfile('jauth');
             $this->execSQLScript('sql/lizgeobookmark');
+
+            // Add lizmap user columns : firstname, address, etc.
+            $this->execSQLScript('sql/lizUserFields');
         }
 
         if ($this->firstExec('acl2') && $this->getParameter('demo')) {
