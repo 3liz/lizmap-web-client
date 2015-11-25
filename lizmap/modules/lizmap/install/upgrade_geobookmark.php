@@ -6,8 +6,17 @@ class lizmapModuleUpgrader_geobookmark extends jInstallerModule {
         '2.10.1',
         '2.10.2',
         '2.10.3',
+        '2.11beta1',
+        '2.11beta2',
+        '2.11beta3',
+        '2.11beta4',
+        '2.11beta5',
         '2.11.0',
         '2.11.1',
+        '2.11.2',
+        '2.11.3',
+        '2.12.0',
+        '2.12.1',
         '3.0pre',
         '3.0beta1'
     );
