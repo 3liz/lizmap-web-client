@@ -146,7 +146,7 @@ class mapCtrl extends jController {
     $title = $project;
     if( $wmsInfo['WMSServiceTitle'] != '' )
       $title = $wmsInfo['WMSServiceTitle'];
-    
+
     $title .= ' - '.$lrep->getData('label');
     $title .= ' - '. $lser->appName;
     $rep->title = $title;
@@ -337,6 +337,7 @@ class mapCtrl extends jController {
     $assign['hideGroupCheckbox'] = $hideGroupCheckbox;
 
     // Add Google Analytics ID
+    $assign['googleAnalyticsID'] = '';
     if($lser->googleAnalyticsID != '' && preg_match("/^UA-\d+-\d+$/", $lser->googleAnalyticsID) == 1 )
       $assign['googleAnalyticsID'] = $lser->googleAnalyticsID;
 
