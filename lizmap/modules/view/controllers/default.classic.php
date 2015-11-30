@@ -22,12 +22,12 @@ class defaultCtrl extends jController {
     if ($this->param('theme')) {
       jApp::config()->theme = $this->param('theme');
     }
-    
+
     $rep = $this->getResponse('html');
-    
+
     // Get lizmap services
     $services = lizmap::getServices();
-    
+
     // only maps
     if($services->onlyMaps) {
       $repository = lizmap::getRepository($services->defaultRepository);
@@ -65,23 +65,25 @@ class defaultCtrl extends jController {
     }
 
     $title = jLocale::get("view~default.repository.list.title").' - '.$services->appName;
-    
+
     if ( $repository ) {
       $lrep = lizmap::getRepository($repository);
       $title = $lrep->getData('label') .' - '. $title;
     }
     $rep->title = $title;
-    
+
     $rep->body->assign('repositoryLabel', $title);
     $rep->body->assign('isConnected', jAuth::isConnected());
     $rep->body->assign('user', jAuth::getUserSession());
-    
+
     if($services->allowUserAccountRequests)
       $rep->body->assign('allowUserAccountRequests', True);
-    
+
     // Add Google Analytics ID
     if($services->googleAnalyticsID != '' && preg_match("/^UA-\d+-\d+$/", $services->googleAnalyticsID) == 1 )
       $rep->body->assign('googleAnalyticsID', $services->googleAnalyticsID);
+    else
+      $rep->body->assign('googleAnalyticsID', '');
 
 
     $rep->body->assignZone('MAIN', 'main_view', array('repository'=>$repository));
