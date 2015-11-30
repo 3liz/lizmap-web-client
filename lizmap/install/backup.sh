@@ -7,16 +7,27 @@ BACKUPDIR="$1"
 SCRIPTDIR=$(dirname $0)
 LIZMAP=$SCRIPTDIR/..
 
-if  [ -f $BACKUPDIR ]; then
+if  [ -d $BACKUPDIR ]; then
     if [ -f $LIZMAP/var/db/jauth.db ]; then
         cp $LIZMAP/var/db/jauth.db     $BACKUPDIR/
-    else if [ -f $LIZMAP/var/jauth.db ]; then
-        cp $LIZMAP/var/jauth.db     $BACKUPDIR/
+    else
+        if [ -f $LIZMAP/var/jauth.db ]; then
+            cp $LIZMAP/var/jauth.db     $BACKUPDIR/
+        fi
     fi
     if [ -f $LIZMAP/var/db/logs.db ]; then
         cp $LIZMAP/var/db/logs.db      $BACKUPDIR/
-    else if [ -f $LIZMAP/var/logs.db ]; then
-        cp $LIZMAP/var/logs.db      $BACKUPDIR/
+    else
+        if [ -f $LIZMAP/var/logs.db ]; then
+            cp $LIZMAP/var/logs.db      $BACKUPDIR/
+        fi
+    fi
+    if [ -f $LIZMAP/var/db/cacheTemplate.db ]; then
+        cp $LIZMAP/var/db/cacheTemplate.db      $BACKUPDIR/
+    else
+        if [ -f $LIZMAP/var/cacheTemplate.db ]; then
+            cp $LIZMAP/var/cacheTemplate.db      $BACKUPDIR/
+        fi
     fi
     if [ -f $LIZMAP/var/config/localconfig.ini.php ]; then
         cp $LIZMAP/var/config/localconfig.ini.php       $BACKUPDIR/
