@@ -33,6 +33,7 @@ if  [ -d $BACKUPDIR ]; then
         cp $LIZMAP/var/config/localconfig.ini.php       $BACKUPDIR/
     fi
     cp $LIZMAP/var/config/lizmapConfig.ini.php $BACKUPDIR/lizmapConfig.ini.php
+    cp $LIZMAP/var/config/lizmapLogConfig.ini.php $BACKUPDIR/lizmapLogConfig.ini.php
     cp $LIZMAP/var/config/installer.ini.php    $BACKUPDIR/installer.ini.php
     cp $LIZMAP/var/config/profiles.ini.php     $BACKUPDIR/profiles.ini.php
 else

@@ -19,10 +19,15 @@ if  [ -d $BACKUPDIR ]; then
     fi
     if [ -f $BACKUPDIR/localconfig.ini.php ]; then
         cp $BACKUPDIR/localconfig.ini.php $LIZMAP/var/config/
+    else
+        cp $LIZMAP/var/config/localconfig.ini.php.dist $LIZMAP/var/config/localconfig.ini.php
     fi
-    cp $BACKUPDIR/lizmapConfig.ini.php $LIZMAP/var/config/lizmapConfig.ini.php 
-    cp $BACKUPDIR/installer.ini.php    $LIZMAP/var/config/installer.ini.php    
-    cp $BACKUPDIR/profiles.ini.php     $LIZMAP/var/config/profiles.ini.php     
+    if [ -f $BACKUPDIR/lizmapLogConfig.ini.php ]; then
+        cp $BACKUPDIR/lizmapLogConfig.ini.php $LIZMAP/var/config/
+    fi
+    cp $BACKUPDIR/lizmapConfig.ini.php $LIZMAP/var/config/lizmapConfig.ini.php
+    cp $BACKUPDIR/installer.ini.php    $LIZMAP/var/config/installer.ini.php
+    cp $BACKUPDIR/profiles.ini.php     $LIZMAP/var/config/profiles.ini.php
 else
     echo "backup directory does not exists"
     exit 1
