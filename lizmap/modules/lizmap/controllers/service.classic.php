@@ -923,7 +923,7 @@ class serviceCtrl extends jController {
     // Get remote data
     $getRemoteData = $this->lizmapCache->getRemoteData(
       $querystring,
-      $this->services->proxyMethod,
+      'php',
       $this->services->debugMode
     );
     $data = $getRemoteData[0];
