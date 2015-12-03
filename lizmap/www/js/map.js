@@ -4446,8 +4446,18 @@ lizMap.events.on({
 
     }
    ,'uicreated':function(evt){
-  //console.log('uicreated')
-
+        //console.log('uicreated')
+        var ovCtrl = lizMap.map.getControlsByClass('OpenLayers.Control.OverviewMap');
+        if ( ovCtrl.length != 0 ) {
+            ovCtrl = ovCtrl[0];
+            if ( ovCtrl.ovmap.layers.length > 1 ) {
+                for ( var i=0, len=ovCtrl.ovmap.layers.length; i<len; i++ ){
+                    var l = ovCtrl.ovmap.layers[i];
+                    if( l.name.toLowerCase() != 'overview' )
+                        l.destroy();
+                }
+            }
+        }
    }
 });
 
