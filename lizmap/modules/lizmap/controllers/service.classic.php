@@ -212,11 +212,11 @@ class serviceCtrl extends jController {
              && $pConfig->loginFilteredLayers->$layername->filterPrivate = 'True')
             {
               $filter.= $v."$pre\"$attribute\" IN ( '".$login."' , 'all' )";
-		    } else {
+            } else {
               $userGroups = jAcl2DbUserGroup::getGroups();
               $flatGroups = implode("' , '", $userGroups);
               $filter.= $v."$pre\"$attribute\" IN ( '".$flatGroups."' , 'all' )";
-		    }
+            }
             $v = ';';
           }else{
             // The user is not authenticated: only show data with attribute = 'all'
@@ -233,7 +233,7 @@ class serviceCtrl extends jController {
           if( array_key_exists('propertyname', $this->params)  ){
             $propertyName = trim($this->params["propertyname"]);
             if( !empty($propertyName) )
-         	$this->params["propertyname"].= ",$oAttribute";
+            $this->params["propertyname"].= ",$oAttribute";
           }
         }
         else
@@ -260,7 +260,7 @@ class serviceCtrl extends jController {
     $cachedMime = jCache::get($cacheId . '_mime');
     $cachedData = jCache::get($cacheId . '_data');
     $newhash = md5_file( realpath($this->repository->getPath()) . '/' . $this->project->getKey() . ".qgs" );
-    
+
     // Verifying cache content
     if ( $cachedData && preg_match( '#ServiceExceptionReport#i', $cachedData ) ) {
         $hash = null;
@@ -292,12 +292,12 @@ class serviceCtrl extends jController {
         $data = $getRemoteData[0];
         $mime = $getRemoteData[1];
         $code = $getRemoteData[2];
-        
+
         if ( empty( $data ) or floor( $code / 100 ) >= 4 ) {
             jMessage::add('Server Error !', 'Error');
             return $this->serviceException();
         }
-        
+
         if ( preg_match( '#ServiceExceptionReport#i', $data ) ) {
             $rep = $this->getResponse('binary');
             $rep->mimeType = $mime;
@@ -937,7 +937,7 @@ class serviceCtrl extends jController {
     // Get remote data
     $getRemoteData = $this->lizmapCache->getRemoteData(
       $querystring,
-      $this->services->proxyMethod,
+      'php',
       $this->services->debugMode
     );
     $data = $getRemoteData[0];
@@ -982,7 +982,7 @@ class serviceCtrl extends jController {
     // Get parameters
     if(!$this->getServiceParameters())
       return $this->serviceException();
-    
+
     // Extensions to get aliases
     if ( strtolower( $this->params['outputformat'] ) == 'json' ) {
         $data = array();
@@ -993,7 +993,7 @@ class serviceCtrl extends jController {
             $data['aliases'] = (object) $aliases;
         }
         $data = json_encode( (object) $data );
-        
+
         // Return response
         $rep = $this->getResponse('binary');
         $rep->mimeType = 'text/json';
