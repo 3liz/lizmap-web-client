@@ -336,7 +336,7 @@ CSS Sprite ositions calculated via http://instantsprite.com/ or https://draeton.
 */
   right:50%;
   max-width:50%;
-  background:url('http://localhost/LIZMAP_3/lizmap-web-client/lizmap/www/css/img/header-background-medium.png');
+  background:url('img/header-background-medium.png');
 }
 #dock.full {
 /*
@@ -344,7 +344,7 @@ CSS Sprite ositions calculated via http://instantsprite.com/ or https://draeton.
 */
   right:0px;
   max-width:100%;
-  background:url('http://localhost/LIZMAP_3/lizmap-web-client/lizmap/www/css/img/header-background-medium.png');
+  background:url('img/header-background-medium.png');
 }
 #map-content.half, #map-content.full{
   margin-left: 25%;
