@@ -4,9 +4,9 @@
         <version date="2015-03-13">0.1pre</version>
         <label lang="en_US">proj4php</label>
         <description lang="en_US" />
-        <license URL="">All rights reserved</license>
+        <license URL="https://www.gnu.org/licenses/lgpl.html">GNU LESSER GENERAL PUBLIC LICENSE Version 3</license>
         <copyright>2011 3liz</copyright>
-        <creator name="your name" email="your-email@yourwebsite.undefined" active="true"/>
+        <creator name="3liz" email="info@3liz.com" active="true"/>
         <!--<contributor name="hisname" email="hisemail@yoursite.undefined" active="true" since="" role=""/>-->
         <homepageURL>http://3liz.com</homepageURL>
     </info>
