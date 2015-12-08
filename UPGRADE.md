@@ -10,7 +10,7 @@ Then you can upgrade to Lizmap 3.0.
 
 Backup your data into a directory (ex: /tmp).
 
-Lizmap 2.12.1 and higher has a lizmap/install/backup.sh script. Call
+Lizmap 2.12.2 and higher has a lizmap/install/backup.sh script. Call
 
 ```
 lizmap/install/backup.sh /tmp
@@ -21,7 +21,7 @@ If you don't have this script, backup by hand: copy these files somewhere, /tmp 
 - var/jauth.db
 - var/logs.db
 - var/config/lizmapConfig.ini.php
-- var/config/installer.ini.php 
+- var/config/installer.ini.php
 - var/config/profiles.ini.php
 
 
