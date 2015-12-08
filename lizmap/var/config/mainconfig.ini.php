@@ -32,9 +32,9 @@ htmlsimple=simpleHtmlResponse
 [jResponseHtml]
 plugins=minify
 ;concatene et compress les fichier CSS
-minifyCSS=1
+minifyCSS=0
 ;concatene et compress les fichier JS
-minifyJS=1
+minifyJS=0
 ; liste des fichiers CSS qui ne doivent pas être compressé
 minifyExcludeCSS="OpenLayers-2.13/theme/default/style.css"
 ; liste des fichiers JS qui ne doivent pas être compressé
