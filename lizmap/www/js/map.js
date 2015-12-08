@@ -77,7 +77,8 @@ var lizMap = function() {
     'bhybrid': 'bing-hybrid',
     'ignmap': 'ign-scan',
     'ignplan': 'ign-plan',
-    'ignphoto': 'ign-photo'
+    'ignphoto': 'ign-photo',
+    'igncadastral': 'ign-cadastral'
   }
 
   /**
@@ -5530,6 +5531,41 @@ lizMap.events.on({
           evt.baselayers.push(ignphoto);
           evt.map.allOverlays = false;
        }
+       if (('ignCadastral' in evt.config.options) && evt.config.options.ignCadastral == 'True' && ('ignKey' in evt.config.options)) {
+          var options = {
+            zoomOffset: 0,
+            maxResolution:156543.03390625,
+            numZoomLevels:19
+          };
+          if (lOptions.zoomOffset != 0) {
+            options.zoomOffset = lOptions.zoomOffset;
+            options.maxResolution = lOptions.maxResolution;
+          }
+          if (lOptions.zoomOffset+lOptions.numZoomLevels <= options.numZoomLevels)
+            options.numZoomLevels = lOptions.numZoomLevels;
+          else
+            options.numZoomLevels = options.numZoomLevels - lOptions.zoomOffset;
+          var igncadastral = new OpenLayers.Layer.WMTS({
+            name: "igncadastral",
+            url: "http://gpp3-wxs.ign.fr/"+evt.config.options.ignKey+"/wmts",
+            layer: "CADASTRALPARCELS.PARCELS",
+            matrixSet: "PM",
+            style: "normal",
+            projection: new OpenLayers.Projection("EPSG:3857"),
+            attribution: 'Fond&nbsp;: &copy;IGN <a href="http://www.geoportail.fr/" target="_blank"><img src="http://api.ign.fr/geoportail/api/js/2.0.0beta/theme/geoportal/img/logo_gp.gif"></a> <a href="http://www.geoportail.gouv.fr/depot/api/cgu/licAPI_CGUF.pdf" alt="TOS" title="TOS" target="_blank">Conditions d\'utilisation</a>'
+            , numZoomLevels: options.numZoomLevels, maxResolution: options.maxResolution, minZoomLevel:options.zoomOffset
+            ,zoomOffset: options.zoomOffset
+
+          });
+          igncadastral.maxExtent = maxExtent;
+          var igncadastralCfg = {
+             "name":"igncadastral"
+            ,"title":"IGN Cadastre"
+          };
+          evt.config.layers['igncadastral'] = igncadastralCfg;
+          evt.baselayers.push(igncadastral);
+          evt.map.allOverlays = false;
+       }
       } catch(e) {
          //problems with google
          var myError = e;
@@ -5620,7 +5656,7 @@ lizMap.events.on({
         if( $('#button-switcher').parent().hasClass('active') )
           $('#button-switcher').click();
       }
-      
+
         var ovCtrl = lizMap.map.getControlsByClass('OpenLayers.Control.OverviewMap');
         if ( ovCtrl.length != 0 ) {
             ovCtrl = ovCtrl[0];
