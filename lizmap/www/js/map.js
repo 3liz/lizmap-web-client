@@ -2542,6 +2542,11 @@ var lizMap = function() {
       }
     );
     map.addControl( pLink );
+    map.events.on({
+      "changebaselayer": function() {
+          $('#switcher-baselayer-select').val( map.baseLayer.name ).change();
+      }
+    });
 
     $('.btn-permalink-clear').click(function(){
       $('#button-permaLink').click();
