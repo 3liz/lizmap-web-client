@@ -818,7 +818,25 @@ class lizmapProject{
 
         // Permalink
         if ( true ) {
+            // Get geobookmark if user is connected
+            $gbCount = False; $gbList = Null;
+            if( jAuth::isConnected() ){
+                $juser = jAuth::getUserSession();
+                $usr_login = $juser->login;
+                $daogb = jDao::get('lizmap~geobookmark');
+                $conditions = jDao::createConditions();
+                $conditions->addCondition('login','=',$usr_login);
+                $gbList = $daogb->findBy($conditions);
+                $gbCount = $daogb->countBy($conditions);
+            }
             $tpl = new jTpl();
+            $tpl->assign( 'gbCount', $gbCount );
+            $tpl->assign( 'gbList', $gbList );
+            $gbContent = Null;
+            if( $gbList )
+                $gbContent = $tpl->fetch('view~map_geobookmark');
+            $tpl = new jTpl();
+            $tpl->assign('gbContent', $gbContent);
             $dockable[] = new lizmapMapDockItem(
                 'permaLink',
                 jLocale::get('view~map.permalink.navbar.title'),
