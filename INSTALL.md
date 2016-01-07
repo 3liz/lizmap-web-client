@@ -42,6 +42,12 @@ cp localconfig.ini.php.dist localconfig.ini.php
 cp profiles.ini.php.dist profiles.ini.php
 cd ../../..
 ```
+In case you want to enable the demo repositories, just add to ``localconfig.ini.php`` the following:
+
+```
+[modules]
+lizmap.installparam=demo
+```
 
 Then you can launch the installer
 
@@ -54,6 +60,9 @@ Test
 
 In your browser, launch: http://127.0.0.1/mylizmap/lizmap/www.
 
+In case you get a ``500 - internal server error``, run again:
 
-
-
+```
+cd /var/www/mylizmap/
+lizmap/install/set_rights.sh www-data www-data
+```

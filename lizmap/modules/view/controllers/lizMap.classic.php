@@ -105,6 +105,8 @@ class lizMapCtrl extends jController {
 
     // Add the jForms js
     $bp = jApp::config()->urlengine['basePath'];
+    $jq = jApp::config()->urlengine['jqueryPath'];
+    $rep->addJSLink($jq.'include/jquery.include.js');
     $rep->addJSLink($bp.'jelix/js/jforms_jquery.js');
     $rep->addJSLink($bp.'jelix/js/jforms/datepickers/default/init.js');
     $rep->addJSLink($bp.'jelix/js/jforms/datepickers/default/ui.en.js');
@@ -149,12 +151,14 @@ class lizMapCtrl extends jController {
 
     // Get the WMS information
     $wmsInfo = $lproj->getWMSInformation();
-
     // Set page title from projet title
+    $title = $project;
     if( $wmsInfo['WMSServiceTitle'] != '' )
-      $rep->title = $wmsInfo['WMSServiceTitle'];
-    else
-      $rep->title = $repository.' - '.$project;
+      $title = $wmsInfo['WMSServiceTitle'];
+
+    $title .= ' - '.$lrep->getData('label');
+    $title .= ' - '. $lser->appName;
+    $rep->title = $title;
 
     // Add date.js for timemanager
     if( $lproj->hasTimemanagerLayers() ) {
@@ -389,6 +393,11 @@ class lizMapCtrl extends jController {
 
     // switcher-layers-actions javascript
     $rep->addJSLink( $bp.'js/switcher-layers-actions.js' );
+
+    // Add Google Analytics ID
+    $assign['googleAnalyticsID'] = '';
+    if($lser->googleAnalyticsID != '' && preg_match("/^UA-\d+-\d+$/", $lser->googleAnalyticsID) == 1 )
+      $assign['googleAnalyticsID'] = $lser->googleAnalyticsID;
 
     $rep->body->assign($assign);
 

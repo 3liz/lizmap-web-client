@@ -13,9 +13,9 @@ class viewModuleInstaller extends jInstallerModule {
 
     function install() {
 
-        if ($this->firstDbExec()) {
-            $this->useDbProfile('auth');
-            $this->execSQLScript('sql/install');
-        }
+        //if ($this->firstDbExec()) {
+            //$this->useDbProfile('auth');
+            //$this->execSQLScript('sql/install');
+        //}
     }
 }

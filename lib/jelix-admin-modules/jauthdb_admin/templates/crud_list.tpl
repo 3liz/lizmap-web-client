@@ -1,5 +1,15 @@
 <h1>{@jauthdb_admin~crud.title.list@}</h1>
 
+{if $canview}
+<form action="{formurl 'jauthdb_admin~default:view'}" method="get">
+    <div>
+        <label>{@jauthdb_admin~crud.title.view@}</label>
+        <input name="j_user_login"></input>
+        <button type="submit">{@jauthdb_admin~crud.link.view.record@}</button>
+    </div>
+</form>
+{/if}
+
 <table class="records-list">
 <thead>
 <tr>

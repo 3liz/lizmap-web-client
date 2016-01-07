@@ -187,6 +187,16 @@ class lizmapProject{
         return null;
     }
 
+    public function findLayerByLayerId( $layerId ){
+        foreach ( $this->cfg->layers as $layer ) {
+            if ( !property_exists( $layer, 'id' ) )
+                continue;
+            if ( $layer->id == $layerId )
+                return $layer;
+        }
+        return null;
+    }
+
     public function hasLocateByLayer(){
         if ( property_exists($this->cfg,'locateByLayer') ){
             $count = 0;
@@ -204,6 +214,19 @@ class lizmapProject{
         if ( property_exists($this->cfg,'timemanagerLayers') ){
             $count = 0;
             foreach( $this->cfg->timemanagerLayers as $key=>$obj ){
+                $count += 1;
+            }
+            if ( $count != 0 )
+                return true;
+            return false;
+        }
+        return false;
+    }
+
+    public function hasTooltipLayers(){
+        if ( property_exists($this->cfg,'tooltipLayers') ){
+            $count = 0;
+            foreach( $this->cfg->tooltipLayers as $key=>$obj ){
                 $count += 1;
             }
             if ( $count != 0 )
@@ -244,6 +267,28 @@ class lizmapProject{
 
     public function getEditionLayers(){
         return $this->cfg->editionLayers;
+    }
+
+    public function findEditionLayerByName( $name ){
+        if ( !$this->hasEditionLayers() )
+            return null;
+
+        if ( property_exists($this->cfg->editionLayers, $name ) )
+            return $this->cfg->editionLayers->$name;
+        return null;
+    }
+
+    public function findEditionLayerByLayerId( $layerId ){
+        if ( !$this->hasEditionLayers() )
+            return null;
+
+        foreach ( $this->cfg->editionLayers as $layer ) {
+            if ( !property_exists( $layer, 'layerId' ) )
+                continue;
+            if ( $layer->layerId == $layerId )
+                return $layer;
+        }
+        return null;
     }
 
     public function hasLoginFilteredLayers(){
@@ -728,7 +773,7 @@ class lizmapProject{
         }
         $metadataTpl->assign(array_merge(array(
             'repositoryLabel'=>$this->getData('label'),
-            'repository'=>$this->getrepository(),
+            'repository'=>$this->repository->getKey(),
             'project'=>$this->getKey(),
             'wmsGetCapabilitiesUrl' => $wmsGetCapabilitiesUrl
         ), $wmsInfo));
@@ -804,6 +849,18 @@ class lizmapProject{
             );
         }
 
+        if ( $this->hasTooltipLayers() ) {
+            $tpl = new jTpl();
+            $dockable[] = new lizmapMapDockItem(
+                'tooltip-layer',
+                jLocale::get('view~map.tooltip.navbar.title'),
+                $tpl->fetch('view~map_tooltip'),
+                5,
+                '',
+                ''
+            );
+        }
+
         if ( $this->hasTimemanagerLayers() ) {
             $tpl = new jTpl();
             $dockable[] = new lizmapMapDockItem(
@@ -826,6 +883,11 @@ class lizmapProject{
                 $daogb = jDao::get('lizmap~geobookmark');
                 $conditions = jDao::createConditions();
                 $conditions->addCondition('login','=',$usr_login);
+                $conditions->addCondition(
+                    'map',
+                    '=',
+                    $this->repository->getKey().':'.$this->getKey()
+                );
                 $gbList = $daogb->findBy($conditions);
                 $gbCount = $daogb->countBy($conditions);
             }

@@ -87,6 +87,7 @@ class geobookmarkCtrl extends jController {
                 $val = filter_var( $this->param($param), FILTER_SANITIZE_STRING );
                 $params[$param] = $val;
             }
+            $record->map = $params['repository'] . ':' . $params['project'];
             $record->params = json_encode( $params );
             $record->login = jAuth::getUserSession()->login;
             // Save the new bookmark
@@ -100,7 +101,7 @@ class geobookmarkCtrl extends jController {
             }
         }
 
-        return $this->getGeoBookmarks();
+        return $this->getGeoBookmarks( $params['repository'], $params['project'] );
     }
 
 
@@ -108,7 +109,7 @@ class geobookmarkCtrl extends jController {
      * Get bookmark content from templates
      *
      */
-    function getGeoBookmarks(){
+    function getGeoBookmarks( $repository=Null, $project=Null ){
 
         $rep = $this->getResponse('htmlfragment');
 
@@ -118,10 +119,16 @@ class geobookmarkCtrl extends jController {
         $juser = jAuth::getUserSession();
         $usr_login = $juser->login;
 
+        if( !$repository)
+            $repository = $this->param('repository');
+        if( !$project)
+            $project = $this->param('project');
+
         // Get user geobookmarks
         $daogb = jDao::get('lizmap~geobookmark');
         $conditions = jDao::createConditions();
         $conditions->addCondition('login','=',$usr_login);
+        $conditions->addCondition('map','=',$repository.':'.$project);
         $gbList = $daogb->findBy($conditions);
         $gbCount = $daogb->countBy($conditions);
 
@@ -173,7 +180,7 @@ class geobookmarkCtrl extends jController {
             }
         }
 
-        return $this->getGeoBookmarks();
+        return $this->getGeoBookmarks( $this->param('repository'), $this->param('project'));
     }
 
     /*

@@ -178,17 +178,18 @@ a:hover {
   vertical-align:middle;
 }
 .navbar .nav .login .icon {
-  background-position: -175px 0px;
+  background-position: -225px 0px;
 }
 .navbar .nav .login a:hover .icon,
 .navbar .nav .login.active a .icon {
-  background-position: -150px 0px;
+  background-position: -200px 0px;
 }
 .navbar .nav .user .icon {
   background-position: -575px 0px;
 }
 .navbar .nav .user a:hover .icon,
-.navbar .nav .user.active a .icon  {
+.navbar .nav .user.active a .icon,
+.navbar .nav .user.open a .icon    {
   background-position: -550px 0px;
 }
 .navbar .nav .home .icon {

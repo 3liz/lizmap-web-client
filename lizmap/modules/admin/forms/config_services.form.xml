@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <form xmlns="http://jelix.org/ns/forms/1.1">
 
+<input ref="appName" type="string" required="true" defaultvalue="Lizmap">
+  <label locale="admin~admin.form.admin_services.appName.label"/>
+</input>
+
 <input ref="wmsServerURL" type="string" required="true" defaultvalue="http://127.0.0.1/cgi-bin/qgis_mapserv.fcgi">
   <label locale="admin~admin.form.admin_services.wmsServerURL.label"/>
 </input>
@@ -62,6 +66,11 @@
 <input ref="adminContactEmail" type="email">
     <label locale="admin~admin.form.admin_services.adminContactEmail.label"/>
     <help locale="admin~admin.form.admin_services.adminContactEmail.help"/>
+</input>
+
+<input ref="googleAnalyticsID" type="string" pattern="/^UA-\d+-\d+$/">
+  <label locale="admin~admin.form.admin_services.googleAnalyticsID.label"/>
+    <help locale="admin~admin.form.admin_services.googleAnalyticsID.help"/>
 </input>
 
 <submit ref="_submit">

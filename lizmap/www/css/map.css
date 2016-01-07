@@ -224,6 +224,13 @@ CSS Sprite ositions calculated via http://instantsprite.com/ or https://draeton.
 #mapmenu .nav-list > li.permaLink a:hover .icon {
   background-position: -650px 0px;
 }
+#mapmenu .nav-list > li.tooltip-layer .icon {
+  background-position: -775px 0px;
+}
+#mapmenu .nav-list > li.tooltip-layer.active .icon,
+#mapmenu .nav-list > li.tooltip-layer a:hover .icon {
+  background-position: -750px 0px;
+}
 #mapmenu .nav-list > li.timemanager .icon {
   background-position: -625px 0px;
 }
@@ -329,7 +336,7 @@ CSS Sprite ositions calculated via http://instantsprite.com/ or https://draeton.
 */
   right:50%;
   max-width:50%;
-  background:url('http://localhost/LIZMAP_3/lizmap-web-client/lizmap/www/css/img/header-background-medium.png');
+  background:url('img/header-background-medium.png');
 }
 #dock.full {
 /*
@@ -337,7 +344,7 @@ CSS Sprite ositions calculated via http://instantsprite.com/ or https://draeton.
 */
   right:0px;
   max-width:100%;
-  background:url('http://localhost/LIZMAP_3/lizmap-web-client/lizmap/www/css/img/header-background-medium.png');
+  background:url('img/header-background-medium.png');
 }
 #map-content.half, #map-content.full{
   margin-left: 25%;
@@ -930,6 +937,12 @@ div.modal h3 .text {
 #mini-dock .permaLink h3 .icon {
   background-position : -675px 0px;
 }
+#toolbar .tooltip-layer h3 .icon,
+#menu .tooltip-layer h3 .icon,
+#dock .tooltip-layer h3 .icon,
+#mini-dock .tooltip-layer h3 .icon {
+  background-position: -775px 0px;
+}
 #toolbar .timemanager h3 .icon,
 #menu .timemanager h3 .icon,
 #dock .timemanager h3 .icon,
@@ -1064,7 +1077,10 @@ div.modal h3 .text {
 #sub-dock .menu-content .btn.btn-success,
 #mini-dock .menu-content .btn.btn-success{
   background-color: #93C01F;
-  background-image: -moz-linear-gradient(center top, #9BC144, #93C01F);
+  background-image: -webkit-linear-gradient(center top, #9BC144, #93C01F);
+  background-image:    -moz-linear-gradient(center top, #9BC144, #93C01F);
+  background-image:      -o-linear-gradient(center top, #9BC144, #93C01F);
+  background-image:         linear-gradient(to bottom, #9BC144, #93C01F);
 }
 #dock .print select,
 #mini-dock .print select {
@@ -1270,6 +1286,10 @@ div.modal h3 .text {
   background-image : url("images/sprite_menu.png");
   background-position : -16px -94px;
   transition: none;
+}
+#switcher button.btn.active,
+#tmLayers button.btn.active{
+  background-color : #0094D6;
 }
 #switcher button.checkbox{
 }
@@ -1622,6 +1642,12 @@ div.modal h3 .text {
 
 #permalink {
   padding:2px;
+}
+
+#tooltip-layer select.loading {
+    background-image: url("images/download_layer.gif");
+    background-repeat: no-repeat;
+    background-position: 90% center;
 }
 
 #message {

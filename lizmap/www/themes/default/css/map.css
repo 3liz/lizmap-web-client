@@ -210,6 +210,7 @@ Timemanager
 }
 
 #baselayer-menu div.baselayer-select,
+#switcher div.baselayer-select,
 #locate div.locate-layer {
   border : solid 1px #606060;
   background: url(images/123_click.png) no-repeat right;

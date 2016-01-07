@@ -221,7 +221,7 @@ class editionCtrl extends jController {
         $attribute = $pConfig->loginFilteredLayers->$layername->filterAttribute;
 
         if (property_exists($pConfig->loginFilteredLayers->$layername, 'filterPrivate')
-         && $pConfig->loginFilteredLayers->$layername->filterPrivate = 'True')
+         && $pConfig->loginFilteredLayers->$layername->filterPrivate == 'True')
           $type = 'login';
 
         // Check if a user is authenticated
@@ -802,11 +802,11 @@ class editionCtrl extends jController {
     }
 
     // Loop though the fields and filter the form posted values
-    $update = array(); $insert = array();
+    $update = array(); $insert = array(); $refs= array();
     foreach($fields as $ref){
       // Get and filter the posted data foreach form control
       $value = $form->getData($ref);
-      
+
       if(is_array($value)){
         $value = '{'.implode(',',$value).'}';
       }
@@ -825,6 +825,7 @@ class editionCtrl extends jController {
               }
             break;
           case 'date':
+      case 'datetime':
             $value = filter_var($value, FILTER_SANITIZE_STRING, FILTER_FLAG_NO_ENCODE_QUOTES);
             if ( !$value )
               $value = 'NULL';
@@ -874,7 +875,8 @@ class editionCtrl extends jController {
       }
       // Build the SQL insert and update query
       $insert[]=$value;
-      $update[]='"' . $ref .'" = ' . $value;
+      $refs[]='"'.$ref.'"';
+      $update[]='"'.$ref.'"='.$value;
     }
 
     $sql = '';
@@ -885,7 +887,7 @@ class editionCtrl extends jController {
       // featureId is set
       // SQL for updating on line in the edition table
       $sql = " UPDATE ".$this->table." SET ";
-      $sql.= implode(',', $update);
+      $sql.= implode(', ', $update);
       $v = ''; $i = 0;
       $sql.= ' WHERE';
       foreach($this->primaryKeys as $key){
@@ -909,7 +911,7 @@ class editionCtrl extends jController {
       }
       $dfields = array_map( "dquote", $fields );
       $sql = " INSERT INTO ".$this->table." (";
-      $sql.= implode(', ', $dfields);
+      $sql.= implode(', ', $refs);
       $sql.= " ) VALUES (";
       $sql.= implode(', ', $insert);
       $sql.= " );";

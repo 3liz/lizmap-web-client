@@ -13,7 +13,7 @@ theme=default
 pluginsPath="app:plugins/,lib:jelix-plugins/,module:jacl2db/plugins"
 modulesPath="lib:jelix-admin-modules/,lib:jelix-modules/,app:modules/,app:lizmap-modules"
 
-availableLocales="fr_FR,en_US,it_IT,es_ES,pt_PT,el_EL"
+availableLocales="fr_FR,en_US,it_IT,es_ES,eu_ES,pt_PT,el_GR,de_DE"
 
 [coordplugins]
 ;name = file_ini_name or 1
@@ -32,9 +32,9 @@ htmlsimple=simpleHtmlResponse
 [jResponseHtml]
 plugins=minify
 ;concatene et compress les fichier CSS
-minifyCSS=1
+minifyCSS=0
 ;concatene et compress les fichier JS
-minifyJS=1
+minifyJS=0
 ; liste des fichiers CSS qui ne doivent pas être compressé
 minifyExcludeCSS="OpenLayers-2.13/theme/default/style.css"
 ; liste des fichiers JS qui ne doivent pas être compressé

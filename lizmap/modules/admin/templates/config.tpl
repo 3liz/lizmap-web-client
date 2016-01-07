@@ -14,20 +14,13 @@
   <!--Services-->
   <div>
     <h2>{@admin~admin.configuration.services.label@}</h2>
-    <dl>
-      <dt>{@admin~admin.configuration.services.wmsServerURL.label@}</dt><dd>{$services->wmsServerURL}</dd>
-      <dt>{@admin~admin.configuration.services.wmsPublicUrlList.label@}</dt><dd>{$services->wmsPublicUrlList}</dd>
-      <dt>{@admin~admin.configuration.services.onlyMaps.label@}</dt><dd>{$services->onlyMaps}</dd>
-      <dt>{@admin~admin.configuration.services.defaultRepository.label@}</dt><dd>{$services->defaultRepository}</dd>
-      <dt>{@admin~admin.configuration.services.defaultProject.label@}</dt><dd>{$services->defaultProject}</dd>
-      <dt>{@admin~admin.configuration.services.cacheStorageType.label@}</dt><dd>{$services->cacheStorageType}</dd>
-      <dt>{@admin~admin.configuration.services.cacheRootDirectory.label@}</dt><dd>{$services->cacheRootDirectory}</dd>
-      <dt>{@admin~admin.configuration.services.cacheExpiration.label@}</dt><dd>{$services->cacheExpiration}</dd>
-      <dt>{@admin~admin.configuration.services.proxyMethod.label@}</dt><dd>{$services->proxyMethod}</dd>
-      <dt>{@admin~admin.configuration.services.debugMode.label@}</dt><dd>{$services->debugMode}</dd>
-      <dt>{@admin~admin.configuration.services.allowUserAccountRequests.label@}</dt><dd>{$services->allowUserAccountRequests}</dd>
-      <dt>{@admin~admin.configuration.services.adminContactEmail.label@}</dt><dd>{$services->adminContactEmail}</dd>
-    </dl>
+    <table class="table">
+      {formcontrols $servicesForm}
+      <tr>
+        <th>{ctrl_label}</th><td>{ctrl_value}</td>
+      </tr>
+      {/formcontrols}
+    </table>
 
     <!-- Modify -->
     {ifacl2 'lizmap.admin.services.update'}
