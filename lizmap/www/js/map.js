@@ -454,6 +454,7 @@ var lizMap = function() {
         if (layerWmsParams.format != 'image/jpeg')
           layerWmsParams['transparent'] = true;
 
+<<<<<<< HEAD
         // Override WMS url if external WMS server
         if (layerConfig.externalAccess ) {
           var extConfig = layerConfig.externalAccess;
@@ -1948,7 +1949,7 @@ var lizMap = function() {
       }
       newScales.sort(function(a,b){return b-a;});
     var scale = map.getScale();
-    var scaleIdx = newScales.indexOf( scale );
+    var scaleIdx = $.inArray( scale, newScales );
     if ( scaleIdx == -1 ) {
     var s=0, slen=newScales.length;
     while ( scaleIdx == -1 && s<slen ) {
@@ -2112,7 +2113,7 @@ var lizMap = function() {
             fillColor: "#D43B19",
             fillOpacity: 0.2,
             strokeColor: "#CE1F2D",
-            strokeWidth: 1,
+            strokeWidth: 1
           })
         })
       });
@@ -2992,7 +2993,7 @@ var lizMap = function() {
     });
     measureControls.perimeter.measure = function(geometry, eventType) {
         var stat, order;
-        if(geometry.CLASS_NAME.indexOf('LineString') > -1) {
+        if( OpenLayers.Util.indexOf( geometry.CLASS_NAME, 'LineString' ) > -1) {
             stat = this.getBestLength(geometry);
             order = 1;
         } else {
