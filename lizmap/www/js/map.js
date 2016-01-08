@@ -701,7 +701,7 @@ var lizMap = function() {
                 alwaysInRange: false,
                 url: serviceUrl
             };
-            if ( ['EPSG:3857','EPSG:900913'].indexOf( config.options.projection.ref ) != -1
+            if ( $.inArray( config.options.projection.ref, ['EPSG:3857','EPSG:900913'] ) != -1
               && ('resolutions' in config.options)
               && config.options.resolutions.length != 0 ) {
                 var resolutions = config.options.resolutions;
@@ -2865,7 +2865,7 @@ var lizMap = function() {
       }
       newScales.sort(function(a,b){return b-a;});
     var scale = map.getScale();
-    var scaleIdx = newScales.indexOf( scale );
+  var scaleIdx = $.inArray( scale, newScales );
     if ( scaleIdx == -1 ) {
     var s=0, slen=newScales.length;
     while ( scaleIdx == -1 && s<slen ) {
@@ -3027,7 +3027,7 @@ var lizMap = function() {
             fillColor: "#D43B19",
             fillOpacity: 0.2,
             strokeColor: "#CE1F2D",
-            strokeWidth: 1,
+            strokeWidth: 1
           })
         })
       });
@@ -3927,7 +3927,7 @@ OpenLayers.Control.HighlightFeature = OpenLayers.Class(OpenLayers.Control, {
     });
     measureControls.perimeter.measure = function(geometry, eventType) {
         var stat, order;
-        if(geometry.CLASS_NAME.indexOf('LineString') > -1) {
+        if( OpenLayers.Util.indexOf( geometry.CLASS_NAME, 'LineString' ) > -1) {
             stat = this.getBestLength(geometry);
             order = 1;
         } else {
@@ -4540,7 +4540,7 @@ OpenLayers.Control.HighlightFeature = OpenLayers.Class(OpenLayers.Control, {
 
       // Optionnal parameter geometryname
       if( geometryName
-        && ['none', 'extent', 'centroid'].indexOf( geometryName ) != -1
+        && $.inArray( geometryName, ['none', 'extent', 'centroid'] ) != -1
       ){
           wfsOptions['GEOMETRYNAME'] = geometryName;
       }

@@ -1082,7 +1082,8 @@ var lizAttributeTable = function() {
                             ,language: { url:lizUrls["dataTableLanguage"] }
                             ,deferRender: true
                             ,createdRow: function ( row, data, dataIndex ) {
-                                if ( config.layers[aName]['selectedFeatures'].indexOf( data.DT_RowId.toString() ) != -1 ) {
+                                if ( $.inArray( data.DT_RowId.toString(), config.layers[aName]['selectedFeatures'] ) != -1
+                                ) {
                                     $(row).addClass('selected');
                                     data.lizSelected = 'a';
                                 }
@@ -1523,10 +1524,10 @@ var lizAttributeTable = function() {
                     config.layers[featureType]['selectedFeatures'] = [];
 
                 // Add or remove feature id from the selectedFeatures
-                if( config.layers[featureType]['selectedFeatures'].indexOf( featId ) == -1 ) {
+                if( $.inArray( featId, config.layers[featureType]['selectedFeatures'] ) == -1 ) {
                     config.layers[featureType]['selectedFeatures'].push( featId );
                 }else{
-                    var idx = config.layers[featureType]['selectedFeatures'].indexOf( featId )
+                    var idx = $.inArray( featId, config.layers[featureType]['selectedFeatures'] );
                     config.layers[featureType]['selectedFeatures'].splice( idx, 1 );
                 }
 
@@ -1610,10 +1611,10 @@ var lizAttributeTable = function() {
                     config.layers[featureType]['filteredFeatures'] = [];
 
                 // Add or remove feature id from the filteredFeatures
-                if( config.layers[featureType]['filteredFeatures'].indexOf( featId ) == -1 ) {
+                if( $.inArray( featId, config.layers[featureType]['filteredFeatures'] ) == -1 ) {
                     config.layers[featureType]['filteredFeatures'].push( featId );
                 }else{
-                    var idx = config.layers[featureType]['filteredFeatures'].indexOf( featId )
+                    var idx = $.inArray( featId, config.layers[featureType]['filteredFeatures'] );
                     config.layers[featureType]['filteredFeatures'].splice( idx, 1 );
                 }
 
@@ -1766,7 +1767,7 @@ var lizAttributeTable = function() {
                         var childLayerConfig = childLayerConfigA[1];
 
                         // Avoid typeName already done ( infinite loop )
-                        if(  typeNameDone.indexOf( childLayerKeyName ) != -1 )
+                        if( $.inArray( childLayerKeyName, typeNameDone ) != -1 )
                             continue;
 
                         // Check if it is a pivot table
@@ -1823,7 +1824,7 @@ var lizAttributeTable = function() {
                             'layerId'
                         );
                         if( otherParentConfig
-                            && typeNameDone.indexOf( otherParentConfig[0] ) != -1
+                            && $.inArray( otherParentConfig[0], typeNameDone ) != -1
                         )
                             continue;
 
@@ -2174,7 +2175,7 @@ var lizAttributeTable = function() {
                             var rTable = $(this).DataTable();
                             rTable
                             .rows( function ( idx, data, node ) {
-                                return featureIds.indexOf( data.DT_RowId.toString() ) != -1 ? true : false;
+                                return $.inArray( data.DT_RowId.toString(), featureIds ) != -1 ? true : false;
                             })
                             .every(function(){
                                 dTable.fnUpdate( 'a', this, 0, false, false );
@@ -2301,7 +2302,7 @@ var lizAttributeTable = function() {
                         if( aConfig && getLayerConfig ) {
                             var layerConfig = getLayerConfig[1];
                             var selClass = '';
-                            if( layerConfig['selectedFeatures'].indexOf( fid ) != -1 )
+                            if( $.inArray( fid, layerConfig['selectedFeatures'] ) != -1 )
                                 selClass = 'btn-warning';
                             eHtml+= '<button class="btn btn-mini popup-layer-feature-select '+selClass+'" value="';
                             eHtml+= aConfig[0] + '.' + fid;
@@ -2311,7 +2312,7 @@ var lizAttributeTable = function() {
                                 && (lizMap.lizmapLayerFilterActive == getLayerConfig[0] || !lizMap.lizmapLayerFilterActive )
                             ){
                                 var filClass = '';
-                                if( layerConfig['filteredFeatures'].indexOf( fid ) != -1 )
+                                if( $.inArray( fid, layerConfig['filteredFeatures'] ) != -1 )
                                     filClass = 'btn-warning';
                                 eHtml+= '<button class="btn btn-mini popup-layer-feature-filter '+filClass+'" value="';
                                 eHtml+= aConfig[0] + '.' + fid;
@@ -2354,7 +2355,7 @@ var lizAttributeTable = function() {
                             // Get already selected items
                             var layerConfig = config.layers[featureType];
                             var wasSelected = false;
-                            if( layerConfig['selectedFeatures'] && layerConfig['selectedFeatures'].indexOf( fid ) != -1 ){
+                            if( layerConfig['selectedFeatures'] && $.inArray( fid, layerConfig['selectedFeatures'] ) != -1 ){
                                 wasSelected = true;
                                 $(this).removeClass('btn-warning');
                             }
@@ -2409,7 +2410,7 @@ var lizAttributeTable = function() {
                                 // Get already filtered items
                                 var layerConfig = config.layers[featureType];
                                 var wasFiltered = false;
-                                if( layerConfig['filteredFeatures'] && layerConfig['filteredFeatures'].indexOf( fid ) != -1 ){
+                                if( layerConfig['filteredFeatures'] && $.inArray( fid, layerConfig['filteredFeatures'] ) != -1 ){
                                     wasFiltered = true;
                                 }
 
