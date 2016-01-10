@@ -99,33 +99,39 @@ class lizmapModuleInstaller extends jInstallerModule {
             jAcl2DbManager::addRight('admins', 'lizmap.repositories.view', 'intranet');
             jAcl2DbManager::addRight('admins', 'lizmap.tools.loginFilteredLayers.override', 'intranet');
             jAcl2DbManager::addRight('admins', 'lizmap.tools.displayGetCapabilitiesLinks', 'intranet');
+            jAcl2DbManager::addRight('admins', 'lizmap.tools.layer.export', 'intranet');
 
             jAcl2DbManager::addRight('admins', 'lizmap.tools.edition.use', 'montpellier');
             jAcl2DbManager::addRight('admins', 'lizmap.repositories.view', 'montpellier');
             jAcl2DbManager::addRight('admins', 'lizmap.tools.loginFilteredLayers.override', 'montpellier');
             jAcl2DbManager::addRight('admins', 'lizmap.tools.displayGetCapabilitiesLinks', 'montpellier');
+            jAcl2DbManager::addRight('admins', 'lizmap.tools.layer.export', 'montpellier');
 
             // lizadmins
             jAcl2DbManager::addRight('lizadmins', 'lizmap.tools.edition.use', 'intranet');
             jAcl2DbManager::addRight('lizadmins', 'lizmap.repositories.view', 'intranet');
             jAcl2DbManager::addRight('lizadmins', 'lizmap.tools.loginFilteredLayers.override', 'intranet');
             jAcl2DbManager::addRight('lizadmins', 'lizmap.tools.displayGetCapabilitiesLinks', 'intranet');
+            jAcl2DbManager::addRight('lizadmins', 'lizmap.tools.layer.export', 'intranet');
 
             jAcl2DbManager::addRight('lizadmins', 'lizmap.tools.edition.use', 'montpellier');
             jAcl2DbManager::addRight('lizadmins', 'lizmap.repositories.view', 'montpellier');
             jAcl2DbManager::addRight('lizadmins', 'lizmap.tools.loginFilteredLayers.override', 'montpellier');
             jAcl2DbManager::addRight('lizadmins', 'lizmap.tools.displayGetCapabilitiesLinks', 'montpellier');
+            jAcl2DbManager::addRight('lizadmins', 'lizmap.tools.layer.export', 'montpellier');
 
             // intranet
             jAcl2DbManager::addRight('intranet', 'lizmap.tools.edition.use', 'intranet');
             jAcl2DbManager::addRight('intranet', 'lizmap.repositories.view', 'intranet');
             jAcl2DbManager::addRight('intranet', 'lizmap.tools.loginFilteredLayers.override', 'intranet');
             jAcl2DbManager::addRight('intranet', 'lizmap.tools.displayGetCapabilitiesLinks', 'intranet');
+            jAcl2DbManager::addRight('intranet', 'lizmap.tools.layer.export', 'intranet');
 
             jAcl2DbManager::addRight('intranet', 'lizmap.tools.edition.use', 'montpellier');
             jAcl2DbManager::addRight('intranet', 'lizmap.repositories.view', 'montpellier');
             jAcl2DbManager::addRight('intranet', 'lizmap.tools.loginFilteredLayers.override', 'montpellier');
             jAcl2DbManager::addRight('intranet', 'lizmap.tools.displayGetCapabilitiesLinks', 'montpellier');
+            jAcl2DbManager::addRight('intranet', 'lizmap.tools.layer.export', 'montpellier');
 
             // anonymous
             jAcl2DbManager::addRight('__anonymous', 'lizmap.tools.edition.use', 'montpellier');
