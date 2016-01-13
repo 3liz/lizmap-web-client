@@ -454,7 +454,6 @@ var lizMap = function() {
         if (layerWmsParams.format != 'image/jpeg')
           layerWmsParams['transparent'] = true;
 
-<<<<<<< HEAD
         // Override WMS url if external WMS server
         if (layerConfig.externalAccess ) {
           var extConfig = layerConfig.externalAccess;
