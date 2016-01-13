@@ -2,6 +2,9 @@
 class lizmapModuleUpgrader_layerexport extends jInstallerModule {
 
     public $targetVersions = array(
+        '2.12.0',
+        '2.12.1',
+        '2.12.2',
         '3.0pre',
         '3.0beta1',
         '3.0beta2',
