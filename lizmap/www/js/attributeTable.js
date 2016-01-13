@@ -300,23 +300,25 @@ var lizAttributeTable = function() {
                 }
 
                 // Export tools
-                html+= '&nbsp;<div class="btn-group pull-right" role="group" >';
-                html+= '    <button type="button" class="btn btn-mini dropdown-toggle" data-toggle="dropdown" aria-expanded="false">';
-                html+= lizDict['attributeLayers.toolbar.btn.data.export.title'];
-                html+= '      <span class="caret"></span>';
-                html+= '    </button>';
-                html+= '    <ul class="dropdown-menu" role="menu">';
-                html+= '        <li><a href="#" class="btn-export-attributeTable">GeoJSON</a></li>';
-                html+= '        <li><a href="#" class="btn-export-attributeTable">GML</a></li>';
-                var exportFormats = lizMap.getVectorLayerResultFormat();
-                for ( var i=0, len=exportFormats.length; i<len; i++ ) {
-                    var format = exportFormats[i].tagName;
-                    if ( format != 'GML2' && format != 'GML3' && format != 'GEOJSON' ) {
-                        html += '        <li><a href="#" class="btn-export-attributeTable">'+format+'</a></li>';
+                if ( 'exportLayers' in config.options && config.options.exportLayers == 'True' ) {
+                    html+= '&nbsp;<div class="btn-group pull-right" role="group" >';
+                    html+= '    <button type="button" class="btn btn-mini dropdown-toggle" data-toggle="dropdown" aria-expanded="false">';
+                    html+= lizDict['attributeLayers.toolbar.btn.data.export.title'];
+                    html+= '      <span class="caret"></span>';
+                    html+= '    </button>';
+                    html+= '    <ul class="dropdown-menu" role="menu">';
+                    html+= '        <li><a href="#" class="btn-export-attributeTable">GeoJSON</a></li>';
+                    html+= '        <li><a href="#" class="btn-export-attributeTable">GML</a></li>';
+                    var exportFormats = lizMap.getVectorLayerResultFormat();
+                    for ( var i=0, len=exportFormats.length; i<len; i++ ) {
+                        var format = exportFormats[i].tagName;
+                        if ( format != 'GML2' && format != 'GML3' && format != 'GEOJSON' ) {
+                            html += '        <li><a href="#" class="btn-export-attributeTable">'+format+'</a></li>';
+                        }
                     }
+                    html+= '    </ul>';
+                    html+= '</div>';
                 }
-                html+= '    </ul>';
-                html+= '</div>';
 
 
                 html+= '</div>'; // attribute-layer-action-bar

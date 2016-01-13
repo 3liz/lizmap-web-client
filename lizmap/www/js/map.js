@@ -4438,6 +4438,11 @@ OpenLayers.Control.HighlightFeature = OpenLayers.Class(OpenLayers.Control, {
    * {jQuery Object} The message added.
    */
   function exportVectorLayer( aName, eformat ) {
+      // right not set
+      if ( !('exportLayers' in lizMap.config.options) || lizMap.config.options.exportLayers != 'True' ) {
+        mAddMessage(lizDict['layer.export.right.required'],'error',true);
+        return false;
+      }
 
       // Set function parameters if not given
       eformat = typeof eformat !== 'undefined' ?  eformat : 'GeoJSON';

@@ -597,6 +597,11 @@ class lizmapProject{
             }
         }
 
+        // Add export layer right
+        if( jAcl2::check('lizmap.tools.layer.export', $this->repository->getKey()) ){
+            $configJson->options->exportLayers = 'True';
+        }
+
         // Update config with layer relations
         $relations = $this->getRelations();
         if( $relations )
@@ -751,6 +756,9 @@ class lizmapProject{
         }
 
         $switcherTpl = new jTpl();
+        $switcherTpl->assign(array(
+            'layerExport'=>jAcl2::check('lizmap.tools.layer.export', $this->repository->getKey())
+        ));
         $dockable[] = new lizmapMapDockItem(
             'switcher',
             jLocale::get('view~map.switchermenu.title'),

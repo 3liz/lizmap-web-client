@@ -15,7 +15,7 @@
             <ul class="dropdown-menu" role="menu">
             </ul>
         </div>
-
+        {if $layerExport}
         <div class="btn-group" role="group" >
             <button type="button" id="layerActionExport" class="btn btn-mini dropdown-toggle disabled" data-toggle="dropdown" aria-expanded="false" title="{@view~map.switcher.layer.export.title@}">
                 <i class="icon-download icon-white"></i>
@@ -26,7 +26,7 @@
                 <li><a href="#" class="btn-export-layer">GML</a></li>
             </ul>
         </div>
-
+        {/if}
         <button class="btn btn-mini pull-right" id="layerActionUnfilter" style="display:none;" title="{@view~map.switcher.layer.unfilter.title@}"><i class="icon-filter icon-white"></i></button>
 
     </div>

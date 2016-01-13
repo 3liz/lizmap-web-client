@@ -172,16 +172,20 @@ var lizLayerActionButtons = function() {
             return false;
         });
 
-        var exportFormats = lizMap.getVectorLayerResultFormat();
-        var exportHTML = '';
-        for ( var i=0, len=exportFormats.length; i<len; i++ ) {
-            var format = exportFormats[i].tagName;
-            if ( format != 'GML2' && format != 'GML3' && format != 'GEOJSON' ) {
-                exportHTML += '        <li><a href="#" class="btn-export-layer">'+format+'</a></li>';
+        if ( 'exportLayers' in lizMap.config.options && lizMap.config.options.exportLayers == 'True' ) {
+            var exportFormats = lizMap.getVectorLayerResultFormat();
+            var exportHTML = '';
+            for ( var i=0, len=exportFormats.length; i<len; i++ ) {
+                var format = exportFormats[i].tagName;
+                if ( format != 'GML2' && format != 'GML3' && format != 'GEOJSON' ) {
+                    exportHTML += '        <li><a href="#" class="btn-export-layer">'+format+'</a></li>';
+                }
             }
+            if ( exportHTML != '' )
+                $('#layerActionExport ~ ul.dropdown-menu').append(exportHTML);
+        } else {
+            $('#layerActionExport').parent().remove();
         }
-        if ( exportHTML != '' )
-            $('#layerActionExport ~ ul.dropdown-menu').append(exportHTML);
 
         // Export action
         $('#switcher-layers-actions a.btn-export-layer').click(function(){

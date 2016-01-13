@@ -4,7 +4,8 @@ class adminModuleUpgrader_layerexport extends jInstallerModule {
     public $targetVersions = array(
         '3.0pre',
         '3.0beta1',
-        '3.0beta2'
+        '3.0beta2',
+        '3.0beta3'
     );
     public $date = '2016-01-10';
 
