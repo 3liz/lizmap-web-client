@@ -5,6 +5,7 @@ class adminModuleUpgrader_layerexport extends jInstallerModule {
         '2.12.0',
         '2.12.1',
         '2.12.2',
+        '2.12.3',
         '3.0pre',
         '3.0beta1',
         '3.0beta2',
