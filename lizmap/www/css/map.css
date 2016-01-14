@@ -1889,3 +1889,15 @@ div.tooltip {
 .tooltip-inner{
   display: inline-block;
 }
+
+
+/* only maps dock style */
+#home #projects h2 {
+  color: white;
+}
+#home #projects ul {
+  margin: auto;
+}
+#home #projects ul li div.thumbnail {
+  text-align: center;
+}

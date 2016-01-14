@@ -527,3 +527,9 @@ Timemanager
   opacity : 0.8;
   background : black;
 }
+
+
+/* only maps dock style */
+#home #projects h2 {
+  color: white;
+}
