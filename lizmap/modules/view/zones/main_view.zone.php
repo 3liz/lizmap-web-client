@@ -18,9 +18,9 @@ class main_viewZone extends jZone {
         $this->_tpl->assign('protocol', $protocol);
         $domain = jApp::coord()->request->getDomainName();
         $this->_tpl->assign('domain', $domain);
-        
+        $this->_tpl->assign('auth_url_return', $this->param('auth_url_return'));
         $this->_tpl->assign('isConnected', jAuth::isConnected());
-        
+
         // Get lizmap services
         $services = lizmap::getServices();
         if($services->allowUserAccountRequests)
@@ -38,7 +38,7 @@ class main_viewZone extends jZone {
         } else {
           $repositories = lizmap::getRepositoryList();
         }
-        
+
         // Get excluded project
         $excludedProject = $this->param('excludedProject');
         foreach ($repositories as $r) {
