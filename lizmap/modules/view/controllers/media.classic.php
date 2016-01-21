@@ -71,20 +71,18 @@ class mediaCtrl extends jController {
 
     // Get the name of the file
     $path_parts = pathinfo($abspath);
-    $name = $path_parts['basename'].'.'.$path_parts['extension'];
+    $ext = $path_parts['extension'];
+    $name = $path_parts['basename'].'.'.$ext;
     $rep->outputFileName = $name;
 
     // Get the mime type
-    $mime = Null;
-    if (extension_loaded('fileinfo')) {
-      $finfo = new finfo(FILEINFO_MIME);
-      if ($finfo){
-        $file_info = $finfo->file($abspath);
-        $mime = substr($file_info, 0, strpos($file_info, ';'));
-      }
+    $mime = jFile::getMimeType($abspath);
+    if( $mime == 'text/plain' ){
+        if( $ext == 'css' )
+            $mime = 'text/css';
+        if( $ext == 'js' )
+            $mime = 'text/javascript';
     }
-
-    // Mime type
     if($mime)
       $rep->mimeType = $mime;
 

@@ -243,11 +243,13 @@ class lizMapCtrl extends jController {
       // Add JS files found in media/js
       $jsDirArray = array('default', $project);
       foreach( $jsDirArray as $dir ){
+        $jsUrls = array();
+        $cssUrls = array();
         $jsPathRoot = realpath($repositoryPath . '/' . 'media/js/' . $dir);
         if( is_dir( $jsPathRoot ) ) {
           foreach (new RecursiveIteratorIterator(new RecursiveDirectoryIterator($jsPathRoot)) as $filename){
             $path_parts = pathinfo($filename);
-            if( $path_parts['extension'] == 'js' ){
+            if( $path_parts['extension'] == 'js' or $path_parts['extension'] == 'css' ){
               $jsPath = realpath( $filename );
               $jsRelPath = 'media/js/' . $dir . str_replace( $jsPathRoot, '', $jsPath);
               $jsUrl = jUrl::get(
@@ -258,15 +260,24 @@ class lizMapCtrl extends jController {
                   'path'=>$jsRelPath
                 )
               );
-              //~ $rep->addJSLink( $jsUrl );
-              // Use addHeadContent and not addJSLink to be sure it will be loaded after minified code
-              $rep->addContent('<script type="text/javascript" src="'.$jsUrl.'" ></script>');
-
-
+              if($path_parts['extension'] == 'js')
+                $jsUrls[] = $jsUrl;
+              else
+                $cssUrls[] = $jsUrl;
             }
           }
         }
 
+        // Add CSS and JS files orderd by name
+        sort($cssUrls);
+        foreach( $cssUrls as $cssUrl ){
+          $rep->addCSSLink( $cssUrl );
+        }
+        sort($jsUrls);
+        foreach( $jsUrls as $jsUrl ){
+          // Use addHeadContent and not addJSLink to be sure it will be loaded after minified code
+          $rep->addContent('<script type="text/javascript" src="'.$jsUrl.'" ></script>');
+        }
       }
 
     }
