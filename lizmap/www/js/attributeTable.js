@@ -1324,6 +1324,14 @@ var lizAttributeTable = function() {
                     $(aTable).show();
                 }
 
+                // Trigget event telling attribute table is ready
+                lizMap.events.triggerEvent(
+                    "attributeLayerContentReady",
+                    {
+                        'featureType': aName
+                    }
+                );
+
 
                 return false;
             }
@@ -1358,6 +1366,8 @@ var lizAttributeTable = function() {
                         $('body').css('cursor', 'auto');
 
                     },'json');
+
+
 
                 },'json');
 
