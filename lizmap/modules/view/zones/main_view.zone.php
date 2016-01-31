@@ -78,13 +78,13 @@ class main_viewZone extends jZone {
                   'map',
                   $wmsGetCapabilitiesUrl
                 );
-              } else {
+              /*} else {
                 $this->_tpl->assign('auth_url_return', jUrl::get('view~map:index',
                   array(
                     "repository"=>$lrep->getKey(),
                     "project"=>$p->getData('id'),
                   )
-                ) );
+                ) );*/
               }
             }
             if ( count($mrep->childItems) != 0 ) {
