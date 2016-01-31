@@ -51,6 +51,8 @@ class qgisMapLayer{
 
     $this->name = (string)$xmlLayer->layername;
     $this->title = (string)$xmlLayer->title;
+    if ( $this->title == '' )
+        $this->title = $this->name;
     $this->abstract = (string)$xmlLayer->abstract;
 
     $this->proj4 = (string)$xmlLayer->srs->spatialrefsys->proj4;
