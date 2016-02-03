@@ -623,8 +623,11 @@ class editionCtrl extends jController {
         }
       }
     }
-    if($expFilter)
+    if($expFilter){
       $params['EXP_FILTER'] = $expFilter;
+      // disable PROPERTYNAME in this case : if the exp_filter uses other fields, no data would be returned otherwise
+      unset( $params['PROPERTYNAME'] );
+    }
 
     // Build query
     $lizmapServices = lizmap::getServices();
