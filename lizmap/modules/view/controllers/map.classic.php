@@ -20,7 +20,7 @@ class mapCtrl extends lizMapCtrl {
             return $rep;
 
         $rep->body->assign('auth_url_return',
-            jUrl::get('andromede~map:index',
+            jUrl::get('view~map:index',
                 array(
                     "repository"=>$repository,
                     "project"=>$project,
