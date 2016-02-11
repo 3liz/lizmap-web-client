@@ -3164,7 +3164,9 @@ var lizMap = function() {
       // Get active baselayer, and add the corresponding QGIS layer if needed
       var activeBaseLayerName = map.baseLayer.name;
       if ( activeBaseLayerName in externalBaselayersReplacement ) {
-        printLayers.push(externalBaselayersReplacement[activeBaseLayerName]);
+        var exbl = externalBaselayersReplacement[activeBaseLayerName];
+        if( exbl in config.layers )
+            printLayers.push(exbl);
       }
 
       url += '&'+dragCtrl.layout.mapId+':LAYERS='+printLayers.join(',');
