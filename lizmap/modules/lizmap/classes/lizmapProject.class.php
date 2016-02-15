@@ -13,14 +13,14 @@
 class lizmapProject{
 
     // lizmapRepository
-    private $repository = null;
+    protected $repository = null;
     // QGIS project XML
-    private $xml = null;
+    protected $xml = null;
     // CFG project JSON
-    private $cfg = null;
+    protected $cfg = null;
 
     // services properties
-    private $properties = array(
+    protected $properties = array(
         'repository',
         'id',
         'title',
@@ -29,11 +29,11 @@ class lizmapProject{
         'bbox'
     );
     // Lizmap repository key
-    private $key = '';
+    protected $key = '';
     // Lizmap repository configuration data
-    private $data = array();
+    protected $data = array();
     // Version of QGIS which wrote the project
-    private $qgisProjectVersion = null;
+    protected $qgisProjectVersion = null;
 
     /**
      * constructor
@@ -143,6 +143,10 @@ class lizmapProject{
 
     public function getQgisProjectVersion(){
         return $this->qgisProjectVersion;
+    }
+
+    public function getQgisPath(){
+        return $this->repository->getPath().$this->key.'.qgs';
     }
 
     public function getKey(){
@@ -634,6 +638,10 @@ class lizmapProject{
 
     public function getFullCfg(){
         return $this->cfg;
+    }
+
+    public function getXmlLayers(){
+        return $this->xml->xpath( "//maplayer" );
     }
 
     public function getXmlLayer( $layerId ){

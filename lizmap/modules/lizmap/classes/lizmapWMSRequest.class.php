@@ -82,7 +82,7 @@ class lizmapWMSRequest extends lizmapOGCRequest {
     }
 
     protected function getmap ( ) {
-        $getMap = lizmapProxy::getMap($this->repository->getKey(), $this->project->getKey(), $this->params, $this->forceRequest);
+        $getMap = lizmapProxy::getMap($this->project, $this->params, $this->forceRequest);
 
         return (object) array(
             'code' => $getMap[2],

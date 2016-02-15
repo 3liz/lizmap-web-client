@@ -35,7 +35,7 @@ class lizmapOGCRequest {
 
         $this->services = lizmap::getServices();
 
-        $params['map'] = realpath($this->repository->getPath()) . '/' . $project->getKey() . ".qgs";
+        $params['map'] = realpath($project->getQgisPath());
         $this->params = lizmapProxy::normalizeParams( $params );
     }
 
