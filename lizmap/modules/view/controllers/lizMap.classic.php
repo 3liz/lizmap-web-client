@@ -73,9 +73,9 @@ class lizMapCtrl extends jController {
       }
     }
 
+    $pOptions = $lproj->getOptions();
     // Redirect if project is hidden (lizmap plugin option)
     if($ok and !$this->forceHiddenProjectVisible ){
-      $pOptions = $lproj->getOptions();
       if (
           property_exists($pOptions,'hideProject')
           && $pOptions->hideProject == 'True'
