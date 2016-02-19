@@ -209,7 +209,7 @@ class lizMapCtrl extends jController {
     $rep->addCssLink($themePath.'css/media.css');
 
     // Add dockable css
-    foreach( $assign['dockable'] as $d ) {
+    foreach( array_merge($assign['dockable'], $assign['minidockable'], $assign['bottomdockable'] ) as $d ) {
         if ( $d->css != '' )
           $rep->addCssLink( $d->css );
     }
