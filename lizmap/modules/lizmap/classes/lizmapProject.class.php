@@ -146,7 +146,7 @@ class lizmapProject{
     }
 
     public function getQgisPath(){
-        return $this->repository->getPath().$this->key.'.qgs';
+        return realpath($this->repository->getPath()).'/'.$this->key.'.qgs';
     }
 
     public function getKey(){
