@@ -1,6 +1,6 @@
 "use strict";
 
-WYMeditor.SKINS['default'] = {
+WYMeditor.SKINS.legacy = {
     init: function (wym) {
         //render following sections as panels
         jQuery(wym._box).find(wym._options.classesSelector)
