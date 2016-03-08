@@ -658,13 +658,24 @@ class editionCtrl extends jController {
       }
       $dataSource = new jFormsStaticDatasource();
       // orderByValue
-      if(strtolower($this->formControls[$fieldName]->valueRelationData['orderByValue']) == 'true')
+      if(
+        strtolower( $this->formControls[$fieldName]->valueRelationData['orderByValue'] ) == 'true'
+        or
+        strtolower( $this->formControls[$fieldName]->valueRelationData['orderByValue'] ) == '1'
+      ){
         asort($data);
+      }
+
       $dataSource->data = $data;
       $this->formControls[$fieldName]->ctrl->datasource = $dataSource;
       // required
-      if(strtolower($this->formControls[$fieldName]->valueRelationData['allowNull']) == 'false')
+      if(
+        strtolower( $this->formControls[$fieldName]->valueRelationData['allowNull'] ) == 'false'
+        or
+        strtolower( $this->formControls[$fieldName]->valueRelationData['allowNull'] ) == '0'
+      ){
         $this->formControls[$fieldName]->ctrl->required = True;
+      }
     }
     else{
       if(!preg_match('#No feature found error messages#', $wfsData)){
