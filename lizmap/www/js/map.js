@@ -2807,8 +2807,8 @@ var lizMap = function() {
         var layer, url;
         for(var i=0, len=candidates.length; i<len; ++i) {
             layer = candidates[i];
-            if(layer instanceof OpenLayers.Layer.WMS  &&
-               (!this.queryVisible || (layer.getVisibility() && layer.calculateInRange()))) {
+            if( (layer instanceof OpenLayers.Layer.WMS || layer instanceof OpenLayers.Layer.WMTS)
+             && (!this.queryVisible || (layer.getVisibility() && layer.calculateInRange())) ) {
                  var configLayer = config.layers[layer.params['LAYERS']];
                  var editionLayer = null;
                  if( 'editionLayers' in config )
