@@ -17,12 +17,12 @@
     </layer-tree-group>
     <layer-tree-group expanded="1" checked="Qt::PartiallyChecked" name="datalayers">
       <customproperties/>
-      <layer-tree-group expanded="1" checked="Qt::Unchecked" name="Bus">
+      <layer-tree-group expanded="1" checked="Qt::Checked" name="Bus">
         <customproperties/>
-        <layer-tree-layer expanded="0" checked="Qt::Unchecked" id="bus_stops20121106170806413" name="bus_stops">
+        <layer-tree-layer expanded="0" checked="Qt::Checked" id="bus_stops20121106170806413" name="bus_stops">
           <customproperties/>
         </layer-tree-layer>
-        <layer-tree-layer expanded="0" checked="Qt::Unchecked" id="bus20121102133611751" name="bus">
+        <layer-tree-layer expanded="0" checked="Qt::Checked" id="bus20121102133611751" name="bus">
           <customproperties/>
         </layer-tree-layer>
       </layer-tree-group>
@@ -108,10 +108,10 @@
   <mapcanvas>
     <units>degrees</units>
     <extent>
-      <xmin>3.8441596525233459</xmin>
-      <ymin>43.59319166853568817</ymin>
-      <xmax>3.89688983346470508</xmax>
-      <ymax>43.64322759003653829</ymax>
+      <xmin>3.85583053849884116</xmin>
+      <ymin>43.60290407928019363</ymin>
+      <xmax>3.88219562896952031</xmax>
+      <ymax>43.62792204003061158</ymax>
     </extent>
     <rotation>0</rotation>
     <projections>1</projections>
@@ -199,15 +199,15 @@
       </legendlayer>
     </legendgroup>
     <legendgroup open="true" checked="Qt::PartiallyChecked" name="datalayers">
-      <legendgroup open="true" checked="Qt::Unchecked" name="Bus">
-        <legendlayer drawingOrder="-1" open="false" checked="Qt::Unchecked" name="bus_stops" showFeatureCount="0">
+      <legendgroup open="true" checked="Qt::Checked" name="Bus">
+        <legendlayer drawingOrder="-1" open="false" checked="Qt::Checked" name="bus_stops" showFeatureCount="0">
           <filegroup open="false" hidden="false">
-            <legendlayerfile isInOverview="0" layerid="bus_stops20121106170806413" visible="0"/>
+            <legendlayerfile isInOverview="0" layerid="bus_stops20121106170806413" visible="1"/>
           </filegroup>
         </legendlayer>
-        <legendlayer drawingOrder="-1" open="false" checked="Qt::Unchecked" name="bus" showFeatureCount="0">
+        <legendlayer drawingOrder="-1" open="false" checked="Qt::Checked" name="bus" showFeatureCount="0">
           <filegroup open="false" hidden="false">
-            <legendlayerfile isInOverview="0" layerid="bus20121102133611751" visible="0"/>
+            <legendlayerfile isInOverview="0" layerid="bus20121102133611751" visible="1"/>
           </filegroup>
         </legendlayer>
       </legendgroup>
@@ -2926,6 +2926,7 @@
       <SingleCategoryDiagramRenderer diagramType="Pie">
         <DiagramCategory penColor="#000000" labelPlacementMethod="XHeight" penWidth="0" diagramOrientation="Up" minimumSize="0" barWidth="5" penAlpha="255" maxScaleDenominator="15000" backgroundColor="#ffffff" transparency="0" width="15" scaleDependency="Area" backgroundAlpha="255" angleOffset="1440" scaleBasedVisibility="1" enabled="0" height="15" sizeType="MM" minScaleDenominator="0">
           <fontProperties description="Ubuntu,11,-1,5,50,0,0,0,0,0" style=""/>
+          <attribute field="" color="#000000" label=""/>
         </DiagramCategory>
       </SingleCategoryDiagramRenderer>
       <DiagramLayerSettings yPosColumn="-1" linePlacementFlags="10" placement="0" dist="0" xPosColumn="-1" priority="0" obstacle="0" showAll="1"/>
@@ -3665,6 +3666,7 @@
       <SingleCategoryDiagramRenderer diagramType="Pie">
         <DiagramCategory penColor="#000000" labelPlacementMethod="XHeight" penWidth="0" diagramOrientation="Up" minimumSize="0" barWidth="5" penAlpha="255" maxScaleDenominator="1e+08" backgroundColor="#ffffff" transparency="0" width="15" scaleDependency="Area" backgroundAlpha="255" angleOffset="1440" scaleBasedVisibility="0" enabled="0" height="15" sizeType="MM" minScaleDenominator="-4.65661e-10">
           <fontProperties description="Ubuntu,11,-1,5,50,0,0,0,0,0" style=""/>
+          <attribute field="" color="#000000" label=""/>
         </DiagramCategory>
       </SingleCategoryDiagramRenderer>
       <DiagramLayerSettings yPosColumn="-1" linePlacementFlags="10" placement="0" dist="0" xPosColumn="-1" priority="0" obstacle="0" showAll="1"/>
@@ -4310,6 +4312,7 @@
       <SingleCategoryDiagramRenderer diagramType="Pie">
         <DiagramCategory penColor="#000000" labelPlacementMethod="XHeight" penWidth="0" diagramOrientation="Up" minimumSize="0" barWidth="5" penAlpha="255" maxScaleDenominator="1e+08" backgroundColor="#ffffff" transparency="0" width="15" scaleDependency="Area" backgroundAlpha="255" angleOffset="1440" scaleBasedVisibility="0" enabled="0" height="15" sizeType="MM" minScaleDenominator="-4.65661e-10">
           <fontProperties description="Ubuntu,11,-1,5,50,0,0,0,0,0" style=""/>
+          <attribute field="" color="#000000" label=""/>
         </DiagramCategory>
       </SingleCategoryDiagramRenderer>
       <DiagramLayerSettings yPosColumn="-1" linePlacementFlags="10" placement="0" dist="0" xPosColumn="-1" priority="0" obstacle="0" showAll="1"/>
@@ -4770,6 +4773,7 @@
       <SingleCategoryDiagramRenderer diagramType="Pie">
         <DiagramCategory penColor="#000000" labelPlacementMethod="XHeight" penWidth="0" diagramOrientation="Up" minimumSize="0" barWidth="5" penAlpha="255" maxScaleDenominator="1e+08" backgroundColor="#ffffff" transparency="0" width="15" scaleDependency="Area" backgroundAlpha="255" angleOffset="1440" scaleBasedVisibility="0" enabled="0" height="15" sizeType="MM" minScaleDenominator="-4.65661e-10">
           <fontProperties description="Ubuntu,11,-1,5,50,0,0,0,0,0" style=""/>
+          <attribute field="" color="#000000" label=""/>
         </DiagramCategory>
       </SingleCategoryDiagramRenderer>
       <DiagramLayerSettings yPosColumn="-1" linePlacementFlags="10" placement="0" dist="0" xPosColumn="-1" priority="0" obstacle="0" showAll="1"/>
