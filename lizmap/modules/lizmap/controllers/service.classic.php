@@ -285,10 +285,15 @@ class serviceCtrl extends jController {
         $service = strtolower($this->params['service']);
         $request = null;
         if( $service == 'wms' ) {
+            $version = '1.3.0';
+            if ( array_key_exists( 'version', $this->params ) ) {
+                $version = $this->params['version'];
+            }
             jClasses::inc('lizmap~lizmapWMSRequest');
             $request = new lizmapWMSRequest( $this->project, array(
                     'service'=>'WMS',
-                    'request'=>'GetCapabilities'
+                    'request'=>'GetCapabilities',
+                    'version'=>$version
                 )
             );
         } else if( $service == 'wfs' ) {
