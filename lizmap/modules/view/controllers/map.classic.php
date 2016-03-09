@@ -94,9 +94,9 @@ class mapCtrl extends jController {
     if ( $lproj->needsGoogle() ) {
       $googleKey = $lproj->getGoogleKey();
       if ( $googleKey != '' )
-        $rep->addJSLink('https://maps.google.com/maps/api/js?v=3.5&sensor=false&key='.$googleKey);
+        $rep->addJSLink('https://maps.google.com/maps/api/js?v=3&key='.$googleKey);
       else
-        $rep->addJSLink('https://maps.google.com/maps/api/js?v=3.5&sensor=false');
+        $rep->addJSLink('https://maps.google.com/maps/api/js?v=3');
     }
 
     // Add the jForms js
