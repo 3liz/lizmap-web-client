@@ -3600,6 +3600,15 @@ var lizMap = function() {
           createSwitcher();
           self.events.triggerEvent("layersadded", self);
 
+          // Verifying z-index
+          var lastLayerZIndex = map.layers[map.layers.length-1].getZIndex();
+          if ( lastLayerZIndex > map.Z_INDEX_BASE['Feature'] - 100 ) {
+            map.Z_INDEX_BASE['Feature'] = lastLayerZIndex + 100;
+            map.Z_INDEX_BASE['Popup'] = map.Z_INDEX_BASE['Feature'] + 25;
+            if ( map.Z_INDEX_BASE['Popup'] > map.Z_INDEX_BASE['Control'] - 25 )
+                map.Z_INDEX_BASE['Control'] = map.Z_INDEX_BASE['Popup'] + 25;
+          }
+
           // initialize the map
           $('#switcher').height(0);
           // Set map extent depending on options
