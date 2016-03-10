@@ -301,7 +301,7 @@ class editionCtrl extends jController {
       $jdbParams = array(
         "driver" => $driver,
         "database" => realpath($this->repository->getPath().$dbname),
-        "extensions"=>"libspatialite.so"
+        "extensions"=>"libspatialite.so,mod_spatialite.so"
       );
     }
     else{

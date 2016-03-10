@@ -579,12 +579,23 @@ class lizmapProject{
             if( jAcl2::check('lizmap.tools.edition.use', $this->repository->getKey()) ){
                 $spatial = false;
                 if ( class_exists('SQLite3') ) {
+                    $spatial = false;
+                    // Try with libspatialite
                     try{
                         $db = new SQLite3(':memory:');
-                        $spatial = $db->loadExtension('libspatialite.so'); # loading SpatiaLite as an extension
+                        $spatial1 = $db->loadExtension('libspatialite.so'); # loading SpatiaLite as an extension
                     }catch(Exception $e){
                         $spatial = False;
                     }
+                    // Try with mod_spatialite
+                    try{
+                        $db = new SQLite3(':memory:');
+                        $spatial1 = $db->loadExtension('mod_spatialite.so'); # loading SpatiaLite as an extension
+                    }catch(Exception $e){
+                        $spatial = False;
+                    }
+                    if( $spatial1 or $spatial2 )
+                        $spatial = True;
                 }
                 if(!$spatial){
                     foreach( $configJson->editionLayers as $key=>$obj ){
