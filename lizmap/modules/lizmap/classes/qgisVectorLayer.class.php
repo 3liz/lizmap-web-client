@@ -29,24 +29,26 @@ class qgisVectorLayer extends qgisMapLayer{
   public function getDatasourceParameters() {
     // Get datasource information from QGIS
     $datasourceMatch = preg_match(
-      "#dbname='([^ ]+)' (?:host=([^ ]+) )?(?:port=([0-9]+) )?(?:user='([^ ]+)' )?(?:password='([^ ]+)' )?(?:sslmode=([^ ]+) )?(?:key='([^ ]+)' )?(?:estimatedmetadata=([^ ]+) )?(?:srid=([0-9]+) )?(?:type=([a-zA-Z]+) )?(?:table=\"(.+)\" \()?(?:([^ ]+)\) )?(?:sql=(.*))?#",
+      "#(?:dbname='([^ ]+)' )?(?:service='([^ ]+)' )?(?:host=([^ ]+) )?(?:port=([0-9]+) )?(?:user='([^ ]+)' )?(?:password='([^ ]+)' )?(?:sslmode=([^ ]+) )?(?:key='([^ ]+)' )?(?:estimatedmetadata=([^ ]+) )?(?:srid=([0-9]+) )?(?:type=([a-zA-Z]+) )?(?:table=\"([^ ]+)\" )?(?:\()?(?:([^ ]+)\) )?(?:sql=(.*))?#",
       $this->datasource,
       $dt
     );
+
     return (object) array(
       "dbname" => $dt[1],
-      "host" => $dt[2],
-      "port" => $dt[3],
-      "user" => $dt[4],
-      "password" => $dt[5],
-      "sslmode" => $dt[6],
-      "key" => $dt[7],
-      "estimatedmetadata" => $dt[8],
-      "srid" => $dt[9],
-      "type" => $dt[10],
-      "table" => $dt[11],
-      "geocol" => $dt[12],
-      "sql" => $dt[13]
+      "service" => $dt[2],
+      "host" => $dt[3],
+      "port" => $dt[4],
+      "user" => $dt[5],
+      "password" => $dt[6],
+      "sslmode" => $dt[7],
+      "key" => $dt[8],
+      "estimatedmetadata" => $dt[9],
+      "srid" => $dt[10],
+      "type" => $dt[11],
+      "table" => $dt[12],
+      "geocol" => $dt[13],
+      "sql" => $dt[14]
     );
   }
 
