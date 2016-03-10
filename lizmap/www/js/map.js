@@ -73,6 +73,13 @@ var lizMap = function() {
   var cleanNameMap = {
   };
 
+  /**
+   * PRIVATE Property: layerIdMap
+   *
+   */
+  var layerIdMap = {
+  };
+
 
   /**
    * PRIVATE function: cleanName
@@ -474,10 +481,13 @@ var lizMap = function() {
     for (var i = 0, len = nested.nestedLayers.length; i<len; i++) {
       var serviceUrl = service
       var layer = nested.nestedLayers[i];
-      var layerConfig = config.layers[layer.name];
-      var layerName = cleanName(layer.name);
+      var qgisLayerName = layer.name;
+      if ( 'useLayerIDs' in config.options && config.options.useLayerIDs == 'True' )
+        qgisLayerName = layerIdMap[layer.name];
+      var layerConfig = config.layers[qgisLayerName];
+      var layerName = cleanName(qgisLayerName);
 
-      if (layer.name.toLowerCase() == 'hidden')
+      if (qgisLayerName.toLowerCase() == 'hidden')
         continue;
 
       // if the layer is not the Overview and had a config
@@ -2300,7 +2310,12 @@ var lizMap = function() {
       // Get active baselayer, and add the corresponding QGIS layer if needed
       var activeBaseLayerName = map.baseLayer.name;
       if ( activeBaseLayerName in externalBaselayersReplacement ) {
-        printLayers.push(externalBaselayersReplacement[activeBaseLayerName]);
+          if ( 'useLayerIDs' in config.options && config.options.useLayerIDs == 'True' ) {
+              var qgisActiveBaseLayerName = externalBaselayersReplacement[activeBaseLayerName]
+              if ( qgisActiveBaseLayerName in config.layers )
+                printLayers.push(config.layers[qgisActiveBaseLayerName].id);
+          } else
+            printLayers.push(externalBaselayersReplacement[activeBaseLayerName]);
       }
 
       url += '&'+dragCtrl.layout.mapId+':LAYERS='+printLayers.join(',');
@@ -2507,7 +2522,17 @@ var lizMap = function() {
           }
           var layerId = editCtrls.click.layerId;
           $.each(layers, function(i, l) {
-            if (config.layers[l.params['LAYERS']].id != layerId)
+            var qgisName = null;
+            if ( l.name in cleanNameMap )
+                qgisName = cleanNameMap[l.name];
+            var layerConfig = null;
+            if ( qgisName )
+                layerConfig = config.layers[qgisName];
+            if ( !layerConfig )
+                layerConfig = config.layers[l.params['LAYERS']];
+            if ( !layerConfig )
+                layerConfig = config.layers[l.name];
+            if (layerConfig.id != layerId)
               return true;
             l.redraw(true);
             return false;
@@ -2549,7 +2574,17 @@ var lizMap = function() {
         if ( $('#edition-modal form').length == 0 ) {
           var layerId = editCtrls.click.layerId;
           $.each(layers, function(i, l) {
-            if (config.layers[l.params['LAYERS']].id != layerId)
+            var qgisName = null;
+            if ( l.name in cleanNameMap )
+                qgisName = cleanNameMap[l.name];
+            var layerConfig = null;
+            if ( qgisName )
+                layerConfig = config.layers[qgisName];
+            if ( !layerConfig )
+                layerConfig = config.layers[l.params['LAYERS']];
+            if ( !layerConfig )
+                layerConfig = config.layers[l.name];
+            if (layerConfig && layerConfig.id != layerId)
               return true;
             l.redraw(true);
             return false;
@@ -2834,7 +2869,17 @@ var lizMap = function() {
           $('#edition-select-unselect').click();
           var layerId = editCtrls.click.layerId;
           $.each(layers, function(i, l) {
-            if (config.layers[l.params['LAYERS']].id != layerId)
+            var qgisName = null;
+            if ( l.name in cleanNameMap )
+                qgisName = cleanNameMap[l.name];
+            var layerConfig = null;
+            if ( qgisName )
+                layerConfig = config.layers[qgisName];
+            if ( !layerConfig )
+                layerConfig = config.layers[l.params['LAYERS']];
+            if ( !layerConfig )
+                layerConfig = config.layers[l.name];
+            if (layerConfig.id != layerId)
               return true;
             l.redraw(true);
             return false;
@@ -3610,6 +3655,13 @@ var lizMap = function() {
       $.getJSON(lizUrls.config,lizUrls.params,function(cfgData) {
         config = cfgData;
         config.options.hasOverview = false;
+
+        if ( 'useLayerIDs' in config.options && config.options.useLayerIDs == 'True' ) {
+            for ( var layerName in config.layers ) {
+                var configLayer = config.layers[layerName];
+                layerIdMap[configLayer.id] = layerName;
+            }
+        }
 
          //get capabilities
         var service = OpenLayers.Util.urlAppend(lizUrls.wms

@@ -170,18 +170,28 @@ class lizmapProject{
     public function getLayers(){
       return $this->cfg->layers;
     }
-    
+
     public function findLayerByName( $name ){
       if ( property_exists($this->cfg->layers, $name ) )
         return $this->cfg->layers->$name;
       return null;
     }
-    
+
     public function findLayerByTitle( $title ){
       foreach ( $this->cfg->layers as $layer ) {
           if ( !property_exists( $layer, 'title' ) )
             continue;
           if ( $layer->title == $title )
+            return $layer;
+      }
+      return null;
+    }
+
+    public function findLayerById( $id ){
+      foreach ( $this->cfg->layers as $layer ) {
+          if ( !property_exists( $layer, 'id' ) )
+            continue;
+          if ( $layer->id == $id )
             return $layer;
       }
       return null;
@@ -554,6 +564,11 @@ class lizmapProject{
         } else {
           unset($configJson->editionLayers);
         }
+      }
+
+      $WMSUseLayerIDs = $this->xml->xpath( "//properties/WMSUseLayerIDs" );
+      if ( count($WMSUseLayerIDs) > 0 && $WMSUseLayerIDs[0] == 'true' ) {
+          $configJson->options->useLayerIDs = 'True';
       }
 
       $configRead = json_encode($configJson);
