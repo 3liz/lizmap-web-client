@@ -45,6 +45,7 @@ var lizMap = function() {
    * {object} The layer's tree
    */
   var tree = {config:{type:'group'}};
+
   /**
    * PRIVATE Property: externalBaselayersReplacement
    *
@@ -63,7 +64,14 @@ var lizMap = function() {
     'ignmap': 'ign-scan',
     'ignplan': 'ign-plan',
     'ignphoto': 'ign-photo'
-  }
+  };
+
+  /**
+   * PRIVATE Property: cleanNameMap
+   *
+   */
+  var cleanNameMap = {
+  };
 
 
   /**
@@ -84,7 +92,9 @@ var lizMap = function() {
     };
     aName = normalize(aName);
     var reg = new RegExp('\\W', 'g');
-    return aName.replace(reg, '_');
+    var theCleanName = aName.replace(reg, '_');
+    cleanNameMap[theCleanName] = aName;
+    return theCleanName;
   }
 
 
@@ -284,6 +294,37 @@ var lizMap = function() {
       if (layer == null && l.name == name)
         layer = l;
     });
+    var qgisName = null;
+    if ( name in cleanNameMap )
+        qgisName = cleanNameMap[name];
+    var layerConfig = null;
+    if ( qgisName )
+        layerConfig = config.layers[qgisName];
+    if ( !layerConfig )
+        layerConfig = config.layers[layer.params['LAYERS']];
+    if ( !layerConfig )
+        layerConfig = config.layers[layer.name];
+    if ( !layerConfig )
+        return null;
+    if ( 'externalWmsToggle' in layerConfig && layerConfig.externalWmsToggle == 'True' ) {
+        var externalAccess = layerConfig.externalAccess;
+        var legendParams = {SERVICE: "WMS",
+                      VERSION: "1.3.0",
+                      REQUEST: "GetLegendGraphic",
+                      LAYER: externalAccess.layers,
+                      LAYERS: externalAccess.layers,
+                      SLD_VERSION: "1.1.0",
+                      EXCEPTIONS: "application/vnd.ogc.se_inimage",
+                      FORMAT: "image/png",
+                      TRANSPARENT: "TRUE",
+                      WIDTH: 150,
+                      DPI: 96};
+
+        var legendParamsString = OpenLayers.Util.getParameterString(
+             legendParams
+            );
+        return OpenLayers.Util.urlAppend(externalAccess.url, legendParamsString);
+    }
     var legendParams = {SERVICE: "WMS",
                   VERSION: "1.3.0",
                   REQUEST: "GetLegendGraphic",
@@ -297,7 +338,6 @@ var lizMap = function() {
                   SYMBOLSPACE: 1,
                   ICONLABELSPACE: 2,
                   DPI: 96};
-    var layerConfig = config.layers[layer.params['LAYERS']];
     if (layerConfig.id==layerConfig.name)
       legendParams['LAYERFONTBOLD'] = "TRUE";
     else {
@@ -619,10 +659,11 @@ var lizMap = function() {
     if (nodeConfig.type == 'layer'
     && (!nodeConfig.noLegendImage || nodeConfig.noLegendImage != 'True')) {
       var url = getLayerLegendGraphicUrl(aNode.name, false);
-
-      html += '<tr id="legend-'+aNode.name+'" class="child-of-layer-'+aNode.name+' legendGraphics">';
-      html += '<td colspan="2"><div class="legendGraphics"><img src="'+url+'"/></div></td>';
-      html += '</tr>';
+      if ( url != null && url != '' ) {
+          html += '<tr id="legend-'+aNode.name+'" class="child-of-layer-'+aNode.name+' legendGraphics">';
+          html += '<td colspan="2"><div class="legendGraphics"><img src="'+url+'"/></div></td>';
+          html += '</tr>';
+      }
     }
 
     return html;
@@ -1195,7 +1236,9 @@ var lizMap = function() {
         if (self.find('div.legendGraphics').length != 0) {
           var name = self.attr('id').replace('legend-','');
           var url = getLayerLegendGraphicUrl(name, true);
-          self.find('div.legendGraphics img').attr('src',url);
+          if ( url != null && url != '' ) {
+            self.find('div.legendGraphics img').attr('src',url);
+          }
         }
       },
       onNodeHide: function() {
@@ -1861,11 +1904,13 @@ var lizMap = function() {
             eventListeners: {
                 getfeatureinfo: function(event) {
                     var text = event.text;
-                    if (text != ''){
-                      if (map.popups.length != 0)
+                    if (!text || text == null || text == '')
+                        return false;
+
+                    if (map.popups.length != 0)
                         map.removePopup(map.popups[0]);
 
-                      var popup = new OpenLayers.Popup.LizmapAnchored(
+                    var popup = new OpenLayers.Popup.LizmapAnchored(
                         "liz_layer_popup",
                         map.getLonLatFromPixel(event.xy),
                         null,
@@ -1880,21 +1925,20 @@ var lizMap = function() {
                           }
                           return false;
                         }
-                        );
-                      popup.panMapIfOutOfView = true;
-                      map.addPopup(popup);
+                    );
+                    popup.panMapIfOutOfView = true;
+                    map.addPopup(popup);
 
-                      // Trigger event
-                      lizMap.events.triggerEvent(
+                    // Trigger event
+                    lizMap.events.triggerEvent(
                         "lizmappopupdisplayed"
-                      );
+                    );
 
-                      popup.verifySize();
-                      // Hide navbar and overview in mobile mode
-                      if(mCheckMobile()){
+                    popup.verifySize();
+                    // Hide navbar and overview in mobile mode
+                    if(mCheckMobile()){
                         $('#navbar').hide();
                         $('#overview-box').hide();
-                      }
                     }
                 }
             }
@@ -1919,8 +1963,17 @@ var lizMap = function() {
             layer = candidates[i];
             if(layer instanceof OpenLayers.Layer.WMS  &&
                (!this.queryVisible || (layer.getVisibility() && layer.calculateInRange()))) {
-                 var configLayer = config.layers[layer.params['LAYERS']];
-                 if( configLayer && configLayer.popup && configLayer.popup == 'True'){
+                var qgisName = null;
+                if ( layer.name in cleanNameMap )
+                    qgisName = cleanNameMap[layer.name];
+                var configLayer = null;
+                if ( qgisName )
+                    configLayer = config.layers[qgisName];
+                if ( !configLayer )
+                    configLayer = config.layers[layer.params['LAYERS']];
+                if ( !configLayer )
+                    configLayer = config.layers[layer.name];
+                if( configLayer && configLayer.popup && configLayer.popup == 'True' && configLayer.externalWmsToggle != 'True'){
                     url = OpenLayers.Util.isArray(layer.url) ? layer.url[0] : layer.url;
                     // if the control was not configured with a url, set it
                     // to the first layer url
@@ -1931,7 +1984,7 @@ var lizMap = function() {
                         layers.push(layer);
                     }
 
-                 }
+                }
             }
         }
         return layers;
@@ -3687,7 +3740,9 @@ var lizMap = function() {
                 var self = $(this);
                 var name = self.attr('id').replace('legend-','');
                 var url = getLayerLegendGraphicUrl(name, true);
-                self.find('div.legendGraphics img').attr('src',url);
+                if ( url != null && url != '' ) {
+                  self.find('div.legendGraphics img').attr('src',url);
+                }
               });
               // update slider position
               $('#navbar div.slider').slider("value",this.getZoom());
