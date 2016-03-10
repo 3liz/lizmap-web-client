@@ -533,6 +533,13 @@ class lizmapProject{
             }catch(Exception $e){
               $spatial = False;
             }
+            if ( !$spatial )
+                try{
+                  $db = new SQLite3(':memory:');
+                  $spatial = $db->loadExtension('mod_spatialite.so'); # loading SpatiaLite as an extension
+                }catch(Exception $e){
+                  $spatial = False;
+                }
           }
           if(!$spatial){
             foreach( $configJson->editionLayers as $key=>$obj ){

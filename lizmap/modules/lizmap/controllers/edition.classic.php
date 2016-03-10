@@ -75,7 +75,7 @@ class editionCtrl extends jController {
 
   // Form controls
   private $formControls = '';
-  
+
   // Filter override flag
   private $loginFilteredOveride = False;
 
@@ -197,7 +197,7 @@ class editionCtrl extends jController {
         $where='';
         $type='groups';
         $attribute = $pConfig->loginFilteredLayers->$layername->filterAttribute;
-        
+
         if (property_exists($pConfig->loginFilteredLayers->$layername, 'filterPrivate')
          && $pConfig->loginFilteredLayers->$layername->filterPrivate = 'True')
           $type = 'login';
@@ -210,12 +210,12 @@ class editionCtrl extends jController {
           $login = $user->login;
           if ( $type == 'login' ) {
             $where = ' "'.$attribute."\" IN ( '".$login."' , 'all' )";
-		  } else {
+          } else {
             $userGroups = jAcl2DbUserGroup::getGroups();
             // Set XML Filter if getFeature request
             $flatGroups = implode("' , '", $userGroups);
             $where = ' "'.$attribute."\" IN ( '".$flatGroups."' , 'all' )";
-		  }
+          }
         }else{
           // The user is not authenticated: only show data with attribute = 'all'
           $where = ' "'.$attribute.'" = '.$cnx->quote("all");
@@ -278,7 +278,7 @@ class editionCtrl extends jController {
       $jdbParams = array(
         "driver" => $driver,
         "database" => realpath($this->repository->getPath().$dbname),
-        "extensions"=>"libspatialite.so"
+        "extensions"=>"libspatialite.so,mod_spatialite.so"
       );
     }
     else{
@@ -432,16 +432,16 @@ class editionCtrl extends jController {
   private function updateFormByLogin($form, $save) {
     if( !is_array($this->loginFilteredLayers) ) //&& $this->loginFilteredOveride )
         $this->filterDataByLogin($this->layerName);
-      
-	if ( is_array($this->loginFilteredLayers) ) {
-		$type = $this->loginFilteredLayers['type'];
-		$attribute = $this->loginFilteredLayers['attribute'];
+
+    if ( is_array($this->loginFilteredLayers) ) {
+        $type = $this->loginFilteredLayers['type'];
+        $attribute = $this->loginFilteredLayers['attribute'];
         //jLog::log('updateFormByLogin', 'error');
-    
-        // Check if a user is authenticated    
+
+        // Check if a user is authenticated
         if ( !jAuth::isConnected() )
             return True;
-    
+
         $user = jAuth::getUserSession();
         if( !$this->loginFilteredOveride ){
             if ( $type == 'login' ) {
@@ -481,7 +481,7 @@ class editionCtrl extends jController {
             $value = null;
             if ( $oldCtrl != null )
                 $value = $form->getData( $attribute );
-            
+
             $data = array();
             if ( $type == 'login' ) {
                 $plugin = jApp::coord()->getPlugin('auth');
@@ -519,7 +519,7 @@ class editionCtrl extends jController {
             else if ( $type == 'login' )
               $form->setData( $attribute, $user->login );
         }
-	}
+    }
     return True;
   }
 
@@ -608,7 +608,7 @@ class editionCtrl extends jController {
       $this->formControls[$fieldName]->ctrl->datasource = $dataSource;
       $this->formControls[$fieldName]->ctrl->emptyItemLabel = '';
       // required
-      if ( strtolower($this->formControls[$fieldName]->valueRelationData['allowNull']) == 'false' 
+      if ( strtolower($this->formControls[$fieldName]->valueRelationData['allowNull']) == 'false'
         || strtolower($this->formControls[$fieldName]->valueRelationData['allowNull']) == '0' )
         $this->formControls[$fieldName]->ctrl->required = True;
     }
@@ -1054,7 +1054,7 @@ class editionCtrl extends jController {
       $this->setFormDataFromFields($form);
     else
       $this->setFormDataFromDefault($form);
-      
+
 
     // If the user has been redirected here from the saveFeature method
     // Set the form controls data from the request parameters
