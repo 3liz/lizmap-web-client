@@ -1330,10 +1330,10 @@ var lizMap = function() {
     var proj = new OpenLayers.Projection(locate.crs);
     var val = $('#locate-layer-'+cleanName(aName)).val();
     if (val == '-1') {
-      return; //don't move the map
-      var bbox = new OpenLayers.Bounds(locate.bbox);
-      bbox.transform(proj, map.getProjection());
-      map.zoomToExtent(bbox);
+
+      //var bbox = new OpenLayers.Bounds(locate.bbox);
+      //bbox.transform(proj, map.getProjection());
+      //map.zoomToExtent(bbox);
 
       // Trigger event
       lizMap.events.triggerEvent(
@@ -1409,7 +1409,7 @@ var lizMap = function() {
       if ('filterFieldName' in locate) {
         // create filter combobox for the layer
         features.sort(function(a, b) {
-          return a.properties[locate.filterFieldName].localeCompare(b.properties[locate.filterFieldName]);
+          return a.properties[locate.filterFieldName].toString().localeCompare(b.properties[locate.filterFieldName].toString());
         });
         var filterPlaceHolder = '';
         if ( 'filterFieldAlias' in locate )
@@ -1461,7 +1461,7 @@ var lizMap = function() {
 
       // create combobox for the layer
       features.sort(function(a, b) {
-        return a.properties[locate.fieldName].localeCompare(b.properties[locate.fieldName]);
+        return a.properties[locate.fieldName].toString().localeCompare(b.properties[locate.fieldName].toString());
       });
       var placeHolder = '';
       if ( 'fieldAlias' in locate )
@@ -1771,7 +1771,7 @@ var lizMap = function() {
               lname = typeName
             else {
               for (lbl in config.locateByLayer) {
-                if (lbl.replace(' ','_') == typeName)
+                if (lbl.split(' ').join('_') == typeName)
                   lname = lbl;
               }
             }
@@ -2202,7 +2202,7 @@ var lizMap = function() {
               lname = typeName
             else {
               for (lbl in config.locateByLayer) {
-                if (lbl.replace(' ','_') == typeName)
+                if (lbl.split(' ').join('_') == typeName)
                   lname = lbl;
               }
             }
@@ -4561,7 +4561,7 @@ OpenLayers.Control.HighlightFeature = OpenLayers.Class(OpenLayers.Control, {
       restrictToMapExtent = typeof restrictToMapExtent !== 'undefined' ?  restrictToMapExtent : false;
 
       // Build WFS request parameters
-      var typeName = aName.replace(' ','_');
+      var typeName = aName.split(' ').join('_');
       var layerName = cleanName(aName);
 
       var wfsOptions = {
