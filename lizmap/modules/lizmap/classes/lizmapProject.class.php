@@ -138,6 +138,17 @@ class lizmapProject{
             $qgisProjectVersion = (integer)$a;
             $this->qgisProjectVersion = $qgisProjectVersion;
 
+            $shortNames = $this->xml->xpath('//maplayer/shortname');
+            if ( count( $shortNames ) > 0 ) {
+                foreach( $shortNames as $sname ) {
+                    $sname = (string) $sname;
+                    $xmlLayer = $qgs_xml->xpath( "//maplayer[shortname='$sname']" );
+                    $xmlLayer = $xmlLayer[0];
+                    $name = (string)$xmlLayer->layername;
+                    if ( property_exists($this->cfg->layers, $name ) )
+                        $this->cfg->layers->$name->shortname = $sname;
+                }
+            }
         }
     }
 
@@ -181,21 +192,21 @@ class lizmapProject{
         return null;
     }
 
-    public function findLayerByTitle( $title ){
+    public function findLayerByShortName( $shortName ){
         foreach ( $this->cfg->layers as $layer ) {
-            if ( !property_exists( $layer, 'title' ) )
+            if ( !property_exists( $layer, 'shortname' ) )
                 continue;
-            if ( $layer->title == $title )
+            if ( $layer->shortname == $shortName )
                 return $layer;
         }
         return null;
     }
 
-    public function findLayerById( $id ){
+    public function findLayerByTitle( $title ){
         foreach ( $this->cfg->layers as $layer ) {
-            if ( !property_exists( $layer, 'id' ) )
+            if ( !property_exists( $layer, 'title' ) )
                 continue;
-            if ( $layer->id == $id )
+            if ( $layer->title == $title )
                 return $layer;
         }
         return null;
@@ -593,19 +604,18 @@ class lizmapProject{
                     // Try with libspatialite
                     try{
                         $db = new SQLite3(':memory:');
-                        $spatial1 = $db->loadExtension('libspatialite.so'); # loading SpatiaLite as an extension
+                        $spatial = $db->loadExtension('libspatialite.so'); # loading SpatiaLite as an extension
                     }catch(Exception $e){
                         $spatial = False;
                     }
                     // Try with mod_spatialite
-                    try{
-                        $db = new SQLite3(':memory:');
-                        $spatial1 = $db->loadExtension('mod_spatialite.so'); # loading SpatiaLite as an extension
-                    }catch(Exception $e){
-                        $spatial = False;
-                    }
-                    if( $spatial1 or $spatial2 )
-                        $spatial = True;
+                    if( $spatial )
+                        try{
+                            $db = new SQLite3(':memory:');
+                            $spatial = $db->loadExtension('mod_spatialite.so'); # loading SpatiaLite as an extension
+                        }catch(Exception $e){
+                            $spatial = False;
+                        }
                 }
                 if(!$spatial){
                     foreach( $configJson->editionLayers as $key=>$obj ){

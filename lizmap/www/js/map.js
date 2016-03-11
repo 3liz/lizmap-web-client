@@ -95,6 +95,12 @@ var lizMap = function() {
    */
   var layerIdMap = {
   };
+  /**
+   * PRIVATE Property: shortNameMap
+   *
+   */
+  var shortNameMap = {
+  };
 
   /**
    * Permalink args
@@ -472,6 +478,8 @@ var lizMap = function() {
       var qgisLayerName = layer.name;
       if ( 'useLayerIDs' in config.options && config.options.useLayerIDs == 'True' )
         qgisLayerName = layerIdMap[layer.name];
+      if ( layer.name in shortNameMap )
+        qgisLayerName = shortNameMap[layer.name];
       var layerConfig = config.layers[qgisLayerName];
       if (layer.nestedLayers.length != 0)
          return getLayerScale(layer,minScale,maxScale);
@@ -514,6 +522,8 @@ var lizMap = function() {
       var qgisLayerName = nested.name;
       if ( 'useLayerIDs' in config.options && config.options.useLayerIDs == 'True' )
         qgisLayerName = layerIdMap[nested.name];
+      if ( nested.name in shortNameMap )
+        qgisLayerName = shortNameMap[nested.name];
       if (qgisLayerName in config.layersOrder)
         return config.layersOrder[nested.name];
       else
@@ -527,6 +537,8 @@ var lizMap = function() {
       var qgisLayerName = layer.name;
       if ( 'useLayerIDs' in config.options && config.options.useLayerIDs == 'True' )
         qgisLayerName = layerIdMap[layer.name];
+      if ( layer.name in shortNameMap )
+        qgisLayerName = shortNameMap[layer.name];
       var lOrder = -1;
       if (layer.nestedLayers.length != 0)
         lOrder = getLayerScale(layer);
@@ -719,6 +731,8 @@ var lizMap = function() {
       var qgisLayerName = layer.name;
       if ( 'useLayerIDs' in config.options && config.options.useLayerIDs == 'True' )
         qgisLayerName = layerIdMap[layer.name];
+      if ( layer.name in shortNameMap )
+        qgisLayerName = shortNameMap[layer.name];
       var layerConfig = config.layers[qgisLayerName];
       var layerName = cleanName(qgisLayerName);
       layerCleanNames[layerName] = qgisLayerName;
@@ -1800,7 +1814,9 @@ var lizMap = function() {
             var lname = '';
             if (typeName in config.locateByLayer)
               lname = typeName
-            else {
+            else if ( typeName in shortNameMap ){
+              lname = shortNameMap[typeName];
+            } else {
               for (lbl in config.locateByLayer) {
                 if (lbl.split(' ').join('_') == typeName)
                   lname = lbl;
@@ -4606,7 +4622,10 @@ OpenLayers.Control.HighlightFeature = OpenLayers.Class(OpenLayers.Control, {
       restrictToMapExtent = typeof restrictToMapExtent !== 'undefined' ?  restrictToMapExtent : false;
 
       // Build WFS request parameters
+      var configLayer = config.layers[aName];
       var typeName = aName.split(' ').join('_');
+      if ( 'shortname' in configLayer )
+        typeName = configLayer.shortname;
       var layerName = cleanName(aName);
 
       var wfsOptions = {
@@ -4741,6 +4760,13 @@ OpenLayers.Control.HighlightFeature = OpenLayers.Class(OpenLayers.Control, {
      * Method: getNameByCleanName
      */
     getNameByCleanName: function( cleanName ) {
+      return getNameByCleanName( cleanName );
+    },
+
+    /**
+     * Method: getNameByCleanName
+     */
+    getNameByShortName: function( cleanName ) {
       return getNameByCleanName( cleanName );
     },
 
@@ -4887,6 +4913,12 @@ OpenLayers.Control.HighlightFeature = OpenLayers.Class(OpenLayers.Control, {
                 var configLayer = config.layers[layerName];
                 layerIdMap[configLayer.id] = layerName;
             }
+        }
+        // store shortnames
+        for ( var layerName in config.layers ) {
+            var configLayer = config.layers[layerName];
+            if ( 'shortname' in configLayer )
+                shortNameMap[configLayer.shortname] = layerName;
         }
 
          //get capabilities

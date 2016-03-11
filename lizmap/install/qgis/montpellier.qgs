@@ -5582,7 +5582,7 @@
       <publicbuildings_tramstop20150420095614071 type="int">1</publicbuildings_tramstop20150420095614071>
       <tram_stops20150311115247810 type="int">8</tram_stops20150311115247810>
       <VilleMTP_MTP_SousQuartiers_201120130929113137811 type="int">8</VilleMTP_MTP_SousQuartiers_201120130929113137811>
-      <VilleMTP_MTP_Quartiers_2011_432620130116112610876 type="int">1</VilleMTP_MTP_Quartiers_2011_432620130116112610876>
+      <VilleMTP_MTP_Quartiers_2011_432620130116112610876 type="int">5</VilleMTP_MTP_Quartiers_2011_432620130116112610876>
       <route_tram20150311113518037 type="int">8</route_tram20150311113518037>
       <jointure_tram_stop20150311122053595 type="int">8</jointure_tram_stop20150311122053595>
       <SousQuartiers20160121124316563 type="int">1</SousQuartiers20160121124316563>
