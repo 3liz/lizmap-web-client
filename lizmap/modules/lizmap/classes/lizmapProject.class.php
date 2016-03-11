@@ -191,6 +191,16 @@ class lizmapProject{
         return null;
     }
 
+    public function findLayerById( $id ){
+        foreach ( $this->cfg->layers as $layer ) {
+            if ( !property_exists( $layer, 'id' ) )
+                continue;
+            if ( $layer->id == $id )
+                return $layer;
+        }
+        return null;
+    }
+
     public function findLayerByLayerId( $layerId ){
         foreach ( $this->cfg->layers as $layer ) {
             if ( !property_exists( $layer, 'id' ) )
@@ -621,6 +631,11 @@ class lizmapProject{
         $relations = $this->getRelations();
         if( $relations )
             $configJson->relations = $relations;
+
+       $WMSUseLayerIDs = $this->xml->xpath( "//properties/WMSUseLayerIDs" );
+      if ( count($WMSUseLayerIDs) > 0 && $WMSUseLayerIDs[0] == 'true' ) {
+          $configJson->options->useLayerIDs = 'True';
+      }
 
         $configRead = json_encode($configJson);
 

@@ -467,7 +467,17 @@ var lizEdition = function() {
             // Redraw layer
             if( editionLayer['spatial'] ){
                 $.each(lizMap.layers, function(i, l) {
-                    if (config.layers[l.params['LAYERS']].id != layerId)
+                    var qgisName = lizMap.getNameByCleanName(l.name);
+                    var layerConfig = null;
+                    if ( qgisName )
+                        layerConfig = config.layers[qgisName];
+                    if ( !layerConfig )
+                        layerConfig = config.layers[l.params['LAYERS']];
+                    if ( !layerConfig )
+                        layerConfig = config.layers[l.name];
+                    if ( !layerConfig )
+                        return true;
+                    if (layerConfig.id != layerId)
                         return true;
                     l.redraw(true);
                     return false;
@@ -685,7 +695,17 @@ var lizEdition = function() {
             );
 
             $.each(lizMap.layers, function(i, l) {
-                if (config.layers[l.params['LAYERS']].id != aLayerId)
+                var qgisName = lizMap.getNameByCleanName(l.name);
+                var layerConfig = null;
+                if ( qgisName )
+                    layerConfig = config.layers[qgisName];
+                if ( !layerConfig )
+                    layerConfig = config.layers[l.params['LAYERS']];
+                if ( !layerConfig )
+                    layerConfig = config.layers[l.name];
+                if ( !layerConfig )
+                    return true;
+                if (layerConfig.id != layerId)
                     return true;
                 l.redraw(true);
                 return false;
@@ -713,20 +733,20 @@ var lizEdition = function() {
             lizMap.deleteEditionFeature = function( aLayerId, aFid, aMessage, aCallback ){
                 return deleteEditionFeature( aLayerId, aFid, aMessage, aCallback );
             };
-            
+
             lizMap.events.on({
                 lizmappopupdisplayed: function(e) {
                     var hasButton = false;
                     // Add action buttons if needed
                     $('#liz_layer_popup input.lizmap-popup-layer-feature-id').each(function(){
                         var self = $(this);
-                        var val = self.val(); 
+                        var val = self.val();
                         var eHtml = '';
                         var fid = val.split('.').pop();
                         var layerId = val.replace( '.' + fid, '' );
-                        
+
                         var getLayerConfig = lizMap.getLayerConfigById( layerId );
-                        
+
                         // Edit button
                         var eConfig = null;
                         if( 'editionLayers' in config ) {
@@ -765,7 +785,7 @@ var lizEdition = function() {
                             } );
                             hasButton = true;
                         }
-                        
+
                     });
                     // Add interaction buttons
                     if( hasButton ) {
@@ -803,7 +823,7 @@ var lizEdition = function() {
                             function(){ $(this).addClass('btn-primary'); },
                             function(){ $(this).removeClass('btn-primary'); }
                         );
-                        
+
                     }
                 }
             });

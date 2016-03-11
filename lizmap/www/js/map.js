@@ -90,6 +90,13 @@ var lizMap = function() {
   };
 
   /**
+   * PRIVATE Property: layerIdMap
+   *
+   */
+  var layerIdMap = {
+  };
+
+  /**
    * Permalink args
    */
   var permalinkArgs = null;
@@ -462,7 +469,10 @@ var lizMap = function() {
   function getLayerScale(nested,minScale,maxScale) {
     for (var i = 0, len = nested.nestedLayers.length; i<len; i++) {
       var layer = nested.nestedLayers[i];
-      var layerConfig = config.layers[layer.name];
+      var qgisLayerName = layer.name;
+      if ( 'useLayerIDs' in config.options && config.options.useLayerIDs == 'True' )
+        qgisLayerName = layerIdMap[layer.name];
+      var layerConfig = config.layers[qgisLayerName];
       if (layer.nestedLayers.length != 0)
          return getLayerScale(layer,minScale,maxScale);
       if (layerConfig) {
@@ -500,21 +510,28 @@ var lizMap = function() {
       return -1;
 
     // the nested is a layer and not a group
-    if (nested.nestedLayers.length == 0)
-      if (nested.name in config.layersOrder)
+    if (nested.nestedLayers.length == 0) {
+      var qgisLayerName = nested.name;
+      if ( 'useLayerIDs' in config.options && config.options.useLayerIDs == 'True' )
+        qgisLayerName = layerIdMap[nested.name];
+      if (qgisLayerName in config.layersOrder)
         return config.layersOrder[nested.name];
       else
         return -1;
+    }
 
     // the nested is a group
     var order = -1;
     for (var i = 0, len = nested.nestedLayers.length; i<len; i++) {
       var layer = nested.nestedLayers[i];
+      var qgisLayerName = layer.name;
+      if ( 'useLayerIDs' in config.options && config.options.useLayerIDs == 'True' )
+        qgisLayerName = layerIdMap[layer.name];
       var lOrder = -1;
       if (layer.nestedLayers.length != 0)
         lOrder = getLayerScale(layer);
-      else if (layer.name in config.layersOrder)
-        lOrder = config.layersOrder[layer.name];
+      else if (qgisLayerName in config.layersOrder)
+        lOrder = config.layersOrder[qgisLayerName];
       else
         lOrder = -1;
       if (lOrder != -1) {
@@ -699,13 +716,16 @@ var lizMap = function() {
     for (var i = 0, len = nested.nestedLayers.length; i<len; i++) {
       var serviceUrl = service
       var layer = nested.nestedLayers[i];
-      var layerConfig = config.layers[layer.name];
-      var layerName = cleanName(layer.name);
-      layerCleanNames[layerName] = layer.name;
+      var qgisLayerName = layer.name;
+      if ( 'useLayerIDs' in config.options && config.options.useLayerIDs == 'True' )
+        qgisLayerName = layerIdMap[layer.name];
+      var layerConfig = config.layers[qgisLayerName];
+      var layerName = cleanName(qgisLayerName);
+      layerCleanNames[layerName] = qgisLayerName;
 
-      if ( layer.name.toLowerCase() == 'hidden' )
+      if ( qgisLayerName.toLowerCase() == 'hidden' )
         continue;
-      if ( layer.name == 'Overview' ) {
+      if ( qgisLayerName == 'Overview' ) {
         config.options.hasOverview = true;
         continue;
       }
@@ -1714,7 +1734,18 @@ var lizMap = function() {
       });
       */
       // Add only layers with geometry
-      var aConfig = config.layers[l.params['LAYERS']];
+      var qgisName = null;
+      if ( l.name in cleanNameMap )
+          qgisName = cleanNameMap[l.name];
+      var aConfig = null;
+      if ( qgisName )
+          aConfig = config.layers[qgisName];
+      if ( !aConfig )
+          aConfig = config.layers[l.params['LAYERS']];
+      if ( !aConfig )
+          aConfig = config.layers[l.name];
+      if ( !aConfig )
+          continue;
       if( 'geometryType' in aConfig &&
         ( aConfig.geometryType == "none" || aConfig.geometryType == "unknown" || aConfig.geometryType == "" )
       ){
@@ -2139,7 +2170,18 @@ var lizMap = function() {
         }
       });
       // Add only layers with geometry
-      var aConfig = config.layers[l.params['LAYERS']];
+      var qgisName = null;
+      if ( l.name in cleanNameMap )
+          qgisName = cleanNameMap[l.name];
+      var aConfig = null;
+      if ( qgisName )
+          aConfig = config.layers[qgisName];
+      if ( !aConfig )
+          aConfig = config.layers[l.params['LAYERS']];
+      if ( !aConfig )
+          aConfig = config.layers[l.name];
+      if ( !aConfig )
+          continue;
       if( 'geometryType' in aConfig &&
         ( aConfig.geometryType == "none" || aConfig.geometryType == "unknown" || aConfig.geometryType == "" )
       ){
@@ -3227,7 +3269,10 @@ var lizMap = function() {
       if ( activeBaseLayerName in externalBaselayersReplacement ) {
         var exbl = externalBaselayersReplacement[activeBaseLayerName];
         if( exbl in config.layers )
-            printLayers.push(exbl);
+            if ( 'useLayerIDs' in config.options && config.options.useLayerIDs == 'True' )
+                printLayers.push(config.layers[exbl].id);
+            else
+                printLayers.push(exbl);
       }
 
       url += '&'+dragCtrl.layout.mapId+':LAYERS='+printLayers.join(',');
@@ -4835,6 +4880,14 @@ OpenLayers.Control.HighlightFeature = OpenLayers.Class(OpenLayers.Control, {
       $.getJSON(lizUrls.config,lizUrls.params,function(cfgData) {
         config = cfgData;
         config.options.hasOverview = false;
+
+        // store layerIDs
+        if ( 'useLayerIDs' in config.options && config.options.useLayerIDs == 'True' ) {
+            for ( var layerName in config.layers ) {
+                var configLayer = config.layers[layerName];
+                layerIdMap[configLayer.id] = layerName;
+            }
+        }
 
          //get capabilities
         var service = OpenLayers.Util.urlAppend(lizUrls.wms
