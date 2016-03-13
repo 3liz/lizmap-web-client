@@ -155,6 +155,13 @@ var lizMap = function() {
     return name;
   }
 
+  function getNameByShortName( shortName ){
+    var name = null;
+    if( shortName in shortNameMap )
+      name = shortNameMap[shortName];
+    return name;
+  }
+
   function getLayerNameByCleanName( cleanName ){
     var layerName = null;
     if( cleanName in layerCleanNames )
@@ -478,7 +485,7 @@ var lizMap = function() {
       var qgisLayerName = layer.name;
       if ( 'useLayerIDs' in config.options && config.options.useLayerIDs == 'True' )
         qgisLayerName = layerIdMap[layer.name];
-      if ( layer.name in shortNameMap )
+      else if ( layer.name in shortNameMap )
         qgisLayerName = shortNameMap[layer.name];
       var layerConfig = config.layers[qgisLayerName];
       if (layer.nestedLayers.length != 0)
@@ -522,7 +529,7 @@ var lizMap = function() {
       var qgisLayerName = nested.name;
       if ( 'useLayerIDs' in config.options && config.options.useLayerIDs == 'True' )
         qgisLayerName = layerIdMap[nested.name];
-      if ( nested.name in shortNameMap )
+      else if ( nested.name in shortNameMap )
         qgisLayerName = shortNameMap[nested.name];
       if (qgisLayerName in config.layersOrder)
         return config.layersOrder[nested.name];
@@ -537,7 +544,7 @@ var lizMap = function() {
       var qgisLayerName = layer.name;
       if ( 'useLayerIDs' in config.options && config.options.useLayerIDs == 'True' )
         qgisLayerName = layerIdMap[layer.name];
-      if ( layer.name in shortNameMap )
+      else if ( layer.name in shortNameMap )
         qgisLayerName = shortNameMap[layer.name];
       var lOrder = -1;
       if (layer.nestedLayers.length != 0)
@@ -731,7 +738,7 @@ var lizMap = function() {
       var qgisLayerName = layer.name;
       if ( 'useLayerIDs' in config.options && config.options.useLayerIDs == 'True' )
         qgisLayerName = layerIdMap[layer.name];
-      if ( layer.name in shortNameMap )
+      else if ( layer.name in shortNameMap )
         qgisLayerName = shortNameMap[layer.name];
       var layerConfig = config.layers[qgisLayerName];
       var layerName = cleanName(qgisLayerName);
@@ -4764,10 +4771,10 @@ OpenLayers.Control.HighlightFeature = OpenLayers.Class(OpenLayers.Control, {
     },
 
     /**
-     * Method: getNameByCleanName
+     * Method: getNameByShortName
      */
-    getNameByShortName: function( cleanName ) {
-      return getNameByCleanName( cleanName );
+    getNameByShortName: function( shortName ) {
+      return getNameByShortName( shortName );
     },
 
     /**
