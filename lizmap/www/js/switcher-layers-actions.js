@@ -252,6 +252,7 @@ var lizLayerActionButtons = function() {
         // Export layer
         // Only if layer is in attribute table
         var showExport = false;
+
         if( featureTypes.length != 0
             && itemType == 'layer'
             && itemSelected
@@ -262,7 +263,7 @@ var lizLayerActionButtons = function() {
                 var typeName = self.find('Name').text();
                 if ( typeName == itemName )
                     showExport = true;
-                else if (typeName == itemName.replace(' ','_') )
+                else if (typeName == itemName.split(' ').join('_') )
                     showExport = true;
             });
         }

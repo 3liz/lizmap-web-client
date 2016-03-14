@@ -4579,10 +4579,12 @@ OpenLayers.Control.HighlightFeature = OpenLayers.Class(OpenLayers.Control, {
       eformat = typeof eformat !== 'undefined' ?  eformat : 'GeoJSON';
 
       // Get selected features
-      var selectionLayer = getLayerNameByCleanName( aName );
+      var cleanName = lizMap.cleanName( aName );
+      var selectionLayer = getLayerNameByCleanName( cleanName );
 
       if( !selectionLayer )
         selectionLayer = aName;
+
       var featureid = getVectorLayerSelectionFeatureIdsString( selectionLayer );
 
       // Get WFS url and options
@@ -4609,8 +4611,14 @@ OpenLayers.Control.HighlightFeature = OpenLayers.Class(OpenLayers.Control, {
       var featureidParameter = '';
       if( aName in config.layers && config.layers[aName]['selectedFeatures'] ){
           var fids = [];
+
+          // Get WFS typename
+          var typeName = aName.split(' ').join('_');
+          if ( 'shortname' in config.layers[aName] )
+              typeName = configLayer.shortname;
+
           for( var id in config.layers[aName]['selectedFeatures'] ) {
-              fids.push( aName + '.' + config.layers[aName]['selectedFeatures'][id] );
+              fids.push( typeName + '.' + config.layers[aName]['selectedFeatures'][id] );
           }
           if( fids.length )
               featureidParameter = fids.join();

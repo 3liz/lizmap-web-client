@@ -489,7 +489,8 @@ var lizAttributeTable = function() {
                     var eFormat = $(this).text();
                     if( eFormat == 'GML' )
                         eFormat = 'GML3';
-                    var eName = $(this).parents('div.attribute-layer-main:first').attr('id').replace('attribute-layer-main-', '');
+                    var cleanName = $(this).parents('div.attribute-layer-main:first').attr('id').replace('attribute-layer-main-', '');
+                    var eName = attributeLayersDic[ cleanName ];
                     lizMap.exportVectorLayer( eName, eFormat );
                     $(this).blur();
                     return false;
