@@ -793,6 +793,7 @@ var lizMap = function() {
                ,singleTile:(layerConfig.singleTile == 'True')
                ,order:getLayerOrder(layer)
                ,attribution:layer.attribution
+			   ,ratio: 1  // don't query a too big image if wms request 
                //~ ,tileOptions: {
                   //~ eventListeners: {
                     //~ 'loaderror': function(evt) {
