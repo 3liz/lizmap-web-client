@@ -864,6 +864,7 @@ var lizMap = function() {
                ,gutter:(layerConfig.cached == 'True') ? 0 : 5
                ,buffer:0
                ,singleTile:(layerConfig.singleTile == 'True')
+               ,ratio:1
                ,attribution:layer.attribution
               }));
       }
@@ -880,6 +881,7 @@ var lizMap = function() {
                ,transitionEffect:(layerConfig.singleTile == 'True')?'resize':null
                ,removeBackBufferDelay:250
                ,singleTile:(layerConfig.singleTile == 'True')
+               ,ratio:1
                ,order:getLayerOrder(layer)
                ,attribution:layer.attribution
                //~ ,tileOptions: {
@@ -2403,6 +2405,7 @@ var lizMap = function() {
                   ,units:map.projection.proj.units
                   ,layers:[ovLayer]
                   ,singleTile:true
+                  ,ratio:1
                   }
         }
       ));
@@ -5832,6 +5835,7 @@ lizMap.events.on({
             ,gutter:(layerConfig.cached == 'True') ? 0 : 5
             ,buffer:0
             ,singleTile:(layerConfig.singleTile == 'True')
+            ,ratio:1
           }));
           evt.map.allOverlays = false;
 
