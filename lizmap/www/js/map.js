@@ -831,10 +831,10 @@ var lizMap = function() {
 
         // Add optionnal filter at start
         if( !( typeof lizLayerFilter === 'undefined' )
-          && layerName in lizLayerFilter
-          && lizLayerFilter[ layerName ]
+          && qgisLayerName in lizLayerFilter
+          && lizLayerFilter[ qgisLayerName ]
         ){
-          layerWmsParams['FILTER'] = layerName+':'+lizLayerFilter[ layerName ];
+          layerWmsParams['FILTER'] = qgisLayerName+':'+lizLayerFilter[ qgisLayerName ];
         }
 
       if (layerConfig.baseLayer == 'True' && wmtsLayer != null) {
@@ -2218,8 +2218,10 @@ var lizMap = function() {
         continue;
       }
       map.addLayer(l);
-      if (l.isVisible)
-        $('#switcher button.checkbox[name="layer"][value="'+l.name+'"]').click();
+
+      // remove this and do it afterwards after line 5075
+      //if (l.isVisible)
+        //$('#switcher button.checkbox[name="layer"][value="'+l.name+'"]');
     }
 
     // Add Locate by layer
@@ -2797,6 +2799,7 @@ var lizMap = function() {
 
         // Activate layers
         var players = data.layers;
+
         for( var i=0; i < map.layers.length; i++){
           var l = map.layers[i];
           var lbase = l.isBaseLayer;
@@ -2816,6 +2819,7 @@ var lizMap = function() {
             if( sp.length == 2 ){
               var flayer = sp[0];
               var ffids = sp[1].split();
+
               // Select feature
               lizMap.events.triggerEvent(
                   'layerfeatureselected',
@@ -5069,6 +5073,34 @@ OpenLayers.Control.HighlightFeature = OpenLayers.Class(OpenLayers.Control, {
 
           // create permalink
           createPermalink();
+
+          // Toggle OpenLayers visibility to true for legend checkboxes
+          // 1/ Check permalink is used or not
+          var layersHaveBeenActivatedByPermalink = false;
+          $('#switcher button.checkbox[name="layer"]').each(function(){
+            var cb = $(this);
+            var cleanName = cb.val();
+            var oLayer = map.getLayersByName(cleanName)[0];
+            if( oLayer.visibility )
+              layersHaveBeenActivatedByPermalink = true;
+          });
+          // 2/ Toggle checkboxes
+          $('#switcher button.checkbox[name="layer"]').each(function(){
+            var cb = $(this);
+            var cleanName = cb.val();
+            var oLayer = map.getLayersByName(cleanName)[0];
+
+            // toggle checked class for permalink layers
+            // because OL has already drawn them in map
+            cb.toggleClass('checked', oLayer.visibility);
+
+            // Check layers wich are not yet checked but need to ( for normal behaviour outside permalink )
+            // This will trigger layers to be drawn
+            if( !cb.hasClass('checked') && oLayer.isVisible && !layersHaveBeenActivatedByPermalink){
+              cb.click();
+            }
+
+          });
 
           // verifying the layer visibility for permalink
           if (verifyingVisibility) {

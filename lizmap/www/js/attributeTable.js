@@ -71,6 +71,7 @@ var lizAttributeTable = function() {
                         && 'FILTER' in layer.params
                         && layer.params['FILTER']
                     ){
+
                         config.layers[configLayerName]['request_params']['filter'] = layer.params['FILTER'];
 
                         // Send signal so that getFeatureInfo takes it into account
