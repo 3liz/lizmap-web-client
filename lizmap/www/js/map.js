@@ -282,7 +282,8 @@ var lizMap = function() {
 
     $('#dock').css('overflow-y', 'hidden');
 
-    updateMapSize();
+    if(map)
+      updateMapSize();
 
   }
 
@@ -1125,6 +1126,10 @@ var lizMap = function() {
     mapHeight = mapHeight - $('#header').height();
     mapHeight = mapHeight - $('#headermenu').height();
     $('#map').height(mapHeight);
+
+    // Make sure interface divs size are updated before creating the map
+    // This avoid the request of each singlettile layer 2 times on startup
+    updateContentSize();
 
     var res = extent.getHeight()/$('#map').height();
 
