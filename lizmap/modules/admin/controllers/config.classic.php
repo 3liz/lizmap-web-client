@@ -637,7 +637,7 @@ class configCtrl extends jController {
     // Check paths
     if(in_array('path', lizmap::getRepositoryProperties())) {
       $npath = $form->getData('path');
-      if ($npath[0] != '/')
+      if ($npath[0] != '/' and $npath[1] != ':')
         $npath = jApp::varPath().$npath;
       if(!file_exists($npath) or !is_dir($npath) ){
         $form->setErrorOn('path', jLocale::get("admin~admin.form.admin_section.message.path.wrong"));

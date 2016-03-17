@@ -263,7 +263,7 @@ class serviceCtrl extends jController {
           if( array_key_exists('propertyname', $this->params)  ){
             $propertyName = trim($this->params["propertyname"]);
             if( !empty($propertyName) )
-         	$this->params["propertyname"].= ",$oAttribute";
+            $this->params["propertyname"].= ",$oAttribute";
           }
         }
         // WMS : FILTER
@@ -285,10 +285,15 @@ class serviceCtrl extends jController {
         $service = strtolower($this->params['service']);
         $request = null;
         if( $service == 'wms' ) {
+            $version = '1.3.0';
+            if ( array_key_exists( 'version', $this->params ) ) {
+                $version = $this->params['version'];
+            }
             jClasses::inc('lizmap~lizmapWMSRequest');
             $request = new lizmapWMSRequest( $this->project, array(
                     'service'=>'WMS',
-                    'request'=>'GetCapabilities'
+                    'request'=>'GetCapabilities',
+                    'version'=>$version
                 )
             );
         } else if( $service == 'wfs' ) {
@@ -591,12 +596,18 @@ class serviceCtrl extends jController {
     foreach($xml->Layer as $layer){
       $layername = $layer['name'];
       $configLayer = $this->project->findLayerByName( $layername );
+      // if WMSUseLayerIDs, layer's name can be layer's id
+      if ( $configLayer == null )
+        $configLayer = $this->project->findLayerByLayerId( $layername );
+      // since 2.14 layer's name can be layer's shortName
+      if ( $configLayer == null )
+        $configLayer = $this->project->findLayerByShortName( $layername );
       // since 2.6 layer's name can be layer's title
       if ( $configLayer == null )
         $configLayer = $this->project->findLayerByTitle( $layername );
       if ( $configLayer == null )
         continue;
-        
+
 
       // Avoid layer if no popup asked by the user for it
       // or if no popup property
@@ -604,7 +615,7 @@ class serviceCtrl extends jController {
       $returnPopup = False;
       if( property_exists($configLayer, 'popup') && $configLayer->popup == 'True' )
         $returnPopup = True;
-        
+
       if ( !$returnPopup ){
         $editionLayer = $this->project->findEditionLayerByLayerId( $configLayer->id );
         if ( $editionLayer != null && ( $editionLayer->capabilities->modifyGeometry == 'True'
@@ -612,7 +623,7 @@ class serviceCtrl extends jController {
                                      || $editionLayer->capabilities->deleteFeature == 'True') )
           $returnPopup = True;
       }
-      
+
       if ( !$returnPopup )
         continue;
 
@@ -947,7 +958,11 @@ class serviceCtrl extends jController {
       // debug 1st line blank from QGIS Server
       $rep->content = preg_replace('/^[\n\r]/', '', $data);
       // Change file name
-      $rep->outputFileName = 'export_' . $this->params['typename'] . '.' . strtolower( $this->params['outputformat'] );
+      $zipped_files = array('shp','mif','tab');
+      if ( in_array( strtolower($this->params['outputformat']), $zipped_files ) )
+        $rep->outputFileName = 'export_' . $this->params['typename'] . '.zip';
+      else
+        $rep->outputFileName = 'export_' . $this->params['typename'] . '.' . strtolower( $this->params['outputformat'] );
     }
 
     return $rep;
@@ -964,7 +979,7 @@ class serviceCtrl extends jController {
     // Get parameters
     if(!$this->getServiceParameters())
       return $this->serviceException();
-    
+
     // Extensions to get aliases
     if ( strtolower( $this->params['outputformat'] ) == 'json' ) {
         $data = array();
@@ -975,7 +990,7 @@ class serviceCtrl extends jController {
             $data['aliases'] = (object) $aliases;
         }
         $data = json_encode( (object) $data );
-        
+
         // Return response
         $rep = $this->getResponse('binary');
         $rep->mimeType = 'text/json; charset=utf-8';

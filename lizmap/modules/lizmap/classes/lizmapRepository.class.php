@@ -66,8 +66,9 @@ class lizmapRepository{
       if( !preg_match('#/$#', $this->data['path'] ))
         $this->data['path'] .= '/';
       // if path is relative, get full path
-      if ($this->data['path'][0] != '/')
+      if ($this->data['path'][0] != '/' and $this->data['path'][1] != ':'){
         return jApp::varPath().$this->data['path'];
+	  }
       return $this->data['path'];
     }
 

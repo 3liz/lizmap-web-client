@@ -7,7 +7,7 @@
   <div id="title">
     <h1>{$repositoryLabel}</h1>
   </div>
-      
+
   <div id="headermenu" class="navbar navbar-fixed-top">
     <div id="auth" class="navbar-inner">
       <ul class="nav pull-right">
@@ -27,7 +27,7 @@
         </li>
         {else}
         <li class="login">
-          <a href="{jurl 'jauth~login:form'}">
+          <a href="{jurl 'jauth~login:form', array('auth_url_return'=>$auth_url_return)}">
             <span class="icon"></span>
             <span class="text">{@view~default.header.connect@}</span>
           </a>

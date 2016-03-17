@@ -49,7 +49,8 @@ body {
   display:none;
 }
 #headermenu .dropdown-menu {
-  background-color: rgb(255,255,255);
+  background-color: #4A4A4A;
+  background-color: rgba(0,0,0,0.7);
 }
 #headermenu .dropdown-caret {
   position: absolute;
@@ -90,12 +91,12 @@ body {
   overflow: hidden;
 }
 #headermenu .dropdown-inner .items li {
-  padding: 0px 4px;
+  padding: 3px 6px;
 }
 #headermenu .dropdown-inner .items li > a {
   display: block;
   overflow: hidden;
-  color: rgb(51,51,51);
+  color: white;
   white-space: normal;
 }
 
@@ -490,15 +491,14 @@ SubDock
 }
 
 #bottom-dock h3 {
-  margin: 1px;
-/*
-  background: none repeat scroll 0% 0% #2B2B2B;
-  color: #FBFBFB;
-*/
-  line-height: 1.3;
-  border-bottom: 1px solid #DDD;
-  border-top: 1px solid #DDD;
-  font-size: 0.9em;
+  margin-bottom: 0px;
+  margin-top: 0px;
+  margin-left:10px;
+  line-height:20px;
+  border-bottom: 1px dashed #F0F0F0;
+  font-weight: bold;
+  color: #FFF;
+  font-size:1em;
 }
 
 #bottom-dock .title .btn{
@@ -750,7 +750,7 @@ div.modal h3,
   margin-bottom: 5px;
   border-bottom: 1px dashed #F0F0F0;
 }
-#mini-dock h3, #bottom-dock h3 {
+#mini-dock h3{
   background-color:#4A4A4A;
   background-color:rgba(0,0,0,0.7);
 }
@@ -1889,4 +1889,16 @@ div.tooltip {
 }
 .tooltip-inner{
   display: inline-block;
+}
+
+
+/* only maps dock style */
+#home #projects h2 {
+  color: white;
+}
+#home #projects ul {
+  margin: auto;
+}
+#home #projects ul li div.thumbnail {
+  text-align: center;
 }

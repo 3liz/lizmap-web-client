@@ -4,3 +4,6 @@
 ; put here configuration variables that are specific to this installation
 
 
+; chmod for files created by Lizmap and Jelix
+;chmodFile=0664
+;chmodDir=0775

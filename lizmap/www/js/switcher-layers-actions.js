@@ -172,16 +172,20 @@ var lizLayerActionButtons = function() {
             return false;
         });
 
-        var exportFormats = lizMap.getVectorLayerResultFormat();
-        var exportHTML = '';
-        for ( var i=0, len=exportFormats.length; i<len; i++ ) {
-            var format = exportFormats[i].tagName;
-            if ( format != 'GML2' && format != 'GML3' && format != 'GEOJSON' ) {
-                exportHTML += '        <li><a href="#" class="btn-export-layer">'+format+'</a></li>';
+        if ( 'exportLayers' in lizMap.config.options && lizMap.config.options.exportLayers == 'True' ) {
+            var exportFormats = lizMap.getVectorLayerResultFormat();
+            var exportHTML = '';
+            for ( var i=0, len=exportFormats.length; i<len; i++ ) {
+                var format = exportFormats[i].tagName;
+                if ( format != 'GML2' && format != 'GML3' && format != 'GEOJSON' ) {
+                    exportHTML += '        <li><a href="#" class="btn-export-layer">'+format+'</a></li>';
+                }
             }
+            if ( exportHTML != '' )
+                $('#layerActionExport ~ ul.dropdown-menu').append(exportHTML);
+        } else {
+            $('#layerActionExport').parent().remove();
         }
-        if ( exportHTML != '' )
-            $('#layerActionExport ~ ul.dropdown-menu').append(exportHTML);
 
         // Export action
         $('#switcher-layers-actions a.btn-export-layer').click(function(){
@@ -248,6 +252,7 @@ var lizLayerActionButtons = function() {
         // Export layer
         // Only if layer is in attribute table
         var showExport = false;
+
         if( featureTypes.length != 0
             && itemType == 'layer'
             && itemSelected
@@ -258,7 +263,7 @@ var lizLayerActionButtons = function() {
                 var typeName = self.find('Name').text();
                 if ( typeName == itemName )
                     showExport = true;
-                else if (typeName == itemName.replace(' ','_') )
+                else if (typeName == itemName.split(' ').join('_') )
                     showExport = true;
             });
         }

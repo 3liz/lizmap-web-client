@@ -8,6 +8,11 @@
   font-size:0.8em;
 }
 
+#auth_login_zone {
+    max-width:450px;
+    margin: auto;
+}
+
 .jforms-error-list {
     margin-left: 0;
     background-color: #C43C35;

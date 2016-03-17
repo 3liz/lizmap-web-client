@@ -333,8 +333,7 @@ class lizmapCache {
             $cacheDirectory = $cacheRootDirectory.'/'.$repository.'/'.$project.'/'.$layers.'/'.$crs.'/';
 
             // Create directory if needed
-            if(!file_exists($cacheDirectory))
-                mkdir($cacheDirectory, 0750, true);
+            jFile::createDir($cacheDirectory);
 
             // Virtual cache profile parameter
             $cacheParams = array(
@@ -342,9 +341,7 @@ class lizmapCache {
                 "cache_dir"=>$cacheDirectory,
                 "file_locking"=>True,
                 "directory_level"=>"5",
-                "directory_umask"=>"0750",
                 "file_name_prefix"=>"lizmap_",
-                "cache_file_umask"=>"0650",
                 "ttl"=>$cacheExpiration
             );
 
@@ -356,8 +353,7 @@ class lizmapCache {
 
             // Directory where to store the sqlite database
             $cacheDirectory = $cacheRootDirectory.'/'.$repository.'/'.$project.'/';
-            if(!file_exists($cacheDirectory))
-                mkdir($cacheDirectory, 0750, true); // Create directory if needed
+            jFile::createDir($cacheDirectory); // Create directory if needed
             $cacheDatabase = $cacheDirectory.$layers.'_'.$crs.'.db';
             $cachePdoDsn = 'sqlite:'.$cacheDatabase;
 

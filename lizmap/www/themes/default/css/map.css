@@ -10,7 +10,8 @@
   background-position: -400px 0px;
 }
 #headermenu .dropdown-menu {
-  background-color: rgb(255,255,255);
+  background-color: #4A4A4A;
+  background-color: rgba(0,0,0,0.7);
 }
 #headermenu .dropdown-caret .caret-inner {
   border-left: 6px solid transparent;
@@ -23,7 +24,7 @@
   border-bottom: 7px solid rgba(0,0,0,0.2);
 }
 #headermenu .dropdown-inner .items li > a {
-  color: rgb(51,51,51);
+  color: white;
 }
 
 .navbar .nav .metadata .icon {
@@ -526,4 +527,10 @@ Timemanager
 .ui-widget-overlay {
   opacity : 0.8;
   background : black;
+}
+
+
+/* only maps dock style */
+#home #projects h2 {
+  color: white;
 }

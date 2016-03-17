@@ -13,14 +13,14 @@
 class lizmapProject{
 
     // lizmapRepository
-    private $repository = null;
+    protected $repository = null;
     // QGIS project XML
-    private $xml = null;
+    protected $xml = null;
     // CFG project JSON
-    private $cfg = null;
+    protected $cfg = null;
 
     // services properties
-    private $properties = array(
+    protected $properties = array(
         'repository',
         'id',
         'title',
@@ -29,11 +29,11 @@ class lizmapProject{
         'bbox'
     );
     // Lizmap repository key
-    private $key = '';
+    protected $key = '';
     // Lizmap repository configuration data
-    private $data = array();
+    protected $data = array();
     // Version of QGIS which wrote the project
-    private $qgisProjectVersion = null;
+    protected $qgisProjectVersion = null;
 
     /**
      * constructor
@@ -138,11 +138,26 @@ class lizmapProject{
             $qgisProjectVersion = (integer)$a;
             $this->qgisProjectVersion = $qgisProjectVersion;
 
+            $shortNames = $this->xml->xpath('//maplayer/shortname');
+            if ( count( $shortNames ) > 0 ) {
+                foreach( $shortNames as $sname ) {
+                    $sname = (string) $sname;
+                    $xmlLayer = $qgs_xml->xpath( "//maplayer[shortname='$sname']" );
+                    $xmlLayer = $xmlLayer[0];
+                    $name = (string)$xmlLayer->layername;
+                    if ( property_exists($this->cfg->layers, $name ) )
+                        $this->cfg->layers->$name->shortname = $sname;
+                }
+            }
         }
     }
 
     public function getQgisProjectVersion(){
         return $this->qgisProjectVersion;
+    }
+
+    public function getQgisPath(){
+        return realpath($this->repository->getPath()).'/'.$this->key.'.qgs';
     }
 
     public function getKey(){
@@ -174,6 +189,16 @@ class lizmapProject{
     public function findLayerByName( $name ){
         if ( property_exists($this->cfg->layers, $name ) )
             return $this->cfg->layers->$name;
+        return null;
+    }
+
+    public function findLayerByShortName( $shortName ){
+        foreach ( $this->cfg->layers as $layer ) {
+            if ( !property_exists( $layer, 'shortname' ) )
+                continue;
+            if ( $layer->shortname == $shortName )
+                return $layer;
+        }
         return null;
     }
 
@@ -575,12 +600,22 @@ class lizmapProject{
             if( jAcl2::check('lizmap.tools.edition.use', $this->repository->getKey()) ){
                 $spatial = false;
                 if ( class_exists('SQLite3') ) {
+                    $spatial = false;
+                    // Try with libspatialite
                     try{
                         $db = new SQLite3(':memory:');
                         $spatial = $db->loadExtension('libspatialite.so'); # loading SpatiaLite as an extension
                     }catch(Exception $e){
                         $spatial = False;
                     }
+                    // Try with mod_spatialite
+                    if( $spatial )
+                        try{
+                            $db = new SQLite3(':memory:');
+                            $spatial = $db->loadExtension('mod_spatialite.so'); # loading SpatiaLite as an extension
+                        }catch(Exception $e){
+                            $spatial = False;
+                        }
                 }
                 if(!$spatial){
                     foreach( $configJson->editionLayers as $key=>$obj ){
@@ -597,10 +632,20 @@ class lizmapProject{
             }
         }
 
+        // Add export layer right
+        if( jAcl2::check('lizmap.tools.layer.export', $this->repository->getKey()) ){
+            $configJson->options->exportLayers = 'True';
+        }
+
         // Update config with layer relations
         $relations = $this->getRelations();
         if( $relations )
             $configJson->relations = $relations;
+
+       $WMSUseLayerIDs = $this->xml->xpath( "//properties/WMSUseLayerIDs" );
+      if ( count($WMSUseLayerIDs) > 0 && $WMSUseLayerIDs[0] == 'true' ) {
+          $configJson->options->useLayerIDs = 'True';
+      }
 
         $configRead = json_encode($configJson);
 
@@ -629,6 +674,10 @@ class lizmapProject{
 
     public function getFullCfg(){
         return $this->cfg;
+    }
+
+    public function getXmlLayers(){
+        return $this->xml->xpath( "//maplayer" );
     }
 
     public function getXmlLayer( $layerId ){
@@ -751,6 +800,9 @@ class lizmapProject{
         }
 
         $switcherTpl = new jTpl();
+        $switcherTpl->assign(array(
+            'layerExport'=>jAcl2::check('lizmap.tools.layer.export', $this->repository->getKey())
+        ));
         $dockable[] = new lizmapMapDockItem(
             'switcher',
             jLocale::get('view~map.switchermenu.title'),

@@ -115,6 +115,7 @@ class qgisFormControl{
       'integer'=>'integer',
       'int4'=>'integer',
       'int8'=>'integer',
+      'bigint'=>'integer',
       'text'=>'text',
       'string'=>'text',
       'varchar'=>'text',
@@ -231,7 +232,7 @@ class qgisFormControl{
         $this->ctrl = new jFormsControlMenulist($this->ref);
         $this->fillControlDatasource();
         break;
-        
+
       case 'checkboxes':
         $this->ctrl = new jFormsControlCheckboxes($this->ref);
         $this->fillControlDatasource();

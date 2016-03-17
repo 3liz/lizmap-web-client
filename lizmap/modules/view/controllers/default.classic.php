@@ -73,6 +73,12 @@ class defaultCtrl extends jController {
     $rep->title = $title;
 
     $rep->body->assign('repositoryLabel', $title);
+
+    $auth_url_return = jUrl::get('view~default:index');
+    if ( $repository )
+        $auth_url_return = jUrl::get('view~default:index', array('repository'=>$repository));
+    $rep->body->assign('auth_url_return', $auth_url_return);
+
     $rep->body->assign('isConnected', jAuth::isConnected());
     $rep->body->assign('user', jAuth::getUserSession());
 
@@ -86,7 +92,7 @@ class defaultCtrl extends jController {
       $rep->body->assign('googleAnalyticsID', '');
 
 
-    $rep->body->assignZone('MAIN', 'main_view', array('repository'=>$repository));
+    $rep->body->assignZone('MAIN', 'main_view', array('repository'=>$repository, 'auth_url_return'=>$auth_url_return));
 
     $rep->addJSCode("
       $(window).load(function() {

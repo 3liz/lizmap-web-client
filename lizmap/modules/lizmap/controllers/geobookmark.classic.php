@@ -213,7 +213,7 @@ class geobookmarkCtrl extends jController {
             $gbList = $daogb->findBy($conditions);
             $gbParams = array();
             foreach( $gbList as $gb ){
-                $gbParams = json_decode($gb->params);
+                $gbParams = json_decode(htmlspecialchars_decode($gb->params,ENT_QUOTES ));
             }
             $rep = $this->getResponse('json');
             $rep->data = $gbParams;
