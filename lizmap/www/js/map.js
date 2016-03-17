@@ -245,9 +245,8 @@ var lizMap = function() {
 
     $('#dock').css('overflow-y', 'hidden');
 
-    // updateMapSize();
-    if(map)
-       updateMapSize();
+    updateMapSize();
+
   }
 
 
@@ -794,7 +793,7 @@ var lizMap = function() {
                ,singleTile:(layerConfig.singleTile == 'True')
                ,order:getLayerOrder(layer)
                ,attribution:layer.attribution
-			   ,ratio: 1  // don't query a too big image if wms request .
+			   ,ratio: 1  // don't query a too big image if wms request 
                //~ ,tileOptions: {
                   //~ eventListeners: {
                     //~ 'loaderror': function(evt) {
@@ -1038,11 +1037,7 @@ var lizMap = function() {
     mapHeight = mapHeight - $('#header').height();
     mapHeight = mapHeight - $('#headermenu').height();
     $('#map').height(mapHeight);
-	
-	// Make sure interface divs size are updated before creating the map
-    // This avoid the request of each singlettile layer 2 times on startup
-    updateContentSize();
-	
+
     var res = extent.getHeight()/$('#map').height();
 
     var scales = [];
