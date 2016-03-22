@@ -5080,8 +5080,9 @@ OpenLayers.Control.HighlightFeature = OpenLayers.Class(OpenLayers.Control, {
           $('#switcher button.checkbox[name="layer"]').each(function(){
             var cb = $(this);
             var cleanName = cb.val();
+            console.log( cleanName );
             var oLayer = map.getLayersByName(cleanName)[0];
-            if( oLayer.visibility )
+            if( oLayer && oLayer.visibility )
               layersHaveBeenActivatedByPermalink = true;
           });
           // 2/ Toggle checkboxes
@@ -5089,15 +5090,17 @@ OpenLayers.Control.HighlightFeature = OpenLayers.Class(OpenLayers.Control, {
             var cb = $(this);
             var cleanName = cb.val();
             var oLayer = map.getLayersByName(cleanName)[0];
+            if( oLayer ){
 
-            // toggle checked class for permalink layers
-            // because OL has already drawn them in map
-            cb.toggleClass('checked', oLayer.visibility);
+              // toggle checked class for permalink layers
+              // because OL has already drawn them in map
+              cb.toggleClass('checked', oLayer.visibility);
 
-            // Check layers wich are not yet checked but need to ( for normal behaviour outside permalink )
-            // This will trigger layers to be drawn
-            if( !cb.hasClass('checked') && oLayer.isVisible && !layersHaveBeenActivatedByPermalink){
-              cb.click();
+              // Check layers wich are not yet checked but need to ( for normal behaviour outside permalink )
+              // This will trigger layers to be drawn
+              if( !cb.hasClass('checked') && oLayer.isVisible && !layersHaveBeenActivatedByPermalink){
+                cb.click();
+              }
             }
 
           });
