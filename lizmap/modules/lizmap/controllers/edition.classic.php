@@ -1100,15 +1100,31 @@ class editionCtrl extends jController {
     $attribute = $this->loginFilteredLayers['attribute'];
 
     // Get title layer
-    $layerXmlZero = $this->layerXml[0];
+    $_layerXmlZero = $this->layerXml;
+    $layerXmlZero = $_layerXmlZero[0];
     $_title = $layerXmlZero->xpath('title');
     $title = (string)$_title[0];
+
+    // Get form layout
+    $_editorlayout = $layerXmlZero->xpath('editorlayout');
+    $editorlayout = $_editorlayout[0];
+    if( $editorlayout == 'tablayout' ){
+        $_attributeEditorForm = $layerXmlZero->xpath('attributeEditorForm');
+        $formLayout = str_replace(
+            '@',
+            '',
+            json_encode($_attributeEditorForm[0] )
+        );
+    }else{
+        $formLayout = '{}';
+    }
 
     // Use template to create html form content
     $tpl = new jTpl();
     $tpl->assign(array(
       'title'=>$title,
-      'form'=>$form
+      'form'=>$form,
+      'formLayout'=>$formLayout
     ));
     $content = $tpl->fetch('view~edition_form');
 

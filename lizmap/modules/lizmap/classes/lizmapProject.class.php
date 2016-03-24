@@ -609,7 +609,7 @@ class lizmapProject{
                         $spatial = False;
                     }
                     // Try with mod_spatialite
-                    if( $spatial )
+                    if( !$spatial )
                         try{
                             $db = new SQLite3(':memory:');
                             $spatial = $db->loadExtension('mod_spatialite.so'); # loading SpatiaLite as an extension

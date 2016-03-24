@@ -1902,3 +1902,33 @@ div.tooltip {
 #home #projects ul li div.thumbnail {
   text-align: center;
 }
+
+
+
+/* Edition style */
+#edition .nav-tabs > li > a {
+  font-size: 1.2em;
+  color: gray;
+}
+#edition .nav > li > a:hover, .nav > li > a:focus {
+    text-decoration: none;
+}
+#edition .nav-tabs > li > a:hover, .nav-tabs > li > a:focus {
+    border-color: lightgrey;
+}
+#edition .nav-tabs > .active > a, .nav-tabs > .active > a:hover, .nav-tabs > .active > a:focus {
+    color: black;
+    cursor: default;
+    background-color: lightgrey;
+    border: 1px solid lightgrey;
+    border-bottom-color: transparent;
+}
+#edition div.tab-content {
+  border: 1px solid lightgrey;
+  padding: 10px;
+}
+#edition div.jforms-table-group{
+  background-color: lightgrey;
+  padding: 10px 0px;
+  border-radius: 10px;
+}

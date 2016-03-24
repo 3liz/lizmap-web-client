@@ -5080,7 +5080,6 @@ OpenLayers.Control.HighlightFeature = OpenLayers.Class(OpenLayers.Control, {
           $('#switcher button.checkbox[name="layer"]').each(function(){
             var cb = $(this);
             var cleanName = cb.val();
-            console.log( cleanName );
             var oLayer = map.getLayersByName(cleanName)[0];
             if( oLayer && oLayer.visibility )
               layersHaveBeenActivatedByPermalink = true;
