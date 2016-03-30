@@ -17,6 +17,7 @@ class lizmapMapDockItem {
     public $css = '';
     public $js = '';
     public $icon = '';
+    public $menuIconClasses = '';
 
     public function __construct($id, $title, $content, $order=0, $css='', $js='') {
         $this->id = $id;
@@ -35,6 +36,7 @@ class lizmapMapDockItem {
         $this->icon = $item->icon;
         $this->css = $item->css;
         $this->js = $item->js;
+        $this->menuIconClasses = $item->menuIconClasses;
     }
 
     public function fetchContent() {

@@ -32,14 +32,11 @@ var bottomDockFunction = function() {
 
 
         // Bind bottom dock buttons actions
+
         // Close button
-        $('#bottom-dock h3').click(function() {
-          hideBottomDockContent();
-          return false;
-        });
         $('#bottom-dock .btn-bottomdock-clear')
         .click(function() {
-          deactivateBottomDock();
+          $('#mapmenu li.nav-bottomdock.active > a').click();
           return false;
         })
         .hover(
@@ -167,34 +164,49 @@ var bottomDockFunction = function() {
         );
 
         $('#mapmenu li.nav-bottomdock > a').click(function(){
-            if (bottomDockActive){
-                deactivateBottomDock();
-            }else{
-                activateBottomDock();
-            }
-            return false
+          var self = $(this);
+          var parent = self.parent();
+          var id = self.attr('href').substr(1);
+          var tab = $('#nav-tab-'+id);
+          if ( parent.hasClass('active') ) {
+              if ( tab.hasClass('active') ) {
+                  var nextActive = tab.next(':visible');
+                  if ( nextActive.length != 0 ) {
+                      nextActive.first().children('a').first().click();
+                  } else {
+                      var prevActive = tab.prev(':visible');
+                      if ( prevActive.length != 0 )
+                          prevActive.first().children('a').first().click();
+                  }
+              }
+              tab.hide();
+              tab.removeClass('active');
+              parent.removeClass('active');
+              bottomDockActive = false;
+              lizMap.events.triggerEvent( "bottomdockclosed", {'id':id} );
+          } else {
+              var oldActive = $('#mapmenu li.nav-bottomdock.active');
+              if ( oldActive.length != 0 ) {
+                  oldActive.removeClass('active');
+                  lizMap.events.triggerEvent( "bottomdockclosed", {'id': oldActive.children('a').first().attr('href').substr(1) } );
+              }
+              tab.show()
+              tab.children('a').first().click();
+              parent.addClass('active');
+              bottomDockActive = true;
+              lizMap.events.triggerEvent( "bottomdockopened", {'id':id} );
+              $('#bottom-dock').css('left',  lizMap.getDockRightPosition() );
+              $('#bottom-dock').addClass('visible');
+          }
+          self.blur();
+
+          var dock = $('#bottom-dock');
+          if ( $('#bottom-dock-tabs .active').length == 0 )
+            dock.hide();
+          else if ( !dock.is(':visible') )
+            dock.show();
+          return false;
         });
-
-        function activateBottomDock() {
-          $('#mapmenu li.nav-bottomdock > a').parent().addClass('active');
-
-          // Show bottom dock title
-          $('#bottom-dock').show();
-          // Open bottom dock
-          showBottomDockContent();
-          bottomDockActive = true;
-
-          return false;
-        }
-
-        function deactivateBottomDock() {
-          $('#mapmenu li.nav-bottomdock > a').parent().removeClass('active');
-          hideBottomDockContent();
-          $('#bottom-dock').hide();
-          bottomDockActive = false;
-
-          return false;
-        }
 
         function showBottomDockContent(){
           $('#bottom-dock').addClass('visible');

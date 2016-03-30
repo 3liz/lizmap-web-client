@@ -13,14 +13,14 @@
 class lizmapProject{
 
     // lizmapRepository
-    private $repository = null;
+    protected $repository = null;
     // QGIS project XML
-    private $xml = null;
+    protected $xml = null;
     // CFG project JSON
-    private $cfg = null;
+    protected $cfg = null;
 
     // services properties
-    private $properties = array(
+    protected $properties = array(
         'repository',
         'id',
         'title',
@@ -29,11 +29,11 @@ class lizmapProject{
         'bbox'
     );
     // Lizmap repository key
-    private $key = '';
+    protected $key = '';
     // Lizmap repository configuration data
-    private $data = array();
+    protected $data = array();
     // Version of QGIS which wrote the project
-    private $qgisProjectVersion = null;
+    protected $qgisProjectVersion = null;
 
     /**
      * constructor
@@ -138,11 +138,26 @@ class lizmapProject{
             $qgisProjectVersion = (integer)$a;
             $this->qgisProjectVersion = $qgisProjectVersion;
 
+            $shortNames = $this->xml->xpath('//maplayer/shortname');
+            if ( count( $shortNames ) > 0 ) {
+                foreach( $shortNames as $sname ) {
+                    $sname = (string) $sname;
+                    $xmlLayer = $qgs_xml->xpath( "//maplayer[shortname='$sname']" );
+                    $xmlLayer = $xmlLayer[0];
+                    $name = (string)$xmlLayer->layername;
+                    if ( property_exists($this->cfg->layers, $name ) )
+                        $this->cfg->layers->$name->shortname = $sname;
+                }
+            }
         }
     }
 
     public function getQgisProjectVersion(){
         return $this->qgisProjectVersion;
+    }
+
+    public function getQgisPath(){
+        return realpath($this->repository->getPath()).'/'.$this->key.'.qgs';
     }
 
     public function getKey(){
@@ -177,11 +192,31 @@ class lizmapProject{
         return null;
     }
 
+    public function findLayerByShortName( $shortName ){
+        foreach ( $this->cfg->layers as $layer ) {
+            if ( !property_exists( $layer, 'shortname' ) )
+                continue;
+            if ( $layer->shortname == $shortName )
+                return $layer;
+        }
+        return null;
+    }
+
     public function findLayerByTitle( $title ){
         foreach ( $this->cfg->layers as $layer ) {
             if ( !property_exists( $layer, 'title' ) )
                 continue;
             if ( $layer->title == $title )
+                return $layer;
+        }
+        return null;
+    }
+
+    public function findLayerByLayerId( $layerId ){
+        foreach ( $this->cfg->layers as $layer ) {
+            if ( !property_exists( $layer, 'id' ) )
+                continue;
+            if ( $layer->id == $layerId )
                 return $layer;
         }
         return null;
@@ -204,6 +239,19 @@ class lizmapProject{
         if ( property_exists($this->cfg,'timemanagerLayers') ){
             $count = 0;
             foreach( $this->cfg->timemanagerLayers as $key=>$obj ){
+                $count += 1;
+            }
+            if ( $count != 0 )
+                return true;
+            return false;
+        }
+        return false;
+    }
+
+    public function hasTooltipLayers(){
+        if ( property_exists($this->cfg,'tooltipLayers') ){
+            $count = 0;
+            foreach( $this->cfg->tooltipLayers as $key=>$obj ){
                 $count += 1;
             }
             if ( $count != 0 )
@@ -244,6 +292,28 @@ class lizmapProject{
 
     public function getEditionLayers(){
         return $this->cfg->editionLayers;
+    }
+
+    public function findEditionLayerByName( $name ){
+        if ( !$this->hasEditionLayers() )
+            return null;
+
+        if ( property_exists($this->cfg->editionLayers, $name ) )
+            return $this->cfg->editionLayers->$name;
+        return null;
+    }
+
+    public function findEditionLayerByLayerId( $layerId ){
+        if ( !$this->hasEditionLayers() )
+            return null;
+
+        foreach ( $this->cfg->editionLayers as $layer ) {
+            if ( !property_exists( $layer, 'layerId' ) )
+                continue;
+            if ( $layer->layerId == $layerId )
+                return $layer;
+        }
+        return null;
     }
 
     public function hasLoginFilteredLayers(){
@@ -530,12 +600,22 @@ class lizmapProject{
             if( jAcl2::check('lizmap.tools.edition.use', $this->repository->getKey()) ){
                 $spatial = false;
                 if ( class_exists('SQLite3') ) {
+                    $spatial = false;
+                    // Try with libspatialite
                     try{
                         $db = new SQLite3(':memory:');
                         $spatial = $db->loadExtension('libspatialite.so'); # loading SpatiaLite as an extension
                     }catch(Exception $e){
                         $spatial = False;
                     }
+                    // Try with mod_spatialite
+                    if( !$spatial )
+                        try{
+                            $db = new SQLite3(':memory:');
+                            $spatial = $db->loadExtension('mod_spatialite.so'); # loading SpatiaLite as an extension
+                        }catch(Exception $e){
+                            $spatial = False;
+                        }
                 }
                 if(!$spatial){
                     foreach( $configJson->editionLayers as $key=>$obj ){
@@ -552,10 +632,20 @@ class lizmapProject{
             }
         }
 
+        // Add export layer right
+        if( jAcl2::check('lizmap.tools.layer.export', $this->repository->getKey()) ){
+            $configJson->options->exportLayers = 'True';
+        }
+
         // Update config with layer relations
         $relations = $this->getRelations();
         if( $relations )
             $configJson->relations = $relations;
+
+       $WMSUseLayerIDs = $this->xml->xpath( "//properties/WMSUseLayerIDs" );
+      if ( count($WMSUseLayerIDs) > 0 && $WMSUseLayerIDs[0] == 'true' ) {
+          $configJson->options->useLayerIDs = 'True';
+      }
 
         $configRead = json_encode($configJson);
 
@@ -584,6 +674,10 @@ class lizmapProject{
 
     public function getFullCfg(){
         return $this->cfg;
+    }
+
+    public function getXmlLayers(){
+        return $this->xml->xpath( "//maplayer" );
     }
 
     public function getXmlLayer( $layerId ){
@@ -689,6 +783,7 @@ class lizmapProject{
     public function getDefaultDockable() {
         jClasses::inc('view~lizmapMapDockItem');
         $dockable = array();
+        $bp = jApp::config()->urlengine['basePath'];
 
         // Get lizmap services
         $services = lizmap::getServices();
@@ -705,6 +800,9 @@ class lizmapProject{
         }
 
         $switcherTpl = new jTpl();
+        $switcherTpl->assign(array(
+            'layerExport'=>jAcl2::check('lizmap.tools.layer.export', $this->repository->getKey())
+        ));
         $dockable[] = new lizmapMapDockItem(
             'switcher',
             jLocale::get('view~map.switchermenu.title'),
@@ -727,7 +825,7 @@ class lizmapProject{
         }
         $metadataTpl->assign(array_merge(array(
             'repositoryLabel'=>$this->getData('label'),
-            'repository'=>$this->getrepository(),
+            'repository'=>$this->repository->getKey(),
             'project'=>$this->getKey(),
             'wmsGetCapabilitiesUrl' => $wmsGetCapabilitiesUrl
         ), $wmsInfo));
@@ -741,7 +839,6 @@ class lizmapProject{
 
         if ( $this->hasEditionLayers() ) {
             $tpl = new jTpl();
-            $bp = jApp::config()->urlengine['basePath'];
             $dockable[] = new lizmapMapDockItem(
                 'edition',
                 jLocale::get('view~edition.navbar.title'),
@@ -759,6 +856,7 @@ class lizmapProject{
         jClasses::inc('view~lizmapMapDockItem');
         $dockable = array();
         $configOptions = $this->getOptions();
+        $bp = jApp::config()->urlengine['basePath'];
 
         if ( $this->hasLocateByLayer() ) {
             $tpl = new jTpl();
@@ -803,19 +901,56 @@ class lizmapProject{
             );
         }
 
+        if ( $this->hasTooltipLayers() ) {
+            $tpl = new jTpl();
+            $dockable[] = new lizmapMapDockItem(
+                'tooltip-layer',
+                jLocale::get('view~map.tooltip.navbar.title'),
+                $tpl->fetch('view~map_tooltip'),
+                5,
+                '',
+                ''
+            );
+        }
+
         if ( $this->hasTimemanagerLayers() ) {
             $tpl = new jTpl();
             $dockable[] = new lizmapMapDockItem(
                 'timemanager',
                 jLocale::get('view~map.timemanager.navbar.title'),
                 $tpl->fetch('view~map_timemanager'),
-                6
+                6,
+                '',
+                $bp.'js/timemanager.js'
             );
         }
 
         // Permalink
         if ( true ) {
+            // Get geobookmark if user is connected
+            $gbCount = False; $gbList = Null;
+            if( jAuth::isConnected() ){
+                $juser = jAuth::getUserSession();
+                $usr_login = $juser->login;
+                $daogb = jDao::get('lizmap~geobookmark');
+                $conditions = jDao::createConditions();
+                $conditions->addCondition('login','=',$usr_login);
+                $conditions->addCondition(
+                    'map',
+                    '=',
+                    $this->repository->getKey().':'.$this->getKey()
+                );
+                $gbList = $daogb->findBy($conditions);
+                $gbCount = $daogb->countBy($conditions);
+            }
             $tpl = new jTpl();
+            $tpl->assign( 'gbCount', $gbCount );
+            $tpl->assign( 'gbList', $gbList );
+            $gbContent = Null;
+            if( $gbList )
+                $gbContent = $tpl->fetch('view~map_geobookmark');
+            $tpl = new jTpl();
+            $tpl->assign('gbContent', $gbContent);
             $dockable[] = new lizmapMapDockItem(
                 'permaLink',
                 jLocale::get('view~map.permalink.navbar.title'),
@@ -831,8 +966,8 @@ class lizmapProject{
         jClasses::inc('view~lizmapMapDockItem');
         $dockable = array();
         $configOptions = $this->getOptions();
-
         $bp = jApp::config()->urlengine['basePath'];
+
         if ( $this->hasAttributeLayers() ) {
             $form = jForms::create( 'view~attribute_layers_option' );
             $assign = array( 'form' => $form );

@@ -114,12 +114,11 @@ class lizmapProxy {
 
     /**
     * Get data from map service or from the cache.
-    * @param string $repository The repository.
-    * @param string $project The project.
+    * @param lizmapProject $project The project.
     * @param array $params Array of parameters.
     * @return array $data Normalized and filtered array.
     */
-    static public function getMap( $repository, $project, $params, $forced=False ) {
+    static public function getMap( $project, $params, $forced=False ) {
         // Get cache if exists
         $keyParams = $params;
         if( array_key_exists( 'map', $keyParams ) ){
@@ -133,8 +132,10 @@ class lizmapProxy {
 
         // Get repository data
         $ser = lizmap::getServices();
-        $lrep = lizmap::getRepository( $repository );
-        $lproj = lizmap::getProject( $repository.'~'.$project );
+        $lrep = $project->getRepository();
+        $lproj = $project;
+        $project = $lproj->getKey();
+        $repository = $lrep->getKey();
 
         // Change to true to put some information in debug files
         $debug = $ser->debugMode;
@@ -203,7 +204,7 @@ class lizmapProxy {
         $url = $ser->wmsServerURL.'?';
 
         // Add project path into map parameter
-        $params["map"] = realpath($lrep->getPath()) . '/' . $lproj->getKey() . ".qgs";
+        $params["map"] = realpath($lproj->getQgisPath());
 
         // Metatile : if needed, change the bbox
         // Avoid metatiling when the cache is not active for the layer
@@ -342,8 +343,7 @@ class lizmapProxy {
             $cacheDirectory = $cacheRootDirectory.'/'.$repository.'/'.$project.'/'.$layers.'/'.$crs.'/';
 
             // Create directory if needed
-            if(!file_exists($cacheDirectory))
-                mkdir($cacheDirectory, 0750, true);
+            jFile::createDir($cacheDirectory);
 
             // Virtual cache profile parameter
             $cacheParams = array(
@@ -351,9 +351,7 @@ class lizmapProxy {
                 "cache_dir"=>$cacheDirectory,
                 "file_locking"=>True,
                 "directory_level"=>"5",
-                "directory_umask"=>"0750",
                 "file_name_prefix"=>"lizmap_",
-                "cache_file_umask"=>"0650",
                 "ttl"=>$cacheExpiration
             );
 
@@ -365,8 +363,7 @@ class lizmapProxy {
 
             // Directory where to store the sqlite database
             $cacheDirectory = $cacheRootDirectory.'/'.$repository.'/'.$project.'/';
-            if(!file_exists($cacheDirectory))
-                mkdir($cacheDirectory, 0750, true); // Create directory if needed
+            jFile::createDir($cacheDirectory); // Create directory if needed
             $cacheDatabase = $cacheDirectory.$layers.'_'.$crs.'.db';
             $cachePdoDsn = 'sqlite:'.$cacheDatabase;
 

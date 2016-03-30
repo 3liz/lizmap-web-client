@@ -11,5 +11,20 @@
     <div id="permalink-box">
       <a href="" target="_blank" id="permalink">{@view~map.permalink.title@}</a>
     </div>
+
+    {if $gbContent}
+    <br/>
+    <div id="geobookmark-container">
+      {$gbContent}
+    </div>
+
+    <div>
+      <form id="geobookmark-form">
+        <input type="text" name="bname" placeholder="{@view~map.permalink.geobookmark.name.placeholder@}">
+        <input type="submit" class="btn-geobookmark-add btn btn-mini" title="{@view~map.permalink.geobookmark.button.add@}" value="{@view~map.permalink.geobookmark.button.add@}"/>
+      </form>
+    </div>
+    {/if}
+
   </div>
 </div>

@@ -1,0 +1,34 @@
+lizMap.events.on({
+
+    'uicreated': function(e) {
+
+        // Layer name
+        var layername = 'tramway';
+
+        // New legend Image URL (to use after or instead of image)
+        var imageUrl = 'media/layer/trams/ligne3.jpg';
+
+        // Open legend at startup ?
+        var openLegend = true;
+
+        // Check is image is a media
+        var mediaRegex = /^(\/)?media\//;
+        if( mediaRegex.test( imageUrl ) ){
+            var mediaLink = OpenLayers.Util.urlAppend(
+                lizUrls.media,
+                OpenLayers.Util.getParameterString( lizUrls.params )
+            );
+            imageUrl = mediaLink+'&path=/'+imageUrl;
+        }
+
+        // Append image
+        var lSel = '#switcher table.tree tr#legend-' + layername + ' div.legendGraphics img';
+        $(lSel).parent().after( '<br/><img src="' + imageUrl + '">' );
+
+        // Open legend
+        if( openLegend )
+            $('#layer-'+layername+' td a.expander').click();
+
+    }
+
+});

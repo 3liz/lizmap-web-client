@@ -31,6 +31,7 @@ class adminModuleInstaller extends jInstallerModule {
             jAcl2DbManager::addSubject("lizmap.tools.edition.use",          "admin~jacl2.lizmap.tools.edition.use",         "lizmap.grp");
             jAcl2DbManager::addSubject("lizmap.tools.loginFilteredLayers.override","admin~jacl2.lizmap.tools.loginFilteredLayers.override","lizmap.grp");
             jAcl2DbManager::addSubject("lizmap.tools.displayGetCapabilitiesLinks","admin~jacl2.lizmap.tools.displayGetCapabilitiesLinks","lizmap.grp");
+            jAcl2DbManager::addSubject("lizmap.tools.layer.export","admin~jacl2.lizmap.tools.layer.export","lizmap.grp");
 
             jAcl2DbManager::addRight('admins', 'lizmap.admin.repositories.view');
             jAcl2DbManager::addRight('admins', 'lizmap.admin.services.view');

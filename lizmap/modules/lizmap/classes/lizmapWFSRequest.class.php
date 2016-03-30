@@ -12,14 +12,12 @@
 jClasses::inc('lizmap~lizmapProxy');
 jClasses::inc('lizmap~lizmapOGCRequest');
 class lizmapWFSRequest extends lizmapOGCRequest {
-    
+
     protected $tplExceptions = 'lizmap~wfs_exception';
-    
+
     protected function getcapabilities ( ) {
         $result = parent::getcapabilities();
-        if ( $result->cached )
-            return $result;
-        
+
         $data = $result->data;
         if ( empty( $data ) or floor( $result->code / 100 ) >= 4 ) {
             jMessage::add('Server Error !', 'Error');
@@ -28,7 +26,7 @@ class lizmapWFSRequest extends lizmapOGCRequest {
 
         if ( preg_match( '#ServiceExceptionReport#i', $data ) )
             return $result;
-        
+
         // Replace qgis server url in the XML (hide real location)
         $sUrl = jUrl::getFull(
           "lizmap~service:index",
@@ -41,14 +39,7 @@ class lizmapWFSRequest extends lizmapOGCRequest {
         if ( count( $matches ) > 1 )
             $data = str_replace($matches[1], $sUrl, $data);
         $data = str_replace('&amp;&amp;', '&amp;', $data);
-        
-        // Add response to cache
-        $cacheId = $this->repository->getKey().'_'.$this->project->getKey().'_'.$this->param('service');
-        $newhash = md5_file( realpath($this->repository->getPath()) . '/' . $this->project->getKey() . ".qgs" );
-        jCache::set($cacheId . '_hash', $newhash);
-        jCache::set($cacheId . '_mime', $result->mime);
-        jCache::set($cacheId . '_data', $data);
-        
+
         return (object) array(
             'code' => 200,
             'mime' => $result->mime,
@@ -56,7 +47,7 @@ class lizmapWFSRequest extends lizmapOGCRequest {
             'cached' => False
         );
     }
-    
+
     function describefeaturetype(){
         // Construction of the request url : base url + parameters
         $url = $this->services->wmsServerURL.'?';
@@ -72,7 +63,7 @@ class lizmapWFSRequest extends lizmapOGCRequest {
         $data = $getRemoteData[0];
         $mime = $getRemoteData[1];
         $code = $getRemoteData[2];
-        
+
         return (object) array(
             'code' => $code,
             'mime' => $mime,
@@ -80,7 +71,7 @@ class lizmapWFSRequest extends lizmapOGCRequest {
             'cached' => False
         );
     }
-    
+
     function getfeature() {
         // add outputformat if not provided
         $output = $this->param('outputformat');
@@ -113,7 +104,7 @@ class lizmapWFSRequest extends lizmapOGCRequest {
                 $data = json_encode( $layer );
             }
         }
-        
+
         return (object) array(
             'code' => $code,
             'mime' => $mime,

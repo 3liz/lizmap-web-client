@@ -64,6 +64,7 @@ var lizEdition = function() {
             // fill in the combobox containing editable layers
             var hasCreateLayers = false;
             for (var alName in config.editionLayers) {
+
                 var al = config.editionLayers[alName];
                 if (
                     al.capabilities.createFeature == "False"
@@ -216,18 +217,18 @@ var lizEdition = function() {
 
             });
 
-            lizMap.events.on({
-                dockopened: function(e) {
-                    if ( e.id == 'edition' ) {
-                        console.log('edition dock set visible');
-                    }
-                },
-                dockclosed: function(e) {
-                    if ( e.id == 'edition' ) {
-                        console.log('edition dock closed');
-                    }
-                }
-            });
+            //~ lizMap.events.on({
+                //~ dockopened: function(e) {
+                    //~ if ( e.id == 'edition' ) {
+                        //~ console.log('edition dock set visible');
+                    //~ }
+                //~ },
+                //~ dockclosed: function(e) {
+                    //~ if ( e.id == 'edition' ) {
+                        //~ console.log('edition dock closed');
+                    //~ }
+                //~ }
+            //~ });
 
             $('#edition-draw').click(function(){
                 // Do nothing if not enabled
@@ -262,11 +263,9 @@ var lizEdition = function() {
                 finishEdition();
             });
 
-            $('#edition-menu a[rel="tooltip"]').tooltip();
-
         } else {
             $('#edition').parent().remove();
-            $('#edition-menu').remove();
+            $('#button-edition').remove();
             $('#edition-form-container').hide();
         }
     }
@@ -406,6 +405,16 @@ var lizEdition = function() {
                 lizMap.addMessage(lizDict['edition.select.modify.activate'],'info',true).attr('id','lizmap-edition-message');
             }
 
+            // Send signal
+            lizMap.events.triggerEvent(
+                "lizmapeditionformdisplayed",
+                {
+                    'layerId': editionLayer['id'],
+                    'featureId': featureId,
+                    'editionConfig': editionLayer['config']
+                }
+            );
+
             if( aCallback )
                 aCallback( editionLayer['id'], featureId );
 
@@ -459,7 +468,17 @@ var lizEdition = function() {
             // Redraw layer
             if( editionLayer['spatial'] ){
                 $.each(lizMap.layers, function(i, l) {
-                    if (config.layers[l.params['LAYERS']].id != layerId)
+                    var qgisName = lizMap.getNameByCleanName(l.name);
+                    var layerConfig = null;
+                    if ( qgisName )
+                        layerConfig = config.layers[qgisName];
+                    if ( !layerConfig )
+                        layerConfig = config.layers[l.params['LAYERS']];
+                    if ( !layerConfig )
+                        layerConfig = config.layers[l.name];
+                    if ( !layerConfig )
+                        return true;
+                    if (layerConfig.id != layerId)
                         return true;
                     l.redraw(true);
                     return false;
@@ -473,6 +492,21 @@ var lizEdition = function() {
             lizMap.addMessage( data, 'info', true).attr('id','lizmap-edition-message');
 
         }
+
+        // Change form layout (from QGIS drag&drop form layout mode )
+        var formId = $('#edition-form-container form').attr('id');
+        // lizmapEditionFormLayoutJson is a global variable added through template
+        if( lizmapEditionFormLayoutJson && 'attributeEditorContainer' in lizmapEditionFormLayoutJson ){
+            var attributeTree = [];
+            var item = buildFormLayoutObj( attributeTree, lizmapEditionFormLayoutJson, 0, null );
+            $('#edition-form-tabbable').prependTo( $('form#'+formId) );
+            $('#edition-form-tabs li:first a').click().blur();
+
+            $('#edition-form-container').parent('div.menu-content').css('overflow-x','hidden');
+        }else{
+            $('#edition-form-tabbable').hide();
+        }
+
 
         $('#edition-form-container').show();
 
@@ -677,13 +711,150 @@ var lizEdition = function() {
             );
 
             $.each(lizMap.layers, function(i, l) {
-                if (config.layers[l.params['LAYERS']].id != aLayerId)
+                var qgisName = lizMap.getNameByCleanName(l.name);
+                var layerConfig = null;
+                if ( qgisName )
+                    layerConfig = config.layers[qgisName];
+                if ( !layerConfig )
+                    layerConfig = config.layers[l.params['LAYERS']];
+                if ( !layerConfig )
+                    layerConfig = config.layers[l.name];
+                if ( !layerConfig )
+                    return true;
+                if (layerConfig.id != layerId)
                     return true;
                 l.redraw(true);
                 return false;
             });
         });
         return false;
+    }
+
+
+    function getFormLayoutNodeInfo(aNode, depth){
+        var node = {};
+
+        // default type
+        if( depth % 2 == 0)
+            node['type'] = 'group';
+        else
+            node['type'] = 'tab';
+
+        // Get name if possible & check if it is a field
+        if( 'attributes' in aNode ){
+            node['name'] = aNode.attributes.name
+            if( 'index' in aNode.attributes ){
+                node['type'] = 'field';
+            }
+        }
+        // Root node
+        if ( depth == 0 ){
+            node['name'] = 'root';
+            node['type'] = 'root';
+        }
+
+        return node;
+
+    }
+
+    function getFormLayoutNodeChildren(aNode){
+
+        var children = [];
+        if( 'attributeEditorContainer' in aNode ){
+            children = children.concat(aNode.attributeEditorContainer);
+        }
+        if( 'attributeEditorField' in aNode ){
+            children = children.concat(aNode.attributeEditorField);
+        }
+        return children;
+
+    }
+
+    function buildFormLayoutObj(item, currentObj, depth, parent){
+            var node = getFormLayoutNodeInfo(currentObj, depth);
+            var children = getFormLayoutNodeChildren(currentObj);
+            var a = node;
+            a.depth = depth
+            a.children = [];
+            getFormLayoutNodeHtml(a, parent);
+            for ( var c in children ){
+                var child = children[c];
+                var b = buildFormLayoutObj(item, child, depth+1, a);
+                a['children'].push( b );
+            }
+
+            return a;
+
+    }
+
+
+    function getFormLayoutNodeHtml(node, parent){
+        var formId = $('#edition-form-container form').attr('id');
+        if( node.type == 'tab' ){
+
+            // Ul item for tab nav
+            var navHtml = '<li><a href="#edition-form-tab-';
+            navHtml+= lizMap.cleanName(node.name);
+            navHtml+= '" data-toggle="tab">' + node.name + '</a></li>';
+
+            // Tab item content
+            var tabHtml = '<div class="tab-pane" id="edition-form-tab-';
+            tabHtml+= lizMap.cleanName(node.name);
+            tabHtml+= '" ></div>';
+
+            // If parent is root, simply add ul and item to already existing tab container
+            if( parent.type == 'root'){
+                $( "#edition-form-tabs" ).append(navHtml);
+                $( "#edition-form-layout" ).append(tabHtml);
+            }
+            // Else we must first be sure tab container exists in parent group
+            // Then append containt
+            else{
+                var tabContainerNavId = 'edition-form-tabs-' + lizMap.cleanName(parent.name);
+                var tabContainerDivId = 'edition-form-layout-' + lizMap.cleanName(parent.name);
+                var parentGroup = $('#' + formId + '_group_' + lizMap.cleanName(parent.name) );
+                if( !$('#' + tabContainerNavId).length ){
+                    var tabContainer = '<ul class="nav nav-tabs" id="';
+                    tabContainer+= tabContainerNavId;
+                    tabContainer+= '"></ul>';
+                    tabContainer+= '<div class="tab-content" id="';
+                    tabContainer+= tabContainerDivId;
+                    tabContainer+= '"></div>';
+                    parentGroup.append(tabContainer);
+                }
+                $('#' + tabContainerNavId).append(navHtml);
+                $('#' + tabContainerDivId).append(tabHtml);
+                $('#' + tabContainerNavId + ' li:first a').click().blur();
+            }
+        }
+        else if( node.type == 'group' ){
+            html = '<fieldset>';
+            html+= '<legend style="font-weight:bold;">';
+            html+= node.name;
+            html+= '</legend>';
+            html+= '<div class="jforms-table-group" border="0" id="';
+            html+= formId + '_group_' + lizMap.cleanName(node.name);
+            html+= '">';
+            html+= '</div>';
+            html+= '</fieldset>';
+            $('#edition-form-tab-' + lizMap.cleanName(parent.name) ).append(html)
+        }
+        else if( node.type == 'field' ){
+            html = '';
+            var field = $('#' + formId + '_' + lizMap.cleanName(node.name) + '_label');
+            var fieldContainer = field.parents().closest('div.control-group');
+            var parentGroup = $('#' + formId + '_group_' + lizMap.cleanName(parent.name) );
+            if( !parentGroup.length )
+                parentGroup = $('#edition-form-tab-' + lizMap.cleanName(parent.name));
+            fieldContainer.appendTo(parentGroup);
+            // Do it also for _choice input (photos and files)
+            var field = $('#' + formId + '_' + lizMap.cleanName(node.name) + '_choice_label');
+            if( field.length){
+                var fieldContainer = field.parents().closest('div.control-group');
+                fieldContainer.appendTo(parentGroup);
+            }
+        }
+
     }
 
 
@@ -705,6 +876,100 @@ var lizEdition = function() {
             lizMap.deleteEditionFeature = function( aLayerId, aFid, aMessage, aCallback ){
                 return deleteEditionFeature( aLayerId, aFid, aMessage, aCallback );
             };
+
+            lizMap.events.on({
+                lizmappopupdisplayed: function(e) {
+                    var hasButton = false;
+                    // Add action buttons if needed
+                    $('#liz_layer_popup input.lizmap-popup-layer-feature-id').each(function(){
+                        var self = $(this);
+                        var val = self.val();
+                        var eHtml = '';
+                        var fid = val.split('.').pop();
+                        var layerId = val.replace( '.' + fid, '' );
+
+                        var getLayerConfig = lizMap.getLayerConfigById( layerId );
+
+                        // Edit button
+                        var eConfig = null;
+                        if( 'editionLayers' in config ) {
+                            eConfig = lizMap.getLayerConfigById(
+                                layerId,
+                                config.editionLayers,
+                                'layerId'
+                            );
+                        }
+
+                        if( eConfig &&
+                            ( eConfig[1].capabilities.modifyAttribute == "True" || eConfig[1].capabilities.modifyGeometry == "True" )
+                        ) {
+                            eHtml+= '<button class="btn btn-mini popup-layer-feature-edit" value="';
+                            eHtml+= $(this).val();
+                            eHtml+= '" title="' + lizDict['attributeLayers.btn.edit.title'] + '"><i class="icon-pencil"></i>&nbsp;</button>';
+                        }
+
+                        // Delete feature button
+                        if( eConfig && eConfig[1].capabilities.deleteFeature == "True") {
+                            eHtml+= '<button class="btn btn-mini popup-layer-feature-delete" value="';
+                            eHtml+= $(this).val();
+                            eHtml+= '" title="' + lizDict['attributeLayers.btn.delete.title'] + '"><i class="icon-remove"></i>&nbsp;</button>';
+                        }
+
+                        if( eHtml != '' ){
+                            var popupButtonBar = self.find('span.popupButtonBar');
+                            if ( popupButtonBar.length != 0 ) {
+                                popupButtonBar.append(eHtml);
+                            } else {
+                                eHtml = '<span class="popupButtonBar">' + eHtml + '</span>';
+                                self.after(eHtml);
+                            }
+                            self.find('button.btn').tooltip( {
+                                placement: 'bottom'
+                            } );
+                            hasButton = true;
+                        }
+
+                    });
+                    // Add interaction buttons
+                    if( hasButton ) {
+
+                        // edit
+                        $('#liz_layer_popup button.popup-layer-feature-edit')
+                        .click(function(){
+                            var fid = $(this).val().split('.').pop();
+                            var layerId = $(this).val().replace( '.' + fid, '' );
+
+                            // launch edition
+                            lizMap.launchEdition( layerId, fid );
+                            return false;
+                        })
+                        .hover(
+                            function(){ $(this).addClass('btn-primary'); },
+                            function(){ $(this).removeClass('btn-primary'); }
+                        );
+
+                        // delete
+                        $('#liz_layer_popup button.popup-layer-feature-delete').click(function(){
+                            var fid = $(this).val().split('.').pop();
+                            var layerId = $(this).val().replace( '.' + fid, '' );
+
+                            // remove Feature
+                            deleteEditionFeature( layerId, fid );
+
+                            // Remove map popup to avoid confusion
+                            if (lizMap.map.popups.length != 0)
+                                lizMap.map.removePopup( lizMap.map.popups[0] );
+
+                            return false;
+                        })
+                        .hover(
+                            function(){ $(this).addClass('btn-primary'); },
+                            function(){ $(this).removeClass('btn-primary'); }
+                        );
+
+                    }
+                }
+            });
 
 
         } // uicreated

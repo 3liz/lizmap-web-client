@@ -35,7 +35,7 @@
 
 <div id="content" class="container">
   <div class="row">
-    <div class="span4 offset4">
+    <div>
        {$MAIN}
     </div>
   </div>

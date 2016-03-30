@@ -90,9 +90,27 @@ class configCtrl extends jController {
     $xmlPath = jApp::appPath('project.xml');
     $xmlLoad = simplexml_load_file($xmlPath);
     $version = (string)$xmlLoad->info->version;
+    
+    
+    // Get the data
+    $services = lizmap::getServices();
+
+    // Create the form
+    $form = jForms::create('admin~config_services');
+    
+    // Set form data values
+    foreach($services->getProperties() as $ser){
+      $form->setData($ser, $services->$ser);
+      if($ser == 'allowUserAccountRequests')
+        if($services->$ser)
+          $form->setData($ser, 'on');
+        else
+          $form->setData($ser, 'off');
+    }
 
     $tpl = new jTpl();
     $tpl->assign('services',lizmap::getServices());
+    $tpl->assign('servicesForm',$form);
     $tpl->assign('repositories', $repositories);
     $tpl->assign('data', $data);
     $tpl->assign('labels', $labels);
@@ -619,7 +637,7 @@ class configCtrl extends jController {
     // Check paths
     if(in_array('path', lizmap::getRepositoryProperties())) {
       $npath = $form->getData('path');
-      if ($npath[0] != '/')
+      if ($npath[0] != '/' and $npath[1] != ':')
         $npath = jApp::varPath().$npath;
       if(!file_exists($npath) or !is_dir($npath) ){
         $form->setErrorOn('path', jLocale::get("admin~admin.form.admin_section.message.path.wrong"));

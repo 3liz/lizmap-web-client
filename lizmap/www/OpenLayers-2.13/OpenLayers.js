@@ -27,22 +27,22 @@
  * OpenLayers.Util.pagePosition is based on Yahoo's getXY method, which is
  * Copyright (c) 2006, Yahoo! Inc.
  * All rights reserved.
- * 
+ *
  * Redistribution and use of this software in source and binary forms, with or
  * without modification, are permitted provided that the following conditions
  * are met:
- * 
+ *
  * * Redistributions of source code must retain the above copyright notice,
  *   this list of conditions and the following disclaimer.
- * 
+ *
  * * Redistributions in binary form must reproduce the above copyright notice,
  *   this list of conditions and the following disclaimer in the documentation
  *   and/or other materials provided with the distribution.
- * 
+ *
  * * Neither the name of Yahoo! Inc. nor the names of its contributors may be
  *   used to endorse or promote products derived from this software without
  *   specific prior written permission of Yahoo! Inc.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -52,7 +52,7 @@
  * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
  * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
  * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
- * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE 
+ * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
 var OpenLayers={VERSION_NUMBER:"Release 2.13.1",singleFile:!0,_getScriptLocation:function(){for(var a=/(^|(.*?\/))(OpenLayers[^\/]*?\.js)(\?|$)/,b=document.getElementsByTagName("script"),c,d="",e=0,f=b.length;e<f;e++)if(c=b[e].getAttribute("src"))if(c=c.match(a)){d=c[1];break}return function(){return d}}(),ImgPath:""};OpenLayers.Class=function(){var a=arguments.length,b=arguments[0],c=arguments[a-1],d="function"==typeof c.initialize?c.initialize:function(){b.prototype.initialize.apply(this,arguments)};1<a?(a=[d,b].concat(Array.prototype.slice.call(arguments).slice(1,a-1),c),OpenLayers.inherit.apply(null,a)):d.prototype=c;return d};
@@ -266,7 +266,7 @@ a.y));return b},CLASS_NAME:"OpenLayers.Layer.EventPane"});OpenLayers.Layer.Fixed
 this.maxZoomLevel-this.minZoomLevel+1:this.numZoomLevels;this.numZoomLevels=null!=b?Math.min(b,a):a;this.maxZoomLevel=this.minZoomLevel+this.numZoomLevels-1;if(null!=this.RESOLUTIONS){a=0;this.resolutions=[];for(b=this.minZoomLevel;b<=this.maxZoomLevel;b++)this.resolutions[a++]=this.RESOLUTIONS[b];this.maxResolution=this.resolutions[0];this.minResolution=this.resolutions[this.resolutions.length-1]}},getResolution:function(){if(null!=this.resolutions)return OpenLayers.Layer.prototype.getResolution.apply(this,
 arguments);var a=null,b=this.map.getSize(),c=this.getExtent();null!=b&&null!=c&&(a=Math.max(c.getWidth()/b.w,c.getHeight()/b.h));return a},getExtent:function(){var a=this.map.getSize(),b=this.getLonLatFromViewPortPx({x:0,y:0}),a=this.getLonLatFromViewPortPx({x:a.w,y:a.h});return null!=b&&null!=a?new OpenLayers.Bounds(b.lon,a.lat,a.lon,b.lat):null},getZoomForResolution:function(a){if(null!=this.resolutions)return OpenLayers.Layer.prototype.getZoomForResolution.apply(this,arguments);var b=OpenLayers.Layer.prototype.getExtent.apply(this,
 []);return this.getZoomForExtent(b)},getOLZoomFromMapObjectZoom:function(a){var b=null;null!=a&&(b=a-this.minZoomLevel,this.map.baseLayer!==this&&(b=this.map.baseLayer.getZoomForResolution(this.getResolutionForZoom(b))));return b},getMapObjectZoomFromOLZoom:function(a){var b=null;null!=a&&(b=a+this.minZoomLevel,this.map.baseLayer!==this&&(b=this.getZoomForResolution(this.map.baseLayer.getResolutionForZoom(b))));return b},CLASS_NAME:"OpenLayers.Layer.FixedZoomLevels"});OpenLayers.Layer.Google=OpenLayers.Class(OpenLayers.Layer.EventPane,OpenLayers.Layer.FixedZoomLevels,{MIN_ZOOM_LEVEL:0,MAX_ZOOM_LEVEL:21,RESOLUTIONS:[1.40625,0.703125,0.3515625,0.17578125,0.087890625,0.0439453125,0.02197265625,0.010986328125,0.0054931640625,0.00274658203125,0.001373291015625,6.866455078125E-4,3.4332275390625E-4,1.71661376953125E-4,8.58306884765625E-5,4.291534423828125E-5,2.145767211914062E-5,1.072883605957031E-5,5.36441802978515E-6,2.68220901489257E-6,1.341104507446289E-6,6.705522537231445E-7],
-type:null,wrapDateLine:!0,sphericalMercator:!1,version:null,initialize:function(a,b){b=b||{};b.version||(b.version="function"===typeof GMap2?"2":"3");var c=OpenLayers.Layer.Google["v"+b.version.replace(/\./g,"_")];if(c)OpenLayers.Util.applyDefaults(b,c);else throw"Unsupported Google Maps API version: "+b.version;OpenLayers.Util.applyDefaults(b,c.DEFAULTS);b.maxExtent&&(b.maxExtent=b.maxExtent.clone());OpenLayers.Layer.EventPane.prototype.initialize.apply(this,[a,b]);OpenLayers.Layer.FixedZoomLevels.prototype.initialize.apply(this,
+type:null,wrapDateLine:!0,sphericalMercator:!1,useTiltImages:!1,version:null,initialize:function(a,b){b=b||{};b.version||(b.version="function"===typeof GMap2?"2":"3");var c=OpenLayers.Layer.Google["v"+b.version.replace(/\./g,"_")];if(c)OpenLayers.Util.applyDefaults(b,c);else throw"Unsupported Google Maps API version: "+b.version;OpenLayers.Util.applyDefaults(b,c.DEFAULTS);b.maxExtent&&(b.maxExtent=b.maxExtent.clone());OpenLayers.Layer.EventPane.prototype.initialize.apply(this,[a,b]);OpenLayers.Layer.FixedZoomLevels.prototype.initialize.apply(this,
 [a,b]);this.sphericalMercator&&(OpenLayers.Util.extend(this,OpenLayers.Layer.SphericalMercator),this.initMercatorParameters())},clone:function(){return new OpenLayers.Layer.Google(this.name,this.getOptions())},setVisibility:function(a){var b=null==this.opacity?1:this.opacity;OpenLayers.Layer.EventPane.prototype.setVisibility.apply(this,arguments);this.setOpacity(b)},display:function(a){this._dragging||this.setGMapVisibility(a);OpenLayers.Layer.EventPane.prototype.display.apply(this,arguments)},moveTo:function(a,
 b,c){this._dragging=c;OpenLayers.Layer.EventPane.prototype.moveTo.apply(this,arguments);delete this._dragging},setOpacity:function(a){a!==this.opacity&&(null!=this.map&&this.map.events.triggerEvent("changelayer",{layer:this,property:"opacity"}),this.opacity=a);if(this.getVisibility()){var b=this.getMapContainer();OpenLayers.Util.modifyDOMElement(b,null,null,null,null,null,null,a)}},destroy:function(){if(this.map){this.setGMapVisibility(!1);var a=OpenLayers.Layer.Google.cache[this.map.id];a&&1>=a.count&&
 this.removeGMapElements()}OpenLayers.Layer.EventPane.prototype.destroy.apply(this,arguments)},removeGMapElements:function(){var a=OpenLayers.Layer.Google.cache[this.map.id];if(a){var b=this.mapObject&&this.getMapContainer();b&&b.parentNode&&b.parentNode.removeChild(b);(b=a.termsOfUse)&&b.parentNode&&b.parentNode.removeChild(b);(a=a.poweredBy)&&a.parentNode&&a.parentNode.removeChild(a);this.mapObject&&(window.google&&google.maps&&google.maps.event&&google.maps.event.clearListeners)&&google.maps.event.clearListeners(this.mapObject,
@@ -1077,9 +1077,9 @@ var b=this.getZoom(),c=this.map.getMaxExtent(),d=this.lzd/Math.pow(2,this.getZoo
 p;n++){var q=d.dimensions[n];l.push(q.identifier);m.hasOwnProperty(q.identifier)||(m[q.identifier]=q["default"])}var n=b.projection||h.supportedCRS.replace(/urn:ogc:def:crs:(\w+):(.*:)?(\w+)$/,"$1:$3"),p=b.units||("EPSG:4326"===n?"degrees":"m"),q=[],r;for(r in h.matrixIds)h.matrixIds.hasOwnProperty(r)&&q.push(2.8E-4*h.matrixIds[r].scaleDenominator/OpenLayers.METERS_PER_INCH/OpenLayers.INCHES_PER_UNIT[p]);if("REST"===c&&d.resourceUrls){r=[];for(var f=0,s=d.resourceUrls.length;f<s;++f)e=d.resourceUrls[f],
 e.format===g&&"tile"===e.resourceType&&r.push(e.template)}else{s=a.operationsMetadata.GetTile.dcp.http.get;r=[];for(var t,e=0,f=s.length;e<f;e++)t=s[e].constraints,(!t||t&&t.GetEncoding.allowedValues[c])&&r.push(s[e].url)}return new OpenLayers.Layer.WMTS(OpenLayers.Util.applyDefaults(b,{url:r,requestEncoding:c,name:d.title,style:k.identifier,format:g,matrixIds:h.matrixIds,matrixSet:h.identifier,projection:n,units:p,resolutions:!1===b.isBaseLayer?void 0:q,serverResolutions:q,tileFullExtent:h.bounds,
 dimensions:l,params:m}))},CLASS_NAME:"OpenLayers.Format.WMTSCapabilities"});OpenLayers.Layer.Google.v3={DEFAULTS:{sphericalMercator:!0,projection:"EPSG:900913"},animationEnabled:!0,loadMapObject:function(){this.type||(this.type=google.maps.MapTypeId.ROADMAP);var a,b=OpenLayers.Layer.Google.cache[this.map.id];b?(a=b.mapObject,++b.count):(a=this.map.getCenter(),b=document.createElement("div"),b.className="olForeignContainer",b.style.width="100%",b.style.height="100%",a=new google.maps.Map(b,{center:a?new google.maps.LatLng(a.lat,a.lon):new google.maps.LatLng(0,0),zoom:this.map.getZoom()||
-0,mapTypeId:this.type,disableDefaultUI:!0,keyboardShortcuts:!1,draggable:!1,disableDoubleClickZoom:!0,scrollwheel:!1,streetViewControl:!1}),b=document.createElement("div"),b.style.width="100%",b.style.height="100%",a.controls[google.maps.ControlPosition.TOP_LEFT].push(b),b={googleControl:b,mapObject:a,count:1},OpenLayers.Layer.Google.cache[this.map.id]=b);this.mapObject=a;this.setGMapVisibility(this.visibility)},onMapResize:function(){this.visibility&&google.maps.event.trigger(this.mapObject,"resize")},
-setGMapVisibility:function(a){var b=OpenLayers.Layer.Google.cache[this.map.id],c=this.map;if(b){for(var d=this.type,e=c.layers,f,g=e.length-1;0<=g;--g)if(f=e[g],f instanceof OpenLayers.Layer.Google&&!0===f.visibility&&!0===f.inRange){d=f.type;a=!0;break}e=this.mapObject.getDiv();if(!0===a){if(e.parentNode!==c.div)if(b.rendered)c.div.appendChild(e),b.googleControl.appendChild(c.viewPortDiv),google.maps.event.trigger(this.mapObject,"resize");else{var h=this;google.maps.event.addListenerOnce(this.mapObject,
-"tilesloaded",function(){b.rendered=!0;h.setGMapVisibility(h.getVisibility());h.moveTo(h.map.getCenter())})}this.mapObject.setMapTypeId(d)}else b.googleControl.hasChildNodes()&&(c.div.appendChild(c.viewPortDiv),c.div.removeChild(e))}},getMapContainer:function(){return this.mapObject.getDiv()},getMapObjectBoundsFromOLBounds:function(a){var b=null;null!=a&&(b=this.sphericalMercator?this.inverseMercator(a.bottom,a.left):new OpenLayers.LonLat(a.bottom,a.left),a=this.sphericalMercator?this.inverseMercator(a.top,
+0,mapTypeId:this.type,disableDefaultUI:!0,keyboardShortcuts:!1,draggable:!1,disableDoubleClickZoom:!0,scrollwheel:!1,streetViewControl:!1,tilt:(this.useTiltImages?45:0)}),b=document.createElement("div"),b.style.width="100%",b.style.height="100%",a.controls[google.maps.ControlPosition.TOP_LEFT].push(b),b={googleControl:b,mapObject:a,count:1},OpenLayers.Layer.Google.cache[this.map.id]=b);this.mapObject=a;this.setGMapVisibility(this.visibility)},onMapResize:function(){this.visibility&&google.maps.event.trigger(this.mapObject,"resize")},
+setGMapVisibility:function(a){var b=OpenLayers.Layer.Google.cache[this.map.id],c=this.map;if(b){for(var d=this.type,e=c.layers,f,g=e.length-1;0<=g;--g)if(f=e[g],f instanceof OpenLayers.Layer.Google&&!0===f.visibility&&!0===f.inRange){d=f.type;a=!0;break}e=this.mapObject.getDiv();if(!0===a){if(e.parentNode!==c.div){if(b.rendered)b.googleControl.appendChild(c.viewPortDiv);else{var h=this;google.maps.event.addListenerOnce(this.mapObject,
+"tilesloaded",function(){b.rendered=!0;h.setGMapVisibility(h.getVisibility());h.moveTo(h.map.getCenter());b.googleControl.appendChild(c.viewPortDiv)})}c.div.appendChild(e);google.maps.event.trigger(this.mapObject,"resize")}this.mapObject.setMapTypeId(d)}else b.googleControl.hasChildNodes()&&(c.div.appendChild(c.viewPortDiv),c.div.removeChild(e))}},getMapContainer:function(){return this.mapObject.getDiv()},getMapObjectBoundsFromOLBounds:function(a){var b=null;null!=a&&(b=this.sphericalMercator?this.inverseMercator(a.bottom,a.left):new OpenLayers.LonLat(a.bottom,a.left),a=this.sphericalMercator?this.inverseMercator(a.top,
 a.right):new OpenLayers.LonLat(a.top,a.right),b=new google.maps.LatLngBounds(new google.maps.LatLng(b.lat,b.lon),new google.maps.LatLng(a.lat,a.lon)));return b},getMapObjectLonLatFromMapObjectPixel:function(a){var b=this.map.getSize(),c=this.getLongitudeFromMapObjectLonLat(this.mapObject.center),d=this.getLatitudeFromMapObjectLonLat(this.mapObject.center),e=this.map.getResolution();a=new OpenLayers.LonLat(c+(a.x-b.w/2)*e,d-(a.y-b.h/2)*e);this.wrapDateLine&&(a=a.wrapDateLine(this.maxExtent));return this.getMapObjectLonLatFromLonLat(a.lon,
 a.lat)},getMapObjectPixelFromMapObjectLonLat:function(a){var b=this.getLongitudeFromMapObjectLonLat(a);a=this.getLatitudeFromMapObjectLonLat(a);var c=this.map.getResolution(),d=this.map.getExtent();return this.getMapObjectPixelFromXY(1/c*(b-d.left),1/c*(d.top-a))},setMapObjectCenter:function(a,b){if(!1===this.animationEnabled&&b!=this.mapObject.zoom){var c=this.getMapContainer();google.maps.event.addListenerOnce(this.mapObject,"idle",function(){c.style.visibility=""});c.style.visibility="hidden"}this.mapObject.setOptions({center:a,
 zoom:b})},getMapObjectZoomFromMapObjectBounds:function(a){return this.mapObject.getBoundsZoomLevel(a)},getMapObjectLonLatFromLonLat:function(a,b){var c;this.sphericalMercator?(c=this.inverseMercator(a,b),c=new google.maps.LatLng(c.lat,c.lon)):c=new google.maps.LatLng(b,a);return c},getMapObjectPixelFromXY:function(a,b){return new google.maps.Point(a,b)}};OpenLayers.Format.WPSDescribeProcess=OpenLayers.Class(OpenLayers.Format.XML,{VERSION:"1.0.0",namespaces:{wps:"http://www.opengis.net/wps/1.0.0",ows:"http://www.opengis.net/ows/1.1",xsi:"http://www.w3.org/2001/XMLSchema-instance"},schemaLocation:"http://www.opengis.net/wps/1.0.0 http://schemas.opengis.net/wps/1.0.0/wpsAll.xsd",defaultPrefix:"wps",regExes:{trimSpace:/^\s*|\s*$/g,removeSpace:/\s*/g,splitSpace:/\s+/,trimComma:/\s*,\s*/g},read:function(a){"string"==typeof a&&(a=OpenLayers.Format.XML.prototype.read.apply(this,
@@ -1114,23 +1114,23 @@ a.DistributedSearch||this.DistributedSearch,b);var c=a.ResponseHandler||this.Res
 (a={});var b=this.createElementNSPlus("csw:Query",{attributes:{typeNames:a.typeNames||"csw:Record"}}),c=a.ElementName;if(OpenLayers.Util.isArray(c)&&0<c.length)for(var d=0,e=c.length;d<e;d++)this.writeNode("csw:ElementName",c[d],b);else this.writeNode("csw:ElementSetName",a.ElementSetName||{value:"summary"},b);a.Constraint&&this.writeNode("csw:Constraint",a.Constraint,b);a.SortBy&&this.writeNode("ogc:SortBy",a.SortBy,b);return b},ElementName:function(a){return this.createElementNSPlus("csw:ElementName",
 {value:a.value})},ElementSetName:function(a){return this.createElementNSPlus("csw:ElementSetName",{attributes:{typeNames:a.typeNames},value:a.value})},Constraint:function(a){var b=this.createElementNSPlus("csw:Constraint",{attributes:{version:a.version}});if(a.Filter){var c=new OpenLayers.Format.Filter({version:a.version});b.appendChild(c.write(a.Filter))}else a.CqlText&&(a=this.createElementNSPlus("CqlText",{value:a.CqlText.value}),b.appendChild(a));return b}},ogc:OpenLayers.Format.Filter.v1_1_0.prototype.writers.ogc},
 CLASS_NAME:"OpenLayers.Format.CSWGetRecords.v2_0_2"});/*
- Apache 2 
+ Apache 2
 
  Contains portions of Rico <http://openrico.org/>
 
- Copyright 2005 Sabre Airline Solutions  
+ Copyright 2005 Sabre Airline Solutions
 
  Licensed under the Apache License, Version 2.0 (the "License"); you
  may not use this file except in compliance with the License. You
  may obtain a copy of the License at
 
-     http://www.apache.org/licenses/LICENSE-2.0  
+     http://www.apache.org/licenses/LICENSE-2.0
 
  Unless required by applicable law or agreed to in writing, software
  distributed under the License is distributed on an "AS IS" BASIS,
  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or
  implied. See the License for the specific language governing
- permissions and limitations under the License. 
+ permissions and limitations under the License.
 */
 OpenLayers.Marker.Box=OpenLayers.Class(OpenLayers.Marker,{bounds:null,div:null,initialize:function(a,b,c){this.bounds=a;this.div=OpenLayers.Util.createDiv();this.div.style.overflow="hidden";this.events=new OpenLayers.Events(this,this.div);this.setBorder(b,c)},destroy:function(){this.div=this.bounds=null;OpenLayers.Marker.prototype.destroy.apply(this,arguments)},setBorder:function(a,b){a||(a="red");b||(b=2);this.div.style.border=b+"px solid "+a},draw:function(a,b){OpenLayers.Util.modifyDOMElement(this.div,
 null,a,b);return this.div},onScreen:function(){var a=!1;this.map&&(a=this.map.getExtent().containsBounds(this.bounds,!0,!0));return a},display:function(a){this.div.style.display=a?"":"none"},CLASS_NAME:"OpenLayers.Marker.Box"});OpenLayers.Format.Text=OpenLayers.Class(OpenLayers.Format,{defaultStyle:null,extractStyles:!0,initialize:function(a){a=a||{};!1!==a.extractStyles&&(a.defaultStyle={externalGraphic:OpenLayers.Util.getImageLocation("marker.png"),graphicWidth:21,graphicHeight:25,graphicXOffset:-10.5,graphicYOffset:-12.5});OpenLayers.Format.prototype.initialize.apply(this,[a])},read:function(a){a=a.split("\n");for(var b,c=[],d=0;d<a.length-1;d++){var e=a[d].replace(/^\s*/,"").replace(/\s*$/,"");if("#"!=e.charAt(0))if(b){for(var e=

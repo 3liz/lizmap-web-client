@@ -67,11 +67,11 @@ cache_dir=
 file_locking=1
 ; directory level. Set the directory structure level. 0 means "no directory structure", 1 means "one level of directory", 2 means "two levels"...
 directory_level=0
-; umask for directory structure (default '0700')
+; umask for directory structure (default jelix one : 0775)
 directory_umask=
 ; prefix for cache files (default 'jelix_cache')
 file_name_prefix=
-; umask for cache files (default '0600')
+; umask for cache files (default jelix one: 0664)
 cache_file_umask=
 
 ; Parameters for db driver :

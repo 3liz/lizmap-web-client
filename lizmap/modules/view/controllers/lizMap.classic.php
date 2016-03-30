@@ -11,7 +11,7 @@
 
 class lizMapCtrl extends jController {
 
-  // forceHiddenProjectVisible : Used to ovverride plugin configuration hideProject 
+  // forceHiddenProjectVisible : Used to ovverride plugin configuration hideProject
   // ( helpfull for modules which maps are based on a hidden project )
   protected $forceHiddenProjectVisible = false;
 
@@ -73,9 +73,9 @@ class lizMapCtrl extends jController {
       }
     }
 
+    $pOptions = $lproj->getOptions();
     // Redirect if project is hidden (lizmap plugin option)
     if($ok and !$this->forceHiddenProjectVisible ){
-      $pOptions = $lproj->getOptions();
       if (
           property_exists($pOptions,'hideProject')
           && $pOptions->hideProject == 'True'
@@ -98,13 +98,15 @@ class lizMapCtrl extends jController {
     if ( $lproj->needsGoogle() ) {
       $googleKey = $lproj->getGoogleKey();
       if ( $googleKey != '' )
-        $rep->addJSLink('https://maps.google.com/maps/api/js?v=3.5&sensor=false&key='.$googleKey);
+        $rep->addJSLink('https://maps.google.com/maps/api/js?v=3&key='.$googleKey);
       else
-        $rep->addJSLink('https://maps.google.com/maps/api/js?v=3.5&sensor=false');
+        $rep->addJSLink('https://maps.google.com/maps/api/js?v=3');
     }
 
     // Add the jForms js
     $bp = jApp::config()->urlengine['basePath'];
+    $jq = jApp::config()->urlengine['jqueryPath'];
+    $rep->addJSLink($jq.'include/jquery.include.js');
     $rep->addJSLink($bp.'jelix/js/jforms_jquery.js');
     $rep->addJSLink($bp.'jelix/js/jforms/datepickers/default/init.js');
     $rep->addJSLink($bp.'jelix/js/jforms/datepickers/default/ui.en.js');
@@ -124,7 +126,9 @@ class lizMapCtrl extends jController {
       "ign" => jUrl::get('lizmap~ign:address'),
       "edition" => jUrl::get('lizmap~edition:getFeature'),
       "permalink" => jUrl::getFull('view~map:index'),
-      "dataTableLanguage"=> $bp.'js/dataTables/'.jApp::config()->locale.'.json'
+      "dataTableLanguage"=> $bp.'js/dataTables/'.jApp::config()->locale.'.json',
+      "basepath" => $bp,
+      "geobookmark" => jUrl::get('lizmap~geobookmark:index')
     );
 
     // Get optionnal WMS public url list
@@ -147,17 +151,18 @@ class lizMapCtrl extends jController {
 
     // Get the WMS information
     $wmsInfo = $lproj->getWMSInformation();
-
     // Set page title from projet title
+    $title = $project;
     if( $wmsInfo['WMSServiceTitle'] != '' )
-      $rep->title = $wmsInfo['WMSServiceTitle'];
-    else
-      $rep->title = $repository.' - '.$project;
+      $title = $wmsInfo['WMSServiceTitle'];
 
-    // Add Timemanager
+    $title .= ' - '.$lrep->getData('label');
+    $title .= ' - '. $lser->appName;
+    $rep->title = $title;
+
+    // Add date.js for timemanager
     if( $lproj->hasTimemanagerLayers() ) {
         $rep->addJSLink($bp.'js/date.js');
-        $rep->addJSLink($bp.'js/timemanager.js');
     }
 
     // Assign variables to template
@@ -204,7 +209,7 @@ class lizMapCtrl extends jController {
     $rep->addCssLink($themePath.'css/media.css');
 
     // Add dockable css
-    foreach( $assign['dockable'] as $d ) {
+    foreach( array_merge($assign['dockable'], $assign['minidockable'], $assign['bottomdockable'] ) as $d ) {
         if ( $d->css != '' )
           $rep->addCssLink( $d->css );
     }
@@ -238,11 +243,13 @@ class lizMapCtrl extends jController {
       // Add JS files found in media/js
       $jsDirArray = array('default', $project);
       foreach( $jsDirArray as $dir ){
+        $jsUrls = array();
+        $cssUrls = array();
         $jsPathRoot = realpath($repositoryPath . '/' . 'media/js/' . $dir);
         if( is_dir( $jsPathRoot ) ) {
           foreach (new RecursiveIteratorIterator(new RecursiveDirectoryIterator($jsPathRoot)) as $filename){
             $path_parts = pathinfo($filename);
-            if( $path_parts['extension'] == 'js' ){
+            if( $path_parts['extension'] == 'js' or $path_parts['extension'] == 'css' ){
               $jsPath = realpath( $filename );
               $jsRelPath = 'media/js/' . $dir . str_replace( $jsPathRoot, '', $jsPath);
               $jsUrl = jUrl::get(
@@ -253,15 +260,24 @@ class lizMapCtrl extends jController {
                   'path'=>$jsRelPath
                 )
               );
-              //~ $rep->addJSLink( $jsUrl );
-              // Use addHeadContent and not addJSLink to be sure it will be loaded after minified code
-              $rep->addContent('<script type="text/javascript" src="'.$jsUrl.'" ></script>');
-
-
+              if($path_parts['extension'] == 'js')
+                $jsUrls[] = $jsUrl;
+              else
+                $cssUrls[] = $jsUrl;
             }
           }
         }
 
+        // Add CSS and JS files orderd by name
+        sort($cssUrls);
+        foreach( $cssUrls as $cssUrl ){
+          $rep->addCSSLink( $cssUrl );
+        }
+        sort($jsUrls);
+        foreach( $jsUrls as $jsUrl ){
+          // Use addHeadContent and not addJSLink to be sure it will be loaded after minified code
+          $rep->addContent('<script type="text/javascript" src="'.$jsUrl.'" ></script>');
+        }
       }
 
     }
@@ -388,6 +404,11 @@ class lizMapCtrl extends jController {
 
     // switcher-layers-actions javascript
     $rep->addJSLink( $bp.'js/switcher-layers-actions.js' );
+
+    // Add Google Analytics ID
+    $assign['googleAnalyticsID'] = '';
+    if($lser->googleAnalyticsID != '' && preg_match("/^UA-\d+-\d+$/", $lser->googleAnalyticsID) == 1 )
+      $assign['googleAnalyticsID'] = $lser->googleAnalyticsID;
 
     $rep->body->assign($assign);
 

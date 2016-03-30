@@ -1,5 +1,9 @@
 var lizLayerActionButtons = function() {
 
+    var tooltipControl = null;
+    var tooltipLayers = [];
+    var featureTypes = null;
+
     function fillSubDock( html ){
         $('#sub-dock').html( html );
         $('#sub-dock i.close').click(function(){
@@ -83,11 +87,12 @@ var lizLayerActionButtons = function() {
             if( !eName )
                 return false;
 
-            var getLayer = lizMap.map.getLayersByName( eName );
+            var cleanName = lizMap.cleanName(eName);
+            var getLayer = lizMap.map.getLayersByName( cleanName );
             if( !getLayer )
                 return false;
 
-            var oLayer = lizMap.map.getLayersByName( eName )[0];
+            var oLayer = lizMap.map.getLayersByName( cleanName )[0];
             if( oLayer && eStyle != ''){
                 oLayer.params['STYLES'] = eStyle;
                 oLayer.redraw( true );
@@ -107,8 +112,13 @@ var lizLayerActionButtons = function() {
 
     'uicreated': function(evt){
 
+        featureTypes = lizMap.getVectorLayerFeatureTypes();
+
         // title tooltip
-        $('#switcher-layers-actions .btn').tooltip( {placement: 'bottom'} );
+        $('#switcher-layers-actions .btn').tooltip( {
+            placement: 'bottom'
+
+        } );
 
         // Activate switcher-layers-actions button
         $('#layerActionMetadata').click(function(){
@@ -127,13 +137,14 @@ var lizLayerActionButtons = function() {
                 }
                 fillSubDock( html );
                 $('#sub-dock').show();
+                $(this).addClass('active');
             }else{
                 $('#sub-dock').hide().html( '' );
+                $(this).removeClass('active');
             }
 
             return false;
         });
-
 
         $('#layerActionZoom').click(function(){
             var layerName = $(this).val();
@@ -161,6 +172,21 @@ var lizLayerActionButtons = function() {
             lizMap.map.zoomToExtent( lBounds );
             return false;
         });
+
+        if ( 'exportLayers' in lizMap.config.options && lizMap.config.options.exportLayers == 'True' ) {
+            var exportFormats = lizMap.getVectorLayerResultFormat();
+            var exportHTML = '';
+            for ( var i=0, len=exportFormats.length; i<len; i++ ) {
+                var format = exportFormats[i].tagName;
+                if ( format != 'GML2' && format != 'GML3' && format != 'GEOJSON' ) {
+                    exportHTML += '        <li><a href="#" class="btn-export-layer">'+format+'</a></li>';
+                }
+            }
+            if ( exportHTML != '' )
+                $('#layerActionExport ~ ul.dropdown-menu').append(exportHTML);
+        } else {
+            $('#layerActionExport').parent().remove();
+        }
 
         // Export action
         $('#switcher-layers-actions a.btn-export-layer').click(function(){
@@ -227,15 +253,20 @@ var lizLayerActionButtons = function() {
         // Export layer
         // Only if layer is in attribute table
         var showExport = false;
-        if(
-            itemType == 'layer'
+
+        if( featureTypes.length != 0
+            && itemType == 'layer'
             && itemSelected
-            && 'attributeLayers' in lizMap.config
-            && itemName in lizMap.config.attributeLayers
-            && itemConfig['geometryType'] != 'none'
-            && itemConfig['geometryType'] != 'unknown'
+            && itemName
         ){
-            showExport = true;
+            featureTypes.each( function(){
+                var self = $(this);
+                var typeName = self.find('Name').text();
+                if ( typeName == itemName )
+                    showExport = true;
+                else if (typeName == itemName.split(' ').join('_') )
+                    showExport = true;
+            });
         }
         $('#layerActionExport').attr( 'disable', !showExport ).toggleClass( 'disabled', !showExport );
 
@@ -267,6 +298,7 @@ var lizLayerActionButtons = function() {
                 fillSubDock( html );
             }else{
                 $('#sub-dock').hide();
+                $('#layerActionMetadata').removeClass('active');
             }
         }
 

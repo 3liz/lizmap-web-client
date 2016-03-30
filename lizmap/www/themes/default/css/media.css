@@ -34,7 +34,6 @@ only screen and (                   max-device-height : 640px) {
   #logo {
     height : 30px;
     margin: 0px 5px;
-    background : none;
   }
   #logo h1 {
     font-size : 1.5em;
@@ -53,14 +52,8 @@ only screen and (                   max-device-height : 640px) {
     line-height: 30px;
   }
   #headermenu{
-/*    height:30px;*/
+    height:30px;
     position: fixed;
-    top: 30px;
-  }
-  #auth {
-    position: absolute;
-    top: -30px;
-    right: 5px;
   }
   .navbar-inner {
     min-height:30px;

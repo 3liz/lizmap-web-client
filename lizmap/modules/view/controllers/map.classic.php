@@ -12,4 +12,22 @@
 include jApp::getModulePath('view').'controllers/lizMap.classic.php';
 
 class mapCtrl extends lizMapCtrl {
+
+    function index() {
+        $rep = parent::index();
+
+        if ( $rep->getType() != 'html' )
+            return $rep;
+
+        $rep->body->assign('auth_url_return',
+            jUrl::get('view~map:index',
+                array(
+                    "repository"=>$repository,
+                    "project"=>$project,
+                )
+            )
+        );
+
+        return $rep;
+    }
 }

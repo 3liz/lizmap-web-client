@@ -206,15 +206,25 @@ class serviceCtrl extends jController {
     if( $lproj->hasLoginFilteredLayers()
       and $pConfig->loginFilteredLayers
     ){
+      // Add client side filter before changing it server side
       $v='';
       $filter='';
+      $clientExpFilter = Null;
+      if( array_key_exists('exp_filter', $this->params))
+        $clientExpFilter = $this->params['exp_filter'];
+      $clientFilter = Null;
+      if( array_key_exists('filter', $this->params))
+        $clientFilter = $this->params['filter'];
+
+      // Check if a user is authenticated
+      $isConnected = jAuth::isConnected();
+
+      // Check need for filter foreach layer
       foreach(explode(',', $layers) as $layername){
         if( property_exists($pConfig->loginFilteredLayers, $layername) ) {
           $oAttribute = $pConfig->loginFilteredLayers->$layername->filterAttribute;
           $attribute = strtolower($oAttribute);
 
-          // Check if a user is authenticated
-          $isConnected = jAuth::isConnected();
           $pre = "$layername:";
           if($request == 'getfeature')
             $pre = '';
@@ -222,7 +232,7 @@ class serviceCtrl extends jController {
             $user = jAuth::getUserSession();
             $login = $user->login;
             if (property_exists($pConfig->loginFilteredLayers->$layername, 'filterPrivate')
-             && $pConfig->loginFilteredLayers->$layername->filterPrivate = 'True')
+             && $pConfig->loginFilteredLayers->$layername->filterPrivate == 'True')
             {
               $filter.= $v."$pre\"$attribute\" IN ( '".$login."' , 'all' )";
             } else {
@@ -236,17 +246,31 @@ class serviceCtrl extends jController {
             $filter.= $v."$pre\"$attribute\" = 'all'";
             $v = ';';
           }
+          if( !empty( $clientFilter ) ){
+            $filter.= " AND " . str_replace( $pre, '', $clientFilter);
+          }
         }
       }
 
       // Set filter when multiple layers concerned
-      if($filter)
+      if($filter){
+        // WFS : EXP_FILTER
         if( $request == 'getfeature' ){
+          if( !empty($clientExpFilter) ){
+            $filter.= " AND ". $clientExpFilter;
+          }
           $this->params['exp_filter'] = $filter;
-          $this->params["propertyname"].= ",$oAttribute";
+          if( array_key_exists('propertyname', $this->params)  ){
+            $propertyName = trim($this->params["propertyname"]);
+            if( !empty($propertyName) )
+            $this->params["propertyname"].= ",$oAttribute";
+          }
         }
+        // WMS : FILTER
         else
           $this->params['filter'] = $filter;
+      }
+
     }
   }
 
@@ -261,10 +285,15 @@ class serviceCtrl extends jController {
         $service = strtolower($this->params['service']);
         $request = null;
         if( $service == 'wms' ) {
+            $version = '1.3.0';
+            if ( array_key_exists( 'version', $this->params ) ) {
+                $version = $this->params['version'];
+            }
             jClasses::inc('lizmap~lizmapWMSRequest');
             $request = new lizmapWMSRequest( $this->project, array(
                     'service'=>'WMS',
-                    'request'=>'GetCapabilities'
+                    'request'=>'GetCapabilities',
+                    'version'=>$version
                 )
             );
         } else if( $service == 'wfs' ) {
@@ -567,22 +596,36 @@ class serviceCtrl extends jController {
     foreach($xml->Layer as $layer){
       $layername = $layer['name'];
       $configLayer = $this->project->findLayerByName( $layername );
+      // if WMSUseLayerIDs, layer's name can be layer's id
+      if ( $configLayer == null )
+        $configLayer = $this->project->findLayerByLayerId( $layername );
+      // since 2.14 layer's name can be layer's shortName
+      if ( $configLayer == null )
+        $configLayer = $this->project->findLayerByShortName( $layername );
       // since 2.6 layer's name can be layer's title
       if ( $configLayer == null )
         $configLayer = $this->project->findLayerByTitle( $layername );
       if ( $configLayer == null )
         continue;
 
+
       // Avoid layer if no popup asked by the user for it
       // or if no popup property
-      if(property_exists($configLayer, 'popup')){
-        if($configLayer->popup != 'True'){
-          continue;
-        }
+      // or if no edition
+      $returnPopup = False;
+      if( property_exists($configLayer, 'popup') && $configLayer->popup == 'True' )
+        $returnPopup = True;
+
+      if ( !$returnPopup ){
+        $editionLayer = $this->project->findEditionLayerByLayerId( $configLayer->id );
+        if ( $editionLayer != null && ( $editionLayer->capabilities->modifyGeometry == 'True'
+                                     || $editionLayer->capabilities->modifyAttribute == 'True'
+                                     || $editionLayer->capabilities->deleteFeature == 'True') )
+          $returnPopup = True;
       }
-      else{
+
+      if ( !$returnPopup )
         continue;
-      }
 
       // Get layer title
       $layerTitle = $configLayer->title;
@@ -891,7 +934,7 @@ class serviceCtrl extends jController {
     // Get remote data
     $getRemoteData = $this->lizmapCache->getRemoteData(
       $querystring,
-      $this->services->proxyMethod,
+      'php',
       $this->services->debugMode
     );
     $data = $getRemoteData[0];
@@ -899,23 +942,9 @@ class serviceCtrl extends jController {
 
     // Return response
     $rep = $this->getResponse('binary');
-    /*
-    if(preg_match('#^GML#', $this->params['outputformat']))
-      $rep->mimeType = 'text/xml';
-    else
-      $rep->mimeType = 'text/json';
-      * */
     $rep->mimeType = $mime;
     if (   preg_match('#^text/plain#', $mime) && strtolower( $this->params['outputformat'] ) == 'geojson' ) {
-        $rep->mimeType = 'text/json';
-        $layer = $this->project->findLayerByName( $this->params['typename'] );
-        if ( $layer != null ) {
-            $layer = $this->project->getLayer( $layer->id );
-            $aliases = $layer->getAliasFields();
-            $aliases = (object) $aliases;
-            $aliases = json_encode( $aliases );
-            $data = preg_replace( '#\}$#', ', "aliases" : ' . $aliases . '}', $data);
-        }
+        $rep->mimeType = 'text/json; charset=utf-8';
     }
     $rep->content = $data;
     $rep->doDownload  =  false;
@@ -929,7 +958,11 @@ class serviceCtrl extends jController {
       // debug 1st line blank from QGIS Server
       $rep->content = preg_replace('/^[\n\r]/', '', $data);
       // Change file name
-      $rep->outputFileName = 'export_' . $this->params['typename'] . '.' . strtolower( $this->params['outputformat'] );
+      $zipped_files = array('shp','mif','tab');
+      if ( in_array( strtolower($this->params['outputformat']), $zipped_files ) )
+        $rep->outputFileName = 'export_' . $this->params['typename'] . '.zip';
+      else
+        $rep->outputFileName = 'export_' . $this->params['typename'] . '.' . strtolower( $this->params['outputformat'] );
     }
 
     return $rep;
@@ -946,6 +979,27 @@ class serviceCtrl extends jController {
     // Get parameters
     if(!$this->getServiceParameters())
       return $this->serviceException();
+
+    // Extensions to get aliases
+    if ( strtolower( $this->params['outputformat'] ) == 'json' ) {
+        $data = array();
+        $layer = $this->project->findLayerByName( $this->params['typename'] );
+        if ( $layer != null ) {
+            $layer = $this->project->getLayer( $layer->id );
+            $aliases = $layer->getAliasFields();
+            $data['aliases'] = (object) $aliases;
+        }
+        $data = json_encode( (object) $data );
+
+        // Return response
+        $rep = $this->getResponse('binary');
+        $rep->mimeType = 'text/json; charset=utf-8';
+        $rep->content = $data;
+        $rep->doDownload  =  false;
+        $rep->outputFileName  =  'qgis_server_wfs';
+
+        return $rep;
+    }
 
     // Construction of the request url : base url + parameters
     $url = $this->services->wmsServerURL.'?';

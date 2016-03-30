@@ -7,7 +7,7 @@
   <div id="title">
     <h1>{$repositoryLabel}</h1>
   </div>
-      
+
   <div id="headermenu" class="navbar navbar-fixed-top">
     <div id="auth" class="navbar-inner">
       <ul class="nav pull-right">
@@ -27,7 +27,7 @@
         </li>
         {else}
         <li class="login">
-          <a href="{jurl 'jauth~login:form'}">
+          <a href="{jurl 'jauth~login:form', array('auth_url_return'=>$auth_url_return)}">
             <span class="icon"></span>
             <span class="text">{@view~default.header.connect@}</span>
           </a>
@@ -56,3 +56,18 @@
   </p>
 </footer>
 </div>
+
+{if $googleAnalyticsID && $googleAnalyticsID != ''}
+<!-- Google Analytics -->
+<script type="text/javascript">
+{literal}
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+{/literal}
+ga('create', '{$googleAnalyticsID}', 'auto');
+ga('send', 'pageview');
+</script>
+<!-- End Google Analytics -->
+{/if}

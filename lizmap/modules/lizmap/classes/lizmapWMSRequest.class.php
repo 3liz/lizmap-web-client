@@ -12,24 +12,22 @@
 jClasses::inc('lizmap~lizmapProxy');
 jClasses::inc('lizmap~lizmapOGCRequest');
 class lizmapWMSRequest extends lizmapOGCRequest {
-    
+
     protected $tplExceptions = 'lizmap~wms_exception';
-    
+
     private $forceRequest = False;
-    
+
     public function getForceRequest ( ) {
         return $this->forceRequest;
     }
-    
+
     public function setForceRequest ( $forced ) {
         return $this->forceRequest = $forced;
     }
-    
+
     protected function getcapabilities ( ) {
         $result = parent::getcapabilities();
-        if ( $result->cached )
-            return $result;
-        
+
         $data = $result->data;
         if ( empty( $data ) or floor( $result->code / 100 ) >= 4 ) {
             jMessage::add('Server Error !', 'Error');
@@ -38,11 +36,11 @@ class lizmapWMSRequest extends lizmapOGCRequest {
 
         if ( preg_match( '#ServiceExceptionReport#i', $data ) )
             return $result;
-        
+
         // Remove no interoparable elements
         $data = preg_replace('@<GetPrint[^>]*?>.*?</GetPrint>@si', '', $data);
         $data = preg_replace('@<ComposerTemplates[^>]*?>.*?</ComposerTemplates>@si', '', $data);
-        
+
         // Replace qgis server url in the XML (hide real location)
         $sUrl = jUrl::getFull(
           "lizmap~service:index",
@@ -74,14 +72,7 @@ class lizmapWMSRequest extends lizmapOGCRequest {
               $data = preg_replace('@GetLegendGraphic@', 'sld:GetLegendGraphic', $data);
             }
         }
-        
-        // Add response to cache
-        $cacheId = $this->repository->getKey().'_'.$this->project->getKey().'_'.$this->param('service');
-        $newhash = md5_file( realpath($this->repository->getPath()) . '/' . $this->project->getKey() . ".qgs" );
-        jCache::set($cacheId . '_hash', $newhash);
-        jCache::set($cacheId . '_mime', $result->mime);
-        jCache::set($cacheId . '_data', $data);
-        
+
         return (object) array(
             'code' => 200,
             'mime' => $result->mime,
@@ -89,10 +80,10 @@ class lizmapWMSRequest extends lizmapOGCRequest {
             'cached' => False
         );
     }
-    
+
     protected function getmap ( ) {
-        $getMap = lizmapProxy::getMap($this->repository->getKey(), $this->project->getKey(), $this->params, $this->forceRequest);
-        
+        $getMap = lizmapProxy::getMap($this->project, $this->params, $this->forceRequest);
+
         return (object) array(
             'code' => $getMap[2],
             'mime' => $getMap[1],

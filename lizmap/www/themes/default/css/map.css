@@ -10,7 +10,8 @@
   background-position: -400px 0px;
 }
 #headermenu .dropdown-menu {
-  background-color: rgb(255,255,255);
+  background-color: #4A4A4A;
+  background-color: rgba(0,0,0,0.7);
 }
 #headermenu .dropdown-caret .caret-inner {
   border-left: 6px solid transparent;
@@ -23,7 +24,7 @@
   border-bottom: 7px solid rgba(0,0,0,0.2);
 }
 #headermenu .dropdown-inner .items li > a {
-  color: rgb(51,51,51);
+  color: white;
 }
 
 .navbar .nav .metadata .icon {
@@ -97,11 +98,11 @@
 
 #metadata {
   background-color:#EFEFEF;
-  color:grey;
+  color:#333;
 }
 
 #metadata h2{
-  color:#80B219;
+  color:#333;
 }
 
 #menu {
@@ -210,6 +211,7 @@ Timemanager
 }
 
 #baselayer-menu div.baselayer-select,
+#switcher div.baselayer-select,
 #locate div.locate-layer {
   border : solid 1px #606060;
   background: url(images/123_click.png) no-repeat right;
@@ -475,29 +477,31 @@ Timemanager
 /*Popup OpenLayers*/
 .lizmapPopup.olPopup,
 #map-content .lizmapPopup{
-  background: #F6F6F6 !important;
+  background-color:#4A4A4A !important;
+  background-color:rgba(0,0,0,0.7) !important;
   border: 1px solid #C9C9C9 !important;
   color: black !important;
 }
 
 .lizmapPopup.olPopup .lizmapPopupContent h4,
 #map-content .lizmapPopupContent h4{
-  background: #2B2B2B !important;
-  color : #FBFBFB !important;
+  color : white !important;
+  border-bottom: 1px dashed white;
 }
 .lizmapPopup.olPopup .lizmapPopupContent a,
 #map-content .lizmapPopupContent a{
   color:black;
 }
+/*
 .lizmapPopup.olPopup .lizmapPopupTable,
 #map-content .lizmapPopupTable{
   border: 1px solid #2B2B2B !important;
 }
+*/
 .lizmapPopup.olPopup .lizmapPopupTable thead,
 #map-content .lizmapPopupTable thead {
-  color: white;
-  background-color: #81B00E;
-  border-bottom: 1px solid #2B2B2B !important;
+  color: black;
+  background-color: lightgrey;
 }
 .lizmapPopup.olPopup .lizmapPopupTable th.left,
 #map-content .lizmapPopupTable th.left{
@@ -523,4 +527,10 @@ Timemanager
 .ui-widget-overlay {
   opacity : 0.8;
   background : black;
+}
+
+
+/* only maps dock style */
+#home #projects h2 {
+  color: white;
 }

@@ -21,10 +21,15 @@ var lizMap = function() {
    */
   var capabilities = null;
   /**
-   * PRIVATE Property: capabilities
+   * PRIVATE Property: wmtsCapabilities
    * {object} The wmts capabilities
    */
   var wmtsCapabilities = null;
+  /**
+   * PRIVATE Property: wfsCapabilities
+   * {object} The wfs capabilities
+   */
+  var wfsCapabilities = null;
   /**
    * PRIVATE Property: map
    * {<OpenLayers.Map>} The map
@@ -55,6 +60,7 @@ var lizMap = function() {
    * {object} The layer's tree
    */
   var tree = {config:{type:'group'}};
+
   /**
    * PRIVATE Property: externalBaselayersReplacement
    *
@@ -72,8 +78,34 @@ var lizMap = function() {
     'bhybrid': 'bing-hybrid',
     'ignmap': 'ign-scan',
     'ignplan': 'ign-plan',
-    'ignphoto': 'ign-photo'
-  }
+    'ignphoto': 'ign-photo',
+    'igncadastral': 'ign-cadastral'
+  };
+
+  /**
+   * PRIVATE Property: cleanNameMap
+   *
+   */
+  var cleanNameMap = {
+  };
+
+  /**
+   * PRIVATE Property: layerIdMap
+   *
+   */
+  var layerIdMap = {
+  };
+  /**
+   * PRIVATE Property: shortNameMap
+   *
+   */
+  var shortNameMap = {
+  };
+
+  /**
+   * Permalink args
+   */
+  var permalinkArgs = null;
 
   /**
    * PRIVATE Property: layerCleanNames
@@ -111,7 +143,23 @@ var lizMap = function() {
     };
     aName = normalize(aName);
     var reg = new RegExp('\\W', 'g');
-    return aName.replace(reg, '_');
+    var theCleanName = aName.replace(reg, '_');
+    cleanNameMap[theCleanName] = aName;
+    return theCleanName;
+  }
+
+  function getNameByCleanName( cleanName ){
+    var name = null;
+    if( cleanName in cleanNameMap )
+      name = cleanNameMap[cleanName];
+    return name;
+  }
+
+  function getNameByShortName( shortName ){
+    var name = null;
+    if( shortName in shortNameMap )
+      name = shortNameMap[shortName];
+    return name;
   }
 
   function getLayerNameByCleanName( cleanName ){
@@ -234,7 +282,8 @@ var lizMap = function() {
 
     $('#dock').css('overflow-y', 'hidden');
 
-    updateMapSize();
+    if(map)
+      updateMapSize();
 
   }
 
@@ -350,8 +399,39 @@ var lizMap = function() {
       if (layer == null && l.name == name)
         layer = l;
     });
-    //if (layer == null )
-      //return null;
+    if (layer == null )
+      return null;
+    var qgisName = null;
+    if ( name in cleanNameMap )
+        qgisName = getLayerNameByCleanName(name);
+    var layerConfig = null;
+    if ( qgisName )
+        layerConfig = config.layers[qgisName];
+    if ( !layerConfig )
+        layerConfig = config.layers[layer.params['LAYERS']];
+    if ( !layerConfig )
+        layerConfig = config.layers[layer.name];
+    if ( !layerConfig )
+        return null;
+    if ( 'externalWmsToggle' in layerConfig && layerConfig.externalWmsToggle == 'True' ) {
+        var externalAccess = layerConfig.externalAccess;
+        var legendParams = {SERVICE: "WMS",
+                      VERSION: "1.3.0",
+                      REQUEST: "GetLegendGraphic",
+                      LAYER: externalAccess.layers,
+                      LAYERS: externalAccess.layers,
+                      SLD_VERSION: "1.1.0",
+                      EXCEPTIONS: "application/vnd.ogc.se_inimage",
+                      FORMAT: "image/png",
+                      TRANSPARENT: "TRUE",
+                      WIDTH: 150,
+                      DPI: 96};
+
+        var legendParamsString = OpenLayers.Util.getParameterString(
+             legendParams
+            );
+        return OpenLayers.Util.urlAppend(externalAccess.url, legendParamsString);
+    }
     var legendParams = {SERVICE: "WMS",
                   VERSION: "1.3.0",
                   REQUEST: "GetLegendGraphic",
@@ -366,7 +446,6 @@ var lizMap = function() {
                   SYMBOLSPACE: 1,
                   ICONLABELSPACE: 2,
                   DPI: 96};
-    var layerConfig = config.layers[layer.params['LAYERS']];
     if (layerConfig.id==layerConfig.name)
       legendParams['LAYERFONTBOLD'] = "TRUE";
     else {
@@ -404,7 +483,12 @@ var lizMap = function() {
   function getLayerScale(nested,minScale,maxScale) {
     for (var i = 0, len = nested.nestedLayers.length; i<len; i++) {
       var layer = nested.nestedLayers[i];
-      var layerConfig = config.layers[layer.name];
+      var qgisLayerName = layer.name;
+      if ( 'useLayerIDs' in config.options && config.options.useLayerIDs == 'True' )
+        qgisLayerName = layerIdMap[layer.name];
+      else if ( layer.name in shortNameMap )
+        qgisLayerName = shortNameMap[layer.name];
+      var layerConfig = config.layers[qgisLayerName];
       if (layer.nestedLayers.length != 0)
          return getLayerScale(layer,minScale,maxScale);
       if (layerConfig) {
@@ -442,21 +526,32 @@ var lizMap = function() {
       return -1;
 
     // the nested is a layer and not a group
-    if (nested.nestedLayers.length == 0)
-      if (nested.name in config.layersOrder)
+    if (nested.nestedLayers.length == 0) {
+      var qgisLayerName = nested.name;
+      if ( 'useLayerIDs' in config.options && config.options.useLayerIDs == 'True' )
+        qgisLayerName = layerIdMap[nested.name];
+      else if ( nested.name in shortNameMap )
+        qgisLayerName = shortNameMap[nested.name];
+      if (qgisLayerName in config.layersOrder)
         return config.layersOrder[nested.name];
       else
         return -1;
+    }
 
     // the nested is a group
     var order = -1;
     for (var i = 0, len = nested.nestedLayers.length; i<len; i++) {
       var layer = nested.nestedLayers[i];
+      var qgisLayerName = layer.name;
+      if ( 'useLayerIDs' in config.options && config.options.useLayerIDs == 'True' )
+        qgisLayerName = layerIdMap[layer.name];
+      else if ( layer.name in shortNameMap )
+        qgisLayerName = shortNameMap[layer.name];
       var lOrder = -1;
       if (layer.nestedLayers.length != 0)
         lOrder = getLayerScale(layer);
-      else if (layer.name in config.layersOrder)
-        lOrder = config.layersOrder[layer.name];
+      else if (qgisLayerName in config.layersOrder)
+        lOrder = config.layersOrder[qgisLayerName];
       else
         lOrder = -1;
       if (lOrder != -1) {
@@ -641,13 +736,18 @@ var lizMap = function() {
     for (var i = 0, len = nested.nestedLayers.length; i<len; i++) {
       var serviceUrl = service
       var layer = nested.nestedLayers[i];
-      var layerConfig = config.layers[layer.name];
-      var layerName = cleanName(layer.name);
-      layerCleanNames[layerName] = layer.name;
+      var qgisLayerName = layer.name;
+      if ( 'useLayerIDs' in config.options && config.options.useLayerIDs == 'True' )
+        qgisLayerName = layerIdMap[layer.name];
+      else if ( layer.name in shortNameMap )
+        qgisLayerName = shortNameMap[layer.name];
+      var layerConfig = config.layers[qgisLayerName];
+      var layerName = cleanName(qgisLayerName);
+      layerCleanNames[layerName] = qgisLayerName;
 
-      if ( layer.name.toLowerCase() == 'hidden' )
+      if ( qgisLayerName.toLowerCase() == 'hidden' )
         continue;
-      if ( layer.name == 'Overview' ) {
+      if ( qgisLayerName == 'Overview' ) {
         config.options.hasOverview = true;
         continue;
       }
@@ -680,8 +780,7 @@ var lizMap = function() {
           $.each(wmtsCapabilities.contents.layers, function(i, l) {
             if ( l.identifier != layer.name)
               return true;
-            //console.log( layer.name +' '+ config.options.projection.ref );
-            wmtsLayer = wmtsFormat.createLayer(wmtsCapabilities, {
+            var wmtsOptions = {
                 layer: layer.name,
                 matrixSet: config.options.projection.ref,
                 name: layerName,
@@ -690,7 +789,27 @@ var lizMap = function() {
                 isBaseLayer: (layerConfig.baseLayer == 'True'),
                 alwaysInRange: false,
                 url: serviceUrl
-            });
+            };
+            if ( $.inArray( config.options.projection.ref, ['EPSG:3857','EPSG:900913'] ) != -1
+              && ('resolutions' in config.options)
+              && config.options.resolutions.length != 0 ) {
+                var resolutions = config.options.resolutions;
+                var maxRes = resolutions[0];
+                var numZoomLevels = resolutions.length;
+                var zoomOffset = 0;
+                var res = 156543.03390625;
+                while ( res > maxRes ) {
+                    zoomOffset += 1;
+                    res = 156543.03390625 / Math.pow(2, zoomOffset);
+                }
+                wmtsOptions['zoomOffset'] = zoomOffset;
+                wmtsOptions['maxResolution'] = maxRes;
+                wmtsOptions['numZoomLevels'] = numZoomLevels;
+                wmtsOptions['minZoomLevel'] = zoomOffset;
+                wmtsOptions['resolutions'] = resolutions;
+            }
+            //console.log( layer.name +' '+ config.options.projection.ref );
+            wmtsLayer = wmtsFormat.createLayer(wmtsCapabilities, wmtsOptions);
             // console.log( wmtsLayer );
             return false;
           });
@@ -712,10 +831,10 @@ var lizMap = function() {
 
         // Add optionnal filter at start
         if( !( typeof lizLayerFilter === 'undefined' )
-          && layerName in lizLayerFilter
-          && lizLayerFilter[ layerName ]
+          && qgisLayerName in lizLayerFilter
+          && lizLayerFilter[ qgisLayerName ]
         ){
-          layerWmsParams['FILTER'] = layerName+':'+lizLayerFilter[ layerName ];
+          layerWmsParams['FILTER'] = qgisLayerName+':'+lizLayerFilter[ qgisLayerName ];
         }
 
       if (layerConfig.baseLayer == 'True' && wmtsLayer != null) {
@@ -745,6 +864,7 @@ var lizMap = function() {
                ,gutter:(layerConfig.cached == 'True') ? 0 : 5
                ,buffer:0
                ,singleTile:(layerConfig.singleTile == 'True')
+               ,ratio:1
                ,attribution:layer.attribution
               }));
       }
@@ -761,6 +881,7 @@ var lizMap = function() {
                ,transitionEffect:(layerConfig.singleTile == 'True')?'resize':null
                ,removeBackBufferDelay:250
                ,singleTile:(layerConfig.singleTile == 'True')
+               ,ratio:1
                ,order:getLayerOrder(layer)
                ,attribution:layer.attribution
                //~ ,tileOptions: {
@@ -876,10 +997,13 @@ var lizMap = function() {
     if (nodeConfig.type == 'layer'
     && (!nodeConfig.noLegendImage || nodeConfig.noLegendImage != 'True')) {
       var url = getLayerLegendGraphicUrl(aNode.name, false);
-
-      html += '<tr id="legend-'+aNode.name+'" class="child-of-layer-'+aNode.name+' legendGraphics">';
-      html += '<td colspan="2"><div class="legendGraphics"><img src="'+url+'"/></div></td>';
-      html += '</tr>';
+      if ( url != null && url != '' ) {
+          html += '<tr id="legend-'+aNode.name+'" class="child-of-layer-'+aNode.name+' legendGraphics">';
+          html += '<td colspan="2"><div class="legendGraphics">';
+          html += '<img data-src="'+url+'" src="'+lizUrls.basepath + 'css/images/download_layer.gif' + '"/>';
+          html += '</div></td>';
+          html += '</tr>';
+      }
     }
 
     return html;
@@ -1004,6 +1128,10 @@ var lizMap = function() {
     mapHeight = mapHeight - $('#header').height();
     mapHeight = mapHeight - $('#headermenu').height();
     $('#map').height(mapHeight);
+
+    // Make sure interface divs size are updated before creating the map
+    // This avoid the request of each singlettile layer 2 times on startup
+    updateContentSize();
 
     var res = extent.getHeight()/$('#map').height();
 
@@ -1250,10 +1378,18 @@ var lizMap = function() {
     var proj = new OpenLayers.Projection(locate.crs);
     var val = $('#locate-layer-'+cleanName(aName)).val();
     if (val == '-1') {
-      return; //don't move the map
-      var bbox = new OpenLayers.Bounds(locate.bbox);
-      bbox.transform(proj, map.getProjection());
-      map.zoomToExtent(bbox);
+
+      //var bbox = new OpenLayers.Bounds(locate.bbox);
+      //bbox.transform(proj, map.getProjection());
+      //map.zoomToExtent(bbox);
+
+      // Trigger event
+      lizMap.events.triggerEvent(
+        'lizmaplocatefeaturecanceled',
+        {
+          'featureType': aName
+        }
+      );
     } else {
       // zoom to val
       var feat = locate.features[val];
@@ -1261,10 +1397,20 @@ var lizMap = function() {
       feat = format.read(feat)[0];
       feat.geometry.transform(proj, map.getProjection());
       map.zoomToExtent(feat.geometry.getBounds());
+
+      var fid = val.split('.')[1];
       // Show geometry if asked
       if (locate.displayGeom == 'True')
         layer.addFeatures([feat]);
 
+      // Trigger event
+      lizMap.events.triggerEvent(
+        'lizmaplocatefeaturechanged',
+        {
+          'featureType': aName,
+          'featureId': fid
+        }
+      );
     }
   }
 
@@ -1311,7 +1457,7 @@ var lizMap = function() {
       if ('filterFieldName' in locate) {
         // create filter combobox for the layer
         features.sort(function(a, b) {
-          return a.properties[locate.filterFieldName].localeCompare(b.properties[locate.filterFieldName]);
+          return a.properties[locate.filterFieldName].toString().localeCompare(b.properties[locate.filterFieldName].toString());
         });
         var filterPlaceHolder = '';
         if ( 'filterFieldAlias' in locate )
@@ -1363,7 +1509,7 @@ var lizMap = function() {
 
       // create combobox for the layer
       features.sort(function(a, b) {
-        return a.properties[locate.fieldName].localeCompare(b.properties[locate.fieldName]);
+        return a.properties[locate.fieldName].toString().localeCompare(b.properties[locate.fieldName].toString());
       });
       var placeHolder = '';
       if ( 'fieldAlias' in locate )
@@ -1508,14 +1654,11 @@ var lizMap = function() {
     } else if (nodeConfig.type == 'layer'
            && (!nodeConfig.noLegendImage || nodeConfig.noLegendImage != 'True')) {
       var url = getLayerLegendGraphicUrl(aNode.name, false);
-      html += '<ul id="legend-layer-'+aNode.name+'">';
-      html += '<li><div><img src="'+url+'"/></div></li>';
-      html += '</ul>';
-      /*
-      html += '<tr id="legend-'+aNode.name+'" class="child-of-layer-'+aNode.name+' legendGraphics">';
-      html += '<td colspan="2"><div class="legendGraphics"><img src="'+url+'"/></div></td>';
-      html += '</tr>';
-      */
+      if ( url != null && url != '' ) {
+          html += '<ul id="legend-layer-'+aNode.name+'">';
+          html += '<li><div><img data-src="'+url+'" src="'+lizUrls.basepath + 'css/images/download_layer.gif' + '"/></div></li>';
+          html += '</ul>';
+      }
     }
     html += '</li>';
     return html;
@@ -1619,7 +1762,18 @@ var lizMap = function() {
       });
       */
       // Add only layers with geometry
-      var aConfig = config.layers[l.params['LAYERS']];
+      var qgisName = null;
+      if ( l.name in cleanNameMap )
+          qgisName = cleanNameMap[l.name];
+      var aConfig = null;
+      if ( qgisName )
+          aConfig = config.layers[qgisName];
+      if ( !aConfig )
+          aConfig = config.layers[l.params['LAYERS']];
+      if ( !aConfig )
+          aConfig = config.layers[l.name];
+      if ( !aConfig )
+          continue;
       if( 'geometryType' in aConfig &&
         ( aConfig.geometryType == "none" || aConfig.geometryType == "unknown" || aConfig.geometryType == "" )
       ){
@@ -1655,15 +1809,13 @@ var lizMap = function() {
           strokeColor: 'yellow'
         })
       }));
-      var service = OpenLayers.Util.urlAppend(lizUrls.wms
-          ,OpenLayers.Util.getParameterString(lizUrls.params)
-      );
-      $.get(service, {
-          'SERVICE':'WFS'
-         ,'VERSION':'1.0.0'
-         ,'REQUEST':'GetCapabilities'
-      }, function(xml) {
-        var featureTypes = $(xml).find('FeatureType');
+
+        // Lizmap URL
+        var service = OpenLayers.Util.urlAppend(lizUrls.wms
+                ,OpenLayers.Util.getParameterString(lizUrls.params)
+        );
+
+        var featureTypes = getVectorLayerFeatureTypes();
         if (featureTypes.length == 0 ){
           config.locateByLayer = {};
           $('#button-locate').parent().remove();
@@ -1676,9 +1828,11 @@ var lizMap = function() {
             var lname = '';
             if (typeName in config.locateByLayer)
               lname = typeName
-            else {
+            else if ( typeName in shortNameMap ){
+              lname = shortNameMap[typeName];
+            } else {
               for (lbl in config.locateByLayer) {
-                if (lbl.replace(' ','_') == typeName)
+                if (lbl.split(' ').join('_') == typeName)
                   lname = lbl;
               }
             }
@@ -1727,20 +1881,35 @@ var lizMap = function() {
             getLocateFeature(lname);
           }
           $('#locate-clear').click(function() {
+
             var layer = map.getLayersByName('locatelayer')[0];
             layer.destroyFeatures();
             $('#locate select').val('-1');
+            $('div.locate-layer span input').val('');
+
+            if( lizMap.lizmapLayerFilterActive ){
+                lizMap.events.triggerEvent(
+                  'lizmaplocatefeaturecanceled',
+                  {'featureType': lizMap.lizmapLayerFilterActive}
+                );
+            }
+
+            return false;
+
           });
-          $('#locate button.btn-locate-clear').click(function() {
+          $('#locate-close').click(function() {
+            $('#locate-clear').click(); // deactivate locate feature and filter
             $('#button-locate').click();
             return false;
           });
         }
-      },'xml');
+
       //$('#locate-menu').show();
     }
 
-    $('#switcher span.label').tooltip();
+    $('#switcher span.label').tooltip({
+      viewport: '#dock'
+    });
   }
   function createSwitcher() {
     // set the switcher content
@@ -1749,13 +1918,19 @@ var lizMap = function() {
       onNodeShow: function() {
         //updateSwitcherSize();
         var self = $(this);
+        self.addClass('visible');
         if (self.find('div.legendGraphics').length != 0) {
           var name = self.attr('id').replace('legend-','');
           var url = getLayerLegendGraphicUrl(name, true);
-          self.find('div.legendGraphics img').attr('src',url);
+          if ( url != null && url != '' ) {
+              var limg = self.find('div.legendGraphics img');
+              limg.attr('src', limg.attr('data-src') );
+          }
         }
       },
       onNodeHide: function() {
+        var self = $(this);
+        self.removeClass('visible');
         //updateSwitcherSize();
       }
     });
@@ -2025,15 +2200,28 @@ var lizMap = function() {
         }
       });
       // Add only layers with geometry
-      var aConfig = config.layers[l.params['LAYERS']];
+      var qgisName = null;
+      if ( l.name in cleanNameMap )
+          qgisName = cleanNameMap[l.name];
+      var aConfig = null;
+      if ( qgisName )
+          aConfig = config.layers[qgisName];
+      if ( !aConfig )
+          aConfig = config.layers[l.params['LAYERS']];
+      if ( !aConfig )
+          aConfig = config.layers[l.name];
+      if ( !aConfig )
+          continue;
       if( 'geometryType' in aConfig &&
         ( aConfig.geometryType == "none" || aConfig.geometryType == "unknown" || aConfig.geometryType == "" )
       ){
         continue;
       }
       map.addLayer(l);
-      if (l.isVisible)
-        $('#switcher button.checkbox[name="layer"][value="'+l.name+'"]').click();
+
+      // remove this and do it afterwards after line 5075
+      //if (l.isVisible)
+        //$('#switcher button.checkbox[name="layer"][value="'+l.name+'"]');
     }
 
     // Add Locate by layer
@@ -2067,15 +2255,13 @@ var lizMap = function() {
           strokeColor: 'yellow'
         })
       }));
-      var service = OpenLayers.Util.urlAppend(lizUrls.wms
-          ,OpenLayers.Util.getParameterString(lizUrls.params)
-      );
-      $.get(service, {
-          'SERVICE':'WFS'
-         ,'VERSION':'1.0.0'
-         ,'REQUEST':'GetCapabilities'
-      }, function(xml) {
-        var featureTypes = $(xml).find('FeatureType');
+
+        // Lizmap URL
+        var service = OpenLayers.Util.urlAppend(lizUrls.wms
+                ,OpenLayers.Util.getParameterString(lizUrls.params)
+        );
+
+        var featureTypes = getVectorLayerFeatureTypes();
         if (featureTypes.length == 0 ){
           config.locateByLayer = {};
           $('#button-locate').parent().remove();
@@ -2090,7 +2276,7 @@ var lizMap = function() {
               lname = typeName
             else {
               for (lbl in config.locateByLayer) {
-                if (lbl.replace(' ','_') == typeName)
+                if (lbl.split(' ').join('_') == typeName)
                   lname = lbl;
               }
             }
@@ -2149,17 +2335,30 @@ var lizMap = function() {
             var layer = map.getLayersByName('locatelayer')[0];
             layer.destroyFeatures();
             $('#locate select').val('-1');
+            $('div.locate-layer span input').val('');
+
+            if( lizMap.lizmapLayerFilterActive ){
+                lizMap.events.triggerEvent(
+                  'lizmaplocatefeaturecanceled',
+                  {'featureType': lizMap.lizmapLayerFilterActive}
+                );
+            }
+            return false;
+
           });
-          $('#locate button.btn-locate-clear').click(function() {
+          $('#locate-close').click(function() {
+            $('#locate-clear').click(); // deactivate locate and filter
             $('#button-locate').click();
             return false;
           });
         }
-      },'xml');
+
       //$('#locate-menu').show();
     }
 
-    $('#switcher span.label').tooltip();
+    $('#switcher span.label').tooltip({
+      viewport: '#dock'
+    });
 
   }
 
@@ -2208,6 +2407,7 @@ var lizMap = function() {
                   ,units:map.projection.proj.units
                   ,layers:[ovLayer]
                   ,singleTile:true
+                  ,ratio:1
                   }
         }
       ));
@@ -2405,6 +2605,11 @@ var lizMap = function() {
     else
       $('#button-print').parent().remove();
 
+    if ( config['tooltipLayers'] && config.tooltipLayers.length != 0)
+        addTooltipControl();
+    else
+      $('#button-tooltip-layer').parent().remove();
+
     if ( ('geolocation' in configOptions)
         && configOptions['geolocation'] == 'True')
       addGeolocationControl();
@@ -2459,13 +2664,46 @@ var lizMap = function() {
       }
     );
     map.addControl( pLink );
+    map.events.on({
+      "changebaselayer": function() {
+          $('#switcher-baselayer-select').val( map.baseLayer.name ).change();
+      }
+    });
 
     $('.btn-permalink-clear').click(function(){
       $('#button-permaLink').click();
       return false;
     });
 
+    bindGeobookmarkEvents();
+
+    $('#geobookmark-form').submit(function(){
+      var bname = $('#geobookmark-form input[name="bname"]').val();
+      if( bname == '' ){
+        mAddMessage(lizDict['geobookmark.name.required'],'error',true);
+        return false;
+      }
+      var gburl = lizUrls.geobookmark;
+      var gbparams = JSON.parse(JSON.stringify(permalinkArgs));
+      gbparams['name'] = bname;
+      gbparams['q'] = 'add';
+      if( lizMap.lizmapLayerFilterActive ) {
+        var afilter = lizMap.lizmapLayerFilterActive + ':' + config.layers[lizMap.lizmapLayerFilterActive]['filteredFeatures'].join();
+        gbparams['filter'] =  afilter;
+      }
+      $.get(gburl,
+        gbparams,
+        function(data) {
+          setGeobookmarkContent(data);
+        }
+        ,'text'
+      );
+
+      return false;
+    });
+
   }
+
 
   function createPermalinkArgs(){
 
@@ -2510,8 +2748,118 @@ var lizMap = function() {
     if ( style.length > 0 )
       args['layerStyles'] = style.join(';');
 
+    // Add permalink args to Lizmap global variable
+    permalinkArgs = args;
+
     return args;
 
+  }
+
+  function bindGeobookmarkEvents(){
+
+    $('.btn-geobookmark-del').click(function(){
+      if (confirm(lizDict['geobookmark.confirm.delete'] )){
+        var gbid = $(this).val();
+        removeGeoBookmark(gbid);
+      }
+      return false;
+    });
+    $('.btn-geobookmark-run').click(function(){
+      var id = $(this).val();
+      runGeoBookmark( id );
+
+      return false;
+    });
+  }
+
+  function setGeobookmarkContent( gbData ){
+    // set content
+    $('div#geobookmark-container').html(gbData);
+    // unbind previous click events
+    $('div#geobookmark-container button').unbind('click');
+    // Bind events
+    bindGeobookmarkEvents();
+    // Remove bname val
+    $('#geobookmark-form input[name="bname"]').val('').blur();
+  }
+
+  function runGeoBookmark( id ){
+    var gburl = lizUrls.geobookmark;
+    var gbparams = {
+      id: id,
+      q: 'get'
+    };
+    $.get(gburl,
+      gbparams,
+      function(data) {
+
+        // Zoom to bbox
+        var bbox = OpenLayers.Bounds.fromString( data.bbox );
+        map.zoomToExtent( bbox );
+
+        // Activate layers
+        var players = data.layers;
+
+        for( var i=0; i < map.layers.length; i++){
+          var l = map.layers[i];
+          var lbase = l.isBaseLayer;
+          if( lbase ){
+            if( players[i] == 'B' )
+              $('#switcher-baselayer-select').val( l.name ).change();
+          }else{
+            var btn = $('#switcher button.checkbox[name="layer"][value="'+l.name+'"]');
+            if ( ( (players[i] == 'T') != btn.hasClass('checked') ) )
+              $('#switcher button.checkbox[name="layer"][value="'+l.name+'"]').click();
+          }
+        }
+
+        // Filter
+        if( data.filter != '' ){
+            var sp = data.filter.split(':');
+            if( sp.length == 2 ){
+              var flayer = sp[0];
+              var ffids = sp[1].split();
+
+              // Select feature
+              lizMap.events.triggerEvent(
+                  'layerfeatureselected',
+                  {'featureType': flayer, 'fid': ffids, 'updateDrawing': false}
+              );
+              // Filter selected feature
+              lizMap.events.triggerEvent(
+                  'layerfeaturefilterselected',
+                  {'featureType': flayer}
+              );
+            }
+        }else{
+          if( lizMap.lizmapLayerFilterActive ){
+            lizMap.events.triggerEvent(
+                'layerfeatureremovefilter',
+                {'featureType': lizMap.lizmapLayerFilterActive}
+            );
+          }
+        }
+
+      }
+      ,'json'
+    );
+  }
+
+  function removeGeoBookmark( id ){
+    var gburl = lizUrls.geobookmark;
+    var gbparams = {
+      id: id,
+      q: 'del',
+      repository: lizUrls.params.repository,
+      project: lizUrls.params.project
+    };
+    $.get(gburl,
+      gbparams,
+      function(data) {
+        setGeobookmarkContent(data);
+      }
+      ,'text'
+    );
   }
 
   function addFeatureInfo() {
@@ -2526,11 +2874,13 @@ var lizMap = function() {
             eventListeners: {
                 getfeatureinfo: function(event) {
                     var text = event.text;
-                    if (text != ''){
-                      if (map.popups.length != 0)
+                    if (!text || text == null || text == '')
+                        return false;
+
+                    if (map.popups.length != 0)
                         map.removePopup(map.popups[0]);
 
-                      var popup = new OpenLayers.Popup.LizmapAnchored(
+                    var popup = new OpenLayers.Popup.LizmapAnchored(
                         "liz_layer_popup",
                         map.getLonLatFromPixel(event.xy),
                         null,
@@ -2545,22 +2895,20 @@ var lizMap = function() {
                           }
                           return false;
                         }
-                        );
-                      popup.panMapIfOutOfView = true;
-                      map.addPopup(popup);
+                    );
+                    popup.panMapIfOutOfView = true;
+                    map.addPopup(popup);
 
-                      // Trigger event
-                      lizMap.events.triggerEvent(
+                    // Trigger event
+                    lizMap.events.triggerEvent(
                         "lizmappopupdisplayed"
-                      );
+                    );
 
-                      popup.verifySize();
-                      // Hide navbar and overview in mobile mode
-                      if(mCheckMobile()){
+                    popup.verifySize();
+                    // Hide navbar and overview in mobile mode
+                    if(mCheckMobile()){
                         $('#navbar').hide();
                         $('#overview-box').hide();
-                      }
-
                     }
                 }
             }
@@ -2583,10 +2931,30 @@ var lizMap = function() {
         var layer, url;
         for(var i=0, len=candidates.length; i<len; ++i) {
             layer = candidates[i];
-            if(layer instanceof OpenLayers.Layer.WMS  &&
-               (!this.queryVisible || (layer.getVisibility() && layer.calculateInRange()))) {
-                 var configLayer = config.layers[layer.params['LAYERS']];
-                 if( configLayer && configLayer.popup && configLayer.popup == 'True'){
+            if( (layer instanceof OpenLayers.Layer.WMS || layer instanceof OpenLayers.Layer.WMTS)
+             && (!this.queryVisible || (layer.getVisibility() && layer.calculateInRange())) ) {
+                var qgisName = null;
+                if ( layer.name in cleanNameMap )
+                    qgisName = getLayerNameByCleanName(name);
+                var configLayer = null;
+                if ( qgisName )
+                    configLayer = config.layers[qgisName];
+                if ( !configLayer )
+                    configLayer = config.layers[layer.params['LAYERS']];
+                if ( !configLayer )
+                    configLayer = config.layers[layer.name];
+                 var editionLayer = null;
+                 if( 'editionLayers' in config ) {
+                     editionLayer = config.editionLayers[qgisName];
+                     if ( !editionLayer )
+                        editionLayer = config.editionLayers[layer.params['LAYERS']];
+                     if ( !editionLayer )
+                        editionLayer = config.editionLayers[layer.name];
+                 }
+                 if( (configLayer && configLayer.popup && configLayer.popup == 'True' && configLayer.externalWmsToggle != 'True')
+                  || (editionLayer && ( editionLayer.capabilities.modifyGeometry == 'True'
+                                     || editionLayer.capabilities.modifyAttribute == 'True'
+                                     || editionLayer.capabilities.deleteFeature == 'True') ) ){
                     url = OpenLayers.Util.isArray(layer.url) ? layer.url[0] : layer.url;
                     // if the control was not configured with a url, set it
                     // to the first layer url
@@ -2635,7 +3003,7 @@ var lizMap = function() {
       }
       newScales.sort(function(a,b){return b-a;});
     var scale = map.getScale();
-    var scaleIdx = newScales.indexOf( scale );
+  var scaleIdx = $.inArray( scale, newScales );
     if ( scaleIdx == -1 ) {
     var s=0, slen=newScales.length;
     while ( scaleIdx == -1 && s<slen ) {
@@ -2733,18 +3101,15 @@ var lizMap = function() {
 
     var scaleOptions = '';
     for( var i=0, len=scales.length; i<len; i++ ){
-      var scale = scales[i];
-      printCapabilities.scales.push(scale);
-      var scaleText = scale;
-      if (scale >= 9500 && scale <= 950000) {
-        scaleText = Math.round(scale / 1000) + "&nbsp;000";
-      } else if (scale >= 950000) {
-        scaleText = Math.round(scale / 1000000) + "&nbsp;000&nbsp;000";
-      } else {
-        scaleText = Math.round(scale)+'';
-        scaleText = scaleText[0]+'&nbsp;'+scaleText.slice(1);
-      }
-      scaleOptions += '<option value="'+scale+'">'+scaleText+'</option>';
+        var scale = scales[i];
+        printCapabilities.scales.push(scale);
+        var scaleText = scale;
+        if (scaleText > 10)
+            scaleText = Math.round(scaleText)
+        else
+            scaleText = Math.round(scaleText*100)/100
+        scaleText = scaleText.toLocaleString()
+        scaleOptions += '<option value="'+scale+'">'+scaleText+'</option>';
     }
     $('#print-scale').html(scaleOptions);
 
@@ -2800,7 +3165,7 @@ var lizMap = function() {
             fillColor: "#D43B19",
             fillOpacity: 0.2,
             strokeColor: "#CE1F2D",
-            strokeWidth: 1,
+            strokeWidth: 1
           })
         })
       });
@@ -2937,7 +3302,12 @@ var lizMap = function() {
       // Get active baselayer, and add the corresponding QGIS layer if needed
       var activeBaseLayerName = map.baseLayer.name;
       if ( activeBaseLayerName in externalBaselayersReplacement ) {
-        printLayers.push(externalBaselayersReplacement[activeBaseLayerName]);
+        var exbl = externalBaselayersReplacement[activeBaseLayerName];
+        if( exbl in config.layers )
+            if ( 'useLayerIDs' in config.options && config.options.useLayerIDs == 'True' )
+                printLayers.push(config.layers[exbl].id);
+            else
+                printLayers.push(exbl);
       }
 
       url += '&'+dragCtrl.layout.mapId+':LAYERS='+printLayers.join(',');
@@ -3006,6 +3376,590 @@ var lizMap = function() {
             }
         }
     });
+  }
+  function addTooltipControl() {
+    if ( !config['tooltipLayers'] || config.tooltipLayers.length == 0 ) {
+      $('#button-tooltip-layer').parent().remove();
+      return false;
+    }
+
+    // Verifying WFS layers
+    var featureTypes = lizMap.getVectorLayerFeatureTypes();
+    if (featureTypes.length == 0 ) {
+      $('#button-tooltip-layer').parent().remove();
+      return false;
+    }
+    var tooltipLayersDic = {};
+    for (var lname in config.tooltipLayers) {
+        tooltipLayersDic[lizMap.cleanName(lname)] = lname;
+    }
+
+    featureTypes.each( function(){
+        var self = $(this);
+        var lname = self.find('Name').text();
+        if ( !(lname in tooltipLayersDic) )
+            return;
+        lname = tooltipLayersDic[lname];
+        if ( (lname in config.tooltipLayers) && (lname in config.layers) ) {
+            var lConfig = config.layers[lname];
+            $('#tooltip-layer-list').append('<option value="'+lname+'">'+lConfig.title+'</option>');
+        }
+    });
+    if ( $('#tooltip-layer-list').find('option').length == 1 ) {
+      $('#button-tooltip-layer').parent().remove();
+      return false;
+    }
+
+OpenLayers.Control.HighlightFeature = OpenLayers.Class(OpenLayers.Control, {
+    /**
+     * Constant: EVENT_TYPES
+     * {Array(String)} Supported application event types.  Register a listener
+     *     for a particular event with the following syntax:
+     * (code)
+     * control.events.register(type, obj, listener);
+     * (end)
+     *
+     *  - *featureset* Triggered when the mouse is hover a new feature,
+     *      i.e. not a previously hover feature.
+     *  - *featurereset* Triggered when the mouse becomes no longer hover
+     *      a feature.
+     */
+    EVENT_TYPES: ["featureset","featurereset"],
+
+    /**
+     * Property: feature
+     * {OpenLayers.Feature} The current highlighted feature the mouse.  Will
+     *                      be set to null as soon as the mouse is not hover
+     *                      a feature.
+     */
+    feature: null,
+
+    /**
+     * Property: style
+     * {OpenLayers.Style}   The style applied to an hover feature
+     */
+    style: null,
+
+    /**
+     * Property: displayPopup
+     * {boolean}  Display a popup with all the feature attributes if this
+     *            is set to true.  Default true.
+     */
+    displayPopup: true,
+
+    defaultHandlerOptions: {
+        'delay': 0,
+        'pixelTolerance': null,
+        'stopMove': false
+    },
+
+    defaultStyle: {
+        'strokeColor' : "red",
+        'strokeWidth' : 7
+    },
+
+    popupOffset: {
+        'left': 45,
+        'right': 0,
+        'top': 5
+    },
+
+    popupTitle: null,
+
+    popupSize: null,
+
+    defaultPopupSize: new OpenLayers.Size(200,325),
+
+    /**
+     * Constructor: OpenLayers.Control.HighlightFeature
+     * Create a new HighlightFeature feature control.
+     *
+     * Parameters:
+     * layer - {<OpenLayers.Layer.Vector>} Layer that contains features.
+     * options - {Object} Optional object whose properties will be set on the
+     *     control.
+     */
+    initialize: function(layers, options) {
+        // concatenate events specific to this control with those from the base
+        this.EVENT_TYPES =
+            OpenLayers.Control.HighlightFeature.prototype.EVENT_TYPES.concat(
+            OpenLayers.Control.prototype.EVENT_TYPES
+        );
+        this.handlerOptions = OpenLayers.Util.extend(
+            {}, this.defaultHandlerOptions
+        );
+        this.style = OpenLayers.Util.extend( {}, this.defaultStyle);
+        this.popupSize = OpenLayers.Util.extend( {}, this.defaultPopupSize);
+
+        OpenLayers.Control.prototype.initialize.apply(this, [options]);
+
+        if(this.scope === null) {
+            this.scope = this;
+        }
+        this.initLayer(layers);
+
+        this.handler = new OpenLayers.Handler.Hover(
+            this, {
+                //'pause': this.onPause,
+                'move': this.onMove
+            },
+            this.handlerOptions
+        );
+
+        if (!this.popupOffset){
+            this.popupOffset = {
+                'left': 0,
+                'right': 0,
+                'top': 0
+            };
+        } else {
+            if (!this.popupOffset.left){
+                this.popupOffset.left = 0;
+            }
+            if (!this.popupOffset.right){
+                this.popupOffset.right = 0;
+            }
+            if (!this.popupOffset.top){
+                this.popupOffset.top = 0;
+            }
+        }
+    },
+
+    /**
+     * Method: setMap
+     * Set the map property for the control. This is done through an accessor
+     * so that subclasses can override this and take special action once
+     * they have their map variable set.
+     *
+     * Parameters:
+     * map - {<OpenLayers.Map>}
+     */
+    setMap: function(map) {
+        this.map = map;
+        if (this.handler) {
+            this.handler.setMap(map);
+        }
+        this.map.events.register("zoomend", this, this.onZoom);
+    },
+
+    /**
+     * Method: initLayer
+     * Assign the layer property. If layers is an array, we need to use
+     *     a RootContainer.
+     *
+     * Parameters:
+     * layers - {<OpenLayers.Layer.Vector>}, or an array of vector layers.
+     */
+    initLayer: function(layers) {
+        if(OpenLayers.Util.isArray(layers)) {
+            this.layers = layers;
+            this.layer = new OpenLayers.Layer.Vector.RootContainer(
+                this.id + "_container", {
+                    layers: layers
+                }
+            );
+        } else {
+            this.layer = layers;
+        }
+    },
+
+    /**
+     * APIMethod: setLayer
+     * Attach a new layer to the control, overriding any existing layers.
+     *
+     * Parameters:
+     * layers - Array of {<OpenLayers.Layer.Vector>} or a single
+     *     {<OpenLayers.Layer.Vector>}
+     */
+    setLayer: function(layers) {
+        var isActive = this.active;
+        //this.unselectAll();
+        this.deactivate();
+        if(this.layers) {
+            this.layer.destroy();
+            this.layers = null;
+        }
+        this.initLayer(layers);
+        //this.handlers.feature.layer = this.layer;
+        if (isActive) {
+            this.activate();
+        }
+    },
+
+    //onPause: function(evt) {},
+
+    /**
+    * Method: onMove
+    * While this control is active, on mouse move, check if the mouse is
+    * over a feature or was over a feature and is not anymore.
+    *
+    * Parameters:
+    * evt
+    */
+    onMove: function(evt){
+        if (evt.type != "mousemove") {
+            return;
+        }
+
+        var oFeature = this.layer.getFeatureFromEvent(evt);
+
+        if (this.feature){ // last hover feature exist
+            if (oFeature){ // mouse is over a feature
+                if (this.feature.fid != oFeature.fid){//are they differents
+                    this.resetFeature();
+                    this.setFeature(oFeature, evt);
+                }
+            } else {// mouse is not over a feature, but last hover feature exist
+                this.resetFeature();
+            }
+        } else if (oFeature){ // no last feature and mouse over a feature
+            this.setFeature(oFeature, evt);
+        }
+    },
+
+    /**
+    * Method: onZoom
+    * If a feature was hover the mouse before a zoom event, the same feature
+    * should be set as hover.  The main purpose of this function is to make
+    * sure the style is applied after the layer has loaded its features and
+    * the popups and events are correctly displayed/triggered.
+    *
+    * Parameters:
+    * evt
+    */
+    onZoom: function(evt){
+        if(this.feature){
+            var oFeature = this.feature;
+            this.resetFeature();
+            // Make sure the hover feature is still among the layer.features
+            // before setting it hover again
+            if (OpenLayers.Util.indexOf(this.layer.features, oFeature) != -1){
+                this.setFeature(oFeature, evt);
+            }
+        }
+    },
+
+    /**
+    * Method: setFeature
+    * Change the color of current feature over the mouse.  Can display a popup
+    * At the same time.  The feature becomes the current feature.
+    *
+    * Parameters:
+    * evt
+    */
+    setFeature: function(feature, evt){
+        var layer = feature.layer;
+        layer.drawFeature( feature, this.style );
+        if(this.displayPopup){
+            this.addInfoPopup(feature, evt);
+        }
+        var event = {feature: feature};
+        this.events.triggerEvent("featureset", event);
+        this.feature = feature;
+    },
+
+    /**
+    * Method: resetFeature
+    * Draw this.feature to its original color.  If there was a popup, it's
+    * also removed.  this.feature becomes null.
+    *
+    */
+    resetFeature: function(){
+        var layer = this.feature.layer;
+        if (OpenLayers.Util.indexOf(layer.features,
+                                    this.feature) != -1){
+            layer.drawFeature(this.feature);
+        }
+        if(this.displayPopup){
+            this.removeInfoPopup(this.feature);
+        }
+        var event = {feature: this.feature};
+        this.events.triggerEvent("featurereset", event);
+        this.feature = null;
+    },
+
+    /**
+     * Method: addInfoPopup
+     * Called when a the mouse is over a feature but not selected.  It creates
+     * a popup with all feature attributes and is displayed at the left or right
+     * of the map depending where the mouse is.  That is why evt is needed.
+     *
+     * Parameters:
+     * feature - {OpenLayers.Feature}
+     *
+     * evt
+     */
+    addInfoPopup: function(feature, evt) {
+        var szHTML, oPopupPos, oMapExtent, nReso, oPopup, bLeft;
+
+        // feature attributes parsing in html
+        szHTML = "<div style='font-size:.8em'><h1>"+this.popupTitle+"</h1>";
+        if (!feature.cluster){
+            aszAttributes = feature.attributes;
+            for(var key in aszAttributes){
+                szHTML += key + " : " + aszAttributes[key] + "<br />";
+            }
+        }
+        szHTML +="</div>";
+
+        oMapExtent = this.layer.map.getExtent();
+        nReso = this.layer.map.getResolution();
+
+        // calculate where (left or right) the popup will appear
+        if(evt.xy){ // if we know the mouse position
+            var nMapWidth = this.layer.map.getSize().w;
+            var nMouseXPos = evt.xy.x;
+            bLeft = nMouseXPos >= (nMapWidth/2);
+        } else { // use feature and map center pixel to compare
+            var nMapXCenter = this.map.getExtent().getCenterPixel().x;
+            var nFeatureXPos = feature.geometry.getBounds().getCenterPixel().x;
+            bLeft = nFeatureXPos >= nMapXCenter;
+        }
+
+        if(bLeft){ // popup appears top-left position
+            oPopupPos = new OpenLayers.LonLat(oMapExtent.left,oMapExtent.top);
+            oPopupPos.lon += this.popupOffset.left * nReso;
+        } else { // popup appears top-right position
+            oPopupPos = new OpenLayers.LonLat(oMapExtent.right,oMapExtent.top);
+            oPopupPos.lon -= this.popupOffset.right * nReso;
+        }
+        oPopupPos.lat -= this.popupOffset.top * nReso;
+
+        oPopup = new OpenLayers.Popup.Anchored(
+            "chicken",
+            oPopupPos,
+            this.popupSize,
+            //new OpenLayers.Size(200,325),
+            //null,
+            szHTML,
+            null, null, null);
+        feature.popup = oPopup;
+        this.map.addPopup(oPopup);
+    },
+
+    /**
+     * Method: removeInfoPopup
+     * Remove the popup of feature when the mouse is no longer hover it.
+     *
+     * Parameters:
+     * feature - {OpenLayers.Feature}
+     */
+    removeInfoPopup: function(feature) {
+        this.map.removePopup(feature.popup);
+        feature.popup.destroy();
+        feature.popup = null;
+    },
+
+    /**
+     * Method: activate
+     * Activates the control.
+     *
+     * Returns:
+     * {Boolean} The control was effectively activated.
+     */
+    activate: function () {
+        if (!this.active) {
+            if(this.layers) {
+                this.map.addLayer(this.layer);
+            }
+        }
+        return OpenLayers.Control.prototype.activate.apply(
+            this, arguments
+        );
+    },
+
+    /**
+     * Method: deactivate
+     * Deactivates a control and it's associated handler if any.  The exact
+     * effect of this depends on the control itself.
+     *
+     * Returns:
+     * {Boolean} True if the control was effectively deactivated or false
+     *           if the control was already inactive.
+     */
+    deactivate: function () {
+        if (this.active) {
+            if (this.handler) {
+                this.handler.deactivate();
+            }
+            this.active = false;
+            if(this.feature){
+                this.resetFeature();
+            }
+            this.events.triggerEvent("deactivate");
+            return true;
+        }
+        return false;
+    },
+    CLASS_NAME: "OpenLayers.Control.HighlightFeature"
+});
+
+    // Define vector layer for tooltip
+    var tooltipStyleMap = new OpenLayers.StyleMap({
+        'default': new OpenLayers.Style({
+            pointRadius: 1,
+            strokeColor: "blue",
+            strokeWidth: 10,
+            strokeOpacity: 0,
+            fillOpacity: 0,
+            cursor: 'pointer'
+        }),
+        'selected': new OpenLayers.Style({
+            pointRadius: 1,
+            strokeColor: "yellow",
+            strokeWidth: 10,
+            strokeOpacity: 0,
+            fillOpacity: 0,
+            cursor: 'pointer'
+        }),
+        'temporary': new OpenLayers.Style({
+            pointRadius: 1,
+            strokeColor: 'red',
+            strokeWidth: 10,
+            strokeOpacity: 0,
+            fillOpacity: 0,
+            cursor: 'pointer'
+        })
+    });
+    var tlayer = new OpenLayers.Layer.Vector('tooltipLayer', {
+        styleMap: tooltipStyleMap
+    });
+    lizMap.map.addLayer(tlayer);
+    tlayer.setVisibility(true);
+
+    var tooltipControl = new OpenLayers.Control.HighlightFeature([tlayer],{
+        displayPopup: true,
+        popupOffset: {
+            'left': 45,
+            'right': 0,
+            'top': 5
+        },
+        popupTitle: "State information",
+        popupSize: new OpenLayers.Size(200,375),
+        style:{
+            pointRadius: 6,
+            strokeColor: "cyan",
+            strokeWidth: 3,
+            strokeOpacity: 1,
+            fillOpacity: 0.2,
+            fillColor: "transparent"
+        }
+    });
+    tooltipControl.addInfoPopup = function(feature, evt) {
+        //~ console.log( "tooltip activated");
+        var lname = $('#tooltip-layer-list').val();//feature.layer.name.split("@")[1];
+        var lconfig = lizMap.config.layers[lname];
+        var tconfig = lizMap.config.tooltipLayers[lname];
+        var tf = tconfig['fields'].trim();
+        var tooltipFields = tf.split(/[\s,]+/);
+        var hiddenFields = [];
+        if ( 'attributeLayers' in lizMap.config ) {
+            var attconfig = lizMap.config.attributeLayers[lname];
+            var hf = attconfig['hiddenFields'].trim();
+            var hiddenFields = hf.split(/[\s,]+/);
+        }
+        var cAliases = lconfig['alias'];
+        var html = '<div style="background-color:#F0F0F0 !important;">';
+        html+= '<table class="lizmapPopupTable">';
+        for (a in feature.attributes){
+            // Do no show hiddenfields
+            if( ($.inArray(a, hiddenFields) > -1) )
+                continue;
+            // show only tootlip fields if some fields given
+            if( tf != '' && !($.inArray(a, tooltipFields) > -1) )
+                continue;
+            html+= '<tr><th>' + cAliases[a] + '</th><td>' + feature.attributes[a] + '</td></tr>';
+        }
+        html+= '</table>';
+        html+= '</div>';
+        var lonlat = feature.geometry.getBounds().getCenterLonLat();
+        var tpopup = new OpenLayers.Popup.Anchored('tooltipPopup',
+            lonlat,
+            new OpenLayers.Size(250,300),
+            html,
+            {size: {w: 14, h: 14}, offset: {x: -7, y: -7}},
+            false
+        );
+        tpopup.autoSize = true;
+        tpopup.backgroundColor = 'rgba(0, 0, 0, 0.7)';
+
+        feature.popup = tpopup;
+        lizMap.map.addPopup( tpopup );
+    };
+
+    lizMap.map.addControl(tooltipControl);
+    controls['tooltip-layer'] = tooltipControl;
+
+    $('#tooltip-layer button.btn-tooltip-layer-clear').click(function() {
+        $('#button-tooltip-layer').click();
+        return false;
+    });
+    $('#tooltip-layer-list').change( function() {
+        var aName = $(this).val();
+        tlayer.destroyFeatures();
+        tooltipControl.deactivate();
+        if ( aName == '' )
+            return;
+        $('#tooltip-layer-list').addClass('loading').attr('disabled','');
+
+        // Get selected features
+        var selectionLayer = getLayerNameByCleanName( aName );
+
+        if( !selectionLayer )
+            selectionLayer = aName;
+        var featureid = getVectorLayerSelectionFeatureIdsString( selectionLayer );
+
+        // Get WFS url and options
+        var getFeatureUrlData = getVectorLayerWfsUrl( aName, null, featureid );
+
+        // Build WFS url
+        var wfsUrl = OpenLayers.Util.urlAppend(
+            getFeatureUrlData['url'],
+            OpenLayers.Util.getParameterString( getFeatureUrlData['options'] )
+        );
+
+        // Get data
+        $.get( getFeatureUrlData['url'], getFeatureUrlData['options'], function(data) {
+
+            var service = OpenLayers.Util.urlAppend(lizUrls.wms
+                ,OpenLayers.Util.getParameterString(lizUrls.params)
+            );
+            $.get(service, {
+                'SERVICE':'WFS'
+               ,'VERSION':'1.0.0'
+               ,'REQUEST':'DescribeFeatureType'
+               ,'TYPENAME':aName
+               ,'OUTPUTFORMAT':'JSON'
+            }, function(describe) {
+
+                var lConfig = config.layers[aName];
+                var tconfig = config.tooltipLayers[aName];
+                config.layers[aName]['alias'] = describe.aliases;
+
+                loadProjDefinition( lConfig.crs, function( aProj ) {
+                    var gFormat = new OpenLayers.Format.GeoJSON({
+                        externalProjection: lConfig.crs,
+                        internalProjection: lizMap.map.getProjection()
+                    });
+                    var tfeatures = gFormat.read( data );
+                    tlayer.addFeatures( tfeatures );
+                    if ( ('displayGeom' in tconfig) && tconfig.displayGeom == 'True' )
+                        if ( ('colorGeom' in tconfig) && tconfig.colorGeom != '' )
+                            tooltipControl.style.strokeColor = tconfig.colorGeom;
+                        else
+                            tooltipControl.style.strokeColor = 'cyan';
+                    else
+                        tooltipControl.style.strokeColor = 'transparent';
+                    tooltipControl.activate();
+                    $('#tooltip-layer-list').removeClass('loading').removeAttr('disabled');
+                });
+
+            },'json');
+
+        },'json');
+    });
+    $('#tooltip-layer-list').removeClass('loading').removeAttr('disabled');
+
   }
 
   function getLayerConfigById( aLayerId, aConfObjet, aIdAttribute ) {
@@ -3116,7 +4070,7 @@ var lizMap = function() {
     });
     measureControls.perimeter.measure = function(geometry, eventType) {
         var stat, order;
-        if(geometry.CLASS_NAME.indexOf('LineString') > -1) {
+        if( OpenLayers.Util.indexOf( geometry.CLASS_NAME, 'LineString' ) > -1) {
             stat = this.getBestLength(geometry);
             order = 1;
         } else {
@@ -3627,15 +4581,22 @@ var lizMap = function() {
    * {jQuery Object} The message added.
    */
   function exportVectorLayer( aName, eformat ) {
+      // right not set
+      if ( !('exportLayers' in lizMap.config.options) || lizMap.config.options.exportLayers != 'True' ) {
+        mAddMessage(lizDict['layer.export.right.required'],'error',true);
+        return false;
+      }
 
       // Set function parameters if not given
       eformat = typeof eformat !== 'undefined' ?  eformat : 'GeoJSON';
 
       // Get selected features
-      var selectionLayer = getLayerNameByCleanName( aName );
+      var cleanName = lizMap.cleanName( aName );
+      var selectionLayer = getLayerNameByCleanName( cleanName );
 
       if( !selectionLayer )
         selectionLayer = aName;
+
       var featureid = getVectorLayerSelectionFeatureIdsString( selectionLayer );
 
       // Get WFS url and options
@@ -3662,8 +4623,14 @@ var lizMap = function() {
       var featureidParameter = '';
       if( aName in config.layers && config.layers[aName]['selectedFeatures'] ){
           var fids = [];
+
+          // Get WFS typename
+          var typeName = aName.split(' ').join('_');
+          if ( 'shortname' in config.layers[aName] )
+              typeName = configLayer.shortname;
+
           for( var id in config.layers[aName]['selectedFeatures'] ) {
-              fids.push( aName + '.' + config.layers[aName]['selectedFeatures'][id] );
+              fids.push( typeName + '.' + config.layers[aName]['selectedFeatures'][id] );
           }
           if( fids.length )
               featureidParameter = fids.join();
@@ -3682,7 +4649,10 @@ var lizMap = function() {
       restrictToMapExtent = typeof restrictToMapExtent !== 'undefined' ?  restrictToMapExtent : false;
 
       // Build WFS request parameters
-      var typeName = aName.replace(' ','_');
+      var configLayer = config.layers[aName];
+      var typeName = aName.split(' ').join('_');
+      if ( 'shortname' in configLayer )
+        typeName = configLayer.shortname;
       var layerName = cleanName(aName);
 
       var wfsOptions = {
@@ -3729,7 +4699,7 @@ var lizMap = function() {
 
       // Optionnal parameter geometryname
       if( geometryName
-        && ['none', 'extent', 'centroid'].indexOf( geometryName ) != -1
+        && $.inArray( geometryName, ['none', 'extent', 'centroid'] ) != -1
       ){
           wfsOptions['GEOMETRYNAME'] = geometryName;
       }
@@ -3740,6 +4710,18 @@ var lizMap = function() {
       getFeatureUrlData['options'] = wfsOptions;
 
       return getFeatureUrlData;
+  }
+
+  function getVectorLayerFeatureTypes() {
+      if ( wfsCapabilities == null )
+          return [];
+      return wfsCapabilities.find('FeatureType');
+  }
+
+  function getVectorLayerResultFormat() {
+      if ( wfsCapabilities == null )
+          return [];
+      return wfsCapabilities.find('Capability > Request > GetFeature > ResultFormat > *');
   }
 
 
@@ -3799,6 +4781,20 @@ var lizMap = function() {
      */
     cleanName: function( aName ) {
       return cleanName( aName );
+    },
+
+    /**
+     * Method: getNameByCleanName
+     */
+    getNameByCleanName: function( cleanName ) {
+      return getNameByCleanName( cleanName );
+    },
+
+    /**
+     * Method: getNameByShortName
+     */
+    getNameByShortName: function( shortName ) {
+      return getNameByShortName( shortName );
     },
 
     /**
@@ -3868,6 +4864,18 @@ var lizMap = function() {
       return externalBaselayersReplacement;
     },
 
+    /**
+     * Method: launchTooltipLayer
+     */
+    launchTooltipLayer: function( aLayerName ) {
+        var tlOptions = $('#tooltip-layer-list option[value="'+aLayerName+'"]');
+        if ( tlOptions.length == 1 && $('#tooltip-layer-list').val() != aLayerName)
+            $('#tooltip-layer-list').val( aLayerName ).change();
+        else if ( tlOptions.length != 1 && $('#tooltip-layer-list').val() != '' )
+            $('#tooltip-layer-list').val('').change();
+        return ($('#tooltip-layer-list').val() == aLayerName);
+    },
+
 
     launchEdition: function( aLayerId, aFid) {
         return false;
@@ -3896,6 +4904,20 @@ var lizMap = function() {
     },
 
     /**
+     * Method: getVectorLayerFeatureType
+     */
+    getVectorLayerFeatureTypes: function() {
+      return getVectorLayerFeatureTypes();
+    },
+
+    /**
+     * Method: getVectorLayerResultFormat
+     */
+    getVectorLayerResultFormat: function() {
+      return getVectorLayerResultFormat();
+    },
+
+    /**
      * Method: getLayerConfigById
      */
     getLayerConfigById: function( aLayerId, aConfObjet, aIdAttribute ) {
@@ -3912,22 +4934,43 @@ var lizMap = function() {
         config = cfgData;
         config.options.hasOverview = false;
 
+        // store layerIDs
+        if ( 'useLayerIDs' in config.options && config.options.useLayerIDs == 'True' ) {
+            for ( var layerName in config.layers ) {
+                var configLayer = config.layers[layerName];
+                layerIdMap[configLayer.id] = layerName;
+            }
+        }
+        // store shortnames
+        for ( var layerName in config.layers ) {
+            var configLayer = config.layers[layerName];
+            if ( 'shortname' in configLayer )
+                shortNameMap[configLayer.shortname] = layerName;
+        }
+
          //get capabilities
         var service = OpenLayers.Util.urlAppend(lizUrls.wms
           ,OpenLayers.Util.getParameterString(lizUrls.params)
         );
         $.get(service
-          ,{SERVICE:'WMTS',REQUEST:'GetCapabilities',VERSION:'1.0.0'}
-          ,function(wmtsCapaData) {
-              var wmtsFormat = new OpenLayers.Format.WMTSCapabilities({});
-              wmtsCapabilities = wmtsFormat.read( wmtsCapaData );
-              //console.log( wmtsCapabilities );
-        $.get(service
           ,{SERVICE:'WMS',REQUEST:'GetCapabilities',VERSION:'1.3.0'}
           ,function(data) {
+        $.get(service
+          ,{SERVICE:'WMTS',REQUEST:'GetCapabilities',VERSION:'1.0.0'}
+          ,function(wmtsCapaData) {
+        $.get(service
+          ,{SERVICE:'WFS',REQUEST:'GetCapabilities',VERSION:'1.0.0'}
+          ,function(wfsCapaData) {
+
           //parse capabilities
           if (!parseData(data))
             return true;
+
+              var wmtsFormat = new OpenLayers.Format.WMTSCapabilities({});
+              wmtsCapabilities = wmtsFormat.read( wmtsCapaData );
+              //console.log( wmtsCapabilities );
+
+              wfsCapabilities = $(wfsCapaData);
 
           //set title and abstract coming from capabilities
 //          document.title = capabilities.title ? capabilities.title : capabilities.service.title;
@@ -3959,6 +5002,16 @@ var lizMap = function() {
           // create the switcher
           createSwitcher();
           self.events.triggerEvent("layersadded", self);
+
+
+          // Verifying z-index
+          var lastLayerZIndex = map.layers[map.layers.length-1].getZIndex();
+          if ( lastLayerZIndex > map.Z_INDEX_BASE['Feature'] - 100 ) {
+            map.Z_INDEX_BASE['Feature'] = lastLayerZIndex + 100;
+            map.Z_INDEX_BASE['Popup'] = map.Z_INDEX_BASE['Feature'] + 25;
+            if ( map.Z_INDEX_BASE['Popup'] > map.Z_INDEX_BASE['Control'] - 25 )
+                map.Z_INDEX_BASE['Control'] = map.Z_INDEX_BASE['Popup'] + 25;
+          }
 
           // initialize the map
           //$('#switcher').height(0);
@@ -4021,6 +5074,36 @@ var lizMap = function() {
           // create permalink
           createPermalink();
 
+          // Toggle OpenLayers visibility to true for legend checkboxes
+          // 1/ Check permalink is used or not
+          var layersHaveBeenActivatedByPermalink = false;
+          $('#switcher button.checkbox[name="layer"]').each(function(){
+            var cb = $(this);
+            var cleanName = cb.val();
+            var oLayer = map.getLayersByName(cleanName)[0];
+            if( oLayer && oLayer.visibility )
+              layersHaveBeenActivatedByPermalink = true;
+          });
+          // 2/ Toggle checkboxes
+          $('#switcher button.checkbox[name="layer"]').each(function(){
+            var cb = $(this);
+            var cleanName = cb.val();
+            var oLayer = map.getLayersByName(cleanName)[0];
+            if( oLayer ){
+
+              // toggle checked class for permalink layers
+              // because OL has already drawn them in map
+              cb.toggleClass('checked', oLayer.visibility);
+
+              // Check layers wich are not yet checked but need to ( for normal behaviour outside permalink )
+              // This will trigger layers to be drawn
+              if( !cb.hasClass('checked') && oLayer.isVisible && !layersHaveBeenActivatedByPermalink){
+                cb.click();
+              }
+            }
+
+          });
+
           // verifying the layer visibility for permalink
           if (verifyingVisibility) {
             map.getControlsByClass('OpenLayers.Control.ArgParser')[0].configureLayers();
@@ -4036,24 +5119,38 @@ var lizMap = function() {
           $('#navbar div.slider').slider("value",map.getZoom());
           map.events.on({
             zoomend : function() {
+              // Update legends
               $('#switcher table.tree tr.legendGraphics.initialized').each(function() {
                 var self = $(this);
                 var name = self.attr('id').replace('legend-','');
                 var url = getLayerLegendGraphicUrl(name, true);
-                self.find('div.legendGraphics img').attr('src',url);
+                if ( url != null && url != '' ) {
+                    // Change image attribute data-src
+                    self.find('div.legendGraphics img').attr( 'data-src', url );
+                    // Only change image attribute src if legend is displayed
+                    if( self.hasClass('visible') ){
+                        self.find('div.legendGraphics img').attr( 'src', url );
+                    }
+                }
               });
               // update slider position
-              $('#navbar div.slider').slider("value",this.getZoom());
+              $('#navbar div.slider').slider("value", this.getZoom());
             }
           });
 
           // Connect signal/slot when layer style is changed
           lizMap.events.on({
             'layerstylechanged': function(evt){
+
+              // Change legend data-src and legend src if legend is visible
               var name = evt.featureType;
               var url = getLayerLegendGraphicUrl(name, true);
-              var lSel = '#switcher table.tree tr#legend-' + name + ' div.legendGraphics img' ;
-              $(lSel).attr('src',url);
+              if ( url != null && url != '' ) {
+                  var lSel = '#switcher table.tree tr#legend-' + name + ' div.legendGraphics img' ;
+                  $(lSel).attr('data-src',url);
+                  if( $('#switcher table.tree tr#legend-' + name).hasClass('visible') )
+                      $(lSel).attr('src',url);
+              }
             }
           });
 
@@ -4168,6 +5265,7 @@ var lizMap = function() {
           $('#loading').dialog('close');
         }, "text");
         }, "text");
+        }, "text");
       });
     }
   };
@@ -4202,7 +5300,8 @@ lizMap.events.on({
         evt.config.layers['emptyBaselayer'] = layerConfig;
 
         evt.baselayers.push(new OpenLayers.Layer.Vector('emptyBaselayer',{
-          maxExtent: evt.map.maxExtent
+          isBaseLayer: true
+         ,maxExtent: evt.map.maxExtent
          ,maxScale: evt.map.maxScale
          ,minScale: evt.map.minScale
          ,numZoomLevels: evt.map.numZoomLevels
@@ -4667,6 +5766,42 @@ lizMap.events.on({
           evt.baselayers.push(ignphoto);
           evt.map.allOverlays = false;
        }
+       if (('ignCadastral' in evt.config.options) && evt.config.options.ignCadastral == 'True' && ('ignKey' in evt.config.options)) {
+          var options = {
+            zoomOffset: 0,
+            maxResolution:156543.03390625,
+            numZoomLevels:19
+          };
+          if (lOptions.zoomOffset != 0) {
+            options.zoomOffset = lOptions.zoomOffset;
+            options.maxResolution = lOptions.maxResolution;
+          }
+          if (lOptions.zoomOffset+lOptions.numZoomLevels <= options.numZoomLevels)
+            options.numZoomLevels = lOptions.numZoomLevels;
+          else
+            options.numZoomLevels = options.numZoomLevels - lOptions.zoomOffset;
+          var igncadastral = new OpenLayers.Layer.WMTS({
+            name: "igncadastral",
+            url: "http://gpp3-wxs.ign.fr/"+evt.config.options.ignKey+"/wmts",
+            layer: "CADASTRALPARCELS.PARCELS",
+            matrixSet: "PM",
+            style: "normal",
+            format: "image/png",
+            projection: new OpenLayers.Projection("EPSG:3857"),
+            attribution: 'Fond&nbsp;: &copy;IGN <a href="http://www.geoportail.fr/" target="_blank"><img src="http://api.ign.fr/geoportail/api/js/2.0.0beta/theme/geoportal/img/logo_gp.gif"></a> <a href="http://www.geoportail.gouv.fr/depot/api/cgu/licAPI_CGUF.pdf" alt="TOS" title="TOS" target="_blank">Conditions d\'utilisation</a>'
+            , numZoomLevels: options.numZoomLevels, maxResolution: options.maxResolution, minZoomLevel:options.zoomOffset
+            ,zoomOffset: options.zoomOffset
+
+          });
+          igncadastral.maxExtent = maxExtent;
+          var igncadastralCfg = {
+             "name":"igncadastral"
+            ,"title":"IGN Cadastre"
+          };
+          evt.config.layers['igncadastral'] = igncadastralCfg;
+          evt.baselayers.push(igncadastral);
+          evt.map.allOverlays = false;
+       }
       } catch(e) {
          //problems with google
          var myError = e;
@@ -4734,6 +5869,7 @@ lizMap.events.on({
             ,gutter:(layerConfig.cached == 'True') ? 0 : 5
             ,buffer:0
             ,singleTile:(layerConfig.singleTile == 'True')
+            ,ratio:1
           }));
           evt.map.allOverlays = false;
 
@@ -4758,6 +5894,17 @@ lizMap.events.on({
           $('#button-switcher').click();
       }
 
+        var ovCtrl = lizMap.map.getControlsByClass('OpenLayers.Control.OverviewMap');
+        if ( ovCtrl.length != 0 ) {
+            ovCtrl = ovCtrl[0];
+            if ( ovCtrl.ovmap.layers.length > 1 ) {
+                for ( var i=0, len=ovCtrl.ovmap.layers.length; i<len; i++ ){
+                    var l = ovCtrl.ovmap.layers[i];
+                    if( l.name.toLowerCase() != 'overview' )
+                        l.destroy();
+                }
+            }
+        }
    }
 
 });

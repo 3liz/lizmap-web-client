@@ -20,19 +20,6 @@ body {
   margin-top:1px;
   height:30px;
   width:235px;
-  margin-left:120px;
-}
-#headermenu.mobile .navbar-search {
-  margin-top:1px;
-  height:30px;
-  width:100px;
-  margin-left:10px;
-
-}
-#headermenu.mobile #auth {
-  position: absolute;
-  top: -30px;
-  right: 5px;
 }
 
 #headermenu .navbar-search .search-query {
@@ -62,7 +49,8 @@ body {
   display:none;
 }
 #headermenu .dropdown-menu {
-  background-color: rgb(255,255,255);
+  background-color: #4A4A4A;
+  background-color: rgba(0,0,0,0.7);
 }
 #headermenu .dropdown-caret {
   position: absolute;
@@ -103,12 +91,12 @@ body {
   overflow: hidden;
 }
 #headermenu .dropdown-inner .items li {
-  padding: 0px 4px;
+  padding: 3px 6px;
 }
 #headermenu .dropdown-inner .items li > a {
   display: block;
   overflow: hidden;
-  color: rgb(51,51,51);
+  color: white;
   white-space: normal;
 }
 
@@ -237,6 +225,20 @@ CSS Sprite ositions calculated via http://instantsprite.com/ or https://draeton.
 #mapmenu .nav-list > li.permaLink a:hover .icon {
   background-position: -650px 0px;
 }
+#mapmenu .nav-list > li.tooltip-layer .icon {
+  background-position: -775px 0px;
+}
+#mapmenu .nav-list > li.tooltip-layer.active .icon,
+#mapmenu .nav-list > li.tooltip-layer a:hover .icon {
+  background-position: -750px 0px;
+}
+#mapmenu .nav-list > li.timemanager .icon {
+  background-position: -625px 0px;
+}
+#mapmenu .nav-list > li.timemanager.active .icon,
+#mapmenu .nav-list > li.timemanager a:hover .icon {
+  background-position: -600px 0px;
+}
 
 
 /* navbar */
@@ -335,7 +337,7 @@ CSS Sprite ositions calculated via http://instantsprite.com/ or https://draeton.
 */
   right:50%;
   max-width:50%;
-  background:url('http://localhost/LIZMAP_3/lizmap-web-client/lizmap/www/css/img/header-background-medium.png');
+  background:url('img/header-background-medium.png');
 }
 #dock.full {
 /*
@@ -343,7 +345,7 @@ CSS Sprite ositions calculated via http://instantsprite.com/ or https://draeton.
 */
   right:0px;
   max-width:100%;
-  background:url('http://localhost/LIZMAP_3/lizmap-web-client/lizmap/www/css/img/header-background-medium.png');
+  background:url('img/header-background-medium.png');
 }
 #map-content.half, #map-content.full{
   margin-left: 25%;
@@ -489,15 +491,14 @@ SubDock
 }
 
 #bottom-dock h3 {
-  margin: 1px;
-/*
-  background: none repeat scroll 0% 0% #2B2B2B;
-  color: #FBFBFB;
-*/
-  line-height: 1.3;
-  border-bottom: 1px solid #DDD;
-  border-top: 1px solid #DDD;
-  font-size: 0.9em;
+  margin-bottom: 0px;
+  margin-top: 0px;
+  margin-left:10px;
+  line-height:20px;
+  border-bottom: 1px dashed #F0F0F0;
+  font-weight: bold;
+  color: #FFF;
+  font-size:1em;
 }
 
 #bottom-dock .title .btn{
@@ -646,24 +647,7 @@ table.attribute-table-table tr.selected a:hover{
 /*
 Timemanager
 */
-#toolbar #timemanager-menu h3 .icon,
-#menu #timemanager-menu h3 .icon {
-  background-image : url(images/sprite_20_tools.png);
-}
-.navbar .navbar-inner .timemanager .icon {
-  background-image:url("images/sprite_20_tools.png");
-}
-.navbar .nav .timemanager .icon {
-  background-position: -625px 0px;
-}
-.navbar .nav .timemanager a:hover .icon,
-.navbar .nav .timemanager.active a .icon {
-  background-position: -600px 0px;
-}
-#toolbar .timemanager h3 .icon,
-#menu .timemanager h3 .icon {
-  background-position: -625px 0px;
-}
+
 #tmLayers button{
   width:16px;
   height:16px;
@@ -717,14 +701,14 @@ Timemanager
   height:100%;
   z-index:100000;
   background-color:#EFEFEF;
-  color:grey;
+  color:#333;
   overflow:auto;
   font-size:0.85em;
   padding:5px;
 }
 
 #metadata h2{
-  color:#80B219;
+  color:#333;
   font-weight:normal;
 }
 
@@ -766,7 +750,7 @@ div.modal h3,
   margin-bottom: 5px;
   border-bottom: 1px dashed #F0F0F0;
 }
-#mini-dock h3, #bottom-dock h3 {
+#mini-dock h3{
   background-color:#4A4A4A;
   background-color:rgba(0,0,0,0.7);
 }
@@ -953,6 +937,18 @@ div.modal h3 .text {
 #mini-dock .permaLink h3 .icon {
   background-position : -675px 0px;
 }
+#toolbar .tooltip-layer h3 .icon,
+#menu .tooltip-layer h3 .icon,
+#dock .tooltip-layer h3 .icon,
+#mini-dock .tooltip-layer h3 .icon {
+  background-position: -775px 0px;
+}
+#toolbar .timemanager h3 .icon,
+#menu .timemanager h3 .icon,
+#dock .timemanager h3 .icon,
+#mini-dock .timemanager h3 .icon {
+  background-position : -625px 0px;
+}
 
 #map-content {
   margin-left : 0px;
@@ -1081,7 +1077,10 @@ div.modal h3 .text {
 #sub-dock .menu-content .btn.btn-success,
 #mini-dock .menu-content .btn.btn-success{
   background-color: #93C01F;
-  background-image: -moz-linear-gradient(center top, #9BC144, #93C01F);
+  background-image: -webkit-linear-gradient(center top, #9BC144, #93C01F);
+  background-image:    -moz-linear-gradient(center top, #9BC144, #93C01F);
+  background-image:      -o-linear-gradient(center top, #9BC144, #93C01F);
+  background-image:         linear-gradient(to bottom, #9BC144, #93C01F);
 }
 #dock .print select,
 #mini-dock .print select {
@@ -1204,13 +1203,23 @@ div.modal h3 .text {
 #switcher-layers-actions {
   background-color: inherit;
   margin-bottom: 1px;
+  padding-right: 10px;
+  text-align: right;
   border-top: 1px solid rgba(255,255,255,0.4);
+
+}
+#switcher-layers-actions div.btn-group > ul{
+  left:auto;
+  right:0px;
 }
 #switcher-layers-actions.active {
   border-top: 1px solid rgba(255,255,255,0.6);
 }
 #switcher-layers-actions button{
   border: none;
+}
+#switcher-layers-actions button#layerActionUnfilter{
+  margin-left: 15px;
 }
 
 
@@ -1266,7 +1275,8 @@ div.modal h3 .text {
 #switcher tr.liz-layer.disabled a.expander {
   display:none;
 }
-#switcher button.btn{
+#switcher button.btn,
+#tmLayers button.btn{
   width:18px;
   height:18px;
   background: none;
@@ -1277,9 +1287,14 @@ div.modal h3 .text {
   background-position : -16px -94px;
   transition: none;
 }
+#switcher button.btn.active,
+#tmLayers button.btn.active{
+  background-color : #0094D6;
+}
 #switcher button.checkbox{
 }
-#switcher button.checkbox.checked{
+#switcher button.checkbox.checked,
+#tmLayers button.checkbox.checked{
   background-color : #0094D6;
   background-position : -48px -80px;
 }
@@ -1629,6 +1644,12 @@ div.modal h3 .text {
   padding:2px;
 }
 
+#tooltip-layer select.loading {
+    background-image: url("images/download_layer.gif");
+    background-repeat: no-repeat;
+    background-position: 90% center;
+}
+
 #message {
   top : 0;
   left : 50%;
@@ -1701,7 +1722,8 @@ div.modal h3 .text {
 
 .lizmapPopup.olPopup,
 #map-content .lizmapPopup{
-  background: #F6F6F6 !important;
+  background-color:#4A4A4A !important;
+  background-color:rgba(0,0,0,0.7) !important;
   border: 1px solid #C9C9C9 !important;
   color: black !important;
 }
@@ -1722,11 +1744,11 @@ div.modal h3 .text {
 .lizmapPopup.olPopup .lizmapPopupContent h4,
 #map-content .lizmapPopupContent h4{
   margin: 0px;
-  background: #2B2B2B !important;
-  color : #FBFBFB !important;
+  color : white !important;
   font-size: 1em;
   padding: 2px;
   padding-left: 5px;
+  border-bottom: 1px dashed white;
 }
 .lizmapPopup.olPopup .lizmapPopupContent a,
 #map-content .lizmapPopupContent a{
@@ -1734,9 +1756,9 @@ div.modal h3 .text {
 }
 .lizmapPopup.olPopup .lizmapPopupDiv,
 #map-content .lizmapPopupDiv{
-  padding:5px !important;
-  padding-right: 20px !important;
-  padding-left: 20px !important;
+  margin: 10px !important;
+  margin-bottom: 20px !important;
+  background-color:#F0F0F0 !important;
 }
 .lizmapPopup.olPopup .lizmapPopupTable,
 #map-content .lizmapPopupTable{
@@ -1744,15 +1766,16 @@ div.modal h3 .text {
   margin-bottom:10px;
   font-size:0.8em;
   width:100%;
+/*
   border: 1px solid #2B2B2B !important;
+*/
   border-collapse: collapse;
 }
 .lizmapPopup.olPopup .lizmapPopupTable thead,
 #map-content .lizmapPopupTable thead {
-  color: white;
-  background-color: #81B00E;
+  color: black;
+  background-color: lightgrey;
   font-size: 1em;
-  border-bottom: 1px solid #2B2B2B !important;
 }
 .lizmapPopup.olPopup .lizmapPopupTable th,
 #map-content .lizmapPopupTable th{
@@ -1855,4 +1878,57 @@ div.modal h3 .text {
 /* Transparent images instead of pink tiles */
 .olImageLoadError {
     display: none !important;
+}
+
+
+
+/* Tooltips */
+div.tooltip {
+  z-index: 2000 !important;
+  position:fixed !important;
+}
+.tooltip-inner{
+  display: inline-block;
+}
+
+
+/* only maps dock style */
+#home #projects h2 {
+  color: white;
+}
+#home #projects ul {
+  margin: auto;
+}
+#home #projects ul li div.thumbnail {
+  text-align: center;
+}
+
+
+
+/* Edition style */
+#edition .nav-tabs > li > a {
+  font-size: 1.2em;
+  color: gray;
+}
+#edition .nav > li > a:hover, .nav > li > a:focus {
+    text-decoration: none;
+}
+#edition .nav-tabs > li > a:hover, .nav-tabs > li > a:focus {
+    border-color: lightgrey;
+}
+#edition .nav-tabs > .active > a, .nav-tabs > .active > a:hover, .nav-tabs > .active > a:focus {
+    color: black;
+    cursor: default;
+    background-color: lightgrey;
+    border: 1px solid lightgrey;
+    border-bottom-color: transparent;
+}
+#edition div.tab-content {
+  border: 1px solid lightgrey;
+  padding: 10px;
+}
+#edition div.jforms-table-group{
+  background-color: lightgrey;
+  padding: 10px 0px;
+  border-radius: 10px;
 }

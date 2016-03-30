@@ -221,7 +221,7 @@ class editionCtrl extends jController {
         $attribute = $pConfig->loginFilteredLayers->$layername->filterAttribute;
 
         if (property_exists($pConfig->loginFilteredLayers->$layername, 'filterPrivate')
-         && $pConfig->loginFilteredLayers->$layername->filterPrivate = 'True')
+         && $pConfig->loginFilteredLayers->$layername->filterPrivate == 'True')
           $type = 'login';
 
         // Check if a user is authenticated
@@ -263,19 +263,20 @@ class editionCtrl extends jController {
 
     // Get datasource information from QGIS
     $datasourceMatch = preg_match(
-      "#dbname='([^ ]+)' (?:host=([^ ]+) )?(?:port=([0-9]+) )?(?:user='([^ ]+)' )?(?:password='([^ ]+)' )?(?:sslmode=([^ ]+) )?(?:key='([^ ]+)' )?(?:estimatedmetadata=([^ ]+) )?(?:srid=([0-9]+) )?(?:type=([a-zA-Z]+) )?(?:table=\"(.+)\" )?(?:\()?(?:([^ ]+)\) )?(?:sql=(.*))?#",
+      "#(?:dbname='([^ ]+)' )?(?:service='([^ ]+)' )?(?:host=([^ ]+) )?(?:port=([0-9]+) )?(?:user='([^ ]+)' )?(?:password='([^ ]+)' )?(?:sslmode=([^ ]+) )?(?:key='([^ ]+)' )?(?:estimatedmetadata=([^ ]+) )?(?:srid=([0-9]+) )?(?:type=([a-zA-Z]+) )?(?:table=\"([^ ]+)\" )?(?:\()?(?:([^ ]+)\) )?(?:sql=(.*))?#",
       $datasource,
       $dt
     );
     $dbname = $dt[1];
-    $host = $dt[2]; $port = $dt[3];
-    $user = $dt[4]; $password = $dt[5];
-    $sslmode = $dt[6]; $key = $dt[7];
-    $estimatedmetadata = $dt[8];
-    $srid = $dt[9]; $type = $dt[10];
-    $table = $dt[11];
-    $geocol = $dt[12];
-    $sql = $dt[13];
+    $service = $dt[2];
+    $host = $dt[3]; $port = $dt[4];
+    $user = $dt[5]; $password = $dt[6];
+    $sslmode = $dt[7]; $key = $dt[8];
+    $estimatedmetadata = $dt[9];
+    $srid = $dt[10]; $type = $dt[11];
+    $table = $dt[12];
+    $geocol = $dt[13];
+    $sql = $dt[14];
 
     // If table contains schema name, like "public"."mytable"
     // We need to add double quotes around and find the real table name (without schema)
@@ -301,18 +302,25 @@ class editionCtrl extends jController {
       $jdbParams = array(
         "driver" => $driver,
         "database" => realpath($this->repository->getPath().$dbname),
-        "extensions"=>"libspatialite.so"
+        "extensions"=>"libspatialite.so,mod_spatialite.so"
       );
     }
     else{
-      $jdbParams = array(
-        "driver" => $driver,
-        "host" => $host,
-        "port" => (integer)$port,
-        "database" => $dbname,
-        "user" => $user,
-        "password" => $password
-      );
+        if(!empty($service) ){
+          $jdbParams = array(
+            "driver" => $driver,
+            "service" => $service
+          );
+        }else{
+          $jdbParams = array(
+            "driver" => $driver,
+            "host" => $host,
+            "port" => (integer)$port,
+            "database" => $dbname,
+            "user" => $user,
+            "password" => $password
+          );
+        }
     }
 
     // Create the virtual jdb profile
@@ -430,7 +438,7 @@ class editionCtrl extends jController {
          and $this->formControls[$fieldName]->valueRelationData ){
           // Fill comboboxes of editType "Value relation" from relation layer
           // Query QGIS Server via WFS
-          $this->fillComboboxFromValueRelationLayer($fieldName);
+          $this->fillControlFromValueRelationLayer($fieldName);
       } else if ( $this->formControls[$fieldName]->fieldEditType == 8
                or $this->formControls[$fieldName]->fieldEditType == 'FileName'
                or $this->formControls[$fieldName]->fieldEditType == 'Photo' ) {
@@ -580,12 +588,12 @@ class editionCtrl extends jController {
 
 
   /**
-  * Get WFS data from a "Value Relation" layer and fill the combobox form control for a specific field.
+  * Get WFS data from a "Value Relation" layer and fill the form control for a specific field.
   * @param string $fieldName Name of QGIS field
   *
   * @return Modified form control
   */
-  private function fillComboboxFromValueRelationLayer($fieldName){
+  private function fillControlFromValueRelationLayer($fieldName){
 
     // Build WFS request parameters
     //   Get layername via id
@@ -623,8 +631,11 @@ class editionCtrl extends jController {
         }
       }
     }
-    if($expFilter)
+    if($expFilter){
       $params['EXP_FILTER'] = $expFilter;
+      // disable PROPERTYNAME in this case : if the exp_filter uses other fields, no data would be returned otherwise
+      unset( $params['PROPERTYNAME'] );
+    }
 
     // Build query
     $lizmapServices = lizmap::getServices();
@@ -655,21 +666,32 @@ class editionCtrl extends jController {
       }
       $dataSource = new jFormsStaticDatasource();
       // orderByValue
-      if(strtolower($this->formControls[$fieldName]->valueRelationData['orderByValue']) == 'true')
+      if(
+        strtolower( $this->formControls[$fieldName]->valueRelationData['orderByValue'] ) == 'true'
+        or
+        strtolower( $this->formControls[$fieldName]->valueRelationData['orderByValue'] ) == '1'
+      ){
         asort($data);
+      }
+
       $dataSource->data = $data;
       $this->formControls[$fieldName]->ctrl->datasource = $dataSource;
       // required
-      if(strtolower($this->formControls[$fieldName]->valueRelationData['allowNull']) == 'false')
+      if(
+        strtolower( $this->formControls[$fieldName]->valueRelationData['allowNull'] ) == 'false'
+        or
+        strtolower( $this->formControls[$fieldName]->valueRelationData['allowNull'] ) == '0'
+      ){
         $this->formControls[$fieldName]->ctrl->required = True;
+      }
     }
     else{
       if(!preg_match('#No feature found error messages#', $wfsData)){
-        $this->formControls[$fieldName]->ctrl->hint = 'Problem : cannot get data to fill this combobox !';
-        $this->formControls[$fieldName]->ctrl->help = 'Problem : cannot get data to fill this combobox !';
+        $this->formControls[$fieldName]->ctrl->hint = 'Problem : cannot get data to fill this control !';
+        $this->formControls[$fieldName]->ctrl->help = 'Problem : cannot get data to fill this control !';
       }else{
-        $this->formControls[$fieldName]->ctrl->hint = 'No data to fill this combobox !';
-        $this->formControls[$fieldName]->ctrl->help = 'No data to fill this combobox !';
+        $this->formControls[$fieldName]->ctrl->hint = 'No data to fill this control !';
+        $this->formControls[$fieldName]->ctrl->help = 'No data to fill this control !';
       }
     }
   }
@@ -725,6 +747,15 @@ class editionCtrl extends jController {
       // Loop through the data fields
       foreach($this->dataFields as $ref=>$prop){
         $form->setData($ref, $record->$ref);
+        // ValueRelation can be an array (i.e. {1,2,3})
+        if( $this->formControls[$ref]->fieldEditType == 15
+          or $this->formControls[$ref]->fieldEditType === 'ValueRelation' ){
+            $value = $record->$ref;
+            if($value[0] == '{'){
+              $arrayValue = explode(",",trim($value, "{}"));
+              $form->setData($ref, $arrayValue);
+            }
+        }
         if ( $this->formControls[$ref]->fieldEditType == 8
           or $this->formControls[$ref]->fieldEditType == 'FileName'
           or $this->formControls[$ref]->fieldEditType == 'Photo' ) {
@@ -793,10 +824,14 @@ class editionCtrl extends jController {
     }
 
     // Loop though the fields and filter the form posted values
-    $update = array(); $insert = array();
+    $update = array(); $insert = array(); $refs= array();
     foreach($fields as $ref){
       // Get and filter the posted data foreach form control
       $value = $form->getData($ref);
+
+      if(is_array($value)){
+        $value = '{'.implode(',',$value).'}';
+      }
 
       switch($this->formControls[$ref]->fieldDataType){
           case 'geometry':
@@ -812,6 +847,7 @@ class editionCtrl extends jController {
               }
             break;
           case 'date':
+      case 'datetime':
             $value = filter_var($value, FILTER_SANITIZE_STRING, FILTER_FLAG_NO_ENCODE_QUOTES);
             if ( !$value )
               $value = 'NULL';
@@ -861,7 +897,8 @@ class editionCtrl extends jController {
       }
       // Build the SQL insert and update query
       $insert[]=$value;
-      $update[]='"' . $ref .'" = ' . $value;
+      $refs[]='"'.$ref.'"';
+      $update[]='"'.$ref.'"='.$value;
     }
 
     $sql = '';
@@ -872,7 +909,7 @@ class editionCtrl extends jController {
       // featureId is set
       // SQL for updating on line in the edition table
       $sql = " UPDATE ".$this->table." SET ";
-      $sql.= implode(',', $update);
+      $sql.= implode(', ', $update);
       $v = ''; $i = 0;
       $sql.= ' WHERE';
       foreach($this->primaryKeys as $key){
@@ -896,7 +933,7 @@ class editionCtrl extends jController {
       }
       $dfields = array_map( "dquote", $fields );
       $sql = " INSERT INTO ".$this->table." (";
-      $sql.= implode(', ', $dfields);
+      $sql.= implode(', ', $refs);
       $sql.= " ) VALUES (";
       $sql.= implode(', ', $insert);
       $sql.= " );";
@@ -1063,15 +1100,31 @@ class editionCtrl extends jController {
     $attribute = $this->loginFilteredLayers['attribute'];
 
     // Get title layer
-    $layerXmlZero = $this->layerXml[0];
+    $_layerXmlZero = $this->layerXml;
+    $layerXmlZero = $_layerXmlZero[0];
     $_title = $layerXmlZero->xpath('title');
     $title = (string)$_title[0];
+
+    // Get form layout
+    $_editorlayout = $layerXmlZero->xpath('editorlayout');
+    $editorlayout = $_editorlayout[0];
+    if( $editorlayout == 'tablayout' ){
+        $_attributeEditorForm = $layerXmlZero->xpath('attributeEditorForm');
+        $formLayout = str_replace(
+            '@',
+            '',
+            json_encode($_attributeEditorForm[0] )
+        );
+    }else{
+        $formLayout = '{}';
+    }
 
     // Use template to create html form content
     $tpl = new jTpl();
     $tpl->assign(array(
       'title'=>$title,
-      'form'=>$form
+      'form'=>$form,
+      'formLayout'=>$formLayout
     ));
     $content = $tpl->fetch('view~edition_form');
 
