@@ -842,7 +842,7 @@ var lizEdition = function() {
         else if( node.type == 'field' ){
             html = '';
             var field = $('#' + formId + '_' + lizMap.cleanName(node.name) + '_label');
-            var fieldContainer = field.parent('div.control-group');
+            var fieldContainer = field.parents().closest('div.control-group');
             var parentGroup = $('#' + formId + '_group_' + lizMap.cleanName(parent.name) );
             if( !parentGroup.length )
                 parentGroup = $('#edition-form-tab-' + lizMap.cleanName(parent.name));
@@ -850,7 +850,7 @@ var lizEdition = function() {
             // Do it also for _choice input (photos and files)
             var field = $('#' + formId + '_' + lizMap.cleanName(node.name) + '_choice_label');
             if( field.length){
-                var fieldContainer = field.parent('div.control-group');
+                var fieldContainer = field.parents().closest('div.control-group');
                 fieldContainer.appendTo(parentGroup);
             }
         }
