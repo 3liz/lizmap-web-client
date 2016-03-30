@@ -62,6 +62,16 @@ var lizMap = function() {
   var tree = {config:{type:'group'}};
 
   /**
+   * PRIVATE Property: getFeatureInfoVendorParams
+   * {object} Additionnal QGIS Server parameter for click tolerance in pixels
+   */
+  var getFeatureInfoVendorParams = {
+    'FI_POINT_TOLERANCE': 25,
+    'FI_LINE_TOLERANCE': 10,
+    'FI_POLYGON_TOLERANCE': 5
+  };
+
+  /**
    * PRIVATE Property: externalBaselayersReplacement
    *
    */
@@ -2863,14 +2873,17 @@ var lizMap = function() {
   }
 
   function addFeatureInfo() {
+      var fiurl = OpenLayers.Util.urlAppend(
+        lizUrls.wms,
+        OpenLayers.Util.getParameterString(lizUrls.params)
+      )
       var info = new OpenLayers.Control.WMSGetFeatureInfo({
-            url: OpenLayers.Util.urlAppend(lizUrls.wms
-              ,OpenLayers.Util.getParameterString(lizUrls.params)
-            ),
+            url: fiurl,
             title: 'Identify features by clicking',
             type:OpenLayers.Control.TYPE_TOGGLE,
             queryVisible: true,
             infoFormat: 'text/html',
+            vendorParams: getFeatureInfoVendorParams,
             eventListeners: {
                 getfeatureinfo: function(event) {
                     var text = event.text;

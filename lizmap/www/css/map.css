@@ -52,6 +52,9 @@ body {
   background-color: #4A4A4A;
   background-color: rgba(0,0,0,0.7);
 }
+#headermenu .dropdown-menu > li > a{
+  color:white;
+}
 #headermenu .dropdown-caret {
   position: absolute;
   top: -7px;
@@ -99,6 +102,7 @@ body {
   color: white;
   white-space: normal;
 }
+
 
 /* mapmenu */
 #mapmenu {
