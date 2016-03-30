@@ -721,7 +721,7 @@ var lizEdition = function() {
                     layerConfig = config.layers[l.name];
                 if ( !layerConfig )
                     return true;
-                if (layerConfig.id != layerId)
+                if (layerConfig.id != aLayerId)
                     return true;
                 l.redraw(true);
                 return false;
