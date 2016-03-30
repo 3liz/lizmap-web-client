@@ -345,44 +345,64 @@ var lizMap = function() {
    * {text} the url
    */
   function getLayerLegendGraphicUrl(name, withScale) {
-    var layer = null
+    var layer = null;
+    var legendParams;
+    var service;
+
     $.each(layers,function(i,l) {
       if (layer == null && l.name == name)
         layer = l;
     });
-    //if (layer == null )
-      //return null;
-    var legendParams = {SERVICE: "WMS",
-                  VERSION: "1.3.0",
-                  REQUEST: "GetLegendGraphic",
-                  LAYERS: layer.params['LAYERS'],
-                  STYLES: layer.params['STYLES'],
-                  EXCEPTIONS: "application/vnd.ogc.se_inimage",
-                  FORMAT: "image/png",
-                  TRANSPARENT: "TRUE",
-                  WIDTH: 150,
-                  LAYERFONTSIZE: 9,
-                  ITEMFONTSIZE: 9,
-                  SYMBOLSPACE: 1,
-                  ICONLABELSPACE: 2,
-                  DPI: 96};
+
     var layerConfig = config.layers[layer.params['LAYERS']];
-    if (layerConfig.id==layerConfig.name)
-      legendParams['LAYERFONTBOLD'] = "TRUE";
-    else {
-      legendParams['LAYERFONTSIZE'] = 0;
-      legendParams['LAYERSPACE'] = 0;
-      legendParams['LAYERFONTBOLD'] = "FALSE";
-      legendParams['LAYERTITLE'] = "FALSE";
+
+    // Set external url for external WMS layers
+    if (layerConfig.externalAccess ) {
+      legendParams = {SERVICE: "WMS",
+                    VERSION: "1.3.0",
+                    REQUEST: "GetLegendGraphic",
+                    LAYER: layer.params['LAYERS'],
+                    EXCEPTIONS: "application/vnd.ogc.se_inimage",
+                    FORMAT: "image/png",
+                    TRANSPARENT: "TRUE",
+                    SLD_VERSION: "1.1.0"};
+
+      service = layerConfig.externalAccess.url;
+    }else{
+      legendParams = {SERVICE: "WMS",
+                    VERSION: "1.3.0",
+                    REQUEST: "GetLegendGraphic",
+                    LAYERS: layer.params['LAYERS'],
+                    EXCEPTIONS: "application/vnd.ogc.se_inimage",
+                    FORMAT: "image/png",
+                    TRANSPARENT: "TRUE",
+                    WIDTH: 150,
+                    LAYERFONTSIZE: 9,
+                    ITEMFONTSIZE: 9,
+                    SYMBOLSPACE: 1,
+                    ICONLABELSPACE: 2,
+                    DPI: 96};
+
+      if (layerConfig.id==layerConfig.name)
+        legendParams['LAYERFONTBOLD'] = "TRUE";
+      else {
+        legendParams['LAYERFONTSIZE'] = 0;
+        legendParams['LAYERSPACE'] = 0;
+        legendParams['LAYERFONTBOLD'] = "FALSE";
+        legendParams['LAYERTITLE'] = "FALSE";
+      }
+      if (withScale)
+        legendParams['SCALE'] = map.getScale();
+
+      service = OpenLayers.Util.urlAppend(lizUrls.wms
+          ,OpenLayers.Util.getParameterString(lizUrls.params)
+      );
     }
-    if (withScale)
-      legendParams['SCALE'] = map.getScale();
+
     var legendParamsString = OpenLayers.Util.getParameterString(
          legendParams
         );
-    var service = OpenLayers.Util.urlAppend(lizUrls.wms
-        ,OpenLayers.Util.getParameterString(lizUrls.params)
-    );
+
     return OpenLayers.Util.urlAppend(service, legendParamsString);
   }
 
