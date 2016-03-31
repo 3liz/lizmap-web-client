@@ -80,6 +80,13 @@ var lizMap = function() {
   var layerIdMap = {
   };
 
+  /**
+   * PRIVATE Property: shortNameMap
+   *
+   */
+  var shortNameMap = {
+  };
+
 
   /**
    * PRIVATE function: cleanName
@@ -104,6 +111,12 @@ var lizMap = function() {
     return theCleanName;
   }
 
+  function getNameByShortName( shortName ){
+    var name = null;
+    if( shortName in shortNameMap )
+      name = shortNameMap[shortName];
+    return name;
+  }
 
   /**
    * PRIVATE function: updateMobile
@@ -484,6 +497,8 @@ var lizMap = function() {
       var qgisLayerName = layer.name;
       if ( 'useLayerIDs' in config.options && config.options.useLayerIDs == 'True' )
         qgisLayerName = layerIdMap[layer.name];
+      else if ( layer.name in shortNameMap )
+        qgisLayerName = shortNameMap[layer.name];
       var layerConfig = config.layers[qgisLayerName];
       var layerName = cleanName(qgisLayerName);
 
@@ -1055,6 +1070,7 @@ var lizMap = function() {
    * Get features for locate by layer tool
    */
   function getLocateFeature(aName) {
+    var lConfig = config.layers[aName];
     var locate = config.locateByLayer[aName];
     var fields = ['geometry',locate.fieldName];
     // if a filter field is defined
@@ -1076,6 +1092,8 @@ var lizMap = function() {
       }
     }
     var typeName = aName.replace(' ','_');
+    if ( lConfig && ('shortname' in lConfig) && lConfig.shortname != '')
+        typeName = lConfig.shortname.replace(' ','_');
     var layerName = cleanName(aName);
     var wfsOptions = {
       'SERVICE':'WFS'
@@ -1091,7 +1109,6 @@ var lizMap = function() {
     $.get(service
         ,wfsOptions
         ,function(data) {
-      var lConfig = config.layers[aName];
       locate['features'] = {};
       var features = data.features;
 
@@ -1549,6 +1566,8 @@ var lizMap = function() {
             var lname = '';
             if (typeName in config.locateByLayer)
               lname = typeName
+            else if ( typeName in shortNameMap )
+              lname = shortNameMap[typeName];
             else {
               for (lbl in config.locateByLayer) {
                 if (lbl.replace(' ','_') == typeName)
@@ -2310,12 +2329,16 @@ var lizMap = function() {
       // Get active baselayer, and add the corresponding QGIS layer if needed
       var activeBaseLayerName = map.baseLayer.name;
       if ( activeBaseLayerName in externalBaselayersReplacement ) {
-          if ( 'useLayerIDs' in config.options && config.options.useLayerIDs == 'True' ) {
-              var qgisActiveBaseLayerName = externalBaselayersReplacement[activeBaseLayerName]
-              if ( qgisActiveBaseLayerName in config.layers )
-                printLayers.push(config.layers[qgisActiveBaseLayerName].id);
-          } else
-            printLayers.push(externalBaselayersReplacement[activeBaseLayerName]);
+          var qgisActiveBaseLayerName = externalBaselayersReplacement[activeBaseLayerName];
+          if ( qgisActiveBaseLayerName in config.layers ) {
+              var configLayer = config.layers[qgisActiveBaseLayerName];
+              if ( 'useLayerIDs' in config.options && config.options.useLayerIDs == 'True' )
+                printLayers.push(configLayer.id);
+              else if ('shortname' in configLayer )
+                printLayers.push(configLayer.shortname);
+              else
+               printLayers.push(qgisActiveBaseLayerName);
+          }
       }
 
       url += '&'+dragCtrl.layout.mapId+':LAYERS='+printLayers.join(',');
@@ -3618,6 +3641,13 @@ var lizMap = function() {
     },
 
     /**
+     * Method: getNameByShortName
+     */
+    getNameByShortName: function( shortName ) {
+      return getNameByShortName( shortName );
+    },
+
+    /**
      * Method: checkMobile
      */
     addMessage: function( aMessage, aType, aClose ) {
@@ -3656,11 +3686,19 @@ var lizMap = function() {
         config = cfgData;
         config.options.hasOverview = false;
 
+        // store layer ids
         if ( 'useLayerIDs' in config.options && config.options.useLayerIDs == 'True' ) {
             for ( var layerName in config.layers ) {
                 var configLayer = config.layers[layerName];
                 layerIdMap[configLayer.id] = layerName;
             }
+        }
+
+        //store shortnames
+        for ( var layerName in config.layers ) {
+            var configLayer = config.layers[layerName];
+            if ( 'shortname' in configLayer )
+                shortNameMap[configLayer.shortname] = layerName;
         }
 
          //get capabilities

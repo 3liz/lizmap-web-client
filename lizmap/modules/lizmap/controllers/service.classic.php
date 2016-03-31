@@ -595,7 +595,10 @@ class serviceCtrl extends jController {
       $configLayer = $this->project->findLayerByName( $layername );
       // if WMSUseLayerIDs, layer's name can be layer's id
       if ( $configLayer == null )
-        $configLayer = $this->project->findLayerById( $layername );
+        $configLayer = $this->project->findLayerByLayerId( $layername );
+      // since 2.14 layer's name can be layer's shortName
+      if ( $configLayer == null )
+        $configLayer = $this->project->findLayerByShortName( $layername );
       // since 2.6 layer's name can be layer's title
       if ( $configLayer == null )
         $configLayer = $this->project->findLayerByTitle( $layername );

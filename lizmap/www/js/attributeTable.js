@@ -47,7 +47,11 @@ var lizAttributeTable = function() {
           } else {
             featureTypes.each( function(){
               var self = $(this);
-              var lname = self.find('Name').text();
+              var typeName = self.find('Name').text();
+              var lname = lizMap.getNameByShortName( typeName );
+              if ( lname == null )
+                lname = typeName;
+              console.log( typeName+' '+lname );
               if (lname in config.attributeLayers) {
                 hasAttributeTableLayers = true;
                 // Get layers config information
@@ -337,8 +341,11 @@ var lizAttributeTable = function() {
           $('body').css('cursor', 'wait');
 
           // Build WFS request parameters
+          var lConfig = config.layers[aName];
           var atConfig = config.attributeLayers[aName];
           var typeName = aName.replace(' ','_');
+          if ( lConfig && ('shortname' in lConfig) && lConfig.shortname != '')
+            typeName = lConfig.shortname.replace(' ','_');
           var layerName = lizMap.cleanName(aName);
           var extent = lizMap.map.getExtent();
           var proj = new OpenLayers.Projection(atConfig.crs);
@@ -369,7 +376,6 @@ var lizAttributeTable = function() {
                    ,'OUTPUTFORMAT':'JSON'
                 },function(describe) {
                     // Get features and build attribute table content
-                    var lConfig = config.layers[aName];
                     atConfig['features'] = {};
                     var features = data.features;
                     dataLength = features.length;

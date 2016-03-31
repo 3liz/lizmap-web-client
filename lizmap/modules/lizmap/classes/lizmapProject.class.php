@@ -138,6 +138,18 @@ class lizmapProject{
         $qgisProjectVersion = (integer)$a;
         $this->qgisProjectVersion = $qgisProjectVersion;
 
+        $shortNames = $this->xml->xpath('//maplayer/shortname');
+        if ( count( $shortNames ) > 0 ) {
+            foreach( $shortNames as $sname ) {
+                $sname = (string) $sname;
+                $xmlLayer = $qgs_xml->xpath( "//maplayer[shortname='$sname']" );
+                $xmlLayer = $xmlLayer[0];
+                $name = (string)$xmlLayer->layername;
+                if ( property_exists($this->cfg->layers, $name ) )
+                    $this->cfg->layers->$name->shortname = $sname;
+            }
+        }
+
       }
     }
 
@@ -177,6 +189,16 @@ class lizmapProject{
       return null;
     }
 
+    public function findLayerByShortName( $shortName ){
+      foreach ( $this->cfg->layers as $layer ) {
+          if ( !property_exists( $layer, 'shortname' ) )
+            continue;
+          if ( $layer->shortname == $shortName )
+            return $layer;
+      }
+      return null;
+    }
+
     public function findLayerByTitle( $title ){
       foreach ( $this->cfg->layers as $layer ) {
           if ( !property_exists( $layer, 'title' ) )
@@ -187,7 +209,7 @@ class lizmapProject{
       return null;
     }
 
-    public function findLayerById( $id ){
+    public function findLayerByLayerId( $id ){
       foreach ( $this->cfg->layers as $layer ) {
           if ( !property_exists( $layer, 'id' ) )
             continue;
