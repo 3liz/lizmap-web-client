@@ -151,17 +151,13 @@ class lizmapProject{
         }
 
         $groupsWithShortName = $this->xml->xpath("//layer-tree-group/customproperties/property[@key='wmsShortName']/parent::*/parent::*");
-        jLog::log('groupsWithShortName: '.count( $groupsWithShortName ));
         if ( count( $groupsWithShortName ) > 0 ) {
             foreach( $groupsWithShortName as $group ) {
                 $name = (string)$group['name'];
-                jLog::log('group name: '.$name);
                 $shortNameProperty = $group->xpath("customproperties/property[@key='wmsShortName']");
-                jLog::log('shortNameProperty: '.count( $shortNameProperty ));
                 if ( count( $shortNameProperty ) > 0 ) {
                     $shortNameProperty = $shortNameProperty[0];
                     $sname = (string) $shortNameProperty['value'];
-                    jLog::log('group shortname: '.$sname);
                     if ( property_exists($this->cfg->layers, $name ) )
                         $this->cfg->layers->$name->shortname = $sname;
                 }
