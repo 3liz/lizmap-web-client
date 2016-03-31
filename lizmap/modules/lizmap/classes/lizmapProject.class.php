@@ -150,6 +150,18 @@ class lizmapProject{
             }
         }
 
+        $groupShortNames = $this->xml->xpath('//layer-tree-group/customproperties/wmsShortName');
+        if ( count( $groupShortNames ) > 0 ) {
+            foreach( $groupShortNames as $sname ) {
+                $sname = (string) $sname;
+                $xmlGroup = $qgs_xml->xpath( "//layer-tree-group[customproperties/wmsShortName='$sname']" );
+                $xmlGroup = $xmlGroup[0];
+                $name = (string)$xmlGroup['name'];
+                if ( property_exists($this->cfg->layers, $name ) )
+                    $this->cfg->layers->$name->shortname = $sname;
+            }
+        }
+
       }
     }
 
