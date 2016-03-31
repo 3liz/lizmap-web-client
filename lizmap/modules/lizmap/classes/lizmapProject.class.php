@@ -149,6 +149,20 @@ class lizmapProject{
                         $this->cfg->layers->$name->shortname = $sname;
                 }
             }
+
+            $groupsWithShortName = $this->xml->xpath("//layer-tree-group/customproperties/property[@key='wmsShortName']/parent::*/parent::*");
+            if ( count( $groupsWithShortName ) > 0 ) {
+                foreach( $groupsWithShortName as $group ) {
+                    $name = (string)$group['name'];
+                    $shortNameProperty = $group->xpath("customproperties/property[@key='wmsShortName']");
+                    if ( count( $shortNameProperty ) > 0 ) {
+                        $shortNameProperty = $shortNameProperty[0];
+                        $sname = (string) $shortNameProperty['value'];
+                        if ( property_exists($this->cfg->layers, $name ) )
+                            $this->cfg->layers->$name->shortname = $sname;
+                    }
+                }
+            }
         }
     }
 
