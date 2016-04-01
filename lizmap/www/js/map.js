@@ -1115,7 +1115,21 @@ var lizMap = function() {
       if ('filterFieldName' in locate) {
         // create filter combobox for the layer
         features.sort(function(a, b) {
-          return a.properties[locate.filterFieldName].localeCompare(b.properties[locate.filterFieldName]);
+            var aProperty = a.properties[locate.filterFieldName];
+            var bProperty = b.properties[locate.filterFieldName];
+            if (isNaN(aProperty)) {
+                if (isNaN(bProperty)) {  // a and b are strings
+                    return aProperty.localeCompare(bProperty);
+                } else {         // a string and b number
+                    return 1;  // a > b
+                }
+            } else {
+                if (isNaN(bProperty)) {  // a number and b string
+                    return -1;  // a < b
+                } else {         // a and b are numbers
+                    return parseFloat(aProperty) - parseFloat(bProperty);
+                }
+            }
         });
         var filterPlaceHolder = '';
         if ( 'filterFieldAlias' in locate )
@@ -1163,7 +1177,21 @@ var lizMap = function() {
 
       // create combobox for the layer
       features.sort(function(a, b) {
-        return a.properties[locate.fieldName].localeCompare(b.properties[locate.fieldName]);
+            var aProperty = a.properties[locate.fieldName];
+            var bProperty = b.properties[locate.fieldName];
+            if (isNaN(aProperty)) {
+                if (isNaN(bProperty)) {  // a and b are strings
+                    return aProperty.localeCompare(bProperty);
+                } else {         // a string and b number
+                    return 1;  // a > b
+                }
+            } else {
+                if (isNaN(bProperty)) {  // a number and b string
+                    return -1;  // a < b
+                } else {         // a and b are numbers
+                    return parseFloat(aProperty) - parseFloat(bProperty);
+                }
+            }
       });
       var placeHolder = '';
       if ( 'fieldAlias' in locate )
