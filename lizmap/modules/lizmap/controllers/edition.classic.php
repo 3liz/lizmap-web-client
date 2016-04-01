@@ -50,6 +50,9 @@ class editionCtrl extends jController {
   // featureId : an integer or a string whith coma separated integers
   private $featureId = Null;
 
+  // featureData : feature data as a PHP object from GeoJSON via json_decode
+  private $featureData = Null;
+
   // Layer date as simpleXml object
   private $layerXml = '';
 
@@ -181,6 +184,32 @@ class editionCtrl extends jController {
       $featureId = preg_split('#,#', $featureIdParam);
     else
       $featureId = $featureIdParam;
+
+    // Get features primary key field values corresponding to featureId(s)
+    if( !empty($featureId) ){
+        $wfsparams = array(
+            'SERVICE' => 'WFS',
+            'VERSION' => '1.0.0',
+            'REQUEST' => 'GetFeature',
+            'TYPENAME' => $layerName,
+            'OUTPUTFORMAT' => 'GeoJSON',
+            'GEOMETRYNAME' => 'none',
+            'FEATUREID' => $layerName . '.' . $featureId
+        );
+        jClasses::inc('lizmap~lizmapWFSRequest');
+        $wfsrequest = new lizmapWFSRequest( $lproj, $wfsparams );
+        $wfsresponse = $wfsrequest->getfeature();
+        if( property_exists($wfsresponse, 'data') ){
+            $this->featureData = json_decode($wfsresponse->data);
+            if( empty($this->featureData) ){
+                $this->featureData = Null;
+            }
+            else{
+                if( empty($this->featureData->features ) )
+                    $this->featureData = Null;
+            }
+        }
+    }
 
     // Define class private properties
     $this->project = $lproj;
@@ -730,16 +759,18 @@ class editionCtrl extends jController {
     // Build the SQL query to retrieve data from the table
     $sql = "SELECT *";
     if ( $this->geometryColumn != '' )
-        $sql.= ", ST_AsText(".$this->geometryColumn.") AS astext";
+      $sql.= ", ST_AsText(".$this->geometryColumn.") AS astext";
     $sql.= " FROM ".$this->table;
-    $v = ''; $i = 0;
-    $sql.= ' WHERE';
+    $sqlw = array();
+    $feature = $this->featureData->features[0];
     foreach($this->primaryKeys as $key){
-      $sql.= "$v $key = ".$featureId[$i];
-      $i++;
-      $v = " AND ";
+      $val = $feature->properties->$key;
+      if( $this->dataFields[$key]->unifiedType != 'integer' )
+        $val = $cnx->quote($val);
+      $sqlw[] = '"' . $key . '"' . ' = ' . $val;
     }
-    //jLog::log( $sql, 'error' );
+    $sql.= ' WHERE ';
+    $sql.= implode(' AND ', $sqlw );
 
     // Run the query and loop through the result to set the form data
     $rs = $cnx->query($sql);
@@ -906,17 +937,23 @@ class editionCtrl extends jController {
     if( $updateAction ){
       if(ctype_digit($this->featureId))
         $featureId = array($this->featureId);
-      // featureId is set
+
       // SQL for updating on line in the edition table
       $sql = " UPDATE ".$this->table." SET ";
       $sql.= implode(', ', $update);
-      $v = ''; $i = 0;
-      $sql.= ' WHERE';
+
+      // Add where clause with primary keys
+      $sqlw = array();
+      $feature = $this->featureData->features[0];
       foreach($this->primaryKeys as $key){
-        $sql.= "$v $key = ".$featureId[$i];
-        $i++;
-        $v = " AND ";
+        $val = $feature->properties->$key;
+        if( $this->dataFields[$key]->unifiedType != 'integer' )
+          $val = $cnx->quote($val);
+        $sqlw[] = '"' . $key . '"' . ' = ' . $val;
       }
+      $sql.= ' WHERE ';
+      $sql.= implode(' AND ', $sqlw );
+
       // Add login filter if needed
       if( !$this->loginFilteredOveride ) {
         $this->filterDataByLogin($this->layerName);
@@ -1008,6 +1045,12 @@ class editionCtrl extends jController {
     if(!$this->getEditionParameters())
       return $this->serviceAnswer();
 
+    // Check if data has been fetched via WFS for the feature
+    if(!$this->featureData){
+      jMessage::add('Lizmap cannot get this feature data via WFS', 'featureNotFoundViaWfs');
+      return $this->serviceAnswer();
+    }
+
     // Create form instance
     $form = jForms::create('view~edition', $this->featureId);
     if(!$form){
@@ -1044,6 +1087,12 @@ class editionCtrl extends jController {
     // Get repository, project data and do some right checking
     if(!$this->getEditionParameters())
       return $this->serviceAnswer();
+
+    // Check if data has been fetched via WFS for the feature
+    if($this->featureId and !$this->featureData){
+      jMessage::add('Lizmap cannot get this feature data via WFS', 'featureNotFoundViaWfs');
+      return $this->serviceAnswer();
+    }
 
     // Get the form instance
     $form = jForms::get('view~edition', $this->featureId);
@@ -1100,15 +1149,31 @@ class editionCtrl extends jController {
     $attribute = $this->loginFilteredLayers['attribute'];
 
     // Get title layer
-    $layerXmlZero = $this->layerXml[0];
+    $_layerXmlZero = $this->layerXml;
+    $layerXmlZero = $_layerXmlZero[0];
     $_title = $layerXmlZero->xpath('title');
     $title = (string)$_title[0];
+
+    // Get form layout
+    $_editorlayout = $layerXmlZero->xpath('editorlayout');
+    $editorlayout = $_editorlayout[0];
+    if( $editorlayout == 'tablayout' ){
+        $_attributeEditorForm = $layerXmlZero->xpath('attributeEditorForm');
+        $formLayout = str_replace(
+            '@',
+            '',
+            json_encode($_attributeEditorForm[0] )
+        );
+    }else{
+        $formLayout = '{}';
+    }
 
     // Use template to create html form content
     $tpl = new jTpl();
     $tpl->assign(array(
       'title'=>$title,
-      'form'=>$form
+      'form'=>$form,
+      'formLayout'=>$formLayout
     ));
     $content = $tpl->fetch('view~edition_form');
 
@@ -1246,14 +1311,20 @@ class editionCtrl extends jController {
     if( !$this->getEditionParameters() )
       return $this->serviceAnswer();
 
-      // Get editLayer capabilities
-        $eLayers  = $this->project->getEditionLayers();
-        $layerName = $this->layerName;
-        $eLayer = $eLayers->$layerName;
-        if ( $eLayer->capabilities->deleteFeature != 'True' ) {
-            jMessage::add('Delete feature for this layer is not in the capabilities!', 'LayerNotEditable');
-            return $this->serviceAnswer();
-        }
+    // Check if data has been fetched via WFS for the feature
+    if(!$this->featureData){
+      jMessage::add('Lizmap cannot get this feature data via WFS', 'featureNotFoundViaWfs');
+      return $this->serviceAnswer();
+    }
+
+    // Get editLayer capabilities
+    $eLayers  = $this->project->getEditionLayers();
+    $layerName = $this->layerName;
+    $eLayer = $eLayers->$layerName;
+    if ( $eLayer->capabilities->deleteFeature != 'True' ) {
+      jMessage::add('Delete feature for this layer is not in the capabilities!', 'LayerNotEditable');
+      return $this->serviceAnswer();
+    }
 
     $featureId = $this->param('featureId');
     if( !$featureId ) {
@@ -1272,16 +1343,23 @@ class editionCtrl extends jController {
     $cnx = jDb::getConnection($this->layerId);
     if(ctype_digit($this->featureId))
       $featureId = array($this->featureId);
-    // featureId is set
+
+
     // SQL for deleting on line in the edition table
     $sql = " DELETE FROM ".$this->table;
-    $v = ''; $i = 0;
-    $sql.= ' WHERE';
+
+    // Add where clause with primary keys
+    $sqlw = array();
+    $feature = $this->featureData->features[0];
     foreach($this->primaryKeys as $key){
-      $sql.= $v . ' "'. $key . '" = ' . $featureId[$i];
-      $i++;
-      $v = " AND ";
+      $val = $feature->properties->$key;
+      if( $this->dataFields[$key]->unifiedType != 'integer' )
+        $val = $cnx->quote($val);
+      $sqlw[] = '"' . $key . '"' . ' = ' . $val;
     }
+    $sql.= ' WHERE ';
+    $sql.= implode(' AND ', $sqlw );
+
     // Add login filter if needed
     if( !$this->loginFilteredOveride ) {
       $this->filterDataByLogin($this->layerName);
@@ -1434,11 +1512,11 @@ class editionCtrl extends jController {
             $msg = false;
             foreach( $ids1 as $a ){
                 $one = (int) $a;
-                if( $this->dataFields[$key1]->type != 'int' )
+                if( $this->dataFields[$key1]->unifiedType != 'integer' )
                     $one = $cnx->quote( $one );
                 foreach( $ids2 as $b ){
                     $two = (int) $b;
-                    if( $this->dataFields[$key2]->type != 'int' )
+                    if( $this->dataFields[$key2]->unifiedType != 'integer' )
                         $two = $cnx->quote( $two );
                     $sql = ' UPDATE '.$this->table;
                     $sql.= ' SET "' . $key2 . '" = ' . $one;
@@ -1471,11 +1549,11 @@ class editionCtrl extends jController {
             $cnx = jDb::getConnection($this->layerId);
             foreach( $ids1 as $a ){
                 $one = (int) $a;
-                if( $this->dataFields[$key1]->type != 'int' )
+                if( $this->dataFields[$key1]->unifiedType != 'integer' )
                     $one = $cnx->quote( $one );
                 foreach( $ids2 as $b ){
                     $two = (int) $b;
-                    if( $this->dataFields[$key2]->type != 'int' )
+                    if( $this->dataFields[$key2]->unifiedType != 'integer' )
                         $two = $cnx->quote( $two );
                     $sql.= ' INSERT INTO '.$this->table.' (';
                     $sql.= ' "' . $key1 . '" , ';
@@ -1576,7 +1654,7 @@ class editionCtrl extends jController {
         $msg = false;
 
         $val = (int) $pkeyval;
-        if( $this->dataFields[$key2]->type != 'int' )
+        if( $this->dataFields[$key2]->unifiedType != 'integer' )
             $val = $cnx->quote( $val );
         $sql = ' UPDATE '.$this->table;
         $sql.= ' SET "' . $fkey . '" = NULL';

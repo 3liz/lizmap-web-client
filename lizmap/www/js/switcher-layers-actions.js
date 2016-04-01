@@ -87,11 +87,12 @@ var lizLayerActionButtons = function() {
             if( !eName )
                 return false;
 
-            var getLayer = lizMap.map.getLayersByName( eName );
+            var cleanName = lizMap.cleanName(eName);
+            var getLayer = lizMap.map.getLayersByName( cleanName );
             if( !getLayer )
                 return false;
 
-            var oLayer = lizMap.map.getLayersByName( eName )[0];
+            var oLayer = lizMap.map.getLayersByName( cleanName )[0];
             if( oLayer && eStyle != ''){
                 oLayer.params['STYLES'] = eStyle;
                 oLayer.redraw( true );

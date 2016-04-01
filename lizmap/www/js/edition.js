@@ -64,6 +64,7 @@ var lizEdition = function() {
             // fill in the combobox containing editable layers
             var hasCreateLayers = false;
             for (var alName in config.editionLayers) {
+
                 var al = config.editionLayers[alName];
                 if (
                     al.capabilities.createFeature == "False"
@@ -492,6 +493,21 @@ var lizEdition = function() {
 
         }
 
+        // Change form layout (from QGIS drag&drop form layout mode )
+        var formId = $('#edition-form-container form').attr('id');
+        // lizmapEditionFormLayoutJson is a global variable added through template
+        if( lizmapEditionFormLayoutJson && 'attributeEditorContainer' in lizmapEditionFormLayoutJson ){
+            var attributeTree = [];
+            var item = buildFormLayoutObj( attributeTree, lizmapEditionFormLayoutJson, 0, null );
+            $('#edition-form-tabbable').prependTo( $('form#'+formId) );
+            $('#edition-form-tabs li:first a').click().blur();
+
+            $('#edition-form-container').parent('div.menu-content').css('overflow-x','hidden');
+        }else{
+            $('#edition-form-tabbable').hide();
+        }
+
+
         $('#edition-form-container').show();
 
         // Show the dock if needed
@@ -705,13 +721,140 @@ var lizEdition = function() {
                     layerConfig = config.layers[l.name];
                 if ( !layerConfig )
                     return true;
-                if (layerConfig.id != layerId)
+                if (layerConfig.id != aLayerId)
                     return true;
                 l.redraw(true);
                 return false;
             });
         });
         return false;
+    }
+
+
+    function getFormLayoutNodeInfo(aNode, depth){
+        var node = {};
+
+        // default type
+        if( depth % 2 == 0)
+            node['type'] = 'group';
+        else
+            node['type'] = 'tab';
+
+        // Get name if possible & check if it is a field
+        if( 'attributes' in aNode ){
+            node['name'] = aNode.attributes.name
+            if( 'index' in aNode.attributes ){
+                node['type'] = 'field';
+            }
+        }
+        // Root node
+        if ( depth == 0 ){
+            node['name'] = 'root';
+            node['type'] = 'root';
+        }
+
+        return node;
+
+    }
+
+    function getFormLayoutNodeChildren(aNode){
+
+        var children = [];
+        if( 'attributeEditorContainer' in aNode ){
+            children = children.concat(aNode.attributeEditorContainer);
+        }
+        if( 'attributeEditorField' in aNode ){
+            children = children.concat(aNode.attributeEditorField);
+        }
+        return children;
+
+    }
+
+    function buildFormLayoutObj(item, currentObj, depth, parent){
+            var node = getFormLayoutNodeInfo(currentObj, depth);
+            var children = getFormLayoutNodeChildren(currentObj);
+            var a = node;
+            a.depth = depth
+            a.children = [];
+            getFormLayoutNodeHtml(a, parent);
+            for ( var c in children ){
+                var child = children[c];
+                var b = buildFormLayoutObj(item, child, depth+1, a);
+                a['children'].push( b );
+            }
+
+            return a;
+
+    }
+
+
+    function getFormLayoutNodeHtml(node, parent){
+        var formId = $('#edition-form-container form').attr('id');
+        if( node.type == 'tab' ){
+
+            // Ul item for tab nav
+            var navHtml = '<li><a href="#edition-form-tab-';
+            navHtml+= lizMap.cleanName(node.name);
+            navHtml+= '" data-toggle="tab">' + node.name + '</a></li>';
+
+            // Tab item content
+            var tabHtml = '<div class="tab-pane" id="edition-form-tab-';
+            tabHtml+= lizMap.cleanName(node.name);
+            tabHtml+= '" ></div>';
+
+            // If parent is root, simply add ul and item to already existing tab container
+            if( parent.type == 'root'){
+                $( "#edition-form-tabs" ).append(navHtml);
+                $( "#edition-form-layout" ).append(tabHtml);
+            }
+            // Else we must first be sure tab container exists in parent group
+            // Then append containt
+            else{
+                var tabContainerNavId = 'edition-form-tabs-' + lizMap.cleanName(parent.name);
+                var tabContainerDivId = 'edition-form-layout-' + lizMap.cleanName(parent.name);
+                var parentGroup = $('#' + formId + '_group_' + lizMap.cleanName(parent.name) );
+                if( !$('#' + tabContainerNavId).length ){
+                    var tabContainer = '<ul class="nav nav-tabs" id="';
+                    tabContainer+= tabContainerNavId;
+                    tabContainer+= '"></ul>';
+                    tabContainer+= '<div class="tab-content" id="';
+                    tabContainer+= tabContainerDivId;
+                    tabContainer+= '"></div>';
+                    parentGroup.append(tabContainer);
+                }
+                $('#' + tabContainerNavId).append(navHtml);
+                $('#' + tabContainerDivId).append(tabHtml);
+                $('#' + tabContainerNavId + ' li:first a').click().blur();
+            }
+        }
+        else if( node.type == 'group' ){
+            html = '<fieldset>';
+            html+= '<legend style="font-weight:bold;">';
+            html+= node.name;
+            html+= '</legend>';
+            html+= '<div class="jforms-table-group" border="0" id="';
+            html+= formId + '_group_' + lizMap.cleanName(node.name);
+            html+= '">';
+            html+= '</div>';
+            html+= '</fieldset>';
+            $('#edition-form-tab-' + lizMap.cleanName(parent.name) ).append(html)
+        }
+        else if( node.type == 'field' ){
+            html = '';
+            var field = $('#' + formId + '_' + lizMap.cleanName(node.name) + '_label');
+            var fieldContainer = field.parents().closest('div.control-group');
+            var parentGroup = $('#' + formId + '_group_' + lizMap.cleanName(parent.name) );
+            if( !parentGroup.length )
+                parentGroup = $('#edition-form-tab-' + lizMap.cleanName(parent.name));
+            fieldContainer.appendTo(parentGroup);
+            // Do it also for _choice input (photos and files)
+            var field = $('#' + formId + '_' + lizMap.cleanName(node.name) + '_choice_label');
+            if( field.length){
+                var fieldContainer = field.parents().closest('div.control-group');
+                fieldContainer.appendTo(parentGroup);
+            }
+        }
+
     }
 
 

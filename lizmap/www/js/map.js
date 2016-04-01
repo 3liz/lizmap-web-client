@@ -62,6 +62,16 @@ var lizMap = function() {
   var tree = {config:{type:'group'}};
 
   /**
+   * PRIVATE Property: getFeatureInfoVendorParams
+   * {object} Additionnal QGIS Server parameter for click tolerance in pixels
+   */
+  var getFeatureInfoVendorParams = {
+    'FI_POINT_TOLERANCE': 25,
+    'FI_LINE_TOLERANCE': 10,
+    'FI_POLYGON_TOLERANCE': 5
+  };
+
+  /**
    * PRIVATE Property: externalBaselayersReplacement
    *
    */
@@ -1457,7 +1467,21 @@ var lizMap = function() {
       if ('filterFieldName' in locate) {
         // create filter combobox for the layer
         features.sort(function(a, b) {
-          return a.properties[locate.filterFieldName].toString().localeCompare(b.properties[locate.filterFieldName].toString());
+            var aProperty = a.properties[locate.filterFieldName];
+            var bProperty = b.properties[locate.filterFieldName];
+            if (isNaN(aProperty)) {
+                if (isNaN(bProperty)) {  // a and b are strings
+                    return aProperty.localeCompare(bProperty);
+                } else {         // a string and b number
+                    return 1;  // a > b
+                }
+            } else {
+                if (isNaN(bProperty)) {  // a number and b string
+                    return -1;  // a < b
+                } else {         // a and b are numbers
+                    return parseFloat(aProperty) - parseFloat(bProperty);
+                }
+            }
         });
         var filterPlaceHolder = '';
         if ( 'filterFieldAlias' in locate )
@@ -1509,7 +1533,21 @@ var lizMap = function() {
 
       // create combobox for the layer
       features.sort(function(a, b) {
-        return a.properties[locate.fieldName].toString().localeCompare(b.properties[locate.fieldName].toString());
+            var aProperty = a.properties[locate.fieldName];
+            var bProperty = b.properties[locate.fieldName];
+            if (isNaN(aProperty)) {
+                if (isNaN(bProperty)) {  // a and b are strings
+                    return aProperty.localeCompare(bProperty);
+                } else {         // a string and b number
+                    return 1;  // a > b
+                }
+            } else {
+                if (isNaN(bProperty)) {  // a number and b string
+                    return -1;  // a < b
+                } else {         // a and b are numbers
+                    return parseFloat(aProperty) - parseFloat(bProperty);
+                }
+            }
       });
       var placeHolder = '';
       if ( 'fieldAlias' in locate )
@@ -2863,14 +2901,17 @@ var lizMap = function() {
   }
 
   function addFeatureInfo() {
+      var fiurl = OpenLayers.Util.urlAppend(
+        lizUrls.wms,
+        OpenLayers.Util.getParameterString(lizUrls.params)
+      )
       var info = new OpenLayers.Control.WMSGetFeatureInfo({
-            url: OpenLayers.Util.urlAppend(lizUrls.wms
-              ,OpenLayers.Util.getParameterString(lizUrls.params)
-            ),
+            url: fiurl,
             title: 'Identify features by clicking',
             type:OpenLayers.Control.TYPE_TOGGLE,
             queryVisible: true,
             infoFormat: 'text/html',
+            vendorParams: getFeatureInfoVendorParams,
             eventListeners: {
                 getfeatureinfo: function(event) {
                     var text = event.text;
@@ -5081,7 +5122,7 @@ OpenLayers.Control.HighlightFeature = OpenLayers.Class(OpenLayers.Control, {
             var cb = $(this);
             var cleanName = cb.val();
             var oLayer = map.getLayersByName(cleanName)[0];
-            if( oLayer.visibility )
+            if( oLayer && oLayer.visibility )
               layersHaveBeenActivatedByPermalink = true;
           });
           // 2/ Toggle checkboxes
@@ -5089,15 +5130,17 @@ OpenLayers.Control.HighlightFeature = OpenLayers.Class(OpenLayers.Control, {
             var cb = $(this);
             var cleanName = cb.val();
             var oLayer = map.getLayersByName(cleanName)[0];
+            if( oLayer ){
 
-            // toggle checked class for permalink layers
-            // because OL has already drawn them in map
-            cb.toggleClass('checked', oLayer.visibility);
+              // toggle checked class for permalink layers
+              // because OL has already drawn them in map
+              cb.toggleClass('checked', oLayer.visibility);
 
-            // Check layers wich are not yet checked but need to ( for normal behaviour outside permalink )
-            // This will trigger layers to be drawn
-            if( !cb.hasClass('checked') && oLayer.isVisible && !layersHaveBeenActivatedByPermalink){
-              cb.click();
+              // Check layers wich are not yet checked but need to ( for normal behaviour outside permalink )
+              // This will trigger layers to be drawn
+              if( !cb.hasClass('checked') && oLayer.isVisible && !layersHaveBeenActivatedByPermalink){
+                cb.click();
+              }
             }
 
           });
