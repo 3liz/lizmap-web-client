@@ -52,6 +52,7 @@ class main_viewZone extends jZone {
               'lizmap.tools.displayGetCapabilitiesLinks',
               $lrep->getKey()
             );
+            $wmtsGetCapabilitiesUrl = $wmsGetCapabilitiesUrl;
 
             foreach ($lprojects as $p) {
               $pOptions = $p->getOptions();
@@ -63,6 +64,7 @@ class main_viewZone extends jZone {
               }
               if ( $wmsGetCapabilitiesUrl ) {
                 $wmsGetCapabilitiesUrl = $p->getData('wmsGetCapabilitiesUrl');
+                $wmtsGetCapabilitiesUrl = $p->getData('wmtsGetCapabilitiesUrl');
               }
               if ( $lrep->getKey().'~'.$p->getData('id') != $excludedProject ) {
                 $mrep->childItems[] = new lizmapMainViewItem(
@@ -76,7 +78,8 @@ class main_viewZone extends jZone {
                   0,
                   $r,
                   'map',
-                  $wmsGetCapabilitiesUrl
+                  $wmsGetCapabilitiesUrl,
+                  $wmtsGetCapabilitiesUrl
                 );
               /*} else {
                 $this->_tpl->assign('auth_url_return', jUrl::get('view~map:index',

@@ -57,6 +57,7 @@
             {if $wmsGetCapabilitiesUrl}
             <dt>{@view~map.metadata.properties.wmsGetCapabilitiesUrl@}</dt>
             <dd><small><a href="{$wmsGetCapabilitiesUrl}" target="_blank">WMS Url</a></small></dd>
+            <dd><small><a href="{$wmtsGetCapabilitiesUrl}" target="_blank">WMTS Url</a></small></dd>
             <br/>
             {/if}
           </dl>
