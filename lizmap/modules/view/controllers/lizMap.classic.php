@@ -11,8 +11,15 @@
 
 class lizMapCtrl extends jController {
 
-  // forceHiddenProjectVisible : Used to ovverride plugin configuration hideProject
-  // ( helpfull for modules which maps are based on a hidden project )
+  // repositoryKey: Used to pass repository key
+  protected $repositoryKey = null;
+  // projectKey: Used to pass project key
+  protected $projectKey = null;
+  // projectObj: Used to pass project Object (no need to rebuild it)
+  protected $projectObj = null;
+
+  // forceHiddenProjectVisible: Used to override plugin configuration hideProject
+  // (helpfull for modules which maps are based on a hidden project)
   protected $forceHiddenProjectVisible = false;
 
   /**
@@ -93,6 +100,10 @@ class lizMapCtrl extends jController {
       $rep->action = 'view~default:index';
       return $rep;
     }
+
+    $this->repositoryKey = $lrep->getKey();
+    $this->projectKey = $lproj->getKey();
+    $this->projectObj = $lproj;
 
     // Add js link if google is needed
     if ( $lproj->needsGoogle() ) {
