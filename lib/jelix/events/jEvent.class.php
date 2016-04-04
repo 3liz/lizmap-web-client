@@ -185,8 +185,9 @@ class jEvent {
     */
     protected static function loadListenersFor ($eventName) {
         if (!isset($GLOBALS['JELIX_EVENTS'])) {
-            self::$compilerData[3] = jApp::config()->urlengine['urlScriptId'].'.'.self::$compilerData[3];
-            jIncluder::incAll(self::$compilerData);
+            $compilerData = self::$compilerData;
+            $compilerData[3] = jApp::config()->urlengine['urlScriptId'].'.'.$compilerData[3];
+            jIncluder::incAll($compilerData, true);
         }
 
         $inf = & $GLOBALS['JELIX_EVENTS'];

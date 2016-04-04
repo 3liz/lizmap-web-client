@@ -5,7 +5,7 @@
 * @author      Laurent Jouanneau
 * @contributor Julien Issler, Dominique Papin, Claudio Bernardes
 * @copyright   2006-2012 Laurent Jouanneau
-* @copyright   2008-2011 Julien Issler, 2008 Dominique Papin, 2012 Claudio Bernardes
+* @copyright   2008-2016 Julien Issler, 2008 Dominique Papin, 2012 Claudio Bernardes
 * @link        http://www.jelix.org
 * @licence     http://www.gnu.org/licenses/lgpl.html GNU Lesser General Public Licence, see LICENCE file
 */
@@ -89,9 +89,10 @@ class HtmlBuilder extends BuilderBase {
         }
         echo '</table> <div class="jforms-submit-buttons">';
         if ( $ctrl = $this->_form->getReset() ) {
-            if(!$this->_form->isActivated($ctrl->ref)) continue;
-            $this->outputControl($ctrl);
-            echo ' ';
+            if($this->_form->isActivated($ctrl->ref)) {
+                $this->outputControl($ctrl);
+                echo ' ';
+            }
         }
         foreach( $this->_form->getSubmits() as $ctrlref=>$ctrl){
             if(!$this->_form->isActivated($ctrlref)) continue;

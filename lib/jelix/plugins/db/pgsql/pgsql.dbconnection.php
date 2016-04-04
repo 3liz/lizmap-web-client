@@ -41,6 +41,9 @@ class pgsqlDbConnection extends jDbConnection {
         {
             $this->setAutoCommit(true);
         }
+        if (version_compare(pg_parameter_status($this->_connection, "server_version"),'9.0') > -1) {
+            $this->_doExec('SET bytea_output = "escape"');
+        }
     }
 
     /**
@@ -99,32 +102,32 @@ class pgsqlDbConnection extends jDbConnection {
         // Service is PostgreSQL way to store credentials in a file :
         // http://www.postgresql.org/docs/9.1/static/libpq-pgservice.html
         // If given, no need to add host, user, database, port and password
-        $useService = false;
-        if( array_key_exists('service', $this->profile) and $this->profile['service'] != ''){
+        if(isset($this->profile['service']) && $this->profile['service'] != ''){
             $useService = true;
             $str = 'service=\''.$this->profile['service'].'\''.$str;
         }
-
-        // we do a distinction because if the host is given == TCP/IP connection else unix socket
-        if(!$useService and $this->profile['host'] != '')
-            $str = 'host=\''.$this->profile['host'].'\''.$str;
-
-        if (!$useService and isset($this->profile['port'])) {
-            $str .= ' port=\''.$this->profile['port'].'\'';
-        }
-
-        if (!$useService and $this->profile['database'] != '') {
-            $str .= ' dbname=\''.$this->profile['database'].'\'';
-        }
-
-        // we do isset instead of equality test against an empty string, to allow to specify
-        // that we want to use configuration set in environment variables
-        if (!$useService and isset($this->profile['user'])) {
-            $str .= ' user=\''.$this->profile['user'].'\'';
-        }
-
-        if (!$useService and isset($this->profile['password'])) {
-            $str .= ' password=\''.$this->profile['password'].'\'';
+        else {
+            // we do a distinction because if the host is given == TCP/IP connection else unix socket
+            if($this->profile['host'] != '')
+                $str = 'host=\''.$this->profile['host'].'\''.$str;
+    
+            if (isset($this->profile['port'])) {
+                $str .= ' port=\''.$this->profile['port'].'\'';
+            }
+    
+            if ($this->profile['database'] != '') {
+                $str .= ' dbname=\''.$this->profile['database'].'\'';
+            }
+    
+            // we do isset instead of equality test against an empty string, to allow to specify
+            // that we want to use configuration set in environment variables
+            if (isset($this->profile['user'])) {
+                $str .= ' user=\''.$this->profile['user'].'\'';
+            }
+    
+            if (isset($this->profile['password'])) {
+                $str .= ' password=\''.$this->profile['password'].'\'';
+            }
         }
 
         if (isset($this->profile['timeout']) && $this->profile['timeout'] != '') {

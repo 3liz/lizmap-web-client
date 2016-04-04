@@ -103,8 +103,12 @@ class jInstallerComponentModule extends jInstallerComponentBase {
         }
 
         $this->moduleInstaller->setParameters($this->moduleInfos[$epId]->parameters);
-
-        $sparam = $ep->localConfigIni->getValue($this->name.'.installparam','modules');
+        if ($ep->localConfigIni) {
+            $sparam = $ep->localConfigIni->getValue($this->name.'.installparam','modules');
+        }
+        else {
+            $sparam = $ep->configIni->getValue($this->name.'.installparam','modules');
+        }
         if ($sparam === null)
             $sparam = '';
         $sp = $this->moduleInfos[$epId]->serializeParameters();

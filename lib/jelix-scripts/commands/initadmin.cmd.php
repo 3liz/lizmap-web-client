@@ -2,8 +2,9 @@
 /**
 * @package     jelix-scripts
 * @author      Laurent Jouanneau
-* @contributor
+* @contributor Julien Issler
 * @copyright   2008-2011 Laurent Jouanneau
+* @copyright   2015 Julien Issler
 * @link        http://jelix.org
 * @licence     GNU General Public Licence see LICENCE file or http://www.gnu.org/licenses/gpl.html
 */
@@ -145,7 +146,7 @@ class initadminCommand extends JelixScriptCommand {
 
         $reporter = new textInstallReporter(($verbose? 'notice':'warning'));
         $installer = new jInstaller($reporter);
-        $installer->installModules(array('master_admin'), $entrypoint.'.php');
+        $installer->installModules(array('jauth','master_admin'), $entrypoint.'.php');
 
         $authini = new jIniFileModifier(jApp::configPath($entrypoint.'/auth.coord.ini.php'));
         $authini->setValue('after_login','master_admin~default:index');
@@ -184,7 +185,7 @@ class initadminCommand extends JelixScriptCommand {
             $inifile->setValue('jacl2db_admin.access', '0', 'modules');
             $inifile->save();
         }
-        
+
         $installer->installModules(array('jpref_admin'), $entrypoint.'.php');
     }
 }

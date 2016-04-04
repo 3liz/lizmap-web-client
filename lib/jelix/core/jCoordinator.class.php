@@ -48,6 +48,13 @@ class jCoordinator {
     public $action = null;
 
     /**
+     * the original action when there is an internal redirection to an action
+     * different from the one corresponding to the request
+     * @var jSelectorAct
+     */
+    public $originalAction = null;
+
+    /**
      * the current module name
      * @var string
      */
@@ -145,7 +152,8 @@ class jCoordinator {
         list($this->moduleName, $this->actionName) = $request->getModuleAction();
         jApp::pushCurrentModule($this->moduleName);
 
-        $this->action = new jSelectorActFast($this->request->type, $this->moduleName, $this->actionName);
+        $this->action =
+        $this->originalAction = new jSelectorActFast($this->request->type, $this->moduleName, $this->actionName);
 
         if ($config->modules[$this->moduleName.'.access'] < 2) {
             throw new jException('jelix~errors.module.untrusted', $this->moduleName);
@@ -235,7 +243,7 @@ class jCoordinator {
      * get the controller corresponding to the selector
      * @param jSelectorAct $selector
      */
-    private function getController($selector){
+    protected function getController($selector){
 
         $ctrlpath = $selector->getPath();
         if(!file_exists($ctrlpath)){
@@ -253,6 +261,17 @@ class jCoordinator {
             throw new jException('jelix~errors.ad.controller.method.unknown',array($this->actionName, $selector->method, $class, $ctrlpath));
         }
         return $ctrl;
+    }
+
+    /**
+     * says if the currently executed action is the original one
+     * @return boolean  true if yes
+     */
+    public function execOriginalAction() {
+        if (!$this->originalAction) {
+            return false;
+        }
+        return $this->originalAction->isEqualTo($this->action);
     }
 
     /**

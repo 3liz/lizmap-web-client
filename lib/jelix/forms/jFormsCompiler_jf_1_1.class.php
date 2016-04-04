@@ -8,7 +8,7 @@
 * @copyright   2006-2012 Laurent Jouanneau
 * @copyright   2007 Loic Mathaud, 2007-2008 Dominique Papin
 * @copyright   2007 Emotic SARL
-* @copyright   2008 Julien Issler, 2009 Thomas, 2009 Olivier Demah
+* @copyright   2008-2015 Julien Issler, 2009 Thomas, 2009 Olivier Demah
 * @link        http://www.jelix.org
 * @licence    GNU Lesser General Public Licence see LICENCE file or http://www.gnu.org/licenses/lgpl.html
 */
@@ -413,7 +413,11 @@ class jFormsCompiler_jf_1_1 extends jFormsCompiler_jf_1_0 {
                 $class = new jSelectorClass($attrs['class']);
                 $source[]='jClasses::inc(\''.$attrs['class'].'\');';
                 $source[]='$datasource = new '.$class->className.'($this->id());';
-                $source[]='if ($datasource instanceof jIFormsDatasource){$ctrl->datasource=$datasource;}';
+                $source[]='if ($datasource instanceof jIFormsDatasource){$ctrl->datasource=$datasource;';
+                if (isset($attrs['criteriafrom'])) {
+                    $source[] = 'if($datasource instanceof jIFormsDynamicDatasource) $datasource->setCriteriaControls(array(\''.join('\',\'',preg_split('/[\s,]+/',$attrs['criteriafrom'])).'\'));';
+                }
+                $source[]='}';
                 $source[]='else{$ctrl->datasource=new jFormsStaticDatasource();}';
                 if($controltype == 'submit'){
                     $source[]='$ctrl->standalone=false;';
@@ -476,7 +480,7 @@ class jFormsCompiler_jf_1_1 extends jFormsCompiler_jf_1_0 {
             }
         }
     }
-    
+
     protected function readItem($item, $hasSelectedValues, $controltype, &$selectedvalues) {
         $value ="'".str_replace("'","\\'",(string)$item['value'])."'=>";
         if(isset($item['locale'])){

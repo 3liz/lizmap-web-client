@@ -80,6 +80,9 @@ class jAuth {
                     $password_hash_method = 0;
                 }
             }
+            else {
+                require_once(__DIR__.'/hash_equals.php');
+            }
 
             $password_hash_options = (isset($config['password_hash_options'])?$config['password_hash_options']:'');
             if ($password_hash_options != '') {
@@ -383,8 +386,10 @@ class jAuth {
     */
     public static function getUserSession (){
         $config = self::loadConfig();
-        if (! isset ($_SESSION[$config['session_name']]))
+        if (!isset ($_SESSION[$config['session_name']]) ||
+            !$_SESSION[$config['session_name']]) {
             $_SESSION[$config['session_name']] = new jAuthDummyUser();
+        }
         return $_SESSION[$config['session_name']];
     }
 
