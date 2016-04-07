@@ -26,6 +26,10 @@ class serviceCtrl extends jController {
   * @return Redirect to the corresponding action depending on the request parameters
   */
   function index() {
+
+    // Variable stored to log lizmap metrics
+    $_SERVER['LIZMAP_BEGIN_TIME'] = microtime(true);
+
     if (isset($_SERVER['PHP_AUTH_USER'])) {
       $ok = jAuth::login($_SERVER['PHP_AUTH_USER'], $_SERVER['PHP_AUTH_PW']);
     }
@@ -398,9 +402,9 @@ class serviceCtrl extends jController {
   */
   function GetMap(){
 
-        // Get parameters
-        if(!$this->getServiceParameters())
-            return $this->serviceException();
+        //Get parameters  DELETED HERE SINCE ALREADY DONE IN index method
+        //if(!$this->getServiceParameters())
+            //return $this->serviceException();
 
         jClasses::inc('lizmap~lizmapWMSRequest');
         $wmsRequest = new lizmapWMSRequest( $this->project, $this->params );
@@ -427,6 +431,9 @@ class serviceCtrl extends jController {
                 $rep->setExpires("+".$clientCacheExpiration." seconds");
             }
         }
+
+        // log metric
+        lizmap::logMetric('LIZMAP_SERVICE_GETMAP');
 
         return $rep;
   }
@@ -1076,7 +1083,7 @@ class serviceCtrl extends jController {
                 $rep->setExpires("+".$clientCacheExpiration." seconds");
             }
         }
-
+        lizmap::logMetric('LIZMAP_SERVICE_GETMAP');
         return $rep;
   }
 
