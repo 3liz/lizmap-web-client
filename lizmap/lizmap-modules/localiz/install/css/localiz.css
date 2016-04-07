@@ -39,3 +39,16 @@ li.localiz_typ_3 {
 li.localiz_typ_4 {
     color: #4775BB;
 }
+
+#localiz_div_search span.loading {
+    background-image: url(images/download_layer.gif);
+    display: none;
+    line-height: 10px;
+    vertical-align: sub;
+    width: 10px;
+    height: 10px;   
+}
+
+#localiz_div_search span.loading.loadstart {
+    display: inline-block;
+}

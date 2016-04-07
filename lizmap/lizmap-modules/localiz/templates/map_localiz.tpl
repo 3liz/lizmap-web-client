@@ -12,7 +12,7 @@
   <div class="menu-content">
     <div id="localiz-box">
         <div id="localiz_div_search">
-            <input id="localiz_search" />
+            <input id="localiz_search" /><span class="loading">&nbsp;</span>
             <br/>
             <span class="localiz_typ" id="localiz_lib"></span>
         </div>
