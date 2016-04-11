@@ -4766,6 +4766,70 @@ OpenLayers.Control.HighlightFeature = OpenLayers.Class(OpenLayers.Control, {
   }
 
 
+  // Create new dock or minidock
+  // Example : lizMap.createDock('mydock', 'My dock title', 'dock', 'Some content', 'icon-pencil');
+  // see icon list here : http://getbootstrap.com/2.3.2/base-css.html#icons
+  function addDock( dname, dlabel, dtype, dcontent, dicon){
+      // First check if this dname already exists
+      if( $('#mapmenu .nav-list > li.'+dname+' > a').length ){
+          console.log(dname + ' menu item already exists');
+          return;
+      }
+
+      // Create menu icon for activating dock
+      var dockli = '';
+      dockli+='<li class="'+dname+' nav-'+dtype+'">';
+      dockli+='   <a id="button-'+dname+'" rel="tooltip" data-original-title="'+dlabel+'" data-placement="right" href="#'+dname+'">';
+      dockli+='       <span class="icon"><i class="'+dicon+' icon-white"></i></span>';
+      dockli+='   </a>';
+      dockli+='</li>';
+      $('#mapmenu div ul').append(dockli);
+
+      //  Remove native lizmap icon
+      $('#mapmenu .nav-list > li.'+dname+' > a .icon').css('background-image','none');
+      $('#mapmenu .nav-list > li.'+dname+' > a .icon >i ').css('margin', '4px');
+
+      // Change icon color when menu is active
+      var style = $('<style>#mapmenu .nav-list > li.'+dname+'.active .icon > i, #mapmenu .nav-list > li.'+dname+' a:hover .icon > i{ background-image: url("/css/images/glyphicons-halflings.png"); }</style>');
+      $('html > head').append(style);
+
+      // Add tooltip
+      $('#mapmenu .nav-list > li.'+dname+' > a').tooltip();
+
+      // Create dock tab content
+      var docktab = '';
+      docktab+='<div class="tab-pane" id="'+dname+'">';
+      if( dtype == 'minidock'){
+          docktab+='    <div class="'+dname+'">';
+          docktab+='        <h3>';
+          docktab+='            <span class="title">';
+          docktab+='              <i class="'+dicon+' icon-white"></i>';
+          docktab+='              <span class="text">&nbsp;'+dlabel+'&nbsp;</span>';
+          docktab+='            </span>';
+          docktab+='        </h3>';
+      }
+      docktab+='        <div class="menu-content">';
+      docktab+= dcontent;
+      docktab+='        </div>';
+      docktab+='    </div>';
+      docktab+='</div>';
+      if( dtype == 'minidock'){
+          $('#mini-dock-content').append(docktab);
+          $('#mini-dock .'+dname+' h3 .icon').css('background-image','none');
+      }
+      else if( dtype == 'dock' )
+          $('#dock-content').append(docktab);
+
+      // Create dock tab li
+      var docktabli = '';
+      docktabli+= '<li id="nav-tab-'+dname+'"><a href="#'+dname+'" data-toggle="tab">'+dlabel+'</a></li>';
+      if( dtype == 'minidock')
+          $('#mini-dock-tabs').append(docktabli);
+      else if( dtype == 'dock' )
+          $('#dock-tabs').append(docktabli);
+
+  }
+
   // creating the lizMap object
   var obj = {
     /**
@@ -4963,6 +5027,13 @@ OpenLayers.Control.HighlightFeature = OpenLayers.Class(OpenLayers.Control, {
      */
     getLayerConfigById: function( aLayerId, aConfObjet, aIdAttribute ) {
       return getLayerConfigById( aLayerId, aConfObjet, aIdAttribute );
+    },
+
+    /**
+     * Method: addDock
+     */
+    addDock: function( dname, dlabel, dtype, dcontent, dicon){
+      return addDock(dname, dlabel, dtype, dcontent, dicon);
     },
 
     /**
@@ -5214,7 +5285,7 @@ OpenLayers.Control.HighlightFeature = OpenLayers.Class(OpenLayers.Control, {
           });
 
           // Toggle locate
-          $('#mapmenu li.nav-minidock > a').click(function(){
+          $('#mapmenu ul').on('click', 'li.nav-minidock > a', function(){
             var self = $(this);
             var parent = self.parent();
             var id = self.attr('href').substr(1);
@@ -5244,7 +5315,7 @@ OpenLayers.Control.HighlightFeature = OpenLayers.Class(OpenLayers.Control, {
           else
             $('#button-locate').click();
 
-          $('#mapmenu li.nav-dock > a').click(function(){
+          $('#mapmenu ul').on('click', 'li.nav-dock > a', function(){
             var self = $(this);
             var parent = self.parent();
             var id = self.attr('href').substr(1);
