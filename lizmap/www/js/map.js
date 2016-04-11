@@ -4808,7 +4808,7 @@ OpenLayers.Control.HighlightFeature = OpenLayers.Class(OpenLayers.Control, {
       dockli+='       <span class="icon"><i class="'+dicon+' icon-white"></i></span>';
       dockli+='   </a>';
       dockli+='</li>';
-      $('#mapmenu div ul').append(dockli);
+      $('#mapmenu div ul li.nav-'+dtype+':last').after(dockli);
 
       //  Remove native lizmap icon
       $('#mapmenu .nav-list > li.'+dname+' > a .icon').css('background-image','none');
@@ -6047,6 +6047,9 @@ lizMap.events.on({
                 }
             }
         }
+
+      // Connect dock close button
+      $('#dock-close').click(function(){ $('#mapmenu .nav-list > li.active > a').click() });
    }
 
 });

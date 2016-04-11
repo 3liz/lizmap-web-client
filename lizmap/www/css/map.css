@@ -351,6 +351,7 @@ CSS Sprite ositions calculated via http://instantsprite.com/ or https://draeton.
   max-width:100%;
   background:url('img/header-background-medium.png');
 }
+
 #map-content.half, #map-content.full{
   margin-left: 25%;
 }
@@ -358,6 +359,12 @@ CSS Sprite ositions calculated via http://instantsprite.com/ or https://draeton.
 ul.nav.nav-tabs {
   margin-bottom: 0px;
   border-bottom:1px dashed #F0F0F0;
+}
+
+#dock-close{
+  position: absolute;
+  bottom:5px;
+  right:5px;
 }
 
 #dock-tabs > li > a {
