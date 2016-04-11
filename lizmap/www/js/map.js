@@ -6049,7 +6049,7 @@ lizMap.events.on({
         }
 
       // Connect dock close button
-      $('#dock-close').click(function(){ $('#mapmenu .nav-list > li.active > a').click() });
+      $('#dock-close').click(function(){ $('#mapmenu .nav-list > li.active.nav-dock > a').click(); });
    }
 
 });
