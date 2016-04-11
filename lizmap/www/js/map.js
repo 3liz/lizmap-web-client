@@ -2915,42 +2915,67 @@ var lizMap = function() {
             eventListeners: {
                 getfeatureinfo: function(event) {
                     var text = event.text;
-                    if (!text || text == null || text == '')
-                        return false;
 
                     if (map.popups.length != 0)
                         map.removePopup(map.popups[0]);
 
-                    var popup = new OpenLayers.Popup.LizmapAnchored(
-                        "liz_layer_popup",
-                        map.getLonLatFromPixel(event.xy),
-                        null,
-                        text,
-                        null,
-                        true,
-                        function() {
-                          map.removePopup(this);
-                          if(mCheckMobile()){
-                            $('#navbar').show();
-                            $('#overview-box').show();
-                          }
+                    if( 'popupLocation' in config.options && config.options.popupLocation != 'map' ){
+                      // create content
+                      var pcontent = '<div class="lizmapPopupContent">'+text+'</div>';
+                      var hasPopupContent = (!(!text || text == null || text == ''))
+                      if( !$('#mapmenu .nav-list > li.popupcontent > a').length )
+                        addDock('popupcontent', 'Popup', config.options.popupLocation, pcontent, 'icon-comment');
+                      else{
+                        $('#popupcontent div.menu-content').html(pcontent);
+                      }
+                      // Display dock if needed
+                      if( hasPopupContent && !$('#mapmenu .nav-list > li.popupcontent').hasClass('active') ){
+                          $('#button-popupcontent').click();
+                      }
+                      if( !hasPopupContent && $('#mapmenu .nav-list > li.popupcontent').hasClass('active') ){
+                          $('#button-popupcontent').click();
+                      }
+
+                      // Hide dock if no result
+                      if( !hasPopupContent && !$('#mapmenu .nav-list > li.switcher').hasClass('active') ){
+                        $('#button-switcher').click();
+                      }
+                    }
+                    else{
+                      if (!text || text == null || text == '')
                           return false;
-                        }
-                    );
-                    popup.panMapIfOutOfView = true;
-                    map.addPopup(popup);
+                      // Use openlayers map popup anchored
+                      var popup = new OpenLayers.Popup.LizmapAnchored(
+                          "liz_layer_popup",
+                          map.getLonLatFromPixel(event.xy),
+                          null,
+                          text,
+                          null,
+                          true,
+                          function() {
+                            map.removePopup(this);
+                            if(mCheckMobile()){
+                              $('#navbar').show();
+                              $('#overview-box').show();
+                            }
+                            return false;
+                          }
+                      );
+                      popup.panMapIfOutOfView = true;
+                      map.addPopup(popup);
+
+                      popup.verifySize();
+                      // Hide navbar and overview in mobile mode
+                      if(mCheckMobile()){
+                          $('#navbar').hide();
+                          $('#overview-box').hide();
+                      }
+                    }
 
                     // Trigger event
                     lizMap.events.triggerEvent(
                         "lizmappopupdisplayed"
                     );
-
-                    popup.verifySize();
-                    // Hide navbar and overview in mobile mode
-                    if(mCheckMobile()){
-                        $('#navbar').hide();
-                        $('#overview-box').hide();
-                    }
                 }
             }
      });
@@ -4800,6 +4825,7 @@ OpenLayers.Control.HighlightFeature = OpenLayers.Class(OpenLayers.Control, {
       var docktab = '';
       docktab+='<div class="tab-pane" id="'+dname+'">';
       if( dtype == 'minidock'){
+          docktab+='<div class="mini-dock-close" title="close" style="padding:7px;float:right;cursor:pointer;"><i class="icon-remove icon-white"></i></div>';
           docktab+='    <div class="'+dname+'">';
           docktab+='        <h3>';
           docktab+='            <span class="title">';
@@ -4815,7 +4841,11 @@ OpenLayers.Control.HighlightFeature = OpenLayers.Class(OpenLayers.Control, {
       docktab+='</div>';
       if( dtype == 'minidock'){
           $('#mini-dock-content').append(docktab);
-          $('#mini-dock .'+dname+' h3 .icon').css('background-image','none');
+          $('#'+dname+' div.mini-dock-close').click(function(){
+            if( $('#mapmenu .nav-list > li.'+dname).hasClass('active') ){
+                $('#button-'+dname).click();
+            }
+          });
       }
       else if( dtype == 'dock' )
           $('#dock-content').append(docktab);

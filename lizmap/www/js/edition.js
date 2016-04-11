@@ -522,7 +522,14 @@ var lizEdition = function() {
         }
 
         // Hide popup
-        $('#liz_layer_popup_close').click();
+        if( $('#liz_layer_popup_close').length )
+            $('#liz_layer_popup_close').click();
+        if( $('#mapmenu .nav-list > li.popupcontent > a').length ){
+            if( $('#mapmenu .nav-list > li.popupcontent').hasClass('active') ){
+                $('#button-popupcontent').click();
+                $('div.lizmapPopupContent').remove();
+            }
+        }
 
     }
 
@@ -881,7 +888,7 @@ var lizEdition = function() {
                 lizmappopupdisplayed: function(e) {
                     var hasButton = false;
                     // Add action buttons if needed
-                    $('#liz_layer_popup input.lizmap-popup-layer-feature-id').each(function(){
+                    $('div.lizmapPopupContent input.lizmap-popup-layer-feature-id').each(function(){
                         var self = $(this);
                         var val = self.val();
                         var eHtml = '';
@@ -934,7 +941,7 @@ var lizEdition = function() {
                     if( hasButton ) {
 
                         // edit
-                        $('#liz_layer_popup button.popup-layer-feature-edit')
+                        $('div.lizmapPopupContent button.popup-layer-feature-edit')
                         .click(function(){
                             var fid = $(this).val().split('.').pop();
                             var layerId = $(this).val().replace( '.' + fid, '' );
@@ -946,10 +953,11 @@ var lizEdition = function() {
                         .hover(
                             function(){ $(this).addClass('btn-primary'); },
                             function(){ $(this).removeClass('btn-primary'); }
-                        );
+                        )
+                        .tooltip();
 
                         // delete
-                        $('#liz_layer_popup button.popup-layer-feature-delete').click(function(){
+                        $('div.lizmapPopupContent button.popup-layer-feature-delete').click(function(){
                             var fid = $(this).val().split('.').pop();
                             var layerId = $(this).val().replace( '.' + fid, '' );
 
@@ -965,7 +973,8 @@ var lizEdition = function() {
                         .hover(
                             function(){ $(this).addClass('btn-primary'); },
                             function(){ $(this).removeClass('btn-primary'); }
-                        );
+                        )
+                        .tooltip();
 
                     }
                 }
