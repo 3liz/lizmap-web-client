@@ -65,7 +65,7 @@ var lizMap = function() {
    * PRIVATE Property: getFeatureInfoVendorParams
    * {object} Additionnal QGIS Server parameter for click tolerance in pixels
    */
-  var getFeatureInfoVendorParams = {
+  var defaultGetFeatureInfoTolerances = {
     'FI_POINT_TOLERANCE': 25,
     'FI_LINE_TOLERANCE': 10,
     'FI_POLYGON_TOLERANCE': 5
@@ -1701,6 +1701,7 @@ var lizMap = function() {
     html += '</li>';
     return html;
   }
+
   function getSwitcherUl(aNode, aLevel) {
     var html = '<ul class="level'+aLevel+'">';
     var children = aNode.children;
@@ -1717,6 +1718,7 @@ var lizMap = function() {
     html += '</ul>';
     return html;
   }
+
   function createSwitcherNew() {
     $('#switcher-layers').html(getSwitcherUl(tree,0));
     var projection = map.projection;
@@ -1949,6 +1951,7 @@ var lizMap = function() {
       viewport: '#dock'
     });
   }
+
   function createSwitcher() {
     // set the switcher content
     $('#switcher-layers').html(getSwitcherNode(tree,0));
@@ -2911,7 +2914,7 @@ var lizMap = function() {
             type:OpenLayers.Control.TYPE_TOGGLE,
             queryVisible: true,
             infoFormat: 'text/html',
-            vendorParams: getFeatureInfoVendorParams,
+            vendorParams: getFeatureInfoTolerances(),
             eventListeners: {
                 getfeatureinfo: function(event) {
                     var text = event.text;
@@ -4858,6 +4861,40 @@ OpenLayers.Control.HighlightFeature = OpenLayers.Class(OpenLayers.Control, {
       else if( dtype == 'dock' )
           $('#dock-tabs').append(docktabli);
 
+  }
+
+  /**
+   * PRIVATE function: getFeatureInfoTolerances
+   * Get tolerances for point, line and polygon
+   * as configured with lizmap plugin, or default
+   * if no configuration found.
+   * Returns:
+   * {Object} The tolerances for point, line and polygon
+   */
+  function getFeatureInfoTolerances(){
+
+    var tolerances = defaultGetFeatureInfoTolerances;
+    if( 'pointTolerance' in config.options
+        && 'lineTolerance' in config.options
+        && 'polygonTolerance' in config.options
+    ){
+      tolerances = {
+        'FI_POINT_TOLERANCE': config.options.pointTolerance,
+        'FI_LINE_TOLERANCE': config.options.lineTolerance,
+        'FI_POLYGON_TOLERANCE': config.options.polygonTolerance
+      };
+    }
+    return tolerances;
+
+  }
+
+  /* PRIVATE function: isHighDensity
+   * Return True when the screen is of high density
+   * Returns:
+   * Boolean
+   */
+  function isHighDensity(){
+    return ((window.matchMedia && (window.matchMedia('only screen and (min-resolution: 124dpi), only screen and (min-resolution: 1.3dppx), only screen and (min-resolution: 48.8dpcm)').matches || window.matchMedia('only screen and (-webkit-min-device-pixel-ratio: 1.3), only screen and (-o-min-device-pixel-ratio: 2.6/2), only screen and (min--moz-device-pixel-ratio: 1.3), only screen and (min-device-pixel-ratio: 1.3)').matches)) || (window.devicePixelRatio && window.devicePixelRatio > 1.3));
   }
 
   // creating the lizMap object
