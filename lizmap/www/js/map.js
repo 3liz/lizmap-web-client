@@ -3918,6 +3918,8 @@ OpenLayers.Control.HighlightFeature = OpenLayers.Class(OpenLayers.Control, {
         //~ console.log( "tooltip activated");
         var lname = $('#tooltip-layer-list').val();//feature.layer.name.split("@")[1];
         var lconfig = lizMap.config.layers[lname];
+        if( !(lname in lizMap.config.layers) )
+          return;
         var tconfig = lizMap.config.tooltipLayers[lname];
         var tf = tconfig['fields'].trim();
         var tooltipFields = tf.split(/[\s,]+/);
@@ -3962,6 +3964,10 @@ OpenLayers.Control.HighlightFeature = OpenLayers.Class(OpenLayers.Control, {
     $('#tooltip-layer button.btn-tooltip-layer-clear').click(function() {
         $('#button-tooltip-layer').click();
         return false;
+    });
+    $('#tooltip-cancel').click(function() {
+      $('#tooltip-layer-list').val('').change();
+      return false;
     });
     $('#tooltip-layer-list').change( function() {
         var aName = $(this).val();

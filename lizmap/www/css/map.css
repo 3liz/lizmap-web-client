@@ -1040,12 +1040,14 @@ div.modal h3 .text {
 }
 #toolbar .title .btn.btn-locate-clear,
 #dock .title .btn.btn-locate-clear,
-#mini-dock .title .btn.btn-locate-clear {
+#mini-dock .title .btn.btn-locate-clear,
+#mini-dock .title .btn.btn-tooltip-cancel {
   background-position : 0px 0px;
 }
 #toolbar .title .btn.btn-locate-clear:hover,
 #dock .title .btn.btn-locate-clear:hover,
-#mini-dock .title .btn.btn-locate-clear:hover {
+#mini-dock .title .btn.btn-locate-clear:hover ,
+#mini-dock .title .btn.btn-tooltip-cancel:hover{
   background-position : -20px 0px;
 }
 #toolbar .title .btn.btn-print-clear,
