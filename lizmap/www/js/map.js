@@ -66,6 +66,28 @@ var lizMap = function() {
     'ignphoto': 'ign-photo'
   };
 
+   /**
+   * PRIVATE Property: externalBaselayersReplacement
+   *
+   */
+  var startupBaselayersReplacement = {
+    'osm-mapnik': 'osm',
+    'osm-mapquest': 'mapquest',
+    'osm-cyclemap': 'osm-cyclemap',
+    'google-satellite': 'gsat',
+    'google-hybrid': 'ghyb',
+    'google-terrain': 'gphy',
+    'google-street': 'gmap',
+    'bing-road': 'bmap',
+    'bing-aerial': 'baerial',
+    'bing-hybrid': 'bhybrid',
+    'ign-scan': 'ignmap',
+    'ign-plan': 'ignplan',
+    'ign-photo': 'ignphoto',
+    'ign-cadastral': 'igncadastral',
+    'empty': 'emptyBaselayer'
+  };
+
   /**
    * PRIVATE Property: cleanNameMap
    *
@@ -1505,6 +1527,13 @@ var lizMap = function() {
       // Hide baselayer-menu if only one base layer inside
       if (baselayers.length==1)
         $('#baselayer-menu').hide();
+      else if ( 'startupBaselayer' in config.options ) {
+          var startupBaselayer = config.options['startupBaselayer'];
+          if ( startupBaselayer in startupBaselayersReplacement )
+            startupBaselayer = startupBaselayersReplacement[startupBaselayer];
+          if ( $('#baselayer-select option[value="'+startupBaselayer+'"]').length != 0 )
+            $('#baselayer-select').val(startupBaselayer).change();
+      }
     } else {
       // hide elements for baselayers
       $('#baselayer-menu').hide();
