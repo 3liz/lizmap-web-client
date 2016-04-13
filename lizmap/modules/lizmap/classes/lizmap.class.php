@@ -192,6 +192,37 @@ class lizmap{
     }
 
 
+    /* Returns time spent in milliseconds from beginning of request
+     * @param string $label Name of the action to lo
+     */
+    public static function logMetric( $label, $start='index' ){
+        // Choose from when to calculate time: index, request or given $start
+        if( $start == 'index' ){
+            $start = $_SERVER["LIZMAP_BEGIN_TIME"];
+        }
+        elseif( $start == 'request' ){
+            // For php < 5.4
+            if (!isset($_SERVER['REQUEST_TIME_FLOAT'])) {
+              $start = $_SERVER['REQUEST_TIME'];
+            }else{
+              $start = $_SERVER["REQUEST_TIME_FLOAT"];
+            }
+        }
 
+        // Calculate time
+        $time = ( microtime(true) - $start ) * 1000;
+
+        // Create log content
+        $log = array(
+            'NAME'=> $label,
+            'RESPONSE_TIME'=> $time
+        );
+
+        // Add cache parameter if given
+        if( isset( $_SESSION['LIZMAP_GETMAP_CACHE_STATUS'] ) ){
+          $log['CACHE_STATUS'] = $_SESSION['LIZMAP_GETMAP_CACHE_STATUS'];
+        }
+        jLog::log(json_encode($log), 'metric');
+    }
 
 }

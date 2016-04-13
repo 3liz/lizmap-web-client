@@ -11,12 +11,14 @@
 * @contributor Kévin Lepeltier, GeekBay, Julien Issler
 * @copyright   2006-2012 Laurent Jouanneau
 * @copyright   2008 Kévin Lepeltier, 2009 Geekbay
-* @copyright   2010 Julien Issler
+* @copyright   2010-2015 Julien Issler
 * @link        http://jelix.org
 * @licence     GNU Lesser General Public Licence see LICENCE file or http://www.gnu.org/licenses/lgpl.html
 */
 
 require(LIB_PATH.'phpMailer/class.phpmailer.php');
+require(LIB_PATH.'phpMailer/class.smtp.php');
+require(LIB_PATH.'phpMailer/class.pop3.php');
 
 
 /**
@@ -46,7 +48,7 @@ class jMailer extends PHPMailer {
      * if mailer is file.
     */
     public $filePath = '';
-    
+
     /**
      * indicates if mails should be copied into files, so the developer can verify that all mails are sent.
      */
@@ -82,7 +84,7 @@ class jMailer extends PHPMailer {
         $this->copyToFiles = $config->mailer['copyToFiles'];
 
         parent::__construct(true);
-        
+
     }
 
     /**
@@ -173,7 +175,7 @@ class jMailer extends PHPMailer {
 
             if (isset($metas['ReplyTo']))
                 foreach( $metas['ReplyTo'] as $val )
-                    $this->getAddrName($val, 'ReplyTo');
+                    $this->getAddrName($val, 'Reply-To');
             $mailtpl->assign('ReplyTo', $this->ReplyTo );
 
             if (isset($metas['From'])) {

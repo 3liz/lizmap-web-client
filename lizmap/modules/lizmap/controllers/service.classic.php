@@ -26,6 +26,10 @@ class serviceCtrl extends jController {
   * @return Redirect to the corresponding action depending on the request parameters
   */
   function index() {
+
+    // Variable stored to log lizmap metrics
+    $_SERVER['LIZMAP_BEGIN_TIME'] = microtime(true);
+
     if (isset($_SERVER['PHP_AUTH_USER'])) {
       $ok = jAuth::login($_SERVER['PHP_AUTH_USER'], $_SERVER['PHP_AUTH_PW']);
     }
@@ -398,9 +402,9 @@ class serviceCtrl extends jController {
   */
   function GetMap(){
 
-        // Get parameters
-        if(!$this->getServiceParameters())
-            return $this->serviceException();
+        //Get parameters  DELETED HERE SINCE ALREADY DONE IN index method
+        //if(!$this->getServiceParameters())
+            //return $this->serviceException();
 
         jClasses::inc('lizmap~lizmapWMSRequest');
         $wmsRequest = new lizmapWMSRequest( $this->project, $this->params );
@@ -427,6 +431,9 @@ class serviceCtrl extends jController {
                 $rep->setExpires("+".$clientCacheExpiration." seconds");
             }
         }
+
+        // log metric
+        lizmap::logMetric('LIZMAP_SERVICE_GETMAP');
 
         return $rep;
   }
@@ -662,7 +669,15 @@ class serviceCtrl extends jController {
         $hiddenFeatureId = '<input type="hidden" value="' . $layerId . '.' .$id.'" class="lizmap-popup-layer-feature-id"/>
         ';
 
-        // Specific template for the layer has been configured
+        // First get default template
+        $tpl = new jTpl();
+        $tpl->assign('attributes', $feature->Attribute);
+        $tpl->assign('repository', $this->repository->getKey());
+        $tpl->assign('project', $this->project->getKey());
+        $popupFeatureContent = $tpl->fetch('view~popupDefaultContent');
+        $autoContent = $popupFeatureContent;
+
+        // Get specific template for the layer has been configured
         if($templateConfigured){
 
           $popupFeatureContent = $popupTemplate;
@@ -678,43 +693,44 @@ class serviceCtrl extends jController {
               $popupFeatureContent
             );
           }
+            $lizmapContent = $popupFeatureContent;
         }
-       // Use default template if needed or maptip value if defined
-        else{
-          $isMaptip = false;
-          $maptipValue = '';
 
-          foreach($feature->Attribute as $attribute){
-            if($attribute['name'] == 'maptip'){
-              $isMaptip = true;
-              $maptipValue = $attribute['value'];
-            }
+        // Use default template if needed or maptip value if defined
+        $hasMaptip = false;
+        $maptipValue = '';
+
+        foreach($feature->Attribute as $attribute){
+          if($attribute['name'] == 'maptip'){
+            $hasMaptip = true;
+            $maptipValue = $attribute['value'];
           }
-          // If there is a maptip attribute we display its value
-          if($isMaptip){
-            // first replace all "media/bla/bla/llkjk.ext" by full url
-            $maptipValue = preg_replace_callback(
-              '#(["\']){1}(media/.+\.\w{3,10})(["\']){1}#',
-              Array($this, 'replaceMediaPathByMediaUrl'),
-              $maptipValue
-            );
-            // Replace : html encoded chars to let further regexp_replace find attributes
-            $maptipValue = str_replace(array('%24', '%7B', '%7D'), array('$', '{', '}'), $maptipValue);
-            $popupFeatureContent = $maptipValue;
-          }
-          // Use default template
-          else{
-            $tpl = new jTpl();
-            $tpl->assign('attributes', $feature->Attribute);
-            $tpl->assign('repository', $this->repository->getKey());
-            $tpl->assign('project', $this->project->getKey());
-            $popupFeatureContent = $tpl->fetch('view~popupDefaultContent');
-          }
+        }
+        // If there is a maptip attribute we display its value
+        if($hasMaptip){
+          // first replace all "media/bla/bla/llkjk.ext" by full url
+          $maptipValue = preg_replace_callback(
+            '#(["\']){1}(media/.+\.\w{3,10})(["\']){1}#',
+            Array($this, 'replaceMediaPathByMediaUrl'),
+            $maptipValue
+          );
+          // Replace : html encoded chars to let further regexp_replace find attributes
+          $maptipValue = str_replace(array('%24', '%7B', '%7D'), array('$', '{', '}'), $maptipValue);
+          $qgisContent = $maptipValue;
+        }
+
+        // New option to choose the popup source : auto (=default), lizmap (=popupTemplate), qgis (=qgis maptip)
+        $finalContent = $autoContent;
+        if(property_exists($configLayer, 'popupSource')){
+            if( $configLayer->popupSource == 'qgis' and $hasMaptip )
+                $finalContent = $qgisContent;
+            if( $configLayer->popupSource == 'lizmap' and $templateConfigured )
+                $finalContent = $lizmapContent;
         }
 
         $tpl = new jTpl();
         $tpl->assign('layerTitle', $layerTitle);
-        $tpl->assign('popupContent', $hiddenFeatureId . $popupFeatureContent);
+        $tpl->assign('popupContent', $hiddenFeatureId . $finalContent);
         $content[] = $tpl->fetch('view~popup');
 
       } // loop features
@@ -1076,7 +1092,7 @@ class serviceCtrl extends jController {
                 $rep->setExpires("+".$clientCacheExpiration." seconds");
             }
         }
-
+        lizmap::logMetric('LIZMAP_SERVICE_GETMAP');
         return $rep;
   }
 

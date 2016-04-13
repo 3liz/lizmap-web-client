@@ -177,8 +177,11 @@ class jDateTime {
                break;
            case self::RFC822_FORMAT:
            case self::RFC2822_FORMAT:
-               $str = date('r', mktime ( $this->hour, $this->minute,$this->second , $this->month, $this->day, $this->year ));
-               break;
+                $dt = new DateTime('now', new DateTimeZone('UTC'));
+                $dt->setDate($this->year, $this->month, $this->day);
+                $dt->setTime($this->hour, $this->minute,$this->second);
+                $str = $dt->format('r');
+                break;
            case self::FULL_LANG_DATE:
                $t = mktime ( $this->hour, $this->minute,$this->second , $this->month, $this->day, $this->year );
                // month translation
@@ -282,44 +285,15 @@ class jDateTime {
                break;
            case self::RFC822_FORMAT:
            case self::RFC2822_FORMAT:
-               // Note the "x" modifier, otherwise the pattern would look like
-               // obfuscated code.
-               $regexp = "/^
-                     (?: (?P<nday> Mon | Tue | Wed | Thu | Fri | Sat | Sun) , )? \s+
-                     (?P<day>\d{1,2}) \s+
-                     (?P<nmonth> Jan | Feb | Mar | Apr | May | Jun |
-                               Jul | Aug | Sep | Oct | Nov | Dec) \s+
-                     (?P<year>\d{4}) \s+
-                     (?P<hour>\d{2}) : (?P<minute>\d{2}) (?: : (?P<second>\d{2}))? \s+
-                     (?P<tzsign>[+-]) (?P<tzhour>\d{2}) (?P<tzminute>\d{2})$/x";
-
-               $english_months = array("Jan", "Feb", "Mar", "Apr", "May", "Jun",
-                   "Jul", "Aug", "Sep", "Oct", "Nov", "Dec");
-
-               $match = array("year" => 0, "month" => 0, "day" => 0,
-                   "hour" => 0, "minute" => 0, "second" => 0, "tzsign" => "+",
-                   "tzhour" => 0, "tzminute" => 0);
-
-               if($ok = preg_match($regexp, $str, $match)){
-                   $this->year = intval($match['year']);
-                   $this->month = array_search($match['nmonth'], $english_months) + 1;
-                   $this->day = intval($match['day']);
-                   $this->hour = intval($match['hour']);
-                   $this->minute = intval($match['minute']);
-                   $this->second = intval($match['second']);
-
-                   // Adjust according to the timezone, so that the stored time
-                   // corresponds to UTC.
-                   $tz = new jDuration(array('hour'=>intval($match['tzhour']),
-                       'minute'=>intval($match['tzminute'])));
-                   if($match['tzsign'] == '+'){
-                       $this->sub($tz);
-                   }
-                   else{
-                       $this->add($tz);
-                   }
-               }
-               break;
+                $dt = new DateTime($str);
+                $dt = $dt->setTimezone(new DateTimeZone('UTC'));
+                $this->year = intval($dt->format('Y'));
+                $this->month = intval($dt->format('m'));
+                $this->day = intval($dt->format('d'));
+                $this->hour = intval($dt->format('H'));
+                $this->minute = intval($dt->format('i'));
+                $this->second = intval($dt->format('s'));
+                break;
             default:
                 if (is_string($format)) {
                     $ok = $this->_createDateFromFormat($format, $str);

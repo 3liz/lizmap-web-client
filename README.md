@@ -1,4 +1,4 @@
-[![logo](icon.png "3Liz")][3liz]Lizmap Web Application 3.0beta3
+[![logo](icon.png "3Liz")][3liz]Lizmap Web Application 3.0beta4
 ================================================================
 
 Lizmap web application, by 3LIZ.
@@ -21,20 +21,30 @@ The Initial Developer of the Original Code are René-Luc D'Hont <rldhont@3liz.co
 Contributors
 --------------
 
-Paolo Cavallini <cavallini@faunalia.it>
-Salvatore Larosa <lrssvtml@gmail.com>
-Giovanni Manghi <giovanni.manghi@gmail.com>
-Vitor Jorge
-Nicolas Boisteault
-Arno <ntelerm@yahoo.gr>
-vherreros
-jaitor1
-Felix Kuehne
+* Paolo Cavallini <cavallini@faunalia.it>
+* Salvatore Larosa <lrssvtml@gmail.com>
+* Giovanni Manghi <giovanni.manghi@gmail.com>
+* Vitor Jorge
+* Nicolas Boisteault
+* Arno <ntelerm@yahoo.gr>
+* vherreros
+* jaitor1
+* Felix Kuehne
 
 Documentation
 --------------
 
 http://docs.3liz.com/
+
+Documentation source: https://github.com/3liz/lizmap-documentation/
+
+Internationalization
+---------------------
+
+Transifex: https://www.transifex.com/3liz-1/lizmap-locales/
+
+Locales source: https://github.com/3liz/lizmap-locales/
+
 
 License
 -------

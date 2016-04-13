@@ -72,7 +72,7 @@ class jAuthDriverBase {
         }
         else {
             // verify with the old hash api
-            if ($currentPasswordHash != $this->cryptPassword($givenPassword, true)) {
+            if (!hash_equals($currentPasswordHash, $this->cryptPassword($givenPassword, true))) {
                 return false;
             }
 

@@ -119,6 +119,18 @@ class lizmapProject{
                 )
             );
 
+            # get WMTS getCapabilities full URL
+            $this->data['wmtsGetCapabilitiesUrl'] = jUrl::getFull(
+                'lizmap~service:index',
+                array(
+                    'repository' => $rep->getKey(),
+                    'project' => $key,
+                    'SERVICE' => 'WMTS',
+                    'VERSION' => '1.0.0',
+                    'REQUEST' => 'GetCapabilities'
+                )
+            );
+
             // get QGIS project version
             $qgisRoot = $this->xml->xpath('//qgis');
             $qgisRootZero = $qgisRoot[0];
@@ -834,14 +846,17 @@ class lizmapProject{
             'lizmap.tools.displayGetCapabilitiesLinks',
             $this->repository->getKey()
         );
+        $wmtsGetCapabilitiesUrl = $wmsGetCapabilitiesUrl;
         if ( $wmsGetCapabilitiesUrl ) {
             $wmsGetCapabilitiesUrl = $this->getData('wmsGetCapabilitiesUrl');
+            $wmtsGetCapabilitiesUrl = $this->getData('wmtsGetCapabilitiesUrl');
         }
         $metadataTpl->assign(array_merge(array(
             'repositoryLabel'=>$this->getData('label'),
             'repository'=>$this->repository->getKey(),
             'project'=>$this->getKey(),
-            'wmsGetCapabilitiesUrl' => $wmsGetCapabilitiesUrl
+            'wmsGetCapabilitiesUrl' => $wmsGetCapabilitiesUrl,
+            'wmtsGetCapabilitiesUrl' => $wmtsGetCapabilitiesUrl
         ), $wmsInfo));
         $dockable[] = new lizmapMapDockItem(
             'metadata',

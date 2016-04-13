@@ -12,3 +12,5 @@
       {/foreach}
       </div>
     </div>
+
+<button id="dock-close"> {@view~map.bottomdock.toolbar.btn.clear.title@}</button>

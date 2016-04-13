@@ -2371,7 +2371,7 @@ var lizAttributeTable = function() {
                 lizmappopupdisplayed: function(e) {
                     var hasButton = false;
                     // Add action buttons if needed
-                    $('#liz_layer_popup input.lizmap-popup-layer-feature-id').each(function(){
+                    $('div.lizmapPopupContent input.lizmap-popup-layer-feature-id').each(function(){
                         var self = $(this);
                         var val = self.val();
                         var eHtml = '';
@@ -2432,9 +2432,11 @@ var lizAttributeTable = function() {
                     });
                     // Add interaction buttons
                     if( hasButton ) {
+                        // Tooltips
+                        $('div.lizmapPopupContent button').tooltip();
 
                         // select
-                        $('#liz_layer_popup button.popup-layer-feature-select')
+                        $('div.lizmapPopupContent button.popup-layer-feature-select')
                         .click(function(){
                             var fid = $(this).val().split('.').pop();
                             var featureType = $(this).val().replace( '.' + fid, '' );
@@ -2468,7 +2470,7 @@ var lizAttributeTable = function() {
                         );
 
                         // Zoom
-                        $('#liz_layer_popup button.popup-layer-feature-zoom')
+                        $('div.lizmapPopupContent button.popup-layer-feature-zoom')
                         .click(function(){
                             var fid = $(this).val().split('.').pop();
                             var featureType = $(this).val().replace( '.' + fid, '' );
@@ -2489,7 +2491,7 @@ var lizAttributeTable = function() {
 
                         // filter
                         if( !startupFilter ){
-                            $('#liz_layer_popup button.popup-layer-feature-filter')
+                            $('div.lizmapPopupContent button.popup-layer-feature-filter')
                             .click(function(){
                                 var fid = $(this).val().split('.').pop();
                                 var featureType = $(this).val().replace( '.' + fid, '' );

@@ -1,7 +1,7 @@
-"use strict";
-
 WYMeditor.SKINS['default'] = {
-    init: function (wym) {
+
+    init: function(wym) {
+
         //render following sections as panels
         jQuery(wym._box).find(wym._options.classesSelector)
           .addClass("wym_panel");
@@ -14,7 +14,7 @@ WYMeditor.SKINS['default'] = {
         jQuery(wym._box).find(wym._options.containersSelector)
           .addClass("wym_dropdown")
           .find(WYMeditor.H2)
-          .append("<span> ></span>");
+          .append("<span>&#160;&gt;</span>");
 
         // auto add some margin to the main area sides if left area
         // or right area are not empty (if they contain sections)
@@ -31,13 +31,10 @@ WYMeditor.SKINS['default'] = {
           .css({"margin-left": "155px"});
 
         //make hover work under IE < 7
-        jQuery(wym._box).find(".wym_section").hover(
-            function () {
-                jQuery(this).addClass("hover");
-            },
-            function () {
-                jQuery(this).removeClass("hover");
-            }
-        );
+        jQuery(wym._box).find(".wym_section").hover(function(){
+          jQuery(this).addClass("hover");
+        },function(){
+          jQuery(this).removeClass("hover");
+        });
     }
 };

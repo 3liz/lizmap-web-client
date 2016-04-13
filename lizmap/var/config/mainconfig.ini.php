@@ -120,6 +120,7 @@ notice=file
 ;deprecated=syslog
 strict=file
 ;sql=syslog
+metric=syslog
 
 [fileLogger]
 default=messages.log
@@ -127,6 +128,7 @@ error=error.log
 warning=error.log
 notice=error.log
 strict=error.log
+;metric=time.log
 
 [mailer]
 webmasterEmail="root@localhost"

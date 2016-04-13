@@ -65,7 +65,7 @@ var lizMap = function() {
    * PRIVATE Property: getFeatureInfoVendorParams
    * {object} Additionnal QGIS Server parameter for click tolerance in pixels
    */
-  var getFeatureInfoVendorParams = {
+  var defaultGetFeatureInfoTolerances = {
     'FI_POINT_TOLERANCE': 25,
     'FI_LINE_TOLERANCE': 10,
     'FI_POLYGON_TOLERANCE': 5
@@ -90,6 +90,28 @@ var lizMap = function() {
     'ignplan': 'ign-plan',
     'ignphoto': 'ign-photo',
     'igncadastral': 'ign-cadastral'
+  };
+
+  /**
+   * PRIVATE Property: externalBaselayersReplacement
+   *
+   */
+  var startupBaselayersReplacement = {
+    'osm-mapnik': 'osm',
+    'osm-mapquest': 'mapquest',
+    'osm-cyclemap': 'osm-cyclemap',
+    'google-satellite': 'gsat',
+    'google-hybrid': 'ghyb',
+    'google-terrain': 'gphy',
+    'google-street': 'gmap',
+    'bing-road': 'bmap',
+    'bing-aerial': 'baerial',
+    'bing-hybrid': 'bhybrid',
+    'ign-scan': 'ignmap',
+    'ign-plan': 'ignplan',
+    'ign-photo': 'ignphoto',
+    'ign-cadastral': 'igncadastral',
+    'empty': 'emptyBaselayer'
   };
 
   /**
@@ -1701,6 +1723,7 @@ var lizMap = function() {
     html += '</li>';
     return html;
   }
+
   function getSwitcherUl(aNode, aLevel) {
     var html = '<ul class="level'+aLevel+'">';
     var children = aNode.children;
@@ -1717,6 +1740,7 @@ var lizMap = function() {
     html += '</ul>';
     return html;
   }
+
   function createSwitcherNew() {
     $('#switcher-layers').html(getSwitcherUl(tree,0));
     var projection = map.projection;
@@ -1949,6 +1973,7 @@ var lizMap = function() {
       viewport: '#dock'
     });
   }
+
   function createSwitcher() {
     // set the switcher content
     $('#switcher-layers').html(getSwitcherNode(tree,0));
@@ -2205,6 +2230,13 @@ var lizMap = function() {
       // Hide switcher-baselayer if only one base layer inside
       if (baselayers.length==1)
         $('#switcher-baselayer').hide();
+      else if ( 'startupBaselayer' in config.options ) {
+          var startupBaselayer = config.options['startupBaselayer'];
+          if ( startupBaselayer in startupBaselayersReplacement )
+            startupBaselayer = startupBaselayersReplacement[startupBaselayer];
+          if ( $('#switcher-baselayer-select option[value="'+startupBaselayer+'"]').length != 0 )
+            $('#switcher-baselayer-select').val(startupBaselayer).change();
+      }
     } else {
       // hide elements for baselayers
       $('#switcher-baselayer').hide();
@@ -2911,46 +2943,71 @@ var lizMap = function() {
             type:OpenLayers.Control.TYPE_TOGGLE,
             queryVisible: true,
             infoFormat: 'text/html',
-            vendorParams: getFeatureInfoVendorParams,
+            vendorParams: getFeatureInfoTolerances(),
             eventListeners: {
                 getfeatureinfo: function(event) {
                     var text = event.text;
-                    if (!text || text == null || text == '')
-                        return false;
 
                     if (map.popups.length != 0)
                         map.removePopup(map.popups[0]);
 
-                    var popup = new OpenLayers.Popup.LizmapAnchored(
-                        "liz_layer_popup",
-                        map.getLonLatFromPixel(event.xy),
-                        null,
-                        text,
-                        null,
-                        true,
-                        function() {
-                          map.removePopup(this);
-                          if(mCheckMobile()){
-                            $('#navbar').show();
-                            $('#overview-box').show();
-                          }
+                    if( 'popupLocation' in config.options && config.options.popupLocation != 'map' ){
+                      // create content
+                      var pcontent = '<div class="lizmapPopupContent">'+text+'</div>';
+                      var hasPopupContent = (!(!text || text == null || text == ''))
+                      if( !$('#mapmenu .nav-list > li.popupcontent > a').length )
+                        addDock('popupcontent', 'Popup', config.options.popupLocation, pcontent, 'icon-comment');
+                      else{
+                        $('#popupcontent div.menu-content').html(pcontent);
+                      }
+                      // Display dock if needed
+                      if( hasPopupContent && !$('#mapmenu .nav-list > li.popupcontent').hasClass('active') ){
+                          $('#button-popupcontent').click();
+                      }
+                      if( !hasPopupContent && $('#mapmenu .nav-list > li.popupcontent').hasClass('active') ){
+                          $('#button-popupcontent').click();
+                      }
+
+                      // Hide dock if no result
+                      if( !hasPopupContent && !$('#mapmenu .nav-list > li.switcher').hasClass('active') ){
+                        $('#button-switcher').click();
+                      }
+                    }
+                    else{
+                      if (!text || text == null || text == '')
                           return false;
-                        }
-                    );
-                    popup.panMapIfOutOfView = true;
-                    map.addPopup(popup);
+                      // Use openlayers map popup anchored
+                      var popup = new OpenLayers.Popup.LizmapAnchored(
+                          "liz_layer_popup",
+                          map.getLonLatFromPixel(event.xy),
+                          null,
+                          text,
+                          null,
+                          true,
+                          function() {
+                            map.removePopup(this);
+                            if(mCheckMobile()){
+                              $('#navbar').show();
+                              $('#overview-box').show();
+                            }
+                            return false;
+                          }
+                      );
+                      popup.panMapIfOutOfView = true;
+                      map.addPopup(popup);
+
+                      popup.verifySize();
+                      // Hide navbar and overview in mobile mode
+                      if(mCheckMobile()){
+                          $('#navbar').hide();
+                          $('#overview-box').hide();
+                      }
+                    }
 
                     // Trigger event
                     lizMap.events.triggerEvent(
                         "lizmappopupdisplayed"
                     );
-
-                    popup.verifySize();
-                    // Hide navbar and overview in mobile mode
-                    if(mCheckMobile()){
-                        $('#navbar').hide();
-                        $('#overview-box').hide();
-                    }
                 }
             }
      });
@@ -3890,6 +3947,8 @@ OpenLayers.Control.HighlightFeature = OpenLayers.Class(OpenLayers.Control, {
         //~ console.log( "tooltip activated");
         var lname = $('#tooltip-layer-list').val();//feature.layer.name.split("@")[1];
         var lconfig = lizMap.config.layers[lname];
+        if( !(lname in lizMap.config.layers) )
+          return;
         var tconfig = lizMap.config.tooltipLayers[lname];
         var tf = tconfig['fields'].trim();
         var tooltipFields = tf.split(/[\s,]+/);
@@ -3934,6 +3993,10 @@ OpenLayers.Control.HighlightFeature = OpenLayers.Class(OpenLayers.Control, {
     $('#tooltip-layer button.btn-tooltip-layer-clear').click(function() {
         $('#button-tooltip-layer').click();
         return false;
+    });
+    $('#tooltip-cancel').click(function() {
+      $('#tooltip-layer-list').val('').change();
+      return false;
     });
     $('#tooltip-layer-list').change( function() {
         var aName = $(this).val();
@@ -4766,6 +4829,109 @@ OpenLayers.Control.HighlightFeature = OpenLayers.Class(OpenLayers.Control, {
   }
 
 
+  // Create new dock or minidock
+  // Example : lizMap.createDock('mydock', 'My dock title', 'dock', 'Some content', 'icon-pencil');
+  // see icon list here : http://getbootstrap.com/2.3.2/base-css.html#icons
+  function addDock( dname, dlabel, dtype, dcontent, dicon){
+      // First check if this dname already exists
+      if( $('#mapmenu .nav-list > li.'+dname+' > a').length ){
+          console.log(dname + ' menu item already exists');
+          return;
+      }
+
+      // Create menu icon for activating dock
+      var dockli = '';
+      dockli+='<li class="'+dname+' nav-'+dtype+'">';
+      dockli+='   <a id="button-'+dname+'" rel="tooltip" data-original-title="'+dlabel+'" data-placement="right" href="#'+dname+'">';
+      dockli+='       <span class="icon"><i class="'+dicon+' icon-white"></i></span>';
+      dockli+='   </a>';
+      dockli+='</li>';
+      $('#mapmenu div ul li.nav-'+dtype+':last').after(dockli);
+
+      //  Remove native lizmap icon
+      $('#mapmenu .nav-list > li.'+dname+' > a .icon').css('background-image','none');
+      $('#mapmenu .nav-list > li.'+dname+' > a .icon >i ').css('margin', '4px');
+
+      // Change icon color when menu is active
+      var style = $('<style>#mapmenu .nav-list > li.'+dname+'.active .icon > i, #mapmenu .nav-list > li.'+dname+' a:hover .icon > i{ background-image: url("/css/images/glyphicons-halflings.png"); }</style>');
+      $('html > head').append(style);
+
+      // Add tooltip
+      $('#mapmenu .nav-list > li.'+dname+' > a').tooltip();
+
+      // Create dock tab content
+      var docktab = '';
+      docktab+='<div class="tab-pane" id="'+dname+'">';
+      if( dtype == 'minidock'){
+          docktab+='<div class="mini-dock-close" title="close" style="padding:7px;float:right;cursor:pointer;"><i class="icon-remove icon-white"></i></div>';
+          docktab+='    <div class="'+dname+'">';
+          docktab+='        <h3>';
+          docktab+='            <span class="title">';
+          docktab+='              <i class="'+dicon+' icon-white"></i>';
+          docktab+='              <span class="text">&nbsp;'+dlabel+'&nbsp;</span>';
+          docktab+='            </span>';
+          docktab+='        </h3>';
+      }
+      docktab+='        <div class="menu-content">';
+      docktab+= dcontent;
+      docktab+='        </div>';
+      docktab+='    </div>';
+      docktab+='</div>';
+      if( dtype == 'minidock'){
+          $('#mini-dock-content').append(docktab);
+          $('#'+dname+' div.mini-dock-close').click(function(){
+            if( $('#mapmenu .nav-list > li.'+dname).hasClass('active') ){
+                $('#button-'+dname).click();
+            }
+          });
+      }
+      else if( dtype == 'dock' )
+          $('#dock-content').append(docktab);
+
+      // Create dock tab li
+      var docktabli = '';
+      docktabli+= '<li id="nav-tab-'+dname+'"><a href="#'+dname+'" data-toggle="tab">'+dlabel+'</a></li>';
+      if( dtype == 'minidock')
+          $('#mini-dock-tabs').append(docktabli);
+      else if( dtype == 'dock' )
+          $('#dock-tabs').append(docktabli);
+
+  }
+
+  /**
+   * PRIVATE function: getFeatureInfoTolerances
+   * Get tolerances for point, line and polygon
+   * as configured with lizmap plugin, or default
+   * if no configuration found.
+   * Returns:
+   * {Object} The tolerances for point, line and polygon
+   */
+  function getFeatureInfoTolerances(){
+
+    var tolerances = defaultGetFeatureInfoTolerances;
+    if( 'pointTolerance' in config.options
+        && 'lineTolerance' in config.options
+        && 'polygonTolerance' in config.options
+    ){
+      tolerances = {
+        'FI_POINT_TOLERANCE': config.options.pointTolerance,
+        'FI_LINE_TOLERANCE': config.options.lineTolerance,
+        'FI_POLYGON_TOLERANCE': config.options.polygonTolerance
+      };
+    }
+    return tolerances;
+
+  }
+
+  /* PRIVATE function: isHighDensity
+   * Return True when the screen is of high density
+   * Returns:
+   * Boolean
+   */
+  function isHighDensity(){
+    return ((window.matchMedia && (window.matchMedia('only screen and (min-resolution: 124dpi), only screen and (min-resolution: 1.3dppx), only screen and (min-resolution: 48.8dpcm)').matches || window.matchMedia('only screen and (-webkit-min-device-pixel-ratio: 1.3), only screen and (-o-min-device-pixel-ratio: 2.6/2), only screen and (min--moz-device-pixel-ratio: 1.3), only screen and (min-device-pixel-ratio: 1.3)').matches)) || (window.devicePixelRatio && window.devicePixelRatio > 1.3));
+  }
+
   // creating the lizMap object
   var obj = {
     /**
@@ -4963,6 +5129,13 @@ OpenLayers.Control.HighlightFeature = OpenLayers.Class(OpenLayers.Control, {
      */
     getLayerConfigById: function( aLayerId, aConfObjet, aIdAttribute ) {
       return getLayerConfigById( aLayerId, aConfObjet, aIdAttribute );
+    },
+
+    /**
+     * Method: addDock
+     */
+    addDock: function( dname, dlabel, dtype, dcontent, dicon){
+      return addDock(dname, dlabel, dtype, dcontent, dicon);
     },
 
     /**
@@ -5214,7 +5387,7 @@ OpenLayers.Control.HighlightFeature = OpenLayers.Class(OpenLayers.Control, {
           });
 
           // Toggle locate
-          $('#mapmenu li.nav-minidock > a').click(function(){
+          $('#mapmenu ul').on('click', 'li.nav-minidock > a', function(){
             var self = $(this);
             var parent = self.parent();
             var id = self.attr('href').substr(1);
@@ -5244,7 +5417,7 @@ OpenLayers.Control.HighlightFeature = OpenLayers.Class(OpenLayers.Control, {
           else
             $('#button-locate').click();
 
-          $('#mapmenu li.nav-dock > a').click(function(){
+          $('#mapmenu ul').on('click', 'li.nav-dock > a', function(){
             var self = $(this);
             var parent = self.parent();
             var id = self.attr('href').substr(1);
@@ -5946,6 +6119,9 @@ lizMap.events.on({
                 }
             }
         }
+
+      // Connect dock close button
+      $('#dock-close').click(function(){ $('#mapmenu .nav-list > li.active.nav-dock > a').click(); });
    }
 
 });

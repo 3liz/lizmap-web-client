@@ -164,7 +164,7 @@ class editionCtrl extends jController {
     $_layerName = $layerXmlZero->xpath('layername');
     $layerName = (string)$_layerName[0];
 
-    // Verifying if the layer is edtable
+    // Verifying if the layer is editable
     $eLayers  = $lproj->getEditionLayers();
     if ( !property_exists( $eLayers, $layerName ) ) {
       jMessage::add('The layer is not editable!', 'LayerNotEditable');
@@ -185,8 +185,28 @@ class editionCtrl extends jController {
     else
       $featureId = $featureIdParam;
 
+    // Define class private properties
+    $this->project = $lproj;
+    $this->repository = $lrep;
+    $this->layerId = $layerId;
+    $this->featureId = $featureId;
+    $this->featureIdParam = $featureIdParam;
+    $this->layerXml = $layerXml;
+    $this->layerName = $layerName;
+
+    // Optionnaly filter data by login
+    if( !jAcl2::check('lizmap.tools.loginFilteredLayers.override', $lrep->getKey()) ){
+      $this->loginFilteredLayers = True;
+    }
+    $this->loginFilteredOveride = jacl2::check('lizmap.tools.loginFilteredLayers.override', $lrep->getKey());
+
     // Get features primary key field values corresponding to featureId(s)
     if( !empty($featureId) ){
+        $_datasource = $layerXmlZero->xpath('datasource');
+        $datasource = (string)$_datasource[0];
+        $s_provider = $layerXmlZero->xpath('provider');
+        $this->provider = (string)$s_provider[0];
+        $this->getDataFields($datasource);
         $wfsparams = array(
             'SERVICE' => 'WFS',
             'VERSION' => '1.0.0',
@@ -194,6 +214,7 @@ class editionCtrl extends jController {
             'TYPENAME' => $layerName,
             'OUTPUTFORMAT' => 'GeoJSON',
             'GEOMETRYNAME' => 'none',
+            'PROPERTYNAME' => implode(',',$this->primaryKeys),
             'FEATUREID' => $layerName . '.' . $featureId
         );
         jClasses::inc('lizmap~lizmapWFSRequest');
@@ -210,21 +231,6 @@ class editionCtrl extends jController {
             }
         }
     }
-
-    // Define class private properties
-    $this->project = $lproj;
-    $this->repository = $lrep;
-    $this->layerId = $layerId;
-    $this->featureId = $featureId;
-    $this->featureIdParam = $featureIdParam;
-    $this->layerXml = $layerXml;
-    $this->layerName = $layerName;
-
-    // Optionnaly filter data by login
-    if( !jAcl2::check('lizmap.tools.loginFilteredLayers.override', $lrep->getKey()) ){
-      $this->loginFilteredLayers = True;
-    }
-    $this->loginFilteredOveride = jacl2::check('lizmap.tools.loginFilteredLayers.override', $lrep->getKey());
 
     return true;
   }
