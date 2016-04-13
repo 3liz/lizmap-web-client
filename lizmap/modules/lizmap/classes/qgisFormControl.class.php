@@ -389,6 +389,12 @@ class qgisFormControl{
 
     // Create an array of data specific for the qgis edittype
     $data = array();
+
+    // Add default empty value for required fields
+    // Jelix does not do it, but we think it is better this way to avoid unwanted set values
+    if( $this->required )
+      $data[''] = '';
+
     switch($this->fieldEditType){
 
       // Enumeration

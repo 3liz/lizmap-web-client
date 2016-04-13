@@ -700,6 +700,21 @@ class editionCtrl extends jController {
         }
       }
       $dataSource = new jFormsStaticDatasource();
+
+      // required
+      if(
+        strtolower( $this->formControls[$fieldName]->valueRelationData['allowNull'] ) == 'false'
+        or
+        strtolower( $this->formControls[$fieldName]->valueRelationData['allowNull'] ) == '0'
+      ){
+        $this->formControls[$fieldName]->ctrl->required = True;
+      }
+
+      // Add default empty value for required fields
+      // Jelix does not do it, but we think it is better this way to avoid unwanted set values
+      if( $this->formControls[$fieldName]->ctrl->required )
+        $data[''] = '';
+
       // orderByValue
       if(
         strtolower( $this->formControls[$fieldName]->valueRelationData['orderByValue'] ) == 'true'
@@ -711,14 +726,6 @@ class editionCtrl extends jController {
 
       $dataSource->data = $data;
       $this->formControls[$fieldName]->ctrl->datasource = $dataSource;
-      // required
-      if(
-        strtolower( $this->formControls[$fieldName]->valueRelationData['allowNull'] ) == 'false'
-        or
-        strtolower( $this->formControls[$fieldName]->valueRelationData['allowNull'] ) == '0'
-      ){
-        $this->formControls[$fieldName]->ctrl->required = True;
-      }
     }
     else{
       if(!preg_match('#No feature found error messages#', $wfsData)){
@@ -900,6 +907,13 @@ class editionCtrl extends jController {
             $value = (float)$value;
             if ( !$value )
               $value = 'NULL';
+            break;
+          case 'text':
+            $value= filter_var($value, FILTER_SANITIZE_STRING, FILTER_FLAG_NO_ENCODE_QUOTES);
+            if ( !$value or empty($value))
+              $value = 'NULL';
+            else
+              $value = $value = $cnx->quote($value);
             break;
           default:
             $value = $cnx->quote(
