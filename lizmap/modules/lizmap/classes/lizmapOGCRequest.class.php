@@ -100,6 +100,19 @@ class lizmapOGCRequest {
         $mime = $getRemoteData[1];
         $code = $getRemoteData[2];
 
+        // Retry if 500 error ( hackish, but QGIS Server segfault sometimes with cache issue )
+        if( $code == 500 ){
+          // Get remote data
+          $getRemoteData = lizmapProxy::getRemoteData(
+            $querystring,
+            $this->services->proxyMethod,
+            $this->services->debugMode
+          );
+          $data = $getRemoteData[0];
+          $mime = $getRemoteData[1];
+          $code = $getRemoteData[2];
+        }
+
         return (object) array(
             'code' => $code,
             'mime' => $mime,
