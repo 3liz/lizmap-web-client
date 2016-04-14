@@ -179,7 +179,7 @@ class editionCtrl extends jController {
       return false;
     }
 
-    // feature Id (optionnal, only for edition and save)
+    // feature Id (optional, only for edition and save)
     if(preg_match('#,#', $featureIdParam))
       $featureId = preg_split('#,#', $featureIdParam);
     else

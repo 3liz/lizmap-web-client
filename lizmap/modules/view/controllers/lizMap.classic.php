@@ -142,7 +142,7 @@ class lizMapCtrl extends jController {
       "geobookmark" => jUrl::get('lizmap~geobookmark:index')
     );
 
-    // Get optionnal WMS public url list
+    // Get optional WMS public url list
     $lser = lizmap::getServices();
     if($lser->wmsPublicUrlList){
         $publicUrlList = $lser->wmsPublicUrlList;
@@ -293,7 +293,7 @@ class lizMapCtrl extends jController {
 
     }
 
-    // optionnally hide some tools
+    // optionally hide some tools
     // header
     $jsCode = ''; $mapMenuCss = '';
     $h = $this->intParam('h',1);

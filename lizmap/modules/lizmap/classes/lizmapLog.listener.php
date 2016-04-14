@@ -18,7 +18,7 @@ class lizmapLogListener extends jEventListener{
   *
   */
   function onAuthCanLogin($event){
-  
+
     $key = 'login';
     $data = array(
       'key'=>$key,
@@ -26,23 +26,23 @@ class lizmapLogListener extends jEventListener{
       'repository'=> Null,
       'project'=> Null
     );
-    
+
     $this->addLog($key, $data);
-    
+
   }
 
   /**
   * Event emitted by lizmap controllers
   * @param string $key Key of the log item
-  * @param string $content Content to log (optionnal)
-  * @param string $repository Lizmap repository key (optionnal)
-  * @param string $project Lizmap project key (optionnal)
+  * @param string $content Content to log (optional)
+  * @param string $repository Lizmap repository key (optional)
+  * @param string $project Lizmap project key (optional)
   *
   */
   function onLizLogItem($event){
-  
+
     $key = $event->getParam('key');
-    
+
     // Build data array from event params
     $logItem = lizmap::getLogItem($key);
     $data = array();
@@ -51,12 +51,12 @@ class lizmapLogListener extends jEventListener{
         if($event->getParam($rk))
           $data[$rk] = $event->getParam($rk);
       }
-    
+
       $this->addLog($key, $data);
     }
 
   }
-  
+
   /**
   * Add log when needed
   * @param string $key Key of the log item to handle.
@@ -64,36 +64,36 @@ class lizmapLogListener extends jEventListener{
   *
   */
   function addLog($key, $data){
-    
-    // Get log item properties  
+
+    // Get log item properties
     $logItem = lizmap::getLogItem($key);
-       
+
     // Optionnaly log detail
     if( $logItem->getData('logDetail') ){
-    
+
       // user who modified the line
-      if(!array_key_exists('user', $data)){     
+      if(!array_key_exists('user', $data)){
         $juser = jAuth::getUserSession();
-        $data['user'] = $juser->login; 
+        $data['user'] = $juser->login;
       }
-            
+
       // Add IP if needed
       if( $logItem->getData('logIp') )
         $data['ip'] = $_SERVER['REMOTE_ADDR'];
-      
+
       // Insert log
       $logItem->insertLogDetail($data);
     }
-    
+
     // Optionnaly log count
     if( $logItem->getData('logCounter') ){
       $logItem->increaseLogCounter($data['repository'], $data['project']);
     }
-    
+
   }
-  
-  
-  
-  
+
+
+
+
 
 }
