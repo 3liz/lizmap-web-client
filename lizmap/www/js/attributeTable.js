@@ -1521,7 +1521,7 @@ var lizAttributeTable = function() {
 
                     // Trigger event
                     lizMap.events.triggerEvent(
-                        'lizmappopupdisplayed'
+                        'lizmappopupdisplayed_inattributetable'
                     );
 
                     var closeButton = '<a class="close-attribute-feature-panel pull-right" href="#"><i class="icon-remove"></i></a>'

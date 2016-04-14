@@ -600,6 +600,9 @@ SubDock
   height: 100%;
   padding-left: 10px;
 }
+.attribute-layer-feature-panel img {
+  max-width: 300px;
+}
 .attribute-layer-feature-panel.visible {
   width:auto;
 }
