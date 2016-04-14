@@ -258,8 +258,8 @@ var lizEdition = function() {
                 if ( $(this).hasClass('disabled') )
                     return false;
                 // Deactivate previous edition
-                if ( !confirm( lizDict['edition.confirm.cancel'] ) )
-                    return false;
+                //if ( !confirm( lizDict['edition.confirm.cancel'] ) )
+                    //return false;
                 finishEdition();
             });
 

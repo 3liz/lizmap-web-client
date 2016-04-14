@@ -4731,7 +4731,7 @@ OpenLayers.Control.HighlightFeature = OpenLayers.Class(OpenLayers.Control, {
           // Get WFS typename
           var typeName = aName.split(' ').join('_');
           if ( 'shortname' in config.layers[aName] )
-              typeName = configLayer.shortname;
+              typeName = config.layers.shortname;
 
           for( var id in config.layers[aName]['selectedFeatures'] ) {
               fids.push( typeName + '.' + config.layers[aName]['selectedFeatures'][id] );
