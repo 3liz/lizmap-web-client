@@ -2967,11 +2967,13 @@ var lizMap = function() {
                         map.removePopup(map.popups[0]);
 
                     if( 'popupLocation' in config.options && config.options.popupLocation != 'map' ){
+                      var popup = null;
                       // create content
                       var pcontent = '<div class="lizmapPopupContent">'+text+'</div>';
                       var hasPopupContent = (!(!text || text == null || text == ''))
-                      if( !$('#mapmenu .nav-list > li.popupcontent > a').length )
+                      if( !$('#mapmenu .nav-list > li.popupcontent > a').length ){
                         addDock('popupcontent', 'Popup', config.options.popupLocation, pcontent, 'icon-comment');
+                      }
                       else{
                         $('#popupcontent div.menu-content').html(pcontent);
                       }
@@ -3021,7 +3023,8 @@ var lizMap = function() {
 
                     // Trigger event
                     lizMap.events.triggerEvent(
-                        "lizmappopupdisplayed"
+                        "lizmappopupdisplayed",
+                        {'popup': popup}
                     );
                 }
             }

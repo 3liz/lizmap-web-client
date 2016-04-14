@@ -1800,6 +1800,10 @@ div.modal h3 .text {
   margin-bottom: 20px !important;
   background-color:none;
 }
+#dock div.lizmapPopupDiv, #mini-dock div.lizmapPopupDiv{
+  padding: 5px 10px;
+  background-color: #F0F0F0 !important;
+}
 
 .lizmapPopup.olPopup .lizmapPopupTable,
 #map-content .lizmapPopupTable,

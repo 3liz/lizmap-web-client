@@ -2370,6 +2370,7 @@ var lizAttributeTable = function() {
 
                 lizmappopupdisplayed: function(e) {
                     var hasButton = false;
+                    var popup = e.popup;
                     // Add action buttons if needed
                     $('div.lizmapPopupContent input.lizmap-popup-layer-feature-id').each(function(){
                         var self = $(this);
@@ -2416,17 +2417,19 @@ var lizAttributeTable = function() {
                         }
 
                         if( eHtml != '' ){
-                            var popupButtonBar = self.find('span.popupButtonBar');
+                            var popupButtonBar = self.next('span.popupButtonBar');
                             if ( popupButtonBar.length != 0 ) {
                                 popupButtonBar.append(eHtml);
                             } else {
-                                eHtml = '<span class="popupButtonBar">' + eHtml + '</span>';
+                                eHtml = '<span class="popupButtonBar">' + eHtml + '</span></br>';
                                 self.after(eHtml);
                             }
                             self.find('button.btn').tooltip( {
                                 placement: 'bottom'
                             } );
                             hasButton = true;
+                            if( popup )
+                                popup.verifySize();
                         }
 
                     });
