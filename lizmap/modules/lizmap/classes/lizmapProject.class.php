@@ -175,6 +175,18 @@ class lizmapProject{
                     }
                 }
             }
+            if (property_exists($this->cfg, 'editionLayers') ){
+                //unset cache
+                foreach( $this->cfg->editionLayers as $key=>$obj ){
+                    if (property_exists($this->cfg->layers, $key) ){
+                        $this->cfg->layers->$key->cached = 'False';
+                        $this->cfg->layers->$key->clientCacheExpiration = 0;
+                        if ( property_exists($this->cfg->layers->$key, 'cacheExpiration') )
+                            unset($this->cfg->layers->$key->cacheExpiration);
+                    }
+                }
+            }
+/**/
         }
     }
 
