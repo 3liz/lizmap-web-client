@@ -217,6 +217,13 @@ class qgisFormControl{
       else if($this->fieldEditType === 'ValueRelation'){
         $markup = $this->qgisEdittypeMap[$this->fieldEditType]['jform']['markup'][(int)$this->edittype[0]->widgetv2config->attributes()->AllowMulti];
       }
+      else if($this->fieldEditType === 'DateTime'){
+        $markup = 'date';
+        // Use date AND time widget id type is DateTime and we find HH
+        if( preg_match('#HH#i', $this->edittype[0]->widgetv2config->attributes()->display_format) ){
+          $markup = 'datetime';
+        }
+      }
       else{
         $markup = $this->qgisEdittypeMap[$this->fieldEditType]['jform']['markup'];
       }
@@ -259,6 +266,7 @@ class qgisFormControl{
 
       case 'datetime':
         $this->ctrl = new jFormsControlDatetime($this->ref);
+        break;
 
       case 'upload':
         $choice = new jFormsControlChoice($this->ref.'_choice');

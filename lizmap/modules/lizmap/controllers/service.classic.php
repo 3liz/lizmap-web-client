@@ -582,7 +582,7 @@ class serviceCtrl extends jController {
     // Get json configuration for the project
     $configLayers = $this->project->getLayers();
 
-    // Get optionnal parameter fid
+    // Get optional parameter fid
     $filterFid = null;
     $fid = $this->param('fid');
     if( $fid ){

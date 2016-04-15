@@ -100,13 +100,13 @@ var lizMap = function() {
     'osm-mapnik': 'osm',
     'osm-mapquest': 'mapquest',
     'osm-cyclemap': 'osm-cyclemap',
-    'google-satellite': 'gsat',
-    'google-hybrid': 'ghyb',
-    'google-terrain': 'gphy',
-    'google-street': 'gmap',
-    'bing-road': 'bmap',
-    'bing-aerial': 'baerial',
-    'bing-hybrid': 'bhybrid',
+    'google-satellite': 'Google Satellite',
+    'google-hybrid': 'Google Hybrid',
+    'google-terrain': 'Google Terrain',
+    'google-street': 'Google Streets',
+    'bing-road': 'Bing Road',
+    'bing-aerial': 'Bing Aerial',
+    'bing-hybrid': 'Bing Hybrid',
     'ign-scan': 'ignmap',
     'ign-plan': 'ignplan',
     'ign-photo': 'ignphoto',
@@ -681,14 +681,18 @@ var lizMap = function() {
          config.options.maxScale = 591659030.3224756;
          config.options.minScale = 2257.0000851534865;
          //config.options.mapScales = [];
-         var hasBaselayers = false;
-         for ( var l in config.layers ) {
-           if ( config.layers[l]["baseLayer"] == "True" )
-             hasBaselayers = true;
+         var hasBaselayers = (('emptyBaselayer' in config.options) && config.options.emptyBaselayer == "True");
+         if ( !hasBaselayers ) {
+           for ( var l in config.layers ) {
+             if ( config.layers[l]["baseLayer"] == "True" ) {
+               hasBaselayers = true;
+               break;
+             }
+           }
          }
          // for minRes evaluating to scale 100
          // zoomLevelNumber is equal to 24
-         if (hasBaselayers) {
+         if ( hasBaselayers ) {
            config.options.zoomLevelNumber = 24;
          }
 
@@ -705,16 +709,19 @@ var lizMap = function() {
            var n = 1;
            while ( res > minRes && n < config.options.zoomLevelNumber) {
              if ( res < maxRes ) {
-               if (resolutions.length == 0 && res != 156543.03390625)
-                 resolutions.push(res*2);
+               //Add extra scale
+               //if (resolutions.length == 0 && res != 156543.03390625)
+               //  resolutions.push(res*2);
                resolutions.push(res);
              }
              res = res/2;
              n++;
            }
            maxRes = resolutions[0];
-           minRes = res;
-           resolutions.push(res);
+           minRes = resolutions[resolutions.length-1];
+           //Add extra scale
+           //minRes = res;
+           //resolutions.push(res);
            var maxScale = OpenLayers.Util.getScaleFromResolution(maxRes, projOSM.proj.units);
            var minScale = OpenLayers.Util.getScaleFromResolution(minRes, projOSM.proj.units);
          }
@@ -1407,8 +1414,9 @@ var lizMap = function() {
 
     // get locate by layer val
     var locate = config.locateByLayer[aName];
+    var layerName = cleanName(aName);
     var proj = new OpenLayers.Projection(locate.crs);
-    var val = $('#locate-layer-'+cleanName(aName)).val();
+    var val = $('#locate-layer-'+layerName).val();
     if (val == '-1') {
 
       //var bbox = new OpenLayers.Bounds(locate.bbox);
@@ -1428,12 +1436,26 @@ var lizMap = function() {
       var format = new OpenLayers.Format.GeoJSON();
       feat = format.read(feat)[0];
       feat.geometry.transform(proj, map.getProjection());
+      // Show geometry if asked
+      if (locate.displayGeom == 'True') {
+          var getFeatureUrlData = getVectorLayerWfsUrl( aName, null, null, null );
+          getFeatureUrlData['options']['PROPERTYNAME'] = ['geometry',locate.fieldName].join(',');
+          getFeatureUrlData['options']['FEATUREID'] = val;
+          // Get data
+          $.get( getFeatureUrlData['url'], getFeatureUrlData['options'], function(data) {
+            if( data.features.length != 0) {
+              feat = format.read(data.features[0])[0];
+              feat.geometry.transform(proj, map.getProjection());
+            }
+            layer.addFeatures([feat]);
+          }).fail(function(){
+            layer.addFeatures([feat]);
+          });
+      }
+      //zoom to extent
       map.zoomToExtent(feat.geometry.getBounds());
 
       var fid = val.split('.')[1];
-      // Show geometry if asked
-      if (locate.displayGeom == 'True')
-        layer.addFeatures([feat]);
 
       // Trigger event
       lizMap.events.triggerEvent(
@@ -2952,11 +2974,13 @@ var lizMap = function() {
                         map.removePopup(map.popups[0]);
 
                     if( 'popupLocation' in config.options && config.options.popupLocation != 'map' ){
+                      var popup = null;
                       // create content
                       var pcontent = '<div class="lizmapPopupContent">'+text+'</div>';
                       var hasPopupContent = (!(!text || text == null || text == ''))
-                      if( !$('#mapmenu .nav-list > li.popupcontent > a').length )
+                      if( !$('#mapmenu .nav-list > li.popupcontent > a').length ){
                         addDock('popupcontent', 'Popup', config.options.popupLocation, pcontent, 'icon-comment');
+                      }
                       else{
                         $('#popupcontent div.menu-content').html(pcontent);
                       }
@@ -3006,7 +3030,8 @@ var lizMap = function() {
 
                     // Trigger event
                     lizMap.events.triggerEvent(
-                        "lizmappopupdisplayed"
+                        "lizmappopupdisplayed",
+                        {'popup': popup}
                     );
                 }
             }
@@ -4731,7 +4756,7 @@ OpenLayers.Control.HighlightFeature = OpenLayers.Class(OpenLayers.Control, {
           // Get WFS typename
           var typeName = aName.split(' ').join('_');
           if ( 'shortname' in config.layers[aName] )
-              typeName = configLayer.shortname;
+              typeName = config.layers.shortname;
 
           for( var id in config.layers[aName]['selectedFeatures'] ) {
               fids.push( typeName + '.' + config.layers[aName]['selectedFeatures'][id] );
@@ -6093,7 +6118,33 @@ lizMap.events.on({
     }
    ,
    'uicreated': function(evt){
-      //~ console.log('uicreated')
+      //~ console.log('uicreated');
+     var map = evt.map;
+     if ( map.id in OpenLayers.Layer.Google.cache ) {
+        google.maps.event.addListenerOnce(OpenLayers.Layer.Google.cache[map.id].mapObject, 'tilesloaded', function() {
+            var olLayers = map.layers;
+            var gVisibility = false;
+            for (var i=olLayers.length-1; i>=0; --i) {
+                var layer = olLayers[i];
+                if (layer instanceof OpenLayers.Layer.Google &&
+                            layer.visibility === true && layer.inRange === true) {
+                    //type = layer.type;
+                    layer.redraw(true);
+                    gVisibility = true;
+                    break;
+                }
+            }
+            if (!gVisibility) {
+                for (var i=olLayers.length-1; i>=0; --i) {
+                    var layer = olLayers[i];
+                    if (layer instanceof OpenLayers.Layer.Google) {
+                        layer.display(false);
+                        break;
+                    }
+                }
+            }
+        });
+     }
 
       // Make subdock always be at the left
       $('#sub-dock').hover(function(){

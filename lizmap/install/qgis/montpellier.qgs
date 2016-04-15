@@ -4770,7 +4770,7 @@ def my_form_open(dialog, layer, feature):
         <fieldstyles/>
       </conditionalstyles>
     </maplayer>
-    <maplayer minimumScale="-4.65661e-10" maximumScale="1e+08" simplifyDrawingHints="1" minLabelScale="1" maxLabelScale="1e+08" simplifyDrawingTol="1" geometry="Line" simplifyMaxScale="1" type="vector" hasScaleBasedVisibilityFlag="0" simplifyLocal="1" scaleBasedLabelVisibilityFlag="0">
+    <maplayer minimumScale="0" maximumScale="1e+08" simplifyDrawingHints="1" minLabelScale="1" maxLabelScale="1e+08" simplifyDrawingTol="1" geometry="Line" simplifyMaxScale="1" type="vector" hasScaleBasedVisibilityFlag="0" simplifyLocal="1" scaleBasedLabelVisibilityFlag="0">
       <id>tramway20150328114206278</id>
       <datasource>dbname='./edition/transport.sqlite' table="tramway" (geometry) sql=</datasource>
       <shortname></shortname>
@@ -5221,8 +5221,10 @@ def my_form_open(dialog, layer, feature):
         <property key="labeling/distInMapUnits" value="false"/>
         <property key="labeling/distMapUnitMaxScale" value="0"/>
         <property key="labeling/distMapUnitMinScale" value="0"/>
+        <property key="labeling/drawLabels" value="false"/>
         <property key="labeling/enabled" value="false"/>
         <property key="labeling/fieldName" value=""/>
+        <property key="labeling/fitInPolygonOnly" value="false"/>
         <property key="labeling/fontBold" value="true"/>
         <property key="labeling/fontCapitals" value="0"/>
         <property key="labeling/fontFamily" value="Ubuntu"/>
@@ -5256,10 +5258,14 @@ def my_form_open(dialog, layer, feature):
         <property key="labeling/multilineHeight" value="1"/>
         <property key="labeling/namedStyle" value="Medium"/>
         <property key="labeling/obstacle" value="true"/>
+        <property key="labeling/obstacleFactor" value="1"/>
+        <property key="labeling/obstacleType" value="0"/>
+        <property key="labeling/offsetType" value="0"/>
         <property key="labeling/placeDirectionSymbol" value="0"/>
         <property key="labeling/placement" value="2"/>
         <property key="labeling/placementFlags" value="10"/>
         <property key="labeling/plussign" value="false"/>
+        <property key="labeling/predefinedPositionOrder" value="TR,TL,BR,BL,R,L,TSR,BSR"/>
         <property key="labeling/preserveRotation" value="true"/>
         <property key="labeling/previewBkgrdColor" value="#ffffff"/>
         <property key="labeling/priority" value="5"/>
@@ -5337,6 +5343,9 @@ def my_form_open(dialog, layer, feature):
         <property key="labeling/wrapChar" value=""/>
         <property key="labeling/xOffset" value="0"/>
         <property key="labeling/yOffset" value="0"/>
+        <property key="labeling/zIndex" value="0"/>
+        <property key="variableNames" value="_fields_"/>
+        <property key="variableValues" value=""/>
       </customproperties>
       <blendMode>0</blendMode>
       <featureBlendMode>0</featureBlendMode>
@@ -5364,7 +5373,7 @@ def my_form_open(dialog, layer, feature):
         <selectedonly on=""/>
       </labelattributes>
       <SingleCategoryDiagramRenderer diagramType="Pie">
-        <DiagramCategory penColor="#000000" labelPlacementMethod="XHeight" penWidth="0" diagramOrientation="Up" minimumSize="0" barWidth="5" penAlpha="255" maxScaleDenominator="1e+08" backgroundColor="#ffffff" transparency="0" width="15" scaleDependency="Area" backgroundAlpha="255" angleOffset="1440" scaleBasedVisibility="0" enabled="0" height="15" sizeType="MM" minScaleDenominator="-4.65661e-10">
+        <DiagramCategory penColor="#000000" labelPlacementMethod="XHeight" penWidth="0" diagramOrientation="Up" minimumSize="0" barWidth="5" penAlpha="255" maxScaleDenominator="1e+08" backgroundColor="#ffffff" transparency="0" width="15" scaleDependency="Area" backgroundAlpha="255" angleOffset="1440" scaleBasedVisibility="0" enabled="0" height="15" sizeType="MM" minScaleDenominator="0">
           <fontProperties description="Ubuntu,11,-1,5,50,0,0,0,0,0" style=""/>
           <attribute field="" color="#000000" label=""/>
         </DiagramCategory>
@@ -5401,10 +5410,29 @@ def my_form_open(dialog, layer, feature):
       <editforminit/>
       <editforminitcodesource>0</editforminitcodesource>
       <editforminitfilepath>.</editforminitfilepath>
-      <editforminitcode><![CDATA[]]></editforminitcode>
+      <editforminitcode><![CDATA[# -*- coding: utf-8 -*-
+"""
+Les formulaires QGIS peuvent avoir une fonction Python qui sera appelée à l'ouverture du formulaire.
+
+Utilisez cette fonction pour ajouter plus de fonctionnalités à vos formulaires.
+
+Entrez le nom de la fonction dans le champ
+"Fonction d'initialisation Python"
+Voici un exemple à suivre:
+"""
+from PyQt4.QtGui import QWidget
+
+def my_form_open(dialog, layer, feature):
+⇥geom = feature.geometry()
+⇥control = dialog.findChild(QWidget, "MyLineEdit")
+]]></editforminitcode>
       <featformsuppress>0</featformsuppress>
       <editorlayout>generatedlayout</editorlayout>
-      <widgets/>
+      <widgets>
+        <widget name="jointure_tram_stop20150328114216806_tram_id_tramway20150328114206278_osm_id">
+          <config/>
+        </widget>
+      </widgets>
       <conditionalstyles>
         <rowstyles/>
         <fieldstyles/>
@@ -5501,17 +5529,18 @@ def my_form_open(dialog, layer, feature):
     <WMSImageQuality type="int">90</WMSImageQuality>
     <WFSLayersPrecision>
       <donnes_sociodemo_sous_quartiers20160121144525075 type="int">1</donnes_sociodemo_sous_quartiers20160121144525075>
-      <jointure_tram_stop20150328114216806 type="int">1</jointure_tram_stop20150328114216806>
-      <publicbuildings20150420100958543 type="int">1</publicbuildings20150420100958543>
+      <jointure_tram_stop20150328114216806 type="int">8</jointure_tram_stop20150328114216806>
+      <publicbuildings20150420100958543 type="int">8</publicbuildings20150420100958543>
+      <edition_point20130118171631518 type="int">8</edition_point20130118171631518>
       <edition_line20130409161630329 type="int">8</edition_line20130409161630329>
       <bus20121102133611751 type="int">8</bus20121102133611751>
       <tram20150311115319564 type="int">8</tram20150311115319564>
-      <tram_stop_work20150416102656130 type="int">1</tram_stop_work20150416102656130>
-      <tramstop20150328114203878 type="int">1</tramstop20150328114203878>
+      <tram_stop_work20150416102656130 type="int">8</tram_stop_work20150416102656130>
+      <tramstop20150328114203878 type="int">8</tramstop20150328114203878>
       <bus_stops20121106170806413 type="int">8</bus_stops20121106170806413>
-      <tramway20150328114206278 type="int">1</tramway20150328114206278>
+      <tramway20150328114206278 type="int">8</tramway20150328114206278>
       <tramway_ref20150612171109044 type="int">1</tramway_ref20150612171109044>
-      <publicbuildings_tramstop20150420095614071 type="int">1</publicbuildings_tramstop20150420095614071>
+      <publicbuildings_tramstop20150420095614071 type="int">8</publicbuildings_tramstop20150420095614071>
       <tram_stops20150311115247810 type="int">8</tram_stops20150311115247810>
       <VilleMTP_MTP_SousQuartiers_201120130929113137811 type="int">8</VilleMTP_MTP_SousQuartiers_201120130929113137811>
       <VilleMTP_MTP_Quartiers_2011_432620130116112610876 type="int">8</VilleMTP_MTP_Quartiers_2011_432620130116112610876>
@@ -5519,7 +5548,7 @@ def my_form_open(dialog, layer, feature):
       <jointure_tram_stop20150311122053595 type="int">8</jointure_tram_stop20150311122053595>
       <SousQuartiers20160121124316563 type="int">8</SousQuartiers20160121124316563>
       <route_tram20150311113517859 type="int">8</route_tram20150311113517859>
-      <edition_polygon20130409114333776 type="int">1</edition_polygon20130409114333776>
+      <edition_polygon20130409114333776 type="int">8</edition_polygon20130409114333776>
     </WFSLayersPrecision>
     <WMSRestrictedComposers type="QStringList">
       <value>Composeur1</value>
@@ -5669,6 +5698,7 @@ Data is licensed under ODbl, OpenStreetMap contributors</WMSServiceAbstract>
       <value>VilleMTP_MTP_Quartiers_2011_432620130116112610876</value>
       <value>donnes_sociodemo_sous_quartiers20160121144525075</value>
       <value>edition_line20130409161630329</value>
+      <value>edition_point20130118171631518</value>
       <value>edition_polygon20130409114333776</value>
       <value>jointure_tram_stop20150328114216806</value>
       <value>publicbuildings20150420100958543</value>
