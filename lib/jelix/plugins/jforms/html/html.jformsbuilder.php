@@ -53,7 +53,7 @@ class htmlJformsBuilder extends jFormsBuilderHtml {
                     }else
                         $resp->addJSLink($bp.$confHtmlEditor[$ed->config.'.engine.file']);
                 }
-                
+
                 if(isset($confHtmlEditor[$ed->config.'.config']))
                     $resp->addJSLink($bp.$confHtmlEditor[$ed->config.'.config']);
 
@@ -64,7 +64,7 @@ class htmlJformsBuilder extends jFormsBuilderHtml {
             }
 
             $datepicker_default_config = jApp::config()->forms['datepicker'];
-            
+
             foreach($v->getControls() as $ctrl){
                 if($ctrl instanceof jFormsControlDate || get_class($ctrl->datatype) == 'jDatatypeDate' || get_class($ctrl->datatype) == 'jDatatypeLocaleDate'){
                     $config = isset($ctrl->datepickerConfig)?$ctrl->datepickerConfig:$datepicker_default_config;
@@ -125,12 +125,12 @@ jFormsJQ.declareForm(jFormsJQ.tForm);
             $this->jsContent .="c.errInvalid=".$this->escJsStr(jLocale::get('jelix~formserr.js.err.invalid', $ctrl->label)).";\n";
         }
 
+        if ($this->isRootControl) $this->jsContent .="jFormsJQ.tForm.addControl(c);\n";
+
         if($ctrl instanceof jFormsControlDate || get_class($ctrl->datatype) == 'jDatatypeDate' || get_class($ctrl->datatype) == 'jDatatypeLocaleDate'){
             $config = isset($ctrl->datepickerConfig)?$ctrl->datepickerConfig:jApp::config()->forms['datepicker'];
             $this->jsContent .= 'jelix_datepicker_'.$config."(c, jFormsJQ.config);\n";
         }
-
-        if ($this->isRootControl) $this->jsContent .="jFormsJQ.tForm.addControl(c);\n";
     }
 
     protected function jsMenulist($ctrl) {
