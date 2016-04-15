@@ -175,8 +175,8 @@ class lizmapProject{
                     }
                 }
             }
+            //unset cache for editionLayers
             if (property_exists($this->cfg, 'editionLayers') ){
-                //unset cache
                 foreach( $this->cfg->editionLayers as $key=>$obj ){
                     if (property_exists($this->cfg->layers, $key) ){
                         $this->cfg->layers->$key->cached = 'False';
@@ -186,8 +186,8 @@ class lizmapProject{
                     }
                 }
             }
+            //unset cache for loginFilteredLayers
             if ( property_exists($this->cfg,'loginFilteredLayers') ){
-                //unset cache
                 foreach( $this->cfg->loginFilteredLayers as $key=>$obj ){
                     if (property_exists($this->cfg->layers, $key) ){
                         $this->cfg->layers->$key->cached = 'False';
@@ -197,7 +197,12 @@ class lizmapProject{
                     }
                 }
             }
-/**/
+            //unset displayInLegend for geometryType none or unknown
+            foreach( $this->cfg->layers as $key=>$obj ){
+                if ( property_exists($this->cfg->layers->$key, 'geometryType') &&
+                     ($this->cfg->layers->$key->geometryType == 'none' || $this->cfg->layers->$key->geometryType == 'unknown') )
+                    $this->cfg->layers->$key->displayInLegend = 'False';
+            }
         }
     }
 

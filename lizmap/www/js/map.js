@@ -1004,6 +1004,12 @@ var lizMap = function() {
   function getSwitcherLine(aNode, aParent) {
     var html = '';
     var nodeConfig = aNode.config;
+
+    if( 'geometryType' in nodeConfig &&
+        ( nodeConfig.geometryType == "none" || nodeConfig.geometryType == "unknown" || nodeConfig.geometryType == "" )
+    )
+        nodeConfig.displayInLegend = 'False';
+
     html += '<tr id="'+nodeConfig.type+'-'+aNode.name+'"';
     html += ' class="liz-'+nodeConfig.type;
     if (aParent)
