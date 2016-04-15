@@ -849,12 +849,9 @@ class editionCtrl extends jController {
     foreach($this->dataFields as $fieldName=>$prop){
         // For update : And get only fields corresponding to edition capabilities
         if(
-            !$prop->primary
-            and (
-                ( strtolower($capabilities->modifyAttribute) == 'true' and $fieldName != $this->geometryColumn )
-                or ( strtolower($capabilities->modifyGeometry) == 'true' and $fieldName == $this->geometryColumn )
-                or $insertAction
-            )
+            ( strtolower($capabilities->modifyAttribute) == 'true' and $fieldName != $this->geometryColumn )
+            or ( strtolower($capabilities->modifyGeometry) == 'true' and $fieldName == $this->geometryColumn )
+            or $insertAction
         )
             $fields[] = $fieldName;
     }
@@ -869,6 +866,7 @@ class editionCtrl extends jController {
 
     // Loop though the fields and filter the form posted values
     $update = array(); $insert = array(); $refs= array();
+    $finalFields = array();
     foreach($fields as $ref){
       // Get and filter the posted data foreach form control
       $value = $form->getData($ref);
@@ -886,12 +884,12 @@ class editionCtrl extends jController {
               if ( preg_match('/'.str_replace('multi','',$this->geometryType).'/',strtolower($rs->geomtype)) )
                 $value = 'ST_Multi('.$value.')';
               else {
-                $form->setErrorOn($this->geometryColumn, "The geometry type doen't match!");
+                $form->setErrorOn($this->geometryColumn, "The geometry type does not match!");
                 return false;
               }
             break;
           case 'date':
-      case 'datetime':
+          case 'datetime':
             $value = filter_var($value, FILTER_SANITIZE_STRING, FILTER_FLAG_NO_ENCODE_QUOTES);
             if ( !$value )
               $value = 'NULL';
@@ -946,10 +944,18 @@ class editionCtrl extends jController {
               filter_var($value, FILTER_SANITIZE_STRING, FILTER_FLAG_NO_ENCODE_QUOTES)
             );
       }
+
+      // Add fields only if no NULL value passed
+      if( $value != 'NULL' )
+        $finalFields[] = $ref;
+
       // Build the SQL insert and update query
-      $insert[]=$value;
-      $refs[]='"'.$ref.'"';
-      $update[]='"'.$ref.'"='.$value;
+      // only for not NULL values
+      if( $value != 'NULL' ){
+        $insert[]=$value;
+        $refs[]='"'.$ref.'"';
+        $update[]='"'.$ref.'"='.$value;
+      }
     }
 
     $sql = '';
@@ -988,7 +994,7 @@ class editionCtrl extends jController {
       function dquote($n){
           return '"' . $n . '"';
       }
-      $dfields = array_map( "dquote", $fields );
+      $dfields = array_map( "dquote", $finalFields );
       $sql = " INSERT INTO ".$this->table." (";
       $sql.= implode(', ', $refs);
       $sql.= " ) VALUES (";
