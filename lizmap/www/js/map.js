@@ -850,6 +850,13 @@ var lizMap = function() {
             //console.log( layer.name +' '+ config.options.projection.ref );
             wmtsLayer = wmtsFormat.createLayer(wmtsCapabilities, wmtsOptions);
             // console.log( wmtsLayer );
+            wmtsLayer.yx = {};
+            wmtsLayer.reverseAxisOrder = function() {
+                var projCode = this.projection.getCode();
+                return parseFloat('1.3.0') >= 1.3 &&
+                    !!(this.yx[projCode] || (OpenLayers.Projection.defaults[projCode] &&
+                    OpenLayers.Projection.defaults[projCode].yx));
+            };
             return false;
           });
       }
