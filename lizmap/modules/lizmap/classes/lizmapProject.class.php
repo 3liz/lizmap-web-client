@@ -610,14 +610,14 @@ class lizmapProject{
                 if( count($alias) != 0 ) {
                     $alias = $alias[0];
                     $v->fieldAlias = (string)$alias['name'];
-                    $configJson->$k = $v;
+                    $configJson->locateByLayer->$k = $v;
                 }
                 if ( property_exists( $v, 'filterFieldName') ) {
                     $alias = $xmlLayerZero->xpath("aliases/alias[@field='".$v->filterFieldName."']");
                     if( count($alias) != 0 ) {
                         $alias = $alias[0];
                         $v->filterFieldAlias = (string)$alias['name'];
-                        $configJson->$k = $v;
+                        $configJson->locateByLayer->$k = $v;
                     }
                 }
                 // vectorjoins
@@ -634,7 +634,7 @@ class lizmapProject{
                                 "joinLayerId"=>(string)$vectorjoin['joinLayerId'],
                             );
                     }
-                    $configJson->$k = $v;
+                    $configJson->locateByLayer->$k = $v;
                 }
             }
         }
