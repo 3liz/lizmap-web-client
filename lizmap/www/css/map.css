@@ -1873,16 +1873,25 @@ div.modal h3 .text {
 #map-content .lizmapPopup .jforms-ctrl-date,
 #popupcontent .lizmapPopup .jforms-ctrl-date,
 #dock .jforms-ctrl-date,
-#edition-modal .jforms-ctrl-date{
+#edition-modal .jforms-ctrl-date,
+.lizmapPopup.olPopup .jforms-ctrl-datetime,
+#map-content .lizmapPopup .jforms-ctrl-datetime,
+#popupcontent .lizmapPopup .jforms-ctrl-datetime,
+#dock .jforms-ctrl-datetime,
+#edition-modal .jforms-ctrl-datetime{
   width:auto;
 }
 
 #dock .controls select.jforms-ctrl-date,
-#edition-modal .controls select.jforms-ctrl-date {
+#edition-modal .controls select.jforms-ctrl-date,
+#dock .controls select.jforms-ctrl-datetime,
+#edition-modal .controls select.jforms-ctrl-datetime {
   padding:0px;
 }
 #dock .controls input.jforms-ctrl-date[size="4"],
-#edition-modal .controls input.jforms-ctrl-date[size="4"] {
+#edition-modal .controls input.jforms-ctrl-date[size="4"],
+#dock .controls input.jforms-ctrl-datetime[size="4"],
+#edition-modal .controls input.jforms-ctrl-datetime[size="4"] {
   max-width:35px;
 }
 
