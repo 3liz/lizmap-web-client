@@ -4057,10 +4057,14 @@ lizMap.events.on({
      evt.config.options.maxScale = 591659030.3224756;
      evt.config.options.minScale = 2257.0000851534865;
      //evt.config.options.mapScales = [];
-     var hasBaselayers = false;
-     for ( var l in evt.config.layers ) {
-       if ( evt.config.layers[l]["baseLayer"] == "True" )
-         hasBaselayers = true;
+     var hasBaselayers = (('emptyBaselayer' in config.options) && config.options.emptyBaselayer == "True");
+     if ( !hasBaselayers ) {
+         for ( var l in config.layers ) {
+             if ( config.layers[l]["baseLayer"] == "True" ) {
+               hasBaselayers = true;
+               break;
+             }
+         }
      }
      // for minRes evaluating to scale 100
      // zoomLevelNumber is equal to 24
@@ -4081,16 +4085,19 @@ lizMap.events.on({
        var n = 1;
        while ( res > minRes && n < evt.config.options.zoomLevelNumber) {
          if ( res < maxRes ) {
-           if (resolutions.length == 0 && res != 156543.03390625)
-             resolutions.push(res*2);
+           //Add extra scale
+           //if (resolutions.length == 0 && res != 156543.03390625)
+           //  resolutions.push(res*2);
            resolutions.push(res);
          }
          res = res/2;
          n++;
        }
        maxRes = resolutions[0];
-       minRes = res;
-       resolutions.push(res);
+       minRes = resolutions[resolutions.length-1];
+       //Add extra scale
+       //minRes = res;
+       //resolutions.push(res);
        var maxScale = OpenLayers.Util.getScaleFromResolution(maxRes, projOSM.proj.units);
        var minScale = OpenLayers.Util.getScaleFromResolution(minRes, projOSM.proj.units);
      }
