@@ -170,22 +170,6 @@ class lizmapProxy {
         if($debug)
             lizmap::logMetric('LIZMAP_PROXY_READ_LAYER_CONFIG');
 
-        if ( !$forced ) {
-            $tile = jCache::get( $key, $profile );
-            if( $tile ){
-                $_SESSION['LIZMAP_GETMAP_CACHE_STATUS'] = 'read';
-                $mime = 'image/jpeg';
-                if(preg_match('#png#', $params['format'] ))
-                    $mime = 'image/png';
-
-                if($debug)
-                    lizmap::logMetric('LIZMAP_PROXY_HIT_CACHE');
-
-                return array( $tile, $mime, 200);
-            }
-        }
-
-        // No cache hit, get more information about tile to grab
 
         // Has the user asked for cache for this layer ?
         $string2bool = array('false'=>False, 'False'=>False, 'True'=>True, 'true'=>True);
@@ -201,6 +185,21 @@ class lizmapProxy {
         ){
             $wmsClient = 'gis';
             $useCache = False;
+        }
+
+        if ( $useCache and !$forced ) {
+            $tile = jCache::get( $key, $profile );
+            if( $tile ){
+                $_SESSION['LIZMAP_GETMAP_CACHE_STATUS'] = 'read';
+                $mime = 'image/jpeg';
+                if(preg_match('#png#', $params['format'] ))
+                    $mime = 'image/png';
+
+                if($debug)
+                    lizmap::logMetric('LIZMAP_PROXY_HIT_CACHE');
+
+                return array( $tile, $mime, 200);
+            }
         }
 
         // ***************************
