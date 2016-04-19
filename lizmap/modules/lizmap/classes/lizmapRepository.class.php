@@ -50,7 +50,7 @@ class lizmapRepository{
       if(array_key_exists($section, $readConfigPath)){
         // Set each property
         foreach(self::$properties as $property){
-		  if ( array_key_exists( $property, $readConfigPath[$section] ) )
+          if ( array_key_exists( $property, $readConfigPath[$section] ) )
             $this->data[$property] = $readConfigPath[$section][$property];
         }
       }
@@ -68,7 +68,7 @@ class lizmapRepository{
       // if path is relative, get full path
       if ($this->data['path'][0] != '/' and $this->data['path'][1] != ':'){
         return jApp::varPath().$this->data['path'];
-	  }
+      }
       return $this->data['path'];
     }
 
@@ -127,7 +127,7 @@ class lizmapRepository{
         jClasses::inc('lizmap~lizmapProject');
         foreach ($qgsFiles as $qgsFile) {
           if (in_array($qgsFile.'.cfg',$cfgFiles))
-            $projects[] = new lizmapProject(substr($qgsFile,0,-4), $this);
+            $projects[] = lizmap::getProject($this->key.'~'.substr($qgsFile,0,-4));
         }
       }
       return $projects;
