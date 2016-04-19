@@ -50,34 +50,13 @@ class lizmapProject{
             $qgs_path = $rep->getPath().$key.'.qgs';
             $config = null;
             $qgs_xml = null;
-            $update_session = false;
 
-            if ( isset($_SESSION['_LIZMAP_'])
-                && isset($_SESSION['_LIZMAP_'][$key_session])
-                && isset($_SESSION['_LIZMAP_'][$key_session]['cfg'])
-                && isset($_SESSION['_LIZMAP_'][$key_session]['cfgmtime'])
-                && $_SESSION['_LIZMAP_'][$key_session]['cfgmtime'] >= filemtime($qgs_path.'.cfg')
-                )
-                $config = $_SESSION['_LIZMAP_'][$key_session]['cfg'];
-            else {
-                $config = jFile::read($qgs_path.'.cfg');
-                $update_session = true;
-            }
+            $config = jFile::read($qgs_path.'.cfg');
             $this->cfg = json_decode($config);
 
             $configOptions = $this->cfg->options;
 
-            if ( isset($_SESSION['_LIZMAP_'])
-                && isset($_SESSION['_LIZMAP_'][$key_session])
-                && isset($_SESSION['_LIZMAP_'][$key_session]['xml'])
-                && isset($_SESSION['_LIZMAP_'][$key_session]['xmlmtime'])
-                && $_SESSION['_LIZMAP_'][$key_session]['xmlmtime'] >= filemtime($qgs_path)
-                )
-                $qgs_xml = simplexml_load_string($_SESSION['_LIZMAP_'][$key_session]['xml']);
-            else {
-                $qgs_xml = simplexml_load_file($qgs_path);
-                $update_session = true;
-            }
+            $qgs_xml = simplexml_load_file($qgs_path);
             $this->xml = $qgs_xml;
 
             $this->data = array(
@@ -96,16 +75,6 @@ class lizmapProject{
             # get abstract from WMS properties
             if (property_exists($qgs_xml->properties, 'WMSServiceAbstract'))
                 $this->data['abstract'] = $qgs_xml->properties->WMSServiceAbstract;
-            if ( $update_session ) {
-                if ( !isset($_SESSION['_LIZMAP_']) )
-                    $_SESSION['_LIZMAP_'] = array($key_session=>array());
-                else if ( !isset($_SESSION['_LIZMAP_'][$key_session]) )
-                    $_SESSION['_LIZMAP_'][$key_session] = array();
-                $_SESSION['_LIZMAP_'][$key_session]['xml'] = $qgs_xml->saveXml();
-                $_SESSION['_LIZMAP_'][$key_session]['xmlmtime'] = filemtime($qgs_path);
-                $_SESSION['_LIZMAP_'][$key_session]['cfg'] = $config;
-                $_SESSION['_LIZMAP_'][$key_session]['cfgmtime'] = filemtime($qgs_path.'.cfg');
-            }
 
             # get WMS getCapabilities full URL
             $this->data['wmsGetCapabilitiesUrl'] = jUrl::getFull(
