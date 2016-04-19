@@ -350,9 +350,11 @@ class lizmapProxy {
         $cacheExpiration = (int)$ser->cacheExpiration;
 
         // Cache root directory
-        $cacheRootDirectory = $ser->cacheRootDirectory;
-        if(!is_writable($cacheRootDirectory) or !is_dir($cacheRootDirectory)){
-            $cacheRootDirectory = sys_get_temp_dir();
+        if( $cacheStorageType != 'redis' ){
+            $cacheRootDirectory = $ser->cacheRootDirectory;
+            if(!is_writable($cacheRootDirectory) or !is_dir($cacheRootDirectory)){
+                $cacheRootDirectory = sys_get_temp_dir();
+            }
         }
 
         if($cacheStorageType == 'file'){
@@ -376,7 +378,22 @@ class lizmapProxy {
             // Create the virtual cache profile
             jProfiles::createVirtualProfile('jcache', $cacheName, $cacheParams);
 
-        }else{
+        }
+        elseif($cacheStorageType == 'redis'){
+            // CACHE CONTENT INTO REDIS
+
+            // Virtual cache profile parameter
+            $cacheParams = array(
+                "driver"=>"redis",
+                "host"=>"localhost",
+                "port"=>"6379",
+                "ttl"=>$cacheExpiration
+            );
+
+            // Create the virtual cache profile
+            jProfiles::createVirtualProfile('jcache', $cacheName, $cacheParams);
+        }
+        else{
             // CACHE CONTENT INTO SQLITE DATABASE
 
             // Directory where to store the sqlite database
