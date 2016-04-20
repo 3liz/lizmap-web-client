@@ -11,6 +11,12 @@
 
 class lizmapProxy {
 
+    /**
+     * loaded profiles
+     * @var array
+     */
+    protected static $_profiles = array();
+
 
     /**
     * Normalize and filter request parameters.
@@ -164,8 +170,7 @@ class lizmapProxy {
         // Get tile cache virtual profile (tile storage)
         // And get tile if already in cache
         // --> must be done after checking that parent project is involved
-        $profile = 'lizmapCache_'.$repository.'_'.$project.'_'.$layers.'_'.$crs;
-        lizmapProxy::createVirtualProfile( $repository, $project, $layers, $crs );
+        $profile = lizmapProxy::createVirtualProfile( $repository, $project, $layers, $crs );
 
         if($debug)
             lizmap::logMetric('LIZMAP_PROXY_READ_LAYER_CONFIG');
@@ -343,6 +348,10 @@ class lizmapProxy {
 
         // Set cache configuration
         $cacheName = 'lizmapCache_'.$repository.'_'.$project.'_'.$layers.'_'.$crs;
+
+        if ( array_key_exists( $cacheName, self::$_profiles ) )
+            return $cacheName;
+
         // Storage type
         $ser = lizmap::getServices();
         $cacheStorageType = $ser->cacheStorageType;
@@ -427,6 +436,9 @@ class lizmapProxy {
             // Create the virtual cache profile
             jProfiles::createVirtualProfile('jcache', $cacheName, $cacheParams);
         }
+
+        self::$_profiles[] = $cacheName;
+        return $cacheName;
     }
 
 
