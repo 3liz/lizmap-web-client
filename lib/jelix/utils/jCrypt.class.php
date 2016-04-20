@@ -15,6 +15,7 @@
 * installed, else a basic algorithm is used.
 * @package     jelix
 * @subpackage  utils
+* @deprecated
 */
 class jCrypt {
 
