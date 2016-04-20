@@ -18,6 +18,10 @@ class lizmap{
 
     // repositories
     protected static $repositories = array();
+    protected static $repositoryInstances = array();
+
+    // projects
+    protected static $projectInstances = array();
 
     // log items
     protected static $logItems = array();
@@ -80,8 +84,13 @@ class lizmap{
         if ( !in_array($key, self::getRepositoryList()) )
           return null;
 
+      if ( in_array($key, self::$repositoryInstances) )
+        return self::$repositoryInstances[$key];
+
       jClasses::inc('lizmap~lizmapRepository');
-      return new lizmapRepository($key);
+      $rep = new lizmapRepository($key);
+      self::$repositoryInstances[$key] = $rep;
+      return $rep;
     }
 
 
@@ -97,6 +106,7 @@ class lizmap{
       $rep = new lizmapRepository($key);
       $rep->update( $data );
       self::getRepositoryList();
+      self::$repositoryInstances[$key] = $rep;
       return $rep;
     }
 
@@ -118,6 +128,8 @@ class lizmap{
         $ini->removeValue(null, $section);
         $ini->save();
         self::getRepositoryList();
+        if ( in_array($key, self::$repositoryInstances) )
+            unset(self::$repositoryInstances[$key]);
         return true;
       }
       return false;
@@ -135,10 +147,14 @@ class lizmap{
       if ( $rep == null)
         return null;
 
+      if ( in_array($key, self::$projectInstances) )
+        return self::$projectInstances[$key];
+
       jClasses::inc('lizmap~lizmapProject');
       $proj = new lizmapProject($matches['proj'], $rep);
       if ( $proj->getKey() != $matches['proj'] )
         return null;
+      self::$projectInstances[$key] = $proj;
       return $proj;
     }
 
