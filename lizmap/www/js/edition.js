@@ -924,7 +924,6 @@ var lizEdition = function() {
                         }
 
                         if( eHtml != '' ){
-                            console.log( self );
                             var popupButtonBar = self.next('span.popupButtonBar');
                             if ( popupButtonBar.length != 0 ) {
                                 popupButtonBar.append(eHtml);

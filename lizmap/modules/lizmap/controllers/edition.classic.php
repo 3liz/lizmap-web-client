@@ -950,12 +950,13 @@ class editionCtrl extends jController {
         $finalFields[] = $ref;
 
       // Build the SQL insert and update query
-      // only for not NULL values
+      // For insert, only for not NULL values to allow serial and default values to work
       if( $value != 'NULL' ){
         $insert[]=$value;
         $refs[]='"'.$ref.'"';
-        $update[]='"'.$ref.'"='.$value;
       }
+      // For update, keep fields with NULL to allow deletion of values
+      $update[]='"'.$ref.'"='.$value;
     }
 
     $sql = '';
@@ -1004,7 +1005,6 @@ class editionCtrl extends jController {
 
     try {
       $rs = $cnx->query($sql);
-//~ jLog::log($sql);
     } catch (Exception $e) {
       $form->setErrorOn($this->geometryColumn, 'An error has been raised when saving the form');
       jLog::log("SQL = ".$sql);
