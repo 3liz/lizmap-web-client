@@ -4057,7 +4057,7 @@ lizMap.events.on({
      evt.config.options.maxScale = 591659030.3224756;
      evt.config.options.minScale = 2257.0000851534865;
      //evt.config.options.mapScales = [];
-     var hasBaselayers = (('emptyBaselayer' in config.options) && config.options.emptyBaselayer == "True");
+     var hasBaselayers = (('emptyBaselayer' in evt.config.options) && evt.config.options.emptyBaselayer == "True");
      if ( !hasBaselayers ) {
          for ( var l in config.layers ) {
              if ( config.layers[l]["baseLayer"] == "True" ) {
