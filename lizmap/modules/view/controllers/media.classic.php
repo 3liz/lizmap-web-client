@@ -41,8 +41,18 @@ class mediaCtrl extends jController {
     $path = $this->param('path');
     $repositoryPath = realpath($lrep->getPath());
     $abspath = realpath($repositoryPath.'/'.$path);
+
     $n_repositoryPath = str_replace('\\', '/', $repositoryPath);
-    $n_abspath = str_replace('\\', '/', $abspath);
+    $n_abspath = $n_repositoryPath.'/'.$path;
+    //manually canonize path to authorize symlink
+    $n_abspath = explode('/', $n_abspath);
+    $n_keys = array_keys($n_abspath, '..');
+    foreach($n_keys AS $keypos => $key)
+    {
+        array_splice($address, $key - ($keypos * 2 + 1), 2);
+    }
+    $n_abspath = implode('/', $n_abspath);
+    $n_abspath = str_replace('./', '', $n_abspath);
 
     $ok = True;
     // Only allow files within the repository for safety reasons
