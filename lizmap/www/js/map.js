@@ -4059,8 +4059,8 @@ lizMap.events.on({
      //evt.config.options.mapScales = [];
      var hasBaselayers = (('emptyBaselayer' in evt.config.options) && evt.config.options.emptyBaselayer == "True");
      if ( !hasBaselayers ) {
-         for ( var l in config.layers ) {
-             if ( config.layers[l]["baseLayer"] == "True" ) {
+         for ( var l in evt.config.layers ) {
+             if ( evt.config.layers[l]["baseLayer"] == "True" ) {
                hasBaselayers = true;
                break;
              }
