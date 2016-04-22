@@ -144,6 +144,15 @@ class lizmapProject{
                     }
                 }
             }
+
+            $layersWithShowFeatureCount = $this->xml->xpath("//layer-tree-layer/customproperties/property[@key='showFeatureCount']/parent::*/parent::*");
+            if ( count( $layersWithShowFeatureCount ) > 0 ) {
+                foreach( $layersWithShowFeatureCount as $layer ) {
+                    $name = (string)$layer['name'];
+                    if ( property_exists($this->cfg->layers, $name ) )
+                        $this->cfg->layers->$name->showFeatureCount = 'True';
+                }
+            }
             //unset cache for editionLayers
             if (property_exists($this->cfg, 'editionLayers') ){
                 foreach( $this->cfg->editionLayers as $key=>$obj ){

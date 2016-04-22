@@ -41,7 +41,9 @@
           <customproperties/>
         </layer-tree-layer>
         <layer-tree-layer expanded="1" checked="Qt::Checked" id="tramway20150328114206278" name="tramway">
-          <customproperties/>
+          <customproperties>
+            <property key="showFeatureCount" value="1"/>
+          </customproperties>
         </layer-tree-layer>
       </layer-tree-group>
       <layer-tree-group expanded="1" checked="Qt::PartiallyChecked" name="Buildings">

@@ -91,4 +91,42 @@ class lizmapWMSRequest extends lizmapOGCRequest {
             'cached' => False
         );
     }
+
+
+    protected function getlegendgraphic ( ) {
+        return $this->getlegendgraphics();
+    }
+
+    protected function getlegendgraphics ( ) {
+        $layers = $this->param('Layers','');
+        $layers = explode(',', $layers);
+        if ( count($layers == 1) ) {
+            $lName = $layers[0];
+            $layer = $this->project->findLayerByShortName( $lName );
+            if ( !$layer ) {
+                $layer = $this->project->findLayerByName( $lName );
+                if ( property_exists($layer, 'showFeatureCount' ) && $layer->showFeatureCount == 'True')
+                    $this->params['showFeatureCount'] = 'True';
+            }
+        }
+
+        $querystring = $this->constructUrl();
+
+        // Get remote data
+        $getRemoteData = lizmapProxy::getRemoteData(
+          $querystring,
+          $this->services->proxyMethod,
+          $this->services->debugMode
+        );
+        $data = $getRemoteData[0];
+        $mime = $getRemoteData[1];
+        $code = $getRemoteData[2];
+
+        return (object) array(
+            'code' => $code,
+            'mime' => $mime,
+            'data' => $data,
+            'cached' => False
+        );
+    }
 }

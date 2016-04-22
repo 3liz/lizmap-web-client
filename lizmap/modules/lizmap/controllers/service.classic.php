@@ -447,34 +447,21 @@ class serviceCtrl extends jController {
   */
   function GetLegendGraphics(){
 
-    // Get parameters
-    if(!$this->getServiceParameters())
-      return $this->serviceException();
+        //Get parameters  DELETED HERE SINCE ALREADY DONE IN index method
+        //if(!$this->getServiceParameters())
+            //return $this->serviceException();
 
-    $url = $this->services->wmsServerURL.'?';
-    $bparams = http_build_query($this->params);
-    // replace some chars (not needed in php 5.4, use the 4th parameter of http_build_query)
-    $a = array('+', '_', '.', '-');
-    $b = array('%20', '%5F', '%2E', '%2D');
-    $bparams = str_replace($a, $b, $bparams);
-    $querystring = $url . $bparams;
+        jClasses::inc('lizmap~lizmapWMSRequest');
+        $wmsRequest = new lizmapWMSRequest( $this->project, $this->params );
+        $result = $wmsRequest->process();
 
-    // Get remote data
-    $getRemoteData = $this->lizmapCache->getRemoteData(
-      $querystring,
-      $this->services->proxyMethod,
-      $this->services->debugMode
-    );
-    $data = $getRemoteData[0];
-    $mime = $getRemoteData[1];
+        $rep = $this->getResponse('binary');
+        $rep->mimeType = $result->mime;
+        $rep->content = $result->data;
+        $rep->doDownload = false;
+        $rep->outputFileName  =  'qgis_server_legend';
 
-    $rep = $this->getResponse('binary');
-    $rep->mimeType = $mime;
-    $rep->content = $data;
-    $rep->doDownload = false;
-    $rep->outputFileName  =  'qgis_server_legend';
-
-    return $rep;
+        return $rep;
   }
 
 
