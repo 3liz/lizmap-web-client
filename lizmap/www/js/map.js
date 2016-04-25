@@ -74,13 +74,13 @@ var lizMap = function() {
     'osm-mapnik': 'osm',
     'osm-mapquest': 'mapquest',
     'osm-cyclemap': 'osm-cyclemap',
-    'google-satellite': 'gsat',
-    'google-hybrid': 'ghyb',
-    'google-terrain': 'gphy',
-    'google-street': 'gmap',
-    'bing-road': 'bmap',
-    'bing-aerial': 'baerial',
-    'bing-hybrid': 'bhybrid',
+    'google-satellite': 'Google Satellite',
+    'google-hybrid': 'Google Hybrid',
+    'google-terrain': 'Google Terrain',
+    'google-street': 'Google Streets',
+    'bing-road': 'Bing Road',
+    'bing-aerial': 'Bing Aerial',
+    'bing-hybrid': 'Bing Hybrid',
     'ign-scan': 'ignmap',
     'ign-plan': 'ignplan',
     'ign-photo': 'ignphoto',
@@ -4665,6 +4665,32 @@ lizMap.events.on({
     }
    ,'uicreated':function(evt){
         //console.log('uicreated')
+        var map = evt.map;
+        if ( map.id in OpenLayers.Layer.Google.cache ) {
+            google.maps.event.addListenerOnce(OpenLayers.Layer.Google.cache[map.id].mapObject, 'tilesloaded', function() {
+                var olLayers = map.layers;
+                var gVisibility = false;
+                for (var i=olLayers.length-1; i>=0; --i) {
+                    var layer = olLayers[i];
+                    if (layer instanceof OpenLayers.Layer.Google &&
+                                layer.visibility === true && layer.inRange === true) {
+                        //type = layer.type;
+                        layer.redraw(true);
+                        gVisibility = true;
+                        break;
+                    }
+                }
+                if (!gVisibility) {
+                    for (var i=olLayers.length-1; i>=0; --i) {
+                        var layer = olLayers[i];
+                        if (layer instanceof OpenLayers.Layer.Google) {
+                            layer.display(false);
+                            break;
+                        }
+                    }
+                }
+            });
+        }
         var ovCtrl = lizMap.map.getControlsByClass('OpenLayers.Control.OverviewMap');
         if ( ovCtrl.length != 0 ) {
             ovCtrl = ovCtrl[0];
