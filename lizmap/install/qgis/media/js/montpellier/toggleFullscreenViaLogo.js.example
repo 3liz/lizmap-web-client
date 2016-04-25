@@ -1,0 +1,32 @@
+lizMap.events.on({
+
+  uicreated: function(e) {
+
+
+    var triggerElementId = 'logo';
+
+    function isDocumentInFullScreenMode() {
+      // Note that the browser fullscreen (triggered by short keys) might
+      // be considered different from content fullscreen when expecting a boolean
+      return ((document.fullscreenElement && document.fullscreenElement !== null) ||    // alternative standard methods
+          document.mozFullScreen || document.webkitIsFullScreen);                   // current working methods
+    }
+
+
+
+    var triggerElement = document.getElementById(triggerElementId);
+    var elt = document.body;
+    triggerElement.onclick = function() {
+      if( isDocumentInFullScreenMode() ){
+        req = document.webkitCancelFullScreen || document.mozCancelFullScreen;
+        req.call(document);
+      }else{
+        req = elt.requestFullScreen || elt.webkitRequestFullScreen || elt.mozRequestFullScreen;
+        req.call(elt);
+      }
+    }
+
+  }
+
+});
+

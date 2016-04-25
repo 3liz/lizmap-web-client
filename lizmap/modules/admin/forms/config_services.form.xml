@@ -33,6 +33,7 @@
   <label locale="admin~admin.form.admin_services.cacheStorageType.label"/>
   <item value="sqlite" selected="true" locale="admin~admin.form.admin_services.cacheStorageType.sqlite.label"/>
   <item value="file" locale="admin~admin.form.admin_services.cacheStorageType.file.label"/>
+  <item value="redis" locale="admin~admin.form.admin_services.cacheStorageType.redis.label"/>
 </menulist>
 
 <input ref="cacheRootDirectory" type="string" required="true">

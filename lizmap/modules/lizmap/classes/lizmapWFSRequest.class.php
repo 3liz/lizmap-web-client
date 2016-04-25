@@ -49,10 +49,7 @@ class lizmapWFSRequest extends lizmapOGCRequest {
     }
 
     function describefeaturetype(){
-        // Construction of the request url : base url + parameters
-        $url = $this->services->wmsServerURL.'?';
-        $bparams = http_build_query($this->params);
-        $querystring = $url . $bparams;
+        $querystring = $this->constructUrl();
 
         // Get remote data
         $getRemoteData = lizmapProxy::getRemoteData(
@@ -78,10 +75,7 @@ class lizmapWFSRequest extends lizmapOGCRequest {
         if(!$output)
             $this->params['outputformat'] = 'GML2';
 
-        // Construction of the request url : base url + parameters
-        $url = $this->services->wmsServerURL.'?';
-        $bparams = http_build_query($this->params);
-        $querystring = $url . $bparams;
+        $querystring = $this->constructUrl();
 
         // Get remote data
         $getRemoteData = lizmapProxy::getRemoteData(

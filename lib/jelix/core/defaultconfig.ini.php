@@ -279,6 +279,11 @@ soap=20
 email = root@localhost
 emailHeaders = "Content-Type: text/plain; charset=UTF-8\nFrom: webmaster@yoursite.com\nX-Mailer: Jelix\nX-Priority: 1 (Highest)\n"
 
+[syslogLogger]
+facility=LOG_LOCAL7
+ident="php-%sapi%-%domain%[%pid%]"
+
+
 [mailer]
 webmasterEmail = root@localhost
 webmasterName =

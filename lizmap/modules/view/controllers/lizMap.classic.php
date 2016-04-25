@@ -11,8 +11,15 @@
 
 class lizMapCtrl extends jController {
 
-  // forceHiddenProjectVisible : Used to ovverride plugin configuration hideProject
-  // ( helpfull for modules which maps are based on a hidden project )
+  // repositoryKey: Used to pass repository key
+  protected $repositoryKey = null;
+  // projectKey: Used to pass project key
+  protected $projectKey = null;
+  // projectObj: Used to pass project Object (no need to rebuild it)
+  protected $projectObj = null;
+
+  // forceHiddenProjectVisible: Used to override plugin configuration hideProject
+  // (helpfull for modules which maps are based on a hidden project)
   protected $forceHiddenProjectVisible = false;
 
   /**
@@ -94,6 +101,10 @@ class lizMapCtrl extends jController {
       return $rep;
     }
 
+    $this->repositoryKey = $lrep->getKey();
+    $this->projectKey = $lproj->getKey();
+    $this->projectObj = $lproj;
+
     // Add js link if google is needed
     if ( $lproj->needsGoogle() ) {
       $googleKey = $lproj->getGoogleKey();
@@ -131,7 +142,7 @@ class lizMapCtrl extends jController {
       "geobookmark" => jUrl::get('lizmap~geobookmark:index')
     );
 
-    // Get optionnal WMS public url list
+    // Get optional WMS public url list
     $lser = lizmap::getServices();
     if($lser->wmsPublicUrlList){
         $publicUrlList = $lser->wmsPublicUrlList;
@@ -282,7 +293,7 @@ class lizMapCtrl extends jController {
 
     }
 
-    // optionnally hide some tools
+    // optionally hide some tools
     // header
     $jsCode = ''; $mapMenuCss = '';
     $h = $this->intParam('h',1);

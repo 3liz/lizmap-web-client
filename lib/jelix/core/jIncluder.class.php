@@ -134,10 +134,9 @@ class jIncluder {
     *    'foo.php',  //cache filename
     *    );
     */
-    public static function incAll($aType){
-
+    public static function incAll($aType, $force = false){
         $cachefile = jApp::tempPath('compiled/'.$aType[3]);
-        if(isset(jIncluder::$_includedFiles[$cachefile])){
+        if(isset(jIncluder::$_includedFiles[$cachefile]) && !$force){
             return;
         }
 

@@ -1521,7 +1521,7 @@ var lizAttributeTable = function() {
 
                     // Trigger event
                     lizMap.events.triggerEvent(
-                        'lizmappopupdisplayed'
+                        'lizmappopupdisplayed_inattributetable'
                     );
 
                     var closeButton = '<a class="close-attribute-feature-panel pull-right" href="#"><i class="icon-remove"></i></a>'
@@ -2370,8 +2370,9 @@ var lizAttributeTable = function() {
 
                 lizmappopupdisplayed: function(e) {
                     var hasButton = false;
+                    var popup = e.popup;
                     // Add action buttons if needed
-                    $('#liz_layer_popup input.lizmap-popup-layer-feature-id').each(function(){
+                    $('div.lizmapPopupContent input.lizmap-popup-layer-feature-id').each(function(){
                         var self = $(this);
                         var val = self.val();
                         var eHtml = '';
@@ -2416,25 +2417,29 @@ var lizAttributeTable = function() {
                         }
 
                         if( eHtml != '' ){
-                            var popupButtonBar = self.find('span.popupButtonBar');
+                            var popupButtonBar = self.next('span.popupButtonBar');
                             if ( popupButtonBar.length != 0 ) {
                                 popupButtonBar.append(eHtml);
                             } else {
-                                eHtml = '<span class="popupButtonBar">' + eHtml + '</span>';
+                                eHtml = '<span class="popupButtonBar">' + eHtml + '</span></br>';
                                 self.after(eHtml);
                             }
                             self.find('button.btn').tooltip( {
                                 placement: 'bottom'
                             } );
                             hasButton = true;
+                            if( popup )
+                                popup.verifySize();
                         }
 
                     });
                     // Add interaction buttons
                     if( hasButton ) {
+                        // Tooltips
+                        $('div.lizmapPopupContent button').tooltip();
 
                         // select
-                        $('#liz_layer_popup button.popup-layer-feature-select')
+                        $('div.lizmapPopupContent button.popup-layer-feature-select')
                         .click(function(){
                             var fid = $(this).val().split('.').pop();
                             var featureType = $(this).val().replace( '.' + fid, '' );
@@ -2468,7 +2473,7 @@ var lizAttributeTable = function() {
                         );
 
                         // Zoom
-                        $('#liz_layer_popup button.popup-layer-feature-zoom')
+                        $('div.lizmapPopupContent button.popup-layer-feature-zoom')
                         .click(function(){
                             var fid = $(this).val().split('.').pop();
                             var featureType = $(this).val().replace( '.' + fid, '' );
@@ -2489,7 +2494,7 @@ var lizAttributeTable = function() {
 
                         // filter
                         if( !startupFilter ){
-                            $('#liz_layer_popup button.popup-layer-feature-filter')
+                            $('div.lizmapPopupContent button.popup-layer-feature-filter')
                             .click(function(){
                                 var fid = $(this).val().split('.').pop();
                                 var featureType = $(this).val().replace( '.' + fid, '' );

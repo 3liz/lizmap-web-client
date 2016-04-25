@@ -35,7 +35,7 @@ class wmtsCtrl extends jControllerCmdLine {
     /**
      * Parameters for the command line
      * 'method_name' => array('parameter_name' => true/false)
-     * false means that the parameter is optionnal. All parameters which follow an optional parameter
+     * false means that the parameter is optional. All parameters which follow an optional parameter
      * is optional
      */
     protected $allowed_parameters = array(
@@ -54,7 +54,7 @@ class wmtsCtrl extends jControllerCmdLine {
             'TileMatrixMax'=>True
         )
     );
-    
+
     /**
      * Help
      *
@@ -88,17 +88,17 @@ class wmtsCtrl extends jControllerCmdLine {
         php lizmap/scripts/script.php lizmap~wmts:seeding [-v] [-f] repository project layer TileMatrixSet TileMatrixMin TileMatrixMax
         '
     );
-    
+
     /**
     *
     */
     function capabilities() {
         $fakeServer = new jelix\FakeServerConf\ApacheMod(jApp::wwwPath(), '/index.php');
-        
+
         $verbose = $this->option('-v');
-        
+
         $rep = $this->getResponse(); // cmdline response by default
-        
+
         $project = lizmap::getProject($this->param('repository').'~'.$this->param('project'));
         // Project not found
         if ( !$project ) {
@@ -106,9 +106,9 @@ class wmtsCtrl extends jControllerCmdLine {
             return $rep;
         }
         $repository = $project->getRepository();
-        
+
         jClasses::inc('lizmap~lizmapWMTSRequest');
-        
+
         $cacheId = $repository->getKey().'_'.$project->getKey().'_WMTS';
         $tileMatrixSetList = jCache::get($cacheId . '_tileMatrixSetList');
         if( !$tileMatrixSetList ) {
@@ -120,10 +120,10 @@ class wmtsCtrl extends jControllerCmdLine {
             $result = $request->process();
             $tileMatrixSetList = jCache::get($cacheId . '_tileMatrixSetList');
         }
-        
+
         $layerId = $this->param('layer');
         $TileMatrixSetId = $this->param('TileMatrixSet');
-        
+
         $layers = $tileMatrixSetList = jCache::get($cacheId . '_layers');
         foreach( $layers as $layer ) {
             if ( $layerId && $layer->name != $layerId )
@@ -145,21 +145,21 @@ class wmtsCtrl extends jControllerCmdLine {
                 }
             }
         }
-        
+
         return $rep;
     }
-    
+
     /**
     *
     */
     function seeding() {
         $fakeServer = new jelix\FakeServerConf\ApacheMod(jApp::wwwPath(), '/index.php');
-        
+
         $forced = $this->option('-f');
         $verbose = $this->option('-v');
-        
+
         $rep = $this->getResponse(); // cmdline response by default
-        
+
         $project = lizmap::getProject($this->param('repository').'~'.$this->param('project'));
         // Project not found
         if ( !$project ) {
@@ -167,9 +167,9 @@ class wmtsCtrl extends jControllerCmdLine {
             return $rep;
         }
         $repository = $project->getRepository();
-        
+
         jClasses::inc('lizmap~lizmapWMTSRequest');
-        
+
         $cacheId = $repository->getKey().'_'.$project->getKey().'_WMTS';
         $tileMatrixSetList = jCache::get($cacheId . '_tileMatrixSetList');
         if( !$tileMatrixSetList ) {
@@ -181,7 +181,7 @@ class wmtsCtrl extends jControllerCmdLine {
             $result = $request->process();
             $tileMatrixSetList = jCache::get($cacheId . '_tileMatrixSetList');
         }
-        
+
         $layers = $tileMatrixSetList = jCache::get($cacheId . '_layers');
         $layerIds = explode( ',', $this->param('layers') );
         $selectedLayers = array();
@@ -195,7 +195,7 @@ class wmtsCtrl extends jControllerCmdLine {
             $rep->addContent("The layers '".implode( ',', $layerIds )."' have not be found!\n");
             return $rep;
         }
-        
+
         foreach( $selectedLayers as $layer ) {
             $TileMatrixSetId = $this->param('TileMatrixSet');
             $tileMatrixSetLink = null;
@@ -210,7 +210,7 @@ class wmtsCtrl extends jControllerCmdLine {
                 $rep->addContent("The TileMatrixSet '".$TileMatrixSetId."' has not be found!\n");
                 continue;
             }
-            
+
             $TileMatrixMin = (int)$this->param('TileMatrixMin');
             $TileMatrixMax = (int)$this->param('TileMatrixMax');
             // count tiles
@@ -226,7 +226,7 @@ class wmtsCtrl extends jControllerCmdLine {
             if ( $verbose ) {
                 $rep->addContent($tileCount.' tiles to generate for "'.$layer->name.'" "'.$TileMatrixSetId.'" between "'. $TileMatrixMin.'" and "'. $TileMatrixMax.'"'."\n");
             }
-            
+
             // generate tiles
             $rep->addContent("Start generation\n");
             $rep->addContent("================\n");

@@ -116,9 +116,11 @@ class qgisFormControl{
       'int4'=>'integer',
       'int8'=>'integer',
       'bigint'=>'integer',
+      'smallint'=>'integer',
       'text'=>'text',
       'string'=>'text',
       'varchar'=>'text',
+      'bpchar'=>'text',
       'char'=>'text',
       'blob'=>'blob',
       'bytea'=>'blob',
@@ -215,6 +217,13 @@ class qgisFormControl{
       else if($this->fieldEditType === 'ValueRelation'){
         $markup = $this->qgisEdittypeMap[$this->fieldEditType]['jform']['markup'][(int)$this->edittype[0]->widgetv2config->attributes()->AllowMulti];
       }
+      else if($this->fieldEditType === 'DateTime'){
+        $markup = 'date';
+        // Use date AND time widget id type is DateTime and we find HH
+        if( preg_match('#HH#i', $this->edittype[0]->widgetv2config->attributes()->display_format) ){
+          $markup = 'datetime';
+        }
+      }
       else{
         $markup = $this->qgisEdittypeMap[$this->fieldEditType]['jform']['markup'];
       }
@@ -257,6 +266,7 @@ class qgisFormControl{
 
       case 'datetime':
         $this->ctrl = new jFormsControlDatetime($this->ref);
+        break;
 
       case 'upload':
         $choice = new jFormsControlChoice($this->ref.'_choice');
@@ -387,6 +397,12 @@ class qgisFormControl{
 
     // Create an array of data specific for the qgis edittype
     $data = array();
+
+    // Add default empty value for required fields
+    // Jelix does not do it, but we think it is better this way to avoid unwanted set values
+    if( $this->required )
+      $data[''] = '';
+
     switch($this->fieldEditType){
 
       // Enumeration

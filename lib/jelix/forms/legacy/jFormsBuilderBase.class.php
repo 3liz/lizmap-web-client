@@ -70,6 +70,12 @@ abstract class jFormsBuilderBase {
         }
     }
 
+    public function getName(){ return  $this->_name; }
+
+    public function getForm(){ return $this->_form; }
+
+    public function endOfTag() { return $this->_endt; }
+
     /**
      * set options
      * @param array $options associative array
@@ -77,8 +83,16 @@ abstract class jFormsBuilderBase {
     public function setOptions($options) {
         $this->options = $options;
     }
-    
-    public function getName(){ return  $this->_name; }
+
+    /**
+     * @param string $name name of an option
+     * @return mixed the value of the option
+     */
+    public function getOption($name) {
+        if (isset($this->options[$name]))
+            return $this->options[$name];
+        return null;
+    }
 
     /**
      * called during the meta content processing in templates
@@ -116,6 +130,13 @@ abstract class jFormsBuilderBase {
      * @param jFormsControl $ctrl the control to display
      */
     abstract public function outputControlLabel($ctrl, $editMode=true);
+
+    /**
+     * displays the value of the control (without the control)
+     * @param jFormsControl $ctrl the control to display
+     * @param array $attributes  attribute to add on the generated code (html attributes for example)
+     */
+    abstract public function outputControlValue($ctrl, $attributes=array());
 
     /**
      * generates a name for the form

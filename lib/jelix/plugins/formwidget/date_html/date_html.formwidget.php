@@ -40,13 +40,13 @@ class date_htmlFormWidget extends \jelix\forms\HtmlWidget\WidgetBase {
         if($maxDate)
             $js .= "c.maxDate = '".$maxDate->toString(jDateTime::DB_DFORMAT)."';\n";
 
-        if($ctrl instanceof jFormsControlDate || get_class($ctrl->datatype) == 'jDatatypeDate' || get_class($ctrl->datatype) == 'jDatatypeLocaleDate'){
-            $config = isset($ctrl->datepickerConfig)?$ctrl->datepickerConfig:jApp::config()->forms['datepicker'];
-            $js .= 'jelix_datepicker_'.$config."(c, jFormsJQ.config);\n";
-        }
-
         $this->parentWidget->addJs($js);
         $this->commonJs();
+
+        if($ctrl instanceof jFormsControlDate || get_class($ctrl->datatype) == 'jDatatypeDate' || get_class($ctrl->datatype) == 'jDatatypeLocaleDate'){
+            $config = isset($ctrl->datepickerConfig)?$ctrl->datepickerConfig:jApp::config()->forms['datepicker'];
+            $this->parentWidget->addJs('jelix_datepicker_'.$config."(c, jFormsJQ.config);\n");
+        }
     }
 
     function outputControl() {
@@ -78,7 +78,7 @@ class date_htmlFormWidget extends \jelix\forms\HtmlWidget\WidgetBase {
         }
         $this->outputJs();
     }
-    
+
     protected function _outputDateControlDay($ctrl, $attr, $value){
         $attr['name'] = $ctrl->ref.'[day]';
         $attr['id'] .= 'day';

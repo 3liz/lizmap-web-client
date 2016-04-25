@@ -960,7 +960,7 @@ class jDaoGenerator {
             if($cond['operator'] == 'IN' || $cond['operator'] == 'NOT IN'){
                 if($cond['isExpr']){
                     $phpexpr = $this->_preparePHPCallbackExpr($prop);
-                    $phpvalue = 'implode(\',\', array_map( '.$phpexpr.', '.$cond['value'].'))';
+                    $phpvalue = 'implode(\',\', array_map( '.$phpexpr.', is_array('.$cond['value'].')?'.$cond['value'].':array('.$cond['value'].')))';
                     $value= '(\'.'.$phpvalue.'.\')';
                 }else{
                     $value= '('.str_replace("'", "\\'", $cond['value']).')';

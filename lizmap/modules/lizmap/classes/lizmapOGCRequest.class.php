@@ -63,6 +63,20 @@ class lizmapOGCRequest {
         return $this->{$this->param('request')}();
     }
 
+    protected function constructUrl ( ) {
+        $url = $this->services->wmsServerURL.'?';
+
+        $bparams = http_build_query($this->params);
+
+        // replace some chars (not needed in php 5.4, use the 4th parameter of http_build_query)
+        $a = array('+', '_', '.', '-');
+        $b = array('%20', '%5F', '%2E', '%2D');
+        $bparams = str_replace($a, $b, $bparams);
+
+        $querystring = $url . $bparams;
+        return $querystring;
+    }
+
     protected function serviceException ( ) {
         $messages = jMessage::getAll();
         $mime = 'text/plain';
@@ -84,11 +98,7 @@ class lizmapOGCRequest {
     }
 
     protected function getcapabilities ( ) {
-
-        $url = $this->services->wmsServerURL.'?';
-
-        $bparams = http_build_query($this->params);
-        $querystring = $url . $bparams;
+        $querystring = $this->constructUrl();
 
         // Get remote data
         $getRemoteData = lizmapProxy::getRemoteData(
@@ -99,6 +109,19 @@ class lizmapOGCRequest {
         $data = $getRemoteData[0];
         $mime = $getRemoteData[1];
         $code = $getRemoteData[2];
+
+        // Retry if 500 error ( hackish, but QGIS Server segfault sometimes with cache issue )
+        if( $code == 500 ){
+          // Get remote data
+          $getRemoteData = lizmapProxy::getRemoteData(
+            $querystring,
+            $this->services->proxyMethod,
+            $this->services->debugMode
+          );
+          $data = $getRemoteData[0];
+          $mime = $getRemoteData[1];
+          $code = $getRemoteData[2];
+        }
 
         return (object) array(
             'code' => $code,

@@ -112,7 +112,7 @@ class htmlbootstrapFormBuilder extends \jelix\forms\Builder\HtmlBuilder {
                     }else
                         $resp->addJSLink($bp.$confHtmlEditor[$ed->config.'.engine.file']);
                 }
-                
+
                 if(isset($confHtmlEditor[$ed->config.'.config']))
                     $resp->addJSLink($bp.$confHtmlEditor[$ed->config.'.config']);
 
@@ -123,7 +123,7 @@ class htmlbootstrapFormBuilder extends \jelix\forms\Builder\HtmlBuilder {
             }
 
             $datepicker_default_config = jApp::config()->forms['datepicker'];
-            
+
             foreach($v->getControls() as $ctrl){
                 if($ctrl instanceof jFormsControlDate || get_class($ctrl->datatype) == 'jDatatypeDate' || get_class($ctrl->datatype) == 'jDatatypeLocaleDate'){
                     $config = isset($ctrl->datepickerConfig)?$ctrl->datepickerConfig:$datepicker_default_config;
@@ -351,12 +351,12 @@ jFormsJQ.declareForm(jFormsJQ.tForm);
             $this->jsContent .="c.errInvalid=".$this->escJsStr(jLocale::get('jelix~formserr.js.err.invalid', $ctrl->label)).";\n";
         }
 
+        if ($this->isRootControl) $this->jsContent .="jFormsJQ.tForm.addControl(c);\n";
+
         if($ctrl instanceof jFormsControlDate || get_class($ctrl->datatype) == 'jDatatypeDate' || get_class($ctrl->datatype) == 'jDatatypeLocaleDate'){
             $config = isset($ctrl->datepickerConfig)?$ctrl->datepickerConfig:jApp::config()->forms['datepicker'];
             $this->jsContent .= 'jelix_datepicker_'.$config."(c, jFormsJQ.config);\n";
         }
-
-        if ($this->isRootControl) $this->jsContent .="jFormsJQ.tForm.addControl(c);\n";
     }
 
     protected function outputInput($ctrl, &$attr) {
@@ -652,7 +652,7 @@ jFormsJQ.declareForm(jFormsJQ.tForm);
         $id = $this->_name.'_'.$ctrl->ref;
         $idLabel = ' id="'.$id.'_label"';
         echo '<label class="jforms-label checkbox',$required,$inError,'" for="',$id,'"',$idLabel,$hint,'>';
-        
+
         $value = $this->_form->getData($ctrl->ref);
 
         if($ctrl->valueOnCheck == $value){
@@ -663,7 +663,7 @@ jFormsJQ.declareForm(jFormsJQ.tForm);
         echo '<input';
         $this->_outputAttr($attr);
         echo $this->_endt;
-        
+
         echo htmlspecialchars($ctrl->label),$reqhtml,"</label>\n";
     }
 

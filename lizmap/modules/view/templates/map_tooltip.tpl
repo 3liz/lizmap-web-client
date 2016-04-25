@@ -1,5 +1,12 @@
 <div class="tooltip-layer">
-  <h3><span class="title"><button class="btn-tooltip-layer-clear btn btn-mini btn-error btn-link" title="{@view~map.toolbar.content.stop@}">×</button><span class="icon"></span>&nbsp;{@view~map.tooltip.toolbar.title@}&nbsp;<span class="text"></span></span></span></h3>
+  <h3>
+    <span class="title">
+      <button class="btn-tooltip-layer-clear btn btn-mini btn-error btn-link" title="{@view~map.toolbar.content.stop@}">×</button>
+      <button id="tooltip-cancel" class="btn-tooltip-cancel btn btn-mini btn-link" type="button"></button>
+      <span class="icon"></span>&nbsp;{@view~map.tooltip.toolbar.title@}&nbsp;
+      <span class="text"></span>
+    </span>
+  </h3>
   <div class="menu-content">
     <table>
       <tr>

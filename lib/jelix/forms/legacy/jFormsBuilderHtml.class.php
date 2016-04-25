@@ -258,6 +258,49 @@ class jFormsBuilderHtml extends jFormsBuilderBase {
         $this->outputHelp($ctrl);
     }
 
+
+    public function outputControlValue($ctrl, $attributes=array()){
+        if($ctrl->type == 'hidden') return;
+        $ro = $ctrl->isReadOnly();
+        $separator = ' ';
+        if (isset($attributes['separator'])) {
+            $separator = $attributes['separator'];
+            unset($attributes['separator']);
+        }
+
+        $attributes['name'] = $ctrl->ref;
+        $attributes['id'] = $this->_name.'_'.$ctrl->ref;
+
+        $class = 'jforms-value jforms-value-'.$ctrl->type;
+        if (isset($attributes['class'])) {
+            $attributes['class'].= ' '.$class;
+        }
+        else {
+            $attributes['class'] = $class;
+        }
+
+        echo '<span ';
+        $this->_outputAttr($attributes);
+        echo '>';
+
+        if (isset($attributes['separator']))
+        $value = $this->_form->getData($ctrl->ref);
+        $value = $ctrl->getDisplayValue($value);
+        if(is_array($value)){
+            $s ='';
+            foreach($value as $v){
+                $s .= $separator.htmlspecialchars($v);
+            }
+            echo substr($s, strlen($separator));
+        }else if ($ctrl->isHtmlContent()) {
+            echo $value;
+        }
+        else {
+            echo htmlspecialchars($value);
+        }
+        echo '</span>';
+    }
+
     protected function _outputAttr(&$attributes) {
         foreach($attributes as $name=>$val) {
             echo ' '.$name.'="'.htmlspecialchars($val).'"';

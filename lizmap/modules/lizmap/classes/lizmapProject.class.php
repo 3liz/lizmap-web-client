@@ -50,34 +50,13 @@ class lizmapProject{
             $qgs_path = $rep->getPath().$key.'.qgs';
             $config = null;
             $qgs_xml = null;
-            $update_session = false;
 
-            if ( isset($_SESSION['_LIZMAP_'])
-                && isset($_SESSION['_LIZMAP_'][$key_session])
-                && isset($_SESSION['_LIZMAP_'][$key_session]['cfg'])
-                && isset($_SESSION['_LIZMAP_'][$key_session]['cfgmtime'])
-                && $_SESSION['_LIZMAP_'][$key_session]['cfgmtime'] >= filemtime($qgs_path.'.cfg')
-                )
-                $config = $_SESSION['_LIZMAP_'][$key_session]['cfg'];
-            else {
-                $config = jFile::read($qgs_path.'.cfg');
-                $update_session = true;
-            }
+            $config = jFile::read($qgs_path.'.cfg');
             $this->cfg = json_decode($config);
 
             $configOptions = $this->cfg->options;
 
-            if ( isset($_SESSION['_LIZMAP_'])
-                && isset($_SESSION['_LIZMAP_'][$key_session])
-                && isset($_SESSION['_LIZMAP_'][$key_session]['xml'])
-                && isset($_SESSION['_LIZMAP_'][$key_session]['xmlmtime'])
-                && $_SESSION['_LIZMAP_'][$key_session]['xmlmtime'] >= filemtime($qgs_path)
-                )
-                $qgs_xml = simplexml_load_string($_SESSION['_LIZMAP_'][$key_session]['xml']);
-            else {
-                $qgs_xml = simplexml_load_file($qgs_path);
-                $update_session = true;
-            }
+            $qgs_xml = simplexml_load_file($qgs_path);
             $this->xml = $qgs_xml;
 
             $this->data = array(
@@ -96,16 +75,6 @@ class lizmapProject{
             # get abstract from WMS properties
             if (property_exists($qgs_xml->properties, 'WMSServiceAbstract'))
                 $this->data['abstract'] = $qgs_xml->properties->WMSServiceAbstract;
-            if ( $update_session ) {
-                if ( !isset($_SESSION['_LIZMAP_']) )
-                    $_SESSION['_LIZMAP_'] = array($key_session=>array());
-                else if ( !isset($_SESSION['_LIZMAP_'][$key_session]) )
-                    $_SESSION['_LIZMAP_'][$key_session] = array();
-                $_SESSION['_LIZMAP_'][$key_session]['xml'] = $qgs_xml->saveXml();
-                $_SESSION['_LIZMAP_'][$key_session]['xmlmtime'] = filemtime($qgs_path);
-                $_SESSION['_LIZMAP_'][$key_session]['cfg'] = $config;
-                $_SESSION['_LIZMAP_'][$key_session]['cfgmtime'] = filemtime($qgs_path.'.cfg');
-            }
 
             # get WMS getCapabilities full URL
             $this->data['wmsGetCapabilitiesUrl'] = jUrl::getFull(
@@ -115,6 +84,18 @@ class lizmapProject{
                     'project' => $key,
                     'SERVICE' => 'WMS',
                     'VERSION' => '1.3.0',
+                    'REQUEST' => 'GetCapabilities'
+                )
+            );
+
+            # get WMTS getCapabilities full URL
+            $this->data['wmtsGetCapabilitiesUrl'] = jUrl::getFull(
+                'lizmap~service:index',
+                array(
+                    'repository' => $rep->getKey(),
+                    'project' => $key,
+                    'SERVICE' => 'WMTS',
+                    'VERSION' => '1.0.0',
                     'REQUEST' => 'GetCapabilities'
                 )
             );
@@ -148,6 +129,57 @@ class lizmapProject{
                     if ( property_exists($this->cfg->layers, $name ) )
                         $this->cfg->layers->$name->shortname = $sname;
                 }
+            }
+
+            $groupsWithShortName = $this->xml->xpath("//layer-tree-group/customproperties/property[@key='wmsShortName']/parent::*/parent::*");
+            if ( count( $groupsWithShortName ) > 0 ) {
+                foreach( $groupsWithShortName as $group ) {
+                    $name = (string)$group['name'];
+                    $shortNameProperty = $group->xpath("customproperties/property[@key='wmsShortName']");
+                    if ( count( $shortNameProperty ) > 0 ) {
+                        $shortNameProperty = $shortNameProperty[0];
+                        $sname = (string) $shortNameProperty['value'];
+                        if ( property_exists($this->cfg->layers, $name ) )
+                            $this->cfg->layers->$name->shortname = $sname;
+                    }
+                }
+            }
+
+            $layersWithShowFeatureCount = $this->xml->xpath("//layer-tree-layer/customproperties/property[@key='showFeatureCount']/parent::*/parent::*");
+            if ( count( $layersWithShowFeatureCount ) > 0 ) {
+                foreach( $layersWithShowFeatureCount as $layer ) {
+                    $name = (string)$layer['name'];
+                    if ( property_exists($this->cfg->layers, $name ) )
+                        $this->cfg->layers->$name->showFeatureCount = 'True';
+                }
+            }
+            //unset cache for editionLayers
+            if (property_exists($this->cfg, 'editionLayers') ){
+                foreach( $this->cfg->editionLayers as $key=>$obj ){
+                    if (property_exists($this->cfg->layers, $key) ){
+                        $this->cfg->layers->$key->cached = 'False';
+                        $this->cfg->layers->$key->clientCacheExpiration = 0;
+                        if ( property_exists($this->cfg->layers->$key, 'cacheExpiration') )
+                            unset($this->cfg->layers->$key->cacheExpiration);
+                    }
+                }
+            }
+            //unset cache for loginFilteredLayers
+            if ( property_exists($this->cfg,'loginFilteredLayers') ){
+                foreach( $this->cfg->loginFilteredLayers as $key=>$obj ){
+                    if (property_exists($this->cfg->layers, $key) ){
+                        $this->cfg->layers->$key->cached = 'False';
+                        $this->cfg->layers->$key->clientCacheExpiration = 0;
+                        if ( property_exists($this->cfg->layers->$key, 'cacheExpiration') )
+                            unset($this->cfg->layers->$key->cacheExpiration);
+                    }
+                }
+            }
+            //unset displayInLegend for geometryType none or unknown
+            foreach( $this->cfg->layers as $key=>$obj ){
+                if ( property_exists($this->cfg->layers->$key, 'geometryType') &&
+                     ($this->cfg->layers->$key->geometryType == 'none' || $this->cfg->layers->$key->geometryType == 'unknown') )
+                    $this->cfg->layers->$key->displayInLegend = 'False';
             }
         }
     }
@@ -561,14 +593,14 @@ class lizmapProject{
                 if( count($alias) != 0 ) {
                     $alias = $alias[0];
                     $v->fieldAlias = (string)$alias['name'];
-                    $configJson->$k = $v;
+                    $configJson->locateByLayer->$k = $v;
                 }
                 if ( property_exists( $v, 'filterFieldName') ) {
                     $alias = $xmlLayerZero->xpath("aliases/alias[@field='".$v->filterFieldName."']");
                     if( count($alias) != 0 ) {
                         $alias = $alias[0];
                         $v->filterFieldAlias = (string)$alias['name'];
-                        $configJson->$k = $v;
+                        $configJson->locateByLayer->$k = $v;
                     }
                 }
                 // vectorjoins
@@ -585,7 +617,7 @@ class lizmapProject{
                                 "joinLayerId"=>(string)$vectorjoin['joinLayerId'],
                             );
                     }
-                    $configJson->$k = $v;
+                    $configJson->locateByLayer->$k = $v;
                 }
             }
         }
@@ -820,14 +852,17 @@ class lizmapProject{
             'lizmap.tools.displayGetCapabilitiesLinks',
             $this->repository->getKey()
         );
+        $wmtsGetCapabilitiesUrl = $wmsGetCapabilitiesUrl;
         if ( $wmsGetCapabilitiesUrl ) {
             $wmsGetCapabilitiesUrl = $this->getData('wmsGetCapabilitiesUrl');
+            $wmtsGetCapabilitiesUrl = $this->getData('wmtsGetCapabilitiesUrl');
         }
         $metadataTpl->assign(array_merge(array(
             'repositoryLabel'=>$this->getData('label'),
             'repository'=>$this->repository->getKey(),
             'project'=>$this->getKey(),
-            'wmsGetCapabilitiesUrl' => $wmsGetCapabilitiesUrl
+            'wmsGetCapabilitiesUrl' => $wmsGetCapabilitiesUrl,
+            'wmtsGetCapabilitiesUrl' => $wmtsGetCapabilitiesUrl
         ), $wmsInfo));
         $dockable[] = new lizmapMapDockItem(
             'metadata',

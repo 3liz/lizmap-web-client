@@ -181,8 +181,8 @@ class jWSDL {
             $serverUri = jApp::coord()->request->getServerURI();
         }
 
-        $serviceURL .= $serverUri .$url->toString();
-        $serviceNameSpace .= jApp::urlBasePath();
+        $serviceURL = $serverUri .$url->toString();
+        $serviceNameSpace = $serverUri . jApp::urlBasePath();
 
         $wsdl = new WSDLStruct($serviceNameSpace, $serviceURL, SOAP_RPC, SOAP_ENCODED);
         $wsdl->setService(new IPReflectionClass($this->controllerClassName));

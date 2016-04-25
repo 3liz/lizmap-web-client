@@ -28,6 +28,7 @@
                         <br/>
                         <b>{@view~map.metadata.properties.wmsGetCapabilitiesUrl@}</b>&nbsp;:
                         <span><a href="{$p->wmsGetCapabilitiesUrl}" target="_blank">WMS Url</a></span>
+                        &nbsp;<span><a href="{$p->wmtsGetCapabilitiesUrl}" target="_blank">WMTS Url</a></span>
                         {/if}
                     <div>
                 </li>
@@ -88,6 +89,7 @@
           {if $p->wmsGetCapabilitiesUrl}
           <dt>{@view~map.metadata.properties.wmsGetCapabilitiesUrl@}</dt>
           <dd><small><a href="{$p->wmsGetCapabilitiesUrl}" target="_blank">WMS Url</a></small></dd>
+          <dd><small><a href="{$p->wmtsGetCapabilitiesUrl}" target="_blank">WMTS Url</a></small></dd>
           {/if}
         </dl>
       </div>

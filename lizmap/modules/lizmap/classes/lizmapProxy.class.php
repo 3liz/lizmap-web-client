@@ -11,6 +11,12 @@
 
 class lizmapProxy {
 
+    /**
+     * loaded profiles
+     * @var array
+     */
+    protected static $_profiles = array();
+
 
     /**
     * Normalize and filter request parameters.
@@ -75,7 +81,7 @@ class lizmapProxy {
             $mime = $info['content_type'];
             $http_code = (int) $info['http_code'];
             // Optionnal debug
-            if($debug or curl_errno($ch))
+            if($debug and curl_errno($ch))
             {
                 jLog::log('--> CURL: ' .json_encode($info));
             }
@@ -92,17 +98,17 @@ class lizmapProxy {
                 if ( preg_match( '#^Content-Type:\s+([\w/\.+]+)(;\s+charset=(\S+))?#i', $header, $matches ) ){
                     $mime = $matches[1];
                     if ( count( $matches ) > 3 )
-                $mime .= '; charset='.$matches[3];
+                        $mime .= '; charset='.$matches[3];
                 } else if ('HTTP/' === substr($header, 0, 5)) {
                     list($version, $code, $phrase) = explode(' ', $header, 3) + array('', FALSE, '');
-            $http_code = (int) $code;
+                    $http_code = (int) $code;
                 }
                 // optional debug
-                if($debug){
+                if($debug and $http_code == 500){
                     $info.= ' '.$header;
                 }
             }
-            if($debug)
+            if($debug and $http_code == 500)
             {
                 jLog::log(json_encode($info));
             }
@@ -119,6 +125,7 @@ class lizmapProxy {
     * @return array $data Normalized and filtered array.
     */
     static public function getMap( $project, $params, $forced=False ) {
+
         // Get cache if exists
         $keyParams = $params;
         if( array_key_exists( 'map', $keyParams ) ){
@@ -163,22 +170,11 @@ class lizmapProxy {
         // Get tile cache virtual profile (tile storage)
         // And get tile if already in cache
         // --> must be done after checking that parent project is involved
-        $profile = 'lizmapCache_'.$repository.'_'.$project.'_'.$layers.'_'.$crs;
-        lizmapProxy::createVirtualProfile( $repository, $project, $layers, $crs );
+        $profile = lizmapProxy::createVirtualProfile( $repository, $project, $layers, $crs );
 
-        if ( !$forced ) {
-            $tile = jCache::get( $key, $profile );
+        if($debug)
+            lizmap::logMetric('LIZMAP_PROXY_READ_LAYER_CONFIG');
 
-            if( $tile ){
-                $mime = 'image/jpeg';
-                if(preg_match('#png#', $params['format'] ))
-                    $mime = 'image/png';
-                //~ jLog::log( 'cache hit !');
-                return array( $tile, $mime, 200);
-            }
-        }
-
-        // No cache hit, get more information about tile to grab
 
         // Has the user asked for cache for this layer ?
         $string2bool = array('false'=>False, 'False'=>False, 'True'=>True, 'true'=>True);
@@ -194,6 +190,21 @@ class lizmapProxy {
         ){
             $wmsClient = 'gis';
             $useCache = False;
+        }
+
+        if ( $useCache and !$forced ) {
+            $tile = jCache::get( $key, $profile );
+            if( $tile ){
+                $_SESSION['LIZMAP_GETMAP_CACHE_STATUS'] = 'read';
+                $mime = 'image/jpeg';
+                if(preg_match('#png#', $params['format'] ))
+                    $mime = 'image/png';
+
+                if($debug)
+                    lizmap::logMetric('LIZMAP_PROXY_HIT_CACHE');
+
+                return array( $tile, $mime, 200);
+            }
         }
 
         // ***************************
@@ -260,6 +271,9 @@ class lizmapProxy {
         $mime = $getRemoteData[1];
         $code = $getRemoteData[2];
 
+        if($debug)
+            lizmap::logMetric('LIZMAP_PROXY_REQUEST_QGIS_MAP');
+
         if ( $useCache && !preg_match('/^image/',$mime) )
             $useCache = False;
 
@@ -304,8 +318,13 @@ class lizmapProxy {
             // Destroy image handlers
             imagedestroy($original);
             imagedestroy($image);
+
+            if($debug)
+                lizmap::logMetric('LIZMAP_PROXY_CROP_METATILE');
+
         }
 
+        $_SESSION['LIZMAP_GETMAP_CACHE_STATUS'] = 'off';
 
         // Store into cache if needed
         if( $useCache ) {
@@ -315,6 +334,10 @@ class lizmapProxy {
                 $cacheExpiration = (int)$configLayer->cacheExpiration;
 
             jCache::set( $key, $data, $cacheExpiration, $profile );
+            $_SESSION['LIZMAP_GETMAP_CACHE_STATUS'] = 'write';
+
+            if($debug)
+                lizmap::logMetric('LIZMAP_PROXY_WRITE_CACHE');
         }
 
         return array($data, $mime, $code);
@@ -325,6 +348,10 @@ class lizmapProxy {
 
         // Set cache configuration
         $cacheName = 'lizmapCache_'.$repository.'_'.$project.'_'.$layers.'_'.$crs;
+
+        if ( array_key_exists( $cacheName, self::$_profiles ) )
+            return $cacheName;
+
         // Storage type
         $ser = lizmap::getServices();
         $cacheStorageType = $ser->cacheStorageType;
@@ -332,9 +359,11 @@ class lizmapProxy {
         $cacheExpiration = (int)$ser->cacheExpiration;
 
         // Cache root directory
-        $cacheRootDirectory = $ser->cacheRootDirectory;
-        if(!is_writable($cacheRootDirectory) or !is_dir($cacheRootDirectory)){
-            $cacheRootDirectory = sys_get_temp_dir();
+        if( $cacheStorageType != 'redis' ){
+            $cacheRootDirectory = $ser->cacheRootDirectory;
+            if(!is_writable($cacheRootDirectory) or !is_dir($cacheRootDirectory)){
+                $cacheRootDirectory = sys_get_temp_dir();
+            }
         }
 
         if($cacheStorageType == 'file'){
@@ -358,7 +387,22 @@ class lizmapProxy {
             // Create the virtual cache profile
             jProfiles::createVirtualProfile('jcache', $cacheName, $cacheParams);
 
-        }else{
+        }
+        elseif($cacheStorageType == 'redis'){
+            // CACHE CONTENT INTO REDIS
+
+            // Virtual cache profile parameter
+            $cacheParams = array(
+                "driver"=>"redis",
+                "host"=>"localhost",
+                "port"=>"6379",
+                "ttl"=>$cacheExpiration
+            );
+
+            // Create the virtual cache profile
+            jProfiles::createVirtualProfile('jcache', $cacheName, $cacheParams);
+        }
+        else{
             // CACHE CONTENT INTO SQLITE DATABASE
 
             // Directory where to store the sqlite database
@@ -392,6 +436,9 @@ class lizmapProxy {
             // Create the virtual cache profile
             jProfiles::createVirtualProfile('jcache', $cacheName, $cacheParams);
         }
+
+        self::$_profiles[] = $cacheName;
+        return $cacheName;
     }
 
 

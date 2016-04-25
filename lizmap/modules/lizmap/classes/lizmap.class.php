@@ -18,6 +18,10 @@ class lizmap{
 
     // repositories
     protected static $repositories = array();
+    protected static $repositoryInstances = array();
+
+    // projects
+    protected static $projectInstances = array();
 
     // log items
     protected static $logItems = array();
@@ -80,8 +84,13 @@ class lizmap{
         if ( !in_array($key, self::getRepositoryList()) )
           return null;
 
+      if ( in_array($key, self::$repositoryInstances) )
+        return self::$repositoryInstances[$key];
+
       jClasses::inc('lizmap~lizmapRepository');
-      return new lizmapRepository($key);
+      $rep = new lizmapRepository($key);
+      self::$repositoryInstances[$key] = $rep;
+      return $rep;
     }
 
 
@@ -97,6 +106,7 @@ class lizmap{
       $rep = new lizmapRepository($key);
       $rep->update( $data );
       self::getRepositoryList();
+      self::$repositoryInstances[$key] = $rep;
       return $rep;
     }
 
@@ -118,6 +128,8 @@ class lizmap{
         $ini->removeValue(null, $section);
         $ini->save();
         self::getRepositoryList();
+        if ( in_array($key, self::$repositoryInstances) )
+            unset(self::$repositoryInstances[$key]);
         return true;
       }
       return false;
@@ -135,10 +147,14 @@ class lizmap{
       if ( $rep == null)
         return null;
 
+      if ( in_array($key, self::$projectInstances) )
+        return self::$projectInstances[$key];
+
       jClasses::inc('lizmap~lizmapProject');
       $proj = new lizmapProject($matches['proj'], $rep);
       if ( $proj->getKey() != $matches['proj'] )
         return null;
+      self::$projectInstances[$key] = $proj;
       return $proj;
     }
 
@@ -192,6 +208,37 @@ class lizmap{
     }
 
 
+    /* Returns time spent in milliseconds from beginning of request
+     * @param string $label Name of the action to lo
+     */
+    public static function logMetric( $label, $start='index' ){
+        // Choose from when to calculate time: index, request or given $start
+        if( $start == 'index' ){
+            $start = $_SERVER["LIZMAP_BEGIN_TIME"];
+        }
+        elseif( $start == 'request' ){
+            // For php < 5.4
+            if (!isset($_SERVER['REQUEST_TIME_FLOAT'])) {
+              $start = $_SERVER['REQUEST_TIME'];
+            }else{
+              $start = $_SERVER["REQUEST_TIME_FLOAT"];
+            }
+        }
 
+        // Calculate time
+        $time = ( microtime(true) - $start ) * 1000;
+
+        // Create log content
+        $log = array(
+            'NAME'=> $label,
+            'RESPONSE_TIME'=> $time
+        );
+
+        // Add cache parameter if given
+        if( isset( $_SESSION['LIZMAP_GETMAP_CACHE_STATUS'] ) ){
+          $log['CACHE_STATUS'] = $_SESSION['LIZMAP_GETMAP_CACHE_STATUS'];
+        }
+        jLog::log(json_encode($log), 'metric');
+    }
 
 }

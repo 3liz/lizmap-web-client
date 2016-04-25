@@ -4,7 +4,7 @@
 * @subpackage  forms
 * @author      Laurent Jouanneau
 * @contributor Julien Issler, Dominique Papin, Olivier Demah
-* @copyright   2006-2012 Laurent Jouanneau
+* @copyright   2006-2015 Laurent Jouanneau
 * @copyright   2008 Julien Issler, 2008 Dominique Papin
 * @copyright   2009 Olivier Demah
 * @link        http://www.jelix.org
@@ -53,7 +53,7 @@ class htmlJformsBuilder extends jFormsBuilderHtml {
                     }else
                         $resp->addJSLink($bp.$confHtmlEditor[$ed->config.'.engine.file']);
                 }
-                
+
                 if(isset($confHtmlEditor[$ed->config.'.config']))
                     $resp->addJSLink($bp.$confHtmlEditor[$ed->config.'.config']);
 
@@ -64,7 +64,7 @@ class htmlJformsBuilder extends jFormsBuilderHtml {
             }
 
             $datepicker_default_config = jApp::config()->forms['datepicker'];
-            
+
             foreach($v->getControls() as $ctrl){
                 if($ctrl instanceof jFormsControlDate || get_class($ctrl->datatype) == 'jDatatypeDate' || get_class($ctrl->datatype) == 'jDatatypeLocaleDate'){
                     $config = isset($ctrl->datepickerConfig)?$ctrl->datepickerConfig:$datepicker_default_config;
@@ -125,26 +125,45 @@ jFormsJQ.declareForm(jFormsJQ.tForm);
             $this->jsContent .="c.errInvalid=".$this->escJsStr(jLocale::get('jelix~formserr.js.err.invalid', $ctrl->label)).";\n";
         }
 
+        if ($this->isRootControl) $this->jsContent .="jFormsJQ.tForm.addControl(c);\n";
+
         if($ctrl instanceof jFormsControlDate || get_class($ctrl->datatype) == 'jDatatypeDate' || get_class($ctrl->datatype) == 'jDatatypeLocaleDate'){
             $config = isset($ctrl->datepickerConfig)?$ctrl->datepickerConfig:jApp::config()->forms['datepicker'];
             $this->jsContent .= 'jelix_datepicker_'.$config."(c, jFormsJQ.config);\n";
         }
-
-        if ($this->isRootControl) $this->jsContent .="jFormsJQ.tForm.addControl(c);\n";
     }
 
     protected function jsMenulist($ctrl) {
 
         $this->jsContent .="c = new jFormsJQControlString('".$ctrl->ref."', ".$this->escJsStr($ctrl->label).");\n";
         if ($ctrl instanceof jFormsControlDatasource
-            && $ctrl->datasource instanceof jFormsDaoDatasource) {
-            $dependentControls = $ctrl->datasource->getDependentControls();
+            && $ctrl->datasource instanceof jIFormsDynamicDatasource) {
+            $dependentControls = $ctrl->datasource->getCriteriaControls();
             if ($dependentControls) {
                 $this->jsContent .="c.dependencies = ['".implode("','",$dependentControls)."'];\n";
                 $this->lastJsContent .= "jFormsJQ.tForm.declareDynamicFill('".$ctrl->ref."');\n";
             }
         }
 
+        $this->commonJs($ctrl);
+    }
+
+    protected function jsListbox($ctrl) {
+        if($ctrl->multiple){
+            $this->jsContent .= "c = new jFormsJQControlString('".$ctrl->ref."[]', ".$this->escJsStr($ctrl->label).");\n";
+            $this->jsContent .= "c.multiple = true;\n";
+        } else {
+            $this->jsContent .= "c = new jFormsJQControlString('".$ctrl->ref."', ".$this->escJsStr($ctrl->label).");\n";
+        }
+
+        if ($ctrl instanceof jFormsControlDatasource
+            && $ctrl->datasource instanceof jIFormsDynamicDatasource) {
+            $dependentControls = $ctrl->datasource->getCriteriaControls();
+            if ($dependentControls) {
+                $this->jsContent .="c.dependencies = ['".implode("','",$dependentControls)."'];\n";
+                $this->lastJsContent .= "jFormsJQ.tForm.declareDynamicFill('".$ctrl->ref."');\n";
+            }
+        }
         $this->commonJs($ctrl);
     }
 

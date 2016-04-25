@@ -19,6 +19,11 @@ class mapCtrl extends lizMapCtrl {
         if ( $rep->getType() != 'html' )
             return $rep;
 
+        // Get repository key
+        $repository = $this->repositoryKey;
+        // Get the project key
+        $project = $this->projectKey;
+
         $rep->body->assign('auth_url_return',
             jUrl::get('view~map:index',
                 array(

@@ -52,6 +52,9 @@ body {
   background-color: #4A4A4A;
   background-color: rgba(0,0,0,0.7);
 }
+#headermenu .dropdown-menu > li > a{
+  color:white;
+}
 #headermenu .dropdown-caret {
   position: absolute;
   top: -7px;
@@ -99,6 +102,7 @@ body {
   color: white;
   white-space: normal;
 }
+
 
 /* mapmenu */
 #mapmenu {
@@ -347,6 +351,7 @@ CSS Sprite ositions calculated via http://instantsprite.com/ or https://draeton.
   max-width:100%;
   background:url('img/header-background-medium.png');
 }
+
 #map-content.half, #map-content.full{
   margin-left: 25%;
 }
@@ -354,6 +359,12 @@ CSS Sprite ositions calculated via http://instantsprite.com/ or https://draeton.
 ul.nav.nav-tabs {
   margin-bottom: 0px;
   border-bottom:1px dashed #F0F0F0;
+}
+
+#dock-close{
+  position: absolute;
+  bottom:5px;
+  right:5px;
 }
 
 #dock-tabs > li > a {
@@ -417,7 +428,9 @@ SubDock
   max-height:50%;
   z-index:1010;
   overflow:auto;
-  /*background-color: #F0F0F0;*/
+  background-color:#4A4A4A !important;
+  background-color:rgba(0,0,0,0.7) !important;
+
 }
 #content.mobile #mini-dock{
   max-width:100%;
@@ -426,10 +439,7 @@ SubDock
   right:0px;
   left:30px;
 }
-#mini-dock-content {
-  background-color: white;
-  background-color: rgba(255, 255, 255, 0.8);
-}
+
 
 #mini-dock-tabs {
   display:none;
@@ -589,6 +599,9 @@ SubDock
   overflow: auto;
   height: 100%;
   padding-left: 10px;
+}
+.attribute-layer-feature-panel img {
+  max-width: 300px;
 }
 .attribute-layer-feature-panel.visible {
   width:auto;
@@ -751,8 +764,7 @@ div.modal h3,
   border-bottom: 1px dashed #F0F0F0;
 }
 #mini-dock h3{
-  background-color:#4A4A4A;
-  background-color:rgba(0,0,0,0.7);
+  background:none;
 }
 div.modal h3 {
   color : #333;
@@ -1031,12 +1043,14 @@ div.modal h3 .text {
 }
 #toolbar .title .btn.btn-locate-clear,
 #dock .title .btn.btn-locate-clear,
-#mini-dock .title .btn.btn-locate-clear {
+#mini-dock .title .btn.btn-locate-clear,
+#mini-dock .title .btn.btn-tooltip-cancel {
   background-position : 0px 0px;
 }
 #toolbar .title .btn.btn-locate-clear:hover,
 #dock .title .btn.btn-locate-clear:hover,
-#mini-dock .title .btn.btn-locate-clear:hover {
+#mini-dock .title .btn.btn-locate-clear:hover ,
+#mini-dock .title .btn.btn-tooltip-cancel:hover{
   background-position : -20px 0px;
 }
 #toolbar .title .btn.btn-print-clear,
@@ -1159,23 +1173,24 @@ div.modal h3 .text {
   overflow-x:hidden;
   overflow-y:auto
 }
-.ui-autocomplete.ui-menu .ui-menu-item a {
+.ui-autocomplete.ui-menu .ui-menu-item {
   background: none;
   color : rgb(51,51,51);
   height: 20px;
   border: 0;
   border-radius: 0;
-  padding : 0em 0.5em;
-  margin :  0em;
+  padding : 0;
+  margin :  0;
   text-shadow: none;
   font-weight: normal;
-  font-size: 11.844px;
+  font-size: 12px;
   white-space: nowrap;
   vertical-align: baseline;
+  text-overflow: ellipsis;
 }
-.ui-autocomplete.ui-menu .ui-menu-item a.ui-state-hover,
-.ui-autocomplete.ui-menu .ui-menu-item a.ui-state-active,
-.ui-autocomplete.ui-menu .ui-menu-item a.ui-state-focus {
+.ui-autocomplete.ui-menu .ui-menu-item.ui-state-hover,
+.ui-autocomplete.ui-menu .ui-menu-item.ui-state-active,
+.ui-autocomplete.ui-menu .ui-menu-item.ui-state-focus {
   font-weight: bold;
   background: #0094D6;
 }
@@ -1373,6 +1388,11 @@ div.modal h3 .text {
 }
 #switcher span.label {
   white-space:normal;
+}
+
+#switcher .treeTable tr {
+  border: 1px solid transparent;
+  border-bottom: 0px;
 }
 
 #switcher .treeTable tr.selected, #switcher .treeTable tr.accept {
@@ -1727,22 +1747,36 @@ div.modal h3 .text {
   border: 1px solid #C9C9C9 !important;
   color: black !important;
 }
+#popupcontent div.menu-content{
+  background:none;
+  border:none;
+  font-size:1em;
+}
+/*
+#mini-dock #popupcontent div.menu-content{
+  background-color:#4A4A4A !important;
+  background-color:rgba(0,0,0,0.6) !important;
+}
+*/
 
 .lizmapPopup.olPopup img,
-#map-content .lizmapPopup img{
+#map-content .lizmapPopup img,
+#popupcontent img{
   border:none;
   max-width: 300px;
   width: expression(this.width > 300 ? "300px" : true);
 }
 
 .lizmapPopup.olPopup .lizmapPopupContent,
-#map-content .olPopup .lizmapPopupContent{
+#map-content .olPopup .lizmapPopupContent,
+#popupcontent .lizmapPopupContent{
   margin: 0px !important;
   padding: 0px !important;
   width: 100% !important;
 }
 .lizmapPopup.olPopup .lizmapPopupContent h4,
-#map-content .lizmapPopupContent h4{
+#map-content .lizmapPopupContent h4,
+#popupcontent .lizmapPopupContent h4{
   margin: 0px;
   color : white !important;
   font-size: 1em;
@@ -1751,7 +1785,8 @@ div.modal h3 .text {
   border-bottom: 1px dashed white;
 }
 .lizmapPopup.olPopup .lizmapPopupContent a,
-#map-content .lizmapPopupContent a{
+#map-content .lizmapPopupContent a,
+#popupcontent .lizmapPopupContent a{
   color:black;
 }
 .lizmapPopup.olPopup .lizmapPopupDiv,
@@ -1760,44 +1795,62 @@ div.modal h3 .text {
   margin-bottom: 20px !important;
   background-color:#F0F0F0 !important;
 }
+#popupcontent .lizmapPopupDiv{
+  margin: 10px !important;
+  margin-bottom: 20px !important;
+  background-color:none;
+}
+#dock div.lizmapPopupDiv, #mini-dock div.lizmapPopupDiv{
+  padding: 5px 10px;
+  background-color: #F0F0F0 !important;
+}
+
 .lizmapPopup.olPopup .lizmapPopupTable,
-#map-content .lizmapPopupTable{
+#map-content .lizmapPopupTable,
+#popupcontent .lizmapPopupTable{
   /*background:#333333 !important;*/
   margin-bottom:10px;
   font-size:0.8em;
   width:100%;
+  background-color: #F0F0F0 !important;
 /*
   border: 1px solid #2B2B2B !important;
 */
   border-collapse: collapse;
 }
 .lizmapPopup.olPopup .lizmapPopupTable thead,
-#map-content .lizmapPopupTable thead {
+#map-content .lizmapPopupTable thead ,
+#popupcontent .lizmapPopupTable thead {
   color: black;
   background-color: lightgrey;
   font-size: 1em;
 }
 .lizmapPopup.olPopup .lizmapPopupTable th,
-#map-content .lizmapPopupTable th{
+#map-content .lizmapPopupTable th,
+#popupcontent .lizmapPopupTable th{
   width:50%;
   text-align: right;
   vertical-align: top;
   padding-right: 5px;
 }
 .lizmapPopup.olPopup .lizmapPopupTable th.left,
-#map-content .lizmapPopupTable th.left{
+#map-content .lizmapPopupTable th.left,
+#popupcontent .lizmapPopupTable th.left{
   border-right: 1px solid #C9C9C9 !important;
 }
 .lizmapPopup.olPopup .lizmapPopupTable td,
-#map-content .lizmapPopupTable td{
+#map-content .lizmapPopupTable td,
+#popupcontent .lizmapPopupTable td{
   padding-left: 5px;
 }
 .lizmapPopup.olPopup .lizmapPopupTable thead th,
-#map-content .lizmapPopupTable thead th{
+#map-content .lizmapPopupTable thead th,
+#popupcontent .lizmapPopupTable thead th{
   text-align: center;
 }
 .lizmapPopup.olPopup .olPopupCloseBox,
-#map-content .lizmapPopup .olPopupCloseBox{
+#map-content .lizmapPopup .olPopupCloseBox,
+#popupcontent .lizmapPopup .olPopupCloseBox{
   width: 20px; height: 20px;
   /*right:0px !important; top:0px !important;*/
   background-color:#2B2B2B;
@@ -1818,17 +1871,27 @@ div.modal h3 .text {
 
 .lizmapPopup.olPopup .jforms-ctrl-date,
 #map-content .lizmapPopup .jforms-ctrl-date,
+#popupcontent .lizmapPopup .jforms-ctrl-date,
 #dock .jforms-ctrl-date,
-#edition-modal .jforms-ctrl-date{
+#edition-modal .jforms-ctrl-date,
+.lizmapPopup.olPopup .jforms-ctrl-datetime,
+#map-content .lizmapPopup .jforms-ctrl-datetime,
+#popupcontent .lizmapPopup .jforms-ctrl-datetime,
+#dock .jforms-ctrl-datetime,
+#edition-modal .jforms-ctrl-datetime{
   width:auto;
 }
 
 #dock .controls select.jforms-ctrl-date,
-#edition-modal .controls select.jforms-ctrl-date {
+#edition-modal .controls select.jforms-ctrl-date,
+#dock .controls select.jforms-ctrl-datetime,
+#edition-modal .controls select.jforms-ctrl-datetime {
   padding:0px;
 }
 #dock .controls input.jforms-ctrl-date[size="4"],
-#edition-modal .controls input.jforms-ctrl-date[size="4"] {
+#edition-modal .controls input.jforms-ctrl-date[size="4"],
+#dock .controls input.jforms-ctrl-datetime[size="4"],
+#edition-modal .controls input.jforms-ctrl-datetime[size="4"] {
   max-width:35px;
 }
 

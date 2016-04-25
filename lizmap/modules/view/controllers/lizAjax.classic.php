@@ -31,7 +31,7 @@ class lizAjaxCtrl extends jController {
         return $rep;
       }
     }
-    
+
     if ( $repository ) {
       $lrep = lizmap::getRepository($repository);
       $title .= ' - '.$lrep->getData('label');
@@ -96,7 +96,7 @@ class lizAjaxCtrl extends jController {
       "permalink" => jUrl::getFull('view~map:index')
     );
 
-    // Get optionnal WMS public url list
+    // Get optional WMS public url list
     $lser = lizmap::getServices();
     if($lser->wmsPublicUrlList){
         $publicUrlList = $lser->wmsPublicUrlList;
@@ -106,7 +106,7 @@ class lizAjaxCtrl extends jController {
         $pul = array_map('f', explode(',', $publicUrlList));
         $lizUrls['publicUrlList'] = $pul;
     }
-    
+
     if(jAcl2::check('lizmap.admin.repositories.delete'))
       $lizUrls['removeCache'] = jUrl::getFull('admin~config:removeLayerCache');
 
@@ -116,7 +116,7 @@ class lizAjaxCtrl extends jController {
     $content .= 'var lizPosition = {"lon":null, "lat":null, "zoom":null};'."\n";
     $content .= "$('#map').css('background-color','".$lproj->getCanvasColor()."');\n";
     $content .= "// ]]></script>";
-    
+
 
     // Get the WMS information
     $wmsInfo = $lproj->getWMSInformation();

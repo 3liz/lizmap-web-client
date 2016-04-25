@@ -10,10 +10,10 @@
 */
 
 class translateCtrl extends jController {
-  
+
   /**
   * Get text/javascript containing all translation for the dictionnary
-  * @param string $lang Language. Ex: fr_FR (optionnal)
+  * @param string $lang Language. Ex: fr_FR (optional)
   * @return JavaScript.
   */
   function index() {
@@ -22,10 +22,10 @@ class translateCtrl extends jController {
     $rep->doDownload = false;
 
     $lang = $this->param('lang');
-    
+
     if(!$lang)
       $lang = jLocale::getCurrentLang().'_'.jLocale::getCurrentCountry();
-    
+
     $data = array();
     $path = jApp::appPath().'modules/view/locales/'.$lang.'/dictionnary.UTF-8.properties';
     if(file_exists($path)){
@@ -45,20 +45,20 @@ class translateCtrl extends jController {
   /**
   * Get JSON containing all translation for a given jelix property file.
   * @param string $property Name of the property file. Ex: map if searched file is map.UTF-8.properties
-  * @param string $lang Language. Ex: fr_FR (optionnal)
+  * @param string $lang Language. Ex: fr_FR (optional)
   * @return binary object The image for this project.
   */
   function getDictionary() {
 
     $rep = $this->getResponse('json');
-    
+
     // Get the property file
     $property= $this->param('property');
     $lang = $this->param('lang');
-    
+
     if(!$lang)
       $lang = jLocale::getCurrentLang().'_'.jLocale::getCurrentCountry();
-    
+
     $data = array();
     $path = jApp::appPath().'modules/view/locales/'.$lang.'/'.$property.'.UTF-8.properties';
     if(file_exists($path)){
