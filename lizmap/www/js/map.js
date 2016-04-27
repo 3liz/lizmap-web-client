@@ -1073,50 +1073,6 @@ var lizMap = function() {
    */
   function getSwitcherNode(aNode,aLevel) {
     var html = '';
-    if (aLevel == 0
-     && ('rootGroupsAsBlock' in config.options)
-     && config.options['rootGroupsAsBlock'] == 'True') {
-      var children = aNode.children;
-      var previousSibling;
-      for (var i=0, len=children.length; i<len; i++) {
-        var child = children[i];
-        var positionClass = '';
-        if (i == 0)
-          positionClass= 'first-block ';
-        else if (i == len-1)
-          positionClass= 'last-block ';
-        if (('children' in child) && child['children'].length!=0) {
-          if (previousSibling && ( (('children' in previousSibling) && previousSibling['children'].length==0) || !('children' in previousSibling)) ) {
-            html += '</table>';
-            html += '</div>';
-          }
-          html += '<div class="with-blocks '+positionClass+child.name+'">';
-          html += '<table class="tree">';
-          var grandChildren = child.children;
-          for (var j=0, jlen=grandChildren.length; j<jlen; j++) {
-            var grandChild = grandChildren[j];
-            html += getSwitcherLine(grandChild);
-
-            if (('children' in grandChild) && grandChild['children'].length!=0)
-              html += getSwitcherNode(grandChild, aLevel+1);
-          }
-          html += '</table>';
-          html += '</div>';
-        } else {
-          if (previousSibling && ('children' in previousSibling) && previousSibling['children'].length!=0) {
-            html += '<div class="with-blocks '+positionClass+'no-group">';
-            html += '<table class="tree">';
-          }
-          html += getSwitcherLine(child);
-        }
-        previousSibling = child;
-      }
-      if ((('children' in previousSibling) && previousSibling['children'].length==0) || !('children' in previousSibling)) {
-        html += '</table>';
-        html += '</div>';
-      }
-      return html;
-    }
     if (aLevel == 0) {
       html += '<div class="without-blocks no-group">';
       html += '<table class="tree">';
