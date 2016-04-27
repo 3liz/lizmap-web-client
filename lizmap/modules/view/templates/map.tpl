@@ -35,6 +35,10 @@
     {zone 'view~map_bottomdock', array('repository'=>$repository,'project'=>$project,'dockable'=>$bottomdockable)}
   </div>
 
+  <div id="right-dock" style="display:none;">
+    {zone 'view~map_rightdock', array('repository'=>$repository,'project'=>$project,'dockable'=>$rightdockable)}
+  </div>
+
   <div id="map-content">
     <div id="map"></div>
 

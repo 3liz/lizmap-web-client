@@ -4842,6 +4842,8 @@ OpenLayers.Control.HighlightFeature = OpenLayers.Class(OpenLayers.Control, {
       dockli+='   </a>';
       dockli+='</li>';
       $('#mapmenu div ul li.nav-'+dtype+':last').after(dockli);
+      if ( $('#mapmenu div ul li.nav-'+dtype+'.'+dname).length == 0 )
+        $('#mapmenu div ul li:last').after(dockli);
 
       //  Remove native lizmap icon
       $('#mapmenu .nav-list > li.'+dname+' > a .icon').css('background-image','none');
@@ -4876,6 +4878,8 @@ OpenLayers.Control.HighlightFeature = OpenLayers.Class(OpenLayers.Control, {
             }
           });
       }
+      else if( dtype == 'right-dock' )
+          $('#right-dock-content').append(docktab);
       else if( dtype == 'dock' )
           $('#dock-content').append(docktab);
 
@@ -4884,6 +4888,8 @@ OpenLayers.Control.HighlightFeature = OpenLayers.Class(OpenLayers.Control, {
       docktabli+= '<li id="nav-tab-'+dname+'"><a href="#'+dname+'" data-toggle="tab">'+dlabel+'</a></li>';
       if( dtype == 'minidock')
           $('#mini-dock-tabs').append(docktabli);
+      else if( dtype == 'right-dock' )
+          $('#right-dock-tabs').append(docktabli);
       else if( dtype == 'dock' )
           $('#dock-tabs').append(docktabli);
 
@@ -5446,6 +5452,52 @@ OpenLayers.Control.HighlightFeature = OpenLayers.Class(OpenLayers.Control, {
               dock.hide();
             else if ( !dock.is(':visible') )
               dock.show();
+            return false;
+          });
+
+          $('#mapmenu ul').on('click', 'li.nav-right-dock > a', function(){
+            var self = $(this);
+            var parent = self.parent();
+            var id = self.attr('href').substr(1);
+            var tab = $('#nav-tab-'+id);
+            if ( parent.hasClass('active') ) {
+                if ( tab.hasClass('active') ) {
+                    var nextActive = tab.next(':visible');
+                    if ( nextActive.length != 0 ) {
+                        nextActive.first().children('a').first().click();
+                    } else {
+                        var prevActive = tab.prev(':visible');
+                        if ( prevActive.length != 0 )
+                            prevActive.first().children('a').first().click();
+                    }
+                }
+                tab.hide();
+                tab.removeClass('active');
+                parent.removeClass('active');
+                lizMap.events.triggerEvent( "rightdockclosed", {'id':id} );
+            } else {
+                var oldActive = $('#mapmenu li.nav-dock.active');
+                if ( oldActive.length != 0 ) {
+                    oldActive.removeClass('active');
+                    lizMap.events.triggerEvent( "rightdockclosed", {'id': oldActive.children('a').first().attr('href').substr(1) } );
+                }
+                tab.show()
+                tab.children('a').first().click();
+                parent.addClass('active');
+                lizMap.events.triggerEvent( "rightdockopened", {'id':id} );
+            }
+            self.blur();
+
+            var dock = $('#right-dock');
+            if ( $('#right-dock-tabs .active').length == 0 ) {
+              dock.hide();
+              $('#content').removeClass('right-dock-visible');
+              updateContentSize();
+            } else if ( !dock.is(':visible') ) {
+              $('#content').addClass('right-dock-visible');
+              dock.show();
+              updateContentSize();
+            }
             return false;
           });
           // Show layer switcher
@@ -6139,6 +6191,7 @@ lizMap.events.on({
 
       // Connect dock close button
       $('#dock-close').click(function(){ $('#mapmenu .nav-list > li.active.nav-dock > a').click(); });
+      $('#right-dock-close').click(function(){ $('#mapmenu .nav-list > li.active.nav-right-dock > a').click(); });
    }
 
 });

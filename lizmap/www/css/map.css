@@ -377,18 +377,27 @@ ul.nav.nav-tabs {
   right:5px;
 }
 
-#dock-tabs > li > a {
+#right-dock-close{
+  position: absolute;
+  bottom:5px;
+  left:5px;
+}
+
+#dock-tabs > li > a,
+#right-dock-tabs > li > a {
   display:none; /* hide unactive tab titles */
   border:none;
   background:none;
   font-weight:bold;
   color:white;
 }
-#dock-tabs > .active > a, #dock-tabs > .active > a:hover, #dock-tabs > .active > a:focus {
+#dock-tabs > .active > a, #dock-tabs > .active > a:hover, #dock-tabs > .active > a:focus,
+#right-dock-tabs > .active > a, #right-dock-tabs > .active > a:hover, #right-dock-tabs > .active > a:focus {
   display:block; /* show only active tab titles */
 }
 
-.dock-title{
+.dock-title,
+.right-dock-title{
     padding:5px;
     color:#FBFBFB;
     font-weight:bold;
@@ -753,6 +762,7 @@ Timemanager
 #dock h3,
 #sub-dock h3,
 #mini-dock h3,
+#right-dock h3,
 div.modal h3,
 .dock-subtitle
 {
@@ -1014,7 +1024,13 @@ div.modal h3 .text {
   position: absolute;
   bottom: 0px;
   right: 0px;
+  top:0px;
   width: 40%;
+  background: #4A4A4A;
+}
+#right-dock > .tabbable{
+  margin-right: 5px;
+  margin-left: 5px;
 }
 
 #content.right-dock-visible #map-content{
@@ -1035,7 +1051,8 @@ div.modal h3 .text {
 #toolbar .title .btn,
 #menu .title .btn,
 #dock .title .btn,
-#mini-dock .title .btn {
+#mini-dock .title .btn,
+#right-dock .title .btn {
   width : 20px;
   height : 20px;
   background : url(images/sprite_menu_tools.png) no-repeat right;
@@ -1049,7 +1066,8 @@ div.modal h3 .text {
 }
 #toolbar .title .btn.btn-error,
 #dock .title .btn.btn-error,
-#mini-dock .title .btn.btn-error {
+#mini-dock .title .btn.btn-error,
+#right-dock .title .btn.btn-error {
   background:none;
   color:#DA4F49;
   font-weight:bold;
@@ -1058,40 +1076,49 @@ div.modal h3 .text {
 }
 #toolbar .title .btn.btn-error:hover,
 #dock .title .btn.btn-error:hover,
-#mini-dock .title .btn.btn-error:hover {
+#mini-dock .title .btn.btn-error:hover,
+#right-dock .title .btn.btn-error:hover {
   text-decoration:none;
   opacity:1;
 }
 #toolbar .title .btn.btn-locate-clear,
 #dock .title .btn.btn-locate-clear,
 #mini-dock .title .btn.btn-locate-clear,
-#mini-dock .title .btn.btn-tooltip-cancel {
+#mini-dock .title .btn.btn-tooltip-cancel,
+#right-dock .title .btn.btn-locate-clear,
+#right-dock .title .btn.btn-tooltip-cancel {
   background-position : 0px 0px;
 }
 #toolbar .title .btn.btn-locate-clear:hover,
 #dock .title .btn.btn-locate-clear:hover,
-#mini-dock .title .btn.btn-locate-clear:hover ,
-#mini-dock .title .btn.btn-tooltip-cancel:hover{
+#mini-dock .title .btn.btn-locate-clear:hover,
+#mini-dock .title .btn.btn-tooltip-cancel:hover,
+#right-dock .title .btn.btn-locate-clear:hover,
+#right-dock .title .btn.btn-tooltip-cancel:hover{
   background-position : -20px 0px;
 }
 #toolbar .title .btn.btn-print-clear,
 #dock .title .btn.btn-print-clear,
-#mini-dock .title .btn.btn-print-clear {
+#mini-dock .title .btn.btn-print-clear,
+#right-dock .title .btn.btn-print-clear {
   background-position : -20px -100px;
 }
 #toolbar .title .btn.btn-print-clear:hover,
 #dock .title .btn.btn-print-clear:hover,
-#mini-dock .title .btn.btn-print-clear:hover {
+#mini-dock .title .btn.btn-print-clear:hover,
+#right-dock .title .btn.btn-print-clear:hover {
   background-position : 0px -100px;
 }
 #toolbar .title .btn.btn-stop,
 #dock .title .btn.btn-stop,
-#mini-dock .title .btn.btn-stop {
+#mini-dock .title .btn.btn-stop,
+#right-dock .title .btn.btn-stop {
   background-position : 0px -20px;
 }
 #toolbar .title .btn.btn-stop:hover,
 #dock .title .btn.btn-stop:hover,
-#mini-dock .title .btn.btn-stop:hover {
+#mini-dock .title .btn.btn-stop:hover,
+#right-dock .title .btn.btn-stop:hover {
   background-position : -20px -20px;
 }
 /*
@@ -1110,7 +1137,8 @@ div.modal h3 .text {
 #toolbar .menu-content .btn.btn-success,
 #dock .menu-content .btn.btn-success,
 #sub-dock .menu-content .btn.btn-success,
-#mini-dock .menu-content .btn.btn-success{
+#mini-dock .menu-content .btn.btn-success,
+#right-dock .menu-content .btn.btn-success{
   background-color: #93C01F;
   background-image: -webkit-linear-gradient(center top, #9BC144, #93C01F);
   background-image:    -moz-linear-gradient(center top, #9BC144, #93C01F);
@@ -1118,15 +1146,18 @@ div.modal h3 .text {
   background-image:         linear-gradient(to bottom, #9BC144, #93C01F);
 }
 #dock .print select,
-#mini-dock .print select {
+#mini-dock .print select,
+#right-dock .print select {
   width:auto;
   margin-bottom:0;
 }
 #toolbar .print select.btn-print-scales,
 #dock .print select.btn-print-scales,
 #mini-dock .print select.btn-print-scales,
+#right-dock .print select.btn-print-scales,
 #dock .print select.btn-print-dpis,
-#mini-dock .print select.btn-print-dpis {
+#mini-dock .print select.btn-print-dpis,
+#right-dock .print select.btn-print-dpis {
   text-align:right;
 }
 

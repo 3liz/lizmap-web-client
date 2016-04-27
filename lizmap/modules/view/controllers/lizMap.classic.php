@@ -208,8 +208,12 @@ class lizMapCtrl extends jController {
     $items = jEvent::notify('mapBottomDockable',array('repository'=>$repository, 'project'=>$project))->getResponse();
     $assign['bottomdockable'] = mapDockItemsMerge( $assign['bottomdockable'], $items );
 
+    $assign['rightdockable'] = array();
+    $items = jEvent::notify('mapRightDockable',array('repository'=>$repository, 'project'=>$project))->getResponse();
+    $assign['rightdockable'] = mapDockItemsMerge( $assign['rightdockable'], $items );
+
     // Add dockable js
-    foreach( array_merge($assign['dockable'], $assign['minidockable'], $assign['bottomdockable'] ) as $d ) {
+    foreach( array_merge($assign['dockable'], $assign['minidockable'], $assign['bottomdockable'], $assign['rightdockable'] ) as $d ) {
         if ( $d->js != '' )
           $rep->addJsLink( $d->js );
     }
@@ -220,7 +224,7 @@ class lizMapCtrl extends jController {
     $rep->addCssLink($themePath.'css/media.css');
 
     // Add dockable css
-    foreach( array_merge($assign['dockable'], $assign['minidockable'], $assign['bottomdockable'] ) as $d ) {
+    foreach( array_merge($assign['dockable'], $assign['minidockable'], $assign['bottomdockable'], $assign['rightdockable'] ) as $d ) {
         if ( $d->css != '' )
           $rep->addCssLink( $d->css );
     }
