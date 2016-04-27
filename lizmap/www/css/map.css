@@ -6,6 +6,17 @@ body {
 #title {
   margin-top : 10px;
 }
+[class^="icon-"], [class*=" icon-"] {
+  background-image: url('images/glyphicons-halflings.png');
+}
+.icon-white {
+  background-image: url('images/glyphicons-halflings-white.png');
+}
+.nav .active > a .icon-white,
+.nav li > a:hover .icon-white,
+.nav li > a:focus .icon-white {
+    background-image: url('images/glyphicons-halflings.png');
+}
 
 .alert-danger, .alert-error {
   color: #F00;
@@ -123,7 +134,6 @@ body {
 #mapmenu .nav-list > li > a:hover, #mapmenu .nav-list > li.active > a {
   background-color:#F0F0F0;
 }
-
 #mapmenu .nav-list > li > a .icon {
   display:inline-block;
   vertical-align:middle;
@@ -132,10 +142,10 @@ body {
   width:20px;
   height:20px;
 }
-/*
-CSS Sprite ositions calculated via http://instantsprite.com/ or https://draeton.github.io/stitches/
-*/
 
+/*
+CSS Sprite positions calculated via http://instantsprite.com/ or https://draeton.github.io/stitches/
+*/
 #mapmenu .nav-list > li.home .icon {
   background-position: -25px 0px;
 }
@@ -963,7 +973,7 @@ div.modal h3 .text {
 }
 
 #map-content {
-  margin-left : 0px;
+  margin-left : 30px;
   position : relative;
   background : #F0F0F0;
 }
@@ -999,6 +1009,17 @@ div.modal h3 .text {
   padding-right:0.2em;
 }
 
+/* Right Dock */
+#right-dock {
+  position: absolute;
+  bottom: 0px;
+  right: 0px;
+  width: 40%;
+}
+
+#content.right-dock-visible #map-content{
+  margin-right:40%;
+}
 
 #content.mobile #toolbar{
   width: 100%;

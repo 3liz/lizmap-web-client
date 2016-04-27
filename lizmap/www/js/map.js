@@ -293,7 +293,8 @@ var lizMap = function() {
     // calculate map width depending on theme configuration
     // (fullscreen map or not, mobile or not)
     var w = $('body').parent()[0].offsetWidth;
-
+    w -= parseInt($('#map-content').css('margin-left'));
+    w -= parseInt($('#map-content').css('margin-right'));
     if ($('#menu').is(':hidden') || $('#map-content').hasClass('fullscreen')) {
       $('#map-content').css('margin-left','auto');
     } else {
@@ -4836,7 +4837,7 @@ OpenLayers.Control.HighlightFeature = OpenLayers.Class(OpenLayers.Control, {
       // Create menu icon for activating dock
       var dockli = '';
       dockli+='<li class="'+dname+' nav-'+dtype+'">';
-      dockli+='   <a id="button-'+dname+'" rel="tooltip" data-original-title="'+dlabel+'" data-placement="right" href="#'+dname+'">';
+      dockli+='   <a id="button-'+dname+'" rel="tooltip" data-original-title="'+dlabel+'" data-placement="right" href="#'+dname+'" data-container="#content">';
       dockli+='       <span class="icon"><i class="'+dicon+' icon-white"></i></span>';
       dockli+='   </a>';
       dockli+='</li>';
@@ -4845,10 +4846,6 @@ OpenLayers.Control.HighlightFeature = OpenLayers.Class(OpenLayers.Control, {
       //  Remove native lizmap icon
       $('#mapmenu .nav-list > li.'+dname+' > a .icon').css('background-image','none');
       $('#mapmenu .nav-list > li.'+dname+' > a .icon >i ').css('margin', '4px');
-
-      // Change icon color when menu is active
-      var style = $('<style>#mapmenu .nav-list > li.'+dname+'.active .icon > i, #mapmenu .nav-list > li.'+dname+' a:hover .icon > i{ background-image: url("/css/images/glyphicons-halflings.png"); }</style>');
-      $('html > head').append(style);
 
       // Add tooltip
       $('#mapmenu .nav-list > li.'+dname+' > a').tooltip();

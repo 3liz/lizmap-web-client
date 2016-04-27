@@ -31,16 +31,17 @@
   <div id="sub-dock">
   </div>
 
-  <div id="mini-dock">
-    {zone 'view~map_minidock', array('repository'=>$repository,'project'=>$project,'dockable'=>$minidockable)}
-  </div>
-
   <div id="bottom-dock" style="display:none;">
     {zone 'view~map_bottomdock', array('repository'=>$repository,'project'=>$project,'dockable'=>$bottomdockable)}
   </div>
 
   <div id="map-content">
     <div id="map"></div>
+
+    <div id="mini-dock">
+      {zone 'view~map_minidock', array('repository'=>$repository,'project'=>$project,'dockable'=>$minidockable)}
+    </div>
+
     <span id="navbar">
       <button class="btn pan active" title="{@view~map.navbar.pan.hover@}"></button><br/>
       <button class="btn zoom" title="{@view~map.navbar.zoom.hover@}"></button><br/>
@@ -54,6 +55,7 @@
       </span>
       <span id="zoom-in-max-msg" class="ui-widget-content ui-corner-all" style="display:none;">{@view~map.message.zoominmax@}</span>
     </span>
+
     <div id="overview-box">
       <div id="overview-map" title="{@view~map.overviewmap.hover@}"></div>
       <div id="overview-bar">
