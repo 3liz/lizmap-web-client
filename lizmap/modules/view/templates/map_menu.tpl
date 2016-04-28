@@ -38,5 +38,13 @@
       </li>
       {/foreach}
 
+      {foreach $rightdockable as $dock}
+      <li class="{$dock->id} nav-bottomdock {$dock->menuIconClasses}">
+        <a id="button-{$dock->id}" rel="tooltip" data-original-title="{$dock->title}" data-placement="right" href="#{$dock->id}" data-container="#content">
+          {$dock->icon}
+        </a>
+      </li>
+      {/foreach}
+
     </ul>
 </div>
