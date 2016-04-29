@@ -207,15 +207,16 @@ class editionCtrl extends jController {
         $s_provider = $layerXmlZero->xpath('provider');
         $this->provider = (string)$s_provider[0];
         $this->getDataFields($datasource);
+        $typename = str_replace(' ', '_', $layerName);
         $wfsparams = array(
             'SERVICE' => 'WFS',
             'VERSION' => '1.0.0',
             'REQUEST' => 'GetFeature',
-            'TYPENAME' => $layerName,
+            'TYPENAME' => $typename,
             'OUTPUTFORMAT' => 'GeoJSON',
             'GEOMETRYNAME' => 'none',
             'PROPERTYNAME' => implode(',',$this->primaryKeys),
-            'FEATUREID' => $layerName . '.' . $featureId
+            'FEATUREID' => $typename . '.' . $featureId
         );
         jClasses::inc('lizmap~lizmapWFSRequest');
         $wfsrequest = new lizmapWFSRequest( $lproj, $wfsparams );
