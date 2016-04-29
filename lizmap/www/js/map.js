@@ -4724,12 +4724,13 @@ OpenLayers.Control.HighlightFeature = OpenLayers.Class(OpenLayers.Control, {
           var fids = [];
 
           // Get WFS typename
+          var configLayer = config.layers[aName];
           var typeName = aName.split(' ').join('_');
-          if ( 'shortname' in config.layers[aName] )
-              typeName = config.layers.shortname;
+          if ( 'shortname' in configLayer && configLayer.shortname != '' )
+              typeName = configLayer.shortname;
 
-          for( var id in config.layers[aName]['selectedFeatures'] ) {
-              fids.push( typeName + '.' + config.layers[aName]['selectedFeatures'][id] );
+          for( var id in configLayer['selectedFeatures'] ) {
+              fids.push( typeName + '.' + configLayer['selectedFeatures'][id] );
           }
           if( fids.length )
               featureidParameter = fids.join();
@@ -4750,7 +4751,7 @@ OpenLayers.Control.HighlightFeature = OpenLayers.Class(OpenLayers.Control, {
       // Build WFS request parameters
       var configLayer = config.layers[aName];
       var typeName = aName.split(' ').join('_');
-      if ( 'shortname' in configLayer )
+      if ( 'shortname' in configLayer && configLayer.shortname != '' )
         typeName = configLayer.shortname;
       var layerName = cleanName(aName);
 
@@ -5155,7 +5156,7 @@ OpenLayers.Control.HighlightFeature = OpenLayers.Class(OpenLayers.Control, {
         // store shortnames
         for ( var layerName in config.layers ) {
             var configLayer = config.layers[layerName];
-            if ( 'shortname' in configLayer )
+            if ( 'shortname' in configLayer && configLayer.shortname != '' )
                 shortNameMap[configLayer.shortname] = layerName;
         }
 
