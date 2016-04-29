@@ -5326,6 +5326,20 @@ OpenLayers.Control.HighlightFeature = OpenLayers.Class(OpenLayers.Control, {
             }
           }
 
+          // checked all toggled layer
+          $('#switcher button.checkbox.disabled[name="layer"]:not(.checked)').each(function(){
+            var cb = $(this);
+            var cleanName = cb.val();
+            var name = cleanName;
+            if ( cleanName in cleanNameMap )
+                name = getLayerNameByCleanName(cleanName);
+            if ( name in config.layers ) {
+                var layerConfig = config.layers[name];
+                if ( layerConfig.toggled == "True" )
+                    cb.addClass('checked');
+            }
+          });
+
           // finalize slider
           $('#navbar div.slider').slider("value",map.getZoom());
           map.events.on({
