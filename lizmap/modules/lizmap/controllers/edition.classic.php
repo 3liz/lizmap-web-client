@@ -641,11 +641,12 @@ class editionCtrl extends jController {
     $valueColumn = $this->formControls[$fieldName]->valueRelationData['value'];
     $keyColumn = $this->formControls[$fieldName]->valueRelationData['key'];
     $filterExpression = $this->formControls[$fieldName]->valueRelationData['filterExpression'];
+    $typename = str_replace(' ', '_', $layerName);
     $params = array(
       'SERVICE' => 'WFS',
       'VERSION' => '1.0.0',
       'REQUEST' => 'GetFeature',
-      'TYPENAME' => $layerName,
+      'TYPENAME' => $typename,
       'PROPERTYNAME' => $valueColumn.','.$keyColumn,
       'OUTPUTFORMAT' => 'GeoJSON',
       'GEOMETRYNAME' => 'none',

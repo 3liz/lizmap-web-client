@@ -89,7 +89,7 @@ class lizmapWFSRequest extends lizmapOGCRequest {
 
         if ( $mime == 'text/plain' && strtolower( $this->param('outputformat') ) == 'geojson' ) {
             $mime = 'text/json';
-            $layer = $this->project->findLayerByName( $this->params['typename'] );
+            $layer = $this->project->findLayerByAnyName( $this->params['typename'] );
             if ( $layer != null ) {
                 $layer = $this->project->getLayer( $layer->id );
                 $aliases = $layer->getAliasFields();

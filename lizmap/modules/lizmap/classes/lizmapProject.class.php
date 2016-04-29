@@ -218,6 +218,29 @@ class lizmapProject{
         return $this->cfg->layers;
     }
 
+
+    public function findLayerByAnyName( $name ){
+        // Get by name ie as written in QGIS Desktop legend
+        $layer = $this->findLayerByName( $name );
+        if ( $layer  ) return $layer;
+
+        // since 2.14 layer's name can be layer's shortName
+        $layer = $this->findLayerByShortName( $name );
+        if ( $layer  ) return $layer;
+
+        // Get layer by typename : qgis server replaces ' ' by '_' for layer names
+        $layer = $this->findLayerByTypeName( $name );
+        if ( $layer  ) return $layer;
+
+        // Get by id
+        $layer = $this->findLayerByLayerId( $name );
+        if ( $layer  ) return $layer;
+
+        // since 2.6 layer's name can be layer's title
+        $layer = $this->findLayerByTitle( $name );
+        return $layer;
+    }
+
     public function findLayerByName( $name ){
         if ( property_exists($this->cfg->layers, $name ) )
             return $this->cfg->layers->$name;
@@ -251,6 +274,15 @@ class lizmapProject{
             if ( $layer->id == $layerId )
                 return $layer;
         }
+        return null;
+    }
+
+    public function findLayerByTypeName( $typeName ){
+        if ( property_exists($this->cfg->layers, $typeName ) )
+            return $this->cfg->layers->$typeName;
+        $layerName = str_replace('_', ' ', $typeName );
+        if ( property_exists($this->cfg->layers, $layerName ) )
+            return $this->cfg->layers->$layerName;
         return null;
     }
 

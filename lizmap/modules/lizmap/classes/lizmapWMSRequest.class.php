@@ -102,11 +102,9 @@ class lizmapWMSRequest extends lizmapOGCRequest {
         $layers = explode(',', $layers);
         if ( count($layers == 1) ) {
             $lName = $layers[0];
-            $layer = $this->project->findLayerByShortName( $lName );
-            if ( !$layer ) {
-                $layer = $this->project->findLayerByName( $lName );
-                if ( property_exists($layer, 'showFeatureCount' ) && $layer->showFeatureCount == 'True')
-                    $this->params['showFeatureCount'] = 'True';
+            $layer = $this->project->findLayerByAnyName( $lName );
+            if ( $layer && property_exists($layer, 'showFeatureCount' ) && $layer->showFeatureCount == 'True') {
+                $this->params['showFeatureCount'] = 'True';
             }
         }
 
