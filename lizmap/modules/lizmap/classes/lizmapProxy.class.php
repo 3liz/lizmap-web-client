@@ -437,7 +437,7 @@ class lizmapProxy {
             jProfiles::createVirtualProfile('jcache', $cacheName, $cacheParams);
         }
 
-        self::$_profiles[] = $cacheName;
+        self::$_profiles[$cacheName] = true;
         return $cacheName;
     }
 
