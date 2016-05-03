@@ -151,9 +151,12 @@ class lizmap{
         return self::$projectInstances[$key];
 
       jClasses::inc('lizmap~lizmapProject');
-      $proj = new lizmapProject($matches['proj'], $rep);
-      if ( $proj->getKey() != $matches['proj'] )
+      try {
+        $proj = new lizmapProject($matches['proj'], $rep);
+      }
+      catch(Exception $e) {
         return null;
+      }
       self::$projectInstances[$key] = $proj;
       return $proj;
     }

@@ -88,22 +88,31 @@ class lizmapProject{
      * rep : the repository has a lizmapRepository class
      */
     public function __construct ( $key, $rep ) {
+        $this->key = $key;
+        $this->repository = $rep;
         $this->readXml($key, $rep);
+    }
+
+    protected function getXml() {
+        if ($this->xml) {
+            return $this->xml;
+        }
+        if (!file_exists($rep->getPath().$this->key.'.qgs') ||
+            !file_exists($rep->getPath().$this->key.'.qgs.cfg') ) {
+            throw new Error("Files of project ".$this->key." does not exists");
+        }
+        $qgs_path = $rep->getPath().$key.'.qgs';
+        return simplexml_load_file($qgs_path);
     }
 
     protected function readXml($key, $rep) {
         if (!file_exists($rep->getPath().$key.'.qgs') ||
             !file_exists($rep->getPath().$key.'.qgs.cfg') ) {
-            return;
+            throw new Exception("Files of project $key does not exists");
         }
-        $this->key = $key;
-        $this->repository = $rep;
 
         $key_session = $rep->getKey().'~'.$key;
         $qgs_path = $rep->getPath().$key.'.qgs';
-        $config = null;
-        $qgs_xml = null;
-
         $config = jFile::read($qgs_path.'.cfg');
         $this->cfg = json_decode($config);
 
@@ -154,7 +163,7 @@ class lizmapProject{
         );
 
         // get QGIS project version
-        $qgisRoot = $this->xml->xpath('//qgis');
+        $qgisRoot = $qgs_xml->xpath('//qgis');
         $qgisRootZero = $qgisRoot[0];
         $qgisProjectVersion = (string)$qgisRootZero->attributes()->version;
         $qgisProjectVersion = explode('-', $qgisProjectVersion);
@@ -172,7 +181,7 @@ class lizmapProject{
         $qgisProjectVersion = (integer)$a;
         $this->qgisProjectVersion = $qgisProjectVersion;
 
-        $shortNames = $this->xml->xpath('//maplayer/shortname');
+        $shortNames = $qgs_xml->xpath('//maplayer/shortname');
         if ( count( $shortNames ) > 0 ) {
             foreach( $shortNames as $sname ) {
                 $sname = (string) $sname;
@@ -184,7 +193,7 @@ class lizmapProject{
             }
         }
 
-        $groupsWithShortName = $this->xml->xpath("//layer-tree-group/customproperties/property[@key='wmsShortName']/parent::*/parent::*");
+        $groupsWithShortName = $qgs_xml->xpath("//layer-tree-group/customproperties/property[@key='wmsShortName']/parent::*/parent::*");
         if ( count( $groupsWithShortName ) > 0 ) {
             foreach( $groupsWithShortName as $group ) {
                 $name = (string)$group['name'];
@@ -198,7 +207,7 @@ class lizmapProject{
             }
         }
 
-        $layersWithShowFeatureCount = $this->xml->xpath("//layer-tree-layer/customproperties/property[@key='showFeatureCount']/parent::*/parent::*");
+        $layersWithShowFeatureCount = $qgs_xml->xpath("//layer-tree-layer/customproperties/property[@key='showFeatureCount']/parent::*/parent::*");
         if ( count( $layersWithShowFeatureCount ) > 0 ) {
             foreach( $layersWithShowFeatureCount as $layer ) {
                 $name = (string)$layer['name'];
@@ -235,20 +244,20 @@ class lizmapProject{
                 $this->cfg->layers->$key->displayInLegend = 'False';
         }
 
-        $this->WMSInformation = $this->readWMSInformation($this->xml);
-        $this->canvasColor = $this->readCanvasColor($this->xml);
-        $this->allProj4 = $this->readAllProj4($this->xml);
-        $this->relations = $this->readRelations($this->xml);
-        $this->layersOrder = $this->readLayersOrder($this->xml);
-        $this->printCapabilities = $this->readPrintCapabilities($this->xml, $this->cfg);
-        $this->locateByLayer = $this->readLocateByLayers($this->xml, $this->cfg);
-        $this->editionLayers = $this->readEditionLayers($this->xml, $this->cfg);
-        $this->useLayerIDs = $this->readUseLayerIDs($this->xml);
-        $this->layers = $this->readLayers($this->xml);
+        $this->WMSInformation = $this->readWMSInformation($qgs_xml);
+        $this->canvasColor = $this->readCanvasColor($qgs_xml);
+        $this->allProj4 = $this->readAllProj4($qgs_xml);
+        $this->relations = $this->readRelations($qgs_xml);
+        $this->layersOrder = $this->readLayersOrder($qgs_xml);
+        $this->printCapabilities = $this->readPrintCapabilities($qgs_xml, $this->cfg);
+        $this->locateByLayer = $this->readLocateByLayers($qgs_xml, $this->cfg);
+        $this->editionLayers = $this->readEditionLayers($qgs_xml, $this->cfg);
+        $this->useLayerIDs = $this->readUseLayerIDs($qgs_xml);
+        $this->layers = $this->readLayers($qgs_xml);
     }
 
     protected function readLayers($xml) {
-        $xmlLayers = $this->xml->xpath( "//maplayer" );
+        $xmlLayers = $xml->xpath( "//maplayer" );
         $layers = array();
         foreach( $xmlLayers as $xmlLayer ) {
             $layer = array(
@@ -886,7 +895,7 @@ class lizmapProject{
     }
 
     public function getProj4( $authId ){
-        return $this->xml->xpath( "//spatialrefsys/authid[.='".$authId."']/parent::*/proj4" );
+        return $this->getXml()->xpath( "//spatialrefsys/authid[.='".$authId."']/parent::*/proj4" );
     }
 
     public function getAllProj4( ) {
@@ -907,35 +916,43 @@ class lizmapProject{
     }
 
     /**
-     * @FIXME: remove this method. Be sure it is not used in other projects
+     * @FIXME: remove this method. Be sure it is not used in other projects.
+     * Data provided by the returned xml element should be extracted and encapsulated
+     * into an object. Xml should not be used by callers
      * @deprecated
      */
     public function getXmlLayers(){
-        return $this->xml->xpath( "//maplayer" );
+        return $this->getXml()->xpath( "//maplayer" );
     }
 
     /**
-     * @FIXME: remove this method. Be sure it is not used in other projects
+     * @FIXME: remove this method. Be sure it is not used in other projects.
+     * Data provided by the returned xml element should be extracted and encapsulated
+     * into an object. Xml should not be used by callers
      * @deprecated
      */
     public function getXmlLayer( $layerId ){
-        return $this->xml->xpath( "//maplayer[id='$layerId']" );
+        return $this->getXml()->xpath( "//maplayer[id='$layerId']" );
     }
 
     /**
      * @FIXME: remove this method. Be sure it is not used in other projects
+     * Data provided by the returned xml element should be extracted and encapsulated
+     * into an object. Xml should not be used by callers
      * @deprecated
      */
     public function getXmlLayerByKeyword( $key ){
-        return $this->xml->xpath( "//maplayer/keywordList[value='$key']/parent::*" );
+        return $this->getXml()->xpath( "//maplayer/keywordList[value='$key']/parent::*" );
     }
 
     /**
      * @FIXME: remove this method. Be sure it is not used in other projects
+     * Data provided by the returned xml element should be extracted and encapsulated
+     * into an object. Xml should not be used by callers
      * @deprecated
      */
     public function getComposer( $title ){
-        $xmlComposer = $this->xml->xpath( "//Composer[@title='$title']" );
+        $xmlComposer = $this->getXml()->xpath( "//Composer[@title='$title']" );
         if( $xmlComposer )
             return $xmlComposer[0];
         else
