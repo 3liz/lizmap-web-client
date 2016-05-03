@@ -36,6 +36,33 @@ class lizmapProject{
     protected $qgisProjectVersion = null;
 
     /**
+     * @var array contains WMS info
+     */
+    protected $WMSInformation = null;
+
+    /**
+     * @var string
+     */
+    protected $canvasColor = '';
+
+    /**
+     * @var array  authid => proj4
+     */
+    protected $allProj4 = array();
+
+    /**
+     * @var array  for each referenced layer, there is an item
+     *            with referencingLayer, referencedField, referencingField keys.
+     *            There is also a 'pivot' key
+     */
+    protected $relations = array();
+
+    /**
+     * @var array list of layer orders: layer name => order
+     */
+    protected $layersOrder = array();
+
+    /**
      * constructor
      * key : the project name
      * rep : the repository has a lizmapRepository class
@@ -187,7 +214,15 @@ class lizmapProject{
                  ($this->cfg->layers->$key->geometryType == 'none' || $this->cfg->layers->$key->geometryType == 'unknown') )
                 $this->cfg->layers->$key->displayInLegend = 'False';
         }
+
+        $this->WMSInformation = $this->readWMSInformation($this->xml);
+        $this->canvasColor = $this->readCanvasColor($this->xml);
+        $this->allProj4 = $this->readAllProj4($this->xml);
+        $this->relations = $this->readRelations($this->xml);
+        $this->layersOrder = $this->readLayersOrder($this->xml);
     }
+
+
 
     public function getQgisProjectVersion(){
         return $this->qgisProjectVersion;
@@ -444,11 +479,10 @@ class lizmapProject{
     }
 
     public function getWMSInformation(){
-        return $this->readWMSInformation();
+        return $this->WMSInformation;
     }
 
-    protected function readWMSInformation() {
-        $qgsLoad = $this->xml;
+    protected function readWMSInformation($qgsLoad) {
 
         // Default metadata
         $WMSServiceTitle = '';
@@ -488,9 +522,7 @@ class lizmapProject{
         );
     }
 
-    public function getUpdatedConfig(){
-        $qgsLoad = $this->xml;
-
+    protected function readLayersOrder($qgsLoad) {
         $legend = $qgsLoad->xpath('//legend');
         $legendZero = $legend[0];
         $updateDrawingOrder = (string)$legendZero->attributes()->updateDrawingOrder;
@@ -522,6 +554,11 @@ class lizmapProject{
                 }
             }
         }
+        return $layersOrder;
+    }
+
+    public function getUpdatedConfig(){
+        $qgsLoad = $this->xml;
 
         //FIXME: it's better to use clone keyword
         $configRead = json_encode($this->cfg);
@@ -534,8 +571,8 @@ class lizmapProject{
         }
 
         // Remove layerOrder option from config if not required
-        if(!empty($layersOrder)){
-            $configJson->layersOrder = $layersOrder;
+        if(!empty($this->layersOrder)){
+            $configJson->layersOrder = $this->layersOrder;
         }
 
         // Update print Capabilities
@@ -727,13 +764,13 @@ class lizmapProject{
     }
 
     public function getCanvasColor(){
-        return $this->readCanvasColor();
+        return $this->canvasColor;
     }
 
-    protected function readCanvasColor() {
-        $red = $this->xml->xpath( "//properties/Gui/CanvasColorRedPart" );
-        $green = $this->xml->xpath( "//properties/Gui/CanvasColorGreenPart" );
-        $blue = $this->xml->xpath( "//properties/Gui/CanvasColorBluePart" );
+    protected function readCanvasColor($xml) {
+        $red = $xml->xpath( "//properties/Gui/CanvasColorRedPart" );
+        $green = $xml->xpath( "//properties/Gui/CanvasColorGreenPart" );
+        $blue = $xml->xpath( "//properties/Gui/CanvasColorBluePart" );
         return 'rgb('.$red[0].','.$green[0].','.$blue[0].')';
     }
 
@@ -742,12 +779,12 @@ class lizmapProject{
     }
 
     public function getAllProj4( ) {
-        return $this->readAllProj4();
+        return $this->allProj4;
     }
 
-    protected function readAllProj4() {
+    protected function readAllProj4($xml) {
         $srsList = array();
-        $spatialrefsys = $this->xml->xpath( "//spatialrefsys" );
+        $spatialrefsys = $xml->xpath( "//spatialrefsys" );
         foreach ( $spatialrefsys as $srs ) {
             $srsList[ (string) $srs->authid ] = (string) $srs->proj4;
         }
@@ -824,11 +861,11 @@ class lizmapProject{
     }
 
     public function getRelations() {
-        return $this->readRelations();
+        return $this->relations;
     }
 
-    protected function readRelations() {
-        $xmlRelations = $this->xml->xpath( "//relations" );
+    protected function readRelations($xml) {
+        $xmlRelations = $xml->xpath( "//relations" );
         $relations = array();
         $pivotGather = array();
         $pivot = array();
