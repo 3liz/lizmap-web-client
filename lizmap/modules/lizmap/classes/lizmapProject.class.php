@@ -78,6 +78,11 @@ class lizmapProject{
     protected $editionLayers = array();
 
     /**
+     * @var boolean
+     */
+    protected $useLayerIDs = false;
+
+    /**
      * constructor
      * key : the project name
      * rep : the repository has a lizmapRepository class
@@ -238,6 +243,7 @@ class lizmapProject{
         $this->printCapabilities = $this->readPrintCapabilities($this->xml, $this->cfg);
         $this->locateByLayer = $this->readLocateByLayers($this->xml, $this->cfg);
         $this->editionLayers = $this->readEditionLayers($this->xml, $this->cfg);
+        $this->useLayerIDs = $this->readUseLayerIDs($this->xml);
     }
 
     public function getQgisProjectVersion(){
@@ -745,6 +751,11 @@ class lizmapProject{
         return $editionLayers;
     }
 
+    protected function readUseLayerIDs($xml) {
+        $WMSUseLayerIDs = $xml->xpath( "//properties/WMSUseLayerIDs" );
+        return ( count($WMSUseLayerIDs) > 0 && $WMSUseLayerIDs[0] == 'true' );
+    }
+
     public function getUpdatedConfig(){
         $qgsLoad = $this->xml;
 
@@ -792,8 +803,7 @@ class lizmapProject{
         if( $relations )
             $configJson->relations = $relations;
 
-        $WMSUseLayerIDs = $this->xml->xpath( "//properties/WMSUseLayerIDs" );
-        if ( count($WMSUseLayerIDs) > 0 && $WMSUseLayerIDs[0] == 'true' ) {
+        if ( $this->useLayerIDs ) {
             $configJson->options->useLayerIDs = 'True';
         }
 
