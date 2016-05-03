@@ -68,6 +68,11 @@ class lizmapProject{
     protected $printCapabilities = array();
 
     /**
+     * @var array
+     */
+    protected $locateByLayer = array();
+
+    /**
      * constructor
      * key : the project name
      * rep : the repository has a lizmapRepository class
@@ -226,6 +231,7 @@ class lizmapProject{
         $this->relations = $this->readRelations($this->xml);
         $this->layersOrder = $this->readLayersOrder($this->xml);
         $this->printCapabilities = $this->readPrintCapabilities($this->xml, $this->cfg);
+        $this->locateByLayer = $this->readLocateByLayers($this->xml, $this->cfg);
     }
 
     public function getQgisProjectVersion(){
@@ -642,6 +648,59 @@ class lizmapProject{
         return $printTemplates;
     }
 
+    protected function getXmlLayer2($xml, $layerId ){
+        return $xml->xpath( "//maplayer[id='$layerId']" );
+    }
+
+    protected function readLocateByLayers($xml, $cfg) {
+        $locateByLayer = array();
+        if (property_exists($cfg, 'locateByLayer')) {
+            $locateByLayer = $cfg->locateByLayer;
+            // collect layerIds
+            $locateLayerIds = array();
+            foreach( $locateByLayer as $k=>$v) {
+                    $locateLayerIds[] = $v->layerId;
+            }
+            // update locateByLayer with alias and filter information
+            foreach( $locateByLayer as $k=>$v) {
+                $xmlLayer = $this->getXmlLayer2($xml, $v->layerId );
+                $xmlLayerZero = $xmlLayer[0];
+                // aliases
+                $alias = $xmlLayerZero->xpath("aliases/alias[@field='".$v->fieldName."']");
+                if( count($alias) != 0 ) {
+                    $alias = $alias[0];
+                    $v->fieldAlias = (string)$alias['name'];
+                    $locateByLayer->$k = $v;
+                }
+                if ( property_exists( $v, 'filterFieldName') ) {
+                    $alias = $xmlLayerZero->xpath("aliases/alias[@field='".$v->filterFieldName."']");
+                    if( count($alias) != 0 ) {
+                        $alias = $alias[0];
+                        $v->filterFieldAlias = (string)$alias['name'];
+                        $locateByLayer->$k = $v;
+                    }
+                }
+                // vectorjoins
+                $vectorjoins = $xmlLayerZero->xpath('vectorjoins/join');
+                if( count($vectorjoins) != 0 ) {
+                    if ( !property_exists( $v, 'vectorjoins' ) )
+                        $v->vectorjoins = array();
+                    foreach( $vectorjoins as $vectorjoin ) {
+                        $joinLayerId = (string)$vectorjoin['joinLayerId'];
+                        if ( in_array($joinLayerId, $locateLayerIds ) )
+                            $v->vectorjoins[] = (object) array(
+                                "joinFieldName"=>(string)$vectorjoin['joinFieldName'],
+                                "targetFieldName"=>(string)$vectorjoin['targetFieldName'],
+                                "joinLayerId"=>(string)$vectorjoin['joinLayerId'],
+                            );
+                    }
+                    $locateByLayer->$k = $v;
+                }
+            }
+        }
+        return $locateByLayer;
+    }
+
     public function getUpdatedConfig(){
         $qgsLoad = $this->xml;
 
@@ -664,49 +723,7 @@ class lizmapProject{
         $configJson->printTemplates = $this->printCapabilities;
 
         // Update locate by layer with vecctorjoins
-        if(property_exists($configJson, 'locateByLayer')) {
-            // collect layerIds
-            $locateLayerIds = array();
-            foreach( $configJson->locateByLayer as $k=>$v) {
-                    $locateLayerIds[] = $v->layerId;
-            }
-            // update locateByLayer with alias and filter information
-            foreach( $configJson->locateByLayer as $k=>$v) {
-                $xmlLayer = $this->getXmlLayer( $v->layerId );
-                $xmlLayerZero = $xmlLayer[0];
-                // aliases
-                $alias = $xmlLayerZero->xpath("aliases/alias[@field='".$v->fieldName."']");
-                if( count($alias) != 0 ) {
-                    $alias = $alias[0];
-                    $v->fieldAlias = (string)$alias['name'];
-                    $configJson->locateByLayer->$k = $v;
-                }
-                if ( property_exists( $v, 'filterFieldName') ) {
-                    $alias = $xmlLayerZero->xpath("aliases/alias[@field='".$v->filterFieldName."']");
-                    if( count($alias) != 0 ) {
-                        $alias = $alias[0];
-                        $v->filterFieldAlias = (string)$alias['name'];
-                        $configJson->locateByLayer->$k = $v;
-                    }
-                }
-                // vectorjoins
-                $vectorjoins = $xmlLayerZero->xpath('vectorjoins/join');
-                if( count($vectorjoins) != 0 ) {
-                    if ( !property_exists( $v, 'vectorjoins' ) )
-                        $v->vectorjoins = array();
-                    foreach( $vectorjoins as $vectorjoin ) {
-                        $joinLayerId = (string)$vectorjoin['joinLayerId'];
-                        if ( in_array($joinLayerId, $locateLayerIds ) )
-                            $v->vectorjoins[] = (object) array(
-                                "joinFieldName"=>(string)$vectorjoin['joinFieldName'],
-                                "targetFieldName"=>(string)$vectorjoin['targetFieldName'],
-                                "joinLayerId"=>(string)$vectorjoin['joinLayerId'],
-                            );
-                    }
-                    $configJson->locateByLayer->$k = $v;
-                }
-            }
-        }
+        $configJson->locateByLayer = $this->locateByLayer;
 
         // Remove FTP remote directory
         if(property_exists($configJson->options, 'remoteDir'))
