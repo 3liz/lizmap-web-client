@@ -63,6 +63,11 @@ class lizmapProject{
     protected $layersOrder = array();
 
     /**
+     * @var array
+     */
+    protected $printCapabilities = array();
+
+    /**
      * constructor
      * key : the project name
      * rep : the repository has a lizmapRepository class
@@ -220,9 +225,8 @@ class lizmapProject{
         $this->allProj4 = $this->readAllProj4($this->xml);
         $this->relations = $this->readRelations($this->xml);
         $this->layersOrder = $this->readLayersOrder($this->xml);
+        $this->printCapabilities = $this->readPrintCapabilities($this->xml, $this->cfg);
     }
-
-
 
     public function getQgisProjectVersion(){
         return $this->qgisProjectVersion;
@@ -557,31 +561,14 @@ class lizmapProject{
         return $layersOrder;
     }
 
-    public function getUpdatedConfig(){
-        $qgsLoad = $this->xml;
+    protected function readPrintCapabilities($qgsLoad, $cfg) {
+        $printTemplates = array();
 
-        //FIXME: it's better to use clone keyword
-        $configRead = json_encode($this->cfg);
-        $configJson = json_decode($configRead);
-
-        // Add an option to display buttons to remove the cache for cached layer
-        // Only if appropriate right is found
-        if( jAcl2::check('lizmap.admin.repositories.delete') ){
-            $configJson->options->removeCache = 'True';
-        }
-
-        // Remove layerOrder option from config if not required
-        if(!empty($this->layersOrder)){
-            $configJson->layersOrder = $this->layersOrder;
-        }
-
-        // Update print Capabilities
-        if( property_exists($configJson->options, 'print')
-            && $configJson->options->print == 'True' ) {
-            $printTemplates = array();
+        if( property_exists($cfg->options, 'print')
+            && $cfg->options->print == 'True' ) {
             // get restricted composers
             $rComposers = array();
-            $restrictedComposers = $this->xml->xpath( "//properties/WMSRestrictedComposers/value" );
+            $restrictedComposers = $qgsLoad->xpath( "//properties/WMSRestrictedComposers/value" );
             foreach($restrictedComposers as $restrictedComposer){
                 $rComposers[] = (string)$restrictedComposer;
             }
@@ -651,10 +638,30 @@ class lizmapProject{
                 }
                 $printTemplates[] = $printTemplate;
             }
-
-            // set printTemplates in config
-            $configJson->printTemplates = $printTemplates;
         }
+        return $printTemplates;
+    }
+
+    public function getUpdatedConfig(){
+        $qgsLoad = $this->xml;
+
+        //FIXME: it's better to use clone keyword
+        $configRead = json_encode($this->cfg);
+        $configJson = json_decode($configRead);
+
+        // Add an option to display buttons to remove the cache for cached layer
+        // Only if appropriate right is found
+        if( jAcl2::check('lizmap.admin.repositories.delete') ){
+            $configJson->options->removeCache = 'True';
+        }
+
+        // Remove layerOrder option from config if not required
+        if(!empty($this->layersOrder)){
+            $configJson->layersOrder = $this->layersOrder;
+        }
+
+        // set printTemplates in config
+        $configJson->printTemplates = $this->printCapabilities;
 
         // Update locate by layer with vecctorjoins
         if(property_exists($configJson, 'locateByLayer')) {
