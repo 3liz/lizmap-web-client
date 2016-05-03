@@ -244,6 +244,69 @@ class lizmapProject{
         $this->locateByLayer = $this->readLocateByLayers($this->xml, $this->cfg);
         $this->editionLayers = $this->readEditionLayers($this->xml, $this->cfg);
         $this->useLayerIDs = $this->readUseLayerIDs($this->xml);
+        $this->layers = $this->readLayers($this->xml);
+    }
+
+    protected function readLayers($xml) {
+        $xmlLayers = $this->xml->xpath( "//maplayer" );
+        $layers = array();
+        foreach( $xmlLayers as $xmlLayer ) {
+            $layer = array(
+                'type' => (string)$xmlLayer->attributes()->type,
+                'id' => (string)$xmlLayer->id,
+                'name' => (string)$xmlLayer->layername,
+                'title' => (string)$xmlLayer->title,
+                'abstract' => (string)$xmlLayer->abstract,
+                'proj4' => (string)$xmlLayer->srs->spatialrefsys->proj4,
+                'srid' => (integer)$xmlLayer->srs->spatialrefsys->srid,
+                'datasource' => (string)$xmlLayer->datasource,
+                'provider' => (string)$xmlLayer->provider,
+                'keywords' => array()
+            );
+            $keywords = $xmlLayer->xpath("./keywordList/value");
+            if ($keywords) {
+                foreach($keywords as $keyword) {
+                    if ('' != (string)$keyword) {
+                        $layer['keywords'][] = (string)$keyword;
+                    }
+                }
+            }
+
+            $items = $xmlLayer->xpath('//item');
+            if ( $layer['title'] == '' ) {
+                $layer['title'] = $layer['name'];
+            }
+            if ($layer['type'] == 'vector') {
+                $fields = array();
+                $wfsFields = array();
+                $aliases = array();
+                $edittypes = $xmlLayer->xpath(".//edittype");
+
+                foreach( $edittypes as $edittype ) {
+                    $field = (string) $edittype->attributes()->name;
+                    $aliases[$field] = $field;
+                    $alias = $xmlLayer->xpath("aliases/alias[@field='".$field."']");
+                    if( count($alias) != 0 ) {
+                        $alias = $alias[0];
+                        $aliases[$field] = (string)$alias['name'];
+                    }
+                    $fields[] = $field;
+                    $wfsFields[] = $field;
+                }
+                $layer['fields'] = $fields;
+                $layer['aliases'] = $aliases;
+
+                $excludeFields = $xmlLayer->xpath(".//excludeAttributesWFS/attribute");
+                foreach( $excludeFields as $eField ) {
+                    $eField = (string) $eField;
+                    array_splice( $wfsFields, array_search( $eField, $wfsFields ), 1 );
+                }
+                $layer['wfsFields'] = $wfsFields;
+            }
+
+            $layers[] = $layer;
+        }
+        return $layers;
     }
 
     public function getQgisProjectVersion(){
@@ -757,9 +820,8 @@ class lizmapProject{
     }
 
     public function getUpdatedConfig(){
-        $qgsLoad = $this->xml;
 
-        //FIXME: it's better to use clone keyword
+        //FIXME: it's better to use clone keyword, isn't it?
         $configRead = json_encode($this->cfg);
         $configJson = json_decode($configRead);
 
@@ -844,18 +906,34 @@ class lizmapProject{
         return $this->cfg;
     }
 
+    /**
+     * @FIXME: remove this method. Be sure it is not used in other projects
+     * @deprecated
+     */
     public function getXmlLayers(){
         return $this->xml->xpath( "//maplayer" );
     }
 
+    /**
+     * @FIXME: remove this method. Be sure it is not used in other projects
+     * @deprecated
+     */
     public function getXmlLayer( $layerId ){
         return $this->xml->xpath( "//maplayer[id='$layerId']" );
     }
 
+    /**
+     * @FIXME: remove this method. Be sure it is not used in other projects
+     * @deprecated
+     */
     public function getXmlLayerByKeyword( $key ){
         return $this->xml->xpath( "//maplayer/keywordList[value='$key']/parent::*" );
     }
 
+    /**
+     * @FIXME: remove this method. Be sure it is not used in other projects
+     * @deprecated
+     */
     public function getComposer( $title ){
         $xmlComposer = $this->xml->xpath( "//Composer[@title='$title']" );
         if( $xmlComposer )
@@ -865,45 +943,54 @@ class lizmapProject{
     }
 
     public function getLayer( $layerId ){
-        $xmlLayer = $this->xml->xpath( "//maplayer[id='$layerId']" );
-        if( $xmlLayer ) {
-            $xmlLayer = $xmlLayer[0];
+        $layers = array_filter($this->layers, function($layer) use ($layerId) {
+           return $layer['id'] ==  $layerId;
+        });
+        if( count($layers) ) {
             jClasses::inc('lizmap~qgisMapLayer');
             jClasses::inc('lizmap~qgisVectorLayer');
-            if( $xmlLayer->attributes()->type == 'vector' )
-                return new qgisVectorLayer( $this, $xmlLayer );
-            else
-                return new qgisMapLayer( $this, $xmlLayer );
+            if( $layers[0]['type'] == 'vector' ) {
+                return new qgisVectorLayer( $this, $layers[0] );
+            }
+            else {
+                return new qgisMapLayer( $this, $layers[0] );
+            }
         }
         return null;
     }
 
     public function getLayerByKeyword( $key ){
-        $xmlLayer = $this->xml->xpath( "//maplayer/keywordList[value='$key']/parent::*" );
-        if( $xmlLayer ) {
-            $xmlLayer = $xmlLayer[0];
+        $layers = array_filter($this->layers, function($layer) use ($key) {
+           return in_array($key, $layer['keywords']);
+        });
+        if( count($layers) ) {
             jClasses::inc('lizmap~qgisMapLayer');
-
             jClasses::inc('lizmap~qgisVectorLayer');
-            if( $xmlLayer->attributes()->type == 'vector' )
-                return new qgisVectorLayer( $this, $xmlLayer );
-            else
-                return new qgisMapLayer( $this, $xmlLayer );
+            if( $layers[0]['type'] == 'vector' ) {
+                return new qgisVectorLayer( $this, $layers[0] );
+            }
+            else {
+                return new qgisMapLayer( $this, $layers[0] );
+            }
         }
         return null;
     }
 
     public function findLayersByKeyword( $key ){
-        $xmlLayers = $this->xml->xpath( "//maplayer/keywordList[value='$key']/parent::*" );
+        $foundLayers = array_filter($this->layers, function($layer) use ($key) {
+           return in_array($key, $layer['keywords']);
+        });
         $layers = array();
-        if( $xmlLayers ) {
+        if( $foundLayers ) {
             jClasses::inc('lizmap~qgisMapLayer');
             jClasses::inc('lizmap~qgisVectorLayer');
-            foreach( $xmlLayers as $xmlLayer ) {
-                if( $xmlLayer->attributes()->type == 'vector' )
-                    $layers[] = new qgisVectorLayer( $this, $xmlLayer );
-                else
-                    $layers[] = new qgisMapLayer( $this, $xmlLayer );
+            foreach( $foundLayers as $layer ) {
+                if( $layer['type'] == 'vector' ) {
+                    $layers[] = new qgisVectorLayer( $this, $layer );
+                }
+                else {
+                    $layers[] = new qgisMapLayer( $this, $layer );
+                }
             }
         }
         return $layers;

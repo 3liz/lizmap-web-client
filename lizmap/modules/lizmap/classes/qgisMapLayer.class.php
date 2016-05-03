@@ -38,30 +38,29 @@ class qgisMapLayer{
   // xml layer element
   protected $xmlLayer = null;
 
-  // project layer
+  /**
+   * @var lizmapProject
+   */
   protected $project = null;
 
   /**
    * constructor
-   * xmlLayer : the XML map layer representation
+   * @param lizmapProject $project
+   * @param array $propLayer  list of properties values
    */
-  public function __construct ( $project, $xmlLayer ) {
-    $this->id = (string)$xmlLayer->attributes()->type;
-    $this->id = (string)$xmlLayer->id;
+  public function __construct ( $project, $propLayer ) {
+    $this->type = $propLayer['type'];
+    $this->id = $propLayer['id'];
 
-    $this->name = (string)$xmlLayer->layername;
-    $this->title = (string)$xmlLayer->title;
-    if ( $this->title == '' )
-        $this->title = $this->name;
-    $this->abstract = (string)$xmlLayer->abstract;
+    $this->name = $propLayer['layername'];
+    $this->title = $propLayer['title'];
+    $this->abstract = $propLayer['abstract'];
 
-    $this->proj4 = (string)$xmlLayer->srs->spatialrefsys->proj4;
-    $this->srid = (integer)$xmlLayer->srs->spatialrefsys->srid;
+    $this->proj4 = $propLayer['proj4'];
+    $this->srid = $propLayer['srid'];
 
-    $this->datasource = (string)$xmlLayer->datasource;
-    $this->provider = (string)$xmlLayer->provider;
-
-    $this->xmlLayer = $xmlLayer;
+    $this->datasource = $propLayer['datasource'];
+    $this->provider = $propLayer['provider'];
     $this->project = $project;
   }
 
