@@ -73,6 +73,11 @@ class lizmapProject{
     protected $locateByLayer = array();
 
     /**
+     * @var array
+     */
+    protected $editionLayers = array();
+
+    /**
      * constructor
      * key : the project name
      * rep : the repository has a lizmapRepository class
@@ -232,6 +237,7 @@ class lizmapProject{
         $this->layersOrder = $this->readLayersOrder($this->xml);
         $this->printCapabilities = $this->readPrintCapabilities($this->xml, $this->cfg);
         $this->locateByLayer = $this->readLocateByLayers($this->xml, $this->cfg);
+        $this->editionLayers = $this->readEditionLayers($this->xml, $this->cfg);
     }
 
     public function getQgisProjectVersion(){
@@ -701,6 +707,44 @@ class lizmapProject{
         return $locateByLayer;
     }
 
+    protected function readEditionLayers($xml, $cfg) {
+        $editionLayers = array();
+
+        // if no ability to load spatialite extension, we leave $editionLayers empty
+        if ( property_exists( $cfg, 'editionLayers' ) ) {
+            $spatial = false;
+            if ( class_exists('SQLite3') ) {
+                // Try with libspatialite
+                try{
+                    $db = new SQLite3(':memory:');
+                    $spatial = $db->loadExtension('libspatialite.so'); # loading SpatiaLite as an extension
+                }catch(Exception $e){
+                    $spatial = False;
+                }
+                // Try with mod_spatialite
+                if( !$spatial )
+                    try{
+                        $db = new SQLite3(':memory:');
+                        $spatial = $db->loadExtension('mod_spatialite.so'); # loading SpatiaLite as an extension
+                    }catch(Exception $e){
+                        $spatial = False;
+                    }
+            }
+            if(!$spatial){
+                $editionLayers = $cfg->editionLayers;
+                foreach( $editionLayers as $key=>$obj ){
+                    $layerXml = $this->getXmlLayer2($xml, $obj->layerId );
+                    $layerXmlZero = $layerXml[0];
+                    $provider = $layerXmlZero->xpath('provider');
+                    $provider = (string)$provider[0];
+                    if ( $provider == 'spatialite' )
+                        unset($editionLayers->$key);
+                }
+            }
+        }
+        return $editionLayers;
+    }
+
     public function getUpdatedConfig(){
         $qgsLoad = $this->xml;
 
@@ -730,38 +774,9 @@ class lizmapProject{
             unset($configJson->options->remoteDir);
 
         // Remove editionLayers from config if no right to access this tool
-        // Or if no ability to load spatialite extension
         if ( property_exists( $configJson, 'editionLayers' ) ) {
             if( jAcl2::check('lizmap.tools.edition.use', $this->repository->getKey()) ){
-                $spatial = false;
-                if ( class_exists('SQLite3') ) {
-                    $spatial = false;
-                    // Try with libspatialite
-                    try{
-                        $db = new SQLite3(':memory:');
-                        $spatial = $db->loadExtension('libspatialite.so'); # loading SpatiaLite as an extension
-                    }catch(Exception $e){
-                        $spatial = False;
-                    }
-                    // Try with mod_spatialite
-                    if( !$spatial )
-                        try{
-                            $db = new SQLite3(':memory:');
-                            $spatial = $db->loadExtension('mod_spatialite.so'); # loading SpatiaLite as an extension
-                        }catch(Exception $e){
-                            $spatial = False;
-                        }
-                }
-                if(!$spatial){
-                    foreach( $configJson->editionLayers as $key=>$obj ){
-                        $layerXml = $this->getXmlLayer( $obj->layerId );
-                        $layerXmlZero = $layerXml[0];
-                        $provider = $layerXmlZero->xpath('provider');
-                        $provider = (string)$provider[0];
-                        if ( $provider == 'spatialite' )
-                            unset($configJson->editionLayers->$key);
-                    }
-                }
+                $configJson->editionLayers = $this->editionLayers;
             } else {
                 unset($configJson->editionLayers);
             }
