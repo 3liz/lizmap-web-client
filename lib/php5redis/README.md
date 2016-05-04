@@ -5,7 +5,7 @@ php-redis contains php5 class for connecting with redis database with methods fo
 Quick start
 -----------
 * Install Redis from [redis.io](http://redis.io/download "Redis")
-* Download latest php-redis class from [here](https://github.com/sash/php-redis/archives/master)
+* Download latest php-redis class from [here](https://github.com/jelix/php-redis/archives/master)
 * Write some code:
 
 		# Connecting
@@ -27,3 +27,4 @@ Changelog
 		- Redis implements the __call magic method. Any non-implemented redis method can be called via ->methodname(param1, ...)
 	1.2 - pipeline support. ->pipeline_begin() and then execute any number of commands - each will return null
 		Then run ->pipeline_responses() to get all of the responses as array and end the pipeline mode
+    1.2.1 - fix quit() error, undefined variable on connection errors, and add closing during destruction of the object

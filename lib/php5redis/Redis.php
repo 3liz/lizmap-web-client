@@ -5,7 +5,7 @@ class RedisException extends Exception {}
  * 
  * @author sash
  * @license LGPL
- * @version 1.2
+ * @version 1.2.1
  */
 class Redis {
 	private $port;
@@ -32,7 +32,7 @@ class Redis {
 		}
 		$msg = "Cannot open socket to {$this->host}:{$this->port}";
 		if ($errno || $errmsg)
-			$msg .= "," . ($errno ? " error $errno" : "") . ($errmsg ? " $errmsg" : "");
+			$msg .= "," . ($errno ? " error $errno" : "") . ($errstr ? " $errstr" : "");
 		throw new RedisException ( "$msg." );
 	}
 	private function debug($msg){
@@ -134,8 +134,9 @@ class Redis {
 		elseif ($readResp) {
 			return $this->cmdResponse ();
 		}
-		else
+		else {
 			return '';
+		}
 	}
 	function disconnect() {
 		if ($this->_sock)
@@ -346,7 +347,7 @@ class Redis {
 	 * @return string
 	 */
 	function type($key){
-		return $this->cms ( array("TYPE", $key) );
+		return $this->cmd ( array("TYPE", $key) );
 	}
 	
 	////////////////////////////////
@@ -785,10 +786,15 @@ class Redis {
 	////////////////////////////////
 	/**
 	 * Provide information and statistics about the server
+	 * @param $section
 	 * @return unknown_type
 	 */
-	function info(){
-		return $this->cmd ( "INFO" );
+	function info($section = false){
+		if ($section === false) {
+			return $this->cmd ( "INFO" );
+		} else {
+			return $this->cmd ( array("INFO", $section) );
+		}
 	}
 	
 	/**

@@ -38,6 +38,7 @@ class jSyslogLogger implements jILogger {
      * @param jILogMessage $message the message to log
      */
     function logMessage($message) {
+        $type = $message->getCategory();
         if (isset($this->catSyslog[$type])) {
             $priority = $this->catSyslog[$type];
         }
