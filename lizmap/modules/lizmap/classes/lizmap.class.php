@@ -80,11 +80,13 @@ class lizmap{
      *
      */
     public static function getRepository ($key){
-      if ( !in_array($key, self::$repositories) )
-        if ( !in_array($key, self::getRepositoryList()) )
+      if ( !in_array($key, self::$repositories) ) {
+        if ( !in_array($key, self::getRepositoryList()) ) {
           return null;
+        }
+      }
 
-      if ( in_array($key, self::$repositoryInstances) )
+      if ( array_key_exists($key, self::$repositoryInstances) )
         return self::$repositoryInstances[$key];
 
       jClasses::inc('lizmap~lizmapRepository');
@@ -128,7 +130,7 @@ class lizmap{
         $ini->removeValue(null, $section);
         $ini->save();
         self::getRepositoryList();
-        if ( in_array($key, self::$repositoryInstances) )
+        if ( array_key_exists($key, self::$repositoryInstances) )
             unset(self::$repositoryInstances[$key]);
         return true;
       }
@@ -147,7 +149,7 @@ class lizmap{
       if ( $rep == null)
         return null;
 
-      if ( in_array($key, self::$projectInstances) )
+      if ( isset(self::$projectInstances[$key]) )
         return self::$projectInstances[$key];
 
       jClasses::inc('lizmap~lizmapProject');
