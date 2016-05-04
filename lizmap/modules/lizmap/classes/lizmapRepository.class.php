@@ -124,7 +124,7 @@ class lizmapRepository{
             $qgsFiles[] = $file;
         }
         closedir($dh);
-        jClasses::inc('lizmap~lizmapProject');
+
         foreach ($qgsFiles as $qgsFile) {
           if (in_array($qgsFile.'.cfg',$cfgFiles))
             $projects[] = lizmap::getProject($this->key.'~'.substr($qgsFile,0,-4));

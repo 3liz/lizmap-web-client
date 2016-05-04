@@ -1067,6 +1067,7 @@ class lizmapProject{
         // only maps
         if($services->onlyMaps) {
                 $projectsTpl = new jTpl();
+                $projectsTpl->assign('excludedProject', '');
                 $dockable[] = new lizmapMapDockItem(
                     'home',
                     jLocale::get('view~default.repository.list.title'),
