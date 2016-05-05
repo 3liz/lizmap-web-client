@@ -802,6 +802,9 @@ class configCtrl extends jController {
     $lproj = lizmap::getProject($repository.'~'.$project);
     $project = $lproj->getKey();
 
+    // Remove project cache
+    jCache::delete($lrep->getPath().$project.'.qgs', 'qgisprojects');
+
     // Remove the cache for the layer
     $cacheRootDirectory = $ser->cacheRootDirectory;
     $cacheProjectDir = $cacheRootDirectory.'/'.$lrep->getKey().'/'.$project.'/';

@@ -139,6 +139,10 @@ class lizmap{
 
     /**
      * Get a project
+     * @return lizmapProject (null if it does not exist)
+     * @FIXME all calls to getProject construct $key. Why not to
+     * deliver directly $rep and $project? It could avoid
+     * a preg_match
      */
     public static function getProject ($key){
       $match = preg_match('/(?P<rep>\w+)~(?P<proj>\w+)/', $key, $matches);

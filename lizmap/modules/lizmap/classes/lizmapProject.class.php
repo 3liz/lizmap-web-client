@@ -82,17 +82,49 @@ class lizmapProject{
      */
     protected $useLayerIDs = false;
 
+    const cachedProperties = array('WMSInformation', 'canvasColor', 'allProj4',
+        'relations', 'layersOrder', 'printCapabilities', 'locateByLayer',
+        'editionLayers', 'useLayerIDs', 'layers', 'data', 'cfg', 'qgisProjectVersion');
+
     /**
      * constructor
-     * key : the project name
-     * rep : the repository has a lizmapRepository class
+     * @param string $key : the project name
+     * @param lizmapRepository $ rep : the repository
      */
     public function __construct ( $key, $rep ) {
         $this->key = $key;
         $this->repository = $rep;
-        $this->readXml($key, $rep);
+
+        // For the cache key, we use the full path of the project file
+        // to avoid collision in the cache engine
+        $file = $rep->getPath().$key.'.qgs';
+        $data = jCache::get($file, 'qgisprojects');
+        if ($data === false ||
+            $data['qgsmtime'] < filemtime($file) ||
+            $data['qgscfgmtime'] < filemtime($file.'.cfg')) {
+            // FIXME reading XML could take time, so many process could
+            // read it and construct the cache at the same time. We should
+            // have a kind of lock to avoid this issue.
+            $this->readXml($key, $rep);
+            $data['qgsmtime'] = filemtime($file);
+            $data['qgscfgmtime'] = filemtime($file.'.cfg');
+            foreach(self::cachedProperties as $prop) {
+                $data[$prop] = $this->$prop;
+            }
+            jCache::set($file, $data, null, 'qgisprojects');
+        }
+        else {
+            foreach(self::cachedProperties as $prop) {
+                $this->$prop = $data[$prop];
+            }
+        }
     }
 
+    /**
+     * temporary function to read xml for some methods that relies on
+     * xml data that are not yet stored in the cache
+     * @deprecated
+     */
     protected function getXml() {
         if ($this->xml) {
             return $this->xml;
@@ -105,6 +137,9 @@ class lizmapProject{
         return simplexml_load_file($qgs_path);
     }
 
+    /**
+     * Read the qgis files
+     */
     protected function readXml($key, $rep) {
         if (!file_exists($rep->getPath().$key.'.qgs') ||
             !file_exists($rep->getPath().$key.'.qgs.cfg') ) {
@@ -132,11 +167,11 @@ class lizmapProject{
         # get title from WMS properties
         if (property_exists($qgs_xml->properties, 'WMSServiceTitle'))
             if (!empty($qgs_xml->properties->WMSServiceTitle))
-                $this->data['title'] = $qgs_xml->properties->WMSServiceTitle;
+                $this->data['title'] = (string)$qgs_xml->properties->WMSServiceTitle;
 
         # get abstract from WMS properties
         if (property_exists($qgs_xml->properties, 'WMSServiceAbstract'))
-            $this->data['abstract'] = $qgs_xml->properties->WMSServiceAbstract;
+            $this->data['abstract'] = (string)$qgs_xml->properties->WMSServiceAbstract;
 
         # get WMS getCapabilities full URL
         $this->data['wmsGetCapabilitiesUrl'] = jUrl::getFull(

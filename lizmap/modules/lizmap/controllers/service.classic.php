@@ -12,6 +12,9 @@
 class serviceCtrl extends jController {
 
 
+  /**
+   * @var lizmapProject
+   */
   protected $project = '';
   protected $repository = '';
   protected $services = '';
@@ -1073,5 +1076,4 @@ class serviceCtrl extends jController {
         lizmap::logMetric('LIZMAP_SERVICE_GETMAP');
         return $rep;
   }
-
 }
