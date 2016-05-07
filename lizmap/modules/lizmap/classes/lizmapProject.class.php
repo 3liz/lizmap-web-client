@@ -250,6 +250,15 @@ class lizmapProject{
                     $this->cfg->layers->$name->showFeatureCount = 'True';
             }
         }
+        //remove plugin layer
+        $pluginLayers = $qgs_xml->xpath('//maplayer[type="plugin"]');
+        if ( count( $pluginLayers ) > 0 ) {
+            foreach( $pluginLayers as $layer ) {
+                $name = (string)$layer->layername;
+                if ( property_exists($this->cfg->layers, $name ) )
+                    unset($this->cfg->layers->$name);
+            }
+        }
         //unset cache for editionLayers
         if (property_exists($this->cfg, 'editionLayers') ){
             foreach( $this->cfg->editionLayers as $key=>$obj ){
