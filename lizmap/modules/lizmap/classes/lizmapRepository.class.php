@@ -126,8 +126,11 @@ class lizmapRepository{
         closedir($dh);
 
         foreach ($qgsFiles as $qgsFile) {
+          $proj = null;
           if (in_array($qgsFile.'.cfg',$cfgFiles))
-            $projects[] = lizmap::getProject($this->key.'~'.substr($qgsFile,0,-4));
+            $proj = lizmap::getProject($this->key.'~'.substr($qgsFile,0,-4));
+          if ( $proj != null )
+            $projects[] = $proj;
         }
       }
       return $projects;
