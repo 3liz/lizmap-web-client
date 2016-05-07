@@ -446,7 +446,9 @@ var lizMap = function() {
         layerConfig = config.layers[layer.name];
     if ( !layerConfig )
         return null;
-    if ( 'externalWmsToggle' in layerConfig && layerConfig.externalWmsToggle == 'True' ) {
+    if ( 'externalWmsToggle' in layerConfig && layerConfig.externalWmsToggle == 'True'
+      && 'externalAccess' in layerConfig && layerConfig.externalAccess
+      && 'layers' in layerConfig.externalAccess && 'url' in layerConfig.externalAccess) {
         var externalAccess = layerConfig.externalAccess;
         var legendParams = {SERVICE: "WMS",
                       VERSION: "1.3.0",
@@ -863,7 +865,8 @@ var lizMap = function() {
       }
 
       // Override WMS url if external WMS server
-      if (layerConfig.externalAccess ) {
+      if ('externalAccess' in layerConfig && layerConfig.externalAccess
+       && 'layers' in layerConfig.externalAccess && 'url' in layerConfig.externalAccess ) {
           var extConfig = layerConfig.externalAccess;
           serviceUrl = extConfig.url;
           layerWmsParams = {
