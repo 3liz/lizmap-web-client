@@ -426,7 +426,7 @@ class jCache {
      * @return boolean
      */
     protected static function _checkKey($key){
-        if (!preg_match('/^[a-z0-9_]+$/i',$key) || strlen($key) > 255) {
+        if (!preg_match('/^[a-z0-9_\\/:\\.\\-]+$/i',$key) || strlen($key) > 255) {
             throw new jException('jelix~cache.error.invalid.key',$key);
         }
     }

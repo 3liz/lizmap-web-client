@@ -1,5 +1,5 @@
 <div id="projects">
-  {zone 'view~main_view', array('excludedProject'=>$repository.'~'.$project)}
+  {zone 'view~main_view', array('excludedProject'=>$excludedProject)}
   <script>
   {literal}
   $(document).ready(function () {
