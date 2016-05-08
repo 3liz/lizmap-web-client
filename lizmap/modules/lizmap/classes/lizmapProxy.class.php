@@ -171,6 +171,8 @@ class lizmapProxy {
         // And get tile if already in cache
         // --> must be done after checking that parent project is involved
         $profile = lizmapProxy::createVirtualProfile( $repository, $project, $layers, $crs );
+        if ( $profile['driver'] == 'redis' )
+            $key = $repository.'_'.$project.'_'.$layers.'_'.$crs.'_'.$key;
 
         if($debug)
             lizmap::logMetric('LIZMAP_PROXY_READ_LAYER_CONFIG');
