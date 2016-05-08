@@ -1008,13 +1008,15 @@ class lizmapProject{
            return $layer['id'] ==  $layerId;
         });
         if( count($layers) ) {
+            // get first key found in the filtered layers
+            $k = key($layers);
             jClasses::inc('lizmap~qgisMapLayer');
             jClasses::inc('lizmap~qgisVectorLayer');
-            if( $layers[0]['type'] == 'vector' ) {
-                return new qgisVectorLayer( $this, $layers[0] );
+            if( $layers[$k]['type'] == 'vector' ) {
+                return new qgisVectorLayer( $this, $layers[$k] );
             }
             else {
-                return new qgisMapLayer( $this, $layers[0] );
+                return new qgisMapLayer( $this, $layers[$k] );
             }
         }
         return null;
@@ -1025,13 +1027,15 @@ class lizmapProject{
            return in_array($key, $layer['keywords']);
         });
         if( count($layers) ) {
+            // get first key found in the filtered layers
+            $k = key($layers);
             jClasses::inc('lizmap~qgisMapLayer');
             jClasses::inc('lizmap~qgisVectorLayer');
-            if( $layers[0]['type'] == 'vector' ) {
-                return new qgisVectorLayer( $this, $layers[0] );
+            if( $layers[$k]['type'] == 'vector' ) {
+                return new qgisVectorLayer( $this, $layers[$k] );
             }
             else {
-                return new qgisMapLayer( $this, $layers[0] );
+                return new qgisMapLayer( $this, $layers[$k] );
             }
         }
         return null;
