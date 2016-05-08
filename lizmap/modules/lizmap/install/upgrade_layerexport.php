@@ -7,6 +7,7 @@ class lizmapModuleUpgrader_layerexport extends jInstallerModule {
         '2.12.2',
         '2.12.3',
         '2.12.4',
+        '2.12.5',
         '3.0pre',
         '3.0beta1',
         '3.0beta2',
