@@ -43,7 +43,7 @@ class mediaCtrl extends jController {
     $abspath = realpath($repositoryPath.'/'.$path);
 
     $n_repositoryPath = str_replace('\\', '/', $repositoryPath);
-    $n_abspath = $n_repositoryPath.'/'.$path;
+    $n_abspath = $n_repositoryPath.'/'.trim($path, '/');
     //manually canonize path to authorize symlink
     $n_abspath = explode('/', $n_abspath);
     $n_keys = array_keys($n_abspath, '..');
