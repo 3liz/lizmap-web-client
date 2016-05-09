@@ -132,7 +132,6 @@ class lizmapProxy {
             unset($keyParams['map']);
         }
         ksort( $keyParams );
-        $key = md5( serialize( $keyParams ) );
 
         $layers = str_replace(',', '_', $params['layers'] );
         $crs = preg_replace('#[^a-zA-Z0-9_]#', '_', $params['crs']);
@@ -167,22 +166,22 @@ class lizmapProxy {
             $lproj = lizmap::getProject($repository.'~'.$project);
         }
 
+        $key = $repository.'/'.$project.'/'.$layers.'/'.$crs.'/'.md5( serialize( $keyParams ) );
+
         // Get tile cache virtual profile (tile storage)
         // And get tile if already in cache
         // --> must be done after checking that parent project is involved
         $profile = lizmapProxy::createVirtualProfile( $repository, $project, $layers, $crs );
-        if ( $profile['driver'] == 'redis' )
-            $key = $repository.'_'.$project.'_'.$layers.'_'.$crs.'_'.$key;
 
         if($debug)
             lizmap::logMetric('LIZMAP_PROXY_READ_LAYER_CONFIG');
 
-
         // Has the user asked for cache for this layer ?
-        $string2bool = array('false'=>False, 'False'=>False, 'True'=>True, 'true'=>True);
         $useCache = False;
-        if ( $configLayer )
-            $useCache = $string2bool[$configLayer->cached];
+        if ( $configLayer ) {
+            $useCache = strtolower($configLayer->cached) == 'true';
+        }
+
         // Avoid using cache for requests concerning not square tiles or too big
         // Focus on real web square tiles
         $wmsClient = 'web';
