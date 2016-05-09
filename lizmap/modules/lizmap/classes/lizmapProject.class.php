@@ -82,7 +82,7 @@ class lizmapProject{
      */
     protected $useLayerIDs = false;
 
-    protected cachedProperties = array('WMSInformation', 'canvasColor', 'allProj4',
+    protected $cachedProperties = array('WMSInformation', 'canvasColor', 'allProj4',
         'relations', 'layersOrder', 'printCapabilities', 'locateByLayer',
         'editionLayers', 'useLayerIDs', 'layers', 'data', 'cfg', 'qgisProjectVersion');
 
@@ -108,13 +108,13 @@ class lizmapProject{
             $this->readXml($key, $rep);
             $data['qgsmtime'] = filemtime($file);
             $data['qgscfgmtime'] = filemtime($file.'.cfg');
-            foreach(self::cachedProperties as $prop) {
+            foreach($this->cachedProperties as $prop) {
                 $data[$prop] = $this->$prop;
             }
             jCache::set($file, $data, null, 'qgisprojects');
         }
         else {
-            foreach(self::cachedProperties as $prop) {
+            foreach($this->cachedProperties as $prop) {
                 $this->$prop = $data[$prop];
             }
         }
