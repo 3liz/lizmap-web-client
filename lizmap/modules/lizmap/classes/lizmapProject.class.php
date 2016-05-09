@@ -82,7 +82,7 @@ class lizmapProject{
      */
     protected $useLayerIDs = false;
 
-    const cachedProperties = array('WMSInformation', 'canvasColor', 'allProj4',
+    protected cachedProperties = array('WMSInformation', 'canvasColor', 'allProj4',
         'relations', 'layersOrder', 'printCapabilities', 'locateByLayer',
         'editionLayers', 'useLayerIDs', 'layers', 'data', 'cfg', 'qgisProjectVersion');
 
