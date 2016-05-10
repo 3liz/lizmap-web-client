@@ -98,7 +98,16 @@ class lizmapProject{
         // For the cache key, we use the full path of the project file
         // to avoid collision in the cache engine
         $file = $rep->getPath().$key.'.qgs';
-        $data = jCache::get($file, 'qgisprojects');
+        $data = false;
+        try {
+            $data = jCache::get($file, 'qgisprojects');
+        }
+        catch(Exception $e) {
+            // if qgisprojects profile does not exist, or if there is an
+            // other error about the cache, let's log it
+            jLog::log($e->getMessage(), 'error');
+        }
+
         if ($data === false ||
             $data['qgsmtime'] < filemtime($file) ||
             $data['qgscfgmtime'] < filemtime($file.'.cfg')) {
@@ -111,7 +120,12 @@ class lizmapProject{
             foreach($this->cachedProperties as $prop) {
                 $data[$prop] = $this->$prop;
             }
-            jCache::set($file, $data, null, 'qgisprojects');
+            try {
+                jCache::set($file, $data, null, 'qgisprojects');
+            }
+            catch(Exception $e) {
+                 jLog::log($e->getMessage(), 'error');
+            }
         }
         else {
             foreach($this->cachedProperties as $prop) {

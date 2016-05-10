@@ -161,6 +161,7 @@ class lizmap{
         $proj = new lizmapProject($matches['proj'], $rep);
       }
       catch(Exception $e) {
+        jLog::logEx($e, 'error');
         return null;
       }
       self::$projectInstances[$key] = $proj;
