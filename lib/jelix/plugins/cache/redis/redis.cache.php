@@ -44,6 +44,13 @@ class redisCacheDriver implements jICacheDriver {
     public $automatic_cleaning_factor = 0;
 
     /**
+    * Key prefix to be added
+    * @var string
+    * @access protected
+    */
+    protected $key_prefix = '';
+
+    /**
      * @param Redis the redis connection
      */
     protected $redis;
@@ -76,8 +83,16 @@ class redisCacheDriver implements jICacheDriver {
             $this->automatic_cleaning_factor = $params['automatic_cleaning_factor'];
         }
 
+        if (isset($params['key_prefix'])) {
+            $this->key_prefix = $params['key_prefix'];
+        }
+
         // OK, let's connect now
         $this->redis = new Redis($params['host'], $params['port']);
+
+        if (isset($params['db']) && intval($params['db']) != 0) {
+            $this->redis->select_db($params['db']);
+        }
     }
 
     /**
@@ -86,7 +101,8 @@ class redisCacheDriver implements jICacheDriver {
     * @return mixed $data      array of data or false if failure
     */
     public function get($key) {
-        $res = $this->redis->get($key);
+        $used_key = $this->getUsedKey($key);
+        $res = $this->redis->get($used_key);
         if ($res === null)
             return false;
         $res = $this->unesc($res);
@@ -109,7 +125,8 @@ class redisCacheDriver implements jICacheDriver {
         if (is_resource($value)) {
             return false;
         }
-        $res = $this->redis->set($key, $this->esc($value));
+        $used_key = $this->getUsedKey($key);
+        $res = $this->redis->set($used_key, $this->esc($value));
 
         if ($res !== 'OK') {
             return false;
@@ -125,7 +142,7 @@ class redisCacheDriver implements jICacheDriver {
             return true;
         }
 
-        return ($this->redis->expire($key, $ttl) == 1);
+        return ($this->redis->expire($used_key, $ttl) == 1);
     }
 
     /**
@@ -134,7 +151,8 @@ class redisCacheDriver implements jICacheDriver {
     * @return boolean       false if failure
     */
     public function delete($key) {
-        return ($this->redis->delete($key) > 0);
+        $used_key = $this->getUsedKey($key);
+        return ($this->redis->delete($used_key) > 0);
     }
 
     /**
@@ -144,16 +162,17 @@ class redisCacheDriver implements jICacheDriver {
     * @return boolean       false if failure
     */
     public function increment($key, $incvalue = 1) {
+        $used_key = $this->getUsedKey($key);
         $val = $this->get($key);
         if ($val === null || !is_numeric($val) || !is_numeric($incvalue)) {
             return false;
         }
         if (intval($val) == $val) {
-            return $this->redis->incr($key, intval($incvalue));
+            return $this->redis->incr($used_key, intval($incvalue));
         }
         else { // float values
             $result = intval($val)+intval($incvalue);
-            if($this->redis->set($key, $result)) {
+            if($this->redis->set($used_key, $result)) {
                 return $result;
             }
             return false;
@@ -167,16 +186,17 @@ class redisCacheDriver implements jICacheDriver {
     * @return boolean       false if failure
     */
     public function decrement($key, $decvalue = 1) {
+        $used_key = $this->getUsedKey($key);
         $val = $this->get($key);
         if ($val === null || !is_numeric($val) || !is_numeric($decvalue)) {
             return false;
         }
         if (intval($val) == $val) {
-            return $this->redis->decr($key, intval($decvalue));
+            return $this->redis->decr($used_key, intval($decvalue));
         }
         else { // float values
             $result = intval($val)-intval($decvalue);
-            if ($this->redis->set($key, $result)) {
+            if ($this->redis->set($used_key, $result)) {
                 return $result;
             }
             return false;
@@ -190,11 +210,12 @@ class redisCacheDriver implements jICacheDriver {
     * @param int    $ttl    data time expiration
     * @return boolean       false if failure
     */
-    public function replace($key, $value, $ttl = 0) {
-        if ($this->redis->exists($key) == 0) {
+    public function replace($key, $var, $ttl = 0) {
+        $used_key = $this->getUsedKey($key);
+        if ($this->redis->exists($used_key) == 0) {
             return false;
         }
-        return $this->set($key, $value, $ttl);
+        return $this->set($key, $var, $ttl);
     }
 
     /**
@@ -212,6 +233,21 @@ class redisCacheDriver implements jICacheDriver {
     */
     public function flush() {
         return ($this->redis->flushall()  == 'OK');
+    }
+
+    protected function getUsedKey($key) {
+        if ($this->key_prefix == '') {
+            return $key;
+        }
+
+        $prefix = $this->key_prefix;
+        if (is_array($key)) {
+            return array_map(function($k) use($prefix) {
+                return $prefix.$k;
+            }, $key);
+        }
+
+        return $prefix.$key;
     }
 
     protected function esc($val) {

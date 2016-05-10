@@ -10,6 +10,7 @@
 </form>
 {/if}
 
+
 <table class="records-list">
 <thead>
 <tr>

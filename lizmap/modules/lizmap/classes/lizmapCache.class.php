@@ -377,6 +377,7 @@ class lizmapCache {
                 "driver"=>"db",
                 "dbprofile"=>$cacheJdbName,
                 "ttl"=>$cacheExpiration,
+                "base64encoding"=> true
             );
 
             // Create the virtual cache profile
