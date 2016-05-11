@@ -476,49 +476,131 @@ class serviceCtrl extends jController {
   */
   function GetFeatureInfo(){
 
+    $globalResponse = '';
+
     // Get parameters
     if(!$this->getServiceParameters())
       return $this->serviceException();
 
-    $url = $this->services->wmsServerURL.'?';
+    $lproj = lizmap::getProject($this->repository->getKey().'~'.$this->project->getKey());
+    $pConfig = $lproj->getFullCfg();
 
-    // Deactivate info_format to use Lizmap instead of QGIS
-    $toHtml = False;
-    if($this->params['info_format'] == 'text/html'){
-      $toHtml = True;
-      $this->params['info_format'] = 'text/xml';
+    $externalWMSLayers = array();
+    $QGISLayers = array();
+    $queryLayers = explode(",",$this->iParam('QUERY_LAYERS'));
+
+    // We split layers in two groups. First contains exernal WMS, second contains QGIS layers
+    foreach ($queryLayers as $queryLayer) {
+      if($pConfig->layers->$queryLayer->externalAccess){
+        $externalWMSLayers[] = $queryLayer;
+      }else{
+        $QGISLayers[] = $queryLayer;
+      }
     }
 
-    $bparams = http_build_query($this->params);
-    $querystring = $url . $bparams;
+    // External WMS
+    foreach ($externalWMSLayers as $externalWMSLayer) {
+      $url = $pConfig->layers->$externalWMSLayer->externalAccess->url;
 
-    // Get remote data
-    $getRemoteData = $this->lizmapCache->getRemoteData(
-      $querystring,
-      $this->services->proxyMethod,
-      $this->services->debugMode
+      $externalWMSLayerParams = $this->params;
+
+      $externalWMSLayerParams['layers'] = $externalWMSLayer;
+      $externalWMSLayerParams['query_layers'] = $externalWMSLayer;
+
+      $keyValueParameters = array();
+      $paramsBlacklist = array('module', 'action', 'C', 'repository','project','exceptions','map');
+
+      // We force info_format application/vnd.ogc.gml as default value.
+      // TODO let user choose which format he wants in lizmap plugin
+      $externalWMSLayerParams['info_format'] = 'application/vnd.ogc.gml';
+
+      foreach($externalWMSLayerParams as $key=>$val){
+        if(!in_array($key, $paramsBlacklist)){
+          $keyValueParameters[] = strtolower($key).'='.urlencode($val);
+        }
+      }
+
+      $querystring = $url . implode('&', $keyValueParameters);
+
+      // Query external WMS layers
+      $ch = curl_init();
+      curl_setopt($ch, CURLOPT_HEADER, 0);
+      curl_setopt($ch, CURLOPT_URL, $querystring);
+      curl_setopt( $ch, CURLOPT_SSL_VERIFYPEER, false );
+      curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+      curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
+      $data = curl_exec($ch);
+      curl_close($ch);
+
+      $xml = simplexml_load_string($data);
+
+      // Create HTML response
+      if (count($xml->children())) {
+        $layerstring = $externalWMSLayer.'_layer';
+        $featurestring = $externalWMSLayer.'_feature';
+
+        $layerTitle = $pConfig->layers->$externalWMSLayer->title;
+
+        $HTMLResponse = "<h4>$layerTitle</h4><div class='lizmapPopupDiv'><table class='lizmapPopupTable'>";
+
+        foreach ($xml->$layerstring->$featurestring->children() as $key => $value) {
+          $HTMLResponse .= "<tr><td>$key&nbsp;:&nbsp;</td><td>$value</td></tr>";
+        }
+        $HTMLResponse .= '</table></div>';
+
+        $globalResponse .= $HTMLResponse;
+      }
+    }
+
+    // Query QGIS WMS layers
+    if(!empty($QGISLayers)){
+      $QGISLayersParams = $this->params;
+
+      $QGISLayersParams['layers'] = implode(',', $QGISLayers);
+      $QGISLayersParams['query_layers'] = implode(',', $QGISLayers);
+
+      $url = $this->services->wmsServerURL.'?';
+
+       // Deactivate info_format to use Lizmap instead of QGIS
+       $toHtml = False;
+       if($QGISLayersParams['info_format'] == 'text/html'){
+         $toHtml = True;
+         $QGISLayersParams['info_format'] = 'text/xml';
+       }
+
+       $bparams = http_build_query($QGISLayersParams);
+       $querystring = $url . $bparams;
+
+       // Get remote data
+       $getRemoteData = $this->lizmapCache->getRemoteData(
+         $querystring,
+         $this->services->proxyMethod,
+         $this->services->debugMode
+       );
+       $data = $getRemoteData[0];
+       $mime = $getRemoteData[1];
+
+       // Get HTML content if needed
+       if($toHtml and preg_match('#/xml#', $mime)){
+         $data = $this->getFeatureInfoHtml($QGISLayersParams, $data);
+         $mime = 'text/html';
+       }
+
+       $globalResponse .= $data;
+    }
+
+    // Log
+    $eventParams = array(
+     'key' => 'popup',
+     'content' => '',
+     'repository' => $this->repository->getKey(),
+     'project' => $this->project->getKey()
     );
-    $data = $getRemoteData[0];
-    $mime = $getRemoteData[1];
-
-    // Get HTML content if needed
-    if($toHtml and preg_match('#/xml#', $mime)){
-      $data = $this->getFeatureInfoHtml($this->params, $data);
-      $mime = 'text/html';
-    }
-
-   // Log
-   $eventParams = array(
-    'key' => 'popup',
-    'content' => '',
-    'repository' => $this->repository->getKey(),
-    'project' => $this->project->getKey()
-   );
-   jEvent::notify('LizLogItem', $eventParams);
+    jEvent::notify('LizLogItem', $eventParams);
 
     $rep = $this->getResponse('binary');
-    $rep->mimeType = $mime;
-    $rep->content = $data;
+    $rep->mimeType = 'text/html';
+    $rep->content = $globalResponse;
     $rep->doDownload = false;
     $rep->outputFileName = 'getFeatureInfo';
 

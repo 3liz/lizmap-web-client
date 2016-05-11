@@ -3047,7 +3047,7 @@ var lizMap = function() {
                      if ( !editionLayer )
                         editionLayer = config.editionLayers[layer.name];
                  }
-                 if( (configLayer && configLayer.popup && configLayer.popup == 'True' && configLayer.externalWmsToggle != 'True')
+                 if( (configLayer && configLayer.popup && configLayer.popup == 'True')
                   || (editionLayer && ( editionLayer.capabilities.modifyGeometry == 'True'
                                      || editionLayer.capabilities.modifyAttribute == 'True'
                                      || editionLayer.capabilities.deleteFeature == 'True') ) ){
@@ -3057,9 +3057,7 @@ var lizMap = function() {
                     if(this.drillDown === false && !this.url) {
                         this.url = url;
                     }
-                    if(this.drillDown === true || this.urlMatches(url)) {
-                        layers.push(layer);
-                    }
+                    layers.push(layer);
 
                  }
             }
