@@ -846,8 +846,13 @@ class lizmapProject{
     protected function readEditionLayers($xml, $cfg) {
         $editionLayers = array();
 
-        // if no ability to load spatialite extension, we leave $editionLayers empty
         if ( property_exists( $cfg, 'editionLayers' ) ) {
+
+            // Add data into editionLayers from configuration
+            $editionLayers = $cfg->editionLayers;
+
+            // Check ability to load spatialite extension
+            // And remove ONLY spatialite layers if no extension found
             $spatial = false;
             if ( class_exists('SQLite3') ) {
                 // Try with libspatialite
@@ -867,7 +872,6 @@ class lizmapProject{
                     }
             }
             if(!$spatial){
-                $editionLayers = $cfg->editionLayers;
                 foreach( $editionLayers as $key=>$obj ){
                     $layerXml = $this->getXmlLayer2($xml, $obj->layerId );
                     $layerXmlZero = $layerXml[0];
