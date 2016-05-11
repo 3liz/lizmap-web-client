@@ -1,5 +1,5 @@
 <!DOCTYPE qgis PUBLIC 'http://mrcc.com/qgis.dtd' 'SYSTEM'>
-<qgis projectname="Montpellier - Transports" version="2.14.1-Essen">
+<qgis projectname="Montpellier - Transports" version="2.14.2-Essen">
   <title>Montpellier - Transports</title>
   <layer-tree-group expanded="1" checked="Qt::PartiallyChecked" name="">
     <customproperties/>
@@ -114,9 +114,9 @@
     <units>degrees</units>
     <extent>
       <xmin>3.80532457219331777</xmin>
-      <ymin>43.56457539669620616</ymin>
+      <ymin>43.56457539669621326</ymin>
       <xmax>3.94824162667439316</xmax>
-      <ymax>43.65667242105484291</ymax>
+      <ymax>43.65667242105485002</ymax>
     </extent>
     <rotation>0</rotation>
     <projections>1</projections>
@@ -238,7 +238,7 @@
             <legendlayerfile isInOverview="0" layerid="tramstop20150328114203878" visible="1"/>
           </filegroup>
         </legendlayer>
-        <legendlayer drawingOrder="-1" open="true" checked="Qt::Checked" name="tramway" showFeatureCount="0">
+        <legendlayer drawingOrder="-1" open="true" checked="Qt::Checked" name="tramway" showFeatureCount="1">
           <filegroup open="true" hidden="false">
             <legendlayerfile isInOverview="0" layerid="tramway20150328114206278" visible="1"/>
           </filegroup>
@@ -747,9 +747,6 @@
     <maplayer minimumScale="-4.65661e-10" maximumScale="1e+08" simplifyDrawingHints="1" minLabelScale="0" maxLabelScale="1e+08" simplifyDrawingTol="1" geometry="Polygon" simplifyMaxScale="1" type="vector" hasScaleBasedVisibilityFlag="0" simplifyLocal="1" scaleBasedLabelVisibilityFlag="0">
       <id>SousQuartiers20160121124316563</id>
       <datasource>./data/vector/VilleMTP_MTP_SousQuartiers_2011.shp</datasource>
-      <shortname></shortname>
-      <title></title>
-      <abstract></abstract>
       <keywordList>
         <value></value>
       </keywordList>
@@ -1076,9 +1073,6 @@ def my_form_open(dialog, layer, feature):
     <maplayer minimumScale="0" maximumScale="1e+08" simplifyDrawingHints="1" minLabelScale="1" maxLabelScale="1e+08" simplifyDrawingTol="1" geometry="Polygon" simplifyMaxScale="1" type="vector" hasScaleBasedVisibilityFlag="1" simplifyLocal="1" scaleBasedLabelVisibilityFlag="0">
       <id>VilleMTP_MTP_Quartiers_2011_432620130116112351546</id>
       <datasource>./data/vector/VilleMTP_MTP_Quartiers_2011_4326.shp</datasource>
-      <shortname></shortname>
-      <title></title>
-      <abstract></abstract>
       <keywordList>
         <value></value>
       </keywordList>
@@ -1328,9 +1322,6 @@ def my_form_open(dialog, layer, feature):
     <maplayer minimumScale="0" maximumScale="1e+08" simplifyDrawingHints="1" minLabelScale="1" maxLabelScale="1e+08" simplifyDrawingTol="1" geometry="Polygon" simplifyMaxScale="1" type="vector" hasScaleBasedVisibilityFlag="0" simplifyLocal="1" scaleBasedLabelVisibilityFlag="0">
       <id>VilleMTP_MTP_Quartiers_2011_432620130116112610876</id>
       <datasource>./data/vector/VilleMTP_MTP_Quartiers_2011_4326.shp</datasource>
-      <shortname></shortname>
-      <title></title>
-      <abstract></abstract>
       <keywordList>
         <value></value>
       </keywordList>
@@ -1758,9 +1749,7 @@ def my_form_open(dialog, layer, feature):
     <maplayer minimumScale="-4.65661e-10" maximumScale="40001" simplifyDrawingHints="1" minLabelScale="1" maxLabelScale="1e+08" simplifyDrawingTol="1" geometry="Line" simplifyMaxScale="1" type="vector" hasScaleBasedVisibilityFlag="1" simplifyLocal="1" scaleBasedLabelVisibilityFlag="0">
       <id>bus20121102133611751</id>
       <datasource>./data/vector/bus.shp</datasource>
-      <shortname></shortname>
       <title>Bus lines</title>
-      <abstract></abstract>
       <keywordList>
         <value></value>
       </keywordList>
@@ -2667,9 +2656,6 @@ def my_form_open(dialog, layer, feature):
     <maplayer minimumScale="0" maximumScale="15000" simplifyDrawingHints="0" minLabelScale="1" maxLabelScale="1e+08" simplifyDrawingTol="1" geometry="Point" simplifyMaxScale="1" type="vector" hasScaleBasedVisibilityFlag="1" simplifyLocal="1" scaleBasedLabelVisibilityFlag="0">
       <id>bus_stops20121106170806413</id>
       <datasource>./data/vector/bus_stops.shp</datasource>
-      <shortname></shortname>
-      <title></title>
-      <abstract></abstract>
       <keywordList>
         <value></value>
       </keywordList>
@@ -2938,9 +2924,6 @@ def my_form_open(dialog, layer, feature):
     <maplayer minimumScale="0" maximumScale="1e+08" geometry="No geometry" type="vector" hasScaleBasedVisibilityFlag="0">
       <id>donnes_sociodemo_sous_quartiers20160121144525075</id>
       <datasource>./data/vector/donnes_sociodemo_sous_quartiers.csv</datasource>
-      <shortname></shortname>
-      <title></title>
-      <abstract></abstract>
       <keywordList>
         <value></value>
       </keywordList>
@@ -3006,9 +2989,7 @@ def my_form_open(dialog, layer, feature):
     <maplayer minimumScale="0" maximumScale="1e+08" simplifyDrawingHints="1" minLabelScale="1" maxLabelScale="1e+08" simplifyDrawingTol="1" geometry="Line" simplifyMaxScale="1" type="vector" hasScaleBasedVisibilityFlag="0" simplifyLocal="1" scaleBasedLabelVisibilityFlag="0">
       <id>edition_line20130409161630329</id>
       <datasource>dbname='./edition/edition_db.sqlite' table="edition_line" (geom) sql=</datasource>
-      <shortname></shortname>
       <title>Bicycle rides</title>
-      <abstract></abstract>
       <keywordList>
         <value></value>
       </keywordList>
@@ -3193,9 +3174,7 @@ def my_form_open(dialog, layer, feature):
     <maplayer minimumScale="-4.65661e-10" maximumScale="1e+08" simplifyDrawingHints="0" minLabelScale="1" maxLabelScale="1e+08" simplifyDrawingTol="1" geometry="Point" simplifyMaxScale="1" type="vector" hasScaleBasedVisibilityFlag="0" simplifyLocal="1" scaleBasedLabelVisibilityFlag="0">
       <id>edition_point20130118171631518</id>
       <datasource>dbname='./edition/edition_db.sqlite' table="edition_point" (geometry) sql=</datasource>
-      <shortname></shortname>
       <title>Points of interest</title>
-      <abstract></abstract>
       <keywordList>
         <value></value>
       </keywordList>
@@ -3681,9 +3660,7 @@ def my_form_open(dialog, layer, feature):
     <maplayer minimumScale="0" maximumScale="1e+08" simplifyDrawingHints="1" minLabelScale="1" maxLabelScale="1e+08" simplifyDrawingTol="1" geometry="Polygon" simplifyMaxScale="1" type="vector" hasScaleBasedVisibilityFlag="0" simplifyLocal="1" scaleBasedLabelVisibilityFlag="0">
       <id>edition_polygon20130409114333776</id>
       <datasource>dbname='./edition/edition_db.sqlite' table="edition_polygon" (geom) sql=</datasource>
-      <shortname></shortname>
       <title>Areas of interest</title>
-      <abstract></abstract>
       <keywordList>
         <value></value>
       </keywordList>
@@ -3839,9 +3816,6 @@ def my_form_open(dialog, layer, feature):
     <maplayer minimumScale="0" maximumScale="1e+08" type="raster" hasScaleBasedVisibilityFlag="0">
       <id>frmt_wms_openstreetmap_mapnik_tms20140610162910636</id>
       <datasource>./data/raster/frmt_wms_openstreetmap_mapnik_tms.xml</datasource>
-      <shortname></shortname>
-      <title></title>
-      <abstract></abstract>
       <keywordList>
         <value></value>
       </keywordList>
@@ -3883,9 +3857,6 @@ def my_form_open(dialog, layer, feature):
     <maplayer minimumScale="0" maximumScale="1e+08" type="raster" hasScaleBasedVisibilityFlag="0">
       <id>frmt_wms_openstreetmap_mapquest_tms20140610162911446</id>
       <datasource>./data/raster/frmt_wms_openstreetmap_mapquest_tms.xml</datasource>
-      <shortname></shortname>
-      <title></title>
-      <abstract></abstract>
       <keywordList>
         <value></value>
       </keywordList>
@@ -3927,9 +3898,6 @@ def my_form_open(dialog, layer, feature):
     <maplayer minimumScale="-4.65661e-10" maximumScale="1e+08" geometry="No geometry" type="vector" hasScaleBasedVisibilityFlag="0">
       <id>jointure_tram_stop20150328114216806</id>
       <datasource>dbname='./edition/transport.sqlite' table="jointure_tram_stop" sql=</datasource>
-      <shortname></shortname>
-      <title></title>
-      <abstract></abstract>
       <keywordList>
         <value></value>
       </keywordList>
@@ -4018,9 +3986,7 @@ def my_form_open(dialog, layer, feature):
     <maplayer minimumScale="-4.65661e-10" maximumScale="1e+08" simplifyDrawingHints="0" minLabelScale="0" maxLabelScale="1e+08" simplifyDrawingTol="1" geometry="Point" simplifyMaxScale="1" type="vector" hasScaleBasedVisibilityFlag="0" simplifyLocal="1" scaleBasedLabelVisibilityFlag="0">
       <id>publicbuildings20150420100958543</id>
       <datasource>dbname='./edition/transport.sqlite' table="publicbuildings" (geom) sql=</datasource>
-      <shortname></shortname>
       <title>public buildings</title>
-      <abstract></abstract>
       <keywordList>
         <value></value>
       </keywordList>
@@ -4291,9 +4257,7 @@ def my_form_open(dialog, layer, feature):
     <maplayer minimumScale="-4.65661e-10" maximumScale="1e+08" geometry="No geometry" type="vector" hasScaleBasedVisibilityFlag="0">
       <id>publicbuildings_tramstop20150420095614071</id>
       <datasource>dbname='./edition/transport.sqlite' table="publicbuildings_tramstop" sql=</datasource>
-      <shortname></shortname>
       <title>Pivot tramstops / Buildings</title>
-      <abstract></abstract>
       <keywordList>
         <value></value>
       </keywordList>
@@ -4372,9 +4336,7 @@ def my_form_open(dialog, layer, feature):
     <maplayer minimumScale="-4.65661e-10" maximumScale="1e+08" geometry="No geometry" type="vector" hasScaleBasedVisibilityFlag="0">
       <id>tram_stop_work20150416102656130</id>
       <datasource>dbname='./edition/transport.sqlite' table="tram_stop_work" sql=</datasource>
-      <shortname></shortname>
       <title>Tram stop works</title>
-      <abstract></abstract>
       <keywordList>
         <value></value>
       </keywordList>
@@ -4462,9 +4424,7 @@ def my_form_open(dialog, layer, feature):
     <maplayer minimumScale="0" maximumScale="1e+08" simplifyDrawingHints="0" minLabelScale="1" maxLabelScale="1e+08" simplifyDrawingTol="1" geometry="Point" simplifyMaxScale="1" type="vector" hasScaleBasedVisibilityFlag="0" simplifyLocal="1" scaleBasedLabelVisibilityFlag="0">
       <id>tramstop20150328114203878</id>
       <datasource>dbname='./edition/transport.sqlite' table="tramstop" (geometry) sql=</datasource>
-      <shortname></shortname>
       <title>Tram stops</title>
-      <abstract></abstract>
       <keywordList>
         <value></value>
       </keywordList>
@@ -4772,12 +4732,10 @@ def my_form_open(dialog, layer, feature):
         <fieldstyles/>
       </conditionalstyles>
     </maplayer>
-    <maplayer minimumScale="0" maximumScale="1e+08" simplifyDrawingHints="1" minLabelScale="1" maxLabelScale="1e+08" simplifyDrawingTol="1" geometry="Line" simplifyMaxScale="1" type="vector" hasScaleBasedVisibilityFlag="0" simplifyLocal="1" scaleBasedLabelVisibilityFlag="0">
+    <maplayer minimumScale="-4.65661e-10" maximumScale="1e+08" simplifyDrawingHints="1" minLabelScale="1" maxLabelScale="1e+08" simplifyDrawingTol="1" geometry="Line" simplifyMaxScale="1" type="vector" hasScaleBasedVisibilityFlag="0" simplifyLocal="1" scaleBasedLabelVisibilityFlag="0">
       <id>tramway20150328114206278</id>
       <datasource>dbname='./edition/transport.sqlite' table="tramway" (geometry) sql=</datasource>
-      <shortname></shortname>
       <title>Tram lines</title>
-      <abstract></abstract>
       <keywordList>
         <value></value>
       </keywordList>
@@ -4799,9 +4757,10 @@ def my_form_open(dialog, layer, feature):
       <vectorjoins/>
       <layerDependencies/>
       <expressionfields/>
-      <map-layer-style-manager current="colored">
-        <map-layer-style name="black">
-          <qgis version="2.8.1-Wien" minimumScale="0" maximumScale="1e+08" simplifyDrawingHints="1" minLabelScale="1" maxLabelScale="1e+08" simplifyDrawingTol="1" simplifyMaxScale="1" hasScaleBasedVisibilityFlag="0" simplifyLocal="1" scaleBasedLabelVisibilityFlag="0">
+      <map-layer-style-manager current="black">
+        <map-layer-style name="black"/>
+        <map-layer-style name="colored">
+          <qgis version="2.14.2-Essen" minimumScale="-4.65661e-10" maximumScale="1e+08" simplifyDrawingHints="1" minLabelScale="1" maxLabelScale="1e+08" simplifyDrawingTol="1" simplifyMaxScale="1" hasScaleBasedVisibilityFlag="0" simplifyLocal="1" scaleBasedLabelVisibilityFlag="0">
             <edittypes>
               <edittype widgetv2type="TextEdit" name="OGC_FID">
                 <widgetv2config IsMultiline="0" fieldEditable="1" UseHtml="0" labelOnTop="0"/>
@@ -4824,38 +4783,128 @@ def my_form_open(dialog, layer, feature):
               <edittype widgetv2type="TextEdit" name="colour">
                 <widgetv2config IsMultiline="0" fieldEditable="1" UseHtml="0" labelOnTop="0"/>
               </edittype>
-              <edittype widgetv2type="TextEdit" name="html">
-                <widgetv2config IsMultiline="0" fieldEditable="1" UseHtml="0" labelOnTop="0"/>
+              <edittype widgetv2type="Hidden" name="html">
+                <widgetv2config fieldEditable="1" labelOnTop="0"/>
               </edittype>
-              <edittype widgetv2type="TextEdit" name="wkt">
-                <widgetv2config IsMultiline="0" fieldEditable="1" UseHtml="0" labelOnTop="0"/>
+              <edittype widgetv2type="Hidden" name="wkt">
+                <widgetv2config fieldEditable="1" labelOnTop="0"/>
               </edittype>
             </edittypes>
-            <renderer-v2 symbollevels="0" type="singleSymbol">
+            <renderer-v2 attr="ref" forceraster="0" symbollevels="0" type="categorizedSymbol" enableorderby="0">
+              <categories>
+                <category render="true" symbol="0" value="1" label="1"/>
+                <category render="true" symbol="1" value="2" label="2"/>
+                <category render="true" symbol="2" value="3" label="3"/>
+                <category render="true" symbol="3" value="4" label="4"/>
+              </categories>
               <symbols>
-                <symbol alpha="1" type="line" name="0">
+                <symbol alpha="1" clip_to_extent="1" type="line" name="0">
                   <layer pass="0" class="SimpleLine" locked="0">
                     <prop k="capstyle" v="square"/>
                     <prop k="customdash" v="5;2"/>
-                    <prop k="customdash_map_unit_scale" v="0,0"/>
+                    <prop k="customdash_map_unit_scale" v="0,0,0,0,0,0"/>
                     <prop k="customdash_unit" v="MM"/>
                     <prop k="draw_inside_polygon" v="0"/>
                     <prop k="joinstyle" v="bevel"/>
-                    <prop k="line_color" v="0,0,0,255"/>
+                    <prop k="line_color" v="0,0,255,255"/>
                     <prop k="line_style" v="solid"/>
-                    <prop k="line_width" v="0.7"/>
+                    <prop k="line_width" v="1.5"/>
                     <prop k="line_width_unit" v="MM"/>
                     <prop k="offset" v="0"/>
-                    <prop k="offset_map_unit_scale" v="0,0"/>
+                    <prop k="offset_map_unit_scale" v="0,0,0,0,0,0"/>
                     <prop k="offset_unit" v="MM"/>
                     <prop k="use_custom_dash" v="0"/>
-                    <prop k="width_map_unit_scale" v="0,0"/>
+                    <prop k="width_map_unit_scale" v="0,0,0,0,0,0"/>
+                  </layer>
+                </symbol>
+                <symbol alpha="1" clip_to_extent="1" type="line" name="1">
+                  <layer pass="0" class="SimpleLine" locked="0">
+                    <prop k="capstyle" v="square"/>
+                    <prop k="customdash" v="5;2"/>
+                    <prop k="customdash_map_unit_scale" v="0,0,0,0,0,0"/>
+                    <prop k="customdash_unit" v="MM"/>
+                    <prop k="draw_inside_polygon" v="0"/>
+                    <prop k="joinstyle" v="bevel"/>
+                    <prop k="line_color" v="255,85,0,255"/>
+                    <prop k="line_style" v="solid"/>
+                    <prop k="line_width" v="1.5"/>
+                    <prop k="line_width_unit" v="MM"/>
+                    <prop k="offset" v="0"/>
+                    <prop k="offset_map_unit_scale" v="0,0,0,0,0,0"/>
+                    <prop k="offset_unit" v="MM"/>
+                    <prop k="use_custom_dash" v="0"/>
+                    <prop k="width_map_unit_scale" v="0,0,0,0,0,0"/>
+                  </layer>
+                </symbol>
+                <symbol alpha="1" clip_to_extent="1" type="line" name="2">
+                  <layer pass="0" class="SimpleLine" locked="0">
+                    <prop k="capstyle" v="square"/>
+                    <prop k="customdash" v="5;2"/>
+                    <prop k="customdash_map_unit_scale" v="0,0,0,0,0,0"/>
+                    <prop k="customdash_unit" v="MM"/>
+                    <prop k="draw_inside_polygon" v="0"/>
+                    <prop k="joinstyle" v="bevel"/>
+                    <prop k="line_color" v="52,221,193,255"/>
+                    <prop k="line_style" v="solid"/>
+                    <prop k="line_width" v="1.5"/>
+                    <prop k="line_width_unit" v="MM"/>
+                    <prop k="offset" v="0"/>
+                    <prop k="offset_map_unit_scale" v="0,0,0,0,0,0"/>
+                    <prop k="offset_unit" v="MM"/>
+                    <prop k="use_custom_dash" v="0"/>
+                    <prop k="width_map_unit_scale" v="0,0,0,0,0,0"/>
+                  </layer>
+                </symbol>
+                <symbol alpha="1" clip_to_extent="1" type="line" name="3">
+                  <layer pass="0" class="SimpleLine" locked="0">
+                    <prop k="capstyle" v="square"/>
+                    <prop k="customdash" v="5;2"/>
+                    <prop k="customdash_map_unit_scale" v="0,0,0,0,0,0"/>
+                    <prop k="customdash_unit" v="MM"/>
+                    <prop k="draw_inside_polygon" v="0"/>
+                    <prop k="joinstyle" v="bevel"/>
+                    <prop k="line_color" v="206,208,26,255"/>
+                    <prop k="line_style" v="solid"/>
+                    <prop k="line_width" v="1.5"/>
+                    <prop k="line_width_unit" v="MM"/>
+                    <prop k="offset" v="0"/>
+                    <prop k="offset_map_unit_scale" v="0,0,0,0,0,0"/>
+                    <prop k="offset_unit" v="MM"/>
+                    <prop k="use_custom_dash" v="0"/>
+                    <prop k="width_map_unit_scale" v="0,0,0,0,0,0"/>
                   </layer>
                 </symbol>
               </symbols>
+              <source-symbol>
+                <symbol alpha="1" clip_to_extent="1" type="line" name="0">
+                  <layer pass="0" class="SimpleLine" locked="0">
+                    <prop k="capstyle" v="square"/>
+                    <prop k="customdash" v="5;2"/>
+                    <prop k="customdash_map_unit_scale" v="0,0,0,0,0,0"/>
+                    <prop k="customdash_unit" v="MM"/>
+                    <prop k="draw_inside_polygon" v="0"/>
+                    <prop k="joinstyle" v="bevel"/>
+                    <prop k="line_color" v="91,8,151,255"/>
+                    <prop k="line_style" v="solid"/>
+                    <prop k="line_width" v="1.5"/>
+                    <prop k="line_width_unit" v="MM"/>
+                    <prop k="offset" v="0"/>
+                    <prop k="offset_map_unit_scale" v="0,0,0,0,0,0"/>
+                    <prop k="offset_unit" v="MM"/>
+                    <prop k="use_custom_dash" v="0"/>
+                    <prop k="width_map_unit_scale" v="0,0,0,0,0,0"/>
+                  </layer>
+                </symbol>
+              </source-symbol>
+              <colorramp type="colorbrewer" name="[source]">
+                <prop k="colors" v="10"/>
+                <prop k="schemeName" v="Paired"/>
+              </colorramp>
+              <invertedcolorramp value="0"/>
               <rotation/>
-              <sizescale scalemethod="area"/>
+              <sizescale scalemethod="diameter"/>
             </renderer-v2>
+            <labeling type="simple"/>
             <customproperties>
               <property key="labeling" value="pal"/>
               <property key="labeling/addDirectionSymbol" value="false"/>
@@ -4873,6 +4922,7 @@ def my_form_open(dialog, layer, feature):
               <property key="labeling/bufferSizeInMapUnits" value="false"/>
               <property key="labeling/bufferSizeMapUnitMaxScale" value="0"/>
               <property key="labeling/bufferSizeMapUnitMinScale" value="0"/>
+              <property key="labeling/bufferSizeMapUnitScale" value="0,0,0,0,0,0"/>
               <property key="labeling/bufferTransp" value="0"/>
               <property key="labeling/centroidInside" value="false"/>
               <property key="labeling/centroidWhole" value="false"/>
@@ -4882,8 +4932,11 @@ def my_form_open(dialog, layer, feature):
               <property key="labeling/distInMapUnits" value="false"/>
               <property key="labeling/distMapUnitMaxScale" value="0"/>
               <property key="labeling/distMapUnitMinScale" value="0"/>
+              <property key="labeling/distMapUnitScale" value="0,0,0,0,0,0"/>
+              <property key="labeling/drawLabels" value="false"/>
               <property key="labeling/enabled" value="false"/>
               <property key="labeling/fieldName" value=""/>
+              <property key="labeling/fitInPolygonOnly" value="false"/>
               <property key="labeling/fontBold" value="true"/>
               <property key="labeling/fontCapitals" value="0"/>
               <property key="labeling/fontFamily" value="Ubuntu"/>
@@ -4896,6 +4949,7 @@ def my_form_open(dialog, layer, feature):
               <property key="labeling/fontSizeInMapUnits" value="false"/>
               <property key="labeling/fontSizeMapUnitMaxScale" value="0"/>
               <property key="labeling/fontSizeMapUnitMinScale" value="0"/>
+              <property key="labeling/fontSizeMapUnitScale" value="0,0,0,0,0,0"/>
               <property key="labeling/fontStrikeout" value="false"/>
               <property key="labeling/fontUnderline" value="false"/>
               <property key="labeling/fontWeight" value="63"/>
@@ -4905,6 +4959,7 @@ def my_form_open(dialog, layer, feature):
               <property key="labeling/labelOffsetInMapUnits" value="true"/>
               <property key="labeling/labelOffsetMapUnitMaxScale" value="0"/>
               <property key="labeling/labelOffsetMapUnitMinScale" value="0"/>
+              <property key="labeling/labelOffsetMapUnitScale" value="0,0,0,0,0,0"/>
               <property key="labeling/labelPerPart" value="false"/>
               <property key="labeling/leftDirectionSymbol" value="&lt;"/>
               <property key="labeling/limitNumLabels" value="false"/>
@@ -4917,10 +4972,14 @@ def my_form_open(dialog, layer, feature):
               <property key="labeling/multilineHeight" value="1"/>
               <property key="labeling/namedStyle" value="Medium"/>
               <property key="labeling/obstacle" value="true"/>
+              <property key="labeling/obstacleFactor" value="1"/>
+              <property key="labeling/obstacleType" value="0"/>
+              <property key="labeling/offsetType" value="0"/>
               <property key="labeling/placeDirectionSymbol" value="0"/>
               <property key="labeling/placement" value="2"/>
               <property key="labeling/placementFlags" value="10"/>
               <property key="labeling/plussign" value="false"/>
+              <property key="labeling/predefinedPositionOrder" value="TR,TL,BR,BL,R,L,TSR,BSR"/>
               <property key="labeling/preserveRotation" value="true"/>
               <property key="labeling/previewBkgrdColor" value="#ffffff"/>
               <property key="labeling/priority" value="5"/>
@@ -4928,6 +4987,7 @@ def my_form_open(dialog, layer, feature):
               <property key="labeling/repeatDistance" value="0"/>
               <property key="labeling/repeatDistanceMapUnitMaxScale" value="0"/>
               <property key="labeling/repeatDistanceMapUnitMinScale" value="0"/>
+              <property key="labeling/repeatDistanceMapUnitScale" value="0,0,0,0,0,0"/>
               <property key="labeling/repeatDistanceUnit" value="1"/>
               <property key="labeling/reverseDirectionSymbol" value="false"/>
               <property key="labeling/rightDirectionSymbol" value=">"/>
@@ -4944,11 +5004,13 @@ def my_form_open(dialog, layer, feature):
               <property key="labeling/shadowOffsetGlobal" value="true"/>
               <property key="labeling/shadowOffsetMapUnitMaxScale" value="0"/>
               <property key="labeling/shadowOffsetMapUnitMinScale" value="0"/>
+              <property key="labeling/shadowOffsetMapUnitScale" value="0,0,0,0,0,0"/>
               <property key="labeling/shadowOffsetUnits" value="1"/>
               <property key="labeling/shadowRadius" value="1.5"/>
               <property key="labeling/shadowRadiusAlphaOnly" value="false"/>
               <property key="labeling/shadowRadiusMapUnitMaxScale" value="0"/>
               <property key="labeling/shadowRadiusMapUnitMinScale" value="0"/>
+              <property key="labeling/shadowRadiusMapUnitScale" value="0,0,0,0,0,0"/>
               <property key="labeling/shadowRadiusUnits" value="1"/>
               <property key="labeling/shadowScale" value="100"/>
               <property key="labeling/shadowTransparency" value="30"/>
@@ -4961,6 +5023,7 @@ def my_form_open(dialog, layer, feature):
               <property key="labeling/shapeBorderWidth" value="0"/>
               <property key="labeling/shapeBorderWidthMapUnitMaxScale" value="0"/>
               <property key="labeling/shapeBorderWidthMapUnitMinScale" value="0"/>
+              <property key="labeling/shapeBorderWidthMapUnitScale" value="0,0,0,0,0,0"/>
               <property key="labeling/shapeBorderWidthUnits" value="1"/>
               <property key="labeling/shapeDraw" value="false"/>
               <property key="labeling/shapeFillColorA" value="255"/>
@@ -4970,11 +5033,13 @@ def my_form_open(dialog, layer, feature):
               <property key="labeling/shapeJoinStyle" value="64"/>
               <property key="labeling/shapeOffsetMapUnitMaxScale" value="0"/>
               <property key="labeling/shapeOffsetMapUnitMinScale" value="0"/>
+              <property key="labeling/shapeOffsetMapUnitScale" value="0,0,0,0,0,0"/>
               <property key="labeling/shapeOffsetUnits" value="1"/>
               <property key="labeling/shapeOffsetX" value="0"/>
               <property key="labeling/shapeOffsetY" value="0"/>
               <property key="labeling/shapeRadiiMapUnitMaxScale" value="0"/>
               <property key="labeling/shapeRadiiMapUnitMinScale" value="0"/>
+              <property key="labeling/shapeRadiiMapUnitScale" value="0,0,0,0,0,0"/>
               <property key="labeling/shapeRadiiUnits" value="1"/>
               <property key="labeling/shapeRadiiX" value="0"/>
               <property key="labeling/shapeRadiiY" value="0"/>
@@ -4983,6 +5048,7 @@ def my_form_open(dialog, layer, feature):
               <property key="labeling/shapeSVGFile" value=""/>
               <property key="labeling/shapeSizeMapUnitMaxScale" value="0"/>
               <property key="labeling/shapeSizeMapUnitMinScale" value="0"/>
+              <property key="labeling/shapeSizeMapUnitScale" value="0,0,0,0,0,0"/>
               <property key="labeling/shapeSizeType" value="0"/>
               <property key="labeling/shapeSizeUnits" value="1"/>
               <property key="labeling/shapeSizeX" value="0"/>
@@ -4998,6 +5064,9 @@ def my_form_open(dialog, layer, feature):
               <property key="labeling/wrapChar" value=""/>
               <property key="labeling/xOffset" value="0"/>
               <property key="labeling/yOffset" value="0"/>
+              <property key="labeling/zIndex" value="0"/>
+              <property key="variableNames" value="_fields_"/>
+              <property key="variableValues" value=""/>
             </customproperties>
             <blendMode>0</blendMode>
             <featureBlendMode>0</featureBlendMode>
@@ -5024,11 +5093,14 @@ def my_form_open(dialog, layer, feature):
               <multilineenabled fieldname="" on=""/>
               <selectedonly on=""/>
             </labelattributes>
-            <editform>.</editform>
-            <editforminit/>
-            <featformsuppress>0</featformsuppress>
+            <SingleCategoryDiagramRenderer diagramType="Pie">
+              <DiagramCategory penColor="#000000" labelPlacementMethod="XHeight" penWidth="0" diagramOrientation="Up" minimumSize="0" barWidth="5" penAlpha="255" maxScaleDenominator="1e+08" backgroundColor="#ffffff" transparency="0" width="15" scaleDependency="Area" backgroundAlpha="255" angleOffset="1440" scaleBasedVisibility="0" enabled="0" height="15" sizeType="MM" minScaleDenominator="-4.65661e-10">
+                <fontProperties description="Ubuntu,11,-1,5,50,0,0,0,0,0" style=""/>
+                <attribute field="" color="#000000" label=""/>
+              </DiagramCategory>
+            </SingleCategoryDiagramRenderer>
+            <DiagramLayerSettings yPosColumn="-1" linePlacementFlags="10" placement="2" dist="0" xPosColumn="-1" priority="0" obstacle="0" zIndex="0" showAll="1"/>
             <annotationform>.</annotationform>
-            <editorlayout>generatedlayout</editorlayout>
             <aliases>
               <alias field="OGC_FID" index="0" name="Id"/>
               <alias field="colour" index="6" name="Colour"/>
@@ -5039,19 +5111,58 @@ def my_form_open(dialog, layer, feature):
               <alias field="to" index="5" name="To"/>
             </aliases>
             <excludeAttributesWMS>
+              <attribute>osm_id</attribute>
               <attribute>OGC_FID</attribute>
               <attribute>wkt</attribute>
+              <attribute>from</attribute>
+              <attribute>to</attribute>
+              <attribute>colour</attribute>
+              <attribute>name</attribute>
+              <attribute>ref</attribute>
             </excludeAttributesWMS>
             <excludeAttributesWFS>
               <attribute>OGC_FID</attribute>
               <attribute>wkt</attribute>
+              <attribute>from</attribute>
               <attribute>html</attribute>
+              <attribute>to</attribute>
               <attribute>colour</attribute>
             </excludeAttributesWFS>
             <attributeactions/>
+            <editform>.</editform>
+            <editforminit/>
+            <editforminitcodesource>0</editforminitcodesource>
+            <editforminitfilepath>.</editforminitfilepath>
+            <editforminitcode><![CDATA[# -*- coding: utf-8 -*-
+"""
+Les formulaires QGIS peuvent avoir une fonction Python qui sera appelée à l'ouverture du formulaire.
+
+Utilisez cette fonction pour ajouter plus de fonctionnalités à vos formulaires.
+
+Entrez le nom de la fonction dans le champ
+"Fonction d'initialisation Python"
+Voici un exemple à suivre:
+"""
+from PyQt4.QtGui import QWidget
+
+def my_form_open(dialog, layer, feature):
+⇥geom = feature.geometry()
+⇥control = dialog.findChild(QWidget, "MyLineEdit")
+]]></editforminitcode>
+            <featformsuppress>0</featformsuppress>
+            <editorlayout>generatedlayout</editorlayout>
+            <widgets>
+              <widget name="jointure_tram_stop20150328114216806_tram_id_tramway20150328114206278_osm_id">
+                <config/>
+              </widget>
+            </widgets>
+            <conditionalstyles>
+              <rowstyles/>
+              <fieldstyles/>
+            </conditionalstyles>
+            <layerGeometryType>1</layerGeometryType>
           </qgis>
         </map-layer-style>
-        <map-layer-style name="colored"/>
       </map-layer-style-manager>
       <edittypes>
         <edittype widgetv2type="TextEdit" name="OGC_FID">
@@ -5075,20 +5186,14 @@ def my_form_open(dialog, layer, feature):
         <edittype widgetv2type="TextEdit" name="colour">
           <widgetv2config IsMultiline="0" fieldEditable="1" UseHtml="0" labelOnTop="0"/>
         </edittype>
-        <edittype widgetv2type="Hidden" name="html">
-          <widgetv2config fieldEditable="1" labelOnTop="0"/>
+        <edittype widgetv2type="TextEdit" name="html">
+          <widgetv2config IsMultiline="0" fieldEditable="1" UseHtml="0" labelOnTop="0"/>
         </edittype>
-        <edittype widgetv2type="Hidden" name="wkt">
-          <widgetv2config fieldEditable="1" labelOnTop="0"/>
+        <edittype widgetv2type="TextEdit" name="wkt">
+          <widgetv2config IsMultiline="0" fieldEditable="1" UseHtml="0" labelOnTop="0"/>
         </edittype>
       </edittypes>
-      <renderer-v2 attr="ref" forceraster="0" symbollevels="0" type="categorizedSymbol" enableorderby="0">
-        <categories>
-          <category render="true" symbol="0" value="1" label="1"/>
-          <category render="true" symbol="1" value="2" label="2"/>
-          <category render="true" symbol="2" value="3" label="3"/>
-          <category render="true" symbol="3" value="4" label="4"/>
-        </categories>
+      <renderer-v2 forceraster="0" symbollevels="0" type="singleSymbol" enableorderby="0">
         <symbols>
           <symbol alpha="1" clip_to_extent="1" type="line" name="0">
             <layer pass="0" class="SimpleLine" locked="0">
@@ -5098,66 +5203,9 @@ def my_form_open(dialog, layer, feature):
               <prop k="customdash_unit" v="MM"/>
               <prop k="draw_inside_polygon" v="0"/>
               <prop k="joinstyle" v="bevel"/>
-              <prop k="line_color" v="0,0,255,255"/>
+              <prop k="line_color" v="0,0,0,255"/>
               <prop k="line_style" v="solid"/>
-              <prop k="line_width" v="1.5"/>
-              <prop k="line_width_unit" v="MM"/>
-              <prop k="offset" v="0"/>
-              <prop k="offset_map_unit_scale" v="0,0,0,0,0,0"/>
-              <prop k="offset_unit" v="MM"/>
-              <prop k="use_custom_dash" v="0"/>
-              <prop k="width_map_unit_scale" v="0,0,0,0,0,0"/>
-            </layer>
-          </symbol>
-          <symbol alpha="1" clip_to_extent="1" type="line" name="1">
-            <layer pass="0" class="SimpleLine" locked="0">
-              <prop k="capstyle" v="square"/>
-              <prop k="customdash" v="5;2"/>
-              <prop k="customdash_map_unit_scale" v="0,0,0,0,0,0"/>
-              <prop k="customdash_unit" v="MM"/>
-              <prop k="draw_inside_polygon" v="0"/>
-              <prop k="joinstyle" v="bevel"/>
-              <prop k="line_color" v="255,85,0,255"/>
-              <prop k="line_style" v="solid"/>
-              <prop k="line_width" v="1.5"/>
-              <prop k="line_width_unit" v="MM"/>
-              <prop k="offset" v="0"/>
-              <prop k="offset_map_unit_scale" v="0,0,0,0,0,0"/>
-              <prop k="offset_unit" v="MM"/>
-              <prop k="use_custom_dash" v="0"/>
-              <prop k="width_map_unit_scale" v="0,0,0,0,0,0"/>
-            </layer>
-          </symbol>
-          <symbol alpha="1" clip_to_extent="1" type="line" name="2">
-            <layer pass="0" class="SimpleLine" locked="0">
-              <prop k="capstyle" v="square"/>
-              <prop k="customdash" v="5;2"/>
-              <prop k="customdash_map_unit_scale" v="0,0,0,0,0,0"/>
-              <prop k="customdash_unit" v="MM"/>
-              <prop k="draw_inside_polygon" v="0"/>
-              <prop k="joinstyle" v="bevel"/>
-              <prop k="line_color" v="52,221,193,255"/>
-              <prop k="line_style" v="solid"/>
-              <prop k="line_width" v="1.5"/>
-              <prop k="line_width_unit" v="MM"/>
-              <prop k="offset" v="0"/>
-              <prop k="offset_map_unit_scale" v="0,0,0,0,0,0"/>
-              <prop k="offset_unit" v="MM"/>
-              <prop k="use_custom_dash" v="0"/>
-              <prop k="width_map_unit_scale" v="0,0,0,0,0,0"/>
-            </layer>
-          </symbol>
-          <symbol alpha="1" clip_to_extent="1" type="line" name="3">
-            <layer pass="0" class="SimpleLine" locked="0">
-              <prop k="capstyle" v="square"/>
-              <prop k="customdash" v="5;2"/>
-              <prop k="customdash_map_unit_scale" v="0,0,0,0,0,0"/>
-              <prop k="customdash_unit" v="MM"/>
-              <prop k="draw_inside_polygon" v="0"/>
-              <prop k="joinstyle" v="bevel"/>
-              <prop k="line_color" v="206,208,26,255"/>
-              <prop k="line_style" v="solid"/>
-              <prop k="line_width" v="1.5"/>
+              <prop k="line_width" v="0.7"/>
               <prop k="line_width_unit" v="MM"/>
               <prop k="offset" v="0"/>
               <prop k="offset_map_unit_scale" v="0,0,0,0,0,0"/>
@@ -5167,32 +5215,6 @@ def my_form_open(dialog, layer, feature):
             </layer>
           </symbol>
         </symbols>
-        <source-symbol>
-          <symbol alpha="1" clip_to_extent="1" type="line" name="0">
-            <layer pass="0" class="SimpleLine" locked="0">
-              <prop k="capstyle" v="square"/>
-              <prop k="customdash" v="5;2"/>
-              <prop k="customdash_map_unit_scale" v="0,0,0,0,0,0"/>
-              <prop k="customdash_unit" v="MM"/>
-              <prop k="draw_inside_polygon" v="0"/>
-              <prop k="joinstyle" v="bevel"/>
-              <prop k="line_color" v="91,8,151,255"/>
-              <prop k="line_style" v="solid"/>
-              <prop k="line_width" v="1.5"/>
-              <prop k="line_width_unit" v="MM"/>
-              <prop k="offset" v="0"/>
-              <prop k="offset_map_unit_scale" v="0,0,0,0,0,0"/>
-              <prop k="offset_unit" v="MM"/>
-              <prop k="use_custom_dash" v="0"/>
-              <prop k="width_map_unit_scale" v="0,0,0,0,0,0"/>
-            </layer>
-          </symbol>
-        </source-symbol>
-        <colorramp type="colorbrewer" name="[source]">
-          <prop k="colors" v="10"/>
-          <prop k="schemeName" v="Paired"/>
-        </colorramp>
-        <invertedcolorramp value="0"/>
         <rotation/>
         <sizescale scalemethod="diameter"/>
       </renderer-v2>
@@ -5214,6 +5236,7 @@ def my_form_open(dialog, layer, feature):
         <property key="labeling/bufferSizeInMapUnits" value="false"/>
         <property key="labeling/bufferSizeMapUnitMaxScale" value="0"/>
         <property key="labeling/bufferSizeMapUnitMinScale" value="0"/>
+        <property key="labeling/bufferSizeMapUnitScale" value="0,0,0,0,0,0"/>
         <property key="labeling/bufferTransp" value="0"/>
         <property key="labeling/centroidInside" value="false"/>
         <property key="labeling/centroidWhole" value="false"/>
@@ -5223,6 +5246,7 @@ def my_form_open(dialog, layer, feature):
         <property key="labeling/distInMapUnits" value="false"/>
         <property key="labeling/distMapUnitMaxScale" value="0"/>
         <property key="labeling/distMapUnitMinScale" value="0"/>
+        <property key="labeling/distMapUnitScale" value="0,0,0,0,0,0"/>
         <property key="labeling/drawLabels" value="false"/>
         <property key="labeling/enabled" value="false"/>
         <property key="labeling/fieldName" value=""/>
@@ -5239,6 +5263,7 @@ def my_form_open(dialog, layer, feature):
         <property key="labeling/fontSizeInMapUnits" value="false"/>
         <property key="labeling/fontSizeMapUnitMaxScale" value="0"/>
         <property key="labeling/fontSizeMapUnitMinScale" value="0"/>
+        <property key="labeling/fontSizeMapUnitScale" value="0,0,0,0,0,0"/>
         <property key="labeling/fontStrikeout" value="false"/>
         <property key="labeling/fontUnderline" value="false"/>
         <property key="labeling/fontWeight" value="63"/>
@@ -5248,6 +5273,7 @@ def my_form_open(dialog, layer, feature):
         <property key="labeling/labelOffsetInMapUnits" value="true"/>
         <property key="labeling/labelOffsetMapUnitMaxScale" value="0"/>
         <property key="labeling/labelOffsetMapUnitMinScale" value="0"/>
+        <property key="labeling/labelOffsetMapUnitScale" value="0,0,0,0,0,0"/>
         <property key="labeling/labelPerPart" value="false"/>
         <property key="labeling/leftDirectionSymbol" value="&lt;"/>
         <property key="labeling/limitNumLabels" value="false"/>
@@ -5275,6 +5301,7 @@ def my_form_open(dialog, layer, feature):
         <property key="labeling/repeatDistance" value="0"/>
         <property key="labeling/repeatDistanceMapUnitMaxScale" value="0"/>
         <property key="labeling/repeatDistanceMapUnitMinScale" value="0"/>
+        <property key="labeling/repeatDistanceMapUnitScale" value="0,0,0,0,0,0"/>
         <property key="labeling/repeatDistanceUnit" value="1"/>
         <property key="labeling/reverseDirectionSymbol" value="false"/>
         <property key="labeling/rightDirectionSymbol" value=">"/>
@@ -5291,11 +5318,13 @@ def my_form_open(dialog, layer, feature):
         <property key="labeling/shadowOffsetGlobal" value="true"/>
         <property key="labeling/shadowOffsetMapUnitMaxScale" value="0"/>
         <property key="labeling/shadowOffsetMapUnitMinScale" value="0"/>
+        <property key="labeling/shadowOffsetMapUnitScale" value="0,0,0,0,0,0"/>
         <property key="labeling/shadowOffsetUnits" value="1"/>
         <property key="labeling/shadowRadius" value="1.5"/>
         <property key="labeling/shadowRadiusAlphaOnly" value="false"/>
         <property key="labeling/shadowRadiusMapUnitMaxScale" value="0"/>
         <property key="labeling/shadowRadiusMapUnitMinScale" value="0"/>
+        <property key="labeling/shadowRadiusMapUnitScale" value="0,0,0,0,0,0"/>
         <property key="labeling/shadowRadiusUnits" value="1"/>
         <property key="labeling/shadowScale" value="100"/>
         <property key="labeling/shadowTransparency" value="30"/>
@@ -5308,6 +5337,7 @@ def my_form_open(dialog, layer, feature):
         <property key="labeling/shapeBorderWidth" value="0"/>
         <property key="labeling/shapeBorderWidthMapUnitMaxScale" value="0"/>
         <property key="labeling/shapeBorderWidthMapUnitMinScale" value="0"/>
+        <property key="labeling/shapeBorderWidthMapUnitScale" value="0,0,0,0,0,0"/>
         <property key="labeling/shapeBorderWidthUnits" value="1"/>
         <property key="labeling/shapeDraw" value="false"/>
         <property key="labeling/shapeFillColorA" value="255"/>
@@ -5317,11 +5347,13 @@ def my_form_open(dialog, layer, feature):
         <property key="labeling/shapeJoinStyle" value="64"/>
         <property key="labeling/shapeOffsetMapUnitMaxScale" value="0"/>
         <property key="labeling/shapeOffsetMapUnitMinScale" value="0"/>
+        <property key="labeling/shapeOffsetMapUnitScale" value="0,0,0,0,0,0"/>
         <property key="labeling/shapeOffsetUnits" value="1"/>
         <property key="labeling/shapeOffsetX" value="0"/>
         <property key="labeling/shapeOffsetY" value="0"/>
         <property key="labeling/shapeRadiiMapUnitMaxScale" value="0"/>
         <property key="labeling/shapeRadiiMapUnitMinScale" value="0"/>
+        <property key="labeling/shapeRadiiMapUnitScale" value="0,0,0,0,0,0"/>
         <property key="labeling/shapeRadiiUnits" value="1"/>
         <property key="labeling/shapeRadiiX" value="0"/>
         <property key="labeling/shapeRadiiY" value="0"/>
@@ -5330,6 +5362,7 @@ def my_form_open(dialog, layer, feature):
         <property key="labeling/shapeSVGFile" value=""/>
         <property key="labeling/shapeSizeMapUnitMaxScale" value="0"/>
         <property key="labeling/shapeSizeMapUnitMinScale" value="0"/>
+        <property key="labeling/shapeSizeMapUnitScale" value="0,0,0,0,0,0"/>
         <property key="labeling/shapeSizeType" value="0"/>
         <property key="labeling/shapeSizeUnits" value="1"/>
         <property key="labeling/shapeSizeX" value="0"/>
@@ -5375,9 +5408,8 @@ def my_form_open(dialog, layer, feature):
         <selectedonly on=""/>
       </labelattributes>
       <SingleCategoryDiagramRenderer diagramType="Pie">
-        <DiagramCategory penColor="#000000" labelPlacementMethod="XHeight" penWidth="0" diagramOrientation="Up" minimumSize="0" barWidth="5" penAlpha="255" maxScaleDenominator="1e+08" backgroundColor="#ffffff" transparency="0" width="15" scaleDependency="Area" backgroundAlpha="255" angleOffset="1440" scaleBasedVisibility="0" enabled="0" height="15" sizeType="MM" minScaleDenominator="0">
+        <DiagramCategory penColor="#000000" labelPlacementMethod="XHeight" penWidth="0" diagramOrientation="Up" minimumSize="0" barWidth="5" penAlpha="255" maxScaleDenominator="1e+08" backgroundColor="#ffffff" transparency="0" width="15" scaleDependency="Area" backgroundAlpha="255" angleOffset="1440" scaleBasedVisibility="0" enabled="0" height="15" sizeType="MM" minScaleDenominator="-4.65661e-10">
           <fontProperties description="Ubuntu,11,-1,5,50,0,0,0,0,0" style=""/>
-          <attribute field="" color="#000000" label=""/>
         </DiagramCategory>
       </SingleCategoryDiagramRenderer>
       <DiagramLayerSettings yPosColumn="-1" linePlacementFlags="10" placement="2" dist="0" xPosColumn="-1" priority="0" obstacle="0" zIndex="0" showAll="1"/>
@@ -5392,19 +5424,19 @@ def my_form_open(dialog, layer, feature):
         <alias field="to" index="5" name="To"/>
       </aliases>
       <excludeAttributesWMS>
+        <attribute>osm_id</attribute>
         <attribute>OGC_FID</attribute>
         <attribute>wkt</attribute>
         <attribute>from</attribute>
-        <attribute>html</attribute>
         <attribute>to</attribute>
         <attribute>colour</attribute>
+        <attribute>name</attribute>
+        <attribute>ref</attribute>
       </excludeAttributesWMS>
       <excludeAttributesWFS>
         <attribute>OGC_FID</attribute>
         <attribute>wkt</attribute>
-        <attribute>from</attribute>
         <attribute>html</attribute>
-        <attribute>to</attribute>
         <attribute>colour</attribute>
       </excludeAttributesWFS>
       <attributeactions/>
@@ -5443,9 +5475,6 @@ def my_form_open(dialog, layer, feature):
     <maplayer minimumScale="0" maximumScale="1e+08" geometry="No geometry" type="vector" hasScaleBasedVisibilityFlag="0">
       <id>tramway_ref20150612171109044</id>
       <datasource>dbname='./edition/transport.sqlite' table="tramway_ref" sql=</datasource>
-      <shortname></shortname>
-      <title></title>
-      <abstract></abstract>
       <keywordList>
         <value></value>
       </keywordList>
@@ -5509,15 +5538,15 @@ def my_form_open(dialog, layer, feature):
       <DistanceUnits type="QString">meters</DistanceUnits>
       <AreaUnits type="QString">m2</AreaUnits>
     </Measurement>
-    <Legend>
-      <filterByMap type="bool">false</filterByMap>
-    </Legend>
     <WMSExtent type="QStringList">
       <value>3.78300108</value>
       <value>43.54854151</value>
       <value>3.97065725</value>
       <value>43.67333749</value>
     </WMSExtent>
+    <Legend>
+      <filterByMap type="bool">false</filterByMap>
+    </Legend>
     <DefaultStyles>
       <Fill type="QString"></Fill>
       <Line type="QString"></Line>
@@ -5531,14 +5560,14 @@ def my_form_open(dialog, layer, feature):
     <WMSImageQuality type="int">90</WMSImageQuality>
     <WFSLayersPrecision>
       <donnes_sociodemo_sous_quartiers20160121144525075 type="int">1</donnes_sociodemo_sous_quartiers20160121144525075>
-      <jointure_tram_stop20150328114216806 type="int">8</jointure_tram_stop20150328114216806>
       <publicbuildings20150420100958543 type="int">8</publicbuildings20150420100958543>
+      <jointure_tram_stop20150328114216806 type="int">8</jointure_tram_stop20150328114216806>
       <edition_point20130118171631518 type="int">8</edition_point20130118171631518>
       <edition_line20130409161630329 type="int">8</edition_line20130409161630329>
       <bus20121102133611751 type="int">8</bus20121102133611751>
+      <tramstop20150328114203878 type="int">8</tramstop20150328114203878>
       <tram20150311115319564 type="int">8</tram20150311115319564>
       <tram_stop_work20150416102656130 type="int">8</tram_stop_work20150416102656130>
-      <tramstop20150328114203878 type="int">8</tramstop20150328114203878>
       <bus_stops20121106170806413 type="int">8</bus_stops20121106170806413>
       <tramway20150328114206278 type="int">8</tramway20150328114206278>
       <tramway_ref20150612171109044 type="int">1</tramway_ref20150612171109044>
@@ -5690,11 +5719,6 @@ def my_form_open(dialog, layer, feature):
       <timeLayerList type="QStringList"/>
       <playBackwards type="int">0</playBackwards>
     </TimeManager>
-    <Measure>
-      <Ellipsoid type="QString">NONE</Ellipsoid>
-    </Measure>
-    <WMSServiceAbstract type="QString">Demo project with bus and tramway lines in Montpellier, France.
-Data is licensed under ODbl, OpenStreetMap contributors</WMSServiceAbstract>
     <WFSLayers type="QStringList">
       <value>SousQuartiers20160121124316563</value>
       <value>VilleMTP_MTP_Quartiers_2011_432620130116112610876</value>
@@ -5710,6 +5734,11 @@ Data is licensed under ODbl, OpenStreetMap contributors</WMSServiceAbstract>
       <value>tramway20150328114206278</value>
       <value>tramway_ref20150612171109044</value>
     </WFSLayers>
+    <WMSServiceAbstract type="QString">Demo project with bus and tramway lines in Montpellier, France.
+Data is licensed under ODbl, OpenStreetMap contributors</WMSServiceAbstract>
+    <Measure>
+      <Ellipsoid type="QString">NONE</Ellipsoid>
+    </Measure>
     <WFSUrl type="QString"></WFSUrl>
     <WMSServiceCapabilities type="bool">true</WMSServiceCapabilities>
     <WMSUseLayerIDs type="bool">false</WMSUseLayerIDs>
