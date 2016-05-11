@@ -143,11 +143,11 @@ class lizmapProject{
         if ($this->xml) {
             return $this->xml;
         }
-        if (!file_exists($rep->getPath().$this->key.'.qgs') ||
-            !file_exists($rep->getPath().$this->key.'.qgs.cfg') ) {
+        if (!file_exists($this->repository->getPath().$this->key.'.qgs') ||
+            !file_exists($this->repository->getPath().$this->key.'.qgs.cfg') ) {
             throw new Error("Files of project ".$this->key." does not exists");
         }
-        $qgs_path = $rep->getPath().$key.'.qgs';
+        $qgs_path = $this->repository->getPath().$this->key.'.qgs';
         return simplexml_load_file($qgs_path);
     }
 
