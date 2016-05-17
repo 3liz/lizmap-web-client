@@ -392,11 +392,18 @@ class lizmapProxy {
         elseif($cacheStorageType == 'redis'){
             // CACHE CONTENT INTO REDIS
 
+            $cacheRedisHost = 'localhost';
+            $cacheRedisPort = '6379';
+            if( property_exists($ser, 'cacheRedisHost')
+                $cacheRedisHost = trim($ser->cacheRedisHost);
+            if( property_exists($ser, 'cacheRedisPort')
+                $cacheRedisPort = trim($ser->cacheRedisPort);
+
             // Virtual cache profile parameter
             $cacheParams = array(
                 "driver"=>"redis",
-                "host"=>"localhost",
-                "port"=>"6379",
+                "host"=>$cacheRedisHost,
+                "port"=>$cacheRedisPort,
                 "ttl"=>$cacheExpiration
             );
 
