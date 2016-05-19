@@ -3,6 +3,13 @@
 
 <h1>{@jacl2db_admin~acl2.users.title@}</h1>
 
+<form action="{formurl 'jacl2db_admin~users:rights'}" method="get" class="form-inline">
+    <div>
+        <label>{@jacl2db_admin~acl2.user.rights.title@}</label>
+        <input name="user"></input>
+        <button type="submit">{@jacl2db_admin~acl2.show.button@}</button>
+    </div>
+</form>
 
 <form action="{formurl 'jacl2db_admin~users:index'}" method="get">
 <fieldset><legend>{@jacl2db_admin~acl2.filter.title@}</legend>
