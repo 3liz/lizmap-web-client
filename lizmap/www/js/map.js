@@ -1174,7 +1174,7 @@ var lizMap = function() {
     map = new OpenLayers.Map('map'
       ,{
         controls:[
-          new OpenLayers.Control.Navigation(),
+          new OpenLayers.Control.Navigation({mouseWheelOptions: {interval: 100}}),
           new OpenLayers.Control.ZoomBox({alwaysZoom:true})
         ]
         ,tileManager: null // prevent bug with OL 2.13 : white tiles on panning back
@@ -3057,7 +3057,7 @@ var lizMap = function() {
                     if(this.drillDown === false && !this.url) {
                         this.url = url;
                     }
-                    
+
                     layers.push(layer);
                  }
             }
@@ -5763,6 +5763,7 @@ lizMap.events.on({
           evt.config.layers['gsat'] = gsatCfg;
           evt.baselayers.push(gsat);
           evt.map.allOverlays = false;
+          //evt.map.zoomDuration = 0;
         }
         if (('googleHybrid' in evt.config.options) && evt.config.options.googleHybrid == 'True') {
           var options = {
@@ -5791,6 +5792,7 @@ lizMap.events.on({
           evt.config.layers['ghyb'] = ghybCfg;
           evt.baselayers.push(ghyb);
           evt.map.allOverlays = false;
+          //evt.map.zoomDuration = 0;
         }
         if (('googleTerrain' in evt.config.options) && evt.config.options.googleTerrain == 'True') {
           var options = {
@@ -5819,6 +5821,7 @@ lizMap.events.on({
           evt.config.layers['gphy'] = gphyCfg;
           evt.baselayers.push(gphy);
           evt.map.allOverlays = false;
+          //evt.map.zoomDuration = 0;
        }
        if (('googleStreets' in evt.config.options) && evt.config.options.googleStreets == 'True') {
           var options = {
@@ -5846,6 +5849,7 @@ lizMap.events.on({
          evt.config.layers['gmap'] = gmapCfg;
          evt.baselayers.push(gmap);
          evt.map.allOverlays = false;
+         evt.map.zoomDuration = 0;
        }
        if (('bingStreets' in evt.config.options) && evt.config.options.bingStreets == 'True' && ('bingKey' in evt.config.options))  {
           var options = {
