@@ -166,7 +166,7 @@ class lizmapProxy {
             $lproj = lizmap::getProject($repository.'~'.$project);
         }
 
-        $key = $repository.'/'.$project.'/'.$layers.'/'.$crs.'/'.md5( serialize( $keyParams ) );
+        $key = md5( serialize( $keyParams ) );
 
         // Get tile cache virtual profile (tile storage)
         // And get tile if already in cache
@@ -404,13 +404,14 @@ class lizmapProxy {
                 "driver"=>"redis",
                 "host"=>$cacheRedisHost,
                 "port"=>$cacheRedisPort,
-                "ttl"=>$cacheExpiration
+                "ttl"=>$cacheExpiration,
+                "key_prefix"=>$repository.'/'.$project.'/'.$layers.'/'.$crs.'/';
             );
 
             if( property_exists($ser, 'cacheRedisDb') and !empty( trim($ser->cacheRedisDb) ) )
                 $cacheParams['db'] = trim($ser->cacheRedisDb);
             if( property_exists($ser, 'cacheRedisKeyPrefix') and !empty( trim($ser->cacheRedisKeyPrefix) ) )
-                $cacheParams['key_prefix'] = trim($ser->cacheRedisKeyPrefix);
+                $cacheParams['key_prefix'] = trim($ser->cacheRedisKeyPrefix).$cacheParams['key_prefix'];
 
             // Create the virtual cache profile
             jProfiles::createVirtualProfile('jcache', $cacheName, $cacheParams);
