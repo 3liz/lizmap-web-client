@@ -41,14 +41,24 @@
     <help locale="admin~admin.form.admin_services.cacheRootDirectory.help"/>
 </input>
 
-<input ref="cacheRedisHost" type="string">
+<input ref="cacheRedisHost" type="string" defaultvalue="localhost">
     <label locale="admin~admin.form.admin_services.cacheRedisHost.label"/>
     <help locale="admin~admin.form.admin_services.cacheRedisHost.help"/>
 </input>
 
-<input ref="cacheRedisPort" type="integer" defaultvalue="6379">
+<input ref="cacheRedisPort" type="integer" defaultvalue="6379" minvalue="1">
     <label locale="admin~admin.form.admin_services.cacheRedisPort.label"/>
     <help locale="admin~admin.form.admin_services.cacheRedisPort.help"/>
+</input>
+
+<input ref="cacheRedisDb" type="integer" defaultvalue="0" minvalue="0">
+    <label locale="admin~admin.form.admin_services.cacheRedisDb.label"/>
+    <help locale="admin~admin.form.admin_services.cacheRedisDb.help"/>
+</input>
+
+<input ref="cacheRedisKeyPrefix" type="string">
+    <label locale="admin~admin.form.admin_services.cacheRedisKeyPrefix.label"/>
+    <help locale="admin~admin.form.admin_services.cacheRedisKeyPrefix.help"/>
 </input>
 
 <input ref="cacheExpiration" type="integer" required="true" defaultvalue="2592000">
