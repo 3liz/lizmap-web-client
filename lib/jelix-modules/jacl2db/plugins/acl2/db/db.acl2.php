@@ -41,8 +41,8 @@ class dbAcl2Driver implements jIAcl2Driver {
         if (empty($resource))
             $resource = '-';
 
-        if(!jAuth::isConnected()) {
-            return self::getAnonymousRight($subject, $resource);
+        if (!jAuth::isConnected()) {
+            return $this->getAnonymousRight($subject, $resource);
         }
 
         $groups = null;

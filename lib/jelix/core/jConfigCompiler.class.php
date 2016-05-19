@@ -39,7 +39,6 @@ class jConfigCompiler {
      * @return object an object which contains configuration values
      */
     static public function read($configFile, $allModuleInfo = false, $isCli = false, $pseudoScriptName=''){
-
         $tempPath = jApp::tempBasePath();
         $configPath = jApp::configPath();
 
@@ -124,7 +123,6 @@ class jConfigCompiler {
      *              corresponding to the readed configuration
      */
     static protected function prepareConfig($config, $allModuleInfo, $isCli, $pseudoScriptName){
-
         self::checkMiscParameters($config);
         self::getPaths($config->urlengine, $pseudoScriptName, $isCli);
         self::_loadModuleInfo($config, $allModuleInfo);
@@ -188,15 +186,17 @@ class jConfigCompiler {
             $classname = $pluginName.'ConfigCompilerPlugin';
             $plugins[] = new $classname();
         }
-        if (!count($plugins))
+        if (!count($plugins)) {
             return;
+        }
 
         // sort plugins by priority
         usort($plugins, function($a, $b){ return $a->getPriority() < $b->getPriority();});
 
         // run plugins
-        foreach($plugins as $plugin)
+        foreach($plugins as $plugin) {
             $plugin->atStart($config);
+        }
 
         foreach($config->_modulesPathList as $moduleName=>$modulePath) {
             $moduleXml = simplexml_load_file($modulePath.'module.xml');
@@ -205,8 +205,9 @@ class jConfigCompiler {
             }
         }
 
-        foreach($plugins as $plugin)
+        foreach($plugins as $plugin) {
             $plugin->atEnd($config);
+        }
     }
     
     /**
@@ -238,10 +239,12 @@ class jConfigCompiler {
             $installation[$section] = array();
 
         $list = preg_split('/ *, */',$config->modulesPath);
-        if (isset(self::$commonConfig->modulesPath))
+        if (isset(self::$commonConfig->modulesPath)) {
             $list = array_merge($list, preg_split('/ *, */',self::$commonConfig->modulesPath));
+        }
         array_unshift($list, JELIX_LIB_PATH.'core-modules/');
         $pathChecked = array();
+        $pluginsPath =  preg_split('/ *, */',$config->pluginsPath);
 
         foreach($list as $k=>$path){
             if(trim($path) == '') continue;
@@ -333,7 +336,13 @@ class jConfigCompiler {
                         elseif ($config->modules[$f.'.access']) {
                             $config->_modulesPathList[$f]=$p.$f.'/';
                             if (file_exists( $p.$f.'/plugins')) {
-                                $config->pluginsPath .= ',module:'.$f;
+                                if (!in_array('module:'.$f, $pluginsPath) &&
+                                    !in_array('module:'.$f.'/', $pluginsPath) &&
+                                    !in_array('module:'.$f.'/plugins', $pluginsPath) &&
+                                    !in_array('module:'.$f.'/plugins/', $pluginsPath)) {
+                                    $config->pluginsPath .= ',module:'.$f;
+                                    $pluginsPath[] = 'module:'.$f;
+                                }
                             }
                         }
                     }
