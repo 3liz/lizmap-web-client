@@ -405,7 +405,7 @@ class lizmapProxy {
                 "host"=>$cacheRedisHost,
                 "port"=>$cacheRedisPort,
                 "ttl"=>$cacheExpiration,
-                "key_prefix"=>$repository.'/'.$project.'/'.$layers.'/'.$crs.'/';
+                "key_prefix"=>$repository.'/'.$project.'/'.$layers.'/'.$crs.'/'
             );
 
             if( property_exists($ser, 'cacheRedisDb') and !empty( trim($ser->cacheRedisDb) ) )
