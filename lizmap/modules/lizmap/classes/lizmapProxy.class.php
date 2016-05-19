@@ -392,13 +392,25 @@ class lizmapProxy {
         elseif($cacheStorageType == 'redis'){
             // CACHE CONTENT INTO REDIS
 
+            $cacheRedisHost = 'localhost';
+            $cacheRedisPort = '6379';
+            if( property_exists($ser, 'cacheRedisHost') )
+                $cacheRedisHost = trim($ser->cacheRedisHost);
+            if( property_exists($ser, 'cacheRedisPort') )
+                $cacheRedisPort = trim($ser->cacheRedisPort);
+
             // Virtual cache profile parameter
             $cacheParams = array(
                 "driver"=>"redis",
-                "host"=>"localhost",
-                "port"=>"6379",
+                "host"=>$cacheRedisHost,
+                "port"=>$cacheRedisPort,
                 "ttl"=>$cacheExpiration
             );
+
+            if( property_exists($ser, 'cacheRedisDb') and !empty( trim($ser->cacheRedisDb) ) )
+                $cacheParams['db'] = trim($ser->cacheRedisDb);
+            if( property_exists($ser, 'cacheRedisKeyPrefix') and !empty( trim($ser->cacheRedisKeyPrefix) ) )
+                $cacheParams['key_prefix'] = trim($ser->cacheRedisKeyPrefix);
 
             // Create the virtual cache profile
             jProfiles::createVirtualProfile('jcache', $cacheName, $cacheParams);

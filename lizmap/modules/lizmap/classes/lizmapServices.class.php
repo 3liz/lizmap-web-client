@@ -30,6 +30,10 @@ class lizmapServices{
       'proxyMethod',
       'debugMode',
       'cacheRootDirectory',
+      'cacheRedisHost',
+      'cacheRedisPort',
+      'cacheRedisDb',
+      'cacheRedisKeyPrefix',
       'allowUserAccountRequests',
       'adminContactEmail',
       'googleAnalyticsID'
@@ -54,6 +58,14 @@ class lizmapServices{
     public $debugMode = '';
     // Cache root directory
     public $cacheRootDirectory = '';
+    // Redis host
+    public $cacheRedisHost = 'localhost';
+    // Redis port
+    public $cacheRedisPort = '6379';
+    // Redis db
+    public $cacheRedisDb = '';
+    // Redis key prefix
+    public $cacheRedisKeyPrefix = '';
     // if we allow to view the form to request an account
     public $allowUserAccountRequests = '';
     // admin contact email
