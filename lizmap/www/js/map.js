@@ -5763,7 +5763,7 @@ lizMap.events.on({
           evt.config.layers['gsat'] = gsatCfg;
           evt.baselayers.push(gsat);
           evt.map.allOverlays = false;
-          //evt.map.zoomDuration = 0;
+          evt.map.zoomDuration = 0;
         }
         if (('googleHybrid' in evt.config.options) && evt.config.options.googleHybrid == 'True') {
           var options = {
@@ -5792,7 +5792,7 @@ lizMap.events.on({
           evt.config.layers['ghyb'] = ghybCfg;
           evt.baselayers.push(ghyb);
           evt.map.allOverlays = false;
-          //evt.map.zoomDuration = 0;
+          evt.map.zoomDuration = 0;
         }
         if (('googleTerrain' in evt.config.options) && evt.config.options.googleTerrain == 'True') {
           var options = {
@@ -5821,7 +5821,7 @@ lizMap.events.on({
           evt.config.layers['gphy'] = gphyCfg;
           evt.baselayers.push(gphy);
           evt.map.allOverlays = false;
-          //evt.map.zoomDuration = 0;
+          evt.map.zoomDuration = 0;
        }
        if (('googleStreets' in evt.config.options) && evt.config.options.googleStreets == 'True') {
           var options = {
