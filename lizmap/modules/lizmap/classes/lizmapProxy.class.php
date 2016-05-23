@@ -408,10 +408,10 @@ class lizmapProxy {
                 "key_prefix"=>$repository.'/'.$project.'/'.$layers.'/'.$crs.'/'
             );
 
-            if( property_exists($ser, 'cacheRedisDb') and !empty( trim($ser->cacheRedisDb) ) )
-                $cacheParams['db'] = trim($ser->cacheRedisDb);
-            if( property_exists($ser, 'cacheRedisKeyPrefix') and !empty( trim($ser->cacheRedisKeyPrefix) ) )
-                $cacheParams['key_prefix'] = trim($ser->cacheRedisKeyPrefix).$cacheParams['key_prefix'];
+            if( property_exists($ser, 'cacheRedisDb') and !empty( $ser->cacheRedisDb ) )
+                $cacheParams['db'] = $ser->cacheRedisDb;
+            if( property_exists($ser, 'cacheRedisKeyPrefix') and !empty( $ser->cacheRedisKeyPrefix ) )
+                $cacheParams['key_prefix'] = $ser->cacheRedisKeyPrefix . $cacheParams['key_prefix'];
 
             // Create the virtual cache profile
             jProfiles::createVirtualProfile('jcache', $cacheName, $cacheParams);
