@@ -125,8 +125,10 @@ var lizEdition = function() {
                             lizMap.deactivateToolControls( evt );
                         },
                         deactivate: function( evt ) {
+                            console.log('deactivate: panel');
                             for ( var c in editCtrls ) {
-                                if ( editCtrls[c].active )
+                                console.log('deactivate: '+c+' '+editCtrls[c].active);
+                                if ( c != 'panel' && editCtrls[c].active )
                                     editCtrls[c].deactivate();
                             }
                         }
@@ -141,6 +143,16 @@ var lizEdition = function() {
                 modify: new OpenLayers.Control.ModifyFeature(editLayer)
             };
             for ( var ctrl in editCtrls ) {
+                if ( ctrl != 'panel' )
+                    editCtrls[ctrl].events.on({
+                        activate: function( evt ){
+                            evt.object.layer.setVisibility(true);
+                        },
+                        deactivate: function( evt ){
+                            console.log('deactivate');
+                            evt.object.layer.setVisibility(false);
+                        }
+                    });
                 map.addControls([editCtrls[ctrl]]);
             }
             controls['edition'] = editCtrls.panel;
@@ -150,7 +162,6 @@ var lizEdition = function() {
             editLayer.events.on({
 
                 featureadded: function(evt) {
-//~ console.log( 'feature added');
                     // Deactivate draw control
                     if( !editCtrls )
                         return false;
@@ -165,6 +176,9 @@ var lizEdition = function() {
 
                     // Activate modify control
                     if (editionLayer['config'].capabilities.modifyGeometry == "True"){
+                        // activate edition
+                        editCtrls.panel.activate();
+                        // then modify
                         editCtrls.modify.activate();
                         editCtrls.modify.selectFeature( feat );
                     }
@@ -182,7 +196,6 @@ var lizEdition = function() {
                 },
 
                 featuremodified: function(evt) {
-//~ console.log( 'feature modified');
                     if ( evt.feature.geometry == null )
                         return;
                     // Update form liz_wkt field from added geometry
@@ -191,44 +204,20 @@ var lizEdition = function() {
                 },
 
                 featureselected: function(evt) {
-//~ console.log( 'feature selected');
                     if ( evt.feature.geometry == null )
                         return;
 
                 },
 
                 featureunselected: function(evt) {
-//~ console.log( 'featureunselected')
-
                     if ( evt.feature.geometry == null )
                         return;
                     updateGeometryColumnFromFeature( evt.feat )
                 },
 
                 vertexmodified: function(evt) {
-//~ console.log( 'vertexmodified');
-
                 }
             });
-
-            $('#edition-layer').change(function() {
-                var self = $(this);
-                editCtrls.panel.activate();
-
-            });
-
-            //~ lizMap.events.on({
-                //~ dockopened: function(e) {
-                    //~ if ( e.id == 'edition' ) {
-                        //~ console.log('edition dock set visible');
-                    //~ }
-                //~ },
-                //~ dockclosed: function(e) {
-                    //~ if ( e.id == 'edition' ) {
-                        //~ console.log('edition dock closed');
-                    //~ }
-                //~ }
-            //~ });
 
             $('#edition-draw').click(function(){
                 // Do nothing if not enabled
@@ -241,6 +230,8 @@ var lizEdition = function() {
                     finishEdition();
                 }
 
+                // activate edition
+                editCtrls.panel.activate();
                 // Get layer id and set global property
                 editionLayer['id'] = $('#edition-layer').val();
 
