@@ -19,7 +19,7 @@
   <item value="1">on</item>
 </menulist>
 
-<menulist ref="defaultRepository" required="true">
+<menulist ref="defaultRepository">
   <label locale="admin~admin.form.admin_services.defaultRepository.label"/>
   <datasource class="admin~listRepositoryDatasource" />
 </menulist>
@@ -64,6 +64,11 @@
 <input ref="cacheExpiration" type="integer" required="true" defaultvalue="2592000">
     <label locale="admin~admin.form.admin_services.cacheExpiration.label"/>
     <help locale="admin~admin.form.admin_services.cacheExpiration.help"/>
+</input>
+
+<input ref="rootRepositories">
+  <label locale="admin~admin.form.admin_services.rootRepositories.label"/>
+  <help locale="admin~admin.form.admin_services.rootRepositories.help"/>
 </input>
 
 <menulist ref="proxyMethod" required="true">

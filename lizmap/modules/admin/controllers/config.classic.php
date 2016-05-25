@@ -90,14 +90,14 @@ class configCtrl extends jController {
     $xmlPath = jApp::appPath('project.xml');
     $xmlLoad = simplexml_load_file($xmlPath);
     $version = (string)$xmlLoad->info->version;
-    
-    
+
+
     // Get the data
     $services = lizmap::getServices();
 
     // Create the form
     $form = jForms::create('admin~config_services');
-    
+
     // Set form data values
     foreach($services->getProperties() as $ser){
       $form->setData($ser, $services->$ser);
@@ -134,7 +134,7 @@ class configCtrl extends jController {
 
     // Create the form
     $form = jForms::create('admin~config_services');
-    
+
     // Set form data values
     foreach($services->getProperties() as $ser){
       $form->setData($ser, $services->$ser);
@@ -167,7 +167,7 @@ class configCtrl extends jController {
 
     // Get the form
     $form = jForms::get('admin~config_services');
-    
+
     if ($form) {
       // Display form
       $tpl = new jTpl();
@@ -475,27 +475,7 @@ class configCtrl extends jController {
     $form->setData('repository', (string)$lrep->getKey());
     $form->setReadOnly('repository', true);
     // Create and fill form controls relatives to repository data
-    $propertiesOptions = $lrep->getPropertiesOptions();
-
-    foreach ( $lrep->getProperties() as $k ) {
-      $v = $lrep->getData($k);
-
-      // Create form control
-      if ( $propertiesOptions[$k]['fieldType'] == 'checkbox' ) {
-          $ctrl = new jFormsControlCheckbox($k);
-      }
-      else {
-        $ctrl = new jFormsControlInput($k);
-      }
-      $ctrl->required = $propertiesOptions[$k]['required'];
-      $ctrl->label = jLocale::get("admin~admin.form.admin_section.repository.".$k.".label");
-      $ctrl->size = 100;
-      $datatype = new jDatatypeString();
-      $ctrl->datatype=$datatype;
-      $form->addControl($ctrl);
-      // Set control data from repository data
-      $form->setData($k, $v);
-    }
+    lizmap::constructRepositoryForm($lrep, $form);
     // Create and fill the form control relative to rights for each group for this repository
     $form = $this->populateRepositoryRightsFormControl($form, $lrep->getKey(), 'db');
 
@@ -518,6 +498,8 @@ class configCtrl extends jController {
     $repository = $this->param('repository');
     $new = (bool)$this->param('new');
 
+    // Get services data
+    $services = lizmap::getServices();
     // Get repository data
     $lrep = lizmap::getRepository($repository);
     // what to do if it's a new one!
@@ -526,26 +508,8 @@ class configCtrl extends jController {
     $form = jForms::get('admin~config_section');
 
     if ($form) {
-      // reconstruct form fields based on repositoryPropertyList
-      $propertiesOptions = lizmap::getRepositoryPropertiesOptions();
-
-      foreach(lizmap::getRepositoryProperties() as $k){
-        if ( $propertiesOptions[$k]['fieldType'] == 'checkbox' ) {
-          $ctrl = new jFormsControlCheckbox($k);
-        }
-        else {
-          $ctrl = new jFormsControlInput($k);
-        }
-        $ctrl->required = $propertiesOptions[$k]['required'];
-        $ctrl->label = jLocale::get("admin~admin.form.admin_section.repository.".$k.".label");
-        $ctrl->size = 100;
-        $datatype = new jDatatypeString();
-        $ctrl->datatype=$datatype;
-        $form->addControl($ctrl);
-        // if edition, set the form data with the data taken from the ini file
-        if(($repository and $new))
-          $form->setData($k, $lrep->getData($k));
-      }
+      // Create and fill form controls relatives to repository data
+      lizmap::constructRepositoryForm($lrep, $form);
       // Create and fill the form control relative to rights for each group for this repository
       if($this->intParam('errors') && $lrep)
         $form = $this->populateRepositoryRightsFormControl($form, $lrep->getKey(), 'request');

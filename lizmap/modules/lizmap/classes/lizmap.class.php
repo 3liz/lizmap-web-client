@@ -73,6 +73,80 @@ class lizmap{
       return lizmapRepository::$propertiesOptions;
     }
 
+    /**
+     * Get the jForm for a repository.
+     *
+     */
+    public static function constructRepositoryForm( $rep, $form ){
+        $services = lizmap::getServices();
+        $rootRepositories = $services->getRootRepositories();
+
+        $repositories = array();
+        foreach(lizmap::getRepositoryList() as $repo){
+            if ( $rep && $rep->getKey() == $repo )
+                continue;
+            $repositories[] = lizmap::getRepository($repo);
+        }
+
+        // reconstruct form fields based on repositoryPropertyList
+        $propertiesOptions = lizmap::getRepositoryPropertiesOptions();
+
+        foreach(lizmap::getRepositoryProperties() as $k){
+            $ctrl = null;
+            if ( $propertiesOptions[$k]['fieldType'] == 'checkbox' ) {
+                $ctrl = new jFormsControlCheckbox($k);
+            }
+            else if ( $k == 'path' && $rootRepositories != '' ) {
+                if ($rep == null || substr($rep->getPath(), 0, strlen($rootRepositories)) === $rootRepositories ) {
+                    $ctrl = new jFormsControlMenulist($k);
+                    $dataSource = new jFormsStaticDatasource();
+                    $data = array();
+                    $data[''] = '';
+                    if ($dh = opendir($rootRepositories)) {
+                        while (($file = readdir($dh)) !== false) {
+                            if ($file == '.' || $file == '..')
+                                continue;
+
+                            $filePath = $rootRepositories.$file.'/';
+                            if ( is_dir($filePath) ) {
+                                $allreadyUsed = False;
+                                foreach( $repositories as $repo ) {
+                                    if ( $repo->getPath() == $filePath ) {
+                                        $allreadyUsed = True;
+                                        break;
+                                    }
+                                }
+                                if( !$allreadyUsed )
+                                    $data[$filePath] = $file;
+                            }
+                        }
+                    }
+                    $dataSource->data = $data;
+                    $ctrl->datasource = $dataSource;
+                } else {
+                    $ctrl = new jFormsControlHidden($k);
+                }
+            }
+            else {
+                $ctrl = new jFormsControlInput($k);
+                $ctrl->datatype = new jDatatypeString();
+            }
+            $ctrl->required = $propertiesOptions[$k]['required'];
+            $ctrl->label = jLocale::get("admin~admin.form.admin_section.repository.".$k.".label");
+            $ctrl->size = 100;
+            $form->addControl($ctrl);
+        }
+        if ( $rep ) {
+            foreach ( $rep->getProperties() as $k ) {
+                $v = $rep->getData($k);
+                if ( $k == 'path' && $rootRepositories != '' && substr($rep->getPath(), 0, strlen($rootRepositories)) === $rootRepositories)
+                    $v = $rep->getPath();
+                $form->setData($k, $v);
+            }
+        }
+        return $form;
+    }
+
 
     /**
      * Get a repository

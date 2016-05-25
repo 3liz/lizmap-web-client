@@ -27,6 +27,7 @@ class lizmapServices{
       'defaultRepository',
       'defaultProject',
       'onlyMaps',
+      'rootRepositories',
       'proxyMethod',
       'debugMode',
       'cacheRootDirectory',
@@ -52,6 +53,8 @@ class lizmapServices{
     public $defaultProject = '';
     // display all project in maps
     public $allInMap = '';
+    // Root folder of repositories
+    public $rootRepositories = '';
     // proxy method : use curl or file_get_contents
     public $proxyMethod = '';
     // debug mode : none or log
@@ -86,6 +89,20 @@ class lizmapServices{
 
     public function getProperties(){
       return $this->properties;
+    }
+
+    public function getRootRepositories(){
+        $rootRepositories = $this->rootRepositories;
+
+        if ( $rootRepositories != '' ) {
+            // if path is relative, get full path
+            if ($rootRepositories[0] != '/' and $rootRepositories[1] != ':')
+                $rootRepositories = realpath( jApp::varPath().$rootRepositories );
+            // add a trailing slash if needed
+            if( !preg_match('#/$#', $rootRepositories ))
+                $rootRepositories .= '/';
+        }
+        return $rootRepositories;
     }
 
     /**
