@@ -543,6 +543,8 @@ class configCtrl extends jController {
 
     $ok = true;
 
+    // Get services data
+    $services = lizmap::getServices();
     // Repository (first take the default one)
     $lrep = lizmap::getRepository($repository);
     // what to do if it's a new one!
@@ -569,7 +571,7 @@ class configCtrl extends jController {
     }
 
     // Rebuild form fields
-    foreach(lizmap::getRepositoryProperties() as $k){
+    /*foreach(lizmap::getRepositoryProperties() as $k){
       if ( $propertiesOptions[$k]['fieldType'] == 'checkbox' ) {
         $ctrl = new jFormsControlCheckbox($k);
       }
@@ -581,7 +583,8 @@ class configCtrl extends jController {
       $datatype = new jDatatypeString();
       $ctrl->datatype=$datatype;
       $form->addControl($ctrl);
-    }
+    }*/
+    lizmap::constructRepositoryForm($lrep, $form);
     if ($lrep)
       $form = $this->populateRepositoryRightsFormControl($form, $lrep->getKey(), false);
 
@@ -606,6 +609,23 @@ class configCtrl extends jController {
       if(!file_exists($npath) or !is_dir($npath) ){
         $form->setErrorOn('path', jLocale::get("admin~admin.form.admin_section.message.path.wrong"));
         $ok = false;
+      }
+      $rootRepositories = $services->getRootRepositories();
+      if ( $rootRepositories != '' ) {
+          if ($lrep && substr($lrep->getPath(), 0, strlen($rootRepositories)) !== $rootRepositories ) {
+              //Can't update path
+              $form->setData('path',$lrep->getData('path'));
+          }
+          else if ($lrep && substr($lrep->getPath(), 0, strlen($rootRepositories)) === $rootRepositories && substr(realpath($npath), 0, strlen($rootRepositories)) !== $rootRepositories ) {
+            $form->setErrorOn('path', jLocale::get("admin~admin.form.admin_section.message.path.not_authorized"));
+            jLog::log('rootRepositories == '.$rootRepositories.', repository '.$lrep->getKey().' path == '.realpath($npath));
+            $ok = false;
+          }
+          else if ($lrep == null && substr(realpath($npath), 0, strlen($rootRepositories)) !== $rootRepositories ) {
+            $form->setErrorOn('path', jLocale::get("admin~admin.form.admin_section.message.path.not_authorized"));
+            jLog::log('rootRepositories == '.$rootRepositories.', new repository path == '.realpath($npath));
+            $ok = false;
+          }
       }
     }
 
