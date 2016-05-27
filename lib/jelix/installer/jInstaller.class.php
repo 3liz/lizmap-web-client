@@ -217,8 +217,8 @@ class jInstaller {
     public $mainConfig;
 
     /**
-     * the localconfig.ini.php content
-     * @var jIniFileModifier
+     * combination between mainconfig.ini.php (master) and localconfig.ini.php (overrider)
+     * @var jIniMultiFilesModifier
      */
     public $localConfig;
 
@@ -296,7 +296,7 @@ class jInstaller {
             // we create an object corresponding to the entry point
             $ep = $this->getEntryPointObject($configFile, $file, $type);
             // not to the constructor, to no break API. FIXME
-            $ep->localConfigIni =  new jIniMultiFilesModifier($this->localConfig, jApp::configPath($configFile));
+            $ep->localConfigIni =  new jIniMultiFilesModifier($this->localConfig, $ep->getEpConfigIni());
             $epId = $ep->getEpId();
 
             $this->epId[$file] = $epId;
@@ -646,6 +646,8 @@ class jInstaller {
                 }
                 // we always save the configuration, so it invalidates the cache
                 $ep->configIni->save();
+                $ep->localConfigIni->save();
+
                 // we re-load configuration file for each module because
                 // previous module installer could have modify it.
                 $ep->config =
@@ -687,6 +689,8 @@ class jInstaller {
 
                 // we always save the configuration, so it invalidates the cache
                 $ep->configIni->save();
+                $ep->localConfigIni->save();
+
                 // we re-load configuration file for each module because
                 // previous module installer could have modify it.
                 $ep->config =

@@ -51,7 +51,7 @@ abstract class jInstallerBase {
     public $version = '0';
 
     /**
-     * default configuration of the application
+     * combination between mainconfig.ini.php (master) and entrypoint config (overrider)
      * @var jIniMultiFilesModifier
      */
     public $config;
