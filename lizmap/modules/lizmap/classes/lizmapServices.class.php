@@ -39,6 +39,23 @@ class lizmapServices{
       'adminContactEmail',
       'googleAnalyticsID'
     );
+
+    // services properties
+    private $sensitiveProperties = array(
+      'wmsServerURL',
+      'wmsPublicUrlList',
+      'cacheStorageType',
+      'cacheExpiration',
+      'rootRepositories',
+      'proxyMethod',
+      'debugMode',
+      'cacheRootDirectory',
+      'cacheRedisHost',
+      'cacheRedisPort',
+      'cacheRedisDb',
+      'cacheRedisKeyPrefix'
+    );
+
     // Wms map server
     public $appName = 'Lizmap';
     // Wms map server
@@ -89,6 +106,16 @@ class lizmapServices{
 
     public function getProperties(){
       return $this->properties;
+    }
+
+    public function hideSensitiveProperties(){
+      if ( isset($this->data['hideSensitiveServicesProperties']) && $this->data['hideSensitiveServicesProperties'] != '0')
+        return true;
+      return false;
+    }
+
+    public function getSensitiveProperties(){
+      return $this->sensitiveProperties;
     }
 
     public function getRootRepositories(){

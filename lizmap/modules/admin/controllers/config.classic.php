@@ -108,6 +108,13 @@ class configCtrl extends jController {
           $form->setData($ser, 'off');
     }
 
+    // hide sensitive services properties
+    if ($services->hideSensitiveProperties()) {
+        foreach($services->getSensitiveProperties() as $ser){
+            $form->deactivate($ser);
+        }
+    }
+
     $tpl = new jTpl();
     $tpl->assign('services',lizmap::getServices());
     $tpl->assign('servicesForm',$form);
@@ -149,6 +156,13 @@ class configCtrl extends jController {
     $cacheRootDirectory = $form->getData('cacheRootDirectory');
     if(!is_writable($cacheRootDirectory) or !is_dir($cacheRootDirectory)){
       $form->setData('cacheRootDirectory', sys_get_temp_dir());
+    }
+
+    // hide sensitive services properties
+    if ($services->hideSensitiveProperties()) {
+        foreach($services->getSensitiveProperties() as $ser){
+            $form->deactivate($ser);
+        }
     }
 
     // redirect to the form display action
