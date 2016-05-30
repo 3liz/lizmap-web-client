@@ -3955,7 +3955,7 @@ OpenLayers.Control.HighlightFeature = OpenLayers.Class(OpenLayers.Control, {
             var hiddenFields = hf.split(/[\s,]+/);
         }
         var cAliases = lconfig['alias'];
-        var html = '<div style="background-color:#F0F0F0 !important;">';
+        var html = '<div style="background-color:#F0F0F0 !important; margin-top:10px;">';
         html+= '<table class="lizmapPopupTable">';
         for (a in feature.attributes){
             // Do no show hiddenfields
@@ -3964,14 +3964,19 @@ OpenLayers.Control.HighlightFeature = OpenLayers.Class(OpenLayers.Control, {
             // show only tootlip fields if some fields given
             if( tf != '' && !($.inArray(a, tooltipFields) > -1) )
                 continue;
-            html+= '<tr><th>' + cAliases[a] + '</th><td>' + feature.attributes[a] + '</td></tr>';
+            html+= '<tr><th>' + cAliases[a] + '</th><td style="white-space: nowrap;">' + feature.attributes[a] + '</td></tr>';
         }
         html+= '</table>';
         html+= '</div>';
-        var lonlat = feature.geometry.getBounds().getCenterLonLat();
+
+        var oMapExtent = this.layer.map.getExtent();
+        var nReso = this.layer.map.getResolution();
+
+        var oPopupPos = new OpenLayers.LonLat(oMapExtent.left,oMapExtent.top);
+        oPopupPos.lon += ( $('#dock').width() + this.popupOffset.left ) * nReso;
         var tpopup = new OpenLayers.Popup.Anchored('tooltipPopup',
-            lonlat,
-            new OpenLayers.Size(250,300),
+            oPopupPos,
+            null,//new OpenLayers.Size(250,300),
             html,
             {size: {w: 14, h: 14}, offset: {x: -7, y: -7}},
             false
@@ -3996,8 +4001,8 @@ OpenLayers.Control.HighlightFeature = OpenLayers.Class(OpenLayers.Control, {
     });
     $('#tooltip-layer-list').change( function() {
         var aName = $(this).val();
-        tlayer.destroyFeatures();
         tooltipControl.deactivate();
+        tlayer.destroyFeatures();
         if ( aName == '' )
             return;
         $('#tooltip-layer-list').addClass('loading').attr('disabled','');
