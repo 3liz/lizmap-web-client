@@ -228,6 +228,13 @@ class configCtrl extends jController {
     // Set the other form data from the request data
     $form->initFromRequest();
 
+    // force sensitive services properties
+    if ($services->hideSensitiveProperties()) {
+        foreach($services->getSensitiveProperties() as $ser){
+            $form->setData($ser, $services->$ser);
+        }
+    }
+
     // Check the form
     $ok = true;
     if (!$form->check()) {
