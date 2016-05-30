@@ -491,7 +491,9 @@ class serviceCtrl extends jController {
 
     // We split layers in two groups. First contains exernal WMS, second contains QGIS layers
     foreach ($queryLayers as $queryLayer) {
-      if(property_exists($pConfig->layers->$queryLayer, 'externalAccess')){
+      if( property_exists($pConfig->layers, $queryLayer)
+       && property_exists($pConfig->layers->$queryLayer, 'externalAccess')
+       && $pConfig->layers->$queryLayer->externalAccess == 'True' ){
         $externalWMSLayers[] = $queryLayer;
       }else{
         $QGISLayers[] = $queryLayer;
