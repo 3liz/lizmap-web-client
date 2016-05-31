@@ -2451,18 +2451,12 @@ var lizAttributeTable = function() {
                                 wasSelected = true;
                                 $(this).removeClass('btn-warning');
                             }
-
-                            // First unselect all items
+                            // Then select or unselect item
                             lizMap.events.triggerEvent(
-                                'layerfeatureunselectall',
-                                { 'featureType': featureType, 'updateDrawing': true}
-                            );
-                            // Then select item if needed
+                                'layerfeatureselected',
+                                { 'featureType': featureType, 'fid': fid, 'updateDrawing': true}
+                            )
                             if( !wasSelected ){
-                                lizMap.events.triggerEvent(
-                                    'layerfeatureselected',
-                                    { 'featureType': featureType, 'fid': fid, 'updateDrawing': true}
-                                )
                                 $(this).addClass('btn-warning');
                             }
                             return false;

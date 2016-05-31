@@ -2932,6 +2932,7 @@ var lizMap = function() {
         lizUrls.wms,
         OpenLayers.Util.getParameterString(lizUrls.params)
       )
+      var lastLonLatInfo = null;
       var info = new OpenLayers.Control.WMSGetFeatureInfo({
             url: fiurl,
             title: 'Identify features by clicking',
@@ -2941,6 +2942,7 @@ var lizMap = function() {
             vendorParams: getFeatureInfoTolerances(),
             eventListeners: {
                 getfeatureinfo: function(event) {
+                    lastLonLatInfo = map.getLonLatFromPixel(event.xy);
                     var text = event.text;
 
                     if (map.popups.length != 0)
@@ -3083,6 +3085,31 @@ var lizMap = function() {
             }
             info.vendorParams['filter'] = filter.join(';');
 
+        },
+        "layerSelectionChanged": function( evt ) {
+            if ( lastLonLatInfo == null )
+                return true;
+            var lastPx = map.getPixelFromLonLat(lastLonLatInfo);
+            if ( $('#liz_layer_popup  div.lizmapPopupContent').length < 1
+              && $('#popupcontent div.menu-content div.lizmapPopupContent').length < 1)
+                return true;
+
+            // Refresh if needed
+            var refreshInfo = false;
+            $('div.lizmapPopupContent input.lizmap-popup-layer-feature-id').each(function(){
+                var self = $(this);
+                var val = self.val();
+                var eHtml = '';
+                var fid = val.split('.').pop();
+                var layerId = val.replace( '.' + fid, '' );
+                var aConfig = lizMap.getLayerConfigById( layerId );
+                if ( aConfig && aConfig[0] == evt.featureType ) {
+                    refreshInfo = true;
+                    return false;
+                }
+            });
+            if ( refreshInfo  )
+                info.request( lastPx, {} );
         }
      });
      map.addControl(info);
