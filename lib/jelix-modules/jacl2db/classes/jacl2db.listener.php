@@ -22,7 +22,7 @@ class jacl2dbListener extends jEventListener{
     * @param jEvent $event   the event
     */
    function onAuthNewUser($event){
-        if(jApp::config()->acl2['driver'] == 'db') {
+        if (jApp::config()->acl2['driver'] == 'db' || jApp::config()->acl2['driver'] == 'dbcache') {
             $user = $event->getParam('user');
             jAcl2DbUserGroup::createUser($user->login);
         }
@@ -34,7 +34,7 @@ class jacl2dbListener extends jEventListener{
     * @param jEvent $event   the event
     */
    function onAuthRemoveUser($event){
-        if(jApp::config()->acl2['driver'] == 'db') {
+        if(jApp::config()->acl2['driver'] == 'db' || jApp::config()->acl2['driver'] == 'dbcache') {
             $login = $event->getParam('login');
             jAcl2DbUserGroup::removeUser($login);
         }

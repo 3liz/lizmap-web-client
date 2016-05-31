@@ -95,6 +95,9 @@ class jFile {
         if (!file_exists($dir)) {
             self::createDir(dirname($dir), $chmod);
             mkdir($dir, ($chmod?$chmod:jApp::config()->chmodDir));
+            // php mkdir apply umask on the given mode, so we must to
+            // do a chmod manually.
+            chmod($dir, ($chmod?$chmod:jApp::config()->chmodDir));
         }
     }
 
