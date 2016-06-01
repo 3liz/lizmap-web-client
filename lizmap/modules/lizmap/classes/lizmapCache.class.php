@@ -9,8 +9,10 @@
 * @license Mozilla Public License : http://www.mozilla.org/MPL/
 */
 
+/**
+ * @deprecated  use lizmapProxy instead
+ */
 class lizmapCache {
-
 
     /**
     * Normalize and filter request parameters.
