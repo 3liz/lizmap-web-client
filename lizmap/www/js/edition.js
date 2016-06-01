@@ -125,9 +125,7 @@ var lizEdition = function() {
                             lizMap.deactivateToolControls( evt );
                         },
                         deactivate: function( evt ) {
-                            console.log('deactivate: panel');
                             for ( var c in editCtrls ) {
-                                console.log('deactivate: '+c+' '+editCtrls[c].active);
                                 if ( c != 'panel' && editCtrls[c].active )
                                     editCtrls[c].deactivate();
                             }
@@ -149,7 +147,6 @@ var lizEdition = function() {
                             evt.object.layer.setVisibility(true);
                         },
                         deactivate: function( evt ){
-                            console.log('deactivate');
                             evt.object.layer.setVisibility(false);
                         }
                     });
