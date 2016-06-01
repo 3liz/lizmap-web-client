@@ -774,14 +774,11 @@ class configCtrl extends jController {
 
     $repository = $this->param('repository');
 
-    // Get config utility
-    $lrep = lizmap::getRepository($repository);
-    $ser = lizmap::getServices();
-
-    // Remove the cache for the repository
-    $cacheRootDirectory = $ser->cacheRootDirectory;
-    if(jFile::removeDir($cacheRootDirectory.'/'.$lrep->getKey()))
-      jMessage::add(jLocale::get("admin~admin.cache.repository.removed", array($lrep->getKey())));
+    jClasses::inc('lizmap~lizmapProxy');
+    $repoKey = lizmapProxy::clearCache($repository);
+    if ($repoKey) {
+      jMessage::add(jLocale::get("admin~admin.cache.repository.removed", array($repoKey)));
+    }
 
     // Redirect to the index
     $rep= $this->getResponse("redirect");

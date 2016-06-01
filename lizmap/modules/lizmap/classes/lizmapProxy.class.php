@@ -4,7 +4,7 @@
 * @package   lizmap
 * @subpackage lizmap
 * @author    3liz
-* @copyright 2012 3liz
+* @copyright 2012-2016 3liz
 * @link      http://3liz.com
 * @license Mozilla Public License : http://www.mozilla.org/MPL/
 */
@@ -391,30 +391,7 @@ class lizmapProxy {
         }
         elseif($cacheStorageType == 'redis'){
             // CACHE CONTENT INTO REDIS
-
-            $cacheRedisHost = 'localhost';
-            $cacheRedisPort = '6379';
-            if( property_exists($ser, 'cacheRedisHost') )
-                $cacheRedisHost = trim($ser->cacheRedisHost);
-            if( property_exists($ser, 'cacheRedisPort') )
-                $cacheRedisPort = trim($ser->cacheRedisPort);
-
-            // Virtual cache profile parameter
-            $cacheParams = array(
-                "driver"=>"redis",
-                "host"=>$cacheRedisHost,
-                "port"=>$cacheRedisPort,
-                "ttl"=>$cacheExpiration,
-                "key_prefix"=>$repository.'/'.$project.'/'.$layers.'/'.$crs.'/'
-            );
-
-            if( property_exists($ser, 'cacheRedisDb') and !empty( $ser->cacheRedisDb ) )
-                $cacheParams['db'] = $ser->cacheRedisDb;
-            if( property_exists($ser, 'cacheRedisKeyPrefix') and !empty( $ser->cacheRedisKeyPrefix ) )
-                $cacheParams['key_prefix'] = $ser->cacheRedisKeyPrefix . $cacheParams['key_prefix'];
-
-            // Create the virtual cache profile
-            jProfiles::createVirtualProfile('jcache', $cacheName, $cacheParams);
+            self::declareRedisProfile($ser, $cacheName, $repository, $project, $layers, $crs);
         }
         else{
             // CACHE CONTENT INTO SQLITE DATABASE
@@ -456,7 +433,68 @@ class lizmapProxy {
         return $cacheName;
     }
 
+    static protected function declareRedisProfile($ser, $cacheName, $repository, $project = null, $layers=null, $crs=null) {
+        $cacheRedisHost = 'localhost';
+        $cacheRedisPort = '6379';
+        $cacheExpiration = (int)$ser->cacheExpiration;
 
+        if( property_exists($ser, 'cacheRedisHost') ) {
+            $cacheRedisHost = trim($ser->cacheRedisHost);
+        }
+        if( property_exists($ser, 'cacheRedisPort') ) {
+            $cacheRedisPort = trim($ser->cacheRedisPort);
+        }
 
+        // Virtual cache profile parameter
+        $cacheParams = array(
+            "driver"=>"redis",
+            "host"=>$cacheRedisHost,
+            "port"=>$cacheRedisPort,
+            "ttl"=>$cacheExpiration,
+        );
+        if ($project) {
+            $cacheParams["key_prefix"] = $repository.'/'.$project.'/'.$layers.'/'.$crs.'/';
+        }
+        else {
+            $cacheParams["key_prefix"] = $repository.'/';
+        }
 
+        if( property_exists($ser, 'cacheRedisDb') and !empty( $ser->cacheRedisDb ) ) {
+            $cacheParams['db'] = $ser->cacheRedisDb;
+        }
+        if( property_exists($ser, 'cacheRedisKeyPrefix') and !empty( $ser->cacheRedisKeyPrefix ) ) {
+            $cacheParams['key_prefix'] = $ser->cacheRedisKeyPrefix . $cacheParams['key_prefix'];
+        }
+
+        // Create the virtual cache profile
+        jProfiles::createVirtualProfile('jcache', $cacheName, $cacheParams);
+    }
+
+    /**
+     * @return mixed  the repository key, or false if clear has failed
+     */
+    static public function clearCache($repository) {
+        // Get config utility
+        $lrep = lizmap::getRepository($repository);
+        $ser = lizmap::getServices();
+
+        // Remove the cache for the repository for file/sqlite cache type
+        $cacheRootDirectory = $ser->cacheRootDirectory;
+        if (!is_writable($cacheRootDirectory) or !is_dir($cacheRootDirectory)){
+            $cacheRootDirectory = sys_get_temp_dir();
+        }
+        $clearCacheOk = jFile::removeDir($cacheRootDirectory.'/'.$lrep->getKey());
+
+        if ($ser->cacheStorageType == 'redis') {
+            // remove the cache from redis
+            $cacheName = 'lizmapCache_'.$repository;
+            self::declareRedisProfile($ser, $cacheName, $repository);
+            $clearCacheOk = $clearCacheOk && jCache::flush($cacheName);
+        }
+        jEvent::notify('lizmapProxyClearCache', array('repository'=>$repository));
+        if ($clearCacheOk) {
+            return $lrep->getKey();
+        }
+        return false;
+    }
 }
