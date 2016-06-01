@@ -497,4 +497,49 @@ class lizmapProxy {
         }
         return false;
     }
+
+    static public function clearLayerCache($repository, $project, $layer) {
+
+        // Storage type
+        $ser = lizmap::getServices();
+        $cacheStorageType = $ser->cacheStorageType;
+
+        // Cache root directory
+        if ($cacheStorageType != 'redis') {
+
+            $cacheRootDirectory = $ser->cacheRootDirectory;
+            if(!is_writable($cacheRootDirectory) or !is_dir($cacheRootDirectory)){
+                $cacheRootDirectory = sys_get_temp_dir();
+            }
+
+            // Directory where cached files are stored for the project
+            $cacheProjectDir = $cacheRootDirectory.'/'.$repository.'/'.$project.'/';
+            $results = array();
+            if (file_exists($cacheProjectDir)) {
+                // Open the directory and walk through the filenames
+                $handle = opendir($cacheProjectDir);
+                while (false !== ($entry = readdir($handle))) {
+                  if ($entry != "." && $entry != "..") {
+                    // Get directories and files corresponding to the layer
+                    if(preg_match('#(^|_)'.$layer.'($|_)#', $entry)) {
+                      $results[] = $cacheProjectDir.$entry;
+                    }
+                  }
+                }
+                closedir($handle);
+                foreach($results as $rem){
+                    if(is_dir($rem)) {
+                        jFile::removeDir($rem);
+                    }
+                    else {
+                        unlink($rem);
+                    }
+                }
+            }
+        }
+        else {
+            // FIXME
+        }
+        jEvent::notify('lizmapProxyClearLayerCache', array('repository'=>$repository, 'project'=>$project, 'layer'=>$layer));
+    }
 }

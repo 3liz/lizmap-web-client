@@ -134,6 +134,17 @@ class lizmapProject{
         }
     }
 
+    public function clearCache() {
+        $file = $this->repository->getPath().$this->key.'.qgs';
+        try {
+            jCache::delete($file, 'qgisprojects');
+        }
+        catch(Exception $e) {
+            // if qgisprojects profile does not exist, or if there is an
+            // other error about the cache, let's log it
+            jLog::log($e->getMessage(), 'error');
+        }
+    }
     /**
      * temporary function to read xml for some methods that relies on
      * xml data that are not yet stored in the cache

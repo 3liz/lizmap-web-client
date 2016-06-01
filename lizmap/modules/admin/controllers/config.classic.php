@@ -800,39 +800,17 @@ class configCtrl extends jController {
 
     // Get config utility
     $lrep = lizmap::getRepository($repository);
-    $ser = lizmap::getServices();
     $lproj = lizmap::getProject($repository.'~'.$project);
     $project = $lproj->getKey();
+    $repository = $lrep->getKey();
 
     // Remove project cache
-    jCache::delete($lrep->getPath().$project.'.qgs', 'qgisprojects');
+    $lproj->clearCache();
 
     // Remove the cache for the layer
-    $cacheRootDirectory = $ser->cacheRootDirectory;
-    $cacheProjectDir = $cacheRootDirectory.'/'.$lrep->getKey().'/'.$project.'/';
+    jClasses::inc('lizmap~lizmapProxy');
+    lizmapProxy::clearLayerCache($repository, $project, $layer);
 
-    $handle = opendir($cacheProjectDir);
-    $results = array();
-    // Open the directory and walk through the filenames
-    while (false !== ($entry = readdir($handle))) {
-      if ($entry != "." && $entry != "..") {
-        // Get directories and files corresponding to the layer
-        if(preg_match('#^'.$layer.'_#', $entry) or $entry == $layer) {
-          $results[] = $cacheProjectDir.$entry;
-        }
-      }
-    }
-    closedir($handle);
-
-    // Remove layer files and folder cache
-    if($lrep && $lproj){
-      foreach($results as $rem){
-        if(is_dir($rem))
-          jFile::removeDir($rem);
-        else
-          unlink($rem);
-      }
-    }
     jMessage::add(jLocale::get("admin~admin.cache.layer.removed", array($layer)));
 
     // Redirect to the index
