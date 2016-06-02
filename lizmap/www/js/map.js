@@ -3066,6 +3066,34 @@ var lizMap = function() {
         }
         return layers;
      };
+     function refreshGetFeatureInfo( evt ) {
+         if ( !evt.updateDrawing )
+            return;
+        if ( lastLonLatInfo == null )
+            return true;
+        var lastPx = map.getPixelFromLonLat(lastLonLatInfo);
+        if ( $('#liz_layer_popup  div.lizmapPopupContent').length < 1
+          && $('#popupcontent div.menu-content div.lizmapPopupContent').length < 1)
+            return;
+
+        // Refresh if needed
+        var refreshInfo = false;
+        $('div.lizmapPopupContent input.lizmap-popup-layer-feature-id').each(function(){
+            var self = $(this);
+            var val = self.val();
+            var eHtml = '';
+            var fid = val.split('.').pop();
+            var layerId = val.replace( '.' + fid, '' );
+            var aConfig = lizMap.getLayerConfigById( layerId );
+            if ( aConfig && aConfig[0] == evt.featureType ) {
+                refreshInfo = true;
+                return false;
+            }
+        });
+        if ( refreshInfo  )
+            info.request( lastPx, {} );
+        return;
+     }
      lizMap.events.on({
         "layerFilterParamChanged": function( evt ) {
             var filter = [];
@@ -3084,32 +3112,10 @@ var lizMap = function() {
                 }
             }
             info.vendorParams['filter'] = filter.join(';');
-
+            refreshGetFeatureInfo(evt);
         },
         "layerSelectionChanged": function( evt ) {
-            if ( lastLonLatInfo == null )
-                return true;
-            var lastPx = map.getPixelFromLonLat(lastLonLatInfo);
-            if ( $('#liz_layer_popup  div.lizmapPopupContent').length < 1
-              && $('#popupcontent div.menu-content div.lizmapPopupContent').length < 1)
-                return true;
-
-            // Refresh if needed
-            var refreshInfo = false;
-            $('div.lizmapPopupContent input.lizmap-popup-layer-feature-id').each(function(){
-                var self = $(this);
-                var val = self.val();
-                var eHtml = '';
-                var fid = val.split('.').pop();
-                var layerId = val.replace( '.' + fid, '' );
-                var aConfig = lizMap.getLayerConfigById( layerId );
-                if ( aConfig && aConfig[0] == evt.featureType ) {
-                    refreshInfo = true;
-                    return false;
-                }
-            });
-            if ( refreshInfo  )
-                info.request( lastPx, {} );
+            refreshGetFeatureInfo(evt);
         }
      });
      map.addControl(info);
