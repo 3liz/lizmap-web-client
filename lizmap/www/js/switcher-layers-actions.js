@@ -120,6 +120,16 @@ var lizLayerActionButtons = function() {
 
         } );
 
+        // Expand all of unfold all
+        $('#layers-unfold-all').click(function(){
+            $('#switcher table.tree').expandAll();
+            return false;
+        });
+        $('#layers-fold-all').click(function(){
+            $('#switcher table.tree').collapseAll();
+            return false;
+        });
+
         // Activate switcher-layers-actions button
         $('#layerActionMetadata').click(function(){
             var layerName = $(this).val();

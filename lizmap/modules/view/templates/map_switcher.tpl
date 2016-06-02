@@ -2,6 +2,11 @@
     <h3><span class="title"><span class="icon"></span>&nbsp;<span class="text">{@view~map.legendmenu.title@}</span></span></h3>
 
     <div id="switcher-layers-actions">
+        <button class="btn btn-mini" id="layers-unfold-all"><i class=
+        "icon-resize-full icon-white"></i></button>
+        <button class="btn btn-mini" id="layers-fold-all"><i class=
+        "icon-resize-small icon-white"></i></button>
+
         <button class="btn btn-mini disabled" id="layerActionMetadata" title="{@view~map.switcher.layer.metadata.title@}"><i class=
         "icon-info-sign icon-white"></i></button>
 
