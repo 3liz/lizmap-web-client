@@ -453,7 +453,12 @@ class lizmapProxy {
             "ttl"=>$cacheExpiration,
         );
         if ($project) {
-            $cacheParams["key_prefix"] = $repository.'/'.$project.'/'.$layers.'/'.$crs.'/';
+            if ($layers) {
+                $cacheParams["key_prefix"] = $repository.'/'.$project.'/'.$layers.'/'.$crs.'/';
+            }
+            else {
+                $cacheParams["key_prefix"] = $repository.'/'.$project.'/';
+            }
         }
         else {
             $cacheParams["key_prefix"] = $repository.'/';
@@ -541,7 +546,10 @@ class lizmapProxy {
             }
         }
         else {
-            // FIXME
+            // FIXME: removing by layer is not supported for the moment. For the moment, we flush all layers of the project.
+            $cacheName = 'lizmapCache_'.$repository.'_'.$project;
+            self::declareRedisProfile($ser, $cacheName, $repository, $project);
+            jCache::flush($cacheName);
         }
         jEvent::notify('lizmapProxyClearLayerCache', array('repository'=>$repository, 'project'=>$project, 'layer'=>$layer));
     }
