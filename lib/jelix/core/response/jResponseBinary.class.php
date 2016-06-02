@@ -6,7 +6,7 @@
 * @contributor Nicolas Lassalle <nicolas@beroot.org> (ticket #188), Julien Issler
 * @copyright   2005-2010 Laurent Jouanneau
 * @copyright   2007 Nicolas Lassalle
-* @copyright   2009 Julien Issler
+* @copyright   2009-2016 Julien Issler
 * @link        http://www.jelix.org
 * @licence     GNU Lesser General Public Licence see LICENCE file or http://www.gnu.org/licenses/lgpl.html
 */
@@ -66,17 +66,17 @@ final class jResponseBinary  extends jResponse {
             return true;
         }
 
-        if($this->doDownload){
-            if (!strlen($this->outputFileName)){
-                $f = explode ('/', str_replace ('\\', '/', $this->fileName));
-                $this->outputFileName = $f[count ($f)-1];
-            }
+        if ($this->outputFileName === '' && $this->fileName !== ''){
+            $f = explode ('/', str_replace ('\\', '/', $this->fileName));
+            $this->outputFileName = $f[count ($f)-1];
         }
 
-        $this->addHttpHeader("Content-Type",$this->mimeType, $this->doDownload);
+        $this->addHttpHeader('Content-Type' ,$this->mimeType, $this->doDownload);
 
         if($this->doDownload)
               $this->_downloadHeader();
+        else
+            $this->addHttpHeader ('Content-Disposition', 'inline; filename="'.str_replace('"','\"',$this->outputFileName).'"', false);
 
         if ($this->content === null) {
             if (is_readable ($this->fileName) && is_file ($this->fileName)) {

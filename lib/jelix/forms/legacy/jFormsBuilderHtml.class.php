@@ -260,15 +260,16 @@ class jFormsBuilderHtml extends jFormsBuilderBase {
 
 
     public function outputControlValue($ctrl, $attributes=array()){
-        if($ctrl->type == 'hidden') return;
-        $ro = $ctrl->isReadOnly();
+        if ($ctrl->type == 'hidden') {
+            return;
+        }
+
         $separator = ' ';
         if (isset($attributes['separator'])) {
             $separator = $attributes['separator'];
             unset($attributes['separator']);
         }
 
-        $attributes['name'] = $ctrl->ref;
         $attributes['id'] = $this->_name.'_'.$ctrl->ref;
 
         $class = 'jforms-value jforms-value-'.$ctrl->type;
@@ -283,7 +284,6 @@ class jFormsBuilderHtml extends jFormsBuilderBase {
         $this->_outputAttr($attributes);
         echo '>';
 
-        if (isset($attributes['separator']))
         $value = $this->_form->getData($ctrl->ref);
         $value = $ctrl->getDisplayValue($value);
         if(is_array($value)){

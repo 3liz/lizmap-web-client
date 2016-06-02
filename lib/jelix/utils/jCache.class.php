@@ -91,7 +91,7 @@ class jCache {
     */
     public static function get ($key, $profile='') {
 
-        $drv = self::_getDriver($profile);
+        $drv = self::getDriver($profile);
 
         if (!$drv->enabled) {
             return false;
@@ -120,7 +120,7 @@ class jCache {
     */
     public static function set ($key, $value, $ttl=null, $profile='') {
 
-        $drv = self::_getDriver($profile);
+        $drv = self::getDriver($profile);
 
         if (!$drv->enabled || is_resource($value)) {
             return false;
@@ -163,7 +163,7 @@ class jCache {
     */
     public static function call ($fn, $fnargs=array(), $ttl=null, $profile='') {
 
-        $drv = self::_getDriver($profile);
+        $drv = self::getDriver($profile);
 
         if($drv->enabled){
 
@@ -232,7 +232,7 @@ class jCache {
     */
     public static function delete ($key, $profile=''){
 
-        $drv = self::_getDriver($profile);
+        $drv = self::getDriver($profile);
 
         if (!$drv->enabled) {
             return false;
@@ -253,7 +253,7 @@ class jCache {
     */
     public static function increment ($key, $incvalue=1, $profile='') {
 
-        $drv = self::_getDriver($profile);
+        $drv = self::getDriver($profile);
 
         if (!$drv->enabled) {
             return false;
@@ -273,7 +273,7 @@ class jCache {
     */
     public static function decrement ($key, $decvalue=1, $profile=''){
 
-        $drv = self::_getDriver($profile);
+        $drv = self::getDriver($profile);
 
         if (!$drv->enabled) {
             return false;
@@ -293,7 +293,7 @@ class jCache {
     */
     public static function replace ($key, $value, $ttl=null, $profile=''){
 
-        $drv = self::_getDriver($profile);
+        $drv = self::getDriver($profile);
 
         if(!$drv->enabled || is_resource($value)){
             return false;
@@ -327,7 +327,7 @@ class jCache {
     */
     public static function add ($key, $value, $ttl=null, $profile=''){
 
-        $drv = self::_getDriver($profile);
+        $drv = self::getDriver($profile);
 
         if (!$drv->enabled || is_resource($value)) {
             return false;
@@ -368,7 +368,7 @@ class jCache {
     */
     public static function garbage ($profile=''){
 
-        $drv = self::_getDriver($profile);
+        $drv = self::getDriver($profile);
 
         if (!$drv->enabled) {
             return false;
@@ -385,7 +385,7 @@ class jCache {
     */
     public static function flush ($profile='') {
 
-        $drv = self::_getDriver($profile);
+        $drv = self::getDriver($profile);
 
         if (!$drv->enabled) {
             return false;
@@ -401,7 +401,7 @@ class jCache {
      * @param string $profile profile name
      * @return jICacheDriver
      */
-    protected static function _getDriver($profile) {
+    public static function getDriver($profile) {
         return jProfiles::getOrStoreInPool('jcache', $profile, array('jCache', '_loadDriver'), true);
     }
 

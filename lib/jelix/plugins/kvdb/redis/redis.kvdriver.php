@@ -4,7 +4,7 @@
  * @subpackage  kvdb
  * @author      Yannick Le Guédart
  * @contributor Laurent Jouanneau
- * @copyright   2009 Yannick Le Guédart, 2010 Laurent Jouanneau
+ * @copyright   2009 Yannick Le Guédart, 2010-2016 Laurent Jouanneau
  *
  * @link     http://www.jelix.org
  * @licence  http://www.gnu.org/licenses/lgpl.html GNU Lesser General Public Licence, see LICENCE file
@@ -15,6 +15,20 @@ require_once(LIB_PATH . 'php5redis/Redis.php');
 class redisKVDriver extends jKVDriver implements jIKVSet, jIKVttl {
 
     protected $key_prefix = '';
+
+    /**
+     * method to flush the keys when key_prefix is used
+     *
+     * direct: uses SCAN and DEL, but it can take huge time
+     * jkvdbredisworker: it stores the keys prefix to delete into a redis list
+     *     named 'jkvdbredisdelkeys'.
+     *     You can use a script to launch a worker which pops from this list
+     *     prefix of keys to delete, and delete them with SCAN/DEL redis commands.
+     *     See the redisworker controller in the jelix module.
+     * event: send a jEvent. It's up to your application to respond to this event
+     *     and to implement your prefered method to delete all keys.
+     */
+    protected $key_prefix_flush_method = 'direct';
 
     /**
      * Connects to the redis server
@@ -37,6 +51,13 @@ class redisKVDriver extends jKVDriver implements jIKVSet, jIKVttl {
 
         if (isset($this->_profile['key_prefix'])) {
             $this->key_prefix = $this->_profile['key_prefix'];
+        }
+
+        if ($this->key_prefix && isset($this->_profile['key_prefix_flush_method'])) {
+            if (in_array($this->_profile['key_prefix_flush_method'],
+                         array('direct', 'jkvdbredisworker', 'event'))) {
+                $this->key_prefix_flush_method = $this->_profile['key_prefix_flush_method'];
+            }
         }
 
         // OK, let's connect now
@@ -68,6 +89,13 @@ class redisKVDriver extends jKVDriver implements jIKVSet, jIKVttl {
         }
 
         return $prefix.$key;
+    }
+
+    /**
+     * @return Redis
+     */
+    public function getRedis() {
+        return $this->_connection;
     }
 
     public function get($key) {
@@ -114,7 +142,21 @@ class redisKVDriver extends jKVDriver implements jIKVSet, jIKVttl {
     }
 
     public function flush() {
-        return ($this->_connection->flushall()  == 'OK');
+        if (!$this->key_prefix) {
+            return ($this->_connection->flushall()  == 'OK');
+        }
+        switch($this->key_prefix_flush_method) {
+            case 'direct':
+                $this->_connection->flushByPrefix($this->key_prefix);
+                return true;
+            case 'event':
+                jEvent::notify('jKvDbRedisFlushKeyPrefix', array('prefix'=>$this->key_prefix,
+                                                                 'profile' =>$this->_profile['_name']));
+                return true;
+            case 'jkvdbredisworker':
+                $this->_connection->rpush('jkvdbredisdelkeys', $this->key_prefix);
+                return true;
+        }
     }
 
     public function append($key, $value) {
