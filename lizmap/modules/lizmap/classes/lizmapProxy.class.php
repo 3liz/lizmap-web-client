@@ -465,6 +465,9 @@ class lizmapProxy {
         if( property_exists($ser, 'cacheRedisKeyPrefix') and !empty( $ser->cacheRedisKeyPrefix ) ) {
             $cacheParams['key_prefix'] = $ser->cacheRedisKeyPrefix . $cacheParams['key_prefix'];
         }
+        if( property_exists($ser, 'cacheRedisKeyPrefixFlushMethod') and !empty( $ser->cacheRedisKeyPrefixFlushMethod ) ) {
+            $cacheParams['key_prefix_flush_method'] = $ser->cacheRedisKeyPrefixFlushMethod;
+        }
 
         // Create the virtual cache profile
         jProfiles::createVirtualProfile('jcache', $cacheName, $cacheParams);

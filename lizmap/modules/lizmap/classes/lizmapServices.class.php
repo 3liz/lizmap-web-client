@@ -53,7 +53,11 @@ class lizmapServices{
       'cacheRedisHost',
       'cacheRedisPort',
       'cacheRedisDb',
-      'cacheRedisKeyPrefix'
+      'cacheRedisKeyPrefix',
+    );
+
+    private $notEditableProperties = array(
+        'cacheRedisKeyPrefixFlushMethod'
     );
 
     // Wms map server
@@ -86,6 +90,8 @@ class lizmapServices{
     public $cacheRedisDb = '';
     // Redis key prefix
     public $cacheRedisKeyPrefix = '';
+    // method to flush keys when $cacheRedisKeyPrefix is set. See Jelix documentation
+    public $cacheRedisKeyPrefixFlushMethod = '';
     // if we allow to view the form to request an account
     public $allowUserAccountRequests = '';
     // admin contact email
@@ -99,9 +105,16 @@ class lizmapServices{
       $this->data = $readConfigPath;
 
       // set generic parameters
-      foreach($this->properties as $prop)
-        if(isset($readConfigPath['services'][$prop]))
+      foreach($this->properties as $prop) {
+        if(isset($readConfigPath['services'][$prop])) {
           $this->$prop = $readConfigPath['services'][$prop];
+        }
+      }
+      foreach($this->notEditableProperties as $prop) {
+        if(isset($readConfigPath['services'][$prop])) {
+          $this->$prop = $readConfigPath['services'][$prop];
+        }
+      }
     }
 
     public function getProperties(){
