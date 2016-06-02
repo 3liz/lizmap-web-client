@@ -4098,6 +4098,22 @@ OpenLayers.Control.HighlightFeature = OpenLayers.Class(OpenLayers.Control, {
     });
     $('#tooltip-layer-list').removeClass('loading').removeAttr('disabled');
 
+    lizMap.events.on({
+        minidockopened: function(e) {
+            if ( e.id == 'tooltip-layer' ) {
+              // Load first layer automatically
+                $('#tooltip-layer-list').val($("#tooltip-layer-list option:nth-child(2)").val()).change();
+            }
+        },
+        minidockclosed: function(e) {
+            if ( e.id == 'tooltip-layer' ) {
+              // deactivate tooltip on close
+              $('#tooltip-layer-list').val('').change();
+              return false;
+            }
+        }
+    });
+
   }
 
   function getLayerConfigById( aLayerId, aConfObjet, aIdAttribute ) {
