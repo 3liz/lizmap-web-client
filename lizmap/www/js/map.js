@@ -5546,7 +5546,7 @@ OpenLayers.Control.HighlightFeature = OpenLayers.Class(OpenLayers.Control, {
                 parent.removeClass('active');
                 lizMap.events.triggerEvent( "rightdockclosed", {'id':id} );
             } else {
-                var oldActive = $('#mapmenu li.nav-dock.active');
+                var oldActive = $('#mapmenu li.nav-right-dock.active');
                 if ( oldActive.length != 0 ) {
                     oldActive.removeClass('active');
                     lizMap.events.triggerEvent( "rightdockclosed", {'id': oldActive.children('a').first().attr('href').substr(1) } );
