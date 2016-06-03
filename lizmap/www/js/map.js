@@ -3988,7 +3988,7 @@ OpenLayers.Control.HighlightFeature = OpenLayers.Class(OpenLayers.Control, {
             var hiddenFields = hf.split(/[\s,]+/);
         }
         var cAliases = lconfig['alias'];
-        var html = '<div style="background-color:#F0F0F0 !important; margin-top:10px;">';
+        var html = '<div id="tooltipPopupContent">';
         html+= '<table class="lizmapPopupTable">';
         for (a in feature.attributes){
             // Do no show hiddenfields
@@ -3997,7 +3997,7 @@ OpenLayers.Control.HighlightFeature = OpenLayers.Class(OpenLayers.Control, {
             // show only tootlip fields if some fields given
             if( tf != '' && !($.inArray(a, tooltipFields) > -1) )
                 continue;
-            html+= '<tr><th>' + cAliases[a] + '</th><td style="white-space: nowrap;">' + feature.attributes[a] + '</td></tr>';
+            html+= '<tr><th>' + cAliases[a] + '</th><td>' + feature.attributes[a] + '</td></tr>';
         }
         html+= '</table>';
         html+= '</div>';
@@ -4015,7 +4015,7 @@ OpenLayers.Control.HighlightFeature = OpenLayers.Class(OpenLayers.Control, {
             false
         );
         tpopup.autoSize = true;
-        tpopup.backgroundColor = 'rgba(0, 0, 0, 0.7)';
+        tpopup.backgroundColor = 'transparent';
 
         feature.popup = tpopup;
         lizMap.map.addPopup( tpopup );

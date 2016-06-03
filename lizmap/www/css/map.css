@@ -1914,6 +1914,22 @@ div.modal h3 .text {
   background-position: -48px -80px;
 }
 
+#tooltipPopupContent {
+  background-color:#F0F0F0 !important;
+  border: rgba(0,0,0,0.7) solid 4px;
+  min-width:100px;
+}
+#tooltipPopupContent .lizmapPopupTable {
+  margin:auto;
+}
+#tooltipPopupContent th,
+#tooltipPopupContent td {
+  white-space: nowrap;
+}
+#tooltipPopupContent td {
+  padding-right: 5px;
+}
+
 #edition-modal form {
   margin: 0;
 }
