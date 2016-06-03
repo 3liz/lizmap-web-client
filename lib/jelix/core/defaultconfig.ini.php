@@ -451,3 +451,8 @@ jelix.cache=cache/
 [disabledListeners]
 ; list of jEvent listener to not call
 ; eventname[]="module~listenerName"
+
+[coordplugin_auth]
+; key to use to crypt the password in the cookie
+; Warning: the value of this parameter should be stored into localconfig.ini.php
+persistant_crypt_key=
