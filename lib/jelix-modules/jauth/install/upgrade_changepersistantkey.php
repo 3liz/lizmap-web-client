@@ -22,10 +22,7 @@ class jauthModuleUpgrader_changepersistantkey extends jInstallerModule {
         }
 
         $conf = $this->config->getValue('auth', 'coordplugins');
-        if ($conf == '1') {
-            $this->config->removeValue('persistant_crypt_key', 'coordplugin_auth');
-        }
-        else if ($conf) {
+        if ($conf != '1') {
             $conff = jApp::configPath($conf);
             if (file_exists($conff)) {
                 $ini = new jIniFileModifier($conff);

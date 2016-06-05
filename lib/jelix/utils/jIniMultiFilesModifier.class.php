@@ -63,6 +63,15 @@ class jIniMultiFilesModifier {
         }
     }
 
+    public function setValues($values, $section=0, $onMaster = false) {
+        if ($onMaster) {
+            $this->master->setValues($values, $section);
+        }
+        else {
+            $this->overrider->setValues($values, $section);
+        }
+    }
+
     /**
      * return the value of an option from the ini files. If the option doesn't exist,
      * it returns null.
@@ -84,6 +93,14 @@ class jIniMultiFilesModifier {
                 $val = $this->master->getValue($name, $section, $key);
             return $val;
         }
+    }
+
+    public function removeValue($name, $section=0, $key=null, $removePreviousComment = true, $masterOnly = false) {
+        $this->master->removeValue($name, $section, $key, $removePreviousComment);
+        if ($masterOnly) {
+            return;
+        }
+        $this->overrider->removeValue($name, $section, $key, $removePreviousComment);
     }
 
     /**
