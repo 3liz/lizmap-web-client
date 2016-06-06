@@ -1,4 +1,4 @@
-[![logo](icon.png "3Liz")][3liz]Lizmap Web Application 3.0beta4
+[![logo](icon.png "3Liz")][3liz]Lizmap Web Application 3.0.0
 ================================================================
 
 Lizmap web application, by 3LIZ.
@@ -21,15 +21,21 @@ The Initial Developer of the Original Code are René-Luc D'Hont <rldhont@3liz.co
 Contributors
 --------------
 
-* Paolo Cavallini <cavallini@faunalia.it>
-* Salvatore Larosa <lrssvtml@gmail.com>
-* Giovanni Manghi <giovanni.manghi@gmail.com>
+* Paolo Cavallini
+* Salvatore Larosa
+* Giovanni Manghi
 * Vitor Jorge
 * Nicolas Boisteault
-* Arno <ntelerm@yahoo.gr>
-* vherreros
-* jaitor1
+* Arnaud Deleurme
+* Víctor Herreros
+* Aitor Gil
 * Felix Kuehne
+* João Gaspar
+* Sławomir Bienias
+* Petr Tsymbarovich
+* Alessandro Fanna
+* Marta Puppo
+* Pietro Rossin
 
 Documentation
 --------------
