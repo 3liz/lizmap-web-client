@@ -24,6 +24,8 @@ Contributors
 * Paolo Cavallini
 * Salvatore Larosa
 * Giovanni Manghi
+* Laurent Jouanneau
+* David Marteau
 * Vitor Jorge
 * Nicolas Boisteault
 * Arnaud Deleurme
