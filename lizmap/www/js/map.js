@@ -1174,8 +1174,7 @@ var lizMap = function() {
     map = new OpenLayers.Map('map'
       ,{
         controls:[
-          new OpenLayers.Control.Navigation({mouseWheelOptions: {interval: 100}}),
-          new OpenLayers.Control.ZoomBox({alwaysZoom:true})
+          new OpenLayers.Control.Navigation({mouseWheelOptions: {interval: 100}})
         ]
         ,tileManager: null // prevent bug with OL 2.13 : white tiles on panning back
         ,eventListeners:{
@@ -2575,8 +2574,11 @@ var lizMap = function() {
         return false;
       $('#navbar button.zoom').removeClass('active');
       self.addClass('active');
-      map.getControlsByClass('OpenLayers.Control.ZoomBox')[0].deactivate();
-      map.getControlsByClass('OpenLayers.Control.Navigation')[0].activate();
+      var navCtrl = map.getControlsByClass('OpenLayers.Control.Navigation')[0];
+      navCtrl.zoomBox.keyMask = navCtrl.zoomBoxKeyMask;
+      navCtrl.zoomBox.handler.keyMask = navCtrl.zoomBoxKeyMask;
+      navCtrl.zoomBox.handler.dragHandler.keyMask = navCtrl.zoomBoxKeyMask;
+      navCtrl.handlers.wheel.activate();
       map.getControlsByClass('OpenLayers.Control.WMSGetFeatureInfo')[0].activate();
     });
     $('#navbar button.zoom').click(function(){
@@ -2585,9 +2587,12 @@ var lizMap = function() {
         return false;
       $('#navbar button.pan').removeClass('active');
       self.addClass('active');
-      map.getControlsByClass('OpenLayers.Control.Navigation')[0].deactivate();
       map.getControlsByClass('OpenLayers.Control.WMSGetFeatureInfo')[0].deactivate();
-      map.getControlsByClass('OpenLayers.Control.ZoomBox')[0].activate();
+      var navCtrl = map.getControlsByClass('OpenLayers.Control.Navigation')[0];
+      navCtrl.handlers.wheel.deactivate();
+      navCtrl.zoomBox.keyMask = null;
+      navCtrl.zoomBox.handler.keyMask = null;
+      navCtrl.zoomBox.handler.dragHandler.keyMask = null;
     });
     $('#navbar button.zoom-extent')
     .click(function(){
