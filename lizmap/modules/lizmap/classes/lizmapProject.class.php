@@ -258,7 +258,7 @@ class lizmapProject{
             foreach( $groupsWithShortName as $group ) {
                 $name = (string)$group['name'];
                 $shortNameProperty = $group->xpath("customproperties/property[@key='wmsShortName']");
-                if ( count( $shortNameProperty ) > 0 ) {
+                if ( $shortNameProperty && count( $shortNameProperty ) > 0 ) {
                     $shortNameProperty = $shortNameProperty[0];
                     $sname = (string) $shortNameProperty['value'];
                     if ( property_exists($this->cfg->layers, $name ) )
@@ -328,6 +328,9 @@ class lizmapProject{
     protected function readLayers($xml) {
         $xmlLayers = $xml->xpath( "//maplayer" );
         $layers = array();
+        if ( !$xmlLayers )
+            return $layers;
+
         foreach( $xmlLayers as $xmlLayer ) {
             $layer = array(
                 'type' => (string)$xmlLayer->attributes()->type,
@@ -359,17 +362,18 @@ class lizmapProject{
                 $wfsFields = array();
                 $aliases = array();
                 $edittypes = $xmlLayer->xpath(".//edittype");
-
-                foreach( $edittypes as $edittype ) {
-                    $field = (string) $edittype->attributes()->name;
-                    $aliases[$field] = $field;
-                    $alias = $xmlLayer->xpath("aliases/alias[@field='".$field."']");
-                    if( $alias && count($alias) != 0 ) {
-                        $alias = $alias[0];
-                        $aliases[$field] = (string)$alias['name'];
+                if ( $edittypes ) {
+                    foreach( $edittypes as $edittype ) {
+                        $field = (string) $edittype->attributes()->name;
+                        $aliases[$field] = $field;
+                        $alias = $xmlLayer->xpath("aliases/alias[@field='".$field."']");
+                        if( $alias && count($alias) != 0 ) {
+                            $alias = $alias[0];
+                            $aliases[$field] = (string)$alias['name'];
+                        }
+                        $fields[] = $field;
+                        $wfsFields[] = $field;
                     }
-                    $fields[] = $field;
-                    $wfsFields[] = $field;
                 }
                 $layer['fields'] = $fields;
                 $layer['aliases'] = $aliases;
@@ -744,7 +748,7 @@ class lizmapProject{
                         continue;
                     // get composition element
                     $composition = $composer->xpath('Composition');
-                    if( count($composition) == 0 )
+                    if( !$composition || count($composition) == 0 )
                         continue;
                     $composition = $composition[0];
 
@@ -759,46 +763,50 @@ class lizmapProject{
 
                     // get composer maps
                     $cMaps = $composer->xpath('.//ComposerMap');
-                    foreach( $cMaps as $cMap ) {
-                        $cMapItem = $cMap->xpath('ComposerItem');
-                        if( count($cMapItem) == 0 )
-                            continue;
-                        $cMapItem = $cMapItem[0];
-                        $ptMap = array(
-                            'id'=>'map'.(string)$cMap['id'],
-                            'width'=>(int)$cMapItem['width'],
-                            'height'=>(int)$cMapItem['height'],
-                        );
+                    if( $cMaps && count($cMaps) > 0 ) {
+                        foreach( $cMaps as $cMap ) {
+                            $cMapItem = $cMap->xpath('ComposerItem');
+                            if( count($cMapItem) == 0 )
+                                continue;
+                            $cMapItem = $cMapItem[0];
+                            $ptMap = array(
+                                'id'=>'map'.(string)$cMap['id'],
+                                'width'=>(int)$cMapItem['width'],
+                                'height'=>(int)$cMapItem['height'],
+                            );
 
-                        // Before 2.6
-                        if ( property_exists( $cMap->attributes(), 'overviewFrameMap' ) and (string)$cMap['overviewFrameMap'] != '-1' ){
-                            $ptMap['overviewMap'] = 'map'.(string)$cMap['overviewFrameMap'];
-                        }
-                        // >= 2.6
-                        $cMapOverviews = $cMap->xpath('ComposerMapOverview');
-                        foreach($cMapOverviews as $cMapOverview){
-                            if ( $cMapOverview and (string)$cMapOverview->attributes()->frameMap != '-1' ){
-                                $ptMap['overviewMap'] = 'map' . (string)$cMapOverview->attributes()->frameMap;
+                            // Before 2.6
+                            if ( property_exists( $cMap->attributes(), 'overviewFrameMap' ) and (string)$cMap['overviewFrameMap'] != '-1' ){
+                                $ptMap['overviewMap'] = 'map'.(string)$cMap['overviewFrameMap'];
                             }
-                        }
+                            // >= 2.6
+                            $cMapOverviews = $cMap->xpath('ComposerMapOverview');
+                            foreach($cMapOverviews as $cMapOverview){
+                                if ( $cMapOverview and (string)$cMapOverview->attributes()->frameMap != '-1' ){
+                                    $ptMap['overviewMap'] = 'map' . (string)$cMapOverview->attributes()->frameMap;
+                                }
+                            }
 
-                        $printTemplate['maps'][] = $ptMap;
+                            $printTemplate['maps'][] = $ptMap;
+                        }
                     }
 
                     // get composer labels
                     $cLabels = $composer->xpath('.//ComposerLabel');
-                    foreach( $cLabels as $cLabel ) {
-                        $cLabelItem = $cLabel->xpath('ComposerItem');
-                        if( count($cLabelItem) == 0 )
-                            continue;
-                        $cLabelItem = $cLabelItem[0];
-                        if( (string)$cLabelItem['id'] == '' )
-                            continue;
-                        $printTemplate['labels'][] = array(
-                            'id'=>(string)$cLabelItem['id'],
-                            'htmlState'=>(int)$cLabel['htmlState'],
-                            'text'=>(string)$cLabel['labelText']
-                        );
+                    if( $cLabels && count($cLabels) > 0 ) {
+                        foreach( $cLabels as $cLabel ) {
+                            $cLabelItem = $cLabel->xpath('ComposerItem');
+                            if( !$cLabelItem || count($cLabelItem) == 0 )
+                                continue;
+                            $cLabelItem = $cLabelItem[0];
+                            if( (string)$cLabelItem['id'] == '' )
+                                continue;
+                            $printTemplate['labels'][] = array(
+                                'id'=>(string)$cLabelItem['id'],
+                                'htmlState'=>(int)$cLabel['htmlState'],
+                                'text'=>(string)$cLabel['labelText']
+                            );
+                        }
                     }
                     $printTemplates[] = $printTemplate;
                 }
@@ -826,14 +834,14 @@ class lizmapProject{
                 $xmlLayerZero = $xmlLayer[0];
                 // aliases
                 $alias = $xmlLayerZero->xpath("aliases/alias[@field='".$v->fieldName."']");
-                if( count($alias) != 0 ) {
+                if( $alias && count($alias) != 0 ) {
                     $alias = $alias[0];
                     $v->fieldAlias = (string)$alias['name'];
                     $locateByLayer->$k = $v;
                 }
                 if ( property_exists( $v, 'filterFieldName') ) {
                     $alias = $xmlLayerZero->xpath("aliases/alias[@field='".$v->filterFieldName."']");
-                    if( count($alias) != 0 ) {
+                    if( $alias && count($alias) != 0 ) {
                         $alias = $alias[0];
                         $v->filterFieldAlias = (string)$alias['name'];
                         $locateByLayer->$k = $v;
@@ -841,7 +849,7 @@ class lizmapProject{
                 }
                 // vectorjoins
                 $vectorjoins = $xmlLayerZero->xpath('vectorjoins/join');
-                if( count($vectorjoins) != 0 ) {
+                if( $vectorjoins && count($vectorjoins) != 0 ) {
                     if ( !property_exists( $v, 'vectorjoins' ) )
                         $v->vectorjoins = array();
                     foreach( $vectorjoins as $vectorjoin ) {
@@ -904,7 +912,7 @@ class lizmapProject{
 
     protected function readUseLayerIDs($xml) {
         $WMSUseLayerIDs = $xml->xpath( "//properties/WMSUseLayerIDs" );
-        return ( count($WMSUseLayerIDs) > 0 && $WMSUseLayerIDs[0] == 'true' );
+        return ( $WMSUseLayerIDs && count($WMSUseLayerIDs) > 0 && $WMSUseLayerIDs[0] == 'true' );
     }
 
     public function getUpdatedConfig(){
