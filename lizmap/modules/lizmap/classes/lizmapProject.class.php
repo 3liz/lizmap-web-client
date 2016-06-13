@@ -175,6 +175,34 @@ class lizmapProject{
                     }
                 }
             }
+            //unset cache for editionLayers
+            if (property_exists($this->cfg, 'editionLayers') ){
+                foreach( $this->cfg->editionLayers as $key=>$obj ){
+                    if (property_exists($this->cfg->layers, $key) ){
+                        $this->cfg->layers->$key->cached = 'False';
+                        $this->cfg->layers->$key->clientCacheExpiration = 0;
+                        if ( property_exists($this->cfg->layers->$key, 'cacheExpiration') )
+                            unset($this->cfg->layers->$key->cacheExpiration);
+                    }
+                }
+            }
+            //unset cache for loginFilteredLayers
+            if ( property_exists($this->cfg,'loginFilteredLayers') ){
+                foreach( $this->cfg->loginFilteredLayers as $key=>$obj ){
+                    if (property_exists($this->cfg->layers, $key) ){
+                        $this->cfg->layers->$key->cached = 'False';
+                        $this->cfg->layers->$key->clientCacheExpiration = 0;
+                        if ( property_exists($this->cfg->layers->$key, 'cacheExpiration') )
+                            unset($this->cfg->layers->$key->cacheExpiration);
+                    }
+                }
+            }
+            //unset displayInLegend for geometryType none or unknown
+            foreach( $this->cfg->layers as $key=>$obj ){
+                if ( property_exists($this->cfg->layers->$key, 'geometryType') &&
+                     ($this->cfg->layers->$key->geometryType == 'none' || $this->cfg->layers->$key->geometryType == 'unknown') )
+                    $this->cfg->layers->$key->displayInLegend = 'False';
+            }
         }
     }
 
@@ -587,14 +615,14 @@ class lizmapProject{
                 if( count($alias) != 0 ) {
                     $alias = $alias[0];
                     $v->fieldAlias = (string)$alias['name'];
-                    $configJson->$k = $v;
+                    $configJson->locateByLayer->$k = $v;
                 }
                 if ( property_exists( $v, 'filterFieldName') ) {
                     $alias = $xmlLayerZero->xpath("aliases/alias[@field='".$v->filterFieldName."']");
                     if( count($alias) != 0 ) {
                         $alias = $alias[0];
                         $v->filterFieldAlias = (string)$alias['name'];
-                        $configJson->$k = $v;
+                        $configJson->locateByLayer->$k = $v;
                     }
                 }
                 // vectorjoins
@@ -611,7 +639,7 @@ class lizmapProject{
                                 "joinLayerId"=>(string)$vectorjoin['joinLayerId'],
                             );
                     }
-                    $configJson->$k = $v;
+                    $configJson->locateByLayer->$k = $v;
                 }
             }
         }
