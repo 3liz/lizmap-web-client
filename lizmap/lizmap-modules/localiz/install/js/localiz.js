@@ -35,8 +35,8 @@ lizMap.events.on({
         // créer un masque
         $('#btn_localiz_mask').click(function(){
 			maskLayer.params['FILTER'] = 'mask:"oid"'+' = '+"'"+itemMask.oid+"'";
-            if (! $("button[value='localiz']").hasClass("checked"))
-                $("button[value='localiz']").click();
+            if (! $("button[value='mask']").hasClass("checked"))
+                $("button[value='mask']").click();
             else
                 maskLayer.redraw();
                 
@@ -45,24 +45,29 @@ lizMap.events.on({
 
         // effacer le masque
         $('#btn_localiz_hide').click(function(){
-            if ($("button[value='localiz']").hasClass("checked"))
-                $("button[value='localiz']").click();
+            if ($("button[value='mask']").hasClass("checked"))
+                $("button[value='mask']").click();
+                
             return false;
         });
 
         // Recherche auto-complétion
         $(function() {
-            //alert('ok 2');
             $("#localiz_search" ).autocomplete({
                 source: function(request, response){
                     url = "/lizmap3/index.php?module=localiz&action=search";
+                    $('#localiz_div_search span.loading').addClass('loadstart');
                     
                     $.getJSON( url, {
                         term: request.term
                     })
                     .done(function( data ) {
                         response(data);
-                    });    
+                    })
+                    .always(function(){
+                        $('#localiz_div_search span.loading').removeClass('loadstart');
+                    })
+                    ;     
                     
                 },
                 // pb de positionnement, appendTo requis ?
@@ -78,9 +83,8 @@ lizMap.events.on({
                     
                     // si couche masque présente, interdire la création de masque à partir des objets linéaires (ce)
                     if (maskLayer) {
-                        if (itemMask.geometrytype == 'LINESTRING' || itemMask.geometrytype == 'MULTILINESTRING') {
+                        if (itemMask.geometrytype == null || itemMask.geometrytype == 'LINESTRING' || itemMask.geometrytype == 'MULTILINESTRING') {
                             $('#btn_localiz_mask').hide();
-                            //$('#btn_localiz_hide').hide();
                         } else {
                             $('#btn_localiz_mask').show();
                             $('#btn_localiz_hide').show();
