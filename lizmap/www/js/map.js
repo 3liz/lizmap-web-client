@@ -814,9 +814,8 @@ var lizMap = function() {
     map = new OpenLayers.Map('map'
       ,{
         controls:[
-          new OpenLayers.Control.Navigation(),
-          new OpenLayers.Control.Permalink('permalink'),
-          new OpenLayers.Control.ZoomBox({alwaysZoom:true})
+          new OpenLayers.Control.Navigation({mouseWheelOptions: {interval: 100}}),
+          new OpenLayers.Control.Permalink('permalink')
         ]
         ,tileManager: null // prevent bug with OL 2.13 : white tiles on panning back
         ,eventListeners:{
@@ -1805,8 +1804,11 @@ var lizMap = function() {
         return false;
       $('#navbar button.zoom').removeClass('active');
       self.addClass('active');
-      map.getControlsByClass('OpenLayers.Control.ZoomBox')[0].deactivate();
-      map.getControlsByClass('OpenLayers.Control.Navigation')[0].activate();
+      var navCtrl = map.getControlsByClass('OpenLayers.Control.Navigation')[0];
+      navCtrl.zoomBox.keyMask = navCtrl.zoomBoxKeyMask;
+      navCtrl.zoomBox.handler.keyMask = navCtrl.zoomBoxKeyMask;
+      navCtrl.zoomBox.handler.dragHandler.keyMask = navCtrl.zoomBoxKeyMask;
+      navCtrl.handlers.wheel.activate();
       map.getControlsByClass('OpenLayers.Control.WMSGetFeatureInfo')[0].activate();
     });
     $('#navbar button.zoom').click(function(){
@@ -1815,9 +1817,12 @@ var lizMap = function() {
         return false;
       $('#navbar button.pan').removeClass('active');
       self.addClass('active');
-      map.getControlsByClass('OpenLayers.Control.Navigation')[0].deactivate();
       map.getControlsByClass('OpenLayers.Control.WMSGetFeatureInfo')[0].deactivate();
-      map.getControlsByClass('OpenLayers.Control.ZoomBox')[0].activate();
+      var navCtrl = map.getControlsByClass('OpenLayers.Control.Navigation')[0];
+      navCtrl.handlers.wheel.deactivate();
+      navCtrl.zoomBox.keyMask = null;
+      navCtrl.zoomBox.handler.keyMask = null;
+      navCtrl.zoomBox.handler.dragHandler.keyMask = null;
     });
     $('#navbar button.zoom-extent')
     .click(function(){
@@ -4272,6 +4277,7 @@ lizMap.events.on({
           evt.config.layers['gsat'] = gsatCfg;
           evt.baselayers.push(gsat);
           evt.map.allOverlays = false;
+          evt.map.zoomDuration = 0;
         }
         if (('googleHybrid' in evt.config.options) && evt.config.options.googleHybrid == 'True') {
           var options = {
@@ -4300,6 +4306,7 @@ lizMap.events.on({
           evt.config.layers['ghyb'] = ghybCfg;
           evt.baselayers.push(ghyb);
           evt.map.allOverlays = false;
+          evt.map.zoomDuration = 0;
         }
         if (('googleTerrain' in evt.config.options) && evt.config.options.googleTerrain == 'True') {
           var options = {
@@ -4328,6 +4335,7 @@ lizMap.events.on({
           evt.config.layers['gphy'] = gphyCfg;
           evt.baselayers.push(gphy);
           evt.map.allOverlays = false;
+          evt.map.zoomDuration = 0;
        }
        if (('googleStreets' in evt.config.options) && evt.config.options.googleStreets == 'True') {
           var options = {
@@ -4355,6 +4363,7 @@ lizMap.events.on({
          evt.config.layers['gmap'] = gmapCfg;
          evt.baselayers.push(gmap);
          evt.map.allOverlays = false;
+         evt.map.zoomDuration = 0;
        }
        if (('bingStreets' in evt.config.options) && evt.config.options.bingStreets == 'True' && ('bingKey' in evt.config.options))  {
           var options = {
