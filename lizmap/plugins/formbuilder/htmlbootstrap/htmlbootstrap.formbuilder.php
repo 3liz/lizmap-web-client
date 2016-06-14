@@ -66,9 +66,10 @@ class htmlbootstrapFormBuilder extends \jelix\forms\Builder\HtmlBuilder {
         else
           echo '<div class="jforms-submit-buttons form-actions">';
         if ( $ctrl = $this->_form->getReset() ) {
-            if(!$this->_form->isActivated($ctrl->ref)) continue;
-            $this->outputControl($ctrl);
-            echo ' ';
+            if($this->_form->isActivated($ctrl->ref)) {
+                $this->outputControl($ctrl);
+                echo ' ';
+            }
         }
         foreach( $this->_form->getSubmits() as $ctrlref=>$ctrl){
             if(!$this->_form->isActivated($ctrlref)) continue;
