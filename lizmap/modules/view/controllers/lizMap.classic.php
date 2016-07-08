@@ -229,6 +229,23 @@ class lizMapCtrl extends jController {
           $rep->addCssLink( $d->css );
     }
 
+    // Get additionnal JS and CSS from modules
+    $additions = jEvent::notify('getMapAdditions',array('repository'=>$repository, 'project'=>$project))->getResponse();
+    foreach($additions as $addition){
+      if(is_array($addition)){
+        if(array_key_exists('js', $addition)){
+          foreach( $addition['js'] as $js ){
+            $rep->addJSLink($js);
+          }
+        }
+        if(array_key_exists('css', $addition)){
+          foreach( $addition['css'] as $css ){
+            $rep->addCssLink($css);
+          }
+        }
+      }
+    }
+
     // Replace default theme by theme found in
     // the repository folder media/themes/default/
     if ( $lrep->getData('allowUserDefinedThemes') ) {

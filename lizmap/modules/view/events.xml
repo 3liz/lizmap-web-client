@@ -1,5 +1,6 @@
 <events xmlns="http://jelix.org/ns/events/1.0">
    <listener name="view">
        <event name="masteradminGetInfoBoxContent" />
+       <event name="getMapAdditions" />
    </listener>
 </events>
