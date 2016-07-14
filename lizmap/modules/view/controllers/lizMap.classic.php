@@ -238,6 +238,11 @@ class lizMapCtrl extends jController {
             $rep->addJSLink($js);
           }
         }
+        if(array_key_exists('jscode', $addition)){
+          foreach( $addition['jscode'] as $jscode ){
+            $rep->addJSCode($jscode);
+          }
+        }
         if(array_key_exists('css', $addition)){
           foreach( $addition['css'] as $css ){
             $rep->addCssLink($css);
