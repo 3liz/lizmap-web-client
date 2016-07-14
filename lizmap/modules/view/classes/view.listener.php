@@ -19,16 +19,21 @@ class viewListener extends jEventListener{
         $js = array(
             $bp.'js/example/example.js'
         );
+        $jscode = array(
+            ' var somevar = "something"; '
+        );
         $css = array(
             $bp.'css/example/example.css'
         );
         The listed files must be added by the module in lizmap/www by the installation script
         */
         $js = array();
+        $jscode = array();
         $css = array();
         $event->add(
             array(
                 'js' => $js,
+                'jscode' => $jscode,
                 'css' => $css
             )
         );
