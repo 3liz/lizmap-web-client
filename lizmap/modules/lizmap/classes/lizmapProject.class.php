@@ -336,6 +336,7 @@ class lizmapProject{
                 'type' => (string)$xmlLayer->attributes()->type,
                 'id' => (string)$xmlLayer->id,
                 'name' => (string)$xmlLayer->layername,
+                'shortname' => (string)$xmlLayer->shortname,
                 'title' => (string)$xmlLayer->title,
                 'abstract' => (string)$xmlLayer->abstract,
                 'proj4' => (string)$xmlLayer->srs->spatialrefsys->proj4,
