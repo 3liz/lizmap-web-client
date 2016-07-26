@@ -52,7 +52,7 @@ class qgisMapLayer{
     $this->type = $propLayer['type'];
     $this->id = $propLayer['id'];
 
-    $this->name = $propLayer['layername'];
+    $this->name = $propLayer['name'];
     $this->title = $propLayer['title'];
     $this->abstract = $propLayer['abstract'];
 
