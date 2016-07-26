@@ -119,10 +119,9 @@ var lizLayerActionButtons = function() {
             placement: 'bottom'
 
         } );
-
         // Expand all of unfold all
         $('#layers-unfold-all').click(function(){
-            $('#switcher table.tree').expandAll();
+            $('#switcher table.tree tr:not(.liz-layer.disabled) a.expander').click();
             return false;
         });
         $('#layers-fold-all').click(function(){
@@ -315,5 +314,6 @@ var lizLayerActionButtons = function() {
     }
 
     });
+        console.log($('#layers-unfold-all').length);
 
 }();
