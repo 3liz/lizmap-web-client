@@ -35,9 +35,6 @@ class qgisMapLayer{
   // layer provider
   protected $provider = '';
 
-  // xml layer element
-  protected $xmlLayer = null;
-
   /**
    * @var lizmapProject
    */
@@ -93,6 +90,9 @@ class qgisMapLayer{
   }
 
   public function getXmlLayer(){
-    return $this->xmlLayer;
+    $xmlLayers = $this->project->getXmlLayer($this->id);
+    if (count($xmlLayers) == 0 )
+        return null;
+    return $xmlLayers[0];
   }
 }
