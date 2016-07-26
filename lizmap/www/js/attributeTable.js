@@ -2606,6 +2606,9 @@ var lizAttributeTable = function() {
 
             }); // lizMap.events.on end
 
+            // Extend lizMap API
+            lizMap.getAttributeFeatureData = getAttributeFeatureData;
+            lizMap.zoomToFeature = zoomToFeature;
 
         } // uicreated
     });
