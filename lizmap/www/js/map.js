@@ -601,8 +601,8 @@ var lizMap = function() {
      if (
        (('osmMapnik' in config.options)
         && config.options.osmMapnik == 'True') ||
-       (('osmMapquest' in config.options)
-        && config.options.osmMapquest == 'True') ||
+       //(('osmMapquest' in config.options)
+       // && config.options.osmMapquest == 'True') ||
        (('osmCyclemap' in config.options)
         && config.options.osmCyclemap == 'True') ||
        (('googleStreets' in config.options)
@@ -667,7 +667,7 @@ var lizMap = function() {
 
          // Specify zoom level number
          if ((('osmMapnik' in config.options) && config.options.osmMapnik == 'True') ||
-             (('osmMapquest' in config.options) && config.options.osmMapquest == 'True') ||
+             //(('osmMapquest' in config.options) && config.options.osmMapquest == 'True') ||
              (('osmCyclemap' in config.options) && config.options.osmCyclemap == 'True') ||
              (('bingStreets' in config.options) && config.options.bingStreets == 'True' && ('bingKey' in config.options)) ||
              (('bingSatellite' in config.options) && config.options.bingSatellite == 'True' && ('bingKey' in config.options)) ||
@@ -5649,8 +5649,8 @@ lizMap.events.on({
       if (
     (('osmMapnik' in evt.config.options)
     && evt.config.options.osmMapnik == 'True') ||
-    (('osmMapquest' in evt.config.options)
-     && evt.config.options.osmMapquest == 'True') ||
+    //(('osmMapquest' in evt.config.options)
+    // && evt.config.options.osmMapquest == 'True') ||
     (('osmCyclemap' in evt.config.options)
      && evt.config.options.osmCyclemap == 'True') ||
     (('googleStreets' in evt.config.options)
@@ -5735,6 +5735,7 @@ lizMap.events.on({
         evt.config.layers['osm'] = osmCfg;
         evt.baselayers.push(osm);
       }
+      /*
       if (('osmMapquest' in evt.config.options) && evt.config.options.osmMapquest == 'True') {
         evt.map.allOverlays = false;
         var options = {
@@ -5765,6 +5766,7 @@ lizMap.events.on({
         evt.config.layers['mapquest'] = mapquestCfg;
         evt.baselayers.push(mapquest);
       }
+      * */
       if (('osmCyclemap' in evt.config.options) && evt.config.options.osmCyclemap == 'True') {
         evt.map.allOverlays = false;
         var options = {
