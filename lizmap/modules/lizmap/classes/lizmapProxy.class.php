@@ -310,7 +310,7 @@ class lizmapProxy {
             # Output the image as a string (use PHP buffering)
             ob_start();
             if(preg_match('#png#', $params['format']))
-                imagepng($image, null);
+                imagepng($image, null, 9);
             else
                 imagejpeg($image, null, 80);
             $data = ob_get_contents(); // read from buffer
