@@ -378,6 +378,7 @@ class lizmapProject{
                 }
                 $layer['fields'] = $fields;
                 $layer['aliases'] = $aliases;
+                $layer['wfsFields'] = $wfsFields;
 
                 $excludeFields = $xmlLayer->xpath(".//excludeAttributesWFS/attribute");
                 if ( $excludeFields && count($excludeFields) > 0 ) {
