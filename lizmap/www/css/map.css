@@ -676,6 +676,12 @@ table.attribute-table-table tr.selected a:hover{
   color: #005580;
 }
 
+table.attribute-table-table tr td {
+    font-size: 1em;
+    white-space: nowrap;
+    padding: 1px 5px;
+}
+
 /*
 Timemanager
 */
