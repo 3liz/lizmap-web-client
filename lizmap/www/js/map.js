@@ -2596,7 +2596,13 @@ var lizMap = function() {
     });
     $('#navbar button.zoom-extent')
     .click(function(){
-      map.zoomToExtent(map.initialExtent);
+      var url_params = getUrlParameters();
+      if( 'layers' in url_params ){
+        runPermalink( url_params );
+      }
+      else{
+        map.zoomToExtent(map.initialExtent);
+      }
     });
     $('#navbar button.zoom-in')
     .click(function(){
@@ -2825,6 +2831,18 @@ var lizMap = function() {
 
   }
 
+  function getUrlParameters(){
+    var oParametre = {};
+
+    if (window.location.search.length > 1) {
+      for (var aItKey, nKeyId = 0, aCouples = window.location.search.substr(1).split("&"); nKeyId < aCouples.length; nKeyId++) {
+        aItKey = aCouples[nKeyId].split("=");
+        oParametre[unescape(aItKey[0])] = aItKey.length > 1 ? unescape(aItKey[1]) : "";
+      }
+    }
+    return oParametre;
+  }
+
   function bindGeobookmarkEvents(){
 
     $('.btn-geobookmark-del').click(function(){
@@ -2853,6 +2871,83 @@ var lizMap = function() {
     $('#geobookmark-form input[name="bname"]').val('').blur();
   }
 
+  // Set the map accordingly to
+  function runPermalink( pparams ){
+
+    // Zoom to bbox
+    var bbox = OpenLayers.Bounds.fromString( pparams.bbox );
+    map.zoomToExtent( bbox );
+
+    // Activate layers
+    var players = pparams.layers;
+
+    // Get styles and tranform into obj
+    var slist = {};
+    if( 'layerStyles' in pparams && pparams.layerStyles != ''){
+      var lstyles = pparams.layerStyles.split(';');
+      for(var i in lstyles){
+        var a = lstyles[i];
+        var b = a.split(':');
+        if( b.length == 2)
+          slist[b[0]] = b[1];
+      }
+    }
+
+    for( var i=0; i < map.layers.length; i++){
+
+      // Activate and deactivate layers
+      var l = map.layers[i];
+      var lbase = l.isBaseLayer;
+      if( lbase ){
+        if( players[i] == 'B' )
+          $('#switcher-baselayer-select').val( l.name ).change();
+      }else{
+        var btn = $('#switcher button.checkbox[name="layer"][value="'+l.name+'"]');
+        if ( ( (players[i] == 'T') != btn.hasClass('checked') ) )
+          $('#switcher button.checkbox[name="layer"][value="'+l.name+'"]').click();
+      }
+
+      // Set style
+      if( l.name in slist ){
+        l.params['STYLES'] = slist[l.name];
+        l.redraw( true );
+        lizMap.events.triggerEvent(
+            "layerstylechanged",
+            { 'featureType': l.name}
+        );
+      }
+    }
+
+
+    // Filter
+    if( 'filter' in pparams && pparams.filter != '' ){
+        var sp = pparams.filter.split(':');
+        if( sp.length == 2 ){
+          var flayer = sp[0];
+          var ffids = sp[1].split();
+
+          // Select feature
+          lizMap.events.triggerEvent(
+              'layerfeatureselected',
+              {'featureType': flayer, 'fid': ffids, 'updateDrawing': false}
+          );
+          // Filter selected feature
+          lizMap.events.triggerEvent(
+              'layerfeaturefilterselected',
+              {'featureType': flayer}
+          );
+        }
+    }else{
+      if( lizMap.lizmapLayerFilterActive ){
+        lizMap.events.triggerEvent(
+            'layerfeatureremovefilter',
+            {'featureType': lizMap.lizmapLayerFilterActive}
+        );
+      }
+    }
+
+  }
+
   function runGeoBookmark( id ){
     var gburl = lizUrls.geobookmark;
     var gbparams = {
@@ -2861,55 +2956,8 @@ var lizMap = function() {
     };
     $.get(gburl,
       gbparams,
-      function(data) {
-
-        // Zoom to bbox
-        var bbox = OpenLayers.Bounds.fromString( data.bbox );
-        map.zoomToExtent( bbox );
-
-        // Activate layers
-        var players = data.layers;
-
-        for( var i=0; i < map.layers.length; i++){
-          var l = map.layers[i];
-          var lbase = l.isBaseLayer;
-          if( lbase ){
-            if( players[i] == 'B' )
-              $('#switcher-baselayer-select').val( l.name ).change();
-          }else{
-            var btn = $('#switcher button.checkbox[name="layer"][value="'+l.name+'"]');
-            if ( ( (players[i] == 'T') != btn.hasClass('checked') ) )
-              $('#switcher button.checkbox[name="layer"][value="'+l.name+'"]').click();
-          }
-        }
-
-        // Filter
-        if( data.filter != '' ){
-            var sp = data.filter.split(':');
-            if( sp.length == 2 ){
-              var flayer = sp[0];
-              var ffids = sp[1].split();
-
-              // Select feature
-              lizMap.events.triggerEvent(
-                  'layerfeatureselected',
-                  {'featureType': flayer, 'fid': ffids, 'updateDrawing': false}
-              );
-              // Filter selected feature
-              lizMap.events.triggerEvent(
-                  'layerfeaturefilterselected',
-                  {'featureType': flayer}
-              );
-            }
-        }else{
-          if( lizMap.lizmapLayerFilterActive ){
-            lizMap.events.triggerEvent(
-                'layerfeatureremovefilter',
-                {'featureType': lizMap.lizmapLayerFilterActive}
-            );
-          }
-        }
-
+      function(geoparams) {
+        runPermalink(geoparams);
       }
       ,'json'
     );
@@ -5349,20 +5397,27 @@ OpenLayers.Control.HighlightFeature = OpenLayers.Class(OpenLayers.Control, {
           // Toggle OpenLayers visibility to true for legend checkboxes
           // 1/ Check permalink is used or not
           var layersHaveBeenActivatedByPermalink = false;
-          $('#switcher button.checkbox[name="layer"]').each(function(){
-            var cb = $(this);
-            var cleanName = cb.val();
-            var oLayer = map.getLayersByName(cleanName)[0];
-            if( oLayer && oLayer.visibility )
-              layersHaveBeenActivatedByPermalink = true;
-          });
+          var uparams = getUrlParameters();
+          if( 'layers' in uparams ) {
+            var players = uparams.layers;
+            for( var i=0; i < map.layers.length; i++){
+              var l = map.layers[i];
+              var lbase = l.isBaseLayer;
+              if( !lbase ){
+                if ( players[i] == 'T' ){
+                  layersHaveBeenActivatedByPermalink = true;
+                  l.setVisibility(true);
+                }
+              }
+            }
+          }
+
           // 2/ Toggle checkboxes
           $('#switcher button.checkbox[name="layer"]').each(function(){
             var cb = $(this);
             var cleanName = cb.val();
             var oLayer = map.getLayersByName(cleanName)[0];
             if( oLayer ){
-
               // toggle checked class for permalink layers
               // because OL has already drawn them in map
               cb.toggleClass('checked', oLayer.visibility);
