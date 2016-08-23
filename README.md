@@ -38,6 +38,8 @@ Contributors
 * Alessandro Fanna
 * Marta Puppo
 * Pietro Rossin
+* Kari Salovaara
+* Xan Vieiro
 
 Documentation
 --------------
@@ -65,5 +67,5 @@ Alternatively, the contents of this file may be used under the terms of either o
 Software distributed under the License is distributed on an "AS IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License for the specific language governing rights and limitations under the License.
 
 
-  [QGIS Server Tutorial]: http://www.qgis.org/wiki/QGIS_Server_Tutorial
+  [QGIS as OGC Data Server]: http://docs.qgis.org/testing/en/docs/user_manual/working_with_ogc/ogc_server_support.html
   [3liz]:http://www.3liz.com
