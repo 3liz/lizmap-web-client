@@ -9,9 +9,9 @@ Lizmap web application, by 3LIZ.
     email       : info@3liz.com
     website     : http://www.3liz.com
 
-Lizmap Web Application generates dynamically a web map application (php/html/css/js) with the help of Qgis Server ( [QGIS Server Tutorial] ). You can configure one web map per Qgis project with the QGIS LizMap Plugin. The Lizmap web application must be installed on the server.
+Lizmap Web Application generates dynamically a web map application (php/html/css/js) with the help of Qgis Server ( [QGIS as OGC Data Server] ). You can configure one web map per Qgis project with the QGIS LizMap Plugin. The Lizmap web application must be installed on the server.
 
-The Original Code is 3liz code.
+The Original Code is [3liz] code.
 
 Authors
 -------
