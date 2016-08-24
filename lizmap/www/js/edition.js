@@ -936,7 +936,7 @@ var lizEdition = function() {
                         .click(function(){
                             var fid = $(this).val().split('.').pop();
                             var layerId = $(this).val().replace( '.' + fid, '' );
-
+                            console.log(layerId+', '+fid);
                             // launch edition
                             lizMap.launchEdition( layerId, fid );
                             return false;
@@ -966,6 +966,13 @@ var lizEdition = function() {
                             function(){ $(this).removeClass('btn-primary'); }
                         )
                         .tooltip();
+
+
+                        // Trigger event
+                        lizMap.events.triggerEvent(
+                            "lizmappopupupdated",
+                            {'popup': popup}
+                        );
 
                     }
                 }
