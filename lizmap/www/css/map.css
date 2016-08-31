@@ -1974,6 +1974,14 @@ div.modal h3 .text {
   max-width:35px;
 }
 
+#edition-form-container h3 {
+  color: black;
+  background-color: lightgrey;
+  line-height: 20px;
+  font-size: 15px;
+  padding: 1px 5px;
+  margin-bottom: 4px;
+}
 #edition-form-container .form-horizontal .jforms-choice .jforms-item-controls  .control-label{
   width:0px;
 }
