@@ -3012,18 +3012,22 @@ var lizMap = function() {
                       else{
                         $('#popupcontent div.menu-content').html(pcontent);
                       }
-                      // Display dock if needed
-                      if( hasPopupContent && !$('#mapmenu .nav-list > li.popupcontent').hasClass('active') ){
-                          $('#button-popupcontent').click();
-                      }
-                      if( !hasPopupContent && $('#mapmenu .nav-list > li.popupcontent').hasClass('active') ){
-                          $('#button-popupcontent').click();
+
+                      // Warn user no data has been found
+                      if( !hasPopupContent ){
+                        pcontent = '<div class="lizmapPopupContent"><h4>'+lizDict['popup.msg.no.result']+'</h4></div>';
+                        $('#popupcontent div.menu-content').html(pcontent);
                       }
 
-                      // Hide dock if no result
-                      if( !hasPopupContent && !$('#mapmenu .nav-list > li.switcher').hasClass('active') ){
-                        $('#button-switcher').click();
+                      // Display dock if needed
+                      if(
+                        !$('#mapmenu .nav-list > li.popupcontent').hasClass('active')
+                      ){
+                        if(!mCheckMobile() || ( mCheckMobile() && hasPopupContent ) ){
+                          $('#button-popupcontent').click();
+                        }
                       }
+
                     }
                     else{
                       if (!text || text == null || text == '')
