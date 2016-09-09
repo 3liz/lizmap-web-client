@@ -335,11 +335,6 @@ class jSignificantUrlsCompiler implements jISimpleCompiler{
     protected $entryPoints = array();
 
     /**
-     * list all modules repository
-     */
-    protected $modulesRepositories = array();
-
-    /**
      * list all modules path
      */
     protected $modulesPath = array();
@@ -353,31 +348,8 @@ class jSignificantUrlsCompiler implements jISimpleCompiler{
      */
     protected function retrieveModulePaths($configFile) {
         $conf = parse_ini_file($configFile);
-        if (!array_key_exists('modulesPath',$conf))
-            return;
-        $list = preg_split('/ *, */',$conf['modulesPath']);
-        array_unshift($list, JELIX_LIB_PATH.'core-modules/');
-
-        foreach($list as $k=>$path){
-            if(trim($path) == '') continue;
-            $p = jFile::parseJelixPath( $path );
-            if (!file_exists($p)) {
-                continue;
-            }
-            if (substr($p,-1) !='/')
-                $p.='/';
-            if (isset($this->modulesRepositories[$p]))
-                continue;
-            $this->modulesRepositories[$p] = true;
-            if ($handle = opendir($p)) {
-                while (false !== ($f = readdir($handle))) {
-                    if ($f[0] != '.' && is_dir($p.$f)) {
-                        $this->modulesPath[$f]=$p.$f.'/';
-                    }
-                }
-                closedir($handle);
-            }
-        }
+        $this->modulesPath = array_merge( $this->modulesPath,
+            jConfigCompiler::getModulesPaths((object) $conf));
     }
 
     /**

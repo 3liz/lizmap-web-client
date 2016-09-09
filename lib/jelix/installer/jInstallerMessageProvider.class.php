@@ -45,8 +45,8 @@ class jInstallerMessageProvider {
         'extension.optional.installed'=>'L\'extension %s optionnelle est disponible',
         'extension.required.installed'=>'L\'extension %s obligatoire est disponible',
         'extensions.required.ok'=>'Toutes les extensions PHP obligatoires sont disponibles',
-        'extension.database.ok'=>'L\'application utilisera une base de données SQL',
-        'extension.database.ok2'=>'L\'application pourra utiliser une base de données SQL',
+        'extension.database.ok'=>'L\'application utilisera une base de données SQL : %s',
+        'extension.database.ok2'=>'L\'application pourra utiliser une base de données SQL : %s',
         'extension.database.missing'=>'L\'application a besoin d\'une base de données SQL',
         'extension.database.missing2'=>'L\'application ne pourra pas utiliser de base de données SQL',
         'path.core'             =>'Le fichier init.php  de jelix ou le fichier application.ini.php de votre application n\'est pas chargé',
@@ -99,6 +99,7 @@ class jInstallerMessageProvider {
         'install.module.error'              =>'Une erreur est survenue durant l\'installation du module %s: %s',
         'install.module.check.dependency'   =>'Vérifie les dépendances du module %s',
         'install.module.upgraded'           =>'Le module %s est mis à jour à la version %s',
+        'more.details'                      =>'Plus de details',
 
         ),
 
@@ -126,8 +127,8 @@ class jInstallerMessageProvider {
         'extension.optional.installed'=>'the optional extension %s is available',
         'extension.required.installed'=>'the required extension %s is available',
         'extensions.required.ok'=>'All needed PHP extensions are available',
-        'extension.database.ok'=>'The application will use a SQL database',
-        'extension.database.ok2'=>'The application can use SQL databases',
+        'extension.database.ok'=>'The application will use a SQL database: %s',
+        'extension.database.ok2'=>'The application can use SQL databases: %s',
         'extension.database.missing'=>'The application needs a SQL database',
         'extension.database.missing2'=>'The application couldn\'t use a SQL database',
         'path.core'             =>'jelix init.php file or application.ini.php file is not loaded',
@@ -180,7 +181,7 @@ class jInstallerMessageProvider {
         'install.module.error'          =>'An error occured during the installation of the module %s: %s',
         'install.module.check.dependency'=>'Check dependencies of the module %s',
         'install.module.upgraded'       =>'Module %s upgraded to the version %s',
-
+        'more.details'                  =>'More details',
 
         ),
     );

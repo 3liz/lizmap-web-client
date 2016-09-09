@@ -116,11 +116,13 @@ class jPrefManager{
             $p->setFromIniNode($item_key, $ini_node);
 
             //current user doesnt have rights to read this pref
-            if(!$p->isReadable())
-                break;
+            if(!$p->isReadable()) {
+                return null;
+            }
 
-            if($get_pref_value)
+            if($get_pref_value) {
                 $p->loadValue();
+            }
 
             return $p;
         }
