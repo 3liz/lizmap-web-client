@@ -477,9 +477,6 @@ class jAuth {
                     setcookie($cookieName.'[passwd]', '', time() - 3600, $config['persistant_cookie_path']);
                 }
             }
-            else {
-                jLog::log(jLocale::get('jelix~auth.error.persistant.incorrectconfig','persistant_cookie_name, persistant_crypt_key'), 'error');
-            }
         }
     }
 

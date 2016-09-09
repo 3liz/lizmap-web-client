@@ -150,26 +150,61 @@ class jInstallCheck {
         }
 
         if (count($this->databases)) {
+            $driversInfos = jDbParameters::getDriversInfosList();
             $req = ($this->dbRequired?'required':'optional');
             $okdb = false;
-            if (class_exists('PDO'))
-                $pdodrivers = PDO::getAvailableDrivers();
-            else
-                $pdodrivers = array();
 
-            foreach($this->databases as $name){
-                if(!extension_loaded($name) && !in_array($name, $pdodrivers)){
-                    $this->notice('extension.not.installed', $name);
-                }
-                else {
-                    $okdb = true;
-                    if ($this->verbose)
-                        $this->ok('extension.installed', $name);
+            array_combine($this->databases, array_fill(0, count($this->databases), false));
+
+            $alreadyExtensionsChecked = array();
+            $okdatabases = array();
+            foreach($this->databases as $name) {
+                foreach($driversInfos as $driverInfo) {
+                    list($dbType, $nativeExt, $pdoExt, $jdbDriver, $pdoDriver) = $driverInfo;
+
+                    if ($name == $dbType || $name == $nativeExt || $name == $pdoDriver) {
+                        if (extension_loaded($nativeExt)) {
+                            if (!isset($alreadyExtensionsChecked[$nativeExt])) {
+                                if ($this->verbose) {
+                                    $this->ok('extension.installed', $nativeExt);
+                                }
+                                $alreadyExtensionsChecked[$nativeExt] = true;
+                                $okdb = true;
+                                $okdatabases[$name] = true;
+                            }
+                        }
+                        else {
+                            if (!isset($alreadyExtensionsChecked[$nativeExt])) {
+                                if ($this->verbose) {
+                                    $this->notice('extension.not.installed', $nativeExt);
+                                }
+                                $alreadyExtensionsChecked[$nativeExt] = false;
+                            }
+                        }
+                        if (extension_loaded($pdoExt)) {
+                            if (!isset($alreadyExtensionsChecked[$pdoExt])) {
+                                if ($this->verbose) {
+                                    $this->ok('extension.installed', $pdoExt);
+                                }
+                                $alreadyExtensionsChecked[$pdoExt] = true;
+                                $okdb = true;
+                                $okdatabases[$name] = true;
+                            }
+                        }
+                        else {
+                            if (!isset($alreadyExtensionsChecked[$pdoExt])) {
+                                if ($this->verbose) {
+                                    $this->notice('extension.not.installed', $pdoExt);
+                                }
+                                $alreadyExtensionsChecked[$pdoExt] = false;
+                            }
+                        }
+                    }
                 }
             }
             if ($this->dbRequired) {
                 if ($okdb) {
-                    $this->ok('extension.database.ok');
+                    $this->ok('extension.database.ok', implode(',', array_keys($okdatabases)));
                 }
                 else {
                     $this->error('extension.database.missing');
@@ -178,7 +213,7 @@ class jInstallCheck {
             }
             else {
                 if ($okdb) {
-                    $this->ok('extension.database.ok2');
+                    $this->ok('extension.database.ok2', implode(',', array_keys($okdatabases)));
                 }
                 else {
                     $this->notice('extension.database.missing2');
