@@ -163,7 +163,7 @@ var bottomDockFunction = function() {
           }
         );
 
-        $('#mapmenu li.nav-bottomdock > a').click(function(){
+        $('#mapmenu ul').on('click', 'li.nav-bottomdock > a', function(){
           var self = $(this);
           var parent = self.parent();
           var id = self.attr('href').substr(1);

@@ -4938,7 +4938,7 @@ OpenLayers.Control.HighlightFeature = OpenLayers.Class(OpenLayers.Control, {
 
 
   // Create new dock or minidock
-  // Example : lizMap.createDock('mydock', 'My dock title', 'dock', 'Some content', 'icon-pencil');
+  // Example : lizMap.addDock('mydock', 'My dock title', 'dock', 'Some content', 'icon-pencil');
   // see icon list here : http://getbootstrap.com/2.3.2/base-css.html#icons
   function addDock( dname, dlabel, dtype, dcontent, dicon){
       // First check if this dname already exists
@@ -4995,6 +4995,8 @@ OpenLayers.Control.HighlightFeature = OpenLayers.Class(OpenLayers.Control, {
           $('#right-dock-content').append(docktab);
       else if( dtype == 'dock' )
           $('#dock-content').append(docktab);
+      else if( dtype == 'bottomdock' )
+          $('#bottom-dock-content').append(docktab);
 
       // Create dock tab li
       var docktabli = '';
@@ -5005,6 +5007,8 @@ OpenLayers.Control.HighlightFeature = OpenLayers.Class(OpenLayers.Control, {
           $('#right-dock-tabs').append(docktabli);
       else if( dtype == 'dock' )
           $('#dock-tabs').append(docktabli);
+      else if( dtype == 'bottomdock' )
+          $('#bottom-dock-tabs').append(docktabli);
 
   }
 
