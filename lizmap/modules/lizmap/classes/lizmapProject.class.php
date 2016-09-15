@@ -549,6 +549,68 @@ class lizmapProject{
         return false;
     }
 
+
+    public function hasFtsSearches(){
+        // Virtual jdb profile corresponding to the layer database
+        $project = $this->key;
+        $repository = $this->repository->getKey();
+
+        $repositoryPath = realpath($this->repository->getPath());
+        $repositoryPath = str_replace('\\', '/', $repositoryPath);
+        $searchDatabase = $repositoryPath.'/default.qfts';
+
+        if ( !file_exists($searchDatabase) ) {
+          // Search for project database
+          $searchDatabase = $repositoryPath.'/'.$project.'.qfts';
+        }
+        if ( !file_exists($searchDatabase) ) {
+          return false;
+        }
+
+        $jdbParams = array(
+            "driver"=>"pdo",
+            "dsn"=>'sqlite:'.$searchDatabase
+        );
+
+        // Create the virtual jdb profile
+        $searchJdbName = "jdb_".$repository.'_'.$project;
+        jProfiles::createVirtualProfile('jdb', $searchJdbName, $jdbParams);
+
+        // Check FTS db ( tables and geometry storage
+        try{
+            $cnx = jDb::getConnection($searchJdbName);
+
+            // Get metadata
+            $sql = "
+            SELECT search_id, search_name, layer_name, geometry_storage, srid
+            FROM quickfinder_toc
+            WHERE geometry_storage != 'wkb'
+            ORDER BY priority
+            ";
+            $res = $cnx->query($sql);
+            $searches = array();
+            foreach($res as $item){
+                $searches[$item->search_id] = array(
+                    'search_name' => $item->search_name,
+                    'layer_name' => $item->layer_name,
+                    'srid' => $item->srid
+                );
+            }
+            if( count($searches) == 0 ){
+                return false;
+            }
+            return array(
+                'jdb_profile' => $searchJdbName,
+                'searches' => $searches
+            );
+        }
+        catch(Exception $e){
+            return false;
+        }
+
+        return false;
+    }
+
     public function hasEditionLayers(){
         if ( property_exists($this->cfg,'editionLayers') ){
             if(!jAcl2::check('lizmap.tools.edition.use', $this->repository->getKey()))
@@ -965,6 +1027,12 @@ class lizmapProject{
 
         if ( $this->useLayerIDs ) {
             $configJson->options->useLayerIDs = 'True';
+        }
+
+        // Add FTS sqlite searches (db created with from quickfinder)
+        $ftsSearches = $this->hasFtsSearches();
+        if( $ftsSearches ){
+            $configJson->options->ftsSearches = $ftsSearches['searches'];
         }
 
         $configRead = json_encode($configJson);
