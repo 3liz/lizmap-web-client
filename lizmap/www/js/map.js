@@ -3407,9 +3407,9 @@ var lizMap = function() {
           var tLabel = layout.template.labels[i];
           var label = '';
           if (tLabel.htmlState == 0) {
-            label = '<input name="'+tLabel.id+'" class="print-label" placeholder="'+tLabel.text+'" value="'+tLabel.text+'"></input>'
+            label = '<input name="'+tLabel.id+'" class="print-label" placeholder="'+tLabel.text+'" value="'+tLabel.text+'"  style="width:90%;align:center;"></input></br>'
           } else {
-            label = '<textarea name="'+tLabel.id+'" class="print-label" placeholder="'+tLabel.text+'">'+tLabel.text+'</textarea>'
+            label = '<textarea name="'+tLabel.id+'" class="print-label" placeholder="'+tLabel.text+'" style="width:90%;align:center;">'+tLabel.text+'</textarea></br>'
           }
           labels += label;
         }
@@ -3451,7 +3451,8 @@ var lizMap = function() {
       url += '&SERVICE=WMS';
       //url += '&VERSION='+capabilities.version+'&REQUEST=GetPrint';
       url += '&VERSION=1.3&REQUEST=GetPrint';
-      url += '&FORMAT=pdf&EXCEPTIONS=application/vnd.ogc.se_inimage&TRANSPARENT=true';
+      url += '&FORMAT='+$('#print-format').val();;
+      url += '&EXCEPTIONS=application/vnd.ogc.se_inimage&TRANSPARENT=true';
       url += '&SRS='+map.projection;
       url += '&DPI='+$('#print-dpi').val();
       url += '&TEMPLATE='+pTemplate.title;
