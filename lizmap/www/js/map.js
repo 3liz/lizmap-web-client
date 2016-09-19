@@ -4852,7 +4852,7 @@ OpenLayers.Control.HighlightFeature = OpenLayers.Class(OpenLayers.Control, {
       return featureidParameter;
   }
 
-  function getVectorLayerWfsUrl( aName, aFilter, aFeatureId, geometryName, restrictToMapExtent ) {
+  function getVectorLayerWfsUrl( aName, aFilter, aFeatureId, geometryName, restrictToMapExtent, startIndex, maxFeatures ) {
       var getFeatureUrlData = {};
 
       // Set function parameters if not given
@@ -4860,6 +4860,8 @@ OpenLayers.Control.HighlightFeature = OpenLayers.Class(OpenLayers.Control, {
       aFeatureId = typeof aFeatureId !== 'undefined' ?  aFeatureId : null;
       geometryName = typeof geometryName !== 'undefined' ?  geometryName : null;
       restrictToMapExtent = typeof restrictToMapExtent !== 'undefined' ?  restrictToMapExtent : false;
+      startIndex = typeof startIndex !== 'undefined' ?  startIndex : null;
+      maxFeatures = typeof maxFeatures !== 'undefined' ?  maxFeatures : null;
 
       // Build WFS request parameters
       var configLayer = config.layers[aName];
@@ -4874,8 +4876,13 @@ OpenLayers.Control.HighlightFeature = OpenLayers.Class(OpenLayers.Control, {
           ,'REQUEST':'GetFeature'
           ,'TYPENAME':typeName
           ,'OUTPUTFORMAT':'GeoJSON'
-          //~ ,'MAXFEATURES': 100
       };
+
+      if( startIndex )
+          wfsOptions['STARTINDEX'] = startIndex;
+
+      if( maxFeatures )
+          wfsOptions['MAXFEATURES'] = maxFeatures;
 
       var filterParam = [];
 
