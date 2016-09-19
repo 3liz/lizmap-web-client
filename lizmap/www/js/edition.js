@@ -144,9 +144,13 @@ var lizEdition = function() {
                 if ( ctrl != 'panel' )
                     editCtrls[ctrl].events.on({
                         activate: function( evt ){
+                            console.log('activate');
+                            console.log(evt.object.layer.getVisibility());
                             evt.object.layer.setVisibility(true);
+                            console.log(evt.object.layer.getVisibility())
                         },
                         deactivate: function( evt ){
+                            console.log('deactivate');
                             evt.object.layer.setVisibility(false);
                         }
                     });
@@ -163,7 +167,9 @@ var lizEdition = function() {
                     if( !editCtrls )
                         return false;
                     var geometryType = editionLayer['config'].geometryType;
-                    editCtrls[geometryType].deactivate();
+                    var drawWasActivated = editCtrls[geometryType].active;
+                    if (drawWasActivated)
+                        editCtrls[geometryType].deactivate();
 
                     // Get feature
                     var feat = editionLayer['ol'].features[0];
@@ -172,7 +178,7 @@ var lizEdition = function() {
                     updateGeometryColumnFromFeature( feat );
 
                     // Activate modify control
-                    if (editionLayer['config'].capabilities.modifyGeometry == "True"){
+                    if (drawWasActivated || editionLayer['config'].capabilities.modifyGeometry == "True"){
                         // activate edition
                         editCtrls.panel.activate();
                         // then modify
