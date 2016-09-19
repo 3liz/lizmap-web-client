@@ -927,7 +927,7 @@ class editionCtrl extends jController {
         $choiceValue = $form->getData( $ref.'_choice' );
         $hiddenValue = $form->getData( $ref.'_hidden' );
         $repPath = $this->repository->getPath();
-        if ( $choiceValue == 'update' ) {
+        if ( $choiceValue == 'update' && $value != '') {
             $refPath = realpath($repPath.'/media').'/upload/'.$this->project->getKey().'/'.$this->tableName.'/'.$ref;
             $form->saveFile( $ref, $refPath );
             $value = 'media'.'/upload/'.$this->project->getKey().'/'.$this->tableName.'/'.$ref.'/'.$value;
@@ -940,7 +940,7 @@ class editionCtrl extends jController {
         } else {
             $value = $hiddenValue;
         }
-        if ( !$value )
+        if ( empty($value) )
             $value = 'NULL';
         else if ( $value != 'NULL' )
             $value = $cnx->quote(
