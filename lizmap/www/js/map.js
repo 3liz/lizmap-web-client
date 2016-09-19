@@ -1981,6 +1981,7 @@ var lizMap = function() {
           var url = getLayerLegendGraphicUrl(name, true);
           if ( url != null && url != '' ) {
               var limg = self.find('div.legendGraphics img');
+              limg.attr('data-src', url );
               limg.attr('src', limg.attr('data-src') );
           }
         }
