@@ -873,7 +873,7 @@ class serviceCtrl extends jController {
     $rep->mimeType = $mime;
     $rep->content = $data;
     $rep->doDownload  =  false;
-    $rep->outputFileName  =  'getPrint';
+    $rep->outputFileName  =  'getPrint.pdf';
 
    // Log
    $logContent ='
