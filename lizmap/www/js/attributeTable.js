@@ -116,7 +116,7 @@ var lizAttributeTable = function() {
             });
             if (hasAttributeTableLayers) {
 
-                // Add the list of laers in the summary table
+                // Add the list of layers in the summary table
                 var tHtml = '<table id="attribute-layer-list-table" class="table table-condensed table-hover table-striped" style="width:auto;">';
                 for( var idx in attributeLayersDic) {
                     var cleanName = idx;
@@ -124,6 +124,13 @@ var lizAttributeTable = function() {
                     // Do not add a button for the pivot tables
                     if( 'pivot' in config.attributeLayers[ attributeLayersDic[ cleanName ] ]
                         && config.attributeLayers[ attributeLayersDic[ cleanName ] ]['pivot'] == 'True'
+                    ){
+                        continue;
+                    }
+
+                    // Do not add a button if not asked by editor
+                    if( 'hideLayer' in config.attributeLayers[ attributeLayersDic[ cleanName ] ]
+                        && config.attributeLayers[ attributeLayersDic[ cleanName ] ]['hideLayer'] == 'True'
                     ){
                         continue;
                     }
@@ -511,6 +518,7 @@ var lizAttributeTable = function() {
                     function(){ $(this).addClass('btn-primary'); },
                     function(){ $(this).removeClass('btn-primary'); }
                 );
+
                 // Bind click on createFeature button via dropDown
                 $('#attribute-layer-'+ cleanName + ' a.btn-createFeature-attributeTable')
                 .click(function(){
@@ -910,169 +918,47 @@ var lizAttributeTable = function() {
                 if( aTable.replace( cleanName, '') == '#attribute-layer-table-' )
                     isChild = false;
 
+                // Pivot table ?
+                var isPivot = false;
+                if( isChild
+                    && 'pivot' in config.attributeLayers[aName]
+                    && config.attributeLayers[aName]['pivot'] == 'True'
+                ){
+                    isPivot = true;
+                }
+
+                // Hidden fields
+                var hiddenFields = [];
+                if( aName in config.attributeLayers
+                    && 'hiddenFields' in config.attributeLayers[aName]
+                    && config.attributeLayers[aName]['hiddenFields']
+                ){
+                    var hf = config.attributeLayers[aName]['hiddenFields'].trim();
+                    hiddenFields = hf.split(/[\s,]+/);
+                }
+
+                // Check edition capabilities
+                var canEdit = false;
+                var canDelete = false;
+                if( 'editionLayers' in config && aName in config.editionLayers ) {
+                    var al = config.editionLayers[aName];
+                    if( al.capabilities.modifyAttribute == "True" || al.capabilities.modifyGeometry == "True" )
+                        canEdit = true;
+                    if( al.capabilities.deleteFeature == "True" )
+                        canDelete = true;
+                }
+
                 if( cFeatures && cFeatures.length > 0 ){
-                    var foundFeatures = {};
-                    var columns = [];
-                    var firstDisplayedColIndex = 0;
 
-                    // Hidden fields
-                    var hiddenFields = [];
+                    // Create columns for datatable
+                    var cdc = createDatatableColumns(atFeatures, lConfig['geometryType'], canEdit, canDelete, isChild, isPivot, hiddenFields, cAliases);
+                    var columns = cdc.columns;
+                    var firstDisplayedColIndex = cdc.firstDisplayedColIndex;
 
-                    if( aName in config.attributeLayers
-                        && 'hiddenFields' in config.attributeLayers[aName]
-                        && config.attributeLayers[aName]['hiddenFields']
-                    ){
-                        var hf = config.attributeLayers[aName]['hiddenFields'].trim();
-                        hiddenFields = hf.split(/[\s,]+/);
-                    }
-
-                    // Pivot table ?
-                    var isPivot = false;
-                    if( isChild
-                        && 'pivot' in config.attributeLayers[aName]
-                        && config.attributeLayers[aName]['pivot'] == 'True'
-                    ){
-                        isPivot = true;
-                    }
-
-                    // Column with selected status
-                    columns.push( {"data": "lizSelected", "width": "25px", "searchable": false, "sortable": true, "visible": false} );
-                    firstDisplayedColIndex+=1;
-
-                    // Select tool
-                    columns.push( { "data": "select", "width": "25px", "searchable": false, "sortable": false} );
-                    firstDisplayedColIndex+=1;
-
-                    // Check edition capabilities
-                    var canEdit = false;
-                    var canDelete = false;
-                    if( 'editionLayers' in config && aName in config.editionLayers ) {
-                        var al = config.editionLayers[aName];
-                        if( al.capabilities.modifyAttribute == "True" || al.capabilities.modifyGeometry == "True" )
-                            canEdit = true;
-                        if( al.capabilities.deleteFeature == "True" )
-                            canDelete = true;
-                    }
-
-                    if( canEdit ){
-                        columns.push( {"data": "edit", "width": "25px", "searchable": false, "sortable": false} );
-                        firstDisplayedColIndex+=1;
-                    }
-                    if( canDelete ){
-                        columns.push( {"data": "delete", "width": "25px", "searchable": false, "sortable": false} );
-                        firstDisplayedColIndex+=1;
-                    }
-
-                    if( canEdit && isChild && !isPivot){
-                        columns.push( {"data": "unlink", "width": "25px", "searchable": false, "sortable": false} );
-                        firstDisplayedColIndex+=1;
-                    }
-
-                    if( lConfig['geometryType'] != 'none'
-                        && lConfig['geometryType'] != 'unknown'
-                    ){
-                        columns.push( {"data": "zoom", "width": "25px", "searchable": false, "sortable": false} );
-                        columns.push( {"data": "center", "width": "25px", "searchable": false, "sortable": false} );
-                        firstDisplayedColIndex+=2;
-                    }
-
-
-
-                    // Add column for each field
-                    for (var idx in atFeatures[0].properties){
-                        // Do not add hidden fields
-                        if( ($.inArray(idx, hiddenFields) > -1) )
-                            continue;
-                        var colConf = { "mData": idx, "title": cAliases[idx] };
-
-                        // Check if we need to replace url or media by link
-                        // Add function for any string cell
-                        if( typeof atFeatures[0].properties[idx] == 'string' ){
-                            colConf['mRender'] = function( data, type, full, meta ){
-                                if( data.substr(0,6) == 'media/' || data.substr(0,6) == '/media/' ){
-                                    var rdata = data;
-                                    if( data.substr(0,6) == '/media/' )
-                                        rdata = data.slice(1);
-                                    return '<a href="' + mediaLinkPrefix + '&path=/' + rdata + '" target="_blank">' + columns[meta.col]['title'] + '</a>';
-                                }
-                                else if( data.substr(0,4) == 'http' || data.substr(0,3) == 'www' ){
-                                    var rdata = data;
-                                    if(data.substr(0,3) == 'www')
-                                        rdata = 'http://' + data;
-                                    return '<a href="' + rdata + '" target="_blank">' + data + '</a>';
-                                }
-                                else
-                                    return data;
-
-                            }
-                        }
-                        columns.push( colConf );
-                    }
-
-                    var dataSet = [];
-                    for (var x in atFeatures) {
-                        var line = {};
-
-                        // add feature to layer global data
-                        var feat = atFeatures[x];
-                        var fid = feat.id.split('.')[1];
-                        foundFeatures[fid] = feat;
-
-                        // Add row ID
-                        line['DT_RowId'] = fid;
-                        line['lizSelected'] = 'z';
-
-                        // Build table lines
-                        var selectCol = '<button class="btn btn-mini attribute-layer-feature-select checkbox" value="'+fid+'" title="' + lizDict['attributeLayers.btn.select.title'] + '"><i class="icon-ok"></i></button>';
-                        line['select'] = selectCol;
-
-                        // Edit button
-                        if( canEdit ) {
-                            var editCol = '<button class="btn btn-mini attribute-layer-feature-edit" value="'+fid+'" title="' + lizDict['attributeLayers.btn.edit.title'] + '"><i class="icon-pencil"></i></button>';
-                            line['edit'] = editCol;
-                        }
-
-                        // Delete button
-                        if( canDelete ) {
-                            var delIcon = 'icon-trash';
-                            var delTitle = lizDict['attributeLayers.btn.delete.title'];
-                            if( isChild && isPivot ){
-                                delIcon = 'icon-minus';
-                                delTitle = lizDict['attributeLayers.btn.remove.link.title'];
-                            }
-                            var deleteCol = '<button class="btn btn-mini attribute-layer-feature-delete" value="'+fid+'" title="' + delTitle + '"><i class="'+delIcon+'"></i></button>';
-                            line['delete'] = deleteCol;
-                        }
-
-                        // Unlink button
-                        if( canEdit && isChild && !isPivot ) {
-
-                            var unlinkIcon = 'icon-minus';
-                            var unlinkTitle = lizDict['attributeLayers.btn.remove.link.title'];
-                            var unlinkCol = '<button class="btn btn-mini attribute-layer-feature-unlink" value="'+fid+'" title="' + unlinkTitle + '"><i class="'+unlinkIcon+'"></i></button>';
-                            line['unlink'] = unlinkCol;
-                        }
-
-                        if( lConfig['geometryType'] != 'none'
-                            && lConfig['geometryType'] != 'unknown'
-                        ){
-                            var zoomCol = '<button class="btn btn-mini attribute-layer-feature-focus zoom" value="'+fid+'" title="' + lizDict['attributeLayers.btn.zoom.title'] + '"><i class="icon-zoom-in"></i></button>';
-                            line['zoom'] = zoomCol;
-
-                            var centerCol = '<button class="btn btn-mini attribute-layer-feature-focus center" value="'+fid+'" title="' + lizDict['attributeLayers.btn.center.title'] + '"><i class="icon-screenshot"></i></button>';
-                            line['center'] = centerCol;
-                        }
-
-                        for (var idx in feat.properties){
-                            if( ($.inArray(idx, hiddenFields) > -1) )
-                                continue;
-                            var prop = feat.properties[idx];
-                            line[idx] = prop;
-                        }
-
-
-                        dataSet.push( line );
-                    }
+                    // Format features for datatable
+                    var ff = formatDatatableFeatures(atFeatures, lConfig['geometryType'], canEdit, canDelete, isChild, isPivot, hiddenFields);
+                    var foundFeatures = ff.foundFeatures;
+                    var dataSet = ff.dataSet;
 
                     // Fill in the features object
                     // only when necessary : object is empty or is not child or (is child and no full features list in the object)
@@ -1137,9 +1023,10 @@ var lizAttributeTable = function() {
                                 }
                             }
                             ,dom: myDom
-                            ,pageLength: 100
+                            ,pageLength: 50
 
                         } );
+
                         var oTable = $( aTable ).dataTable();
 
                         if( !searchWhileTyping )
@@ -1220,6 +1107,150 @@ var lizAttributeTable = function() {
                     }
                 );
                 return false;
+            }
+
+            function createDatatableColumns(atFeatures, geometryType, canEdit, canDelete, isChild, isPivot, hiddenFields, cAliases){
+                var columns = [];
+                var firstDisplayedColIndex = 0;
+
+                // Column with selected status
+                columns.push( {"data": "lizSelected", "width": "25px", "searchable": false, "sortable": true, "visible": false} );
+                firstDisplayedColIndex+=1;
+
+                // Select tool
+                columns.push( { "data": "select", "width": "25px", "searchable": false, "sortable": false} );
+                firstDisplayedColIndex+=1;
+
+                if( canEdit ){
+                    columns.push( {"data": "edit", "width": "25px", "searchable": false, "sortable": false} );
+                    firstDisplayedColIndex+=1;
+                }
+                if( canDelete ){
+                    columns.push( {"data": "delete", "width": "25px", "searchable": false, "sortable": false} );
+                    firstDisplayedColIndex+=1;
+                }
+
+                if( canEdit && isChild && !isPivot){
+                    columns.push( {"data": "unlink", "width": "25px", "searchable": false, "sortable": false} );
+                    firstDisplayedColIndex+=1;
+                }
+
+                if( geometryType != 'none'
+                    && geometryType != 'unknown'
+                ){
+                    columns.push( {"data": "zoom", "width": "25px", "searchable": false, "sortable": false} );
+                    columns.push( {"data": "center", "width": "25px", "searchable": false, "sortable": false} );
+                    firstDisplayedColIndex+=2;
+                }
+
+
+
+                // Add column for each field
+                for (var idx in atFeatures[0].properties){
+                    // Do not add hidden fields
+                    if( ($.inArray(idx, hiddenFields) > -1) )
+                        continue;
+                    var colConf = { "mData": idx, "title": cAliases[idx] };
+
+                    // Check if we need to replace url or media by link
+                    // Add function for any string cell
+                    if( typeof atFeatures[0].properties[idx] == 'string' ){
+                        colConf['mRender'] = function( data, type, full, meta ){
+                            if( data.substr(0,6) == 'media/' || data.substr(0,6) == '/media/' ){
+                                var rdata = data;
+                                if( data.substr(0,6) == '/media/' )
+                                    rdata = data.slice(1);
+                                return '<a href="' + mediaLinkPrefix + '&path=/' + rdata + '" target="_blank">' + columns[meta.col]['title'] + '</a>';
+                            }
+                            else if( data.substr(0,4) == 'http' || data.substr(0,3) == 'www' ){
+                                var rdata = data;
+                                if(data.substr(0,3) == 'www')
+                                    rdata = 'http://' + data;
+                                return '<a href="' + rdata + '" target="_blank">' + data + '</a>';
+                            }
+                            else
+                                return data;
+
+                        }
+                    }
+                    columns.push( colConf );
+                }
+                return {
+                    'columns': columns,
+                    'firstDisplayedColIndex': firstDisplayedColIndex
+                };
+            }
+
+            function formatDatatableFeatures(atFeatures, geometryType, canEdit, canDelete, isChild, isPivot, hiddenFields){
+                var dataSet = [];
+                var foundFeatures = {};
+                for (var x in atFeatures) {
+                    var line = {};
+
+                    // add feature to layer global data
+                    var feat = atFeatures[x];
+                    var fid = feat.id.split('.')[1];
+                    foundFeatures[fid] = feat;
+
+                    // Add row ID
+                    line['DT_RowId'] = fid;
+                    line['lizSelected'] = 'z';
+
+                    // Build table lines
+                    var selectCol = '<button class="btn btn-mini attribute-layer-feature-select checkbox" value="'+fid+'" title="' + lizDict['attributeLayers.btn.select.title'] + '"><i class="icon-ok"></i></button>';
+                    line['select'] = selectCol;
+
+                    // Edit button
+                    if( canEdit ) {
+                        var editCol = '<button class="btn btn-mini attribute-layer-feature-edit" value="'+fid+'" title="' + lizDict['attributeLayers.btn.edit.title'] + '"><i class="icon-pencil"></i></button>';
+                        line['edit'] = editCol;
+                    }
+
+                    // Delete button
+                    if( canDelete ) {
+                        var delIcon = 'icon-trash';
+                        var delTitle = lizDict['attributeLayers.btn.delete.title'];
+                        if( isChild && isPivot ){
+                            delIcon = 'icon-minus';
+                            delTitle = lizDict['attributeLayers.btn.remove.link.title'];
+                        }
+                        var deleteCol = '<button class="btn btn-mini attribute-layer-feature-delete" value="'+fid+'" title="' + delTitle + '"><i class="'+delIcon+'"></i></button>';
+                        line['delete'] = deleteCol;
+                    }
+
+                    // Unlink button
+                    if( canEdit && isChild && !isPivot ) {
+
+                        var unlinkIcon = 'icon-minus';
+                        var unlinkTitle = lizDict['attributeLayers.btn.remove.link.title'];
+                        var unlinkCol = '<button class="btn btn-mini attribute-layer-feature-unlink" value="'+fid+'" title="' + unlinkTitle + '"><i class="'+unlinkIcon+'"></i></button>';
+                        line['unlink'] = unlinkCol;
+                    }
+
+                    if( geometryType != 'none'
+                        && geometryType != 'unknown'
+                    ){
+                        var zoomCol = '<button class="btn btn-mini attribute-layer-feature-focus zoom" value="'+fid+'" title="' + lizDict['attributeLayers.btn.zoom.title'] + '"><i class="icon-zoom-in"></i></button>';
+                        line['zoom'] = zoomCol;
+
+                        var centerCol = '<button class="btn btn-mini attribute-layer-feature-focus center" value="'+fid+'" title="' + lizDict['attributeLayers.btn.center.title'] + '"><i class="icon-screenshot"></i></button>';
+                        line['center'] = centerCol;
+                    }
+
+                    for (var idx in feat.properties){
+                        if( ($.inArray(idx, hiddenFields) > -1) )
+                            continue;
+                        var prop = feat.properties[idx];
+                        line[idx] = prop;
+                    }
+
+
+                    dataSet.push( line );
+                }
+                return {
+                    'dataSet': dataSet,
+                    'foundFeatures': foundFeatures
+                };
             }
 
             function bindTableLineClick(aName, aTable){
