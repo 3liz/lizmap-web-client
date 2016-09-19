@@ -929,7 +929,14 @@ class editionCtrl extends jController {
         $repPath = $this->repository->getPath();
         if ( $choiceValue == 'update' && $value != '') {
             $refPath = realpath($repPath.'/media').'/upload/'.$this->project->getKey().'/'.$this->tableName.'/'.$ref;
-            $form->saveFile( $ref, $refPath );
+            $alreadyValueIdx = 0;
+            while ( file_exists( $refPath.'/'.$value ) ) {
+                $alreadyValueIdx += 1;
+                $splitValue = explode('.', $value);
+                $splitValue[0] = $splitValue[0].$alreadyValueIdx;
+                $value = implode('.', $splitValue);
+            }
+            $form->saveFile( $ref, $refPath, $value );
             $value = 'media'.'/upload/'.$this->project->getKey().'/'.$this->tableName.'/'.$ref.'/'.$value;
             if ( $hiddenValue && file_exists( realPath( $repPath ).'/'.$hiddenValue ) )
                 unlink( realPath( $repPath ).'/'.$hiddenValue );
