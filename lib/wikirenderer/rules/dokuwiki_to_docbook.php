@@ -45,6 +45,7 @@ class dokuwiki_to_docbook  extends WikiRendererConfig  {
          'dkdbk_macro'
    );
 
+   public $defaultBlock = 'dkdbk_default';
 
    public $simpletags = array("\\\\"=>"");
 
@@ -134,7 +135,7 @@ class dkdbk_del extends WikiTagXml {
 }
 
 class dkdbk_link extends WikiTagXml {
-    protected $name='ulink';
+    protected $name='link';
     public $beginTag='[[';
     public $endTag=']]';
     protected $attribute=array('href','$$');
@@ -156,10 +157,10 @@ class dkdbk_link extends WikiTagXml {
             return $label;
         
         if(preg_match("/^\#(.+)$/", $href, $m)) {
-            return '<link linkterm="'.$this->_doEscape(trim($m[1])).'">'.$label.'</link>';
+            return '<link linkend="'.$this->_doEscape(trim($m[1])).'">'.$label.'</link>';
         }
         else
-            return '<ulink url="'.$this->_doEscape(trim($href)).'">'.$label.'</ulink>';
+            return '<link xlink:href="'.$this->_doEscape(trim($href)).'">'.$label.'</link>';
     }
 }
 
@@ -327,7 +328,7 @@ class dkdbk_list extends WikiRendererBloc {
 
         }
         $this->_firstItem = false;
-        return $str.$this->_renderInlineTag(trim($this->_detectMatch[3]));
+        return $str.'<para>'.$this->_renderInlineTag(trim($this->_detectMatch[3])).'</para>';
 
     }
 }
@@ -351,14 +352,26 @@ class dkdbk_title extends WikiRendererBloc {
         if(count($conf->sectionLevel)) {
             $last = end($conf->sectionLevel);
             if($last < $level) {
+                $first = true;
                 while($last = end($conf->sectionLevel) && $last <= $level) {
+                    if ($this->engine->getPreviousBloc()) {
+                        if ($first && $this->engine->getPreviousBloc() instanceof dkdbk_title) {
+                            $output .= '<para> </para>';
+                        }
+                    }
                     $output.= '</section>';
+                    $first = false;
                     array_pop($conf->sectionLevel);
                 }
             }else if($last > $level) {
 
             }else{
                 array_pop($conf->sectionLevel);
+                if ($this->engine->getPreviousBloc()) {
+                    if ($this->engine->getPreviousBloc() instanceof dkdbk_title) {
+                        $output .= '<para> </para>';
+                    }
+                }
                 $output.= '</section>';
             }
         }
@@ -367,7 +380,7 @@ class dkdbk_title extends WikiRendererBloc {
         $title = trim($this->_detectMatch[2]);
         $id = $conf->getSectionId($title);
         if ($id)
-            return $output.'<section id="'.$id.'"><title>'.$this->_renderInlineTag($title).'</title>';
+            return $output.'<section xml:id="'.$id.'"><title>'.$this->_renderInlineTag($title).'</title>';
         else
             return $output.'<section><title>'.$this->_renderInlineTag($title).'</title>';
     }
@@ -382,9 +395,14 @@ class dkdbk_para extends WikiRendererBloc {
     protected $_closeTag='</para>';
 
     public function detect($string){
-        if($string=='') return false;
+        if (trim($string) == '')
+            return false;
         if (preg_match("/^\s+[\*\-\=\|\^>;<=~]/",$string))
             return false;
+        if(preg_match("/^\s*(\*\*.*)/",$string, $m)) {
+            $this->_detectMatch=array($m[1],$m[1]);
+            return true;
+        }
         if(preg_match("/^\s*([^\*\-\=\|\^>;<=~].*)/",$string, $m)) {
             $this->_detectMatch=array($m[1],$m[1]);
             return true;
@@ -393,6 +411,16 @@ class dkdbk_para extends WikiRendererBloc {
     }
 }
 
+class dkdbk_default extends WikiRendererBloc {
+    public $type='default';
+    protected $_openTag='<para>';
+    protected $_closeTag='</para>';
+
+    public function detect($string){
+        $this->_detectMatch=array($string,$string);
+        return true;
+    }
+}
 
 
 /**
@@ -557,7 +585,7 @@ class dkdbk_table extends WikiRendererBloc {
 
     public function open(){
         $this->engine->getConfig()->defaultTextLineContainer = 'dkdbk_table_row';
-        return $this->_openTag;
+        return $this->_openTag.'<caption></caption>';
     }
 
     public function close(){
@@ -578,10 +606,12 @@ class dkdbk_syntaxhighlight extends WikiRendererBloc {
     protected $_openTag='<programlisting>';
     protected $_closeTag='</programlisting>';
     protected $isOpen = false;
+    protected $closeTagDetected = false;
     protected $dktag='code';
 
    public function open(){
       $this->isOpen = true;
+      $this->closeTagDetected = false;
       return $this->_openTag;
    }
 
@@ -595,10 +625,14 @@ class dkdbk_syntaxhighlight extends WikiRendererBloc {
     }
 
     public function detect($string){
+        if ($this->closeTagDetected) {
+            return false;
+        }
         if($this->isOpen){
             if(preg_match('/(.*)<\/'.$this->dktag.'>\s*$/',$string,$m)){
                 $this->_detectMatch=$m[1];
                 $this->isOpen=false;
+                $this->closeTagDetected = true;
             }else{
                 $this->_detectMatch=$string;
             }
@@ -608,6 +642,7 @@ class dkdbk_syntaxhighlight extends WikiRendererBloc {
             if(preg_match('/^\s*<'.$this->dktag.'( \w+)?>(.*)/',$string,$m)){
                 if(preg_match('/(.*)<\/'.$this->dktag.'>\s*$/',$m[2],$m2)){
                     $this->_closeNow = true;
+                    $this->closeTagDetected = true;
                     $this->_detectMatch=$m2[1];
                 }
                 else {
@@ -657,9 +692,11 @@ class dkdbk_html extends WikiRendererBloc {
     public $type='html';
     protected $isOpen = false;
     protected $dktag='html';
+    protected $closeTagDetected = false;
 
     public function open(){
         $this->isOpen = true;
+        $this->closeTagDetected = false;
         return '';
     }
 
@@ -673,15 +710,20 @@ class dkdbk_html extends WikiRendererBloc {
     }
 
     public function detect($string){
+        if ($this->closeTagDetected) {
+            return false;
+        }
         if($this->isOpen){
             if(preg_match('/(.*)<\/'.$this->dktag.'>\s*$/',$string,$m)){
                 $this->isOpen=false;
+                $this->closeTagDetected = true;
             }
             return true;
         }else{
             if(preg_match('/^\s*<'.$this->dktag.'>(.*)/',$string,$m)){
                 if(preg_match('/(.*)<\/'.$this->dktag.'>\s*$/',$string,$m)){
                     $this->_closeNow = true;
+                    $this->closeTagDetected = true;
                 }
                 else {
                     $this->_closeNow = false;
@@ -725,7 +767,7 @@ class dkdbk_definition extends WikiRendererBloc {
    public function getRenderedLine(){
       $dt=$this->_renderInlineTag($this->_detectMatch[1]);
       $dd=$this->_renderInlineTag($this->_detectMatch[2]);
-      return "<varlistentry><term>$dt</term>\n<listitem>$dd</listitem></varlistentry>\n";
+      return "<varlistentry><term>$dt</term>\n<listitem><para>$dd</para></listitem></varlistentry>\n";
    }
 }
 

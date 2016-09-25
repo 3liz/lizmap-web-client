@@ -20,13 +20,27 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  */
-define('WIKIRENDERER_PATH', __DIR__.'/');
-define('WIKIRENDERER_VERSION', trim(file_get_contents(__DIR__.'/VERSION')));
 
-require_once('WikiTag.class.php');
-require_once('WikiInlineParser.class.php');
-require_once('WikiRendererBloc.class.php');
-require_once('WikiRendererConfig.class.php');
-require_once('WikiRenderer.class.php');
-require_once('WikiTextLine.lib.php');
-require_once('WikiTagXhtml.class.php');
+/**
+ *
+ */
+class WikiTextLine extends WikiTag {
+    public $isTextLineTag=true;
+}
+
+/**
+ *
+ */
+class WikiHtmlTextLine extends WikiTag {
+    public $isTextLineTag=true;
+
+    protected function _doEscape($string){
+        return htmlspecialchars($string, ENT_COMPAT, $this->config->charset);
+    }
+}
+
+class WikiXmlTextLine extends WikiHtmlTextLine {
+    protected function _doEscape($string){
+        return htmlspecialchars($string, ENT_NOQUOTES, $this->config->charset);
+    }
+}
