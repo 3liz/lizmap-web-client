@@ -48,7 +48,6 @@ class jUnitTestCase extends PHPUnit_Framework_TestCase {
      * @param string $entryPoint the entrypoint name as indicated into project.xml
      */
     protected static function initJelixConfig($config = 'index/config.ini.php', $entryPoint = 'index.php') {
-        require_once(JELIX_LIB_CORE_PATH.'jConfigCompiler.class.php');
         $config = jConfigCompiler::read($config, true, true, $entryPoint);
         jApp::setConfig($config);
         jApp::setCoord(null);
@@ -71,7 +70,6 @@ class jUnitTestCase extends PHPUnit_Framework_TestCase {
         self::$fakeServer = new jelix\FakeServerConf\ApacheMod(jApp::wwwPath(), '/'.$entryPoint);
         self::$fakeServer->setHttpRequest($url);
 
-        require_once(JELIX_LIB_CORE_PATH.'jConfigCompiler.class.php');
         $config = jConfigCompiler::read($config, true, false, '/'.$entryPoint);
         $coord = new jCoordinatorForTest($config, false);
         jApp::setCoord($coord);

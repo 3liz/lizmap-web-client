@@ -48,5 +48,9 @@ class jWiki extends  WikiRenderer {
         foreach($this->config->bloctags as $name){
             $this->_blocList[]= new $name($this);
         }
+        if ($this->config->defaultBlock) {
+            $name = $this->config->defaultBlock;
+            $this->_defaultBlock = new $name($this);
+        }
    }
 }

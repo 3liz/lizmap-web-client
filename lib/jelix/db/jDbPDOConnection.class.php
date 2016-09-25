@@ -121,21 +121,21 @@ class jDbPDOConnection extends PDO {
     }
 
     protected function _parseSqlitePath($path) {
-        if (preg_match('/^(app|lib|var|temp|www)\:/', $db, $m)) {
-            return jFile::parseJelixPath( $db );
+        if (preg_match('/^(app|lib|var|temp|www)\:/', $path, $m)) {
+            return jFile::parseJelixPath( $path );
         }
-        else if (preg_match('!^[a-z]\\:(\\\\|/)[a-z]!i', $db) || // windows path
-                 $db[0] == '/' // *nix path
+        else if (preg_match('!^[a-z]\\:(\\\\|/)[a-z]!i', $path) || // windows path
+                 $path[0] == '/' // *nix path
                 ) {
-            if (file_exists($db) || file_exists(dirname($db))) {
-                return $db;
+            if (file_exists($path) || file_exists(dirname($path))) {
+                return $path;
             }
             else {
                 throw new Exception ('jDbPDOConnection, sqlite: unknown database path scheme');
             }
         }
         else {
-            return jApp::varPath('db/sqlite/'.$db);
+            return jApp::varPath('db/sqlite/'.$path);
         }
     }
 
