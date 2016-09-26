@@ -4539,7 +4539,7 @@ OpenLayers.Control.HighlightFeature = OpenLayers.Class(OpenLayers.Control, {
     // Search with nominatim
     var wgs84 = new OpenLayers.Projection('EPSG:4326');
     var extent = new OpenLayers.Bounds( map.maxExtent.toArray() );
-    extent.transform(map.getProjectionObject(), wgs84);
+    extent.transform(map.getProjection(), wgs84);
 
     // define external search service
     var service = null
