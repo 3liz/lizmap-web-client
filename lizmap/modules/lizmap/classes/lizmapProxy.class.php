@@ -310,7 +310,7 @@ class lizmapProxy {
             # Output the image as a string (use PHP buffering)
             ob_start();
             if(preg_match('#png#', $params['format']))
-                imagepng($image, null);
+                imagepng($image, null, 9);
             else
                 imagejpeg($image, null, 80);
             $data = ob_get_contents(); // read from buffer
@@ -329,21 +329,6 @@ class lizmapProxy {
 
         // Store into cache if needed
         if( $useCache ) {
-            // If cache is used and the tile has png format, we compress at maximum level with quality parameter of imagepng()
-            if(preg_match('#png#', $params['format'])){
-                $image = imagecreatefromstring($data);
-                imageAlphaBlending($image, true);
-                imageSaveAlpha($image, true);
-
-                # Output the image as a string (use PHP buffering)
-                ob_start();
-                imagepng($image,NULL,9);
-                $data = ob_get_contents(); // read from buffer
-                ob_end_clean(); // delete buffer
-
-                // Destroy image handlers
-                imagedestroy($image);
-            }
             //~ jLog::log( ' Store into cache');
             $cacheExpiration = (int)$ser->cacheExpiration;
             if(property_exists($configLayer, 'cacheExpiration'))
