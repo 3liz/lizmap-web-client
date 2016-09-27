@@ -27,14 +27,14 @@ class translateCtrl extends jController {
       $lang = jLocale::getCurrentLang().'_'.jLocale::getCurrentCountry();
 
     $data = array();
-    $path = jApp::appPath().'modules/view/locales/'.$lang.'/dictionnary.UTF-8.properties';
+    $path = jApp::appPath().'modules/view/locales/en_US/dictionnary.UTF-8.properties';
     if(file_exists($path)){
       $lines = file($path);
       foreach ($lines as $lineNumber => $lineContent){
         if(!empty($lineContent) and $lineContent != '\n'){
           $exp = explode('=', trim($lineContent));
           if(!empty($exp[0]))
-            $data[$exp[0]] = $exp[1];
+            $data[$exp[0]] = jLocale::get('view~dictionnary.'.$exp[0], null, $lang);
         }
       }
     }
@@ -67,7 +67,7 @@ class translateCtrl extends jController {
         if(!empty($lineContent) and $lineContent != '\n'){
           $exp = explode('=', trim($lineContent));
           if(!empty($exp[0]))
-            $data[$exp[0]] = $exp[1];
+            $data[$exp[0]] = jLocale::get('view~dictionnary.'.$exp[0], null, $lang);
         }
       }
     }
