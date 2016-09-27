@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <module xmlns="http://jelix.org/ns/module/1.0">
     <info id="dynamicLayers3liz.com" name="dynamicLayers" createdate="2015-10-05">
-        <version date="2016-08-23">3.0.2</version>
+        <version date="2016-09-27">3.0.3</version>
         <label lang="en_US">dynamicLayers</label>
         <description lang="en_US" />
         <license URL="">All rights reserved</license>
