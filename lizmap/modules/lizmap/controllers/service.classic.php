@@ -313,7 +313,7 @@ class serviceCtrl extends jController {
         } else if( $service == 'wmts' ) {
             jClasses::inc('lizmap~lizmapWMTSRequest');
             $request = new lizmapWMTSRequest( $this->project, array(
-                    'service'=>'WFS',
+                    'service'=>'WMTS',
                     'request'=>'GetCapabilities'
                 )
             );
