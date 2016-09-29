@@ -4516,14 +4516,20 @@ OpenLayers.Control.HighlightFeature = OpenLayers.Class(OpenLayers.Control, {
       bbox.transform(wgs84, map.getProjectionObject());
       map.zoomToExtent(bbox);
 
+      var feat = new OpenLayers.Feature.Vector(bbox.toGeometry().getCentroid());
+      var data = $(this).attr('data');
+      if ( data ) {
+          var geom = OpenLayers.Geometry.fromWKT(data);
+          geom.transform(wgs84, map.getProjectionObject());
+          feat = new OpenLayers.Feature.Vector(geom);
+      }
+
       var locateLayer = map.getLayersByName('locatelayer');
       if (locateLayer.length != 0) {
         locateLayer = locateLayer[0];
         locateLayer.destroyFeatures();
         locateLayer.setVisibility(true);
-        locateLayer.addFeatures([
-          new OpenLayers.Feature.Vector(bbox.toGeometry().getCentroid())
-          ]);
+        locateLayer.addFeatures([feat]);
       }
 
       $('#nominatim-search').removeClass('open');
@@ -4704,7 +4710,7 @@ OpenLayers.Control.HighlightFeature = OpenLayers.Class(OpenLayers.Control, {
                             ftsGeometry.trasnform(ftsLayerResult.srid, 'EPSG:4326');
                         var bbox = ftsGeometry.getBounds();
                         if ( extent.intersectsBounds(bbox) ) {
-                          text += '<li><a href="#'+bbox.toBBOX()+'">'+ftsFeat.label+'</a></li>';
+                          text += '<li><a href="#'+bbox.toBBOX()+'" data="'+ftsGeometry.toString()+'">'+ftsFeat.label+'</a></li>';
                           count++;
                         }
                     }
