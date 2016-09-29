@@ -63,6 +63,9 @@ body {
   background-color: #4A4A4A;
   background-color: rgba(0,0,0,0.7);
 }
+#headermenu .dropdown-menu:after {
+  border-bottom: 6px solid rgba(0,0,0,0.5);
+}
 #headermenu .dropdown-menu > li > a{
   color:white;
 }
@@ -89,7 +92,7 @@ body {
   display: inline-block;
   border-left: 6px solid transparent;
   border-right: 6px solid transparent;
-  border-bottom: 6px solid rgb(255,255,255);
+  border-bottom: 6px solid rgba(0,0,0,0.5);
 }
 #headermenu .dropdown-caret .caret-outer {
   border-left: 7px solid transparent;
@@ -98,6 +101,14 @@ body {
 }
 #headermenu .dropdown-inner {
   width: 250px;
+}
+#headermenu .dropdown-inner .close {
+position: absolute;
+color: #DA4F49;
+opacity: 1;
+right: 5px;
+text-decoration: none;
+text-shadow: none;
 }
 #headermenu .dropdown-inner .items {
   width: 100%;
