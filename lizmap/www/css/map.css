@@ -122,6 +122,10 @@ text-shadow: none;
   display: block;
   overflow: hidden;
   color: white;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+#headermenu .dropdown-inner .items li > a:hover {
   white-space: normal;
 }
 

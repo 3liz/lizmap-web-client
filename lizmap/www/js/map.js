@@ -4551,7 +4551,8 @@ OpenLayers.Control.HighlightFeature = OpenLayers.Class(OpenLayers.Control, {
     extent.transform(map.getProjection(), wgs84);
 
     // define external search service
-    var service = null
+    var service = null;
+    var ftsService = null;
     switch (configOptions['externalSearch']) {
       case 'nominatim':
         if ( 'nominatim' in lizUrls )
@@ -4571,13 +4572,13 @@ OpenLayers.Control.HighlightFeature = OpenLayers.Class(OpenLayers.Control, {
         break;
     }
     if ( 'ftsSearches' in configOptions ) {
-        service = OpenLayers.Util.urlAppend(lizUrls.basepath+'index.php/lizmap/search/get'
+        ftsService = OpenLayers.Util.urlAppend(lizUrls.basepath+'index.php/lizmap/search/get'
               ,OpenLayers.Util.getParameterString(lizUrls.params)
               );
     }
     // if no external search service found
     // update ui
-    if ( service == null ) {
+    if ( service == null && ftsService == null ) {
       $('#nominatim-search').remove();
       return false;
     }
@@ -4611,12 +4612,6 @@ OpenLayers.Control.HighlightFeature = OpenLayers.Class(OpenLayers.Control, {
               if (count == 0 || text == '')
                 text = '<li>'+lizDict['externalsearch.notfound']+'</li>';
               updateExternalSearch( '<li><b>Nominatim</b><ul>'+text+'</ul></li>' );
-              /*
-              if (count != 0 && text != '')
-                updateExternalSearch( text );
-              else
-                updateExternalSearch( '<li>'+lizDict['externalsearch.notfound']+'</li>' );
-              * */
             }, 'json');
           break;
         case 'ign':
@@ -4692,7 +4687,7 @@ OpenLayers.Control.HighlightFeature = OpenLayers.Class(OpenLayers.Control, {
           break;
       }
       if ( 'ftsSearches' in configOptions ) {
-          $.get(service
+          $.get(ftsService
             ,{"query":$('#search-query').val(),"bbox":extent.toBBOX()}
             ,function(results) {
                 var text = '';
