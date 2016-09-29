@@ -4495,11 +4495,20 @@ OpenLayers.Control.HighlightFeature = OpenLayers.Class(OpenLayers.Control, {
     });
   }
 
+  function startExternalSearch() {
+    $('#nominatim-search .dropdown-inner .items li > a').unbind('click');
+    $('#nominatim-search .dropdown-inner .items').html( '<li class="start">'+lizDict['externalsearch.search']+'</li>' );
+    $('#nominatim-search').addClass('open');
+  }
+
   function updateExternalSearch( aHTML ) {
     var wgs84 = new OpenLayers.Projection('EPSG:4326');
 
     $('#nominatim-search .dropdown-inner .items li > a').unbind('click');
-    $('#nominatim-search .dropdown-inner .items').html( aHTML );
+    if ( $('#nominatim-search .dropdown-inner .items li.start').length != 0 )
+        $('#nominatim-search .dropdown-inner .items').html( aHTML );
+    else
+        $('#nominatim-search .dropdown-inner .items').append( aHTML );
     $('#nominatim-search').addClass('open');
     $('#nominatim-search .dropdown-inner .items li > a').click(function() {
       var bbox = $(this).attr('href').replace('#','');
@@ -4561,6 +4570,11 @@ OpenLayers.Control.HighlightFeature = OpenLayers.Class(OpenLayers.Control, {
           service = new google.maps.Geocoder();
         break;
     }
+    if ( 'ftsSearches' in configOptions ) {
+        service = OpenLayers.Util.urlAppend(lizUrls.basepath+'index.php/lizmap/search/get'
+              ,OpenLayers.Util.getParameterString(lizUrls.params)
+              );
+    }
     // if no external search service found
     // update ui
     if ( service == null ) {
@@ -4569,7 +4583,7 @@ OpenLayers.Control.HighlightFeature = OpenLayers.Class(OpenLayers.Control, {
     }
 
     $('#nominatim-search').submit(function(){
-      updateExternalSearch( '<li>'+lizDict['externalsearch.search']+'</li>' );
+      startExternalSearch();
       switch (configOptions['externalSearch']) {
         case 'nominatim':
           $.get(service
@@ -4580,6 +4594,8 @@ OpenLayers.Control.HighlightFeature = OpenLayers.Class(OpenLayers.Control, {
               $.each(data, function(i, e){
                 if (count > 9)
                   return false;
+                if ( !e.boundingbox )
+                  return true;
                 var bbox = [
                   e.boundingbox[2],
                   e.boundingbox[0],
@@ -4592,10 +4608,15 @@ OpenLayers.Control.HighlightFeature = OpenLayers.Class(OpenLayers.Control, {
                   count++;
                 }
               });
+              if (count == 0 || text == '')
+                text = '<li>'+lizDict['externalsearch.notfound']+'</li>';
+              updateExternalSearch( '<li><b>Nominatim</b><ul>'+text+'</ul></li>' );
+              /*
               if (count != 0 && text != '')
                 updateExternalSearch( text );
               else
                 updateExternalSearch( '<li>'+lizDict['externalsearch.notfound']+'</li>' );
+              * */
             }, 'json');
           break;
         case 'ign':
@@ -4619,10 +4640,9 @@ OpenLayers.Control.HighlightFeature = OpenLayers.Class(OpenLayers.Control, {
                   count++;
                 }
               });
-              if (count != 0 && text != '')
-                updateExternalSearch( text );
-              else
-                updateExternalSearch( '<li>'+lizDict['externalsearch.notfound']+'</li>' );
+              if (count == 0 || text == '')
+                text = '<li>'+lizDict['externalsearch.notfound']+'</li>';
+              updateExternalSearch( '<li><b>IGN</b><ul>'+text+'</ul></li>' );
             }, 'json');
           break;
         case 'google':
@@ -4663,16 +4683,44 @@ OpenLayers.Control.HighlightFeature = OpenLayers.Class(OpenLayers.Control, {
                   count++;
                 }
               });
-              if (count != 0 && text != '')
-                updateExternalSearch( text );
-              else
-                updateExternalSearch( '<li>'+lizDict['externalsearch.notfound']+'</li>' );
-                //mAddMessage('Nothing Found','info',true);
+              if (count == 0 || text == '')
+                text = '<li>'+lizDict['externalsearch.notfound']+'</li>';
+              updateExternalSearch( '<li><b>Google</b><ul>'+text+'</ul></li>' );
             } else
-              updateExternalSearch( '<li>'+lizDict['externalsearch.notfound']+'</li>' );
-              //mAddMessage('Nothing Found','info',true);
+              updateExternalSearch( '<li><b>Google</b><ul><li>'+lizDict['externalsearch.notfound']+'</li></ul></li>' );
           });
           break;
+      }
+      if ( 'ftsSearches' in configOptions ) {
+          $.get(service
+            ,{"query":$('#search-query').val(),"bbox":extent.toBBOX()}
+            ,function(results) {
+                var text = '';
+                var count = 0;
+
+                for ( var ftsId in results ) {
+                    var ftsLayerResult = results[ftsId];
+                    text += '<li><b>'+ftsLayerResult.search_name+'</b>';
+                    text += '<ul>';
+                    for ( var i=0, len=ftsLayerResult.features.length; i<len; i++){
+                        var ftsFeat = ftsLayerResult.features[i];
+                        var ftsGeometry = OpenLayers.Geometry.fromWKT(ftsFeat.geometry);
+                        if ( ftsLayerResult.srid != 'EPSG:4326' )
+                            ftsGeometry.trasnform(ftsLayerResult.srid, 'EPSG:4326');
+                        var bbox = ftsGeometry.getBounds();
+                        if ( extent.intersectsBounds(bbox) ) {
+                          text += '<li><a href="#'+bbox.toBBOX()+'">'+ftsFeat.label+'</a></li>';
+                          count++;
+                        }
+                    }
+                    text += '</ul></li>';
+                }
+
+                if (count != 0 && text != '')
+                    updateExternalSearch( text );
+                else
+                    updateExternalSearch( '<li><b>'+lizDict['externalsearch.mapdata']+'</b><ul><li>'+lizDict['externalsearch.notfound']+'</li></ul></li>' );
+            }, 'json');
       }
       return false;
     });

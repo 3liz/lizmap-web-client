@@ -61,8 +61,6 @@ enable_after_logout_override=on
 ; enable the persistance of the authentification between two sessions
 persistant_enable=on
 
-; key to use to crypt the password in the cookie. replace it by your own words !
-persistant_crypt_key=
 
 ; the name of the cookie which is used to store data for the authentification
 persistant_cookie_name=LizmapSession
@@ -149,4 +147,5 @@ password_crypt_function=sha1
 ; if you want to use a salt with sha1:
 ;password_crypt_function = "1:sha1WithSalt"
 ;password_salt = "here_your_salt"
+
 
