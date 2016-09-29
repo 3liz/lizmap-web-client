@@ -406,6 +406,10 @@ ul.nav.nav-tabs {
     border-bottom: 1px dashed #F0F0F0;
 }
 
+#dock #home #projects .thumbnail {
+  background-color: white;
+}
+
 
 /*
 SubDock
