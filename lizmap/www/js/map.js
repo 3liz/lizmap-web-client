@@ -3452,7 +3452,7 @@ var lizMap = function() {
       url += '&SERVICE=WMS';
       //url += '&VERSION='+capabilities.version+'&REQUEST=GetPrint';
       url += '&VERSION=1.3&REQUEST=GetPrint';
-      url += '&FORMAT='+$('#print-format').val();;
+      url += '&FORMAT='+$('#print-format').val();
       url += '&EXCEPTIONS=application/vnd.ogc.se_inimage&TRANSPARENT=true';
       url += '&SRS='+map.projection;
       url += '&DPI='+$('#print-dpi').val();
@@ -3466,6 +3466,7 @@ var lizMap = function() {
       url += '&'+dragCtrl.layout.mapId+':grid_interval_y='+gridInterval;
       var printLayers = [];
       var styleLayers = [];
+      var opacityLayers = [];
       $.each(map.layers, function(i, l) {
         if (l.getVisibility()
           && (
@@ -3480,20 +3481,25 @@ var lizMap = function() {
           if( 'STYLES' in l.params && l.params['STYLES'].length > 0 )
             lst = l.params['STYLES'];
           styleLayers.push( lst );
+          opacityLayers.push(parseInt(255*l.opacity));
         }
       });
       printLayers.reverse();
       styleLayers.reverse();
+      opacityLayers.reverse();
 
       // Get active baselayer, and add the corresponding QGIS layer if needed
       var activeBaseLayerName = map.baseLayer.name;
       if ( activeBaseLayerName in externalBaselayersReplacement ) {
         var exbl = externalBaselayersReplacement[activeBaseLayerName];
-        if( exbl in config.layers )
+        if( exbl in config.layers ) {
             if ( 'useLayerIDs' in config.options && config.options.useLayerIDs == 'True' )
                 printLayers.push(config.layers[exbl].id);
             else
                 printLayers.push(exbl);
+            styleLayers.push('Overview');
+            opacityLayers.push(255);
+        }
       }
 
       url += '&'+dragCtrl.layout.mapId+':LAYERS='+printLayers.join(',');
@@ -3506,9 +3512,11 @@ var lizMap = function() {
         url += '&'+dragCtrl.layout.overviewId+':LAYERS=Overview';
         printLayers.unshift('Overview');
         styleLayers.unshift('Overview');
+        opacityLayers.unshift(255);
       }
       url += '&LAYERS='+printLayers.join(',');
       url += '&STYLES='+styleLayers.join(',');
+      url += '&OPACITIES='+opacityLayers.join(',');
       var labels = $('#print .print-labels').find('input.print-label, textarea.print-label').serialize();
       if ( labels != "" )
         url += '&'+labels;
