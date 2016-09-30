@@ -4715,7 +4715,7 @@ OpenLayers.Control.HighlightFeature = OpenLayers.Class(OpenLayers.Control, {
                         var ftsFeat = ftsLayerResult.features[i];
                         var ftsGeometry = OpenLayers.Geometry.fromWKT(ftsFeat.geometry);
                         if ( ftsLayerResult.srid != 'EPSG:4326' )
-                            ftsGeometry.trasnform(ftsLayerResult.srid, 'EPSG:4326');
+                            ftsGeometry.transform(ftsLayerResult.srid, 'EPSG:4326');
                         var bbox = ftsGeometry.getBounds();
                         if ( extent.intersectsBounds(bbox) ) {
                           text += '<li><a href="#'+bbox.toBBOX()+'" data="'+ftsGeometry.toString()+'">'+ftsFeat.label+'</a></li>';
