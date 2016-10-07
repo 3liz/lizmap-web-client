@@ -3,9 +3,10 @@
 * @package     jelix
 * @subpackage  urls_engine
 * @author      Laurent Jouanneau
-* @contributor Thibault Piront (nuKs)
+* @contributor Thibault Piront (nuKs), Julien Issler
 * @copyright   2005-2012 Laurent Jouanneau
 * @copyright   2007 Thibault Piront
+* @copyright   2016 Julien Issler
 * @link        http://www.jelix.org
 * @licence     GNU Lesser General Public Licence see LICENCE file or http://www.gnu.org/licenses/lgpl.html
 */
@@ -146,7 +147,7 @@ class jSignificantUrlsCompiler implements jISimpleCompiler{
         $this->createUrlContent .= "filemtime('".$sourceFile.'\') > '.filemtime($sourceFile);
         $this->createUrlContentInc = '';
         $this->readProjectXml();
-        $this->retrieveModulePaths(jApp::mainConfigFile());
+        $this->retrieveModulePaths(basename(jApp::mainConfigFile()));
 
         // for an app on a simple http server behind an https proxy, we shouldn't check HTTPS
         $this->checkHttps = jApp::config()->urlengine['checkHttpsOnParsing'];
@@ -327,7 +328,7 @@ class jSignificantUrlsCompiler implements jISimpleCompiler{
             $entrypoint.='.php';
         if (!isset($this->entryPoints[$entrypoint]))
             throw new Exception('The entry point "'.$entrypoint.'" is not declared into project.xml');
-        return jApp::configPath($this->entryPoints[$entrypoint]);
+        return $this->entryPoints[$entrypoint];
     }
     /**
      * list all entry points and their config
@@ -347,9 +348,9 @@ class jSignificantUrlsCompiler implements jISimpleCompiler{
      * @param string $configFile the config file name
      */
     protected function retrieveModulePaths($configFile) {
-        $conf = parse_ini_file($configFile);
+        $conf = jConfigCompiler::read($configFile);
         $this->modulesPath = array_merge( $this->modulesPath,
-            jConfigCompiler::getModulesPaths((object) $conf));
+            jConfigCompiler::getModulesPaths($conf));
     }
 
     /**

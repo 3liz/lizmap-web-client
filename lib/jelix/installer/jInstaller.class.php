@@ -304,7 +304,8 @@ class jInstaller {
             $this->modules[$epId] = array();
 
             // now let's read all modules properties
-            foreach ($ep->getModulesList() as $name=>$path) {
+            $modulesList = $ep->getModulesList();
+            foreach ($modulesList as $name=>$path) {
                 $module = $ep->getModule($name);
 
                 $this->installerIni->setValue($name.'.installed', $module->isInstalled, $epId);
@@ -317,6 +318,17 @@ class jInstaller {
                 $m = $this->allModules[$path];
                 $m->addModuleInfos($epId, $module);
                 $this->modules[$epId][$name] = $m;
+            }
+            // remove informations about modules that don't exist anymore
+            $modules = $this->installerIni->getValues($epId);
+            foreach($modules as $key=>$value) {
+                $l = explode('.', $key);
+                if (count($l)<=1) {
+                    continue;
+                }
+                if (!isset($modulesList[$l[0]])) {
+                    $this->installerIni->removeValue($key, $epId);
+                }
             }
         }
     }
