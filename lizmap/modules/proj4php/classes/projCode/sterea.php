@@ -44,7 +44,7 @@ class Proj4phpProjSterea {
         $k = $this->k0 * $this->R2 / (1.0 + $this->sinc0 * $sinc + $this->cosc0 * $cosc * $cosl);
         
         $p->x = $k * $cosc * sin( $p->x );
-        $p->y = $k * ($this->cosc0 * sinc - $this->sinc0 * $cosc * $cosl);
+        $p->y = $k * ($this->cosc0 * $sinc - $this->sinc0 * $cosc * $cosl);
         
         $p->x = $this->a * $p->x + $this->x0;
         $p->y = $this->a * $p->y + $this->y0;
