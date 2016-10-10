@@ -409,23 +409,18 @@ class jInstaller {
      */
     public function installApplication($flags = false) {
 
-        if ($flags === false)
+        if ($flags === false) {
             $flags = self::FLAG_ALL;
+        }
 
         $this->startMessage();
         $result = true;
 
         foreach(array_keys($this->entryPoints) as $epId) {
-            $modules = array();
-            foreach($this->modules[$epId] as $name => $module) {
-                $access = $module->getAccessLevel($epId);
-                if ($access != 1 && $access != 2)
-                    continue;
-                $modules[$name] = $module;
-            }
-            $result = $result & $this->_installModules($modules, $epId, true, $flags);
-            if (!$result)
+            $result = $result & $this->installEntryPointModules($epId, $flags);
+            if (!$result) {
                 break;
+            }
         }
 
         $this->installerIni->save();
@@ -450,20 +445,44 @@ class jInstaller {
         }
 
         $epId = $this->epId[$entrypoint];
-
-        $modules = array();
-        foreach($this->modules[$epId] as $name => $module) {
-            $access = $module->getAccessLevel($epId);
-            if ($access != 1 && $access != 2)
-                continue;
-            $modules[$name] = $module;
-        }
-        $result = $this->_installModules($modules, $epId, true);
+        $result = $this->installEntryPointModules($epId);
 
         $this->installerIni->save();
         $this->endMessage();
         return $result;
     }
+
+    /**
+     *
+     * @param string $epId  the entrypoint id
+     * @return boolean true if succeed, false if there are some errors
+     */
+    protected function installEntryPointModules($epId, $flags=3) {
+        $modules = array();
+        foreach($this->modules[$epId] as $name => $module) {
+            $access = $module->getAccessLevel($epId);
+            if ($access != 1 && $access != 2) {
+                if ($module->isInstalled($epId)) {
+                    $this->installerIni->removeValue($name.'.installed', $epId);
+                    $this->installerIni->removeValue($name.'.version', $epId);
+                    $this->installerIni->removeValue($name.'.version.date', $epId);
+                    $this->installerIni->removeValue($name.'.firstversion', $epId);
+                    $this->installerIni->removeValue($name.'.firstversion.date', $epId);
+                }
+            }
+            else {
+                $modules[$name] = $module;
+            }
+        }
+        if (count($modules)) {
+            $result = $this->_installModules($modules, $epId, true, $flags);
+            if (!$result) {
+                return false;
+            }
+        }
+        return true;
+    }
+
 
     /**
      * install given modules even if they don't have an access property > 0
@@ -475,7 +494,7 @@ class jInstaller {
     public function installModules($modulesList, $entrypoint = null) {
 
         $this->startMessage();
-        $entryPointList = array();
+
         if ($entrypoint == null) {
             $entryPointList = array_keys($this->entryPoints);
         }
@@ -723,7 +742,6 @@ class jInstaller {
 
         return $result;
     }
-
 
     protected $_componentsToInstall = array();
     protected $_checkedComponents = array();

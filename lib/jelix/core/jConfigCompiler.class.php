@@ -226,14 +226,20 @@ class jConfigCompiler {
         if ($config->disableInstallers) {
             $installation = array ();
         }
-        else if (!file_exists($installerFile)) {
+        else if (file_exists($installerFile)) {
+            $installation = parse_ini_file($installerFile, true);
+        }
+        else {
             if ($allModuleInfo)
                 $installation = array ();
-            else
+            else {
                 throw new Exception("The application is not installed -- installer.ini.php doesn't exist!\n", 9);
+            }
         }
-        else
-            $installation = parse_ini_file($installerFile,true);
+
+        if ($allModuleInfo) {
+            $config->_allModulesPathList = array();
+        }
 
         $section = $config->urlengine['urlScriptId'];
 
@@ -375,7 +381,7 @@ class jConfigCompiler {
         // -- read all *.path into [modules]
         if (property_exists($config, 'modules')) {
             foreach ($config->modules as $key => $path) {
-                if (!preg_match('/^([a-zA-Z_0-9]+)\\.path$/', $key, $m)) {
+                if (!preg_match('/^([a-zA-Z_0-9]+)\\.path$/', $key, $m) || $path == '') {
                     continue;
                 }
                 $p = jFile::parseJelixPath($path);
