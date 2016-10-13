@@ -957,10 +957,12 @@ class lizmapProject{
                         $db = new SQLite3(':memory:');
                         $spatial = $db->loadExtension('mod_spatialite.so'); # loading SpatiaLite as an extension
                     }catch(Exception $e){
+                        jLog::log($e->getMessage(), 'error');
                         $spatial = False;
                     }
             }
             if(!$spatial){
+                jLog::log('Spatialite is not available', 'error');
                 foreach( $editionLayers as $key=>$obj ){
                     $layerXml = $this->getXmlLayer2($xml, $obj->layerId );
                     $layerXmlZero = $layerXml[0];
