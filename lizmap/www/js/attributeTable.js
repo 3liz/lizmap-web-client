@@ -1603,6 +1603,10 @@ var lizAttributeTable = function() {
                 var layerConfig = config.layers[featureType];
                 var featureId = featureType + '.' + fid;
                 var proj = new OpenLayers.Projection(config.layers[featureType].crs);
+                getAndDoFeature(featureType, fid, function(feat) {
+                    zoomToOlFeature( feat, proj, zoomAction );
+                });
+                /*
                 var feat = null;
 
                 // Use already retrieved feature
@@ -1619,7 +1623,31 @@ var lizAttributeTable = function() {
                         }
                     });
                 }
+                * */
+            }
 
+            function getAndDoFeature( featureType, fid, aCallback ){
+                if ( !aCallback )
+                    return;
+
+                if ( !(featureType in config.layers) )
+                    return;
+
+                var layerConfig = config.layers[featureType];
+                var featureId = featureType + '.' + fid;
+
+                // Use already retrieved feature
+                if( layerConfig['features'] && fid in layerConfig['features'] ){
+                    aCallback(layerConfig['features'][fid]);
+                }
+                // Or get the feature via WFS in needed
+                else{
+                    getAttributeFeatureData(featureType, null, featureId, function( aName, aFilter, cFeatures, cAliases ){
+                        if( cFeatures.length == 1 ){
+                            aCallback(cFeatures[0]);
+                        }
+                    });
+                }
             }
 
             function refreshLayerSelection( featureType, featId, rupdateDrawing ) {
@@ -2425,6 +2453,60 @@ var lizAttributeTable = function() {
                             'layerId'
                         );
                         var getLayerConfig = lizMap.getLayerConfigById( layerId );
+
+                        if( aConfig && getLayerConfig && 'relations' in lizMap.config && layerId in lizMap.config.relations ) {
+                            console.log(layerId+' has relations');
+                            var relations = lizMap.config.relations[layerId];
+                            console.log(relations);
+                            var layerConfig = getLayerConfig[1];
+                            var featureType = layerConfig.name;
+                            var featureId = featureType + '.' + fid;
+                            console.log(featureType+' has relations');
+                            getAndDoFeature(featureType, fid, function(feat) {
+                                console.log(feat);
+
+                                var wmsOptions = {
+                                     'LAYERS': featureType
+                                    ,'QUERY_LAYERS': featureType
+                                    ,'STYLES': ''
+                                    ,'SERVICE': 'WMS'
+                                    ,'VERSION': '1.3.0'
+                                    ,'REQUEST': 'GetFeatureInfo'
+                                    ,'EXCEPTIONS': 'application/vnd.ogc.se_inimage'
+                                    ,'FEATURE_COUNT': 10
+                                    ,'INFO_FORMAT': 'text/html'
+                                };
+
+                                // Query the server
+                                var service = OpenLayers.Util.urlAppend(lizUrls.wms
+                                    ,OpenLayers.Util.getParameterString(lizUrls.params)
+                                );
+                                for ( var i=0, len=relations.length; i<len; i++ ){
+                                    var r = relations[i];
+                                    var rLayerId = r.referencingLayer;
+                                    console.log('relation: '+rLayerId);
+                                    var rGetLayerConfig = lizMap.getLayerConfigById( rLayerId );
+                                    if ( rGetLayerConfig ) {
+                                        rConfigLayer = rGetLayerConfig[1];
+                                        console.log('relation: '+rConfigLayer.name+' has popup '+rConfigLayer.popup);
+                                        if ( rConfigLayer.popup == 'True' ) {
+                                            wmsOptions['LAYERS'] = rConfigLayer.name;
+                                            wmsOptions['QUERY_LAYERS'] = rConfigLayer.name;
+                                            wmsOptions['FILTER'] = rConfigLayer.name+':"'+r.referencingField+'" = '+feat.properties[r.referencedField]+'';
+                                            console.log('relation: '+rConfigLayer.name+' filter '+wmsOptions['FILTER']);
+                                            $.get(service, wmsOptions, function(data) {
+                                                var hasPopupContent = (!(!data || data == null || data == ''))
+                                                if ( hasPopupContent ) {
+                                                    //console.log(data);
+                                                    self.parent().append('<div class="lizmapPopupChildren">'+data+'</div>');
+                                                }
+                                            });
+                                        }
+                                    }
+                                }
+
+                            });
+                        }
 
                         if( aConfig && getLayerConfig ) {
                             var layerConfig = getLayerConfig[1];

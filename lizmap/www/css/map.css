@@ -1940,6 +1940,15 @@ div.modal h3 .text {
   background-position: -48px -80px;
 }
 
+.lizmapPopup.olPopup .lizmapPopupDiv .lizmapPopupChildren h4,
+#map-content .lizmapPopupDiv .lizmapPopupChildren h4,
+#popupcontent .lizmapPopupDiv .lizmapPopupChildren h4{
+    margin: 0 10px;
+    color: black !important;
+    border-bottom: 1px solid rgba(0,0,0,0.4);
+    font-size: 0.85em;
+}
+
 #tooltipPopupContent {
   background-color:#F0F0F0 !important;
   border: rgba(0,0,0,0.7) solid 4px;
