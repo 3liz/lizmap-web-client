@@ -80,6 +80,14 @@ class lizMapCtrl extends jController {
       }
     }
 
+    // Redirect if no right to access the project
+    if ( !$lproj->checkAcl() ){
+      $rep = $this->getResponse('redirect');
+      $rep->action = 'view~default:index';
+      jMessage::add(jLocale::get('view~default.repository.access.denied'), 'error');
+      return $rep;
+    }
+
     $pOptions = $lproj->getOptions();
     // Redirect if project is hidden (lizmap plugin option)
     if($ok and !$this->forceHiddenProjectVisible ){

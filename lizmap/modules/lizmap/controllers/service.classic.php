@@ -43,7 +43,7 @@ class serviceCtrl extends jController {
     $project = $this->iParam('project');
     if(!$project){
       // Error message
-      jMessage::add('The parameter project is mandatory !', 'ProjectNotDefind');
+      jMessage::add('The parameter project is mandatory !', 'ProjectNotDefined');
       return $this->serviceException();
     }
 
@@ -150,7 +150,7 @@ class serviceCtrl extends jController {
     $project = $this->iParam('project');
 
     if(!$project){
-      jMessage::add('The parameter project is mandatory !', 'ProjectNotDefind');
+      jMessage::add('The parameter project is mandatory !', 'ProjectNotDefined');
       return false;
     }
 
@@ -159,9 +159,14 @@ class serviceCtrl extends jController {
 
     // Get the corresponding repository
     $lrep = lizmap::getRepository($repository);
+    $lproj = lizmap::getProject($repository.'~'.$project);
 
     // Redirect if no rights to access this repository
-    if(!jAcl2::check('lizmap.repositories.view', $lrep->getKey())){
+    if ( !$lproj ) {
+      jMessage::add('The lizmapProject '.strtoupper($project).' does not exist !', 'ProjectNotDefined');
+      return false;
+    }
+    if ( !$lproj->checkAcl() ) {
       jMessage::add(jLocale::get('view~default.repository.access.denied'), 'AuthorizationRequired');
       return false;
     }
@@ -173,7 +178,7 @@ class serviceCtrl extends jController {
     $params = $lizmapCache->normalizeParams($pParams);
 
     // Define class private properties
-    $this->project = lizmap::getProject($repository.'~'.$project);
+    $this->project = $lproj;
     $this->repository = $lrep;
     $this->services = lizmap::getServices();
     $this->params = $params;

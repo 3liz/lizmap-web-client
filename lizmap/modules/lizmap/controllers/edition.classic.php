@@ -148,7 +148,7 @@ class editionCtrl extends jController {
     $lproj = lizmap::getProject($repository.'~'.$project);
 
     // Redirect if no rights to access this repository
-    if(!jAcl2::check('lizmap.repositories.view', $lrep->getKey())){
+    if ( !$lproj || !$lproj->checkAcl() ){
       jMessage::add(jLocale::get('view~default.repository.access.denied'), 'AuthorizationRequired');
       return false;
     }

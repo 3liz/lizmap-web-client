@@ -38,6 +38,8 @@ class ajax_viewZone extends jZone {
             $mrep = new lizmapMainViewItem($r, $lrep->getData('label'));
             $lprojects = $lrep->getProjects();
             foreach ($lprojects as $p) {
+              if ( !$p->checkAcl() )
+                continue;
               $mrep->childItems[] = new lizmapMainViewItem(
                 $p->getData('id'),
                 $p->getData('title'),

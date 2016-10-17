@@ -82,6 +82,9 @@ class lizmapProject{
      */
     protected $useLayerIDs = false;
 
+    /**
+     * @var array List of cached properties
+     */
     protected $cachedProperties = array('WMSInformation', 'canvasColor', 'allProj4',
         'relations', 'layersOrder', 'printCapabilities', 'locateByLayer',
         'editionLayers', 'useLayerIDs', 'layers', 'data', 'cfg', 'qgisProjectVersion');
@@ -1426,6 +1429,36 @@ class lizmapProject{
         }
 
         return $dockable;
+    }
+
+    /**
+     * Check acl rights on the project
+     */
+    public function checkAcl () {
+
+        // Check right on repository
+        if (!jAcl2::check('lizmap.repositories.view', $this->repository->getKey())){
+            return False;
+        }
+
+        // Check acl option is configured in project config
+        if (!property_exists($this->cfg->options, 'acl') || !is_array($this->cfg->options->acl) || empty($this->cfg->options->acl) ){
+            return True;
+        }
+
+        // Check user is authenticated
+        if(!jAuth::isConnected()){
+            return False;
+        }
+
+        // Check if configured groups white list and authenticated user groups list intersects
+        $aclGroups = $this->cfg->options->acl;
+        $userGroups = jAcl2DbUserGroup::getGroups();
+        if( array_intersect($aclGroups, $userGroups) ){
+            return True;
+        }
+
+        return False;
     }
 
 }

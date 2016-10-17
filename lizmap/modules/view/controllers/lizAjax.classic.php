@@ -69,10 +69,6 @@ class lizAjaxCtrl extends jController {
     } else
       $lrep = lizmap::getRepository($repository);
 
-    if(!jAcl2::check('lizmap.repositories.view', $lrep->getKey())){
-      jMessage::add(jLocale::get('view~default.repository.access.denied'), 'error');
-      return $rep;
-    }
     // We must redirect to default repository project list if no project given
     if(!$project){
       jMessage::add('The parameter project is mandatory !', 'error');
@@ -83,6 +79,11 @@ class lizAjaxCtrl extends jController {
     $lproj = lizmap::getProject($lrep->getKey().'~'.$project);
     if(!$lproj){
       jMessage::add('The lizmapProject '.strtoupper($project).' does not exist !', 'error');
+      return $rep;
+    }
+
+    if ( !$lproj->checkAcl() ) {
+      jMessage::add(jLocale::get('view~default.repository.access.denied'), 'error');
       return $rep;
     }
 

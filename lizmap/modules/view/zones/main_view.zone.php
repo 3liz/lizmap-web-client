@@ -56,12 +56,20 @@ class main_viewZone extends jZone {
 
             foreach ($lprojects as $p) {
               $pOptions = $p->getOptions();
+              // Hide project with option "hideProject"
               if (
                 property_exists($pOptions,'hideProject')
                 && $pOptions->hideProject == 'True'
               ){
                 continue;
               }
+
+              // Hide project with no acl
+              if ( !$p->checkAcl() ){
+                continue;
+              }
+
+              // Get project information
               if ( $wmsGetCapabilitiesUrl ) {
                 $wmsGetCapabilitiesUrl = $p->getData('wmsGetCapabilitiesUrl');
                 $wmtsGetCapabilitiesUrl = $p->getData('wmtsGetCapabilitiesUrl');

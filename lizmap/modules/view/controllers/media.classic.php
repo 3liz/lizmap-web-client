@@ -13,6 +13,16 @@ class mediaCtrl extends jController {
 
 
   /**
+   * Returns error
+   */
+  function error($message){
+    $rep = $this->getResponse('redirect');
+    $rep->action = 'view~default:error';
+    jMessage::add($message, 'error');
+    return $rep;
+  }
+
+  /**
   * Get a media file (image, html, csv, pdf, etc.) store in the repository.
   * Used to display media in the popup, via the information icon, etc.
   *
@@ -28,14 +38,22 @@ class mediaCtrl extends jController {
     $lrep = lizmap::getRepository($repository);
 
     if(!$lrep or !jAcl2::check('lizmap.repositories.view', $lrep->getKey())){
-      $rep = $this->getResponse('redirect');
-      $rep->action = 'view~default:error';
-      jMessage::add(jLocale::get('view~default.repository.access.denied'), 'error');
-      return $rep;
+      $this->error(jLocale::get('view~default.repository.access.denied'));
     }
 
     // Get the project
     $project = $this->param('project');
+
+    // Get lizmapProject class
+    $lproj = lizmap::getProject($lrep->getKey().'~'.$project);
+    if(!$lproj){
+        $this->error('The lizmapProject '.strtoupper($project).' does not exist !');
+    }
+
+    // Redirect if no right to access the project
+    if ( !$lproj->checkAcl() ){
+      return $this->error(jLocale::get('view~default.repository.access.denied'));
+    }
 
     // Get the file
     $path = $this->param('path');
@@ -126,16 +144,22 @@ class mediaCtrl extends jController {
     $repository = $this->param('repository');
 
     $lrep = lizmap::getRepository($repository);
-    if (!$lrep) {
-      $ser = lizmap::getServices();
-      $lrep = lizmap::getRepository($ser->defaultRepository);
+    if(!$lrep or !jAcl2::check('lizmap.repositories.view', $lrep->getKey())){
+      $this->error(jLocale::get('view~default.repository.access.denied'));
     }
 
-    if(!jAcl2::check('lizmap.repositories.view', $lrep->getKey())){
-      $rep = $this->getResponse('redirect');
-      $rep->action = 'view~default:error';
-      jMessage::add(jLocale::get('view~default.repository.access.denied'), 'error');
-      return $rep;
+    // Get the project
+    $project = $this->param('project');
+
+    // Get lizmapProject class
+    $lproj = lizmap::getProject($lrep->getKey().'~'.$project);
+    if(!$lproj){
+        $this->error('The lizmapProject '.strtoupper($project).' does not exist !');
+    }
+
+    // Redirect if no right to access the project
+    if ( !$lproj->checkAcl() ){
+      return $this->error(jLocale::get('view~default.repository.access.denied'));
     }
 
     // Get the project
@@ -174,15 +198,23 @@ class mediaCtrl extends jController {
 
     $lrep = lizmap::getRepository($repository);
 
-    if(!jAcl2::check('lizmap.repositories.view', $lrep->getKey())){
-      $rep = $this->getResponse('redirect');
-      $rep->action = 'view~default:error';
-      jMessage::add(jLocale::get('view~default.repository.access.denied'), 'error');
-      return $rep;
+    if(!$lrep or !jAcl2::check('lizmap.repositories.view', $lrep->getKey())){
+      $this->error(jLocale::get('view~default.repository.access.denied'));
     }
 
     // Get the project
     $project = $this->param('project');
+
+    // Get lizmapProject class
+    $lproj = lizmap::getProject($lrep->getKey().'~'.$project);
+    if(!$lproj){
+        $this->error('The lizmapProject '.strtoupper($project).' does not exist !');
+    }
+
+    // Redirect if no right to access the project
+    if ( !$lproj->checkAcl() ){
+      return $this->error(jLocale::get('view~default.repository.access.denied'));
+    }
 
     // Get the file
     $path = $this->param('path');
