@@ -793,30 +793,42 @@ class configCtrl extends jController {
   * @return Redirection to the index
   */
   function removeLayerCache(){
-
-    $repository = $this->param('repository');
-    $project = $this->param('project');
-    $layer = $this->param('layer');
-
-    // Get config utility
-    $lrep = lizmap::getRepository($repository);
-    $lproj = lizmap::getProject($repository.'~'.$project);
-    $project = $lproj->getKey();
-    $repository = $lrep->getKey();
-
-    // Remove project cache
-    $lproj->clearCache();
-
-    // Remove the cache for the layer
-    jClasses::inc('lizmap~lizmapProxy');
-    lizmapProxy::clearLayerCache($repository, $project, $layer);
-
-    jMessage::add(jLocale::get("admin~admin.cache.layer.removed", array($layer)));
-
-    // Redirect to the index
+    // Create response to redirect to the index
     $rep= $this->getResponse("redirect");
     $rep->action="admin~config:index";
 
+    $repository = $this->param('repository');
+    $lrep = lizmap::getRepository($repository);
+    if(!$lrep){
+      jMessage::add('The repository '.strtoupper($repository).' does not exist !', 'error');
+      return $rep;
+    }
+
+    $project = $this->param('project');
+    try {
+        $lproj = lizmap::getProject($lrep->getKey().'~'.$project);
+        if(!$lproj){
+            jMessage::add('The lizmapProject '.strtoupper($project).' does not exist !', 'error');
+            return $rep;
+        }
+        $layer = $this->param('layer');
+
+        // Remove project cache
+        $lproj->clearCache();
+
+        // Remove the cache for the layer
+        jClasses::inc('lizmap~lizmapProxy');
+        lizmapProxy::clearLayerCache($repository, $project, $layer);
+
+        jMessage::add(jLocale::get("admin~admin.cache.layer.removed", array($layer)));
+
+        return $rep;
+    }
+    catch(UnknownLizmapProjectException $e) {
+        jLog::logEx($e, 'error');
+        jMessage::add('The lizmapProject '.strtoupper($project).' does not exist !', 'error');
+        return $rep;
+    }
     return $rep;
   }
 

@@ -29,28 +29,33 @@ class map_menuZone extends jZone {
             "attributeLayers"=>false
         );
 
-        $lproj = lizmap::getProject($repository.'~'.$project);
-        $configOptions = $lproj->getOptions();
+        try {
+            $lproj = lizmap::getProject($repository.'~'.$project);
+            $configOptions = $lproj->getOptions();
 
-        if ( property_exists($configOptions,'measure')
-          && $configOptions->measure == 'True')
-            $assign['measure'] = true;
+            if ( property_exists($configOptions,'measure')
+              && $configOptions->measure == 'True')
+                $assign['measure'] = true;
 
-        $assign['locate'] = $lproj->hasLocateByLayer();
-    
-        if ( property_exists($configOptions,'print')
-          && $configOptions->print == 'True')
-            $assign['print'] = true;
+            $assign['locate'] = $lproj->hasLocateByLayer();
 
-        $assign['edition'] = $lproj->hasEditionLayers();
+            if ( property_exists($configOptions,'print')
+              && $configOptions->print == 'True')
+                $assign['print'] = true;
 
-        if ( property_exists($configOptions,'geolocation')
-          && $configOptions->geolocation == 'True')
-            $assign['geolocation'] = true;
+            $assign['edition'] = $lproj->hasEditionLayers();
 
-        $assign['timemanager'] = $lproj->hasTimemanagerLayers();
+            if ( property_exists($configOptions,'geolocation')
+              && $configOptions->geolocation == 'True')
+                $assign['geolocation'] = true;
 
-        $assign['attributeLayers'] = $lproj->hasAttributeLayers();
+            $assign['timemanager'] = $lproj->hasTimemanagerLayers();
+
+            $assign['attributeLayers'] = $lproj->hasAttributeLayers();
+        }
+        catch(UnknownLizmapProjectException $e) {
+            jLog::logEx($e, 'error');
+        }
 
         $this->_tpl->assign($assign);
    }

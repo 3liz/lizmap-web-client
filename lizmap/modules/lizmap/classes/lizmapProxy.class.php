@@ -163,7 +163,22 @@ class lizmapProxy {
             $repository = $newRepository;
             $project = $newProject;
             $lrep = lizmap::getRepository($repository);
-            $lproj = lizmap::getProject($repository.'~'.$project);
+            if (!$lrep) {
+                jMessage::add('The repository '.strtoupper($repository).' does not exist !', 'RepositoryNotDefined');
+                return array('error', 'text/plain', '404');
+            }
+            try {
+                $lproj = lizmap::getProject($repository.'~'.$project);
+                if(!$lproj){
+                    jMessage::add('The lizmapProject '.strtoupper($project).' does not exist !', 'ProjectNotDefined');
+                    return array('error', 'text/plain', '404');
+                }
+            }
+            catch(UnknownLizmapProjectException $e) {
+                jLog::logEx($e, 'error');
+                jMessage::add('The lizmapProject '.strtoupper($project).' does not exist !', 'ProjectNotDefined');
+                return array('error', 'text/plain', '404');
+            }
         }
 
         $key = md5( serialize( $keyParams ) );

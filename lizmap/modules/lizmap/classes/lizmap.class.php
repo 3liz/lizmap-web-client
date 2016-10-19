@@ -9,6 +9,7 @@
 * @license Mozilla Public License : http://www.mozilla.org/MPL/
 */
 
+class UnknownLizmapProjectException extends Exception { }
 
 class lizmap{
 
@@ -233,6 +234,9 @@ class lizmap{
       jClasses::inc('lizmap~lizmapProject');
       try {
         $proj = new lizmapProject($matches['proj'], $rep);
+      }
+      catch(UnknownLizmapProjectException $e) {
+          throw $e;
       }
       catch(Exception $e) {
         jLog::logEx($e, 'error');

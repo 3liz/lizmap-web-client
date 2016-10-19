@@ -42,9 +42,15 @@ class listProjectDatasource extends jFormsDaoDatasource
   {
     $criteria = $form->getData($this->criteriaFrom);
     if ( $criteria && array_key_exists($criteria, $this->data ) ) {
-        $p = lizmap::getProject( $criteria.'~'.$key );
-        if ( $p )
-          return (string) $p->getData('title');
+        try {
+            $p = lizmap::getProject( $criteria.'~'.$key );
+            if ( $p )
+                return (string) $p->getData('title');
+        }
+        catch(UnknownLizmapProjectException $e) {
+            jLog::logEx($e, 'error');
+            return null;
+        }
     }
     return null;
   }
@@ -52,7 +58,7 @@ class listProjectDatasource extends jFormsDaoDatasource
   public function getDependentControls() {
       return array($this->criteriaFrom);
   }
-  
+
   public function hasGroupedData() {
       return $this->groupeBy;
   }

@@ -132,7 +132,10 @@ class serviceCtrl extends jController {
     foreach( $messages as $code=>$msg ){
       if( $code == 'AuthorizationRequired' )
         $rep->setHttpStatus(401, $code);
-
+      else if( $code == 'ProjectNotDefined' )
+        $rep->setHttpStatus(404, 'Not Found');
+      else if( $code == 'RepositoryNotDefined' )
+        $rep->setHttpStatus(404, 'Not Found');
     }
 
     return $rep;
@@ -159,13 +162,26 @@ class serviceCtrl extends jController {
 
     // Get the corresponding repository
     $lrep = lizmap::getRepository($repository);
-    $lproj = lizmap::getProject($repository.'~'.$project);
-
-    // Redirect if no rights to access this repository
-    if ( !$lproj ) {
-      jMessage::add('The lizmapProject '.strtoupper($project).' does not exist !', 'ProjectNotDefined');
+    if(!$lrep){
+      jMessage::add('The repository '.strtoupper($repository).' does not exist !', 'RepositoryNotDefined');
       return false;
     }
+    // Get the project object
+    $lproj = null;
+    try {
+        $lproj = lizmap::getProject($repository.'~'.$project);
+        if ( !$lproj ) {
+            jMessage::add('The lizmapProject '.strtoupper($project).' does not exist !', 'ProjectNotDefined');
+            return false;
+        }
+    }
+    catch(UnknownLizmapProjectException $e) {
+        jLog::logEx($e, 'error');
+        jMessage::add('The lizmapProject '.strtoupper($project).' does not exist !', 'ProjectNotDefined');
+        return false;
+    }
+
+    // Redirect if no rights to access this repository
     if ( !$lproj->checkAcl() ) {
       jMessage::add(jLocale::get('view~default.repository.access.denied'), 'AuthorizationRequired');
       return false;
@@ -205,7 +221,7 @@ class serviceCtrl extends jController {
   protected function filterDataByLogin() {
 
     // Optionnaly add a filter parameter
-    $lproj = lizmap::getProject($this->repository->getKey().'~'.$this->project->getKey());
+    $lproj = $this->project;
 
     $request = strtolower($this->params['request']);
     if( $request == 'getfeature' )
@@ -417,6 +433,9 @@ class serviceCtrl extends jController {
         jClasses::inc('lizmap~lizmapWMSRequest');
         $wmsRequest = new lizmapWMSRequest( $this->project, $this->params );
         $result = $wmsRequest->process();
+        if ( $result->data == 'error' ) {
+            return $this->serviceException();
+        }
 
         $rep = $this->getResponse('binary');
         $rep->mimeType = $result->mime;
@@ -430,7 +449,7 @@ class serviceCtrl extends jController {
 
         // HTTP browser cache expiration time
         $layername = $this->params["layers"];
-        $lproj = lizmap::getProject($this->repository->getKey().'~'.$this->project->getKey());
+        $lproj = $this->project;
         $configLayers = $lproj->getLayers();
         if( property_exists($configLayers, $layername) ){
             $configLayer = $configLayers->$layername;
@@ -487,7 +506,7 @@ class serviceCtrl extends jController {
     if(!$this->getServiceParameters())
       return $this->serviceException();
 
-    $lproj = lizmap::getProject($this->repository->getKey().'~'.$this->project->getKey());
+    $lproj = $this->project;
     $pConfig = $lproj->getFullCfg();
 
     $externalWMSLayers = array();
@@ -1153,7 +1172,7 @@ class serviceCtrl extends jController {
 
         // HTTP browser cache expiration time
         $layername = $this->params["layer"];
-        $lproj = lizmap::getProject($this->repository->getKey().'~'.$this->project->getKey());
+        $lproj = $this->project;
         $configLayers = $lproj->getLayers();
         if( property_exists($configLayers, $layername) ){
             $configLayer = $configLayers->$layername;

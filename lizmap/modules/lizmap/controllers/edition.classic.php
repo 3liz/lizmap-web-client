@@ -139,16 +139,32 @@ class editionCtrl extends jController {
     }
 
     if(!$project){
-      jMessage::add('The parameter project is mandatory !', 'ProjectNotDefind');
+      jMessage::add('The parameter project is mandatory !', 'ProjectNotDefined');
       return false;
     }
 
     // Get repository data
     $lrep = lizmap::getRepository($repository);
-    $lproj = lizmap::getProject($repository.'~'.$project);
+    if(!$lrep){
+      jMessage::add('The repository '.strtoupper($repository).' does not exist !', 'RepositoryNotDefined');
+      return false;
+    }
+    // Get the project data
+    $lproj = null;
+    try {
+        $lproj = lizmap::getProject($repository.'~'.$project);
+        if(!$lproj){
+            jMessage::add('The lizmapProject '.strtoupper($project).' does not exist !', 'ProjectNotDefined');
+            return false;
+        }
+    }
+    catch(UnknownLizmapProjectException $e) {
+        jMessage::add('The lizmapProject '.strtoupper($project).' does not exist !', 'ProjectNotDefined');
+        return false;
+    }
 
     // Redirect if no rights to access this repository
-    if ( !$lproj || !$lproj->checkAcl() ){
+    if ( !$lproj->checkAcl() ){
       jMessage::add(jLocale::get('view~default.repository.access.denied'), 'AuthorizationRequired');
       return false;
     }
@@ -244,7 +260,7 @@ class editionCtrl extends jController {
   protected function filterDataByLogin($layername) {
 
     // Optionnaly add a filter parameter
-    $lproj = lizmap::getProject($this->repository->getKey().'~'.$this->project->getKey());
+    $lproj = $this->project;
     $pConfig = $lproj->getFullCfg();
 
     if( $lproj->hasLoginFilteredLayers()
@@ -1467,8 +1483,27 @@ class editionCtrl extends jController {
 
         $project = $this->param('project');
         $repository = $this->param('repository');
+
+        // Get repository data
         $lrep = lizmap::getRepository($repository);
-        $lproj = lizmap::getProject($repository.'~'.$project);
+        if(!$lrep){
+          jMessage::add('The repository '.strtoupper($repository).' does not exist !', 'RepositoryNotDefined');
+          return $this->serviceAnswer();
+        }
+        // Get the project data
+        $lproj = null;
+        try {
+            $lproj = lizmap::getProject($repository.'~'.$project);
+            if(!$lproj){
+                jMessage::add('The lizmapProject '.strtoupper($project).' does not exist !', 'ProjectNotDefined');
+                return $this->serviceAnswer();
+            }
+        }
+        catch(UnknownLizmapProjectException $e) {
+            jMessage::add('The lizmapProject '.strtoupper($project).' does not exist !', 'ProjectNotDefined');
+            return $this->serviceAnswer();
+        }
+
         $this->project = $lproj;
         $this->repository = $lrep;
 
@@ -1647,9 +1682,25 @@ class editionCtrl extends jController {
             return $this->serviceAnswer();
         }
 
-        // Get project configuration
+        // Get repository data
         $lrep = lizmap::getRepository($repository);
-        $lproj = lizmap::getProject($repository.'~'.$project);
+        if(!$lrep){
+          jMessage::add('The repository '.strtoupper($repository).' does not exist !', 'RepositoryNotDefined');
+          return $this->serviceAnswer();
+        }
+        // Get the project data
+        $lproj = null;
+        try {
+            $lproj = lizmap::getProject($repository.'~'.$project);
+            if(!$lproj){
+                jMessage::add('The lizmapProject '.strtoupper($project).' does not exist !', 'ProjectNotDefined');
+                return $this->serviceAnswer();
+            }
+        }
+        catch(UnknownLizmapProjectException $e) {
+            jMessage::add('The lizmapProject '.strtoupper($project).' does not exist !', 'ProjectNotDefined');
+            return $this->serviceAnswer();
+        }
         $this->project = $lproj;
         $this->repository = $lrep;
 

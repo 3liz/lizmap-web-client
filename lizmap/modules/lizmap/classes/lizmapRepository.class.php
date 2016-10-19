@@ -116,25 +116,30 @@ class lizmapRepository{
         $projects = Array();
         $dir = $this->getPath();
         if (is_dir($dir)) {
-          if ($dh = opendir($dir)) {
-            $cfgFiles = Array();
-            $qgsFiles = Array();
-            while (($file = readdir($dh)) !== false) {
-              if (substr($file, -3) == 'cfg')
-                $cfgFiles[] = $file;
-              if (substr($file, -3) == 'qgs')
-                $qgsFiles[] = $file;
-            }
-            closedir($dh);
+            if ($dh = opendir($dir)) {
+                $cfgFiles = Array();
+                $qgsFiles = Array();
+                while (($file = readdir($dh)) !== false) {
+                    if (substr($file, -3) == 'cfg')
+                        $cfgFiles[] = $file;
+                    if (substr($file, -3) == 'qgs')
+                        $qgsFiles[] = $file;
+                }
+                closedir($dh);
 
-            foreach ($qgsFiles as $qgsFile) {
-              $proj = null;
-              if (in_array($qgsFile.'.cfg',$cfgFiles))
-                $proj = lizmap::getProject($this->key.'~'.substr($qgsFile,0,-4));
-              if ( $proj != null )
-                $projects[] = $proj;
+                foreach ($qgsFiles as $qgsFile) {
+                    $proj = null;
+                    if (in_array($qgsFile.'.cfg',$cfgFiles))
+                        try {
+                            $proj = lizmap::getProject($this->key.'~'.substr($qgsFile,0,-4));
+                            if ( $proj != null )
+                                $projects[] = $proj;
+                        }
+                        catch(UnknownLizmapProjectException $e) {
+                            jLog::logEx($e, 'error');
+                        }
+                }
             }
-          }
         }
         return $projects;
     }

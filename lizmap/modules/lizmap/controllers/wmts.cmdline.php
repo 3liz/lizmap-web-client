@@ -99,9 +99,16 @@ class wmtsCtrl extends jControllerCmdLine {
 
         $rep = $this->getResponse(); // cmdline response by default
 
-        $project = lizmap::getProject($this->param('repository').'~'.$this->param('project'));
-        // Project not found
-        if ( !$project ) {
+        $project = null;
+        try{
+            $project = lizmap::getProject($this->param('repository').'~'.$this->param('project'));
+            // Project not found
+            if ( !$project ) {
+                $rep->addContent("The project has not be found!\n");
+                return $rep;
+            }
+        }
+        catch(UnknownLizmapProjectException $e) {
             $rep->addContent("The project has not be found!\n");
             return $rep;
         }
@@ -160,9 +167,16 @@ class wmtsCtrl extends jControllerCmdLine {
 
         $rep = $this->getResponse(); // cmdline response by default
 
-        $project = lizmap::getProject($this->param('repository').'~'.$this->param('project'));
-        // Project not found
-        if ( !$project ) {
+        $project = null;
+        try{
+            $project = lizmap::getProject($this->param('repository').'~'.$this->param('project'));
+            // Project not found
+            if ( !$project ) {
+                $rep->addContent("The project has not be found!\n");
+                return $rep;
+            }
+        }
+        catch(UnknownLizmapProjectException $e) {
             $rep->addContent("The project has not be found!\n");
             return $rep;
         }

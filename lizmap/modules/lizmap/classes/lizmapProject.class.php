@@ -9,7 +9,6 @@
 * @license Mozilla Public License : http://www.mozilla.org/MPL/
 */
 
-
 class lizmapProject{
 
     // lizmapRepository
@@ -98,9 +97,16 @@ class lizmapProject{
         $this->key = $key;
         $this->repository = $rep;
 
+        $file = $rep->getPath().$key.'.qgs';
+
+        // Verifying if the files exist
+        if (!file_exists($file))
+            throw new UnknownLizmapProjectException('The QGIS project '.$file.' does not exist!');
+        if (!file_exists($file.'.cfg'))
+            throw new UnknownLizmapProjectException('The lizmap config '.$file.'.cfg does not exist!');
+
         // For the cache key, we use the full path of the project file
         // to avoid collision in the cache engine
-        $file = $rep->getPath().$key.'.qgs';
         $data = false;
         try {
             $data = jCache::get($file, 'qgisprojects');

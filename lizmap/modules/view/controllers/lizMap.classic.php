@@ -33,8 +33,6 @@ class lizMapCtrl extends jController {
     if ($this->param('theme')) {
       jApp::config()->theme = $this->param('theme');
     }
-    $rep = $this->getResponse('htmlmap');
-    $rep->addJSLink(jUrl::get('view~translate:index'));
     $ok = true;
 
     // Get the project
@@ -54,60 +52,66 @@ class lizMapCtrl extends jController {
       $lrep = lizmap::getRepository($repository);
     }
 
+    // default response
+    // redirection if error encountered
+    $rep = $this->getResponse('redirect');
+    $rep->action = 'view~default:index';
+
     if(!$lrep or !jAcl2::check('lizmap.repositories.view', $lrep->getKey())){
-      $rep = $this->getResponse('redirect');
-      $rep->action = 'view~default:index';
       jMessage::add(jLocale::get('view~default.repository.access.denied'), 'error');
       return $rep;
     }
 
     // We must redirect to default repository project list if no project given
     if(!$project){
-      $lproj = lizmap::getProject($lrep->getKey().'~'.$lser->defaultProject);
-      if (!$lproj) {
-        jMessage::add('The parameter project is mandatory !', 'error');
-        $ok = false;
-      } else
-        $project = $lser->defaultProject;
+        try {
+            $lproj = lizmap::getProject($lrep->getKey().'~'.$lser->defaultProject);
+            if (!$lproj) {
+                jMessage::add('The parameter project is mandatory!', 'error');
+                return $rep;
+            } else
+                $project = $lser->defaultProject;
+        }
+        catch(UnknownLizmapProjectException $e) {
+            jMessage::add('The parameter project is mandatory!', 'error');
+            return $rep;
+        }
     }
 
     // Get lizmapProject class
-    if($ok){
-      $lproj = lizmap::getProject($lrep->getKey().'~'.$project);
-      if(!$lproj){
+    try {
+        $lproj = lizmap::getProject($lrep->getKey().'~'.$project);
+        if(!$lproj){
+            jMessage::add('The lizmapProject '.strtoupper($project).' does not exist !', 'error');
+            return $rep;
+        }
+    }
+    catch(UnknownLizmapProjectException $e) {
         jMessage::add('The lizmapProject '.strtoupper($project).' does not exist !', 'error');
-        $ok = false;
-      }
+        return $rep;
     }
 
     // Redirect if no right to access the project
-    if ( !$lproj->checkAcl() ){
-      $rep = $this->getResponse('redirect');
-      $rep->action = 'view~default:index';
+    if (!$lproj->checkAcl()) {
       jMessage::add(jLocale::get('view~default.repository.access.denied'), 'error');
       return $rep;
     }
 
     $pOptions = $lproj->getOptions();
     // Redirect if project is hidden (lizmap plugin option)
-    if($ok and !$this->forceHiddenProjectVisible ){
+    if(!$this->forceHiddenProjectVisible ){
       if (
           property_exists($pOptions,'hideProject')
           && $pOptions->hideProject == 'True'
       ){
         jMessage::add(jLocale::get('view~default.project.access.denied'), 'error');
-        $ok = false;
+        return $rep;
       }
     }
 
-
-    // Redirect if error encountered
-    if(!$ok){
-      $rep = $this->getResponse('redirect');
-      $rep->params = array('repository'=>$lrep->getKey());
-      $rep->action = 'view~default:index';
-      return $rep;
-    }
+    // the html response
+    $rep = $this->getResponse('htmlmap');
+    $rep->addJSLink(jUrl::get('view~translate:index'));
 
     $this->repositoryKey = $lrep->getKey();
     $this->projectKey = $lproj->getKey();

@@ -30,24 +30,30 @@ class defaultCtrl extends jController {
 
     // only maps
     if($services->onlyMaps) {
-      $repository = lizmap::getRepository($services->defaultRepository);
-      if ($repository && jAcl2::check('lizmap.repositories.view', $repository->getKey())) {
-        $project = lizmap::getProject($repository->getKey().'~'.$services->defaultProject);
-        if ($project) {
-            // test redirection to an other controller
-            $items = jEvent::notify('mainviewGetMaps')->getResponse();
-            foreach ($items as $item) {
-                if($item->parentId == $repository->getKey() && $item->id == $services->defaultProject ) {
-                    $rep = $this->getResponse('redirectUrl');
-                    $rep->url = $item->url;
+        $repository = lizmap::getRepository($services->defaultRepository);
+        if ($repository && jAcl2::check('lizmap.repositories.view', $repository->getKey())) {
+            try {
+                $project = lizmap::getProject($repository->getKey().'~'.$services->defaultProject);
+                if ($project) {
+                    // test redirection to an other controller
+                    $items = jEvent::notify('mainviewGetMaps')->getResponse();
+                    foreach ($items as $item) {
+                        if($item->parentId == $repository->getKey() && $item->id == $services->defaultProject ) {
+                            $rep = $this->getResponse('redirectUrl');
+                            $rep->url = $item->url;
+                            return $rep;
+                        }
+                    }
+                    // redirection to default controller
+                    $rep = $this->getResponse('redirect');
+                    $rep->action = 'view~map:index';
                     return $rep;
                 }
             }
-            // redirection to default controller
-            $rep = $this->getResponse('redirect');
-            $rep->action = 'view~map:index';
-            return $rep;
-        }
+            catch(UnknownLizmapProjectException $e) {
+                jMessage::add('The \'only maps\' option is not well configured!', 'error');
+                jLog::logEx($e, 'error');
+            }
       }
     }
 

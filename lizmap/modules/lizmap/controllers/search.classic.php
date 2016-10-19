@@ -28,10 +28,18 @@ class searchCtrl extends jController {
     $project = $this->param('project');
     $repository = $this->param('repository');
     $lrep = lizmap::getRepository($repository);
-    $lproj = lizmap::getProject($repository.'~'.$project);
-    if ( !$lproj ){
-      jMessage::add('The lizmapProject '.strtoupper($project).' does not exist !', 'ProjectNotDefined');
-      return $rep;
+    $lproj = null;
+    try {
+        $lproj = lizmap::getProject($repository.'~'.$project);
+        if ( !$lproj ){
+            jMessage::add('The lizmapProject '.strtoupper($project).' does not exist !', 'ProjectNotDefined');
+            return $rep;
+        }
+    }
+    catch(UnknownLizmapProjectException $e) {
+        jLog::logEx($e, 'error');
+        jMessage::add('The lizmapProject '.strtoupper($project).' does not exist !', 'ProjectNotDefined');
+        return $rep;
     }
     if ( !$lproj->checkAcl() ){
       jMessage::add(jLocale::get('view~default.repository.access.denied'), 'AuthorizationRequired');
