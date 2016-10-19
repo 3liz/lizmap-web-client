@@ -2466,7 +2466,6 @@ var lizAttributeTable = function() {
                             var layerConfig = getLayerConfig[1];
                             var featureType = layerConfig.name;
                             var featureId = featureType + '.' + fid;
-                            //console.log(featureType+' has relations');
                             getAndDoFeature(featureType, fid, function(feat) {
 
                                 var wmsOptions = {
