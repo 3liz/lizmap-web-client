@@ -2454,16 +2454,20 @@ var lizAttributeTable = function() {
                         );
                         var getLayerConfig = lizMap.getLayerConfigById( layerId );
 
-                        if( aConfig && getLayerConfig && 'relations' in lizMap.config && layerId in lizMap.config.relations ) {
-                            console.log(layerId+' has relations');
+                        // Display related children objects
+
+                        if( aConfig && getLayerConfig
+                            && 'popupDisplayChildren' in getLayerConfig[1]
+                            && getLayerConfig[1]['popupDisplayChildren'] == 'True'
+                            && 'relations' in lizMap.config
+                            && layerId in lizMap.config.relations
+                        ) {
                             var relations = lizMap.config.relations[layerId];
-                            console.log(relations);
                             var layerConfig = getLayerConfig[1];
                             var featureType = layerConfig.name;
                             var featureId = featureType + '.' + fid;
-                            console.log(featureType+' has relations');
+                            //console.log(featureType+' has relations');
                             getAndDoFeature(featureType, fid, function(feat) {
-                                console.log(feat);
 
                                 var wmsOptions = {
                                      'LAYERS': featureType
