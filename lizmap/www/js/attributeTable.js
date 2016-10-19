@@ -2484,16 +2484,13 @@ var lizAttributeTable = function() {
                                 for ( var i=0, len=relations.length; i<len; i++ ){
                                     var r = relations[i];
                                     var rLayerId = r.referencingLayer;
-                                    console.log('relation: '+rLayerId);
                                     var rGetLayerConfig = lizMap.getLayerConfigById( rLayerId );
                                     if ( rGetLayerConfig ) {
                                         rConfigLayer = rGetLayerConfig[1];
-                                        console.log('relation: '+rConfigLayer.name+' has popup '+rConfigLayer.popup);
                                         if ( rConfigLayer.popup == 'True' ) {
                                             wmsOptions['LAYERS'] = rConfigLayer.name;
                                             wmsOptions['QUERY_LAYERS'] = rConfigLayer.name;
-                                            wmsOptions['FILTER'] = rConfigLayer.name+':"'+r.referencingField+'" = '+feat.properties[r.referencedField]+'';
-                                            console.log('relation: '+rConfigLayer.name+' filter '+wmsOptions['FILTER']);
+                                            wmsOptions['FILTER'] = rConfigLayer.name+':"'+r.referencingField+'" = \''+feat.properties[r.referencedField]+'\'';
                                             $.get(service, wmsOptions, function(data) {
                                                 var hasPopupContent = (!(!data || data == null || data == ''))
                                                 if ( hasPopupContent ) {
