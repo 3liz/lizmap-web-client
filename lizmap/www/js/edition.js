@@ -942,9 +942,14 @@ var lizEdition = function() {
                         .click(function(){
                             var fid = $(this).val().split('.').pop();
                             var layerId = $(this).val().replace( '.' + fid, '' );
-                            console.log(layerId+', '+fid);
+
                             // launch edition
                             lizMap.launchEdition( layerId, fid );
+
+                            // Remove map popup to avoid confusion
+                            if (lizMap.map.popups.length != 0)
+                                lizMap.map.removePopup( lizMap.map.popups[0] );
+
                             return false;
                         })
                         .hover(
