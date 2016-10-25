@@ -77,7 +77,7 @@ var lizMap = function() {
    */
   var externalBaselayersReplacement = {
     'osm': 'osm-mapnik',
-    'mapquest': 'osm-mapquest',
+    'osm-stamen-toner': 'osm-stamen-toner',
     'osm-cyclemap': 'osm-cyclemap',
     'gsat': 'google-satellite',
     'ghyb': 'google-hybrid',
@@ -98,7 +98,7 @@ var lizMap = function() {
    */
   var startupBaselayersReplacement = {
     'osm-mapnik': 'osm',
-    'osm-mapquest': 'mapquest',
+    'osm-stamen-toner': 'osm-stamen-toner',
     'osm-cyclemap': 'osm-cyclemap',
     'google-satellite': 'Google Satellite',
     'google-hybrid': 'Google Hybrid',
@@ -601,8 +601,8 @@ var lizMap = function() {
      if (
        (('osmMapnik' in config.options)
         && config.options.osmMapnik == 'True') ||
-       //(('osmMapquest' in config.options)
-       // && config.options.osmMapquest == 'True') ||
+       (('osmStamenToner' in config.options)
+        && config.options.osmStamenToner == 'True') ||
        (('osmCyclemap' in config.options)
         && config.options.osmCyclemap == 'True') ||
        (('googleStreets' in config.options)
@@ -667,7 +667,7 @@ var lizMap = function() {
 
          // Specify zoom level number
          if ((('osmMapnik' in config.options) && config.options.osmMapnik == 'True') ||
-             //(('osmMapquest' in config.options) && config.options.osmMapquest == 'True') ||
+             (('osmStamenToner' in config.options) && config.options.osmStamenToner == 'True') ||
              (('osmCyclemap' in config.options) && config.options.osmCyclemap == 'True') ||
              (('bingStreets' in config.options) && config.options.bingStreets == 'True' && ('bingKey' in config.options)) ||
              (('bingSatellite' in config.options) && config.options.bingSatellite == 'True' && ('bingKey' in config.options)) ||
@@ -5778,8 +5778,8 @@ lizMap.events.on({
       if (
     (('osmMapnik' in evt.config.options)
     && evt.config.options.osmMapnik == 'True') ||
-    //(('osmMapquest' in evt.config.options)
-    // && evt.config.options.osmMapquest == 'True') ||
+    (('osmStamenToner' in evt.config.options)
+     && evt.config.options.osmStamenToner == 'True') ||
     (('osmCyclemap' in evt.config.options)
      && evt.config.options.osmCyclemap == 'True') ||
     (('googleStreets' in evt.config.options)
@@ -5864,8 +5864,8 @@ lizMap.events.on({
         evt.config.layers['osm'] = osmCfg;
         evt.baselayers.push(osm);
       }
-      /*
-      if (('osmMapquest' in evt.config.options) && evt.config.options.osmMapquest == 'True') {
+      
+      if (('osmStamenToner' in evt.config.options) && evt.config.options.osmStamenToner == 'True') {
         evt.map.allOverlays = false;
         var options = {
           zoomOffset: 0,
@@ -5880,22 +5880,22 @@ lizMap.events.on({
           options.numZoomLevels = lOptions.numZoomLevels;
         else
           options.numZoomLevels = options.numZoomLevels - lOptions.zoomOffset;
-        var mapquest = new OpenLayers.Layer.OSM('mapquest',
-            ["http://otile1.mqcdn.com/tiles/1.0.0/osm/${z}/${x}/${y}.png",
-            "http://otile2.mqcdn.com/tiles/1.0.0/osm/${z}/${x}/${y}.png",
-            "http://otile3.mqcdn.com/tiles/1.0.0/osm/${z}/${x}/${y}.png",
-            "http://otile4.mqcdn.com/tiles/1.0.0/osm/${z}/${x}/${y}.png"]
+        var stamenToner = new OpenLayers.Layer.OSM('osm-stamen-toner',
+            ["http://a.tile.stamen.com/toner-lite/${z}/${x}/${y}.png",
+            "http://b.tile.stamen.com/toner-lite/${z}/${x}/${y}.png",
+            "http://c.tile.stamen.com/toner-lite/${z}/${x}/${y}.png",
+            "http://d.tile.stamen.com/toner-lite/${z}/${x}/${y}.png"]
             ,options
             );
-        mapquest.maxExtent = maxExtent;
-        var mapquestCfg = {
-          "name":"mapquest"
-            ,"title":"MapQuest OSM"
+        stamenToner.maxExtent = maxExtent;
+        var stamenTonerCfg = {
+          "name":"osm-stamen-toner"
+            ,"title":"OSM Stamen Toner"
         };
-        evt.config.layers['mapquest'] = mapquestCfg;
-        evt.baselayers.push(mapquest);
+        evt.config.layers['osm-stamen-toner'] = stamenTonerCfg;
+        evt.baselayers.push(stamenToner);
       }
-      * */
+
       if (('osmCyclemap' in evt.config.options) && evt.config.options.osmCyclemap == 'True') {
         evt.map.allOverlays = false;
         var options = {

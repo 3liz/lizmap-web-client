@@ -1,6 +1,9 @@
 <GDAL_WMS>
     <Service name="TMS">
-        <ServerUrl>	http://otile2.mqcdn.com/tiles/1.0.0/osm/${z}/${x}/${y}.png</ServerUrl>
+        <ServerUrl>http://a.tile.stamen.com/toner-lite/${z}/${x}/${y}.png</ServerUrl>
+        <ServerUrl>http://b.tile.stamen.com/toner-lite/${z}/${x}/${y}.png</ServerUrl>
+        <ServerUrl>http://c.tile.stamen.com/toner-lite/${z}/${x}/${y}.png</ServerUrl>
+        <ServerUrl>http://d.tile.stamen.com/toner-lite/${z}/${x}/${y}.png</ServerUrl>
     </Service>
     <DataWindow>
         <UpperLeftX>-20037508.34</UpperLeftX>

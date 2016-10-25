@@ -1,5 +1,5 @@
 <!DOCTYPE qgis PUBLIC 'http://mrcc.com/qgis.dtd' 'SYSTEM'>
-<qgis projectname="Montpellier - Transports" version="2.14.2-Essen">
+<qgis projectname="Montpellier - Transports" version="2.14.7-Essen">
   <title>Montpellier - Transports</title>
   <layer-tree-group expanded="1" checked="Qt::PartiallyChecked" name="">
     <customproperties/>
@@ -62,7 +62,7 @@
     <layer-tree-layer expanded="1" checked="Qt::Checked" id="SousQuartiers20160121124316563" name="SousQuartiers">
       <customproperties/>
     </layer-tree-layer>
-    <layer-tree-layer expanded="0" checked="Qt::Checked" id="VilleMTP_MTP_Quartiers_2011_432620130116112610876" name="Quartiers">
+    <layer-tree-layer expanded="0" checked="Qt::Unchecked" id="VilleMTP_MTP_Quartiers_2011_432620130116112610876" name="Quartiers">
       <customproperties/>
     </layer-tree-layer>
     <layer-tree-group expanded="1" checked="Qt::Unchecked" name="Overview">
@@ -71,11 +71,11 @@
         <customproperties/>
       </layer-tree-layer>
     </layer-tree-group>
-    <layer-tree-group expanded="1" checked="Qt::Unchecked" name="Hidden">
+    <layer-tree-group expanded="1" checked="Qt::PartiallyChecked" name="Hidden">
       <customproperties/>
-      <layer-tree-group expanded="1" checked="Qt::Unchecked" name="osm-mapquest">
+      <layer-tree-group expanded="1" checked="Qt::Checked" name="osm-stamen-toner">
         <customproperties/>
-        <layer-tree-layer expanded="0" checked="Qt::Unchecked" id="frmt_wms_openstreetmap_mapquest_tms20140610162911446" name="frmt_wms_openstreetmap_mapquest_tms">
+        <layer-tree-layer expanded="0" checked="Qt::Checked" id="frmt_wms_openstreetmap_stamen_toner_tms20140610162911446" name="frmt_wms_openstreetmap_stamen_toner_tms">
           <customproperties/>
         </layer-tree-layer>
       </layer-tree-group>
@@ -111,57 +111,37 @@
     </relation>
   </relations>
   <mapcanvas>
-    <units>degrees</units>
+    <units>meters</units>
     <extent>
-      <xmin>3.80532457219331777</xmin>
-      <ymin>43.56457539669621326</ymin>
-      <xmax>3.94824162667439316</xmax>
-      <ymax>43.65667242105485002</ymax>
+      <xmin>417006.61373760335845873</xmin>
+      <ymin>5395601.84335885662585497</ymin>
+      <xmax>447158.04891100589884445</xmax>
+      <ymax>5414153.49234960880130529</ymax>
     </extent>
     <rotation>0</rotation>
     <projections>1</projections>
     <destinationsrs>
       <spatialrefsys>
-        <proj4>+proj=longlat +datum=WGS84 +no_defs</proj4>
-        <srsid>3452</srsid>
-        <srid>4326</srid>
-        <authid>EPSG:4326</authid>
-        <description>WGS 84</description>
-        <projectionacronym>longlat</projectionacronym>
+        <proj4>+proj=merc +a=6378137 +b=6378137 +lat_ts=0.0 +lon_0=0.0 +x_0=0.0 +y_0=0 +k=1.0 +units=m +nadgrids=@null +wktext  +no_defs</proj4>
+        <srsid>3857</srsid>
+        <srid>3857</srid>
+        <authid>EPSG:3857</authid>
+        <description>WGS 84 / Pseudo Mercator</description>
+        <projectionacronym>merc</projectionacronym>
         <ellipsoidacronym>WGS84</ellipsoidacronym>
-        <geographicflag>true</geographicflag>
+        <geographicflag>false</geographicflag>
       </spatialrefsys>
     </destinationsrs>
     <rendermaptile>0</rendermaptile>
     <layer_coordinate_transform_info>
-      <layer_coordinate_transform destAuthId="EPSG:4326" srcAuthId="EPSG:4326" srcDatumTransform="-1" destDatumTransform="-1" layerid="amenity_public_building20150420095954276"/>
-      <layer_coordinate_transform destAuthId="EPSG:4326" srcAuthId="EPSG:3857" srcDatumTransform="-1" destDatumTransform="-1" layerid="publicbuildings20150420100958543"/>
-      <layer_coordinate_transform destAuthId="EPSG:4326" srcAuthId="EPSG:4326" srcDatumTransform="-1" destDatumTransform="-1" layerid="Tram_lines20150709150747773"/>
-      <layer_coordinate_transform destAuthId="EPSG:4326" srcAuthId="EPSG:3857" srcDatumTransform="-1" destDatumTransform="-1" layerid="frmt_wms_openstreetmap_mapquest_tms20140610162911446"/>
-      <layer_coordinate_transform destAuthId="EPSG:4326" srcAuthId="EPSG:4326" srcDatumTransform="-1" destDatumTransform="-1" layerid="edition_point20130118171631518"/>
-      <layer_coordinate_transform destAuthId="EPSG:4326" srcAuthId="EPSG:4326" srcDatumTransform="-1" destDatumTransform="-1" layerid="tram_stops20110923123319267"/>
-      <layer_coordinate_transform destAuthId="EPSG:4326" srcAuthId="EPSG:4326" srcDatumTransform="-1" destDatumTransform="-1" layerid="edition_line20130409161630329"/>
-      <layer_coordinate_transform destAuthId="EPSG:4326" srcAuthId="EPSG:3857" srcDatumTransform="-1" destDatumTransform="-1" layerid="OSM_Mapnik20150420100141766"/>
-      <layer_coordinate_transform destAuthId="EPSG:4326" srcAuthId="EPSG:4326" srcDatumTransform="-1" destDatumTransform="-1" layerid="bus20121102133611751"/>
-      <layer_coordinate_transform destAuthId="EPSG:4326" srcAuthId="EPSG:4326" srcDatumTransform="-1" destDatumTransform="-1" layerid="tramstop20150328114203878"/>
-      <layer_coordinate_transform destAuthId="EPSG:4326" srcAuthId="EPSG:4326" srcDatumTransform="-1" destDatumTransform="-1" layerid="tram20150311115319564"/>
-      <layer_coordinate_transform destAuthId="EPSG:4326" srcAuthId="EPSG:4326" srcDatumTransform="-1" destDatumTransform="-1" layerid="bus_stops20121106170806413"/>
-      <layer_coordinate_transform destAuthId="EPSG:4326" srcAuthId="EPSG:4326" srcDatumTransform="-1" destDatumTransform="-1" layerid="tramway20150328114206278"/>
-      <layer_coordinate_transform destAuthId="EPSG:4326" srcAuthId="EPSG:4326" srcDatumTransform="-1" destDatumTransform="-1" layerid="route_tram20150311113518254"/>
-      <layer_coordinate_transform destAuthId="EPSG:4326" srcAuthId="EPSG:4326" srcDatumTransform="-1" destDatumTransform="-1" layerid="tram20121031171456234"/>
-      <layer_coordinate_transform destAuthId="EPSG:4326" srcAuthId="EPSG:2154" srcDatumTransform="-1" destDatumTransform="-1" layerid="quartiers20160122141556340"/>
-      <layer_coordinate_transform destAuthId="EPSG:4326" srcAuthId="EPSG:3857" srcDatumTransform="-1" destDatumTransform="-1" layerid="frmt_wms_openstreetmap_mapnik_tms20140610162910636"/>
-      <layer_coordinate_transform destAuthId="EPSG:4326" srcAuthId="EPSG:3857" srcDatumTransform="-1" destDatumTransform="-1" layerid="Photographies_aériennes20140610155023520"/>
-      <layer_coordinate_transform destAuthId="EPSG:4326" srcAuthId="EPSG:4326" srcDatumTransform="-1" destDatumTransform="-1" layerid="tram_stops20150311115247810"/>
-      <layer_coordinate_transform destAuthId="EPSG:4326" srcAuthId="EPSG:4326" srcDatumTransform="-1" destDatumTransform="-1" layerid="tram20150311114837414"/>
-      <layer_coordinate_transform destAuthId="EPSG:4326" srcAuthId="EPSG:4326" srcDatumTransform="-1" destDatumTransform="-1" layerid="amenity_public_building20150420095954062"/>
-      <layer_coordinate_transform destAuthId="EPSG:4326" srcAuthId="EPSG:2154" srcDatumTransform="-1" destDatumTransform="-1" layerid="VilleMTP_MTP_SousQuartiers_201120130929113137811"/>
-      <layer_coordinate_transform destAuthId="EPSG:4326" srcAuthId="EPSG:4326" srcDatumTransform="-1" destDatumTransform="-1" layerid="VilleMTP_MTP_Quartiers_2011_432620130116112610876"/>
-      <layer_coordinate_transform destAuthId="EPSG:4326" srcAuthId="EPSG:4326" srcDatumTransform="-1" destDatumTransform="-1" layerid="route_tram20150311113518037"/>
-      <layer_coordinate_transform destAuthId="EPSG:4326" srcAuthId="EPSG:3857" srcDatumTransform="-1" destDatumTransform="-1" layerid="publicbuildings20150420094812447"/>
-      <layer_coordinate_transform destAuthId="EPSG:4326" srcAuthId="EPSG:2154" srcDatumTransform="-1" destDatumTransform="-1" layerid="SousQuartiers20160121124316563"/>
-      <layer_coordinate_transform destAuthId="EPSG:4326" srcAuthId="EPSG:4326" srcDatumTransform="-1" destDatumTransform="-1" layerid="route_tram20150311113517859"/>
-      <layer_coordinate_transform destAuthId="EPSG:4326" srcAuthId="EPSG:4326" srcDatumTransform="-1" destDatumTransform="-1" layerid="edition_polygon20130409114333776"/>
+      <layer_coordinate_transform destAuthId="EPSG:3857" srcAuthId="EPSG:4326" srcDatumTransform="-1" destDatumTransform="-1" layerid="tramstop20150328114203878"/>
+      <layer_coordinate_transform destAuthId="EPSG:3857" srcAuthId="EPSG:4326" srcDatumTransform="-1" destDatumTransform="-1" layerid="bus_stops20121106170806413"/>
+      <layer_coordinate_transform destAuthId="EPSG:3857" srcAuthId="EPSG:4326" srcDatumTransform="-1" destDatumTransform="-1" layerid="bus20121102133611751"/>
+      <layer_coordinate_transform destAuthId="EPSG:3857" srcAuthId="EPSG:2154" srcDatumTransform="-1" destDatumTransform="-1" layerid="SousQuartiers20160121124316563"/>
+      <layer_coordinate_transform destAuthId="EPSG:3857" srcAuthId="EPSG:4326" srcDatumTransform="-1" destDatumTransform="-1" layerid="edition_point20130118171631518"/>
+      <layer_coordinate_transform destAuthId="EPSG:3857" srcAuthId="EPSG:4326" srcDatumTransform="-1" destDatumTransform="-1" layerid="tramway20150328114206278"/>
+      <layer_coordinate_transform destAuthId="EPSG:3857" srcAuthId="EPSG:3857" srcDatumTransform="-1" destDatumTransform="-1" layerid="publicbuildings20150420100958543"/>
+      <layer_coordinate_transform destAuthId="EPSG:3857" srcAuthId="EPSG:3857" srcDatumTransform="-1" destDatumTransform="-1" layerid="frmt_wms_openstreetmap_stamen_toner_tms20140610162911446"/>
     </layer_coordinate_transform_info>
   </mapcanvas>
   <layer-tree-canvas>
@@ -173,7 +153,7 @@
       <item>bus20121102133611751</item>
       <item>VilleMTP_MTP_Quartiers_2011_432620130116112610876</item>
       <item>VilleMTP_MTP_Quartiers_2011_432620130116112351546</item>
-      <item>frmt_wms_openstreetmap_mapquest_tms20140610162911446</item>
+      <item>frmt_wms_openstreetmap_stamen_toner_tms20140610162911446</item>
       <item>frmt_wms_openstreetmap_mapnik_tms20140610162910636</item>
       <item>tramstop20150328114203878</item>
       <item>tramway20150328114206278</item>
@@ -267,9 +247,9 @@
         <legendlayerfile isInOverview="0" layerid="SousQuartiers20160121124316563" visible="1"/>
       </filegroup>
     </legendlayer>
-    <legendlayer drawingOrder="-1" open="false" checked="Qt::Checked" name="Quartiers" showFeatureCount="0">
+    <legendlayer drawingOrder="-1" open="false" checked="Qt::Unchecked" name="Quartiers" showFeatureCount="0">
       <filegroup open="false" hidden="false">
-        <legendlayerfile isInOverview="0" layerid="VilleMTP_MTP_Quartiers_2011_432620130116112610876" visible="1"/>
+        <legendlayerfile isInOverview="0" layerid="VilleMTP_MTP_Quartiers_2011_432620130116112610876" visible="0"/>
       </filegroup>
     </legendlayer>
     <legendgroup open="true" checked="Qt::Unchecked" name="Overview">
@@ -279,11 +259,11 @@
         </filegroup>
       </legendlayer>
     </legendgroup>
-    <legendgroup open="true" checked="Qt::Unchecked" name="Hidden">
-      <legendgroup open="true" checked="Qt::Unchecked" name="osm-mapquest">
-        <legendlayer drawingOrder="-1" open="false" checked="Qt::Unchecked" name="frmt_wms_openstreetmap_mapquest_tms" showFeatureCount="0">
+    <legendgroup open="true" checked="Qt::PartiallyChecked" name="Hidden">
+      <legendgroup open="true" checked="Qt::Checked" name="osm-stamen-toner">
+        <legendlayer drawingOrder="-1" open="false" checked="Qt::Checked" name="frmt_wms_openstreetmap_stamen_toner_tms" showFeatureCount="0">
           <filegroup open="false" hidden="false">
-            <legendlayerfile isInOverview="0" layerid="frmt_wms_openstreetmap_mapquest_tms20140610162911446" visible="0"/>
+            <legendlayerfile isInOverview="0" layerid="frmt_wms_openstreetmap_stamen_toner_tms20140610162911446" visible="1"/>
           </filegroup>
         </legendlayer>
       </legendgroup>
@@ -313,7 +293,7 @@
           <prop k="style" v="solid"/>
         </layer>
       </symbol>
-      <ComposerLegend symbolWidth="7" title="Legend" boxSpace="2" rasterBorderWidth="0" splitLayer="0" equalColumnWidth="0" map="0" titleAlignment="1" rasterBorder="1" symbolHeight="4" wmsLegendHeight="25" wrapChar="" fontColor="#000000" columnSpace="2" wmsLegendWidth="50" columnCount="1" rasterBorderColor="0,0,0,255">
+      <ComposerLegend symbolWidth="7" title="Legend" rasterBorderWidth="0" titleAlignment="1" map="0" wmsLegendWidth="50" rasterBorderColor="0,0,0,255" wrapChar="" fontColor="#000000" columnCount="1" wmsLegendHeight="25" columnSpace="2" symbolHeight="4" equalColumnWidth="0" resizeToContents="1" splitLayer="0" boxSpace="2" rasterBorder="1">
         <styles>
           <style marginBottom="2" name="title">
             <styleFont description="Ubuntu,16,-1,5,50,0,0,0,0,0" style=""/>
@@ -358,7 +338,7 @@
               <property key="legend/title-style" value="subgroup"/>
             </customproperties>
           </layer-tree-layer>
-          <layer-tree-layer expanded="1" checked="Qt::Checked" id="frmt_wms_openstreetmap_mapquest_tms20140610162911446" name="frmt_wms_openstreetmap_mapquest_tms">
+          <layer-tree-layer expanded="1" checked="Qt::Checked" id="frmt_wms_openstreetmap_stamen_toner_tms20140610162911446" name="frmt_wms_openstreetmap_stamen_toner_tms">
             <customproperties>
               <property key="legend/title-style" value="subgroup"/>
             </customproperties>
@@ -605,7 +585,7 @@
           <customproperties/>
         </ComposerItem>
       </ComposerMap>
-      <ComposerLegend symbolWidth="6" title="Légende" boxSpace="2" rasterBorderWidth="0" splitLayer="1" equalColumnWidth="1" map="0" titleAlignment="1" rasterBorder="1" symbolHeight="3" wmsLegendHeight="25" wrapChar="" fontColor="#000000" columnSpace="2" wmsLegendWidth="50" columnCount="1" rasterBorderColor="0,0,0,255">
+      <ComposerLegend symbolWidth="6" title="Légende" rasterBorderWidth="0" titleAlignment="1" map="0" wmsLegendWidth="50" rasterBorderColor="0,0,0,255" wrapChar="" fontColor="#000000" columnCount="1" wmsLegendHeight="25" columnSpace="2" symbolHeight="3" equalColumnWidth="1" resizeToContents="1" splitLayer="1" boxSpace="2" rasterBorder="1">
         <styles>
           <style marginBottom="2" name="title">
             <styleFont description="Ubuntu,14,-1,5,50,0,0,0,0,0" style=""/>
@@ -745,6 +725,12 @@
   </Composer>
   <projectlayers>
     <maplayer minimumScale="-4.65661e-10" maximumScale="1e+08" simplifyDrawingHints="1" minLabelScale="0" maxLabelScale="1e+08" simplifyDrawingTol="1" geometry="Polygon" simplifyMaxScale="1" type="vector" hasScaleBasedVisibilityFlag="0" simplifyLocal="1" scaleBasedLabelVisibilityFlag="0">
+      <extent>
+        <xmin>765145.88230000005569309</xmin>
+        <ymin>6274561.22229999955743551</ymin>
+        <xmax>776031.66700000001583248</xmax>
+        <ymax>6284189.52060000039637089</ymax>
+      </extent>
       <id>SousQuartiers20160121124316563</id>
       <datasource>./data/vector/VilleMTP_MTP_SousQuartiers_2011.shp</datasource>
       <keywordList>
@@ -1320,6 +1306,12 @@ def my_form_open(dialog, layer, feature):
       </conditionalstyles>
     </maplayer>
     <maplayer minimumScale="0" maximumScale="1e+08" simplifyDrawingHints="1" minLabelScale="1" maxLabelScale="1e+08" simplifyDrawingTol="1" geometry="Polygon" simplifyMaxScale="1" type="vector" hasScaleBasedVisibilityFlag="0" simplifyLocal="1" scaleBasedLabelVisibilityFlag="0">
+      <extent>
+        <xmin>3.80707036695971279</xmin>
+        <ymin>43.56670409545019851</ymin>
+        <xmax>3.94133068060567293</xmax>
+        <ymax>43.65337122449288643</ymax>
+      </extent>
       <id>VilleMTP_MTP_Quartiers_2011_432620130116112610876</id>
       <datasource>./data/vector/VilleMTP_MTP_Quartiers_2011_4326.shp</datasource>
       <keywordList>
@@ -1747,6 +1739,12 @@ def my_form_open(dialog, layer, feature):
       </conditionalstyles>
     </maplayer>
     <maplayer minimumScale="-4.65661e-10" maximumScale="40001" simplifyDrawingHints="1" minLabelScale="1" maxLabelScale="1e+08" simplifyDrawingTol="1" geometry="Line" simplifyMaxScale="1" type="vector" hasScaleBasedVisibilityFlag="1" simplifyLocal="1" scaleBasedLabelVisibilityFlag="0">
+      <extent>
+        <xmin>3.69812299999999983</xmin>
+        <ymin>43.52649999999999864</ymin>
+        <xmax>4.08123900000000006</xmax>
+        <ymax>43.76157899999999756</ymax>
+      </extent>
       <id>bus20121102133611751</id>
       <datasource>./data/vector/bus.shp</datasource>
       <title>Bus lines</title>
@@ -2654,6 +2652,12 @@ def my_form_open(dialog, layer, feature):
       </conditionalstyles>
     </maplayer>
     <maplayer minimumScale="0" maximumScale="15000" simplifyDrawingHints="0" minLabelScale="1" maxLabelScale="1e+08" simplifyDrawingTol="1" geometry="Point" simplifyMaxScale="1" type="vector" hasScaleBasedVisibilityFlag="1" simplifyLocal="1" scaleBasedLabelVisibilityFlag="0">
+      <extent>
+        <xmin>3.55325999999999986</xmin>
+        <ymin>43.52692799999999806</ymin>
+        <xmax>4.03913100000000025</xmax>
+        <ymax>43.75234100000000126</ymax>
+      </extent>
       <id>bus_stops20121106170806413</id>
       <datasource>./data/vector/bus_stops.shp</datasource>
       <keywordList>
@@ -3172,6 +3176,12 @@ def my_form_open(dialog, layer, feature):
       </conditionalstyles>
     </maplayer>
     <maplayer minimumScale="-4.65661e-10" maximumScale="1e+08" simplifyDrawingHints="0" minLabelScale="1" maxLabelScale="1e+08" simplifyDrawingTol="1" geometry="Point" simplifyMaxScale="1" type="vector" hasScaleBasedVisibilityFlag="0" simplifyLocal="1" scaleBasedLabelVisibilityFlag="0">
+      <extent>
+        <xmin>3.84541513302194948</xmin>
+        <ymin>43.59438300000000055</ymin>
+        <xmax>3.8956343529661015</xmax>
+        <ymax>43.64203625857223301</ymax>
+      </extent>
       <id>edition_point20130118171631518</id>
       <datasource>dbname='./edition/edition_db.sqlite' table="edition_point" (geometry) sql=</datasource>
       <title>Points of interest</title>
@@ -3814,6 +3824,12 @@ def my_form_open(dialog, layer, feature):
       </conditionalstyles>
     </maplayer>
     <maplayer minimumScale="0" maximumScale="1e+08" type="raster" hasScaleBasedVisibilityFlag="0">
+      <extent>
+        <xmin>-20037508.33999999985098839</xmin>
+        <ymin>-20037508.33999999985098839</ymin>
+        <xmax>20037508.33999999985098839</xmax>
+        <ymax>20037508.33999999985098839</ymax>
+      </extent>
       <id>frmt_wms_openstreetmap_mapnik_tms20140610162910636</id>
       <datasource>./data/raster/frmt_wms_openstreetmap_mapnik_tms.xml</datasource>
       <keywordList>
@@ -3855,12 +3871,18 @@ def my_form_open(dialog, layer, feature):
       <blendMode>0</blendMode>
     </maplayer>
     <maplayer minimumScale="0" maximumScale="1e+08" type="raster" hasScaleBasedVisibilityFlag="0">
-      <id>frmt_wms_openstreetmap_mapquest_tms20140610162911446</id>
-      <datasource>./data/raster/frmt_wms_openstreetmap_mapquest_tms.xml</datasource>
+      <extent>
+        <xmin>-20037508.33999999985098839</xmin>
+        <ymin>-20037508.33999999985098839</ymin>
+        <xmax>20037508.33999999985098839</xmax>
+        <ymax>20037508.33999999985098839</ymax>
+      </extent>
+      <id>frmt_wms_openstreetmap_stamen_toner_tms20140610162911446</id>
+      <datasource>./data/raster/frmt_wms_openstreetmap_stamen_toner_tms.xml</datasource>
       <keywordList>
         <value></value>
       </keywordList>
-      <layername>frmt_wms_openstreetmap_mapquest_tms</layername>
+      <layername>frmt_wms_openstreetmap_stamen_toner_tms</layername>
       <srs>
         <spatialrefsys>
           <proj4>+proj=merc +a=6378137 +b=6378137 +lat_ts=0.0 +lon_0=0.0 +x_0=0.0 +y_0=0 +k=1.0 +units=m +nadgrids=@null +wktext  +no_defs</proj4>
@@ -3984,6 +4006,12 @@ def my_form_open(dialog, layer, feature):
       </conditionalstyles>
     </maplayer>
     <maplayer minimumScale="-4.65661e-10" maximumScale="1e+08" simplifyDrawingHints="0" minLabelScale="0" maxLabelScale="1e+08" simplifyDrawingTol="1" geometry="Point" simplifyMaxScale="1" type="vector" hasScaleBasedVisibilityFlag="0" simplifyLocal="1" scaleBasedLabelVisibilityFlag="0">
+      <extent>
+        <xmin>431114.8420873464201577</xmin>
+        <ymin>5403527.32227708306163549</ymin>
+        <xmax>433783.149820341845043</xmax>
+        <ymax>5406274.45135516300797462</ymax>
+      </extent>
       <id>publicbuildings20150420100958543</id>
       <datasource>dbname='./edition/transport.sqlite' table="publicbuildings" (geom) sql=</datasource>
       <title>public buildings</title>
@@ -4422,6 +4450,12 @@ def my_form_open(dialog, layer, feature):
       </conditionalstyles>
     </maplayer>
     <maplayer minimumScale="0" maximumScale="1e+08" simplifyDrawingHints="0" minLabelScale="1" maxLabelScale="1e+08" simplifyDrawingTol="1" geometry="Point" simplifyMaxScale="1" type="vector" hasScaleBasedVisibilityFlag="0" simplifyLocal="1" scaleBasedLabelVisibilityFlag="0">
+      <extent>
+        <xmin>3.81010559999999998</xmin>
+        <ymin>43.55794230000000056</ymin>
+        <xmax>3.96364740000000015</xmax>
+        <ymax>43.65455959999999891</ymax>
+      </extent>
       <id>tramstop20150328114203878</id>
       <datasource>dbname='./edition/transport.sqlite' table="tramstop" (geometry) sql=</datasource>
       <title>Tram stops</title>
@@ -4733,6 +4767,12 @@ def my_form_open(dialog, layer, feature):
       </conditionalstyles>
     </maplayer>
     <maplayer minimumScale="-4.65661e-10" maximumScale="1e+08" simplifyDrawingHints="1" minLabelScale="1" maxLabelScale="1e+08" simplifyDrawingTol="1" geometry="Line" simplifyMaxScale="1" type="vector" hasScaleBasedVisibilityFlag="0" simplifyLocal="1" scaleBasedLabelVisibilityFlag="0">
+      <extent>
+        <xmin>3.8097468000000001</xmin>
+        <ymin>43.55760910000000052</ymin>
+        <xmax>3.96392439999999979</xmax>
+        <ymax>43.65461210000000136</ymax>
+      </extent>
       <id>tramway20150328114206278</id>
       <datasource>dbname='./edition/transport.sqlite' table="tramway" (geometry) sql=</datasource>
       <title>Tram lines</title>
@@ -5410,6 +5450,7 @@ def my_form_open(dialog, layer, feature):
       <SingleCategoryDiagramRenderer diagramType="Pie">
         <DiagramCategory penColor="#000000" labelPlacementMethod="XHeight" penWidth="0" diagramOrientation="Up" minimumSize="0" barWidth="5" penAlpha="255" maxScaleDenominator="1e+08" backgroundColor="#ffffff" transparency="0" width="15" scaleDependency="Area" backgroundAlpha="255" angleOffset="1440" scaleBasedVisibility="0" enabled="0" height="15" sizeType="MM" minScaleDenominator="-4.65661e-10">
           <fontProperties description="Ubuntu,11,-1,5,50,0,0,0,0,0" style=""/>
+          <attribute field="" color="#000000" label=""/>
         </DiagramCategory>
       </SingleCategoryDiagramRenderer>
       <DiagramLayerSettings yPosColumn="-1" linePlacementFlags="10" placement="2" dist="0" xPosColumn="-1" priority="0" obstacle="0" zIndex="0" showAll="1"/>
@@ -5529,24 +5570,24 @@ def my_form_open(dialog, layer, feature):
   <properties>
     <WMSUrl type="QString"></WMSUrl>
     <SpatialRefSys>
-      <ProjectCRSProj4String type="QString">+proj=longlat +datum=WGS84 +no_defs</ProjectCRSProj4String>
-      <ProjectCrs type="QString">EPSG:4326</ProjectCrs>
-      <ProjectCRSID type="int">3452</ProjectCRSID>
+      <ProjectCRSProj4String type="QString">+proj=merc +a=6378137 +b=6378137 +lat_ts=0.0 +lon_0=0.0 +x_0=0.0 +y_0=0 +k=1.0 +units=m +nadgrids=@null +wktext  +no_defs</ProjectCRSProj4String>
+      <ProjectCrs type="QString">EPSG:3857</ProjectCrs>
+      <ProjectCRSID type="int">3857</ProjectCRSID>
       <ProjectionsEnabled type="int">1</ProjectionsEnabled>
     </SpatialRefSys>
     <Measurement>
       <DistanceUnits type="QString">meters</DistanceUnits>
       <AreaUnits type="QString">m2</AreaUnits>
     </Measurement>
-    <WMSExtent type="QStringList">
-      <value>3.78300108</value>
-      <value>43.54854151</value>
-      <value>3.97065725</value>
-      <value>43.67333749</value>
-    </WMSExtent>
     <Legend>
       <filterByMap type="bool">false</filterByMap>
     </Legend>
+    <WMSExtent type="QStringList">
+      <value>417006.61373760335845873</value>
+      <value>5394910.34090302512049675</value>
+      <value>447158.04891100589884445</value>
+      <value>5414844.99480544030666351</value>
+    </WMSExtent>
     <DefaultStyles>
       <Fill type="QString"></Fill>
       <Line type="QString"></Line>
@@ -5560,14 +5601,14 @@ def my_form_open(dialog, layer, feature):
     <WMSImageQuality type="int">90</WMSImageQuality>
     <WFSLayersPrecision>
       <donnes_sociodemo_sous_quartiers20160121144525075 type="int">1</donnes_sociodemo_sous_quartiers20160121144525075>
-      <publicbuildings20150420100958543 type="int">8</publicbuildings20150420100958543>
       <jointure_tram_stop20150328114216806 type="int">8</jointure_tram_stop20150328114216806>
+      <publicbuildings20150420100958543 type="int">8</publicbuildings20150420100958543>
       <edition_point20130118171631518 type="int">8</edition_point20130118171631518>
       <edition_line20130409161630329 type="int">8</edition_line20130409161630329>
       <bus20121102133611751 type="int">8</bus20121102133611751>
-      <tramstop20150328114203878 type="int">8</tramstop20150328114203878>
       <tram20150311115319564 type="int">8</tram20150311115319564>
       <tram_stop_work20150416102656130 type="int">8</tram_stop_work20150416102656130>
+      <tramstop20150328114203878 type="int">8</tramstop20150328114203878>
       <bus_stops20121106170806413 type="int">8</bus_stops20121106170806413>
       <tramway20150328114206278 type="int">8</tramway20150328114206278>
       <tramway_ref20150612171109044 type="int">1</tramway_ref20150612171109044>
@@ -5602,8 +5643,8 @@ def my_form_open(dialog, layer, feature):
     <WMSOnlineResource type="QString">http://www.3liz.com/lizmap.html</WMSOnlineResource>
     <WMSPrecision type="QString">8</WMSPrecision>
     <WMSCrsList type="QStringList">
+      <value>EPSG:2154</value>
       <value>EPSG:4326</value>
-      <value>EPSG:900913</value>
       <value>EPSG:3857</value>
     </WMSCrsList>
     <Digitizing>
@@ -5719,6 +5760,11 @@ def my_form_open(dialog, layer, feature):
       <timeLayerList type="QStringList"/>
       <playBackwards type="int">0</playBackwards>
     </TimeManager>
+    <Measure>
+      <Ellipsoid type="QString">WGS84</Ellipsoid>
+    </Measure>
+    <WMSServiceAbstract type="QString">Demo project with bus and tramway lines in Montpellier, France.
+Data is licensed under ODbl, OpenStreetMap contributors</WMSServiceAbstract>
     <WFSLayers type="QStringList">
       <value>SousQuartiers20160121124316563</value>
       <value>VilleMTP_MTP_Quartiers_2011_432620130116112610876</value>
@@ -5734,11 +5780,6 @@ def my_form_open(dialog, layer, feature):
       <value>tramway20150328114206278</value>
       <value>tramway_ref20150612171109044</value>
     </WFSLayers>
-    <WMSServiceAbstract type="QString">Demo project with bus and tramway lines in Montpellier, France.
-Data is licensed under ODbl, OpenStreetMap contributors</WMSServiceAbstract>
-    <Measure>
-      <Ellipsoid type="QString">NONE</Ellipsoid>
-    </Measure>
     <WFSUrl type="QString"></WFSUrl>
     <WMSServiceCapabilities type="bool">true</WMSServiceCapabilities>
     <WMSUseLayerIDs type="bool">false</WMSUseLayerIDs>
