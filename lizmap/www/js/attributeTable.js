@@ -216,6 +216,19 @@ var lizAttributeTable = function() {
                 return false;
             }
 
+            function getRelationInfo(parentLayerId,childLayerId){
+                if( 'relations' in config && parentLayerId in config.relations) {
+                    var layerRelations = config.relations[parentLayerId];
+                    for( var lridx in layerRelations ) {
+                        var relation = layerRelations[lridx];
+                        if (relation.referencingLayer == childLayerId) {
+                            return relation;
+                        }
+                    }
+                }
+                return null;
+            }
+
 
             function addLayerDiv(lname) {
                 // Get layer config
@@ -509,9 +522,30 @@ var lizAttributeTable = function() {
                 // Bind click on createFeature button
                 $('#attribute-layer-'+ cleanName + ' button.btn-createFeature-attributeTable')
                 .click(function(){
+                    if ( $('#attribute-layer-'+ cleanName + ' tr.active').length != 1) {
+                        $('#lizmap-edition-message').remove();
+                        lizMap.addMessage( lizDict['attributeLayers.toolbar.btn.data.createChildFeature.no.actived'], 'info', true).attr('id','lizmap-edition-message');
+                        return false;
+                    }
+                    var parentFeatId = $('#attribute-layer-'+ cleanName + ' tr.active button.attribute-layer-feature-select').val();
+                    var parentLayerName = attributeLayersDic[ cleanName ];
+                    var parentLayerId = config.layers[parentLayerName]['id'];
+                    var parentFeat = config.layers[parentLayerName].features[parentFeatId];
                     var aName = attributeLayersDic[ $(this).val() ];
                     var lid = config.layers[aName]['id'];
-                    lizMap.launchEdition( lid );
+                    lizMap.launchEdition( lid, null, function(editionLayerId, editionFeatureId){
+                        if( 'relations' in config &&
+                            parentLayerId in config.relations &&
+                            editionLayerId == lid ) {
+                            var relation = getRelationInfo(parentLayerId,editionLayerId);
+                            if( relation != null &&
+                                relation.referencingLayer == lid) {
+                                $('#edition-form-container form select[name="'+relation.referencingField+'"]')
+                                    .val(parentFeat.properties[relation.referencedField])
+                                    .attr('disabled','disabled');
+                            }
+                        }
+                    });
                     return false;
                 })
                 .hover(
@@ -522,10 +556,31 @@ var lizAttributeTable = function() {
                 // Bind click on createFeature button via dropDown
                 $('#attribute-layer-'+ cleanName + ' a.btn-createFeature-attributeTable')
                 .click(function(){
+                    if ( $('#attribute-layer-'+ cleanName + ' tr.active').length != 1) {
+                        $('#lizmap-edition-message').remove();
+                        lizMap.addMessage( lizDict['attributeLayers.toolbar.btn.data.createChildFeature.no.actived'], 'info', true).attr('id','lizmap-edition-message');
+                        return false;
+                    }
+                    var parentFeatId = $('#attribute-layer-'+ cleanName + ' tr.active button.attribute-layer-feature-select').val();
+                    var parentLayerName = attributeLayersDic[ cleanName ];
+                    var parentLayerId = config.layers[parentLayerName]['id'];
+                    var parentFeat = config.layers[parentLayerName].features[parentFeatId];
                     var selectedValue = $(this).attr('href').replace('#', '');
                     var aName = attributeLayersDic[ selectedValue ];
                     var lid = config.layers[aName]['id'];
-                    lizMap.launchEdition( lid );
+                    lizMap.launchEdition( lid, null, function(editionLayerId, editionFeatureId){
+                        if( 'relations' in config &&
+                            parentLayerId in config.relations &&
+                            editionLayerId == lid ) {
+                            var relation = getRelationInfo(parentLayerId,editionLayerId);
+                            if( relation != null &&
+                                relation.referencingLayer == lid) {
+                                $('#edition-form-container form select[name="'+relation.referencingField+'"]')
+                                    .val(parentFeat.properties[relation.referencedField])
+                                    .attr('disabled','disabled');
+                            }
+                        }
+                    });
                     $(this).blur();
                     return false;
                 })
@@ -613,6 +668,7 @@ var lizAttributeTable = function() {
 
                         }, function(data){
                             // Show response message
+                            $('#lizmap-edition-message').remove();
                             lizMap.addMessage( data, 'info', true).attr('id','lizmap-edition-message');
 
                             // Unselect features of parent (or child)
@@ -1414,6 +1470,7 @@ var lizAttributeTable = function() {
                       fkey: cFkey
                     }, function(data){
                         // Show response message
+                        $('#lizmap-edition-message').remove();
                         lizMap.addMessage( data, 'info', true).attr('id','lizmap-edition-message');
 
                         // Send signal saying edition has been done on table

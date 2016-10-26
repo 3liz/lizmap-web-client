@@ -870,8 +870,8 @@ var lizEdition = function() {
 
             addEditionControls();
 
-            lizMap.launchEdition = function( aLayerId, aFid) {
-                return launchEdition( aLayerId, aFid);
+            lizMap.launchEdition = function( aLayerId, aFid, aCallback) {
+                return launchEdition( aLayerId, aFid, aCallback);
             };
 
             lizMap.deleteEditionFeature = function( aLayerId, aFid, aMessage, aCallback ){

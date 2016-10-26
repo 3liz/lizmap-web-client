@@ -1056,14 +1056,14 @@ class editionCtrl extends jController {
     if(!$this->getEditionParameters())
       return $this->serviceAnswer();
 
-      // Get editLayer capabilities
-        $eLayers  = $this->project->getEditionLayers();
-        $layerName = $this->layerName;
-        $eLayer = $eLayers->$layerName;
-        if ( $eLayer->capabilities->createFeature != 'True' ) {
-            jMessage::add('Create feature for this layer is not in the capabilities!', 'LayerNotEditable');
-            return $this->serviceAnswer();
-        }
+    // Get editLayer capabilities
+    $eLayers  = $this->project->getEditionLayers();
+    $layerName = $this->layerName;
+    $eLayer = $eLayers->$layerName;
+    if ( $eLayer->capabilities->createFeature != 'True' ) {
+        jMessage::add('Create feature for this layer is not in the capabilities!', 'LayerNotEditable');
+        return $this->serviceAnswer();
+    }
 
     jForms::destroy('view~edition');
     // Create form instance
