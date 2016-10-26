@@ -42,6 +42,9 @@ var lizEdition = function() {
         // Remove messages
         $('#lizmap-edition-message').remove();
 
+        // Empty and hide tables
+        $('#edition-children-container').hide().html('');
+
         // Empty and hide form and tools
         $('#edition-cancel').addClass('disabled');
         $('#edition-form-container').hide().html('');
