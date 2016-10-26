@@ -2996,7 +2996,7 @@ var lizMap = function() {
             vendorParams: getFeatureInfoTolerances(),
             eventListeners: {
                 getfeatureinfo: function(event) {
-                    lastLonLatInfo = map.getLonLatFromPixel(event.xy);
+                    var eventLonLatInfo = map.getLonLatFromPixel(event.xy);
                     var text = event.text;
 
                     if (map.popups.length != 0)
@@ -3024,7 +3024,10 @@ var lizMap = function() {
                       if(
                         !$('#mapmenu .nav-list > li.popupcontent').hasClass('active')
                       ){
-                        if(!mCheckMobile() || ( mCheckMobile() && hasPopupContent ) ){
+                        if(
+                          (!mCheckMobile() || ( mCheckMobile() && hasPopupContent ) ) &&
+                          (lastLonLatInfo == null || eventLonLatInfo.lon != lastLonLatInfo.lon || eventLonLatInfo.lat != lastLonLatInfo.lat)
+                        ){
                           $('#button-popupcontent').click();
                         }
                       }
@@ -3036,7 +3039,7 @@ var lizMap = function() {
                       // Use openlayers map popup anchored
                       var popup = new OpenLayers.Popup.LizmapAnchored(
                           "liz_layer_popup",
-                          map.getLonLatFromPixel(event.xy),
+                          eventLonLatInfo,
                           null,
                           text,
                           null,
@@ -3060,6 +3063,7 @@ var lizMap = function() {
                           $('#overview-box').hide();
                       }
                     }
+                    lastLonLatInfo = eventLonLatInfo;
 
                     // Trigger event
                     lizMap.events.triggerEvent(
