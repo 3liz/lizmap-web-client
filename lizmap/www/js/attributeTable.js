@@ -2860,6 +2860,10 @@ var lizAttributeTable = function() {
 
                 lizmapeditionformdisplayed: function(e) {
                     var fid =  e.featureId;
+                    // Do not disply child if it's a creation
+                    if (fid == null)
+                        return;
+
                     var layerId = e.layerId;
                     var getLayerConfig = lizMap.getLayerConfigById( layerId );
 
