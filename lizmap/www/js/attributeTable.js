@@ -540,9 +540,14 @@ var lizAttributeTable = function() {
                             var relation = getRelationInfo(parentLayerId,editionLayerId);
                             if( relation != null &&
                                 relation.referencingLayer == lid) {
-                                $('#edition-form-container form select[name="'+relation.referencingField+'"]')
+                                var select = $('#edition-form-container form select[name="'+relation.referencingField+'"]')
                                     .val(parentFeat.properties[relation.referencedField])
                                     .attr('disabled','disabled');
+                                var hiddenInput = $('<input type="hidden"></input>')
+                                    .attr('id', select.attr('id')+'_hidden')
+                                    .attr('name', relation.referencingField)
+                                    .attr('value', parentFeat.properties[relation.referencedField]);
+                                $('#edition-form-container form div.jforms-hiddens').append(hiddenInput);
                             }
                         }
                     });
@@ -575,9 +580,14 @@ var lizAttributeTable = function() {
                             var relation = getRelationInfo(parentLayerId,editionLayerId);
                             if( relation != null &&
                                 relation.referencingLayer == lid) {
-                                $('#edition-form-container form select[name="'+relation.referencingField+'"]')
+                                var select = $('#edition-form-container form select[name="'+relation.referencingField+'"]')
                                     .val(parentFeat.properties[relation.referencedField])
                                     .attr('disabled','disabled');
+                                var hiddenInput = $('<input type="hidden"></input>')
+                                    .attr('id', select.attr('id')+'_hidden')
+                                    .attr('name', relation.referencingField)
+                                    .attr('value', parentFeat.properties[relation.referencedField]);
+                                $('#edition-form-container form div.jforms-hiddens').append(hiddenInput);
                             }
                         }
                     });
