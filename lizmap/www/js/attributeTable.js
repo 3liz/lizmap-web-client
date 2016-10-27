@@ -533,23 +533,8 @@ var lizAttributeTable = function() {
                     var parentFeat = config.layers[parentLayerName].features[parentFeatId];
                     var aName = attributeLayersDic[ $(this).val() ];
                     var lid = config.layers[aName]['id'];
-                    lizMap.launchEdition( lid, null, function(editionLayerId, editionFeatureId){
-                        if( 'relations' in config &&
-                            parentLayerId in config.relations &&
-                            editionLayerId == lid ) {
-                            var relation = getRelationInfo(parentLayerId,editionLayerId);
-                            if( relation != null &&
-                                relation.referencingLayer == lid) {
-                                var select = $('#edition-form-container form select[name="'+relation.referencingField+'"]')
-                                    .val(parentFeat.properties[relation.referencedField])
-                                    .attr('disabled','disabled');
-                                var hiddenInput = $('<input type="hidden"></input>')
-                                    .attr('id', select.attr('id')+'_hidden')
-                                    .attr('name', relation.referencingField)
-                                    .attr('value', parentFeat.properties[relation.referencedField]);
-                                $('#edition-form-container form div.jforms-hiddens').append(hiddenInput);
-                            }
-                        }
+                    lizMap.launchEdition( lid, null, {layerId:parentLayerId,feature:parentFeat}, function(editionLayerId, editionFeatureId){
+                        $('#bottom-dock').css('left',  lizMap.getDockRightPosition() );
                     });
                     return false;
                 })
@@ -573,23 +558,8 @@ var lizAttributeTable = function() {
                     var selectedValue = $(this).attr('href').replace('#', '');
                     var aName = attributeLayersDic[ selectedValue ];
                     var lid = config.layers[aName]['id'];
-                    lizMap.launchEdition( lid, null, function(editionLayerId, editionFeatureId){
-                        if( 'relations' in config &&
-                            parentLayerId in config.relations &&
-                            editionLayerId == lid ) {
-                            var relation = getRelationInfo(parentLayerId,editionLayerId);
-                            if( relation != null &&
-                                relation.referencingLayer == lid) {
-                                var select = $('#edition-form-container form select[name="'+relation.referencingField+'"]')
-                                    .val(parentFeat.properties[relation.referencedField])
-                                    .attr('disabled','disabled');
-                                var hiddenInput = $('<input type="hidden"></input>')
-                                    .attr('id', select.attr('id')+'_hidden')
-                                    .attr('name', relation.referencingField)
-                                    .attr('value', parentFeat.properties[relation.referencedField]);
-                                $('#edition-form-container form div.jforms-hiddens').append(hiddenInput);
-                            }
-                        }
+                    lizMap.launchEdition( lid, null, {layerId:parentLayerId,feature:parentFeat}, function(editionLayerId, editionFeatureId){
+                        $('#bottom-dock').css('left',  lizMap.getDockRightPosition() );
                     });
                     $(this).blur();
                     return false;
@@ -1399,7 +1369,9 @@ var lizAttributeTable = function() {
                     var featId = $(this).val();
                     // trigger edition
                     var lid = config.layers[aName]['id'];
-                    lizMap.launchEdition( lid, featId );
+                    lizMap.launchEdition( lid, featId, null, function(editionLayerId, editionFeatureId){
+                        $('#bottom-dock').css('left',  lizMap.getDockRightPosition() );
+                    });
                     return false;
                 })
                 .hover(
@@ -2876,6 +2848,13 @@ var lizAttributeTable = function() {
                             var html = '';
                             // Add children content
                             if( childHtml ){
+                                // Add buttons to create new children
+                                if( childHtml['childCreateButton'] ) {
+                                    // Action bar
+                                    html+= '<div class="attribute-layer-action-bar">';
+                                    html+= childHtml['childCreateButton'];
+                                    html+= '</div>';
+                                }
                                 // Add children content : one tab per childlayer
                                 html+= '<div class="tabbable edition-children-content">';
                                 // Ul content
@@ -2895,9 +2874,58 @@ var lizAttributeTable = function() {
                                 html+= '</div>'; // tabbable
                             }
                             $('#edition-children-container').show().append(html);
+                            $('#edition-children-container div.tabbable ul.nav-tabs li').each(function() {
+                                $(this).attr('id', $(this).attr('id').replace(/nav-tab-attribute-child-tab-/g, 'nav-tab-edition-child-tab-'));
+                            });
+                            $('#edition-children-container div.tabbable ul.nav-tabs li a').each(function() {
+                                $(this).attr('href', $(this).attr('href').replace(/attribute-child-tab-/g, 'edition-child-tab-'));
+                            });
+                            $('#edition-children-container div.tabbable div.tab-content div.tab-pane').each(function() {
+                                $(this).attr('id', $(this).attr('id').replace(/attribute-child-tab-/g, 'edition-child-tab-'));
+                            });
                             $('#edition-children-container div.tabbable div.tab-content table').each(function() {
                                 $(this).attr('id', $(this).attr('id').replace(/attribute-layer-/g, 'edition-'));
                             });
+
+                            // Bind click on createFeature button
+                            $('#edition-children-container button.btn-createFeature-attributeTable')
+                            .click(function(){
+                                var parentFeatId = fid;
+                                var parentLayerName = featureType;
+                                var parentLayerId = layerId;
+                                var parentFeat = config.layers[parentLayerName].features[parentFeatId];
+                                var aName = attributeLayersDic[ $(this).val() ];
+                                var lid = config.layers[aName]['id'];
+                                lizMap.launchEdition( lid, null, {layerId:parentLayerId,feature:parentFeat}, function(editionLayerId, editionFeatureId){
+                                    $('#bottom-dock').css('left',  lizMap.getDockRightPosition() );
+                                });
+                                return false;
+                            })
+                            .hover(
+                                function(){ $(this).addClass('btn-primary'); },
+                                function(){ $(this).removeClass('btn-primary'); }
+                            );
+
+                            // Bind click on createFeature button via dropDown
+                            $('#edition-children-container a.btn-createFeature-attributeTable')
+                            .click(function(){
+                                var parentFeatId = fid;
+                                var parentLayerName = featureType;
+                                var parentLayerId = layerId;
+                                var parentFeat = config.layers[parentLayerName].features[parentFeatId];
+                                var selectedValue = $(this).attr('href').replace('#', '');
+                                var aName = attributeLayersDic[ selectedValue ];
+                                var lid = config.layers[aName]['id'];
+                                lizMap.launchEdition( lid, null, {layerId:parentLayerId,feature:parentFeat}, function(editionLayerId, editionFeatureId){
+                                    $('#bottom-dock').css('left',  lizMap.getDockRightPosition() );
+                                });
+                                $(this).blur();
+                                return false;
+                            })
+                            .hover(
+                                function(){ $(this).addClass('btn-primary'); },
+                                function(){ $(this).removeClass('btn-primary'); }
+                            );
                             getAndDoFeature(featureType, fid, function(feat) {
                                 var fp = feat.properties;
                                 for ( var i=0, len=relations.length; i<len; i++ ){
