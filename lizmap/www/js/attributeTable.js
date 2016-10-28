@@ -530,11 +530,13 @@ var lizAttributeTable = function() {
                     var parentFeatId = $('#attribute-layer-'+ cleanName + ' tr.active button.attribute-layer-feature-select').val();
                     var parentLayerName = attributeLayersDic[ cleanName ];
                     var parentLayerId = config.layers[parentLayerName]['id'];
-                    var parentFeat = config.layers[parentLayerName].features[parentFeatId];
                     var aName = attributeLayersDic[ $(this).val() ];
-                    var lid = config.layers[aName]['id'];
-                    lizMap.launchEdition( lid, null, {layerId:parentLayerId,feature:parentFeat}, function(editionLayerId, editionFeatureId){
-                        $('#bottom-dock').css('left',  lizMap.getDockRightPosition() );
+                    getLayerFeature(parentLayerName, parentFeatId, function(feat) {
+                        var parentFeat = feat;
+                        var lid = config.layers[aName]['id'];
+                        lizMap.launchEdition( lid, null, {layerId:parentLayerId,feature:parentFeat}, function(editionLayerId, editionFeatureId){
+                            $('#bottom-dock').css('left',  lizMap.getDockRightPosition() );
+                        });
                     });
                     return false;
                 })
@@ -554,14 +556,16 @@ var lizAttributeTable = function() {
                     var parentFeatId = $('#attribute-layer-'+ cleanName + ' tr.active button.attribute-layer-feature-select').val();
                     var parentLayerName = attributeLayersDic[ cleanName ];
                     var parentLayerId = config.layers[parentLayerName]['id'];
-                    var parentFeat = config.layers[parentLayerName].features[parentFeatId];
                     var selectedValue = $(this).attr('href').replace('#', '');
                     var aName = attributeLayersDic[ selectedValue ];
-                    var lid = config.layers[aName]['id'];
-                    lizMap.launchEdition( lid, null, {layerId:parentLayerId,feature:parentFeat}, function(editionLayerId, editionFeatureId){
-                        $('#bottom-dock').css('left',  lizMap.getDockRightPosition() );
+                    getLayerFeature(parentLayerName, parentFeatId, function(feat) {
+                        var parentFeat = feat;
+                        var lid = config.layers[aName]['id'];
+                        lizMap.launchEdition( lid, null, {layerId:parentLayerId,feature:parentFeat}, function(editionLayerId, editionFeatureId){
+                            $('#bottom-dock').css('left',  lizMap.getDockRightPosition() );
+                        });
+                        $(this).blur();
                     });
-                    $(this).blur();
                     return false;
                 })
                 .hover(
@@ -1708,7 +1712,7 @@ var lizAttributeTable = function() {
                 var layerConfig = config.layers[featureType];
                 var featureId = featureType + '.' + fid;
                 var proj = new OpenLayers.Projection(config.layers[featureType].crs);
-                getAndDoFeature(featureType, fid, function(feat) {
+                getLayerFeature(featureType, fid, function(feat) {
                     zoomToOlFeature( feat, proj, zoomAction );
                 });
                 /*
@@ -1731,7 +1735,7 @@ var lizAttributeTable = function() {
                 * */
             }
 
-            function getAndDoFeature( featureType, fid, aCallback ){
+            function getLayerFeature( featureType, fid, aCallback ){
                 if ( !aCallback )
                     return;
 
@@ -2571,7 +2575,7 @@ var lizAttributeTable = function() {
                             var layerConfig = getLayerConfig[1];
                             var featureType = getLayerConfig[0];
                             var featureId = featureType + '.' + fid;
-                            getAndDoFeature(featureType, fid, function(feat) {
+                            getLayerFeature(featureType, fid, function(feat) {
 
                                 var wmsOptions = {
                                      'LAYERS': featureType
@@ -2893,11 +2897,13 @@ var lizAttributeTable = function() {
                                 var parentFeatId = fid;
                                 var parentLayerName = featureType;
                                 var parentLayerId = layerId;
-                                var parentFeat = config.layers[parentLayerName].features[parentFeatId];
                                 var aName = attributeLayersDic[ $(this).val() ];
-                                var lid = config.layers[aName]['id'];
-                                lizMap.launchEdition( lid, null, {layerId:parentLayerId,feature:parentFeat}, function(editionLayerId, editionFeatureId){
-                                    $('#bottom-dock').css('left',  lizMap.getDockRightPosition() );
+                                getLayerFeature(featureType, fid, function(feat) {
+                                    var parentFeat = feat;
+                                    var lid = config.layers[aName]['id'];
+                                    lizMap.launchEdition( lid, null, {layerId:parentLayerId,feature:parentFeat}, function(editionLayerId, editionFeatureId){
+                                        $('#bottom-dock').css('left',  lizMap.getDockRightPosition() );
+                                    });
                                 });
                                 return false;
                             })
@@ -2912,21 +2918,23 @@ var lizAttributeTable = function() {
                                 var parentFeatId = fid;
                                 var parentLayerName = featureType;
                                 var parentLayerId = layerId;
-                                var parentFeat = config.layers[parentLayerName].features[parentFeatId];
                                 var selectedValue = $(this).attr('href').replace('#', '');
                                 var aName = attributeLayersDic[ selectedValue ];
-                                var lid = config.layers[aName]['id'];
-                                lizMap.launchEdition( lid, null, {layerId:parentLayerId,feature:parentFeat}, function(editionLayerId, editionFeatureId){
-                                    $('#bottom-dock').css('left',  lizMap.getDockRightPosition() );
+                                getLayerFeature(featureType, fid, function(feat) {
+                                    var parentFeat = feat;
+                                    var lid = config.layers[aName]['id'];
+                                    lizMap.launchEdition( lid, null, {layerId:parentLayerId,feature:parentFeat}, function(editionLayerId, editionFeatureId){
+                                        $('#bottom-dock').css('left',  lizMap.getDockRightPosition() );
+                                    });
+                                    $(this).blur();
                                 });
-                                $(this).blur();
                                 return false;
                             })
                             .hover(
                                 function(){ $(this).addClass('btn-primary'); },
                                 function(){ $(this).removeClass('btn-primary'); }
                             );
-                            getAndDoFeature(featureType, fid, function(feat) {
+                            getLayerFeature(featureType, fid, function(feat) {
                                 var fp = feat.properties;
                                 for ( var i=0, len=relations.length; i<len; i++ ){
                                     var r = relations[i];
