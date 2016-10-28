@@ -1476,6 +1476,38 @@ var lizAttributeTable = function() {
                 );
             }
 
+            function bindEditTableEditButton(aName, aTable){
+                $(aTable +' tr td button.attribute-layer-feature-edit').click(function() {
+                    var featId = $(this).val();
+                    // trigger edition
+                    var lid = config.layers[aName]['id'];
+                    // get info from the form
+                    var formFeatureId = $('#edition-form-container form input[name="liz_featureId"]').val();
+                    var formLayerId = $('#edition-form-container form input[name="liz_layerId"]').val();
+                    // get parent layer config
+                    var getParentLayerConfig = lizMap.getLayerConfigById( formLayerId );
+                    var parentLayerName = getParentLayerConfig[0];
+                    if ( aName in config.attributeLayers ) {
+                        // get featureType layer config
+                        var layerConfig = config.attributeLayers[aName];
+                        //get relation
+                        var relation = getRelationInfo(formLayerId,layerConfig.layerId);
+                        if( relation != null ) {
+                            getLayerFeature(parentLayerName, formFeatureId, function(feat) {
+                                lizMap.launchEdition( lid, featId, {layerId:formLayerId,feature:feat}, function(editionLayerId, editionFeatureId){
+                                    $('#bottom-dock').css('left',  lizMap.getDockRightPosition() );
+                                });
+                            });
+                        }
+                    }
+                    return false;
+                })
+                .hover(
+                    function(){ $(this).addClass('btn-primary'); },
+                    function(){ $(this).removeClass('btn-primary'); }
+                );
+            }
+
             function getEditionChildData( childLayerName, filter, childTable ){
                 // Get features
                 getAttributeFeatureData(childLayerName, filter, null, function(chName, chFilter, chFeatures, chAliases){
@@ -1513,35 +1545,25 @@ var lizAttributeTable = function() {
                                 bindTableDeleteButton(chName, childTable);
                             }
 
+                            // Bind event on edit button
+                            if( canEdit ) {
+                                bindEditTableEditButton(chName, childTable);
+                            }
+
                             // Remove button before reuse it
                             // Zoom
                             $(childTable +' tr td button.attribute-layer-feature-focus').remove();
-                            // Edit
-                            $(childTable +' tr td button.attribute-layer-feature-edit').remove();
                             // Unlink
                             $(childTable +' tr td button.attribute-layer-feature-unlink').remove();
 /*
                             // Bind event when users click anywhere on the table line to highlight
                             bindTableLineClick(aName, aTable);
 
-                            // Bind event on select button
-                            bindTableSelectButton(aName, aTable);
-
                             // Bind event on zoom buttons
                             if(  config.layers[aName]['geometryType'] != 'none'
                                     && config.layers[aName]['geometryType'] != 'unknown'
                             ) {
                                 bindTableZoomButton(aName, aTable);
-                            }
-
-                            // Bind event on edit button
-                            if( canEdit ) {
-                                bindTableEditButton(aName, aTable);
-                            }
-
-                            // Bind event on delete button
-                            if( canDelete ) {
-                                bindTableDeleteButton(aName, aTable);
                             }
 
                             // Bind event on unlink button
