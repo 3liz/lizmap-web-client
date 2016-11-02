@@ -2194,9 +2194,11 @@ var lizAttributeTable = function() {
 
                 // Add false value to hide all features if we need to hide layer
                 if( typeNamePkeyValues.length == 0 )
-                    typeNamePkeyValues.push('-99999');
+                    typeNamePkeyValues.push(" '-99999' ");
+
                 if( aFilter )
                     var lFilter = layerN + ':"' + typeNamePkey + '" IN ( ' + typeNamePkeyValues.join( ' , ' ) + ' ) ';
+
                 config.layers[typeName]['request_params']['filter'] = lFilter;
 
                 // Add filter to openlayers layer

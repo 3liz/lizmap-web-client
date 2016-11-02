@@ -235,8 +235,6 @@ class serviceCtrl extends jController {
       and $pConfig->loginFilteredLayers
     ){
       // Add client side filter before changing it server side
-      $v='';
-      $filter='';
       $clientExpFilter = Null;
       if( array_key_exists('exp_filter', $this->params))
         $clientExpFilter = $this->params['exp_filter'];
@@ -248,44 +246,47 @@ class serviceCtrl extends jController {
       $isConnected = jAuth::isConnected();
 
       // Check need for filter foreach layer
+      $serverFilterArray = array();
       foreach(explode(',', $layers) as $layername){
         if( property_exists($pConfig->loginFilteredLayers, $layername) ) {
           $oAttribute = $pConfig->loginFilteredLayers->$layername->filterAttribute;
           $attribute = strtolower($oAttribute);
 
-          $pre = "$layername:";
-          if($request == 'getfeature')
-            $pre = '';
           if($isConnected){
             $user = jAuth::getUserSession();
             $login = $user->login;
             if (property_exists($pConfig->loginFilteredLayers->$layername, 'filterPrivate')
              && $pConfig->loginFilteredLayers->$layername->filterPrivate == 'True')
             {
-              $filter.= $v."$pre\"$attribute\" IN ( '".$login."' , 'all' )";
+              $serverFilterArray[$layername] = "\"$attribute\" IN ( '".$login."' , 'all' )";
             } else {
               $userGroups = jAcl2DbUserGroup::getGroups();
               $flatGroups = implode("' , '", $userGroups);
-              $filter.= $v."$pre\"$attribute\" IN ( '".$flatGroups."' , 'all' )";
+              $serverFilterArray[$layername] = "\"$attribute\" IN ( '".$flatGroups."' , 'all' )";
             }
-            $v = ';';
           }else{
             // The user is not authenticated: only show data with attribute = 'all'
-            $filter.= $v."$pre\"$attribute\" = 'all'";
-            $v = ';';
+            $serverFilterArray[$layername] = "\"$attribute\" = 'all'";
           }
-          if( !empty( $clientFilter ) ){
-            $filter.= " AND " . str_replace( $pre, '', $clientFilter);
-          }
+
         }
       }
 
-      // Set filter when multiple layers concerned
-      if($filter){
+      // Set filter if needed
+      if(count($serverFilterArray)>0){
+
         // WFS : EXP_FILTER
         if( $request == 'getfeature' ){
-          if( !empty($clientExpFilter) ){
-            $filter.= " AND ". $clientExpFilter;
+          $filter = ''; $s = '';
+          if( !empty( $clientExpFilter ) ){
+            $filter = $clientExpFilter;
+            $s = ' AND ';
+          }
+          if(count($serverFilterArray) > 0){
+            foreach($serverFilterArray as $lname=>$lfilter){
+              $filter.= $s . $lfilter;
+              $s = ' AND ';
+            }
           }
           $this->params['exp_filter'] = $filter;
           if( array_key_exists('propertyname', $this->params)  ){
@@ -295,11 +296,32 @@ class serviceCtrl extends jController {
           }
         }
         // WMS : FILTER
-        else
-          $this->params['filter'] = $filter;
+        else{
+          if( !empty( $clientFilter ) ){
+            $cfexp = explode(';', $clientFilter);
+            foreach($cfexp as $a){
+              $b = explode(':', $a);
+              $lname = trim($b[0]);
+              $lfilter = trim($b[1]);
+              if(array_key_exists( $lname, $serverFilterArray) ){
+                $serverFilterArray[$lname] .= ' AND ' . $lfilter;
+              }else{
+                $serverFilterArray[$lname] = $lfilter;
+              }
+            }
+          }
+          $filter = ''; $s = '';
+          foreach($serverFilterArray as $lname=>$lfilter){
+            $filter.= $s . $lname . ':' . $lfilter;
+            $s = ';';
+          }
+          if( count($serverFilterArray) > 0 )
+            $this->params['filter'] = $filter;
+        }
       }
 
     }
+
   }
 
 
