@@ -26,7 +26,7 @@
 
 <menulist ref="defaultProject">
   <label locale="admin~admin.form.admin_services.defaultProject.label"/>
-  <datasource class="admin~listProjectDatasource" />
+  <datasource class="admin~listProjectDatasource" criteriafrom="defaultRepository"/>
 </menulist>
 
 <menulist ref="cacheStorageType" required="true">

@@ -26,18 +26,6 @@ class htmlbootstrapFormBuilder extends \jelix\forms\Builder\HtmlBuilder {
 
     protected $isRootControl = true;
 
-    /**
-     * set options
-     * @param array $options some parameters <ul>
-     *      <li>"errDecorator"=>"name of your javascript object for error listener"</li>
-     *      <li>"method" => "post" or "get". default is "post"</li>
-     *      </ul>
-     */
-    public function setOptions($options) {
-        $this->options = array_merge(array('errorDecorator'=>$this->jFormsJsVarName.'ErrorDecoratorHtml',
-            'method'=>'post'), $options);
-    }
-
     public function outputAllControls() {
 
         $modal = False;
@@ -785,10 +773,10 @@ jFormsJQ.declareForm(jFormsJQ.tForm);
         }
         else {
             foreach($data as $v=>$label){
-                    if(is_array($value))
-                        $selected = in_array((string) $v,$value,true);
-                    else
-                        $selected = ((string) $v===$value);
+                if(is_array($value))
+                    $selected = in_array((string) $v,$value,true);
+                else
+                    $selected = ((string) $v===$value);
                 echo '<option value="',htmlspecialchars($v),'"',($selected?' selected="selected"':''),'>',htmlspecialchars($label),"</option>\n";
             }
         }
@@ -823,8 +811,8 @@ jFormsJQ.declareForm(jFormsJQ.tForm);
 
         $this->jsContent .="c = new jFormsJQControlString('".$ctrl->ref."', ".$this->escJsStr($ctrl->label).");\n";
         if ($ctrl instanceof jFormsControlDatasource
-            && $ctrl->datasource instanceof jFormsDaoDatasource) {
-            $dependentControls = $ctrl->datasource->getDependentControls();
+            && $ctrl->datasource instanceof jIFormsDynamicDatasource) {
+            $dependentControls = $ctrl->datasource->getCriteriaControls();
             if ($dependentControls) {
                 $this->jsContent .="c.dependencies = ['".implode("','",$dependentControls)."'];\n";
                 $this->lastJsContent .= "jFormsJQ.tForm.declareDynamicFill('".$ctrl->ref."');\n";
@@ -888,6 +876,14 @@ jFormsJQ.declareForm(jFormsJQ.tForm);
             $this->jsContent .= "c.multiple = true;\n";
         } else {
             $this->jsContent .= "c = new ".$this->jFormsJsVarName."ControlString('".$ctrl->ref."', ".$this->escJsStr($ctrl->label).");\n";
+        }
+        if ($ctrl instanceof jFormsControlDatasource
+            && $ctrl->datasource instanceof jIFormsDynamicDatasource) {
+            $dependentControls = $ctrl->datasource->getCriteriaControls();
+            if ($dependentControls) {
+                $this->jsContent .="c.dependencies = ['".implode("','",$dependentControls)."'];\n";
+                $this->lastJsContent .= "jFormsJQ.tForm.declareDynamicFill('".$ctrl->ref.($ctrl->multiple?'[]':'')."');\n";
+            }
         }
 
         $this->commonJs($ctrl);
