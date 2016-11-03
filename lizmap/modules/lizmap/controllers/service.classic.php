@@ -123,7 +123,9 @@ class serviceCtrl extends jController {
   */
   function serviceException(){
     $messages = jMessage::getAll();
-
+    if (!$messages) {
+        $messages = array();
+    }
     $rep = $this->getResponse('xml');
     $rep->contentTpl = 'lizmap~wms_exception';
     $rep->content->assign('messages', $messages);

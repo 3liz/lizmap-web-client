@@ -238,7 +238,7 @@ class lizmapTiler{
         $layer = $layers->$layerName;
         
         $xmlLayer = $wms_xml->xpath('//wms:Layer/wms:Name[. ="'.$layer->name.'"]/parent::*');
-        if ( !$rootLayer  || count( $rootLayer ) == 0 )
+        if ( !$xmlLayer  || count( $xmlLayer ) == 0 )
             return null;
         $xmlLayer = $xmlLayer[0];
         $layerExtent = null;

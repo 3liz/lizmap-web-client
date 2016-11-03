@@ -106,7 +106,6 @@ class editionCtrl extends jController {
             $title = (string)$_title[0];
     }
 
-    $messages = jMessage::getAll();
     $rep = $this->getResponse('htmlfragment');
     $tpl = new jTpl();
     $tpl->assign('title', $title);
