@@ -956,7 +956,7 @@ class lizmapProject{
                 // Try with libspatialite
                 try{
                     $db = new SQLite3(':memory:');
-                    $spatial = $db->loadExtension('libspatialite.so'); # loading SpatiaLite as an extension
+                    $spatial = @$db->loadExtension('libspatialite.so'); # loading SpatiaLite as an extension
                 }catch(Exception $e){
                     $spatial = False;
                 }
@@ -964,9 +964,9 @@ class lizmapProject{
                 if( !$spatial )
                     try{
                         $db = new SQLite3(':memory:');
-                        $spatial = $db->loadExtension('mod_spatialite.so'); # loading SpatiaLite as an extension
+                        $spatial = @$db->loadExtension('mod_spatialite.so'); # loading SpatiaLite as an extension
                     }catch(Exception $e){
-                        jLog::log($e->getMessage(), 'error');
+                        //jLog::log($e->getMessage(), 'error');
                         $spatial = False;
                     }
             }
