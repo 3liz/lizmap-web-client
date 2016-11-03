@@ -70,8 +70,11 @@ class myHtmlMapResponse extends jResponseHtml {
   }
 
   protected function doAfterActions() {
-      // Include all process in common for all actions, like the settings of the
-      // main template, the settings of the response       $tpl = new jTpl();
-
+      $this->body->assignIfNone('MAIN','');
+      $this->body->assignIfNone('repositoryLabel', 'Lizmap');
+      $this->body->assignIfNone('isConnected', jAuth::isConnected());
+      $this->body->assignIfNone('user', jAuth::getUserSession());
+      $this->body->assignIfNone('auth_url_return','');
+      $this->body->assignIfNone('googleAnalyticsID', '');
   }
 }
