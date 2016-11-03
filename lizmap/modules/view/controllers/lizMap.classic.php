@@ -297,8 +297,8 @@ class lizMapCtrl extends jController {
         $jsPathRoot = realpath($repositoryPath . '/' . 'media/js/' . $dir);
         if( is_dir( $jsPathRoot ) ) {
           foreach (new RecursiveIteratorIterator(new RecursiveDirectoryIterator($jsPathRoot)) as $filename){
-            $path_parts = pathinfo($filename);
-            if( $path_parts['extension'] == 'js' or $path_parts['extension'] == 'css' ){
+            $fileExtension = pathinfo($filename,  PATHINFO_EXTENSION);
+            if( $fileExtension == 'js' || $fileExtension == 'css' ){
               $jsPath = realpath( $filename );
               $jsRelPath = 'media/js/' . $dir . str_replace( $jsPathRoot, '', $jsPath);
               $jsUrl = jUrl::get(
@@ -309,7 +309,7 @@ class lizMapCtrl extends jController {
                   'path'=>$jsRelPath
                 )
               );
-              if($path_parts['extension'] == 'js')
+              if($fileExtension == 'js')
                 $jsUrls[] = $jsUrl;
               else
                 $cssUrls[] = $jsUrl;
