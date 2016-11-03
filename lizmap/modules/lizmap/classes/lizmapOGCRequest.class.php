@@ -80,7 +80,12 @@ class lizmapOGCRequest {
     protected function serviceException ( ) {
         $messages = jMessage::getAll();
         $mime = 'text/plain';
-        $data = implode('\n', $messages);
+        if (!$messages) {
+            $data = "";
+        }
+        else {
+            $data = implode('\n', $messages);
+        }
 
         if ( $this->tplExceptions !== null ) {
             $mime = 'text/xml';
