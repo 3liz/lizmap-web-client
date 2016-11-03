@@ -3575,6 +3575,7 @@ var lizMap = function() {
         }
     });
   }
+
   function addTooltipControl() {
     if ( !config['tooltipLayers'] || config.tooltipLayers.length == 0 ) {
       $('#button-tooltip-layer').parent().remove();
@@ -3582,7 +3583,7 @@ var lizMap = function() {
     }
 
     // Verifying WFS layers
-    var featureTypes = lizMap.getVectorLayerFeatureTypes();
+    var featureTypes = getVectorLayerFeatureTypes();
     if (featureTypes.length == 0 ) {
       $('#button-tooltip-layer').parent().remove();
       return false;
@@ -4186,6 +4187,7 @@ OpenLayers.Control.HighlightFeature = OpenLayers.Class(OpenLayers.Control, {
     });
 
   }
+
 
   function getLayerConfigById( aLayerId, aConfObjet, aIdAttribute ) {
     // Set function parameters if not given
@@ -5868,7 +5870,7 @@ lizMap.events.on({
         evt.config.layers['osm'] = osmCfg;
         evt.baselayers.push(osm);
       }
-      
+
       if (('osmStamenToner' in evt.config.options) && evt.config.options.osmStamenToner == 'True') {
         evt.map.allOverlays = false;
         var options = {

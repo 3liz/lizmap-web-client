@@ -191,7 +191,7 @@ class lizmapProject{
         if ($this->cfg === null) {
             throw new Exception(".qgs.cfg File of project $key has invalid content");
         }
-        
+
         $configOptions = $this->cfg->options;
 
         $qgs_xml = simplexml_load_file($qgs_path);
@@ -1417,8 +1417,20 @@ class lizmapProject{
                 'permaLink',
                 jLocale::get('view~map.permalink.navbar.title'),
                 $tpl->fetch('view~map_permalink'),
-                6
+                7
             );
+        }
+
+        if ( $this->hasAttributeLayers() ) {
+            $tpl = new jTpl();
+            $dock = new lizmapMapDockItem(
+                'selectiontool',
+                jLocale::get('view~map.selectiontool.navbar.title'),
+                $tpl->fetch('view~map_selectiontool'),
+                8
+            );
+            $dock->icon = '<span class="icon-white icon-star" style="margin-left:2px; margin-top:2px;"></span>';
+            $dockable[] = $dock;
         }
 
         return $dockable;

@@ -192,6 +192,8 @@ var lizAttributeTable = function() {
                     "attributeLayersReady", {'layers': attributeLayersDic}
                 );
 
+                addSelectionToolControl();
+
             } else {
                 // Hide navbar menu
                 $('#mapmenu li.attributeLayers').hide();
@@ -463,11 +465,14 @@ var lizAttributeTable = function() {
                 $('#attribute-layer-'+ cleanName + ' button.btn-moveselectedtotop-attributeTable')
                 .click(function(){
                     var aTable = '#attribute-layer-table-' + $(this).val();
-                    var rTable = $( aTable ).dataTable();
-                    var previousSorting = rTable.fnSettings().aaSorting;
-                    var selectedSorting = [ [0, 'asc'] ];
-                    var newSorting = selectedSorting.concat(previousSorting);
-                    rTable.fnSort( newSorting );
+                    var dTable = $( aTable ).DataTable();
+                    var previousOrder = dTable.order();
+                    previousOrder = $.grep(previousOrder, function(o){
+                        return o[0] != 0;
+                    });
+                    var selectedOrder = [ [0, 'asc'] ];
+                    var newOrder = selectedOrder.concat(previousOrder);
+                    dTable.order( newOrder ).draw();
 
                     // Scroll to top
                     $(aTable).parents('div.attribute-layer-content').scrollTop(0);
@@ -997,7 +1002,7 @@ var lizAttributeTable = function() {
                     var firstDisplayedColIndex = cdc.firstDisplayedColIndex;
 
                     // Format features for datatable
-                    var ff = formatDatatableFeatures(atFeatures, lConfig['geometryType'], canEdit, canDelete, isChild, isPivot, hiddenFields);
+                    var ff = formatDatatableFeatures(atFeatures, lConfig['geometryType'], canEdit, canDelete, isChild, isPivot, hiddenFields, config.layers[aName]['selectedFeatures']);
                     var foundFeatures = ff.foundFeatures;
                     var dataSet = ff.dataSet;
 
@@ -1224,7 +1229,7 @@ var lizAttributeTable = function() {
                 };
             }
 
-            function formatDatatableFeatures(atFeatures, geometryType, canEdit, canDelete, isChild, isPivot, hiddenFields){
+            function formatDatatableFeatures(atFeatures, geometryType, canEdit, canDelete, isChild, isPivot, hiddenFields, selectedFeatures){
                 var dataSet = [];
                 var foundFeatures = {};
                 for (var x in atFeatures) {
@@ -1238,6 +1243,9 @@ var lizAttributeTable = function() {
                     // Add row ID
                     line['DT_RowId'] = fid;
                     line['lizSelected'] = 'z';
+
+                    if( selectedFeatures && $.inArray( fid, selectedFeatures ) != -1 )
+                        line.lizSelected = 'a';
 
                     // Build table lines
                     var selectCol = '<button class="btn btn-mini attribute-layer-feature-select checkbox" value="'+fid+'" title="' + lizDict['attributeLayers.btn.select.title'] + '"><i class="icon-ok"></i></button>';
@@ -2266,6 +2274,7 @@ var lizAttributeTable = function() {
                 if( isPivot && pivotParam ){
                     // Add a Filter to the "other parent" layers
                     var cFilter = null;
+                    var orObj = null;
                     var pwmsName = pivotParam['otherParentTypeName'];
                     // Get WMS layer name
                     var pwlayer = lizMap.map.getLayersByName( lizMap.cleanName(pwmsName) )[0];
@@ -2277,9 +2286,18 @@ var lizAttributeTable = function() {
                             cFilter = pwmsName + ':"';
                             cFilter+= pivotParam['otherParentRelation'].referencedField;
                             cFilter+= '" IN ( ' + pivotParam['otherParentValues'].join() + ' )';
+                            orObj = {
+                                field: pivotParam['otherParentRelation'].referencedField,
+                                values: pivotParam['otherParentValues']
+                            }
                         }
-                        else
+                        else {
                             cFilter = pwmsName + ':"' + pivotParam['otherParentRelation'].referencedField + '" IN ( ' + "'-999999'" + ' )';
+                            orObj = {
+                                field: pivotParam['otherParentRelation'].referencedField,
+                                values: ['-999999']
+                            }
+                        }
                     }
 
                     config.layers[ pivotParam['otherParentTypeName'] ]['request_params']['filter'] = cFilter;
@@ -2480,14 +2498,14 @@ var lizAttributeTable = function() {
                         if( featureIds.length > 0 ){
 
                             var rTable = $(this).DataTable();
+                            rTable.data().each( function(d){
+                                if( $.inArray( d.DT_RowId.toString(), featureIds ) != -1 )
+                                    d.lizSelected = 'a';
+                            });
                             rTable
                             .rows( function ( idx, data, node ) {
-                                return $.inArray( data.DT_RowId.toString(), featureIds ) != -1 ? true : false;
+                                return data.lizSelected == 'a' ? true : false;
                             })
-                            .every(function(){
-                                dTable.fnUpdate( 'a', this, 0, false, false );
-                            })
-                            //~ .draw()
                             .nodes()
                             .to$()
                             .addClass( 'selected' )
@@ -3032,6 +3050,343 @@ var lizAttributeTable = function() {
                 }
 
             }); // lizMap.events.on end
+
+  function addSelectionToolControl() {
+    /*if ( !config['tooltipLayers'] || config.tooltipLayers.length == 0 ) {
+      $('#button-tooltip-layer').parent().remove();
+      return false;
+    }*/
+
+    // Verifying WFS layers
+    var featureTypes = lizMap.getVectorLayerFeatureTypes();
+    if (featureTypes.length == 0 ) {
+      $('#button-selectiontool').parent().remove();
+      return false;
+    }
+
+    var selectionLayersDic = {};
+    for (var lname in config.attributeLayers) {
+        selectionLayersDic[lizMap.cleanName(lname)] = lname;
+    }
+
+    var options = '';
+    featureTypes.each( function(){
+        var self = $(this);
+        var lname = self.find('Name').text();
+        if ( !(lname in selectionLayersDic) )
+            return;
+        lname = selectionLayersDic[lname];
+        if( lname in config.layers
+            && config.layers[lname]['geometryType'] != 'none'
+            && config.layers[lname]['geometryType'] != 'unknown') {
+            var lConfig = config.layers[lname];
+            options += '<option value="'+lname+'">'+lConfig.title+'</option>';
+        }
+    });
+    if ( options == '' ) {
+      $('#button-selectiontool').parent().remove();
+      return false;
+    }
+
+    $('#selectiontool-layer-list').html(options);
+
+
+    // Style des outils de dessin et sélection
+    // -------------------------------------------------------------------------
+    var drawStyle = new OpenLayers.Style({
+        pointRadius:7,
+        fillColor: "#94EF05",
+        fillOpacity: 0.3,
+        strokeColor: "yellow",
+        strokeOpacity: 1,
+        strokeWidth: 3
+    });
+
+    var drawStyleTemp = new OpenLayers.Style({
+        pointRadius:7,
+        fillColor: "orange",
+        fillOpacity: 0.3,
+        strokeColor: "blue",
+        strokeOpacity: 1,
+        strokeWidth: 3
+    });
+
+    var drawStyleSelect = new OpenLayers.Style({
+        pointRadius:7,
+        fillColor: "blue",
+        fillOpacity: 0.3,
+        strokeColor: "blue",
+        strokeOpacity: 1,
+        strokeWidth: 3
+    });
+
+    var drawStyleMap = new OpenLayers.StyleMap({
+        "default":   drawStyle,
+        "temporary": drawStyleTemp,
+        "select" :   drawStyleSelect
+    });
+
+    var queryLayer = new OpenLayers.Layer.Vector("selectionQueryLayer", {styleMap:drawStyleMap});
+    lizMap.map.addLayers([queryLayer]);
+    //lizMap.layers['selectionQueryLayer'] = queryLayer;
+
+    lizMap.controls['selectiontool'] = {};
+
+
+    function onQueryFeatureAdded(feature, callback) {
+        var theLayer = feature.layer;
+
+        /**
+         * @todo Ne gère que si il ya a seulement 1 géométrie
+         */
+        if( feature.layer ) {
+            if(feature.layer.features.length > 1) {
+                feature.layer.destroyFeatures( feature.layer.features.shift() );
+            }
+        }
+
+        theLayer.drawFeature( feature );
+        var featureType = $('#selectiontool-layer-list').val();
+        var lConfig = config.layers[featureType];
+        lizMap.loadProjDefinition( lConfig.crs, function( aProj ) {
+            /*
+            var format = OpenLayers.Format.WFST(OpenLayers.Util.extend({
+                    version: '1.0.0',
+                    featureType: featureType,
+                    featureNS: 'http://www.qgis.org/gml',
+                    featurePrefix: 'qgs',
+                    geometryName: 'GEOMETRY',
+                    srsName: null,
+                    schema: null
+                }, null));
+            var filter = new OpenLayers.Filter.Spatial({
+                type: OpenLayers.Filter.Spatial.INTERSECTS,
+                value: feature.geometry.clone().transform(lizMap.map.getProjection(),aProj)
+            });
+            var options = {filter:filter};
+            var data = OpenLayers.Format.XML.prototype.write.apply(
+                format, [format.writeNode("wfs:GetFeature", options)]
+            );
+            console.log(data);
+            */
+            var gml2 = new OpenLayers.Format.GML();
+            var gml = gml2.buildGeometryNode(
+                feature.geometry.clone().transform(lizMap.map.getProjection(),aProj)
+            );
+            var spatialFilter = "intersects($geometry, geom_from_gml('"+OpenLayers.Format.XML.prototype.write.apply(gml2, [gml])+"'))";
+
+            if( 'request_params' in lConfig && 'filter' in lConfig['request_params'] ){
+                var rFilter = lConfig['request_params']['filter'];
+                if( rFilter ){
+                    rFilter = rFilter.replace( featureType + ':', '');
+                    spatialFilter = rFilter +' AND '+ spatialFilter;
+                }
+            }
+            //console.log( spatialFilter );
+
+            var getFeatureUrlData = lizMap.getVectorLayerWfsUrl( featureType, spatialFilter, null, null );
+            $.post( getFeatureUrlData['url'], getFeatureUrlData['options'], function(result) {
+                    var gFormat = new OpenLayers.Format.GeoJSON({
+                        externalProjection: lConfig.crs,
+                        internalProjection: lizMap.map.getProjection()
+                    });
+                    var tfeatures = gFormat.read( result );
+                    config.layers[featureType]['selectedFeatures'] = $.map(tfeatures, function(feat){
+                        return feat.fid.split('.')[1];
+                    });
+                    lizMap.events.triggerEvent(
+                        "layerSelectionChanged",
+                        {
+                            'featureType': featureType,
+                            'featureIds': config.layers[featureType]['selectedFeatures'],
+                            'updateDrawing': true
+                        }
+                    );
+                    queryLayer.destroyFeatures();
+            });
+        });
+    }
+
+        /**
+         * Box
+         * @type @new;OpenLayers.Control.DrawFeature
+         */
+        var queryBoxLayerCtrl = new OpenLayers.Control.DrawFeature(queryLayer,
+            OpenLayers.Handler.RegularPolygon,
+            { handlerOptions: {sides: 4}, 'featureAdded': onQueryFeatureAdded}
+        );
+        lizMap.map.addControl(queryBoxLayerCtrl);
+        lizMap.controls['selectiontool']['queryBoxLayerCtrl'] = queryBoxLayerCtrl;
+
+        /**
+         * Circle
+         * @type @new;OpenLayers.Control.DrawFeature
+         */
+        var queryCircleLayerCtrl = new OpenLayers.Control.DrawFeature(queryLayer,
+            OpenLayers.Handler.RegularPolygon,
+            { handlerOptions: {sides: 40}, 'featureAdded': onQueryFeatureAdded}
+        );
+        lizMap.map.addControl(queryCircleLayerCtrl);
+        lizMap.controls['selectiontool']['queryCircleLayerCtrl'] = queryCircleLayerCtrl;
+
+        /**
+         * Polygon
+         * @type @new;OpenLayers.Control.DrawFeature
+         */
+        var queryPolygonLayerCtrl = new OpenLayers.Control.DrawFeature(queryLayer,
+            OpenLayers.Handler.Polygon, {'featureAdded': onQueryFeatureAdded, styleMap:drawStyleMap}
+        );
+        lizMap.map.addControl(queryPolygonLayerCtrl);
+        lizMap.controls['selectiontool']['queryPolygonLayerCtrl'] = queryPolygonLayerCtrl;
+
+        /**
+         * Freehand
+         * @type @new;OpenLayers.Control.DrawFeature
+         */
+        var queryFreehandLayerCtrl = new OpenLayers.Control.DrawFeature(queryLayer,
+            OpenLayers.Handler.Polygon, {'featureAdded': onQueryFeatureAdded, styleMap:drawStyleMap,
+                handlerOptions:{freehand:true}}
+        );
+        lizMap.map.addControl(queryFreehandLayerCtrl);
+        lizMap.controls['selectiontool']['queryFreehandLayerCtrl'] = queryFreehandLayerCtrl;
+
+        $('#selectiontool-query-buttons button').tooltip( {
+            placement: 'bottom'
+        } );
+        $('#selectiontool-actions button').tooltip( {
+            placement: 'bottom'
+        } );
+
+        $('#selectiontool-unselect').click(function(){
+            if($(this).hasClass('disabled')) return false;
+            // Send signal
+            lizMap.events.triggerEvent(
+                "layerfeatureunselectall",
+                { 'featureType': $('#selectiontool-layer-list').val(), 'updateDrawing': true}
+            );
+            return false;
+        })
+        .hover(
+            function(){ if(!$(this).hasClass('disabled')) $(this).addClass('btn-primary'); },
+            function(){ $(this).removeClass('btn-primary'); }
+        );
+
+        $('#selectiontool-filter').click(function(){
+            if($(this).hasClass('disabled')) return false;
+
+            var aName = $('#selectiontool-layer-list').val();
+            if( $(this).hasClass('active') ) {
+                lizMap.events.triggerEvent(
+                    "layerfeatureremovefilter",
+                    { 'featureType': aName}
+                );
+                lizMap.lizmapLayerFilterActive = null;
+            } else {
+                lizMap.events.triggerEvent(
+                    "layerfeaturefilterselected",
+                    { 'featureType': aName}
+                );
+                lizMap.lizmapLayerFilterActive = aName;
+            }
+            return false;
+        })
+        .hover(
+            function(){ if(!$(this).hasClass('disabled')) $(this).addClass('btn-primary'); },
+            function(){ $(this).removeClass('btn-primary'); }
+        );
+
+        $('#selectiontool-query-deactivate').click(function(){
+            lizMap.controls.selectiontool.queryFreehandLayerCtrl.deactivate();
+            lizMap.controls.selectiontool.queryPolygonLayerCtrl.deactivate();
+            lizMap.controls.selectiontool.queryCircleLayerCtrl.deactivate();
+            lizMap.controls.selectiontool.queryBoxLayerCtrl.deactivate();
+        });
+        $('#selectiontool-query-box').click(function(){
+            lizMap.controls.selectiontool.queryFreehandLayerCtrl.deactivate();
+            lizMap.controls.selectiontool.queryPolygonLayerCtrl.deactivate();
+            lizMap.controls.selectiontool.queryCircleLayerCtrl.deactivate();
+            lizMap.controls.selectiontool.queryBoxLayerCtrl.activate();
+        });
+        $('#selectiontool-query-circle').click(function(){
+            lizMap.controls.selectiontool.queryFreehandLayerCtrl.deactivate();
+            lizMap.controls.selectiontool.queryPolygonLayerCtrl.deactivate();
+            lizMap.controls.selectiontool.queryBoxLayerCtrl.deactivate();
+            lizMap.controls.selectiontool.queryCircleLayerCtrl.activate();
+        });
+        $('#selectiontool-query-polygon').click(function(){
+            lizMap.controls.selectiontool.queryFreehandLayerCtrl.deactivate();
+            lizMap.controls.selectiontool.queryCircleLayerCtrl.deactivate();
+            lizMap.controls.selectiontool.queryBoxLayerCtrl.deactivate();
+            lizMap.controls.selectiontool.queryPolygonLayerCtrl.activate();
+        });
+        $('#selectiontool-query-freehand').click(function(){
+            lizMap.controls.selectiontool.queryBoxLayerCtrl.deactivate();
+            lizMap.controls.selectiontool.queryCircleLayerCtrl.deactivate();
+            lizMap.controls.selectiontool.queryPolygonLayerCtrl.deactivate();
+            lizMap.controls.selectiontool.queryFreehandLayerCtrl.activate();
+        });
+
+        $('#selectiontool-layer-list').change(function(){
+            var selectedFeatureType = $(this).val();
+            if( selectedFeatureType in config.layers &&
+                'selectedFeatures' in config.layers[selectedFeatureType] )
+            {
+                var selectedFeaturesNumber = config.layers[selectedFeatureType]['selectedFeatures'].length;
+                if( selectedFeaturesNumber == 0 ) {
+                    $('#selectiontool-results').html(lizDict['selectiontool.results.none']);
+                    $('#selectiontool-unselect').addClass('disabled');
+                    $('#selectiontool-filter').addClass('disabled');
+                } else {
+                    if( selectedFeaturesNumber == 1 )
+                        $('#selectiontool-results').html(lizDict['selectiontool.results.one']);
+                    else
+                        $('#selectiontool-results').html(lizDict['selectiontool.results.more'].replace('%s',selectedFeaturesNumber));
+                    $('#selectiontool-unselect').removeClass('disabled');
+                    $('#selectiontool-filter').removeClass('disabled');
+                }
+                if ('filteredFeatures' in config.layers[selectedFeatureType] ) {
+                    var filteredFeaturesNumber = config.layers[selectedFeatureType]['filteredFeatures'].length;
+                    if ( filteredFeaturesNumber == 0 )
+                        $('#selectiontool-filter').removeClass('active').css( 'background-color', '');
+                    else
+                        $('#selectiontool-filter').removeClass('disabled').addClass('active').css( 'background-color', 'rgba(255, 171, 0, 0.4)');
+                }
+            }
+        });
+
+        lizMap.events.on( {
+            "minidockopened": function(mdoEvt){
+                if (mdoEvt.id == 'selectiontool') {
+                    $('#selectiontool-query-deactivate').click();
+                    queryLayer.destroyFeatures();
+                    queryLayer.setVisibility(true);
+                    $('#selectiontool-layer-list').change();
+                }
+            },
+            "minidockclosed": function(mdcEvt){
+                if (mdcEvt.id == 'selectiontool') {
+                    $('#selectiontool-query-deactivate').click();
+                    queryLayer.destroyFeatures();
+                    queryLayer.setVisibility(false);
+                }
+            },
+            "layerSelectionChanged": function(lscEvt){
+                if( $('#mapmenu li.selectiontool').hasClass('active') &&
+                    lscEvt.featureType == $('#selectiontool-layer-list').val() )
+                {
+                    $('#selectiontool-layer-list').change();
+                }
+            },
+            "layerFilteredFeaturesChanged": function(lffcEvt){
+                if( $('#mapmenu li.selectiontool').hasClass('active') &&
+                    lffcEvt.featureType == $('#selectiontool-layer-list').val() )
+                {
+                    $('#selectiontool-layer-list').change();
+                }
+            }
+        });
+  }
+
 
             // Extend lizMap API
             lizMap.getAttributeFeatureData = getAttributeFeatureData;
