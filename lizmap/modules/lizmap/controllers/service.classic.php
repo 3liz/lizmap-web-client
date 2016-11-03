@@ -728,7 +728,9 @@ class serviceCtrl extends jController {
       foreach($layer->Feature as $feature){
         $id = $feature['id'];
         // Optionnally filter by feature id
-        if( $filterFid and $filterFid[$configLayer->name] and $filterFid[$configLayer->name] != $id ){
+        if ($filterFid &&
+            isset($filterFid[$configLayer->name]) &&
+            $filterFid[$configLayer->name] != $id) {
           continue;
         }
 
