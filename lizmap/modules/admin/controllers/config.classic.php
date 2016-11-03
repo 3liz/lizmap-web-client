@@ -414,42 +414,41 @@ class configCtrl extends jController {
   * @param object $repository Repository key.
   * @return boolean Success or failure of the saving.
   */
-  protected function saveRepositoryRightsFromRequest($form, $repository, $save=false) {
+  protected function saveRepositoryRightsFromRequest($form, $repository) {
     // Daos to use
     $daoright = jDao::get('jacl2db~jacl2rights','jacl2_profile');
     $daogroup = jDao::get('jacl2db~jacl2group','jacl2_profile');
-    // Set groups array if return needed
-    if(!$save)
-      $groups = array();
 
     // Loop through the form controls
     foreach($form->getControls() as $ctrl){
       // Filter controls corresponding to lizmap subjects
-      if(preg_match('#^'.$this->lizmapClientPrefix.'#', $ctrl->ref) and $ctrl->isContainer()){
+      if(preg_match('#^'.$this->lizmapClientPrefix.'#', $ctrl->ref) && $ctrl->isContainer()){
         $id_aclsbj = $ctrl->ref;
         // Edit control ref to get request params
         $param = str_replace('.', '_', $id_aclsbj);
         // Get values for the selected subject
-        $values = array_values(jApp::coord()->request->params[$param]);
+        if (isset(jApp::coord()->request->params[$param])) {
+          $values = array_values(jApp::coord()->request->params[$param]);
+        }
+        else {
+          // the list in the form may be empty, so no parameters
+          $values = array();
+        }
         // Loop through the groups
         foreach($daogroup->findAll() as $group){
-          // Retrieve only normal groups wich are not blacklisted
-          if(!in_array($group->id_aclgrp, $this->groupBlacklist) and $group->grouptype == 0){
+          // Retrieve only normal groups which are not blacklisted
+          if(!in_array($group->id_aclgrp, $this->groupBlacklist) && $group->grouptype == 0){
             // Add the right if needed else remove it
             if(in_array($group->id_aclgrp, $values)){
-              $groups[] = $group->id_aclgrp;
-              if($save)
-                jAcl2DbManager::addRight($group->id_aclgrp, $id_aclsbj, $repository);
+              jAcl2DbManager::addRight($group->id_aclgrp, $id_aclsbj, $repository);
             }
-            else
-              if($save)
-                $daoright->delete($id_aclsbj, $group->id_aclgrp, $repository);
+            else {
+              $daoright->delete($id_aclsbj, $group->id_aclgrp, $repository);
+            }
           }
         }
       }
     }
-    if(!$save)
-      return $groups;
   }
 
 
@@ -686,8 +685,7 @@ class configCtrl extends jController {
       $modifySection = $lrep->update($data);
     jMessage::add(jLocale::get("admin~admin.form.admin_section.message.data.saved"));
     // group rights data
-    $save = True;
-    $this->saveRepositoryRightsFromRequest($form, $repository, $save);
+    $this->saveRepositoryRightsFromRequest($form, $repository);
 
     // Redirect to the validation page
     $rep= $this->getResponse("redirect");
