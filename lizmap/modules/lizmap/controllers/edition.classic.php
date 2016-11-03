@@ -806,7 +806,8 @@ class editionCtrl extends jController {
           or $this->formControls[$ref]->fieldEditType == 'Photo' ) {
             $ctrl = $form->getControl($ref.'_choice');
             if ($ctrl && $ctrl->type == 'choice' ) {
-                $filename = array_pop( explode( '/', $record->$ref ) );
+                $path = explode( '/', $record->$ref );
+                $filename = array_pop($path);
                 $ctrl->itemsNames['keep'] = jLocale::get("view~edition.upload.choice.keep") . ' ' . $filename;
                 $ctrl->itemsNames['update'] = jLocale::get("view~edition.upload.choice.update");
                 $ctrl->itemsNames['delete'] = jLocale::get("view~edition.upload.choice.delete") . ' ' . $filename;
@@ -1181,25 +1182,29 @@ class editionCtrl extends jController {
       }
     }
     $this->updateFormByLogin($form, False);
-    $attribute = $this->loginFilteredLayers['attribute'];
 
     // Get title layer
     $_layerXmlZero = $this->layerXml;
     $layerXmlZero = $_layerXmlZero[0];
     $_title = $layerXmlZero->xpath('title');
-    $title = (string)$_title[0];
+    if ($_title) {
+        $title = (string)$_title[0];
+    }
+    else {
+        $title = 'No title';
+    }
 
     // Get form layout
     $_editorlayout = $layerXmlZero->xpath('editorlayout');
-    $editorlayout = $_editorlayout[0];
-    if( $editorlayout == 'tablayout' ){
+    if ($_editorlayout && $_editorlayout[0] == 'tablayout') {
         $_attributeEditorForm = $layerXmlZero->xpath('attributeEditorForm');
         $formLayout = str_replace(
             '@',
             '',
             json_encode($_attributeEditorForm[0] )
         );
-    }else{
+    }
+    else {
         $formLayout = '{}';
     }
 

@@ -62,7 +62,7 @@ class mediaCtrl extends jController {
     }
 
     // Check if file exists
-    if($ok and !file_exists($abspath)){
+    if($ok && !is_file($abspath)){
       $ok = False;
     }
 
@@ -83,9 +83,12 @@ class mediaCtrl extends jController {
 
     // Get the name of the file
     $path_parts = pathinfo($abspath);
-    $ext = $path_parts['extension'];
-    $name = $path_parts['basename'].'.'.$ext;
-    $rep->outputFileName = $name;
+    if (isset($path_parts['extension'])) {
+        $rep->outputFileName = $path_parts['basename'].'.'.$path_parts['extension'];
+    }
+    else {
+        $rep->outputFileName = $path_parts['basename'];
+    }
 
     // Get the mime type
     $mime = jFile::getMimeType($abspath);
@@ -205,8 +208,10 @@ class mediaCtrl extends jController {
 
     // Check if file is CSS
     $path_parts = pathinfo($abspath);
-    if( strtolower($path_parts['extension']) != 'css' )
-      $ok = False;
+    if(!isset($path_parts['extension']) ||
+        strtolower($path_parts['extension']) != 'css') {
+        $ok = False;
+    }
 
     // Redirect if errors
     if(!$ok){
@@ -227,7 +232,6 @@ class mediaCtrl extends jController {
 
     // Mime type
     $rep->mimeType = 'text/css';
-
 
     // Read content from file
     $content = jFile::read($abspath);
