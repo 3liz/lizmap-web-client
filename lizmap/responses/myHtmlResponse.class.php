@@ -48,10 +48,11 @@ class myHtmlResponse extends jResponseHtml {
   }
 
   protected function doAfterActions() {
-      // Include all process in common for all actions, like the settings of the
-      // main template, the settings of the response etc..
-    //$this->bodyTagAttributes = array('onload'=>'init()');
     $this->body->assignIfNone('MAIN','<p>no content</p>');
-
+    $this->body->assignIfNone('repositoryLabel', 'Lizmap');
+    $this->body->assignIfNone('isConnected', jAuth::isConnected());
+    $this->body->assignIfNone('user', jAuth::getUserSession());
+    $this->body->assignIfNone('auth_url_return','');
+    $this->body->assignIfNone('googleAnalyticsID', '');
   }
 }

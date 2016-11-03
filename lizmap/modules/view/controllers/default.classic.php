@@ -92,10 +92,9 @@ class defaultCtrl extends jController {
       $rep->body->assign('allowUserAccountRequests', True);
 
     // Add Google Analytics ID
-    if($services->googleAnalyticsID != '' && preg_match("/^UA-\d+-\d+$/", $services->googleAnalyticsID) == 1 )
-      $rep->body->assign('googleAnalyticsID', $services->googleAnalyticsID);
-    else
-      $rep->body->assign('googleAnalyticsID', '');
+    if($services->googleAnalyticsID != '' && preg_match("/^UA-\d+-\d+$/", $services->googleAnalyticsID) == 1 ) {
+        $rep->body->assign('googleAnalyticsID', $services->googleAnalyticsID);
+    }
 
 
     $rep->body->assignZone('MAIN', 'main_view', array('repository'=>$repository, 'auth_url_return'=>$auth_url_return));
