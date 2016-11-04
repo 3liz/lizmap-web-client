@@ -861,6 +861,13 @@ class editionCtrl extends jController {
     else
         $insertAction = true;
 
+    // Check if data has been fetched via WFS for the feature
+    if($updateAction && !$this->featureData){
+      jMessage::clearAll();
+      jMessage::add('Lizmap cannot get this feature data via WFS', 'featureNotFoundViaWfs');
+      return false;
+    }
+
     // Get list of fields which are not primary keys
     $fields = array();
     foreach($this->dataFields as $fieldName=>$prop){
