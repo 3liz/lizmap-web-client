@@ -52,16 +52,17 @@ class lizmapWMTSRequest extends lizmapOGCRequest {
             $cfgLayers = $this->project->getLayers();
             $layers = array();
             foreach( $cfgLayers as $n=>$l ) {
-                $cfgl = $l;
                 if ( $l->cached == 'True' && $l->singleTile != 'True' && strtolower( $l->name ) != 'overview' ) {
-                    $layers[] = lizmapTiler::getLayerTileInfo( $l->name, $this->project, $wms_xml, $tileMatrixSetList );
+                    $layer = lizmapTiler::getLayerTileInfo( $l->name, $this->project, $wms_xml, $tileMatrixSetList );
+                    if ($layer) {
+                        $layers[] = $layer;
+                    }
                 }
             }
 
             jCache::set($cacheId . '_hash', $newhash, 3600);
             jCache::set($cacheId . '_tilematrixsetlist', $tileMatrixSetList, 3600 );
             jCache::set($cacheId . '_layers', $layers, 3600);
-
         }
         $sUrl = jUrl::getFull(
             "lizmap~service:index",
@@ -139,6 +140,13 @@ class lizmapWMTSRequest extends lizmapOGCRequest {
                 break;
             }
         }
+
+        if($tileMatrixSet === null){
+            // Error message
+            jMessage::add('TileMatrixSet seems to be wrong', 'MissingParameter');
+            return $this->serviceException();
+        }
+
         $tileWidth = 256.0;
         $tileHeight = 256.0;
 
