@@ -163,31 +163,41 @@ class lizmapProject{
         if ($this->xml) {
             return $this->xml;
         }
-        if (!file_exists($this->repository->getPath().$this->key.'.qgs') ||
-            !file_exists($this->repository->getPath().$this->key.'.qgs.cfg') ) {
+        $qgs_path = $this->repository->getPath().$this->key.'.qgs';
+        if (!file_exists($qgs_path) ||
+            !file_exists($qgs_path.'.cfg') ) {
             throw new Error("Files of project ".$this->key." does not exists");
         }
-        $qgs_path = $this->repository->getPath().$this->key.'.qgs';
-        return simplexml_load_file($qgs_path);
+        $xml = simplexml_load_file($qgs_path);
+        if ($xml === false) {
+            throw new Exception("Qgs File of project ".$this->key." has invalid content");
+        }
+        return $xml;
     }
 
     /**
      * Read the qgis files
      */
     protected function readXml($key, $rep) {
-        if (!file_exists($rep->getPath().$key.'.qgs') ||
-            !file_exists($rep->getPath().$key.'.qgs.cfg') ) {
+        $qgs_path = $rep->getPath().$key.'.qgs';
+
+        if (!file_exists($qgs_path) ||
+            !file_exists($qgs_path.'.cfg') ) {
             throw new Exception("Files of project $key does not exists");
         }
 
-        $key_session = $rep->getKey().'~'.$key;
-        $qgs_path = $rep->getPath().$key.'.qgs';
         $config = jFile::read($qgs_path.'.cfg');
         $this->cfg = json_decode($config);
-
+        if ($this->cfg === null) {
+            throw new Exception(".qgs.cfg File of project $key has invalid content");
+        }
+        
         $configOptions = $this->cfg->options;
 
         $qgs_xml = simplexml_load_file($qgs_path);
+        if ($qgs_xml === false) {
+            throw new Exception("Qgs File of project $key has invalid content");
+        }
         $this->xml = $qgs_xml;
 
         $this->data = array(
