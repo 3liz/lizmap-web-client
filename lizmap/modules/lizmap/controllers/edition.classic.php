@@ -1196,16 +1196,16 @@ class editionCtrl extends jController {
 
     // Get form layout
     $_editorlayout = $layerXmlZero->xpath('editorlayout');
+    $formLayout = '{}';
     if ($_editorlayout && $_editorlayout[0] == 'tablayout') {
         $_attributeEditorForm = $layerXmlZero->xpath('attributeEditorForm');
-        $formLayout = str_replace(
-            '@',
-            '',
-            json_encode($_attributeEditorForm[0] )
-        );
-    }
-    else {
-        $formLayout = '{}';
+        if ($_attributeEditorForm && count($_attributeEditorForm)) {
+            $formLayout = str_replace(
+                '@',
+                '',
+                json_encode($_attributeEditorForm[0] )
+            );
+        }
     }
 
     // Use template to create html form content
