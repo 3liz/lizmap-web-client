@@ -3,15 +3,14 @@
     <span class="title">
       <button class="btn-tooltip-layer-clear btn btn-mini btn-error btn-link" title="{@view~map.toolbar.content.stop@}">×</button>
       <button id="tooltip-cancel" class="btn-tooltip-cancel btn btn-mini btn-link" type="button"></button>
-      <span class="icon"></span>&nbsp;{@view~map.tooltip.toolbar.title@}&nbsp;
-      <span class="text"></span>
+      <span class="icon"></span>
+      <span class="text">&nbsp;{@view~map.tooltip.toolbar.title@}&nbsp;</span>
     </span>
   </h3>
   <div class="menu-content">
     <table>
       <tr>
         <th>{@view~map.tooltip.toolbar.layer@}</th>
-        <th></th>
       </tr>
       <tr>
         <td>
