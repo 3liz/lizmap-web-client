@@ -273,7 +273,7 @@ class lizmap{
      */
     public static function getLogItemProperties(){
       jClasses::inc('lizmap~lizmapLogItem');
-      return lizmapLogItem::$properties;
+      return lizmapLogItem::getSProperties();
     }
 
 
