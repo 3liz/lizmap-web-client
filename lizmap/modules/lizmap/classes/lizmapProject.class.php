@@ -1320,13 +1320,25 @@ class lizmapProject{
         $configOptions = $this->getOptions();
         $bp = jApp::config()->urlengine['basePath'];
 
+        if ( $this->hasAttributeLayers() ) {
+            $tpl = new jTpl();
+            $dock = new lizmapMapDockItem(
+                'selectiontool',
+                jLocale::get('view~map.selectiontool.navbar.title'),
+                $tpl->fetch('view~map_selectiontool'),
+                1
+            );
+            $dock->icon = '<span class="icon-white icon-star" style="margin-left:2px; margin-top:2px;"></span>';
+            $dockable[] = $dock;
+        }
+
         if ( $this->hasLocateByLayer() ) {
             $tpl = new jTpl();
             $dockable[] = new lizmapMapDockItem(
                 'locate',
                 jLocale::get('view~map.locatemenu.title'),
                 $tpl->fetch('view~map_locate'),
-                1
+                2
             );
         }
 
@@ -1337,7 +1349,7 @@ class lizmapProject{
                 'geolocation',
                 jLocale::get('view~map.geolocate.navbar.title'),
                 $tpl->fetch('view~map_geolocation'),
-                2
+                3
             );
         }
 
@@ -1348,7 +1360,7 @@ class lizmapProject{
                 'print',
                 jLocale::get('view~map.print.navbar.title'),
                 $tpl->fetch('view~map_print'),
-                3
+                4
             );
         }
 
@@ -1359,7 +1371,7 @@ class lizmapProject{
                 'measure',
                 jLocale::get('view~map.measure.navbar.title'),
                 $tpl->fetch('view~map_measure'),
-                4
+                5
             );
         }
 
@@ -1369,7 +1381,7 @@ class lizmapProject{
                 'tooltip-layer',
                 jLocale::get('view~map.tooltip.navbar.title'),
                 $tpl->fetch('view~map_tooltip'),
-                5,
+                6,
                 '',
                 ''
             );
@@ -1381,7 +1393,7 @@ class lizmapProject{
                 'timemanager',
                 jLocale::get('view~map.timemanager.navbar.title'),
                 $tpl->fetch('view~map_timemanager'),
-                6,
+                7,
                 '',
                 $bp.'js/timemanager.js'
             );
@@ -1417,20 +1429,8 @@ class lizmapProject{
                 'permaLink',
                 jLocale::get('view~map.permalink.navbar.title'),
                 $tpl->fetch('view~map_permalink'),
-                7
-            );
-        }
-
-        if ( $this->hasAttributeLayers() ) {
-            $tpl = new jTpl();
-            $dock = new lizmapMapDockItem(
-                'selectiontool',
-                jLocale::get('view~map.selectiontool.navbar.title'),
-                $tpl->fetch('view~map_selectiontool'),
                 8
             );
-            $dock->icon = '<span class="icon-white icon-star" style="margin-left:2px; margin-top:2px;"></span>';
-            $dockable[] = $dock;
         }
 
         return $dockable;
