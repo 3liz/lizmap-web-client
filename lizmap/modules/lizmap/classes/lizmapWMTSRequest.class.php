@@ -9,8 +9,6 @@
 * @license Mozilla Public License : http://www.mozilla.org/MPL/
 */
 
-jClasses::inc('lizmap~lizmapOGCRequest');
-jClasses::inc('lizmap~lizmapWMSRequest');
 class lizmapWMTSRequest extends lizmapOGCRequest {
 
     protected $tplExceptions = 'lizmap~wmts_exception';
@@ -47,7 +45,6 @@ class lizmapWMTSRequest extends lizmapOGCRequest {
             $wms_xml->registerXPathNamespace("wms", "http://www.opengis.net/wms");
             $wms_xml->registerXPathNamespace("xlink", "http://www.w3.org/1999/xlink");
 
-            jClasses::inc("lizmap~lizmapTiler");
             $tileMatrixSetList = lizmapTiler::getTileMatrixSetList( $this->project, $wms_xml );
             $cfgLayers = $this->project->getLayers();
             $layers = array();

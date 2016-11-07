@@ -233,7 +233,7 @@ class editionCtrl extends jController {
             'PROPERTYNAME' => implode(',',$this->primaryKeys),
             'FEATUREID' => $typename . '.' . $featureId
         );
-        jClasses::inc('lizmap~lizmapWFSRequest');
+
         $wfsrequest = new lizmapWFSRequest( $lproj, $wfsparams );
         $wfsresponse = $wfsrequest->getfeature();
         if( property_exists($wfsresponse, 'data') ){
@@ -463,7 +463,6 @@ class editionCtrl extends jController {
 
     // Loop through the table fields
     // and create a form control if needed
-    jClasses::inc('lizmap~qgisFormControl');
     $this->formControls = array();
 
     $layerName = $this->layerName;

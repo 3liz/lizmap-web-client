@@ -9,8 +9,6 @@
 * @license Mozilla Public License : http://www.mozilla.org/MPL/
 */
 
-jClasses::inc('lizmap~lizmapProxy');
-jClasses::inc('lizmap~lizmapOGCRequest');
 class lizmapWFSRequest extends lizmapOGCRequest {
 
     protected $tplExceptions = 'lizmap~wfs_exception';

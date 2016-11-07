@@ -61,7 +61,6 @@ class lizmap{
      *
      */
     public static function getRepositoryProperties(){
-      jClasses::inc('lizmap~lizmapRepository');
       return lizmapRepository::$properties;
     }
 
@@ -70,7 +69,6 @@ class lizmap{
      *
      */
     public static function getRepositoryPropertiesOptions(){
-      jClasses::inc('lizmap~lizmapRepository');
       return lizmapRepository::$propertiesOptions;
     }
 
@@ -164,7 +162,6 @@ class lizmap{
       if ( array_key_exists($key, self::$repositoryInstances) )
         return self::$repositoryInstances[$key];
 
-      jClasses::inc('lizmap~lizmapRepository');
       $rep = new lizmapRepository($key);
       self::$repositoryInstances[$key] = $rep;
       return $rep;
@@ -179,7 +176,6 @@ class lizmap{
         || in_array($key, self::getRepositoryList()) )
         return null;
 
-      jClasses::inc('lizmap~lizmapRepository');
       $rep = new lizmapRepository($key);
       $rep->update( $data );
       self::getRepositoryList();
@@ -231,7 +227,6 @@ class lizmap{
       if ( isset(self::$projectInstances[$key]) )
         return self::$projectInstances[$key];
 
-      jClasses::inc('lizmap~lizmapProject');
       try {
         $proj = new lizmapProject($matches['proj'], $rep);
       }
@@ -276,10 +271,8 @@ class lizmap{
      *
      */
     public static function getLogItemProperties(){
-      jClasses::inc('lizmap~lizmapLogItem');
       return lizmapLogItem::getSProperties();
     }
-
 
     /**
      * Get a log item
@@ -291,7 +284,6 @@ class lizmap{
         if ( !in_array($key, self::getLogItemList()) )
           return null;
 
-      jClasses::inc('lizmap~lizmapLogItem');
       return new lizmapLogItem($key);
     }
 

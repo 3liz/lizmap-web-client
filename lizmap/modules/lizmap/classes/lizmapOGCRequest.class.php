@@ -9,7 +9,6 @@
 * @license Mozilla Public License : http://www.mozilla.org/MPL/
 */
 
-jClasses::inc('lizmap~lizmapProxy');
 class lizmapOGCRequest {
 
     protected $project = null;

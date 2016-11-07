@@ -341,7 +341,6 @@ class serviceCtrl extends jController {
             if ( array_key_exists( 'version', $this->params ) ) {
                 $version = $this->params['version'];
             }
-            jClasses::inc('lizmap~lizmapWMSRequest');
             $request = new lizmapWMSRequest( $this->project, array(
                     'service'=>'WMS',
                     'request'=>'GetCapabilities',
@@ -349,14 +348,12 @@ class serviceCtrl extends jController {
                 )
             );
         } else if( $service == 'wfs' ) {
-            jClasses::inc('lizmap~lizmapWFSRequest');
             $request = new lizmapWFSRequest( $this->project, array(
                     'service'=>'WFS',
                     'request'=>'GetCapabilities'
                 )
             );
         } else if( $service == 'wmts' ) {
-            jClasses::inc('lizmap~lizmapWMTSRequest');
             $request = new lizmapWMTSRequest( $this->project, array(
                     'service'=>'WMTS',
                     'request'=>'GetCapabilities'
@@ -454,7 +451,6 @@ class serviceCtrl extends jController {
         //if(!$this->getServiceParameters())
             //return $this->serviceException();
 
-        jClasses::inc('lizmap~lizmapWMSRequest');
         $wmsRequest = new lizmapWMSRequest( $this->project, $this->params );
         $result = $wmsRequest->process();
         if ( $result->data == 'error' ) {
@@ -502,7 +498,6 @@ class serviceCtrl extends jController {
         //if(!$this->getServiceParameters())
             //return $this->serviceException();
 
-        jClasses::inc('lizmap~lizmapWMSRequest');
         $wmsRequest = new lizmapWMSRequest( $this->project, $this->params );
         $result = $wmsRequest->process();
 
@@ -1182,7 +1177,6 @@ class serviceCtrl extends jController {
   }
 
   function GetTile(){
-        jClasses::inc('lizmap~lizmapWMTSRequest');
         $wmsRequest = new lizmapWMTSRequest( $this->project, $this->params );
         $result = $wmsRequest->process();
 

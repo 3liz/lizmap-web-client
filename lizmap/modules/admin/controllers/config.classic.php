@@ -771,8 +771,6 @@ class configCtrl extends jController {
   function removeCache(){
 
     $repository = $this->param('repository');
-
-    jClasses::inc('lizmap~lizmapProxy');
     $repoKey = lizmapProxy::clearCache($repository);
     if ($repoKey) {
       jMessage::add(jLocale::get("admin~admin.cache.repository.removed", array($repoKey)));
@@ -815,7 +813,6 @@ class configCtrl extends jController {
         $lproj->clearCache();
 
         // Remove the cache for the layer
-        jClasses::inc('lizmap~lizmapProxy');
         lizmapProxy::clearLayerCache($repository, $project, $layer);
 
         jMessage::add(jLocale::get("admin~admin.cache.layer.removed", array($layer)));

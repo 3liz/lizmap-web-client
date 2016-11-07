@@ -114,8 +114,6 @@ class wmtsCtrl extends jControllerCmdLine {
         }
         $repository = $project->getRepository();
 
-        jClasses::inc('lizmap~lizmapWMTSRequest');
-
         $cacheId = $repository->getKey().'_'.$project->getKey().'_WMTS';
         $tileMatrixSetList = jCache::get($cacheId . '_tileMatrixSetList');
         if( !$tileMatrixSetList ) {
@@ -181,8 +179,6 @@ class wmtsCtrl extends jControllerCmdLine {
             return $rep;
         }
         $repository = $project->getRepository();
-
-        jClasses::inc('lizmap~lizmapWMTSRequest');
 
         $cacheId = $repository->getKey().'_'.$project->getKey().'_WMTS';
         $tileMatrixSetList = jCache::get($cacheId . '_tileMatrixSetList');

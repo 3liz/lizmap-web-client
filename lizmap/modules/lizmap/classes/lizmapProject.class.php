@@ -1144,8 +1144,6 @@ class lizmapProject{
         if( count($layers) ) {
             // get first key found in the filtered layers
             $k = key($layers);
-            jClasses::inc('lizmap~qgisMapLayer');
-            jClasses::inc('lizmap~qgisVectorLayer');
             if( $layers[$k]['type'] == 'vector' ) {
                 return new qgisVectorLayer( $this, $layers[$k] );
             }
@@ -1163,8 +1161,6 @@ class lizmapProject{
         if( count($layers) ) {
             // get first key found in the filtered layers
             $k = key($layers);
-            jClasses::inc('lizmap~qgisMapLayer');
-            jClasses::inc('lizmap~qgisVectorLayer');
             if( $layers[$k]['type'] == 'vector' ) {
                 return new qgisVectorLayer( $this, $layers[$k] );
             }
@@ -1181,8 +1177,6 @@ class lizmapProject{
         });
         $layers = array();
         if( $foundLayers ) {
-            jClasses::inc('lizmap~qgisMapLayer');
-            jClasses::inc('lizmap~qgisVectorLayer');
             foreach( $foundLayers as $layer ) {
                 if( $layer['type'] == 'vector' ) {
                     $layers[] = new qgisVectorLayer( $this, $layer );
