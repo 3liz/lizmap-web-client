@@ -23,6 +23,7 @@
         <class name="lizmapProject" file="classes/lizmapProject.class.php" />
         <class name="lizmapProxy" file="classes/lizmapProxy.class.php" />
         <class name="lizmapRepository" file="classes/lizmapRepository.class.php" />
+        <class name="lizmapWMSRequest" file="classes/lizmapWMSRequest.class.php" />
         <class name="lizmapWFSRequest" file="classes/lizmapWFSRequest.class.php" />
         <class name="lizmapWMTSRequest" file="classes/lizmapWMTSRequest.class.php" />
         <class name="lizmapTiler" file="classes/lizmapTiler.class.php" />
