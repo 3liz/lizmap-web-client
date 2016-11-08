@@ -134,7 +134,6 @@ class lizmapTiler{
                 $tileMatrixSet->tileMatrixList = $tileMatrixList;
                 $tileMatrixSetList[] = $tileMatrixSet;
             } else if ( $CRS == $opt->projection->ref ) {
-                jClasses::inc("proj4php~proj4php");
                 $proj4 = new Proj4php();
                 Proj4php::$defs[ $CRS ] = $opt->projection->proj4;
                 $sourceProj = new Proj4phpProj('EPSG:4326',$proj4);
@@ -293,7 +292,6 @@ class lizmapTiler{
         );
         
         $opt = $project->getOptions();
-        jClasses::inc("proj4php~proj4php");
         $proj4 = new Proj4php();
         Proj4php::$defs[ $opt->projection->ref ] = $opt->projection->proj4;
         $sourceProj = new Proj4phpProj('EPSG:4326',$proj4);

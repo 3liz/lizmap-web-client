@@ -26,7 +26,6 @@ class main_viewZone extends jZone {
         if($services->allowUserAccountRequests)
           $this->_tpl->assign('allowUserAccountRequests', True);
 
-        jClasses::inc('lizmapMainViewItem');
         $maps = array();
 
         // Get repository data

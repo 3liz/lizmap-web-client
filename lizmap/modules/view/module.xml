@@ -15,4 +15,8 @@
         <jelix minversion="1.5" maxversion="1.6.*"/>
         <module name="lizmap" />
     </dependencies>
+    <autoload>
+        <class name="lizmapMainViewItem" file="classes/lizmap.class.php" />
+        <class name="lizmapMapDockItem" file="classes/lizmap.class.php" />
+    </autoload>
 </module>

@@ -13,4 +13,9 @@
     <dependencies>
         <jelix minversion="1.6.2" maxversion="1.6.*"/>
     </dependencies>
+    <autoload>
+        <class name="Proj4php" file="classes/proj4php.php" />
+        <class name="proj4phpPoint" file="classes/proj4phpPoint.php" />
+        <class name="Proj4phpProj" file="classes/proj4phpProj.php" />
+    </autoload>
 </module>

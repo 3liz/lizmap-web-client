@@ -19,7 +19,6 @@ class ajax_viewZone extends jZone {
         $domain = jApp::coord()->request->getDomainName();
         $this->_tpl->assign('domain', $domain);
 
-        jClasses::inc('lizmapMainViewItem');
         $maps = array();
 
         // Get repository data

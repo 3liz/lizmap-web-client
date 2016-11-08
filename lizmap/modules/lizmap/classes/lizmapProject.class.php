@@ -1233,7 +1233,6 @@ class lizmapProject{
     }
 
     public function getDefaultDockable() {
-        jClasses::inc('view~lizmapMapDockItem');
         $dockable = array();
         $bp = jApp::config()->urlengine['basePath'];
 
@@ -1309,7 +1308,6 @@ class lizmapProject{
     }
 
     public function getDefaultMiniDockable() {
-        jClasses::inc('view~lizmapMapDockItem');
         $dockable = array();
         $configOptions = $this->getOptions();
         $bp = jApp::config()->urlengine['basePath'];
@@ -1431,7 +1429,6 @@ class lizmapProject{
     }
 
     public function getDefaultBottomDockable() {
-        jClasses::inc('view~lizmapMapDockItem');
         $dockable = array();
         $configOptions = $this->getOptions();
         $bp = jApp::config()->urlengine['basePath'];
