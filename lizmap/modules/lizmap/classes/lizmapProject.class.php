@@ -285,6 +285,14 @@ class lizmapProject{
                 }
             }
         }
+        $groupsMutuallyExclusive = $qgs_xml->xpath("//layer-tree-group[@mutually-exclusive='1']");
+        if ( $groupsMutuallyExclusive && count( $groupsMutuallyExclusive ) > 0 ) {
+            foreach( $groupsMutuallyExclusive as $group ) {
+                $name = (string)$group['name'];
+                if ( property_exists($this->cfg->layers, $name ) )
+                    $this->cfg->layers->$name->mutuallyExclusive = 'True';
+            }
+        }
 
         $layersWithShowFeatureCount = $qgs_xml->xpath("//layer-tree-layer/customproperties/property[@key='showFeatureCount']/parent::*/parent::*");
         if ( $layersWithShowFeatureCount && count( $layersWithShowFeatureCount ) > 0 ) {

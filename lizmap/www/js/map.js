@@ -1008,6 +1008,8 @@ var lizMap = function() {
   function getSwitcherLine(aNode, aParent) {
     var html = '';
     var nodeConfig = aNode.config;
+    var parentConfig = null;
+    if( aParent ) parentConfig = aParent.config;
 
     if( 'geometryType' in nodeConfig &&
         ( nodeConfig.geometryType == "none" || nodeConfig.geometryType == "unknown" || nodeConfig.geometryType == "" )
@@ -1022,6 +1024,8 @@ var lizMap = function() {
       html += ' expanded parent';
     if ( 'displayInLegend' in nodeConfig && nodeConfig.displayInLegend == 'False' )
       html += ' liz-hidden';
+    if ( parentConfig && 'mutuallyExclusive' in parentConfig && parentConfig.mutuallyExclusive == 'True' )
+      html += ' mutually-exclusive';
 
     html += '">';
 
@@ -2092,32 +2096,107 @@ var lizMap = function() {
       var self = $(this);
       if (self.hasClass('disabled'))
         return false;
-      var descendants = [self.parents('tr').first()];
-      descendants = descendants.concat(descendantsOf($(descendants[0])));
-      if ( !self.hasClass('checked') ) {
-        $.each(descendants,function(i,tr) {
-          $(tr).find('button.checkbox').removeClass('partial').addClass('checked');
-          $(tr).find('button.checkbox[name="layer"]').each(function(i,b){
-            var name = $(b).val();
-            var layer = map.getLayersByName(name)[0];
-            if( typeof layer !== 'undefined' )
-              layer.setVisibility(true);
-          });
-        });
-        self.removeClass('partial').addClass('checked');
-      } else {
-        $.each(descendants,function(i,tr) {
-          $(tr).find('button.checkbox').removeClass('partial').removeClass('checked');
-          $(tr).find('button.checkbox[name="layer"]').each(function(i,b){
-            var name = $(b).val();
-            var layer = map.getLayersByName(name)[0];
-            if( typeof layer !== 'undefined' )
-              layer.setVisibility(false);
-          });
-        });
-        self.removeClass('partial').removeClass('checked');
+      // get tr of the button
+      var selfTr = self.parents('tr').first();
+      // get the parent of the tr of the button
+      var parentTr = parentOf( selfTr );
+      // get the siblings of the tr of the button
+      var siblingsTr = [];
+      if ( parentTr && parentTr.length != 0) {
+        for (var c=0, childrenParentTr=childrenOf(parentTr); c<childrenParentTr.length; c++){
+            var siblingTr = $(childrenParentTr[c]);
+            if( siblingTr.attr('id') != selfTr.attr('id') )
+              siblingsTr.push( siblingTr );
+        }
       }
-      var ancestors = ancestorsOf(self.parents('tr').first());
+      var ancestors = [];
+      if( selfTr.hasClass('liz-layer') ) {
+          // manage the button layer
+          if( !self.hasClass('checked') ) {
+              self.removeClass('partial').addClass('checked');
+              selfTr.find('button.checkbox[name="layer"]').each(function(i,b){
+                var name = $(b).val();
+                var layer = map.getLayersByName(name)[0];
+                if( typeof layer !== 'undefined' )
+                  layer.setVisibility(true);
+              });
+          } else {
+              self.removeClass('partial').removeClass('checked');
+              selfTr.find('button.checkbox[name="layer"]').each(function(i,b){
+                var name = $(b).val();
+                var layer = map.getLayersByName(name)[0];
+                if( typeof layer !== 'undefined' )
+                  layer.setVisibility(false);
+              });
+          }
+          if( selfTr.hasClass('mutually-exclusive') ){
+              if( self.hasClass('checked') ) {
+                  for(var s=0, slen=siblingsTr.length; s<slen; s++) {
+                      var siblingTr = $(siblingsTr[s]);
+                      var siblingButt = siblingTr.find('button.checkbox');
+                      if( siblingButt.hasClass('checked') ){
+                        siblingButt.removeClass('partial').removeClass('checked');
+                        if( siblingButt.attr('name') == 'layer') {
+                            var name = $(siblingButt).val();
+                            var layer = map.getLayersByName(name)[0];
+                            if( typeof layer !== 'undefined' )
+                              layer.setVisibility(false);
+                        }
+                      }
+                  }
+                  if ( parentTr && parentTr.length != 0) {
+                      var parentButt = parentTr.find('button.checkbox');
+                      parentButt.removeClass('partial').addClass('checked');
+                  }
+              } else if ( parentTr && parentTr.length != 0) {
+                  var parentButt = parentTr.find('button.checkbox');
+                  parentButt.removeClass('partial').removeClass('checked');
+              }
+              ancestors = ancestorsOf(parentTr);
+          } else {
+            ancestors = ancestorsOf(selfTr);
+          }
+      } else {
+          // manage the button group
+          var descendants = descendantsOf(selfTr);
+          var mutuallyExclusiveGroups = [];
+          $.each(descendants,function(i,tr) {
+            tr = $(tr);
+            var butt = tr.find('button.checkbox');
+            if( !self.hasClass('checked') ) {
+                butt.removeClass('partial').addClass('checked');
+                if( tr.hasClass('liz-layer') && butt.attr('name') == 'layer') {
+                    if( tr.hasClass('mutually-exclusive') ){
+                        var pTr = parentOf(tr);
+                        var pId = pTr.attr('id');
+                        if( mutuallyExclusiveGroups.indexOf(pId) != -1 ) {
+                            butt.removeClass('partial').removeClass('checked');
+                            return;
+                        }
+                        mutuallyExclusiveGroups.push(pId);
+                    }
+                    var name = $(butt).val();
+                    var layer = map.getLayersByName(name)[0];
+                    if( typeof layer !== 'undefined' )
+                      layer.setVisibility(true);
+                }
+            } else {
+                butt.removeClass('partial').removeClass('checked');
+                if( tr.hasClass('liz-layer') && butt.attr('name') == 'layer') {
+                    var name = $(butt).val();
+                    var layer = map.getLayersByName(name)[0];
+                    if( typeof layer !== 'undefined' )
+                      layer.setVisibility(false);
+                }
+            }
+          });
+          if( !self.hasClass('checked') )
+              self.removeClass('partial').addClass('checked');
+          else
+              self.removeClass('partial').removeClass('checked');
+          ancestors = ancestorsOf(selfTr);
+      }
+      // manage ancestors
       $.each(ancestors,function(i,tr) {
         tr = $(tr);
         var count = 0;

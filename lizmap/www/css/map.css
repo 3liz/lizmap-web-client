@@ -1394,7 +1394,10 @@ div.modal h3 .text {
   background-color : #B3B3B3;
 }
 #switcher button.checkbox.partial.checked{
-    background-position: -32px -80px;
+  background-position: -32px -80px;
+}
+#switcher tr.liz-layer.mutually-exclusive button.checkbox {
+  border-radius: 9px;
 }
 #switcher button.link{
   float:right;
