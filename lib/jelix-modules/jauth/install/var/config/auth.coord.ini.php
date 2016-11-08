@@ -35,6 +35,9 @@ error_message = "jauth~autherror.notlogged"
 ; action to execute on a missing authentification when on_error=2
 on_error_action = "jauth~login:out"
 
+; action to execute on a missing authentification when on_error=2 and request is ajax
+on_ajax_error_action=
+
 ; action to execute when a bad ip is checked with secure_with_ip=1 and on_error=2
 bad_ip_action = "jauth~login:out"
 

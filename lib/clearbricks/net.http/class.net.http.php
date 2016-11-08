@@ -52,6 +52,7 @@ class netHttp extends netSocket
 	/** @var string HTTP method */				protected $method;
 	/** @var string POST query string */			protected $postdata = '';
 	/** @var string POST charset */				protected $post_charset;
+    /** @var string POST content type */        protected $post_content_type = 'application/x-www-form-urlencoded';
 	/** @var array Cookies sent */				protected $cookies = array();
 	/** @var string HTTP referer */				protected $referer;
 	/** @var string HTTP accept header */			protected $accept = 'text/xml,application/xml,application/xhtml+xml,text/html,text/plain,image/png,image/jpeg,image/gif,*/*';
@@ -148,14 +149,24 @@ class netHttp extends netSocket
 	* @param array		$charset			Request charset
 	* @return boolean
 	*/
-	public function post($path,$data,$charset=null)
+	public function post($path,$data,$charset=null, $contentType=null)
 	{
 		if ($charset) {
 			$this->post_charset = $charset;
 		}
+		if ($contentType) {
+		    $this->post_content_type = $contentType;
+        }
 		$this->path = $path;
 		$this->method = 'POST';
-		$this->postdata = $this->buildQueryString($data);
+
+        if ($this->post_content_type == 'application/x-www-form-urlencoded') {
+            $this->postdata = $this->buildQueryString($data);
+        }
+        else {
+            $this->postdata = $data;
+        }
+
 		return $this->doRequest();
 	}
 	
@@ -400,7 +411,7 @@ class netHttp extends netSocket
 		
 		# If this is a POST, set the content type and length
 		if ($this->postdata) {
-			$content_type = 'Content-Type: application/x-www-form-urlencoded';
+			$content_type = 'Content-Type: '.$this->post_content_type;
 			if ($this->post_charset) {
 				$content_type .= '; charset='.$this->post_charset;
 			}
