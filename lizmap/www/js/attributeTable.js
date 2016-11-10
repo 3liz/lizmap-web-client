@@ -989,6 +989,8 @@ var lizAttributeTable = function() {
                         // Add function for any string cell
                         if( typeof atFeatures[0].properties[idx] == 'string' ){
                             colConf['mRender'] = function( data, type, full, meta ){
+                                if( !data )
+                                    return data;
                                 if( data.substr(0,6) == 'media/' || data.substr(0,6) == '/media/' ){
                                     var rdata = data;
                                     if( data.substr(0,6) == '/media/' )
