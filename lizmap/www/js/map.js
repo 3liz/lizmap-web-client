@@ -1475,10 +1475,22 @@ var lizMap = function() {
 
     // Get data
     $.get( getFeatureUrlData['url'], getFeatureUrlData['options'], function(data) {
-
       var lConfig = config.layers[aName];
       locate['features'] = {};
       var features = data.features;
+      if( locate.crs != 'EPSG:4326' && features.length != 0) {
+          loadProjDefinition( locate.crs, function( aProj ) {
+              var locateBounds = OpenLayers.Bounds.fromArray(locate.bbox);
+              var dataBounds = OpenLayers.Bounds.fromArray(features[0].bbox);
+              if( dataBounds.getWidth()*dataBounds.getHeight() < 360*180 ) {
+                var tDataBounds = dataBounds.clone().transform(locate.crs, 'EPSG:4326');
+                if ( tDataBounds.getWidth()*tDataBounds.getHeight() < 0.0000028649946082102277 ) {
+                    locate.bbox = locateBounds.transform(locate.crs, 'EPSG:4326').toArray();
+                    locate.crs = 'EPSG:4326';
+                }
+              }
+          });
+      }
 
       if ('filterFieldName' in locate) {
         // create filter combobox for the layer
