@@ -246,19 +246,25 @@ class jCoordinator {
     protected function getController($selector){
 
         $ctrlpath = $selector->getPath();
+        if (isset($_SERVER['HTTP_REFERER'])) {
+            $referer = ' REFERER:'.$_SERVER['HTTP_REFERER'];
+        }
+        else {
+            $referer = '';
+        }
         if(!file_exists($ctrlpath)){
-            throw new jException('jelix~errors.ad.controller.file.unknown',array($this->actionName,$ctrlpath));
+            throw new jException('jelix~errors.ad.controller.file.unknown',array($this->actionName,$ctrlpath.$referer));
         }
         require_once($ctrlpath);
         $class = $selector->getClass();
         if(!class_exists($class,false)){
-            throw new jException('jelix~errors.ad.controller.class.unknown',array($this->actionName,$class, $ctrlpath));
+            throw new jException('jelix~errors.ad.controller.class.unknown',array($this->actionName,$class, $ctrlpath.$referer));
         }
         $ctrl = new $class($this->request);
         if($ctrl instanceof jIRestController){
-            $method = $selector->method = strtolower($_SERVER['REQUEST_METHOD']);
+            $selector->method = strtolower($_SERVER['REQUEST_METHOD']);
         }elseif(!is_callable(array($ctrl, $selector->method))){
-            throw new jException('jelix~errors.ad.controller.method.unknown',array($this->actionName, $selector->method, $class, $ctrlpath));
+            throw new jException('jelix~errors.ad.controller.method.unknown',array($this->actionName, $selector->method, $class, $ctrlpath.$referer));
         }
         return $ctrl;
     }

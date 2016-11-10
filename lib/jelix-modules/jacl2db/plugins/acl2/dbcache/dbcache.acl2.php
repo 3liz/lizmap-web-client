@@ -46,7 +46,7 @@ class dbcacheAcl2Driver implements jIAcl2Driver {
             $resource = '-';
         }
 
-        $login = jAuth::getUserSession()->login;
+        $login = jCache::normalizeKey(jAuth::getUserSession()->login);
         $rightkey = 'acl2db/'.$login.'/rights';
         $groups = null;
 
