@@ -1065,25 +1065,11 @@ class serviceCtrl extends jController {
     if(!$this->getServiceParameters())
       return $this->serviceException();
 
-    // Extensions to get aliases
+    // Extensions to get aliases and type
+    $returnJson = false;
     if ( strtolower( $this->params['outputformat'] ) == 'json' ) {
-        $data = array();
-        $layer = $this->project->findLayerByAnyName( $this->params['typename'] );
-        if ( $layer != null ) {
-            $layer = $this->project->getLayer( $layer->id );
-            $aliases = $layer->getAliasFields();
-            $data['aliases'] = (object) $aliases;
-        }
-        $data = json_encode( (object) $data );
-
-        // Return response
-        $rep = $this->getResponse('binary');
-        $rep->mimeType = 'text/json; charset=utf-8';
-        $rep->content = $data;
-        $rep->doDownload  =  false;
-        $rep->outputFileName  =  'qgis_server_wfs';
-
-        return $rep;
+        $this->params['outputformat'] = 'XMLSCHEMA';
+        $returnJson = true;
     }
 
     // Construction of the request url : base url + parameters
@@ -1099,6 +1085,52 @@ class serviceCtrl extends jController {
     );
     $data = $getRemoteData[0];
     $mime = $getRemoteData[1];
+
+    if( $returnJson ) {
+        $jsonData = array();
+
+        $layer = $this->project->findLayerByAnyName( $this->params['typename'] );
+        if ( $layer != null ) {
+
+            // Get data from XML
+            $use_errors = libxml_use_internal_errors(true);
+            $go = true; $errorlist = array();
+            // Create a DOM instance
+            $xml = simplexml_load_string($data);
+            if(!$xml) {
+              foreach(libxml_get_errors() as $error) {
+                $errorlist[] = $error;
+              }
+              $go = false;
+            }
+            if( $go && $xml->complexType ) {
+                $layername = $layer->name;
+                $typename = (string)$xml->complexType->attributes()->name;
+                if( $typename == $layername.'Type' ) {
+                    $jsonData['name'] = $layername;
+                    $types = array();
+                    $elements = $xml->complexType->complexContent->extension->sequence->element;
+                    foreach($elements as $element) {
+                        $types[(string)$element->attributes()->name] = (string)$element->attributes()->type;
+                    }
+                    $jsonData['types'] = (object) $types;
+                }
+            }
+            $layer = $this->project->getLayer( $layer->id );
+            $aliases = $layer->getAliasFields();
+            $jsonData['aliases'] = (object) $aliases;
+        }
+        $jsonData = json_encode( (object) $jsonData );
+
+        // Return response
+        $rep = $this->getResponse('binary');
+        $rep->mimeType = 'text/json; charset=utf-8';
+        $rep->content = $jsonData;
+        $rep->doDownload  =  false;
+        $rep->outputFileName  =  'qgis_server_wfs';
+
+        return $rep;
+    }
 
     // Return response
     $rep = $this->getResponse('binary');
