@@ -56,6 +56,7 @@ var lizAttributeTable = function() {
 
                     // Add some properties to the lizMap.config
                     config.layers[configLayerName]['features'] = [];
+                    config.layers[configLayerName]['featureCrs'] = null;
                     config.layers[configLayerName]['featuresFullSet'] = false;
                     config.layers[configLayerName]['selectedFeatures'] = [];
                     config.layers[configLayerName]['highlightedFeature'] = null;
@@ -1409,10 +1410,40 @@ var lizAttributeTable = function() {
                 aFeatureID = typeof aFeatureID !== 'undefined' ?  aFeatureID : null;
                 aCallBack = typeof aCallBack !== 'undefined' ?  aCallBack : null;
 
+                // get layer configs
+                var aConfig = config.layers[aName];
+                var atConfig = null;
+                if( aName in config.attributeLayers )
+                    atConfig = config.attributeLayers[aName];
+
                 $('body').css('cursor', 'wait');
                 var geometryName = 'extent';
                 var getFeatureUrlData = lizMap.getVectorLayerWfsUrl( aName, aFilter, aFeatureID, geometryName );
                 $.get( getFeatureUrlData['url'], getFeatureUrlData['options'], function(data) {
+                    if( !('featureCrs' in aConfig) )
+                        aConfig['featureCrs'] = null;
+                    if( aConfig.crs == 'EPSG:4326' );
+                        aConfig['featureCrs'] = 'EPSG:4326';
+                    // verifying the feature CRS
+                    if( !aConfig.featureCrs && data.features.length != 0) {
+                        lizMap.loadProjDefinition( aConfig.featureCrs, function( aProj ) {
+                            var dataBounds = OpenLayers.Bounds.fromArray(data.features[0].bbox);
+                            if( dataBounds.getWidth()*dataBounds.getHeight() < 360*180 ) {
+                                var tDataBounds = dataBounds.clone().transform(aProj, 'EPSG:4326');
+                                if ( tDataBounds.getWidth()*tDataBounds.getHeight() < 0.0000028649946082102277 ) {
+                                    if( atConfig ){
+                                        var atBounds = OpenLayers.Bounds.fromArray(atConfig.bbox);
+                                        atConfig.bbox = atBounds.transform(aConfig['featureCrs'], 'EPSG:4326').toArray();
+                                    }
+                                    aConfig['featureCrs'] = 'EPSG:4326';
+                                }
+                            }
+
+                            if( !aConfig.featureCrs )
+                              aConfig['featureCrs'] = aConfig.crs;
+
+                        });
+                    }
 
                     $.get(service, {
                         'SERVICE':'WFS'
@@ -1455,6 +1486,8 @@ var lizAttributeTable = function() {
                 // Calculate fake bbox around the feature
                 var proj = new OpenLayers.Projection(config.layers[aName].crs);
                 var lConfig = config.layers[aName];
+                if( lConfig.featureCrs )
+                    proj = new OpenLayers.Projection(config.layers[aName].featureCrs);
                 var units = lizMap.map.getUnits();
                 if( lizMap.map.maxScale == 'auto' )
                     var scale = lConfig.minScale;
@@ -1574,6 +1607,8 @@ var lizAttributeTable = function() {
                 var layerConfig = config.layers[featureType];
                 var featureId = featureType + '.' + fid;
                 var proj = new OpenLayers.Projection(config.layers[featureType].crs);
+                if( config.layers[featureType].featureCrs )
+                    proj = new OpenLayers.Projection(config.layers[featureType].featureCrs);
                 var feat = null;
 
                 // Use already retrieved feature
