@@ -1479,10 +1479,27 @@ var lizMap = function() {
 
     // Get data
     $.get( getFeatureUrlData['url'], getFeatureUrlData['options'], function(data) {
-
       var lConfig = config.layers[aName];
       locate['features'] = {};
       var features = data.features;
+      if( locate.crs != 'EPSG:4326' && features.length != 0) {
+          loadProjDefinition( locate.crs, function( aProj ) {
+              var locateBounds = OpenLayers.Bounds.fromArray(locate.bbox);
+
+              var feat = features[0];
+              var geojson = new OpenLayers.Format.GeoJSON();
+              var olFeat = geojson.read(feat);
+              var dataBounds = olFeat[0].geometry.getBounds();
+
+              if( dataBounds.getWidth()*dataBounds.getHeight() < 360*180 ) {
+                var tDataBounds = dataBounds.clone().transform(locate.crs, 'EPSG:4326');
+                if ( tDataBounds.getWidth()*tDataBounds.getHeight() < 0.0000028649946082102277 ) {
+                    locate.bbox = locateBounds.transform(locate.crs, 'EPSG:4326').toArray();
+                    locate.crs = 'EPSG:4326';
+                }
+              }
+          });
+      }
 
       if ('filterFieldName' in locate) {
         // create filter combobox for the layer
@@ -1527,8 +1544,8 @@ var lizMap = function() {
           var filterValue = $(this).children(':selected').val();
           updateLocateFeatureList( aName );
           if (filterValue == '-1')
-            $('#locate-layer-'+layerName+'-'+locate.filterFieldName+' ~ span input').val('');
-          $('#locate-layer-'+layerName+' ~ span input').val('');
+            $('#locate-layer-'+layerName+'-'+locate.filterFieldName+' ~ span > input').val('');
+          $('#locate-layer-'+layerName+' ~ span > input').val('');
           $('#locate-layer-'+layerName).val('-1');
           zoomToLocateFeature(aName);
         });
@@ -1548,6 +1565,7 @@ var lizMap = function() {
 
         // add place holder to the filter combobox input
         $('#locate-layer-'+layerName+'-'+locate.filterFieldName+' ~ span > input').attr('placeholder', filterPlaceHolder).val('');
+        $('#locate-layer-'+layerName+'-'+locate.filterFieldName+' ~ span > input').autocomplete('close');
         updateSwitcherSize();
       }
 
@@ -1584,7 +1602,7 @@ var lizMap = function() {
       $('#locate-layer-'+layerName).html(options).change(function() {
         var val = $(this).children(':selected').val();
         if (val == '-1') {
-          $('#locate-layer-'+layerName+' ~ span input').val('');
+          $('#locate-layer-'+layerName+' ~ span > input').val('');
           // update to join layer
           if ( 'filterjoins' in locate && locate.filterjoins.length != 0 ) {
               var filterjoins = locate.filterjoins;
@@ -1623,7 +1641,7 @@ var lizMap = function() {
                       // update joined select options
                       updateLocateFeatureList( jName );
                       $('#locate-layer-'+cleanName(jName)).val('-1');
-                      $('#locate-layer-'+cleanName(jName)+' ~ span input').val('');
+                      $('#locate-layer-'+cleanName(jName)+' ~ span > input').val('');
                   }
               }
           }
@@ -1644,7 +1662,8 @@ var lizMap = function() {
           }
         }
       });
-      $('#locate-layer-'+layerName+' ~ span input').attr('placeholder', placeHolder).val('');
+      $('#locate-layer-'+layerName+' ~ span > input').attr('placeholder', placeHolder).val('');
+      $('#locate-layer-'+layerName+' ~ span > input').autocomplete('close');
       if ( ('minLength' in locate) && locate.minLength > 0 )
         $('#locate-layer-'+layerName).parent().addClass('no-toggle');
       if(mCheckMobile()){
@@ -1945,7 +1964,7 @@ var lizMap = function() {
             var layer = map.getLayersByName('locatelayer')[0];
             layer.destroyFeatures();
             $('#locate select').val('-1');
-            $('div.locate-layer span input').val('');
+            $('div.locate-layer span > input').val('');
 
             if( lizMap.lizmapLayerFilterActive ){
                 lizMap.events.triggerEvent(
@@ -2479,7 +2498,7 @@ var lizMap = function() {
             var layer = map.getLayersByName('locatelayer')[0];
             layer.destroyFeatures();
             $('#locate select').val('-1');
-            $('div.locate-layer span input').val('');
+            $('div.locate-layer span > input').val('');
 
             if( lizMap.lizmapLayerFilterActive ){
                 lizMap.events.triggerEvent(

@@ -40,6 +40,8 @@ Contributors
 * Pietro Rossin
 * Kari Salovaara
 * Xan Vieiro
+* Rasmus Johansson
+* Jankó J A
 
 Documentation
 --------------

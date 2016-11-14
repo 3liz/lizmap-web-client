@@ -56,6 +56,7 @@ var lizAttributeTable = function() {
 
                     // Add some properties to the lizMap.config
                     config.layers[configLayerName]['features'] = [];
+                    config.layers[configLayerName]['featureCrs'] = null;
                     config.layers[configLayerName]['featuresFullSet'] = false;
                     config.layers[configLayerName]['selectedFeatures'] = [];
                     config.layers[configLayerName]['highlightedFeature'] = null;
@@ -949,6 +950,9 @@ var lizAttributeTable = function() {
                 if( !cAliases ){
                     cAliases = config.layers[aName]['alias'];
                 }
+                var cTypes = {};
+                if( 'types' in config.layers[aName] )
+                    cTypes = config.layers[aName]['types'];
 
                 var dataLength = 0;
                 var atFeatures = cFeatures;
@@ -1593,28 +1597,63 @@ var lizAttributeTable = function() {
                 aFeatureID = typeof aFeatureID !== 'undefined' ?  aFeatureID : null;
                 aCallBack = typeof aCallBack !== 'undefined' ?  aCallBack : null;
 
+                // get layer configs
+                var aConfig = config.layers[aName];
+                var atConfig = null;
+                if( aName in config.attributeLayers )
+                    atConfig = config.attributeLayers[aName];
+
                 $('body').css('cursor', 'wait');
                 var geometryName = 'extent';
                 var getFeatureUrlData = lizMap.getVectorLayerWfsUrl( aName, aFilter, aFeatureID, geometryName );
                 $.get( getFeatureUrlData['url'], getFeatureUrlData['options'], function(data) {
+                    if( !('featureCrs' in aConfig) )
+                        aConfig['featureCrs'] = null;
+                    if( aConfig.crs == 'EPSG:4326' );
+                        aConfig['featureCrs'] = 'EPSG:4326';
+                    // verifying the feature CRS
+                    if( !aConfig.featureCrs && data.features.length != 0) {
+                        lizMap.loadProjDefinition( aConfig.featureCrs, function( aProj ) {
+                            var dataBounds = OpenLayers.Bounds.fromArray(data.features[0].bbox);
+                            if( dataBounds.getWidth()*dataBounds.getHeight() < 360*180 ) {
+                                var tDataBounds = dataBounds.clone().transform(aProj, 'EPSG:4326');
+                                if ( tDataBounds.getWidth()*tDataBounds.getHeight() < 0.0000028649946082102277 ) {
+                                    if( atConfig ){
+                                        var atBounds = OpenLayers.Bounds.fromArray(atConfig.bbox);
+                                        atConfig.bbox = atBounds.transform(aConfig['featureCrs'], 'EPSG:4326').toArray();
+                                    }
+                                    aConfig['featureCrs'] = 'EPSG:4326';
+                                }
+                            }
 
-                    $.get(service, {
-                        'SERVICE':'WFS'
-                       ,'VERSION':'1.0.0'
-                       ,'REQUEST':'DescribeFeatureType'
-                       ,'TYPENAME':aName
-                       ,'OUTPUTFORMAT':'JSON'
-                    }, function(describe) {
+                            if( !aConfig.featureCrs )
+                              aConfig['featureCrs'] = aConfig.crs;
 
-                        var cFeatures = data.features;
-                        var cAliases = describe.aliases;
+                        });
+                    }
 
+                    if ('alias' in aConfig && aConfig['alias']) {
                         if( aCallBack)
-                            aCallBack( aName, aFilter, cFeatures, cAliases );
+                            aCallBack( aName, aFilter, data.features, aConfig['alias'] );
+                    } else
+                        $.get(service, {
+                            'SERVICE':'WFS'
+                           ,'VERSION':'1.0.0'
+                           ,'REQUEST':'DescribeFeatureType'
+                           ,'TYPENAME':aName
+                           ,'OUTPUTFORMAT':'JSON'
+                        }, function(describe) {
 
-                        $('body').css('cursor', 'auto');
+                            aConfig['alias'] = describe.aliases;
+                            if ('types' in describe)
+                                aConfig['types'] = describe.types;
 
-                    },'json');
+                            if( aCallBack)
+                                aCallBack( aName, aFilter, data.features, aConfig['alias'] );
+
+                            $('body').css('cursor', 'auto');
+
+                        },'json');
 
 
 
@@ -1639,6 +1678,8 @@ var lizAttributeTable = function() {
                 // Calculate fake bbox around the feature
                 var proj = new OpenLayers.Projection(config.layers[aName].crs);
                 var lConfig = config.layers[aName];
+                if( lConfig.featureCrs )
+                    proj = new OpenLayers.Projection(config.layers[aName].featureCrs);
                 var units = lizMap.map.getUnits();
                 if( lizMap.map.maxScale == 'auto' )
                     var scale = lConfig.minScale;
