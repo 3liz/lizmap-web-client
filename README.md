@@ -1,4 +1,4 @@
-[![logo](icon.png "3Liz")][3liz]Lizmap Web Application 3.0.3
+[![logo](icon.png "3Liz")][3liz]Lizmap Web Application 3.0.4
 ================================================================
 
 Lizmap web application, by 3LIZ.
@@ -40,6 +40,8 @@ Contributors
 * Pietro Rossin
 * Kari Salovaara
 * Xan Vieiro
+* Rasmus Johansson
+* Jankó J A
 
 Documentation
 --------------
