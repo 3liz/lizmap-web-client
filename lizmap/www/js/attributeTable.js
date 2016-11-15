@@ -1001,7 +1001,7 @@ var lizAttributeTable = function() {
                 if( cFeatures && cFeatures.length > 0 ){
 
                     // Create columns for datatable
-                    var cdc = createDatatableColumns(atFeatures, lConfig['geometryType'], canEdit, canDelete, isChild, isPivot, hiddenFields, cAliases);
+                    var cdc = createDatatableColumns(atFeatures, lConfig['geometryType'], canEdit, canDelete, isChild, isPivot, hiddenFields, cAliases, cTypes);
                     var columns = cdc.columns;
                     var firstDisplayedColIndex = cdc.firstDisplayedColIndex;
 
@@ -1161,7 +1161,7 @@ var lizAttributeTable = function() {
                 return false;
             }
 
-            function createDatatableColumns(atFeatures, geometryType, canEdit, canDelete, isChild, isPivot, hiddenFields, cAliases){
+            function createDatatableColumns(atFeatures, geometryType, canEdit, canDelete, isChild, isPivot, hiddenFields, cAliases, cTypes){
                 var columns = [];
                 var firstDisplayedColIndex = 0;
 
@@ -1195,8 +1195,6 @@ var lizAttributeTable = function() {
                     firstDisplayedColIndex+=2;
                 }
 
-
-
                 // Add column for each field
                 for (var idx in atFeatures[0].properties){
                     // Do not add hidden fields
@@ -1207,23 +1205,38 @@ var lizAttributeTable = function() {
                     // Check if we need to replace url or media by link
                     // Add function for any string cell
                     if( typeof atFeatures[0].properties[idx] == 'string' ){
-                        colConf['mRender'] = function( data, type, full, meta ){
-                            if( data.substr(0,6) == 'media/' || data.substr(0,6) == '/media/' ){
-                                var rdata = data;
-                                if( data.substr(0,6) == '/media/' )
-                                    rdata = data.slice(1);
-                                return '<a href="' + mediaLinkPrefix + '&path=/' + rdata + '" target="_blank">' + columns[meta.col]['title'] + '</a>';
+                        // Check if the col is number
+                        if (idx in cTypes && cTypes[idx] == 'integer')
+                            colConf['mRender'] = function( data, type, full, meta ){
+                                return parseInt(data);
                             }
-                            else if( data.substr(0,4) == 'http' || data.substr(0,3) == 'www' ){
-                                var rdata = data;
-                                if(data.substr(0,3) == 'www')
-                                    rdata = 'http://' + data;
-                                return '<a href="' + rdata + '" target="_blank">' + data + '</a>';
+                        else if (idx in cTypes && cTypes[idx] == 'long')
+                            colConf['mRender'] = function( data, type, full, meta ){
+                                return parseInt(data);
                             }
-                            else
-                                return data;
-
-                        }
+                        else if (idx in cTypes && cTypes[idx] == 'double')
+                            colConf['mRender'] = function( data, type, full, meta ){
+                                return parseFloat(data);
+                            }
+                        else
+                            colConf['mRender'] = function( data, type, full, meta ){
+                                if( !data )
+                                    return data;
+                                if( data.substr(0,6) == 'media/' || data.substr(0,6) == '/media/' ){
+                                    var rdata = data;
+                                    if( data.substr(0,6) == '/media/' )
+                                        rdata = data.slice(1);
+                                    return '<a href="' + mediaLinkPrefix + '&path=/' + rdata + '" target="_blank">' + columns[meta.col]['title'] + '</a>';
+                                }
+                                else if( data.substr(0,4) == 'http' || data.substr(0,3) == 'www' ){
+                                    var rdata = data;
+                                    if(data.substr(0,3) == 'www')
+                                        rdata = 'http://' + data;
+                                    return '<a href="' + rdata + '" target="_blank">' + data + '</a>';
+                                }
+                                else
+                                    return data;
+                            }
                     }
                     columns.push( colConf );
                 }
