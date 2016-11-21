@@ -27,7 +27,8 @@ lizMap.events.on({
         
         // zoom sur l'entité
         $('#btn_localiz_zoom').click(function(){
-            var bbox = new OpenLayers.Bounds(itemMask.xmin, itemMask.ymin, itemMask.xmax, itemMask.ymax).transform(lizMap.map.displayProjection, lizMap.map.projection);
+            var p4326 = new OpenLayers.Projection('EPSG:4326');
+            var bbox = new OpenLayers.Bounds(itemMask.xmin, itemMask.ymin, itemMask.xmax, itemMask.ymax).transform(p4326, lizMap.map.projection);
             lizMap.map.zoomToExtent(bbox);            
             return false;
         });
@@ -93,7 +94,8 @@ lizMap.events.on({
                     
                     $("#localiz_search").val(itemMask.label);
                     $("#localiz_lib").text(itemMask.longlabel);
-                    var bbox = new OpenLayers.Bounds(itemMask.xmin, itemMask.ymin, itemMask.xmax, itemMask.ymax).transform(lizMap.map.displayProjection, lizMap.map.projection);
+                    var p4326 = new OpenLayers.Projection('EPSG:4326');
+                    var bbox = new OpenLayers.Bounds(itemMask.xmin, itemMask.ymin, itemMask.xmax, itemMask.ymax).transform(p4326, lizMap.map.projection);
                     lizMap.map.zoomToExtent(bbox);            
                 },
                 create: function() {

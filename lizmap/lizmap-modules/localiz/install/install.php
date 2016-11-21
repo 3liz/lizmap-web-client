@@ -38,7 +38,7 @@ class localizModuleInstaller extends jInstallerModule {
             /* Ex with plain text search
                 "select oid, typcode, geometrytype(geom) as geometrytype, code as value, lib || complement as label, 
                 typ || ' ' || lib || complement || ' (' || code || ')' as longlabel, 
-                st_xmin(bbox) xmin, st_ymin(bbox) ymin, st_xmax(bbox) xmax, st_ymax(bbox) ymax
+                st_xmin(st_transform(bbox, 4326)) xmin, st_ymin(st_transform(bbox, 4326)) ymin, st_xmax(st_transform(bbox, 4326)) xmax, st_ymax(st_transform(bbox, 4326)) ymax
                 from services.ref_search
                 where (v @@ to_tsquery('fr', regexp_replace('%1$s', '\\s+', '&', 'g')) )
                 order by st_area(bbox) desc"            */
