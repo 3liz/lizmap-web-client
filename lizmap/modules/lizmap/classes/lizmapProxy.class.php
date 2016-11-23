@@ -129,7 +129,10 @@ class lizmapProxy {
         // Get cache if exists
         $keyParams = array();
         foreach ($params as $pk=>$value) {
-            if (in_array($pk, array("bbox", "format", "height", "layers", "transparent"))) {
+            if (in_array($pk, array("crs", "bbox", "format", "height", "width", "layers"))) {
+                if ($pk == "bbox") {
+                    $value = implode(",", array_map(function($v){ return round($v, 1); }, explode(",", $value)));
+                }
                 $keyParams[$pk] = $value;
             }
         }
