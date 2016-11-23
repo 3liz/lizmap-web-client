@@ -92,14 +92,10 @@ class mediaCtrl extends jController {
 
     // Get the mime type
     $mime = jFile::getMimeType($abspath);
-    if( $mime == 'text/plain' ){
-        if( $ext == 'css' )
-            $mime = 'text/css';
-        if( $ext == 'js' )
-            $mime = 'text/javascript';
+    if( $mime == 'text/plain' || $mime == '') {
+        $mime = jFile::getMimeTypeFromFilename($abspath);
     }
-    if($mime)
-      $rep->mimeType = $mime;
+    $rep->mimeType = $mime;
 
     $mimeTextArray = array('text/html', 'text/text');
     if(in_array($mime, $mimeTextArray)){
