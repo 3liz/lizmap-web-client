@@ -2,22 +2,39 @@
     <h3><span class="title"><span class="icon"></span>&nbsp;<span class="text">{@view~map.legendmenu.title@}</span></span></h3>
 
     <div id="switcher-layers-actions">
-        <button class="btn btn-mini disabled" id="layerActionMetadata" title="{@view~map.switcher.layer.metadata.title@}"><i class=
-        "icon-info-sign icon-white"></i></button>
+        <button class="btn btn-mini" id="layers-unfold-all"><i class=
+        "icon-resize-full icon-white"></i></button>
+        <button class="btn btn-mini" id="layers-fold-all"><i class=
+        "icon-resize-small icon-white"></i></button>
 
-        <button class="btn btn-mini disabled" id="layerActionZoom" title="{@view~map.switcher.layer.zoomToExtent.title@}"><i class="icon-zoom-in icon-white"></i></button>
+        <button class="btn btn-mini layerActionZoom disabled" title="{@view~map.switcher.layer.zoomToExtent.title@}"><i class="icon-zoom-in icon-white"></i></button>
 
         <div class="btn-group" role="group" >
-            <button type="button" id="layerActionStyle" class="btn btn-mini dropdown-toggle disabled" data-toggle="dropdown" aria-expanded="false" title="{@view~map.switcher.layer.style.title@}">
+            <button type="button" class="btn btn-mini dropdown-toggle layerActionStyle disabled" data-toggle="dropdown" aria-expanded="false" title="{@view~map.switcher.layer.style.title@}">
                 <i class="icon-adjust icon-white"></i>
               <span class="caret"></span>
             </button>
             <ul class="dropdown-menu" role="menu">
             </ul>
         </div>
+
+        <div class="btn-group" role="group" >
+            <button type="button" class="btn btn-mini dropdown-toggle layerActionOpacity disabled" data-toggle="dropdown" aria-expanded="false" title="{@view~map.switcher.layer.opacity.title@}">
+                <i class="icon-eye-close icon-white"></i>
+              <span class="caret"></span>
+            </button>
+            <ul class="dropdown-menu" role="menu">
+                <li><a href="#" class="btn-opacity-layer">20</a></li>
+                <li><a href="#" class="btn-opacity-layer">40</a></li>
+                <li><a href="#" class="btn-opacity-layer">60</a></li>
+                <li><a href="#" class="btn-opacity-layer">80</a></li>
+                <li><a href="#" class="btn-opacity-layer">100</a></li>
+            </ul>
+        </div>
+
         {if $layerExport}
         <div class="btn-group" role="group" >
-            <button type="button" id="layerActionExport" class="btn btn-mini dropdown-toggle disabled" data-toggle="dropdown" aria-expanded="false" title="{@view~map.switcher.layer.export.title@}">
+            <button type="button" class="btn btn-mini dropdown-toggle layerActionExport disabled" data-toggle="dropdown" aria-expanded="false" title="{@view~map.switcher.layer.export.title@}">
                 <i class="icon-download icon-white"></i>
               <span class="caret"></span>
             </button>

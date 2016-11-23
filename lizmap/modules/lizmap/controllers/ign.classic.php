@@ -24,7 +24,7 @@ class ignCtrl extends jController {
     $query = $this->param('query');
     if ( !$query )
       return $rep;
-    
+
     // Get the project
     $project = filter_var($this->param('project'), FILTER_SANITIZE_STRING);
     if(!$project)
@@ -34,11 +34,18 @@ class ignCtrl extends jController {
     $repository = $this->param('repository');
     if(!$repository)
       return $rep;
-    
+
     // Get the project object
-    $lproj = lizmap::getProject($repository.'~'.$project);
-    if(!$lproj)
-      return $rep;
+    $lproj = null;
+    try {
+        $lproj = lizmap::getProject($repository.'~'.$project);
+        if(!$lproj)
+            return $rep;
+    }
+    catch(UnknownLizmapProjectException $e) {
+        jLog::logEx($e, 'error');
+        return $rep;
+    }
 
     $configOptions = $lproj->getOptions();
     if( !property_exists($configOptions, 'ignKey')
@@ -84,7 +91,7 @@ class ignCtrl extends jController {
         $point = explode(' ',(string)$Point);
         $result['point'] = array($point[1],$point[0]);
       }
-      
+
       $Address = $GeocodedAddress->xpath('Address');
       if ( count($Address) == 0 )
         continue;

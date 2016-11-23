@@ -4,12 +4,18 @@
 * @package   lizmap
 * @subpackage lizmap
 * @author    3liz
-* @copyright 2012 3liz
+* @copyright 2012-2016 3liz
 * @link      http://3liz.com
 * @license Mozilla Public License : http://www.mozilla.org/MPL/
 */
 
 class lizmapProxy {
+
+    /**
+     * loaded profiles
+     * @var array
+     */
+    protected static $_profiles = array();
 
 
     /**
@@ -128,7 +134,6 @@ class lizmapProxy {
             }
         }
         ksort( $keyParams );
-        $key = md5( serialize( $keyParams ) );
 
         $layers = str_replace(',', '_', $params['layers'] );
         $crs = preg_replace('#[^a-zA-Z0-9_]#', '_', $params['crs']);
@@ -160,19 +165,52 @@ class lizmapProxy {
             $repository = $newRepository;
             $project = $newProject;
             $lrep = lizmap::getRepository($repository);
-            $lproj = lizmap::getProject($repository.'~'.$project);
+            if (!$lrep) {
+                jMessage::add('The repository '.strtoupper($repository).' does not exist !', 'RepositoryNotDefined');
+                return array('error', 'text/plain', '404');
+            }
+            try {
+                $lproj = lizmap::getProject($repository.'~'.$project);
+                if(!$lproj){
+                    jMessage::add('The lizmapProject '.strtoupper($project).' does not exist !', 'ProjectNotDefined');
+                    return array('error', 'text/plain', '404');
+                }
+            }
+            catch(UnknownLizmapProjectException $e) {
+                jLog::logEx($e, 'error');
+                jMessage::add('The lizmapProject '.strtoupper($project).' does not exist !', 'ProjectNotDefined');
+                return array('error', 'text/plain', '404');
+            }
         }
+
+        $key = md5( serialize( $keyParams ) );
 
         // Get tile cache virtual profile (tile storage)
         // And get tile if already in cache
         // --> must be done after checking that parent project is involved
-        $profile = 'lizmapCache_'.$repository.'_'.$project.'_'.$layers.'_'.$crs;
-        lizmapProxy::createVirtualProfile( $repository, $project, $layers, $crs );
+        $profile = lizmapProxy::createVirtualProfile( $repository, $project, $layers, $crs );
 
         if($debug)
             lizmap::logMetric('LIZMAP_PROXY_READ_LAYER_CONFIG');
 
-        if ( !$forced ) {
+        // Has the user asked for cache for this layer ?
+        $useCache = False;
+        if ( $configLayer ) {
+            $useCache = strtolower($configLayer->cached) == 'true';
+        }
+
+        // Avoid using cache for requests concerning not square tiles or too big
+        // Focus on real web square tiles
+        $wmsClient = 'web';
+        if( $useCache
+            and $params['width'] != $params['height']
+            and ( $params['width'] > 300 or $params['height'] > 300)
+        ){
+            $wmsClient = 'gis';
+            $useCache = False;
+        }
+
+        if ( $useCache and !$forced ) {
             $tile = jCache::get( $key, $profile );
             if( $tile ){
                 $_SESSION['LIZMAP_GETMAP_CACHE_STATUS'] = 'read';
@@ -185,24 +223,6 @@ class lizmapProxy {
 
                 return array( $tile, $mime, 200);
             }
-        }
-
-        // No cache hit, get more information about tile to grab
-
-        // Has the user asked for cache for this layer ?
-        $string2bool = array('false'=>False, 'False'=>False, 'True'=>True, 'true'=>True);
-        $useCache = False;
-        if ( $configLayer )
-            $useCache = $string2bool[$configLayer->cached];
-        // Avoid using cache for requests concerning not square tiles or too big
-        // Focus on real web square tiles
-        $wmsClient = 'web';
-        if( $useCache
-            and $params['width'] != $params['height']
-            and ( $params['width'] > 300 or $params['height'] > 300)
-        ){
-            $wmsClient = 'gis';
-            $useCache = False;
         }
 
         // ***************************
@@ -307,9 +327,9 @@ class lizmapProxy {
             # Output the image as a string (use PHP buffering)
             ob_start();
             if(preg_match('#png#', $params['format']))
-                imagepng($image, null);
+                imagepng($image, null, 9);
             else
-                imagejpeg($image, null, 80);
+                imagejpeg($image, null, 90);
             $data = ob_get_contents(); // read from buffer
             ob_end_clean(); // delete buffer
 
@@ -346,6 +366,10 @@ class lizmapProxy {
 
         // Set cache configuration
         $cacheName = 'lizmapCache_'.$repository.'_'.$project.'_'.$layers.'_'.$crs;
+
+        if ( array_key_exists( $cacheName, self::$_profiles ) )
+            return $cacheName;
+
         // Storage type
         $ser = lizmap::getServices();
         $cacheStorageType = $ser->cacheStorageType;
@@ -353,9 +377,11 @@ class lizmapProxy {
         $cacheExpiration = (int)$ser->cacheExpiration;
 
         // Cache root directory
-        $cacheRootDirectory = $ser->cacheRootDirectory;
-        if(!is_writable($cacheRootDirectory) or !is_dir($cacheRootDirectory)){
-            $cacheRootDirectory = sys_get_temp_dir();
+        if( $cacheStorageType != 'redis' ){
+            $cacheRootDirectory = $ser->cacheRootDirectory;
+            if(!is_writable($cacheRootDirectory) or !is_dir($cacheRootDirectory)){
+                $cacheRootDirectory = sys_get_temp_dir();
+            }
         }
 
         if($cacheStorageType == 'file'){
@@ -379,7 +405,12 @@ class lizmapProxy {
             // Create the virtual cache profile
             jProfiles::createVirtualProfile('jcache', $cacheName, $cacheParams);
 
-        }else{
+        }
+        elseif($cacheStorageType == 'redis'){
+            // CACHE CONTENT INTO REDIS
+            self::declareRedisProfile($ser, $cacheName, $repository, $project, $layers, $crs);
+        }
+        else{
             // CACHE CONTENT INTO SQLITE DATABASE
 
             // Directory where to store the sqlite database
@@ -408,14 +439,135 @@ class lizmapProxy {
                 "driver"=>"db",
                 "dbprofile"=>$cacheJdbName,
                 "ttl"=>$cacheExpiration,
+                "base64encoding"=>true
             );
 
             // Create the virtual cache profile
             jProfiles::createVirtualProfile('jcache', $cacheName, $cacheParams);
         }
+
+        self::$_profiles[$cacheName] = true;
+        return $cacheName;
     }
 
+    static protected function declareRedisProfile($ser, $cacheName, $repository, $project = null, $layers=null, $crs=null) {
+        $cacheRedisHost = 'localhost';
+        $cacheRedisPort = '6379';
+        $cacheExpiration = (int)$ser->cacheExpiration;
 
+        if( property_exists($ser, 'cacheRedisHost') ) {
+            $cacheRedisHost = trim($ser->cacheRedisHost);
+        }
+        if( property_exists($ser, 'cacheRedisPort') ) {
+            $cacheRedisPort = trim($ser->cacheRedisPort);
+        }
 
+        // Virtual cache profile parameter
+        $cacheParams = array(
+            "driver"=>"redis",
+            "host"=>$cacheRedisHost,
+            "port"=>$cacheRedisPort,
+            "ttl"=>$cacheExpiration,
+        );
+        if ($project) {
+            if ($layers) {
+                $cacheParams["key_prefix"] = $repository.'/'.$project.'/'.$layers.'/'.$crs.'/';
+            }
+            else {
+                $cacheParams["key_prefix"] = $repository.'/'.$project.'/';
+            }
+        }
+        else {
+            $cacheParams["key_prefix"] = $repository.'/';
+        }
 
+        if( property_exists($ser, 'cacheRedisDb') and !empty( $ser->cacheRedisDb ) ) {
+            $cacheParams['db'] = $ser->cacheRedisDb;
+        }
+        if( property_exists($ser, 'cacheRedisKeyPrefix') and !empty( $ser->cacheRedisKeyPrefix ) ) {
+            $cacheParams['key_prefix'] = $ser->cacheRedisKeyPrefix . $cacheParams['key_prefix'];
+        }
+        if( property_exists($ser, 'cacheRedisKeyPrefixFlushMethod') and !empty( $ser->cacheRedisKeyPrefixFlushMethod ) ) {
+            $cacheParams['key_prefix_flush_method'] = $ser->cacheRedisKeyPrefixFlushMethod;
+        }
+
+        // Create the virtual cache profile
+        jProfiles::createVirtualProfile('jcache', $cacheName, $cacheParams);
+    }
+
+    /**
+     * @return mixed  the repository key, or false if clear has failed
+     */
+    static public function clearCache($repository) {
+        // Get config utility
+        $lrep = lizmap::getRepository($repository);
+        $ser = lizmap::getServices();
+
+        // Remove the cache for the repository for file/sqlite cache type
+        $cacheRootDirectory = $ser->cacheRootDirectory;
+        if (!is_writable($cacheRootDirectory) or !is_dir($cacheRootDirectory)){
+            $cacheRootDirectory = sys_get_temp_dir();
+        }
+        $clearCacheOk = jFile::removeDir($cacheRootDirectory.'/'.$lrep->getKey());
+
+        if ($ser->cacheStorageType == 'redis') {
+            // remove the cache from redis
+            $cacheName = 'lizmapCache_'.$repository;
+            self::declareRedisProfile($ser, $cacheName, $repository);
+            $clearCacheOk = $clearCacheOk && jCache::flush($cacheName);
+        }
+        jEvent::notify('lizmapProxyClearCache', array('repository'=>$repository));
+        if ($clearCacheOk) {
+            return $lrep->getKey();
+        }
+        return false;
+    }
+
+    static public function clearLayerCache($repository, $project, $layer) {
+
+        // Storage type
+        $ser = lizmap::getServices();
+        $cacheStorageType = $ser->cacheStorageType;
+
+        // Cache root directory
+        if ($cacheStorageType != 'redis') {
+
+            $cacheRootDirectory = $ser->cacheRootDirectory;
+            if(!is_writable($cacheRootDirectory) or !is_dir($cacheRootDirectory)){
+                $cacheRootDirectory = sys_get_temp_dir();
+            }
+
+            // Directory where cached files are stored for the project
+            $cacheProjectDir = $cacheRootDirectory.'/'.$repository.'/'.$project.'/';
+            $results = array();
+            if (file_exists($cacheProjectDir)) {
+                // Open the directory and walk through the filenames
+                $handle = opendir($cacheProjectDir);
+                while (false !== ($entry = readdir($handle))) {
+                  if ($entry != "." && $entry != "..") {
+                    // Get directories and files corresponding to the layer
+                    if(preg_match('#(^|_)'.$layer.'($|_)#', $entry)) {
+                      $results[] = $cacheProjectDir.$entry;
+                    }
+                  }
+                }
+                closedir($handle);
+                foreach($results as $rem){
+                    if(is_dir($rem)) {
+                        jFile::removeDir($rem);
+                    }
+                    else {
+                        unlink($rem);
+                    }
+                }
+            }
+        }
+        else {
+            // FIXME: removing by layer is not supported for the moment. For the moment, we flush all layers of the project.
+            $cacheName = 'lizmapCache_'.$repository.'_'.$project;
+            self::declareRedisProfile($ser, $cacheName, $repository, $project);
+            jCache::flush($cacheName);
+        }
+        jEvent::notify('lizmapProxyClearLayerCache', array('repository'=>$repository, 'project'=>$project, 'layer'=>$layer));
+    }
 }

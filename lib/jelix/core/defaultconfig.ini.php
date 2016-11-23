@@ -60,6 +60,7 @@ enableAllModules = off
 ; modulename.access = x   where x : 0= unused/forbidden, 1 = private access, 2 = public access
 
 jelix.access = 2
+jelix.path = lib:jelix/core-modules/jelix
 
 ; jacldb is deprecated. keep it uninstall if possible
 jacldb.access = 0
@@ -279,6 +280,11 @@ soap=20
 email = root@localhost
 emailHeaders = "Content-Type: text/plain; charset=UTF-8\nFrom: webmaster@yoursite.com\nX-Mailer: Jelix\nX-Priority: 1 (Highest)\n"
 
+[syslogLogger]
+facility=LOG_LOCAL7
+ident="php-%sapi%-%domain%[%pid%]"
+
+
 [mailer]
 webmasterEmail = root@localhost
 webmasterName =
@@ -446,3 +452,8 @@ jelix.cache=cache/
 [disabledListeners]
 ; list of jEvent listener to not call
 ; eventname[]="module~listenerName"
+
+[coordplugin_auth]
+; key to use to crypt the password in the cookie
+; Warning: the value of this parameter should be stored into localconfig.ini.php
+persistant_crypt_key=

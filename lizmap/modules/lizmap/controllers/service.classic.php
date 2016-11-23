@@ -12,6 +12,9 @@
 class serviceCtrl extends jController {
 
 
+  /**
+   * @var lizmapProject
+   */
   protected $project = '';
   protected $repository = '';
   protected $services = '';
@@ -40,7 +43,7 @@ class serviceCtrl extends jController {
     $project = $this->iParam('project');
     if(!$project){
       // Error message
-      jMessage::add('The parameter project is mandatory !', 'ProjectNotDefind');
+      jMessage::add('The parameter project is mandatory !', 'ProjectNotDefined');
       return $this->serviceException();
     }
 
@@ -120,7 +123,9 @@ class serviceCtrl extends jController {
   */
   function serviceException(){
     $messages = jMessage::getAll();
-
+    if (!$messages) {
+        $messages = array();
+    }
     $rep = $this->getResponse('xml');
     $rep->contentTpl = 'lizmap~wms_exception';
     $rep->content->assign('messages', $messages);
@@ -129,7 +134,10 @@ class serviceCtrl extends jController {
     foreach( $messages as $code=>$msg ){
       if( $code == 'AuthorizationRequired' )
         $rep->setHttpStatus(401, $code);
-
+      else if( $code == 'ProjectNotDefined' )
+        $rep->setHttpStatus(404, 'Not Found');
+      else if( $code == 'RepositoryNotDefined' )
+        $rep->setHttpStatus(404, 'Not Found');
     }
 
     return $rep;
@@ -147,7 +155,7 @@ class serviceCtrl extends jController {
     $project = $this->iParam('project');
 
     if(!$project){
-      jMessage::add('The parameter project is mandatory !', 'ProjectNotDefind');
+      jMessage::add('The parameter project is mandatory !', 'ProjectNotDefined');
       return false;
     }
 
@@ -156,9 +164,27 @@ class serviceCtrl extends jController {
 
     // Get the corresponding repository
     $lrep = lizmap::getRepository($repository);
+    if(!$lrep){
+      jMessage::add('The repository '.strtoupper($repository).' does not exist !', 'RepositoryNotDefined');
+      return false;
+    }
+    // Get the project object
+    $lproj = null;
+    try {
+        $lproj = lizmap::getProject($repository.'~'.$project);
+        if ( !$lproj ) {
+            jMessage::add('The lizmapProject '.strtoupper($project).' does not exist !', 'ProjectNotDefined');
+            return false;
+        }
+    }
+    catch(UnknownLizmapProjectException $e) {
+        jLog::logEx($e, 'error');
+        jMessage::add('The lizmapProject '.strtoupper($project).' does not exist !', 'ProjectNotDefined');
+        return false;
+    }
 
     // Redirect if no rights to access this repository
-    if(!jAcl2::check('lizmap.repositories.view', $lrep->getKey())){
+    if ( !$lproj->checkAcl() ) {
       jMessage::add(jLocale::get('view~default.repository.access.denied'), 'AuthorizationRequired');
       return false;
     }
@@ -170,7 +196,7 @@ class serviceCtrl extends jController {
     $params = $lizmapCache->normalizeParams($pParams);
 
     // Define class private properties
-    $this->project = lizmap::getProject($repository.'~'.$project);
+    $this->project = $lproj;
     $this->repository = $lrep;
     $this->services = lizmap::getServices();
     $this->params = $params;
@@ -197,7 +223,7 @@ class serviceCtrl extends jController {
   protected function filterDataByLogin() {
 
     // Optionnaly add a filter parameter
-    $lproj = lizmap::getProject($this->repository->getKey().'~'.$this->project->getKey());
+    $lproj = $this->project;
 
     $request = strtolower($this->params['request']);
     if( $request == 'getfeature' )
@@ -211,8 +237,6 @@ class serviceCtrl extends jController {
       and $pConfig->loginFilteredLayers
     ){
       // Add client side filter before changing it server side
-      $v='';
-      $filter='';
       $clientExpFilter = Null;
       if( array_key_exists('exp_filter', $this->params))
         $clientExpFilter = $this->params['exp_filter'];
@@ -224,44 +248,47 @@ class serviceCtrl extends jController {
       $isConnected = jAuth::isConnected();
 
       // Check need for filter foreach layer
+      $serverFilterArray = array();
       foreach(explode(',', $layers) as $layername){
         if( property_exists($pConfig->loginFilteredLayers, $layername) ) {
           $oAttribute = $pConfig->loginFilteredLayers->$layername->filterAttribute;
           $attribute = strtolower($oAttribute);
 
-          $pre = "$layername:";
-          if($request == 'getfeature')
-            $pre = '';
           if($isConnected){
             $user = jAuth::getUserSession();
             $login = $user->login;
             if (property_exists($pConfig->loginFilteredLayers->$layername, 'filterPrivate')
              && $pConfig->loginFilteredLayers->$layername->filterPrivate == 'True')
             {
-              $filter.= $v."$pre\"$attribute\" IN ( '".$login."' , 'all' )";
+              $serverFilterArray[$layername] = "\"$attribute\" IN ( '".$login."' , 'all' )";
             } else {
               $userGroups = jAcl2DbUserGroup::getGroups();
               $flatGroups = implode("' , '", $userGroups);
-              $filter.= $v."$pre\"$attribute\" IN ( '".$flatGroups."' , 'all' )";
+              $serverFilterArray[$layername] = "\"$attribute\" IN ( '".$flatGroups."' , 'all' )";
             }
-            $v = ';';
           }else{
             // The user is not authenticated: only show data with attribute = 'all'
-            $filter.= $v."$pre\"$attribute\" = 'all'";
-            $v = ';';
+            $serverFilterArray[$layername] = "\"$attribute\" = 'all'";
           }
-          if( !empty( $clientFilter ) ){
-            $filter.= " AND " . str_replace( $pre, '', $clientFilter);
-          }
+
         }
       }
 
-      // Set filter when multiple layers concerned
-      if($filter){
+      // Set filter if needed
+      if(count($serverFilterArray)>0){
+
         // WFS : EXP_FILTER
         if( $request == 'getfeature' ){
-          if( !empty($clientExpFilter) ){
-            $filter.= " AND ". $clientExpFilter;
+          $filter = ''; $s = '';
+          if( !empty( $clientExpFilter ) ){
+            $filter = $clientExpFilter;
+            $s = ' AND ';
+          }
+          if(count($serverFilterArray) > 0){
+            foreach($serverFilterArray as $lname=>$lfilter){
+              $filter.= $s . $lfilter;
+              $s = ' AND ';
+            }
           }
           $this->params['exp_filter'] = $filter;
           if( array_key_exists('propertyname', $this->params)  ){
@@ -271,11 +298,32 @@ class serviceCtrl extends jController {
           }
         }
         // WMS : FILTER
-        else
-          $this->params['filter'] = $filter;
+        else{
+          if( !empty( $clientFilter ) ){
+            $cfexp = explode(';', $clientFilter);
+            foreach($cfexp as $a){
+              $b = explode(':', $a);
+              $lname = trim($b[0]);
+              $lfilter = trim($b[1]);
+              if(array_key_exists( $lname, $serverFilterArray) ){
+                $serverFilterArray[$lname] .= ' AND ' . $lfilter;
+              }else{
+                $serverFilterArray[$lname] = $lfilter;
+              }
+            }
+          }
+          $filter = ''; $s = '';
+          foreach($serverFilterArray as $lname=>$lfilter){
+            $filter.= $s . $lname . ':' . $lfilter;
+            $s = ';';
+          }
+          if( count($serverFilterArray) > 0 )
+            $this->params['filter'] = $filter;
+        }
       }
 
     }
+
   }
 
 
@@ -293,7 +341,6 @@ class serviceCtrl extends jController {
             if ( array_key_exists( 'version', $this->params ) ) {
                 $version = $this->params['version'];
             }
-            jClasses::inc('lizmap~lizmapWMSRequest');
             $request = new lizmapWMSRequest( $this->project, array(
                     'service'=>'WMS',
                     'request'=>'GetCapabilities',
@@ -301,16 +348,14 @@ class serviceCtrl extends jController {
                 )
             );
         } else if( $service == 'wfs' ) {
-            jClasses::inc('lizmap~lizmapWFSRequest');
             $request = new lizmapWFSRequest( $this->project, array(
                     'service'=>'WFS',
                     'request'=>'GetCapabilities'
                 )
             );
         } else if( $service == 'wmts' ) {
-            jClasses::inc('lizmap~lizmapWMTSRequest');
             $request = new lizmapWMTSRequest( $this->project, array(
-                    'service'=>'WFS',
+                    'service'=>'WMTS',
                     'request'=>'GetCapabilities'
                 )
             );
@@ -406,9 +451,11 @@ class serviceCtrl extends jController {
         //if(!$this->getServiceParameters())
             //return $this->serviceException();
 
-        jClasses::inc('lizmap~lizmapWMSRequest');
         $wmsRequest = new lizmapWMSRequest( $this->project, $this->params );
         $result = $wmsRequest->process();
+        if ( $result->data == 'error' ) {
+            return $this->serviceException();
+        }
 
         $rep = $this->getResponse('binary');
         $rep->mimeType = $result->mime;
@@ -422,7 +469,7 @@ class serviceCtrl extends jController {
 
         // HTTP browser cache expiration time
         $layername = $this->params["layers"];
-        $lproj = lizmap::getProject($this->repository->getKey().'~'.$this->project->getKey());
+        $lproj = $this->project;
         $configLayers = $lproj->getLayers();
         if( property_exists($configLayers, $layername) ){
             $configLayer = $configLayers->$layername;
@@ -447,34 +494,20 @@ class serviceCtrl extends jController {
   */
   function GetLegendGraphics(){
 
-    // Get parameters
-    if(!$this->getServiceParameters())
-      return $this->serviceException();
+        //Get parameters  DELETED HERE SINCE ALREADY DONE IN index method
+        //if(!$this->getServiceParameters())
+            //return $this->serviceException();
 
-    $url = $this->services->wmsServerURL.'?';
-    $bparams = http_build_query($this->params);
-    // replace some chars (not needed in php 5.4, use the 4th parameter of http_build_query)
-    $a = array('+', '_', '.', '-');
-    $b = array('%20', '%5F', '%2E', '%2D');
-    $bparams = str_replace($a, $b, $bparams);
-    $querystring = $url . $bparams;
+        $wmsRequest = new lizmapWMSRequest( $this->project, $this->params );
+        $result = $wmsRequest->process();
 
-    // Get remote data
-    $getRemoteData = $this->lizmapCache->getRemoteData(
-      $querystring,
-      $this->services->proxyMethod,
-      $this->services->debugMode
-    );
-    $data = $getRemoteData[0];
-    $mime = $getRemoteData[1];
+        $rep = $this->getResponse('binary');
+        $rep->mimeType = $result->mime;
+        $rep->content = $result->data;
+        $rep->doDownload = false;
+        $rep->outputFileName  =  'qgis_server_legend';
 
-    $rep = $this->getResponse('binary');
-    $rep->mimeType = $mime;
-    $rep->content = $data;
-    $rep->doDownload = false;
-    $rep->outputFileName  =  'qgis_server_legend';
-
-    return $rep;
+        return $rep;
   }
 
 
@@ -486,49 +519,133 @@ class serviceCtrl extends jController {
   */
   function GetFeatureInfo(){
 
+    $globalResponse = '';
+
     // Get parameters
     if(!$this->getServiceParameters())
       return $this->serviceException();
 
-    $url = $this->services->wmsServerURL.'?';
+    $lproj = $this->project;
+    $pConfig = $lproj->getFullCfg();
 
-    // Deactivate info_format to use Lizmap instead of QGIS
-    $toHtml = False;
-    if($this->params['info_format'] == 'text/html'){
-      $toHtml = True;
-      $this->params['info_format'] = 'text/xml';
+    $externalWMSLayers = array();
+    $QGISLayers = array();
+    $queryLayers = explode(",",$this->iParam('QUERY_LAYERS'));
+
+    // We split layers in two groups. First contains exernal WMS, second contains QGIS layers
+    foreach ($queryLayers as $queryLayer) {
+      if( property_exists($pConfig->layers, $queryLayer)
+       && property_exists($pConfig->layers->$queryLayer, 'externalAccess')
+       && $pConfig->layers->$queryLayer->externalAccess == 'True' ){
+        $externalWMSLayers[] = $queryLayer;
+      }else{
+        $QGISLayers[] = $queryLayer;
+      }
     }
 
-    $bparams = http_build_query($this->params);
-    $querystring = $url . $bparams;
+    // External WMS
+    foreach ($externalWMSLayers as $externalWMSLayer) {
+      $url = $pConfig->layers->$externalWMSLayer->externalAccess->url;
 
-    // Get remote data
-    $getRemoteData = $this->lizmapCache->getRemoteData(
-      $querystring,
-      $this->services->proxyMethod,
-      $this->services->debugMode
+      $externalWMSLayerParams = $this->params;
+
+      $externalWMSLayerParams['layers'] = $externalWMSLayer;
+      $externalWMSLayerParams['query_layers'] = $externalWMSLayer;
+
+      $keyValueParameters = array();
+      $paramsBlacklist = array('module', 'action', 'C', 'repository','project','exceptions','map');
+
+      // We force info_format application/vnd.ogc.gml as default value.
+      // TODO let user choose which format he wants in lizmap plugin
+      $externalWMSLayerParams['info_format'] = 'application/vnd.ogc.gml';
+
+      foreach($externalWMSLayerParams as $key=>$val){
+        if(!in_array($key, $paramsBlacklist)){
+          $keyValueParameters[] = strtolower($key).'='.urlencode($val);
+        }
+      }
+
+      $querystring = $url . implode('&', $keyValueParameters);
+
+      // Query external WMS layers
+      $ch = curl_init();
+      curl_setopt($ch, CURLOPT_HEADER, 0);
+      curl_setopt($ch, CURLOPT_URL, $querystring);
+      curl_setopt( $ch, CURLOPT_SSL_VERIFYPEER, false );
+      curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+      curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
+      $data = curl_exec($ch);
+      curl_close($ch);
+
+      $xml = simplexml_load_string($data);
+
+      // Create HTML response
+      if (count($xml->children())) {
+        $layerstring = $externalWMSLayer.'_layer';
+        $featurestring = $externalWMSLayer.'_feature';
+
+        $layerTitle = $pConfig->layers->$externalWMSLayer->title;
+
+        $HTMLResponse = "<h4>$layerTitle</h4><div class='lizmapPopupDiv'><table class='lizmapPopupTable'>";
+
+        foreach ($xml->$layerstring->$featurestring->children() as $key => $value) {
+          $HTMLResponse .= "<tr><td>$key&nbsp;:&nbsp;</td><td>$value</td></tr>";
+        }
+        $HTMLResponse .= '</table></div>';
+
+        $globalResponse .= $HTMLResponse;
+      }
+    }
+
+    // Query QGIS WMS layers
+    if(!empty($QGISLayers)){
+      $QGISLayersParams = $this->params;
+
+      $QGISLayersParams['layers'] = implode(',', $QGISLayers);
+      $QGISLayersParams['query_layers'] = implode(',', $QGISLayers);
+
+      $url = $this->services->wmsServerURL.'?';
+
+       // Deactivate info_format to use Lizmap instead of QGIS
+       $toHtml = False;
+       if($QGISLayersParams['info_format'] == 'text/html'){
+         $toHtml = True;
+         $QGISLayersParams['info_format'] = 'text/xml';
+       }
+
+       $bparams = http_build_query($QGISLayersParams);
+       $querystring = $url . $bparams;
+
+       // Get remote data
+       $getRemoteData = $this->lizmapCache->getRemoteData(
+         $querystring,
+         $this->services->proxyMethod,
+         $this->services->debugMode
+       );
+       $data = $getRemoteData[0];
+       $mime = $getRemoteData[1];
+
+       // Get HTML content if needed
+       if($toHtml and preg_match('#/xml#', $mime)){
+         $data = $this->getFeatureInfoHtml($QGISLayersParams, $data);
+         $mime = 'text/html';
+       }
+
+       $globalResponse .= $data;
+    }
+
+    // Log
+    $eventParams = array(
+     'key' => 'popup',
+     'content' => '',
+     'repository' => $this->repository->getKey(),
+     'project' => $this->project->getKey()
     );
-    $data = $getRemoteData[0];
-    $mime = $getRemoteData[1];
-
-    // Get HTML content if needed
-    if($toHtml and preg_match('#/xml#', $mime)){
-      $data = $this->getFeatureInfoHtml($this->params, $data);
-      $mime = 'text/html';
-    }
-
-   // Log
-   $eventParams = array(
-    'key' => 'popup',
-    'content' => '',
-    'repository' => $this->repository->getKey(),
-    'project' => $this->project->getKey()
-   );
-   jEvent::notify('LizLogItem', $eventParams);
+    jEvent::notify('LizLogItem', $eventParams);
 
     $rep = $this->getResponse('binary');
-    $rep->mimeType = $mime;
-    $rep->content = $data;
+    $rep->mimeType = 'text/html';
+    $rep->content = $globalResponse;
     $rep->doDownload = false;
     $rep->outputFileName = 'getFeatureInfo';
 
@@ -602,16 +719,7 @@ class serviceCtrl extends jController {
 
     foreach($xml->Layer as $layer){
       $layername = $layer['name'];
-      $configLayer = $this->project->findLayerByName( $layername );
-      // if WMSUseLayerIDs, layer's name can be layer's id
-      if ( $configLayer == null )
-        $configLayer = $this->project->findLayerByLayerId( $layername );
-      // since 2.14 layer's name can be layer's shortName
-      if ( $configLayer == null )
-        $configLayer = $this->project->findLayerByShortName( $layername );
-      // since 2.6 layer's name can be layer's title
-      if ( $configLayer == null )
-        $configLayer = $this->project->findLayerByTitle( $layername );
+      $configLayer = $this->project->findLayerByAnyName( $layername );
       if ( $configLayer == null )
         continue;
 
@@ -661,7 +769,9 @@ class serviceCtrl extends jController {
       foreach($layer->Feature as $feature){
         $id = $feature['id'];
         // Optionnally filter by feature id
-        if( $filterFid and $filterFid[$configLayer->name] and $filterFid[$configLayer->name] != $id ){
+        if ($filterFid &&
+            isset($filterFid[$configLayer->name]) &&
+            $filterFid[$configLayer->name] != $id) {
           continue;
         }
 
@@ -808,7 +918,7 @@ class serviceCtrl extends jController {
     $rep->mimeType = $mime;
     $rep->content = $data;
     $rep->doDownload  =  false;
-    $rep->outputFileName  =  'getPrint';
+    $rep->outputFileName  =  'getPrint.'.$this->param('format');
 
    // Log
    $logContent ='
@@ -996,25 +1106,11 @@ class serviceCtrl extends jController {
     if(!$this->getServiceParameters())
       return $this->serviceException();
 
-    // Extensions to get aliases
+    // Extensions to get aliases and type
+    $returnJson = false;
     if ( strtolower( $this->params['outputformat'] ) == 'json' ) {
-        $data = array();
-        $layer = $this->project->findLayerByName( $this->params['typename'] );
-        if ( $layer != null ) {
-            $layer = $this->project->getLayer( $layer->id );
-            $aliases = $layer->getAliasFields();
-            $data['aliases'] = (object) $aliases;
-        }
-        $data = json_encode( (object) $data );
-
-        // Return response
-        $rep = $this->getResponse('binary');
-        $rep->mimeType = 'text/json; charset=utf-8';
-        $rep->content = $data;
-        $rep->doDownload  =  false;
-        $rep->outputFileName  =  'qgis_server_wfs';
-
-        return $rep;
+        $this->params['outputformat'] = 'XMLSCHEMA';
+        $returnJson = true;
     }
 
     // Construction of the request url : base url + parameters
@@ -1030,6 +1126,52 @@ class serviceCtrl extends jController {
     );
     $data = $getRemoteData[0];
     $mime = $getRemoteData[1];
+
+    if( $returnJson ) {
+        $jsonData = array();
+
+        $layer = $this->project->findLayerByAnyName( $this->params['typename'] );
+        if ( $layer != null ) {
+
+            // Get data from XML
+            $use_errors = libxml_use_internal_errors(true);
+            $go = true; $errorlist = array();
+            // Create a DOM instance
+            $xml = simplexml_load_string($data);
+            if(!$xml) {
+              foreach(libxml_get_errors() as $error) {
+                $errorlist[] = $error;
+              }
+              $go = false;
+            }
+            if( $go && $xml->complexType ) {
+                $layername = $layer->name;
+                $typename = (string)$xml->complexType->attributes()->name;
+                if( $typename == $layername.'Type' ) {
+                    $jsonData['name'] = $layername;
+                    $types = array();
+                    $elements = $xml->complexType->complexContent->extension->sequence->element;
+                    foreach($elements as $element) {
+                        $types[(string)$element->attributes()->name] = (string)$element->attributes()->type;
+                    }
+                    $jsonData['types'] = (object) $types;
+                }
+            }
+            $layer = $this->project->getLayer( $layer->id );
+            $aliases = $layer->getAliasFields();
+            $jsonData['aliases'] = (object) $aliases;
+        }
+        $jsonData = json_encode( (object) $jsonData );
+
+        // Return response
+        $rep = $this->getResponse('binary');
+        $rep->mimeType = 'text/json; charset=utf-8';
+        $rep->content = $jsonData;
+        $rep->doDownload  =  false;
+        $rep->outputFileName  =  'qgis_server_wfs';
+
+        return $rep;
+    }
 
     // Return response
     $rep = $this->getResponse('binary');
@@ -1067,7 +1209,6 @@ class serviceCtrl extends jController {
   }
 
   function GetTile(){
-        jClasses::inc('lizmap~lizmapWMTSRequest');
         $wmsRequest = new lizmapWMTSRequest( $this->project, $this->params );
         $result = $wmsRequest->process();
 
@@ -1083,7 +1224,7 @@ class serviceCtrl extends jController {
 
         // HTTP browser cache expiration time
         $layername = $this->params["layer"];
-        $lproj = lizmap::getProject($this->repository->getKey().'~'.$this->project->getKey());
+        $lproj = $this->project;
         $configLayers = $lproj->getLayers();
         if( property_exists($configLayers, $layername) ){
             $configLayer = $configLayers->$layername;
@@ -1095,5 +1236,4 @@ class serviceCtrl extends jController {
         lizmap::logMetric('LIZMAP_SERVICE_GETMAP');
         return $rep;
   }
-
 }

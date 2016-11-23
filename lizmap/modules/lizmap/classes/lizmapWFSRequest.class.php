@@ -9,8 +9,6 @@
 * @license Mozilla Public License : http://www.mozilla.org/MPL/
 */
 
-jClasses::inc('lizmap~lizmapProxy');
-jClasses::inc('lizmap~lizmapOGCRequest');
 class lizmapWFSRequest extends lizmapOGCRequest {
 
     protected $tplExceptions = 'lizmap~wfs_exception';
@@ -49,10 +47,7 @@ class lizmapWFSRequest extends lizmapOGCRequest {
     }
 
     function describefeaturetype(){
-        // Construction of the request url : base url + parameters
-        $url = $this->services->wmsServerURL.'?';
-        $bparams = http_build_query($this->params);
-        $querystring = $url . $bparams;
+        $querystring = $this->constructUrl();
 
         // Get remote data
         $getRemoteData = lizmapProxy::getRemoteData(
@@ -78,10 +73,7 @@ class lizmapWFSRequest extends lizmapOGCRequest {
         if(!$output)
             $this->params['outputformat'] = 'GML2';
 
-        // Construction of the request url : base url + parameters
-        $url = $this->services->wmsServerURL.'?';
-        $bparams = http_build_query($this->params);
-        $querystring = $url . $bparams;
+        $querystring = $this->constructUrl();
 
         // Get remote data
         $getRemoteData = lizmapProxy::getRemoteData(
@@ -95,7 +87,7 @@ class lizmapWFSRequest extends lizmapOGCRequest {
 
         if ( $mime == 'text/plain' && strtolower( $this->param('outputformat') ) == 'geojson' ) {
             $mime = 'text/json';
-            $layer = $this->project->findLayerByName( $this->params['typename'] );
+            $layer = $this->project->findLayerByAnyName( $this->params['typename'] );
             if ( $layer != null ) {
                 $layer = $this->project->getLayer( $layer->id );
                 $aliases = $layer->getAliasFields();

@@ -58,9 +58,17 @@
         <table class="table">
       {assign $section = 'repository:'.$repo->getKey()}
       {assign $properties = $repo->getProperties()}
+      {assign $rootRepositories = $services->getRootRepositories()}
       {foreach $properties as $prop}
       <tr>
+        {if $prop == 'path' && $rootRepositories != ''}
+            {if substr($repo->getPath(), 0, strlen($rootRepositories)) === $rootRepositories}
+            {assign $d = substr($repo->getPath(), strlen($rootRepositories))}
+            <th>{@admin~admin.form.admin_section.repository.$prop.label@}</th><td>{$d}</td>
+            {/if}
+        {else}
         <th>{@admin~admin.form.admin_section.repository.$prop.label@}</th><td>{$repo->getData($prop)}</td>
+        {/if}
       </tr>
       {/foreach}
         </table>

@@ -13,17 +13,38 @@
  */
 class jInstallerEntryPoint {
 
-    /** @var StdObj   configuration parameters. compiled content of config files */
+    /** @var StdObj   configuration parameters. compiled content of config files
+      *  result of the merge of entry point config, localconfig.ini.php,
+      *  mainconfig.ini.php and defaultconfig.ini.php
+      *  @deprecated as public property
+      */
     public $config;
 
-    /** @var string the filename of the configuration file */
+    /** @var string the filename of the configuration file dedicated to the entry point
+     *       ex: <apppath>/var/config/index/config.ini.php
+     *  @deprecated as public property
+     */
     public $configFile;
 
-    /** @var jIniMultiFilesModifier */
+    /**
+     * combination between mainconfig.ini.php (master) and entrypoint config (overrider)
+     * @var jIniMultiFilesModifier
+     *  @deprecated as public property
+     */
     public $configIni;
 
-    /** @var jIniMultiFilesModifier */
+    /**
+      * combination between masterconfig.ini.php, localconfig.ini.php (master) and entrypoint config (overrider)
+      * @var jIniMultiFilesModifier
+      * @deprecated as public property
+      */
     public $localConfigIni;
+
+    /**
+      * entrypoint config
+      * @var jIniFilesModifier
+      */
+    protected $epConfigIni;
 
     /**
      * @var boolean true if the script corresponding to the configuration
@@ -59,7 +80,8 @@ class jInstallerEntryPoint {
         $this->configFile = $configFile;
         $this->scriptName =  ($this->isCliScript?$file:'/'.$file);
         $this->file = $file;
-        $this->configIni = new jIniMultiFilesModifier($mainConfig, jApp::configPath($configFile));
+        $this->epConfigIni = new jIniFileModifier(jApp::configPath($configFile));
+        $this->configIni = new jIniMultiFilesModifier($mainConfig, $this->epConfigIni);
         $this->config = jConfigCompiler::read($configFile, true,
                                               $this->isCliScript,
                                               $this->scriptName);
@@ -86,5 +108,33 @@ class jInstallerEntryPoint {
      */
     function getModule($moduleName) {
         return new jInstallerModuleInfos($moduleName, $this->config->modules);
+    }
+
+    /**
+     * the entry point config
+     * @return jIniFilesModifier
+     * @since 1.6.8
+     */
+    function getEpConfigIni() {
+        return $this->epConfigIni;
+    }
+
+    /**
+     * @return string the config file name of the entry point
+     */
+    function getConfigFile() {
+        return $this->configFile;
+    }
+
+    /**
+     * @return stdObj the config content of the entry point, as seen when
+     * calling jApp::config()
+     */
+    function getConfigObj() {
+        return $this->config;
+    }
+
+    function setConfigObj($config) {
+        $this->config = $config;
     }
 }

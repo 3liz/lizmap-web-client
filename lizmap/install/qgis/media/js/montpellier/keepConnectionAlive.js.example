@@ -1,0 +1,29 @@
+lizMap.events.on({
+
+    'uicreated': function(e) {
+
+      // Refresh interval in milliseconds
+      var refreshInterval = 60000;
+
+      // Build URL to empty dictionnary provided by Lizmap
+      // Calling this URL will force the checking
+      var mediaLinkPrefix = OpenLayers.Util.urlAppend(
+          lizUrls.media,
+          OpenLayers.Util.getParameterString(lizUrls.params)
+      );
+      var refreshUrl = mediaLinkPrefix.replace('getMedia', 'index').replace('media','translate');
+      // use false language to force an empty response
+      refreshUrl+= '&lang=empty';
+
+      // Set timer to send request every N milliseconds
+      var tid = setInterval(getDataFromLizmap, refreshInterval);
+
+      function getDataFromLizmap() {
+        $.get(refreshUrl, function(data){
+          var a = 1;
+          //console.log( data);
+        });
+      }
+    }
+
+});

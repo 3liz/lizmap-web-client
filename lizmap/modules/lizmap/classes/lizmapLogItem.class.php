@@ -78,6 +78,11 @@ class lizmapLogItem{
       return self::$properties;
     }
 
+    public static function getSProperties(){
+        return self::$properties;
+    }
+
+
     /**
     * Return the array of record keys
     */

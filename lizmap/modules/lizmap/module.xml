@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <module xmlns="http://jelix.org/ns/module/1.0">
     <info id="info@3liz.com" name="lizmap" createdate="2011-06-15">
-        <version date="2016-04-04">3.0beta4</version>
+        <version date="2016-06-07">3.1pre.0001</version>
         <label lang="en_US">lizmap</label>
         <description lang="en_US" />
         <license URL="http://www.mozilla.org/MPL/">Mozilla Public License</license>
@@ -17,6 +17,18 @@
         <module name="admin" />
     </dependencies>
     <autoload>
-      <class name="lizmap" file="classes/lizmap.class.php" />
+        <class name="lizmap" file="classes/lizmap.class.php" />
+        <class name="lizmapLogItem" file="classes/lizmapLogItem.class.php" />
+        <class name="lizmapOGCRequest" file="classes/lizmapOGCRequest.class.php" />
+        <class name="lizmapProject" file="classes/lizmapProject.class.php" />
+        <class name="lizmapProxy" file="classes/lizmapProxy.class.php" />
+        <class name="lizmapRepository" file="classes/lizmapRepository.class.php" />
+        <class name="lizmapWMSRequest" file="classes/lizmapWMSRequest.class.php" />
+        <class name="lizmapWFSRequest" file="classes/lizmapWFSRequest.class.php" />
+        <class name="lizmapWMTSRequest" file="classes/lizmapWMTSRequest.class.php" />
+        <class name="lizmapTiler" file="classes/lizmapTiler.class.php" />
+        <class name="qgisVectorLayer" file="classes/qgisVectorLayer.class.php" />
+        <class name="qgisMapLayer" file="classes/qgisMapLayer.class.php" />
+        <class name="qgisFormControl" file="classes/qgisFormControl.class.php" />
     </autoload>
 </module>

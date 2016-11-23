@@ -10,7 +10,9 @@ var lizAttributeTable = function() {
             var attributeLayersActive = false;
             var attributeLayersDic = {};
             var wfsTypenameMap = {};
-
+            var mediaLinkPrefix = OpenLayers.Util.urlAppend(lizUrls.media
+              ,OpenLayers.Util.getParameterString(lizUrls.params)
+            )
             var startupFilter = false;
             if( !( typeof lizLayerFilter === 'undefined' ) ){
                 startupFilter = true;
@@ -54,6 +56,7 @@ var lizAttributeTable = function() {
 
                     // Add some properties to the lizMap.config
                     config.layers[configLayerName]['features'] = [];
+                    config.layers[configLayerName]['featureCrs'] = null;
                     config.layers[configLayerName]['featuresFullSet'] = false;
                     config.layers[configLayerName]['selectedFeatures'] = [];
                     config.layers[configLayerName]['highlightedFeature'] = null;
@@ -114,7 +117,7 @@ var lizAttributeTable = function() {
             });
             if (hasAttributeTableLayers) {
 
-                // Add the list of laers in the summary table
+                // Add the list of layers in the summary table
                 var tHtml = '<table id="attribute-layer-list-table" class="table table-condensed table-hover table-striped" style="width:auto;">';
                 for( var idx in attributeLayersDic) {
                     var cleanName = idx;
@@ -122,6 +125,13 @@ var lizAttributeTable = function() {
                     // Do not add a button for the pivot tables
                     if( 'pivot' in config.attributeLayers[ attributeLayersDic[ cleanName ] ]
                         && config.attributeLayers[ attributeLayersDic[ cleanName ] ]['pivot'] == 'True'
+                    ){
+                        continue;
+                    }
+
+                    // Do not add a button if not asked by editor
+                    if( 'hideLayer' in config.attributeLayers[ attributeLayersDic[ cleanName ] ]
+                        && config.attributeLayers[ attributeLayersDic[ cleanName ] ]['hideLayer'] == 'True'
                     ){
                         continue;
                     }
@@ -183,6 +193,8 @@ var lizAttributeTable = function() {
                     "attributeLayersReady", {'layers': attributeLayersDic}
                 );
 
+                addSelectionToolControl();
+
             } else {
                 // Hide navbar menu
                 $('#mapmenu li.attributeLayers').hide();
@@ -205,6 +217,19 @@ var lizAttributeTable = function() {
             function deactivateAttributeLayers() {
                 // Some actions done when deactivating attribute table
                 return false;
+            }
+
+            function getRelationInfo(parentLayerId,childLayerId){
+                if( 'relations' in config && parentLayerId in config.relations) {
+                    var layerRelations = config.relations[parentLayerId];
+                    for( var lridx in layerRelations ) {
+                        var relation = layerRelations[lridx];
+                        if (relation.referencingLayer == childLayerId) {
+                            return relation;
+                        }
+                    }
+                }
+                return null;
             }
 
 
@@ -441,11 +466,14 @@ var lizAttributeTable = function() {
                 $('#attribute-layer-'+ cleanName + ' button.btn-moveselectedtotop-attributeTable')
                 .click(function(){
                     var aTable = '#attribute-layer-table-' + $(this).val();
-                    var rTable = $( aTable ).dataTable();
-                    var previousSorting = rTable.fnSettings().aaSorting;
-                    var selectedSorting = [ [0, 'asc'] ];
-                    var newSorting = selectedSorting.concat(previousSorting);
-                    rTable.fnSort( newSorting );
+                    var dTable = $( aTable ).DataTable();
+                    var previousOrder = dTable.order();
+                    previousOrder = $.grep(previousOrder, function(o){
+                        return o[0] != 0;
+                    });
+                    var selectedOrder = [ [0, 'asc'] ];
+                    var newOrder = selectedOrder.concat(previousOrder);
+                    dTable.order( newOrder ).draw();
 
                     // Scroll to top
                     $(aTable).parents('div.attribute-layer-content').scrollTop(0);
@@ -500,23 +528,50 @@ var lizAttributeTable = function() {
                 // Bind click on createFeature button
                 $('#attribute-layer-'+ cleanName + ' button.btn-createFeature-attributeTable')
                 .click(function(){
+                    if ( $('#attribute-layer-'+ cleanName + ' tr.active').length != 1) {
+                        $('#lizmap-edition-message').remove();
+                        lizMap.addMessage( lizDict['attributeLayers.toolbar.btn.data.createChildFeature.no.actived'], 'info', true).attr('id','lizmap-edition-message');
+                        return false;
+                    }
+                    var parentFeatId = $('#attribute-layer-'+ cleanName + ' tr.active button.attribute-layer-feature-select').val();
+                    var parentLayerName = attributeLayersDic[ cleanName ];
+                    var parentLayerId = config.layers[parentLayerName]['id'];
                     var aName = attributeLayersDic[ $(this).val() ];
-                    var lid = config.layers[aName]['id'];
-                    lizMap.launchEdition( lid );
+                    getLayerFeature(parentLayerName, parentFeatId, function(feat) {
+                        var parentFeat = feat;
+                        var lid = config.layers[aName]['id'];
+                        lizMap.launchEdition( lid, null, {layerId:parentLayerId,feature:parentFeat}, function(editionLayerId, editionFeatureId){
+                            $('#bottom-dock').css('left',  lizMap.getDockRightPosition() );
+                        });
+                    });
                     return false;
                 })
                 .hover(
                     function(){ $(this).addClass('btn-primary'); },
                     function(){ $(this).removeClass('btn-primary'); }
                 );
+
                 // Bind click on createFeature button via dropDown
                 $('#attribute-layer-'+ cleanName + ' a.btn-createFeature-attributeTable')
                 .click(function(){
+                    if ( $('#attribute-layer-'+ cleanName + ' tr.active').length != 1) {
+                        $('#lizmap-edition-message').remove();
+                        lizMap.addMessage( lizDict['attributeLayers.toolbar.btn.data.createChildFeature.no.actived'], 'info', true).attr('id','lizmap-edition-message');
+                        return false;
+                    }
+                    var parentFeatId = $('#attribute-layer-'+ cleanName + ' tr.active button.attribute-layer-feature-select').val();
+                    var parentLayerName = attributeLayersDic[ cleanName ];
+                    var parentLayerId = config.layers[parentLayerName]['id'];
                     var selectedValue = $(this).attr('href').replace('#', '');
                     var aName = attributeLayersDic[ selectedValue ];
-                    var lid = config.layers[aName]['id'];
-                    lizMap.launchEdition( lid );
-                    $(this).blur();
+                    getLayerFeature(parentLayerName, parentFeatId, function(feat) {
+                        var parentFeat = feat;
+                        var lid = config.layers[aName]['id'];
+                        lizMap.launchEdition( lid, null, {layerId:parentLayerId,feature:parentFeat}, function(editionLayerId, editionFeatureId){
+                            $('#bottom-dock').css('left',  lizMap.getDockRightPosition() );
+                        });
+                        $(this).blur();
+                    });
                     return false;
                 })
                 .hover(
@@ -603,6 +658,7 @@ var lizAttributeTable = function() {
 
                         }, function(data){
                             // Show response message
+                            $('#lizmap-edition-message').remove();
                             lizMap.addMessage( data, 'info', true).attr('id','lizmap-edition-message');
 
                             // Unselect features of parent (or child)
@@ -739,8 +795,9 @@ var lizAttributeTable = function() {
                             // Build Div content for tab
                             var cDiv = '<div class="tab-pane attribute-layer-child-content '+childActive+'" id="'+ tabId +'" >';
                             var tId = 'attribute-layer-table-' + lizMap.cleanName(parentLayerName) + '-' + lizMap.cleanName(childLayerName);
+                            var tClass = 'attribute-table-table table table-hover table-condensed table-striped child-of-' + lizMap.cleanName(parentLayerName);
                             cDiv+= '    <input type="hidden" class="attribute-table-hidden-layer" value="'+lizMap.cleanName(childLayerName)+'">';
-                            cDiv+= '    <table id="' + tId  + '" class="attribute-table-table table table-hover table-condensed table-striped"></table>';
+                            cDiv+= '    <table id="' + tId  + '" class="' + tClass + '"></table>';
                             cDiv+= '</div>';
                             childDiv.push(cDiv);
 
@@ -868,7 +925,7 @@ var lizAttributeTable = function() {
             }
 
 
-            function getDirectChildData( childLayerName, filter, childTable){
+            function getDirectChildData( childLayerName, filter, childTable ){
                 // Get features
                 getAttributeFeatureData(childLayerName, filter, null, function(chName, chFilter, chFeatures, chAliases){
                     buildLayerAttributeDatatable( chName, childTable, chFeatures, chAliases );
@@ -883,7 +940,7 @@ var lizAttributeTable = function() {
                 };
             })();
 
-            function buildLayerAttributeDatatable(aName, aTable, cFeatures, cAliases ) {
+            function buildLayerAttributeDatatable(aName, aTable, cFeatures, cAliases, aCallback ) {
 
                 cFeatures = typeof cFeatures !== 'undefined' ?  cFeatures : null;
                 if( !cFeatures ){
@@ -893,6 +950,9 @@ var lizAttributeTable = function() {
                 if( !cAliases ){
                     cAliases = config.layers[aName]['alias'];
                 }
+                var cTypes = {};
+                if( 'types' in config.layers[aName] )
+                    cTypes = config.layers[aName]['types'];
 
                 var dataLength = 0;
                 var atFeatures = cFeatures;
@@ -908,163 +968,47 @@ var lizAttributeTable = function() {
                 if( aTable.replace( cleanName, '') == '#attribute-layer-table-' )
                     isChild = false;
 
+                // Pivot table ?
+                var isPivot = false;
+                if( isChild
+                    && 'pivot' in config.attributeLayers[aName]
+                    && config.attributeLayers[aName]['pivot'] == 'True'
+                ){
+                    isPivot = true;
+                }
+
+                // Hidden fields
+                var hiddenFields = [];
+                if( aName in config.attributeLayers
+                    && 'hiddenFields' in config.attributeLayers[aName]
+                    && config.attributeLayers[aName]['hiddenFields']
+                ){
+                    var hf = config.attributeLayers[aName]['hiddenFields'].trim();
+                    hiddenFields = hf.split(/[\s,]+/);
+                }
+
+                // Check edition capabilities
+                var canEdit = false;
+                var canDelete = false;
+                if( 'editionLayers' in config && aName in config.editionLayers ) {
+                    var al = config.editionLayers[aName];
+                    if( al.capabilities.modifyAttribute == "True" || al.capabilities.modifyGeometry == "True" )
+                        canEdit = true;
+                    if( al.capabilities.deleteFeature == "True" )
+                        canDelete = true;
+                }
+
                 if( cFeatures && cFeatures.length > 0 ){
-                    var foundFeatures = {};
-                    var columns = [];
-                    var firstDisplayedColIndex = 0;
 
-                    // Hidden fields
-                    var hiddenFields = [];
+                    // Create columns for datatable
+                    var cdc = createDatatableColumns(atFeatures, lConfig['geometryType'], canEdit, canDelete, isChild, isPivot, hiddenFields, cAliases, cTypes);
+                    var columns = cdc.columns;
+                    var firstDisplayedColIndex = cdc.firstDisplayedColIndex;
 
-                    if( aName in config.attributeLayers
-                        && 'hiddenFields' in config.attributeLayers[aName]
-                        && config.attributeLayers[aName]['hiddenFields']
-                    ){
-                        var hf = config.attributeLayers[aName]['hiddenFields'].trim();
-                        hiddenFields = hf.split(/[\s,]+/);
-                    }
-
-                    // Pivot table ?
-                    var isPivot = false;
-                    if( isChild
-                        && 'pivot' in config.attributeLayers[aName]
-                        && config.attributeLayers[aName]['pivot'] == 'True'
-                    ){
-                        isPivot = true;
-                    }
-
-                    // Column with selected status
-                    columns.push( {"data": "lizSelected", "width": "25px", "searchable": false, "sortable": true, "visible": false} );
-                    firstDisplayedColIndex+=1;
-
-                    // Select tool
-                    columns.push( { "data": "select", "width": "25px", "searchable": false, "sortable": false} );
-                    firstDisplayedColIndex+=1;
-
-                    // Check edition capabilities
-                    var canEdit = false;
-                    var canDelete = false;
-                    if( 'editionLayers' in config && aName in config.editionLayers ) {
-                        var al = config.editionLayers[aName];
-                        if( al.capabilities.modifyAttribute == "True" || al.capabilities.modifyGeometry == "True" )
-                            canEdit = true;
-                        if( al.capabilities.deleteFeature == "True" )
-                            canDelete = true;
-                    }
-
-                    if( canEdit ){
-                        columns.push( {"data": "edit", "width": "25px", "searchable": false, "sortable": false} );
-                        firstDisplayedColIndex+=1;
-                    }
-                    if( canDelete ){
-                        columns.push( {"data": "delete", "width": "25px", "searchable": false, "sortable": false} );
-                        firstDisplayedColIndex+=1;
-                    }
-
-                    if( canEdit && isChild && !isPivot){
-                        columns.push( {"data": "unlink", "width": "25px", "searchable": false, "sortable": false} );
-                        firstDisplayedColIndex+=1;
-                    }
-
-                    if( lConfig['geometryType'] != 'none'
-                        && lConfig['geometryType'] != 'unknown'
-                    ){
-                        columns.push( {"data": "zoom", "width": "25px", "searchable": false, "sortable": false} );
-                        columns.push( {"data": "center", "width": "25px", "searchable": false, "sortable": false} );
-                        firstDisplayedColIndex+=2;
-                    }
-
-                    var mediaLinkPrefix = OpenLayers.Util.urlAppend(lizUrls.media
-                      ,OpenLayers.Util.getParameterString(lizUrls.params)
-                    )
-
-                    // Add column for each field
-                    for (var idx in atFeatures[0].properties){
-                        // Do not add hidden fields
-                        if( ($.inArray(idx, hiddenFields) > -1) )
-                            continue;
-                        var colConf = { "mData": idx, "title": cAliases[idx] };
-
-                        // Check if we need to replace url or media by link
-                        if( typeof atFeatures[0].properties[idx] == 'string' ){
-                            if( atFeatures[0].properties[idx].substr(0, 6) == 'media/' ){
-                                colConf['mRender'] = function( data, type, full, meta ){
-                                    return '<a href="' + mediaLinkPrefix + '&path=/' + data + '" target="_blank">' + columns[meta.col]['title'] + '</a>';
-                                }
-                            }
-                            else if( atFeatures[0].properties[idx].substr(0, 4) == 'http' ){
-                                colConf['mRender'] = function( data, type, full, meta ){
-                                    return '<a href="' + data + '" target="_blank">' + data + '</a>';
-                                }
-                            }
-                        }
-                        columns.push( colConf );
-                    }
-
-                    var dataSet = [];
-                    for (var x in atFeatures) {
-                        var line = {};
-
-                        // add feature to layer global data
-                        var feat = atFeatures[x];
-                        var fid = feat.id.split('.')[1];
-                        foundFeatures[fid] = feat;
-
-                        // Add row ID
-                        line['DT_RowId'] = fid;
-                        line['lizSelected'] = 'z';
-
-                        // Build table lines
-                        var selectCol = '<button class="btn btn-mini attribute-layer-feature-select checkbox" value="'+fid+'" title="' + lizDict['attributeLayers.btn.select.title'] + '"><i class="icon-ok"></i></button>';
-                        line['select'] = selectCol;
-
-                        // Edit button
-                        if( canEdit ) {
-                            var editCol = '<button class="btn btn-mini attribute-layer-feature-edit" value="'+fid+'" title="' + lizDict['attributeLayers.btn.edit.title'] + '"><i class="icon-pencil"></i></button>';
-                            line['edit'] = editCol;
-                        }
-
-                        // Delete button
-                        if( canDelete ) {
-                            var delIcon = 'icon-trash';
-                            var delTitle = lizDict['attributeLayers.btn.delete.title'];
-                            if( isChild && isPivot ){
-                                delIcon = 'icon-minus';
-                                delTitle = lizDict['attributeLayers.btn.remove.link.title'];
-                            }
-                            var deleteCol = '<button class="btn btn-mini attribute-layer-feature-delete" value="'+fid+'" title="' + delTitle + '"><i class="'+delIcon+'"></i></button>';
-                            line['delete'] = deleteCol;
-                        }
-
-                        // Unlink button
-                        if( canEdit && isChild && !isPivot ) {
-
-                            var unlinkIcon = 'icon-minus';
-                            var unlinkTitle = lizDict['attributeLayers.btn.remove.link.title'];
-                            var unlinkCol = '<button class="btn btn-mini attribute-layer-feature-unlink" value="'+fid+'" title="' + unlinkTitle + '"><i class="'+unlinkIcon+'"></i></button>';
-                            line['unlink'] = unlinkCol;
-                        }
-
-                        if( lConfig['geometryType'] != 'none'
-                            && lConfig['geometryType'] != 'unknown'
-                        ){
-                            var zoomCol = '<button class="btn btn-mini attribute-layer-feature-focus zoom" value="'+fid+'" title="' + lizDict['attributeLayers.btn.zoom.title'] + '"><i class="icon-zoom-in"></i></button>';
-                            line['zoom'] = zoomCol;
-
-                            var centerCol = '<button class="btn btn-mini attribute-layer-feature-focus center" value="'+fid+'" title="' + lizDict['attributeLayers.btn.center.title'] + '"><i class="icon-screenshot"></i></button>';
-                            line['center'] = centerCol;
-                        }
-
-                        for (var idx in feat.properties){
-                            if( ($.inArray(idx, hiddenFields) > -1) )
-                                continue;
-                            var prop = feat.properties[idx];
-                            line[idx] = prop;
-                        }
-
-
-                        dataSet.push( line );
-                    }
+                    // Format features for datatable
+                    var ff = formatDatatableFeatures(atFeatures, lConfig['geometryType'], canEdit, canDelete, isChild, isPivot, hiddenFields, config.layers[aName]['selectedFeatures']);
+                    var foundFeatures = ff.foundFeatures;
+                    var dataSet = ff.dataSet;
 
                     // Fill in the features object
                     // only when necessary : object is empty or is not child or (is child and no full features list in the object)
@@ -1129,9 +1073,10 @@ var lizAttributeTable = function() {
                                 }
                             }
                             ,dom: myDom
-                            ,pageLength: 100
+                            ,pageLength: 50
 
                         } );
+
                         var oTable = $( aTable ).dataTable();
 
                         if( !searchWhileTyping )
@@ -1211,7 +1156,169 @@ var lizAttributeTable = function() {
                         'featureType': aName
                     }
                 );
+                if (aCallback)
+                    aCallback(aName,aTable);
                 return false;
+            }
+
+            function createDatatableColumns(atFeatures, geometryType, canEdit, canDelete, isChild, isPivot, hiddenFields, cAliases, cTypes){
+                var columns = [];
+                var firstDisplayedColIndex = 0;
+
+                // Column with selected status
+                columns.push( {"data": "lizSelected", "width": "25px", "searchable": false, "sortable": true, "visible": false} );
+                firstDisplayedColIndex+=1;
+
+                // Select tool
+                columns.push( { "data": "select", "width": "25px", "searchable": false, "sortable": false} );
+                firstDisplayedColIndex+=1;
+
+                if( canEdit ){
+                    columns.push( {"data": "edit", "width": "25px", "searchable": false, "sortable": false} );
+                    firstDisplayedColIndex+=1;
+                }
+                if( canDelete ){
+                    columns.push( {"data": "delete", "width": "25px", "searchable": false, "sortable": false} );
+                    firstDisplayedColIndex+=1;
+                }
+
+                if( canEdit && isChild && !isPivot){
+                    columns.push( {"data": "unlink", "width": "25px", "searchable": false, "sortable": false} );
+                    firstDisplayedColIndex+=1;
+                }
+
+                if( geometryType != 'none'
+                    && geometryType != 'unknown'
+                ){
+                    columns.push( {"data": "zoom", "width": "25px", "searchable": false, "sortable": false} );
+                    columns.push( {"data": "center", "width": "25px", "searchable": false, "sortable": false} );
+                    firstDisplayedColIndex+=2;
+                }
+
+                // Add column for each field
+                for (var idx in atFeatures[0].properties){
+                    // Do not add hidden fields
+                    if( ($.inArray(idx, hiddenFields) > -1) )
+                        continue;
+                    var colConf = { "mData": idx, "title": cAliases[idx] };
+
+                    // Check if we need to replace url or media by link
+                    // Add function for any string cell
+                    if( typeof atFeatures[0].properties[idx] == 'string' ){
+                        // Check if the col is number
+                        if (idx in cTypes && cTypes[idx] == 'integer')
+                            colConf['mRender'] = function( data, type, full, meta ){
+                                return parseInt(data);
+                            }
+                        else if (idx in cTypes && cTypes[idx] == 'long')
+                            colConf['mRender'] = function( data, type, full, meta ){
+                                return parseInt(data);
+                            }
+                        else if (idx in cTypes && cTypes[idx] == 'double')
+                            colConf['mRender'] = function( data, type, full, meta ){
+                                return parseFloat(data);
+                            }
+                        else
+                            colConf['mRender'] = function( data, type, full, meta ){
+                                if( !data )
+                                    return data;
+                                if( data.substr(0,6) == 'media/' || data.substr(0,6) == '/media/' ){
+                                    var rdata = data;
+                                    if( data.substr(0,6) == '/media/' )
+                                        rdata = data.slice(1);
+                                    return '<a href="' + mediaLinkPrefix + '&path=/' + rdata + '" target="_blank">' + columns[meta.col]['title'] + '</a>';
+                                }
+                                else if( data.substr(0,4) == 'http' || data.substr(0,3) == 'www' ){
+                                    var rdata = data;
+                                    if(data.substr(0,3) == 'www')
+                                        rdata = 'http://' + data;
+                                    return '<a href="' + rdata + '" target="_blank">' + data + '</a>';
+                                }
+                                else
+                                    return data;
+                            }
+                    }
+                    columns.push( colConf );
+                }
+                return {
+                    'columns': columns,
+                    'firstDisplayedColIndex': firstDisplayedColIndex
+                };
+            }
+
+            function formatDatatableFeatures(atFeatures, geometryType, canEdit, canDelete, isChild, isPivot, hiddenFields, selectedFeatures){
+                var dataSet = [];
+                var foundFeatures = {};
+                for (var x in atFeatures) {
+                    var line = {};
+
+                    // add feature to layer global data
+                    var feat = atFeatures[x];
+                    var fid = feat.id.split('.')[1];
+                    foundFeatures[fid] = feat;
+
+                    // Add row ID
+                    line['DT_RowId'] = fid;
+                    line['lizSelected'] = 'z';
+
+                    if( selectedFeatures && $.inArray( fid, selectedFeatures ) != -1 )
+                        line.lizSelected = 'a';
+
+                    // Build table lines
+                    var selectCol = '<button class="btn btn-mini attribute-layer-feature-select checkbox" value="'+fid+'" title="' + lizDict['attributeLayers.btn.select.title'] + '"><i class="icon-ok"></i></button>';
+                    line['select'] = selectCol;
+
+                    // Edit button
+                    if( canEdit ) {
+                        var editCol = '<button class="btn btn-mini attribute-layer-feature-edit" value="'+fid+'" title="' + lizDict['attributeLayers.btn.edit.title'] + '"><i class="icon-pencil"></i></button>';
+                        line['edit'] = editCol;
+                    }
+
+                    // Delete button
+                    if( canDelete ) {
+                        var delIcon = 'icon-trash';
+                        var delTitle = lizDict['attributeLayers.btn.delete.title'];
+                        if( isChild && isPivot ){
+                            delIcon = 'icon-minus';
+                            delTitle = lizDict['attributeLayers.btn.remove.link.title'];
+                        }
+                        var deleteCol = '<button class="btn btn-mini attribute-layer-feature-delete" value="'+fid+'" title="' + delTitle + '"><i class="'+delIcon+'"></i></button>';
+                        line['delete'] = deleteCol;
+                    }
+
+                    // Unlink button
+                    if( canEdit && isChild && !isPivot ) {
+
+                        var unlinkIcon = 'icon-minus';
+                        var unlinkTitle = lizDict['attributeLayers.btn.remove.link.title'];
+                        var unlinkCol = '<button class="btn btn-mini attribute-layer-feature-unlink" value="'+fid+'" title="' + unlinkTitle + '"><i class="'+unlinkIcon+'"></i></button>';
+                        line['unlink'] = unlinkCol;
+                    }
+
+                    if( geometryType != 'none'
+                        && geometryType != 'unknown'
+                    ){
+                        var zoomCol = '<button class="btn btn-mini attribute-layer-feature-focus zoom" value="'+fid+'" title="' + lizDict['attributeLayers.btn.zoom.title'] + '"><i class="icon-zoom-in"></i></button>';
+                        line['zoom'] = zoomCol;
+
+                        var centerCol = '<button class="btn btn-mini attribute-layer-feature-focus center" value="'+fid+'" title="' + lizDict['attributeLayers.btn.center.title'] + '"><i class="icon-screenshot"></i></button>';
+                        line['center'] = centerCol;
+                    }
+
+                    for (var idx in feat.properties){
+                        if( ($.inArray(idx, hiddenFields) > -1) )
+                            continue;
+                        var prop = feat.properties[idx];
+                        line[idx] = prop;
+                    }
+
+
+                    dataSet.push( line );
+                }
+                return {
+                    'dataSet': dataSet,
+                    'foundFeatures': foundFeatures
+                };
             }
 
             function bindTableLineClick(aName, aTable){
@@ -1243,8 +1350,7 @@ var lizAttributeTable = function() {
                 });
             }
 
-            function bindTableSelectButton(aName, aTable){
-
+            function bindTableSelectButton(aName, aTable, aClass){
                 $(aTable +' tr td button.attribute-layer-feature-select').click(function() {
 
                     // Trigger click to highlight feature;
@@ -1293,7 +1399,9 @@ var lizAttributeTable = function() {
                     var featId = $(this).val();
                     // trigger edition
                     var lid = config.layers[aName]['id'];
-                    lizMap.launchEdition( lid, featId );
+                    lizMap.launchEdition( lid, featId, null, function(editionLayerId, editionFeatureId){
+                        $('#bottom-dock').css('left',  lizMap.getDockRightPosition() );
+                    });
                     return false;
                 })
                 .hover(
@@ -1375,6 +1483,7 @@ var lizAttributeTable = function() {
                       fkey: cFkey
                     }, function(data){
                         // Show response message
+                        $('#lizmap-edition-message').remove();
                         lizMap.addMessage( data, 'info', true).attr('id','lizmap-edition-message');
 
                         // Send signal saying edition has been done on table
@@ -1392,6 +1501,108 @@ var lizAttributeTable = function() {
                 );
             }
 
+            function bindEditTableEditButton(aName, aTable){
+                $(aTable +' tr td button.attribute-layer-feature-edit').click(function() {
+                    var featId = $(this).val();
+                    // trigger edition
+                    var lid = config.layers[aName]['id'];
+                    // get info from the form
+                    var formFeatureId = $('#edition-form-container form input[name="liz_featureId"]').val();
+                    var formLayerId = $('#edition-form-container form input[name="liz_layerId"]').val();
+                    // get parent layer config
+                    var getParentLayerConfig = lizMap.getLayerConfigById( formLayerId );
+                    var parentLayerName = getParentLayerConfig[0];
+                    if ( aName in config.attributeLayers ) {
+                        // get featureType layer config
+                        var layerConfig = config.attributeLayers[aName];
+                        //get relation
+                        var relation = getRelationInfo(formLayerId,layerConfig.layerId);
+                        if( relation != null ) {
+                            getLayerFeature(parentLayerName, formFeatureId, function(feat) {
+                                lizMap.launchEdition( lid, featId, {layerId:formLayerId,feature:feat}, function(editionLayerId, editionFeatureId){
+                                    $('#bottom-dock').css('left',  lizMap.getDockRightPosition() );
+                                });
+                            });
+                        }
+                    }
+                    return false;
+                })
+                .hover(
+                    function(){ $(this).addClass('btn-primary'); },
+                    function(){ $(this).removeClass('btn-primary'); }
+                );
+            }
+
+            function getEditionChildData( childLayerName, filter, childTable ){
+                // Get features
+                getAttributeFeatureData(childLayerName, filter, null, function(chName, chFilter, chFeatures, chAliases){
+                    buildLayerAttributeDatatable( chName, childTable, chFeatures, chAliases, function() {
+
+                        // Check edition capabilities
+                        var canEdit = false;
+                        var canDelete = false;
+                        if( 'editionLayers' in config && chName in config.editionLayers ) {
+                            var al = config.editionLayers[chName];
+                            if( al.capabilities.modifyAttribute == "True" || al.capabilities.modifyGeometry == "True" )
+                                canEdit = true;
+                            if( al.capabilities.deleteFeature == "True" )
+                                canDelete = true;
+                        }
+
+                        // Unbind previous events on page
+                        $( childTable ).on( 'page.dt', function() {
+                            // unbind previous events
+                            $(childTable +' tr').unbind('click');
+                            $(childTable +' tr td button').unbind('click');
+                        });
+
+                        // Bind events when drawing table
+                        $( childTable ).on( 'draw.dt', function() {
+
+                            $(childTable +' tr').unbind('click');
+                            $(childTable +' tr td button').unbind('click');
+
+                            // Bind event on select button
+                            bindTableSelectButton(chName, childTable);
+
+                            // Bind event on delete button
+                            if( canDelete ) {
+                                bindTableDeleteButton(chName, childTable);
+                            }
+
+                            // Bind event on edit button
+                            if( canEdit ) {
+                                bindEditTableEditButton(chName, childTable);
+                            }
+
+                            // Remove button before reuse it
+                            // Zoom
+                            $(childTable +' tr td button.attribute-layer-feature-focus').remove();
+                            // Unlink
+                            $(childTable +' tr td button.attribute-layer-feature-unlink').remove();
+/*
+                            // Bind event when users click anywhere on the table line to highlight
+                            bindTableLineClick(aName, aTable);
+
+                            // Bind event on zoom buttons
+                            if(  config.layers[aName]['geometryType'] != 'none'
+                                    && config.layers[aName]['geometryType'] != 'unknown'
+                            ) {
+                                bindTableZoomButton(aName, aTable);
+                            }
+
+                            // Bind event on unlink button
+                            if( canEdit && isChild && !isPivot ) {
+                                bindTableUnlinkButton(aName, aTable);
+                            }
+*/
+                            return false;
+
+                        });
+                    });
+                });
+            }
+
 
             function getAttributeFeatureData(aName, aFilter, aFeatureID, aCallBack){
 
@@ -1399,28 +1610,63 @@ var lizAttributeTable = function() {
                 aFeatureID = typeof aFeatureID !== 'undefined' ?  aFeatureID : null;
                 aCallBack = typeof aCallBack !== 'undefined' ?  aCallBack : null;
 
+                // get layer configs
+                var aConfig = config.layers[aName];
+                var atConfig = null;
+                if( aName in config.attributeLayers )
+                    atConfig = config.attributeLayers[aName];
+
                 $('body').css('cursor', 'wait');
                 var geometryName = 'extent';
                 var getFeatureUrlData = lizMap.getVectorLayerWfsUrl( aName, aFilter, aFeatureID, geometryName );
                 $.get( getFeatureUrlData['url'], getFeatureUrlData['options'], function(data) {
+                    if( !('featureCrs' in aConfig) )
+                        aConfig['featureCrs'] = null;
+                    if( aConfig.crs == 'EPSG:4326' );
+                        aConfig['featureCrs'] = 'EPSG:4326';
+                    // verifying the feature CRS
+                    if( !aConfig.featureCrs && data.features.length != 0) {
+                        lizMap.loadProjDefinition( aConfig.featureCrs, function( aProj ) {
+                            var dataBounds = OpenLayers.Bounds.fromArray(data.features[0].bbox);
+                            if( dataBounds.getWidth()*dataBounds.getHeight() < 360*180 ) {
+                                var tDataBounds = dataBounds.clone().transform(aProj, 'EPSG:4326');
+                                if ( tDataBounds.getWidth()*tDataBounds.getHeight() < 0.0000028649946082102277 ) {
+                                    if( atConfig ){
+                                        var atBounds = OpenLayers.Bounds.fromArray(atConfig.bbox);
+                                        atConfig.bbox = atBounds.transform(aConfig['featureCrs'], 'EPSG:4326').toArray();
+                                    }
+                                    aConfig['featureCrs'] = 'EPSG:4326';
+                                }
+                            }
 
-                    $.get(service, {
-                        'SERVICE':'WFS'
-                       ,'VERSION':'1.0.0'
-                       ,'REQUEST':'DescribeFeatureType'
-                       ,'TYPENAME':aName
-                       ,'OUTPUTFORMAT':'JSON'
-                    }, function(describe) {
+                            if( !aConfig.featureCrs )
+                              aConfig['featureCrs'] = aConfig.crs;
 
-                        var cFeatures = data.features;
-                        var cAliases = describe.aliases;
+                        });
+                    }
 
+                    if ('alias' in aConfig && aConfig['alias']) {
                         if( aCallBack)
-                            aCallBack( aName, aFilter, cFeatures, cAliases );
+                            aCallBack( aName, aFilter, data.features, aConfig['alias'] );
+                    } else
+                        $.get(service, {
+                            'SERVICE':'WFS'
+                           ,'VERSION':'1.0.0'
+                           ,'REQUEST':'DescribeFeatureType'
+                           ,'TYPENAME':aName
+                           ,'OUTPUTFORMAT':'JSON'
+                        }, function(describe) {
 
-                        $('body').css('cursor', 'auto');
+                            aConfig['alias'] = describe.aliases;
+                            if ('types' in describe)
+                                aConfig['types'] = describe.types;
 
-                    },'json');
+                            if( aCallBack)
+                                aCallBack( aName, aFilter, data.features, aConfig['alias'] );
+
+                            $('body').css('cursor', 'auto');
+
+                        },'json');
 
 
 
@@ -1445,6 +1691,8 @@ var lizAttributeTable = function() {
                 // Calculate fake bbox around the feature
                 var proj = new OpenLayers.Projection(config.layers[aName].crs);
                 var lConfig = config.layers[aName];
+                if( lConfig.featureCrs )
+                    proj = new OpenLayers.Projection(config.layers[aName].featureCrs);
                 var units = lizMap.map.getUnits();
                 if( lizMap.map.maxScale == 'auto' )
                     var scale = lConfig.minScale;
@@ -1564,6 +1812,10 @@ var lizAttributeTable = function() {
                 var layerConfig = config.layers[featureType];
                 var featureId = featureType + '.' + fid;
                 var proj = new OpenLayers.Projection(config.layers[featureType].crs);
+                getLayerFeature(featureType, fid, function(feat) {
+                    zoomToOlFeature( feat, proj, zoomAction );
+                });
+                /*
                 var feat = null;
 
                 // Use already retrieved feature
@@ -1580,7 +1832,35 @@ var lizAttributeTable = function() {
                         }
                     });
                 }
+                * */
+            }
 
+            function getLayerFeature( featureType, fid, aCallback ){
+                if ( !aCallback )
+                    return;
+
+                if ( !(featureType in config.layers) )
+                    return;
+
+                var layerConfig = config.layers[featureType];
+                var featureId = featureType + '.' + fid;
+
+                // Use already retrieved feature
+                if( layerConfig['features'] && fid in layerConfig['features'] ){
+                    aCallback(layerConfig['features'][fid]);
+                }
+                // Or get the feature via WFS in needed
+                else{
+                    getAttributeFeatureData(featureType, null, featureId, function( aName, aFilter, cFeatures, cAliases ){
+                        if( cFeatures.length == 1 ){
+                            var feat = cFeatures[0];
+                            if( !layerConfig['features'] )
+                                layerConfig['features'] = {};
+                            layerConfig['features'][fid] = feat;
+                            aCallback(feat);
+                        }
+                    });
+                }
             }
 
             function refreshLayerSelection( featureType, featId, rupdateDrawing ) {
@@ -1976,9 +2256,11 @@ var lizAttributeTable = function() {
 
                 // Add false value to hide all features if we need to hide layer
                 if( typeNamePkeyValues.length == 0 )
-                    typeNamePkeyValues.push('-99999');
+                    typeNamePkeyValues.push(" '-99999' ");
+
                 if( aFilter )
                     var lFilter = layerN + ':"' + typeNamePkey + '" IN ( ' + typeNamePkeyValues.join( ' , ' ) + ' ) ';
+
                 config.layers[typeName]['request_params']['filter'] = lFilter;
 
                 // Add filter to openlayers layer
@@ -2046,6 +2328,7 @@ var lizAttributeTable = function() {
                 if( isPivot && pivotParam ){
                     // Add a Filter to the "other parent" layers
                     var cFilter = null;
+                    var orObj = null;
                     var pwmsName = pivotParam['otherParentTypeName'];
                     // Get WMS layer name
                     var pwlayer = lizMap.map.getLayersByName( lizMap.cleanName(pwmsName) )[0];
@@ -2057,9 +2340,18 @@ var lizAttributeTable = function() {
                             cFilter = pwmsName + ':"';
                             cFilter+= pivotParam['otherParentRelation'].referencedField;
                             cFilter+= '" IN ( ' + pivotParam['otherParentValues'].join() + ' )';
+                            orObj = {
+                                field: pivotParam['otherParentRelation'].referencedField,
+                                values: pivotParam['otherParentValues']
+                            }
                         }
-                        else
+                        else {
                             cFilter = pwmsName + ':"' + pivotParam['otherParentRelation'].referencedField + '" IN ( ' + "'-999999'" + ' )';
+                            orObj = {
+                                field: pivotParam['otherParentRelation'].referencedField,
+                                values: ['-999999']
+                            }
+                        }
                     }
 
                     config.layers[ pivotParam['otherParentTypeName'] ]['request_params']['filter'] = cFilter;
@@ -2260,14 +2552,14 @@ var lizAttributeTable = function() {
                         if( featureIds.length > 0 ){
 
                             var rTable = $(this).DataTable();
+                            rTable.data().each( function(d){
+                                if( $.inArray( d.DT_RowId.toString(), featureIds ) != -1 )
+                                    d.lizSelected = 'a';
+                            });
                             rTable
                             .rows( function ( idx, data, node ) {
-                                return $.inArray( data.DT_RowId.toString(), featureIds ) != -1 ? true : false;
+                                return data.lizSelected == 'a' ? true : false;
                             })
-                            .every(function(){
-                                dTable.fnUpdate( 'a', this, 0, false, false );
-                            })
-                            //~ .draw()
                             .nodes()
                             .to$()
                             .addClass( 'selected' )
@@ -2293,17 +2585,46 @@ var lizAttributeTable = function() {
                         && lizMap.cleanName( featureType ) == tableLayerName
                     ){
                         var zTable = '#' + tableId;
-                        var parentLayerCleanName = zTable.replace('#attribute-layer-table-', '').split('-');
-                        var parentLayerCleanName = parentLayerCleanName[0];
-                        var parentTable = '#attribute-layer-table-' + parentLayerCleanName;
-                        var parentLayerName = attributeLayersDic[parentLayerCleanName]
+                        var parentTable = zTable;
+                        var parentLayerCleanName = tableLayerName;
+                        var parentLayerName = featureType;
+                        var zClassNames = $(zTable).attr('class').split(' ');
+                        for(var zKey=0; zKey<zClassNames.length; zKey++) {
+                            if( !zClassNames[zKey].match('child-of-'))
+                                continue;
 
+                            parentLayerCleanName = zClassNames[zKey].substring('child-of-'.length);
+                            parentTable = '#attribute-layer-table-' + parentLayerCleanName;
+                            parentLayerName = attributeLayersDic[parentLayerCleanName];
+                            break;
+                        }
                         // If child, re-highlight parent feature to refresh all the children
+                        // or update the edition table
                         if( parentTable != zTable ){
-                            var parentHighlighted = config.layers[parentLayerName]['highlightedFeature'];
-                            if( parentHighlighted )
-                                $(parentTable +' tr#' + parentHighlighted).click();
-
+                            if( zTable.match('edition-table-') ) {
+                                // get info from the form
+                                var formFeatureId = $('#edition-form-container form input[name="liz_featureId"]').val();
+                                var formLayerId = $('#edition-form-container form input[name="liz_layerId"]').val();
+                                // get parent layer config
+                                var getParentLayerConfig = lizMap.getLayerConfigById( formLayerId );
+                                if ( (featureType in config.attributeLayers) && parentLayerName == getParentLayerConfig[0] ) {
+                                    // get featureType layer config
+                                    var featureTypeConfig = config.attributeLayers[featureType];
+                                    //get relation
+                                    var relation = getRelationInfo(formLayerId,featureTypeConfig.layerId);
+                                    if( relation != null ) {
+                                        getLayerFeature(parentLayerName, formFeatureId, function(feat) {
+                                            var fp = feat.properties;
+                                            filter = '"' + relation.referencingField + '" = ' + "'" + fp[relation.referencedField] + "'";
+                                            getEditionChildData( featureType, filter, zTable);
+                                        });
+                                    }
+                                }
+                            } else {
+                                var parentHighlighted = config.layers[parentLayerName]['highlightedFeature'];
+                                if( parentHighlighted )
+                                    $(parentTable +' tr#' + parentHighlighted).click();
+                            }
                         }
                         // Else refresh main table with no filter
                         else{
@@ -2387,6 +2708,60 @@ var lizAttributeTable = function() {
                         );
                         var getLayerConfig = lizMap.getLayerConfigById( layerId );
 
+                        // Display related children objects
+
+                        if( aConfig && getLayerConfig
+                            && 'popupDisplayChildren' in getLayerConfig[1]
+                            && getLayerConfig[1]['popupDisplayChildren'] == 'True'
+                            && 'relations' in lizMap.config
+                            && layerId in lizMap.config.relations
+                        ) {
+                            var relations = lizMap.config.relations[layerId];
+                            var layerConfig = getLayerConfig[1];
+                            var featureType = getLayerConfig[0];
+                            var featureId = featureType + '.' + fid;
+                            getLayerFeature(featureType, fid, function(feat) {
+
+                                var wmsOptions = {
+                                     'LAYERS': featureType
+                                    ,'QUERY_LAYERS': featureType
+                                    ,'STYLES': ''
+                                    ,'SERVICE': 'WMS'
+                                    ,'VERSION': '1.3.0'
+                                    ,'REQUEST': 'GetFeatureInfo'
+                                    ,'EXCEPTIONS': 'application/vnd.ogc.se_inimage'
+                                    ,'FEATURE_COUNT': 10
+                                    ,'INFO_FORMAT': 'text/html'
+                                };
+
+                                // Query the server
+                                var service = OpenLayers.Util.urlAppend(lizUrls.wms
+                                    ,OpenLayers.Util.getParameterString(lizUrls.params)
+                                );
+                                for ( var i=0, len=relations.length; i<len; i++ ){
+                                    var r = relations[i];
+                                    var rLayerId = r.referencingLayer;
+                                    var rGetLayerConfig = lizMap.getLayerConfigById( rLayerId );
+                                    if ( rGetLayerConfig ) {
+                                        var rConfigLayer = rGetLayerConfig[1];
+                                        if ( rConfigLayer.popup == 'True' ) {
+                                            wmsOptions['LAYERS'] = rConfigLayer.name;
+                                            wmsOptions['QUERY_LAYERS'] = rConfigLayer.name;
+                                            wmsOptions['FILTER'] = rConfigLayer.name+':"'+r.referencingField+'" = \''+feat.properties[r.referencedField]+'\'';
+                                            $.get(service, wmsOptions, function(data) {
+                                                var hasPopupContent = (!(!data || data == null || data == ''))
+                                                if ( hasPopupContent ) {
+                                                    //console.log(data);
+                                                    self.parent().append('<div class="lizmapPopupChildren">'+data+'</div>');
+                                                }
+                                            });
+                                        }
+                                    }
+                                }
+
+                            });
+                        }
+
                         if( aConfig && getLayerConfig ) {
                             var layerConfig = getLayerConfig[1];
                             var selClass = '';
@@ -2451,18 +2826,12 @@ var lizAttributeTable = function() {
                                 wasSelected = true;
                                 $(this).removeClass('btn-warning');
                             }
-
-                            // First unselect all items
+                            // Then select or unselect item
                             lizMap.events.triggerEvent(
-                                'layerfeatureunselectall',
-                                { 'featureType': featureType, 'updateDrawing': true}
-                            );
-                            // Then select item if needed
+                                'layerfeatureselected',
+                                { 'featureType': featureType, 'fid': fid, 'updateDrawing': true}
+                            )
                             if( !wasSelected ){
-                                lizMap.events.triggerEvent(
-                                    'layerfeatureselected',
-                                    { 'featureType': featureType, 'fid': fid, 'updateDrawing': true}
-                                )
                                 $(this).addClass('btn-warning');
                             }
                             return false;
@@ -2608,10 +2977,474 @@ var lizAttributeTable = function() {
                         'layerfeatureremovefilter',
                         {'featureType': e.featureType}
                     );
+                },
+
+                lizmapeditionformdisplayed: function(e) {
+                    var fid =  e.featureId;
+                    // Do not disply child if it's a creation
+                    if (fid == null)
+                        return;
+
+                    var layerId = e.layerId;
+                    var getLayerConfig = lizMap.getLayerConfigById( layerId );
+
+                    if( getLayerConfig && 'relations' in lizMap.config && layerId in lizMap.config.relations ) {
+                        var relations = lizMap.config.relations[layerId];
+                        var featureType = getLayerConfig[0];
+                        var featureId = featureType + '.' + fid;
+                        if ( relations.length > 1 ) {
+                            var childHtml = getChildrenHtmlContent( featureType );
+                            var html = '';
+                            // Add children content
+                            if( childHtml ){
+                                // Add buttons to create new children
+                                if( childHtml['childCreateButton'] ) {
+                                    // Action bar
+                                    html+= '<div class="attribute-layer-action-bar">';
+                                    html+= childHtml['childCreateButton'];
+                                    html+= '</div>';
+                                }
+                                // Add children content : one tab per childlayer
+                                html+= '<div class="tabbable edition-children-content">';
+                                // Ul content
+                                html+= '    <ul class="nav nav-tabs">';
+                                for( var i in childHtml['tab-li'] ){
+                                    var cLi = childHtml['tab-li'][i];
+                                    html+= cLi;
+                                }
+                                html+= '    </ul>';
+                                html+= '    <div class="tab-content">';
+                                // Tab content
+                                for( var i in childHtml['tab-content'] ){
+                                    var cDiv = childHtml['tab-content'][i];
+                                    html+= cDiv;
+                                }
+                                html+= '    </div>'; // tab-content
+                                html+= '</div>'; // tabbable
+                            }
+                            $('#edition-children-container').show().append(html);
+                            $('#edition-children-container div.tabbable ul.nav-tabs li').each(function() {
+                                $(this).attr('id', $(this).attr('id').replace(/nav-tab-attribute-child-tab-/g, 'nav-tab-edition-child-tab-'));
+                            });
+                            $('#edition-children-container div.tabbable ul.nav-tabs li a').each(function() {
+                                $(this).attr('href', $(this).attr('href').replace(/attribute-child-tab-/g, 'edition-child-tab-'));
+                            });
+                            $('#edition-children-container div.tabbable div.tab-content div.tab-pane').each(function() {
+                                $(this).attr('id', $(this).attr('id').replace(/attribute-child-tab-/g, 'edition-child-tab-'));
+                            });
+                            $('#edition-children-container div.tabbable div.tab-content table').each(function() {
+                                $(this).attr('id', $(this).attr('id').replace(/attribute-layer-/g, 'edition-'));
+                            });
+
+                            // Bind click on createFeature button
+                            $('#edition-children-container button.btn-createFeature-attributeTable')
+                            .click(function(){
+                                var parentFeatId = fid;
+                                var parentLayerName = featureType;
+                                var parentLayerId = layerId;
+                                var aName = attributeLayersDic[ $(this).val() ];
+                                getLayerFeature(featureType, fid, function(feat) {
+                                    var parentFeat = feat;
+                                    var lid = config.layers[aName]['id'];
+                                    lizMap.launchEdition( lid, null, {layerId:parentLayerId,feature:parentFeat}, function(editionLayerId, editionFeatureId){
+                                        $('#bottom-dock').css('left',  lizMap.getDockRightPosition() );
+                                    });
+                                });
+                                return false;
+                            })
+                            .hover(
+                                function(){ $(this).addClass('btn-primary'); },
+                                function(){ $(this).removeClass('btn-primary'); }
+                            );
+
+                            // Bind click on createFeature button via dropDown
+                            $('#edition-children-container a.btn-createFeature-attributeTable')
+                            .click(function(){
+                                var parentFeatId = fid;
+                                var parentLayerName = featureType;
+                                var parentLayerId = layerId;
+                                var selectedValue = $(this).attr('href').replace('#', '');
+                                var aName = attributeLayersDic[ selectedValue ];
+                                getLayerFeature(featureType, fid, function(feat) {
+                                    var parentFeat = feat;
+                                    var lid = config.layers[aName]['id'];
+                                    lizMap.launchEdition( lid, null, {layerId:parentLayerId,feature:parentFeat}, function(editionLayerId, editionFeatureId){
+                                        $('#bottom-dock').css('left',  lizMap.getDockRightPosition() );
+                                    });
+                                    $(this).blur();
+                                });
+                                return false;
+                            })
+                            .hover(
+                                function(){ $(this).addClass('btn-primary'); },
+                                function(){ $(this).removeClass('btn-primary'); }
+                            );
+                            getLayerFeature(featureType, fid, function(feat) {
+                                var fp = feat.properties;
+                                for ( var i=0, len=relations.length; i<len; i++ ){
+                                    var r = relations[i];
+                                    var rLayerId = r.referencingLayer;
+                                    var rGetLayerConfig = lizMap.getLayerConfigById( rLayerId );
+                                    if ( rGetLayerConfig ) {
+                                        var rLayerName = rGetLayerConfig[0];
+                                        var rConfigLayer = rGetLayerConfig[1];
+                                        filter = '"' + r.referencingField + '" = ' + "'" + fp[r.referencedField] + "'";
+                                        // Get child table id
+                                        var childTable = '#edition-table-' + lizMap.cleanName(featureType) + '-' + lizMap.cleanName(rLayerName);
+
+                                        // Fill in attribute table for child
+                                        if( rLayerName in config.attributeLayers ) {
+                                            getEditionChildData( rLayerName, filter, childTable );
+                                        }
+                                    }
+                                }
+                            });
+                        }
+                    }
                 }
 
             }); // lizMap.events.on end
 
+  function addSelectionToolControl() {
+    /*if ( !config['tooltipLayers'] || config.tooltipLayers.length == 0 ) {
+      $('#button-tooltip-layer').parent().remove();
+      return false;
+    }*/
+
+    // Verifying WFS layers
+    var featureTypes = lizMap.getVectorLayerFeatureTypes();
+    if (featureTypes.length == 0 ) {
+      $('#button-selectiontool').parent().remove();
+      return false;
+    }
+
+    var selectionLayersDic = {};
+    for (var lname in config.attributeLayers) {
+        selectionLayersDic[lizMap.cleanName(lname)] = lname;
+    }
+
+    var options = '';
+    featureTypes.each( function(){
+        var self = $(this);
+        var lname = self.find('Name').text();
+        if ( !(lname in selectionLayersDic) )
+            return;
+        lname = selectionLayersDic[lname];
+        if( lname in config.layers
+            && config.layers[lname]['geometryType'] != 'none'
+            && config.layers[lname]['geometryType'] != 'unknown') {
+            var lConfig = config.layers[lname];
+            options += '<option value="'+lname+'">'+lConfig.title+'</option>';
+        }
+    });
+    if ( options == '' ) {
+      $('#button-selectiontool').parent().remove();
+      return false;
+    }
+
+    $('#selectiontool-layer-list').html(options);
+
+
+    // Style des outils de dessin et sélection
+    // -------------------------------------------------------------------------
+    var drawStyle = new OpenLayers.Style({
+        pointRadius:7,
+        fillColor: "#94EF05",
+        fillOpacity: 0.3,
+        strokeColor: "yellow",
+        strokeOpacity: 1,
+        strokeWidth: 3
+    });
+
+    var drawStyleTemp = new OpenLayers.Style({
+        pointRadius:7,
+        fillColor: "orange",
+        fillOpacity: 0.3,
+        strokeColor: "blue",
+        strokeOpacity: 1,
+        strokeWidth: 3
+    });
+
+    var drawStyleSelect = new OpenLayers.Style({
+        pointRadius:7,
+        fillColor: "blue",
+        fillOpacity: 0.3,
+        strokeColor: "blue",
+        strokeOpacity: 1,
+        strokeWidth: 3
+    });
+
+    var drawStyleMap = new OpenLayers.StyleMap({
+        "default":   drawStyle,
+        "temporary": drawStyleTemp,
+        "select" :   drawStyleSelect
+    });
+
+    var queryLayer = new OpenLayers.Layer.Vector("selectionQueryLayer", {styleMap:drawStyleMap});
+    lizMap.map.addLayers([queryLayer]);
+    //lizMap.layers['selectionQueryLayer'] = queryLayer;
+
+    lizMap.controls['selectiontool'] = {};
+
+
+    function onQueryFeatureAdded(feature, callback) {
+        var theLayer = feature.layer;
+
+        /**
+         * @todo Ne gère que si il ya a seulement 1 géométrie
+         */
+        if( feature.layer ) {
+            if(feature.layer.features.length > 1) {
+                feature.layer.destroyFeatures( feature.layer.features.shift() );
+            }
+        }
+
+        theLayer.drawFeature( feature );
+        var featureType = $('#selectiontool-layer-list').val();
+        var lConfig = config.layers[featureType];
+        lizMap.loadProjDefinition( lConfig.crs, function( aProj ) {
+            /*
+            var format = OpenLayers.Format.WFST(OpenLayers.Util.extend({
+                    version: '1.0.0',
+                    featureType: featureType,
+                    featureNS: 'http://www.qgis.org/gml',
+                    featurePrefix: 'qgs',
+                    geometryName: 'GEOMETRY',
+                    srsName: null,
+                    schema: null
+                }, null));
+            var filter = new OpenLayers.Filter.Spatial({
+                type: OpenLayers.Filter.Spatial.INTERSECTS,
+                value: feature.geometry.clone().transform(lizMap.map.getProjection(),aProj)
+            });
+            var options = {filter:filter};
+            var data = OpenLayers.Format.XML.prototype.write.apply(
+                format, [format.writeNode("wfs:GetFeature", options)]
+            );
+            console.log(data);
+            */
+            var gml2 = new OpenLayers.Format.GML();
+            var gml = gml2.buildGeometryNode(
+                feature.geometry.clone().transform(lizMap.map.getProjection(),aProj)
+            );
+            var spatialFilter = "intersects($geometry, geom_from_gml('"+OpenLayers.Format.XML.prototype.write.apply(gml2, [gml])+"'))";
+
+            if( 'request_params' in lConfig && 'filter' in lConfig['request_params'] ){
+                var rFilter = lConfig['request_params']['filter'];
+                if( rFilter ){
+                    rFilter = rFilter.replace( featureType + ':', '');
+                    spatialFilter = rFilter +' AND '+ spatialFilter;
+                }
+            }
+            //console.log( spatialFilter );
+
+            var getFeatureUrlData = lizMap.getVectorLayerWfsUrl( featureType, spatialFilter, null, null );
+            $.post( getFeatureUrlData['url'], getFeatureUrlData['options'], function(result) {
+                    var gFormat = new OpenLayers.Format.GeoJSON({
+                        externalProjection: lConfig.crs,
+                        internalProjection: lizMap.map.getProjection()
+                    });
+                    var tfeatures = gFormat.read( result );
+                    config.layers[featureType]['selectedFeatures'] = $.map(tfeatures, function(feat){
+                        return feat.fid.split('.')[1];
+                    });
+                    lizMap.events.triggerEvent(
+                        "layerSelectionChanged",
+                        {
+                            'featureType': featureType,
+                            'featureIds': config.layers[featureType]['selectedFeatures'],
+                            'updateDrawing': true
+                        }
+                    );
+                    queryLayer.destroyFeatures();
+            });
+        });
+    }
+
+        /**
+         * Box
+         * @type @new;OpenLayers.Control.DrawFeature
+         */
+        var queryBoxLayerCtrl = new OpenLayers.Control.DrawFeature(queryLayer,
+            OpenLayers.Handler.RegularPolygon,
+            { handlerOptions: {sides: 4}, 'featureAdded': onQueryFeatureAdded}
+        );
+        lizMap.map.addControl(queryBoxLayerCtrl);
+        lizMap.controls['selectiontool']['queryBoxLayerCtrl'] = queryBoxLayerCtrl;
+
+        /**
+         * Circle
+         * @type @new;OpenLayers.Control.DrawFeature
+         */
+        var queryCircleLayerCtrl = new OpenLayers.Control.DrawFeature(queryLayer,
+            OpenLayers.Handler.RegularPolygon,
+            { handlerOptions: {sides: 40}, 'featureAdded': onQueryFeatureAdded}
+        );
+        lizMap.map.addControl(queryCircleLayerCtrl);
+        lizMap.controls['selectiontool']['queryCircleLayerCtrl'] = queryCircleLayerCtrl;
+
+        /**
+         * Polygon
+         * @type @new;OpenLayers.Control.DrawFeature
+         */
+        var queryPolygonLayerCtrl = new OpenLayers.Control.DrawFeature(queryLayer,
+            OpenLayers.Handler.Polygon, {'featureAdded': onQueryFeatureAdded, styleMap:drawStyleMap}
+        );
+        lizMap.map.addControl(queryPolygonLayerCtrl);
+        lizMap.controls['selectiontool']['queryPolygonLayerCtrl'] = queryPolygonLayerCtrl;
+
+        /**
+         * Freehand
+         * @type @new;OpenLayers.Control.DrawFeature
+         */
+        var queryFreehandLayerCtrl = new OpenLayers.Control.DrawFeature(queryLayer,
+            OpenLayers.Handler.Polygon, {'featureAdded': onQueryFeatureAdded, styleMap:drawStyleMap,
+                handlerOptions:{freehand:true}}
+        );
+        lizMap.map.addControl(queryFreehandLayerCtrl);
+        lizMap.controls['selectiontool']['queryFreehandLayerCtrl'] = queryFreehandLayerCtrl;
+
+        $('#selectiontool-query-buttons button').tooltip( {
+            placement: 'bottom'
+        } );
+        $('#selectiontool-actions button').tooltip( {
+            placement: 'bottom'
+        } );
+
+        $('#selectiontool-unselect').click(function(){
+            if($(this).hasClass('disabled')) return false;
+            // Send signal
+            lizMap.events.triggerEvent(
+                "layerfeatureunselectall",
+                { 'featureType': $('#selectiontool-layer-list').val(), 'updateDrawing': true}
+            );
+            return false;
+        })
+        .hover(
+            function(){ if(!$(this).hasClass('disabled')) $(this).addClass('btn-primary'); },
+            function(){ $(this).removeClass('btn-primary'); }
+        );
+
+        $('#selectiontool-filter').click(function(){
+            if($(this).hasClass('disabled')) return false;
+
+            var aName = $('#selectiontool-layer-list').val();
+            if( $(this).hasClass('active') ) {
+                lizMap.events.triggerEvent(
+                    "layerfeatureremovefilter",
+                    { 'featureType': aName}
+                );
+                lizMap.lizmapLayerFilterActive = null;
+            } else {
+                lizMap.events.triggerEvent(
+                    "layerfeaturefilterselected",
+                    { 'featureType': aName}
+                );
+                lizMap.lizmapLayerFilterActive = aName;
+            }
+            return false;
+        })
+        .hover(
+            function(){ if(!$(this).hasClass('disabled')) $(this).addClass('btn-primary'); },
+            function(){ $(this).removeClass('btn-primary'); }
+        );
+
+        $('#selectiontool-query-deactivate').click(function(){
+            lizMap.controls.selectiontool.queryFreehandLayerCtrl.deactivate();
+            lizMap.controls.selectiontool.queryPolygonLayerCtrl.deactivate();
+            lizMap.controls.selectiontool.queryCircleLayerCtrl.deactivate();
+            lizMap.controls.selectiontool.queryBoxLayerCtrl.deactivate();
+        });
+        $('#selectiontool-query-box').click(function(){
+            lizMap.controls.selectiontool.queryFreehandLayerCtrl.deactivate();
+            lizMap.controls.selectiontool.queryPolygonLayerCtrl.deactivate();
+            lizMap.controls.selectiontool.queryCircleLayerCtrl.deactivate();
+            lizMap.controls.selectiontool.queryBoxLayerCtrl.activate();
+        });
+        $('#selectiontool-query-circle').click(function(){
+            lizMap.controls.selectiontool.queryFreehandLayerCtrl.deactivate();
+            lizMap.controls.selectiontool.queryPolygonLayerCtrl.deactivate();
+            lizMap.controls.selectiontool.queryBoxLayerCtrl.deactivate();
+            lizMap.controls.selectiontool.queryCircleLayerCtrl.activate();
+        });
+        $('#selectiontool-query-polygon').click(function(){
+            lizMap.controls.selectiontool.queryFreehandLayerCtrl.deactivate();
+            lizMap.controls.selectiontool.queryCircleLayerCtrl.deactivate();
+            lizMap.controls.selectiontool.queryBoxLayerCtrl.deactivate();
+            lizMap.controls.selectiontool.queryPolygonLayerCtrl.activate();
+        });
+        $('#selectiontool-query-freehand').click(function(){
+            lizMap.controls.selectiontool.queryBoxLayerCtrl.deactivate();
+            lizMap.controls.selectiontool.queryCircleLayerCtrl.deactivate();
+            lizMap.controls.selectiontool.queryPolygonLayerCtrl.deactivate();
+            lizMap.controls.selectiontool.queryFreehandLayerCtrl.activate();
+        });
+
+        $('#selectiontool-layer-list').change(function(){
+            var selectedFeatureType = $(this).val();
+            if( selectedFeatureType in config.layers &&
+                'selectedFeatures' in config.layers[selectedFeatureType] )
+            {
+                var selectedFeaturesNumber = config.layers[selectedFeatureType]['selectedFeatures'].length;
+                if( selectedFeaturesNumber == 0 ) {
+                    $('#selectiontool-results').html(lizDict['selectiontool.results.none']);
+                    $('#selectiontool-unselect').addClass('disabled');
+                    $('#selectiontool-filter').addClass('disabled');
+                } else {
+                    if( selectedFeaturesNumber == 1 )
+                        $('#selectiontool-results').html(lizDict['selectiontool.results.one']);
+                    else
+                        $('#selectiontool-results').html(lizDict['selectiontool.results.more'].replace('%s',selectedFeaturesNumber));
+                    $('#selectiontool-unselect').removeClass('disabled');
+                    $('#selectiontool-filter').removeClass('disabled');
+                }
+                if ('filteredFeatures' in config.layers[selectedFeatureType] ) {
+                    var filteredFeaturesNumber = config.layers[selectedFeatureType]['filteredFeatures'].length;
+                    if ( filteredFeaturesNumber == 0 )
+                        $('#selectiontool-filter').removeClass('active').css( 'background-color', '');
+                    else
+                        $('#selectiontool-filter').removeClass('disabled').addClass('active').css( 'background-color', 'rgba(255, 171, 0, 0.4)');
+                }
+            }
+        });
+
+        lizMap.events.on( {
+            "minidockopened": function(mdoEvt){
+                if (mdoEvt.id == 'selectiontool') {
+                    $('#selectiontool-query-deactivate').click();
+                    queryLayer.destroyFeatures();
+                    queryLayer.setVisibility(true);
+                    $('#selectiontool-layer-list').change();
+                }
+            },
+            "minidockclosed": function(mdcEvt){
+                if (mdcEvt.id == 'selectiontool') {
+                    $('#selectiontool-query-deactivate').click();
+                    queryLayer.destroyFeatures();
+                    queryLayer.setVisibility(false);
+                }
+            },
+            "layerSelectionChanged": function(lscEvt){
+                if( $('#mapmenu li.selectiontool').hasClass('active') &&
+                    lscEvt.featureType == $('#selectiontool-layer-list').val() )
+                {
+                    $('#selectiontool-layer-list').change();
+                }
+            },
+            "layerFilteredFeaturesChanged": function(lffcEvt){
+                if( $('#mapmenu li.selectiontool').hasClass('active') &&
+                    lffcEvt.featureType == $('#selectiontool-layer-list').val() )
+                {
+                    $('#selectiontool-layer-list').change();
+                }
+            }
+        });
+  }
+
+
+            // Extend lizMap API
+            lizMap.getAttributeFeatureData = getAttributeFeatureData;
+            lizMap.zoomToFeature = zoomToFeature;
 
         } // uicreated
     });

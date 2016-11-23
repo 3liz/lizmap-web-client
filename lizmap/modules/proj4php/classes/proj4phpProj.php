@@ -151,7 +151,7 @@ class Proj4phpProj {
             return;
         }
         //else check for def on the server
-        $filename = dirname( __FILE__ ) . '/defs/' . strtoupper( $this->srsAuth ) . $this->srsProjNumber . '.php';
+        $filename = __DIR__ . '/defs/' . strtoupper( $this->srsAuth ) . $this->srsProjNumber . '.php';
 
         try {
             Proj4php::loadScript( $filename );
@@ -227,7 +227,7 @@ class Proj4phpProj {
             return;
         }
         //the filename for the projection code
-        $filename = dirname( __FILE__ ) . '/projCode/' . $projName . '.php';
+        $filename = __DIR__ . '/projCode/' . $projName . '.php';
 
         try {
             Proj4php::loadScript( $filename );

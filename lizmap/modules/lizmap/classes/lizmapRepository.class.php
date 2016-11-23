@@ -50,7 +50,7 @@ class lizmapRepository{
       if(array_key_exists($section, $readConfigPath)){
         // Set each property
         foreach(self::$properties as $property){
-		  if ( array_key_exists( $property, $readConfigPath[$section] ) )
+          if ( array_key_exists( $property, $readConfigPath[$section] ) )
             $this->data[$property] = $readConfigPath[$section][$property];
         }
       }
@@ -67,8 +67,8 @@ class lizmapRepository{
         $this->data['path'] .= '/';
       // if path is relative, get full path
       if ($this->data['path'][0] != '/' and $this->data['path'][1] != ':'){
-        return jApp::varPath().$this->data['path'];
-	  }
+        return realpath(jApp::varPath().$this->data['path']).'/';
+      }
       return $this->data['path'];
     }
 
@@ -113,23 +113,34 @@ class lizmapRepository{
     }
 
     public function getProjects( ) {
-      $projects = Array();
-      if ($dh = opendir($this->getPath())) {
-        $cfgFiles = Array();
-        $qgsFiles = Array();
-        while (($file = readdir($dh)) !== false) {
-          if (substr($file, -3) == 'cfg')
-            $cfgFiles[] = $file;
-          if (substr($file, -3) == 'qgs')
-            $qgsFiles[] = $file;
+        $projects = Array();
+        $dir = $this->getPath();
+        if (is_dir($dir)) {
+            if ($dh = opendir($dir)) {
+                $cfgFiles = Array();
+                $qgsFiles = Array();
+                while (($file = readdir($dh)) !== false) {
+                    if (substr($file, -3) == 'cfg')
+                        $cfgFiles[] = $file;
+                    if (substr($file, -3) == 'qgs')
+                        $qgsFiles[] = $file;
+                }
+                closedir($dh);
+
+                foreach ($qgsFiles as $qgsFile) {
+                    $proj = null;
+                    if (in_array($qgsFile.'.cfg',$cfgFiles))
+                        try {
+                            $proj = lizmap::getProject($this->key.'~'.substr($qgsFile,0,-4));
+                            if ( $proj != null )
+                                $projects[] = $proj;
+                        }
+                        catch(UnknownLizmapProjectException $e) {
+                            jLog::logEx($e, 'error');
+                        }
+                }
+            }
         }
-        closedir($dh);
-        jClasses::inc('lizmap~lizmapProject');
-        foreach ($qgsFiles as $qgsFile) {
-          if (in_array($qgsFile.'.cfg',$cfgFiles))
-            $projects[] = new lizmapProject(substr($qgsFile,0,-4), $this);
-        }
-      }
-      return $projects;
+        return $projects;
     }
 }

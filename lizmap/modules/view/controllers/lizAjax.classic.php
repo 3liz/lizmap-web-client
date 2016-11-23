@@ -12,6 +12,48 @@
 class lizAjaxCtrl extends jController {
 
   /**
+   * Return 404
+   */
+  function error404($message){
+    $rep = $this->getResponse('htmlfragment');
+    $content = '<p>404 not found (wrong action)</p>';
+    $content .= '<p>'.$message.'</p>';
+    $rep->addContent( $content );
+    $rep->setHttpStatus('404', 'Not Found');
+    return $rep;
+    /*
+      $rep = $this->getResponse('text');
+      $rep->content = $message  ;
+      $rep->setHttpStatus('404', 'Not Found');
+      return $rep;
+     */
+  }
+
+  /**
+   * Return 403
+   */
+  function error403($message){
+    $rep = $this->getResponse('htmlfragment');
+    $content = '<p>403 forbidden (you\'re not allowed to access to this content)</p>';
+    $content .= '<p>'.$message.'</p>';
+    $rep->addContent( $content );
+    $rep->setHttpStatus('403', 'Forbidden');
+    return $rep;
+  }
+
+  /**
+   * Return 401
+   */
+  function error401($message){
+    $rep = $this->getResponse('htmlfragment');
+    $content = '<p>401 Unauthorized (authentication is required)</p>';
+    $content .= '<p>'.$message.'</p>';
+    $rep->addContent( $content );
+    $rep->setHttpStatus('401', 'Unauthorized');
+    return $rep;
+  }
+
+  /**
   * Displays the list of project for a given repository for ajax request.
   *
   * @param string $repository. Name of the repository.
@@ -24,17 +66,12 @@ class lizAjaxCtrl extends jController {
     // Get repository data
     $repository = $this->param('repository');
 
-    $repositoryList = Array();
     if ( $repository ) {
-      if( !jAcl2::check('lizmap.repositories.view', $repository )){
-        jMessage::add(jLocale::get('view~default.repository.access.denied'), 'error');
-        return $rep;
-      }
-    }
-
-    if ( $repository ) {
-      $lrep = lizmap::getRepository($repository);
-      $title .= ' - '.$lrep->getData('label');
+        $lrep = lizmap::getRepository($repository);
+        if(!$lrep)
+            return $this->error404('');
+        if( !jAcl2::check('lizmap.repositories.view', $lrep->getKey() ))
+            return $this->error403(jLocale::get('view~default.repository.access.denied'));
     }
 
     $content = jZone::get('ajax_view', array('repository'=>$repository));
@@ -63,27 +100,45 @@ class lizAjaxCtrl extends jController {
     // Get lizmapRepository class
     // if repository not found get the default
     $lrep = null;
+    $lser = lizmap::getServices();
     if ( !$repository ){
-      $lser = lizmap::getServices();
       $lrep = lizmap::getRepository($lser->defaultRepository);
+      $repository = $lser->defaultRepository;
     } else
       $lrep = lizmap::getRepository($repository);
 
-    if(!jAcl2::check('lizmap.repositories.view', $lrep->getKey())){
-      jMessage::add(jLocale::get('view~default.repository.access.denied'), 'error');
-      return $rep;
-    }
+    if(!$lrep)
+        return $this->error404('');
+    if( !jAcl2::check('lizmap.repositories.view', $lrep->getKey() ))
+        return $this->error403(jLocale::get('view~default.repository.access.denied'));
+
     // We must redirect to default repository project list if no project given
     if(!$project){
-      jMessage::add('The parameter project is mandatory !', 'error');
-      return $rep;
+        try {
+            $lproj = lizmap::getProject($lrep->getKey().'~'.$lser->defaultProject);
+            if (!$lproj) {
+                return $this->error404('The parameter project is mandatory!');
+            } else
+                $project = $lser->defaultProject;
+        }
+        catch(UnknownLizmapProjectException $e) {
+            return $this->error404('The parameter project is mandatory!');
+        }
     }
 
     // Get lizmapProject class
-    $lproj = lizmap::getProject($lrep->getKey().'~'.$project);
-    if(!$lproj){
-      jMessage::add('The lizmapProject '.strtoupper($project).' does not exist !', 'error');
-      return $rep;
+    try {
+        $lproj = lizmap::getProject($lrep->getKey().'~'.$project);
+        if(!$lproj){
+            return $this->error404('The lizmapProject '.strtoupper($project).' does not exist !');
+        }
+    }
+    catch(UnknownLizmapProjectException $e) {
+        return $this->error404('The lizmapProject '.strtoupper($project).' does not exist !');
+    }
+
+    if ( !$lproj->checkAcl() ) {
+      return $this->error403('view~default.repository.access.denied');
     }
 
     $lizUrls = array(
@@ -97,7 +152,6 @@ class lizAjaxCtrl extends jController {
     );
 
     // Get optional WMS public url list
-    $lser = lizmap::getServices();
     if($lser->wmsPublicUrlList){
         $publicUrlList = $lser->wmsPublicUrlList;
         function f($x) {

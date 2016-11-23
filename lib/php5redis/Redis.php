@@ -5,7 +5,7 @@ class RedisException extends Exception {}
  * 
  * @author sash
  * @license LGPL
- * @version 1.2
+ * @version 1.3.0
  */
 class Redis {
 	private $port;
@@ -22,6 +22,14 @@ class Redis {
 		$this->disconnect();
 	}
 
+	public function getHost() {
+		return $this->host;
+	}
+
+	public function getPort() {
+		return $this->port;
+	}
+
 	private function connect() {
 		if ($this->_sock)
 			return;
@@ -32,7 +40,7 @@ class Redis {
 		}
 		$msg = "Cannot open socket to {$this->host}:{$this->port}";
 		if ($errno || $errmsg)
-			$msg .= "," . ($errno ? " error $errno" : "") . ($errmsg ? " $errmsg" : "");
+			$msg .= "," . ($errno ? " error $errno" : "") . ($errstr ? " $errstr" : "");
 		throw new RedisException ( "$msg." );
 	}
 	private function debug($msg){
@@ -134,15 +142,24 @@ class Redis {
 		elseif ($readResp) {
 			return $this->cmdResponse ();
 		}
-		else
+		else {
 			return '';
+		}
 	}
 	function disconnect() {
 		if ($this->_sock)
 			@fclose ( $this->_sock );
 		$this->_sock = null;
 	}
-	
+
+	function __clone() {
+		// a clone should not use the same socket, as it may be closed
+		// by the other clone
+		$this->_sock = null;
+		$this->pipeline = false;
+		$this->pipeline_commands = 0;
+	}
+
 	////////////////////////////////
 	///// Connection handling
 	////////////////////////////////
@@ -346,7 +363,7 @@ class Redis {
 	 * @return string
 	 */
 	function type($key){
-		return $this->cms ( array("TYPE", $key) );
+		return $this->cmd ( array("TYPE", $key) );
 	}
 	
 	////////////////////////////////
@@ -731,8 +748,60 @@ class Redis {
 	function flushall(){
 		return $this->cmd ( "FLUSHALL" );
 	}
-	
-	
+
+	/**
+	 * delete some keys starting by the given prefix
+	 *
+	 * *Warning*: use it with caution. This method could
+	 * consume huge processing time. It is not recommanded to use it
+	 * during a php request if there are chance that it will delete
+	 * thousand keys. In this case, prefer to launch it in a separate
+	 * process (for example in a worker launched by a messaging system like
+	 * RabbitMQ, Resque..)
+	 *
+	 * @param string $prefix
+	 * @param integer $maxKeyToDeleteByIter the number of keys that are deleted at each iteration
+	 *               To avoid memory issue it deleted keys by
+	 *               pack of $maxKeyToDeleteByIter key.
+	 *               You can change the default number,
+	 *               depending of the memory that the process can use.
+	 *               and the length of keys
+	 *               $maxKeyToDeleteByIter = maxmemory/(average key length+140)
+	 */
+	function flushByPrefix($prefix, $maxKeyToDeleteByIter = 3000) {
+		$end = false;
+		// to avoid memory issue, we will delete only $maxKeyToDeleteByIter
+		// at the same time
+		while(!$end) {
+			$nextIndex = -1;
+			// in this array, be sure it does not contain duplicate keys.
+			// According to SCAN specification, it may return some keys
+			// several time. We should not delete the same key
+			// several time.
+			$keysToDelete = array();
+
+			while ($nextIndex != 0) {
+				if ($nextIndex == -1) {
+					$nextIndex = 0;
+				}
+				$response = $this->cmd(array('SCAN', $nextIndex, 'MATCH', $prefix.'*'));
+				$nextIndex = intval($response[0]);
+				foreach($response[1] as $key) {
+					if (!isset($keysToDelete[$key])) {
+						$keysToDelete[$key] = true;
+					}
+				}
+				$end = ($nextIndex == 0);
+				if (count($keysToDelete)>= $maxKeyToDeleteByIter) {
+					$nextIndex = 0;
+				}
+			}
+			foreach($keysToDelete as $key => $v) {
+				$this->cmd(array('DEL', $key));
+			}
+		}
+	}
+
 	////////////////////////////////
 	///// Sorting
 	////////////////////////////////
@@ -785,10 +854,15 @@ class Redis {
 	////////////////////////////////
 	/**
 	 * Provide information and statistics about the server
+	 * @param $section
 	 * @return unknown_type
 	 */
-	function info(){
-		return $this->cmd ( "INFO" );
+	function info($section = false){
+		if ($section === false) {
+			return $this->cmd ( "INFO" );
+		} else {
+			return $this->cmd ( array("INFO", $section) );
+		}
 	}
 	
 	/**
@@ -835,5 +909,126 @@ class Redis {
 		array_unshift($params, strtoupper($name));
 		return $this->cmd($params);
 	}
-	
+
+
+	////////////////////////////////
+	///// PUBSUB
+	////////////////////////////////
+
+	/**
+	 * Subscribe to a channel or some channels
+	 *
+	 * The given callable is called for each received
+	 * messages send by a publisher.
+	 * The subscription stops when the callable returns a value.
+	 * 
+	 * @param mixed $channels a channel (string) or a list of channels (array)
+	 * @param callable $f  it accepts these arguments :
+	 * 						- redis object
+	 * 						- channel
+	 * 						- payload
+	 * 
+	 */
+	function subscribe($channels, callable $f) {
+		if (!is_array($channels)) {
+			$channels = array($channels);
+		}
+		array_unshift($channels, 'SUBSCRIBE');
+		$this->cmd($channels, false);
+
+		$exit = false;
+		while(!$exit) {
+			$response = $this->cmdResponse();
+			switch ($response[0]) {
+				case "subscribe":
+				case "unsubscribe":
+					break;
+				case "message":
+					if (is_string($f) || is_array($f)) {
+						$result = call_user_func($f, $this, $response[1], $response[2]);
+					}
+					else {
+						$result = $f($this, $response[1], $response[2]);
+					}
+					if ($result) {
+						$exit = $result;
+					}
+					break;
+				case "pong":
+					break;
+				default:
+					throw new RuntimeException("Unknown message type '".$response[0]);
+			}
+		}
+		$channels[0] = 'UNSUBSCRIBE';
+		$this->cmd($channels, false);
+		for($i=0; $i < count($channels) -1; $i++) {
+			$this->cmdResponse();
+		}
+		return $exit;
+	}
+
+	/**
+	 * publish a payload to a channel.
+	 * 
+	 * @param string $channel
+	 * @param string $payload
+	 */
+	function publish ($channel, $payload) {
+		return $this->cmd(array('publish', $channel, $payload));
+	}
+
+	/**
+	 * Subscribe to some channels that match the given pattern(s).
+	 *
+	 * The given callable is called for each received
+	 * messages send by a publisher.
+	 * The subscription stops when the callable returns a value.
+	 *
+	 * @param mixed $channelPatterns a pattern (string) or a list of pattern (array)
+	 * @param callable $f  it accepts these arguments :
+	 * 						- redis object
+	 * 						- channel pattern
+	 * 						- channel
+	 * 						- payload
+	 */
+	function psubscribe($channelPatterns, callback $f) {
+		if (!is_array($channelPatterns)) {
+			$channelPatterns = array($channelPatterns);
+		}
+		array_unshift($channelPatterns, 'PSUBSCRIBE');
+		$this->cmd($channelPatterns, false);
+
+		$exit = false;
+		while(!$exit) {
+			$response = $this->cmdResponse();
+			switch ($response[0]) {
+				case "psubscribe":
+				case "punsubscribe":
+					break;
+				case "pmessage":
+					if (is_string($f) || is_array($f)) {
+						$result = call_user_func($f, $this, $response[1], $response[2], $response[3]);
+					}
+					else {
+						$result = $f($this, $response[1], $response[2], $response[3]);
+					}
+					if ($result) {
+						$exit = $result;
+					}
+					break;
+				case "pong":
+					break;
+				default:
+					throw new RuntimeException("Unknown message type '".$response[0]);
+			}
+		}
+		$channelPatterns[0] = 'PUNSUBSCRIBE';
+		$this->cmd($channelPatterns, false);
+		for($i=0; $i < count($channelPatterns) -1; $i++) {
+			$this->cmdResponse();
+		}
+		return $exit;
+	}
+
 }

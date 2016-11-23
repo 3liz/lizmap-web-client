@@ -36,7 +36,11 @@ class jUnitTestCaseDb extends jUnitTestCase {
         foreach($records as $rec){
             $ins='';
             foreach($fields as $f){
-                $ins.= ','.$db->quote($rec[$f]);
+                if ($rec[$f] === null) {
+                    $ins.= ',NULL';
+                } else {
+                    $ins.= ','.$db->quote($rec[$f]);
+                }
             }
             $db->exec($sql.substr($ins,1).')');
         }

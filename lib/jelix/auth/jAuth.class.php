@@ -4,7 +4,7 @@
 * @subpackage auth
 * @author     Laurent Jouanneau
 * @contributor Frédéric Guillot, Antoine Detante, Julien Issler, Dominique Papin, Tahina Ramaroson, Sylvain de Vathaire, Vincent Viaud
-* @copyright  2001-2005 CopixTeam, 2005-2014 Laurent Jouanneau, 2007 Frédéric Guillot, 2007 Antoine Detante
+* @copyright  2001-2005 CopixTeam, 2005-2016 Laurent Jouanneau, 2007 Frédéric Guillot, 2007 Antoine Detante
 * @copyright  2007-2008 Julien Issler, 2008 Dominique Papin, 2010 NEOV, 2010 BP2I
 *
 * This classes were get originally from an experimental branch of the Copix project (Copix 2.3dev, http://www.copix.org)
@@ -63,6 +63,19 @@ class jAuth {
                     $config['persistant_cookie_path'] = '/';
             }
 
+            if (!isset($config['persistant_encryption_key'])) {
+                if (isset(jApp::config()->coordplugin_auth) && isset(jApp::config()->coordplugin_auth['persistant_crypt_key'])) {
+                    $config['persistant_crypt_key'] = trim(jApp::config()->coordplugin_auth['persistant_crypt_key']);
+                }
+                else {
+                    $config['persistant_crypt_key'] = '';
+                }
+            }
+
+            if (!isset($config['persistant_cookie_name'])) {
+                $config['persistant_cookie_name'] = 'jauthSession';
+            }
+
             // Read hash method configuration. If not empty, cryptPassword will use
             // the new API of PHP 5.5 (password_verify and so on...)
             $password_hash_method = (isset($config['password_hash_method'])? $config['password_hash_method']:0);
@@ -80,9 +93,7 @@ class jAuth {
                     $password_hash_method = 0;
                 }
             }
-            else {
-                require_once(__DIR__.'/hash_equals.php');
-            }
+            require_once(__DIR__.'/hash_equals.php');
 
             $password_hash_options = (isset($config['password_hash_options'])?$config['password_hash_options']:'');
             if ($password_hash_options != '') {
@@ -365,9 +376,12 @@ class jAuth {
         }
 
         if(isset($config['persistant_enable']) && $config['persistant_enable']){
-            if(!isset($config['persistant_cookie_name']))
-                throw new jException('jelix~auth.error.persistant.incorrectconfig','persistant_cookie_name, persistant_crypt_key');
-            setcookie($config['persistant_cookie_name'].'[auth]', '', time() - 3600, $config['persistant_cookie_path']);
+            if(isset($config['persistant_cookie_name'])) {
+                setcookie($config['persistant_cookie_name'].'[auth]', '', time() - 3600, $config['persistant_cookie_path'], "", false, true);
+            }
+            else {
+                jLog::log(jLocale::get('jelix~auth.error.persistant.incorrectconfig','persistant_cookie_name'), 'error');
+            }
         }
     }
 
@@ -443,12 +457,16 @@ class jAuth {
     public static function checkCookieToken() {
         $config = self::loadConfig();
         if (isset($config['persistant_enable']) && $config['persistant_enable'] && !self::isConnected()) {
-            if (isset($config['persistant_cookie_name']) && isset($config['persistant_crypt_key'])) {
+            if (isset($config['persistant_cookie_name']) &&
+                isset($config['persistant_crypt_key']) &&
+                trim($config['persistant_cookie_name']) != '' &&
+                trim($config['persistant_crypt_key']) != ''
+                ) {
                 $cookieName = $config['persistant_cookie_name'];
                 if (isset($_COOKIE[$cookieName]['auth']) && strlen($_COOKIE[$cookieName]['auth'])>0) {
                     $decrypted = jCrypt::decrypt($_COOKIE[$cookieName]['auth'],$config['persistant_crypt_key']);
                     $decrypted = @unserialize($decrypted);
-                    if ($decrypted && is_array($decrypted)) {
+                    if ($decrypted && is_array($decrypted) && count($decrypted) == 2) {
                         list($login, $password) = $decrypted;
                         self::login($login, $password, true);
                     }
@@ -459,9 +477,6 @@ class jAuth {
                     setcookie($cookieName.'[passwd]', '', time() - 3600, $config['persistant_cookie_path']);
                 }
             }
-            else {
-                throw new jException('jelix~auth.error.persistant.incorrectconfig','persistant_cookie_name, persistant_crypt_key');
-            }
         }
     }
 
@@ -471,21 +486,24 @@ class jAuth {
 
         // Add a cookie for session persistance, if enabled
         if (isset($config['persistant_enable']) && $config['persistant_enable']) {
-            if (!isset($config['persistant_crypt_key']) || !isset($config['persistant_cookie_name'])) {
-                throw new jException('jelix~auth.error.persistant.incorrectconfig','persistant_cookie_name, persistant_crypt_key');
+            if (!isset($config['persistant_crypt_key']) ||
+                !isset($config['persistant_cookie_name']) ||
+                trim($config['persistant_crypt_key']) == '' ||
+                trim($config['persistant_cookie_name']) == '') {
+                jLog::log(jLocale::get('jelix~auth.error.persistant.incorrectconfig','persistant_cookie_name, persistant_crypt_key'), 'error');
+                return 0;
             }
 
-            if (isset($config['persistant_duration']))
-                $persistence = $config['persistant_duration']*86400;
-            else
+            if (isset($config['persistant_duration'])) {
+                $persistence = intval($config['persistant_duration'])*86400;
+            }
+            else {
                 $persistence = 86400; // 24h
+            }
             $persistence += time();
-            //$login = $_SESSION[$config['session_name']]->login;
             $encrypted = jCrypt::encrypt(serialize(array($login, $password)),$config['persistant_crypt_key']);
-            setcookie($config['persistant_cookie_name'].'[auth]', $encrypted, $persistence, $config['persistant_cookie_path']);
+            setcookie($config['persistant_cookie_name'].'[auth]', $encrypted, $persistence, $config['persistant_cookie_path'], "", false, true);
         }
         return $persistence;
     }
-
-
 }

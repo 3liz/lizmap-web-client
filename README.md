@@ -1,4 +1,4 @@
-[![logo](icon.png "3Liz")][3liz]Lizmap Web Application 3.0beta4
+[![logo](icon.png "3Liz")][3liz]Lizmap Web Application 3.1pre
 ================================================================
 
 Lizmap web application, by 3LIZ.
@@ -9,9 +9,9 @@ Lizmap web application, by 3LIZ.
     email       : info@3liz.com
     website     : http://www.3liz.com
 
-Lizmap Web Application generates dynamically a web map application (php/html/css/js) with the help of Qgis Server ( [QGIS Server Tutorial] ). You can configure one web map per Qgis project with the QGIS LizMap Plugin. The Lizmap web application must be installed on the server.
+Lizmap Web Application generates dynamically a web map application (php/html/css/js) with the help of Qgis Server ( [QGIS as OGC Data Server] ). You can configure one web map per Qgis project with the QGIS LizMap Plugin. The Lizmap web application must be installed on the server.
 
-The Original Code is 3liz code.
+The Original Code is [3liz] code.
 
 Authors
 -------
@@ -21,15 +21,27 @@ The Initial Developer of the Original Code are René-Luc D'Hont <rldhont@3liz.co
 Contributors
 --------------
 
-* Paolo Cavallini <cavallini@faunalia.it>
-* Salvatore Larosa <lrssvtml@gmail.com>
-* Giovanni Manghi <giovanni.manghi@gmail.com>
+* Paolo Cavallini
+* Salvatore Larosa
+* Giovanni Manghi
+* Laurent Jouanneau
+* David Marteau
 * Vitor Jorge
 * Nicolas Boisteault
-* Arno <ntelerm@yahoo.gr>
-* vherreros
-* jaitor1
+* Arnaud Deleurme
+* Víctor Herreros
+* Aitor Gil
 * Felix Kuehne
+* João Gaspar
+* Sławomir Bienias
+* Petr Tsymbarovich
+* Alessandro Fanna
+* Marta Puppo
+* Pietro Rossin
+* Kari Salovaara
+* Xan Vieiro
+* Rasmus Johansson
+* Jankó J A
 
 Documentation
 --------------
@@ -57,5 +69,5 @@ Alternatively, the contents of this file may be used under the terms of either o
 Software distributed under the License is distributed on an "AS IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License for the specific language governing rights and limitations under the License.
 
 
-  [QGIS Server Tutorial]: http://www.qgis.org/wiki/QGIS_Server_Tutorial
+  [QGIS as OGC Data Server]: http://docs.qgis.org/testing/en/docs/user_manual/working_with_ogc/ogc_server_support.html
   [3liz]:http://www.3liz.com

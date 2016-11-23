@@ -1,5 +1,5 @@
 Upgrading to Lizmap 3.0
-=======================
+========================
 
 First, be sure that your lizmap installation has been upgraded to the latest version
 of 2.x.

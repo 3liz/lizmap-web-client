@@ -28,24 +28,23 @@ class geobookmarkCtrl extends jController {
     }
 
 
-    function index(){
-        if( !jAuth::isConnected() ){
+    function index()
+    {
+        if (!jAuth::isConnected()) {
             jMessage::add('Geobookmarks - User is not connected', 'error');
-            return $this->error;
-        }
-
-        if( $this->param('q') == 'add' )
-            return $this->add();
-        else if ( $this->param('q') == 'del' )
-            return $this->delete();
-        else if ( $this->param('q') == 'get' )
-            return $this->getBookmarkParams();
-        else{
-            jMessage::add('Geobookmarks - Wrong parameters given', 'error');
             return $this->error();
         }
-        return $rep;
 
+        if ($this->param('q') == 'add') {
+            return $this->add();
+        } else if ( $this->param('q') == 'del' ) {
+            return $this->delete();
+        } else if ( $this->param('q') == 'get' ) {
+            return $this->getBookmarkParams();
+        }
+
+        jMessage::add('Geobookmarks - Wrong parameters given', 'error');
+        return $this->error();
     }
 
 

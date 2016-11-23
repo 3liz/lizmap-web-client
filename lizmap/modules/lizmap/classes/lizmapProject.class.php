@@ -9,7 +9,6 @@
 * @license Mozilla Public License : http://www.mozilla.org/MPL/
 */
 
-
 class lizmapProject{
 
     // lizmapRepository
@@ -36,174 +35,391 @@ class lizmapProject{
     protected $qgisProjectVersion = null;
 
     /**
+     * @var array contains WMS info
+     */
+    protected $WMSInformation = null;
+
+    /**
+     * @var string
+     */
+    protected $canvasColor = '';
+
+    /**
+     * @var array  authid => proj4
+     */
+    protected $allProj4 = array();
+
+    /**
+     * @var array  for each referenced layer, there is an item
+     *            with referencingLayer, referencedField, referencingField keys.
+     *            There is also a 'pivot' key
+     */
+    protected $relations = array();
+
+    /**
+     * @var array list of layer orders: layer name => order
+     */
+    protected $layersOrder = array();
+
+    /**
+     * @var array
+     */
+    protected $printCapabilities = array();
+
+    /**
+     * @var array
+     */
+    protected $locateByLayer = array();
+
+    /**
+     * @var array
+     */
+    protected $editionLayers = array();
+
+    /**
+     * @var boolean
+     */
+    protected $useLayerIDs = false;
+
+    /**
+     * @var array List of cached properties
+     */
+    protected $cachedProperties = array('WMSInformation', 'canvasColor', 'allProj4',
+        'relations', 'layersOrder', 'printCapabilities', 'locateByLayer',
+        'editionLayers', 'useLayerIDs', 'layers', 'data', 'cfg', 'qgisProjectVersion');
+
+    /**
      * constructor
-     * key : the project name
-     * rep : the repository has a lizmapRepository class
+     * @param string $key : the project name
+     * @param lizmapRepository $ rep : the repository
      */
     public function __construct ( $key, $rep ) {
-        if (file_exists($rep->getPath().$key.'.qgs')
-         && file_exists($rep->getPath().$key.'.qgs.cfg') ) {
-            $this->key = $key;
-            $this->repository = $rep;
+        $this->key = $key;
+        $this->repository = $rep;
 
-            $key_session = $rep->getKey().'~'.$key;
-            $qgs_path = $rep->getPath().$key.'.qgs';
-            $config = null;
-            $qgs_xml = null;
-            $update_session = false;
+        $file = $rep->getPath().$key.'.qgs';
 
-            if ( isset($_SESSION['_LIZMAP_'])
-                && isset($_SESSION['_LIZMAP_'][$key_session])
-                && isset($_SESSION['_LIZMAP_'][$key_session]['cfg'])
-                && isset($_SESSION['_LIZMAP_'][$key_session]['cfgmtime'])
-                && $_SESSION['_LIZMAP_'][$key_session]['cfgmtime'] >= filemtime($qgs_path.'.cfg')
-                )
-                $config = $_SESSION['_LIZMAP_'][$key_session]['cfg'];
+        // Verifying if the files exist
+        if (!file_exists($file))
+            throw new UnknownLizmapProjectException('The QGIS project '.$file.' does not exist!');
+        if (!file_exists($file.'.cfg'))
+            throw new UnknownLizmapProjectException('The lizmap config '.$file.'.cfg does not exist!');
+
+        // For the cache key, we use the full path of the project file
+        // to avoid collision in the cache engine
+        $data = false;
+        try {
+            $data = jCache::get($file, 'qgisprojects');
+        }
+        catch(Exception $e) {
+            // if qgisprojects profile does not exist, or if there is an
+            // other error about the cache, let's log it
+            jLog::log($e->getMessage(), 'error');
+        }
+
+        if ($data === false ||
+            $data['qgsmtime'] < filemtime($file) ||
+            $data['qgscfgmtime'] < filemtime($file.'.cfg')) {
+            // FIXME reading XML could take time, so many process could
+            // read it and construct the cache at the same time. We should
+            // have a kind of lock to avoid this issue.
+            $this->readXml($key, $rep);
+            $data['qgsmtime'] = filemtime($file);
+            $data['qgscfgmtime'] = filemtime($file.'.cfg');
+            foreach($this->cachedProperties as $prop) {
+                $data[$prop] = $this->$prop;
+            }
+            try {
+                jCache::set($file, $data, null, 'qgisprojects');
+            }
+            catch(Exception $e) {
+                 jLog::log($e->getMessage(), 'error');
+            }
+        }
+        else {
+            foreach($this->cachedProperties as $prop) {
+                $this->$prop = $data[$prop];
+            }
+        }
+    }
+
+    public function clearCache() {
+        $file = $this->repository->getPath().$this->key.'.qgs';
+        try {
+            jCache::delete($file, 'qgisprojects');
+        }
+        catch(Exception $e) {
+            // if qgisprojects profile does not exist, or if there is an
+            // other error about the cache, let's log it
+            jLog::log($e->getMessage(), 'error');
+        }
+    }
+    /**
+     * temporary function to read xml for some methods that relies on
+     * xml data that are not yet stored in the cache
+     * @deprecated
+     */
+    protected function getXml() {
+        if ($this->xml) {
+            return $this->xml;
+        }
+        $qgs_path = $this->repository->getPath().$this->key.'.qgs';
+        if (!file_exists($qgs_path) ||
+            !file_exists($qgs_path.'.cfg') ) {
+            throw new Error("Files of project ".$this->key." does not exists");
+        }
+        $xml = simplexml_load_file($qgs_path);
+        if ($xml === false) {
+            throw new Exception("Qgs File of project ".$this->key." has invalid content");
+        }
+        return $xml;
+    }
+
+    /**
+     * Read the qgis files
+     */
+    protected function readXml($key, $rep) {
+        $qgs_path = $rep->getPath().$key.'.qgs';
+
+        if (!file_exists($qgs_path) ||
+            !file_exists($qgs_path.'.cfg') ) {
+            throw new Exception("Files of project $key does not exists");
+        }
+
+        $config = jFile::read($qgs_path.'.cfg');
+        $this->cfg = json_decode($config);
+        if ($this->cfg === null) {
+            throw new Exception(".qgs.cfg File of project $key has invalid content");
+        }
+
+        $configOptions = $this->cfg->options;
+
+        $qgs_xml = simplexml_load_file($qgs_path);
+        if ($qgs_xml === false) {
+            throw new Exception("Qgs File of project $key has invalid content");
+        }
+        $this->xml = $qgs_xml;
+
+        $this->data = array(
+            'repository'=>$rep->getKey(),
+            'id'=>$key,
+            'title'=>ucfirst($key),
+            'abstract'=>'',
+            'proj'=> $configOptions->projection->ref,
+            'bbox'=> join($configOptions->bbox,', ')
+        );
+        # get title from WMS properties
+        if (property_exists($qgs_xml->properties, 'WMSServiceTitle'))
+            if (!empty($qgs_xml->properties->WMSServiceTitle))
+                $this->data['title'] = (string)$qgs_xml->properties->WMSServiceTitle;
+
+        # get abstract from WMS properties
+        if (property_exists($qgs_xml->properties, 'WMSServiceAbstract'))
+            $this->data['abstract'] = (string)$qgs_xml->properties->WMSServiceAbstract;
+
+        # get WMS getCapabilities full URL
+        $this->data['wmsGetCapabilitiesUrl'] = jUrl::getFull(
+            'lizmap~service:index',
+            array(
+                'repository' => $rep->getKey(),
+                'project' => $key,
+                'SERVICE' => 'WMS',
+                'VERSION' => '1.3.0',
+                'REQUEST' => 'GetCapabilities'
+            )
+        );
+
+        # get WMTS getCapabilities full URL
+        $this->data['wmtsGetCapabilitiesUrl'] = jUrl::getFull(
+            'lizmap~service:index',
+            array(
+                'repository' => $rep->getKey(),
+                'project' => $key,
+                'SERVICE' => 'WMTS',
+                'VERSION' => '1.0.0',
+                'REQUEST' => 'GetCapabilities'
+            )
+        );
+
+        // get QGIS project version
+        $qgisRoot = $qgs_xml->xpath('//qgis');
+        $qgisRootZero = $qgisRoot[0];
+        $qgisProjectVersion = (string)$qgisRootZero->attributes()->version;
+        $qgisProjectVersion = explode('-', $qgisProjectVersion);
+        $qgisProjectVersion = $qgisProjectVersion[0];
+        $qgisProjectVersion = explode('.', $qgisProjectVersion);
+        $a = '';
+        foreach( $qgisProjectVersion as $k ){
+            if( strlen($k) == 1 ){
+                $a.= $k . '0';
+            }
             else {
-                $config = jFile::read($qgs_path.'.cfg');
-                $update_session = true;
+                $a.= $k;
             }
-            $this->cfg = json_decode($config);
+        }
+        $qgisProjectVersion = (integer)$a;
+        $this->qgisProjectVersion = $qgisProjectVersion;
 
-            $configOptions = $this->cfg->options;
-
-            if ( isset($_SESSION['_LIZMAP_'])
-                && isset($_SESSION['_LIZMAP_'][$key_session])
-                && isset($_SESSION['_LIZMAP_'][$key_session]['xml'])
-                && isset($_SESSION['_LIZMAP_'][$key_session]['xmlmtime'])
-                && $_SESSION['_LIZMAP_'][$key_session]['xmlmtime'] >= filemtime($qgs_path)
-                )
-                $qgs_xml = simplexml_load_string($_SESSION['_LIZMAP_'][$key_session]['xml']);
-            else {
-                $qgs_xml = simplexml_load_file($qgs_path);
-                $update_session = true;
+        $shortNames = $qgs_xml->xpath('//maplayer/shortname');
+        if ( $shortNames && count( $shortNames ) > 0 ) {
+            foreach( $shortNames as $sname ) {
+                $sname = (string) $sname;
+                $xmlLayer = $qgs_xml->xpath( "//maplayer[shortname='$sname']" );
+                $xmlLayer = $xmlLayer[0];
+                $name = (string)$xmlLayer->layername;
+                if ( property_exists($this->cfg->layers, $name ) )
+                    $this->cfg->layers->$name->shortname = $sname;
             }
-            $this->xml = $qgs_xml;
+        }
 
-            $this->data = array(
-                'repository'=>$rep->getKey(),
-                'id'=>$key,
-                'title'=>ucfirst($key),
-                'abstract'=>'',
-                'proj'=> $configOptions->projection->ref,
-                'bbox'=> join($configOptions->bbox,', ')
-            );
-            # get title from WMS properties
-            if (property_exists($qgs_xml->properties, 'WMSServiceTitle'))
-                if (!empty($qgs_xml->properties->WMSServiceTitle))
-                    $this->data['title'] = $qgs_xml->properties->WMSServiceTitle;
-
-            # get abstract from WMS properties
-            if (property_exists($qgs_xml->properties, 'WMSServiceAbstract'))
-                $this->data['abstract'] = $qgs_xml->properties->WMSServiceAbstract;
-            if ( $update_session ) {
-                if ( !isset($_SESSION['_LIZMAP_']) )
-                    $_SESSION['_LIZMAP_'] = array($key_session=>array());
-                else if ( !isset($_SESSION['_LIZMAP_'][$key_session]) )
-                    $_SESSION['_LIZMAP_'][$key_session] = array();
-                $_SESSION['_LIZMAP_'][$key_session]['xml'] = $qgs_xml->saveXml();
-                $_SESSION['_LIZMAP_'][$key_session]['xmlmtime'] = filemtime($qgs_path);
-                $_SESSION['_LIZMAP_'][$key_session]['cfg'] = $config;
-                $_SESSION['_LIZMAP_'][$key_session]['cfgmtime'] = filemtime($qgs_path.'.cfg');
-            }
-
-            # get WMS getCapabilities full URL
-            $this->data['wmsGetCapabilitiesUrl'] = jUrl::getFull(
-                'lizmap~service:index',
-                array(
-                    'repository' => $rep->getKey(),
-                    'project' => $key,
-                    'SERVICE' => 'WMS',
-                    'VERSION' => '1.3.0',
-                    'REQUEST' => 'GetCapabilities'
-                )
-            );
-
-            # get WMTS getCapabilities full URL
-            $this->data['wmtsGetCapabilitiesUrl'] = jUrl::getFull(
-                'lizmap~service:index',
-                array(
-                    'repository' => $rep->getKey(),
-                    'project' => $key,
-                    'SERVICE' => 'WMTS',
-                    'VERSION' => '1.0.0',
-                    'REQUEST' => 'GetCapabilities'
-                )
-            );
-
-            // get QGIS project version
-            $qgisRoot = $this->xml->xpath('//qgis');
-            $qgisRootZero = $qgisRoot[0];
-            $qgisProjectVersion = (string)$qgisRootZero->attributes()->version;
-            $qgisProjectVersion = explode('-', $qgisProjectVersion);
-            $qgisProjectVersion = $qgisProjectVersion[0];
-            $qgisProjectVersion = explode('.', $qgisProjectVersion);
-            $a = '';
-            foreach( $qgisProjectVersion as $k ){
-                if( strlen($k) == 1 ){
-                    $a.= $k . '0';
-                }
-                else {
-                    $a.= $k;
-                }
-            }
-            $qgisProjectVersion = (integer)$a;
-            $this->qgisProjectVersion = $qgisProjectVersion;
-
-            $shortNames = $this->xml->xpath('//maplayer/shortname');
-            if ( count( $shortNames ) > 0 ) {
-                foreach( $shortNames as $sname ) {
-                    $sname = (string) $sname;
-                    $xmlLayer = $qgs_xml->xpath( "//maplayer[shortname='$sname']" );
-                    $xmlLayer = $xmlLayer[0];
-                    $name = (string)$xmlLayer->layername;
+        $groupsWithShortName = $qgs_xml->xpath("//layer-tree-group/customproperties/property[@key='wmsShortName']/parent::*/parent::*");
+        if ( $groupsWithShortName && count( $groupsWithShortName ) > 0 ) {
+            foreach( $groupsWithShortName as $group ) {
+                $name = (string)$group['name'];
+                $shortNameProperty = $group->xpath("customproperties/property[@key='wmsShortName']");
+                if ( $shortNameProperty && count( $shortNameProperty ) > 0 ) {
+                    $shortNameProperty = $shortNameProperty[0];
+                    $sname = (string) $shortNameProperty['value'];
                     if ( property_exists($this->cfg->layers, $name ) )
                         $this->cfg->layers->$name->shortname = $sname;
                 }
             }
-
-            $groupsWithShortName = $this->xml->xpath("//layer-tree-group/customproperties/property[@key='wmsShortName']/parent::*/parent::*");
-            if ( count( $groupsWithShortName ) > 0 ) {
-                foreach( $groupsWithShortName as $group ) {
-                    $name = (string)$group['name'];
-                    $shortNameProperty = $group->xpath("customproperties/property[@key='wmsShortName']");
-                    if ( count( $shortNameProperty ) > 0 ) {
-                        $shortNameProperty = $shortNameProperty[0];
-                        $sname = (string) $shortNameProperty['value'];
-                        if ( property_exists($this->cfg->layers, $name ) )
-                            $this->cfg->layers->$name->shortname = $sname;
-                    }
-                }
-            }
-            //unset cache for editionLayers
-            if (property_exists($this->cfg, 'editionLayers') ){
-                foreach( $this->cfg->editionLayers as $key=>$obj ){
-                    if (property_exists($this->cfg->layers, $key) ){
-                        $this->cfg->layers->$key->cached = 'False';
-                        $this->cfg->layers->$key->clientCacheExpiration = 0;
-                        if ( property_exists($this->cfg->layers->$key, 'cacheExpiration') )
-                            unset($this->cfg->layers->$key->cacheExpiration);
-                    }
-                }
-            }
-            //unset cache for loginFilteredLayers
-            if ( property_exists($this->cfg,'loginFilteredLayers') ){
-                foreach( $this->cfg->loginFilteredLayers as $key=>$obj ){
-                    if (property_exists($this->cfg->layers, $key) ){
-                        $this->cfg->layers->$key->cached = 'False';
-                        $this->cfg->layers->$key->clientCacheExpiration = 0;
-                        if ( property_exists($this->cfg->layers->$key, 'cacheExpiration') )
-                            unset($this->cfg->layers->$key->cacheExpiration);
-                    }
-                }
-            }
-            //unset displayInLegend for geometryType none or unknown
-            foreach( $this->cfg->layers as $key=>$obj ){
-                if ( property_exists($this->cfg->layers->$key, 'geometryType') &&
-                     ($this->cfg->layers->$key->geometryType == 'none' || $this->cfg->layers->$key->geometryType == 'unknown') )
-                    $this->cfg->layers->$key->displayInLegend = 'False';
+        }
+        $groupsMutuallyExclusive = $qgs_xml->xpath("//layer-tree-group[@mutually-exclusive='1']");
+        if ( $groupsMutuallyExclusive && count( $groupsMutuallyExclusive ) > 0 ) {
+            foreach( $groupsMutuallyExclusive as $group ) {
+                $name = (string)$group['name'];
+                if ( property_exists($this->cfg->layers, $name ) )
+                    $this->cfg->layers->$name->mutuallyExclusive = 'True';
             }
         }
+
+        $layersWithShowFeatureCount = $qgs_xml->xpath("//layer-tree-layer/customproperties/property[@key='showFeatureCount']/parent::*/parent::*");
+        if ( $layersWithShowFeatureCount && count( $layersWithShowFeatureCount ) > 0 ) {
+            foreach( $layersWithShowFeatureCount as $layer ) {
+                $name = (string)$layer['name'];
+                if ( property_exists($this->cfg->layers, $name ) )
+                    $this->cfg->layers->$name->showFeatureCount = 'True';
+            }
+        }
+        //remove plugin layer
+        $pluginLayers = $qgs_xml->xpath('//maplayer[type="plugin"]');
+        if ( $pluginLayers && count( $pluginLayers ) > 0 ) {
+            foreach( $pluginLayers as $layer ) {
+                $name = (string)$layer->layername;
+                if ( property_exists($this->cfg->layers, $name ) )
+                    unset($this->cfg->layers->$name);
+            }
+        }
+        //unset cache for editionLayers
+        if (property_exists($this->cfg, 'editionLayers') ){
+            foreach( $this->cfg->editionLayers as $key=>$obj ){
+                if (property_exists($this->cfg->layers, $key) ){
+                    $this->cfg->layers->$key->cached = 'False';
+                    $this->cfg->layers->$key->clientCacheExpiration = 0;
+                    if ( property_exists($this->cfg->layers->$key, 'cacheExpiration') )
+                        unset($this->cfg->layers->$key->cacheExpiration);
+                }
+            }
+        }
+        //unset cache for loginFilteredLayers
+        if ( property_exists($this->cfg,'loginFilteredLayers') ){
+            foreach( $this->cfg->loginFilteredLayers as $key=>$obj ){
+                if (property_exists($this->cfg->layers, $key) ){
+                    $this->cfg->layers->$key->cached = 'False';
+                    $this->cfg->layers->$key->clientCacheExpiration = 0;
+                    if ( property_exists($this->cfg->layers->$key, 'cacheExpiration') )
+                        unset($this->cfg->layers->$key->cacheExpiration);
+                }
+            }
+        }
+        //unset displayInLegend for geometryType none or unknown
+        foreach( $this->cfg->layers as $key=>$obj ){
+            if ( property_exists($this->cfg->layers->$key, 'geometryType') &&
+                 ($this->cfg->layers->$key->geometryType == 'none' || $this->cfg->layers->$key->geometryType == 'unknown') )
+                $this->cfg->layers->$key->displayInLegend = 'False';
+        }
+
+        $this->WMSInformation = $this->readWMSInformation($qgs_xml);
+        $this->canvasColor = $this->readCanvasColor($qgs_xml);
+        $this->allProj4 = $this->readAllProj4($qgs_xml);
+        $this->relations = $this->readRelations($qgs_xml);
+        $this->layersOrder = $this->readLayersOrder($qgs_xml);
+        $this->printCapabilities = $this->readPrintCapabilities($qgs_xml, $this->cfg);
+        $this->locateByLayer = $this->readLocateByLayers($qgs_xml, $this->cfg);
+        $this->editionLayers = $this->readEditionLayers($qgs_xml, $this->cfg);
+        $this->useLayerIDs = $this->readUseLayerIDs($qgs_xml);
+        $this->layers = $this->readLayers($qgs_xml);
+    }
+
+    protected function readLayers($xml) {
+        $xmlLayers = $xml->xpath( "//maplayer" );
+        $layers = array();
+        if ( !$xmlLayers )
+            return $layers;
+
+        foreach( $xmlLayers as $xmlLayer ) {
+            $layer = array(
+                'type' => (string)$xmlLayer->attributes()->type,
+                'id' => (string)$xmlLayer->id,
+                'name' => (string)$xmlLayer->layername,
+                'shortname' => (string)$xmlLayer->shortname,
+                'title' => (string)$xmlLayer->title,
+                'abstract' => (string)$xmlLayer->abstract,
+                'proj4' => (string)$xmlLayer->srs->spatialrefsys->proj4,
+                'srid' => (integer)$xmlLayer->srs->spatialrefsys->srid,
+                'datasource' => (string)$xmlLayer->datasource,
+                'provider' => (string)$xmlLayer->provider,
+                'keywords' => array()
+            );
+            $keywords = $xmlLayer->xpath("./keywordList/value");
+            if ($keywords) {
+                foreach($keywords as $keyword) {
+                    if ('' != (string)$keyword) {
+                        $layer['keywords'][] = (string)$keyword;
+                    }
+                }
+            }
+
+            $items = $xmlLayer->xpath('//item');
+            if ( $layer['title'] == '' ) {
+                $layer['title'] = $layer['name'];
+            }
+            if ($layer['type'] == 'vector') {
+                $fields = array();
+                $wfsFields = array();
+                $aliases = array();
+                $edittypes = $xmlLayer->xpath(".//edittype");
+                if ( $edittypes ) {
+                    foreach( $edittypes as $edittype ) {
+                        $field = (string) $edittype->attributes()->name;
+                        $aliases[$field] = $field;
+                        $alias = $xmlLayer->xpath("aliases/alias[@field='".$field."']");
+                        if( $alias && count($alias) != 0 ) {
+                            $alias = $alias[0];
+                            $aliases[$field] = (string)$alias['name'];
+                        }
+                        $fields[] = $field;
+                        $wfsFields[] = $field;
+                    }
+                }
+                $layer['fields'] = $fields;
+                $layer['aliases'] = $aliases;
+                $layer['wfsFields'] = $wfsFields;
+
+                $excludeFields = $xmlLayer->xpath(".//excludeAttributesWFS/attribute");
+                if ( $excludeFields && count($excludeFields) > 0 ) {
+                    foreach( $excludeFields as $eField ) {
+                        $eField = (string) $eField;
+                        array_splice( $wfsFields, array_search( $eField, $wfsFields ), 1 );
+                    }
+                    $layer['wfsFields'] = $wfsFields;
+                }
+            }
+
+            $layers[] = $layer;
+        }
+        return $layers;
     }
 
     public function getQgisProjectVersion(){
@@ -240,6 +456,29 @@ class lizmapProject{
         return $this->cfg->layers;
     }
 
+
+    public function findLayerByAnyName( $name ){
+        // Get by name ie as written in QGIS Desktop legend
+        $layer = $this->findLayerByName( $name );
+        if ( $layer  ) return $layer;
+
+        // since 2.14 layer's name can be layer's shortName
+        $layer = $this->findLayerByShortName( $name );
+        if ( $layer  ) return $layer;
+
+        // Get layer by typename : qgis server replaces ' ' by '_' for layer names
+        $layer = $this->findLayerByTypeName( $name );
+        if ( $layer  ) return $layer;
+
+        // Get by id
+        $layer = $this->findLayerByLayerId( $name );
+        if ( $layer  ) return $layer;
+
+        // since 2.6 layer's name can be layer's title
+        $layer = $this->findLayerByTitle( $name );
+        return $layer;
+    }
+
     public function findLayerByName( $name ){
         if ( property_exists($this->cfg->layers, $name ) )
             return $this->cfg->layers->$name;
@@ -273,6 +512,15 @@ class lizmapProject{
             if ( $layer->id == $layerId )
                 return $layer;
         }
+        return null;
+    }
+
+    public function findLayerByTypeName( $typeName ){
+        if ( property_exists($this->cfg->layers, $typeName ) )
+            return $this->cfg->layers->$typeName;
+        $layerName = str_replace('_', ' ', $typeName );
+        if ( property_exists($this->cfg->layers, $layerName ) )
+            return $this->cfg->layers->$layerName;
         return null;
     }
 
@@ -325,6 +573,68 @@ class lizmapProject{
                 return true;
             return false;
         }
+        return false;
+    }
+
+
+    public function hasFtsSearches(){
+        // Virtual jdb profile corresponding to the layer database
+        $project = $this->key;
+        $repository = $this->repository->getKey();
+
+        $repositoryPath = realpath($this->repository->getPath());
+        $repositoryPath = str_replace('\\', '/', $repositoryPath);
+        $searchDatabase = $repositoryPath.'/default.qfts';
+
+        if ( !file_exists($searchDatabase) ) {
+          // Search for project database
+          $searchDatabase = $repositoryPath.'/'.$project.'.qfts';
+        }
+        if ( !file_exists($searchDatabase) ) {
+          return false;
+        }
+
+        $jdbParams = array(
+            "driver"=>"pdo",
+            "dsn"=>'sqlite:'.$searchDatabase
+        );
+
+        // Create the virtual jdb profile
+        $searchJdbName = "jdb_".$repository.'_'.$project;
+        jProfiles::createVirtualProfile('jdb', $searchJdbName, $jdbParams);
+
+        // Check FTS db ( tables and geometry storage
+        try{
+            $cnx = jDb::getConnection($searchJdbName);
+
+            // Get metadata
+            $sql = "
+            SELECT search_id, search_name, layer_name, geometry_storage, srid
+            FROM quickfinder_toc
+            WHERE geometry_storage != 'wkb'
+            ORDER BY priority
+            ";
+            $res = $cnx->query($sql);
+            $searches = array();
+            foreach($res as $item){
+                $searches[$item->search_id] = array(
+                    'search_name' => $item->search_name,
+                    'layer_name' => $item->layer_name,
+                    'srid' => $item->srid
+                );
+            }
+            if( count($searches) == 0 ){
+                return false;
+            }
+            return array(
+                'jdb_profile' => $searchJdbName,
+                'searches' => $searches
+            );
+        }
+        catch(Exception $e){
+            return false;
+        }
+
         return false;
     }
 
@@ -429,7 +739,10 @@ class lizmapProject{
     }
 
     public function getWMSInformation(){
-        $qgsLoad = $this->xml;
+        return $this->WMSInformation;
+    }
+
+    protected function readWMSInformation($qgsLoad) {
 
         // Default metadata
         $WMSServiceTitle = '';
@@ -469,9 +782,7 @@ class lizmapProject{
         );
     }
 
-    public function getUpdatedConfig(){
-        $qgsLoad = $this->xml;
-
+    protected function readLayersOrder($qgsLoad) {
         $legend = $qgsLoad->xpath('//legend');
         $legendZero = $legend[0];
         $updateDrawingOrder = (string)$legendZero->attributes()->updateDrawingOrder;
@@ -503,131 +814,133 @@ class lizmapProject{
                 }
             }
         }
+        return $layersOrder;
+    }
 
-        $configRead = json_encode($this->cfg);
-        $configJson = json_decode($configRead);
+    protected function readPrintCapabilities($qgsLoad, $cfg) {
+        $printTemplates = array();
 
-        // Add an option to display buttons to remove the cache for cached layer
-        // Only if appropriate right is found
-        if( jAcl2::check('lizmap.admin.repositories.delete') ){
-            $configJson->options->removeCache = 'True';
-        }
-
-        // Remove layerOrder option from config if not required
-        if(!empty($layersOrder)){
-            $configJson->layersOrder = $layersOrder;
-        }
-
-        // Update print Capabilities
-        if( property_exists($configJson->options, 'print')
-            && $configJson->options->print == 'True' ) {
-            $printTemplates = array();
+        if( property_exists($cfg->options, 'print')
+            && $cfg->options->print == 'True' ) {
             // get restricted composers
             $rComposers = array();
-            $restrictedComposers = $this->xml->xpath( "//properties/WMSRestrictedComposers/value" );
-            foreach($restrictedComposers as $restrictedComposer){
-                $rComposers[] = (string)$restrictedComposer;
+            $restrictedComposers = $qgsLoad->xpath( "//properties/WMSRestrictedComposers/value" );
+            if ( $restrictedComposers && count( $restrictedComposers ) > 0 ) {
+                foreach($restrictedComposers as $restrictedComposer){
+                    $rComposers[] = (string)$restrictedComposer;
+                }
             }
             // get composer
             $composers =  $qgsLoad->xpath('//Composer');
-            foreach($composers as $composer){
-                // test restriction
-                if( in_array((string)$composer['title'], $rComposers) )
-                    continue;
-                // get composition element
-                $composition = $composer->xpath('Composition');
-                if( count($composition) == 0 )
-                    continue;
-                $composition = $composition[0];
-
-                // init print template element
-                $printTemplate = array(
-                    'title'=>(string)$composer['title'],
-                    'width'=>(int)$composition['paperWidth'],
-                    'height'=>(int)$composition['paperHeight'],
-                    'maps'=>array(),
-                    'labels'=>array()
-                );
-
-                // get composer maps
-                $cMaps = $composer->xpath('.//ComposerMap');
-                foreach( $cMaps as $cMap ) {
-                    $cMapItem = $cMap->xpath('ComposerItem');
-                    if( count($cMapItem) == 0 )
+            if ( $composers && count( $composers ) > 0 ) {
+                foreach($composers as $composer){
+                    // test restriction
+                    if( in_array((string)$composer['title'], $rComposers) )
                         continue;
-                    $cMapItem = $cMapItem[0];
-                    $ptMap = array(
-                        'id'=>'map'.(string)$cMap['id'],
-                        'width'=>(int)$cMapItem['width'],
-                        'height'=>(int)$cMapItem['height'],
+                    // get composition element
+                    $composition = $composer->xpath('Composition');
+                    if( !$composition || count($composition) == 0 )
+                        continue;
+                    $composition = $composition[0];
+
+                    // init print template element
+                    $printTemplate = array(
+                        'title'=>(string)$composer['title'],
+                        'width'=>(int)$composition['paperWidth'],
+                        'height'=>(int)$composition['paperHeight'],
+                        'maps'=>array(),
+                        'labels'=>array()
                     );
 
-                    // Before 2.6
-                    if ( property_exists( $cMap->attributes(), 'overviewFrameMap' ) and (string)$cMap['overviewFrameMap'] != '-1' ){
-                        $ptMap['overviewMap'] = 'map'.(string)$cMap['overviewFrameMap'];
-                    }
-                    // >= 2.6
-                    $cMapOverviews = $cMap->xpath('ComposerMapOverview');
-                    foreach($cMapOverviews as $cMapOverview){
-                        if ( $cMapOverview and (string)$cMapOverview->attributes()->frameMap != '-1' ){
-                            $ptMap['overviewMap'] = 'map' . (string)$cMapOverview->attributes()->frameMap;
+                    // get composer maps
+                    $cMaps = $composer->xpath('.//ComposerMap');
+                    if( $cMaps && count($cMaps) > 0 ) {
+                        foreach( $cMaps as $cMap ) {
+                            $cMapItem = $cMap->xpath('ComposerItem');
+                            if( count($cMapItem) == 0 )
+                                continue;
+                            $cMapItem = $cMapItem[0];
+                            $ptMap = array(
+                                'id'=>'map'.(string)$cMap['id'],
+                                'width'=>(int)$cMapItem['width'],
+                                'height'=>(int)$cMapItem['height'],
+                            );
+
+                            // Before 2.6
+                            if ( property_exists( $cMap->attributes(), 'overviewFrameMap' ) and (string)$cMap['overviewFrameMap'] != '-1' ){
+                                $ptMap['overviewMap'] = 'map'.(string)$cMap['overviewFrameMap'];
+                            }
+                            // >= 2.6
+                            $cMapOverviews = $cMap->xpath('ComposerMapOverview');
+                            foreach($cMapOverviews as $cMapOverview){
+                                if ( $cMapOverview and (string)$cMapOverview->attributes()->frameMap != '-1' ){
+                                    $ptMap['overviewMap'] = 'map' . (string)$cMapOverview->attributes()->frameMap;
+                                }
+                            }
+
+                            $printTemplate['maps'][] = $ptMap;
                         }
                     }
 
-                    $printTemplate['maps'][] = $ptMap;
+                    // get composer labels
+                    $cLabels = $composer->xpath('.//ComposerLabel');
+                    if( $cLabels && count($cLabels) > 0 ) {
+                        foreach( $cLabels as $cLabel ) {
+                            $cLabelItem = $cLabel->xpath('ComposerItem');
+                            if( !$cLabelItem || count($cLabelItem) == 0 )
+                                continue;
+                            $cLabelItem = $cLabelItem[0];
+                            if( (string)$cLabelItem['id'] == '' )
+                                continue;
+                            $printTemplate['labels'][] = array(
+                                'id'=>(string)$cLabelItem['id'],
+                                'htmlState'=>(int)$cLabel['htmlState'],
+                                'text'=>(string)$cLabel['labelText']
+                            );
+                        }
+                    }
+                    $printTemplates[] = $printTemplate;
                 }
-
-                // get composer labels
-                $cLabels = $composer->xpath('.//ComposerLabel');
-                foreach( $cLabels as $cLabel ) {
-                    $cLabelItem = $cLabel->xpath('ComposerItem');
-                    if( count($cLabelItem) == 0 )
-                        continue;
-                    $cLabelItem = $cLabelItem[0];
-                    if( (string)$cLabelItem['id'] == '' )
-                        continue;
-                    $printTemplate['labels'][] = array(
-                        'id'=>(string)$cLabelItem['id'],
-                        'htmlState'=>(int)$cLabel['htmlState'],
-                        'text'=>(string)$cLabel['labelText']
-                    );
-                }
-                $printTemplates[] = $printTemplate;
             }
-
-            // set printTemplates in config
-            $configJson->printTemplates = $printTemplates;
         }
+        return $printTemplates;
+    }
 
-        // Update locate by layer with vecctorjoins
-        if(property_exists($configJson, 'locateByLayer')) {
+    protected function getXmlLayer2($xml, $layerId ){
+        return $xml->xpath( "//maplayer[id='$layerId']" );
+    }
+
+    protected function readLocateByLayers($xml, $cfg) {
+        $locateByLayer = array();
+        if (property_exists($cfg, 'locateByLayer')) {
+            $locateByLayer = $cfg->locateByLayer;
             // collect layerIds
             $locateLayerIds = array();
-            foreach( $configJson->locateByLayer as $k=>$v) {
+            foreach( $locateByLayer as $k=>$v) {
                     $locateLayerIds[] = $v->layerId;
             }
             // update locateByLayer with alias and filter information
-            foreach( $configJson->locateByLayer as $k=>$v) {
-                $xmlLayer = $this->getXmlLayer( $v->layerId );
+            foreach( $locateByLayer as $k=>$v) {
+                $xmlLayer = $this->getXmlLayer2($xml, $v->layerId );
                 $xmlLayerZero = $xmlLayer[0];
                 // aliases
                 $alias = $xmlLayerZero->xpath("aliases/alias[@field='".$v->fieldName."']");
-                if( count($alias) != 0 ) {
+                if( $alias && count($alias) != 0 ) {
                     $alias = $alias[0];
                     $v->fieldAlias = (string)$alias['name'];
-                    $configJson->locateByLayer->$k = $v;
+                    $locateByLayer->$k = $v;
                 }
                 if ( property_exists( $v, 'filterFieldName') ) {
                     $alias = $xmlLayerZero->xpath("aliases/alias[@field='".$v->filterFieldName."']");
-                    if( count($alias) != 0 ) {
+                    if( $alias && count($alias) != 0 ) {
                         $alias = $alias[0];
                         $v->filterFieldAlias = (string)$alias['name'];
-                        $configJson->locateByLayer->$k = $v;
+                        $locateByLayer->$k = $v;
                     }
                 }
                 // vectorjoins
                 $vectorjoins = $xmlLayerZero->xpath('vectorjoins/join');
-                if( count($vectorjoins) != 0 ) {
+                if( $vectorjoins && count($vectorjoins) != 0 ) {
                     if ( !property_exists( $v, 'vectorjoins' ) )
                         $v->vectorjoins = array();
                     foreach( $vectorjoins as $vectorjoin ) {
@@ -639,48 +952,93 @@ class lizmapProject{
                                 "joinLayerId"=>(string)$vectorjoin['joinLayerId'],
                             );
                     }
-                    $configJson->locateByLayer->$k = $v;
+                    $locateByLayer->$k = $v;
                 }
             }
         }
+        return $locateByLayer;
+    }
+
+    protected function readEditionLayers($xml, $cfg) {
+        $editionLayers = array();
+
+        if ( property_exists( $cfg, 'editionLayers' ) ) {
+
+            // Add data into editionLayers from configuration
+            $editionLayers = $cfg->editionLayers;
+
+            // Check ability to load spatialite extension
+            // And remove ONLY spatialite layers if no extension found
+            $spatial = false;
+            if ( class_exists('SQLite3') ) {
+                // Try with libspatialite
+                try{
+                    $db = new SQLite3(':memory:');
+                    $spatial = @$db->loadExtension('libspatialite.so'); # loading SpatiaLite as an extension
+                }catch(Exception $e){
+                    $spatial = False;
+                }
+                // Try with mod_spatialite
+                if( !$spatial )
+                    try{
+                        $db = new SQLite3(':memory:');
+                        $spatial = @$db->loadExtension('mod_spatialite.so'); # loading SpatiaLite as an extension
+                    }catch(Exception $e){
+                        //jLog::log($e->getMessage(), 'error');
+                        $spatial = False;
+                    }
+            }
+            if(!$spatial){
+                jLog::log('Spatialite is not available', 'error');
+                foreach( $editionLayers as $key=>$obj ){
+                    $layerXml = $this->getXmlLayer2($xml, $obj->layerId );
+                    $layerXmlZero = $layerXml[0];
+                    $provider = $layerXmlZero->xpath('provider');
+                    $provider = (string)$provider[0];
+                    if ( $provider == 'spatialite' )
+                        unset($editionLayers->$key);
+                }
+            }
+        }
+        return $editionLayers;
+    }
+
+    protected function readUseLayerIDs($xml) {
+        $WMSUseLayerIDs = $xml->xpath( "//properties/WMSUseLayerIDs" );
+        return ( $WMSUseLayerIDs && count($WMSUseLayerIDs) > 0 && $WMSUseLayerIDs[0] == 'true' );
+    }
+
+    public function getUpdatedConfig(){
+
+        //FIXME: it's better to use clone keyword, isn't it?
+        $configRead = json_encode($this->cfg);
+        $configJson = json_decode($configRead);
+
+        // Add an option to display buttons to remove the cache for cached layer
+        // Only if appropriate right is found
+        if( jAcl2::check('lizmap.admin.repositories.delete') ){
+            $configJson->options->removeCache = 'True';
+        }
+
+        // Remove layerOrder option from config if not required
+        if(!empty($this->layersOrder)){
+            $configJson->layersOrder = $this->layersOrder;
+        }
+
+        // set printTemplates in config
+        $configJson->printTemplates = $this->printCapabilities;
+
+        // Update locate by layer with vecctorjoins
+        $configJson->locateByLayer = $this->locateByLayer;
 
         // Remove FTP remote directory
         if(property_exists($configJson->options, 'remoteDir'))
             unset($configJson->options->remoteDir);
 
         // Remove editionLayers from config if no right to access this tool
-        // Or if no ability to load spatialite extension
         if ( property_exists( $configJson, 'editionLayers' ) ) {
             if( jAcl2::check('lizmap.tools.edition.use', $this->repository->getKey()) ){
-                $spatial = false;
-                if ( class_exists('SQLite3') ) {
-                    $spatial = false;
-                    // Try with libspatialite
-                    try{
-                        $db = new SQLite3(':memory:');
-                        $spatial = $db->loadExtension('libspatialite.so'); # loading SpatiaLite as an extension
-                    }catch(Exception $e){
-                        $spatial = False;
-                    }
-                    // Try with mod_spatialite
-                    if( !$spatial )
-                        try{
-                            $db = new SQLite3(':memory:');
-                            $spatial = $db->loadExtension('mod_spatialite.so'); # loading SpatiaLite as an extension
-                        }catch(Exception $e){
-                            $spatial = False;
-                        }
-                }
-                if(!$spatial){
-                    foreach( $configJson->editionLayers as $key=>$obj ){
-                        $layerXml = $this->getXmlLayer( $obj->layerId );
-                        $layerXmlZero = $layerXml[0];
-                        $provider = $layerXmlZero->xpath('provider');
-                        $provider = (string)$provider[0];
-                        if ( $provider == 'spatialite' )
-                            unset($configJson->editionLayers->$key);
-                    }
-                }
+                $configJson->editionLayers = $this->editionLayers;
             } else {
                 unset($configJson->editionLayers);
             }
@@ -696,10 +1054,15 @@ class lizmapProject{
         if( $relations )
             $configJson->relations = $relations;
 
-       $WMSUseLayerIDs = $this->xml->xpath( "//properties/WMSUseLayerIDs" );
-      if ( count($WMSUseLayerIDs) > 0 && $WMSUseLayerIDs[0] == 'true' ) {
-          $configJson->options->useLayerIDs = 'True';
-      }
+        if ( $this->useLayerIDs ) {
+            $configJson->options->useLayerIDs = 'True';
+        }
+
+        // Add FTS sqlite searches (db created with from quickfinder)
+        $ftsSearches = $this->hasFtsSearches();
+        if( $ftsSearches ){
+            $configJson->options->ftsSearches = $ftsSearches['searches'];
+        }
 
         $configRead = json_encode($configJson);
 
@@ -707,19 +1070,27 @@ class lizmapProject{
     }
 
     public function getCanvasColor(){
-        $red = $this->xml->xpath( "//properties/Gui/CanvasColorRedPart" );
-        $green = $this->xml->xpath( "//properties/Gui/CanvasColorGreenPart" );
-        $blue = $this->xml->xpath( "//properties/Gui/CanvasColorBluePart" );
+        return $this->canvasColor;
+    }
+
+    protected function readCanvasColor($xml) {
+        $red = $xml->xpath( "//properties/Gui/CanvasColorRedPart" );
+        $green = $xml->xpath( "//properties/Gui/CanvasColorGreenPart" );
+        $blue = $xml->xpath( "//properties/Gui/CanvasColorBluePart" );
         return 'rgb('.$red[0].','.$green[0].','.$blue[0].')';
     }
 
     public function getProj4( $authId ){
-        return $this->xml->xpath( "//spatialrefsys/authid[.='".$authId."']/parent::*/proj4" );
+        return $this->getXml()->xpath( "//spatialrefsys/authid[.='".$authId."']/parent::*/proj4" );
     }
 
     public function getAllProj4( ) {
+        return $this->allProj4;
+    }
+
+    protected function readAllProj4($xml) {
         $srsList = array();
-        $spatialrefsys = $this->xml->xpath( "//spatialrefsys" );
+        $spatialrefsys = $xml->xpath( "//spatialrefsys" );
         foreach ( $spatialrefsys as $srs ) {
             $srsList[ (string) $srs->authid ] = (string) $srs->proj4;
         }
@@ -730,20 +1101,44 @@ class lizmapProject{
         return $this->cfg;
     }
 
+    /**
+     * @FIXME: remove this method. Be sure it is not used in other projects.
+     * Data provided by the returned xml element should be extracted and encapsulated
+     * into an object. Xml should not be used by callers
+     * @deprecated
+     */
     public function getXmlLayers(){
-        return $this->xml->xpath( "//maplayer" );
+        return $this->getXml()->xpath( "//maplayer" );
     }
 
+    /**
+     * @FIXME: remove this method. Be sure it is not used in other projects.
+     * Data provided by the returned xml element should be extracted and encapsulated
+     * into an object. Xml should not be used by callers
+     * @deprecated
+     */
     public function getXmlLayer( $layerId ){
-        return $this->xml->xpath( "//maplayer[id='$layerId']" );
+        return $this->getXml()->xpath( "//maplayer[id='$layerId']" );
     }
 
+    /**
+     * @FIXME: remove this method. Be sure it is not used in other projects
+     * Data provided by the returned xml element should be extracted and encapsulated
+     * into an object. Xml should not be used by callers
+     * @deprecated
+     */
     public function getXmlLayerByKeyword( $key ){
-        return $this->xml->xpath( "//maplayer/keywordList[value='$key']/parent::*" );
+        return $this->getXml()->xpath( "//maplayer/keywordList[value='$key']/parent::*" );
     }
 
+    /**
+     * @FIXME: remove this method. Be sure it is not used in other projects
+     * Data provided by the returned xml element should be extracted and encapsulated
+     * into an object. Xml should not be used by callers
+     * @deprecated
+     */
     public function getComposer( $title ){
-        $xmlComposer = $this->xml->xpath( "//Composer[@title='$title']" );
+        $xmlComposer = $this->getXml()->xpath( "//Composer[@title='$title']" );
         if( $xmlComposer )
             return $xmlComposer[0];
         else
@@ -751,52 +1146,63 @@ class lizmapProject{
     }
 
     public function getLayer( $layerId ){
-        $xmlLayer = $this->xml->xpath( "//maplayer[id='$layerId']" );
-        if( $xmlLayer ) {
-            $xmlLayer = $xmlLayer[0];
-            jClasses::inc('lizmap~qgisMapLayer');
-            jClasses::inc('lizmap~qgisVectorLayer');
-            if( $xmlLayer->attributes()->type == 'vector' )
-                return new qgisVectorLayer( $this, $xmlLayer );
-            else
-                return new qgisMapLayer( $this, $xmlLayer );
+        $layers = array_filter($this->layers, function($layer) use ($layerId) {
+           return $layer['id'] ==  $layerId;
+        });
+        if( count($layers) ) {
+            // get first key found in the filtered layers
+            $k = key($layers);
+            if( $layers[$k]['type'] == 'vector' ) {
+                return new qgisVectorLayer( $this, $layers[$k] );
+            }
+            else {
+                return new qgisMapLayer( $this, $layers[$k] );
+            }
         }
         return null;
     }
 
     public function getLayerByKeyword( $key ){
-        $xmlLayer = $this->xml->xpath( "//maplayer/keywordList[value='$key']/parent::*" );
-        if( $xmlLayer ) {
-            $xmlLayer = $xmlLayer[0];
-            jClasses::inc('lizmap~qgisMapLayer');
-
-            jClasses::inc('lizmap~qgisVectorLayer');
-            if( $xmlLayer->attributes()->type == 'vector' )
-                return new qgisVectorLayer( $this, $xmlLayer );
-            else
-                return new qgisMapLayer( $this, $xmlLayer );
+        $layers = array_filter($this->layers, function($layer) use ($key) {
+           return in_array($key, $layer['keywords']);
+        });
+        if( count($layers) ) {
+            // get first key found in the filtered layers
+            $k = key($layers);
+            if( $layers[$k]['type'] == 'vector' ) {
+                return new qgisVectorLayer( $this, $layers[$k] );
+            }
+            else {
+                return new qgisMapLayer( $this, $layers[$k] );
+            }
         }
         return null;
     }
 
     public function findLayersByKeyword( $key ){
-        $xmlLayers = $this->xml->xpath( "//maplayer/keywordList[value='$key']/parent::*" );
+        $foundLayers = array_filter($this->layers, function($layer) use ($key) {
+           return in_array($key, $layer['keywords']);
+        });
         $layers = array();
-        if( $xmlLayers ) {
-            jClasses::inc('lizmap~qgisMapLayer');
-            jClasses::inc('lizmap~qgisVectorLayer');
-            foreach( $xmlLayers as $xmlLayer ) {
-                if( $xmlLayer->attributes()->type == 'vector' )
-                    $layers[] = new qgisVectorLayer( $this, $xmlLayer );
-                else
-                    $layers[] = new qgisMapLayer( $this, $xmlLayer );
+        if( $foundLayers ) {
+            foreach( $foundLayers as $layer ) {
+                if( $layer['type'] == 'vector' ) {
+                    $layers[] = new qgisVectorLayer( $this, $layer );
+                }
+                else {
+                    $layers[] = new qgisMapLayer( $this, $layer );
+                }
             }
         }
         return $layers;
     }
 
     public function getRelations() {
-        $xmlRelations = $this->xml->xpath( "//relations" );
+        return $this->relations;
+    }
+
+    protected function readRelations($xml) {
+        $xmlRelations = $xml->xpath( "//relations" );
         $relations = array();
         $pivotGather = array();
         $pivot = array();
@@ -835,7 +1241,6 @@ class lizmapProject{
     }
 
     public function getDefaultDockable() {
-        jClasses::inc('view~lizmapMapDockItem');
         $dockable = array();
         $bp = jApp::config()->urlengine['basePath'];
 
@@ -845,6 +1250,7 @@ class lizmapProject{
         // only maps
         if($services->onlyMaps) {
                 $projectsTpl = new jTpl();
+                $projectsTpl->assign('excludedProject', '');
                 $dockable[] = new lizmapMapDockItem(
                     'home',
                     jLocale::get('view~default.repository.list.title'),
@@ -910,10 +1316,21 @@ class lizmapProject{
     }
 
     public function getDefaultMiniDockable() {
-        jClasses::inc('view~lizmapMapDockItem');
         $dockable = array();
         $configOptions = $this->getOptions();
         $bp = jApp::config()->urlengine['basePath'];
+
+        if ( $this->hasAttributeLayers() ) {
+            $tpl = new jTpl();
+            $dock = new lizmapMapDockItem(
+                'selectiontool',
+                jLocale::get('view~map.selectiontool.navbar.title'),
+                $tpl->fetch('view~map_selectiontool'),
+                1
+            );
+            $dock->icon = '<span class="icon-white icon-star" style="margin-left:2px; margin-top:2px;"></span>';
+            $dockable[] = $dock;
+        }
 
         if ( $this->hasLocateByLayer() ) {
             $tpl = new jTpl();
@@ -921,7 +1338,7 @@ class lizmapProject{
                 'locate',
                 jLocale::get('view~map.locatemenu.title'),
                 $tpl->fetch('view~map_locate'),
-                1
+                2
             );
         }
 
@@ -932,7 +1349,7 @@ class lizmapProject{
                 'geolocation',
                 jLocale::get('view~map.geolocate.navbar.title'),
                 $tpl->fetch('view~map_geolocation'),
-                2
+                3
             );
         }
 
@@ -943,7 +1360,7 @@ class lizmapProject{
                 'print',
                 jLocale::get('view~map.print.navbar.title'),
                 $tpl->fetch('view~map_print'),
-                3
+                4
             );
         }
 
@@ -954,7 +1371,7 @@ class lizmapProject{
                 'measure',
                 jLocale::get('view~map.measure.navbar.title'),
                 $tpl->fetch('view~map_measure'),
-                4
+                5
             );
         }
 
@@ -964,7 +1381,7 @@ class lizmapProject{
                 'tooltip-layer',
                 jLocale::get('view~map.tooltip.navbar.title'),
                 $tpl->fetch('view~map_tooltip'),
-                5,
+                6,
                 '',
                 ''
             );
@@ -976,7 +1393,7 @@ class lizmapProject{
                 'timemanager',
                 jLocale::get('view~map.timemanager.navbar.title'),
                 $tpl->fetch('view~map_timemanager'),
-                6,
+                7,
                 '',
                 $bp.'js/timemanager.js'
             );
@@ -1012,7 +1429,7 @@ class lizmapProject{
                 'permaLink',
                 jLocale::get('view~map.permalink.navbar.title'),
                 $tpl->fetch('view~map_permalink'),
-                6
+                8
             );
         }
 
@@ -1020,7 +1437,6 @@ class lizmapProject{
     }
 
     public function getDefaultBottomDockable() {
-        jClasses::inc('view~lizmapMapDockItem');
         $dockable = array();
         $configOptions = $this->getOptions();
         $bp = jApp::config()->urlengine['basePath'];
@@ -1040,6 +1456,36 @@ class lizmapProject{
         }
 
         return $dockable;
+    }
+
+    /**
+     * Check acl rights on the project
+     */
+    public function checkAcl () {
+
+        // Check right on repository
+        if (!jAcl2::check('lizmap.repositories.view', $this->repository->getKey())){
+            return False;
+        }
+
+        // Check acl option is configured in project config
+        if (!property_exists($this->cfg->options, 'acl') || !is_array($this->cfg->options->acl) || empty($this->cfg->options->acl) ){
+            return True;
+        }
+
+        // Check user is authenticated
+        if(!jAuth::isConnected()){
+            return False;
+        }
+
+        // Check if configured groups white list and authenticated user groups list intersects
+        $aclGroups = $this->cfg->options->acl;
+        $userGroups = jAcl2DbUserGroup::getGroups();
+        if( array_intersect($aclGroups, $userGroups) ){
+            return True;
+        }
+
+        return False;
     }
 
 }

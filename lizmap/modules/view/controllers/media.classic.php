@@ -13,6 +13,52 @@ class mediaCtrl extends jController {
 
 
   /**
+   * Returns error
+   */
+  function error($message){
+    $rep = $this->getResponse('redirect');
+    $rep->action = 'view~default:error';
+    jMessage::add($message, 'error');
+    return $rep;
+  }
+
+  /**
+   * Return 404
+   */
+  function error404($message){
+    $rep = $this->getResponse('json');
+    $rep->data = array('error'=>'404 not found (wrong action)', 'message'=>$message);
+    $rep->setHttpStatus('404', 'Not Found');
+    return $rep;
+    /*
+      $rep = $this->getResponse('text');
+      $rep->content = $message  ;
+      $rep->setHttpStatus('404', 'Not Found');
+      return $rep;
+     */
+  }
+
+  /**
+   * Return 403
+   */
+  function error403($message){
+    $rep = $this->getResponse('json');
+    $rep->data = array('error'=>'403 forbidden (you\'re not allowed to access to this media)', 'message'=>$message);
+    $rep->setHttpStatus('403', 'Forbidden');
+    return $rep;
+  }
+
+  /**
+   * Return 401
+   */
+  function error401($message){
+    $rep = $this->getResponse('json');
+    $rep->data = array('error'=>'401 Unauthorized (authentication is required)', 'message'=>$message);
+    $rep->setHttpStatus('401', 'Unauthorized');
+    return $rep;
+  }
+
+  /**
   * Get a media file (image, html, csv, pdf, etc.) store in the repository.
   * Used to display media in the popup, via the information icon, etc.
   *
@@ -26,23 +72,48 @@ class mediaCtrl extends jController {
     $repository = $this->param('repository');
 
     $lrep = lizmap::getRepository($repository);
-
-    if(!$lrep or !jAcl2::check('lizmap.repositories.view', $lrep->getKey())){
-      $rep = $this->getResponse('redirect');
-      $rep->action = 'view~default:error';
-      jMessage::add(jLocale::get('view~default.repository.access.denied'), 'error');
-      return $rep;
+    if(!$lrep)
+        return $this->error404('');
+    if(!jAcl2::check('lizmap.repositories.view', $lrep->getKey())){
+        return $this->error403(jLocale::get('view~default.repository.access.denied'));
     }
 
     // Get the project
     $project = $this->param('project');
 
+    // Get lizmapProject class
+    try {
+        $lproj = lizmap::getProject($lrep->getKey().'~'.$project);
+        if(!$lproj){
+            return $this->error404('The lizmapProject '.strtoupper($project).' does not exist !');
+        }
+    }
+    catch(UnknownLizmapProjectException $e) {
+        jLog::logEx($e, 'error');
+        return $this->error404('The lizmapProject '.strtoupper($project).' does not exist !');
+    }
+
+    // Redirect if no right to access the project
+    if ( !$lproj->checkAcl() ){
+        return $this->error403(jLocale::get('view~default.repository.access.denied'));
+    }
+
     // Get the file
     $path = $this->param('path');
     $repositoryPath = realpath($lrep->getPath());
     $abspath = realpath($repositoryPath.'/'.$path);
+
     $n_repositoryPath = str_replace('\\', '/', $repositoryPath);
-    $n_abspath = str_replace('\\', '/', $abspath);
+    $n_abspath = $n_repositoryPath.'/'.trim($path, '/');
+    //manually canonize path to authorize symlink
+    $n_abspath = explode('/', $n_abspath);
+    $n_keys = array_keys($n_abspath, '..');
+    foreach($n_keys AS $keypos => $key)
+    {
+        array_splice($address, $key - ($keypos * 2 + 1), 2);
+    }
+    $n_abspath = implode('/', $n_abspath);
+    $n_abspath = str_replace('./', '', $n_abspath);
 
     $ok = True;
     // Only allow files within the repository for safety reasons
@@ -52,16 +123,16 @@ class mediaCtrl extends jController {
     }
 
     // Check if file exists
-    if($ok and !file_exists($abspath)){
+    if($ok && !is_file($abspath)){
       $ok = False;
     }
 
     // Redirect if errors
     if(!$ok){
-      $content = "No media file in the specified path";
-      $rep = $this->getResponse('text');
-      $rep->content = $content;
-      return $rep;
+        $content = "No media file in the specified path: ".$path;
+        if ( is_link($repositoryPath.'/'.$path) )
+            $content .= " ".readlink($repositoryPath.'/'.$path);
+        return $this->error404($content);
     }
 
     // Prepare the file to return
@@ -71,9 +142,12 @@ class mediaCtrl extends jController {
 
     // Get the name of the file
     $path_parts = pathinfo($abspath);
-    $ext = $path_parts['extension'];
-    $name = $path_parts['basename'].'.'.$ext;
-    $rep->outputFileName = $name;
+    if (isset($path_parts['extension'])) {
+        $rep->outputFileName = $path_parts['basename'].'.'.$path_parts['extension'];
+    }
+    else {
+        $rep->outputFileName = $path_parts['basename'];
+    }
 
     // Get the mime type
     $mime = jFile::getMimeType($abspath);
@@ -114,16 +188,31 @@ class mediaCtrl extends jController {
     $repository = $this->param('repository');
 
     $lrep = lizmap::getRepository($repository);
-    if (!$lrep) {
-      $ser = lizmap::getServices();
-      $lrep = lizmap::getRepository($ser->defaultRepository);
-    }
+    if(!$lrep)
+        return $this->error404('');
 
     if(!jAcl2::check('lizmap.repositories.view', $lrep->getKey())){
-      $rep = $this->getResponse('redirect');
-      $rep->action = 'view~default:error';
-      jMessage::add(jLocale::get('view~default.repository.access.denied'), 'error');
-      return $rep;
+        return $this->error403(jLocale::get('view~default.repository.access.denied'));
+    }
+
+    // Get the project
+    $project = $this->param('project');
+
+    // Get lizmapProject class
+    try {
+        $lproj = lizmap::getProject($lrep->getKey().'~'.$project);
+        if(!$lproj){
+            return $this->error404('The lizmapProject '.strtoupper($project).' does not exist !');
+        }
+    }
+    catch(UnknownLizmapProjectException $e) {
+        jLog::logEx($e, 'error');
+        return $this->error404('The lizmapProject '.strtoupper($project).' does not exist !');
+    }
+
+    // Redirect if no right to access the project
+    if ( !$lproj->checkAcl() ){
+        return $this->error403(jLocale::get('view~default.repository.access.denied'));
     }
 
     // Get the project
@@ -133,15 +222,15 @@ class mediaCtrl extends jController {
     $rep->fileName = $themePath.'css/img/250x250_mappemonde.png';
     // get project illustration if exists
     if($project){
-      $imageTypes = array('jpg', 'jpeg', 'png', 'gif');
-      foreach($imageTypes as $type){
-        if(file_exists($lrep->getPath().$project.'.qgs.'.$type)){
-          $rep->fileName = $lrep->getPath().$project.'.qgs.'.$type;
-          $rep->mimeType = "image/$type";
-          $rep->setExpires('+60 seconds');
-          return $rep;
+        $imageTypes = array('jpg', 'jpeg', 'png', 'gif');
+        foreach($imageTypes as $type){
+            if(file_exists($lrep->getPath().$project.'.qgs.'.$type)){
+                $rep->fileName = $lrep->getPath().$project.'.qgs.'.$type;
+                $rep->mimeType = "image/$type";
+                $rep->setExpires('+60 seconds');
+                return $rep;
+            }
         }
-      }
     }
     return $rep;
   }
@@ -162,15 +251,23 @@ class mediaCtrl extends jController {
 
     $lrep = lizmap::getRepository($repository);
 
-    if(!jAcl2::check('lizmap.repositories.view', $lrep->getKey())){
-      $rep = $this->getResponse('redirect');
-      $rep->action = 'view~default:error';
-      jMessage::add(jLocale::get('view~default.repository.access.denied'), 'error');
-      return $rep;
+    if(!$lrep or !jAcl2::check('lizmap.repositories.view', $lrep->getKey())){
+      $this->error(jLocale::get('view~default.repository.access.denied'));
     }
 
     // Get the project
     $project = $this->param('project');
+
+    // Get lizmapProject class
+    $lproj = lizmap::getProject($lrep->getKey().'~'.$project);
+    if(!$lproj){
+        $this->error('The lizmapProject '.strtoupper($project).' does not exist !');
+    }
+
+    // Redirect if no right to access the project
+    if ( !$lproj->checkAcl() ){
+      return $this->error(jLocale::get('view~default.repository.access.denied'));
+    }
 
     // Get the file
     $path = $this->param('path');
@@ -193,8 +290,10 @@ class mediaCtrl extends jController {
 
     // Check if file is CSS
     $path_parts = pathinfo($abspath);
-    if( strtolower($path_parts['extension']) != 'css' )
-      $ok = False;
+    if(!isset($path_parts['extension']) ||
+        strtolower($path_parts['extension']) != 'css') {
+        $ok = False;
+    }
 
     // Redirect if errors
     if(!$ok){
@@ -215,7 +314,6 @@ class mediaCtrl extends jController {
 
     // Mime type
     $rep->mimeType = 'text/css';
-
 
     // Read content from file
     $content = jFile::read($abspath);

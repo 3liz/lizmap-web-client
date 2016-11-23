@@ -40,14 +40,19 @@ class map_headermenuZone extends jZone {
             "attributeLayers"=>false
         );
 
-        $lproj = lizmap::getProject($repository.'~'.$project);
-        $configOptions = $lproj->getOptions();
+        try {
+            $lproj = lizmap::getProject($repository.'~'.$project);
+            $configOptions = $lproj->getOptions();
 
-        if ( property_exists($configOptions,'externalSearch') )
-            $assign['externalSearch'] = $configOptions->externalSearch;
+            if ( property_exists($configOptions,'externalSearch') )
+                $assign['externalSearch'] = $configOptions->externalSearch;
+        }
+        catch(UnknownLizmapProjectException $e) {
+            jLog::logEx($e, 'error');
+        }
 
         $this->_tpl->assign($assign);
-        
+
         // Get lizmap services
         $services = lizmap::getServices();
         if($services->allowUserAccountRequests)

@@ -28,8 +28,8 @@ $locales = array(
         'extension.optional.installed'=>'L\'extension %s optionnelle est disponible',
         'extension.required.installed'=>'L\'extension %s obligatoire est disponible',
         'extensions.required.ok'=>'Toutes les extensions PHP obligatoires sont disponibles',
-        'extension.database.ok'=>'L\'application utilisera une base de données SQL',
-        'extension.database.ok2'=>'L\'application pourra utiliser une base de données SQL',
+        'extension.database.ok'=>'L\'application utilisera une base de données SQL : %s',
+        'extension.database.ok2'=>'L\'application pourra utiliser une base de données SQL : %s',
         'extension.database.missing'=>'L\'application a besoin d\'une base de données SQL',
         'extension.database.missing2'=>'L\'application ne pourra pas utiliser de base de données SQL',
         'path.core'             =>'Le fichier init.php  de jelix ou le fichier application.ini.php de votre application n\'est pas chargé',
@@ -82,6 +82,7 @@ $locales = array(
         'install.module.error'              =>'Une erreur est survenue durant l\'installation du module %s: %s',
         'install.module.check.dependency'   =>'Vérifie les dépendances du module %s',
         'install.module.upgraded'           =>'Le module %s est mis à jour à la version %s',
+        'more.details'                      =>'Plus de details',
 
 
 );

@@ -9,8 +9,6 @@
 * @license Mozilla Public License : http://www.mozilla.org/MPL/
 */
 
-jClasses::inc('lizmap~lizmapProxy');
-jClasses::inc('lizmap~lizmapOGCRequest');
 class lizmapWMSRequest extends lizmapOGCRequest {
 
     protected $tplExceptions = 'lizmap~wms_exception';
@@ -88,6 +86,42 @@ class lizmapWMSRequest extends lizmapOGCRequest {
             'code' => $getMap[2],
             'mime' => $getMap[1],
             'data' => $getMap[0],
+            'cached' => False
+        );
+    }
+
+
+    protected function getlegendgraphic ( ) {
+        return $this->getlegendgraphics();
+    }
+
+    protected function getlegendgraphics ( ) {
+        $layers = $this->param('Layers','');
+        $layers = explode(',', $layers);
+        if ( count($layers == 1) ) {
+            $lName = $layers[0];
+            $layer = $this->project->findLayerByAnyName( $lName );
+            if ( $layer && property_exists($layer, 'showFeatureCount' ) && $layer->showFeatureCount == 'True') {
+                $this->params['showFeatureCount'] = 'True';
+            }
+        }
+
+        $querystring = $this->constructUrl();
+
+        // Get remote data
+        $getRemoteData = lizmapProxy::getRemoteData(
+          $querystring,
+          $this->services->proxyMethod,
+          $this->services->debugMode
+        );
+        $data = $getRemoteData[0];
+        $mime = $getRemoteData[1];
+        $code = $getRemoteData[2];
+
+        return (object) array(
+            'code' => $code,
+            'mime' => $mime,
+            'data' => $data,
             'cached' => False
         );
     }

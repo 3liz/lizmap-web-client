@@ -24,7 +24,7 @@ class mysqliDbStatement extends jDbStatement {
         $this->_stmt->execute();
 
         if($this->_stmt->result_metadata()){
-            //the query prodeces a result
+            //the query produces a result
             try{
                 if( $this->_usesMysqlnd ) {
                     //with the MySQL native driver - mysqlnd (by default in php 5.3.0)
@@ -56,8 +56,14 @@ class mysqliDbStatement extends jDbStatement {
      */
     public function bindParam(){
         $args = func_get_args();
+        $params = array();
+        // we should pass parameters by references to bind_param
+        $args = array_walk($args, function($val, $key) use (&$params) {
+            $params[$key] = $val;
+            $args[$key] = &$params[$key];
+        }, $args);
         $method = new ReflectionMethod('mysqli_stmt', 'bind_param');
-        $res = $method->invokeArgs($this->_stmt, $args); 
+        $res = $method->invokeArgs($this->_stmt, $params);
         if(!$res){
             throw new jException('jelix~db.error.invalid.param');
         }

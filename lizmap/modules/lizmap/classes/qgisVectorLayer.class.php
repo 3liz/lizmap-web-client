@@ -14,16 +14,22 @@ class qgisVectorLayer extends qgisMapLayer{
   // layer type
   protected $type = 'vector';
 
+  protected $fields = array();
+
+  protected $aliases = array();
+
+  protected $wfsFields = array();
+
   /**
    * constructor
-   * xmlLayer : the XML map layer representation
+   * @param lizmapProject $project
+   * @param array $propLayer  list of properties values
    */
-  public function __construct ( $project, $xmlLayer ) {
-    parent::__construct( $project, $xmlLayer );
-    /*
-    if( $this->type == 'vector') {
-    }
-     */
+  public function __construct ( $project, $propLayer ) {
+    parent::__construct( $project, $propLayer );
+    $this->fields = $propLayer['fields'];
+    $this->aliases = $propLayer['aliases'];
+    $this->wfsFields = $propLayer['wfsFields'];
   }
 
   public function getDatasourceParameters() {
@@ -81,35 +87,14 @@ class qgisVectorLayer extends qgisMapLayer{
   }
 
   public function getFields() {
-      $fields = array();
-      $edittypes = $this->xmlLayer->xpath(".//edittype");
-      foreach( $edittypes as $edittype ) {
-          $fields[] = (string) $edittype->attributes()->name;
-      }
-      return $fields;
+      return $this->fields;
   }
 
   public function getAliasFields() {
-      $fields = $this->getFields();
-      $aliases = array();
-      foreach( $fields as $f ) {
-          $aliases[$f] = $f;
-          $alias = $this->xmlLayer->xpath("aliases/alias[@field='".$f."']");
-          if( count($alias) != 0 ) {
-            $alias = $alias[0];
-            $aliases[$f] = (string)$alias['name'];
-          }
-      }
-      return $aliases;
+      return $this->aliases;
   }
 
   public function getWfsFields() {
-      $fields = $this->getFields();
-      $excludeFields = $this->xmlLayer->xpath(".//excludeAttributesWFS/attribute");
-      foreach( $excludeFields as $eField ) {
-          $eField = (string) $eField;
-          array_splice( $fields, array_search( $eField, $fields ), 1 );
-      }
-      return $fields;
+      return $this->wfsFields;
   }
 }

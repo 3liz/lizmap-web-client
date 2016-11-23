@@ -9,6 +9,7 @@
 * @license Mozilla Public License : http://www.mozilla.org/MPL/
 */
 
+class UnknownLizmapProjectException extends Exception { }
 
 class lizmap{
 
@@ -18,6 +19,10 @@ class lizmap{
 
     // repositories
     protected static $repositories = array();
+    protected static $repositoryInstances = array();
+
+    // projects
+    protected static $projectInstances = array();
 
     // log items
     protected static $logItems = array();
@@ -56,7 +61,6 @@ class lizmap{
      *
      */
     public static function getRepositoryProperties(){
-      jClasses::inc('lizmap~lizmapRepository');
       return lizmapRepository::$properties;
     }
 
@@ -65,8 +69,81 @@ class lizmap{
      *
      */
     public static function getRepositoryPropertiesOptions(){
-      jClasses::inc('lizmap~lizmapRepository');
       return lizmapRepository::$propertiesOptions;
+    }
+
+    /**
+     * Get the jForm for a repository.
+     *
+     */
+    public static function constructRepositoryForm( $rep, $form ){
+        $services = lizmap::getServices();
+        $rootRepositories = $services->getRootRepositories();
+
+        $repositories = array();
+        foreach(lizmap::getRepositoryList() as $repo){
+            if ( $rep && $rep->getKey() == $repo )
+                continue;
+            $repositories[] = lizmap::getRepository($repo);
+        }
+
+        // reconstruct form fields based on repositoryPropertyList
+        $propertiesOptions = lizmap::getRepositoryPropertiesOptions();
+
+        foreach(lizmap::getRepositoryProperties() as $k){
+            $ctrl = null;
+            if ( $propertiesOptions[$k]['fieldType'] == 'checkbox' ) {
+                $ctrl = new jFormsControlCheckbox($k);
+            }
+            else if ( $k == 'path' && $rootRepositories != '' ) {
+                if ($rep == null || substr($rep->getPath(), 0, strlen($rootRepositories)) === $rootRepositories ) {
+                    $ctrl = new jFormsControlMenulist($k);
+                    $dataSource = new jFormsStaticDatasource();
+                    $data = array();
+                    $data[''] = '';
+                    if ($dh = opendir($rootRepositories)) {
+                        while (($file = readdir($dh)) !== false) {
+                            if ($file == '.' || $file == '..')
+                                continue;
+
+                            $filePath = $rootRepositories.$file.'/';
+                            if ( is_dir($filePath) ) {
+                                $allreadyUsed = False;
+                                foreach( $repositories as $repo ) {
+                                    if ( $repo->getPath() == $filePath ) {
+                                        $allreadyUsed = True;
+                                        break;
+                                    }
+                                }
+                                if( !$allreadyUsed )
+                                    $data[$filePath] = $file;
+                            }
+                        }
+                    }
+                    $dataSource->data = $data;
+                    $ctrl->datasource = $dataSource;
+                } else {
+                    $ctrl = new jFormsControlHidden($k);
+                }
+            }
+            else {
+                $ctrl = new jFormsControlInput($k);
+                $ctrl->datatype = new jDatatypeString();
+            }
+            $ctrl->required = $propertiesOptions[$k]['required'];
+            $ctrl->label = jLocale::get("admin~admin.form.admin_section.repository.".$k.".label");
+            $ctrl->size = 100;
+            $form->addControl($ctrl);
+        }
+        if ( $rep ) {
+            foreach ( $rep->getProperties() as $k ) {
+                $v = $rep->getData($k);
+                if ( $k == 'path' && $rootRepositories != '' && substr($rep->getPath(), 0, strlen($rootRepositories)) === $rootRepositories)
+                    $v = $rep->getPath();
+                $form->setData($k, $v);
+            }
+        }
+        return $form;
     }
 
 
@@ -76,12 +153,18 @@ class lizmap{
      *
      */
     public static function getRepository ($key){
-      if ( !in_array($key, self::$repositories) )
-        if ( !in_array($key, self::getRepositoryList()) )
+      if ( !in_array($key, self::$repositories) ) {
+        if ( !in_array($key, self::getRepositoryList()) ) {
           return null;
+        }
+      }
 
-      jClasses::inc('lizmap~lizmapRepository');
-      return new lizmapRepository($key);
+      if ( array_key_exists($key, self::$repositoryInstances) )
+        return self::$repositoryInstances[$key];
+
+      $rep = new lizmapRepository($key);
+      self::$repositoryInstances[$key] = $rep;
+      return $rep;
     }
 
 
@@ -93,10 +176,10 @@ class lizmap{
         || in_array($key, self::getRepositoryList()) )
         return null;
 
-      jClasses::inc('lizmap~lizmapRepository');
       $rep = new lizmapRepository($key);
       $rep->update( $data );
       self::getRepositoryList();
+      self::$repositoryInstances[$key] = $rep;
       return $rep;
     }
 
@@ -118,6 +201,8 @@ class lizmap{
         $ini->removeValue(null, $section);
         $ini->save();
         self::getRepositoryList();
+        if ( array_key_exists($key, self::$repositoryInstances) )
+            unset(self::$repositoryInstances[$key]);
         return true;
       }
       return false;
@@ -125,6 +210,10 @@ class lizmap{
 
     /**
      * Get a project
+     * @return lizmapProject (null if it does not exist)
+     * @FIXME all calls to getProject construct $key. Why not to
+     * deliver directly $rep and $project? It could avoid
+     * a preg_match
      */
     public static function getProject ($key){
       $match = preg_match('/(?P<rep>\w+)~(?P<proj>\w+)/', $key, $matches);
@@ -135,10 +224,20 @@ class lizmap{
       if ( $rep == null)
         return null;
 
-      jClasses::inc('lizmap~lizmapProject');
-      $proj = new lizmapProject($matches['proj'], $rep);
-      if ( $proj->getKey() != $matches['proj'] )
+      if ( isset(self::$projectInstances[$key]) )
+        return self::$projectInstances[$key];
+
+      try {
+        $proj = new lizmapProject($matches['proj'], $rep);
+      }
+      catch(UnknownLizmapProjectException $e) {
+          throw $e;
+      }
+      catch(Exception $e) {
+        jLog::logEx($e, 'error');
         return null;
+      }
+      self::$projectInstances[$key] = $proj;
       return $proj;
     }
 
@@ -172,10 +271,8 @@ class lizmap{
      *
      */
     public static function getLogItemProperties(){
-      jClasses::inc('lizmap~lizmapLogItem');
-      return lizmapLogItem::$properties;
+      return lizmapLogItem::getSProperties();
     }
-
 
     /**
      * Get a log item
@@ -187,7 +284,6 @@ class lizmap{
         if ( !in_array($key, self::getLogItemList()) )
           return null;
 
-      jClasses::inc('lizmap~lizmapLogItem');
       return new lizmapLogItem($key);
     }
 

@@ -8,7 +8,7 @@
 * @license Mozilla Public License : http://www.mozilla.org/MPL/
 */
 
-$appPath = dirname (__FILE__).'/';
+$appPath = __DIR__.'/';
 require ($appPath.'../lib/jelix/init.php');
 
 jApp::initPaths(

@@ -9,6 +9,9 @@ defaultProject=
 cacheStorageType=file
 ;cacheStorageType=sqlite => store cached images in one sqlite file per repo/project/layer
 ;cacheStorageType=file => store cached images in one folder per repo/project/layer. The root folder is /tmp/
+;cacheStorageType=redis => store cached images through redis
+cacheRedisHost=localhost
+cacheRedisPort=6379
 cacheExpiration=0
 ; default cache expiration : the default time to live of data, in seconds.
 ; 0 means no expiration, max : 2592000 seconds (30 days)

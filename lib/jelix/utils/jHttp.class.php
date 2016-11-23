@@ -55,14 +55,24 @@ class jHttp extends netHttp {
 	* @param array		$charset			Request charset
 	* @return boolean
 	*/
-	public function put($path,$data,$charset=null)
+	public function put($path, $data, $charset=null, $contentType= null)
 	{
-		if ($charset) {
-			$this->post_charset = $charset;
-		}
-		$this->path = $path;
-		$this->method = 'PUT';
-		$this->postdata = $this->buildQueryString($data);
+        if ($charset) {
+            $this->post_charset = $charset;
+        }
+        if ($contentType) {
+            $this->post_content_type = $contentType;
+        }
+        $this->path = $path;
+        $this->method = 'PUT';
+
+        if ($this->post_content_type == 'application/x-www-form-urlencoded') {
+            $this->postdata = $this->buildQueryString($data);
+        }
+        else {
+            $this->postdata = $data;
+        }
+
 		return $this->doRequest();
 	}
 

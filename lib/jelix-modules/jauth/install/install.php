@@ -4,7 +4,7 @@
 * @subpackage  jauth module
 * @author      Laurent Jouanneau
 * @contributor Julien Issler
-* @copyright   2009-2010 Laurent Jouanneau
+* @copyright   2009-2016 Laurent Jouanneau
 * @copyright   2011 Julien Issler
 * @link        http://www.jelix.org
 * @licence     GNU Lesser General Public Licence see LICENCE file or http://www.gnu.org/licenses/lgpl.html
@@ -12,7 +12,14 @@
 
 class jauthModuleInstaller extends jInstallerModule {
 
+
+    protected static $key = null;
+
     function install() {
+
+        if (self::$key === null) {
+            self::$key = jAuth::getRandomPassword(30, true);
+        }
 
         $authconfig = $this->config->getValue('auth','coordplugins');
         $authconfigMaster = $this->config->getValue('auth','coordplugins', null, true);
@@ -36,6 +43,12 @@ class jauthModuleInstaller extends jInstallerModule {
                     $this->copyFile('var/config/'.$pluginIni, jApp::configPath($authconfig));
                 }
             }
+        }
+
+        $localConfigIni = $this->entryPoint->localConfigIni;
+        $key = $localConfigIni->getValue('persistant_crypt_key', 'coordplugin_auth');
+        if ($key === 'exampleOfCryptKey' || $key == '') {
+            $localConfigIni->getMaster()->setValue('persistant_crypt_key', self::$key, 'coordplugin_auth');
         }
     }
 }

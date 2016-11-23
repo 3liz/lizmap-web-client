@@ -118,6 +118,16 @@ class usersCtrl extends jController {
             return $rep;
         }
 
+        // retrieve user
+        $dao = jDao::get('jacl2db~jacl2groupsofuser','jacl2_profile');
+        $cond = jDao::createConditions();
+        $cond->addCondition('login', '=', $user);
+        $cond->addCondition('grouptype', '=', 2);
+        if ($dao->countBy($cond)==0) {
+            $rep->body->assign('MAIN', '<p>invalid user</p>');
+            return $rep;
+        }
+
         // retrieve groups of the user
         $hisgroup = null;
         $groupsuser = array();

@@ -19,20 +19,21 @@
   <item value="1">on</item>
 </menulist>
 
-<menulist ref="defaultRepository" required="true">
+<menulist ref="defaultRepository">
   <label locale="admin~admin.form.admin_services.defaultRepository.label"/>
   <datasource class="admin~listRepositoryDatasource" />
 </menulist>
 
 <menulist ref="defaultProject">
   <label locale="admin~admin.form.admin_services.defaultProject.label"/>
-  <datasource class="admin~listProjectDatasource" />
+  <datasource class="admin~listProjectDatasource" criteriafrom="defaultRepository"/>
 </menulist>
 
 <menulist ref="cacheStorageType" required="true">
   <label locale="admin~admin.form.admin_services.cacheStorageType.label"/>
   <item value="sqlite" selected="true" locale="admin~admin.form.admin_services.cacheStorageType.sqlite.label"/>
   <item value="file" locale="admin~admin.form.admin_services.cacheStorageType.file.label"/>
+  <item value="redis" locale="admin~admin.form.admin_services.cacheStorageType.redis.label"/>
 </menulist>
 
 <input ref="cacheRootDirectory" type="string" required="true">
@@ -40,9 +41,34 @@
     <help locale="admin~admin.form.admin_services.cacheRootDirectory.help"/>
 </input>
 
+<input ref="cacheRedisHost" type="string" defaultvalue="localhost">
+    <label locale="admin~admin.form.admin_services.cacheRedisHost.label"/>
+    <help locale="admin~admin.form.admin_services.cacheRedisHost.help"/>
+</input>
+
+<input ref="cacheRedisPort" type="integer" defaultvalue="6379" minvalue="1">
+    <label locale="admin~admin.form.admin_services.cacheRedisPort.label"/>
+    <help locale="admin~admin.form.admin_services.cacheRedisPort.help"/>
+</input>
+
+<input ref="cacheRedisDb" type="integer" defaultvalue="0" minvalue="0">
+    <label locale="admin~admin.form.admin_services.cacheRedisDb.label"/>
+    <help locale="admin~admin.form.admin_services.cacheRedisDb.help"/>
+</input>
+
+<input ref="cacheRedisKeyPrefix" type="string">
+    <label locale="admin~admin.form.admin_services.cacheRedisKeyPrefix.label"/>
+    <help locale="admin~admin.form.admin_services.cacheRedisKeyPrefix.help"/>
+</input>
+
 <input ref="cacheExpiration" type="integer" required="true" defaultvalue="2592000">
     <label locale="admin~admin.form.admin_services.cacheExpiration.label"/>
     <help locale="admin~admin.form.admin_services.cacheExpiration.help"/>
+</input>
+
+<input ref="rootRepositories">
+  <label locale="admin~admin.form.admin_services.rootRepositories.label"/>
+  <help locale="admin~admin.form.admin_services.rootRepositories.help"/>
 </input>
 
 <menulist ref="proxyMethod" required="true">

@@ -81,7 +81,7 @@ abstract class jResponse {
     public function outputErrors() {
         // if accept text/html
         if (isset($_SERVER['HTTP_ACCEPT']) && strstr($_SERVER['HTTP_ACCEPT'],'text/html')) {
-            require_once(JELIX_LIB_CORE_PATH.'responses/jResponseBasicHtml.class.php');
+            require_once(JELIX_LIB_CORE_PATH.'response/jResponseBasicHtml.class.php');
             $response = new jResponseBasicHtml();
             $response->outputErrors();
         }

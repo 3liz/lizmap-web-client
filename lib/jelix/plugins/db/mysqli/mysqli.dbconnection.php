@@ -99,7 +99,28 @@ class mysqliDbConnection extends jDbConnection {
 
     protected function _connect (){
         $host = ($this->profile['persistent']) ? 'p:'.$this->profile['host'] : $this->profile['host'];
-        $cnx = @new mysqli ($host, $this->profile['user'], $this->profile['password'], $this->profile['database']);
+        if (isset($this->profile['ssl']) && $this->profile['ssl'])
+        {
+            $cnx = mysqli_init();
+            if (!$cnx) {
+                throw new jException('jelix~db.error.connection',$this->profile['host']);
+            }
+            mysqli_ssl_set(
+                $cnx,
+                (isset($this->profile['ssl_key_pem']) ? $this->profile['ssl_key_pem'] : NULL),
+                (isset($this->profile['ssl_cert_pem']) ? $this->profile['ssl_cert_pem'] : NULL),
+                (isset($this->profile['ssl_cacert_pem']) ? $this->profile['ssl_cacert_pem'] : NULL),
+                NULL,
+                NULL);
+            if (!mysqli_real_connect($cnx, $host, $this->profile['user'],
+                       $this->profile['password'], $this->profile['database']))
+            {
+                throw new jException('jelix~db.error.connection', $this->profile['host']);
+            }
+        }
+        else {
+            $cnx = @new mysqli ($host, $this->profile['user'], $this->profile['password'], $this->profile['database']);
+        }
         if ($cnx->connect_errno) {
             throw new jException('jelix~db.error.connection',$this->profile['host']);
         }

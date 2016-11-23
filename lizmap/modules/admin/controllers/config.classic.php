@@ -90,14 +90,14 @@ class configCtrl extends jController {
     $xmlPath = jApp::appPath('project.xml');
     $xmlLoad = simplexml_load_file($xmlPath);
     $version = (string)$xmlLoad->info->version;
-    
-    
+
+
     // Get the data
     $services = lizmap::getServices();
 
     // Create the form
     $form = jForms::create('admin~config_services');
-    
+
     // Set form data values
     foreach($services->getProperties() as $ser){
       $form->setData($ser, $services->$ser);
@@ -106,6 +106,13 @@ class configCtrl extends jController {
           $form->setData($ser, 'on');
         else
           $form->setData($ser, 'off');
+    }
+
+    // hide sensitive services properties
+    if ($services->hideSensitiveProperties()) {
+        foreach($services->getSensitiveProperties() as $ser){
+            $form->deactivate($ser);
+        }
     }
 
     $tpl = new jTpl();
@@ -134,7 +141,7 @@ class configCtrl extends jController {
 
     // Create the form
     $form = jForms::create('admin~config_services');
-    
+
     // Set form data values
     foreach($services->getProperties() as $ser){
       $form->setData($ser, $services->$ser);
@@ -149,6 +156,13 @@ class configCtrl extends jController {
     $cacheRootDirectory = $form->getData('cacheRootDirectory');
     if(!is_writable($cacheRootDirectory) or !is_dir($cacheRootDirectory)){
       $form->setData('cacheRootDirectory', sys_get_temp_dir());
+    }
+
+    // hide sensitive services properties
+    if ($services->hideSensitiveProperties()) {
+        foreach($services->getSensitiveProperties() as $ser){
+            $form->deactivate($ser);
+        }
     }
 
     // redirect to the form display action
@@ -167,7 +181,7 @@ class configCtrl extends jController {
 
     // Get the form
     $form = jForms::get('admin~config_services');
-    
+
     if ($form) {
       // Display form
       $tpl = new jTpl();
@@ -213,6 +227,13 @@ class configCtrl extends jController {
 
     // Set the other form data from the request data
     $form->initFromRequest();
+
+    // force sensitive services properties
+    if ($services->hideSensitiveProperties()) {
+        foreach($services->getSensitiveProperties() as $ser){
+            $form->setData($ser, $services->$ser);
+        }
+    }
 
     // Check the form
     $ok = true;
@@ -393,42 +414,41 @@ class configCtrl extends jController {
   * @param object $repository Repository key.
   * @return boolean Success or failure of the saving.
   */
-  protected function saveRepositoryRightsFromRequest($form, $repository, $save=false) {
+  protected function saveRepositoryRightsFromRequest($form, $repository) {
     // Daos to use
     $daoright = jDao::get('jacl2db~jacl2rights','jacl2_profile');
     $daogroup = jDao::get('jacl2db~jacl2group','jacl2_profile');
-    // Set groups array if return needed
-    if(!$save)
-      $groups = array();
 
     // Loop through the form controls
     foreach($form->getControls() as $ctrl){
       // Filter controls corresponding to lizmap subjects
-      if(preg_match('#^'.$this->lizmapClientPrefix.'#', $ctrl->ref) and $ctrl->isContainer()){
+      if(preg_match('#^'.$this->lizmapClientPrefix.'#', $ctrl->ref) && $ctrl->isContainer()){
         $id_aclsbj = $ctrl->ref;
         // Edit control ref to get request params
         $param = str_replace('.', '_', $id_aclsbj);
         // Get values for the selected subject
-        $values = array_values(jApp::coord()->request->params[$param]);
+        if (isset(jApp::coord()->request->params[$param])) {
+          $values = array_values(jApp::coord()->request->params[$param]);
+        }
+        else {
+          // the list in the form may be empty, so no parameters
+          $values = array();
+        }
         // Loop through the groups
         foreach($daogroup->findAll() as $group){
-          // Retrieve only normal groups wich are not blacklisted
-          if(!in_array($group->id_aclgrp, $this->groupBlacklist) and $group->grouptype == 0){
+          // Retrieve only normal groups which are not blacklisted
+          if(!in_array($group->id_aclgrp, $this->groupBlacklist) && $group->grouptype == 0){
             // Add the right if needed else remove it
             if(in_array($group->id_aclgrp, $values)){
-              $groups[] = $group->id_aclgrp;
-              if($save)
-                jAcl2DbManager::addRight($group->id_aclgrp, $id_aclsbj, $repository);
+              jAcl2DbManager::addRight($group->id_aclgrp, $id_aclsbj, $repository);
             }
-            else
-              if($save)
-                $daoright->delete($id_aclsbj, $group->id_aclgrp, $repository);
+            else {
+              $daoright->delete($id_aclsbj, $group->id_aclgrp, $repository);
+            }
           }
         }
       }
     }
-    if(!$save)
-      return $groups;
   }
 
 
@@ -475,27 +495,7 @@ class configCtrl extends jController {
     $form->setData('repository', (string)$lrep->getKey());
     $form->setReadOnly('repository', true);
     // Create and fill form controls relatives to repository data
-    $propertiesOptions = $lrep->getPropertiesOptions();
-
-    foreach ( $lrep->getProperties() as $k ) {
-      $v = $lrep->getData($k);
-
-      // Create form control
-      if ( $propertiesOptions[$k]['fieldType'] == 'checkbox' ) {
-          $ctrl = new jFormsControlCheckbox($k);
-      }
-      else {
-        $ctrl = new jFormsControlInput($k);
-      }
-      $ctrl->required = $propertiesOptions[$k]['required'];
-      $ctrl->label = jLocale::get("admin~admin.form.admin_section.repository.".$k.".label");
-      $ctrl->size = 100;
-      $datatype = new jDatatypeString();
-      $ctrl->datatype=$datatype;
-      $form->addControl($ctrl);
-      // Set control data from repository data
-      $form->setData($k, $v);
-    }
+    lizmap::constructRepositoryForm($lrep, $form);
     // Create and fill the form control relative to rights for each group for this repository
     $form = $this->populateRepositoryRightsFormControl($form, $lrep->getKey(), 'db');
 
@@ -518,6 +518,8 @@ class configCtrl extends jController {
     $repository = $this->param('repository');
     $new = (bool)$this->param('new');
 
+    // Get services data
+    $services = lizmap::getServices();
     // Get repository data
     $lrep = lizmap::getRepository($repository);
     // what to do if it's a new one!
@@ -526,26 +528,8 @@ class configCtrl extends jController {
     $form = jForms::get('admin~config_section');
 
     if ($form) {
-      // reconstruct form fields based on repositoryPropertyList
-      $propertiesOptions = lizmap::getRepositoryPropertiesOptions();
-
-      foreach(lizmap::getRepositoryProperties() as $k){
-        if ( $propertiesOptions[$k]['fieldType'] == 'checkbox' ) {
-          $ctrl = new jFormsControlCheckbox($k);
-        }
-        else {
-          $ctrl = new jFormsControlInput($k);
-        }
-        $ctrl->required = $propertiesOptions[$k]['required'];
-        $ctrl->label = jLocale::get("admin~admin.form.admin_section.repository.".$k.".label");
-        $ctrl->size = 100;
-        $datatype = new jDatatypeString();
-        $ctrl->datatype=$datatype;
-        $form->addControl($ctrl);
-        // if edition, set the form data with the data taken from the ini file
-        if(($repository and $new))
-          $form->setData($k, $lrep->getData($k));
-      }
+      // Create and fill form controls relatives to repository data
+      lizmap::constructRepositoryForm($lrep, $form);
       // Create and fill the form control relative to rights for each group for this repository
       if($this->intParam('errors') && $lrep)
         $form = $this->populateRepositoryRightsFormControl($form, $lrep->getKey(), 'request');
@@ -579,6 +563,8 @@ class configCtrl extends jController {
 
     $ok = true;
 
+    // Get services data
+    $services = lizmap::getServices();
     // Repository (first take the default one)
     $lrep = lizmap::getRepository($repository);
     // what to do if it's a new one!
@@ -605,7 +591,7 @@ class configCtrl extends jController {
     }
 
     // Rebuild form fields
-    foreach(lizmap::getRepositoryProperties() as $k){
+    /*foreach(lizmap::getRepositoryProperties() as $k){
       if ( $propertiesOptions[$k]['fieldType'] == 'checkbox' ) {
         $ctrl = new jFormsControlCheckbox($k);
       }
@@ -617,7 +603,8 @@ class configCtrl extends jController {
       $datatype = new jDatatypeString();
       $ctrl->datatype=$datatype;
       $form->addControl($ctrl);
-    }
+    }*/
+    lizmap::constructRepositoryForm($lrep, $form);
     if ($lrep)
       $form = $this->populateRepositoryRightsFormControl($form, $lrep->getKey(), false);
 
@@ -642,6 +629,23 @@ class configCtrl extends jController {
       if(!file_exists($npath) or !is_dir($npath) ){
         $form->setErrorOn('path', jLocale::get("admin~admin.form.admin_section.message.path.wrong"));
         $ok = false;
+      }
+      $rootRepositories = $services->getRootRepositories();
+      if ( $rootRepositories != '' ) {
+          if ($lrep && substr($lrep->getPath(), 0, strlen($rootRepositories)) !== $rootRepositories ) {
+              //Can't update path
+              $form->setData('path',$lrep->getData('path'));
+          }
+          else if ($lrep && substr($lrep->getPath(), 0, strlen($rootRepositories)) === $rootRepositories && substr(realpath($npath), 0, strlen($rootRepositories)) !== $rootRepositories ) {
+            $form->setErrorOn('path', jLocale::get("admin~admin.form.admin_section.message.path.not_authorized"));
+            jLog::log('rootRepositories == '.$rootRepositories.', repository '.$lrep->getKey().' path == '.realpath($npath));
+            $ok = false;
+          }
+          else if ($lrep == null && substr(realpath($npath), 0, strlen($rootRepositories)) !== $rootRepositories ) {
+            $form->setErrorOn('path', jLocale::get("admin~admin.form.admin_section.message.path.not_authorized"));
+            jLog::log('rootRepositories == '.$rootRepositories.', new repository path == '.realpath($npath));
+            $ok = false;
+          }
       }
     }
 
@@ -681,8 +685,7 @@ class configCtrl extends jController {
       $modifySection = $lrep->update($data);
     jMessage::add(jLocale::get("admin~admin.form.admin_section.message.data.saved"));
     // group rights data
-    $save = True;
-    $this->saveRepositoryRightsFromRequest($form, $repository, $save);
+    $this->saveRepositoryRightsFromRequest($form, $repository);
 
     // Redirect to the validation page
     $rep= $this->getResponse("redirect");
@@ -768,15 +771,10 @@ class configCtrl extends jController {
   function removeCache(){
 
     $repository = $this->param('repository');
-
-    // Get config utility
-    $lrep = lizmap::getRepository($repository);
-    $ser = lizmap::getServices();
-
-    // Remove the cache for the repository
-    $cacheRootDirectory = $ser->cacheRootDirectory;
-    if(jFile::removeDir($cacheRootDirectory.'/'.$lrep->getKey()))
-      jMessage::add(jLocale::get("admin~admin.cache.repository.removed", array($lrep->getKey())));
+    $repoKey = lizmapProxy::clearCache($repository);
+    if ($repoKey) {
+      jMessage::add(jLocale::get("admin~admin.cache.repository.removed", array($repoKey)));
+    }
 
     // Redirect to the index
     $rep= $this->getResponse("redirect");
@@ -791,49 +789,41 @@ class configCtrl extends jController {
   * @return Redirection to the index
   */
   function removeLayerCache(){
-
-    $repository = $this->param('repository');
-    $project = $this->param('project');
-    $layer = $this->param('layer');
-
-    // Get config utility
-    $lrep = lizmap::getRepository($repository);
-    $ser = lizmap::getServices();
-    $lproj = lizmap::getProject($repository.'~'.$project);
-    $project = $lproj->getKey();
-
-    // Remove the cache for the layer
-    $cacheRootDirectory = $ser->cacheRootDirectory;
-    $cacheProjectDir = $cacheRootDirectory.'/'.$lrep->getKey().'/'.$project.'/';
-
-    $handle = opendir($cacheProjectDir);
-    $results = array();
-    // Open the directory and walk through the filenames
-    while (false !== ($entry = readdir($handle))) {
-      if ($entry != "." && $entry != "..") {
-        // Get directories and files corresponding to the layer
-        if(preg_match('#^'.$layer.'_#', $entry) or $entry == $layer) {
-          $results[] = $cacheProjectDir.$entry;
-        }
-      }
-    }
-    closedir($handle);
-
-    // Remove layer files and folder cache
-    if($lrep && $lproj){
-      foreach($results as $rem){
-        if(is_dir($rem))
-          jFile::removeDir($rem);
-        else
-          unlink($rem);
-      }
-    }
-    jMessage::add(jLocale::get("admin~admin.cache.layer.removed", array($layer)));
-
-    // Redirect to the index
+    // Create response to redirect to the index
     $rep= $this->getResponse("redirect");
     $rep->action="admin~config:index";
 
+    $repository = $this->param('repository');
+    $lrep = lizmap::getRepository($repository);
+    if(!$lrep){
+      jMessage::add('The repository '.strtoupper($repository).' does not exist !', 'error');
+      return $rep;
+    }
+
+    $project = $this->param('project');
+    try {
+        $lproj = lizmap::getProject($lrep->getKey().'~'.$project);
+        if(!$lproj){
+            jMessage::add('The lizmapProject '.strtoupper($project).' does not exist !', 'error');
+            return $rep;
+        }
+        $layer = $this->param('layer');
+
+        // Remove project cache
+        $lproj->clearCache();
+
+        // Remove the cache for the layer
+        lizmapProxy::clearLayerCache($repository, $project, $layer);
+
+        jMessage::add(jLocale::get("admin~admin.cache.layer.removed", array($layer)));
+
+        return $rep;
+    }
+    catch(UnknownLizmapProjectException $e) {
+        jLog::logEx($e, 'error');
+        jMessage::add('The lizmapProject '.strtoupper($project).' does not exist !', 'error');
+        return $rep;
+    }
     return $rep;
   }
 

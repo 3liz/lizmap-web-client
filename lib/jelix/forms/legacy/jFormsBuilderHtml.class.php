@@ -39,13 +39,17 @@ class jFormsBuilderHtml extends jFormsBuilderBase {
 
         echo '<table class="jforms-table" border="0">';
         foreach( $this->_form->getRootControls() as $ctrlref=>$ctrl){
-            if($ctrl->type == 'submit' || $ctrl->type == 'reset' || $ctrl->type == 'hidden') continue;
-            if(!$this->_form->isActivated($ctrlref)) continue;
-            if($ctrl->type == 'group') {
+            if ($ctrl->type == 'submit' || $ctrl->type == 'reset' || $ctrl->type == 'hidden') {
+                continue;
+            }
+            if (!$this->_form->isActivated($ctrlref)) {
+                continue;
+            }
+            if ($ctrl->type == 'group') {
                 echo '<tr><td colspan="2">';
                 $this->outputControl($ctrl);
                 echo '</td></tr>';
-            }else{
+            } else {
                 echo '<tr><th scope="row">';
                 $this->outputControlLabel($ctrl);
                 echo '</th><td>';
@@ -54,15 +58,17 @@ class jFormsBuilderHtml extends jFormsBuilderBase {
             }
         }
         echo '</table> <div class="jforms-submit-buttons">';
-        if ( $ctrl = $this->_form->getReset() ) {
-            if(!$this->_form->isActivated($ctrl->ref)) continue;
-            $this->outputControl($ctrl);
-            echo ' ';
+        if ($ctrl = $this->_form->getReset() ) {
+            if ($this->_form->isActivated($ctrl->ref)) {
+                $this->outputControl($ctrl);
+                echo ' ';
+            }
         }
-        foreach( $this->_form->getSubmits() as $ctrlref=>$ctrl){
-            if(!$this->_form->isActivated($ctrlref)) continue;
-            $this->outputControl($ctrl);
-            echo ' ';
+        foreach ($this->_form->getSubmits() as $ctrlref=>$ctrl) {
+            if ($this->_form->isActivated($ctrlref)) {
+                $this->outputControl($ctrl);
+                echo ' ';
+            }
         }
         echo "</div>\n";
     }
@@ -260,15 +266,16 @@ class jFormsBuilderHtml extends jFormsBuilderBase {
 
 
     public function outputControlValue($ctrl, $attributes=array()){
-        if($ctrl->type == 'hidden') return;
-        $ro = $ctrl->isReadOnly();
+        if ($ctrl->type == 'hidden') {
+            return;
+        }
+
         $separator = ' ';
         if (isset($attributes['separator'])) {
             $separator = $attributes['separator'];
             unset($attributes['separator']);
         }
 
-        $attributes['name'] = $ctrl->ref;
         $attributes['id'] = $this->_name.'_'.$ctrl->ref;
 
         $class = 'jforms-value jforms-value-'.$ctrl->type;
@@ -283,7 +290,6 @@ class jFormsBuilderHtml extends jFormsBuilderBase {
         $this->_outputAttr($attributes);
         echo '>';
 
-        if (isset($attributes['separator']))
         $value = $this->_form->getData($ctrl->ref);
         $value = $ctrl->getDisplayValue($value);
         if(is_array($value)){

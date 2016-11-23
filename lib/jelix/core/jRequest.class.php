@@ -24,7 +24,7 @@ abstract class jRequest {
     * could set from $_GET, $_POST, or from data processing of $HTTP_RAW_POST_DATA
     * @var array
     */
-    public $params;
+    public $params = array();
 
     /**
      * the request type code

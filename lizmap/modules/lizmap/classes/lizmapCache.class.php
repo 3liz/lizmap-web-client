@@ -9,8 +9,10 @@
 * @license Mozilla Public License : http://www.mozilla.org/MPL/
 */
 
+/**
+ * @deprecated  use lizmapProxy instead
+ */
 class lizmapCache {
-
 
     /**
     * Normalize and filter request parameters.
@@ -377,6 +379,7 @@ class lizmapCache {
                 "driver"=>"db",
                 "dbprofile"=>$cacheJdbName,
                 "ttl"=>$cacheExpiration,
+                "base64encoding"=> true
             );
 
             // Create the virtual cache profile

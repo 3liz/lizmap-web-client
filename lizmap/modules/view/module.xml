@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <module xmlns="http://jelix.org/ns/module/1.0">
     <info id="info@3liz.com" name="view" createdate="2011-09-12">
-        <version date="2016-04-04">3.0beta4</version>
+        <version date="2016-06-07">3.1pre.0001</version>
         <label lang="en_US">view</label>
         <description lang="en_US" />
         <license URL="http://www.mozilla.org/MPL/">Mozilla Public License</license>
@@ -15,4 +15,8 @@
         <jelix minversion="1.5" maxversion="1.6.*"/>
         <module name="lizmap" />
     </dependencies>
+    <autoload>
+        <class name="lizmapMainViewItem" file="classes/lizmapMainViewItem.class.php" />
+        <class name="lizmapMapDockItem" file="classes/lizmapMapDockItem.class.php" />
+    </autoload>
 </module>

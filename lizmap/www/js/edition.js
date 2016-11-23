@@ -19,6 +19,19 @@ var lizEdition = function() {
     // Edition type : createFeature or modifyFeature
     var editionType = null;
 
+    function getRelationInfo(parentLayerId,childLayerId){
+        if( 'relations' in config && parentLayerId in config.relations) {
+            var layerRelations = config.relations[parentLayerId];
+            for( var lridx in layerRelations ) {
+                var relation = layerRelations[lridx];
+                if (relation.referencingLayer == childLayerId) {
+                    return relation;
+                }
+            }
+        }
+        return null;
+    }
+
     function finishEdition() {
         // Lift the constraint on edition
         lizMap.editionPending = false;
@@ -42,6 +55,9 @@ var lizEdition = function() {
         // Remove messages
         $('#lizmap-edition-message').remove();
 
+        // Empty and hide tables
+        $('#edition-children-container').hide().html('');
+
         // Empty and hide form and tools
         $('#edition-cancel').addClass('disabled');
         $('#edition-form-container').hide().html('');
@@ -51,6 +67,9 @@ var lizEdition = function() {
             $('#edition-layer').show();
             $('#edition-draw').removeClass('disabled').show();
         }
+
+        // Redraw bottom dock
+        $('#bottom-dock').css('left',  lizMap.getDockRightPosition() );
     }
 
     function addEditionControls() {
@@ -126,7 +145,7 @@ var lizEdition = function() {
                         },
                         deactivate: function( evt ) {
                             for ( var c in editCtrls ) {
-                                if ( editCtrls[c].active )
+                                if ( c != 'panel' && editCtrls[c].active )
                                     editCtrls[c].deactivate();
                             }
                         }
@@ -141,6 +160,19 @@ var lizEdition = function() {
                 modify: new OpenLayers.Control.ModifyFeature(editLayer)
             };
             for ( var ctrl in editCtrls ) {
+                if ( ctrl != 'panel' )
+                    editCtrls[ctrl].events.on({
+                        activate: function( evt ){
+                            console.log('activate');
+                            console.log(evt.object.layer.getVisibility());
+                            evt.object.layer.setVisibility(true);
+                            console.log(evt.object.layer.getVisibility())
+                        },
+                        deactivate: function( evt ){
+                            console.log('deactivate');
+                            evt.object.layer.setVisibility(false);
+                        }
+                    });
                 map.addControls([editCtrls[ctrl]]);
             }
             controls['edition'] = editCtrls.panel;
@@ -150,12 +182,13 @@ var lizEdition = function() {
             editLayer.events.on({
 
                 featureadded: function(evt) {
-//~ console.log( 'feature added');
                     // Deactivate draw control
                     if( !editCtrls )
                         return false;
                     var geometryType = editionLayer['config'].geometryType;
-                    editCtrls[geometryType].deactivate();
+                    var drawWasActivated = editCtrls[geometryType].active;
+                    if (drawWasActivated)
+                        editCtrls[geometryType].deactivate();
 
                     // Get feature
                     var feat = editionLayer['ol'].features[0];
@@ -164,7 +197,10 @@ var lizEdition = function() {
                     updateGeometryColumnFromFeature( feat );
 
                     // Activate modify control
-                    if (editionLayer['config'].capabilities.modifyGeometry == "True"){
+                    if (drawWasActivated || editionLayer['config'].capabilities.modifyGeometry == "True"){
+                        // activate edition
+                        editCtrls.panel.activate();
+                        // then modify
                         editCtrls.modify.activate();
                         editCtrls.modify.selectFeature( feat );
                     }
@@ -182,7 +218,6 @@ var lizEdition = function() {
                 },
 
                 featuremodified: function(evt) {
-//~ console.log( 'feature modified');
                     if ( evt.feature.geometry == null )
                         return;
                     // Update form liz_wkt field from added geometry
@@ -191,44 +226,20 @@ var lizEdition = function() {
                 },
 
                 featureselected: function(evt) {
-//~ console.log( 'feature selected');
                     if ( evt.feature.geometry == null )
                         return;
 
                 },
 
                 featureunselected: function(evt) {
-//~ console.log( 'featureunselected')
-
                     if ( evt.feature.geometry == null )
                         return;
                     updateGeometryColumnFromFeature( evt.feat )
                 },
 
                 vertexmodified: function(evt) {
-//~ console.log( 'vertexmodified');
-
                 }
             });
-
-            $('#edition-layer').change(function() {
-                var self = $(this);
-                editCtrls.panel.activate();
-
-            });
-
-            //~ lizMap.events.on({
-                //~ dockopened: function(e) {
-                    //~ if ( e.id == 'edition' ) {
-                        //~ console.log('edition dock set visible');
-                    //~ }
-                //~ },
-                //~ dockclosed: function(e) {
-                    //~ if ( e.id == 'edition' ) {
-                        //~ console.log('edition dock closed');
-                    //~ }
-                //~ }
-            //~ });
 
             $('#edition-draw').click(function(){
                 // Do nothing if not enabled
@@ -241,6 +252,8 @@ var lizEdition = function() {
                     finishEdition();
                 }
 
+                // activate edition
+                editCtrls.panel.activate();
                 // Get layer id and set global property
                 editionLayer['id'] = $('#edition-layer').val();
 
@@ -261,6 +274,16 @@ var lizEdition = function() {
                 //if ( !confirm( lizDict['edition.confirm.cancel'] ) )
                     //return false;
                 finishEdition();
+
+                // back to parent
+                if ( editionLayer['parent'] != null && editionLayer['parent']['backToParent']) {
+                    var parentInfo = editionLayer['parent'];
+                    var parentLayerId = parentInfo['layerId'];
+                    var parentFeat = parentInfo['feature'];
+                    launchEdition( parentLayerId, parentFeat.id.split('.').pop(), parentInfo['parent'], function(editionLayerId, editionFeatureId){
+                        $('#bottom-dock').css('left',  lizMap.getDockRightPosition() );
+                    });
+                }
             });
 
         } else {
@@ -272,10 +295,39 @@ var lizEdition = function() {
 
 
     // Start edition of a new feature or an existing one
-    function launchEdition( aLayerId, aFid, aCallback ) {
+    function launchEdition( aLayerId, aFid, aParent, aCallback ) {
+        // Get parent relation
+        var parentInfo = null;
+        if ( aParent != null && ('layerId' in aParent) && ('feature' in aParent) ) {
+            var parentLayerId = aParent['layerId'];
+            var parentFeat = aParent['feature'];
+            if( 'relations' in config &&
+                parentLayerId in config.relations ) {
+                var relation = getRelationInfo(parentLayerId,aLayerId);
+                if (relation != null &&
+                    relation.referencingLayer == aLayerId) {
+                        parentInfo = {
+                            'layerId': parentLayerId,
+                            'feature': parentFeat,
+                            'relation': relation,
+                            'backToParent': false,
+                            'parent': null
+                        }
+                    if ( lizMap.editionPending && editionLayer['id'] == parentLayerId ) {
+                        var formFeatureId = $('#edition-form-container form input[name="liz_featureId"]').val();
+                        var formLayerId = $('#edition-form-container form input[name="liz_layerId"]').val();
+                        if (formLayerId == parentLayerId && formFeatureId == parentFeat.id.split('.').pop()) {
+                            parentInfo['backToParent'] = true;
+                            parentInfo['parent'] = editionLayer['parent'];
+                            finishEdition();
+                        }
+                    }
+                }
+            }
+        }
 
         // Deactivate previous edition
-        if( lizMap.editionPending){
+        if( lizMap.editionPending ){
             if ( !confirm( lizDict['edition.confirm.cancel'] ) )
                 return false;
             finishEdition();
@@ -287,6 +339,7 @@ var lizEdition = function() {
         editionLayer['spatial'] = null;
         editionLayer['drawControl'] = null;
         editionLayer['ol'] = null;
+        editionLayer['parent'] = null;
 
         // Check if edition is configured in lizmap
         if ( !('editionLayers' in config) )
@@ -318,6 +371,9 @@ var lizEdition = function() {
             editionLayer['drawControl'] = editCtrls[geometryType];
         }
 
+        // save parent info even if it's null
+        editionLayer['parent'] = parentInfo;
+
         // Get form and display it
         getEditionForm( aFid, aCallback );
 
@@ -333,7 +389,6 @@ var lizEdition = function() {
      * @param featureId Feature id to edit : in null-> create feature
      */
     function getEditionForm( featureId, aCallback ){
-
         $('#edition-form-container').hide();
 
         // Get edition type
@@ -443,6 +498,24 @@ var lizEdition = function() {
 
         // Response contains a form
         if ( form.length != 0 ) {
+
+            if ( editionLayer['parent'] != null ){
+                var parentInfo = editionLayer['parent'];
+                var parentFeat = parentInfo['feature'];
+                var relation = parentInfo['relation'];
+                var select = $('#edition-form-container form select[name="'+relation.referencingField+'"]')
+                    .val(parentFeat.properties[relation.referencedField])
+                    .attr('disabled','disabled');
+                var hiddenInput = $('<input type="hidden"></input>')
+                    .attr('id', select.attr('id')+'_hidden')
+                    .attr('name', relation.referencingField)
+                    .attr('value', parentFeat.properties[relation.referencedField]);
+                $('#edition-form-container form div.jforms-hiddens').append(hiddenInput);
+                jFormsJQ.getForm($('#edition-form-container form').attr('id'))
+                    .getControl(relation.referencingField)
+                    .required=false;
+            }
+
             handleEditionFormSubmit( form );
 
             if ( $('#edition-cancel').hasClass('disabled') ) {
@@ -531,6 +604,18 @@ var lizEdition = function() {
             }
         }
 
+        // back to parent
+        if ( form.length == 0 && editionLayer['parent'] != null && editionLayer['parent']['backToParent']) {
+            var parentInfo = editionLayer['parent'];
+            var parentLayerId = parentInfo['layerId'];
+            var parentFeat = parentInfo['feature'];
+            launchEdition( parentLayerId, parentFeat.id.split('.').pop(), parentInfo['parent'], function(editionLayerId, editionFeatureId){
+                $('#bottom-dock').css('left',  lizMap.getDockRightPosition() );
+            });
+        }
+
+        // Redraw bottom dock
+        $('#bottom-dock').css('left',  lizMap.getDockRightPosition() );
     }
 
     function handleEditionFormSubmit( form ){
@@ -876,8 +961,8 @@ var lizEdition = function() {
 
             addEditionControls();
 
-            lizMap.launchEdition = function( aLayerId, aFid) {
-                return launchEdition( aLayerId, aFid);
+            lizMap.launchEdition = function( aLayerId, aFid, aParent, aCallback) {
+                return launchEdition( aLayerId, aFid, aParent, aCallback);
             };
 
             lizMap.deleteEditionFeature = function( aLayerId, aFid, aMessage, aCallback ){
@@ -924,7 +1009,6 @@ var lizEdition = function() {
                         }
 
                         if( eHtml != '' ){
-                            console.log( self );
                             var popupButtonBar = self.next('span.popupButtonBar');
                             if ( popupButtonBar.length != 0 ) {
                                 popupButtonBar.append(eHtml);
@@ -949,9 +1033,14 @@ var lizEdition = function() {
                         .click(function(){
                             var fid = $(this).val().split('.').pop();
                             var layerId = $(this).val().replace( '.' + fid, '' );
-
+                            console.log(layerId+', '+fid);
                             // launch edition
                             lizMap.launchEdition( layerId, fid );
+
+                            // Remove map popup to avoid confusion
+                            if (lizMap.map.popups.length != 0)
+                                lizMap.map.removePopup( lizMap.map.popups[0] );
+
                             return false;
                         })
                         .hover(
@@ -979,6 +1068,13 @@ var lizEdition = function() {
                             function(){ $(this).removeClass('btn-primary'); }
                         )
                         .tooltip();
+
+
+                        // Trigger event
+                        lizMap.events.triggerEvent(
+                            "lizmappopupupdated",
+                            {'popup': popup}
+                        );
 
                     }
                 }

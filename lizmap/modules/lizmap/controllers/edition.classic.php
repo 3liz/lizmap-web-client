@@ -106,7 +106,6 @@ class editionCtrl extends jController {
             $title = (string)$_title[0];
     }
 
-    $messages = jMessage::getAll();
     $rep = $this->getResponse('htmlfragment');
     $tpl = new jTpl();
     $tpl->assign('title', $title);
@@ -139,16 +138,32 @@ class editionCtrl extends jController {
     }
 
     if(!$project){
-      jMessage::add('The parameter project is mandatory !', 'ProjectNotDefind');
+      jMessage::add('The parameter project is mandatory !', 'ProjectNotDefined');
       return false;
     }
 
     // Get repository data
     $lrep = lizmap::getRepository($repository);
-    $lproj = lizmap::getProject($repository.'~'.$project);
+    if(!$lrep){
+      jMessage::add('The repository '.strtoupper($repository).' does not exist !', 'RepositoryNotDefined');
+      return false;
+    }
+    // Get the project data
+    $lproj = null;
+    try {
+        $lproj = lizmap::getProject($repository.'~'.$project);
+        if(!$lproj){
+            jMessage::add('The lizmapProject '.strtoupper($project).' does not exist !', 'ProjectNotDefined');
+            return false;
+        }
+    }
+    catch(UnknownLizmapProjectException $e) {
+        jMessage::add('The lizmapProject '.strtoupper($project).' does not exist !', 'ProjectNotDefined');
+        return false;
+    }
 
     // Redirect if no rights to access this repository
-    if(!jAcl2::check('lizmap.repositories.view', $lrep->getKey())){
+    if ( !$lproj->checkAcl() ){
       jMessage::add(jLocale::get('view~default.repository.access.denied'), 'AuthorizationRequired');
       return false;
     }
@@ -207,17 +222,18 @@ class editionCtrl extends jController {
         $s_provider = $layerXmlZero->xpath('provider');
         $this->provider = (string)$s_provider[0];
         $this->getDataFields($datasource);
+        $typename = str_replace(' ', '_', $layerName);
         $wfsparams = array(
             'SERVICE' => 'WFS',
             'VERSION' => '1.0.0',
             'REQUEST' => 'GetFeature',
-            'TYPENAME' => $layerName,
+            'TYPENAME' => $typename,
             'OUTPUTFORMAT' => 'GeoJSON',
             'GEOMETRYNAME' => 'none',
             'PROPERTYNAME' => implode(',',$this->primaryKeys),
-            'FEATUREID' => $layerName . '.' . $featureId
+            'FEATUREID' => $typename . '.' . $featureId
         );
-        jClasses::inc('lizmap~lizmapWFSRequest');
+
         $wfsrequest = new lizmapWFSRequest( $lproj, $wfsparams );
         $wfsresponse = $wfsrequest->getfeature();
         if( property_exists($wfsresponse, 'data') ){
@@ -243,7 +259,7 @@ class editionCtrl extends jController {
   protected function filterDataByLogin($layername) {
 
     // Optionnaly add a filter parameter
-    $lproj = lizmap::getProject($this->repository->getKey().'~'.$this->project->getKey());
+    $lproj = $this->project;
     $pConfig = $lproj->getFullCfg();
 
     if( $lproj->hasLoginFilteredLayers()
@@ -447,7 +463,6 @@ class editionCtrl extends jController {
 
     // Loop through the table fields
     // and create a form control if needed
-    jClasses::inc('lizmap~qgisFormControl');
     $this->formControls = array();
 
     $layerName = $this->layerName;
@@ -640,11 +655,12 @@ class editionCtrl extends jController {
     $valueColumn = $this->formControls[$fieldName]->valueRelationData['value'];
     $keyColumn = $this->formControls[$fieldName]->valueRelationData['key'];
     $filterExpression = $this->formControls[$fieldName]->valueRelationData['filterExpression'];
+    $typename = str_replace(' ', '_', $layerName);
     $params = array(
       'SERVICE' => 'WFS',
       'VERSION' => '1.0.0',
       'REQUEST' => 'GetFeature',
-      'TYPENAME' => $layerName,
+      'TYPENAME' => $typename,
       'PROPERTYNAME' => $valueColumn.','.$keyColumn,
       'OUTPUTFORMAT' => 'GeoJSON',
       'GEOMETRYNAME' => 'none',
@@ -805,7 +821,8 @@ class editionCtrl extends jController {
           or $this->formControls[$ref]->fieldEditType == 'Photo' ) {
             $ctrl = $form->getControl($ref.'_choice');
             if ($ctrl && $ctrl->type == 'choice' ) {
-                $filename = array_pop( explode( '/', $record->$ref ) );
+                $path = explode( '/', $record->$ref );
+                $filename = array_pop($path);
                 $ctrl->itemsNames['keep'] = jLocale::get("view~edition.upload.choice.keep") . ' ' . $filename;
                 $ctrl->itemsNames['update'] = jLocale::get("view~edition.upload.choice.update");
                 $ctrl->itemsNames['delete'] = jLocale::get("view~edition.upload.choice.delete") . ' ' . $filename;
@@ -843,6 +860,13 @@ class editionCtrl extends jController {
         $updateAction = true;
     else
         $insertAction = true;
+
+    // Check if data has been fetched via WFS for the feature
+    if($updateAction && !$this->featureData){
+      jMessage::clearAll();
+      jMessage::add('Lizmap cannot get this feature data via WFS', 'featureNotFoundViaWfs');
+      return false;
+    }
 
     // Get list of fields which are not primary keys
     $fields = array();
@@ -907,6 +931,7 @@ class editionCtrl extends jController {
               $value = 'NULL';
             break;
           case 'text':
+          case 'boolean':
             $value= filter_var($value, FILTER_SANITIZE_STRING, FILTER_FLAG_NO_ENCODE_QUOTES);
             if ( !$value or empty($value))
               $value = 'NULL';
@@ -924,9 +949,16 @@ class editionCtrl extends jController {
         $choiceValue = $form->getData( $ref.'_choice' );
         $hiddenValue = $form->getData( $ref.'_hidden' );
         $repPath = $this->repository->getPath();
-        if ( $choiceValue == 'update' ) {
+        if ( $choiceValue == 'update' && $value != '') {
             $refPath = realpath($repPath.'/media').'/upload/'.$this->project->getKey().'/'.$this->tableName.'/'.$ref;
-            $form->saveFile( $ref, $refPath );
+            $alreadyValueIdx = 0;
+            while ( file_exists( $refPath.'/'.$value ) ) {
+                $alreadyValueIdx += 1;
+                $splitValue = explode('.', $value);
+                $splitValue[0] = $splitValue[0].$alreadyValueIdx;
+                $value = implode('.', $splitValue);
+            }
+            $form->saveFile( $ref, $refPath, $value );
             $value = 'media'.'/upload/'.$this->project->getKey().'/'.$this->tableName.'/'.$ref.'/'.$value;
             if ( $hiddenValue && file_exists( realPath( $repPath ).'/'.$hiddenValue ) )
                 unlink( realPath( $repPath ).'/'.$hiddenValue );
@@ -937,7 +969,7 @@ class editionCtrl extends jController {
         } else {
             $value = $hiddenValue;
         }
-        if ( !$value )
+        if ( empty($value) )
             $value = 'NULL';
         else if ( $value != 'NULL' )
             $value = $cnx->quote(
@@ -950,12 +982,13 @@ class editionCtrl extends jController {
         $finalFields[] = $ref;
 
       // Build the SQL insert and update query
-      // only for not NULL values
+      // For insert, only for not NULL values to allow serial and default values to work
       if( $value != 'NULL' ){
         $insert[]=$value;
         $refs[]='"'.$ref.'"';
-        $update[]='"'.$ref.'"='.$value;
       }
+      // For update, keep fields with NULL to allow deletion of values
+      $update[]='"'.$ref.'"='.$value;
     }
 
     $sql = '';
@@ -1004,7 +1037,6 @@ class editionCtrl extends jController {
 
     try {
       $rs = $cnx->query($sql);
-//~ jLog::log($sql);
     } catch (Exception $e) {
       $form->setErrorOn($this->geometryColumn, 'An error has been raised when saving the form');
       jLog::log("SQL = ".$sql);
@@ -1030,14 +1062,14 @@ class editionCtrl extends jController {
     if(!$this->getEditionParameters())
       return $this->serviceAnswer();
 
-      // Get editLayer capabilities
-        $eLayers  = $this->project->getEditionLayers();
-        $layerName = $this->layerName;
-        $eLayer = $eLayers->$layerName;
-        if ( $eLayer->capabilities->createFeature != 'True' ) {
-            jMessage::add('Create feature for this layer is not in the capabilities!', 'LayerNotEditable');
-            return $this->serviceAnswer();
-        }
+    // Get editLayer capabilities
+    $eLayers  = $this->project->getEditionLayers();
+    $layerName = $this->layerName;
+    $eLayer = $eLayers->$layerName;
+    if ( $eLayer->capabilities->createFeature != 'True' ) {
+        jMessage::add('Create feature for this layer is not in the capabilities!', 'LayerNotEditable');
+        return $this->serviceAnswer();
+    }
 
     jForms::destroy('view~edition');
     // Create form instance
@@ -1172,26 +1204,30 @@ class editionCtrl extends jController {
       }
     }
     $this->updateFormByLogin($form, False);
-    $attribute = $this->loginFilteredLayers['attribute'];
 
     // Get title layer
     $_layerXmlZero = $this->layerXml;
     $layerXmlZero = $_layerXmlZero[0];
     $_title = $layerXmlZero->xpath('title');
-    $title = (string)$_title[0];
+    if ($_title) {
+        $title = (string)$_title[0];
+    }
+    else {
+        $title = 'No title';
+    }
 
     // Get form layout
     $_editorlayout = $layerXmlZero->xpath('editorlayout');
-    $editorlayout = $_editorlayout[0];
-    if( $editorlayout == 'tablayout' ){
+    $formLayout = '{}';
+    if ($_editorlayout && $_editorlayout[0] == 'tablayout') {
         $_attributeEditorForm = $layerXmlZero->xpath('attributeEditorForm');
-        $formLayout = str_replace(
-            '@',
-            '',
-            json_encode($_attributeEditorForm[0] )
-        );
-    }else{
-        $formLayout = '{}';
+        if ($_attributeEditorForm && count($_attributeEditorForm)) {
+            $formLayout = str_replace(
+                '@',
+                '',
+                json_encode($_attributeEditorForm[0] )
+            );
+        }
     }
 
     // Use template to create html form content
@@ -1457,8 +1493,27 @@ class editionCtrl extends jController {
 
         $project = $this->param('project');
         $repository = $this->param('repository');
+
+        // Get repository data
         $lrep = lizmap::getRepository($repository);
-        $lproj = lizmap::getProject($repository.'~'.$project);
+        if(!$lrep){
+          jMessage::add('The repository '.strtoupper($repository).' does not exist !', 'RepositoryNotDefined');
+          return $this->serviceAnswer();
+        }
+        // Get the project data
+        $lproj = null;
+        try {
+            $lproj = lizmap::getProject($repository.'~'.$project);
+            if(!$lproj){
+                jMessage::add('The lizmapProject '.strtoupper($project).' does not exist !', 'ProjectNotDefined');
+                return $this->serviceAnswer();
+            }
+        }
+        catch(UnknownLizmapProjectException $e) {
+            jMessage::add('The lizmapProject '.strtoupper($project).' does not exist !', 'ProjectNotDefined');
+            return $this->serviceAnswer();
+        }
+
         $this->project = $lproj;
         $this->repository = $lrep;
 
@@ -1637,9 +1692,25 @@ class editionCtrl extends jController {
             return $this->serviceAnswer();
         }
 
-        // Get project configuration
+        // Get repository data
         $lrep = lizmap::getRepository($repository);
-        $lproj = lizmap::getProject($repository.'~'.$project);
+        if(!$lrep){
+          jMessage::add('The repository '.strtoupper($repository).' does not exist !', 'RepositoryNotDefined');
+          return $this->serviceAnswer();
+        }
+        // Get the project data
+        $lproj = null;
+        try {
+            $lproj = lizmap::getProject($repository.'~'.$project);
+            if(!$lproj){
+                jMessage::add('The lizmapProject '.strtoupper($project).' does not exist !', 'ProjectNotDefined');
+                return $this->serviceAnswer();
+            }
+        }
+        catch(UnknownLizmapProjectException $e) {
+            jMessage::add('The lizmapProject '.strtoupper($project).' does not exist !', 'ProjectNotDefined');
+            return $this->serviceAnswer();
+        }
         $this->project = $lproj;
         $this->repository = $lrep;
 

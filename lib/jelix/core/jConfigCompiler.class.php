@@ -39,7 +39,6 @@ class jConfigCompiler {
      * @return object an object which contains configuration values
      */
     static public function read($configFile, $allModuleInfo = false, $isCli = false, $pseudoScriptName=''){
-
         $tempPath = jApp::tempBasePath();
         $configPath = jApp::configPath();
 
@@ -56,9 +55,11 @@ class jConfigCompiler {
         if(!is_writable(jApp::logPath())) {
             throw new Exception('Application log directory is not writable -- ('.jApp::logPath().')', 4);
         }
+
+        self::$commonConfig = jelix_read_ini(jApp::mainConfigFile());
+
         // this is the defaultconfig file of JELIX itself
         $config = jelix_read_ini(JELIX_LIB_CORE_PATH.'defaultconfig.ini.php');
-        self::$commonConfig = clone $config;
 
         // read the main configuration of the app
         @jelix_read_ini(jApp::mainConfigFile(), $config);
@@ -124,7 +125,6 @@ class jConfigCompiler {
      *              corresponding to the readed configuration
      */
     static protected function prepareConfig($config, $allModuleInfo, $isCli, $pseudoScriptName){
-
         self::checkMiscParameters($config);
         self::getPaths($config->urlengine, $pseudoScriptName, $isCli);
         self::_loadModuleInfo($config, $allModuleInfo);
@@ -188,15 +188,17 @@ class jConfigCompiler {
             $classname = $pluginName.'ConfigCompilerPlugin';
             $plugins[] = new $classname();
         }
-        if (!count($plugins))
+        if (!count($plugins)) {
             return;
+        }
 
         // sort plugins by priority
         usort($plugins, function($a, $b){ return $a->getPriority() < $b->getPriority();});
 
         // run plugins
-        foreach($plugins as $plugin)
+        foreach($plugins as $plugin) {
             $plugin->atStart($config);
+        }
 
         foreach($config->_modulesPathList as $moduleName=>$modulePath) {
             $moduleXml = simplexml_load_file($modulePath.'module.xml');
@@ -205,8 +207,9 @@ class jConfigCompiler {
             }
         }
 
-        foreach($plugins as $plugin)
+        foreach($plugins as $plugin) {
             $plugin->atEnd($config);
+        }
     }
     
     /**
@@ -223,124 +226,176 @@ class jConfigCompiler {
         if ($config->disableInstallers) {
             $installation = array ();
         }
-        else if (!file_exists($installerFile)) {
+        else if (file_exists($installerFile)) {
+            $installation = parse_ini_file($installerFile, true);
+        }
+        else {
             if ($allModuleInfo)
                 $installation = array ();
-            else
+            else {
                 throw new Exception("The application is not installed -- installer.ini.php doesn't exist!\n", 9);
+            }
         }
-        else
-            $installation = parse_ini_file($installerFile,true);
+
+        if ($allModuleInfo) {
+            $config->_allModulesPathList = array();
+        }
 
         $section = $config->urlengine['urlScriptId'];
 
-        if (!isset($installation[$section]))
+        if (!isset($installation[$section])) {
             $installation[$section] = array();
+        }
+        $modulesPaths = self::getModulesPaths($config, true);
+        $pluginsPath =  preg_split('/ *, */',$config->pluginsPath);
 
-        $list = preg_split('/ *, */',$config->modulesPath);
-        if (isset(self::$commonConfig->modulesPath))
-            $list = array_merge($list, preg_split('/ *, */',self::$commonConfig->modulesPath));
-        array_unshift($list, JELIX_LIB_PATH.'core-modules/');
-        $pathChecked = array();
-
-        foreach($list as $k=>$path){
-            if(trim($path) == '') continue;
-            $p = jFile::parseJelixPath( $path );
-            if (!file_exists($p)) {
-                throw new Exception('Error in the configuration file -- The path, '.$path.' given in the jelix config, doesn\'t exist', 10);
+        foreach ($modulesPaths as $f=>$p) {
+            if ($config->disableInstallers) {
+                $installation[$section][$f . '.installed'] = 1;
+            } else if (!isset($installation[$section][$f.'.installed'])) {
+                $installation[$section][$f . '.installed'] = 0;
             }
-            if (substr($p,-1) !='/')
-                $p.='/';
-            if (in_array($p, $pathChecked))
+
+            if ($f == 'jelix') {
+                $config->modules['jelix.access'] = 2; // the jelix module should always be public
+            } else {
+                if ($config->enableAllModules) {
+                    if ($config->disableInstallers
+                        || $installation[$section][$f.'.installed']
+                        || $allModuleInfo) {
+                        $config->modules[$f . '.access'] = 2;
+                    } else {
+                        $config->modules[$f . '.access'] = 0;
+                    }
+                } else if (!isset($config->modules[$f.'.access'])) {
+                    // no given access in defaultconfig and ep config
+                    $config->modules[$f.'.access'] = 0;
+
+                } else if($config->modules[$f.'.access'] == 0) {
+                    // we want to activate the module if it is not activated
+                    // for the entry point, but is declared activated
+                    // in the default config file. In this case, it means
+                    // that it is activated for an other entry point,
+                    // and then we want the possibility to retrieve its
+                    // urls, at least
+                    if (isset(self::$commonConfig->modules[$f.'.access'])
+                        && self::$commonConfig->modules[$f.'.access'] > 0) {
+                        $config->modules[$f . '.access'] = 3;
+                    }
+                } else if (!$installation[$section][$f.'.installed']) {
+                    // module is not installed.
+                    // outside installation mode, we force the access to 0
+                    // so the module is unusable until it is installed
+                    if (!$allModuleInfo) {
+                        $config->modules[$f . '.access'] = 0;
+                    }
+                }
+            }
+
+            if (!isset($installation[$section][$f.'.dbprofile'])) {
+                $config->modules[$f.'.dbprofile'] = 'default';
+            } else {
+                $config->modules[$f.'.dbprofile'] = $installation[$section][$f . '.dbprofile'];
+            }
+
+            if ($allModuleInfo) {
+                if (!isset($installation[$section][$f.'.version'])) {
+                    $installation[$section][$f.'.version'] = '';
+                }
+
+                if (!isset($installation[$section][$f.'.dataversion'])) {
+                    $installation[$section][$f.'.dataversion'] = '';
+                }
+
+                if (!isset($installation['__modules_data'][$f.'.contexts'])) {
+                    $installation['__modules_data'][$f.'.contexts'] = '';
+                }
+
+                $config->modules[$f.'.version'] = $installation[$section][$f.'.version'];
+                $config->modules[$f.'.dataversion'] = $installation[$section][$f.'.dataversion'];
+                $config->modules[$f.'.installed'] = $installation[$section][$f.'.installed'];
+
+                $config->_allModulesPathList[$f] = $p;
+            }
+
+            if ($config->modules[$f.'.access'] == 3) {
+                $config->_externalModulesPathList[$f]=$p;
+            }
+            elseif ($config->modules[$f.'.access']) {
+                $config->_modulesPathList[$f]=$p;
+                if (file_exists( $p.'plugins')) {
+                    if (!in_array('module:'.$f, $pluginsPath) &&
+                        !in_array('module:'.$f.'/', $pluginsPath) &&
+                        !in_array('module:'.$f.'/plugins', $pluginsPath) &&
+                        !in_array('module:'.$f.'/plugins/', $pluginsPath)) {
+                        $config->pluginsPath .= ',module:'.$f;
+                        $pluginsPath[] = 'module:'.$f;
+                    }
+                }
+            }
+        }
+    }
+
+    static public function getModulesPaths($config, $toCompileConfig = false)
+    {
+        // --- read from modulesPath configuration
+        $list = array();
+        $pathChecked = array();
+        $modulesPaths = array();
+
+        if (property_exists($config, 'modulesPath')) {
+            $list = preg_split('/ *, */', $config->modulesPath);
+            if ($toCompileConfig && isset(self::$commonConfig->modulesPath)) {
+                $list = array_merge($list, preg_split('/ *, */', self::$commonConfig->modulesPath));
+            }
+        }
+
+        foreach ($list as $k => $path) {
+            if (trim($path) == '') continue;
+            $p = jFile::parseJelixPath($path);
+            if (!file_exists($p)) {
+                throw new Exception('Error in the configuration file -- The path, ' . $path . ' given in the jelix config, doesn\'t exist', 10);
+            }
+            if (substr($p, -1) != '/') {
+                $p .= '/';
+            }
+            if (in_array($p, $pathChecked)) {
                 continue;
+            }
             $pathChecked[] = $p;
 
-             // don't include the core-modules into the list of base path. this list is to verify
-             // if modules have been modified into repositories
-            if ($k!=0 && $config->compilation['checkCacheFiletime'])
-                $config->_allBasePath[]=$p;
+            if ($toCompileConfig && $config->compilation['checkCacheFiletime']) {
+                $config->_allBasePath[] = $p;
+            }
 
             if ($handle = opendir($p)) {
                 while (false !== ($f = readdir($handle))) {
-                    if ($f[0] != '.' && is_dir($p.$f)) {
-
-                        if ($config->disableInstallers)
-                            $installation[$section][$f.'.installed'] = 1;
-                        else if (!isset($installation[$section][$f.'.installed']))
-                            $installation[$section][$f.'.installed'] = 0;
-
-                        if ($f == 'jelix') {
-                            $config->modules['jelix.access'] = 2; // the jelix module should always be public
-                        }
-                        else {
-                            if ($config->enableAllModules) {
-                                if ($config->disableInstallers
-                                    || $installation[$section][$f.'.installed']
-                                    || $allModuleInfo)
-                                    $config->modules[$f.'.access'] = 2;
-                                else
-                                    $config->modules[$f.'.access'] = 0;
-                            }
-                            else if (!isset($config->modules[$f.'.access'])) {
-                                // no given access in defaultconfig and ep config
-                                $config->modules[$f.'.access'] = 0;
-                            }
-                            else if($config->modules[$f.'.access'] == 0){
-                                // we want to activate the module if it is not activated
-                                // for the entry point, but is declared activated
-                                // in the default config file. In this case, it means
-                                // that it is activated for an other entry point,
-                                // and then we want the possibility to retrieve its
-                                // urls, at least
-                                if (isset(self::$commonConfig->modules[$f.'.access'])
-                                    && self::$commonConfig->modules[$f.'.access'] > 0)
-                                    $config->modules[$f.'.access'] = 3;
-                            }
-                            else if (!$installation[$section][$f.'.installed']) {
-                                // module is not installed.
-                                // outside installation mode, we force the access to 0
-                                // so the module is unusable until it is installed
-                                if (!$allModuleInfo)
-                                    $config->modules[$f.'.access'] = 0;
-                            }
-                        }
-
-                        if (!isset($installation[$section][$f.'.dbprofile']))
-                            $config->modules[$f.'.dbprofile'] = 'default';
-                        else
-                            $config->modules[$f.'.dbprofile'] = $installation[$section][$f.'.dbprofile'];
-
-                        if ($allModuleInfo) {
-                            if (!isset($installation[$section][$f.'.version']))
-                                $installation[$section][$f.'.version'] = '';
-
-                            if (!isset($installation[$section][$f.'.dataversion']))
-                                $installation[$section][$f.'.dataversion'] = '';
-
-                            if (!isset($installation['__modules_data'][$f.'.contexts']))
-                                $installation['__modules_data'][$f.'.contexts'] = '';
-
-                            $config->modules[$f.'.version'] = $installation[$section][$f.'.version'];
-                            $config->modules[$f.'.dataversion'] = $installation[$section][$f.'.dataversion'];
-                            $config->modules[$f.'.installed'] = $installation[$section][$f.'.installed'];
-
-                            $config->_allModulesPathList[$f]=$p.$f.'/';
-                        }
-
-                        if ($config->modules[$f.'.access'] == 3) {
-                            $config->_externalModulesPathList[$f]=$p.$f.'/';
-                        }
-                        elseif ($config->modules[$f.'.access']) {
-                            $config->_modulesPathList[$f]=$p.$f.'/';
-                            if (file_exists( $p.$f.'/plugins')) {
-                                $config->pluginsPath .= ',module:'.$f;
-                            }
-                        }
+                    if ($f[0] != '.' && is_dir($p . $f)) {
+                        $modulesPaths[$f] = $p . $f . '/';
                     }
                 }
                 closedir($handle);
             }
         }
+
+        // -- read all *.path into [modules]
+        if (property_exists($config, 'modules')) {
+            foreach ($config->modules as $key => $path) {
+                if (!preg_match('/^([a-zA-Z_0-9]+)\\.path$/', $key, $m) || $path == '') {
+                    continue;
+                }
+                $p = jFile::parseJelixPath($path);
+                if (!file_exists($p)) {
+                    throw new Exception('Error in the configuration file -- The path, ' . $path . ' given in the jelix config, doesn\'t exist', 10);
+                }
+                if (!is_dir($p)) {
+                    throw new Exception('Error in the configuration file -- The path, ' . $path . ' given in the jelix config, is not a directory', 10);
+                }
+                $p = rtrim($p, '/');
+                $modulesPaths[$m[1]] = $p . '/';
+            }
+        }
+        return $modulesPaths;
     }
 
     /**

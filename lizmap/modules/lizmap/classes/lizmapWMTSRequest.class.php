@@ -9,8 +9,6 @@
 * @license Mozilla Public License : http://www.mozilla.org/MPL/
 */
 
-jClasses::inc('lizmap~lizmapOGCRequest');
-jClasses::inc('lizmap~lizmapWMSRequest');
 class lizmapWMTSRequest extends lizmapOGCRequest {
 
     protected $tplExceptions = 'lizmap~wmts_exception';
@@ -47,21 +45,21 @@ class lizmapWMTSRequest extends lizmapOGCRequest {
             $wms_xml->registerXPathNamespace("wms", "http://www.opengis.net/wms");
             $wms_xml->registerXPathNamespace("xlink", "http://www.w3.org/1999/xlink");
 
-            jClasses::inc("lizmap~lizmapTiler");
             $tileMatrixSetList = lizmapTiler::getTileMatrixSetList( $this->project, $wms_xml );
             $cfgLayers = $this->project->getLayers();
             $layers = array();
             foreach( $cfgLayers as $n=>$l ) {
-                $cfgl = $l;
                 if ( $l->cached == 'True' && $l->singleTile != 'True' && strtolower( $l->name ) != 'overview' ) {
-                    $layers[] = lizmapTiler::getLayerTileInfo( $l->name, $this->project, $wms_xml, $tileMatrixSetList );
+                    $layer = lizmapTiler::getLayerTileInfo( $l->name, $this->project, $wms_xml, $tileMatrixSetList );
+                    if ($layer) {
+                        $layers[] = $layer;
+                    }
                 }
             }
 
             jCache::set($cacheId . '_hash', $newhash, 3600);
             jCache::set($cacheId . '_tilematrixsetlist', $tileMatrixSetList, 3600 );
             jCache::set($cacheId . '_layers', $layers, 3600);
-
         }
         $sUrl = jUrl::getFull(
             "lizmap~service:index",
@@ -139,6 +137,13 @@ class lizmapWMTSRequest extends lizmapOGCRequest {
                 break;
             }
         }
+
+        if($tileMatrixSet === null){
+            // Error message
+            jMessage::add('TileMatrixSet seems to be wrong', 'MissingParameter');
+            return $this->serviceException();
+        }
+
         $tileWidth = 256.0;
         $tileHeight = 256.0;
 

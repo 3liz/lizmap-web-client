@@ -27,13 +27,39 @@ class lizmapServices{
       'defaultRepository',
       'defaultProject',
       'onlyMaps',
+      'rootRepositories',
       'proxyMethod',
       'debugMode',
       'cacheRootDirectory',
+      'cacheRedisHost',
+      'cacheRedisPort',
+      'cacheRedisDb',
+      'cacheRedisKeyPrefix',
       'allowUserAccountRequests',
       'adminContactEmail',
       'googleAnalyticsID'
     );
+
+    // services properties
+    private $sensitiveProperties = array(
+      'wmsServerURL',
+      'wmsPublicUrlList',
+      'cacheStorageType',
+      'cacheExpiration',
+      'rootRepositories',
+      'proxyMethod',
+      'debugMode',
+      'cacheRootDirectory',
+      'cacheRedisHost',
+      'cacheRedisPort',
+      'cacheRedisDb',
+      'cacheRedisKeyPrefix',
+    );
+
+    private $notEditableProperties = array(
+        'cacheRedisKeyPrefixFlushMethod'
+    );
+
     // Wms map server
     public $appName = 'Lizmap';
     // Wms map server
@@ -48,12 +74,24 @@ class lizmapServices{
     public $defaultProject = '';
     // display all project in maps
     public $allInMap = '';
+    // Root folder of repositories
+    public $rootRepositories = '';
     // proxy method : use curl or file_get_contents
     public $proxyMethod = '';
     // debug mode : none or log
     public $debugMode = '';
     // Cache root directory
     public $cacheRootDirectory = '';
+    // Redis host
+    public $cacheRedisHost = 'localhost';
+    // Redis port
+    public $cacheRedisPort = '6379';
+    // Redis db
+    public $cacheRedisDb = '';
+    // Redis key prefix
+    public $cacheRedisKeyPrefix = '';
+    // method to flush keys when $cacheRedisKeyPrefix is set. See Jelix documentation
+    public $cacheRedisKeyPrefixFlushMethod = '';
     // if we allow to view the form to request an account
     public $allowUserAccountRequests = '';
     // admin contact email
@@ -67,13 +105,44 @@ class lizmapServices{
       $this->data = $readConfigPath;
 
       // set generic parameters
-      foreach($this->properties as $prop)
-        if(isset($readConfigPath['services'][$prop]))
+      foreach($this->properties as $prop) {
+        if(isset($readConfigPath['services'][$prop])) {
           $this->$prop = $readConfigPath['services'][$prop];
+        }
+      }
+      foreach($this->notEditableProperties as $prop) {
+        if(isset($readConfigPath['services'][$prop])) {
+          $this->$prop = $readConfigPath['services'][$prop];
+        }
+      }
     }
 
     public function getProperties(){
       return $this->properties;
+    }
+
+    public function hideSensitiveProperties(){
+      if ( isset($this->data['hideSensitiveServicesProperties']) && $this->data['hideSensitiveServicesProperties'] != '0')
+        return true;
+      return false;
+    }
+
+    public function getSensitiveProperties(){
+      return $this->sensitiveProperties;
+    }
+
+    public function getRootRepositories(){
+        $rootRepositories = $this->rootRepositories;
+
+        if ( $rootRepositories != '' ) {
+            // if path is relative, get full path
+            if ($rootRepositories[0] != '/' and $rootRepositories[1] != ':')
+                $rootRepositories = realpath( jApp::varPath().$rootRepositories );
+            // add a trailing slash if needed
+            if( !preg_match('#/$#', $rootRepositories ))
+                $rootRepositories .= '/';
+        }
+        return $rootRepositories;
     }
 
     /**

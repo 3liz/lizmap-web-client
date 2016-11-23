@@ -21,6 +21,8 @@
   <div class="menu-content">
     <div id="edition-form-container">
     </div>
+    <div id="edition-children-container" style="display:none;">
+    </div>
   </div>
 
 

@@ -28,10 +28,12 @@ class jClassicRequest extends jRequest {
 
         if ($_SERVER['REQUEST_METHOD'] == 'PUT') {
             $_PUT = $this->readHttpBody();
-            if (is_string($_PUT))
+            if (is_string($_PUT)) {
+                $this->params = $url->params;
                 $this->params['__httpbody'] = $_PUT;
-            else
+            } else {
                 $this->params = array_merge($url->params, $_PUT);
+            }
         }
         else {
             $this->params = array_merge($url->params, $_POST);

@@ -57,6 +57,13 @@ class dbCacheDriver implements jICacheDriver {
     */
     public $automatic_cleaning_factor = 0;
 
+    /**
+     * for some sqlite version, it seems it doesn't support
+     * very well result of php serialization. This flags indicates
+     * to encode values before storing them
+     */
+    protected $base64encoding = false;
+
     public function __construct($params) {
 
         $this->profil_name = $params['_name'];
@@ -80,6 +87,10 @@ class dbCacheDriver implements jICacheDriver {
         if (isset($params['automatic_cleaning_factor'])) {
             $this->automatic_cleaning_factor = $params['automatic_cleaning_factor'];
         }
+
+        if(isset($params['base64encoding']) && $params['base64encoding']){
+            $this->base64encoding = true;
+        }
     }
 
     /**
@@ -99,7 +110,8 @@ class dbCacheDriver implements jICacheDriver {
             foreach($rs as $cache){
                 if(is_null($cache->date) || (strtotime($cache->date) > time())){
                     try {
-                        $data[$cache->key] = unserialize(base64_decode($cache->data));
+                        $val = $this->base64encoding?base64_decode($cache->data):$cache->data;
+                        $data[$cache->key] = unserialize($val);
                     } catch(Exception $e) {
                         throw new jException('jelix~cache.error.unserialize.data',array($this->profil_name, $e->getMessage()));
                     }
@@ -111,7 +123,8 @@ class dbCacheDriver implements jICacheDriver {
             $rec = $dao->getData($key);
             if ($rec){
                 try {
-                    $data = unserialize(base64_decode($rec->data));
+                    $val = $this->base64encoding?base64_decode($rec->data):$rec->data;
+                    $data = unserialize($val);
                 } catch(Exception $e) {
                     throw new jException('jelix~cache.error.unserialize.data',array($this->profil_name, $e->getMessage()));
                 }
@@ -132,7 +145,10 @@ class dbCacheDriver implements jICacheDriver {
     public function set ($key, $var, $ttl=0){
 
         try{
-            $var = base64_encode(serialize($var));
+            $var = serialize($var);
+            if ($this->base64encoding) {
+                $var = base64_encode($var);
+            }
         }
         catch(Exception $e) {
             throw new jException('jelix~cache.error.serialize.data',array($this->profil_name,$e->getMessage()));

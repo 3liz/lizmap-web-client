@@ -33,8 +33,6 @@ class myHtmlMapResponse extends jResponseHtml {
     $this->addCSSLink($bp.'css/main.css');
     $this->addCSSLink($bp.'css/map.css');
     $this->addCSSLink($bp.'css/media.css');
-    $this->addStyle('[class^="icon-"], [class*=" icon-"]','background-image: url(\''.$bp.'css/images/glyphicons-halflings.png\')');
-    $this->addStyle('.icon-white','background-image: url(\''.$bp.'css/images/glyphicons-halflings-white.png\')');
 
 #    $this->addCSSLink($bp.'css/bootstrap-responsive.css');
 
@@ -72,8 +70,11 @@ class myHtmlMapResponse extends jResponseHtml {
   }
 
   protected function doAfterActions() {
-      // Include all process in common for all actions, like the settings of the
-      // main template, the settings of the response       $tpl = new jTpl();
-
+      $this->body->assignIfNone('MAIN','');
+      $this->body->assignIfNone('repositoryLabel', 'Lizmap');
+      $this->body->assignIfNone('isConnected', jAuth::isConnected());
+      $this->body->assignIfNone('user', jAuth::getUserSession());
+      $this->body->assignIfNone('auth_url_return','');
+      $this->body->assignIfNone('googleAnalyticsID', '');
   }
 }

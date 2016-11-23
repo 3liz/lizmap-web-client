@@ -61,11 +61,9 @@ enable_after_logout_override=on
 ; enable the persistance of the authentification between two sessions
 persistant_enable=on
 
-; key to use to crypt the password in the cookie. replace it by your own words !
-persistant_crypt_key=IliveInMontpellier
 
 ; the name of the cookie which is used to store data for the authentification
-persistant_cookie_name=jelixAuthentificationCookie
+persistant_cookie_name=LizmapSession
 
 ; duration of the validity of the cookie (in days). default is 1 day.
 persistant_duration=1
@@ -75,7 +73,7 @@ persistant_duration=1
 ; method of the hash. 0 or "" means old hashing behavior of jAuth
 ; (using password_* parameters in drivers ).
 ; Prefer to choose 1, which is the default hash method (bcrypt).
-password_hash_method=
+password_hash_method=1
 
 ; options for the hash method. list of "name:value" separated by a ";"
 password_hash_options=
@@ -149,4 +147,5 @@ password_crypt_function=sha1
 ; if you want to use a salt with sha1:
 ;password_crypt_function = "1:sha1WithSalt"
 ;password_salt = "here_your_salt"
+
 
