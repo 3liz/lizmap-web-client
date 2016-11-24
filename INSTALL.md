@@ -66,3 +66,4 @@ In case you get a ``500 - internal server error``, run again:
 cd /var/www/mylizmap/
 lizmap/install/set_rights.sh www-data www-data
 ```
+and eventually restart apache.
