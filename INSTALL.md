@@ -10,7 +10,7 @@ First you should install
 - the web server Apache
 - PHP and its extensions sqlite, gd, xml (`php-xml-rpc` or equivalents), and curl
 - [QGIS](http://hub.qgis.org/wiki/quantum-gis/QGIS_Server_Tutorial).
-- (optional) Postgresql with postgis
+- (optional) PostgreSQL with PostGIS
 
 Get the source
 --------------
@@ -30,9 +30,9 @@ cd /var/www/mylizmap/
 lizmap/install/set_rights.sh www-data www-data
 ```
 
-Create lizmapConfig.ini.php, localconfig.ini.php and profiles.ini.php and edit them
-to set parameters specific to your installation. You can modify lizmapConfig.ini.php
-to set the url of qgis map server and other things, and profiles.ini.php to store
+Create `lizmapConfig.ini.php`, `localconfig.ini.php` and `profiles.ini.php` and edit them
+to set parameters specific to your installation. You can modify `lizmapConfig.ini.php`
+to set the url of qgis map server and other things, and `profiles.ini.php` to store
 data in a database other than an sqlite database.
 
 ```
