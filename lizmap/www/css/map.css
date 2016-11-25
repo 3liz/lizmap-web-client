@@ -9,7 +9,13 @@ body {
 [class^="icon-"], [class*=" icon-"] {
   background-image: url('images/glyphicons-halflings.png');
 }
-.icon-white {
+.icon-white,
+.dropdown-menu > li > a:hover > [class^="icon-"],
+.dropdown-menu > li > a:focus > [class^="icon-"],
+.dropdown-menu > li > a:hover > [class*=" icon-"],
+.dropdown-menu > li > a:focus > [class*=" icon-"],
+.dropdown-menu > .active > a > [class^="icon-"],
+.dropdown-menu > .active > a > [class*=" icon-"] {
   background-image: url('images/glyphicons-halflings-white.png');
 }
 .nav .active > a .icon-white,
@@ -1319,6 +1325,9 @@ div.modal h3 .text {
 }
 #switcher-layers-actions button#layerActionUnfilter{
   margin-left: 15px;
+}
+#switcher-layers-actions ul.list-style-layer li.selected{
+  background-color: #FFFFFF;
 }
 
 

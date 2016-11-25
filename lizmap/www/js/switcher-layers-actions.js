@@ -80,8 +80,23 @@ var lizLayerActionButtons = function() {
         if( !bindClick )
             return false;
 
+        $('#layerActionStyle').click(function() {
+            var scrollInterval = window.setInterval( function(){
+                if ( $('#switcher ul.list-style-layer li.selected').length > 0 )
+                    $('#switcher ul.list-style-layer li').each(function(i,e){
+                        if($(e).hasClass('selected')) {
+                            $('#switcher ul.list-style-layer').scrollTop(i*$(e).height());
+                            window.clearInterval(scrollInterval);
+                        }
+                    });
+                else
+                    window.clearInterval(scrollInterval);
+            }, 100);
+        });
+
         $('#switcher-layers-actions a.btn-style-layer').click(function(){
-            var eStyle = $(this).text();
+            var self = $(this);
+            var eStyle = self.text();
 
             var eName = $('#layerActionStyle').val();
             if( !eName )
@@ -96,6 +111,8 @@ var lizLayerActionButtons = function() {
             if( oLayer && eStyle != ''){
                 oLayer.params['STYLES'] = eStyle;
                 oLayer.redraw( true );
+                self.parent().parent().find('li.selected').removeClass('selected').find('i').remove();
+                self.parent().addClass('selected').find('a').prepend('<i class="icon-check"></i> ');
 
                 lizMap.events.triggerEvent(
                     "layerstylechanged",
@@ -291,10 +308,10 @@ var lizLayerActionButtons = function() {
         ){
             showStyles = true;
             for( var st in itemConfig.styles ){
-                styleHtml += '<li><a href="#" class="btn-style-layer">'+itemConfig.styles[st]+'</a></li>';
+                styleHtml += '<li data-style="'+itemConfig.styles[st]+'"><a href="#" class="btn-style-layer">'+itemConfig.styles[st]+'</a></li>';
             }
         }
-        $('#layerActionStyle').next('ul:first').html( styleHtml );
+        $('#layerActionStyle').next('ul:first').addClass('list-style-layer').html( styleHtml );
         onStyleSelection(showStyles);
         $('#layerActionStyle').attr( 'disable', !showStyles ).toggleClass( 'disabled', !showStyles );
 
