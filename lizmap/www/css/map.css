@@ -1278,8 +1278,17 @@ div.modal h3 .text {
   border : solid 1px rgb(251,216,80);
 }
 
+#dock div.tabbable {
+  height: 100%;
+}
+
+#dock-content {
+  height: 100%;
+}
+
 #switcher {
   overflow : auto;
+  height: 100%;
 /*
   border : solid 1px #606060;
 */
@@ -1299,6 +1308,8 @@ div.modal h3 .text {
 #switcher-layers-actions div.btn-group > ul{
   left:auto;
   right:0px;
+  max-height:90px;
+  overflow-y:auto;
 }
 #switcher-layers-actions.active {
   border-top: 1px solid rgba(255,255,255,0.6);

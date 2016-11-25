@@ -307,7 +307,10 @@ var lizMap = function() {
 
     // Set the switcher content a max-height
     $('#switcher-layers-container').css( 'height', 'auto' );
-    var mh = $('#dock').height() - 2*$('#dock-tabs').height() - $('#switcher-layers-container h3').height() - $('#switcher-layers-actions').height() - $('#switcher-baselayer').height() ;
+    //var mh = $('#dock').height() - 2*$('#dock-tabs').height() - $('#switcher-layers-container h3').height() - $('#switcher-layers-actions').height() - $('#switcher-baselayer').height() ;
+    var mh = $('#dock-content').height() - $('#switcher-layers-container h3').height() - $('#switcher-layers-actions').height();
+    if ( $('#switcher-baselayer').is(':visible') )
+        mh -= $('#switcher-baselayer').height();
     $('#switcher-layers-container .menu-content').css( 'max-height', mh ).css('overflow-x', 'hidden').css('overflow-y', 'auto');
 
     // Set the other tab-content max-height
