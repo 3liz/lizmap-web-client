@@ -804,6 +804,20 @@ class serviceCtrl extends jController {
 
       } // loop features
 
+      // Raster Popup
+      if ( count($layer->Attribute) > 0 ){
+        $tpl = new jTpl();
+        $tpl->assign('attributes', $layer->Attribute);
+        $tpl->assign('repository', $this->repository->getKey());
+        $tpl->assign('project', $this->project->getKey());
+        $popupRasterContent = $tpl->fetch('view~popupRasterContent');
+
+        $tpl = new jTpl();
+        $tpl->assign('layerTitle', $layerTitle);
+        $tpl->assign('popupContent', $popupRasterContent);
+        $content[] = $tpl->fetch('view~popup');
+      }
+
     } // loop layers
 
     $content = array_reverse($content);
