@@ -16,7 +16,7 @@ a:hover {
 /* END for ie 8*/
 
 #header {
-  background : url('img/header-background-medium.png') repeat fixed #2B2B2B;
+  background : url(img/header-background-medium.png) repeat fixed #2B2B2B;
   color : #FBFBFB;
 }
 #logo {
