@@ -81,6 +81,28 @@ var lizLayerActionButtons = function() {
             return false;
 
         $('#layerActionStyle').click(function() {
+            var self = $(this);
+            var eName = self.val();
+            if( !eName )
+                return false;
+
+            var getLayer = lizMap.map.getLayersByName( cleanName );
+            if( !getLayer )
+                return false;
+
+            var oLayer = getLayer[0];
+            if( oLayer && 'STYLES' in oLayer.params){
+                var selectedStyle = oLayer.params['STYLES'];
+                var selectedLi = $('#switcher ul.list-style-layer li.selected');
+                var dataStyle = '';
+                if( selectedLi.length > 0 )
+                    dataStyle = selectedLi.attr('data-style');
+                if ( selectedStyle != dataStyle ) {
+                    selectedLi.removeClass('selected').find('i').remove();
+                    $('#switcher ul.list-style-layer li[data-style="'+selectedStyle+'"]').addClass('selected').find('a').prepend('<i class="icon-check"></i> ');
+                }
+            }
+
             var scrollInterval = window.setInterval( function(){
                 if ( $('#switcher ul.list-style-layer li.selected').length > 0 )
                     $('#switcher ul.list-style-layer li').each(function(i,e){
@@ -107,7 +129,7 @@ var lizLayerActionButtons = function() {
             if( !getLayer )
                 return false;
 
-            var oLayer = lizMap.map.getLayersByName( cleanName )[0];
+            var oLayer = getLayer[0];
             if( oLayer && eStyle != ''){
                 oLayer.params['STYLES'] = eStyle;
                 oLayer.redraw( true );
@@ -307,8 +329,20 @@ var lizLayerActionButtons = function() {
             && 'styles' in itemConfig
         ){
             showStyles = true;
+            var selectedStyle = '';
+            var oLayer = lizMap.map.getLayersByName( evt.name )[0];
+            if( oLayer && 'STYLES' in oLayer.params) {
+                selectedStyle = oLayer.params['STYLES'];
+            }
             for( var st in itemConfig.styles ){
-                styleHtml += '<li data-style="'+itemConfig.styles[st]+'"><a href="#" class="btn-style-layer">'+itemConfig.styles[st]+'</a></li>';
+                styleHtml += '<li data-style="'+itemConfig.styles[st]+'"';
+                if( itemConfig.styles[st] == selectedStyle ) styleHtml += ' class="selected"';
+                styleHtml += '>';
+                styleHtml += '<a href="#" class="btn-style-layer">';
+                if( itemConfig.styles[st] == selectedStyle ) styleHtml += '<i class="icon-check"></i> ';
+                styleHtml += itemConfig.styles[st];
+                '</a>';
+                styleHtml += '</li>';
             }
         }
         $('#layerActionStyle').next('ul:first').addClass('list-style-layer').html( styleHtml );
