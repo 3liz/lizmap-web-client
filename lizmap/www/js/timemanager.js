@@ -4,8 +4,8 @@ var lizTimemanager = function() {
         'uicreated':function(evt){
 
             // Attributes
-            var config = lizMap.config
-            var layers = lizMap.layers
+            var config = lizMap.config;
+            var layers = lizMap.layers;
             var tmActive = false;
             var tmLayersNb = 0;
             var tmLayerIndex = 0;
@@ -56,7 +56,7 @@ var lizTimemanager = function() {
             var service = OpenLayers.Util.urlAppend(lizUrls.wms
                 ,OpenLayers.Util.getParameterString(lizUrls.params)
             );
-            
+
               var featureTypes = lizMap.getVectorLayerFeatureTypes();
               if (featureTypes.length == 0 ){
                 //what to deactivate ?
@@ -260,8 +260,8 @@ var lizTimemanager = function() {
                   for ( var g in tmGroups ) {
                     var tmGroup = tmGroups[g];
                     var div = '<div>';
-                    div += '<td><button class="btn checkbox checked" name="tm" value="'+tmGroup.id+'" title="'+lizDict['tree.button.checkbox']+'"></button>';
-                    div +=  '<span class="label" title="'+tmGroup.title+'">'+tmGroup.title+'</span>';
+                    div += '<button class="btn checkbox checked" name="tm" value="'+tmGroup.id+'" title="'+lizDict['tree.button.checkbox']+'"></button>';
+                    div += '<span class="label" title="'+tmGroup.title+'">'+tmGroup.title+'</span>';
                     div += '</div>';
                     $('#tmLayers').append(div);
                   }
