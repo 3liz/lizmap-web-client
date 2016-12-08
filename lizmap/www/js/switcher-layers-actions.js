@@ -86,6 +86,7 @@ var lizLayerActionButtons = function() {
             if( !eName )
                 return false;
 
+            var cleanName = lizMap.cleanName(eName);
             var getLayer = lizMap.map.getLayersByName( cleanName );
             if( !getLayer )
                 return false;
