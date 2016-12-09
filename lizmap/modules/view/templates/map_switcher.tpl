@@ -53,7 +53,13 @@
     </div>
 </div>
 <div id="switcher-baselayer" class="baselayer">
-    <h3><span class="title"><span class="icon"></span>&nbsp;<span class="text">{@view~map.baselayermenu.title@}</span></span></h3>
+    <h3>
+        <span class="title">
+            <span class="icon"></span>&nbsp;
+            <span class="text">{@view~map.baselayermenu.title@}</span>
+            <span id="get-baselayer-metadata" class="pull-right" title="{@view~map.switcher.layer.metadata.title@}"><i class="icon-info-sign icon-white"></i></span>
+        </span>
+    </h3>
     <div class="menu-content">
         <div class="baselayer-select">
             <select id="switcher-baselayer-select" class="label"></select>

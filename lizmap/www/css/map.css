@@ -1495,6 +1495,22 @@ div.modal h3 .text {
   line-height : 2;
 }
 
+#get-baselayer-metadata {
+  width: 20px;
+  border:none;
+  cursor:pointer;
+}
+
+a.btn.btn-opacity-layer {
+
+}
+
+a.btn.btn-opacity-layer.active {
+  background-color:#0094d6 !important;
+  color:white !important;
+}
+
+
 /*navbar*/
 #navbar {
   z-index :1000;

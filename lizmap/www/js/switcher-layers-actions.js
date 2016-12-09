@@ -3,6 +3,7 @@ var lizLayerActionButtons = function() {
     var tooltipControl = null;
     var tooltipLayers = [];
     var featureTypes = null;
+    var opacityLayers = {};
 
     function fillSubDock( html ){
         $('#sub-dock').html( html );
@@ -41,7 +42,10 @@ var lizLayerActionButtons = function() {
         $('#hide-sub-dock').click(function(){
             var itemName = $(this).val();
             var itemConfig = lizMap.config.layers[itemName];
-            var itemType = itemConfig.type;
+            if('type' in itemConfig)
+                var itemType = itemConfig.type;
+            else
+                var itemType = 'baselayer';
 
             lizMap.events.triggerEvent(
                 "lizmapswitcheritemselected",
@@ -55,9 +59,29 @@ var lizLayerActionButtons = function() {
 
     function getLayerMetadataHtml( aName ){
 
-        var html = '';
-
+        var html = ''; var metadatas = null;
         if( aName in lizMap.config.layers ){
+            var layerConfig = lizMap.config.layers[aName];
+            metadatas = {
+                title: layerConfig.title,
+                type: layerConfig.type,
+                abstract: null,
+                link: null,
+                isBaselayer: false
+            };
+            if(layerConfig.abstract &&  layerConfig.abstract)
+                metadatas.abstract = layerConfig.abstract;
+            if( layerConfig.link  )
+                metadatas.link = layerConfig.link
+        }
+        if( lizMap.map.baseLayer && lizMap.map.baseLayer.name == aName ){
+            metadatas.abstract = metadatas.title;
+            metadatas.type = 'layer';
+            metadatas.link = null;
+            metadatas.isBaselayer = true;
+        }
+
+        if( metadatas ){
             var layerConfig = lizMap.config.layers[aName];
 
             // Header
@@ -75,23 +99,39 @@ var lizLayerActionButtons = function() {
             // Metadata
             html+= '    <dl class="dl-vertical" style="font-size:0.8em;">';
             html+= '        <dt>'+lizDict['layer.metadata.layer.name']+'</dt>';
-            html+= '        <dd>'+layerConfig.title+'</dd>';
+            html+= '        <dd>'+metadatas.title+'</dd>';
             html+= '        <dt>'+lizDict['layer.metadata.layer.type']+'</dt>';
-            html+= '        <dd>'+lizDict['layer.metadata.layer.type.' + layerConfig.type]+'</dd>';
-            if( layerConfig.abstract &&  layerConfig.abstract){
+            html+= '        <dd>'+lizDict['layer.metadata.layer.type.' + metadatas.type]+'</dd>';
+            if( metadatas.abstract){
                 html+= '        <dt>'+lizDict['layer.metadata.layer.abstract']+'</dt>';
-                html+= '        <dd>'+layerConfig.abstract+'</dd>';
+                html+= '        <dd>'+metadatas.abstract+'</dd>';
             }
 
             // Tools
-            if( layerConfig.type == 'layer'){
+            if( metadatas.type == 'layer'){
                 // Zoom
                 html+= '        <dt>'+lizDict['layer.metadata.zoomToExtent.title']+'</dt>';
                 html+= '<dd><button class="btn btn-mini layerActionZoom" title="'+lizDict['layer.metadata.zoomToExtent.title']+'" value="'+aName+'"><i class="icon-zoom-in"></i></button></dd>';
 
                 // Opacity
                 html+= '        <dt>'+lizDict['layer.metadata.opacity.title']+'</dt>';
-                html+= '<dd><a href="#" class="btn btn-mini btn-opacity-layer">20</a><a href="#" class="btn btn-mini btn-opacity-layer">40</a><a href="#" class="btn btn-mini btn-opacity-layer">60</a><a href="#" class="btn btn-mini btn-opacity-layer">80</a><a href="#" class="btn btn-mini btn-opacity-layer">100</a></dd>';
+                html+= '<dd>';
+                isBaselayer = '';
+                if(metadatas.isBaselayer)
+                    isBaselayer = 'baselayer';
+                var currentOpacity = 1;
+                if( aName in opacityLayers ){
+                    currentOpacity = opacityLayers[aName];
+                }
+                html+= '<input type="hidden" class="opacityLayer '+isBaselayer+'" value="'+aName+'">';
+                var opacities = [0.2, 0.4, 0.6, 0.8, 1];
+                for ( var i=0, len=opacities.length; i<len; i++ ) {
+                    var oactive = '';
+                    if(currentOpacity == opacities[i])
+                        oactive = 'active';
+                    html+= '<a href="#" class="btn btn-mini btn-opacity-layer '+ oactive+' '+ opacities[i]*100+'">'+opacities[i]*100+'</a>';
+                }
+                html+= '</dd>';
             }
 
             html+= '    </dl>';
@@ -100,8 +140,8 @@ var lizLayerActionButtons = function() {
 
 
             // Link
-            if( layerConfig.link  ){
-                html+= '    <button class="btn link" name="link" title="'+lizDict['layer.metadata.layer.info.see']+'" value="'+layerConfig.link+'">'+lizDict['layer.metadata.layer.info.see']+'</button>';
+            if( metadatas.link  ){
+                html+= '    <button class="btn link" name="link" title="'+lizDict['layer.metadata.layer.info.see']+'" value="'+metadatas.link+'">'+lizDict['layer.metadata.layer.info.see']+'</button>';
             }
 
             // Style
@@ -182,7 +222,7 @@ var lizLayerActionButtons = function() {
         featureTypes = lizMap.getVectorLayerFeatureTypes();
 
         // title tooltip
-        $('#switcher-layers-actions .btn').tooltip( {
+        $('#switcher-layers-actions .btn, #get-baselayer-metadata').tooltip( {
             placement: 'bottom'
 
         } );
@@ -195,6 +235,27 @@ var lizLayerActionButtons = function() {
         });
         $('#layers-fold-all').click(function(){
             $('#switcher table.tree').collapseAll();
+            return false;
+        });
+
+
+
+        // Activate get-baselayer-metadata button
+        $('#get-baselayer-metadata').click(function(){
+
+            $('#hide-sub-dock').click();
+
+            if( !lizMap.map.baseLayer)
+                return false;
+            var layerName = lizMap.map.baseLayer.name;
+            if( !layerName )
+                return false;
+
+            lizMap.events.triggerEvent(
+                "lizmapswitcheritemselected",
+                { 'name': layerName, 'type': 'baselayer', 'selected': true}
+            );
+
             return false;
         });
 
@@ -236,18 +297,37 @@ var lizLayerActionButtons = function() {
 
         // Opacity
         $('#content').on('click', 'a.btn-opacity-layer', function(){
+
+            // Get chosen opacity
             var eVal = $(this).text();
-            var eName = $('button.layerActionOpacity').val();
+            var opacity = parseInt(eVal) / 100;
+
+            // Get layer name and type
+            var h = $(this).parent().find('input.opacityLayer');
+            var eName = h.val();
+            var isBaselayer = h.hasClass('baselayer');
             if( !eName )
                 return false;
 
-            var layer = lizMap.map.getLayersByName( lizMap.cleanName(eName) )[0];
-            if( layer && layer.params) {
-                var opacity = parseInt(eVal) / 100;
-                layer.setOpacity(opacity);
+            // Get layer
+            var layer = null;
+            if( isBaselayer){
+                layer = lizMap.map.baseLayer;
+            }else{
+                var layer = lizMap.map.getLayersByName( lizMap.cleanName(eName) )[0];
             }
 
-            $('#switcher').click(); // blur dropdown
+            // Set opactity
+            if( layer && layer.params) {
+                layer.setOpacity(opacity);
+                opacityLayers[eName] = opacity;
+                $('a.btn-opacity-layer').removeClass('active');
+                $('a.btn-opacity-layer.' + opacity*100).addClass('active');
+            }
+
+            // Blur dropdown or baselayer button
+            $('#switcher').click();
+
             // Close subdock and dock
             if( lizMap.checkMobile() ){
                 $('#hide-sub-dock').click();
@@ -308,15 +388,21 @@ var lizLayerActionButtons = function() {
         var itemName = '';
         var itemType = evt.type;
         var itemSelected = evt.selected;
+        var itemConfig = {};
 
         // Get item Lizmap config
-        var layerName = lizMap.getLayerNameByCleanName( lizMap.cleanName(evt.name) );
-        if( layerName ){
-            itemName = layerName;
-            itemConfig = lizMap.config.layers[layerName];
-        }
-        else{
-            return false;
+        if( itemType == 'baselayer'){
+            itemName = evt.name;
+        }else{
+            var layerName = lizMap.getLayerNameByCleanName( lizMap.cleanName(evt.name) );
+            if( layerName ){
+                itemName = layerName;
+                itemConfig = lizMap.config.layers[layerName];
+            }
+            else{
+                return false;
+            }
+
         }
 
         // Change action buttons values
@@ -328,7 +414,7 @@ var lizLayerActionButtons = function() {
         // Toggle buttons depending on itemType
 
         // Zoom to layer
-        var zoomStatus = (itemType == 'group' || !itemSelected || !('extent' in itemConfig) )
+        var zoomStatus = (itemType == 'group' || !itemSelected || !('extent' in itemConfig) );
         $('button.layerActionZoom').attr( 'disable', zoomStatus ).toggleClass( 'disabled', zoomStatus );
 
         // Opacity
@@ -382,6 +468,6 @@ var lizLayerActionButtons = function() {
     }
 
     });
-        console.log($('#layers-unfold-all').length);
+        //console.log($('#layers-unfold-all').length);
 
 }();
