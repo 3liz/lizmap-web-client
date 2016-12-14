@@ -194,6 +194,22 @@ class editionCtrl extends jController {
       return false;
     }
 
+    // Check if user groups intersects groups allowed by project editor
+    // If user is admin, no need to check for given groups
+    if( jAuth::isConnected() and !jAcl2::check('lizmap.admin.repositories.delete') and property_exists($eLayer, 'acl') ){
+        // Check if configured groups white list and authenticated user groups list intersects
+        $editionGroups = $eLayer->acl;
+        $editionGroups = array_map('trim', explode(',', $editionGroups));
+        if( is_array($editionGroups) and count($editionGroups)>0 ){
+            $userGroups = jAcl2DbUserGroup::getGroups();
+            if( !array_intersect($editionGroups, $userGroups) ){
+              jMessage::add(jLocale::get('view~edition.access.denied'), 'AuthorizationRequired');
+              return false;
+            }
+        }
+    }
+
+
     // feature Id (optional, only for edition and save)
     if(preg_match('#,#', $featureIdParam))
       $featureId = preg_split('#,#', $featureIdParam);

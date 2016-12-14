@@ -644,8 +644,28 @@ class lizmapProject{
                 return false;
 
             $count = 0;
-            foreach( $this->cfg->editionLayers as $key=>$obj ){
-                $count += 1;
+            foreach( $this->cfg->editionLayers as $key=>$eLayer ){
+                // Check if user groups intersects groups allowed by project editor
+                // If user is admin, no need to check for given groups
+                if( property_exists($eLayer, 'acl') ){
+                    // Check if configured groups white list and authenticated user groups list intersects
+                    $editionGroups = $eLayer->acl;
+                    $editionGroups = array_map('trim', explode(',', $editionGroups));
+                    if( is_array($editionGroups) and count($editionGroups)>0 ){
+                        $userGroups = jAcl2DbUserGroup::getGroups();
+                        if( array_intersect($editionGroups, $userGroups) or jAcl2::check('lizmap.admin.repositories.delete')){
+                            // User group(s) correspond to the groups given for this edition layer
+                            // or user is admin
+                            $count += 1;
+                            unset($this->cfg->editionLayers->$key->acl);
+                        }else{
+                            // No match found, we deactivate the edition layer
+                            unset($this->cfg->editionLayers->$key);
+                        }
+                    }
+                }else{
+                    $count += 1;
+                }
             }
             if ( $count != 0 )
                 return true;
@@ -999,7 +1019,9 @@ class lizmapProject{
                         unset($editionLayers->$key);
                 }
             }
+
         }
+
         return $editionLayers;
     }
 
@@ -1039,10 +1061,33 @@ class lizmapProject{
         if ( property_exists( $configJson, 'editionLayers' ) ) {
             if( jAcl2::check('lizmap.tools.edition.use', $this->repository->getKey()) ){
                 $configJson->editionLayers = $this->editionLayers;
+                // Check right to edit this layer (if property "acl" is in config)
+                foreach( $configJson->editionLayers as $key=>$eLayer ){
+                    // Check if user groups intersects groups allowed by project editor
+                    // If user is admin, no need to check for given groups
+                    if( property_exists($eLayer, 'acl') ){
+                        // Check if configured groups white list and authenticated user groups list intersects
+                        $editionGroups = $eLayer->acl;
+                        $editionGroups = array_map('trim', explode(',', $editionGroups));
+                        if( is_array($editionGroups) and count($editionGroups)>0 ){
+                            $userGroups = jAcl2DbUserGroup::getGroups();
+                            if( array_intersect($editionGroups, $userGroups) or jAcl2::check('lizmap.admin.repositories.delete')){
+                                // User group(s) correspond to the groups given for this edition layer
+                                // or the user is admin
+                                unset($configJson->editionLayers->$key->acl);
+                            }else{
+                                // No match found, we deactivate the edition layer
+                                unset($configJson->editionLayers->$key);
+                            }
+                        }
+                    }
+                }
+
             } else {
                 unset($configJson->editionLayers);
             }
         }
+
 
         // Add export layer right
         if( jAcl2::check('lizmap.tools.layer.export', $this->repository->getKey()) ){
@@ -1476,6 +1521,11 @@ class lizmapProject{
         // Check user is authenticated
         if(!jAuth::isConnected()){
             return False;
+        }
+
+        // Check user is admin -> ok, give permission
+        if( jAcl2::check('lizmap.admin.repositories.delete') ){
+            return True;
         }
 
         // Check if configured groups white list and authenticated user groups list intersects
