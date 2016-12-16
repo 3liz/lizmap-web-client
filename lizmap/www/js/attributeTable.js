@@ -1439,20 +1439,27 @@ var lizAttributeTable = function() {
                 $.get( getFeatureUrlData['url'], getFeatureUrlData['options'], function(data) {
                     if( !('featureCrs' in aConfig) )
                         aConfig['featureCrs'] = null;
-                    if( aConfig.crs == 'EPSG:4326' );
+                    if( aConfig.crs == 'EPSG:4326' )
                         aConfig['featureCrs'] = 'EPSG:4326';
+
                     // verifying the feature CRS
                     if( !aConfig.featureCrs && data.features.length != 0) {
-                        lizMap.loadProjDefinition( aConfig.featureCrs, function( aProj ) {
+                        lizMap.loadProjDefinition( aConfig.crs, function( aProj ) {
                             var dataBounds = OpenLayers.Bounds.fromArray(data.features[0].bbox);
-                            if( dataBounds.getWidth()*dataBounds.getHeight() < 360*180 ) {
-                                var tDataBounds = dataBounds.clone().transform(aProj, 'EPSG:4326');
-                                if ( tDataBounds.getWidth()*tDataBounds.getHeight() < 0.0000028649946082102277 ) {
-                                    if( atConfig ){
-                                        var atBounds = OpenLayers.Bounds.fromArray(atConfig.bbox);
-                                        atConfig.bbox = atBounds.transform(aConfig['featureCrs'], 'EPSG:4326').toArray();
+
+                            var worldBounds = OpenLayers.Bounds.fromArray([-180,-90,180,90]);
+                            if( worldBounds.containsBounds( dataBounds ) ) {
+                                var map = lizMap.map;
+                                var mapBounds = map.maxExtent.clone().transform(map.getProjection(), 'EPSG:4326');
+                                if( mapBounds.intersectsBounds( dataBounds ) ) {
+                                    var tDataBounds = dataBounds.clone().transform(aProj, 'EPSG:4326');
+                                    if ( tDataBounds.getWidth()*tDataBounds.getHeight() < 0.0000028649946082102277 ) {
+                                        if( atConfig ){
+                                            var atBounds = OpenLayers.Bounds.fromArray(atConfig.bbox);
+                                            atConfig.bbox = atBounds.transform(aConfig['featureCrs'], 'EPSG:4326').toArray();
+                                        }
+                                        aConfig['featureCrs'] = 'EPSG:4326';
                                     }
-                                    aConfig['featureCrs'] = 'EPSG:4326';
                                 }
                             }
 

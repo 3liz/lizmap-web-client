@@ -1492,12 +1492,16 @@ var lizMap = function() {
               var olFeat = geojson.read(feat);
               var dataBounds = olFeat[0].geometry.getBounds();
 
-              if( dataBounds.getWidth()*dataBounds.getHeight() < 360*180 ) {
-                var tDataBounds = dataBounds.clone().transform(locate.crs, 'EPSG:4326');
-                if ( tDataBounds.getWidth()*tDataBounds.getHeight() < 0.0000028649946082102277 ) {
-                    locate.bbox = locateBounds.transform(locate.crs, 'EPSG:4326').toArray();
-                    locate.crs = 'EPSG:4326';
-                }
+              var worldBounds = OpenLayers.Bounds.fromArray([-180,-90,180,90]);
+              if( worldBounds.containsBounds( dataBounds ) ) {
+                  var mapBounds = map.maxExtent.clone().transform(map.getProjection(), 'EPSG:4326');
+                  if( mapBounds.intersectsBounds( dataBounds ) ) {
+                    var tDataBounds = dataBounds.clone().transform(locate.crs, 'EPSG:4326');
+                    if ( tDataBounds.getWidth()*tDataBounds.getHeight() < 0.0000028649946082102277 ) {
+                        locate.bbox = locateBounds.transform(locate.crs, 'EPSG:4326').toArray();
+                        locate.crs = 'EPSG:4326';
+                    }
+                  }
               }
           });
       }
