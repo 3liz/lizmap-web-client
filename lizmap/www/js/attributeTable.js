@@ -3249,9 +3249,28 @@ var lizAttributeTable = function() {
                         internalProjection: lizMap.map.getProjection()
                     });
                     var tfeatures = gFormat.read( result );
-                    config.layers[featureType]['selectedFeatures'] = $.map(tfeatures, function(feat){
+                    var sfIds = $.map(tfeatures, function(feat){
                         return feat.fid.split('.')[1];
                     });
+                    var stType = $('#selectiontool-type-buttons button.btn.active').val();
+                    if( stType == 'plus' ) {
+                        sfIds = config.layers[featureType]['selectedFeatures'].concat(sfIds);
+                        for(var i=0; i<sfIds.length; ++i) {
+                            for(var j=i+1; j<sfIds.length; ++j) {
+                                if(sfIds[i] === sfIds[j])
+                                    sfIds.splice(j--, 1);
+                            }
+                        }
+                    } else if( stType == 'minus' ) {
+                        var asfIds = config.layers[featureType]['selectedFeatures'].concat([]);
+                        for(var i=0; i<sfIds.length; ++i) {
+                            var asfIdIdx = asfIds.indexOf( sfIds[i] );
+                            if( asfIdIdx != -1 )
+                                asfIds.splice(asfIdIdx, 1);
+                        }
+                        sfIds = asfIds;
+                    }
+                    config.layers[featureType]['selectedFeatures'] = sfIds;
                     lizMap.events.triggerEvent(
                         "layerSelectionChanged",
                         {
@@ -3261,6 +3280,7 @@ var lizAttributeTable = function() {
                         }
                     );
                     queryLayer.destroyFeatures();
+                    $('#selectiontool-query-deactivate').click();
             });
         });
     }

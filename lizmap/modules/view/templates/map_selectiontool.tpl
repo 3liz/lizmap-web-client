@@ -46,6 +46,17 @@
       <tr>
         <td>
             <div id="selectiontool-actions">
+                <div id="selectiontool-type-buttons" class="btn-group" data-toggle="buttons-radio">
+                    <button id="selectiontool-type-refresh" class="btn btn-mini active" title="" data-original-title="{@view~map.selectiontool.toolbar.action.type.refresh@}" value="refresh">
+                        <i class="icon-refresh"></i>
+                    </button>
+                    <button id="selectiontool-type-plus" class="btn btn-mini" title="" data-original-title="{@view~map.selectiontool.toolbar.action.type.plus@}" value="plus">
+                        <i class="icon-plus"></i>
+                    </button>
+                    <button id="selectiontool-type-minus" class="btn btn-mini" title="" data-original-title="{@view~map.selectiontool.toolbar.action.type.minus@}" value="minus">
+                        <i class="icon-minus"></i>
+                    </button>
+                </div>
                 <button id="selectiontool-unselect" class="btn btn-mini disabled" title="" data-original-title="{@view~map.selectiontool.toolbar.action.unselect@}">
                     <i class="icon-star-empty"></i>
                 </button>
