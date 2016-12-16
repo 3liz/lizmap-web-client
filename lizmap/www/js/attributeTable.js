@@ -3239,6 +3239,10 @@ var lizAttributeTable = function() {
             //console.log( spatialFilter );
 
             var getFeatureUrlData = lizMap.getVectorLayerWfsUrl( featureType, spatialFilter, null, null );
+            // add BBox to restrict to geom bbox
+            var geomBounds = feature.geometry.clone().transform(lizMap.map.getProjection(),aProj).getBounds();
+            getFeatureUrlData['options']['BBOX'] = geomBounds.toBBOX();
+            // get features
             $.post( getFeatureUrlData['url'], getFeatureUrlData['options'], function(result) {
                     var gFormat = new OpenLayers.Format.GeoJSON({
                         externalProjection: lConfig.crs,
