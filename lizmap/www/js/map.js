@@ -784,7 +784,7 @@ var lizMap = function() {
       var serviceUrl = service
       var layer = nested.nestedLayers[i];
       var qgisLayerName = layer.name;
-      if ( 'useLayerIDs' in config.options && config.options.useLayerIDs == 'True' )
+      if ( ('useLayerIDs' in config.options) && config.options.useLayerIDs == 'True' )
         qgisLayerName = layerIdMap[layer.name];
       else if ( layer.name in shortNameMap )
         qgisLayerName = shortNameMap[layer.name];
@@ -1848,7 +1848,7 @@ var lizMap = function() {
       // Add only layers with geometry
       var qgisName = null;
       if ( l.name in cleanNameMap )
-          qgisName = cleanNameMap[l.name];
+          qgisName = getLayerNameByCleanName(l.name);
       var aConfig = null;
       if ( qgisName )
           aConfig = config.layers[qgisName];
@@ -2295,7 +2295,7 @@ var lizMap = function() {
       // Add only layers with geometry
       var qgisName = null;
       if ( l.name in cleanNameMap )
-          qgisName = cleanNameMap[l.name];
+          qgisName = getLayerNameByCleanName(l.name);
       var aConfig = null;
       if ( qgisName )
           aConfig = config.layers[qgisName];
