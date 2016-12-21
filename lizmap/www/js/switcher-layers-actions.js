@@ -186,8 +186,46 @@ var lizLayerActionButtons = function() {
         if( !bindClick )
             return false;
 
+        $('#layerActionStyle').click(function() {
+            var self = $(this);
+            var eName = self.val();
+            if( !eName )
+                return false;
+
+            var cleanName = lizMap.cleanName(eName);
+            var getLayer = lizMap.map.getLayersByName( cleanName );
+            if( !getLayer )
+                return false;
+
+            var oLayer = getLayer[0];
+            if( oLayer && 'STYLES' in oLayer.params){
+                var selectedStyle = oLayer.params['STYLES'];
+                var selectedLi = $('#switcher ul.list-style-layer li.selected');
+                var dataStyle = '';
+                if( selectedLi.length > 0 )
+                    dataStyle = selectedLi.attr('data-style');
+                if ( selectedStyle != dataStyle ) {
+                    selectedLi.removeClass('selected').find('i').remove();
+                    $('#switcher ul.list-style-layer li[data-style="'+selectedStyle+'"]').addClass('selected').find('a').prepend('<i class="icon-check"></i> ');
+                }
+            }
+
+            var scrollInterval = window.setInterval( function(){
+                if ( $('#switcher ul.list-style-layer li.selected').length > 0 )
+                    $('#switcher ul.list-style-layer li').each(function(i,e){
+                        if($(e).hasClass('selected')) {
+                            $('#switcher ul.list-style-layer').scrollTop(i*$(e).height());
+                            window.clearInterval(scrollInterval);
+                        }
+                    });
+                else
+                    window.clearInterval(scrollInterval);
+            }, 100);
+        });
+
         $('#switcher-layers-actions a.btn-style-layer').click(function(){
-            var eStyle = $(this).text();
+            var self = $(this);
+            var eStyle = self.text();
 
             var eName = $('button.layerActionStyle').val();
             if( !eName )
@@ -198,10 +236,12 @@ var lizLayerActionButtons = function() {
             if( !getLayer )
                 return false;
 
-            var oLayer = lizMap.map.getLayersByName( cleanName )[0];
+            var oLayer = getLayer[0];
             if( oLayer && eStyle != ''){
                 oLayer.params['STYLES'] = eStyle;
                 oLayer.redraw( true );
+                self.parent().parent().find('li.selected').removeClass('selected').find('i').remove();
+                self.parent().addClass('selected').find('a').prepend('<i class="icon-check"></i> ');
 
                 lizMap.events.triggerEvent(
                     "layerstylechanged",
@@ -453,11 +493,23 @@ var lizLayerActionButtons = function() {
             && 'styles' in itemConfig
         ){
             showStyles = true;
+            var selectedStyle = '';
+            var oLayer = lizMap.map.getLayersByName( evt.name )[0];
+            if( oLayer && 'STYLES' in oLayer.params) {
+                selectedStyle = oLayer.params['STYLES'];
+            }
             for( var st in itemConfig.styles ){
-                styleHtml += '<li><a href="#" class="btn-style-layer">'+itemConfig.styles[st]+'</a></li>';
+                styleHtml += '<li data-style="'+itemConfig.styles[st]+'"';
+                if( itemConfig.styles[st] == selectedStyle ) styleHtml += ' class="selected"';
+                styleHtml += '>';
+                styleHtml += '<a href="#" class="btn-style-layer">';
+                if( itemConfig.styles[st] == selectedStyle ) styleHtml += '<i class="icon-check"></i> ';
+                styleHtml += itemConfig.styles[st];
+                '</a>';
+                styleHtml += '</li>';
             }
         }
-        $('button.layerActionStyle').next('ul:first').html( styleHtml );
+        $('button.layerActionStyle').next('ul:first').addClass('list-style-layer').html( styleHtml );
         onStyleSelection(showStyles);
         $('button.layerActionStyle').attr( 'disable', !showStyles ).toggleClass( 'disabled', !showStyles );
 
