@@ -747,9 +747,25 @@ class editionCtrl extends jController {
   * @return Boolean True if filled form
   */
   public function setFormDataFromDefault( $form ) {
+
+      // Get database connection object
+      $cnx = jDb::getConnection($this->layerId);
+
       foreach ( $this->dataFields as $ref=>$prop ) {
-          if ( $prop->hasDefault )
-              $form->setData( $ref, $prop->default );
+          if ( $prop->hasDefault ){
+              $ctrl = $form->getControl( $ref );
+              // only set default value for non hidden field
+              if( $ctrl->type != 'hidden' ) {
+                  $form->setData( $ref, $prop->default );
+                  // if provider is postgres evaluate default value
+                  if( $this->provider == 'postgres' && $prop->default != '' ){
+                      $ds = $cnx->query ('SELECT '.$prop->default.' AS v;');
+                      $d = $ds->fetch();
+                      if( $d )
+                          $form->setData( $ref, $d->v );
+                  }
+              }
+          }
       }
       return true;
   }
