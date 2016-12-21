@@ -1030,8 +1030,12 @@ var lizMap = function() {
 
     html += '">';
 
+    function truncateWithEllipsis(str,n){
+          return (str.length > n) ? str.substr(0,n-1)+'&hellip;' : str;
+    };
+
     html += '<td><button class="btn checkbox" name="'+nodeConfig.type+'" value="'+aNode.name+'" title="'+lizDict['tree.button.checkbox']+'"></button>';
-    html += '<span class="label" title="'+nodeConfig.abstract+'">'+nodeConfig.title+'</span>';
+    html += '<span class="label" title="'+truncateWithEllipsis($('<div>'+nodeConfig.abstract+'</div>').text(),50)+'">'+nodeConfig.title+'</span>';
     html += '</td>';
 
     html += '<td>';
