@@ -307,7 +307,12 @@ var lizMap = function() {
 
     // Set the switcher content a max-height
     $('#switcher-layers-container').css( 'height', 'auto' );
-    var mh = $('#dock').height() - 2*$('#dock-tabs').height() - $('#switcher-layers-container h3').height() - $('#switcher-layers-actions').height() - $('#switcher-baselayer').height() ;
+    //var mh = $('#dock').height() - 2*$('#dock-tabs').height() - $('#switcher-layers-container h3').height() - $('#switcher-layers-actions').height() - $('#switcher-baselayer').height() ;
+    var mh = $('#dock').height() - ($('#dock-tabs').height()+1) - $('#switcher-layers-container h3').height() - ($('#switcher-layers-actions').height()+1);
+    mh -= parseInt($('#switcher-layers-container .menu-content').css( 'padding-top' ));
+    mh -= parseInt($('#switcher-layers-container .menu-content').css( 'padding-bottom' ));
+    if ( $('#switcher-baselayer').is(':visible') )
+        mh -= $('#switcher-baselayer').height();
     $('#switcher-layers-container .menu-content').css( 'max-height', mh ).css('overflow-x', 'hidden').css('overflow-y', 'auto');
 
     // Set the other tab-content max-height
@@ -779,7 +784,7 @@ var lizMap = function() {
       var serviceUrl = service
       var layer = nested.nestedLayers[i];
       var qgisLayerName = layer.name;
-      if ( 'useLayerIDs' in config.options && config.options.useLayerIDs == 'True' )
+      if ( ('useLayerIDs' in config.options) && config.options.useLayerIDs == 'True' )
         qgisLayerName = layerIdMap[layer.name];
       else if ( layer.name in shortNameMap )
         qgisLayerName = shortNameMap[layer.name];
@@ -1029,8 +1034,12 @@ var lizMap = function() {
 
     html += '">';
 
+    function truncateWithEllipsis(str,n){
+          return (str.length > n) ? str.substr(0,n-1)+'&hellip;' : str;
+    };
+
     html += '<td><button class="btn checkbox" name="'+nodeConfig.type+'" value="'+aNode.name+'" title="'+lizDict['tree.button.checkbox']+'"></button>';
-    html += '<span class="label" title="'+nodeConfig.abstract+'">'+nodeConfig.title+'</span>';
+    html += '<span class="label" title="'+truncateWithEllipsis($('<div>'+nodeConfig.abstract+'</div>').text(),50)+'">'+nodeConfig.title+'</span>';
     html += '</td>';
 
     html += '<td>';
@@ -1491,12 +1500,16 @@ var lizMap = function() {
               var olFeat = geojson.read(feat);
               var dataBounds = olFeat[0].geometry.getBounds();
 
-              if( dataBounds.getWidth()*dataBounds.getHeight() < 360*180 ) {
-                var tDataBounds = dataBounds.clone().transform(locate.crs, 'EPSG:4326');
-                if ( tDataBounds.getWidth()*tDataBounds.getHeight() < 0.0000028649946082102277 ) {
-                    locate.bbox = locateBounds.transform(locate.crs, 'EPSG:4326').toArray();
-                    locate.crs = 'EPSG:4326';
-                }
+              var worldBounds = OpenLayers.Bounds.fromArray([-180,-90,180,90]);
+              if( worldBounds.containsBounds( dataBounds ) ) {
+                  var mapBounds = map.maxExtent.clone().transform(map.getProjection(), 'EPSG:4326');
+                  if( mapBounds.intersectsBounds( dataBounds ) ) {
+                    var tDataBounds = dataBounds.clone().transform(locate.crs, 'EPSG:4326');
+                    if ( tDataBounds.getWidth()*tDataBounds.getHeight() < 0.0000028649946082102277 ) {
+                        locate.bbox = locateBounds.transform(locate.crs, 'EPSG:4326').toArray();
+                        locate.crs = 'EPSG:4326';
+                    }
+                  }
               }
           });
       }
@@ -1843,7 +1856,7 @@ var lizMap = function() {
       // Add only layers with geometry
       var qgisName = null;
       if ( l.name in cleanNameMap )
-          qgisName = cleanNameMap[l.name];
+          qgisName = getLayerNameByCleanName(l.name);
       var aConfig = null;
       if ( qgisName )
           aConfig = config.layers[qgisName];
@@ -2365,7 +2378,7 @@ var lizMap = function() {
       // Add only layers with geometry
       var qgisName = null;
       if ( l.name in cleanNameMap )
-          qgisName = cleanNameMap[l.name];
+          qgisName = getLayerNameByCleanName(l.name);
       var aConfig = null;
       if ( qgisName )
           aConfig = config.layers[qgisName];
