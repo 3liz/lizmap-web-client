@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<form xmlns="http://jelix.org/ns/forms/1.1">
+
+<upload ref="headerLogo" mimetype="image/jpeg;image/pjpeg;image/png;image/gif" maxsize="200000">
+  <label locale="admin.form.admin_theme.headerLogo.label"/>
+  <help locale="admin.form.admin_theme.headerLogo.help"/>
+</upload>
+
+<input ref="headerLogoWidth" type="integer" defaultvalue="">
+  <label locale="admin.form.admin_theme.headerLogoWidth.label"/>
+  <help locale="admin.form.admin_theme.headerLogoWidth.help"/>
+</input>
+
+<input ref="headerBackgroundColor" type="string" defaultvalue="">
+  <label locale="admin.form.admin_theme.headerBackgroundColor.label"/>
+  <help locale="admin.form.admin_theme.headerBackgroundColor.help"/>
+</input>
+
+<input ref="headerTitleColor" type="string" defaultvalue="">
+  <label locale="admin.form.admin_theme.headerTitleColor.label"/>
+  <help locale="admin.form.admin_theme.headerTitleColor.help"/>
+</input>
+
+<input ref="headerSubtitleColor" type="string" defaultvalue="">
+  <label locale="admin.form.admin_theme.headerSubtitleColor.label"/>
+  <help locale="admin.form.admin_theme.headerSubtitleColor.help"/>
+</input>
+
+<input ref="menuBackgroundColor" type="string" defaultvalue="">
+  <label locale="admin.form.admin_theme.menuBackgroundColor.label"/>
+  <help locale="admin.form.admin_theme.menuBackgroundColor.help"/>
+</input>
+
+<input ref="dockBackgroundColor" type="string" defaultvalue="">
+  <label locale="admin.form.admin_theme.dockBackgroundColor.label"/>
+  <help locale="admin.form.admin_theme.dockBackgroundColor.help"/>
+</input>
+
+<input ref="navbarColor" type="string" defaultvalue="">
+  <label locale="admin.form.admin_theme.navbarColor.label"/>
+  <help locale="admin.form.admin_theme.navbarColor.help"/>
+</input>
+
+<submit ref="_submit">
+    <label locale="admin.form.admin_services.submit.label"/>
+</submit>
+</form>

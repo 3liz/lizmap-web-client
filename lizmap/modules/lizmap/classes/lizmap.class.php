@@ -40,6 +40,13 @@ class lizmap{
     }
 
     /**
+     *
+     */
+    public static function getTheme (){
+      return jClasses::getService('lizmap~lizmapTheme');
+    }
+
+    /**
      * Get a list of repository names.
      *
      */

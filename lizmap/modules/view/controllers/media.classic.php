@@ -348,5 +348,34 @@ class mediaCtrl extends jController {
   }
 
 
+  /**
+  * Get logo defined in lizmap admin theme configuration
+  *
+  * @return Admin configured theme logo
+  */
+  function logo() {
+
+    $rep = $this->getResponse('binary');
+    $rep->doDownload = false;
+
+    $theme = lizmap::getTheme();
+    $logoPath = jApp::varPath('lizmap-theme-config/') . $theme->headerLogo;
+
+    if( is_file($logoPath) ){
+        $mime = jFile::getMimeType($logoPath);
+        if( $mime == 'text/plain' || $mime == '') {
+            $mime = jFile::getMimeTypeFromFilename($logoPath);
+        }
+        $rep->mimeType = $mime;
+        $rep->fileName = $logoPath;
+    }else{
+        //return $this->error404('The logo file  does not exist !');
+        $rep->fileName = realpath(jApp::wwwPath('/themes/default/css/img/logo.png'));
+        $rep->mimeType = 'image/png';
+        $rep->outputFileName = 'logo.png';
+    }
+    return $rep;
+  }
+
 
 }

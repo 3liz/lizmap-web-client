@@ -119,6 +119,14 @@ class defaultCtrl extends jController {
     $bp = jApp::config()->urlengine['basePath'];
     $rep->addJSLink($bp.'js/view.js');
 
+    // Override default theme with color set in admin panel
+    if($cssContent = jFile::read(jApp::varPath('lizmap-theme-config/') . 'theme.css') ){
+      $css = '<style type="text/css">' . $cssContent . '</style>
+      ';
+      $rep->addHeadContent($css);
+    }
+
+
     return $rep;
   }
 
