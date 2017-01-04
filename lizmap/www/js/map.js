@@ -1780,7 +1780,10 @@ var lizMap = function() {
       var baselayer = baselayers[i]
       baselayer.units = projection.proj.units;
       map.addLayer(baselayer);
-      var blConfig = config.layers[baselayer.name];
+      var qgisName = null;
+      if ( baselayer.name in cleanNameMap )
+          qgisName = getLayerNameByCleanName(baselayer.name);
+      var blConfig = config.layers[qgisName];
       if (blConfig)
         select += '<option value="'+blConfig.name+'">'+blConfig.title+'</option>';
       else
@@ -2222,9 +2225,12 @@ var lizMap = function() {
       var baselayer = baselayers[i]
       baselayer.units = projection.proj.units;
       map.addLayer(baselayer);
-      var blConfig = config.layers[baselayer.name];
+      var qgisName = null;
+      if ( baselayer.name in cleanNameMap )
+          qgisName = getLayerNameByCleanName(baselayer.name);
+      var blConfig = config.layers[qgisName];
       if (blConfig)
-        select += '<option value="'+blConfig.name+'">'+blConfig.title+'</option>';
+        select += '<option value="'+baselayer.name+'">'+blConfig.title+'</option>';
       else
         select += '<option value="'+baselayer.name+'">'+baselayer.name+'</option>';
       /*
