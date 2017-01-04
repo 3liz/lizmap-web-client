@@ -20,7 +20,7 @@ class userCtrl extends jController {
 
     $rep = $this->getResponse('redirect');
     $rep->action = 'view~default:index';
-    
+
     // Get lizmap services
     $services = lizmap::getServices();
     // Redirect if not active
@@ -35,7 +35,7 @@ class userCtrl extends jController {
 
     // Create the form
     $form = jForms::create('view~lizmap_user');
-    
+
     // redirect to the form display action
     $rep= $this->getResponse("redirect");
     $rep->action="view~user:editAccount";
@@ -52,9 +52,9 @@ class userCtrl extends jController {
 
     // Get lizmap services
     $services = lizmap::getServices();
-    
+
     $rep = $this->getResponse('redirect');
-    $rep->action = 'view~default:index';    
+    $rep->action = 'view~default:index';
     // Redirect if not active
     if( !$services->allowUserAccountRequests ){
       return $rep;
@@ -65,16 +65,23 @@ class userCtrl extends jController {
       return $rep;
     }
 
-    // Prepare html response
-    $rep = $this->getResponse('html');
-    $rep->title = 'Lizmap';
     if ($this->param('theme')) {
       jApp::config()->theme = $this->param('theme');
     }
 
+    // Prepare html response
+    $rep = $this->getResponse('html');
+
+    // Get lizmap services
+    $services = lizmap::getServices();
+    $title = jLocale::get("view~user.title").' - '.$services->appName;
+
+    $rep->title = $title;
+    $rep->body->assign('repositoryLabel', $title);
+
     // Get the form
     $form = jForms::get('view~lizmap_user');
-    
+
     if ($form) {
       // Display form
       $tpl = new jTpl();
@@ -85,16 +92,15 @@ class userCtrl extends jController {
       $rep =  $this->getResponse('redirect');
       $rep->action ='view~user:createAccount';
       return $rep;
-    }    
+    }
     $rep->body->assign('isConnected', jAuth::isConnected());
     $rep->body->assign('user', jAuth::getUserSession());
-    $rep->body->assign('repositoryLabel', "LizMap");
- 
-    
+
+
     return $rep;
-    
+
   }
-  
+
 
   /**
   * Save the data for the services section.
@@ -104,10 +110,10 @@ class userCtrl extends jController {
 
     // Get lizmap services
     $services = lizmap::getServices();
-    
+
     $rep = $this->getResponse('redirect');
     $rep->action = 'view~default:index';
-      
+
     // Redirect if option not active
     if( !$services->allowUserAccountRequests ){
       return $rep;
@@ -118,7 +124,7 @@ class userCtrl extends jController {
       return $rep;
     }
 
-    // Get the form   
+    // Get the form
     $form = jForms::get('view~lizmap_user');
 
     // token
@@ -142,7 +148,7 @@ class userCtrl extends jController {
     if (!$form->check()) {
       $ok = false;
     }
-    
+
     // Check the honey pot. Redirect if filled (means robot)
     $honey = $form->getData('name');
     if($honey and !empty($honey)){
@@ -163,7 +169,7 @@ class userCtrl extends jController {
       $sanitize = array('login', 'firstname', 'lastname', 'organization', 'phonenumber', 'street', 'postcode', 'city', 'country', 'comment');
       foreach( $sanitize as $field ){
         $form->setData(
-          $field, 
+          $field,
           filter_var($form->getData($field), FILTER_SANITIZE_STRING, FILTER_FLAG_NO_ENCODE_QUOTES)
         );
       }
@@ -197,23 +203,23 @@ class userCtrl extends jController {
     }
     return $rep;
   }
-  
+
   /**
   * Send an email to the administrator
-  * 
+  *
   * @param objet $user jAuth user for the created user
   */
   private function sendEmailToAdmin($user){
-  
+
     $services = lizmap::getServices();
-    
+
     if( $email = filter_var($services->adminContactEmail, FILTER_VALIDATE_EMAIL) ){
       $mail = new jMailer();
       $mail->Subject = jLocale::get("view~user.email.admin.subject");
       $mail->Body = jLocale::get("view~user.email.admin.body", array($user->login, $user->email));
       $mail->AddAddress( $email, 'Lizmap Notifications');
-      $mail->Send(); 
-    }  
+      $mail->Send();
+    }
   }
 
 
@@ -227,7 +233,7 @@ class userCtrl extends jController {
     if($form = jForms::get('view~lizmap_user')){
       jForms::destroy('view~lizmap_user');
     }
-    
+
     // Redirect to the index
     $rep= $this->getResponse("redirect");
     $rep->action="view~default:index";
