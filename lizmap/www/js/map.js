@@ -455,11 +455,12 @@ var lizMap = function() {
       && 'externalAccess' in layerConfig && layerConfig.externalAccess
       && 'layers' in layerConfig.externalAccess && 'url' in layerConfig.externalAccess) {
         var externalAccess = layerConfig.externalAccess;
+        console.log(externalAccess);
         var legendParams = {SERVICE: "WMS",
                       VERSION: "1.3.0",
                       REQUEST: "GetLegendGraphic",
                       LAYER: externalAccess.layers,
-                      LAYERS: externalAccess.layers,
+                      STYLE: externalAccess.styles,
                       SLD_VERSION: "1.1.0",
                       EXCEPTIONS: "application/vnd.ogc.se_inimage",
                       FORMAT: "image/png",
@@ -475,8 +476,8 @@ var lizMap = function() {
     var legendParams = {SERVICE: "WMS",
                   VERSION: "1.3.0",
                   REQUEST: "GetLegendGraphic",
-                  LAYERS: layer.params['LAYERS'],
-                  STYLES: layer.params['STYLES'],
+                  LAYER: layer.params['LAYERS'],
+                  STYLE: layer.params['STYLES'],
                   EXCEPTIONS: "application/vnd.ogc.se_inimage",
                   FORMAT: "image/png",
                   TRANSPARENT: "TRUE",
