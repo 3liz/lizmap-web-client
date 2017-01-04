@@ -3,8 +3,8 @@
 * @package    jelix
 * @subpackage core
 * @author     Laurent Jouanneau
-* @contributor Yannick Le Guédart
-* @copyright  2005-2013 Laurent Jouanneau, 2010 Yannick Le Guédart
+* @contributor Yannick Le Guédart, Julien Issler
+* @copyright  2005-2013 Laurent Jouanneau, 2010 Yannick Le Guédart, 2016 Julien Issler
 * @link        http://www.jelix.org
 * @licence    GNU Lesser General Public Licence see LICENCE file or http://www.gnu.org/licenses/lgpl.html
 */
@@ -386,48 +386,51 @@ abstract class jRequest {
    }
 
    /**
-    * call it when you want to read the content of the body of a request
-    * when the method is not GET or POST
-    * @return mixed    array of parameters or a single string when the content-type is unknown
-    * @since 1.2
-    */
-   public function readHttpBody() {
-      $input = file_get_contents("php://input");
-      $values = array();
+     * call it when you want to read the content of the body of a request
+     * when the method is not GET or POST
+     * @return mixed    array of parameters or a single string when the content-type is unknown
+     * @since 1.2
+     */
+    public function readHttpBody() {
+        $input = file_get_contents('php://input');
 
-      if (!isset($_SERVER["CONTENT_TYPE"])) {
-        return $input;
-      }
-      if (strpos($_SERVER["CONTENT_TYPE"], "application/x-www-form-urlencoded") === 0) {
-         parse_str($input, $values);
-         return $values;
-      }
-      else if (strpos($_SERVER["CONTENT_TYPE"], "multipart/form-data") === 0) {
-
-         if (!preg_match("/boundary=([a-zA-Z0-9]+)/", $_SERVER["CONTENT_TYPE"], $m))
+        if (!isset($_SERVER['CONTENT_TYPE'])) {
             return $input;
+        }
 
-         $parts = explode('--'.$m[1], $input);
-         foreach($parts as $part) {
-            if (trim($part) == '' || $part == '--')
-               continue;
-            list($header, $value) = explode("\r\n\r\n", $part);
-            if (preg_match('/content\-disposition\:(?: *)form\-data\;(?: *)name="([^"]+)"(\;(?: *)filename="([^"]+)")?/i', $header, $m)) {
-               if (isset($m[2]) && $m[3] != '')
-                  $return[$m[1]] = array( $m[3], $value);
-               else
-                  $return[$m[1]] = $value;
-            }
-         }
-         if (count($values))
+        $values = array();
+
+        if (strpos($_SERVER['CONTENT_TYPE'], 'application/x-www-form-urlencoded') === 0) {
+            parse_str($input, $values);
             return $values;
-         else
-            return $input;
-      }
-      else {
-         return $input;
-      }
-   }
+        }
+
+        if (strpos($_SERVER['CONTENT_TYPE'], 'multipart/form-data') === 0) {
+
+            if (!preg_match('/boundary=([a-zA-Z0-9]+)/', $_SERVER['CONTENT_TYPE'], $m))
+                return $values;
+
+            $parts = explode('--' . $m[1], $input);
+            foreach ($parts as $part) {
+                if (trim($part) == '' || $part == '--')
+                    continue;
+                list($header, $value) = explode("\r\n\r\n", $part);
+                if (preg_match('/content\-disposition\:(?: *)form\-data\;(?: *)name="([^"]+)"(\;(?: *)filename="([^"]+)")?/i', $header, $m)) {
+                    if (isset($m[2]) && $m[3] != '')
+                        $values[$m[1]] = array($m[3], $value);
+                    else
+                        $values[$m[1]] = $value;
+                }
+            }
+            return $values;
+        }
+
+        if (jApp::config()->enableRequestBodyJSONParsing && strpos($_SERVER['CONTENT_TYPE'], 'application/json') === 0) {
+            return json_decode($input, true);
+        }
+
+        return $input;
+    }
 
    private $_headers = null;
 

@@ -9,7 +9,7 @@
 * @subpackage  utils
 * @author      Laurent Jouanneau
 * @contributor Kévin Lepeltier, GeekBay, Julien Issler
-* @copyright   2006-2012 Laurent Jouanneau
+* @copyright   2006-2016 Laurent Jouanneau
 * @copyright   2008 Kévin Lepeltier, 2009 Geekbay
 * @copyright   2010-2015 Julien Issler
 * @link        http://jelix.org
@@ -52,7 +52,7 @@ class jMailer extends PHPMailer {
     /**
      * indicates if mails should be copied into files, so the developer can verify that all mails are sent.
      */
-    protected $copyTofile = false;
+    protected $copyToFiles = false;
 
     /**
      * initialize some member
@@ -62,8 +62,9 @@ class jMailer extends PHPMailer {
         $this->defaultLang = $config->locale;
         $this->CharSet = $config->charset;
         $this->Mailer = $config->mailer['mailerType'];
-        if ($config->mailer['mailerType'])
+        if ($config->mailer['mailerType']) {
             $this->Mailer = $config->mailer['mailerType'];
+        }
         $this->Hostname = $config->mailer['hostname'];
         $this->Sendmail = $config->mailer['sendmailPath'];
         $this->Host = $config->mailer['smtpHost'];
@@ -74,7 +75,7 @@ class jMailer extends PHPMailer {
         $this->Username = $config->mailer['smtpUsername'];
         $this->Password = $config->mailer['smtpPassword'];
         $this->Timeout = $config->mailer['smtpTimeout'];
-        if($config->mailer['webmasterEmail'] != '') {
+        if ($config->mailer['webmasterEmail'] != '') {
             $this->From = $config->mailer['webmasterEmail'];
         }
 
@@ -100,6 +101,7 @@ class jMailer extends PHPMailer {
     /**
      * Find the name and address in the form "name<address@hop.tld>"
      * @param string $address
+     * @param string $kind One of 'to', 'cc', 'bcc', or 'ReplyTo'
      * @return array( $name, $address )
      */
     function getAddrName($address, $kind = false) {
@@ -111,10 +113,10 @@ class jMailer extends PHPMailer {
             $name = '';
             $addr = $address;
         }
-        if (!$kind) {
-            return array($addr, $name);
+        if ($kind) {
+            $this->addAnAddress($kind, $addr, $name);
         }
-        $this->AddAnAddress($kind, $addr, $name);
+        return array($addr, $name);
     }
 
     protected $tpl = null;
@@ -129,7 +131,7 @@ class jMailer extends PHPMailer {
     function Tpl( $selector, $isHtml = false ) {
         $this->bodyTpl = $selector;
         $this->tpl = new jTpl();
-        $this->IsHTML($isHtml);
+        $this->isHTML($isHtml);
         return $this->tpl;
     }
 
@@ -147,47 +149,58 @@ class jMailer extends PHPMailer {
             $mailtpl = $this->tpl;
             $metas = $mailtpl->meta( $this->bodyTpl , ($this->ContentType == 'text/html'?'html':'text') );
 
-            if (isset($metas['Subject']))
+            if (isset($metas['Subject'])) {
                 $this->Subject = $metas['Subject'];
+            }
 
-            if (isset($metas['Priority']))
+            if (isset($metas['Priority'])) {
                 $this->Priority = $metas['Priority'];
+            }
             $mailtpl->assign('Priority', $this->Priority );
 
-            if (isset($metas['Sender']))
+            if (isset($metas['Sender'])) {
                 $this->Sender = $metas['Sender'];
+            }
             $mailtpl->assign('Sender', $this->Sender );
 
-            if (isset($metas['to']))
-                foreach( $metas['to'] as $val )
-                    $this->getAddrName( $val, 'to' );
+            if (isset($metas['to'])) {
+                foreach ($metas['to'] as $val) {
+                    $this->getAddrName($val, 'to');
+                }
+            }
             $mailtpl->assign('to', $this->to );
 
-            if (isset($metas['cc']))
-                foreach( $metas['cc'] as $val )
+            if (isset($metas['cc'])) {
+                foreach ($metas['cc'] as $val) {
                     $this->getAddrName($val, 'cc');
+                }
+            }
             $mailtpl->assign('cc', $this->cc );
 
-            if (isset($metas['bcc']))
-                foreach( $metas['bcc'] as $val )
+            if (isset($metas['bcc'])) {
+                foreach ($metas['bcc'] as $val) {
                     $this->getAddrName($val, 'bcc');
+                }
+            }
             $mailtpl->assign('bcc', $this->bcc);
 
-            if (isset($metas['ReplyTo']))
-                foreach( $metas['ReplyTo'] as $val )
+            if (isset($metas['ReplyTo'])) {
+                foreach ($metas['ReplyTo'] as $val) {
                     $this->getAddrName($val, 'Reply-To');
+                }
+            }
             $mailtpl->assign('ReplyTo', $this->ReplyTo );
 
             if (isset($metas['From'])) {
                 $adr = $this->getAddrName($metas['From']);
-                $this->SetFrom($adr[0], $adr[1]);
+                $this->setFrom($adr[0], $adr[1]);
             }
 
             $mailtpl->assign('From', $this->From );
             $mailtpl->assign('FromName', $this->FromName );
 
             if ($this->ContentType == 'text/html') {
-                $this->MsgHTML($mailtpl->fetch( $this->bodyTpl, 'html'));
+                $this->msgHTML($mailtpl->fetch( $this->bodyTpl, 'html'));
             }
             else
                 $this->Body = $mailtpl->fetch( $this->bodyTpl, 'text');
@@ -204,8 +217,9 @@ class jMailer extends PHPMailer {
             $this->Mailer = 'file';
             return $headers;
         }
-        else
+        else {
             return parent::CreateHeader();
+        }
     }
 
     /**
@@ -226,18 +240,14 @@ class jMailer extends PHPMailer {
         return parent::SetLanguage($lang[0], $lang_path);
     }
 
-    protected function Lang($key) {
+    protected function lang($key) {
       if(count($this->language) < 1) {
         $this->SetLanguage($this->defaultLang); // set the default language
       }
-      if(isset($this->language[$key])) {
-        return $this->language[$key];
-      } else {
-        return 'Language string failed to load: ' . $key;
-      }
+      return parent::lang($key);
     }
 
-    protected function SendmailSend($header, $body) {
+    protected function sendmailSend($header, $body) {
         if ($this->copyToFiles)
             $this->copyMail($header, $body);
         return parent::SendmailSend($header, $body);
@@ -249,7 +259,7 @@ class jMailer extends PHPMailer {
         return parent::MailSend($header, $body);
     }
 
-    protected function SmtpSend($header, $body) {
+    protected function smtpSend($header, $body) {
         if ($this->copyToFiles)
             $this->copyMail($header, $body);
         return parent::SmtpSend($header, $body);

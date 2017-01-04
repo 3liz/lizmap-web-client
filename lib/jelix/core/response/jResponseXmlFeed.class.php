@@ -45,18 +45,18 @@ abstract class jResponseXMLFeed extends jResponse {
     * Template engine used for output
     * @var jtpl
     */
-    private $_template = null;
+    protected $_template = null;
 
     /**
      * template name
      * @var string
      */
-    private $_mainTpl = '';
+    protected $_mainTpl = '';
 
     /**
     * Array containing the XSL stylesheets links
     */
-    private $_xsl = array ();
+    protected $_xsl = array ();
 
     /**
      * Class constructor

@@ -56,6 +56,12 @@ disableInstallers = off
 ; if set to on, all modules have an access=2, and access values in [modules] are not readed (not recommanded)
 enableAllModules = off
 
+; set it to true if you want to parse JSON content-type in jClassicRequest
+; (as in the futur Jelix 1.7) or keep false if you want to have, as usual, JSON
+; content as a string in the __httpbody parameter.
+; this flag will be removed in Jelix 1.7
+enableRequestBodyJSONParsing = false
+
 [modules]
 ; modulename.access = x   where x : 0= unused/forbidden, 1 = private access, 2 = public access
 
