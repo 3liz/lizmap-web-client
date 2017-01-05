@@ -397,39 +397,63 @@ abstract class jRequest {
         if (!isset($_SERVER['CONTENT_TYPE'])) {
             return $input;
         }
+        $contentType = $_SERVER['CONTENT_TYPE'];
 
         $values = array();
-
-        if (strpos($_SERVER['CONTENT_TYPE'], 'application/x-www-form-urlencoded') === 0) {
+        if (strpos($contentType, 'application/x-www-form-urlencoded') === 0) {
             parse_str($input, $values);
             return $values;
         }
 
-        if (strpos($_SERVER['CONTENT_TYPE'], 'multipart/form-data') === 0) {
-
-            if (!preg_match('/boundary=([a-zA-Z0-9]+)/', $_SERVER['CONTENT_TYPE'], $m))
-                return $values;
-
-            $parts = explode('--' . $m[1], $input);
-            foreach ($parts as $part) {
-                if (trim($part) == '' || $part == '--')
-                    continue;
-                list($header, $value) = explode("\r\n\r\n", $part);
-                if (preg_match('/content\-disposition\:(?: *)form\-data\;(?: *)name="([^"]+)"(\;(?: *)filename="([^"]+)")?/i', $header, $m)) {
-                    if (isset($m[2]) && $m[3] != '')
-                        $values[$m[1]] = array($m[3], $value);
-                    else
-                        $values[$m[1]] = $value;
-                }
-            }
-            return $values;
+        if (strpos($contentType, 'multipart/form-data') === 0) {
+            // XXX it seems php://input is empty for this content-type, as
+            // indicated into the php doc. Only for POST method?
+            return self::parseMultipartBody($contentType, $input);
         }
 
-        if (jApp::config()->enableRequestBodyJSONParsing && strpos($_SERVER['CONTENT_TYPE'], 'application/json') === 0) {
+        if (jApp::config()->enableRequestBodyJSONParsing && strpos($contentType, 'application/json') === 0) {
             return json_decode($input, true);
         }
 
         return $input;
+    }
+
+    public static function parseMultipartBody($contentType, $input) {
+        $values = array();
+        if (!preg_match('/boundary=([^\\s]+)/', $contentType, $m)) {
+            return $values;
+        }
+
+        $parts = preg_split("/\r\n--" . preg_quote($m[1])."/", $input);
+        foreach ($parts as $part) {
+            if (trim($part) == '' || $part == '--')
+                continue;
+            list($header, $value) = explode("\r\n\r\n", $part, 2);
+            $value = rtrim($value);
+            if (preg_match('/content-disposition\:\\s*form-data\;\\s*name="([^"]+)"(\;\\s*filename="([^"]+)")?/i', $header, $m)) {
+                $name = $m[1];
+                if (isset($m[2]) && $m[3] != '') {
+                    $values = array($m[3], $value);
+                }
+                if (preg_match("/^([^\\[]+)\\[([^\\]]*)\\]$/", $name, $nm)) {
+                    $name = $nm[1];
+                    $index = $nm[2];
+                    if (!isset($values[$name]) || !is_array($values[$name])) {
+                        $values[$name] = array();
+                    }
+                    if ($index === "") {
+                        $values[$name][] = $value;
+                    }
+                    else {
+                        $values[$name][$index] = $value;
+                    }
+                }
+                else {
+                    $values[$name] = $value;
+                }
+            }
+        }
+        return $values;
     }
 
    private $_headers = null;

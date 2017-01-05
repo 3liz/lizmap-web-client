@@ -398,7 +398,9 @@ abstract class jInstallerBase {
             }
             if (is_array($sectionContent)) {
                 foreach($sectionContent as $k=>$v) {
-                    $profiles->setValue($k,$v, 'jdb:'.$name);
+                    if ($force || !$profiles->getValue($k, 'jdb:'.$name)) {
+                        $profiles->setValue($k,$v, 'jdb:'.$name);
+                    }
                 }
             }
             else {
