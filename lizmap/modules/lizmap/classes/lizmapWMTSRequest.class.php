@@ -151,9 +151,13 @@ class lizmapWMTSRequest extends lizmapOGCRequest {
 
         $res = $tileMatrix->resolution;
         $minx = $tileMatrix->left + ( (int) $TileCol ) * ($tileWidth * $res);
-        $miny = $tileMatrix->top - ( (int) $TileRow ) * ($tileHeight * $res);
+        $miny = $tileMatrix->top - ( (int) $TileRow + 1 ) * ($tileHeight * $res);
         $maxx = $tileMatrix->left + ( (int) $TileCol + 1) * ($tileWidth * $res);
-        $maxy = $tileMatrix->top - ( (int) $TileRow +1 ) * ($tileHeight * $res);
+        $maxy = $tileMatrix->top - ( (int) $TileRow ) * ($tileHeight * $res);
+
+        $bbox = (string) round($minx,6) .','. (string) round($miny,6) .','. (string) round($maxx,6) .','. (string) round($maxy,6);
+        if( $TileMatrixSetId == 'EPSG:4326' )
+            $bbox = (string) round($miny,6) .','. (string) round($minx,6) .','. (string) round($maxy,6) .','. (string) round($maxx,6);
 
         $params['service'] = 'WMS';
         $params['version'] = '1.3.0';
@@ -162,7 +166,7 @@ class lizmapWMTSRequest extends lizmapOGCRequest {
         $params['styles'] = '';
         $params['format'] = $Format;
         $params['crs'] = $TileMatrixSetId;
-        $params['bbox'] = (string) round($minx,6) .','. (string) round($miny,6) .','. (string) round($maxx,6) .','. (string) round($maxy,6);
+        $params['bbox'] = $bbox;
         $params['width'] = $tileWidth;
         $params['height'] = $tileHeight;
         $params['dpi'] = '96';
