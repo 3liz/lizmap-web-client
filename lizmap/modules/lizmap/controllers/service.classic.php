@@ -659,6 +659,7 @@ class serviceCtrl extends jController {
   * @return Replaced text.
   */
   function replaceMediaPathByMediaUrl($matches){
+    $req = jApp::coord()->request;
     $return = '';
     $return.= '"';
     $return.= jUrl::getFull(
@@ -669,7 +670,7 @@ class serviceCtrl extends jController {
         'path'=>$matches[2]
       ),
       0,
-      $_SERVER['SERVER_NAME']
+      $req->getDomainName().$req->getPort()
     );
     $return.= '"';
     return $return;

@@ -919,6 +919,17 @@ class lizmapProject{
                             );
                         }
                     }
+
+                    // get composer attribute tables
+                    $cTables = $composer->xpath('.//ComposerAttributeTableV2');
+                    if( $cTables && count($cTables) > 0 ) {
+                        foreach( $cTables as $cTable ) {
+                            $printTemplate['tables'][] = array(
+                                'composerMap'=>(int)$cTable['composerMap'],
+                                'vectorLayer'=>(string)$cTable['vectorLayer']
+                            );
+                        }
+                    }
                     $printTemplates[] = $printTemplate;
                 }
             }

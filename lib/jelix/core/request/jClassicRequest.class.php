@@ -3,8 +3,8 @@
 * @package     jelix
 * @subpackage  core_request
 * @author      Laurent Jouanneau
-* @contributor Yoan Blanc
-* @copyright   2005-2011 Laurent Jouanneau, 2008 Yoan Blanc
+* @contributor Yoan Blanc, Julien Issler
+* @copyright   2005-2017 Laurent Jouanneau, 2008 Yoan Blanc, 2016-2017 Julien Issler
 * @link        http://www.jelix.org
 * @licence     GNU Lesser General Public Licence see LICENCE file or http://www.gnu.org/licenses/lgpl.html
 */
@@ -23,20 +23,30 @@ class jClassicRequest extends jRequest {
     public $defaultResponseType = 'html';
 
     protected function _initParams(){
+        $this->params = jUrl::getEngine()->parseFromRequest($this, $_GET)->params;
 
-        $url  = jUrl::getEngine()->parseFromRequest($this, $_GET);
+        if ($_SERVER['REQUEST_METHOD'] == 'GET') {
+            return;
+        }
 
-        if ($_SERVER['REQUEST_METHOD'] == 'PUT') {
-            $_PUT = $this->readHttpBody();
-            if (is_string($_PUT)) {
-                $this->params = $url->params;
-                $this->params['__httpbody'] = $_PUT;
-            } else {
-                $this->params = array_merge($url->params, $_PUT);
+        if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+            // when no content type or for known content-type,
+            // let's get parameters from $_POST
+            if (!isset($_SERVER['CONTENT_TYPE']) ||
+                strpos($_SERVER['CONTENT_TYPE'], 'application/x-www-form-urlencoded') === 0 ||
+                strpos($_SERVER['CONTENT_TYPE'], 'multipart/form-data') === 0
+            ) {
+                $this->params = array_merge($this->params, $_POST);
+                return;
             }
         }
-        else {
-            $this->params = array_merge($url->params, $_POST);
+
+        // for any REQUEST method other than GET (PUT, unknown content type for POST, etc...)
+        $data = $this->readHttpBody();
+        if (is_string($data)) {
+            $this->params['__httpbody'] = $data;
+        } else {
+            $this->params = array_merge($this->params, $data);
         }
     }
 

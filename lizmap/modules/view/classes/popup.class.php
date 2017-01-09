@@ -63,11 +63,12 @@ class popup{
         $pathVal = $attributeValue;
         $sharp = '';
       }
+      $req = jApp::coord()->request;
       $mediaUrl = jUrl::getFull(
         'view~media:getMedia',
         array('repository'=>$repository, 'project'=>$project, 'path'=>$pathVal),
         0,
-        $_SERVER['SERVER_NAME']
+        $req->getDomainName().$req->getPort()
       );
       if( $sharp )
         $mediaUrl.= '#' . $sharp;

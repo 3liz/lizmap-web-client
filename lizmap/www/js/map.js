@@ -459,7 +459,7 @@ var lizMap = function() {
                       VERSION: "1.3.0",
                       REQUEST: "GetLegendGraphic",
                       LAYER: externalAccess.layers,
-                      LAYERS: externalAccess.layers,
+                      STYLE: externalAccess.styles,
                       SLD_VERSION: "1.1.0",
                       EXCEPTIONS: "application/vnd.ogc.se_inimage",
                       FORMAT: "image/png",
@@ -475,8 +475,8 @@ var lizMap = function() {
     var legendParams = {SERVICE: "WMS",
                   VERSION: "1.3.0",
                   REQUEST: "GetLegendGraphic",
-                  LAYERS: layer.params['LAYERS'],
-                  STYLES: layer.params['STYLES'],
+                  LAYER: layer.params['LAYERS'],
+                  STYLE: layer.params['STYLES'],
                   EXCEPTIONS: "application/vnd.ogc.se_inimage",
                   FORMAT: "image/png",
                   TRANSPARENT: "TRUE",
@@ -1784,7 +1784,10 @@ var lizMap = function() {
       var baselayer = baselayers[i]
       baselayer.units = projection.proj.units;
       map.addLayer(baselayer);
-      var blConfig = config.layers[baselayer.name];
+      var qgisName = null;
+      if ( baselayer.name in cleanNameMap )
+          qgisName = getLayerNameByCleanName(baselayer.name);
+      var blConfig = config.layers[qgisName];
       if (blConfig)
         select += '<option value="'+blConfig.name+'">'+blConfig.title+'</option>';
       else
@@ -2301,9 +2304,12 @@ var lizMap = function() {
       var baselayer = baselayers[i]
       baselayer.units = projection.proj.units;
       map.addLayer(baselayer);
-      var blConfig = config.layers[baselayer.name];
+      var qgisName = null;
+      if ( baselayer.name in cleanNameMap )
+          qgisName = getLayerNameByCleanName(baselayer.name);
+      var blConfig = config.layers[qgisName];
       if (blConfig)
-        select += '<option value="'+blConfig.name+'">'+blConfig.title+'</option>';
+        select += '<option value="'+baselayer.name+'">'+blConfig.title+'</option>';
       else
         select += '<option value="'+baselayer.name+'">'+baselayer.name+'</option>';
       /*
@@ -3560,13 +3566,19 @@ var lizMap = function() {
     });
     $('#print-launch').click(function() {
       var pTemplate = dragCtrl.layout.template;
+      var pTableVectorLayers = [];
+      if( 'tables' in pTemplate )
+          pTableVectorLayers = $.map( pTemplate.tables, function( t ){
+              if( t.composerMap == -1 || ('map'+t.composerMap) == dragCtrl.layout.mapId )
+                return t.vectorLayer;
+          });
       var extent = dragCtrl.layer.features[0].geometry.getBounds();
       var url = OpenLayers.Util.urlAppend(lizUrls.wms
           ,OpenLayers.Util.getParameterString(lizUrls.params)
           );
       url += '&SERVICE=WMS';
       //url += '&VERSION='+capabilities.version+'&REQUEST=GetPrint';
-      url += '&VERSION=1.3&REQUEST=GetPrint';
+      url += '&VERSION=1.3.0&REQUEST=GetPrint';
       url += '&FORMAT='+$('#print-format').val();
       url += '&EXCEPTIONS=application/vnd.ogc.se_inimage&TRANSPARENT=true';
       url += '&SRS='+map.projection;
@@ -3583,22 +3595,44 @@ var lizMap = function() {
       var styleLayers = [];
       var opacityLayers = [];
       $.each(map.layers, function(i, l) {
-        if (l.getVisibility()
-          && (
-            l.CLASS_NAME == "OpenLayers.Layer.WMS"
-            || ( l.CLASS_NAME == "OpenLayers.Layer.WMTS" && !(l.name.lastIndexOf('ign', 0) === 0 ) )
-          )
+        if (
+            l instanceof OpenLayers.Layer.WMS
+            || ( l instanceof OpenLayers.Layer.WMTS && !(l.name.lastIndexOf('ign', 0) === 0 ) )
         ){
-          // Add layer to the list of printed layers
-          printLayers.push(l.params['LAYERS']);
-          // Optionnaly add layer style if needed (same order as layers )
-          var lst = 'default';
-          if( 'STYLES' in l.params && l.params['STYLES'].length > 0 )
-            lst = l.params['STYLES'];
-          styleLayers.push( lst );
-          opacityLayers.push(parseInt(255*l.opacity));
+            if( l.getVisibility() ) {
+              // Add layer to the list of printed layers
+              printLayers.push(l.params['LAYERS']);
+              // Optionnaly add layer style if needed (same order as layers )
+              var lst = 'default';
+              if( 'STYLES' in l.params && l.params['STYLES'].length > 0 )
+                lst = l.params['STYLES'];
+              styleLayers.push( lst );
+              opacityLayers.push(parseInt(255*l.opacity));
+            /*} else {
+                var qgisName = null;
+                if ( layer.name in cleanNameMap )
+                    qgisName = getLayerNameByCleanName(name);
+                var configLayer = null;
+                if ( qgisName )
+                    configLayer = config.layers[qgisName];
+                if ( !configLayer )
+                    configLayer = config.layers[layer.params['LAYERS']];
+                if ( !configLayer )
+                    configLayer = config.layers[layer.name];
+                if ( configLayer && pTableVectorLayers.indexOf( configLayer.layerId ) != -1 ) {
+                  // Add layer to the list of printed layers
+                  printLayers.push(l.params['LAYERS']);
+                  // Optionnaly add layer style if needed (same order as layers )
+                  var lst = 'default';
+                  if( 'STYLES' in l.params && l.params['STYLES'].length > 0 )
+                    lst = l.params['STYLES'];
+                  styleLayers.push( lst );
+                  opacityLayers.push(parseInt(255*l.opacity));
+                }*/
+            }
         }
       });
+
       printLayers.reverse();
       styleLayers.reverse();
       opacityLayers.reverse();
@@ -3612,13 +3646,33 @@ var lizMap = function() {
                 printLayers.push(config.layers[exbl].id);
             else
                 printLayers.push(exbl);
-            styleLayers.push('Overview');
+            styleLayers.push('default');
             opacityLayers.push(255);
         }
       }
 
+      // Add table vector layer without geom
+      if( pTableVectorLayers.length > 0 ) {
+          $.each( pTableVectorLayers, function( i, layerId ){
+              var aConfig = getLayerConfigById( layerId );
+              if( aConfig ) {
+                  var layerName = aConfig[0];
+                  var layerConfig = aConfig[1];
+                  if( ( layerConfig.geometryType == "none" || layerConfig.geometryType == "unknown" || layerConfig.geometryType == "" ) ) {
+                      if ( 'shortname' in layerConfig && layerConfig.shortname != '' )
+                          printLayers.push(layerConfig.shortname);
+                      else
+                          printLayers.push(layerConfig.name);
+                      styleLayers.push('default');
+                      opacityLayers.push(255);
+                  }
+              }
+          });
+      }
+
       url += '&'+dragCtrl.layout.mapId+':LAYERS='+printLayers.join(',');
       url += '&'+dragCtrl.layout.mapId+':STYLES='+styleLayers.join(',');
+
       if ( dragCtrl.layout.overviewId != null
           && config.options.hasOverview ) {
         var bbox = config.options.bbox;
@@ -3626,7 +3680,7 @@ var lizMap = function() {
         url += '&'+dragCtrl.layout.overviewId+':extent='+oExtent;
         url += '&'+dragCtrl.layout.overviewId+':LAYERS=Overview';
         printLayers.unshift('Overview');
-        styleLayers.unshift('Overview');
+        styleLayers.unshift('default');
         opacityLayers.unshift(255);
       }
       url += '&LAYERS='+printLayers.join(',');

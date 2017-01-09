@@ -48,6 +48,11 @@ class jelix_TextUI_Command extends PHPUnit_TextUI_Command {
     }
 
 
+    protected function showMessage($message)
+    {
+        echo $message;
+    }
+
     protected function createRunner()
     {
         if ($this->version36) {
