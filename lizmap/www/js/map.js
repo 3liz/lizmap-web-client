@@ -3556,7 +3556,7 @@ var lizMap = function() {
         var exbl = externalBaselayersReplacement[activeBaseLayerName];
         if( exbl in config.layers )
             if ( 'useLayerIDs' in config.options && config.options.useLayerIDs == 'True' )
-                printLayers.unshift(config.layers[exbl].id);
+                printLayers.push(config.layers[exbl].id);
             else
                 printLayers.push(exbl);
             styleLayers.push('default');
