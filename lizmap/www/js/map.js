@@ -3484,13 +3484,19 @@ var lizMap = function() {
     });
     $('#print-launch').click(function() {
       var pTemplate = dragCtrl.layout.template;
+      var pTableVectorLayers = [];
+      if( 'tables' in pTemplate )
+          pTableVectorLayers = $.map( pTemplate.tables, function( t ){
+              if( t.composerMap == -1 || ('map'+t.composerMap) == dragCtrl.layout.mapId )
+                return t.vectorLayer;
+          });
       var extent = dragCtrl.layer.features[0].geometry.getBounds();
       var url = OpenLayers.Util.urlAppend(lizUrls.wms
           ,OpenLayers.Util.getParameterString(lizUrls.params)
           );
       url += '&SERVICE=WMS';
       //url += '&VERSION='+capabilities.version+'&REQUEST=GetPrint';
-      url += '&VERSION=1.3&REQUEST=GetPrint';
+      url += '&VERSION=1.3.0&REQUEST=GetPrint';
       url += '&FORMAT=pdf&EXCEPTIONS=application/vnd.ogc.se_inimage&TRANSPARENT=true';
       url += '&SRS='+map.projection;
       url += '&DPI='+$('#print-dpi').val();
@@ -3505,21 +3511,42 @@ var lizMap = function() {
       var printLayers = [];
       var styleLayers = [];
       $.each(map.layers, function(i, l) {
-        if (l.getVisibility()
-          && (
-            l.CLASS_NAME == "OpenLayers.Layer.WMS"
-            || ( l.CLASS_NAME == "OpenLayers.Layer.WMTS" && !(l.name.lastIndexOf('ign', 0) === 0 ) )
-          )
+        if (
+            l instanceof OpenLayers.Layer.WMS
+            || ( l instanceof OpenLayers.Layer.WMTS && !(l.name.lastIndexOf('ign', 0) === 0 ) )
         ){
-          // Add layer to the list of printed layers
-          printLayers.push(l.params['LAYERS']);
-          // Optionnaly add layer style if needed (same order as layers )
-          var lst = 'default';
-          if( 'STYLES' in l.params && l.params['STYLES'].length > 0 )
-            lst = l.params['STYLES'];
-          styleLayers.push( lst );
+            if( l.getVisibility() ) {
+              // Add layer to the list of printed layers
+              printLayers.push(l.params['LAYERS']);
+              // Optionnaly add layer style if needed (same order as layers )
+              var lst = 'default';
+              if( 'STYLES' in l.params && l.params['STYLES'].length > 0 )
+                lst = l.params['STYLES'];
+              styleLayers.push( lst );
+            /*} else {
+                var qgisName = null;
+                if ( layer.name in cleanNameMap )
+                    qgisName = getLayerNameByCleanName(name);
+                var configLayer = null;
+                if ( qgisName )
+                    configLayer = config.layers[qgisName];
+                if ( !configLayer )
+                    configLayer = config.layers[layer.params['LAYERS']];
+                if ( !configLayer )
+                    configLayer = config.layers[layer.name];
+                if ( configLayer && pTableVectorLayers.indexOf( configLayer.layerId ) != -1 ) {
+                  // Add layer to the list of printed layers
+                  printLayers.push(l.params['LAYERS']);
+                  // Optionnaly add layer style if needed (same order as layers )
+                  var lst = 'default';
+                  if( 'STYLES' in l.params && l.params['STYLES'].length > 0 )
+                    lst = l.params['STYLES'];
+                  styleLayers.push( lst );
+                }*/
+            }
         }
       });
+
       printLayers.reverse();
       styleLayers.reverse();
 
@@ -3529,9 +3556,29 @@ var lizMap = function() {
         var exbl = externalBaselayersReplacement[activeBaseLayerName];
         if( exbl in config.layers )
             if ( 'useLayerIDs' in config.options && config.options.useLayerIDs == 'True' )
-                printLayers.push(config.layers[exbl].id);
+                printLayers.unshift(config.layers[exbl].id);
             else
                 printLayers.push(exbl);
+            styleLayers.push('default');
+      }
+
+      // Add table vector layer without geom
+      if( pTableVectorLayers.length > 0 ) {
+          $.each( pTableVectorLayers, function( i, layerId ){
+              var aConfig = getLayerConfigById( layerId );
+              if( aConfig ) {
+                  console.log(aConfig);
+                  var layerName = aConfig[0];
+                  var layerConfig = aConfig[1];
+                  if( ( layerConfig.geometryType == "none" || layerConfig.geometryType == "unknown" || layerConfig.geometryType == "" ) ) {
+                      if ( 'shortname' in layerConfig && layerConfig.shortname != '' )
+                          printLayers.push(layerConfig.shortname);
+                      else
+                          printLayers.push(layerConfig.name);
+                      styleLayers.push('default');
+                  }
+              }
+          });
       }
 
       url += '&'+dragCtrl.layout.mapId+':LAYERS='+printLayers.join(',');
@@ -3543,7 +3590,7 @@ var lizMap = function() {
         url += '&'+dragCtrl.layout.overviewId+':extent='+oExtent;
         url += '&'+dragCtrl.layout.overviewId+':LAYERS=Overview';
         printLayers.unshift('Overview');
-        styleLayers.unshift('Overview');
+        styleLayers.unshift('default');
       }
       url += '&LAYERS='+printLayers.join(',');
       url += '&STYLES='+styleLayers.join(',');

@@ -182,7 +182,7 @@ class lizmapProject{
         if ($this->cfg === null) {
             throw new Exception(".qgs.cfg File of project $key has invalid content");
         }
-        
+
         $configOptions = $this->cfg->options;
 
         $qgs_xml = simplexml_load_file($qgs_path);
@@ -817,6 +817,17 @@ class lizmapProject{
                                 'id'=>(string)$cLabelItem['id'],
                                 'htmlState'=>(int)$cLabel['htmlState'],
                                 'text'=>(string)$cLabel['labelText']
+                            );
+                        }
+                    }
+
+                    // get composer attribute tables
+                    $cTables = $composer->xpath('.//ComposerAttributeTableV2');
+                    if( $cTables && count($cTables) > 0 ) {
+                        foreach( $cTables as $cTable ) {
+                            $printTemplate['tables'][] = array(
+                                'composerMap'=>(int)$cTable['composerMap'],
+                                'vectorLayer'=>(string)$cTable['vectorLayer']
                             );
                         }
                     }
