@@ -3335,6 +3335,11 @@ var lizAttributeTable = function() {
         lizMap.map.addControl(queryFreehandLayerCtrl);
         lizMap.controls['selectiontool']['queryFreehandLayerCtrl'] = queryFreehandLayerCtrl;
 
+        $('#selectiontool .btn-selectiontool-clear').click(function(){
+          $('#button-selectiontool').click();
+          return false;
+        });
+
         $('#selectiontool-query-buttons button').tooltip( {
             placement: 'bottom'
         } );
