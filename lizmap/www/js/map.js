@@ -5757,7 +5757,6 @@ OpenLayers.Control.HighlightFeature = OpenLayers.Class(OpenLayers.Control, {
             //~ console.log('redraw');
             return false;
           });
-
           // Toggle locate
           $('#mapmenu ul').on('click', 'li.nav-minidock > a', function(){
             var self = $(this);
@@ -5781,13 +5780,21 @@ OpenLayers.Control.HighlightFeature = OpenLayers.Class(OpenLayers.Control, {
                 lizMap.events.triggerEvent( "minidockopened", {'id':id} );
             }
             self.blur();
+
             return false;
           });
+
           // Show locate by layer
           if ( !('locateByLayer' in config) )
             $('#button-locate').parent().hide();
           else
             $('#button-locate').click();
+
+          // hide mini-dock if no tool is active
+          if ( $('#mapmenu ul li.nav-minidock.active').length == 0 ) {
+              $('#mini-dock-content .tab-pane.active').removeClass('active');
+              $('#mini-dock-tabs li.active').removeClass('active');
+          }
 
           $('#mapmenu ul').on('click', 'li.nav-dock > a', function(){
             var self = $(this);
