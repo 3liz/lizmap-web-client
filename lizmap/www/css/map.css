@@ -394,7 +394,7 @@ ul.nav.nav-tabs {
 
 #dock-close{
   position: absolute;
-  bottom:5px;
+  top:5px;
   right:5px;
 }
 
