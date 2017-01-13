@@ -481,7 +481,7 @@ SubDock
   top:auto;
   bottom:0px;
   right:0px;
-  left:0px;
+  left:30px;
 }
 
 
@@ -1017,6 +1017,9 @@ div.modal h3 .text {
   margin-left : 30px;
   position : relative;
   background : #F0F0F0;
+}
+#content.mobile #map-content {
+  margin-left : 0px;
 }
  /* avoid bootstrap collision*/
 #map-content img {
