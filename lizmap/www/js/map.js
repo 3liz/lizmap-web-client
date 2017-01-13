@@ -5501,9 +5501,6 @@ OpenLayers.Control.HighlightFeature = OpenLayers.Class(OpenLayers.Control, {
           self.config = config;
           self.tree = tree;
           self.events.triggerEvent("treecreated", self);
-          if(self.checkMobile()){
-            $('#map-content').css('margin-left','0');
-          }
 
           // create the map
           createMap();
