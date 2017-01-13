@@ -141,7 +141,7 @@ var lizLayerActionButtons = function() {
 
             // Link
             if( metadatas.link  ){
-                html+= '    <button class="btn link" name="link" title="'+lizDict['layer.metadata.layer.info.see']+'" value="'+metadatas.link+'">'+lizDict['layer.metadata.layer.info.see']+'</button>';
+                html+= '    <button class="btn link layer-info" name="link" title="'+lizDict['layer.metadata.layer.info.see']+'" value="'+metadatas.link+'">'+lizDict['layer.metadata.layer.info.see']+'</button>';
             }
 
             // Style
@@ -172,6 +172,20 @@ var lizLayerActionButtons = function() {
                 $('#sub-dock').css('left', leftPos).css('width', leftPos);
             }
             $('#sub-dock').show();
+
+            var mh = $('#sub-dock').height();
+            mh -= parseInt($('#sub-dock').css('padding-top'));
+            mh -= parseInt($('#sub-dock').css('padding-bottom'));
+            mh -= $('#sub-dock > .sub-metadata > h3').outerHeight();
+            mh -= parseInt($('#sub-dock > .sub-metadata > h3').css('margin-bottom'));
+            mh -= $('#sub-dock > button').outerHeight();
+            mh -= parseInt($('#sub-dock > button').css('margin-top'));
+            mh -= parseInt($('#sub-dock > .sub-metadata > .menu-content').css('padding-top'));
+            mh -= parseInt($('#sub-dock > .sub-metadata > .menu-content').css('padding-bottom'));
+            $('#sub-dock > .sub-metadata > .menu-content')
+                .css('max-height', mh)
+                .css('overflow', 'auto');
+
             $(this).addClass('active');
         }
 

@@ -440,11 +440,7 @@ SubDock
   position:absolute;
   left:30px;
   top:0px;
-/*
-  bottom:0px;
-*/
-  /*max-width:30%;
-  max-height:90%;*/
+  max-height:100%;
   z-index:1000;
   overflow:auto;
   background-color:#4A4A4A;
@@ -461,6 +457,10 @@ SubDock
   left:0px;
   background-color:#4A4A4A;
   z-index:1200;
+}
+
+#sub-dock div.menu-content button.layer-info{
+  margin-bottom:5px;
 }
 
 /* Mini-Dock */
