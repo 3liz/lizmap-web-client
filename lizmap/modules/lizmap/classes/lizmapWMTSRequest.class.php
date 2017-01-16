@@ -154,9 +154,9 @@ class lizmapWMTSRequest extends lizmapOGCRequest {
 
         $res = $tileMatrix->resolution;
         $minx = $tileMatrix->left + ( (int) $TileCol ) * ($tileWidth * $res);
-        $miny = $tileMatrix->top - ( (int) $TileRow ) * ($tileHeight * $res);
+        $miny = $tileMatrix->top - ( (int) $TileRow + 1 ) * ($tileHeight * $res);
         $maxx = $tileMatrix->left + ( (int) $TileCol + 1) * ($tileWidth * $res);
-        $maxy = $tileMatrix->top - ( (int) $TileRow +1 ) * ($tileHeight * $res);
+        $maxy = $tileMatrix->top - ( (int) $TileRow ) * ($tileHeight * $res);
 
         $params['service'] = 'WMS';
         $params['version'] = '1.3.0';
