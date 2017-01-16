@@ -2226,7 +2226,7 @@ var lizMap = function() {
       var baselayer = baselayers[i]
       baselayer.units = projection.proj.units;
       map.addLayer(baselayer);
-      var qgisName = null;
+      var qgisName = baselayer.name;
       if ( baselayer.name in cleanNameMap )
           qgisName = getLayerNameByCleanName(baselayer.name);
       var blConfig = config.layers[qgisName];
