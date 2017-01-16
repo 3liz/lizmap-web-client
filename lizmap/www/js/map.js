@@ -3554,12 +3554,13 @@ var lizMap = function() {
       var activeBaseLayerName = map.baseLayer.name;
       if ( activeBaseLayerName in externalBaselayersReplacement ) {
         var exbl = externalBaselayersReplacement[activeBaseLayerName];
-        if( exbl in config.layers )
+        if( exbl in config.layers ){
             if ( 'useLayerIDs' in config.options && config.options.useLayerIDs == 'True' )
                 printLayers.push(config.layers[exbl].id);
             else
                 printLayers.push(exbl);
             styleLayers.push('default');
+        }
       }
 
       // Add table vector layer without geom
