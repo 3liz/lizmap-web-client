@@ -9,8 +9,8 @@
 {meta_html csstheme 'css/admin.css'}
 {meta_html csstheme 'css/media.css'}
 
-{meta_html js $j_basepath.'js/jquery-1.11.1.min.js'}
-{meta_html js $j_basepath.'js/jquery-ui-1.11.2.custom.min.js'}
+{meta_html js $j_basepath.'js/jquery-1.12.4.min.js'}
+{meta_html js $j_basepath.'js/jquery-ui-1.12.1.custom.min.js'}
 {meta_html js $j_basepath.'js/bootstrap.js'}
 
 <div id="header" class="navbar navbar-fixed-top">
