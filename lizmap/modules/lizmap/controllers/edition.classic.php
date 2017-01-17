@@ -374,7 +374,7 @@ class editionCtrl extends jController {
 
     $this->dataFields = array();
     foreach($fields as $fieldName=>$prop){
-        if( in_array($fieldName, $wfsFields) )
+        if( in_array($fieldName, $wfsFields) || in_array( strtolower($prop->type), $this->geometryDatatypeMap ) )
             $this->dataFields[$fieldName] = $prop;
     }
 
