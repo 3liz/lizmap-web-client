@@ -1784,7 +1784,7 @@ var lizMap = function() {
       var baselayer = baselayers[i]
       baselayer.units = projection.proj.units;
       map.addLayer(baselayer);
-      var qgisName = null;
+      var qgisName = baselayer.name;
       if ( baselayer.name in cleanNameMap )
           qgisName = getLayerNameByCleanName(baselayer.name);
       var blConfig = config.layers[qgisName];
@@ -2304,7 +2304,7 @@ var lizMap = function() {
       var baselayer = baselayers[i]
       baselayer.units = projection.proj.units;
       map.addLayer(baselayer);
-      var qgisName = null;
+      var qgisName = baselayer.name;
       if ( baselayer.name in cleanNameMap )
           qgisName = getLayerNameByCleanName(baselayer.name);
       var blConfig = config.layers[qgisName];
@@ -3641,7 +3641,7 @@ var lizMap = function() {
       var activeBaseLayerName = map.baseLayer.name;
       if ( activeBaseLayerName in externalBaselayersReplacement ) {
         var exbl = externalBaselayersReplacement[activeBaseLayerName];
-        if( exbl in config.layers ) {
+        if( exbl in config.layers ){
             if ( 'useLayerIDs' in config.options && config.options.useLayerIDs == 'True' )
                 printLayers.push(config.layers[exbl].id);
             else

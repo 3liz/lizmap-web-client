@@ -174,6 +174,7 @@ class editionCtrl extends jController {
       return false;
     }
 
+    $layer = $lproj->getLayer( $layerId );
     $layerXml = $lproj->getXmlLayer( $layerId );
     $layerXmlZero = $layerXml[0];
     $_layerName = $layerXmlZero->xpath('layername');
@@ -222,6 +223,7 @@ class editionCtrl extends jController {
     $this->layerId = $layerId;
     $this->featureId = $featureId;
     $this->featureIdParam = $featureIdParam;
+    $this->layer = $layer;
     $this->layerXml = $layerXml;
     $this->layerName = $layerName;
 
@@ -400,7 +402,13 @@ class editionCtrl extends jController {
     $sequence = null;
 
     $fields = $tools->getFieldList($tableAlone, $sequence);
-    $this->dataFields = $fields;
+    $wfsFields = $this->layer->getWfsFields();
+
+    $this->dataFields = array();
+    foreach($fields as $fieldName=>$prop){
+        if( in_array($fieldName, $wfsFields) )
+            $this->dataFields[$fieldName] = $prop;
+    }
 
     foreach($this->dataFields as $fieldName=>$prop){
       // Detect primary key column
