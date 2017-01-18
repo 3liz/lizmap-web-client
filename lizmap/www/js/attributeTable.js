@@ -1220,7 +1220,7 @@ var lizAttributeTable = function() {
                             }
                         else
                             colConf['mRender'] = function( data, type, full, meta ){
-                                if( !data )
+                                if( !data || !( typeof data === 'string') )
                                     return data;
                                 if( data.substr(0,6) == 'media/' || data.substr(0,6) == '/media/' ){
                                     var rdata = data;
