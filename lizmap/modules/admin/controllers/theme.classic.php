@@ -145,7 +145,8 @@ class themeCtrl extends jController {
     foreach($theme->getProperties() as $prop){
       $data[$prop] = $form->getData($prop);
       if( $prop == 'headerLogo'){
-        if(!empty($form->getData($prop)) ){
+        $hl = $form->getData($prop);
+        if(!empty($hl) ){
           // Remove previous logo file
           if( file_exists(jApp::varPath('lizmap-theme-config/') . $theme->headerLogo) ){
             unlink(jApp::varPath('lizmap-theme-config/') . $theme->headerLogo );
