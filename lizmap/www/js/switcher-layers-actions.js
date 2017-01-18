@@ -119,7 +119,7 @@ var lizLayerActionButtons = function() {
 
         $('#switcher-layers-actions a.btn-style-layer').click(function(){
             var self = $(this);
-            var eStyle = self.text();
+            var eStyle = self.parent().attr('data-style');
 
             var eName = $('#layerActionStyle').val();
             if( !eName )
