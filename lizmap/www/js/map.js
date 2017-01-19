@@ -3568,7 +3568,6 @@ var lizMap = function() {
           $.each( pTableVectorLayers, function( i, layerId ){
               var aConfig = getLayerConfigById( layerId );
               if( aConfig ) {
-                  console.log(aConfig);
                   var layerName = aConfig[0];
                   var layerConfig = aConfig[1];
                   if( ( layerConfig.geometryType == "none" || layerConfig.geometryType == "unknown" || layerConfig.geometryType == "" ) ) {
@@ -3620,7 +3619,7 @@ var lizMap = function() {
       if ( filter.length !=0 )
         url += '&FILTER='+ filter.join(';');
       if ( selection.length !=0 )
-        url += '&SELECTION='+ filter.join(';');
+        url += '&SELECTION='+ selection.join(';');
       window.open(url);
       return false;
     });
