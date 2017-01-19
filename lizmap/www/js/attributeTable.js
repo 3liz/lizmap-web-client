@@ -131,7 +131,7 @@ var lizAttributeTable = function() {
 
                     var title = config.layers[ attributeLayersDic[ cleanName ] ][ 'title' ];
                     tHtml+= '<tr>';
-                    tHtml+= '   <td>' + title + '</td><td><button value=' + cleanName + ' class="btn-open-attribute-layer">Detail</button></td>';
+                    tHtml+= '   <td>' + title + '</td><td><button value=' + cleanName + ' class="btn-open-attribute-layer">'+ lizDict['attributeLayers.toolbar.btn.detail'] +'</button></td>';
                     tHtml+= '</tr>';
                 }
 
