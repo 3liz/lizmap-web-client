@@ -5815,17 +5815,7 @@ OpenLayers.Control.HighlightFeature = OpenLayers.Class(OpenLayers.Control, {
             var tab = $('#nav-tab-'+id);
             var lizmapEvent = '';
             if ( parent.hasClass('active') ) {
-                if ( tab.hasClass('active') ) {
-                    var nextActive = tab.next(':visible');
-                    if ( nextActive.length != 0 ) {
-                        nextActive.first().children('a').first().click();
-                    } else {
-                        var prevActive = tab.prev(':visible');
-                        if ( prevActive.length != 0 )
-                            prevActive.first().children('a').first().click();
-                    }
-                }
-                tab.hide();
+                $('#'+id).removeClass('active');
                 tab.removeClass('active');
                 parent.removeClass('active');
                 lizmapEvent = 'dockclosed';
