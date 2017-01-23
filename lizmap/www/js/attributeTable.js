@@ -1472,6 +1472,8 @@ var lizAttributeTable = function() {
                     if ('alias' in aConfig && aConfig['alias']) {
                         if( aCallBack)
                             aCallBack( aName, aFilter, data.features, aConfig['alias'] );
+
+                        $('body').css('cursor', 'auto');
                     } else
                         $.get(service, {
                             'SERVICE':'WFS'
