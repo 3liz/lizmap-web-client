@@ -951,7 +951,9 @@ var lizMap = function() {
           if ( layer.nestedLayers.length != 0 ) {
               var scales = getLayerScale(layer,null,null);
               wmsLayer.minScale = scales.maxScale;
+              wmsLayer.options.minScale = scales.maxScale;
               wmsLayer.maxScale = scales.minScale;
+              wmsLayer.options.maxScale = scales.minScale;
           }
           layers.push( wmsLayer );
       }
