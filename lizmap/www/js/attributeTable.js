@@ -138,7 +138,7 @@ var lizAttributeTable = function() {
 
                     var title = config.layers[ attributeLayersDic[ cleanName ] ][ 'title' ];
                     tHtml+= '<tr>';
-                    tHtml+= '   <td>' + title + '</td><td><button value=' + cleanName + ' class="btn-open-attribute-layer">Detail</button></td>';
+                    tHtml+= '   <td>' + title + '</td><td><button value=' + cleanName + ' class="btn-open-attribute-layer">'+ lizDict['attributeLayers.toolbar.btn.detail'] +'</button></td>';
                     tHtml+= '</tr>';
                 }
 
@@ -1655,6 +1655,8 @@ var lizAttributeTable = function() {
                     if ('alias' in aConfig && aConfig['alias']) {
                         if( aCallBack)
                             aCallBack( aName, aFilter, data.features, aConfig['alias'] );
+
+                        $('body').css('cursor', 'auto');
                     } else
                         $.get(service, {
                             'SERVICE':'WFS'
@@ -2441,9 +2443,12 @@ var lizAttributeTable = function() {
                     && config.layers[featureType]['selectedFeatures'].length
                 ) {
                     layer.params['SELECTION'] = layerN + ':' + config.layers[featureType]['selectedFeatures'].join();
+                    config.layers[featureType]['request_params']['selection'] = layer.params['SELECTION'];
                 }
-                else
+                else {
                     delete layer.params['SELECTION'];
+                    config.layers[featureType]['request_params']['selection'] = null;
+                }
 
                 // Build data to update layer drawing and other components
                 var typeNamePile = [ featureType ];
@@ -2469,9 +2474,12 @@ var lizAttributeTable = function() {
                     && config.layers[featureType]['selectedFeatures'].length
                 ) {
                     layer.params['SELECTION'] = featureType + ':' + config.layers[featureType]['selectedFeatures'].join();
+                    config.layers[featureType]['request_params']['selection'] = layer.params['SELECTION'];
                 }
-                else
+                else {
                     delete layer.params['SELECTION'];
+                    config.layers[featureType]['request_params']['selection'] = null;
+                }
 
                 // Redraw openlayers layer
                 if( config.layers[featureType]['geometryType'] != 'none'

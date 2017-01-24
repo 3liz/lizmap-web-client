@@ -950,7 +950,9 @@ var lizMap = function() {
           if ( layer.nestedLayers.length != 0 ) {
               var scales = getLayerScale(layer,null,null);
               wmsLayer.minScale = scales.maxScale;
+              wmsLayer.options.minScale = scales.maxScale;
               wmsLayer.maxScale = scales.minScale;
+              wmsLayer.options.maxScale = scales.minScale;
           }
           layers.push( wmsLayer );
       }
@@ -3711,7 +3713,7 @@ var lizMap = function() {
       if ( filter.length !=0 )
         url += '&FILTER='+ filter.join(';');
       if ( selection.length !=0 )
-        url += '&SELECTION='+ filter.join(';');
+        url += '&SELECTION='+ selection.join(';');
       window.open(url);
       return false;
     });
@@ -4613,13 +4615,16 @@ OpenLayers.Control.HighlightFeature = OpenLayers.Class(OpenLayers.Control, {
         $('#geolocation .menu-content button').removeAttr('disabled');
       },
       "locationfailed": function(evt) {
-        if ( vector.features.length == 0 )
-          mAddMessage(lizDict['geolocation.failed'],'error',true);
+        if ( vector.features.length == 0 && $('#geolocation-locationfailed').length != 0)
+          mAddMessage('<span id="geolocation-locationfailed">'+lizDict['geolocation.failed']+'</span>','error',true);
       },
       "activate": function(evt) {
+          $('#geolocation-stop').removeAttr('disabled');
       },
       "deactivate": function(evt) {
-        $('#geolocation .menu-content button').attr('disabled','disabled');
+        firstGeolocation = true;
+        this.bind = false;
+        $('#geolocation .menu-content button').attr('disabled','disabled').removeClass('active');
         vector.destroyFeatures();
       }
     });
@@ -4634,7 +4639,7 @@ OpenLayers.Control.HighlightFeature = OpenLayers.Class(OpenLayers.Control, {
 
         minidockclosed: function(e) {
             if ( e.id == 'geolocation' ) {
-                if (geolocate.active && !geolocate.getCurrentLocation() )
+                if (geolocate.active && vector.features.length == 0 )
                     geolocate.deactivate();
             }
         }
@@ -4652,10 +4657,12 @@ OpenLayers.Control.HighlightFeature = OpenLayers.Class(OpenLayers.Control, {
         return false;
       var self = $(this);
       if ( self.hasClass('active') ) {
-        self.removeClass('btn-info active').addClass('btn-success');
+        $('#geolocation-center').removeAttr('disabled');
+        self.removeClass('active');
         geolocate.bind = false;
       } else {
-        self.removeClass('btn-success').addClass('btn-info active');
+        self.addClass('active');
+        $('#geolocation-center').attr('disabled','disabled');
         geolocate.bind = true;
       }
       return false;
@@ -4668,9 +4675,11 @@ OpenLayers.Control.HighlightFeature = OpenLayers.Class(OpenLayers.Control, {
     }
     $('#geolocation-stop').click(function(){
       stopGeolocation();
+      return false;
     });
-    $('#geolocation button.btn-geolocation-clear').click(function(){
-      stopGeolocation();
+    $('#geolocation button.btn-geolocation-close').click(function(){
+      $('#button-geolocation').click();
+      return false;
     });
   }
 
