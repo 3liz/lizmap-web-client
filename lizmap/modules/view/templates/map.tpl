@@ -93,7 +93,6 @@
 
 <div id="loading" class="ui-dialog-content ui-widget-content" title="{@view~map.loading.title@}">
   <p>
-    {image $j_themepath.'css/img/loading.gif'}
   </p>
 </div>
 

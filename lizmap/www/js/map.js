@@ -6589,6 +6589,7 @@ $(document).ready(function () {
     , resizable: false
     , closeOnEscape: false
     , dialogClass: 'liz-dialog-wait'
+    , minHeight: 128
   })
   .parent().removeClass('ui-corner-all')
   .children('.ui-dialog-titlebar').removeClass('ui-corner-all');
@@ -6596,4 +6597,5 @@ $(document).ready(function () {
   OpenLayers.DOTS_PER_INCH = 96;
   // initialize LizMap
   lizMap.init();
+  $( "#loading" ).css('min-height','128px');
 });
