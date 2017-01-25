@@ -39,8 +39,10 @@ class jZipCreator {
     /**
      * adds a physical file to the zip archive
      *
-     * @param  string  $filename  the path of the physical file you want to add
-     * @param  string  $zipPath  the path of the file inside the zip archive
+     * @param  string $filename the path of the physical file you want to add
+     * @param string $zipFileName
+     * @throws jException
+     * @internal param string $zipPath the path of the file inside the zip archive
      */
     public function addFile($filename, $zipFileName=''){
         if($zipFileName == '') $zipFileName = $filename;
@@ -54,7 +56,10 @@ class jZipCreator {
     /**
      * adds the content of a directory to the zip archive
      *
-     * @param  string  $path  the path of the physical directory you want to add
+     * @param  string $path the path of the physical directory you want to add
+     * @param string $zipDirPath
+     * @param bool $recursive
+     * @throws jException
      */
     public function addDir($path, $zipDirPath='', $recursive = false){
         if(file_exists($path)){

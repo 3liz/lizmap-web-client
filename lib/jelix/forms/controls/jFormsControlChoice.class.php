@@ -31,6 +31,7 @@ class jFormsControlChoice extends jFormsControlGroups {
     /**
      * list of item. Each value is an array which contains corresponding controls of the item
      * an item could not have controls, in this case its value is an empty array
+     *
      */
     public $items = array();
 

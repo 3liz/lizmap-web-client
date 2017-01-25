@@ -281,6 +281,7 @@ class redisCacheDriver implements jICacheDriver {
                 $this->redis->rpush('jcacheredisdelkeys', $this->key_prefix);
                 return true;
         }
+        return false;
     }
 
     protected function getUsedKey($key) {
@@ -314,7 +315,7 @@ class redisCacheDriver implements jICacheDriver {
             foreach($val as $k=>$v) {
                 $val[$k] = $this->unesc($v);
             }
-            return $val;
         }
+        return $val;
     }
 }

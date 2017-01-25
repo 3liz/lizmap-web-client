@@ -29,7 +29,18 @@ class  jLogSoapMessage extends jLogMessage {
      * @var string
      */
     protected $duration;
+    /**
+     * @var string
+     */
+    protected $functionName;
 
+    /**
+     * jLogSoapMessage constructor.
+     * @param $function_name
+     * @param SoapClient $soapClient
+     * @param string $category
+     * @param int $duration
+     */
     public function __construct($function_name, $soapClient, $category='default', $duration = 0) {
         $this->category = $category;
         $this->headers = $soapClient->__getLastRequestHeaders();
@@ -123,13 +134,17 @@ class jSoapClient {
 
     /**
      * @param string $profile  the profile name
+     * @return object|null the profile data
      */
     public static function get($profile = '') {
         return jProfiles::getOrStoreInPool('jsoapclient', $profile, array('jSoapClient', '_getClient'));
     }
 
     /**
-     * callback method for jprofiles. Internal use.
+     * callback method for jProfiles. Internal use.
+     * @param array $profile profile parameters
+     * @return SoapClient
+     * @see jProfiles
      */
     public static function _getClient($profile) {
         $wsdl = null;

@@ -62,17 +62,10 @@ class ociDbConnection extends jDbConnection {
             $rs->_connector = $this;
             if($res = $rs->execute()) {
                 return $rs;
-            } else {
-                $rs = false;
-                $err = oci_error();
-                throw new jException('jelix~db.error.query.bad', $err['message'].'('.$queryString.')');
             }
-        } else {
-            $rs = false;
-            $err = oci_error();
-            throw new jException('jelix~db.error.query.bad', $err['message'].'('.$queryString.')');
         }
-        return $rs;
+        $err = oci_error();
+        throw new jException('jelix~db.error.query.bad', $err['message'].'('.$queryString.')');
     }
 
     protected function _doLimitQuery($queryString, $offset, $number) {
@@ -129,7 +122,7 @@ class ociDbConnection extends jDbConnection {
             trigger_error(get_class($this).'::lastInstertId invalid sequence name', E_USER_WARNING);
             return false;
         }
-        $cur = $this->query('select ' . $seqname . '.currval as "id" from dual');
+        $cur = $this->query('select ' . $seqName . '.currval as "id" from dual');
         if($cur) {
             $res = $cur->fetch();
             if($res) {

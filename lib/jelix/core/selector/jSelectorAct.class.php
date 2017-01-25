@@ -25,9 +25,10 @@ class jSelectorAct extends jSelectorActFast {
     protected $forUrl = false;
 
     /**
-     * @param string $sel  the selector
+     * @param string $sel the selector
      * @param boolean $enableRequestPart true if the selector can contain the request part
-     * @param boolean $toRetrieveUrl  true if the goal to have this selector is to generate an url
+     * @param boolean $toRetrieveUrl true if the goal to have this selector is to generate an url
+     * @throws jExceptionSelector
      */
     function __construct($sel, $enableRequestPart = false, $toRetrieveUrl = false){
         $coord = jApp::coord();

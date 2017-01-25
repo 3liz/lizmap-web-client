@@ -23,7 +23,7 @@ class date_htmlFormWidget extends \jelix\forms\HtmlWidget\WidgetBase {
         $confDate = &jApp::config()->datepickers;
         $datepicker_default_config = jApp::config()->forms['datepicker'];
 
-        $config = isset($ctrl->datepickerConfig)?$ctrl->datepickerConfig:$datepicker_default_config;
+        $config = isset($this->ctrl->datepickerConfig) ? $this->ctrl->datepickerConfig : $datepicker_default_config;
         $resp->addJSLink($bp.$confDate[$config]);
     }
 
@@ -52,7 +52,7 @@ class date_htmlFormWidget extends \jelix\forms\HtmlWidget\WidgetBase {
     function outputControl() {
         $formName = $this->builder->getName();
         $attr = $this->getControlAttributes();
-        $value = $this->getValue($this->ctrl);
+        $value = $this->getValue();
 
 
         $attr['id'] = $formName.'_'.$this->ctrl->ref.'_';

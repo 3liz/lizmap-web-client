@@ -177,7 +177,7 @@ class ociDbTools extends jDbTools {
                     $sqlai = "SELECT 'Y' FROM USER_SEQUENCES US
                                 WHERE US.SEQUENCE_NAME = '".$sequence."'";
                     $rsai = $this->_conn->query ($sqlai);
-                    if ($this->_conn->query($sqlai)->fetch()){
+                    if ($rsai->fetch()){
                         $field->autoIncrement  = true;
                         $field->sequence = $sequence;
                     }

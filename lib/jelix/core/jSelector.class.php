@@ -34,8 +34,10 @@ class jSelectorFactory {
 
     /**
      * Create an instance of a selector object corresponding to the given selector
-     * @param string $selstr  the selector. It should be a full selector : "type:module~resource" (not "module~resource")
+     * @param string $selstr the selector. It should be a full selector : "type:module~resource" (not "module~resource")
+     * @param bool $defaulttype
      * @return jISelector the corresponding selector
+     * @throws jExceptionSelector
      */
     static public function create ($selstr, $defaulttype=false) {
         if (is_string($defaulttype) && strpos($selstr, ':') === false) {

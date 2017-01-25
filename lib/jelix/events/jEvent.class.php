@@ -83,6 +83,7 @@ class jEvent {
     /**
     * gets the given param
     * @param string $name the param name
+    * @return string|null the value or null if the parameter does not exist
     * @deprecated since Jelix 1.6
     */
     public function getParam ($name){
@@ -107,8 +108,8 @@ class jEvent {
     * eg, we want to know if we have failed = true, we do
     * @param string $responseName the param we're looking for
     * @param mixed $value the value we're looking for
-    * @param ref $response the response that have this value
-    * @return boolean wether or not we have founded the response value
+    * @param mixed[] $response the response that have this value
+    * @return boolean whether or not we have founded the response value
     */
     public function inResponse ($responseName, $value, & $response){
         $founded  = false;
@@ -179,9 +180,8 @@ class jEvent {
     protected static $hashListened = array ();
 
     /**
-    * return the list of all listener corresponding to an event
+    * construct the list of all listeners corresponding to an event
     * @param string $eventName the event name we wants the listeners for.
-    * @return array of objects
     */
     protected static function loadListenersFor ($eventName) {
         if (!isset($GLOBALS['JELIX_EVENTS'])) {

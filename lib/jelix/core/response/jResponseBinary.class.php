@@ -57,7 +57,8 @@ final class jResponseBinary  extends jResponse {
 
     /**
      * send the content or the file to the browser.
-     * @return boolean    true it it's ok
+     * @return bool true it it's ok
+     * @throws jException
      */
     public function output(){
 

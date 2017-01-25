@@ -13,12 +13,12 @@
 abstract class jXMLFeedReader {
 
     /**
-    * @var jRSS20Info or jAtom10Info
+    * @var jRSS20Info|jAtom10Info
     */
     protected $infos;
     
     /**
-    * @var array of jRSSItem or jAtom10Item
+    * @var jRSS20Item[]|jAtom10Item[]
     */
     protected $items;
     
@@ -33,9 +33,10 @@ abstract class jXMLFeedReader {
     private $_infos_analyzed = false;
 
     /**
-    * read an flux with an url parameter
-    * @param string $url
-    */
+     * read an flux with an url parameter
+     * @param string $url
+     * @throws jException
+     */
     public function __construct($url){
 
         try{
@@ -65,7 +66,7 @@ abstract class jXMLFeedReader {
     }
 
     /**
-    * @return array of jXMLFeedInfo
+    * @return jRSS20Info|jAtom10Info
     */
     public function getInfos() {
         if(!$this->_infos_analyzed){
@@ -76,7 +77,7 @@ abstract class jXMLFeedReader {
     }
 
     /**
-    * @return array of jXMLFeedItem
+    * @return jXMLFeedItem[]
     */
     public function getItems() {
         if(!$this->_items_analyzed){
@@ -89,6 +90,7 @@ abstract class jXMLFeedReader {
     
     /**
      * return the SimpleXML structure corresponding to the feed
+     * @return SimpleXMLElement
      */
     public function getXML(){
         return $this->xml;

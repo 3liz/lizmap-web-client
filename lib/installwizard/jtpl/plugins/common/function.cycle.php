@@ -23,8 +23,10 @@
  * {cycle}
  * </pre>
  * @paramm jTpl $tpl
- * @param string,array $param the name of the cycle, or the list of values
- * @return string
+ * @param $tpl
+ * @param string $param
+ * @throws jException
+ * @internal param $string ,array $param the name of the cycle, or the list of values
  */
 function jtpl_function_common_cycle($tpl, $param=''){
     if(is_array($param)){

@@ -42,6 +42,7 @@
  *
  * @param jTpl $tpl template engine
  * @param array $params parameters for the url
+ * @return string PHP generated code
  */
 function jtpl_cfunction_html_swfbiscuit($tpl, $params) {
 

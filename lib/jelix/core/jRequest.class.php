@@ -198,9 +198,11 @@ abstract class jRequest {
 
     /**
      * get a response object.
-     * @param string $name the name of the response type (ex: "html")
+     * @param string $type
      * @param boolean $useOriginal true:don't use the response object redefined by the application
      * @return jResponse the response object
+     * @throws jException
+     * @internal param string $name the name of the response type (ex: "html")
      */
     public function getResponse($type='', $useOriginal = false){
 

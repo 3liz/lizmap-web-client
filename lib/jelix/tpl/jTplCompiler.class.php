@@ -250,6 +250,8 @@ class jTplCompiler
      * It is called on each template tag {xxxx }
      * @param array $matches a matched item
      * @return string the corresponding php code of the tag (with php tag).
+     * @throws Exception
+     * @throws jException
      */
     public function _callback ($matches) {
         list(,$tag, $firstcar) = $matches;
@@ -658,7 +660,6 @@ class jTplCompiler
      *                      and the name of the plugin function, or false if not found
      */
     protected function _getPlugin ($type, $name) {
-        $foundPath = '';
 
         $config = jApp::config();
         if (isset($config->{'_tplpluginsPathList_'.$this->outputType})) {

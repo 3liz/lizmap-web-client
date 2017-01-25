@@ -271,7 +271,7 @@ class jFormsCompiler_jf_1_1 extends jFormsCompiler_jf_1_0 {
         }
 
         $source[]='$topctrl = $ctrl;';
-        $ctrlcount = $this->readChildControls($source, 'group', $control, $tagtoIgnore);
+        $this->readChildControls($source, 'group', $control, $tagtoIgnore);
         /*if ($ctrlcount == 0) {
              throw new jException('jelix~formserr.no.child.control',array('group',$this->sourceFile));
         }*/
@@ -317,29 +317,30 @@ class jFormsCompiler_jf_1_1 extends jFormsCompiler_jf_1_0 {
             }
 
             if(isset($item->label['locale'])){
-                $label='';
                 $labellocale=(string)$item->label['locale'];
                 $source[]='$topctrl->createItem(\''.str_replace("'","\\'",$value).'\', jLocale::get(\''.$labellocale.'\'));';
             }else{
                 $label=(string)$item->label;
-                $labellocale='';
                 $source[]='$topctrl->createItem(\''.str_replace("'","\\'",$value).'\', \''.str_replace("'","\\'",$label).'\');';
             }
 
-            $ctrlcount = $this->readChildControls($source, 'choice', $item, array('label'), str_replace("'","\\'",$value));
-            //$itemCount ++;
+            $this->readChildControls($source, 'choice', $item, array('label'), str_replace("'","\\'",$value));
         }
-
-        /*if ($itemCount == 0) {
-            throw new jException('jelix~formserr.no.child.control',array('choice',$this->sourceFile));
-        }*/
 
         $source[]='$topctrl->defaultValue=\''.str_replace('\'','\\\'',$selectedvalue).'\';';
         $source[]='$ctrl = $topctrl;';
         return false;
     }
 
-
+    /**
+     * @param array $source
+     * @param string $controltype
+     * @param SimpleXMLElement $xml
+     * @param array $ignore
+     * @param string $itemname
+     * @return int
+     * @throws jException
+     */
     protected function readChildControls(&$source, $controltype, $xml, $ignore, $itemname='') {
         if($itemname != '')
             $itemname = ",'$itemname'";

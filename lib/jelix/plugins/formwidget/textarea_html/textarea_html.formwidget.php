@@ -38,7 +38,7 @@ class textarea_htmlFormWidget extends \jelix\forms\HtmlWidget\WidgetBase {
 
     function outputControl() {
         $attr = $this->getControlAttributes();
-        $value = $this->getValue($this->ctrl);
+        $value = $this->getValue();
 
         if (!isset($attr['rows']))
             $attr['rows'] = $this->ctrl->rows;

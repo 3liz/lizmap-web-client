@@ -53,9 +53,10 @@ class jControllerCmdLine extends jController {
     protected $_parameters;
 
     /**
-    *
-    * @param jRequest $request
-    */
+     *
+     * @param jRequest $request
+     * @throws jException
+     */
     function __construct ($request){
         // we receive null when the controller is created only for help
         if($request == null)

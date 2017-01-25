@@ -103,7 +103,6 @@ class pgsqlDbConnection extends jDbConnection {
         // http://www.postgresql.org/docs/9.1/static/libpq-pgservice.html
         // If given, no need to add host, user, database, port and password
         if(isset($this->profile['service']) && $this->profile['service'] != ''){
-            $useService = true;
             $str = 'service=\''.$this->profile['service'].'\''.$str;
         }
         else {
@@ -163,7 +162,6 @@ class pgsqlDbConnection extends jDbConnection {
             $rs= new pgsqlDbResultSet ($qI);
             $rs->_connector = $this;
         }else{
-            $rs = false;
             throw new jException('jelix~db.error.query.bad',  pg_last_error($this->_connection).'('.$queryString.')');
         }
         return $rs;

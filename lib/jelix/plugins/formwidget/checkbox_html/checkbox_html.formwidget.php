@@ -27,7 +27,7 @@ class checkbox_htmlFormWidget extends \jelix\forms\HtmlWidget\WidgetBase {
     function outputControl() {
         $attr = $this->getControlAttributes();
 
-        if($this->ctrl->valueOnCheck == $this->getValue($this->ctrl)){
+        if($this->ctrl->valueOnCheck == $this->getValue()){
             $attr['checked'] = "checked";
         }
         $attr['value'] = $this->ctrl->valueOnCheck;

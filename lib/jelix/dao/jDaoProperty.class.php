@@ -92,11 +92,13 @@ class jDaoProperty {
     public $comment = '';
 
     /**
-    * constructor.
-    * @param array  $attributes  list of attributes of a simpleXmlElement
-    * @param jDaoParser $parser the parser on the dao file
-    * @param jDbTools $tools
-    */
+     * constructor.
+     * @param $aAttributes
+     * @param jDaoParser $parser the parser on the dao file
+     * @param jDbTools $tools
+     * @throws jDaoXmlException
+     * @internal param array $attributes list of attributes of a simpleXmlElement
+     */
     function __construct ($aAttributes, $parser, $tools){
         $needed = array('name', 'fieldname', 'table', 'datatype', 'required',
                         'minlength', 'maxlength', 'regexp', 'sequence', 'default', 'autoincrement');

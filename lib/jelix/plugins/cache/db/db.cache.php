@@ -94,10 +94,11 @@ class dbCacheDriver implements jICacheDriver {
     }
 
     /**
-    * read a specific data in the cache.
-    * @param mixed   $key   key or array of keys used for storing data in the cache
-    * @return mixed $data      data or false if failure
-    */
+     * read a specific data in the cache.
+     * @param mixed $key key or array of keys used for storing data in the cache
+     * @return mixed $data      data or false if failure
+     * @throws jException
+     */
     public function get ($key) {
 
         $dao = jDao::get($this->_dao, $this->_dbprofile);
@@ -136,12 +137,13 @@ class dbCacheDriver implements jICacheDriver {
     }
 
     /**
-    * set a specific data in the cache
-    * @param string $key    key used for storing data
-    * @param mixed  $var    data to store
-    * @param int    $ttl    data time expiration. -1 means no change
-    * @return boolean false if failure
-    */
+     * set a specific data in the cache
+     * @param string $key key used for storing data
+     * @param mixed $var data to store
+     * @param int $ttl data time expiration. -1 means no change
+     * @return bool false if failure
+     * @throws jException
+     */
     public function set ($key, $var, $ttl=0){
 
         try{
@@ -155,7 +157,6 @@ class dbCacheDriver implements jICacheDriver {
         }
 
         $dao = jDao::get($this->_dao, $this->_dbprofile);
-        $n = 0;
         switch($ttl){
             case -1:
                 $date=-1;

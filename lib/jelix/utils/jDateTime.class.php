@@ -99,6 +99,7 @@ class jDateTime {
      * @link http://php.net/manual/fr/function.date.php
      * @param string $lf Date string format
      * @param timestamp $str The timestamp to parse
+     * @return boolean false if the string $str has a bad format
      */
     private function _createDateFromFormat($lf, $str) {
         if ($res = date_parse_from_format($lf, $str)) {
@@ -208,6 +209,7 @@ class jDateTime {
      * read a string to extract date values
      * @param string $str the string date
      * @param int $format one of the class constant xxx_FORMAT, or -1 if it should use the default format
+     * @return boolean true if the format of $str has been parsed well
      * @see jDateTime:$defaultFormat
      */
     function setFromString($str,$format=-1){

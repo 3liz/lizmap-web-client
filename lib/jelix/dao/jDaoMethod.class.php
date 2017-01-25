@@ -38,9 +38,10 @@ class jDaoMethod {
     private $_groupBy=null;
 
     /**
-     * @param simpleXmlElement $method  the xml element describing the method to generate
-     * @param jDaoParser  $parser the parser on a dao file
-    */
+     * @param simpleXmlElement $method the xml element describing the method to generate
+     * @param jDaoParser $parser the parser on a dao file
+     * @throws jDaoXmlException
+     */
     function __construct ($method, $parser){
         $this->_parser = $parser;
 
@@ -171,6 +172,10 @@ class jDaoMethod {
     public function getBody (){ return $this->_body;}
     public function getGroupBy() { return $this->_groupBy;}
 
+    /**
+     * @param simpleXmlElement $conditions
+     * @param bool $subcond
+     */
     private function _parseConditions($conditions, $subcond=true){
         if (isset ($conditions['logic'])){
             $kind = strtoupper((string)$conditions['logic']);

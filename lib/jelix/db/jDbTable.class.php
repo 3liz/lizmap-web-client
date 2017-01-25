@@ -25,7 +25,7 @@ abstract class jDbTable {
     protected $schema;
   
     /**
-     * @var array of jDbColumns. null means "columns are not loaded"
+     * @var jDbColumn[]. null means "columns are not loaded"
      */
     protected $columns = null;
     
@@ -35,17 +35,17 @@ abstract class jDbTable {
     protected $primaryKey = null;
 
     /**
-     * @var array list unique keys, jDbUniqueKey. null means "unique key are not loaded"
+     * @var jDbUniqueKey[] list unique keys. null means "unique key are not loaded"
      */
     protected $uniqueKeys = null;
 
     /**
-     * @var array list of indexes, jDbIndex. null means "indexes are not loaded"
+     * @var jDbIndex[] list of indexes. null means "indexes are not loaded"
      */
     protected $indexes = null;
 
     /**
-     * @var array list of references, jDbReference. null means "references are not loaded"
+     * @var jDbReference[] list of references. null means "references are not loaded"
      */
     protected $references = null;
 
@@ -117,7 +117,7 @@ abstract class jDbTable {
         if ($pk == $key)
             return;
         if ($pk !== false)
-            $this->_removeIndex($pk);
+            $this->_dropIndex($pk);
         $this->_createIndex($key);
         $this->primaryKey = $key;
     }
@@ -125,7 +125,7 @@ abstract class jDbTable {
     public function dropPrimaryKey() {
         $pk = $this->getPrimaryKey();
         if ($pk !== false) {
-            $this->_removeIndex($pk);
+            $this->_dropIndex($pk);
             $this->primaryKey = false;
         }
     }
@@ -188,7 +188,7 @@ abstract class jDbTable {
         $this->alterUniqueKey($key);
     }
 
-    public function alterUniqueKey(jDbUniqueKey $key) {
+    public function alterUniqueKey(jDbUniqueKey $index) {
         $idx = $this->getUniqueKey($index->name);
         if ($idx) {
             $this->_dropIndex($idx);

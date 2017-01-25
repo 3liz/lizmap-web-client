@@ -358,6 +358,7 @@ abstract class jDbConnection {
     * you should override it into the driver
     * @param string $text the text to escape
     * @param boolean $binary true if the content of the string is a binary content
+    * @return string the escaped string
     */
     protected function _quote($text, $binary){
         return addslashes($text);

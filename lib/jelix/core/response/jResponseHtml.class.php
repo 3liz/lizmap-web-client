@@ -260,7 +260,7 @@ class jResponseHtml extends jResponseBasicHtml {
     *
     * @param string $module  the module where file is stored
     * @param mixed $src the relative path inside the {module}/www/ directory
-    * @params array $params additionnal parameters for the generated tag (a media attribute for stylesheet for example)
+    * @param array $params additionnal parameters for the generated tag (a media attribute for stylesheet for example)
     * @param boolean $forIE if true, the script sheet will be only for IE browser. string values possible (ex:'lt IE 7')
     */
     public function addJSLinkModule ($module, $src, $params=array(), $forIE=false){ 
@@ -304,7 +304,7 @@ class jResponseHtml extends jResponseBasicHtml {
 
      /**
      * returns all CSS links
-     * @var array  key = url, value=link attributes
+     * @return array  key = url, value=link attributes
      */
     public function getCSSLinks() { return $this->_CSSLink; }
 
@@ -316,7 +316,7 @@ class jResponseHtml extends jResponseBasicHtml {
 
     /**
      * returns all CSS links for IE
-     * @var array  key = url, value=link attributes + optional parameter _iecondition
+     * @return array  key = url, value=link attributes + optional parameter _iecondition
      */
      public function getCSSIELinks() { return $this->_CSSIELink; }
 

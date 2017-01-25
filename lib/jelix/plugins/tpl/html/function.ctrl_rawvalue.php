@@ -15,8 +15,9 @@
  * and without to display values of child controls. You should use this plugin inside a formcontrols block
  *
  * @param jTpl $tpl template engine
- * @param string $ctrlname  the name of the control to display (required if it is outside a formcontrols)
- * @param string $sep  separator to display values of a multi-value control
+ * @param string $ctrlname the name of the control to display (required if it is outside a formcontrols)
+ * @param string $sep separator to display values of a multi-value control
+ * @throws jException
  */
 function jtpl_function_html_ctrl_rawvalue($tpl, $ctrlname='', $sep =', '){
 
