@@ -933,7 +933,7 @@ class serviceCtrl extends jController {
     $rep->mimeType = $mime;
     $rep->content = $data;
     $rep->doDownload  =  false;
-    $rep->outputFileName  =  'getPrint.'.$this->param('format');
+    $rep->outputFileName  =  $this->project->getKey() . '_' . preg_replace("#[\W]+#", '_', $this->params['template']) . '.' . $this->params['format'];
 
    // Log
    $logContent ='
