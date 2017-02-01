@@ -18,20 +18,6 @@
             </ul>
         </div>
 
-        <div class="btn-group" role="group" >
-            <button type="button" class="btn btn-mini dropdown-toggle layerActionOpacity disabled" data-toggle="dropdown" aria-expanded="false" title="{@view~map.switcher.layer.opacity.title@}">
-                <i class="icon-eye-close icon-white"></i>
-              <span class="caret"></span>
-            </button>
-            <ul class="dropdown-menu" role="menu">
-                <li><a href="#" class="btn-opacity-layer">20</a></li>
-                <li><a href="#" class="btn-opacity-layer">40</a></li>
-                <li><a href="#" class="btn-opacity-layer">60</a></li>
-                <li><a href="#" class="btn-opacity-layer">80</a></li>
-                <li><a href="#" class="btn-opacity-layer">100</a></li>
-            </ul>
-        </div>
-
         {if $layerExport}
         <div class="btn-group" role="group" >
             <button type="button" class="btn btn-mini dropdown-toggle layerActionExport disabled" data-toggle="dropdown" aria-expanded="false" title="{@view~map.switcher.layer.export.title@}">
