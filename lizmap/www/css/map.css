@@ -2191,6 +2191,15 @@ a.btn.btn-opacity-layer.active {
   background : black;
   z-index: 1040;
 }
+#loading p {
+  display: none;
+}
+#loading {
+  background-image: url(img/loading.gif);
+  background-repeat: no-repeat;
+  background-position-x: center;
+  background-position-y: center;
+}
 
 /* Transparent images instead of pink tiles */
 .olImageLoadError {
