@@ -15,8 +15,8 @@
 
 <menulist ref="onlyMaps" required="true">
   <label locale="admin~admin.form.admin_services.onlyMaps.label"/>
-  <item value="0" selected="true">off</item>
-  <item value="1">on</item>
+  <item value="off" selected="true" locale="admin~admin.form.admin_services.off.label"/>
+  <item value="on" locale="admin~admin.form.admin_services.on.label"/>
 </menulist>
 
 <menulist ref="defaultRepository">
@@ -85,8 +85,8 @@
 
 <menulist ref="allowUserAccountRequests">
   <label locale="admin~admin.form.admin_services.allowUserAccountRequests.label"/>
-  <item value="off" selected="true">off</item>
-  <item value="on">on</item>
+  <item value="off" selected="true" locale="admin~admin.form.admin_services.off.label"/>
+  <item value="on" locale="admin~admin.form.admin_services.on.label"/>
 </menulist>
 
 <input ref="adminContactEmail" type="email">
