@@ -101,7 +101,7 @@ class configCtrl extends jController {
     // Set form data values
     foreach($services->getProperties() as $ser){
       $form->setData($ser, $services->$ser);
-      if($ser == 'allowUserAccountRequests')
+      if($ser == 'allowUserAccountRequests' || $ser == 'onlyMaps')
         if($services->$ser)
           $form->setData($ser, 'on');
         else
@@ -145,7 +145,7 @@ class configCtrl extends jController {
     // Set form data values
     foreach($services->getProperties() as $ser){
       $form->setData($ser, $services->$ser);
-      if($ser == 'allowUserAccountRequests')
+      if($ser == 'allowUserAccountRequests' || $ser == 'onlyMaps')
         if($services->$ser)
           $form->setData($ser, 'on');
         else
