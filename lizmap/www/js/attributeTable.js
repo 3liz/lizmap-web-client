@@ -19,6 +19,11 @@ var lizAttributeTable = function() {
                 lizMap.lizmapLayerFilterActive = true;
             }
 
+            var limitDataToBbox = false;
+            if ( 'limitDataToBbox' in config.options && config.options.limitDataToBbox == 'True'){
+                limitDataToBbox = true;
+            }
+
             if (!('attributeLayers' in config))
                 return -1;
 
@@ -138,7 +143,7 @@ var lizAttributeTable = function() {
 
                     var title = config.layers[ attributeLayersDic[ cleanName ] ][ 'title' ];
                     tHtml+= '<tr>';
-                    tHtml+= '   <td>' + title + '</td><td><button value=' + cleanName + ' class="btn-open-attribute-layer">'+ lizDict['attributeLayers.toolbar.btn.detail'] +'</button></td>';
+                    tHtml+= '   <td>' + title + '</td><td><button value=' + cleanName + ' class="btn btn-open-attribute-layer">'+ lizDict['attributeLayers.toolbar.btn.detail'] +'</button></td>';
                     tHtml+= '</tr>';
                 }
 
@@ -149,15 +154,35 @@ var lizAttributeTable = function() {
                 $('button.btn-open-attribute-layer')
                 .click(function(){
                     var cleanName = $(this).val();
+
+                    // Disable attribute table if limitDataToBbox and layer not visible in map
+                    if(limitDataToBbox){
+                        var layer = lizMap.map.getLayersByName( cleanName )[0];
+                        var ms = lizMap.map.getScale();
+                        if( layer ) {
+                            var lvisibility = layer.maxScale < ms && ms < layer.minScale;
+                            if( !lvisibility ){
+                                var msg = lizDict['attributeLayers.msg.layer.not.visible'];
+                                lizMap.addMessage( msg, 'info', true).attr('id','lizmap-attribute-message');
+                                return false;
+                            }
+                        }
+                    }
+
+                    // Add Div if not already there
                     var lname = attributeLayersDic[cleanName];
                     if( !$('#nav-tab-attribute-layer-' + cleanName ).length )
                         addLayerDiv(lname);
-                        var aTable = '#attribute-layer-table-'+cleanName;
+                    var aTable = '#attribute-layer-table-'+cleanName;
+
+                    // Get data and fill attribute table
                     var dFilter = null;
                     getAttributeFeatureData( lname, dFilter, null, function(someName, someNameFilter, someNameFeatures, someNameAliases){
                         buildLayerAttributeDatatable( someName, aTable, someNameFeatures, someNameAliases );
                     });
+
                     $('#nav-tab-attribute-layer-' + cleanName + ' a' ).tab('show');
+
                     return false;
                 })
                 .hover(
@@ -317,6 +342,16 @@ var lizAttributeTable = function() {
                 }
 
 
+                // Refresh button (if limitDataToBbox is true)
+                if( limitDataToBbox
+                    && config.layers[lname]['geometryType'] != 'none'
+                    && config.layers[lname]['geometryType'] != 'unknown'
+                ){
+                    // Add button to refresh table
+                    html+= '    <button class="btn-refresh-table btn btn-mini" value="' + cleanName + '" title="'+lizDict['attributeLayers.toolbar.btn.refresh.table.tooltip']+'">'+lizDict['attributeLayers.toolbar.btn.refresh.table.title']+'</button>';
+
+                }
+
                 // Get children content
                 var childHtml = getChildrenHtmlContent( lname );
                 var alc='';
@@ -408,6 +443,46 @@ var lizAttributeTable = function() {
                     $('#attributeLayers-tabs a:last').tab('show'); // Select first tab
                     $(tabContentId).remove(); //remove respective tab content
                 });
+
+                if(limitDataToBbox){
+                    $('#attribute-layer-'+ cleanName + ' button.btn-refresh-table')
+                    .click(function(){
+                        // Reset button tooltip & style
+                        $(this)
+                        .attr('data-original-title', lizDict['attributeLayers.toolbar.btn.refresh.table.tooltip'])
+                        .removeClass('btn-warning');
+
+                        // Disable if the layer is not visible
+                        var layer = lizMap.map.getLayersByName( cleanName )[0];
+                        var ms = lizMap.map.getScale();
+                        if( layer ) {
+                            var lvisibility = layer.maxScale < ms && ms < layer.minScale;
+                            if( !lvisibility ){
+                                var msg = lizDict['attributeLayers.msg.layer.not.visible'];
+                                lizMap.addMessage( msg, 'info', true).attr('id','lizmap-attribute-message');
+                                return false;
+                            }
+                        }else{
+                            // do nothing if no layer found
+                            return false;
+                        }
+
+                        // Refresh table
+                        var aTable = '#attribute-layer-table-'+cleanName;
+                        var dFilter = null;
+                        $('#attribute-layer-main-'+cleanName+' > div.attribute-layer-content').hide();
+                        getAttributeFeatureData( lname, dFilter, null, function(someName, someNameFilter, someNameFeatures, someNameAliases){
+                            buildLayerAttributeDatatable( someName, aTable, someNameFeatures, someNameAliases );
+                            $('#attribute-layer-main-'+cleanName+' > div.attribute-layer-content').show();
+                        });
+
+                        return false;
+                    })
+                    .hover(
+                        function(){ $(this).addClass('btn-primary'); },
+                        function(){ $(this).removeClass('btn-primary'); }
+                    );
+                }
 
                 if( childHtml ){
                     $('#attribute-layer-'+ cleanName + ' button.btn-toggle-children')
@@ -1618,7 +1693,7 @@ var lizAttributeTable = function() {
 
                 $('body').css('cursor', 'wait');
                 var geometryName = 'extent';
-                var getFeatureUrlData = lizMap.getVectorLayerWfsUrl( aName, aFilter, aFeatureID, geometryName );
+                var getFeatureUrlData = lizMap.getVectorLayerWfsUrl( aName, aFilter, aFeatureID, geometryName, limitDataToBbox );
                 $.get( getFeatureUrlData['url'], getFeatureUrlData['options'], function(data) {
                     if( !('featureCrs' in aConfig) )
                         aConfig['featureCrs'] = null;
@@ -2076,7 +2151,7 @@ var lizAttributeTable = function() {
 
             // Get features to refresh attribute table AND build children filters
             var geometryName = 'extent';
-            var getFeatureUrlData = lizMap.getVectorLayerWfsUrl( typeName, aFilter, null, geometryName );
+            var getFeatureUrlData = lizMap.getVectorLayerWfsUrl( typeName, aFilter, null, geometryName, limitDataToBbox );
 
             getAttributeFeatureData(typeName, aFilter, null, function(aName, aNameFilter, aNameFeatures, aNameAliases ){
 
@@ -3253,7 +3328,7 @@ var lizAttributeTable = function() {
             }
             //console.log( spatialFilter );
 
-            var getFeatureUrlData = lizMap.getVectorLayerWfsUrl( featureType, spatialFilter, null, null );
+            var getFeatureUrlData = lizMap.getVectorLayerWfsUrl( featureType, spatialFilter, null, null, limitDataToBbox );
             // add BBox to restrict to geom bbox
             var geomBounds = feature.geometry.clone().transform(lizMap.map.getProjection(),aProj).getBounds();
             getFeatureUrlData['options']['BBOX'] = geomBounds.toBBOX();
@@ -3483,6 +3558,24 @@ var lizAttributeTable = function() {
                 }
             }
         });
+
+        // Map events
+        function warnExtent(){
+            var btitle = lizDict['attributeLayers.toolbar.btn.refresh.table.tooltip.changed'];
+            btitle+= ' ' + lizDict['attributeLayers.toolbar.btn.refresh.table.tooltip'];
+            $('button.btn-refresh-table')
+            .attr('data-original-title', btitle)
+            .addClass('btn-warning')
+            .tooltip()
+            ;
+        }
+        if(limitDataToBbox){
+            lizMap.map.events.on({
+                moveend : function() {
+                    warnExtent();
+                }
+            });
+        }
   }
 
 
