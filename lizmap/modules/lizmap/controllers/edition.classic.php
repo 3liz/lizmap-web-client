@@ -1611,6 +1611,7 @@ class editionCtrl extends jController {
         $s_provider = $layerXmlZero->xpath('provider');
         $this->provider = (string)$s_provider[0];
         $this->layerId = $pivotId;
+        $this->layer = $lproj->getLayer( $pivotId );
         $this->layerName = $layerNamePivot;
         $this->getDataFields($datasource);
 
