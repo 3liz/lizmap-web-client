@@ -647,7 +647,7 @@ class lizmapProject{
             foreach( $this->cfg->editionLayers as $key=>$eLayer ){
                 // Check if user groups intersects groups allowed by project editor
                 // If user is admin, no need to check for given groups
-                if( property_exists($eLayer, 'acl') ){
+                if( property_exists($eLayer, 'acl') and $eLayer->acl ){
                     // Check if configured groups white list and authenticated user groups list intersects
                     $editionGroups = $eLayer->acl;
                     $editionGroups = array_map('trim', explode(',', $editionGroups));
@@ -1076,7 +1076,7 @@ class lizmapProject{
                 foreach( $configJson->editionLayers as $key=>$eLayer ){
                     // Check if user groups intersects groups allowed by project editor
                     // If user is admin, no need to check for given groups
-                    if( property_exists($eLayer, 'acl') ){
+                    if( property_exists($eLayer, 'acl') and $eLayer->acl ){
                         // Check if configured groups white list and authenticated user groups list intersects
                         $editionGroups = $eLayer->acl;
                         $editionGroups = array_map('trim', explode(',', $editionGroups));
