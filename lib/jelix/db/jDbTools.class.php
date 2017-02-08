@@ -165,8 +165,9 @@ abstract class jDbTools {
      * Return the PHP type corresponding to the given unified type
      * @param string $unifiedType
      * @return string the php type
+     * @throws Exception
      * @since 1.2
-    */
+     */
     public function unifiedToPHPType($unifiedType) {
         if(isset($this->unifiedToPhp[$unifiedType])) {
             return $this->unifiedToPhp[$unifiedType];

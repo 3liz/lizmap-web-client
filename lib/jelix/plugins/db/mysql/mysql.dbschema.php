@@ -3,7 +3,7 @@
 * @package    jelix
 * @subpackage db
 * @author     Laurent Jouanneau
-* @copyright  2005-2010 Laurent Jouanneau
+* @copyright  2005-2017 Laurent Jouanneau
 * @link        http://www.jelix.org
 * @licence     http://www.gnu.org/licenses/lgpl.html GNU Lesser General Public Licence, see LICENCE file
 */
@@ -77,7 +77,7 @@ class mysqlDbTable extends jDbTable {
 		$sql = 'ALTER TABLE '.$conn->encloseName($this->name)
                 .' CHANGE COLUMN '.$conn->encloseName($old->name)
                 .' '.$this->schema->_prepareSqlColumn($new);
-        if ($isPk && $col->autoIncrement)
+        if ($isPk && $old->autoIncrement)
             $sql .= ' AUTO_INCREMENT';
 		$conn->exec($sql);
     }
@@ -88,7 +88,7 @@ class mysqlDbTable extends jDbTable {
         $isPk = ($pk && in_array($new->name, $pk->columns));
         $sql = 'ALTER TABLE '.$conn->encloseName($this->name)
                 .' ADD COLUMN '.$this->schema->_prepareSqlColumn($new);
-        if ($isPk && $col->autoIncrement)
+        if ($isPk && $new->autoIncrement)
             $sql .= ' AUTO_INCREMENT';
 
 		$conn->exec($sql);
@@ -170,7 +170,10 @@ class mysqlDbTable extends jDbTable {
         $sql = 'SHOW CREATE TABLE '.$conn->encloseName($this->name);
         $rs = $conn->query($sql);
         $rec = $rs->fetch();
-
+        if (!$rec) {
+            return;
+        }
+        $createTableQuery = $rec->{'Create Table'};
         /*
         CONSTRAINT [symbol] FOREIGN KEY [index_name] (col_name [(length)] [ASC | DESC],...)
         REFERENCES tbl_name (col_name [(length)] [ASC | DESC],...)
@@ -179,7 +182,7 @@ class mysqlDbTable extends jDbTable {
               [ON UPDATE  RESTRICT | CASCADE | SET NULL | NO ACTION]
         */
 
-		preg_match_all('/^\s*(?:CONSTRAINT(?:\s+`(.+?)`)?\s+)?FOREIGN\s+KEY(?:\s+`(.+?)`)?\s+\((.+?)\)\s+REFERENCES\s+`(.+?)`\s+\((.+?)\)(?:\s+MATCH\s+(FULL|PARTIAL|SIMPLE))?(?:\s+ON DELETE\s+(RESTRICT|CASCADE|SET NULL|NO ACTION))?(?:\s+ON UPDATE\s+(RESTRICT|CASCADE|SET NULL|NO ACTION))?,?$/msi', $s, $m);
+		preg_match_all('/^\s*(?:CONSTRAINT(?:\s+`(.+?)`)?\s+)?FOREIGN\s+KEY(?:\s+`(.+?)`)?\s+\((.+?)\)\s+REFERENCES\s+`(.+?)`\s+\((.+?)\)(?:\s+MATCH\s+(FULL|PARTIAL|SIMPLE))?(?:\s+ON DELETE\s+(RESTRICT|CASCADE|SET NULL|NO ACTION))?(?:\s+ON UPDATE\s+(RESTRICT|CASCADE|SET NULL|NO ACTION))?,?$/msi', $createTableQuery, $m);
         foreach ($m[1] as $i => $symbol) {
             //$match = $m[6][$i];
             $ref = new jDbReference();
@@ -240,6 +243,7 @@ class mysqlDbSchema extends jDbSchema {
     /**
      * @param string $name
      * @param array[jDbColumn] $columns
+     * @return mysqlDbTable
      */
     function _createTable($name, $columns, $primaryKey, $attributes=array()) {
 
@@ -282,7 +286,6 @@ class mysqlDbSchema extends jDbSchema {
 
     protected function _getTables() {
         $results = array ();
-        $conn = $this->conn;
         if (isset($this->conn->profile['database'])) {
             $db = $this->conn->profile['database'];
         }

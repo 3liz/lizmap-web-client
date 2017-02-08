@@ -23,7 +23,7 @@
  * </pre>
  * @param jTpl $tpl
  * @param string $name the name of the cycle
- * @return 1
+ * @throws jException
  */
 function jtpl_function_common_cycle_reset($tpl, $name='') {
     $cycle_name = $name ? $name : 'default';

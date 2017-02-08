@@ -33,9 +33,6 @@ class mssqlDaoBuilder extends jDaoGenerator {
             $using = $this->_dataParser->getProperties ();
         }
 
-        $tb = $this->_dataParser->getTables();
-        $tb = $tb[$this->_dataParser->getPrimaryTable()]['realname'];
-
         foreach ($using as $id=>$field) {
             if(!$field->isPK) {
                 continue;
@@ -47,5 +44,3 @@ class mssqlDaoBuilder extends jDaoGenerator {
         return null;
     }
 }
-
-?>

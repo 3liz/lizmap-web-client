@@ -128,15 +128,15 @@ class pgsqlDbTools extends jDbTools {
    }
 
     /**
-    * retrieve the list of fields of a table
-    * @param string $tableName the name of the table
-    * @param string $sequence  the sequence used to auto increment the primary key
-    * @return   array    keys are field names and values are jDbFieldProperties objects
-    */
+     * retrieve the list of fields of a table
+     * @param string $tableName the name of the table
+     * @param string $sequence the sequence used to auto increment the primary key
+     * @return array keys are field names and values are jDbFieldProperties objects
+     * @throws Exception
+     */
     public function getFieldList ($tableName, $sequence='') {
         $tableName = $this->_conn->prefixTable($tableName);
-        $results = array ();
-        
+
         // get table informations
         $sql ='SELECT oid, relhaspkey, relhasindex FROM pg_class WHERE relname = \''.$tableName.'\'';
         $rs = $this->_conn->query ($sql);

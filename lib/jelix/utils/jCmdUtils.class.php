@@ -45,6 +45,7 @@ class jCmdUtils {
      * @param array $params allowed parameters
      * @return array an array with the array of founded option and
      *                        an array with founded parameters
+     * @throws jException
      */
     public static function getOptionsAndParams($argv, $sws, $params) {
         $switches = array();

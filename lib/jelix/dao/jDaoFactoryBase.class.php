@@ -201,8 +201,9 @@ abstract class jDaoFactoryBase  {
 
     /**
      * return the record corresponding to the given key
-     * @param string $key one or more primary key
      * @return jDaoRecordBase
+     * @throws jException
+     * @internal param string $key one or more primary key
      */
     final public function get(){
         $args=func_get_args();
@@ -226,8 +227,9 @@ abstract class jDaoFactoryBase  {
 
     /**
      * delete a record corresponding to the given key
-     * @param string  $key one or more primary key
      * @return int the number of deleted record
+     * @throws jException
+     * @internal param string $key one or more primary key
      */
     final public function delete(){
         $args=func_get_args();
@@ -306,7 +308,7 @@ abstract class jDaoFactoryBase  {
     final public function countBy($searchcond, $distinct=null) {
         $count = '*';
         $sqlite = false;
-        $oracle = false;
+
         if ($distinct !== null) {
             $props = static::$_properties;
             if (isset($props[$distinct]))

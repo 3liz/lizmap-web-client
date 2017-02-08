@@ -19,4 +19,4 @@ require_once(JELIX_LIB_PATH.'auth/jAuthUser.class.php');
 class jAuthUserLDAP extends jAuthUser {
 }
 
-?>
+

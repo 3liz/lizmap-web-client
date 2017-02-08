@@ -26,6 +26,7 @@ class jClassBinding {
 
     /**
      * selector to the binded class (string form)
+     * @var jSelectorClass
      */
     protected $toSelector = null;
 
@@ -114,8 +115,8 @@ class jClassBinding {
     /**
      * Get the selector to the binded class
      * Protected because this does not work if called after a simple __construct() and a toInstance()
-     *
-     * @return string
+     * @return jSelectorClass
+     * @throws jException
      */
     protected function _getClassSelector() {
         $class_selector = null;

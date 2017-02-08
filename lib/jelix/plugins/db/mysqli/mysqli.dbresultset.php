@@ -79,7 +79,8 @@ class mysqliDbStmtResultSet extends mysqliDbResultSet {
         $meta = $result->result_metadata();
 
         $this->resultObject = new stdClass();
-        
+
+        $variables = array();
         while($field = $meta->fetch_field()) {
             $this->resultObject->{$field->name} = null;
             $variables[] = & $this->resultObject->{$field->name}; // pass by reference

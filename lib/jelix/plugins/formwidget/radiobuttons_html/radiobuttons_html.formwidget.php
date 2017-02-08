@@ -23,9 +23,9 @@ class radiobuttons_htmlFormWidget extends checkboxes_htmlFormWidget {
 
     function outputControl() {
         $attr = $this->getControlAttributes();
-        $value = $this->getValue($this->ctrl);
+        $value = $this->getValue();
 
-        $id = $this->builder->getName().'_'.$this->ctrl->ref.'_';
+        $id = $this->builder->getName().'_'.$this->ctrl->ref.'_'; // FIXME should we use it?
         $attr['name'] = $this->ctrl->ref;
         unset($attr['title']);
         if(is_array($value)){

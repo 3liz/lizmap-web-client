@@ -16,7 +16,7 @@
  * Version number of Jelix
  * @name  JELIX_VERSION
  */
-define ('JELIX_VERSION', '1.6.14pre.3352');
+define ('JELIX_VERSION', '1.6.14pre.3368');
 
 /**
  * base of namespace path used in xml files of jelix

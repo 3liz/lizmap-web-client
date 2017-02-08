@@ -25,7 +25,7 @@ class button_htmlFormWidget extends \jelix\forms\HtmlWidget\WidgetBase {
         unset($attr['readonly']); //readonly is useless on button
         unset($attr['class']); //no class on button
 
-        $attr['value'] = $this->getValue($this->ctrl);
+        $attr['value'] = $this->getValue();
         echo '<button ';
         $this->_outputAttr($attr);
         echo '>',htmlspecialchars($this->ctrl->label),'</button>';

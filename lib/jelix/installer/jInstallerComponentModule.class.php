@@ -31,8 +31,14 @@ class jInstallerComponentModule extends jInstallerComponentBase {
      */
     protected $identityFile = 'module.xml';
 
+    /**
+     * @var jInstallerBase
+     */
     protected $moduleInstaller = null;
 
+    /**
+     * @var jInstallerBase[]
+     */
     protected $moduleUpgraders = null;
 
     /**
@@ -53,6 +59,9 @@ class jInstallerComponentModule extends jInstallerComponentBase {
         }
     }
 
+    /**
+     * @param jIniMultiFilesModifier $config
+     */
     protected function _setAccess($config) {
         $access = $config->getValue($this->name.'.access', 'modules');
         if ($access == 0 || $access == null) {
@@ -73,6 +82,7 @@ class jInstallerComponentModule extends jInstallerComponentBase {
      * @param boolean $installWholeApp true if the installation is done during app installation
      * @return jIInstallerComponent the installer, or null if there isn't any installer
      *         or false if the installer is useless for the given parameter
+     * @throws jInstallerException
      */
     function getInstaller($ep, $installWholeApp) {
 
@@ -133,8 +143,9 @@ class jInstallerComponentModule extends jInstallerComponentBase {
      * installed/upgraded before calling this method
      *
      * @param jInstallerEntryPoint $ep the entry point
+     * @return jIInstallerComponent[]
+     * @throws jInstallerException
      * @throw jInstallerException  if an error occurs during the install.
-     * @return array   array of jIInstallerComponent
      */
     function getUpgraders($ep) {
 

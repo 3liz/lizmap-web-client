@@ -131,9 +131,6 @@ class jFormsControlGroup extends jFormsControlGroups {
         if ($value == $this->valueOnCheck) {
             return ($this->valueLabelOnCheck !== ''?$this->valueLabelOnCheck:$value);
         }
-        else {
-            return ($this->valueLabelOnUncheck !== ''?$this->valueLabelOnUncheck:$value);
-        }
-        return $value;
+        return ($this->valueLabelOnUncheck !== ''?$this->valueLabelOnUncheck:$value);
     }
 }

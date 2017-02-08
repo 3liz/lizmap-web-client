@@ -13,7 +13,9 @@
  * function plugin :  print the label of a form control. You should use this plugin inside a formcontrols block
  *
  * @param jTpl $tpl template engine
- * @param string $ctrlname  the name of the control to display (required if it is outside a formcontrols)
+ * @param string $ctrlname the name of the control to display (required if it is outside a formcontrols)
+ * @param string $format
+ * @throws jException
  */
 function jtpl_function_html_ctrl_label($tpl, $ctrlname='', $format='')
 {

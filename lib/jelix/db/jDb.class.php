@@ -148,10 +148,11 @@ class jDb {
     }
 
     /**
-    * create a connector. internal use (callback method for jProfiles)
-    * @param array  $profile  profile properties
-    * @return jDbConnection|jDbPDOConnection  database connector
-    */
+     * create a connector. internal use (callback method for jProfiles)
+     * @param array $profile profile properties
+     * @return jDbConnection|jDbPDOConnection database connector
+     * @throws jException
+     */
     public static function _createConnector ($profile) {
         if ($profile['driver'] == 'pdo' || (isset($profile['usepdo']) && $profile['usepdo'])) {
             /*

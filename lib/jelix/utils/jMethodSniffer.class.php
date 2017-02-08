@@ -58,7 +58,6 @@ class jMethodSniffer {
                     break;
                 }
             }
-            $encodedParams = '';
             $decodingMethod = 'json_decode';
             if( $canUseJson ) {
                 $encodedParams = str_replace("'", "\\'", str_replace("\\", "\\\\", json_encode( $sniffedItem[1] )));

@@ -44,6 +44,7 @@
  * @param jTplCompiler $compiler the template compiler
  * @param boolean $begin true if it is the begin of block, else false
  * @param array $params parameters for the url
+ * @return string PHP generated code
  */
 function jtpl_block_html_swf($compiler, $begin, $params) {
 

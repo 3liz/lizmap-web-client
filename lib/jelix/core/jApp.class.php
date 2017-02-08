@@ -167,12 +167,21 @@ class jApp {
         return $configFileName;
     }
 
+    /**
+     * @var jCoordinator
+     */
     protected static $_coord = null;
-    
+
+    /**
+     * @return jCoordinator
+     */
     public static function coord() {
         return self::$_coord;
     }
 
+    /**
+     * @param jCoordinator $coord
+     */
     public static function setCoord($coord) {
         self::$_coord = $coord; 
     }
@@ -241,12 +250,13 @@ class jApp {
     }
 
     /**
-    * Says if the given module $name is enabled
-    * @param string $moduleName
-    * @param boolean $includingExternal  true if we want to know if the module
-    *               is also an external module, e.g. in an other entry point
-    * @return boolean true : module is ok
-    */
+     * Says if the given module $name is enabled
+     * @param string $moduleName
+     * @param boolean $includingExternal true if we want to know if the module
+     *               is also an external module, e.g. in an other entry point
+     * @return bool true : module is ok
+     * @throws Exception
+     */
     public static function isModuleEnabled ($moduleName, $includingExternal = false) {
         if (!self::$_config)
             throw new Exception ('Configuration is not loaded');
@@ -259,9 +269,10 @@ class jApp {
     /**
      * return the real path of a module
      * @param string $module a module name
-     * @param boolean $includingExternal  true if we want to know if the module
+     * @param boolean $includingExternal true if we want to know if the module
      *               is also an external module, e.g. in an other entry point
      * @return string the corresponding path
+     * @throws Exception
      */
     public static function getModulePath($module, $includingExternal = false){
         if (!self::$_config)

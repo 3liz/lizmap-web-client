@@ -32,10 +32,17 @@ class jAuth {
     }
 
     protected static $config = null;
+
+    /**
+     * @var jIAuthDriver
+     */
     protected static $driver = null;
+
     /**
      * Load the configuration of authentification, stored in the auth plugin config
+     * @param null $newconfig
      * @return array
+     * @throws jException
      * @since 1.2.10
      */
     public static function loadConfig($newconfig = null){
@@ -128,6 +135,7 @@ class jAuth {
     /**
      * return the auth driver
      * @return jIAuthDriver
+     * @throws jException
      * @since 1.2.10
      */
     public static function getDriver(){
@@ -229,6 +237,7 @@ class jAuth {
      *  the type of $user depends of the driver, so it can have other properties.
      *
      * @param object $user  user data
+     * @return boolean true if the user has been updated
      */
     public static function updateUser($user){
         $dr = self::getDriver();

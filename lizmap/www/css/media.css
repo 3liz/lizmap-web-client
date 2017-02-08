@@ -91,7 +91,7 @@ only screen and (                   max-device-height : 640px) {
 
   #overview-box {
     right:10px;
-    bottom:1em;
+    bottom:40px;
   }
 
   #bottom-dock  {

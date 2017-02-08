@@ -29,7 +29,7 @@ class redisworkerCtrl extends jControllerCmdLine {
         
         if (get_class($redisPlugin) != 'redisCacheDriver') {
             $rep->addContent("Error, wrong profile. Not a redis cache.\n");
-            $this->setExitCode(1);
+            $rep->setExitCode(1);
             return $rep;
         }
         $rep->addContent("--- Starting worker...\n");
@@ -53,11 +53,11 @@ class redisworkerCtrl extends jControllerCmdLine {
         
         if (get_class($redisDriver) != 'redisKVDriver') {
             $rep->addContent("Error, wrong profile. Not a redis jKvDb driver.\n");
-            $this->setExitCode(1);
+            $rep->setExitCode(1);
             return $rep;
         }
         $rep->addContent("--- Starting worker...\n");
-        $redis = $redisPlugin->getRedis();
+        $redis = $redisDriver->getRedis();
         while(true) {
             $prefixKey = $redis->lpop('jkvdbredisdelkeys');
             if (!$prefixKey) {

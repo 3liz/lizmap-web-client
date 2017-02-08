@@ -32,7 +32,6 @@ class jelixModuleUpgrader_modulejacl2 extends jInstallerModule {
 
         $jacl2File = jApp::configPath($jacl2File);
         if (!file_exists($jacl2File)) {
-            $jacl2File = '';
             $message = $module."~errors.action.right.needed";
             if ($this->entryPoint->type != 'classic')
                 $onerror = 1;

@@ -14,6 +14,7 @@
 * @package     jelix
 * @subpackage  installer
 * @experimental
+* @deprecated
 * @since 1.2
 */
 class jInstallerComponentPlugin extends jInstallerComponentBase {
@@ -23,5 +24,12 @@ class jInstallerComponentPlugin extends jInstallerComponentBase {
     protected $identityFile = 'plugin.xml';
 
 
+    function getInstaller($ep, $installWholeApp) {
+        throw new Exception("Not implemented");
+    }
+
+    function getUpgraders($ep) {
+        throw new Exception("Not implemented");
+    }
 }
 

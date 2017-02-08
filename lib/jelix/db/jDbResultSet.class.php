@@ -35,6 +35,7 @@ abstract class jDbResultSet implements Iterator {
 
     /**
      * @param string $text a binary string to unescape
+     * @return string the unescaped string
      * @since 1.1.6
      */
     public function unescapeBin($text) {

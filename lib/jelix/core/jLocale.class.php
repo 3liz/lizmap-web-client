@@ -22,7 +22,7 @@
  */
 class jLocale {
     /**
-     *
+     * @var jBundle[][]
      */
     static $bundles = array();
 
@@ -49,16 +49,18 @@ class jLocale {
     }
 
     /**
-    * gets the correct string, for a given language.
-    *   if it can't get the correct language, it will try to gets the string
-    *   from the default language.
-    *   if both fails, it will raise an exception.
-    * @param string $key the key of the localized string
-    * @param array $args arguments to apply to the localized string with sprintf
-    * @param string $locale  the lang code. if null, use the default language
-    * @param string $charset the charset code. if null, use the default charset
-    * @return string the localized string
-    */
+     * gets the correct string, for a given language.
+     *   if it can't get the correct language, it will try to gets the string
+     *   from the default language.
+     *   if both fails, it will raise an exception.
+     * @param string $key the key of the localized string
+     * @param array $args arguments to apply to the localized string with sprintf
+     * @param string $locale the lang code. if null, use the default language
+     * @param string $charset the charset code. if null, use the default charset
+     * @return string the localized string
+     * @throws Exception
+     * @throws jExceptionSelector
+     */
     static function get ($key, $args=null, $locale=null, $charset=null) {
 
         $config = jApp::config();

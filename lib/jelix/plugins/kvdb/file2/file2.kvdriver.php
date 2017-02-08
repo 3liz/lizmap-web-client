@@ -31,11 +31,11 @@ class file2KVDriver extends jKVDriver {
 
    	protected function _disconnect() {}
 
-    protected function _doGet($key) {
+    public function get($key) {
         return $this->_connection->get($key);
     }
 
-    protected function _doSet($key, $value, $ttl) {
+    public function set($key, $value, $ttl) {
         return $this->_connection->set(
             $key,
             $value,
@@ -43,11 +43,11 @@ class file2KVDriver extends jKVDriver {
         );
     }
 
-    protected function _doDelete($key) {
+    public function delete($key) {
         return $this->_connection->delete($key);
     }
 
-    protected function _doFlush() {
+    public function flush() {
         return $this->_connection->flush();
     }
 }

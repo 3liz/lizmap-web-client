@@ -50,9 +50,21 @@ class jDbPrimaryKey extends jDbIndex {
  */
 class jDbReference {
     public $name;
+    /**
+     * list of columns on which there is the constraint
+     * @var string[]
+     */
     public $columns = array();
-  
+
+    /**
+     * name of the foreign table
+     * @var string
+     */
     public $fTable = '';
+    /**
+     * list of foreign columns
+     * @var string[]
+     */
     public $fColumns = array();
     
     public $onUpdate = '';

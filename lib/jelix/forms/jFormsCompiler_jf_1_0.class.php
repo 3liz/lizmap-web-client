@@ -175,7 +175,7 @@ class jFormsCompiler_jf_1_0  {
     }
 
     protected function generateOutput(&$source, $control, &$attributes) {
-        $type = $this->attrType($source, $attributes);
+        $this->attrType($source, $attributes);
         $this->attrDefaultvalue($source, $attributes);
         $this->readLabel($source, $control, 'output');
         $this->readEmptyValueLabel($source, $control);
@@ -282,7 +282,6 @@ class jFormsCompiler_jf_1_0  {
         $this->attrReadOnly($source, $attributes);
 
         if(isset($control->confirm)) {
-            $label='';
             if(isset($control->confirm['locale'])){
                 $label = "jLocale::get('".(string)$control->confirm['locale']."');";
             }elseif( "" != (string)$control->confirm) {

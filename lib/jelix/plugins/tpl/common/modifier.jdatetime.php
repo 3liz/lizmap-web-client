@@ -36,9 +36,10 @@
  *  {$mydate|jdatetime:'db_time':'lang_time'}
  *
  * @param string $date the date
- * @param string $format_in  the format identifier of the given date
+ * @param string $format_in the format identifier of the given date
  * @param string $format_out the format identifier of the output date
  * @return string the converted date
+ * @throws jException
  * @see jDateTime
  */
 function jtpl_modifier_common_jdatetime($date, $format_in = 'db_datetime',

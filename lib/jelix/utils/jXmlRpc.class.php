@@ -38,9 +38,9 @@ class jXmlRpc {
 
         }
         $methodname = (string)$xml->methodName;
+        $params = array();
         if(isset($xml->params)){
             if(isset($xml->params->param)){
-                $params = array();
                 foreach($xml->params->param as $param){
                     if(isset($param->value)){
                         $params[] = self::_decodeValue($param->value);
@@ -130,13 +130,13 @@ class jXmlRpc {
 
     /**
      * deserialize a xmlrpc content to a php value
-     * @param string $valuetag xmlrpc content
+     * @param SimpleXMLElement $valuetag xmlrpc content
      * @return mixed the php value
      */
     private static function _decodeValue($valuetag){
-        $children= $valuetag->children();
+        $children = $valuetag->children();
         $value = null;
-        if(count($children)){
+        if($children->count()){
             if(isset($valuetag->i4)){
                 $value= intval((string) $valuetag->i4);
             }else if(isset($valuetag->int)){

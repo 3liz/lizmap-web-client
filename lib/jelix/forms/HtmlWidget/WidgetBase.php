@@ -29,7 +29,7 @@ abstract class WidgetBase implements WidgetInterface {
 
     /**
      * The control
-     * @var jControl
+     * @var \jFormsControl
      */
     protected $ctrl;
 
@@ -94,6 +94,7 @@ abstract class WidgetBase implements WidgetInterface {
         }
         $this->attributes = $attr;
     }
+
 
     public function outputMetaContent($resp) { /* do nothing */ }
     
@@ -195,11 +196,6 @@ abstract class WidgetBase implements WidgetInterface {
      */
     public function outputHelp() {
          if ($this->ctrl->help) {
-            if($this->ctrl->type == 'checkboxes' || ($this->ctrl->type == 'listbox' && $this->ctrl->multiple)){
-                $name=$this->ctrl->ref.'[]';
-            }else{
-                $name=$this->ctrl->ref;
-            }
             // additionnal &nbsp, else background icon is not shown in webkit
             echo '<span class="jforms-help" id="'.$this->getId().'-help">&nbsp;<span>'.htmlspecialchars($this->ctrl->help).'</span></span>';
         }

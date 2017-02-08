@@ -250,8 +250,9 @@ abstract class jFormsBase {
      * @param string $daoSelector the selector of a dao file
      * @param string $key the primary key for the dao. if null, takes the form ID as primary key
      * @param string $dbProfile the jDb profile to use with the dao
-     * @see jDao
      * @return jDaoRecordBase
+     * @throws jExceptionForms
+     * @see jDao
      */
     public function initFromDao($daoSelector, $key = null, $dbProfile=''){
         if($key === null)
@@ -333,11 +334,12 @@ abstract class jFormsBase {
      * you should provide the list of property names which corresponds to the primary key
      * in this order : properties for the formId, followed by the property which contains
      * the value.
-     * @param string $name  the name of the control
+     * @param string $name the name of the control
      * @param string $daoSelector the selector of a dao file
-     * @param mixed  $primaryKey the primary key if the form have no id. (optional)
-     * @param mixed  $primaryKeyNames list of field corresponding to primary keys (optional)
+     * @param mixed $primaryKey the primary key if the form have no id. (optional)
+     * @param mixed $primaryKeyNames list of field corresponding to primary keys (optional)
      * @param string $dbProfile the jDb profile to use with the dao
+     * @throws jExceptionForms
      * @see jDao
      */
     public function initControlFromDao($name, $daoSelector, $primaryKey = null, $primaryKeyNames=null, $dbProfile=''){
@@ -399,11 +401,12 @@ abstract class jFormsBase {
      * All existing records which have the formid in their keys are deleted
      * before to insert new values.
      *
-     * @param string $controlName  the name of the control
+     * @param string $controlName the name of the control
      * @param string $daoSelector the selector of a dao file
-     * @param mixed  $primaryKey the primary key if the form have no id. (optional)
-     * @param mixed  $primaryKeyNames list of field corresponding to primary keys (optional)
+     * @param mixed $primaryKey the primary key if the form have no id. (optional)
+     * @param mixed $primaryKeyNames list of field corresponding to primary keys (optional)
      * @param string $dbProfile the jDb profile to use with the dao
+     * @throws jExceptionForms
      * @see jDao
      */
     public function saveControlToDao($controlName, $daoSelector, $primaryKey = null, $primaryKeyNames=null, $dbProfile=''){
@@ -472,6 +475,7 @@ abstract class jFormsBase {
      *
      * @param string $name the name of the control/data
      * @param string $value the data value
+     * @throws jExceptionForms
      */
     public function setData($name, $value) {
         if (!isset($this->controls[$name]))
@@ -499,8 +503,9 @@ abstract class jFormsBase {
     /**
      * deactivate (or reactivate) a control
      * When a control is deactivated, it is not displayes anymore in the output form
-     * @param string $name  the name of the control
-     * @param boolean $deactivation   TRUE to deactivate, or FALSE to reactivate
+     * @param string $name the name of the control
+     * @param boolean $deactivation TRUE to deactivate, or FALSE to reactivate
+     * @throws jExceptionForms
      */
     public function deactivate($name, $deactivation=true) {
         if (!isset($this->controls[$name]))
@@ -521,7 +526,9 @@ abstract class jFormsBase {
 
     /**
      * set a control readonly or not
+     * @param $name
      * @param boolean $r true if you want read only
+     * @throws jExceptionForms
      */
     public function setReadOnly($name, $r = true) {
         if (!isset($this->controls[$name]))
@@ -655,7 +662,7 @@ abstract class jFormsBase {
     }
 
     /**
-     * @return array of jFormsControl objects
+     * @return jFormsControl the reset object
      */
     public function getReset(){ return $this->reset; }
 
@@ -670,9 +677,10 @@ abstract class jFormsBase {
     public function hasUpload() { return count($this->uploads)>0; }
 
     /**
-     * @param string $buildertype  the type name of a form builder.
+     * @param string $buildertype the type name of a form builder.
      *          if the name begins by 'legacy.', it load a legacy builder plugin (jelix <=1.4)
-     * @return \jelix\forms\Builder\BuilderBase | jFormsBuilderBase
+     * @return \jelix\forms\Builder\BuilderBase|jFormsBuilderBase
+     * @throws jExceptionForms
      */
     public function getBuilder($buildertype){
 
@@ -715,7 +723,8 @@ abstract class jFormsBase {
      *                     it will be stored under the var/uploads/_modulename~formname_/ directory
      * @param string $alternateName a new name for the file. If it is not given, the file
      *                              while be stored with the original name
-     * @return boolean true if the file has been saved correctly
+     * @return bool true if the file has been saved correctly
+     * @throws jExceptionForms
      */
     public function saveFile($controlName, $path='', $alternateName='') {
         if ($path == '') {

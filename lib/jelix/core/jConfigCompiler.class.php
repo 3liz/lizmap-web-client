@@ -33,10 +33,11 @@ class jConfigCompiler {
      * @param boolean $allModuleInfo may be true for the installer, which needs all informations
      *                               else should be false, these extra informations are
      *                               not needed to run the application
-     * @param boolean $isCli  indicate if the configuration to read is for a CLI script or no
+     * @param boolean $isCli indicate if the configuration to read is for a CLI script or no
      * @param string $pseudoScriptName the name of the entry point, relative to the base path,
      *              corresponding to the readed configuration
      * @return object an object which contains configuration values
+     * @throws Exception
      */
     static public function read($configFile, $allModuleInfo = false, $isCli = false, $pseudoScriptName=''){
         $tempPath = jApp::tempBasePath();
@@ -88,6 +89,7 @@ class jConfigCompiler {
      * @param boolean $isCli
      * @param string $pseudoScriptName
      * @return object an object which contains configuration values
+     * @throws Exception
      */
     static public function readAndCache($configFile, $isCli = null, $pseudoScriptName = '') {
 
@@ -109,7 +111,7 @@ class jConfigCompiler {
                 throw new Exception('Error while writing configuration cache file -- '.$filename);
             }
         }else{
-            jIniFile::write(get_object_vars($config), $filename.'.resultini.php', ";<?php die('');?>\n", '', $config->chmodFile);
+            jIniFile::write(get_object_vars($config), $filename.'.resultini.php', ";<?php die('');?>\n", $config->chmodFile);
         }
         return $config;
     }
@@ -211,13 +213,14 @@ class jConfigCompiler {
             $plugin->atEnd($config);
         }
     }
-    
+
     /**
      * Analyse and check the "lib:" and "app:" path.
-     * @param object $config  the config object
+     * @param object $config the config object
      * @param boolean $allModuleInfo may be true for the installer, which needs all informations
      *                               else should be false, these extra informations are
      *                               not needed to run the application
+     * @throws Exception
      */
     static protected function _loadModuleInfo($config, $allModuleInfo) {
 
@@ -462,8 +465,11 @@ class jConfigCompiler {
     /**
      * calculate miscelaneous path, depending of the server configuration and other informations
      * in the given array : script path, script name, documentRoot ..
-     * @param array $urlconf  urlengine configuration. scriptNameServerVariable, basePath,
+     * @param array $urlconf urlengine configuration. scriptNameServerVariable, basePath,
      * jelixWWWPath and jqueryPath should be present
+     * @param string $pseudoScriptName
+     * @param bool $isCli
+     * @throws Exception
      */
     static public function getPaths(&$urlconf, $pseudoScriptName ='', $isCli = false) {
         // retrieve the script path+name.
@@ -566,7 +572,6 @@ class jConfigCompiler {
     }
 
     static public function findServerName($ext = '.php', $isCli = false) {
-        $varname = '';
         $extlen = strlen($ext);
 
         if(strrpos($_SERVER['SCRIPT_NAME'], $ext) === (strlen($_SERVER['SCRIPT_NAME']) - $extlen)
