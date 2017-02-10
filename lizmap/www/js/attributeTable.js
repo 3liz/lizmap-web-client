@@ -3222,6 +3222,19 @@ var lizAttributeTable = function() {
     $('#selectiontool-layer-list').html(options);
 
 
+    // List of WFS format
+    var exportFormats = lizMap.getVectorLayerResultFormat();
+    var exportFormatsLi = '';
+    for ( var i=0, len=exportFormats.length; i<len; i++ ) {
+        var format = exportFormats[i].tagName;
+        if ( format != 'GML2' && format != 'GML3' && format != 'GEOJSON' ) {
+            exportFormatsLi += '        <li><a href="#" class="btn-export-selection">'+format+'</a></li>';
+        }
+    }
+    if( exportFormatsLi.length){
+        $('#selectiontool-export-formats').append(exportFormatsLi);
+    }
+
     // Style des outils de dessin et sélection
     // -------------------------------------------------------------------------
     var drawStyle = new OpenLayers.Style({
@@ -3411,10 +3424,10 @@ var lizAttributeTable = function() {
         });
 
         $('#selectiontool-query-buttons button').tooltip( {
-            placement: 'bottom'
+            placement: 'top'
         } );
         $('#selectiontool-actions button').tooltip( {
-            placement: 'bottom'
+            placement: 'top'
         } );
 
         $('#selectiontool-unselect').click(function(){
@@ -3448,6 +3461,22 @@ var lizAttributeTable = function() {
                 );
                 lizMap.lizmapLayerFilterActive = aName;
             }
+            return false;
+        })
+        .hover(
+            function(){ if(!$(this).hasClass('disabled')) $(this).addClass('btn-primary'); },
+            function(){ $(this).removeClass('btn-primary'); }
+        );
+
+        $('#selectiontool-export-formats a.btn-export-selection').click(function(){
+            if($(this).hasClass('disabled')) return false;
+            var aName = $('#selectiontool-layer-list').val();
+            var eFormat = $(this).text();
+            if( eFormat == 'GML' )
+                eFormat = 'GML3';
+
+            lizMap.exportVectorLayer( aName, eFormat );
+            $('#selectiontool-export').click().blur();
             return false;
         })
         .hover(
@@ -3496,6 +3525,7 @@ var lizAttributeTable = function() {
                     $('#selectiontool-results').html(lizDict['selectiontool.results.none']);
                     $('#selectiontool-unselect').addClass('disabled');
                     $('#selectiontool-filter').addClass('disabled');
+                    $('#selectiontool-export').addClass('disabled');
                 } else {
                     if( selectedFeaturesNumber == 1 )
                         $('#selectiontool-results').html(lizDict['selectiontool.results.one']);
@@ -3503,6 +3533,7 @@ var lizAttributeTable = function() {
                         $('#selectiontool-results').html(lizDict['selectiontool.results.more'].replace('%s',selectedFeaturesNumber));
                     $('#selectiontool-unselect').removeClass('disabled');
                     $('#selectiontool-filter').removeClass('disabled');
+                    $('#selectiontool-export').removeClass('disabled');
                 }
                 if ('filteredFeatures' in config.layers[selectedFeatureType] ) {
                     var filteredFeaturesNumber = config.layers[selectedFeatureType]['filteredFeatures'].length;

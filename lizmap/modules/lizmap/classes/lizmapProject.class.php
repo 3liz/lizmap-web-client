@@ -1378,6 +1378,8 @@ class lizmapProject{
 
         if ( $this->hasAttributeLayers() ) {
             $tpl = new jTpl();
+            $layerExport = jAcl2::check('lizmap.tools.layer.export', $this->repository->getKey());
+            $tpl->assign('layerExport', $layerExport);
             $dock = new lizmapMapDockItem(
                 'selectiontool',
                 jLocale::get('view~map.selectiontool.navbar.title'),

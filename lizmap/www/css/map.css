@@ -1440,7 +1440,6 @@ div.modal h3 .text {
   background-color: #FFFFFF;
 }
 
-
 #switcher > div {
   /*padding-left : 19px;
   margin-bottom:25px;*/
@@ -2394,4 +2393,11 @@ div.tooltip {
 }
 #lizmap-search-close.open{
   display:block;
+}
+
+#selectiontool-export-formats{
+  left: auto;
+  right: 0px;
+  max-height: 140px;
+  overflow-y: auto;
 }
