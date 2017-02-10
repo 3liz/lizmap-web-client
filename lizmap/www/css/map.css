@@ -1277,6 +1277,11 @@ div.modal h3 .text {
   background-image:      -o-linear-gradient(center top, #9BC144, #93C01F);
   background-image:         linear-gradient(to bottom, #9BC144, #93C01F);
 }
+#dock .print .menu-content,
+#mini-dock .print .menu-content,
+#right-dock .print .menu-content {
+  overflow:auto;
+}
 #dock .print select,
 #mini-dock .print select,
 #right-dock .print select {
