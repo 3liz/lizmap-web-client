@@ -2824,8 +2824,10 @@ var lizMap = function() {
 
     if ( 'externalSearch' in configOptions )
       addExternalSearch();
-    else
+    else{
       $('#nominatim-search').remove();
+      $('#lizmap-search, #lizmap-search-close').remove();
+    }
 
   }
 
@@ -4684,21 +4686,21 @@ OpenLayers.Control.HighlightFeature = OpenLayers.Class(OpenLayers.Control, {
   }
 
   function startExternalSearch() {
-    $('#nominatim-search .dropdown-inner .items li > a').unbind('click');
-    $('#nominatim-search .dropdown-inner .items').html( '<li class="start">'+lizDict['externalsearch.search']+'</li>' );
-    $('#nominatim-search').addClass('open');
+    $('#lizmap-search .items li > a').unbind('click');
+    $('#lizmap-search .items').html( '<li class="start"><ul><li>'+lizDict['externalsearch.search']+'</li></ul></li>' );
+    $('#lizmap-search, #lizmap-search-close').addClass('open');
   }
 
   function updateExternalSearch( aHTML ) {
     var wgs84 = new OpenLayers.Projection('EPSG:4326');
 
-    $('#nominatim-search .dropdown-inner .items li > a').unbind('click');
-    if ( $('#nominatim-search .dropdown-inner .items li.start').length != 0 )
-        $('#nominatim-search .dropdown-inner .items').html( aHTML );
+    $('#lizmap-search .items li > a').unbind('click');
+    if ( $('#lizmap-search .items li.start').length != 0 )
+        $('#lizmap-search .items').html( aHTML );
     else
-        $('#nominatim-search .dropdown-inner .items').append( aHTML );
-    $('#nominatim-search').addClass('open');
-    $('#nominatim-search .dropdown-inner .items li > a').click(function() {
+        $('#lizmap-search .items').append( aHTML );
+    $('#lizmap-search, #lizmap-search-close').addClass('open');
+    $('#lizmap-search .items li > a').click(function() {
       var bbox = $(this).attr('href').replace('#','');
       var bbox = OpenLayers.Bounds.fromString(bbox);
       bbox.transform(wgs84, map.getProjectionObject());
@@ -4720,11 +4722,11 @@ OpenLayers.Control.HighlightFeature = OpenLayers.Class(OpenLayers.Control, {
         locateLayer.addFeatures([feat]);
       }
 
-      $('#nominatim-search').removeClass('open');
+      $('#lizmap-search, #lizmap-search-close').removeClass('open');
       return false;
     });
-    $('#nominatim-search .dropdown-inner span.close').click(function() {
-      $('#nominatim-search').removeClass('open');
+    $('#lizmap-search-close button').click(function() {
+      $('#lizmap-search, #lizmap-search-close').removeClass('open');
       return false;
     });
   }
@@ -4774,6 +4776,7 @@ OpenLayers.Control.HighlightFeature = OpenLayers.Class(OpenLayers.Control, {
     // update ui
     if ( service == null && ftsService == null ) {
       $('#nominatim-search').remove();
+      $('#lizmap-search, #lizmap-search-close').remove();
       return false;
     }
 
@@ -4898,7 +4901,9 @@ OpenLayers.Control.HighlightFeature = OpenLayers.Class(OpenLayers.Control, {
                             ftsGeometry.transform(ftsLayerResult.srid, 'EPSG:4326');
                         var bbox = ftsGeometry.getBounds();
                         if ( extent.intersectsBounds(bbox) ) {
-                          text += '<li><a href="#'+bbox.toBBOX()+'" data="'+ftsGeometry.toString()+'">'+ftsFeat.label+'</a></li>';
+                          var labrex = new RegExp('(' + $('#search-query').val() + '|'+lizMap.cleanName($('#search-query').val())+')', "ig")
+                          var lab = ftsFeat.label.replace(labrex,'<b style="color:#0094D6;">$1</b>');
+                          text += '<li><a href="#'+bbox.toBBOX()+'" data="'+ftsGeometry.toString()+'">'+lab+'</a></li>';
                           count++;
                         }
                     }

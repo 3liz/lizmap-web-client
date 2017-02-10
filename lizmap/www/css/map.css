@@ -65,6 +65,7 @@ body {
 #headermenu .navbar-search .icon span {
   display:none;
 }
+
 #headermenu .dropdown-menu {
   background-color: #4A4A4A;
   background-color: rgba(0,0,0,0.7);
@@ -2335,3 +2336,57 @@ div.tooltip {
 .qgis_sprite.mActionMapIdentificationsvg { background-position: -2047px 0; width: 20px; }
 .qgis_sprite.mActionPanHighlightFeaturesvg { background-position: -2077px 0; width: 16px; }
 
+#lizmap-search{
+  top: 1px;
+  position: absolute;
+  z-index: 1040;
+  overflow: auto;
+  background-color: #F0F0F0;
+  background-color: #4A4A4A;
+  background-color: rgba(0,0,0,0.7);
+  max-height: 99%;
+  right: 100px;
+  max-width: 70%;
+  color:white;
+  border-radius:5px;
+  font-size:0.8em;
+  display:none;
+}
+#content.mobile #lizmap-search{
+  left: 31px;
+  right: 1px;
+  bottom: 1px;
+  max-width:none;
+  border-radius:0;
+}
+#lizmap-search > li{
+  list-style: none;
+}
+#lizmap-search .items > li > ul{
+  margin: 0 10px 10px 25px
+}
+
+#lizmap-search a{
+  color:white;
+  font-size:0.9em;
+}
+#lizmap-search a:hover{
+  background-color: grey;
+  text-decoration:none;
+}
+#lizmap-search.open{
+  display:block;
+}
+#lizmap-search-close{
+  display:none;
+  right: 101px;
+  top: 2px;
+  position: absolute;
+  z-index: 1041;
+}
+#content.mobile #lizmap-search-close{
+  right: 3px;
+}
+#lizmap-search-close.open{
+  display:block;
+}
