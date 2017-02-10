@@ -1704,6 +1704,9 @@ var lizAttributeTable = function() {
                     if( !aConfig.featureCrs && data.features.length != 0) {
                         lizMap.loadProjDefinition( aConfig.crs, function( aProj ) {
                             var dataBounds = OpenLayers.Bounds.fromArray(data.features[0].bbox);
+                            if( data.features.length > 1 ) {
+                                dataBounds.extend( OpenLayers.Bounds.fromArray(data.features[1].bbox) );
+                            }
 
                             var worldBounds = OpenLayers.Bounds.fromArray([-180,-90,180,90]);
                             if( worldBounds.containsBounds( dataBounds ) ) {
@@ -1896,27 +1899,11 @@ var lizAttributeTable = function() {
                 var layerConfig = config.layers[featureType];
                 var featureId = featureType + '.' + fid;
                 var proj = new OpenLayers.Projection(config.layers[featureType].crs);
+                if( config.layers[featureType].featureCrs )
+                    proj = new OpenLayers.Projection(config.layers[featureType].featureCrs);
                 getLayerFeature(featureType, fid, function(feat) {
                     zoomToOlFeature( feat, proj, zoomAction );
                 });
-                /*
-                var feat = null;
-
-                // Use already retrieved feature
-                if( layerConfig['features'] && fid in layerConfig['features'] ){
-                    feat = layerConfig['features'][fid];
-                    zoomToOlFeature( feat, proj, zoomAction );
-                }
-                // Or get the feature via WFS in needed
-                else{
-                    getAttributeFeatureData(featureType, null, featureId, function( aName, aFilter, cFeatures, cAliases ){
-                        if( cFeatures.length == 1 ){
-                            feat = cFeatures[0];
-                            zoomToOlFeature( feat, proj, zoomAction );
-                        }
-                    });
-                }
-                * */
             }
 
             function getLayerFeature( featureType, fid, aCallback ){
