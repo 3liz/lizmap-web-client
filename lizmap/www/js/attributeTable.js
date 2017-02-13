@@ -1980,11 +1980,11 @@ var lizAttributeTable = function() {
                         && lizMap.cleanName( featureType ) == tableLayerName
                     ){
 
-                        var sIds = []
-                        var oTable = $( this ).dataTable();
-                        var filteredrows = oTable.$( 'tr', {"filter":"applied"} );
-                        for ( var i = 0; i < filteredrows.length; i++ ) {
-                            sIds.push( filteredrows[i].id );
+                        var sIds = [];
+                        var rTable = $(this).DataTable();
+                        var filteredrowids = rTable.rows( {"filter":"applied"} ).ids();
+                        for ( var i = 0; i < filteredrowids.length; i++ ) {
+                            sIds.push( filteredrowids[i] );
                         }
                         config.layers[featureType]['selectedFeatures'] = sIds;
                         hasChanged = true;
