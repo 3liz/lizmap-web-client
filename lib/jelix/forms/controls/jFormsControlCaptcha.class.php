@@ -17,23 +17,76 @@
  */
 class jFormsControlCaptcha extends jFormsControl {
     public $type = 'captcha';
+    /**
+     * @var string
+     * @deprecated
+     */
     public $question='';
     public $required = true;
-    function check(){
-        $value = $this->container->data[$this->ref];
-        if(trim($value) == '') {
-            return $this->container->errors[$this->ref] = jForms::ERRDATA_REQUIRED;
-        }elseif($value !=  $this->container->privateData[$this->ref]){
-            return $this->container->errors[$this->ref] = jForms::ERRDATA_INVALID;
-        }
-        return null;
+
+    protected $validatorName = 'simple';
+
+    function __construct($ref){
+        parent::__construct($ref);
+        $this->validatorName = jApp::config()->forms['captcha'];
     }
 
+    public function setValidator($validatorName) {
+        $this->validatorName = $validatorName;
+    }
+
+    function getWidgetType() {
+        if (isset(jApp::config()->forms['captcha.'.$this->validatorName.'.widgettype'])) {
+            return jApp::config()->forms['captcha.'.$this->validatorName.'.widgettype'];
+        }
+        return $this->type;
+    }
+
+    protected function getCaptcha() {
+        $className = '';
+        if (isset(jApp::config()->forms['captcha.'.$this->validatorName.'.validator'])) {
+            $className = jApp::config()->forms['captcha.'.$this->validatorName.'.validator'];
+        }
+        if (!$className) {
+            throw new \Exception("Captcha validator not set in the configuration for '".$this->validatorName."'");
+        }
+        return new $className();
+    }
+
+    function check(){
+        $value = $this->container->data[$this->ref];
+        if (isset($this->container->privateData[$this->ref])) {
+            $internalData = $this->container->privateData[$this->ref];
+        }
+        else {
+            $internalData = null;
+        }
+        $result = $this->getCaptcha()->validate($value, $internalData);
+        if ($result) {
+            $this->container->errors[$this->ref] = $result;
+        }
+        return $result;
+    }
+
+    /**
+     * @return mixed data returns by the captcha validator
+     */
+    function initCaptcha() {
+        $data = $this->getCaptcha()->initOnDisplay();
+        if (is_array($data) && isset($data['question'])) {
+            // to mimic deprecated behavior of a previous version of jFormsControlCaptcha
+            $this->question = $data['question'];
+        }
+        $this->container->privateData[$this->ref] = $data;
+        return $data;
+    }
+
+    /**
+     * @deprecated use initCaptcha() instead
+     */
     function initExpectedValue(){
-        $numbers = jLocale::get('jelix~captcha.number');
-        $id = rand(1,intval($numbers));
-        $this->question = jLocale::get('jelix~captcha.question.'.$id);
-        $this->container->privateData[$this->ref] = jLocale::get('jelix~captcha.response.'.$id);
+        jLog::log("captcha jforms control: initExpectedValue is deprecated, use initCaptcha instead", "deprecated");
+        $this->initCaptcha();
     }
 }
 

@@ -1037,8 +1037,8 @@ class jFormsBuilderHtml extends jFormsBuilderBase {
     }
 
     protected function outputCaptcha($ctrl, &$attr) {
-        $ctrl->initExpectedValue();
-        echo '<span class="jforms-captcha-question">',htmlspecialchars($ctrl->question),'</span> ';
+        $data = $ctrl->initCaptcha();
+        echo '<span class="jforms-captcha-question">',htmlspecialchars($data['question']),'</span> ';
 
         unset($attr['readonly']);
         $attr['type'] = 'text';

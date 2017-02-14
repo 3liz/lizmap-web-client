@@ -34,6 +34,7 @@ class sqlite3DbTools extends jDbTools {
 
       'float'           =>array('float',            'float',    null,       null,       null,     null), //4bytes
       'money'           =>array('real',             'float',    null,       null,       null,     null), //4bytes
+      'smallmoney'      =>array('float',            'float',    null,       null,       null,     null), //4bytes
       'double precision'=>array('double',           'decimal',  null,       null,       null,     null), //8bytes
       'double'          =>array('double',           'decimal',  null,       null,       null,     null), //8bytes
       'real'            =>array('real',             'decimal',  null,       null,       null,     null), //8bytes
@@ -48,6 +49,9 @@ class sqlite3DbTools extends jDbTools {
       'date'            =>array('date',       'date',       null,       null,       10,    10),
       'time'            =>array('time',       'time',       null,       null,       8,     8),
       'datetime'        =>array('datetime',   'datetime',   null,       null,       19,    19),
+      'datetime2'       =>array('datetime',   'datetime',   null,       null,       19,    27), // sqlsrv / 9999-12-31 23:59:59.9999999
+      'datetimeoffset'  =>array('datetime',   'datetime',   null,       null,       19,    34), // sqlsrv / 9999-12-31 23:59:59.9999999 +14:00
+      'smalldatetime'   =>array('datetime',   'datetime',   null,       null,       19,    19), // sqlsrv / 2079-06-06 23:59
       'timestamp'       =>array('datetime',   'datetime',   null,       null,       19,    19), // oracle/pgsql timestamp
       'utimestamp'      =>array('integer',    'integer',    0,          2147483647, null,  null), // mysql timestamp
       'year'            =>array('integer',    'year',       null,       null,       2,     4),
@@ -64,30 +68,33 @@ class sqlite3DbTools extends jDbTools {
       'longvarchar'     =>array('varchar',    'varchar',    null,       null,       0,     65535),
       'string'          =>array('varchar',    'varchar',    null,       null,       0,     65535),// for old dao files
 
-      'tinytext'        =>array('text',   'text',       null,       null,       0,     255),
-      'text'            =>array('text',       'text',       null,       null,       0,     65535),
-      'mediumtext'      =>array('text', 'text',       null,       null,       0,     16777215),
-      'longtext'        =>array('text',   'text',       null,       null,       0,     0),
-      'long'            =>array('text',   'text',       null,       null,       0,     0),
-      'clob'            =>array('text',   'text',       null,       null,       0,     0),
-      'nclob'           =>array('text',   'text',       null,       null,       0,     0),
+      'tinytext'        =>array('text',   'text',      null,       null,       0,     255),
+      'text'            =>array('text',   'text',      null,       null,       0,     65535),
+      'ntext'           =>array('text',   'text',      null,       null,       0,     0),
+      'mediumtext'      =>array('text',   'text',      null,       null,       0,     16777215),
+      'longtext'        =>array('text',   'text',      null,       null,       0,     0),
+      'long'            =>array('text',   'text',      null,       null,       0,     0),
+      'clob'            =>array('text',   'text',      null,       null,       0,     0),
+      'nclob'           =>array('text',   'text',      null,       null,       0,     0),
 
 
-      'tinyblob'        =>array('blob',   'blob',       null,       null,       0,     255),
-      'blob'            =>array('blob',       'blob',       null,       null,       0,     65535),
-      'mediumblob'      =>array('blob', 'blob',       null,       null,       0,     16777215),
-      'longblob'        =>array('blob',   'blob',       null,       null,       0,     0),
-      'bfile'           =>array('blob',   'blob',       null,       null,       0,     0),
+      'tinyblob'        =>array('blob',  'blob',       null,       null,       0,     255),
+      'blob'            =>array('blob',  'blob',       null,       null,       0,     65535),
+      'mediumblob'      =>array('blob',  'blob',       null,       null,       0,     16777215),
+      'longblob'        =>array('blob',  'blob',       null,       null,       0,     0),
+      'bfile'           =>array('blob',  'blob',       null,       null,       0,     0),
       
-      'bytea'           =>array('blob',   'varbinary',       null,       null,       0,     0),
-      'binary'          =>array('blob',     'binary',     null,       null,       0,     255),
+      'bytea'           =>array('blob',  'varbinary',  null,       null,       0,     0),
+      'binary'          =>array('blob',  'binary',     null,       null,       0,     255),
       'varbinary'       =>array('blob',  'varbinary',  null,       null,       0,     255),
       'raw'             =>array('blob',  'varbinary',  null,       null,       0,     2000),
       'long raw'        =>array('blob',  'varbinary',  null,       null,       0,     0),
+      'image'           =>array('blob',  'varbinary',  null,       null,       0,     0),
 
       'enum'            =>array('varchar',    'varchar',    null,       null,       0,     65535),
       'set'             =>array('varchar',    'varchar',    null,       null,       0,     65535),
       'xmltype'         =>array('varchar',    'varchar',    null,       null,       0,     65535),
+      'xml'             =>array('text',       'text',       null,       null,       0,     0),
 
       'point'           =>array('varchar',    'varchar',    null,       null,       0,     16),
       'line'            =>array('varchar',    'varchar',    null,       null,       0,     32),

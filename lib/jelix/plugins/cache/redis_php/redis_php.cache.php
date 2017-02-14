@@ -10,9 +10,7 @@
  * @licence  http://www.gnu.org/licenses/lgpl.html GNU Lesser General Public Licence, see LICENCE file
  */
 
-require_once(LIB_PATH . 'php5redis/Redis.php');
-
-class redisCacheDriver implements jICacheDriver {
+class redis_phpCacheDriver implements jICacheDriver {
 
     /**
     * profil name used in the ini file
@@ -65,7 +63,7 @@ class redisCacheDriver implements jICacheDriver {
     protected $key_prefix_flush_method = 'direct';
 
     /**
-     * @param Redis the redis connection
+     * @param \PhpRedis\Redis the redis connection
      */
     protected $redis;
 
@@ -109,7 +107,7 @@ class redisCacheDriver implements jICacheDriver {
         }
 
         // OK, let's connect now
-        $this->redis = new Redis($params['host'], $params['port']);
+        $this->redis = new \PhpRedis\Redis($params['host'], $params['port']);
 
         if (isset($params['db']) && intval($params['db']) != 0) {
             $this->redis->select_db($params['db']);
@@ -118,7 +116,7 @@ class redisCacheDriver implements jICacheDriver {
 
     /**
      * Returns the redis api
-     * @return Redis
+     * @return \PhpRedis\Redis
      */
     public function getRedis() {
         return $this->redis;
@@ -267,7 +265,7 @@ class redisCacheDriver implements jICacheDriver {
     */
     public function flush() {
         if (!$this->key_prefix) {
-            return ($this->redis->flushall()  == 'OK');
+            return ($this->redis->flushdb()  == 'OK');
         }
         switch($this->key_prefix_flush_method) {
             case 'direct':

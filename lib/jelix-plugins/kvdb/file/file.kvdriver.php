@@ -236,7 +236,7 @@ class fileKVDriver extends jKVDriver implements jIKVPersistent, jIKVttl {
         if ($oldData === null)
             return false;
 
-        if (!is_numeric($oldData)) {
+        if (!is_numeric($oldData) || !is_numeric($var)) {
             return false;
         }
         $data = $oldData + $var;
@@ -257,7 +257,7 @@ class fileKVDriver extends jKVDriver implements jIKVPersistent, jIKVttl {
         if ($oldData === null)
             return false;
 
-        if (!is_numeric($oldData)) {
+        if (!is_numeric($oldData) || !is_numeric($var)) {
             return false;
         }
         $data = $oldData - (int)$var;

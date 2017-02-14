@@ -72,7 +72,7 @@ class pgsqlDbSchema extends jDbSchema {
      * @return jDbTable
      */
     function getTable($name) {
-        return  new pgsqlDbTable($this->schema->getConn()->prefixTable($name), $this);
+        return  new pgsqlDbTable($this->getConn()->prefixTable($name), $this);
     }
 
     protected function _getTables () {
