@@ -216,16 +216,27 @@ class HtmlBuilder extends BuilderBase {
     protected $widgets = array();
 
     public function getWidget($ctrl, ParentWidgetInterface $parentWidget = null) {
-        if (isset($this->widgets[$ctrl->ref]))
+        if (isset($this->widgets[$ctrl->ref])) {
             return $this->widgets[$ctrl->ref];
-        $config = \jApp::config()->{$this->formConfig};
-        if (isset($this->pluginsConf[$ctrl->ref])) { //first the builder conf
-           $pluginName = $this->pluginsConf[$ctrl->ref];
-        } elseif (isset($config[$ctrl->type])) { //then the ini conf
-           $pluginName = $config[$ctrl->type];
-        } else { //finaly the control type
-           $pluginName = $ctrl->type . '_'. $this->formType;
         }
+
+        // we have to retrieve the plugin name corresponding to the widget
+
+        $config = \jApp::config()->{$this->formConfig};
+        // check the builder conf
+        if (isset($this->pluginsConf[$ctrl->ref])) {
+            $pluginName = $this->pluginsConf[$ctrl->ref];
+        }
+        // else check the ini conf
+        elseif (isset($config[$ctrl->type])) {
+            $pluginName = $config[$ctrl->type];
+        }
+        // else get the plugin name from the control
+        else {
+            $pluginName = $ctrl->getWidgetType(). '_'. $this->formType;
+        }
+
+        // now we have its name, let's create the widget instance
         $className = $pluginName . 'FormWidget';
         $plugin = \jApp::loadPlugin($pluginName, 'formwidget', '.formwidget.php', $className, array($ctrl, $this, $parentWidget));
         if (!$plugin)

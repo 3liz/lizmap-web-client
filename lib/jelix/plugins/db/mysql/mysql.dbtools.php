@@ -39,6 +39,7 @@ class mysqlDbTools extends jDbTools {
 
       'float'           =>array('float',            'float',    null,       null,       null,     null), //4bytes
       'money'           =>array('float',            'float',    null,       null,       null,     null), //4bytes
+      'smallmoney'      =>array('float',            'float',    null,       null,       null,     null),
       'double precision'=>array('double precision', 'decimal',  null,       null,       null,     null), //8bytes
       'double'          =>array('double precision', 'decimal',  null,       null,       null,     null), //8bytes
       'real'            =>array('real',             'decimal',  null,       null,       null,     null), //8bytes
@@ -53,6 +54,9 @@ class mysqlDbTools extends jDbTools {
       'date'            =>array('date',       'date',       null,       null,       10,    10),
       'time'            =>array('time',       'time',       null,       null,       8,     8),
       'datetime'        =>array('datetime',   'datetime',   null,       null,       19,    19),
+      'datetime2'       =>array('datetime',   'datetime',   null,       null,       19,    27), // sqlsrv / 9999-12-31 23:59:59.9999999
+      'datetimeoffset'  =>array('datetime',   'datetime',   null,       null,       19,    34), // sqlsrv / 9999-12-31 23:59:59.9999999 +14:00
+      'smalldatetime'   =>array('datetime',   'datetime',   null,       null,       19,    19), // sqlsrv / 2079-06-06 23:59
       'timestamp'       =>array('datetime',   'datetime',   null,       null,       19,    19), // oracle/pgsql timestamp
       'utimestamp'      =>array('timestamp',  'integer',    0,          2147483647, null,  null), // mysql timestamp
       'year'            =>array('year',       'year',       null,       null,       2,     4),
@@ -71,6 +75,7 @@ class mysqlDbTools extends jDbTools {
 
       'tinytext'        =>array('tinytext',   'text',       null,       null,       0,     255),
       'text'            =>array('text',       'text',       null,       null,       0,     65535),
+      'ntext'           =>array('text',       'text',       null,       null,       0,     0),
       'mediumtext'      =>array('mediumtext', 'text',       null,       null,       0,     16777215),
       'longtext'        =>array('longtext',   'text',       null,       null,       0,     0),
       'long'            =>array('longtext',   'text',       null,       null,       0,     0),
@@ -89,10 +94,12 @@ class mysqlDbTools extends jDbTools {
       'varbinary'       =>array('varbinary',  'varbinary',  null,       null,       0,     255),
       'raw'             =>array('varbinary',  'varbinary',  null,       null,       0,     2000),
       'long raw'        =>array('varbinary',  'varbinary',  null,       null,       0,     0),
+      'image'           =>array('varbinary',  'varbinary',  null,       null,       0,     0),
 
       'enum'            =>array('varchar',    'varchar',    null,       null,       0,     65535),
       'set'             =>array('varchar',    'varchar',    null,       null,       0,     65535),
       'xmltype'         =>array('varchar',    'varchar',    null,       null,       0,     65535),
+      'xml'             =>array('text',       'text',       null,       null,       0,     0),
 
       'point'           =>array('varchar',    'varchar',    null,       null,       0,     16),
       'line'            =>array('varchar',    'varchar',    null,       null,       0,     32),

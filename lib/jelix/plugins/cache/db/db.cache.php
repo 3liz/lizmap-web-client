@@ -4,7 +4,7 @@
 * @subpackage plugins_cache_db
 * @author     Tahina Ramaroson
 * @contributor Sylvain de Vathaire, Laurent Jouanneau
-* @copyright  2009 Neov, 2009 Laurent Jouanneau
+* @copyright  2009 Neov, 2009-2017 Laurent Jouanneau
 * @licence  http://www.gnu.org/licenses/lgpl.html GNU Lesser General Public Licence, see LICENCE file
 */
 
@@ -200,11 +200,11 @@ class dbCacheDriver implements jICacheDriver {
     * @param mixed  $var    value used
     * @return boolean false if failure
     */
-    public function increment ($key,$var=1){
+    public function increment ($key, $var=1) {
 
         if ($oldData = $this->get($key)) {
 
-            if (!is_numeric($oldData)) {
+            if (!is_numeric($oldData) || !is_numeric($var)) {
                 return false;
             }
             $data = $oldData + $var;
@@ -227,7 +227,7 @@ class dbCacheDriver implements jICacheDriver {
 
         if (($oldData=$this->get($key))) {
 
-            if (!is_numeric($oldData)) {
+            if (!is_numeric($oldData) || !is_numeric($var)) {
                 return false;
             }
             $data= $oldData - (int)$var;

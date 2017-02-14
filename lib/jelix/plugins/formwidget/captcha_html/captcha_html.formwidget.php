@@ -39,8 +39,8 @@ class captcha_htmlFormWidget extends  \jelix\forms\HtmlWidget\WidgetBase {
     function outputControl() {
         $attr = $this->getControlAttributes();
 
-        $this->ctrl->initExpectedValue();
-        echo '<span class="jforms-captcha-question">',htmlspecialchars($this->ctrl->question),'</span> ';
+        $data = $this->ctrl->initCaptcha();
+        echo '<span class="jforms-captcha-question">',htmlspecialchars($data['question']),'</span> ';
 
         unset($attr['readonly']);
         $attr['type'] = 'text';

@@ -254,7 +254,7 @@ abstract class jDbTools {
     }
 
     /**
-     * Rnclose the field name
+     * Enclose the field name
      * @param string $fieldName the field name
      * @return string the enclosed field name
      * @since 1.2
@@ -264,7 +264,7 @@ abstract class jDbTools {
     }
 
     /**
-    * <teturns the table list
+    * returns the table list
     */
     abstract public function getTableList ();
 

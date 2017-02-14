@@ -234,6 +234,9 @@ class jFormsCompiler_jf_1_1 extends jFormsCompiler_jf_1_0 {
     protected function generateCaptcha(&$source, $control, &$attributes) {
         $this->readLabel($source, $control, 'captcha');
         $this->readHelpHintAlert($source, $control);
+        if (isset($attributes['validator'])) {
+            $source[] = '$ctrl->setValidator(\'' . str_replace("'", "\\'", $attributes['validator']) . '\');';
+        }
         return false;
     }
 

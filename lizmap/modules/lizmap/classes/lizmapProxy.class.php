@@ -460,9 +460,16 @@ class lizmapProxy {
             $cacheRedisPort = trim($ser->cacheRedisPort);
         }
 
+        if (extension_loaded('redis')) {
+            $driver = 'redis_ext';
+        }
+        else {
+            $driver = 'redis_php';
+        }
+
         // Virtual cache profile parameter
         $cacheParams = array(
-            "driver"=>"redis",
+            "driver"=>$driver,
             "host"=>$cacheRedisHost,
             "port"=>$cacheRedisPort,
             "ttl"=>$cacheExpiration,

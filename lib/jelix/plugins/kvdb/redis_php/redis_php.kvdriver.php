@@ -10,9 +10,7 @@
  * @licence  http://www.gnu.org/licenses/lgpl.html GNU Lesser General Public Licence, see LICENCE file
  */
 
-require_once(LIB_PATH . 'php5redis/Redis.php');
-
-class redisKVDriver extends jKVDriver implements jIKVSet, jIKVttl {
+class redis_phpKVDriver extends jKVDriver implements jIKVSet, jIKVttl {
 
     protected $key_prefix = '';
 
@@ -32,7 +30,7 @@ class redisKVDriver extends jKVDriver implements jIKVSet, jIKVttl {
 
     /**
      * Connects to the redis server
-     * @return Redis object
+     * @return \PhpRedis\Redis object
      * @throws jException
      */
     protected function _connect() {
@@ -61,7 +59,7 @@ class redisKVDriver extends jKVDriver implements jIKVSet, jIKVttl {
         }
 
         // OK, let's connect now
-        $cnx = new Redis($this->_profile['host'], $this->_profile['port']);
+        $cnx = new \PhpRedis\Redis($this->_profile['host'], $this->_profile['port']);
 
         if (isset($this->_profile['db']) && intval($this->_profile['db']) != 0) {
             $cnx->select_db($this->_profile['db']);
@@ -92,7 +90,7 @@ class redisKVDriver extends jKVDriver implements jIKVSet, jIKVttl {
     }
 
     /**
-     * @return Redis
+     * @return \PhpRedis\Redis
      */
     public function getRedis() {
         return $this->_connection;
@@ -143,7 +141,7 @@ class redisKVDriver extends jKVDriver implements jIKVSet, jIKVttl {
 
     public function flush() {
         if (!$this->key_prefix) {
-            return ($this->_connection->flushall()  == 'OK');
+            return ($this->_connection->flushdb()  == 'OK');
         }
         switch($this->key_prefix_flush_method) {
             case 'direct':
@@ -189,10 +187,10 @@ class redisKVDriver extends jKVDriver implements jIKVSet, jIKVttl {
     }
 
     public function increment($key, $incvalue = 1) {
-        $usedkey = $this->getUsedKey($key);
         $val = $this->get($key);
         if ($val === null || !is_numeric($val) || !is_numeric($incvalue))
             return false;
+        $usedkey = $this->getUsedKey($key);
         if (intval($val) == $val)
             return $this->_connection->incr($usedkey, intval($incvalue));
         else { // float values
@@ -204,10 +202,10 @@ class redisKVDriver extends jKVDriver implements jIKVSet, jIKVttl {
     }
 
     public function decrement($key, $decvalue = 1) {
-        $usedkey = $this->getUsedKey($key);
         $val = $this->get($key);
         if ($val === null || !is_numeric($val) || !is_numeric($decvalue))
             return false;
+        $usedkey = $this->getUsedKey($key);
         if (intval($val) == $val)
             return $this->_connection->decr($usedkey, intval($decvalue));
         else { // float values
