@@ -1868,13 +1868,14 @@ var lizAttributeTable = function() {
             getAttributeFeatureData(typeName, aFilter, null, function(aName, aNameFilter, aNameFeatures, aNameAliases ){
 
                 // **0** Prepare some variable. e.g. reset features stored in the layer config
-                config.layers[typeName]['features'] = [];
+                var layerConfig = config.layers[typeName];
+                layerConfig['features'] = [];
                 var foundFeatures = {};
 
                 // **1** Get children info
                 var cFeatures = aNameFeatures;
                 var dataLength = cFeatures.length;
-                var typeNameId = config.layers[typeName]['id'];
+                var typeNameId = layerConfig['id'];
                 var typeNamePkey = config.attributeLayers[typeName]['primaryKey'];
                 var typeNamePkeyValues = [];
                 var typeNameChildren = {};
@@ -2012,9 +2013,15 @@ var lizAttributeTable = function() {
 
                     // Add primary keys values to build the WMS filter ( to be able to redraw layer)
                     var pk = feat.properties[typeNamePkey];
-                    var intRegex = /^[0-9]+$/;
-                    if( !( intRegex.test(pk) ) )
+                    if( ('types' in layerConfig)
+                     && (typeNamePkey in layerConfig.types)
+                     && layerConfig.types[typeNamePkey] == 'string') {
                         pk = " '" + pk + "' ";
+                    } else {
+                        var intRegex = /^[0-9]+$/;
+                        if( !( intRegex.test(pk) ) )
+                            pk = " '" + pk + "' ";
+                    }
                     typeNamePkeyValues.push( pk );
 
                     // Reset filteredFeatures with found features
@@ -2040,8 +2047,8 @@ var lizAttributeTable = function() {
                 }
 
                 // **3** Apply filter to the typeName and redraw if necessary
-                config.layers[typeName]['features'] = foundFeatures;
-                config.layers[typeName]['alias'] = aNameAliases;
+                layerConfig['features'] = foundFeatures;
+                layerConfig['alias'] = aNameAliases;
                 var layerN = attributeLayersDic[lizMap.cleanName(typeName)];
 
                 var lFilter = null;
@@ -2055,7 +2062,7 @@ var lizAttributeTable = function() {
                     typeNamePkeyValues.push('-99999');
                 if( aFilter )
                     var lFilter = layerN + ':"' + typeNamePkey + '" IN ( ' + typeNamePkeyValues.join( ' , ' ) + ' ) ';
-                config.layers[typeName]['request_params']['filter'] = lFilter;
+                layerConfig['request_params']['filter'] = lFilter;
 
                 // Add filter to openlayers layer
                 if( layer
@@ -2069,8 +2076,8 @@ var lizAttributeTable = function() {
 
                 // Redraw openlayers layer
                 if( layer
-                    && config.layers[typeName]['geometryType'] != 'none'
-                    && config.layers[typeName]['geometryType'] != 'unknown'
+                    && layerConfig['geometryType'] != 'none'
+                    && layerConfig['geometryType'] != 'unknown'
                 ){
                     layer.redraw(true);
                 }
