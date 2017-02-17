@@ -1,4 +1,4 @@
-[![logo](icon.png "3Liz")][3liz]Lizmap Web Application 3.1beta3
+[![logo](icon.png "3Liz")][3liz]Lizmap Web Application 3.1rc1
 ================================================================
 
 Lizmap web application, by 3LIZ.
@@ -25,6 +25,7 @@ Contributors
 * Salvatore Larosa
 * Giovanni Manghi
 * Laurent Jouanneau
+* José Macau
 * David Marteau
 * Vitor Jorge
 * Nicolas Boisteault
