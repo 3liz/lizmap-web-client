@@ -208,6 +208,22 @@ class lizmapProject{
         if (property_exists($qgs_xml->properties, 'WMSServiceAbstract'))
             $this->data['abstract'] = (string)$qgs_xml->properties->WMSServiceAbstract;
 
+        # get WMS max width
+        if (property_exists($qgs_xml->properties, 'WMSMaxWidth'))
+            $this->data['wmsMaxWidth'] = (int)$qgs_xml->properties->WMSMaxWidth;
+        else
+            $this->data['wmsMaxWidth'] = 1500;
+        if( !$this->data['wmsMaxWidth'] )
+            $this->data['wmsMaxWidth'] = 1500;
+
+        # get WMS max height
+        if (property_exists($qgs_xml->properties, 'WMSMaxHeight'))
+            $this->data['wmsMaxHeight'] = (int)$qgs_xml->properties->WMSMaxHeight;
+        else
+            $this->data['wmsMaxHeight'] = 1500;
+        if( !$this->data['wmsMaxHeight'] )
+            $this->data['wmsMaxHeight'] = 1500;
+
         # get WMS getCapabilities full URL
         $this->data['wmsGetCapabilitiesUrl'] = jUrl::getFull(
             'lizmap~service:index',
@@ -980,6 +996,10 @@ class lizmapProject{
         if( jAcl2::check('lizmap.tools.layer.export', $this->repository->getKey()) ){
             $configJson->options->exportLayers = 'True';
         }
+
+        // Add WMS max width ad height
+        $configJson->options->wmsMaxWidth = $this->data['wmsMaxWidth'];
+        $configJson->options->wmsMaxHeight = $this->data['wmsMaxHeight'];
 
         // Update config with layer relations
         $relations = $this->getRelations();

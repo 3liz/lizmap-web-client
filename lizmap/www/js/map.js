@@ -331,6 +331,55 @@ var lizMap = function() {
    * query OpenLayers to update the map size
    */
  function updateMapSize(){
+    //manage WMS max width and height
+    var wmsMaxWidth = 1500;
+    var wmsMaxHeight = 1500;
+    if( ('wmsMaxWidth' in config.options) && config.options.wmsMaxWidth )
+        wmsMaxWidth = config.options.wmsMaxWidth;
+    if( ('wmsMaxHeight' in config.options) && config.options.wmsMaxHeight )
+        wmsMaxHeight = config.options.wmsMaxHeight;
+    var removeSingleTile = false;
+    var newMapSize = map.getCurrentSize();
+    var replaceSingleTileSize = newMapSize.clone();
+    if( newMapSize.w > wmsMaxWidth || newMapSize.h > wmsMaxHeight ){
+        removeSingleTile = true;
+        var wmsMaxMax = Math.max(wmsMaxWidth, wmsMaxHeight);
+        var wmsMinMax = Math.min(wmsMaxWidth, wmsMaxHeight);
+        var mapMax = Math.max(newMapSize.w, newMapSize.h);
+        var mapMin = Math.min(newMapSize.w, newMapSize.h);
+        if( mapMax/2 > mapMin )
+          replaceSingleTileSize = new OpenLayers.Size(mapMax/2, mapMax/2);
+        else if( wmsMaxMax/2 > mapMin )
+          replaceSingleTileSize = new OpenLayers.Size(wmsMaxMax/2, wmsMaxMax/2);
+        else
+          replaceSingleTileSize = new OpenLayers.Size(wmsMinMax/2, wmsMinMax/2);
+    }
+    // Update singleTile layers
+    for(var i=0, len=map.layers.length; i<len; ++i) {
+        var layer = map.layers[i];
+        if( !(layer instanceof OpenLayers.Layer.WMS) )
+            continue;
+        var qgisName = null;
+        if ( layer.name in cleanNameMap )
+            qgisName = getLayerNameByCleanName(name);
+        var configLayer = null;
+        if ( qgisName )
+            configLayer = config.layers[qgisName];
+        if ( !configLayer )
+            configLayer = config.layers[layer.params['LAYERS']];
+        if ( !configLayer )
+            configLayer = config.layers[layer.name];
+        if( configLayer.singleTile != "True" )
+            continue;
+        if( removeSingleTile ) {
+          layer.addOptions({singleTile:false, tileSize: replaceSingleTileSize});
+        } else {
+          replaceSingleTileSize.h = parseInt(replaceSingleTileSize.h * layer.ratio, 10);
+          replaceSingleTileSize.w = parseInt(replaceSingleTileSize.w * layer.ratio, 10);
+          layer.addOptions({singleTile:true, tileSize: replaceSingleTileSize});
+        }
+    }
+
     var center = map.getCenter();
     map.updateSize();
     map.setCenter(center);
@@ -2219,6 +2268,30 @@ var lizMap = function() {
 
     var projection = map.projection;
 
+    //manage WMS max width and height
+    var wmsMaxWidth = 1500;
+    var wmsMaxHeight = 1500;
+    if( ('wmsMaxWidth' in config.options) && config.options.wmsMaxWidth )
+        wmsMaxWidth = config.options.wmsMaxWidth;
+    if( ('wmsMaxHeight' in config.options) && config.options.wmsMaxHeight )
+        wmsMaxHeight = config.options.wmsMaxHeight;
+    var removeSingleTile = false;
+    var mapSize = map.size;
+    var replaceSingleTileSize = new OpenLayers.Size(wmsMaxWidth, wmsMaxHeight);
+    if( mapSize.w > wmsMaxWidth || mapSize.h > wmsMaxHeight ){
+        removeSingleTile = true;
+        var wmsMaxMax = Math.max(wmsMaxWidth, wmsMaxHeight);
+        var wmsMinMax = Math.min(wmsMaxWidth, wmsMaxHeight);
+        var mapMax = Math.max(mapSize.w, mapSize.h);
+        var mapMin = Math.min(mapSize.w, mapSize.h);
+        if( mapMax/2 > mapMin )
+          replaceSingleTileSize = new OpenLayers.Size(mapMax/2, mapMax/2);
+        else if( wmsMaxMax/2 > mapMin )
+          replaceSingleTileSize = new OpenLayers.Size(wmsMaxMax/2, wmsMaxMax/2);
+        else
+          replaceSingleTileSize = new OpenLayers.Size(wmsMinMax/2, wmsMinMax/2);
+    }
+
     // get the baselayer select content
     // and adding baselayers to the map
     //var select = '<select class="baselayers">';
@@ -2227,6 +2300,10 @@ var lizMap = function() {
     for (var i=0,len=baselayers.length; i<len; i++) {
       var baselayer = baselayers[i]
       baselayer.units = projection.proj.units;
+      // Update singleTile layers
+      if( removeSingleTile && (baselayer instanceof OpenLayers.Layer.WMS) && baselayer.singleTile ) {
+          baselayer.addOptions({singleTile:false, tileSize: replaceSingleTileSize});
+      }
       map.addLayer(baselayer);
       var qgisName = baselayer.name;
       if ( baselayer.name in cleanNameMap )
@@ -2322,6 +2399,10 @@ var lizMap = function() {
         ( aConfig.geometryType == "none" || aConfig.geometryType == "unknown" || aConfig.geometryType == "" )
       ){
         continue;
+      }
+      // Update singleTile layers
+      if( removeSingleTile && (l instanceof OpenLayers.Layer.WMS) && l.singleTile ) {
+          l.addOptions({singleTile:false, tileSize: replaceSingleTileSize});
       }
       map.addLayer(l);
 
