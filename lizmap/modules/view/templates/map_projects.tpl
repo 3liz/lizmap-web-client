@@ -31,12 +31,10 @@
         var desc = self.parent().parent().find('.liz-project-desc');
         var proj = desc.find('span.proj').text();
         var bbox = desc.find('span.bbox').text();
-        alert(proj+' '+bbox);
         lizMap.loadProjDefinition( proj, function( aProj ) {
           var bounds = OpenLayers.Bounds.fromString( bbox );
           bounds.transform( aProj, 'EPSG:4326' );
           var mapBounds = lizMap.map.getExtent().transform(lizMap.map.getProjection(), 'EPSG:4326');
-          alert(bounds.containsBounds( mapBounds ));
           if ( bounds.containsBounds( mapBounds ) )
             window.location = OpenLayers.Util.urlAppend(self.attr('href')
               ,'bbox='+mapBounds.clone().transform('EPSG:4326',aProj)
