@@ -348,11 +348,11 @@ var lizMap = function() {
         var mapMax = Math.max(newMapSize.w, newMapSize.h);
         var mapMin = Math.min(newMapSize.w, newMapSize.h);
         if( mapMax/2 > mapMin )
-          replaceSingleTileSize = new OpenLayers.Size(mapMax/2, mapMax/2);
+          replaceSingleTileSize = new OpenLayers.Size(Math.round(mapMax/2), Math.round(mapMax/2));
         else if( wmsMaxMax/2 > mapMin )
-          replaceSingleTileSize = new OpenLayers.Size(wmsMaxMax/2, wmsMaxMax/2);
+          replaceSingleTileSize = new OpenLayers.Size(Math.round(wmsMaxMax/2), Math.round(wmsMaxMax/2));
         else
-          replaceSingleTileSize = new OpenLayers.Size(wmsMinMax/2, wmsMinMax/2);
+          replaceSingleTileSize = new OpenLayers.Size(Math.round(wmsMinMax/2), Math.round(wmsMinMax/2));
     }
     // Update singleTile layers
     for(var i=0, len=map.layers.length; i<len; ++i) {
@@ -371,9 +371,9 @@ var lizMap = function() {
             configLayer = config.layers[layer.name];
         if( configLayer.singleTile != "True" )
             continue;
-        if( removeSingleTile ) {
+        if( removeSingleTile && layer.singleTile) {
           layer.addOptions({singleTile:false, tileSize: replaceSingleTileSize});
-        } else {
+        } else if( !removeSingleTile && !layer.singleTile) {
           replaceSingleTileSize.h = parseInt(replaceSingleTileSize.h * layer.ratio, 10);
           replaceSingleTileSize.w = parseInt(replaceSingleTileSize.w * layer.ratio, 10);
           layer.addOptions({singleTile:true, tileSize: replaceSingleTileSize});
@@ -2285,11 +2285,11 @@ var lizMap = function() {
         var mapMax = Math.max(mapSize.w, mapSize.h);
         var mapMin = Math.min(mapSize.w, mapSize.h);
         if( mapMax/2 > mapMin )
-          replaceSingleTileSize = new OpenLayers.Size(mapMax/2, mapMax/2);
+          replaceSingleTileSize = new OpenLayers.Size(Math.round(mapMax/2), Math.round(mapMax/2));
         else if( wmsMaxMax/2 > mapMin )
-          replaceSingleTileSize = new OpenLayers.Size(wmsMaxMax/2, wmsMaxMax/2);
+          replaceSingleTileSize = new OpenLayers.Size(Math.round(wmsMaxMax/2), Math.round(wmsMaxMax/2));
         else
-          replaceSingleTileSize = new OpenLayers.Size(wmsMinMax/2, wmsMinMax/2);
+          replaceSingleTileSize = new OpenLayers.Size(Math.round(wmsMinMax/2), Math.round(wmsMinMax/2));
     }
 
     // get the baselayer select content
