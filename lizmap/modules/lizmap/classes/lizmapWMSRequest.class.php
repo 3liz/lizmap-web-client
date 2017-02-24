@@ -137,8 +137,10 @@ class lizmapWMSRequest extends lizmapOGCRequest {
 
     protected function getlegendgraphics ( ) {
         $layers = $this->param('Layers','');
+        if( $layers == '' )
+            $layers = $this->param('Layer','');
         $layers = explode(',', $layers);
-        if ( count($layers == 1) ) {
+        if ( count($layers) == 1 ) {
             $lName = $layers[0];
             $layer = $this->project->findLayerByAnyName( $lName );
             if ( $layer && property_exists($layer, 'showFeatureCount' ) && $layer->showFeatureCount == 'True') {
