@@ -1704,8 +1704,11 @@ var lizAttributeTable = function() {
                     if( !aConfig.featureCrs && data.features.length != 0) {
                         lizMap.loadProjDefinition( aConfig.crs, function( aProj ) {
                             var dataBounds = OpenLayers.Bounds.fromArray(data.features[0].bbox);
-                            if( data.features.length > 1 ) {
+                            if( data.features.length > 1 && data.features[1].bbox ) {
                                 dataBounds.extend( OpenLayers.Bounds.fromArray(data.features[1].bbox) );
+                            }
+                            else if( data.features.length > 2 && data.features[2].bbox ) {
+                                dataBounds.extend( OpenLayers.Bounds.fromArray(data.features[2].bbox) );
                             }
 
                             var worldBounds = OpenLayers.Bounds.fromArray([-180,-90,180,90]);
