@@ -123,12 +123,14 @@ var lizEdition = function() {
                     eventListeners: {
                         activate: function( evt ) {
                             lizMap.deactivateToolControls( evt );
+                            lizMap.controls.featureInfo.deactivate();
                         },
                         deactivate: function( evt ) {
                             for ( var c in editCtrls ) {
                                 if ( c != 'panel' && editCtrls[c].active )
                                     editCtrls[c].deactivate();
                             }
+                            lizMap.controls.featureInfo.activate();
                         }
                     }
                 }),

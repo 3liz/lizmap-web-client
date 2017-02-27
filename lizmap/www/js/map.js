@@ -2702,7 +2702,8 @@ var lizMap = function() {
       navCtrl.zoomBox.handler.keyMask = navCtrl.zoomBoxKeyMask;
       navCtrl.zoomBox.handler.dragHandler.keyMask = navCtrl.zoomBoxKeyMask;
       navCtrl.handlers.wheel.activate();
-      map.getControlsByClass('OpenLayers.Control.WMSGetFeatureInfo')[0].activate();
+      if( 'edition' in controls && !controls.edition.active )
+        controls['featureInfo'].activate();
     });
     $('#navbar button.zoom').click(function(){
       var self = $(this);
@@ -2710,7 +2711,7 @@ var lizMap = function() {
         return false;
       $('#navbar button.pan').removeClass('active');
       self.addClass('active');
-      map.getControlsByClass('OpenLayers.Control.WMSGetFeatureInfo')[0].deactivate();
+      controls['featureInfo'].deactivate();
       var navCtrl = map.getControlsByClass('OpenLayers.Control.Navigation')[0];
       navCtrl.handlers.wheel.deactivate();
       navCtrl.zoomBox.keyMask = null;
