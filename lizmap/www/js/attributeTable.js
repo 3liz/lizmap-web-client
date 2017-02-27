@@ -3076,7 +3076,7 @@ var lizAttributeTable = function() {
                         var relations = lizMap.config.relations[layerId];
                         var featureType = getLayerConfig[0];
                         var featureId = featureType + '.' + fid;
-                        if ( relations.length > 1 ) {
+                        if ( relations.length > 0 ) {
                             var childHtml = getChildrenHtmlContent( featureType );
                             var html = '';
                             // Add children content
