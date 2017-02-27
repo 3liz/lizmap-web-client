@@ -503,17 +503,19 @@ var lizEdition = function() {
                 var parentInfo = editionLayer['parent'];
                 var parentFeat = parentInfo['feature'];
                 var relation = parentInfo['relation'];
-                var select = $('#edition-form-container form select[name="'+relation.referencingField+'"]')
-                    .val(parentFeat.properties[relation.referencedField])
-                    .attr('disabled','disabled');
-                var hiddenInput = $('<input type="hidden"></input>')
-                    .attr('id', select.attr('id')+'_hidden')
-                    .attr('name', relation.referencingField)
-                    .attr('value', parentFeat.properties[relation.referencedField]);
-                $('#edition-form-container form div.jforms-hiddens').append(hiddenInput);
-                jFormsJQ.getForm($('#edition-form-container form').attr('id'))
-                    .getControl(relation.referencingField)
-                    .required=false;
+                var select = $('#edition-form-container form select[name="'+relation.referencingField+'"]');
+                if( select.length == 1 ){
+                    select.val(parentFeat.properties[relation.referencedField])
+                          .attr('disabled','disabled');
+                    var hiddenInput = $('<input type="hidden"></input>')
+                        .attr('id', select.attr('id')+'_hidden')
+                        .attr('name', relation.referencingField)
+                        .attr('value', parentFeat.properties[relation.referencedField]);
+                    $('#edition-form-container form div.jforms-hiddens').append(hiddenInput);
+                    jFormsJQ.getForm($('#edition-form-container form').attr('id'))
+                        .getControl(relation.referencingField)
+                        .required=false;
+                }
             }
 
             handleEditionFormSubmit( form );
