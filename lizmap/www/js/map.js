@@ -3297,6 +3297,9 @@ var lizMap = function() {
         },
         "layerSelectionChanged": function( evt ) {
             refreshGetFeatureInfo(evt);
+        },
+        "lizmapeditionfeaturedeleted": function( evt ) {
+            refreshGetFeatureInfo(evt);
         }
      });
      map.addControl(info);

@@ -680,6 +680,11 @@ var lizEdition = function() {
         );
         if ( !eConfig || eConfig[1].capabilities.deleteFeature == "False" )
             return false;
+        var aName = eConfig[0];
+        var configLayer = config.layers[aName];
+        var typeName = eConfig[0].split(' ').join('_');
+        if ( 'shortname' in configLayer && configLayer.shortname != '' )
+            typeName = configLayer.shortname;
 
         var deleteConfirm = lizDict['edition.confirm.delete'];
         if ( aMessage )
@@ -705,7 +710,9 @@ var lizEdition = function() {
                 "lizmapeditionfeaturedeleted",
                 {
                     'layerId': aLayerId,
-                    'featureId': aFeatureId
+                    'featureId': aFeatureId,
+                    'featureType': aName,
+                    'updateDrawing': true
                 }
             );
 
