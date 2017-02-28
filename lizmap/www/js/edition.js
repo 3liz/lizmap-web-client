@@ -515,6 +515,22 @@ var lizEdition = function() {
                     jFormsJQ.getForm($('#edition-form-container form').attr('id'))
                         .getControl(relation.referencingField)
                         .required=false;
+                } else {
+                    var input = $('#edition-form-container form input[name="'+relation.referencingField+'"]');
+                    if( input.length == 1 && input.attr('type') != 'hidden'){
+                        input.val(parentFeat.properties[relation.referencedField])
+                              .attr('disabled','disabled');
+                        var hiddenInput = $('<input type="hidden"></input>')
+                            .attr('id', input.attr('id')+'_hidden')
+                            .attr('name', relation.referencingField)
+                            .attr('value', parentFeat.properties[relation.referencedField]);
+                        $('#edition-form-container form div.jforms-hiddens').append(hiddenInput);
+                        jFormsJQ.getForm($('#edition-form-container form').attr('id'))
+                            .getControl(relation.referencingField)
+                            .required=false;
+                    }
+                    else
+                        input.val(parentFeat.properties[relation.referencedField]);
                 }
             }
 
