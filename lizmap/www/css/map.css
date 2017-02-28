@@ -2106,6 +2106,22 @@ div.modal h3 .text {
   max-width:35px;
 }
 
+#edition .edition {
+  position: relative;
+}
+#edition .edition .waiter {
+  background-color: rgba(255,255,255,0.4);
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  display: none;
+}
+#edition .edition .waiter .progress {
+  margin-bottom: 0px;
+}
+
 #edition-form-container h3 {
   color: black;
   background-color: lightgrey;

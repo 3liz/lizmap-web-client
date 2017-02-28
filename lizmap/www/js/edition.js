@@ -45,6 +45,7 @@ var lizEdition = function() {
         // Empty and hide form and tools
         $('#edition-cancel').addClass('disabled');
         $('#edition-form-container').hide().html('');
+        $('#edition-waiter').hide();
 
         // Display create tools back
         if( $('#edition-layer').html().trim() != '' ){
@@ -326,6 +327,7 @@ var lizEdition = function() {
      */
     function getEditionForm( featureId, aCallback ){
 
+        $('#edition-waiter').show();
         $('#edition-form-container').hide();
 
         // Get edition type
@@ -501,6 +503,7 @@ var lizEdition = function() {
 
 
         $('#edition-form-container').show();
+        $('#edition-waiter').hide();
 
         // Show the dock if needed
         var btn = $('#button-edition');
@@ -550,6 +553,7 @@ var lizEdition = function() {
                 fileInputs = fileInputs.filter( function( i, e ) {
                     return $(e).val() != "";
                 });
+                $('#edition-waiter').show();
                 if ( fileInputs.length != 0 ) {
                     form.fileupload({
                         dataType: 'html',
@@ -559,11 +563,11 @@ var lizEdition = function() {
                     });
                     form.fileupload('add', {fileInput:fileInputs});
                 } else
-                $.post(form.attr('action'),
-                    form.serialize(),
-                    function(data) {
-                        displayEditionForm( data );
-                    });
+                    $.post(form.attr('action'),
+                        form.serialize(),
+                        function(data) {
+                            displayEditionForm( data );
+                        });
                 return false;
             });
         }
@@ -575,6 +579,7 @@ var lizEdition = function() {
                     lizMap.addMessage( msg, 'info', true).attr('id','lizmap-edition-message');
                     return false;
                 }
+                $('#edition-waiter').show();
                 $.post(form.attr('action'),
                     form.serialize(),
                     function(data) {
