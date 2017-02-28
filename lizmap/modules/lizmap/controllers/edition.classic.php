@@ -863,6 +863,7 @@ class editionCtrl extends jController {
             if ($ctrl && $ctrl->type == 'choice' ) {
                 $path = explode( '/', $record->$ref );
                 $filename = array_pop($path);
+                $filename = preg_replace('#_|-#', ' ', $filename);
                 $ctrl->itemsNames['keep'] = jLocale::get("view~edition.upload.choice.keep") . ' ' . $filename;
                 $ctrl->itemsNames['update'] = jLocale::get("view~edition.upload.choice.update");
                 $ctrl->itemsNames['delete'] = jLocale::get("view~edition.upload.choice.delete") . ' ' . $filename;

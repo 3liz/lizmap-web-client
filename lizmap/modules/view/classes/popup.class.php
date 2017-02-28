@@ -110,8 +110,11 @@ class popup{
 
       // Else just write a link to the file
       else{
-        if(!$popupFeatureContent) // only if no template is passed by the user
-          $attributeValue = '<a href="'.$mediaUrl.'" target="_blank">'.$attributeValue.'</a>';
+        if(!$popupFeatureContent) {
+          // only if no template is passed by the user
+          $attributeValueLabel = preg_replace('#_|-#', ' ', end(explode('/', $attributeValue)) );
+          $attributeValue = '<a href="'.$mediaUrl.'" target="_blank">'.$attributeValueLabel.'</a>';
+        }
         else
           $attributeValue = $mediaUrl;
       }
