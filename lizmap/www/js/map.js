@@ -5601,6 +5601,7 @@ OpenLayers.Control.HighlightFeature = OpenLayers.Class(OpenLayers.Control, {
                 }
               }
             }
+            runPermalink( uparams );
           }
 
           // 2/ Toggle checkboxes
