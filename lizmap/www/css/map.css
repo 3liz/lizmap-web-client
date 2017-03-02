@@ -276,6 +276,9 @@ CSS Sprite positions calculated via http://instantsprite.com/ or https://draeton
   background-position: -600px 0px;
 }
 
+#content.mobile #mapmenu li.tooltip-layer {
+  display:none;
+}
 
 /* navbar */
 .navbar-fixed-top .navbar-inner,

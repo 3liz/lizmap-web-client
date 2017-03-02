@@ -226,6 +226,10 @@ var lizMap = function() {
       if( $('#button-switcher').parent().hasClass('active') )
         $('#button-switcher').click();
 
+      // Hide tooltip-layer
+      if( $('#button-tooltip-layer').parent().hasClass('active') )
+        $('#button-tooltip-layer').click();
+
       if( $('#menu').is(':visible'))
         $('#menu').hide();
 
