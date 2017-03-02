@@ -3226,13 +3226,16 @@ var lizMap = function() {
                       // Display dock if needed
                       if(
                         !$('#mapmenu .nav-list > li.popupcontent').hasClass('active')
+                         && (!mCheckMobile() || ( mCheckMobile() && hasPopupContent ) )
+                         && (lastLonLatInfo == null || eventLonLatInfo.lon != lastLonLatInfo.lon || eventLonLatInfo.lat != lastLonLatInfo.lat)
                       ){
-                        if(
-                          (!mCheckMobile() || ( mCheckMobile() && hasPopupContent ) ) &&
-                          (lastLonLatInfo == null || eventLonLatInfo.lon != lastLonLatInfo.lon || eventLonLatInfo.lat != lastLonLatInfo.lat)
-                        ){
                           $('#button-popupcontent').click();
-                        }
+                      }
+                      else if(
+                        $('#mapmenu .nav-list > li.popupcontent').hasClass('active')
+                         && ( mCheckMobile() && hasPopupContent )
+                      ){
+                          $('#button-popupcontent').click();
                       }
 
                     }
