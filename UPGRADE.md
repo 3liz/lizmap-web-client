@@ -18,8 +18,8 @@ lizmap/install/backup.sh /tmp
 
 If you don't have this script, backup by hand: copy these files somewhere, /tmp for instance:
 
-- var/jauth.db
-- var/logs.db
+- var/db/jauth.db
+- var/db/logs.db
 - var/config/lizmapConfig.ini.php
 - var/config/installer.ini.php
 - var/config/profiles.ini.php
