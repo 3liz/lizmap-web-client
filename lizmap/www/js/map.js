@@ -3005,6 +3005,7 @@ var lizMap = function() {
     // Add layer filter and style if needed
     var filter = [];
     var style = [];
+    var opacity = [];
     for ( var  lName in config.layers ) {
 
       var lConfig = config.layers[lName];
@@ -3028,9 +3029,15 @@ var lizMap = function() {
       if( layer.isVisible && layer.params['STYLES'] != 'default'){
         style.push( layer.name + ':' + layer.params['STYLES'] );
       }
+      if( layer.opacity && layer.opacity != 1 ){
+        opacity.push( layer.name + ':' + layer.opacity );
+      }
     }
     if ( style.length > 0 )
       args['layerStyles'] = style.join(';');
+    if ( opacity.length > 0 ) {
+      args['layerOpacities'] = opacity.join(';');
+    }
 
     // Add permalink args to Lizmap global variable
     permalinkArgs = args;
@@ -3101,6 +3108,18 @@ var lizMap = function() {
       }
     }
 
+    // Get opacities and tranform into obj
+    var olist = {};
+    if( 'layerOpacities' in pparams && pparams.layerOpacities != ''){
+      var lopacities = pparams.layerOpacities.split(';');
+      for(var i in lopacities){
+        var a = lopacities[i];
+        var b = a.split(':');
+        if( b.length == 2)
+          olist[b[0]] = parseFloat(b[1]);
+      }
+    }
+
     for( var i=0; i < map.layers.length; i++){
 
       // Activate and deactivate layers
@@ -3123,6 +3142,11 @@ var lizMap = function() {
             "layerstylechanged",
             { 'featureType': l.name}
         );
+      }
+
+      // Set opacity
+      if( l.name in olist ){
+        l.setOpacity(olist[l.name]);
       }
     }
 
