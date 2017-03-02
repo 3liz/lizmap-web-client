@@ -1,0 +1,1 @@
+jQuery(function($){var d=$.datepicker.regional['pl'];d.buttonText='Open the calendar';d.resetButtonText='Reset the date';$.datepicker.setDefaults($.datepicker.regional['pl'])});

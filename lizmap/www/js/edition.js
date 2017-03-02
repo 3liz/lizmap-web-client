@@ -61,6 +61,7 @@ var lizEdition = function() {
         // Empty and hide form and tools
         $('#edition-cancel').addClass('disabled');
         $('#edition-form-container').hide().html('');
+        $('#edition-waiter').hide();
 
         // Display create tools back
         if( $('#edition-layer').html().trim() != '' ){
@@ -142,12 +143,14 @@ var lizEdition = function() {
                     eventListeners: {
                         activate: function( evt ) {
                             lizMap.deactivateToolControls( evt );
+                            lizMap.controls.featureInfo.deactivate();
                         },
                         deactivate: function( evt ) {
                             for ( var c in editCtrls ) {
                                 if ( c != 'panel' && editCtrls[c].active )
                                     editCtrls[c].deactivate();
                             }
+                            lizMap.controls.featureInfo.activate();
                         }
                     }
                 }),
@@ -163,13 +166,9 @@ var lizEdition = function() {
                 if ( ctrl != 'panel' )
                     editCtrls[ctrl].events.on({
                         activate: function( evt ){
-                            console.log('activate');
-                            console.log(evt.object.layer.getVisibility());
                             evt.object.layer.setVisibility(true);
-                            console.log(evt.object.layer.getVisibility())
                         },
                         deactivate: function( evt ){
-                            console.log('deactivate');
                             evt.object.layer.setVisibility(false);
                         }
                     });
@@ -389,6 +388,8 @@ var lizEdition = function() {
      * @param featureId Feature id to edit : in null-> create feature
      */
     function getEditionForm( featureId, aCallback ){
+
+        $('#edition-waiter').show();
         $('#edition-form-container').hide();
 
         // Get edition type
@@ -600,6 +601,7 @@ var lizEdition = function() {
 
 
         $('#edition-form-container').show();
+        $('#edition-waiter').hide();
 
         // Show the dock if needed
         var btn = $('#button-edition');
@@ -661,6 +663,7 @@ var lizEdition = function() {
                 fileInputs = fileInputs.filter( function( i, e ) {
                     return $(e).val() != "";
                 });
+                $('#edition-waiter').show();
                 if ( fileInputs.length != 0 ) {
                     form.fileupload({
                         dataType: 'html',
@@ -670,11 +673,11 @@ var lizEdition = function() {
                     });
                     form.fileupload('add', {fileInput:fileInputs});
                 } else
-                $.post(form.attr('action'),
-                    form.serialize(),
-                    function(data) {
-                        displayEditionForm( data );
-                    });
+                    $.post(form.attr('action'),
+                        form.serialize(),
+                        function(data) {
+                            displayEditionForm( data );
+                        });
                 return false;
             });
         }
@@ -686,6 +689,7 @@ var lizEdition = function() {
                     lizMap.addMessage( msg, 'info', true).attr('id','lizmap-edition-message');
                     return false;
                 }
+                $('#edition-waiter').show();
                 $.post(form.attr('action'),
                     form.serialize(),
                     function(data) {
@@ -791,6 +795,11 @@ var lizEdition = function() {
         );
         if ( !eConfig || eConfig[1].capabilities.deleteFeature == "False" )
             return false;
+        var aName = eConfig[0];
+        var configLayer = config.layers[aName];
+        var typeName = eConfig[0].split(' ').join('_');
+        if ( 'shortname' in configLayer && configLayer.shortname != '' )
+            typeName = configLayer.shortname;
 
         var deleteConfirm = lizDict['edition.confirm.delete'];
         if ( aMessage )
@@ -816,7 +825,9 @@ var lizEdition = function() {
                 "lizmapeditionfeaturedeleted",
                 {
                     'layerId': aLayerId,
-                    'featureId': aFeatureId
+                    'featureId': aFeatureId,
+                    'featureType': aName,
+                    'updateDrawing': true
                 }
             );
 
@@ -1051,7 +1062,6 @@ var lizEdition = function() {
                         .click(function(){
                             var fid = $(this).val().split('.').pop();
                             var layerId = $(this).val().replace( '.' + fid, '' );
-                            console.log(layerId+', '+fid);
                             // launch edition
                             lizMap.launchEdition( layerId, fid );
 

@@ -1447,6 +1447,25 @@ class editionCtrl extends jController {
     if(ctype_digit($this->featureId))
       $featureId = array($this->featureId);
 
+    // Create form instance to get uploads file
+    $form = jForms::create('view~edition', $featureId);
+    $deleteFiles = array();
+    if( $form  and $this->addFormControls($form) ) {
+        // SELECT data from the database and set the form data accordingly
+        $this->setFormDataFromDefault($form);
+        if( $this->featureId )
+          $this->setFormDataFromFields($form);
+        if ( $form->hasUpload() ) {
+            foreach( $form->getUploads() as $upload ) {
+                $choiceRef = $upload->ref.'_choice';
+                $value = $form->getData( $upload->ref );
+                $hiddenValue = $form->getData( $upload->ref.'_hidden' );
+                $repPath = $this->repository->getPath();
+                if ( $hiddenValue && file_exists( realPath( $repPath ).'/'.$hiddenValue ) )
+                    $deleteFiles[] = realPath( $repPath ).'/'.$hiddenValue;
+            }
+        }
+    }
 
     // SQL for deleting on line in the edition table
     $sql = " DELETE FROM ".$this->table;
@@ -1483,6 +1502,11 @@ class editionCtrl extends jController {
         'project' => $this->project->getKey()
       );
       jEvent::notify('LizLogItem', $eventParams);
+
+      foreach( $deleteFiles as $path ) {
+          if ( file_exists( $path ) )
+            unlink( $path );
+      }
 
     } catch (Exception $e) {
       jLog::log("SQL = ".$sql);
