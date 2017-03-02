@@ -3146,10 +3146,15 @@ var lizMap = function() {
                       // Display dock if needed
                       if(
                         !$('#mapmenu .nav-list > li.popupcontent').hasClass('active')
+                         && (!mCheckMobile() || ( mCheckMobile() && hasPopupContent ) )
                       ){
-                        if(!mCheckMobile() || ( mCheckMobile() && hasPopupContent ) ){
                           $('#button-popupcontent').click();
-                        }
+                      }
+                      else if(
+                        $('#mapmenu .nav-list > li.popupcontent').hasClass('active')
+                         && ( mCheckMobile() && hasPopupContent )
+                      ){
+                          $('#button-popupcontent').click();
                       }
 
                     }
