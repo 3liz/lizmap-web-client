@@ -8,7 +8,7 @@ Requirements
 First you should install
 
 - the web server Apache
-- PHP and its extensions sqlite, gd, xml (`php-xml-rpc` or equivalents), libapache2-mod-php, and curl
+- PHP and its extensions sqlite, gd, xml (`php-xml-rpc` or equivalents), `libapache2-mod-php`, and curl
 - [QGIS](http://hub.qgis.org/wiki/quantum-gis/QGIS_Server_Tutorial).
 - (optional) PostgreSQL with PostGIS and its php extension (php-pgsql or equivalents)
 
