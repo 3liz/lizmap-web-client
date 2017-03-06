@@ -466,6 +466,14 @@ SubDock
 #sub-dock div.menu-content button.layer-info{
   margin-bottom:5px;
 }
+#sub-dock div.menu-content select{
+  max-width: 180px;
+  margin-bottom: 0px;
+}
+#sub-dock div.menu-content .btn-mini [class^="icon-"],
+#sub-dock div.menu-content .btn-mini [class*=" icon-"]{
+  margin-top: 1px;
+}
 
 /* Mini-Dock */
 #mini-dock {

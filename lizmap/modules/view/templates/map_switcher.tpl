@@ -9,27 +9,6 @@
 
         <button class="btn btn-mini layerActionZoom disabled" title="{@view~map.switcher.layer.zoomToExtent.title@}"><i class="icon-zoom-in icon-white"></i></button>
 
-        <div class="btn-group" role="group" >
-            <button type="button" class="btn btn-mini dropdown-toggle layerActionStyle disabled" data-toggle="dropdown" aria-expanded="false" title="{@view~map.switcher.layer.style.title@}">
-                <i class="icon-adjust icon-white"></i>
-              <span class="caret"></span>
-            </button>
-            <ul class="dropdown-menu" role="menu">
-            </ul>
-        </div>
-
-        {if $layerExport}
-        <div class="btn-group" role="group" >
-            <button type="button" class="btn btn-mini dropdown-toggle layerActionExport disabled" data-toggle="dropdown" aria-expanded="false" title="{@view~map.switcher.layer.export.title@}">
-                <i class="icon-download icon-white"></i>
-              <span class="caret"></span>
-            </button>
-            <ul class="dropdown-menu" role="menu">
-                <li><a href="#" class="btn-export-layer">GeoJSON</a></li>
-                <li><a href="#" class="btn-export-layer">GML</a></li>
-            </ul>
-        </div>
-        {/if}
         <button class="btn btn-mini pull-right" id="layerActionUnfilter" style="display:none;" title="{@view~map.switcher.layer.unfilter.title@}"><i class="icon-filter icon-white"></i></button>
 
     </div>
