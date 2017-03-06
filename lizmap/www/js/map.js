@@ -1119,7 +1119,8 @@ var lizMap = function() {
     html += '</tr>';
 
     if (nodeConfig.type == 'layer'
-    && (!nodeConfig.noLegendImage || nodeConfig.noLegendImage != 'True')) {
+    && (!nodeConfig.noLegendImage || nodeConfig.noLegendImage != 'True')
+    && ('displayInLegend' in nodeConfig && nodeConfig.displayInLegend == 'True')) {
       var url = getLayerLegendGraphicUrl(aNode.name, false);
       if ( url != null && url != '' ) {
           html += '<tr id="legend-'+aNode.name+'" class="child-of-layer-'+aNode.name+' legendGraphics">';

@@ -312,7 +312,7 @@ var lizLayerActionButtons = function() {
             if( !layerName )
                 return false;
 
-            itemConfig = lizMap.config.layers[layerName];
+            var itemConfig = lizMap.config.layers[layerName];
             if( itemConfig.type == 'group' || !( 'extent' in itemConfig ) || !( 'crs' in itemConfig ) )
                 return false;
 
@@ -445,7 +445,6 @@ var lizLayerActionButtons = function() {
     'lizmapswitcheritemselected': function(evt){
 
         // Get item properties
-        var itemConfig = null;
         var itemName = '';
         var itemType = evt.type;
         var itemSelected = evt.selected;
