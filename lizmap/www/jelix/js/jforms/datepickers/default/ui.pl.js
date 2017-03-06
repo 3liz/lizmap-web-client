@@ -1,1 +1,1 @@
-jQuery(function($){var d=$.datepicker.regional['pl'];d.buttonText='Open the calendar';d.resetButtonText='Reset the date';$.datepicker.setDefaults($.datepicker.regional['pl'])});
+jQuery(function($){var d=$.datepicker.regional['pl'];d.buttonText='Otwórz kalendarz';d.resetButtonText='Zresetuj datę';$.datepicker.setDefaults($.datepicker.regional['pl'])});
