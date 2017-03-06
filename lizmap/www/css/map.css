@@ -463,6 +463,9 @@ SubDock
   z-index:1200;
 }
 
+#sub-dock .sub-metadata h3 .icon{
+  background-position: -125px 0px;
+}
 #sub-dock div.menu-content button.layer-info{
   margin-bottom:5px;
 }

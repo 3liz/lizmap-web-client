@@ -5869,23 +5869,6 @@ OpenLayers.Control.HighlightFeature = OpenLayers.Class(OpenLayers.Control, {
             }
           });
 
-
-          // Toggle legend
-          $('#toggleLegend').click(function(){
-            if ($('#menu').is(':visible')) {
-              $('.ui-icon-close-menu').click();
-              $('#metadata').hide();
-            }
-            else{
-              $('.ui-icon-open-menu').click();
-              $('#metadata').hide();
-            }
-            //~ console.log('toggleLegend');
-            map.updateSize();
-            map.baseLayer.redraw(true);
-            //~ console.log('redraw');
-            return false;
-          });
           // Toggle locate
           $('#mapmenu ul').on('click', 'li.nav-minidock > a', function(){
             var self = $(this);
@@ -6004,16 +5987,6 @@ OpenLayers.Control.HighlightFeature = OpenLayers.Class(OpenLayers.Control, {
           // Show layer switcher
           $('#button-switcher').click();
           updateContentSize();
-
-          // Toggle Metadata
-          //$('#displayMetadata').click(function(){
-          /*
-          $('#hideMetadata').click(function(){
-            //$('#metadata').hide();
-            $('#displayMetadata').parent().removeClass('active');
-            return false;
-          });
-          */
 
           $('#headermenu .navbar-inner .nav a[rel="tooltip"]').tooltip();
           $('#mapmenu .nav a[rel="tooltip"]').tooltip();

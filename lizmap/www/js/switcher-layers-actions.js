@@ -441,6 +441,14 @@ var lizLayerActionButtons = function() {
             return false;
         });
 
+        lizMap.events.on({
+            dockclosed: function(e) {
+                if ( e.id == 'switcher' ) {
+                    $('#hide-sub-dock').click();
+                }
+            }
+        });
+
     },
     'lizmapswitcheritemselected': function(evt){
 
