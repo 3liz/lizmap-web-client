@@ -57,12 +57,12 @@ var lizLayerActionButtons = function() {
             html+= '        <dd>'+layerConfig.title+'</dd>';
             html+= '        <dt>'+lizDict['layer.metadata.layer.type']+'</dt>';
             html+= '        <dd>'+lizDict['layer.metadata.layer.type.' + layerConfig.type]+'</dd>';
-            if( layerConfig.abstract &&  layerConfig.abstract){
+            if( layerConfig.abstract ){
                 html+= '        <dt>'+lizDict['layer.metadata.layer.abstract']+'</dt>';
                 html+= '        <dd>'+layerConfig.abstract+'</dd>';
             }
             html+= '    </dl>';
-            if( layerConfig.link  ){
+            if( layerConfig.link ){
                 html+= '    <button class="btn link" name="link" title="'+lizDict['layer.metadata.layer.info.see']+'" value="'+layerConfig.link+'">'+lizDict['layer.metadata.layer.info.see']+'</button>';
             }
 
@@ -200,7 +200,7 @@ var lizLayerActionButtons = function() {
             if( !layerName )
                 return false;
 
-            itemConfig = lizMap.config.layers[layerName];
+            var itemConfig = lizMap.config.layers[layerName];
             if( itemConfig.type == 'group' || !( 'extent' in itemConfig ) || !( 'crs' in itemConfig ) )
                 return false;
 
@@ -250,7 +250,7 @@ var lizLayerActionButtons = function() {
             return false;
         });
 
-
+        // Cancel Lizmap global filter
         $('#layerActionUnfilter').click(function(){
             var layerName = lizMap.lizmapLayerFilterActive;
             if( !layerName )
@@ -270,10 +270,10 @@ var lizLayerActionButtons = function() {
     'lizmapswitcheritemselected': function(evt){
 
         // Get item properties
-        var itemConfig = null;
         var itemName = '';
         var itemType = evt.type;
         var itemSelected = evt.selected;
+        var itemConfig = {};
 
         // Get item Lizmap config
         var layerName = lizMap.getLayerNameByCleanName( evt.name );
@@ -366,6 +366,6 @@ var lizLayerActionButtons = function() {
     }
 
     });
-        console.log($('#layers-unfold-all').length);
+        //console.log($('#layers-unfold-all').length);
 
 }();
