@@ -55,7 +55,7 @@ force=off
 
 [urlengine]
 ; name of url engine :  "simple", "basic_significant" or "significant"
-engine=basic_significant
+engine=significant
 
 ; this is the url path to the jelix-www content (you can found this content in lib/jelix-www/)
 ; because the jelix-www directory is outside the yourapp/www/ directory, you should create a link to
