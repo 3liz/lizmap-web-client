@@ -14,7 +14,7 @@ class lizAjaxCtrl extends jController {
   /**
    * Return 404
    */
-  function error404($message){
+  protected function error404($message){
     $rep = $this->getResponse('htmlfragment');
     $content = '<p>404 not found (wrong action)</p>';
     $content .= '<p>'.$message.'</p>';
@@ -32,7 +32,7 @@ class lizAjaxCtrl extends jController {
   /**
    * Return 403
    */
-  function error403($message){
+  protected function error403($message){
     $rep = $this->getResponse('htmlfragment');
     $content = '<p>403 forbidden (you\'re not allowed to access to this content)</p>';
     $content .= '<p>'.$message.'</p>';
@@ -44,7 +44,7 @@ class lizAjaxCtrl extends jController {
   /**
    * Return 401
    */
-  function error401($message){
+  protected function error401($message){
     $rep = $this->getResponse('htmlfragment');
     $content = '<p>401 Unauthorized (authentication is required)</p>';
     $content .= '<p>'.$message.'</p>';

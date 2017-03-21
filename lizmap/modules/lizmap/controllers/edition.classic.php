@@ -94,7 +94,7 @@ class editionCtrl extends jController {
   * Send an answer
   * @return HTML fragment.
   */
-  function serviceAnswer(){
+  protected function serviceAnswer(){
 
     $title = jLocale::get("view~edition.modal.title.default");
 
@@ -785,7 +785,7 @@ class editionCtrl extends jController {
   * @param object $form Jelix jForm object
   * @return Boolean True if filled form
   */
-  public function setFormDataFromDefault( $form ) {
+  protected function setFormDataFromDefault( $form ) {
 
       // Get database connection object
       $cnx = jDb::getConnection($this->layerId);
@@ -816,7 +816,7 @@ class editionCtrl extends jController {
   * @param object $form Jelix jForm object
   * @return Boolean True if filled form
   */
-  public function setFormDataFromFields($form){
+  protected function setFormDataFromFields($form){
 
     // Get database connection object
     $cnx = jDb::getConnection($this->layerId);
@@ -886,7 +886,7 @@ class editionCtrl extends jController {
   * @param object $form Jelix jForm object
   * @return Boolean True if the has been saved
   */
-  public function saveFormDataToDb($form){
+  protected function saveFormDataToDb($form){
     // Set the form from request
     //$form->initFromRequest();
 

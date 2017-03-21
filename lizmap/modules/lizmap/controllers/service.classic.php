@@ -121,7 +121,7 @@ class serviceCtrl extends jController {
   * @param $SERVICE the OGC service
   * @return XML OGC Service Exception.
   */
-  function serviceException(){
+  protected function serviceException(){
     $messages = jMessage::getAll();
     if (!$messages) {
         $messages = array();
@@ -658,7 +658,7 @@ class serviceCtrl extends jController {
   * @param array $matches Array containing the preg matches
   * @return Replaced text.
   */
-  function replaceMediaPathByMediaUrl($matches){
+  protected function replaceMediaPathByMediaUrl($matches){
     $req = jApp::coord()->request;
     $return = '';
     $return.= '"';

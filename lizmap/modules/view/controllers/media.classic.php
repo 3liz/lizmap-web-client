@@ -15,7 +15,7 @@ class mediaCtrl extends jController {
   /**
    * Returns error
    */
-  function error($message){
+  protected function error($message){
     $rep = $this->getResponse('redirect');
     $rep->action = 'view~default:error';
     jMessage::add($message, 'error');
@@ -25,7 +25,7 @@ class mediaCtrl extends jController {
   /**
    * Return 404
    */
-  function error404($message){
+  protected function error404($message){
     $rep = $this->getResponse('json');
     $rep->data = array('error'=>'404 not found (wrong action)', 'message'=>$message);
     $rep->setHttpStatus('404', 'Not Found');
@@ -41,7 +41,7 @@ class mediaCtrl extends jController {
   /**
    * Return 403
    */
-  function error403($message){
+  protected function error403($message){
     $rep = $this->getResponse('json');
     $rep->data = array('error'=>'403 forbidden (you\'re not allowed to access to this media)', 'message'=>$message);
     $rep->setHttpStatus('403', 'Forbidden');
@@ -51,7 +51,7 @@ class mediaCtrl extends jController {
   /**
    * Return 401
    */
-  function error401($message){
+  protected function error401($message){
     $rep = $this->getResponse('json');
     $rep->data = array('error'=>'401 Unauthorized (authentication is required)', 'message'=>$message);
     $rep->setHttpStatus('401', 'Unauthorized');
