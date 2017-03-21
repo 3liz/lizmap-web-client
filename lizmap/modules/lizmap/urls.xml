@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<suburls xmlns="http://jelix.org/ns/suburls/1.0">
+    <url pathinfo="/"       action="default:index"/>
+
+
+    <url pathinfo="/edition/:repository/:project/:layerId/feature/:featureId/create"       action="edition:createFeature"/>
+    <url pathinfo="/edition/:repository/:project/:layerId/feature/:featureId/modify"       action="edition:modifyFeature"/>
+    <url pathinfo="/edition/:repository/:project/:layerId/feature/:featureId/edit"       action="edition:editFeature"/>
+    <url pathinfo="/edition/:repository/:project/:layerId/feature/:featureId/save"       action="edition:saveFeature"/>
+    <url pathinfo="/edition/:repository/:project/:layerId/feature/:featureId/validate"       action="edition:validateFeature"/>
+    <url pathinfo="/edition/:repository/:project/:layerId/feature/:featureId/delete"       action="edition:deleteFeature"/>
+    <url pathinfo="/edition/:repository/:project/:pivot/link"       action="edition:linkFeatures"/>
+    <url pathinfo="/edition/:repository/:project/:lid/unkink"       action="edition:unlinkChild"/>
+
+
+    <url pathinfo="/geobookmark"       action="geobookmark:index"/> <!-- /:repository/:project/ -->
+
+    <url pathinfo="/ign"       action="ign:address"/> <!-- /:repository/:project/ -->
+    <url pathinfo="/osm"       action="osm:nominatim"/>
+    <url pathinfo="/repo/:repository/:project/search"       action="search:get"/>
+    <url pathinfo="/repo/:repository/:project/service"       action="service:index"/>
+    <url pathinfo="/repo/:repository/:project/config"       action="service:getProjectConfig"/>
+
+
+</suburls>

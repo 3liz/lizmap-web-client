@@ -104,7 +104,6 @@ simple_urlengine_https=
 ;   @r       -> for all actions for the request of type "r"
 
 index="@classic"
-index="jauth~*@classic"
 admin="jacl2db~*@classic, jacl2db_admin~*@classic, jauthdb_admin~*@classic, master_admin~*@classic, admin~*@classic, jauth~*@classic"
 
 
@@ -223,7 +222,7 @@ datepicker=default
 default="jelix/js/jforms/datepickers/default/init.js"
 
 [modules]
-jelix.access=2
+jelix.access=1
 
 jacl.access=0
 jacldb.access=0
@@ -232,23 +231,19 @@ jsoap.access=0
 junittests.access=0
 jpref_admin.access=0
 
-
 jacl2.access=1
-jacl2db.access=2
+jacl2db.access=1
 jacl2db.installparam=defaultuser
-jacl2db_admin.access=2
-jauth.access=2
-jauthdb.access=2
+
+jauth.access=1
+jauthdb.access=1
 jauthdb.installparam=defaultuser
-jauthdb_admin.access=2
 
-master_admin.access=2
-
-lizmap.access=2
-view.access=2
-admin.access=2
+lizmap.access=1
+view.access=1
+admin.access=1
 proj4php.access=1
-
+dynamicLayers.access=1
 
 [mailLogger]
 email="root@localhost"

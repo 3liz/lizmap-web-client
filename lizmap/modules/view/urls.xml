@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<suburls xmlns="http://jelix.org/ns/suburls/1.0">
+
+    <url pathinfo="/"       action="default:index"/><!-- FIXME: repository is optional !? -> split into 2 actions-->
+    <url pathinfo="/metadata"       action="app:metadata"/>
+
+    <url pathinfo="/map"       action="map:index"/> <!-- FIXME: repository is optional !? -> split into 2 actions-->
+    <url pathinfo="/media/:repository/:project"       action="media:getMedia"/>
+    <url pathinfo="/media/:repository/:project/illustration"       action="media:illustration"/>
+    <url pathinfo="/media/:repository/:project/css"       action="media:getCssFile"/>
+    <url pathinfo="/logo"       action="media:logo"/>
+    <url pathinfo="/default-theme"       action="media:getDefaultTheme"/>
+
+    <url pathinfo="/translations"       action="translate:index"/><!-- FIXME: lang is optional !? -> split into 2 actions-->
+    <url pathinfo="/translations/:property"       action="translate:getDictionary"/><!-- FIXME: lang is optional !? -> split into 2 actions-->
+
+    <url pathinfo="/newaccount/precreate"       action="user:createAccount"/>
+    <url pathinfo="/newaccount/create"       action="user:editAccount"/>
+    <url pathinfo="/newaccount/save"       action="user:saveAccount"/>
+    <url pathinfo="/newaccount/validate"       action="user:validateAccount"/>
+
+    <url pathinfo="/ajax/"       action="ajax:index"/> <!-- FIXME: repository is optional !? -> split into 2 actions-->
+    <url pathinfo="/ajax/map"       action="ajax:map"/> <!-- FIXME: repository is optional !? -> split into 2 actions-->
+
+
+
+</suburls>

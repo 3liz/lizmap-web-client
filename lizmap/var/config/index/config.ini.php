@@ -10,5 +10,7 @@ jacl2=1
 
 [modules]
 lizmap.access=2
-admin.access=2
-
+view.access=2
+admin.access=1
+dynamicLayers.access=2
+jelix.access=2

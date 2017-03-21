@@ -1,227 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
 <urls xmlns="http://jelix.org/ns/urls/1.0">
     <entrypoint name="index" default="true">
 
-        <url pathinfo="" module="view" action="default:index" />
-        <url pathinfo="/" module="view" action="default:index" />
-        <url pathinfo="/projects" module="view" action="default:index" />
-        <url pathinfo="/projects/:repository" module="view" action="default:index" />
-        <url pathinfo="/view/" module="view" action="default:index" />
-
-
-        <url pathinfo="/projects/:repository/:project" module="view" action="map:index" />
-        <url pathinfo="/view/map/" module="view" action="map:index" />
-
-        <url pathinfo="/error" module="view" action="default:error" />
-        <url pathinfo="/view/default/error/" module="view" action="default:error" />
-
-
-        <url pathinfo="/ajax/" module="view" action="lizAjax:index" />
-        <url pathinfo="/view/ajax/" module="view" action="lizAjax:index" />
-
-        <url pathinfo="/ajax/map" module="view" action="lizAjax:map" />
-        <url pathinfo="/view/ajax/map" module="view" action="lizAjax:map" />
-
-        <url pathinfo="/ajax/error/404" module="view" action="ajax:error404" />
-        <url pathinfo="/view/ajax/error404" module="view" action="ajax:error404" />
-
-        <url pathinfo="/ajax/error/403" module="view" action="ajax:error403" />
-        <url pathinfo="/view/ajax/error403" module="view" action="ajax:error403" />
-
-        <url pathinfo="/ajax/error/401" module="view" action="ajax:error401" />
-        <url pathinfo="/view/ajax/error401" module="view" action="ajax:error401" />
-
-        <url pathinfo="/app/metadata" module="view" action="app:metadata" />
-        <url pathinfo="/view/app/metadata" module="view" action="app:metadata" />
-
-
-        <url pathinfo="/media/:repository/:project/" module="view" action="media:getMedia" />
-        <url pathinfo="/view/media/getMedia" module="view" action="media:getMedia" />
-
-        <url pathinfo="/media/illustration/:repository/:project" module="view" action="media:illustration"/>
-        <url pathinfo="/view/media/illustration" module="view" action="media:illustration" />
-
-        <url pathinfo="/media/css/:repository/:project" module="view" action="media:getCssFile" />
-        <url pathinfo="/view/media/getCssFile" module="view" action="media:getCssFile" />
-
-        <url pathinfo="/theme/default" module="view" action="media:getDefaultTheme" />
-        <url pathinfo="/view/media/getDefaultTheme" module="view" action="media:getDefaultTheme" />
-
-        <url pathinfo="/theme/logo" module="view" action="media:logo" />
-        <url pathinfo="/view/media/logo" module="view" action="media:logo" />
-
-        <url pathinfo="/media/error" module="view" action="media:error" />
-        <url pathinfo="/view/media/error" module="view" action="media:error" />
-        <url pathinfo="/media/error/404" module="view" action="media:error404" />
-        <url pathinfo="/view/media/error404" module="view" action="media:error404" />
-        <url pathinfo="/media/error/403" module="view" action="media:error403" />
-        <url pathinfo="/view/media/error403" module="view" action="media:error403" />
-        <url pathinfo="/media/error/401" module="view" action="media:error401" />
-        <url pathinfo="/view/media/error401" module="view" action="media:error401" />
-
-
-        <url pathinfo="/translate" module="view" action="translate:index" />
-        <url pathinfo="/view/translate/" module="view" action="translate:index" />
-        <url pathinfo="/translate/dictionary" module="view" action="translate:getDictionary" />
-        <url pathinfo="/view/translate/getDictionary" module="view" action="translate:getDictionary" />
-
-        <url pathinfo="/user/create" module="view" action="user:createAccount" />
-        <url pathinfo="/view/user/createAccount" module="view" action="user:createAccount" />
-        <url pathinfo="/user/edit" module="view" action="user:editAccount" />
-        <url pathinfo="/view/user/editAccount" module="view" action="user:editAccount" />
-        <url pathinfo="/user/save" module="view" action="user:saveAccount" />
-        <url pathinfo="/view/user/saveAccount" module="view" action="user:saveAccount" />
-        <url pathinfo="/user/validate" module="view" action="user:validateAccount" />
-        <url pathinfo="/view/user/validateAccount" module="view" action="user:validateAccount" />
-
-
-        <url pathinfo="/app/index" module="lizmap" action="default:index" />
-        <url pathinfo="/lizmap/default/" module="lizmap" action="default:index" />
-
-
-        <url pathinfo="/edition/message" module="lizmap" action="edition:serviceAnswer" />
-        <url pathinfo="/lizmap/edition/serviceAnswer" module="lizmap" action="edition:serviceAnswer" />
-        <url pathinfo="/edition/feature/create" module="lizmap" action="edition:createFeature" />
-        <url pathinfo="/lizmap/edition/createFeature" module="lizmap" action="edition:createFeature" />
-        <url pathinfo="/edition/feature/modify" module="lizmap" action="edition:modifyFeature" />
-        <url pathinfo="/lizmap/edition/modifyFeature" module="lizmap" action="edition:modifyFeature" />
-        <url pathinfo="/edition/feature/edit" module="lizmap" action="edition:editFeature" />
-        <url pathinfo="/lizmap/edition/editFeature" module="lizmap" action="edition:editFeature" />
-        <url pathinfo="/edition/feature/save" module="lizmap" action="edition:saveFeature" />
-        <url pathinfo="/lizmap/edition/saveFeature" module="lizmap" action="edition:saveFeature" />
-        <url pathinfo="/edition/feature/validate" module="lizmap" action="edition:validateFeature" />
-        <url pathinfo="/lizmap/edition/validateFeature" module="lizmap" action="edition:validateFeature" />
-        <url pathinfo="/edition/feature/delete" module="lizmap" action="edition:deleteFeature" />
-        <url pathinfo="/lizmap/edition/deleteFeature" module="lizmap" action="edition:deleteFeature" />
-        <url pathinfo="/edition/feature/link" module="lizmap" action="edition:linkFeatures" />
-        <url pathinfo="/lizmap/edition/linkFeatures" module="lizmap" action="edition:linkFeatures" />
-        <url pathinfo="/edition/child/unlink" module="lizmap" action="edition:unlinkChild" />
-        <url pathinfo="/lizmap/edition/unlinkChild" module="lizmap" action="edition:unlinkChild" />
-
-
-        <url pathinfo="/geobookmarks" module="lizmap" action="geobookmark:index" />
-        <url pathinfo="/lizmap/geobookmark/" module="lizmap" action="geobookmark:index" />
-        <url pathinfo="/geobookmarks/error" module="lizmap" action="geobookmark:error" />
-        <url pathinfo="/lizmap/geobookmark/error" module="lizmap" action="geobookmark:error" />
-        <url pathinfo="/geobookmarks/list" module="lizmap" action="geobookmark:getGeoBookmarks" />
-        <url pathinfo="/lizmap/geobookmark/getGeoBookmarks" module="lizmap" action="geobookmark:getGeoBookmarks" />
-        <url pathinfo="/geobookmark/:id" module="lizmap" action="geobookmark:getBookmarkParams" />
-        <url pathinfo="/lizmap/geobookmark/getBookmarkParams" module="lizmap" action="geobookmark:getBookmarkParams" />
-        <url pathinfo="/geobookmark/delete/:id" module="lizmap" action="geobookmark:delete" />
-        <url pathinfo="/lizmap/geobookmark/delete" module="lizmap" action="geobookmark:getBookmarkParams" />
-
-        <url pathinfo="/ign/address" module="lizmap" action="ign:address" />
-        <url pathinfo="/lizmap/ign/address" module="lizmap" action="ign:address" />
-
-
-        <url pathinfo="/osm/address" module="lizmap" action="osm:nominatim" />
-        <url pathinfo="/lizmap/osm/nominatim" module="lizmap" action="osm:nominatim" />
-
-
-        <url pathinfo="/data/search" module="lizmap" action="search:get" />
-        <url pathinfo="/lizmap/search/get" module="lizmap" action="search:get" />
-
-
-        <url pathinfo="/service" module="lizmap" action="service:index" />
-        <url pathinfo="/lizmap/service/" module="lizmap" action="service:index" />
-
-        <url pathinfo="/service/proj4" module="lizmap" action="service:GetProj4" />
-        <url pathinfo="/lizmap/service/GetProj4" module="lizmap" action="service:GetProj4" />
-
-<!--
-        <url pathinfo="/service/exception" module="lizmap" action="service:serviceException" />
-        <url pathinfo="/service/exception" module="lizmap" action="service:serviceException" />
-        <url pathinfo="/service/:service/capabilities" module="lizmap" action="service:getCapabilities" />
-        <url pathinfo="/service/:service/context" module="lizmap" action="service:getContext" />
-        <url pathinfo="/service/:service/schema" module="lizmap" action="service:getSchemaExtension" />
-        <url pathinfo="/service/:service/getmap" module="lizmap" action="service:getMap" />
-        <url pathinfo="/service/:service/getlegendgraphics" module="lizmap" action="service:getLegendGraphics" />
-        <url pathinfo="/service/:service/getfeatureinfo" module="lizmap" action="service:getFeatureInfo" />
-        <url pathinfo="/service/:service/getfeatureinfohtml" module="lizmap" action="service:getFeatureInfoHtml" />
-        <url pathinfo="/service/:service/wms/getprint" module="lizmap" action="service:getPrint" />
-        <url pathinfo="/service/:service/getstyles" module="lizmap" action="service:getStyles" />
-        <url pathinfo="/service/project/config" module="lizmap" action="service:getProjectConfig" />
-        <url pathinfo="/service/:service/getfeature" module="lizmap" action="service:getFeature" />
-        <url pathinfo="/service/:service/describefeaturetype" module="lizmap" action="service:describeFeatureType" />
-        <url pathinfo="/service/:service/gettile" module="lizmap" action="service:getTile" />
--->
+        <url pathinfo="/dynamic-layers"   module="dynamicLayers"  include="urls.xml" />
+        <url pathinfo="/lizmap"   module="lizmap"  include="urls.xml" />
+        <url pathinfo="/view"   module="view"  include="urls.xml" />
+        <url pathinfo="/jelix"          module="jelix"          include="urls.xml" />
 
     </entrypoint>
 
     <entrypoint name="admin">
-        <url pathinfo="/jelix/jforms/getListData" module="jelix" action="jforms:getListData" />
+        <url pathinfo="/"               module="master_admin" action="default:index" />
+        <url pathinfo="/auth"           module="jauth"          include="urls.xml" />
+        <url pathinfo="/auth-admin"     module="jauthdb_admin"  include="urls.xml" />
+        <url pathinfo="/acl"            module="jacl2db_admin"  include="urls.xml" />
+        <url pathinfo="/lizmap-admin"   module="admin"  include="urls.xml" />
 
-        <url pathinfo="/jauth/login/form" module="jauth" action="login:form" />
-        <url pathinfo="/jauth/login/in" module="jauth" action="login:in" />
-        <url pathinfo="/jauth/login/out" module="jauth" action="login:out" />
-
-        <url pathinfo="/jauthdb_admin/default/view" module="jauthdb_admin" action="default:view" />
-        <url pathinfo="/jauthdb_admin/user/index" module="jauthdb_admin" action="user:index" />
-        <url pathinfo="/jauthdb_admin/user/preupdate" module="jauthdb_admin" action="user:preupdate" />
-        <url pathinfo="/jauthdb_admin/user/editupdate" module="jauthdb_admin" action="user:editupdate" />
-        <url pathinfo="/jauthdb_admin/user/saveupdate" module="jauthdb_admin" action="user:saveupdate" />
-        <url pathinfo="/jauthdb_admin/password/index" module="jauthdb_admin" action="password:index" />
-        <url pathinfo="/jauthdb_admin/password/update" module="jauthdb_admin" action="password:update" />
-
-        <url pathinfo="/master_admin/default/index" module="master_admin" action="default:index" />
-        <url pathinfo="/master_admin/groups/index" module="master_admin" action="groups:index" />
-        <url pathinfo="/master_admin/users/index" module="master_admin" action="users:index" />
-
+<!--
         <url pathinfo="/osm_admin/osm/index" module="osm_admin" action="osm:index" />
         <url pathinfo="/osm_admin/filter/index" module="osm_admin" action="filter:index" />
-
-
-        <url pathinfo="" module="admin" action="config:index" />
-        <url pathinfo="/config" module="admin" action="config:index" />
-        <url pathinfo="/config/" module="admin" action="config:index" />
-        <url pathinfo="/admin/config/" module="admin" action="config:index" />
-        <url pathinfo="/config/services/modify" module="admin" action="config:modifyServices" />
-        <url pathinfo="/admin/config/modifyServices" module="admin" action="config:modifyServices" />
-        <url pathinfo="/config/services/edit" module="admin" action="config:editServices" />
-        <url pathinfo="/admin/config/editServices" module="admin" action="config:editServices" />
-        <url pathinfo="/config/services/save" module="admin" action="config:saveServices" />
-        <url pathinfo="/admin/config/saveServices" module="admin" action="config:saveServices" />
-        <url pathinfo="/config/services/validate" module="admin" action="config:validateServices" />
-        <url pathinfo="/admin/config/validateServices" module="admin" action="config:validateServices" />
-        <url pathinfo="/config/section/create" module="admin" action="config:createSection" />
-        <url pathinfo="/admin/config/createSection" module="admin" action="config:createSection" />
-        <url pathinfo="/config/section/modify" module="admin" action="config:modifySection" />
-        <url pathinfo="/admin/config/modifySection" module="admin" action="config:modifySection" />
-        <url pathinfo="/config/section/edit" module="admin" action="config:editSection" />
-        <url pathinfo="/admin/config/editSection" module="admin" action="config:editSection" />
-        <url pathinfo="/config/section/save" module="admin" action="config:saveSection" />
-        <url pathinfo="/admin/config/saveSection" module="admin" action="config:saveSection" />
-        <url pathinfo="/config/section/validate" module="admin" action="config:validateSection" />
-        <url pathinfo="/admin/config/validateSection" module="admin" action="config:validateServices" />
-        <url pathinfo="/config/section/remove" module="admin" action="config:removeSection" />
-        <url pathinfo="/admin/config/removeSection" module="admin" action="config:removeSection" />
-        <url pathinfo="/config/cache/remove" module="admin" action="config:removeCache" />
-        <url pathinfo="/admin/config/removeCache" module="admin" action="config:removeCache" />
-        <url pathinfo="/config/cache/layer/remove" module="admin" action="config:removeLayerCache" />
-        <url pathinfo="/admin/config/removeLayerCache" module="admin" action="config:removeLayerCache" />
-
-        <url pathinfo="/logs" module="admin" action="logs:index" />
-        <url pathinfo="/admin/logs/" module="admin" action="logs:index" />
-        <url pathinfo="/logs/counters/empty" module="admin" action="logs:emptyCounter" />
-        <url pathinfo="/admin/logs/emptyCounter" module="admin" action="logs:emptyCounter" />
-        <url pathinfo="/logs/details" module="admin" action="logs:detail" />
-        <url pathinfo="/admin/logs/detail" module="admin" action="logs:emptyCounter" />
-        <url pathinfo="/logs/details/export" module="admin" action="logs:export" />
-        <url pathinfo="/admin/logs/export" module="admin" action="logs:export" />
-        <url pathinfo="/logs/counters/empty" module="admin" action="logs:emptyDetail" />
-        <url pathinfo="/admin/logs/emptyDetail" module="admin" action="logs:emptyDetail" />
-
-        <url pathinfo="/config/theme" module="admin" action="theme:index" />
-        <url pathinfo="/admin/theme/" module="admin" action="theme:index" />
-        <url pathinfo="/config/theme/modify" module="admin" action="theme:modify" />
-        <url pathinfo="/admin/theme/modify" module="admin" action="theme:modify" />
-        <url pathinfo="/config/theme/edit" module="admin" action="theme:edit" />
-        <url pathinfo="/admin/theme/edit" module="admin" action="theme:edit" />
-        <url pathinfo="/config/theme/save" module="admin" action="theme:save" />
-        <url pathinfo="/admin/theme/save" module="admin" action="theme:save" />
-        <url pathinfo="/config/theme/validate" module="admin" action="theme:validate" />
-        <url pathinfo="/admin/theme/" module="admin" action="theme:validate" />
-
-
+-->
     </entrypoint>
 
 </urls>
