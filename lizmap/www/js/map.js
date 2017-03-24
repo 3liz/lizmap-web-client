@@ -2703,7 +2703,7 @@ var lizMap = function() {
       navCtrl.zoomBox.handler.keyMask = navCtrl.zoomBoxKeyMask;
       navCtrl.zoomBox.handler.dragHandler.keyMask = navCtrl.zoomBoxKeyMask;
       navCtrl.handlers.wheel.activate();
-      if( 'edition' in controls && !controls.edition.active )
+      if( !('edition' in controls) || !controls.edition.active )
         controls['featureInfo'].activate();
     });
     $('#navbar button.zoom').click(function(){
