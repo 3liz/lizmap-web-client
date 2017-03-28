@@ -35,20 +35,21 @@ class jProfiles {
     }
 
     /**
-    * load properties of a profile.
-    *
-    * A profile is a section in the profiles.ini.php file. Profiles are belong
-    * to a category. Each section names is composed by "category:profilename".
-    *
-    * The given name can be a profile name or an alias of a profile. An alias
-    * is a parameter name in the category section of the ini file, and the value
-    * of this parameter should be a profile name.
-    *
-    * @param string $category     the profile category
-    * @param string   $name  profile name or alias of a profile name. if empty, use the default profile
-    * @param boolean  $noDefault  if true and if the profile doesn't exist, throw an error instead of getting the default profile
-    * @return array  properties
-    */
+     * load properties of a profile.
+     *
+     * A profile is a section in the profiles.ini.php file. Profiles are belong
+     * to a category. Each section names is composed by "category:profilename".
+     *
+     * The given name can be a profile name or an alias of a profile. An alias
+     * is a parameter name in the category section of the ini file, and the value
+     * of this parameter should be a profile name.
+     *
+     * @param string $category the profile category
+     * @param string $name profile name or alias of a profile name. if empty, use the default profile
+     * @param boolean $noDefault if true and if the profile doesn't exist, throw an error instead of getting the default profile
+     * @return array properties
+     * @throws jException
+     */
     public static function get ($category, $name='', $noDefault = false) {
         if (self::$_profiles === null) {
             self::loadProfiles();
@@ -163,6 +164,7 @@ class jProfiles {
      * @param string $name the name of the profile
      * @param array|string $params parameters of the profile. key=parameter name, value=parameter value.
      *                      we can also indicate a name of an other profile, to create an alias
+     * @throws jException
      */
     public static function createVirtualProfile ($category, $name, $params) {
         if ($name == '') {

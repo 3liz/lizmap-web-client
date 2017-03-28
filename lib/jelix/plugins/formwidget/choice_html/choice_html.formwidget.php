@@ -70,7 +70,7 @@ class choice_htmlFormWidget extends \jelix\forms\HtmlWidget\WidgetBase
     function outputControl() {
         $ctrl = $this->ctrl;
         $attr = $this->getControlAttributes();
-        $value = $this->getValue($ctrl);
+        $value = $this->getValue();
         $jFormsJsVarName = $this->builder->getjFormsJsVarName();
 
         echo '<ul class="jforms-choice jforms-ctl-'.$ctrl->ref.'" >',"\n";
@@ -86,7 +86,7 @@ class choice_htmlFormWidget extends \jelix\forms\HtmlWidget\WidgetBase
         $id = $this->builder->getName().'_'.$ctrl->ref.'_';
         $attr['type']='radio';
         unset($attr['class']);
-        $readonly = (isset($attr['readonly']) && $attr['readonly']!='');
+        $readonly = (isset($attr['readonly']) && $attr['readonly']!=''); // FIXME: should be used?
 
         $this->jsChoiceInternal($ctrl);
 
@@ -131,7 +131,7 @@ class choice_htmlFormWidget extends \jelix\forms\HtmlWidget\WidgetBase
     function outputControlValue() {
         $ctrl = $this->ctrl;
         $attr = $this->getValueAttributes();
-        $value = $this->getValue($ctrl);
+        $value = $this->getValue();
 
         if(is_array($value)){
             if(isset($value[0]))
@@ -140,9 +140,8 @@ class choice_htmlFormWidget extends \jelix\forms\HtmlWidget\WidgetBase
                 $value='';
         }
 
-        $i=0;
         $attr['name'] = $ctrl->ref;
-        $id = $this->builder->getName().'_'.$ctrl->ref.'_';
+        $id = $this->builder->getName().'_'.$ctrl->ref.'_'; // FIXME should be used?
         $attr['type']='radio';
 
         if (!isset($ctrl->items[$value])) {

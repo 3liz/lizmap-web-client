@@ -75,6 +75,7 @@ class jDbPDOResultSet extends PDOStatement {
      * @param int $mode  the mode, a PDO::FETCH_* constant
      * @param mixed $arg1 a parameter for the given mode
      * @param mixed $arg2 a parameter for the given mode
+     * @return boolean true if the fetch mode is ok
      */
     public function setFetchMode($mode, $arg1=null , $arg2=null){
         $this->_fetchMode = $mode;
@@ -89,6 +90,7 @@ class jDbPDOResultSet extends PDOStatement {
 
     /**
      * @param string $text a binary string to unescape
+     * @return string the unescaped string
      * @since 1.1.6
      */
     public function unescapeBin($text) {

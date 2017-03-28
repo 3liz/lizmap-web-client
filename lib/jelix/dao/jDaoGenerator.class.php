@@ -78,7 +78,9 @@ class jDaoGenerator {
 
     /**
     * constructor
-    * @param jDaoParser $daoDefinition
+     * @param jSelectorDao $selector
+     * @param jDbTools $tools
+    * @param jDaoParser $daoParser
     */
     function __construct($selector, $tools, $daoParser){
         $this->_daoId = $selector->toString();
@@ -392,7 +394,6 @@ class jDaoGenerator {
 
             $limit='';
 
-            $glueCondition =' WHERE ';
             switch($method->type){
                 case 'delete':
                     $this->buildDeleteUserQuery($method, $src, $primaryFields);
@@ -669,16 +670,17 @@ class jDaoGenerator {
     }
 
     /**
-    * format field names with start, end and between strings.
-    *   will write the field named info.
-    *   eg info == name
-    *   echo $field->name
+    * format field names with a start, an end and a between strings.
+    *
+    * ex: give 'name' as $info, it will output the result of $field->name
+     *
     * @param string   $info    property to get from objects in $using
     * @param string   $start   string to add before the info
     * @param string   $end     string to add after the info
     * @param string   $beetween string to add between each info
-    * @param array    $using     list of CopixPropertiesForDAO object. if null, get default fields list
+    * @param jDaoProperty[]    $using     list of jDaoProperty object. if null, get default fields list
     * @see  jDaoProperty
+     * @return string list of field names seperated by the $between character
     */
     protected function _writeFieldsInfoWith ($info, $start = '', $end='', $beetween = '', $using = null){
         $result = array();
@@ -691,7 +693,7 @@ class jDaoGenerator {
             $result[] = $start . $field->$info . $end;
         }
 
-        return implode ($beetween,$result);
+        return implode ($beetween, $result);
     }
 
     /**
@@ -776,9 +778,6 @@ class jDaoGenerator {
         if ($using === null){
             $using = $this->_dataParser->getProperties ();
         }
-
-        $tb = $this->_dataParser->getTables();
-        $tb = $tb[$this->_dataParser->getPrimaryTable()]['realname'];
 
         foreach ($using as $id=>$field) {
             if(!$field->isPK)
@@ -887,7 +886,6 @@ class jDaoGenerator {
 
         $order = array ();
         foreach ($cond->order as $name => $way){
-            $ord='';
             if (isset($fields[$name])){
                 if ($withPrefix)
                     $ord = $this->_encloseName($fields[$name]->table).'.'.$this->_encloseName($fields[$name]->fieldName);

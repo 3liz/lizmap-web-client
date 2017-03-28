@@ -51,7 +51,7 @@ class jDbPDOConnection extends PDO {
         $prof = $profile;
         $user = '';
         $password = '';
-        $dsn = '';
+
         if (isset($profile['dsn'])) {
             $this->dbms = $this->driverName = substr($profile['dsn'],0,strpos($profile['dsn'],':'));
             $dsn = $profile['dsn'];
@@ -66,7 +66,6 @@ class jDbPDOConnection extends PDO {
                 $this->dbms = $this->driverName = 'sqlite';
             }
             $db = $profile['database'];
-            $dsn = $this->dbms.':host='.$profile['host'].';dbname='.$db;
             if ($this->dbms != 'sqlite') {
                 $dsn = $this->dbms.':host='.$profile['host'].';dbname='.$db;
             }
@@ -272,6 +271,7 @@ class jDbPDOConnection extends PDO {
 
     /**
      * @return jDbTools
+     * @throws jException
      */
     public function tools () {
         if (!$this->_tools) {

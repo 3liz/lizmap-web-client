@@ -73,7 +73,7 @@ class group_htmlFormWidget extends \jelix\forms\HtmlWidget\WidgetBase
 
     function outputControl() {
         $attr = $this->getControlAttributes();
-        $value = $this->getValue($this->ctrl);
+        $value = $this->getValue();
         $jFormsJsVarName = $this->builder->getjFormsJsVarName();
         
         if ($this->ctrl->hasCheckbox) {
@@ -126,7 +126,7 @@ class group_htmlFormWidget extends \jelix\forms\HtmlWidget\WidgetBase
         $attr = $this->getValueAttributes();
 
         echo '<fieldset id="',$attr['id'],'"><legend>',htmlspecialchars($this->ctrl->label),"</legend>\n";
-        if ($this->ctrl->hasCheckbox && $this->getValue($this->ctrl) != $this->ctrl->valueOnCheck) {
+        if ($this->ctrl->hasCheckbox && $this->getValue() != $this->ctrl->valueOnCheck) {
             parent::outputControlValue();
         }
         else {

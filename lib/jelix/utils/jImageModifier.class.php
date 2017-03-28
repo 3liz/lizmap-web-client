@@ -99,8 +99,12 @@ class jImageModifier {
         // extension
         if(empty($params['ext'])) {
             $path_parts = pathinfo($src);
-            if ( isset($path_parts['extension']))
+            if ( isset($path_parts['extension'])) {
                 $ext = strtolower($path_parts['extension']);
+            }
+            else {
+                $ext = '';
+            }
         } else {
             $ext = strtolower($params['ext']);
         }
@@ -252,8 +256,6 @@ class jImageModifier {
             $ancienimage = $image;
             $resampleheight = imagesy($ancienimage);
             $resamplewidth = imagesx($ancienimage);
-            $posx = 0;
-            $posy = 0;
 
             if(empty($params['width'])) {
                 $finalheight = $params['height'];
@@ -334,7 +336,7 @@ class jImageModifier {
      * create a shadow
      * @param string $src the url of image (myapp/www/):string.[gif|jpeg|jpg|jpe|xpm|xbm|wbmp|png]
      * @param array $params parameters for the url
-     * @return the image with shadow
+     * @return resource the image with shadow
      **/
     static protected function createShadow($image, $params) {
 

@@ -13,8 +13,9 @@
  * function plugin :  print the html content of a form control. You should use this plugin inside a formcontrols block
  *
  * @param jTpl $tpl template engine
- * @param string $ctrlname  the name of the control to display (required if it is outside a formcontrols)
- * @param array $attributes  attribute to add on the generated code (html attributes for example)
+ * @param string $ctrlname the name of the control to display (required if it is outside a formcontrols)
+ * @param array $attributes attribute to add on the generated code (html attributes for example)
+ * @throws jException
  */
 function jtpl_function_html_ctrl_control($tpl, $ctrlname='', $attributes = array())
 {

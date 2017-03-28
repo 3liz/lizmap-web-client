@@ -21,7 +21,13 @@
 * @subpackage core
 */
 class jBundle {
+    /**
+     * @var jISelector
+     */
     public $fic;
+    /**
+     * @var string
+     */
     public $locale;
 
     protected $_loadedCharset = array ();
@@ -29,7 +35,7 @@ class jBundle {
 
     /**
     * constructor
-    * @param jSelector   $file selector of a properties file
+    * @param jISelector   $file selector of a properties file
     * @param string      $locale    the code lang
     */
     public function __construct ($file, $locale){
@@ -49,7 +55,7 @@ class jBundle {
             $charset = jApp::config()->charset;
         }
         if (!in_array ($charset, $this->_loadedCharset)){
-            $this->_loadLocales ($this->locale, $charset);
+            $this->_loadLocales ($charset);
         }
 
         if (isset ($this->_strings[$charset][$key])){
@@ -61,10 +67,9 @@ class jBundle {
 
     /**
     * Loads the resources for a given locale/charset.
-    * @param string $locale     the locale
     * @param string $charset    the charset
     */
-    protected function _loadLocales ($locale, $charset){
+    protected function _loadLocales ($charset){
 
         $this->_loadedCharset[] = $charset;
 

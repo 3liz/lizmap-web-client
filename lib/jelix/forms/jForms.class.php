@@ -47,7 +47,7 @@ class jForms {
      *
      * @param string $formSel the selector of the xml jform file
      * @param string $formId  the id of the new instance (an id of a record for example)
-     * @return jFormBase the object representing the form
+     * @return jFormsBase the object representing the form
      */
     public static function create($formSel, $formId=null){
         $sel = new jSelectorForm($formSel);
@@ -80,7 +80,7 @@ class jForms {
      *
      * @param string $formSel the selector of the xml jform file
      * @param string $formId  the id of the form (if you use multiple instance of a form)
-     * @return jFormBase the object representing the form. Return null if there isn't an existing form
+     * @return jFormsBase the object representing the form. Return null if there isn't an existing form
      */
     static public function get($formSel, $formId=null){
 
@@ -110,7 +110,7 @@ class jForms {
      *
      * @param string $formSel the selector of the xml jform file
      * @param string $formId  the id of the form (if you use multiple instance of a form)
-     * @return jFormBase the object representing the form. Return null if there isn't an existing form
+     * @return jFormsBase the object representing the form. Return null if there isn't an existing form
      */
     static public function fill($formSel,$formId=null){
         $form = self::get($formSel,$formId);

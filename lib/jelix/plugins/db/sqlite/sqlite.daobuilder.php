@@ -36,7 +36,7 @@ class sqliteDaoBuilder extends jDaoGenerator {
             $distinct=' DISTINCT '.$this->_encloseName($tables[$prop->table]['name']) .'.'.$this->_encloseName($prop->fieldName);
         }
 
-        $src[] = '    $__query = \'SELECT COUNT(*) as c '.($method->distinct !=''?'FROM (SELECT'.$distinct:'').'\'.$this->_fromClause.$this->_whereClause;';
+        $src[] = '    $__query = \'SELECT COUNT(*) as c '.($method->distinct !=''?'FROM (SELECT'.$method->distinct:'').'\'.$this->_fromClause.$this->_whereClause;';
         $glueCondition = ($this->sqlWhereClause !='' ? ' AND ':' WHERE ');
 
         $cond = $method->getConditions();

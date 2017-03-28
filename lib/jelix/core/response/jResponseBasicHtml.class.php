@@ -112,7 +112,7 @@ class jResponseBasicHtml extends jResponse {
 
     /**
      * list of plugins
-     * @var array  array of jIHTMLResponsePlugin
+     * @var jIHTMLResponsePlugin[]
      * @since 1.3a1
      */
     protected $plugins = array();
@@ -198,8 +198,8 @@ class jResponseBasicHtml extends jResponse {
 
     /**
      * output the html content
-     *
-     * @return boolean    true if the generated content is ok
+     * @return bool true if the generated content is ok
+     * @throws Exception
      */
     public function output(){
 

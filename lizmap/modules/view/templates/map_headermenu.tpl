@@ -9,16 +9,6 @@
           <span>{@view~map.search.nominatim.button@}</span>
         </button>
       </span>
-      <div class="dropdown-menu pull-right">
-        <div class="dropdown-caret">
-          <div class="caret-outer"></div>
-          <div class="caret-inner"></div>
-        </div>
-        <div class="dropdown-inner">
-          <span class="close">×</span>
-          <ul class="items"></ul>
-        </div>
-      </div>
     </form>
     {/if}
 

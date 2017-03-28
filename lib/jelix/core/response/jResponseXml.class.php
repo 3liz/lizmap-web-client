@@ -77,7 +77,8 @@ class jResponseXml extends jResponse {
 
     /**
      * generate the xml content and send it to the browser
-     * @return boolean    true if ok
+     * @return bool true if ok
+     * @throws jException
      */
     final public function output(){
         

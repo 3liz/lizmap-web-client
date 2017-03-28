@@ -102,7 +102,7 @@ class jZone {
     * @since 1.0b1
     */
     public static function clear ($name, $params=array ()){
-        return self::_callZone($name, 'clearCache', $params);
+        self::_callZone($name, 'clearCache', $params);
     }
 
     /**
@@ -175,6 +175,7 @@ class jZone {
                     if( filesize($cacheFiles['meta']) > 0 ) {
                         //create an anonymous function and then unset it. if jZone cache is cleared within 2 calls in a single
                         //request, this should still work fine
+                        // @deprecated PHP_7_2 create_function
                         $metaFunct = create_function('$resp', file_get_contents($cacheFiles['meta']));
                         $metaFunct( jApp::coord()->response );
                         unset( $metaFunct );
@@ -249,8 +250,8 @@ class jZone {
     }
 
     /**
-    * create the cache filename
-    * @return string the filename
+    * Get the list of cache filenames
+    * @return array list of filenames
     */
     private function _getCacheFiles($forCurrentResponse=true){
         $module = jApp::getCurrentModule ();

@@ -263,6 +263,14 @@ class lizMapCtrl extends jController {
       }
     }
 
+    // Override default theme with color set in admin panel
+    if($cssContent = jFile::read(jApp::varPath('lizmap-theme-config/') . 'theme.css') ){
+      $css = '<style type="text/css">' . $cssContent . '</style>
+      ';
+      $rep->addHeadContent($css);
+    }
+
+
     // Replace default theme by theme found in
     // the repository folder media/themes/default/
     if ( $lrep->getData('allowUserDefinedThemes') ) {

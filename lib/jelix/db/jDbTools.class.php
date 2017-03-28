@@ -165,8 +165,9 @@ abstract class jDbTools {
      * Return the PHP type corresponding to the given unified type
      * @param string $unifiedType
      * @return string the php type
+     * @throws Exception
      * @since 1.2
-    */
+     */
     public function unifiedToPHPType($unifiedType) {
         if(isset($this->unifiedToPhp[$unifiedType])) {
             return $this->unifiedToPhp[$unifiedType];
@@ -253,7 +254,7 @@ abstract class jDbTools {
     }
 
     /**
-     * Rnclose the field name
+     * Enclose the field name
      * @param string $fieldName the field name
      * @return string the enclosed field name
      * @since 1.2
@@ -263,7 +264,7 @@ abstract class jDbTools {
     }
 
     /**
-    * <teturns the table list
+    * returns the table list
     */
     abstract public function getTableList ();
 

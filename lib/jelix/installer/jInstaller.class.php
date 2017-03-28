@@ -177,7 +177,7 @@ class jInstaller {
 
     /**
      * list of modules for each entry point
-     * @var array first key: entry point id, second key: module name, value = jInstallerComponentModule
+     * @var jInstallerComponentModule[][] first key: entry point id, second key: module name, value = jInstallerComponentModule
      */
     protected $modules = array();
     
@@ -254,6 +254,7 @@ class jInstaller {
     /**
      * @internal mainly for tests
      * @return jIniFileModifier the modifier for the installer.ini.php file
+     * @throws Exception
      */
     protected function getInstallerIni() {
         if (!file_exists(jApp::configPath('installer.ini.php')))
@@ -342,6 +343,7 @@ class jInstaller {
 
     /**
      * @internal for tests
+     * @return jInstallerComponentModule
      */
     protected function getComponentModule($name, $path, $installer) {
         return new jInstallerComponentModule($name, $path, $installer);
@@ -364,7 +366,6 @@ class jInstaller {
      */
     public function forceModuleVersion($moduleName, $version) {
         foreach(array_keys($this->entryPoints) as $epId) {
-            $modules = array();
             if (isset($this->modules[$epId][$moduleName])) {
                 $this->modules[$epId][$moduleName]->setInstalledVersion($epId, $version);
             }
@@ -389,7 +390,6 @@ class jInstaller {
         }
         else {
             foreach(array_keys($this->entryPoints) as $epId) {
-                $modules = array();
                 if (isset($this->modules[$epId][$moduleName])) {
                     $this->modules[$epId][$moduleName]->setInstallParameters($epId, $parameters);
                 }
@@ -433,8 +433,9 @@ class jInstaller {
      * entry point. Only modules which have an access property > 0
      * are installed. Errors appeared during the installation are passed
      * to the reporter.
-     * @param string $entrypoint  the entrypoint name as it appears in project.xml
-     * @return boolean true if succeed, false if there are some errors
+     * @param string $entrypoint the entrypoint name as it appears in project.xml
+     * @return bool true if succeed, false if there are some errors
+     * @throws Exception
      */
     public function installEntryPoint($entrypoint) {
 
@@ -487,9 +488,10 @@ class jInstaller {
     /**
      * install given modules even if they don't have an access property > 0
      * @param array $modulesList array of module names
-     * @param string $entrypoint  the entrypoint name as it appears in project.xml
+     * @param string $entrypoint the entrypoint name as it appears in project.xml
      *               or null if modules should be installed for all entry points
-     * @return boolean true if the installation is ok
+     * @return bool true if the installation is ok
+     * @throws Exception
      */
     public function installModules($modulesList, $entrypoint = null) {
 
@@ -505,6 +507,7 @@ class jInstaller {
             throw new Exception("unknown entry point");
         }
 
+        $result = true;
         foreach ($entryPointList as $epId) {
 
             $allModules = &$this->modules[$epId];
@@ -751,6 +754,7 @@ class jInstaller {
      * check dependencies of given modules and plugins
      *
      * @param array $list  list of jInstallerComponentModule/jInstallerComponentPlugin objects
+     * @return boolean true if the dependencies are ok
      * @throw jException if the install has failed
      */
     protected function checkDependencies ($list, $epId) {
@@ -789,6 +793,7 @@ class jInstaller {
      * check dependencies of a module
      * @param jInstallerComponentBase $component
      * @param string $epId
+     * @throws jInstallerException
      */
     protected function _checkDependencies($component, $epId) {
 

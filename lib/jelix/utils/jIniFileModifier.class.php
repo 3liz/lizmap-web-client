@@ -69,6 +69,7 @@ class jIniFileModifier {
     /**
      * load the given ini file
      * @param string $filename the file to load
+     * @throws Exception
      */
     function __construct($filename) {
         if(!file_exists($filename) || !is_file($filename))
@@ -108,7 +109,7 @@ class jIniFileModifier {
                     $currentValue[2].=$line."\n";
                 }
             } else if(preg_match('/^\s*([a-z0-9_.-]+)(\[\])?\s*=\s*(")?([^"]*)(")?(\s*)/i', $line, $m)) {
-                list($all, $name, $foundkey, $firstquote, $value ,$secondquote,$lastspace) = $m;
+                list($all, $name, $foundkey, $firstquote, $value ,$secondquote, $lastspace) = $m;
 
                 if ($foundkey !='') {
                     if (isset($arrayContents[$currentSection][$name]))
@@ -242,7 +243,6 @@ class jIniFileModifier {
      * @since 1.2
      */
     public function removeValue($name, $section=0, $key=null, $removePreviousComment = true) {
-        $foundValue=false;
 
         if ($section === 0 && $name == '')
             return;
@@ -345,11 +345,9 @@ class jIniFileModifier {
                     if ($item[0] == self::TK_ARR_VALUE) {
                         // the previous value was an array value, so we erase other array values
                         $deleteMode = true;
-                        $foundValue = true;
                         continue;
                     }
                 }
-                $foundValue=true;
                 break;
             }
         }
@@ -631,7 +629,6 @@ class jIniFileModifier {
                         break;
                     }
                     if (!$found) {
-                        $atTheEnd = false;
                         $previousItems[] = $item;
                         if ($lastNonValues > 0) {
                             $previousItems = array_splice($this->content[$sectionTarget], $lastNonValues, $j, $previousItems);

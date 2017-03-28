@@ -174,6 +174,7 @@ class editionCtrl extends jController {
       return false;
     }
 
+    $layer = $lproj->getLayer( $layerId );
     $layerXml = $lproj->getXmlLayer( $layerId );
     $layerXmlZero = $layerXml[0];
     $_layerName = $layerXmlZero->xpath('layername');
@@ -194,6 +195,22 @@ class editionCtrl extends jController {
       return false;
     }
 
+    // Check if user groups intersects groups allowed by project editor
+    // If user is admin, no need to check for given groups
+    if( jAuth::isConnected() and !jAcl2::check('lizmap.admin.repositories.delete') and property_exists($eLayer, 'acl') ){
+        // Check if configured groups white list and authenticated user groups list intersects
+        $editionGroups = $eLayer->acl;
+        $editionGroups = array_map('trim', explode(',', $editionGroups));
+        if( is_array($editionGroups) and count($editionGroups)>0 ){
+            $userGroups = jAcl2DbUserGroup::getGroups();
+            if( !array_intersect($editionGroups, $userGroups) ){
+              jMessage::add(jLocale::get('view~edition.access.denied'), 'AuthorizationRequired');
+              return false;
+            }
+        }
+    }
+
+
     // feature Id (optional, only for edition and save)
     if(preg_match('#,#', $featureIdParam))
       $featureId = preg_split('#,#', $featureIdParam);
@@ -206,6 +223,7 @@ class editionCtrl extends jController {
     $this->layerId = $layerId;
     $this->featureId = $featureId;
     $this->featureIdParam = $featureIdParam;
+    $this->layer = $layer;
     $this->layerXml = $layerXml;
     $this->layerName = $layerName;
 
@@ -384,7 +402,13 @@ class editionCtrl extends jController {
     $sequence = null;
 
     $fields = $tools->getFieldList($tableAlone, $sequence);
-    $this->dataFields = $fields;
+    $wfsFields = $this->layer->getWfsFields();
+
+    $this->dataFields = array();
+    foreach($fields as $fieldName=>$prop){
+        if( in_array($fieldName, $wfsFields) || in_array( strtolower($prop->type), $this->geometryDatatypeMap ) )
+            $this->dataFields[$fieldName] = $prop;
+    }
 
     foreach($this->dataFields as $fieldName=>$prop){
       // Detect primary key column
@@ -762,9 +786,25 @@ class editionCtrl extends jController {
   * @return Boolean True if filled form
   */
   public function setFormDataFromDefault( $form ) {
+
+      // Get database connection object
+      $cnx = jDb::getConnection($this->layerId);
+
       foreach ( $this->dataFields as $ref=>$prop ) {
-          if ( $prop->hasDefault )
-              $form->setData( $ref, $prop->default );
+          if ( $prop->hasDefault ){
+              $ctrl = $form->getControl( $ref );
+              // only set default value for non hidden field
+              if( $ctrl->type != 'hidden' ) {
+                  $form->setData( $ref, $prop->default );
+                  // if provider is postgres evaluate default value
+                  if( $this->provider == 'postgres' && $prop->default != '' ){
+                      $ds = $cnx->query ('SELECT '.$prop->default.' AS v;');
+                      $d = $ds->fetch();
+                      if( $d )
+                          $form->setData( $ref, $d->v );
+                  }
+              }
+          }
       }
       return true;
   }
@@ -823,6 +863,7 @@ class editionCtrl extends jController {
             if ($ctrl && $ctrl->type == 'choice' ) {
                 $path = explode( '/', $record->$ref );
                 $filename = array_pop($path);
+                $filename = preg_replace('#_|-#', ' ', $filename);
                 $ctrl->itemsNames['keep'] = jLocale::get("view~edition.upload.choice.keep") . ' ' . $filename;
                 $ctrl->itemsNames['update'] = jLocale::get("view~edition.upload.choice.update");
                 $ctrl->itemsNames['delete'] = jLocale::get("view~edition.upload.choice.delete") . ' ' . $filename;
@@ -1406,6 +1447,25 @@ class editionCtrl extends jController {
     if(ctype_digit($this->featureId))
       $featureId = array($this->featureId);
 
+    // Create form instance to get uploads file
+    $form = jForms::create('view~edition', $featureId);
+    $deleteFiles = array();
+    if( $form  and $this->addFormControls($form) ) {
+        // SELECT data from the database and set the form data accordingly
+        $this->setFormDataFromDefault($form);
+        if( $this->featureId )
+          $this->setFormDataFromFields($form);
+        if ( $form->hasUpload() ) {
+            foreach( $form->getUploads() as $upload ) {
+                $choiceRef = $upload->ref.'_choice';
+                $value = $form->getData( $upload->ref );
+                $hiddenValue = $form->getData( $upload->ref.'_hidden' );
+                $repPath = $this->repository->getPath();
+                if ( $hiddenValue && file_exists( realPath( $repPath ).'/'.$hiddenValue ) )
+                    $deleteFiles[] = realPath( $repPath ).'/'.$hiddenValue;
+            }
+        }
+    }
 
     // SQL for deleting on line in the edition table
     $sql = " DELETE FROM ".$this->table;
@@ -1442,6 +1502,11 @@ class editionCtrl extends jController {
         'project' => $this->project->getKey()
       );
       jEvent::notify('LizLogItem', $eventParams);
+
+      foreach( $deleteFiles as $path ) {
+          if ( file_exists( $path ) )
+            unlink( $path );
+      }
 
     } catch (Exception $e) {
       jLog::log("SQL = ".$sql);
@@ -1571,6 +1636,7 @@ class editionCtrl extends jController {
         $s_provider = $layerXmlZero->xpath('provider');
         $this->provider = (string)$s_provider[0];
         $this->layerId = $pivotId;
+        $this->layer = $lproj->getLayer( $pivotId );
         $this->layerName = $layerNamePivot;
         $this->getDataFields($datasource);
 

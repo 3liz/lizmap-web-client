@@ -25,5 +25,13 @@
     </div>
   </div>
 
+  <div id="edition-waiter" class="waiter">
+    <h3><span class="title"><!--button id="edition-stop" class="btn btn-stop btn-mini btn-link" title="{@view~map.toolbar.content.stop@}"></button--><span class="icon"></span>&nbsp;<span class="text">{@view~edition.toolbar.title@}</span></span></h3>
+    <div class="menu-content">
+    <div class="progress progress-striped active">
+      <div class="bar" style="width: 100%;"></div>
+    </div>
+    </div>
+  </div>
 
 </div>

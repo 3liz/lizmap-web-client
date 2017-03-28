@@ -32,7 +32,7 @@ class secretconfirm_htmlFormWidget extends \jelix\forms\HtmlWidget\WidgetBase {
         if ($this->ctrl->size != 0)
             $attr['size'] = $this->ctrl->size;
         $attr['type'] = 'password';
-        $attr['value'] = $this->getValue($this->ctrl);
+        $attr['value'] = $this->getValue();
         echo '<input';
         $this->_outputAttr($attr);
         echo "/>\n";

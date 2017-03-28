@@ -34,7 +34,7 @@
     <table width="100%">
       <tr>
         <td align="right">
-          <button style="width:100%;" id="print-launch" class="btn-print-launch btn btn-small btn-success"><span class="icon"></span>&nbsp;{@view~map.print.toolbar.title@}</button>
+          <button style="width:100%;" id="print-launch" class="btn-print-launch btn btn-small btn-primary"><span class="icon"></span>&nbsp;{@view~map.print.toolbar.title@}</button>
         </td>
       </tr>
     </table>

@@ -1,5 +1,5 @@
 <!DOCTYPE qgis PUBLIC 'http://mrcc.com/qgis.dtd' 'SYSTEM'>
-<qgis projectname="Montpellier - Transports" version="2.14.7-Essen">
+<qgis projectname="Montpellier - Transports" version="2.14.10-Essen">
   <title>Montpellier - Transports</title>
   <layer-tree-group expanded="1" checked="Qt::PartiallyChecked" name="">
     <customproperties/>
@@ -359,7 +359,7 @@
           <customproperties/>
         </ComposerItem>
       </ComposerLabel>
-      <ComposerPicture resizeMode="0" svgBorderWidth="0.2" pictureRotation="0" pictureWidth="35.168" svgFillColor="255,255,255,255" svgBorderColor="0,0,0,255" file="./media/logo_osm.png" pictureHeight="35.3838" mapId="-1" anchorPoint="4">
+      <ComposerPicture resizeMode="0" svgBorderWidth="0.2" pictureRotation="0" pictureWidth="35.168" svgFillColor="255,255,255,255" svgBorderColor="0,0,0,255" northMode="0" file="./media/logo_osm.png" northOffset="0" pictureHeight="35.3838" mapId="-1" anchorPoint="4">
         <ComposerItem pagey="10.3524" page="1" id="" lastValidViewScaleFactor="1.95973" positionMode="0" positionLock="false" x="245.868" y="10.3524" visibility="1" zValue="3" background="false" transparency="0" frameJoinStyle="miter" blendMode="0" width="41.4127" outlineWidth="0.3" excludeFromExports="0" uuid="{6b35eaa7-9f33-4cd3-a59c-04772b964ab8}" height="35.3838" itemRotation="0" frame="false" pagex="245.868">
           <FrameColor alpha="255" red="0" blue="0" green="0"/>
           <BackgroundColor alpha="255" red="255" blue="255" green="255"/>
@@ -367,7 +367,7 @@
           <customproperties/>
         </ComposerItem>
       </ComposerPicture>
-      <ComposerPicture resizeMode="0" svgBorderWidth="0.2" pictureRotation="0" pictureWidth="38.0665" svgFillColor="255,255,255,255" svgBorderColor="0,0,0,255" file="/kimaidou/Documents/3liz/LOGOS/LOGOS/CARRE/WEB/Logo_car_coul.png" pictureHeight="38.3" mapId="-1" anchorPoint="4">
+      <ComposerPicture resizeMode="0" svgBorderWidth="0.2" pictureRotation="0" pictureWidth="38.0665" svgFillColor="255,255,255,255" svgBorderColor="0,0,0,255" northMode="0" file="/kimaidou/Documents/3liz/LOGOS/LOGOS/CARRE/WEB/Logo_car_coul.png" northOffset="0" pictureHeight="38.3" mapId="-1" anchorPoint="4">
         <ComposerItem pagey="5.91563" page="1" id="" lastValidViewScaleFactor="2.7047" positionMode="0" positionLock="false" x="5.56126" y="5.91563" visibility="1" zValue="2" background="false" transparency="0" frameJoinStyle="miter" blendMode="0" width="38.0665" outlineWidth="0.3" excludeFromExports="0" uuid="{15a8899f-b857-4319-86bc-81c22ef664b2}" height="39.6255" itemRotation="0" frame="false" pagex="5.56126">
           <FrameColor alpha="255" red="0" blue="0" green="0"/>
           <BackgroundColor alpha="255" red="255" blue="255" green="255"/>
@@ -454,7 +454,7 @@
     </Composition>
   </Composer>
   <Composer title="Landscape A4" visible="0">
-    <Composition resizeToContentsMarginLeft="0" snapping="0" showPages="1" guidesVisible="1" resizeToContentsMarginTop="0" alignmentSnap="1" printResolution="300" paperWidth="297" gridVisible="0" snapGridOffsetX="0" smartGuides="1" snapGridOffsetY="0" resizeToContentsMarginRight="0" snapTolerancePixels="10" printAsRaster="0" generateWorldFile="0" paperHeight="210" numPages="1" snapGridResolution="10" resizeToContentsMarginBottom="0">
+    <Composition resizeToContentsMarginLeft="0" snapping="0" showPages="1" guidesVisible="1" resizeToContentsMarginTop="0" alignmentSnap="1" printResolution="300" paperWidth="297" gridVisible="0" snapGridOffsetX="0" smartGuides="1" snapGridOffsetY="0" resizeToContentsMarginRight="0" snapTolerancePixels="10" printAsRaster="0" generateWorldFile="0" paperHeight="210" numPages="2" snapGridResolution="10" resizeToContentsMarginBottom="0">
       <symbol alpha="1" clip_to_extent="1" type="fill" name="">
         <layer pass="0" class="SimpleFill" locked="0">
           <prop k="border_width_map_unit_scale" v="0,0,0,0,0,0"/>
@@ -579,7 +579,7 @@
           </symbol>
         </ComposerMapOverview>
         <AtlasMap scalingMode="2" atlasDriven="0" margin="0.10000000000000001"/>
-        <ComposerItem pagey="162.072" page="1" id="" lastValidViewScaleFactor="3.44841" positionMode="0" positionLock="false" x="237.35" y="162.072" visibility="1" zValue="3" background="true" transparency="0" frameJoinStyle="miter" blendMode="0" width="60.5889" outlineWidth="0.3" excludeFromExports="0" uuid="{2ebf76e3-6f6b-4c34-95f1-3d642932cfb3}" height="45" itemRotation="0" frame="false" pagex="237.35">
+        <ComposerItem pagey="162.072" page="1" id="" lastValidViewScaleFactor="1.15513" positionMode="0" positionLock="false" x="237.35" y="162.072" visibility="1" zValue="3" background="true" transparency="0" frameJoinStyle="miter" blendMode="0" width="60.5889" outlineWidth="0.3" excludeFromExports="0" uuid="{2ebf76e3-6f6b-4c34-95f1-3d642932cfb3}" height="45" itemRotation="0" frame="false" pagex="237.35">
           <FrameColor alpha="255" red="0" blue="0" green="0"/>
           <BackgroundColor alpha="255" red="255" blue="255" green="255"/>
           <customproperties/>
@@ -639,7 +639,7 @@
             </customproperties>
           </layer-tree-layer>
         </layer-tree-group>
-        <ComposerItem pagey="0" page="1" id="" lastValidViewScaleFactor="1.43937" positionMode="0" positionLock="false" x="237.35" y="0" visibility="1" zValue="2" background="true" transparency="0" frameJoinStyle="miter" blendMode="0" width="45.7234" outlineWidth="0.3" excludeFromExports="0" uuid="{e5857829-a6bb-42db-aed6-70473177b9da}" height="164" itemRotation="0" frame="false" pagex="237.35">
+        <ComposerItem pagey="0" page="1" id="" lastValidViewScaleFactor="1.43937" positionMode="0" positionLock="false" x="237.35" y="0" visibility="1" zValue="2" background="true" transparency="0" frameJoinStyle="miter" blendMode="0" width="45.7234" outlineWidth="0.3" excludeFromExports="0" uuid="{e5857829-a6bb-42db-aed6-70473177b9da}" height="146.3" itemRotation="0" frame="false" pagex="237.35">
           <FrameColor alpha="255" red="0" blue="0" green="0"/>
           <BackgroundColor alpha="150" red="255" blue="255" green="255"/>
           <customproperties/>
@@ -714,12 +714,52 @@
           </symbol>
         </ComposerMapOverview>
         <AtlasMap scalingMode="2" atlasDriven="0" margin="0.10000000000000001"/>
-        <ComposerItem pagey="18" page="1" id="" lastValidViewScaleFactor="1.43937" positionMode="0" positionLock="false" x="0" y="18" visibility="1" zValue="1" background="true" transparency="0" frameJoinStyle="miter" blendMode="0" width="237.2" outlineWidth="0.3" excludeFromExports="0" uuid="{2835ecbd-6089-4454-b22e-707b558ecef1}" height="191.85" itemRotation="0" frame="true" pagex="0">
+        <ComposerItem pagey="18" page="1" id="" lastValidViewScaleFactor="1.15513" positionMode="0" positionLock="false" x="0" y="18" visibility="1" zValue="1" background="true" transparency="0" frameJoinStyle="miter" blendMode="0" width="237.2" outlineWidth="0.3" excludeFromExports="0" uuid="{2835ecbd-6089-4454-b22e-707b558ecef1}" height="191.85" itemRotation="0" frame="true" pagex="0">
           <FrameColor alpha="255" red="0" blue="0" green="0"/>
           <BackgroundColor alpha="255" red="255" blue="255" green="255"/>
           <customproperties/>
         </ComposerItem>
       </ComposerMap>
+      <ComposerAttributeTableV2 source="0" showGrid="1" maxFeatures="30" resizeMode="0" filterFeatures="false" featureFilter="" emptyTableMode="0" wrapString="" wrapBehaviour="0" headerMode="0" backgroundColor="255,255,255,255" showEmptyRows="0" emptyTableMessage="" showOnlyVisibleFeatures="1" vectorLayer="tram_stop_work20150416102656130" composerMap="0" headerHAlignment="0" contentFontColor="0,0,0,255" headerFontColor="0,0,0,255" cellMargin="1" filterToAtlasIntersection="0" relationId="" gridStrokeWidth="0.5" gridColor="0,0,0,255" showUniqueRowsOnly="0">
+        <headerFontProperties description="Ubuntu,11,-1,5,50,0,0,0,0,0" style=""/>
+        <contentFontProperties description="Ubuntu,11,-1,5,50,0,0,0,0,0" style=""/>
+        <displayColumns>
+          <column width="0" vAlignment="128" attribute="work_id" sortByRank="0" hAlignment="1" heading="Id" sortOrder="0">
+            <backgroundColor alpha="0" red="0" blue="0" green="0"/>
+          </column>
+          <column width="0" vAlignment="128" attribute="work_date" sortByRank="1" hAlignment="1" heading="Date" sortOrder="1">
+            <backgroundColor alpha="0" red="0" blue="0" green="0"/>
+          </column>
+          <column width="0" vAlignment="128" attribute="work_title" sortByRank="0" hAlignment="1" heading="Title" sortOrder="0">
+            <backgroundColor alpha="0" red="0" blue="0" green="0"/>
+          </column>
+          <column width="0" vAlignment="128" attribute="work_description" sortByRank="0" hAlignment="1" heading="Description" sortOrder="0">
+            <backgroundColor alpha="0" red="0" blue="0" green="0"/>
+          </column>
+          <column width="0" vAlignment="128" attribute="tram_stop_id" sortByRank="0" hAlignment="1" heading="Stop id" sortOrder="0">
+            <backgroundColor alpha="0" red="0" blue="0" green="0"/>
+          </column>
+        </displayColumns>
+        <cellStyles>
+          <oddColumns enabled="0" cellBackgroundColor="255,255,255,255"/>
+          <evenColumns enabled="0" cellBackgroundColor="255,255,255,255"/>
+          <oddRows enabled="0" cellBackgroundColor="255,255,255,255"/>
+          <evenRows enabled="0" cellBackgroundColor="255,255,255,255"/>
+          <firstColumn enabled="0" cellBackgroundColor="255,255,255,255"/>
+          <lastColumn enabled="0" cellBackgroundColor="255,255,255,255"/>
+          <headerRow enabled="0" cellBackgroundColor="255,255,255,255"/>
+          <firstRow enabled="0" cellBackgroundColor="255,255,255,255"/>
+          <lastRow enabled="0" cellBackgroundColor="255,255,255,255"/>
+        </cellStyles>
+        <ComposerFrame sectionWidth="198.455" sectionHeight="197.439" hideBackgroundIfEmpty="0" hidePageIfEmpty="0" sectionX="0" sectionY="0">
+          <ComposerItem pagey="4.18073" page="2" id="" lastValidViewScaleFactor="-1" positionMode="0" positionLock="false" x="2.22844" y="224.181" visibility="1" zValue="8" background="false" transparency="0" frameJoinStyle="miter" blendMode="0" width="198.455" outlineWidth="0.3" excludeFromExports="0" uuid="{3dac7fb6-a4be-4daf-89b1-c1617d1d20c3}" height="197.439" itemRotation="0" frame="false" pagex="2.22844">
+            <FrameColor alpha="255" red="0" blue="0" green="0"/>
+            <BackgroundColor alpha="255" red="255" blue="255" green="255"/>
+            <customproperties/>
+          </ComposerItem>
+        </ComposerFrame>
+        <customproperties/>
+      </ComposerAttributeTableV2>
       <customproperties/>
     </Composition>
   </Composer>

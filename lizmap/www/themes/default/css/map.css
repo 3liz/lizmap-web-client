@@ -1,4 +1,3 @@
-
 #title h1 {
   color : #E9E9E9;
 }
@@ -530,6 +529,15 @@ Timemanager
 .ui-widget-overlay {
   opacity : 0.8;
   background : black;
+}
+#loading p {
+  display: none;
+}
+#loading {
+  background-image: url(img/loading.gif);
+  background-repeat: no-repeat;
+  background-position-x: center;
+  background-position-y: center;
 }
 
 

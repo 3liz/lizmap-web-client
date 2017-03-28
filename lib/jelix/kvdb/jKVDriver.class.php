@@ -82,7 +82,7 @@ abstract class jKVDriver {
     /**
      * Name of the driver.
      *
-     * @var object
+     * @var object|resource
      */
     protected $_connection = null;
 

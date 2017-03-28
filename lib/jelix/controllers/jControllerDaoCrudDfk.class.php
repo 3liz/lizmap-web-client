@@ -168,7 +168,6 @@ class jControllerDaoCrudDfk extends jController {
         if($dao == null)
             $dao = jDao::get($this->dao, $this->dbProfile);
 
-        $props = $dao->getProperties();
         $pks = $dao->getPrimaryKeyNames();
         if($pks[0] == $this->spkName) {
             return array($spk, $dpk);

@@ -9,7 +9,13 @@ body {
 [class^="icon-"], [class*=" icon-"] {
   background-image: url('images/glyphicons-halflings.png');
 }
-.icon-white {
+.icon-white,
+.dropdown-menu > li > a:hover > [class^="icon-"],
+.dropdown-menu > li > a:focus > [class^="icon-"],
+.dropdown-menu > li > a:hover > [class*=" icon-"],
+.dropdown-menu > li > a:focus > [class*=" icon-"],o
+.dropdown-menu > .active > a > [class^="icon-"],
+.dropdown-menu > .active > a > [class*=" icon-"] {
   background-image: url('images/glyphicons-halflings-white.png');
 }
 .nav .active > a .icon-white,
@@ -59,6 +65,7 @@ body {
 #headermenu .navbar-search .icon span {
   display:none;
 }
+
 #headermenu .dropdown-menu {
   background-color: #4A4A4A;
   background-color: rgba(0,0,0,0.7);
@@ -269,6 +276,9 @@ CSS Sprite positions calculated via http://instantsprite.com/ or https://draeton
   background-position: -600px 0px;
 }
 
+#content.mobile #mapmenu li.tooltip-layer {
+  display:none;
+}
 
 /* navbar */
 .navbar-fixed-top .navbar-inner,
@@ -388,7 +398,7 @@ ul.nav.nav-tabs {
 
 #dock-close{
   position: absolute;
-  bottom:5px;
+  top:5px;
   right:5px;
 }
 
@@ -434,11 +444,7 @@ SubDock
   position:absolute;
   left:30px;
   top:0px;
-/*
-  bottom:0px;
-*/
-  /*max-width:30%;
-  max-height:90%;*/
+  max-height:100%;
   z-index:1000;
   overflow:auto;
   background-color:#4A4A4A;
@@ -455,6 +461,21 @@ SubDock
   left:0px;
   background-color:#4A4A4A;
   z-index:1200;
+}
+
+#sub-dock .sub-metadata h3 .icon{
+  background-position: -125px 0px;
+}
+#sub-dock div.menu-content button.layer-info{
+  margin-bottom:5px;
+}
+#sub-dock div.menu-content select{
+  max-width: 180px;
+  margin-bottom: 0px;
+}
+#sub-dock div.menu-content .btn-mini [class^="icon-"],
+#sub-dock div.menu-content .btn-mini [class*=" icon-"]{
+  margin-top: 1px;
 }
 
 /* Mini-Dock */
@@ -475,7 +496,7 @@ SubDock
   top:auto;
   bottom:0px;
   right:0px;
-  left:0px;
+  left:30px;
 }
 
 
@@ -587,6 +608,103 @@ SubDock
 
 #attributeLayers .tab-content .attribute-content {
   top:50px;
+}
+#attributeLayers .tab-content .attribute-content .dataTables_wrapper .dataTables_info {
+  padding-right:5px;
+}
+#attributeLayers .tab-content .attribute-content .dataTables_wrapper .dataTables_paginate {
+  padding-left:5px;
+}
+#attributeLayers .tab-content .attribute-content .dataTables_wrapper .dataTables_length {
+  padding-top:0.45em;
+}
+#attributeLayers .tab-content .attribute-content .dataTables_wrapper .dataTables_filter {
+  padding-top:0.45em;
+}
+#attributeLayers .tab-content .attribute-content .dataTables_wrapper .dataTables_length label {
+  font-size: 1em;
+}
+#attributeLayers .tab-content .attribute-content .dataTables_wrapper .dataTables_length select {
+  font-size: 1em;
+}
+#attributeLayers .tab-content .attribute-content .dataTables_wrapper .dataTables_filter label {
+  font-size: 1em;
+}
+#attributeLayers .tab-content .attribute-content .dataTables_wrapper .dataTables_filter input {
+  font-size: 1em;
+}
+#attributeLayers .tab-content .attribute-content div.dataTables_wrapper div.dataTables_paginate ul.pagination {
+    margin: 2px 0;
+    white-space: nowrap;
+}
+#attributeLayers .tab-content .attribute-content .pagination {
+    display: inline-block;
+    padding-left: 0;
+    margin: 20px 0;
+    border-radius: 4px;
+}
+#attributeLayers .tab-content .attribute-content .pagination > li {
+    display: inline;
+    box-sizing: border-box;
+    padding:0;
+    margin:0;
+    border:0;
+    border-radius:0;
+}
+#attributeLayers .tab-content .attribute-content .pagination > li > a,
+#attributeLayers .tab-content .attribute-content .pagination > li > span {
+    position: relative;
+    float: left;
+    padding: 6px 12px;
+    margin-left: -1px;
+    line-height: 1.42857143;
+    color: #337ab7;
+    text-decoration: none;
+    background-color: #fff;
+    border: 1px solid #ddd;
+}
+#attributeLayers .tab-content .attribute-content .pagination > li > a:focus,
+#attributeLayers .tab-content .attribute-content .pagination > li > a:hover,
+#attributeLayers .tab-content .attribute-content .pagination > li > span:focus,
+#attributeLayers .tab-content .attribute-content .pagination > li > span:hover {
+    z-index: 3;
+    color: #23527c;
+    background-color: #eee;
+    border-color: #ddd;
+}
+#attributeLayers .tab-content .attribute-content .pagination > .active > a,
+#attributeLayers .tab-content .attribute-content .pagination > .active > a:focus,
+#attributeLayers .tab-content .attribute-content .pagination > .active > a:hover,
+#attributeLayers .tab-content .attribute-content .pagination > .active > span,
+#attributeLayers .tab-content .attribute-content .pagination > .active > span:focus,
+#attributeLayers .tab-content .attribute-content .pagination > .active > span:hover {
+    z-index: 2;
+    color: #fff;
+    cursor: default;
+    background-color: #337ab7;
+    border-color: #337ab7;
+}
+#attributeLayers .tab-content .attribute-content .pagination > .disabled > a,
+#attributeLayers .tab-content .attribute-content .pagination > .disabled > a:focus,
+#attributeLayers .tab-content .attribute-content .pagination > .disabled > a:hover,
+#attributeLayers .tab-content .attribute-content .pagination > .disabled > span,
+#attributeLayers .tab-content .attribute-content .pagination > .disabled > span:focus,
+#attributeLayers .tab-content .attribute-content .pagination > .disabled > span:hover {
+    color: #777;
+    cursor: not-allowed;
+    background-color: #fff;
+    border-color: #ddd;
+}
+#attributeLayers .tab-content .attribute-content .pagination > li:first-child > a,
+#attributeLayers .tab-content .attribute-content .pagination > li:first-child > span {
+    margin-left: 0;
+    border-top-left-radius: 4px;
+    border-bottom-left-radius: 4px;
+}
+#attributeLayers .tab-content .attribute-content .pagination > li:last-child > a,
+#attributeLayers .tab-content .attribute-content .pagination > li:last-child > span {
+    border-top-right-radius: 4px;
+    border-bottom-right-radius: 4px;
 }
 
 #attribute-summary.attribute-content.bottom-content{
@@ -1012,6 +1130,9 @@ div.modal h3 .text {
   position : relative;
   background : #F0F0F0;
 }
+#content.mobile #map-content {
+  margin-left : 0px;
+}
  /* avoid bootstrap collision*/
 #map-content img {
   max-width : none;
@@ -1170,6 +1291,11 @@ div.modal h3 .text {
   background-image:      -o-linear-gradient(center top, #9BC144, #93C01F);
   background-image:         linear-gradient(to bottom, #9BC144, #93C01F);
 }
+#dock .print .menu-content,
+#mini-dock .print .menu-content,
+#right-dock .print .menu-content {
+  overflow:auto;
+}
 #dock .print select,
 #mini-dock .print select,
 #right-dock .print select {
@@ -1282,8 +1408,17 @@ div.modal h3 .text {
   border : solid 1px rgb(251,216,80);
 }
 
+#dock div.tabbable {
+  height: 100%;
+}
+
+#dock-content {
+  height: 100%;
+}
+
 #switcher {
   overflow : auto;
+  height: 100%;
 /*
   border : solid 1px #606060;
 */
@@ -1303,6 +1438,8 @@ div.modal h3 .text {
 #switcher-layers-actions div.btn-group > ul{
   left:auto;
   right:0px;
+  max-height:90px;
+  overflow-y:auto;
 }
 #switcher-layers-actions.active {
   border-top: 1px solid rgba(255,255,255,0.6);
@@ -1313,7 +1450,9 @@ div.modal h3 .text {
 #switcher-layers-actions button#layerActionUnfilter{
   margin-left: 15px;
 }
-
+#switcher-layers-actions ul.list-style-layer li.selected{
+  background-color: #FFFFFF;
+}
 
 #switcher > div {
   /*padding-left : 19px;
@@ -1495,6 +1634,22 @@ div.modal h3 .text {
   line-height : 2;
 }
 
+#get-baselayer-metadata {
+  width: 20px;
+  border:none;
+  cursor:pointer;
+}
+
+a.btn.btn-opacity-layer {
+
+}
+
+a.btn.btn-opacity-layer.active {
+  background-color:#0094d6 !important;
+  color:white !important;
+}
+
+
 /*navbar*/
 #navbar {
   z-index :1000;
@@ -1601,7 +1756,7 @@ div.modal h3 .text {
   z-index:999;
   position:absolute;
   right:10px;
-  bottom:2.5em;
+  bottom:40px;
 }
 #overview-bar {
   position:relative;
@@ -2005,6 +2160,22 @@ div.modal h3 .text {
   max-width:35px;
 }
 
+#edition .edition {
+  position: relative;
+}
+#edition .edition .waiter {
+  background-color: rgba(255,255,255,0.4);
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  display: none;
+}
+#edition .edition .waiter .progress {
+  margin-bottom: 0px;
+}
+
 #edition-form-container h3 {
   color: black;
   background-color: lightgrey;
@@ -2054,6 +2225,15 @@ div.modal h3 .text {
   opacity : 0.8;
   background : black;
   z-index: 1040;
+}
+#loading p {
+  display: none;
+}
+#loading {
+  background-image: url(img/loading.gif);
+  background-repeat: no-repeat;
+  background-position-x: center;
+  background-position-y: center;
 }
 
 /* Transparent images instead of pink tiles */
@@ -2190,3 +2370,64 @@ div.tooltip {
 .qgis_sprite.mActionMapIdentificationsvg { background-position: -2047px 0; width: 20px; }
 .qgis_sprite.mActionPanHighlightFeaturesvg { background-position: -2077px 0; width: 16px; }
 
+#lizmap-search{
+  top: 1px;
+  position: absolute;
+  z-index: 1040;
+  overflow: auto;
+  background-color: #F0F0F0;
+  background-color: #4A4A4A;
+  background-color: rgba(0,0,0,0.7);
+  max-height: 99%;
+  right: 100px;
+  max-width: 70%;
+  color:white;
+  border-radius:5px;
+  font-size:0.8em;
+  display:none;
+}
+#content.mobile #lizmap-search{
+  left: 31px;
+  right: 1px;
+  bottom: 1px;
+  max-width:none;
+  border-radius:0;
+}
+#lizmap-search > li{
+  list-style: none;
+}
+#lizmap-search .items > li > ul{
+  margin: 0 10px 10px 25px
+}
+
+#lizmap-search a{
+  color:white;
+  font-size:0.9em;
+}
+#lizmap-search a:hover{
+  background-color: grey;
+  text-decoration:none;
+}
+#lizmap-search.open{
+  display:block;
+}
+#lizmap-search-close{
+  display:none;
+  right: 101px;
+  top: 2px;
+  position: absolute;
+  z-index: 1041;
+}
+#content.mobile #lizmap-search-close{
+  right: 3px;
+}
+#lizmap-search-close.open{
+  display:block;
+}
+
+#selectiontool-export-formats{
+  left: auto;
+  right: 0px;
+  max-height: 140px;
+  overflow-y: auto;
+}

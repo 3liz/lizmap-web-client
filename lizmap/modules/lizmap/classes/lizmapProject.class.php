@@ -217,6 +217,22 @@ class lizmapProject{
         if (property_exists($qgs_xml->properties, 'WMSServiceAbstract'))
             $this->data['abstract'] = (string)$qgs_xml->properties->WMSServiceAbstract;
 
+        # get WMS max width
+        if (property_exists($qgs_xml->properties, 'WMSMaxWidth'))
+            $this->data['wmsMaxWidth'] = (int)$qgs_xml->properties->WMSMaxWidth;
+        else
+            $this->data['wmsMaxWidth'] = 1500;
+        if( !$this->data['wmsMaxWidth'] )
+            $this->data['wmsMaxWidth'] = 1500;
+
+        # get WMS max height
+        if (property_exists($qgs_xml->properties, 'WMSMaxHeight'))
+            $this->data['wmsMaxHeight'] = (int)$qgs_xml->properties->WMSMaxHeight;
+        else
+            $this->data['wmsMaxHeight'] = 1500;
+        if( !$this->data['wmsMaxHeight'] )
+            $this->data['wmsMaxHeight'] = 1500;
+
         # get WMS getCapabilities full URL
         $this->data['wmsGetCapabilitiesUrl'] = jUrl::getFull(
             'lizmap~service:index',
@@ -644,8 +660,28 @@ class lizmapProject{
                 return false;
 
             $count = 0;
-            foreach( $this->cfg->editionLayers as $key=>$obj ){
-                $count += 1;
+            foreach( $this->cfg->editionLayers as $key=>$eLayer ){
+                // Check if user groups intersects groups allowed by project editor
+                // If user is admin, no need to check for given groups
+                if( property_exists($eLayer, 'acl') and $eLayer->acl ){
+                    // Check if configured groups white list and authenticated user groups list intersects
+                    $editionGroups = $eLayer->acl;
+                    $editionGroups = array_map('trim', explode(',', $editionGroups));
+                    if( is_array($editionGroups) and count($editionGroups)>0 ){
+                        $userGroups = jAcl2DbUserGroup::getGroups();
+                        if( array_intersect($editionGroups, $userGroups) or jAcl2::check('lizmap.admin.repositories.delete')){
+                            // User group(s) correspond to the groups given for this edition layer
+                            // or user is admin
+                            $count += 1;
+                            unset($this->cfg->editionLayers->$key->acl);
+                        }else{
+                            // No match found, we deactivate the edition layer
+                            unset($this->cfg->editionLayers->$key);
+                        }
+                    }
+                }else{
+                    $count += 1;
+                }
             }
             if ( $count != 0 )
                 return true;
@@ -899,6 +935,17 @@ class lizmapProject{
                             );
                         }
                     }
+
+                    // get composer attribute tables
+                    $cTables = $composer->xpath('.//ComposerAttributeTableV2');
+                    if( $cTables && count($cTables) > 0 ) {
+                        foreach( $cTables as $cTable ) {
+                            $printTemplate['tables'][] = array(
+                                'composerMap'=>(int)$cTable['composerMap'],
+                                'vectorLayer'=>(string)$cTable['vectorLayer']
+                            );
+                        }
+                    }
                     $printTemplates[] = $printTemplate;
                 }
             }
@@ -999,7 +1046,9 @@ class lizmapProject{
                         unset($editionLayers->$key);
                 }
             }
+
         }
+
         return $editionLayers;
     }
 
@@ -1039,15 +1088,42 @@ class lizmapProject{
         if ( property_exists( $configJson, 'editionLayers' ) ) {
             if( jAcl2::check('lizmap.tools.edition.use', $this->repository->getKey()) ){
                 $configJson->editionLayers = $this->editionLayers;
+                // Check right to edit this layer (if property "acl" is in config)
+                foreach( $configJson->editionLayers as $key=>$eLayer ){
+                    // Check if user groups intersects groups allowed by project editor
+                    // If user is admin, no need to check for given groups
+                    if( property_exists($eLayer, 'acl') and $eLayer->acl ){
+                        // Check if configured groups white list and authenticated user groups list intersects
+                        $editionGroups = $eLayer->acl;
+                        $editionGroups = array_map('trim', explode(',', $editionGroups));
+                        if( is_array($editionGroups) and count($editionGroups)>0 ){
+                            $userGroups = jAcl2DbUserGroup::getGroups();
+                            if( array_intersect($editionGroups, $userGroups) or jAcl2::check('lizmap.admin.repositories.delete')){
+                                // User group(s) correspond to the groups given for this edition layer
+                                // or the user is admin
+                                unset($configJson->editionLayers->$key->acl);
+                            }else{
+                                // No match found, we deactivate the edition layer
+                                unset($configJson->editionLayers->$key);
+                            }
+                        }
+                    }
+                }
+
             } else {
                 unset($configJson->editionLayers);
             }
         }
 
+
         // Add export layer right
         if( jAcl2::check('lizmap.tools.layer.export', $this->repository->getKey()) ){
             $configJson->options->exportLayers = 'True';
         }
+
+        // Add WMS max width ad height
+        $configJson->options->wmsMaxWidth = $this->data['wmsMaxWidth'];
+        $configJson->options->wmsMaxHeight = $this->data['wmsMaxHeight'];
 
         // Update config with layer relations
         $relations = $this->getRelations();
@@ -1250,7 +1326,7 @@ class lizmapProject{
         // only maps
         if($services->onlyMaps) {
                 $projectsTpl = new jTpl();
-                $projectsTpl->assign('excludedProject', '');
+                $projectsTpl->assign('excludedProject', $this->repository->getKey().'~'.$this->getKey());
                 $dockable[] = new lizmapMapDockItem(
                     'home',
                     jLocale::get('view~default.repository.list.title'),
@@ -1322,6 +1398,8 @@ class lizmapProject{
 
         if ( $this->hasAttributeLayers() ) {
             $tpl = new jTpl();
+            $layerExport = jAcl2::check('lizmap.tools.layer.export', $this->repository->getKey());
+            $tpl->assign('layerExport', $layerExport);
             $dock = new lizmapMapDockItem(
                 'selectiontool',
                 jLocale::get('view~map.selectiontool.navbar.title'),
@@ -1476,6 +1554,11 @@ class lizmapProject{
         // Check user is authenticated
         if(!jAuth::isConnected()){
             return False;
+        }
+
+        // Check user is admin -> ok, give permission
+        if( jAcl2::check('lizmap.admin.repositories.delete') ){
+            return True;
         }
 
         // Check if configured groups white list and authenticated user groups list intersects

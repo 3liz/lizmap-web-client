@@ -106,10 +106,11 @@ class jFile {
      *
      * @param string $path The path of the directory to remove recursively
      * @param boolean $deleteParent If the path must be deleted too
-     * @param array $except  filenames and suffix of filename, for files to NOT delete
+     * @param array $except filenames and suffix of filename, for files to NOT delete
+     * @return bool true if all the content has been removed
+     * @throws jException
      * @since 1.0b1
      * @author Loic Mathaud
-     * @return boolean true if all the content has been removed
      */
     public static function removeDir($path, $deleteParent=true, $except=array()) {
 
@@ -217,8 +218,7 @@ class jFile {
      * @return string the path with Jelix shortcuts parts
      */
     public static function unparseJelixPath($path, $beforeShortcut='', $afterShortcut=''){
-        $shortcutPath = '';
-        $shortcut = '';
+
         if (strpos($path, LIB_PATH) === 0) {
             $shortcutPath = LIB_PATH;
             $shortcut = 'lib:';

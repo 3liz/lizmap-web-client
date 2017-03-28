@@ -68,6 +68,17 @@ abstract class jFormsControl {
         $this->datatype = new jDatatypeString();
     }
 
+    /**
+     * @return string the default widget type to use to render the control
+     * @since 1.6.14
+     */
+    function getWidgetType() {
+        return $this->type;
+    }
+
+    /**
+     * @param jFormsBase $form
+     */
     function setForm($form) {
         $this->form = $form;
         $this->container = $form->getContainer();
@@ -84,6 +95,14 @@ abstract class jFormsControl {
         return false;
     }
 
+    /**
+     * check and filter the value of the control.
+     *
+     * It is the responsability of the implementation to fill the "errors" or "data"
+     * properties of the container.
+     *
+     * @return int|null null if it is ok, or one of jForms::ERRDATA_* constants when there is an error
+     */
     function check(){
         $value = $this->container->data[$this->ref];
         if(trim($value) == '') {
@@ -108,6 +127,9 @@ abstract class jFormsControl {
         $this->container->setReadOnly($this->ref, $r);
     }
 
+    /**
+     * @param jRequest $request
+     */
     function setValueFromRequest($request) {
         $this->setData($request->getParam($this->ref,''));
     }

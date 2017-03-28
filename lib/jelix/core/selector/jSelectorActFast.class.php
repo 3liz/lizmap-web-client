@@ -30,6 +30,9 @@ class jSelectorActFast extends jSelectorModule {
 
     /**
      * @var string $requestType type of request ('classic', 'soap'...)
+     * @param $module
+     * @param $action
+     * @throws jExceptionSelector
      */
     function __construct($requestType, $module, $action){
         $this->module = $module;

@@ -20,7 +20,7 @@ class jIniFile {
     /**
      * read an ini file
      * @param string $filename the path and the name of the file to read
-     * @return array the content of the file or false
+     * @return array|false the content of the file or false if the ini format is invalid
      */
     public static function read($filename) {
         if ( file_exists ($filename) ) {
@@ -36,8 +36,10 @@ class jIniFile {
      * the read method (or parse_ini_file)
      * @param array $array the content of an ini file
      * @param string $filename the path and the name of the file use to store the content
-     * @param string $header   some content to insert at the begining of the file
-     * @param integer $chmod   
+     * @param string $header some content to insert at the begining of the file
+     * @param integer $chmod
+     * @throws Exception
+     * @throws jException
      */
     public static function write($array, $filename, $header='', $chmod=null) {
         $result='';

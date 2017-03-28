@@ -120,11 +120,6 @@ abstract class jInstallerBase {
     }
 
     /**
-     * @var jDbTools
-     */
-    private $_dbTool = null;
-
-    /**
      * @var jDbConnection
      */
     private $_dbConn = null;
@@ -249,10 +244,11 @@ abstract class jInstallerBase {
      * in the directory of the component. (replace databasetype by mysql, pgsql etc.)
      * You can however provide a script compatible with all databases, but then
      * you should indicate the full name of the script, with a .sql extension.
-     * 
+     *
      * @param string $name the name of the script
      * @param string $module the module from which we should take the sql file. null for the current module
      * @param boolean $inTransaction indicate if queries should be executed inside a transaction
+     * @throws Exception
      */
     final protected function execSQLScript ($name, $module = null, $inTransaction = true) {
 
@@ -398,7 +394,9 @@ abstract class jInstallerBase {
             }
             if (is_array($sectionContent)) {
                 foreach($sectionContent as $k=>$v) {
-                    $profiles->setValue($k,$v, 'jdb:'.$name);
+                    if ($force || !$profiles->getValue($k, 'jdb:'.$name)) {
+                        $profiles->setValue($k,$v, 'jdb:'.$name);
+                    }
                 }
             }
             else {

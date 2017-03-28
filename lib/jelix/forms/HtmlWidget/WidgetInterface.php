@@ -40,7 +40,7 @@ interface WidgetInterface {
 
     /**
      * add the CSS and javascript link
-     * @param jResponse $resp The response used
+     * @param \jResponseHtml $resp The response used
      */
     public function outputMetaContent($resp);
 

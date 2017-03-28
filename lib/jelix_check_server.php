@@ -80,20 +80,20 @@ class jInstallerMessageProvider {
 
     protected $messages = array(
         'fr'=>array(
-     'checker.title'=>'Vérification de votre serveur pour Jelix 1.6.12pre.3323',
+     'checker.title'=>'Vérification de votre serveur pour Jelix 1.6.14',
         'number.errors'         =>' erreurs.',
         'number.error'          =>' erreur.',
         'number.warnings'       =>' avertissements.',
         'number.warning'        =>' avertissement.',
         'number.notices'        =>' remarques.',
         'number.notice'         =>' remarque.',
-    'conclusion.error'      =>'Vous devez corriger l\'erreur pour faire fonctionner correctement une application Jelix 1.6.12pre.3323.',
-    'conclusion.errors'     =>'Vous devez corriger les erreurs pour faire fonctionner correctement une application Jelix 1.6.12pre.3323.',
-    'conclusion.warning'    =>'Une application Jelix 1.6.12pre.3323 peut à priori fonctionner, mais il est préférable de corriger l\'avertissement pour être sûr.',
-    'conclusion.warnings'   =>'Une application Jelix 1.6.12pre.3323 peut à priori fonctionner, mais il est préférable de corriger les avertissements pour être sûr.',
-    'conclusion.notice'     =>'Aucun problème pour installer une application pour Jelix  1.6.12pre.3323 malgré la remarque.',
-    'conclusion.notices'    =>'Aucun problème pour installer une application pour Jelix  1.6.12pre.3323 malgré les remarques.',
-    'conclusion.ok'         =>'Vous pouvez installer une application avec Jelix 1.6.12pre.3323',
+    'conclusion.error'      =>'Vous devez corriger l\'erreur pour faire fonctionner correctement une application Jelix 1.6.14.',
+    'conclusion.errors'     =>'Vous devez corriger les erreurs pour faire fonctionner correctement une application Jelix 1.6.14.',
+    'conclusion.warning'    =>'Une application Jelix 1.6.14 peut à priori fonctionner, mais il est préférable de corriger l\'avertissement pour être sûr.',
+    'conclusion.warnings'   =>'Une application Jelix 1.6.14 peut à priori fonctionner, mais il est préférable de corriger les avertissements pour être sûr.',
+    'conclusion.notice'     =>'Aucun problème pour installer une application pour Jelix  1.6.14 malgré la remarque.',
+    'conclusion.notices'    =>'Aucun problème pour installer une application pour Jelix  1.6.14 malgré les remarques.',
+    'conclusion.ok'         =>'Vous pouvez installer une application avec Jelix 1.6.14',
         'cannot.continue'       =>'Les vérifications ne peuvent continuer : %s',
         'extension.not.installed'=>'L\'extension %s n\'est pas disponible',
         'extension.optional.not.installed'=>'L\'extension %s optionnelle n\'est pas disponible',
@@ -161,20 +161,20 @@ class jInstallerMessageProvider {
         ),
 
         'en'=>array(
-  'checker.title'   =>'Check your configuration server for Jelix 1.6.12pre.3323',
+  'checker.title'   =>'Check your configuration server for Jelix 1.6.14',
         'number.errors'     =>' errors.',
         'number.error'      =>' error.',
         'number.warnings'   =>' warnings.',
         'number.warning'    =>' warning.',
         'number.notices'    =>' notices.',
         'number.notice'     =>' notice.',
-      'conclusion.error'    =>'You must fix the error in order to run an application correctly with Jelix 1.6.12pre.3323.',
-      'conclusion.errors'   =>'You must fix errors in order to run an application correctly with Jelix 1.6.12pre.3323.',
-      'conclusion.warning'  =>'Your application for Jelix 1.6.12pre.3323 may run without problems, but it is recommanded to fix the warning.',
-      'conclusion.warnings' =>'Your application for Jelix 1.6.12pre.3323 may run without problems, but it is recommanded to fix warnings.',
-      'conclusion.notice'   =>'You can install an application for Jelix 1.6.12pre.3323, although there is a notice.',
-      'conclusion.notices'  =>'You can install an application for Jelix 1.6.12pre.3323, although there are notices.',
-      'conclusion.ok'       =>'You can install an application for Jelix 1.6.12pre.3323.',
+      'conclusion.error'    =>'You must fix the error in order to run an application correctly with Jelix 1.6.14.',
+      'conclusion.errors'   =>'You must fix errors in order to run an application correctly with Jelix 1.6.14.',
+      'conclusion.warning'  =>'Your application for Jelix 1.6.14 may run without problems, but it is recommanded to fix the warning.',
+      'conclusion.warnings' =>'Your application for Jelix 1.6.14 may run without problems, but it is recommanded to fix warnings.',
+      'conclusion.notice'   =>'You can install an application for Jelix 1.6.14, although there is a notice.',
+      'conclusion.notices'  =>'You can install an application for Jelix 1.6.14, although there are notices.',
+      'conclusion.ok'       =>'You can install an application for Jelix 1.6.14.',
         'cannot.continue'       =>'Cannot continue the checking: %s',
         'extension.not.installed'=>'The extension %s is not available',
         'extension.optional.not.installed'=>'the optional extension %s is not available',
@@ -411,7 +411,7 @@ class jInstallCheck {
             $this->error('php.bad.version');
             $notice = $this->messages->get('php.version.required', $this->buildProperties['PHP_VERSION_TARGET']);
             $notice.= '. '.$this->messages->get('php.version.current',phpversion());
-            $this->reporter->showNotice($notice);
+            $this->reporter->message($notice, 'notice');
             $ok=false;
         }
         else if ($this->verbose) {
@@ -433,7 +433,6 @@ class jInstallCheck {
 
         if (count($this->databases)) {
             $driversInfos = jDbParameters::getDriversInfosList();
-            $req = ($this->dbRequired?'required':'optional');
             $okdb = false;
 
             array_combine($this->databases, array_fill(0, count($this->databases), false));
@@ -661,10 +660,10 @@ class jDbParameters
      * it gives the name of the jDb driver and the database type indicated in a profile.
      * (or corresponding to the PDO dsn indicated in the profile).
      *
-     * @param  array  $profile 'driver' key is required. It should indicates 'pdo' or a jdb driver.
+     * @param  array $profile 'driver' key is required. It should indicates 'pdo' or a jdb driver.
      *    if 'pdo', a 'dsn' key is required.
-     *
      * @return array ['database type', 'native extension name', 'pdo extension name', 'jdb driver name', 'pdo driver name']
+     * @throws Exception
      */
     protected function getDatabaseInfo($profile)
     {
@@ -881,6 +880,8 @@ class jDbParameters
                 $dsn .= ';Database='.$profile['database'];
                 break;
             case 'odbc':
+            default:
+                throw new Exception('PDO: cannot construct the DSN string');
                 break;
         }
 

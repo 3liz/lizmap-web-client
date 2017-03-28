@@ -67,6 +67,6 @@ function jtpl_function_html_link_to_remote($tpl, $label, $element_id, $action_se
             $(\'#'.$element_id."').".$position."(msg);
           }
         });
-      }; //]]>
+      } //]]>
     </script>";
 }

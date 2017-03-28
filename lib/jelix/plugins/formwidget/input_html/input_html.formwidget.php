@@ -73,7 +73,7 @@ class input_htmlFormWidget extends \jelix\forms\HtmlWidget\WidgetBase {
         $maxl= $this->ctrl->datatype->getFacet('maxLength');
         if($maxl !== null)
             $attr['maxlength']=$maxl;
-        $attr['value'] = $this->getValue($this->ctrl);
+        $attr['value'] = $this->getValue();
         $attr['type'] = 'text';
 
         echo '<input';

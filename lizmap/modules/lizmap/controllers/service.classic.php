@@ -659,6 +659,7 @@ class serviceCtrl extends jController {
   * @return Replaced text.
   */
   function replaceMediaPathByMediaUrl($matches){
+    $req = jApp::coord()->request;
     $return = '';
     $return.= '"';
     $return.= jUrl::getFull(
@@ -669,7 +670,7 @@ class serviceCtrl extends jController {
         'path'=>$matches[2]
       ),
       0,
-      $_SERVER['SERVER_NAME']
+      $req->getDomainName().$req->getPort()
     );
     $return.= '"';
     return $return;
@@ -845,6 +846,20 @@ class serviceCtrl extends jController {
 
       } // loop features
 
+      // Raster Popup
+      if ( count($layer->Attribute) > 0 ){
+        $tpl = new jTpl();
+        $tpl->assign('attributes', $layer->Attribute);
+        $tpl->assign('repository', $this->repository->getKey());
+        $tpl->assign('project', $this->project->getKey());
+        $popupRasterContent = $tpl->fetch('view~popupRasterContent');
+
+        $tpl = new jTpl();
+        $tpl->assign('layerTitle', $layerTitle);
+        $tpl->assign('popupContent', $popupRasterContent);
+        $content[] = $tpl->fetch('view~popup');
+      }
+
     } // loop layers
 
     $content = array_reverse($content);
@@ -918,7 +933,7 @@ class serviceCtrl extends jController {
     $rep->mimeType = $mime;
     $rep->content = $data;
     $rep->doDownload  =  false;
-    $rep->outputFileName  =  'getPrint.'.$this->param('format');
+    $rep->outputFileName  =  $this->project->getKey() . '_' . preg_replace("#[\W]+#", '_', $this->params['template']) . '.' . $this->params['format'];
 
    // Log
    $logContent ='

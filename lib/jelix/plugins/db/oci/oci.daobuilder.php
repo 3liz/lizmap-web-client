@@ -70,7 +70,9 @@ class ociDaoBuilder extends jDaoGenerator {
 
     /**
      * build the insert() method in the final class
+     * @param $pkFields
      * @return string the source of the method
+     * @throws Exception
      */
     protected function buildInsertMethod($pkFields) {
         $pkai = $this->getAutoIncrementPKField();

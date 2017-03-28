@@ -325,7 +325,7 @@ class lizmapCache {
 
         // Cache root directory
         $cacheRootDirectory = $ser->cacheRootDirectory;
-        if(!is_writable($cacheRootDirectory) or !is_dir($cacheRootDirectory)){
+        if(!is_dir($cacheRootDirectory) or !is_writable($cacheRootDirectory)){
             $cacheRootDirectory = sys_get_temp_dir();
         }
 

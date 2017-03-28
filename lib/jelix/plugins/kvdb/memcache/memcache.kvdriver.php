@@ -36,8 +36,8 @@ class memcacheKVDriver extends jKVDriver implements jIKVttl {
      * The host list is in the host profile value, in the form of :
      *
      * host=server1:port1;server2:port2;server3;port3;...
-     *
      * @return Memcache object
+     * @throws jException
      */
     protected function _connect() {
         /* A host is needed */
@@ -129,10 +129,7 @@ class memcacheKVDriver extends jKVDriver implements jIKVttl {
 
     /**
      * Disconnect from the memcache server
-     *
-     * @return Memcache object
      */
-
     protected function _disconnect() {
         $this->_connection->close();
     }

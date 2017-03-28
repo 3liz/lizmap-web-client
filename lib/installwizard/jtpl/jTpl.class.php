@@ -16,7 +16,7 @@
  */
 class jTpl {
 
-    const VERSION = '1.0pre.3323';
+    const VERSION = '1.0pre.SERIAL';
 
     /**
      * all assigned template variables. 
@@ -37,7 +37,7 @@ class jTpl {
 
     /**
      * internal use
-     * It have a public access only for plugins. So you musn't use directly this property
+     * It have a public access only for plugins. So you must not use directly this property
      * except from tpl plugins.
      * @var array
      */
@@ -146,6 +146,7 @@ class jTpl {
      * @param string $tpl template selector
      * @param string $outputtype the type of output (html, text etc..)
      * @param boolean $trusted  says if the template file is trusted or not
+     * @return array
      */
     public function meta ($tpl, $outputtype = '', $trusted = true) {
         if (in_array($tpl, $this->processedMeta)) {
@@ -195,8 +196,9 @@ class jTpl {
      * include the compiled template file and call one of the generated function
      * @param string|jSelectorTpl $tpl template selector
      * @param string $outputtype the type of output (html, text etc..)
-     * @param boolean $trusted  says if the template file is trusted or not
+     * @param boolean $trusted says if the template file is trusted or not
      * @return string the suffix name of the function to call
+     * @throws Exception
      */
     protected function getTemplate ($tpl, $outputtype = '', $trusted = true) {
         $tpl = jTplConfig::$templatePath . $tpl;
@@ -234,9 +236,10 @@ class jTpl {
      * return the generated content from the given template
      * @param string $tpl template selector
      * @param string $outputtype the type of output (html, text etc..)
-     * @param boolean $trusted  says if the template file is trusted or not
+     * @param boolean $trusted says if the template file is trusted or not
      * @param boolean $callMeta false if meta should not be called
      * @return string the generated content
+     * @throws Exception
      */
     public function fetch ($tpl, $outputtype='', $trusted = true, $callMeta=true) {
         $content = '';
@@ -270,13 +273,14 @@ class jTpl {
         return $content;
     }
 
-     /**
+    /**
      * Return the generated content from the given string template (virtual)
      * @param string $tpl template content
      * @param string $outputtype the type of output (html, text etc..)
-     * @param boolean $trusted  says if the template file is trusted or not
+     * @param boolean $trusted says if the template file is trusted or not
      * @param boolean $callMeta false if meta should not be called
      * @return string the generated content
+     * @throws Exception
      */
     public function fetchFromString ($tpl, $outputtype='', $trusted = true, $callMeta=true){
         $content = '';

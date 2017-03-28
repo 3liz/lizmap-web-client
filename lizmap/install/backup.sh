@@ -32,6 +32,9 @@ if  [ -d $BACKUPDIR ]; then
     if [ -f $LIZMAP/var/config/localconfig.ini.php ]; then
         cp $LIZMAP/var/config/localconfig.ini.php       $BACKUPDIR/
     fi
+    if [ -d $LIZMAP/var/lizmap-theme-config ]; then
+        cp -R $LIZMAP/var/lizmap-theme-config $BACKUPDIR/
+    fi
     cp $LIZMAP/var/config/lizmapConfig.ini.php $BACKUPDIR/lizmapConfig.ini.php
     cp $LIZMAP/var/config/lizmapLogConfig.ini.php $BACKUPDIR/lizmapLogConfig.ini.php
     cp $LIZMAP/var/config/installer.ini.php    $BACKUPDIR/installer.ini.php

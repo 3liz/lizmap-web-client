@@ -21,7 +21,7 @@ namespace jelix\forms\Builder;
 abstract class BuilderBase {
     /**
      * a form object
-     * @var jFormsBase
+     * @var \jFormsBase
      */
     protected $_form;
 
@@ -49,7 +49,7 @@ abstract class BuilderBase {
 
     protected $_endt = '/>';
     /**
-     * @param jFormsBase $form a form object
+     * @param \jFormsBase $form a form object
      */
     public function __construct($form){
         $this->_form = $form;
@@ -96,7 +96,7 @@ abstract class BuilderBase {
      * called during the meta content processing in templates
      * This method should set things on the response, like adding
      * css styles, javascript links etc.
-     * @param jTpl $tpl the template object
+     * @param \jTpl $tpl the template object
      */
     abstract public function outputMetaContent($tpl);
 
@@ -118,20 +118,20 @@ abstract class BuilderBase {
 
     /**
      * displays the content corresponding of the given control
-     * @param jFormsControl $ctrl the control to display
+     * @param \jFormsControl $ctrl the control to display
      * @param array $attributes  attribute to add on the generated code (html attributes for example)
      */
     abstract public function outputControl($ctrl, $attributes=array());
 
     /**
      * displays the label corresponding of the given control
-     * @param jFormsControl $ctrl the control to display
+     * @param \jFormsControl $ctrl the control to display
      */
     abstract public function outputControlLabel($ctrl, $format='', $editMode=true);
 
     /**
      * displays the value of the control (without the control)
-     * @param jFormsControl $ctrl the control to display
+     * @param \jFormsControl $ctrl the control to display
      * @param array $attributes  attribute to add on the generated code (html attributes for example)
      */
     abstract public function outputControlValue($ctrl, $attributes=array());

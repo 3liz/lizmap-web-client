@@ -30,7 +30,7 @@
         else $hint = '';
         
         $attr['type'] = 'hidden';
-        $attr['value'] = $this->getValue($this->ctrl);
+        $attr['value'] = $this->getValue();
         echo '<input';
         $this->_outputAttr($attr);
         echo '/>';

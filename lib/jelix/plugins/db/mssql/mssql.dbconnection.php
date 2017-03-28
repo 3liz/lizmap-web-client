@@ -18,7 +18,7 @@ class mssqlDbConnection extends jDbConnection {
     /**
      * Default constructor
      * @param array $profile profile de connexion
-     * @return unknown_type
+     * @throws jException
      */
     function __construct($profile){
         if(!function_exists('mssql_connect')){

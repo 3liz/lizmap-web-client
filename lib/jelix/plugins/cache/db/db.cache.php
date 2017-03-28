@@ -4,7 +4,7 @@
 * @subpackage plugins_cache_db
 * @author     Tahina Ramaroson
 * @contributor Sylvain de Vathaire, Laurent Jouanneau
-* @copyright  2009 Neov, 2009 Laurent Jouanneau
+* @copyright  2009 Neov, 2009-2017 Laurent Jouanneau
 * @licence  http://www.gnu.org/licenses/lgpl.html GNU Lesser General Public Licence, see LICENCE file
 */
 
@@ -94,10 +94,11 @@ class dbCacheDriver implements jICacheDriver {
     }
 
     /**
-    * read a specific data in the cache.
-    * @param mixed   $key   key or array of keys used for storing data in the cache
-    * @return mixed $data      data or false if failure
-    */
+     * read a specific data in the cache.
+     * @param mixed $key key or array of keys used for storing data in the cache
+     * @return mixed $data      data or false if failure
+     * @throws jException
+     */
     public function get ($key) {
 
         $dao = jDao::get($this->_dao, $this->_dbprofile);
@@ -136,12 +137,13 @@ class dbCacheDriver implements jICacheDriver {
     }
 
     /**
-    * set a specific data in the cache
-    * @param string $key    key used for storing data
-    * @param mixed  $var    data to store
-    * @param int    $ttl    data time expiration. -1 means no change
-    * @return boolean false if failure
-    */
+     * set a specific data in the cache
+     * @param string $key key used for storing data
+     * @param mixed $var data to store
+     * @param int $ttl data time expiration. -1 means no change
+     * @return bool false if failure
+     * @throws jException
+     */
     public function set ($key, $var, $ttl=0){
 
         try{
@@ -155,7 +157,6 @@ class dbCacheDriver implements jICacheDriver {
         }
 
         $dao = jDao::get($this->_dao, $this->_dbprofile);
-        $n = 0;
         switch($ttl){
             case -1:
                 $date=-1;
@@ -199,11 +200,11 @@ class dbCacheDriver implements jICacheDriver {
     * @param mixed  $var    value used
     * @return boolean false if failure
     */
-    public function increment ($key,$var=1){
+    public function increment ($key, $var=1) {
 
         if ($oldData = $this->get($key)) {
 
-            if (!is_numeric($oldData)) {
+            if (!is_numeric($oldData) || !is_numeric($var)) {
                 return false;
             }
             $data = $oldData + $var;
@@ -226,7 +227,7 @@ class dbCacheDriver implements jICacheDriver {
 
         if (($oldData=$this->get($key))) {
 
-            if (!is_numeric($oldData)) {
+            if (!is_numeric($oldData) || !is_numeric($var)) {
                 return false;
             }
             $data= $oldData - (int)$var;

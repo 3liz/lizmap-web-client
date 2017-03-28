@@ -39,8 +39,9 @@ class AuthCoordPlugin implements jICoordPlugin {
     }
 
     /**
-     * @param    array  $params   plugin parameters for the current action
+     * @param    array $params plugin parameters for the current action
      * @return null or jSelectorAct  if action should change
+     * @throws jException
      */
     public function beforeAction ($params){
         $notLogged = false;

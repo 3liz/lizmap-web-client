@@ -48,7 +48,7 @@ class ldsAuthDriver implements jIAuthDriver {
         // NULL homedir = /tmp ...
         $homedir = "/tmp";
         $param = array($login, $pass, $firstname, $name, $homedir);
-        $ret = $this->xmlCall("base.createUser",$param);
+        $this->xmlCall("base.createUser",$param);
         return true;
     }
 
@@ -114,12 +114,14 @@ class ldsAuthDriver implements jIAuthDriver {
     }
 
     /**
-    * function wich decode UTF-8 Entity with ref
-    * &#03; for example
-    * need because XMLRPC server doest not like this sort
-    * of encoding
+    * function wich decode UTF-8 Entity with ref &#03; for example.
+    *
+    * It is needed because XMLRPC server doest not like this sort
+    * of encoding.
+    * @param string $text the content in which the entities should be decoded
+    * @return string the decoded string
     */
-    protected function decodeEntities($text) {
+    protected function decodeEntities($text, $charset='UTF-8') {
         $text = html_entity_decode($text,ENT_QUOTES,"ISO-8859-1"); /* NOTE: UTF-8 does not work! */
         $text= preg_replace('/&#(\d+);/me',"chr(\\1)",$text); /* decimal notation */
         $text= preg_replace('/&#x([a-f0-9]+);/mei',"chr(0x\\1)",$text);  /* hex notation */
@@ -127,11 +129,13 @@ class ldsAuthDriver implements jIAuthDriver {
     }
 
     /**
-    * call an xmlrpc call for a method
-    * via the xmlrpc server in python (lmc-agent)
-    * @param string $method name of the method
-    * @param array $params array with param
-    */
+     * call an xmlrpc call for a method
+     * via the xmlrpc server in python (lmc-agent)
+     * @param string $method name of the method
+     * @param array $params array with param
+     * @return mixed the value of the response returned by the call
+     * @throws jException
+     */
     protected function xmlCall($method,$params) {
 
         $output_options = array( "output_type" => "xml", "verbosity" => "pretty", "escaping" => array("markup", "non-ascii", "non-print"), "version" => "xmlrpc", "encoding" => "UTF-8" );
@@ -142,7 +146,7 @@ class ldsAuthDriver implements jIAuthDriver {
             $request = xmlrpc_encode_request($method,null,$output_options);
         }else {
             $request = xmlrpc_encode_request($method,$params,$output_options);
-            $request = $this->decodeEntities($request,ENT_QUOTES,"UTF-8");
+            $request = $this->decodeEntities($request, "UTF-8");
         }
 
 

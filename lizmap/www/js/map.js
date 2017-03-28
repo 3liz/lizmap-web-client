@@ -226,6 +226,10 @@ var lizMap = function() {
       if( $('#button-switcher').parent().hasClass('active') )
         $('#button-switcher').click();
 
+      // Hide tooltip-layer
+      if( $('#button-tooltip-layer').parent().hasClass('active') )
+        $('#button-tooltip-layer').click();
+
       if( $('#menu').is(':visible'))
         $('#menu').hide();
 
@@ -307,7 +311,12 @@ var lizMap = function() {
 
     // Set the switcher content a max-height
     $('#switcher-layers-container').css( 'height', 'auto' );
-    var mh = $('#dock').height() - 2*$('#dock-tabs').height() - $('#switcher-layers-container h3').height() - $('#switcher-layers-actions').height() - $('#switcher-baselayer').height() ;
+    //var mh = $('#dock').height() - 2*$('#dock-tabs').height() - $('#switcher-layers-container h3').height() - $('#switcher-layers-actions').height() - $('#switcher-baselayer').height() ;
+    var mh = $('#dock').height() - ($('#dock-tabs').height()+1) - $('#switcher-layers-container h3').height() - ($('#switcher-layers-actions').height()+1);
+    mh -= parseInt($('#switcher-layers-container .menu-content').css( 'padding-top' ));
+    mh -= parseInt($('#switcher-layers-container .menu-content').css( 'padding-bottom' ));
+    if ( $('#switcher-baselayer').is(':visible') )
+        mh -= $('#switcher-baselayer').height();
     $('#switcher-layers-container .menu-content').css( 'max-height', mh ).css('overflow-x', 'hidden').css('overflow-y', 'auto');
 
     // Set the other tab-content max-height
@@ -326,6 +335,55 @@ var lizMap = function() {
    * query OpenLayers to update the map size
    */
  function updateMapSize(){
+    //manage WMS max width and height
+    var wmsMaxWidth = 1500;
+    var wmsMaxHeight = 1500;
+    if( ('wmsMaxWidth' in config.options) && config.options.wmsMaxWidth )
+        wmsMaxWidth = config.options.wmsMaxWidth;
+    if( ('wmsMaxHeight' in config.options) && config.options.wmsMaxHeight )
+        wmsMaxHeight = config.options.wmsMaxHeight;
+    var removeSingleTile = false;
+    var newMapSize = map.getCurrentSize();
+    var replaceSingleTileSize = newMapSize.clone();
+    if( newMapSize.w > wmsMaxWidth || newMapSize.h > wmsMaxHeight ){
+        removeSingleTile = true;
+        var wmsMaxMax = Math.max(wmsMaxWidth, wmsMaxHeight);
+        var wmsMinMax = Math.min(wmsMaxWidth, wmsMaxHeight);
+        var mapMax = Math.max(newMapSize.w, newMapSize.h);
+        var mapMin = Math.min(newMapSize.w, newMapSize.h);
+        if( mapMax/2 > mapMin )
+          replaceSingleTileSize = new OpenLayers.Size(Math.round(mapMax/2), Math.round(mapMax/2));
+        else if( wmsMaxMax/2 > mapMin )
+          replaceSingleTileSize = new OpenLayers.Size(Math.round(wmsMaxMax/2), Math.round(wmsMaxMax/2));
+        else
+          replaceSingleTileSize = new OpenLayers.Size(Math.round(wmsMinMax/2), Math.round(wmsMinMax/2));
+    }
+    // Update singleTile layers
+    for(var i=0, len=map.layers.length; i<len; ++i) {
+        var layer = map.layers[i];
+        if( !(layer instanceof OpenLayers.Layer.WMS) )
+            continue;
+        var qgisName = null;
+        if ( layer.name in cleanNameMap )
+            qgisName = getLayerNameByCleanName(name);
+        var configLayer = null;
+        if ( qgisName )
+            configLayer = config.layers[qgisName];
+        if ( !configLayer )
+            configLayer = config.layers[layer.params['LAYERS']];
+        if ( !configLayer )
+            configLayer = config.layers[layer.name];
+        if( configLayer.singleTile != "True" )
+            continue;
+        if( removeSingleTile && layer.singleTile) {
+          layer.addOptions({singleTile:false, tileSize: replaceSingleTileSize});
+        } else if( !removeSingleTile && !layer.singleTile) {
+          replaceSingleTileSize.h = parseInt(replaceSingleTileSize.h * layer.ratio, 10);
+          replaceSingleTileSize.w = parseInt(replaceSingleTileSize.w * layer.ratio, 10);
+          layer.addOptions({singleTile:true, tileSize: replaceSingleTileSize});
+        }
+    }
+
     var center = map.getCenter();
     map.updateSize();
     map.setCenter(center);
@@ -454,7 +512,7 @@ var lizMap = function() {
                       VERSION: "1.3.0",
                       REQUEST: "GetLegendGraphic",
                       LAYER: externalAccess.layers,
-                      LAYERS: externalAccess.layers,
+                      STYLE: externalAccess.styles,
                       SLD_VERSION: "1.1.0",
                       EXCEPTIONS: "application/vnd.ogc.se_inimage",
                       FORMAT: "image/png",
@@ -470,8 +528,8 @@ var lizMap = function() {
     var legendParams = {SERVICE: "WMS",
                   VERSION: "1.3.0",
                   REQUEST: "GetLegendGraphic",
-                  LAYERS: layer.params['LAYERS'],
-                  STYLES: layer.params['STYLES'],
+                  LAYER: layer.params['LAYERS'],
+                  STYLE: layer.params['STYLES'],
                   EXCEPTIONS: "application/vnd.ogc.se_inimage",
                   FORMAT: "image/png",
                   TRANSPARENT: "TRUE",
@@ -779,7 +837,7 @@ var lizMap = function() {
       var serviceUrl = service
       var layer = nested.nestedLayers[i];
       var qgisLayerName = layer.name;
-      if ( 'useLayerIDs' in config.options && config.options.useLayerIDs == 'True' )
+      if ( ('useLayerIDs' in config.options) && config.options.useLayerIDs == 'True' )
         qgisLayerName = layerIdMap[layer.name];
       else if ( layer.name in shortNameMap )
         qgisLayerName = shortNameMap[layer.name];
@@ -945,7 +1003,9 @@ var lizMap = function() {
           if ( layer.nestedLayers.length != 0 ) {
               var scales = getLayerScale(layer,null,null);
               wmsLayer.minScale = scales.maxScale;
+              wmsLayer.options.minScale = scales.maxScale;
               wmsLayer.maxScale = scales.minScale;
+              wmsLayer.options.maxScale = scales.minScale;
           }
           layers.push( wmsLayer );
       }
@@ -1029,8 +1089,12 @@ var lizMap = function() {
 
     html += '">';
 
+    function truncateWithEllipsis(str,n){
+          return (str.length > n) ? str.substr(0,n-1)+'&hellip;' : str;
+    };
+
     html += '<td><button class="btn checkbox" name="'+nodeConfig.type+'" value="'+aNode.name+'" title="'+lizDict['tree.button.checkbox']+'"></button>';
-    html += '<span class="label" title="'+nodeConfig.abstract+'">'+nodeConfig.title+'</span>';
+    html += '<span class="label" title="'+truncateWithEllipsis($('<div>'+nodeConfig.abstract+'</div>').text(),50)+'">'+nodeConfig.title+'</span>';
     html += '</td>';
 
     html += '<td>';
@@ -1055,7 +1119,8 @@ var lizMap = function() {
     html += '</tr>';
 
     if (nodeConfig.type == 'layer'
-    && (!nodeConfig.noLegendImage || nodeConfig.noLegendImage != 'True')) {
+    && (!nodeConfig.noLegendImage || nodeConfig.noLegendImage != 'True')
+    && ('displayInLegend' in nodeConfig && nodeConfig.displayInLegend == 'True')) {
       var url = getLayerLegendGraphicUrl(aNode.name, false);
       if ( url != null && url != '' ) {
           html += '<tr id="legend-'+aNode.name+'" class="child-of-layer-'+aNode.name+' legendGraphics">';
@@ -1491,12 +1556,16 @@ var lizMap = function() {
               var olFeat = geojson.read(feat);
               var dataBounds = olFeat[0].geometry.getBounds();
 
-              if( dataBounds.getWidth()*dataBounds.getHeight() < 360*180 ) {
-                var tDataBounds = dataBounds.clone().transform(locate.crs, 'EPSG:4326');
-                if ( tDataBounds.getWidth()*tDataBounds.getHeight() < 0.0000028649946082102277 ) {
-                    locate.bbox = locateBounds.transform(locate.crs, 'EPSG:4326').toArray();
-                    locate.crs = 'EPSG:4326';
-                }
+              var worldBounds = OpenLayers.Bounds.fromArray([-180,-90,180,90]);
+              if( worldBounds.containsBounds( dataBounds ) ) {
+                  var mapBounds = map.maxExtent.clone().transform(map.getProjection(), 'EPSG:4326');
+                  if( mapBounds.intersectsBounds( dataBounds ) ) {
+                    var tDataBounds = dataBounds.clone().transform(locate.crs, 'EPSG:4326');
+                    if ( tDataBounds.getWidth()*tDataBounds.getHeight() < 0.0000028649946082102277 ) {
+                        locate.bbox = locateBounds.transform(locate.crs, 'EPSG:4326').toArray();
+                        locate.crs = 'EPSG:4326';
+                    }
+                  }
               }
           });
       }
@@ -1771,7 +1840,10 @@ var lizMap = function() {
       var baselayer = baselayers[i]
       baselayer.units = projection.proj.units;
       map.addLayer(baselayer);
-      var blConfig = config.layers[baselayer.name];
+      var qgisName = baselayer.name;
+      if ( baselayer.name in cleanNameMap )
+          qgisName = getLayerNameByCleanName(baselayer.name);
+      var blConfig = config.layers[qgisName];
       if (blConfig)
         select += '<option value="'+blConfig.name+'">'+blConfig.title+'</option>';
       else
@@ -1843,7 +1915,7 @@ var lizMap = function() {
       // Add only layers with geometry
       var qgisName = null;
       if ( l.name in cleanNameMap )
-          qgisName = cleanNameMap[l.name];
+          qgisName = getLayerNameByCleanName(l.name);
       var aConfig = null;
       if ( qgisName )
           aConfig = config.layers[qgisName];
@@ -2279,6 +2351,30 @@ var lizMap = function() {
 
     var projection = map.projection;
 
+    //manage WMS max width and height
+    var wmsMaxWidth = 1500;
+    var wmsMaxHeight = 1500;
+    if( ('wmsMaxWidth' in config.options) && config.options.wmsMaxWidth )
+        wmsMaxWidth = config.options.wmsMaxWidth;
+    if( ('wmsMaxHeight' in config.options) && config.options.wmsMaxHeight )
+        wmsMaxHeight = config.options.wmsMaxHeight;
+    var removeSingleTile = false;
+    var mapSize = map.size;
+    var replaceSingleTileSize = new OpenLayers.Size(wmsMaxWidth, wmsMaxHeight);
+    if( mapSize.w > wmsMaxWidth || mapSize.h > wmsMaxHeight ){
+        removeSingleTile = true;
+        var wmsMaxMax = Math.max(wmsMaxWidth, wmsMaxHeight);
+        var wmsMinMax = Math.min(wmsMaxWidth, wmsMaxHeight);
+        var mapMax = Math.max(mapSize.w, mapSize.h);
+        var mapMin = Math.min(mapSize.w, mapSize.h);
+        if( mapMax/2 > mapMin )
+          replaceSingleTileSize = new OpenLayers.Size(Math.round(mapMax/2), Math.round(mapMax/2));
+        else if( wmsMaxMax/2 > mapMin )
+          replaceSingleTileSize = new OpenLayers.Size(Math.round(wmsMaxMax/2), Math.round(wmsMaxMax/2));
+        else
+          replaceSingleTileSize = new OpenLayers.Size(Math.round(wmsMinMax/2), Math.round(wmsMinMax/2));
+    }
+
     // get the baselayer select content
     // and adding baselayers to the map
     //var select = '<select class="baselayers">';
@@ -2287,10 +2383,17 @@ var lizMap = function() {
     for (var i=0,len=baselayers.length; i<len; i++) {
       var baselayer = baselayers[i]
       baselayer.units = projection.proj.units;
+      // Update singleTile layers
+      if( removeSingleTile && (baselayer instanceof OpenLayers.Layer.WMS) && baselayer.singleTile ) {
+          baselayer.addOptions({singleTile:false, tileSize: replaceSingleTileSize});
+      }
       map.addLayer(baselayer);
-      var blConfig = config.layers[baselayer.name];
+      var qgisName = baselayer.name;
+      if ( baselayer.name in cleanNameMap )
+          qgisName = getLayerNameByCleanName(baselayer.name);
+      var blConfig = config.layers[qgisName];
       if (blConfig)
-        select += '<option value="'+blConfig.name+'">'+blConfig.title+'</option>';
+        select += '<option value="'+baselayer.name+'">'+blConfig.title+'</option>';
       else
         select += '<option value="'+baselayer.name+'">'+baselayer.name+'</option>';
       /*
@@ -2365,7 +2468,7 @@ var lizMap = function() {
       // Add only layers with geometry
       var qgisName = null;
       if ( l.name in cleanNameMap )
-          qgisName = cleanNameMap[l.name];
+          qgisName = getLayerNameByCleanName(l.name);
       var aConfig = null;
       if ( qgisName )
           aConfig = config.layers[qgisName];
@@ -2379,6 +2482,10 @@ var lizMap = function() {
         ( aConfig.geometryType == "none" || aConfig.geometryType == "unknown" || aConfig.geometryType == "" )
       ){
         continue;
+      }
+      // Update singleTile layers
+      if( removeSingleTile && (l instanceof OpenLayers.Layer.WMS) && l.singleTile ) {
+          l.addOptions({singleTile:false, tileSize: replaceSingleTileSize});
       }
       map.addLayer(l);
 
@@ -2678,7 +2785,8 @@ var lizMap = function() {
       navCtrl.zoomBox.handler.keyMask = navCtrl.zoomBoxKeyMask;
       navCtrl.zoomBox.handler.dragHandler.keyMask = navCtrl.zoomBoxKeyMask;
       navCtrl.handlers.wheel.activate();
-      map.getControlsByClass('OpenLayers.Control.WMSGetFeatureInfo')[0].activate();
+      if( 'edition' in controls && !controls.edition.active )
+        controls['featureInfo'].activate();
     });
     $('#navbar button.zoom').click(function(){
       var self = $(this);
@@ -2686,7 +2794,7 @@ var lizMap = function() {
         return false;
       $('#navbar button.pan').removeClass('active');
       self.addClass('active');
-      map.getControlsByClass('OpenLayers.Control.WMSGetFeatureInfo')[0].deactivate();
+      controls['featureInfo'].deactivate();
       var navCtrl = map.getControlsByClass('OpenLayers.Control.Navigation')[0];
       navCtrl.handlers.wheel.deactivate();
       navCtrl.zoomBox.keyMask = null;
@@ -2803,8 +2911,10 @@ var lizMap = function() {
 
     if ( 'externalSearch' in configOptions )
       addExternalSearch();
-    else
+    else{
       $('#nominatim-search').remove();
+      $('#lizmap-search, #lizmap-search-close').remove();
+    }
 
   }
 
@@ -2896,6 +3006,7 @@ var lizMap = function() {
     // Add layer filter and style if needed
     var filter = [];
     var style = [];
+    var opacity = [];
     for ( var  lName in config.layers ) {
 
       var lConfig = config.layers[lName];
@@ -2919,9 +3030,15 @@ var lizMap = function() {
       if( layer.isVisible && layer.params['STYLES'] != 'default'){
         style.push( layer.name + ':' + layer.params['STYLES'] );
       }
+      if( layer.opacity && layer.opacity != 1 ){
+        opacity.push( layer.name + ':' + layer.opacity );
+      }
     }
     if ( style.length > 0 )
       args['layerStyles'] = style.join(';');
+    if ( opacity.length > 0 ) {
+      args['layerOpacities'] = opacity.join(';');
+    }
 
     // Add permalink args to Lizmap global variable
     permalinkArgs = args;
@@ -2992,6 +3109,18 @@ var lizMap = function() {
       }
     }
 
+    // Get opacities and tranform into obj
+    var olist = {};
+    if( 'layerOpacities' in pparams && pparams.layerOpacities != ''){
+      var lopacities = pparams.layerOpacities.split(';');
+      for(var i in lopacities){
+        var a = lopacities[i];
+        var b = a.split(':');
+        if( b.length == 2)
+          olist[b[0]] = parseFloat(b[1]);
+      }
+    }
+
     for( var i=0; i < map.layers.length; i++){
 
       // Activate and deactivate layers
@@ -3014,6 +3143,11 @@ var lizMap = function() {
             "layerstylechanged",
             { 'featureType': l.name}
         );
+      }
+
+      // Set opacity
+      if( l.name in olist ){
+        l.setOpacity(olist[l.name]);
       }
     }
 
@@ -3121,13 +3255,16 @@ var lizMap = function() {
                       // Display dock if needed
                       if(
                         !$('#mapmenu .nav-list > li.popupcontent').hasClass('active')
+                         && (!mCheckMobile() || ( mCheckMobile() && hasPopupContent ) )
+                         && (lastLonLatInfo == null || eventLonLatInfo.lon != lastLonLatInfo.lon || eventLonLatInfo.lat != lastLonLatInfo.lat)
                       ){
-                        if(
-                          (!mCheckMobile() || ( mCheckMobile() && hasPopupContent ) ) &&
-                          (lastLonLatInfo == null || eventLonLatInfo.lon != lastLonLatInfo.lon || eventLonLatInfo.lat != lastLonLatInfo.lat)
-                        ){
                           $('#button-popupcontent').click();
-                        }
+                      }
+                      else if(
+                        $('#mapmenu .nav-list > li.popupcontent').hasClass('active')
+                         && ( mCheckMobile() && hasPopupContent )
+                      ){
+                          $('#button-popupcontent').click();
                       }
 
                     }
@@ -3275,6 +3412,9 @@ var lizMap = function() {
             refreshGetFeatureInfo(evt);
         },
         "layerSelectionChanged": function( evt ) {
+            refreshGetFeatureInfo(evt);
+        },
+        "lizmapeditionfeaturedeleted": function( evt ) {
             refreshGetFeatureInfo(evt);
         }
      });
@@ -3547,13 +3687,19 @@ var lizMap = function() {
     });
     $('#print-launch').click(function() {
       var pTemplate = dragCtrl.layout.template;
+      var pTableVectorLayers = [];
+      if( 'tables' in pTemplate )
+          pTableVectorLayers = $.map( pTemplate.tables, function( t ){
+              if( t.composerMap == -1 || ('map'+t.composerMap) == dragCtrl.layout.mapId )
+                return t.vectorLayer;
+          });
       var extent = dragCtrl.layer.features[0].geometry.getBounds();
       var url = OpenLayers.Util.urlAppend(lizUrls.wms
           ,OpenLayers.Util.getParameterString(lizUrls.params)
           );
       url += '&SERVICE=WMS';
       //url += '&VERSION='+capabilities.version+'&REQUEST=GetPrint';
-      url += '&VERSION=1.3&REQUEST=GetPrint';
+      url += '&VERSION=1.3.0&REQUEST=GetPrint';
       url += '&FORMAT='+$('#print-format').val();
       url += '&EXCEPTIONS=application/vnd.ogc.se_inimage&TRANSPARENT=true';
       url += '&SRS='+map.projection;
@@ -3570,22 +3716,44 @@ var lizMap = function() {
       var styleLayers = [];
       var opacityLayers = [];
       $.each(map.layers, function(i, l) {
-        if (l.getVisibility()
-          && (
-            l.CLASS_NAME == "OpenLayers.Layer.WMS"
-            || ( l.CLASS_NAME == "OpenLayers.Layer.WMTS" && !(l.name.lastIndexOf('ign', 0) === 0 ) )
-          )
+        if (
+            l instanceof OpenLayers.Layer.WMS
+            || ( l instanceof OpenLayers.Layer.WMTS && !(l.name.lastIndexOf('ign', 0) === 0 ) )
         ){
-          // Add layer to the list of printed layers
-          printLayers.push(l.params['LAYERS']);
-          // Optionnaly add layer style if needed (same order as layers )
-          var lst = 'default';
-          if( 'STYLES' in l.params && l.params['STYLES'].length > 0 )
-            lst = l.params['STYLES'];
-          styleLayers.push( lst );
-          opacityLayers.push(parseInt(255*l.opacity));
+            if( l.getVisibility() ) {
+              // Add layer to the list of printed layers
+              printLayers.push(l.params['LAYERS']);
+              // Optionnaly add layer style if needed (same order as layers )
+              var lst = 'default';
+              if( 'STYLES' in l.params && l.params['STYLES'].length > 0 )
+                lst = l.params['STYLES'];
+              styleLayers.push( lst );
+              opacityLayers.push(parseInt(255*l.opacity));
+            /*} else {
+                var qgisName = null;
+                if ( layer.name in cleanNameMap )
+                    qgisName = getLayerNameByCleanName(name);
+                var configLayer = null;
+                if ( qgisName )
+                    configLayer = config.layers[qgisName];
+                if ( !configLayer )
+                    configLayer = config.layers[layer.params['LAYERS']];
+                if ( !configLayer )
+                    configLayer = config.layers[layer.name];
+                if ( configLayer && pTableVectorLayers.indexOf( configLayer.layerId ) != -1 ) {
+                  // Add layer to the list of printed layers
+                  printLayers.push(l.params['LAYERS']);
+                  // Optionnaly add layer style if needed (same order as layers )
+                  var lst = 'default';
+                  if( 'STYLES' in l.params && l.params['STYLES'].length > 0 )
+                    lst = l.params['STYLES'];
+                  styleLayers.push( lst );
+                  opacityLayers.push(parseInt(255*l.opacity));
+                }*/
+            }
         }
       });
+
       printLayers.reverse();
       styleLayers.reverse();
       opacityLayers.reverse();
@@ -3594,18 +3762,38 @@ var lizMap = function() {
       var activeBaseLayerName = map.baseLayer.name;
       if ( activeBaseLayerName in externalBaselayersReplacement ) {
         var exbl = externalBaselayersReplacement[activeBaseLayerName];
-        if( exbl in config.layers ) {
+        if( exbl in config.layers ){
             if ( 'useLayerIDs' in config.options && config.options.useLayerIDs == 'True' )
                 printLayers.push(config.layers[exbl].id);
             else
                 printLayers.push(exbl);
-            styleLayers.push('Overview');
+            styleLayers.push('default');
             opacityLayers.push(255);
         }
       }
 
+      // Add table vector layer without geom
+      if( pTableVectorLayers.length > 0 ) {
+          $.each( pTableVectorLayers, function( i, layerId ){
+              var aConfig = getLayerConfigById( layerId );
+              if( aConfig ) {
+                  var layerName = aConfig[0];
+                  var layerConfig = aConfig[1];
+                  if( ( layerConfig.geometryType == "none" || layerConfig.geometryType == "unknown" || layerConfig.geometryType == "" ) ) {
+                      if ( 'shortname' in layerConfig && layerConfig.shortname != '' )
+                          printLayers.push(layerConfig.shortname);
+                      else
+                          printLayers.push(layerConfig.name);
+                      styleLayers.push('default');
+                      opacityLayers.push(255);
+                  }
+              }
+          });
+      }
+
       url += '&'+dragCtrl.layout.mapId+':LAYERS='+printLayers.join(',');
       url += '&'+dragCtrl.layout.mapId+':STYLES='+styleLayers.join(',');
+
       if ( dragCtrl.layout.overviewId != null
           && config.options.hasOverview ) {
         var bbox = config.options.bbox;
@@ -3613,7 +3801,7 @@ var lizMap = function() {
         url += '&'+dragCtrl.layout.overviewId+':extent='+oExtent;
         url += '&'+dragCtrl.layout.overviewId+':LAYERS=Overview';
         printLayers.unshift('Overview');
-        styleLayers.unshift('Overview');
+        styleLayers.unshift('default');
         opacityLayers.unshift(255);
       }
       url += '&LAYERS='+printLayers.join(',');
@@ -3644,7 +3832,7 @@ var lizMap = function() {
       if ( filter.length !=0 )
         url += '&FILTER='+ filter.join(';');
       if ( selection.length !=0 )
-        url += '&SELECTION='+ filter.join(';');
+        url += '&SELECTION='+ selection.join(';');
       window.open(url);
       return false;
     });
@@ -4546,13 +4734,16 @@ OpenLayers.Control.HighlightFeature = OpenLayers.Class(OpenLayers.Control, {
         $('#geolocation .menu-content button').removeAttr('disabled');
       },
       "locationfailed": function(evt) {
-        if ( vector.features.length == 0 )
-          mAddMessage(lizDict['geolocation.failed'],'error',true);
+        if ( vector.features.length == 0 && $('#geolocation-locationfailed').length != 0)
+          mAddMessage('<span id="geolocation-locationfailed">'+lizDict['geolocation.failed']+'</span>','error',true);
       },
       "activate": function(evt) {
+          $('#geolocation-stop').removeAttr('disabled');
       },
       "deactivate": function(evt) {
-        $('#geolocation .menu-content button').attr('disabled','disabled');
+        firstGeolocation = true;
+        this.bind = false;
+        $('#geolocation .menu-content button').attr('disabled','disabled').removeClass('active');
         vector.destroyFeatures();
       }
     });
@@ -4567,7 +4758,7 @@ OpenLayers.Control.HighlightFeature = OpenLayers.Class(OpenLayers.Control, {
 
         minidockclosed: function(e) {
             if ( e.id == 'geolocation' ) {
-                if (geolocate.active && !geolocate.getCurrentLocation() )
+                if (geolocate.active && vector.features.length == 0 )
                     geolocate.deactivate();
             }
         }
@@ -4585,10 +4776,12 @@ OpenLayers.Control.HighlightFeature = OpenLayers.Class(OpenLayers.Control, {
         return false;
       var self = $(this);
       if ( self.hasClass('active') ) {
-        self.removeClass('btn-info active').addClass('btn-success');
+        $('#geolocation-center').removeAttr('disabled');
+        self.removeClass('active');
         geolocate.bind = false;
       } else {
-        self.removeClass('btn-success').addClass('btn-info active');
+        self.addClass('active');
+        $('#geolocation-center').attr('disabled','disabled');
         geolocate.bind = true;
       }
       return false;
@@ -4601,28 +4794,30 @@ OpenLayers.Control.HighlightFeature = OpenLayers.Class(OpenLayers.Control, {
     }
     $('#geolocation-stop').click(function(){
       stopGeolocation();
+      return false;
     });
-    $('#geolocation button.btn-geolocation-clear').click(function(){
-      stopGeolocation();
+    $('#geolocation button.btn-geolocation-close').click(function(){
+      $('#button-geolocation').click();
+      return false;
     });
   }
 
   function startExternalSearch() {
-    $('#nominatim-search .dropdown-inner .items li > a').unbind('click');
-    $('#nominatim-search .dropdown-inner .items').html( '<li class="start">'+lizDict['externalsearch.search']+'</li>' );
-    $('#nominatim-search').addClass('open');
+    $('#lizmap-search .items li > a').unbind('click');
+    $('#lizmap-search .items').html( '<li class="start"><ul><li>'+lizDict['externalsearch.search']+'</li></ul></li>' );
+    $('#lizmap-search, #lizmap-search-close').addClass('open');
   }
 
   function updateExternalSearch( aHTML ) {
     var wgs84 = new OpenLayers.Projection('EPSG:4326');
 
-    $('#nominatim-search .dropdown-inner .items li > a').unbind('click');
-    if ( $('#nominatim-search .dropdown-inner .items li.start').length != 0 )
-        $('#nominatim-search .dropdown-inner .items').html( aHTML );
+    $('#lizmap-search .items li > a').unbind('click');
+    if ( $('#lizmap-search .items li.start').length != 0 )
+        $('#lizmap-search .items').html( aHTML );
     else
-        $('#nominatim-search .dropdown-inner .items').append( aHTML );
-    $('#nominatim-search').addClass('open');
-    $('#nominatim-search .dropdown-inner .items li > a').click(function() {
+        $('#lizmap-search .items').append( aHTML );
+    $('#lizmap-search, #lizmap-search-close').addClass('open');
+    $('#lizmap-search .items li > a').click(function() {
       var bbox = $(this).attr('href').replace('#','');
       var bbox = OpenLayers.Bounds.fromString(bbox);
       bbox.transform(wgs84, map.getProjectionObject());
@@ -4644,11 +4839,11 @@ OpenLayers.Control.HighlightFeature = OpenLayers.Class(OpenLayers.Control, {
         locateLayer.addFeatures([feat]);
       }
 
-      $('#nominatim-search').removeClass('open');
+      $('#lizmap-search, #lizmap-search-close').removeClass('open');
       return false;
     });
-    $('#nominatim-search .dropdown-inner span.close').click(function() {
-      $('#nominatim-search').removeClass('open');
+    $('#lizmap-search-close button').click(function() {
+      $('#lizmap-search, #lizmap-search-close').removeClass('open');
       return false;
     });
   }
@@ -4698,6 +4893,7 @@ OpenLayers.Control.HighlightFeature = OpenLayers.Class(OpenLayers.Control, {
     // update ui
     if ( service == null && ftsService == null ) {
       $('#nominatim-search').remove();
+      $('#lizmap-search, #lizmap-search-close').remove();
       return false;
     }
 
@@ -4822,7 +5018,9 @@ OpenLayers.Control.HighlightFeature = OpenLayers.Class(OpenLayers.Control, {
                             ftsGeometry.transform(ftsLayerResult.srid, 'EPSG:4326');
                         var bbox = ftsGeometry.getBounds();
                         if ( extent.intersectsBounds(bbox) ) {
-                          text += '<li><a href="#'+bbox.toBBOX()+'" data="'+ftsGeometry.toString()+'">'+ftsFeat.label+'</a></li>';
+                          var labrex = new RegExp('(' + $('#search-query').val() + '|'+lizMap.cleanName($('#search-query').val())+')', "ig")
+                          var lab = ftsFeat.label.replace(labrex,'<b style="color:#0094D6;">$1</b>');
+                          text += '<li><a href="#'+bbox.toBBOX()+'" data="'+ftsGeometry.toString()+'">'+lab+'</a></li>';
                           count++;
                         }
                     }
@@ -5485,9 +5683,6 @@ OpenLayers.Control.HighlightFeature = OpenLayers.Class(OpenLayers.Control, {
           self.config = config;
           self.tree = tree;
           self.events.triggerEvent("treecreated", self);
-          if(self.checkMobile()){
-            $('#map-content').css('margin-left','0');
-          }
 
           // create the map
           createMap();
@@ -5588,6 +5783,7 @@ OpenLayers.Control.HighlightFeature = OpenLayers.Class(OpenLayers.Control, {
                 }
               }
             }
+            runPermalink( uparams );
           }
 
           // 2/ Toggle checkboxes
@@ -5673,24 +5869,6 @@ OpenLayers.Control.HighlightFeature = OpenLayers.Class(OpenLayers.Control, {
             }
           });
 
-
-          // Toggle legend
-          $('#toggleLegend').click(function(){
-            if ($('#menu').is(':visible')) {
-              $('.ui-icon-close-menu').click();
-              $('#metadata').hide();
-            }
-            else{
-              $('.ui-icon-open-menu').click();
-              $('#metadata').hide();
-            }
-            //~ console.log('toggleLegend');
-            map.updateSize();
-            map.baseLayer.redraw(true);
-            //~ console.log('redraw');
-            return false;
-          });
-
           // Toggle locate
           $('#mapmenu ul').on('click', 'li.nav-minidock > a', function(){
             var self = $(this);
@@ -5714,13 +5892,21 @@ OpenLayers.Control.HighlightFeature = OpenLayers.Class(OpenLayers.Control, {
                 lizMap.events.triggerEvent( "minidockopened", {'id':id} );
             }
             self.blur();
+
             return false;
           });
+
           // Show locate by layer
           if ( !('locateByLayer' in config) )
             $('#button-locate').parent().hide();
           else
             $('#button-locate').click();
+
+          // hide mini-dock if no tool is active
+          if ( $('#mapmenu ul li.nav-minidock.active').length == 0 ) {
+              $('#mini-dock-content .tab-pane.active').removeClass('active');
+              $('#mini-dock-tabs li.active').removeClass('active');
+          }
 
           $('#mapmenu ul').on('click', 'li.nav-dock > a', function(){
             var self = $(this);
@@ -5728,17 +5914,7 @@ OpenLayers.Control.HighlightFeature = OpenLayers.Class(OpenLayers.Control, {
             var id = self.attr('href').substr(1);
             var tab = $('#nav-tab-'+id);
             if ( parent.hasClass('active') ) {
-                if ( tab.hasClass('active') ) {
-                    var nextActive = tab.next(':visible');
-                    if ( nextActive.length != 0 ) {
-                        nextActive.first().children('a').first().click();
-                    } else {
-                        var prevActive = tab.prev(':visible');
-                        if ( prevActive.length != 0 )
-                            prevActive.first().children('a').first().click();
-                    }
-                }
-                tab.hide();
+                $('#'+id).removeClass('active');
                 tab.removeClass('active');
                 parent.removeClass('active');
                 lizMap.events.triggerEvent( "dockclosed", {'id':id} );
@@ -5811,16 +5987,6 @@ OpenLayers.Control.HighlightFeature = OpenLayers.Class(OpenLayers.Control, {
           // Show layer switcher
           $('#button-switcher').click();
           updateContentSize();
-
-          // Toggle Metadata
-          //$('#displayMetadata').click(function(){
-          /*
-          $('#hideMetadata').click(function(){
-            //$('#metadata').hide();
-            $('#displayMetadata').parent().removeClass('active');
-            return false;
-          });
-          */
 
           $('#headermenu .navbar-inner .nav a[rel="tooltip"]').tooltip();
           $('#mapmenu .nav a[rel="tooltip"]').tooltip();
@@ -6519,6 +6685,7 @@ $(document).ready(function () {
     , resizable: false
     , closeOnEscape: false
     , dialogClass: 'liz-dialog-wait'
+    , minHeight: 128
   })
   .parent().removeClass('ui-corner-all')
   .children('.ui-dialog-titlebar').removeClass('ui-corner-all');
@@ -6526,4 +6693,5 @@ $(document).ready(function () {
   OpenLayers.DOTS_PER_INCH = 96;
   // initialize LizMap
   lizMap.init();
+  $( "#loading" ).css('min-height','128px');
 });

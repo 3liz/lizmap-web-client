@@ -101,7 +101,7 @@ class configCtrl extends jController {
     // Set form data values
     foreach($services->getProperties() as $ser){
       $form->setData($ser, $services->$ser);
-      if($ser == 'allowUserAccountRequests')
+      if($ser == 'allowUserAccountRequests' || $ser == 'onlyMaps')
         if($services->$ser)
           $form->setData($ser, 'on');
         else
@@ -145,7 +145,7 @@ class configCtrl extends jController {
     // Set form data values
     foreach($services->getProperties() as $ser){
       $form->setData($ser, $services->$ser);
-      if($ser == 'allowUserAccountRequests')
+      if($ser == 'allowUserAccountRequests' || $ser == 'onlyMaps')
         if($services->$ser)
           $form->setData($ser, 'on');
         else
@@ -154,7 +154,7 @@ class configCtrl extends jController {
 
     // If wrong cacheRootDirectory, use the system temporary directory
     $cacheRootDirectory = $form->getData('cacheRootDirectory');
-    if(!is_writable($cacheRootDirectory) or !is_dir($cacheRootDirectory)){
+    if(!is_dir($cacheRootDirectory) or !is_writable($cacheRootDirectory)){
       $form->setData('cacheRootDirectory', sys_get_temp_dir());
     }
 
@@ -242,13 +242,16 @@ class configCtrl extends jController {
     }
 
     // Check the cacheRootDirectory : must be writable
-    $cacheRootDirectory = $form->getData('cacheRootDirectory');
-    if(!is_writable($cacheRootDirectory) or !is_dir($cacheRootDirectory)){
-      $ok = false;
-      $form->setErrorOn(
-        'cacheRootDirectory',
-        jLocale::get("admin~admin.form.admin_services.message.cacheRootDirectory.wrong", array(sys_get_temp_dir()))
-      );
+    $cacheStorageType = $form->getData('cacheStorageType');
+    if($cacheStorageType != 'redis') {
+        $cacheRootDirectory = $form->getData('cacheRootDirectory');
+        if(!is_dir($cacheRootDirectory) or !is_writable($cacheRootDirectory)){
+            $ok = false;
+            $form->setErrorOn(
+                'cacheRootDirectory',
+                jLocale::get("admin~admin.form.admin_services.message.cacheRootDirectory.wrong", array(sys_get_temp_dir()))
+            );
+        }
     }
 
     // Check that cacheExpiration  is between 0 and 2592000 seconds

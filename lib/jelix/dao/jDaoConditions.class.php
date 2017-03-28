@@ -90,10 +90,11 @@ class jDaoConditions {
 
     /**
      * add an order clause
-     * @param string $field_id   the property name used to order results
-     * @param string $way        the order type : asc or desc
+     * @param string $field_id the property name used to order results
+     * @param string $way the order type : asc or desc
      * @param boolean $allowAnyWay true if the value of $way should be checked. Internal use.
      *                              Not recommended because it may cause security issues
+     * @throws jException
      */
     function addItemOrder ($field_id, $way='ASC', $allowAnyWay=false) {
         if (!$allowAnyWay && strtoupper($way) !='DESC' && strtoupper($way) != 'ASC')
@@ -131,9 +132,10 @@ class jDaoConditions {
     }
 
     /**
-    * starts a new condition group
-    * @param string $glueOp the logical operator which links each conditions in the group : AND or OR
-    */
+     * starts a new condition group
+     * @param string $glueOp the logical operator which links each conditions in the group : AND or OR
+     * @throws jException
+     */
     function startGroup ($glueOp = 'AND'){
         $glueOp = strtoupper($glueOp);
         if ($glueOp !='AND' && $glueOp != 'OR')
@@ -154,13 +156,14 @@ class jDaoConditions {
     }
 
     /**
-    * adds a condition
-    * @param string $field_id  the property name on which the condition applies
-    * @param string $operator  the sql operator
-    * @param string $value     the value which is compared to the property
-    * @param string $field_pattern  the pattern to use on the property (WHERE clause)
-    * @param boolean $foo      parameter for internal use : don't use it or set to false
-    */
+     * adds a condition
+     * @param string $field_id the property name on which the condition applies
+     * @param string $operator the sql operator
+     * @param string $value the value which is compared to the property
+     * @param string $field_pattern the pattern to use on the property (WHERE clause)
+     * @param boolean $foo parameter for internal use : don't use it or set to false
+     * @throws jException
+     */
     function addCondition ($field_id, $operator, $value, $field_pattern = '%s', $foo = false){
         $operator = trim(strtoupper($operator));
         if(preg_match ('/^[^\w\d\s;\(\)]+$/', $operator) ||

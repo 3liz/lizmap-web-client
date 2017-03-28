@@ -172,7 +172,6 @@ class jFormsBuilderHtml extends jFormsBuilderBase {
         if(count($errors)){
             $ctrls = $this->_form->getControls();
             echo '<ul id="'.$this->_name.'_errors" class="jforms-error-list">';
-            $errRequired='';
             foreach($errors as $cname => $err){
                 if(!$this->_form->isActivated($ctrls[$cname]->ref)) continue;
                 if ($err === jForms::ERRDATA_REQUIRED) {
@@ -709,7 +708,7 @@ class jFormsBuilderHtml extends jFormsBuilderBase {
     }
 
     protected function outputRadiobuttons($ctrl, &$attr) {
-        $id = $this->_name.'_'.$ctrl->ref.'_';
+        $id = $this->_name.'_'.$ctrl->ref.'_'; // FIXME should be used?
         $attr['name'] = $ctrl->ref;
         unset($attr['title']);
         $value = $this->_form->getData($ctrl->ref);
@@ -1038,8 +1037,8 @@ class jFormsBuilderHtml extends jFormsBuilderBase {
     }
 
     protected function outputCaptcha($ctrl, &$attr) {
-        $ctrl->initExpectedValue();
-        echo '<span class="jforms-captcha-question">',htmlspecialchars($ctrl->question),'</span> ';
+        $data = $ctrl->initCaptcha();
+        echo '<span class="jforms-captcha-question">',htmlspecialchars($data['question']),'</span> ';
 
         unset($attr['readonly']);
         $attr['type'] = 'text';
@@ -1088,7 +1087,7 @@ class jFormsBuilderHtml extends jFormsBuilderBase {
         $id = $this->_name.'_'.$ctrl->ref.'_';
         $attr['type']='radio';
         unset($attr['class']);
-        $readonly = (isset($attr['readonly']) && $attr['readonly']!='');
+        $readonly = (isset($attr['readonly']) && $attr['readonly']!=''); // FIXME should be used?
 
         $this->jsChoiceInternal($ctrl);
         $this->jsContent .="c2 = c;\n";
@@ -1149,11 +1148,6 @@ class jFormsBuilderHtml extends jFormsBuilderBase {
 
     protected function outputHelp($ctrl) {
         if ($ctrl->help) {
-            if($ctrl->type == 'checkboxes' || ($ctrl->type == 'listbox' && $ctrl->multiple)){
-                $name=$ctrl->ref.'[]';
-            }else{
-                $name=$ctrl->ref;
-            }
             // additionnal &nbsp, else background icon is not shown in webkit
             echo '<span class="jforms-help" id="'. $this->_name.'_'.$ctrl->ref.'-help">&nbsp;<span>'.htmlspecialchars($ctrl->help).'</span></span>';
         }

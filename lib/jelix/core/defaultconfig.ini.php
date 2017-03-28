@@ -56,6 +56,12 @@ disableInstallers = off
 ; if set to on, all modules have an access=2, and access values in [modules] are not readed (not recommanded)
 enableAllModules = off
 
+; set it to true if you want to parse JSON content-type in jClassicRequest
+; (as in the futur Jelix 1.7) or keep false if you want to have, as usual, JSON
+; content as a string in the __httpbody parameter.
+; this flag will be removed in Jelix 1.7
+enableRequestBodyJSONParsing = false
+
 [modules]
 ; modulename.access = x   where x : 0= unused/forbidden, 1 = private access, 2 = public access
 
@@ -372,6 +378,15 @@ controls.datetime.months.labels = "names"
 ; define the default config for datepickers in jforms
 datepicker = default
 
+; default captcha type
+captcha = simple
+
+captcha.simple.validator=\jelix\forms\Captcha\SimpleCaptchaValidator
+captcha.simple.widgettype=captcha
+
+captcha.recaptcha.validator=\jelix\forms\Captcha\ReCaptchaValidator
+captcha.recaptcha.widgettype=recaptcha
+
 [jforms_builder_html]
 ;control type = plugin name
 
@@ -457,3 +472,15 @@ jelix.cache=cache/
 ; key to use to crypt the password in the cookie
 ; Warning: the value of this parameter should be stored into localconfig.ini.php
 persistant_crypt_key=
+
+[recaptcha]
+; sitekey and secret should be set only into localconfig.ini.php!
+sitekey=
+secret=
+
+; see https://developers.google.com/recaptcha/docs/display to know the meaning
+; of these configuration parameters.
+theme=
+type=
+size=
+tabindex=

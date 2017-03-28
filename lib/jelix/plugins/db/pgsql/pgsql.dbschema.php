@@ -17,6 +17,41 @@
  */
 class pgsqlDbTable extends jDbTable {
 
+    protected function _loadColumns(){
+        throw new Exception("Not Implemented");
+    }
+
+    protected function _alterColumn(jDbColumn $old, jDbColumn $new){
+        throw new Exception("Not Implemented");
+    }
+
+    protected function _addColumn(jDbColumn $new){
+        throw new Exception("Not Implemented");
+    }
+
+    protected function _loadIndexesAndKeys(){
+        throw new Exception("Not Implemented");
+    }
+
+    protected function _createIndex(jDbIndex $index){
+        throw new Exception("Not Implemented");
+    }
+
+    protected function _dropIndex(jDbIndex $index){
+        throw new Exception("Not Implemented");
+    }
+
+    protected function _loadReferences(){
+        throw new Exception("Not Implemented");
+    }
+
+    protected function _createReference(jDbReference $ref){
+        throw new Exception("Not Implemented");
+    }
+
+    protected function _dropReference(jDbReference $ref){
+        throw new Exception("Not Implemented");
+    }
 }
 
 /**
@@ -29,23 +64,23 @@ class pgsqlDbSchema extends jDbSchema {
     /**
      *
      */
-    function createTable($name, $columns, $primaryKeys, $attributes=array()) {
-        
+    function _createTable($name, $columns, $primaryKeys, $attributes=array()) {
+        throw new Exception("Not Implemented");
     }
 
     /**
      * @return jDbTable
      */
     function getTable($name) {
-        return  new pgsqlDbTable($this->schema->getConn()->prefixTable($name), $this);
+        return  new pgsqlDbTable($this->getConn()->prefixTable($name), $this);
     }
 
-    public function getTables () {
+    protected function _getTables () {
         $results = array ();
         $sql = "SELECT tablename FROM pg_tables
                   WHERE schemaname NOT IN ('pg_catalog', 'information_schema')
                   ORDER BY tablename";
-        $rs = $this->schema->getConn()->query ($sql);
+        $rs = $this->getConn()->query ($sql);
         while ($line = $rs->fetch()){
             $results[] = new pgsqlDbTable($line->tablename, $this);
         }

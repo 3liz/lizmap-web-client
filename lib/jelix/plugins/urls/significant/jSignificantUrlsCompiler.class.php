@@ -73,7 +73,6 @@ class jSignificantUrlsCompiler implements jISimpleCompiler{
     public function compile($aSelector) {
 
         $sourceFile = $aSelector->getPath();
-        $cachefile = $aSelector->getCompiledFilePath();
 
         $xml = simplexml_load_file ($sourceFile);
         if (!$xml) {
@@ -192,7 +191,7 @@ class jSignificantUrlsCompiler implements jISimpleCompiler{
             $createUrlInfosDedicatedModules = array();
             $parseContent = "<?php \n";
 
-            foreach ($tag->children() as $tagname => $url) {
+            foreach ($tag->children() as $tagnameChild => $url) {
                 $u = clone $this->defaultUrl;
                 $u->module = (string)$url['module'];
 
@@ -486,7 +485,8 @@ class jSignificantUrlsCompiler implements jISimpleCompiler{
     /**
      * @param simpleXmlElement $url
      * @param significantUrlInfoParsing $uInfo
-    */
+     * @throws Exception
+     */
     protected function readInclude($url, $uInfo) {
 
         $file = (string)$url['include'];

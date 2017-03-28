@@ -17,9 +17,12 @@
  */
 class jVersionComparator {
 
-  /**
-   * @return int  0 if equal, -1 if $version1 < $version2, 1 if $version1 > $version2
-   */
+    /**
+     * @param $version1
+     * @param $version2
+     * @return int 0 if equal, -1 if $version1 < $version2, 1 if $version1 > $version2
+     * @throws Exception
+     */
     static function compareVersion($version1, $version2) {
 
         if ($version1 == $version2)
@@ -125,7 +128,11 @@ class jVersionComparator {
      * create a string representing a version number in a manner that it could
      * be easily to be compared with an other serialized version. useful to
      * do comparison in a database for example.
+     * @param string $version
      * @param int $starReplacement 1 if it should replace by max value, 0 for min value
+     * @param int $pad
+     * @return string the serialized version
+     * @throws Exception
      */
     static public function serializeVersion($version, $starReplacement = 0, $pad=4) {
         $vers = explode('.', $version);

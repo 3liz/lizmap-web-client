@@ -7,7 +7,7 @@
 
       <div id="attribute-layer-list"></div>
 
-      <b>Options</b>
+      <b>{@view~map.attributeLayers.options.title@}</b>
       {formfull $form, 'view~default:index', array(), 'htmlbootstrap'}
     </div>
 

@@ -28,6 +28,10 @@ class RootWidget implements ParentWidgetInterface {
     }
 
     //------ Other methods
+
+    /**
+     * @param \jelix\forms\Builder\HtmlBuilder $builder
+     */
     public function outputHeader($builder) {
         $jsVarName = $builder->getjFormsJsVarName();
         echo '<script type="text/javascript">

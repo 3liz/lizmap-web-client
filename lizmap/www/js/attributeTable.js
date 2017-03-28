@@ -19,6 +19,11 @@ var lizAttributeTable = function() {
                 lizMap.lizmapLayerFilterActive = true;
             }
 
+            var limitDataToBbox = false;
+            if ( 'limitDataToBbox' in config.options && config.options.limitDataToBbox == 'True'){
+                limitDataToBbox = true;
+            }
+
             if (!('attributeLayers' in config))
                 return -1;
 
@@ -138,7 +143,7 @@ var lizAttributeTable = function() {
 
                     var title = config.layers[ attributeLayersDic[ cleanName ] ][ 'title' ];
                     tHtml+= '<tr>';
-                    tHtml+= '   <td>' + title + '</td><td><button value=' + cleanName + ' class="btn-open-attribute-layer">Detail</button></td>';
+                    tHtml+= '   <td>' + title + '</td><td><button value=' + cleanName + ' class="btn btn-open-attribute-layer">'+ lizDict['attributeLayers.toolbar.btn.detail'] +'</button></td>';
                     tHtml+= '</tr>';
                 }
 
@@ -149,15 +154,35 @@ var lizAttributeTable = function() {
                 $('button.btn-open-attribute-layer')
                 .click(function(){
                     var cleanName = $(this).val();
+
+                    // Disable attribute table if limitDataToBbox and layer not visible in map
+                    if(limitDataToBbox){
+                        var layer = lizMap.map.getLayersByName( cleanName )[0];
+                        var ms = lizMap.map.getScale();
+                        if( layer ) {
+                            var lvisibility = layer.maxScale < ms && ms < layer.minScale;
+                            if( !lvisibility ){
+                                var msg = lizDict['attributeLayers.msg.layer.not.visible'];
+                                lizMap.addMessage( msg, 'info', true).attr('id','lizmap-attribute-message');
+                                return false;
+                            }
+                        }
+                    }
+
+                    // Add Div if not already there
                     var lname = attributeLayersDic[cleanName];
                     if( !$('#nav-tab-attribute-layer-' + cleanName ).length )
                         addLayerDiv(lname);
-                        var aTable = '#attribute-layer-table-'+cleanName;
+                    var aTable = '#attribute-layer-table-'+cleanName;
+
+                    // Get data and fill attribute table
                     var dFilter = null;
                     getAttributeFeatureData( lname, dFilter, null, function(someName, someNameFilter, someNameFeatures, someNameAliases){
                         buildLayerAttributeDatatable( someName, aTable, someNameFeatures, someNameAliases );
                     });
+
                     $('#nav-tab-attribute-layer-' + cleanName + ' a' ).tab('show');
+
                     return false;
                 })
                 .hover(
@@ -317,6 +342,16 @@ var lizAttributeTable = function() {
                 }
 
 
+                // Refresh button (if limitDataToBbox is true)
+                if( limitDataToBbox
+                    && config.layers[lname]['geometryType'] != 'none'
+                    && config.layers[lname]['geometryType'] != 'unknown'
+                ){
+                    // Add button to refresh table
+                    html+= '    <button class="btn-refresh-table btn btn-mini" value="' + cleanName + '" title="'+lizDict['attributeLayers.toolbar.btn.refresh.table.tooltip']+'">'+lizDict['attributeLayers.toolbar.btn.refresh.table.title']+'</button>';
+
+                }
+
                 // Get children content
                 var childHtml = getChildrenHtmlContent( lname );
                 var alc='';
@@ -408,6 +443,46 @@ var lizAttributeTable = function() {
                     $('#attributeLayers-tabs a:last').tab('show'); // Select first tab
                     $(tabContentId).remove(); //remove respective tab content
                 });
+
+                if(limitDataToBbox){
+                    $('#attribute-layer-'+ cleanName + ' button.btn-refresh-table')
+                    .click(function(){
+                        // Reset button tooltip & style
+                        $(this)
+                        .attr('data-original-title', lizDict['attributeLayers.toolbar.btn.refresh.table.tooltip'])
+                        .removeClass('btn-warning');
+
+                        // Disable if the layer is not visible
+                        var layer = lizMap.map.getLayersByName( cleanName )[0];
+                        var ms = lizMap.map.getScale();
+                        if( layer ) {
+                            var lvisibility = layer.maxScale < ms && ms < layer.minScale;
+                            if( !lvisibility ){
+                                var msg = lizDict['attributeLayers.msg.layer.not.visible'];
+                                lizMap.addMessage( msg, 'info', true).attr('id','lizmap-attribute-message');
+                                return false;
+                            }
+                        }else{
+                            // do nothing if no layer found
+                            return false;
+                        }
+
+                        // Refresh table
+                        var aTable = '#attribute-layer-table-'+cleanName;
+                        var dFilter = null;
+                        $('#attribute-layer-main-'+cleanName+' > div.attribute-layer-content').hide();
+                        getAttributeFeatureData( lname, dFilter, null, function(someName, someNameFilter, someNameFeatures, someNameAliases){
+                            buildLayerAttributeDatatable( someName, aTable, someNameFeatures, someNameAliases );
+                            $('#attribute-layer-main-'+cleanName+' > div.attribute-layer-content').show();
+                        });
+
+                        return false;
+                    })
+                    .hover(
+                        function(){ $(this).addClass('btn-primary'); },
+                        function(){ $(this).removeClass('btn-primary'); }
+                    );
+                }
 
                 if( childHtml ){
                     $('#attribute-layer-'+ cleanName + ' button.btn-toggle-children')
@@ -1220,7 +1295,7 @@ var lizAttributeTable = function() {
                             }
                         else
                             colConf['mRender'] = function( data, type, full, meta ){
-                                if( !data )
+                                if( !data || !( typeof data === 'string') )
                                     return data;
                                 if( data.substr(0,6) == 'media/' || data.substr(0,6) == '/media/' ){
                                     var rdata = data;
@@ -1618,24 +1693,37 @@ var lizAttributeTable = function() {
 
                 $('body').css('cursor', 'wait');
                 var geometryName = 'extent';
-                var getFeatureUrlData = lizMap.getVectorLayerWfsUrl( aName, aFilter, aFeatureID, geometryName );
+                var getFeatureUrlData = lizMap.getVectorLayerWfsUrl( aName, aFilter, aFeatureID, geometryName, limitDataToBbox );
                 $.get( getFeatureUrlData['url'], getFeatureUrlData['options'], function(data) {
                     if( !('featureCrs' in aConfig) )
                         aConfig['featureCrs'] = null;
-                    if( aConfig.crs == 'EPSG:4326' );
+                    if( aConfig.crs == 'EPSG:4326' )
                         aConfig['featureCrs'] = 'EPSG:4326';
+
                     // verifying the feature CRS
                     if( !aConfig.featureCrs && data.features.length != 0) {
-                        lizMap.loadProjDefinition( aConfig.featureCrs, function( aProj ) {
+                        lizMap.loadProjDefinition( aConfig.crs, function( aProj ) {
                             var dataBounds = OpenLayers.Bounds.fromArray(data.features[0].bbox);
-                            if( dataBounds.getWidth()*dataBounds.getHeight() < 360*180 ) {
-                                var tDataBounds = dataBounds.clone().transform(aProj, 'EPSG:4326');
-                                if ( tDataBounds.getWidth()*tDataBounds.getHeight() < 0.0000028649946082102277 ) {
-                                    if( atConfig ){
-                                        var atBounds = OpenLayers.Bounds.fromArray(atConfig.bbox);
-                                        atConfig.bbox = atBounds.transform(aConfig['featureCrs'], 'EPSG:4326').toArray();
+                            if( data.features.length > 1 && data.features[1].bbox ) {
+                                dataBounds.extend( OpenLayers.Bounds.fromArray(data.features[1].bbox) );
+                            }
+                            else if( data.features.length > 2 && data.features[2].bbox ) {
+                                dataBounds.extend( OpenLayers.Bounds.fromArray(data.features[2].bbox) );
+                            }
+
+                            var worldBounds = OpenLayers.Bounds.fromArray([-180,-90,180,90]);
+                            if( worldBounds.containsBounds( dataBounds ) ) {
+                                var map = lizMap.map;
+                                var mapBounds = map.maxExtent.clone().transform(map.getProjection(), 'EPSG:4326');
+                                if( mapBounds.intersectsBounds( dataBounds ) ) {
+                                    var tDataBounds = dataBounds.clone().transform(aProj, 'EPSG:4326');
+                                    if ( tDataBounds.getWidth()*tDataBounds.getHeight() < 0.0000028649946082102277 ) {
+                                        if( atConfig ){
+                                            var atBounds = OpenLayers.Bounds.fromArray(atConfig.bbox);
+                                            atConfig.bbox = atBounds.transform(aConfig['featureCrs'], 'EPSG:4326').toArray();
+                                        }
+                                        aConfig['featureCrs'] = 'EPSG:4326';
                                     }
-                                    aConfig['featureCrs'] = 'EPSG:4326';
                                 }
                             }
 
@@ -1648,6 +1736,8 @@ var lizAttributeTable = function() {
                     if ('alias' in aConfig && aConfig['alias']) {
                         if( aCallBack)
                             aCallBack( aName, aFilter, data.features, aConfig['alias'] );
+
+                        $('body').css('cursor', 'auto');
                     } else
                         $.get(service, {
                             'SERVICE':'WFS'
@@ -1812,27 +1902,11 @@ var lizAttributeTable = function() {
                 var layerConfig = config.layers[featureType];
                 var featureId = featureType + '.' + fid;
                 var proj = new OpenLayers.Projection(config.layers[featureType].crs);
+                if( config.layers[featureType].featureCrs )
+                    proj = new OpenLayers.Projection(config.layers[featureType].featureCrs);
                 getLayerFeature(featureType, fid, function(feat) {
                     zoomToOlFeature( feat, proj, zoomAction );
                 });
-                /*
-                var feat = null;
-
-                // Use already retrieved feature
-                if( layerConfig['features'] && fid in layerConfig['features'] ){
-                    feat = layerConfig['features'][fid];
-                    zoomToOlFeature( feat, proj, zoomAction );
-                }
-                // Or get the feature via WFS in needed
-                else{
-                    getAttributeFeatureData(featureType, null, featureId, function( aName, aFilter, cFeatures, cAliases ){
-                        if( cFeatures.length == 1 ){
-                            feat = cFeatures[0];
-                            zoomToOlFeature( feat, proj, zoomAction );
-                        }
-                    });
-                }
-                * */
             }
 
             function getLayerFeature( featureType, fid, aCallback ){
@@ -1909,11 +1983,11 @@ var lizAttributeTable = function() {
                         && lizMap.cleanName( featureType ) == tableLayerName
                     ){
 
-                        var sIds = []
-                        var oTable = $( this ).dataTable();
-                        var filteredrows = oTable.$( 'tr', {"filter":"applied"} );
-                        for ( var i = 0; i < filteredrows.length; i++ ) {
-                            sIds.push( filteredrows[i].id );
+                        var sIds = [];
+                        var rTable = $(this).DataTable();
+                        var filteredrowids = rTable.rows( {"filter":"applied"} ).ids();
+                        for ( var i = 0; i < filteredrowids.length; i++ ) {
+                            sIds.push( filteredrowids[i] );
                         }
                         config.layers[featureType]['selectedFeatures'] = sIds;
                         hasChanged = true;
@@ -2067,18 +2141,19 @@ var lizAttributeTable = function() {
 
             // Get features to refresh attribute table AND build children filters
             var geometryName = 'extent';
-            var getFeatureUrlData = lizMap.getVectorLayerWfsUrl( typeName, aFilter, null, geometryName );
+            var getFeatureUrlData = lizMap.getVectorLayerWfsUrl( typeName, aFilter, null, geometryName, limitDataToBbox );
 
             getAttributeFeatureData(typeName, aFilter, null, function(aName, aNameFilter, aNameFeatures, aNameAliases ){
 
                 // **0** Prepare some variable. e.g. reset features stored in the layer config
-                config.layers[typeName]['features'] = [];
+                var layerConfig = config.layers[typeName];
+                layerConfig['features'] = [];
                 var foundFeatures = {};
 
                 // **1** Get children info
                 var cFeatures = aNameFeatures;
                 var dataLength = cFeatures.length;
-                var typeNameId = config.layers[typeName]['id'];
+                var typeNameId = layerConfig['id'];
                 var typeNamePkey = config.attributeLayers[typeName]['primaryKey'];
                 var typeNamePkeyValues = [];
                 var typeNameChildren = {};
@@ -2216,9 +2291,15 @@ var lizAttributeTable = function() {
 
                     // Add primary keys values to build the WMS filter ( to be able to redraw layer)
                     var pk = feat.properties[typeNamePkey];
-                    var intRegex = /^[0-9]+$/;
-                    if( !( intRegex.test(pk) ) )
+                    if( ('types' in layerConfig)
+                     && (typeNamePkey in layerConfig.types)
+                     && layerConfig.types[typeNamePkey] == 'string') {
                         pk = " '" + pk + "' ";
+                    } else {
+                        var intRegex = /^[0-9]+$/;
+                        if( !( intRegex.test(pk) ) )
+                            pk = " '" + pk + "' ";
+                    }
                     typeNamePkeyValues.push( pk );
 
                     // Reset filteredFeatures with found features
@@ -2244,8 +2325,8 @@ var lizAttributeTable = function() {
                 }
 
                 // **3** Apply filter to the typeName and redraw if necessary
-                config.layers[typeName]['features'] = foundFeatures;
-                config.layers[typeName]['alias'] = aNameAliases;
+                layerConfig['features'] = foundFeatures;
+                layerConfig['alias'] = aNameAliases;
                 var layerN = attributeLayersDic[lizMap.cleanName(typeName)];
 
                 var lFilter = null;
@@ -2261,7 +2342,7 @@ var lizAttributeTable = function() {
                 if( aFilter )
                     var lFilter = layerN + ':"' + typeNamePkey + '" IN ( ' + typeNamePkeyValues.join( ' , ' ) + ' ) ';
 
-                config.layers[typeName]['request_params']['filter'] = lFilter;
+                layerConfig['request_params']['filter'] = lFilter;
 
                 // Add filter to openlayers layer
                 if( layer
@@ -2275,8 +2356,8 @@ var lizAttributeTable = function() {
 
                 // Redraw openlayers layer
                 if( layer
-                    && config.layers[typeName]['geometryType'] != 'none'
-                    && config.layers[typeName]['geometryType'] != 'unknown'
+                    && layerConfig['geometryType'] != 'none'
+                    && layerConfig['geometryType'] != 'unknown'
                 ){
                     layer.redraw(true);
                 }
@@ -2434,9 +2515,12 @@ var lizAttributeTable = function() {
                     && config.layers[featureType]['selectedFeatures'].length
                 ) {
                     layer.params['SELECTION'] = layerN + ':' + config.layers[featureType]['selectedFeatures'].join();
+                    config.layers[featureType]['request_params']['selection'] = layer.params['SELECTION'];
                 }
-                else
+                else {
                     delete layer.params['SELECTION'];
+                    config.layers[featureType]['request_params']['selection'] = null;
+                }
 
                 // Build data to update layer drawing and other components
                 var typeNamePile = [ featureType ];
@@ -2462,9 +2546,12 @@ var lizAttributeTable = function() {
                     && config.layers[featureType]['selectedFeatures'].length
                 ) {
                     layer.params['SELECTION'] = featureType + ':' + config.layers[featureType]['selectedFeatures'].join();
+                    config.layers[featureType]['request_params']['selection'] = layer.params['SELECTION'];
                 }
-                else
+                else {
                     delete layer.params['SELECTION'];
+                    config.layers[featureType]['request_params']['selection'] = null;
+                }
 
                 // Redraw openlayers layer
                 if( config.layers[featureType]['geometryType'] != 'none'
@@ -2992,7 +3079,7 @@ var lizAttributeTable = function() {
                         var relations = lizMap.config.relations[layerId];
                         var featureType = getLayerConfig[0];
                         var featureId = featureType + '.' + fid;
-                        if ( relations.length > 1 ) {
+                        if ( relations.length > 0 ) {
                             var childHtml = getChildrenHtmlContent( featureType );
                             var html = '';
                             // Add children content
@@ -3120,6 +3207,10 @@ var lizAttributeTable = function() {
 
     var selectionLayersDic = {};
     for (var lname in config.attributeLayers) {
+        if( 'hideLayer' in config.attributeLayers[lname]
+           && config.attributeLayers[lname]['hideLayer'] == 'True'){
+            continue;
+        }
         selectionLayersDic[lizMap.cleanName(lname)] = lname;
     }
 
@@ -3144,6 +3235,19 @@ var lizAttributeTable = function() {
 
     $('#selectiontool-layer-list').html(options);
 
+
+    // List of WFS format
+    var exportFormats = lizMap.getVectorLayerResultFormat();
+    var exportFormatsLi = '';
+    for ( var i=0, len=exportFormats.length; i<len; i++ ) {
+        var format = exportFormats[i].tagName;
+        if ( format != 'GML2' && format != 'GML3' && format != 'GEOJSON' ) {
+            exportFormatsLi += '        <li><a href="#" class="btn-export-selection">'+format+'</a></li>';
+        }
+    }
+    if( exportFormatsLi.length){
+        $('#selectiontool-export-formats').append(exportFormatsLi);
+    }
 
     // Style des outils de dessin et sélection
     // -------------------------------------------------------------------------
@@ -3238,16 +3342,39 @@ var lizAttributeTable = function() {
             }
             //console.log( spatialFilter );
 
-            var getFeatureUrlData = lizMap.getVectorLayerWfsUrl( featureType, spatialFilter, null, null );
+            var getFeatureUrlData = lizMap.getVectorLayerWfsUrl( featureType, spatialFilter, null, null, limitDataToBbox );
+            // add BBox to restrict to geom bbox
+            var geomBounds = feature.geometry.clone().transform(lizMap.map.getProjection(),aProj).getBounds();
+            getFeatureUrlData['options']['BBOX'] = geomBounds.toBBOX();
+            // get features
             $.post( getFeatureUrlData['url'], getFeatureUrlData['options'], function(result) {
                     var gFormat = new OpenLayers.Format.GeoJSON({
                         externalProjection: lConfig.crs,
                         internalProjection: lizMap.map.getProjection()
                     });
                     var tfeatures = gFormat.read( result );
-                    config.layers[featureType]['selectedFeatures'] = $.map(tfeatures, function(feat){
+                    var sfIds = $.map(tfeatures, function(feat){
                         return feat.fid.split('.')[1];
                     });
+                    var stType = $('#selectiontool-type-buttons button.btn.active').val();
+                    if( stType == 'plus' ) {
+                        sfIds = config.layers[featureType]['selectedFeatures'].concat(sfIds);
+                        for(var i=0; i<sfIds.length; ++i) {
+                            for(var j=i+1; j<sfIds.length; ++j) {
+                                if(sfIds[i] === sfIds[j])
+                                    sfIds.splice(j--, 1);
+                            }
+                        }
+                    } else if( stType == 'minus' ) {
+                        var asfIds = config.layers[featureType]['selectedFeatures'].concat([]);
+                        for(var i=0; i<sfIds.length; ++i) {
+                            var asfIdIdx = asfIds.indexOf( sfIds[i] );
+                            if( asfIdIdx != -1 )
+                                asfIds.splice(asfIdIdx, 1);
+                        }
+                        sfIds = asfIds;
+                    }
+                    config.layers[featureType]['selectedFeatures'] = sfIds;
                     lizMap.events.triggerEvent(
                         "layerSelectionChanged",
                         {
@@ -3257,6 +3384,7 @@ var lizAttributeTable = function() {
                         }
                     );
                     queryLayer.destroyFeatures();
+                    $('#selectiontool-query-deactivate').click();
             });
         });
     }
@@ -3304,11 +3432,16 @@ var lizAttributeTable = function() {
         lizMap.map.addControl(queryFreehandLayerCtrl);
         lizMap.controls['selectiontool']['queryFreehandLayerCtrl'] = queryFreehandLayerCtrl;
 
+        $('#selectiontool .btn-selectiontool-clear').click(function(){
+          $('#button-selectiontool').click();
+          return false;
+        });
+
         $('#selectiontool-query-buttons button').tooltip( {
-            placement: 'bottom'
+            placement: 'top'
         } );
         $('#selectiontool-actions button').tooltip( {
-            placement: 'bottom'
+            placement: 'top'
         } );
 
         $('#selectiontool-unselect').click(function(){
@@ -3342,6 +3475,22 @@ var lizAttributeTable = function() {
                 );
                 lizMap.lizmapLayerFilterActive = aName;
             }
+            return false;
+        })
+        .hover(
+            function(){ if(!$(this).hasClass('disabled')) $(this).addClass('btn-primary'); },
+            function(){ $(this).removeClass('btn-primary'); }
+        );
+
+        $('#selectiontool-export-formats a.btn-export-selection').click(function(){
+            if($(this).hasClass('disabled')) return false;
+            var aName = $('#selectiontool-layer-list').val();
+            var eFormat = $(this).text();
+            if( eFormat == 'GML' )
+                eFormat = 'GML3';
+
+            lizMap.exportVectorLayer( aName, eFormat );
+            $('#selectiontool-export').click().blur();
             return false;
         })
         .hover(
@@ -3390,6 +3539,7 @@ var lizAttributeTable = function() {
                     $('#selectiontool-results').html(lizDict['selectiontool.results.none']);
                     $('#selectiontool-unselect').addClass('disabled');
                     $('#selectiontool-filter').addClass('disabled');
+                    $('#selectiontool-export').addClass('disabled');
                 } else {
                     if( selectedFeaturesNumber == 1 )
                         $('#selectiontool-results').html(lizDict['selectiontool.results.one']);
@@ -3397,6 +3547,7 @@ var lizAttributeTable = function() {
                         $('#selectiontool-results').html(lizDict['selectiontool.results.more'].replace('%s',selectedFeaturesNumber));
                     $('#selectiontool-unselect').removeClass('disabled');
                     $('#selectiontool-filter').removeClass('disabled');
+                    $('#selectiontool-export').removeClass('disabled');
                 }
                 if ('filteredFeatures' in config.layers[selectedFeatureType] ) {
                     var filteredFeaturesNumber = config.layers[selectedFeatureType]['filteredFeatures'].length;
@@ -3439,6 +3590,24 @@ var lizAttributeTable = function() {
                 }
             }
         });
+
+        // Map events
+        function warnExtent(){
+            var btitle = lizDict['attributeLayers.toolbar.btn.refresh.table.tooltip.changed'];
+            btitle+= ' ' + lizDict['attributeLayers.toolbar.btn.refresh.table.tooltip'];
+            $('button.btn-refresh-table')
+            .attr('data-original-title', btitle)
+            .addClass('btn-warning')
+            .tooltip()
+            ;
+        }
+        if(limitDataToBbox){
+            lizMap.map.events.on({
+                moveend : function() {
+                    warnExtent();
+                }
+            });
+        }
   }
 
 

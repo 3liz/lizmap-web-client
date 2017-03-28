@@ -39,6 +39,7 @@ class pgsqlDbTools extends jDbTools {
 
       'float'           =>array('real',             'float',    null,       null,       null,     null), //4bytes
       'money'           =>array('money',            'float',    null,       null,       null,     null), //4bytes
+      'smallmoney'      =>array('money',            'float',    null,       null,       null,     null),
       'double precision'=>array('double precision', 'decimal',  null,       null,       null,     null), //8bytes
       'double'          =>array('double precision', 'decimal',  null,       null,       null,     null), //8bytes
       'real'            =>array('real',             'float',    null,       null,       null,     null), //8bytes
@@ -53,6 +54,9 @@ class pgsqlDbTools extends jDbTools {
       'date'            =>array('date',       'date',       null,       null,       10,    10),
       'time'            =>array('time',       'time',       null,       null,       8,     8),
       'datetime'        =>array('datetime',   'datetime',   null,       null,       19,    19),
+      'datetime2'       =>array('datetime',   'datetime',   null,       null,       19,    27), // sqlsrv / 9999-12-31 23:59:59.9999999
+      'datetimeoffset'  =>array('datetime',   'datetime',   null,       null,       19,    34), // sqlsrv / 9999-12-31 23:59:59.9999999 +14:00
+      'smalldatetime'   =>array('datetime',   'datetime',   null,       null,       19,    19), // sqlsrv / 2079-06-06 23:59
       'timestamp'       =>array('datetime',   'datetime',   null,       null,       19,    19), // oracle/pgsql timestamp
       'utimestamp'      =>array('timestamp',  'integer',    0,          2147483647, null,  null), // mysql timestamp
       'year'            =>array('year',       'year',       null,       null,       2,     4),
@@ -71,6 +75,7 @@ class pgsqlDbTools extends jDbTools {
 
       'tinytext'        =>array('text',   'text',       null,       null,       0,     255),
       'text'            =>array('text',   'text',       null,       null,       0,     0),
+      'ntext'           =>array('text',   'text',       null,       null,       0,     0),
       'mediumtext'      =>array('text',   'text',       null,       null,       0,     0),
       'longtext'        =>array('text',   'text',       null,       null,       0,     0),
       'long'            =>array('text',   'text',       null,       null,       0,     0),
@@ -89,10 +94,12 @@ class pgsqlDbTools extends jDbTools {
       'varbinary'       =>array('bytea',  'varbinary',   null,       null,       0,     255),
       'raw'             =>array('bytea',  'varbinary',   null,       null,       0,     2000),
       'long raw'        =>array('bytea',  'varbinary',   null,       null,       0,     0),
+      'image'           =>array('bytea',  'varbinary',   null,       null,       0,     0),
 
       'enum'            =>array('varchar',    'varchar',    null,       null,       0,     65535),
       'set'             =>array('varchar',    'varchar',    null,       null,       0,     65535),
       'xmltype'         =>array('varchar',    'varchar',    null,       null,       0,     65535),
+      'xml'             =>array('text',       'text',       null,       null,       0,     0),
 
       'point'           =>array('point',    'varchar',    null,       null,       0,     16),
       'line'            =>array('line',     'varchar',    null,       null,       0,     32),
@@ -128,15 +135,15 @@ class pgsqlDbTools extends jDbTools {
    }
 
     /**
-    * retrieve the list of fields of a table
-    * @param string $tableName the name of the table
-    * @param string $sequence  the sequence used to auto increment the primary key
-    * @return   array    keys are field names and values are jDbFieldProperties objects
-    */
+     * retrieve the list of fields of a table
+     * @param string $tableName the name of the table
+     * @param string $sequence the sequence used to auto increment the primary key
+     * @return array keys are field names and values are jDbFieldProperties objects
+     * @throws Exception
+     */
     public function getFieldList ($tableName, $sequence='') {
         $tableName = $this->_conn->prefixTable($tableName);
-        $results = array ();
-        
+
         // get table informations
         $sql ='SELECT oid, relhaspkey, relhasindex FROM pg_class WHERE relname = \''.$tableName.'\'';
         $rs = $this->_conn->query ($sql);

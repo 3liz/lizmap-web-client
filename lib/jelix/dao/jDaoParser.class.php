@@ -172,7 +172,12 @@ class jDaoParser {
             throw new jDaoXmlException ($this->selector, 'datasource.missing');
         }
     }
-    
+
+    /**
+     * @param simpleXmlElement $xml
+     * @param jDbTools $tools
+     * @throws jDaoXmlException
+     */
     protected function parseRecord($xml, $tools) {
 
         //add the record properties
@@ -240,6 +245,8 @@ class jDaoParser {
 
     /**
     * parse a join definition
+     * @param integer $typetable
+     * @param simpleXmlElement $tabletag
     */
     private function _parseTable ($typetable, $tabletag){
         $infos = $this->getAttr($tabletag, array('name','realname','primarykey','onforeignkey'));
@@ -342,7 +349,7 @@ class jDaoParser {
 
     /**
     * list of code name of foreign table with a outer join
-    * @var array  list of array(table code name, 0)
+    * @return array  list of array(table code name, 0)
     */
     public function getOuterJoins(){  return $this->_ojoins;}
 

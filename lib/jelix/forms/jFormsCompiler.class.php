@@ -24,8 +24,6 @@ class jFormsCompiler implements jISimpleCompiler {
 
     public function compile($selector){
 
-        $sel = clone $selector;
-
         $this->sourceFile = $selector->getPath();
 
         // load XML file

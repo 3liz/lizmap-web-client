@@ -48,7 +48,7 @@ class secret_htmlFormWidget extends \jelix\forms\HtmlWidget\WidgetBase {
         if($maxl !== null)
             $attr['maxlength'] = $maxl;
         $attr['type'] = 'password';
-        $attr['value'] = $this->getValue($this->ctrl);
+        $attr['value'] = $this->getValue();
         echo '<input';
         $this->_outputAttr($attr);
         echo "/>\n";

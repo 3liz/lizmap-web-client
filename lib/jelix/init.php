@@ -16,7 +16,7 @@
  * Version number of Jelix
  * @name  JELIX_VERSION
  */
-define ('JELIX_VERSION', '1.6.12pre.3323');
+define ('JELIX_VERSION', '1.6.14');
 
 /**
  * base of namespace path used in xml files of jelix
@@ -71,10 +71,10 @@ require (JELIX_LIB_CORE_PATH . 'jIncluder.class.php');
 require (JELIX_LIB_CORE_PATH . 'jSession.class.php');
 
 /**
- * contains path for __autoload function
+ * contains path for the jelix_autoload function
  * @global array $gLibPath
  * @name $gLibPath
- * @see __autoload()
+ * @see jelix_autoload()
  */
 $GLOBALS['gLibPath']=array('Config'=>JELIX_LIB_PATH.'core/',
  'Db'=>JELIX_LIB_PATH.'db/', 'Dao'=>JELIX_LIB_PATH.'dao/',

@@ -62,6 +62,7 @@ class jCrypt {
      * @param string $key the key used to encrypt string. If not given, use
      *      the key indicated in the configuration
      * @return string encrypted string
+     * @throws jException
      */
     public static function mcryptEncrypt($string, $key='') {
         if ($key=='')
@@ -83,7 +84,8 @@ class jCrypt {
      * @param string $string the string to decrypt
      * @param string $key the key used to decrypt string. If not given, use
      * the key indicated in the configuration
-     * @return string decrypted string 
+     * @return string decrypted string
+     * @throws jException
      */
     public static function mcryptDecrypt($string,$key=''){
         if($key=='')
@@ -106,6 +108,7 @@ class jCrypt {
      * @param string $key the key used to encrypt/decrypt string (must be >= 8 characters).
      * If not given, use the key indicated in the configuration
      * @return string encrypted/decrypted string
+     * @throws jException
      */
     protected static function simpleCrypt($str,$key=''){
         if($key=='')
@@ -129,10 +132,10 @@ class jCrypt {
 
     /**
      * Get default key in config
-     *
      * @return string
+     * @throws jException
      * @author Hadrien Lanneau <hadrien at over-blog dot com>
-     **/
+     */
     private static function _getDefaultKey() {
         $conf = jApp::config()->jcrypt;
         if (isset($conf['defaultkey']) && $conf['defaultkey'] !='') {
