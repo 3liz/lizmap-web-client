@@ -36,6 +36,18 @@ lizMap.events.on({
         // créer un masque
         $('#btn_localiz_mask').click(function(){
 			maskLayer.params['FILTER'] = 'mask:"oid"'+' = '+"'"+itemMask.oid+"'";
+
+            //console.log(maskLayer.params['FILTER']);
+            lConfig = lizMap.config.layers['mask']
+            if ( !('request_params' in lConfig)) {
+                lConfig['request_params'] = {
+                    'filter': maskLayer.params['FILTER'],
+                    'exp_filter': null,
+                    'selection': null
+                };
+            }
+            lConfig['request_params']['filter'] = maskLayer.params['FILTER'];
+            
             if (! $("button[value='mask']").hasClass("checked"))
                 $("button[value='mask']").click();
             else
