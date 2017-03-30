@@ -3754,9 +3754,9 @@ var lizMap = function() {
         }
       });
 
-      printLayers.reverse();
-      styleLayers.reverse();
-      opacityLayers.reverse();
+      //printLayers.reverse();
+      //styleLayers.reverse();
+      //opacityLayers.reverse();
 
       // Get active baselayer, and add the corresponding QGIS layer if needed
       var activeBaseLayerName = map.baseLayer.name;
