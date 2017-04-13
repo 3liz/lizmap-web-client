@@ -211,18 +211,14 @@ class lizmapProject{
         # get WMS max width
         if (property_exists($qgs_xml->properties, 'WMSMaxWidth'))
             $this->data['wmsMaxWidth'] = (int)$qgs_xml->properties->WMSMaxWidth;
-        else
-            $this->data['wmsMaxWidth'] = 1500;
         if( !$this->data['wmsMaxWidth'] )
-            $this->data['wmsMaxWidth'] = 1500;
+            unset($this->data['wmsMaxWidth']);
 
         # get WMS max height
         if (property_exists($qgs_xml->properties, 'WMSMaxHeight'))
             $this->data['wmsMaxHeight'] = (int)$qgs_xml->properties->WMSMaxHeight;
-        else
-            $this->data['wmsMaxHeight'] = 1500;
         if( !$this->data['wmsMaxHeight'] )
-            $this->data['wmsMaxHeight'] = 1500;
+            unset($this->data['wmsMaxHeight']);
 
         # get WMS getCapabilities full URL
         $this->data['wmsGetCapabilitiesUrl'] = jUrl::getFull(
@@ -1005,8 +1001,15 @@ class lizmapProject{
         }
 
         // Add WMS max width ad height
-        $configJson->options->wmsMaxWidth = $this->data['wmsMaxWidth'];
-        $configJson->options->wmsMaxHeight = $this->data['wmsMaxHeight'];
+        $services = lizmap::getServices();
+        if ( array_key_exists( 'wmsMaxWidth', $this->data ) )
+            $configJson->options->wmsMaxWidth = $this->data['wmsMaxWidth'];
+        else
+            $configJson->options->wmsMaxWidth = $services->wmsMaxWidth;
+        if ( array_key_exists( 'wmsMaxHeight', $this->data ) )
+            $configJson->options->wmsMaxHeight = $this->data['wmsMaxHeight'];
+        else
+            $configJson->options->wmsMaxWidth = $services->wmsMaxHeight;
 
         // Update config with layer relations
         $relations = $this->getRelations();
