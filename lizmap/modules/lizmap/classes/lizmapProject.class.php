@@ -814,6 +814,13 @@ class lizmapProject{
                                     $ptMap['overviewMap'] = 'map' . (string)$cMapOverview->attributes()->frameMap;
                                 }
                             }
+                            // Grid
+                            $cMapGrids = $cMap->xpath('ComposerMapGrid');
+                            foreach($cMapGrids as $cMapGrid){
+                                if ( $cMapGrid and (string)$cMapGrid->attributes()->show != '0' ){
+                                    $ptMap['grid'] = 'True';
+                                }
+                            }
 
                             $printTemplate['maps'][] = $ptMap;
                         }

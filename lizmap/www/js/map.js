@@ -3598,9 +3598,11 @@ var lizMap = function() {
       //url += '&'+dragCtrl.layout.mapId+':rotation=0';
       var scale = $('#print-scale').val();
       url += '&'+dragCtrl.layout.mapId+':scale='+scale;
-      var gridInterval = getPrintGridInterval( dragCtrl.layout, parseFloat(scale), printCapabilities.scales );
-      url += '&'+dragCtrl.layout.mapId+':grid_interval_x='+gridInterval;
-      url += '&'+dragCtrl.layout.mapId+':grid_interval_y='+gridInterval;
+      if ( 'grid' in pTemplate && pTemplate.grid == 'True' ) {
+          var gridInterval = getPrintGridInterval( dragCtrl.layout, parseFloat(scale), printCapabilities.scales );
+          url += '&'+dragCtrl.layout.mapId+':grid_interval_x='+gridInterval;
+          url += '&'+dragCtrl.layout.mapId+':grid_interval_y='+gridInterval;
+      }
       var printLayers = [];
       var styleLayers = [];
       $.each(map.layers, function(i, l) {
