@@ -2337,9 +2337,11 @@ var lizMap = function() {
       //url += '&'+dragCtrl.layout.mapId+':rotation=0';
       var scale = $('#print-menu select.btn-print-scales').val();
       url += '&'+dragCtrl.layout.mapId+':scale='+scale;
-      var gridInterval = getPrintGridInterval( dragCtrl.layout, parseFloat(scale), printCapabilities.scales );
-      url += '&'+dragCtrl.layout.mapId+':grid_interval_x='+gridInterval;
-      url += '&'+dragCtrl.layout.mapId+':grid_interval_y='+gridInterval;
+      if ( 'grid' in pTemplate && pTemplate.grid == 'True' ) {
+          var gridInterval = getPrintGridInterval( dragCtrl.layout, parseFloat(scale), printCapabilities.scales );
+          url += '&'+dragCtrl.layout.mapId+':grid_interval_x='+gridInterval;
+          url += '&'+dragCtrl.layout.mapId+':grid_interval_y='+gridInterval;
+      }
       var printLayers = [];
       $.each(map.layers, function(i, l) {
         if (l.getVisibility() && l.CLASS_NAME == "OpenLayers.Layer.WMS")
