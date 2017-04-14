@@ -314,6 +314,8 @@ var lizLayerActionButtons = function() {
                 return false;
 
             var itemConfig = lizMap.config.layers[layerName];
+            if( itemConfig.type == 'baselayer' )
+                lizMap.map.zoomToMaxExtent();
             if( itemConfig.type == 'group' || !( 'extent' in itemConfig ) || !( 'crs' in itemConfig ) )
                 return false;
 
@@ -326,7 +328,7 @@ var lizLayerActionButtons = function() {
             );
             var layerProj = new OpenLayers.Projection( itemConfig.crs );
             var mapProj = lizMap.map.getProjectionObject();
-            mapProj = new OpenLayers.Projection( 'EPSG:3857' );
+            //mapProj = new OpenLayers.Projection( 'EPSG:3857' );
             lBounds.transform(
                 layerProj,
                 mapProj

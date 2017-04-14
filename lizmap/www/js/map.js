@@ -3772,7 +3772,7 @@ var lizMap = function() {
                 else
                     printLayers.push(exbl);
                 styleLayers.push('default');
-		opacityLayers.push(255);
+        opacityLayers.push(255);
             }
         }
       }
@@ -6135,6 +6135,7 @@ lizMap.events.on({
         var osmCfg = {
           "name":"osm"
             ,"title":"OpenStreetMap"
+            ,"type":"baselayer"
         };
         evt.config.layers['osm'] = osmCfg;
         evt.baselayers.push(osm);
@@ -6166,6 +6167,7 @@ lizMap.events.on({
         var stamenTonerCfg = {
           "name":"osm-stamen-toner"
             ,"title":"OSM Stamen Toner"
+            ,"type":"baselayer"
         };
         evt.config.layers['osm-stamen-toner'] = stamenTonerCfg;
         evt.baselayers.push(stamenToner);
@@ -6196,6 +6198,7 @@ lizMap.events.on({
         var cyclemapCfg = {
           "name":"osm-cyclemap"
             ,"title":"OSM CycleMap"
+            ,"type":"baselayer"
         };
         evt.config.layers['osm-cyclemap'] = cyclemapCfg;
         evt.baselayers.push(cyclemap);
@@ -6224,6 +6227,7 @@ lizMap.events.on({
           var gsatCfg = {
             "name":"gsat"
               ,"title":"Google Satellite"
+            ,"type":"baselayer"
           };
           evt.config.layers['gsat'] = gsatCfg;
           evt.baselayers.push(gsat);
@@ -6253,6 +6257,7 @@ lizMap.events.on({
           var ghybCfg = {
             "name":"ghyb"
               ,"title":"Google Hybrid"
+            ,"type":"baselayer"
           };
           evt.config.layers['ghyb'] = ghybCfg;
           evt.baselayers.push(ghyb);
@@ -6282,6 +6287,7 @@ lizMap.events.on({
           var gphyCfg = {
             "name":"gphy"
               ,"title":"Google Terrain"
+            ,"type":"baselayer"
           };
           evt.config.layers['gphy'] = gphyCfg;
           evt.baselayers.push(gphy);
@@ -6310,6 +6316,7 @@ lizMap.events.on({
          var gmapCfg = {
            "name":"gmap"
           ,"title":"Google Streets"
+            ,"type":"baselayer"
          };
          evt.config.layers['gmap'] = gmapCfg;
          evt.baselayers.push(gmap);
@@ -6340,6 +6347,7 @@ lizMap.events.on({
           var bmapCfg = {
              "name":"bmap"
             ,"title":"Bing Road"
+            ,"type":"baselayer"
           };
           evt.config.layers['bmap'] = bmapCfg;
           evt.baselayers.push(bmap);
@@ -6369,6 +6377,7 @@ lizMap.events.on({
           var baerialCfg = {
              "name":"baerial"
             ,"title":"Bing Aerial"
+            ,"type":"baselayer"
           };
           evt.config.layers['baerial'] = baerialCfg;
           evt.baselayers.push(baerial);
@@ -6398,6 +6407,7 @@ lizMap.events.on({
           var bhybridCfg = {
              "name":"bhybrid"
             ,"title":"Bing Hybrid"
+            ,"type":"baselayer"
           };
           evt.config.layers['bhybrid'] = bhybridCfg;
           evt.baselayers.push(bhybrid);
@@ -6433,6 +6443,7 @@ lizMap.events.on({
           var ignmapCfg = {
              "name":"ignmap"
             ,"title":"IGN Scan"
+            ,"type":"baselayer"
           };
           evt.config.layers['ignmap'] = ignmapCfg;
           evt.baselayers.push(ignmap);
@@ -6468,6 +6479,7 @@ lizMap.events.on({
           var ignplanCfg = {
              "name":"ignplan"
             ,"title":"IGN Plan"
+            ,"type":"baselayer"
           };
           evt.config.layers['ignplan'] = ignplanCfg;
           evt.baselayers.push(ignplan);
@@ -6503,6 +6515,7 @@ lizMap.events.on({
           var ignphotoCfg = {
              "name":"ignphoto"
             ,"title":"IGN Photos"
+            ,"type":"baselayer"
           };
           evt.config.layers['ignphoto'] = ignphotoCfg;
           evt.baselayers.push(ignphoto);
@@ -6539,6 +6552,7 @@ lizMap.events.on({
           var igncadastralCfg = {
              "name":"igncadastral"
             ,"title":"IGN Cadastre"
+            ,"type":"baselayer"
           };
           evt.config.layers['igncadastral'] = igncadastralCfg;
           evt.baselayers.push(igncadastral);
@@ -6594,10 +6608,6 @@ lizMap.events.on({
             var url = externalService.replace(reg, 'repository='+layerConfig.repository+'&project='+layerConfig.project);
           else
             var url = jQuery.map(externalService, function(element) { return element.replace(reg, 'repository='+layerConfig.repository+'&project='+layerConfig.project) });
-
-
-
-
 
           // creating the base layer
           layerConfig.title = layerConfig.layerTitle
