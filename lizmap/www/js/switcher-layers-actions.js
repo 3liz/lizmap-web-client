@@ -125,10 +125,11 @@ var lizLayerActionButtons = function() {
                     }
                     options = '';
                     for( var st in metadatas.styles ){
+                        st = metadatas.styles[st];
                         if( st == selectedStyle )
-                            options += '<option value="'+metadatas.styles[st]+'" selected>'+metadatas.styles[st]+'</option>';
+                            options += '<option value="'+st+'" selected>'+st+'</option>';
                         else
-                            options += '<option value="'+metadatas.styles[st]+'">'+metadatas.styles[st]+'</option>';
+                            options += '<option value="'+st+'">'+st+'</option>';
                     }
                     if( options != '' ){
                         html+= '        <dt>'+lizDict['layer.metadata.style.title']+'</dt>';
@@ -313,6 +314,8 @@ var lizLayerActionButtons = function() {
                 return false;
 
             var itemConfig = lizMap.config.layers[layerName];
+            if( itemConfig.type == 'baselayer' )
+                lizMap.map.zoomToMaxExtent();
             if( itemConfig.type == 'group' || !( 'extent' in itemConfig ) || !( 'crs' in itemConfig ) )
                 return false;
 
@@ -325,7 +328,7 @@ var lizLayerActionButtons = function() {
             );
             var layerProj = new OpenLayers.Projection( itemConfig.crs );
             var mapProj = lizMap.map.getProjectionObject();
-            mapProj = new OpenLayers.Projection( 'EPSG:3857' );
+            //mapProj = new OpenLayers.Projection( 'EPSG:3857' );
             lBounds.transform(
                 layerProj,
                 mapProj

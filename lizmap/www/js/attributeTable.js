@@ -3395,7 +3395,7 @@ var lizAttributeTable = function() {
          */
         var queryBoxLayerCtrl = new OpenLayers.Control.DrawFeature(queryLayer,
             OpenLayers.Handler.RegularPolygon,
-            { handlerOptions: {sides: 4}, 'featureAdded': onQueryFeatureAdded}
+            { handlerOptions: {sides: 4, irregular: true}, 'featureAdded': onQueryFeatureAdded}
         );
         lizMap.map.addControl(queryBoxLayerCtrl);
         lizMap.controls['selectiontool']['queryBoxLayerCtrl'] = queryBoxLayerCtrl;
