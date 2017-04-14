@@ -2785,7 +2785,7 @@ var lizMap = function() {
       navCtrl.zoomBox.handler.keyMask = navCtrl.zoomBoxKeyMask;
       navCtrl.zoomBox.handler.dragHandler.keyMask = navCtrl.zoomBoxKeyMask;
       navCtrl.handlers.wheel.activate();
-      if( 'edition' in controls && !controls.edition.active )
+      if( !('edition' in controls) || !controls.edition.active )
         controls['featureInfo'].activate();
     });
     $('#navbar button.zoom').click(function(){
@@ -3709,9 +3709,11 @@ var lizMap = function() {
       //url += '&'+dragCtrl.layout.mapId+':rotation=0';
       var scale = $('#print-scale').val();
       url += '&'+dragCtrl.layout.mapId+':scale='+scale;
-      var gridInterval = getPrintGridInterval( dragCtrl.layout, parseFloat(scale), printCapabilities.scales );
-      url += '&'+dragCtrl.layout.mapId+':grid_interval_x='+gridInterval;
-      url += '&'+dragCtrl.layout.mapId+':grid_interval_y='+gridInterval;
+      if ( 'grid' in pTemplate && pTemplate.grid == 'True' ) {
+          var gridInterval = getPrintGridInterval( dragCtrl.layout, parseFloat(scale), printCapabilities.scales );
+          url += '&'+dragCtrl.layout.mapId+':grid_interval_x='+gridInterval;
+          url += '&'+dragCtrl.layout.mapId+':grid_interval_y='+gridInterval;
+      }
       var printLayers = [];
       var styleLayers = [];
       var opacityLayers = [];
@@ -3762,13 +3764,16 @@ var lizMap = function() {
       var activeBaseLayerName = map.baseLayer.name;
       if ( activeBaseLayerName in externalBaselayersReplacement ) {
         var exbl = externalBaselayersReplacement[activeBaseLayerName];
-        if( exbl in config.layers ){
-            if ( 'useLayerIDs' in config.options && config.options.useLayerIDs == 'True' )
-                printLayers.push(config.layers[exbl].id);
-            else
-                printLayers.push(exbl);
-            styleLayers.push('default');
-            opacityLayers.push(255);
+        if( exbl in config.layers ) {
+            var activeBaseLayerConfig = config.layers[exbl];
+            if ( 'id' in activeBaseLayerConfig && 'abstract' in activeBaseLayerConfig ) {
+                if ( 'useLayerIDs' in config.options && config.options.useLayerIDs == 'True' )
+                    printLayers.push(activeBaseLayerConfig.id);
+                else
+                    printLayers.push(exbl);
+                styleLayers.push('default');
+		opacityLayers.push(255);
+            }
         }
       }
 
