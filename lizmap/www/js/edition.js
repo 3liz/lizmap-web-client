@@ -561,7 +561,7 @@ var lizEdition = function() {
                             displayEditionForm( data.result );
                         }
                     });
-                    form.fileupload('add', {fileInput:fileInputs});
+                    form.fileupload('send', {fileInput:fileInputs});
                 } else
                     $.post(form.attr('action'),
                         form.serialize(),
