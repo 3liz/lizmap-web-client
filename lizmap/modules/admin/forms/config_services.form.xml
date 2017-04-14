@@ -13,6 +13,14 @@
   <label locale="admin~admin.form.admin_services.wmsPublicUrlList.label"/>
 </input>
 
+<input ref="wmsMaxWidth" type="integer" required="false" defaultvalue="1500" minvalue="256" maxvalue="256000">
+  <label locale="admin~admin.form.admin_services.wmsMaxWidth.label"/>
+</input>
+
+<input ref="wmsMaxHeight" type="integer" required="false" defaultvalue="1500" minvalue="256" maxvalue="256000">
+  <label locale="admin~admin.form.admin_services.wmsMaxHeight.label"/>
+</input>
+
 <menulist ref="onlyMaps" required="true">
   <label locale="admin~admin.form.admin_services.onlyMaps.label"/>
   <item value="off" selected="true" locale="admin~admin.form.admin_services.off.label"/>

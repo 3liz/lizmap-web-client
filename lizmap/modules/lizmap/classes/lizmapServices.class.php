@@ -22,6 +22,8 @@ class lizmapServices{
       'appName',
       'wmsServerURL',
       'wmsPublicUrlList',
+      'wmsMaxWidth',
+      'wmsMaxHeight',
       'cacheStorageType',
       'cacheExpiration',
       'defaultRepository',
@@ -44,6 +46,8 @@ class lizmapServices{
     private $sensitiveProperties = array(
       'wmsServerURL',
       'wmsPublicUrlList',
+      'wmsMaxWidth',
+      'wmsMaxHeight',
       'cacheStorageType',
       'cacheExpiration',
       'rootRepositories',
@@ -66,6 +70,10 @@ class lizmapServices{
     public $wmsServerURL = '';
     // Public Wms url list
     public $wmsPublicUrlList = '';
+    // Wms max width
+    public $wmsMaxWidth = '1500';
+    // Wms max width
+    public $wmsMaxHeight = '1500';
     // map cache server
     public $cacheStorageType = '';
     // default repository
