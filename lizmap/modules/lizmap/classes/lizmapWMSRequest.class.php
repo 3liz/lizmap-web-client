@@ -78,7 +78,7 @@ class lizmapWMSRequest extends lizmapOGCRequest {
             $matches = array();
             if( preg_match( '@Service>(.*?)</Service@si', $data, $matches) ) {
                 if ( count( $matches ) > 1 ) {
-                    $sUpdate = $matches[1]."<MaxWidth>1500</MaxWidth>\n ";
+                    $sUpdate = $matches[1]."<MaxWidth>3000</MaxWidth>\n ";
                     $data = str_replace($matches[1], $sUpdate, $data);
                 }
             }
@@ -87,7 +87,7 @@ class lizmapWMSRequest extends lizmapOGCRequest {
             $matches = array();
             if( preg_match( '@Service>(.*?)</Service@si', $data, $matches) ) {
                 if ( count( $matches ) > 1 ) {
-                    $sUpdate = $matches[1]."<MaxHeight>1500</MaxHeight>\n ";
+                    $sUpdate = $matches[1]."<MaxHeight>3000</MaxHeight>\n ";
                     $data = str_replace($matches[1], $sUpdate, $data);
                 }
             }
@@ -120,12 +120,16 @@ class lizmapWMSRequest extends lizmapOGCRequest {
     protected function checkMaximumWidthHeight ( ) {
         $maxWidth = $this->project->getData('wmsMaxWidth');
         if( !$maxWidth )
-            $maxWidth = 1500;
+            $maxWidth = $this->services->wmsMaxWidth;
+        if( !$maxWidth )
+            $maxWidth = 3000;
         if( $this->params['width'] > $maxWidth )
             return false;
         $maxHeight = $this->project->getData('wmsMaxHeight');
         if( !$maxHeight )
-            $maxHeight = 1500;
+            $maxHeight = $this->services->wmsMaxHeight;
+        if( !$maxHeight )
+            $maxHeight = 3000;
         if( $this->params['height'] > $maxHeight )
             return false;
         return true;

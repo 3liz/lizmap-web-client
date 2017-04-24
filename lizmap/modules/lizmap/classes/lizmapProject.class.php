@@ -1009,7 +1009,7 @@ class lizmapProject{
         if ( array_key_exists( 'wmsMaxHeight', $this->data ) )
             $configJson->options->wmsMaxHeight = $this->data['wmsMaxHeight'];
         else
-            $configJson->options->wmsMaxWidth = $services->wmsMaxHeight;
+            $configJson->options->wmsMaxHeight = $services->wmsMaxHeight;
 
         // Update config with layer relations
         $relations = $this->getRelations();
