@@ -336,12 +336,12 @@ var lizMap = function() {
    */
  function updateMapSize(){
     //manage WMS max width and height
-    var wmsMaxWidth = 1500;
-    var wmsMaxHeight = 1500;
+    var wmsMaxWidth = 3000;
+    var wmsMaxHeight = 3000;
     if( ('wmsMaxWidth' in config.options) && config.options.wmsMaxWidth )
-        wmsMaxWidth = config.options.wmsMaxWidth;
+        wmsMaxWidth = Number(config.options.wmsMaxWidth);
     if( ('wmsMaxHeight' in config.options) && config.options.wmsMaxHeight )
-        wmsMaxHeight = config.options.wmsMaxHeight;
+        wmsMaxHeight = Number(config.options.wmsMaxHeight);
     var removeSingleTile = false;
     var newMapSize = map.getCurrentSize();
     var replaceSingleTileSize = newMapSize.clone();
@@ -2352,12 +2352,12 @@ var lizMap = function() {
     var projection = map.projection;
 
     //manage WMS max width and height
-    var wmsMaxWidth = 1500;
-    var wmsMaxHeight = 1500;
+    var wmsMaxWidth = 3000;
+    var wmsMaxHeight = 3000;
     if( ('wmsMaxWidth' in config.options) && config.options.wmsMaxWidth )
-        wmsMaxWidth = config.options.wmsMaxWidth;
+        wmsMaxWidth = Number(config.options.wmsMaxWidth);
     if( ('wmsMaxHeight' in config.options) && config.options.wmsMaxHeight )
-        wmsMaxHeight = config.options.wmsMaxHeight;
+        wmsMaxHeight = Number(config.options.wmsMaxHeight);
     var removeSingleTile = false;
     var mapSize = map.size;
     var replaceSingleTileSize = new OpenLayers.Size(wmsMaxWidth, wmsMaxHeight);
