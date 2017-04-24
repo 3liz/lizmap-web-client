@@ -71,9 +71,9 @@ class lizmapServices{
     // Public Wms url list
     public $wmsPublicUrlList = '';
     // Wms max width
-    public $wmsMaxWidth = '1500';
+    public $wmsMaxWidth = 3000;
     // Wms max width
-    public $wmsMaxHeight = '1500';
+    public $wmsMaxHeight = 3000;
     // map cache server
     public $cacheStorageType = '';
     // default repository

@@ -83,7 +83,10 @@ class lizmapOGCRequest {
             $data = "";
         }
         else {
-            $data = implode('\n', $messages);
+            if(is_array($messages))
+                $data = "";
+            else
+                $data = implode('\n', $messages);
         }
 
         if ( $this->tplExceptions !== null ) {
