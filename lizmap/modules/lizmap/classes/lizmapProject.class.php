@@ -211,13 +211,13 @@ class lizmapProject{
         # get WMS max width
         if (property_exists($qgs_xml->properties, 'WMSMaxWidth'))
             $this->data['wmsMaxWidth'] = (int)$qgs_xml->properties->WMSMaxWidth;
-        if( !$this->data['wmsMaxWidth'] )
+        if( !array_key_exists('WMSMaxWidth', $this->data) or !$this->data['wmsMaxWidth'] )
             unset($this->data['wmsMaxWidth']);
 
         # get WMS max height
         if (property_exists($qgs_xml->properties, 'WMSMaxHeight'))
             $this->data['wmsMaxHeight'] = (int)$qgs_xml->properties->WMSMaxHeight;
-        if( !$this->data['wmsMaxHeight'] )
+        if( !array_key_exists('WMSMaxHeight', $this->data) or !$this->data['wmsMaxHeight'] )
             unset($this->data['wmsMaxHeight']);
 
         # get WMS getCapabilities full URL
