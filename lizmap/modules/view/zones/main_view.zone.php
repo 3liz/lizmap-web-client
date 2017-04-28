@@ -98,7 +98,7 @@ class main_viewZone extends jZone {
               }
             }
             if ( count($mrep->childItems) != 0 ) {
-              usort($mrep->childItems, "mainViewItemSort");
+              usort($mrep->childItems, "lizmapMainViewItem::mainViewItemSort");
               $maps[$r] = $mrep;
             }
           }
@@ -122,7 +122,7 @@ class main_viewZone extends jZone {
                 }
                 if( !$replaced ) {
                   $maps[$item->parentId]->childItems[] = $item;
-                  usort($maps[$item->parentId]->childItems, "mainViewItemSort");
+                  usort($maps[$item->parentId]->childItems, "lizmapMainViewItem::mainViewItemSort");
                 }
             }
             else {
@@ -135,9 +135,9 @@ class main_viewZone extends jZone {
             }
         }
 
-        usort($maps, "mainViewItemSort");
+        usort($maps, "lizmapMainViewItem::mainViewItemSort");
         foreach($maps as $topitem) {
-            usort($topitem->childItems, "mainViewItemSort");
+            usort($topitem->childItems, "lizmapMainViewItem::mainViewItemSort");
         }
         $this->_tpl->assign( 'mapitems', $maps );
         $this->_tpl->assign( 'onlyMaps', $this->param('onlyMaps', False) );
