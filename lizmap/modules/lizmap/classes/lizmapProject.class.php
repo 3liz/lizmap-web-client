@@ -725,6 +725,75 @@ class lizmapProject{
         return false;
     }
 
+    public function getDatavizLayersConfig(){
+
+        $config = array(
+            'layers'=>array(),
+            'dataviz'=>array()
+        );
+        foreach( $this->cfg->datavizLayers as $order=>$lc ){
+            if(!array_key_exists('layerId', $lc))
+                continue;
+            $layer = $this->findLayerByAnyName($lc->layerId);
+            if(!$layer)
+                continue;
+            $title = $layer->title;
+            if(!empty($lc->title))
+                $title = $lc->title;
+            $plotConf = array(
+                'plot_id' => $lc->order,
+                'layer_id' => $layer->id,
+                'title' => $title,
+                'abstract' => $layer->abstract,
+                'plot'=>array(
+                    'type' => $lc->type,
+                    'y_field' => $lc->y_field,
+                    'x_field' => $lc->x_field
+                )
+            );
+            if( !empty($lc->color) ){
+                $plotConf['plot']['color'] = $lc->color;
+            }
+
+            // Add more layout config, written like:
+            // layout_config=barmode:stack,bargap:0.5
+            if( !empty($lc->layout_config) ){
+                $layout_config = array();
+                $a = array_map( 'trim', explode(',', $lc->layout_config) );
+                foreach($a as $i){
+                    $b = array_map('trim', explode(':', $i));
+                    if( is_array($b) and count($b) == 2 ){
+                        $c = $b[1];
+                        if( $c == 'false'){
+                            $c = (boolean)false;
+                        }
+                        if( $c == 'true'){
+                            $c = (boolean)true;
+                        }
+                        $layout_config[$b[0]] = $c;
+                    }
+                }
+                if( count($layout_config)>0 )
+                    $plotConf['plot']['layout_config'] = $layout_config;
+            }
+            $config['layers'][$order] = $plotConf;
+
+        }
+        if(empty($config['layers'])){
+            return false;
+        }
+
+        $config['dataviz'] = array(
+            'location'=>'dock'
+        );
+        if( property_exists($this->cfg->options, 'datavizLocation')
+            and in_array( $this->cfg->options->datavizLocation, array('dock', 'bottomdock', 'right-dock' ) )
+        ){
+            $config['dataviz']['location'] = $this->cfg->options->datavizLocation;
+        }
+        return $config;
+    }
+
     public function needsGoogle(){
         $configOptions = $this->cfg->options;
         return (
@@ -1148,6 +1217,17 @@ class lizmapProject{
         $ftsSearches = $this->hasFtsSearches();
         if( $ftsSearches ){
             $configJson->options->ftsSearches = $ftsSearches['searches'];
+        }
+
+        // Update dataviz config
+        if ( property_exists( $configJson, 'datavizLayers' ) ) {
+            $datavizLayers = $this->getDatavizLayersConfig();
+            if($datavizLayers){
+                $configJson->datavizLayers = $datavizLayers;
+            }
+            else{
+                unset($configJson->datavizLayers);
+            }
         }
 
         $configRead = json_encode($configJson);

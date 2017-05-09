@@ -1,0 +1,58 @@
+/*
+Left Menu button
+*/
+
+#mapmenu .nav-list > li.dataviz .icon {
+  background-image: url(dataviz-icon-white.png);
+}
+#mapmenu .nav-list > li.dataviz.active .icon,
+#mapmenu .nav-list > li.dataviz a:hover .icon {
+  background-image: url(dataviz-icon-dark.png);
+}
+
+
+/*
+Toolbar buttons
+*/
+
+#dataviz h3 .icon {
+    background-image: url(dataviz-icon-white.png);
+}
+
+#dataviz-content {
+    overflow: auto;
+    height: 100%;
+}
+
+#dataviz-content div.menu-content {
+    margin-bottom:10px !important;
+}
+
+#dataviz-main.bottom-content {
+    background:none !important;
+    border:none !important;
+}
+
+#dataviz-main.bottom-content div.menu-content{
+    background-color: #F0F0F0 !important;
+    border:none !important;
+}
+
+#dataviz-main.bottom-content div.menu-content p{
+    padding: 5px;
+}
+#nav-tab-dataviz-main > a{
+    background: none !important;
+    border: none;
+    color: white;
+    margin-top: 1px;
+    font-weight: bold;
+}
+#dataviz-content > h3{
+    margin-left:0px;
+    border:none;
+}
+#dataviz-content > h3 > span.title{
+    padding-left: 0px;
+}
+

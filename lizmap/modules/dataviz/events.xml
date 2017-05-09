@@ -1,0 +1,11 @@
+<events xmlns="http://jelix.org/ns/events/1.0">
+    <listener name="datavizDockable">
+        <event name="mapDockable" />
+        <event name="mapBottomDockable" />
+        <event name="mapRightDockable" />
+    </listener>
+   <listener name="dataviz">
+       <event name="getMapAdditions" />
+   </listener>
+</events>
+

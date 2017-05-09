@@ -14,3 +14,8 @@ view.access=2
 admin.access=1
 dynamicLayers.access=2
 jelix.access=2
+dataviz.access=2
+
+master_admin.access=2
+jauthdb_admin.access=2
+jacl2db_admin.access=2
