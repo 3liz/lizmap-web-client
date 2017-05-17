@@ -64,8 +64,9 @@ var lizEdition = function() {
 
             // fill in the combobox containing editable layers
             var hasCreateLayers = false;
+            var elconfig = {};
+            var elk = [];
             for (var alName in config.editionLayers) {
-
                 var al = config.editionLayers[alName];
                 if (
                     al.capabilities.createFeature == "False"
@@ -76,14 +77,24 @@ var lizEdition = function() {
                     delete config.editionLayers[alName];
                     continue;
                 }
+
                 if (
                     alName in config.layers
                     && al.capabilities.createFeature == "True"
                 ) {
                     hasCreateLayers = true;
                     var alConfig = config.layers[alName];
-                    $('#edition-layer').append('<option value="'+alConfig.id+'">'+alConfig.title+'</option>');
+                    elconfig[al.order] = {
+                       id: alConfig.id,
+                        title: alConfig.title,
+                        order: al.order
+                    };
+                    elk.push(al.order);
                 }
+            }
+            for (var i in elk.sort()) {
+                var alConfig = elconfig[i];
+                $('#edition-layer').append('<option value="'+alConfig.id+'">'+alConfig.title+'</option>');
             }
             if( hasCreateLayers ){
                 $('#edition-layer').removeAttr('disabled').show();
