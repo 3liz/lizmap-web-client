@@ -137,7 +137,8 @@ class qgisFormControl{
       'boolean'=>'boolean',
       'date'=>'date',
       'datetime'=>'datetime',
-      'timestamp'=>'datetime'
+      'timestamp'=>'datetime',
+      'time'=>'time'
     );
 
 
@@ -219,10 +220,16 @@ class qgisFormControl{
       }
       else if($this->fieldEditType === 'DateTime'){
         $markup = 'date';
+        $display_format = $this->edittype[0]->widgetv2config->attributes()->display_format;
         // Use date AND time widget id type is DateTime and we find HH
-        if( preg_match('#HH#i', $this->edittype[0]->widgetv2config->attributes()->display_format) ){
+        if( preg_match('#HH#i', $display_format) ){
           $markup = 'datetime';
         }
+        // Use only time if field is only time
+        if( preg_match('#HH#i', $display_format) and !preg_match('#YY#i', $display_format)){
+          $markup = 'time';
+        }
+
       }
       else{
         $markup = $this->qgisEdittypeMap[$this->fieldEditType]['jform']['markup'];
@@ -268,6 +275,11 @@ class qgisFormControl{
         $this->ctrl = new jFormsControlDatetime($this->ref);
         break;
 
+      case 'time':
+        //$this->ctrl = new jFormsControlDatetime($this->ref);
+        $this->ctrl = new jFormsControlInput($this->ref);
+        break;
+
       case 'upload':
         $choice = new jFormsControlChoice($this->ref.'_choice');
         $choice->createItem('keep','keep');
@@ -310,6 +322,7 @@ class qgisFormControl{
 
     // Data type
     if(property_exists($this->ctrl, 'datatype')){
+
       switch($this->fieldDataType){
 
         case 'text':
@@ -330,6 +343,10 @@ class qgisFormControl{
 
         case 'datetime':
           $datatype = new jDatatypeDateTime();
+          break;
+
+        case 'time':
+          $datatype = new jDatatypeTime();
           break;
 
         default:

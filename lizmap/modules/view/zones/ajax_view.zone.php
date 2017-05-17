@@ -89,9 +89,9 @@ class ajax_viewZone extends jZone {
             }
         }
 
-        usort($maps, "mainViewItemSort");
+        usort($maps, "lizmapMainViewItem::mainViewItemSort");
         foreach($maps as $topitem) {
-            usort($topitem->childItems, "mainViewItemSort");
+            usort($topitem->childItems, "lizmapMainViewItem::mainViewItemSort");
         }
         $this->_tpl->assign('mapitems', $maps);
 
