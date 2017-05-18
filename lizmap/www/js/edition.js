@@ -112,7 +112,7 @@ var lizEdition = function() {
                 }
             }
             for (var i in elk.sort()) {
-                var alConfig = elconfig[i];
+                var alConfig = elconfig[elk[i]];
                 $('#edition-layer').append('<option value="'+alConfig.id+'">'+alConfig.title+'</option>');
             }
             if( hasCreateLayers ){
