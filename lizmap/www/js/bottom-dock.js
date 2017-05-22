@@ -13,23 +13,45 @@ var bottomDockFunction = function() {
         // Initialize bottom dock position
         $('#bottom-dock').css('left',  lizMap.getDockRightPosition() );
 
-        // Div content interactions
-        $('#bottom-dock').hover(
-          function(){
-            showBottomDockContent();
-            $(this).removeClass('half-transparent');
-            return false;
-          }
-          ,
-          function(){
-            if ( !bottomDockGlued &&!lizMap.checkMobile())
-              hideBottomDockContent();
+        // Hide/show bottom dock on hover out/in (with small delay)
+        $(function() {
+            var lizBottomDockTimer;
+            var lizBottomDockTimeHoverOut = 700;
+            var lizBottomDockTimeHoverIn = 50;
+            if( 'bottomDockTimeHoverOut' in lizMap.config.options )
+              lizBottomDockTimeHoverOut = lizMap.config.options.bottomDockTimeHoverOut;
+            if( 'bottomDockTimeHoverIn' in lizMap.config.options )
+              lizBottomDockTimeHoverIn = lizMap.config.options.bottomDockTimeHoverIn;
 
-            $(this).addClass('half-transparent');
-            return false;
-          }
-        );
-
+            $('#bottom-dock').hover(
+              // hover in
+              function() {
+                if(lizBottomDockTimer) {
+                    clearTimeout(lizBottomDockTimer);
+                    lizBottomDockTimer = null;
+                }
+                lizBottomDockTimer = setTimeout(function() {
+                  showBottomDockContent();
+                  $(this).removeClass('half-transparent');
+                  return false;
+                }, lizBottomDockTimeHoverIn);
+              },
+              // mouse out
+              function(){
+                if(lizBottomDockTimer) {
+                    clearTimeout(lizBottomDockTimer);
+                    lizBottomDockTimer = null;
+                }
+                lizBottomDockTimer = setTimeout(function() {
+                  if ( !bottomDockGlued &&!lizMap.checkMobile()){
+                    hideBottomDockContent();
+                  }
+                  $(this).addClass('half-transparent');
+                  return false;
+                }, lizBottomDockTimeHoverOut);
+              }
+            );
+        });
 
         // Bind bottom dock buttons actions
 
