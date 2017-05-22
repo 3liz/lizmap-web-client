@@ -3237,6 +3237,8 @@ var lizMap = function() {
                     if( 'popupLocation' in config.options && config.options.popupLocation != 'map' ){
                       var popup = null;
                       // create content
+                      var popupReg = new RegExp('lizmapPopupTable', 'g');
+                      text = text.replace( popupReg, 'table table-condensed table-striped table-bordered lizmapPopupTable');
                       var pcontent = '<div class="lizmapPopupContent">'+text+'</div>';
                       var hasPopupContent = (!(!text || text == null || text == ''))
                       if( !$('#mapmenu .nav-list > li.popupcontent > a').length ){

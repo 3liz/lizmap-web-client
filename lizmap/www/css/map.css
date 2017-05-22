@@ -2076,8 +2076,11 @@ a.btn.btn-opacity-layer.active {
 .lizmapPopup.olPopup .lizmapPopupTable th,
 #map-content .lizmapPopupTable th,
 #popupcontent .lizmapPopupTable th{
+/*
   width:50%;
   text-align: right;
+*/
+  text-align: left;
   vertical-align: top;
   padding-right: 5px;
 }

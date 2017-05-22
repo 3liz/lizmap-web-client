@@ -2839,6 +2839,8 @@ var lizAttributeTable = function() {
                                                 var hasPopupContent = (!(!data || data == null || data == ''))
                                                 if ( hasPopupContent ) {
                                                     //console.log(data);
+                                                    var popupReg = new RegExp('lizmapPopupTable', 'g');
+                                                    data = data.replace(popupReg, 'table table-condensed table-striped lizmapPopupTable');
                                                     self.parent().append('<div class="lizmapPopupChildren">'+data+'</div>');
                                                 }
                                             });
