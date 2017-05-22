@@ -3209,10 +3209,10 @@ var lizAttributeTable = function() {
 
     var selectionLayersDic = {};
     for (var lname in config.attributeLayers) {
-        if( 'hideLayer' in config.attributeLayers[lname]
-           && config.attributeLayers[lname]['hideLayer'] == 'True'){
-            continue;
-        }
+        //if( 'hideLayer' in config.attributeLayers[lname]
+           //&& config.attributeLayers[lname]['hideLayer'] == 'True'){
+            //continue;
+        //}
         selectionLayersDic[lizMap.cleanName(lname)] = lname;
     }
 
