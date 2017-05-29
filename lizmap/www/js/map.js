@@ -2424,14 +2424,21 @@ var lizMap = function() {
           $(this).blur();
         });
       // Hide switcher-baselayer if only one base layer inside
-      if (baselayers.length==1)
+      if (baselayers.length==1){
         $('#switcher-baselayer').hide();
+      }
       else if ( 'startupBaselayer' in config.options ) {
           var startupBaselayer = config.options['startupBaselayer'];
-          if ( startupBaselayer in startupBaselayersReplacement )
+          if ( startupBaselayer in startupBaselayersReplacement ){
             startupBaselayer = startupBaselayersReplacement[startupBaselayer];
-          if ( $('#switcher-baselayer-select option[value="'+startupBaselayer+'"]').length != 0 )
+          }
+          if ( $('#switcher-baselayer-select option[value="'+startupBaselayer+'"]').length != 0){
             $('#switcher-baselayer-select').val(startupBaselayer).change();
+          }else{
+            if ( $('#switcher-baselayer-select option[value="'+lizMap.cleanName(startupBaselayer)+'"]').length != 0){
+              $('#switcher-baselayer-select').val(lizMap.cleanName(startupBaselayer)).change();
+            }
+          }
       }
     } else {
       // hide elements for baselayers
