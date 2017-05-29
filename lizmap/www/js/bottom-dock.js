@@ -79,6 +79,8 @@ var bottomDockFunction = function() {
             )
             .html(lizDict['bottomdock.toolbar.btn.glue.activate.title']);
             hideBottomDockContent();
+
+            lizMap.events.triggerEvent('bottomdockunpinned', null );
           }
           else {
             bottomDockGlued = true;
@@ -88,6 +90,7 @@ var bottomDockFunction = function() {
               lizDict['bottomdock.toolbar.btn.glue.deactivate.title']
             )
             .html(lizDict['bottomdock.toolbar.btn.glue.glued.title']);
+            lizMap.events.triggerEvent('bottomdockpinned', null );
           }
           $('#bottom-dock').css('left',  lizMap.getDockRightPosition() );
           return false;
@@ -138,6 +141,7 @@ var bottomDockFunction = function() {
             )
             .html(lizDict['bottomdock.toolbar.btn.size.maximize.title']);
             $('#bottom-dock').removeClass('fullsize');
+            lizMap.events.triggerEvent('bottomdocksizechanged', {'size': 'half'} );
           }
           else {
             bottomDockFullsize = true;
@@ -148,6 +152,7 @@ var bottomDockFunction = function() {
             )
             .html(lizDict['bottomdock.toolbar.btn.size.minimize.title']);
             $('#bottom-dock').addClass('fullsize');
+            lizMap.events.triggerEvent('bottomdocksizechanged', {'size': 'full'} );
           }
           $('#bottom-dock').css('left',  lizMap.getDockRightPosition() );
           return false;
