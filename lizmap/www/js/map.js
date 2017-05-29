@@ -5312,6 +5312,56 @@ OpenLayers.Control.HighlightFeature = OpenLayers.Class(OpenLayers.Control, {
   }
 
 
+  function getFeaturePopupContent( aName, feat, aCallback) {
+      // Only use this functino with callback
+      if ( !aCallback )
+          return;
+
+      // Only use when feat is set
+      if( !feat )
+          return false;
+
+      // Remove map popup to avoid confusion
+      if (lizMap.map.popups.length != 0)
+          lizMap.map.removePopup( lizMap.map.popups[0] );
+
+      // Get popup content by FILTER and not with virtual click on map
+      var filter = '';
+      if( aName in lizMap.config.attributeLayers ){
+          var qgisName = aName;
+          if( lizMap.getLayerNameByCleanName(aName) ){
+              qgisName = lizMap.getLayerNameByCleanName(aName);
+          }
+          var atConfig = lizMap.config.attributeLayers[qgisName];
+          var pkVal = feat.properties[atConfig.primaryKey];
+          filter = qgisName + ':"' + atConfig.primaryKey + '" = ' + "'" + pkVal + "'" ;
+      }
+
+      wmsOptions = {
+           'LAYERS': aName
+          ,'QUERY_LAYERS': aName
+          ,'STYLES': ''
+          ,'SERVICE': 'WMS'
+          ,'VERSION': '1.3.0'
+          ,'REQUEST': 'GetFeatureInfo'
+          ,'EXCEPTIONS': 'application/vnd.ogc.se_inimage'
+          ,'INFO_FORMAT': 'text/html'
+          ,'FEATURE_COUNT': 1
+          ,'FILTER': filter
+      }
+
+      // Query the server
+      var service = OpenLayers.Util.urlAppend(lizUrls.wms
+          ,OpenLayers.Util.getParameterString(lizUrls.params)
+      );
+      $.get(service, wmsOptions, function(data) {
+          aCallback(data);
+      });
+
+  }
+
+
+
   // Create new dock or minidock
   // Example : lizMap.addDock('mydock', 'My dock title', 'dock', 'Some content', 'icon-pencil');
   // see icon list here : http://getbootstrap.com/2.3.2/base-css.html#icons
@@ -5618,6 +5668,13 @@ OpenLayers.Control.HighlightFeature = OpenLayers.Class(OpenLayers.Control, {
      */
     getLayerConfigById: function( aLayerId, aConfObjet, aIdAttribute ) {
       return getLayerConfigById( aLayerId, aConfObjet, aIdAttribute );
+    },
+
+    /**
+     * Method: getFeaturePopupContent
+     */
+    getFeaturePopupContent: function( aName, feat, aCallback) {
+      return getFeaturePopupContent(aName, feat, aCallback);
     },
 
     /**

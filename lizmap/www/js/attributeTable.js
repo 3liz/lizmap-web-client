@@ -1418,7 +1418,32 @@ var lizAttributeTable = function() {
                         && lConfig['geometryType'] != 'unknown'
                     ) {
                         var feat = config.layers[aName]['features'][featId];
-                        getFeatureInfoForLayerFeature( aTable, aName, feat );
+
+                        var parentLayerCleanName = aTable.replace('#attribute-layer-table-', '').split('-');
+                        parentLayerCleanName = parentLayerCleanName[0];
+
+                        $('#attribute-table-panel-' + parentLayerCleanName ).html('');
+
+                        lizMap.getFeaturePopupContent( aName, feat, function(data){
+                            $('#attribute-table-panel-' + parentLayerCleanName ).html(data);
+
+                            // Trigger event
+                            lizMap.events.triggerEvent(
+                                'lizmappopupdisplayed_inattributetable'
+                            );
+
+                            var closeButton = '<a class="close-attribute-feature-panel pull-right" href="#"><i class="icon-remove"></i></a>'
+                            $('#attribute-table-panel-' + parentLayerCleanName + ' h4').append(closeButton);
+
+                            $('#attribute-table-panel-' + parentLayerCleanName + ' h4 a.close-attribute-feature-panel').click(function(){
+                                // Hide panel
+                                $('#attribute-layer-main-' + parentLayerCleanName ).removeClass('reduced');
+                                $('#attribute-table-panel-' + parentLayerCleanName ).removeClass('visible').html('');
+                                // Deactivate Detail button
+                                $('#attribute-layer-'+ parentLayerCleanName + ' button.btn-detail-attributeTable').removeClass('active btn-warning');
+
+                            });
+                        });
                     }
 
                     //~ return false; // disable to be able to click on a href link inside the line
@@ -1766,119 +1791,6 @@ var lizAttributeTable = function() {
 
             }
 
-
-            function getFeatureInfoForLayerFeature( aTable, aName, feat) {
-
-                // Remove map popup to avoid confusion
-                if (lizMap.map.popups.length != 0)
-                    lizMap.map.removePopup( lizMap.map.popups[0] );
-
-                var parentLayerCleanName = aTable.replace('#attribute-layer-table-', '').split('-');
-                parentLayerCleanName = parentLayerCleanName[0];
-
-                $('#attribute-table-panel-' + parentLayerCleanName ).html('');
-
-                // Calculate fake bbox around the feature
-                var proj = new OpenLayers.Projection(config.layers[aName].crs);
-                var lConfig = config.layers[aName];
-                if( lConfig.featureCrs )
-                    proj = new OpenLayers.Projection(config.layers[aName].featureCrs);
-                var units = lizMap.map.getUnits();
-                if( lizMap.map.maxScale == 'auto' )
-                    var scale = lConfig.minScale;
-                else
-                    var scale = Math.max( lizMap.map.maxScale, lConfig.minScale );
-                scale = scale * 2;
-                var res = OpenLayers.Util.getResolutionFromScale(scale, units);
-
-                // Get coordinate to mimic click on the map
-                var format = new OpenLayers.Format.GeoJSON();
-                if( !feat )
-                    return false;
-
-                feat = format.read(feat)[0];
-                feat.geometry.transform( proj, lizMap.map.getProjection() );
-                var geomType = feat.geometry.CLASS_NAME;
-
-                if (
-                    geomType == 'OpenLayers.Geometry.Polygon'
-                    || geomType == 'OpenLayers.Geometry.MultiPolygon'
-                    || geomType == 'OpenLayers.Geometry.Point'
-                ) {
-                    var lonlat = feat.geometry.getBounds().getCenterLonLat()
-                }
-                else {
-                    var vert = feat.geometry.getVertices();
-                    var middlePoint = vert[Math.floor(vert.length/2)];
-                    var lonlat = new OpenLayers.LonLat(middlePoint.x, middlePoint.y);
-                }
-
-                // Calculate fake bbox
-                var bbox = new OpenLayers.Bounds(
-                    lonlat.lon - 5 * res,
-                    lonlat.lat - 5 * res,
-                    lonlat.lon + 5 * res,
-                    lonlat.lat + 5 * res
-                );
-
-                var gfiCrs = lizMap.map.getProjectionObject().toString();
-                if ( gfiCrs == 'EPSG:900913' )
-                    gfiCrs = 'EPSG:3857';
-
-                // Get WMS layer name (can be layer id, or shortname, or name depending on QGIS version)
-
-
-                var wmsOptions = {
-                     'LAYERS': aName
-                    ,'QUERY_LAYERS': aName
-                    ,'STYLES': ''
-                    ,'SERVICE': 'WMS'
-                    ,'VERSION': '1.3.0'
-                    ,'REQUEST': 'GetFeatureInfo'
-                    ,'EXCEPTIONS': 'application/vnd.ogc.se_inimage'
-                    ,'BBOX': bbox.toBBOX()
-                    ,'FEATURE_COUNT': 10
-                    ,'HEIGHT': 100
-                    ,'WIDTH': 100
-                    ,'INFO_FORMAT': 'text/html'
-                    ,'CRS': gfiCrs
-                    ,'I': 50
-                    ,'J': 50
-                };
-
-                // Add lizmap specific fid parameter
-                var fidFilter = feat.fid;
-                wmsOptions['fid'] = fidFilter;
-
-                // Query the server
-                var service = OpenLayers.Util.urlAppend(lizUrls.wms
-                    ,OpenLayers.Util.getParameterString(lizUrls.params)
-                );
-                $.get(service, wmsOptions, function(data) {
-                    $('#attribute-table-panel-' + parentLayerCleanName ).html(data);
-
-                    // Trigger event
-                    lizMap.events.triggerEvent(
-                        'lizmappopupdisplayed_inattributetable'
-                    );
-
-                    var closeButton = '<a class="close-attribute-feature-panel pull-right" href="#"><i class="icon-remove"></i></a>'
-                    $('#attribute-table-panel-' + parentLayerCleanName + ' h4').append(closeButton);
-
-                    $('#attribute-table-panel-' + parentLayerCleanName + ' h4 a.close-attribute-feature-panel').click(function(){
-                        // Hide panel
-                        $('#attribute-layer-main-' + parentLayerCleanName ).removeClass('reduced');
-                        $('#attribute-table-panel-' + parentLayerCleanName ).removeClass('visible').html('');
-                        // Deactivate Detail button
-                        $('#attribute-layer-'+ parentLayerCleanName + ' button.btn-detail-attributeTable').removeClass('active btn-warning');
-
-                    });
-                });
-
-
-            }
-
-
             function zoomToOlFeature( feature, proj, zoomAction ){
                 zoomAction = typeof zoomAction !== 'undefined' ?  zoomAction : 'zoom';
                 var format = new OpenLayers.Format.GeoJSON();
@@ -1901,6 +1813,7 @@ var lizAttributeTable = function() {
 
                 var layerConfig = config.layers[featureType];
                 var featureId = featureType + '.' + fid;
+
                 var proj = new OpenLayers.Projection(config.layers[featureType].crs);
                 if( config.layers[featureType].featureCrs )
                     proj = new OpenLayers.Projection(config.layers[featureType].featureCrs);
