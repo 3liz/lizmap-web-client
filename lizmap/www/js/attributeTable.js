@@ -1025,6 +1025,11 @@ var lizAttributeTable = function() {
                 if( !cAliases ){
                     cAliases = config.layers[aName]['alias'];
                 }
+                for( key in cAliases){
+			        if(cAliases[key]==""){
+			            cAliases[key]=key;
+			        }
+		        }
                 var cTypes = {};
                 if( 'types' in config.layers[aName] )
                     cTypes = config.layers[aName]['types'];
