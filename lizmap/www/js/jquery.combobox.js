@@ -53,7 +53,6 @@
       wasOpen = false;
       $( "<a>" )
         .attr( "tabIndex", -1 )
-        .attr( "title", "Show All Items" )
         .appendTo( this.wrapper )
         .button({
           icons: {
