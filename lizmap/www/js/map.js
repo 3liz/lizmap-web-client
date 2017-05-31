@@ -6164,10 +6164,10 @@ lizMap.events.on({
         else
           options.numZoomLevels = options.numZoomLevels - lOptions.zoomOffset;
         var stamenToner = new OpenLayers.Layer.OSM('osm-stamen-toner',
-            ["http://a.tile.stamen.com/toner-lite/${z}/${x}/${y}.png",
-            "http://b.tile.stamen.com/toner-lite/${z}/${x}/${y}.png",
-            "http://c.tile.stamen.com/toner-lite/${z}/${x}/${y}.png",
-            "http://d.tile.stamen.com/toner-lite/${z}/${x}/${y}.png"]
+            ["https://stamen-tiles-a.a.ssl.fastly.net/toner-lite/${z}/${x}/${y}.png",
+            "https://stamen-tiles-b.a.ssl.fastly.net/toner-lite/${z}/${x}/${y}.png",
+            "https://stamen-tiles-c.a.ssl.fastly.net/toner-lite/${z}/${x}/${y}.png",
+            "https://stamen-tiles-d.a.ssl.fastly.net/toner-lite/${z}/${x}/${y}.png"]
             ,options
             );
         stamenToner.maxExtent = maxExtent;
