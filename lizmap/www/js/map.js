@@ -3277,8 +3277,10 @@ var lizMap = function() {
                 return false;
             }
         });
-        if ( refreshInfo  )
+        if ( refreshInfo  ) {
+            $('div.lizmapPopupContent input.lizmap-popup-layer-feature-id[value="'+evt.layerId+'.'+evt.featureId+'"]').parent().remove();
             info.request( lastPx, {} );
+        }
         return;
      }
      lizMap.events.on({
@@ -3305,7 +3307,19 @@ var lizMap = function() {
             refreshGetFeatureInfo(evt);
         },
         "lizmapeditionfeaturedeleted": function( evt ) {
-            refreshGetFeatureInfo(evt);
+            if ( $('div.lizmapPopupContent input.lizmap-popup-layer-feature-id').length > 1 ) {
+                refreshGetFeatureInfo(evt);
+            } else {
+                if (map.popups.length != 0)
+                    map.removePopup(map.popups[0]);
+
+                if( 'popupLocation' in config.options && config.options.popupLocation != 'map' ){
+                    var pcontent = '<div class="lizmapPopupContent"><h4>'+lizDict['popup.msg.no.result']+'</h4></div>';
+                    $('#popupcontent div.menu-content').html(pcontent);
+                    if ( $('#mapmenu .nav-list > li.popupcontent').hasClass('active') )
+                        $('#button-popupcontent').click();
+                }
+            }
         }
      });
      map.addControl(info);
