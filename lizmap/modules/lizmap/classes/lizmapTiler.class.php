@@ -404,7 +404,7 @@ class lizmapTiler{
         $tileWidth = 256.0;
         $tileHeight = 256.0;
 
-        $tileMatrix = $tileMatrixSet->$tileMatrixList[ (int) $tileMatrixId ];
+        $tileMatrix = $tileMatrixSet->tileMatrixList[ (int) $tileMatrixId ];
 
         $res = $tileMatrix->resolution;
         $minx = $tileMatrix->left + ( (int) $TileCol ) * ($tileWidth * $res);
