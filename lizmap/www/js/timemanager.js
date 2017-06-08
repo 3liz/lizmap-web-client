@@ -109,6 +109,8 @@ var lizTimemanager = function() {
                 }
 
                 for (id in config.timemanagerLayers) {
+                    // Get layer config
+                    var aConfig = config.layers[id];
 
                     // Get layers timemanager config information
                     tmLayerConfig = config.timemanagerLayers[id];
@@ -198,6 +200,21 @@ var lizTimemanager = function() {
                     lizMap.map.addLayer(layer);
                     layer.setVisibility(true);
 
+                    if ( !('alias' in aConfig) || !aConfig['alias']) {
+                        $.get(service, {
+                            'SERVICE':'WFS'
+                           ,'VERSION':'1.0.0'
+                           ,'REQUEST':'DescribeFeatureType'
+                           ,'TYPENAME':id
+                           ,'OUTPUTFORMAT':'JSON'
+                        }, function(describe) {
+
+                            aConfig['alias'] = describe.aliases;
+                            if ('types' in describe)
+                                aConfig['types'] = describe.types;
+
+                        },'json');
+                    }
                 }
 
 
@@ -221,7 +238,12 @@ var lizTimemanager = function() {
                             for (a in evt.feature.attributes){
                                 for (b in labelAttributeTable){
                                     if (a == labelAttributeTable[b]){
-                                        html+= '<b>' + a + '</b>: ' + evt.feature.attributes[a] + '</br>';
+                                        var attrName = a;
+                                        var aConfig = config.layers[lname];
+                                        if ('alias' in aConfig && aConfig['alias'] && a in aConfig['alias'] && aConfig['alias'][a] != "" ) {
+                                            attrName = aConfig['alias'][a];
+                                        }
+                                        html+= '<b>' + attrName + '</b>: ' + evt.feature.attributes[a] + '</br>';
                                     }
                                 }
                             }
