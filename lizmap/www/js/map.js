@@ -2060,6 +2060,8 @@ var lizMap = function() {
     // set the switcher content
     $('#switcher-layers').html(getSwitcherNode(tree,0));
     $('#switcher table.tree').treeTable({
+      stringExpand: lizDict['tree.button.expand'],
+      stringCollapse: lizDict['tree.button.collapse'],
       onNodeShow: function() {
         //updateSwitcherSize();
         var self = $(this);

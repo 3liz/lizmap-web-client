@@ -81,6 +81,7 @@
   $.fn.collapse = function() {
     return this.each(function() {
       $(this).removeClass("expanded").addClass("collapsed");
+      $(this).find('td a.expander').attr('title', options.stringExpand);
 
       if (options.persist) {
         persistNodeState($(this));
@@ -105,6 +106,7 @@
   $.fn.expand = function() {
     return this.each(function() {
       $(this).removeClass("collapsed").addClass("expanded");
+      $(this).find('td a.expander').attr('title', options.stringCollapse);
 
       if (options.persist) {
         persistNodeState($(this));
