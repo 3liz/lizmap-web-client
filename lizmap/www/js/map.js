@@ -3001,10 +3001,6 @@ var lizMap = function() {
   // Set the map accordingly to
   function runPermalink( pparams ){
 
-    // Zoom to bbox
-    var bbox = OpenLayers.Bounds.fromString( pparams.bbox );
-    map.zoomToExtent( bbox );
-
     // Activate layers
     var players = pparams.layers;
 
@@ -3072,6 +3068,10 @@ var lizMap = function() {
         );
       }
     }
+
+    // Zoom to bbox
+    var bbox = OpenLayers.Bounds.fromString( pparams.bbox );
+    map.zoomToExtent( bbox );
 
   }
 
