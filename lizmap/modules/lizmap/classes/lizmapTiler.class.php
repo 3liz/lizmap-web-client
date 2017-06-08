@@ -11,7 +11,7 @@
 
 
 class lizmapTiler{
-    
+
     // tile matrix info
     protected static $tileMatrixInfo = array(
         'EPSG:3857'=> array(
@@ -37,7 +37,7 @@ class lizmapTiler{
      * this is a static class, so private constructor
      */
     private function __construct (){ }
-    
+
     /**
      * Get a list of tileMatrixSet.
      *
@@ -57,14 +57,14 @@ class lizmapTiler{
         $INCHES_PER_UNIT["in"]=$INCHES_PER_UNIT['inches'];
         $INCHES_PER_UNIT["degrees"] =$INCHES_PER_UNIT['dd'];
         $INCHES_PER_UNIT["nmi"] = 1852 * $INCHES_PER_UNIT['m'];
-        
+
         $tileWidth = 256.0;
         $tileHeight = 256.0;
-      
+
         $rootLayer = $wms_xml->xpath("//wms:Capability/wms:Layer");
         if ( !$rootLayer  || count( $rootLayer ) == 0 )
             return array();
-        
+
         $rootLayer = $rootLayer[0];
         $rootExtent = array(
             (float) $rootLayer->EX_GeographicBoundingBox->westBoundLongitude,
@@ -72,22 +72,31 @@ class lizmapTiler{
             (float) $rootLayer->EX_GeographicBoundingBox->eastBoundLongitude,
             (float) $rootLayer->EX_GeographicBoundingBox->northBoundLatitude
         );
-        
+        $geoExtent = self::$tileMatrixInfo['EPSG:4326']['extent'];
+        if ( $rootExtent[0] < $geoExtent[0] )
+            $rootExtent[0] = $geoExtent[0];
+        if ( $rootExtent[1] < $geoExtent[1] )
+            $rootExtent[1] = $geoExtent[1];
+        if ( $rootExtent[2] > $geoExtent[2] )
+            $rootExtent[2] = $geoExtent[2];
+        if ( $rootExtent[3] > $geoExtent[3] )
+            $rootExtent[3] = $geoExtent[3];
+
         $opt = $project->getOptions();
         $scales = array_merge( array(), $opt->mapScales );
         rsort( $scales );
-        
+
         $tileMatrixSetList = array();
         foreach ( $rootLayer[0]->CRS as $CRS ) {
             $CRS = (string) $CRS;
-            
+
             if ( array_key_exists( $CRS, self::$tileMatrixInfo ) ) {
                 $tileMatrixInfo = self::$tileMatrixInfo[$CRS];
                 $extent = $tileMatrixInfo['extent'];
                 $scaleDenominator = $tileMatrixInfo['scaleDenominator'];
                 $unit = $tileMatrixInfo['unit'];
                 $minScale = $scales[ count($scales) - 1 ];
-                
+
                 $tileMatrixList = array();
                 $scale = $scaleDenominator;
                 $res = 0.28E-3 * $scale / $METERS_PER_INCH / $INCHES_PER_UNIT[ $unit ];
@@ -104,7 +113,7 @@ class lizmapTiler{
                   'left'=>$left,
                   'top'=>$top
                 );
-                
+
                 while ( $scaleDenominator > $minScale ) {
                     $scaleDenominator = $scaleDenominator/2;
                     $scale = $scaleDenominator;
@@ -123,7 +132,7 @@ class lizmapTiler{
                       'top'=>$top
                     );
                 }
-                
+
                 $tileMatrixSet = (object) array(
                     'ref'=> $CRS,
                     'unit'=> $unit,
@@ -139,18 +148,18 @@ class lizmapTiler{
                 Proj4php::$defs[ $CRS ] = $opt->projection->proj4;
                 $sourceProj = new Proj4phpProj('EPSG:4326',$proj4);
                 $destProj  = new Proj4phpProj($opt->projection->ref,$proj4);
-                  
+
                 $sourceMinPt = new proj4phpPoint( $rootExtent[0], $rootExtent[1] );
                 $destMinPt   = $proj4->transform($sourceProj,$destProj,$sourceMinPt);
-                  
+
                 $sourceMaxPt = new proj4phpPoint( $rootExtent[2], $rootExtent[3] );
                 $destMaxPt   = $proj4->transform($sourceProj,$destProj,$sourceMaxPt);
-                
+
                 $extent = array( $destMinPt->x, $destMinPt->y, $destMaxPt->x, $destMaxPt->y );
-                
+
                 preg_match('/ \+units=(?P<unit>\w+) /', $opt->projection->proj4, $matches);
                 $unit = $matches['unit'];
-                            
+
                 //$res = 0.28E-3 * $scales[0] / $METERS_PER_INCH / $INCHES_PER_UNIT[ $unit ];
                 $res = $scales[0] / ($INCHES_PER_UNIT[ $unit ] * 96.0);
                 $scale = $res * $METERS_PER_INCH * $INCHES_PER_UNIT[ $unit ] / 0.28E-3;
@@ -160,7 +169,7 @@ class lizmapTiler{
                 $top = ($extent[1] + ($extent[3] - $extent[1]) / 2) + ($row/2) * ($tileHeight * $res);
                 $right = ($extent[0] + ($extent[2] - $extent[0]) / 2) + ($col/2) * ($tileWidth * $res);
                 $bottom = ($extent[1] + ($extent[3] - $extent[1]) / 2) - ($row/2) * ($tileHeight * $res);
-                  
+
                 $extent = array( $left, $bottom, $right, $top );
 
                 $tileMatrixList = array();
@@ -180,7 +189,7 @@ class lizmapTiler{
                         'top'=>$top
                     );
                 }
-                
+
                 $tileMatrixSet = (object) array(
                     'ref'=> $CRS,
                     'unit'=> $unit,
@@ -194,7 +203,7 @@ class lizmapTiler{
         }
         return $tileMatrixSetList;
     }
-    
+
     /**
      * Get layer tile info.
      *
@@ -214,14 +223,14 @@ class lizmapTiler{
         $INCHES_PER_UNIT["in"]=$INCHES_PER_UNIT['inches'];
         $INCHES_PER_UNIT["degrees"] =$INCHES_PER_UNIT['dd'];
         $INCHES_PER_UNIT["nmi"] = 1852 * $INCHES_PER_UNIT['m'];
-        
+
         $tileWidth = 256.0;
         $tileHeight = 256.0;
-      
+
         $rootLayer = $wms_xml->xpath("//wms:Capability/wms:Layer");
         if ( !$rootLayer  || count( $rootLayer ) == 0 )
             return null;
-        
+
         $rootLayer = $rootLayer[0];
         $rootExtent = array(
             (float) $rootLayer->EX_GeographicBoundingBox->westBoundLongitude,
@@ -229,20 +238,29 @@ class lizmapTiler{
             (float) $rootLayer->EX_GeographicBoundingBox->eastBoundLongitude,
             (float) $rootLayer->EX_GeographicBoundingBox->northBoundLatitude
         );
-        
+        $geoExtent = self::$tileMatrixInfo['EPSG:4326']['extent'];
+        if ( $rootExtent[0] < $geoExtent[0] )
+            $rootExtent[0] = $geoExtent[0];
+        if ( $rootExtent[1] < $geoExtent[1] )
+            $rootExtent[1] = $geoExtent[1];
+        if ( $rootExtent[2] > $geoExtent[2] )
+            $rootExtent[2] = $geoExtent[2];
+        if ( $rootExtent[3] > $geoExtent[3] )
+            $rootExtent[3] = $geoExtent[3];
+
         $opt = $project->getOptions();
         $scales = array_merge( array(), $opt->mapScales );
         rsort( $scales );
-        
+
         $layers = $project->getLayers();
         $layer = $layers->$layerName;
-        
+
         $xmlLayer = $wms_xml->xpath('//wms:Layer/wms:Name[. ="'.$layer->name.'"]/parent::*');
         if ( !$xmlLayer  || count( $xmlLayer ) == 0 )
             return null;
         $xmlLayer = $xmlLayer[0];
         $layerExtent = null;
-        
+
         $xmlLayers = $wms_xml->xpath('//wms:Layer/wms:Name[. ="'.$layer->name.'"]/parent::*//wms:Layer');
         foreach( $xmlLayers as $xmlcLayer ) {
             if ( !property_exists( $xmlcLayer, 'Layer' ) ) {
@@ -282,7 +300,7 @@ class lizmapTiler{
             $layerExtent[2] = $rootExtent[2];
         if ( $layerExtent[3] > $rootExtent[3] )
             $layerExtent[3] = $rootExtent[3];
-            
+
         $lowerCorner = (object) array(
             'x'=> $layerExtent[0],
             'y'=> $layerExtent[1]
@@ -291,25 +309,39 @@ class lizmapTiler{
             'x'=> $layerExtent[2],
             'y'=> $layerExtent[3]
         );
-        
+
         $opt = $project->getOptions();
         jClasses::inc("proj4php~proj4php");
         $proj4 = new Proj4php();
         Proj4php::$defs[ $opt->projection->ref ] = $opt->projection->proj4;
         $sourceProj = new Proj4phpProj('EPSG:4326',$proj4);
-        
+
         $tileMatrixSetLinkList = array();
         foreach( $tileMatrixSetList as $tileMatrixSet ) {
+
             $destProj  = new Proj4phpProj($tileMatrixSet->ref,$proj4);
-        
+            $destMaxExtent = $tileMatrixSet->extent;
+
             $sourceMinPt = new proj4phpPoint( $layerExtent[0], $layerExtent[1] );
-            $destMinPt   = $proj4->transform($sourceProj,$destProj,$sourceMinPt);
-              
+            $destMinPt   = new proj4phpPoint( $destMaxExtent[0], $destMaxExtent[1] );
+
             $sourceMaxPt = new proj4phpPoint( $layerExtent[2], $layerExtent[3] );
-            $destMaxPt   = $proj4->transform($sourceProj,$destProj,$sourceMaxPt);
-            
+            $destMaxPt   = new proj4phpPoint( $destMaxExtent[2], $destMaxExtent[3] );
+
+            try {
+                $transPt   = $proj4->transform($sourceProj,$destProj,$sourceMinPt);
+            } catch( Exception $e ) {
+                $destMinPt   = new proj4phpPoint( $destMaxExtent[0], $destMaxExtent[1] );
+            }
+            try {
+                $destMaxPt   = $proj4->transform($sourceProj,$destProj,$sourceMaxPt);
+            } catch( Exception $e ) {
+                $destMaxPt   = new proj4phpPoint( $destMaxExtent[2], $destMaxExtent[3] );
+            }
+
+
             $extent = array( $destMinPt->x, $destMinPt->y, $destMaxPt->x, $destMaxPt->y );
-            
+
             $tileMatrixList = $tileMatrixSet->tileMatrixList;
             $tileMatrixLimits = array();
             foreach( $tileMatrixList as $k=>$tileMatrix ) {
@@ -338,16 +370,16 @@ class lizmapTiler{
                     );
                 }
             }
-            
+
             $tileMatrixSetLink = (object) array(
                 'ref'=> $tileMatrixSet->ref,
                 'tileMatrixLimits'=>null
             );
             $tileMatrixSetLink->tileMatrixLimits = $tileMatrixLimits;
-            
+
             $tileMatrixSetLinkList[] = $tileMatrixSetLink;
         }
-        
+
         $l = (object) array(
             'id'=> $layer->id,
             'name'=> $layer->name,
@@ -363,7 +395,7 @@ class lizmapTiler{
         $l->tileMatrixSetLinkList = $tileMatrixSetLinkList;
         return $l;
     }
-    
+
     /**
      * Get tile bbox.
      *
@@ -371,15 +403,15 @@ class lizmapTiler{
     public static function getTileBbox( $tileMatrixSet, $tileMatrixId, $tileRow, $tileCol ){
         $tileWidth = 256.0;
         $tileHeight = 256.0;
-        
+
         $tileMatrix = $tileMatrixSet->$tileMatrixList[ (int) $tileMatrixId ];
-        
+
         $res = $tileMatrix->resolution;
         $minx = $tileMatrix->left + ( (int) $TileCol ) * ($tileWidth * $res);
         $miny = $tileMatrix->top - ( (int) $TileRow ) * ($tileHeight * $res);
         $maxx = $tileMatrix->left + ( (int) $TileCol + 1) * ($tileWidth * $res);
         $maxy = $tileMatrix->top - ( (int) $TileRow +1 ) * ($tileHeight * $res);
-        
+
         return (string) $minx .','. (string) $miny .','. (string) $maxx .','. (string) $maxy;
     }
 }
