@@ -365,7 +365,7 @@ var lizMap = function() {
             continue;
         var qgisName = null;
         if ( layer.name in cleanNameMap )
-            qgisName = getLayerNameByCleanName(name);
+            qgisName = getLayerNameByCleanName(layer.name);
         var configLayer = null;
         if ( qgisName )
             configLayer = config.layers[qgisName];
@@ -926,6 +926,7 @@ var lizMap = function() {
       if ('externalAccess' in layerConfig && layerConfig.externalAccess
        && 'layers' in layerConfig.externalAccess && 'url' in layerConfig.externalAccess ) {
           var extConfig = layerConfig.externalAccess;
+          extConfig.layers = decodeURI(extConfig.layers);
           serviceUrl = extConfig.url;
           layerWmsParams = {
             layers: extConfig.layers
@@ -3186,7 +3187,7 @@ var lizMap = function() {
 
     // Zoom to bbox
     var bbox = OpenLayers.Bounds.fromString( pparams.bbox );
-    map.zoomToExtent( bbox );
+    map.zoomToExtent( bbox, true );
 
   }
 
