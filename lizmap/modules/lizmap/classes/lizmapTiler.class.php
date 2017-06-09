@@ -72,6 +72,15 @@ class lizmapTiler{
             (float) $rootLayer->EX_GeographicBoundingBox->eastBoundLongitude,
             (float) $rootLayer->EX_GeographicBoundingBox->northBoundLatitude
         );
+        $geoExtent = self::$tileMatrixInfo['EPSG:4326']['extent'];
+        if ( $rootExtent[0] < $geoExtent[0] )
+            $rootExtent[0] = $geoExtent[0];
+        if ( $rootExtent[1] < $geoExtent[1] )
+            $rootExtent[1] = $geoExtent[1];
+        if ( $rootExtent[2] > $geoExtent[2] )
+            $rootExtent[2] = $geoExtent[2];
+        if ( $rootExtent[3] > $geoExtent[3] )
+            $rootExtent[3] = $geoExtent[3];
 
         $opt = $project->getOptions();
         $scales = array_merge( array(), $opt->mapScales );
@@ -230,6 +239,15 @@ class lizmapTiler{
             (float) $rootLayer->EX_GeographicBoundingBox->eastBoundLongitude,
             (float) $rootLayer->EX_GeographicBoundingBox->northBoundLatitude
         );
+        $geoExtent = self::$tileMatrixInfo['EPSG:4326']['extent'];
+        if ( $rootExtent[0] < $geoExtent[0] )
+            $rootExtent[0] = $geoExtent[0];
+        if ( $rootExtent[1] < $geoExtent[1] )
+            $rootExtent[1] = $geoExtent[1];
+        if ( $rootExtent[2] > $geoExtent[2] )
+            $rootExtent[2] = $geoExtent[2];
+        if ( $rootExtent[3] > $geoExtent[3] )
+            $rootExtent[3] = $geoExtent[3];
 
         $opt = $project->getOptions();
         $scales = array_merge( array(), $opt->mapScales );
@@ -300,13 +318,26 @@ class lizmapTiler{
 
         $tileMatrixSetLinkList = array();
         foreach( $tileMatrixSetList as $tileMatrixSet ) {
+
             $destProj  = new Proj4phpProj($tileMatrixSet->ref,$proj4);
+            $destMaxExtent = $tileMatrixSet->extent;
 
             $sourceMinPt = new proj4phpPoint( $layerExtent[0], $layerExtent[1] );
-            $destMinPt   = $proj4->transform($sourceProj,$destProj,$sourceMinPt);
+            $destMinPt   = new proj4phpPoint( $destMaxExtent[0], $destMaxExtent[1] );
 
             $sourceMaxPt = new proj4phpPoint( $layerExtent[2], $layerExtent[3] );
-            $destMaxPt   = $proj4->transform($sourceProj,$destProj,$sourceMaxPt);
+            $destMaxPt   = new proj4phpPoint( $destMaxExtent[2], $destMaxExtent[3] );
+
+            try {
+                $transPt   = $proj4->transform($sourceProj,$destProj,$sourceMinPt);
+            } catch( Exception $e ) {
+                $destMinPt   = new proj4phpPoint( $destMaxExtent[0], $destMaxExtent[1] );
+            }
+            try {
+                $destMaxPt   = $proj4->transform($sourceProj,$destProj,$sourceMaxPt);
+            } catch( Exception $e ) {
+                $destMaxPt   = new proj4phpPoint( $destMaxExtent[2], $destMaxExtent[3] );
+            }
 
             $extent = array( $destMinPt->x, $destMinPt->y, $destMaxPt->x, $destMaxPt->y );
 

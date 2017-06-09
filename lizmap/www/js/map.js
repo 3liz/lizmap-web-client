@@ -365,7 +365,7 @@ var lizMap = function() {
             continue;
         var qgisName = null;
         if ( layer.name in cleanNameMap )
-            qgisName = getLayerNameByCleanName(name);
+            qgisName = getLayerNameByCleanName(layer.name);
         var configLayer = null;
         if ( qgisName )
             configLayer = config.layers[qgisName];
@@ -926,6 +926,7 @@ var lizMap = function() {
       if ('externalAccess' in layerConfig && layerConfig.externalAccess
        && 'layers' in layerConfig.externalAccess && 'url' in layerConfig.externalAccess ) {
           var extConfig = layerConfig.externalAccess;
+          extConfig.layers = decodeURI(extConfig.layers);
           serviceUrl = extConfig.url;
           layerWmsParams = {
             layers: extConfig.layers
@@ -2067,6 +2068,8 @@ var lizMap = function() {
     // set the switcher content
     $('#switcher-layers').html(getSwitcherNode(tree,0));
     $('#switcher table.tree').treeTable({
+      stringExpand: lizDict['tree.button.expand'],
+      stringCollapse: lizDict['tree.button.collapse'],
       onNodeShow: function() {
         //updateSwitcherSize();
         var self = $(this);
@@ -3097,10 +3100,6 @@ var lizMap = function() {
   // Set the map accordingly to
   function runPermalink( pparams ){
 
-    // Zoom to bbox
-    var bbox = OpenLayers.Bounds.fromString( pparams.bbox );
-    map.zoomToExtent( bbox );
-
     // Activate layers
     var players = pparams.layers;
 
@@ -3185,6 +3184,10 @@ var lizMap = function() {
         );
       }
     }
+
+    // Zoom to bbox
+    var bbox = OpenLayers.Bounds.fromString( pparams.bbox );
+    map.zoomToExtent( bbox, true );
 
   }
 
@@ -3396,8 +3399,10 @@ var lizMap = function() {
                 return false;
             }
         });
-        if ( refreshInfo  )
+        if ( refreshInfo  ) {
+            $('div.lizmapPopupContent input.lizmap-popup-layer-feature-id[value="'+evt.layerId+'.'+evt.featureId+'"]').parent().remove();
             info.request( lastPx, {} );
+        }
         return;
      }
      lizMap.events.on({
@@ -3424,7 +3429,19 @@ var lizMap = function() {
             refreshGetFeatureInfo(evt);
         },
         "lizmapeditionfeaturedeleted": function( evt ) {
-            refreshGetFeatureInfo(evt);
+            if ( $('div.lizmapPopupContent input.lizmap-popup-layer-feature-id').length > 1 ) {
+                refreshGetFeatureInfo(evt);
+            } else {
+                if (map.popups.length != 0)
+                    map.removePopup(map.popups[0]);
+
+                if( 'popupLocation' in config.options && config.options.popupLocation != 'map' ){
+                    var pcontent = '<div class="lizmapPopupContent"><h4>'+lizDict['popup.msg.no.result']+'</h4></div>';
+                    $('#popupcontent div.menu-content').html(pcontent);
+                    if ( $('#mapmenu .nav-list > li.popupcontent').hasClass('active') )
+                        $('#button-popupcontent').click();
+                }
+            }
         }
      });
      map.addControl(info);

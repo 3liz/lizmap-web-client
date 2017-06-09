@@ -59,17 +59,19 @@ var lizLayerActionButtons = function() {
 
     function getLayerMetadataHtml( aName ){
 
-        var html = ''; var metadatas = null;
+        var html = '';
+        var metadatas = {
+            title: aName,
+            type: 'layer',
+            abstract: null,
+            link: null,
+            styles: null,
+            isBaselayer: false
+        };
         if( aName in lizMap.config.layers ){
             var layerConfig = lizMap.config.layers[aName];
-            metadatas = {
-                title: layerConfig.title,
-                type: layerConfig.type,
-                abstract: null,
-                link: null,
-                styles: null,
-                isBaselayer: false
-            };
+            metadatas.title = layerConfig.title;
+            metadatas.type = layerConfig.type;
             if( layerConfig.abstract )
                 metadatas.abstract = layerConfig.abstract;
             if( layerConfig.link  )
@@ -78,9 +80,7 @@ var lizLayerActionButtons = function() {
                 metadatas.styles = layerConfig.styles
         }
         if( lizMap.map.baseLayer && lizMap.map.baseLayer.name == aName ){
-            metadatas.abstract = metadatas.title;
             metadatas.type = 'layer';
-            metadatas.link = null;
             metadatas.isBaselayer = true;
         }
 
@@ -464,6 +464,10 @@ var lizLayerActionButtons = function() {
         // Get item Lizmap config
         if( itemType == 'baselayer'){
             itemName = evt.name;
+            var layerName = lizMap.getLayerNameByCleanName( lizMap.cleanName(evt.name) );
+            if( layerName ){
+                itemName = layerName;
+            }
         }else{
             var layerName = lizMap.getLayerNameByCleanName( lizMap.cleanName(evt.name) );
             if( layerName ){
