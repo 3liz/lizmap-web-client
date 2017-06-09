@@ -1976,8 +1976,10 @@ var lizMap = function() {
               lname = shortNameMap[typeName];
             } else {
               for (lbl in config.locateByLayer) {
-                if (lbl.split(' ').join('_') == typeName)
+                if (lbl.split(' ').join('_') == typeName) {
                   lname = lbl;
+                  break;
+                }
               }
             }
             if (lname != '') {

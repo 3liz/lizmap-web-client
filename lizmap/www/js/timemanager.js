@@ -57,13 +57,27 @@ var lizTimemanager = function() {
                 ,OpenLayers.Util.getParameterString(lizUrls.params)
             );
 
-              var featureTypes = lizMap.getVectorLayerFeatureTypes();
-              if (featureTypes.length == 0 ){
+            var featureTypes = lizMap.getVectorLayerFeatureTypes();
+            if (featureTypes.length == 0 ){
                 //what to deactivate ?
-              } else {
+            } else {
                 featureTypes.each( function(){
-                  var self = $(this);
-                  var lname = self.find('Name').text();
+                    var self = $(this);
+                    var lname = self.find('Name').text();
+                    var typeName = self.find('Name').text();
+                    var lname = '';
+                    if (typeName in config.timemanagerLayers)
+                        lname = typeName
+                    else if ( lizMap.getNameByShortName(typeName) ){
+                        lname = lizMap.getNameByShortName(typeName);
+                    } else {
+                        for (ltl in config.timemanagerLayers) {
+                            if (ltl.split(' ').join('_') == typeName) {
+                                lname = ltl;
+                                break;
+                            }
+                        }
+                    }
                   if (lname in config.timemanagerLayers) {
                     // Get layers timemanager config information
                     tmLayerConfig = config.timemanagerLayers[lname];
@@ -125,12 +139,17 @@ var lizTimemanager = function() {
                         continue;
                     }
 
+                    // get typeName
+                    var typeName = id.split(' ').join('_');
+                    if ( 'shortname' in aConfig && aConfig.shortname != '' )
+                      typeName = aConfig.shortname;
+
                     // WFS parameters
                     var wfsOptions = {
                         'SERVICE':'WFS'
                         ,'VERSION':'1.0.0'
                         ,'REQUEST':'GetFeature'
-                        ,'TYPENAME': id
+                        ,'TYPENAME': typeName
                         ,'OUTPUTFORMAT':'GeoJSON'
                     };
 
@@ -205,7 +224,7 @@ var lizTimemanager = function() {
                             'SERVICE':'WFS'
                            ,'VERSION':'1.0.0'
                            ,'REQUEST':'DescribeFeatureType'
-                           ,'TYPENAME':id
+                           ,'TYPENAME':typeName
                            ,'OUTPUTFORMAT':'JSON'
                         }, function(describe) {
 
@@ -329,7 +348,12 @@ var lizTimemanager = function() {
 
             function setLayerStyleMap(aName){
                 var format_sld = new OpenLayers.Format.SLD();
-                var wmsLayer = aName.split("@")[1];
+                var id = aName.split("@")[1];
+                // Get layer config
+                var aConfig = config.layers[id];
+                var wmsLayer = id;
+                if ( 'shortname' in aConfig && aConfig.shortname != '' )
+                      wmsLayer = aConfig.shortname;
                 // WFS parameters
                 var wmsOptions = {
                     'SERVICE':'WMS'
