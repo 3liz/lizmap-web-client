@@ -209,7 +209,6 @@ var lizLayerActionButtons = function() {
 
 
             // Link
-            console.log(metadatas);
             if( metadatas.link  ){
                 html+= '    <button class="btn link layer-info" name="link" title="'+lizDict['layer.metadata.layer.info.see']+'" value="'+metadatas.link+'">'+lizDict['layer.metadata.layer.info.see']+'</button>';
             }
