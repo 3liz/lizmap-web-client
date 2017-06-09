@@ -361,7 +361,7 @@ var lizMap = function() {
             continue;
         var qgisName = null;
         if ( layer.name in cleanNameMap )
-            qgisName = getLayerNameByCleanName(name);
+            qgisName = getLayerNameByCleanName(layer.name);
         var configLayer = null;
         if ( qgisName )
             configLayer = config.layers[qgisName];
@@ -504,7 +504,6 @@ var lizMap = function() {
       && 'externalAccess' in layerConfig && layerConfig.externalAccess
       && 'layers' in layerConfig.externalAccess && 'url' in layerConfig.externalAccess) {
         var externalAccess = layerConfig.externalAccess;
-        console.log(externalAccess);
         var legendParams = {SERVICE: "WMS",
                       VERSION: "1.3.0",
                       REQUEST: "GetLegendGraphic",
@@ -923,6 +922,7 @@ var lizMap = function() {
       if ('externalAccess' in layerConfig && layerConfig.externalAccess
        && 'layers' in layerConfig.externalAccess && 'url' in layerConfig.externalAccess ) {
           var extConfig = layerConfig.externalAccess;
+          extConfig.layers = decodeURI(extConfig.layers);
           serviceUrl = extConfig.url;
           layerWmsParams = {
             layers: extConfig.layers
