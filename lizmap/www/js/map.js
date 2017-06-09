@@ -3071,7 +3071,7 @@ var lizMap = function() {
 
     // Zoom to bbox
     var bbox = OpenLayers.Bounds.fromString( pparams.bbox );
-    map.zoomToExtent( bbox );
+    map.zoomToExtent( bbox, true );
 
   }
 
