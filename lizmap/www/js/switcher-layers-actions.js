@@ -465,6 +465,10 @@ var lizLayerActionButtons = function() {
         // Get item Lizmap config
         if( itemType == 'baselayer'){
             itemName = evt.name;
+            var layerName = lizMap.getLayerNameByCleanName( lizMap.cleanName(evt.name) );
+            if( layerName ){
+                itemName = layerName;
+            }
         }else{
             var layerName = lizMap.getLayerNameByCleanName( lizMap.cleanName(evt.name) );
             if( layerName ){
