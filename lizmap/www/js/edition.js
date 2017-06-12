@@ -923,15 +923,14 @@ var lizEdition = function() {
     function getFormLayoutNodeHtml(node, parent){
         var formId = $('#edition-form-container form').attr('id');
         if( node.type == 'tab' ){
-
             // Ul item for tab nav
             var navHtml = '<li><a href="#edition-form-tab-';
-            navHtml+= lizMap.cleanName(node.name);
+            navHtml+= lizMap.cleanName(node.name).toLowerCase();
             navHtml+= '" data-toggle="tab">' + node.name + '</a></li>';
 
             // Tab item content
             var tabHtml = '<div class="tab-pane" id="edition-form-tab-';
-            tabHtml+= lizMap.cleanName(node.name);
+            tabHtml+= lizMap.cleanName(node.name).toLowerCase();
             tabHtml+= '" ></div>';
 
             // If parent is root, simply add ul and item to already existing tab container
@@ -942,9 +941,9 @@ var lizEdition = function() {
             // Else we must first be sure tab container exists in parent group
             // Then append containt
             else{
-                var tabContainerNavId = 'edition-form-tabs-' + lizMap.cleanName(parent.name);
-                var tabContainerDivId = 'edition-form-layout-' + lizMap.cleanName(parent.name);
-                var parentGroup = $('#' + formId + '_group_' + lizMap.cleanName(parent.name) );
+                var tabContainerNavId = 'edition-form-tabs-' + lizMap.cleanName(parent.name).toLowerCase();
+                var tabContainerDivId = 'edition-form-layout-' + lizMap.cleanName(parent.name).toLowerCase();
+                var parentGroup = $('#' + formId + '_group_' + lizMap.cleanName(parent.name).toLowerCase() );
                 if( !$('#' + tabContainerNavId).length ){
                     var tabContainer = '<ul class="nav nav-tabs" id="';
                     tabContainer+= tabContainerNavId;
@@ -965,22 +964,22 @@ var lizEdition = function() {
             html+= node.name;
             html+= '</legend>';
             html+= '<div class="jforms-table-group" border="0" id="';
-            html+= formId + '_group_' + lizMap.cleanName(node.name);
+            html+= formId + '_group_' + lizMap.cleanName(node.name).toLowerCase();
             html+= '">';
             html+= '</div>';
             html+= '</fieldset>';
-            $('#edition-form-tab-' + lizMap.cleanName(parent.name) ).append(html)
+            $('#edition-form-tab-' + lizMap.cleanName(parent.name).toLowerCase() ).append(html)
         }
         else if( node.type == 'field' ){
             html = '';
-            var field = $('#' + formId + '_' + lizMap.cleanName(node.name) + '_label');
+            var field = $('#' + formId + '_' + lizMap.cleanName(node.name).toLowerCase() + '_label');
             var fieldContainer = field.parents().closest('div.control-group');
-            var parentGroup = $('#' + formId + '_group_' + lizMap.cleanName(parent.name) );
+            var parentGroup = $('#' + formId + '_group_' + lizMap.cleanName(parent.name).toLowerCase() );
             if( !parentGroup.length )
-                parentGroup = $('#edition-form-tab-' + lizMap.cleanName(parent.name));
+                parentGroup = $('#edition-form-tab-' + lizMap.cleanName(parent.name).toLowerCase());
             fieldContainer.appendTo(parentGroup);
             // Do it also for _choice input (photos and files)
-            var field = $('#' + formId + '_' + lizMap.cleanName(node.name) + '_choice_label');
+            var field = $('#' + formId + '_' + lizMap.cleanName(node.name).toLowerCase() + '_choice_label');
             if( field.length){
                 var fieldContainer = field.parents().closest('div.control-group');
                 fieldContainer.appendTo(parentGroup);

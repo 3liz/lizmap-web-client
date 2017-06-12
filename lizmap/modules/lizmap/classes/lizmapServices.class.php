@@ -20,6 +20,7 @@ class lizmapServices{
     // services properties
     private $properties = array(
       'appName',
+      'qgisServerVersion',
       'wmsServerURL',
       'wmsPublicUrlList',
       'wmsMaxWidth',
@@ -44,6 +45,7 @@ class lizmapServices{
 
     // services properties
     private $sensitiveProperties = array(
+      'qgisServerVersion',
       'wmsServerURL',
       'wmsPublicUrlList',
       'wmsMaxWidth',
@@ -66,6 +68,8 @@ class lizmapServices{
 
     // Wms map server
     public $appName = 'Lizmap';
+    // QGIS Server version
+    public $qgisServerVersion = '2.14';
     // Wms map server
     public $wmsServerURL = '';
     // Public Wms url list
