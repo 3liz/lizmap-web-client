@@ -1020,6 +1020,9 @@ class lizmapProject{
         else
             $configJson->options->wmsMaxHeight = $services->wmsMaxHeight;
 
+        // Add QGS Server version
+        $configJson->options->qgisServerVersion = $services->qgisServerVersion;
+
         // Update config with layer relations
         $relations = $this->getRelations();
         if( $relations )

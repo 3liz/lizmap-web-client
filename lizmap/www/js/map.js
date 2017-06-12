@@ -1541,25 +1541,11 @@ var lizMap = function() {
       locate['features'] = {};
       var features = data.features;
       if( locate.crs != 'EPSG:4326' && features.length != 0) {
+          // load projection to be sure to have the definition
           loadProjDefinition( locate.crs, function( aProj ) {
-              var locateBounds = OpenLayers.Bounds.fromArray(locate.bbox);
-
-              var feat = features[0];
-              var geojson = new OpenLayers.Format.GeoJSON();
-              var olFeat = geojson.read(feat);
-              var dataBounds = olFeat[0].geometry.getBounds();
-
-              var worldBounds = OpenLayers.Bounds.fromArray([-180,-90,180,90]);
-              if( worldBounds.containsBounds( dataBounds ) ) {
-                  var mapBounds = map.maxExtent.clone().transform(map.getProjection(), 'EPSG:4326');
-                  if( mapBounds.intersectsBounds( dataBounds ) ) {
-                    var tDataBounds = dataBounds.clone().transform(locate.crs, 'EPSG:4326');
-                    if ( tDataBounds.getWidth()*tDataBounds.getHeight() < 0.0000028649946082102277 ) {
-                        locate.bbox = locateBounds.transform(locate.crs, 'EPSG:4326').toArray();
-                        locate.crs = 'EPSG:4326';
-                    }
-                  }
-              }
+              // in QGIS server > 2.14 GeoJSON is in EPSG:4326
+              if ( 'qgisServerVersion' in config.options && config.options.qgisServerVersion != '2.14' )
+                locate.crs = 'EPSG:4326';
           });
       }
 
@@ -3695,6 +3681,11 @@ var lizMap = function() {
                   }
               }
           });
+      }
+
+      if ( 'qgisServerVersion' in config.options && config.options.qgisServerVersion != '2.14' ) {
+        printLayers.reverse();
+        styleLayers.reverse();
       }
 
       url += '&'+dragCtrl.layout.mapId+':LAYERS='+printLayers.join(',');
