@@ -268,6 +268,9 @@ class lizmapProject{
             foreach( $shortNames as $sname ) {
                 $sname = (string) $sname;
                 $xmlLayer = $qgs_xml->xpath( "//maplayer[shortname='$sname']" );
+                if(count($xmlLayer) == 0){
+                    continue;
+                }
                 $xmlLayer = $xmlLayer[0];
                 $name = (string)$xmlLayer->layername;
                 if ( property_exists($this->cfg->layers, $name ) )
@@ -873,6 +876,9 @@ class lizmapProject{
             // update locateByLayer with alias and filter information
             foreach( $locateByLayer as $k=>$v) {
                 $xmlLayer = $this->getXmlLayer2($xml, $v->layerId );
+                if(count($xmlLayer) == 0){
+                    continue;
+                }
                 $xmlLayerZero = $xmlLayer[0];
                 // aliases
                 $alias = $xmlLayerZero->xpath("aliases/alias[@field='".$v->fieldName."']");
@@ -943,6 +949,9 @@ class lizmapProject{
                 jLog::log('Spatialite is not available', 'error');
                 foreach( $editionLayers as $key=>$obj ){
                     $layerXml = $this->getXmlLayer2($xml, $obj->layerId );
+                    if(count($layerXml) == 0){
+                        continue;
+                    }
                     $layerXmlZero = $layerXml[0];
                     $provider = $layerXmlZero->xpath('provider');
                     $provider = (string)$provider[0];
