@@ -4362,7 +4362,7 @@ OpenLayers.Control.HighlightFeature = OpenLayers.Class(OpenLayers.Control, {
         var tf = tconfig['fields'].trim();
         var tooltipFields = tf.split(/[\s,]+/);
         var hiddenFields = [];
-        if ( 'attributeLayers' in lizMap.config ) {
+        if ( 'attributeLayers' in lizMap.config && lname in lizMap.config.attributeLayers ) {
             var attconfig = lizMap.config.attributeLayers[lname];
             var hf = attconfig['hiddenFields'].trim();
             var hiddenFields = hf.split(/[\s,]+/);
@@ -4468,6 +4468,10 @@ OpenLayers.Control.HighlightFeature = OpenLayers.Class(OpenLayers.Control, {
                             tooltipControl.style.strokeColor = 'cyan';
                     else
                         tooltipControl.style.strokeColor = 'transparent';
+                    if ( tfeatures.length != 0 && tfeatures[0].geometry.id.startsWith('OpenLayers_Geometry_LineString') )
+                        tooltipControl.style.strokeWidth = 10;
+                    else
+                        tooltipControl.style.strokeWidth = 3;
                     tooltipControl.activate();
                     $('#tooltip-layer-list').removeClass('loading').removeAttr('disabled');
                 });
