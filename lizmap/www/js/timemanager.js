@@ -81,17 +81,6 @@ var lizTimemanager = function() {
                   if (lname in config.timemanagerLayers) {
                     // Get layers timemanager config information
                     tmLayerConfig = config.timemanagerLayers[lname];
-                    tmLayerConfig['crs'] = self.find('SRS').text();
-                    if ( tmLayerConfig.crs in Proj4js.defs )
-                      new OpenLayers.Projection(tmLayerConfig.crs);
-                    else
-                      $.get(service, {
-                        'REQUEST':'GetProj4'
-                        ,'authid': tmLayerConfig.crs
-                      }, function ( aText ) {
-                        Proj4js.defs[tmLayerConfig.crs] = aText;
-                        new OpenLayers.Projection(tmLayerConfig.crs);
-                      }, 'text');
                     var bbox = self.find('LatLongBoundingBox');
                     tmLayerConfig['bbox'] = [
                       parseFloat(bbox.attr('minx'))
@@ -100,6 +89,35 @@ var lizTimemanager = function() {
                      ,parseFloat(bbox.attr('maxy'))
                     ];
                     tmLayerConfig['title'] = self.find('Title').text();
+                    tmLayerConfig['crs'] = self.find('SRS').text();
+                    if ( tmLayerConfig.crs in Proj4js.defs ) {
+                        new OpenLayers.Projection(tmLayerConfig.crs);
+
+                        // in QGIS server > 2.14 GeoJSON is in EPSG:4326
+                        if ( 'qgisServerVersion' in config.options && config.options.qgisServerVersion != '2.14' ) {
+                            tmLayerConfig['crs'] = 'EPSG:4326';
+                            var bbox = tmLayerConfig['bbox'];
+                            var extent = new OpenLayers.Bounds(Number(bbox[0]),Number(bbox[1]),Number(bbox[2]),Number(bbox[3]));
+                            extent.transform(tmLayerConfig.crs, 'EPSG:4326');
+                            tmLayerConfig['bbox'] = extent.toArray();
+                        }
+                    } else
+                        $.get(service, {
+                            'REQUEST':'GetProj4'
+                           ,'authid': tmLayerConfig.crs
+                        }, function ( aText ) {
+                            Proj4js.defs[tmLayerConfig.crs] = aText;
+                            new OpenLayers.Projection(tmLayerConfig.crs);
+
+                            // in QGIS server > 2.14 GeoJSON is in EPSG:4326
+                            if ( 'qgisServerVersion' in config.options && config.options.qgisServerVersion != '2.14' ) {
+                                tmLayerConfig['crs'] = 'EPSG:4326';
+                                var bbox = tmLayerConfig['bbox'];
+                                var extent = new OpenLayers.Bounds(Number(bbox[0]),Number(bbox[1]),Number(bbox[2]),Number(bbox[3]));
+                                extent.transform(tmLayerConfig.crs, 'EPSG:4326');
+                                tmLayerConfig['bbox'] = extent.toArray();
+                            }
+                        }, 'text');
                   }
                 });
               }
@@ -190,6 +208,22 @@ var lizTimemanager = function() {
                         loadend: function(evt) {
                             setAnimationBoundariesFromLayer(evt.object.name);
                             setLayerStyleMap(evt.object.name);
+                            // Get aliases and types information
+                            if ( !('alias' in aConfig) || !aConfig['alias']) {
+                                $.get(service, {
+                                    'SERVICE':'WFS'
+                                   ,'VERSION':'1.0.0'
+                                   ,'REQUEST':'DescribeFeatureType'
+                                   ,'TYPENAME':typeName
+                                   ,'OUTPUTFORMAT':'JSON'
+                                }, function(describe) {
+
+                                    aConfig['alias'] = describe.aliases;
+                                    if ('types' in describe)
+                                        aConfig['types'] = describe.types;
+
+                                },'json');
+                            }
                         }
 
                     });
@@ -218,22 +252,6 @@ var lizTimemanager = function() {
 
                     lizMap.map.addLayer(layer);
                     layer.setVisibility(true);
-
-                    if ( !('alias' in aConfig) || !aConfig['alias']) {
-                        $.get(service, {
-                            'SERVICE':'WFS'
-                           ,'VERSION':'1.0.0'
-                           ,'REQUEST':'DescribeFeatureType'
-                           ,'TYPENAME':typeName
-                           ,'OUTPUTFORMAT':'JSON'
-                        }, function(describe) {
-
-                            aConfig['alias'] = describe.aliases;
-                            if ('types' in describe)
-                                aConfig['types'] = describe.types;
-
-                        },'json');
-                    }
                 }
 
 
@@ -351,7 +369,7 @@ var lizTimemanager = function() {
                 var id = aName.split("@")[1];
                 // Get layer config
                 var aConfig = config.layers[id];
-                var wmsLayer = id;
+                var wmsLayer = id.split(' ').join('_');
                 if ( 'shortname' in aConfig && aConfig.shortname != '' )
                       wmsLayer = aConfig.shortname;
                 // WFS parameters
