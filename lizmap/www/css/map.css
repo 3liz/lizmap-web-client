@@ -2209,19 +2209,22 @@ div.tooltip {
 /* Edition style */
 #edition .nav-tabs > li > a {
   font-size: 1.2em;
-  color: gray;
+  color: darkgray;
+  padding: 5px;
+  border: 1px solid darkgrey;
+  border-bottom-color: transparent;
 }
 #edition .nav > li > a:hover, .nav > li > a:focus {
     text-decoration: none;
 }
 #edition .nav-tabs > li > a:hover, .nav-tabs > li > a:focus {
-    border-color: lightgrey;
+    border-color: darkgrey;
 }
 #edition .nav-tabs > .active > a, .nav-tabs > .active > a:hover, .nav-tabs > .active > a:focus {
     color: black;
     cursor: default;
     background-color: lightgrey;
-    border: 1px solid lightgrey;
+    border: 1px solid darkgray;
     border-bottom-color: transparent;
 }
 #edition div.tab-content {
