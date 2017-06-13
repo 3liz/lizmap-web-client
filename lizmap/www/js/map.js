@@ -2342,6 +2342,8 @@ var lizMap = function() {
           var startupBaselayer = config.options['startupBaselayer'];
           if ( startupBaselayer in startupBaselayersReplacement )
             startupBaselayer = startupBaselayersReplacement[startupBaselayer];
+          else if ( startupBaselayer in config.layers )
+            startupBaselayer = cleanName(startupBaselayer);
           if ( $('#switcher-baselayer-select option[value="'+startupBaselayer+'"]').length != 0 )
             $('#switcher-baselayer-select').val(startupBaselayer).change();
       }
