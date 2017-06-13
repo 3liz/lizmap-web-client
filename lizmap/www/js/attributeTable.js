@@ -1026,10 +1026,10 @@ var lizAttributeTable = function() {
                     cAliases = config.layers[aName]['alias'];
                 }
                 for( key in cAliases){
-			        if(cAliases[key]==""){
-			            cAliases[key]=key;
-			        }
-		        }
+                    if(cAliases[key]==""){
+                        cAliases[key]=key;
+                    }
+                }
                 var cTypes = {};
                 if( 'types' in config.layers[aName] )
                     cTypes = config.layers[aName]['types'];
@@ -1732,33 +1732,13 @@ var lizAttributeTable = function() {
 
                     // verifying the feature CRS
                     if( !aConfig.featureCrs && data.features.length != 0) {
+                        // load projection to be sure to have the definition
                         lizMap.loadProjDefinition( aConfig.crs, function( aProj ) {
-                            var dataBounds = OpenLayers.Bounds.fromArray(data.features[0].bbox);
-                            if( data.features.length > 1 && data.features[1].bbox ) {
-                                dataBounds.extend( OpenLayers.Bounds.fromArray(data.features[1].bbox) );
-                            }
-                            else if( data.features.length > 2 && data.features[2].bbox ) {
-                                dataBounds.extend( OpenLayers.Bounds.fromArray(data.features[2].bbox) );
-                            }
-
-                            var worldBounds = OpenLayers.Bounds.fromArray([-180,-90,180,90]);
-                            if( worldBounds.containsBounds( dataBounds ) ) {
-                                var map = lizMap.map;
-                                var mapBounds = map.maxExtent.clone().transform(map.getProjection(), 'EPSG:4326');
-                                if( mapBounds.intersectsBounds( dataBounds ) ) {
-                                    var tDataBounds = dataBounds.clone().transform(aProj, 'EPSG:4326');
-                                    if ( tDataBounds.getWidth()*tDataBounds.getHeight() < 0.0000028649946082102277 ) {
-                                        if( atConfig ){
-                                            var atBounds = OpenLayers.Bounds.fromArray(atConfig.bbox);
-                                            atConfig.bbox = atBounds.transform(aConfig['featureCrs'], 'EPSG:4326').toArray();
-                                        }
-                                        aConfig['featureCrs'] = 'EPSG:4326';
-                                    }
-                                }
-                            }
-
-                            if( !aConfig.featureCrs )
-                              aConfig['featureCrs'] = aConfig.crs;
+                            // in QGIS server > 2.14 GeoJSON is in EPSG:4326
+                            if ( 'qgisServerVersion' in config.options && config.options.qgisServerVersion != '2.14' )
+                                aConfig['featureCrs'] = 'EPSG:4326';
+                            else if ( !aConfig.featureCrs )
+                                aConfig['featureCrs'] = aConfig.crs;
 
                         });
                     }

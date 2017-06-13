@@ -198,6 +198,10 @@ var lizMap = function() {
     var layerName = null;
     if( cleanName in layerCleanNames )
       layerName = layerCleanNames[cleanName];
+    if ( layerName == null && cleanName in cleanNameMap ) {
+      layerName = cleanNameMap[cleanName];
+      layerCleanNames[cleanName] = layerName;
+    }
     return layerName;
   }
 
@@ -1549,25 +1553,11 @@ var lizMap = function() {
       locate['features'] = {};
       var features = data.features;
       if( locate.crs != 'EPSG:4326' && features.length != 0) {
+          // load projection to be sure to have the definition
           loadProjDefinition( locate.crs, function( aProj ) {
-              var locateBounds = OpenLayers.Bounds.fromArray(locate.bbox);
-
-              var feat = features[0];
-              var geojson = new OpenLayers.Format.GeoJSON();
-              var olFeat = geojson.read(feat);
-              var dataBounds = olFeat[0].geometry.getBounds();
-
-              var worldBounds = OpenLayers.Bounds.fromArray([-180,-90,180,90]);
-              if( worldBounds.containsBounds( dataBounds ) ) {
-                  var mapBounds = map.maxExtent.clone().transform(map.getProjection(), 'EPSG:4326');
-                  if( mapBounds.intersectsBounds( dataBounds ) ) {
-                    var tDataBounds = dataBounds.clone().transform(locate.crs, 'EPSG:4326');
-                    if ( tDataBounds.getWidth()*tDataBounds.getHeight() < 0.0000028649946082102277 ) {
-                        locate.bbox = locateBounds.transform(locate.crs, 'EPSG:4326').toArray();
-                        locate.crs = 'EPSG:4326';
-                    }
-                  }
-              }
+              // in QGIS server > 2.14 GeoJSON is in EPSG:4326
+              if ( 'qgisServerVersion' in config.options && config.options.qgisServerVersion != '2.14' )
+                locate.crs = 'EPSG:4326';
           });
       }
 
@@ -1984,8 +1974,10 @@ var lizMap = function() {
               lname = shortNameMap[typeName];
             } else {
               for (lbl in config.locateByLayer) {
-                if (lbl.split(' ').join('_') == typeName)
+                if (lbl.split(' ').join('_') == typeName) {
                   lname = lbl;
+                  break;
+                }
               }
             }
             if (lname != '') {
@@ -2435,6 +2427,9 @@ var lizMap = function() {
           if ( startupBaselayer in startupBaselayersReplacement ){
             startupBaselayer = startupBaselayersReplacement[startupBaselayer];
           }
+          else if ( startupBaselayer in config.layers ) {
+            startupBaselayer = cleanName(startupBaselayer);
+	  }
           if ( $('#switcher-baselayer-select option[value="'+startupBaselayer+'"]').length != 0){
             $('#switcher-baselayer-select').val(startupBaselayer).change();
           }else{
@@ -3822,6 +3817,11 @@ var lizMap = function() {
           });
       }
 
+      if ( 'qgisServerVersion' in config.options && config.options.qgisServerVersion != '2.14' ) {
+        printLayers.reverse();
+        styleLayers.reverse();
+      }
+
       url += '&'+dragCtrl.layout.mapId+':LAYERS='+printLayers.join(',');
       url += '&'+dragCtrl.layout.mapId+':STYLES='+styleLayers.join(',');
 
@@ -4371,7 +4371,7 @@ OpenLayers.Control.HighlightFeature = OpenLayers.Class(OpenLayers.Control, {
         var tf = tconfig['fields'].trim();
         var tooltipFields = tf.split(/[\s,]+/);
         var hiddenFields = [];
-        if ( 'attributeLayers' in lizMap.config ) {
+        if ( 'attributeLayers' in lizMap.config && lname in lizMap.config.attributeLayers ) {
             var attconfig = lizMap.config.attributeLayers[lname];
             var hf = attconfig['hiddenFields'].trim();
             var hiddenFields = hf.split(/[\s,]+/);
@@ -4477,6 +4477,10 @@ OpenLayers.Control.HighlightFeature = OpenLayers.Class(OpenLayers.Control, {
                             tooltipControl.style.strokeColor = 'cyan';
                     else
                         tooltipControl.style.strokeColor = 'transparent';
+                    if ( tfeatures.length != 0 && tfeatures[0].geometry.id.startsWith('OpenLayers_Geometry_LineString') )
+                        tooltipControl.style.strokeWidth = 10;
+                    else
+                        tooltipControl.style.strokeWidth = 3;
                     tooltipControl.activate();
                     $('#tooltip-layer-list').removeClass('loading').removeAttr('disabled');
                 });
@@ -6687,7 +6691,7 @@ lizMap.events.on({
 
           // Change repository and project in service URL
           var reg = new RegExp('repository\=(.+)&project\=(.+)', 'g');
-          if (!externalService instanceof Array)
+          if (! (externalService instanceof Array) )
             var url = externalService.replace(reg, 'repository='+layerConfig.repository+'&project='+layerConfig.project);
           else
             var url = jQuery.map(externalService, function(element) { return element.replace(reg, 'repository='+layerConfig.repository+'&project='+layerConfig.project) });

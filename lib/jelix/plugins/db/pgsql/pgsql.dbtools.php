@@ -138,14 +138,24 @@ class pgsqlDbTools extends jDbTools {
      * retrieve the list of fields of a table
      * @param string $tableName the name of the table
      * @param string $sequence the sequence used to auto increment the primary key
+     * @param string $schemaName the name of the schema
      * @return array keys are field names and values are jDbFieldProperties objects
      * @throws Exception
      */
-    public function getFieldList ($tableName, $sequence='') {
+    public function getFieldList ($tableName, $sequence='', $schemaName='') {
         $tableName = $this->_conn->prefixTable($tableName);
 
         // get table informations
-        $sql ='SELECT oid, relhaspkey, relhasindex FROM pg_class WHERE relname = \''.$tableName.'\'';
+        $sql =' SELECT pg_class.oid, pg_class.relhaspkey, pg_class.relhasindex';
+        $sql.=' FROM pg_class';
+        if(!empty($schemaName)){
+            $sql.= ' JOIN pg_catalog.pg_namespace n ON n.oid = pg_class.relnamespace';
+        }
+        $sql.=' WHERE relname = \''.$tableName.'\'';
+        if(!empty($schemaName)){
+            $sql.= ' AND n.nspname = \''.$schemaName.'\'';
+        }
+
         $rs = $this->_conn->query ($sql);
         if (! ($table = $rs->fetch())) {
             throw new Exception('dbtools, pgsql: unknown table');

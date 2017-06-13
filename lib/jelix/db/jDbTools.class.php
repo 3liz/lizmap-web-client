@@ -274,7 +274,7 @@ abstract class jDbTools {
     * @param string $sequence  the sequence used to auto increment the primary key
     * @return   array    keys are field names and values are jDbFieldProperties objects
     */
-    abstract public function getFieldList ($tableName, $sequence='');
+    abstract public function getFieldList ($tableName, $sequence='', $schemaName='');
 
     /**
      * regular expression to detect comments and end of query

@@ -401,7 +401,7 @@ class editionCtrl extends jController {
     $tools = $cnx->tools();
     $sequence = null;
 
-    $fields = $tools->getFieldList($tableAlone, $sequence);
+    $fields = $tools->getFieldList($tableAlone, $sequence, $schema);
     $wfsFields = $this->layer->getWfsFields();
 
     $this->dataFields = array();

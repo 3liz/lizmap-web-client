@@ -5,6 +5,12 @@
   <label locale="admin~admin.form.admin_services.appName.label"/>
 </input>
 
+<menulist ref="qgisServerVersion" required="true">
+  <label locale="admin~admin.form.admin_services.qgisServerVersion.label"/>
+  <item value="2.14" selected="true" locale="admin~admin.form.admin_services.qgisServerVersion.214.label"/>
+  <item value="2.18" locale="admin~admin.form.admin_services.qgisServerVersion.218.label"/>
+</menulist>
+
 <input ref="wmsServerURL" type="string" required="true" defaultvalue="http://127.0.0.1/cgi-bin/qgis_mapserv.fcgi">
   <label locale="admin~admin.form.admin_services.wmsServerURL.label"/>
 </input>
