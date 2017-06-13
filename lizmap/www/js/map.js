@@ -6448,14 +6448,10 @@ lizMap.events.on({
 
           // Change repository and project in service URL
           var reg = new RegExp('repository\=(.+)&project\=(.+)', 'g');
-          if (!externalService instanceof Array)
+          if (! (externalService instanceof Array) )
             var url = externalService.replace(reg, 'repository='+layerConfig.repository+'&project='+layerConfig.project);
           else
             var url = jQuery.map(externalService, function(element) { return element.replace(reg, 'repository='+layerConfig.repository+'&project='+layerConfig.project) });
-
-
-
-
 
           // creating the base layer
           layerConfig.title = layerConfig.layerTitle
