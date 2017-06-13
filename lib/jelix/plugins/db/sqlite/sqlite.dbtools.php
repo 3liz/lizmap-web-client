@@ -131,9 +131,10 @@ class sqliteDbTools extends jDbTools {
     * retrieve the list of fields of a table
     * @param string $tableName the name of the table
     * @param string $sequence  the sequence used to auto increment the primary key (not supported here)
+    * @param string $schemaName the name of the schema (only for PostgreSQL, not supported here)
     * @return   array    keys are field names and values are jDbFieldProperties objects
     */
-    public function getFieldList ($tableName, $sequence='') {
+    public function getFieldList ($tableName, $sequence='', $schemaName='') {
 
         $tableName = $this->_conn->prefixTable($tableName);
         $results = array ();
