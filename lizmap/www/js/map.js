@@ -198,6 +198,10 @@ var lizMap = function() {
     var layerName = null;
     if( cleanName in layerCleanNames )
       layerName = layerCleanNames[cleanName];
+    if ( layerName == null && cleanName in cleanNameMap ) {
+      layerName = cleanNameMap[cleanName];
+      layerCleanNames[cleanName] = layerName;
+    }
     return layerName;
   }
 
