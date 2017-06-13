@@ -198,6 +198,10 @@ var lizMap = function() {
     var layerName = null;
     if( cleanName in layerCleanNames )
       layerName = layerCleanNames[cleanName];
+    if ( layerName == null && cleanName in cleanNameMap ) {
+      layerName = cleanNameMap[cleanName];
+      layerCleanNames[cleanName] = layerName;
+    }
     return layerName;
   }
 
@@ -2423,6 +2427,9 @@ var lizMap = function() {
           if ( startupBaselayer in startupBaselayersReplacement ){
             startupBaselayer = startupBaselayersReplacement[startupBaselayer];
           }
+          else if ( startupBaselayer in config.layers ) {
+            startupBaselayer = cleanName(startupBaselayer);
+	  }
           if ( $('#switcher-baselayer-select option[value="'+startupBaselayer+'"]').length != 0){
             $('#switcher-baselayer-select').val(startupBaselayer).change();
           }else{
@@ -6625,7 +6632,7 @@ lizMap.events.on({
 
           // Change repository and project in service URL
           var reg = new RegExp('repository\=(.+)&project\=(.+)', 'g');
-          if (!externalService instanceof Array)
+          if (! (externalService instanceof Array) )
             var url = externalService.replace(reg, 'repository='+layerConfig.repository+'&project='+layerConfig.project);
           else
             var url = jQuery.map(externalService, function(element) { return element.replace(reg, 'repository='+layerConfig.repository+'&project='+layerConfig.project) });
