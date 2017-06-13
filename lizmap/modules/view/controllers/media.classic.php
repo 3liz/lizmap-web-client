@@ -142,18 +142,30 @@ class mediaCtrl extends jController {
     // default illustration
     $themePath = jApp::wwwPath().'themes/'.jApp::config()->theme.'/';
     $rep->fileName = $themePath.'css/img/250x250_mappemonde.png';
+    $rep->outputFileName = 'lizmap_mappemonde.png';
+    $rep->mimeType = 'image/png';
+
     // get project illustration if exists
     if($project){
       $imageTypes = array('jpg', 'jpeg', 'png', 'gif');
       foreach($imageTypes as $type){
-        if(file_exists($lrep->getPath().$project.'.qgs.'.$type)){
+          if ( !file_exists($lrep->getPath().$project.'.qgs.'.$type) )
+            continue;
+
           $rep->fileName = $lrep->getPath().$project.'.qgs.'.$type;
-          $rep->mimeType = "image/$type";
-          $rep->setExpires('+60 seconds');
-          return $rep;
-        }
+          $rep->outputFileName = $repository.'_'.$project.'.'.$type;
+          $rep->mimeType = 'image/'.$type;
       }
     }
+
+    // Get the mime type
+    $mime = jFile::getMimeType($rep->fileName);
+    if( $mime == 'text/plain' || $mime == '') {
+        $mime = jFile::getMimeTypeFromFilename($rep->fileName);
+    }
+    $rep->mimeType = $mime;
+
+    $rep->setExpires('+60 seconds');
     return $rep;
   }
 
