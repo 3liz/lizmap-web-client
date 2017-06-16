@@ -729,7 +729,9 @@ class lizmapProject{
     }
 
     public function getDatavizLayersConfig(){
-
+        if(!property_exists($this->cfg, 'datavizLayers')){
+            return false;
+        }
         $config = array(
             'layers'=>array(),
             'dataviz'=>array()
