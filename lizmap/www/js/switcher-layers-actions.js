@@ -42,10 +42,9 @@ var lizLayerActionButtons = function() {
         $('#hide-sub-dock').click(function(){
             var itemName = $(this).val();
             var itemConfig = lizMap.config.layers[itemName];
+            var itemType = 'baselayer';
             if('type' in itemConfig)
-                var itemType = itemConfig.type;
-            else
-                var itemType = 'baselayer';
+                itemType = itemConfig.type;
 
             lizMap.events.triggerEvent(
                 "lizmapswitcheritemselected",
@@ -58,7 +57,6 @@ var lizLayerActionButtons = function() {
     }
 
     function getLayerMetadataHtml( aName ){
-
         var html = '';
         var metadatas = {
             title: aName,
@@ -225,7 +223,6 @@ var lizLayerActionButtons = function() {
     }
 
     function toggleMetadataSubDock(layerName, selected){
-
         if( selected ){
             var html = getLayerMetadataHtml( layerName );
             fillSubDock( html );
@@ -297,7 +294,6 @@ var lizLayerActionButtons = function() {
             var layerName = lizMap.map.baseLayer.name;
             if( !layerName )
                 return false;
-
             lizMap.events.triggerEvent(
                 "lizmapswitcheritemselected",
                 { 'name': layerName, 'type': 'baselayer', 'selected': true}
@@ -449,6 +445,19 @@ var lizLayerActionButtons = function() {
                 if ( e.id == 'switcher' ) {
                     $('#hide-sub-dock').click();
                 }
+            },
+            lizmapbaselayerchanged: function(e) {
+                if ( $('#sub-dock').is(':visible') ) {
+                    var subDockLayer = $('#hide-sub-dock').val();
+                    if ( $('#switcher-baselayer-select').find('option[value="'+subDockLayer+'"]').length != 0 ) {
+                        if ( subDockLayer != $('#switcher-baselayer-select').val() ) {
+                            lizMap.events.triggerEvent(
+                                "lizmapswitcheritemselected",
+                                { 'name': e.layer.name, 'type': 'baselayer', 'selected': true}
+                            );
+                        }
+                    }
+                }
             }
         });
 
@@ -456,20 +465,18 @@ var lizLayerActionButtons = function() {
     'lizmapswitcheritemselected': function(evt){
 
         // Get item properties
-        var itemName = '';
+        var itemName = evt.name;
         var itemType = evt.type;
         var itemSelected = evt.selected;
         var itemConfig = {};
-
         // Get item Lizmap config
         if( itemType == 'baselayer'){
-            itemName = evt.name;
-            var layerName = lizMap.getLayerNameByCleanName( lizMap.cleanName(evt.name) );
+            var layerName = lizMap.getLayerNameByCleanName( lizMap.cleanName(itemName) );
             if( layerName ){
                 itemName = layerName;
             }
         }else{
-            var layerName = lizMap.getLayerNameByCleanName( lizMap.cleanName(evt.name) );
+            var layerName = lizMap.getLayerNameByCleanName( lizMap.cleanName(itemName) );
             if( layerName ){
                 itemName = layerName;
                 itemConfig = lizMap.config.layers[layerName];
