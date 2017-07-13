@@ -1538,6 +1538,7 @@ div.modal h3 .text {
   overflow:auto;
   margin:0px;
   width:100%;
+  max-width:150px;
 /*  background:white;*/
 }
 #switcher div.legendGraphics img{
