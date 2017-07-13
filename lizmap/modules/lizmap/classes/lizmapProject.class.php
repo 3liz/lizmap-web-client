@@ -9,7 +9,7 @@
 * @license Mozilla Public License : http://www.mozilla.org/MPL/
 */
 
-class lizmapProject{
+class lizmapProject extends qgisProject {
 
     // lizmapRepository
     protected $repository = null;
@@ -119,11 +119,12 @@ class lizmapProject{
 
         if ($data === false ||
             $data['qgsmtime'] < filemtime($file) ||
-            $data['qgscfgmtime'] < filemtime($file.'.cfg')) {
+            !array_key_exists('cfg', $data) ||
+            $data['qgscfgmtime'] < filemtime($file.'.cfg') ) {
             // FIXME reading XML could take time, so many process could
             // read it and construct the cache at the same time. We should
             // have a kind of lock to avoid this issue.
-            $this->readXml($key, $rep);
+            $this->readProject($key, $rep);
             $data['qgsmtime'] = filemtime($file);
             $data['qgscfgmtime'] = filemtime($file.'.cfg');
             foreach($this->cachedProperties as $prop) {
@@ -172,13 +173,14 @@ class lizmapProject{
         if ($xml === false) {
             throw new Exception("Qgs File of project ".$this->key." has invalid content");
         }
+        $this->xml = $xml;
         return $xml;
     }
 
     /**
      * Read the qgis files
      */
-    protected function readXml($key, $rep) {
+    protected function readProject($key, $rep) {
         $qgs_path = $rep->getPath().$key.'.qgs';
 
         if (!file_exists($qgs_path) ||
@@ -194,40 +196,26 @@ class lizmapProject{
 
         $configOptions = $this->cfg->options;
 
-        $qgs_xml = simplexml_load_file($qgs_path);
-        if ($qgs_xml === false) {
-            throw new Exception("Qgs File of project $key has invalid content");
+        try {
+            parent::readXmlProject($qgs_path);
         }
-        $this->xml = $qgs_xml;
+        catch(Exception $e) {
+            throw $e;
+        }
+        $qgs_xml = $this->xml;
 
-        $this->data = array(
-            'repository'=>$rep->getKey(),
-            'id'=>$key,
-            'title'=>ucfirst($key),
-            'abstract'=>'',
-            'proj'=> $configOptions->projection->ref,
-            'bbox'=> join($configOptions->bbox,', ')
-        );
-        # get title from WMS properties
-        if (property_exists($qgs_xml->properties, 'WMSServiceTitle'))
-            if (!empty($qgs_xml->properties->WMSServiceTitle))
-                $this->data['title'] = (string)$qgs_xml->properties->WMSServiceTitle;
+        // Complete data
+        $this->data['repository'] = $rep->getKey();
+        $this->data['id'] = $key;
+        if ( !array_key_exists('title', $this->data) )
+            $this->data['title'] = ucfirst($key);
+        if ( !array_key_exists('abstract', $this->data) )
+            $this->data['abstract'] = '';
+        $this->data['proj'] = $configOptions->projection->ref;
+        $this->data['bbox'] = join($configOptions->bbox,', ');
 
-        # get abstract from WMS properties
-        if (property_exists($qgs_xml->properties, 'WMSServiceAbstract'))
-            $this->data['abstract'] = (string)$qgs_xml->properties->WMSServiceAbstract;
-
-        # get WMS max width
-        if (property_exists($qgs_xml->properties, 'WMSMaxWidth'))
-            $this->data['wmsMaxWidth'] = (int)$qgs_xml->properties->WMSMaxWidth;
-        if( !array_key_exists('WMSMaxWidth', $this->data) or !$this->data['wmsMaxWidth'] )
-            unset($this->data['wmsMaxWidth']);
-
-        # get WMS max height
-        if (property_exists($qgs_xml->properties, 'WMSMaxHeight'))
-            $this->data['wmsMaxHeight'] = (int)$qgs_xml->properties->WMSMaxHeight;
-        if( !array_key_exists('WMSMaxHeight', $this->data) or !$this->data['wmsMaxHeight'] )
-            unset($this->data['wmsMaxHeight']);
+        // Update WMSInformation
+        $this->WMSInformation['ProjectCrs'] = $this->data['proj'];
 
         # get WMS getCapabilities full URL
         $this->data['wmsGetCapabilitiesUrl'] = jUrl::getFull(
@@ -252,25 +240,6 @@ class lizmapProject{
                 'REQUEST' => 'GetCapabilities'
             )
         );
-
-        // get QGIS project version
-        $qgisRoot = $qgs_xml->xpath('//qgis');
-        $qgisRootZero = $qgisRoot[0];
-        $qgisProjectVersion = (string)$qgisRootZero->attributes()->version;
-        $qgisProjectVersion = explode('-', $qgisProjectVersion);
-        $qgisProjectVersion = $qgisProjectVersion[0];
-        $qgisProjectVersion = explode('.', $qgisProjectVersion);
-        $a = '';
-        foreach( $qgisProjectVersion as $k ){
-            if( strlen($k) == 1 ){
-                $a.= $k . '0';
-            }
-            else {
-                $a.= $k;
-            }
-        }
-        $qgisProjectVersion = (integer)$a;
-        $this->qgisProjectVersion = $qgisProjectVersion;
 
         $shortNames = $qgs_xml->xpath('//maplayer/shortname');
         if ( $shortNames && count( $shortNames ) > 0 ) {
@@ -355,90 +324,9 @@ class lizmapProject{
                 $this->cfg->layers->$key->displayInLegend = 'False';
         }
 
-        $this->WMSInformation = $this->readWMSInformation($qgs_xml);
-        $this->canvasColor = $this->readCanvasColor($qgs_xml);
-        $this->allProj4 = $this->readAllProj4($qgs_xml);
-        $this->relations = $this->readRelations($qgs_xml);
-        $this->layersOrder = $this->readLayersOrder($qgs_xml);
         $this->printCapabilities = $this->readPrintCapabilities($qgs_xml, $this->cfg);
         $this->locateByLayer = $this->readLocateByLayers($qgs_xml, $this->cfg);
         $this->editionLayers = $this->readEditionLayers($qgs_xml, $this->cfg);
-        $this->useLayerIDs = $this->readUseLayerIDs($qgs_xml);
-        $this->layers = $this->readLayers($qgs_xml);
-    }
-
-    protected function readLayers($xml) {
-        $xmlLayers = $xml->xpath( "//maplayer" );
-        $layers = array();
-        if ( !$xmlLayers )
-            return $layers;
-
-        foreach( $xmlLayers as $xmlLayer ) {
-            $layer = array(
-                'type' => (string)$xmlLayer->attributes()->type,
-                'id' => (string)$xmlLayer->id,
-                'name' => (string)$xmlLayer->layername,
-                'shortname' => (string)$xmlLayer->shortname,
-                'title' => (string)$xmlLayer->title,
-                'abstract' => (string)$xmlLayer->abstract,
-                'proj4' => (string)$xmlLayer->srs->spatialrefsys->proj4,
-                'srid' => (integer)$xmlLayer->srs->spatialrefsys->srid,
-                'datasource' => (string)$xmlLayer->datasource,
-                'provider' => (string)$xmlLayer->provider,
-                'keywords' => array()
-            );
-            $keywords = $xmlLayer->xpath("./keywordList/value");
-            if ($keywords) {
-                foreach($keywords as $keyword) {
-                    if ('' != (string)$keyword) {
-                        $layer['keywords'][] = (string)$keyword;
-                    }
-                }
-            }
-
-            $items = $xmlLayer->xpath('//item');
-            if ( $layer['title'] == '' ) {
-                $layer['title'] = $layer['name'];
-            }
-            if ($layer['type'] == 'vector') {
-                $fields = array();
-                $wfsFields = array();
-                $aliases = array();
-                $edittypes = $xmlLayer->xpath(".//edittype");
-                if ( $edittypes ) {
-                    foreach( $edittypes as $edittype ) {
-                        $field = (string) $edittype->attributes()->name;
-                        $aliases[$field] = $field;
-                        $alias = $xmlLayer->xpath("aliases/alias[@field='".$field."']");
-                        if( $alias && count($alias) != 0 ) {
-                            $alias = $alias[0];
-                            $aliases[$field] = (string)$alias['name'];
-                        }
-                        $fields[] = $field;
-                        $wfsFields[] = $field;
-                    }
-                }
-                $layer['fields'] = $fields;
-                $layer['aliases'] = $aliases;
-                $layer['wfsFields'] = $wfsFields;
-
-                $excludeFields = $xmlLayer->xpath(".//excludeAttributesWFS/attribute");
-                if ( $excludeFields && count($excludeFields) > 0 ) {
-                    foreach( $excludeFields as $eField ) {
-                        $eField = (string) $eField;
-                        array_splice( $wfsFields, array_search( $eField, $wfsFields ), 1 );
-                    }
-                    $layer['wfsFields'] = $wfsFields;
-                }
-            }
-
-            $layers[] = $layer;
-        }
-        return $layers;
-    }
-
-    public function getQgisProjectVersion(){
-        return $this->qgisProjectVersion;
     }
 
     public function getQgisPath(){
@@ -455,12 +343,6 @@ class lizmapProject{
 
     public function getProperties(){
         return $this->properties;
-    }
-
-    public function getData( $key ) {
-        if ( !array_key_exists($key, $this->data) )
-            return null;
-        return $this->data[$key];
     }
 
     public function getOptions(){
@@ -844,85 +726,6 @@ class lizmapProject{
         return $name;
     }
 
-    public function getWMSInformation(){
-        return $this->WMSInformation;
-    }
-
-    protected function readWMSInformation($qgsLoad) {
-
-        // Default metadata
-        $WMSServiceTitle = '';
-        $WMSServiceAbstract = '';
-        $WMSExtent = '';
-        $ProjectCrs = '';
-        $WMSOnlineResource = '';
-        $WMSContactMail = '';
-        $WMSContactOrganization = '';
-        $WMSContactPerson = '';
-        $WMSContactPhone = '';
-        if($qgsLoad){
-            $WMSServiceTitle = (string)$qgsLoad->properties->WMSServiceTitle;
-            $WMSServiceAbstract = (string)$qgsLoad->properties->WMSServiceAbstract;
-            $WMSExtent = $qgsLoad->properties->WMSExtent->value[0];
-            $WMSExtent.= ", ".$qgsLoad->properties->WMSExtent->value[1];
-            $WMSExtent.= ", ".$qgsLoad->properties->WMSExtent->value[2];
-            $WMSExtent.= ", ".$qgsLoad->properties->WMSExtent->value[3];
-            $ProjectCrs = (string)$this->data['proj'];
-            $WMSOnlineResource = (string)$qgsLoad->properties->WMSOnlineResource;
-            $WMSContactMail = (string)$qgsLoad->properties->WMSContactMail;
-            $WMSContactOrganization = (string)$qgsLoad->properties->WMSContactOrganization;
-            $WMSContactPerson= (string)$qgsLoad->properties->WMSContactPerson;
-            $WMSContactPhone = (string)$qgsLoad->properties->WMSContactPhone;
-        }
-
-        return array(
-            'WMSServiceTitle'=>$WMSServiceTitle,
-            'WMSServiceAbstract'=>$WMSServiceAbstract,
-            'WMSExtent'=>$WMSExtent,
-            'ProjectCrs'=>$ProjectCrs,
-            'WMSOnlineResource'=>$WMSOnlineResource,
-            'WMSContactMail'=>$WMSContactMail,
-            'WMSContactOrganization'=>$WMSContactOrganization,
-            'WMSContactPerson'=>$WMSContactPerson,
-            'WMSContactPhone'=>$WMSContactPhone
-        );
-    }
-
-    protected function readLayersOrder($qgsLoad) {
-        $legend = $qgsLoad->xpath('//legend');
-        $legendZero = $legend[0];
-        $updateDrawingOrder = (string)$legendZero->attributes()->updateDrawingOrder;
-        $layersOrder = array();
-
-        if( $updateDrawingOrder == 'false' ){
-            // For QGIS >=2.4, new item layer-tree-canvas
-            if( $this->qgisProjectVersion >= 204000){
-                $customeOrder = $qgsLoad->xpath('//layer-tree-canvas/custom-order');
-                $customeOrderZero = $customeOrder[0];
-                if( $customeOrderZero->attributes()->enabled == 1 ){
-                    $items = $customeOrderZero->xpath('//item');
-                    $lo = 0;
-                    foreach( $items as $layerI ) {
-                        # Get layer name from config instead of XML for possible embedded layers
-                        $name = $this->getLayerNameByIdFromConfig($layerI);
-                        if( $name ){
-                            $layersOrder[$name] = $lo;
-                        }
-                        $lo+=1;
-                    }
-                }
-            } else {
-                $layers =  $qgsLoad->xpath('//legendlayer');
-                foreach( $layers as $layer ){
-                    if( $layer->attributes()->drawingOrder and $layer->attributes()->drawingOrder >= 0 ){
-                        $layersOrder[(string)$layer->attributes()->name] = (integer)$layer->attributes()->drawingOrder;
-                    }
-                }
-            }
-        }
-        return $layersOrder;
-    }
-
     protected function readPrintCapabilities($qgsLoad, $cfg) {
         $printTemplates = array();
 
@@ -1135,11 +938,6 @@ class lizmapProject{
         return $editionLayers;
     }
 
-    protected function readUseLayerIDs($xml) {
-        $WMSUseLayerIDs = $xml->xpath( "//properties/WMSUseLayerIDs" );
-        return ( $WMSUseLayerIDs && count($WMSUseLayerIDs) > 0 && $WMSUseLayerIDs[0] == 'true' );
-    }
-
     public function getUpdatedConfig(){
 
         //FIXME: it's better to use clone keyword, isn't it?
@@ -1249,66 +1047,8 @@ class lizmapProject{
         return $configRead;
     }
 
-    public function getCanvasColor(){
-        return $this->canvasColor;
-    }
-
-    protected function readCanvasColor($xml) {
-        $red = $xml->xpath( "//properties/Gui/CanvasColorRedPart" );
-        $green = $xml->xpath( "//properties/Gui/CanvasColorGreenPart" );
-        $blue = $xml->xpath( "//properties/Gui/CanvasColorBluePart" );
-        return 'rgb('.$red[0].','.$green[0].','.$blue[0].')';
-    }
-
-    public function getProj4( $authId ){
-        return $this->getXml()->xpath( "//spatialrefsys/authid[.='".$authId."']/parent::*/proj4" );
-    }
-
-    public function getAllProj4( ) {
-        return $this->allProj4;
-    }
-
-    protected function readAllProj4($xml) {
-        $srsList = array();
-        $spatialrefsys = $xml->xpath( "//spatialrefsys" );
-        foreach ( $spatialrefsys as $srs ) {
-            $srsList[ (string) $srs->authid ] = (string) $srs->proj4;
-        }
-        return $srsList;
-    }
-
     public function getFullCfg(){
         return $this->cfg;
-    }
-
-    /**
-     * @FIXME: remove this method. Be sure it is not used in other projects.
-     * Data provided by the returned xml element should be extracted and encapsulated
-     * into an object. Xml should not be used by callers
-     * @deprecated
-     */
-    public function getXmlLayers(){
-        return $this->getXml()->xpath( "//maplayer" );
-    }
-
-    /**
-     * @FIXME: remove this method. Be sure it is not used in other projects.
-     * Data provided by the returned xml element should be extracted and encapsulated
-     * into an object. Xml should not be used by callers
-     * @deprecated
-     */
-    public function getXmlLayer( $layerId ){
-        return $this->getXml()->xpath( "//maplayer[id='$layerId']" );
-    }
-
-    /**
-     * @FIXME: remove this method. Be sure it is not used in other projects
-     * Data provided by the returned xml element should be extracted and encapsulated
-     * into an object. Xml should not be used by callers
-     * @deprecated
-     */
-    public function getXmlLayerByKeyword( $key ){
-        return $this->getXml()->xpath( "//maplayer/keywordList[value='$key']/parent::*" );
     }
 
     /**
@@ -1321,101 +1061,6 @@ class lizmapProject{
         $xmlComposer = $this->getXml()->xpath( "//Composer[@title='$title']" );
         if( $xmlComposer )
             return $xmlComposer[0];
-        else
-            return null;
-    }
-
-    public function getLayer( $layerId ){
-        $layers = array_filter($this->layers, function($layer) use ($layerId) {
-           return $layer['id'] ==  $layerId;
-        });
-        if( count($layers) ) {
-            // get first key found in the filtered layers
-            $k = key($layers);
-            if( $layers[$k]['type'] == 'vector' ) {
-                return new qgisVectorLayer( $this, $layers[$k] );
-            }
-            else {
-                return new qgisMapLayer( $this, $layers[$k] );
-            }
-        }
-        return null;
-    }
-
-    public function getLayerByKeyword( $key ){
-        $layers = array_filter($this->layers, function($layer) use ($key) {
-           return in_array($key, $layer['keywords']);
-        });
-        if( count($layers) ) {
-            // get first key found in the filtered layers
-            $k = key($layers);
-            if( $layers[$k]['type'] == 'vector' ) {
-                return new qgisVectorLayer( $this, $layers[$k] );
-            }
-            else {
-                return new qgisMapLayer( $this, $layers[$k] );
-            }
-        }
-        return null;
-    }
-
-    public function findLayersByKeyword( $key ){
-        $foundLayers = array_filter($this->layers, function($layer) use ($key) {
-           return in_array($key, $layer['keywords']);
-        });
-        $layers = array();
-        if( $foundLayers ) {
-            foreach( $foundLayers as $layer ) {
-                if( $layer['type'] == 'vector' ) {
-                    $layers[] = new qgisVectorLayer( $this, $layer );
-                }
-                else {
-                    $layers[] = new qgisMapLayer( $this, $layer );
-                }
-            }
-        }
-        return $layers;
-    }
-
-    public function getRelations() {
-        return $this->relations;
-    }
-
-    protected function readRelations($xml) {
-        $xmlRelations = $xml->xpath( "//relations" );
-        $relations = array();
-        $pivotGather = array();
-        $pivot = array();
-        if( $xmlRelations ){
-            foreach( $xmlRelations[0] as $relation ) {
-                $relationObj = $relation->attributes();
-                $fieldRefObj = $relation->fieldRef->attributes();
-                if( !array_key_exists( (string)$relationObj->referencedLayer, $relations ) )
-                    $relations[ (string)$relationObj->referencedLayer ] = array();
-
-                $relations[ (string)$relationObj->referencedLayer ][] = array(
-                    'referencingLayer' =>  (string)$relationObj->referencingLayer,
-                    'referencedField' => (string)$fieldRefObj->referencedField,
-                    'referencingField' => (string)$fieldRefObj->referencingField
-                );
-
-                if( !array_key_exists( (string)$relationObj->referencingLayer, $pivotGather ) )
-                    $pivotGather[ (string)$relationObj->referencingLayer ] = array();
-
-                $pivotGather[ (string)$relationObj->referencingLayer ][(string)$relationObj->referencedLayer] = (string)$fieldRefObj->referencingField;
-
-            }
-
-            // Keep only child with at least to parents
-            foreach( $pivotGather as $pi=>$vo ){
-                if( count( $vo ) > 1 ){
-                    $pivot[$pi] = $vo;
-                }
-            }
-            $relations['pivot'] = $pivot;
-
-            return $relations;
-        }
         else
             return null;
     }
