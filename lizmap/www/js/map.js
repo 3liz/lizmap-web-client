@@ -173,9 +173,9 @@ var lizMap = function() {
         }
         return ret;
     };
-    aName = normalize(aName);
+    var theCleanName = normalize(aName);
     var reg = new RegExp('\\W', 'g');
-    var theCleanName = aName.replace(reg, '_');
+    theCleanName = theCleanName.replace(reg, '_');
     cleanNameMap[theCleanName] = aName;
     return theCleanName;
   }
