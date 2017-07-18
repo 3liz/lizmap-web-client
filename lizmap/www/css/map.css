@@ -1538,7 +1538,7 @@ div.modal h3 .text {
   overflow:auto;
   margin:0px;
   width:100%;
-  max-width:150px;
+  max-width:250px;
 /*  background:white;*/
 }
 #switcher div.legendGraphics img{
@@ -1607,6 +1607,10 @@ div.modal h3 .text {
   border-left : none;
   padding : 1em;
   line-height : 2;
+}
+
+#content.mobile #switcher div.legendGraphics{
+  max-width:150px;
 }
 
 /*navbar*/
