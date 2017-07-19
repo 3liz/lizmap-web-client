@@ -669,13 +669,28 @@ class editionCtrl extends jController {
   */
   private function fillControlFromValueRelationLayer($fieldName){
 
+    $wfsData = null;
+    $mime = '';
+
     // Build WFS request parameters
     //   Get layername via id
     $relationLayerId = $this->formControls[$fieldName]->valueRelationData['layer'];
-    $_relationayerXml = $this->project->getXmlLayer($relationLayerId);
-    $relationayerXml = $_relationayerXml[0];
-    $_layerName = $relationayerXml->xpath('layername');
+
+    $_relationLayerXml = $this->project->getXmlLayer($relationLayerId);
+    if(count($_relationLayerXml) == 0){
+        $this->formControls[$fieldName]->ctrl->hint = 'Control not well configured!';
+        $this->formControls[$fieldName]->ctrl->help = 'Control not well configured!';
+        return;
+    }
+    $relationLayerXml = $_relationLayerXml[0];
+
+    $_layerName = $relationLayerXml->xpath('layername');
+    if(count($_layerName) == 0){
+        $this->formControls[$fieldName]->ctrl->hint = 'Control not well configured!';
+        $this->formControls[$fieldName]->ctrl->help = 'Control not well configured!';
+    }
     $layerName = (string)$_layerName[0];
+
     $valueColumn = $this->formControls[$fieldName]->valueRelationData['value'];
     $keyColumn = $this->formControls[$fieldName]->valueRelationData['key'];
     $filterExpression = $this->formControls[$fieldName]->valueRelationData['filterExpression'];
@@ -769,11 +784,11 @@ class editionCtrl extends jController {
     }
     else{
       if(!preg_match('#No feature found error messages#', $wfsData)){
-        $this->formControls[$fieldName]->ctrl->hint = 'Problem : cannot get data to fill this control !';
-        $this->formControls[$fieldName]->ctrl->help = 'Problem : cannot get data to fill this control !';
+        $this->formControls[$fieldName]->ctrl->hint = 'Problem : cannot get data to fill this control!';
+        $this->formControls[$fieldName]->ctrl->help = 'Problem : cannot get data to fill this control!';
       }else{
-        $this->formControls[$fieldName]->ctrl->hint = 'No data to fill this control !';
-        $this->formControls[$fieldName]->ctrl->help = 'No data to fill this control !';
+        $this->formControls[$fieldName]->ctrl->hint = 'No data to fill this control!';
+        $this->formControls[$fieldName]->ctrl->help = 'No data to fill this control!';
       }
     }
   }

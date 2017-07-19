@@ -568,26 +568,74 @@ var lizEdition = function() {
                 { 'layerId': layerId}
             );
 
-            // Redraw layer
-            if( editionLayer['spatial'] ){
-                $.each(lizMap.layers, function(i, l) {
-                    var qgisName = lizMap.getNameByCleanName(l.name);
-                    var layerConfig = null;
-                    if ( qgisName )
-                        layerConfig = config.layers[qgisName];
-                    if ( !layerConfig )
-                        layerConfig = config.layers[l.params['LAYERS']];
-                    if ( !layerConfig )
-                        layerConfig = config.layers[l.name];
-                    if ( !layerConfig )
-                        return true;
-                    if (layerConfig.id != layerId)
-                        return true;
-                    l.redraw(true);
-                    return false;
-                });
+            // Redraw layers
+            var willBeRedrawnLayerIds = [layerId];
+            if( 'relations' in config ) {
+                for( var rx in config.relations ){
+                    // get children layer ids
+                    if( rx == layerId ) {
+                        var layerRelations = config.relations[layerId];
+                        for( var lid in layerRelations ) {
+                            var relation = layerRelations[lid];
+                            if ( $.inArray( relation.referencingLayer, willBeRedrawnLayerIds ) != -1 )
+                                continue;
+                            willBeRedrawnLayerIds.push( relation.referencingLayer );
+                        }
+                    }
+                    // get pivot linked layer ids
+                    else if( rx == 'pivot' && layerId in config.relations.pivot) {
+                        var pivotLayers = config.relations.pivot[layerId];
+                        for( var pId in pivotLayers ) {
+                            if ( $.inArray( pId, willBeRedrawnLayerIds ) != -1 )
+                                continue;
+                            willBeRedrawnLayerIds.push( pId );
+                        }
+                    }
+                    // get parent layer id
+                    else {
+                        if ( $.inArray( rx, willBeRedrawnLayerIds ) != -1 )
+                            continue;
+                        var layerRelations = config.relations[rx];
+                        for( var lid in layerRelations ) {
+                            var relation = layerRelations[lid];
+                            if( relation.referencingLayer == layerId )
+                                willBeRedrawnLayerIds.push( rx );
+                        }
+                    }
+                }
             }
+            var redrawnLayerIds = [];
+            while( willBeRedrawnLayerIds.length > 0 ) {
+                var lid = willBeRedrawnLayerIds.shift();
+                var childLayerConfig = lizMap.getLayerConfigById(
+                    lid,
+                    config.layers,
+                    'id'
+                );
 
+                // if no config
+                if( !childLayerConfig )
+                    continue;
+
+                var qgisName = childLayerConfig[0];
+                var childLayerConfig = childLayerConfig[1];
+
+                if( !('geometryType' in childLayerConfig) || childLayerConfig.geometryType == 'none' )
+                    continue;
+
+                var olLayer = map.getLayersByName( qgisName );
+                if( olLayer.length == 0 )
+                    olLayer = map.getLayersByName( lizMap.cleanName( qgisName ) );
+                if( olLayer.length == 0 )
+                    continue;
+
+                olLayer = olLayer[0];
+                if( !olLayer.getVisibility() )
+                    continue;
+
+                redrawnLayerIds.push(childLayerConfig.id);
+                olLayer.redraw(true);
+            }
             // Deactivate edition
             finishEdition();
 

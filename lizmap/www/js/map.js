@@ -173,9 +173,9 @@ var lizMap = function() {
         }
         return ret;
     };
-    aName = normalize(aName);
+    var theCleanName = normalize(aName);
     var reg = new RegExp('\\W', 'g');
-    var theCleanName = aName.replace(reg, '_');
+    theCleanName = theCleanName.replace(reg, '_');
     cleanNameMap[theCleanName] = aName;
     return theCleanName;
   }
@@ -1830,21 +1830,28 @@ var lizMap = function() {
     for (var i=0,len=baselayers.length; i<len; i++) {
       var baselayer = baselayers[i]
       baselayer.units = projection.proj.units;
-      map.addLayer(baselayer);
-      var qgisName = baselayer.name;
-      if ( baselayer.name in cleanNameMap )
-          qgisName = getLayerNameByCleanName(baselayer.name);
-      var blConfig = config.layers[qgisName];
-      if (blConfig)
-        select += '<option value="'+blConfig.name+'">'+blConfig.title+'</option>';
-      else
-        select += '<option value="'+baselayer.name+'">'+baselayer.name+'</option>';
-      /*
-      if (blConfig)
-        select.push('<input type="radio" name="baselayers" value="'+blConfig.name+'"><span class="baselayer-radio-label">'+blConfig.title+'</span></input>');
-      else
-        select.push('<input type="radio" name="baselayers" value="'+baselayer.name+'"><span class="baselayer-radio-label">'+baselayer.name+'</span></input>');
-        */
+      try{ // because google maps layer can be created but not added
+          map.addLayer(baselayer);
+          var qgisName = baselayer.name;
+          if ( baselayer.name in cleanNameMap )
+              qgisName = getLayerNameByCleanName(baselayer.name);
+          var blConfig = config.layers[qgisName];
+          if (blConfig)
+            select += '<option value="'+blConfig.name+'">'+blConfig.title+'</option>';
+          else
+            select += '<option value="'+baselayer.name+'">'+baselayer.name+'</option>';
+          /*
+          if (blConfig)
+            select.push('<input type="radio" name="baselayers" value="'+blConfig.name+'"><span class="baselayer-radio-label">'+blConfig.title+'</span></input>');
+          else
+            select.push('<input type="radio" name="baselayers" value="'+baselayer.name+'"><span class="baselayer-radio-label">'+baselayer.name+'</span></input>');
+            */
+      } catch(e) {
+          var qgisName = baselayer.name;
+          if ( baselayer.name in cleanNameMap )
+              qgisName = getLayerNameByCleanName(baselayer.name);
+          console.log(qgisName+" can't be added to the map!");
+      }
     }
     //select += '</select>';
     //select = select.join('<br/>');
@@ -2382,21 +2389,28 @@ var lizMap = function() {
       if( removeSingleTile && (baselayer instanceof OpenLayers.Layer.WMS) && baselayer.singleTile ) {
           baselayer.addOptions({singleTile:false, tileSize: replaceSingleTileSize});
       }
-      map.addLayer(baselayer);
-      var qgisName = baselayer.name;
-      if ( baselayer.name in cleanNameMap )
-          qgisName = getLayerNameByCleanName(baselayer.name);
-      var blConfig = config.layers[qgisName];
-      if (blConfig)
-        select += '<option value="'+baselayer.name+'">'+blConfig.title+'</option>';
-      else
-        select += '<option value="'+baselayer.name+'">'+baselayer.name+'</option>';
-      /*
-      if (blConfig)
-        select.push('<input type="radio" name="baselayers" value="'+blConfig.name+'"><span class="baselayer-radio-label">'+blConfig.title+'</span></input>');
-      else
-        select.push('<input type="radio" name="baselayers" value="'+baselayer.name+'"><span class="baselayer-radio-label">'+baselayer.name+'</span></input>');
-        */
+      try{ // because google maps layer can be created but not added
+          map.addLayer(baselayer);
+          var qgisName = baselayer.name;
+          if ( baselayer.name in cleanNameMap )
+              qgisName = getLayerNameByCleanName(baselayer.name);
+          var blConfig = config.layers[qgisName];
+          if (blConfig)
+            select += '<option value="'+baselayer.name+'">'+blConfig.title+'</option>';
+          else
+            select += '<option value="'+baselayer.name+'">'+baselayer.name+'</option>';
+          /*
+          if (blConfig)
+            select.push('<input type="radio" name="baselayers" value="'+blConfig.name+'"><span class="baselayer-radio-label">'+blConfig.title+'</span></input>');
+          else
+            select.push('<input type="radio" name="baselayers" value="'+baselayer.name+'"><span class="baselayer-radio-label">'+baselayer.name+'</span></input>');
+            */
+      } catch(e) {
+          var qgisName = baselayer.name;
+          if ( baselayer.name in cleanNameMap )
+              qgisName = getLayerNameByCleanName(baselayer.name);
+          console.log(qgisName+" can't be added to the map!");
+      }
     }
     //select += '</select>';
     //select = select.join('<br/>');
@@ -2424,19 +2438,13 @@ var lizMap = function() {
       }
       else if ( 'startupBaselayer' in config.options ) {
           var startupBaselayer = config.options['startupBaselayer'];
-          if ( startupBaselayer in startupBaselayersReplacement ){
+          if ( startupBaselayer in startupBaselayersReplacement )
             startupBaselayer = startupBaselayersReplacement[startupBaselayer];
-          }
-          else if ( startupBaselayer in config.layers ) {
+          else if ( startupBaselayer in config.layers )
             startupBaselayer = cleanName(startupBaselayer);
-	  }
-          if ( $('#switcher-baselayer-select option[value="'+startupBaselayer+'"]').length != 0){
+
+          if ( $('#switcher-baselayer-select option[value="'+startupBaselayer+'"]').length != 0)
             $('#switcher-baselayer-select').val(startupBaselayer).change();
-          }else{
-            if ( $('#switcher-baselayer-select option[value="'+lizMap.cleanName(startupBaselayer)+'"]').length != 0){
-              $('#switcher-baselayer-select').val(lizMap.cleanName(startupBaselayer)).change();
-            }
-          }
       }
     } else {
       // hide elements for baselayers
@@ -6220,7 +6228,7 @@ lizMap.events.on({
             );
         osm.maxExtent = maxExtent;
         var osmCfg = {
-          "name":"osm"
+             "name":"osm"
             ,"title":"OpenStreetMap"
             ,"type":"baselayer"
         };
@@ -6283,7 +6291,7 @@ lizMap.events.on({
             );
         cyclemap.maxExtent = maxExtent;
         var cyclemapCfg = {
-          "name":"osm-cyclemap"
+             "name":"osm-cyclemap"
             ,"title":"OSM CycleMap"
             ,"type":"baselayer"
         };
@@ -6306,13 +6314,13 @@ lizMap.events.on({
           else
             options.numZoomLevels = options.numZoomLevels - lOptions.zoomOffset;
           var gsat = new OpenLayers.Layer.Google(
-              "Google Satellite",
+              "gsat",
               {type: google.maps.MapTypeId.SATELLITE
                 , numZoomLevels: options.numZoomLevels, maxResolution: options.maxResolution, minZoomLevel:options.zoomOffset}
               );
           gsat.maxExtent = maxExtent;
           var gsatCfg = {
-            "name":"gsat"
+               "name":"gsat"
               ,"title":"Google Satellite"
             ,"type":"baselayer"
           };
@@ -6336,13 +6344,13 @@ lizMap.events.on({
           else
             options.numZoomLevels = options.numZoomLevels - lOptions.zoomOffset;
           var ghyb = new OpenLayers.Layer.Google(
-              "Google Hybrid",
+              "ghyb",
               {type: google.maps.MapTypeId.HYBRID
                 , numZoomLevels: options.numZoomLevels, maxResolution: options.maxResolution, minZoomLevel:options.zoomOffset}
               );
           ghyb.maxExtent = maxExtent;
           var ghybCfg = {
-            "name":"ghyb"
+               "name":"ghyb"
               ,"title":"Google Hybrid"
             ,"type":"baselayer"
           };
@@ -6366,13 +6374,13 @@ lizMap.events.on({
           else
             options.numZoomLevels = options.numZoomLevels - lOptions.zoomOffset;
           var gphy = new OpenLayers.Layer.Google(
-              "Google Terrain",
+              "gphy",
               {type: google.maps.MapTypeId.TERRAIN
               , numZoomLevels: options.numZoomLevels, maxResolution: options.maxResolution, minZoomLevel:options.zoomOffset}
               );
           gphy.maxExtent = maxExtent;
           var gphyCfg = {
-            "name":"gphy"
+               "name":"gphy"
               ,"title":"Google Terrain"
             ,"type":"baselayer"
           };
@@ -6396,14 +6404,15 @@ lizMap.events.on({
           else
             options.numZoomLevels = options.numZoomLevels - lOptions.zoomOffset;
          var gmap = new OpenLayers.Layer.Google(
-             "Google Streets", // the default
+             "gmap", // the default
              {numZoomLevels: options.numZoomLevels, maxResolution: options.maxResolution, minZoomLevel:options.zoomOffset}
              );
+         console.log( gmap.mapObject );
          gmap.maxExtent = maxExtent;
          var gmapCfg = {
-           "name":"gmap"
-          ,"title":"Google Streets"
-            ,"type":"baselayer"
+              "name":"gmap"
+             ,"title":"Google Streets"
+             ,"type":"baselayer"
          };
          evt.config.layers['gmap'] = gmapCfg;
          evt.baselayers.push(gmap);
@@ -6426,7 +6435,7 @@ lizMap.events.on({
             options.numZoomLevels = options.numZoomLevels - lOptions.zoomOffset;
           var bmap = new OpenLayers.Layer.Bing({
              key: evt.config.options.bingKey,
-             type: "Road",
+             type: "bmap",
              name: "Bing Road", // the default
              numZoomLevels: options.numZoomLevels, maxResolution: options.maxResolution, minZoomLevel:options.zoomOffset
           });
@@ -6456,7 +6465,7 @@ lizMap.events.on({
             options.numZoomLevels = options.numZoomLevels - lOptions.zoomOffset;
           var baerial = new OpenLayers.Layer.Bing({
              key: evt.config.options.bingKey,
-             type: "Aerial",
+             type: "baerial",
              name: "Bing Aerial", // the default
              numZoomLevels: options.numZoomLevels, maxResolution: options.maxResolution, minZoomLevel:options.zoomOffset
           });
@@ -6486,7 +6495,7 @@ lizMap.events.on({
             options.numZoomLevels = options.numZoomLevels - lOptions.zoomOffset;
           var bhybrid = new OpenLayers.Layer.Bing({
              key: evt.config.options.bingKey,
-             type: "AerialWithLabels",
+             type: "bhybrid",
              name: "Bing Hybrid", // the default
              numZoomLevels: options.numZoomLevels, maxResolution: options.maxResolution, minZoomLevel:options.zoomOffset
           });
