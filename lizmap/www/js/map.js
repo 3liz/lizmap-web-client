@@ -2922,7 +2922,7 @@ var lizMap = function() {
       $('#measure-perimeter-menu').remove();
     }
 
-    if ( 'externalSearch' in configOptions )
+    if ( ( 'externalSearch' in configOptions ) || ( 'ftsSearches' in configOptions ) )
       addExternalSearch();
     else{
       $('#nominatim-search').remove();
