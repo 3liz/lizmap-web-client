@@ -647,7 +647,7 @@ var lizEdition = function() {
         // Change form layout (from QGIS drag&drop form layout mode )
         var formId = $('#edition-form-container form').attr('id');
         // lizmapEditionFormLayoutJson is a global variable added through template
-        if( lizmapEditionFormLayoutJson && 'attributeEditorContainer' in lizmapEditionFormLayoutJson ){
+        if( typeof lizmapEditionFormLayoutJson !== 'undefined' && 'attributeEditorContainer' in lizmapEditionFormLayoutJson ){
             var attributeTree = [];
             var item = buildFormLayoutObj( attributeTree, lizmapEditionFormLayoutJson, 0, null );
             $('#edition-form-tabbable').prependTo( $('form#'+formId) );

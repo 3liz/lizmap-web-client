@@ -197,7 +197,7 @@ class editionCtrl extends jController {
 
     // Check if user groups intersects groups allowed by project editor
     // If user is admin, no need to check for given groups
-    if( jAuth::isConnected() and !jAcl2::check('lizmap.admin.repositories.delete') and property_exists($eLayer, 'acl') ){
+    if( jAuth::isConnected() and !jAcl2::check('lizmap.admin.repositories.delete') and property_exists($eLayer, 'acl') and $eLayer->acl){
         // Check if configured groups white list and authenticated user groups list intersects
         $editionGroups = $eLayer->acl;
         $editionGroups = array_map('trim', explode(',', $editionGroups));
