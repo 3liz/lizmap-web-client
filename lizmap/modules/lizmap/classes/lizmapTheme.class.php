@@ -172,6 +172,9 @@ class lizmapTheme{
         #title h1{
           color: '.$this->headerTitleColor.';
         }
+        #logo h1{
+          color: '.$this->headerTitleColor.';
+        }
         ';
       }
       if( !empty($this->headerSubtitleColor) ){
