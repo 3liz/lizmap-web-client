@@ -4942,6 +4942,24 @@ OpenLayers.Control.HighlightFeature = OpenLayers.Class(OpenLayers.Control, {
 
     $('#nominatim-search').submit(function(){
       startExternalSearch();
+
+        // Format answers to highlight searched keywords
+        var sqval = $('#search-query').val();
+        var sqvals = sqval.split(' ');
+        var sqvalsn = [];
+        var sqrex = '(';
+        for(var i in sqvals){
+          var sqi = sqvals[i].trim();
+          if( sqi == '' ){continue;}
+          sqvalsn.push(sqi);
+          if(sqi != lizMap.cleanName(sqi)){
+            sqvalsn.push(lizMap.cleanName(sqi));
+          }
+        }
+        sqrex+= sqvalsn.join('|');
+        sqrex+= ')';
+        var labrex = new RegExp(sqrex, "ig")
+
       switch (configOptions['externalSearch']) {
         case 'nominatim':
           $.get(service
@@ -4962,13 +4980,15 @@ OpenLayers.Control.HighlightFeature = OpenLayers.Class(OpenLayers.Control, {
                 ];
                 bbox = new OpenLayers.Bounds(bbox);
                 if ( extent.intersectsBounds(bbox) ) {
-                  text += '<li><a href="#'+bbox.toBBOX()+'">'+e.display_name+'</a></li>';
+
+                  var lab = e.display_name.replace(labrex,'<b style="color:#0094D6;">$1</b>');
+                  text += '<li><a href="#'+bbox.toBBOX()+'">'+lab+'</a></li>';
                   count++;
                 }
               });
               if (count == 0 || text == '')
                 text = '<li>'+lizDict['externalsearch.notfound']+'</li>';
-              updateExternalSearch( '<li><b>Nominatim</b><ul>'+text+'</ul></li>' );
+              updateExternalSearch( '<li><b>OpenStreetMap</b><ul>'+text+'</ul></li>' );
             }, 'json');
           break;
         case 'ign':
@@ -4988,7 +5008,8 @@ OpenLayers.Control.HighlightFeature = OpenLayers.Class(OpenLayers.Control, {
                 ];
                 bbox = new OpenLayers.Bounds(bbox);
                 if ( extent.intersectsBounds(bbox) ) {
-                  text += '<li><a href="#'+bbox.toBBOX()+'">'+e.formatted_address+'</a></li>';
+                  var lab = e.formatted_address.replace(labrex,'<b style="color:#0094D6;">$1</b>');
+                  text += '<li><a href="#'+bbox.toBBOX()+'">'+lab+'</a></li>';
                   count++;
                 }
               });
@@ -5031,7 +5052,8 @@ OpenLayers.Control.HighlightFeature = OpenLayers.Class(OpenLayers.Control, {
                   return false;
                 bbox = new OpenLayers.Bounds(bbox);
                 if ( extent.intersectsBounds(bbox) ) {
-                  text += '<li><a href="#'+bbox.toBBOX()+'">'+e.formatted_address+'</a></li>';
+                  var lab = e.formatted_address.replace(labrex,'<b style="color:#0094D6;">$1</b>');
+                  text += '<li><a href="#'+bbox.toBBOX()+'">'+lab+'</a></li>';
                   count++;
                 }
               });
@@ -5050,6 +5072,7 @@ OpenLayers.Control.HighlightFeature = OpenLayers.Class(OpenLayers.Control, {
                 var text = '';
                 var count = 0;
 
+                // Loop through results
                 for ( var ftsId in results ) {
                     var ftsLayerResult = results[ftsId];
                     text += '<li><b>'+ftsLayerResult.search_name+'</b>';
@@ -5061,7 +5084,6 @@ OpenLayers.Control.HighlightFeature = OpenLayers.Class(OpenLayers.Control, {
                             ftsGeometry.transform(ftsLayerResult.srid, 'EPSG:4326');
                         var bbox = ftsGeometry.getBounds();
                         if ( extent.intersectsBounds(bbox) ) {
-                          var labrex = new RegExp('(' + $('#search-query').val() + '|'+lizMap.cleanName($('#search-query').val())+')', "ig")
                           var lab = ftsFeat.label.replace(labrex,'<b style="color:#0094D6;">$1</b>');
                           text += '<li><a href="#'+bbox.toBBOX()+'" data="'+ftsGeometry.toString()+'">'+lab+'</a></li>';
                           count++;

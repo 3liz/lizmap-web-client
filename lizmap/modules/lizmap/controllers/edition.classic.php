@@ -197,7 +197,7 @@ class editionCtrl extends jController {
 
     // Check if user groups intersects groups allowed by project editor
     // If user is admin, no need to check for given groups
-    if( jAuth::isConnected() and !jAcl2::check('lizmap.admin.repositories.delete') and property_exists($eLayer, 'acl') ){
+    if( jAuth::isConnected() and !jAcl2::check('lizmap.admin.repositories.delete') and property_exists($eLayer, 'acl') and $eLayer->acl){
         // Check if configured groups white list and authenticated user groups list intersects
         $editionGroups = $eLayer->acl;
         $editionGroups = array_map('trim', explode(',', $editionGroups));
@@ -313,7 +313,7 @@ class editionCtrl extends jController {
         }
         // Set filter when multiple layers concerned
         if($where){
-          $this->loginFilteredLayers = array(
+          return array(
             'where' => $where,
             'type' => $type,
             'attribute' => $attribute
@@ -321,6 +321,7 @@ class editionCtrl extends jController {
         }
       }
     }
+    return null;
   }
 
   /**
@@ -568,7 +569,7 @@ class editionCtrl extends jController {
   */
   private function updateFormByLogin($form, $save) {
     if( !is_array($this->loginFilteredLayers) ) //&& $this->loginFilteredOveride )
-        $this->filterDataByLogin($this->layerName);
+        $this->loginFilteredLayers = $this->filterDataByLogin($this->layerName);
 
     if ( is_array($this->loginFilteredLayers) ) {
         $type = $this->loginFilteredLayers['type'];
@@ -712,12 +713,12 @@ class editionCtrl extends jController {
     }
     // Filter by login
     if( !$this->loginFilteredOveride ) {
-      $this->filterDataByLogin($layerName);
-      if( is_array( $this->loginFilteredLayers )){
+      $loginFilteredLayers = $this->filterDataByLogin($layerName);
+      if( is_array( $loginFilteredLayers )){
         if($expFilter){
           $expFilter = " ( ".$expFilter." ) AND ( ".$this->loginFilteredLayers['where']." ) ";
         }else {
-          $expFilter = $this->loginFilteredLayers['where'];
+          $expFilter = $loginFilteredLayers['where'];
         }
       }
     }
@@ -1071,7 +1072,7 @@ class editionCtrl extends jController {
 
       // Add login filter if needed
       if( !$this->loginFilteredOveride ) {
-        $this->filterDataByLogin($this->layerName);
+        $this->loginFilteredLayers = $this->filterDataByLogin($this->layerName);
         if( is_array( $this->loginFilteredLayers ) ){
           $sql.= ' AND '.$this->loginFilteredLayers['where'];
         }
@@ -1499,7 +1500,7 @@ class editionCtrl extends jController {
 
     // Add login filter if needed
     if( !$this->loginFilteredOveride ) {
-      $this->filterDataByLogin($this->layerName);
+      $this->loginFilteredLayers = $this->filterDataByLogin($this->layerName);
       if( is_array( $this->loginFilteredLayers ) ){
         $sql.= ' AND '.$this->loginFilteredLayers['where'];
       }

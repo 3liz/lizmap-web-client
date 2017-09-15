@@ -42,6 +42,7 @@ class osmCtrl extends jController {
     curl_setopt($curl_handle, CURLOPT_URL, $url);
     curl_setopt($curl_handle, CURLOPT_RETURNTRANSFER, TRUE);
     curl_setopt($curl_handle, CURLOPT_HTTPHEADER, array('Expect:'));
+    curl_setopt($curl_handle, CURLOPT_REFERER, jUrl::getFull("view~default:index"));
     $content = curl_exec($curl_handle);
     curl_close($curl_handle);
 
