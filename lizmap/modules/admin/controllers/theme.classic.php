@@ -33,13 +33,21 @@ class themeCtrl extends jController {
 
     // Set form data values
     foreach($theme->getProperties() as $ser){
-      $form->setData($ser, $theme->$ser);
+      $val = $theme->$ser;
+      if( $ser == 'additionalCss' ){
+        $val =  html_entity_decode( $val );
+      }
+      $form->setData($ser, $val);
     }
 
     $tpl = new jTpl();
     $tpl->assign('theme', lizmap::getTheme());
     $tpl->assign('themeForm', $form);
-    $tpl->assign('hasHeaderLogo', is_file(jApp::varPath('lizmap-theme-config/') . $theme->headerLogo) );
+    $hasHeaderImage = array(
+      'headerLogo' => is_file(jApp::varPath('lizmap-theme-config/') . $theme->headerLogo),
+      'headerBackgroundImage' => is_file(jApp::varPath('lizmap-theme-config/') . $theme->headerBackgroundImage)
+    );
+    $tpl->assign('hasHeaderImage', $hasHeaderImage );
     $rep->body->assign('MAIN', $tpl->fetch('theme'));
     $rep->body->assign('selectedMenuItem','lizmap_theme');
 
@@ -63,7 +71,11 @@ class themeCtrl extends jController {
 
     // Set form data values
     foreach($theme->getProperties() as $ser){
-      $form->setData($ser, $theme->$ser);
+      $val = $theme->$ser;
+      if( $ser == 'additionalCss' ){
+        $val =  html_entity_decode( $val );
+      }
+      $form->setData($ser, $val);
     }
 
     $rep->action="theme:edit";
@@ -144,20 +156,25 @@ class themeCtrl extends jController {
     $data = array();
     foreach($theme->getProperties() as $prop){
       $data[$prop] = $form->getData($prop);
-      if( $prop == 'headerLogo'){
+      if( $prop == 'headerLogo' or $prop == 'headerBackgroundImage'){
         $hl = $form->getData($prop);
         if(!empty($hl) ){
-          // Remove previous logo file
-          if( file_exists(jApp::varPath('lizmap-theme-config/') . $theme->headerLogo) ){
-            unlink(jApp::varPath('lizmap-theme-config/') . $theme->headerLogo );
+          // Remove previous theme image file
+          if( file_exists(jApp::varPath('lizmap-theme-config/') . $theme->$prop)
+            and is_file(jApp::varPath('lizmap-theme-config/') . $theme->$prop)
+          ){
+            unlink(jApp::varPath('lizmap-theme-config/') . $theme->$prop );
           }
           // Save new file in theme folder
           $form->saveFile($prop, jApp::varPath('lizmap-theme-config'));
         }
         else{
-          // keep previous logo path if not changed
-          $data[$prop] = $theme->headerLogo;
+          // keep previous theme image path if not changed
+          $data[$prop] = $theme->$prop;
         }
+      }
+      if( $prop == 'additionalCss'){
+        $data[$prop] = htmlentities( $data[$prop] );
       }
     }
 
@@ -191,14 +208,27 @@ class themeCtrl extends jController {
     return $rep;
   }
 
-  function removeLogo(){
+  function removeThemeImage(){
     $theme = lizmap::getTheme();
-    $data['headerLogo'] = '';
-    $data['headerLogoWidth'] = '';
-    if( file_exists(jApp::varPath('lizmap-theme-config/') . $theme->headerLogo) ){
-      unlink(jApp::varPath('lizmap-theme-config/') . $theme->headerLogo );
+    $prop = $this->param('key', 'headerLogo');
+    if( $prop != 'headerLogo' and $prop != 'headerBackgroundImage')
+      $prop = 'headerLogo';
+
+    // empty property
+    $data[$prop] = '';
+
+    // also empty logo width
+    if( $prop == 'headerLogo')
+      $data['headerLogoWidth'] = '';
+
+    // remove file
+    if( file_exists(jApp::varPath('lizmap-theme-config/') . $theme->$prop) ){
+      unlink(jApp::varPath('lizmap-theme-config/') . $theme->$prop );
     }
+
+    // update theme
     $modifytheme = $theme->update($data);
+
     // Redirect to the index
     $rep= $this->getResponse("redirect");
     $rep->action="theme:index";

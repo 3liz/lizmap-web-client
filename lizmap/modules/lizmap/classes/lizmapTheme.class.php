@@ -22,12 +22,14 @@ class lizmapTheme{
     private $properties = array(
       'headerLogo',
       'headerLogoWidth',
+      'headerBackgroundImage',
       'headerBackgroundColor',
       'headerTitleColor',
       'headerSubtitleColor',
       'menuBackgroundColor',
       'dockBackgroundColor',
-      'navbarColor'
+      'navbarColor',
+      'additionalCss'
     );
 
     // header logo image
@@ -35,6 +37,9 @@ class lizmapTheme{
 
     // header logo image width
     public $headerLogoWidth = '';
+
+    // header background image
+    public $headerBackgroundImage = '';
 
     // header background color
     public $headerBackgroundColor = '';
@@ -53,6 +58,9 @@ class lizmapTheme{
 
     // navbar color
     public $navbarColor = '';
+
+    // additional CSS properties
+    public $additionalCss = '';
 
     public function __construct () {
       // read the lizmap configuration file
@@ -142,8 +150,10 @@ class lizmapTheme{
         }
         ';
       }
+
+      // Header logo image and size
       if( !empty($this->headerLogo) and file_exists(jApp::varPath('lizmap-theme-config/') . $this->headerLogo) ){
-        $logoUrl = jUrl::get('view~media:logo');
+        $logoUrl = jUrl::get('view~media:themeImage', array('key'=>'headerLogo'));
         $css.= '
         #logo {
           background : url("'.$logoUrl.'") no-repeat left center;
@@ -152,6 +162,7 @@ class lizmapTheme{
         if( !empty($this->headerLogoWidth) ){
           $css.= '
           width: '.$this->headerLogoWidth.'px;
+          text-align: right;
           ';
         }
         $css.= '
@@ -162,10 +173,25 @@ class lizmapTheme{
         #title {
           top: 40%;
           transform: translateY(-60%);
-
         }
         ';
       }
+
+      // Header background image
+      if( !empty($this->headerBackgroundImage) and file_exists(jApp::varPath('lizmap-theme-config/') . $this->headerBackgroundImage) ){
+        $logoUrl = jUrl::get('view~media:themeImage', array('key'=>'headerBackgroundImage'));
+        $css.= '
+        #header {
+          background-image : url("'.$logoUrl.'");
+          background-repeat: no-repeat;
+          background-position:  left center;
+        }
+        #title {
+          background: none;
+        }
+        ';
+      }
+
 
       if( !empty($this->headerTitleColor) ){
         $css.= '
@@ -212,6 +238,10 @@ class lizmapTheme{
           background: '.$this->navbarColor.';
         }
         ';
+      }
+
+      if( !empty($this->additionalCss)){
+        $css.= $this->additionalCss;
       }
 
       return $css;

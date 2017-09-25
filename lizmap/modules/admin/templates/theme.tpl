@@ -25,24 +25,29 @@
   {/ifacl2}
 
 <script>
-{if $hasHeaderLogo}
-{literal}
-$(document).ready(function() {
-    // Replace logo value by corresponding image
-    var html = '<img src="{/literal}{jurl 'view~media:logo'}{literal}" style="max-width:200px;">';
-    html+= '&nbsp;<a onclick="return confirm(\'{/literal}{@admin~admin.theme.button.remove.logo.confirm.label@}{literal}\');" href="{/literal}{jurl 'admin~theme:removeLogo'}{literal}" class="btn" id="btn-remove-theme-logo">{/literal}{@admin~admin.theme.button.remove.logo.label@}{literal}</a>';
-    $('#_headerLogo').html( html );
-});
-{/literal}
+    {literal}
+    function confirmImageDelete(){
+        return confirm("{/literal}{@admin~admin.theme.button.remove.logo.confirm.label@}{literal}");
+    }
+    {/literal}
+{foreach $hasHeaderImage as $item=>$has}
+    {if $has}
+        {literal}
+        $(document).ready(function() {
+            // Replace theme image value by corresponding image
+            var html = '<img src="{/literal}{jurl 'view~media:themeImage', array('key'=>$item)}{literal}" style="max-width:200px;">';
+            html+= '&nbsp;<a onclick="confirmImageDelete();" href="{/literal}{jurl 'admin~theme:removeThemeImage', array('key'=>$item)}{literal}" class="btn" class="btn-remove-theme-image">{/literal}{@admin~admin.theme.button.remove.logo.label@}{literal}</a>';
+            $('#_{/literal}{$item}{literal}').html( html );
+        });
+        {/literal}
 
-{else}
-
-{literal}
-$(document).ready(function() {
-    $( '#_headerLogo').html('');
-});
-{/literal}
-
-{/if}
+    {else}
+        {literal}
+        $(document).ready(function() {
+            $( '#_{/literal}{$item}{literal}').html('');
+        });
+        {/literal}
+    {/if}
+{/foreach}
 </script>
 

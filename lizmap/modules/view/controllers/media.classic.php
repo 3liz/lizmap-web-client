@@ -361,30 +361,37 @@ class mediaCtrl extends jController {
 
 
   /**
-  * Get logo defined in lizmap admin theme configuration
-  *
+  * Get logo or background image defined in lizmap admin theme configuration
+  * @param $key : type of image. Can be 'headerLogo' or 'headerBackgroundImage'
   * @return Admin configured theme logo
   */
-  function logo() {
+  function themeImage() {
+
+    $key = $this->param('key', 'headerLogo');
+    if($key != 'headerLogo' and $key != 'headerBackgroundImage')
+        $key = 'headerLogo';
 
     $rep = $this->getResponse('binary');
     $rep->doDownload = false;
 
     $theme = lizmap::getTheme();
-    $logoPath = jApp::varPath('lizmap-theme-config/') . $theme->headerLogo;
+    $imgPath = jApp::varPath('lizmap-theme-config/') . $theme->$key;
 
-    if( is_file($logoPath) ){
-        $mime = jFile::getMimeType($logoPath);
+    if( is_file($imgPath) ){
+        $mime = jFile::getMimeType($imgPath);
         if( $mime == 'text/plain' || $mime == '') {
-            $mime = jFile::getMimeTypeFromFilename($logoPath);
+            $mime = jFile::getMimeTypeFromFilename($imgPath);
         }
         $rep->mimeType = $mime;
-        $rep->fileName = $logoPath;
+        $rep->fileName = $imgPath;
     }else{
-        //return $this->error404('The logo file  does not exist !');
-        $rep->fileName = realpath(jApp::wwwPath('/themes/default/css/img/logo.png'));
-        $rep->mimeType = 'image/png';
-        $rep->outputFileName = 'logo.png';
+        if( $key == 'headerLogo' ){
+            $rep->fileName = realpath(jApp::wwwPath('/themes/default/css/img/logo.png'));
+            $rep->mimeType = 'image/png';
+            $rep->outputFileName = 'logo.png';
+        }else{
+            return $this->error404('The image file  does not exist !');
+        }
     }
     return $rep;
   }
