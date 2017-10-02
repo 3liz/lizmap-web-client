@@ -35,12 +35,12 @@ label="Save a feature (creation or modification)"
 logCounter=on
 logDetail=on
 logIp=off
-logEmail=on
+logEmail=off
 
 [item:editionDeleteFeature]
 label="Delete a feature"
 logCounter=on
 logDetail=on
 logIp=off
-logEmail=on
+logEmail=off
 
