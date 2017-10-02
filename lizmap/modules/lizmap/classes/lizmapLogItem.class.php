@@ -20,22 +20,30 @@ class lizmapLogItem{
       'label',
       'logCounter',
       'logDetail',
-      'logIp'
+      'logIp',
+      'logEmail'
     );
-    
+
     // Log key
     private $key = '';
+
     // Log label
     private $label = '';
+
     // If a counter must be increased for this item
     private $logCounter = '';
+
     // If a new line must be added in the detail log
     private $logDetail = '';
+
     // If user IP address must be logged in the detail log
-    private $logIp = '';    
-     
+    private $logIp = '';
+
+    // If an email must be sent to the admin contact
+    private $logEmail = '';
+
     private $data = array();
-    
+
     // log record keys
     private static $recordKeys = array(
       'key',
@@ -43,16 +51,17 @@ class lizmapLogItem{
       'content',
       'repository',
       'project',
-      'ip'
+      'ip',
+      'email'
     );
-    
+
 
     public function __construct ( $key ) {
       // read the lizmap log configuration file
       $readConfigPath = parse_ini_file(jApp::varPath().$this->config, True);
 
       $section = 'item:'.$key;
-      
+
       // Check if this item exists in the ini file
       if(array_key_exists($section, $readConfigPath)){
         // Set each property
@@ -61,7 +70,7 @@ class lizmapLogItem{
         }
       }
       $this->key = $key;
-      
+
     }
 
     /**
@@ -89,7 +98,7 @@ class lizmapLogItem{
     public function getRecordKeys(){
       return self::$recordKeys;
     }
-    
+
     /**
     * Return data for a log item
     * @param string $key Key of the log item
@@ -100,7 +109,7 @@ class lizmapLogItem{
         return null;
       return $this->data[$key];
     }
-    
+
     /**
     * Update the data for the log item in the ini file
     */
@@ -129,13 +138,13 @@ class lizmapLogItem{
         $ini->save();
       return $modified;
     }
-    
-    
+
+
     /**
     * Insert a new line of log for this item
     */
     public function insertLogDetail( $data, $profile='lizlog'){
-    
+
       $dao = jDao::get('lizmap~logDetail', $profile);
       $rec = jDao::createRecord('lizmap~logDetail', $profile);
       // Set the value for each column
@@ -148,9 +157,9 @@ class lizmapLogItem{
       }catch(Exception $e){
         jLog::log('Error while inserting a new line in log_detail :'.$e->getMessage());
       }
-      
+
     }
-    
+
     /**
     * Increase counter for this log item
     */
@@ -165,7 +174,7 @@ class lizmapLogItem{
         }catch(Exception $e){
           jLog::log('Error while updating a line in log_counter :'.$e->getMessage());
         }
-        
+
       }else{
         $rec = jDao::createRecord('lizmap~logCounter', $profile);
         $rec->key = $this->key;
@@ -179,10 +188,10 @@ class lizmapLogItem{
         }catch(Exception $e){
           jLog::log('Error while inserting a new line in log_counter :'.$e->getMessage());
         }
-        
+
       }
-      
+
     }
-    
+
 
 }

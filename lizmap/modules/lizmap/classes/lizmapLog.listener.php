@@ -52,7 +52,9 @@ class lizmapLogListener extends jEventListener{
           $data[$rk] = $event->getParam($rk);
       }
 
+      // Add log to the database
       $this->addLog($key, $data);
+
     }
 
   }
@@ -78,11 +80,21 @@ class lizmapLogListener extends jEventListener{
       }
 
       // Add IP if needed
-      if( $logItem->getData('logIp') )
+      if( $logItem->getData('logIp') ){
         $data['ip'] = $_SERVER['REMOTE_ADDR'];
+      }
 
       // Insert log
       $logItem->insertLogDetail($data);
+
+      // Send an email
+      if(
+        $logItem->getData('logEmail')
+        and in_array( $key, array('editionSaveFeature', 'editionDeleteFeature') )
+      ){
+        $this->sendEmail($key, $data);
+      }
+
     }
 
     // Optionnaly log count
@@ -93,7 +105,58 @@ class lizmapLogListener extends jEventListener{
   }
 
 
+  /**
+  * Send an email to the administrator
+  *
+  * @param string $subject Email subject
+  * @param string $body Email body
+  */
+  private function sendEmail($key, $data){
 
+    $services = lizmap::getServices();
+    if( $email = filter_var($services->adminContactEmail, FILTER_VALIDATE_EMAIL) ){
+
+      // Build subject and body
+      $subject = "[". $services->appName . "] " . jLocale::get("admin~admin.logs.email.subject");
+
+      $body = jLocale::get("admin~admin.logs.email.$key.body");
+
+      foreach($data as $k=>$v){
+        if(empty($v)){
+          continue;
+        }
+
+        if( $k == 'key'){
+          continue;
+        }
+        else if( $k == 'content'){
+          if( $key == 'editionSaveFeature' or $key == 'editionDeleteFeature'){
+            $content = array_map('trim', explode(',', $v));
+            foreach($content as $item){
+              $itemdata = array_map('trim', explode('=', $item));
+              if( count($itemdata) == 2){
+                $body.= "\r\n" . "  * " . $itemdata[0] . " = " . $itemdata[1];
+              }
+            }
+          }
+        }else{
+          $body.= "\r\n" . "  * $k = $v";
+        }
+      }
+
+      // Send email
+      $mail = new jMailer();
+      $mail->Subject = $subject;
+      $mail->Body = $body;
+      $mail->AddAddress( $email, 'Lizmap Notifications');
+      try{
+        $mail->Send();
+      }
+      catch(Exception $e){
+        jLog::log('error while sending email to admin: '. $e->getMessage() );
+      }
+    }
+  }
 
 
 }

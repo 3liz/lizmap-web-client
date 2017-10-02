@@ -1372,10 +1372,24 @@ class editionCtrl extends jController {
       return $rep;
     }
 
+
+    $pks = array();
+    foreach(array_keys($form->getControls()) as $ctrl) {
+      $d = $form->getData($ctrl);
+      if(in_array($ctrl->ref, $this->primaryKeys)){
+        $pks[] = $d;
+      }
+    }
+
     // Log
+    $content = "table=".$this->tableName;
+    if( !empty($this->featureId) )
+      $content.", id=".$this->featureId;
+    if( count($pk)>0 )
+      $content.= ", pk=" . implode(',', $pks);
     $eventParams = array(
       'key' => 'editionSaveFeature',
-      'content' => "table=".$this->tableName.", id=".$this->featureId,
+      'content' => $content,
       'repository' => $this->repository->getKey(),
       'project' => $this->project->getKey()
     );
@@ -1489,8 +1503,10 @@ class editionCtrl extends jController {
     // Add where clause with primary keys
     $sqlw = array();
     $feature = $this->featureData->features[0];
+    $pks = array();
     foreach($this->primaryKeys as $key){
       $val = $feature->properties->$key;
+      $pks[] = $val;
       if( $this->dataFields[$key]->unifiedType != 'integer' )
         $val = $cnx->quote($val);
       $sqlw[] = '"' . $key . '"' . ' = ' . $val;
@@ -1511,9 +1527,13 @@ class editionCtrl extends jController {
       jMessage::add( jLocale::get('view~edition.message.success.delete'), 'success');
 
       // Log
+      $content = "table=" . $this->tableName;
+      $content.= ", id=" . $this->featureId;
+      if( count($pks)>0 )
+        $content.= ", pk=" . implode(',', $pks);
       $eventParams = array(
         'key' => 'editionDeleteFeature',
-        'content' => "table=".$this->tableName.", id=".$this->featureId,
+        'content' => $content,
         'repository' => $this->repository->getKey(),
         'project' => $this->project->getKey()
       );
