@@ -104,11 +104,13 @@ var lizLayerActionButtons = function() {
             html+= '        <dt>'+lizDict['layer.metadata.layer.type']+'</dt>';
             html+= '        <dd>'+lizDict['layer.metadata.layer.type.' + metadatas.type]+'</dd>';
 
+            // Zoom
+            html+= '        <dt>'+lizDict['layer.metadata.zoomToExtent.title']+'</dt>';
+            html+= '<dd><button class="btn btn-mini layerActionZoom" title="'+lizDict['layer.metadata.zoomToExtent.title']+'" value="'+aName+'"><i class="icon-zoom-in"></i></button></dd>';
+
             // Tools
             if( metadatas.type == 'layer'){
-                // Zoom
-                html+= '        <dt>'+lizDict['layer.metadata.zoomToExtent.title']+'</dt>';
-                html+= '<dd><button class="btn btn-mini layerActionZoom" title="'+lizDict['layer.metadata.zoomToExtent.title']+'" value="'+aName+'"><i class="icon-zoom-in"></i></button></dd>';
+
 
                 var isBaselayer = '';
                 if(metadatas.isBaselayer)
@@ -312,22 +314,23 @@ var lizLayerActionButtons = function() {
             var itemConfig = lizMap.config.layers[layerName];
             if( itemConfig.type == 'baselayer' )
                 lizMap.map.zoomToMaxExtent();
-            if( itemConfig.type == 'group' || !( 'extent' in itemConfig ) || !( 'crs' in itemConfig ) )
-                return false;
 
-            var lex = itemConfig['extent'];
+            var mapProjection = lizMap.map.getProjection();
+            if(mapProjection == 'EPSG:900913')
+                mapProjection = 'EPSG:3857';
+
+            if( !( 'bbox' in itemConfig ) || !( mapProjection in itemConfig['bbox'] ) ){
+                console.log('The layer bbox information has not been found in config');
+                console.log(itemConfig);
+                return false;
+            }
+
+            var lex = itemConfig['bbox'][mapProjection]['bbox'];
             var lBounds = new OpenLayers.Bounds(
                 lex[0],
                 lex[1],
                 lex[2],
                 lex[3]
-            );
-            var layerProj = new OpenLayers.Projection( itemConfig.crs );
-            var mapProj = lizMap.map.getProjectionObject();
-            //mapProj = new OpenLayers.Projection( 'EPSG:3857' );
-            lBounds.transform(
-                layerProj,
-                mapProj
             );
             lizMap.map.zoomToExtent( lBounds );
 
@@ -496,7 +499,7 @@ var lizLayerActionButtons = function() {
         // Toggle buttons depending on itemType
 
         // Zoom to layer
-        var zoomStatus = (itemType == 'group' || !itemSelected || !('extent' in itemConfig) );
+        var zoomStatus = (!itemSelected || !('bbox' in itemConfig) );
         $('button.layerActionZoom').attr( 'disable', zoomStatus ).toggleClass( 'disabled', zoomStatus );
 
         // Refresh sub-dock content
