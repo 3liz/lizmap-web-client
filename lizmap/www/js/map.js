@@ -1020,6 +1020,9 @@ var lizMap = function() {
       if (layerConfig.baseLayer != 'True')
           pNode.children.push(node);
 
+      // Add bbox from WMS data into lizmap configuration (used by switcher-layers-actions
+      layerConfig.bbox = layer.bbox;
+
     }
   }
 
