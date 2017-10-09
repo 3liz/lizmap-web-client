@@ -3261,11 +3261,19 @@ var lizMap = function() {
                       else{
                         $('#popupcontent div.menu-content').html(pcontent);
                       }
+                      if ( !$('#mapmenu .nav-list > li.popupcontent').is(':visible') )
+                        $('#mapmenu .nav-list > li.popupcontent').show();
 
                       // Warn user no data has been found
                       if( !hasPopupContent ){
                         pcontent = '<div class="lizmapPopupContent"><h4>'+lizDict['popup.msg.no.result']+'</h4></div>';
                         $('#popupcontent div.menu-content').html(pcontent);
+                        window.setTimeout(function(){
+                            if ( $('#mapmenu .nav-list > li.popupcontent').hasClass('active') )
+                                $('#button-popupcontent').click();
+                            if ( !$('#mapmenu .nav-list > li.popupcontent').hasClass('active') )
+                                $('#mapmenu .nav-list > li.popupcontent').hide();
+                        },1000);
                       }
 
                       // Display dock if needed
@@ -3444,6 +3452,8 @@ var lizMap = function() {
                     $('#popupcontent div.menu-content').html(pcontent);
                     if ( $('#mapmenu .nav-list > li.popupcontent').hasClass('active') )
                         $('#button-popupcontent').click();
+                    if ( !$('#mapmenu .nav-list > li.popupcontent').hasClass('active') )
+                        $('#mapmenu .nav-list > li.popupcontent').hide();
                 }
             }
         }
