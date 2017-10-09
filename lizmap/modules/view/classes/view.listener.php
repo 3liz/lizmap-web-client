@@ -1,13 +1,13 @@
 <?php
 class viewListener extends jEventListener{
 
-   function onmasteradminGetInfoBoxContent ($event) {
+    function onmasteradminGetInfoBoxContent ($event) {
 
         $home = new masterAdminMenuItem('home', jLocale::get("view~default.repository.list.title"), jUrl::get('view~default:index'));
         $home->icon = True;
         $event->add($home);
 
-   }
+    }
 
     function ongetMapAdditions ($event) {
         $bp = jApp::config()->urlengine['basePath'];
@@ -37,6 +37,32 @@ class viewListener extends jEventListener{
                 'css' => $css
             )
         );
+
+    }
+
+    function onsearchServiceItem ($event) {
+
+        /*
+         * Use this listener in your modules to make Lizmap
+         * add search services based on an URL
+         * The parameters for searches are the same as search
+         * based on QuickFinder database
+         * lizmap/controllers/search.classic.php
+         * - repository
+         * - project
+         * - query: the search string
+         * - bbox: max extent in wgs84
+         *
+         * $event->add(
+         *     array(
+         *         'type' => 'QuickFinder',
+         *         'service' => 'lizmapQuickFinder',
+         *         'url' => jUrl::get('lizmap~search:get')
+         *     )
+         * );
+         *
+         * */
+
     }
 
 }

@@ -1045,14 +1045,23 @@ class lizmapProject extends qgisProject {
         $ftsSearches = $this->hasFtsSearches();
         if( $ftsSearches ){
             $configJson->options->searches[] = (object) array(
-                'type' => 'ftsSearches',
-                'service' => 'fts',
-                'url' => jUrl::get('lizmap~search:get',
-                    array('repository'=>$this->repository->getKey(), 'project'=>$this->getKey())
-                )
+                'type' => 'QuickFinder',
+                'service' => 'lizmapQuickFinder',
+                'url' => jUrl::get('lizmap~search:get')
             );
         }
         // Events to get additional searches
+        $searchServices = jEvent::notify('searchServiceItem',array('repository'=>$this->repository->getKey(), 'project'=>$this->getKey()))->getResponse();
+        foreach( $searchServices as $searchService ){
+            if( is_array($searchService) ) {
+                if ( array_key_exists( 'type', $searchService ) && array_key_exists( 'url', $searchService ) )
+                    $configJson->options->searches[] = (object) $searchService;
+            }
+            else if( is_object($searchService) ) {
+                if ( property_exists( $searchService, 'type' ) && property_exists( $searchService, 'url' ) )
+                    $configJson->options->searches[] = $searchService;
+            }
+        }
 
         // Update dataviz config
         if ( property_exists( $configJson, 'datavizLayers' ) ) {

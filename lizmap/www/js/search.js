@@ -93,7 +93,12 @@ var lizAttributeTable = function() {
             // Format answers to highlight searched keywords
             var labrex = getHighlightRegEx();
             $.get(searchConfig.url
-                ,{"query":$('#search-query').val(),"bbox":extent.toBBOX()}
+                ,{
+                  "repository": lizUrls.params.repository,
+                  "project": lizUrls.params.project,
+                  "query":$('#search-query').val(),
+                  "bbox":extent.toBBOX()
+                 }
                 ,function(results) {
                     var text = '';
                     var count = 0;
@@ -292,13 +297,14 @@ var lizAttributeTable = function() {
 
         var searchOptions = config.options.searches;
         var searchAdded = false;
-        //configOptions = {};
         for( var i=0, len=searchOptions.length; i<len; i++ ){
             var searchOption = searchOptions[i];
+            var searchAddedResult = false;
             if ( searchOption.type == 'externalSearch' )
-                searchAdded = searchAdded || addExternalSearch( searchOption );
+                searchAddedResult = addExternalSearch( searchOption );
             else
-                searchAdded = searchAdded || addSearch( searchOption );
+                searchAddedResult = addSearch( searchOption );
+            searchAdded = searchAdded || searchAddedResult;
         }
         if ( !searchAdded ){
             $('#nominatim-search').remove();
