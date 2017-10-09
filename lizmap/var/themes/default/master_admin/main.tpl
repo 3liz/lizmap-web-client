@@ -12,7 +12,7 @@
 
 <div id="header">
   <div id="logo">
-    <h1>Admin</h1>
+    <h1>{@admin~admin.header.admin@}</h1>
   </div>
 </div>
 
