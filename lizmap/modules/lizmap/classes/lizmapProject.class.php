@@ -1025,11 +1025,34 @@ class lizmapProject extends qgisProject {
             $configJson->options->useLayerIDs = 'True';
         }
 
+        // Update searches informations.
+        if ( !property_exists( $configJson->options, 'searches' ) ) {
+            $configJson->options->searches = array();
+        }
+        if ( property_exists( $configJson->options, 'externalSearch' ) ) {
+            $externalSearch = array(
+                'type' => 'externalSearch',
+                'service' => $configJson->options->externalSearch
+            );
+            if ( $configJson->options->externalSearch == 'nominatim' )
+                $externalSearch['url'] = jUrl::get('lizmap~osm:nominatim');
+            else if ( $configJson->options->externalSearch == 'ign' )
+                $externalSearch['url'] = jUrl::get('lizmap~ign:address');
+            $configJson->options->searches[] = (object) $externalSearch;
+            unset( $configJson->options->externalSearch );
+        }
         // Add FTS sqlite searches (db created with from quickfinder)
         $ftsSearches = $this->hasFtsSearches();
         if( $ftsSearches ){
-            $configJson->options->ftsSearches = $ftsSearches['searches'];
+            $configJson->options->searches[] = (object) array(
+                'type' => 'ftsSearches',
+                'service' => 'fts',
+                'url' => jUrl::get('lizmap~search:get',
+                    array('repository'=>$this->repository->getKey(), 'project'=>$this->getKey())
+                )
+            );
         }
+        // Events to get additional searches
 
         // Update dataviz config
         if ( property_exists( $configJson, 'datavizLayers' ) ) {

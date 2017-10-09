@@ -183,6 +183,11 @@ class lizMapCtrl extends jController {
     $title .= ' - '. $lser->appName;
     $rep->title = $title;
 
+
+    // Add search js
+    $rep->addJSLink($bp.'js/search.js');
+
+
     // Add date.js for timemanager
     if( $lproj->hasTimemanagerLayers() ) {
         $rep->addJSLink($bp.'js/date.js');
