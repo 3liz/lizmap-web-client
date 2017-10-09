@@ -2408,6 +2408,7 @@ div.tooltip {
   left: 31px;
   right: 1px;
   bottom: 1px;
+  max-height: 33%;
   max-width:none;
   border-radius:0;
 }
