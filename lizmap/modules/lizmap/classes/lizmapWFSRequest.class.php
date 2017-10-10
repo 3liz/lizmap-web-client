@@ -230,8 +230,10 @@ class lizmapWFSRequest extends lizmapOGCRequest {
             }
             if( count( $sort_items ) > 0 ){
                 $sql.= " ORDER BY ";
+                $sep = '';
                 foreach( $sort_items as $f=>$o ){
-                    $sql.= '"' . $f .'" ' . $o;
+                    $sql.= $sep . '"' . $f .'" ' . $o;
+                    $sep = ', ';
                 }
             }
         }
@@ -239,7 +241,7 @@ class lizmapWFSRequest extends lizmapOGCRequest {
         // LIMIT
         $maxfeatures = '';
         if( array_key_exists( 'maxfeatures', $this->params ) )
-            $maxfeatures = $this->params['propertyname'];
+            $maxfeatures = $this->params['maxfeatures'];
         $maxfeatures = filter_var($maxfeatures, FILTER_VALIDATE_INT);
         // !!! validate integer to avoid injection !!!
         if( is_int( $maxfeatures ) ){
