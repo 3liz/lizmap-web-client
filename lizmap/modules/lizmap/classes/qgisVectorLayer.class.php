@@ -40,7 +40,7 @@ class qgisVectorLayer extends qgisMapLayer{
       $dt
     );
 
-    return (object) array(
+    $ds = array(
       "dbname" => $dt[1],
       "service" => $dt[2],
       "host" => $dt[3],
@@ -56,6 +56,21 @@ class qgisVectorLayer extends qgisMapLayer{
       "geocol" => $dt[13],
       "sql" => $dt[14]
     );
+
+    $table = $ds['table'];
+    $tableAlone = $table;
+    $schema = '';
+    if(preg_match('#"."#', $table)){
+      $table = '"'.$table.'"';
+      $exp = explode('.', str_replace('"', '', $table));
+      $tableAlone = $exp[1];
+      $schema = $exp[0];
+    }
+    $ds['schema'] = $schema;
+    $ds['table'] = $table;
+    $ds['tablename'] = $tableAlone;
+
+    return (object) $ds;
   }
 
   public function getDatasourceConnection() {

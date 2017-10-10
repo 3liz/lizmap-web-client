@@ -1058,37 +1058,13 @@ class serviceCtrl extends jController {
   */
   function GetFeature(){
 
-    // Get parameters
-    if(!$this->getServiceParameters())
-      return $this->serviceException();
+    $wfsRequest = new lizmapWFSRequest( $this->project, $this->params );
+    $result = $wfsRequest->process();
 
-    // add outputformat if not provided
-    $output = $this->iParam('outputformat');
-    if(!$output)
-      $this->params['outputformat'] = 'GML2';
-
-    // Construction of the request url : base url + parameters
-    $url = $this->services->wmsServerURL.'?';
-    $bparams = http_build_query($this->params);
-    $querystring = $url . $bparams;
-
-    // Get remote data
-    $getRemoteData = $this->lizmapCache->getRemoteData(
-      $querystring,
-      'php',
-      $this->services->debugMode
-    );
-    $data = $getRemoteData[0];
-    $mime = $getRemoteData[1];
-
-    // Return response
     $rep = $this->getResponse('binary');
-    $rep->mimeType = $mime;
-    if (   preg_match('#^text/plain#', $mime) && strtolower( $this->params['outputformat'] ) == 'geojson' ) {
-        $rep->mimeType = 'text/json; charset=utf-8';
-    }
-    $rep->content = $data;
-    $rep->doDownload  =  false;
+    $rep->mimeType = $result->mime;
+    $rep->content = $result->data;
+    $rep->doDownload = false;
     $rep->outputFileName  =  'qgis_server_wfs';
 
     // Export

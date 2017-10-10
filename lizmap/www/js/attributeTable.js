@@ -3227,11 +3227,23 @@ var lizAttributeTable = function() {
             );
             console.log(data);
             */
-            var gml2 = new OpenLayers.Format.GML();
-            var gml = gml2.buildGeometryNode(
-                feature.geometry.clone().transform(lizMap.map.getProjection(),aProj)
+            var gml3 = new OpenLayers.Format.GML.v3(
+                {
+                    internalProjection: lizMap.map.getProjection(),
+                    externalProjection: aProj,
+                    srsName: aProj
+                }
             );
-            var spatialFilter = "intersects($geometry, geom_from_gml('"+OpenLayers.Format.XML.prototype.write.apply(gml2, [gml])+"'))";
+            var gml = gml3.writeNode(
+                'feature:_geometry',
+                feature.geometry
+            );
+            var spatialFilter = "intersects($geometry, geom_from_gml('" ;
+            spatialFilter+= OpenLayers.Format.XML.prototype.write.apply(
+                gml3,
+                gml.children
+            );
+            spatialFilter+= "'))";
 
             if( 'request_params' in lConfig && 'filter' in lConfig['request_params'] ){
                 var rFilter = lConfig['request_params']['filter'];
