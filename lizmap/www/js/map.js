@@ -5095,6 +5095,15 @@ OpenLayers.Control.HighlightFeature = OpenLayers.Class(OpenLayers.Control, {
       restrictToMapExtent = typeof restrictToMapExtent !== 'undefined' ?  restrictToMapExtent : false;
 
       // Build WFS request parameters
+      if ( !(aName in config.layers) ) {
+          var qgisName = lizMap.getNameByCleanName(aName);
+          if ( qgisName && (qgisName in config.layers)) {
+              aName = qgisName;
+          } else {
+              console.log('getVectorLayerWfsUrl: "'+aName+'" and "'+qgisName+'" not found in config');
+              return false;
+          }
+      }
       var configLayer = config.layers[aName];
       var typeName = aName.split(' ').join('_');
       if ( 'shortname' in configLayer && configLayer.shortname != '' )

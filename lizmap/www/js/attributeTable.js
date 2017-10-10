@@ -1433,6 +1433,15 @@ var lizAttributeTable = function() {
                 aCallBack = typeof aCallBack !== 'undefined' ?  aCallBack : null;
 
                 // get layer configs
+                if ( !(aName in config.layers) ) {
+                    var qgisName = lizMap.getNameByCleanName(aName);
+                    if ( qgisName && (qgisName in config.layers)) {
+                        aName = qgisName;
+                    } else {
+                        console.log('getAttributeFeatureData: "'+aName+'" and "'+qgisName+'" not found in config');
+                        return false;
+                    }
+                }
                 var aConfig = config.layers[aName];
                 var atConfig = null;
                 if( aName in config.attributeLayers )
@@ -2389,7 +2398,7 @@ var lizAttributeTable = function() {
                         else{
                             // If not pivot
                             var dFilter = null;
-                            getAttributeFeatureData( tableLayerName, dFilter, null, function(someName, someNameFilter, someNameFeatures){
+                            getAttributeFeatureData( featureType, dFilter, null, function(someName, someNameFilter, someNameFeatures){
                                 buildLayerAttributeDatatable( someName, zTable, someNameFeatures );
                             });
                         }
