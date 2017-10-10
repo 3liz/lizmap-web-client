@@ -162,6 +162,9 @@ var lizMap = function() {
    * cleaning layerName for class and layer
    */
   function cleanName(aName){
+    if ( aName in cleanNameMap )
+        return aName;
+
     var accentMap = {
         "à": "a",    "á": "a",    "â": "a",    "ã": "a",    "ä": "a",    "ç": "c",    "è": "e",    "é": "e",    "ê": "e",    "ë": "e",    "ì": "i",    "í": "i",    "î": "i",    "ï": "i",    "ñ": "n",    "ò": "o",    "ó": "o",    "ô": "o",    "õ": "o",    "ö": "o",    "ù": "u",    "ú": "u",    "û": "u",    "ü": "u",    "ý": "y",    "ÿ": "y",
         "À": "A",    "Á": "A",    "Â": "A",    "Ã": "A",    "Ä": "A",    "Ç": "C",    "È": "E",    "É": "E",    "Ê": "E",    "Ë": "E",    "Ì": "I",    "Í": "I",    "Î": "I",    "Ï": "I",    "Ñ": "N",    "Ò": "O",    "Ó": "O",    "Ô": "O",    "Õ": "O",    "Ö": "O",    "Ù": "U",    "Ú": "U",    "Û": "U",    "Ü": "U",    "Ý": "Y",
@@ -5300,6 +5303,15 @@ OpenLayers.Control.HighlightFeature = OpenLayers.Class(OpenLayers.Control, {
       maxFeatures = typeof maxFeatures !== 'undefined' ?  maxFeatures : null;
 
       // Build WFS request parameters
+      if ( !(aName in config.layers) ) {
+          var qgisName = lizMap.getNameByCleanName(aName);
+          if ( qgisName && (qgisName in config.layers)) {
+              aName = qgisName;
+          } else {
+              console.log('getVectorLayerWfsUrl: "'+aName+'" and "'+qgisName+'" not found in config');
+              return false;
+          }
+      }
       var configLayer = config.layers[aName];
       var typeName = aName.split(' ').join('_');
       if ( 'shortname' in configLayer && configLayer.shortname != '' )
