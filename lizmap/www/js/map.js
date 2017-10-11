@@ -4967,7 +4967,10 @@ OpenLayers.Control.HighlightFeature = OpenLayers.Class(OpenLayers.Control, {
    * Returns:
    * {jQuery Object} The message added.
    */
-  function exportVectorLayer( aName, eformat ) {
+  function exportVectorLayer( aName, eformat, restrictToMapExtent ) {
+
+      restrictToMapExtent = typeof restrictToMapExtent !== 'undefined' ?  restrictToMapExtent : null;
+
       // right not set
       if ( !('exportLayers' in lizMap.config.options) || lizMap.config.options.exportLayers != 'True' ) {
         mAddMessage(lizDict['layer.export.right.required'],'error',true);
@@ -4987,7 +4990,7 @@ OpenLayers.Control.HighlightFeature = OpenLayers.Class(OpenLayers.Control, {
       var featureid = getVectorLayerSelectionFeatureIdsString( selectionLayer );
 
       // Get WFS url and options
-      var getFeatureUrlData = getVectorLayerWfsUrl( aName, null, featureid );
+      var getFeatureUrlData = getVectorLayerWfsUrl( aName, null, featureid, null, restrictToMapExtent );
 
       // Force download
       getFeatureUrlData['options']['dl'] = 1;
@@ -5455,8 +5458,8 @@ OpenLayers.Control.HighlightFeature = OpenLayers.Class(OpenLayers.Control, {
     /**
      * Method: exportVectorLayer
      */
-    exportVectorLayer: function( aName, eformat ) {
-      return exportVectorLayer( aName, eformat );
+    exportVectorLayer: function( aName, eformat, restrictToMapExtent ) {
+      return exportVectorLayer( aName, eformat, restrictToMapExtent );
     },
 
     /**
