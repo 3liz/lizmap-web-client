@@ -19,6 +19,20 @@ class lizmapWFSRequest extends lizmapOGCRequest {
 
     protected $selectFields = array();
 
+    protected $blackSqlWords = array(
+        ';',
+        'select',
+        'delete',
+        'insert',
+        'update',
+        'drop',
+        'alter',
+        '--',
+        'truncate',
+        'vacuum',
+        'create'
+    );
+
     protected function getcapabilities ( ) {
         $result = parent::getcapabilities();
 
@@ -74,6 +88,7 @@ class lizmapWFSRequest extends lizmapOGCRequest {
     }
 
     function getfeature() {
+
         // add outputformat if not provided
         $output = $this->param('outputformat');
         if(!$output)
@@ -82,6 +97,10 @@ class lizmapWFSRequest extends lizmapOGCRequest {
         // Get Lizmap layer config
         $typename = $this->params['typename'];
         $lizmapLayer = $this->project->findLayerByTypeName( $typename );
+        if ( !$lizmapLayer ) {
+            jMessage::add('The layer '.$typename . ' does not exists !', 'Error');
+            return $this->serviceException();
+        }
         $qgisLayer = $this->project->getLayer( $lizmapLayer->id );
         $this->qgisLayer = $qgisLayer;
 
@@ -97,7 +116,6 @@ class lizmapWFSRequest extends lizmapOGCRequest {
         if( $provider == 'postgres'
             and empty($filter)
             and strtolower($output) == 'geojson'
-            //and false
         ){
             return $this->getfeaturePostgres();
         }else{
@@ -194,6 +212,32 @@ class lizmapWFSRequest extends lizmapOGCRequest {
         // WHERE
         $sql.= ' WHERE True';
 
+        // BBOX
+        $bbox = '';
+        if( array_key_exists( 'bbox', $this->params ) )
+            $bbox = $this->params['bbox'];
+        $bboxvalid = false;
+        if( !empty( $bbox ) ){
+          $bboxvalid = true;
+          $bboxitem = explode(",",$bbox);
+          if(count($bboxitem)==4){
+            foreach($bboxitem as $coord){
+              if(!is_numeric(trim($coord))){
+                $bboxvalid = false;
+              }
+            }
+          }
+        }
+        if($bboxvalid){
+            $xmin = trim($bboxitem[0]);
+            $ymin = trim($bboxitem[1]);
+            $xmax = trim($bboxitem[2]);
+            $ymax = trim($bboxitem[3]);
+            $sql.= ' AND ST_Intersects("';
+            $sql.= $ds->geocol;
+            $sql.= '", ST_MakeEnvelope(' . $xmin . ',' . $ymin . ',' . $xmax . ',' . $ymax .', '. $this->qgisLayer->getSrid() . '))';
+        }
+
         // EXP_FILTER
         $exp_filter = '';
         if( array_key_exists( 'exp_filter', $this->params ) )
@@ -201,11 +245,37 @@ class lizmapWFSRequest extends lizmapOGCRequest {
         if( ! empty( $exp_filter ) ){
             $validFilter = $this->validateFilter($exp_filter);
             if(!$validFilter){
-                jLog::log('Dangerous filter, use QGIS Server to get features');
                 return $this->getfeatureQgis();
             }
             $sql.= ' AND ' . $validFilter;
         }
+
+        // FEATUREID
+        $featureid = '';
+        $typename = $this->params['typename'];
+        if( array_key_exists( 'featureid', $this->params ) )
+            $featureid = $this->params['featureid'];
+        if( ! empty( $featureid ) ){
+            $exp = explode( '.', $featureid );
+            if( count($exp) == 2 and $exp[0] == $typename ){
+                $sql.= " AND ";
+                $pks = explode(',', $exp[1]);
+                $i = 0;
+                $v = '';
+                foreach($keys as $key){
+                    $sql.= $v . '"' . $key . '" = ' ;
+                    if( ctype_digit($pks[$i]) ){
+                        $sql.= $pks[$i];
+                    }
+                    else{
+                        $sql.= $cnx->quote($pks[$i]);
+                    }
+                    $v = ' AND ';
+                    $i++;
+                }
+            }
+        }
+
 
         // ORDER BY
         // séparé par virgule, et fini par espace + a ou d
@@ -258,9 +328,10 @@ class lizmapWFSRequest extends lizmapOGCRequest {
             $sql.= " OFFSET " . $startindex;
         }
 
+//jLog::log($sql);
         // Use PostgreSQL method to export geojson
         $sql = $this->setGeojsonSql($sql);
-
+//jLog::log($sql);
         // Run query
         try{
             $q = $cnx->query( $sql );
@@ -268,24 +339,43 @@ class lizmapWFSRequest extends lizmapOGCRequest {
             jLog::log($e->getMessage(), 'error');
             return $this->getfeatureQgis();
         }
-        $return = '';
+
+        // To avoid memory issues, we do not ask PostgreSQL for a unique big line containing the geojson
+        // but asked for a feature in JSON per line
+        // the we store the data into a file
+        $path = sys_get_temp_dir() . '/' . time() . session_id() . '_wfs' . '.csv';
+        $fd = fopen($path, 'w');
+        fwrite($fd,'
+{
+  "type": "FeatureCollection",
+  "features": [
+');
+        $virg = '';
         foreach( $q as $d){
-            $geojson =  $d->geojson;
-            break;
+            fwrite( $fd, $virg . $d->geojson );
+            $virg = ',
+';
         }
+        fwrite( $fd, "
+]}
+" );
+        fclose($fd);
 
         // Return response
         return (object) array(
             'code' => '200',
             'mime' => 'text/json; charset=utf-8',
-            'data' => $geojson,
+            'file' => True,// we use this to inform controler postgres has been used
+            'data' => $path,
             'cached' => False
         );
 
     }
 
     private function validateFilter($filter){
-        if( preg_match('#;|select|delete|insert|update|drop|alter|from|--|truncate|vacuum|create#i', $filter) ){
+        $black_items = array();
+        if( preg_match('#'.implode( '|', $this->blackSqlWords ).'#i', $filter, $black_items) ){
+            jLog::log("The EXP_FILTER param contains dangerous chars : " . implode(', ', $black_items ) );
             return False;
         }else{
             $filter = str_replace('intersects', 'ST_Intersects', $filter );
@@ -303,11 +393,12 @@ class lizmapWFSRequest extends lizmapOGCRequest {
         )";
 
         $sql.= "
-        SELECT row_to_json(fc, True) AS geojson
-        FROM (
-            SELECT
-                'FeatureCollection' As type,
-                array_to_json(array_agg(f)) As features
+        --SELECT row_to_json(fc, True) AS geojson
+        --FROM (
+        --    SELECT
+        --        'FeatureCollection' As type,
+        --        array_to_json(array_agg(f)) As features
+        SELECT row_to_json(f, True) AS geojson
             FROM (
                 SELECT
                     'Feature' AS type,
@@ -378,7 +469,7 @@ class lizmapWFSRequest extends lizmapOGCRequest {
                     ) As properties
                 FROM source As lg
             ) As f
-        ) As fc";
+        --) As fc";
 
         return $sql;
     }

@@ -89,6 +89,10 @@ class qgisMapLayer{
     return $this->provider;
   }
 
+  public function getSrid(){
+    return $this->srid;
+  }
+
   public function getXmlLayer(){
     $xmlLayers = $this->project->getXmlLayer($this->id);
     if (count($xmlLayers) == 0 )

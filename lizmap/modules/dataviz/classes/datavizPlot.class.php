@@ -185,7 +185,11 @@ class datavizPlot {
 
             // Check data
             if( property_exists($wfsresponse, 'data') ){
-                $featureData = json_decode($wfsresponse->data);
+                $data = $wfsresponse->data;
+                if(property_exists($wfsresponse, 'file') and $wfsresponse->file and is_file($data) ){
+                    $data = jFile::read($data);
+                }
+                $featureData = json_decode($data);
                 if( empty($featureData) ){
                     $featureData = null;
                 }

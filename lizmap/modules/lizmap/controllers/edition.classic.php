@@ -255,7 +255,11 @@ class editionCtrl extends jController {
         $wfsrequest = new lizmapWFSRequest( $lproj, $wfsparams );
         $wfsresponse = $wfsrequest->getfeature();
         if( property_exists($wfsresponse, 'data') ){
-            $this->featureData = json_decode($wfsresponse->data);
+            $data = $wfsresponse->data;
+            if( property_exists($wfsresponse, 'file') and $wfsresponse->file and is_file($data) ){
+                $data = jFile::read($data);
+            }
+            $this->featureData = json_decode($data);
             if( empty($this->featureData) ){
                 $this->featureData = Null;
             }
@@ -704,7 +708,7 @@ class editionCtrl extends jController {
       'PROPERTYNAME' => $valueColumn.','.$keyColumn,
       'OUTPUTFORMAT' => 'GeoJSON',
       'GEOMETRYNAME' => 'none',
-      'map' => $this->repository->getPath().$this->project->getKey().".qgs"
+      //'map' => $this->repository->getPath().$this->project->getKey().".qgs"
     );
     // add EXP_FILTER. Only for QGIS >=2.0
     $expFilter = Null;
@@ -729,21 +733,31 @@ class editionCtrl extends jController {
     }
 
     // Build query
-    $lizmapServices = lizmap::getServices();
-    $url = $lizmapServices->wmsServerURL.'?';
-    $bparams = http_build_query($params);
-    $querystring = $url . $bparams;
+    //$lizmapServices = lizmap::getServices();
+    //$url = $lizmapServices->wmsServerURL.'?';
+    //$bparams = http_build_query($params);
+    //$querystring = $url . $bparams;
 
     // Get remote data
-    $lizmapCache = jClasses::getService('lizmap~lizmapCache');
-    $getRemoteData = $lizmapCache->getRemoteData(
-      $querystring,
-      $lizmapServices->proxyMethod,
-      $lizmapServices->debugMode
-    );
-    $wfsData = $getRemoteData[0];
-    $mime = $getRemoteData[1];
+    //$lizmapCache = jClasses::getService('lizmap~lizmapCache');
+    //$getRemoteData = $lizmapCache->getRemoteData(
+      //$querystring,
+      //$lizmapServices->proxyMethod,
+      //$lizmapServices->debugMode
+    //);
+    //$wfsData = $getRemoteData[0];
+    //$mime = $getRemoteData[1];
 
+    $wfsrequest = new lizmapWFSRequest( $this->project, $params );
+    $wfsresponse = $wfsrequest->getfeature();
+    $wfsData = Null;
+    if( property_exists($wfsresponse, 'data') ){
+        $wfsData = $wfsresponse->data;
+        if( property_exists($wfsresponse, 'file') and $wfsresponse->file and is_file($wfsData) ){
+            $wfsData = jFile::read($wfsData);
+        }
+    }
+    $mime = $wfsresponse->mime;
     if($wfsData and !in_array(strtolower($mime), array('text/html', 'text/xml')) ){
       $wfsData = json_decode($wfsData);
       // Get data from layer
@@ -1215,7 +1229,6 @@ class editionCtrl extends jController {
       jMessage::add('An error has been raised when getting the form', 'formNotDefined');
       return $this->serviceAnswer();
     }
-
     // Set lizmap form controls (hard-coded in the form xml file)
     $form->setData('liz_repository', $this->repository->getKey());
     $form->setData('liz_project', $this->project->getKey());

@@ -1063,7 +1063,12 @@ class serviceCtrl extends jController {
 
     $rep = $this->getResponse('binary');
     $rep->mimeType = $result->mime;
-    $rep->content = $result->data;
+
+    if(property_exists($result, 'file') and $result->file and is_file($result->data) ){
+        $rep->fileName = $result->data;
+    }else{
+        $rep->content = $result->data; // causes memory_limit for big content
+    }
     $rep->doDownload = false;
     $rep->outputFileName  =  'qgis_server_wfs';
 
@@ -1072,8 +1077,13 @@ class serviceCtrl extends jController {
     if( $dl ){
       // force download
       $rep->doDownload = true;
-      // debug 1st line blank from QGIS Server
-      $rep->content = preg_replace('/^[\n\r]/', '', $data);
+
+      if(property_exists($result, 'file') and $result->file and is_file($result->data) ){
+          $rep->fileName = $result->data;
+      }else{
+        // debug 1st line blank from QGIS Server
+        $rep->content = preg_replace('/^[\n\r]/', '', $result->data);
+      }
       // Change file name
       $zipped_files = array('shp','mif','tab');
       if ( in_array( strtolower($this->params['outputformat']), $zipped_files ) )
