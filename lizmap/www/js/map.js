@@ -1487,25 +1487,28 @@ var lizMap = function() {
       var feat = locate.features[val];
       var format = new OpenLayers.Format.GeoJSON();
       feat = format.read(feat)[0];
-      feat.geometry.transform(proj, map.getProjection());
-      // Show geometry if asked
-      if (locate.displayGeom == 'True') {
-          var getFeatureUrlData = getVectorLayerWfsUrl( aName, null, null, null );
-          getFeatureUrlData['options']['PROPERTYNAME'] = ['geometry',locate.fieldName].join(',');
-          getFeatureUrlData['options']['FEATUREID'] = val;
-          // Get data
-          $.get( getFeatureUrlData['url'], getFeatureUrlData['options'], function(data) {
-            if( data.features.length != 0) {
-              feat = format.read(data.features[0])[0];
-              feat.geometry.transform(proj, map.getProjection());
-            }
-            layer.addFeatures([feat]);
-          }).fail(function(){
-            layer.addFeatures([feat]);
-          });
+
+      if( feat.geometry != null){
+        feat.geometry.transform(proj, map.getProjection());
+        // Show geometry if asked
+        if (locate.displayGeom == 'True') {
+            var getFeatureUrlData = getVectorLayerWfsUrl( aName, null, null, null );
+            getFeatureUrlData['options']['PROPERTYNAME'] = ['geometry',locate.fieldName].join(',');
+            getFeatureUrlData['options']['FEATUREID'] = val;
+            // Get data
+            $.get( getFeatureUrlData['url'], getFeatureUrlData['options'], function(data) {
+              if( data.features.length != 0) {
+                feat = format.read(data.features[0])[0];
+                feat.geometry.transform(proj, map.getProjection());
+              }
+              layer.addFeatures([feat]);
+            }).fail(function(){
+              layer.addFeatures([feat]);
+            });
+        }
+        //zoom to extent
+        map.zoomToExtent(feat.geometry.getBounds());
       }
-      //zoom to extent
-      map.zoomToExtent(feat.geometry.getBounds());
 
       var fid = val.split('.')[1];
 
