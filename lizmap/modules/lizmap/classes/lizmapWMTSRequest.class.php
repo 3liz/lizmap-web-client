@@ -173,6 +173,13 @@ class lizmapWMTSRequest extends lizmapOGCRequest {
         if(preg_match('#png#', $Format))
             $params['transparent'] = 'true';
 
+        $filter = $this->param('filter');
+        if($filter)
+            $params['filter'] = $filter;
+        $exp_filter = $this->param('exp_filter');
+        if($exp_filter)
+            $params['exp_filter'] = $exp_filter;
+
         $wmsRequest = new lizmapWMSRequest( $this->project, $params );
         $wmsRequest->setForceRequest( $this->forceRequest );
 
