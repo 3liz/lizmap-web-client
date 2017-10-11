@@ -595,7 +595,7 @@ var lizAttributeTable = function() {
                         eFormat = 'GML3';
                     var cleanName = $(this).parents('div.attribute-layer-main:first').attr('id').replace('attribute-layer-main-', '');
                     var eName = attributeLayersDic[ cleanName ];
-                    lizMap.exportVectorLayer( eName, eFormat );
+                    lizMap.exportVectorLayer( eName, eFormat, limitDataToBbox );
                     $(this).blur();
                     return false;
                 });
@@ -2249,6 +2249,8 @@ var lizAttributeTable = function() {
                 if( aFilter )
                     var lFilter = layerN + ':"' + typeNamePkey + '" IN ( ' + typeNamePkeyValues.join( ' , ' ) + ' ) ';
 
+
+
                 layerConfig['request_params']['filter'] = lFilter;
 
                 // Add filter to openlayers layer
@@ -2401,11 +2403,12 @@ var lizAttributeTable = function() {
 
             function updateMapLayerDrawing( featureType, cascade ){
                 cascade = typeof cascade !== 'undefined' ?  cascade : true;
-
                 // Get layer
                 var layer = lizMap.map.getLayersByName( lizMap.cleanName(featureType) )[0];
-                if( !layer )
-                    return;
+
+                // comment this to allow non spatial layers to trigger filters for children layers
+                //if( !layer )
+                    //return;
 
                 // Build filter from filteredFeatures
                 var cFilter = null;
@@ -2421,11 +2424,15 @@ var lizAttributeTable = function() {
                     && config.layers[featureType]['selectedFeatures']
                     && config.layers[featureType]['selectedFeatures'].length
                 ) {
-                    layer.params['SELECTION'] = layerN + ':' + config.layers[featureType]['selectedFeatures'].join();
-                    config.layers[featureType]['request_params']['selection'] = layer.params['SELECTION'];
+                    if(layer){
+                        layer.params['SELECTION'] = layerN + ':' + config.layers[featureType]['selectedFeatures'].join();
+                        config.layers[featureType]['request_params']['selection'] = layer.params['SELECTION'];
+                    }
                 }
                 else {
-                    delete layer.params['SELECTION'];
+                    if(layer){
+                        delete layer.params['SELECTION'];
+                    }
                     config.layers[featureType]['request_params']['selection'] = null;
                 }
 
@@ -2434,7 +2441,6 @@ var lizAttributeTable = function() {
                 var typeNameFilter = {};
                 typeNameFilter[featureType] = cFilter;
                 var typeNameDone = [];
-
                 updateLayer(typeNamePile, typeNameFilter, typeNameDone,  cascade );
 
             }
@@ -2952,6 +2958,7 @@ var lizAttributeTable = function() {
 
                     if( 'filterOnLocate' in aConfig && aConfig.filterOnLocate == 'True' )
                         triggerFilterOnLocate = true;
+
                     if( !triggerFilterOnLocate )
                         return false;
 
@@ -3409,8 +3416,10 @@ var lizAttributeTable = function() {
             var eFormat = $(this).text();
             if( eFormat == 'GML' )
                 eFormat = 'GML3';
+            lizMap.exportVectorLayer( aName, eFormat, false );
+            // if selection is passed, features number should not be too high
+            // we do not restrict data to map extent
 
-            lizMap.exportVectorLayer( aName, eFormat );
             $('#selectiontool-export').click().blur();
             return false;
         })
