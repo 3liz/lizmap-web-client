@@ -115,7 +115,7 @@ class qgisProject{
     }
 
     public function clearCache() {
-        $file = $this->repository->getPath().$this->key.'.qgs';
+        $file = $this->path;
         try {
             jCache::delete($file, 'qgisprojects');
         }
@@ -124,6 +124,10 @@ class qgisProject{
             // other error about the cache, let's log it
             jLog::log($e->getMessage(), 'error');
         }
+    }
+
+    public function getPath() {
+        return $this->path;
     }
 
     public function getData( $key ) {
