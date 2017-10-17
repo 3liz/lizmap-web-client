@@ -181,8 +181,10 @@ class qgisFormControl{
     // Set class attributes
     $this->ref = $ref;
     $this->fieldName = $ref;
-    if ( $aliasXml and count( $aliasXml ) != 0 )
+    if ( $aliasXml and is_array($aliasXml) and count( $aliasXml ) != 0 )
       $this->fieldAlias = (string)$aliasXml[0]->attributes()->name;
+    else if ( $aliasXml and count( $aliasXml ) != 0 )
+      $this->fieldAlias = $aliasXml;
     $this->fieldDataType = $this->castDataType[strtolower($prop->type)];
 
     if($prop->notNull && !$prop->autoIncrement)

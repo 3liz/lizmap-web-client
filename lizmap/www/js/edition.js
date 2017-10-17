@@ -94,7 +94,7 @@ var lizEdition = function() {
         }
         return redrawnLayerIds;
     }
-    
+
     function getRelationInfo(parentLayerId,childLayerId){
         if( 'relations' in config && parentLayerId in config.relations) {
             var layerRelations = config.relations[parentLayerId];
@@ -505,6 +505,8 @@ var lizEdition = function() {
 
             // Activate some controls
             if( !editCtrls )
+                return false;
+            if ( !editionLayer['id'] )
                 return false;
             var geometryType = editionLayer['config'].geometryType;
 
