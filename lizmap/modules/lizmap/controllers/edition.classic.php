@@ -299,7 +299,7 @@ class editionCtrl extends jController {
 
         // Check if a user is authenticated
         $isConnected = jAuth::isConnected();
-        $cnx = jDb::getConnection();
+        $cnx = jDb::getConnection($this->layerId);
         if($isConnected){
           $user = jAuth::getUserSession();
           $login = $user->login;
@@ -720,7 +720,7 @@ class editionCtrl extends jController {
       $loginFilteredLayers = $this->filterDataByLogin($layerName);
       if( is_array( $loginFilteredLayers )){
         if($expFilter){
-          $expFilter = " ( ".$expFilter." ) AND ( ".$this->loginFilteredLayers['where']." ) ";
+          $expFilter = " ( ".$expFilter." ) AND ( ".$loginFilteredLayers['where']." ) ";
         }else {
           $expFilter = $loginFilteredLayers['where'];
         }
@@ -1560,7 +1560,7 @@ class editionCtrl extends jController {
     } catch (Exception $e) {
       jLog::log("SQL = ".$sql);
       jLog::log("An error has been raised when saving form data edition to db : ".$e->getMessage() ,'error');
-      jMessage::add( jLocale::get('view~edition.message.success.delete'), 'error');
+      jMessage::add( jLocale::get('view~edition.message.error.delete'), 'error');
     }
     return $this->serviceAnswer();
   }
@@ -1866,7 +1866,7 @@ class editionCtrl extends jController {
         $msg = false;
 
         $val = (int) $pkeyval;
-        if( $this->dataFields[$key2]->unifiedType != 'integer' )
+        if( $this->dataFields[$pkey]->unifiedType != 'integer' )
             $val = $cnx->quote( $val );
         $sql = ' UPDATE '.$this->table;
         $sql.= ' SET "' . $fkey . '" = NULL';
