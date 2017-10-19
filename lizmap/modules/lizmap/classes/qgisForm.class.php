@@ -15,12 +15,12 @@ class qgisForm {
     protected $layer = null;
     protected $form = null;
     protected $featureId = null;
-    protected $loginFilteredOveride = False;
+    protected $loginFilteredOverride = False;
 
     protected $dbFieldsInfo = null;
     protected $formControls = array();
 
-    public function __construct ( $layer, $form, $featureId, $loginFilteredOveride ){
+    public function __construct ( $layer, $form, $featureId, $loginFilteredOverride ){
         if ( $layer->getType() != 'vector' )
             throw new Exception('The layer "'.$layer->getName().'" is not a vector layer!');
         if ( !$layer->isEditable() )
@@ -38,7 +38,7 @@ class qgisForm {
         $this->layer = $layer;
         $this->form = $form;
         $this->featureId = $featureId;
-        $this->loginFilteredOveride = $loginFilteredOveride;
+        $this->loginFilteredOverride = $loginFilteredOverride;
 
         $this->dbFieldsInfo = $dbFieldsInfo;
 
@@ -359,7 +359,7 @@ class qgisForm {
                 return $form;
 
             $user = jAuth::getUserSession();
-            if( !$this->loginFilteredOveride ){
+            if( !$this->loginFilteredOverride ){
                 if ( $type == 'login' ) {
                     $user = jAuth::getUserSession();
                     $form->setData($attribute, $user->login);
@@ -492,7 +492,7 @@ class qgisForm {
             $expFilter = $filterExpression;
         }
         // Filter by login
-        if( !$this->loginFilteredOveride ) {
+        if( !$this->loginFilteredOverride ) {
           $loginFilteredLayers = $this->filterDataByLogin($layerName);
           if ( is_array( $loginFilteredLayers ) ) {
             if ( $expFilter ){

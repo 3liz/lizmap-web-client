@@ -51,7 +51,7 @@ class editionCtrl extends jController {
   private $proj4 = '';
 
   // Filter override flag
-  private $loginFilteredOveride = False;
+  private $loginFilteredOverride = False;
 
 
   /**
@@ -181,7 +181,7 @@ class editionCtrl extends jController {
     $this->layerName = $layerName;
 
     // Optionnaly filter data by login
-    $this->loginFilteredOveride = jacl2::check('lizmap.tools.loginFilteredLayers.override', $lrep->getKey());
+    $this->loginFilteredOverride = jacl2::check('lizmap.tools.loginFilteredLayers.override', $lrep->getKey());
 
     $dbFieldsInfo = $this->layer->getDbFieldsInfo();
     $this->primaryKeys = $dbFieldsInfo->primaryKeys;
@@ -342,7 +342,7 @@ class editionCtrl extends jController {
     // Dynamically add form controls based on QGIS layer information
     $qgisForm = null;
     try {
-        $qgisForm = new qgisForm( $this->layer, $form, $this->featureId, $this->loginFilteredOveride );
+        $qgisForm = new qgisForm( $this->layer, $form, $this->featureId, $this->loginFilteredOverride );
     }
     catch(Exception $e) {
         jMessage::add($e->getMessage(), 'error');
@@ -451,7 +451,7 @@ class editionCtrl extends jController {
     $save =True;
     $qgisForm = null;
     try {
-        $qgisForm = new qgisForm( $this->layer, $form, $this->featureId, $this->loginFilteredOveride );
+        $qgisForm = new qgisForm( $this->layer, $form, $this->featureId, $this->loginFilteredOverride );
     }
     catch(Exception $e) {
         jMessage::add($e->getMessage(), 'error');
@@ -583,7 +583,7 @@ class editionCtrl extends jController {
 
     $qgisForm = null;
     try {
-        $qgisForm = new qgisForm( $this->layer, $form, $this->featureId, $this->loginFilteredOveride );
+        $qgisForm = new qgisForm( $this->layer, $form, $this->featureId, $this->loginFilteredOverride );
     }
     catch(Exception $e) {
         jMessage::add($e->getMessage(), 'error');
