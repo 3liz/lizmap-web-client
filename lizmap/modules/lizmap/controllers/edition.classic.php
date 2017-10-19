@@ -23,27 +23,6 @@ class editionCtrl extends jController {
   // layer name (<layername> in QGIS project)
   private $layerName = '';
 
-  // table name
-  private $table = '';
-
-  // Schema
-  private $schema = '';
-
-  // table name without schema
-  private $tableName = '';
-
-  // QGIS where clause
-  private $whereClause = '';
-
-  // provider driver map
-  private $providerDriverMap = array(
-    'spatialite'=>'sqlite3',
-    'postgres'=>'pgsql'
-  );
-
-  // provider
-  private $provider = '';
-
   // featureIdParam : featureId parameter from the request
   private $featureIdParam = Null;
 
@@ -59,38 +38,20 @@ class editionCtrl extends jController {
   // Layer data as qgisVectorLayer
   private $layer = '';
 
-  // Fields information taken from database
-  private $dataFields = '';
-
-  // Primary key
+  // Primary key for getWfsFeature
   private $primaryKeys = array();
 
-  // Map data type as geometry type
-  private $geometryDatatypeMap = array(
-    'point', 'linestring', 'polygon', 'multipoint',
-    'multilinestring', 'multipolygon', 'geometrycollection', 'geometry'
-  );
-
-  // Geometry type
-  private $geometryType = '';
-
-  // Geometry column
+  // Geometry column for form
   private $geometryColumn = '';
 
-  // Geometry srid
+  // Geometry srid for form
   private $srid = '';
 
-  // Geometry proj4 string
+  // Geometry proj4 string for form
   private $proj4 = '';
-
-  // Form controls
-  private $formControls = '';
 
   // Filter override flag
   private $loginFilteredOveride = False;
-
-  // Filter by login information
-  private $loginFilteredLayers = Null;
 
 
   /**
@@ -220,17 +181,11 @@ class editionCtrl extends jController {
     $this->layerName = $layerName;
 
     // Optionnaly filter data by login
-    if( !jAcl2::check('lizmap.tools.loginFilteredLayers.override', $lrep->getKey()) ){
-      $this->loginFilteredLayers = True;
-    }
     $this->loginFilteredOveride = jacl2::check('lizmap.tools.loginFilteredLayers.override', $lrep->getKey());
 
-    $this->provider = $this->layer->getProvider();
     $dbFieldsInfo = $this->layer->getDbFieldsInfo();
-    $this->dataFields = $dbFieldsInfo->dataFields;
     $this->primaryKeys = $dbFieldsInfo->primaryKeys;
     $this->geometryColumn = $dbFieldsInfo->geometryColumn;
-    $this->geometryType = $dbFieldsInfo->geometryType;
     $this->srid = $this->layer->getSrid();
     $this->proj4 = $this->layer->getProj4();
 
