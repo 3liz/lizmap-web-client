@@ -199,7 +199,7 @@ class lizmapWFSRequest extends lizmapOGCRequest {
         $sql.= '"' . implode( '", "', $sfields ) . '"';
 
         // Get spatial field
-        $geocol = $ds->geocol;
+        $geocol = $this->datasource->geocol;
         if( !empty( $geocol ) ){
             $geocolalias = 'geosource';
             $sql.= ', "' . $geocol . '" AS "' . $geocolalias . '"';
@@ -207,7 +207,7 @@ class lizmapWFSRequest extends lizmapOGCRequest {
 
 
         // FROM
-        $sql.= ' FROM ' . $ds->table ;
+        $sql.= ' FROM ' . $this->datasource->table ;
 
         // WHERE
         $sql.= ' WHERE True';
@@ -234,7 +234,7 @@ class lizmapWFSRequest extends lizmapOGCRequest {
             $xmax = trim($bboxitem[2]);
             $ymax = trim($bboxitem[3]);
             $sql.= ' AND ST_Intersects("';
-            $sql.= $ds->geocol;
+            $sql.= $this->datasource->geocol;
             $sql.= '", ST_MakeEnvelope(' . $xmin . ',' . $ymin . ',' . $xmax . ',' . $ymax .', '. $this->qgisLayer->getSrid() . '))';
         }
 
@@ -420,24 +420,29 @@ class lizmapWFSRequest extends lizmapOGCRequest {
 
 
         // Get geometryname param
-        $geometryname = '';
-        if( array_key_exists('geometryname', $this->params ) ){
-            $geometryname = $this->params['geometryname'];
+        $geosql = '';
+        if( !empty($this->datasource->geocol) ){
+            // geometry name
+            $geometryname = '';
+            if( array_key_exists('geometryname', $this->params ) ){
+                $geometryname = $this->params['geometryname'];
+            }
+            // use PostGIS functions to change geometry based on geometryname
+            if( $geometryname == 'extent' ){
+                $geosql = 'ST_Envelope(lg.geosource)';
+            }
+            elseif ( $geometryname == 'centroid' ){
+                $geosql = 'ST_Centroid(lg.geosource)';
+            }
+            elseif ( $geometryname == 'none' ){
+                $geosql = Null;
+            }
+            else{
+                $geosql = 'lg.geosource';
+            }
         }
 
-        if( $geometryname == 'extent' ){
-            $geosql = 'ST_Envelope(lg.geosource)';
-        }
-        elseif ( $geometryname == 'centroid' ){
-            $geosql = 'ST_Centroid(lg.geosource)';
-        }
-        elseif ( $geometryname == 'none' ){
-            $geosql = Null;
-        }
-        else{
-            $geosql = 'lg.geosource';
-        }
-        if( $geosql ){
+        if( !empty($geosql) ){
             // For new QGIS versions, export into EPSG:4326
             $lizservices = lizmap::getServices();
             $qgisServerVersion = (integer)str_replace('.', '', $lizservices->qgisServerVersion);
