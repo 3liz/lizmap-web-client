@@ -35,7 +35,7 @@ class qgisVectorLayer extends qgisMapLayer{
   public function getDatasourceParameters() {
     // Get datasource information from QGIS
     $datasourceMatch = preg_match(
-      "#(?:dbname='([^ ]+)' )?(?:service='([^ ]+)' )?(?:host=([^ ]+) )?(?:port=([0-9]+) )?(?:user='([^ ]+)' )?(?:password='([^ ]+)' )?(?:sslmode=([^ ]+) )?(?:key='([^ ]+)' )?(?:estimatedmetadata=([^ ]+) )?(?:srid=([0-9]+) )?(?:type=([a-zA-Z]+) )?(?:table=\"(.+)?\" )?(?:\()?(?:([^ ]+)\) )?(?:sql=(.*))?#",
+      "#(?:dbname='([^ ]+)' )?(?:service='([^ ]+)' )?(?:host=([^ ]+) )?(?:port=([0-9]+) )?(?:user='([^ ]+)' )?(?:password='([^ ]+)' )?(?:sslmode=([^ ]+) )?(?:key='([^ ]+)' )?(?:estimatedmetadata=([^ ]+) )?(?:srid=([0-9]+) )?(?:type=([a-zA-Z]+) )?(?:table=\"(.+)?\" )?(?:\()?(?:([^ ]+)\) )?(?:sql=(.*))?#s",
       $this->datasource,
       $dt
     );
@@ -69,6 +69,8 @@ class qgisVectorLayer extends qgisMapLayer{
     // Handle subqueries
     if( substr($table, 0, 1) == '(' and substr($table, -1) == ')' ){
       $table = $tableAlone = $table . ' fooliz';
+      // remove \" which escapes table and schema names in QGIS WML within subquery
+      $table = str_replace('\"', '"', $table);
     }
     $ds['schema'] = $schema;
     $ds['table'] = $table;
