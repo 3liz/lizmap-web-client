@@ -243,7 +243,7 @@ class datavizPlot {
                     $colors = array();
                     $xf = $x_field;
                     $yf = $y_field;
-                    if( $trace['orientation'] == 'h'){
+                    if( array_key_exists('orientation', $trace) and $trace['orientation'] == 'h'){
                         // Revert x and y for horizontal bar plot
                         $xf = $y_field;
                         $yf = $x_field;
