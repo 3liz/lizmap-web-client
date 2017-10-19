@@ -1179,16 +1179,30 @@ div.modal h3 .text {
   bottom: 0px;
   right: 0px;
   top:0px;
-  width: 40%;
+  width:30%;
+  height:100%;
   background: #4A4A4A;
 }
+#content.mobile #right-dock{
+  max-width:100%;
+  top:auto;
+  bottom:0px;
+  right:0px;
+  left:30px;
+  width:auto;
+  z-index:1100;
+}
+
 #right-dock > .tabbable{
   margin-right: 5px;
   margin-left: 5px;
 }
 
 #content.right-dock-visible #map-content{
-  margin-right:40%;
+  margin-right:30%;
+}
+#content.mobile.right-dock-visible #map-content{
+  margin-right:0px;
 }
 
 #content.mobile #toolbar{
