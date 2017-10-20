@@ -101,6 +101,10 @@ class qgisFormControl{
       16 => array (
             'qgis'=>array('name'=>'UUID generator', 'description'=>'Read-only field that generates a UUID if empty'),
             'jform'=>array('markup'=>'input', 'readonly'=>true)
+      ),
+      17 => array (
+            'qgis'=>array('name'=>'External Resource', 'description'=>'Simplifies file selection by adding a file chooser dialog.'),
+            'jform'=>array('markup'=>'upload')
       )
     );
 
@@ -177,6 +181,7 @@ class qgisFormControl{
     $this->qgisEdittypeMap['Photo'] = $this->qgisEdittypeMap[8];
     $this->qgisEdittypeMap['WebView'] = $this->qgisEdittypeMap[0];
     $this->qgisEdittypeMap['Color'] = $this->qgisEdittypeMap[0];
+    $this->qgisEdittypeMap['ExternalResource'] = $this->qgisEdittypeMap[17];
 
     // Set class attributes
     $this->ref = $ref;
@@ -289,8 +294,64 @@ class qgisFormControl{
         $upload = new jFormsControlUpload($this->ref);
         if( $this->fieldEditType == 'Photo' ) {
           $upload->mimetype = array('image/jpg','image/jpeg','image/pjpeg','image/png','image/gif');
-          $upload->accept = 'image/*';
+          $upload->accept = 'image/jpg, image/jpeg, image/pjpeg, image/png, image/gif';
           $upload->capture = 'camera';
+        }
+        else if( $this->fieldEditType == 'ExternalResource' ) {
+            $upload->accept = '';
+            if( property_exists($this->edittype[0]->widgetv2config->attributes(), 'FileWidgetFilter') ){
+                //QFileDialog::getOpenFileName filter
+                $FileWidgetFilter = $this->edittype[0]->widgetv2config->attributes()->FileWidgetFilter;
+                $FileWidgetFilter = explode( ';;', $FileWidgetFilter );
+                $accepts = array();
+                $re = '/(\*\.\w{3,6})/g';
+                foreach( $FileWidgetFilter as $FileFilter ) {
+                    $matches = array();
+                    if ( preg_match( $re, $FileFilter, $matches ) == 1 ) {
+                        foreach( array_slice( $matches, 1 ) as $m ) {
+                            $accepts[] = substr( $m, 1 );
+                        }
+                    }
+                }
+                if ( count( $accepts ) > 0 )
+                    $upload->accept = implode( ', ', array_unique( $accepts ) );
+            }
+            if( property_exists($this->edittype[0]->widgetv2config->attributes(), 'DocumentViewer')
+                and $this->edittype[0]->widgetv2config->attributes()->DocumentViewer == '1'){
+                if ( $upload->accept != '' ) {
+                    $mimetypes = array();
+                    $accepts = explode( ', ', $upload->accept );
+                    foreach( $accepts as $a ){
+                        if ( $a == '.gif' )
+                            $mimetypes[] = 'image/gif';
+                        else if ( $a == '.png' )
+                            $mimetypes[] = 'image/png';
+                        else if ( $a == '.jpg' or $a == '.jpeg')
+                            if ( !in_array( 'image/jpg', $mimetypes ) )
+                                $mimetypes = array_merge( $mimetypes, array('image/jpg','image/jpeg','image/pjpeg') );
+                        else if ( $a == '.bm' or $a == '.bmp')
+                            if ( !in_array( 'image/bmp', $mimetypes ) )
+                                $mimetypes = array_merge( $mimetypes, array('image/bmp','image/x-windows-bmp') );
+                        else if ( $a == '.pbm' )
+                            $mimetypes[] = 'image/x-portable-bitmap';
+                        else if ( $a == '.pgm')
+                            $mimetypes = array_merge( $mimetypes, array('image/x-portable-graymap','image/x-portable-greymap') );
+                        else if ( $a == '.ppm' )
+                            $mimetypes[] = 'image/x-portable-pixmap';
+                        else if ( $a == '.xbm')
+                            $mimetypes = array_merge( $mimetypes, array('image/xbm','image/x-xbm','image/x-xbitmap') );
+                        else if ( $a == '.xpm')
+                            $mimetypes = array_merge( $mimetypes, array('image/xpm','image/x-xpixmap') );
+                        else if ( $a == '.svg')
+                            $mimetypes[] = 'image/svg+xml';
+                    }
+                    $upload->mimetype = array_unique( $mimetypes );
+                } else {
+                    $upload->mimetype = array('image/jpg','image/jpeg','image/pjpeg','image/png','image/gif');
+                    $upload->accept = 'image/jpg, image/jpeg, image/pjpeg, image/png, image/gif';
+                }
+                $upload->capture = 'camera';
+            }
         }
         $choice->addChildControl($upload, 'update');
         $choice->createItem('delete','delete');
