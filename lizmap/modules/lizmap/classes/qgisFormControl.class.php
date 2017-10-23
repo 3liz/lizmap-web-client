@@ -44,6 +44,8 @@ class qgisFormControl{
     // Value relation : one of the edittypes. We store information in an array
     public $valueRelationData = Null;
 
+    public $relationReferenceData = Null;
+
     // Table mapping QGIS and jelix forms
     public $qgisEdittypeMap = array(
       0 => array (
@@ -105,6 +107,10 @@ class qgisFormControl{
       17 => array (
             'qgis'=>array('name'=>'External Resource', 'description'=>'Simplifies file selection by adding a file chooser dialog.'),
             'jform'=>array('markup'=>'upload')
+      ),
+      18 => array (
+            'qgis'=>array('name'=>'Relation reference', 'description'=>'Use relation to select value'),
+            'jform'=>array('markup'=>'menulist')
       )
     );
 
@@ -182,6 +188,7 @@ class qgisFormControl{
     $this->qgisEdittypeMap['WebView'] = $this->qgisEdittypeMap[0];
     $this->qgisEdittypeMap['Color'] = $this->qgisEdittypeMap[0];
     $this->qgisEdittypeMap['ExternalResource'] = $this->qgisEdittypeMap[17];
+    $this->qgisEdittypeMap['RelationReference'] = $this->qgisEdittypeMap[18];
 
     // Set class attributes
     $this->ref = $ref;
@@ -597,6 +604,21 @@ class qgisFormControl{
         );
 
         break;
+
+      case 'RelationReference':
+        $allowNull = (string)$this->edittype[0]->widgetv2config->attributes()->AllowNULL;
+        $orderByValue = (string)$this->edittype[0]->widgetv2config->attributes()->OrderByValue;
+        $Relation = (string)$this->edittype[0]->widgetv2config->attributes()->Relation;
+        $MapIdentification = (string)$this->edittype[0]->widgetv2config->attributes()->MapIdentification;
+        $this->relationReferenceData = array(
+          "allowNull" => $allowNull,
+          "orderByValue" => $orderByValue,
+          "relation" => $Relation,
+          "mapIdentification" => $MapIdentification
+        );
+
+        break;
+
 
     }
 

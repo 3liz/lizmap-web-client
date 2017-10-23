@@ -74,10 +74,15 @@ class qgisForm {
 
             if( ( $formControl->fieldEditType == 15
                   or $formControl->fieldEditType == 'ValueRelation')
-                and $formControl->valueRelationData ){
+                and $formControl->valueRelationData ) {
                 // Fill comboboxes of editType "Value relation" from relation layer
                 // Query QGIS Server via WFS
                 $this->fillControlFromValueRelationLayer( $fieldName, $formControl );
+            } else if ( $formControl->fieldEditType == 'RelationReference'
+                        and $formControl->relationReferenceData ) {
+                // Fill comboboxes of editType "Relation reference" from relation layer
+                // Query QGIS Server via WFS
+                $this->fillControlFromRelationReference( $fieldName, $formControl );
             } else if ( $formControl->fieldEditType == 8
                         or $formControl->fieldEditType == 'FileName'
                         or $formControl->fieldEditType == 'Photo' ) {
@@ -551,6 +556,163 @@ class qgisForm {
                 strtolower( $formControl->valueRelationData['orderByValue'] ) == 'true'
                 or
                 strtolower( $formControl->valueRelationData['orderByValue'] ) == '1'
+            ){
+                asort($data);
+            }
+
+            $dataSource->data = $data;
+            $formControl->ctrl->datasource = $dataSource;
+        } else {
+            if( !preg_match( '#No feature found error messages#', $wfsData ) ) {
+                $formControl->ctrl->hint = 'Problem : cannot get data to fill this control!';
+                $formControl->ctrl->help = 'Problem : cannot get data to fill this control!';
+            } else {
+                $formControl->ctrl->hint = 'No data to fill this control!';
+                $formControl->ctrl->help = 'No data to fill this control!';
+            }
+        }
+    }
+
+    /**
+     * Get WFS data from a "Relation Reference" and fill the form control for a specific field.
+     * @param string $fieldName Name of QGIS field
+     *
+     * @return Modified form control
+     */
+    private function fillControlFromRelationReference( $fieldName, $formControl ) {
+        $wfsData = null;
+        $mime = '';
+
+        // Build WFS request parameters
+        //   Get layername via id
+        $project = $this->layer->getProject();
+        $relationId = $formControl->relationReferenceData['relation'];
+
+        $_relationXml = $project->getXmlRelation($relationId);
+        if(count($_relationXml) == 0){
+            $formControl->ctrl->hint = 'Control not well configured!';
+            $formControl->ctrl->help = 'Control not well configured!';
+            return;
+        }
+        $relationXml = $_relationXml[0];
+
+        $referencedLayerId = $relationXml->attributes()->referencedLayer;
+
+        $_referencedLayerXml = $project->getXmlLayer($referencedLayerId);
+        if(count($_referencedLayerXml) == 0){
+            $formControl->ctrl->hint = 'Control not well configured!';
+            $formControl->ctrl->help = 'Control not well configured!';
+            return;
+        }
+        $referencedLayerXml = $_referencedLayerXml[0];
+
+        $_layerName = $referencedLayerXml->xpath('layername');
+        if(count($_layerName) == 0){
+            $formControl->ctrl->hint = 'Control not well configured!';
+            $formControl->ctrl->help = 'Control not well configured!';
+            return;
+        }
+        $layerName = (string)$_layerName[0];
+
+        $_previewExpression = $referencedLayerXml->xpath('previewExpression');
+        if(count($_previewExpression) == 0){
+            $formControl->ctrl->hint = 'Control not well configured!';
+            $formControl->ctrl->help = 'Control not well configured!';
+            return;
+        }
+        $previewExpression = (string)$_previewExpression[0];
+        $referencedField = $relationXml->fieldRef->attributes()->referencedField;
+        $previewField = $previewExpression;
+        if ( substr( $previewField, 0, 8 ) == 'COALESCE' ) {
+          if ( preg_match( '/"([\S ]+)"/g', $previewField, $matches ) == 1 ) {
+            $previewField = $matches[1];
+          } else {
+            $previewField = $referencedField;
+          }
+        } else if ( substr( $previewField, 0, 1 ) == '"' and substr( $previewField, -1 ) == '"' ) {
+            $previewField = substr( $previewField, 1, -1 );
+        }
+
+        $filterExpression = '';
+        $typename = str_replace(' ', '_', $layerName);
+        $propertyname = $referencedField.','.$previewField;
+
+        $params = array(
+            'SERVICE' => 'WFS',
+            'VERSION' => '1.0.0',
+            'REQUEST' => 'GetFeature',
+            'TYPENAME' => $typename,
+            'PROPERTYNAME' => $propertyname,
+            'OUTPUTFORMAT' => 'GeoJSON',
+            'GEOMETRYNAME' => 'none',
+            'map' => $project->getPath()
+        );
+
+        // add EXP_FILTER. Only for QGIS >=2.0
+        $expFilter = Null;
+        if ( $filterExpression ) {
+            $expFilter = $filterExpression;
+        }
+        // Filter by login
+        if( !$this->loginFilteredOverride ) {
+          $loginFilteredLayers = $this->filterDataByLogin($layerName);
+          if ( is_array( $loginFilteredLayers ) ) {
+            if ( $expFilter ){
+              $expFilter = " ( ".$expFilter." ) AND ( ".$loginFilteredLayers['where']." ) ";
+            } else {
+              $expFilter = $loginFilteredLayers['where'];
+            }
+          }
+        }
+        if ( $expFilter ) {
+            $params['EXP_FILTER'] = $expFilter;
+            // disable PROPERTYNAME in this case : if the exp_filter uses other fields, no data would be returned otherwise
+            unset( $params['PROPERTYNAME'] );
+        }
+
+        // Perform request
+        $wfsRequest = new lizmapWFSRequest( $project, $params );
+        $result = $wfsRequest->process();
+
+        $wfsData = $result->data;
+        if( property_exists($result, 'file') and $result->file and is_file($wfsData) ){
+            $wfsData = jFile::read($wfsData);
+        }
+        $mime = $result->mime;
+
+        // Used data
+        if ( $wfsData and !in_array( strtolower( $mime ), array( 'text/html', 'text/xml' ) ) ) {
+            $wfsData = json_decode( $wfsData );
+            // Get data from layer
+            $features = $wfsData->features;
+            $data = array();
+            foreach( $features as $feat ) {
+                if( property_exists( $feat, 'properties' )
+                    and property_exists( $feat->properties, $referencedField )
+                    and property_exists( $feat->properties, $previewField ) )
+                    $data[(string)$feat->properties->$referencedField] = $feat->properties->$previewField;
+            }
+            $dataSource = new jFormsStaticDatasource();
+
+            // required
+            if(
+                strtolower( $formControl->relationReferenceData['allowNull'] ) == 'false'
+                or
+                strtolower( $formControl->relationReferenceData['allowNull'] ) == '0'
+            ){
+                $formControl->ctrl->required = True;
+            }
+
+            // Add default empty value for required fields
+            // Jelix does not do it, but we think it is better this way to avoid unwanted set values
+            if( $formControl->ctrl->required )
+                $data[''] = '';
+
+            // orderByValue
+            if(
+                strtolower( $formControl->relationReferenceData['orderByValue'] ) == 'true'
+                or
+                strtolower( $formControl->relationReferenceData['orderByValue'] ) == '1'
             ){
                 asort($data);
             }

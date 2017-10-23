@@ -262,6 +262,16 @@ class qgisProject{
     }
 
     /**
+     * @FIXME: remove this method. Be sure it is not used in other projects.
+     * Data provided by the returned xml element should be extracted and encapsulated
+     * into an object. Xml should not be used by callers
+     * @deprecated
+     */
+    public function getXmlRelation( $relationId ){
+        return $this->getXml()->xpath( "//relation[@id='$relationId']" );
+    }
+
+    /**
      * temporary function to read xml for some methods that relies on
      * xml data that are not yet stored in the cache
      * @deprecated
