@@ -545,6 +545,12 @@ class qgisForm {
             ){
                 $formControl->ctrl->required = True;
             }
+            // combobox
+            if ( array_key_exists('fieldEditable', $formControl->valueRelationData)
+                 and $formControl->valueRelationData['fieldEditable'] == '1'
+            ){
+                $formControl->ctrl->class = 'combobox';
+            }
 
             // Add default empty value for required fields
             // Jelix does not do it, but we think it is better this way to avoid unwanted set values

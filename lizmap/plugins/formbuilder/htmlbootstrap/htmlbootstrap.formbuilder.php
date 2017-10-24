@@ -295,6 +295,7 @@ jFormsJQ.declareForm(jFormsJQ.tForm);
         $class .= ($ctrl->required == false || $ro?'':' jforms-required');
         $class .= (isset($this->_form->getContainer()->errors[$ctrl->ref]) ?' jforms-error':'');
         $class .= ($ro && $ctrl->type != 'captcha'?' jforms-readonly':'');
+        $class .= (property_exists($ctrl, 'class') && $ctrl->class != ''?' '.$ctrl->class:'');
         if (isset($attributes['class']))
             $attributes['class'].= ' '.$class;
         else

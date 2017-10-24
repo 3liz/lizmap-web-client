@@ -624,6 +624,27 @@ var lizEdition = function() {
                 }
             }
 
+            // Create combobox based on RelationValue with fieldEditable
+            var selectComboboxes = $('#edition-form-container form select.combobox');
+            for( var i=0, len=selectComboboxes.length; i<len; i++ ) {
+                var selectCombobox = $(selectComboboxes[i]);
+                selectCombobox.combobox({
+                    "minLength": 1,
+                    "position": { my : "left bottom", position: "flip" },
+                    "selected": function(evt, ui){
+                      if ( ui.item ) {
+                        var self = $(this);
+                        var uiItem = $(ui.item);
+                        window.setTimeout(function(){
+                          self.val(uiItem.val()).change();
+                        }, 1);
+                      }
+                    }
+                });
+                selectCombobox.parent().find('span > input')
+                    .removeClass('label ui-corner-left ui-state-default ui-widget-content ui-widget');
+            }
+
             handleEditionFormSubmit( form );
 
             if ( $('#edition-cancel').hasClass('disabled') ) {

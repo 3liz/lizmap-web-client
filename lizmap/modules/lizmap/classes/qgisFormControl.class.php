@@ -593,6 +593,7 @@ class qgisFormControl{
         $value = (string)$this->edittype[0]->widgetv2config->attributes()->Value;
         $allowMulti = (string)$this->edittype[0]->widgetv2config->attributes()->AllowMulti;
         $filterExpression = (string)$this->edittype[0]->widgetv2config->attributes()->FilterExpression;
+        $fieldEditable = (string)$this->edittype[0]->widgetv2config->attributes()->fieldEditable;
         $this->valueRelationData = array(
           "allowNull" => $allowNull,
           "orderByValue" => $orderByValue,
@@ -600,7 +601,8 @@ class qgisFormControl{
           "key" => $key,
           "value" => $value,
           "allowMulti" => $allowMulti,
-          "filterExpression" => $filterExpression
+          "filterExpression" => $filterExpression,
+          "fieldEditable" => $fieldEditable
         );
 
         break;
