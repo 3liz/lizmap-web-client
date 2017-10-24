@@ -3492,7 +3492,7 @@ def my_form_open(dialog, layer, feature):
           <widgetv2config fieldEditable="1" constraint="" labelOnTop="0" constraintDescription="" notNull="0"/>
         </edittype>
         <edittype widgetv2type="ExternalResource" name="photo">
-          <widgetv2config RelativeStorage="0" fieldEditable="1" DocumentViewer="1" FileWidgetButton="1" DocumentViewerWidth="400" constraint="" FileWidget="1" DocumentViewerHeight="400" StorageMode="0" labelOnTop="0" constraintDescription="" notNull="0" FileWidgetFilter="Images (*.gif *.jpeg *.jpg *.png)"/>
+          <widgetv2config fieldEditable="1" DocumentViewer="1" FileWidgetButton="1" DocumentViewerWidth="400" constraint="" FileWidget="1" DocumentViewerHeight="400" StorageMode="0" labelOnTop="0" constraintDescription="" notNull="0" FileWidgetFilter="Images (*.gif *.jpeg *.jpg *.png)"/>
         </edittype>
       </edittypes>
       <renderer-v2 attr="type" forceraster="0" symbollevels="0" type="categorizedSymbol" enableorderby="0">
@@ -4819,8 +4819,8 @@ def my_form_open(dialog, layer, feature):
         <edittype widgetv2type="TextEdit" name="work_description">
           <widgetv2config IsMultiline="1" fieldEditable="1" constraint="" UseHtml="0" labelOnTop="0" constraintDescription="" notNull="0"/>
         </edittype>
-        <edittype widgetv2type="RelationReference" name="tram_stop_id">
-          <widgetv2config OrderByValue="1" fieldEditable="1" AllowAddFeatures="0" ShowForm="0" Relation="tram_stop_work20150416102656130_tram_stop_id_tramstop20150328114203878_osm_id" ReadOnly="0" constraint="" MapIdentification="0" labelOnTop="0" constraintDescription="" notNull="0" AllowNULL="0"/>
+        <edittype widgetv2type="ValueRelation" name="tram_stop_id">
+          <widgetv2config OrderByValue="1" AllowNull="0" FilterExpression="" UseCompleter="1" fieldEditable="1" Key="OGC_FID" constraint="" Layer="tramstop20150328114203878" Value="unique_name" labelOnTop="0" constraintDescription="" AllowMulti="0" notNull="0"/>
         </edittype>
       </edittypes>
       <annotationform>.</annotationform>
@@ -4910,7 +4910,7 @@ def my_form_open(dialog, layer, feature):
       <vectorjoins/>
       <layerDependencies/>
       <expressionfields>
-        <field typeName="TEXT" precision="0" expression=" &quot;osm_id&quot;  || ' - '  ||   &quot;name&quot;  " length="0" type="10" comment="" name="unique_name"/>
+        <field typeName="TEXT" precision="0" expression=" &quot;name&quot; || ' - ' || &quot;osm_id&quot;" length="0" type="10" comment="" name="unique_name"/>
       </expressionfields>
       <map-layer-style-manager current="">
         <map-layer-style name=""/>
@@ -4960,6 +4960,7 @@ def my_form_open(dialog, layer, feature):
       </renderer-v2>
       <labeling type="simple"/>
       <customproperties>
+        <property key="embeddedWidgets/count" value="0"/>
         <property key="labeling" value="pal"/>
         <property key="labeling/addDirectionSymbol" value="false"/>
         <property key="labeling/angleOffset" value="0"/>
@@ -5109,18 +5110,20 @@ def my_form_open(dialog, layer, feature):
         <property key="labeling/shapeSizeY" value="0"/>
         <property key="labeling/shapeTransparency" value="0"/>
         <property key="labeling/shapeType" value="0"/>
+        <property key="labeling/substitutions" value="&lt;substitutions/>"/>
         <property key="labeling/textColorA" value="255"/>
         <property key="labeling/textColorB" value="0"/>
         <property key="labeling/textColorG" value="0"/>
         <property key="labeling/textColorR" value="0"/>
         <property key="labeling/textTransp" value="0"/>
         <property key="labeling/upsidedownLabels" value="0"/>
+        <property key="labeling/useSubstitutions" value="false"/>
         <property key="labeling/wrapChar" value=""/>
         <property key="labeling/xOffset" value="0"/>
         <property key="labeling/yOffset" value="0"/>
         <property key="labeling/zIndex" value="0"/>
-        <property key="variableNames" value="_fields_"/>
-        <property key="variableValues" value=""/>
+        <property key="variableNames"/>
+        <property key="variableValues"/>
       </customproperties>
       <blendMode>0</blendMode>
       <featureBlendMode>0</featureBlendMode>
@@ -5148,7 +5151,7 @@ def my_form_open(dialog, layer, feature):
         <selectedonly on=""/>
       </labelattributes>
       <SingleCategoryDiagramRenderer diagramType="Pie" sizeLegend="0" attributeLegend="1">
-        <DiagramCategory penColor="#000000" labelPlacementMethod="XHeight" penWidth="0" diagramOrientation="Up" sizeScale="0,0,0,0,0,0" minimumSize="0" barWidth="5" penAlpha="255" maxScaleDenominator="1e+08" backgroundColor="#ffffff" transparency="0" width="15" scaleDependency="Area" backgroundAlpha="255" angleOffset="1440" scaleBasedVisibility="0" enabled="0" height="15" lineSizeScale="0,0,0,0,0,0" sizeType="MM" lineSizeType="MM" minScaleDenominator="-4.65661e-10">
+        <DiagramCategory penColor="#000000" labelPlacementMethod="XHeight" penWidth="0" diagramOrientation="Up" sizeScale="0,0,0,0,0,0" minimumSize="0" barWidth="5" penAlpha="255" maxScaleDenominator="1e+08" backgroundColor="#ffffff" transparency="0" width="15" scaleDependency="Area" backgroundAlpha="255" angleOffset="1440" scaleBasedVisibility="0" enabled="0" height="15" lineSizeScale="0,0,0,0,0,0" sizeType="MM" lineSizeType="MM" minScaleDenominator="inf">
           <fontProperties description="Ubuntu,11,-1,5,50,0,0,0,0,0" style=""/>
           <attribute field="" color="#000000" label=""/>
         </DiagramCategory>
@@ -5191,9 +5194,16 @@ def my_form_open(dialog, layer, feature):
       <excludeAttributesWFS>
         <attribute>wkt</attribute>
       </excludeAttributesWFS>
-      <attributeactions default="0"/>
+      <attributeactions default="-1"/>
       <attributetableconfig actionWidgetStyle="dropDown" sortExpression="" sortOrder="0">
-        <columns/>
+        <columns>
+          <column width="-1" hidden="0" type="field" name="OGC_FID"/>
+          <column width="-1" hidden="0" type="field" name="osm_id"/>
+          <column width="226" hidden="0" type="field" name="name"/>
+          <column width="-1" hidden="0" type="field" name="wkt"/>
+          <column width="229" hidden="0" type="field" name="unique_name"/>
+          <column width="-1" hidden="1" type="actions"/>
+        </columns>
       </attributetableconfig>
       <editform>.</editform>
       <editforminit/>
