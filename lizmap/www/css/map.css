@@ -148,6 +148,11 @@ text-shadow: none;
   background:#4A4A4A;
   background:rgba(0,0,0,0.7);
 }
+#mapmenu > div {
+  width: 30px;
+  height: auto;
+  position: relative;
+}
 #mapmenu .nav-list > li > a {
   width: 20px;
   height: 20px;
@@ -349,7 +354,7 @@ CSS Sprite positions calculated via http://instantsprite.com/ or https://draeton
   position:absolute;
   left:30px;
   top:0px;
-  bottom:10px;
+  bottom:0px;
   /*max-width:30%;
   max-height:90%;*/
   z-index:1040;

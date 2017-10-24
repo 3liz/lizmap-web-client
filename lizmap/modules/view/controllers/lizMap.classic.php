@@ -208,21 +208,7 @@ class lizMapCtrl extends jController {
     $assign['wmsGetCapabilitiesUrl'] = $wmsGetCapabilitiesUrl;
 
     // Get dockable and minidockable element
-    $assign['dockable'] = $lproj->getDefaultDockable();
-    $items = jEvent::notify('mapDockable',array('repository'=>$repository, 'project'=>$project))->getResponse();
-    $assign['dockable'] = mapDockItemsMerge( $assign['dockable'], $items );
-
-    $assign['minidockable'] = $lproj->getDefaultMiniDockable();
-    $items = jEvent::notify('mapMiniDockable',array('repository'=>$repository, 'project'=>$project))->getResponse();
-    $assign['minidockable'] = mapDockItemsMerge( $assign['minidockable'], $items );
-
-    $assign['bottomdockable'] = $lproj->getDefaultBottomDockable();
-    $items = jEvent::notify('mapBottomDockable',array('repository'=>$repository, 'project'=>$project))->getResponse();
-    $assign['bottomdockable'] = mapDockItemsMerge( $assign['bottomdockable'], $items );
-
-    $assign['rightdockable'] = array();
-    $items = jEvent::notify('mapRightDockable',array('repository'=>$repository, 'project'=>$project))->getResponse();
-    $assign['rightdockable'] = mapDockItemsMerge( $assign['rightdockable'], $items );
+    $assign = array_merge( $assign, $this->getProjectDockables() );
 
     // Add dockable js
     foreach( array_merge($assign['dockable'], $assign['minidockable'], $assign['bottomdockable'], $assign['rightdockable'] ) as $d ) {
@@ -482,5 +468,33 @@ class lizMapCtrl extends jController {
     return $rep;
   }
 
+  protected function getProjectDockables() {
 
+    // Get repository key
+    $repository = $this->repositoryKey;
+    // Get the project key
+    $project = $this->projectKey;
+    // Get project object
+    $lproj = $this->projectObj;
+
+    $assign = array();
+    // Get dockable and minidockable element
+    $assign['dockable'] = $lproj->getDefaultDockable();
+    $items = jEvent::notify('mapDockable',array('repository'=>$repository, 'project'=>$project))->getResponse();
+    $assign['dockable'] = mapDockItemsMerge( $assign['dockable'], $items );
+
+    $assign['minidockable'] = $lproj->getDefaultMiniDockable();
+    $items = jEvent::notify('mapMiniDockable',array('repository'=>$repository, 'project'=>$project))->getResponse();
+    $assign['minidockable'] = mapDockItemsMerge( $assign['minidockable'], $items );
+
+    $assign['bottomdockable'] = $lproj->getDefaultBottomDockable();
+    $items = jEvent::notify('mapBottomDockable',array('repository'=>$repository, 'project'=>$project))->getResponse();
+    $assign['bottomdockable'] = mapDockItemsMerge( $assign['bottomdockable'], $items );
+
+    $assign['rightdockable'] = array();
+    $items = jEvent::notify('mapRightDockable',array('repository'=>$repository, 'project'=>$project))->getResponse();
+    $assign['rightdockable'] = mapDockItemsMerge( $assign['rightdockable'], $items );
+
+    return $assign;
+  }
 }

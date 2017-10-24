@@ -1,4 +1,4 @@
-<div style="width:30px; height:30px; position:relative;">
+<div style="">
     <ul class="nav nav-list">
       {assign $onlyMaps=False}
       {foreach $dockable as $dock}
