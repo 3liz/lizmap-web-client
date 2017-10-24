@@ -314,7 +314,7 @@ var lizMap = function() {
     }
     $('#map').width(w);
     // Make the dock fill the max height to calculate its max size, then restore to auto height
-    $('#dock').css('bottom', '0px');
+    //$('#dock').css('bottom', '0px');
 
     // Set the switcher content a max-height
     $('#switcher-layers-container').css( 'height', 'auto' );
@@ -5208,7 +5208,7 @@ OpenLayers.Control.HighlightFeature = OpenLayers.Class(OpenLayers.Control, {
 
       //  Remove native lizmap icon
       $('#mapmenu .nav-list > li.'+dname+' > a .icon').css('background-image','none');
-      $('#mapmenu .nav-list > li.'+dname+' > a .icon >i ').css('margin', '4px');
+      $('#mapmenu .nav-list > li.'+dname+' > a .icon >i ').css('margin-left', '4px');
 
       // Add tooltip
       $('#mapmenu .nav-list > li.'+dname+' > a').tooltip();
