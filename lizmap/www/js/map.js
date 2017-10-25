@@ -3757,7 +3757,14 @@ var lizMap = function() {
               if( t.composerMap == -1 || ('map'+t.composerMap) == dragCtrl.layout.mapId )
                 return t.vectorLayer;
           });
+      // Print Extent
       var extent = dragCtrl.layer.features[0].geometry.getBounds();
+
+      // Projection code and reverseAxisOrder
+      var projCode = map.projection.getCode();
+      var reverseAxisOrder = (OpenLayers.Projection.defaults[projCode] && OpenLayers.Projection.defaults[projCode].yx);
+
+      // Build URL
       var url = OpenLayers.Util.urlAppend(lizUrls.wms
           ,OpenLayers.Util.getParameterString(lizUrls.params)
           );
@@ -3766,10 +3773,10 @@ var lizMap = function() {
       url += '&VERSION=1.3.0&REQUEST=GetPrint';
       url += '&FORMAT='+$('#print-format').val();
       url += '&EXCEPTIONS=application/vnd.ogc.se_inimage&TRANSPARENT=true';
-      url += '&SRS='+map.projection;
+      url += '&SRS='+projCode;
       url += '&DPI='+$('#print-dpi').val();
       url += '&TEMPLATE='+pTemplate.title;
-      url += '&'+dragCtrl.layout.mapId+':extent='+extent;
+      url += '&'+dragCtrl.layout.mapId+':extent='+extent.toBBOX(null, reverseAxisOrder);
       //url += '&'+dragCtrl.layout.mapId+':rotation=0';
       var scale = $('#print-scale').val();
       url += '&'+dragCtrl.layout.mapId+':scale='+scale;
