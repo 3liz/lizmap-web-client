@@ -857,6 +857,9 @@ var lizMap = function() {
       if ( !layerConfig )
         continue;
 
+      if ( layerConfig.groupAsLayer == 'True' )
+        layerConfig.type = 'layer';
+
       // if the layer is not the Overview and had a config
       // creating the {<OpenLayers.Layer.WMS>} and the tree node
       var node = {name:layerName,config:layerConfig,parent:pNode};
