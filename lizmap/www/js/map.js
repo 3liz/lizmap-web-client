@@ -1173,11 +1173,7 @@ var lizMap = function() {
     return html;
   }
 
-  /**
-   * PRIVATE function: createMap
-   * creating the map {<OpenLayers.Map>}
-   */
-  function createMap() {
+  function initProjections(firstLayer) {
     // Insert or update projection liste
     if ( lizProj4 ) {
         for( var ref in lizProj4 ) {
@@ -1186,13 +1182,35 @@ var lizMap = function() {
           }
         }
     }
+
     // get and define projection
     var proj = config.options.projection;
     if ( !(proj.ref in Proj4js.defs) )
       Proj4js.defs[proj.ref]=proj.proj4;
     var projection = new OpenLayers.Projection(proj.ref);
-    if ( !(proj.ref in OpenLayers.Projection.defaults) )
-      OpenLayers.Projection.defaults[proj.ref] = projection;
+
+    if ( !(proj.ref in OpenLayers.Projection.defaults) ) {
+        OpenLayers.Projection.defaults[proj.ref] = projection;
+
+        // test extent for inverted axis
+        if ( proj.ref in firstLayer.bbox ) {
+            var wmsBbox = firstLayer.bbox[proj.ref].bbox;
+            var wmsBounds = OpenLayers.Bounds.fromArray( wmsBbox );
+            var initBounds = OpenLayers.Bounds.fromArray( config.options.initialExtent );
+            if ( !initBounds.intersectsBounds( wmsBounds ) )
+                OpenLayers.Projection.defaults[proj.ref].yx = true;
+        }
+    }
+  }
+
+  /**
+   * PRIVATE function: createMap
+   * creating the map {<OpenLayers.Map>}
+   */
+  function createMap() {
+    // get projection
+    var proj = config.options.projection;
+    var projection = new OpenLayers.Projection(proj.ref);
 
     // get and define the max extent
     var bbox = config.options.bbox;
@@ -5563,6 +5581,7 @@ OpenLayers.Control.HighlightFeature = OpenLayers.Class(OpenLayers.Control, {
           self.events.triggerEvent("treecreated", self);
 
           // create the map
+          initProjections(firstLayer);
           createMap();
           self.map = map;
           self.layers = layers;
