@@ -2974,6 +2974,9 @@ var lizMap = function() {
    * create the permalink tool
    */
   function createPermalink() {
+      if ( $('#permalink').length == 0 )
+        return;
+
     var configOptions = config.options;
 
     var pLink = new OpenLayers.Control.Permalink(
