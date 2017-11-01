@@ -309,20 +309,8 @@ var lizMap = function() {
       $('#map-content').css('margin-left', $('#menu').width());
     }
     $('#map').width(w);
-    // Make the dock fill the max height to calculate its max size, then restore to auto height
-    //$('#dock').css('bottom', '0px');
 
-    // Set the switcher content a max-height
-    $('#switcher-layers-container').css( 'height', 'auto' );
-    //var mh = $('#dock').height() - 2*$('#dock-tabs').height() - $('#switcher-layers-container h3').height() - $('#switcher-layers-actions').height() - $('#switcher-baselayer').height() ;
-    var mh = $('#dock').height() - ($('#dock-tabs').height()+1) - $('#switcher-layers-container h3').height() - ($('#switcher-layers-actions').height()+1);
-    mh -= parseInt($('#switcher-layers-container .menu-content').css( 'padding-top' ));
-    mh -= parseInt($('#switcher-layers-container .menu-content').css( 'padding-bottom' ));
-    if ( $('#switcher-baselayer').is(':visible') )
-        mh -= $('#switcher-baselayer').height();
-    $('#switcher-layers-container .menu-content').css( 'max-height', mh ).css('overflow-x', 'hidden').css('overflow-y', 'auto');
-
-    // Set the other tab-content max-height
+    // Set the tab-content max-height
     $('#dock-content').css( 'max-height', $('#dock').height() - $('#dock-tabs').height() );
 
     $('#dock').css('overflow-y', 'hidden');
@@ -392,10 +380,11 @@ var lizMap = function() {
     map.setCenter(center);
     map.baseLayer.redraw();
 
-    if ($('#navbar').height()+150 > $('#map').height() || mCheckMobile())
-      $('#navbar .slider').hide();
-    else
-      $('#navbar .slider').show();
+    var slider = $('#navbar .slider');
+    if ( slider.is(':visible') && ($('#navbar').height()+150 > $('#map').height() || mCheckMobile()) )
+      slider.hide();
+    else if ( !slider.is(':visible') && $('#navbar').height()+200 < $('#map').height() && !mCheckMobile() )
+      slider.show();
 
     updateSwitcherSize();
   }
@@ -405,6 +394,17 @@ var lizMap = function() {
    * update the switcher size
    */
   function updateSwitcherSize(){
+
+    // Set the switcher content a max-height
+    $('#switcher-layers-container').css( 'height', 'auto' );
+    //var mh = $('#dock').height() - 2*$('#dock-tabs').height() - $('#switcher-layers-container h3').height() - $('#switcher-layers-actions').height() - $('#switcher-baselayer').height() ;
+    var mh = $('#dock').height() - ($('#dock-tabs').height()+1) - $('#switcher-layers-container h3').height() - ($('#switcher-layers-actions').height()+1);
+    mh -= parseInt($('#switcher-layers-container .menu-content').css( 'padding-top' ));
+    mh -= parseInt($('#switcher-layers-container .menu-content').css( 'padding-bottom' ));
+    if ( $('#switcher-baselayer').is(':visible') )
+        mh -= $('#switcher-baselayer').height();
+    $('#switcher-layers-container .menu-content').css( 'max-height', mh ).css('overflow-x', 'hidden').css('overflow-y', 'auto');
+
     // calculate switcher height
     // based on map height
     h = $('#map').height();
@@ -450,14 +450,6 @@ var lizMap = function() {
 
     // If map if fullscreen, get #menu position : bottom or top
     h -= 2 * (parseInt($('#menu').css('bottom')) ? parseInt($('#menu').css('bottom')) : 0 ) ;
-
-/*
-    if($('#map-content').hasClass('fullscreen')){
-        $('#switcher').css('max-height', h);
-    }
-    else
-        $('#switcher').height(h);
-*/
 
   }
 
@@ -1836,6 +1828,15 @@ var lizMap = function() {
 
   function createSwitcherNew() {
     $('#switcher-layers').html(getSwitcherUl(tree,0));
+
+    lizMap.events.on({
+        dockopened: function(e) {
+            if ( e.id == 'switcher' ) {
+                updateSwitcherSize();
+            }
+        }
+    });
+
     var projection = map.projection;
 
     // get the baselayer select content
@@ -2086,7 +2087,6 @@ var lizMap = function() {
       stringExpand: lizDict['tree.button.expand'],
       stringCollapse: lizDict['tree.button.collapse'],
       onNodeShow: function() {
-        //updateSwitcherSize();
         var self = $(this);
         self.addClass('visible');
         if (self.find('div.legendGraphics').length != 0) {
@@ -2102,7 +2102,6 @@ var lizMap = function() {
       onNodeHide: function() {
         var self = $(this);
         self.removeClass('visible');
-        //updateSwitcherSize();
       }
     });
     $("#switcher table.tree tbody").on("mousedown", "tr td span", function() {
@@ -2123,35 +2122,12 @@ var lizMap = function() {
 
     });
 
-    $('#close-menu .ui-icon-close-menu').click(function(){
-      $('#menu').hide();
-      if($('#content').hasClass('mobile')) {
-        $('#map-content').show();
-        $('#toggleLegend')
-          .attr('data-original-title',$('#toggleLegendOn').attr('value'))
-          .parent().attr('class','legend');
-      } else {
-        $('#toggleLegend')
-          .attr('data-original-title',$('#toggleLegendMapOn').attr('value'))
-          .parent().attr('class','legend');
-      }
-      $('#content .ui-icon-open-menu').show();
-      updateContentSize();
-    });
-    $('#content .ui-icon-open-menu').click(function(){
-      $('#menu').show();
-      if($('#content').hasClass('mobile')) {
-        $('#map-content').hide();
-        $('#toggleLegend')
-          .attr('data-original-title',$('#toggleMapOn').attr('value'))
-          .parent().attr('class','map');
-      } else {
-        $('#toggleLegend')
-          .attr('data-original-title',$('#toggleMapOn').attr('value'))
-          .parent().attr('class','map');
-      }
-      $(this).hide();
-      updateContentSize();
+    lizMap.events.on({
+        dockopened: function(e) {
+            if ( e.id == 'switcher' ) {
+                updateSwitcherSize();
+            }
+        }
     });
 
 
@@ -5830,6 +5806,7 @@ OpenLayers.Control.HighlightFeature = OpenLayers.Class(OpenLayers.Control, {
             var parent = self.parent();
             var id = self.attr('href').substr(1);
             var tab = $('#nav-tab-'+id);
+            var lizmapEvent = '';
             if ( parent.hasClass('active') ) {
                 if ( tab.hasClass('active') ) {
                     var nextActive = tab.next(':visible');
@@ -5844,17 +5821,17 @@ OpenLayers.Control.HighlightFeature = OpenLayers.Class(OpenLayers.Control, {
                 tab.hide();
                 tab.removeClass('active');
                 parent.removeClass('active');
-                lizMap.events.triggerEvent( "dockclosed", {'id':id} );
+                lizmapEvent = 'dockclosed';
             } else {
                 var oldActive = $('#mapmenu li.nav-dock.active');
                 if ( oldActive.length != 0 ) {
                     oldActive.removeClass('active');
                     lizMap.events.triggerEvent( "dockclosed", {'id': oldActive.children('a').first().attr('href').substr(1) } );
                 }
-                tab.show()
+                tab.show();
                 tab.children('a').first().click();
                 parent.addClass('active');
-                lizMap.events.triggerEvent( "dockopened", {'id':id} );
+                lizmapEvent = 'dockopened';
             }
             self.blur();
 
@@ -5863,6 +5840,11 @@ OpenLayers.Control.HighlightFeature = OpenLayers.Class(OpenLayers.Control, {
               dock.hide();
             else if ( !dock.is(':visible') )
               dock.show();
+
+            // trigger event
+            if ( lizmapEvent != '' )
+                lizMap.events.triggerEvent( lizmapEvent, {'id':id} );
+
             return false;
           });
 
@@ -5871,6 +5853,7 @@ OpenLayers.Control.HighlightFeature = OpenLayers.Class(OpenLayers.Control, {
             var parent = self.parent();
             var id = self.attr('href').substr(1);
             var tab = $('#nav-tab-'+id);
+            var lizmapEvent = '';
             if ( parent.hasClass('active') ) {
                 if ( tab.hasClass('active') ) {
                     var nextActive = tab.next(':visible');
@@ -5885,17 +5868,17 @@ OpenLayers.Control.HighlightFeature = OpenLayers.Class(OpenLayers.Control, {
                 tab.hide();
                 tab.removeClass('active');
                 parent.removeClass('active');
-                lizMap.events.triggerEvent( "rightdockclosed", {'id':id} );
+                var lizmapEvent = 'rightdockclosed';
             } else {
                 var oldActive = $('#mapmenu li.nav-right-dock.active');
                 if ( oldActive.length != 0 ) {
                     oldActive.removeClass('active');
                     lizMap.events.triggerEvent( "rightdockclosed", {'id': oldActive.children('a').first().attr('href').substr(1) } );
                 }
-                tab.show()
+                tab.show();
                 tab.children('a').first().click();
                 parent.addClass('active');
-                lizMap.events.triggerEvent( "rightdockopened", {'id':id} );
+                var lizmapEvent = 'rightdockopened';
             }
             self.blur();
 
@@ -5909,21 +5892,15 @@ OpenLayers.Control.HighlightFeature = OpenLayers.Class(OpenLayers.Control, {
               dock.show();
               updateContentSize();
             }
+
+            // trigger event
+            if ( lizmapEvent != '' )
+                lizMap.events.triggerEvent( lizmapEvent, {'id':id} );
             return false;
           });
           // Show layer switcher
           $('#button-switcher').click();
           updateContentSize();
-
-          // Toggle Metadata
-          //$('#displayMetadata').click(function(){
-          /*
-          $('#hideMetadata').click(function(){
-            //$('#metadata').hide();
-            $('#displayMetadata').parent().removeClass('active');
-            return false;
-          });
-          */
 
           $('#headermenu .navbar-inner .nav a[rel="tooltip"]').tooltip();
           $('#mapmenu .nav a[rel="tooltip"]').tooltip();
