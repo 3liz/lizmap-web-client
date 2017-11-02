@@ -87,14 +87,16 @@
     <div id="message" class="span6">{jmessage_bootstrap}</div>
 
 
-    <div id="lizmap-search-close">
-      <button class="btn btn-mini btn-primary">{@view~map.bottomdock.toolbar.btn.clear.title@}</button>
-    </div>
-
     <div id="lizmap-search">
+
+      <div id="lizmap-search-close">
+        <button class="btn btn-mini btn-primary">{@view~map.bottomdock.toolbar.btn.clear.title@}</button>
+      </div>
+
       <div>
         <ul class="items"></ul>
       </div>
+
     </div>
 
   </div>
