@@ -9,16 +9,37 @@ var lizDataviz = function() {
         if(!dv.config.layers)
             return false;
         for( var i in dv.config.layers) {
-            getPlot(
-                dv.config.layers[i]
-            );
+            addPlotContainer(i);
         }
+        lizMap.events.triggerEvent( "datavizplotcontainersadded" );
+        for( var i in dv.config.layers) {
+            getPlot(i);
+        }
+
     }
 
-    function getPlot(plot_config){
+    function addPlotContainer(plot_id){
+        var dataviz_plot_id = 'dataviz_plot_' + plot_id;
+        var plot_config = dv.config.layers[plot_id];
+        var html = '';
+        html+= '<div class="dataviz_plot_container"  id="'+dataviz_plot_id+'_container">'
+        html+= '<h3><span class="title">';
+        html+= '<span class="icon"></span>&nbsp;';
+        html+= '<span class="text">'+plot_config.title+'</span>';
+        html+= '</span></h3>';
+        html+= '<div class="menu-content">';
+        html+= '  <p>'+plot_config.abstract+'</p>';
+        html+= '  <div id="'+dataviz_plot_id+'"></div>';
+        html+= '</div>';
+        html+= '</div>';
+
+        $('#dataviz-content').append(html);
+    }
+
+    function getPlot(plot_id){
         var lparams = {
             'request': 'getPlot',
-            'plot_id': plot_config.plot_id
+            'plot_id': plot_id
         };
         $.getJSON(datavizConfig.url,
             lparams,
@@ -32,24 +53,8 @@ var lizDataviz = function() {
                     return false;
                 dv.plots.push(json);
 
-
-                var dataviz_plot_id = 'dataviz_plot_' + plot_config.plot_id;
-
-                var html = '';
-                html+= '<div class="dataviz_plot_container"  id="'+dataviz_plot_id+'_container">'
-                html+= '<h3><span class="title">';
-                html+= '<span class="icon"></span>&nbsp;';
-                html+= '<span class="text">'+plot_config.title+'</span>';
-                html+= '</span></h3>';
-                html+= '<div class="menu-content">';
-                html+= '  <p>'+plot_config.abstract+'</p>';
-                html+= '  <div id="'+dataviz_plot_id+'"></div>';
-                html+= '</div>';
-                html+= '</div>';
-
-                $('#dataviz-content').append(html);
+                var dataviz_plot_id = 'dataviz_plot_' + plot_id;
                 var plot = buildPlot(dataviz_plot_id, json);
-
             }
         );
     }
@@ -83,6 +88,11 @@ var lizDataviz = function() {
             }
         });
         $('#dataviz-waiter').hide();
+
+        lizMap.events.triggerEvent(
+            "datavizplotloaded",
+            {'id':id}
+        );
     }
 
     function resizePlot(id){
