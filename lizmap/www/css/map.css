@@ -854,10 +854,6 @@ Timemanager
 }
 #content .project-list,
 #metadata {
-/*display:none;
-  bottom:0px;
-  right:0px;
-  position:absolute;*/
   width:100%;
   height:100%;
   z-index:100000;
@@ -866,6 +862,8 @@ Timemanager
   overflow:auto;
   font-size:0.85em;
   padding:5px;
+  max-height: calc(100% - 10px);
+  max-width: calc(100% - 10px);
 }
 
 #metadata h2{

@@ -311,7 +311,8 @@ var lizMap = function() {
     $('#map').width(w);
 
     // Set the tab-content max-height
-    $('#dock-content').css( 'max-height', $('#dock').height() - $('#dock-tabs').height() );
+    if ( $('#dock-tabs').is(':visible') )
+        $('#dock-content').css( 'max-height', $('#dock').height() - $('#dock-tabs').height() );
 
     $('#dock').css('overflow-y', 'hidden');
 
@@ -1831,6 +1832,9 @@ var lizMap = function() {
 
     lizMap.events.on({
         dockopened: function(e) {
+            // Set the tab-content max-height
+            if ( $('#dock-tabs').is(':visible') )
+                $('#dock-content').css( 'max-height', $('#dock').height() - $('#dock-tabs').height() );
             if ( e.id == 'switcher' ) {
                 updateSwitcherSize();
             }
@@ -2124,6 +2128,9 @@ var lizMap = function() {
 
     lizMap.events.on({
         dockopened: function(e) {
+            // Set the tab-content max-height
+            if ( $('#dock-tabs').is(':visible') )
+                $('#dock-content').css( 'max-height', $('#dock').height() - $('#dock-tabs').height() );
             if ( e.id == 'switcher' ) {
                 updateSwitcherSize();
             }
