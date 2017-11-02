@@ -32,14 +32,19 @@ var lizDataviz = function() {
                     return false;
                 dv.plots.push(json);
 
-                var html = '<h3><span class="title">';
+
+                var dataviz_plot_id = 'dataviz_plot_' + plot_config.plot_id;
+
+                var html = '';
+                html+= '<div class="dataviz_plot_container"  id="'+dataviz_plot_id+'_container">'
+                html+= '<h3><span class="title">';
                 html+= '<span class="icon"></span>&nbsp;';
                 html+= '<span class="text">'+plot_config.title+'</span>';
                 html+= '</span></h3>';
                 html+= '<div class="menu-content">';
                 html+= '  <p>'+plot_config.abstract+'</p>';
-                var dataviz_plot_id = 'dataviz_plot_' + plot_config.plot_id;
                 html+= '  <div id="'+dataviz_plot_id+'"></div>';
+                html+= '</div>';
                 html+= '</div>';
 
                 $('#dataviz-content').append(html);
