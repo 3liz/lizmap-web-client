@@ -24,7 +24,7 @@
         </p>
       </div>
       <h5>{$p->title}</h5>
-      <p>
+      <p style="text-align:center;">
         <a class="btn liz-project-view" href="{$p->url}">{@default.project.open.map@}</a>
         <a class="btn liz-project-show-desc" href="#link-projet-{$idm}" onclick="$('#liz-project-modal-{$idm}').modal('show'); return false;">{@default.project.open.map.metadata@}</a>
       </p>
