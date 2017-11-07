@@ -7,6 +7,12 @@ body {
   background : #EFEFEF;
 }
 
+h1, h2, h3, h4, h5
+{
+  font-weight: normal !important;
+}
+
+
 /* for ie 8*/
 a {
   color: #2B2B2B\9;

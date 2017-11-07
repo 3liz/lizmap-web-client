@@ -9,7 +9,7 @@
   <div class="menu-content">
     <table>
       <tr>
-        <th>{@view~map.selectiontool.toolbar.layer@}</th>
+        <td>{@view~map.selectiontool.toolbar.layer@}</td>
       </tr>
       <tr>
         <td>

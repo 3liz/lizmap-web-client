@@ -355,7 +355,6 @@ ul.nav.nav-tabs {
   display:none; /* hide unactive tab titles */
   border:none;
   background:none;
-  font-weight:bold;
   color:white;
 }
 #dock-tabs > .active > a, #dock-tabs > .active > a:hover, #dock-tabs > .active > a:focus,
@@ -367,7 +366,6 @@ ul.nav.nav-tabs {
 .right-dock-title{
     padding:5px;
     color:#FBFBFB;
-    font-weight:bold;
     font-size:1em;
     line-height:1.3;
     border-bottom: 1px dashed #F0F0F0;
@@ -511,7 +509,6 @@ SubDock
   margin-left:10px;
   line-height:20px;
   border-bottom: 1px dashed #F0F0F0;
-  font-weight: bold;
   color: #FFF;
   font-size:1em;
 }
@@ -541,13 +538,11 @@ SubDock
 #attributeLayers-tabs > li > a {
   border:none;
   background:none;
-  font-weight:bold;
   color:grey;
 }
 #attributeLayers-tabs > li.active > a, #attributeLayers-tabs > li > a:hover {
   border:none;
   background:none;
-  font-weight:bold;
   color:white;
 }
 
@@ -692,8 +687,7 @@ SubDock
 
 .tabbable.attribute-layer-child-content ul li a {
   padding: 1px;
-  font-weight:bold;
-  font-size:1.1em;
+  font-size:1em;
 }
 
 .attribute-layer-feature-panel {
@@ -828,7 +822,6 @@ Timemanager
 
 #metadata h2{
   color:#333;
-  font-weight:normal;
 }
 
 #menu {
@@ -864,7 +857,7 @@ div.modal h3,
   border-bottom : solid 1px #DDDDDD;
   border-top : solid 1px #DDDDDD;
 */
-  font-size : 0.9em;
+  font-size : 1em;
 }
 #sub-dock h3 {
   margin-bottom: 5px;
@@ -1174,7 +1167,6 @@ div.modal h3 .text {
 #right-dock .title .btn.btn-error {
   background:none;
   color:#DA4F49;
-  font-weight:bold;
   font-size:20px;
   opacity:0.6;
 }
@@ -1352,7 +1344,6 @@ div.modal h3 .text {
 .ui-autocomplete.ui-menu .ui-menu-item.ui-state-hover,
 .ui-autocomplete.ui-menu .ui-menu-item.ui-state-active,
 .ui-autocomplete.ui-menu .ui-menu-item.ui-state-focus {
-  font-weight: bold;
   background: #0094D6;
 }
 
@@ -1513,7 +1504,6 @@ div.modal h3 .text {
   background: none;
   text-shadow : none;
   cursor : pointer;
-  /*font-size:0.8em;*/
 }
 #switcher tr.liz-hidden{
   display:none;
@@ -1566,6 +1556,10 @@ div.modal h3 .text {
 }
 #switcher span.label {
   white-space:normal;
+}
+
+#switcher .treeTable tr.liz-layer td span.label {
+    font-weight: normal;
 }
 
 #switcher .treeTable tr {
@@ -1701,6 +1695,9 @@ a.btn.btn-opacity-layer.active {
 /*Loading window*/
 #ui-dialog-title-loading {
   font-size:0.7em;
+}
+.ui-widget-header {
+  font-weight: normal !important;
 }
 
 #loading {
@@ -2145,7 +2142,7 @@ a.btn.btn-opacity-layer.active {
   color: black;
   background-color: lightgrey;
   line-height: 20px;
-  font-size: 15px;
+  font-size: 1em;
   padding: 1px 5px;
   margin-bottom: 4px;
 }

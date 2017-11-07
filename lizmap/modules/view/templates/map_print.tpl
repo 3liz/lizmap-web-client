@@ -3,10 +3,10 @@
   <div class="menu-content">
     <table class="table table-condensed">
       <tr>
-        <th>{@view~map.print.toolbar.template@}</th>
-        <th>{@view~map.print.toolbar.scale@}</th>
-        <th>{@view~map.print.toolbar.dpi@}</th>
-        <th>{@view~map.print.toolbar.format@}</th>
+        <td>{@view~map.print.toolbar.template@}</td>
+        <td>{@view~map.print.toolbar.scale@}</td>
+        <td>{@view~map.print.toolbar.dpi@}</td>
+        <td>{@view~map.print.toolbar.format@}</td>
       </tr>
       <tr>
         <td><select id="print-template" class="btn-print-templates"></select></td>

@@ -10,7 +10,7 @@
   <div class="menu-content">
     <table>
       <tr>
-        <th>{@view~map.tooltip.toolbar.layer@}</th>
+        <td>{@view~map.tooltip.toolbar.layer@}</td>
       </tr>
       <tr>
         <td>
