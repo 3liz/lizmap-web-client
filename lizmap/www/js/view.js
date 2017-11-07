@@ -14,14 +14,35 @@
     }
 })(jQuery);
 
-resizeThumbnails = function(){
-    $(".thumbnail h5").height('auto');
-    $(".thumbnail h5").height(Math.max.apply(null, $(".thumbnail h5").map(function() { return $(this).height(); })));
-    $('.thumbnails').height('auto');
-    $('.thumbnails').find('.thumbnail').uniformHeight();
+addDescriptionSlider = function(){
+    $('.liz-project-img').parent().mouseenter(function(){
+      var self = $(this);
+      self.find('.liz-project-desc').slideDown();
+      self.css('cursor','pointer');
+    }).mouseleave(function(){
+      var self = $(this);
+      self.find('.liz-project-desc').hide();
+    }).click(function(){
+      var self = $(this);
+      window.location = self.parent().find('a.liz-project-view').attr('href');
+      return false;
+    });
 }
 
+resizeThumbnails = function(){
+    $(".thumbnail h5").height('auto');
+    $('.thumbnails').height('auto');
+    $('.thumbnails').each(function () {
+        $(this).find('.thumbnail h5').height(Math.max.apply(null, $(this).find('.thumbnail h5').map(function() { return $(this).height(); })));
+        $(this).find('.thumbnail').uniformHeight();
+    });
+}
+
+
+
+
 $( window ).load(function() {
+    addDescriptionSlider();
     resizeThumbnails();
 });
 
