@@ -163,7 +163,7 @@ class mediaCtrl extends jController {
       $rep->content = $content;
     }
 
-    $rep->setExpires('+60 seconds');
+    $rep->setExpires('+1 days');
 
     return $rep;
   }
@@ -239,7 +239,7 @@ class mediaCtrl extends jController {
     }
     $rep->mimeType = $mime;
 
-    $rep->setExpires('+60 seconds');
+    $rep->setExpires('+1 days');
     return $rep;
   }
 
@@ -342,7 +342,7 @@ class mediaCtrl extends jController {
     $content = str_replace('"', '', $content);
     $rep->content = $content;
 
-    $rep->setExpires('+60 seconds');
+    $rep->setExpires('+1 days');
 
     return $rep;
   }
@@ -393,6 +393,8 @@ class mediaCtrl extends jController {
             return $this->error404('The image file  does not exist !');
         }
     }
+    $rep->setExpires('+1 days');
+
     return $rep;
   }
 
