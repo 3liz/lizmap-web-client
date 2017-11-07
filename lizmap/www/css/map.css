@@ -66,6 +66,10 @@ body {
   display:none;
 }
 
+#headermenu .dropdown-menu > li > a{
+  color:white;
+}
+
 /* mapmenu */
 #mapmenu {
   position:absolute;
