@@ -37,8 +37,7 @@ only screen and (                   max-device-height : 640px) {
   }
   #logo h1 {
     font-size : 1.5em;
-    margin-left: 10px;
-    margin: 5px 5px;
+    margin: 5px 5px 5px 35px;
     line-height: 20px;
   }
   #title{
