@@ -61,7 +61,7 @@ only screen and (                   max-device-height : 640px) {
     height:30px;
     position: fixed;
     top: 0px;
-    padding-right: 50px;
+    padding-right: 20px;
   }
   #headermenu.mobile #auth form#nominatim-search {
     position:absolute;
