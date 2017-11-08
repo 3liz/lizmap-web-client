@@ -18,7 +18,7 @@
         <a class="dropdown-toggle" data-toggle="dropdown" href="#" id="user-info">
           <span class="icon"></span>
           <span class="text">
-            <b id="info-user-login" title="{$user->firstname} {$user->lastname}">{$user->login|eschtml}</b>
+            <span id="info-user-login" title="{$user->firstname} {$user->lastname}">{$user->login|eschtml}</span>
             <span style="display:none" id="info-user-firstname">{$user->firstname}</span>
             <span style="display:none" id="info-user-lastname">{$user->lastname}</span>
           </span>
