@@ -333,7 +333,7 @@ class editionCtrl extends jController {
 
     // Get datasource information from QGIS
     $datasourceMatch = preg_match(
-      "#(?:dbname='([^ ]+)' )?(?:service='([^ ]+)' )?(?:host=([^ ]+) )?(?:port=([0-9]+) )?(?:user='([^ ]+)' )?(?:password='([^ ]+)' )?(?:sslmode=([^ ]+) )?(?:key='([^ ]+)' )?(?:estimatedmetadata=([^ ]+) )?(?:srid=([0-9]+) )?(?:type=([a-zA-Z]+) )?(?:table=\"([^ ]+)\" )?(?:\()?(?:([^ ]+)\) )?(?:sql=(.*))?#",
+      "#(?:dbname='([^ ]+)' )?(?:service='([^ ]+)' )?(?:host=([^ ]+) )?(?:port=([0-9]+) )?(?:user='([^ ]+)' )?(?:password='([^ ]+)' )?(?:sslmode=([^ ]+) )?(?:key='([^ ]+)' )?(?:estimatedmetadata=([^ ]+) )?(?:selectatid=([^ ]+) )?(?:srid=([0-9]+) )?(?:type=([a-zA-Z]+) )?(?:table=\"(.+)?\" )?(?:\()?(?:([^ ]+)\) )?(?:sql=(.*))?#s",
       $datasource,
       $dt
     );
@@ -343,10 +343,11 @@ class editionCtrl extends jController {
     $user = $dt[5]; $password = $dt[6];
     $sslmode = $dt[7]; $key = $dt[8];
     $estimatedmetadata = $dt[9];
-    $srid = $dt[10]; $type = $dt[11];
-    $table = $dt[12];
-    $geocol = $dt[13];
-    $sql = $dt[14];
+    $selectatid = $dt[10];
+    $srid = $dt[11]; $type = $dt[12];
+    $table = $dt[13];
+    $geocol = $dt[14];
+    $sql = $dt[15];
 
     // If table contains schema name, like "public"."mytable"
     // We need to add double quotes around and find the real table name (without schema)
@@ -1137,7 +1138,7 @@ class editionCtrl extends jController {
     $layerName = $this->layerName;
     $eLayer = $eLayers->$layerName;
     if ( $eLayer->capabilities->createFeature != 'True' ) {
-	jMessage::add(jLocale::get('view~edition.message.error.layer.editable.create'), 'LayerNotEditable');
+    jMessage::add(jLocale::get('view~edition.message.error.layer.editable.create'), 'LayerNotEditable');
         return $this->serviceAnswer();
     }
 
