@@ -4,7 +4,7 @@
      {if $item->type == 'url'}
      <a href="{$item->content|eschtml}" title="{$item->label|eschtml}">
        {if $item->icon}<span class="icon"></span>{/if}
-       <span class="text"><b>{$item->label|eschtml}</b></span>
+       <span class="text">{$item->label|eschtml}</span>
      </a>
      {else}
      <p class="navbar-text">{$item->content}</p>
@@ -14,7 +14,7 @@
   <li class="user dropdown">
     <a class="dropdown-toggle" data-toggle="dropdown" href="#" id="info-user">{*<strong>{@master_admin~gui.header.user@}</strong>*}
       <span class="icon"></span>
-      <span class="text"><b id="info-user-login">{$user->login|eschtml}</b></span>
+      <span id="info-user-login" class="text">{$user->login|eschtml}</span>
       <span class="caret"></span>
     </a>
     <ul class="dropdown-menu pull-right">
