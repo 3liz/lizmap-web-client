@@ -1988,11 +1988,8 @@ a.btn.btn-opacity-layer.active {
   border-bottom: 1px solid white;
   border-bottom: 1px solid rgba(255,255,255,0.4);
 }
-.lizmapPopup.olPopup .lizmapPopupContent a,
-#map-content .lizmapPopupContent a,
-#popupcontent .lizmapPopupContent a{
-  color:black;
-}
+
+
 .lizmapPopup.olPopup .lizmapPopupDiv,
 #map-content .lizmapPopupDiv{
   margin: 10px !important;
