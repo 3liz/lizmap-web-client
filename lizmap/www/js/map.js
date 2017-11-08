@@ -2970,11 +2970,32 @@ var lizMap = function() {
       }
     );
     map.addControl( pLink );
-    map.events.on({
-      "changebaselayer": function() {
-          $('#switcher-baselayer-select').val( map.baseLayer.name ).change();
+
+    var eLink = new OpenLayers.Control.Permalink(
+      'permalink-embed',
+      $('#permalink-embed').attr('href'),
+      {
+        "createParams": createPermalinkArgs
       }
+    );
+    map.addControl( eLink );
+    map.events.on({
+        "changebaselayer": function() {
+            $('#switcher-baselayer-select').val( map.baseLayer.name ).change();
+        },
+        'moveend': updatePermalinkInputs,
+        'changelayer': updatePermalinkInputs,
+        'changebaselayer': updatePermalinkInputs
     });
+    $('#select-embed-permalink').change(function(){
+        if ( $(this).val() == 'p') {
+            $('#span-embed-personalized-permalink').show();
+        } else {
+            $('#span-embed-personalized-permalink').hide();
+        }
+        updatePermalinkInputs();
+    });
+    $('#span-embed-personalized-permalink input').change(updatePermalinkInputs);
 
     $('.btn-permalink-clear').click(function(){
       $('#button-permaLink').click();
@@ -3006,6 +3027,14 @@ var lizMap = function() {
       );
 
       return false;
+    });
+
+    lizMap.events.on({
+        minidockopened: function(e) {
+            if ( e.id == 'permaLink' ) {
+                updatePermalinkInputs();
+            }
+        }
     });
 
   }
@@ -3078,6 +3107,31 @@ var lizMap = function() {
       }
     }
     return oParametre;
+  }
+
+  function updatePermalinkInputs() {
+    if ( !$('#permaLink').hasClass('active') )
+        return;
+
+    var pHref = $('#permalink').attr('href');
+
+    $('#input-share-permalink').val(pHref);
+
+    var iframeSize = $('#select-embed-permalink').val();
+    pHref = $('#permalink-embed').attr('href');
+    var pIframe = '';
+    if ( iframeSize == 's' ) {
+        pIframe = '<iframe width="400" height="300" frameborder="0" style="border:0" src="'+pHref+'" allowfullscreen></iframe>';
+    } else if ( iframeSize == 'm' ) {
+        pIframe = '<iframe width="600" height="450" frameborder="0" style="border:0" src="'+pHref+'" allowfullscreen></iframe>';
+    }else if ( iframeSize == 'l' ) {
+        pIframe = '<iframe width="800" height="600" frameborder="0" style="border:0" src="'+pHref+'" allowfullscreen></iframe>';
+    }else if ( iframeSize == 'p' ) {
+        var w = $('#input-embed-width-permalink').val();
+        var h = $('#input-embed-height-permalink').val();
+        pIframe = '<iframe width="'+w+'" height="'+h+'" frameborder="0" style="border:0" src="'+pHref+'" allowfullscreen></iframe>';
+    }
+    $('#input-embed-permalink').val(pIframe);
   }
 
   function bindGeobookmarkEvents(){
