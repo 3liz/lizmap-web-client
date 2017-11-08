@@ -12,12 +12,13 @@
 
 <div id="header">
   <div id="logo">
+  </div>
+  <div id="title">
     <h1>{@admin~admin.header.admin@}</h1>
   </div>
-</div>
-
-<div id="headermenu" class="navbar navbar-fixed-top">
-  <div id="auth" class="navbar-inner">{$INFOBOX}</div>
+  <div id="headermenu" class="navbar navbar-fixed-top">
+   <div id="auth" class="navbar-inner">{$INFOBOX}</div>
+  </div>
 </div>
 
 <div id="content" class="container-fluid">

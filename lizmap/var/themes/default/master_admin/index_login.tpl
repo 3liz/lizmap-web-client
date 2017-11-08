@@ -10,8 +10,10 @@
 {meta_html csstheme 'css/admin.css'}
 {meta_html csstheme 'css/media.css'}
 
-<div id="header" class="navbar navbar-fixed-top">
+<div id="header">
   <div id="logo">
+  </div>
+  <div id="title">
     <h1>{@auth.titlePage.login@}</h1>
   </div>
 </div>

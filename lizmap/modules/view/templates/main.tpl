@@ -15,7 +15,7 @@
         <li class="user dropdown">
           <a class="dropdown-toggle" data-toggle="dropdown" href="#">
             <span class="icon"></span>
-            <b id="info-user-login" class="text">{$user->login|eschtml}</b>
+            <span id="info-user-login" class="text">{$user->login|eschtml}</span>
             <span class="caret"></span>
           </a>
           <ul class="dropdown-menu pull-right">
