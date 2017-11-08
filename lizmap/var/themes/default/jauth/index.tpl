@@ -13,7 +13,7 @@
 {meta_html js $j_basepath.'js/jquery-ui-1.11.2.custom.min.js'}
 {meta_html js $j_basepath.'js/bootstrap.js'}
 
-<div id="header" class="navbar navbar-fixed-top">
+<div id="header">
   <div id="logo">
   </div>
   <div id="title">
