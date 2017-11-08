@@ -758,7 +758,7 @@ table.attribute-table-table tr.selected a:hover{
 }
 
 table.attribute-table-table tr td {
-    font-size: 1em;
+    font-size: 0.85em;
     white-space: nowrap;
     padding: 1px 5px;
 }
@@ -1294,6 +1294,7 @@ div.modal h3 .text {
   height: 20px;
   cursor: pointer;
   -webkit-appearance:none;
+  font-weight:normal;
 }
 
 #locate div.locate-layer .custom-combobox-toggle {
