@@ -35,7 +35,7 @@
       <li class="login">
         <a href="{jurl 'jauth~login:form', array('auth_url_return'=>$auth_url_return)}">
           <span class="icon"></span>
-          <span class="text"><b>{@view~default.header.connect@}</b></span>
+          <span class="text">{@view~default.header.connect@}</span>
         </a>
       </li>
         {if isset($allowUserAccountRequests)}
