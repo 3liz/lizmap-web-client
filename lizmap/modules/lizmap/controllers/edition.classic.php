@@ -1063,6 +1063,17 @@ class editionCtrl extends jController {
     }
 
     $sql = '';
+
+    // Get select clause for primary keys (used when inserting data in postgresql)
+    $returnKeys = array();
+    foreach($this->primaryKeys as $key){
+      $returnKeys[] = '"' . $key . '"';
+    }
+    $returnKeysString = implode(', ', $returnKeys);
+
+    // Begin transaction
+    $cnx->beginTransaction();
+
     // update
     if( $updateAction ){
       if(ctype_digit($this->featureId))
@@ -1081,15 +1092,22 @@ class editionCtrl extends jController {
           $val = $cnx->quote($val);
         $sqlw[] = '"' . $key . '"' . ' = ' . $val;
       }
-      $sql.= ' WHERE ';
-      $sql.= implode(' AND ', $sqlw );
+      $uwhere = '';
+      $uwhere.= ' WHERE ';
+      $uwhere.= implode(' AND ', $sqlw );
 
       // Add login filter if needed
       if( !$this->loginFilteredOveride ) {
         $this->loginFilteredLayers = $this->filterDataByLogin($this->layerName);
         if( is_array( $this->loginFilteredLayers ) ){
-          $sql.= ' AND '.$this->loginFilteredLayers['where'];
+          $uwhere.= ' AND '.$this->loginFilteredLayers['where'];
         }
+      }
+      $sql.= $uwhere;
+      if ($this->provider == 'postgres'){
+        $sql.= "  RETURNING ". $returnKeysString .";";
+      }else{
+        // For spatialite, we will run a complentary query to retrieve the pkeys
       }
     }
     // insert
@@ -1103,11 +1121,47 @@ class editionCtrl extends jController {
       $sql.= implode(', ', $refs);
       $sql.= " ) VALUES (";
       $sql.= implode(', ', $insert);
-      $sql.= " );";
+      $sql.= " )";
+
+      if($this->provider == 'postgres'){
+        $sql.= "  RETURNING ". $returnKeysString .";";
+      }else{
+        // we will need to run a complementary query to retrieve the newly created pk
+      }
     }
 
+    $pkvals = true;
     try {
+      // Run the query UPDATE OR INSERT
       $rs = $cnx->query($sql);
+
+      // Retrieve PK for created objects
+      if ($this->provider == 'postgres'){
+        // PostreSQL
+        $pkvals = array();
+        foreach($rs as $line){
+          foreach($this->primaryKeys as $key){
+            $pkvals[$key] = $line->$key;
+          }
+        }
+      }else{
+        // Spatialite : run the 2nd query
+        if( $updateAction ){
+          $sqlpk = "SELECT " . $returnKeysString . " FROM ".$this->table . $uwhere . ";";
+        }
+        if( $insertAction ){
+          $sqlpk = "SELECT " . $returnKeysString . " FROM ".$this->table." WHERE rowid = last_insert_rowid();";
+        }
+        $rspk = $cnx->query($sqlpk);
+        $pkvals = array();
+        foreach($rspk as $line){
+          foreach($this->primaryKeys as $key){
+            $pkvals[$key] = $line->$key;
+          }
+        }
+      }
+      $cnx->commit();
+
     } catch (Exception $e) {
       $form->setErrorOn($this->geometryColumn, 'An error has been raised when saving the form');
       jLog::log("SQL = ".$sql);
@@ -1115,7 +1169,7 @@ class editionCtrl extends jController {
       return false;
     }
 
-    return true;
+    return $pkvals;
   }
 
 
@@ -1145,13 +1199,15 @@ class editionCtrl extends jController {
     jForms::destroy('view~edition');
     // Create form instance
     $form = jForms::create('view~edition');
+    $form->setData( 'liz_future_action', $this->param('liz_future_action', 0) );
 
     // Redirect to the display action
     $rep = $this->getResponse('redirect');
     $rep->params = array(
       "project"=>$this->project->getKey(),
       "repository"=>$this->repository->getKey(),
-      "layerId"=>$this->layerId
+      "layerId"=>$this->layerId,
+      "status"=>$this->param('status', 0)
     );
     $rep->action="lizmap~edition:editFeature";
 
@@ -1198,6 +1254,7 @@ class editionCtrl extends jController {
       "project"=>$this->project->getKey(),
       "repository"=>$this->repository->getKey(),
       "layerId"=>$this->layerId,
+      "status"=> $this->param('status', '0'),
       "featureId"=>$this->featureIdParam
     );
 
@@ -1243,6 +1300,29 @@ class editionCtrl extends jController {
     $form->setData('liz_srid', $this->srid);
     $form->setData('liz_proj4', $this->proj4);
     $form->setData('liz_geometryColumn', $this->geometryColumn);
+
+    // Set status data to communicate client that the form is reopened after successfull save
+    $form->setData( 'liz_status', $this->param('status', 0) );
+
+    // Set future action (close forme, reopen saved form, create new feature)
+    // Redirect to the edition form or to the validate message
+    $eLayers  = $this->project->getEditionLayers();
+    $layerName = $this->layerName;
+    $eLayer = $eLayers->$layerName;
+    $faCtrl = $form->getControl('liz_future_action');
+    $faData = $faCtrl->datasource->data;
+    if( $eLayer->capabilities->createFeature != 'True' ){
+      unset($faData['create']);
+    }
+    if( $eLayer->capabilities->modifyAttribute != 'True' ){
+      unset($faData['edit']);
+    }
+    $faCtrl->datasource= new jFormsStaticDatasource();
+    $faCtrl->datasource->data = $faData;
+    $faCtrl->defaultValue = array (
+      0 => $form->getData('liz_future_action')
+    );
+
 
     // SELECT data from the database and set the form data accordingly
     $this->setFormDataFromDefault($form);
@@ -1365,13 +1445,16 @@ class editionCtrl extends jController {
     );
 
     // Save data into database
-    if ($check)
-      $check = $this->saveFormDataToDb($form);
+    // And get returned primary key values
+    if ($check){
+      $pkvals = $this->saveFormDataToDb($form);
+    }
 
-    if ( !$check ) {
+    // Some errors where encoutered
+    if ( !$check or !$pkvals ) {
       // Redirect to the display action
       $token = uniqid('lizform_');
-      $params["error"] = $token;
+      $rep->params["error"] = $token;
 
       // Build array of data for all the controls
       // And save it in session
@@ -1386,20 +1469,12 @@ class editionCtrl extends jController {
     }
 
 
-    $pks = array();
-    foreach(array_keys($form->getControls()) as $ctrl) {
-      $d = $form->getData($ctrl);
-      if(in_array($ctrl->ref, $this->primaryKeys)){
-        $pks[] = $d;
-      }
-    }
-
-    // Log
+    // Log edition
     $content = "table=".$this->tableName;
     if( !empty($this->featureId) )
       $content.", id=".$this->featureId;
-    if( count($pk)>0 )
-      $content.= ", pk=" . implode(',', $pks);
+    if( count($pkvals)>0 )
+      $content.= ", pkeys=" . json_encode($pkvals);
     $eventParams = array(
       'key' => 'editionSaveFeature',
       'content' => $content,
@@ -1408,14 +1483,79 @@ class editionCtrl extends jController {
     );
     jEvent::notify('LizLogItem', $eventParams);
 
+
+    // Redirect to the edition form or to the validate message
+    $eLayers  = $this->project->getEditionLayers();
+    $layerName = $this->layerName;
+    $eLayer = $eLayers->$layerName;
+
+    // CREATE NEW FEATURE
+    if(
+      $form->getData('liz_future_action') == 'create'
+      and $eLayer->capabilities->createFeature == 'True'
+    ){
+      jMessage::add(jLocale::get('view~edition.form.data.saved'), 'success');
+      $rep = $this->getResponse('redirect');
+      $rep->params = array(
+        "project"=>$this->project->getKey(),
+        "repository"=>$this->repository->getKey(),
+        "layerId"=>$this->layerId,
+        "status"=>"1",
+        "liz_future_action"=>$form->getData('liz_future_action')
+      );
+      // Destroy form and recreate new
+      jForms::destroy('view~edition');
+      if($form = jForms::get('view~edition', $this->featureId)){
+        jForms::destroy('view~edition', $this->featureId);
+      }
+      $rep->action="lizmap~edition:createFeature";
+      return $rep;
+    }
+
+    // REOPEN THE FORM FOR THE EDITED FEATURE
+    // If there is a single integer primary key
+    // This is the featureid, we can redirect to the edition form
+    // for the newly created or the updated feature
+    if(
+      $form->getData('liz_future_action') == 'edit'
+      // and if capabilities is ok for attribute modification
+      and $eLayer->capabilities->modifyAttribute == 'True'
+      // if we have retrieved the pkeys only one integer pkey
+      and is_array($pkvals) and count($pkvals) == 1
+    ){
+      foreach($this->primaryKeys as $key){
+        // If the pkey is not an integer, return
+        $featureId = $pkvals[$key];
+        if($this->dataFields[$key]->unifiedType != 'integer')
+          break;
+        jMessage::add(jLocale::get('view~edition.form.data.saved'), 'success');
+        $rep = $this->getResponse('redirect');
+        $rep->params = array(
+          "project"=>$this->project->getKey(),
+          "repository"=>$this->repository->getKey(),
+          "layerId"=>$this->layerId,
+          "status"=>"1",
+          "featureId"=>$featureId // use the one returned by the query, not the one in the class property
+        );
+        // Destroy form and recreate new
+        jForms::destroy('view~edition');
+        if( !($form = jForms::get('view~edition', $featureId) ) ){
+          $form = jForms::create('view~edition', $featureId);
+        }
+        $rep->action="lizmap~edition:editFeature";
+        return $rep;
+      }
+    }
+
+    // Else redirect to the validate method to destroy the form
     // Redirect to the validation action
-    $rep->action="lizmap~edition:validateFeature";
+    $rep->action="lizmap~edition:closeFeature";
     return $rep;
 
   }
 
   /**
-  * Form validation : destroy it and display a message
+  * Form close : destroy it and display a message
   *
   * @param string $repository Lizmap Repository
   * @param string $project Name of the project
@@ -1423,24 +1563,24 @@ class editionCtrl extends jController {
   * @param integer $featureId Id of the feature.
   * @return Confirmation message that the form has been saved.
   */
-  public function validateFeature(){
+  public function closeFeature(){
 
     // Get repository, project data and do some right checking
     if(!$this->getEditionParameters())
       return $this->serviceAnswer();
 
+
     // Destroy the form
     if($form = jForms::get('view~edition', $this->featureId)){
       jForms::destroy('view~edition', $this->featureId);
+      // Return html fragment response
+      jMessage::add(jLocale::get('view~edition.form.data.saved'), 'success');
+      return $this->serviceAnswer();
     }else{
       // undefined form : redirect to error
       jMessage::add('An error has been raised when getting the form', 'error');
       return $this->serviceAnswer();
     }
-
-    // Return html fragment response
-    jMessage::add(jLocale::get('view~edition.form.data.saved'), 'success');
-    return $this->serviceAnswer();
 
   }
 
