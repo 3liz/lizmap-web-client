@@ -15,10 +15,9 @@ class embedCtrl extends lizMapCtrl {
 
     function index() {
         $req = jApp::coord()->request;
-        //$req->params['theme'] = 'embed';
         $req->params['h'] = 0;
         $req->params['l'] = 0;
-        $req->params['o'] = 0;
+
         $rep = parent::index();
 
         if ( $rep->getType() != 'html' )
@@ -37,10 +36,6 @@ class embedCtrl extends lizMapCtrl {
         $( document ).ready( function() {
           lizMap.events.on({
             'uicreated':function(evt){
-              if ( $('#mapmenu li.locate').hasClass('active') )
-                $('#button-locate').click();
-              if ( $('#mapmenu li.switcher').hasClass('active') )
-                $('#button-switcher').click();
               $('#mapmenu .nav-list > li > a').tooltip('destroy').tooltip({placement:'bottom'});
               var search = $('#nominatim-search');
               if ( search.length != 0 ) {
@@ -48,7 +43,25 @@ class embedCtrl extends lizMapCtrl {
                 $('#nominatim-search div.dropdown-menu').removeClass('pull-right').addClass('pull-left');
               }
               $('#dock').css('top', ($('#mapmenu').height()+10)+'px');
+              $('#content').addClass('embed');
+
               lizMap.updateContentSize();
+              $('#mini-dock').css('top', $('#dock').css('top'));
+              $('#sub-dock').css('top', $('#dock').css('top'));
+
+              if ( $('#mapmenu li.locate').hasClass('active') )
+                $('#button-locate').click();
+              if ( $('#mapmenu li.switcher').hasClass('active') )
+                $('#button-switcher').click();
+              if ( $('#overview-toggle').hasClass('active') )
+                $('#overview-toggle').click();
+            },
+            'minidockopened': function(evt) {
+                if ( evt.id == 'locate' ) {
+                  // autocompletion items for locatebylayer feature
+                  $('div.locate-layer select').hide();
+                  $('span.custom-combobox').show();
+                }
             }
           });
         });
@@ -70,21 +83,11 @@ class embedCtrl extends lizMapCtrl {
         );
 
         return $rep;
-
-        /*
-         * Petite
-         * <iframe src="" width="400" height="300" frameborder="0" style="border:0" allowfullscreen></iframe>
-         * Moyenne
-         * <iframe src="" width="600" height="450" frameborder="0" style="border:0" allowfullscreen></iframe>
-         * Grande
-         * <iframe src="" width="800" height="600" frameborder="0" style="border:0" allowfullscreen></iframe>
-         *
-         * */
   }
 
   protected function getProjectDockables() {
     $assign = parent::getProjectDockables();
-    $available = array('switcher', 'metadata', 'locate', 'measure', 'tooltip-layer');//, 'permaLink'
+    $available = array('switcher', 'metadata', 'locate', 'measure', 'tooltip-layer');//, 'print', 'permaLink'
     $dAssign = array();
     foreach ( $assign['dockable'] as $dock ) {
         if ( in_array( $dock->id, $available ) )

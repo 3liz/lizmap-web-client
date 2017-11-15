@@ -464,8 +464,10 @@ var lizMap = function() {
    */
   function getDockRightPosition() {
     var right = $('#mapmenu').width();
-    if( $('#dock').css('display') != 'none' && !lizMap.checkMobile() )
-      right+= $('#dock').width() + 11;
+    if( $('#content').hasClass('embed') )
+        right+= 11;
+    else if( $('#dock').css('display') != 'none' && !lizMap.checkMobile() )
+        right+= $('#dock').width() + 11;
     return right;
   }
 
