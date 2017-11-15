@@ -72,20 +72,24 @@ class qgisForm {
                 $alias = $aliases[$fieldName];
             $formControl = new qgisFormControl($fieldName, $edittype, $alias, $categoriesXml, $prop);
 
-            if( ( $formControl->fieldEditType == 15
-                  or $formControl->fieldEditType == 'ValueRelation')
+            if ( $formControl->fieldEditType === 2
+                 or $formControl->fieldEditType === 'UniqueValues'
+                 or $formControl->fieldEditType === 'UniqueValuesEditable' ) {
+                $this->fillControlFromUniqueValues( $fieldName, $formControl );
+            } else if( ( $formControl->fieldEditType === 15
+                  or $formControl->fieldEditType === 'ValueRelation')
                 and $formControl->valueRelationData ) {
                 // Fill comboboxes of editType "Value relation" from relation layer
                 // Query QGIS Server via WFS
                 $this->fillControlFromValueRelationLayer( $fieldName, $formControl );
-            } else if ( $formControl->fieldEditType == 'RelationReference'
+            } else if ( $formControl->fieldEditType === 'RelationReference'
                         and $formControl->relationReferenceData ) {
                 // Fill comboboxes of editType "Relation reference" from relation layer
                 // Query QGIS Server via WFS
                 $this->fillControlFromRelationReference( $fieldName, $formControl );
-            } else if ( $formControl->fieldEditType == 8
-                        or $formControl->fieldEditType == 'FileName'
-                        or $formControl->fieldEditType == 'Photo' ) {
+            } else if ( $formControl->fieldEditType === 8
+                        or $formControl->fieldEditType === 'FileName'
+                        or $formControl->fieldEditType === 'Photo' ) {
                 // Add Hidden Control for upload
                 // help to retrieve file path
                 $hiddenCtrl = new jFormsControlHidden($fieldName.'_hidden');
@@ -442,6 +446,49 @@ class qgisForm {
             return $form;
         }
         return $this->form;
+    }
+
+
+
+    /**
+     * Get the values for a "Unqiue Values" layer's field and fill the form control for a specific field.
+     * @param string $fieldName Name of QGIS field
+     *
+     * @return Modified form control
+     */
+    private function fillControlFromUniqueValues( $fieldName, $formControl ) {
+        $values = $this->layer->getDbFieldDistinctValues( $fieldName );
+
+        $data = array();
+        foreach( $values as $v ) {
+            $data[$v] = $v;
+        }
+
+        $dataSource = new jFormsStaticDatasource();
+
+        // required
+        if( array_key_exists('notNull', $formControl->uniqueValuesData)
+            and strtolower( $formControl->uniqueValuesData['notNull'] ) == '1'
+        ){
+            jLog::log('notNull '.$formControl->uniqueValuesData['notNull'], 'error');
+            $formControl->ctrl->required = True;
+        }
+        // combobox
+        if ( array_key_exists('editable', $formControl->uniqueValuesData)
+             and strtolower( $formControl->uniqueValuesData['editable'] ) == '1'
+        ){
+            $formControl->ctrl->class = 'combobox';
+        }
+
+        // Add default empty value for required fields
+        // Jelix does not do it, but we think it is better this way to avoid unwanted set values
+        if( $formControl->ctrl->required )
+            $data[''] = '';
+
+        asort($data);
+
+        $dataSource->data = $data;
+        $formControl->ctrl->datasource = $dataSource;
     }
 
     /**

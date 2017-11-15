@@ -281,6 +281,26 @@ class qgisVectorLayer extends qgisMapLayer{
       return $defaultValues;
   }
 
+  public function getDbFieldDistinctValues( $field ) {
+      $dtParams = $this->getDatasourceParameters();
+
+      // Get database connection object
+      $cnx = $this->getDatasourceConnection();
+
+      // Build the SQL query to retrieve data from the table
+      $sql = 'SELECT DISTINCT "'.$field.'"';
+      $sql.= ' FROM '.$dtParams->table;
+
+      // Run the query and loop through the result to set the form data
+      $rs = $cnx->query( $sql );
+      $values = array();
+      foreach ( $rs as $record ) {
+          $values[] = $record->$field;
+      }
+
+      return $values;
+  }
+
   public function getDbFieldValues( $feature ) {
       $dbFieldsInfo = $this->getDbFieldsInfo();
 

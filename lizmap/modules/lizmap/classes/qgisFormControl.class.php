@@ -46,6 +46,8 @@ class qgisFormControl{
 
     public $relationReferenceData = Null;
 
+    public $uniqueValuesData = Null;
+
     // Table mapping QGIS and jelix forms
     public $qgisEdittypeMap = array(
       0 => array (
@@ -62,7 +64,7 @@ class qgisFormControl{
       ),
       2 => array (
             'qgis'=>array('name'=>'Unique values', 'description'=>'the user can select one of the values already used in the attribute. If editable, a line edit is shown with autocompletion support, otherwise a combo box is used'),
-            'jform'=>array('markup'=>'input')
+            'jform'=>array('markup'=>'menulist')
       ),
       8 => array (
             'qgis'=>array('name'=>'File name', 'description'=>'Simplifies file selection by adding a file chooser dialog.'),
@@ -248,6 +250,7 @@ class qgisFormControl{
       else{
         $markup = $this->qgisEdittypeMap[$this->fieldEditType]['jform']['markup'];
       }
+
     }else{
       $markup='hidden';
     }
@@ -496,6 +499,22 @@ class qgisFormControl{
       case -1:
       case 'Enumeration':
         $data[0] = '--qgis edit type not supported yet--';
+        break;
+
+      // Unique Values
+      case 2:
+      case 'UniqueValuesEditable':
+      case 'UniqueValues':
+        $this->uniqueValuesData = array(
+          "notNull" => '0',
+          "editable" => '0'
+        );
+        if ( $this->fieldEditType == 'UniqueValuesEditable' )
+            $this->uniqueValuesData['editable'] = '1';
+        if ( $this->edittype[0]->widgetv2config ) {
+            $this->uniqueValuesData['notNull'] = (string)$this->edittype[0]->widgetv2config->attributes()->notNull;
+            $this->uniqueValuesData['editable'] = (string)$this->edittype[0]->widgetv2config->attributes()->Editable;
+        }
         break;
 
       // Value map
