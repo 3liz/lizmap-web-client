@@ -89,7 +89,8 @@ class qgisForm {
                 $this->fillControlFromRelationReference( $fieldName, $formControl );
             } else if ( $formControl->fieldEditType === 8
                         or $formControl->fieldEditType === 'FileName'
-                        or $formControl->fieldEditType === 'Photo' ) {
+                        or $formControl->fieldEditType === 'Photo'
+                        or $formControl->fieldEditType === 'ExternalResource' ) {
                 // Add Hidden Control for upload
                 // help to retrieve file path
                 $hiddenCtrl = new jFormsControlHidden($fieldName.'_hidden');
@@ -166,16 +167,17 @@ class qgisForm {
         foreach ( $values as $ref=>$value ) {
             $form->setData($ref, $value);
             // ValueRelation can be an array (i.e. {1,2,3})
-            if( $this->formControls[$ref]->fieldEditType == 15
+            if( $this->formControls[$ref]->fieldEditType === 15
                 or $this->formControls[$ref]->fieldEditType === 'ValueRelation' ){
                 if($value[0] == '{'){
                     $arrayValue = explode(",",trim($value, "{}"));
                     $form->setData($ref, $arrayValue);
                 }
             }
-            if ( $this->formControls[$ref]->fieldEditType == 8
-                or $this->formControls[$ref]->fieldEditType == 'FileName'
-                or $this->formControls[$ref]->fieldEditType == 'Photo' ) {
+            if ( $this->formControls[$ref]->fieldEditType === 8
+                or $this->formControls[$ref]->fieldEditType === 'FileName'
+                or $this->formControls[$ref]->fieldEditType === 'Photo'
+                or $this->formControls[$ref]->fieldEditType === 'ExternalResource' ) {
                 $ctrl = $form->getControl($ref.'_choice');
                 if ($ctrl && $ctrl->type == 'choice' ) {
                     $path = explode( '/', $value );
