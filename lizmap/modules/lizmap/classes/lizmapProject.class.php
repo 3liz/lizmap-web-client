@@ -77,6 +77,11 @@ class lizmapProject extends qgisProject {
     protected $editionLayers = array();
 
     /**
+     * @var array
+     */
+    protected $attributeLayers = array();
+
+    /**
      * @var boolean
      */
     protected $useLayerIDs = false;
@@ -86,7 +91,7 @@ class lizmapProject extends qgisProject {
      */
     protected $cachedProperties = array('WMSInformation', 'canvasColor', 'allProj4',
         'relations', 'layersOrder', 'printCapabilities', 'locateByLayer',
-        'editionLayers', 'useLayerIDs', 'layers', 'data', 'cfg', 'qgisProjectVersion');
+        'editionLayers', 'attributeLayers', 'useLayerIDs', 'layers', 'data', 'cfg', 'qgisProjectVersion');
 
     /**
      * constructor
@@ -120,6 +125,7 @@ class lizmapProject extends qgisProject {
         if ($data === false ||
             $data['qgsmtime'] < filemtime($file) ||
             !array_key_exists('cfg', $data) ||
+            !array_key_exists('attributeLayers', $data) || // to force cache invalidation for this new feature
             $data['qgscfgmtime'] < filemtime($file.'.cfg') ) {
             // FIXME reading XML could take time, so many process could
             // read it and construct the cache at the same time. We should
@@ -576,10 +582,6 @@ class lizmapProject extends qgisProject {
         return $this->cfg->editionLayers;
     }
 
-    public function getAttributeLayers(){
-        return $this->cfg->attributeLayers;
-    }
-
     public function findEditionLayerByName( $name ){
         if ( !$this->hasEditionLayers() )
             return null;
@@ -1003,6 +1005,9 @@ class lizmapProject extends qgisProject {
 
         // Update locate by layer with vecctorjoins
         $configJson->locateByLayer = $this->locateByLayer;
+
+        // Update attributeLayesr with attributetableconfig
+        $configJson->attributeLayers = $this->attributeLayers;
 
         // Remove FTP remote directory
         if(property_exists($configJson->options, 'remoteDir'))
