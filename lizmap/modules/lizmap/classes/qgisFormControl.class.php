@@ -228,7 +228,7 @@ class qgisFormControl{
         $this->fieldEditType = 0;
 
       // Get jform control type
-      if($this->fieldEditType == 15){
+      if($this->fieldEditType === 15){
         $markup = $this->qgisEdittypeMap[$this->fieldEditType]['jform']['markup'][(int)$this->edittype[0]->attributes()->allowMulti];
       }
       else if($this->fieldEditType === 'ValueRelation'){
@@ -302,12 +302,12 @@ class qgisFormControl{
         $choice->createItem('keep','keep');
         $choice->createItem('update','update');
         $upload = new jFormsControlUpload($this->ref);
-        if( $this->fieldEditType == 'Photo' ) {
+        if( $this->fieldEditType === 'Photo' ) {
           $upload->mimetype = array('image/jpg','image/jpeg','image/pjpeg','image/png','image/gif');
           $upload->accept = 'image/jpg, image/jpeg, image/pjpeg, image/png, image/gif';
           $upload->capture = 'camera';
         }
-        else if( $this->fieldEditType == 'ExternalResource' ) {
+        else if( $this->fieldEditType === 'ExternalResource' ) {
             $upload->accept = '';
             if( property_exists($this->edittype[0]->widgetv2config->attributes(), 'FileWidgetFilter') ){
                 //QFileDialog::getOpenFileName filter
@@ -464,7 +464,7 @@ class qgisFormControl{
   public function fillCheckboxValues(){
     $checked = null;
     $unchecked = null;
-    if ( $this->fieldEditType == 'CheckBox'){
+    if ( $this->fieldEditType === 'CheckBox'){
       $checked = (string)$this->edittype[0]->widgetv2config->attributes()->CheckedState;
       $unchecked = (string)$this->edittype[0]->widgetv2config->attributes()->UncheckedState;
     } else {
@@ -509,7 +509,7 @@ class qgisFormControl{
           "notNull" => '0',
           "editable" => '0'
         );
-        if ( $this->fieldEditType == 'UniqueValuesEditable' )
+        if ( $this->fieldEditType === 'UniqueValuesEditable' )
             $this->uniqueValuesData['editable'] = '1';
         if ( $this->edittype[0]->widgetv2config ) {
             $this->uniqueValuesData['notNull'] = (string)$this->edittype[0]->widgetv2config->attributes()->notNull;
