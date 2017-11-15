@@ -78,3 +78,28 @@
 #map-content {
   margin-left:0px;
 }
+#content.embed.mobile #dock {
+  max-width: 30%;
+  bottom: 10px;
+  right: auto;
+}
+#content.embed.mobile #mini-dock {
+  max-width: 30%;
+  min-width: 247px;
+  left: 10px;
+  top: 40px;
+  right: auto;
+  bottom: auto;
+}
+#content.embed.mobile #mapmenu li.tooltip-layer {
+  display: inline-block;
+}
+#content.embed #navbar {
+  top: 5px;
+}
+#content.embed #sub-dock {
+  left: 256px;
+  top: 40px;
+  bottom: 10px;
+  width: 256px;
+}

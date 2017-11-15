@@ -1862,6 +1862,17 @@ a.btn.btn-opacity-layer.active {
 #permalink {
   padding:2px;
 }
+#permalink-box div.permalink-tab-content {
+  border: 1px solid lightgrey;
+  padding: 10px;
+}
+#permalink-box span.permalink-personalized {
+  display: inline-block;
+}
+#permalink-box span.permalink-personalized input[type="text"] {
+  width:50px;
+}
+
 
 #tooltip-layer select.loading {
     background-image: url("images/download_layer.gif");

@@ -17,9 +17,9 @@
                 <a href="#tab-embed-permalink" data-toggle="tab" title="{@view~map.permalink.embed.tab.title@}">{@view~map.permalink.embed.tab@}</a>
             </li>
         </ul>
-        <div class="tab-content permalink-tabs-content" style="border: 1px solid lightgrey; padding: 10px; width:320px;">
+        <div class="tab-content permalink-tab-content">
             <div id="tab-share-permalink" class="permalink-tab-pane-share tab-pane active">
-                <input id="input-share-permalink" type="text" style="width: 270px;">
+                <input id="input-share-permalink" type="text">
                 <a href="" target="_blank" id="permalink" title="{@view~map.permalink.share.link@}"><i class="icon-share"></i></a>
             </div>
             <div id="tab-embed-permalink" class="permalink-tab-pane-embed tab-pane">
@@ -31,11 +31,11 @@
                     <option value="p">{@view~map.permalink.embed.size.personalized@}</option>
                 </select>
                 <span id="span-embed-personalized-permalink" class="permalink-personalized" style="display:none;">
-                  <input id="input-embed-width-permalink" type="text" style="width:50px;" value="800">
+                  <input id="input-embed-width-permalink" type="text" value="800">
                   <pan>×</pan>
-                  <input id="input-embed-height-permalink" type="text" style="width:50px;" value="600">
+                  <input id="input-embed-height-permalink" type="text" value="600">
                 </span>
-                <input id="input-embed-permalink" class="permalink-embed-input" type="text" style="width: 300px;">
+                <input id="input-embed-permalink" class="permalink-embed-input" type="text">
             </div>
         </div>
     </div>
