@@ -4,7 +4,7 @@ body {
   padding-right:0;
 }
 #title {
-  margin-top : 10px;
+  margin-top : 5px;
 }
 [class^="icon-"], [class*=" icon-"] {
   background-image: url('images/glyphicons-halflings.png');
@@ -1621,7 +1621,7 @@ div.modal h3 .text {
   z-index :1000;
   position :absolute;
   right :10px;
-  top : 1em;
+  top : 10px;
   font-size:0.9em;
 }
 #navbar div.slider{

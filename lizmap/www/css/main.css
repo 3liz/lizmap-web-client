@@ -35,7 +35,7 @@ a:hover {
 }
 #logo {
   float : left;
-  height : 60px;
+  height : 65px;
   min-width: 60px;
   margin-top : 5px;
   margin-bottom : 5px;
@@ -43,6 +43,7 @@ a:hover {
   margin-right : 20px;
   background : url('img/logo.png') no-repeat;
   background-size: contain;
+  background-position:center;
 }
 #logo h1 {
   margin-left : 85px;
