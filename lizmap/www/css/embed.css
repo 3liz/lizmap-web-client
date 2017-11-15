@@ -53,6 +53,8 @@
   background-position: -400px 0px;
   border: none;
   background-image: url(images/sprite_20_tools.png);
+  width: 20px;
+  height: 20px;
 }
 #mapmenu .navbar-search .icon span {
   display:none;

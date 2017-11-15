@@ -56,11 +56,20 @@ class embedCtrl extends lizMapCtrl {
               if ( $('#overview-toggle').hasClass('active') )
                 $('#overview-toggle').click();
             },
+            'dockopened': function(evt) {
+                var activeMenu = $('#mapmenu ul li.nav-minidock.active a');
+                if ( activeMenu.length != 0 )
+                    activeMenu.click();
+            },
             'minidockopened': function(evt) {
+                var activeMenu = $('#mapmenu ul li.nav-dock.active a');
+                if ( activeMenu.length != 0 )
+                    activeMenu.click();
                 if ( evt.id == 'locate' ) {
                   // autocompletion items for locatebylayer feature
                   $('div.locate-layer select').hide();
                   $('span.custom-combobox').show();
+                  $('#locate div.locate-layer input.custom-combobox-input').autocomplete('option', 'position', {my : 'left top', at: 'left bottom'});
                 }
             }
           });
