@@ -327,6 +327,7 @@ class lizmapProject extends qgisProject {
         $this->printCapabilities = $this->readPrintCapabilities($qgs_xml, $this->cfg);
         $this->locateByLayer = $this->readLocateByLayers($qgs_xml, $this->cfg);
         $this->editionLayers = $this->readEditionLayers($qgs_xml, $this->cfg);
+        $this->attributeLayers = $this->readAttributeLayers($qgs_xml, $this->cfg);
     }
 
     public function getQgisPath(){
@@ -573,6 +574,10 @@ class lizmapProject extends qgisProject {
 
     public function getEditionLayers(){
         return $this->cfg->editionLayers;
+    }
+
+    public function getAttributeLayers(){
+        return $this->cfg->attributeLayers;
     }
 
     public function findEditionLayerByName( $name ){
@@ -937,6 +942,44 @@ class lizmapProject extends qgisProject {
 
         return $editionLayers;
     }
+
+
+    protected function readAttributeLayers($xml, $cfg) {
+        $attributeLayers = array();
+
+        if ( property_exists( $cfg, 'attributeLayers' ) ) {
+
+            // Add data into attributeLayers from configuration
+            $attributeLayers = $cfg->attributeLayers;
+
+            // Get field order & visibility
+            foreach( $attributeLayers as $key=>$obj ){
+                $layerXml = $this->getXmlLayer2($xml, $obj->layerId );
+                if(count($layerXml) == 0){
+                    continue;
+                }
+                $layerXmlZero = $layerXml[0];
+                $attributetableconfigXml = $layerXmlZero->xpath('attributetableconfig');
+                if(count($attributetableconfigXml) == 0){
+                    continue;
+                }
+                $attributetableconfig = str_replace(
+                    '@',
+                    '',
+                    json_encode($attributetableconfigXml[0] )
+                );
+                $obj->attributetableconfig = json_decode($attributetableconfig);
+                $attributeLayers->$key = $obj;
+
+            }
+
+        }
+
+        return $attributeLayers;
+    }
+
+
+
 
     public function getUpdatedConfig(){
 
