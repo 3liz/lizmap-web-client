@@ -1081,9 +1081,10 @@ var lizAttributeTable = function() {
                 if( cFeatures && cFeatures.length > 0 ){
 
                     // Create columns for datatable
-                    var cdc = createDatatableColumns(atFeatures, lConfig['geometryType'], canEdit, canDelete, isChild, isPivot, hiddenFields, cAliases, cTypes);
+                    var cdc = createDatatableColumns(aName, atFeatures, lConfig['geometryType'], canEdit, canDelete, isChild, isPivot, hiddenFields, cAliases, cTypes);
                     var columns = cdc.columns;
                     var firstDisplayedColIndex = cdc.firstDisplayedColIndex;
+
 
                     // Format features for datatable
                     var ff = formatDatatableFeatures(atFeatures, lConfig['geometryType'], canEdit, canDelete, isChild, isPivot, hiddenFields, config.layers[aName]['selectedFeatures']);
@@ -1241,7 +1242,7 @@ var lizAttributeTable = function() {
                 return false;
             }
 
-            function createDatatableColumns(atFeatures, geometryType, canEdit, canDelete, isChild, isPivot, hiddenFields, cAliases, cTypes){
+            function createDatatableColumns(aName, atFeatures, geometryType, canEdit, canDelete, isChild, isPivot, hiddenFields, cAliases, cTypes){
                 var columns = [];
                 var firstDisplayedColIndex = 0;
 
@@ -1320,11 +1321,60 @@ var lizAttributeTable = function() {
                     }
                     columns.push( colConf );
                 }
-                return {
+
+                var colToReturn = {
                     'columns': columns,
                     'firstDisplayedColIndex': firstDisplayedColIndex
                 };
+
+                // Reorder and hide columns from QGIS attributetableconfig property
+                if(
+                    'attributetableconfig' in config.attributeLayers[aName]
+                    && config.attributeLayers[aName]['attributetableconfig']
+                    && !$.isEmptyObject(config.attributeLayers[aName]['attributetableconfig']['columns'])
+                ){
+                    var atc = config.attributeLayers[aName]['attributetableconfig']['columns']['column'];
+                    if(atc.length == 0){
+                        return colToReturn;
+                    }
+                    var lizcols = columns.slice(0, firstDisplayedColIndex);
+                    var newcolumns = columns.slice(firstDisplayedColIndex);
+
+                    var newpos = 0;
+                    for(var x in atc){
+                        var colx = atc[x];
+                        // Do nothing if the item does not reference a field
+                        if(colx.attributes.type != 'field')
+                            continue;
+                        var fieldname = colx.attributes.name;
+                        var colhidden = colx.attributes.hidden;
+
+                        // Rearrange columns
+                        for (var i=0; i < newcolumns.length; i++) {
+                            // move item
+                            if ('mData' in newcolumns[i] && newcolumns[i].mData === fieldname) {
+                                // adds it back to the good position if not declared hidden
+                                if( colhidden == "1" ){
+                                    // Remove the item
+                                    var a = newcolumns.splice(i,1);
+                                }else{
+                                    // Move the item
+                                    var cfrom = i;
+                                    newcolumns.splice(newpos, 0, newcolumns.splice(cfrom,1)[0]);
+                                    newpos+= 1;
+                                }
+                                break;
+                            }
+                        }
+                    }
+
+                    var newcolumnsfinal = lizcols.concat(newcolumns)
+                    colToReturn['columns'] = newcolumnsfinal;
+                }
+
+                return colToReturn;
             }
+
 
             function formatDatatableFeatures(atFeatures, geometryType, canEdit, canDelete, isChild, isPivot, hiddenFields, selectedFeatures){
                 var dataSet = [];
