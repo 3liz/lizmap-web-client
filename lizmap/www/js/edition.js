@@ -644,6 +644,38 @@ var lizEdition = function() {
                 selectCombobox.parent().find('span > input')
                     .removeClass('label ui-corner-left ui-state-default ui-widget-content ui-widget');
             }
+            var selectAutocompletes = $('#edition-form-container form select.autocomplete');
+            for( var i=0, len=selectAutocompletes.length; i<len; i++ ) {
+                var selectAutocomplete = $(selectAutocompletes[i]);
+                var wrapper = $( "<span>" )
+                    .addClass( "custom-autocomplete" )
+                    .insertAfter( selectAutocomplete );
+                var selected = selectAutocomplete.children( ":selected" ),
+                    value = selected.val() ? selected.text() : "";
+                var input = $( "<input>" )
+                    .appendTo( wrapper )
+                    .val( value )
+                    .attr( "title", "" )
+                    .addClass( "custom-autocomplete-input" )
+                    .autocomplete({
+                      source: function( request, response ) {
+                          var matcher = new RegExp( $.ui.autocomplete.escapeRegex(request.term), "i" );
+                          response( selectAutocomplete.children( "option" ).map(function() {
+                            var text = $( this ).text();
+                            if ( this.value && ( !request.term || matcher.test(text) ) )
+                              return {
+                                label: text,
+                                value: text,
+                                option: this
+                              };
+                          }) );
+                        }
+                    });
+                input.autocomplete( "widget" ).css("z-index","1050");
+                input.attr('name', selectAutocomplete.attr('name'));
+                selectAutocomplete.attr('name', input.attr('name')+'_source');
+                selectAutocomplete.hide();
+            }
 
             handleEditionFormSubmit( form );
 
