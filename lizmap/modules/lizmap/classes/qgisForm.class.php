@@ -479,7 +479,7 @@ class qgisForm {
         if ( array_key_exists('editable', $formControl->uniqueValuesData)
              and strtolower( $formControl->uniqueValuesData['editable'] ) == '1'
         ){
-            $formControl->ctrl->class = 'combobox';
+            $formControl->ctrl->class = 'autocomplete';
         }
 
         // Add default empty value for required fields
