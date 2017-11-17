@@ -26,7 +26,7 @@ if  [ -d $BACKUPDIR ]; then
         cp $BACKUPDIR/lizmapLogConfig.ini.php $LIZMAP/var/config/
     fi
     if [ -d $BACKUPDIR/lizmap-theme-config ]; then
-        cp -R $BACKUPDIR/lizmap-theme-config $LIZMAP/var/lizmap-theme-config
+        cp -R $BACKUPDIR/lizmap-theme-config/* $LIZMAP/var/lizmap-theme-config/
     fi
     cp $BACKUPDIR/lizmapConfig.ini.php $LIZMAP/var/config/lizmapConfig.ini.php
     cp $BACKUPDIR/installer.ini.php    $LIZMAP/var/config/installer.ini.php
