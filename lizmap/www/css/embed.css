@@ -80,19 +80,22 @@
 #map-content {
   margin-left:0px;
 }
+#content.embed #dock,
 #content.embed.mobile #dock {
-  max-width: 30%;
+  max-width: 237px;
   bottom: 10px;
   right: auto;
 }
+#content.embed #mini-dock,
 #content.embed.mobile #mini-dock {
-  max-width: 30%;
+  max-width: 247px;
   min-width: 247px;
   left: 10px;
   top: 40px;
   right: auto;
   bottom: auto;
 }
+#content.embed #mapmenu li.tooltip-layer,
 #content.embed.mobile #mapmenu li.tooltip-layer {
   display: inline-block;
 }
