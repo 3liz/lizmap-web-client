@@ -3290,6 +3290,75 @@ var lizMap = function() {
     );
   }
 
+  function addChildrenFeatureInfo( popup ) {
+      $('div.lizmapPopupContent input.lizmap-popup-layer-feature-id').each(function(){
+        var self = $(this);
+        var val = self.val();
+        var eHtml = '';
+        var fid = val.split('.').pop();
+        var layerId = val.replace( '.' + fid, '' );
+
+        var getLayerConfig = getLayerConfigById( layerId );
+
+        // verifiying  related children objects
+        if ( !getLayerConfig )
+            return true;
+        var layerConfig = getLayerConfig[1];
+        var featureType = getLayerConfig[0];
+        if ( !('popupDisplayChildren' in layerConfig) || layerConfig.popupDisplayChildren != 'True')
+            return true;
+        if ( !('relations' in config) || !(layerId in config.relations) )
+            return true;
+
+        // Display related children objects
+        var relations = config.relations[layerId];
+        var featureId = featureType + '.' + fid;
+        getLayerFeature(featureType, fid, function(feat) {
+            var wmsOptions = {
+                 'LAYERS': featureType
+                ,'QUERY_LAYERS': featureType
+                ,'STYLES': ''
+                ,'SERVICE': 'WMS'
+                ,'VERSION': '1.3.0'
+                ,'REQUEST': 'GetFeatureInfo'
+                ,'EXCEPTIONS': 'application/vnd.ogc.se_inimage'
+                ,'FEATURE_COUNT': 10
+                ,'INFO_FORMAT': 'text/html'
+            };
+
+            // Query the server
+            var service = OpenLayers.Util.urlAppend(lizUrls.wms
+                ,OpenLayers.Util.getParameterString(lizUrls.params)
+            );
+            for ( var i=0, len=relations.length; i<len; i++ ){
+                var r = relations[i];
+                var rLayerId = r.referencingLayer;
+                var rGetLayerConfig = getLayerConfigById( rLayerId );
+                if ( rGetLayerConfig ) {
+                    var rConfigLayer = rGetLayerConfig[1];
+                    if ( rConfigLayer.popup == 'True' ) {
+                        wmsOptions['LAYERS'] = rConfigLayer.name;
+                        wmsOptions['QUERY_LAYERS'] = rConfigLayer.name;
+                        wmsOptions['FILTER'] = rConfigLayer.name+':"'+r.referencingField+'" = \''+feat.properties[r.referencedField]+'\'';
+                        $.get(service, wmsOptions, function(data) {
+                            var hasPopupContent = (!(!data || data == null || data == ''))
+                            if ( hasPopupContent ) {
+                                //console.log(data);
+                                var popupReg = new RegExp('lizmapPopupTable', 'g');
+                                data = data.replace(popupReg, 'table table-condensed table-striped lizmapPopupTable');
+                                self.parent().append('<div class="lizmapPopupChildren">'+data+'</div>');
+                                if ( popup )
+                                    popup.verifySize();
+                            }
+                        });
+                    }
+                }
+            }
+
+        });
+      });
+  }
+
   function addFeatureInfo() {
       var fiurl = OpenLayers.Util.urlAppend(
         lizUrls.wms,
@@ -3311,8 +3380,8 @@ var lizMap = function() {
                     if (map.popups.length != 0)
                         map.removePopup(map.popups[0]);
 
+                    var popup = null;
                     if( 'popupLocation' in config.options && config.options.popupLocation != 'map' ){
-                      var popup = null;
                       // create content
                       var popupReg = new RegExp('lizmapPopupTable', 'g');
                       text = text.replace( popupReg, 'table table-condensed table-striped table-bordered lizmapPopupTable');
@@ -3359,7 +3428,7 @@ var lizMap = function() {
                       if (!text || text == null || text == '')
                           return false;
                       // Use openlayers map popup anchored
-                      var popup = new OpenLayers.Popup.LizmapAnchored(
+                      popup = new OpenLayers.Popup.LizmapAnchored(
                           "liz_layer_popup",
                           eventLonLatInfo,
                           null,
@@ -3386,6 +3455,9 @@ var lizMap = function() {
                       }
                     }
                     lastLonLatInfo = eventLonLatInfo;
+
+                    // Display related children objects
+                    addChildrenFeatureInfo( popup );
 
                     // Trigger event
                     lizMap.events.triggerEvent(
@@ -5192,6 +5264,149 @@ OpenLayers.Control.HighlightFeature = OpenLayers.Class(OpenLayers.Control, {
       return getFeatureUrlData;
   }
 
+  function getAttributeFeatureData(aName, aFilter, aFeatureID, aCallBack){
+
+      aFilter = typeof aFilter !== 'undefined' ?  aFilter : null;
+      aFeatureID = typeof aFeatureID !== 'undefined' ?  aFeatureID : null;
+      aCallBack = typeof aCallBack !== 'undefined' ?  aCallBack : null;
+
+      // get layer configs
+      if ( !(aName in config.layers) ) {
+          var qgisName = lizMap.getNameByCleanName(aName);
+          if ( qgisName && (qgisName in config.layers)) {
+              aName = qgisName;
+          } else {
+              console.log('getAttributeFeatureData: "'+aName+'" and "'+qgisName+'" not found in config');
+              return false;
+          }
+      }
+      var aConfig = config.layers[aName];
+      var atConfig = null;
+      if( aName in config.attributeLayers )
+          atConfig = config.attributeLayers[aName];
+
+      var limitDataToBbox = false;
+      if ( 'limitDataToBbox' in config.options && config.options.limitDataToBbox == 'True'){
+          limitDataToBbox = true;
+      }
+
+      $('body').css('cursor', 'wait');
+      var geometryName = 'extent';
+      var getFeatureUrlData = lizMap.getVectorLayerWfsUrl( aName, aFilter, aFeatureID, geometryName, limitDataToBbox );
+      $.get( getFeatureUrlData['url'], getFeatureUrlData['options'], function(data) {
+          if( !('featureCrs' in aConfig) )
+              aConfig['featureCrs'] = null;
+          if( aConfig.crs == 'EPSG:4326' )
+              aConfig['featureCrs'] = 'EPSG:4326';
+
+          // verifying the feature CRS
+          if( !aConfig.featureCrs && data.features.length != 0) {
+              // load projection to be sure to have the definition
+              lizMap.loadProjDefinition( aConfig.crs, function( aProj ) {
+                  // in QGIS server > 2.14 GeoJSON is in EPSG:4326
+                  if ( 'qgisServerVersion' in config.options && config.options.qgisServerVersion != '2.14' )
+                      aConfig['featureCrs'] = 'EPSG:4326';
+                  else if ( !aConfig.featureCrs )
+                      aConfig['featureCrs'] = aConfig.crs;
+
+              });
+          }
+
+          if ('alias' in aConfig && aConfig['alias']) {
+              if( aCallBack)
+                  aCallBack( aName, aFilter, data.features, aConfig['alias'] );
+
+              $('body').css('cursor', 'auto');
+          } else
+              var service = OpenLayers.Util.urlAppend(lizUrls.wms
+                    ,OpenLayers.Util.getParameterString(lizUrls.params)
+              );
+              $.get(service, {
+                  'SERVICE':'WFS'
+                 ,'VERSION':'1.0.0'
+                 ,'REQUEST':'DescribeFeatureType'
+                 ,'TYPENAME':aName
+                 ,'OUTPUTFORMAT':'JSON'
+              }, function(describe) {
+
+                  aConfig['alias'] = describe.aliases;
+                  if ('types' in describe)
+                      aConfig['types'] = describe.types;
+
+                  if( aCallBack)
+                      aCallBack( aName, aFilter, data.features, aConfig['alias'] );
+
+                  $('body').css('cursor', 'auto');
+
+              },'json');
+
+
+
+      },'json');
+
+      return false;
+
+  }
+
+  function zoomToOlFeature( feature, proj, zoomAction ){
+      zoomAction = typeof zoomAction !== 'undefined' ?  zoomAction : 'zoom';
+      var format = new OpenLayers.Format.GeoJSON();
+      var feat = format.read(feature)[0];
+      if( feat && 'geometry' in feat ){
+          feat.geometry.transform( proj, lizMap.map.getProjection() );
+
+          // Zoom or center to selected feature
+          if( zoomAction == 'zoom' )
+              map.zoomToExtent(feat.geometry.getBounds());
+          if( zoomAction == 'center' ){
+              var lonlat = feat.geometry.getBounds().getCenterLonLat()
+              map.setCenter(lonlat);
+          }
+      }
+  }
+
+  function zoomToFeature( featureType, fid, zoomAction ){
+      zoomAction = typeof zoomAction !== 'undefined' ?  zoomAction : 'zoom';
+
+      var layerConfig = config.layers[featureType];
+      var featureId = featureType + '.' + fid;
+
+      var proj = new OpenLayers.Projection(config.layers[featureType].crs);
+      if( config.layers[featureType].featureCrs )
+          proj = new OpenLayers.Projection(config.layers[featureType].featureCrs);
+      getLayerFeature(featureType, fid, function(feat) {
+          zoomToOlFeature( feat, proj, zoomAction );
+      });
+  }
+
+  function getLayerFeature( featureType, fid, aCallback ){
+      if ( !aCallback )
+          return;
+
+      if ( !(featureType in config.layers) )
+          return;
+
+      var layerConfig = config.layers[featureType];
+      var featureId = featureType + '.' + fid;
+
+      // Use already retrieved feature
+      if( layerConfig['features'] && fid in layerConfig['features'] ){
+          aCallback(layerConfig['features'][fid]);
+      }
+      // Or get the feature via WFS in needed
+      else{
+          getAttributeFeatureData(featureType, null, featureId, function( aName, aFilter, cFeatures, cAliases ){
+              if( cFeatures.length == 1 ){
+                  var feat = cFeatures[0];
+                  if( !layerConfig['features'] )
+                      layerConfig['features'] = {};
+                  layerConfig['features'][fid] = feat;
+                  aCallback(feat);
+              }
+          });
+      }
+  }
+
   function getVectorLayerFeatureTypes() {
       if ( wfsCapabilities == null )
           return [];
@@ -5477,6 +5692,28 @@ OpenLayers.Control.HighlightFeature = OpenLayers.Class(OpenLayers.Control, {
      */
     updateContentSize: function() {
       return updateContentSize();
+    },
+
+
+    /**
+     * Method: getLayerFeature
+     */
+    getLayerFeature: function( featureType, fid, aCallback ) {
+      getLayerFeature( featureType, fid, aCallback );
+    },
+
+    /**
+     * Method: getAttributeFeatureData
+     */
+    getAttributeFeatureData: function(aName, aFilter, aFeatureID, aCallBack) {
+      getAttributeFeatureData(aName, aFilter, aFeatureID, aCallBack);
+    },
+
+    /**
+     * Method: zoomToFeature
+     */
+    zoomToFeature: function( featureType, fid, zoomAction ) {
+      zoomToFeature( featureType, fid, zoomAction );
     },
 
 
