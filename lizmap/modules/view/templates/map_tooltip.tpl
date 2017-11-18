@@ -15,7 +15,8 @@
       <tr>
         <td>
             <select id="tooltip-layer-list" class="btn-tooltip-layer-list loading" disabled="">
-                <option value="">---</option>
+                <option value="">{@view~map.tooltip.toolbar.select@}</option>
+                <option style="display:none">
             </select>
         </td>
       </tr>
