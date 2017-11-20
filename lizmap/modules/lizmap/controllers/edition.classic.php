@@ -394,24 +394,13 @@ class editionCtrl extends jController {
     $_layerXmlZero = $this->layerXml;
     $layerXmlZero = $_layerXmlZero[0];
     $_editorlayout = $layerXmlZero->xpath('editorlayout');
-    $formLayout = '{}';
-    if ($_editorlayout && $_editorlayout[0] == 'tablayout') {
-        $_attributeEditorForm = $layerXmlZero->xpath('attributeEditorForm');
-        if ($_attributeEditorForm && count($_attributeEditorForm)) {
-            $formLayout = str_replace(
-                '@',
-                '',
-                json_encode($_attributeEditorForm[0] )
-            );
-        }
-    }
+    $attributeEditorFormTemplate = $qgisForm->getHtmlForm();
 
     // Use template to create html form content
     $tpl = new jTpl();
     $tpl->assign(array(
       'title'=>$title,
-      'form'=>$form,
-      'formLayout'=>$formLayout
+      'attributeEditorFormTemplate'=>$attributeEditorFormTemplate
     ));
     $content = $tpl->fetch('view~edition_form');
 

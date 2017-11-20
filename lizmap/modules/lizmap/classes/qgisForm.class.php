@@ -14,6 +14,7 @@ class qgisForm {
 
     protected $layer = null;
     protected $form = null;
+    protected $form_name = null;
     protected $featureId = null;
     protected $loginFilteredOverride = False;
 
@@ -70,6 +71,7 @@ class qgisForm {
             $alias = null;
             if ( $aliases and array_key_exists( $fieldName, $aliases ) )
                 $alias = $aliases[$fieldName];
+
             $formControl = new qgisFormControl($fieldName, $edittype, $alias, $categoriesXml, $prop);
 
             if ( $formControl->fieldEditType === 2
@@ -128,6 +130,156 @@ class qgisForm {
             }
         }
 
+    }
+
+    /**
+     * get the html content
+     *
+     * @return string the Html content for the form
+     */
+    public function getHtmlForm() {
+        $this->form_name = self::generateFormName($this->form->getSelector());
+
+        $layerXml = $this->layer->getXmlLayer();
+        $_editorlayout = $layerXml->xpath('editorlayout');
+        $attributeEditorForm = null;
+        if ($_editorlayout && $_editorlayout[0] == 'tablayout') {
+            $_attributeEditorForm = $layerXml->xpath('attributeEditorForm');
+            if ($_attributeEditorForm && count($_attributeEditorForm)) {
+                $attributeEditorForm = $this->xml2obj( $_attributeEditorForm[0] );
+            }
+        }
+
+        $template = '{formfull $form, "lizmap~edition:saveFeature", array(), "htmlbootstrap"}';
+
+        if ( $attributeEditorForm && property_exists($attributeEditorForm, 'children') ) {
+            $template = '{form $form, "lizmap~edition:saveFeature", array(), "htmlbootstrap"}';
+            $template.= $this->getEditorContainerHtmlContent( $attributeEditorForm, $this->form_name, 0 );
+            $template.= '<div class="jforms-submit-buttons form-actions">{formsubmit}</div>';
+            $template.= '{/form}';
+        }
+
+        $tpl = new jTpl();
+        $tpl->assign( 'form', $this->form );
+        return $tpl->fetchFromString( $template, 'html' );
+    }
+    private function xml2obj( $node ) {
+        $jsnode = array(
+            'name'=>$node->getName()
+        );
+        $attributesObj = json_decode(
+                str_replace(
+                    '@',
+                    '',
+                    json_encode( $node->attributes() )
+                )
+            );
+        if ( property_exists( $attributesObj, 'attributes' ) )
+            $jsnode['attributes'] = $attributesObj->attributes;
+        $children = array();
+        foreach ( $node->children() as $child ) {
+            $children[] = $this->xml2obj( $child );
+        }
+        if ( count( $children ) > 0 )
+          $jsnode['children'] = $children;
+        return (object) $jsnode;
+    }
+    private function getEditorContainerHtmlContent( $container, $parent_id, $depth ) {
+        // a container has children
+        if ( !property_exists($container, 'children') )
+            return '';
+        // a container has a name
+        if ( !property_exists($container, 'name') )
+            return '';
+        // a container can be the root
+        if ( $container->name != 'attributeEditorContainer' && $container->name != 'attributeEditorForm' )
+            return '';
+
+        $htmlBeforeTab = '';
+        $htmlTabNav = '';
+        $htmlTabContent = '';
+        $htmlAfterTab = '';
+        $idx = 0;
+        foreach ( $container->children as $c ) {
+            if ( $c->name === 'attributeEditorField' ) {
+                $html = $this->getEditorFieldHtmlContent( $c );
+                if ( $htmlTabNav === '' )
+                    $htmlBeforeTab.= $html;
+                else
+                    $htmlAfterTab.= $html;
+            }
+            else if ( $c->name === 'attributeEditorContainer' ) {
+                $groupBox = False;
+                if ( property_exists( $c->attributes, 'groupBox' ) ) {
+                    $groupBox = ( $c->attributes->groupBox === '1' );
+                } else {
+                    $groupBox = (($depth % 2) == 1);
+                }
+                if ( $groupBox ) {
+                    $html= '<fieldset>';
+                    $html.= '<legend style="font-weight:bold;">';
+                    $html.= $c->attributes->name;
+                    $html.= '</legend>';
+                    $html.= '<div class="jforms-table-group" border="0" id="'.$parent_id.'-group'.$idx.'">';
+                    $html.= $this->getEditorContainerHtmlContent( $c, $parent_id.'-group'.$idx, $depth+1 );
+                    $html.= '</div>';
+                    $html.= '</fieldset>';
+                    if ( $htmlTabNav === '' )
+                        $htmlBeforeTab.= $html;
+                    else
+                        $htmlAfterTab.= $html;
+                } else {
+                    $htmlTabNav.= '<li><a href="#'.$parent_id.'-tab'.$idx.'" data-toggle="tab">';
+                    $htmlTabNav.= $c->attributes->name;
+                    $htmlTabNav.= '</a></li>';
+
+                    $htmlTabContent.= '<div class="tab-pane" id="'.$parent_id.'-tab'.$idx.'">';
+                    $htmlTabContent.= $this->getEditorContainerHtmlContent( $c, $parent_id.'-tab'.$idx, $depth+1 );
+                    $htmlTabContent.= '</div>';
+                }
+            }
+            $idx += 1;
+        }
+
+        if ( $htmlTabNav === '' )
+            return $htmlBeforeTab;
+
+        $html = $htmlBeforeTab;
+        $html.= '<ul id="'.$parent_id.'-tabs" class="nav nav-tabs">';
+        $html.= $htmlTabNav;
+        $html.= '</ul>';
+        $html.= '<div id="'.$parent_id.'-tab-content" class="tab-content">';
+        $html.= $htmlTabContent;
+        $html.= '</div>';
+        $html.= $htmlAfterTab;
+        return $html;
+    }
+    private function getEditorFieldHtmlContent( $field ) {
+        // field node is named attributeEditorField
+        if ( !property_exists($field, 'name') && $field->name != 'attributeEditorField')
+            return '';
+
+        $html = '';
+        // Get field name
+        $fName = $field->attributes->name;
+        // Verifying that the field is defined
+        if ( !array_key_exists( $fName, $this->formControls ) )
+            return $html;
+        $formControl =  $this->formControls[$fName];
+        // Change field name to choice for files upoad control
+        if ( $formControl->fieldEditType === 8
+             or $formControl->fieldEditType === 'FileName'
+             or $formControl->fieldEditType === 'Photo'
+             or $formControl->fieldEditType === 'ExternalResource' )
+             $fName = $fName.'_choice';
+        // generate the template
+        $html.= '<div class="control-group">';
+        $html.= '{ctrl_label "'.$fName.'"}';
+        $html.= '<div class="controls">';
+        $html.= '{ctrl_control "'.$fName.'"}';
+        $html.= '</div>';
+        $html.= '</div>';
+        return $html;
     }
 
     /**
@@ -838,4 +990,17 @@ class qgisForm {
         return null;
     }
 
+
+    /**
+     * generates a name for the form
+     */
+    protected static function generateFormName($sel){
+        static $forms = array();
+        $name = 'jforms_'.str_replace('~','_',$sel);
+        if (isset($forms[$sel])) {
+            return $name.(++$forms[$sel]);
+        } else
+            $forms[$sel] = 0;
+        return $name;
+    }
 }
