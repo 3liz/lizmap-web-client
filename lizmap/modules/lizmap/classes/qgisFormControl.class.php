@@ -314,10 +314,10 @@ class qgisFormControl{
                 $FileWidgetFilter = $this->edittype[0]->widgetv2config->attributes()->FileWidgetFilter;
                 $FileWidgetFilter = explode( ';;', $FileWidgetFilter );
                 $accepts = array();
-                $re = '/(\*\.\w{3,6})/g';
+                $re = '/(\*\.\w{3,6})/';
                 foreach( $FileWidgetFilter as $FileFilter ) {
                     $matches = array();
-                    if ( preg_match( $re, $FileFilter, $matches ) == 1 ) {
+                    if ( preg_match_all( $re, $FileFilter, $matches ) == 1 ) {
                         foreach( array_slice( $matches, 1 ) as $m ) {
                             $accepts[] = substr( $m, 1 );
                         }
