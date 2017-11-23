@@ -1,4 +1,4 @@
-var lizAttributeTable = function() {
+var lizSearch = function() {
 
     // Attributes
     var config = null;
@@ -77,6 +77,7 @@ var lizAttributeTable = function() {
      * {Boolean} external search is in the user interface
      */
     function addSearch( searchConfig ) {
+        console.log($('#nominatim-search').length);
         if ( searchConfig.type == 'externalSearch' )
             return false;
         if ( !'url' in searchConfig )
