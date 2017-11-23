@@ -1,4 +1,4 @@
-var lizAttributeTable = function() {
+var lizSearch = function() {
 
     // Attributes
     var config = null;
