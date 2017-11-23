@@ -60,10 +60,15 @@
   display:none;
 }
 
-#lizmap-search {
+#lizmap-search,
+#content.embed #lizmap-search,
+#content.embed.mobile #lizmap-search {
   left: 10px;
   right: auto;
   top: 70px;
+}
+#content.embed.mobile #lizmap-search {
+  margin-right: 50px;
 }
 
 #mapmenu li.home {
