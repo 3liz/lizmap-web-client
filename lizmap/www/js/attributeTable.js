@@ -177,7 +177,7 @@ var lizAttributeTable = function() {
 
                     // Get data and fill attribute table
                     var dFilter = null;
-                    getAttributeFeatureData( lname, dFilter, null, function(someName, someNameFilter, someNameFeatures, someNameAliases){
+                    lizMap.getAttributeFeatureData( lname, dFilter, null, function(someName, someNameFilter, someNameFeatures, someNameAliases){
                         buildLayerAttributeDatatable( someName, aTable, someNameFeatures, someNameAliases );
                     });
 
@@ -471,7 +471,7 @@ var lizAttributeTable = function() {
                         var aTable = '#attribute-layer-table-'+cleanName;
                         var dFilter = null;
                         $('#attribute-layer-main-'+cleanName+' > div.attribute-layer-content').hide();
-                        getAttributeFeatureData( lname, dFilter, null, function(someName, someNameFilter, someNameFeatures, someNameAliases){
+                        lizMap.getAttributeFeatureData( lname, dFilter, null, function(someName, someNameFilter, someNameFeatures, someNameAliases){
                             buildLayerAttributeDatatable( someName, aTable, someNameFeatures, someNameAliases );
                             $('#attribute-layer-main-'+cleanName+' > div.attribute-layer-content').show();
                         });
@@ -612,7 +612,7 @@ var lizAttributeTable = function() {
                     var parentLayerName = attributeLayersDic[ cleanName ];
                     var parentLayerId = config.layers[parentLayerName]['id'];
                     var aName = attributeLayersDic[ $(this).val() ];
-                    getLayerFeature(parentLayerName, parentFeatId, function(feat) {
+                    lizMap.getLayerFeature(parentLayerName, parentFeatId, function(feat) {
                         var parentFeat = feat;
                         var lid = config.layers[aName]['id'];
                         lizMap.launchEdition( lid, null, {layerId:parentLayerId,feature:parentFeat}, function(editionLayerId, editionFeatureId){
@@ -639,7 +639,7 @@ var lizAttributeTable = function() {
                     var parentLayerId = config.layers[parentLayerName]['id'];
                     var selectedValue = $(this).attr('href').replace('#', '');
                     var aName = attributeLayersDic[ selectedValue ];
-                    getLayerFeature(parentLayerName, parentFeatId, function(feat) {
+                    lizMap.getLayerFeature(parentLayerName, parentFeatId, function(feat) {
                         var parentFeat = feat;
                         var lid = config.layers[aName]['id'];
                         lizMap.launchEdition( lid, null, {layerId:parentLayerId,feature:parentFeat}, function(editionLayerId, editionFeatureId){
@@ -1002,7 +1002,7 @@ var lizAttributeTable = function() {
 
             function getDirectChildData( childLayerName, filter, childTable ){
                 // Get features
-                getAttributeFeatureData(childLayerName, filter, null, function(chName, chFilter, chFeatures, chAliases){
+                lizMap.getAttributeFeatureData(childLayerName, filter, null, function(chName, chFilter, chFeatures, chAliases){
                     buildLayerAttributeDatatable( chName, childTable, chFeatures, chAliases );
                 });
             }
@@ -1540,7 +1540,7 @@ var lizAttributeTable = function() {
                     var zoomAction = 'zoom';
                     if( $(this).hasClass('center') )
                         zoomAction = 'center';
-                    zoomToFeature( aName, featId, zoomAction );
+                    lizMap.zoomToFeature( aName, featId, zoomAction );
                     return false;
                 })
                 .hover(
@@ -1673,7 +1673,7 @@ var lizAttributeTable = function() {
                         //get relation
                         var relation = getRelationInfo(formLayerId,layerConfig.layerId);
                         if( relation != null ) {
-                            getLayerFeature(parentLayerName, formFeatureId, function(feat) {
+                            lizMap.getLayerFeature(parentLayerName, formFeatureId, function(feat) {
                                 lizMap.launchEdition( lid, featId, {layerId:formLayerId,feature:feat}, function(editionLayerId, editionFeatureId){
                                     $('#bottom-dock').css('left',  lizMap.getDockRightPosition() );
                                 });
@@ -1690,7 +1690,7 @@ var lizAttributeTable = function() {
 
             function getEditionChildData( childLayerName, filter, childTable ){
                 // Get features
-                getAttributeFeatureData(childLayerName, filter, null, function(chName, chFilter, chFeatures, chAliases){
+                lizMap.getAttributeFeatureData(childLayerName, filter, null, function(chName, chFilter, chFeatures, chAliases){
                     buildLayerAttributeDatatable( chName, childTable, chFeatures, chAliases, function() {
 
                         // Check edition capabilities
@@ -1758,141 +1758,6 @@ var lizAttributeTable = function() {
                 });
             }
 
-
-            function getAttributeFeatureData(aName, aFilter, aFeatureID, aCallBack){
-
-                aFilter = typeof aFilter !== 'undefined' ?  aFilter : null;
-                aFeatureID = typeof aFeatureID !== 'undefined' ?  aFeatureID : null;
-                aCallBack = typeof aCallBack !== 'undefined' ?  aCallBack : null;
-
-                // get layer configs
-                if ( !(aName in config.layers) ) {
-                    var qgisName = lizMap.getNameByCleanName(aName);
-                    if ( qgisName && (qgisName in config.layers)) {
-                        aName = qgisName;
-                    } else {
-                        console.log('getAttributeFeatureData: "'+aName+'" and "'+qgisName+'" not found in config');
-                        return false;
-                    }
-                }
-                var aConfig = config.layers[aName];
-                var atConfig = null;
-                if( aName in config.attributeLayers )
-                    atConfig = config.attributeLayers[aName];
-
-                $('body').css('cursor', 'wait');
-                var geometryName = 'extent';
-                var getFeatureUrlData = lizMap.getVectorLayerWfsUrl( aName, aFilter, aFeatureID, geometryName, limitDataToBbox );
-                $.get( getFeatureUrlData['url'], getFeatureUrlData['options'], function(data) {
-                    if( !('featureCrs' in aConfig) )
-                        aConfig['featureCrs'] = null;
-                    if( aConfig.crs == 'EPSG:4326' )
-                        aConfig['featureCrs'] = 'EPSG:4326';
-
-                    // verifying the feature CRS
-                    if( !aConfig.featureCrs && data.features.length != 0) {
-                        // load projection to be sure to have the definition
-                        lizMap.loadProjDefinition( aConfig.crs, function( aProj ) {
-                            // in QGIS server > 2.14 GeoJSON is in EPSG:4326
-                            if ( 'qgisServerVersion' in config.options && config.options.qgisServerVersion != '2.14' )
-                                aConfig['featureCrs'] = 'EPSG:4326';
-                            else if ( !aConfig.featureCrs )
-                                aConfig['featureCrs'] = aConfig.crs;
-
-                        });
-                    }
-
-                    if ('alias' in aConfig && aConfig['alias']) {
-                        if( aCallBack)
-                            aCallBack( aName, aFilter, data.features, aConfig['alias'] );
-
-                        $('body').css('cursor', 'auto');
-                    } else
-                        $.get(service, {
-                            'SERVICE':'WFS'
-                           ,'VERSION':'1.0.0'
-                           ,'REQUEST':'DescribeFeatureType'
-                           ,'TYPENAME':aName
-                           ,'OUTPUTFORMAT':'JSON'
-                        }, function(describe) {
-
-                            aConfig['alias'] = describe.aliases;
-                            if ('types' in describe)
-                                aConfig['types'] = describe.types;
-
-                            if( aCallBack)
-                                aCallBack( aName, aFilter, data.features, aConfig['alias'] );
-
-                            $('body').css('cursor', 'auto');
-
-                        },'json');
-
-
-
-                },'json');
-
-                return false;
-
-            }
-
-            function zoomToOlFeature( feature, proj, zoomAction ){
-                zoomAction = typeof zoomAction !== 'undefined' ?  zoomAction : 'zoom';
-                var format = new OpenLayers.Format.GeoJSON();
-                var feat = format.read(feature)[0];
-                if( feat && 'geometry' in feat ){
-                    feat.geometry.transform( proj, lizMap.map.getProjection() );
-
-                    // Zoom or center to selected feature
-                    if( zoomAction == 'zoom' )
-                        lizMap.map.zoomToExtent(feat.geometry.getBounds());
-                    if( zoomAction == 'center' ){
-                        var lonlat = feat.geometry.getBounds().getCenterLonLat()
-                        lizMap.map.setCenter(lonlat);
-                    }
-                }
-            }
-
-            function zoomToFeature( featureType, fid, zoomAction ){
-                zoomAction = typeof zoomAction !== 'undefined' ?  zoomAction : 'zoom';
-
-                var layerConfig = config.layers[featureType];
-                var featureId = featureType + '.' + fid;
-
-                var proj = new OpenLayers.Projection(config.layers[featureType].crs);
-                if( config.layers[featureType].featureCrs )
-                    proj = new OpenLayers.Projection(config.layers[featureType].featureCrs);
-                getLayerFeature(featureType, fid, function(feat) {
-                    zoomToOlFeature( feat, proj, zoomAction );
-                });
-            }
-
-            function getLayerFeature( featureType, fid, aCallback ){
-                if ( !aCallback )
-                    return;
-
-                if ( !(featureType in config.layers) )
-                    return;
-
-                var layerConfig = config.layers[featureType];
-                var featureId = featureType + '.' + fid;
-
-                // Use already retrieved feature
-                if( layerConfig['features'] && fid in layerConfig['features'] ){
-                    aCallback(layerConfig['features'][fid]);
-                }
-                // Or get the feature via WFS in needed
-                else{
-                    getAttributeFeatureData(featureType, null, featureId, function( aName, aFilter, cFeatures, cAliases ){
-                        if( cFeatures.length == 1 ){
-                            var feat = cFeatures[0];
-                            if( !layerConfig['features'] )
-                                layerConfig['features'] = {};
-                            layerConfig['features'][fid] = feat;
-                            aCallback(feat);
-                        }
-                    });
-                }
-            }
 
             function refreshLayerSelection( featureType, featId, rupdateDrawing ) {
                 // Set function parameters if not given
@@ -2100,7 +1965,7 @@ var lizAttributeTable = function() {
             var geometryName = 'extent';
             var getFeatureUrlData = lizMap.getVectorLayerWfsUrl( typeName, aFilter, null, geometryName, limitDataToBbox );
 
-            getAttributeFeatureData(typeName, aFilter, null, function(aName, aNameFilter, aNameFeatures, aNameAliases ){
+            lizMap.getAttributeFeatureData(typeName, aFilter, null, function(aName, aNameFilter, aNameFeatures, aNameAliases ){
 
                 // **0** Prepare some variable. e.g. reset features stored in the layer config
                 var layerConfig = config.layers[typeName];
@@ -2663,7 +2528,7 @@ var lizAttributeTable = function() {
                                     //get relation
                                     var relation = getRelationInfo(formLayerId,featureTypeConfig.layerId);
                                     if( relation != null ) {
-                                        getLayerFeature(parentLayerName, formFeatureId, function(feat) {
+                                        lizMap.getLayerFeature(parentLayerName, formFeatureId, function(feat) {
                                             var fp = feat.properties;
                                             filter = '"' + relation.referencingField + '" = ' + "'" + fp[relation.referencedField] + "'";
                                             getEditionChildData( featureType, filter, zTable);
@@ -2680,7 +2545,7 @@ var lizAttributeTable = function() {
                         else{
                             // If not pivot
                             var dFilter = null;
-                            getAttributeFeatureData( featureType, dFilter, null, function(someName, someNameFilter, someNameFeatures){
+                            lizMap.getAttributeFeatureData( featureType, dFilter, null, function(someName, someNameFilter, someNameFeatures){
                                 buildLayerAttributeDatatable( someName, zTable, someNameFeatures );
                             });
                         }
@@ -2757,62 +2622,6 @@ var lizAttributeTable = function() {
                             'layerId'
                         );
                         var getLayerConfig = lizMap.getLayerConfigById( layerId );
-
-                        // Display related children objects
-
-                        if( aConfig && getLayerConfig
-                            && 'popupDisplayChildren' in getLayerConfig[1]
-                            && getLayerConfig[1]['popupDisplayChildren'] == 'True'
-                            && 'relations' in lizMap.config
-                            && layerId in lizMap.config.relations
-                        ) {
-                            var relations = lizMap.config.relations[layerId];
-                            var layerConfig = getLayerConfig[1];
-                            var featureType = getLayerConfig[0];
-                            var featureId = featureType + '.' + fid;
-                            getLayerFeature(featureType, fid, function(feat) {
-
-                                var wmsOptions = {
-                                     'LAYERS': featureType
-                                    ,'QUERY_LAYERS': featureType
-                                    ,'STYLES': ''
-                                    ,'SERVICE': 'WMS'
-                                    ,'VERSION': '1.3.0'
-                                    ,'REQUEST': 'GetFeatureInfo'
-                                    ,'EXCEPTIONS': 'application/vnd.ogc.se_inimage'
-                                    ,'FEATURE_COUNT': 10
-                                    ,'INFO_FORMAT': 'text/html'
-                                };
-
-                                // Query the server
-                                var service = OpenLayers.Util.urlAppend(lizUrls.wms
-                                    ,OpenLayers.Util.getParameterString(lizUrls.params)
-                                );
-                                for ( var i=0, len=relations.length; i<len; i++ ){
-                                    var r = relations[i];
-                                    var rLayerId = r.referencingLayer;
-                                    var rGetLayerConfig = lizMap.getLayerConfigById( rLayerId );
-                                    if ( rGetLayerConfig ) {
-                                        var rConfigLayer = rGetLayerConfig[1];
-                                        if ( rConfigLayer.popup == 'True' ) {
-                                            wmsOptions['LAYERS'] = rConfigLayer.name;
-                                            wmsOptions['QUERY_LAYERS'] = rConfigLayer.name;
-                                            wmsOptions['FILTER'] = rConfigLayer.name+':"'+r.referencingField+'" = \''+feat.properties[r.referencedField]+'\'';
-                                            $.get(service, wmsOptions, function(data) {
-                                                var hasPopupContent = (!(!data || data == null || data == ''))
-                                                if ( hasPopupContent ) {
-                                                    //console.log(data);
-                                                    var popupReg = new RegExp('lizmapPopupTable', 'g');
-                                                    data = data.replace(popupReg, 'table table-condensed table-striped lizmapPopupTable');
-                                                    self.parent().append('<div class="lizmapPopupChildren">'+data+'</div>');
-                                                }
-                                            });
-                                        }
-                                    }
-                                }
-
-                            });
-                        }
 
                         if( aConfig && getLayerConfig ) {
                             var layerConfig = getLayerConfig[1];
@@ -2903,7 +2712,7 @@ var lizAttributeTable = function() {
                             if (lizMap.map.popups.length != 0)
                                 lizMap.map.removePopup( lizMap.map.popups[0] );
 
-                            zoomToFeature( featureType, fid, 'zoom' );
+                            lizMap.zoomToFeature( featureType, fid, 'zoom' );
                             return false;
                         })
                         .hover(
@@ -3096,7 +2905,7 @@ var lizAttributeTable = function() {
                                 var parentLayerName = featureType;
                                 var parentLayerId = layerId;
                                 var aName = attributeLayersDic[ $(this).val() ];
-                                getLayerFeature(featureType, fid, function(feat) {
+                                lizMap.getLayerFeature(featureType, fid, function(feat) {
                                     var parentFeat = feat;
                                     var lid = config.layers[aName]['id'];
                                     lizMap.launchEdition( lid, null, {layerId:parentLayerId,feature:parentFeat}, function(editionLayerId, editionFeatureId){
@@ -3118,7 +2927,7 @@ var lizAttributeTable = function() {
                                 var parentLayerId = layerId;
                                 var selectedValue = $(this).attr('href').replace('#', '');
                                 var aName = attributeLayersDic[ selectedValue ];
-                                getLayerFeature(featureType, fid, function(feat) {
+                                lizMap.getLayerFeature(featureType, fid, function(feat) {
                                     var parentFeat = feat;
                                     var lid = config.layers[aName]['id'];
                                     lizMap.launchEdition( lid, null, {layerId:parentLayerId,feature:parentFeat}, function(editionLayerId, editionFeatureId){
@@ -3132,7 +2941,7 @@ var lizAttributeTable = function() {
                                 function(){ $(this).addClass('btn-primary'); },
                                 function(){ $(this).removeClass('btn-primary'); }
                             );
-                            getLayerFeature(featureType, fid, function(feat) {
+                            lizMap.getLayerFeature(featureType, fid, function(feat) {
                                 var fp = feat.properties;
                                 for ( var i=0, len=relations.length; i<len; i++ ){
                                     var r = relations[i];
@@ -3590,10 +3399,6 @@ var lizAttributeTable = function() {
         }
   }
 
-
-            // Extend lizMap API
-            lizMap.getAttributeFeatureData = getAttributeFeatureData;
-            lizMap.zoomToFeature = zoomToFeature;
 
         } // uicreated
     });
