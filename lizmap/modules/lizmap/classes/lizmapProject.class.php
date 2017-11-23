@@ -1331,7 +1331,11 @@ class lizmapProject extends qgisProject {
             if( $gbList )
                 $gbContent = $tpl->fetch('view~map_geobookmark');
             $tpl = new jTpl();
-            $tpl->assign('gbContent', $gbContent);
+            $tpl->assign(array(
+                'repository'=>$this->repository->getKey(),
+                'project'=>$this->getKey(),
+                'gbContent'=>$gbContent
+            ));
             $dockable[] = new lizmapMapDockItem(
                 'permaLink',
                 jLocale::get('view~map.permalink.navbar.title'),

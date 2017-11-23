@@ -1,0 +1,115 @@
+#mapmenu {
+  top: 5px;
+  left: 10px;
+  height: auto;
+  width: auto;
+  border: solid 1px;
+}
+#mapmenu > div {
+  width: auto;
+  height: 30px;
+  position: relative;
+}
+#mapmenu .nav-list {
+  padding-left: 5px;
+  padding-right: 5px;
+}
+#mapmenu .nav-list > li {
+  display: inline-block;
+  width: 30px;
+  position: relative;
+}
+#mapmenu .nav-list > li > a {
+  margin-left: 0;
+}
+
+#mapmenu .navbar-search {
+  margin-top:1px;
+  height:30px;
+  width:235px;
+  margin-left: 5px;
+  margin-right: 5px;
+}
+#mapmenu .navbar-search .search-query {
+  z-index:2;
+  position: absolute;
+  top: 1px;
+  right: 0px;
+  padding-top:2px;
+  padding-bottom:2px;
+}
+#mapmenu .navbar-search .search-icon {
+  z-index:3;
+  position: absolute;
+  top: 2px;
+  right: 4px;
+  display: block;
+  width: 20px;
+  height: 20px;
+  cursor: pointer;
+}
+#mapmenu .navbar-search .icon {
+  background-color: transparent;
+  background-position: -400px 0px;
+  border: none;
+  background-image: url(images/sprite_20_tools.png);
+  width: 20px;
+  height: 20px;
+}
+#mapmenu .navbar-search .icon span {
+  display:none;
+}
+
+#lizmap-search,
+#content.embed #lizmap-search,
+#content.embed.mobile #lizmap-search {
+  left: 10px;
+  right: auto;
+  top: 70px;
+}
+#content.embed.mobile #lizmap-search {
+  margin-right: 50px;
+}
+
+#mapmenu li.home {
+  display:none !important;
+}
+
+#dock {
+  top: 40px;
+  left:10px;
+  bottom: 10px;
+  border-left:none;
+  min-width:237px;
+}
+#map-content {
+  margin-left:0px;
+}
+#content.embed #dock,
+#content.embed.mobile #dock {
+  max-width: 237px;
+  bottom: 10px;
+  right: auto;
+}
+#content.embed #mini-dock,
+#content.embed.mobile #mini-dock {
+  max-width: 247px;
+  min-width: 247px;
+  left: 10px;
+  top: 40px;
+  right: auto;
+  bottom: auto;
+}
+#content.embed #mapmenu li.tooltip-layer,
+#content.embed.mobile #mapmenu li.tooltip-layer {
+  display: inline-block;
+}
+#content.embed #navbar {
+  top: 5px;
+}
+#content.embed #sub-dock {
+  left: 256px;
+  top: 40px;
+  bottom: 10px;
+  width: 256px;
+}
