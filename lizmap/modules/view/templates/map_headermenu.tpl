@@ -1,7 +1,6 @@
 <div id="auth" class="navbar-inner">
   <div class="pull-right">
 
-    {if $externalSearch != ''}
     <form id="nominatim-search" class="navbar-search dropdown">
       <input id="search-query" type="text" class="search-query" placeholder="{@view~map.search.nominatim.placeholder@}"></input>
       <span class="search-icon">
@@ -10,7 +9,6 @@
         </button>
       </span>
     </form>
-    {/if}
 
     <ul class="nav">
       {if $isConnected}
