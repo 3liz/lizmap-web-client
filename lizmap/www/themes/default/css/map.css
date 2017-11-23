@@ -490,10 +490,6 @@ Timemanager
   color : white !important;
   border-bottom: 1px dashed white;
 }
-.lizmapPopup.olPopup .lizmapPopupContent a,
-#map-content .lizmapPopupContent a{
-  color:black;
-}
 /*
 .lizmapPopup.olPopup .lizmapPopupTable,
 #map-content .lizmapPopupTable{
