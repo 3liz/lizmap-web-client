@@ -12,15 +12,15 @@
 <hidden ref="_submit"/>
 
 <menulist ref="liz_future_action" required="true">
-    <label>Après enregistrement</label>
-    <item value="close">Close form</item>
-    <item value="create">Create new feature</item>
-    <item value="edit">Reopen form</item>
+    <label  locale="view~edition.form.action.future.label" />
+    <item value="close" locale="view~edition.form.action.future.close" />
+    <item value="create" locale="view~edition.form.action.future.create" />
+    <item value="edit" locale="view~edition.form.action.future.edit" />
 </menulist>
 <submit ref="_submit">
     <label></label>
     <item value="submit" locale="view~edition.form.submit.label" />
-    <item value="cancel" locale="view~edition.form.btn.clear.title" />
+    <item value="cancel" locale="view~edition.form.cancel.label" />
 </submit>
 
 
