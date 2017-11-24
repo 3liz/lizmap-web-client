@@ -9,12 +9,13 @@
 <!--
     <a id="edition-select-undo" class="btn btn-small disabled" href="#" rel="tooltip" title="{@view~edition.toolbar.select.undo.tooltip@}" data-placement="bottom">{@view~edition.toolbar.select.undo.title@}</a>
 -->
-    <a id="edition-cancel" class="btn btn-small disabled" href="#" rel="tooltip" title="{@view~edition.toolbar.cancel.tooltip@}" data-placement="bottom">{@view~edition.toolbar.cancel.title@}</a>
+
 
 
     <form id="edition-hidden-form" style="display:none;">
       <input type="hidden" name="liz_wkt" value=""/>
     </form>
+
   </div>
 
 

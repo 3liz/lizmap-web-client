@@ -370,7 +370,6 @@ class qgisVectorLayer extends qgisMapLayer{
       $refs = array();
       $insert = array();
       $primaryKeys = $dbFieldsInfo->primaryKeys;
-      $pkLogInfo = array();
       $dataLogInfo = array();
       foreach ( $values as $ref=>$value ) {
           // For insert, only for not NULL values to allow serial and default values to work
@@ -382,7 +381,6 @@ class qgisVectorLayer extends qgisMapLayer{
                 $val = $value;
                 if( $dataFields[$key]->unifiedType != 'integer' )
                     $val = $cnx->quote($val);
-                $pkLogInfo[] = $val;
                 $dataLogInfo[] = '"' . $ref . '"' . ' = ' . $val;
             }
           }
@@ -392,15 +390,50 @@ class qgisVectorLayer extends qgisMapLayer{
       $sql.= implode(', ', $refs);
       $sql.= ' ) VALUES (';
       $sql.= implode(', ', $insert);
-      $sql.= ' );';
+      $sql.= ' )';
+
+      // Get select clause for primary keys (used when inserting data in postgresql)
+      $returnKeys = array();
+      foreach($primaryKeys as $key){
+          $returnKeys[] = '"' . $key . '"';
+      }
+      $returnKeysString = implode(', ', $returnKeys);
+      // For spatialite, we will run a complentary query to retrieve the pkeys
+      if( $this->provider == 'postgres' ){
+          $sql.= '  RETURNING '. $returnKeysString;
+      }
+      $sql.= ';';
 
       try {
+          // Begin transaction
+          $cnx->beginTransaction();
+          // Run the query
           $rs = $cnx->exec($sql);
+          // Retrieve PK for created objects
+          $pkvals = array();
+          if( $this->provider == 'postgres' ) {
+              foreach($rs as $line){
+                  foreach($primaryKeys as $key){
+                      $pkvals[$key] = $line->$key;
+                  }
+                  break;
+              }
+          } else {
+              $sqlpk = 'SELECT ' . $returnKeysString . ' FROM '.$dtParams->table.' WHERE rowid = last_insert_rowid();';
+              $rspk = $cnx->query($sqlpk);
+              foreach($rspk as $line){
+                  foreach($primaryKeys as $key){
+                      $pkvals[$key] = $line->$key;
+                  }
+                  break;
+              }
+          }
+          $cnx->commit();
 
           // Log
           $content = 'INSERT table=' . $dtParams->table;
-          if( count($pkLogInfo) > 0 )
-            $content.= ', pk=' . implode(',', $pkLogInfo);
+          if( count($pkVals) > 0 )
+            $content.= ', pkeys=' . json_encode($pkvals);
           $content.= ', ('.implode(', ', $dataLogInfo).')';
           $eventParams = array(
             'key' => 'editionSaveFeature',
@@ -410,7 +443,7 @@ class qgisVectorLayer extends qgisMapLayer{
           );
           jEvent::notify('LizLogItem', $eventParams);
 
-          return $rs;
+          return $pkvals;
       } catch (Exception $e) {
           jLog::log("SQL = ".$sql);
           throw $e;
@@ -436,31 +469,67 @@ class qgisVectorLayer extends qgisMapLayer{
       // Add where clause with primary keys
       $sqlw = array();
       $primaryKeys = $dbFieldsInfo->primaryKeys;
-      $dataFields = $dbFieldsInfo->dataFields;
-      $pkLogInfo = array();
+      $dataFields = $dbField;
       foreach($primaryKeys as $key){
           $val = $feature->properties->$key;
           if( $dataFields[$key]->unifiedType != 'integer' )
               $val = $cnx->quote($val);
           $sqlw[] = '"' . $key . '"' . ' = ' . $val;
-          $pkLogInfo[] = $val;
       }
-      $sql.= ' WHERE ';
-      $sql.= implode(' AND ', $sqlw );
+      // Store WHere clause to retrieve primary keys in spatialite
+      $uwhere = '';
+      $uwhere.= ' WHERE ';
+      $uwhere.= implode(' AND ', $sqlw );
 
       // Add login filter if needed
       if( $loginFilteredLayers and is_array( $loginFilteredLayers ) ){
           $sql.= ' AND '.$loginFilteredLayers['where'];
       }
+      $sql.= $uwhere;
+
+      // Get select clause for primary keys (used when inserting data in postgresql)
+      $returnKeys = array();
+      foreach($primaryKeys as $key){
+          $returnKeys[] = '"' . $key . '"';
+      }
+      $returnKeysString = implode(', ', $returnKeys);
+      // For spatialite, we will run a complentary query to retrieve the pkeys
+      if( $this->provider == 'postgres' ){
+          $sql.= '  RETURNING '. $returnKeysString;
+      }
+      $sql.= ';';
 
       try {
+          // Begin transaction
+          $cnx->beginTransaction();
+          // Run query
           $rs = $cnx->exec($sql);
+          // Retrieve PK for created objects
+          $pkvals = array();
+          if( $this->provider == 'postgres' ) {
+              foreach($rs as $line){
+                  foreach($primaryKeys as $key){
+                      $pkvals[$key] = $line->$key;
+                  }
+                  break;
+              }
+          } else {
+              $sqlpk = 'SELECT ' . $returnKeysString . ' FROM '.$dtParams->table.$uwhere;
+              $rspk = $cnx->query($sqlpk);
+              foreach($rspk as $line){
+                  foreach($primaryKeys as $key){
+                      $pkvals[$key] = $line->$key;
+                  }
+                  break;
+              }
+          }
+          $cnx->commit();
 
           // Log
           $content = 'UPDATE table=' . $dtParams->table;
           $content.= ', id=' . $feature->id;
-          if( count($pkLogInfo) > 0 )
-            $content.= ', pk=' . implode(',', $pkLogInfo);
+          if( count($pkVals) > 0 )
+            $content.= ', pkeys=' . json_encode($pkvals);
           $content.= ', ('.implode(', ', $update).')';
           $eventParams = array(
             'key' => 'editionSaveFeature',
@@ -470,7 +539,7 @@ class qgisVectorLayer extends qgisMapLayer{
           );
           jEvent::notify('LizLogItem', $eventParams);
 
-          return $rs;
+          return $pkvals;
       } catch (Exception $e) {
           jLog::log("SQL = ".$sql);
           throw $e;
