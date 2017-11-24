@@ -155,6 +155,34 @@ class qgisForm {
         if ( $attributeEditorForm && property_exists($attributeEditorForm, 'children') ) {
             $template = '{form $form, "lizmap~edition:saveFeature", array(), "htmlbootstrap"}';
             $template.= $this->getEditorContainerHtmlContent( $attributeEditorForm, $this->form_name, 0 );
+            $template.= '<div class="control-group">';
+            $template.= '{ctrl_label "liz_future_action"}';
+            $template.= '<div class="controls">';
+            $template.= '{ctrl_control "liz_future_action"}';
+            $template.= '</div>';
+            $template.= '</div>';
+            $template.= '<div class="jforms-submit-buttons form-actions">{formsubmit}</div>';
+            $template.= '{/form}';
+        } else {
+            $fieldNames = array();
+            foreach( array_keys($this->formControls) as $k ) {
+                $fieldNames[] = '\''.$k.'\'';
+            }
+            $template = '{form $form, "lizmap~edition:saveFeature", array(), "htmlbootstrap"}';
+            $template.= '{formcontrols array('.implode(',',$fieldNames).')}';
+            $template.= '<div class="control-group">';
+            $template.= '{ctrl_label}';
+            $template.= '<div class="controls">';
+            $template.= '{ctrl_control}';
+            $template.= '</div>';
+            $template.= '</div>';
+            $template.= '{/formcontrols}';
+            $template.= '<div class="control-group">';
+            $template.= '{ctrl_label "liz_future_action"}';
+            $template.= '<div class="controls">';
+            $template.= '{ctrl_control "liz_future_action"}';
+            $template.= '</div>';
+            $template.= '</div>';
             $template.= '<div class="jforms-submit-buttons form-actions">{formsubmit}</div>';
             $template.= '{/form}';
         }
@@ -444,7 +472,7 @@ class qgisForm {
             $value = $form->getData( $ref );
             $choiceValue = $form->getData( $ref.'_choice' );
             $hiddenValue = $form->getData( $ref.'_hidden' );
-            $repPath = $this->repository->getPath();
+            $repPath = $project->getRepository()->getPath();
             if ( $choiceValue == 'update' && $value != '') {
                 $refPath = realpath($repPath.'/media').'/upload/'.$project->getKey().'/'.$dtParams->tablename.'/'.$ref;
                 $alreadyValueIdx = 0;
