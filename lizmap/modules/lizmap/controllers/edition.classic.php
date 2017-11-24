@@ -252,13 +252,15 @@ class editionCtrl extends jController {
     jForms::destroy('view~edition');
     // Create form instance
     $form = jForms::create('view~edition');
+    $form->setData( 'liz_future_action', $this->param('liz_future_action', 'close') );
 
     // Redirect to the display action
     $rep = $this->getResponse('redirect');
     $rep->params = array(
       "project"=>$this->project->getKey(),
       "repository"=>$this->repository->getKey(),
-      "layerId"=>$this->layerId
+      "layerId"=>$this->layerId,
+      "status"=>$this->param('status', 0)
     );
     $rep->action="lizmap~edition:editFeature";
 
@@ -294,6 +296,7 @@ class editionCtrl extends jController {
       jMessage::add('An error has been raised when creating the form', 'formNotDefined');
       return $this->serviceAnswer();
     }
+    $form->setData( 'liz_future_action', $this->param('liz_future_action', 'close') );
 
     // Redirect to the display action
     $rep = $this->getResponse('redirect');
@@ -301,7 +304,8 @@ class editionCtrl extends jController {
       "project"=>$this->project->getKey(),
       "repository"=>$this->repository->getKey(),
       "layerId"=>$this->layerId,
-      "featureId"=>$this->featureIdParam
+      "featureId"=>$this->featureIdParam,
+      "status"=>$this->param('status', 0)
     );
 
     $rep->action="lizmap~edition:editFeature";
@@ -353,6 +357,26 @@ class editionCtrl extends jController {
     $form->setData('liz_srid', $this->srid);
     $form->setData('liz_proj4', $this->proj4);
     $form->setData('liz_geometryColumn', $this->geometryColumn);
+
+    // Set status data to communicate client that the form is reopened after successfull save
+    $form->setData( 'liz_status', $this->param('status', 0) );
+
+    // Set future action (close forme, reopen saved form, create new feature)
+    // Redirect to the edition form or to the validate message
+    $faCtrl = $form->getControl('liz_future_action');
+    $faData = $faCtrl->datasource->data;
+    $eCapabilities = $this->layer->getEditionCapabilities();
+    if ( $eCapabilities->capabilities->createFeature != 'True' ) {
+        unset($faData['create']);
+    }
+    if ( $eCapabilities->capabilities->modifyAttribute != 'True' ) {
+        unset($faData['edit']);
+    }
+    $faCtrl->datasource= new jFormsStaticDatasource();
+    $faCtrl->datasource->data = $faData;
+    $faCtrl->defaultValue = array (
+        0 => $form->getData('liz_future_action')
+    );
 
     // SELECT data from the database and set the form data accordingly
     $form = $qgisForm->setFormDataFromDefault();
@@ -467,17 +491,20 @@ class editionCtrl extends jController {
     );
 
     // Save data into database
+    // And get returned primary key values
+    $pkvals = null;
     if ( $check ) {
         $feature = null;
         if ( $this->featureId )
             $feature = $this->featureData->features[0];
-        $check = $qgisForm->saveToDb( $feature );
+        $pkvals = $qgisForm->saveToDb( $feature );
     }
 
-    if ( !$check ) {
+    // Some errors where encoutered
+    if ( !$check or !$pkvals ) {
       // Redirect to the display action
       $token = uniqid('lizform_');
-      $params["error"] = $token;
+      $rep->params["error"] = $token;
 
       // Build array of data for all the controls
       // And save it in session
@@ -491,14 +518,79 @@ class editionCtrl extends jController {
       return $rep;
     }
 
-    // Redirect to the validation action
-    $rep->action="lizmap~edition:validateFeature";
+    // Redirect to the edition form or to the validate message
+    $next_action = $form->getData('liz_future_action');
+    if ( $next_action == 'close' ) {
+      // Redirect to the close action
+      $rep->action="lizmap~edition:closeFeature";
+    }
+
+    // Use edition capabilities
+    $eCapabilities = $this->layer->getEditionCapabilities();
+
+    // CREATE NEW FEATURE
+    if(
+      $next_action == 'create'
+      and $eCapabilities->capabilities->createFeature == 'True'
+    ){
+        jMessage::add(jLocale::get('view~edition.form.data.saved'), 'success');
+        $rep->params = array(
+            "project"=>$this->project->getKey(),
+            "repository"=>$this->repository->getKey(),
+            "layerId"=>$this->layerId,
+            "status"=>"1",
+            "liz_future_action"=>$next_action
+        );
+        // Destroy form and redirect to create
+        if($form = jForms::get('view~edition', $this->featureId)){
+            jForms::destroy('view~edition', $this->featureId);
+        }
+        $rep->action="lizmap~edition:createFeature";
+        return $rep;
+    }
+    // REOPEN THE FORM FOR THE EDITED FEATURE
+    // If there is a single integer primary key
+    // This is the featureid, we can redirect to the edition form
+    // for the newly created or the updated feature
+    if(
+      $next_action == 'edit'
+      // and if capabilities is ok for attribute modification
+      and $eCapabilities->capabilities->modifyAttribute == 'True'
+      // if we have retrieved the pkeys only one integer pkey
+      and is_array($pkvals) and count($pkvals) == 1
+    ){
+        //Get the fields info
+        $dbFieldsInfo = $this->layer->getDbFieldsInfo();
+        foreach($primaryKeys as $key){
+            if($dbFieldsInfo->dataFields[$key]->unifiedType != 'integer')
+                break;
+            jMessage::add(jLocale::get('view~edition.form.data.saved'), 'success');
+            $rep->params = array(
+                "project"=>$this->project->getKey(),
+                "repository"=>$this->repository->getKey(),
+                "layerId"=>$this->layerId,
+                "status"=>"1",
+                "featureId"=>$pkvals[$key], // use the one returned by the query, not the one in the class property
+                "liz_future_action"=>$next_action
+            );
+            // Destroy form and redirect to create
+            if($form = jForms::get('view~edition', $this->featureId)){
+                jForms::destroy('view~edition', $this->featureId);
+            }
+            $rep->action="lizmap~edition:modifyFeature";
+            return $rep;
+        }
+    }
+
+    // Else redirect to the validate method to destroy the form
+    // Redirect to the close action
+    $rep->action="lizmap~edition:closeFeature";
     return $rep;
 
   }
 
   /**
-  * Form validation : destroy it and display a message
+  * Form close : destroy it and display a message
   *
   * @param string $repository Lizmap Repository
   * @param string $project Name of the project
@@ -506,7 +598,7 @@ class editionCtrl extends jController {
   * @param integer $featureId Id of the feature.
   * @return Confirmation message that the form has been saved.
   */
-  public function validateFeature(){
+  public function closeFeature(){
 
     // Get repository, project data and do some right checking
     if(!$this->getEditionParameters())
@@ -515,16 +607,14 @@ class editionCtrl extends jController {
     // Destroy the form
     if($form = jForms::get('view~edition', $this->featureId)){
       jForms::destroy('view~edition', $this->featureId);
+      // Return html fragment response
+      jMessage::add(jLocale::get('view~edition.form.data.saved'), 'success');
+      return $this->serviceAnswer();
     }else{
       // undefined form : redirect to error
       jMessage::add('An error has been raised when getting the form', 'error');
       return $this->serviceAnswer();
     }
-
-    // Return html fragment response
-    jMessage::add(jLocale::get('view~edition.form.data.saved'), 'success');
-    return $this->serviceAnswer();
-
   }
 
   /**

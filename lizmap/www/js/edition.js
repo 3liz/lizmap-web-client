@@ -14,6 +14,7 @@ var lizEdition = function() {
         ,'config': null // QGIS layer name
         ,'spatial': null // If the layer is spatial or not
         ,'drawControl': null // draw control
+        ,'submitActor': 'submit' // Which submit button has been clicked
     };
 
     // Edition type : createFeature or modifyFeature
@@ -135,7 +136,6 @@ var lizEdition = function() {
         $('#edition-children-container').hide().html('');
 
         // Empty and hide form and tools
-        $('#edition-cancel').addClass('disabled');
         $('#edition-form-container').hide().html('');
         $('#edition-waiter').hide();
 
@@ -352,26 +352,6 @@ var lizEdition = function() {
                 return false;
             });
 
-            $('#edition-cancel').click(function(){
-                // Do nothing if not enabled
-                if ( $(this).hasClass('disabled') )
-                    return false;
-                // Deactivate previous edition
-                //if ( !confirm( lizDict['edition.confirm.cancel'] ) )
-                    //return false;
-                finishEdition();
-
-                // back to parent
-                if ( editionLayer['parent'] != null && editionLayer['parent']['backToParent']) {
-                    var parentInfo = editionLayer['parent'];
-                    var parentLayerId = parentInfo['layerId'];
-                    var parentFeat = parentInfo['feature'];
-                    launchEdition( parentLayerId, parentFeat.id.split('.').pop(), parentInfo['parent'], function(editionLayerId, editionFeatureId){
-                        $('#bottom-dock').css('left',  lizMap.getDockRightPosition() );
-                    });
-                }
-            });
-
         } else {
             $('#edition').parent().remove();
             $('#button-edition').remove();
@@ -379,6 +359,23 @@ var lizEdition = function() {
         }
     }
 
+    function cancelEdition(){
+        // Deactivate previous edition
+        //if ( !confirm( lizDict['edition.confirm.cancel'] ) )
+            //return false;
+
+        finishEdition();
+
+        // back to parent
+        if ( editionLayer['parent'] != null && editionLayer['parent']['backToParent']) {
+            var parentInfo = editionLayer['parent'];
+            var parentLayerId = parentInfo['layerId'];
+            var parentFeat = parentInfo['feature'];
+            launchEdition( parentLayerId, parentFeat.id.split('.').pop(), parentInfo['parent'], function(editionLayerId, editionFeatureId){
+                $('#bottom-dock').css('left',  lizMap.getDockRightPosition() );
+            });
+        }
+    }
 
     // Start edition of a new feature or an existing one
     function launchEdition( aLayerId, aFid, aParent, aCallback ) {
@@ -516,7 +513,7 @@ var lizEdition = function() {
             $('#edition-draw').addClass('disabled').hide();
 
             // Creation
-            if( action == 'createFeature' ){
+            if( editionType == 'createFeature' ){
 
                 // Activate drawFeature control only if relevant
                 if( editionLayer['config'].capabilities.createFeature == "True"
@@ -577,6 +574,14 @@ var lizEdition = function() {
         $('#edition-form-container').html(data);
         var form = $('#edition-form-container form');
 
+        // Get edition type from form data
+        var formFeatureId = form.find('input[name="liz_featureId"]').val();
+        if(formFeatureId != ''){
+            editionType = 'createFeature';
+        }
+
+console.log('editionType = ' + editionType);
+
         // Keep a copy of original geometry data
         if( editionLayer['spatial'] && editionType == 'modifyFeature' ){
             var gColumn = form.find('input[name="liz_geometryColumn"]').val();
@@ -589,6 +594,7 @@ var lizEdition = function() {
         // Response contains a form
         if ( form.length != 0 ) {
 
+            // Manage child form
             if ( editionLayer['parent'] != null ){
                 var parentInfo = editionLayer['parent'];
                 var parentFeat = parentInfo['feature'];
@@ -677,14 +683,32 @@ var lizEdition = function() {
                 selectAutocomplete.hide();
             }
 
+            // If the form has been reopened after a successful save, refresh data
+            var saveStatus = form.find('input[name="liz_status"]').val();
+            if( saveStatus == '1' ){
+                var layerId = editionLayer['id'];
+
+                // Trigger event
+                var ev = 'lizmapeditionfeaturecreated';
+                if( editionType == 'modifyFeature' )
+                    ev = 'lizmapeditionfeaturemodified';
+
+                lizMap.events.triggerEvent(
+                    ev,
+                    { 'layerId': layerId}
+                );
+
+                // Redraw layers
+                redrawLayers( layerId );
+            }
+
+            // Handle JS events on form (submit, etc.)
             handleEditionFormSubmit( form );
 
-            if ( $('#edition-cancel').hasClass('disabled') ) {
-                $('#edition-cancel').removeClass('disabled');
-            }
         }
 
         // Else it means no form has been sent back
+        // We consider it was a successful edition with no option to reopen the form
         if ( form.length == 0 ) {
             controls['edition'].deactivate();
             controls['edition'].activate();
@@ -711,7 +735,6 @@ var lizEdition = function() {
 
         // Activate form tabs based on QGIS drag&drop form layout mode
         $('#edition-form-container form > ul.nav-tabs li:first a').click().blur();
-
 
         $('#edition-form-container').show();
         $('#edition-waiter').hide();
@@ -752,6 +775,19 @@ var lizEdition = function() {
     }
 
     function handleEditionFormSubmit( form ){
+
+        // Detect click on submit buttons
+        editionLayer['submitActor'] = 'submit';
+        form.find('input[type="submit"]').click(function(){
+            var subprefix = form.attr('id') + '_' + '_submit' + '_';
+            var submitActor = $(this).attr('id').replace(subprefix, '')
+            editionLayer['submitActor'] = submitActor;
+
+            // Confirm the use of the cancel button
+            //if ( submitActor == 'cancel' && !confirm( lizDict['edition.confirm.cancel'] ) )
+                //return false;
+        });
+
         // If needed, copy the geometry from the openlayer feature
         if(
             editionLayer['spatial']
@@ -767,6 +803,11 @@ var lizEdition = function() {
             form.submit(function() {
                 // Additionnal checks
                 var msg = checkFormBeforeSubmit();
+                // Edition has been canceled
+                if(!msg){
+                    return false;
+                }
+                // Some client side errors have been detected in form
                 if( msg != 'ok' ){
                     lizMap.addMessage( msg, 'info', true).attr('id','lizmap-edition-message');
                     return false;
@@ -785,24 +826,31 @@ var lizEdition = function() {
                         }
                     });
                     form.fileupload('send', {fileInput:fileInputs});
-                } else
+                } else {
                     $.post(form.attr('action'),
                         form.serialize(),
                         function(data) {
                             displayEditionForm( data );
                         });
+                }
                 return false;
             });
         }
         else{
-            form.submit(function() {
+            form.submit(function(e) {
                 // Additionnal checks
-                var msg = checkFormBeforeSubmit();
+                var msg = checkFormBeforeSubmit(e);
+                // Edition has been canceled
+                if(!msg){
+                    return false;
+                }
+                // Some client side errors have been detected in form
                 if( msg != 'ok' ){
                     lizMap.addMessage( msg, 'info', true).attr('id','lizmap-edition-message');
                     return false;
                 }
                 $('#edition-waiter').show();
+                var formser =
                 $.post(form.attr('action'),
                     form.serialize(),
                     function(data) {
@@ -815,9 +863,19 @@ var lizEdition = function() {
 
     // Perform some additionnal checking on form
     function checkFormBeforeSubmit(){
-        var msg = 'ok';
         var form = $('#edition-form-container form');
 
+        // Cancel edition if this submit button has been used
+        if(editionLayer['submitActor'] == 'cancel'){
+            cancelEdition();
+            return false;
+        }
+
+        // Set submit button value
+        var submit_hidden_id = form.attr('id') + '_' + '_submit';
+        $('#' + submit_hidden_id).val(editionLayer['submitActor']);
+
+        var msg = 'ok';
         if( editionLayer['spatial'] ){
 
             var gColumn = form.find('input[name="liz_geometryColumn"]').val();
