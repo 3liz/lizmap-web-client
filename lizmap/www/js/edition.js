@@ -505,47 +505,10 @@ var lizEdition = function() {
                 return false;
             if ( !editionLayer['id'] )
                 return false;
-            var geometryType = editionLayer['config'].geometryType;
-
 
             // Hide drawfeature controls : they will go back when finishing edition or canceling
             $('#edition-layer').hide();
             $('#edition-draw').addClass('disabled').hide();
-
-            // Creation
-            if( editionType == 'createFeature' ){
-
-                // Activate drawFeature control only if relevant
-                if( editionLayer['config'].capabilities.createFeature == "True"
-                && geometryType in editCtrls ){
-                    var ctrl = editCtrls[geometryType];
-                    if ( ctrl.active ) {
-                        return false;
-                    } else {
-                        ctrl.activate();
-
-                        $('#lizmap-edition-message').remove();
-                        lizMap.addMessage(lizDict['edition.draw.activate'],'info',true).attr('id','lizmap-edition-message');
-                    }
-                }
-            }
-            // Modification
-            else{
-
-                // Activate modification control
-                if ( editionLayer['config'].capabilities.modifyGeometry == "True"
-                && geometryType in editCtrls ){
-                    // Need to get geometry from form and add feature to the openlayer layer
-                    var feat = updateFeatureFromGeometryColumn();
-                    if( feat ){
-                        editCtrls.modify.activate();
-                        editCtrls.modify.selectFeature( feat );
-                    }
-                }
-
-                $('#lizmap-edition-message').remove();
-                lizMap.addMessage(lizDict['edition.select.modify.activate'],'info',true).attr('id','lizmap-edition-message');
-            }
 
             // Send signal
             lizMap.events.triggerEvent(
@@ -569,30 +532,32 @@ var lizEdition = function() {
      *
      */
     function displayEditionForm( data ){
+        // Firstly does the edition-form-container already has a form ?
+        var oldSerializeArray = $('#edition-form-container form').serializeArray();
 
         // Add data
         $('#edition-form-container').html(data);
         var form = $('#edition-form-container form');
 
-        // Get edition type from form data
-        var formFeatureId = form.find('input[name="liz_featureId"]').val();
-        if(formFeatureId != ''){
-            editionType = 'createFeature';
-        }
-
-console.log('editionType = ' + editionType);
-
-        // Keep a copy of original geometry data
-        if( editionLayer['spatial'] && editionType == 'modifyFeature' ){
-            var gColumn = form.find('input[name="liz_geometryColumn"]').val();
-            if( gColumn != '' ){
-                var originalGeom = form.find('input[name="'+gColumn+'"]').val();
-                $('#edition-hidden-form input[name="liz_wkt"]').val( originalGeom );
-            }
-        }
-
         // Response contains a form
         if ( form.length != 0 ) {
+            var newSerializeArray = $('#edition-form-container form').serializeArray();
+
+            // Get edition type from form data
+            var formFeatureId = form.find('input[name="liz_featureId"]').val();
+            if ( formFeatureId != '' )
+                editionType = 'modifyFeature';
+            else
+                editionType = 'createFeature';
+
+            // Keep a copy of original geometry data
+            if( editionLayer['spatial'] && editionType == 'modifyFeature' ){
+                var gColumn = form.find('input[name="liz_geometryColumn"]').val();
+                if( gColumn != '' ){
+                    var originalGeom = form.find('input[name="'+gColumn+'"]').val();
+                    $('#edition-hidden-form input[name="liz_wkt"]').val( originalGeom );
+                }
+            }
 
             // Manage child form
             if ( editionLayer['parent'] != null ){
@@ -684,27 +649,69 @@ console.log('editionType = ' + editionType);
             }
 
             // If the form has been reopened after a successful save, refresh data
-            var saveStatus = form.find('input[name="liz_status"]').val();
-            if( saveStatus == '1' ){
-                var layerId = editionLayer['id'];
+            var formStatus = form.find('input[name="liz_status"]').val();
+            if( formStatus == '0' ) {
+                if ( oldSerializeArray.length != 0 ){
+                    var layerId = editionLayer['id'];
 
-                // Trigger event
-                var ev = 'lizmapeditionfeaturecreated';
-                if( editionType == 'modifyFeature' )
-                    ev = 'lizmapeditionfeaturemodified';
+                    // Trigger event
+                    var ev = 'lizmapeditionfeaturecreated';
+                    if( editionType == 'modifyFeature' )
+                        ev = 'lizmapeditionfeaturemodified';
 
-                lizMap.events.triggerEvent(
-                    ev,
-                    { 'layerId': layerId}
-                );
+                    lizMap.events.triggerEvent(
+                        ev,
+                        { 'layerId': layerId}
+                    );
 
-                // Redraw layers
-                redrawLayers( layerId );
+                    // Redraw layers
+                    redrawLayers( layerId );
+                }
+
+                var geometryType = editionLayer['config'].geometryType;
+                // Creation
+                if( editionType == 'createFeature' ){
+
+                    // Activate drawFeature control only if relevant
+                    if( editionLayer['config'].capabilities.createFeature == "True"
+                    && geometryType in editCtrls ){
+                        editCtrls.modify.deactivate();
+                        editionLayer['ol'].destroyFeatures();
+                        var ctrl = editCtrls[geometryType];
+                        if ( ctrl.active ) {
+                            return false;
+                        } else {
+                            ctrl.activate();
+
+                            $('#lizmap-edition-message').remove();
+                            lizMap.addMessage(lizDict['edition.draw.activate'],'info',true).attr('id','lizmap-edition-message');
+                        }
+                    }
+                }
+                // Modification
+                else{
+                    // Activate modification control
+                    if ( editionLayer['config'].capabilities.modifyGeometry == "True"
+                    && geometryType in editCtrls ){
+                        // Need to get geometry from form and add feature to the openlayer layer
+                        var feat = updateFeatureFromGeometryColumn();
+                        if( feat ){
+                            editCtrls.modify.activate();
+                            editCtrls.modify.selectFeature( feat );
+                        }
+                    }
+
+                    $('#lizmap-edition-message').remove();
+                    lizMap.addMessage(lizDict['edition.select.modify.activate'],'info',true).attr('id','lizmap-edition-message');
+                }
             }
+
+
+            // Activate form tabs based on QGIS drag&drop form layout mode
+            $('#edition-form-container form > ul.nav-tabs li:first a').click().blur();
 
             // Handle JS events on form (submit, etc.)
             handleEditionFormSubmit( form );
-
         }
 
         // Else it means no form has been sent back
@@ -732,9 +739,6 @@ console.log('editionType = ' + editionType);
             lizMap.addMessage( data, 'info', true).attr('id','lizmap-edition-message');
 
         }
-
-        // Activate form tabs based on QGIS drag&drop form layout mode
-        $('#edition-form-container form > ul.nav-tabs li:first a').click().blur();
 
         $('#edition-form-container').show();
         $('#edition-waiter').hide();
