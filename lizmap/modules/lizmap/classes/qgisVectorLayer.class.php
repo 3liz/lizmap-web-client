@@ -432,7 +432,7 @@ class qgisVectorLayer extends qgisMapLayer{
 
           // Log
           $content = 'INSERT table=' . $dtParams->table;
-          if( count($pkVals) > 0 )
+          if( count($pkvals) > 0 )
             $content.= ', pkeys=' . json_encode($pkvals);
           $content.= ', ('.implode(', ', $dataLogInfo).')';
           $eventParams = array(

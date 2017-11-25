@@ -505,6 +505,7 @@ class editionCtrl extends jController {
       // Redirect to the display action
       $token = uniqid('lizform_');
       $rep->params["error"] = $token;
+      $rep->params["status"] = '1';
 
       // Build array of data for all the controls
       // And save it in session
@@ -538,7 +539,6 @@ class editionCtrl extends jController {
             "project"=>$this->project->getKey(),
             "repository"=>$this->repository->getKey(),
             "layerId"=>$this->layerId,
-            "status"=>"1",
             "liz_future_action"=>$next_action
         );
         // Destroy form and redirect to create
@@ -561,7 +561,7 @@ class editionCtrl extends jController {
     ){
         //Get the fields info
         $dbFieldsInfo = $this->layer->getDbFieldsInfo();
-        foreach($primaryKeys as $key){
+        foreach($dbFieldsInfo->primaryKeys as $key){
             if($dbFieldsInfo->dataFields[$key]->unifiedType != 'integer')
                 break;
             jMessage::add(jLocale::get('view~edition.form.data.saved'), 'success');
@@ -569,7 +569,6 @@ class editionCtrl extends jController {
                 "project"=>$this->project->getKey(),
                 "repository"=>$this->repository->getKey(),
                 "layerId"=>$this->layerId,
-                "status"=>"1",
                 "featureId"=>$pkvals[$key], // use the one returned by the query, not the one in the class property
                 "liz_future_action"=>$next_action
             );
