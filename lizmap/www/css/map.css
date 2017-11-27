@@ -962,7 +962,8 @@ div.modal .form-horizontal .controls label.checkbox {
 div.modal .form-actions {
   margin-bottom: 0px;
   margin-top: 0px;
-  padding-left: 100px;
+  padding-left: 0px;
+  text-align: right;
 }
 
 #toolbar h3 .icon,

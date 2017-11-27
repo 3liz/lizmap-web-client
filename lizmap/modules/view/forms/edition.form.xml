@@ -17,10 +17,13 @@
     <item value="create" locale="view~edition.form.action.future.create" />
     <item value="edit" locale="view~edition.form.action.future.edit" />
 </menulist>
+<reset ref="reinit">
+    <label locale="view~edition.form.reset.label" />
+</reset>
 <submit ref="_submit">
     <label></label>
-    <item value="submit" locale="view~edition.form.submit.label" />
     <item value="cancel" locale="view~edition.form.cancel.label" />
+    <item value="submit" locale="view~edition.form.submit.label" />
 </submit>
 
 
