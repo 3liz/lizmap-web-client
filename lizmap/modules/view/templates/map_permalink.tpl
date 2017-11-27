@@ -35,6 +35,7 @@
                   <pan>×</pan>
                   <input id="input-embed-height-permalink" type="text" value="600">
                 </span>
+                <br/>
                 <input id="input-embed-permalink" class="permalink-embed-input" type="text">
             </div>
         </div>
