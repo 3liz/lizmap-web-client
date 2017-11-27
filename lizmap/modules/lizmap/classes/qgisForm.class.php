@@ -161,7 +161,7 @@ class qgisForm {
             $template.= '{ctrl_control "liz_future_action"}';
             $template.= '</div>';
             $template.= '</div>';
-            $template.= '<div class="jforms-submit-buttons form-actions">{formsubmit}</div>';
+            $template.= '<div class="jforms-submit-buttons form-actions">{formreset}{formsubmit}</div>';
             $template.= '{/form}';
         } else {
             $fieldNames = array();
@@ -183,7 +183,7 @@ class qgisForm {
             $template.= '{ctrl_control "liz_future_action"}';
             $template.= '</div>';
             $template.= '</div>';
-            $template.= '<div class="jforms-submit-buttons form-actions">{formsubmit}</div>';
+            $template.= '<div class="jforms-submit-buttons form-actions">{formreset}{formsubmit}</div>';
             $template.= '{/form}';
         }
 
