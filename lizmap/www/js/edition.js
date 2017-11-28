@@ -20,6 +20,67 @@ var lizEdition = function() {
     // Edition type : createFeature or modifyFeature
     var editionType = null;
 
+    function afterSpliting(evt) {
+        var splitFeatures = evt.features;
+        var geometryType = editionLayer['config'].geometryType;
+        var removableFeat = null;
+        if ( geometryType == 'line' ) {
+            if ( splitFeatures[0].geometry.getLength() < splitFeatures[1].geometry.getLength() )
+                removableFeat = splitFeatures[0];
+            else
+                removableFeat = splitFeatures[1];
+        }
+        else if ( geometryType == 'polygon' ) {
+            if ( splitFeatures[0].geometry.getArea() < splitFeatures[1].geometry.getArea() )
+                removableFeat = splitFeatures[0];
+            else
+                removableFeat = splitFeatures[1];
+        }
+        if ( removableFeat )
+            editionLayer['ol'].removeFeatures( [removableFeat] );
+        $('#edition-geomtool-nodetool').click();
+        return false;
+    }
+
+/**
+ * Function: OpenLayers.Geometry.pointOnSegment
+ * Note that the OpenLayers.Geometry.segmentsIntersect doesn't work with points
+ *
+ * Parameters:
+ * point - {Object} An object with x and y properties representing the
+ *     point coordinates.
+ * segment - {Object} An object with x1, y1, x2, and y2 properties
+ *     representing endpoint coordinates.
+ *
+ * Returns:
+ * {Boolean} Returns true if the point is on the segment.
+ */
+OpenLayers.Geometry.pointOnSegment = function(point, segment) {
+    // Is the point inside the BBox of the segment
+    if(point.x < Math.min(segment.x1, segment.x2) || point.x > Math.max(segment.x1, segment.x2) ||
+       point.y < Math.min(segment.y1, segment.y2) || point.y > Math.max(segment.y1, segment.y2))
+    {
+        return false;
+    }
+
+    // Avoid dividing by zero
+    if( segment.x1 == segment.x2 || segment.y1 == segment.y2 ||
+        (point.x == segment.x1 && point.y == segment.y1) ||
+        (point.x == segment.x2 && point.y == segment.y2) )
+    {
+        return true;
+    }
+
+    // Is the point on the line
+    if(((segment.x1 - point.x) / (segment.y1 - point.y)).toFixed(5) ==
+       ((segment.x2 - point.x) / (segment.y2 - point.y)).toFixed(5))
+    {
+        return true;
+    }
+
+    return false;
+};
+
     // Redraw layers
     function redrawLayers( layerId ) {
         var willBeRedrawnLayerIds = [layerId];
@@ -117,6 +178,10 @@ var lizEdition = function() {
         if( editCtrls ){
             if( editionLayer['drawControl'] && editionLayer['drawControl'].active )
                 editionLayer['drawControl'].deactivate();
+            $('#edition-geomtool-container button i').removeClass('line');
+            $('#edition-geomtool-container').hide();
+            editCtrls.modify.mode = OpenLayers.Control.ModifyFeature.RESHAPE;
+            editCtrls.modify.createVertices = true;
             editCtrls.panel.deactivate();
         }
         // Destroy edition layer features
@@ -247,7 +312,8 @@ var lizEdition = function() {
                     OpenLayers.Handler.Path),
                 polygon: new OpenLayers.Control.DrawFeature(editLayer,
                     OpenLayers.Handler.Polygon),
-                modify: new OpenLayers.Control.ModifyFeature(editLayer)
+                modify: new OpenLayers.Control.ModifyFeature(editLayer),
+                split: new OpenLayers.Control.Split({layer:editLayer,eventListeners: {aftersplit:afterSpliting}})
             };
             for ( var ctrl in editCtrls ) {
                 if ( ctrl != 'panel' )
@@ -288,7 +354,12 @@ var lizEdition = function() {
                         editCtrls.panel.activate();
                         // then modify
                         editCtrls.modify.activate();
+                        $('#edition-geomtool-nodetool').click();
                         editCtrls.modify.selectFeature( feat );
+                        if (geometryType == 'line')
+                            $('#edition-geomtool-container button i').addClass('line');
+                        if (geometryType != 'point')
+                            $('#edition-geomtool-container').show();
                     }
 
                     // Inform user he can now modify
@@ -351,6 +422,56 @@ var lizEdition = function() {
 
                 return false;
             });
+
+            $('#edition-geomtool-nodetool').click(function(){
+                editCtrls.split.deactivate();
+                editCtrls.modify.mode = OpenLayers.Control.ModifyFeature.RESHAPE;
+                editCtrls.modify.createVertices = true;
+                editCtrls.modify.activate();
+                if ( editionLayer['ol'].features.length != 0 ) {
+                    var feat = editionLayer['ol'].features[0];
+                    if ( editCtrls.modify.feature )
+                        editCtrls.modify.unselectFeature( feat );
+                    editCtrls.modify.selectFeature( feat );
+                }
+            });
+            $('#edition-geomtool-drag').click(function(){
+                editCtrls.split.deactivate();
+                editCtrls.modify.mode = OpenLayers.Control.ModifyFeature.DRAG;
+                editCtrls.modify.createVertices = false;
+                editCtrls.modify.activate();
+                if ( editionLayer['ol'].features.length != 0 ) {
+                    var feat = editionLayer['ol'].features[0];
+                    if ( editCtrls.modify.feature )
+                        editCtrls.modify.unselectFeature( feat );
+                    editCtrls.modify.selectFeature( feat );
+                }
+            });
+            $('#edition-geomtool-rotate').click(function(){
+                editCtrls.split.deactivate();
+                editCtrls.modify.mode = OpenLayers.Control.ModifyFeature.ROTATE;
+                editCtrls.modify.createVertices = false;
+                editCtrls.modify.activate();
+                if ( editionLayer['ol'].features.length != 0 ) {
+                    var feat = editionLayer['ol'].features[0];
+                    if ( editCtrls.modify.feature )
+                        editCtrls.modify.unselectFeature( feat );
+                    editCtrls.modify.selectFeature( feat );
+                }
+            });
+            $('#edition-geomtool-reshape').click(function(){
+                if ( editionLayer['ol'].features.length != 0 ) {
+                    var feat = editionLayer['ol'].features[0];
+                    if ( editCtrls.modify.feature )
+                        editCtrls.modify.unselectFeature( feat );
+                }
+                editCtrls.modify.deactivate();
+                editCtrls.split.activate();
+            });
+
+            $('#edition-geomtool-container button').tooltip( {
+                placement: 'top'
+            } );
 
         } else {
             $('#edition').parent().remove();
@@ -675,6 +796,10 @@ var lizEdition = function() {
                     // Activate drawFeature control only if relevant
                     if( editionLayer['config'].capabilities.createFeature == "True"
                     && geometryType in editCtrls ){
+                        $('#edition-geomtool-container button i').removeClass('line');
+                        $('#edition-geomtool-container').hide();
+                        editCtrls.modify.mode = OpenLayers.Control.ModifyFeature.RESHAPE;
+                        editCtrls.modify.createVertices = true;
                         editCtrls.modify.deactivate();
                         editionLayer['ol'].destroyFeatures();
                         var ctrl = editCtrls[geometryType];
@@ -697,7 +822,12 @@ var lizEdition = function() {
                         var feat = updateFeatureFromGeometryColumn();
                         if( feat ){
                             editCtrls.modify.activate();
+                            $('#edition-geomtool-nodetool').click();
                             editCtrls.modify.selectFeature( feat );
+                            if (geometryType == 'line')
+                                $('#edition-geomtool-container button i').addClass('line');
+                            if (geometryType != 'point')
+                                $('#edition-geomtool-container').show();
                         }
                     }
 

@@ -20,6 +20,20 @@
 
 
   <div class="menu-content">
+    <div id="edition-geomtool-container" class="btn-group" data-toggle="buttons-radio" style="display:none;">
+        <button id="edition-geomtool-nodetool" class="btn btn-small" data-original-title="{@view~edition.geomtool.nodetool.title@}">
+            <i class="icon-none qgis_sprite mActionNodeTool"></i>
+        </button>
+        <button id="edition-geomtool-drag" class="btn btn-small" data-original-title="{@view~edition.geomtool.drag.title@}">
+            <i class="icon-none qgis_sprite mActionMoveFeature"></i>
+        </button>
+        <button id="edition-geomtool-rotate" class="btn btn-small" data-original-title="{@view~edition.geomtool.rotate.title@}">
+            <i class="icon-none qgis_sprite mActionRotateFeature"></i>
+        </button>
+        <button id="edition-geomtool-reshape" class="btn btn-small" data-original-title="{@view~edition.geomtool.reshape.title@}">
+            <i class="icon-none qgis_sprite mActionReshape"></i>
+        </button>
+    </div>
     <div id="edition-form-container">
     </div>
     <div id="edition-children-container" style="display:none;">
