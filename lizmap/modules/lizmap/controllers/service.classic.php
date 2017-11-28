@@ -767,8 +767,9 @@ class serviceCtrl extends jController {
       }
 
       // Loop through the features
-      // TODO make this configurable
-      $popupMaxFeatures = 999999999;
+      $popupMaxFeatures = 10;
+      if( property_exists($configLayer, 'popupMaxFeatures') && is_numeric($configLayer->popupMaxFeatures) )
+          $popupMaxFeatures = $configLayer->popupMaxFeatures + 0;
       $layerFeaturesCounter = 0;
       foreach($layer->Feature as $feature){
         $id = $feature['id'];

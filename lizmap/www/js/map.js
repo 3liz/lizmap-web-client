@@ -3313,6 +3313,9 @@ var lizMap = function() {
         // Display related children objects
         var relations = config.relations[layerId];
         var featureId = featureType + '.' + fid;
+        var popupMaxFeatures = 10;
+        if ( 'popupMaxFeatures' in layerConfig && !isNaN(parseInt(layerConfig.popupMaxFeatures)) )
+            popupMaxFeatures += parseInt(layerConfig.popupMaxFeatures);
         getLayerFeature(featureType, fid, function(feat) {
             var wmsOptions = {
                  'LAYERS': featureType
@@ -3322,7 +3325,7 @@ var lizMap = function() {
                 ,'VERSION': '1.3.0'
                 ,'REQUEST': 'GetFeatureInfo'
                 ,'EXCEPTIONS': 'application/vnd.ogc.se_inimage'
-                ,'FEATURE_COUNT': 10
+                ,'FEATURE_COUNT': popupMaxFeatures
                 ,'INFO_FORMAT': 'text/html'
             };
 
@@ -3482,6 +3485,7 @@ var lizMap = function() {
      info.findLayers = function() {
         var candidates = this.layers || this.map.layers;
         var layers = [];
+        var maxFeatures = 0;
         var layer, url;
         for(var i=0, len=candidates.length; i<len; ++i) {
             layer = candidates[i];
@@ -3517,9 +3521,14 @@ var lizMap = function() {
                     }
 
                     layers.push(layer);
+                    if ( 'popupMaxFeatures' in configLayer && !isNaN(parseInt(configLayer.popupMaxFeatures)) )
+                        maxFeatures += parseInt(configLayer.popupMaxFeatures);
+                    else
+                        maxFeatures += 10;
                  }
             }
         }
+        this.maxFeatures = maxFeatures == 0 ? 10 : maxFeatures;
         return layers;
      };
      function refreshGetFeatureInfo( evt ) {
