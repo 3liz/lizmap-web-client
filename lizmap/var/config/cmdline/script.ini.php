@@ -14,6 +14,7 @@ error_message="jacl2~errors.action.right.needed"
 on_error_action="jelix~error:badright"
 
 [modules]
-master_admin.access=2
-jauthdb_admin.access=2
-jacl2db_admin.access=2
+master_admin.access=1
+jauthdb_admin.access=1
+jacl2db_admin.access=1
+lizmap.access=2
