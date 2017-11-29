@@ -22,7 +22,7 @@ postgresql, postgis, redis, nginx, php, QGIS server...
 It can take time the first time. It depends of your internet connection.
 
 When the "Done" message appears, and if there are no errors, Lizmap is
-ready. Go in http://localhost:8132/ to see the app.
+ready. Go in http://localhost:8130/ to see the app.
 
 You can authenticate yourself in the application with the login "admin" 
 and the password "admin".
