@@ -6,6 +6,7 @@
 *.swp
 *.log
 *.pyc
+.idea
 lizmap/var/config/lizmapConfig.ini.php
 lizmap/var/config/localconfig.ini.php
 lizmap/var/config/profiles.ini.php
@@ -13,3 +14,5 @@ lizmap/var/config/installer.ini.php
 lizmap/var/db/*.db
 temp/lizmap/*
 !temp/lizmap/.empty
+vagrant/playbook.retry
+vagrant/.vagrant

@@ -1,0 +1,33 @@
+---
+# Dependencies for qgis-server
+- name: qgis server dependencies
+  apt: name={{ item }} state=present install_recommends=no
+  with_items:
+    - libgdal1h
+    - libgeos-c1
+    - libproj0
+    - libosgearth3
+    - libspatialindex3
+    - libspatialite5
+    - libsqlite3-0
+    - libopenscenegraph100
+    - libpq5
+    - libqscintilla2-11
+    - libqca2
+    - python-qscintilla2
+    - libqtcore4
+    - python-qt4
+    - python-qt4-sql
+    - libqt4-opengl
+    - libqtwebkit4
+    - libqwt6
+    - libfcgi0ldbl
+    - python-sip
+    - txt2tags
+    - xauth
+    - xfonts-100dpi
+    - xfonts-75dpi
+    - xfonts-base
+    - xfonts-scalable
+  tags: qgis
+

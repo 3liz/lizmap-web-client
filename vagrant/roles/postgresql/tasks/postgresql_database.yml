@@ -1,0 +1,39 @@
+---
+
+- name: PostgreSQL - create database
+  become: yes
+  become_user: postgres
+  postgresql_db:  name={{ postgresql_database }}
+                  encoding={{ postgresql_encoding }}
+                  lc_collate={{ postgresql_locale }}
+                  lc_ctype={{ postgresql_locale }}
+                  template=template0
+                  state=present
+  register: createdb
+  tags: postgresql
+
+- name: PostgreSQL - enable postgis extension
+  become: yes
+  become_user: postgres
+  postgresql_ext: name=postgis db={{ postgresql_database }}
+  #when: createdb.changed
+
+- name: PostgreSQL - create user
+  become: yes
+  become_user: postgres
+  postgresql_user:  db={{ postgresql_database }}
+                    name={{ postgresql_lizmap_user }}
+                    state=present
+                    priv=ALL
+                    password={{ postgresql_lizmap_password }}
+  #when: createdb.changed
+
+- name: PostgreSQL - apply user privileges on database
+  become: yes
+  become_user: postgres
+  postgresql_privs: db={{ postgresql_database }}
+                    privs=ALL
+                    type=database
+                    role={{ postgresql_lizmap_user }}
+  #when: createdb.changed
+

@@ -1,0 +1,19 @@
+---
+# Install supervisor
+- name: Install Supervisord
+  apt: name=supervisor state=present install_recommends=no
+
+# Override default configuration
+- copy: dest=/etc/default/supervisor src=supervisor-default mode=644
+
+# Override supervisor conf
+- name: Override Supervisord config file
+  template: src=supervisord.conf.j2 dest={{ supervisor_config_file }} mode=0644
+
+# Create directory to store services configurations
+- file: path={{ supervisor_config_directory }} state=directory
+
+# Run Supervisord
+- name: Ensure that supervisor service is running
+  service: name=supervisor state=started enabled=yes
+
