@@ -1,0 +1,26 @@
+---
+# Qgis server
+qgis_server_version: 2.18
+qgis_server_name: qgis
+qgis_server_port: 8200
+qgis_set_real_ip: 127.0.0.1
+qgis_fcgi_socket: 127.0.0.1:7200
+
+# debian
+qgis_server_fcgi_path: /usr/lib/cgi-bin/qgis_mapserv.fcgi
+
+qgis_num_workers: 4
+qgis_server_log_level: 1
+qgis_server_plugin_directory: /srv/qgis/plugins
+qgis_server_plugins:
+  wfsOutputExtension:
+    repository: https://github.com/3liz/qgis-wfsOutputExtension
+    version: master
+
+qgis_server_config_directory: /srv/qgis/config
+
+# source: package or repository
+qgis_install_source: repository
+qgis_repository_debian: 'http://qgis.org/debian-ltr'
+qgis_repository_debian_key: 'CAEB3DC3BDF7FB45'
+qgis_repository_debian_key_url: 'http://qgis.org/downloads/qgis-2017.gpg.key'

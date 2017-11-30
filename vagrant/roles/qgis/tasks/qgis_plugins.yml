@@ -1,0 +1,25 @@
+---
+# Install Lizmap from github
+
+- name: Install python-qgis for Debian
+  package: name={{ item }} state=present
+  with_items:
+    - python-qgis
+
+- name: Add QGIS plugins directory
+  file: path={{ qgis_server_plugin_directory }} state=directory
+
+- name: Install QGIS server plugins from github
+  git: repo={{ item.value.repository }}
+       version={{ item.value.version }}
+       dest="{{ qgis_server_plugin_directory }}/{{ item.key }}"
+       depth=1
+       accept_hostkey=yes
+  with_dict: "{{ qgis_server_plugins }}"
+  register: qgis_plugins_installed
+
+- name: Restart Supervisor Debian
+  shell: echo "Restart Supervisor"
+  notify:
+    - restart supervisor
+  when: qgis_plugins_installed.changed

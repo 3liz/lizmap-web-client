@@ -1,0 +1,43 @@
+---
+
+# Add repository for Debian nodes
+- name: Import repository key - Debian
+  apt_key: url={{ postgresql_apt_key_url }} state=present validate_certs=no
+
+- name: Add official repository - Debian
+  apt_repository: repo='deb http://apt.postgresql.org/pub/repos/apt/ {{ ansible_distribution_release }}-pgdg main' state=present
+
+# Install Postgres
+- name: PostgreSQL - Update apt - Debian
+  apt: update_cache=yes
+
+- name: PostgreSQL - install packages - Debian
+  apt: pkg={{ item }} state=latest
+  with_items:
+    - postgresql-{{ postgresql_version }}
+    - postgresql-client-{{ postgresql_version }}
+    - postgresql-contrib-{{ postgresql_version }}
+    - python-pygresql
+    - python-psycopg2
+    - postgresql-{{ postgresql_version }}-postgis-{{ postgresql_postgis_version }}
+
+- name: Check if database already exists
+  become: yes
+  become_user: postgres
+  shell: psql -lqt | cut -d \| -f 1 | grep -w {{ postgresql_database }} | wc -l
+  register: dbexists
+
+- name: Drop and recreate cluster to ensure locale - Debian
+  command: "{{ item }}"
+  with_items:
+    - pg_dropcluster --stop {{ postgresql_version }} main
+    - pg_createcluster --start --locale {{ postgresql_locale }} {{ postgresql_version }} main
+  when: dbexists.stdout == "0"
+
+
+- name: Change postgres user password
+  become: yes
+  become_user: postgres
+  postgresql_user:  name=postgres
+                    password={{ postgresql_postgres_password }}
+

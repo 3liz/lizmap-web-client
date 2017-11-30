@@ -1,0 +1,13 @@
+---
+# PostgreSQL server
+postgresql_install: true
+postgresql_apt_key_url: 'https://www.postgresql.org/media/keys/ACCC4CF8.asc'
+postgresql_version: 9.6
+postgresql_encoding: UTF-8
+postgresql_locale: fr_FR.UTF-8
+postgresql_database: lizmap
+postgresql_lizmap_user: lizmap
+postgresql_postgis_version: 2.3
+
+postgresql_postgres_password: "lizmap1234!"
+postgresql_lizmap_password: "lizmap1234!"

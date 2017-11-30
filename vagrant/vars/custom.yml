@@ -1,0 +1,56 @@
+---
+# Define custom variables to overrides defaults for roles
+
+# Local configuration
+# local_timezone: Europe/Paris
+# local_locale: fr_FR.UTF-8
+# local_locale_left: fr_FR
+# local_locale_right: UTF-8
+
+# PHP
+#php_apt_key_server: keyserver.ubuntu.com
+#php_apt_key_id: AC0E47584A7A714D
+#php_version: "5.6"
+#php_repository: https://packages.sury.org/php
+
+# lizmap_hostname: lizmap.local
+# lizmap_webserver_group: www-data
+
+# lizmap_jauth_driver: sqlite3
+# driver can be sqlite3 (default) or pgsql. If pgsql, auth and acl configuration will be store in PostgreSQL database
+# only if postgresql has already been installed
+
+
+# Qgis server
+# qgis_server_version: 2.18
+# qgis_server_name: qgis
+# qgis_server_port: 8200
+# qgis_set_real_ip: 127.0.0.1
+# qgis_fcgi_socket: 127.0.0.1:7200
+# qgis_num_workers: 4
+# qgis_server_log_level: 1
+# qgis_server_plugin_directory: /srv/qgis/plugins
+# qgis_install_source: repository
+# qgis_server_plugins:
+#   wfsOutputExtension:
+#     repository: https://github.com/3liz/qgis-wfsOutputExtension
+#     version: master
+# qgis_repository_debian: http://qgis.org/debian-ltr
+#qgis_repository_debian_key: 'CAEB3DC3BDF7FB45'
+#qgis_repository_debian_key_url: 'http://qgis.org/downloads/qgis-2017.gpg.key'
+
+# postgresql_install: true
+# postgresql_apt_key_url: 'https://www.postgresql.org/media/keys/ACCC4CF8.asc'
+# postgresql_version: 9.6
+# postgresql_encoding: UTF-8
+# postgresql_locale: fr_FR.UTF-8
+# postgresql_database: lizmap
+# postgresql_lizmap_user: lizmap
+# postgresql_postgis_version: 2.3
+# postgresql_postgres_password: "lizmap1234!"
+# postgresql_lizmap_password: "lizmap1234!"
+
+
+
+# xvfb_install: true
+# xvfb_port: 99

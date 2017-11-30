@@ -1,0 +1,13 @@
+/var/log/qgis/qgis-server.log {
+    copytruncate
+    daily
+    rotate 7
+    compress
+    missingok
+    notifempty
+    dateext
+    create 0640 root root
+    sharedscripts
+}
+
+

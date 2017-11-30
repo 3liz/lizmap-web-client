@@ -1,0 +1,20 @@
+#-----------------------------------
+# THIS FILE IS INSTALLED BY LIZMAP
+# ALL CHANGES WILL BE LOST
+#-----------------------------------
+
+# FCGI launcher
+
+[fcgi-program:qgis]
+command={{ qgis_server_fcgi_path }}
+socket=tcp://{{ qgis_fcgi_socket }}
+process_name=worker_%(process_num)02d
+numprocs={{ qgis_num_workers }}      ; number of process to start
+autostart=true
+stopsignal=QUIT
+redirect_stderr=true  ;
+stdout_logfile=/var/log/qgis/qgis-supervisor.log
+stdout_logfile_maxbytes=0   ; we use logrotate
+stdout_capture_maxbytes=1MB
+user=lizmap
+environment=QGIS_SERVER_LOG_LEVEL={{ qgis_server_log_level }},QGIS_SERVER_LOG_FILE="/var/log/qgis/qgis-server.log",QGIS_PLUGINPATH="{{ qgis_server_plugin_directory }}",DISPLAY=":{{ xvfb_port }}",QGIS_OPTIONS_PATH="{{ qgis_server_config_directory }}"
