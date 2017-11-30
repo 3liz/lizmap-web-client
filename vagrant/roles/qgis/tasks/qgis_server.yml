@@ -1,0 +1,61 @@
+---
+# Qgis server config
+# log directory
+- name: Add log directory
+  file: path=/var/log/qgis state=directory mode=0755 owner=lizmap group=lizmap
+
+# qgis server logrotate
+- name: Set Server logrotate
+  copy: dest=/etc/logrotate.d/qgis-server src=qgis_server_logrotate mode=0644
+
+# supervisor config
+- name: Add supervisor config
+  template: src=qgis_supervisor_conf.j2 dest='{{ supervisor_config_directory }}/qgis-server.conf' mode=0644
+  notify:
+    - restart supervisor
+
+# Debian : Install qgis-server from local package
+- name: Copy QGIS local package
+  copy: dest=/tmp/  src={{ qgis_package }}
+  when: qgis_install_source == 'package'
+
+- name: Install QGIS - Debian
+  apt: deb=/tmp/{{ qgis_package }}
+  notify:
+    - restart supervisor
+  when: qgis_install_source == 'package'
+
+# Debian : Install QGIS from repository
+
+- name: Add QGIS repository key - 1
+  shell: wget -O - {{ qgis_repository_debian_key_url }} | gpg --import
+  when: qgis_install_source == 'repository'
+
+- name: Add QGIS repository key - 2
+  shell: gpg --fingerprint {{ qgis_repository_debian_key }}
+  when: qgis_install_source == 'repository'
+
+- name: Add QGIS repository key - 3
+  shell: gpg --export --armor {{ qgis_repository_debian_key }} | apt-key add -
+  when: qgis_install_source == 'repository'
+
+- name: Add QGIS repository
+  apt_repository: repo='deb {{ qgis_repository_debian }} {{ ansible_distribution_release|lower }} main' state=present
+  when: qgis_install_source == 'repository'
+
+- name: Install QGIS from repository - Debian
+  apt: pkg={{ item }} state=latest update_cache=yes allow_unauthenticated=yes
+  when: qgis_install_source == 'repository'
+  with_items:
+    - qgis-server
+  notify:
+    - restart supervisor
+
+- name: Add QGIS config directory
+  file: path={{ qgis_server_config_directory }}/QGIS state=directory
+
+- name: Add QGIS config file
+  template: src=qgis_config.j2 dest='{{ qgis_server_config_directory }}/QGIS/QGIS2.ini' mode=0644
+
+
+

@@ -1,0 +1,13 @@
+---
+- hosts: all
+  become: true
+  vars_files:
+    - vars/qgis.yml
+    - vars/custom.yml
+
+  roles:
+    - common
+    - qgis
+    - postgresql
+    - lizmap
+
