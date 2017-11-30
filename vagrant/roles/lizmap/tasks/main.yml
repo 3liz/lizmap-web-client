@@ -1,0 +1,8 @@
+---
+- include: php.yml
+  tags: php
+- include: web-client.yml
+  tags: lizmap
+- include: redis.yml
+  tags: redis
+

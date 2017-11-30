@@ -1,0 +1,53 @@
+;<?php die(''); ?>
+;for security reasons, don't remove or modify the first line
+
+[jdb]
+; name of the default profile to use for any connection
+default=jauth
+jacl2_profile=jauth
+
+[jdb:jauth]
+; the driver name : mysql, pgsql, sqlite...
+driver=pgsql
+database={{ postgresql_database }}
+host=localhost
+port=5432
+user={{ postgresql_lizmap_user }}
+password="{{ postgresql_lizmap_password }}"
+persistent=off
+search_path=""
+
+[jdb:lizlog]
+driver=sqlite3
+database="var:db/logs.db"
+
+[jcache]
+; name of the default profil to use for cache
+default=myapp
+
+[jcache:qgisprojects]
+enabled=1
+driver=file
+ttl=0
+
+[jcache:myapp]
+; disable or enable cache for this profile
+enabled=1
+; driver type (file, db, memcached)
+driver=file
+; TTL used (0 means no expire)
+ttl=0
+; directory where to put the cache files (optional default 'JELIX_APP_TEMP_PATH/cache/')
+cache_dir=
+; enable / disable locking file
+file_locking=1
+; directory level. Set the directory structure level. 0 means "no directory structure", 1 means "one level of directory", 2 means "two levels"...
+directory_level=0
+; umask for directory structure (default jelix one : 0775)
+directory_umask=
+; prefix for cache files (default 'jelix_cache')
+file_name_prefix=
+; umask for cache files (default jelix one: 0664)
+cache_file_umask=
+
+

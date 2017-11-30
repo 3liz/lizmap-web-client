@@ -1,0 +1,32 @@
+# Lizmapmutu hosting site
+# Give access to accounts
+server {
+    listen {{ lizmap_port }} default_server;
+    #listen [::]:{{ lizmap_port }} default_server ipv6only=on;
+
+    #server_name {{ lizmap_hostname }};
+    index index.html index.php;
+    root {{ lizmap_home }}/lizmap/www;
+
+    location / {
+        root {{ lizmap_home }}/lizmap/www;
+    }
+
+    # URI resolved to web sub directory
+    # and found a index.php file here
+    location ~* /\w+\.php {
+        fastcgi_split_path_info ^(.+\.php)(/.+)$;
+        set $path_info $fastcgi_path_info; # because of bug http://trac.nginx.org/nginx/ticket/321
+
+        try_files $fastcgi_script_name =404;
+        include fastcgi_params;
+
+        fastcgi_index index.php;
+        fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+        fastcgi_param SERVER_NAME {{ lizmap_hostname }};
+        fastcgi_param PATH_INFO $path_info;
+        fastcgi_param PATH_TRANSLATED $document_root$path_info;
+        fastcgi_pass unix:{{ lizmap_fpm_socket }};
+    }
+
+}

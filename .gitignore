@@ -15,3 +15,5 @@ lizmap/var/db/*.db
 lizmap/var/lizmap-theme-config/*
 temp/lizmap/*
 !temp/lizmap/.empty
+vagrant/playbook.retry
+vagrant/.vagrant

@@ -1,0 +1,21 @@
+---
+# Locale configuration
+local_timezone: Europe/Paris
+local_locale: fr_FR.UTF-8
+local_locale_left: fr_FR
+local_locale_right: UTF-8
+
+# nginx
+nginx_default_web_port: 80
+
+# Supervisor
+supervisor_override: true
+supervisor_inet_port: 127.0.0.1:9001
+supervisor_username: ""
+supervisor_password: ""
+supervisor_config_file: /etc/supervisor/supervisord.conf
+supervisor_config_directory: /etc/supervisor/conf.d
+
+# xvfb
+xvfb_install: true
+xvfb_port: 99
