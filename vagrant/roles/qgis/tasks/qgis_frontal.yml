@@ -1,0 +1,10 @@
+---
+# Qgis http frontal configuration
+- name: Create QGIS server nginx configuration
+  template: src=qgis_nginx_conf.j2 dest=/etc/nginx/sites-available/qgis-server mode=0644
+
+- name: Activate QGIS server nginx configuration
+  file: path=/etc/nginx/sites-enabled/qgis src=/etc/nginx/sites-available/qgis-server  state=link
+  notify:
+    - restart nginx
+
