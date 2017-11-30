@@ -2262,6 +2262,16 @@ div.tooltip {
   border-radius: 10px;
 }
 
+#edition-point-coord-form,
+#dock #edition-point-coord-form{
+  margin-bottom: 5px;
+}
+#edition-point-coord-form-expander{
+  color: inherit;
+  text-decoration: inherit;
+  cursor: pointer;
+}
+
 .qgis_sprite { background: url('images/qgis_sprite.png') no-repeat top left; width: 24px; height: 24px;  }
 .qgis_sprite.mActionMoveFeature { background-position: 0 0; }
 .qgis_sprite.mActionReshapeLine { background-position: -34px 0; }

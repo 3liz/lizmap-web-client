@@ -81,6 +81,60 @@ OpenLayers.Geometry.pointOnSegment = function(point, segment) {
     return false;
 };
 
+    function deactivatePointCoord() {
+        $('#edition-point-coord-crs-layer').html(lizDict['edition.point.coord.crs.layer']).val('').hide();
+        $('#edition-point-coord-crs-map').html(lizDict['edition.point.coord.crs.map']).val('').hide();
+        $('#edition-point-coord-x').val('');
+        $('#edition-point-coord-y').val('');
+        $('#edition-point-coord-add').hide();
+        $('#edition-point-coord-form').hide();
+        $('#edition-point-coord-form-expander i').removeClass('icon-chevron-down').addClass('icon-chevron-right');
+        $('#edition-point-coord-form-group').hide();
+    }
+
+    function activatePointCoord() {
+        var eform = $('#edition-form-container form');
+        var srid = eform.find('input[name="liz_srid"]').val();
+        if ( srid != '' && !('EPSG:'+srid in Proj4js.defs) )
+            Proj4js.defs['EPSG:'+srid] = eform.find('input[name="liz_proj4"]').val();
+        $('#edition-point-coord-crs-layer').html(lizDict['edition.point.coord.crs.layer']+' - EPSG:'+srid).val(srid).show();
+
+        var mapProjCode = editionLayer['ol'].projection.projCode;
+        var mapSrid = mapProjCode.replace('EPSG:','');
+        $('#edition-point-coord-crs-map').html(lizDict['edition.point.coord.crs.map']+' - EPSG:'+mapSrid).val(mapSrid).show();
+
+        var geometryType = editionLayer['config'].geometryType;
+        if ( geometryType == 'point' )
+            $('#edition-point-coord-add').hide();
+        else
+            $('#edition-point-coord-add').show();
+        $('#edition-point-coord-form').show();
+    }
+
+    function keyUpPointCoord() {
+        var x = parseFloat($('#edition-point-coord-x').val());
+        var y = parseFloat($('#edition-point-coord-y').val());
+        if ( !isNaN(x) && !isNaN(y) ) {
+            var vertex = new OpenLayers.Geometry.Point(x,y);
+            // Get SRID and transform geometry
+            var srid = $('#edition-point-coord-crs').val();
+            vertex.transform( 'EPSG:'+srid, editionLayer['ol'].projection );
+            var geometryType = editionLayer['config'].geometryType;
+            if ( !editCtrls[geometryType].handler.point ) {
+                var px = editCtrls[geometryType].handler.layer.getViewPortPxFromLonLat({lon:vertex.x,lat:vertex.y});
+                editCtrls[geometryType].handler.createFeature(px);
+                editCtrls[geometryType].handler.point.geometry.x = vertex.x;
+                editCtrls[geometryType].handler.point.geometry.y = vertex.y;
+                editCtrls[geometryType].handler.point.geometry.clearBounds();
+            } else {
+                editCtrls[geometryType].handler.point.geometry.x = vertex.x;
+                editCtrls[geometryType].handler.point.geometry.y = vertex.y;
+                editCtrls[geometryType].handler.point.geometry.clearBounds();
+            }
+            editCtrls[geometryType].handler.drawFeature();
+        }
+    }
+
     // Redraw layers
     function redrawLayers( layerId ) {
         var willBeRedrawnLayerIds = [layerId];
@@ -307,11 +361,38 @@ OpenLayers.Geometry.pointOnSegment = function(point, segment) {
                     }
                 }),
                 point: new OpenLayers.Control.DrawFeature(editLayer,
-                     OpenLayers.Handler.Point),
+                     OpenLayers.Handler.Point,{
+                        eventListeners: {
+                            activate: function() {
+                                activatePointCoord();
+                            },
+                            deactivate: function() {
+                                deactivatePointCoord();
+                            }
+                        }
+                     }),
                 line: new OpenLayers.Control.DrawFeature(editLayer,
-                    OpenLayers.Handler.Path),
+                    OpenLayers.Handler.Path,{
+                        eventListeners: {
+                            activate: function() {
+                                activatePointCoord();
+                            },
+                            deactivate: function() {
+                                deactivatePointCoord();
+                            }
+                        }
+                     }),
                 polygon: new OpenLayers.Control.DrawFeature(editLayer,
-                    OpenLayers.Handler.Polygon),
+                    OpenLayers.Handler.Polygon,{
+                        eventListeners: {
+                            activate: function() {
+                                activatePointCoord();
+                            },
+                            deactivate: function() {
+                                deactivatePointCoord();
+                            }
+                        }
+                     }),
                 modify: new OpenLayers.Control.ModifyFeature(editLayer),
                 split: new OpenLayers.Control.Split({layer:editLayer,eventListeners: {aftersplit:afterSpliting}})
             };
@@ -394,6 +475,15 @@ OpenLayers.Geometry.pointOnSegment = function(point, segment) {
                     updateGeometryColumnFromFeature( evt.feat )
                 },
 
+                sketchmodified: function(evt) {
+                    var vertex = evt.vertex.clone();
+                    // Get SRID and transform geometry
+                    var srid = $('#edition-point-coord-crs').val();
+                    vertex.transform( editionLayer['ol'].projection,'EPSG:'+srid );
+                    $('#edition-point-coord-x').val(vertex.x);
+                    $('#edition-point-coord-y').val(vertex.y);
+                },
+
                 vertexmodified: function(evt) {
                 }
             });
@@ -421,6 +511,38 @@ OpenLayers.Geometry.pointOnSegment = function(point, segment) {
                     return false;
 
                 return false;
+            });
+
+            $('#edition-point-coord-form').submit(function(){
+                return false;
+            });
+            $('#edition-point-coord-form-expander').click(function(){
+                var chevron = $('#edition-point-coord-form-expander i');
+                if ( chevron.hasClass('icon-chevron-right') ) {
+                    chevron.removeClass('icon-chevron-right').addClass('icon-chevron-down');
+                    $('#edition-point-coord-form-group').show();
+                } else {
+                    chevron.removeClass('icon-chevron-down').addClass('icon-chevron-right');
+                    $('#edition-point-coord-form-group').hide();
+                }
+                return false;
+            });
+            $('#edition-point-coord-x').keyup(keyUpPointCoord);
+            $('#edition-point-coord-y').keyup(keyUpPointCoord);
+            $('#edition-point-coord-add').click(function(){
+                var geometryType = editionLayer['config'].geometryType;
+                if ( geometryType != 'point' ) {
+                    var node = editCtrls[geometryType].handler.point.geometry;
+                    editCtrls[geometryType].handler.insertXY(node.x, node.y);
+                }
+            });
+            $('#edition-point-coord-submit').click(function(){
+                var geometryType = editionLayer['config'].geometryType;
+                if ( geometryType == 'point' ) {
+                    editCtrls[geometryType].handler.finalize();
+                } else {
+                    editCtrls[geometryType].handler.finishGeometry();
+                }
             });
 
             $('#edition-geomtool-nodetool').click(function(){
