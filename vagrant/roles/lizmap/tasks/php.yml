@@ -1,0 +1,41 @@
+---
+
+- name: Import PHP repository key
+  apt_key:
+     keyserver: "{{ php_apt_key_server }}"
+     id: "{{ php_apt_key_id }}"
+
+- name: Add PHP repository
+  apt_repository: repo='deb {{ php_repository }} {{ ansible_distribution_release }} main' state=present
+
+- name: PHP - Update apt
+  apt: update_cache=yes
+
+- name: Install PHP
+  package: name={{ item }} state=present
+  with_items:
+    - "php{{ php_version }}-fpm"
+    - "php{{ php_version }}-curl"
+    - "php{{ php_version }}-cli"
+    - "php{{ php_version }}-sqlite3"
+    - "php{{ php_version }}-pgsql"
+    - "php{{ php_version }}-gd"
+    - "php{{ php_version }}-intl"
+    - "php{{ php_version }}-xml"
+    - "php-redis"
+
+- name: setup user into php fpm pool
+  lineinfile:
+    dest: "{{ php_fpm_config_file }}"
+    regexp: '^\s*user\s*='
+    line: "user = {{ lizmap_webserver_user }}"
+  notify:
+    - restart php-fpm
+
+- name: setup group into php fpm pool
+  lineinfile:
+    dest: "{{ php_fpm_config_file }}"
+    regexp: '^\s*group\s*='
+    line: "group = {{ lizmap_webserver_group }}"
+  notify:
+    - restart php-fpm

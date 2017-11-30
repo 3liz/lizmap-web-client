@@ -1,0 +1,11 @@
+---
+- include: postgresql_server.yml
+  when: postgresql_install
+  tags: postgresql
+- include: postgresql_database.yml
+  when: postgresql_install
+  tags: postgresql
+- include: postgresql_access.yml
+  when: postgresql_install
+  tags: postgresql
+
