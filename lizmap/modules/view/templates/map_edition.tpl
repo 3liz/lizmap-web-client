@@ -34,6 +34,41 @@
             <i class="icon-none qgis_sprite mActionReshape"></i>
         </button>
     </div>
+    <form id="edition-point-coord-form" class="form-horizontal" style="display:none;">
+        <fieldset>
+            <legend style="font-weight:bold;"><a id="edition-point-coord-form-expander" style=""><i class="icon-chevron-right"></i>{@view~edition.point.coord.title@}</a></legend>
+            <div id="edition-point-coord-form-group" class="jforms-table-group" style="display:none;">
+                <div class="control-group">
+                    <label class="jforms-label control-label" for="edition-point-coord-crs" id="jedition-point-coord-crs-label">{@view~edition.point.coord.crs.label@}</label>
+                    <div class="controls">
+                        <select name="coord-crs" id="edition-point-coord-crs" class="jforms-ctrl-menulist">
+                            <option value="4326" selected="selected"><span>EPSG:4326</span></option>
+                            <option id="edition-point-coord-crs-layer" value="" style="display:none;"></option>
+                            <option id="edition-point-coord-crs-map" value="" style="display:none;"></option>
+                        </select>
+                    </div>
+                </div>
+                <div class="control-group">
+                    <label class="jforms-label control-label" for="edition-point-coord-x" id="jedition-point-coord-x-label">{@view~edition.point.coord.x.label@}</label>
+                    <div class="controls">
+                        <input name="coord-x" id="edition-point-coord-x" class="jforms-ctrl-input" value="" type="text">
+                    </div>
+                </div>
+                <div class="control-group">
+                    <label class="jforms-label control-label" for="edition-point-coord-y" id="jedition-point-coord-y-label">{@view~edition.point.coord.y.label@}</label>
+                    <div class="controls">
+                        <input name="coord-y" id="edition-point-coord-y" class="jforms-ctrl-input" value="" type="text">
+                    </div>
+                </div>
+                <div class="control-group">
+                    <div class="controls">
+                        <button name="submit" id="edition-point-coord-add" class="btn btn-small">{@view~edition.point.coord.add.label@}</button>
+                        <button name="submit" id="edition-point-coord-submit" class="btn btn-small">{@view~edition.point.coord.finalize.label@}</button>
+                    </div>
+                </div>
+            </div>
+        </fieldset>
+    </form>
     <div id="edition-form-container">
     </div>
     <div id="edition-children-container" style="display:none;">
