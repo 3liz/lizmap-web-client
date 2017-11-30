@@ -1,0 +1,46 @@
+---
+
+- name: Add temp directory
+  file: path={{ lizmap_home }}/temp/lizmap mode=0775  state=directory group={{ lizmap_webserver_group }}
+
+# Configure and install
+- name: Set rights on dirs
+  shell: cd {{ lizmap_home }} && lizmap/install/set_rights.sh {{ lizmap_webserver_group }} {{ lizmap_webserver_group }}
+
+- name: Create lizmap configuration files
+  copy: remote_src=True src={{ item.src }} dest={{ item.dest }} force=no
+  with_items:
+    - { src: '{{ lizmap_home }}/lizmap/var/config/lizmapConfig.ini.php.dist', dest: '{{ lizmap_home }}/lizmap/var/config/lizmapConfig.ini.php'}
+    - { src: '{{ lizmap_home }}/lizmap/var/config/localconfig.ini.php.dist', dest: '{{ lizmap_home }}/lizmap/var/config/localconfig.ini.php'}
+    - { src: '{{ lizmap_home }}/lizmap/var/config/profiles.ini.php.dist', dest: '{{ lizmap_home }}/lizmap/var/config/profiles.ini.php'}
+
+- name: Modifiy db profile for lizmap if PostgreSQL chosen for jauth
+  template: src=lizmap_profiles.j2 dest='{{ lizmap_home }}/lizmap/var/config/profiles.ini.php' force=no
+  when: lizmap_jauth_driver == 'pgsql'
+
+- name: Add option to create Demo project
+  shell: cd {{ lizmap_home }} && echo "{{ item.src }}" >> {{ item.dest }}
+  with_items:
+    - { src: '[modules]', dest: 'lizmap/var/config/localconfig.ini.php'}
+    - { src: 'lizmap.installparam=demo', dest: 'lizmap/var/config/localconfig.ini.php'}
+
+- name: Change URL to QGIS Server
+  lineinfile: dest='{{ lizmap_home }}/lizmap/var/config/lizmapConfig.ini.php'
+              regexp='wmsServerURL="http\://127\.0\.0\.1/cgi-bin/qgis_mapserv\.fcgi"'
+              line='wmsServerURL="http://127.0.0.1:8200"'
+              backrefs=yes
+
+- name: Install Lizmap
+  shell: cd {{ lizmap_home }} && php lizmap/install/installer.php
+
+# Configure nginx
+- name: Configure nginx vhost for lizmap
+  template: src=lizmap_nginx.j2 dest='/etc/nginx/sites-available/default' mode=0644
+  notify:
+    - restart nginx
+
+- name: Enable vhost
+  file: path='/etc/nginx/sites-enabled/default' src='/etc/nginx/sites-available/default' state=link
+  notify:
+    - restart nginx
+

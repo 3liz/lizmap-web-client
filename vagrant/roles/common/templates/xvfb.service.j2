@@ -1,0 +1,14 @@
+#-----------------------------------
+# THIS FILE IS INSTALLED BY LIZMAP 
+# ALL CHANGES WILL BE LOST
+#-----------------------------------
+
+[Unit]
+Description=X Virtual Frame Buffer Service
+After=network.target
+
+[Service]
+ExecStart=/usr/bin/Xvfb :{{ xvfb_port }} -screen 0 1024x768x24 -ac +extension GLX +render -noreset
+
+[Install]
+WantedBy=multi-user.target

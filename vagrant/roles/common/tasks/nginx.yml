@@ -1,0 +1,19 @@
+---
+- name: Remove apache - Debian
+  package : name=apache2* state=absent purge=yes
+
+- name: Install Nginx Debian
+  apt: name=nginx state=present install_recommends=no
+
+- name: Add directories for virtual hosts
+  file: path={{ item }} state=directory
+  with_items:
+    - /etc/nginx
+    - /etc/nginx/sites-enabled
+    - /etc/nginx/sites-available
+
+- name: Enable gzip compression
+  copy: dest=/etc/nginx/conf.d/gzip.conf src=nginx-gzip mode=644
+
+- name: Ensure that nginx is running
+  service: name=nginx state=started enabled=yes

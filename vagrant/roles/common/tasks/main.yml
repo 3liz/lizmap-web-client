@@ -1,0 +1,15 @@
+---
+- apt: update_cache=yes cache_valid_time=3600
+
+- include: local.yml
+  tags: local
+- include: nginx.yml
+  tags: nginx
+- include: supervisor.yml
+  tags: supervisor
+- include: xvfb.yml
+  tags: xvfb
+
+- name: Create system user lizmap
+  user: name=lizmap system=yes
+

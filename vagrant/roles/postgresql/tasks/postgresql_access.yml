@@ -1,0 +1,15 @@
+---
+
+- name: PostgreSQL - listen on all adresses
+  lineinfile: dest=/etc/postgresql/{{ postgresql_version }}/main/postgresql.conf
+              regexp="^listen_addresses"
+              line="listen_addresses = '*'" state=present
+  notify: restart postgresql
+
+- name: PostgreSQL - allow access to host for the database user
+  lineinfile: dest=/etc/postgresql/{{ postgresql_version }}/main/pg_hba.conf
+              line='host    postgres,{{ postgresql_database }}  {{ postgresql_lizmap_user }}  0.0.0.0 0.0.0.0 md5'
+              state=present
+              insertafter=EOF
+  notify: restart postgresql
+

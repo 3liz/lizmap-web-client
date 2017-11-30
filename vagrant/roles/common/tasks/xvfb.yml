@@ -1,0 +1,18 @@
+---
+- name: xvfb - install package
+  package: name=xvfb state=present
+
+- name: Check if server uses systemd or init
+  shell: cat /proc/1/comm
+  register: cmd_result
+
+- name: xvfb - create service file - systemd
+  template: src=xvfb.service.j2 dest=/etc/systemd/system/xvfb.service
+  when: cmd_result.stdout == 'systemd'
+
+- name: xvfb - create service file - init
+  template: src=xvfb.service.init.j2 dest=/etc/init.d/xvfb mode="0750"
+  when: cmd_result.stdout == 'init'
+
+- name: xvfb - ensure that service is running
+  service: name=xvfb state=started enabled=yes
