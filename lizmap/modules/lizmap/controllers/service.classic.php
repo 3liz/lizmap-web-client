@@ -767,6 +767,10 @@ class serviceCtrl extends jController {
       }
 
       // Loop through the features
+      $popupMaxFeatures = 10;
+      if( property_exists($configLayer, 'popupMaxFeatures') && is_numeric($configLayer->popupMaxFeatures) )
+          $popupMaxFeatures = $configLayer->popupMaxFeatures + 0;
+      $layerFeaturesCounter = 0;
       foreach($layer->Feature as $feature){
         $id = $feature['id'];
         // Optionnally filter by feature id
@@ -775,6 +779,11 @@ class serviceCtrl extends jController {
             $filterFid[$configLayer->name] != $id) {
           continue;
         }
+
+        if($layerFeaturesCounter == $popupMaxFeatures){
+          break;
+        }
+        $layerFeaturesCounter++;
 
         // Hidden input containing layer id and feature id
         $hiddenFeatureId = '<input type="hidden" value="' . $layerId . '.' .$id.'" class="lizmap-popup-layer-feature-id"/>
