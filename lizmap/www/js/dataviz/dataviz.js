@@ -16,6 +16,23 @@ var lizDataviz = function() {
             getPlot(i);
         }
 
+        // Filter plot if needed
+        lizMap.events.on({
+            layerFilterParamChanged: function(e) {
+                for( var i in dv.config.layers) {
+                    var dvLayerId = dv.config.layers[i]['layer_id']
+                    if( e.featureType in lizMap.config.layers ){
+                        var layerId = lizMap.config.layers[e.featureType].id;
+                        if( layerId == dvLayerId ){
+                            var pFilterSplit = e.filter.split(':');
+                            if( pFilterSplit.length == 2)
+                                getPlot(i, pFilterSplit[1]);
+                        }
+                    }
+                }
+            }
+        });
+
     }
 
     function addPlotContainer(plot_id){
@@ -36,11 +53,16 @@ var lizDataviz = function() {
         $('#dataviz-content').append(html);
     }
 
-    function getPlot(plot_id){
+    function getPlot(plot_id, exp_filter){
+        exp_filter = typeof exp_filter !== 'undefined' ?  exp_filter : null;
+
         var lparams = {
             'request': 'getPlot',
             'plot_id': plot_id
         };
+        if(exp_filter){
+            lparams['exp_filter'] = exp_filter;
+        }
         $.getJSON(datavizConfig.url,
             lparams,
             function(json){
@@ -50,7 +72,7 @@ var lizDataviz = function() {
                     return false;
                 }
                 if( !json.data || json.data.length < 1)
-                    return false;
+                    return null;
                 dv.plots.push(json);
 
                 var dataviz_plot_id = 'dataviz_plot_' + plot_id;
@@ -60,7 +82,10 @@ var lizDataviz = function() {
     }
 
     function buildPlot(id, conf){
+        // Build plot with plotly
         Plotly.newPlot(id, conf.data, conf.layout);
+
+        // Add events to resize plot when needed
         lizMap.events.on({
             dockopened: function(e) {
                 if ( e.id == 'dataviz' ) {
@@ -87,6 +112,7 @@ var lizDataviz = function() {
                 resizePlot(id);
             }
         });
+
         $('#dataviz-waiter').hide();
 
         lizMap.events.triggerEvent(

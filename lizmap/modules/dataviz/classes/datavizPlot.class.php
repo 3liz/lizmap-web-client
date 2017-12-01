@@ -147,7 +147,7 @@ class datavizPlot {
         return $layout;
     }
 
-    public function fetchData($layerId, $method='wfs'){
+    public function fetchData($layerId, $method='wfs', $exp_filter=''){
 
         if(!$layerId)
             return false;
@@ -178,6 +178,24 @@ class datavizPlot {
                 'GEOMETRYNAME' => 'none',
                 'PROPERTYNAME' => implode(',', $x_fields) . ',' . implode(',', $y_fields)
             );
+            if(!empty($exp_filter)){
+                // Add fields in PROPERTYNAME
+                // bug in QGIS SERVER 2.18: send no data if fields in exp_filter not in PROPERTYNAME
+                $matches = array();
+                $preg = preg_match_all('#"\b[^\s]+\b"#', $exp_filter, $matches);
+                $pp = '';
+                if(count($matches) > 0 and count($matches[0])>0){
+                    foreach($matches[0] as $m){
+                        $pp.= ',' . trim($m, '"');
+                    }
+                }
+                if($pp){
+                    $wfsparams['PROPERTYNAME'].= ',' . $pp;
+                }
+
+                // Add filter
+                $wfsparams['EXP_FILTER'] = $exp_filter;
+            }
 
             $wfsrequest = new lizmapWFSRequest( $this->lproj, $wfsparams );
             $wfsresponse = $wfsrequest->getfeature();
