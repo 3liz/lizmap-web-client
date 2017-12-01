@@ -218,7 +218,7 @@ class qgisVectorLayer extends qgisMapLayer{
               $geometryColumn = $fieldName;
               $geometryType = strtolower($prop->type);
               // If postgresql, get real geometryType from geometry_columns (jelix prop gives 'geometry')
-              if( $this->provider == 'postgres' and $this->geometryType == 'geometry' ){
+              if( $this->provider == 'postgres' and $geometryType == 'geometry' ){
                   $res = $cnx->query('SELECT type FROM geometry_columns WHERE f_table_name = '.$cnx->quote($dtParams->tablename));
                   $res = $res->fetch();
                   if( $res )
