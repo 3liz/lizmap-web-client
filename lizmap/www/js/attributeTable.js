@@ -2060,9 +2060,25 @@ var lizAttributeTable = function() {
                 // Add false value to hide all features if we need to hide layer
                 if( typeNamePkeyValues.length == 0 )
                     typeNamePkeyValues.push('-99999');
-                if( aFilter )
+
+                if( aFilter ){
                     var lFilter = layerN + ':"' + typeNamePkey + '" IN ( ' + typeNamePkeyValues.join( ' , ' ) + ' ) ';
+
+                    // Try to use the simple filter ( for example myforeignkey = 4 )
+                    // instead of the full list of pkeys we got from wfs
+                    // This can prevent too long GET URL
+                    // NB : we should improve this by using server side filters
+                    if( !aFilter.startsWith('$id') ){
+                        var simpleFilter = aFilter;
+                        if( !aFilter.startsWith(layerN) ){
+                            simpleFilter = layerN + ':' + aFilter ;
+                        }
+                        lFilter = simpleFilter;
+                    }
+                }
+
                 layerConfig['request_params']['filter'] = lFilter;
+                layerConfig['request_params']['exp_filter'] = aFilter;
 
                 // Add filter to openlayers layer
                 if( layer
