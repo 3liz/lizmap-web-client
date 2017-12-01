@@ -64,6 +64,7 @@ class serviceCtrl extends jController {
         $repository = $this->param('repository');
         $project = $this->param('project');
         $plot_id = $this->intParam('plot_id');
+        $exp_filter = trim($this->param('exp_filter'));
         $color = null;
         $layout = null;
 
@@ -119,7 +120,7 @@ class serviceCtrl extends jController {
             return $plot;
         }
 
-        $fd = $dplot->fetchData($layerId, 'wfs');
+        $fd = $dplot->fetchData($layerId, 'wfs', $exp_filter);
         $plot = array(
             'title' => $dplot->title,
             'data' => $dplot->getData(),
