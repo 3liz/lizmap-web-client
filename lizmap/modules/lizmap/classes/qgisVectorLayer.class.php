@@ -370,6 +370,7 @@ class qgisVectorLayer extends qgisMapLayer{
       $refs = array();
       $insert = array();
       $primaryKeys = $dbFieldsInfo->primaryKeys;
+      $dataFields = $dbFieldsInfo->dataFields;
       $dataLogInfo = array();
       foreach ( $values as $ref=>$value ) {
           // For insert, only for not NULL values to allow serial and default values to work
@@ -469,7 +470,7 @@ class qgisVectorLayer extends qgisMapLayer{
       // Add where clause with primary keys
       $sqlw = array();
       $primaryKeys = $dbFieldsInfo->primaryKeys;
-      $dataFields = $dbField;
+      $dataFields = $dbFieldsInfo->dataFields;
       foreach($primaryKeys as $key){
           $val = $feature->properties->$key;
           if( $dataFields[$key]->unifiedType != 'integer' )
