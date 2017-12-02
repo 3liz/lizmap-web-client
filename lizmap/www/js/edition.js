@@ -86,6 +86,8 @@ OpenLayers.Geometry.pointOnSegment = function(point, segment) {
         $('#edition-point-coord-crs-map').html(lizDict['edition.point.coord.crs.map']).val('').hide();
         $('#edition-point-coord-x').val('');
         $('#edition-point-coord-y').val('');
+        if ( $('#edition-point-coord-geolocation').is(':checked') )
+            $('#edition-point-coord-geolocation').click();
         $('#edition-point-coord-add').hide();
         $('#edition-point-coord-form').hide();
         $('#edition-point-coord-form-expander i').removeClass('icon-chevron-down').addClass('icon-chevron-right');
@@ -529,6 +531,19 @@ OpenLayers.Geometry.pointOnSegment = function(point, segment) {
             });
             $('#edition-point-coord-x').keyup(keyUpPointCoord);
             $('#edition-point-coord-y').keyup(keyUpPointCoord);
+            $('#edition-point-coord-geolocation').change(function(){
+                if ( $(this).is(':checked') ) {
+                    $('#edition-point-coord-x').attr('disabled','disabled');
+                    $('#edition-point-coord-y').attr('disabled','disabled');
+                    var geometryType = editionLayer['config'].geometryType;
+                    var vertex = lizMap.controls.geolocation.layer.features[0].geometry;
+                    var px = editCtrls[geometryType].handler.layer.getViewPortPxFromLonLat({lon:vertex.x,lat:vertex.y});
+                    editCtrls[geometryType].handler.modifyFeature(px);
+                } else {
+                    $('#edition-point-coord-x').removeAttr('disabled');
+                    $('#edition-point-coord-y').removeAttr('disabled');
+                }
+            });
             $('#edition-point-coord-add').click(function(){
                 var geometryType = editionLayer['config'].geometryType;
                 if ( geometryType != 'point' ) {
@@ -594,6 +609,30 @@ OpenLayers.Geometry.pointOnSegment = function(point, segment) {
             $('#edition-geomtool-container button').tooltip( {
                 placement: 'top'
             } );
+
+            //geolocation
+            if ( 'geolocation' in lizMap.controls ) {
+                lizMap.controls.geolocation.events.on({
+                    "locationupdated": function(evt) {
+                        if ( $('#edition-point-coord-geolocation').is(':checked') ) {
+                            var geometryType = editionLayer['config'].geometryType;
+                            if ( editCtrls[geometryType].active ) {
+                                var vertex = evt.point;
+                                var px = editCtrls[geometryType].handler.layer.getViewPortPxFromLonLat({lon:vertex.x,lat:vertex.y});
+                                editCtrls[geometryType].handler.modifyFeature(px);
+                            }
+                        }
+                    },
+                    "activate": function(evt) {
+                        $('#edition-point-coord-geolocation-group').show();
+                    },
+                    "deactivate": function(evt) {
+                        if ( $('#edition-point-coord-geolocation').is(':checked') )
+                            $('#edition-point-coord-geolocation').click();
+                        $('#edition-point-coord-geolocation-group').hide();
+                    }
+                });
+            }
 
         } else {
             $('#edition').parent().remove();

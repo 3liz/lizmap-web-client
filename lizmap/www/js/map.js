@@ -4756,6 +4756,7 @@ OpenLayers.Control.HighlightFeature = OpenLayers.Class(OpenLayers.Control, {
       type: OpenLayers.Control.TYPE_TOGGLE,
       bind: false,
       watch: true,
+      layer: vector,
       geolocationOptions: {
         enableHighAccuracy: true,
         maximumAge: 5000,
@@ -4766,32 +4767,53 @@ OpenLayers.Control.HighlightFeature = OpenLayers.Class(OpenLayers.Control, {
     var firstGeolocation = true;
     geolocate.events.on({
       "locationupdated": function(evt) {
-        vector.destroyFeatures();
-        var circle = new OpenLayers.Feature.Vector(
-          OpenLayers.Geometry.Polygon.createRegularPolygon(
-            evt.point.clone(),
-            evt.position.coords.accuracy/2,
-            40,
-            0
-          ),
-          {},
-          style
-        );
-        vector.addFeatures([
-          new OpenLayers.Feature.Vector(
-            evt.point,
-            {},
-            {
-              graphicName: 'circle',
-              strokeColor: '#0395D6',
-              strokeWidth: 1,
-              fillOpacity: 1,
-              fillColor: '#0395D6',
-              pointRadius: 3
-            }
-          ),
-          circle
-        ]);
+        //this.layer.destroyFeatures();
+        if ( this.layer.features.length == 0 ) {
+            var circle = new OpenLayers.Feature.Vector(
+              OpenLayers.Geometry.Polygon.createRegularPolygon(
+                evt.point.clone(),
+                evt.position.coords.accuracy/2,
+                40,
+                0
+              ),
+              {},
+              style
+            );
+            this.layer.addFeatures([
+              new OpenLayers.Feature.Vector(
+                evt.point,
+                {},
+                {
+                  graphicName: 'circle',
+                  strokeColor: '#0395D6',
+                  strokeWidth: 1,
+                  fillOpacity: 1,
+                  fillColor: '#0395D6',
+                  pointRadius: 3
+                }
+              ),
+              circle
+            ]);
+        } else {
+            var point = this.layer.features[0];
+            point.geometry.x = evt.point.x;
+            point.geometry.y = evt.point.y;
+            point.geometry.clearBounds();
+            this.layer.drawFeature(point);
+            var circle = this.layer.features[1];
+            this.layer.destroyFeatures([circle]);
+            circle = new OpenLayers.Feature.Vector(
+              OpenLayers.Geometry.Polygon.createRegularPolygon(
+                evt.point.clone(),
+                evt.position.coords.accuracy/2,
+                40,
+                0
+              ),
+              {},
+              style
+            );
+            this.layer.addFeatures([circle]);
+        }
         if (firstGeolocation) {
           map.zoomToExtent(vector.getDataExtent());
           //pulsate(circle);
@@ -4802,7 +4824,7 @@ OpenLayers.Control.HighlightFeature = OpenLayers.Class(OpenLayers.Control, {
         $('#geolocation .menu-content button').removeAttr('disabled');
       },
       "locationfailed": function(evt) {
-        if ( vector.features.length == 0 && $('#geolocation-locationfailed').length != 0)
+        if ( this.layer.features.length == 0 && $('#geolocation-locationfailed').length != 0)
           mAddMessage('<span id="geolocation-locationfailed">'+lizDict['geolocation.failed']+'</span>','error',true);
       },
       "activate": function(evt) {
@@ -4812,7 +4834,7 @@ OpenLayers.Control.HighlightFeature = OpenLayers.Class(OpenLayers.Control, {
         firstGeolocation = true;
         this.bind = false;
         $('#geolocation .menu-content button').attr('disabled','disabled').removeClass('active');
-        vector.destroyFeatures();
+        this.layer.destroyFeatures();
       }
     });
     controls['geolocation'] = geolocate;
