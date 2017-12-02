@@ -39,7 +39,7 @@
             <legend style="font-weight:bold;"><a id="edition-point-coord-form-expander" style=""><i class="icon-chevron-right"></i>{@view~edition.point.coord.title@}</a></legend>
             <div id="edition-point-coord-form-group" class="jforms-table-group" style="display:none;">
                 <div class="control-group">
-                    <label class="jforms-label control-label" for="edition-point-coord-crs" id="jedition-point-coord-crs-label">{@view~edition.point.coord.crs.label@}</label>
+                    <label class="jforms-label control-label" for="edition-point-coord-crs" id="edition-point-coord-crs-label">{@view~edition.point.coord.crs.label@}</label>
                     <div class="controls">
                         <select name="coord-crs" id="edition-point-coord-crs" class="jforms-ctrl-menulist">
                             <option value="4326" selected="selected"><span>EPSG:4326</span></option>
@@ -49,15 +49,23 @@
                     </div>
                 </div>
                 <div class="control-group">
-                    <label class="jforms-label control-label" for="edition-point-coord-x" id="jedition-point-coord-x-label">{@view~edition.point.coord.x.label@}</label>
+                    <label class="jforms-label control-label" for="edition-point-coord-x" id="edition-point-coord-x-label">{@view~edition.point.coord.x.label@}</label>
                     <div class="controls">
                         <input name="coord-x" id="edition-point-coord-x" class="jforms-ctrl-input" value="" type="text">
                     </div>
                 </div>
                 <div class="control-group">
-                    <label class="jforms-label control-label" for="edition-point-coord-y" id="jedition-point-coord-y-label">{@view~edition.point.coord.y.label@}</label>
+                    <label class="jforms-label control-label" for="edition-point-coord-y" id="edition-point-coord-y-label">{@view~edition.point.coord.y.label@}</label>
                     <div class="controls">
                         <input name="coord-y" id="edition-point-coord-y" class="jforms-ctrl-input" value="" type="text">
+                    </div>
+                </div>
+                <div class="control-group" id="edition-point-coord-geolocation-group" style="display:none;">
+                    <div class="controls">
+                        <label class="jforms-label checkbox" for="edition-point-coord-geolocation" id="edition-point-coord-geolocation-label">
+                            <input name="checked" id="edition-point-coord-geolocation" class="jforms-ctrl-checkbox" value="1" type="checkbox">
+                            {@view~edition.point.coord.geolocation.label@}
+                        </label>
                     </div>
                 </div>
                 <div class="control-group">
