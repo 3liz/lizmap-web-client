@@ -408,11 +408,11 @@ class qgisVectorLayer extends qgisMapLayer{
       try {
           // Begin transaction
           $cnx->beginTransaction();
-          // Run the query
-          $rs = $cnx->exec($sql);
           // Retrieve PK for created objects
           $pkvals = array();
           if( $this->provider == 'postgres' ) {
+              // Query the request
+              $rs = $cnx->query($sql);
               foreach($rs as $line){
                   foreach($primaryKeys as $key){
                       $pkvals[$key] = $line->$key;
@@ -420,6 +420,8 @@ class qgisVectorLayer extends qgisMapLayer{
                   break;
               }
           } else {
+              // Exec the request
+              $rs = $cnx->exec($sql);
               $sqlpk = 'SELECT ' . $returnKeysString . ' FROM '.$dtParams->table.' WHERE rowid = last_insert_rowid();';
               $rspk = $cnx->query($sqlpk);
               foreach($rspk as $line){
@@ -503,11 +505,11 @@ class qgisVectorLayer extends qgisMapLayer{
       try {
           // Begin transaction
           $cnx->beginTransaction();
-          // Run query
-          $rs = $cnx->exec($sql);
           // Retrieve PK for created objects
           $pkvals = array();
           if( $this->provider == 'postgres' ) {
+              // Query the request
+              $rs = $cnx->query($sql);
               foreach($rs as $line){
                   foreach($primaryKeys as $key){
                       $pkvals[$key] = $line->$key;
@@ -515,6 +517,8 @@ class qgisVectorLayer extends qgisMapLayer{
                   break;
               }
           } else {
+              // Exec the request
+              $rs = $cnx->exec($sql);
               $sqlpk = 'SELECT ' . $returnKeysString . ' FROM '.$dtParams->table.$uwhere;
               $rspk = $cnx->query($sqlpk);
               foreach($rspk as $line){
