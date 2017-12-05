@@ -524,6 +524,7 @@ class editionCtrl extends jController {
     if ( $next_action == 'close' ) {
       // Redirect to the close action
       $rep->action="lizmap~edition:closeFeature";
+      return $rep;
     }
 
     // Use edition capabilities
