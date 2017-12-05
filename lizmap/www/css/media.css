@@ -9,6 +9,14 @@
 }
 
 /* #### Mobile Phones Portrait or Landscape #### */
+@media screen and (max-device-width: 480px){
+  /* some CSS here */
+
+  /* Adapt form */
+  #dock .form-horizontal .controls, div.modal .form-horizontal .controls {
+    margin-left: 10px;
+  }
+}
 @media screen and (max-device-width: 640px){
   /* some CSS here */
 
