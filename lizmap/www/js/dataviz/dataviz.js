@@ -19,20 +19,33 @@ var lizDataviz = function() {
         // Filter plot if needed
         lizMap.events.on({
             layerFilterParamChanged: function(e) {
-                for( var i in dv.config.layers) {
-                    var dvLayerId = dv.config.layers[i]['layer_id']
-                    if( e.featureType in lizMap.config.layers ){
-                        var layerId = lizMap.config.layers[e.featureType].id;
-                        if( layerId == dvLayerId ){
-                            var pFilterSplit = e.filter.split(':');
-                            if( pFilterSplit.length == 2)
-                                getPlot(i, pFilterSplit[1]);
+                refreshPlotsOnFilter(e.featureType, e.filter);
+            },
+            layerfeatureremovefilter: function(e) {
+                refreshPlotsOnFilter(e.featureType, null);
+            }
+        });
+
+    }
+
+    function refreshPlotsOnFilter(featureType, filter){
+        for( var i in dv.config.layers) {
+            var dvLayerId = dv.config.layers[i]['layer_id']
+            if( featureType in lizMap.config.layers ){
+                var layerId = lizMap.config.layers[featureType].id;
+                if( layerId == dvLayerId ){
+                    if(filter === null){
+                        getPlot(i);
+                    }
+                    else{
+                        var pFilterSplit = filter.split(':');
+                        if( pFilterSplit.length == 2){
+                            getPlot(i, pFilterSplit[1]);
                         }
                     }
                 }
             }
-        });
-
+        }
     }
 
     function addPlotContainer(plot_id){
