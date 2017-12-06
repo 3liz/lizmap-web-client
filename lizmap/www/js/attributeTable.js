@@ -83,8 +83,7 @@ var lizAttributeTable = function() {
                         config.layers[configLayerName]['request_params']['filter'] = layer.params['FILTER'];
 
                         // Send signal so that getFeatureInfo takes it into account
-                        lizMap.events.triggerEvent(
-                            "layerFilterParamChanged",
+                        lizMap.events.triggerEvent("layerFilterParamChanged",
                             {
                                 'featureType': attributeLayersDic[cleanName],
                                 'filter': config.layers[configLayerName]['request_params']['filter'],
@@ -214,8 +213,8 @@ var lizAttributeTable = function() {
 
 
                 // Send signal
-                lizMap.events.triggerEvent(
-                    "attributeLayersReady", {'layers': attributeLayersDic}
+                lizMap.events.triggerEvent("attributeLayersReady", 
+                  {'layers': attributeLayersDic}
                 );
 
                 addSelectionToolControl();
@@ -526,8 +525,7 @@ var lizAttributeTable = function() {
                 .click(function(){
                     var aName = attributeLayersDic[ $(this).val() ];
                     // Send signal
-                    lizMap.events.triggerEvent(
-                        "layerfeatureunselectall",
+                    lizMap.events.triggerEvent("layerfeatureunselectall",
                         { 'featureType': aName, 'updateDrawing': true}
                     );
                     return false;
@@ -567,14 +565,12 @@ var lizAttributeTable = function() {
                     .click(function(){
                         var aName = attributeLayersDic[ $(this).val() ];
                         if( $(this).hasClass('active') ) {
-                            lizMap.events.triggerEvent(
-                                "layerfeatureremovefilter",
+                            lizMap.events.triggerEvent( "layerfeatureremovefilter",
                                 { 'featureType': aName}
                             );
                             lizMap.lizmapLayerFilterActive = null;
                         } else {
-                            lizMap.events.triggerEvent(
-                                "layerfeaturefilterselected",
+                            lizMap.events.triggerEvent("layerfeaturefilterselected",
                                 { 'featureType': aName}
                             );
                             lizMap.lizmapLayerFilterActive = aName;
@@ -739,23 +735,19 @@ var lizAttributeTable = function() {
                             // Unselect features of parent (or child)
                             // And trigger table refresh
                             if( doQuery == 'pivot' ){
-                                lizMap.events.triggerEvent(
-                                    "layerfeatureunselectall",
+                                lizMap.events.triggerEvent("layerfeatureunselectall",
                                     { 'featureType': attributeLayersDic[cleanName], 'updateDrawing': true}
                                 );
                                 // Send signal saying edition has been done on pivot
-                                lizMap.events.triggerEvent(
-                                    "lizmapeditionfeaturecreated",
+                                lizMap.events.triggerEvent("lizmapeditionfeaturecreated",
                                     { 'layerId': cId}
                                 );
                             }else{
-                                lizMap.events.triggerEvent(
-                                    "layerfeatureunselectall",
+                                lizMap.events.triggerEvent("layerfeatureunselectall",
                                     { 'featureType': cName, 'updateDrawing': true}
                                 );
                                 // Send signal saying edition has been done on pivot
-                                lizMap.events.triggerEvent(
-                                    "lizmapeditionfeaturemodified",
+                                lizMap.events.triggerEvent("lizmapeditionfeaturemodified",
                                     { 'layerId': cId}
                                 );
                             }
@@ -777,8 +769,7 @@ var lizAttributeTable = function() {
                     var aName = attributeLayersDic[ $(this).val() ];
 
                     // Send signal
-                    lizMap.events.triggerEvent(
-                        "layerfeatureselectsearched",
+                    lizMap.events.triggerEvent("layerfeatureselectsearched",
                         { 'featureType': aName, 'updateDrawing': true}
                     );
                     return false;
@@ -1231,8 +1222,7 @@ var lizAttributeTable = function() {
                 }
 
                 // Trigget event telling attribute table is ready
-                lizMap.events.triggerEvent(
-                    "attributeLayerContentReady",
+                lizMap.events.triggerEvent("attributeLayerContentReady",
                     {
                         'featureType': aName
                     }
@@ -1461,8 +1451,7 @@ var lizAttributeTable = function() {
                     var featId = $(this).find('button.attribute-layer-feature-select').val();
 
                     // Send signal
-                    lizMap.events.triggerEvent(
-                        "layerfeaturehighlighted",
+                    lizMap.events.triggerEvent("layerfeaturehighlighted",
                         { 'sourceTable': aTable, 'featureType': aName, 'fid': featId}
                     );
 
@@ -1483,8 +1472,7 @@ var lizAttributeTable = function() {
                             $('#attribute-table-panel-' + parentLayerCleanName ).html(data);
 
                             // Trigger event
-                            lizMap.events.triggerEvent(
-                                'lizmappopupdisplayed_inattributetable'
+                            lizMap.events.triggerEvent('lizmappopupdisplayed_inattributetable'
                             );
 
                             var closeButton = '<a class="close-attribute-feature-panel pull-right" href="#"><i class="icon-remove"></i></a>'
@@ -1515,13 +1503,11 @@ var lizAttributeTable = function() {
                     var featId = $(this).val();
 
                     // Send signal to select the feature
-                    lizMap.events.triggerEvent(
-                        "layerfeatureselected",
+                    lizMap.events.triggerEvent("layerfeatureselected",
                         { 'featureType': aName, 'fid': featId, 'updateDrawing': true }
                     );
 
-                    lizMap.events.triggerEvent(
-                        "layerfeaturehighlighted",
+                    lizMap.events.triggerEvent("layerfeaturehighlighted",
                         { 'sourceTable': aTable, 'featureType': aName, 'fid': featId}
                     );
                     return false;
@@ -1642,8 +1628,7 @@ var lizAttributeTable = function() {
                         lizMap.addMessage( data, 'info', true).attr('id','lizmap-edition-message');
 
                         // Send signal saying edition has been done on table
-                        lizMap.events.triggerEvent(
-                            "lizmapeditionfeaturemodified",
+                        lizMap.events.triggerEvent("lizmapeditionfeaturemodified",
                             { 'layerId': cId}
                         );
 
@@ -1775,8 +1760,7 @@ var lizAttributeTable = function() {
                     config.layers[featureType]['selectedFeatures'].splice( idx, 1 );
                 }
 
-                lizMap.events.triggerEvent(
-                    "layerSelectionChanged",
+                lizMap.events.triggerEvent("layerSelectionChanged",
                     {
                         'featureType': featureType,
                         'featureIds': config.layers[featureType]['selectedFeatures'],
@@ -1817,8 +1801,7 @@ var lizAttributeTable = function() {
                 })
 
                 if( hasChanged ){
-                    lizMap.events.triggerEvent(
-                        "layerSelectionChanged",
+                    lizMap.events.triggerEvent("layerSelectionChanged",
                         {
                             'featureType': featureType,
                             'featureIds': config.layers[featureType]['selectedFeatures'],
@@ -1838,8 +1821,7 @@ var lizAttributeTable = function() {
                     config.layers[featureType]['selectedFeatures'] = [];
                 config.layers[featureType]['selectedFeatures'] = [];
 
-                lizMap.events.triggerEvent(
-                    "layerSelectionChanged",
+                lizMap.events.triggerEvent("layerSelectionChanged",
                     {
                         'featureType': featureType,
                         'featureIds': config.layers[featureType]['selectedFeatures'],
@@ -1862,8 +1844,7 @@ var lizAttributeTable = function() {
                     config.layers[featureType]['filteredFeatures'].splice( idx, 1 );
                 }
 
-                lizMap.events.triggerEvent(
-                    "layerFilteredFeaturesChanged",
+                lizMap.events.triggerEvent("layerFilteredFeaturesChanged",
                     {
                         'featureType': featureType,
                         'featureIds': config.layers[featureType]['filteredFeatures'],
@@ -1889,8 +1870,7 @@ var lizAttributeTable = function() {
                     config.layers[featureType]['request_params']['exp_filter'] = null;
                 }
 
-                lizMap.events.triggerEvent(
-                    "layerFilteredFeaturesChanged",
+                lizMap.events.triggerEvent("layerFilteredFeaturesChanged",
                     {
                         'featureType': featureType,
                         'featureIds': config.layers[featureType]['filteredFeatures'],
@@ -1917,8 +1897,7 @@ var lizAttributeTable = function() {
 
                 lizMap.lizmapLayerFilterActive = featureType;
 
-                lizMap.events.triggerEvent(
-                    "layerFilteredFeaturesChanged",
+                lizMap.events.triggerEvent("layerFilteredFeaturesChanged",
                     {
                         'featureType': featureType,
                         'featureIds': config.layers[featureType]['filteredFeatures'],
@@ -2204,8 +2183,7 @@ var lizAttributeTable = function() {
                     buildLayerAttributeDatatable( typeName, opTable, cFeatures, aNameAliases );
 
                 // And send event so that getFeatureInfo and getPrint use the updated layer filters
-                lizMap.events.triggerEvent(
-                    "layerFilterParamChanged",
+                lizMap.events.triggerEvent("layerFilterParamChanged",
                     {
                         'featureType': typeName,
                         'filter': lFilter,
@@ -2700,8 +2678,7 @@ var lizAttributeTable = function() {
                                 $(this).removeClass('btn-warning');
                             }
                             // Then select or unselect item
-                            lizMap.events.triggerEvent(
-                                'layerfeatureselected',
+                            lizMap.events.triggerEvent('layerfeatureselected',
                                 { 'featureType': featureType, 'fid': fid, 'updateDrawing': true}
                             )
                             if( !wasSelected ){
@@ -2749,28 +2726,24 @@ var lizAttributeTable = function() {
                                 }
 
                                 // First deselect all features
-                                lizMap.events.triggerEvent(
-                                    'layerfeatureunselectall',
+                                lizMap.events.triggerEvent('layerfeatureunselectall',
                                     { 'featureType': featureType, 'updateDrawing': false}
                                 );
 
                                 if( !wasFiltered ){
                                     // Then select this feature only
-                                    lizMap.events.triggerEvent(
-                                        'layerfeatureselected',
+                                    lizMap.events.triggerEvent('layerfeatureselected',
                                         { 'featureType': featureType, 'fid': fid, 'updateDrawing': false}
                                     );
                                     // Then filter for the selected features
-                                    lizMap.events.triggerEvent(
-                                        'layerfeaturefilterselected',
+                                    lizMap.events.triggerEvent('layerfeaturefilterselected',
                                         { 'featureType': featureType}
                                     );
                                     lizMap.lizmapLayerFilterActive = featureType;
                                     $(this).addClass('btn-warning');
                                 }else{
                                     // Then remove filter for this selected feature
-                                    lizMap.events.triggerEvent(
-                                        'layerfeatureremovefilter',
+                                    lizMap.events.triggerEvent('layerfeatureremovefilter',
                                         { 'featureType': featureType }
                                     );
                                     $(this).removeClass('btn-warning');
@@ -2834,21 +2807,18 @@ var lizAttributeTable = function() {
                         return false;
 
                     // Select feature
-                    lizMap.events.triggerEvent(
-                        'layerfeatureselected',
+                    lizMap.events.triggerEvent('layerfeatureselected',
                         {'featureType': e.featureType, 'fid': e.featureId, 'updateDrawing': false}
                     );
                     // Filter selected feature
-                    lizMap.events.triggerEvent(
-                        'layerfeaturefilterselected',
+                    lizMap.events.triggerEvent('layerfeaturefilterselected',
                         {'featureType': e.featureType}
                     );
                 },
 
                 lizmaplocatefeaturecanceled: function(e){
 
-                    lizMap.events.triggerEvent(
-                        'layerfeatureremovefilter',
+                    lizMap.events.triggerEvent('layerfeatureremovefilter',
                         {'featureType': e.featureType}
                     );
                 },
@@ -3174,8 +3144,7 @@ var lizAttributeTable = function() {
                         sfIds = asfIds;
                     }
                     config.layers[featureType]['selectedFeatures'] = sfIds;
-                    lizMap.events.triggerEvent(
-                        "layerSelectionChanged",
+                    lizMap.events.triggerEvent("layerSelectionChanged",
                         {
                             'featureType': featureType,
                             'featureIds': config.layers[featureType]['selectedFeatures'],
@@ -3246,8 +3215,7 @@ var lizAttributeTable = function() {
         $('#selectiontool-unselect').click(function(){
             if($(this).hasClass('disabled')) return false;
             // Send signal
-            lizMap.events.triggerEvent(
-                "layerfeatureunselectall",
+            lizMap.events.triggerEvent("layerfeatureunselectall",
                 { 'featureType': $('#selectiontool-layer-list').val(), 'updateDrawing': true}
             );
             return false;
@@ -3262,14 +3230,12 @@ var lizAttributeTable = function() {
 
             var aName = $('#selectiontool-layer-list').val();
             if( $(this).hasClass('active') ) {
-                lizMap.events.triggerEvent(
-                    "layerfeatureremovefilter",
+                lizMap.events.triggerEvent("layerfeatureremovefilter",
                     { 'featureType': aName}
                 );
                 lizMap.lizmapLayerFilterActive = null;
             } else {
-                lizMap.events.triggerEvent(
-                    "layerfeaturefilterselected",
+                lizMap.events.triggerEvent("layerfeaturefilterselected",
                     { 'featureType': aName}
                 );
                 lizMap.lizmapLayerFilterActive = aName;

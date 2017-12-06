@@ -115,8 +115,7 @@ var lizDataviz = function() {
 
         $('#dataviz-waiter').hide();
 
-        lizMap.events.triggerEvent(
-            "datavizplotloaded",
+        lizMap.events.triggerEvent( "datavizplotloaded",
             {'id':id}
         );
     }

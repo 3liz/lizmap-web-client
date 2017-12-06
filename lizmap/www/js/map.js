@@ -1492,8 +1492,7 @@ var lizMap = function() {
       //map.zoomToExtent(bbox);
 
       // Trigger event
-      lizMap.events.triggerEvent(
-        'lizmaplocatefeaturecanceled',
+      lizMap.events.triggerEvent('lizmaplocatefeaturecanceled',
         {
           'featureType': aName
         }
@@ -1529,8 +1528,7 @@ var lizMap = function() {
       var fid = val.split('.')[1];
 
       // Trigger event
-      lizMap.events.triggerEvent(
-        'lizmaplocatefeaturechanged',
+      lizMap.events.triggerEvent('lizmaplocatefeaturechanged',
         {
           'featureType': aName,
           'featureId': fid
@@ -1903,8 +1901,7 @@ var lizMap = function() {
           map.setBaseLayer( blName );
 
           // Trigger event
-          lizMap.events.triggerEvent(
-            "lizmapbaselayerchanged",
+          lizMap.events.triggerEvent("lizmapbaselayerchanged",
             { 'layer': blName}
           );
 
@@ -2076,8 +2073,7 @@ var lizMap = function() {
             $('div.locate-layer span > input').val('');
 
             if( lizMap.lizmapLayerFilterActive ){
-                lizMap.events.triggerEvent(
-                  'lizmaplocatefeaturecanceled',
+                lizMap.events.triggerEvent('lizmaplocatefeaturecanceled',
                   {'featureType': lizMap.lizmapLayerFilterActive}
                 );
             }
@@ -2135,8 +2131,7 @@ var lizMap = function() {
       var id = $(this).parents('tr:first').attr('id');
       var itemType = id.split('-')[0];
       var itemName = id.split('-')[1];
-      lizMap.events.triggerEvent(
-        "lizmapswitcheritemselected",
+      lizMap.events.triggerEvent("lizmapswitcheritemselected",
         { 'name': itemName, 'type': itemType, 'selected': isSelected}
       );
 
@@ -2440,8 +2435,7 @@ var lizMap = function() {
           map.setBaseLayer( blName );
 
           // Trigger event
-          lizMap.events.triggerEvent(
-            "lizmapbaselayerchanged",
+          lizMap.events.triggerEvent("lizmapbaselayerchanged",
             { 'layer': blName}
           );
 
@@ -2636,8 +2630,7 @@ var lizMap = function() {
             $('div.locate-layer span > input').val('');
 
             if( lizMap.lizmapLayerFilterActive ){
-                lizMap.events.triggerEvent(
-                  'lizmaplocatefeaturecanceled',
+                lizMap.events.triggerEvent('lizmaplocatefeaturecanceled',
                   {'featureType': lizMap.lizmapLayerFilterActive}
                 );
             }
@@ -3212,8 +3205,7 @@ var lizMap = function() {
       if( l.name in slist ){
         l.params['STYLES'] = slist[l.name];
         l.redraw( true );
-        lizMap.events.triggerEvent(
-            "layerstylechanged",
+        lizMap.events.triggerEvent("layerstylechanged",
             { 'featureType': l.name}
         );
       }
@@ -3233,20 +3225,17 @@ var lizMap = function() {
           var ffids = sp[1].split();
 
           // Select feature
-          lizMap.events.triggerEvent(
-              'layerfeatureselected',
+          lizMap.events.triggerEvent('layerfeatureselected',
               {'featureType': flayer, 'fid': ffids, 'updateDrawing': false}
           );
           // Filter selected feature
-          lizMap.events.triggerEvent(
-              'layerfeaturefilterselected',
+          lizMap.events.triggerEvent('layerfeaturefilterselected',
               {'featureType': flayer}
           );
         }
     }else{
       if( lizMap.lizmapLayerFilterActive ){
-        lizMap.events.triggerEvent(
-            'layerfeatureremovefilter',
+        lizMap.events.triggerEvent('layerfeatureremovefilter',
             {'featureType': lizMap.lizmapLayerFilterActive}
         );
       }
@@ -3463,8 +3452,7 @@ var lizMap = function() {
                     addChildrenFeatureInfo( popup );
 
                     // Trigger event
-                    lizMap.events.triggerEvent(
-                        "lizmappopupdisplayed",
+                    lizMap.events.triggerEvent("lizmappopupdisplayed",
                         {'popup': popup}
                     );
                 }

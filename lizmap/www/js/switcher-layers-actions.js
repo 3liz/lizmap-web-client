@@ -46,8 +46,7 @@ var lizLayerActionButtons = function() {
             if('type' in itemConfig)
                 itemType = itemConfig.type;
 
-            lizMap.events.triggerEvent(
-                "lizmapswitcheritemselected",
+            lizMap.events.triggerEvent("lizmapswitcheritemselected",
                 { 'name': itemName, 'type': itemType, 'selected': false}
             );
 
@@ -296,8 +295,7 @@ var lizLayerActionButtons = function() {
             var layerName = lizMap.map.baseLayer.name;
             if( !layerName )
                 return false;
-            lizMap.events.triggerEvent(
-                "lizmapswitcheritemselected",
+            lizMap.events.triggerEvent("lizmapswitcheritemselected",
                 { 'name': layerName, 'type': 'baselayer', 'selected': true}
             );
 
@@ -369,8 +367,7 @@ var lizLayerActionButtons = function() {
                 layer.params['STYLES'] = eStyle;
                 layer.redraw( true );
 
-                lizMap.events.triggerEvent(
-                    "layerstylechanged",
+                lizMap.events.triggerEvent("layerstylechanged",
                     { 'featureType': eName}
                 );
             }
@@ -433,8 +430,7 @@ var lizLayerActionButtons = function() {
             if( !layerName )
                 return false;
 
-            lizMap.events.triggerEvent(
-                "layerfeatureremovefilter",
+            lizMap.events.triggerEvent("layerfeatureremovefilter",
                 { 'featureType': layerName}
             );
             lizMap.lizmapLayerFilterActive = null;
@@ -454,8 +450,7 @@ var lizLayerActionButtons = function() {
                     var subDockLayer = $('#hide-sub-dock').val();
                     if ( $('#switcher-baselayer-select').find('option[value="'+subDockLayer+'"]').length != 0 ) {
                         if ( subDockLayer != $('#switcher-baselayer-select').val() ) {
-                            lizMap.events.triggerEvent(
-                                "lizmapswitcheritemselected",
+                            lizMap.events.triggerEvent("lizmapswitcheritemselected",
                                 { 'name': e.layer.name, 'type': 'baselayer', 'selected': true}
                             );
                         }

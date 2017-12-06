@@ -549,8 +549,7 @@ var lizEdition = function() {
             }
 
             // Send signal
-            lizMap.events.triggerEvent(
-                "lizmapeditionformdisplayed",
+            lizMap.events.triggerEvent("lizmapeditionformdisplayed",
                 {
                     'layerId': editionLayer['id'],
                     'featureId': featureId,
@@ -639,8 +638,7 @@ var lizEdition = function() {
             var ev = 'lizmapeditionfeaturecreated';
             if( editionType == 'modifyFeature' )
                 ev = 'lizmapeditionfeaturemodified';
-            lizMap.events.triggerEvent(
-                ev,
+            lizMap.events.triggerEvent(ev,
                 { 'layerId': layerId}
             );
 
@@ -890,8 +888,7 @@ var lizEdition = function() {
             if ( aCallback )
                 aCallback( aLayerId, aFeatureId );
 
-            lizMap.events.triggerEvent(
-                "lizmapeditionfeaturedeleted",
+            lizMap.events.triggerEvent("lizmapeditionfeaturedeleted",
                 {
                     'layerId': aLayerId,
                     'featureId': aFeatureId,
@@ -1153,8 +1150,7 @@ var lizEdition = function() {
 
 
                         // Trigger event
-                        lizMap.events.triggerEvent(
-                            "lizmappopupupdated",
+                        lizMap.events.triggerEvent("lizmappopupupdated",
                             {'popup': popup}
                         );
 
