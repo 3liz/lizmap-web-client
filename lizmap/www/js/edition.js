@@ -546,10 +546,12 @@ OpenLayers.Geometry.pointOnSegment = function(point, segment) {
                 if ( $(this).is(':checked') ) {
                     $('#edition-point-coord-x').attr('disabled','disabled');
                     $('#edition-point-coord-y').attr('disabled','disabled');
-                    var geometryType = editionLayer['config'].geometryType;
-                    var vertex = lizMap.controls.geolocation.layer.features[0].geometry;
-                    var px = editCtrls[geometryType].handler.layer.getViewPortPxFromLonLat({lon:vertex.x,lat:vertex.y});
-                    editCtrls[geometryType].handler.modifyFeature(px);
+                    if ( lizMap.controls.geolocation.layer.features.length != 0 ) {
+                        var geometryType = editionLayer['config'].geometryType;
+                        var vertex = lizMap.controls.geolocation.layer.features[0].geometry;
+                        var px = editCtrls[geometryType].handler.layer.getViewPortPxFromLonLat({lon:vertex.x,lat:vertex.y});
+                        editCtrls[geometryType].handler.modifyFeature(px);
+                    }
                 } else {
                     $('#edition-point-coord-x').removeAttr('disabled');
                     $('#edition-point-coord-y').removeAttr('disabled');
