@@ -3945,14 +3945,14 @@ var lizMap = function() {
         var exbl = externalBaselayersReplacement[activeBaseLayerName];
         if( exbl in config.layers ) {
             var activeBaseLayerConfig = config.layers[exbl];
-            if ( 'id' in activeBaseLayerConfig && 'abstract' in activeBaseLayerConfig ) {
-                if ( 'useLayerIDs' in config.options && config.options.useLayerIDs == 'True' )
-                    printLayers.push(activeBaseLayerConfig.id);
-                else
-                    printLayers.push(exbl);
-                styleLayers.push('default');
-        opacityLayers.push(255);
+            if ( 'id' in activeBaseLayerConfig && 'useLayerIDs' in config.options && config.options.useLayerIDs == 'True' ){
+                printLayers.push(activeBaseLayerConfig.id);
             }
+            else{
+                printLayers.push(exbl);
+            }
+            styleLayers.push('default');
+            opacityLayers.push(255);
         }
       }
 
