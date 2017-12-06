@@ -529,6 +529,15 @@ OpenLayers.Geometry.pointOnSegment = function(point, segment) {
                 }
                 return false;
             });
+            $('#edition-point-coord-crs').change(function(){
+                var geometryType = editionLayer['config'].geometryType;
+                var vertex = editCtrls[geometryType].handler.point.geometry.clone();
+                // Get SRID and transform geometry
+                var srid = $(this).val();
+                vertex.transform( editionLayer['ol'].projection,'EPSG:'+srid );
+                $('#edition-point-coord-x').val(vertex.x);
+                $('#edition-point-coord-y').val(vertex.y);
+            });
             $('#edition-point-coord-x').keyup(keyUpPointCoord);
             $('#edition-point-coord-y').keyup(keyUpPointCoord);
             $('#edition-point-coord-geolocation').change(function(){
