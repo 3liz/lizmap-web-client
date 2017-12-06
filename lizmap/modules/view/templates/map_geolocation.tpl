@@ -9,6 +9,6 @@
   <div class="menu-content">
     <button id="geolocation-center" class="btn btn-small btn-primary" disabled="disabled"><span class="icon"></span>&nbsp;{@view~map.geolocate.toolbar.center@}</button>
     <button id="geolocation-bind" class="btn btn-small btn-primary" disabled="disabled"><span class="icon"></span>&nbsp;{@view~map.geolocate.toolbar.bind@}</button>
-    <button id="geolocation-stop" class="btn btn-small btn-primary" disabled="disabled"><span class="icon"></span>&nbsp;Stop</button>
+    <button id="geolocation-stop" class="btn btn-small btn-primary" disabled="disabled"><span class="icon"></span>&nbsp;{@view~map.geolocate.toolbar.stop@}</button>
   </div>
 </div>
