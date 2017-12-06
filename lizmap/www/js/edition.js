@@ -81,7 +81,7 @@ OpenLayers.Geometry.pointOnSegment = function(point, segment) {
     return false;
 };
 
-    function deactivatePointCoord() {
+    function deactivateDrawFeature() {
         $('#edition-point-coord-crs-layer').html(lizDict['edition.point.coord.crs.layer']).val('').hide();
         $('#edition-point-coord-crs-map').html(lizDict['edition.point.coord.crs.map']).val('').hide();
         $('#edition-point-coord-x').val('');
@@ -92,9 +92,16 @@ OpenLayers.Geometry.pointOnSegment = function(point, segment) {
         $('#edition-point-coord-form').hide();
         $('#edition-point-coord-form-expander i').removeClass('icon-chevron-down').addClass('icon-chevron-right');
         $('#edition-point-coord-form-group').hide();
+
+        lizMap.events.triggerEvent("lizmapeditiondrawfeaturedeactivated",
+            {
+                'layerId': editionLayer['id'],
+                'editionConfig': editionLayer['config']
+            }
+        );
     }
 
-    function activatePointCoord() {
+    function activateDrawFeature() {
         var eform = $('#edition-form-container form');
         var srid = eform.find('input[name="liz_srid"]').val();
         if ( srid != '' && !('EPSG:'+srid in Proj4js.defs) )
@@ -111,6 +118,13 @@ OpenLayers.Geometry.pointOnSegment = function(point, segment) {
         else
             $('#edition-point-coord-add').show();
         $('#edition-point-coord-form').show();
+
+        lizMap.events.triggerEvent("lizmapeditiondrawfeatureactivated",
+            {
+                'layerId': editionLayer['id'],
+                'editionConfig': editionLayer['config']
+            }
+        );
     }
 
     function keyUpPointCoord() {
@@ -365,34 +379,22 @@ OpenLayers.Geometry.pointOnSegment = function(point, segment) {
                 point: new OpenLayers.Control.DrawFeature(editLayer,
                      OpenLayers.Handler.Point,{
                         eventListeners: {
-                            activate: function() {
-                                activatePointCoord();
-                            },
-                            deactivate: function() {
-                                deactivatePointCoord();
-                            }
+                            activate: activateDrawFeature,
+                            deactivate: deactivateDrawFeature
                         }
                      }),
                 line: new OpenLayers.Control.DrawFeature(editLayer,
                     OpenLayers.Handler.Path,{
                         eventListeners: {
-                            activate: function() {
-                                activatePointCoord();
-                            },
-                            deactivate: function() {
-                                deactivatePointCoord();
-                            }
+                            activate: activateDrawFeature,
+                            deactivate: deactivateDrawFeature
                         }
                      }),
                 polygon: new OpenLayers.Control.DrawFeature(editLayer,
                     OpenLayers.Handler.Polygon,{
                         eventListeners: {
-                            activate: function() {
-                                activatePointCoord();
-                            },
-                            deactivate: function() {
-                                deactivatePointCoord();
-                            }
+                            activate: activateDrawFeature,
+                            deactivate: deactivateDrawFeature
                         }
                      }),
                 modify: new OpenLayers.Control.ModifyFeature(editLayer),
