@@ -166,7 +166,16 @@ class qgisForm {
         } else {
             $fieldNames = array();
             foreach( array_keys($this->formControls) as $k ) {
-                $fieldNames[] = '\''.$k.'\'';
+                // Get field name
+                $fName = $k;
+                $formControl =  $this->formControls[$fName];
+                // Change field name to choice for files upoad control
+                if ( $formControl->fieldEditType === 8
+                     or $formControl->fieldEditType === 'FileName'
+                     or $formControl->fieldEditType === 'Photo'
+                     or $formControl->fieldEditType === 'ExternalResource' )
+                     $fName = $fName.'_choice';
+                $fieldNames[] = '\''.$fName.'\'';
             }
             $template = '{form $form, "lizmap~edition:saveFeature", array(), "htmlbootstrap"}';
             $template.= '{formcontrols array('.implode(',',$fieldNames).')}';
