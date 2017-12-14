@@ -784,8 +784,8 @@ class qgisForm {
                 $formControl->ctrl->required = True;
             }
             // combobox
-            if ( array_key_exists('fieldEditable', $formControl->valueRelationData)
-                 and $formControl->valueRelationData['fieldEditable'] == '1'
+            if ( array_key_exists('useCompleter', $formControl->valueRelationData)
+                 and $formControl->valueRelationData['useCompleter'] == '1'
             ){
                 $formControl->ctrl->class = 'combobox';
             }
