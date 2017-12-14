@@ -612,6 +612,7 @@ class qgisFormControl{
         $value = (string)$this->edittype[0]->widgetv2config->attributes()->Value;
         $allowMulti = (string)$this->edittype[0]->widgetv2config->attributes()->AllowMulti;
         $filterExpression = (string)$this->edittype[0]->widgetv2config->attributes()->FilterExpression;
+        $useCompleter = (string)$this->edittype[0]->widgetv2config->attributes()->UseCompleter;
         $fieldEditable = (string)$this->edittype[0]->widgetv2config->attributes()->fieldEditable;
         $this->valueRelationData = array(
           "allowNull" => $allowNull,
@@ -621,6 +622,7 @@ class qgisFormControl{
           "value" => $value,
           "allowMulti" => $allowMulti,
           "filterExpression" => $filterExpression,
+          "useCompleter" => $useCompleter,
           "fieldEditable" => $fieldEditable
         );
 
