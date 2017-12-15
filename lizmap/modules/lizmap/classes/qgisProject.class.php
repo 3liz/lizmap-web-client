@@ -115,7 +115,7 @@ class qgisProject{
     }
 
     public function clearCache() {
-        $file = $this->repository->getPath().$this->key.'.qgs';
+        $file = $this->path;
         try {
             jCache::delete($file, 'qgisprojects');
         }
@@ -124,6 +124,10 @@ class qgisProject{
             // other error about the cache, let's log it
             jLog::log($e->getMessage(), 'error');
         }
+    }
+
+    public function getPath() {
+        return $this->path;
     }
 
     public function getData( $key ) {
@@ -255,6 +259,16 @@ class qgisProject{
      */
     public function getXmlLayerByKeyword( $key ){
         return $this->getXml()->xpath( "//maplayer/keywordList[value='$key']/parent::*" );
+    }
+
+    /**
+     * @FIXME: remove this method. Be sure it is not used in other projects.
+     * Data provided by the returned xml element should be extracted and encapsulated
+     * into an object. Xml should not be used by callers
+     * @deprecated
+     */
+    public function getXmlRelation( $relationId ){
+        return $this->getXml()->xpath( "//relation[@id='$relationId']" );
     }
 
     /**

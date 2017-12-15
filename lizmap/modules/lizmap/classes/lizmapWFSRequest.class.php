@@ -405,6 +405,10 @@ class lizmapWFSRequest extends lizmapOGCRequest {
         ";
 
         // feature id
+        // The feature ID is very fragile
+        // it needs to be an integer, and only one columnn, and must be unique
+        // this means some Lizmap features won't work with multiple keys or string ids
+        // for example when using a filter clause in this query, row_number() will be false
         $sql.= " Concat(
             '" . $this->params['typename'] . "',
             '.',

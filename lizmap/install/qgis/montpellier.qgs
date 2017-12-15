@@ -1,17 +1,19 @@
 <!DOCTYPE qgis PUBLIC 'http://mrcc.com/qgis.dtd' 'SYSTEM'>
-<qgis projectname="Montpellier - Transports" version="2.14.12-Essen">
+<qgis projectname="Montpellier - Transports" version="2.18.14">
   <title>Montpellier - Transports</title>
+  <autotransaction active="0"/>
+  <evaluateDefaultValues active="0"/>
   <layer-tree-group expanded="1" checked="Qt::PartiallyChecked" name="">
     <customproperties/>
     <layer-tree-group expanded="1" checked="Qt::PartiallyChecked" name="Edition">
       <customproperties/>
-      <layer-tree-layer expanded="0" checked="Qt::Checked" id="edition_point20130118171631518" name="points of interest">
+      <layer-tree-layer expanded="0" providerKey="spatialite" checked="Qt::Checked" id="edition_point20130118171631518" source="dbname='/home/dhont/public_html/lizmap/lizmap/install/qgis/edition/edition_db.sqlite' table=&quot;edition_point&quot; (geometry) sql=" name="points of interest">
         <customproperties/>
       </layer-tree-layer>
-      <layer-tree-layer expanded="0" checked="Qt::Unchecked" id="edition_line20130409161630329" name="edition_line">
+      <layer-tree-layer expanded="0" providerKey="spatialite" checked="Qt::Unchecked" id="edition_line20130409161630329" source="dbname='/home/dhont/public_html/lizmap/lizmap/install/qgis/edition/edition_db.sqlite' table=&quot;edition_line&quot; (geom) sql=" name="edition_line">
         <customproperties/>
       </layer-tree-layer>
-      <layer-tree-layer expanded="0" checked="Qt::Unchecked" id="edition_polygon20130409114333776" name="areas_of_interest">
+      <layer-tree-layer expanded="0" providerKey="spatialite" checked="Qt::Checked" id="edition_polygon20130409114333776" source="dbname='/home/dhont/public_html/lizmap/lizmap/install/qgis/edition/edition_db.sqlite' table=&quot;edition_polygon&quot; (geom) sql=" name="areas_of_interest">
         <customproperties/>
       </layer-tree-layer>
     </layer-tree-group>
@@ -19,28 +21,28 @@
       <customproperties/>
       <layer-tree-group expanded="1" checked="Qt::Checked" name="Bus">
         <customproperties/>
-        <layer-tree-layer expanded="0" checked="Qt::Checked" id="bus_stops20121106170806413" name="bus_stops">
+        <layer-tree-layer expanded="0" providerKey="ogr" checked="Qt::Checked" id="bus_stops20121106170806413" source="/home/dhont/public_html/lizmap/lizmap/install/qgis/data/vector/bus_stops.shp" name="bus_stops">
           <customproperties/>
         </layer-tree-layer>
-        <layer-tree-layer expanded="0" checked="Qt::Checked" id="bus20121102133611751" name="bus">
+        <layer-tree-layer expanded="0" providerKey="ogr" checked="Qt::Checked" id="bus20121102133611751" source="/home/dhont/public_html/lizmap/lizmap/install/qgis/data/vector/bus.shp" name="bus">
           <customproperties/>
         </layer-tree-layer>
       </layer-tree-group>
       <layer-tree-group expanded="1" checked="Qt::Checked" name="Tramway">
         <customproperties/>
-        <layer-tree-layer expanded="1" checked="Qt::Checked" id="tramway_ref20150612171109044" name="tramway_ref">
+        <layer-tree-layer expanded="1" providerKey="spatialite" checked="Qt::Checked" id="tramway_ref20150612171109044" source="dbname='/home/dhont/public_html/lizmap/lizmap/install/qgis/edition/transport.sqlite' table=&quot;tramway_ref&quot; sql=" name="tramway_ref">
           <customproperties/>
         </layer-tree-layer>
-        <layer-tree-layer expanded="1" checked="Qt::Checked" id="jointure_tram_stop20150328114216806" name="tramway_pivot">
+        <layer-tree-layer expanded="1" providerKey="spatialite" checked="Qt::Checked" id="jointure_tram_stop20150328114216806" source="dbname='/home/dhont/public_html/lizmap/lizmap/install/qgis/edition/transport.sqlite' table=&quot;jointure_tram_stop&quot; sql=" name="tramway_pivot">
           <customproperties/>
         </layer-tree-layer>
-        <layer-tree-layer expanded="1" checked="Qt::Checked" id="tram_stop_work20150416102656130" name="tram_stop_work">
+        <layer-tree-layer expanded="1" providerKey="spatialite" checked="Qt::Checked" id="tram_stop_work20150416102656130" source="dbname='/home/dhont/public_html/lizmap/lizmap/install/qgis/edition/transport.sqlite' table=&quot;tram_stop_work&quot; sql=" name="tram_stop_work">
           <customproperties/>
         </layer-tree-layer>
-        <layer-tree-layer expanded="1" checked="Qt::Checked" id="tramstop20150328114203878" name="tramstop">
+        <layer-tree-layer expanded="1" providerKey="spatialite" checked="Qt::Checked" id="tramstop20150328114203878" source="dbname='/home/dhont/public_html/lizmap/lizmap/install/qgis/edition/transport.sqlite' table=&quot;tramstop&quot; (geometry) sql=" name="tramstop">
           <customproperties/>
         </layer-tree-layer>
-        <layer-tree-layer expanded="1" checked="Qt::Checked" id="tramway20150328114206278" name="tramway">
+        <layer-tree-layer expanded="1" providerKey="spatialite" checked="Qt::Checked" id="tramway20150328114206278" source="dbname='/home/dhont/public_html/lizmap/lizmap/install/qgis/edition/transport.sqlite' table=&quot;tramway&quot; (geometry) sql=" name="tramway">
           <customproperties>
             <property key="showFeatureCount" value="1"/>
           </customproperties>
@@ -48,26 +50,26 @@
       </layer-tree-group>
       <layer-tree-group expanded="1" checked="Qt::PartiallyChecked" name="Buildings">
         <customproperties/>
-        <layer-tree-layer expanded="1" checked="Qt::Checked" id="publicbuildings20150420100958543" name="publicbuildings">
+        <layer-tree-layer expanded="1" providerKey="spatialite" checked="Qt::Checked" id="publicbuildings20150420100958543" source="dbname='/home/dhont/public_html/lizmap/lizmap/install/qgis/edition/transport.sqlite' table=&quot;publicbuildings&quot; (geom) sql=" name="publicbuildings">
           <customproperties/>
         </layer-tree-layer>
-        <layer-tree-layer expanded="1" checked="Qt::Unchecked" id="publicbuildings_tramstop20150420095614071" name="publicbuildings_tramstop">
+        <layer-tree-layer expanded="1" providerKey="spatialite" checked="Qt::Unchecked" id="publicbuildings_tramstop20150420095614071" source="dbname='/home/dhont/public_html/lizmap/lizmap/install/qgis/edition/transport.sqlite' table=&quot;publicbuildings_tramstop&quot; sql=" name="publicbuildings_tramstop">
           <customproperties/>
         </layer-tree-layer>
       </layer-tree-group>
     </layer-tree-group>
-    <layer-tree-layer expanded="1" checked="Qt::Checked" id="donnes_sociodemo_sous_quartiers20160121144525075" name="donnes_sociodemo_sous_quartiers">
+    <layer-tree-layer expanded="1" providerKey="ogr" checked="Qt::Checked" id="donnes_sociodemo_sous_quartiers20160121144525075" source="/home/dhont/public_html/lizmap/lizmap/install/qgis/data/vector/donnes_sociodemo_sous_quartiers.csv" name="donnes_sociodemo_sous_quartiers">
       <customproperties/>
     </layer-tree-layer>
-    <layer-tree-layer expanded="1" checked="Qt::Checked" id="SousQuartiers20160121124316563" name="SousQuartiers">
+    <layer-tree-layer expanded="1" providerKey="ogr" checked="Qt::Checked" id="SousQuartiers20160121124316563" source="/home/dhont/public_html/lizmap/lizmap/install/qgis/data/vector/VilleMTP_MTP_SousQuartiers_2011.shp" name="SousQuartiers">
       <customproperties/>
     </layer-tree-layer>
-    <layer-tree-layer expanded="0" checked="Qt::Checked" id="VilleMTP_MTP_Quartiers_2011_432620130116112610876" name="Quartiers">
+    <layer-tree-layer expanded="0" providerKey="ogr" checked="Qt::Checked" id="VilleMTP_MTP_Quartiers_2011_432620130116112610876" source="/home/dhont/public_html/lizmap/lizmap/install/qgis/data/vector/VilleMTP_MTP_Quartiers_2011_4326.shp" name="Quartiers">
       <customproperties/>
     </layer-tree-layer>
     <layer-tree-group expanded="1" checked="Qt::Unchecked" name="Overview">
       <customproperties/>
-      <layer-tree-layer expanded="0" checked="Qt::Unchecked" id="VilleMTP_MTP_Quartiers_2011_432620130116112351546" name="VilleMTP_MTP_Quartiers_2011_4326">
+      <layer-tree-layer expanded="0" providerKey="ogr" checked="Qt::Unchecked" id="VilleMTP_MTP_Quartiers_2011_432620130116112351546" source="/home/dhont/public_html/lizmap/lizmap/install/qgis/data/vector/VilleMTP_MTP_Quartiers_2011_4326.shp" name="VilleMTP_MTP_Quartiers_2011_4326">
         <customproperties/>
       </layer-tree-layer>
     </layer-tree-group>
@@ -75,13 +77,13 @@
       <customproperties/>
       <layer-tree-group expanded="1" checked="Qt::Checked" name="osm-stamen-toner">
         <customproperties/>
-        <layer-tree-layer expanded="0" checked="Qt::Checked" id="frmt_wms_openstreetmap_stamen_toner_tms20140610162911446" name="frmt_wms_openstreetmap_stamen_toner_tms">
+        <layer-tree-layer expanded="0" providerKey="gdal" checked="Qt::Checked" id="frmt_wms_openstreetmap_stamen_toner_tms20140610162911446" source="/home/dhont/public_html/lizmap/lizmap/install/qgis/data/raster/frmt_wms_openstreetmap_stamen_toner_tms.xml" name="frmt_wms_openstreetmap_stamen_toner_tms">
           <customproperties/>
         </layer-tree-layer>
       </layer-tree-group>
       <layer-tree-group expanded="1" checked="Qt::Unchecked" name="osm-mapnik">
         <customproperties/>
-        <layer-tree-layer expanded="0" checked="Qt::Unchecked" id="frmt_wms_openstreetmap_mapnik_tms20140610162910636" name="frmt_wms_openstreetmap_mapnik_tms">
+        <layer-tree-layer expanded="0" providerKey="gdal" checked="Qt::Unchecked" id="frmt_wms_openstreetmap_mapnik_tms20140610162910636" source="/home/dhont/public_html/lizmap/lizmap/install/qgis/data/raster/frmt_wms_openstreetmap_mapnik_tms.xml" name="frmt_wms_openstreetmap_mapnik_tms">
           <customproperties/>
         </layer-tree-layer>
       </layer-tree-group>
@@ -147,6 +149,7 @@
       <layer_coordinate_transform destAuthId="EPSG:3857" srcAuthId="EPSG:2154" srcDatumTransform="-1" destDatumTransform="-1" layerid="Monuments_Historiques20170509160204814"/>
       <layer_coordinate_transform destAuthId="EPSG:3857" srcAuthId="EPSG:4326" srcDatumTransform="-1" destDatumTransform="-1" layerid="average_tenants_owners20170509164213410"/>
       <layer_coordinate_transform destAuthId="EPSG:3857" srcAuthId="EPSG:3857" srcDatumTransform="-1" destDatumTransform="-1" layerid="frmt_wms_openstreetmap_stamen_toner_tms20140610162911446"/>
+      <layer_coordinate_transform destAuthId="EPSG:3857" srcAuthId="EPSG:4326" srcDatumTransform="-1" destDatumTransform="-1" layerid="edition_polygon20130409114333776"/>
     </layer_coordinate_transform_info>
   </mapcanvas>
   <layer-tree-canvas>
@@ -183,9 +186,9 @@
           <legendlayerfile isInOverview="0" layerid="edition_line20130409161630329" visible="0"/>
         </filegroup>
       </legendlayer>
-      <legendlayer drawingOrder="-1" open="false" checked="Qt::Unchecked" name="areas_of_interest" showFeatureCount="0">
+      <legendlayer drawingOrder="-1" open="false" checked="Qt::Checked" name="areas_of_interest" showFeatureCount="0">
         <filegroup open="false" hidden="false">
-          <legendlayerfile isInOverview="0" layerid="edition_polygon20130409114333776" visible="0"/>
+          <legendlayerfile isInOverview="0" layerid="edition_polygon20130409114333776" visible="1"/>
         </filegroup>
       </legendlayer>
     </legendgroup>
@@ -282,7 +285,7 @@
     </legendgroup>
   </legend>
   <Composer title="Composeur1" visible="0">
-    <Composition resizeToContentsMarginLeft="0" snapping="0" showPages="1" guidesVisible="1" resizeToContentsMarginTop="0" alignmentSnap="1" printResolution="300" paperWidth="297" gridVisible="0" snapGridOffsetX="0" smartGuides="1" snapGridOffsetY="0" resizeToContentsMarginRight="0" snapTolerancePixels="10" printAsRaster="0" generateWorldFile="0" paperHeight="210" numPages="1" snapGridResolution="1" resizeToContentsMarginBottom="0">
+    <Composition resizeToContentsMarginLeft="0" snapping="0" showPages="1" guidesVisible="1" resizeToContentsMarginTop="0" worldFileMap="" alignmentSnap="1" printResolution="300" paperWidth="297" gridVisible="0" snapGridOffsetX="0" smartGuides="1" snapGridOffsetY="0" resizeToContentsMarginRight="0" snapTolerancePixels="10" printAsRaster="0" generateWorldFile="0" paperHeight="210" numPages="1" snapGridResolution="1" resizeToContentsMarginBottom="0">
       <symbol alpha="1" clip_to_extent="1" type="fill" name="">
         <layer pass="0" class="SimpleFill" locked="0">
           <prop k="border_width_map_unit_scale" v="0,0,0,0,0,0"/>
@@ -298,7 +301,7 @@
           <prop k="style" v="solid"/>
         </layer>
       </symbol>
-      <ComposerLegend symbolWidth="7" title="Legend" rasterBorderWidth="0" titleAlignment="1" map="0" wmsLegendWidth="50" rasterBorderColor="0,0,0,255" wrapChar="" fontColor="#000000" columnCount="1" wmsLegendHeight="25" columnSpace="2" symbolHeight="4" equalColumnWidth="0" resizeToContents="1" splitLayer="0" boxSpace="2" rasterBorder="1">
+      <ComposerLegend symbolWidth="7" title="Legend" rasterBorderWidth="0" titleAlignment="1" map="0" wmsLegendWidth="50" rasterBorderColor="0,0,0,255" wrapChar="" fontColor="#000000" legendFilterByAtlas="0" columnCount="1" wmsLegendHeight="25" columnSpace="2" symbolHeight="4" equalColumnWidth="0" resizeToContents="1" splitLayer="0" boxSpace="2" rasterBorder="1">
         <styles>
           <style marginBottom="2" name="title">
             <styleFont description="Ubuntu,16,-1,5,50,0,0,0,0,0" style=""/>
@@ -318,17 +321,17 @@
         </styles>
         <layer-tree-group expanded="1" checked="Qt::Checked" name="">
           <customproperties/>
-          <layer-tree-layer expanded="1" checked="Qt::Checked" id="edition_polygon20130409114333776" name="areas_of_interest">
+          <layer-tree-layer expanded="1" providerKey="spatialite" checked="Qt::Checked" id="edition_polygon20130409114333776" source="dbname='/home/dhont/public_html/lizmap/lizmap/install/qgis/edition/edition_db.sqlite' table=&quot;edition_polygon&quot; (geom) sql=" name="areas_of_interest">
             <customproperties>
               <property key="legend/title-style" value="subgroup"/>
             </customproperties>
           </layer-tree-layer>
-          <layer-tree-layer expanded="1" checked="Qt::Checked" id="edition_point20130118171631518" name="points of interest">
+          <layer-tree-layer expanded="1" providerKey="spatialite" checked="Qt::Checked" id="edition_point20130118171631518" source="dbname='/home/dhont/public_html/lizmap/lizmap/install/qgis/edition/edition_db.sqlite' table=&quot;edition_point&quot; (geometry) sql=" name="points of interest">
             <customproperties>
               <property key="legend/title-style" value="subgroup"/>
             </customproperties>
           </layer-tree-layer>
-          <layer-tree-layer expanded="1" checked="Qt::Checked" id="edition_line20130409161630329" name="edition_line">
+          <layer-tree-layer expanded="1" providerKey="spatialite" checked="Qt::Checked" id="edition_line20130409161630329" source="dbname='/home/dhont/public_html/lizmap/lizmap/install/qgis/edition/edition_db.sqlite' table=&quot;edition_line&quot; (geom) sql=" name="edition_line">
             <customproperties>
               <property key="legend/title-style" value="subgroup"/>
             </customproperties>
@@ -338,12 +341,12 @@
               <property key="legend/title-style" value="hidden"/>
             </customproperties>
           </layer-tree-layer>
-          <layer-tree-layer expanded="1" checked="Qt::Checked" id="frmt_wms_openstreetmap_mapnik_tms20140610162910636" name="frmt_wms_openstreetmap_mapnik_tms">
+          <layer-tree-layer expanded="1" providerKey="gdal" checked="Qt::Checked" id="frmt_wms_openstreetmap_mapnik_tms20140610162910636" source="/home/dhont/public_html/lizmap/lizmap/install/qgis/data/raster/frmt_wms_openstreetmap_mapnik_tms.xml" name="frmt_wms_openstreetmap_mapnik_tms">
             <customproperties>
               <property key="legend/title-style" value="subgroup"/>
             </customproperties>
           </layer-tree-layer>
-          <layer-tree-layer expanded="1" checked="Qt::Checked" id="frmt_wms_openstreetmap_stamen_toner_tms20140610162911446" name="frmt_wms_openstreetmap_stamen_toner_tms">
+          <layer-tree-layer expanded="1" providerKey="gdal" checked="Qt::Checked" id="frmt_wms_openstreetmap_stamen_toner_tms20140610162911446" source="/home/dhont/public_html/lizmap/lizmap/install/qgis/data/raster/frmt_wms_openstreetmap_stamen_toner_tms.xml" name="frmt_wms_openstreetmap_stamen_toner_tms">
             <customproperties>
               <property key="legend/title-style" value="subgroup"/>
             </customproperties>
@@ -380,7 +383,7 @@
           <customproperties/>
         </ComposerItem>
       </ComposerPicture>
-      <ComposerMap mapRotation="0" keepLayerSet="false" id="0" previewMode="Cache" drawCanvasItems="true">
+      <ComposerMap followPreset="false" mapRotation="0" keepLayerSet="false" followPresetName="" id="0" previewMode="Cache" drawCanvasItems="true">
         <Extent ymin="43.60159999999999769" xmin="3.8584299999999998" ymax="43.62462027445078405" xmax="3.89396999999999993"/>
         <LayerSet/>
         <Grid/>
@@ -412,6 +415,7 @@
                 <prop k="angle" v="0"/>
                 <prop k="color" v="0,0,0,255"/>
                 <prop k="horizontal_anchor_point" v="1"/>
+                <prop k="joinstyle" v="bevel"/>
                 <prop k="name" v="circle"/>
                 <prop k="offset" v="0,0"/>
                 <prop k="offset_map_unit_scale" v="0,0,0,0,0,0"/>
@@ -459,7 +463,7 @@
     </Composition>
   </Composer>
   <Composer title="Landscape A4" visible="0">
-    <Composition resizeToContentsMarginLeft="0" snapping="0" showPages="1" guidesVisible="1" resizeToContentsMarginTop="0" alignmentSnap="1" printResolution="300" paperWidth="297" gridVisible="0" snapGridOffsetX="0" smartGuides="1" snapGridOffsetY="0" resizeToContentsMarginRight="0" snapTolerancePixels="10" printAsRaster="0" generateWorldFile="0" paperHeight="210" numPages="2" snapGridResolution="10" resizeToContentsMarginBottom="0">
+    <Composition resizeToContentsMarginLeft="0" snapping="0" showPages="1" guidesVisible="1" resizeToContentsMarginTop="0" worldFileMap="" alignmentSnap="1" printResolution="300" paperWidth="297" gridVisible="0" snapGridOffsetX="0" smartGuides="1" snapGridOffsetY="0" resizeToContentsMarginRight="0" snapTolerancePixels="10" printAsRaster="0" generateWorldFile="0" paperHeight="210" numPages="2" snapGridResolution="10" resizeToContentsMarginBottom="0">
       <symbol alpha="1" clip_to_extent="1" type="fill" name="">
         <layer pass="0" class="SimpleFill" locked="0">
           <prop k="border_width_map_unit_scale" v="0,0,0,0,0,0"/>
@@ -487,7 +491,7 @@
           <customproperties/>
         </ComposerItem>
       </ComposerScaleBar>
-      <ComposerPicture resizeMode="0" svgBorderWidth="0.2" pictureRotation="0" pictureWidth="14.2361" svgFillColor="255,255,255,255" svgBorderColor="0,0,0,255" northMode="0" file="/usr/share/qgis/svg/arrows/Arrow_05.svg" northOffset="0" pictureHeight="14.2361" mapId="0" anchorPoint="4">
+      <ComposerPicture resizeMode="0" svgBorderWidth="0.2" pictureRotation="0" pictureWidth="14.2361" svgFillColor="255,255,255,255" svgBorderColor="0,0,0,255" northMode="0" file="/usr/share/qgis/svg/arrows/Arrow_05.svg" northOffset="0" pictureHeight="14.3234" mapId="0" anchorPoint="4">
         <ComposerItem pagey="191.227" page="1" id="" lastValidViewScaleFactor="3.66844" positionMode="0" positionLock="false" x="216.926" y="191.227" visibility="1" zValue="6" background="true" transparency="0" frameJoinStyle="miter" blendMode="0" width="14.2361" outlineWidth="0.3" excludeFromExports="0" uuid="{5fc27115-d5a9-44e3-aebe-e6199c6ac0fa}" height="16.2837" itemRotation="0" frame="false" pagex="216.926">
           <FrameColor alpha="255" red="0" blue="0" green="0"/>
           <BackgroundColor alpha="255" red="255" blue="255" green="255"/>
@@ -513,10 +517,10 @@
           <customproperties/>
         </ComposerItem>
       </ComposerLabel>
-      <ComposerMap mapRotation="0" keepLayerSet="true" id="1" previewMode="Cache" drawCanvasItems="true">
+      <ComposerMap followPreset="false" mapRotation="0" keepLayerSet="true" followPresetName="" id="1" previewMode="Cache" drawCanvasItems="true">
         <Extent ymin="43.55700000000000216" xmin="3.78988000000000014" ymax="43.69059872847996928" xmax="3.96975999999999996"/>
         <LayerSet>
-          <Layer>VilleMTP_MTP_Quartiers_2011_432620130116112351546</Layer>
+          <Layer provider="ogr" source="/home/dhont/public_html/lizmap/lizmap/install/qgis/data/vector/VilleMTP_MTP_Quartiers_2011_4326.shp" name="VilleMTP_MTP_Quartiers_2011_4326">VilleMTP_MTP_Quartiers_2011_432620130116112351546</Layer>
         </LayerSet>
         <Grid/>
         <ComposerMapGrid rightAnnotationDirection="0" gridFramePenColor="0,0,0,255" show="0" bottomAnnotationPosition="1" annotationPrecision="3" showAnnotation="0" topFrameDivisions="0" uuid="{79ab9045-ef71-4cf1-83f1-f90bfe64ad9f}" leftAnnotationDirection="0" topAnnotationPosition="1" rightAnnotationDisplay="0" offsetX="0" offsetY="0" rightFrameDivisions="0" gridStyle="0" annotationFontColor="0,0,0,255" intervalX="0" gridFrameSideFlags="15" intervalY="0" bottomAnnotationDirection="0" leftAnnotationDisplay="0" leftFrameDivisions="0" frameFillColor1="255,255,255,255" annotationExpression="" frameFillColor2="0,0,0,255" crossLength="3" gridFramePenThickness="0.5" bottomAnnotationDisplay="0" unit="0" topAnnotationDisplay="0" leftAnnotationPosition="1" blendMode="0" gridFrameStyle="0" rightAnnotationPosition="1" gridFrameWidth="2" name="Grille 1" annotationFormat="0" bottomFrameDivisions="0" topAnnotationDirection="0" frameAnnotationDistance="1">
@@ -547,6 +551,7 @@
                 <prop k="angle" v="0"/>
                 <prop k="color" v="0,0,0,255"/>
                 <prop k="horizontal_anchor_point" v="1"/>
+                <prop k="joinstyle" v="bevel"/>
                 <prop k="name" v="circle"/>
                 <prop k="offset" v="0,0"/>
                 <prop k="offset_map_unit_scale" v="0,0,0,0,0,0"/>
@@ -590,7 +595,7 @@
           <customproperties/>
         </ComposerItem>
       </ComposerMap>
-      <ComposerLegend symbolWidth="6" title="Légende" rasterBorderWidth="0" titleAlignment="1" map="0" wmsLegendWidth="50" rasterBorderColor="0,0,0,255" wrapChar="" fontColor="#000000" columnCount="1" wmsLegendHeight="25" columnSpace="2" symbolHeight="3" equalColumnWidth="1" resizeToContents="1" splitLayer="1" boxSpace="2" rasterBorder="1">
+      <ComposerLegend symbolWidth="6" title="Légende" rasterBorderWidth="0" titleAlignment="1" map="0" wmsLegendWidth="50" rasterBorderColor="0,0,0,255" wrapChar="" fontColor="#000000" legendFilterByAtlas="0" columnCount="1" wmsLegendHeight="25" columnSpace="2" symbolHeight="3" equalColumnWidth="1" resizeToContents="1" splitLayer="1" boxSpace="2" rasterBorder="1">
         <styles>
           <style marginBottom="2" name="title">
             <styleFont description="Ubuntu,14,-1,5,50,0,0,0,0,0" style=""/>
@@ -610,29 +615,29 @@
         </styles>
         <layer-tree-group expanded="1" checked="Qt::Checked" name="">
           <customproperties/>
-          <layer-tree-layer expanded="1" checked="Qt::Checked" id="edition_point20130118171631518" name="points of interest">
+          <layer-tree-layer expanded="1" providerKey="spatialite" checked="Qt::Checked" id="edition_point20130118171631518" source="dbname='/home/dhont/public_html/lizmap/lizmap/install/qgis/edition/edition_db.sqlite' table=&quot;edition_point&quot; (geometry) sql=" name="points of interest">
             <customproperties>
               <property key="legend/title-label" value="Points of interest"/>
               <property key="legend/title-style" value="subgroup"/>
             </customproperties>
           </layer-tree-layer>
-          <layer-tree-layer expanded="1" checked="Qt::Checked" id="edition_line20130409161630329" name="edition_line">
+          <layer-tree-layer expanded="1" providerKey="spatialite" checked="Qt::Checked" id="edition_line20130409161630329" source="dbname='/home/dhont/public_html/lizmap/lizmap/install/qgis/edition/edition_db.sqlite' table=&quot;edition_line&quot; (geom) sql=" name="edition_line">
             <customproperties>
               <property key="legend/title-label" value="Bicycle rides"/>
               <property key="legend/title-style" value="subgroup"/>
             </customproperties>
           </layer-tree-layer>
-          <layer-tree-layer expanded="1" checked="Qt::Checked" id="edition_polygon20130409114333776" name="areas_of_interest">
+          <layer-tree-layer expanded="1" providerKey="spatialite" checked="Qt::Checked" id="edition_polygon20130409114333776" source="dbname='/home/dhont/public_html/lizmap/lizmap/install/qgis/edition/edition_db.sqlite' table=&quot;edition_polygon&quot; (geom) sql=" name="areas_of_interest">
             <customproperties>
               <property key="legend/title-style" value="subgroup"/>
             </customproperties>
           </layer-tree-layer>
-          <layer-tree-layer expanded="1" checked="Qt::Checked" id="bus_stops20121106170806413" name="bus_stops">
+          <layer-tree-layer expanded="1" providerKey="ogr" checked="Qt::Checked" id="bus_stops20121106170806413" source="/home/dhont/public_html/lizmap/lizmap/install/qgis/data/vector/bus_stops.shp" name="bus_stops">
             <customproperties>
               <property key="legend/title-style" value="hidden"/>
             </customproperties>
           </layer-tree-layer>
-          <layer-tree-layer expanded="1" checked="Qt::Checked" id="VilleMTP_MTP_Quartiers_2011_432620130116112610876" name="Quartiers">
+          <layer-tree-layer expanded="1" providerKey="ogr" checked="Qt::Checked" id="VilleMTP_MTP_Quartiers_2011_432620130116112610876" source="/home/dhont/public_html/lizmap/lizmap/install/qgis/data/vector/VilleMTP_MTP_Quartiers_2011_4326.shp" name="Quartiers">
             <customproperties>
               <property key="legend/title-style" value="subgroup"/>
             </customproperties>
@@ -650,7 +655,7 @@
           <customproperties/>
         </ComposerItem>
       </ComposerLegend>
-      <ComposerMap mapRotation="0" keepLayerSet="false" id="0" previewMode="Cache" drawCanvasItems="true">
+      <ComposerMap followPreset="false" mapRotation="0" keepLayerSet="false" followPresetName="" id="0" previewMode="Cache" drawCanvasItems="true">
         <Extent ymin="43.55210000000000292" xmin="3.77899999999999991" ymax="43.71518058811130203" xmax="3.98063000000000011"/>
         <LayerSet/>
         <Grid/>
@@ -682,6 +687,7 @@
                 <prop k="angle" v="0"/>
                 <prop k="color" v="0,0,0,255"/>
                 <prop k="horizontal_anchor_point" v="1"/>
+                <prop k="joinstyle" v="bevel"/>
                 <prop k="name" v="circle"/>
                 <prop k="offset" v="0,0"/>
                 <prop k="offset_map_unit_scale" v="0,0,0,0,0,0"/>
@@ -725,7 +731,7 @@
           <customproperties/>
         </ComposerItem>
       </ComposerMap>
-      <ComposerAttributeTableV2 source="0" showGrid="1" maxFeatures="30" resizeMode="0" filterFeatures="false" featureFilter="" emptyTableMode="0" wrapString="" wrapBehaviour="0" headerMode="0" backgroundColor="255,255,255,255" showEmptyRows="0" emptyTableMessage="" showOnlyVisibleFeatures="1" vectorLayer="tram_stop_work20150416102656130" composerMap="0" headerHAlignment="0" contentFontColor="0,0,0,255" headerFontColor="0,0,0,255" cellMargin="1" filterToAtlasIntersection="0" relationId="" gridStrokeWidth="0.5" gridColor="0,0,0,255" showUniqueRowsOnly="0">
+      <ComposerAttributeTableV2 vectorLayerName="tram_stop_work" source="0" showGrid="1" maxFeatures="30" resizeMode="0" filterFeatures="false" featureFilter="" emptyTableMode="0" wrapString="" wrapBehaviour="0" headerMode="0" backgroundColor="255,255,255,255" showEmptyRows="0" emptyTableMessage="" showOnlyVisibleFeatures="1" vectorLayer="tram_stop_work20150416102656130" vectorLayerSource="dbname='/home/dhont/public_html/lizmap/lizmap/install/qgis/edition/transport.sqlite' table=&quot;tram_stop_work&quot; sql=" composerMap="0" headerHAlignment="0" contentFontColor="0,0,0,255" headerFontColor="0,0,0,255" cellMargin="1" filterToAtlasIntersection="0" relationId="" gridStrokeWidth="0.5" gridColor="0,0,0,255" showUniqueRowsOnly="0" vectorLayerProvider="spatialite">
         <headerFontProperties description="Ubuntu,11,-1,5,50,0,0,0,0,0" style=""/>
         <contentFontProperties description="Ubuntu,11,-1,5,50,0,0,0,0,0" style=""/>
         <displayColumns>
@@ -769,7 +775,7 @@
     </Composition>
   </Composer>
   <projectlayers>
-    <maplayer minimumScale="-4.65661e-10" maximumScale="1e+08" simplifyDrawingHints="1" minLabelScale="0" maxLabelScale="1e+08" simplifyDrawingTol="1" geometry="Polygon" simplifyMaxScale="1" type="vector" hasScaleBasedVisibilityFlag="0" simplifyLocal="1" scaleBasedLabelVisibilityFlag="0">
+    <maplayer simplifyAlgorithm="0" minimumScale="-4.65661e-10" maximumScale="1e+08" simplifyDrawingHints="1" minLabelScale="0" maxLabelScale="1e+08" simplifyDrawingTol="1" readOnly="0" geometry="Polygon" simplifyMaxScale="1" type="vector" hasScaleBasedVisibilityFlag="0" simplifyLocal="1" scaleBasedLabelVisibilityFlag="0">
       <extent>
         <xmin>765145.88230000005569309</xmin>
         <ymin>6274561.22229999955743551</ymin>
@@ -795,7 +801,6 @@
         </spatialrefsys>
       </srs>
       <provider encoding="ISO-8859-1">ogr</provider>
-      <previewExpression>COALESCE( "QUARTMNO", '&lt;NULL>' )</previewExpression>
       <vectorjoins>
         <join hasCustomPrefix="1" joinFieldName="squartmno" customPrefix="socio_" targetFieldName="SQUARTMNO" memoryCache="0" joinLayerId="donnes_sociodemo_sous_quartiers20160121144525075"/>
         <join joinFieldName="QUARTMNO" targetFieldName="QUARTMNO" memoryCache="0" joinLayerId="VilleMTP_MTP_Quartiers_2011_432620130116112610876">
@@ -814,37 +819,37 @@
       </map-layer-style-manager>
       <edittypes>
         <edittype widgetv2type="TextEdit" name="QUARTMNO">
-          <widgetv2config IsMultiline="0" fieldEditable="1" UseHtml="0" labelOnTop="0"/>
+          <widgetv2config IsMultiline="0" fieldEditable="1" constraint="" UseHtml="0" labelOnTop="0" constraintDescription="" notNull="0"/>
         </edittype>
         <edittype widgetv2type="TextEdit" name="SQUARTMNO">
-          <widgetv2config IsMultiline="0" fieldEditable="1" UseHtml="0" labelOnTop="0"/>
+          <widgetv2config IsMultiline="0" fieldEditable="1" constraint="" UseHtml="0" labelOnTop="0" constraintDescription="" notNull="0"/>
         </edittype>
         <edittype widgetv2type="TextEdit" name="LIBSQUART">
-          <widgetv2config IsMultiline="0" fieldEditable="1" UseHtml="0" labelOnTop="0"/>
+          <widgetv2config IsMultiline="0" fieldEditable="1" constraint="" UseHtml="0" labelOnTop="0" constraintDescription="" notNull="0"/>
         </edittype>
         <edittype widgetv2type="TextEdit" name="socio_population_2009">
-          <widgetv2config IsMultiline="0" fieldEditable="0" UseHtml="0" labelOnTop="0"/>
+          <widgetv2config IsMultiline="0" fieldEditable="0" constraint="" UseHtml="0" labelOnTop="0" constraintDescription="" notNull="0"/>
         </edittype>
         <edittype widgetv2type="TextEdit" name="socio_population_percentage">
-          <widgetv2config IsMultiline="0" fieldEditable="0" UseHtml="0" labelOnTop="0"/>
+          <widgetv2config IsMultiline="0" fieldEditable="0" constraint="" UseHtml="0" labelOnTop="0" constraintDescription="" notNull="0"/>
         </edittype>
         <edittype widgetv2type="TextEdit" name="socio_average_income">
-          <widgetv2config IsMultiline="0" fieldEditable="0" UseHtml="0" labelOnTop="0"/>
+          <widgetv2config IsMultiline="0" fieldEditable="0" constraint="" UseHtml="0" labelOnTop="0" constraintDescription="" notNull="0"/>
         </edittype>
         <edittype widgetv2type="TextEdit" name="socio_prop_percentage">
-          <widgetv2config IsMultiline="0" fieldEditable="0" UseHtml="0" labelOnTop="0"/>
+          <widgetv2config IsMultiline="0" fieldEditable="0" constraint="" UseHtml="0" labelOnTop="0" constraintDescription="" notNull="0"/>
         </edittype>
         <edittype widgetv2type="TextEdit" name="socio_loc_percentage">
-          <widgetv2config IsMultiline="0" fieldEditable="0" UseHtml="0" labelOnTop="0"/>
+          <widgetv2config IsMultiline="0" fieldEditable="0" constraint="" UseHtml="0" labelOnTop="0" constraintDescription="" notNull="0"/>
         </edittype>
         <edittype widgetv2type="TextEdit" name="Quartiers_LIBQUART">
-          <widgetv2config IsMultiline="0" fieldEditable="0" UseHtml="0" labelOnTop="0"/>
+          <widgetv2config IsMultiline="0" fieldEditable="0" constraint="" UseHtml="0" labelOnTop="0" constraintDescription="" notNull="0"/>
         </edittype>
         <edittype widgetv2type="TextEdit" name="popdensity">
-          <widgetv2config IsMultiline="0" fieldEditable="0" UseHtml="0" labelOnTop="0"/>
+          <widgetv2config IsMultiline="0" fieldEditable="0" constraint="" UseHtml="0" labelOnTop="0" constraintDescription="" notNull="0"/>
         </edittype>
         <edittype widgetv2type="TextEdit" name="area">
-          <widgetv2config IsMultiline="0" fieldEditable="0" UseHtml="0" labelOnTop="0"/>
+          <widgetv2config IsMultiline="0" fieldEditable="0" constraint="" UseHtml="0" labelOnTop="0" constraintDescription="" notNull="0"/>
         </edittype>
       </edittypes>
       <renderer-v2 forceraster="0" symbollevels="0" type="singleSymbol" enableorderby="0">
@@ -1046,33 +1051,58 @@
         <multilineenabled fieldname="" on=""/>
         <selectedonly on=""/>
       </labelattributes>
-      <SingleCategoryDiagramRenderer diagramType="Pie">
-        <DiagramCategory penColor="#000000" labelPlacementMethod="XHeight" penWidth="0" diagramOrientation="Up" minimumSize="0" barWidth="5" penAlpha="255" maxScaleDenominator="1e+08" backgroundColor="#ffffff" transparency="0" width="15" scaleDependency="Area" backgroundAlpha="255" angleOffset="1440" scaleBasedVisibility="0" enabled="0" height="15" sizeType="MM" minScaleDenominator="-4.65661e-10">
+      <SingleCategoryDiagramRenderer diagramType="Pie" sizeLegend="0" attributeLegend="1">
+        <DiagramCategory penColor="#000000" labelPlacementMethod="XHeight" penWidth="0" diagramOrientation="Up" sizeScale="0,0,0,0,0,0" minimumSize="0" barWidth="5" penAlpha="255" maxScaleDenominator="1e+08" backgroundColor="#ffffff" transparency="0" width="15" scaleDependency="Area" backgroundAlpha="255" angleOffset="1440" scaleBasedVisibility="0" enabled="0" height="15" lineSizeScale="0,0,0,0,0,0" sizeType="MM" lineSizeType="MM" minScaleDenominator="-4.65661e-10">
           <fontProperties description="Ubuntu,11,-1,5,50,0,0,0,0,0" style=""/>
           <attribute field="" color="#000000" label=""/>
         </DiagramCategory>
+        <symbol alpha="1" clip_to_extent="1" type="marker" name="sizeSymbol">
+          <layer pass="0" class="SimpleMarker" locked="0">
+            <prop k="angle" v="0"/>
+            <prop k="color" v="255,0,0,255"/>
+            <prop k="horizontal_anchor_point" v="1"/>
+            <prop k="joinstyle" v="bevel"/>
+            <prop k="name" v="circle"/>
+            <prop k="offset" v="0,0"/>
+            <prop k="offset_map_unit_scale" v="0,0,0,0,0,0"/>
+            <prop k="offset_unit" v="MM"/>
+            <prop k="outline_color" v="0,0,0,255"/>
+            <prop k="outline_style" v="solid"/>
+            <prop k="outline_width" v="0"/>
+            <prop k="outline_width_map_unit_scale" v="0,0,0,0,0,0"/>
+            <prop k="outline_width_unit" v="MM"/>
+            <prop k="scale_method" v="diameter"/>
+            <prop k="size" v="2"/>
+            <prop k="size_map_unit_scale" v="0,0,0,0,0,0"/>
+            <prop k="size_unit" v="MM"/>
+            <prop k="vertical_anchor_point" v="1"/>
+          </layer>
+        </symbol>
       </SingleCategoryDiagramRenderer>
-      <DiagramLayerSettings yPosColumn="-1" linePlacementFlags="10" placement="0" dist="0" xPosColumn="-1" priority="0" obstacle="0" zIndex="0" showAll="1"/>
+      <DiagramLayerSettings yPosColumn="-1" showColumn="0" linePlacementFlags="10" placement="0" dist="0" xPosColumn="-1" priority="0" obstacle="0" zIndex="0" showAll="1"/>
       <annotationform>.</annotationform>
       <aliases>
-        <alias field="LIBSQUART" index="2" name="Name"/>
         <alias field="QUARTMNO" index="0" name="District"/>
-        <alias field="Quartiers_LIBQUART" index="8" name="District"/>
         <alias field="SQUARTMNO" index="1" name="Code"/>
-        <alias field="area" index="10" name="Area ( km2)"/>
-        <alias field="popdensity" index="9" name="Density ( inhabitants / km2 )"/>
-        <alias field="socio_average_income" index="5" name="Average income (€)"/>
-        <alias field="socio_loc_percentage" index="7" name="Tenants (%)"/>
+        <alias field="LIBSQUART" index="2" name="Name"/>
         <alias field="socio_population_2009" index="3" name="Population (2009)"/>
         <alias field="socio_population_percentage" index="4" name="% population Montpellier"/>
+        <alias field="socio_average_income" index="5" name="Average income (€)"/>
         <alias field="socio_prop_percentage" index="6" name="Owners (%)"/>
+        <alias field="socio_loc_percentage" index="7" name="Tenants (%)"/>
+        <alias field="Quartiers_LIBQUART" index="8" name="District"/>
+        <alias field="popdensity" index="9" name="Density ( inhabitants / km2 )"/>
+        <alias field="area" index="10" name="Area ( km2)"/>
       </aliases>
       <excludeAttributesWMS>
         <attribute>SQUARTMNO</attribute>
         <attribute>QUARTMNO</attribute>
       </excludeAttributesWMS>
       <excludeAttributesWFS/>
-      <attributeactions/>
+      <attributeactions default="0"/>
+      <attributetableconfig actionWidgetStyle="dropDown" sortExpression="" sortOrder="0">
+        <columns/>
+      </attributetableconfig>
       <editform>.</editform>
       <editforminit/>
       <editforminitcodesource>0</editforminitcodesource>
@@ -1100,8 +1130,22 @@ def my_form_open(dialog, layer, feature):
         <rowstyles/>
         <fieldstyles/>
       </conditionalstyles>
+      <defaults>
+        <default field="QUARTMNO" expression=""/>
+        <default field="SQUARTMNO" expression=""/>
+        <default field="LIBSQUART" expression=""/>
+        <default field="socio_population_2009" expression=""/>
+        <default field="socio_population_percentage" expression=""/>
+        <default field="socio_average_income" expression=""/>
+        <default field="socio_prop_percentage" expression=""/>
+        <default field="socio_loc_percentage" expression=""/>
+        <default field="Quartiers_LIBQUART" expression=""/>
+        <default field="popdensity" expression=""/>
+        <default field="area" expression=""/>
+      </defaults>
+      <previewExpression>COALESCE( "QUARTMNO", '&lt;NULL>' )</previewExpression>
     </maplayer>
-    <maplayer minimumScale="0" maximumScale="1e+08" simplifyDrawingHints="1" minLabelScale="1" maxLabelScale="1e+08" simplifyDrawingTol="1" geometry="Polygon" simplifyMaxScale="1" type="vector" hasScaleBasedVisibilityFlag="1" simplifyLocal="1" scaleBasedLabelVisibilityFlag="0">
+    <maplayer simplifyAlgorithm="0" minimumScale="0" maximumScale="1e+08" simplifyDrawingHints="1" minLabelScale="1" maxLabelScale="1e+08" simplifyDrawingTol="1" readOnly="0" geometry="Polygon" simplifyMaxScale="1" type="vector" hasScaleBasedVisibilityFlag="1" simplifyLocal="1" scaleBasedLabelVisibilityFlag="0">
       <extent>
         <xmin>3.80707036695971279</xmin>
         <ymin>43.56670409545019851</ymin>
@@ -1127,7 +1171,6 @@ def my_form_open(dialog, layer, feature):
         </spatialrefsys>
       </srs>
       <provider encoding="UTF-8">ogr</provider>
-      <previewExpression></previewExpression>
       <vectorjoins/>
       <layerDependencies/>
       <expressionfields/>
@@ -1136,22 +1179,22 @@ def my_form_open(dialog, layer, feature):
       </map-layer-style-manager>
       <edittypes>
         <edittype widgetv2type="TextEdit" name="QUARTIER">
-          <widgetv2config IsMultiline="0" fieldEditable="1" UseHtml="0" labelOnTop="0"/>
+          <widgetv2config IsMultiline="0" fieldEditable="1" constraint="" UseHtml="0" labelOnTop="0" constraintDescription="" notNull="0"/>
         </edittype>
         <edittype widgetv2type="TextEdit" name="QUARTMNO">
-          <widgetv2config IsMultiline="0" fieldEditable="1" UseHtml="0" labelOnTop="0"/>
+          <widgetv2config IsMultiline="0" fieldEditable="1" constraint="" UseHtml="0" labelOnTop="0" constraintDescription="" notNull="0"/>
         </edittype>
         <edittype widgetv2type="TextEdit" name="LIBQUART">
-          <widgetv2config IsMultiline="0" fieldEditable="1" UseHtml="0" labelOnTop="0"/>
+          <widgetv2config IsMultiline="0" fieldEditable="1" constraint="" UseHtml="0" labelOnTop="0" constraintDescription="" notNull="0"/>
         </edittype>
         <edittype widgetv2type="TextEdit" name="SQUARTMNO">
-          <widgetv2config IsMultiline="0" fieldEditable="1" UseHtml="0" labelOnTop="0"/>
+          <widgetv2config IsMultiline="0" fieldEditable="1" constraint="" UseHtml="0" labelOnTop="0" constraintDescription="" notNull="0"/>
         </edittype>
         <edittype widgetv2type="TextEdit" name="photo">
-          <widgetv2config IsMultiline="0" fieldEditable="1" UseHtml="0" labelOnTop="0"/>
+          <widgetv2config IsMultiline="0" fieldEditable="1" constraint="" UseHtml="0" labelOnTop="0" constraintDescription="" notNull="0"/>
         </edittype>
         <edittype widgetv2type="TextEdit" name="url">
-          <widgetv2config IsMultiline="0" fieldEditable="1" UseHtml="0" labelOnTop="0"/>
+          <widgetv2config IsMultiline="0" fieldEditable="1" constraint="" UseHtml="0" labelOnTop="0" constraintDescription="" notNull="0"/>
         </edittype>
       </edittypes>
       <renderer-v2 attr="LIBQUART" forceraster="0" symbollevels="0" type="categorizedSymbol" enableorderby="0">
@@ -1341,16 +1384,19 @@ def my_form_open(dialog, layer, feature):
       </labelattributes>
       <annotationform>.</annotationform>
       <aliases>
-        <alias field="LIBQUART" index="2" name=""/>
         <alias field="QUARTIER" index="0" name=""/>
         <alias field="QUARTMNO" index="1" name=""/>
+        <alias field="LIBQUART" index="2" name=""/>
         <alias field="SQUARTMNO" index="3" name=""/>
         <alias field="photo" index="4" name=""/>
         <alias field="url" index="5" name=""/>
       </aliases>
       <excludeAttributesWMS/>
       <excludeAttributesWFS/>
-      <attributeactions/>
+      <attributeactions default="0"/>
+      <attributetableconfig actionWidgetStyle="dropDown" sortExpression="" sortOrder="0">
+        <columns/>
+      </attributetableconfig>
       <editform>.</editform>
       <editforminit/>
       <editforminitcodesource>0</editforminitcodesource>
@@ -1363,8 +1409,17 @@ def my_form_open(dialog, layer, feature):
         <rowstyles/>
         <fieldstyles/>
       </conditionalstyles>
+      <defaults>
+        <default field="QUARTIER" expression=""/>
+        <default field="QUARTMNO" expression=""/>
+        <default field="LIBQUART" expression=""/>
+        <default field="SQUARTMNO" expression=""/>
+        <default field="photo" expression=""/>
+        <default field="url" expression=""/>
+      </defaults>
+      <previewExpression></previewExpression>
     </maplayer>
-    <maplayer minimumScale="0" maximumScale="1e+08" simplifyDrawingHints="1" minLabelScale="1" maxLabelScale="1e+08" simplifyDrawingTol="1" geometry="Polygon" simplifyMaxScale="1" type="vector" hasScaleBasedVisibilityFlag="0" simplifyLocal="1" scaleBasedLabelVisibilityFlag="0">
+    <maplayer simplifyAlgorithm="0" minimumScale="0" maximumScale="1e+08" simplifyDrawingHints="1" minLabelScale="1" maxLabelScale="1e+08" simplifyDrawingTol="1" readOnly="0" geometry="Polygon" simplifyMaxScale="1" type="vector" hasScaleBasedVisibilityFlag="0" simplifyLocal="1" scaleBasedLabelVisibilityFlag="0">
       <extent>
         <xmin>3.80707036695971279</xmin>
         <ymin>43.56670409545019851</ymin>
@@ -1390,7 +1445,6 @@ def my_form_open(dialog, layer, feature):
         </spatialrefsys>
       </srs>
       <provider encoding="UTF-8">ogr</provider>
-      <previewExpression>COALESCE( "LIBQUART", '&lt;NULL>' )</previewExpression>
       <vectorjoins/>
       <layerDependencies/>
       <expressionfields/>
@@ -1399,22 +1453,22 @@ def my_form_open(dialog, layer, feature):
       </map-layer-style-manager>
       <edittypes>
         <edittype widgetv2type="Hidden" name="QUARTIER">
-          <widgetv2config fieldEditable="1" labelOnTop="0"/>
+          <widgetv2config fieldEditable="1" constraint="" labelOnTop="0" constraintDescription="" notNull="0"/>
         </edittype>
         <edittype widgetv2type="Hidden" name="QUARTMNO">
-          <widgetv2config fieldEditable="1" labelOnTop="0"/>
+          <widgetv2config fieldEditable="1" constraint="" labelOnTop="0" constraintDescription="" notNull="0"/>
         </edittype>
         <edittype widgetv2type="TextEdit" name="LIBQUART">
-          <widgetv2config IsMultiline="0" fieldEditable="1" UseHtml="0" labelOnTop="0"/>
+          <widgetv2config IsMultiline="0" fieldEditable="1" constraint="" UseHtml="0" labelOnTop="0" constraintDescription="" notNull="0"/>
         </edittype>
         <edittype widgetv2type="Hidden" name="SQUARTMNO">
-          <widgetv2config fieldEditable="1" labelOnTop="0"/>
+          <widgetv2config fieldEditable="1" constraint="" labelOnTop="0" constraintDescription="" notNull="0"/>
         </edittype>
         <edittype widgetv2type="TextEdit" name="photo">
-          <widgetv2config IsMultiline="0" fieldEditable="1" UseHtml="0" labelOnTop="0"/>
+          <widgetv2config IsMultiline="0" fieldEditable="1" constraint="" UseHtml="0" labelOnTop="0" constraintDescription="" notNull="0"/>
         </edittype>
         <edittype widgetv2type="TextEdit" name="url">
-          <widgetv2config IsMultiline="0" fieldEditable="1" UseHtml="0" labelOnTop="0"/>
+          <widgetv2config IsMultiline="0" fieldEditable="1" constraint="" UseHtml="0" labelOnTop="0" constraintDescription="" notNull="0"/>
         </edittype>
       </edittypes>
       <renderer-v2 attr="LIBQUART" forceraster="0" symbollevels="0" type="categorizedSymbol" enableorderby="0">
@@ -1753,25 +1807,54 @@ def my_form_open(dialog, layer, feature):
         <multilineenabled fieldname="" on=""/>
         <selectedonly on=""/>
       </labelattributes>
-      <SingleCategoryDiagramRenderer diagramType="Pie">
-        <DiagramCategory penColor="#000000" labelPlacementMethod="XHeight" penWidth="0" diagramOrientation="Up" minimumSize="0" barWidth="5" penAlpha="255" maxScaleDenominator="1e+08" backgroundColor="#ffffff" transparency="0" width="15" scaleDependency="Area" backgroundAlpha="255" angleOffset="1440" scaleBasedVisibility="0" enabled="0" height="15" sizeType="MM" minScaleDenominator="0">
+      <SingleCategoryDiagramRenderer diagramType="Pie" sizeLegend="0" attributeLegend="1">
+        <DiagramCategory penColor="#000000" labelPlacementMethod="XHeight" penWidth="0" diagramOrientation="Up" sizeScale="0,0,0,0,0,0" minimumSize="0" barWidth="5" penAlpha="255" maxScaleDenominator="1e+08" backgroundColor="#ffffff" transparency="0" width="15" scaleDependency="Area" backgroundAlpha="255" angleOffset="1440" scaleBasedVisibility="0" enabled="0" height="15" lineSizeScale="0,0,0,0,0,0" sizeType="MM" lineSizeType="MM" minScaleDenominator="0">
           <fontProperties description="Ubuntu,11,-1,5,50,0,0,0,0,0" style=""/>
           <attribute field="" color="#000000" label=""/>
         </DiagramCategory>
+        <symbol alpha="1" clip_to_extent="1" type="marker" name="sizeSymbol">
+          <layer pass="0" class="SimpleMarker" locked="0">
+            <prop k="angle" v="0"/>
+            <prop k="color" v="255,0,0,255"/>
+            <prop k="horizontal_anchor_point" v="1"/>
+            <prop k="joinstyle" v="bevel"/>
+            <prop k="name" v="circle"/>
+            <prop k="offset" v="0,0"/>
+            <prop k="offset_map_unit_scale" v="0,0,0,0,0,0"/>
+            <prop k="offset_unit" v="MM"/>
+            <prop k="outline_color" v="0,0,0,255"/>
+            <prop k="outline_style" v="solid"/>
+            <prop k="outline_width" v="0"/>
+            <prop k="outline_width_map_unit_scale" v="0,0,0,0,0,0"/>
+            <prop k="outline_width_unit" v="MM"/>
+            <prop k="scale_method" v="diameter"/>
+            <prop k="size" v="2"/>
+            <prop k="size_map_unit_scale" v="0,0,0,0,0,0"/>
+            <prop k="size_unit" v="MM"/>
+            <prop k="vertical_anchor_point" v="1"/>
+          </layer>
+        </symbol>
       </SingleCategoryDiagramRenderer>
-      <DiagramLayerSettings yPosColumn="-1" linePlacementFlags="10" placement="0" dist="0" xPosColumn="-1" priority="0" obstacle="0" zIndex="0" showAll="1"/>
+      <DiagramLayerSettings yPosColumn="-1" showColumn="0" linePlacementFlags="10" placement="0" dist="0" xPosColumn="-1" priority="0" obstacle="0" zIndex="0" showAll="1"/>
       <annotationform>.</annotationform>
       <aliases>
-        <alias field="LIBQUART" index="2" name="Name"/>
         <alias field="QUARTIER" index="0" name=""/>
         <alias field="QUARTMNO" index="1" name=""/>
+        <alias field="LIBQUART" index="2" name="Name"/>
         <alias field="SQUARTMNO" index="3" name=""/>
         <alias field="photo" index="4" name="Illustration"/>
         <alias field="url" index="5" name="Website"/>
       </aliases>
       <excludeAttributesWMS/>
       <excludeAttributesWFS/>
-      <attributeactions/>
+      <attributeactions default="0"/>
+      <attributetableconfig actionWidgetStyle="dropDown" sortExpression="" sortOrder="0">
+        <columns>
+          <column width="-1" hidden="1" type="field" name="QUARTIER"/>
+          <column width="-1" hidden="1" type="field" name="QUARTMNO"/>
+          <column width="-1" hidden="1" type="field" name="SQUARTMNO"/>
+        </columns>
+      </attributetableconfig>
       <editform>.</editform>
       <editforminit/>
       <editforminitcodesource>0</editforminitcodesource>
@@ -1799,8 +1882,17 @@ def my_form_open(dialog, layer, feature):
         <rowstyles/>
         <fieldstyles/>
       </conditionalstyles>
+      <defaults>
+        <default field="QUARTIER" expression=""/>
+        <default field="QUARTMNO" expression=""/>
+        <default field="LIBQUART" expression=""/>
+        <default field="SQUARTMNO" expression=""/>
+        <default field="photo" expression=""/>
+        <default field="url" expression=""/>
+      </defaults>
+      <previewExpression>COALESCE( "LIBQUART", '&lt;NULL>' )</previewExpression>
     </maplayer>
-    <maplayer minimumScale="-4.65661e-10" maximumScale="40001" simplifyDrawingHints="1" minLabelScale="1" maxLabelScale="1e+08" simplifyDrawingTol="1" geometry="Line" simplifyMaxScale="1" type="vector" hasScaleBasedVisibilityFlag="1" simplifyLocal="1" scaleBasedLabelVisibilityFlag="0">
+    <maplayer simplifyAlgorithm="0" minimumScale="-4.65661e-10" maximumScale="40001" simplifyDrawingHints="1" minLabelScale="1" maxLabelScale="1e+08" simplifyDrawingTol="1" readOnly="0" geometry="Line" simplifyMaxScale="1" type="vector" hasScaleBasedVisibilityFlag="1" simplifyLocal="1" scaleBasedLabelVisibilityFlag="0">
       <extent>
         <xmin>3.69812299999999983</xmin>
         <ymin>43.52649999999999864</ymin>
@@ -1827,7 +1919,6 @@ def my_form_open(dialog, layer, feature):
         </spatialrefsys>
       </srs>
       <provider encoding="UTF-8">ogr</provider>
-      <previewExpression>COALESCE( "name", '&lt;NULL>' )</previewExpression>
       <vectorjoins/>
       <layerDependencies/>
       <expressionfields/>
@@ -1836,25 +1927,25 @@ def my_form_open(dialog, layer, feature):
       </map-layer-style-manager>
       <edittypes>
         <edittype widgetv2type="TextEdit" name="name">
-          <widgetv2config IsMultiline="0" fieldEditable="1" UseHtml="0" labelOnTop="0"/>
+          <widgetv2config IsMultiline="0" fieldEditable="1" constraint="" UseHtml="0" labelOnTop="0" constraintDescription="" notNull="0"/>
         </edittype>
         <edittype widgetv2type="TextEdit" name="color">
-          <widgetv2config IsMultiline="0" fieldEditable="1" UseHtml="0" labelOnTop="0"/>
+          <widgetv2config IsMultiline="0" fieldEditable="1" constraint="" UseHtml="0" labelOnTop="0" constraintDescription="" notNull="0"/>
         </edittype>
         <edittype widgetv2type="TextEdit" name="ref">
-          <widgetv2config IsMultiline="0" fieldEditable="1" UseHtml="0" labelOnTop="0"/>
+          <widgetv2config IsMultiline="0" fieldEditable="1" constraint="" UseHtml="0" labelOnTop="0" constraintDescription="" notNull="0"/>
         </edittype>
         <edittype widgetv2type="TextEdit" name="route">
-          <widgetv2config IsMultiline="0" fieldEditable="1" UseHtml="0" labelOnTop="0"/>
+          <widgetv2config IsMultiline="0" fieldEditable="1" constraint="" UseHtml="0" labelOnTop="0" constraintDescription="" notNull="0"/>
         </edittype>
         <edittype widgetv2type="TextEdit" name="operator">
-          <widgetv2config IsMultiline="0" fieldEditable="1" UseHtml="0" labelOnTop="0"/>
+          <widgetv2config IsMultiline="0" fieldEditable="1" constraint="" UseHtml="0" labelOnTop="0" constraintDescription="" notNull="0"/>
         </edittype>
         <edittype widgetv2type="Hidden" name="type">
-          <widgetv2config fieldEditable="1" labelOnTop="0"/>
+          <widgetv2config fieldEditable="1" constraint="" labelOnTop="0" constraintDescription="" notNull="0"/>
         </edittype>
         <edittype widgetv2type="Hidden" name="role">
-          <widgetv2config fieldEditable="1" labelOnTop="0"/>
+          <widgetv2config fieldEditable="1" constraint="" labelOnTop="0" constraintDescription="" notNull="0"/>
         </edittype>
       </edittypes>
       <renderer-v2 attr="name" forceraster="0" symbollevels="0" type="categorizedSymbol" enableorderby="0">
@@ -2687,13 +2778,13 @@ def my_form_open(dialog, layer, feature):
       </labelattributes>
       <annotationform>.</annotationform>
       <aliases>
-        <alias field="color" index="1" name="Color"/>
         <alias field="name" index="0" name="Name"/>
-        <alias field="operator" index="4" name="Operator"/>
+        <alias field="color" index="1" name="Color"/>
         <alias field="ref" index="2" name="Ref"/>
-        <alias field="role" index="6" name=""/>
         <alias field="route" index="3" name=""/>
+        <alias field="operator" index="4" name="Operator"/>
         <alias field="type" index="5" name="Type"/>
+        <alias field="role" index="6" name=""/>
       </aliases>
       <excludeAttributesWMS>
         <attribute>route</attribute>
@@ -2701,7 +2792,13 @@ def my_form_open(dialog, layer, feature):
       <excludeAttributesWFS>
         <attribute>route</attribute>
       </excludeAttributesWFS>
-      <attributeactions/>
+      <attributeactions default="0"/>
+      <attributetableconfig actionWidgetStyle="dropDown" sortExpression="" sortOrder="0">
+        <columns>
+          <column width="-1" hidden="1" type="field" name="type"/>
+          <column width="-1" hidden="1" type="field" name="role"/>
+        </columns>
+      </attributetableconfig>
       <editform>.</editform>
       <editforminit/>
       <editforminitcodesource>0</editforminitcodesource>
@@ -2714,8 +2811,18 @@ def my_form_open(dialog, layer, feature):
         <rowstyles/>
         <fieldstyles/>
       </conditionalstyles>
+      <defaults>
+        <default field="name" expression=""/>
+        <default field="color" expression=""/>
+        <default field="ref" expression=""/>
+        <default field="route" expression=""/>
+        <default field="operator" expression=""/>
+        <default field="type" expression=""/>
+        <default field="role" expression=""/>
+      </defaults>
+      <previewExpression>COALESCE( "name", '&lt;NULL>' )</previewExpression>
     </maplayer>
-    <maplayer minimumScale="0" maximumScale="15000" simplifyDrawingHints="0" minLabelScale="1" maxLabelScale="1e+08" simplifyDrawingTol="1" geometry="Point" simplifyMaxScale="1" type="vector" hasScaleBasedVisibilityFlag="1" simplifyLocal="1" scaleBasedLabelVisibilityFlag="0">
+    <maplayer simplifyAlgorithm="0" minimumScale="0" maximumScale="15000" simplifyDrawingHints="0" minLabelScale="1" maxLabelScale="1e+08" simplifyDrawingTol="1" readOnly="0" geometry="Point" simplifyMaxScale="1" type="vector" hasScaleBasedVisibilityFlag="1" simplifyLocal="1" scaleBasedLabelVisibilityFlag="0">
       <extent>
         <xmin>3.55325999999999986</xmin>
         <ymin>43.52692799999999806</ymin>
@@ -2741,7 +2848,6 @@ def my_form_open(dialog, layer, feature):
         </spatialrefsys>
       </srs>
       <provider encoding="UTF-8">ogr</provider>
-      <previewExpression>COALESCE( "name", '&lt;NULL>' )</previewExpression>
       <vectorjoins/>
       <layerDependencies/>
       <expressionfields/>
@@ -2750,13 +2856,13 @@ def my_form_open(dialog, layer, feature):
       </map-layer-style-manager>
       <edittypes>
         <edittype widgetv2type="TextEdit" name="operator">
-          <widgetv2config IsMultiline="0" fieldEditable="1" UseHtml="0" labelOnTop="0"/>
+          <widgetv2config IsMultiline="0" fieldEditable="1" constraint="" UseHtml="0" labelOnTop="0" constraintDescription="" notNull="0"/>
         </edittype>
         <edittype widgetv2type="TextEdit" name="name">
-          <widgetv2config IsMultiline="0" fieldEditable="1" UseHtml="0" labelOnTop="0"/>
+          <widgetv2config IsMultiline="0" fieldEditable="1" constraint="" UseHtml="0" labelOnTop="0" constraintDescription="" notNull="0"/>
         </edittype>
         <edittype widgetv2type="Hidden" name="ref">
-          <widgetv2config fieldEditable="1" labelOnTop="0"/>
+          <widgetv2config fieldEditable="1" constraint="" labelOnTop="0" constraintDescription="" notNull="0"/>
         </edittype>
       </edittypes>
       <renderer-v2 forceraster="0" symbollevels="0" type="singleSymbol" enableorderby="0">
@@ -2960,22 +3066,49 @@ def my_form_open(dialog, layer, feature):
         <multilineenabled fieldname="" on=""/>
         <selectedonly on=""/>
       </labelattributes>
-      <SingleCategoryDiagramRenderer diagramType="Pie">
-        <DiagramCategory penColor="#000000" labelPlacementMethod="XHeight" penWidth="0" diagramOrientation="Up" minimumSize="0" barWidth="5" penAlpha="255" maxScaleDenominator="15000" backgroundColor="#ffffff" transparency="0" width="15" scaleDependency="Area" backgroundAlpha="255" angleOffset="1440" scaleBasedVisibility="1" enabled="0" height="15" sizeType="MM" minScaleDenominator="0">
+      <SingleCategoryDiagramRenderer diagramType="Pie" sizeLegend="0" attributeLegend="1">
+        <DiagramCategory penColor="#000000" labelPlacementMethod="XHeight" penWidth="0" diagramOrientation="Up" sizeScale="0,0,0,0,0,0" minimumSize="0" barWidth="5" penAlpha="255" maxScaleDenominator="15000" backgroundColor="#ffffff" transparency="0" width="15" scaleDependency="Area" backgroundAlpha="255" angleOffset="1440" scaleBasedVisibility="1" enabled="0" height="15" lineSizeScale="0,0,0,0,0,0" sizeType="MM" lineSizeType="MM" minScaleDenominator="0">
           <fontProperties description="Ubuntu,11,-1,5,50,0,0,0,0,0" style=""/>
           <attribute field="" color="#000000" label=""/>
         </DiagramCategory>
+        <symbol alpha="1" clip_to_extent="1" type="marker" name="sizeSymbol">
+          <layer pass="0" class="SimpleMarker" locked="0">
+            <prop k="angle" v="0"/>
+            <prop k="color" v="255,0,0,255"/>
+            <prop k="horizontal_anchor_point" v="1"/>
+            <prop k="joinstyle" v="bevel"/>
+            <prop k="name" v="circle"/>
+            <prop k="offset" v="0,0"/>
+            <prop k="offset_map_unit_scale" v="0,0,0,0,0,0"/>
+            <prop k="offset_unit" v="MM"/>
+            <prop k="outline_color" v="0,0,0,255"/>
+            <prop k="outline_style" v="solid"/>
+            <prop k="outline_width" v="0"/>
+            <prop k="outline_width_map_unit_scale" v="0,0,0,0,0,0"/>
+            <prop k="outline_width_unit" v="MM"/>
+            <prop k="scale_method" v="diameter"/>
+            <prop k="size" v="2"/>
+            <prop k="size_map_unit_scale" v="0,0,0,0,0,0"/>
+            <prop k="size_unit" v="MM"/>
+            <prop k="vertical_anchor_point" v="1"/>
+          </layer>
+        </symbol>
       </SingleCategoryDiagramRenderer>
-      <DiagramLayerSettings yPosColumn="-1" linePlacementFlags="10" placement="0" dist="0" xPosColumn="-1" priority="0" obstacle="0" zIndex="0" showAll="1"/>
+      <DiagramLayerSettings yPosColumn="-1" showColumn="0" linePlacementFlags="10" placement="0" dist="0" xPosColumn="-1" priority="0" obstacle="0" zIndex="0" showAll="1"/>
       <annotationform>.</annotationform>
       <aliases>
-        <alias field="name" index="1" name="Name"/>
         <alias field="operator" index="0" name="Operator"/>
+        <alias field="name" index="1" name="Name"/>
         <alias field="ref" index="2" name="Ref"/>
       </aliases>
       <excludeAttributesWMS/>
       <excludeAttributesWFS/>
-      <attributeactions/>
+      <attributeactions default="0"/>
+      <attributetableconfig actionWidgetStyle="dropDown" sortExpression="" sortOrder="0">
+        <columns>
+          <column width="-1" hidden="1" type="field" name="ref"/>
+        </columns>
+      </attributetableconfig>
       <editform>.</editform>
       <editforminit/>
       <editforminitcodesource>0</editforminitcodesource>
@@ -2988,8 +3121,14 @@ def my_form_open(dialog, layer, feature):
         <rowstyles/>
         <fieldstyles/>
       </conditionalstyles>
+      <defaults>
+        <default field="operator" expression=""/>
+        <default field="name" expression=""/>
+        <default field="ref" expression=""/>
+      </defaults>
+      <previewExpression>COALESCE( "name", '&lt;NULL>' )</previewExpression>
     </maplayer>
-    <maplayer minimumScale="-4.65661e-10" maximumScale="1e+08" geometry="No geometry" type="vector" hasScaleBasedVisibilityFlag="0">
+    <maplayer minimumScale="-4.65661e-10" maximumScale="1e+08" readOnly="0" geometry="No geometry" type="vector" hasScaleBasedVisibilityFlag="0">
       <id>donnes_sociodemo_sous_quartiers20160121144525075</id>
       <datasource>./data/vector/donnes_sociodemo_sous_quartiers.csv</datasource>
       <title>Repartition of owners and tenants</title>
@@ -3015,7 +3154,6 @@ def my_form_open(dialog, layer, feature):
         <property key="variableValues"/>
       </customproperties>
       <provider encoding="System">ogr</provider>
-      <previewExpression>COALESCE("squartmno", '&lt;NULL>')||', '||COALESCE("population_2009", '&lt;NULL>')||', '||COALESCE("population_percentage", '&lt;NULL>')||', '||COALESCE("population_density", '&lt;NULL>')||', '||COALESCE("average_income", '&lt;NULL>')||', '||COALESCE("prop_percentage", '&lt;NULL>')||', '||COALESCE("loc_percentage", '&lt;NULL>')</previewExpression>
       <vectorjoins/>
       <layerDependencies/>
       <expressionfields/>
@@ -3024,36 +3162,39 @@ def my_form_open(dialog, layer, feature):
       </map-layer-style-manager>
       <edittypes>
         <edittype widgetv2type="TextEdit" name="squartmno">
-          <widgetv2config IsMultiline="0" fieldEditable="1" UseHtml="0" labelOnTop="0"/>
+          <widgetv2config IsMultiline="0" fieldEditable="1" constraint="" UseHtml="0" labelOnTop="0" constraintDescription="" notNull="0"/>
         </edittype>
         <edittype widgetv2type="TextEdit" name="population_2009">
-          <widgetv2config IsMultiline="0" fieldEditable="1" UseHtml="0" labelOnTop="0"/>
+          <widgetv2config IsMultiline="0" fieldEditable="1" constraint="" UseHtml="0" labelOnTop="0" constraintDescription="" notNull="0"/>
         </edittype>
         <edittype widgetv2type="TextEdit" name="population_percentage">
-          <widgetv2config IsMultiline="0" fieldEditable="1" UseHtml="0" labelOnTop="0"/>
+          <widgetv2config IsMultiline="0" fieldEditable="1" constraint="" UseHtml="0" labelOnTop="0" constraintDescription="" notNull="0"/>
         </edittype>
         <edittype widgetv2type="TextEdit" name="average_income">
-          <widgetv2config IsMultiline="0" fieldEditable="1" UseHtml="0" labelOnTop="0"/>
+          <widgetv2config IsMultiline="0" fieldEditable="1" constraint="" UseHtml="0" labelOnTop="0" constraintDescription="" notNull="0"/>
         </edittype>
         <edittype widgetv2type="TextEdit" name="prop_percentage">
-          <widgetv2config IsMultiline="0" fieldEditable="1" UseHtml="0" labelOnTop="0"/>
+          <widgetv2config IsMultiline="0" fieldEditable="1" constraint="" UseHtml="0" labelOnTop="0" constraintDescription="" notNull="0"/>
         </edittype>
         <edittype widgetv2type="TextEdit" name="loc_percentage">
-          <widgetv2config IsMultiline="0" fieldEditable="1" UseHtml="0" labelOnTop="0"/>
+          <widgetv2config IsMultiline="0" fieldEditable="1" constraint="" UseHtml="0" labelOnTop="0" constraintDescription="" notNull="0"/>
         </edittype>
       </edittypes>
       <annotationform>.</annotationform>
       <aliases>
-        <alias field="average_income" index="3" name="Average income"/>
-        <alias field="loc_percentage" index="5" name="% Tenants"/>
+        <alias field="squartmno" index="0" name="Subdistrict"/>
         <alias field="population_2009" index="1" name="Population"/>
         <alias field="population_percentage" index="2" name="Population %"/>
+        <alias field="average_income" index="3" name="Average income"/>
         <alias field="prop_percentage" index="4" name="% Owners"/>
-        <alias field="squartmno" index="0" name="Subdistrict"/>
+        <alias field="loc_percentage" index="5" name="% Tenants"/>
       </aliases>
       <excludeAttributesWMS/>
       <excludeAttributesWFS/>
-      <attributeactions/>
+      <attributeactions default="0"/>
+      <attributetableconfig actionWidgetStyle="dropDown" sortExpression="" sortOrder="0">
+        <columns/>
+      </attributetableconfig>
       <editform>.</editform>
       <editforminit/>
       <editforminitcodesource>0</editforminitcodesource>
@@ -3081,8 +3222,17 @@ def my_form_open(dialog, layer, feature):
         <rowstyles/>
         <fieldstyles/>
       </conditionalstyles>
+      <defaults>
+        <default field="squartmno" expression=""/>
+        <default field="population_2009" expression=""/>
+        <default field="population_percentage" expression=""/>
+        <default field="average_income" expression=""/>
+        <default field="prop_percentage" expression=""/>
+        <default field="loc_percentage" expression=""/>
+      </defaults>
+      <previewExpression>COALESCE("squartmno", '&lt;NULL>')||', '||COALESCE("population_2009", '&lt;NULL>')||', '||COALESCE("population_percentage", '&lt;NULL>')||', '||COALESCE("population_density", '&lt;NULL>')||', '||COALESCE("average_income", '&lt;NULL>')||', '||COALESCE("prop_percentage", '&lt;NULL>')||', '||COALESCE("loc_percentage", '&lt;NULL>')</previewExpression>
     </maplayer>
-    <maplayer minimumScale="0" maximumScale="1e+08" simplifyDrawingHints="1" minLabelScale="1" maxLabelScale="1e+08" simplifyDrawingTol="1" geometry="Line" simplifyMaxScale="1" type="vector" hasScaleBasedVisibilityFlag="0" simplifyLocal="1" scaleBasedLabelVisibilityFlag="0">
+    <maplayer simplifyAlgorithm="0" minimumScale="0" maximumScale="1e+08" simplifyDrawingHints="1" minLabelScale="1" maxLabelScale="1e+08" simplifyDrawingTol="1" readOnly="0" geometry="Line" simplifyMaxScale="1" type="vector" hasScaleBasedVisibilityFlag="0" simplifyLocal="1" scaleBasedLabelVisibilityFlag="0">
       <extent>
         <xmin>3.83129799999999987</xmin>
         <ymin>43.5719143059459455</ymin>
@@ -3109,7 +3259,6 @@ def my_form_open(dialog, layer, feature):
         </spatialrefsys>
       </srs>
       <provider encoding="System">spatialite</provider>
-      <previewExpression>COALESCE( "description", '&lt;NULL>' )</previewExpression>
       <vectorjoins/>
       <layerDependencies/>
       <expressionfields/>
@@ -3118,16 +3267,16 @@ def my_form_open(dialog, layer, feature):
       </map-layer-style-manager>
       <edittypes>
         <edittype widgetv2type="Hidden" name="pkuid">
-          <widgetv2config fieldEditable="1" labelOnTop="0"/>
+          <widgetv2config fieldEditable="1" constraint="" labelOnTop="0" constraintDescription="" notNull="0"/>
         </edittype>
         <edittype widgetv2type="TextEdit" name="label">
-          <widgetv2config IsMultiline="0" fieldEditable="1" UseHtml="0" labelOnTop="0"/>
+          <widgetv2config IsMultiline="0" fieldEditable="1" constraint="" UseHtml="0" labelOnTop="0" constraintDescription="" notNull="0"/>
         </edittype>
         <edittype widgetv2type="TextEdit" name="description">
-          <widgetv2config IsMultiline="1" fieldEditable="1" UseHtml="0" labelOnTop="0"/>
+          <widgetv2config IsMultiline="1" fieldEditable="1" constraint="" UseHtml="0" labelOnTop="0" constraintDescription="" notNull="0"/>
         </edittype>
         <edittype widgetv2type="Classification" name="difficulty">
-          <widgetv2config fieldEditable="1" labelOnTop="0"/>
+          <widgetv2config fieldEditable="1" constraint="" labelOnTop="0" constraintDescription="" notNull="0"/>
         </edittype>
       </edittypes>
       <renderer-v2 attr="difficulty" forceraster="0" symbollevels="0" type="categorizedSymbol" enableorderby="0">
@@ -3258,14 +3407,19 @@ def my_form_open(dialog, layer, feature):
       </labelattributes>
       <annotationform>.</annotationform>
       <aliases>
+        <alias field="pkuid" index="0" name=""/>
+        <alias field="label" index="1" name=""/>
         <alias field="description" index="2" name=""/>
         <alias field="difficulty" index="3" name=""/>
-        <alias field="label" index="1" name=""/>
-        <alias field="pkuid" index="0" name=""/>
       </aliases>
       <excludeAttributesWMS/>
       <excludeAttributesWFS/>
-      <attributeactions/>
+      <attributeactions default="-1"/>
+      <attributetableconfig actionWidgetStyle="dropDown" sortExpression="" sortOrder="0">
+        <columns>
+          <column width="-1" hidden="1" type="field" name="pkuid"/>
+        </columns>
+      </attributetableconfig>
       <editform>.</editform>
       <editforminit/>
       <editforminitcodesource>0</editforminitcodesource>
@@ -3278,8 +3432,15 @@ def my_form_open(dialog, layer, feature):
         <rowstyles/>
         <fieldstyles/>
       </conditionalstyles>
+      <defaults>
+        <default field="pkuid" expression=""/>
+        <default field="label" expression=""/>
+        <default field="description" expression=""/>
+        <default field="difficulty" expression=""/>
+      </defaults>
+      <previewExpression>COALESCE( "description", '&lt;NULL>' )</previewExpression>
     </maplayer>
-    <maplayer minimumScale="-4.65661e-10" maximumScale="1e+08" simplifyDrawingHints="0" minLabelScale="1" maxLabelScale="1e+08" simplifyDrawingTol="1" geometry="Point" simplifyMaxScale="1" type="vector" hasScaleBasedVisibilityFlag="0" simplifyLocal="1" scaleBasedLabelVisibilityFlag="0">
+    <maplayer simplifyAlgorithm="0" minimumScale="0" maximumScale="1e+08" simplifyDrawingHints="0" minLabelScale="1" maxLabelScale="1e+08" simplifyDrawingTol="1" readOnly="0" geometry="Point" simplifyMaxScale="1" type="vector" hasScaleBasedVisibilityFlag="0" simplifyLocal="1" scaleBasedLabelVisibilityFlag="0">
       <extent>
         <xmin>3.84541513302194948</xmin>
         <ymin>43.59438300000000055</ymin>
@@ -3306,7 +3467,6 @@ def my_form_open(dialog, layer, feature):
         </spatialrefsys>
       </srs>
       <provider encoding="UTF-8">spatialite</provider>
-      <previewExpression>COALESCE( "name", '&lt;NULL>' )</previewExpression>
       <vectorjoins/>
       <layerDependencies/>
       <expressionfields/>
@@ -3315,25 +3475,25 @@ def my_form_open(dialog, layer, feature):
       </map-layer-style-manager>
       <edittypes>
         <edittype widgetv2type="TextEdit" name="pkuid">
-          <widgetv2config IsMultiline="0" fieldEditable="1" UseHtml="0" labelOnTop="0"/>
+          <widgetv2config IsMultiline="0" fieldEditable="1" constraint="" UseHtml="0" labelOnTop="0" constraintDescription="" notNull="0"/>
         </edittype>
         <edittype widgetv2type="TextEdit" name="name">
-          <widgetv2config IsMultiline="0" fieldEditable="1" UseHtml="0" labelOnTop="0"/>
+          <widgetv2config IsMultiline="0" fieldEditable="1" constraint="" UseHtml="0" labelOnTop="0" constraintDescription="" notNull="0"/>
         </edittype>
         <edittype widgetv2type="TextEdit" name="description">
-          <widgetv2config IsMultiline="1" fieldEditable="1" UseHtml="0" labelOnTop="0"/>
+          <widgetv2config IsMultiline="1" fieldEditable="1" constraint="" UseHtml="0" labelOnTop="0" constraintDescription="" notNull="0"/>
         </edittype>
         <edittype widgetv2type="Hidden" name="user">
-          <widgetv2config fieldEditable="1" labelOnTop="0"/>
+          <widgetv2config fieldEditable="1" constraint="" labelOnTop="0" constraintDescription="" notNull="0"/>
         </edittype>
         <edittype widgetv2type="DateTime" name="date">
-          <widgetv2config fieldEditable="1" calendar_popup="0" allow_null="0" display_format="" field_format="yyyy-mm-dd" labelOnTop="0"/>
+          <widgetv2config fieldEditable="1" calendar_popup="0" allow_null="0" display_format="" field_format="yyyy-mm-dd" constraint="" labelOnTop="0" constraintDescription="" notNull="0"/>
         </edittype>
         <edittype widgetv2type="Classification" name="type">
-          <widgetv2config fieldEditable="1" labelOnTop="0"/>
+          <widgetv2config fieldEditable="1" constraint="" labelOnTop="0" constraintDescription="" notNull="0"/>
         </edittype>
-        <edittype widgetv2type="Photo" name="photo">
-          <widgetv2config Width="400" fieldEditable="1" Height="400" labelOnTop="0"/>
+        <edittype widgetv2type="ExternalResource" name="photo">
+          <widgetv2config fieldEditable="1" DocumentViewer="1" FileWidgetButton="1" DocumentViewerWidth="400" constraint="" FileWidget="1" DocumentViewerHeight="400" StorageMode="0" labelOnTop="0" constraintDescription="" notNull="0" FileWidgetFilter="Images (*.gif *.jpeg *.jpg *.png)"/>
         </edittype>
       </edittypes>
       <renderer-v2 attr="type" forceraster="0" symbollevels="0" type="categorizedSymbol" enableorderby="0">
@@ -3349,6 +3509,7 @@ def my_form_open(dialog, layer, feature):
               <prop k="angle" v="0"/>
               <prop k="color" v="255,255,255,255"/>
               <prop k="horizontal_anchor_point" v="1"/>
+              <prop k="joinstyle" v="bevel"/>
               <prop k="name" v="circle"/>
               <prop k="offset" v="0,0"/>
               <prop k="offset_map_unit_scale" v="0,0,0,0,0,0"/>
@@ -3388,6 +3549,7 @@ def my_form_open(dialog, layer, feature):
               <prop k="angle" v="0"/>
               <prop k="color" v="255,255,255,255"/>
               <prop k="horizontal_anchor_point" v="1"/>
+              <prop k="joinstyle" v="bevel"/>
               <prop k="name" v="circle"/>
               <prop k="offset" v="0,0"/>
               <prop k="offset_map_unit_scale" v="0,0,0,0,0,0"/>
@@ -3427,6 +3589,7 @@ def my_form_open(dialog, layer, feature):
               <prop k="angle" v="0"/>
               <prop k="color" v="255,255,255,255"/>
               <prop k="horizontal_anchor_point" v="1"/>
+              <prop k="joinstyle" v="bevel"/>
               <prop k="name" v="circle"/>
               <prop k="offset" v="0,0"/>
               <prop k="offset_map_unit_scale" v="0,0,0,0,0,0"/>
@@ -3466,6 +3629,7 @@ def my_form_open(dialog, layer, feature):
               <prop k="angle" v="0"/>
               <prop k="color" v="255,255,255,255"/>
               <prop k="horizontal_anchor_point" v="1"/>
+              <prop k="joinstyle" v="bevel"/>
               <prop k="name" v="circle"/>
               <prop k="offset" v="0,0"/>
               <prop k="offset_map_unit_scale" v="0,0,0,0,0,0"/>
@@ -3507,6 +3671,7 @@ def my_form_open(dialog, layer, feature):
               <prop k="angle" v="0"/>
               <prop k="color" v="91,198,110,255"/>
               <prop k="horizontal_anchor_point" v="1"/>
+              <prop k="joinstyle" v="bevel"/>
               <prop k="name" v="circle"/>
               <prop k="offset" v="0,0"/>
               <prop k="offset_map_unit_scale" v="0,0,0,0,0,0"/>
@@ -3539,6 +3704,7 @@ def my_form_open(dialog, layer, feature):
       </renderer-v2>
       <labeling type="simple"/>
       <customproperties>
+        <property key="embeddedWidgets/count" value="0"/>
         <property key="labeling" value="pal"/>
         <property key="labeling/addDirectionSymbol" value="false"/>
         <property key="labeling/angleOffset" value="0"/>
@@ -3555,6 +3721,7 @@ def my_form_open(dialog, layer, feature):
         <property key="labeling/bufferSizeInMapUnits" value="false"/>
         <property key="labeling/bufferSizeMapUnitMaxScale" value="0"/>
         <property key="labeling/bufferSizeMapUnitMinScale" value="0"/>
+        <property key="labeling/bufferSizeMapUnitScale" value="0,0,0,0,0,0"/>
         <property key="labeling/bufferTransp" value="0"/>
         <property key="labeling/centroidInside" value="false"/>
         <property key="labeling/centroidWhole" value="false"/>
@@ -3564,6 +3731,7 @@ def my_form_open(dialog, layer, feature):
         <property key="labeling/distInMapUnits" value="false"/>
         <property key="labeling/distMapUnitMaxScale" value="0"/>
         <property key="labeling/distMapUnitMinScale" value="0"/>
+        <property key="labeling/distMapUnitScale" value="0,0,0,0,0,0"/>
         <property key="labeling/drawLabels" value="true"/>
         <property key="labeling/enabled" value="true"/>
         <property key="labeling/fieldName" value="name"/>
@@ -3580,6 +3748,7 @@ def my_form_open(dialog, layer, feature):
         <property key="labeling/fontSizeInMapUnits" value="false"/>
         <property key="labeling/fontSizeMapUnitMaxScale" value="0"/>
         <property key="labeling/fontSizeMapUnitMinScale" value="0"/>
+        <property key="labeling/fontSizeMapUnitScale" value="0,0,0,0,0,0"/>
         <property key="labeling/fontStrikeout" value="false"/>
         <property key="labeling/fontUnderline" value="false"/>
         <property key="labeling/fontWeight" value="63"/>
@@ -3589,6 +3758,7 @@ def my_form_open(dialog, layer, feature):
         <property key="labeling/labelOffsetInMapUnits" value="true"/>
         <property key="labeling/labelOffsetMapUnitMaxScale" value="0"/>
         <property key="labeling/labelOffsetMapUnitMinScale" value="0"/>
+        <property key="labeling/labelOffsetMapUnitScale" value="0,0,0,0,0,0"/>
         <property key="labeling/labelPerPart" value="false"/>
         <property key="labeling/leftDirectionSymbol" value="&lt;"/>
         <property key="labeling/limitNumLabels" value="false"/>
@@ -3616,6 +3786,7 @@ def my_form_open(dialog, layer, feature):
         <property key="labeling/repeatDistance" value="0"/>
         <property key="labeling/repeatDistanceMapUnitMaxScale" value="0"/>
         <property key="labeling/repeatDistanceMapUnitMinScale" value="0"/>
+        <property key="labeling/repeatDistanceMapUnitScale" value="0,0,0,0,0,0"/>
         <property key="labeling/repeatDistanceUnit" value="1"/>
         <property key="labeling/reverseDirectionSymbol" value="false"/>
         <property key="labeling/rightDirectionSymbol" value=">"/>
@@ -3632,11 +3803,13 @@ def my_form_open(dialog, layer, feature):
         <property key="labeling/shadowOffsetGlobal" value="true"/>
         <property key="labeling/shadowOffsetMapUnitMaxScale" value="0"/>
         <property key="labeling/shadowOffsetMapUnitMinScale" value="0"/>
+        <property key="labeling/shadowOffsetMapUnitScale" value="0,0,0,0,0,0"/>
         <property key="labeling/shadowOffsetUnits" value="1"/>
         <property key="labeling/shadowRadius" value="1.5"/>
         <property key="labeling/shadowRadiusAlphaOnly" value="false"/>
         <property key="labeling/shadowRadiusMapUnitMaxScale" value="0"/>
         <property key="labeling/shadowRadiusMapUnitMinScale" value="0"/>
+        <property key="labeling/shadowRadiusMapUnitScale" value="0,0,0,0,0,0"/>
         <property key="labeling/shadowRadiusUnits" value="1"/>
         <property key="labeling/shadowScale" value="100"/>
         <property key="labeling/shadowTransparency" value="30"/>
@@ -3649,6 +3822,7 @@ def my_form_open(dialog, layer, feature):
         <property key="labeling/shapeBorderWidth" value="0"/>
         <property key="labeling/shapeBorderWidthMapUnitMaxScale" value="0"/>
         <property key="labeling/shapeBorderWidthMapUnitMinScale" value="0"/>
+        <property key="labeling/shapeBorderWidthMapUnitScale" value="0,0,0,0,0,0"/>
         <property key="labeling/shapeBorderWidthUnits" value="1"/>
         <property key="labeling/shapeDraw" value="false"/>
         <property key="labeling/shapeFillColorA" value="255"/>
@@ -3658,11 +3832,13 @@ def my_form_open(dialog, layer, feature):
         <property key="labeling/shapeJoinStyle" value="64"/>
         <property key="labeling/shapeOffsetMapUnitMaxScale" value="0"/>
         <property key="labeling/shapeOffsetMapUnitMinScale" value="0"/>
+        <property key="labeling/shapeOffsetMapUnitScale" value="0,0,0,0,0,0"/>
         <property key="labeling/shapeOffsetUnits" value="1"/>
         <property key="labeling/shapeOffsetX" value="0"/>
         <property key="labeling/shapeOffsetY" value="0"/>
         <property key="labeling/shapeRadiiMapUnitMaxScale" value="0"/>
         <property key="labeling/shapeRadiiMapUnitMinScale" value="0"/>
+        <property key="labeling/shapeRadiiMapUnitScale" value="0,0,0,0,0,0"/>
         <property key="labeling/shapeRadiiUnits" value="1"/>
         <property key="labeling/shapeRadiiX" value="0"/>
         <property key="labeling/shapeRadiiY" value="0"/>
@@ -3671,24 +3847,27 @@ def my_form_open(dialog, layer, feature):
         <property key="labeling/shapeSVGFile" value=""/>
         <property key="labeling/shapeSizeMapUnitMaxScale" value="0"/>
         <property key="labeling/shapeSizeMapUnitMinScale" value="0"/>
+        <property key="labeling/shapeSizeMapUnitScale" value="0,0,0,0,0,0"/>
         <property key="labeling/shapeSizeType" value="0"/>
         <property key="labeling/shapeSizeUnits" value="1"/>
         <property key="labeling/shapeSizeX" value="0"/>
         <property key="labeling/shapeSizeY" value="0"/>
         <property key="labeling/shapeTransparency" value="0"/>
         <property key="labeling/shapeType" value="0"/>
+        <property key="labeling/substitutions" value="&lt;substitutions/>"/>
         <property key="labeling/textColorA" value="255"/>
         <property key="labeling/textColorB" value="124"/>
         <property key="labeling/textColorG" value="41"/>
         <property key="labeling/textColorR" value="41"/>
         <property key="labeling/textTransp" value="0"/>
         <property key="labeling/upsidedownLabels" value="0"/>
+        <property key="labeling/useSubstitutions" value="false"/>
         <property key="labeling/wrapChar" value=" "/>
         <property key="labeling/xOffset" value="0"/>
         <property key="labeling/yOffset" value="0"/>
         <property key="labeling/zIndex" value="0"/>
-        <property key="variableNames" value="_fields_"/>
-        <property key="variableValues" value=""/>
+        <property key="variableNames"/>
+        <property key="variableValues"/>
       </customproperties>
       <blendMode>0</blendMode>
       <featureBlendMode>0</featureBlendMode>
@@ -3715,26 +3894,60 @@ def my_form_open(dialog, layer, feature):
         <multilineenabled fieldname="" on=""/>
         <selectedonly on=""/>
       </labelattributes>
-      <SingleCategoryDiagramRenderer diagramType="Pie">
-        <DiagramCategory penColor="#000000" labelPlacementMethod="XHeight" penWidth="0" diagramOrientation="Up" minimumSize="0" barWidth="5" penAlpha="255" maxScaleDenominator="1e+08" backgroundColor="#ffffff" transparency="0" width="15" scaleDependency="Area" backgroundAlpha="255" angleOffset="1440" scaleBasedVisibility="0" enabled="0" height="15" sizeType="MM" minScaleDenominator="-4.65661e-10">
+      <SingleCategoryDiagramRenderer diagramType="Pie" sizeLegend="0" attributeLegend="1">
+        <DiagramCategory penColor="#000000" labelPlacementMethod="XHeight" penWidth="0" diagramOrientation="Up" sizeScale="0,0,0,0,0,0" minimumSize="0" barWidth="5" penAlpha="255" maxScaleDenominator="1e+08" backgroundColor="#ffffff" transparency="0" width="15" scaleDependency="Area" backgroundAlpha="255" angleOffset="1440" scaleBasedVisibility="0" enabled="0" height="15" lineSizeScale="0,0,0,0,0,0" sizeType="MM" lineSizeType="MM" minScaleDenominator="0">
           <fontProperties description="Ubuntu,11,-1,5,50,0,0,0,0,0" style=""/>
           <attribute field="" color="#000000" label=""/>
         </DiagramCategory>
+        <symbol alpha="1" clip_to_extent="1" type="marker" name="sizeSymbol">
+          <layer pass="0" class="SimpleMarker" locked="0">
+            <prop k="angle" v="0"/>
+            <prop k="color" v="255,0,0,255"/>
+            <prop k="horizontal_anchor_point" v="1"/>
+            <prop k="joinstyle" v="bevel"/>
+            <prop k="name" v="circle"/>
+            <prop k="offset" v="0,0"/>
+            <prop k="offset_map_unit_scale" v="0,0,0,0,0,0"/>
+            <prop k="offset_unit" v="MM"/>
+            <prop k="outline_color" v="0,0,0,255"/>
+            <prop k="outline_style" v="solid"/>
+            <prop k="outline_width" v="0"/>
+            <prop k="outline_width_map_unit_scale" v="0,0,0,0,0,0"/>
+            <prop k="outline_width_unit" v="MM"/>
+            <prop k="scale_method" v="diameter"/>
+            <prop k="size" v="2"/>
+            <prop k="size_map_unit_scale" v="0,0,0,0,0,0"/>
+            <prop k="size_unit" v="MM"/>
+            <prop k="vertical_anchor_point" v="1"/>
+          </layer>
+        </symbol>
       </SingleCategoryDiagramRenderer>
-      <DiagramLayerSettings yPosColumn="-1" linePlacementFlags="10" placement="0" dist="0" xPosColumn="-1" priority="0" obstacle="0" zIndex="0" showAll="1"/>
+      <DiagramLayerSettings yPosColumn="-1" showColumn="0" linePlacementFlags="10" placement="0" dist="0" xPosColumn="-1" priority="0" obstacle="0" zIndex="0" showAll="1"/>
       <annotationform>.</annotationform>
       <aliases>
-        <alias field="date" index="4" name=""/>
-        <alias field="description" index="2" name=""/>
-        <alias field="name" index="1" name=""/>
-        <alias field="photo" index="6" name=""/>
         <alias field="pkuid" index="0" name=""/>
-        <alias field="type" index="5" name=""/>
+        <alias field="name" index="1" name=""/>
+        <alias field="description" index="2" name=""/>
         <alias field="user" index="3" name=""/>
+        <alias field="date" index="4" name=""/>
+        <alias field="type" index="5" name=""/>
+        <alias field="photo" index="6" name=""/>
       </aliases>
       <excludeAttributesWMS/>
       <excludeAttributesWFS/>
-      <attributeactions/>
+      <attributeactions default="-1"/>
+      <attributetableconfig actionWidgetStyle="dropDown" sortExpression="" sortOrder="0">
+        <columns>
+          <column width="-1" hidden="1" type="field" name="user"/>
+          <column width="-1" hidden="0" type="field" name="pkuid"/>
+          <column width="-1" hidden="0" type="field" name="name"/>
+          <column width="-1" hidden="0" type="field" name="description"/>
+          <column width="-1" hidden="0" type="field" name="date"/>
+          <column width="-1" hidden="0" type="field" name="type"/>
+          <column width="-1" hidden="0" type="field" name="photo"/>
+          <column width="-1" hidden="1" type="actions"/>
+        </columns>
+      </attributetableconfig>
       <editform>.</editform>
       <editforminit/>
       <editforminitcodesource>0</editforminitcodesource>
@@ -3758,20 +3971,20 @@ def my_form_open(dialog, layer, feature):
       <featformsuppress>0</featformsuppress>
       <editorlayout>tablayout</editorlayout>
       <attributeEditorForm>
-        <attributeEditorContainer name="Description">
-          <attributeEditorContainer name="Generic">
-            <attributeEditorField index="0" name="pkuid"/>
-            <attributeEditorField index="1" name="name"/>
-            <attributeEditorField index="2" name="description"/>
+        <attributeEditorContainer showLabel="1" visibilityExpressionEnabled="0" visibilityExpression="" name="Description" groupBox="0" columnCount="0">
+          <attributeEditorContainer showLabel="1" visibilityExpressionEnabled="0" visibilityExpression="" name="Generic" groupBox="1" columnCount="0">
+            <attributeEditorField showLabel="1" index="0" name="pkuid"/>
+            <attributeEditorField showLabel="1" index="1" name="name"/>
+            <attributeEditorField showLabel="1" index="2" name="description"/>
           </attributeEditorContainer>
-          <attributeEditorContainer name="Other">
-            <attributeEditorField index="4" name="date"/>
-            <attributeEditorField index="5" name="type"/>
-            <attributeEditorField index="3" name="user"/>
+          <attributeEditorContainer showLabel="1" visibilityExpressionEnabled="0" visibilityExpression="" name="Other" groupBox="1" columnCount="0">
+            <attributeEditorField showLabel="1" index="4" name="date"/>
+            <attributeEditorField showLabel="1" index="5" name="type"/>
+            <attributeEditorField showLabel="1" index="3" name="user"/>
           </attributeEditorContainer>
         </attributeEditorContainer>
-        <attributeEditorContainer name="Photo">
-          <attributeEditorField index="6" name="photo"/>
+        <attributeEditorContainer showLabel="1" visibilityExpressionEnabled="0" visibilityExpression="" name="Photo" groupBox="0" columnCount="0">
+          <attributeEditorField showLabel="1" index="6" name="photo"/>
         </attributeEditorContainer>
       </attributeEditorForm>
       <widgets/>
@@ -3779,8 +3992,18 @@ def my_form_open(dialog, layer, feature):
         <rowstyles/>
         <fieldstyles/>
       </conditionalstyles>
+      <defaults>
+        <default field="pkuid" expression=""/>
+        <default field="name" expression=""/>
+        <default field="description" expression=""/>
+        <default field="user" expression=""/>
+        <default field="date" expression=""/>
+        <default field="type" expression=""/>
+        <default field="photo" expression=""/>
+      </defaults>
+      <previewExpression>COALESCE( "name", '&lt;NULL>' )</previewExpression>
     </maplayer>
-    <maplayer minimumScale="0" maximumScale="1e+08" simplifyDrawingHints="1" minLabelScale="1" maxLabelScale="1e+08" simplifyDrawingTol="1" geometry="Polygon" simplifyMaxScale="1" type="vector" hasScaleBasedVisibilityFlag="0" simplifyLocal="1" scaleBasedLabelVisibilityFlag="0">
+    <maplayer simplifyAlgorithm="0" minimumScale="0" maximumScale="1e+08" simplifyDrawingHints="1" minLabelScale="1" maxLabelScale="1e+08" simplifyDrawingTol="1" readOnly="0" geometry="Polygon" simplifyMaxScale="1" type="vector" hasScaleBasedVisibilityFlag="0" simplifyLocal="1" scaleBasedLabelVisibilityFlag="0">
       <extent>
         <xmin>3.86227799999999988</xmin>
         <ymin>43.60601400000000183</ymin>
@@ -3807,7 +4030,6 @@ def my_form_open(dialog, layer, feature):
         </spatialrefsys>
       </srs>
       <provider encoding="System">spatialite</provider>
-      <previewExpression></previewExpression>
       <vectorjoins/>
       <layerDependencies/>
       <expressionfields/>
@@ -3816,19 +4038,19 @@ def my_form_open(dialog, layer, feature):
       </map-layer-style-manager>
       <edittypes>
         <edittype widgetv2type="TextEdit" name="pkuid">
-          <widgetv2config IsMultiline="0" fieldEditable="1" UseHtml="0" labelOnTop="0"/>
+          <widgetv2config IsMultiline="0" fieldEditable="1" constraint="" UseHtml="0" labelOnTop="0" constraintDescription="" notNull="0"/>
         </edittype>
         <edittype widgetv2type="TextEdit" name="label">
-          <widgetv2config IsMultiline="0" fieldEditable="1" UseHtml="0" labelOnTop="0"/>
+          <widgetv2config IsMultiline="0" fieldEditable="1" constraint="" UseHtml="0" labelOnTop="0" constraintDescription="" notNull="0"/>
         </edittype>
         <edittype widgetv2type="TextEdit" name="description">
-          <widgetv2config IsMultiline="1" fieldEditable="1" UseHtml="0" labelOnTop="0"/>
+          <widgetv2config IsMultiline="1" fieldEditable="1" constraint="" UseHtml="0" labelOnTop="0" constraintDescription="" notNull="0"/>
         </edittype>
-        <edittype widgetv2type="TextEdit" name="author">
-          <widgetv2config IsMultiline="0" fieldEditable="1" UseHtml="0" labelOnTop="0"/>
+        <edittype widgetv2type="UniqueValues" name="author">
+          <widgetv2config fieldEditable="1" constraint="" labelOnTop="0" constraintDescription="" notNull="0" Editable="1"/>
         </edittype>
         <edittype widgetv2type="CheckBox" name="checked">
-          <widgetv2config fieldEditable="1" UncheckedState="0" CheckedState="1" labelOnTop="0"/>
+          <widgetv2config fieldEditable="1" UncheckedState="0" constraint="" CheckedState="1" labelOnTop="0" constraintDescription="" notNull="0"/>
         </edittype>
       </edittypes>
       <renderer-v2 attr="checked" forceraster="0" symbollevels="0" type="categorizedSymbol" enableorderby="0">
@@ -3899,7 +4121,149 @@ def my_form_open(dialog, layer, feature):
         <sizescale scalemethod="diameter"/>
       </renderer-v2>
       <labeling type="simple"/>
-      <customproperties/>
+      <customproperties>
+        <property key="embeddedWidgets/count" value="0"/>
+        <property key="labeling" value="pal"/>
+        <property key="labeling/addDirectionSymbol" value="false"/>
+        <property key="labeling/angleOffset" value="0"/>
+        <property key="labeling/blendMode" value="0"/>
+        <property key="labeling/bufferBlendMode" value="0"/>
+        <property key="labeling/bufferColorA" value="255"/>
+        <property key="labeling/bufferColorB" value="255"/>
+        <property key="labeling/bufferColorG" value="255"/>
+        <property key="labeling/bufferColorR" value="255"/>
+        <property key="labeling/bufferDraw" value="false"/>
+        <property key="labeling/bufferJoinStyle" value="128"/>
+        <property key="labeling/bufferNoFill" value="false"/>
+        <property key="labeling/bufferSize" value="1"/>
+        <property key="labeling/bufferSizeInMapUnits" value="false"/>
+        <property key="labeling/bufferSizeMapUnitScale" value="0,0,0,0,0,0"/>
+        <property key="labeling/bufferTransp" value="0"/>
+        <property key="labeling/centroidInside" value="false"/>
+        <property key="labeling/centroidWhole" value="false"/>
+        <property key="labeling/decimals" value="3"/>
+        <property key="labeling/displayAll" value="false"/>
+        <property key="labeling/dist" value="0"/>
+        <property key="labeling/distInMapUnits" value="false"/>
+        <property key="labeling/distMapUnitScale" value="0,0,0,0,0,0"/>
+        <property key="labeling/drawLabels" value="false"/>
+        <property key="labeling/enabled" value="false"/>
+        <property key="labeling/fieldName" value=""/>
+        <property key="labeling/fitInPolygonOnly" value="false"/>
+        <property key="labeling/fontCapitals" value="0"/>
+        <property key="labeling/fontFamily" value="Ubuntu"/>
+        <property key="labeling/fontItalic" value="false"/>
+        <property key="labeling/fontLetterSpacing" value="0"/>
+        <property key="labeling/fontLimitPixelSize" value="false"/>
+        <property key="labeling/fontMaxPixelSize" value="10000"/>
+        <property key="labeling/fontMinPixelSize" value="3"/>
+        <property key="labeling/fontSize" value="11"/>
+        <property key="labeling/fontSizeInMapUnits" value="false"/>
+        <property key="labeling/fontSizeMapUnitScale" value="0,0,0,0,0,0"/>
+        <property key="labeling/fontStrikeout" value="false"/>
+        <property key="labeling/fontUnderline" value="false"/>
+        <property key="labeling/fontWeight" value="50"/>
+        <property key="labeling/fontWordSpacing" value="0"/>
+        <property key="labeling/formatNumbers" value="false"/>
+        <property key="labeling/isExpression" value="true"/>
+        <property key="labeling/labelOffsetInMapUnits" value="true"/>
+        <property key="labeling/labelOffsetMapUnitScale" value="0,0,0,0,0,0"/>
+        <property key="labeling/labelPerPart" value="false"/>
+        <property key="labeling/leftDirectionSymbol" value="&lt;"/>
+        <property key="labeling/limitNumLabels" value="false"/>
+        <property key="labeling/maxCurvedCharAngleIn" value="25"/>
+        <property key="labeling/maxCurvedCharAngleOut" value="-25"/>
+        <property key="labeling/maxNumLabels" value="2000"/>
+        <property key="labeling/mergeLines" value="false"/>
+        <property key="labeling/minFeatureSize" value="0"/>
+        <property key="labeling/multilineAlign" value="4294967295"/>
+        <property key="labeling/multilineHeight" value="1"/>
+        <property key="labeling/namedStyle" value="Medium Italic"/>
+        <property key="labeling/obstacle" value="true"/>
+        <property key="labeling/obstacleFactor" value="1"/>
+        <property key="labeling/obstacleType" value="0"/>
+        <property key="labeling/offsetType" value="0"/>
+        <property key="labeling/placeDirectionSymbol" value="0"/>
+        <property key="labeling/placement" value="1"/>
+        <property key="labeling/placementFlags" value="10"/>
+        <property key="labeling/plussign" value="false"/>
+        <property key="labeling/predefinedPositionOrder" value="TR,TL,BR,BL,R,L,TSR,BSR"/>
+        <property key="labeling/preserveRotation" value="true"/>
+        <property key="labeling/previewBkgrdColor" value="#ffffff"/>
+        <property key="labeling/priority" value="5"/>
+        <property key="labeling/quadOffset" value="4"/>
+        <property key="labeling/repeatDistance" value="0"/>
+        <property key="labeling/repeatDistanceMapUnitScale" value="0,0,0,0,0,0"/>
+        <property key="labeling/repeatDistanceUnit" value="1"/>
+        <property key="labeling/reverseDirectionSymbol" value="false"/>
+        <property key="labeling/rightDirectionSymbol" value=">"/>
+        <property key="labeling/scaleMax" value="10000000"/>
+        <property key="labeling/scaleMin" value="1"/>
+        <property key="labeling/scaleVisibility" value="false"/>
+        <property key="labeling/shadowBlendMode" value="6"/>
+        <property key="labeling/shadowColorB" value="0"/>
+        <property key="labeling/shadowColorG" value="0"/>
+        <property key="labeling/shadowColorR" value="0"/>
+        <property key="labeling/shadowDraw" value="false"/>
+        <property key="labeling/shadowOffsetAngle" value="135"/>
+        <property key="labeling/shadowOffsetDist" value="1"/>
+        <property key="labeling/shadowOffsetGlobal" value="true"/>
+        <property key="labeling/shadowOffsetMapUnitScale" value="0,0,0,0,0,0"/>
+        <property key="labeling/shadowOffsetUnits" value="1"/>
+        <property key="labeling/shadowRadius" value="1.5"/>
+        <property key="labeling/shadowRadiusAlphaOnly" value="false"/>
+        <property key="labeling/shadowRadiusMapUnitScale" value="0,0,0,0,0,0"/>
+        <property key="labeling/shadowRadiusUnits" value="1"/>
+        <property key="labeling/shadowScale" value="100"/>
+        <property key="labeling/shadowTransparency" value="30"/>
+        <property key="labeling/shadowUnder" value="0"/>
+        <property key="labeling/shapeBlendMode" value="0"/>
+        <property key="labeling/shapeBorderColorA" value="255"/>
+        <property key="labeling/shapeBorderColorB" value="128"/>
+        <property key="labeling/shapeBorderColorG" value="128"/>
+        <property key="labeling/shapeBorderColorR" value="128"/>
+        <property key="labeling/shapeBorderWidth" value="0"/>
+        <property key="labeling/shapeBorderWidthMapUnitScale" value="0,0,0,0,0,0"/>
+        <property key="labeling/shapeBorderWidthUnits" value="1"/>
+        <property key="labeling/shapeDraw" value="false"/>
+        <property key="labeling/shapeFillColorA" value="255"/>
+        <property key="labeling/shapeFillColorB" value="255"/>
+        <property key="labeling/shapeFillColorG" value="255"/>
+        <property key="labeling/shapeFillColorR" value="255"/>
+        <property key="labeling/shapeJoinStyle" value="64"/>
+        <property key="labeling/shapeOffsetMapUnitScale" value="0,0,0,0,0,0"/>
+        <property key="labeling/shapeOffsetUnits" value="1"/>
+        <property key="labeling/shapeOffsetX" value="0"/>
+        <property key="labeling/shapeOffsetY" value="0"/>
+        <property key="labeling/shapeRadiiMapUnitScale" value="0,0,0,0,0,0"/>
+        <property key="labeling/shapeRadiiUnits" value="1"/>
+        <property key="labeling/shapeRadiiX" value="0"/>
+        <property key="labeling/shapeRadiiY" value="0"/>
+        <property key="labeling/shapeRotation" value="0"/>
+        <property key="labeling/shapeRotationType" value="0"/>
+        <property key="labeling/shapeSVGFile" value=""/>
+        <property key="labeling/shapeSizeMapUnitScale" value="0,0,0,0,0,0"/>
+        <property key="labeling/shapeSizeType" value="0"/>
+        <property key="labeling/shapeSizeUnits" value="1"/>
+        <property key="labeling/shapeSizeX" value="0"/>
+        <property key="labeling/shapeSizeY" value="0"/>
+        <property key="labeling/shapeTransparency" value="0"/>
+        <property key="labeling/shapeType" value="0"/>
+        <property key="labeling/substitutions" value="&lt;substitutions/>"/>
+        <property key="labeling/textColorA" value="255"/>
+        <property key="labeling/textColorB" value="0"/>
+        <property key="labeling/textColorG" value="0"/>
+        <property key="labeling/textColorR" value="0"/>
+        <property key="labeling/textTransp" value="0"/>
+        <property key="labeling/upsidedownLabels" value="0"/>
+        <property key="labeling/useSubstitutions" value="false"/>
+        <property key="labeling/wrapChar" value=""/>
+        <property key="labeling/xOffset" value="0"/>
+        <property key="labeling/yOffset" value="0"/>
+        <property key="labeling/zIndex" value="0"/>
+        <property key="variableNames"/>
+        <property key="variableValues"/>
+      </customproperties>
       <blendMode>0</blendMode>
       <featureBlendMode>0</featureBlendMode>
       <layerTransparency>0</layerTransparency>
@@ -3925,22 +4289,75 @@ def my_form_open(dialog, layer, feature):
         <multilineenabled fieldname="" on=""/>
         <selectedonly on=""/>
       </labelattributes>
+      <SingleCategoryDiagramRenderer diagramType="Histogram" sizeLegend="0" attributeLegend="1">
+        <DiagramCategory penColor="#000000" labelPlacementMethod="XHeight" penWidth="0" diagramOrientation="Up" sizeScale="0,0,0,0,0,0" minimumSize="0" barWidth="5" penAlpha="255" maxScaleDenominator="1e+08" backgroundColor="#ffffff" transparency="0" width="15" scaleDependency="Area" backgroundAlpha="255" angleOffset="1440" scaleBasedVisibility="0" enabled="0" height="15" lineSizeScale="0,0,0,0,0,0" sizeType="MM" lineSizeType="MM" minScaleDenominator="inf">
+          <fontProperties description="Ubuntu,11,-1,5,50,0,0,0,0,0" style=""/>
+        </DiagramCategory>
+        <symbol alpha="1" clip_to_extent="1" type="marker" name="sizeSymbol">
+          <layer pass="0" class="SimpleMarker" locked="0">
+            <prop k="angle" v="0"/>
+            <prop k="color" v="255,0,0,255"/>
+            <prop k="horizontal_anchor_point" v="1"/>
+            <prop k="joinstyle" v="bevel"/>
+            <prop k="name" v="circle"/>
+            <prop k="offset" v="0,0"/>
+            <prop k="offset_map_unit_scale" v="0,0,0,0,0,0"/>
+            <prop k="offset_unit" v="MM"/>
+            <prop k="outline_color" v="0,0,0,255"/>
+            <prop k="outline_style" v="solid"/>
+            <prop k="outline_width" v="0"/>
+            <prop k="outline_width_map_unit_scale" v="0,0,0,0,0,0"/>
+            <prop k="outline_width_unit" v="MM"/>
+            <prop k="scale_method" v="diameter"/>
+            <prop k="size" v="2"/>
+            <prop k="size_map_unit_scale" v="0,0,0,0,0,0"/>
+            <prop k="size_unit" v="MM"/>
+            <prop k="vertical_anchor_point" v="1"/>
+          </layer>
+        </symbol>
+      </SingleCategoryDiagramRenderer>
+      <DiagramLayerSettings yPosColumn="-1" showColumn="-1" linePlacementFlags="10" placement="0" dist="0" xPosColumn="-1" priority="0" obstacle="0" zIndex="0" showAll="1"/>
       <annotationform>.</annotationform>
       <aliases>
+        <alias field="pkuid" index="0" name=""/>
+        <alias field="label" index="1" name=""/>
+        <alias field="description" index="2" name=""/>
         <alias field="author" index="3" name=""/>
         <alias field="checked" index="4" name=""/>
-        <alias field="description" index="2" name=""/>
-        <alias field="label" index="1" name=""/>
-        <alias field="pkuid" index="0" name=""/>
       </aliases>
       <excludeAttributesWMS/>
       <excludeAttributesWFS/>
-      <attributeactions/>
+      <attributeactions default="-1"/>
+      <attributetableconfig actionWidgetStyle="dropDown" sortExpression="" sortOrder="0">
+        <columns>
+          <column width="-1" hidden="0" type="field" name="pkuid"/>
+          <column width="-1" hidden="0" type="field" name="label"/>
+          <column width="-1" hidden="0" type="field" name="description"/>
+          <column width="-1" hidden="0" type="field" name="author"/>
+          <column width="-1" hidden="0" type="field" name="checked"/>
+          <column width="-1" hidden="1" type="actions"/>
+        </columns>
+      </attributetableconfig>
       <editform>.</editform>
       <editforminit/>
       <editforminitcodesource>0</editforminitcodesource>
       <editforminitfilepath>.</editforminitfilepath>
-      <editforminitcode><![CDATA[]]></editforminitcode>
+      <editforminitcode><![CDATA[# -*- coding: utf-8 -*-
+"""
+Les formulaires QGIS peuvent avoir une fonction Python qui sera appelée à l'ouverture du formulaire.
+
+Utilisez cette fonction pour ajouter plus de fonctionnalités à vos formulaires.
+
+Entrez le nom de la fonction dans le champ "Fonction d'initialisation Python".
+Voici un exemple à suivre:
+"""
+from qgis.PyQt.QtWidgets import QWidget
+
+def my_form_open(dialog, layer, feature):
+    geom = feature.geometry()
+    control = dialog.findChild(QWidget, "MyLineEdit")
+
+]]></editforminitcode>
       <featformsuppress>0</featformsuppress>
       <editorlayout>generatedlayout</editorlayout>
       <widgets/>
@@ -3948,6 +4365,14 @@ def my_form_open(dialog, layer, feature):
         <rowstyles/>
         <fieldstyles/>
       </conditionalstyles>
+      <defaults>
+        <default field="pkuid" expression=""/>
+        <default field="label" expression=""/>
+        <default field="description" expression=""/>
+        <default field="author" expression=""/>
+        <default field="checked" expression=""/>
+      </defaults>
+      <previewExpression>COALESCE( "description", '&lt;NULL>' )</previewExpression>
     </maplayer>
     <maplayer minimumScale="0" maximumScale="1e+08" type="raster" hasScaleBasedVisibilityFlag="0">
       <extent>
@@ -4043,7 +4468,7 @@ def my_form_open(dialog, layer, feature):
       </pipe>
       <blendMode>0</blendMode>
     </maplayer>
-    <maplayer minimumScale="-4.65661e-10" maximumScale="1e+08" geometry="No geometry" type="vector" hasScaleBasedVisibilityFlag="0">
+    <maplayer minimumScale="-4.65661e-10" maximumScale="1e+08" readOnly="0" geometry="No geometry" type="vector" hasScaleBasedVisibilityFlag="0">
       <id>jointure_tram_stop20150328114216806</id>
       <datasource>dbname='./edition/transport.sqlite' table="jointure_tram_stop" sql=</datasource>
       <keywordList>
@@ -4064,7 +4489,6 @@ def my_form_open(dialog, layer, feature):
       </srs>
       <customproperties/>
       <provider encoding="System">spatialite</provider>
-      <previewExpression>COALESCE("pk", '&lt;NULL>')</previewExpression>
       <vectorjoins>
         <join hasCustomPrefix="1" joinFieldName="osm_id" customPrefix="tramstop_" targetFieldName="stop_id" memoryCache="1" joinLayerId="tramstop20150328114203878">
           <joinFieldsSubset>
@@ -4085,40 +4509,43 @@ def my_form_open(dialog, layer, feature):
       </map-layer-style-manager>
       <edittypes>
         <edittype widgetv2type="TextEdit" name="OGC_FID">
-          <widgetv2config IsMultiline="0" fieldEditable="1" UseHtml="0" labelOnTop="0"/>
+          <widgetv2config IsMultiline="0" fieldEditable="1" constraint="" UseHtml="0" labelOnTop="0" constraintDescription="" notNull="0"/>
         </edittype>
         <edittype widgetv2type="ValueRelation" name="tram_id">
-          <widgetv2config OrderByValue="1" AllowNull="1" FilterExpression="" UseCompleter="0" fieldEditable="1" Key="osm_id" Layer="tramway20150328114206278" Value="test" labelOnTop="0" AllowMulti="0"/>
+          <widgetv2config OrderByValue="1" AllowNull="1" FilterExpression="" UseCompleter="0" fieldEditable="1" Key="osm_id" constraint="" Layer="tramway20150328114206278" Value="test" labelOnTop="0" constraintDescription="" AllowMulti="0" notNull="0"/>
         </edittype>
         <edittype widgetv2type="ValueRelation" name="stop_id">
-          <widgetv2config OrderByValue="1" AllowNull="1" FilterExpression="" UseCompleter="0" fieldEditable="1" Key="osm_id" Layer="tramstop20150328114203878" Value="name" labelOnTop="0" AllowMulti="0"/>
+          <widgetv2config OrderByValue="1" AllowNull="1" FilterExpression="" UseCompleter="0" fieldEditable="1" Key="osm_id" constraint="" Layer="tramstop20150328114203878" Value="name" labelOnTop="0" constraintDescription="" AllowMulti="0" notNull="0"/>
         </edittype>
         <edittype widgetv2type="TextEdit" name="sequence">
-          <widgetv2config IsMultiline="0" fieldEditable="1" UseHtml="0" labelOnTop="0"/>
+          <widgetv2config IsMultiline="0" fieldEditable="1" constraint="" UseHtml="0" labelOnTop="0" constraintDescription="" notNull="0"/>
         </edittype>
         <edittype widgetv2type="TextEdit" name="tramstop_name">
-          <widgetv2config IsMultiline="0" fieldEditable="0" UseHtml="0" labelOnTop="0"/>
+          <widgetv2config IsMultiline="0" fieldEditable="0" constraint="" UseHtml="0" labelOnTop="0" constraintDescription="" notNull="0"/>
         </edittype>
         <edittype widgetv2type="TextEdit" name="tramway_name">
-          <widgetv2config IsMultiline="0" fieldEditable="0" UseHtml="0" labelOnTop="0"/>
+          <widgetv2config IsMultiline="0" fieldEditable="0" constraint="" UseHtml="0" labelOnTop="0" constraintDescription="" notNull="0"/>
         </edittype>
         <edittype widgetv2type="TextEdit" name="tramway_ref">
-          <widgetv2config IsMultiline="0" fieldEditable="0" UseHtml="0" labelOnTop="0"/>
+          <widgetv2config IsMultiline="0" fieldEditable="0" constraint="" UseHtml="0" labelOnTop="0" constraintDescription="" notNull="0"/>
         </edittype>
       </edittypes>
       <annotationform>.</annotationform>
       <aliases>
         <alias field="OGC_FID" index="0" name=""/>
-        <alias field="sequence" index="3" name="Sequence"/>
-        <alias field="stop_id" index="2" name="Stop id"/>
         <alias field="tram_id" index="1" name="Tram id"/>
+        <alias field="stop_id" index="2" name="Stop id"/>
+        <alias field="sequence" index="3" name="Sequence"/>
         <alias field="tramstop_name" index="4" name="Stop name"/>
         <alias field="tramway_name" index="5" name="Tramway line"/>
         <alias field="tramway_ref" index="6" name="Ref"/>
       </aliases>
       <excludeAttributesWMS/>
       <excludeAttributesWFS/>
-      <attributeactions/>
+      <attributeactions default="0"/>
+      <attributetableconfig actionWidgetStyle="dropDown" sortExpression="" sortOrder="0">
+        <columns/>
+      </attributetableconfig>
       <editform>.</editform>
       <editforminit/>
       <editforminitcodesource>0</editforminitcodesource>
@@ -4131,8 +4558,18 @@ def my_form_open(dialog, layer, feature):
         <rowstyles/>
         <fieldstyles/>
       </conditionalstyles>
+      <defaults>
+        <default field="OGC_FID" expression=""/>
+        <default field="tram_id" expression=""/>
+        <default field="stop_id" expression=""/>
+        <default field="sequence" expression=""/>
+        <default field="tramstop_name" expression=""/>
+        <default field="tramway_name" expression=""/>
+        <default field="tramway_ref" expression=""/>
+      </defaults>
+      <previewExpression>COALESCE("pk", '&lt;NULL>')</previewExpression>
     </maplayer>
-    <maplayer minimumScale="-4.65661e-10" maximumScale="1e+08" simplifyDrawingHints="0" minLabelScale="0" maxLabelScale="1e+08" simplifyDrawingTol="1" geometry="Point" simplifyMaxScale="1" type="vector" hasScaleBasedVisibilityFlag="0" simplifyLocal="1" scaleBasedLabelVisibilityFlag="0">
+    <maplayer simplifyAlgorithm="0" minimumScale="-4.65661e-10" maximumScale="1e+08" simplifyDrawingHints="0" minLabelScale="0" maxLabelScale="1e+08" simplifyDrawingTol="1" readOnly="0" geometry="Point" simplifyMaxScale="1" type="vector" hasScaleBasedVisibilityFlag="0" simplifyLocal="1" scaleBasedLabelVisibilityFlag="0">
       <extent>
         <xmin>431114.8420873464201577</xmin>
         <ymin>5403527.32227708306163549</ymin>
@@ -4159,7 +4596,6 @@ def my_form_open(dialog, layer, feature):
         </spatialrefsys>
       </srs>
       <provider encoding="System">spatialite</provider>
-      <previewExpression>COALESCE( "b_name", '&lt;NULL>' )</previewExpression>
       <vectorjoins/>
       <layerDependencies/>
       <expressionfields/>
@@ -4168,13 +4604,13 @@ def my_form_open(dialog, layer, feature):
       </map-layer-style-manager>
       <edittypes>
         <edittype widgetv2type="TextEdit" name="b_id">
-          <widgetv2config IsMultiline="0" fieldEditable="1" UseHtml="0" labelOnTop="0"/>
+          <widgetv2config IsMultiline="0" fieldEditable="1" constraint="" UseHtml="0" labelOnTop="0" constraintDescription="" notNull="0"/>
         </edittype>
         <edittype widgetv2type="TextEdit" name="b_name">
-          <widgetv2config IsMultiline="0" fieldEditable="1" UseHtml="0" labelOnTop="0"/>
+          <widgetv2config IsMultiline="0" fieldEditable="1" constraint="" UseHtml="0" labelOnTop="0" constraintDescription="" notNull="0"/>
         </edittype>
         <edittype widgetv2type="TextEdit" name="b_description">
-          <widgetv2config IsMultiline="0" fieldEditable="1" UseHtml="0" labelOnTop="0"/>
+          <widgetv2config IsMultiline="0" fieldEditable="1" constraint="" UseHtml="0" labelOnTop="0" constraintDescription="" notNull="0"/>
         </edittype>
       </edittypes>
       <renderer-v2 forceraster="0" symbollevels="0" type="singleSymbol" enableorderby="0">
@@ -4378,24 +4814,49 @@ def my_form_open(dialog, layer, feature):
         <multilineenabled fieldname="" on=""/>
         <selectedonly on=""/>
       </labelattributes>
-      <SingleCategoryDiagramRenderer diagramType="Pie">
-        <DiagramCategory penColor="#000000" labelPlacementMethod="XHeight" penWidth="0" diagramOrientation="Up" minimumSize="0" barWidth="5" penAlpha="255" maxScaleDenominator="1e+08" backgroundColor="#ffffff" transparency="0" width="15" scaleDependency="Area" backgroundAlpha="255" angleOffset="1440" scaleBasedVisibility="0" enabled="0" height="15" sizeType="MM" minScaleDenominator="-4.65661e-10">
+      <SingleCategoryDiagramRenderer diagramType="Pie" sizeLegend="0" attributeLegend="1">
+        <DiagramCategory penColor="#000000" labelPlacementMethod="XHeight" penWidth="0" diagramOrientation="Up" sizeScale="0,0,0,0,0,0" minimumSize="0" barWidth="5" penAlpha="255" maxScaleDenominator="1e+08" backgroundColor="#ffffff" transparency="0" width="15" scaleDependency="Area" backgroundAlpha="255" angleOffset="1440" scaleBasedVisibility="0" enabled="0" height="15" lineSizeScale="0,0,0,0,0,0" sizeType="MM" lineSizeType="MM" minScaleDenominator="-4.65661e-10">
           <fontProperties description="Ubuntu,11,-1,5,50,0,0,0,0,0" style=""/>
           <attribute field="" color="#000000" label=""/>
         </DiagramCategory>
+        <symbol alpha="1" clip_to_extent="1" type="marker" name="sizeSymbol">
+          <layer pass="0" class="SimpleMarker" locked="0">
+            <prop k="angle" v="0"/>
+            <prop k="color" v="255,0,0,255"/>
+            <prop k="horizontal_anchor_point" v="1"/>
+            <prop k="joinstyle" v="bevel"/>
+            <prop k="name" v="circle"/>
+            <prop k="offset" v="0,0"/>
+            <prop k="offset_map_unit_scale" v="0,0,0,0,0,0"/>
+            <prop k="offset_unit" v="MM"/>
+            <prop k="outline_color" v="0,0,0,255"/>
+            <prop k="outline_style" v="solid"/>
+            <prop k="outline_width" v="0"/>
+            <prop k="outline_width_map_unit_scale" v="0,0,0,0,0,0"/>
+            <prop k="outline_width_unit" v="MM"/>
+            <prop k="scale_method" v="diameter"/>
+            <prop k="size" v="2"/>
+            <prop k="size_map_unit_scale" v="0,0,0,0,0,0"/>
+            <prop k="size_unit" v="MM"/>
+            <prop k="vertical_anchor_point" v="1"/>
+          </layer>
+        </symbol>
       </SingleCategoryDiagramRenderer>
-      <DiagramLayerSettings yPosColumn="-1" linePlacementFlags="10" placement="0" dist="0" xPosColumn="-1" priority="0" obstacle="0" zIndex="0" showAll="1"/>
+      <DiagramLayerSettings yPosColumn="-1" showColumn="0" linePlacementFlags="10" placement="0" dist="0" xPosColumn="-1" priority="0" obstacle="0" zIndex="0" showAll="1"/>
       <annotationform>.</annotationform>
       <aliases>
-        <alias field="b_description" index="2" name="Description"/>
         <alias field="b_id" index="0" name="Id"/>
         <alias field="b_name" index="1" name="Name"/>
+        <alias field="b_description" index="2" name="Description"/>
       </aliases>
       <excludeAttributesWMS>
         <attribute>b_id</attribute>
       </excludeAttributesWMS>
       <excludeAttributesWFS/>
-      <attributeactions/>
+      <attributeactions default="0"/>
+      <attributetableconfig actionWidgetStyle="dropDown" sortExpression="" sortOrder="0">
+        <columns/>
+      </attributetableconfig>
       <editform>.</editform>
       <editforminit/>
       <editforminitcodesource>0</editforminitcodesource>
@@ -4408,8 +4869,14 @@ def my_form_open(dialog, layer, feature):
         <rowstyles/>
         <fieldstyles/>
       </conditionalstyles>
+      <defaults>
+        <default field="b_id" expression=""/>
+        <default field="b_name" expression=""/>
+        <default field="b_description" expression=""/>
+      </defaults>
+      <previewExpression>COALESCE( "b_name", '&lt;NULL>' )</previewExpression>
     </maplayer>
-    <maplayer minimumScale="-4.65661e-10" maximumScale="1e+08" geometry="No geometry" type="vector" hasScaleBasedVisibilityFlag="0">
+    <maplayer minimumScale="-4.65661e-10" maximumScale="1e+08" readOnly="0" geometry="No geometry" type="vector" hasScaleBasedVisibilityFlag="0">
       <id>publicbuildings_tramstop20150420095614071</id>
       <datasource>dbname='./edition/transport.sqlite' table="publicbuildings_tramstop" sql=</datasource>
       <title>Pivot tramstops / Buildings</title>
@@ -4431,7 +4898,6 @@ def my_form_open(dialog, layer, feature):
       </srs>
       <customproperties/>
       <provider encoding="System">spatialite</provider>
-      <previewExpression>COALESCE("r_id", '&lt;NULL>')</previewExpression>
       <vectorjoins>
         <join hasCustomPrefix="1" joinFieldName="osm_id" customPrefix="tramstop_" targetFieldName="stop_id" memoryCache="1" joinLayerId="tramstop20150328114203878">
           <joinFieldsSubset>
@@ -4451,32 +4917,35 @@ def my_form_open(dialog, layer, feature):
       </map-layer-style-manager>
       <edittypes>
         <edittype widgetv2type="TextEdit" name="r_id">
-          <widgetv2config IsMultiline="0" fieldEditable="1" UseHtml="0" labelOnTop="0"/>
+          <widgetv2config IsMultiline="0" fieldEditable="1" constraint="" UseHtml="0" labelOnTop="0" constraintDescription="" notNull="0"/>
         </edittype>
         <edittype widgetv2type="ValueRelation" name="b_id">
-          <widgetv2config OrderByValue="1" AllowNull="0" FilterExpression="" UseCompleter="0" fieldEditable="1" Key="b_id" Layer="publicbuildings20150420100958543" Value="b_name" labelOnTop="0" AllowMulti="0"/>
+          <widgetv2config OrderByValue="1" AllowNull="0" FilterExpression="" UseCompleter="0" fieldEditable="1" Key="b_id" constraint="" Layer="publicbuildings20150420100958543" Value="b_name" labelOnTop="0" constraintDescription="" AllowMulti="0" notNull="0"/>
         </edittype>
         <edittype widgetv2type="TextEdit" name="stop_id">
-          <widgetv2config IsMultiline="0" fieldEditable="1" UseHtml="0" labelOnTop="0"/>
+          <widgetv2config IsMultiline="0" fieldEditable="1" constraint="" UseHtml="0" labelOnTop="0" constraintDescription="" notNull="0"/>
         </edittype>
         <edittype widgetv2type="TextEdit" name="tramstop_name">
-          <widgetv2config IsMultiline="0" fieldEditable="0" UseHtml="0" labelOnTop="0"/>
+          <widgetv2config IsMultiline="0" fieldEditable="0" constraint="" UseHtml="0" labelOnTop="0" constraintDescription="" notNull="0"/>
         </edittype>
         <edittype widgetv2type="TextEdit" name="publicbuildings_b_name">
-          <widgetv2config IsMultiline="0" fieldEditable="0" UseHtml="0" labelOnTop="0"/>
+          <widgetv2config IsMultiline="0" fieldEditable="0" constraint="" UseHtml="0" labelOnTop="0" constraintDescription="" notNull="0"/>
         </edittype>
       </edittypes>
       <annotationform>.</annotationform>
       <aliases>
-        <alias field="b_id" index="1" name="Building Id"/>
-        <alias field="publicbuildings_b_name" index="4" name="Name"/>
         <alias field="r_id" index="0" name="Id"/>
+        <alias field="b_id" index="1" name="Building Id"/>
         <alias field="stop_id" index="2" name="Stop Id"/>
         <alias field="tramstop_name" index="3" name="Stop name"/>
+        <alias field="publicbuildings_b_name" index="4" name="Name"/>
       </aliases>
       <excludeAttributesWMS/>
       <excludeAttributesWFS/>
-      <attributeactions/>
+      <attributeactions default="0"/>
+      <attributetableconfig actionWidgetStyle="dropDown" sortExpression="" sortOrder="0">
+        <columns/>
+      </attributetableconfig>
       <editform>.</editform>
       <editforminit/>
       <editforminitcodesource>0</editforminitcodesource>
@@ -4489,8 +4958,16 @@ def my_form_open(dialog, layer, feature):
         <rowstyles/>
         <fieldstyles/>
       </conditionalstyles>
+      <defaults>
+        <default field="r_id" expression=""/>
+        <default field="b_id" expression=""/>
+        <default field="stop_id" expression=""/>
+        <default field="tramstop_name" expression=""/>
+        <default field="publicbuildings_b_name" expression=""/>
+      </defaults>
+      <previewExpression>COALESCE("r_id", '&lt;NULL>')</previewExpression>
     </maplayer>
-    <maplayer minimumScale="-4.65661e-10" maximumScale="1e+08" geometry="No geometry" type="vector" hasScaleBasedVisibilityFlag="0">
+    <maplayer minimumScale="0" maximumScale="1e+08" readOnly="0" geometry="No geometry" type="vector" hasScaleBasedVisibilityFlag="0">
       <id>tram_stop_work20150416102656130</id>
       <datasource>dbname='./edition/transport.sqlite' table="tram_stop_work" sql=</datasource>
       <title>Tram stop works</title>
@@ -4511,11 +4988,11 @@ def my_form_open(dialog, layer, feature):
         </spatialrefsys>
       </srs>
       <customproperties>
-        <property key="variableNames" value="_fields_"/>
-        <property key="variableValues" value=""/>
+        <property key="embeddedWidgets/count" value="0"/>
+        <property key="variableNames"/>
+        <property key="variableValues"/>
       </customproperties>
       <provider encoding="System">spatialite</provider>
-      <previewExpression>COALESCE("work_id", '&lt;NULL>')</previewExpression>
       <vectorjoins/>
       <layerDependencies/>
       <expressionfields/>
@@ -4524,32 +5001,42 @@ def my_form_open(dialog, layer, feature):
       </map-layer-style-manager>
       <edittypes>
         <edittype widgetv2type="TextEdit" name="work_id">
-          <widgetv2config IsMultiline="0" fieldEditable="1" UseHtml="0" labelOnTop="0"/>
+          <widgetv2config IsMultiline="0" fieldEditable="1" constraint="" UseHtml="0" labelOnTop="0" constraintDescription="" notNull="0"/>
         </edittype>
         <edittype widgetv2type="DateTime" name="work_date">
-          <widgetv2config fieldEditable="1" calendar_popup="1" allow_null="0" display_format="yyyy-MM-dd" field_format="yyyy-MM-dd" labelOnTop="0"/>
+          <widgetv2config fieldEditable="1" calendar_popup="1" allow_null="0" display_format="yyyy-MM-dd" field_format="yyyy-MM-dd" constraint="" labelOnTop="0" constraintDescription="" notNull="0"/>
         </edittype>
         <edittype widgetv2type="TextEdit" name="work_title">
-          <widgetv2config IsMultiline="0" fieldEditable="1" UseHtml="0" labelOnTop="0"/>
+          <widgetv2config IsMultiline="0" fieldEditable="1" constraint="" UseHtml="0" labelOnTop="0" constraintDescription="" notNull="0"/>
         </edittype>
         <edittype widgetv2type="TextEdit" name="work_description">
-          <widgetv2config IsMultiline="1" fieldEditable="1" UseHtml="0" labelOnTop="0"/>
+          <widgetv2config IsMultiline="1" fieldEditable="1" constraint="" UseHtml="0" labelOnTop="0" constraintDescription="" notNull="0"/>
         </edittype>
         <edittype widgetv2type="ValueRelation" name="tram_stop_id">
-          <widgetv2config OrderByValue="1" AllowNull="0" FilterExpression="" UseCompleter="0" fieldEditable="1" Key="osm_id" Layer="tramstop20150328114203878" Value="name" labelOnTop="0" AllowMulti="0"/>
+          <widgetv2config OrderByValue="1" AllowNull="0" FilterExpression="" UseCompleter="1" fieldEditable="1" Key="OGC_FID" constraint="" Layer="tramstop20150328114203878" Value="unique_name" labelOnTop="0" constraintDescription="" AllowMulti="0" notNull="0"/>
         </edittype>
       </edittypes>
       <annotationform>.</annotationform>
       <aliases>
-        <alias field="tram_stop_id" index="4" name="Stop id"/>
-        <alias field="work_date" index="1" name="Date"/>
-        <alias field="work_description" index="3" name="Description"/>
         <alias field="work_id" index="0" name="Id"/>
+        <alias field="work_date" index="1" name="Date"/>
         <alias field="work_title" index="2" name="Title"/>
+        <alias field="work_description" index="3" name="Description"/>
+        <alias field="tram_stop_id" index="4" name="Stop id"/>
       </aliases>
       <excludeAttributesWMS/>
       <excludeAttributesWFS/>
-      <attributeactions/>
+      <attributeactions default="-1"/>
+      <attributetableconfig actionWidgetStyle="dropDown" sortExpression="" sortOrder="0">
+        <columns>
+          <column width="-1" hidden="0" type="field" name="work_id"/>
+          <column width="-1" hidden="0" type="field" name="work_date"/>
+          <column width="-1" hidden="0" type="field" name="work_title"/>
+          <column width="-1" hidden="0" type="field" name="work_description"/>
+          <column width="-1" hidden="0" type="field" name="tram_stop_id"/>
+          <column width="-1" hidden="1" type="actions"/>
+        </columns>
+      </attributetableconfig>
       <editform>.</editform>
       <editforminit/>
       <editforminitcodesource>0</editforminitcodesource>
@@ -4577,8 +5064,16 @@ def my_form_open(dialog, layer, feature):
         <rowstyles/>
         <fieldstyles/>
       </conditionalstyles>
+      <defaults>
+        <default field="work_id" expression=""/>
+        <default field="work_date" expression=""/>
+        <default field="work_title" expression=""/>
+        <default field="work_description" expression=""/>
+        <default field="tram_stop_id" expression=""/>
+      </defaults>
+      <previewExpression>COALESCE("work_id", '&lt;NULL>')</previewExpression>
     </maplayer>
-    <maplayer minimumScale="0" maximumScale="1e+08" simplifyDrawingHints="0" minLabelScale="1" maxLabelScale="1e+08" simplifyDrawingTol="1" geometry="Point" simplifyMaxScale="1" type="vector" hasScaleBasedVisibilityFlag="0" simplifyLocal="1" scaleBasedLabelVisibilityFlag="0">
+    <maplayer simplifyAlgorithm="0" minimumScale="0" maximumScale="1e+08" simplifyDrawingHints="0" minLabelScale="1" maxLabelScale="1e+08" simplifyDrawingTol="1" readOnly="0" geometry="Point" simplifyMaxScale="1" type="vector" hasScaleBasedVisibilityFlag="0" simplifyLocal="1" scaleBasedLabelVisibilityFlag="0">
       <extent>
         <xmin>3.81010559999999998</xmin>
         <ymin>43.55794230000000056</ymin>
@@ -4605,30 +5100,29 @@ def my_form_open(dialog, layer, feature):
         </spatialrefsys>
       </srs>
       <provider encoding="System">spatialite</provider>
-      <previewExpression>COALESCE( "name", '&lt;NULL>' )</previewExpression>
       <vectorjoins/>
       <layerDependencies/>
       <expressionfields>
-        <field typeName="TEXT" precision="0" expression=" &quot;osm_id&quot;  || ' - '  ||   &quot;name&quot;  " length="0" type="10" comment="" name="unique_name"/>
+        <field typeName="TEXT" precision="0" expression=" &quot;name&quot; || ' - ' || &quot;osm_id&quot;" length="0" type="10" comment="" name="unique_name"/>
       </expressionfields>
       <map-layer-style-manager current="">
         <map-layer-style name=""/>
       </map-layer-style-manager>
       <edittypes>
         <edittype widgetv2type="TextEdit" name="OGC_FID">
-          <widgetv2config IsMultiline="0" fieldEditable="1" UseHtml="0" labelOnTop="0"/>
+          <widgetv2config IsMultiline="0" fieldEditable="1" constraint="" UseHtml="0" labelOnTop="0" constraintDescription="" notNull="0"/>
         </edittype>
         <edittype widgetv2type="TextEdit" name="osm_id">
-          <widgetv2config IsMultiline="0" fieldEditable="1" UseHtml="0" labelOnTop="0"/>
+          <widgetv2config IsMultiline="0" fieldEditable="1" constraint="" UseHtml="0" labelOnTop="0" constraintDescription="" notNull="0"/>
         </edittype>
         <edittype widgetv2type="TextEdit" name="name">
-          <widgetv2config IsMultiline="0" fieldEditable="1" UseHtml="0" labelOnTop="0"/>
+          <widgetv2config IsMultiline="0" fieldEditable="1" constraint="" UseHtml="0" labelOnTop="0" constraintDescription="" notNull="0"/>
         </edittype>
         <edittype widgetv2type="TextEdit" name="wkt">
-          <widgetv2config IsMultiline="0" fieldEditable="0" UseHtml="0" labelOnTop="0"/>
+          <widgetv2config IsMultiline="0" fieldEditable="0" constraint="" UseHtml="0" labelOnTop="0" constraintDescription="" notNull="0"/>
         </edittype>
         <edittype widgetv2type="TextEdit" name="unique_name">
-          <widgetv2config IsMultiline="0" fieldEditable="0" UseHtml="0" labelOnTop="0"/>
+          <widgetv2config IsMultiline="0" fieldEditable="0" constraint="" UseHtml="0" labelOnTop="0" constraintDescription="" notNull="0"/>
         </edittype>
       </edittypes>
       <renderer-v2 forceraster="0" symbollevels="0" type="singleSymbol" enableorderby="0">
@@ -4659,6 +5153,7 @@ def my_form_open(dialog, layer, feature):
       </renderer-v2>
       <labeling type="simple"/>
       <customproperties>
+        <property key="embeddedWidgets/count" value="0"/>
         <property key="labeling" value="pal"/>
         <property key="labeling/addDirectionSymbol" value="false"/>
         <property key="labeling/angleOffset" value="0"/>
@@ -4808,18 +5303,20 @@ def my_form_open(dialog, layer, feature):
         <property key="labeling/shapeSizeY" value="0"/>
         <property key="labeling/shapeTransparency" value="0"/>
         <property key="labeling/shapeType" value="0"/>
+        <property key="labeling/substitutions" value="&lt;substitutions/>"/>
         <property key="labeling/textColorA" value="255"/>
         <property key="labeling/textColorB" value="0"/>
         <property key="labeling/textColorG" value="0"/>
         <property key="labeling/textColorR" value="0"/>
         <property key="labeling/textTransp" value="0"/>
         <property key="labeling/upsidedownLabels" value="0"/>
+        <property key="labeling/useSubstitutions" value="false"/>
         <property key="labeling/wrapChar" value=""/>
         <property key="labeling/xOffset" value="0"/>
         <property key="labeling/yOffset" value="0"/>
         <property key="labeling/zIndex" value="0"/>
-        <property key="variableNames" value="_fields_"/>
-        <property key="variableValues" value=""/>
+        <property key="variableNames"/>
+        <property key="variableValues"/>
       </customproperties>
       <blendMode>0</blendMode>
       <featureBlendMode>0</featureBlendMode>
@@ -4846,20 +5343,42 @@ def my_form_open(dialog, layer, feature):
         <multilineenabled fieldname="" on=""/>
         <selectedonly on=""/>
       </labelattributes>
-      <SingleCategoryDiagramRenderer diagramType="Pie">
-        <DiagramCategory penColor="#000000" labelPlacementMethod="XHeight" penWidth="0" diagramOrientation="Up" minimumSize="0" barWidth="5" penAlpha="255" maxScaleDenominator="1e+08" backgroundColor="#ffffff" transparency="0" width="15" scaleDependency="Area" backgroundAlpha="255" angleOffset="1440" scaleBasedVisibility="0" enabled="0" height="15" sizeType="MM" minScaleDenominator="-4.65661e-10">
+      <SingleCategoryDiagramRenderer diagramType="Pie" sizeLegend="0" attributeLegend="1">
+        <DiagramCategory penColor="#000000" labelPlacementMethod="XHeight" penWidth="0" diagramOrientation="Up" sizeScale="0,0,0,0,0,0" minimumSize="0" barWidth="5" penAlpha="255" maxScaleDenominator="1e+08" backgroundColor="#ffffff" transparency="0" width="15" scaleDependency="Area" backgroundAlpha="255" angleOffset="1440" scaleBasedVisibility="0" enabled="0" height="15" lineSizeScale="0,0,0,0,0,0" sizeType="MM" lineSizeType="MM" minScaleDenominator="inf">
           <fontProperties description="Ubuntu,11,-1,5,50,0,0,0,0,0" style=""/>
           <attribute field="" color="#000000" label=""/>
         </DiagramCategory>
+        <symbol alpha="1" clip_to_extent="1" type="marker" name="sizeSymbol">
+          <layer pass="0" class="SimpleMarker" locked="0">
+            <prop k="angle" v="0"/>
+            <prop k="color" v="255,0,0,255"/>
+            <prop k="horizontal_anchor_point" v="1"/>
+            <prop k="joinstyle" v="bevel"/>
+            <prop k="name" v="circle"/>
+            <prop k="offset" v="0,0"/>
+            <prop k="offset_map_unit_scale" v="0,0,0,0,0,0"/>
+            <prop k="offset_unit" v="MM"/>
+            <prop k="outline_color" v="0,0,0,255"/>
+            <prop k="outline_style" v="solid"/>
+            <prop k="outline_width" v="0"/>
+            <prop k="outline_width_map_unit_scale" v="0,0,0,0,0,0"/>
+            <prop k="outline_width_unit" v="MM"/>
+            <prop k="scale_method" v="diameter"/>
+            <prop k="size" v="2"/>
+            <prop k="size_map_unit_scale" v="0,0,0,0,0,0"/>
+            <prop k="size_unit" v="MM"/>
+            <prop k="vertical_anchor_point" v="1"/>
+          </layer>
+        </symbol>
       </SingleCategoryDiagramRenderer>
-      <DiagramLayerSettings yPosColumn="-1" linePlacementFlags="10" placement="0" dist="0" xPosColumn="-1" priority="0" obstacle="0" zIndex="0" showAll="1"/>
+      <DiagramLayerSettings yPosColumn="-1" showColumn="0" linePlacementFlags="10" placement="0" dist="0" xPosColumn="-1" priority="0" obstacle="0" zIndex="0" showAll="1"/>
       <annotationform>.</annotationform>
       <aliases>
         <alias field="OGC_FID" index="0" name="Id"/>
-        <alias field="name" index="2" name="Stop name"/>
         <alias field="osm_id" index="1" name="Id OSM"/>
-        <alias field="unique_name" index="4" name="Unique name"/>
+        <alias field="name" index="2" name="Stop name"/>
         <alias field="wkt" index="3" name=""/>
+        <alias field="unique_name" index="4" name="Unique name"/>
       </aliases>
       <excludeAttributesWMS>
         <attribute>OGC_FID</attribute>
@@ -4868,7 +5387,17 @@ def my_form_open(dialog, layer, feature):
       <excludeAttributesWFS>
         <attribute>wkt</attribute>
       </excludeAttributesWFS>
-      <attributeactions/>
+      <attributeactions default="-1"/>
+      <attributetableconfig actionWidgetStyle="dropDown" sortExpression="" sortOrder="0">
+        <columns>
+          <column width="-1" hidden="0" type="field" name="OGC_FID"/>
+          <column width="-1" hidden="0" type="field" name="osm_id"/>
+          <column width="226" hidden="0" type="field" name="name"/>
+          <column width="-1" hidden="0" type="field" name="wkt"/>
+          <column width="229" hidden="0" type="field" name="unique_name"/>
+          <column width="-1" hidden="1" type="actions"/>
+        </columns>
+      </attributetableconfig>
       <editform>.</editform>
       <editforminit/>
       <editforminitcodesource>0</editforminitcodesource>
@@ -4906,8 +5435,16 @@ def my_form_open(dialog, layer, feature):
         <rowstyles/>
         <fieldstyles/>
       </conditionalstyles>
+      <defaults>
+        <default field="OGC_FID" expression=""/>
+        <default field="osm_id" expression=""/>
+        <default field="name" expression=""/>
+        <default field="wkt" expression=""/>
+        <default field="unique_name" expression=""/>
+      </defaults>
+      <previewExpression>unique_name</previewExpression>
     </maplayer>
-    <maplayer minimumScale="-4.65661e-10" maximumScale="1e+08" simplifyDrawingHints="1" minLabelScale="1" maxLabelScale="1e+08" simplifyDrawingTol="1" geometry="Line" simplifyMaxScale="1" type="vector" hasScaleBasedVisibilityFlag="0" simplifyLocal="1" scaleBasedLabelVisibilityFlag="0">
+    <maplayer simplifyAlgorithm="0" minimumScale="-4.65661e-10" maximumScale="1e+08" simplifyDrawingHints="1" minLabelScale="1" maxLabelScale="1e+08" simplifyDrawingTol="1" readOnly="0" geometry="Line" simplifyMaxScale="1" type="vector" hasScaleBasedVisibilityFlag="0" simplifyLocal="1" scaleBasedLabelVisibilityFlag="0">
       <extent>
         <xmin>3.8097468000000001</xmin>
         <ymin>43.55760910000000052</ymin>
@@ -4934,7 +5471,6 @@ def my_form_open(dialog, layer, feature):
         </spatialrefsys>
       </srs>
       <provider encoding="System">spatialite</provider>
-      <previewExpression>COALESCE("name", '&lt;NULL>')</previewExpression>
       <vectorjoins/>
       <layerDependencies/>
       <expressionfields/>
@@ -5347,31 +5883,31 @@ def my_form_open(dialog, layer, feature):
       </map-layer-style-manager>
       <edittypes>
         <edittype widgetv2type="TextEdit" name="OGC_FID">
-          <widgetv2config IsMultiline="0" fieldEditable="1" UseHtml="0" labelOnTop="0"/>
+          <widgetv2config IsMultiline="0" fieldEditable="1" constraint="" UseHtml="0" labelOnTop="0" constraintDescription="" notNull="0"/>
         </edittype>
         <edittype widgetv2type="TextEdit" name="osm_id">
-          <widgetv2config IsMultiline="0" fieldEditable="1" UseHtml="0" labelOnTop="0"/>
+          <widgetv2config IsMultiline="0" fieldEditable="1" constraint="" UseHtml="0" labelOnTop="0" constraintDescription="" notNull="0"/>
         </edittype>
         <edittype widgetv2type="TextEdit" name="name">
-          <widgetv2config IsMultiline="0" fieldEditable="1" UseHtml="0" labelOnTop="0"/>
+          <widgetv2config IsMultiline="0" fieldEditable="1" constraint="" UseHtml="0" labelOnTop="0" constraintDescription="" notNull="0"/>
         </edittype>
         <edittype widgetv2type="TextEdit" name="ref">
-          <widgetv2config IsMultiline="0" fieldEditable="1" UseHtml="0" labelOnTop="0"/>
+          <widgetv2config IsMultiline="0" fieldEditable="1" constraint="" UseHtml="0" labelOnTop="0" constraintDescription="" notNull="0"/>
         </edittype>
         <edittype widgetv2type="TextEdit" name="from">
-          <widgetv2config IsMultiline="0" fieldEditable="1" UseHtml="0" labelOnTop="0"/>
+          <widgetv2config IsMultiline="0" fieldEditable="1" constraint="" UseHtml="0" labelOnTop="0" constraintDescription="" notNull="0"/>
         </edittype>
         <edittype widgetv2type="TextEdit" name="to">
-          <widgetv2config IsMultiline="0" fieldEditable="1" UseHtml="0" labelOnTop="0"/>
+          <widgetv2config IsMultiline="0" fieldEditable="1" constraint="" UseHtml="0" labelOnTop="0" constraintDescription="" notNull="0"/>
         </edittype>
         <edittype widgetv2type="TextEdit" name="colour">
-          <widgetv2config IsMultiline="0" fieldEditable="1" UseHtml="0" labelOnTop="0"/>
+          <widgetv2config IsMultiline="0" fieldEditable="1" constraint="" UseHtml="0" labelOnTop="0" constraintDescription="" notNull="0"/>
         </edittype>
         <edittype widgetv2type="TextEdit" name="html">
-          <widgetv2config IsMultiline="0" fieldEditable="1" UseHtml="0" labelOnTop="0"/>
+          <widgetv2config IsMultiline="0" fieldEditable="1" constraint="" UseHtml="0" labelOnTop="0" constraintDescription="" notNull="0"/>
         </edittype>
         <edittype widgetv2type="TextEdit" name="wkt">
-          <widgetv2config IsMultiline="0" fieldEditable="1" UseHtml="0" labelOnTop="0"/>
+          <widgetv2config IsMultiline="0" fieldEditable="1" constraint="" UseHtml="0" labelOnTop="0" constraintDescription="" notNull="0"/>
         </edittype>
       </edittypes>
       <renderer-v2 forceraster="0" symbollevels="0" type="singleSymbol" enableorderby="0">
@@ -5588,23 +6124,45 @@ def my_form_open(dialog, layer, feature):
         <multilineenabled fieldname="" on=""/>
         <selectedonly on=""/>
       </labelattributes>
-      <SingleCategoryDiagramRenderer diagramType="Pie">
-        <DiagramCategory penColor="#000000" labelPlacementMethod="XHeight" penWidth="0" diagramOrientation="Up" minimumSize="0" barWidth="5" penAlpha="255" maxScaleDenominator="1e+08" backgroundColor="#ffffff" transparency="0" width="15" scaleDependency="Area" backgroundAlpha="255" angleOffset="1440" scaleBasedVisibility="0" enabled="0" height="15" sizeType="MM" minScaleDenominator="-4.65661e-10">
+      <SingleCategoryDiagramRenderer diagramType="Pie" sizeLegend="0" attributeLegend="1">
+        <DiagramCategory penColor="#000000" labelPlacementMethod="XHeight" penWidth="0" diagramOrientation="Up" sizeScale="0,0,0,0,0,0" minimumSize="0" barWidth="5" penAlpha="255" maxScaleDenominator="1e+08" backgroundColor="#ffffff" transparency="0" width="15" scaleDependency="Area" backgroundAlpha="255" angleOffset="1440" scaleBasedVisibility="0" enabled="0" height="15" lineSizeScale="0,0,0,0,0,0" sizeType="MM" lineSizeType="MM" minScaleDenominator="-4.65661e-10">
           <fontProperties description="Ubuntu,11,-1,5,50,0,0,0,0,0" style=""/>
           <attribute field="" color="#000000" label=""/>
         </DiagramCategory>
+        <symbol alpha="1" clip_to_extent="1" type="marker" name="sizeSymbol">
+          <layer pass="0" class="SimpleMarker" locked="0">
+            <prop k="angle" v="0"/>
+            <prop k="color" v="255,0,0,255"/>
+            <prop k="horizontal_anchor_point" v="1"/>
+            <prop k="joinstyle" v="bevel"/>
+            <prop k="name" v="circle"/>
+            <prop k="offset" v="0,0"/>
+            <prop k="offset_map_unit_scale" v="0,0,0,0,0,0"/>
+            <prop k="offset_unit" v="MM"/>
+            <prop k="outline_color" v="0,0,0,255"/>
+            <prop k="outline_style" v="solid"/>
+            <prop k="outline_width" v="0"/>
+            <prop k="outline_width_map_unit_scale" v="0,0,0,0,0,0"/>
+            <prop k="outline_width_unit" v="MM"/>
+            <prop k="scale_method" v="diameter"/>
+            <prop k="size" v="2"/>
+            <prop k="size_map_unit_scale" v="0,0,0,0,0,0"/>
+            <prop k="size_unit" v="MM"/>
+            <prop k="vertical_anchor_point" v="1"/>
+          </layer>
+        </symbol>
       </SingleCategoryDiagramRenderer>
-      <DiagramLayerSettings yPosColumn="-1" linePlacementFlags="10" placement="2" dist="0" xPosColumn="-1" priority="0" obstacle="0" zIndex="0" showAll="1"/>
+      <DiagramLayerSettings yPosColumn="-1" showColumn="0" linePlacementFlags="10" placement="2" dist="0" xPosColumn="-1" priority="0" obstacle="0" zIndex="0" showAll="1"/>
       <annotationform>.</annotationform>
       <aliases>
         <alias field="OGC_FID" index="0" name="Id"/>
-        <alias field="colour" index="6" name="Colour"/>
-        <alias field="from" index="4" name="From"/>
-        <alias field="html" index="7" name=""/>
-        <alias field="name" index="2" name="Line"/>
         <alias field="osm_id" index="1" name="Id OSM"/>
+        <alias field="name" index="2" name="Line"/>
         <alias field="ref" index="3" name="Ref"/>
+        <alias field="from" index="4" name="From"/>
         <alias field="to" index="5" name="To"/>
+        <alias field="colour" index="6" name="Colour"/>
+        <alias field="html" index="7" name=""/>
         <alias field="wkt" index="8" name=""/>
       </aliases>
       <excludeAttributesWMS>
@@ -5623,7 +6181,10 @@ def my_form_open(dialog, layer, feature):
         <attribute>html</attribute>
         <attribute>colour</attribute>
       </excludeAttributesWFS>
-      <attributeactions/>
+      <attributeactions default="0"/>
+      <attributetableconfig actionWidgetStyle="dropDown" sortExpression="" sortOrder="0">
+        <columns/>
+      </attributetableconfig>
       <editform>.</editform>
       <editforminit/>
       <editforminitcodesource>0</editforminitcodesource>
@@ -5655,8 +6216,20 @@ def my_form_open(dialog, layer, feature):
         <rowstyles/>
         <fieldstyles/>
       </conditionalstyles>
+      <defaults>
+        <default field="OGC_FID" expression=""/>
+        <default field="osm_id" expression=""/>
+        <default field="name" expression=""/>
+        <default field="ref" expression=""/>
+        <default field="from" expression=""/>
+        <default field="to" expression=""/>
+        <default field="colour" expression=""/>
+        <default field="html" expression=""/>
+        <default field="wkt" expression=""/>
+      </defaults>
+      <previewExpression>COALESCE("name", '&lt;NULL>')</previewExpression>
     </maplayer>
-    <maplayer minimumScale="0" maximumScale="1e+08" geometry="No geometry" type="vector" hasScaleBasedVisibilityFlag="0">
+    <maplayer minimumScale="0" maximumScale="1e+08" readOnly="0" geometry="No geometry" type="vector" hasScaleBasedVisibilityFlag="0">
       <id>tramway_ref20150612171109044</id>
       <datasource>dbname='./edition/transport.sqlite' table="tramway_ref" sql=</datasource>
       <keywordList>
@@ -5677,7 +6250,6 @@ def my_form_open(dialog, layer, feature):
       </srs>
       <customproperties/>
       <provider encoding="UTF-8">spatialite</provider>
-      <previewExpression>COALESCE("ref_id", '&lt;NULL>')</previewExpression>
       <vectorjoins/>
       <layerDependencies/>
       <expressionfields/>
@@ -5686,20 +6258,23 @@ def my_form_open(dialog, layer, feature):
       </map-layer-style-manager>
       <edittypes>
         <edittype widgetv2type="TextEdit" name="ref_id">
-          <widgetv2config IsMultiline="0" fieldEditable="1" UseHtml="0" labelOnTop="0"/>
+          <widgetv2config IsMultiline="0" fieldEditable="1" constraint="" UseHtml="0" labelOnTop="0" constraintDescription="" notNull="0"/>
         </edittype>
         <edittype widgetv2type="TextEdit" name="line_name">
-          <widgetv2config IsMultiline="0" fieldEditable="1" UseHtml="0" labelOnTop="0"/>
+          <widgetv2config IsMultiline="0" fieldEditable="1" constraint="" UseHtml="0" labelOnTop="0" constraintDescription="" notNull="0"/>
         </edittype>
       </edittypes>
       <annotationform>.</annotationform>
       <aliases>
-        <alias field="line_name" index="1" name=""/>
         <alias field="ref_id" index="0" name=""/>
+        <alias field="line_name" index="1" name=""/>
       </aliases>
       <excludeAttributesWMS/>
       <excludeAttributesWFS/>
-      <attributeactions/>
+      <attributeactions default="0"/>
+      <attributetableconfig actionWidgetStyle="dropDown" sortExpression="" sortOrder="0">
+        <columns/>
+      </attributetableconfig>
       <editform>.</editform>
       <editforminit/>
       <editforminitcodesource>0</editforminitcodesource>
@@ -5712,6 +6287,11 @@ def my_form_open(dialog, layer, feature):
         <rowstyles/>
         <fieldstyles/>
       </conditionalstyles>
+      <defaults>
+        <default field="ref_id" expression=""/>
+        <default field="line_name" expression=""/>
+      </defaults>
+      <previewExpression>COALESCE("ref_id", '&lt;NULL>')</previewExpression>
     </maplayer>
   </projectlayers>
   <properties>
@@ -5730,15 +6310,15 @@ def my_form_open(dialog, layer, feature):
       <DistanceUnits type="QString">meters</DistanceUnits>
       <AreaUnits type="QString">m2</AreaUnits>
     </Measurement>
-    <Legend>
-      <filterByMap type="bool">false</filterByMap>
-    </Legend>
     <WMSExtent type="QStringList">
       <value>417006.61373760335845873</value>
       <value>5394910.34090302512049675</value>
       <value>447158.04891100589884445</value>
       <value>5414844.99480544030666351</value>
     </WMSExtent>
+    <Legend>
+      <filterByMap type="bool">false</filterByMap>
+    </Legend>
     <DefaultStyles>
       <Fill type="QString"></Fill>
       <Line type="QString"></Line>
@@ -5752,18 +6332,18 @@ def my_form_open(dialog, layer, feature):
     <WMSImageQuality type="int">90</WMSImageQuality>
     <WFSLayersPrecision>
       <donnes_sociodemo_sous_quartiers20160121144525075 type="int">8</donnes_sociodemo_sous_quartiers20160121144525075>
-      <jointure_tram_stop20150328114216806 type="int">8</jointure_tram_stop20150328114216806>
       <publicbuildings20150420100958543 type="int">8</publicbuildings20150420100958543>
+      <jointure_tram_stop20150328114216806 type="int">8</jointure_tram_stop20150328114216806>
       <edition_point20130118171631518 type="int">8</edition_point20130118171631518>
       <edition_line20130409161630329 type="int">8</edition_line20130409161630329>
       <bus20121102133611751 type="int">8</bus20121102133611751>
+      <tramstop20150328114203878 type="int">8</tramstop20150328114203878>
       <tram20150311115319564 type="int">8</tram20150311115319564>
       <tram_stop_work20150416102656130 type="int">8</tram_stop_work20150416102656130>
-      <tramstop20150328114203878 type="int">8</tramstop20150328114203878>
       <bus_stops20121106170806413 type="int">8</bus_stops20121106170806413>
       <tramway20150328114206278 type="int">8</tramway20150328114206278>
-      <VilleMTP_MTP_Quartiers_2011_432620130116112351546 type="int">8</VilleMTP_MTP_Quartiers_2011_432620130116112351546>
       <tramway_ref20150612171109044 type="int">1</tramway_ref20150612171109044>
+      <VilleMTP_MTP_Quartiers_2011_432620130116112351546 type="int">8</VilleMTP_MTP_Quartiers_2011_432620130116112351546>
       <publicbuildings_tramstop20150420095614071 type="int">8</publicbuildings_tramstop20150420095614071>
       <ArbRemarq_point20170509160239869 type="int">8</ArbRemarq_point20170509160239869>
       <tram_stops20150311115247810 type="int">8</tram_stops20150311115247810>
@@ -5915,11 +6495,11 @@ def my_form_open(dialog, layer, feature):
       <timeLayerList type="QStringList"/>
       <playBackwards type="int">0</playBackwards>
     </TimeManager>
+    <WMSServiceAbstract type="QString">Demo project with bus and tramway lines in Montpellier, France.
+Data is licensed under ODbl, OpenStreetMap contributors</WMSServiceAbstract>
     <Measure>
       <Ellipsoid type="QString">WGS84</Ellipsoid>
     </Measure>
-    <WMSServiceAbstract type="QString">Demo project with bus and tramway lines in Montpellier, France.
-Data is licensed under ODbl, OpenStreetMap contributors</WMSServiceAbstract>
     <WFSLayers type="QStringList">
       <value>SousQuartiers20160121124316563</value>
       <value>VilleMTP_MTP_Quartiers_2011_432620130116112351546</value>

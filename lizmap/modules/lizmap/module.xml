@@ -28,8 +28,9 @@
         <class name="lizmapWFSRequest" file="classes/lizmapWFSRequest.class.php" />
         <class name="lizmapWMTSRequest" file="classes/lizmapWMTSRequest.class.php" />
         <class name="lizmapTiler" file="classes/lizmapTiler.class.php" />
-        <class name="qgisVectorLayer" file="classes/qgisVectorLayer.class.php" />
         <class name="qgisMapLayer" file="classes/qgisMapLayer.class.php" />
+        <class name="qgisVectorLayer" file="classes/qgisVectorLayer.class.php" />
+        <class name="qgisForm" file="classes/qgisForm.class.php" />
         <class name="qgisFormControl" file="classes/qgisFormControl.class.php" />
     </autoload>
 </module>

@@ -8,8 +8,28 @@
 <hidden ref="liz_srid"/>
 <hidden ref="liz_proj4"/>
 <hidden ref="liz_geometryColumn"/>
+<hidden ref="liz_status"/>
+<hidden ref="_submit"/>
 
+<menulist ref="liz_future_action" required="true">
+    <label  locale="view~edition.form.action.future.label" />
+    <item value="close" locale="view~edition.form.action.future.close" />
+    <item value="create" locale="view~edition.form.action.future.create" />
+    <item value="edit" locale="view~edition.form.action.future.edit" />
+</menulist>
+<reset ref="reinit">
+    <label locale="view~edition.form.reset.label" />
+</reset>
 <submit ref="_submit">
-	<label locale="view~edition.form.submit.label" />
+    <label></label>
+    <item value="cancel" locale="view~edition.form.cancel.label" />
+    <item value="submit" locale="view~edition.form.submit.label" />
 </submit>
+
+
+<!--
+cancel is placed after the _submit because HTML 5 defines that the default submit button is the first one
+We need this to handle the default submit button used when the ENTER key is pressed -> we want it to be submit (and not cancel)
+-->
+
 </form>
