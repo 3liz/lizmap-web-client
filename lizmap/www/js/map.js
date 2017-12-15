@@ -4946,7 +4946,7 @@ OpenLayers.Control.HighlightFeature = OpenLayers.Class(OpenLayers.Control, {
           if ( $('#geolocate-menu-bind').hasClass('active') )
             this.bind = true;
         }
-        $('#geolocation .menu-content button').removeAttr('disabled');
+        $('#geolocation .button-bar button').removeAttr('disabled');
       },
       "locationfailed": function(evt) {
         if ( this.layer.features.length == 0 && $('#geolocation-locationfailed').length != 0)
@@ -4958,7 +4958,7 @@ OpenLayers.Control.HighlightFeature = OpenLayers.Class(OpenLayers.Control, {
       "deactivate": function(evt) {
         firstGeolocation = true;
         this.bind = false;
-        $('#geolocation .menu-content button').attr('disabled','disabled').removeClass('active');
+        $('#geolocation .button-bar button').attr('disabled','disabled').removeClass('active');
         this.layer.destroyFeatures();
       }
     });
