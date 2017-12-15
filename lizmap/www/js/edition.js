@@ -14,10 +14,142 @@ var lizEdition = function() {
         ,'config': null // QGIS layer name
         ,'spatial': null // If the layer is spatial or not
         ,'drawControl': null // draw control
+        ,'submitActor': 'submit' // Which submit button has been clicked
     };
 
     // Edition type : createFeature or modifyFeature
     var editionType = null;
+
+    function afterSpliting(evt) {
+        var splitFeatures = evt.features;
+        var geometryType = editionLayer['config'].geometryType;
+        var removableFeat = null;
+        if ( geometryType == 'line' ) {
+            if ( splitFeatures[0].geometry.getLength() < splitFeatures[1].geometry.getLength() )
+                removableFeat = splitFeatures[0];
+            else
+                removableFeat = splitFeatures[1];
+        }
+        else if ( geometryType == 'polygon' ) {
+            if ( splitFeatures[0].geometry.getArea() < splitFeatures[1].geometry.getArea() )
+                removableFeat = splitFeatures[0];
+            else
+                removableFeat = splitFeatures[1];
+        }
+        if ( removableFeat )
+            editionLayer['ol'].removeFeatures( [removableFeat] );
+        $('#edition-geomtool-nodetool').click();
+        return false;
+    }
+
+/**
+ * Function: OpenLayers.Geometry.pointOnSegment
+ * Note that the OpenLayers.Geometry.segmentsIntersect doesn't work with points
+ *
+ * Parameters:
+ * point - {Object} An object with x and y properties representing the
+ *     point coordinates.
+ * segment - {Object} An object with x1, y1, x2, and y2 properties
+ *     representing endpoint coordinates.
+ *
+ * Returns:
+ * {Boolean} Returns true if the point is on the segment.
+ */
+OpenLayers.Geometry.pointOnSegment = function(point, segment) {
+    // Is the point inside the BBox of the segment
+    if(point.x < Math.min(segment.x1, segment.x2) || point.x > Math.max(segment.x1, segment.x2) ||
+       point.y < Math.min(segment.y1, segment.y2) || point.y > Math.max(segment.y1, segment.y2))
+    {
+        return false;
+    }
+
+    // Avoid dividing by zero
+    if( segment.x1 == segment.x2 || segment.y1 == segment.y2 ||
+        (point.x == segment.x1 && point.y == segment.y1) ||
+        (point.x == segment.x2 && point.y == segment.y2) )
+    {
+        return true;
+    }
+
+    // Is the point on the line
+    if(((segment.x1 - point.x) / (segment.y1 - point.y)).toFixed(5) ==
+       ((segment.x2 - point.x) / (segment.y2 - point.y)).toFixed(5))
+    {
+        return true;
+    }
+
+    return false;
+};
+
+    function deactivateDrawFeature() {
+        $('#edition-point-coord-crs-layer').html(lizDict['edition.point.coord.crs.layer']).val('').hide();
+        $('#edition-point-coord-crs-map').html(lizDict['edition.point.coord.crs.map']).val('').hide();
+        $('#edition-point-coord-x').val('');
+        $('#edition-point-coord-y').val('');
+        if ( $('#edition-point-coord-geolocation').is(':checked') )
+            $('#edition-point-coord-geolocation').click();
+        $('#edition-point-coord-add').hide();
+        $('#edition-point-coord-form').hide();
+        $('#edition-point-coord-form-expander i').removeClass('icon-chevron-down').addClass('icon-chevron-right');
+        $('#edition-point-coord-form-group').hide();
+
+        lizMap.events.triggerEvent("lizmapeditiondrawfeaturedeactivated",
+            {
+                'layerId': editionLayer['id'],
+                'editionConfig': editionLayer['config']
+            }
+        );
+    }
+
+    function activateDrawFeature() {
+        var eform = $('#edition-form-container form');
+        var srid = eform.find('input[name="liz_srid"]').val();
+        if ( srid != '' && !('EPSG:'+srid in Proj4js.defs) )
+            Proj4js.defs['EPSG:'+srid] = eform.find('input[name="liz_proj4"]').val();
+        $('#edition-point-coord-crs-layer').html(lizDict['edition.point.coord.crs.layer']+' - EPSG:'+srid).val(srid).show();
+
+        var mapProjCode = editionLayer['ol'].projection.projCode;
+        var mapSrid = mapProjCode.replace('EPSG:','');
+        $('#edition-point-coord-crs-map').html(lizDict['edition.point.coord.crs.map']+' - EPSG:'+mapSrid).val(mapSrid).show();
+
+        var geometryType = editionLayer['config'].geometryType;
+        if ( geometryType == 'point' )
+            $('#edition-point-coord-add').hide();
+        else
+            $('#edition-point-coord-add').show();
+        $('#edition-point-coord-form').show();
+
+        lizMap.events.triggerEvent("lizmapeditiondrawfeatureactivated",
+            {
+                'layerId': editionLayer['id'],
+                'editionConfig': editionLayer['config']
+            }
+        );
+    }
+
+    function keyUpPointCoord() {
+        var x = parseFloat($('#edition-point-coord-x').val());
+        var y = parseFloat($('#edition-point-coord-y').val());
+        if ( !isNaN(x) && !isNaN(y) ) {
+            var vertex = new OpenLayers.Geometry.Point(x,y);
+            // Get SRID and transform geometry
+            var srid = $('#edition-point-coord-crs').val();
+            vertex.transform( 'EPSG:'+srid, editionLayer['ol'].projection );
+            var geometryType = editionLayer['config'].geometryType;
+            if ( !editCtrls[geometryType].handler.point ) {
+                var px = editCtrls[geometryType].handler.layer.getViewPortPxFromLonLat({lon:vertex.x,lat:vertex.y});
+                editCtrls[geometryType].handler.createFeature(px);
+                editCtrls[geometryType].handler.point.geometry.x = vertex.x;
+                editCtrls[geometryType].handler.point.geometry.y = vertex.y;
+                editCtrls[geometryType].handler.point.geometry.clearBounds();
+            } else {
+                editCtrls[geometryType].handler.point.geometry.x = vertex.x;
+                editCtrls[geometryType].handler.point.geometry.y = vertex.y;
+                editCtrls[geometryType].handler.point.geometry.clearBounds();
+            }
+            editCtrls[geometryType].handler.drawFeature();
+        }
+    }
 
     // Redraw layers
     function redrawLayers( layerId ) {
@@ -94,7 +226,7 @@ var lizEdition = function() {
         }
         return redrawnLayerIds;
     }
-    
+
     function getRelationInfo(parentLayerId,childLayerId){
         if( 'relations' in config && parentLayerId in config.relations) {
             var layerRelations = config.relations[parentLayerId];
@@ -116,6 +248,10 @@ var lizEdition = function() {
         if( editCtrls ){
             if( editionLayer['drawControl'] && editionLayer['drawControl'].active )
                 editionLayer['drawControl'].deactivate();
+            $('#edition-geomtool-container button i').removeClass('line');
+            $('#edition-geomtool-container').hide();
+            editCtrls.modify.mode = OpenLayers.Control.ModifyFeature.RESHAPE;
+            editCtrls.modify.createVertices = true;
             editCtrls.panel.deactivate();
         }
         // Destroy edition layer features
@@ -135,7 +271,6 @@ var lizEdition = function() {
         $('#edition-children-container').hide().html('');
 
         // Empty and hide form and tools
-        $('#edition-cancel').addClass('disabled');
         $('#edition-form-container').hide().html('');
         $('#edition-waiter').hide();
 
@@ -242,12 +377,28 @@ var lizEdition = function() {
                     }
                 }),
                 point: new OpenLayers.Control.DrawFeature(editLayer,
-                     OpenLayers.Handler.Point),
+                     OpenLayers.Handler.Point,{
+                        eventListeners: {
+                            activate: activateDrawFeature,
+                            deactivate: deactivateDrawFeature
+                        }
+                     }),
                 line: new OpenLayers.Control.DrawFeature(editLayer,
-                    OpenLayers.Handler.Path),
+                    OpenLayers.Handler.Path,{
+                        eventListeners: {
+                            activate: activateDrawFeature,
+                            deactivate: deactivateDrawFeature
+                        }
+                     }),
                 polygon: new OpenLayers.Control.DrawFeature(editLayer,
-                    OpenLayers.Handler.Polygon),
-                modify: new OpenLayers.Control.ModifyFeature(editLayer)
+                    OpenLayers.Handler.Polygon,{
+                        eventListeners: {
+                            activate: activateDrawFeature,
+                            deactivate: deactivateDrawFeature
+                        }
+                     }),
+                modify: new OpenLayers.Control.ModifyFeature(editLayer),
+                split: new OpenLayers.Control.Split({layer:editLayer,eventListeners: {aftersplit:afterSpliting}})
             };
             for ( var ctrl in editCtrls ) {
                 if ( ctrl != 'panel' )
@@ -288,7 +439,12 @@ var lizEdition = function() {
                         editCtrls.panel.activate();
                         // then modify
                         editCtrls.modify.activate();
+                        $('#edition-geomtool-nodetool').click();
                         editCtrls.modify.selectFeature( feat );
+                        if (geometryType == 'line')
+                            $('#edition-geomtool-container button i').addClass('line');
+                        if (geometryType != 'point')
+                            $('#edition-geomtool-container').show();
                     }
 
                     // Inform user he can now modify
@@ -323,6 +479,15 @@ var lizEdition = function() {
                     updateGeometryColumnFromFeature( evt.feat )
                 },
 
+                sketchmodified: function(evt) {
+                    var vertex = evt.vertex.clone();
+                    // Get SRID and transform geometry
+                    var srid = $('#edition-point-coord-crs').val();
+                    vertex.transform( editionLayer['ol'].projection,'EPSG:'+srid );
+                    $('#edition-point-coord-x').val(vertex.x);
+                    $('#edition-point-coord-y').val(vertex.y);
+                },
+
                 vertexmodified: function(evt) {
                 }
             });
@@ -352,25 +517,135 @@ var lizEdition = function() {
                 return false;
             });
 
-            $('#edition-cancel').click(function(){
-                // Do nothing if not enabled
-                if ( $(this).hasClass('disabled') )
-                    return false;
-                // Deactivate previous edition
-                //if ( !confirm( lizDict['edition.confirm.cancel'] ) )
-                    //return false;
-                finishEdition();
-
-                // back to parent
-                if ( editionLayer['parent'] != null && editionLayer['parent']['backToParent']) {
-                    var parentInfo = editionLayer['parent'];
-                    var parentLayerId = parentInfo['layerId'];
-                    var parentFeat = parentInfo['feature'];
-                    launchEdition( parentLayerId, parentFeat.id.split('.').pop(), parentInfo['parent'], function(editionLayerId, editionFeatureId){
-                        $('#bottom-dock').css('left',  lizMap.getDockRightPosition() );
-                    });
+            $('#edition-point-coord-form').submit(function(){
+                return false;
+            });
+            $('#edition-point-coord-form-expander').click(function(){
+                var chevron = $('#edition-point-coord-form-expander i');
+                if ( chevron.hasClass('icon-chevron-right') ) {
+                    chevron.removeClass('icon-chevron-right').addClass('icon-chevron-down');
+                    $('#edition-point-coord-form-group').show();
+                } else {
+                    chevron.removeClass('icon-chevron-down').addClass('icon-chevron-right');
+                    $('#edition-point-coord-form-group').hide();
+                }
+                return false;
+            });
+            $('#edition-point-coord-crs').change(function(){
+                var geometryType = editionLayer['config'].geometryType;
+                var vertex = editCtrls[geometryType].handler.point.geometry.clone();
+                // Get SRID and transform geometry
+                var srid = $(this).val();
+                vertex.transform( editionLayer['ol'].projection,'EPSG:'+srid );
+                $('#edition-point-coord-x').val(vertex.x);
+                $('#edition-point-coord-y').val(vertex.y);
+            });
+            $('#edition-point-coord-x').keyup(keyUpPointCoord);
+            $('#edition-point-coord-y').keyup(keyUpPointCoord);
+            $('#edition-point-coord-geolocation').change(function(){
+                if ( $(this).is(':checked') ) {
+                    $('#edition-point-coord-x').attr('disabled','disabled');
+                    $('#edition-point-coord-y').attr('disabled','disabled');
+                    if ( lizMap.controls.geolocation.layer.features.length != 0 ) {
+                        var geometryType = editionLayer['config'].geometryType;
+                        var vertex = lizMap.controls.geolocation.layer.features[0].geometry;
+                        var px = editCtrls[geometryType].handler.layer.getViewPortPxFromLonLat({lon:vertex.x,lat:vertex.y});
+                        editCtrls[geometryType].handler.modifyFeature(px);
+                    }
+                } else {
+                    $('#edition-point-coord-x').removeAttr('disabled');
+                    $('#edition-point-coord-y').removeAttr('disabled');
                 }
             });
+            $('#edition-point-coord-add').click(function(){
+                var geometryType = editionLayer['config'].geometryType;
+                if ( geometryType != 'point' ) {
+                    var node = editCtrls[geometryType].handler.point.geometry;
+                    editCtrls[geometryType].handler.insertXY(node.x, node.y);
+                }
+            });
+            $('#edition-point-coord-submit').click(function(){
+                var geometryType = editionLayer['config'].geometryType;
+                if ( geometryType == 'point' ) {
+                    editCtrls[geometryType].handler.finalize();
+                } else {
+                    editCtrls[geometryType].handler.finishGeometry();
+                }
+            });
+
+            $('#edition-geomtool-nodetool').click(function(){
+                editCtrls.split.deactivate();
+                editCtrls.modify.mode = OpenLayers.Control.ModifyFeature.RESHAPE;
+                editCtrls.modify.createVertices = true;
+                editCtrls.modify.activate();
+                if ( editionLayer['ol'].features.length != 0 ) {
+                    var feat = editionLayer['ol'].features[0];
+                    if ( editCtrls.modify.feature )
+                        editCtrls.modify.unselectFeature( feat );
+                    editCtrls.modify.selectFeature( feat );
+                }
+            });
+            $('#edition-geomtool-drag').click(function(){
+                editCtrls.split.deactivate();
+                editCtrls.modify.mode = OpenLayers.Control.ModifyFeature.DRAG;
+                editCtrls.modify.createVertices = false;
+                editCtrls.modify.activate();
+                if ( editionLayer['ol'].features.length != 0 ) {
+                    var feat = editionLayer['ol'].features[0];
+                    if ( editCtrls.modify.feature )
+                        editCtrls.modify.unselectFeature( feat );
+                    editCtrls.modify.selectFeature( feat );
+                }
+            });
+            $('#edition-geomtool-rotate').click(function(){
+                editCtrls.split.deactivate();
+                editCtrls.modify.mode = OpenLayers.Control.ModifyFeature.ROTATE;
+                editCtrls.modify.createVertices = false;
+                editCtrls.modify.activate();
+                if ( editionLayer['ol'].features.length != 0 ) {
+                    var feat = editionLayer['ol'].features[0];
+                    if ( editCtrls.modify.feature )
+                        editCtrls.modify.unselectFeature( feat );
+                    editCtrls.modify.selectFeature( feat );
+                }
+            });
+            $('#edition-geomtool-reshape').click(function(){
+                if ( editionLayer['ol'].features.length != 0 ) {
+                    var feat = editionLayer['ol'].features[0];
+                    if ( editCtrls.modify.feature )
+                        editCtrls.modify.unselectFeature( feat );
+                }
+                editCtrls.modify.deactivate();
+                editCtrls.split.activate();
+            });
+
+            $('#edition-geomtool-container button').tooltip( {
+                placement: 'top'
+            } );
+
+            //geolocation
+            if ( 'geolocation' in lizMap.controls ) {
+                lizMap.controls.geolocation.events.on({
+                    "locationupdated": function(evt) {
+                        if ( $('#edition-point-coord-geolocation').is(':checked') ) {
+                            var geometryType = editionLayer['config'].geometryType;
+                            if ( editCtrls[geometryType].active ) {
+                                var vertex = evt.point;
+                                var px = editCtrls[geometryType].handler.layer.getViewPortPxFromLonLat({lon:vertex.x,lat:vertex.y});
+                                editCtrls[geometryType].handler.modifyFeature(px);
+                            }
+                        }
+                    },
+                    "activate": function(evt) {
+                        $('#edition-point-coord-geolocation-group').show();
+                    },
+                    "deactivate": function(evt) {
+                        if ( $('#edition-point-coord-geolocation').is(':checked') )
+                            $('#edition-point-coord-geolocation').click();
+                        $('#edition-point-coord-geolocation-group').hide();
+                    }
+                });
+            }
 
         } else {
             $('#edition').parent().remove();
@@ -379,6 +654,23 @@ var lizEdition = function() {
         }
     }
 
+    function cancelEdition(){
+        // Deactivate previous edition
+        //if ( !confirm( lizDict['edition.confirm.cancel'] ) )
+            //return false;
+
+        finishEdition();
+
+        // back to parent
+        if ( editionLayer['parent'] != null && editionLayer['parent']['backToParent']) {
+            var parentInfo = editionLayer['parent'];
+            var parentLayerId = parentInfo['layerId'];
+            var parentFeat = parentInfo['feature'];
+            launchEdition( parentLayerId, parentFeat.id.split('.').pop(), parentInfo['parent'], function(editionLayerId, editionFeatureId){
+                $('#bottom-dock').css('left',  lizMap.getDockRightPosition() );
+            });
+        }
+    }
 
     // Start edition of a new feature or an existing one
     function launchEdition( aLayerId, aFid, aParent, aCallback ) {
@@ -506,47 +798,12 @@ var lizEdition = function() {
             // Activate some controls
             if( !editCtrls )
                 return false;
-            var geometryType = editionLayer['config'].geometryType;
-
+            if ( !editionLayer['id'] )
+                return false;
 
             // Hide drawfeature controls : they will go back when finishing edition or canceling
             $('#edition-layer').hide();
             $('#edition-draw').addClass('disabled').hide();
-
-            // Creation
-            if( action == 'createFeature' ){
-
-                // Activate drawFeature control only if relevant
-                if( editionLayer['config'].capabilities.createFeature == "True"
-                && geometryType in editCtrls ){
-                    var ctrl = editCtrls[geometryType];
-                    if ( ctrl.active ) {
-                        return false;
-                    } else {
-                        ctrl.activate();
-
-                        $('#lizmap-edition-message').remove();
-                        lizMap.addMessage(lizDict['edition.draw.activate'],'info',true).attr('id','lizmap-edition-message');
-                    }
-                }
-            }
-            // Modification
-            else{
-
-                // Activate modification control
-                if ( editionLayer['config'].capabilities.modifyGeometry == "True"
-                && geometryType in editCtrls ){
-                    // Need to get geometry from form and add feature to the openlayer layer
-                    var feat = updateFeatureFromGeometryColumn();
-                    if( feat ){
-                        editCtrls.modify.activate();
-                        editCtrls.modify.selectFeature( feat );
-                    }
-                }
-
-                $('#lizmap-edition-message').remove();
-                lizMap.addMessage(lizDict['edition.select.modify.activate'],'info',true).attr('id','lizmap-edition-message');
-            }
 
             // Send signal
             lizMap.events.triggerEvent("lizmapeditionformdisplayed",
@@ -569,23 +826,34 @@ var lizEdition = function() {
      *
      */
     function displayEditionForm( data ){
+        // Firstly does the edition-form-container already has a form ?
+        var oldSerializeArray = $('#edition-form-container form').serializeArray();
 
         // Add data
         $('#edition-form-container').html(data);
         var form = $('#edition-form-container form');
 
-        // Keep a copy of original geometry data
-        if( editionLayer['spatial'] && editionType == 'modifyFeature' ){
-            var gColumn = form.find('input[name="liz_geometryColumn"]').val();
-            if( gColumn != '' ){
-                var originalGeom = form.find('input[name="'+gColumn+'"]').val();
-                $('#edition-hidden-form input[name="liz_wkt"]').val( originalGeom );
-            }
-        }
-
         // Response contains a form
         if ( form.length != 0 ) {
+            var newSerializeArray = $('#edition-form-container form').serializeArray();
 
+            // Get edition type from form data
+            var formFeatureId = form.find('input[name="liz_featureId"]').val();
+            if ( formFeatureId != '' )
+                editionType = 'modifyFeature';
+            else
+                editionType = 'createFeature';
+
+            // Keep a copy of original geometry data
+            if( editionLayer['spatial'] && editionType == 'modifyFeature' ){
+                var gColumn = form.find('input[name="liz_geometryColumn"]').val();
+                if( gColumn != '' ){
+                    var originalGeom = form.find('input[name="'+gColumn+'"]').val();
+                    $('#edition-hidden-form input[name="liz_wkt"]').val( originalGeom );
+                }
+            }
+
+            // Manage child form
             if ( editionLayer['parent'] != null ){
                 var parentInfo = editionLayer['parent'];
                 var parentFeat = parentInfo['feature'];
@@ -621,14 +889,137 @@ var lizEdition = function() {
                 }
             }
 
-            handleEditionFormSubmit( form );
-
-            if ( $('#edition-cancel').hasClass('disabled') ) {
-                $('#edition-cancel').removeClass('disabled');
+            // Create combobox based on RelationValue with fieldEditable
+            var selectComboboxes = $('#edition-form-container form select.combobox');
+            for( var i=0, len=selectComboboxes.length; i<len; i++ ) {
+                var selectCombobox = $(selectComboboxes[i]);
+                selectCombobox.combobox({
+                    "minLength": 1,
+                    "position": { my : "left bottom", position: "flip" },
+                    "selected": function(evt, ui){
+                      if ( ui.item ) {
+                        var self = $(this);
+                        var uiItem = $(ui.item);
+                        window.setTimeout(function(){
+                          self.val(uiItem.val()).change();
+                        }, 1);
+                      }
+                    }
+                });
+                selectCombobox.parent().find('span > input')
+                    .removeClass('label ui-corner-left ui-state-default ui-widget-content ui-widget');
             }
+            var selectAutocompletes = $('#edition-form-container form select.autocomplete');
+            for( var i=0, len=selectAutocompletes.length; i<len; i++ ) {
+                var selectAutocomplete = $(selectAutocompletes[i]);
+                var wrapper = $( "<span>" )
+                    .addClass( "custom-autocomplete" )
+                    .insertAfter( selectAutocomplete );
+                var selected = selectAutocomplete.children( ":selected" ),
+                    value = selected.val() ? selected.text() : "";
+                var input = $( "<input>" )
+                    .appendTo( wrapper )
+                    .val( value )
+                    .attr( "title", "" )
+                    .addClass( "custom-autocomplete-input" )
+                    .autocomplete({
+                      source: function( request, response ) {
+                          var matcher = new RegExp( $.ui.autocomplete.escapeRegex(request.term), "i" );
+                          response( selectAutocomplete.children( "option" ).map(function() {
+                            var text = $( this ).text();
+                            if ( this.value && ( !request.term || matcher.test(text) ) )
+                              return {
+                                label: text,
+                                value: text,
+                                option: this
+                              };
+                          }) );
+                        }
+                    });
+                input.autocomplete( "widget" ).css("z-index","1050");
+                input.attr('name', selectAutocomplete.attr('name'));
+                selectAutocomplete.attr('name', input.attr('name')+'_source');
+                selectAutocomplete.hide();
+            }
+
+            // If the form has been reopened after a successful save, refresh data
+            var formStatus = form.find('input[name="liz_status"]').val();
+            if( formStatus == '0' ) {
+                if ( oldSerializeArray.length != 0 ){
+                    var layerId = editionLayer['id'];
+
+                    // Trigger event
+                    var ev = 'lizmapeditionfeaturecreated';
+                    if( editionType == 'modifyFeature' )
+                        ev = 'lizmapeditionfeaturemodified';
+
+                    lizMap.events.triggerEvent(
+                        ev,
+                        { 'layerId': layerId}
+                    );
+
+                    // Redraw layers
+                    redrawLayers( layerId );
+                }
+
+                var geometryType = editionLayer['config'].geometryType;
+                // Creation
+                if( editionType == 'createFeature' ){
+
+                    // Activate drawFeature control only if relevant
+                    if( editionLayer['config'].capabilities.createFeature == "True"
+                    && geometryType in editCtrls ){
+                        $('#edition-geomtool-container button i').removeClass('line');
+                        $('#edition-geomtool-container').hide();
+                        editCtrls.modify.mode = OpenLayers.Control.ModifyFeature.RESHAPE;
+                        editCtrls.modify.createVertices = true;
+                        editCtrls.modify.deactivate();
+                        editionLayer['ol'].destroyFeatures();
+                        var ctrl = editCtrls[geometryType];
+                        if ( ctrl.active ) {
+                            return false;
+                        } else {
+                            ctrl.activate();
+
+                            $('#lizmap-edition-message').remove();
+                            lizMap.addMessage(lizDict['edition.draw.activate'],'info',true).attr('id','lizmap-edition-message');
+                        }
+                    }
+                }
+                // Modification
+                else{
+                    // Activate modification control
+                    if ( editionLayer['config'].capabilities.modifyGeometry == "True"
+                    && geometryType in editCtrls ){
+                        // Need to get geometry from form and add feature to the openlayer layer
+                        var feat = updateFeatureFromGeometryColumn();
+                        if( feat ){
+                            editCtrls.modify.activate();
+                            $('#edition-geomtool-nodetool').click();
+                            editCtrls.modify.selectFeature( feat );
+                            if (geometryType == 'line')
+                                $('#edition-geomtool-container button i').addClass('line');
+                            if (geometryType != 'point')
+                                $('#edition-geomtool-container').show();
+                        }
+                    }
+
+                    $('#lizmap-edition-message').remove();
+                    lizMap.addMessage(lizDict['edition.select.modify.activate'],'info',true).attr('id','lizmap-edition-message');
+                }
+            }
+
+
+            // Activate form tabs based on QGIS drag&drop form layout mode
+            $('#edition-form-container form > ul.nav-tabs li:first a').click().blur();
+            $('#'+$('#edition-form-container form').attr('id')+'_liz_future_action_label').removeClass('control-label');
+
+            // Handle JS events on form (submit, etc.)
+            handleEditionFormSubmit( form );
         }
 
         // Else it means no form has been sent back
+        // We consider it was a successful edition with no option to reopen the form
         if ( form.length == 0 ) {
             controls['edition'].deactivate();
             controls['edition'].activate();
@@ -651,21 +1042,6 @@ var lizEdition = function() {
             lizMap.addMessage( data, 'info', true).attr('id','lizmap-edition-message');
 
         }
-
-        // Change form layout (from QGIS drag&drop form layout mode )
-        var formId = $('#edition-form-container form').attr('id');
-        // lizmapEditionFormLayoutJson is a global variable added through template
-        if( typeof lizmapEditionFormLayoutJson !== 'undefined' && 'attributeEditorContainer' in lizmapEditionFormLayoutJson ){
-            var attributeTree = [];
-            var item = buildFormLayoutObj( attributeTree, lizmapEditionFormLayoutJson, 0, null );
-            $('#edition-form-tabbable').prependTo( $('form#'+formId) );
-            $('#edition-form-tabs li:first a').click().blur();
-
-            $('#edition-form-container').parent('div.menu-content').css('overflow-x','hidden');
-        }else{
-            $('#edition-form-tabbable').hide();
-        }
-
 
         $('#edition-form-container').show();
         $('#edition-waiter').hide();
@@ -706,6 +1082,19 @@ var lizEdition = function() {
     }
 
     function handleEditionFormSubmit( form ){
+
+        // Detect click on submit buttons
+        editionLayer['submitActor'] = 'submit';
+        form.find('input[type="submit"]').click(function(){
+            var subprefix = form.attr('id') + '_' + '_submit' + '_';
+            var submitActor = $(this).attr('id').replace(subprefix, '')
+            editionLayer['submitActor'] = submitActor;
+
+            // Confirm the use of the cancel button
+            //if ( submitActor == 'cancel' && !confirm( lizDict['edition.confirm.cancel'] ) )
+                //return false;
+        });
+
         // If needed, copy the geometry from the openlayer feature
         if(
             editionLayer['spatial']
@@ -721,6 +1110,11 @@ var lizEdition = function() {
             form.submit(function() {
                 // Additionnal checks
                 var msg = checkFormBeforeSubmit();
+                // Edition has been canceled
+                if(!msg){
+                    return false;
+                }
+                // Some client side errors have been detected in form
                 if( msg != 'ok' ){
                     lizMap.addMessage( msg, 'info', true).attr('id','lizmap-edition-message');
                     return false;
@@ -739,24 +1133,31 @@ var lizEdition = function() {
                         }
                     });
                     form.fileupload('send', {fileInput:fileInputs});
-                } else
+                } else {
                     $.post(form.attr('action'),
                         form.serialize(),
                         function(data) {
                             displayEditionForm( data );
                         });
+                }
                 return false;
             });
         }
         else{
-            form.submit(function() {
+            form.submit(function(e) {
                 // Additionnal checks
-                var msg = checkFormBeforeSubmit();
+                var msg = checkFormBeforeSubmit(e);
+                // Edition has been canceled
+                if(!msg){
+                    return false;
+                }
+                // Some client side errors have been detected in form
                 if( msg != 'ok' ){
                     lizMap.addMessage( msg, 'info', true).attr('id','lizmap-edition-message');
                     return false;
                 }
                 $('#edition-waiter').show();
+                var formser =
                 $.post(form.attr('action'),
                     form.serialize(),
                     function(data) {
@@ -769,9 +1170,19 @@ var lizEdition = function() {
 
     // Perform some additionnal checking on form
     function checkFormBeforeSubmit(){
-        var msg = 'ok';
         var form = $('#edition-form-container form');
 
+        // Cancel edition if this submit button has been used
+        if(editionLayer['submitActor'] == 'cancel'){
+            cancelEdition();
+            return false;
+        }
+
+        // Set submit button value
+        var submit_hidden_id = form.attr('id') + '_' + '_submit';
+        $('#' + submit_hidden_id).val(editionLayer['submitActor']);
+
+        var msg = 'ok';
         if( editionLayer['spatial'] ){
 
             var gColumn = form.find('input[name="liz_geometryColumn"]').val();
@@ -901,132 +1312,6 @@ var lizEdition = function() {
             redrawLayers( aLayerId );
         });
         return false;
-    }
-
-
-    function getFormLayoutNodeInfo(aNode, depth){
-        var node = {};
-
-        // default type
-        if( depth % 2 == 0)
-            node['type'] = 'group';
-        else
-            node['type'] = 'tab';
-
-        // Get name if possible & check if it is a field
-        if( 'attributes' in aNode ){
-            node['name'] = aNode.attributes.name
-            if( 'index' in aNode.attributes ){
-                node['type'] = 'field';
-            }
-        }
-        // Root node
-        if ( depth == 0 ){
-            node['name'] = 'root';
-            node['type'] = 'root';
-        }
-
-        return node;
-
-    }
-
-    function getFormLayoutNodeChildren(aNode){
-
-        var children = [];
-        if( 'attributeEditorContainer' in aNode ){
-            children = children.concat(aNode.attributeEditorContainer);
-        }
-        if( 'attributeEditorField' in aNode ){
-            children = children.concat(aNode.attributeEditorField);
-        }
-        return children;
-
-    }
-
-    function buildFormLayoutObj(item, currentObj, depth, parent){
-            var node = getFormLayoutNodeInfo(currentObj, depth);
-            var children = getFormLayoutNodeChildren(currentObj);
-            var a = node;
-            a.depth = depth
-            a.children = [];
-            getFormLayoutNodeHtml(a, parent);
-            for ( var c in children ){
-                var child = children[c];
-                var b = buildFormLayoutObj(item, child, depth+1, a);
-                a['children'].push( b );
-            }
-
-            return a;
-
-    }
-
-
-    function getFormLayoutNodeHtml(node, parent){
-        var formId = $('#edition-form-container form').attr('id');
-        if( node.type == 'tab' ){
-            // Ul item for tab nav
-            var navHtml = '<li><a href="#edition-form-tab-';
-            navHtml+= lizMap.cleanName(node.name).toLowerCase();
-            navHtml+= '" data-toggle="tab">' + node.name + '</a></li>';
-
-            // Tab item content
-            var tabHtml = '<div class="tab-pane" id="edition-form-tab-';
-            tabHtml+= lizMap.cleanName(node.name).toLowerCase();
-            tabHtml+= '" ></div>';
-
-            // If parent is root, simply add ul and item to already existing tab container
-            if( parent.type == 'root'){
-                $( "#edition-form-tabs" ).append(navHtml);
-                $( "#edition-form-layout" ).append(tabHtml);
-            }
-            // Else we must first be sure tab container exists in parent group
-            // Then append containt
-            else{
-                var tabContainerNavId = 'edition-form-tabs-' + lizMap.cleanName(parent.name).toLowerCase();
-                var tabContainerDivId = 'edition-form-layout-' + lizMap.cleanName(parent.name).toLowerCase();
-                var parentGroup = $('#' + formId + '_group_' + lizMap.cleanName(parent.name).toLowerCase() );
-                if( !$('#' + tabContainerNavId).length ){
-                    var tabContainer = '<ul class="nav nav-tabs" id="';
-                    tabContainer+= tabContainerNavId;
-                    tabContainer+= '"></ul>';
-                    tabContainer+= '<div class="tab-content" id="';
-                    tabContainer+= tabContainerDivId;
-                    tabContainer+= '"></div>';
-                    parentGroup.append(tabContainer);
-                }
-                $('#' + tabContainerNavId).append(navHtml);
-                $('#' + tabContainerDivId).append(tabHtml);
-                $('#' + tabContainerNavId + ' li:first a').click().blur();
-            }
-        }
-        else if( node.type == 'group' ){
-            html = '<fieldset>';
-            html+= '<legend style="font-weight:bold;">';
-            html+= node.name;
-            html+= '</legend>';
-            html+= '<div class="jforms-table-group" border="0" id="';
-            html+= formId + '_group_' + lizMap.cleanName(node.name).toLowerCase();
-            html+= '">';
-            html+= '</div>';
-            html+= '</fieldset>';
-            $('#edition-form-tab-' + lizMap.cleanName(parent.name).toLowerCase() ).append(html)
-        }
-        else if( node.type == 'field' ){
-            html = '';
-            var field = $('#' + formId + '_' + lizMap.cleanName(node.name).toLowerCase() + '_label');
-            var fieldContainer = field.parents().closest('div.control-group');
-            var parentGroup = $('#' + formId + '_group_' + lizMap.cleanName(parent.name).toLowerCase() );
-            if( !parentGroup.length )
-                parentGroup = $('#edition-form-tab-' + lizMap.cleanName(parent.name).toLowerCase());
-            fieldContainer.appendTo(parentGroup);
-            // Do it also for _choice input (photos and files)
-            var field = $('#' + formId + '_' + lizMap.cleanName(node.name).toLowerCase() + '_choice_label');
-            if( field.length){
-                var fieldContainer = field.parents().closest('div.control-group');
-                fieldContainer.appendTo(parentGroup);
-            }
-        }
-
     }
 
 

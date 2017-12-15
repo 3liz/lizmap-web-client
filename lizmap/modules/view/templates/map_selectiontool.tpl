@@ -21,19 +21,19 @@
         <td>
             <div id="selectiontool-query-buttons" class="btn-group" data-toggle="buttons-radio">
                 <button id="selectiontool-query-deactivate" class="btn btn-small" data-original-title="{@view~map.selectiontool.toolbar.query.deactivate@}">
-                    <i class="icon-none qgis_sprite mIconDeselectedsvg"></i>
+                    <i class="icon-none qgis_sprite mIconDeselected"></i>
                 </button>
                 <button id="selectiontool-query-box" class="btn btn-small" data-original-title="{@view~map.selectiontool.toolbar.query.box@}">
-                    <i class="icon-none qgis_sprite mActionSelectRectanglesvg"></i>
+                    <i class="icon-none qgis_sprite mActionSelectRectangle"></i>
                 </button>
                 <button id="selectiontool-query-circle" class="btn btn-small" data-original-title="{@view~map.selectiontool.toolbar.query.circle@}">
-                    <i class="icon-none qgis_sprite mActionSelectRadiussvg"></i>
+                    <i class="icon-none qgis_sprite mActionSelectRadius"></i>
                 </button>
                 <button id="selectiontool-query-polygon" class="btn btn-small" data-original-title="{@view~map.selectiontool.toolbar.query.polygon@}">
-                    <i class="icon-none qgis_sprite mActionSelectPolygonsvg"></i>
+                    <i class="icon-none qgis_sprite mActionSelectPolygon"></i>
                 </button>
                 <button id="selectiontool-query-freehand" class="btn btn-small" data-original-title="{@view~map.selectiontool.toolbar.query.freehand@}">
-                    <i class="icon-none qgis_sprite mActionSelectFreehandsvg"></i>
+                    <i class="icon-none qgis_sprite mActionSelectFreehand"></i>
                 </button>
             </div>
         </td>

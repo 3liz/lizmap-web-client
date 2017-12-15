@@ -20,6 +20,9 @@ class qgisMapLayer{
   // layer name
   protected $name = '';
 
+  // layer short name
+  protected $shortname = '';
+
   // layer title
   protected $title = '';
 
@@ -31,6 +34,9 @@ class qgisMapLayer{
 
   // layer srid
   protected $srid = 0;
+
+  // layer datasource
+  protected $datasource = '';
 
   // layer provider
   protected $provider = '';
@@ -50,6 +56,7 @@ class qgisMapLayer{
     $this->id = $propLayer['id'];
 
     $this->name = $propLayer['name'];
+    $this->shortname = $propLayer['shortname'];
     $this->title = $propLayer['title'];
     $this->abstract = $propLayer['abstract'];
 
@@ -73,12 +80,24 @@ class qgisMapLayer{
     return $this->name;
   }
 
+  public function getShortName(){
+    return $this->shortname;
+  }
+
   public function getTitle(){
     return $this->title;
   }
 
   public function getAbstract(){
     return $this->abstract;
+  }
+
+  public function getProj4(){
+    return $this->proj4;
+  }
+
+  public function getSrid(){
+    return $this->srid;
   }
 
   public function getDatasource(){
@@ -89,8 +108,8 @@ class qgisMapLayer{
     return $this->provider;
   }
 
-  public function getSrid(){
-    return $this->srid;
+  public function getProject(){
+    return $this->project;
   }
 
   public function getXmlLayer(){

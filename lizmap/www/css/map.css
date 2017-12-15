@@ -962,7 +962,8 @@ div.modal .form-horizontal .controls label.checkbox {
 div.modal .form-actions {
   margin-bottom: 0px;
   margin-top: 0px;
-  padding-left: 100px;
+  padding-left: 0px;
+  text-align: right;
 }
 
 #toolbar h3 .icon,
@@ -2272,81 +2273,36 @@ div.tooltip {
   border-radius: 10px;
 }
 
-.qgis_sprite { background: url('images/qgis_sprite.png') no-repeat top left; width: 19px; height: 20px;  }
-.qgis_sprite.lockedsvg { background-position: 0 0; width: 15px; }
-.qgis_sprite.mActionPansvg { background-position: -25px 0; width: 14px; }
-.qgis_sprite.mIconAtlassvg { background-position: -49px 0; width: 20px; height: 16px; }
-.qgis_sprite.mIconClearsvg { background-position: -79px 0; width: 17px; }
-.qgis_sprite.mActionDrawsvg { background-position: -106px 0; width: 18px; }
-.qgis_sprite.mActionLinksvg { background-position: -134px 0; width: 20px; height: 7px; }
-.qgis_sprite.mIconRastersvg { background-position: -164px 0; }
-.qgis_sprite.mActionFoldersvg { background-position: -193px 0; width: 17px; }
-.qgis_sprite.mActionRemovesvg { background-position: -220px 0; }
-.qgis_sprite.mActionSelectsvg { background-position: -249px 0; }
-.qgis_sprite.mActionUnlinksvg { background-position: -278px 0; width: 20px; height: 9px; }
-.qgis_sprite.mActionZoomInsvg { background-position: -308px 0; }
-.qgis_sprite.mIconSelectedsvg { background-position: -337px 0; width: 18px; }
-.qgis_sprite.mActionFileNewsvg { background-position: -365px 0; width: 16px; }
-.qgis_sprite.mActionZoomOutsvg { background-position: -391px 0; }
-.qgis_sprite.mActionSharingsvg { background-position: -420px 0; }
-.qgis_sprite.mIconLineLayersvg { background-position: -449px 0; width: 20px; }
-.qgis_sprite.mIconSelectAddsvg { background-position: -479px 0; }
-.qgis_sprite.mActionFileOpensvg { background-position: -508px 0; width: 20px; height: 17px; }
-.qgis_sprite.mActionFileSavesvg { background-position: -538px 0; width: 18px; }
-.qgis_sprite.mActionIdentifysvg { background-position: -566px 0; width: 20px; }
-.qgis_sprite.mActionZoomLastsvg { background-position: -596px 0; width: 20px; }
-.qgis_sprite.mIconDeselectedsvg { background-position: -626px 0; width: 18px; }
-.qgis_sprite.mActionZoomNextsvg { background-position: -654px 0; width: 20px; }
-.qgis_sprite.mIconExpressionsvg { background-position: -684px 0; width: 15px; }
-.qgis_sprite.mIconPointLayersvg { background-position: -709px 0; width: 17px; }
-.qgis_sprite.mIconTableLayersvg { background-position: -736px 0; width: 17px; }
-.qgis_sprite.mActionOpenTablesvg { background-position: -763px 0; width: 20px; }
-.qgis_sprite.mActionSaveEditssvg { background-position: -793px 0; }
-.qgis_sprite.mActionSelectAllsvg { background-position: -822px 0; width: 20px; }
-.qgis_sprite.mIconRasterLayersvg { background-position: -852px 0; }
-.qgis_sprite.mIconColorPickersvg { background-position: -881px 0; width: 18px; }
-.qgis_sprite.mActionExpandTreesvg { background-position: -909px 0; width: 20px; }
-.qgis_sprite.mActionSplitPartssvg { background-position: -939px 0; }
-.qgis_sprite.mActionZoomToAreasvg { background-position: -968px 0; }
-.qgis_sprite.mIconPolygonLayersvg { background-position: -997px 0; width: 20px; height: 17px; }
-.qgis_sprite.mIconSelectRemovesvg { background-position: -1027px 0; }
-.qgis_sprite.mActionAddOgrLayersvg { background-position: -1056px 0; }
-.qgis_sprite.mActionAddWfsLayersvg { background-position: -1085px 0; }
-.qgis_sprite.mActionAddWmsLayersvg { background-position: -1114px 0; }
-.qgis_sprite.mActionCaptureLinesvg { background-position: -1143px 0; }
-.qgis_sprite.mActionDeselectAllsvg { background-position: -1172px 0; }
-.qgis_sprite.mActionRemoveLayersvg { background-position: -1201px 0; width: 18px; }
-.qgis_sprite.mActionZoomToLayersvg { background-position: -1229px 0; }
-.qgis_sprite.mIconColorSwatchessvg { background-position: -1258px 0; }
-.qgis_sprite.mActionCapturePointsvg { background-position: -1287px 0; }
-.qgis_sprite.mActionPropertyItemsvg { background-position: -1316px 0; width: 9px; }
-.qgis_sprite.mActionSaveAllEditssvg { background-position: -1335px 0; }
-.qgis_sprite.mActionSelectRadiussvg { background-position: -1364px 0; }
-.qgis_sprite.mActionHideAllLayerssvg { background-position: -1393px 0; width: 20px; height: 15px; }
-.qgis_sprite.mActionPanToSelectedsvg { background-position: -1423px 0; }
-.qgis_sprite.mActionRollbackEditssvg { background-position: -1452px 0; }
-.qgis_sprite.mActionSelectPolygonsvg { background-position: -1481px 0; }
-.qgis_sprite.mActionSetProjectionsvg { background-position: -1510px 0; width: 20px; height: 19px; }
-.qgis_sprite.mActionSharingExportsvg { background-position: -1540px 0; }
-.qgis_sprite.mActionSharingImportsvg { background-position: -1569px 0; }
-.qgis_sprite.mActionSplitFeaturessvg { background-position: -1598px 0; width: 18px; }
-.qgis_sprite.mActionToggleEditingsvg { background-position: -1626px 0; width: 12px; }
-.qgis_sprite.mActionShowAllLayerssvg { background-position: -1648px 0; width: 20px; height: 15px; }
-.qgis_sprite.mActionAddRasterLayersvg { background-position: -1678px 0; }
-.qgis_sprite.mIconSelectIntersectsvg { background-position: -1707px 0; width: 20px; }
-.qgis_sprite.mActionCapturePolygonsvg { background-position: -1737px 0; }
-.qgis_sprite.mActionDeleteSelectedsvg { background-position: -1766px 0; width: 15px; }
-.qgis_sprite.mActionSelectFreehandsvg { background-position: -1791px 0; width: 20px; }
-.qgis_sprite.mActionZoomFullExtentsvg { background-position: -1821px 0; }
-.qgis_sprite.mActionZoomToSelectedsvg { background-position: -1850px 0; }
-.qgis_sprite.mIconExpressionSelectsvg { background-position: -1879px 0; width: 18px; }
-.qgis_sprite.mActionInvertSelectionsvg { background-position: -1907px 0; width: 20px; }
-.qgis_sprite.mActionSelectRectanglesvg { background-position: -1937px 0; }
-.qgis_sprite.mActionHighlightFeaturesvg { background-position: -1966px 0; width: 12px; }
-.qgis_sprite.mActionPropertiesWidgetsvg { background-position: -1988px 0; width: 20px; }
-.qgis_sprite.mActionRollbackAllEditssvg { background-position: -2018px 0; }
-.qgis_sprite.mActionMapIdentificationsvg { background-position: -2047px 0; width: 20px; }
-.qgis_sprite.mActionPanHighlightFeaturesvg { background-position: -2077px 0; width: 16px; }
+#edition-point-coord-form,
+#dock #edition-point-coord-form{
+  margin-bottom: 5px;
+}
+#edition-point-coord-form-expander{
+  color: inherit;
+  text-decoration: inherit;
+  cursor: pointer;
+}
+
+.qgis_sprite { background: url('images/qgis_sprite.png') no-repeat top left; width: 24px; height: 24px;  }
+.qgis_sprite.mActionMoveFeature { background-position: 0 0; }
+.qgis_sprite.mActionReshapeLine { background-position: -34px 0; }
+.qgis_sprite.line.mActionReshape { background-position: -34px 0; }
+.qgis_sprite.mActionMoveFeatureLine { background-position: -68px 0; }
+.qgis_sprite.line.mActionMoveFeature { background-position: -68px 0; }
+.qgis_sprite.mActionNodeTool { background-position: -102px 0; }
+.qgis_sprite.mActionReshape { background-position: -136px 0; }
+.qgis_sprite.mActionRotateFeature { background-position: -170px 0; }
+.qgis_sprite.mActionRotateFeatureLine { background-position: -204px 0; }
+.qgis_sprite.line.mActionRotateFeature { background-position: -204px 0; }
+.qgis_sprite.mActionSelectAll { background-position: -238px 0; }
+.qgis_sprite.mActionSelectRectangle { background-position: -272px 0; }
+.qgis_sprite.mActionSelect { background-position: -306px 0; }
+.qgis_sprite.mActionSelectAllTree { background-position: -340px 0; }
+.qgis_sprite.mActionSelectFreehand { background-position: -374px 0; }
+.qgis_sprite.mActionSelectRadius { background-position: -408px 0; }
+.qgis_sprite.mActionSelectedToTop { background-position: -442px 0; }
+.qgis_sprite.mActionSelectPolygon { background-position: -476px 0; }
+.qgis_sprite.mIconDeselected { background-position: -510px 0; }
 
 #lizmap-search{
   top: 1px;

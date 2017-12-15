@@ -44,6 +44,10 @@ class qgisFormControl{
     // Value relation : one of the edittypes. We store information in an array
     public $valueRelationData = Null;
 
+    public $relationReferenceData = Null;
+
+    public $uniqueValuesData = Null;
+
     // Table mapping QGIS and jelix forms
     public $qgisEdittypeMap = array(
       0 => array (
@@ -60,7 +64,7 @@ class qgisFormControl{
       ),
       2 => array (
             'qgis'=>array('name'=>'Unique values', 'description'=>'the user can select one of the values already used in the attribute. If editable, a line edit is shown with autocompletion support, otherwise a combo box is used'),
-            'jform'=>array('markup'=>'input')
+            'jform'=>array('markup'=>'menulist')
       ),
       8 => array (
             'qgis'=>array('name'=>'File name', 'description'=>'Simplifies file selection by adding a file chooser dialog.'),
@@ -101,6 +105,14 @@ class qgisFormControl{
       16 => array (
             'qgis'=>array('name'=>'UUID generator', 'description'=>'Read-only field that generates a UUID if empty'),
             'jform'=>array('markup'=>'input', 'readonly'=>true)
+      ),
+      17 => array (
+            'qgis'=>array('name'=>'External Resource', 'description'=>'Simplifies file selection by adding a file chooser dialog.'),
+            'jform'=>array('markup'=>'upload')
+      ),
+      18 => array (
+            'qgis'=>array('name'=>'Relation reference', 'description'=>'Use relation to select value'),
+            'jform'=>array('markup'=>'menulist')
       )
     );
 
@@ -177,12 +189,16 @@ class qgisFormControl{
     $this->qgisEdittypeMap['Photo'] = $this->qgisEdittypeMap[8];
     $this->qgisEdittypeMap['WebView'] = $this->qgisEdittypeMap[0];
     $this->qgisEdittypeMap['Color'] = $this->qgisEdittypeMap[0];
+    $this->qgisEdittypeMap['ExternalResource'] = $this->qgisEdittypeMap[17];
+    $this->qgisEdittypeMap['RelationReference'] = $this->qgisEdittypeMap[18];
 
     // Set class attributes
     $this->ref = $ref;
     $this->fieldName = $ref;
-    if ( $aliasXml and count( $aliasXml ) != 0 )
+    if ( $aliasXml and is_array($aliasXml) and count( $aliasXml ) != 0 )
       $this->fieldAlias = (string)$aliasXml[0]->attributes()->name;
+    else if ( $aliasXml and count( $aliasXml ) != 0 )
+      $this->fieldAlias = $aliasXml;
     $this->fieldDataType = $this->castDataType[strtolower($prop->type)];
 
     if($prop->notNull && !$prop->autoIncrement)
@@ -212,7 +228,7 @@ class qgisFormControl{
         $this->fieldEditType = 0;
 
       // Get jform control type
-      if($this->fieldEditType == 15){
+      if($this->fieldEditType === 15){
         $markup = $this->qgisEdittypeMap[$this->fieldEditType]['jform']['markup'][(int)$this->edittype[0]->attributes()->allowMulti];
       }
       else if($this->fieldEditType === 'ValueRelation'){
@@ -234,6 +250,7 @@ class qgisFormControl{
       else{
         $markup = $this->qgisEdittypeMap[$this->fieldEditType]['jform']['markup'];
       }
+
     }else{
       $markup='hidden';
     }
@@ -285,10 +302,66 @@ class qgisFormControl{
         $choice->createItem('keep','keep');
         $choice->createItem('update','update');
         $upload = new jFormsControlUpload($this->ref);
-        if( $this->fieldEditType == 'Photo' ) {
+        if( $this->fieldEditType === 'Photo' ) {
           $upload->mimetype = array('image/jpg','image/jpeg','image/pjpeg','image/png','image/gif');
-          $upload->accept = 'image/*';
+          $upload->accept = 'image/jpg, image/jpeg, image/pjpeg, image/png, image/gif';
           $upload->capture = 'camera';
+        }
+        else if( $this->fieldEditType === 'ExternalResource' ) {
+            $upload->accept = '';
+            if( property_exists($this->edittype[0]->widgetv2config->attributes(), 'FileWidgetFilter') ){
+                //QFileDialog::getOpenFileName filter
+                $FileWidgetFilter = $this->edittype[0]->widgetv2config->attributes()->FileWidgetFilter;
+                $FileWidgetFilter = explode( ';;', $FileWidgetFilter );
+                $accepts = array();
+                $re = '/(\*\.\w{3,6})/';
+                foreach( $FileWidgetFilter as $FileFilter ) {
+                    $matches = array();
+                    if ( preg_match_all( $re, $FileFilter, $matches ) == 1 ) {
+                        foreach( array_slice( $matches, 1 ) as $m ) {
+                            $accepts[] = substr( $m, 1 );
+                        }
+                    }
+                }
+                if ( count( $accepts ) > 0 )
+                    $upload->accept = implode( ', ', array_unique( $accepts ) );
+            }
+            if( property_exists($this->edittype[0]->widgetv2config->attributes(), 'DocumentViewer')
+                and $this->edittype[0]->widgetv2config->attributes()->DocumentViewer == '1'){
+                if ( $upload->accept != '' ) {
+                    $mimetypes = array();
+                    $accepts = explode( ', ', $upload->accept );
+                    foreach( $accepts as $a ){
+                        if ( $a == '.gif' )
+                            $mimetypes[] = 'image/gif';
+                        else if ( $a == '.png' )
+                            $mimetypes[] = 'image/png';
+                        else if ( $a == '.jpg' or $a == '.jpeg')
+                            if ( !in_array( 'image/jpg', $mimetypes ) )
+                                $mimetypes = array_merge( $mimetypes, array('image/jpg','image/jpeg','image/pjpeg') );
+                        else if ( $a == '.bm' or $a == '.bmp')
+                            if ( !in_array( 'image/bmp', $mimetypes ) )
+                                $mimetypes = array_merge( $mimetypes, array('image/bmp','image/x-windows-bmp') );
+                        else if ( $a == '.pbm' )
+                            $mimetypes[] = 'image/x-portable-bitmap';
+                        else if ( $a == '.pgm')
+                            $mimetypes = array_merge( $mimetypes, array('image/x-portable-graymap','image/x-portable-greymap') );
+                        else if ( $a == '.ppm' )
+                            $mimetypes[] = 'image/x-portable-pixmap';
+                        else if ( $a == '.xbm')
+                            $mimetypes = array_merge( $mimetypes, array('image/xbm','image/x-xbm','image/x-xbitmap') );
+                        else if ( $a == '.xpm')
+                            $mimetypes = array_merge( $mimetypes, array('image/xpm','image/x-xpixmap') );
+                        else if ( $a == '.svg')
+                            $mimetypes[] = 'image/svg+xml';
+                    }
+                    $upload->mimetype = array_unique( $mimetypes );
+                } else {
+                    $upload->mimetype = array('image/jpg','image/jpeg','image/pjpeg','image/png','image/gif');
+                    $upload->accept = 'image/jpg, image/jpeg, image/pjpeg, image/png, image/gif';
+                }
+                $upload->capture = 'camera';
+            }
         }
         $choice->addChildControl($upload, 'update');
         $choice->createItem('delete','delete');
@@ -391,7 +464,7 @@ class qgisFormControl{
   public function fillCheckboxValues(){
     $checked = null;
     $unchecked = null;
-    if ( $this->fieldEditType == 'CheckBox'){
+    if ( $this->fieldEditType === 'CheckBox'){
       $checked = (string)$this->edittype[0]->widgetv2config->attributes()->CheckedState;
       $unchecked = (string)$this->edittype[0]->widgetv2config->attributes()->UncheckedState;
     } else {
@@ -426,6 +499,22 @@ class qgisFormControl{
       case -1:
       case 'Enumeration':
         $data[0] = '--qgis edit type not supported yet--';
+        break;
+
+      // Unique Values
+      case 2:
+      case 'UniqueValuesEditable':
+      case 'UniqueValues':
+        $this->uniqueValuesData = array(
+          "notNull" => '0',
+          "editable" => '0'
+        );
+        if ( $this->fieldEditType === 'UniqueValuesEditable' )
+            $this->uniqueValuesData['editable'] = '1';
+        if ( $this->edittype[0]->widgetv2config ) {
+            $this->uniqueValuesData['notNull'] = (string)$this->edittype[0]->widgetv2config->attributes()->notNull;
+            $this->uniqueValuesData['editable'] = (string)$this->edittype[0]->widgetv2config->attributes()->Editable;
+        }
         break;
 
       // Value map
@@ -523,6 +612,8 @@ class qgisFormControl{
         $value = (string)$this->edittype[0]->widgetv2config->attributes()->Value;
         $allowMulti = (string)$this->edittype[0]->widgetv2config->attributes()->AllowMulti;
         $filterExpression = (string)$this->edittype[0]->widgetv2config->attributes()->FilterExpression;
+        $useCompleter = (string)$this->edittype[0]->widgetv2config->attributes()->UseCompleter;
+        $fieldEditable = (string)$this->edittype[0]->widgetv2config->attributes()->fieldEditable;
         $this->valueRelationData = array(
           "allowNull" => $allowNull,
           "orderByValue" => $orderByValue,
@@ -530,10 +621,27 @@ class qgisFormControl{
           "key" => $key,
           "value" => $value,
           "allowMulti" => $allowMulti,
-          "filterExpression" => $filterExpression
+          "filterExpression" => $filterExpression,
+          "useCompleter" => $useCompleter,
+          "fieldEditable" => $fieldEditable
         );
 
         break;
+
+      case 'RelationReference':
+        $allowNull = (string)$this->edittype[0]->widgetv2config->attributes()->AllowNULL;
+        $orderByValue = (string)$this->edittype[0]->widgetv2config->attributes()->OrderByValue;
+        $Relation = (string)$this->edittype[0]->widgetv2config->attributes()->Relation;
+        $MapIdentification = (string)$this->edittype[0]->widgetv2config->attributes()->MapIdentification;
+        $this->relationReferenceData = array(
+          "allowNull" => $allowNull,
+          "orderByValue" => $orderByValue,
+          "relation" => $Relation,
+          "mapIdentification" => $MapIdentification
+        );
+
+        break;
+
 
     }
 
