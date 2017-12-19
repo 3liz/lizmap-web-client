@@ -45,6 +45,7 @@ class logsCtrl extends jController {
         $errorLog = 'toobig';
       }else{
         $errorLog = trim(implode("", array_slice(file($logPath), - $lines)));
+        $errorLog = htmlentities($errorLog);
       }
     }
 
