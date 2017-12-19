@@ -15,47 +15,62 @@ class logsCtrl extends jController {
   public $pluginParams = array(
     '*' => array( 'jacl2.right'=>'lizmap.admin.access')
   );
-  
-  
+
+
   /**
   * Display a summary of the logs
   *
-  * 
+  *
   */
   function index() {
     $rep = $this->getResponse('html');
-    
+
     // Get counter count
     $dao = jDao::get('lizmap~logCounter', 'lizlog');
     $conditions = jDao::createConditions();
     $counterNumber = $dao->countBy($conditions);
-    
+
     // Get details count
     $dao = jDao::get('lizmap~logDetail', 'lizlog');
     $conditions = jDao::createConditions();
     $detailNumber = $dao->countBy($conditions);
 
+    // Get last error log
+    $logPath = jApp::varPath('log/error.log');
+    $errorLog = '';
+    $lines = 50;
+    if(is_file($logPath)){
+      // Only display content if the file is small to avoid memory issues
+      if(filesize($logPath) > 512000) {
+        $errorLog = 'toobig';
+      }else{
+        $errorLog = trim(implode("", array_slice(file($logPath), - $lines)));
+      }
+    }
+
+
     // Display content via templates
     $tpl = new jTpl();
     $assign = array(
       'counterNumber' => $counterNumber,
-      'detailNumber' => $detailNumber
+      'detailNumber' => $detailNumber,
+      'errorLog' => $errorLog
     );
     $tpl->assign($assign);
     $rep->body->assign('MAIN', $tpl->fetch('logs_view'));
     $rep->body->assign('selectedMenuItem','lizmap_logs');
 
-    return $rep;    
+    return $rep;
   }
-  
+
   /**
   * Display the logs counter
   *
-  * 
+  *
   */
   function counter() {
     $rep = $this->getResponse('html');
-    
+
     // Get counter
     $dao = jDao::get('lizmap~logCounter', 'lizlog');
     $counter = $dao->getSortedCounter();
@@ -69,17 +84,17 @@ class logsCtrl extends jController {
     $rep->body->assign('MAIN', $tpl->fetch('logs_counter'));
     $rep->body->assign('selectedMenuItem','lizmap_logs');
 
-    return $rep;    
+    return $rep;
   }
-  
+
   /**
   * Empty the counter logs table
   *
-  * 
+  *
   */
   function emptyCounter() {
     $rep = $this->getResponse('redirect');
-    
+
     // Get counter
     $cnx = jDb::getConnection('lizlog');
     try{
@@ -90,24 +105,24 @@ class logsCtrl extends jController {
     }
 
     $rep->action = 'admin~logs:index';
-    return $rep;    
-  }  
-  
-  
+    return $rep;
+  }
+
+
   /**
   * Display the detailed logs
   *
-  * 
+  *
   */
   function detail() {
     $rep = $this->getResponse('html');
-    
+
     $maxvisible = 50;
     $page = $this->intParam('page');
     if(!$page)
       $page = 1;
     $offset = $page * $maxvisible - $maxvisible;
-        
+
     // Get details
     $dao = jDao::get('lizmap~logDetail', 'lizlog');
     $detail = $dao->getDetailRange($offset, $maxvisible);
@@ -128,10 +143,10 @@ class logsCtrl extends jController {
   /**
   * Export the detailed logs in CSV
   *
-  * 
+  *
   */
   function export() {
-    
+
     // Get logs
     $dao = jDao::get('lizmap~logDetail', 'lizlog');
     $nblogs = 0;
@@ -139,20 +154,20 @@ class logsCtrl extends jController {
     try{
       $logs = $dao->findAll();
       $conditions = jDao::createConditions();
-      $nblogs = $dao->countBy($conditions);  
+      $nblogs = $dao->countBy($conditions);
     }catch (Exception $e) {
       $rep = $this->getResponse('redirect');
       jMessage::add('Error : ' . $e->getMessage(), 'error') ;
       $rep->action = 'admin~logs:index';
       return $rep;
     }
-    
+
     // Récupération des colonnes
-    $fetch = $logs->fetch();    
+    $fetch = $logs->fetch();
     $columns = array();
     if($nblogs > 0){
       $fetchArray = get_object_vars($fetch);
-      $columns = array_keys($fetchArray);    
+      $columns = array_keys($fetchArray);
     }
 
     $rep = $this->getResponse('binary');
@@ -175,15 +190,15 @@ class logsCtrl extends jController {
     return $rep;
   }
 
-  
+
   /**
   * Empty the detail logs table
   *
-  * 
+  *
   */
   function emptyDetail() {
     $rep = $this->getResponse('redirect');
-    
+
     // Get counter
     $cnx = jDb::getConnection('lizlog');
     try{
@@ -194,7 +209,28 @@ class logsCtrl extends jController {
     }
 
     $rep->action = 'admin~logs:index';
-    return $rep;    
+    return $rep;
   }
-    
-}    
+
+
+  /* Erase the error log file
+   *
+   *
+  */
+  function eraseError() {
+    $rep = $this->getResponse('redirect');
+
+    // Erase the log file
+    try{
+      $logPath = jApp::varPath('log/error.log');
+      jFile::write($logPath, '');
+      jMessage::add(jLocale::get("admin~admin.logs.error.file.erase.ok", array('log_detail') ) );
+    }catch(Exception $e){
+      jLog::log('Error while emptying the error log file');
+    }
+
+    $rep->action = 'admin~logs:index';
+    return $rep;
+  }
+
+}
