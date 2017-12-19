@@ -219,6 +219,12 @@ var lizAttributeTable = function() {
 
                 addSelectionToolControl();
 
+                // Bind click on tabs to resize datatable tables
+                $('#attributeLayers-tabs li').click(function(){
+                    var mycontainerId = $('#bottom-dock div.bottom-content.active div.attribute-layer-main').attr('id');
+                    refreshDatatableSize('#'+mycontainerId);
+                });
+
             } else {
                 // Hide navbar menu
                 $('#mapmenu li.attributeLayers').hide();
@@ -398,7 +404,7 @@ var lizAttributeTable = function() {
                     alc= ' showChildren';
                 html+= '<div class="attribute-layer-content'+alc+'">';
                 html+= '    <input type="hidden" class="attribute-table-hidden-layer" value="'+cleanName+'">';
-                html+= '    <table id="attribute-layer-table-' + cleanName + '" class="attribute-table-table table table-hover table-condensed table-striped order-column"></table>';
+                html+= '    <table id="attribute-layer-table-' + cleanName + '" class="attribute-table-table table table-hover table-condensed table-striped order-column" width="100%"></table>';
 
                 html+= '</div>';  // attribute-layer-content
 
@@ -489,6 +495,8 @@ var lizAttributeTable = function() {
                         var parentDir = $(this).parents('div.attribute-layer-main');
                         parentDir.find('div.attribute-layer-content').toggleClass('showChildren');
                         parentDir.find('div.tabbable.attribute-layer-child-content').toggle();
+                        // Refresh parent table size
+                        refreshDatatableSize('#attribute-layer-main-'+ cleanName);
                         return false;
                     })
                     .hover(
@@ -512,6 +520,7 @@ var lizAttributeTable = function() {
                             $('#attribute-layer-main-' + cleanName ).addClass('reduced');
                             $('#attribute-table-panel-' + cleanName ).addClass('visible');
                         }
+                        refreshDatatableSize('#attribute-layer-main-'+ cleanName);
                         return false;
                     })
                     .hover(
@@ -1119,7 +1128,7 @@ var lizAttributeTable = function() {
                         if( dataLength > 50000 )
                             searchWhileTyping = false;
 
-                        var myDom = '<<t>iplf>';
+                        var myDom = '<<t>ipl>';
                         if( searchWhileTyping ) {
                             $('#attribute-layer-search-' + cleanName).on( 'keyup', function (e){
                             var searchVal = this.value;
@@ -1146,6 +1155,8 @@ var lizAttributeTable = function() {
                             }
                             ,dom: myDom
                             ,pageLength: 50
+                            ,scrollY: '95%'
+                            ,scrollX: '100%'
 
                         } );
 
@@ -1200,6 +1211,17 @@ var lizAttributeTable = function() {
                                 bindTableUnlinkButton(aName, aTable);
                             }
 
+                            // Refresh size
+                            var mycontainerId = $('#bottom-dock div.bottom-content.active div.attribute-layer-main').attr('id');
+                            //var mycontainer = $(aTable).parents('div.attribute-layer-content:first');
+                            //if(mycontainer.length == 0){
+                                //mycontainer = $('div.attribute-layer-child-content.active');
+                            //}else{
+                                //mycontainer = $('div.attribute-content.active');
+                            //}
+                            //var mycontainerId = mycontainer.attr('id');
+                            refreshDatatableSize('#' + mycontainerId);
+
                             return false;
 
                         });
@@ -1219,6 +1241,7 @@ var lizAttributeTable = function() {
 
                 } else {
                     $(aTable).show();
+
                 }
 
                 // Trigget event telling attribute table is ready
@@ -1229,6 +1252,7 @@ var lizAttributeTable = function() {
                 );
                 if (aCallback)
                     aCallback(aName,aTable);
+
                 return false;
             }
 
@@ -2543,6 +2567,29 @@ var lizAttributeTable = function() {
                 });
             }
 
+
+            function refreshDatatableSize(container){
+
+                var dtable = $(container).find('table.dataTable');
+
+                // Adapt height
+                var h = $(container +' div.attribute-layer-content').height();
+
+                h = h - $(container +' thead').height();
+                h = h - $(container +' div.dataTables_paginate').height();
+                h = h - $(container +' div.dataTables_filter').height();
+                h = h - 20;
+                dtable.parent('div.dataTables_scrollBody').height(h);
+
+                // Width : adapt columns size
+                dtable.DataTable().tables().columns.adjust();
+            }
+
+
+            lizMap.refreshDatatableSize = function(container){
+              return refreshDatatableSize(container);
+            }
+
             lizMap.events.on({
 
                 layerfeaturehighlighted: function(e) {
@@ -2945,6 +2992,11 @@ var lizAttributeTable = function() {
                             });
                         }
                     }
+                },
+
+                bottomdocksizechanged: function(evt) {
+                    var mycontainerId = $('#bottom-dock div.bottom-content.active div.attribute-layer-main').attr('id');
+                    refreshDatatableSize('#'+mycontainerId);
                 }
 
             }); // lizMap.events.on end

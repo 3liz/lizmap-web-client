@@ -551,6 +551,10 @@ SubDock
 }
 
 
+#attributeLayers table th {
+  white-space: nowrap !important;
+}
+
 #attributeLayers .tab-content .attribute-content {
   top:50px;
 }
@@ -680,14 +684,9 @@ SubDock
 }
 
 .tabbable.attribute-layer-child-content {
-  height:40%;
   border:1px solid darkgrey;
 }
 
-.tabbable.attribute-layer-child-content div.tab-content{
-  height:90%;
-  overflow:auto;
-}
 
 .tabbable.attribute-layer-child-content ul li a {
   padding: 1px;
