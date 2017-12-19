@@ -238,6 +238,7 @@ var bottomDockFunction = function() {
         function showBottomDockContent(){
           $('#bottom-dock').addClass('visible');
           $('#bottom-dock').css('left',  lizMap.getDockRightPosition() );
+          lizMap.events.triggerEvent('bottomdocksizechanged', {'size': 'unknown'} );
           return false;
         }
         function hideBottomDockContent(){
