@@ -456,6 +456,13 @@ class lizmapProject extends qgisProject {
         return false;
     }
 
+    public function hasAtlasEnabled(){
+        if ( property_exists($this->cfg->options,'atlasEnabled') and $this->cfg->options->atlasEnabled == 'True' ){
+            return true;
+        }
+        return false;
+    }
+
     public function hasTooltipLayers(){
         if ( property_exists($this->cfg,'tooltipLayers') ){
             $count = 0;

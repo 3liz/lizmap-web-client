@@ -193,6 +193,11 @@ class lizMapCtrl extends jController {
         $rep->addJSLink($bp.'js/date.js');
     }
 
+    // Add atlas.js for atlas feature
+    if( $lproj->hasAtlasEnabled() ) {
+        $rep->addJSLink($bp.'js/atlas.js');
+    }
+
     // Assign variables to template
     $assign = array_merge(array(
       'repositoryLabel'=>$lrep->getData('label'),
