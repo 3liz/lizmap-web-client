@@ -1,5 +1,5 @@
 <!DOCTYPE qgis PUBLIC 'http://mrcc.com/qgis.dtd' 'SYSTEM'>
-<qgis projectname="Montpellier - Transports" version="2.18.14">
+<qgis projectname="Montpellier - Transports" version="2.18.15">
   <title>Montpellier - Transports</title>
   <autotransaction active="0"/>
   <evaluateDefaultValues active="0"/>
@@ -7,13 +7,13 @@
     <customproperties/>
     <layer-tree-group expanded="1" checked="Qt::PartiallyChecked" name="Edition">
       <customproperties/>
-      <layer-tree-layer expanded="0" providerKey="spatialite" checked="Qt::Checked" id="edition_point20130118171631518" source="dbname='/home/dhont/public_html/lizmap/lizmap/install/qgis/edition/edition_db.sqlite' table=&quot;edition_point&quot; (geometry) sql=" name="points of interest">
+      <layer-tree-layer expanded="0" providerKey="spatialite" checked="Qt::Checked" id="edition_point20130118171631518" source="dbname='/var/www/LIZMAP/master/lizmap/install/qgis/edition/edition_db.sqlite' table=&quot;edition_point&quot; (geometry) sql=" name="points of interest">
         <customproperties/>
       </layer-tree-layer>
-      <layer-tree-layer expanded="0" providerKey="spatialite" checked="Qt::Unchecked" id="edition_line20130409161630329" source="dbname='/home/dhont/public_html/lizmap/lizmap/install/qgis/edition/edition_db.sqlite' table=&quot;edition_line&quot; (geom) sql=" name="edition_line">
+      <layer-tree-layer expanded="0" providerKey="spatialite" checked="Qt::Unchecked" id="edition_line20130409161630329" source="dbname='/var/www/LIZMAP/master/lizmap/install/qgis/edition/edition_db.sqlite' table=&quot;edition_line&quot; (geom) sql=" name="edition_line">
         <customproperties/>
       </layer-tree-layer>
-      <layer-tree-layer expanded="0" providerKey="spatialite" checked="Qt::Checked" id="edition_polygon20130409114333776" source="dbname='/home/dhont/public_html/lizmap/lizmap/install/qgis/edition/edition_db.sqlite' table=&quot;edition_polygon&quot; (geom) sql=" name="areas_of_interest">
+      <layer-tree-layer expanded="0" providerKey="spatialite" checked="Qt::Checked" id="edition_polygon20130409114333776" source="dbname='/var/www/LIZMAP/master/lizmap/install/qgis/edition/edition_db.sqlite' table=&quot;edition_polygon&quot; (geom) sql=" name="areas_of_interest">
         <customproperties/>
       </layer-tree-layer>
     </layer-tree-group>
@@ -21,28 +21,28 @@
       <customproperties/>
       <layer-tree-group expanded="1" checked="Qt::Checked" name="Bus">
         <customproperties/>
-        <layer-tree-layer expanded="0" providerKey="ogr" checked="Qt::Checked" id="bus_stops20121106170806413" source="/home/dhont/public_html/lizmap/lizmap/install/qgis/data/vector/bus_stops.shp" name="bus_stops">
+        <layer-tree-layer expanded="0" providerKey="ogr" checked="Qt::Checked" id="bus_stops20121106170806413" source="/var/www/LIZMAP/master/lizmap/install/qgis/data/vector/bus_stops.shp" name="bus_stops">
           <customproperties/>
         </layer-tree-layer>
-        <layer-tree-layer expanded="0" providerKey="ogr" checked="Qt::Checked" id="bus20121102133611751" source="/home/dhont/public_html/lizmap/lizmap/install/qgis/data/vector/bus.shp" name="bus">
+        <layer-tree-layer expanded="0" providerKey="ogr" checked="Qt::Checked" id="bus20121102133611751" source="/var/www/LIZMAP/master/lizmap/install/qgis/data/vector/bus.shp" name="bus">
           <customproperties/>
         </layer-tree-layer>
       </layer-tree-group>
       <layer-tree-group expanded="1" checked="Qt::Checked" name="Tramway">
         <customproperties/>
-        <layer-tree-layer expanded="1" providerKey="spatialite" checked="Qt::Checked" id="tramway_ref20150612171109044" source="dbname='/home/dhont/public_html/lizmap/lizmap/install/qgis/edition/transport.sqlite' table=&quot;tramway_ref&quot; sql=" name="tramway_ref">
+        <layer-tree-layer expanded="1" providerKey="spatialite" checked="Qt::Checked" id="tramway_ref20150612171109044" source="dbname='/var/www/LIZMAP/master/lizmap/install/qgis/edition/transport.sqlite' table=&quot;tramway_ref&quot; sql=" name="tramway_ref">
           <customproperties/>
         </layer-tree-layer>
-        <layer-tree-layer expanded="1" providerKey="spatialite" checked="Qt::Checked" id="jointure_tram_stop20150328114216806" source="dbname='/home/dhont/public_html/lizmap/lizmap/install/qgis/edition/transport.sqlite' table=&quot;jointure_tram_stop&quot; sql=" name="tramway_pivot">
+        <layer-tree-layer expanded="1" providerKey="spatialite" checked="Qt::Checked" id="jointure_tram_stop20150328114216806" source="dbname='/var/www/LIZMAP/master/lizmap/install/qgis/edition/transport.sqlite' table=&quot;jointure_tram_stop&quot; sql=" name="tramway_pivot">
           <customproperties/>
         </layer-tree-layer>
-        <layer-tree-layer expanded="1" providerKey="spatialite" checked="Qt::Checked" id="tram_stop_work20150416102656130" source="dbname='/home/dhont/public_html/lizmap/lizmap/install/qgis/edition/transport.sqlite' table=&quot;tram_stop_work&quot; sql=" name="tram_stop_work">
+        <layer-tree-layer expanded="1" providerKey="spatialite" checked="Qt::Checked" id="tram_stop_work20150416102656130" source="dbname='/var/www/LIZMAP/master/lizmap/install/qgis/edition/transport.sqlite' table=&quot;tram_stop_work&quot; sql=" name="tram_stop_work">
           <customproperties/>
         </layer-tree-layer>
-        <layer-tree-layer expanded="1" providerKey="spatialite" checked="Qt::Checked" id="tramstop20150328114203878" source="dbname='/home/dhont/public_html/lizmap/lizmap/install/qgis/edition/transport.sqlite' table=&quot;tramstop&quot; (geometry) sql=" name="tramstop">
+        <layer-tree-layer expanded="1" providerKey="spatialite" checked="Qt::Checked" id="tramstop20150328114203878" source="dbname='/var/www/LIZMAP/master/lizmap/install/qgis/edition/transport.sqlite' table=&quot;tramstop&quot; (geometry) sql=" name="tramstop">
           <customproperties/>
         </layer-tree-layer>
-        <layer-tree-layer expanded="1" providerKey="spatialite" checked="Qt::Checked" id="tramway20150328114206278" source="dbname='/home/dhont/public_html/lizmap/lizmap/install/qgis/edition/transport.sqlite' table=&quot;tramway&quot; (geometry) sql=" name="tramway">
+        <layer-tree-layer expanded="1" providerKey="spatialite" checked="Qt::Checked" id="tramway20150328114206278" source="dbname='/var/www/LIZMAP/master/lizmap/install/qgis/edition/transport.sqlite' table=&quot;tramway&quot; (geometry) sql=" name="tramway">
           <customproperties>
             <property key="showFeatureCount" value="1"/>
           </customproperties>
@@ -50,26 +50,26 @@
       </layer-tree-group>
       <layer-tree-group expanded="1" checked="Qt::PartiallyChecked" name="Buildings">
         <customproperties/>
-        <layer-tree-layer expanded="1" providerKey="spatialite" checked="Qt::Checked" id="publicbuildings20150420100958543" source="dbname='/home/dhont/public_html/lizmap/lizmap/install/qgis/edition/transport.sqlite' table=&quot;publicbuildings&quot; (geom) sql=" name="publicbuildings">
+        <layer-tree-layer expanded="1" providerKey="spatialite" checked="Qt::Checked" id="publicbuildings20150420100958543" source="dbname='/var/www/LIZMAP/master/lizmap/install/qgis/edition/transport.sqlite' table=&quot;publicbuildings&quot; (geom) sql=" name="publicbuildings">
           <customproperties/>
         </layer-tree-layer>
-        <layer-tree-layer expanded="1" providerKey="spatialite" checked="Qt::Unchecked" id="publicbuildings_tramstop20150420095614071" source="dbname='/home/dhont/public_html/lizmap/lizmap/install/qgis/edition/transport.sqlite' table=&quot;publicbuildings_tramstop&quot; sql=" name="publicbuildings_tramstop">
+        <layer-tree-layer expanded="1" providerKey="spatialite" checked="Qt::Unchecked" id="publicbuildings_tramstop20150420095614071" source="dbname='/var/www/LIZMAP/master/lizmap/install/qgis/edition/transport.sqlite' table=&quot;publicbuildings_tramstop&quot; sql=" name="publicbuildings_tramstop">
           <customproperties/>
         </layer-tree-layer>
       </layer-tree-group>
     </layer-tree-group>
-    <layer-tree-layer expanded="1" providerKey="ogr" checked="Qt::Checked" id="donnes_sociodemo_sous_quartiers20160121144525075" source="/home/dhont/public_html/lizmap/lizmap/install/qgis/data/vector/donnes_sociodemo_sous_quartiers.csv" name="donnes_sociodemo_sous_quartiers">
+    <layer-tree-layer expanded="1" providerKey="ogr" checked="Qt::Checked" id="donnes_sociodemo_sous_quartiers20160121144525075" source="/var/www/LIZMAP/master/lizmap/install/qgis/data/vector/donnes_sociodemo_sous_quartiers.csv" name="donnes_sociodemo_sous_quartiers">
       <customproperties/>
     </layer-tree-layer>
-    <layer-tree-layer expanded="1" providerKey="ogr" checked="Qt::Checked" id="SousQuartiers20160121124316563" source="/home/dhont/public_html/lizmap/lizmap/install/qgis/data/vector/VilleMTP_MTP_SousQuartiers_2011.shp" name="SousQuartiers">
+    <layer-tree-layer expanded="1" providerKey="ogr" checked="Qt::Checked" id="SousQuartiers20160121124316563" source="/var/www/LIZMAP/master/lizmap/install/qgis/data/vector/VilleMTP_MTP_SousQuartiers_2011.shp" name="SousQuartiers">
       <customproperties/>
     </layer-tree-layer>
-    <layer-tree-layer expanded="0" providerKey="ogr" checked="Qt::Checked" id="VilleMTP_MTP_Quartiers_2011_432620130116112610876" source="/home/dhont/public_html/lizmap/lizmap/install/qgis/data/vector/VilleMTP_MTP_Quartiers_2011_4326.shp" name="Quartiers">
+    <layer-tree-layer expanded="0" providerKey="ogr" checked="Qt::Checked" id="VilleMTP_MTP_Quartiers_2011_432620130116112610876" source="/var/www/LIZMAP/master/lizmap/install/qgis/data/vector/VilleMTP_MTP_Quartiers_2011_4326.shp" name="Quartiers">
       <customproperties/>
     </layer-tree-layer>
     <layer-tree-group expanded="1" checked="Qt::Unchecked" name="Overview">
       <customproperties/>
-      <layer-tree-layer expanded="0" providerKey="ogr" checked="Qt::Unchecked" id="VilleMTP_MTP_Quartiers_2011_432620130116112351546" source="/home/dhont/public_html/lizmap/lizmap/install/qgis/data/vector/VilleMTP_MTP_Quartiers_2011_4326.shp" name="VilleMTP_MTP_Quartiers_2011_4326">
+      <layer-tree-layer expanded="0" providerKey="ogr" checked="Qt::Unchecked" id="VilleMTP_MTP_Quartiers_2011_432620130116112351546" source="/var/www/LIZMAP/master/lizmap/install/qgis/data/vector/VilleMTP_MTP_Quartiers_2011_4326.shp" name="VilleMTP_MTP_Quartiers_2011_4326">
         <customproperties/>
       </layer-tree-layer>
     </layer-tree-group>
@@ -77,13 +77,13 @@
       <customproperties/>
       <layer-tree-group expanded="1" checked="Qt::Checked" name="osm-stamen-toner">
         <customproperties/>
-        <layer-tree-layer expanded="0" providerKey="gdal" checked="Qt::Checked" id="frmt_wms_openstreetmap_stamen_toner_tms20140610162911446" source="/home/dhont/public_html/lizmap/lizmap/install/qgis/data/raster/frmt_wms_openstreetmap_stamen_toner_tms.xml" name="frmt_wms_openstreetmap_stamen_toner_tms">
+        <layer-tree-layer expanded="0" providerKey="gdal" checked="Qt::Checked" id="frmt_wms_openstreetmap_stamen_toner_tms20140610162911446" source="/var/www/LIZMAP/master/lizmap/install/qgis/data/raster/frmt_wms_openstreetmap_stamen_toner_tms.xml" name="frmt_wms_openstreetmap_stamen_toner_tms">
           <customproperties/>
         </layer-tree-layer>
       </layer-tree-group>
       <layer-tree-group expanded="1" checked="Qt::Unchecked" name="osm-mapnik">
         <customproperties/>
-        <layer-tree-layer expanded="0" providerKey="gdal" checked="Qt::Unchecked" id="frmt_wms_openstreetmap_mapnik_tms20140610162910636" source="/home/dhont/public_html/lizmap/lizmap/install/qgis/data/raster/frmt_wms_openstreetmap_mapnik_tms.xml" name="frmt_wms_openstreetmap_mapnik_tms">
+        <layer-tree-layer expanded="0" providerKey="gdal" checked="Qt::Unchecked" id="frmt_wms_openstreetmap_mapnik_tms20140610162910636" source="/var/www/LIZMAP/master/lizmap/install/qgis/data/raster/frmt_wms_openstreetmap_mapnik_tms.xml" name="frmt_wms_openstreetmap_mapnik_tms">
           <customproperties/>
         </layer-tree-layer>
       </layer-tree-group>
@@ -124,7 +124,7 @@
     <projections>1</projections>
     <destinationsrs>
       <spatialrefsys>
-        <proj4>+proj=merc +a=6378137 +b=6378137 +lat_ts=0.0 +lon_0=0.0 +x_0=0.0 +y_0=0 +k=1.0 +units=m +nadgrids=@null +wktext  +no_defs</proj4>
+        <proj4>+proj=merc +a=6378137 +b=6378137 +lat_ts=0.0 +lon_0=0.0 +x_0=0.0 +y_0=0 +k=1.0 +units=m +nadgrids=@null +wktext +no_defs</proj4>
         <srsid>3857</srsid>
         <srid>3857</srid>
         <authid>EPSG:3857</authid>
@@ -321,17 +321,17 @@
         </styles>
         <layer-tree-group expanded="1" checked="Qt::Checked" name="">
           <customproperties/>
-          <layer-tree-layer expanded="1" providerKey="spatialite" checked="Qt::Checked" id="edition_polygon20130409114333776" source="dbname='/home/dhont/public_html/lizmap/lizmap/install/qgis/edition/edition_db.sqlite' table=&quot;edition_polygon&quot; (geom) sql=" name="areas_of_interest">
+          <layer-tree-layer expanded="1" providerKey="spatialite" checked="Qt::Checked" id="edition_polygon20130409114333776" source="dbname='/var/www/LIZMAP/master/lizmap/install/qgis/edition/edition_db.sqlite' table=&quot;edition_polygon&quot; (geom) sql=" name="areas_of_interest">
             <customproperties>
               <property key="legend/title-style" value="subgroup"/>
             </customproperties>
           </layer-tree-layer>
-          <layer-tree-layer expanded="1" providerKey="spatialite" checked="Qt::Checked" id="edition_point20130118171631518" source="dbname='/home/dhont/public_html/lizmap/lizmap/install/qgis/edition/edition_db.sqlite' table=&quot;edition_point&quot; (geometry) sql=" name="points of interest">
+          <layer-tree-layer expanded="1" providerKey="spatialite" checked="Qt::Checked" id="edition_point20130118171631518" source="dbname='/var/www/LIZMAP/master/lizmap/install/qgis/edition/edition_db.sqlite' table=&quot;edition_point&quot; (geometry) sql=" name="points of interest">
             <customproperties>
               <property key="legend/title-style" value="subgroup"/>
             </customproperties>
           </layer-tree-layer>
-          <layer-tree-layer expanded="1" providerKey="spatialite" checked="Qt::Checked" id="edition_line20130409161630329" source="dbname='/home/dhont/public_html/lizmap/lizmap/install/qgis/edition/edition_db.sqlite' table=&quot;edition_line&quot; (geom) sql=" name="edition_line">
+          <layer-tree-layer expanded="1" providerKey="spatialite" checked="Qt::Checked" id="edition_line20130409161630329" source="dbname='/var/www/LIZMAP/master/lizmap/install/qgis/edition/edition_db.sqlite' table=&quot;edition_line&quot; (geom) sql=" name="edition_line">
             <customproperties>
               <property key="legend/title-style" value="subgroup"/>
             </customproperties>
@@ -341,12 +341,12 @@
               <property key="legend/title-style" value="hidden"/>
             </customproperties>
           </layer-tree-layer>
-          <layer-tree-layer expanded="1" providerKey="gdal" checked="Qt::Checked" id="frmt_wms_openstreetmap_mapnik_tms20140610162910636" source="/home/dhont/public_html/lizmap/lizmap/install/qgis/data/raster/frmt_wms_openstreetmap_mapnik_tms.xml" name="frmt_wms_openstreetmap_mapnik_tms">
+          <layer-tree-layer expanded="1" providerKey="gdal" checked="Qt::Checked" id="frmt_wms_openstreetmap_mapnik_tms20140610162910636" source="/var/www/LIZMAP/master/lizmap/install/qgis/data/raster/frmt_wms_openstreetmap_mapnik_tms.xml" name="frmt_wms_openstreetmap_mapnik_tms">
             <customproperties>
               <property key="legend/title-style" value="subgroup"/>
             </customproperties>
           </layer-tree-layer>
-          <layer-tree-layer expanded="1" providerKey="gdal" checked="Qt::Checked" id="frmt_wms_openstreetmap_stamen_toner_tms20140610162911446" source="/home/dhont/public_html/lizmap/lizmap/install/qgis/data/raster/frmt_wms_openstreetmap_stamen_toner_tms.xml" name="frmt_wms_openstreetmap_stamen_toner_tms">
+          <layer-tree-layer expanded="1" providerKey="gdal" checked="Qt::Checked" id="frmt_wms_openstreetmap_stamen_toner_tms20140610162911446" source="/var/www/LIZMAP/master/lizmap/install/qgis/data/raster/frmt_wms_openstreetmap_stamen_toner_tms.xml" name="frmt_wms_openstreetmap_stamen_toner_tms">
             <customproperties>
               <property key="legend/title-style" value="subgroup"/>
             </customproperties>
@@ -491,7 +491,7 @@
           <customproperties/>
         </ComposerItem>
       </ComposerScaleBar>
-      <ComposerPicture resizeMode="0" svgBorderWidth="0.2" pictureRotation="0" pictureWidth="14.2361" svgFillColor="255,255,255,255" svgBorderColor="0,0,0,255" northMode="0" file="/usr/share/qgis/svg/arrows/Arrow_05.svg" northOffset="0" pictureHeight="14.3234" mapId="0" anchorPoint="4">
+      <ComposerPicture resizeMode="0" svgBorderWidth="0.2" pictureRotation="0" pictureWidth="14.2361" svgFillColor="255,255,255,255" svgBorderColor="0,0,0,255" northMode="0" file="/usr/share/qgis/svg/arrows/Arrow_05.svg" northOffset="0" pictureHeight="14.2361" mapId="0" anchorPoint="4">
         <ComposerItem pagey="191.227" page="1" id="" lastValidViewScaleFactor="3.66844" positionMode="0" positionLock="false" x="216.926" y="191.227" visibility="1" zValue="6" background="true" transparency="0" frameJoinStyle="miter" blendMode="0" width="14.2361" outlineWidth="0.3" excludeFromExports="0" uuid="{5fc27115-d5a9-44e3-aebe-e6199c6ac0fa}" height="16.2837" itemRotation="0" frame="false" pagex="216.926">
           <FrameColor alpha="255" red="0" blue="0" green="0"/>
           <BackgroundColor alpha="255" red="255" blue="255" green="255"/>
@@ -520,7 +520,7 @@
       <ComposerMap followPreset="false" mapRotation="0" keepLayerSet="true" followPresetName="" id="1" previewMode="Cache" drawCanvasItems="true">
         <Extent ymin="43.55700000000000216" xmin="3.78988000000000014" ymax="43.69059872847996928" xmax="3.96975999999999996"/>
         <LayerSet>
-          <Layer provider="ogr" source="/home/dhont/public_html/lizmap/lizmap/install/qgis/data/vector/VilleMTP_MTP_Quartiers_2011_4326.shp" name="VilleMTP_MTP_Quartiers_2011_4326">VilleMTP_MTP_Quartiers_2011_432620130116112351546</Layer>
+          <Layer provider="ogr" source="/var/www/LIZMAP/master/lizmap/install/qgis/data/vector/VilleMTP_MTP_Quartiers_2011_4326.shp" name="VilleMTP_MTP_Quartiers_2011_4326">VilleMTP_MTP_Quartiers_2011_432620130116112351546</Layer>
         </LayerSet>
         <Grid/>
         <ComposerMapGrid rightAnnotationDirection="0" gridFramePenColor="0,0,0,255" show="0" bottomAnnotationPosition="1" annotationPrecision="3" showAnnotation="0" topFrameDivisions="0" uuid="{79ab9045-ef71-4cf1-83f1-f90bfe64ad9f}" leftAnnotationDirection="0" topAnnotationPosition="1" rightAnnotationDisplay="0" offsetX="0" offsetY="0" rightFrameDivisions="0" gridStyle="0" annotationFontColor="0,0,0,255" intervalX="0" gridFrameSideFlags="15" intervalY="0" bottomAnnotationDirection="0" leftAnnotationDisplay="0" leftFrameDivisions="0" frameFillColor1="255,255,255,255" annotationExpression="" frameFillColor2="0,0,0,255" crossLength="3" gridFramePenThickness="0.5" bottomAnnotationDisplay="0" unit="0" topAnnotationDisplay="0" leftAnnotationPosition="1" blendMode="0" gridFrameStyle="0" rightAnnotationPosition="1" gridFrameWidth="2" name="Grille 1" annotationFormat="0" bottomFrameDivisions="0" topAnnotationDirection="0" frameAnnotationDistance="1">
@@ -615,29 +615,29 @@
         </styles>
         <layer-tree-group expanded="1" checked="Qt::Checked" name="">
           <customproperties/>
-          <layer-tree-layer expanded="1" providerKey="spatialite" checked="Qt::Checked" id="edition_point20130118171631518" source="dbname='/home/dhont/public_html/lizmap/lizmap/install/qgis/edition/edition_db.sqlite' table=&quot;edition_point&quot; (geometry) sql=" name="points of interest">
+          <layer-tree-layer expanded="1" providerKey="spatialite" checked="Qt::Checked" id="edition_point20130118171631518" source="dbname='/var/www/LIZMAP/master/lizmap/install/qgis/edition/edition_db.sqlite' table=&quot;edition_point&quot; (geometry) sql=" name="points of interest">
             <customproperties>
               <property key="legend/title-label" value="Points of interest"/>
               <property key="legend/title-style" value="subgroup"/>
             </customproperties>
           </layer-tree-layer>
-          <layer-tree-layer expanded="1" providerKey="spatialite" checked="Qt::Checked" id="edition_line20130409161630329" source="dbname='/home/dhont/public_html/lizmap/lizmap/install/qgis/edition/edition_db.sqlite' table=&quot;edition_line&quot; (geom) sql=" name="edition_line">
+          <layer-tree-layer expanded="1" providerKey="spatialite" checked="Qt::Checked" id="edition_line20130409161630329" source="dbname='/var/www/LIZMAP/master/lizmap/install/qgis/edition/edition_db.sqlite' table=&quot;edition_line&quot; (geom) sql=" name="edition_line">
             <customproperties>
               <property key="legend/title-label" value="Bicycle rides"/>
               <property key="legend/title-style" value="subgroup"/>
             </customproperties>
           </layer-tree-layer>
-          <layer-tree-layer expanded="1" providerKey="spatialite" checked="Qt::Checked" id="edition_polygon20130409114333776" source="dbname='/home/dhont/public_html/lizmap/lizmap/install/qgis/edition/edition_db.sqlite' table=&quot;edition_polygon&quot; (geom) sql=" name="areas_of_interest">
+          <layer-tree-layer expanded="1" providerKey="spatialite" checked="Qt::Checked" id="edition_polygon20130409114333776" source="dbname='/var/www/LIZMAP/master/lizmap/install/qgis/edition/edition_db.sqlite' table=&quot;edition_polygon&quot; (geom) sql=" name="areas_of_interest">
             <customproperties>
               <property key="legend/title-style" value="subgroup"/>
             </customproperties>
           </layer-tree-layer>
-          <layer-tree-layer expanded="1" providerKey="ogr" checked="Qt::Checked" id="bus_stops20121106170806413" source="/home/dhont/public_html/lizmap/lizmap/install/qgis/data/vector/bus_stops.shp" name="bus_stops">
+          <layer-tree-layer expanded="1" providerKey="ogr" checked="Qt::Checked" id="bus_stops20121106170806413" source="/var/www/LIZMAP/master/lizmap/install/qgis/data/vector/bus_stops.shp" name="bus_stops">
             <customproperties>
               <property key="legend/title-style" value="hidden"/>
             </customproperties>
           </layer-tree-layer>
-          <layer-tree-layer expanded="1" providerKey="ogr" checked="Qt::Checked" id="VilleMTP_MTP_Quartiers_2011_432620130116112610876" source="/home/dhont/public_html/lizmap/lizmap/install/qgis/data/vector/VilleMTP_MTP_Quartiers_2011_4326.shp" name="Quartiers">
+          <layer-tree-layer expanded="1" providerKey="ogr" checked="Qt::Checked" id="VilleMTP_MTP_Quartiers_2011_432620130116112610876" source="/var/www/LIZMAP/master/lizmap/install/qgis/data/vector/VilleMTP_MTP_Quartiers_2011_4326.shp" name="Quartiers">
             <customproperties>
               <property key="legend/title-style" value="subgroup"/>
             </customproperties>
@@ -731,7 +731,7 @@
           <customproperties/>
         </ComposerItem>
       </ComposerMap>
-      <ComposerAttributeTableV2 vectorLayerName="tram_stop_work" source="0" showGrid="1" maxFeatures="30" resizeMode="0" filterFeatures="false" featureFilter="" emptyTableMode="0" wrapString="" wrapBehaviour="0" headerMode="0" backgroundColor="255,255,255,255" showEmptyRows="0" emptyTableMessage="" showOnlyVisibleFeatures="1" vectorLayer="tram_stop_work20150416102656130" vectorLayerSource="dbname='/home/dhont/public_html/lizmap/lizmap/install/qgis/edition/transport.sqlite' table=&quot;tram_stop_work&quot; sql=" composerMap="0" headerHAlignment="0" contentFontColor="0,0,0,255" headerFontColor="0,0,0,255" cellMargin="1" filterToAtlasIntersection="0" relationId="" gridStrokeWidth="0.5" gridColor="0,0,0,255" showUniqueRowsOnly="0" vectorLayerProvider="spatialite">
+      <ComposerAttributeTableV2 vectorLayerName="tram_stop_work" source="0" showGrid="1" maxFeatures="30" resizeMode="0" filterFeatures="false" featureFilter="" emptyTableMode="0" wrapString="" wrapBehaviour="0" headerMode="0" backgroundColor="255,255,255,255" showEmptyRows="0" emptyTableMessage="" showOnlyVisibleFeatures="1" vectorLayer="tram_stop_work20150416102656130" vectorLayerSource="dbname='/var/www/LIZMAP/master/lizmap/install/qgis/edition/transport.sqlite' table=&quot;tram_stop_work&quot; sql=" composerMap="0" headerHAlignment="0" contentFontColor="0,0,0,255" headerFontColor="0,0,0,255" cellMargin="1" filterToAtlasIntersection="0" relationId="" gridStrokeWidth="0.5" gridColor="0,0,0,255" showUniqueRowsOnly="0" vectorLayerProvider="spatialite">
         <headerFontProperties description="Ubuntu,11,-1,5,50,0,0,0,0,0" style=""/>
         <contentFontProperties description="Ubuntu,11,-1,5,50,0,0,0,0,0" style=""/>
         <displayColumns>
@@ -4292,6 +4292,7 @@ def my_form_open(dialog, layer, feature):
       <SingleCategoryDiagramRenderer diagramType="Histogram" sizeLegend="0" attributeLegend="1">
         <DiagramCategory penColor="#000000" labelPlacementMethod="XHeight" penWidth="0" diagramOrientation="Up" sizeScale="0,0,0,0,0,0" minimumSize="0" barWidth="5" penAlpha="255" maxScaleDenominator="1e+08" backgroundColor="#ffffff" transparency="0" width="15" scaleDependency="Area" backgroundAlpha="255" angleOffset="1440" scaleBasedVisibility="0" enabled="0" height="15" lineSizeScale="0,0,0,0,0,0" sizeType="MM" lineSizeType="MM" minScaleDenominator="inf">
           <fontProperties description="Ubuntu,11,-1,5,50,0,0,0,0,0" style=""/>
+          <attribute field="" color="#000000" label=""/>
         </DiagramCategory>
         <symbol alpha="1" clip_to_extent="1" type="marker" name="sizeSymbol">
           <layer pass="0" class="SimpleMarker" locked="0">
@@ -4389,7 +4390,7 @@ def my_form_open(dialog, layer, feature):
       <layername>frmt_wms_openstreetmap_mapnik_tms</layername>
       <srs>
         <spatialrefsys>
-          <proj4>+proj=merc +a=6378137 +b=6378137 +lat_ts=0.0 +lon_0=0.0 +x_0=0.0 +y_0=0 +k=1.0 +units=m +nadgrids=@null +wktext  +no_defs</proj4>
+          <proj4>+proj=merc +a=6378137 +b=6378137 +lat_ts=0.0 +lon_0=0.0 +x_0=0.0 +y_0=0 +k=1.0 +units=m +nadgrids=@null +wktext +no_defs</proj4>
           <srsid>3857</srsid>
           <srid>3857</srid>
           <authid>EPSG:3857</authid>
@@ -4436,7 +4437,7 @@ def my_form_open(dialog, layer, feature):
       <layername>frmt_wms_openstreetmap_stamen_toner_tms</layername>
       <srs>
         <spatialrefsys>
-          <proj4>+proj=merc +a=6378137 +b=6378137 +lat_ts=0.0 +lon_0=0.0 +x_0=0.0 +y_0=0 +k=1.0 +units=m +nadgrids=@null +wktext  +no_defs</proj4>
+          <proj4>+proj=merc +a=6378137 +b=6378137 +lat_ts=0.0 +lon_0=0.0 +x_0=0.0 +y_0=0 +k=1.0 +units=m +nadgrids=@null +wktext +no_defs</proj4>
           <srsid>3857</srsid>
           <srid>3857</srid>
           <authid>EPSG:3857</authid>
@@ -4585,7 +4586,7 @@ def my_form_open(dialog, layer, feature):
       <layername>publicbuildings</layername>
       <srs>
         <spatialrefsys>
-          <proj4>+proj=merc +a=6378137 +b=6378137 +lat_ts=0.0 +lon_0=0.0 +x_0=0.0 +y_0=0 +k=1.0 +units=m +nadgrids=@null +wktext  +no_defs</proj4>
+          <proj4>+proj=merc +a=6378137 +b=6378137 +lat_ts=0.0 +lon_0=0.0 +x_0=0.0 +y_0=0 +k=1.0 +units=m +nadgrids=@null +wktext +no_defs</proj4>
           <srsid>3857</srsid>
           <srid>3857</srid>
           <authid>EPSG:3857</authid>
