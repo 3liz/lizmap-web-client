@@ -148,6 +148,8 @@ class lizmapProject extends qgisProject {
                 $this->$prop = $data[$prop];
             }
         }
+
+        $this->path = $file;
     }
 
     public function clearCache() {
