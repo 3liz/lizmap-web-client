@@ -40,35 +40,17 @@ var lizAtlas = function() {
 
         function getAtlasData(featureType) {
 
-            // Get data URL
-            var getFeatureUrlData = lizMap.getVectorLayerWfsUrl(featureType, null, null, 'geom' );
-            var format = new OpenLayers.Format.GeoJSON();
-            //getFeatureUrlData['options']['PROPERTYNAME'] = 'id,somefield';
-            $('body').css('cursor', 'wait');
-
             // Get data
-            $.getJSON(
-                getFeatureUrlData['url'],
-                getFeatureUrlData['options'],
-                function(data) {
-                    if( data.features.length != 0 ) {
-                        lizAtlasConfig['features'] = data.features;
-                        lizAtlasConfig['featureType'] = featureType;
-                        prepareFeatures();
-                        launchAtlas();
-                        $('body').css('cursor', 'auto');
-                    }
-                    $('body').css('cursor', 'auto');
-
-
-                    return false;
+            lizMap.getAttributeFeatureData(featureType, null, null, 'geom', function(aName, aFilter, aFeatures, aAliases){
+                if( aFeatures.length != 0 ) {
+                    lizAtlasConfig['features'] = aFeatures;
+                    lizAtlasConfig['featureType'] = featureType;
+                    prepareFeatures();
+                    launchAtlas();
                 }
-            ).fail(
-                function(){
-                    $('body').css('cursor', 'auto');
-                    return false;
-                }
-            );
+                $('body').css('cursor', 'auto');
+                return false;
+            });
         }
 
         function prepareFeatures(){
@@ -91,18 +73,23 @@ var lizAtlas = function() {
                 // Add feature to sorted oject
                 items.push(feat.properties);
             }
-    //console.log(items);
+
             items.sort(function(a, b) {
-              var nameA = a[s_field].toUpperCase(); // ignore upper and lowercase
-              var nameB = b[s_field].toUpperCase(); // ignore upper and lowercase
-              if (nameA < nameB) {
-                return -1;
-              }
-              if (nameA > nameB) {
-                return 1;
-              }
-              // names must be equal
-              return 0;
+                var nameA = a[s_field];
+                var nameB = b[s_field];
+                if( typeof(a[s_field]) == 'string' || typeof(b[s_field]) == 'string' ){
+                    nameA = a[s_field].toUpperCase(); // ignore upper and lowercase
+                    nameB = b[s_field].toUpperCase(); // ignore upper and lowercase
+                }
+                if (nameA < nameB) {
+                    return -1;
+                }
+                if (nameA > nameB) {
+                    return 1;
+                }
+
+                // names must be equal
+                return 0;
             });
 
             lizAtlasConfig['features_sorted'] = items;
@@ -118,7 +105,7 @@ var lizAtlas = function() {
             if( lizAtlasConfig['displayLayerDescription'] ){
                 var labstract = lizMap.config.layers[lizAtlasConfig.layername]['abstract'];
                 if(labstract != ''){
-                    home+= '<p style="color:white;padding:0px 10px;">' + lizMap.config.layers[lizAtlasConfig.layername]['abstract'] + '</p>';
+                    home+= '<p id="liz-atlas-item-layer-abstract">' + lizMap.config.layers[lizAtlasConfig.layername]['abstract'] + '</p>';
                 }
             }
 
@@ -147,7 +134,7 @@ var lizAtlas = function() {
             home+= '</span>';
             home+= '</br>';
             home+= '</p>';
-            home+= '<div id="liz-atlas-item-detail" style="background-color:#F0F0F0;font-size:0.8em;">';
+            home+= '<div id="liz-atlas-item-detail">';
             home+= '</div>';
 
             lizAtlasConfig.home = home;
@@ -199,17 +186,16 @@ var lizAtlas = function() {
             rightdockopened: function(e) {
                 if ( e.id == 'atlas') {
                     // Size
-                    $('#content:not(.mobile) #right-dock')
-                    .css('max-width', lizAtlasConfig.maxWidth)
-                    ;
+                    $('#content:not(.mobile) #right-dock').css('max-width', lizAtlasConfig.maxWidth);
+                    $('#content:not(.mobile).right-dock-visible #map-content').css('margin-right', lizAtlasConfig.maxWidth);
+                    lizMap.updateContentSize();
                 }
             },
             rightdockclosed: function(e) {
                 if ( e.id == 'atlas' ) {
                     // Set right-dock default size
-                    $('#content:not(.mobile) #right-dock')
-                    .css('max-width', '30%')
-                    ;
+                    $('#content:not(.mobile) #right-dock').css('max-width', '30%');
+                    $('#content:not(.mobile).right-dock-visible #map-content').css('margin-right', '30%');
 
                     // Deactivate atlas and stop animation
                     deactivateAtlas();
@@ -234,6 +220,7 @@ var lizAtlas = function() {
                     var item = lizAtlasConfig['features_sorted'][i];
 
                     var pkey_field = lizAtlasConfig['primaryKey'];
+
                     if(item[pkey_field] in lizAtlasConfig['features_with_pkey'] ){
                         var feature = lizAtlasConfig['features_with_pkey'][item[pkey_field]];
                         runAtlasItem( feature );
@@ -299,31 +286,33 @@ var lizAtlas = function() {
 
 
         function runAtlasItem(feature){
+
             // Use OL tools to reproject feature geometry
             var format = new OpenLayers.Format.GeoJSON();
             var feat = format.read(feature)[0];
-            var proj = lizMap.config.layers[lizAtlasConfig.layername].crs;
-            feat.geometry.transform(proj, lizMap.map.getProjection());
+            var f = feat.clone();
+            var proj = lizMap.config.layers[lizAtlasConfig.layername]['featureCrs'];
+            f.geometry.transform(proj, lizMap.map.getProjection());
 
             // Zoom to feature
             if( lizAtlasConfig['zoom']){
                 if( lizAtlasConfig['zoom'].toLowerCase() == 'center' ){
                     // center
-                    var lonlat = feat.geometry.getBounds().getCenterLonLat()
+                    var lonlat = f.geometry.getBounds().getCenterLonLat();
                     lizMap.map.setCenter(lonlat);
                 }
                 else{
                     // zoom
-                    lizMap.map.zoomToExtent(feat.geometry.getBounds());
+                    lizMap.map.zoomToExtent(f.geometry.getBounds());
                 }
             }
 
             // Draw feature geometry
-            var layer = lizMap.map.getLayersByName('locatelayer');
-            if ( lizAtlasConfig.drawFeatureGeom && layer.length > 0 ){
-                layer = layer[0];
-                layer.destroyFeatures();
-                layer.addFeatures([feat]);
+            var getLayer = lizMap.map.getLayersByName('locatelayer');
+            if ( lizAtlasConfig.drawFeatureGeom && getLayer.length > 0 ){
+                alayer = getLayer[0];
+                alayer.destroyFeatures();
+                alayer.addFeatures([f]);
             }
 
             // Display popup

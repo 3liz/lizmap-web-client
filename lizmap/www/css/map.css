@@ -2365,3 +2365,19 @@ div.tooltip {
   max-height: 140px;
   overflow-y: auto;
 }
+
+/*
+atlas
+*/
+#liz-atlas-item-detail{
+  background-color:#F0F0F0;
+  font-size:0.8em;
+  padding:5px;
+}
+
+#liz-atlas-item-layer-abstract{
+  color:white;
+  padding:5px 10px;
+  font-size:0.8em;
+  line-height:normal;
+}
