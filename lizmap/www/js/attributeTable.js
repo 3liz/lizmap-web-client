@@ -176,7 +176,7 @@ var lizAttributeTable = function() {
 
                     // Get data and fill attribute table
                     var dFilter = null;
-                    lizMap.getAttributeFeatureData( lname, dFilter, null, function(someName, someNameFilter, someNameFeatures, someNameAliases){
+                    lizMap.getAttributeFeatureData( lname, dFilter, null, 'extent', function(someName, someNameFilter, someNameFeatures, someNameAliases){
                         buildLayerAttributeDatatable( someName, aTable, someNameFeatures, someNameAliases );
                     });
 
@@ -213,7 +213,7 @@ var lizAttributeTable = function() {
 
 
                 // Send signal
-                lizMap.events.triggerEvent("attributeLayersReady", 
+                lizMap.events.triggerEvent("attributeLayersReady",
                   {'layers': attributeLayersDic}
                 );
 
@@ -470,7 +470,7 @@ var lizAttributeTable = function() {
                         var aTable = '#attribute-layer-table-'+cleanName;
                         var dFilter = null;
                         $('#attribute-layer-main-'+cleanName+' > div.attribute-layer-content').hide();
-                        lizMap.getAttributeFeatureData( lname, dFilter, null, function(someName, someNameFilter, someNameFeatures, someNameAliases){
+                        lizMap.getAttributeFeatureData( lname, dFilter, null, 'extent', function(someName, someNameFilter, someNameFeatures, someNameAliases){
                             buildLayerAttributeDatatable( someName, aTable, someNameFeatures, someNameAliases );
                             $('#attribute-layer-main-'+cleanName+' > div.attribute-layer-content').show();
                         });
@@ -993,7 +993,7 @@ var lizAttributeTable = function() {
 
             function getDirectChildData( childLayerName, filter, childTable ){
                 // Get features
-                lizMap.getAttributeFeatureData(childLayerName, filter, null, function(chName, chFilter, chFeatures, chAliases){
+                lizMap.getAttributeFeatureData(childLayerName, filter, null, 'extent', function(chName, chFilter, chFeatures, chAliases){
                     buildLayerAttributeDatatable( chName, childTable, chFeatures, chAliases );
                 });
             }
@@ -1675,7 +1675,7 @@ var lizAttributeTable = function() {
 
             function getEditionChildData( childLayerName, filter, childTable ){
                 // Get features
-                lizMap.getAttributeFeatureData(childLayerName, filter, null, function(chName, chFilter, chFeatures, chAliases){
+                lizMap.getAttributeFeatureData(childLayerName, filter, null, 'extent', function(chName, chFilter, chFeatures, chAliases){
                     buildLayerAttributeDatatable( chName, childTable, chFeatures, chAliases, function() {
 
                         // Check edition capabilities
@@ -1944,7 +1944,7 @@ var lizAttributeTable = function() {
             var geometryName = 'extent';
             var getFeatureUrlData = lizMap.getVectorLayerWfsUrl( typeName, aFilter, null, geometryName, limitDataToBbox );
 
-            lizMap.getAttributeFeatureData(typeName, aFilter, null, function(aName, aNameFilter, aNameFeatures, aNameAliases ){
+            lizMap.getAttributeFeatureData(typeName, aFilter, null, 'extent', function(aName, aNameFilter, aNameFeatures, aNameAliases ){
 
                 // **0** Prepare some variable. e.g. reset features stored in the layer config
                 var layerConfig = config.layers[typeName];
@@ -2535,7 +2535,7 @@ var lizAttributeTable = function() {
                         else{
                             // If not pivot
                             var dFilter = null;
-                            lizMap.getAttributeFeatureData( featureType, dFilter, null, function(someName, someNameFilter, someNameFeatures){
+                            lizMap.getAttributeFeatureData( featureType, dFilter, null, 'extent', function(someName, someNameFilter, someNameFeatures){
                                 buildLayerAttributeDatatable( someName, zTable, someNameFeatures );
                             });
                         }

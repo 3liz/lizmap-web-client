@@ -5283,10 +5283,11 @@ OpenLayers.Control.HighlightFeature = OpenLayers.Class(OpenLayers.Control, {
       return getFeatureUrlData;
   }
 
-  function getAttributeFeatureData(aName, aFilter, aFeatureID, aCallBack){
+  function getAttributeFeatureData(aName, aFilter, aFeatureID, aGeometryName, aCallBack){
 
       aFilter = typeof aFilter !== 'undefined' ?  aFilter : null;
       aFeatureID = typeof aFeatureID !== 'undefined' ?  aFeatureID : null;
+      aGeometryName  = typeof aGeometryName !== 'undefined' ?  aGeometryName : 'extent';
       aCallBack = typeof aCallBack !== 'undefined' ?  aCallBack : null;
 
       // get layer configs
@@ -5310,8 +5311,7 @@ OpenLayers.Control.HighlightFeature = OpenLayers.Class(OpenLayers.Control, {
       }
 
       $('body').css('cursor', 'wait');
-      var geometryName = 'extent';
-      var getFeatureUrlData = lizMap.getVectorLayerWfsUrl( aName, aFilter, aFeatureID, geometryName, limitDataToBbox );
+      var getFeatureUrlData = lizMap.getVectorLayerWfsUrl( aName, aFilter, aFeatureID, aGeometryName, limitDataToBbox );
       $.get( getFeatureUrlData['url'], getFeatureUrlData['options'], function(data) {
           if( !('featureCrs' in aConfig) )
               aConfig['featureCrs'] = null;
@@ -5414,7 +5414,7 @@ OpenLayers.Control.HighlightFeature = OpenLayers.Class(OpenLayers.Control, {
       }
       // Or get the feature via WFS in needed
       else{
-          getAttributeFeatureData(featureType, null, featureId, function( aName, aFilter, cFeatures, cAliases ){
+          getAttributeFeatureData(featureType, null, featureId, 'extent', function( aName, aFilter, cFeatures, cAliases ){
               if( cFeatures.length == 1 ){
                   var feat = cFeatures[0];
                   if( !layerConfig['features'] )
@@ -5454,15 +5454,29 @@ OpenLayers.Control.HighlightFeature = OpenLayers.Class(OpenLayers.Control, {
 
       // Get popup content by FILTER and not with virtual click on map
       var filter = '';
-      if( aName in lizMap.config.attributeLayers ){
-          var qgisName = aName;
-          if( lizMap.getLayerNameByCleanName(aName) ){
-              qgisName = lizMap.getLayerNameByCleanName(aName);
-          }
-          var atConfig = lizMap.config.attributeLayers[qgisName];
-          var pkVal = feat.properties[atConfig.primaryKey];
-          filter = qgisName + ':"' + atConfig.primaryKey + '" = ' + "'" + pkVal + "'" ;
+      var qgisName = aName;
+      if( lizMap.getLayerNameByCleanName(aName) ){
+          qgisName = lizMap.getLayerNameByCleanName(aName);
       }
+
+      var pkey = null;
+      // Get primary key with attributelayer options
+      if( (qgisName in lizMap.config.attributeLayers) ){
+          pkey = lizMap.config.attributeLayers[qgisName]['primaryKey'];
+      }
+
+      // Test if primary key is set in the atlas tool
+      if( !pkey && 'atlasLayer' in lizMap.config.options && 'atlasPrimaryKey' in lizMap.config.options ){
+        var layerConfig = lizMap.config.layers[qgisName];
+        if( layerConfig.id == lizMap.config.options['atlasLayer'] && lizMap.config.options['atlasPrimaryKey'] != '' ){
+          pkey = lizMap.config.options['atlasPrimaryKey'];
+        }
+      }
+      if( !pkey )
+          return false;
+
+      var pkVal = feat.properties[pkey];
+      filter = qgisName + ':"' + pkey + '" = ' + "'" + pkVal + "'" ;
 
       wmsOptions = {
            'LAYERS': aName
@@ -5724,8 +5738,8 @@ OpenLayers.Control.HighlightFeature = OpenLayers.Class(OpenLayers.Control, {
     /**
      * Method: getAttributeFeatureData
      */
-    getAttributeFeatureData: function(aName, aFilter, aFeatureID, aCallBack) {
-      getAttributeFeatureData(aName, aFilter, aFeatureID, aCallBack);
+    getAttributeFeatureData: function(aName, aFilter, aFeatureID, aGeometryName, aCallBack) {
+      getAttributeFeatureData(aName, aFilter, aFeatureID, aGeometryName, aCallBack);
     },
 
     /**
