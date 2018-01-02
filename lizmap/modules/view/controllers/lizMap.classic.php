@@ -193,9 +193,19 @@ class lizMapCtrl extends jController {
         $rep->addJSLink($bp.'js/date.js');
     }
 
-    // Add atlas.js for atlas feature
+    // Add atlas.js for atlas feature and additionnal CSS for right-dock max-width
     if( $lproj->hasAtlasEnabled() ) {
+        // Add JS
         $rep->addJSLink($bp.'js/atlas.js');
+
+        // Add CSS
+        $options = $lproj->getOptions();
+        $atlasWidth = $options->atlasMaxWidth;
+        $cssContent = '';
+        $cssContent.= "#content.atlas-visible:not(.mobile) #right-dock {width: $atlasWidth%; max-width: $atlasWidth%;}";
+        $cssContent.= "#content.atlas-visible:not(.mobile) #map-content {margin-right: $atlasWidth%;}";
+        $css = '<style type="text/css">' . $cssContent . '</style>';
+        $rep->addHeadContent($css);
     }
 
     // Assign variables to template

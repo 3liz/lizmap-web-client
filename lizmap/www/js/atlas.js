@@ -185,17 +185,18 @@ var lizAtlas = function() {
             // Adapt dock size to display metadata
             rightdockopened: function(e) {
                 if ( e.id == 'atlas') {
-                    // Size
-                    $('#content:not(.mobile) #right-dock').css('max-width', lizAtlasConfig.maxWidth);
-                    $('#content:not(.mobile).right-dock-visible #map-content').css('margin-right', lizAtlasConfig.maxWidth);
+                    // Size : add class to content to enabled specific css to be applied
+                    $('#content').addClass('atlas-visible');
                     lizMap.updateContentSize();
+
                 }
             },
             rightdockclosed: function(e) {
                 if ( e.id == 'atlas' ) {
-                    // Set right-dock default size
-                    $('#content:not(.mobile) #right-dock').css('max-width', '30%');
-                    $('#content:not(.mobile).right-dock-visible #map-content').css('margin-right', '30%');
+
+                    // Set right-dock default size by removing #content class
+                    $('#content').removeClass('atlas-visible');
+                    lizMap.updateContentSize();
 
                     // Deactivate atlas and stop animation
                     deactivateAtlas();
