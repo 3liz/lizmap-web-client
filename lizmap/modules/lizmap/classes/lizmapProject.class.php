@@ -1261,6 +1261,7 @@ class lizmapProject extends qgisProject {
         if ( property_exists($configOptions,'geolocation')
             && $configOptions->geolocation == 'True') {
             $tpl = new jTpl();
+            $tpl->assign('hasEditionLayers', $this->hasEditionLayers());
             $dockable[] = new lizmapMapDockItem(
                 'geolocation',
                 jLocale::get('view~map.geolocate.navbar.title'),
