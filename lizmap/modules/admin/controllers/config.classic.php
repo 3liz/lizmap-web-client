@@ -830,22 +830,4 @@ class configCtrl extends jController {
     return $rep;
   }
 
-  function cryptUsersPassword(){
-
-    $and = ' AND 1>2 ';
-    $cnx = jDb::getConnection('jauthdb~jelixuser', 'jauth');
-    $sql = "
-    SELECT u.usr_login, u.usr_password
-    FROM jlx_user u INNER JOIN lizlogin l
-    ON l.usr_password = u.usr_password AND l.usr_login = u.usr_login
-    WHERE 2>1
-    ";
-    $sql.= $and;
-    $res = $cnx->query($sql);
-    foreach($res as $rec){
-      jAuth::changePassword($rec->usr_login, $rec->usr_password);
-    }
-  }
-
-
 }
