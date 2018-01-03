@@ -32,9 +32,9 @@
   
   <div class="pagination">
     <ul>
-      <li><a href="{jurl 'admin~logs:detail', array('page'=>1)}">First</a></li>
-      <li><a href="{jurl 'admin~logs:detail', array('page'=>$page-1)}">Prev</a></li>
-      <li><a href="{jurl 'admin~logs:detail', array('page'=>$page+1)}">Next</a></li>
+      <li><a href="{jurl 'admin~logs:detail', array('page'=>1)}">{@admin~admin.logs.first_page@}</a></li>
+      <li><a href="{jurl 'admin~logs:detail', array('page'=>$page-1)}">{@admin~admin.logs.previous_page@}</a></li>
+      <li><a href="{jurl 'admin~logs:detail', array('page'=>$page+1)}">{@admin~admin.logs.next_page@}</a></li>
     </ul>
   </div>  
   
