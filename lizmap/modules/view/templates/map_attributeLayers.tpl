@@ -2,8 +2,6 @@
   <div class="tab-content" id="attribute-table-container">
 
     <div class="tab-pane active attribute-content bottom-content" id="attribute-summary" >
-      <b>{@view~map.attributeLayers.toolbar.help@}</b>
-      <p>{@view~map.attributeLayers.toolbar.summary@}</p>
 
       <div id="attribute-layer-list"></div>
 
