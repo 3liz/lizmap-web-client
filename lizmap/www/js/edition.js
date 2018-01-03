@@ -93,6 +93,12 @@ OpenLayers.Geometry.pointOnSegment = function(point, segment) {
         $('#edition-point-coord-form-expander i').removeClass('icon-chevron-down').addClass('icon-chevron-right');
         $('#edition-point-coord-form-group').hide();
 
+        if ( $('#geolocation-edition-group').length != 0 ) {
+            $('#geolocation-edition-group input').attr('disabled','disabled').removeClass('active');
+            $('#geolocation-edition-group button').attr('disabled','disabled').removeClass('active');
+            $('#geolocation-edition-group').hide();
+        }
+
         lizMap.events.triggerEvent("lizmapeditiondrawfeaturedeactivated",
             {
                 'layerId': editionLayer['id'],
@@ -118,6 +124,12 @@ OpenLayers.Geometry.pointOnSegment = function(point, segment) {
         else
             $('#edition-point-coord-add').show();
         $('#edition-point-coord-form').show();
+
+        if ( $('#geolocation-edition-group').length != 0 ) {
+            $('#geolocation-edition-group').show();
+            if ( !$('#geolocation-center').attr('disabled') )
+                $('#geolocation-edition-group input').removeAttr('disabled');
+        }
 
         lizMap.events.triggerEvent("lizmapeditiondrawfeatureactivated",
             {
@@ -484,8 +496,10 @@ OpenLayers.Geometry.pointOnSegment = function(point, segment) {
                     // Get SRID and transform geometry
                     var srid = $('#edition-point-coord-crs').val();
                     vertex.transform( editionLayer['ol'].projection,'EPSG:'+srid );
-                    $('#edition-point-coord-x').val(vertex.x);
-                    $('#edition-point-coord-y').val(vertex.y);
+                    if ( !$('#edition-point-coord-x').attr('disabled') )
+                        $('#edition-point-coord-x').val(vertex.x);
+                    if ( !$('#edition-point-coord-y').attr('disabled') )
+                        $('#edition-point-coord-y').val(vertex.y);
                 },
 
                 vertexmodified: function(evt) {
@@ -625,26 +639,74 @@ OpenLayers.Geometry.pointOnSegment = function(point, segment) {
 
             //geolocation
             if ( 'geolocation' in lizMap.controls ) {
+                $('#edition-point-coord-geolocation').attr('disabled','disabled');
                 lizMap.controls.geolocation.events.on({
                     "locationupdated": function(evt) {
-                        if ( $('#edition-point-coord-geolocation').is(':checked') ) {
+                        if ( editionLayer.config ) {
+                            $('#edition-point-coord-geolocation').removeAttr('disabled');
                             var geometryType = editionLayer['config'].geometryType;
-                            if ( editCtrls[geometryType].active ) {
-                                var vertex = evt.point;
-                                var px = editCtrls[geometryType].handler.layer.getViewPortPxFromLonLat({lon:vertex.x,lat:vertex.y});
-                                editCtrls[geometryType].handler.modifyFeature(px);
+                            if ( $('#edition-point-coord-geolocation').is(':checked') ) {
+                                if ( editCtrls[geometryType].active ) {
+                                    var vertex = evt.point;
+                                    var px = editCtrls[geometryType].handler.layer.getViewPortPxFromLonLat({lon:vertex.x,lat:vertex.y});
+                                    editCtrls[geometryType].handler.modifyFeature(px);
+                                }
                             }
+                            if ( $('#geolocation-edition-group').length != 0 ) {
+                                $('#geolocation-edition-group').show();
+                                $('#geolocation-edition-group input').removeAttr('disabled');
+                                if ( geometryType == 'point' )
+                                    $('#geolocation-edition-add').hide();
+                                else
+                                    $('#geolocation-edition-add').show();
+                            }
+                        } else if ( $('#geolocation-edition-group').length != 0 ) {
+                            $('#geolocation-edition-group input').attr('disabled','disabled').removeClass('active');
+                            $('#geolocation-edition-group button').attr('disabled','disabled').removeClass('active');
+                            $('#geolocation-edition-group').hide();
                         }
                     },
                     "activate": function(evt) {
                         $('#edition-point-coord-geolocation-group').show();
+                        if ( $('#geolocation-edition-group').length != 0 && editionLayer.config )
+                            $('#geolocation-edition-group').show();
                     },
                     "deactivate": function(evt) {
                         if ( $('#edition-point-coord-geolocation').is(':checked') )
                             $('#edition-point-coord-geolocation').click();
+                        $('#edition-point-coord-geolocation').attr('disabled','disabled');
                         $('#edition-point-coord-geolocation-group').hide();
+                        if ( $('#geolocation-edition-group').length != 0 ) {
+                            $('#geolocation-edition-group input').attr('disabled','disabled').removeClass('active');
+                            $('#geolocation-edition-group button').attr('disabled','disabled').removeClass('active');
+                            $('#geolocation-edition-group').hide();
+                        }
                     }
                 });
+
+                if ( $('#geolocation-edition-group').length != 0 ) {
+                    $('#geolocation-edition-linked').change(function(){
+                        if ( $(this).is(':checked') ) {
+                            if ( !$('#edition-point-coord-geolocation').is(':checked') )
+                                $('#edition-point-coord-geolocation').click();
+                            $('#geolocation-edition-group button').removeAttr('disabled');
+                        } else {
+                            if ( $('#edition-point-coord-geolocation').is(':checked') )
+                                $('#edition-point-coord-geolocation').click();
+                            $('#geolocation-edition-group button').attr('disabled','disabled').removeClass('active');
+                        }
+                    });
+                    $('#edition-point-coord-geolocation').change(function(){
+                        if ( $(this).is(':checked') != $('#geolocation-edition-linked').is(':checked') )
+                            $('#geolocation-edition-linked').click();
+                    });
+                    $('#geolocation-edition-add').click(function() {
+                        $('#edition-point-coord-add').click();
+                    });
+                    $('#geolocation-edition-submit').click(function() {
+                        $('#edition-point-coord-submit').click();
+                    });
+                }
             }
 
         } else {
