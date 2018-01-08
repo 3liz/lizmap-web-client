@@ -3830,6 +3830,7 @@ var lizMap = function() {
                 printLayers.push(exbl);
             }
             styleLayers.push('default');
+            opacityLayers.push(255);
         }
       }
 
