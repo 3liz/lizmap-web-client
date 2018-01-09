@@ -31,6 +31,7 @@ class lizmapServices{
       'defaultProject',
       'onlyMaps',
       'rootRepositories',
+      'relativeWMSPath',
       'proxyMethod',
       'debugMode',
       'cacheRootDirectory',
@@ -53,6 +54,7 @@ class lizmapServices{
       'cacheStorageType',
       'cacheExpiration',
       'rootRepositories',
+      'relativeWMSPath',
       'proxyMethod',
       'debugMode',
       'cacheRootDirectory',
@@ -88,6 +90,8 @@ class lizmapServices{
     public $allInMap = '';
     // Root folder of repositories
     public $rootRepositories = '';
+    // Does the server use relative Path from root folder?
+    public $relativeWMSPath = '0';
     // proxy method : use curl or file_get_contents
     public $proxyMethod = '';
     // debug mode : none or log
@@ -155,6 +159,12 @@ class lizmapServices{
                 $rootRepositories .= '/';
         }
         return $rootRepositories;
+    }
+
+    public function isRelativeWMSPath(){
+      if ( isset($this->data['relativeWMSPath']) && $this->data['relativeWMSPath'] != '0')
+        return true;
+      return false;
     }
 
     /**
