@@ -162,7 +162,7 @@ class lizmapServices{
     }
 
     public function isRelativeWMSPath(){
-      if ( isset($this->data['relativeWMSPath']) && $this->data['relativeWMSPath'] != '0')
+      if ( $this->relativeWMSPath != '0')
         return true;
       return false;
     }
