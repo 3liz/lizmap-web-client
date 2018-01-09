@@ -34,13 +34,7 @@ class lizmapOGCRequest {
 
         $this->services = lizmap::getServices();
 
-        $mapParam = realpath($project->getQgisPath());
-        $rootRepositories = $this->services->getRootRepositories();
-        if ( $this->services->isRelativeWMSPath() && strpos($mapParam, $rootRepositories) === 0) {
-            $mapParam = str_replace( $rootRepositories, '', $mapParam );
-            $mapParam = ltrim($mapParam, '/');
-        }
-        $params['map'] = $mapParam;
+        $params['map'] = $project->getRelativeQgisPath();
         $this->params = lizmapProxy::normalizeParams( $params );
     }
 

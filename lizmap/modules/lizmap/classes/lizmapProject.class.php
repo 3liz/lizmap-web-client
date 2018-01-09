@@ -342,6 +342,21 @@ class lizmapProject extends qgisProject {
         return realpath($this->repository->getPath()).'/'.$this->key.'.qgs';
     }
 
+    public function getRelativeQgisPath(){
+        $services = lizmap::getServices();
+
+        $mapParam = $this->getQgisPath();
+        if ( !$services->isRelativeWMSPath() )
+            return $mapParam;
+
+        $rootRepositories = $services->getRootRepositories();
+        if ( strpos($mapParam, $rootRepositories) === 0) {
+            $mapParam = str_replace( $rootRepositories, '', $mapParam );
+            $mapParam = ltrim($mapParam, '/');
+        }
+        return $mapParam;
+    }
+
     public function getKey(){
         return $this->key;
     }
