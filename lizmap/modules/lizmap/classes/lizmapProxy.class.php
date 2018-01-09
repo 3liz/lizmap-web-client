@@ -208,8 +208,25 @@ class lizmapProxy {
             $useCache = False;
         }
 
+        // Get the cache Driver, to be sure that we can use the configured cache
+        if ( $useCache ) {
+            try {
+                $drv = jCache::getDriver( $profile );
+                if ( !$drv )
+                    $useCache = False;
+            } catch(Exception $e) {
+                jLog::logEx($e, 'error');
+                $useCache = False;
+            }
+        }
+
         if ( $useCache and !$forced ) {
-            $tile = jCache::get( $key, $profile );
+            try {
+                $tile = jCache::get( $key, $profile );
+            } catch(Exception $e) {
+                jLog::logEx($e, 'error');
+                $tile = False;
+            }
             if( $tile ){
                 $_SESSION['LIZMAP_GETMAP_CACHE_STATUS'] = 'read';
                 $mime = 'image/jpeg';
@@ -219,7 +236,7 @@ class lizmapProxy {
                 if($debug)
                     lizmap::logMetric('LIZMAP_PROXY_HIT_CACHE');
 
-                return array( $tile, $mime, 200);
+                return array( $tile, $mime, 200, True);
             }
         }
 
@@ -343,20 +360,26 @@ class lizmapProxy {
         $_SESSION['LIZMAP_GETMAP_CACHE_STATUS'] = 'off';
 
         // Store into cache if needed
+        $cached = False;
         if( $useCache ) {
             //~ jLog::log( ' Store into cache');
             $cacheExpiration = (int)$ser->cacheExpiration;
             if(property_exists($configLayer, 'cacheExpiration'))
                 $cacheExpiration = (int)$configLayer->cacheExpiration;
+            try {
+                jCache::set( $key, $data, $cacheExpiration, $profile );
+                $_SESSION['LIZMAP_GETMAP_CACHE_STATUS'] = 'write';
+                $cached = True;
 
-            jCache::set( $key, $data, $cacheExpiration, $profile );
-            $_SESSION['LIZMAP_GETMAP_CACHE_STATUS'] = 'write';
-
-            if($debug)
-                lizmap::logMetric('LIZMAP_PROXY_WRITE_CACHE');
+                if($debug)
+                    lizmap::logMetric('LIZMAP_PROXY_WRITE_CACHE');
+            } catch(Exception $e) {
+                jLog::logEx($e, 'error');
+                $cached = False;
+            }
         }
 
-        return array($data, $mime, $code);
+        return array($data, $mime, $code, $cached);
     }
 
 
