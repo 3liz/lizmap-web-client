@@ -19,7 +19,6 @@ class serviceCtrl extends jController {
   protected $repository = '';
   protected $services = '';
   protected $params = '';
-  protected $lizmapCache = '';
 
 
   /**
@@ -147,7 +146,7 @@ class serviceCtrl extends jController {
   /**
   * Get parameters and set classes for the project and repository given.
   *
-  * @return array List of needed variables : $params, $lizmapProject, $lizmapRepository, $lizmapCache.
+  * @return array List of needed variables : $params, $lizmapProject, $lizmapRepository.
   */
   protected function getServiceParameters(){
 
@@ -192,15 +191,13 @@ class serviceCtrl extends jController {
     // Get and normalize the passed parameters
     $pParams = jApp::coord()->request->params;
     $pParams['map'] = realpath($lrep->getPath()) . '/' . $project . ".qgs";
-    $lizmapCache = jClasses::getService('lizmap~lizmapCache');
-    $params = $lizmapCache->normalizeParams($pParams);
+    $params = lizmapProxy::normalizeParams($pParams);
 
     // Define class private properties
     $this->project = $lproj;
     $this->repository = $lrep;
     $this->services = lizmap::getServices();
     $this->params = $params;
-    $this->lizmapCache = $lizmapCache;
 
     // Optionnaly filter data by login
     if(isset($params['request'])){
@@ -389,7 +386,7 @@ class serviceCtrl extends jController {
     $querystring = $url . $bparams;
 
     // Get remote data
-    $getRemoteData = $this->lizmapCache->getRemoteData(
+    $getRemoteData = lizmapProxy::getRemoteData(
       $querystring,
       $this->services->proxyMethod,
       $this->services->debugMode
@@ -617,7 +614,7 @@ class serviceCtrl extends jController {
        $querystring = $url . $bparams;
 
        // Get remote data
-       $getRemoteData = $this->lizmapCache->getRemoteData(
+       $getRemoteData = lizmapProxy::getRemoteData(
          $querystring,
          $this->services->proxyMethod,
          $this->services->debugMode
@@ -715,7 +712,6 @@ class serviceCtrl extends jController {
     // Loop through the layers
     $content = array();
     $ptemplate = 'view~popup';
-    $lizmapCache = $this->lizmapCache;
     $popupClass = jClasses::getService('view~popup');
 
     foreach($xml->Layer as $layer){
@@ -918,7 +914,7 @@ class serviceCtrl extends jController {
 
     // Get remote data from cache
     /*
-    $getRemoteData = $this->lizmapCache->getRemoteData(
+    $getRemoteData = lizmapProxy::getRemoteData(
       $querystring,
       $this->services->proxyMethod,
       $this->services->debugMode
@@ -977,7 +973,7 @@ class serviceCtrl extends jController {
     $querystring = $url . $bparams;
 
     // Get remote data
-    $getRemoteData = $this->lizmapCache->getRemoteData(
+    $getRemoteData = lizmapProxy::getRemoteData(
       $querystring,
       $this->services->proxyMethod,
       $this->services->debugMode
@@ -1129,7 +1125,7 @@ class serviceCtrl extends jController {
     $querystring = $url . $bparams;
 
     // Get remote data
-    $getRemoteData = $this->lizmapCache->getRemoteData(
+    $getRemoteData = lizmapProxy::getRemoteData(
       $querystring,
       $this->services->proxyMethod,
       $this->services->debugMode

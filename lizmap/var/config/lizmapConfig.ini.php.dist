@@ -31,4 +31,6 @@ allowUserAccountRequests=off
 
 ; path to find repositories
 ; rootRepositories="path"
+; Does the server use relative path from root folder? 0/1
+; relativeWMSPath=0
 

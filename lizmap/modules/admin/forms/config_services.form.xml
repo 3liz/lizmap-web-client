@@ -85,6 +85,12 @@
   <help locale="admin~admin.form.admin_services.rootRepositories.help"/>
 </input>
 
+<menulist ref="relativeWMSPath">
+  <label locale="admin~admin.form.admin_services.relativeWMSPath.label"/>
+  <item value="0" selected="true" locale="admin~admin.form.admin_services.no.label"/>
+  <item value="1" locale="admin~admin.form.admin_services.yes.label"/>
+</menulist>
+
 <menulist ref="proxyMethod" required="true">
   <label locale="admin~admin.form.admin_services.proxyMethod.label"/>
   <item value="php" selected="true" locale="admin~admin.form.admin_services.proxyMethod.php.label"/>
