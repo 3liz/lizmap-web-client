@@ -248,7 +248,7 @@ class lizmapProxy {
         $url = $ser->wmsServerURL.'?';
 
         // Add project path into map parameter
-        $params["map"] = realpath($lproj->getQgisPath());
+        $params["map"] = $lproj->getRelativeQgisPath();
 
         // Metatile : if needed, change the bbox
         // Avoid metatiling when the cache is not active for the layer
