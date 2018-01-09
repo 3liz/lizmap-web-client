@@ -124,6 +124,7 @@ class lizmapProject{
             // read it and construct the cache at the same time. We should
             // have a kind of lock to avoid this issue.
             $this->readXml($key, $rep);
+            $data = array();
             $data['qgsmtime'] = filemtime($file);
             $data['qgscfgmtime'] = filemtime($file.'.cfg');
             foreach($this->cachedProperties as $prop) {
