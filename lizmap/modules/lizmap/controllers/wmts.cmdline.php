@@ -108,24 +108,40 @@ class wmtsCtrl extends jControllerCmdLine {
         $repository = $project->getRepository();
 
         jClasses::inc('lizmap~lizmapWMTSRequest');
+        jClasses::inc('lizmap~lizmapTiler');
 
-        $cacheId = $repository->getKey().'_'.$project->getKey().'_WMTS';
-        $tileMatrixSetList = jCache::get($cacheId . '_tileMatrixSetList');
-        if( !$tileMatrixSetList ) {
-            $request = new lizmapWMTSRequest( $project, array(
-                    'service'=>'WMTS',
-                    'request'=>'GetCapabilities'
-                )
-            );
-            $result = $request->process();
-            $tileMatrixSetList = jCache::get($cacheId . '_tileMatrixSetList');
+        $tileCapabilities = null;
+        try {
+            $tileCapabilities = lizmapTiler::getTileCapabilities( $project );
+        }
+        catch(Exception $e) {
+            // if default profile does not exist, or if there is an
+            // other error about the cache, let's log it
+            jLog::log($e->getMessage(), 'error');
+            // Error message
+            $rep->addContent("The cache is not available!\n");
+            $rep->addContent($e->getMessage()."\n");
+            return $rep;
+        }
+
+        if ( $tileCapabilities === null ||
+             $tileCapabilities->tileMatrixSetList === null ||
+             $tileCapabilities->layerTileInfoList === null ) {
+            // Error message
+            $rep->addContent("The cache is not available!\n");
+            $rep->addContent("The WMTS Service can't be initialized!\n");
+            return $rep;
         }
 
         $layerId = $this->param('layer');
         $TileMatrixSetId = $this->param('TileMatrixSet');
 
-        $layers = $tileMatrixSetList = jCache::get($cacheId . '_layers');
-        foreach( $layers as $layer ) {
+        if ( count($tileCapabilities->layerTileInfoList) === 0 ) {
+            $rep->addContent("No layers configured with cache!\n");
+            return $rep;
+        }
+
+        foreach( $tileCapabilities->layerTileInfoList as $layer ) {
             if ( $layerId && $layer->name != $layerId )
                 continue;
             foreach( $layer->tileMatrixSetLinkList as $tileMatrixSetLink ) {
@@ -169,29 +185,46 @@ class wmtsCtrl extends jControllerCmdLine {
         $repository = $project->getRepository();
 
         jClasses::inc('lizmap~lizmapWMTSRequest');
+        jClasses::inc('lizmap~lizmapTiler');
 
-        $cacheId = $repository->getKey().'_'.$project->getKey().'_WMTS';
-        $tileMatrixSetList = jCache::get($cacheId . '_tileMatrixSetList');
-        if( !$tileMatrixSetList ) {
-            $request = new lizmapWMTSRequest( $project, array(
-                    'service'=>'WMTS',
-                    'request'=>'GetCapabilities'
-                )
-            );
-            $result = $request->process();
-            $tileMatrixSetList = jCache::get($cacheId . '_tileMatrixSetList');
+        $tileCapabilities = null;
+        try {
+            $tileCapabilities = lizmapTiler::getCalculatedTileCapabilities( $project );
+        }
+        catch(Exception $e) {
+            // if default profile does not exist, or if there is an
+            // other error about the cache, let's log it
+            jLog::log($e->getMessage(), 'error');
+            // Error message
+            $rep->addContent("The cache is not available!\n");
+            $rep->addContent($e->getMessage()."\n");
+            return $rep;
         }
 
-        $layers = $tileMatrixSetList = jCache::get($cacheId . '_layers');
+        if ( $tileCapabilities === null ||
+             $tileCapabilities->tileMatrixSetList === null ||
+             $tileCapabilities->layerTileInfoList === null ) {
+            // Error message
+            $rep->addContent("The cache is not available!\n");
+            $rep->addContent("The WMTS Service has not be initialized!\n");
+            $rep->addContent("If you have not run lizmap~wmts:capabilities, run it before, otherwise take a look at the error logs!\n");
+            return $rep;
+        }
+
+        if ( count($tileCapabilities->layerTileInfoList) === 0 ) {
+            $rep->addContent("No layers configured with cache!\n");
+            return $rep;
+        }
+
         $layerIds = explode( ',', $this->param('layers') );
         $selectedLayers = array();
-        foreach( $layers as $l ) {
+        foreach( $tileCapabilities->layerTileInfoList as $l ) {
             if ( in_array( '*', $layerIds) || in_array( $l->name, $layerIds) ) {
                 $selectedLayers[] = $l;
             }
         }
         // Layer not found
-        if ( count( $selectedLayers ) == 0 ) {
+        if ( count( $selectedLayers ) === 0 ) {
             $rep->addContent("The layers '".implode( ',', $layerIds )."' have not be found!\n");
             return $rep;
         }
@@ -255,6 +288,10 @@ class wmtsCtrl extends jControllerCmdLine {
                             if ( $forced )
                                 $request->setForceRequest( True );
                             $result = $request->process();
+                            if ( !preg_match('/^image/',$result->mime) )
+                                $rep->addContent('Error for tile: '.$layer->name.' / '.$TileMatrixSetId.' / '.$tileMatrixLimit->id.' / '.$row.' / '.$col."\n");
+                            if ( !$result->cached )
+                                $rep->addContent('Error, tile not cached: '.$layer->name.' / '.$TileMatrixSetId.' / '.$tileMatrixLimit->id.' / '.$row.' / '.$col."\n");
                             //$rep->addContent($layer->name.' '.$layer->imageFormat.' '.$TileMatrixSetId.' '.$tileMatrixLimit->id.' '.$row.' '.$col.' '.$result->code."\n");
                             $col += 1;
                             $tileProgress += 1;

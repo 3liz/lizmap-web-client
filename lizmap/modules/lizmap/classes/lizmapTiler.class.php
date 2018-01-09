@@ -38,6 +38,105 @@ class lizmapTiler{
      */
     private function __construct (){ }
 
+
+    /**
+     * Get tile capabililities.
+     *
+     */
+    public static function getTileCapabilities( $project ){
+        $repository = $project->getRepository();
+
+        $cacheId = $repository->getKey().'_'.$project->getKey().'_WMTS';
+        $file = $repository->getPath().$project->getKey().'.qgs';
+
+        $hash = False;
+        $tileMatrixSetList = False;
+        $layers = False;
+
+        try {
+            $hash = jCache::get($cacheId . '_hash');
+            $tileMatrixSetList = jCache::get($cacheId . '_tilematrixsetlist');
+            $layers = jCache::get($cacheId . '_layers');
+        }
+        catch(Exception $e) {
+            // if default profile does not exist, or if there is an
+            // other error about the cache, let's log it
+            jLog::log($e->getMessage(), 'error');
+        }
+
+        if( !is_array($tileMatrixSetList) || !is_array($layers) || !is_array($hash) ||
+            $hash['qgsmtime'] < filemtime($file) ||
+            $hash['qgscfgmtime'] < filemtime($file.'.cfg') ) {
+
+            $wmsRequest = new lizmapWMSRequest( $project, array(
+                    'service'=>'WMS',
+                    'request'=>'GetCapabilities'
+                )
+            );
+            $wmsResult = $wmsRequest->process();
+            $wms = $wmsResult->data;
+
+            $wms_xml = simplexml_load_string( $wms );
+            $wms_xml->registerXPathNamespace("wms", "http://www.opengis.net/wms");
+            $wms_xml->registerXPathNamespace("xlink", "http://www.w3.org/1999/xlink");
+
+            $tileMatrixSetList = self::getTileMatrixSetList( $project, $wms_xml );
+
+            $layers = self::getLayerTileInfoList( $project, $wms_xml, $tileMatrixSetList );
+
+            $hash = array();
+            $hash['qgsmtime'] = filemtime($file);
+            $hash['qgscfgmtime'] = filemtime($file.'.cfg');
+
+            jCache::set($cacheId . '_hash', $hash, 3600);
+            jCache::set($cacheId . '_tilematrixsetlist', $tileMatrixSetList, 3600 );
+            jCache::set($cacheId . '_layers', $layers, 3600);
+        }
+
+        $tileCapabilities = (object) array(
+            'tileMatrixSetList'=> null,
+            'layerTileInfoList'=> null
+        );
+        if ( is_array($tileMatrixSetList) && is_array($layers) ) {
+            $tileCapabilities->tileMatrixSetList = $tileMatrixSetList;
+            $tileCapabilities->layerTileInfoList = $layers;
+        }
+        return $tileCapabilities;
+    }
+
+    /**
+     * Get calculated tile capabililities.
+     *
+     */
+    public static function getCalculatedTileCapabilities( $project ){
+        $repository = $project->getRepository();
+
+        $cacheId = $repository->getKey().'_'.$project->getKey().'_WMTS';
+
+        $tileMatrixSetList = False;
+        $layers = False;
+
+        try {
+            $tileMatrixSetList = jCache::get($cacheId . '_tilematrixsetlist');
+            $layers = jCache::get($cacheId . '_layers');
+        }
+        catch(Exception $e) {
+            // if default profile does not exist, or if there is an
+            // other error about the cache, let's log it
+            jLog::log($e->getMessage(), 'error');
+        }
+
+        $tileCapabilities = (object) array(
+            'tileMatrixSetList'=> null,
+            'layerTileInfoList'=> null
+        );
+        if ( is_array($tileMatrixSetList) && is_array($layers) ) {
+            $tileCapabilities->tileMatrixSetList = $tileMatrixSetList;
+            $tileCapabilities->layerTileInfoList = $layers;
+        }
+        return $tileCapabilities;
+    }
+
     /**
      * Get a list of tileMatrixSet.
      *
@@ -205,6 +304,24 @@ class lizmapTiler{
     }
 
     /**
+     * Get layers list.
+     *
+     */
+    public static function getLayerTileInfoList( $project, $wms_xml, $tileMatrixSetList ){
+        $cfgLayers = $project->getLayers();
+        $layers = array();
+        foreach( $cfgLayers as $n=>$l ) {
+            if ( $l->cached == 'True' && $l->singleTile != 'True' && strtolower( $l->name ) != 'overview' ) {
+                $layer = lizmapTiler::getLayerTileInfo( $l->name, $project, $wms_xml, $tileMatrixSetList );
+                if ($layer) {
+                    $layers[] = $layer;
+                }
+            }
+        }
+        return $layers;
+    }
+
+    /**
      * Get layer tile info.
      *
      */
@@ -329,13 +446,15 @@ class lizmapTiler{
             $destMaxPt   = new proj4phpPoint( $destMaxExtent[2], $destMaxExtent[3] );
 
             try {
-                $transPt   = $proj4->transform($sourceProj,$destProj,$sourceMinPt);
+                $destMinPt   = $proj4->transform($sourceProj,$destProj,$sourceMinPt);
             } catch( Exception $e ) {
+                jLog::log($e->getMessage(), 'error');
                 $destMinPt   = new proj4phpPoint( $destMaxExtent[0], $destMaxExtent[1] );
             }
             try {
                 $destMaxPt   = $proj4->transform($sourceProj,$destProj,$sourceMaxPt);
             } catch( Exception $e ) {
+                jLog::log($e->getMessage(), 'error');
                 $destMaxPt   = new proj4phpPoint( $destMaxExtent[2], $destMaxExtent[3] );
             }
 
