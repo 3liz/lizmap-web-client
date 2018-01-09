@@ -11,6 +11,7 @@
 
 jClasses::inc('lizmap~lizmapOGCRequest');
 jClasses::inc('lizmap~lizmapWMSRequest');
+jClasses::inc('lizmap~lizmapTiler');
 class lizmapWMTSRequest extends lizmapOGCRequest {
 
     protected $tplExceptions = 'lizmap~wmts_exception';
@@ -26,44 +27,27 @@ class lizmapWMTSRequest extends lizmapOGCRequest {
     }
 
     protected function getcapabilities( ) {
-        //Get Cache
-        $cacheId = $this->repository->getKey().'_'.$this->project->getKey().'_WMTS';
-        $hash = jCache::get($cacheId . '_hash');
-        $newhash = md5_file( realpath($this->repository->getPath()) . '/' . $this->project->getKey() . ".qgs" );
-        $tileMatrixSetList = jCache::get($cacheId . '_tilematrixsetlist');
-        $layers = jCache::get($cacheId . '_layers');
-
-        if( !$tileMatrixSetList || !$layers || $hash != $newhash ) {
-
-            $wmsRequest = new lizmapWMSRequest( $this->project, array(
-                    'service'=>'WMS',
-                    'request'=>'GetCapabilities'
-                )
-            );
-            $wmsResult = $wmsRequest->process();
-            $wms = $wmsResult->data;
-
-            $wms_xml = simplexml_load_string( $wms );
-            $wms_xml->registerXPathNamespace("wms", "http://www.opengis.net/wms");
-            $wms_xml->registerXPathNamespace("xlink", "http://www.w3.org/1999/xlink");
-
-            jClasses::inc("lizmap~lizmapTiler");
-            $tileMatrixSetList = lizmapTiler::getTileMatrixSetList( $this->project, $wms_xml );
-            $cfgLayers = $this->project->getLayers();
-            $layers = array();
-            foreach( $cfgLayers as $n=>$l ) {
-                if ( $l->cached == 'True' && $l->singleTile != 'True' && strtolower( $l->name ) != 'overview' ) {
-                    $layer = lizmapTiler::getLayerTileInfo( $l->name, $this->project, $wms_xml, $tileMatrixSetList );
-                    if ($layer) {
-                        $layers[] = $layer;
-                    }
-                }
-            }
-
-            jCache::set($cacheId . '_hash', $newhash, 3600);
-            jCache::set($cacheId . '_tilematrixsetlist', $tileMatrixSetList, 3600 );
-            jCache::set($cacheId . '_layers', $layers, 3600);
+        $tileCapabilities = null;
+        try {
+            $tileCapabilities = lizmapTiler::getTileCapabilities( $this->project );
         }
+        catch(Exception $e) {
+            // if default profile does not exist, or if there is an
+            // other error about the cache, let's log it
+            jLog::log($e->getMessage(), 'error');
+            // Error message
+            jMessage::add('The WMTS Service can\'t be initialized!', 'ServiceError');
+            return $this->serviceException();
+        }
+
+        if ( $tileCapabilities === null ||
+             $tileCapabilities->tileMatrixSetList === null ||
+             $tileCapabilities->layerTileInfoList === null ) {
+            // Error message
+            jMessage::add('The WMTS Service can\'t be initialized!', 'ServiceError');
+            return $this->serviceException();
+        }
+
         $sUrl = jUrl::getFull(
             "lizmap~service:index",
             array("repository"=>$this->repository->getKey(), "project"=>$this->project->getKey())
@@ -73,8 +57,8 @@ class lizmapWMTSRequest extends lizmapOGCRequest {
         $tpl->assign( 'url', $sUrl );
         $tpl->assign( 'repository', $this->param('repository') );
         $tpl->assign( 'project', $this->param('project') );
-        $tpl->assign( 'tileMatrixSetList', $tileMatrixSetList );
-        $tpl->assign( 'layers', $layers );
+        $tpl->assign( 'tileMatrixSetList', $tileCapabilities->tileMatrixSetList );
+        $tpl->assign( 'layers', $tileCapabilities->layerTileInfoList );
 
         return (object) array(
             'code' => 200,
@@ -90,51 +74,67 @@ class lizmapWMTSRequest extends lizmapOGCRequest {
         $LayerName = $this->param('Layer');
         if(!$LayerName){
             // Error message
-            jMessage::add('The parameter Layer is mandatory !', 'MissingParameter');
+            jMessage::add('The parameter Layer is mandatory!', 'MissingParameter');
             return $this->serviceException();
         }
         $Format = $this->param('Format');
         if(!$Format){
             // Error message
-            jMessage::add('The parameter Format is mandatory !', 'MissingParameter');
+            jMessage::add('The parameter Format is mandatory!', 'MissingParameter');
             return $this->serviceException();
         }
         $TileMatrixSetId = $this->param('TileMatrixSet');
         if(!$TileMatrixSetId){
             // Error message
-            jMessage::add('The parameter TileMatrixSet is mandatory !', 'MissingParameter');
+            jMessage::add('The parameter TileMatrixSet is mandatory!', 'MissingParameter');
             return $this->serviceException();
         }
         $TileMatrixId = $this->param('TileMatrix');
         if($TileMatrixId === null){
             // Error message
-            jMessage::add('The parameter TileMatrix is mandatory !', 'MissingParameter');
+            jMessage::add('The parameter TileMatrix is mandatory!', 'MissingParameter');
             return $this->serviceException();
         }
         $TileRow = $this->param('TileRow');
         if($TileRow === null){
             // Error message
-            jMessage::add('The parameter TileRow is mandatory !', 'MissingParameter');
+            jMessage::add('The parameter TileRow is mandatory!', 'MissingParameter');
             return $this->serviceException();
         }
         $TileCol = $this->param('TileCol');
         if($TileCol === null){
             // Error message
-            jMessage::add('The parameter TileCol is mandatory !', 'MissingParameter');
+            jMessage::add('The parameter TileCol is mandatory!', 'MissingParameter');
             return $this->serviceException();
         }
 
-        $cacheId = $this->repository->getKey().'_'.$this->project->getKey().'_WMTS';
-        $tileMatrixSetList = jCache::get($cacheId . '_tilematrixsetlist');
+        $tileCapabilities = null;
+        try {
+            // if the cache is not available, the tile matrix is calculated
+            // if there is an issue with the cache, the tile matrix is caclulated each time
+            // to get an error we acn used getCalculatedTileCapabilities
+            $tileCapabilities = lizmapTiler::getTileCapabilities( $this->project );
+        }
+        catch(Exception $e) {
+            // if default profile does not exist, or if there is an
+            // other error about the cache, let's log it
+            jLog::log($e->getMessage(), 'error');
+            // Error message
+            jMessage::add('The WMTS Service can\'t be initialized!', 'ServiceError');
+            return $this->serviceException();
+        }
 
-        if( !$tileMatrixSetList ) {
-            $this->getcapabilities();
-            $tileMatrixSetList = jCache::get($cacheId . '_tilematrixsetlist');
+        if ( $tileCapabilities === null ||
+             $tileCapabilities->tileMatrixSetList === null ||
+             $tileCapabilities->layerTileInfoList === null ) {
+            // Error message
+            jMessage::add('The WMTS Service can\'t be initialized!', 'ServiceError');
+            return $this->serviceException();
         }
 
         $tileMatrixSet = null;
 
-        foreach( $tileMatrixSetList as $tms ) {
+        foreach( $tileCapabilities->tileMatrixSetList as $tms ) {
             if ( $tms->ref == $TileMatrixSetId ) {
                 $tileMatrixSet = $tms;
                 break;
@@ -143,7 +143,7 @@ class lizmapWMTSRequest extends lizmapOGCRequest {
 
         if($tileMatrixSet === null){
             // Error message
-            jMessage::add('TileMatrixSet seems to be wrong', 'MissingParameter');
+            jMessage::add('TileMatrixSet seems to be wrong', 'ServiceError');
             return $this->serviceException();
         }
 

@@ -113,7 +113,7 @@ class lizmapWMSRequest extends lizmapOGCRequest {
             'code' => $getMap[2],
             'mime' => $getMap[1],
             'data' => $getMap[0],
-            'cached' => False
+            'cached' => $getMap[3]
         );
     }
 

@@ -988,7 +988,7 @@ var lizMap = function() {
                ,buffer:0
                ,transitionEffect:(layerConfig.singleTile == 'True')?'resize':null
                ,removeBackBufferDelay:250
-               ,singleTile:(layerConfig.singleTile == 'True')
+               ,singleTile:(layerConfig.singleTile == 'True' || (layerConfig.cached == 'True' && !wmtsCapabilities))
                ,ratio:1
                ,order:getLayerOrder(layer)
                ,attribution:layer.attribution
@@ -5547,15 +5547,21 @@ OpenLayers.Control.HighlightFeature = OpenLayers.Class(OpenLayers.Control, {
           ,{SERVICE:'WFS',REQUEST:'GetCapabilities',VERSION:'1.0.0'}
           ,function(wfsCapaData) {
 
-          //parse capabilities
-          if (!parseData(data))
-            return true;
+            //parse capabilities
+            if (!parseData(data))
+                return true;
 
-              var wmtsFormat = new OpenLayers.Format.WMTSCapabilities({});
-              wmtsCapabilities = wmtsFormat.read( wmtsCapaData );
-              //console.log( wmtsCapabilities );
+            var wmtsFormat = new OpenLayers.Format.WMTSCapabilities({});
+            wmtsCapabilities = wmtsFormat.read( wmtsCapaData );
+            if ( 'exceptionReport' in wmtsCapabilities ) {
+                wmtsElem = $('#metadata-wmts-getcapabilities-url');
+                if ( wmtsElem.length != 0 ) {
+                    wmtsElem.before('<i title="'+wmtsCapabilities.exceptionReport.exceptions[0].texts[0]+'" class="icon-warning-sign"></i>&nbsp;');
+                }
+                wmtsCapabilities = null;
+            }
 
-              wfsCapabilities = $(wfsCapaData);
+            wfsCapabilities = $(wfsCapaData);
 
           //set title and abstract coming from capabilities
 //          document.title = capabilities.title ? capabilities.title : capabilities.service.title;

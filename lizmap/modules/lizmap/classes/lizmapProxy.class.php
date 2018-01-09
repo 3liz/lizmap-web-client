@@ -221,7 +221,7 @@ class lizmapProxy {
                 if($debug)
                     lizmap::logMetric('LIZMAP_PROXY_HIT_CACHE');
 
-                return array( $tile, $mime, 200);
+                return array( $tile, $mime, 200, True);
             }
         }
 
@@ -345,6 +345,7 @@ class lizmapProxy {
         $_SESSION['LIZMAP_GETMAP_CACHE_STATUS'] = 'off';
 
         // Store into cache if needed
+        $cached = False;
         if( $useCache ) {
             //~ jLog::log( ' Store into cache');
             $cacheExpiration = (int)$ser->cacheExpiration;
@@ -353,15 +354,17 @@ class lizmapProxy {
             try {
                 jCache::set( $key, $data, $cacheExpiration, $profile );
                 $_SESSION['LIZMAP_GETMAP_CACHE_STATUS'] = 'write';
+                $cached = True;
 
                 if($debug)
                     lizmap::logMetric('LIZMAP_PROXY_WRITE_CACHE');
             } catch(Exception $e) {
                 jLog::logEx($e, 'error');
+                $cached = False;
             }
         }
 
-        return array($data, $mime, $code);
+        return array($data, $mime, $code, $cached);
     }
 
 
