@@ -40,6 +40,16 @@ class jacl2dbListener extends jEventListener{
         }
    }
 
+    function onAuthCanRemoveUser($event){
+        if (jApp::config()->acl2['driver'] == 'db' || jApp::config()->acl2['driver'] == 'dbcache') {
+            $manager = new jAcl2DbAdminUIManager();
+            $login = $event->getParam('login');
+            if (!$manager->canRemoveUser($login)) {
+                $event->add(array('canremove'=>false));
+            }
+        }
+    }
+
    function onAuthLogout($event){
         try { jAcl2::clearCache(); jAcl2DbUserGroup::clearCache(); } catch(Exception $e) {}
     }

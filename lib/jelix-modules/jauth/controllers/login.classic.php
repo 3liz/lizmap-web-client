@@ -13,6 +13,8 @@
 
 class loginCtrl extends jController {
 
+    public $sensitiveParameters = array('password');
+
     public $pluginParams = array(
       '*'=>array('auth.required'=>false)
     );

@@ -3,4 +3,4 @@ CREATE TABLE   IF NOT EXISTS `%%PREFIX%%jlx_cache` (
   `cache_data` longblob,
   `cache_date` datetime default NULL,
   PRIMARY KEY  (`cache_key`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8;
+) DEFAULT CHARSET=utf8;

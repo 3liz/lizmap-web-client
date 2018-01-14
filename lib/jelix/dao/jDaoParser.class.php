@@ -13,10 +13,10 @@
 * @licence  http://www.gnu.org/licenses/lgpl.html GNU Lesser General Public Licence, see LICENCE file
 */
 
-require(JELIX_LIB_PATH.'dao/jDaoXmlException.class.php');
-require(JELIX_LIB_PATH.'dao/jDaoProperty.class.php');
-require(JELIX_LIB_PATH.'dao/jDaoMethod.class.php');
-require(JELIX_LIB_PATH.'dao/jDaoGenerator.class.php');
+require_once(JELIX_LIB_PATH.'dao/jDaoXmlException.class.php');
+require_once(JELIX_LIB_PATH.'dao/jDaoProperty.class.php');
+require_once(JELIX_LIB_PATH.'dao/jDaoMethod.class.php');
+require_once(JELIX_LIB_PATH.'dao/jDaoGenerator.class.php');
 
 /**
  * extract data from a dao xml content
@@ -85,9 +85,11 @@ class jDaoParser {
     private $_importedDao = null;
     
     public $selector;
+
     /**
-    * Constructor
-    */
+     *
+     * @param jSelectorDao $selector the selector of the DAO file
+     */
     function __construct($selector) {
         $this->selector = $selector;
     }

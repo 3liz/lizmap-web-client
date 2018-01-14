@@ -45,7 +45,7 @@ class jClassicRequest extends jRequest {
         $data = $this->readHttpBody();
         if (is_string($data)) {
             $this->params['__httpbody'] = $data;
-        } else {
+        } elseif (is_array($data)) {
             $this->params = array_merge($this->params, $data);
         }
     }

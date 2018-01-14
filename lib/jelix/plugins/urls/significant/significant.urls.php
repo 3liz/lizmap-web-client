@@ -120,8 +120,7 @@ class significantUrlEngine implements jIUrlEngine {
                 require($file);
                 $this->dataCreateUrl = & $GLOBALS['SIGNIFICANT_CREATEURL']; // given by jIncluder line 99
                 $this->dataParseUrl = & $GLOBALS['SIGNIFICANT_PARSEURL'][$snp];
-                $isHttps = ($request->getProtocol() == 'https://');
-                return $this->_parse($request->urlScript, $request->urlPathInfo, $params, $isHttps);
+                return $this->_parse($request->urlScript, $request->urlPathInfo, $params, $request->isHttps());
             }
         }
 

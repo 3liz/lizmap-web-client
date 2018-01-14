@@ -3,7 +3,7 @@
 * @package    jelix
 * @subpackage db
 * @author     Laurent Jouanneau
-* @copyright  2010 Laurent Jouanneau
+* @copyright  2010-2017 Laurent Jouanneau
 *
 * @link        http://jelix.org
 * @licence     http://www.gnu.org/licenses/lgpl.html GNU Lesser General Public Licence, see LICENCE file
@@ -11,44 +11,100 @@
 
 
 /**
- *
+ * Represents an index on some columns
  */
 class jDbIndex {
-    public $name , $type;
+    /**
+     * @var string the index name
+     */
+    public $name;
+
+    /**
+     *  the type of index : 'btree', 'hash'...
+     * @var string
+     */
+    public $type;
+
+    /**
+     * @var string[]  list of indexed columns
+     */
     public $columns = array();
 
-    function __construct($name, $type='') {
+    /**
+     * @var string   SQL where clause for the index
+     */
+    //public $predicat = '';
+
+    public $isUnique = false;
+
+    /**
+     * jDbIndex constructor.
+     * @param string $name  the index name
+     * @param string[] $columns  the list of column names
+     */
+    function __construct($name, $type='', $columns = array()) { //, $predicat='', ) {
         $this->name = $name;
+        $this->columns = $columns;
         $this->type = $type;
+        //$this->predicat = $predicat;
     }
 }
 
+abstract class jDbConstraint {
+    public $name;
+    public $columns = array();
 
-/**
- *
- */
-class jDbUniqueKey extends jDbIndex {
-
-}
-
-/**
- *
- */
-class jDbPrimaryKey extends jDbIndex {
-    function __construct($columns) {
-        if (is_string($columns))
+    /**
+     * jDbConstraint constructor.
+     * @param string $name
+     * @param string[]|string $columns
+     */
+    function __construct($name, $columns) {
+        $this->name = $name;
+        if (is_string($columns)) {
             $this->columns = array($columns);
-        else
+        }
+        else {
             $this->columns = $columns;
+        }
+    }
+}
+
+/**
+ * represents a unique key
+ */
+class jDbUniqueKey extends jDbConstraint {
+
+    function __construct($name, $columns = null) {
+        // for previous version <1.6.16, where $columns was $type
+        if ($columns === null) {
+            parent::__construct($name, array());
+        }
+        else {
+            parent::__construct($name, $columns);
+        }
+
+
+    }
+}
+
+/**
+ * used to declare a primary key
+ */
+class jDbPrimaryKey extends jDbConstraint {
+
+    function __construct($columns, $name = '') {
+        // for previous version <1.6.16, where there was only one argument, $columns
+        parent::__construct($name, $columns);
     }
 }
 
 
 
 /**
- *
+ * used to declare a foreign key
  */
-class jDbReference {
+class jDbReference  extends jDbConstraint {
     public $name;
     /**
      * list of columns on which there is the constraint
@@ -69,6 +125,27 @@ class jDbReference {
     
     public $onUpdate = '';
     public $onDelete = '';
+
+    /**
+     * jDbReference constructor.
+     *
+     * Note: all parameters are optional, to be compatible with Jelix < 1.6.16
+     * where parameters didn't exist
+     * @param string $name
+     * @param string[]|string $columns
+     * @param string $foreignTable
+     * @param string[]|string $foreignColumns
+     */
+    function __construct($name = '', $columns = array(), $foreignTable='', $foreignColumns=array()) {
+        parent::__construct($name, $columns);
+        $this->fTable = $foreignTable;
+        if (is_string($foreignColumns)) {
+            $this->fColumns = array($foreignColumns);
+        }
+        else {
+            $this->fColumns = $foreignColumns;
+        }
+    }
 }
 
 
@@ -99,7 +176,7 @@ class jDbColumn {
      * says if the field can be null or not
      * @var boolean
      */
-    public $notNull = true;
+    public $notNull = false;
 
     /**
      * says if the field is auto incremented
@@ -111,7 +188,7 @@ class jDbColumn {
      * default value
      * @var string
      */
-    public $default = '';
+    public $default = null;
 
     /**
      * says if there is a default value
@@ -120,10 +197,23 @@ class jDbColumn {
     public $hasDefault = false;
 
     /**
-     *
+     * The length for a string
+     * @var int
      */
     public $length = 0;
-    
+
+    /**
+     * The precision for a number
+     * @var int
+     */
+    public $precision = 0;
+
+    /**
+     * The scale for a number (value after the coma, in the precision)
+     * @var int
+     */
+    public $scale = 0;
+
      /**
      * if there is a sequence
      * @var string
@@ -139,19 +229,51 @@ class jDbColumn {
     public $minValue = null;
     
     public $maxValue = null;
-    
-    function __construct ($name, $type, $length=0, $hasDefault = false, $default = null, $notNull = false) {
+
+    public $comment = '';
+
+    function __construct ($name, $type, $length=0, $hasDefault = false,
+                          $default = null, $notNull = false) {
         $this->type = $type;
         $this->name = $name;
         $this->length = $length;
         $this->hasDefault = $hasDefault;
         if ($hasDefault) {
-            $this->default = $default;
+            $this->default = ($notNull&&$default === null?'':$default);
         }
         else {
-            $this->default = '';
+            $this->default = ($notNull?'':null);
         }
-        
         $this->notNull = $notNull;
+    }
+
+    function isEqualTo($column) {
+        return (
+          $this->name == $column->name &&
+          $this->type == $column->type &&
+          $this->notNull == $column->notNull &&
+          $this->autoIncrement == $column->autoIncrement &&
+          $this->default == $column->default &&
+          $this->hasDefault == $column->hasDefault &&
+          $this->length == $column->length &&
+          $this->scale == $column->scale &&
+          $this->sequence == $column->sequence &&
+          $this->unsigned == $column->unsigned
+        );
+    }
+
+    function hasOnlyDifferentName($otherColumn) {
+        return (
+            $this->name != $otherColumn->name &&
+            $this->type == $otherColumn->type &&
+            $this->notNull == $otherColumn->notNull &&
+            $this->autoIncrement == $otherColumn->autoIncrement &&
+            $this->default == $otherColumn->default &&
+            $this->hasDefault == $otherColumn->hasDefault &&
+            $this->length == $otherColumn->length &&
+            $this->scale == $otherColumn->scale &&
+            $this->sequence == $otherColumn->sequence &&
+            $this->unsigned == $otherColumn->unsigned
+        );
     }
 }

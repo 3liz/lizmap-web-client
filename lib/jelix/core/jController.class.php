@@ -43,6 +43,16 @@ abstract class jController{
     public $pluginParams=array();
 
     /**
+     * sensitive parameters
+     *
+     * List of names of parameters that can have sensitive values like password etc.
+     * This list is used by the logger for example, to replace values by a dummy value.
+     * See also sensitiveParameters into error_handling section of the configuration.
+     * @since 1.6.16
+     */
+    public $sensitiveParameters = array();
+
+    /**
      * the request object
      * @var jRequest
      */
@@ -126,7 +136,7 @@ abstract class jController{
      * get a response object.
      * @param string $name the name of the response type (ex: "html")
      * @param boolean $useOriginal true:don't use the response object redefined by the application
-     * @return jResponse the response object
+     * @return jResponse|jResponseHtml|jResponseRedirect|jResponseJson the response object
      */
     protected function getResponse($name='', $useOriginal=false){
         return $this->request->getResponse($name, $useOriginal);
