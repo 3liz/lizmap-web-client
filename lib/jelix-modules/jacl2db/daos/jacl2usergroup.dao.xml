@@ -4,8 +4,8 @@
        <primarytable name="ug" realname="jacl2_user_group" primarykey="login,id_aclgrp" />
     </datasources>
     <record>
-      <property name="login" fieldname="login" datatype="string" required="yes"/>
-      <property name="id_aclgrp" fieldname="id_aclgrp" datatype="string" required="yes"/>
+      <property name="login" fieldname="login" datatype="string"  maxlength="50" required="yes"/>
+      <property name="id_aclgrp" fieldname="id_aclgrp" datatype="string"  maxlength="50" required="yes"/>
     </record>
 
     <factory>
@@ -42,6 +42,29 @@
             <parameter name="grp" />
             <conditions>
                 <eq property="id_aclgrp" expr="$grp" />
+            </conditions>
+        </method>
+        <method name="getUsersGroupLimitAndFilter" type="select">
+            <parameter name="grp" />
+            <parameter name="login" />
+            <parameter name="offset" />
+            <parameter name="count" />
+            <parameter name="ordre" default="asc" />
+            <conditions>
+                <eq property="id_aclgrp" expr="$grp" />
+                <like property="login" expr="$login"/>
+            </conditions>
+            <order>
+                <orderitem property="login" way="$ordre" />
+            </order>
+            <limit offset="$offset" count="$count" />
+        </method>
+        <method name="getUsersGroupCountAndFilter" type="count">
+            <parameter name="grp" />
+            <parameter name="login" />
+            <conditions>
+                <eq property="id_aclgrp" expr="$grp" />
+                <like property="login" expr="$login"/>
             </conditions>
         </method>
         <method name="deleteByUser" type="delete">

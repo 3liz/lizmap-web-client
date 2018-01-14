@@ -13,6 +13,8 @@
  */
 class defaultCtrl extends jController {
 
+    public $sensitiveParameters = array('password', 'password_confirm', 'pwd', 'pwd_confirm');
+
     public $pluginParams=array(
         'index'        =>array('jacl2.right'=>'auth.users.list'),
         'view'         =>array('jacl2.right'=>'auth.users.view'),

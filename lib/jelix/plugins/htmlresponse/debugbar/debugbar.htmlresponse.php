@@ -147,17 +147,19 @@ class debugbarHTMLResponsePlugin implements jIHTMLResponsePlugin {
         }
         ?>
 <style type="text/css">
-#jxdb {position:absolute;right:10;top:0;left:auto;margin:0;padding:0;z-index:1000;font-size:10pt;font-family:arial;font-weight:normal;color:black;}
+#jxdb {position:absolute;right:10px;top:0;left:auto;margin:0;padding:0;z-index:1000;font-size:10pt;font-family:arial;font-weight:normal;color:black;}
 #jxdb-pjlx-a-right { display:none;}
 #jxdb-pjlx-a-left { display:inline;}
-#jxdb.jxdb-position-l {left:10; right: auto;}
+#jxdb.jxdb-position-l {left:10px; right: auto;}
 #jxdb.jxdb-position-l #jxdb-pjlx-a-right { display:inline;}
 #jxdb.jxdb-position-l #jxdb-pjlx-a-left { display:none;}
 #jxdb-header {
     padding:3px;font-size:10pt;color:#797979;float:right;z-index:1200;position:relative;
-    background:linear-gradient(top, #EFF4F6, #87CDEF);background:-moz-linear-gradient(top, #EFF4F6, #87CDEF);background:-webkit-linear-gradient(top, #EFF4F6, #87CDEF);background-color: #EFF4F6;
-    border-radius:0 0 5px 5px ;-webkit-border-bottom-right-radius: 5px;-webkit-border-bottom-left-radius: 5px;-o-border-radius:0 0  5px 5px ;-moz-border-radius:0 0 5px 5px;
-    box-shadow: #6B6F80 3px 3px 6px 0;-moz-box-shadow: #969CB4 3px 3px 6px 0;-webkit-box-shadow: #6B6F80 3px 3px 6px;-o-box-shadow: #6B6F80 3px 3px 6px 0;
+    background:-moz-linear-gradient(to bottom, #EFF4F6, #87CDEF);background:-webkit-linear-gradient(top, #EFF4F6, #87CDEF);background-color: #EFF4F6;background:linear-gradient(to bottom, #EFF4F6, #87CDEF);
+    -webkit-border-bottom-right-radius: 5px;-webkit-border-bottom-left-radius: 5px;-o-border-radius:0 0  5px 5px ;-moz-border-radius:0 0 5px 5px;
+    border-radius:0 0 5px 5px ;
+    -moz-box-shadow: #969CB4 3px 3px 6px 0;-webkit-box-shadow: #6B6F80 3px 3px 6px;-o-box-shadow: #6B6F80 3px 3px 6px 0;
+    box-shadow: #6B6F80 3px 3px 6px 0;
 }
 #jxdb.jxdb-position-l #jxdb-header { float:left;}
 #jxdb-header img {vertical-align: middle;}
@@ -166,12 +168,12 @@ class debugbarHTMLResponsePlugin implements jIHTMLResponsePlugin {
 #jxdb-header a {text-decoration:none;color:black;}
 #jxdb-header span a:hover {text-decoration:underline;}
 #jxdb-tabpanels {
-    clear:both;color:black;background-color: #CCE4ED;z-index:1100;margin:0;padding:0;position:relative;max-height:700;overflow: auto;resize:both;
-    border-radius:0 0  5px 5px ;-moz-border-radius: 0 0 5px 5px;-o-border-radius:0 0  5px 5px ;-webkit-border-bottom-left-radius: 5px;-webkit-border-bottom-right-radius: 5px;
-    box-shadow: #6B6F80 3px 3px 3px 0;-moz-box-shadow: #969CB4 3px 3px 3px 0;-webkit-box-shadow: #6B6F80 3px 3px 3px;-o-box-shadow: #6B6F80 3px 3px 3px 0;
+    clear:both;color:black;background-color: #CCE4ED;z-index:1100;margin:0;padding:0;position:relative;max-height:700px;overflow: auto;resize:both;
+    -moz-border-radius: 0 0 5px 5px;-o-border-radius:0 0 5px 5px ;-webkit-border-bottom-left-radius: 5px;-webkit-border-bottom-right-radius: 5px;border-radius:0 0  5px 5px;
+    -moz-box-shadow: #969CB4 3px 3px 3px 0;-webkit-box-shadow: #6B6F80 3px 3px 3px;-o-box-shadow: #6B6F80 3px 3px 3px 0;box-shadow: #6B6F80 3px 3px 3px 0;
 }
 #jxdb-tabpanels div.jxdb-tabpanel { padding:4px; }
-.jxdb-list {margin:10; padding:8px 8px 8px 8px; list-style-type:none;}
+.jxdb-list {margin:10px; padding:8px 8px 8px 8px; list-style-type:none;}
 .jxdb-list li {margin:3px 0; padding:0 0 0 0; background-color: #D0E6F4;}
 .jxdb-list h5 a {color:black;text-decoration:none;display:inline-block;padding:0 0 0 18px;background-position:left center; background-repeat: no-repeat;}
 .jxdb-list h5 span {display:inline-block;padding:0 0 0 18px;background-position: left center;background-repeat:no-repeat;}

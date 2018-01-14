@@ -3,10 +3,11 @@
 * @package     jelix
 * @subpackage  core_response
 * @author      Tahina Ramaroson
-* @contributor Sylvain de Vathaire, Dominique Papin, Olivier Demah, Laurent Jouanneau
+* @contributor Sylvain de Vathaire, Dominique Papin, Olivier Demah, Laurent Jouanneau, Julien Issler
 * @copyright   2008 Tahina Ramaroson, Sylvain de Vathaire
 * @copyright   2008 Dominique Papin
 * @copyright   2009 Olivier Demah, 2009-2012 Laurent Jouanneau
+* @copyright   2017 Julien Issler
 * @link        http://www.jelix.org
 * @licence     GNU Lesser General Public Licence see LICENCE file or http://www.gnu.org/licenses/lgpl.html
 */
@@ -64,7 +65,7 @@ class jResponseHtmlFragment extends jResponse {
             $this->sendHttpHeaders();
             return true;
         }
-    
+
         $this->doAfterActions();
 
         $content = implode("\n",$this->_contentTop);
@@ -75,7 +76,6 @@ class jResponseHtmlFragment extends jResponse {
         $content .= implode("\n",$this->_contentBottom);
 
         $this->_httpHeaders['Content-Type']='text/plain;charset='.jApp::config()->charset;
-        $this->_httpHeaders['Content-length']=strlen($content);
         $this->sendHttpHeaders();
         echo $content;
         return true;
@@ -119,7 +119,6 @@ class jResponseHtmlFragment extends jResponse {
         $content .= htmlspecialchars(jApp::coord()->getGenericErrorMessage());
         $content .= '</p>';
 
-        $this->_httpHeaders['Content-length'] = strlen($content);
         $this->sendHttpHeaders();
         echo $content;
     }

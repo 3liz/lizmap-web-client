@@ -4,7 +4,7 @@
 * @subpackage  jacl2db_admin
 * @author      Laurent Jouanneau
 * @contributor Julien Issler, Olivier Demah
-* @copyright   2008-2011 Laurent Jouanneau
+* @copyright   2008-2017 Laurent Jouanneau
 * @copyright   2009 Julien Issler
 * @copyright   2010 Olivier Demah
 * @link        http://jelix.org
@@ -24,80 +24,27 @@ class groupsCtrl extends jController {
         'setdefault'=>array('jacl2.rights.and'=>array('acl.group.view','acl.group.modify')),
     );
 
-    protected function getLabel($id, $labelKey) {
-        if ($labelKey) {
-            try {
-                return jLocale::get($labelKey);
-            }
-            catch(Exception $e) { }
-        }
-        return $id;
+    /**
+     * @param jTpl $tpl
+     */
+    protected function loadGroupRights($tpl) {
+        /** @var jAcl2DbAdminUIManager $manager */
+        $manager = new jAcl2DbAdminUIManager();
+        $data = $manager->getGroupRights();
+        $tpl->assign('nbgrp', count($data['groups']));
+        $tpl->assign($data);
     }
 
-    protected function loadGroupRights($tpl) {
-        $gid=array('__anonymous');
-        $o = new StdClass;
-        $o->id_aclgrp = '__anonymous';
-        $o->name = jLocale::get('jacl2db_admin~acl2.anonymous.group.name');
-        $o->grouptype = 0;
-
-        $daorights = jDao::get('jacl2db~jacl2rights','jacl2_profile');
-        $rightsWithResources = array();
-        $hasRightsOnResources = false;
-
-        // retrieve the list of groups and the number of existing rights with
-        // resource for each groups
-        $groups=array($o);
-        $grouprights=array('__anonymous'=>false);
-        foreach(jAcl2DbUserGroup::getGroupList() as $grp) {
-            $gid[]=$grp->id_aclgrp;
-            $groups[]=$grp;
-            $grouprights[$grp->id_aclgrp]='';
-
-            $rs = $daorights->getRightsHavingRes($grp->id_aclgrp);
-            foreach($rs as $rec){
-                if (!isset($rightsWithResources[$rec->id_aclsbj]))
-                    $rightsWithResources[$rec->id_aclsbj] = array();
-                if (!isset($rightsWithResources[$rec->id_aclsbj][$grp->id_aclgrp]))
-                    $rightsWithResources[$rec->id_aclsbj][$grp->id_aclgrp] = 0;
-                $rightsWithResources[$rec->id_aclsbj][$grp->id_aclgrp] ++;
-            }
+    protected function checkException(jAcl2DbAdminUIException $e, $category) {
+        if ($e->getCode() == 1) {
+            jMessage::add(jLocale::get('acl2.error.invalid.user'), 'error');
         }
-
-        // retrieve the number of existing rights with
-        // resource for the anonymous group
-        $rs = $daorights->getRightsHavingRes('__anonymous');
-        foreach($rs as $rec){
-            if (!isset($rightsWithResources[$rec->id_aclsbj]))
-                $rightsWithResources[$rec->id_aclsbj] = array();
-            if (!isset($rightsWithResources[$rec->id_aclsbj]['__anonymous']))
-                $rightsWithResources[$rec->id_aclsbj]['__anonymous'] = 0;
-            $rightsWithResources[$rec->id_aclsbj]['__anonymous'] ++;
+        else if ($e->getCode() == 2) {
+            jMessage::add(jLocale::get('acl2.message.'.$category.'.error.noacl.anybody'), 'error');
         }
-
-        // create the list of subjects and their labels
-        $rights=array();
-        $sbjgroups_localized = array();
-        $subjects = array();
-        $rs = jDao::get('jacl2db~jacl2subject','jacl2_profile')->findAllSubject();
-        foreach($rs as $rec){
-            $rights[$rec->id_aclsbj] = $grouprights;
-            $subjects[$rec->id_aclsbj] = array('grp'=>$rec->id_aclsbjgrp, 'label'=>$this->getLabel($rec->id_aclsbj, $rec->label_key));
-            if ($rec->id_aclsbjgrp && !isset($sbjgroups_localized[$rec->id_aclsbjgrp])) {
-                $sbjgroups_localized[$rec->id_aclsbjgrp] = $this->getLabel($rec->id_aclsbjgrp, $rec->label_group_key);
-            }
-            if (!isset($rightsWithResources[$rec->id_aclsbj]))
-                $rightsWithResources[$rec->id_aclsbj] = array();
+        else if ($e->getCode() == 3) {
+            jMessage::add(jLocale::get('acl2.message.'.$category.'.error.noacl.yourself'), 'error');
         }
-
-        // retrieve existing rights
-        $rs = jDao::get('jacl2db~jacl2rights','jacl2_profile')->getRightsByGroups($gid);
-        foreach($rs as $rec){
-            $rights[$rec->id_aclsbj][$rec->id_aclgrp] = ($rec->canceled?'n':'y');
-        }
-
-        $tpl->assign('nbgrp', count($groups));
-        $tpl->assign(compact('groups', 'rights', 'sbjgroups_localized', 'subjects', 'rightsWithResources'));
     }
 
     /**
@@ -129,17 +76,21 @@ class groupsCtrl extends jController {
         return $rep;
     }
 
+    /**
+     * save rights of all groups
+     * @return jResponse
+     */
     function saverights(){
         $rep = $this->getResponse('redirect');
         $rights = $this->param('rights',array());
-
-        foreach(jAcl2DbUserGroup::getGroupList() as $grp) {
-            $id = $grp->id_aclgrp;
-            jAcl2DbManager::setRightsOnGroup($id, (isset($rights[$id])?$rights[$id]:array()));
+        try {
+            $manager = new jAcl2DbAdminUIManager();
+            $manager->saveGroupRights($rights, jAuth::getUserSession()->login);
+            jMessage::add(jLocale::get('acl2.message.group.rights.ok'), 'ok');
         }
-
-        jAcl2DbManager::setRightsOnGroup('__anonymous', (isset($rights['__anonymous'])?$rights['__anonymous']:array()));
-        jMessage::add(jLocale::get('acl2.message.group.rights.ok'), 'ok');
+        catch (jAcl2DbAdminUIException $e) {
+            $this->checkException($e, 'savegrouprights');
+        }
         $rep->action = 'jacl2db_admin~groups:rights';
         return $rep;
     }
@@ -163,29 +114,16 @@ class groupsCtrl extends jController {
             }
             $groupname = $group->name;
         }
-        else
+        else {
             $groupname = jLocale::get('jacl2db_admin~acl2.anonymous.group.name');
-
-        $rightsWithResources = array();
-        $daorights = jDao::get('jacl2db~jacl2rights','jacl2_profile');
-
-        $rs = $daorights->getRightsHavingRes($groupid);
-        $hasRightsOnResources = false;
-        foreach($rs as $rec){
-            if (!isset($rightsWithResources[$rec->id_aclsbj]))
-                $rightsWithResources[$rec->id_aclsbj] = array();
-            $rightsWithResources[$rec->id_aclsbj][] = $rec;
-            $hasRightsOnResources = true;
         }
-        $subjects_localized = array();
-        if(!empty($rightsWithResources)){
-            $conditions = jDao::createConditions();
-            $conditions->addCondition('id_aclsbj', 'in', array_keys($rightsWithResources));
-            foreach(jDao::get('jacl2db~jacl2subject','jacl2_profile')->findBy($conditions) as $rec)
-                $subjects_localized[$rec->id_aclsbj] = jLocale::get($rec->label_key);
-        }
+
+        $manager = new jAcl2DbAdminUIManager();
+        $data = $manager->getGroupRightsWithResources($groupid);
+
         $tpl = new jTpl();
-        $tpl->assign(compact('groupid', 'groupname', 'subjects_localized', 'rightsWithResources', 'hasRightsOnResources'));
+        $tpl->assign($data);
+        $tpl->assign(compact('groupid', 'groupname'));
 
         if(jAcl2::check('acl.group.modify')) {
             $rep->body->assign('MAIN', $tpl->fetch('group_rights_res'));
@@ -218,17 +156,9 @@ class groupsCtrl extends jController {
         }
 
         $rep->params = array('group'=>$groupid);
+        $manager = new jAcl2DbAdminUIManager();
+        $manager->removeGroupRightsWithResources($groupid, $subjects);
 
-        $subjectsToRemove = array();
-
-        foreach($subjects as $sbj=>$val) {
-            if ($val != '' || $val == true) {
-                $subjectsToRemove[] = $sbj;
-            }
-        }
-
-        jDao::get('jacl2db~jacl2rights', 'jacl2_profile')
-            ->deleteRightsOnResource($groupid, $subjectsToRemove);
         jMessage::add(jLocale::get('jacl2db_admin~acl2.message.group.rights.ok'), 'ok');
         return $rep;
     }
@@ -279,8 +209,14 @@ class groupsCtrl extends jController {
         $rep = $this->getResponse('redirect');
         $rep->action = 'jacl2db_admin~groups:index';
 
-        jAcl2DbUserGroup::removeGroup($this->param('group_id'));
-        jMessage::add(jLocale::get('acl2.message.group.delete.ok'), 'ok');
+        try {
+            $manager = new jAcl2DbAdminUIManager();
+            $manager->removeGroup($this->param('group_id'));
+            jMessage::add(jLocale::get('acl2.message.group.delete.ok'), 'ok');
+        }
+        catch (jAcl2DbAdminUIException $e) {
+            $this->checkException($e, 'group.delete');
+        }
 
         return $rep;
     }

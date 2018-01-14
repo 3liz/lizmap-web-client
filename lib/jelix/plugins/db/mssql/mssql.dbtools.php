@@ -3,8 +3,8 @@
  * @package    jelix
  * @subpackage db_driver
  * @author     Yann Lecommandoux
- * @contributor Julien
- * @copyright  2008 Yann Lecommandoux, 2010 Julien
+ * @contributor Julien, Laurent Jouanneau
+ * @copyright  2008 Yann Lecommandoux, 2010 Julien, 2017 Laurent Jouanneau
  * @link      http://jelix.org
  * @licence  http://www.gnu.org/licenses/lgpl.html GNU Lesser General Public Licence, see LICENCE file
  */
@@ -112,19 +112,88 @@ class mssqlDbTools extends jDbTools {
         'complex types'   =>array('varchar',    'varchar',    null,       null,       0,     65535),
     );
 
-    /**
-     * 	List of tables
-     * @return   array    $tab[] = $nomDeTable
-     */
-    function getTableList (){
-        $results = array ();
-        $sql = "SELECT TABLE_NAME FROM " .$this->_conn->profile['database']. ".INFORMATION_SCHEMA.TABLES
-                WHERE TABLE_NAME NOT LIKE ('sys%') AND TABLE_NAME NOT LIKE ('dt%')";
-        $rs = $this->_conn->query ($sql);
-        while ($line = $rs->fetch ()){
-            $results[] = $line->TABLE_NAME;
-        }
-        return $results;
+    protected $keywordNameCorrespondence = array(
+        // sqlsrv,mysql,oci,pgsql -> date+time
+        //'current_timestamp' => '',
+        // mysql,oci,pgsql -> date
+        'current_date' => 'DATEFROMPARTS(DATEPART(year,GETDATE()),DATEPART(month,GETDATE()),DATEPART(day,GETDATE()))',
+        // mysql -> time, pgsql -> time+timezone
+        'current_time' => 'TIMEFROMPARTS(DATEPART(hour,GETDATE()),DATEPART(minute,GETDATE()),DATEPART(second,GETDATE()),0,0)',
+        // oci -> date+fractional secon + timezone
+        'systimestamp' => 'GETDATE()',
+        // oci -> date+time+tz
+        'sysdate' => 'GETDATE()',
+        // pgsql -> time
+        'localtime' => 'TIMEFROMPARTS(DATEPART(hour,GETDATE()),DATEPART(minute,GETDATE()),DATEPART(second,GETDATE()),0,0)',
+        // pgsql -> date+time
+        'localtimestamp' => 'GETDATE()',
+    );
+
+    protected $functionNameCorrespondence = array(
+
+        // sqlsrv, -> date+time
+        //'sysdatetime' => '',
+        // sqlsrv, -> date+time+offset
+        //'sysdatetimeoffset' => '',
+        // sqlsrv, -> date+time at utc
+        //'sysutcdatetime' => '',
+        // sqlsrv -> date+time
+        //'getdate' => '',
+        // sqlsrv -> date+time at utc
+        //'getutcdate' => '',
+        // sqlsrv,mysql (datetime)-> integer
+        //'day' => '',
+        // sqlsrv,mysql (datetime)-> integer
+        //'month' => '',
+        // sqlsrv, mysql (datetime)-> integer
+        //'year' => '',
+        // mysql -> date
+        'curdate' => 'DATEFROMPARTS(DATEPART(year,GETDATE()),DATEPART(month,GETDATE()),DATEPART(day,GETDATE()))',
+        // mysql -> date
+        'current_date' => 'DATEFROMPARTS(DATEPART(year,GETDATE()),DATEPART(month,GETDATE()),DATEPART(day,GETDATE()))',
+        // mysql -> time
+        'curtime' => 'TIMEFROMPARTS(DATEPART(hour,GETDATE()),DATEPART(minute,GETDATE()),DATEPART(second,GETDATE()),0,0)',
+        // mysql -> time
+        'current_time' => 'TIMEFROMPARTS(DATEPART(hour,GETDATE()),DATEPART(minute,GETDATE()),DATEPART(second,GETDATE()),0,0)',
+        // mysql,pgsql -> date+time
+        'now' => 'GETDATE()',
+        // mysql date+time
+        'current_timestamp' => 'GETDATE()',
+        // mysql (datetime)->date, sqlite (timestring, modifier)->date
+        'date' => 'DATEFROMPARTS(DATEPART(year,%!p),DATEPART(month,%!p),DATEPART(day,%!p))',
+        // mysql = day()
+        'dayofmonth' => 'day(%!p)',
+        // mysql -> date+time
+        'localtime' => 'GETDATE()',
+        // mysql -> date+time
+        'localtimestamp' => 'GETDATE()',
+        // mysql utc current date
+        'utc_date' => 'DATEFROMPARTS(DATEPART(year,GETUTCDATE()),DATEPART(month,GETUTCDATE()),DATEPART(day,GETUTCDATE()))',
+        // mysql utc current time
+        'utc_time' => 'TIMEFROMPARTS(DATEPART(hour,GETUTCDATE()),DATEPART(minute,GETUTCDATE()),DATEPART(second,GETUTCDATE()),0,0)',
+        // mysql utc current date+time
+        'utc_timestamp' => 'GETUTCDATE()',
+        // mysql (datetime)->time, , sqlite (timestring, modifier)->time
+        'time' => 'TIMEFROMPARTS(DATEPART(hour,%!p),DATEPART(minute,%!p),DATEPART(second,%!p),0,0)',
+        // mysql (datetime/time)-> hour
+        'hour'=> 'DATEPART(hour,GETDATE())',
+        // mysql (datetime/time)-> minute
+        'minute'=> 'DATEPART(minute,GETDATE())',
+        // mysql (datetime/time)-> second
+        'second'=> 'DATEPART(second,GETDATE())',
+        // sqlite (timestring, modifier)->datetime
+        //'datetime' => '!sqliteDateTime',
+        // oci, mysql (year|month|day|hour|minute|second FROM <datetime>)->value ,
+        // pgsql (year|month|day|hour|minute|second <datetime>)->value
+        'extract' => '!extractDateConverter',
+        // pgsql ('year'|'month'|'day'|'hour'|'minute'|'second', <datetime>)->value
+        'date_part' => '!extractDateConverter',
+        // sqlsrv (year||month|day|hour|minute|second, <datetime>)->value
+        //'datepart' => '!extractDateConverter',
+    );
+
+    protected function extractDateConverter($parametersString) {
+        return 'datepart('.$parametersString.')';
     }
 
     /**

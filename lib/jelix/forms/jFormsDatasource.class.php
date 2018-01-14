@@ -176,7 +176,7 @@ abstract class jFormsDynamicDatasource implements jIFormsDynamicDatasource {
  * @subpackage  forms
  */
 class jFormsDaoDatasource extends jFormsDynamicDatasource {
-
+  
     protected $selector;
     protected $method;
     protected $labelProperty = array();
@@ -244,6 +244,9 @@ class jFormsDaoDatasource extends jFormsDynamicDatasource {
     }
 
     public function getLabel2($key, $form){
+        if ($key === null || $key == "")
+            return null;
+        
         if($this->dao === null)
             $this->dao = jDao::get($this->selector, $this->profile);
 
