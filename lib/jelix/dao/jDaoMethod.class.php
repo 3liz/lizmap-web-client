@@ -138,6 +138,7 @@ class jDaoMethod {
         }
 
         if(strlen($params['groupby'])){
+            trigger_error("jdao: groupby attribute on method element is deprecated because its behavior is not predictable", E_USER_DEPRECATED);
             if($this->type == 'select' || $this->type == 'selectfirst'){
                 $this->_groupBy = preg_split("/[\s,]+/", $params['groupby']);
                 $props = $this->_parser->getProperties();
@@ -203,7 +204,7 @@ class jDaoMethod {
     }
 
     private $_op = array('eq'=>'=', 'neq'=>'<>', 'lt'=>'<', 'gt'=>'>', 'lteq'=>'<=', 'gteq'=>'>=',
-        'like'=>'LIKE', 'notlike'=>'NOT LIKE', 'isnull'=>'IS NULL', 'isnotnull'=>'IS NOT NULL','in'=>'IN', 'notin'=>'NOT IN',
+        'like'=>'LIKE', 'notlike'=>'NOT LIKE', 'ilike'=>'ILIKE', 'isnull'=>'IS NULL', 'isnotnull'=>'IS NOT NULL','in'=>'IN', 'notin'=>'NOT IN',
         'binary_op'=>'dummy');
       // 'between'=>'BETWEEN',  'notbetween'=>'NOT BETWEEN',
 
@@ -354,6 +355,10 @@ class jDaoMethod {
     private function _addLimit($limit){
         $attr = $this->_parser->getAttr($limit, array('offset','count'));
 
+        /**
+         * @var $offset
+         * @var $count
+         */
         extract($attr);
 
         if( $offset === null){

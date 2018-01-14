@@ -3,7 +3,9 @@
 * @package     jelix
 * @subpackage  core_response
 * @author      Laurent Jouanneau
+* @contributor Julien Issler
 * @copyright   2006-2010 Laurent Jouanneau
+* @copyright   2017 Julien Issler
 * @link        http://www.jelix.org
 * @licence     GNU Lesser General Public Licence see LICENCE file or http://www.gnu.org/licenses/lgpl.html
 */
@@ -48,12 +50,12 @@ class jResponseZip extends jResponse {
      * @return boolean    true  if it's ok
      */
     public function output(){
-        
+
         if($this->_outputOnlyHeaders){
             $this->sendHttpHeaders();
             return true;
         }
-        
+
         $zipContent = $this->content->getContent();
         $this->_httpHeaders['Content-Type']='application/zip';
         $this->_httpHeaders['Content-Disposition']='attachment; filename="'.$this->zipFilename.'"';
@@ -64,7 +66,7 @@ class jResponseZip extends jResponse {
         $this->addHttpHeader('Cache-Control','no-store, no-cache, must-revalidate, post-check=0, pre-check=0',false);
         $this->addHttpHeader('Expires','0',false);
 
-        $this->_httpHeaders['Content-length']=strlen($zipContent);
+        $this->_httpHeaders['Content-Length']=strlen($zipContent);
         $this->sendHttpHeaders();
         echo $zipContent;
         flush();

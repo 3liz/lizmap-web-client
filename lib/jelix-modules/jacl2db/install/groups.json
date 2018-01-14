@@ -1,0 +1,41 @@
+[
+  {
+    "dao": "jacl2db~jacl2group",
+    "properties": ["id_aclgrp", "name", "grouptype", "ownerlogin"],
+    "data": [
+      ["__anonymous", "anonymous", 0, null],
+      ["admins", "admins", 0, null],
+      ["users", "users", 1, null]
+    ]
+  },
+  {
+    "dao": "jacl2db~jacl2rights",
+    "properties": ["id_aclsbj", "id_aclgrp", "id_aclres"],
+    "data": [
+      ["acl.group.modify", "admins", "-"],
+      ["acl.group.create", "admins", "-"],
+      ["acl.group.delete", "admins", "-"],
+      ["acl.group.view", "admins", "-"],
+      ["acl.user.modify", "admins", "-"],
+      ["acl.user.view", "admins", "-"],
+
+      ["auth.users.list", "admins", "-"],
+      ["auth.users.view", "admins", "-"],
+      ["auth.users.modify", "admins", "-"],
+      ["auth.users.create", "admins", "-"],
+      ["auth.users.delete", "admins", "-"],
+      ["auth.users.change.password", "admins", "-"],
+
+      ["auth.user.view", "admins", "-"],
+      ["auth.user.modify", "admins", "-"],
+      ["auth.user.change.password", "admins", "-"],
+      ["auth.user.view", "users", "-"],
+      ["auth.user.modify", "users", "-"],
+      ["auth.user.change.password", "users", "-"]
+    ]
+  }
+]
+
+
+
+

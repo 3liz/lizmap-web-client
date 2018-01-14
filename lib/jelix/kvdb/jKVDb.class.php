@@ -18,10 +18,10 @@ class jKVDb {
     protected function __construct() { } // the class is only static
 
     /**
-    * get the jKVConnection object associated to a given profile name
+    * get the jKVDriver object associated to a given profile name
     *
     * @param string $name
-    * @return jKVConnection
+    * @return jKVDriver
     */
     public static function getConnection($name = null) {
         return jProfiles::getOrStoreInPool('jkvdb', $name, array('jKVDb', '_createConnector'));
@@ -29,6 +29,7 @@ class jKVDb {
 
     /**
      * callback method for jProfiles. internal use
+     * @return jKVDriver
      */
     public static function _createConnector($profile) {
         // If no driver is specified, let's throw an exception

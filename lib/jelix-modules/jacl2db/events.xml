@@ -4,5 +4,6 @@
         <event name="AuthNewUser" />
         <event name="AuthRemoveUser" />
         <event name="AuthLogout" />
+        <event name="AuthCanRemoveUser" />
     </listener>
 </events>

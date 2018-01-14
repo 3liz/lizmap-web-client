@@ -1,0 +1,17 @@
+[
+  {
+    "dao": "jacl2db~jacl2group",
+    "properties": ["id_aclgrp", "name", "grouptype", "ownerlogin"],
+    "data": [
+      ["__priv_admin", "admin", 2, "admin"]
+    ]
+  },
+  {
+    "dao": "jacl2db~jacl2usergroup",
+    "properties": ["login", "id_aclgrp"],
+    "data": [
+      ["admin", "__priv_admin"],
+      ["admin", "admins"]
+    ]
+  }
+]

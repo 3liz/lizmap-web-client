@@ -10,6 +10,8 @@
 
 class passwordCtrl extends jController {
 
+    public $sensitiveParameters = array('pwd', 'pwd_confirm');
+
     public $pluginParams=array(
         '*'   =>array('jacl2.rights.or'=>array('auth.users.change.password','auth.user.change.password')),
     );

@@ -102,7 +102,9 @@ dao = ""
 ; profile to use for jDb 
 profile = ""
 
-; name of the php function to crypt the password in the database
+; name of the php function used to hash password
+; It is deprecated but still used to convert password hash
+; to new hashes with password_hash_method
 password_crypt_function = sha1
 ; if you want to use a salt with sha1:
 ;password_crypt_function = "1:sha1WithSalt"
@@ -120,7 +122,9 @@ uploadsDirectory= ""
 ; selector of the class
 class = ""
 
-; name of the php function to crypt the password in the database
+; name of the php function used to hash password
+; It is deprecated but still used to convert password hash
+; to new hashes with password_hash_method
 password_crypt_function = sha1
 ; if you want to use a salt with sha1:
 ;password_crypt_function = "1:sha1WithSalt"
@@ -150,8 +154,8 @@ searchFilter=
 ; attributes to retrieve for the search, example for Active Directory: "cn,distinguishedName,name"
 searchAttributes=
 
-; name of the php function to crypt the password in the database
-password_crypt_function = sha1
-; if you want to use a salt with sha1:
-;password_crypt_function = "1:sha1WithSalt"
-;password_salt = "here_your_salt"
+; the name of the ldap property used for the login field
+uidProperty=cn
+; the objectclass to use for a user
+ldapUserObjectClass=user
+

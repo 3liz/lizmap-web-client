@@ -120,6 +120,7 @@ class jAuth {
             $config[$config['driver']]['password_hash_method'] = $password_hash_method;
             $config[$config['driver']]['password_hash_options'] = $password_hash_options;
             self::$config = $config;
+            self::$driver = null;
         }
         return self::$config;
     }

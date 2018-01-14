@@ -7,7 +7,7 @@
 * @contributor Bastien Jaillot (bug fix)
 * @contributor Julien Issler, Guillaume Dugas
 * @contributor Philippe Villiers
-* @copyright  2001-2005 CopixTeam, 2005-2012 Laurent Jouanneau
+* @copyright  2001-2005 CopixTeam, 2005-2017 Laurent Jouanneau
 * @copyright  2007-2008 Julien Issler
 * This class was get originally from the Copix project (CopixDAOGeneratorV1, Copix 2.3dev20050901, http://www.copix.org)
 * Few lines of code are still copyrighted 2001-2005 CopixTeam (LGPL licence).
@@ -487,14 +487,19 @@ class jDaoGenerator {
         $sqlSet='';
 
         foreach($method->getValues() as $propname=>$value){
-            if($value[1]){
-                preg_match_all('/\$([a-zA-Z0-9_]+)/', $value[0], $varMatches, PREG_OFFSET_CAPTURE );
+            if ($value[1]) {
+                // value is an expression
+
+                $expression = $this->parseSQLFunction($value[0]);
+
+                // replace all variable name by a php expression
+                preg_match_all('/\$([a-zA-Z0-9_]+)/', $expression, $varMatches, PREG_OFFSET_CAPTURE );
                 $parameters = $method->getParameters();
                 if (count($varMatches[0])) {
                     $result = '';
                     $len = 0;
                     foreach($varMatches[1] as $k=>$var) {
-                        $result .= substr($value[0], $len, $len+$varMatches[0][$k][1]);
+                        $result .= substr($expression, $len, $len+$varMatches[0][$k][1]);
                         $len += $varMatches[0][$k][1] + strlen($varMatches[0][$k][0]);
                         if (in_array($var[0], $parameters)) {
                             $result .= '\'.'.$this->_preparePHPExpr($varMatches[0][$k][0], $updatefields[$propname],true).'.\'';
@@ -503,10 +508,12 @@ class jDaoGenerator {
                             $result .= $varMatches[0][$k][0];
                         }
                     }
-                    $value[0] = $result;
+                    $expression = $result;
                 }
-                $sqlSet.= ', '.$this->_encloseName($updatefields[$propname]->fieldName). '= '. $value[0];
-            }else{
+                $sqlSet.= ', '.$this->_encloseName($updatefields[$propname]->fieldName). '= '. $expression;
+            }
+            else {
+                // value is a simple value
                 $sqlSet.= ', '.$this->_encloseName($updatefields[$propname]->fieldName). '= '.
                     $this->tools->escapeValue($updatefields[$propname]->unifiedType, $value[0], false, true);
             }
@@ -660,7 +667,12 @@ class jDaoGenerator {
                 $field .= ' as '.$this->_encloseName($propname);    
             }
         }else{
-            $field = str_replace(array("'", "%s"), array("\\'",$table.$this->_encloseName($fieldname)),$pattern).' as '.$this->_encloseName($propname);
+            $expression = $this->parseSQLFunction($pattern);
+            $field = str_replace(
+                array("'", "%s"),
+                array("\\'", $table.$this->_encloseName($fieldname)),
+                $expression)
+                .' as '.$this->_encloseName($propname);
         }
         return $field;
     }
@@ -839,11 +851,13 @@ class jDaoGenerator {
 
             $value = $this->_preparePHPExpr('$'.$prefixfield.$fieldName, $field, true);
 
-            if($pattern != ''){
-                if(strpos($field->$pattern, "'") !== false && strpos($field->$pattern, "\\'") === false) {
-                    $values[$field->name] = sprintf(str_replace("'", "\\'", $field->$pattern),'\'.'.$value.'.\'');
-                } else {
-                    $values[$field->name] = sprintf($field->$pattern,'\'.'.$value.'.\'');
+            if ($pattern != '') {
+                $expression = $this->parseSQLFunction($field->$pattern);
+                if(strpos($expression, "'") !== false && strpos($expression, "\\'") === false) {
+                    $values[$field->name] = sprintf(str_replace("'", "\\'", $expression),'\'.'.$value.'.\'');
+                }
+                else {
+                    $values[$field->name] = sprintf($expression,'\'.'.$value.'.\'');
                 }
             }else{
                 $values[$field->name] = '\'.'.$value.'.\'';
@@ -937,7 +951,9 @@ class jDaoGenerator {
 
             $prop = $fields[$cond['field_id']];
 
-            $pattern = (isset($cond['field_pattern']) && !empty($cond['field_pattern'])) ? $cond['field_pattern'] : '%s';
+            $pattern = (isset($cond['field_pattern']) && !empty($cond['field_pattern'])) ?
+                $this->parseSQLFunction($cond['field_pattern']) :
+                '%s';
 
             if($withPrefix){
                 if($pattern == '%s') {
@@ -968,15 +984,17 @@ class jDaoGenerator {
                 $r.=$cond['operator'].' ';
             }else{
                 if($cond['isExpr']){
-                    $value=str_replace("'","\\'",$cond['value']);
                     // we need to know if the expression is like "$foo" (1) or a thing like "concat($foo,'bla')" (2)
                     // because of the nullability of the parameter. If the value of the parameter is null and the operator
                     // is = or <>, then we need to generate a thing like :
                     // - in case 1: ($foo === null ? 'IS NULL' : '='.$this->_conn->quote($foo))
                     // - in case 2: '= concat('.($foo === null ? 'NULL' : $this->_conn->quote($foo)).' ,\'bla\')'
-                    if($value[0] == '$'){
+                    if ($cond['value'][0] == '$') {
+                        $value = str_replace("'", "\\'", $cond['value']);
                         $value = '\'.'.$this->_preparePHPExpr($value, $prop, !$prop->requiredInConditions,$cond['operator']).'.\'';
                     }else{
+                        $value = $this->parseSQLFunction($cond['value']);
+                        $value = str_replace("'", "\\'", $value);
                         foreach($params as $param){
                             $value = str_replace('$'.$param, '\'.'.$this->_preparePHPExpr('$'.$param, $prop, !$prop->requiredInConditions).'.\'',$value);
                         }
@@ -1095,4 +1113,9 @@ class jDaoGenerator {
     protected function buildUpdateAutoIncrementPK($pkai) {
         return '       $record->'.$pkai->name.'= $this->_conn->lastInsertId();';
     }
+
+    protected function parseSQLFunction($expression) {
+        return $this->tools->parseSQLFunctionAndConvert($expression);
+    }
+
 }

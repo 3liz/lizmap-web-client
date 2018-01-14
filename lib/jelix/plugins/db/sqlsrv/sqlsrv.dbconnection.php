@@ -217,6 +217,12 @@ class sqlsrvDbConnection extends jDbConnection {
         return new sqlsrvDbResultSet(null, $this, $newQuery, $parameterNames);
     }
 
+    /**
+     * @inheritdoc
+     */
+    public function encloseName ($fieldName) {
+        return '['.$fieldName.']';
+    }
 
 
     /**

@@ -46,16 +46,19 @@ class jauthdbModuleInstaller extends jInstallerModule {
 
                 $this->execSQLScript('install_jauth.schema');
                 if ($this->getParameter('defaultuser')) {
-                    require_once(JELIX_LIB_PATH.'auth/jAuth.class.php');
-                    require_once(JELIX_LIB_PATH.'plugins/auth/db/db.auth.php');
-
-                    $confIni = parse_ini_file(jApp::configPath($authconfig), true);
-                    $authConfig = jAuth::loadConfig($confIni);
-                    $driver = new dbAuthDriver($authConfig['Db']);
-                    $passwordHash = $driver->cryptPassword('admin');
                     $cn = $this->dbConnection();
-                    $cn->exec("INSERT INTO ".$cn->prefixTable('jlx_user')." (usr_login, usr_password, usr_email ) VALUES
+                    $rs = $cn->query("SELECT usr_login FROM ".$cn->prefixTable('jlx_user')." WHERE usr_login = 'admin'");
+                    if (!$rs->fetch()) {
+                        require_once(JELIX_LIB_PATH.'auth/jAuth.class.php');
+                        require_once(JELIX_LIB_PATH.'plugins/auth/db/db.auth.php');
+
+                        $confIni = parse_ini_file(jApp::configPath($authconfig), true);
+                        $authConfig = jAuth::loadConfig($confIni);
+                        $driver = new dbAuthDriver($authConfig['Db']);
+                        $passwordHash = $driver->cryptPassword('admin');
+                        $cn->exec("INSERT INTO ".$cn->prefixTable('jlx_user')." (usr_login, usr_password, usr_email ) VALUES
                                 ('admin', ".$cn->quote($passwordHash)." , 'admin@localhost.localdomain')");
+                    }
                 }
             }
         }
