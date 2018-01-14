@@ -6,7 +6,7 @@ namespace PhpRedis;
  * 
  * @author sash
  * @license LGPL
- * @version 2.0.0
+ * @version 2.0.1
  */
 class Redis {
 	private $port;
@@ -40,8 +40,9 @@ class Redis {
 			return;
 		}
 		$msg = "Cannot open socket to {$this->host}:{$this->port}";
-		if ($errno || $errmsg)
+		if ($errno || $errstr) {
 			$msg .= "," . ($errno ? " error $errno" : "") . ($errstr ? " $errstr" : "");
+		}
 		throw new RedisException ( "$msg." );
 	}
 	private function debug($msg){

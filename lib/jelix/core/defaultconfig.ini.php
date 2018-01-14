@@ -138,10 +138,12 @@ errors_openon=error
 [error_handling]
 messageLogFormat = "%date%\t%ip%\t[%code%]\t%msg%\t%file%\t%line%\n\t%url%\n%params%\n%trace%\n\n"
 errorMessage="A technical error has occured (code: %code%). Sorry for this inconvenience."
+; HTTP parameters that should not appears in logs. See also jController::$sensitiveParameters
+sensitiveParameters = "password,passwd,pwd"
 
 [compilation]
 checkCacheFiletime  = on
-force  = off
+force = off
 
 [urlengine]
 ; name of url engine :  "basic_significant" or "significant"
@@ -188,8 +190,17 @@ basePath = ""
 ; you MUST define basePath when you define backendBasePath
 backendBasePath =
 
+; Reverse proxies often communicate with web servers with the HTTP protocol,
+; even if requests are made with HTTPS. And it may add a 'Fowarded' or a
+; 'X-Forwarded-proto' headers so the web server know what is the protocol of
+; the original request. However Jelix <=1.6 does not support these headers, so
+; you must indicate the protocol of the original requests here, if you know
+; that the web site can be reach entirely with HTTPS.
+; Possible value is 'https' or nothing (no proxy).
+forceProxyProtocol=
+
 ; for an app on a simple http server behind an https proxy, the https verification
-; should be disabled
+; should be disabled (see forceProxyProtocol).
 checkHttpsOnParsing = on
 
 ; this is the url path to the jelix-www content (you can found this content in lib/jelix-www/)
@@ -241,6 +252,10 @@ jsonrpc = "@jsonrpc"
 index = on
 xmlrpc = on
 jsonrpc = on
+
+[basic_significant_urlengine_aliases]
+; list of names to use for module name in url
+; urlname = modulename
 
 [logger]
 ; list of loggers for each categories of log messages

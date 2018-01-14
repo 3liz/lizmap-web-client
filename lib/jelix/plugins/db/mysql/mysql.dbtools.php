@@ -116,35 +116,89 @@ class mysqlDbTools extends jDbTools {
       'complex types'   =>array('varchar',    'varchar',    null,       null,       0,     65535),
     );
 
+
+    protected $keywordNameCorrespondence = array(
+        // sqlsrv,mysql,oci,pgsql -> date+time
+        //'current_timestamp' => '',
+        // mysql,oci,pgsql -> date
+        //'current_date' => '',
+        // mysql -> time, pgsql -> time+timezone
+        //'current_time' => '',
+        // oci -> date+fractional secon + timezone
+        'systimestamp' => 'current_timestamp',
+        // oci -> date+time+tz
+        'sysdate' => 'current_timestamp',
+        // pgsql -> time
+        'localtime' => 'current_time',
+        // pgsql -> date+time
+        //'localtimestamp' => '',
+    );
+
+    protected $functionNameCorrespondence = array(
+
+        // sqlsrv, -> date+time
+        'sysdatetime' => 'current_timestamp',
+        // sqlsrv, -> date+time+offset
+        'sysdatetimeoffset' => 'current_timestamp',
+        // sqlsrv, -> date+time at utc
+        'sysutcdatetime' => 'UTC_TIMESTAMP()',
+        // sqlsrv -> date+time
+        'getdate' => 'current_timestamp',
+        // sqlsrv -> date+time at utc
+        'getutcdate' => 'UTC_TIMESTAMP()',
+        // sqlsrv,mysql (datetime)-> integer
+        //'day' => '',
+        // sqlsrv,mysql (datetime)-> integer
+        //'month' => '',
+        // sqlsrv, mysql (datetime)-> integer
+        //'year' => '',
+        // mysql -> date
+        //'curdate' => '',
+        // mysql -> date
+        //'current_date' => '',
+        // mysql -> time
+        //'curtime' => '',
+        // mysql -> time
+        //'current_time' => '',
+        // mysql,pgsql -> date+time
+        //'now' => '',
+        // mysql date+time
+        //'current_timestamp' => '',
+        // mysql (datetime)->date, sqlite (timestring, modifier)->date
+        //'date' => '!dateConverter',
+        // mysql = day()
+        //'dayofmonth' => '',
+        // mysql -> date+time
+        //'localtime' => '',
+        // mysql -> date+time
+        //'localtimestamp' => '',
+        // mysql utc current date
+        //'utc_date' => '',
+        // mysql utc current time
+        //'utc_time' => '',
+        // mysql utc current date+time
+        //'utc_timestamp' => '',
+        // mysql (datetime)->time, , sqlite (timestring, modifier)->time
+        //'time' => '!timeConverter',
+        // mysql (datetime/time)-> hour
+        //'hour'=> '',
+        // mysql (datetime/time)-> minute
+        //'minute'=> '',
+        // mysql (datetime/time)-> second
+        //'second'=> '',
+        // sqlite (timestring, modifier)->datetime
+        'datetime' => 'DATE_FORMAT(%1p, \'%Y-%m-%d %H:%i:%s\')',
+        // oci, mysql (year|month|day|hour|minute|second FROM <datetime>)->value ,
+        // pgsql (year|month|day|hour|minute|second <datetime>)->value
+        'extract' => '!extractDateConverter',
+        // pgsql ('year'|'month'|'day'|'hour'|'minute'|'second', <datetime>)->value
+        'date_part' => '!extractDateConverter',
+        // sqlsrv (year||month|day|hour|minute|second, <datetime>)->value
+        'datepart' => '!extractDateConverter',
+    );
+
     public function encloseName($name){
         return '`'.$name.'`';
-    }
-
-    /**
-     * returns the list of tables
-     * @return array list of table names
-     * @throws jException
-     */
-    public function getTableList () {
-        $results = array ();
-        if (isset($this->_conn->profile['database'])) {
-            $db = $this->_conn->profile['database'];
-        }
-        else if (isset($this->_conn->profile['dsn'])
-                 && preg_match('/dbname=([a-z0-9_ ]*)/', $this->_conn->profile['dsn'], $m)){
-            $db = $m[1];
-        }
-        else {
-            throw new jException("jelix~error.no.database.name", $this->_conn->profile['name']);
-        }
-        $rs = $this->_conn->query ('SHOW TABLES FROM '.$this->encloseName($db));
-        $col_name = 'Tables_in_'.$db;
-
-        while ($line = $rs->fetch ()){
-            $results[] = $line->$col_name;
-        }
-
-        return $results;
     }
 
     /**

@@ -285,6 +285,39 @@ abstract class jInstallerBase {
     }
 
     /**
+     * Insert data into a database, from a json file, using a DAO mapping
+     * @param string $relativeSourcePath name of the json file into the install directory
+     * @param integer $option one of jDbTools::IBD_* const
+     * @return integer number of records inserted/updated
+     * @throws Exception
+     * @since 1.6.16
+     */
+    final protected function insertDaoData($relativeSourcePath, $option) {
+        $file = $this->path.'install/'.$relativeSourcePath;
+        $dataToInsert = json_decode(file_get_contents($file), true);
+        if (!$dataToInsert) {
+            throw new Exception("Bad format for dao data file.");
+        }
+        if (is_object($dataToInsert)) {
+            $dataToInsert = array($dataToInsert);
+        }
+        $daoMapper = new jDaoDbMapper($this->dbProfile);
+        $count = 0;
+        foreach($dataToInsert as $daoData) {
+            if (!isset($daoData['dao']) ||
+                !isset($daoData['properties']) ||
+                !isset($daoData['data'])
+            ) {
+               throw new Exception("Bad format for dao data file.");
+            }
+            $count += $daoMapper->insertDaoData($daoData['dao'],
+                $daoData['properties'], $daoData['data'], $option);
+        }
+        return $count;
+    }
+
+
+    /**
      * copy the whole content of a directory existing in the install/ directory
      * of the component, to the given directory
      * @param string $relativeSourcePath relative path to the install/ directory of the component
