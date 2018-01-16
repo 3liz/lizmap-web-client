@@ -16,6 +16,10 @@ class datavizPlot {
 
     public $type = null;
 
+    public $layerId = null;
+
+    public $layerXmlZero = null;
+
     protected $data = null;
 
     protected $traces = array();
@@ -28,13 +32,19 @@ class datavizPlot {
 
     protected $x_field = null;
 
-    protected $color = null;
+    protected $y_fields = null;
 
-    protected $color_values = array();
+    protected $x_fields = null;
+
+    protected $colors = array();
 
     protected $layout = null;
 
-    function __construct( $repository, $project, $x_field, $y_field, $color='lightblue', $title='plot title', $layout=null, $data=null ){
+    protected $x_mandatory = array('scatter', 'bar', 'histogram', 'histogram2d', 'polar');
+
+    protected $y_mandatory = array('scatter', 'box', 'bar', 'pie', 'histogram2d', 'polar');
+
+    function __construct( $repository, $project, $layerId, $x_field, $y_field, $colors=array(), $title='plot title', $layout=null, $data=null ){
 
         // Get the project data
         $lproj = $this->getProject($repository, $project);
@@ -42,9 +52,21 @@ class datavizPlot {
             return false;
         $this->lproj = $lproj;
 
+        // Get layer data
+        $this->layerId = $layerId;
+        $this->parseLayer($layerId);
+
         $this->y_field = $y_field;
         $this->x_field = $x_field;
-        $this->color = $color;
+        $this->colors = $colors;
+
+        // Get the field(s) given by the user to build traces
+        $x_fields = array_map('trim', explode(',', $this->x_field));
+        if($x_fields != array(''))
+            $this->x_fields = $x_fields;
+        $y_fields = array_map('trim', explode(',', $this->y_field));
+        if($y_fields != array(''))
+            $this->y_fields = $y_fields;
 
         // Set title, layout and data (use default if none given)
         $this->setTitle($title);
@@ -76,6 +98,13 @@ class datavizPlot {
         return $lproj;
     }
 
+    protected function parseLayer($layerId){
+        $layer = $this->lproj->getLayer( $this->layerId );
+        $layerXml = $this->lproj->getXmlLayer( $this->layerId );
+        if(count($layerXml) > 0)
+            $this->layerXmlZero = $layerXml[0];
+    }
+
     protected function setTitle($title) {
         $this->title = $title;
     }
@@ -100,14 +129,50 @@ class datavizPlot {
 
     }
 
+    protected function getFieldAlias($field){
+        $name = $field;
+        if(count($this->layerXmlZero->aliases) > 0){
+            $aliasesZero = $this->layerXmlZero->aliases[0];
+            $aliasXml = $aliasesZero->xpath("alias[@field='$name']");
+            if($aliasXml and $aliasXml[0]){
+                $name = (string)$aliasXml[0]->attributes()->name;
+            }
+        }
+        return $name;
+    }
+
     protected function getLayoutTemplate(){
         $layout = array(
-            'title' => $this->title,
-            'showlegend' => false,
+            //'title' => $this->title,
+            'showlegend' => true,
+            'legend' => array(
+                'orientation'=> 'h',
+                'x'=> '-0.1',
+                'y'=> '1.15'
+            ),
             'autosize'=> true,
             'plot_bgcolor'=> 'rgba(0,0,0,0)',
             'paper_bgcolor'=> 'rgba(0,0,0,0)'
         );
+
+        if($this->type == 'bar' and count($this->y_fields) > 1){
+            $layout['barmode'] = 'stack';
+        }
+
+        if(!in_array($this->type, array('pie', 'bar'))){
+            if(count($this->x_fields) == 1){
+                $layout['xaxis'] = array(
+                    'title'=> $this->getFieldAlias($this->x_field)
+                );
+            }
+        }
+        if(!in_array($this->type, array('pie', 'bar'))){
+            if(count($this->y_fields) == 1){
+                $layout['yaxis'] = array(
+                    'title'=> $this->getFieldAlias($this->y_field)
+                );
+            }
+        }
         return $layout;
     }
 
@@ -147,23 +212,14 @@ class datavizPlot {
         return $layout;
     }
 
-    public function fetchData($layerId, $method='wfs', $exp_filter=''){
+    public function fetchData($method='wfs', $exp_filter=''){
 
-        if(!$layerId)
+        if(!$this->layerId)
             return false;
         $response = false;
 
-        $layer = $this->lproj->getLayer( $layerId );
-        $layerXml = $this->lproj->getXmlLayer( $layerId );
-        $layerXmlZero = $layerXml[0];
-        $_layerName = $layerXmlZero->xpath('layername');
+        $_layerName = $this->layerXmlZero->xpath('layername');
         $layerName = (string)$_layerName[0];
-
-
-
-        // Get the field(s) given by the user to build traces
-        $x_fields = array_map('trim', explode(',', $this->x_field));
-        $y_fields = array_map('trim', explode(',', $this->y_field));
 
         // Prepare request and get data
         if($method == 'wfs'){
@@ -176,7 +232,7 @@ class datavizPlot {
                 'TYPENAME' => $typename,
                 'OUTPUTFORMAT' => 'GeoJSON',
                 'GEOMETRYNAME' => 'none',
-                'PROPERTYNAME' => implode(',', $x_fields) . ',' . implode(',', $y_fields)
+                'PROPERTYNAME' => implode(',', $this->x_fields) . ',' . implode(',', $this->y_fields)
             );
             if(!empty($exp_filter)){
                 // Add fields in PROPERTYNAME
@@ -225,65 +281,96 @@ class datavizPlot {
             if(!property_exists($f1, 'properties')){
                 return false;
             }
-            foreach($x_fields as $x_field){
-                if( !property_exists($f1->properties, $x_field) ){
-                    return false;
+
+            // Check if plot needs X and has $x_field
+            if( in_array($this->type, $this->x_mandatory) and !$this->x_fields){
+                return false;
+            }
+
+            if( count($this->x_fields) > 0 ){
+                foreach($this->x_fields as $x_field){
+                    if( !property_exists($f1->properties, $x_field) ){
+                        return false;
+                    }
                 }
             }
-            foreach($y_fields as $y_field){
-                if( !property_exists($f1->properties, $y_field) ){
-                    return false;
+
+            // Check if plot needs Y and has $y_field
+            if( in_array($this->type, $this->y_mandatory) and !$this->y_fields){
+                return false;
+            }
+            if( count($this->y_fields) > 0 ){
+                foreach($this->y_fields as $y_field){
+                    if( !property_exists($f1->properties, $y_field) ){
+                        return false;
+                    }
                 }
             }
 
             // Fill in traces
             $traces = array();
-            $color = $this->color;
-            foreach($x_fields as $x_field){
-                foreach($y_fields as $y_field){
 
-                    // build empty trace
-                    $trace = $this->getTraceTemplate();
+            $yidx = 0;
+            foreach($this->y_fields as $y_field){
 
-                    // Set trace name. Use QGIS field alias if present
-                    $trace_name = $y_field;
-                    if($layerXmlZero->aliases){
-                        $aliasesZero = $layerXmlZero->aliases[0];
-                        $aliasXml = $aliasesZero->xpath("alias[@field='$trace_name']");
-                        if($aliasXml and $aliasXml[0]){
-                            $trace_name = (string)$aliasXml[0]->attributes()->name;
-                        }
-                    }
+                // build empty trace
+                $trace = $this->getTraceTemplate();
 
-                    $trace['name'] = $trace_name;
+                // Set trace name. Use QGIS field alias if present
+                $trace_name = $this->getFieldAlias($y_field);
+                $trace['name'] = $trace_name;
 
-                    // Get data from layer features et fill the trace
-                    $colors = array();
-                    $xf = $x_field;
-                    $yf = $y_field;
-                    if( array_key_exists('orientation', $trace) and $trace['orientation'] == 'h'){
-                        // Revert x and y for horizontal bar plot
-                        $xf = $y_field;
-                        $yf = $x_field;
-                    }
-                    foreach($features as $feat){
-                        $trace[$this->x_property_name][] = $feat->properties->$xf;
-                        $trace[$this->y_property_name][] = $feat->properties->$yf;
-                        if( property_exists($feat->properties, $color)
-                            and !empty($feat->properties->$color)
-                        ){
-                            $colors[] = $feat->properties->$color;
-                        }
-                    }
-                    if(!empty($colors)){
-                        $trace['marker']['colors'] = $colors;
-                        unset($trace['marker']['colors']);
-                    }else{
-                        $trace['marker']['color'] = $color;
-                    }
-                    $traces[] = $trace;
+                // Get data from layer features et fill the trace
+                $xf = Null;
+                if( count($this->x_fields) > 0 ){
+                    $xf = $this->x_field;
                 }
+                $yf = Null;
+                if( count($this->y_fields) > 0 ){
+                    $yf = $y_field;
+                }
+
+                // Revert x and y for horizontal bar plot
+                if( array_key_exists('orientation', $trace) and $trace['orientation'] == 'h'){
+                    $xf = $y_field;
+                    $yf = $this->x_field;
+                }
+
+                // Set color
+                if( array_key_exists('marker', $trace) and !empty($this->colors)) {
+                    $trace['marker']['color'] = $this->colors[$yidx];
+                    $yidx++;
+                }
+                //$featcolors = array();
+
+                // Fill in the trace for each dimension
+                //$featcolor = 'color';
+                foreach($features as $feat){
+                    if(count($this->x_fields) > 0){
+                        $trace[$this->x_property_name][] = $feat->properties->$xf;
+                    }
+                    if(count($this->y_fields) > 0){
+                        $trace[$this->y_property_name][] = $feat->properties->$yf;
+                    }
+
+                    //if( property_exists($feat->properties, $featcolor)
+                        //and !empty($feat->properties->$featcolor)
+                    //){
+                        //$featcolors[] = $feat->properties->$featcolor;
+                    //}
+                }
+                //if(!empty($featcolors)){
+                    //$trace['marker']['colors'] = $featcolors;
+                    //unset($trace['marker']['color']);
+                //}
+
+                if( count($trace[$this->x_property_name]) == 0 )
+                    $trace[$this->x_property_name] = Null;
+                if( count($trace[$this->y_property_name]) == 0 )
+                    $trace[$this->y_property_name] = Null;
+                $traces[] = $trace;
             }
+
             $this->traces = $traces;
             $this->data = $traces;
 
@@ -298,31 +385,76 @@ class datavizPlot {
 }
 
 
-class datavizPlotPie extends datavizPlot {
+class datavizPlotScatter extends datavizPlot {
 
-    public $type = 'pie';
+    public $type = 'scatter';
 
-    protected $x_property_name = 'values';
+    protected $x_property_name = 'x';
 
-    protected $y_property_name = 'labels';
+    protected $y_property_name = 'y';
 
     protected function getTraceTemplate(){
         $data = array(
+            'type'=> 'scatter',
             'name'=> '',
-            'values'=> array(),
-            'labels'=> array(),
+            'y'=> array(),
+            'x'=> array(),
+            'text'=> array(),
             'marker'=> array(
-                'color' => 'orange'
+                'color' => 'orange',
+                'colorscale' => Null,
+                'showscale' => False,
+                'reversescale' => False,
+                'colorbar' => array(
+                    'len'=>'0.8'
+                ),
+                'size'=>Null,
+                'symbol'=>Null,
+                'line' => array(
+                    'color'=>Null,
+                    'width'=>Null
+                )
             ),
-            'hoverinfo'=> 'label+value+percent',
-            'textinfo'=> 'label',
-            'type'=> 'pie'
+            'mode'=> 'markers',
+            'textinfo'=> 'none',
+            'opacity'=>Null
         );
         return $data;
     }
 
 }
 
+class datavizPlotBox extends datavizPlot {
+
+    public $type = 'box';
+
+    protected $x_property_name = 'x';
+
+    protected $y_property_name = 'y';
+
+    protected function getTraceTemplate(){
+        $data = array(
+            'type'=> 'box',
+            'name'=> '',
+            'x'=> array(),
+            'y'=> array(),
+            'text'=> array(),
+            //'marker'=> array(
+                //'color' => 'orange'
+            //),
+            'boxmean'=>Null,
+            'orientation'=>'v',
+            'boxpoints'=>False,
+            'fillcolor'=>'orange',
+            'line' => array(
+                'color'=>Null,
+                'width'=> 1
+            ),
+            'opacity'=>Null
+        );
+        return $data;
+    }
+}
 
 class datavizPlotBar extends datavizPlot {
 
@@ -334,17 +466,31 @@ class datavizPlotBar extends datavizPlot {
 
     protected function getTraceTemplate(){
         $data = array(
+            'type'=> 'bar',
             'name'=> '',
             'y'=> array(),
             'x'=> array(),
+            'ids'=> Null,
             'text'=> array(),
             'marker'=> array(
-                'color' => 'orange'
+                'color' => 'orange',
+                'colorscale' => Null,
+                'showscale' => False,
+                'reversescale' => False,
+                'colorbar' => array(
+                    'len'=>'0.8'
+                ),
+                'line' => array(
+                    'color'=>Null,
+                    'width'=>Null
+                )
             ),
             'textinfo'=> 'none',
-            'type'=> 'bar',
             'orientation'=> 'v'
         );
+        if($this->type == 'bar' and count($this->y_fields) > 1){
+            $data['orientation'] = 'h';
+        }
         return $data;
     }
 }
@@ -359,9 +505,9 @@ class datavizPlotBarH extends datavizPlotBar {
 }
 
 
-class datavizPlotScatter extends datavizPlot {
+class datavizPlotHistogram extends datavizPlot {
 
-    public $type = 'scatter';
+    public $type = 'histogram';
 
     protected $x_property_name = 'x';
 
@@ -369,18 +515,103 @@ class datavizPlotScatter extends datavizPlot {
 
     protected function getTraceTemplate(){
         $data = array(
+            'type'=> 'histogram',
             'name'=> '',
-            'y'=> array(),
             'x'=> array(),
-            'text'=> array(),
+            'y'=> array(),
             'marker'=> array(
-                'color' => 'orange'
+                'color' => 'orange',
+                'line' => array(
+                    'color'=>Null,
+                    'width'=>Null
+                )
             ),
-            'mode'=> 'lines',
-            'textinfo'=> 'none',
-            'type'=> 'scatter'
+            'hoverinfo'=> 'label+value+percent',
+            'textinfo'=> 'label',
+            'orientation'=>'v',
+            'nbinsx'=> array(),
+            'nbinsy'=> array(),
+            'histnorm'=> Null,
+            'opacity'=> Null,
+            'cumulative'=> array(
+                'enabled'=>False,
+                'direction'=>False
+            )
         );
         return $data;
     }
 
+}
+
+
+class datavizPlotPie extends datavizPlot {
+
+    public $type = 'pie';
+
+    protected $x_property_name = 'labels';
+
+    protected $y_property_name = 'values';
+
+    protected function getTraceTemplate(){
+        $data = array(
+            'type'=> 'pie',
+            'name'=> '',
+            'values'=> array(),
+            'labels'=> array(),
+            'hoverinfo'=> 'label+value+percent',
+            'textinfo'=> 'label',
+            'opacity'=> Null
+        );
+        return $data;
+    }
+
+}
+
+class datavizPlotHistogram2d extends datavizPlot {
+
+    public $type = 'histogram2d';
+
+    protected $x_property_name = 'x';
+
+    protected $y_property_name = 'y';
+
+    protected function getTraceTemplate(){
+        $data = array(
+            'type'=> 'histogram2d',
+            'name'=> '',
+            'x'=> array(),
+            'y'=> array(),
+            'colorscale'=> Null,
+            'opacity'=> Null
+        );
+        return $data;
+    }
+
+}
+
+
+class datavizPlotPolar extends datavizPlot {
+
+    public $type = 'polar';
+
+    protected $x_property_name = 'r';
+
+    protected $y_property_name = 't';
+
+    protected function getTraceTemplate(){
+        $data = array(
+            'type'=> 'scatter',
+            'name'=> '',
+            'r'=> array(),
+            't'=> array(),
+            'textinfo'=>'r+t',
+            'mode'=>'markers',
+            'hoverinfo'=> 'label+value+percent',
+            'marker'=> array(
+                'color' => 'orange'
+            ),
+            'opacity'=> Null
+        );
+        return $data;
+    }
 }
