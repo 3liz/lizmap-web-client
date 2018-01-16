@@ -2,7 +2,8 @@ var lizDataviz = function() {
 
     var dv = {
         'config' : null,
-        'plots': []
+        'plots': [],
+        'template': null
     };
 
     function getPlots(){
@@ -63,7 +64,16 @@ var lizDataviz = function() {
         html+= '</div>';
         html+= '</div>';
 
-        $('#dataviz-content').append(html);
+        // Move plot at the end of the main container
+        // to the corresponding place if id is referenced in the template
+        var pgetter = '#dataviz_plot_template_' + plot_id;
+        var p = $(pgetter);
+        if( p.length ){
+            p.append(html);
+        }
+        else{
+            $('#dataviz-content').append(html);
+        }
     }
 
     function getPlot(plot_id, exp_filter){
@@ -104,21 +114,23 @@ var lizDataviz = function() {
                 if ( e.id == 'dataviz' ) {
                     resizePlot(id);
                 }
-            }
-        });
-        lizMap.events.on({
+            },
             rightdockopened: function(e) {
                 if ( e.id == 'dataviz' ) {
                     resizePlot(id);
                 }
-            }
-        });
-        lizMap.events.on({
+            },
             bottomdockopened: function(e) {
                 if ( e.id == 'dataviz' ) {
                     resizePlot(id);
                 }
+            },
+            bottomdocksizechanged: function(e) {
+                if($('#mapmenu li.dataviz').hasClass('active')){
+                    resizePlot(id);
+                }
             }
+
         });
         $(window).resize(function() {
             if($('#mapmenu li.dataviz').hasClass('active')){
@@ -149,6 +161,17 @@ var lizDataviz = function() {
             if( 'datavizLayers' in lizMap.config ){
                 // Get config
                 dv.config = lizMap.config.datavizLayers;
+
+                // Add HTML template
+                if( 'datavizTemplate' in lizMap.config.options ){
+                    datavizTemplate = lizMap.config.options.datavizTemplate;
+                    // Replace $N by container divs
+                    dv.template = datavizTemplate.replace(
+                        new RegExp('\\$([0-9])+','gm'),
+                        '<div id="dataviz_plot_template_$1"></div>'
+                    )
+                    $('#dataviz-content').append(dv.template);
+                }
 
                 // Build all plots
                 getPlots();
