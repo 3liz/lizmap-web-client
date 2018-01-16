@@ -665,8 +665,9 @@ class lizmapProject extends qgisProject {
                 'abstract' => $layer->abstract,
                 'plot'=>array(
                     'type' => $lc->type,
+                    'x_field' => $lc->x_field,
                     'y_field' => $lc->y_field,
-                    'x_field' => $lc->x_field
+                    'y2_field' => $lc->y2_field
                 )
             );
             if( !empty($lc->color) ){

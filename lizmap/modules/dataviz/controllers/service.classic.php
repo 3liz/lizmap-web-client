@@ -66,14 +66,17 @@ class serviceCtrl extends jController {
         $plot_id = $this->intParam('plot_id');
         $exp_filter = trim($this->param('exp_filter'));
         $color = null;
+        $color2 = null;
         $layout = null;
 
         // Default values
         $title = $this->param('title');
         $type = $this->param('type');
-        $y_field = $this->param('y_field');
         $x_field = $this->param('x_field');
+        $y_field = $this->param('y_field');
+        $y2_field = $this->param('y2_field');
         $color = $this->param('color', null);
+        $color2 = $this->param('color2', null);
 
         $layerId = null;
 
@@ -84,10 +87,25 @@ class serviceCtrl extends jController {
             $title = $plot['title'];
             $abstract = $plot['abstract'];
             $type = $plot['plot']['type'];
-            $y_field = $plot['plot']['y_field'];
             $x_field = $plot['plot']['x_field'];
-            if( array_key_exists('color', $plot['plot']) )
+            $y_field = $plot['plot']['y_field'];
+
+            $y2_field = $plot['plot']['y2_field'];
+            if(!empty($y2_field)){
+                $y_field = $y_field . ',' . $y2_field;
+            }
+
+            // Colors
+            $colors = array();
+            if( array_key_exists('color', $plot['plot']) ){
                 $color = $plot['plot']['color'];
+                $colors[] = $color;
+            }
+            if( array_key_exists('color2', $plot['plot']) ){
+                $color2 = $plot['plot']['color2'];
+                $colors[] = $color2;
+            }
+
             if( array_key_exists('layout_config', $plot['plot']) )
                 $layout = $plot['plot']['layout_config'];
 
@@ -95,17 +113,27 @@ class serviceCtrl extends jController {
 
         // Create plot
         jClasses::inc('dataviz~datavizPlot');
-        if( $type == 'pie'){
-            $dplot = new datavizPlotPie(  $repository, $project, $x_field, $y_field, $color, $title, $layout );
+
+        if( $type == 'scatter'){
+            $dplot = new datavizPlotScatter(  $repository, $project, $layerId, $x_field, $y_field, $colors, $title, $layout );
+        }
+        elseif( $type == 'box'){
+            $dplot = new datavizPlotBox(  $repository, $project, $layerId, $x_field, $y_field, $colors, $title, $layout );
         }
         elseif( $type == 'bar'){
-            $dplot = new datavizPlotBar(  $repository, $project, $x_field, $y_field, $color, $title, $layout );
+            $dplot = new datavizPlotBar(  $repository, $project, $layerId, $x_field, $y_field, $colors, $title, $layout );
         }
-        elseif( $type == 'bar_h'){
-            $dplot = new datavizPlotBarH(  $repository, $project, $x_field, $y_field, $color, $title, $layout );
+        elseif( $type == 'histogram'){
+            $dplot = new datavizPlotHistogram(  $repository, $project, $layerId, $x_field, $y_field, $colors, $title, $layout );
         }
-        elseif( $type == 'scatter'){
-            $dplot = new datavizPlotScatter(  $repository, $project, $x_field, $y_field, $color, $title, $layout );
+        elseif( $type == 'pie'){
+            $dplot = new datavizPlotPie(  $repository, $project, $layerId, $x_field, $y_field, $colors, $title, $layout );
+        }
+        elseif( $type == 'histogram2d'){
+            $dplot = new datavizPlotHistogram2d(  $repository, $project, $layerId, $x_field, $y_field, $colors, $title, $layout );
+        }
+        elseif( $type == 'polar'){
+            $dplot = new datavizPlotPolar(  $repository, $project, $layerId, $x_field, $y_field, $colors, $title, $layout );
         }
         else{
             $dplot = null;
@@ -120,7 +148,7 @@ class serviceCtrl extends jController {
             return $plot;
         }
 
-        $fd = $dplot->fetchData($layerId, 'wfs', $exp_filter);
+        $fd = $dplot->fetchData('wfs', $exp_filter);
         $plot = array(
             'title' => $dplot->title,
             'data' => $dplot->getData(),
