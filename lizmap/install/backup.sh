@@ -36,7 +36,7 @@ if  [ -d $BACKUPDIR ]; then
         cp -p $LIZMAP/var/config/authldap.coord.ini.php $BACKUPDIR/
     fi
     if [ -f $LIZMAP/var/config/mainconfig.ini.php ]; then
-        cp -p $LIZMAP/var/config/amainconfig.ini.php	$BACKUPDIR/
+        cp -p $LIZMAP/var/config/mainconfig.ini.php	$BACKUPDIR/
     fi    
     if [ -d $LIZMAP/var/lizmap-theme-config ]; then
         cp -Rp $LIZMAP/var/lizmap-theme-config          $BACKUPDIR/
