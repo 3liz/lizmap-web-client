@@ -369,6 +369,8 @@ var lizMap = function() {
             configLayer = config.layers[layer.params['LAYERS']];
         if ( !configLayer )
             configLayer = config.layers[layer.name];
+        if ( !configLayer )
+            continue;
         if( configLayer.singleTile != "True" )
             continue;
         if( removeSingleTile && layer.singleTile) {
