@@ -34,16 +34,18 @@ class jInstallerEntryPoint {
     public $configIni;
 
     /**
-      * combination between masterconfig.ini.php, localconfig.ini.php (master) and entrypoint config (overrider)
-      * @var jIniMultiFilesModifier
-      * @deprecated as public property
-      */
+     * combination between mainconfig.ini.php, localconfig.ini.php (master)
+     *  and entrypoint config (overrider)
+     *
+     * @var jIniMultiFilesModifier
+     * @deprecated as public property
+     */
     public $localConfigIni;
 
     /**
-      * entrypoint config
-      * @var jIniFilesModifier
-      */
+     * entrypoint config
+     * @var jIniFilesModifier
+     */
     protected $epConfigIni;
 
     /**

@@ -72,6 +72,7 @@ class jDaoConditions {
 
     /**
     * the groups we wants the list to be
+     * @deprecated
     */
     public $group = array ();
 
@@ -107,6 +108,8 @@ class jDaoConditions {
      * add a group clause
      *
      * @param string $field_id	the property name used to group results
+     * @deprecated Avoid to use it, don't work on recent Mysql and any other database,
+     * and unexpected behavior on old Mysql.
      */
     function addItemGroup($field_id) {
         $this->group[] = $field_id;

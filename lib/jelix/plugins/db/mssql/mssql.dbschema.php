@@ -1,13 +1,14 @@
 <?php
 /**
-* @package    jelix
-* @subpackage db
-* @author     Laurent Jouanneau
-* @copyright  2010 Laurent Jouanneau
-*
-* @link        http://www.jelix.org
-* @licence     http://www.gnu.org/licenses/lgpl.html GNU Lesser General Public Licence, see LICENCE file
-*/
+ * @package    jelix
+ * @subpackage db
+ * @author     Laurent Jouanneau
+ * @contributor Julien, Yann Lecommandoux
+ * @copyright  2008 Yann Lecommandoux, 2010 Julien, 2010-2017 Laurent Jouanneau
+ *
+ * @link        http://www.jelix.org
+ * @licence     http://www.gnu.org/licenses/lgpl.html GNU Lesser General Public Licence, see LICENCE file
+ */
 
 /**
  * 
@@ -43,11 +44,11 @@ class mssqlDbTable extends jDbTable {
         throw new Exception ('Not Implemented');
     }
 
-    protected function _createReference(jDbReference $ref) {
+    protected function _createConstraint(jDbConstraint $constraint) {
         throw new Exception ('Not Implemented');
     }
 
-    protected function _dropReference(jDbReference $ref) {
+    protected function _dropConstraint(jDbConstraint $constraint) {
         throw new Exception ('Not Implemented');
     }
 
@@ -59,11 +60,25 @@ class mssqlDbTable extends jDbTable {
  * @subpackage db_driver
  */
 class mssqlDbSchema extends jDbSchema {
+
     protected function _createTable($name, $columns, $primaryKey, $attributes = array()) {
         throw new Exception ('Not Implemented');
     }
 
     protected function _getTables() {
-        throw new Exception ('Not Implemented');
+        $results = array ();
+        $sql = "SELECT TABLE_NAME FROM ".
+            $this->conn->profile['database'].".INFORMATION_SCHEMA.TABLES
+            WHERE TABLE_NAME NOT LIKE ('sys%') AND TABLE_NAME NOT LIKE ('dt%')";
+        $rs = $this->conn->query ($sql);
+        while ($line = $rs->fetch ()){
+            $pName = $this->conn->unprefixTable($line->TABLE_NAME);
+            $results[$pName] = new mssqlDbTable($line->TABLE_NAME, $this);
+        }
+        return $results;
+    }
+
+    protected function _getTableInstance($name) {
+        return new mssqlDbTable($name, $this);
     }
 }

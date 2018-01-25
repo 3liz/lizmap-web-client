@@ -181,10 +181,76 @@ class jDbPDOConnection extends PDO {
                 $queryString = 'SELECT * FROM ( SELECT ocilimit.*, rownum rnum FROM ('.$queryString.') ocilimit WHERE
                     rownum<'.(intval($limitOffset)+intval($limitCount)).'  ) WHERE rnum >='.intval($limitOffset);
             }
+            elseif ($this->dbms == 'sqlsrv') {
+		$queryString = $this->limitQuerySqlsrv($queryString, $limitOffset, $limitCount);
+	    }
         }
         return $this->query ($queryString);
     }
 
+    /**
+    * Create a limitQuery for the SQL server dbms
+    * @param   string   $queryString   the SQL query
+    * @param   integer  $limitOffset   the offset of the first row to return
+    * @param   integer  $limitCount    the maximum of number of rows to return
+    * @return  string  SQL Select.
+    */
+    protected function limitQuerySqlsrv ($queryString, $limitOffset = null, $limitCount = null) {
+        // we suppress existing 'TOP XX'
+        $queryString = preg_replace('/^SELECT TOP[ ]\d*\s*/i', 'SELECT ', trim($queryString));
+
+        $distinct = false;
+
+        // we retrieve the select part and the from part
+        list($select, $from) = preg_split('/\sFROM\s/mi', $queryString, 2);
+
+        $fields = preg_split('/\s*,\s*/', $select);
+        $firstField = preg_replace('/^\s*SELECT\s+/', '', array_shift($fields));
+
+        // is there a distinct?
+        if (stripos($firstField, 'DISTINCT') !== false) {
+            $firstField = preg_replace('/DISTINCT/i', '', $firstField);
+            $distinct = true;
+        }
+
+        // is there an order by? if not, we order with the first field
+        $orderby = stristr($from, 'ORDER BY');
+        if ($orderby === false) {
+            if (stripos($firstField, ' as ') !== false) {
+            list($field, $key) = preg_split('/ as /', $firstField);
+            }
+            else {
+            $key = $firstField;
+            }
+
+            $orderby = ' ORDER BY '.strstr(strstr($key, '.'),'[').' ASC';
+            $from .= $orderby;
+        } else {
+	    if(strpos($orderby, '.', 8)){
+		$orderby = ' ORDER BY ' . substr($orderby, strpos($orderby, '.') + 1);
+	    }
+	}
+
+        // first we select all records from the begining to the last record of the selection
+        if(!$distinct)
+            $queryString = 'SELECT TOP ';
+        else
+            $queryString = 'SELECT DISTINCT TOP ';
+
+        $queryString .= ($limitCount+$limitOffset) . ' '.$firstField.','.implode(',', $fields).' FROM '.$from;
+
+        // then we select the last $number records, by retrieving the first $number record in the reverse order
+        $queryString = 'SELECT TOP ' . $limitCount . ' * FROM (' . $queryString . ') AS inner_tbl ';
+        $order_inner = preg_replace(array('/\bASC\b/i', '/\bDESC\b/i'), array('_DESC', '_ASC'), $orderby);
+        $order_inner = str_replace(array('_DESC', '_ASC'), array('DESC', 'ASC'), $order_inner);
+        $queryString .= $order_inner;
+
+        // finally, we retrieve the result in the expected order
+        $queryString = 'SELECT TOP ' . $limitCount . ' * FROM (' . $queryString . ') AS outer_tbl '.$orderby;
+
+        return $queryString;
+    }
+        
     /**
      * sets the autocommit state
      * @param boolean $state the status of autocommit

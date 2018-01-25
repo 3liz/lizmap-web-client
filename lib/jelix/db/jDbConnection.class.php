@@ -228,6 +228,24 @@ abstract class jDbConnection {
     }
 
     /**
+     * Remove the prefix of the given table name
+     *
+     * @param string $tableName
+     * @return string the table name unprefixed
+     * @since 1.6.16
+     */
+    public function unprefixTable($tableName) {
+        if (!isset($this->profile['table_prefix']) || $this->profile['table_prefix'] == '') {
+            return $tableName;
+        }
+        $prefix = $this->profile['table_prefix'];
+        if (strpos($tableName, $prefix) !== 0) {
+            return $tableName;
+        }
+        return substr($tableName, strlen($prefix));
+    }
+
+    /**
       * Check if the current connection has a table prefix set
       *
       * @return boolean
