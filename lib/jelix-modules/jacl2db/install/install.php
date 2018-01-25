@@ -30,17 +30,27 @@ class jacl2dbModuleInstaller extends jInstallerModule {
         $driver = $this->config->getValue('driver','acl2');
         if ($driver != 'db')
             $this->config->setValue('driver','db','acl2');
+
+        /*
+        $mapper = new jDaoDbMapper('jacl2_profile');
+        $mapper->createTableFromDao("jacl2db~jacl2group");
+        $mapper->createTableFromDao("jacl2db~jacl2usergroup");
+        $mapper->createTableFromDao("jacl2db~jacl2subjectgroup");
+        $mapper->createTableFromDao("jacl2db~jacl2subject");
+        $mapper->createTableFromDao("jacl2db~jacl2rights");
+        */
+
         $this->execSQLScript('install_jacl2.schema');
 
-        $this->execSQLScript('data.sql');
+        $this->insertDaoData('data.json', jDbTools::IBD_INSERT_ONLY_IF_TABLE_IS_EMPTY);
 
         if ($this->getParameter('defaultuser') || $this->getParameter('defaultgroups')) {
             // declare some groups
-            $this->execSQLScript('groups.sql');
+            $this->insertDaoData('groups.json', jDbTools::IBD_INSERT_ONLY_IF_TABLE_IS_EMPTY);
         }
 
         if ($this->getParameter('defaultuser')) {
-            $this->execSQLScript('user.sql');
+            $this->insertDaoData('users.json', jDbTools::IBD_INSERT_ONLY_IF_TABLE_IS_EMPTY);
         }
     }
 }

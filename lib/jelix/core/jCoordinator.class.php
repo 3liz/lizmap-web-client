@@ -265,11 +265,17 @@ class jCoordinator {
             throw new jException('jelix~errors.ad.controller.class.unknown',array($this->actionName,$class, $ctrlpath.$referer));
         }
         $ctrl = new $class($this->request);
-        if($ctrl instanceof jIRestController){
+        if ($ctrl instanceof jIRestController) {
             $selector->method = strtolower($_SERVER['REQUEST_METHOD']);
-        }elseif(!is_callable(array($ctrl, $selector->method))){
+        }
+        elseif (!is_callable(array($ctrl, $selector->method))) {
             throw new jException('jelix~errors.ad.controller.method.unknown',array($this->actionName, $selector->method, $class, $ctrlpath.$referer));
         }
+        if (property_exists ($ctrl , 'sensitiveParameters')) {
+            $config = jApp::config();
+            $config->error_handling['sensitiveParameters'] = array_merge($config->error_handling['sensitiveParameters'], $ctrl->sensitiveParameters);
+        }
+
         return $ctrl;
     }
 

@@ -391,9 +391,16 @@ abstract class jDaoFactoryBase  {
      */
     final protected function _createOrderClause($daocond) {
         $order = array ();
+        $isOci = ($this->_conn->dbms == 'oci');
         foreach ($daocond->order as $name => $way){
             if (isset(static::$_properties[$name])) {
-                $order[] = $this->_conn->encloseName(static::$_properties[$name]['table']).'.'.$this->_conn->encloseName(static::$_properties[$name]['fieldName']).' '.$way;
+                // SqlServer needs only name/aliases, Oci needs only table.field. Sqlite, Pgsql, Mysql accept both syntax.
+                if ($isOci) {
+                    $order[] = $this->_conn->encloseName(static::$_properties[$name]['table']).'.'.$this->_conn->encloseName(static::$_properties[$name]['fieldName']).' '.$way;
+                }
+                else {
+                    $order[] = $this->_conn->encloseName(static::$_properties[$name]['name']).' '.$way;
+                }
             }
         }
 

@@ -3,7 +3,9 @@
 * @package     jelix
 * @subpackage  core_response
 * @author      Laurent Jouanneau
+* @contributor Julien Issler
 * @copyright   2005-2010 Laurent Jouanneau
+* @copyright   2017 Julien Issler
 * @link        http://www.jelix.org
 * @licence     GNU Lesser General Public Licence see LICENCE file or http://www.gnu.org/licenses/lgpl.html
 */
@@ -36,7 +38,6 @@ final class jResponseXmlRpc extends jResponse {
         $content = jXmlRpc::encodeResponse($this->response, jApp::config()->charset);
 
         $this->_httpHeaders["Content-Type"]="text/xml;charset=".jApp::config()->charset;
-        $this->_httpHeaders["Content-length"]=strlen($content);
         $this->sendHttpHeaders();
         echo $content;
         return true;
@@ -58,7 +59,6 @@ final class jResponseXmlRpc extends jResponse {
 
         header("HTTP/1.0 500 Internal Server Error");
         header("Content-Type: text/xml;charset=".jApp::config()->charset);
-        header("Content-length: ".strlen($content));
         echo $content;
     }
 }

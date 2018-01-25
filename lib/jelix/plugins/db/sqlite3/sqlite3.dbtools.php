@@ -18,8 +18,8 @@ class sqlite3DbTools extends jDbTools {
 
     protected $typesInfo = array(
       // type                  native type        unified type  minvalue     maxvalue   minlength  maxlength
-      'bool'            =>array('integer',          'boolean',  0,           1,          null,     null),
-      'boolean'         =>array('integer',          'boolean',  0,           1,          null,     null),
+      'bool'            =>array('bool',          'boolean',  0,           1,          null,     null),
+      'boolean'         =>array('bool',          'boolean',  0,           1,          null,     null),
       'bit'             =>array('integer',          'integer',  0,           1,          null,     null),
       'tinyint'         =>array('integer',          'integer',  -128,        127,        null,     null),
       'smallint'        =>array('integer',          'integer',  -32768,      32767,      null,     null),
@@ -27,7 +27,7 @@ class sqlite3DbTools extends jDbTools {
       'integer'         =>array('integer',          'integer',  -2147483648, 2147483647, null,     null),
       'int'             =>array('integer',          'integer',  -2147483648, 2147483647, null,     null),
       'bigint'          =>array('numeric',          'numeric',  '-9223372036854775808', '9223372036854775807', null, null),
-      'serial'          =>array('numeric',          'numeric',  '-9223372036854775808', '9223372036854775807', null, null),
+      'serial'          =>array('integer',          'integer',  '-9223372036854775808', '9223372036854775807', null, null),
       'bigserial'       =>array('numeric',          'numeric',  '-9223372036854775808', '9223372036854775807', null, null),
       'autoincrement'   =>array('integer',          'integer',  -2147483648, 2147483647, null,     null), // for old dao files
       'bigautoincrement'=>array('numeric',           'numeric',  '-9223372036854775808', '9223372036854775807', null, null),// for old dao files
@@ -57,30 +57,30 @@ class sqlite3DbTools extends jDbTools {
       'year'            =>array('integer',    'year',       null,       null,       2,     4),
       'interval'        =>array('datetime',   'datetime',   null,       null,       19,    19),
 
-      'char'            =>array('char',       'char',       null,       null,       0,     255),
-      'nchar'           =>array('char',       'char',       null,       null,       0,     255),
-      'varchar'         =>array('varchar',    'varchar',    null,       null,       0,     65535),
-      'varchar2'        =>array('varchar',    'varchar',    null,       null,       0,     4000),
-      'nvarchar2'       =>array('varchar',    'varchar',    null,       null,       0,     4000),
-      'character'       =>array('varchar',    'varchar',    null,       null,       0,     65535),
-      'character varying'=>array('varchar',   'varchar',    null,       null,       0,     65535),
-      'name'            =>array('varchar',    'varchar',    null,       null,       0,     64),
-      'longvarchar'     =>array('varchar',    'varchar',    null,       null,       0,     65535),
-      'string'          =>array('varchar',    'varchar',    null,       null,       0,     65535),// for old dao files
+      'char'            =>array('char',       'char',       null,       null,       0,     0),
+      'nchar'           =>array('char',       'char',       null,       null,       0,     0),
+      'varchar'         =>array('varchar',    'varchar',    null,       null,       0,     0),
+      'varchar2'        =>array('varchar',    'varchar',    null,       null,       0,     0),
+      'nvarchar2'       =>array('varchar',    'varchar',    null,       null,       0,     0),
+      'character'       =>array('varchar',    'varchar',    null,       null,       0,     0),
+      'character varying'=>array('varchar',   'varchar',    null,       null,       0,     0),
+      'name'            =>array('varchar',    'varchar',    null,       null,       0,     0),
+      'longvarchar'     =>array('varchar',    'varchar',    null,       null,       0,     0),
+      'string'          =>array('varchar',    'varchar',    null,       null,       0,     0),// for old dao files
 
-      'tinytext'        =>array('text',   'text',      null,       null,       0,     255),
-      'text'            =>array('text',   'text',      null,       null,       0,     65535),
+      'tinytext'        =>array('text',   'text',      null,       null,       0,     0),
+      'text'            =>array('text',   'text',      null,       null,       0,     0),
       'ntext'           =>array('text',   'text',      null,       null,       0,     0),
-      'mediumtext'      =>array('text',   'text',      null,       null,       0,     16777215),
+      'mediumtext'      =>array('text',   'text',      null,       null,       0,     0),
       'longtext'        =>array('text',   'text',      null,       null,       0,     0),
       'long'            =>array('text',   'text',      null,       null,       0,     0),
       'clob'            =>array('text',   'text',      null,       null,       0,     0),
       'nclob'           =>array('text',   'text',      null,       null,       0,     0),
 
 
-      'tinyblob'        =>array('blob',  'blob',       null,       null,       0,     255),
-      'blob'            =>array('blob',  'blob',       null,       null,       0,     65535),
-      'mediumblob'      =>array('blob',  'blob',       null,       null,       0,     16777215),
+      'tinyblob'        =>array('blob',  'blob',       null,       null,       0,     null),
+      'blob'            =>array('blob',  'blob',       null,       null,       0,     null),
+      'mediumblob'      =>array('blob',  'blob',       null,       null,       0,     null),
       'longblob'        =>array('blob',  'blob',       null,       null,       0,     0),
       'bfile'           =>array('blob',  'blob',       null,       null,       0,     0),
       
@@ -111,20 +111,108 @@ class sqlite3DbTools extends jDbTools {
       'complex types'   =>array('varchar',    'varchar',    null,       null,       0,     65535),
     );
 
-    /**
-    * returns the list of tables 
-    * @return   array    list of table names
-    */
-    public function getTableList (){
-        $results = array ();
+    protected $keywordNameCorrespondence = array(
+        // sqlsrv,mysql,oci -> date+time, pgsql -> date+time (+tz)
+        'current_timestamp' => 'datetime(\'now\', \'localtime\')',
+        // mysql,oci,pgsql -> date
+        'current_date' => 'date(\'now\', \'localtime\')',
+        // mysql -> time, pgsql -> time+timezone
+        'current_time' => 'time(\'now\', \'localtime\')',
+        // oci -> date+fractional secon + timezone
+        //'systimestamp' => '',
+        // oci -> date+time
+        'sysdate' => 'datetime(\'now\', \'localtime\')',
+        // pgsql -> time
+        'localtime' => 'time(\'now\', \'localtime\')',
+        // pgsql -> date+time
+        'localtimestamp' => 'datetime(\'now\', \'localtime\')',
+    );
 
-        $rs = $this->_conn->query('SELECT name FROM sqlite_master WHERE type="table"');
+    protected $functionNameCorrespondence = array(
 
-        while ($line = $rs->fetch ()){
-            $results[] = $line->name;
+        // sqlsrv, -> date+time
+        'sysdatetime' => 'datetime(\'now\', \'localtime\')',
+        // sqlsrv, -> date+time+offset
+        'sysdatetimeoffset' => 'datetime(\'now\', \'localtime\')',
+        // sqlsrv, -> date+time at utc
+        'sysutcdatetime' => 'datetime(\'now\')',
+        // sqlsrv -> date+time
+        'getdate' => 'datetime(\'now\', \'localtime\')',
+        // sqlsrv -> date+time at utc
+        'getutcdate' => 'strftime(\'%d\', \'now\')',
+        // sqlsrv,mysql (datetime)-> integer
+        'day' => 'strftime(\'%d\', %!p, \'localtime\')',
+        // sqlsrv,mysql (datetime)-> integer
+        'month' => 'strftime(\'%m\', %!p, \'localtime\')',
+        // sqlsrv, mysql (datetime)-> integer
+        'year' => 'strftime(\'%Y\', %!p, \'localtime\')',
+        // mysql -> date
+        'curdate' => 'date(\'now\', \'localtime\')',
+        // mysql -> date
+        'current_date' => 'date(\'now\', \'localtime\')',
+        // mysql -> time
+        'curtime' => 'time(\'now\', \'localtime\')',
+        // mysql -> time
+        'current_time' => 'time(\'now\', \'localtime\')',
+        // mysql,pgsql -> date+time
+        'now' => 'date(\'now\', \'localtime\')',
+        // mysql date+time
+        'current_timestamp' => 'date(\'now\', \'localtime\')',
+        // mysql (datetime)->date, sqlite (timestring, modifier)->date
+        //'date' => '!dateConverter',
+        // mysql = day()
+        'dayofmonth' => 'strftime(\'%d\', %!p, \'localtime\')',
+        // mysql -> date+time
+        'localtime' => 'datetime(\'now\', \'localtime\')',
+        // mysql -> date+time
+        'localtimestamp' => 'datetime(\'now\', \'localtime\')',
+        // mysql utc current date
+        'utc_date' => 'date(\'now\')',
+        // mysql utc current time
+        'utc_time' => 'time(\'now\')',
+        // mysql utc current date+time
+        'utc_timestamp' => 'datetime(\'now\')',
+        // mysql (datetime)->time, , sqlite (timestring, modifier)->time
+        //'time' => '!timeConverter',
+        // mysql (datetime/time)-> hour
+        'hour'=> 'strftime(\'%H\', %!p, \'localtime\')',
+        // mysql (datetime/time)-> minute
+        'minute'=> 'strftime(\'%M\', %!p, \'localtime\')',
+        // mysql (datetime/time)-> second
+        'second'=> 'strftime(\'%S\', %!p, \'localtime\')',
+        // sqlite (timestring, modifier)->datetime
+        //'datetime' => '',
+        // oci, mysql (year|month|day|hour|minute|second FROM <datetime>)->value ,
+        // pgsql (year|month|day|hour|minute|second <datetime>)->value
+        'extract' => '!extractDateConverter',
+        // pgsql ('year'|'month'|'day'|'hour'|'minute'|'second', <datetime>)->value
+        'date_part' => '!extractDateConverter',
+        // sqlsrv (year||month|day|hour|minute|second, <datetime>)->value
+        'datepart' => '!extractDateConverter',
+
+    );
+
+    protected $literalFilterToSubstitions = array(
+        'year' => '%Y',
+        'month' => '%m',
+        'day' => '%d',
+        'hour' => '%H',
+        'minute' => '%M',
+        'seconde' => '%S',
+    );
+
+    protected function extractDateConverter($parametersString) {
+        if (preg_match("/^'?([a-z]+)'?(?:\s*,\s*|\s+FROM(?: TIMESTAMP)?\s+|\s+)(.*)$/i", $parametersString, $p) &&
+            isset($this->literalFilterToSubstitions[strtolower($p[1])])
+        ) {
+            $param2 = $this->parseSQLFunctionAndConvert(strtolower($p[2]));
+            return 'strftime(\''.$this->literalFilterToSubstitions[$p[1]].'\', '.$param2.', \'localtime\')';
         }
-
-        return $results;
+        else {
+            // probably some parameters are variables, we cannot guess what is asked
+            // at compile time...
+            return 'date_part('.$parametersString.')';
+        }
     }
 
     /**

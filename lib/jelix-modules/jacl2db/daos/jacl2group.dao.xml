@@ -4,12 +4,12 @@
         <primarytable name="grp" realname="jacl2_group" primarykey="id_aclgrp" />
     </datasources>
     <record>
-      <property name="id_aclgrp" fieldname="id_aclgrp" datatype="string"/>
-      <property name="name" fieldname="name" datatype="string" required="yes"/>
+      <property name="id_aclgrp" fieldname="id_aclgrp" datatype="string" maxlength="50"/>
+      <property name="name" fieldname="name" datatype="string" required="yes"  maxlength="150"/>
 
-      <!-- 0=normal 1=default 2=private -->
-      <property name="grouptype" fieldname="grouptype" datatype="int" required="yes"/>
-      <property name="ownerlogin" fieldname="ownerlogin" datatype="string" />
+      <!-- 0=normal 1=default 2=private . See jAcl2DbUserGroup::GROUPTYPE_* -->
+      <property name="grouptype" fieldname="grouptype" datatype="tinyint" required="yes" default="0"/>
+      <property name="ownerlogin" fieldname="ownerlogin" datatype="string"  maxlength="50"/>
 
     </record>
     <factory>

@@ -274,6 +274,119 @@ class redis_extKVDriver extends jKVDriver implements jIKVSet, jIKVttl {
         return $this->_connection->sPop($this->getUsedKey($skey));
     }
 
+    // Hashes -------------------------------------------------------------
+
+    /**
+     * @param string $key
+     * @param string|string[] $hKey
+     * @return integer|boolean the number of deleted keys, 0 if the key doesn't
+     *                          exist, FALSE if the key isn't a hash.
+     */
+    public function hDel($key, $hKey) {
+        if (is_array($hKey)) {
+            array_unshift($hKey, $this->getUsedKey($key));
+            return call_user_func_array(array($this->_connection, 'hDel'), $hKey);
+        }
+        return $this->_connection->hDel($this->getUsedKey($key), $hKey);
+    }
+
+    /**
+     * @param string $key
+     * @param string $hKey the hash key to check
+     * @return boolean true if the hash key exists
+     */
+    public function hExists($key, $hKey) {
+        return $this->_connection->hExists($this->getUsedKey($key), $hKey);
+    }
+
+    /**
+     * @param string $key
+     * @param string $hKey the hash key to retrieve
+     * @return mixed|boolean  FALSE if it failed
+     */
+    public function hGet($key, $hKey) {
+        return $this->_connection->hGet($this->getUsedKey($key), $hKey);
+    }
+
+    /**
+     * @param string $key
+     * @return string[]  list of keys and values
+     */
+    public function hGetAll($key) {
+        return $this->_connection->hGetAll($this->getUsedKey($key));
+    }
+
+    /**
+     * @param string $key
+     * @return string[]  list of hkeys
+     */
+    public function hKeys($key) {
+        return $this->_connection->hKeys($this->getUsedKey($key));
+    }
+
+    /**
+     * @param string $key
+     * @return integer|boolean the number of items in a hash, FALSE if the key doesn't exist or isn't a hash.
+     */
+    public function hLen($key) {
+        return $this->_connection->hLen($this->getUsedKey($key));
+    }
+
+    /**
+     * @param string $key
+     * @param string[] $keys  list of hash keys to retrieve
+     * @return array  list of associative values
+     */
+    public function hMGet($key, $keys) {
+        return $this->_connection->hMGet($this->getUsedKey($key), $keys);
+    }
+
+    /**
+     * @param string $key
+     * @param array $values associative array with hkeys and values
+     * @return boolean
+     */
+    public function hMSet($key, $values) {
+        return $this->_connection->hMSet($this->getUsedKey($key), $values);
+    }
+
+    /**
+     * @param string $key
+     * @param string $hKey the hash key
+     * @param mixed $value
+     * @return integer|boolean 1 if value didn't exist and was added successfully,
+     * 0 if the value was already present and was replaced, FALSE if there was an error.
+     */
+    public function hSet($key, $hKey, $value) {
+        return $this->_connection->hSet($this->getUsedKey($key), $hKey, $value);
+    }
+
+    /**
+     * @param string $key
+     * @param string $hKey the hash key
+     * @param mixed $value
+     * @return boolean TRUE if it was set, FALSE if was already present
+     */
+    public function hSetNx($key, $hKey, $value) {
+        return $this->_connection->hSetNx($this->getUsedKey($key), $hKey, $value);
+    }
+
+    /**
+     * @param string $key
+     * @return string[] list of values (random order)
+     */
+    public function hVals($key) {
+        return $this->_connection->hVals($this->getUsedKey($key));
+    }
+
+    /**
+     * @param string $key
+     * @return mixed
+     */
+    public function hStrLen($key) {
+        return $this->_connection->hStrLen($this->getUsedKey($key));
+    }
+
 
     // ------------------------------------- utils
 
