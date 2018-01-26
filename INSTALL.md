@@ -8,7 +8,7 @@ Requirements
 First you should install
 
 - the web server Apache
-- PHP and its extensions sqlite, gd, xml (`php-xml-rpc` or equivalents), `libapache2-mod-php`, and curl
+- PHP and its extensions curl, sqlite, gd, xml (`php-xml-rpc` or equivalents), `libapache2-mod-php`, and curl
 - [QGIS](http://qgis.org/it/site/forusers/download.html)
 - (optional) PostgreSQL with PostGIS and its php extension (php-pgsql or equivalents)
 
