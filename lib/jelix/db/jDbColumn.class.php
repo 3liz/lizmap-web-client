@@ -3,7 +3,7 @@
 * @package    jelix
 * @subpackage db
 * @author     Laurent Jouanneau
-* @copyright  2010-2017 Laurent Jouanneau
+* @copyright  2010-2018 Laurent Jouanneau
 *
 * @link        http://jelix.org
 * @licence     http://www.gnu.org/licenses/lgpl.html GNU Lesser General Public Licence, see LICENCE file
@@ -249,31 +249,40 @@ class jDbColumn {
 
     function isEqualTo($column) {
         return (
-          $this->name == $column->name &&
-          $this->type == $column->type &&
-          $this->notNull == $column->notNull &&
-          $this->autoIncrement == $column->autoIncrement &&
-          $this->default == $column->default &&
-          $this->hasDefault == $column->hasDefault &&
-          $this->length == $column->length &&
-          $this->scale == $column->scale &&
-          $this->sequence == $column->sequence &&
-          $this->unsigned == $column->unsigned
+            $this->name == $column->name &&
+            $this->_isEqualToExceptName($column)
         );
     }
 
     function hasOnlyDifferentName($otherColumn) {
         return (
             $this->name != $otherColumn->name &&
-            $this->type == $otherColumn->type &&
-            $this->notNull == $otherColumn->notNull &&
-            $this->autoIncrement == $otherColumn->autoIncrement &&
-            $this->default == $otherColumn->default &&
-            $this->hasDefault == $otherColumn->hasDefault &&
-            $this->length == $otherColumn->length &&
-            $this->scale == $otherColumn->scale &&
-            $this->sequence == $otherColumn->sequence &&
-            $this->unsigned == $otherColumn->unsigned
+            $this->_isEqualToExceptName($otherColumn)
+        );
+    }
+
+    protected function _isEqualToExceptName($column) {
+        if ($column->nativeType && $this->nativeType) {
+            if ($column->nativeType != $this->nativeType) {
+                return false;
+            }
+        }
+        else if ($this->type != $column->type) {
+            return false;
+        }
+
+        if (($this->sequence || $column->sequence) &&
+            $this->sequence != $column->sequence) {
+            return false;
+        }
+        return (
+            $this->notNull == $column->notNull &&
+            $this->autoIncrement == $column->autoIncrement &&
+            $this->default == $column->default &&
+            $this->hasDefault == $column->hasDefault &&
+            $this->length == $column->length &&
+            $this->scale == $column->scale &&
+            $this->unsigned == $column->unsigned
         );
     }
 }

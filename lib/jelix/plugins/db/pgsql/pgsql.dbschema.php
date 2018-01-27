@@ -3,7 +3,7 @@
 * @package    jelix
 * @subpackage db
 * @author     Laurent Jouanneau
-* @copyright  2010-2017 Laurent Jouanneau
+* @copyright  2010-2018 Laurent Jouanneau
 *
 * @link        http://www.jelix.org
 * @licence     http://www.gnu.org/licenses/lgpl.html GNU Lesser General Public Licence, see LICENCE file
@@ -73,7 +73,7 @@ class pgsqlDbTable extends jDbTable {
                 $col->default = null;
             }
 
-            //$col->unifiedType = $typeinfo[1];
+            $col->nativeType = $typeinfo[0];
             $col->maxValue = $typeinfo[3];
             $col->minValue = $typeinfo[2];
             $col->maxLength = $typeinfo[5];
