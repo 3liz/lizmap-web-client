@@ -13,15 +13,15 @@
         <property name="password" fieldname="usr_password" datatype="string"
                   maxlength="120" selectpattern="%s" updatepattern="" insertpattern="%s" />
 
-        <property name="firstname" fieldname="firstname" datatype="string" maxlength="100" required="true"/>
-        <property name="lastname" fieldname="lastname" datatype="string" maxlength="100" required="true"/>
-        <property name="organization" fieldname="organization" datatype="string" maxlength="100" required="true"/>
-        <property name="phonenumber" fieldname="phonenumber" datatype="string" maxlength="20"/>
-        <property name="street" fieldname="street" datatype="string" maxlength="150" required="true"/>
-        <property name="postcode" fieldname="postcode" datatype="string" maxlength="10" required="true"/>
-        <property name="city" fieldname="city" datatype="string" maxlength="150" required="true"/>
-        <property name="country" fieldname="country" datatype="string" maxlength="100"/>
-        <property name="comment" fieldname="comment" datatype="text" maxlength="300"/>
+        <property name="firstname" fieldname="firstname" datatype="string" maxlength="100" required="true" default=""/>
+        <property name="lastname" fieldname="lastname" datatype="string" maxlength="100" required="true" default=""/>
+        <property name="organization" fieldname="organization" datatype="string" maxlength="100" required="true" default=""/>
+        <property name="phonenumber" fieldname="phonenumber" datatype="string" maxlength="20" default=""/>
+        <property name="street" fieldname="street" datatype="string" maxlength="150" required="true" default=""/>
+        <property name="postcode" fieldname="postcode" datatype="string" maxlength="10" required="true" default=""/>
+        <property name="city" fieldname="city" datatype="string" maxlength="150" required="true" default=""/>
+        <property name="country" fieldname="country" datatype="string" maxlength="100" default=""/>
+        <property name="comment" fieldname="comment" datatype="text" maxlength="300" default=""/>
 
         <property name="status" fieldname="status" datatype="integer" />
         <!-- status :
