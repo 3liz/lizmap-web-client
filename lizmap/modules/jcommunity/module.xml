@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<module xmlns="http://jelix.org/ns/module/1.0">
+      <info id="jcommunity@jelix.org" name="jcommunity">
+        <version date="2018-01-27">1.2.0a1</version>
+        <label>jCommunity</label>
+        <description>module for a portal, to bring registration, profile editing for users</description>
+        <licence URL="http://www.gnu.org/licenses/gpl.html">GPL</licence>
+        <copyright>Copyright 2008-2018 jelix.org</copyright>
+        <creator name="Laurent Jouanneau" email="laurent@jelix.org"/>
+        <homepageURL>https://github.com/jelix/jcommunity-module/</homepageURL>
+    </info>
+    <dependencies>
+        <jelix minversion="1.6.16" maxversion="1.7.*"/>
+    </dependencies>
+    <autoload>
+        <namespacePathMap name="Jelix\JCommunity" dir="lib" />
+   </autoload>
+</module>
