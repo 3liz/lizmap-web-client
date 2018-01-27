@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<suburls xmlns="http://jelix.org/ns/suburls/1.0">
+    <url pathinfo="/"                    action="registration:index" optionalTrailingSlash="true"/>
+    <url pathinfo="/save"               action="registration:save"/>
+    <url pathinfo="/confirm"            action="registration:confirm"/>
+    <url pathinfo="/confirmform"        action="registration:confirmform"/>
+    <url pathinfo="/confirmok"          action="registration:confirmok"/>
+
+    <url pathinfo="/password"           action="password:index" />
+    <url pathinfo="/password/send"      action="password:send"/>
+    <url pathinfo="/password/confirm"   action="password:confirm"/>
+    <url pathinfo="/password/confirmform"  action="password:confirmform"/>
+    <url pathinfo="/password/confirmok"  action="password:confirmok"/>
+</suburls>

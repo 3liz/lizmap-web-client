@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<forms xmlns="http://jelix.org/ns/forms/1.0">
+<!--
+@package      jcommunity
+@subpackage
+@author       Laurent Jouanneau <laurent@xulfr.org>
+@contributor
+@copyright    2008 Laurent Jouanneau
+@link         http://jelix.org
+@licence      http://www.gnu.org/licenses/gpl.html GNU General Public Licence, see LICENCE file
+-->
+   <input ref="auth_login" required="true" size="8">
+      <label locale="jcommunity~login.form.login"/>
+   </input>
+
+   <secret ref="auth_password"  required="true" size="8">
+       <label locale="jcommunity~login.form.password"/>
+   </secret>
+   <checkbox ref="auth_remember_me"  valueoncheck="1" valueonuncheck="0">
+       <label locale="jcommunity~login.form.remember.me"/>
+   </checkbox>
+   <submit ref="auth_submit">
+       <label locale="jcommunity~login.form.submit" />
+   </submit>
+</forms>

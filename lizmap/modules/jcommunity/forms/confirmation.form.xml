@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<forms xmlns="http://jelix.org/ns/forms/1.0">
+<!--
+@package      jcommunity
+@subpackage
+@author       Laurent Jouanneau <laurent@xulfr.org>
+@contributor
+@copyright    2007 Laurent Jouanneau
+@link         http://jelix.org
+@licence      http://www.gnu.org/licenses/gpl.html GNU General Public Licence, see LICENCE file
+-->
+   <input ref="conf_login" required="true">
+       <label locale="register.form.confirm.login.label"/>
+   </input>
+
+   <input ref="conf_key"  required="true" maxlength="10" minlength="10">
+       <label locale="register.form.confirm.key.label"/>
+       <alert type="invalid" locale="register.form.confirm.bad.key" />
+       <hint locale="register.form.confirm.key.hint" />
+   </input>
+
+   <secret ref="conf_password"  required="true">
+       <label locale="register.form.confirm.password.label"/>
+       <hint locale="register.form.confirm.password.hint"/>
+       <confirm locale="register.form.confirm.password2.label" />
+   </secret>
+
+   <submit ref="conf_submit">
+       <label locale="register.form.confirm.activate.label"/>
+   </submit>
+   
+</forms>
