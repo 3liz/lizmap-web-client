@@ -235,9 +235,11 @@ jacl2.access=1
 jacl2db.access=1
 jacl2db.installparam=defaultuser
 
-jauth.access=1
-jauthdb.access=1
-jauthdb.installparam=defaultuser
+jauth.access=0
+jauthdb.access=0
+
+jcommunity.access=1
+jcommunity.installparam=defaultuser;manualconfig
 
 admin.access=1
 dataviz.access=1
@@ -253,4 +255,8 @@ email="root@localhost"
 emailHeaders="Content-Type: text/plain; charset=UTF-8\nFrom: webmaster@yoursite.com\nX-Mailer: Jelix\nX-Priority: 1 (Highest)\n"
 
 
+[jcommunity]
+loginresponse = htmlauth
+registrationEnabled = off
+resetPasswordEnabled = on
 

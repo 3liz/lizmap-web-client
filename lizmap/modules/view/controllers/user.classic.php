@@ -175,7 +175,7 @@ class userCtrl extends jController {
       }
       // Add user to database via jAuth methods
       try{
-        $props = jDao::createRecord('jauthdb~jelixuser', 'jauth')->getProperties();
+        $props = jDao::createRecord('lizmap~user', 'jauth')->getProperties();
         $user = jAuth::createUserObject($form->getData('login'),$form->getData('password'));
         $form->setData('password', $user->password);
         $form->prepareObjectFromControls($user, $props);
