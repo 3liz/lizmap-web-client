@@ -4,7 +4,7 @@
 * @subpackage  db
 * @author      Laurent Jouanneau
 * @contributor Gwendal Jouannic
-* @copyright   2008 Gwendal Jouannic, 2009-2010 Laurent Jouanneau
+* @copyright   2008 Gwendal Jouannic, 2009-2018 Laurent Jouanneau
 * @link        http://www.jelix.org
 * @licence     http://www.gnu.org/licenses/lgpl.html GNU Lesser General Public Licence, see LICENCE file
 */
@@ -67,6 +67,7 @@ class ociDbTable extends jDbTable {
             }
 
             $col = new jDbColumn($name, $type,  $length, $hasDefault, $default, $notNull);
+            $col->nativeType = $typeinfo[0];
             $col->maxValue = $typeinfo[3];
             $col->minValue = $typeinfo[2];
             $col->maxLength = $maxLength;
