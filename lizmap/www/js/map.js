@@ -3483,7 +3483,7 @@ var lizMap = function() {
              && (!this.queryVisible || (layer.getVisibility() && layer.calculateInRange())) ) {
                 var qgisName = null;
                 if ( layer.name in cleanNameMap )
-                    qgisName = getLayerNameByCleanName(name);
+                    qgisName = getLayerNameByCleanName(layer.name);
                 var configLayer = null;
                 if ( qgisName )
                     configLayer = config.layers[qgisName];
