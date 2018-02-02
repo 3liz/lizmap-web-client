@@ -23,13 +23,6 @@ Copy files to a directory for apache, let's say  /var/www/mylizmap/.
 Installation
 ------------
 
-Set rights for Apache, so php scripts could write some temporary files or do changes.
-
-```
-cd /var/www/mylizmap/
-lizmap/install/set_rights.sh www-data www-data
-```
-
 Create `lizmapConfig.ini.php`, `localconfig.ini.php` and `profiles.ini.php` and edit them
 to set parameters specific to your installation. You can modify `lizmapConfig.ini.php`
 to set the url of qgis map server and other things, and `profiles.ini.php` to store
@@ -47,6 +40,13 @@ In case you want to enable the demo repositories, just add to ``localconfig.ini.
 ```
 [modules]
 lizmap.installparam=demo
+```
+
+Set rights for Apache, so php scripts could write some temporary files or do changes.
+
+```
+cd /var/www/mylizmap/
+lizmap/install/set_rights.sh www-data www-data
 ```
 
 Then you can launch the installer
