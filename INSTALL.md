@@ -40,7 +40,7 @@ In case you want to enable the demo repositories, just add to ``localconfig.ini.
 [modules]
 lizmap.installparam=demo
 ```
-the exit the directory:
+then exit the directory:
 
 ```
 cd ../../..
