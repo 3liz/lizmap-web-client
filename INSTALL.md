@@ -33,7 +33,6 @@ cd lizmap/var/config
 cp lizmapConfig.ini.php.dist lizmapConfig.ini.php
 cp localconfig.ini.php.dist localconfig.ini.php
 cp profiles.ini.php.dist profiles.ini.php
-cd ../../..
 ```
 In case you want to enable the demo repositories, just add to ``localconfig.ini.php`` the following:
 
@@ -41,7 +40,12 @@ In case you want to enable the demo repositories, just add to ``localconfig.ini.
 [modules]
 lizmap.installparam=demo
 ```
+the exit the directory:
 
+```
+cd ../../..
+
+```
 Set rights for Apache, so php scripts could write some temporary files or do changes.
 
 ```
