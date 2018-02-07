@@ -31,7 +31,6 @@ html=myHtmlResponse
 htmlmap=myHtmlMapResponse
 htmlsimple=simpleHtmlResponse
 
-
 [jResponseHtml]
 plugins=minify
 ;concatene et compress les fichier CSS
@@ -104,7 +103,7 @@ simple_urlengine_https=
 ;   @r       -> for all actions for the request of type "r"
 
 index="@classic"
-admin="jacl2db~*@classic, jacl2db_admin~*@classic, jauthdb_admin~*@classic, master_admin~*@classic, admin~*@classic, jauth~*@classic"
+admin="jacl2db~*@classic, jacl2db_admin~*@classic, jauthdb_admin~*@classic, master_admin~*@classic, admin~*@classic, jcommunity~*@classic"
 
 
 [basic_significant_urlengine_entrypoints]
@@ -112,6 +111,10 @@ admin="jacl2db~*@classic, jacl2db_admin~*@classic, jauthdb_admin~*@classic, mast
 ; should be include in the url or not
 index=on
 admin=on
+
+[basic_significant_urlengine_aliases]
+auth=jcommunity
+
 
 [logger]
 _all=
@@ -176,7 +179,7 @@ on_error=2
 error_message="jelix~errors.acl.action.right.needed"
 
 ; action to execute on a missing authentification when on_error=2
-on_error_action="jauth~login:form"
+on_error_action="jcommunity~login:index"
 
 
 [coordplugin_autolocale]
@@ -239,7 +242,7 @@ jauth.access=0
 jauthdb.access=0
 
 jcommunity.access=1
-jcommunity.installparam=defaultuser;manualconfig
+jcommunity.installparam="defaultuser;manualconfig"
 
 admin.access=1
 dataviz.access=1
@@ -256,7 +259,7 @@ emailHeaders="Content-Type: text/plain; charset=UTF-8\nFrom: webmaster@yoursite.
 
 
 [jcommunity]
-loginresponse = htmlauth
+loginResponse = htmlauth
 registrationEnabled = off
 resetPasswordEnabled = on
 

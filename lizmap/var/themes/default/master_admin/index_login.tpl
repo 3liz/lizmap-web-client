@@ -14,7 +14,7 @@
   <div id="logo">
   </div>
   <div id="title">
-    <h1>{@auth.titlePage.login@}</h1>
+    <h1>{@jcommunity~login.login.title@}</h1>
   </div>
 </div>
 <div id="content" class="container">

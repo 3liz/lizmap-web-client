@@ -69,9 +69,6 @@ class registrationCtrl extends \Jelix\JCommunity\AbstractController {
 
         $user = jAuth::createUserObject($login,$pass);
         $user->email = $form->getData('reg_email');
-        if ($form->getControl('nickname') !== null) {
-            $user->nickname = $login;
-        }
         $user->status = JCOMMUNITY_STATUS_NEW;
         $user->request_date = date('Y-m-d H:i:s');
         $user->keyactivate = $key;

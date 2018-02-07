@@ -2,4 +2,8 @@
   <listener name="config">
        <event name="masteradminGetMenuContent" />
    </listener>
+    <listener name="lzmAuthListener">
+        <event name=""/>
+
+    </listener>
 </events>
