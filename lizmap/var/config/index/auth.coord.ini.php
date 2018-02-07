@@ -99,7 +99,7 @@ password_crypt_function=sha1
 ;password_salt = "salt_of_22_alphanumeric_characters_for_bcrypt_algo"
 
 ; name of the form for the jauthdb_admin module
-form="jauthdb_admin~jelixuser"
+form="jcommunity~account_admin"
 
 ; path of the directory where to store files uploaded by the form (jauthdb_admin module)
 ; should be related to the var directory of the application
@@ -146,5 +146,8 @@ password_crypt_function=sha1
 ; if you want to use a salt with sha1:
 ;password_crypt_function = "1:sha1WithSalt"
 ;password_salt = "here_your_salt"
+
+
+
 
 
