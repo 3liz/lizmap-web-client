@@ -48,7 +48,6 @@ cd ../../..
 Set rights for Apache, so php scripts could write some temporary files or do changes.
 
 ```
-cd /var/www/mylizmap/
 lizmap/install/set_rights.sh www-data www-data
 ```
 
