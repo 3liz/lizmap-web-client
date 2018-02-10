@@ -1,17 +1,15 @@
-Hello,
+{meta Subject 'Request about a password reset on '.$domain_name}
+<p>Hello,</p>
 
-You have asked a new password on http://{$server}.
+<p>You requested a password reset for your account <em>"{$user->login|eschtml}"</em>
+on the web site <a href="{$website_uri}" class="notexpandlink">{$domain_name}</a>.</p>
 
-If you really want to change it, you should confirm by filling the form displayed after
-your request. In this form, indicate your login "{$login}" and this key: {$key}
+<p>If you really want to change it, you should <a href="{$confirmation_link}">click on this link</a>.</p>
 
-(the form is available at this page if you loose the page:
-http://{$server}{jurl 'jcommunity~password:confirmform'} )
+<p>You could then set a new password for your account. The link is valid 48h.</p>
 
-In the form, you will also indicate a new password for your account. You can choose any
-password. Here is an example you can use {$pass}.
+<p>If this request is an error or you don't want to confirm, ignore this mail.
+Your password won't be changed.</p>
 
-If you don't want to confirm, ignore this mail, and your
-password won't be changed.
+<p>See you now on {$domain_name}!</p>
 
-See you soon on {$server} !

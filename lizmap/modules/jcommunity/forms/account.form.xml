@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<forms xmlns="http://jelix.org/ns/forms/1.0">
+<form xmlns="http://jelix.org/ns/forms/1.1">
 <!--
 @package      jcommunity
 @subpackage   
@@ -20,4 +20,4 @@
    <submit ref="acc_submit">
        <label locale="jcommunity~account.form.submit" />
    </submit>
-</forms>
+</form>

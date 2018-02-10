@@ -24,7 +24,7 @@
         <label locale="jcommunity~account.form.email"/>
     </input>
 
-    <secret ref="password" maxlength="50">
+    <secret ref="password" minlength="8" maxlength="120">
        <label locale="jcommunity~account.form.password"/>
        <confirm locale="jcommunity~account.form.password.confirm"/>
     </secret>

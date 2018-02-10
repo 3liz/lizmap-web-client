@@ -23,7 +23,7 @@
            -->
       <property name="email" fieldname="email" datatype="string" required="yes" maxlength="255" />
       <property name="nickname" fieldname="nickname" datatype="string" maxlength="50" />
-      <property name="keyactivate" fieldname="keyactivate"  datatype="string" maxlength="10" />
+      <property name="keyactivate" fieldname="keyactivate"  datatype="string" maxlength="50" />
       <property name="request_date" fieldname="request_date" datatype="datetime" />
       <property name="create_date" fieldname="create_date" datatype="datetime"
                 insertpattern="now()" updatepattern=""/>
