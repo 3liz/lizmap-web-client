@@ -3298,7 +3298,12 @@ var lizMap = function() {
         var crs = self.parent().find('input.lizmap-popup-layer-feature-crs').val();
         if ( crs == '' )
             return;
-        geometries.push( { geom: val, crs: crs } );
+        var fid = self.parent().find('input.lizmap-popup-layer-feature-id').val();
+        var minx = self.parent().find('input.lizmap-popup-layer-feature-bbox-minx').val();
+        var miny = self.parent().find('input.lizmap-popup-layer-feature-bbox-miny').val();
+        var maxx = self.parent().find('input.lizmap-popup-layer-feature-bbox-maxx').val();
+        var maxy = self.parent().find('input.lizmap-popup-layer-feature-bbox-maxy').val();
+        geometries.push( { fid: fid, geom: val, crs: crs, bbox:[minx,miny,maxx,maxy] } );
       });
       // load proj and build features from popup
       var projLoaded = [];
@@ -3312,8 +3317,41 @@ var lizMap = function() {
                       var geometry = OpenLayers.Geometry.fromWKT( geomInfo.geom );
                       geometry.transform(geomInfo.crs, map.getProjection());
                       features.push( new OpenLayers.Feature.Vector( geometry ) );
+
+                      var fidInput = $('div.lizmapPopupContent input.lizmap-popup-layer-feature-id[value="'+geomInfo.fid+'"]');
+                      if ( !fidInput )
+                        continue;
+
+                      var bounds = OpenLayers.Bounds.fromArray(geomInfo.bbox);
+                      bounds.transform(geomInfo.crs, map.getProjection());
+                      var eHtml = '';
+                      eHtml+= '<button class="btn btn-mini popup-layer-feature-bbox-zoom" value="';
+                      eHtml+= bounds.toString();
+                      eHtml+= '" title="' + lizDict['attributeLayers.btn.zoom.title'] + '"><i class="icon-zoom-in"></i>&nbsp;</button>';
+                      var popupButtonBar = fidInput.next('span.popupButtonBar');
+                      if ( popupButtonBar.length != 0 ) {
+                          popupButtonBar.append(eHtml);
+                      } else {
+                          eHtml = '<span class="popupButtonBar">' + eHtml + '</span></br>';
+                          fidInput.after(eHtml);
+                      }
+                      fidInput.find('button.btn').tooltip( {
+                          placement: 'bottom'
+                      } );
                   }
                  layer.addFeatures( features );
+
+                  // Zoom
+                  $('div.lizmapPopupContent button.popup-layer-feature-bbox-zoom')
+                  .click(function(){
+                      var bbox = OpenLayers.Bounds.fromString($(this).val());
+                      map.zoomToExtent(bbox);
+                      return false;
+                  })
+                  .hover(
+                      function(){ $(this).addClass('btn-primary'); },
+                      function(){ $(this).removeClass('btn-primary'); }
+                  );
               }
           } );
       }
