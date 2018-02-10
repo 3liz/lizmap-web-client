@@ -1,15 +1,16 @@
 <?php
 /**
-* @package      jcommunity
 * @author       Laurent Jouanneau <laurent@jelix.org>
 * @copyright    2015 Laurent Jouanneau
+*
 * @link         http://jelix.org
 * @licence      http://www.gnu.org/licenses/gpl.html GNU General Public Licence, see LICENCE file
 */
+
 namespace Jelix\JCommunity;
 
-class Config {
-
+class Config
+{
     protected $responseType = 'html';
 
     protected $registrationEnabled = true;
@@ -18,10 +19,13 @@ class Config {
 
     protected $verifyNickname = true;
 
+    protected $publicProperties = array('login', 'nickname', 'create_date');
+
     /**
      */
-    function __construct() {
-        $config = (isset(\jApp::config()->jcommunity)?\jApp::config()->jcommunity:array());
+    public function __construct()
+    {
+        $config = (isset(\jApp::config()->jcommunity) ? \jApp::config()->jcommunity : array());
         if (isset($config['loginResponse'])) {
             $this->responseType = $config['loginResponse'];
         }
@@ -30,7 +34,16 @@ class Config {
             $this->verifyNickname = $config['verifyNickname'];
         }
 
-        if ((!isset($config['disableJPref']) || $config['disableJPref'] == true ) &&
+        if (isset($config['publicProperties'])) {
+            if (!is_array($config['publicProperties'])) {
+                $this->publicProperties = preg_split('/\s*,\s*/', trim($config['publicProperties']));
+            }
+            else {
+                $this->publicProperties = $config['publicProperties'];
+            }
+        }
+
+        if ((!isset($config['disableJPref']) || $config['disableJPref'] == true) &&
             class_exists('jPref')
         ) {
             $pref = \jPref::get('jcommunity_registrationEnabled');
@@ -41,32 +54,38 @@ class Config {
             if ($pref !== null) {
                 $this->resetPasswordEnabled = $pref;
             }
-        }
-        else {
+        } else {
             if (isset($config['registrationEnabled'])) {
-                $this->registrationEnabled = !!$config['registrationEnabled'];
+                $this->registrationEnabled = (bool) $config['registrationEnabled'];
             }
             if (isset($config['resetPasswordEnabled'])) {
-                $this->resetPasswordEnabled = !!$config['resetPasswordEnabled'];
+                $this->resetPasswordEnabled = (bool) $config['resetPasswordEnabled'];
             }
         }
     }
 
-    function getResponseType() {
+    public function getResponseType()
+    {
         return $this->responseType;
     }
 
-    function isRegistrationEnabled() {
+    public function isRegistrationEnabled()
+    {
         return $this->registrationEnabled;
     }
 
-    function isResetPasswordEnabled() {
+    public function isResetPasswordEnabled()
+    {
         return $this->resetPasswordEnabled;
     }
 
-    function verifyNickname() {
+    public function verifyNickname()
+    {
         return $this->verifyNickname;
     }
 
-
+    public function getPublicUserProperties()
+    {
+        return $this->publicProperties;
+    }
 }

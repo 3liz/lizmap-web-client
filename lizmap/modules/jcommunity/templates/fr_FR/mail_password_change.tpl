@@ -1,20 +1,16 @@
-Bonjour,
+{meta Subject 'Réinitialisation de mot de passe sur le site '.$domain_name}
+<p>Bonjour,</p>
 
-Vous venez de demander un nouveau mot de passe sur le site http://{$server}.
+<p>Vous venez de demander une réinitialisation du mot de passe de votre
+compte <em>"{$user->login}"</em> sur le site <a href="{$website_uri}" class="notexpandlink">{$domain_name}</a>.</p>
 
-Si vous voulez confirmer ce changement, remplissez le formulaire 
-qui s'est affiché aprés votre demande, en indiquant votre login  "{$login}"
-et la clé d'activation suivante : {$key}.
+<p>Si vous voulez confirmer cette réinitialisation, <a href="{$confirmation_link}">cliquez sur ce lien</a>.</p>
 
-(Le formulaire est disponible à cette adresse si vous avez perdu la page :
-http://{$server}{jurl 'jcommunity~password:confirmform'})
+<p>Vous pourrez alors changer le mot de passe. Ce lien est valide 48h.</p>
 
-Vous devez aussi indiquer sur ce formulaire un nouveau mot de passe
-de votre choix.
-Voici une proposition de mot de passe: {$pass}
+<p>Si cette demande de réinitialisation est une erreur, ignorez ce mail,
+et votre mot de passe actuel sera toujours valide.</p>
 
-Si vous ne voulez pas confirmer, ignorez ce mail,
-et votre ancien mot de passe sera toujours valide.
+<p>À tout de suite sur {$domain_name} !</p>
 
 
-À bientôt sur {$server}.

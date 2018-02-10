@@ -9,5 +9,9 @@
     </url>
     <url pathinfo="/:user/destroy" action="account:destroy" actionoverride="account:dodestroy">
         <param name="user" />
-        </url>
+    </url>
+    <url pathinfo="/:user/destroydone" action="account:destroydone">
+        <param name="user" />
+    </url>
+
 </suburls>

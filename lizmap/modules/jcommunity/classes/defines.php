@@ -7,7 +7,8 @@
 * @copyright    2008 Laurent Jouanneau
 * @link         http://jelix.org
 * @licence      http://www.gnu.org/licenses/gpl.html GNU General Public Licence, see LICENCE file
-*/
+* @deprecated   use \Jelix\JCommunity\Account::STATUS_* instead
+ */
 
 define('JCOMMUNITY_STATUS_PWD_CHANGED',3);
 define('JCOMMUNITY_STATUS_MAIL_CHANGED',2);

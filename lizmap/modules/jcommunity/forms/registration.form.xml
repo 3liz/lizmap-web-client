@@ -17,6 +17,12 @@
        <label locale="register.form.create.email"/>
    </input>
 
+   <secret ref="reg_password"  required="true" minlength="8" maxlength="120">
+        <label locale="register.form.confirm.password.label"/>
+        <help locale="register.form.confirm.password.help"/>
+        <confirm locale="register.form.confirm.password2.label" />
+   </secret>
+
    <captcha ref="reg_captcha">
        <label locale="register.form.create.captcha"/>
    </captcha>

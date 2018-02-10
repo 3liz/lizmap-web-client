@@ -1,17 +1,10 @@
-Bonjour,
+{meta Subject 'Activation de votre compte sur le site '.$domain_name}
+<p>Bonjour,</p>
 
-Vous venez de vous inscrire sur le site http://{$server}.
+<p>Vous venez de vous inscrire sur le site <a href="{$website_uri}" class="notexpandlink">{$domain_name}</a>.</p>
 
-Pour vous identifier, vous devez d'abord activer votre compte.
+<p>Pour utiliser votre compte, vous devez d'abord confirmer votre
+inscription <a href="{$confirmation_link}">en cliquant sur ce lien</a>.</p>
 
-Pour cela, remplissez le formulaire qui s'est affiché aprés la
-création de votre compte en indiquant votre login  "{$login}"
-et la clé d'activation suivante : {$key} .
+<p>À tout de suite sur {$domain_name} !</p>
 
-(Le formulaire est disponible à cette adresse si vous avez perdu la page :
-http://{$server}{jurl 'jcommunity~registration:confirmform'})
-
-Vous devrez aussi indiquer sur ce formulaire un mot de passe de votre choix.
-Voici une proposition de mot de passe: {$pass}
-
-À bientôt sur {$server}.
