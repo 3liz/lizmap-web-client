@@ -3281,6 +3281,44 @@ var lizMap = function() {
     );
   }
 
+  function addGeometryFeatureInfo( popup ) {
+      // clean locate layer
+      var layer = map.getLayersByName('locatelayer');
+      if ( layer.length == 0 )
+        return;
+      layer = layer[0];
+      layer.destroyFeatures();
+      // get geometries and crs
+      var geometries = [];
+      $('div.lizmapPopupContent input.lizmap-popup-layer-feature-geometry').each(function(){
+        var self = $(this);
+        var val = self.val();
+        if ( val == '' )
+            return;
+        var crs = self.parent().find('input.lizmap-popup-layer-feature-crs').val();
+        if ( crs == '' )
+            return;
+        geometries.push( { geom: val, crs: crs } );
+      });
+      // load proj and build features from popup
+      var projLoaded = [];
+      for ( var i=0, len=geometries.length; i<len; i++ ) {
+          loadProjDefinition(geometries[i].crs, function( aProj ) {
+              projLoaded.push( aProj );
+              if ( projLoaded.length == geometries.length ) {
+                  var features = [];
+                  for ( var j=0, len=geometries.length; j<len; j++ ) {
+                      var geomInfo = geometries[j];
+                      var geometry = OpenLayers.Geometry.fromWKT( geomInfo.geom );
+                      geometry.transform(geomInfo.crs, map.getProjection());
+                      features.push( new OpenLayers.Feature.Vector( geometry ) );
+                  }
+                 layer.addFeatures( features );
+              }
+          } );
+      }
+  }
+
   function addChildrenFeatureInfo( popup ) {
       $('div.lizmapPopupContent input.lizmap-popup-layer-feature-id').each(function(){
         var self = $(this);
@@ -3452,6 +3490,8 @@ var lizMap = function() {
 
                     // Display related children objects
                     addChildrenFeatureInfo( popup );
+                    // Display geometries
+                    addGeometryFeatureInfo( popup );
 
                     // Trigger event
                     lizMap.events.triggerEvent("lizmappopupdisplayed",

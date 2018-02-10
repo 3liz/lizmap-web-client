@@ -815,11 +815,18 @@ class serviceCtrl extends jController {
         // Use default template if needed or maptip value if defined
         $hasMaptip = false;
         $maptipValue = '';
+        // Get geometry data
+        $hasGeometry = false;
+        $geometryValue = '';
 
         foreach($feature->Attribute as $attribute){
           if($attribute['name'] == 'maptip'){
             $hasMaptip = true;
             $maptipValue = $attribute['value'];
+          }
+          else if ($attribute['name'] == 'geometry'){
+            $hasGeometry = true;
+            $geometryValue = $attribute['value'];
           }
         }
         // If there is a maptip attribute we display its value
@@ -835,6 +842,24 @@ class serviceCtrl extends jController {
           $qgisContent = $maptipValue;
         }
 
+        // Get the BoundingBox data
+        $hiddenGeometry = '';
+        if ( $hasGeometry && $feature->BoundingBox) {
+            $hiddenGeometry = '<input type="hidden" value="'. $geometryValue. '" class="lizmap-popup-layer-feature-geometry"/>
+        ';
+            $bbox = $feature->BoundingBox[0];
+            $hiddenGeometry.= '<input type="hidden" value="'. $bbox['CRS']. '" class="lizmap-popup-layer-feature-crs"/>
+        ';
+            $hiddenGeometry.= '<input type="hidden" value="'. $bbox['minx']. '" class="lizmap-popup-layer-feature-bbox-minx"/>
+        ';
+            $hiddenGeometry.= '<input type="hidden" value="'. $bbox['miny']. '" class="lizmap-popup-layer-feature-bbox-miny"/>
+        ';
+            $hiddenGeometry.= '<input type="hidden" value="'. $bbox['maxx']. '" class="lizmap-popup-layer-feature-bbox-maxx"/>
+        ';
+            $hiddenGeometry.= '<input type="hidden" value="'. $bbox['maxy']. '" class="lizmap-popup-layer-feature-bbox-maxy"/>
+        ';
+        }
+
         // New option to choose the popup source : auto (=default), lizmap (=popupTemplate), qgis (=qgis maptip)
         $finalContent = $autoContent;
         if(property_exists($configLayer, 'popupSource')){
@@ -846,7 +871,7 @@ class serviceCtrl extends jController {
 
         $tpl = new jTpl();
         $tpl->assign('layerTitle', $layerTitle);
-        $tpl->assign('popupContent', $hiddenFeatureId . $finalContent);
+        $tpl->assign('popupContent', $hiddenFeatureId . $hiddenGeometry . $finalContent);
         $content[] = $tpl->fetch('view~popup');
 
       } // loop features
