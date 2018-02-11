@@ -209,3 +209,12 @@ a:hover {
 #content {
   padding-top: 20px;
 }
+
+div.form-horizontal .controls .jforms-value {
+  font-size: 14px;
+  padding-top: 5px;
+  display: inline-block;
+}
+div.form-horizontal .control-label {
+  font-weight: bold;
+}
