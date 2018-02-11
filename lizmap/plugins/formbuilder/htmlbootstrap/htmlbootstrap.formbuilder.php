@@ -31,7 +31,7 @@ class htmlbootstrapFormBuilder extends \jelix\forms\Builder\HtmlBuilder {
         $modal = False;
         if ( isset($this->options['modal']) && $this->options['modal'] )
           $modal = True;
-        echo '<div class="jforms-table" border="0">';
+        echo '<div class="jforms-table">';
         foreach( $this->_form->getRootControls() as $ctrlref=>$ctrl){
             if($ctrl->type == 'submit' || $ctrl->type == 'reset' || $ctrl->type == 'hidden') continue;
             if(!$this->_form->isActivated($ctrlref)) continue;
