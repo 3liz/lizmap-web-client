@@ -70,7 +70,7 @@
         <item value="3" locale="jcommunity~account.form.status.valid.password.changed" />
     </menulist>
 
-    <input ref="keyactivate" maxlength="10">
+    <input ref="keyactivate" maxlength="50">
         <label locale="jcommunity~account.form.keyactivate"/>
     </input>
 

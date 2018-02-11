@@ -105,7 +105,7 @@ class loginCtrl extends jController {
             // we are here because of an internal redirection (authentication missing)
             // if we can indicate the url to go after the login, let's pass this url
             // to the next action (which is in most of case a login form)
-            if ($conf['enable_after_login_override']) {
+            if ($conf['enable_after_login_override'] && $_SERVER['REQUEST_METHOD'] == 'GET') {
                 $rep->url = jUrl::get($conf['after_logout'],
                                       array('auth_url_return'=> jUrl::getCurrentUrl()));
             }
