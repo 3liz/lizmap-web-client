@@ -171,10 +171,8 @@ class passwordCtrl extends \Jelix\JCommunity\AbstractController
      */
     public function changed()
     {
-        // jcommunity response can be a single page without menu etc..
-        // so we retrieve the standard response to be sure that the user have links
-        // to navigate into the web site
-        $rep = $this->getResponse('html');
+        $rep = $this->_getjCommunityResponse();
+        $rep->title = jLocale::get('password.form.change.title');
         $tpl = new jTpl();
         $rep->body->assign('MAIN', $tpl->fetch('password_ok'));
 

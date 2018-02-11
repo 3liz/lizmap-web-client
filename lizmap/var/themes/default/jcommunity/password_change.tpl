@@ -6,9 +6,8 @@
 
     {@jcommunity~password.form.change.text.html@}
 
-    {formfull $form,'jcommunity~password:save', array()}
+    {formfull $form,'jcommunity~password:save', array(), 'htmlbootstrap'}
 
 {/if}
-
     <p><a href="{jurl 'jcommunity~login:index'}">{@jcommunity~register.cancel.and.back.to.login@}</a></p>
 </div>

@@ -17,6 +17,12 @@
         <label locale="register.form.create.email"/>
     </input>
 
+    <secret ref="reg_password"  required="true" minlength="8" maxlength="120">
+        <label locale="register.form.confirm.password.label"/>
+        <help locale="register.form.confirm.password.help"/>
+        <confirm locale="register.form.confirm.password2.label" />
+    </secret>
+
     <textarea ref="comment" required="true" maxlength="300">
         <label locale="view~user.form.comment.label"/>
         <hint locale="view~user.form.comment.help"/>

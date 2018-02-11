@@ -32,7 +32,7 @@
              2 valid, but email changed. awaiting for confirmation
              3 valid, but password changed. awaiting for confirmation
              -->
-        <property name="keyactivate" fieldname="keyactivate"  datatype="string" maxlength="10" />
+        <property name="keyactivate" fieldname="keyactivate"  datatype="string" maxlength="50" />
         <property name="request_date" fieldname="request_date" datatype="datetime" />
         <property name="create_date" fieldname="create_date" datatype="datetime"
                   insertpattern="now()" updatepattern=""/>
