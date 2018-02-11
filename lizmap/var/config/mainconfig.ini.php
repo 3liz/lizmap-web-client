@@ -85,8 +85,8 @@ defaultEntrypoint=index
 entrypointExtension=.php
 
 ; leave empty to have jelix error messages
-notfoundAct=
-;notfoundAct = "jelix~error:notfound"
+;notfoundAct=
+notfoundAct = "jelix~error:notfound"
 
 ; list of actions which require https protocol for the simple url engine
 ; syntax of the list is the same as explained in the simple_urlengine_entrypoints
