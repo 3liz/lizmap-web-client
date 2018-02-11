@@ -17,6 +17,18 @@
         <label locale="register.form.create.email"/>
     </input>
 
+    <input ref="firstname" maxlength="100" required="true">
+        <label locale="view~user.form.firstname.label"/>
+    </input>
+
+    <input ref="lastname" maxlength="100" required="true">
+        <label locale="view~user.form.lastname.label"/>
+    </input>
+
+    <input ref="organization" maxlength="100" required="true">
+        <label locale="view~user.form.organization.label"/>
+    </input>
+
     <secret ref="reg_password"  required="true" minlength="8" maxlength="120">
         <label locale="register.form.confirm.password.label"/>
         <help locale="register.form.confirm.password.help"/>

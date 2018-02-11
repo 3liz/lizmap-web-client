@@ -3,7 +3,7 @@
        <event name="masteradminGetMenuContent" />
    </listener>
     <listener name="lzmAuthListener">
-        <event name=""/>
-
+        <event name="jcommunity_registration_prepare_save"/>
+        <event name="jcommunity_registration_after_save"/>
     </listener>
 </events>
