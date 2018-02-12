@@ -1,13 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <module xmlns="http://jelix.org/ns/module/1.0">
     <info id="proj4php3liz.com" name="proj4php" createdate="2015-03-13">
-        <version date="2018-02-02">3.2pre180202</version>
+        <version date="2018-02-02">3.2pre.180202</version>
         <label lang="en_US">proj4php</label>
         <description lang="en_US" />
         <license URL="https://www.gnu.org/licenses/lgpl.html">GNU LESSER GENERAL PUBLIC LICENSE Version 3</license>
-        <copyright>2011 3liz</copyright>
-        <creator name="3liz" email="info@3liz.com" active="true"/>
-        <!--<contributor name="hisname" email="hisemail@yoursite.undefined" active="true" since="" role=""/>-->
+        <copyright>2011-2018 3liz</copyright>
+        <creator name="3liz" email="info@3liz.com"/>
         <homepageURL>http://3liz.com</homepageURL>
     </info>
     <dependencies>
