@@ -16,6 +16,13 @@ class accountCtrl extends jController
       'destroydone' => array('auth.required' => false),
     );
 
+    protected $config;
+
+    public function __construct($request)
+    {
+        parent::__construct($request);
+        $this->config = new \Jelix\JCommunity\Config();
+    }
     protected function getDaoName()
     {
         $plugin = jApp::coord()->getPlugin('auth');
@@ -61,7 +68,6 @@ class accountCtrl extends jController
         $tpl->assign('username', $login);
         $rep->title = jLocale::get('account.profile.of', array($login));
 
-        $config = new \Jelix\JCommunity\Config();
         try {
             $form = jForms::create($this->getAccountForm(), $login);
             $user = $form->initFromDao($this->getDaoName(), $login, $this->getProfileName());
@@ -78,8 +84,10 @@ class accountCtrl extends jController
 
         $tpl->assign('user', $user);
         $tpl->assign('form', $form);
-        $tpl->assign('publicProperties', $config->getPublicUserProperties());
-        $tpl->assign('passwordChangeAllowed', $config->isPasswordChangeEnabled());
+        $tpl->assign('publicProperties',        $this->config->getPublicUserProperties());
+        $tpl->assign('passwordChangeAllowed',   $this->config->isPasswordChangeEnabled());
+        $tpl->assign('changeAllowed',           $this->config->isAccountChangeEnabled());
+        $tpl->assign('destroyAllowed',          $this->config->isAccountDestroyEnabled());
         $tpl->assign('himself', $himself);
         $tpl->assign('additionnalContent', '');
         $tpl->assign('otherInfos', array()); // 'label'=>'value'
@@ -104,7 +112,10 @@ class accountCtrl extends jController
         $rep->action = 'jcommunity~account:show';
         $rep->params = array('user' => $login);
 
-        if (!jAuth::isConnected() || jAuth::getUserSession()->login != $login) {
+        if (!jAuth::isConnected() ||
+            jAuth::getUserSession()->login != $login ||
+            !$this->config->isAccountChangeEnabled()
+        ) {
             return $rep;
         }
 
@@ -128,7 +139,11 @@ class accountCtrl extends jController
     public function edit()
     {
         $login = $this->param('user');
-        if ($login == '' || !jAuth::isConnected() || jAuth::getUserSession()->login != $login) {
+        if ($login == '' ||
+            !jAuth::isConnected() ||
+            jAuth::getUserSession()->login != $login ||
+            !$this->config->isAccountChangeEnabled()
+        ) {
             $rep = $this->getResponse('redirect');
             $rep->action = 'jcommunity~account:show';
             $rep->params = array('user' => $login);
@@ -169,9 +184,14 @@ class accountCtrl extends jController
         $rep->action = 'jcommunity~account:show';
         $rep->params = array('user' => $login);
 
-        if ($login == '' || !jAuth::isConnected() || jAuth::getUserSession()->login != $login) {
+        if ($login == '' ||
+            !jAuth::isConnected() ||
+            jAuth::getUserSession()->login != $login||
+            !$this->config->isAccountChangeEnabled()
+        ) {
             return $rep;
         }
+
         $form = jForms::get($this->getAccountForm(), $login);
         if (!$form) {
             return $rep;
@@ -215,7 +235,11 @@ class accountCtrl extends jController
     public function destroy()
     {
         $login = $this->param('user');
-        if ($login == '' || !jAuth::isConnected() || jAuth::getUserSession()->login != $login) {
+        if ($login == '' ||
+            !jAuth::isConnected() ||
+            jAuth::getUserSession()->login != $login ||
+            !$this->config->isAccountDestroyEnabled()
+        ) {
             $rep = $this->getResponse('redirect');
             $rep->action = 'jcommunity~account:show';
             $rep->params = array('user' => $login);
@@ -237,7 +261,11 @@ class accountCtrl extends jController
         $rep->action = 'jcommunity~account:show';
         $rep->params = array('user' => $login);
 
-        if ($login == '' || !jAuth::isConnected() || jAuth::getUserSession()->login != $login) {
+        if ($login == '' ||
+            !jAuth::isConnected() ||
+            jAuth::getUserSession()->login != $login ||
+            !$this->config->isAccountDestroyEnabled()
+        ) {
             return $rep;
         }
 

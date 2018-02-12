@@ -242,7 +242,7 @@ jauth.access=0
 jauthdb.access=0
 
 jcommunity.access=1
-jcommunity.installparam="defaultuser;manualconfig"
+jcommunity.installparam="manualconfig"
 
 admin.access=1
 dataviz.access=1
@@ -251,15 +251,16 @@ lizmap.access=1
 proj4php.access=1
 view.access=1
 
-
-
 [mailLogger]
 email="root@localhost"
 emailHeaders="Content-Type: text/plain; charset=UTF-8\nFrom: webmaster@yoursite.com\nX-Mailer: Jelix\nX-Priority: 1 (Highest)\n"
-
 
 [jcommunity]
 loginResponse = htmlauth
 registrationEnabled = off
 resetPasswordEnabled = on
-
+verifyNickname = off
+;passwordChangeEnabled=on
+;accountDestroyEnabled=on
+useJAuthDbAdminRights=on
+;disableJPref = on
