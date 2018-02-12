@@ -2682,7 +2682,8 @@ var lizAttributeTable = function() {
                         }
 
                         // Zoom button
-                        if( aConfig && getLayerConfig ) {
+                        var bboxZoomButton = self.next('span.popupButtonBar').find('button.popup-layer-feature-bbox-zoom');
+                        if( aConfig && getLayerConfig && bboxZoomButton.length == 0) {
                             var layerConfig = getLayerConfig[1];
                             eHtml+= '<button class="btn btn-mini popup-layer-feature-zoom" value="';
                             eHtml+= aConfig[0] + '.' + fid;
@@ -2692,7 +2693,10 @@ var lizAttributeTable = function() {
                         if( eHtml != '' ){
                             var popupButtonBar = self.next('span.popupButtonBar');
                             if ( popupButtonBar.length != 0 ) {
-                                popupButtonBar.append(eHtml);
+                                if ( bboxZoomButton.length == 0 )
+                                    popupButtonBar.append(eHtml);
+                                else
+                                    bboxZoomButton.before(eHtml);
                             } else {
                                 eHtml = '<span class="popupButtonBar">' + eHtml + '</span></br>';
                                 self.after(eHtml);
