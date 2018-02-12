@@ -114,6 +114,16 @@
     <help locale="admin~admin.form.admin_services.adminContactEmail.help"/>
 </input>
 
+<input ref="adminSenderEmail" type="email">
+    <label locale="admin~admin.form.admin_services.adminSenderEmail.label"/>
+    <help locale="admin~admin.form.admin_services.adminSenderEmail.help"/>
+</input>
+
+<input ref="adminSenderName" maxlength="250">
+    <label locale="admin~admin.form.admin_services.adminSenderName.label"/>
+    <help locale="admin~admin.form.admin_services.adminSenderName.help"/>
+</input>
+
 <input ref="googleAnalyticsID" type="string" pattern="/^UA-\d+-\d+$/">
   <label locale="admin~admin.form.admin_services.googleAnalyticsID.label"/>
     <help locale="admin~admin.form.admin_services.googleAnalyticsID.help"/>

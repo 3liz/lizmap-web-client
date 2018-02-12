@@ -85,6 +85,13 @@ class Config
                 $this->resetPasswordEnabled = (bool) $config['resetPasswordEnabled'];
             }
         }
+        $sender = filter_var(\jApp::config()->mailer['webmasterEmail'], FILTER_VALIDATE_EMAIL);
+        if (!$sender) {
+            // if the sender email is not configured, deactivate features that
+            // need to send an email
+            $this->resetPasswordEnabled = false;
+            $this->registrationEnabled = false;
+        }
     }
 
     public function getResponseType()
