@@ -11,7 +11,7 @@ timeZone="Europe/Paris"
 theme=default
 
 pluginsPath="app:plugins/,lib:jelix-plugins/,module:jacl2db/plugins"
-modulesPath="lib:jelix-admin-modules/,lib:jelix-modules/,app:modules/,app:lizmap-modules"
+modulesPath="lib:jelix-admin-modules/,lib:jelix-modules/,lib:vendor-modules/,app:modules/,app:lizmap-modules"
 
 ; the locales available in the application
 availableLocales="fr_FR,en_US,it_IT,es_ES,eu_ES,pt_PT,el_GR,de_DE,pl_PL,ru_RU,fi_FI,gl_ES,sv_SE,nl_NL,ro_RO"
