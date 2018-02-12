@@ -120,24 +120,27 @@ class jcommunityModuleInstaller extends jInstallerModule {
             if ($this->getParameter('migratejauthdbusers')) {
                 $this->migrateUsers($daoSelector);
             }
-            else if ($this->getParameter('defaultuser')) {
-                $dao = jDao::get($daoSelector, $dbProfile);
-                $user = $dao->getByLogin('admin');
-                if (!$user) {
-                    require_once(JELIX_LIB_PATH.'auth/jAuth.class.php');
-                    require_once(JELIX_LIB_PATH.'plugins/auth/db/db.auth.php');
+            else {
+                $this->fillDefaultValues($daoSelector);
+                if ($this->getParameter('defaultuser')) {
+                    $dao = jDao::get($daoSelector, $dbProfile);
+                    $user = $dao->getByLogin('admin');
+                    if (!$user) {
+                        require_once(JELIX_LIB_PATH.'auth/jAuth.class.php');
+                        require_once(JELIX_LIB_PATH.'plugins/auth/db/db.auth.php');
 
-                    $confIni = parse_ini_file($conf->getFileName(), true);
-                    $authConfig = jAuth::loadConfig($confIni);
-                    $driver = new dbAuthDriver($authConfig['Db']);
-                    $passwordHash = $driver->cryptPassword('admin');
+                        $confIni = parse_ini_file($conf->getFileName(), true);
+                        $authConfig = jAuth::loadConfig($confIni);
+                        $driver = new dbAuthDriver($authConfig['Db']);
+                        $passwordHash = $driver->cryptPassword('admin');
 
-                    $user = jDao::createRecord($daoSelector, $dbProfile);
-                    $user->nickname = $user->login = 'admin';
-                    $user->password = $passwordHash;
-                    $user->email = 'admin@localhost.localdomain';
-                    $user->status = 1;
-                    $dao->insert($user);
+                        $user = jDao::createRecord($daoSelector, $dbProfile);
+                        $user->nickname = $user->login = 'admin';
+                        $user->password = $passwordHash;
+                        $user->email = 'admin@localhost.localdomain';
+                        $user->status = 1;
+                        $dao->insert($user);
+                    }
                 }
             }
         }
@@ -219,5 +222,32 @@ class jcommunityModuleInstaller extends jInstallerModule {
         $sql .= '('.implode(',', $targetFields).')';
         $sql .= ' SELECT '.implode(',', $sourceFields) . ' FROM '.$cn->prefixTable('jlx_user');
         $cn->exec($sql);
+    }
+
+    protected function fillDefaultValues($daoSelector) {
+        $dao = jDao::get($daoSelector);
+
+        $daoProperties = $dao->getProperties();
+        $tableProp = $dao->getTables()[$dao->getPrimaryTable()];
+        $cn = $this->dbConnection();
+
+        if (!isset($daoProperties['status'])) {
+            $statusField = $cn->encloseName($daoProperties['status']['fieldName']);
+
+            $sql = "UPDATE ".$cn->prefixTable($tableProp['realname']).
+                " SET ".$statusField." = ".\Jelix\JCommunity\Account::STATUS_VALID.
+                " WHERE ".$statusField." IS NULL";
+            $cn->exec($sql);
+        }
+
+        if (isset($daoProperties['nickname'])) {
+            $loginField = $cn->encloseName($daoProperties['login']['fieldName']);
+            $nicknameField = $cn->encloseName($daoProperties['nickname']['fieldName']);
+
+            $sql = "UPDATE ".$cn->prefixTable($tableProp['realname']).
+                " SET ".$nicknameField." = ".$loginField.
+                " WHERE ".$nicknameField." IS NULL or ".$nicknameField." = ''";
+            $cn->exec($sql);
+        }
     }
 }

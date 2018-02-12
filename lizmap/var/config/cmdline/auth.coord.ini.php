@@ -102,7 +102,10 @@ password_crypt_function=sha1
 
 
 ; name of the form for the jauthdb_admin module
-form="jcommunity~account_admin"
+form = "lizmap~account_admin"
+; name of the form for the user to modify its account data
+userform = "lizmap~account"
+
 
 ; path of the directory where to store files uploaded by the form (jauthdb_admin module)
 ; should be related to the var directory of the application

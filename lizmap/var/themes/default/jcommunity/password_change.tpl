@@ -1,14 +1,14 @@
 <div class="jcommunity-box jcommunity-account-password">
     <h1>{@jcommunity~password.form.change.title@}</h1>
-{if $error_status}
-    <p>{@jcommunity~password.form.change.error.$error_status@}</p>
-    <p><a href="{jurl 'jcommunity~login:index'}">{@jcommunity~register.cancel.and.back.to.login@}</a></p>
-{else}
+    {if $error_status}
+        <p>{@jcommunity~password.form.change.error.$error_status@}</p>
+    {else}
 
-    {@jcommunity~password.form.change.text.html@}
+        {@jcommunity~password.form.change.text.html@}
 
-    {formfull $form,'jcommunity~password:save', array(), 'htmlbootstrap'}
-    <p><a href="{jurl 'jcommunity~login:index'}"  class="btn">{@jcommunity~register.cancel.and.back.to.login@}</a></p>
+        {formfull $form,'jcommunity~password:save', array('user'=>$login), 'htmlbootstrap'}
 
-{/if}
+    {/if}
+
+    <p><a href="{jurl 'jcommunity~account:show', array('user'=>$login)}">{@jcommunity~password.cancel.and.back.to.account@}</a></p>
 </div>

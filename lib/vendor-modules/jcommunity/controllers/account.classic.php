@@ -79,6 +79,7 @@ class accountCtrl extends jController
         $tpl->assign('user', $user);
         $tpl->assign('form', $form);
         $tpl->assign('publicProperties', $config->getPublicUserProperties());
+        $tpl->assign('passwordChangeAllowed', $config->isPasswordChangeEnabled());
         $tpl->assign('himself', $himself);
         $tpl->assign('additionnalContent', '');
         $tpl->assign('otherInfos', array()); // 'label'=>'value'

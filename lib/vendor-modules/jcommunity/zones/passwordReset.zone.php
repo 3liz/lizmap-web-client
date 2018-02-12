@@ -10,15 +10,15 @@
 */
 
 
-class passwordZone extends jZone {
+class passwordResetZone extends jZone {
 
-   protected $_tplname='passwordform';
+   protected $_tplname = 'password_reset_form';
 
 
     protected function _prepareTpl(){
-        $form = jForms::get('password');
+        $form = jForms::get('password_reset');
         if($form == null){
-            $form = jForms::create('password');
+            $form = jForms::create('password_reset');
         }
         $this->_tpl->assign('form',$form);
     }

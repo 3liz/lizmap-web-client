@@ -14,7 +14,7 @@
         <ul>
             <li><a href="{jurl 'jcommunity~login:index'}">{@jcommunity~login.startpage.login@}</a></li>
             {if $canRegister}<li><a href="{jurl 'jcommunity~registration:index'}">{@jcommunity~login.startpage.account.create@}</a></li>{/if}
-            {if $canResetPassword}<li><a href="{jurl 'jcommunity~password:index'}">{@jcommunity~login.startpage.password.reset@}</a></li>{/if}
+            {if $canResetPassword}<li><a href="{jurl 'jcommunity~password_reset:index'}">{@jcommunity~login.startpage.password.reset@}</a></li>{/if}
         </ul>
     {/ifuserconnected}
 </div>

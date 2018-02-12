@@ -3,7 +3,7 @@
 
     {@jcommunity~password.form.text.html@}
 
-    {formfull $form,'jcommunity~password:send', array()}
+    {formfull $form,'jcommunity~password_reset:send', array()}
 
     <p><a href="{jurl 'jcommunity~login:index'}">{@jcommunity~register.cancel.and.back.to.login@}</a></p>
 </div>

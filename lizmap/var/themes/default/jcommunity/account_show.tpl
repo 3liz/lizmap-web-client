@@ -33,6 +33,7 @@
         <ul class="crud-links-list unstyled">
             <li><a href="{jurl 'jcommunity~account:prepareedit', array('user'=>$user->login)}" class="crud-link btn">{@jcommunity~account.link.profile.edit@}</a></li>
             <li><a href="{jurl 'jcommunity~account:destroy', array('user'=>$user->login)}" class="crud-link btn">{@jcommunity~account.link.account.delete@}</a></li>
+            {if $passwordChangeAllowed}<li><a href="{jurl 'jcommunity~password:index', array('user'=>$user->login)}" class="crud-link btn">{@jcommunity~account.link.account.change.password@}</a></li>{/if}
             {foreach $otherPrivateActions as $link=>$label}
                 <li><a href="{$link}"  class="crud-link btn">{$label|eschtml}</a></li>
             {/foreach}

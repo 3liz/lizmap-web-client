@@ -5,11 +5,5 @@
     <listener name="lzmAuth">
         <event name="jcommunity_registration_prepare_save"/>
         <event name="jcommunity_registration_after_save"/>
-        <event name="jauthdbAdminGetViewInfo"/>
-        <event name="jauthdbAdminPrepareUpdate"/>
-        <event name="jauthdbAdminEditUpdate"/>
-        <event name="jauthdbAdminPrepareCreate"/>
-        <event name="jauthdbAdminEditCreate"/>
-        <event name="jauthdbAdminCheckCreateForm"/>
     </listener>
 </events>

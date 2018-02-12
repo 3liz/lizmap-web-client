@@ -1,13 +1,13 @@
 <?php
 /**
- * @package      jcommunity
- * @subpackage
- * @author       Laurent Jouanneau <laurent@xulfr.org>
- * @contributor
- * @copyright    2008-2018 Laurent Jouanneau
- * @link         http://jelix.org
- * @licence      http://www.gnu.org/licenses/gpl.html GNU General Public Licence, see LICENCE file
- */
+* @package      jcommunity
+* @subpackage   
+* @author       Laurent Jouanneau <laurent@xulfr.org>
+* @contributor
+* @copyright    2008-2018 Laurent Jouanneau
+* @link         http://jelix.org
+* @licence      http://www.gnu.org/licenses/gpl.html GNU General Public Licence, see LICENCE file
+*/
 
 
 class loginZone extends jZone {
@@ -31,7 +31,7 @@ class loginZone extends jZone {
             }
             $this->_tpl->assign('form',$form);
             $this->_tpl->assign('url_return','');
-
+            
             if ($conf['enable_after_login_override']) {
                 $req = jApp::coord()->request;
                 // if there is a parameter indicating to go back to an url
@@ -52,4 +52,5 @@ class loginZone extends jZone {
             }
         }
     }
+
 }
