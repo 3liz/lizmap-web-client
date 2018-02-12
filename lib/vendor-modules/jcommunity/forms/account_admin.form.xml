@@ -39,9 +39,9 @@
         <item value="3" locale="jcommunity~account.form.status.valid.password.changed" />
     </menulist>
 
-    <input ref="keyactivate" maxlength="10">
+    <output ref="keyactivate">
         <label locale="jcommunity~account.form.keyactivate"/>
-    </input>
+    </output>
 
     <output ref="request_date">
         <label locale="jcommunity~account.form.requestdate"/>

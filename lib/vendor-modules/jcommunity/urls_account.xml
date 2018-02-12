@@ -13,5 +13,14 @@
     <url pathinfo="/:user/destroydone" action="account:destroydone">
         <param name="user" />
     </url>
+    <url pathinfo="/:user/password" action="password:index">
+        <param name="user" />
+    </url>
+    <url pathinfo="/:user/password/save" action="password:save">
+        <param name="user" />
+    </url>
+    <url pathinfo="/:user/password/changed" action="password:changed">
+        <param name="user" />
+    </url>
 
 </suburls>

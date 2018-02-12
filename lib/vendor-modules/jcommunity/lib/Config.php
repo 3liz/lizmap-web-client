@@ -17,6 +17,8 @@ class Config
 
     protected $resetPasswordEnabled = true;
 
+    protected $passwordChangeEnabled = true;
+
     protected $verifyNickname = true;
 
     protected $publicProperties = array('login', 'nickname', 'create_date');
@@ -32,6 +34,10 @@ class Config
 
         if (isset($config['verifyNickname'])) {
             $this->verifyNickname = $config['verifyNickname'];
+        }
+
+        if (isset($config['passwordChangeEnabled'])) {
+            $this->passwordChangeEnabled = $config['passwordChangeEnabled'];
         }
 
         if (isset($config['publicProperties'])) {
@@ -77,6 +83,11 @@ class Config
     public function isResetPasswordEnabled()
     {
         return $this->resetPasswordEnabled;
+    }
+
+    public function isPasswordChangeEnabled()
+    {
+        return $this->passwordChangeEnabled;
     }
 
     public function verifyNickname()

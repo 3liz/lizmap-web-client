@@ -5,10 +5,10 @@
     <url pathinfo="/saved"               action="registration:saved"/>
     <url pathinfo="/confirm"            action="registration:confirm"/>
 
-    <url pathinfo="/password"           action="password:index" />
-    <url pathinfo="/password/send"      action="password:send"/>
-    <url pathinfo="/password/sent"      action="password:sent"/>
-    <url pathinfo="/password/resetform" action="password:resetform"/>
-    <url pathinfo="/password/save"      action="password:save"/>
-    <url pathinfo="/password/changed"   action="password:changed"/>
+    <url pathinfo="/password-reset/"         action="password_reset:index" />
+    <url pathinfo="/password-reset/send"      action="password_reset:send"/>
+    <url pathinfo="/password-reset/sent"      action="password_reset:sent"/>
+    <url pathinfo="/password-reset/resetform" action="password_reset:resetform"/>
+    <url pathinfo="/password-reset/save"      action="password_reset:save"/>
+    <url pathinfo="/password-reset/changed"   action="password_reset:changed"/>
 </suburls>

@@ -26,7 +26,7 @@
         <div class="loginbox-links">
             {if $canRegister}<a href="{jurl 'jcommunity~registration:index'}" class="loginbox-links-create">{@jcommunity~login.startpage.account.create@}</a>{/if}
             {if $canResetPassword}{if $canRegister}<span class="loginbox-links-separator"> - </span>{/if}
-            <a href="{jurl 'jcommunity~password:index'}" class="loginbox-links-resetpass">{@jcommunity~login.login.password.reset@}</a>{/if}
+            <a href="{jurl 'jcommunity~password_reset:index'}" class="loginbox-links-resetpass">{@jcommunity~login.login.password.reset@}</a>{/if}
         </div>
 
     {/ifuserconnected}
