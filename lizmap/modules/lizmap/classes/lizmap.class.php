@@ -33,7 +33,7 @@ class lizmap{
     private function __construct (){ }
 
     /**
-     *
+     * @return lizmapServices
      */
     public static function getServices (){
       return jClasses::getService('lizmap~lizmapServices');

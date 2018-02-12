@@ -100,12 +100,12 @@ class configCtrl extends jController {
 
     // Set form data values
     foreach($services->getProperties() as $ser){
-      $form->setData($ser, $services->$ser);
-      if($ser == 'allowUserAccountRequests' || $ser == 'onlyMaps')
-        if($services->$ser)
-          $form->setData($ser, 'on');
-        else
-          $form->setData($ser, 'off');
+      if ($ser == 'allowUserAccountRequests' || $ser == 'onlyMaps') {
+        $form->setData($ser, $services->$ser ? 'on' : 'off');
+      }
+      else {
+        $form->setData($ser, $services->$ser);
+      }
     }
 
     // hide sensitive services properties
@@ -144,12 +144,12 @@ class configCtrl extends jController {
 
     // Set form data values
     foreach($services->getProperties() as $ser){
-      $form->setData($ser, $services->$ser);
-      if($ser == 'allowUserAccountRequests' || $ser == 'onlyMaps')
-        if($services->$ser)
-          $form->setData($ser, 'on');
-        else
-          $form->setData($ser, 'off');
+      if ($ser == 'allowUserAccountRequests' || $ser == 'onlyMaps') {
+        $form->setData($ser, $services->$ser ? 'on' : 'off');
+      }
+      else {
+        $form->setData($ser, $services->$ser);
+      }
     }
 
     // If wrong cacheRootDirectory, use the system temporary directory
@@ -295,10 +295,11 @@ class configCtrl extends jController {
     $data = array();
     foreach($services->getProperties() as $prop)
       $data[$prop] = $form->getData($prop);
-    $isRepository=false;
+
     $modifyServices = $services->update($data);
-    if($modifyServices)
+    if ($modifyServices) {
       jMessage::add(jLocale::get("admin~admin.form.admin_services.message.data.saved"));
+    }
 
     // Redirect to the validation page
     $rep= $this->getResponse("redirect");

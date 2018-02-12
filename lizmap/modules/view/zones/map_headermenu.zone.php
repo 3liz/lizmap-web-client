@@ -55,7 +55,6 @@ class map_headermenuZone extends jZone {
 
         // Get lizmap services
         $services = lizmap::getServices();
-        if($services->allowUserAccountRequests)
-            $this->_tpl->assign('allowUserAccountRequests', True);
+        $this->_tpl->assign('allowUserAccountRequests', $services->allowUserAccountRequests);
     }
 }

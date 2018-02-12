@@ -12,12 +12,17 @@
 
 class lizmapServices{
 
-    // Lizmap configuration file path (relative to the path folder)
-    private $config = 'config/lizmapConfig.ini.php';
-    // Lizmap configuration data
+    /**
+     * Lizmap configuration data from lizmapConfig.ini.php
+     * This allow to access to configuration properties that are not exposed
+     * via properties member for this class
+     */
     private $data = array();
 
-    // services properties
+    /**
+     * List of all properties of lizmapServices that should be retrieved
+     * from lizmapConfig.ini.php or from the main configuration
+     */
     private $properties = array(
       'appName',
       'qgisServerVersion',
@@ -41,6 +46,8 @@ class lizmapServices{
       'cacheRedisKeyPrefix',
       'allowUserAccountRequests',
       'adminContactEmail',
+      'adminSenderEmail',
+      'adminSenderName',
       'googleAnalyticsID'
     );
 
@@ -62,11 +69,25 @@ class lizmapServices{
       'cacheRedisPort',
       'cacheRedisDb',
       'cacheRedisKeyPrefix',
+      'adminSenderEmail',
+      'adminSenderName',
     );
 
     private $notEditableProperties = array(
         'cacheRedisKeyPrefixFlushMethod'
     );
+
+    /**
+     * List of properties mapped to a parameter of the main configuration of Jelix
+     * @var array
+     */
+    private $globalConfigProperties = array(
+        // property name => array(ini parameter name, ini section name)
+        'allowUserAccountRequests' => array('registrationEnabled', 'jcommunity'),
+        'adminSenderEmail' => array('webmasterEmail', 'mailer'),
+        'adminSenderName' => array('webmasterName', 'mailer'),
+    );
+
 
     // Wms map server
     public $appName = 'Lizmap';
@@ -112,20 +133,34 @@ class lizmapServices{
     public $allowUserAccountRequests = '';
     // admin contact email
     public $adminContactEmail = '';
-    // admin contact email
+    // admin sender email
+    public $adminSenderEmail = '';
+    public $adminSenderName = '';
+    // application id for google analytics
     public $googleAnalyticsID = '';
 
     public function __construct () {
       // read the lizmap configuration file
-      $readConfigPath = parse_ini_file(jApp::varPath().$this->config, True);
+      $readConfigPath = parse_ini_file(jApp::configPath('lizmapConfig.ini.php'), True);
       $this->data = $readConfigPath;
+      $globalConfig = jApp::config();
 
       // set generic parameters
       foreach($this->properties as $prop) {
-        if(isset($readConfigPath['services'][$prop])) {
+        if (isset($this->globalConfigProperties[$prop])) {
+          list($key, $section) = $this->globalConfigProperties[$prop];
+          if (isset($globalConfig->$section)) {
+              $conf = & $globalConfig->$section;
+          }
+          if (isset($conf[$key])) {
+            $this->$prop = $conf[$key];
+          }
+        }
+        else if(isset($readConfigPath['services'][$prop])) {
           $this->$prop = $readConfigPath['services'][$prop];
         }
       }
+
       foreach($this->notEditableProperties as $prop) {
         if(isset($readConfigPath['services'][$prop])) {
           $this->$prop = $readConfigPath['services'][$prop];
@@ -173,8 +208,19 @@ class lizmapServices{
      */
     public function modify( $data ){
       $modified = false;
+      $globalConfig = jApp::config();
       foreach($data as $k=>$v){
-        if(in_array($k, $this->properties)){
+        if (isset($this->globalConfigProperties[$k])) {
+          list($key, $section) = $this->globalConfigProperties[$k];
+          if (!isset($globalConfig->$section)) {
+            $globalConfig->$section = array();
+          }
+          $conf = & $globalConfig->$section;
+          $conf[$key] = $v;
+          $this->$k = $v;
+          $modified = true;
+        }
+        else if(in_array($k, $this->properties)){
           $this->data['services'][$k] = $v;
           $this->$k = $v;
           $modified = true;
@@ -189,7 +235,7 @@ class lizmapServices{
      */
     public function update( $data ){
       $modified = $this->modify( $data );
-      if ( $modified )
+      if ($modified)
         $modified = $this->save();
       return $modified;
     }
@@ -199,18 +245,55 @@ class lizmapServices{
      */
     public function save( ){
       // Get access to the ini file
-      $iniFile = jApp::configPath('lizmapConfig.ini.php');
-      $ini = new jIniFileModifier($iniFile);
+      $ini = new jIniFileModifier(jApp::configPath('lizmapConfig.ini.php'));
+      $localIni = new jIniFileModifier(jApp::configPath('localconfig.ini.php'));
 
       foreach($this->properties as $prop) {
-        if($this->$prop != '')
+        if (isset($this->globalConfigProperties[$prop])) {
+          list($key, $section) = $this->globalConfigProperties[$prop];
+          $localIni->setValue($key, $this->$prop, $section);
+        }
+        else if ($this->$prop != '') {
           $ini->setValue($prop, $this->$prop, 'services');
-        else
+        }
+        else {
           $ini->removeValue($prop, 'services');
+        }
       }
+
+      $modified = $ini->isModified() || $localIni->isModified();
 
       // Save the ini file
       $ini->save();
-      return $ini->isModified();
+      $localIni->save();
+      return $modified;
+    }
+
+    function sendNotificationEmail($subject, $body) {
+        $email = filter_var($this->adminContactEmail, FILTER_VALIDATE_EMAIL);
+        $sender = filter_var($this->adminSenderEmail, FILTER_VALIDATE_EMAIL);
+        if ($email && $sender) {
+            $mail = new jMailer();
+            $mail->Subject = $subject;
+            $mail->Body = $body;
+            $mail->AddAddress( $email, 'Lizmap Notifications');
+            try{
+                $mail->Send();
+            }
+            catch(Exception $e){
+                jLog::log('error while sending email to admin: '. $e->getMessage(), 'error');
+            }
+        }
+        else {
+            if (!$sender && !$email) {
+                jLog::log('Notification cannot be send: no sender email nor notification email have been configured', 'warning');
+            }
+            else if (!$email) {
+                jLog::log('Notification cannot be send: no notification email has been configured', 'warning');
+            }
+            else if (!$sender) {
+                jLog::log('Notification cannot be send: no sender email has been configured', 'warning');
+            }
+        }
     }
 }
