@@ -19,9 +19,19 @@ class Config
 
     protected $passwordChangeEnabled = true;
 
+    protected $accountDestroyEnabled = true;
+
     protected $verifyNickname = true;
 
     protected $publicProperties = array('login', 'nickname', 'create_date');
+
+    /**
+     * Indicate if jcommunity should take care of this following rights:
+     * - auth.user.modify
+     * - auth.user.change.password
+     * @var bool
+     */
+    protected $useJAuthDbAdminRights = false;
 
     /**
      */
@@ -38,6 +48,13 @@ class Config
 
         if (isset($config['passwordChangeEnabled'])) {
             $this->passwordChangeEnabled = $config['passwordChangeEnabled'];
+        }
+        if (isset($config['accountDestroyEnabled'])) {
+            $this->accountDestroyEnabled = $config['accountDestroyEnabled'];
+        }
+
+        if (isset($config['useJAuthDbAdminRights'])) {
+            $this->useJAuthDbAdminRights = $config['useJAuthDbAdminRights'];
         }
 
         if (isset($config['publicProperties'])) {
@@ -87,7 +104,22 @@ class Config
 
     public function isPasswordChangeEnabled()
     {
+        if ($this->useJAuthDbAdminRights) {
+            return $this->passwordChangeEnabled &&
+                \jAcl2::check('auth.user.change.password');
+        }
         return $this->passwordChangeEnabled;
+    }
+
+    public function isAccountChangeEnabled() {
+        if ($this->useJAuthDbAdminRights) {
+            return \jAcl2::check('auth.user.modify');
+        }
+        return true;
+    }
+
+    public function isAccountDestroyEnabled() {
+        return $this->accountDestroyEnabled && $this->isAccountChangeEnabled();
     }
 
     public function verifyNickname()
@@ -97,6 +129,9 @@ class Config
 
     public function getPublicUserProperties()
     {
+        if ($this->useJAuthDbAdminRights && ! \jAcl2::check('auth.user.view')) {
+            return array('login');
+        }
         return $this->publicProperties;
     }
 }

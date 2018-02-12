@@ -20,8 +20,3 @@ auth="admin/auth.coord.ini.php"
 jacl2=1
 
 
-
-[jcommunity]
-loginresponse = htmlauth
-registrationEnabled = off
-resetPasswordEnabled = on
