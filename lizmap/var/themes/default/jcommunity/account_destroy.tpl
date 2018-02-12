@@ -14,7 +14,7 @@
 
             <div><input type="submit" value="{@jcommunity~account.form.delete.account.submit@}" />
 
-                <a href="{jurl 'jcommunity~account:show', array('user'=>$username)}">{@jcommunity~account.form.cancel@}</a>
+                <a href="{jurl 'jcommunity~account:show', array('user'=>$username)}" class="btn">{@jcommunity~account.form.cancel@}</a>
             </div>
         </fieldset>
     </form>
