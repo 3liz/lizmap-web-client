@@ -15,10 +15,9 @@
     </input>
 
     <secret ref="password" minlength="8" maxlength="120">
-        <label locale="jcommunity~register.form.confirm.password.label"/>
-        <hint locale="jcommunity~register.form.confirm.password.help"/>
-        <help locale="jcommunity~register.form.confirm.password.help"/>
-        <confirm locale="jcommunity~register.form.confirm.password2.label"/>
+        <label locale="jcommunity~account.form.password"/>
+        <help locale="jcommunity~account.form.password.help"/>
+        <confirm locale="jcommunity~account.form.password.confirm"/>
     </secret>
 
     <input ref="firstname" maxlength="100">
@@ -57,7 +56,6 @@
         <label locale="admin~user.form.comment.label"/>
     </textarea>
 
-
     <menulist ref="status" required="true">
         <label locale="jcommunity~account.form.status" />
         <item value="-2" locale="jcommunity~account.form.status.deleted" />
@@ -68,9 +66,9 @@
         <item value="3" locale="jcommunity~account.form.status.valid.password.changed" />
     </menulist>
 
-    <input ref="keyactivate" maxlength="50">
+    <output ref="keyactivate">
         <label locale="jcommunity~account.form.keyactivate"/>
-    </input>
+    </output>
 
     <output ref="request_date">
         <label locale="jcommunity~account.form.requestdate"/>

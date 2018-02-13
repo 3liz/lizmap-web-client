@@ -81,7 +81,7 @@ class password_resetCtrl extends \Jelix\JCommunity\AbstractController
         }
 
         $rep = $this->_getjCommunityResponse();
-        $rep->title = jLocale::get('password.waiting.title');
+        $rep->title = jLocale::get('password.form.title');
         $tpl = new jTpl();
         $rep->body->assign('MAIN', $tpl->fetch('password_reset_waiting'));
 

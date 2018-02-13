@@ -10,5 +10,5 @@
 
 {/if}
 
-    <p><a href="{jurl 'jcommunity~login:index'}">{@jcommunity~register.cancel.and.back.to.login@}</a></p>
+    <p><a href="{jurl 'jcommunity~login:index'}">{@jcommunity~login.cancel.and.back.to.login@}</a></p>
 </div>

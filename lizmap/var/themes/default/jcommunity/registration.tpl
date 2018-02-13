@@ -5,5 +5,5 @@
 
     {formfull $form,'jcommunity~registration:save', array(), 'htmlbootstrap'}
 
-    <p><a href="{jurl 'jcommunity~login:index'}"  class="btn">{@jcommunity~register.cancel.and.back.to.login@}</a></p>
+    <p><a href="{jurl 'jcommunity~login:index'}"  class="btn">{@jcommunity~login.cancel.and.back.to.login@}</a></p>
 </div>
