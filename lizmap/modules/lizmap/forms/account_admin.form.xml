@@ -7,9 +7,7 @@
 
 
     <input ref="login" required="true" minlength="3" maxlength="50">
-        <label locale="view~user.form.login.label"/>
-        <hint locale="view~user.form.login.help"/>
-        <help locale="view~user.form.login.help"/>
+        <label locale="jcommunity~account.form.login"/>
     </input>
 
     <input ref="email"  required="true" type="email">
@@ -17,10 +15,10 @@
     </input>
 
     <secret ref="password" minlength="8" maxlength="120">
-        <label locale="view~user.form.password.label"/>
-        <hint locale="view~user.form.password.help"/>
-        <help locale="view~user.form.password.help"/>
-        <confirm locale="view~user.form.password.confirm.label"/>
+        <label locale="jcommunity~register.form.confirm.password.label"/>
+        <hint locale="jcommunity~register.form.confirm.password.help"/>
+        <help locale="jcommunity~register.form.confirm.password.help"/>
+        <confirm locale="jcommunity~register.form.confirm.password2.label"/>
     </secret>
 
     <input ref="firstname" maxlength="100">
