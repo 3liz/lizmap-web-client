@@ -5,7 +5,7 @@
         own profile
     -->
     <output ref="login">
-        <label locale="view~user.form.login.label"/>
+        <label locale="jcommunity~account.form.login"/>
     </output>
 
     <input ref="email"  required="true" type="email">
