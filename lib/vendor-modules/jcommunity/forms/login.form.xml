@@ -10,11 +10,11 @@
 @licence      http://www.gnu.org/licenses/gpl.html GNU General Public Licence, see LICENCE file
 -->
    <input ref="auth_login" required="true" size="8">
-      <label locale="jcommunity~login.form.login"/>
+      <label locale="jcommunity~account.form.login"/>
    </input>
 
    <secret ref="auth_password"  required="true" size="8" minlength="8" maxlength="120">
-       <label locale="jcommunity~login.form.password"/>
+       <label locale="jcommunity~account.form.password"/>
    </secret>
    <checkbox ref="auth_remember_me"  valueoncheck="1" valueonuncheck="0">
        <label locale="jcommunity~login.form.remember.me"/>

@@ -1,5 +1,5 @@
 <div class="jcommunity-box jcommunity-account">
-    <h1>{@jcommunity~password.waiting.title@}</h1>
+    <h1>{@jcommunity~password.form.title@}</h1>
 
     {@jcommunity~password.waiting.text.html@}
 

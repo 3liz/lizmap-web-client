@@ -10,5 +10,5 @@
 
     {/if}
 
-    <p><a href="{jurl 'jcommunity~account:show', array('user'=>$login)}">{@jcommunity~password.cancel.and.back.to.account@}</a></p>
+    <p><a href="{jurl 'jcommunity~account:show', array('user'=>$login)}">{@jcommunity~account.cancel.and.back.to.account@}</a></p>
 </div>

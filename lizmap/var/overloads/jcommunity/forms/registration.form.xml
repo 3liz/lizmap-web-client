@@ -5,16 +5,16 @@
     @subpackage
     @author       Laurent Jouanneau <laurent@xulfr.org>
     @contributor
-    @copyright    2007-2009 Laurent Jouanneau
+    @copyright    2007-2018 Laurent Jouanneau
     @link         http://jelix.org
     @licence      http://www.gnu.org/licenses/gpl.html GNU General Public Licence, see LICENCE file
     -->
     <input ref="reg_login" required="true">
-        <label locale="register.form.create.login"/>
+        <label locale="jcommunity~account.form.login"/>
     </input>
 
     <input ref="reg_email"  required="true" type="email">
-        <label locale="register.form.create.email"/>
+        <label locale="jcommunity~account.form.email"/>
     </input>
 
     <input ref="firstname" maxlength="100" required="true">
@@ -30,9 +30,9 @@
     </input>
 
     <secret ref="reg_password"  required="true" minlength="8" maxlength="120">
-        <label locale="register.form.confirm.password.label"/>
-        <help locale="register.form.confirm.password.help"/>
-        <confirm locale="register.form.confirm.password2.label" />
+        <label locale="jcommunity~account.form.password"/>
+        <help locale="jcommunity~account.form.password.help"/>
+        <confirm locale="jcommunity~account.form.password" />
     </secret>
 
     <textarea ref="comment" required="true" maxlength="300">
@@ -42,10 +42,10 @@
     </textarea>
 
     <captcha ref="reg_captcha">
-        <label locale="register.form.create.captcha"/>
+        <label locale="jcommunity~account.form.captcha"/>
     </captcha>
 
     <submit ref="reg_submit">
-        <label locale="register.form.create.submit" />
+        <label locale="jcommunity~register.form.create.submit" />
     </submit>
 </form>

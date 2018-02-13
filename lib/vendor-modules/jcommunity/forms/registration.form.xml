@@ -10,21 +10,21 @@
 @licence      http://www.gnu.org/licenses/gpl.html GNU General Public Licence, see LICENCE file
 -->
    <input ref="reg_login" required="true">
-      <label locale="register.form.create.login"/>
+      <label locale="account.form.login"/>
    </input>
 
    <input ref="reg_email"  required="true" type="email">
-       <label locale="register.form.create.email"/>
+       <label locale="account.form.email"/>
    </input>
 
    <secret ref="reg_password"  required="true" minlength="8" maxlength="120">
-        <label locale="register.form.confirm.password.label"/>
-        <help locale="register.form.confirm.password.help"/>
-        <confirm locale="register.form.confirm.password2.label" />
+        <label locale="account.form.password"/>
+        <help locale="account.form.password.help"/>
+        <confirm locale="account.form.password.confirm" />
    </secret>
 
    <captcha ref="reg_captcha">
-       <label locale="register.form.create.captcha"/>
+       <label locale="account.form.captcha"/>
    </captcha>
 
    <submit ref="reg_submit">
