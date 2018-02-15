@@ -4472,6 +4472,47 @@ OpenLayers.Control.HighlightFeature = OpenLayers.Class(OpenLayers.Control, {
             selectionLayer = aName;
         var featureid = getVectorLayerSelectionFeatureIdsString( selectionLayer );
 
+        getAttributeFeatureData( aName, null, featureid, null, function(fName, fFilter, fFeatures, fAliases ){
+              // get layer name for config
+              if ( !(fName in config.layers) ) {
+                  var qgisName = lizMap.getNameByCleanName(aName);
+                  if ( qgisName && (qgisName in config.layers)) {
+                      fName = qgisName;
+                  } else {
+                      console.log('getAttributeFeatureData: "'+fName+'" and "'+qgisName+'" not found in config');
+                      return false;
+                  }
+              }
+
+              var lConfig = config.layers[fName];
+              var tconfig = config.tooltipLayers[fName];
+
+              var gFormat = new OpenLayers.Format.GeoJSON({
+                  externalProjection: lConfig['featureCrs'],
+                  internalProjection: lizMap.map.getProjection()
+              });
+              var tfeatures = gFormat.read( {
+                  type: 'FeatureCollection',
+                  features: fFeatures
+              } );
+              tlayer.addFeatures( tfeatures );
+
+              if ( ('displayGeom' in tconfig) && tconfig.displayGeom == 'True' )
+                  if ( ('colorGeom' in tconfig) && tconfig.colorGeom != '' )
+                      tooltipControl.style.strokeColor = tconfig.colorGeom;
+                  else
+                      tooltipControl.style.strokeColor = 'cyan';
+              else
+                  tooltipControl.style.strokeColor = 'transparent';
+              if ( tfeatures.length != 0 && tfeatures[0].geometry.id.startsWith('OpenLayers_Geometry_LineString') )
+                  tooltipControl.style.strokeWidth = 10;
+              else
+                  tooltipControl.style.strokeWidth = 3;
+              tooltipControl.activate();
+              $('#tooltip-layer-list').removeClass('loading').removeAttr('disabled');
+
+        });
+        /*
         // Get WFS url and options
         var getFeatureUrlData = getVectorLayerWfsUrl( aName, null, featureid );
 
@@ -4524,6 +4565,7 @@ OpenLayers.Control.HighlightFeature = OpenLayers.Class(OpenLayers.Control, {
             },'json');
 
         },'json');
+        */
     });
     $('#tooltip-layer-list').removeClass('loading').removeAttr('disabled');
 
