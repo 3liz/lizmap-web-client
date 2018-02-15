@@ -4512,60 +4512,6 @@ OpenLayers.Control.HighlightFeature = OpenLayers.Class(OpenLayers.Control, {
               $('#tooltip-layer-list').removeClass('loading').removeAttr('disabled');
 
         });
-        /*
-        // Get WFS url and options
-        var getFeatureUrlData = getVectorLayerWfsUrl( aName, null, featureid );
-
-        // Build WFS url
-        var wfsUrl = OpenLayers.Util.urlAppend(
-            getFeatureUrlData['url'],
-            OpenLayers.Util.getParameterString( getFeatureUrlData['options'] )
-        );
-
-        // Get data
-        $.get( getFeatureUrlData['url'], getFeatureUrlData['options'], function(data) {
-
-            var service = OpenLayers.Util.urlAppend(lizUrls.wms
-                ,OpenLayers.Util.getParameterString(lizUrls.params)
-            );
-            $.get(service, {
-                'SERVICE':'WFS'
-               ,'VERSION':'1.0.0'
-               ,'REQUEST':'DescribeFeatureType'
-               ,'TYPENAME':aName
-               ,'OUTPUTFORMAT':'JSON'
-            }, function(describe) {
-
-                var lConfig = config.layers[aName];
-                var tconfig = config.tooltipLayers[aName];
-                config.layers[aName]['alias'] = describe.aliases;
-
-                loadProjDefinition( lConfig.crs, function( aProj ) {
-                    var gFormat = new OpenLayers.Format.GeoJSON({
-                        externalProjection: lConfig.crs,
-                        internalProjection: lizMap.map.getProjection()
-                    });
-                    var tfeatures = gFormat.read( data );
-                    tlayer.addFeatures( tfeatures );
-                    if ( ('displayGeom' in tconfig) && tconfig.displayGeom == 'True' )
-                        if ( ('colorGeom' in tconfig) && tconfig.colorGeom != '' )
-                            tooltipControl.style.strokeColor = tconfig.colorGeom;
-                        else
-                            tooltipControl.style.strokeColor = 'cyan';
-                    else
-                        tooltipControl.style.strokeColor = 'transparent';
-                    if ( tfeatures.length != 0 && tfeatures[0].geometry.id.startsWith('OpenLayers_Geometry_LineString') )
-                        tooltipControl.style.strokeWidth = 10;
-                    else
-                        tooltipControl.style.strokeWidth = 3;
-                    tooltipControl.activate();
-                    $('#tooltip-layer-list').removeClass('loading').removeAttr('disabled');
-                });
-
-            },'json');
-
-        },'json');
-        */
     });
     $('#tooltip-layer-list').removeClass('loading').removeAttr('disabled');
 
