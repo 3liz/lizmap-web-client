@@ -3334,41 +3334,47 @@ var lizMap = function() {
                         wmsOptions['LAYERS'] = rConfigLayer.name;
                         wmsOptions['QUERY_LAYERS'] = rConfigLayer.name;
                         wmsOptions['FILTER'] = rConfigLayer.name+':"'+r.referencingField+'" = \''+feat.properties[r.referencedField]+'\'';
-console.log(rConfigLayer.name);
                         $.get(service, wmsOptions, function(data) {
                             var hasPopupContent = (!(!data || data == null || data == ''))
                             if ( hasPopupContent ) {
                                 //console.log(data);
                                 var popupReg = new RegExp('lizmapPopupTable', 'g');
                                 data = data.replace(popupReg, 'table table-condensed table-striped lizmapPopupTable');
-//Jquery part
-var childPopup=$(data);
-console.log(childPopup);
-childPopup.tagName==table
+				//Manage if the user choose to create a table for children 
+				var childPopup=data;
 
+				if(rConfigLayer.popupSource=='qgis')
+				{
+					childPopup=$('<div class="lizmapPopupChildren">'+data+'</div>');
+					if(childPopup.find('.lizmap_merged'))
+					{		
+						childPopup.find("h4").each(function(i,e){
+						    if(i != 0 )
+							$(e).remove();
+				       	 	});
 
+						childPopup.find(".lizmapPopupHeader").each(function(i,e){
+				       	     	   if(i != 0 )
+							$(e).remove();
+				       		 });
 
-//'regex' part
+						childPopup.find(".lizmapPopupDiv").contents().unwrap();
+						childPopup.find(".lizmap_merged").contents().unwrap();	
+						childPopup.find(".lizmapPopupDiv").remove();
+						childPopup.find(".lizmap_merged").remove();
 
-var pos = data.lastIndexOf("<tr>");
-if( pos != -1){
-	var test= data.slice(0,data.search("</h4>")+5);
-	var regex = new RegExp(test, "g");
-	data=data.replace(regex, "");
-	data=data.replace(/<div class="lizmapPopupDiv">/g,"");
-	data=data.replace(/<\/div>/g,"");
+						childPopup.find(".lizmapPopupHidden").hide();
 	
-	var startFields=data.search("<tr>");
-	var endFields=data.search("</tr>")+5;
-	var allFields=data.slice(startFields,endFields);
-	var regexFields= new RegExp(allFields, "g");
-	data=data.replace(regexFields,"");
-	data=allFields+data;
-
-	data='<div class="lizmapPopupDiv">'+rConfigLayer.title+'<table>'+data+'</table></div>';
-	//console.log(data);
-}
-                                self.parent().append('<div class="lizmapPopupChildren">'+data+'</div>');
+				       		var tChildPopup = $("<table class='lizmap_merged'></table>");
+						childPopup.append(tChildPopup);
+				      	 	childPopup.find('tr').appendTo(tChildPopup);
+		
+						childPopup.children('tbody').remove();
+	
+					}
+				}
+				
+                                self.parent().append(childPopup);
                                 if ( popup )
                                     popup.verifySize();
                             }
