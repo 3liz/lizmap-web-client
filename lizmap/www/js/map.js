@@ -3340,7 +3340,41 @@ var lizMap = function() {
                                 //console.log(data);
                                 var popupReg = new RegExp('lizmapPopupTable', 'g');
                                 data = data.replace(popupReg, 'table table-condensed table-striped lizmapPopupTable');
-                                self.parent().append('<div class="lizmapPopupChildren">'+data+'</div>');
+				//Manage if the user choose to create a table for children 
+				var childPopup=data;
+
+				if(rConfigLayer.popupSource=='qgis')
+				{
+					childPopup=$('<div class="lizmapPopupChildren">'+data+'</div>');
+					if(childPopup.find('.lizmap_merged'))
+					{		
+						childPopup.find("h4").each(function(i,e){
+						    if(i != 0 )
+							$(e).remove();
+				       	 	});
+
+						childPopup.find(".lizmapPopupHeader").each(function(i,e){
+				       	     	   if(i != 0 )
+							$(e).remove();
+				       		 });
+
+						childPopup.find(".lizmapPopupDiv").contents().unwrap();
+						childPopup.find(".lizmap_merged").contents().unwrap();	
+						childPopup.find(".lizmapPopupDiv").remove();
+						childPopup.find(".lizmap_merged").remove();
+
+						childPopup.find(".lizmapPopupHidden").hide();
+	
+				       		var tChildPopup = $("<table class='lizmap_merged'></table>");
+						childPopup.append(tChildPopup);
+				      	 	childPopup.find('tr').appendTo(tChildPopup);
+		
+						childPopup.children('tbody').remove();
+	
+					}
+				}
+				
+                                self.parent().append(childPopup);
                                 if ( popup )
                                     popup.verifySize();
                             }
