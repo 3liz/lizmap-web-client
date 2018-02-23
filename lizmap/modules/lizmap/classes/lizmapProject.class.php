@@ -858,6 +858,18 @@ class lizmapProject extends qgisProject {
                             );
                         }
                     }
+                    
+                    // Atlas
+                    $Atlas = $composer->xpath('Atlas');
+                    jLog::log(json_encode($Atlas));
+                    if( count($Atlas) == 1 ){
+                        $Atlas = $Atlas[0];
+                        $printTemplate['atlas'] = array(
+                            'enabled' => (string)$Atlas['enabled'],
+                            'coverageLayer' => (string)$Atlas['coverageLayer']
+                        );
+                    }                    
+                    
                     $printTemplates[] = $printTemplate;
                 }
             }
