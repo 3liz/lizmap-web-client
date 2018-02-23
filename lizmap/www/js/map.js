@@ -893,7 +893,7 @@ var lizMap = function() {
                 alwaysInRange: false,
                 url: serviceUrl
             };
-            if ( $.inArray( config.options.projection.ref, ['EPSG:3857','EPSG:900913'] ) != -1
+            if ( $.inArray( config.options.projection.ref.toUpperCase(), ['EPSG:3857','EPSG:900913'] ) != -1
               && ('resolutions' in config.options)
               && config.options.resolutions.length != 0 ) {
                 var resolutions = config.options.resolutions;
@@ -5385,7 +5385,7 @@ OpenLayers.Control.HighlightFeature = OpenLayers.Class(OpenLayers.Control, {
 
       // Optionnal parameter geometryname
       if( geometryName
-        && $.inArray( geometryName, ['none', 'extent', 'centroid'] ) != -1
+        && $.inArray( geometryName.toLowerCase(), ['none', 'extent', 'centroid'] ) != -1
       ){
           wfsOptions['GEOMETRYNAME'] = geometryName;
       }
