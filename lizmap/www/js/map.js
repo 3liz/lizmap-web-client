@@ -4058,6 +4058,7 @@ var lizMap = function() {
       if ( 'qgisServerVersion' in config.options && config.options.qgisServerVersion != '2.14' ) {
         printLayers.reverse();
         styleLayers.reverse();
+        opacityLayers.reverse();
       }
 
       url += '&'+dragCtrl.layout.mapId+':LAYERS='+printLayers.join(',');
@@ -4069,9 +4070,15 @@ var lizMap = function() {
         var oExtent = new OpenLayers.Bounds(Number(bbox[0]),Number(bbox[1]),Number(bbox[2]),Number(bbox[3]));
         url += '&'+dragCtrl.layout.overviewId+':extent='+oExtent;
         url += '&'+dragCtrl.layout.overviewId+':LAYERS=Overview';
-        printLayers.unshift('Overview');
-        styleLayers.unshift('default');
-        opacityLayers.unshift(255);
+        if ( 'qgisServerVersion' in config.options && config.options.qgisServerVersion != '2.14' ) {
+            printLayers.push('Overview');
+            styleLayers.push('default');
+            opacityLayers.push(255);
+        } else {
+            printLayers.unshift('Overview');
+            styleLayers.unshift('default');
+            opacityLayers.unshift(255);
+        }
       }
       url += '&LAYERS='+printLayers.join(',');
       url += '&STYLES='+styleLayers.join(',');
