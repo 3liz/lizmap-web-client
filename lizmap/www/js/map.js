@@ -3856,6 +3856,7 @@ var lizMap = function() {
       if ( 'qgisServerVersion' in config.options && config.options.qgisServerVersion != '2.14' ) {
         printLayers.reverse();
         styleLayers.reverse();
+        opacityLayers.reverse();
       }
 
       url += '&'+dragCtrl.layout.mapId+':LAYERS='+printLayers.join(',');
@@ -3870,6 +3871,7 @@ var lizMap = function() {
         if ( 'qgisServerVersion' in config.options && config.options.qgisServerVersion != '2.14' ) {
             printLayers.push('Overview');
             styleLayers.push('default');
+            opacityLayers.push(255);
         } else {
             printLayers.unshift('Overview');
             styleLayers.unshift('default');
