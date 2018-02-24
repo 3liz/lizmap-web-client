@@ -241,7 +241,7 @@ class wmtsCtrl extends jControllerCmdLine {
 
         $TileMatrixSetId = $this->param('TileMatrixSet');
         $tileMatrixSet = null;
-        foreach( $tileMatrixSetList as $tms ) {
+        foreach( $tileCapabilities->tileMatrixSetList as $tms ) {
             $rep->addContent("The TileMatrixSet '".$tms->ref."'!\n");
             if ( $tms->ref == $TileMatrixSetId ) {
                 $tileMatrixSet = $tms;
