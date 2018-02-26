@@ -157,14 +157,7 @@ var lizMap = function() {
    */
   var editionPending = false;
 
-  /**
-   * PRIVATE function: cleanName
-   * cleaning layerName for class and layer
-   */
-  function cleanName(aName){
-    if ( aName in cleanNameMap )
-        return aName;
-
+  function performCleanName(aName) {
     var accentMap = {
         "à": "a",    "á": "a",    "â": "a",    "ã": "a",    "ä": "a",    "ç": "c",    "è": "e",    "é": "e",    "ê": "e",    "ë": "e",    "ì": "i",    "í": "i",    "î": "i",    "ï": "i",    "ñ": "n",    "ò": "o",    "ó": "o",    "ô": "o",    "õ": "o",    "ö": "o",    "ù": "u",    "ú": "u",    "û": "u",    "ü": "u",    "ý": "y",    "ÿ": "y",
         "À": "A",    "Á": "A",    "Â": "A",    "Ã": "A",    "Ä": "A",    "Ç": "C",    "È": "E",    "É": "E",    "Ê": "E",    "Ë": "E",    "Ì": "I",    "Í": "I",    "Î": "I",    "Ï": "I",    "Ñ": "N",    "Ò": "O",    "Ó": "O",    "Ô": "O",    "Õ": "O",    "Ö": "O",    "Ù": "U",    "Ú": "U",    "Û": "U",    "Ü": "U",    "Ý": "Y",
@@ -178,7 +171,18 @@ var lizMap = function() {
     };
     var theCleanName = normalize(aName);
     var reg = new RegExp('\\W', 'g');
-    theCleanName = theCleanName.replace(reg, '_');
+    return theCleanName.replace(reg, '_');
+  }
+
+  /**
+   * PRIVATE function: cleanName
+   * cleaning layerName for class and layer
+   */
+  function cleanName(aName){
+    if ( aName in cleanNameMap )
+        return aName;
+
+    theCleanName = performCleanName( aName );
     cleanNameMap[theCleanName] = aName;
     return theCleanName;
   }
@@ -3955,10 +3959,22 @@ var lizMap = function() {
 
     featureTypes.each( function(){
         var self = $(this);
-        var lname = self.find('Name').text();
-        if ( !(lname in tooltipLayersDic) )
+        var typeName = self.find('Name').text();
+        var lname = '';
+        if (typeName in config.locateByLayer)
+          lname = typeName
+        else if ( typeName in shortNameMap ){
+          lname = shortNameMap[typeName];
+        } else {
+          for (ttl in config.tooltipLayers) {
+            if (ttl.split(' ').join('_') == typeName) {
+              lname = ttl;
+              break;
+            }
+          }
+        }
+        if ( lname == '' )
             return;
-        lname = tooltipLayersDic[lname];
         if ( (lname in config.tooltipLayers) && (lname in config.layers) ) {
             var lConfig = config.layers[lname];
             $('#tooltip-layer-list').append('<option value="'+lname+'">'+lConfig.title+'</option>');
