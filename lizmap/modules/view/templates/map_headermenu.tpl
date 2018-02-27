@@ -37,7 +37,7 @@
         </a>
       </li>
         {if isset($allowUserAccountRequests)}
-        <li class="login">
+        <li class="registered">
           <a href="{jurl 'view~user:createAccount'}">
             <span class="icon"></span>
             <span class="text">{@view~default.header.createAccount@}</span>
