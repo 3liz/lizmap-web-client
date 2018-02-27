@@ -157,14 +157,7 @@ var lizMap = function() {
    */
   var editionPending = false;
 
-  /**
-   * PRIVATE function: cleanName
-   * cleaning layerName for class and layer
-   */
-  function cleanName(aName){
-    if ( aName in cleanNameMap )
-        return aName;
-
+  function performCleanName(aName) {
     var accentMap = {
         "à": "a",    "á": "a",    "â": "a",    "ã": "a",    "ä": "a",    "ç": "c",    "è": "e",    "é": "e",    "ê": "e",    "ë": "e",    "ì": "i",    "í": "i",    "î": "i",    "ï": "i",    "ñ": "n",    "ò": "o",    "ó": "o",    "ô": "o",    "õ": "o",    "ö": "o",    "ù": "u",    "ú": "u",    "û": "u",    "ü": "u",    "ý": "y",    "ÿ": "y",
         "À": "A",    "Á": "A",    "Â": "A",    "Ã": "A",    "Ä": "A",    "Ç": "C",    "È": "E",    "É": "E",    "Ê": "E",    "Ë": "E",    "Ì": "I",    "Í": "I",    "Î": "I",    "Ï": "I",    "Ñ": "N",    "Ò": "O",    "Ó": "O",    "Ô": "O",    "Õ": "O",    "Ö": "O",    "Ù": "U",    "Ú": "U",    "Û": "U",    "Ü": "U",    "Ý": "Y",
@@ -178,7 +171,18 @@ var lizMap = function() {
     };
     var theCleanName = normalize(aName);
     var reg = new RegExp('\\W', 'g');
-    theCleanName = theCleanName.replace(reg, '_');
+    return theCleanName.replace(reg, '_');
+  }
+
+  /**
+   * PRIVATE function: cleanName
+   * cleaning layerName for class and layer
+   */
+  function cleanName(aName){
+    if ( aName in cleanNameMap )
+        return aName;
+
+    theCleanName = performCleanName( aName );
     cleanNameMap[theCleanName] = aName;
     return theCleanName;
   }
@@ -897,7 +901,7 @@ var lizMap = function() {
                 alwaysInRange: false,
                 url: serviceUrl
             };
-            if ( $.inArray( config.options.projection.ref, ['EPSG:3857','EPSG:900913'] ) != -1
+            if ( $.inArray( config.options.projection.ref.toUpperCase(), ['EPSG:3857','EPSG:900913'] ) != -1
               && ('resolutions' in config.options)
               && config.options.resolutions.length != 0 ) {
                 var resolutions = config.options.resolutions;
@@ -4058,6 +4062,7 @@ var lizMap = function() {
       if ( 'qgisServerVersion' in config.options && config.options.qgisServerVersion != '2.14' ) {
         printLayers.reverse();
         styleLayers.reverse();
+        opacityLayers.reverse();
       }
 
       url += '&'+dragCtrl.layout.mapId+':LAYERS='+printLayers.join(',');
@@ -4069,9 +4074,15 @@ var lizMap = function() {
         var oExtent = new OpenLayers.Bounds(Number(bbox[0]),Number(bbox[1]),Number(bbox[2]),Number(bbox[3]));
         url += '&'+dragCtrl.layout.overviewId+':extent='+oExtent;
         url += '&'+dragCtrl.layout.overviewId+':LAYERS=Overview';
-        printLayers.unshift('Overview');
-        styleLayers.unshift('default');
-        opacityLayers.unshift(255);
+        if ( 'qgisServerVersion' in config.options && config.options.qgisServerVersion != '2.14' ) {
+            printLayers.push('Overview');
+            styleLayers.push('default');
+            opacityLayers.push(255);
+        } else {
+            printLayers.unshift('Overview');
+            styleLayers.unshift('default');
+            opacityLayers.unshift(255);
+        }
       }
       url += '&LAYERS='+printLayers.join(',');
       url += '&STYLES='+styleLayers.join(',');
@@ -4150,10 +4161,22 @@ var lizMap = function() {
 
     featureTypes.each( function(){
         var self = $(this);
-        var lname = self.find('Name').text();
-        if ( !(lname in tooltipLayersDic) )
+        var typeName = self.find('Name').text();
+        var lname = '';
+        if (typeName in config.locateByLayer)
+          lname = typeName
+        else if ( typeName in shortNameMap ){
+          lname = shortNameMap[typeName];
+        } else {
+          for (ttl in config.tooltipLayers) {
+            if (ttl.split(' ').join('_') == typeName) {
+              lname = ttl;
+              break;
+            }
+          }
+        }
+        if ( lname == '' )
             return;
-        lname = tooltipLayersDic[lname];
         if ( (lname in config.tooltipLayers) && (lname in config.layers) ) {
             var lConfig = config.layers[lname];
             $('#tooltip-layer-list').append('<option value="'+lname+'">'+lConfig.title+'</option>');
@@ -4674,58 +4697,46 @@ OpenLayers.Control.HighlightFeature = OpenLayers.Class(OpenLayers.Control, {
             selectionLayer = aName;
         var featureid = getVectorLayerSelectionFeatureIdsString( selectionLayer );
 
-        // Get WFS url and options
-        var getFeatureUrlData = getVectorLayerWfsUrl( aName, null, featureid );
+        getAttributeFeatureData( aName, null, featureid, null, function(fName, fFilter, fFeatures, fAliases ){
+              // get layer name for config
+              if ( !(fName in config.layers) ) {
+                  var qgisName = lizMap.getNameByCleanName(aName);
+                  if ( qgisName && (qgisName in config.layers)) {
+                      fName = qgisName;
+                  } else {
+                      console.log('getAttributeFeatureData: "'+fName+'" and "'+qgisName+'" not found in config');
+                      return false;
+                  }
+              }
 
-        // Build WFS url
-        var wfsUrl = OpenLayers.Util.urlAppend(
-            getFeatureUrlData['url'],
-            OpenLayers.Util.getParameterString( getFeatureUrlData['options'] )
-        );
+              var lConfig = config.layers[fName];
+              var tconfig = config.tooltipLayers[fName];
 
-        // Get data
-        $.get( getFeatureUrlData['url'], getFeatureUrlData['options'], function(data) {
+              var gFormat = new OpenLayers.Format.GeoJSON({
+                  externalProjection: lConfig['featureCrs'],
+                  internalProjection: lizMap.map.getProjection()
+              });
+              var tfeatures = gFormat.read( {
+                  type: 'FeatureCollection',
+                  features: fFeatures
+              } );
+              tlayer.addFeatures( tfeatures );
 
-            var service = OpenLayers.Util.urlAppend(lizUrls.wms
-                ,OpenLayers.Util.getParameterString(lizUrls.params)
-            );
-            $.get(service, {
-                'SERVICE':'WFS'
-               ,'VERSION':'1.0.0'
-               ,'REQUEST':'DescribeFeatureType'
-               ,'TYPENAME':aName
-               ,'OUTPUTFORMAT':'JSON'
-            }, function(describe) {
+              if ( ('displayGeom' in tconfig) && tconfig.displayGeom == 'True' )
+                  if ( ('colorGeom' in tconfig) && tconfig.colorGeom != '' )
+                      tooltipControl.style.strokeColor = tconfig.colorGeom;
+                  else
+                      tooltipControl.style.strokeColor = 'cyan';
+              else
+                  tooltipControl.style.strokeColor = 'transparent';
+              if ( tfeatures.length != 0 && tfeatures[0].geometry.id.startsWith('OpenLayers_Geometry_LineString') )
+                  tooltipControl.style.strokeWidth = 10;
+              else
+                  tooltipControl.style.strokeWidth = 3;
+              tooltipControl.activate();
+              $('#tooltip-layer-list').removeClass('loading').removeAttr('disabled');
 
-                var lConfig = config.layers[aName];
-                var tconfig = config.tooltipLayers[aName];
-                config.layers[aName]['alias'] = describe.aliases;
-
-                loadProjDefinition( lConfig.crs, function( aProj ) {
-                    var gFormat = new OpenLayers.Format.GeoJSON({
-                        externalProjection: lConfig.crs,
-                        internalProjection: lizMap.map.getProjection()
-                    });
-                    var tfeatures = gFormat.read( data );
-                    tlayer.addFeatures( tfeatures );
-                    if ( ('displayGeom' in tconfig) && tconfig.displayGeom == 'True' )
-                        if ( ('colorGeom' in tconfig) && tconfig.colorGeom != '' )
-                            tooltipControl.style.strokeColor = tconfig.colorGeom;
-                        else
-                            tooltipControl.style.strokeColor = 'cyan';
-                    else
-                        tooltipControl.style.strokeColor = 'transparent';
-                    if ( tfeatures.length != 0 && tfeatures[0].geometry.id.startsWith('OpenLayers_Geometry_LineString') )
-                        tooltipControl.style.strokeWidth = 10;
-                    else
-                        tooltipControl.style.strokeWidth = 3;
-                    tooltipControl.activate();
-                    $('#tooltip-layer-list').removeClass('loading').removeAttr('disabled');
-                });
-
-            },'json');
-
-        },'json');
+        });
     });
     $('#tooltip-layer-list').removeClass('loading').removeAttr('disabled');
 
@@ -5350,7 +5361,7 @@ OpenLayers.Control.HighlightFeature = OpenLayers.Class(OpenLayers.Control, {
 
       // Optionnal parameter geometryname
       if( geometryName
-        && $.inArray( geometryName, ['none', 'extent', 'centroid'] ) != -1
+        && $.inArray( geometryName.toLowerCase(), ['none', 'extent', 'centroid'] ) != -1
       ){
           wfsOptions['GEOMETRYNAME'] = geometryName;
       }
@@ -7022,3 +7033,60 @@ $(document).ready(function () {
   lizMap.init();
   $( "#loading" ).css('min-height','128px');
 });
+
+/*! ES6 String.prototype.startsWith polyfill */
+/*! https://mths.be/startswith v0.2.0 by @mathias */
+if (!String.prototype.startsWith) {
+    (function() {
+        'use strict'; // needed to support `apply`/`call` with `undefined`/`null`
+        var defineProperty = (function() {
+            // IE 8 only supports `Object.defineProperty` on DOM elements
+            try {
+                var object = {};
+                var $defineProperty = Object.defineProperty;
+                var result = $defineProperty(object, object, object) && $defineProperty;
+            } catch(error) {}
+            return result;
+        }());
+        var toString = {}.toString;
+        var startsWith = function(search) {
+            if (this == null) {
+                throw TypeError();
+            }
+            var string = String(this);
+            if (search && toString.call(search) == '[object RegExp]') {
+                throw TypeError();
+            }
+            var stringLength = string.length;
+            var searchString = String(search);
+            var searchLength = searchString.length;
+            var position = arguments.length > 1 ? arguments[1] : undefined;
+            // `ToInteger`
+            var pos = position ? Number(position) : 0;
+            if (pos != pos) { // better `isNaN`
+                pos = 0;
+            }
+            var start = Math.min(Math.max(pos, 0), stringLength);
+            // Avoid the `indexOf` call if no match is possible
+            if (searchLength + start > stringLength) {
+                return false;
+            }
+            var index = -1;
+            while (++index < searchLength) {
+                if (string.charCodeAt(start + index) != searchString.charCodeAt(index)) {
+                    return false;
+                }
+            }
+            return true;
+        };
+        if (defineProperty) {
+            defineProperty(String.prototype, 'startsWith', {
+                'value': startsWith,
+                'configurable': true,
+                'writable': true
+            });
+        } else {
+            String.prototype.startsWith = startsWith;
+        }
+    }());
+}

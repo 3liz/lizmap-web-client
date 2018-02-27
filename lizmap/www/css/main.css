@@ -191,6 +191,13 @@ a:hover {
 .navbar .nav .login.active a .icon {
   background-position: -200px 0px;
 }
+.navbar .nav .registered .icon {
+  background-position: -825px 0px;
+}
+.navbar .nav .registered a:hover .icon,
+.navbar .nav .registered.active a .icon {
+  background-position: -800px 0px;
+}
 .navbar .nav .user .icon {
   background-position: -575px 0px;
 }
