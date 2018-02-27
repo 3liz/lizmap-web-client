@@ -180,5 +180,14 @@ var lizDataviz = function() {
         }
     });
 
+    var obj = {
+        /**
+         * Method: addMessage
+         */
+        buildPlot: function(id, conf) {
+          return buildPlot(id, conf);
+        }
+    }
 
+    return obj;
 }();
