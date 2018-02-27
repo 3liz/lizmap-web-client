@@ -1610,11 +1610,11 @@ var lizMap = function() {
             }
         });
         var filterPlaceHolder = '';
-        if ( 'filterFieldAlias' in locate )
-          filterPlaceHolder += locate.filterFieldAlias+' ';
+        if ( 'filterFieldAlias' in locate && locate.filterFieldAlias!='')        
+          filterPlaceHolder += locate.filterFieldAlias+' ';        	  
         else
-          filterPlaceHolder += locate.filterFieldName+' ';
-        filterPlaceHolder += lConfig.title;
+          filterPlaceHolder += locate.filterFieldName;
+        filterPlaceHolder +=' ('+ lConfig.title + ')';
         var fOptions = '<option value="-1"></option>';
         var fValue = '-1';
         for (var i=0, len=features.length; i<len; i++) {
@@ -1677,9 +1677,11 @@ var lizMap = function() {
             }
       });
       var placeHolder = '';
-      if ( 'fieldAlias' in locate )
+      if ( 'fieldAlias' in locate && locate.fieldAlias!='' )		
         placeHolder += locate.fieldAlias+' ';
-      placeHolder += lConfig.title;
+      else 
+		placeHolder += locate.fieldName+' ';	  
+      placeHolder += '('+lConfig.title+')';
       var options = '<option value="-1"></option>';
       for (var i=0, len=features.length; i<len; i++) {
         var feat = features[i];
