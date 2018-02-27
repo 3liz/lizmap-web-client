@@ -131,15 +131,21 @@ class jcommunityModuleInstaller extends jInstallerModule {
 
                         $confIni = parse_ini_file($conf->getFileName(), true);
                         $authConfig = jAuth::loadConfig($confIni);
-                        $driver = new dbAuthDriver($authConfig['Db']);
-                        $passwordHash = $driver->cryptPassword('admin');
+                        $driverConfig = $authConfig[$authConfig['driver']];
+                        if ($authConfig['driver'] == 'Db' ||
+                            (isset($driverConfig['compatiblewithdb']) &&
+                                $driverConfig['compatiblewithdb'])
+                        ) {
+                            $driver = new dbAuthDriver($driverConfig);
+                            $passwordHash = $driver->cryptPassword('admin');
 
-                        $user = jDao::createRecord($daoSelector, $dbProfile);
-                        $user->nickname = $user->login = 'admin';
-                        $user->password = $passwordHash;
-                        $user->email = 'admin@localhost.localdomain';
-                        $user->status = 1;
-                        $dao->insert($user);
+                            $user = jDao::createRecord($daoSelector, $dbProfile);
+                            $user->nickname = $user->login = 'admin';
+                            $user->password = $passwordHash;
+                            $user->email = 'admin@localhost.localdomain';
+                            $user->status = 1;
+                            $dao->insert($user);
+                        }
                     }
                 }
             }
