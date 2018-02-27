@@ -231,7 +231,7 @@ class jcommunityModuleInstaller extends jInstallerModule {
         $tableProp = $dao->getTables()[$dao->getPrimaryTable()];
         $cn = $this->dbConnection();
 
-        if (!isset($daoProperties['status'])) {
+        if (isset($daoProperties['status'])) {
             $statusField = $cn->encloseName($daoProperties['status']['fieldName']);
 
             $sql = "UPDATE ".$cn->prefixTable($tableProp['realname']).
