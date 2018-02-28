@@ -2545,7 +2545,7 @@ var lizMap = function() {
         //constructing the select
         locateContent.push(html);
       }
-      $('#locate .menu-content').html(locateContent.join('<br/>'));
+      $('#locate .menu-content').html(locateContent.join('<hr/>'));
       map.addLayer(new OpenLayers.Layer.Vector('locatelayer',{
         styleMap: new OpenLayers.StyleMap({
           pointRadius: 6,
