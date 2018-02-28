@@ -533,7 +533,7 @@ class qgisVectorLayer extends qgisMapLayer{
           // Log
           $content = 'UPDATE table=' . $dtParams->table;
           $content.= ', id=' . $feature->id;
-          if( count($pkVals) > 0 )
+          if( count($pkvals) > 0 )
             $content.= ', pkeys=' . json_encode($pkvals);
           $content.= ', ('.implode(', ', $update).')';
           $eventParams = array(
