@@ -989,7 +989,8 @@ class editionCtrl extends jController {
             break;
           case 'text':
           case 'boolean':
-            $value= filter_var($value, FILTER_SANITIZE_STRING, FILTER_FLAG_NO_ENCODE_QUOTES);
+            $value= filter_var($value, FILTER_SANITIZE_FULL_SPECIAL_CHARS, FILTER_FLAG_NO_ENCODE_QUOTES);
+            $value = htmlspecialchars_decode($value);
             if ( !$value or empty($value))
               $value = 'NULL';
             else
