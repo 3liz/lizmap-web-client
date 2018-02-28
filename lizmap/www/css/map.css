@@ -904,7 +904,9 @@ div.modal div.menu-content {
   display : block;
   padding : 0.5em;
   background-color: #F0F0F0;
+  
 }
+
 
 #dock div.menu-content,
 div.modal div.menu-content,
@@ -1312,6 +1314,7 @@ div.modal h3 .text {
 #locate div.locate-layer.no-toggle .custom-combobox-toggle {
   background-image: none;
 }
+
 #locate div.locate-layer .custom-combobox-input {
   background: none;
   color : rgb(51,51,51);
@@ -1355,6 +1358,16 @@ div.modal h3 .text {
 #baselayer-menu div.baselayer-select select option,
 #locate div.locate-layer select option {
   font-weight: normal;
+}
+
+#mini-dock div.locate div.menu-content {
+	line-height: 10px;
+}
+
+#mini-dock div.locate div.menu-content hr {
+	margin: 10px 0;
+	border-top: 1px solid #eeeeee;
+	border-bottom: 2px solid #4c4c4c;
 }
 
 #menu .ui-accordion-content {
