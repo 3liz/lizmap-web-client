@@ -375,22 +375,20 @@ class configCtrl extends jController {
         $mydata = array();
         // Initialize future values to set
         $dataValues = array();
-        // Loop through each group
-        foreach($daogroup->findAll() as $group){
-          // Retrieve only normal groups wich are not blacklisted
-          if(!in_array($group->id_aclgrp, $this->groupBlacklist) and $group->grouptype == 0){
-            $mydata[$group->id_aclgrp] = $group->name;
-            // Get rights with resources for the current group
+        // Loop through each public group
+        foreach($daogroup->findAllPublicGroup() as $group){
+            $mydata[$group->id_aclgrp] = $group->name.' ('.$group->id_aclgrp.')';
+            if($group->grouptype == 1)
+                $mydata[$group->id_aclgrp] .= ' ['.jLocale::get("admin~jacl2.lizmap.admin.grp.default").']';
             if($load == 'db'){
-              $conditions = jDao::createConditions();
-              $conditions->addCondition('id_aclsbj','=',$subject->id_aclsbj);
-              $conditions->addCondition('id_aclgrp','=',$group->id_aclgrp);
-              $conditions->addCondition('id_aclres','=',$repository);
-              $res = $daoright->findBy($conditions);
-              foreach($res as $rec)
-                $dataValues[] = $rec->id_aclgrp;
+                $conditions = jDao::createConditions();
+                $conditions->addCondition('id_aclsbj','=',$subject->id_aclsbj);
+                $conditions->addCondition('id_aclgrp','=',$group->id_aclgrp);
+                $conditions->addCondition('id_aclres','=',$repository);
+                $res = $daoright->findBy($conditions);
+                foreach($res as $rec)
+                    $dataValues[] = $rec->id_aclgrp;
             }
-          }
         }
         $dataSource->data = $mydata;
         $ctrl->datasource = $dataSource;
@@ -438,9 +436,7 @@ class configCtrl extends jController {
           $values = array();
         }
         // Loop through the groups
-        foreach($daogroup->findAll() as $group){
-          // Retrieve only normal groups which are not blacklisted
-          if(!in_array($group->id_aclgrp, $this->groupBlacklist) && $group->grouptype == 0){
+        foreach($daogroup->findAllPublicGroup() as $group){
             // Add the right if needed else remove it
             if(in_array($group->id_aclgrp, $values)){
               jAcl2DbManager::addRight($group->id_aclgrp, $id_aclsbj, $repository);
@@ -448,7 +444,6 @@ class configCtrl extends jController {
             else {
               $daoright->delete($id_aclsbj, $group->id_aclgrp, $repository);
             }
-          }
         }
       }
     }
