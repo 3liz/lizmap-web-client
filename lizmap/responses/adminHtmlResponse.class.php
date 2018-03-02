@@ -18,6 +18,9 @@ class adminHtmlResponse extends jResponseHtml {
     function __construct() {
         parent::__construct();
 
+        // Header
+        $this->addHttpHeader('x-ua-compatible', 'ie=edge');
+
         $bp = jApp::config()->urlengine['basePath'];
         $this->addJSLink($bp.'js/jquery-1.12.4.min.js');
         $this->addJSLink($bp.'js/jquery-ui-1.11.2.custom.min.js');

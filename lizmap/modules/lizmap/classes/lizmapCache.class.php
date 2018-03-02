@@ -325,8 +325,11 @@ class lizmapCache {
 
         // Cache root directory
         $cacheRootDirectory = $ser->cacheRootDirectory;
-        if(!is_dir($cacheRootDirectory) or !is_writable($cacheRootDirectory)){
-            $cacheRootDirectory = sys_get_temp_dir();
+        if( $cacheStorageType != 'redis' ){
+            if(!is_dir($cacheRootDirectory) or !is_writable($cacheRootDirectory)){
+                jLog::log('cacheRootDirectory "'. $cacheRootDirectory .'" is not a directory or is not writable!', 'error');
+                $cacheRootDirectory = sys_get_temp_dir();
+            }
         }
 
         if($cacheStorageType == 'file'){
