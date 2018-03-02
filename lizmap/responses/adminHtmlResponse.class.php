@@ -17,8 +17,11 @@ class adminHtmlResponse extends jResponseHtml {
 
     function __construct() {
         parent::__construct();
-        
-        $bp = jApp::config()->urlengine['basePath']; 
+
+        // Header
+        $this->addHttpHeader('x-ua-compatible', 'ie=edge');
+
+        $bp = jApp::config()->urlengine['basePath'];
         $this->addJSLink($bp.'js/jquery-1.11.1.min.js');
         $this->addJSLink($bp.'js/jquery-ui-1.11.2.custom.min.js');
         $this->addJSLink($bp.'js/bootstrap.js');
@@ -27,7 +30,7 @@ class adminHtmlResponse extends jResponseHtml {
     }
 
     protected function doAfterActions() {
-        
+
         // Include all process in common for all actions, like the settings of the
         // main template, the settings of the response etc..
         $this->title .= ($this->title !=''?' - ':'').' Administration';

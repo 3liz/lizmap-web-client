@@ -23,6 +23,9 @@ class myHtmlMapResponse extends jResponseHtml {
 
     $this->title = '';
 
+    // Header
+    $this->addHttpHeader('x-ua-compatible', 'ie=edge');
+
     // CSS
     $this->addCSSLink($bp.'css/jquery-ui-1.8.23.custom.css');
     $this->addCSSLink($bp.'css/bootstrap.css');
