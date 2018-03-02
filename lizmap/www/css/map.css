@@ -36,7 +36,7 @@ body {
 #headermenu .navbar-search {
   margin-top:1px;
   height:30px;
-  width:235px;
+  width:260px;
 }
 
 #headermenu .navbar-search .search-query {
@@ -1156,7 +1156,7 @@ div.modal h3 .text {
 #right-dock .title .btn {
   width : 20px;
   height : 20px;
-  background : url(images/sprite_menu_tools.png) no-repeat right;
+  background : url(images/sprite_20_tools.png) no-repeat right;
   transition: none;
   float : right;
   text-shadow : none;
@@ -1187,15 +1187,7 @@ div.modal h3 .text {
 #mini-dock .title .btn.btn-tooltip-cancel,
 #right-dock .title .btn.btn-locate-clear,
 #right-dock .title .btn.btn-tooltip-cancel {
-  background-position : 0px 0px;
-}
-#toolbar .title .btn.btn-locate-clear:hover,
-#dock .title .btn.btn-locate-clear:hover,
-#mini-dock .title .btn.btn-locate-clear:hover,
-#mini-dock .title .btn.btn-tooltip-cancel:hover,
-#right-dock .title .btn.btn-locate-clear:hover,
-#right-dock .title .btn.btn-tooltip-cancel:hover{
-  background-position : -20px 0px;
+  background-position : -875px 0px;
 }
 #toolbar .title .btn.btn-print-clear,
 #dock .title .btn.btn-print-clear,
