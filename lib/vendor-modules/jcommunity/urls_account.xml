@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<suburls xmlns="http://jelix.org/ns/suburls/1.0">
+    <url pathinfo="/"       action="default:index" optionalTrailingSlash="true"/>
+    <url pathinfo="/:user"  action="account:show">
+        <param name="user" />
+    </url>
+    <url pathinfo="/:user/edit" action="account:edit" actionoverride="account:prepareedit,account:save">
+        <param name="user" />
+    </url>
+    <url pathinfo="/:user/destroy" action="account:destroy" actionoverride="account:dodestroy">
+        <param name="user" />
+    </url>
+    <url pathinfo="/:user/destroydone" action="account:destroydone">
+        <param name="user" />
+    </url>
+    <url pathinfo="/:user/password" action="password:index">
+        <param name="user" />
+    </url>
+    <url pathinfo="/:user/password/save" action="password:save">
+        <param name="user" />
+    </url>
+    <url pathinfo="/:user/password/changed" action="password:changed">
+        <param name="user" />
+    </url>
+
+</suburls>

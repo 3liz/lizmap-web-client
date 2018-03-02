@@ -17,7 +17,6 @@ class configCtrl extends jController {
     'modifyServices' => array( 'jacl2.right'=>'lizmap.admin.services.update'),
     'editServices' => array( 'jacl2.right'=>'lizmap.admin.services.update'),
     'saveServices' => array( 'jacl2.right'=>'lizmap.admin.services.update'),
-    'validateServices' => array( 'jacl2.right'=>'lizmap.admin.services.update'),
     'createSection' => array( 'jacl2.right'=>'lizmap.admin.repositories.create'),
     'modifySection' => array( 'jacl2.right'=>'lizmap.admin.repositories.update'),
     'editSection' => array( 'jacl2.rights.or'=>array('lizmap.admin.repositories.create', 'lizmap.admin.repositories.update')),
@@ -100,12 +99,12 @@ class configCtrl extends jController {
 
     // Set form data values
     foreach($services->getProperties() as $ser){
-      $form->setData($ser, $services->$ser);
-      if($ser == 'allowUserAccountRequests' || $ser == 'onlyMaps')
-        if($services->$ser)
-          $form->setData($ser, 'on');
-        else
-          $form->setData($ser, 'off');
+      if ($ser == 'allowUserAccountRequests' || $ser == 'onlyMaps') {
+        $form->setData($ser, $services->$ser ? 'on' : 'off');
+      }
+      else {
+        $form->setData($ser, $services->$ser);
+      }
     }
 
     // hide sensitive services properties
@@ -144,12 +143,12 @@ class configCtrl extends jController {
 
     // Set form data values
     foreach($services->getProperties() as $ser){
-      $form->setData($ser, $services->$ser);
-      if($ser == 'allowUserAccountRequests' || $ser == 'onlyMaps')
-        if($services->$ser)
-          $form->setData($ser, 'on');
-        else
-          $form->setData($ser, 'off');
+      if ($ser == 'allowUserAccountRequests' || $ser == 'onlyMaps') {
+        $form->setData($ser, $services->$ser ? 'on' : 'off');
+      }
+      else {
+        $form->setData($ser, $services->$ser);
+      }
     }
 
     // If wrong cacheRootDirectory, use the system temporary directory
@@ -295,42 +294,20 @@ class configCtrl extends jController {
     $data = array();
     foreach($services->getProperties() as $prop)
       $data[$prop] = $form->getData($prop);
-    $isRepository=false;
+
     $modifyServices = $services->update($data);
-    if($modifyServices)
+    if ($modifyServices) {
       jMessage::add(jLocale::get("admin~admin.form.admin_services.message.data.saved"));
-
-    // Redirect to the validation page
-    $rep= $this->getResponse("redirect");
-    $rep->action="admin~config:validateServices";
-
-    return $rep;
-  }
-
-
-  /**
-  * Validate the data for the services section : destroy form and redirect.
-  * @return Redirect to the index.
-  */
-  function validateServices(){
-
-    // Destroy the form
-    if($form = jForms::get('admin~config_services')){
-      jForms::destroy('admin~config_services');
-    }else{
-      // undefined form : redirect
-      $rep= $this->getResponse("redirect");
-      $rep->action="admin~config:index";
-      return $rep;
     }
 
-    // Redirect to the index
+    jForms::destroy('admin~config_services');
+
+    // Redirect to the validation page
     $rep= $this->getResponse("redirect");
     $rep->action="admin~config:index";
 
     return $rep;
   }
-
 
 
 #  REPOSITORIES

@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<form xmlns="http://jelix.org/ns/forms/1.1">
+<!--
+@package      jcommunity
+@subpackage   
+@author       Laurent Jouanneau <laurent@xulfr.org>
+@contributor
+@copyright    2007-2018 Laurent Jouanneau
+@link         http://jelix.org
+@licence      http://www.gnu.org/licenses/gpl.html GNU General Public Licence, see LICENCE file
+-->
+   <input ref="reg_login" required="true">
+      <label locale="jcommunity~account.form.login"/>
+   </input>
+
+   <input ref="reg_email"  required="true" type="email">
+       <label locale="jcommunity~account.form.email"/>
+   </input>
+
+   <secret ref="reg_password"  required="true" minlength="8" maxlength="120">
+        <label locale="jcommunity~account.form.password"/>
+        <help locale="jcommunity~account.form.password.help"/>
+        <confirm locale="jcommunity~account.form.password.confirm" />
+   </secret>
+
+   <captcha ref="reg_captcha">
+       <label locale="jcommunity~account.form.captcha"/>
+   </captcha>
+
+   <submit ref="reg_submit">
+       <label locale="jcommunity~register.form.create.submit" />
+   </submit>
+</form>

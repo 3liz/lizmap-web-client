@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<forms xmlns="http://jelix.org/ns/forms/1.0">
+    <!--
+        form used by jcommunity, for the user who wants to edit its
+        own profile
+    -->
+    <output ref="login">
+        <label locale="jcommunity~account.form.login"/>
+    </output>
+
+    <input ref="email"  required="true" type="email">
+        <label locale="jcommunity~account.form.email"/>
+    </input>
+
+    <input ref="firstname" maxlength="100">
+        <label locale="view~user.form.firstname.label"/>
+    </input>
+
+    <input ref="lastname" maxlength="100">
+        <label locale="view~user.form.lastname.label"/>
+    </input>
+
+    <input ref="organization" maxlength="100">
+        <label locale="view~user.form.organization.label"/>
+    </input>
+
+    <input ref="phonenumber" maxlength="20">
+        <label locale="view~user.form.phonenumber.label"/>
+    </input>
+
+    <input ref="street" maxlength="150">
+        <label locale="view~user.form.street.label"/>
+    </input>
+
+    <input ref="postcode" maxlength="10">
+        <label locale="view~user.form.postcode.label"/>
+    </input>
+
+    <input ref="city" maxlength="150">
+        <label locale="view~user.form.city.label"/>
+    </input>
+
+    <input ref="country" maxlength="100">
+        <label locale="view~user.form.country.label"/>
+    </input>
+
+    <textarea ref="comment" maxlength="300">
+        <label locale="admin~user.form.comment.label"/>
+    </textarea>
+
+
+    <submit ref="acc_submit">
+        <label locale="jcommunity~account.form.submit" />
+    </submit>
+</forms>
