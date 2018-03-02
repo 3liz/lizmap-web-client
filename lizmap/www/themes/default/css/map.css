@@ -8,6 +8,11 @@
   background-color: transparent;
   background-position: -400px 0px;
 }
+
+#headermenu #locate-clear.icon {
+  background-color: transparent;
+  background-position: -875px 0px;
+}
 #headermenu .dropdown-menu {
   background-color: #4A4A4A;
   background-color: rgba(0,0,0,0.7);

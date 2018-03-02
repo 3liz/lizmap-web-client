@@ -2,6 +2,7 @@
   <div class="pull-right">
 
     <form id="nominatim-search" class="navbar-search dropdown">
+	 <button id="locate-clear" class="btn-locate-clear btn btn-mini btn-link icon" type="button"></button>
       <input id="search-query" type="text" class="search-query" placeholder="{@view~map.search.nominatim.placeholder@}"></input>
       <span class="search-icon">
         <button class="icon nav-search" type="submit" tabindex="-1">
