@@ -401,6 +401,7 @@ class lizmapProxy {
         $cacheRootDirectory = $ser->cacheRootDirectory;
         if( $cacheStorageType != 'redis' ){
             if(!is_dir($cacheRootDirectory) or !is_writable($cacheRootDirectory)){
+                jLog::log('cacheRootDirectory "'. $cacheRootDirectory .'" is not a directory or is not writable!', 'error');
                 $cacheRootDirectory = sys_get_temp_dir();
             }
         }
@@ -532,13 +533,15 @@ class lizmapProxy {
         $ser = lizmap::getServices();
 
         // Remove the cache for the repository for file/sqlite cache type
-        $cacheRootDirectory = $ser->cacheRootDirectory;
-        if (!is_writable($cacheRootDirectory) or !is_dir($cacheRootDirectory)){
-            $cacheRootDirectory = sys_get_temp_dir();
-        }
-        $clearCacheOk = jFile::removeDir($cacheRootDirectory.'/'.$lrep->getKey());
-
-        if ($ser->cacheStorageType == 'redis') {
+        $cacheStorageType = $ser->cacheStorageType;
+        $clearCacheOk = False;
+        if( $cacheStorageType != 'redis' ){
+            $cacheRootDirectory = $ser->cacheRootDirectory;
+            if (!is_writable($cacheRootDirectory) or !is_dir($cacheRootDirectory)){
+                $cacheRootDirectory = sys_get_temp_dir();
+            }
+            $clearCacheOk = jFile::removeDir($cacheRootDirectory.'/'.$lrep->getKey());
+        } else {
             // remove the cache from redis
             $cacheName = 'lizmapCache_'.$repository;
             self::declareRedisProfile($ser, $cacheName, $repository);
