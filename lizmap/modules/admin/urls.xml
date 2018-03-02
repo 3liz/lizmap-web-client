@@ -4,7 +4,6 @@
     <url pathinfo="/services"            action="config:modifyServices"/>
     <url pathinfo="/services/edit"       action="config:editServices"/>
     <url pathinfo="/services/save"       action="config:saveServices"/>
-    <url pathinfo="/services/validate"   action="config:validateServices"/>
     <url pathinfo="/section/:repository/create"       action="config:createSection">
         <param name="repository"/>
     </url>

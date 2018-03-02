@@ -4,7 +4,7 @@
 * @subpackage db
 * @author     Laurent Jouanneau
 * @contributor Aurélien Marcel
-* @copyright  2017 Laurent Jouanneau, 2011 Aurélien Marcel
+* @copyright  2017-2018 Laurent Jouanneau, 2011 Aurélien Marcel
 *
 * @link        http://jelix.org
 * @licence     http://www.gnu.org/licenses/lgpl.html GNU Lesser General Public Licence, see LICENCE file
@@ -156,10 +156,16 @@ abstract class jDbSchema {
             $primaryKey = array($primaryKey);
         }
 
+        $autoIncrementUniqueKey = null;
+
         foreach ($columns as $col) {
             $isPk = (in_array($col->name, $primaryKey));
             $isSinglePk = $isPk && (count($primaryKey) == 1);
             $cols[] = $this->_prepareSqlColumn($col, $isPk, $isSinglePk);
+            if ($col->autoIncrement && !$isPk) {
+                // we should declare it as unique key
+                $autoIncrementUniqueKey = $col;
+            }
         }
 
         if (isset($attributes['temporary']) && $attributes['temporary']) {
@@ -179,10 +185,14 @@ abstract class jDbSchema {
             $sql .= ', CONSTRAINT '.$pkName.' PRIMARY KEY ('.implode(',', $pkEsc).')';
         }
 
+        if ($autoIncrementUniqueKey) {
+            $ukName = $this->conn->encloseName($name.'_'.$autoIncrementUniqueKey->name.'_ukey');
+            $sql .= ', CONSTRAINT '.$ukName.' UNIQUE ('.$this->conn->encloseName($autoIncrementUniqueKey->name).')';
+        }
+
         $sql .= ')';
         return $sql;
     }
-
 
     abstract protected function _getTables();
 

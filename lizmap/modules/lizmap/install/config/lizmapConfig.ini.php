@@ -25,4 +25,3 @@ debugMode=0
 cacheRootDirectory="/tmp/"
 ; cache root directory where cache files will be stored
 ; must be writable
-allowUserAccountRequests=off

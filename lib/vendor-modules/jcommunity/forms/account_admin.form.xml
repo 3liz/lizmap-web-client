@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<form xmlns="http://jelix.org/ns/forms/1.1">
+<!--
+@package      jcommunity
+@subpackage   
+@author       Laurent Jouanneau <laurent@xulfr.org>
+@contributor
+@copyright    2009 Laurent Jouanneau
+@link         http://jelix.org
+@licence      http://www.gnu.org/licenses/gpl.html GNU General Public Licence, see LICENCE file
+-->
+    <hidden ref="id">
+    </hidden>
+
+    <input ref="login" required="true" maxlength="50">
+       <label locale="jcommunity~account.form.login"/>
+    </input>
+
+    <input ref="nickname" required="true" maxlength="50">
+       <label locale="jcommunity~account.form.nickname"/>
+    </input>
+
+    <input ref="email"  required="true" type="email">
+        <label locale="jcommunity~account.form.email"/>
+    </input>
+
+    <secret ref="password" minlength="8" maxlength="120">
+       <label locale="jcommunity~account.form.password"/>
+        <help locale="jcommunity~account.form.password.help"/>
+       <confirm locale="jcommunity~account.form.password.confirm"/>
+    </secret>
+
+    <menulist ref="status" required="true">
+        <label locale="jcommunity~account.form.status" />
+        <item value="-2" locale="jcommunity~account.form.status.deleted" />
+        <item value="-1" locale="jcommunity~account.form.status.deactivate" />
+        <item value="0" locale="jcommunity~account.form.status.newuser" />
+        <item value="1" locale="jcommunity~account.form.status.valid" />
+        <item value="2" locale="jcommunity~account.form.status.valid.email.changed" />
+        <item value="3" locale="jcommunity~account.form.status.valid.password.changed" />
+    </menulist>
+
+    <output ref="keyactivate">
+        <label locale="jcommunity~account.form.keyactivate"/>
+    </output>
+
+    <output ref="request_date">
+        <label locale="jcommunity~account.form.requestdate"/>
+    </output>
+    
+    <output ref="create_date">
+        <label locale="jcommunity~account.form.createdate"/>
+    </output>
+
+    <submit ref="acc_submit">
+        <label locale="jcommunity~account.form.submit" />
+    </submit>
+</form>

@@ -11,7 +11,7 @@ timeZone="Europe/Paris"
 theme=default
 
 pluginsPath="app:plugins/,lib:jelix-plugins/,module:jacl2db/plugins"
-modulesPath="lib:jelix-admin-modules/,lib:jelix-modules/,app:modules/,app:lizmap-modules"
+modulesPath="lib:jelix-admin-modules/,lib:jelix-modules/,lib:vendor-modules/,app:modules/,app:lizmap-modules"
 
 ; the locales available in the application
 availableLocales="fr_FR,en_US,it_IT,es_ES,eu_ES,pt_PT,el_GR,de_DE,pl_PL,ru_RU,fi_FI,gl_ES,sv_SE,nl_NL,ro_RO,hu_HU"
@@ -30,7 +30,6 @@ defaultJformsBuilder=html
 html=myHtmlResponse
 htmlmap=myHtmlMapResponse
 htmlsimple=simpleHtmlResponse
-
 
 [jResponseHtml]
 plugins=minify
@@ -86,8 +85,8 @@ defaultEntrypoint=index
 entrypointExtension=.php
 
 ; leave empty to have jelix error messages
-notfoundAct=
-;notfoundAct = "jelix~error:notfound"
+;notfoundAct=
+notfoundAct = "jelix~error:notfound"
 
 ; list of actions which require https protocol for the simple url engine
 ; syntax of the list is the same as explained in the simple_urlengine_entrypoints
@@ -104,7 +103,7 @@ simple_urlengine_https=
 ;   @r       -> for all actions for the request of type "r"
 
 index="@classic"
-admin="jacl2db~*@classic, jacl2db_admin~*@classic, jauthdb_admin~*@classic, master_admin~*@classic, admin~*@classic, jauth~*@classic"
+admin="jacl2db~*@classic, jacl2db_admin~*@classic, jauthdb_admin~*@classic, master_admin~*@classic, admin~*@classic, jcommunity~*@classic"
 
 
 [basic_significant_urlengine_entrypoints]
@@ -112,6 +111,10 @@ admin="jacl2db~*@classic, jacl2db_admin~*@classic, jauthdb_admin~*@classic, mast
 ; should be include in the url or not
 index=on
 admin=on
+
+[basic_significant_urlengine_aliases]
+auth=jcommunity
+
 
 [logger]
 _all=
@@ -176,7 +179,7 @@ on_error=2
 error_message="jelix~errors.acl.action.right.needed"
 
 ; action to execute on a missing authentification when on_error=2
-on_error_action="jauth~login:form"
+on_error_action="jcommunity~login:index"
 
 
 [coordplugin_autolocale]
@@ -235,9 +238,11 @@ jacl2.access=1
 jacl2db.access=1
 jacl2db.installparam=defaultuser
 
-jauth.access=1
-jauthdb.access=1
-jauthdb.installparam=defaultuser
+jauth.access=0
+jauthdb.access=0
+
+jcommunity.access=1
+jcommunity.installparam="manualconfig"
 
 admin.access=1
 dataviz.access=1
@@ -246,11 +251,16 @@ lizmap.access=1
 proj4php.access=1
 view.access=1
 
-
-
 [mailLogger]
 email="root@localhost"
 emailHeaders="Content-Type: text/plain; charset=UTF-8\nFrom: webmaster@yoursite.com\nX-Mailer: Jelix\nX-Priority: 1 (Highest)\n"
 
-
-
+[jcommunity]
+loginResponse = htmlauth
+registrationEnabled = off
+resetPasswordEnabled = on
+verifyNickname = off
+;passwordChangeEnabled=on
+;accountDestroyEnabled=on
+useJAuthDbAdminRights=on
+;disableJPref = on

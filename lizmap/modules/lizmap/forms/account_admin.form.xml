@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<form xmlns="http://jelix.org/ns/forms/1.1">
+    <!-- form used by jauthdb_admin for:
+      - the user who wants to modify its own profile
+      - the admin user to edit profile of other users
+     -->
+
+
+    <input ref="login" required="true" minlength="3" maxlength="50">
+        <label locale="jcommunity~account.form.login"/>
+    </input>
+
+    <input ref="email"  required="true" type="email">
+        <label locale="jcommunity~account.form.email"/>
+    </input>
+
+    <secret ref="password" minlength="8" maxlength="120">
+        <label locale="jcommunity~account.form.password"/>
+        <help locale="jcommunity~account.form.password.help"/>
+        <confirm locale="jcommunity~account.form.password.confirm"/>
+    </secret>
+
+    <input ref="firstname" maxlength="100">
+        <label locale="view~user.form.firstname.label"/>
+    </input>
+
+    <input ref="lastname" maxlength="100">
+        <label locale="view~user.form.lastname.label"/>
+    </input>
+
+    <input ref="organization" maxlength="100">
+        <label locale="view~user.form.organization.label"/>
+    </input>
+
+    <input ref="phonenumber" maxlength="20">
+        <label locale="view~user.form.phonenumber.label"/>
+    </input>
+
+    <input ref="street" maxlength="150">
+        <label locale="view~user.form.street.label"/>
+    </input>
+
+    <input ref="postcode" maxlength="10">
+        <label locale="view~user.form.postcode.label"/>
+    </input>
+
+    <input ref="city" maxlength="150">
+        <label locale="view~user.form.city.label"/>
+    </input>
+
+    <input ref="country" maxlength="100">
+        <label locale="view~user.form.country.label"/>
+    </input>
+
+    <textarea ref="comment" maxlength="300">
+        <label locale="admin~user.form.comment.label"/>
+    </textarea>
+
+    <menulist ref="status" required="true">
+        <label locale="jcommunity~account.form.status" />
+        <item value="-2" locale="jcommunity~account.form.status.deleted" />
+        <item value="-1" locale="jcommunity~account.form.status.deactivate" />
+        <item value="0" locale="jcommunity~account.form.status.newuser" />
+        <item value="1" locale="jcommunity~account.form.status.valid" />
+        <item value="2" locale="jcommunity~account.form.status.valid.email.changed" />
+        <item value="3" locale="jcommunity~account.form.status.valid.password.changed" />
+    </menulist>
+
+    <output ref="keyactivate">
+        <label locale="jcommunity~account.form.keyactivate"/>
+    </output>
+
+    <output ref="request_date">
+        <label locale="jcommunity~account.form.requestdate"/>
+    </output>
+
+    <output ref="create_date">
+        <label locale="jcommunity~account.form.createdate"/>
+    </output>
+
+    <submit ref="_submit">
+        <label locale="jcommunity~account.form.submit" />
+    </submit>
+</form>

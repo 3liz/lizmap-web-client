@@ -2,4 +2,8 @@
   <listener name="config">
        <event name="masteradminGetMenuContent" />
    </listener>
+    <listener name="lzmAuth">
+        <event name="jcommunity_registration_prepare_save"/>
+        <event name="jcommunity_registration_after_save"/>
+    </listener>
 </events>
