@@ -463,12 +463,10 @@ class qgisForm {
                 break;
               case 'text':
               case 'boolean':
-                $value= filter_var($value, FILTER_SANITIZE_FULL_SPECIAL_CHARS, FILTER_FLAG_NO_ENCODE_QUOTES);
-                $value = htmlspecialchars_decode($value);
                 if ( !$value or empty($value))
                   $value = 'NULL';
                 else
-                  $value = $value = $cnx->quote($value);
+                  $value = $cnx->quote($value);
                 break;
               default:
                 $value = $cnx->quote(
