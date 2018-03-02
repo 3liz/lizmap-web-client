@@ -16,6 +16,11 @@ class adminLoginHtmlResponse extends jResponseHtml {
 
     function __construct() {
         parent::__construct();
+
+        // Header
+        $this->addHttpHeader('x-ua-compatible', 'ie=edge');
+
+        // Meta
         $this->addHeadContent('<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />');
     }
 
