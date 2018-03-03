@@ -95,8 +95,9 @@ only screen and (                   max-device-height : 640px) {
   }
 
   #bottom-dock  {
-    width: 100%;
+    width: auto;
     height: auto;
+    right: 0px;
   }
   #bottom-dock.visible {
     height: 100%;
