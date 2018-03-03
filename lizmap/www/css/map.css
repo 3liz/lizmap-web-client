@@ -559,9 +559,9 @@ SubDock
 
 #bottom-dock.fullsize {
   left:0px;
-  height: 100%;
+  height:100%;
   width:auto;
-  right:1px;
+  right:0px;
 }
 
 #bottom-dock h3 {

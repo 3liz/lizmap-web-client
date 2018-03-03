@@ -22,7 +22,7 @@ var bottomDockFunction = function() {
           }
           ,
           function(){
-            if ( !bottomDockGlued &&!lizMap.checkMobile())
+            if ( !bottomDockGlued && !lizMap.checkMobile())
               hideBottomDockContent();
 
             $(this).addClass('half-transparent');
@@ -209,12 +209,23 @@ var bottomDockFunction = function() {
         });
 
         function showBottomDockContent(){
+            if ( hideBottomDockContentTimer != null) {
+                clearTimeout(hideBottomDockContentTimer);
+                hideBottomDockContentTimer = null;
+            }
           $('#bottom-dock').addClass('visible');
           $('#bottom-dock').css('left',  lizMap.getDockRightPosition() );
           return false;
         }
+        var hideBottomDockContentTimer = null;
         function hideBottomDockContent(){
-          $('#bottom-dock').removeClass('visible').focus();
+            if ( hideBottomDockContentTimer == null) {
+                hideBottomDockContentTimer = setTimeout(function(){
+                    clearTimeout(hideBottomDockContentTimer);
+                    hideBottomDockContentTimer = null;
+                    $('#bottom-dock').removeClass('visible').focus();
+                }, 1000);
+            }
           return false;
         }
 
