@@ -30,9 +30,9 @@ var bottomDockFunction = function() {
                     clearTimeout(lizBottomDockTimer);
                     lizBottomDockTimer = null;
                 }
+                $(this).removeClass('half-transparent');
                 lizBottomDockTimer = setTimeout(function() {
                   showBottomDockContent();
-                  $(this).removeClass('half-transparent');
                   return false;
                 }, lizBottomDockTimeHoverIn);
               },
@@ -42,11 +42,11 @@ var bottomDockFunction = function() {
                     clearTimeout(lizBottomDockTimer);
                     lizBottomDockTimer = null;
                 }
+                $(this).addClass('half-transparent');
                 lizBottomDockTimer = setTimeout(function() {
                   if ( !bottomDockGlued &&!lizMap.checkMobile()){
                     hideBottomDockContent();
                   }
-                  $(this).addClass('half-transparent');
                   return false;
                 }, lizBottomDockTimeHoverOut);
               }
