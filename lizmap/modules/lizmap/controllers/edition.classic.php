@@ -1203,6 +1203,10 @@ class editionCtrl extends jController {
     if( $this->featureId )
       $this->setFormDataFromFields($form);
     else if ( $form->hasUpload() ) {
+        $repPath = $this->repository->getPath();
+        $layerPath = realpath($repPath.'/media').'/upload/'.$this->project->getKey().'/'.$this->tableName;
+        if ( !is_dir($layerPath) )
+            jFile::createDir($layerPath);
         foreach( $form->getUploads() as $upload ) {
             $choiceRef = $upload->ref.'_choice';
             $choiceCtrl = $form->getControl( $choiceRef );
@@ -1211,6 +1215,15 @@ class editionCtrl extends jController {
                 $choiceCtrl->itemsNames['update'] = jLocale::get("view~edition.upload.choice.update");
                 $choiceCtrl->deactivateItem('keep');
                 $choiceCtrl->deactivateItem('delete');
+            }
+            if( !is_dir($layerPath) or !is_writable($layerPath) )
+                $form->setErrorOn($upload->ref, jLocale::get("view~edition.message.error.upload.layer", array($this->tableName) ) );
+            else {
+                $refPath = $layerPath.'/'.$upload->ref;
+                if ( !is_dir($refPath) )
+                    jFile::createDir($refPath);
+                if( !is_dir($refPath) or !is_writable($refPath) )
+                    $form->setErrorOn($upload->ref, jLocale::get("view~edition.message.error.upload.layer.field", array($choiceCtrl->label, $this->tableName) ) );
             }
         }
     }
