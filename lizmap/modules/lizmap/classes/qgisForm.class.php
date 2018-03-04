@@ -418,7 +418,7 @@ class qgisForm {
 
         if( count($fields) == 0){
             jLog::log('Not enough capabilities for this layer ! SQL cannot be constructed: no fields available !' ,'error');
-            $this->form->setErrorOn($geometryColumn, 'An error has been raised when saving the form: Not enough capabilities for this layer !');
+            $this->form->setErrorOn($geometryColumn, jLocale::get('view~edition.message.error.save').' '.jLocale::get('view~edition.message.error.save.fields'));
             throw new Exception( jLocale::get('view~edition.link.error.sql') );
         }
 
@@ -520,7 +520,7 @@ class qgisForm {
                 return $this->layer->insertFeature( $values );
             }
         } catch (Exception $e) {
-            $form->setErrorOn($geometryColumn, 'An error has been raised when saving the form');
+            $form->setErrorOn($geometryColumn, jLocale::get('view~edition.message.error.save'));
             jLog::log("An error has been raised when saving form data edition to db : ".$e->getMessage() ,'error');
             return false;
         }
