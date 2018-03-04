@@ -101,7 +101,7 @@ class editionCtrl extends jController {
     }
 
     if(!$project){
-      jMessage::add('The parameter project is mandatory !', 'ProjectNotDefined');
+      jMessage::add(jLocale::get('view~edition.message.error.parameter.project'), 'ProjectNotDefined');
       return false;
     }
 
@@ -143,7 +143,7 @@ class editionCtrl extends jController {
 
     // Verifying if the layer is editable
     if ( !$layer->isEditable() ) {
-      jMessage::add('The layer is not editable!', 'LayerNotEditable');
+      jMessage::add(jLocale::get('view~edition.message.error.layer.editable'), 'LayerNotEditable');
       return false;
     }
     $eLayer = $layer->getEditionCapabilities();
@@ -245,7 +245,7 @@ class editionCtrl extends jController {
     // Get editLayer capabilities
     $eCapabilities = $this->layer->getEditionCapabilities();
     if ( $eCapabilities->capabilities->createFeature != 'True' ) {
-        jMessage::add('Create feature for this layer is not in the capabilities!', 'LayerNotEditable');
+	jMessage::add(jLocale::get('view~edition.message.error.layer.editable.create'), 'LayerNotEditable');
         return $this->serviceAnswer();
     }
 
@@ -286,14 +286,14 @@ class editionCtrl extends jController {
     // Check if data has been fetched via WFS for the feature
     $this->getWfsFeature();
     if(!$this->featureData){
-      jMessage::add('Lizmap cannot get this feature data via WFS', 'featureNotFoundViaWfs');
+      jMessage::add(jLocale::get('view~edition.message.error.feature.get'), 'featureNotFoundViaWfs');
       return $this->serviceAnswer();
     }
 
     // Create form instance
     $form = jForms::create('view~edition', $this->featureId);
     if(!$form){
-      jMessage::add('An error has been raised when creating the form', 'formNotDefined');
+      jMessage::add(jLocale::get('view~edition.message.error.form.get'), 'formNotDefined');
       return $this->serviceAnswer();
     }
     $form->setData( 'liz_future_action', $this->param('liz_future_action', 'close') );
@@ -327,14 +327,14 @@ class editionCtrl extends jController {
     // Check if data has been fetched via WFS for the feature
     $this->getWfsFeature();
     if($this->featureId and !$this->featureData){
-      jMessage::add('Lizmap cannot get this feature data via WFS', 'featureNotFoundViaWfs');
+      jMessage::add(jLocale::get('view~edition.message.error.feature.get'), 'featureNotFoundViaWfs');
       return $this->serviceAnswer();
     }
 
     // Get the form instance
     $form = jForms::get('view~edition', $this->featureId);
     if(!$form){
-      jMessage::add('An error has been raised when getting the form', 'formNotDefined');
+      jMessage::add(jLocale::get('view~edition.message.error.form.get'), 'formNotDefined');
       return $this->serviceAnswer();
     }
     // Set lizmap form controls (hard-coded in the form xml file)
@@ -383,6 +383,10 @@ class editionCtrl extends jController {
     if ( $this->featureId )
       $form = $qgisForm->setFormDataFromFields($this->featureData->features[0]);
     else if ( $form->hasUpload() ) {
+        $repPath = $this->repository->getPath();
+        $layerPath = realpath($repPath.'/media').'/upload/'.$this->project->getKey().'/'.$this->tableName;
+        if ( !is_dir($layerPath) )
+            jFile::createDir($layerPath);
         foreach( $form->getUploads() as $upload ) {
             $choiceRef = $upload->ref.'_choice';
             $choiceCtrl = $form->getControl( $choiceRef );
@@ -391,6 +395,15 @@ class editionCtrl extends jController {
                 $choiceCtrl->itemsNames['update'] = jLocale::get("view~edition.upload.choice.update");
                 $choiceCtrl->deactivateItem('keep');
                 $choiceCtrl->deactivateItem('delete');
+            }
+            if( !is_dir($layerPath) or !is_writable($layerPath) )
+                $form->setErrorOn($upload->ref, jLocale::get("view~edition.message.error.upload.layer", array($this->tableName) ) );
+            else {
+                $refPath = $layerPath.'/'.$upload->ref;
+                if ( !is_dir($refPath) )
+                    jFile::createDir($refPath);
+                if( !is_dir($refPath) or !is_writable($refPath) )
+                    $form->setErrorOn($upload->ref, jLocale::get("view~edition.message.error.upload.layer.field", array($choiceCtrl->label, $this->tableName) ) );
             }
         }
     }
@@ -455,7 +468,7 @@ class editionCtrl extends jController {
     $form = jForms::get('view~edition', $this->featureId);
 
     if(!$form){
-      jMessage::add('An error has been raised when getting the form', 'formNotDefined');
+      jMessage::add(jLocale::get('view~edition.message.error.form.get'), 'formNotDefined');
       return $this->serviceAnswer();
     }
 
@@ -479,7 +492,7 @@ class editionCtrl extends jController {
     $check = $form->check();
     if ( $this->geometryColumn != '' && $form->getData( $this->geometryColumn ) == '' ) {
       $check = False;
-      $form->setErrorOn($this->geometryColumn, jLocale::get("view~edition.message.error.no.geometry") );
+      $form->setErrorOn($this->geometryColumn, jLocale::get('view~edition.message.error.no.geometry') );
     }
 
     $rep = $this->getResponse('redirect');
@@ -612,7 +625,7 @@ class editionCtrl extends jController {
       return $this->serviceAnswer();
     }else{
       // undefined form : redirect to error
-      jMessage::add('An error has been raised when getting the form', 'error');
+      jMessage::add(jLocale::get('view~edition.message.error.form.get'), 'error');
       return $this->serviceAnswer();
     }
   }
@@ -633,20 +646,20 @@ class editionCtrl extends jController {
     // Check if data has been fetched via WFS for the feature
     $this->getWfsFeature();
     if(!$this->featureData){
-      jMessage::add('Lizmap cannot get this feature data via WFS', 'featureNotFoundViaWfs');
+      jMessage::add(jLocale::get('view~edition.message.error.feature.get'), 'featureNotFoundViaWfs');
       return $this->serviceAnswer();
     }
 
     // Get editLayer capabilities
     $eCapabilities = $this->layer->getEditionCapabilities();
     if ( $eCapabilities->capabilities->deleteFeature != 'True' ) {
-      jMessage::add('Delete feature for this layer is not in the capabilities!', 'LayerNotEditable');
+      jMessage::add(jLocale::get('view~edition.message.error.layer.editable.delete'), 'LayerNotEditable');
       return $this->serviceAnswer();
     }
 
     $featureId = $this->param('featureId');
     if( !$featureId ) {
-      jMessage::add('The featureId is mandatory !', 'error');
+      jMessage::add(jLocale::get('view~edition.message.error.parameter.featureId'), 'error');
       return $this->serviceAnswer();
     }
 
@@ -722,7 +735,7 @@ class editionCtrl extends jController {
         $features2 = $this->param('features2');
         $pivotId = $this->param('pivot');
         if( !$features1 or !$features2 or !$pivotId ) {
-            jMessage::add(jLocale::get("view~edition.link.error.missing.parameter"), 'error');
+            jMessage::add(jLocale::get('view~edition.link.error.missing.parameter'), 'error');
             return $this->serviceAnswer();
         }
 
@@ -730,18 +743,18 @@ class editionCtrl extends jController {
         $exp1 = explode(':', $features1);
         $exp2 = explode(':', $features2);
         if( count($exp1) != 3 or count($exp2) != 3 ){
-            jMessage::add(jLocale::get("view~edition.link.error.missing.parameter"), 'error');
+            jMessage::add(jLocale::get('view~edition.link.error.missing.parameter'), 'error');
             return $this->serviceAnswer();
         }
 
         $ids1 = explode( ',', $exp1[2] );
         $ids2 = explode( ',', $exp2[2] );
         if( count($ids1) > 1 and count($ids2) > 1 ){
-            jMessage::add(jLocale::get("view~edition.link.error.multiple.ids"), 'error');
+            jMessage::add(jLocale::get('view~edition.link.error.multiple.ids'), 'error');
             return $this->serviceAnswer();
         }
         if( count($ids1) == 0 or count($ids2) == 0 or empty( $exp1[2] ) or empty( $exp2[2] ) ){
-            jMessage::add( jLocale::get("view~edition.link.error.missing.id"), 'error');
+            jMessage::add( jLocale::get('view~edition.link.error.missing.id'), 'error');
             return $this->serviceAnswer();
         }
 
@@ -787,7 +800,7 @@ class editionCtrl extends jController {
             or !property_exists($pConfig->attributeLayers, $layerName1)
             or !property_exists($pConfig->attributeLayers, $layerName2)
         ) {
-            jMessage::add( jLocale::get("view~edition.link.error.not.attribute.layer"), 'error' );
+            jMessage::add( jLocale::get('view~edition.link.error.not.attribute.layer'), 'error' );
             return $this->serviceAnswer();
         }
 
@@ -803,13 +816,13 @@ class editionCtrl extends jController {
         if( $layerNamePivot == $layerName2 ){
             // pivot layer (n:m)
             if ( $eLayer->capabilities->createFeature != 'True' ) {
-                jMessage::add('Create feature for this layer ' . $layerNamePivot . ' is not in the capabilities!', 'LayerNotEditable');
+                jMessage::add(jLocale::get('view~edition.link.error.no.create.feature', array($layerNamePivot)), 'LayerNotEditable');
                 return $this->serviceAnswer();
             }
         }else{
             // child layer (1:n)
             if ( $eLayer->capabilities->modifyAttribute != 'True' ) {
-                jMessage::add('Modify attributes for this layer ' . $layerNamePivot . ' is not in the capabilities!', 'LayerNotEditable');
+                jMessage::add(jLocale::get('view~edition.link.error.no.modify.attributes', array($layerNamePivot)), 'LayerNotEditable');
                 return $this->serviceAnswer();
             }
         }
@@ -820,7 +833,7 @@ class editionCtrl extends jController {
 
         // Check fields
         if( !array_key_exists( $exp1[1], $dataFields ) or !array_key_exists( $exp2[1], $dataFields ) ){
-            jMessage::add('Given fields do not exists !', 'error');
+            jMessage::add(jLocale::get('view~edition.link.error.no.given.fields'), 'error');
             return $this->serviceAnswer();
         }
         $key1 = $exp1[1];
@@ -876,7 +889,7 @@ class editionCtrl extends jController {
         $repository = $this->param('repository');
 
         if( !$lid or !$fkey or !$pkey or !$pkeyval or !$project or !$repository ) {
-            jMessage::add(jLocale::get("view~edition.link.error.missing.parameter"), 'error');
+            jMessage::add(jLocale::get('view~edition.link.error.missing.parameter'), 'error');
             return $this->serviceAnswer();
         }
 
@@ -912,7 +925,7 @@ class editionCtrl extends jController {
         // Get editLayer capabilities
         $eLayer = $layer->getEditionCapabilities();
         if ( $eLayer->capabilities->modifyAttribute != 'True' ) {
-            jMessage::add('Modify feature attributes for this layer ' . $layerName . ' is not in the capabilities!', 'LayerNotEditable');
+            jMessage::add(jLocale::get('view~edition.link.error.no.modify.attributes', array($layerName)), 'LayerNotEditable');
             return $this->serviceAnswer();
         }
 
@@ -922,7 +935,7 @@ class editionCtrl extends jController {
 
         // Check fields
         if( !array_key_exists( $fkey, $dataFields ) or !array_key_exists( $pkey, $dataFields ) ){
-            jMessage::add('Given fields do not exists !', 'error');
+            jMessage::add(jLocale::get('view~edition.link.error.no.given.fields'), 'error');
             return $this->serviceAnswer();
         }
 
