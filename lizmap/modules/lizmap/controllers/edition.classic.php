@@ -906,8 +906,8 @@ class editionCtrl extends jController {
     }
 
     if( count($fields) == 0){
-        jLog::log('Not enough capabilities for this layer ! SQL cannot be constructed: no fields available !' ,'error');
-        $form->setErrorOn($this->geometryColumn, 'An error has been raised when saving the form: Not enough capabilities for this layer !');
+        jLog::log('Not enough capabilities for this layer! SQL cannot be constructed: no fields available!' ,'error');
+        $form->setErrorOn($this->geometryColumn, jLocale::get('view~edition.message.error.save').' '.jLocale::get('view~edition.message.error.save.fields'));
         jMessage::clearAll();
         jMessage::add( jLocale::get('view~edition.link.error.sql'), 'error');
         return false;
@@ -1062,7 +1062,7 @@ class editionCtrl extends jController {
     try {
       $rs = $cnx->query($sql);
     } catch (Exception $e) {
-      $form->setErrorOn($this->geometryColumn, 'An error has been raised when saving the form');
+      $form->setErrorOn($this->geometryColumn, jLocale::get('view~edition.message.error.save'));
       jLog::log("SQL = ".$sql);
       jLog::log("An error has been raised when saving form data edition to db : ".$e->getMessage() ,'error');
       return false;
