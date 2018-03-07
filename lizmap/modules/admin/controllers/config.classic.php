@@ -375,15 +375,19 @@ class configCtrl extends jController {
         $mydata = array();
         // Initialize future values to set
         $dataValues = array();
+        $group = $daogroup->get('__anonymous');
+        $mydata[$group->id_aclgrp] = $group->name;
         // Loop through each public group
         foreach($daogroup->findAllPublicGroup() as $group){
             $mydata[$group->id_aclgrp] = $group->name.' ('.$group->id_aclgrp.')';
             if($group->grouptype == 1)
                 $mydata[$group->id_aclgrp] .= ' ['.jLocale::get("admin~jacl2.lizmap.admin.grp.default").']';
-            if($load == 'db'){
+        }
+        if($load == 'db'){
+            foreach($mydata as $id_aclgrp=>$name_aclgrp) {
                 $conditions = jDao::createConditions();
                 $conditions->addCondition('id_aclsbj','=',$subject->id_aclsbj);
-                $conditions->addCondition('id_aclgrp','=',$group->id_aclgrp);
+                $conditions->addCondition('id_aclgrp','=',$id_aclgrp);
                 $conditions->addCondition('id_aclres','=',$repository);
                 $res = $daoright->findBy($conditions);
                 foreach($res as $rec)
