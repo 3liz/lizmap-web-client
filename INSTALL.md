@@ -7,10 +7,13 @@ Requirements
 
 First you should install
 
-- the web server Apache
-- the package `curl`, `php` and its extensions curl, sqlite, gd, xml (`php-curl, php-sqlite, php-gd` or equivalents), `libapache2-mod-php`
-- [QGIS](http://qgis.org/it/site/forusers/download.html)
-- (optional) PostgreSQL with PostGIS and its php extension (`php-pgsql` or equivalents)
+- The web server Apache or Nginx
+- The PHP-FPM package (`php5-fpm` or `php7.0` on debian/ubuntu) or `libapache2-mod-php` (apache only).
+  You can install PHP 5.6 or PHP 7.0/7.1/7.2. So package names start with `php5`, `php7.0` `php7.1` etc.
+- The package `curl`, and PHP extensions `curl`, `sqlite3`, `gd` and `xml` (example with PHP 7 on Debian: `php7.0-sqlite3`, `php7.0-gd`, `php7.0-xml` and `php7.0-curl`) 
+- [QGIS](http://qgis.org/en/site/forusers/download.html)
+- (optional) PostgreSQL with PostGIS and its php extension (`php5-pgsql` or equivalents)
+
 
 Get the source
 --------------
