@@ -63,15 +63,38 @@ class lizmapModuleInstaller extends jInstallerModule {
             $authconfig = $this->config->getValue('auth','coordplugins');
             $confIni = parse_ini_file(jApp::configPath($authconfig), true);
             $authConfig = jAuth::loadConfig($confIni);
-            $driver = new dbAuthDriver($authConfig['Db']);
-            $passwordHash1 = $driver->cryptPassword('lizadmin');
-            $passwordHash2 = $driver->cryptPassword('logintranet');
-            $cn = $this->dbConnection();
-            $cn->exec("INSERT INTO ".$cn->prefixTable('jlx_user')." (usr_login, usr_password, usr_email ) VALUES
-                        ('lizadmin', ".$cn->quote($passwordHash1)." , 'lizadmin@nomail.nomail')");
+            $driverConfig = $authConfig[$authConfig['driver']];
+            if ($authConfig['driver'] == 'Db' ||
+                (isset($driverConfig['compatiblewithdb']) &&
+                    $driverConfig['compatiblewithdb'])
+            ) {
+                $driver = new dbAuthDriver($driverConfig);
+                $passwordHash1 = $driver->cryptPassword('lizadmin');
+                $passwordHash2 = $driver->cryptPassword('logintranet');
+                $daoSelector = $driverConfig['dao'];
+                $daoProfile = $driverConfig['profile'];
+                $dao = jDao::get($daoSelector, $daoProfile);
+                echo "bla\n";
 
-            $cn->exec("INSERT INTO ".$cn->prefixTable('jlx_user')." (usr_login, usr_password, usr_email ) VALUES
-                        ('logintranet', ".$cn->quote($passwordHash2)." , 'logintranet@nomail.nomail')");
+                $user = jDao::createRecord($daoSelector, $daoProfile);
+                $user->firstname = '';
+                $user->lastname = '';
+                $user->organization = '';
+                $user->street = '';
+                $user->postcode = '';
+                $user->city = '';
+                $user->nickname = $user->login = 'lizadmin';
+                $user->password = $passwordHash1;
+                $user->email = 'lizadmin@nomail.nomail';
+                $user->status = 1;
+                $dao->insert($user);
+                echo "bla2\n";
+
+                $user->nickname = $user->login = 'logintranet';
+                $user->password = $passwordHash2;
+                $user->email = 'logintranet@nomail.nomail';
+                $dao->insert($user);
+            }
 
             // declare users in jAcl2
 
