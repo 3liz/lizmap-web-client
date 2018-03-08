@@ -147,7 +147,7 @@ class debugbarHTMLResponsePlugin implements jIHTMLResponsePlugin {
         }
         ?>
 <style type="text/css">
-#jxdb {position:absolute;right:10px;top:0;left:auto;margin:0;padding:0;z-index:1000;font-size:10pt;font-family:arial;font-weight:normal;color:black;}
+#jxdb {position:absolute;right:10px;top:0;left:auto;margin:0;padding:0;z-index:5000;font-size:10pt;font-family:arial;font-weight:normal;color:black;}
 #jxdb-pjlx-a-right { display:none;}
 #jxdb-pjlx-a-left { display:inline;}
 #jxdb.jxdb-position-l {left:10px; right: auto;}

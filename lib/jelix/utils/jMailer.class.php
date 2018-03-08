@@ -158,47 +158,36 @@ class jMailer extends PHPMailer {
             $mailtpl = $this->tpl;
             $metas = $mailtpl->meta( $this->bodyTpl , ($this->ContentType == 'text/html'?'html':'text') );
 
-            if (isset($metas['Subject'])) {
+            if (isset($metas['Subject']) && is_string($metas['Subject'])) {
                 $this->Subject = $metas['Subject'];
             }
 
-            if (isset($metas['Priority'])) {
+            if (isset($metas['Priority']) && is_numeric($metas['Priority'])) {
                 $this->Priority = $metas['Priority'];
             }
             $mailtpl->assign('Priority', $this->Priority );
 
-            if (isset($metas['Sender'])) {
+            if (isset($metas['Sender']) && is_string($metas['Sender'])) {
                 $this->Sender = $metas['Sender'];
             }
             $mailtpl->assign('Sender', $this->Sender );
 
-            if (isset($metas['to'])) {
-                foreach ($metas['to'] as $val) {
-                    $this->getAddrName($val, 'to');
+            foreach (array('to'=>'to',
+                         'cc'=>'cc',
+                         'bcc'=>'bcc',
+                         'ReplyTo'=>'Reply-To') as $prop=>$propName) {
+                if (isset($metas[$prop])) {
+                    if (is_array($metas[$prop])) {
+                        foreach ($metas[$prop] as $val) {
+                            $this->getAddrName($val, $propName);
+                        }
+                    }
+                    else if (is_string($metas[$prop])) {
+                        $this->getAddrName($metas[$prop], $propName);
+                    }
                 }
+                $mailtpl->assign($prop, $this->$prop );
             }
-            $mailtpl->assign('to', $this->to );
-
-            if (isset($metas['cc'])) {
-                foreach ($metas['cc'] as $val) {
-                    $this->getAddrName($val, 'cc');
-                }
-            }
-            $mailtpl->assign('cc', $this->cc );
-
-            if (isset($metas['bcc'])) {
-                foreach ($metas['bcc'] as $val) {
-                    $this->getAddrName($val, 'bcc');
-                }
-            }
-            $mailtpl->assign('bcc', $this->bcc);
-
-            if (isset($metas['ReplyTo'])) {
-                foreach ($metas['ReplyTo'] as $val) {
-                    $this->getAddrName($val, 'Reply-To');
-                }
-            }
-            $mailtpl->assign('ReplyTo', $this->ReplyTo );
 
             if (isset($metas['From'])) {
                 $adr = $this->getAddrName($metas['From']);
@@ -211,7 +200,6 @@ class jMailer extends PHPMailer {
             if ($this->ContentType == 'text/html') {
                 $converter = $this->html2textConverter ? $this->html2textConverter: array($this, 'html2textKeepLinkSafe');
                 $this->msgHTML($mailtpl->fetch( $this->bodyTpl, 'html'), $this->htmlImageBaseDir, $converter);
-
             }
             else
                 $this->Body = $mailtpl->fetch( $this->bodyTpl, 'text');
