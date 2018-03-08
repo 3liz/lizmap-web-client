@@ -74,7 +74,6 @@ class lizmapModuleInstaller extends jInstallerModule {
                 $daoSelector = $driverConfig['dao'];
                 $daoProfile = $driverConfig['profile'];
                 $dao = jDao::get($daoSelector, $daoProfile);
-                echo "bla\n";
 
                 $user = jDao::createRecord($daoSelector, $daoProfile);
                 $user->firstname = '';
@@ -88,7 +87,6 @@ class lizmapModuleInstaller extends jInstallerModule {
                 $user->email = 'lizadmin@nomail.nomail';
                 $user->status = 1;
                 $dao->insert($user);
-                echo "bla2\n";
 
                 $user->nickname = $user->login = 'logintranet';
                 $user->password = $passwordHash2;
