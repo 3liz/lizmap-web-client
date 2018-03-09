@@ -45,4 +45,8 @@
     <url pathinfo="/theme/validate"     action="theme:validate"/>
     <url pathinfo="/theme/remove-logo"  action="theme:removeLogo"/>
 
+
+    <url pathinfo="/acl/user/removegroup"  action="acl:removegroup"/>
+    <url pathinfo="/acl/user/addgroup"  action="acl:addgroup"/>
+
 </suburls>
