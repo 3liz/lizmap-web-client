@@ -633,11 +633,21 @@ class qgisFormControl{
         $orderByValue = (string)$this->edittype[0]->widgetv2config->attributes()->OrderByValue;
         $Relation = (string)$this->edittype[0]->widgetv2config->attributes()->Relation;
         $MapIdentification = (string)$this->edittype[0]->widgetv2config->attributes()->MapIdentification;
+        $chainFilters = '0';
+        $filters = array();
+        if ( property_exists($this->edittype[0]->widgetv2config, 'FilterFields') ) {
+            foreach($this->edittype[0]->widgetv2config->FilterFields->children('field') as $f) {
+                $filters[] = (string)$f->attrbutes()->name;
+            }
+            $chainFilters = (string)$this->edittype[0]->widgetv2config->FilterFields->attributes()->ChainFilters;
+        }
         $this->relationReferenceData = array(
           "allowNull" => $allowNull,
           "orderByValue" => $orderByValue,
           "relation" => $Relation,
-          "mapIdentification" => $MapIdentification
+          "mapIdentification" => $MapIdentification,
+          "filters" => $filters,
+          "chainFilters" => $chainFilters
         );
 
         break;
