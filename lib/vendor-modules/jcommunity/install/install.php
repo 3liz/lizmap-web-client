@@ -1,12 +1,12 @@
 <?php
 /**
-* @package     jcommunity
-* @author      Laurent Jouanneau
-* @contributor
-* @copyright   2010-2018 Laurent Jouanneau
+ * @package     jcommunity
+ * @author      Laurent Jouanneau
+ * @contributor
+ * @copyright   2010-2018 Laurent Jouanneau
  * @link      https://github.com/laurentj/jcommunity
  * @license  http://www.gnu.org/licenses/lgpl.html GNU Lesser General Public Licence, see LICENCE file
-*/
+ */
 
 
 class jcommunityModuleInstaller extends jInstallerModule {
@@ -122,30 +122,33 @@ class jcommunityModuleInstaller extends jInstallerModule {
             }
             else {
                 $this->fillDefaultValues($daoSelector);
-                if ($this->getParameter('defaultuser')) {
-                    $dao = jDao::get($daoSelector, $dbProfile);
-                    $user = $dao->getByLogin('admin');
-                    if (!$user) {
-                        require_once(JELIX_LIB_PATH.'auth/jAuth.class.php');
+
+                $sourceUserDataModule = null;
+                $sourceUserDataFile = '';
+                $defaultUsers = $this->getParameter('defaultusers');
+
+                if ($defaultUsers &&
+                    is_string($defaultUsers) &&
+                    preg_match("/^([a-zA-Z0-9_\.]+)~([a-zA-Z0-9_\.]+)$/", $defaultUsers, $m)
+                ) {
+                    list(,$sourceUserDataModule,$sourceUserDataFile) = $m;
+                }
+                else if ($this->getParameter('defaultuser')) {
+                    $sourceUserDataFile = 'defaultuser.json';
+                }
+
+                if ($sourceUserDataFile) {
+                    require_once(JELIX_LIB_PATH.'auth/jAuth.class.php');
+                    $confIni = parse_ini_file($conf->getFileName(), true);
+                    $authConfig = jAuth::loadConfig($confIni);
+                    $driverConfig = $authConfig[$authConfig['driver']];
+                    if ($authConfig['driver'] == 'Db' ||
+                        (isset($driverConfig['compatiblewithdb']) &&
+                            $driverConfig['compatiblewithdb'])
+                    ) {
                         require_once(JELIX_LIB_PATH.'plugins/auth/db/db.auth.php');
-
-                        $confIni = parse_ini_file($conf->getFileName(), true);
-                        $authConfig = jAuth::loadConfig($confIni);
-                        $driverConfig = $authConfig[$authConfig['driver']];
-                        if ($authConfig['driver'] == 'Db' ||
-                            (isset($driverConfig['compatiblewithdb']) &&
-                                $driverConfig['compatiblewithdb'])
-                        ) {
-                            $driver = new dbAuthDriver($driverConfig);
-                            $passwordHash = $driver->cryptPassword('admin');
-
-                            $user = jDao::createRecord($daoSelector, $dbProfile);
-                            $user->nickname = $user->login = 'admin';
-                            $user->password = $passwordHash;
-                            $user->email = 'admin@localhost.localdomain';
-                            $user->status = 1;
-                            $dao->insert($user);
-                        }
+                        $driver = new dbAuthDriver($driverConfig);
+                        $this->insertUsers($driver, $daoSelector, $dbProfile, $sourceUserDataModule, $sourceUserDataFile);
                     }
                 }
             }
@@ -202,7 +205,6 @@ class jcommunityModuleInstaller extends jInstallerModule {
             $targetFields[] = $cn->encloseName($daoProperties[$name]['fieldName']);
         }
 
-
         $sourceFields = array(
             $cn->encloseName('usr_login'),
             $cn->encloseName('usr_password'),
@@ -254,6 +256,47 @@ class jcommunityModuleInstaller extends jInstallerModule {
                 " SET ".$nicknameField." = ".$loginField.
                 " WHERE ".$nicknameField." IS NULL or ".$nicknameField." = ''";
             $cn->exec($sql);
+        }
+    }
+
+    protected function insertUsers($driver, $daoSelector, $dbProfile, $module, $relativeSourcePath) {
+
+        if ($module) {
+            $conf = $this->entryPoint->config->_modulesPathList;
+            if (!isset($conf[$module])) {
+                throw new Exception('insertUsers : invalid module name');
+            }
+            $path = $conf[$module];
+        }
+        else {
+            $path = $this->path;
+        }
+
+        $file = $path.'install/'.$relativeSourcePath;
+        $usersToInsert = json_decode(file_get_contents($file), true);
+        if (!$usersToInsert) {
+            throw new Exception("jCommunity install: Bad format for users data file $relativeSourcePath.");
+        }
+        if (is_object($usersToInsert)) {
+            $usersToInsert = array($usersToInsert);
+        }
+
+        $dao = jDao::get($daoSelector, $dbProfile);
+        foreach($usersToInsert as $userData) {
+            $user = $dao->getByLogin($userData['login']);
+            if (!$user) {
+                if (isset($userData['_clear_password_to_be_encrypted'])) {
+                    if (!isset($userData['password'])) {
+                        $userData['password'] = $driver->cryptPassword($userData['_clear_password_to_be_encrypted']);
+                    }
+                    unset($userData['_clear_password_to_be_encrypted']);
+                }
+                $user = jDao::createRecord($daoSelector, $dbProfile);
+                foreach ($userData as $property => $value) {
+                    $user->$property = $value;
+                }
+                $dao->insert($user);
+            }
         }
     }
 }

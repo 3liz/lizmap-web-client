@@ -1,0 +1,9 @@
+[
+  {
+    "login": "admin",
+    "_clear_password_to_be_encrypted": "admin",
+    "status": 1,
+    "email": "admin@localhost.localdomain",
+    "nickname": "admin"
+  }
+]
