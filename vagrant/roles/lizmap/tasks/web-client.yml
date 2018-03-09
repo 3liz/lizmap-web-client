@@ -14,6 +14,23 @@
     - { src: '{{ lizmap_home }}/lizmap/var/config/localconfig.ini.php.dist', dest: '{{ lizmap_home }}/lizmap/var/config/localconfig.ini.php'}
     - { src: '{{ lizmap_home }}/lizmap/var/config/profiles.ini.php.dist', dest: '{{ lizmap_home }}/lizmap/var/config/profiles.ini.php'}
 
+
+- name: Setup localconfig.ini.php for debug mode
+  ini_file:
+    dest: "{{ lizmap_home }}/lizmap/var/config/localconfig.ini.php"
+    section: "{{ item.section }}"
+    option: "{{ item.option }}"
+    value: "{{ item.value }}"
+  with_items:
+    - { section: "jResponseHtml", option: "plugins", value: "debugbar" }
+    - { section: "mailer", option: "mailerType", value: "file" }
+    - { section: "logger", option: "default", value: "file" }
+    - { section: "logger", option: "error", value: "file" }
+    - { section: "logger", option: "warning", value: "file" }
+    - { section: "logger", option: "notice", value: "file" }
+    - { section: "logger", option: "deprecated", value: "file" }
+
+
 - name: Modifiy db profile for lizmap if PostgreSQL chosen for jauth
   template: src=lizmap_profiles.j2 dest='{{ lizmap_home }}/lizmap/var/config/profiles.ini.php' force=no
   when: lizmap_jauth_driver == 'pgsql'
