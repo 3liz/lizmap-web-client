@@ -3425,6 +3425,12 @@ var lizMap = function() {
                                 self.parent().append('<div class="lizmapPopupChildren">'+data+'</div>');
                                 if ( popup )
                                     popup.verifySize();
+
+                                // Trigger event
+                                lizMap.events.triggerEvent(
+                                    "lizmappopupchildrendisplayed",
+                                    {'html': html}
+                                );
                             }
                         });
                     }
