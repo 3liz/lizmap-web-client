@@ -65,6 +65,7 @@ class myHtmlMapResponse extends jResponseHtml {
     $this->addJSLink($bp.'js/jquery.dataTables.min.js');
     $this->addJSLink($bp.'js/jquery.dataTables.bootstrap.js');
     $this->addJSLink($bp.'js/map.js');
+    $this->addJSLink($bp.'js/popupQgisAtlas.js');
 
 
     $generalJSConfig = '

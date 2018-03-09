@@ -67,6 +67,8 @@ class serviceCtrl extends jController {
       return $this->GetFeatureInfo();
     elseif ($request == "GETPRINT")
       return $this->GetPrint();
+    elseif ($request == "GETPRINTATLAS")
+      return $this->GetPrintAtlas();
     elseif ($request == "GETSTYLES")
       return $this->GetStyles();
     elseif ($request == "GETMAP")
@@ -203,7 +205,7 @@ class serviceCtrl extends jController {
     if(isset($params['request'])){
       $request = strtolower($params['request']);
       if(
-        in_array($request, array('getmap', 'getfeatureinfo', 'getfeature', 'getprint'))
+        in_array($request, array('getmap', 'getfeatureinfo', 'getfeature', 'getprint', 'getprintatlas'))
         and !jAcl2::check('lizmap.tools.loginFilteredLayers.override', $lrep->getKey() )
       ){
         $this->filterDataByLogin();
@@ -425,6 +427,7 @@ class serviceCtrl extends jController {
 <schema xmlns="http://www.w3.org/2001/XMLSchema" xmlns:wms="http://www.opengis.net/wms" xmlns:qgs="http://www.qgis.org/wms" targetNamespace="http://www.qgis.org/wms" elementFormDefault="qualified" version="1.0.0">
   <import namespace="http://www.opengis.net/wms" schemaLocation="http://schemas.opengis.net/wms/1.3.0/capabilities_1_3_0.xsd"/>
   <element name="GetPrint" type="wms:OperationType" substitutionGroup="wms:_ExtendedOperation" />
+  <element name="GetPrintAtlas" type="wms:OperationType" substitutionGroup="wms:_ExtendedOperation" />
   <element name="GetStyles" type="wms:OperationType" substitutionGroup="wms:_ExtendedOperation" />
 </schema>';
     // Return response
@@ -947,6 +950,67 @@ class serviceCtrl extends jController {
     $data = $getRemoteData[0];
     $mime = $getRemoteData[1];
      */
+    // Get data form server
+    $ch = curl_init();
+    curl_setopt($ch, CURLOPT_HEADER, 0);
+    curl_setopt($ch, CURLOPT_URL, $querystring);
+    curl_setopt( $ch, CURLOPT_SSL_VERIFYPEER, false );
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+    curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
+    $data = curl_exec($ch);
+    $info = curl_getinfo($ch);
+    $mime = $info['content_type'];
+    curl_close($ch);
+
+    $rep = $this->getResponse('binary');
+    $rep->mimeType = $mime;
+    $rep->content = $data;
+    $rep->doDownload  =  false;
+    $rep->outputFileName  =  $this->project->getKey() . '_' . preg_replace("#[\W]+#", '_', $this->params['template']) . '.' . $this->params['format'];
+
+   // Log
+   $logContent ='
+     <a href="'.jUrl::get('lizmap~service:index',jApp::coord()->request->params).'" target="_blank">'.$this->params['template'].'<a>
+     ';
+   $eventParams = array(
+    'key' => 'print',
+    'content' => $logContent,
+    'repository' => $this->repository->getKey(),
+    'project' => $this->project->getKey()
+   );
+   jEvent::notify('LizLogItem', $eventParams);
+
+    return $rep;
+  }
+
+
+
+
+  /**
+  * GetPrintAtlas
+  * @param string $repository Lizmap Repository
+  * @param string $project Name of the project : mandatory
+  * @return Image rendered by the Map Server.
+  */
+  function GetPrintAtlas(){
+
+    // Get parameters
+    if(!$this->getServiceParameters())
+      return $this->serviceException();
+
+    $url = $this->services->wmsServerURL.'?';
+
+    // Filter the parameters of the request
+    // for querying GetPrint
+    $data = array();
+    $paramsBlacklist = array('module', 'action', 'C', 'repository','project');
+    foreach($this->params as $key=>$val){
+      if(!in_array($key, $paramsBlacklist)){
+        $data[] = strtolower($key).'='.urlencode($val);
+      }
+    }
+    $querystring = $url . implode('&', $data);
+
     // Get data form server
     $ch = curl_init();
     curl_setopt($ch, CURLOPT_HEADER, 0);

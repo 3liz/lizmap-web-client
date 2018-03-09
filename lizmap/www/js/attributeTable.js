@@ -181,6 +181,7 @@ var lizAttributeTable = function() {
                     });
 
                     $('#nav-tab-attribute-layer-' + cleanName + ' a' ).tab('show');
+                
 
                     return false;
                 })
