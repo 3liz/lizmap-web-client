@@ -13,7 +13,7 @@
       <label locale="jcommunity~account.form.login"/>
    </input>
 
-   <secret ref="auth_password"  required="true" size="8" minlength="8" maxlength="120">
+   <secret ref="auth_password"  required="true" size="8" maxlength="120">
        <label locale="jcommunity~account.form.password"/>
    </secret>
    <checkbox ref="auth_remember_me"  valueoncheck="1" valueonuncheck="0">
