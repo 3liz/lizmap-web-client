@@ -242,7 +242,7 @@ jauth.access=0
 jauthdb.access=0
 
 jcommunity.access=1
-jcommunity.installparam="manualconfig"
+jcommunity.installparam="defaultusers=lizmap~defaultusers.json;manualconfig"
 
 admin.access=1
 dataviz.access=1
