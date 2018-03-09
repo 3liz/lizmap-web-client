@@ -2848,6 +2848,12 @@ var lizAttributeTable = function() {
                                                 if ( hasPopupContent ) {
                                                     //console.log(data);
                                                     self.parent().append('<div class="lizmapPopupChildren">'+data+'</div>');
+
+                                                    // Trigger event
+                                                    lizMap.events.triggerEvent(
+                                                        "lizmappopupchildrendisplayed",
+                                                        {'html': html}
+                                                    );
                                                 }
                                             });
                                         }
