@@ -26,7 +26,7 @@
 #mapmenu .navbar-search {
   margin-top:1px;
   height:30px;
-  width:235px;
+  width:258px;
   margin-left: 5px;
   margin-right: 5px;
 }
@@ -55,6 +55,16 @@
   background-image: url(images/sprite_20_tools.png);
   width: 20px;
   height: 20px;
+}
+
+#mapmenu #locate-clear.icon {
+  background-color: transparent;
+  background-position: -870px 0px;
+  border: none;
+  background-image: url(images/sprite_20_tools.png);
+  width: 20px;
+  height: 20px;
+  margin-top: 5px;
 }
 #mapmenu .navbar-search .icon span {
   display:none;
