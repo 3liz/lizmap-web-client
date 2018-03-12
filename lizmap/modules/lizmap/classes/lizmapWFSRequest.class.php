@@ -201,8 +201,12 @@ class lizmapWFSRequest extends lizmapOGCRequest {
         $sql.= '"' . implode( '", "', $sfields ) . '"';
 
         // Get spatial field
+        $geometryname = '';
+        if( array_key_exists('geometryname', $this->params ) ){
+            $geometryname = strtolower($this->params['geometryname']);
+        }
         $geocol = $this->datasource->geocol;
-        if( !empty( $geocol ) ){
+        if( !empty( $geocol ) && $geometryname !== 'none'  ){
             $geocolalias = 'geosource';
             $sql.= ', "' . $geocol . '" AS "' . $geocolalias . '"';
         }
@@ -431,20 +435,20 @@ class lizmapWFSRequest extends lizmapOGCRequest {
             // geometry name
             $geometryname = '';
             if( array_key_exists('geometryname', $this->params ) ){
-                $geometryname = $this->params['geometryname'];
+                $geometryname = strtolower($this->params['geometryname']);
             }
             // use PostGIS functions to change geometry based on geometryname
-            if( $geometryname == 'extent' ){
-                $geosql = 'ST_Envelope(lg.geosource)';
+            if( $geometryname === 'extent' ){
+                $geosql = 'ST_Envelope(lg.geosource::geometry)';
             }
-            elseif ( $geometryname == 'centroid' ){
-                $geosql = 'ST_Centroid(lg.geosource)';
+            elseif ( $geometryname === 'centroid' ){
+                $geosql = 'ST_Centroid(lg.geosource::geometry)';
             }
-            elseif ( $geometryname == 'none' ){
+            elseif ( $geometryname === 'none' ){
                 $geosql = Null;
             }
             else{
-                $geosql = 'lg.geosource';
+                $geosql = 'lg.geosource::geometry';
             }
         }
 
@@ -459,6 +463,10 @@ class lizmapWFSRequest extends lizmapOGCRequest {
             // Transform into GeoJSON
             $sql.= "
                         ST_AsGeoJSON(" . $geosql . ")::json As geometry,
+            ";
+        } else {
+            $sql.= "
+                        Null As geometry,
             ";
         }
 
