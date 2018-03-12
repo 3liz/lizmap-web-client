@@ -32,4 +32,35 @@ class configListener extends jEventListener{
       $event->add($bloc);
     }
   }
+
+    function onjauthdbAdminGetViewInfo(jEvent $event) {
+        if (/*!$event->himself && */jAcl2::check('acl.user.view')) {
+            $user = $event->tpl->get('id');
+
+            $groups = jAcl2DbUserGroup::getGroupList($user);
+            $userGroups = array();
+            foreach($groups as $group) {
+                if ($group->grouptype == jAcl2DbUserGroup::GROUPTYPE_PRIVATE) {
+                    continue;
+                }
+                $userGroups[$group->id_aclgrp] = $group;
+            }
+
+            $groups = jAcl2DbUserGroup::getGroupList();
+            $allGroups = array();
+            foreach($groups as $group) {
+                if (isset($userGroups[$group->id_aclgrp])) {
+                    continue;
+                }
+                $allGroups[] = $group;
+            }
+
+            $tpl = new jTpl();
+            $tpl->assign('user', $user);
+            $tpl->assign('usergroups', $userGroups);
+            $tpl->assign('groups', $allGroups);
+
+            $event->add($tpl->fetch('admin~user_groups'));
+        }
+    }
 }

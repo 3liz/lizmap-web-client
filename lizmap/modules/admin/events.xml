@@ -1,6 +1,7 @@
 <events xmlns="http://jelix.org/ns/events/1.0">
   <listener name="config">
        <event name="masteradminGetMenuContent" />
+       <event name="jauthdbAdminGetViewInfo" />
    </listener>
     <listener name="lzmAuth">
         <event name="jcommunity_registration_prepare_save"/>
