@@ -225,3 +225,8 @@ div.form-horizontal .controls .jforms-value {
 div.form-horizontal .control-label {
   font-weight: bold;
 }
+
+.alert-danger, .alert-error {
+  color: #F00;
+  border: 1px solid #F00;
+}
