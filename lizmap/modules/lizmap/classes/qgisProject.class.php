@@ -546,6 +546,9 @@ class qgisProject{
                     if ( $edittypes ) {
                         foreach( $edittypes as $edittype ) {
                             $field = (string) $edittype->attributes()->name;
+                            if ( in_array($field, $fields) ) {
+                                continue; // QGIS sometimes stores them twice
+                            }
                             $aliases[$field] = $field;
                             $alias = $xmlLayer->xpath("aliases/alias[@field='".$field."']");
                             if( $alias && count($alias) != 0 ) {
