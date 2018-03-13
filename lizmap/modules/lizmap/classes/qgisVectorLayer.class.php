@@ -62,7 +62,7 @@ class qgisVectorLayer extends qgisMapLayer{
 
     // Get datasource information from QGIS
     $datasourceMatch = preg_match(
-      "#(?:dbname='([^ ]+)' )?(?:service='([^ ]+)' )?(?:host=([^ ]+) )?(?:port=([0-9]+) )?(?:user='([^ ]+)' )?(?:password='([^ ]+)' )?(?:sslmode=([^ ]+) )?(?:key='([^ ]+)' )?(?:estimatedmetadata=([^ ]+) )?(?:selectatid=([^ ]+) )?(?:srid=([0-9]+) )?(?:type=([a-zA-Z]+) )?(?:table=\"(.+)?\" )?(?:\()?(?:([^ ]+)\) )?(?:sql=(.*))?#s",
+      "#(?:dbname='([^ ]+)' )?(?:service='([^ ]+)' )?(?:host=([^ ]+) )?(?:port=([0-9]+) )?(?:user='([^ ]+)' )?(?:password='([^ ]+)' )?(?:sslmode=([^ ]+) )?(?:key='([^ ]+)' )?(?:estimatedmetadata=([^ ]+) )?(?:selectatid=([^ ]+) )?(?:srid=([0-9]+) )?(?:type=([a-zA-Z]+) )?(?:table=\"([^ ]+)\" )?(?:\()?(?:([^ ]+)\) )?(?:sql=(.*))?#s",
       $this->datasource,
       $dt
     );
