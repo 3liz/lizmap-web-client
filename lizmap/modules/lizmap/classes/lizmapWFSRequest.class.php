@@ -217,6 +217,7 @@ class lizmapWFSRequest extends lizmapOGCRequest {
 
         // WHERE
         $sql.= ' WHERE True';
+        $sql.= ' AND '. $this->datasource->sql;
 
         // BBOX
         $bbox = '';
