@@ -2017,7 +2017,7 @@ a.btn.btn-opacity-layer.active {
   margin-bottom: 20px !important;
   background-color:none;
 }
-#dock div.lizmapPopupDiv, #mini-dock div.lizmapPopupDiv, #right-dock div.lizmapPopupDiv{
+#dock div.lizmapPopupDiv, #mini-dock div.lizmapPopupDiv, #right-dock div.lizmapPopupDiv, #bottom-dock div.lizmapPopupDiv{
   padding: 5px 10px;
   background-color: #F0F0F0 !important;
 }
