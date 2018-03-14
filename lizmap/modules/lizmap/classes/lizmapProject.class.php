@@ -667,9 +667,10 @@ class lizmapProject extends qgisProject {
                     'type' => $lc->type,
                     'x_field' => $lc->x_field,
                     'y_field' => $lc->y_field,
-                    'y2_field' => $lc->y2_field
                 )
             );
+            if(property_exists($lc, 'y2_field'))
+                $plotConf['plot']['y2_field'] = $lc->y2_field;
             if( !empty($lc->color) ){
                 $plotConf['plot']['color'] = $lc->color;
             }
