@@ -2852,7 +2852,7 @@ var lizAttributeTable = function() {
                                                     // Trigger event
                                                     lizMap.events.triggerEvent(
                                                         "lizmappopupchildrendisplayed",
-                                                        {'html': html}
+                                                        {'html': data}
                                                     );
                                                 }
                                             });
