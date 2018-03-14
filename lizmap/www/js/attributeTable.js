@@ -2660,8 +2660,7 @@ var lizAttributeTable = function() {
                             'layerId'
                         );
                         var getLayerConfig = lizMap.getLayerConfigById( layerId );
-
-                        if( aConfig && getLayerConfig ) {
+                        if( aConfig && getLayerConfig && self.next('span.popupButtonBar').find('button.popup-layer-feature-select').length == 0) {
                             var layerConfig = getLayerConfig[1];
                             var selClass = '';
                             if( $.inArray( fid, layerConfig['selectedFeatures'] ) != -1 )
@@ -2683,7 +2682,7 @@ var lizAttributeTable = function() {
                         }
 
                         // Zoom button
-                        var bboxZoomButton = self.next('span.popupButtonBar').find('button.popup-layer-feature-bbox-zoom');
+                        var bboxZoomButton = self.next('span.popupButtonBar').find('button.popup-layer-feature-zoom');
                         if( aConfig && getLayerConfig && bboxZoomButton.length == 0) {
                             var layerConfig = getLayerConfig[1];
                             eHtml+= '<button class="btn btn-mini popup-layer-feature-zoom" value="';

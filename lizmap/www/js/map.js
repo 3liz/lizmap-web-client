@@ -3412,7 +3412,7 @@ var lizMap = function() {
                 var rGetLayerConfig = getLayerConfigById( rLayerId );
                 if ( rGetLayerConfig ) {
                     var rConfigLayer = rGetLayerConfig[1];
-                    if ( rConfigLayer.popup == 'True' ) {
+                    if ( rConfigLayer.popup == 'True' && self.parent().find('div.lizmapPopupChildren').length == 0) {
                         wmsOptions['LAYERS'] = rConfigLayer.name;
                         wmsOptions['QUERY_LAYERS'] = rConfigLayer.name;
                         wmsOptions['FILTER'] = rConfigLayer.name+':"'+r.referencingField+'" = \''+feat.properties[r.referencedField]+'\'';
@@ -3423,13 +3423,13 @@ var lizMap = function() {
                                 var popupReg = new RegExp('lizmapPopupTable', 'g');
                                 data = data.replace(popupReg, 'table table-condensed table-striped lizmapPopupTable');
                                 self.parent().append('<div class="lizmapPopupChildren">'+data+'</div>');
-                                if ( popup )
+                                if ( popup && typeof popup.verifySize === "function" )
                                     popup.verifySize();
 
                                 // Trigger event
                                 lizMap.events.triggerEvent(
                                     "lizmappopupchildrendisplayed",
-                                    {'html': html}
+                                    {'html': data}
                                 );
                             }
                         });
@@ -3464,6 +3464,7 @@ var lizMap = function() {
 
                     var popup = null;
                     if( 'popupLocation' in config.options && config.options.popupLocation != 'map' ){
+config.options.popupLocation = 'right-dock';
                       // create content
                       var popupReg = new RegExp('lizmapPopupTable', 'g');
                       text = text.replace( popupReg, 'table table-condensed table-striped table-bordered lizmapPopupTable');
@@ -3483,9 +3484,9 @@ var lizMap = function() {
                         pcontent = '<div class="lizmapPopupContent"><h4>'+lizDict['popup.msg.no.result']+'</h4></div>';
                         $('#popupcontent div.menu-content').html(pcontent);
                         window.setTimeout(function(){
-                            if ( $('#mapmenu .nav-list > li.popupcontent').hasClass('active') )
+                            if ( $('#mapmenu .nav-list > li.popupcontent').hasClass('active') && config.options.popupLocation != 'right-dock')
                                 $('#button-popupcontent').click();
-                            if ( !$('#mapmenu .nav-list > li.popupcontent').hasClass('active') )
+                            if ( !$('#mapmenu .nav-list > li.popupcontent').hasClass('active') && config.options.popupLocation != 'right-dock' )
                                 $('#mapmenu .nav-list > li.popupcontent').hide();
                         },1000);
                       }
@@ -5937,6 +5938,13 @@ OpenLayers.Control.HighlightFeature = OpenLayers.Class(OpenLayers.Control, {
      */
     getFeaturePopupContent: function( aName, feat, aCallback) {
       return getFeaturePopupContent(aName, feat, aCallback);
+    },
+
+    /**
+     * Method: addChildrenFeatureInfo
+     */
+    addChildrenFeatureInfo: function(popup){
+      return addChildrenFeatureInfo(popup);
     },
 
     /**

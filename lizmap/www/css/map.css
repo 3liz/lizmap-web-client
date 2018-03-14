@@ -900,11 +900,11 @@ div.modal h3 span.ui-icon {
 #dock div.menu-content,
 #sub-dock div.menu-content,
 #mini-dock div.menu-content,
+#right-dock div.menu-content,
 div.modal div.menu-content {
   display : block;
   padding : 0.5em;
   background-color: #F0F0F0;
-  
 }
 
 
@@ -2017,7 +2017,7 @@ a.btn.btn-opacity-layer.active {
   margin-bottom: 20px !important;
   background-color:none;
 }
-#dock div.lizmapPopupDiv, #mini-dock div.lizmapPopupDiv{
+#dock div.lizmapPopupDiv, #mini-dock div.lizmapPopupDiv, #right-dock div.lizmapPopupDiv{
   padding: 5px 10px;
   background-color: #F0F0F0 !important;
 }
@@ -2080,7 +2080,8 @@ a.btn.btn-opacity-layer.active {
 
 .lizmapPopup.olPopup .lizmapPopupDiv .lizmapPopupChildren h4,
 #map-content .lizmapPopupDiv .lizmapPopupChildren h4,
-#popupcontent .lizmapPopupDiv .lizmapPopupChildren h4{
+#popupcontent .lizmapPopupDiv .lizmapPopupChildren h4, 
+.lizmapPopupChildren h4{
     margin: 0 10px;
     color: black !important;
     border-bottom: 1px solid rgba(0,0,0,0.4);
@@ -2385,3 +2386,15 @@ atlas
   font-size:0.8em;
   line-height:normal;
 }
+
+a.lizmap-atlasprint-link span.icon{
+  display:inline-block;
+  vertical-align:middle;
+  background-image:url("images/sprite_20_tools.png");
+  background-repeat:no-repeat;
+  width:20px;
+  height:20px;
+  background-position: -350px 0px;
+  margin-right:7px;
+}
+
