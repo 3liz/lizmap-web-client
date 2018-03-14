@@ -90,7 +90,9 @@ class serviceCtrl extends jController {
             $x_field = $plot['plot']['x_field'];
             $y_field = $plot['plot']['y_field'];
 
-            $y2_field = $plot['plot']['y2_field'];
+            $y2_field = Null;
+            if(array_key_exists('y2_field', $plot['plot']))
+                $y2_field = $plot['plot']['y2_field'];
             if(!empty($y2_field)){
                 $y_field = $y_field . ',' . $y2_field;
             }
