@@ -329,7 +329,10 @@ var lizAtlas = function() {
                     $('#liz-atlas-item-detail').html(text);
 
                     // Trigger event ? a bit buggy
-                    // lizMap.events.triggerEvent("lizmappopupdisplayed", {'popup': null} );
+                    lizMap.events.triggerEvent("lizmappopupdisplayed", {'popup': null} );
+
+                    // Add children
+                    lizMap.addChildrenFeatureInfo(data);
 
                 });
             }

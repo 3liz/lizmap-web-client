@@ -1422,6 +1422,7 @@ OpenLayers.Geometry.pointOnSegment = function(point, segment) {
 
                         if( eConfig &&
                             ( eConfig[1].capabilities.modifyAttribute == "True" || eConfig[1].capabilities.modifyGeometry == "True" )
+                            && self.next('span.popupButtonBar').find('button.popup-layer-feature-edit').length == 0
                         ) {
                             eHtml+= '<button class="btn btn-mini popup-layer-feature-edit" value="';
                             eHtml+= $(this).val();
@@ -1429,7 +1430,9 @@ OpenLayers.Geometry.pointOnSegment = function(point, segment) {
                         }
 
                         // Delete feature button
-                        if( eConfig && eConfig[1].capabilities.deleteFeature == "True") {
+                        if( eConfig && eConfig[1].capabilities.deleteFeature == "True"
+                            && self.next('span.popupButtonBar').find('button.popup-layer-feature-delete').length == 0
+                        ) {
                             eHtml+= '<button class="btn btn-mini popup-layer-feature-delete" value="';
                             eHtml+= $(this).val();
                             eHtml+= '" title="' + lizDict['attributeLayers.btn.delete.title'] + '"><i class="icon-remove"></i>&nbsp;</button>';
