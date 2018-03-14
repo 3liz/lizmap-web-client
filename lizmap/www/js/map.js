@@ -3464,7 +3464,7 @@ var lizMap = function() {
 
                     var popup = null;
                     if( 'popupLocation' in config.options && config.options.popupLocation != 'map' ){
-config.options.popupLocation = 'right-dock';
+
                       // create content
                       var popupReg = new RegExp('lizmapPopupTable', 'g');
                       text = text.replace( popupReg, 'table table-condensed table-striped table-bordered lizmapPopupTable');
