@@ -54,6 +54,22 @@ class lizmapProxy {
     }
 
 
+    public function constructUrl ( $params ) {
+        $ser = lizmap::getServices();
+        $url = $ser->wmsServerURL.'?';
+
+        $bparams = http_build_query($params);
+
+        // replace some chars (not needed in php 5.4, use the 4th parameter of http_build_query)
+        $a = array('+', '_', '.', '-');
+        $b = array('%20', '%5F', '%2E', '%2D');
+        $bparams = str_replace($a, $b, $bparams);
+
+        $querystring = $url . $bparams;
+        return $querystring;
+    }
+
+
     /**
     * Get remote data from URL, with curl or internal php functions.
     * @param string $url Url of the remote data to fetch.
