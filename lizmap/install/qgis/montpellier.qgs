@@ -1,5 +1,5 @@
 <!DOCTYPE qgis PUBLIC 'http://mrcc.com/qgis.dtd' 'SYSTEM'>
-<qgis projectname="Montpellier - Transports" version="2.18.15">
+<qgis projectname="Montpellier - Transports" version="2.18.17">
   <title>Montpellier - Transports</title>
   <autotransaction active="0"/>
   <evaluateDefaultValues active="0"/>
@@ -73,20 +73,14 @@
         <customproperties/>
       </layer-tree-layer>
     </layer-tree-group>
-    <layer-tree-group expanded="1" checked="Qt::PartiallyChecked" name="Hidden">
+    <layer-tree-group expanded="1" checked="Qt::Checked" mutually-exclusive="1" name="Hidden" mutually-exclusive-child="1">
       <customproperties/>
-      <layer-tree-group expanded="1" checked="Qt::Checked" name="osm-stamen-toner">
+      <layer-tree-layer expanded="1" providerKey="wms" checked="Qt::Unchecked" id="osm_mapnik20180315181738526" source="crs=EPSG:3857&amp;format=&amp;type=xyz&amp;url=http://tile.openstreetmap.org/%7Bz%7D/%7Bx%7D/%7By%7D.png" name="osm-mapnik">
         <customproperties/>
-        <layer-tree-layer expanded="0" providerKey="gdal" checked="Qt::Checked" id="frmt_wms_openstreetmap_stamen_toner_tms20140610162911446" source="/var/www/LIZMAP/master/lizmap/install/qgis/data/raster/frmt_wms_openstreetmap_stamen_toner_tms.xml" name="frmt_wms_openstreetmap_stamen_toner_tms">
-          <customproperties/>
-        </layer-tree-layer>
-      </layer-tree-group>
-      <layer-tree-group expanded="1" checked="Qt::Unchecked" name="osm-mapnik">
+      </layer-tree-layer>
+      <layer-tree-layer expanded="1" providerKey="wms" checked="Qt::Checked" id="osm_stamen_toner20180315181710198" source="crs=EPSG:3857&amp;format=&amp;type=xyz&amp;url=http://tile.stamen.com/toner-lite/%7Bz%7D/%7Bx%7D/%7By%7D.png" name="osm-stamen-toner">
         <customproperties/>
-        <layer-tree-layer expanded="0" providerKey="gdal" checked="Qt::Unchecked" id="frmt_wms_openstreetmap_mapnik_tms20140610162910636" source="/var/www/LIZMAP/master/lizmap/install/qgis/data/raster/frmt_wms_openstreetmap_mapnik_tms.xml" name="frmt_wms_openstreetmap_mapnik_tms">
-          <customproperties/>
-        </layer-tree-layer>
-      </layer-tree-group>
+      </layer-tree-layer>
     </layer-tree-group>
   </layer-tree-group>
   <relations>
@@ -137,8 +131,10 @@
     <rendermaptile>0</rendermaptile>
     <layer_coordinate_transform_info>
       <layer_coordinate_transform destAuthId="EPSG:3857" srcAuthId="EPSG:4326" srcDatumTransform="-1" destDatumTransform="-1" layerid="tramstop20150328114203878"/>
+      <layer_coordinate_transform destAuthId="EPSG:3857" srcAuthId="EPSG:3857" srcDatumTransform="-1" destDatumTransform="-1" layerid="osm_mapnik20180315181738526"/>
       <layer_coordinate_transform destAuthId="EPSG:3857" srcAuthId="EPSG:4326" srcDatumTransform="-1" destDatumTransform="-1" layerid="bus_stops20121106170806413"/>
       <layer_coordinate_transform destAuthId="EPSG:3857" srcAuthId="EPSG:4326" srcDatumTransform="-1" destDatumTransform="-1" layerid="bus20121102133611751"/>
+      <layer_coordinate_transform destAuthId="EPSG:3857" srcAuthId="EPSG:3857" srcDatumTransform="-1" destDatumTransform="-1" layerid="osm_stamen_toner20180315181710198"/>
       <layer_coordinate_transform destAuthId="EPSG:3857" srcAuthId="EPSG:2154" srcDatumTransform="-1" destDatumTransform="-1" layerid="SousQuartiers20160121124316563"/>
       <layer_coordinate_transform destAuthId="EPSG:3857" srcAuthId="EPSG:4326" srcDatumTransform="-1" destDatumTransform="-1" layerid="VilleMTP_MTP_Quartiers_2011_432620130116112610876"/>
       <layer_coordinate_transform destAuthId="EPSG:3857" srcAuthId="EPSG:4326" srcDatumTransform="-1" destDatumTransform="-1" layerid="ArbRemarq_point20170509160239869"/>
@@ -161,8 +157,6 @@
       <item>bus20121102133611751</item>
       <item>VilleMTP_MTP_Quartiers_2011_432620130116112610876</item>
       <item>VilleMTP_MTP_Quartiers_2011_432620130116112351546</item>
-      <item>frmt_wms_openstreetmap_stamen_toner_tms20140610162911446</item>
-      <item>frmt_wms_openstreetmap_mapnik_tms20140610162910636</item>
       <item>tramstop20150328114203878</item>
       <item>tramway20150328114206278</item>
       <item>jointure_tram_stop20150328114216806</item>
@@ -172,6 +166,8 @@
       <item>tramway_ref20150612171109044</item>
       <item>SousQuartiers20160121124316563</item>
       <item>donnes_sociodemo_sous_quartiers20160121144525075</item>
+      <item>osm_stamen_toner20180315181710198</item>
+      <item>osm_mapnik20180315181738526</item>
     </custom-order>
   </layer-tree-canvas>
   <legend updateDrawingOrder="true">
@@ -267,21 +263,17 @@
         </filegroup>
       </legendlayer>
     </legendgroup>
-    <legendgroup open="true" checked="Qt::PartiallyChecked" name="Hidden">
-      <legendgroup open="true" checked="Qt::Checked" name="osm-stamen-toner">
-        <legendlayer drawingOrder="-1" open="false" checked="Qt::Checked" name="frmt_wms_openstreetmap_stamen_toner_tms" showFeatureCount="0">
-          <filegroup open="false" hidden="false">
-            <legendlayerfile isInOverview="0" layerid="frmt_wms_openstreetmap_stamen_toner_tms20140610162911446" visible="1"/>
-          </filegroup>
-        </legendlayer>
-      </legendgroup>
-      <legendgroup open="true" checked="Qt::Unchecked" name="osm-mapnik">
-        <legendlayer drawingOrder="-1" open="false" checked="Qt::Unchecked" name="frmt_wms_openstreetmap_mapnik_tms" showFeatureCount="0">
-          <filegroup open="false" hidden="false">
-            <legendlayerfile isInOverview="0" layerid="frmt_wms_openstreetmap_mapnik_tms20140610162910636" visible="0"/>
-          </filegroup>
-        </legendlayer>
-      </legendgroup>
+    <legendgroup open="true" checked="Qt::Checked" name="Hidden">
+      <legendlayer drawingOrder="-1" open="true" checked="Qt::Unchecked" name="osm-mapnik" showFeatureCount="0">
+        <filegroup open="true" hidden="false">
+          <legendlayerfile isInOverview="0" layerid="osm_mapnik20180315181738526" visible="0"/>
+        </filegroup>
+      </legendlayer>
+      <legendlayer drawingOrder="-1" open="true" checked="Qt::Checked" name="osm-stamen-toner" showFeatureCount="0">
+        <filegroup open="true" hidden="false">
+          <legendlayerfile isInOverview="0" layerid="osm_stamen_toner20180315181710198" visible="1"/>
+        </filegroup>
+      </legendlayer>
     </legendgroup>
   </legend>
   <Composer title="Composeur1" visible="0">
@@ -341,12 +333,12 @@
               <property key="legend/title-style" value="hidden"/>
             </customproperties>
           </layer-tree-layer>
-          <layer-tree-layer expanded="1" providerKey="gdal" checked="Qt::Checked" id="frmt_wms_openstreetmap_mapnik_tms20140610162910636" source="/var/www/LIZMAP/master/lizmap/install/qgis/data/raster/frmt_wms_openstreetmap_mapnik_tms.xml" name="frmt_wms_openstreetmap_mapnik_tms">
+          <layer-tree-layer expanded="1" checked="Qt::Checked" id="frmt_wms_openstreetmap_mapnik_tms20140610162910636" name="frmt_wms_openstreetmap_mapnik_tms">
             <customproperties>
               <property key="legend/title-style" value="subgroup"/>
             </customproperties>
           </layer-tree-layer>
-          <layer-tree-layer expanded="1" providerKey="gdal" checked="Qt::Checked" id="frmt_wms_openstreetmap_stamen_toner_tms20140610162911446" source="/var/www/LIZMAP/master/lizmap/install/qgis/data/raster/frmt_wms_openstreetmap_stamen_toner_tms.xml" name="frmt_wms_openstreetmap_stamen_toner_tms">
+          <layer-tree-layer expanded="1" checked="Qt::Checked" id="frmt_wms_openstreetmap_stamen_toner_tms20140610162911446" name="frmt_wms_openstreetmap_stamen_toner_tms">
             <customproperties>
               <property key="legend/title-style" value="subgroup"/>
             </customproperties>
@@ -479,7 +471,16 @@
           <prop k="style" v="solid"/>
         </layer>
       </symbol>
-      <ComposerScaleBar lineCapStyle="square" style="Numeric" numMapUnitsPerScaleBarUnit="1" segmentSizeMode="0" alignment="0" numSegments="4" segmentMillimeters="11.7643" lineJoinStyle="miter" minBarWidth="50" numUnitsPerSegment="0.01" units="1" labelBarSpace="3" outlineWidth="1" numSegmentsLeft="2" maxBarWidth="150" height="3" boxContentSpace="1" mapId="0" unitLabel=" m">
+      <ComposerLabel valign="128" marginX="1" marginY="1" labelText="[%CASE &#xa;&#x9;WHEN  @atlas_featureid = $id &#xa;&#x9;THEN 'District : ' || &quot;LIBQUART&quot;&#xa;END%]" htmlState="0" halign="4">
+        <LabelFont description="Ubuntu,16,-1,5,50,0,0,0,0,0" style="Regular"/>
+        <FontColor red="0" blue="0" green="0"/>
+        <ComposerItem pagey="0" page="1" id="" lastValidViewScaleFactor="-1" positionMode="0" positionLock="false" x="122.9" y="0" visibility="1" zValue="9" background="false" transparency="0" frameJoinStyle="miter" blendMode="0" width="114.45" outlineWidth="0.3" excludeFromExports="0" uuid="{4954581d-288a-475a-8e82-db03a837782d}" height="17.85" itemRotation="0" frame="false" pagex="122.9">
+          <FrameColor alpha="255" red="0" blue="0" green="0"/>
+          <BackgroundColor alpha="255" red="255" blue="255" green="255"/>
+          <customproperties/>
+        </ComposerItem>
+      </ComposerLabel>
+      <ComposerScaleBar lineCapStyle="square" style="Numeric" numMapUnitsPerScaleBarUnit="1" segmentSizeMode="0" alignment="0" numSegments="4" segmentMillimeters="0.000108332" lineJoinStyle="miter" minBarWidth="50" numUnitsPerSegment="0.01" units="1" labelBarSpace="3" outlineWidth="1" numSegmentsLeft="2" maxBarWidth="150" height="3" boxContentSpace="1" mapId="0" unitLabel=" m">
         <scaleBarFont description="Ubuntu,12,-1,5,50,0,0,0,0,0" style=""/>
         <fillColor alpha="255" red="0" blue="0" green="0"/>
         <fillColor2 alpha="255" red="255" blue="255" green="255"/>
@@ -509,9 +510,9 @@
         </ComposerItem>
       </ComposerLabel>
       <ComposerLabel valign="128" marginX="0" marginY="0" labelText="Map's title" htmlState="0" halign="4">
-        <LabelFont description="Arial,24,-1,5,75,0,0,0,0,0" style=""/>
+        <LabelFont description="Ubuntu,20,-1,5,75,0,0,0,0,0" style=""/>
         <FontColor red="0" blue="0" green="0"/>
-        <ComposerItem pagey="0" page="1" id="title" lastValidViewScaleFactor="3.44841" positionMode="0" positionLock="false" x="0" y="0" visibility="1" zValue="4" background="true" transparency="0" frameJoinStyle="miter" blendMode="0" width="237.2" outlineWidth="0.3" excludeFromExports="0" uuid="{6307d78b-68bd-47ff-b870-f451e5e4e5eb}" height="18" itemRotation="0" frame="false" pagex="0">
+        <ComposerItem pagey="0" page="1" id="title" lastValidViewScaleFactor="3.44841" positionMode="0" positionLock="false" x="0" y="0" visibility="1" zValue="4" background="true" transparency="0" frameJoinStyle="miter" blendMode="0" width="122.9" outlineWidth="0.3" excludeFromExports="0" uuid="{6307d78b-68bd-47ff-b870-f451e5e4e5eb}" height="18" itemRotation="0" frame="false" pagex="0">
           <FrameColor alpha="255" red="0" blue="0" green="0"/>
           <BackgroundColor alpha="255" red="255" blue="255" green="255"/>
           <customproperties/>
@@ -589,7 +590,7 @@
           </symbol>
         </ComposerMapOverview>
         <AtlasMap scalingMode="2" atlasDriven="0" margin="0.10000000000000001"/>
-        <ComposerItem pagey="162.072" page="1" id="" lastValidViewScaleFactor="1.15513" positionMode="0" positionLock="false" x="237.35" y="162.072" visibility="1" zValue="3" background="true" transparency="0" frameJoinStyle="miter" blendMode="0" width="60.5889" outlineWidth="0.3" excludeFromExports="0" uuid="{2ebf76e3-6f6b-4c34-95f1-3d642932cfb3}" height="45" itemRotation="0" frame="false" pagex="237.35">
+        <ComposerItem pagey="162.072" page="1" id="" lastValidViewScaleFactor="1.42425" positionMode="0" positionLock="false" x="237.35" y="162.072" visibility="1" zValue="3" background="true" transparency="0" frameJoinStyle="miter" blendMode="0" width="60.5889" outlineWidth="0.3" excludeFromExports="0" uuid="{2ebf76e3-6f6b-4c34-95f1-3d642932cfb3}" height="45" itemRotation="0" frame="false" pagex="237.35">
           <FrameColor alpha="255" red="0" blue="0" green="0"/>
           <BackgroundColor alpha="255" red="255" blue="255" green="255"/>
           <customproperties/>
@@ -649,14 +650,14 @@
             </customproperties>
           </layer-tree-layer>
         </layer-tree-group>
-        <ComposerItem pagey="0" page="1" id="" lastValidViewScaleFactor="1.43937" positionMode="0" positionLock="false" x="237.35" y="0" visibility="1" zValue="2" background="true" transparency="0" frameJoinStyle="miter" blendMode="0" width="45.7234" outlineWidth="0.3" excludeFromExports="0" uuid="{e5857829-a6bb-42db-aed6-70473177b9da}" height="146.3" itemRotation="0" frame="false" pagex="237.35">
+        <ComposerItem pagey="0" page="1" id="" lastValidViewScaleFactor="1.43937" positionMode="0" positionLock="false" x="237.35" y="0" visibility="1" zValue="2" background="true" transparency="0" frameJoinStyle="miter" blendMode="0" width="45.7234" outlineWidth="0.3" excludeFromExports="0" uuid="{e5857829-a6bb-42db-aed6-70473177b9da}" height="164" itemRotation="0" frame="false" pagex="237.35">
           <FrameColor alpha="255" red="0" blue="0" green="0"/>
           <BackgroundColor alpha="150" red="255" blue="255" green="255"/>
           <customproperties/>
         </ComposerItem>
       </ComposerLegend>
       <ComposerMap followPreset="false" mapRotation="0" keepLayerSet="false" followPresetName="" id="0" previewMode="Cache" drawCanvasItems="true">
-        <Extent ymin="43.55210000000000292" xmin="3.77899999999999991" ymax="43.71518058811130203" xmax="3.98063000000000011"/>
+        <Extent ymin="5392684.25967966020107269" xmin="417006.61373760335845873" ymax="5417071.07602880522608757" xmax="447158.04891100589884445"/>
         <LayerSet/>
         <Grid/>
         <ComposerMapGrid rightAnnotationDirection="0" gridFramePenColor="0,0,0,255" show="0" bottomAnnotationPosition="1" annotationPrecision="3" showAnnotation="0" topFrameDivisions="0" uuid="{6e0cb54d-dd79-43cd-8dd0-c8c92632e8e3}" leftAnnotationDirection="0" topAnnotationPosition="1" rightAnnotationDisplay="0" offsetX="0" offsetY="0" rightFrameDivisions="0" gridStyle="0" annotationFontColor="0,0,0,255" intervalX="0" gridFrameSideFlags="15" intervalY="0" bottomAnnotationDirection="0" leftAnnotationDisplay="0" leftFrameDivisions="0" frameFillColor1="255,255,255,255" annotationExpression="" frameFillColor2="0,0,0,255" crossLength="3" gridFramePenThickness="0.5" bottomAnnotationDisplay="0" unit="0" topAnnotationDisplay="0" leftAnnotationPosition="1" blendMode="0" gridFrameStyle="0" rightAnnotationPosition="1" gridFrameWidth="2" name="Grille 1" annotationFormat="0" bottomFrameDivisions="0" topAnnotationDirection="0" frameAnnotationDistance="1">
@@ -724,8 +725,8 @@
             </layer>
           </symbol>
         </ComposerMapOverview>
-        <AtlasMap scalingMode="2" atlasDriven="0" margin="0.10000000000000001"/>
-        <ComposerItem pagey="18" page="1" id="" lastValidViewScaleFactor="1.15513" positionMode="0" positionLock="false" x="0" y="18" visibility="1" zValue="1" background="true" transparency="0" frameJoinStyle="miter" blendMode="0" width="237.2" outlineWidth="0.3" excludeFromExports="0" uuid="{2835ecbd-6089-4454-b22e-707b558ecef1}" height="191.85" itemRotation="0" frame="true" pagex="0">
+        <AtlasMap scalingMode="1" atlasDriven="1" margin="0.10000000000000001"/>
+        <ComposerItem pagey="18" page="1" id="" lastValidViewScaleFactor="1.42425" positionMode="0" positionLock="false" x="0" y="18" visibility="1" zValue="1" background="true" transparency="0" frameJoinStyle="miter" blendMode="0" width="237.2" outlineWidth="0.3" excludeFromExports="0" uuid="{2835ecbd-6089-4454-b22e-707b558ecef1}" height="191.85" itemRotation="0" frame="true" pagex="0">
           <FrameColor alpha="255" red="0" blue="0" green="0"/>
           <BackgroundColor alpha="255" red="255" blue="255" green="255"/>
           <customproperties/>
@@ -773,6 +774,7 @@
       </ComposerAttributeTableV2>
       <customproperties/>
     </Composition>
+    <Atlas hideCoverage="false" coverageLayer="VilleMTP_MTP_Quartiers_2011_432620130116112610876" singleFile="false" filenamePattern="'output_'||@atlas_featurenumber" enabled="true" coverageLayerName="Quartiers" filterFeatures="false" coverageLayerProvider="ogr" sortFeatures="false" pageNameExpression="" coverageLayerSource="/var/www/LIZMAP/master/lizmap/install/qgis/data/vector/VilleMTP_MTP_Quartiers_2011_4326.shp"/>
   </Composer>
   <projectlayers>
     <maplayer simplifyAlgorithm="0" minimumScale="-4.65661e-10" maximumScale="1e+08" simplifyDrawingHints="1" minLabelScale="0" maxLabelScale="1e+08" simplifyDrawingTol="1" readOnly="0" geometry="Polygon" simplifyMaxScale="1" type="vector" hasScaleBasedVisibilityFlag="0" simplifyLocal="1" scaleBasedLabelVisibilityFlag="0">
@@ -4375,100 +4377,6 @@ def my_form_open(dialog, layer, feature):
       </defaults>
       <previewExpression>COALESCE( "description", '&lt;NULL>' )</previewExpression>
     </maplayer>
-    <maplayer minimumScale="0" maximumScale="1e+08" type="raster" hasScaleBasedVisibilityFlag="0">
-      <extent>
-        <xmin>-20037508.33999999985098839</xmin>
-        <ymin>-20037508.33999999985098839</ymin>
-        <xmax>20037508.33999999985098839</xmax>
-        <ymax>20037508.33999999985098839</ymax>
-      </extent>
-      <id>frmt_wms_openstreetmap_mapnik_tms20140610162910636</id>
-      <datasource>./data/raster/frmt_wms_openstreetmap_mapnik_tms.xml</datasource>
-      <keywordList>
-        <value></value>
-      </keywordList>
-      <layername>frmt_wms_openstreetmap_mapnik_tms</layername>
-      <srs>
-        <spatialrefsys>
-          <proj4>+proj=merc +a=6378137 +b=6378137 +lat_ts=0.0 +lon_0=0.0 +x_0=0.0 +y_0=0 +k=1.0 +units=m +nadgrids=@null +wktext +no_defs</proj4>
-          <srsid>3857</srsid>
-          <srid>3857</srid>
-          <authid>EPSG:3857</authid>
-          <description>WGS 84 / Pseudo Mercator</description>
-          <projectionacronym>merc</projectionacronym>
-          <ellipsoidacronym>WGS84</ellipsoidacronym>
-          <geographicflag>false</geographicflag>
-        </spatialrefsys>
-      </srs>
-      <customproperties>
-        <property key="identify/format" value="Value"/>
-      </customproperties>
-      <provider>gdal</provider>
-      <noData>
-        <noDataList bandNo="1" useSrcNoData="0"/>
-        <noDataList bandNo="2" useSrcNoData="0"/>
-        <noDataList bandNo="3" useSrcNoData="0"/>
-      </noData>
-      <map-layer-style-manager current="">
-        <map-layer-style name=""/>
-      </map-layer-style-manager>
-      <pipe>
-        <rasterrenderer opacity="1" alphaBand="-1" blueBand="3" greenBand="2" type="multibandcolor" redBand="1">
-          <rasterTransparency/>
-        </rasterrenderer>
-        <brightnesscontrast brightness="0" contrast="0"/>
-        <huesaturation colorizeGreen="128" colorizeOn="0" colorizeRed="255" colorizeBlue="128" grayscaleMode="0" saturation="0" colorizeStrength="100"/>
-        <rasterresampler maxOversampling="2"/>
-      </pipe>
-      <blendMode>0</blendMode>
-    </maplayer>
-    <maplayer minimumScale="0" maximumScale="1e+08" type="raster" hasScaleBasedVisibilityFlag="0">
-      <extent>
-        <xmin>-20037508.33999999985098839</xmin>
-        <ymin>-20037508.33999999985098839</ymin>
-        <xmax>20037508.33999999985098839</xmax>
-        <ymax>20037508.33999999985098839</ymax>
-      </extent>
-      <id>frmt_wms_openstreetmap_stamen_toner_tms20140610162911446</id>
-      <datasource>./data/raster/frmt_wms_openstreetmap_stamen_toner_tms.xml</datasource>
-      <keywordList>
-        <value></value>
-      </keywordList>
-      <layername>frmt_wms_openstreetmap_stamen_toner_tms</layername>
-      <srs>
-        <spatialrefsys>
-          <proj4>+proj=merc +a=6378137 +b=6378137 +lat_ts=0.0 +lon_0=0.0 +x_0=0.0 +y_0=0 +k=1.0 +units=m +nadgrids=@null +wktext +no_defs</proj4>
-          <srsid>3857</srsid>
-          <srid>3857</srid>
-          <authid>EPSG:3857</authid>
-          <description>WGS 84 / Pseudo Mercator</description>
-          <projectionacronym>merc</projectionacronym>
-          <ellipsoidacronym>WGS84</ellipsoidacronym>
-          <geographicflag>false</geographicflag>
-        </spatialrefsys>
-      </srs>
-      <customproperties>
-        <property key="identify/format" value="Value"/>
-      </customproperties>
-      <provider>gdal</provider>
-      <noData>
-        <noDataList bandNo="1" useSrcNoData="0"/>
-        <noDataList bandNo="2" useSrcNoData="0"/>
-        <noDataList bandNo="3" useSrcNoData="0"/>
-      </noData>
-      <map-layer-style-manager current="">
-        <map-layer-style name=""/>
-      </map-layer-style-manager>
-      <pipe>
-        <rasterrenderer opacity="1" alphaBand="-1" blueBand="3" greenBand="2" type="multibandcolor" redBand="1">
-          <rasterTransparency/>
-        </rasterrenderer>
-        <brightnesscontrast brightness="0" contrast="0"/>
-        <huesaturation colorizeGreen="128" colorizeOn="0" colorizeRed="255" colorizeBlue="128" grayscaleMode="0" saturation="0" colorizeStrength="100"/>
-        <rasterresampler maxOversampling="2"/>
-      </pipe>
-      <blendMode>0</blendMode>
-    </maplayer>
     <maplayer minimumScale="-4.65661e-10" maximumScale="1e+08" readOnly="0" geometry="No geometry" type="vector" hasScaleBasedVisibilityFlag="0">
       <id>jointure_tram_stop20150328114216806</id>
       <datasource>dbname='./edition/transport.sqlite' table="jointure_tram_stop" sql=</datasource>
@@ -4569,6 +4477,96 @@ def my_form_open(dialog, layer, feature):
         <default field="tramway_ref" expression=""/>
       </defaults>
       <previewExpression>COALESCE("pk", '&lt;NULL>')</previewExpression>
+    </maplayer>
+    <maplayer minimumScale="0" maximumScale="1e+08" type="raster" hasScaleBasedVisibilityFlag="0">
+      <extent>
+        <xmin>-20037508.34278924390673637</xmin>
+        <ymin>-20037508.34278925508260727</ymin>
+        <xmax>20037508.34278924390673637</xmax>
+        <ymax>20037508.34278924390673637</ymax>
+      </extent>
+      <id>osm_mapnik20180315181738526</id>
+      <datasource>crs=EPSG:3857&amp;format=&amp;type=xyz&amp;url=http://tile.openstreetmap.org/%7Bz%7D/%7Bx%7D/%7By%7D.png</datasource>
+      <keywordList>
+        <value></value>
+      </keywordList>
+      <layername>osm-mapnik</layername>
+      <srs>
+        <spatialrefsys>
+          <proj4>+proj=merc +a=6378137 +b=6378137 +lat_ts=0.0 +lon_0=0.0 +x_0=0.0 +y_0=0 +k=1.0 +units=m +nadgrids=@null +wktext +no_defs</proj4>
+          <srsid>3857</srsid>
+          <srid>3857</srid>
+          <authid>EPSG:3857</authid>
+          <description>WGS 84 / Pseudo Mercator</description>
+          <projectionacronym>merc</projectionacronym>
+          <ellipsoidacronym>WGS84</ellipsoidacronym>
+          <geographicflag>false</geographicflag>
+        </spatialrefsys>
+      </srs>
+      <customproperties>
+        <property key="identify/format" value="Undefined"/>
+      </customproperties>
+      <provider>wms</provider>
+      <noData>
+        <noDataList bandNo="1" useSrcNoData="0"/>
+      </noData>
+      <map-layer-style-manager current="">
+        <map-layer-style name=""/>
+      </map-layer-style-manager>
+      <pipe>
+        <rasterrenderer opacity="1" alphaBand="-1" band="1" type="singlebandcolordata">
+          <rasterTransparency/>
+        </rasterrenderer>
+        <brightnesscontrast brightness="0" contrast="0"/>
+        <huesaturation colorizeGreen="128" colorizeOn="0" colorizeRed="255" colorizeBlue="128" grayscaleMode="0" saturation="0" colorizeStrength="100"/>
+        <rasterresampler maxOversampling="2"/>
+      </pipe>
+      <blendMode>0</blendMode>
+    </maplayer>
+    <maplayer minimumScale="0" maximumScale="1e+08" type="raster" hasScaleBasedVisibilityFlag="0">
+      <extent>
+        <xmin>-20037508.34278924390673637</xmin>
+        <ymin>-20037508.34278925508260727</ymin>
+        <xmax>20037508.34278924390673637</xmax>
+        <ymax>20037508.34278924390673637</ymax>
+      </extent>
+      <id>osm_stamen_toner20180315181710198</id>
+      <datasource>crs=EPSG:3857&amp;format=&amp;type=xyz&amp;url=http://tile.stamen.com/toner-lite/%7Bz%7D/%7Bx%7D/%7By%7D.png</datasource>
+      <keywordList>
+        <value></value>
+      </keywordList>
+      <layername>osm-stamen-toner</layername>
+      <srs>
+        <spatialrefsys>
+          <proj4>+proj=merc +a=6378137 +b=6378137 +lat_ts=0.0 +lon_0=0.0 +x_0=0.0 +y_0=0 +k=1.0 +units=m +nadgrids=@null +wktext +no_defs</proj4>
+          <srsid>3857</srsid>
+          <srid>3857</srid>
+          <authid>EPSG:3857</authid>
+          <description>WGS 84 / Pseudo Mercator</description>
+          <projectionacronym>merc</projectionacronym>
+          <ellipsoidacronym>WGS84</ellipsoidacronym>
+          <geographicflag>false</geographicflag>
+        </spatialrefsys>
+      </srs>
+      <customproperties>
+        <property key="identify/format" value="Undefined"/>
+      </customproperties>
+      <provider>wms</provider>
+      <noData>
+        <noDataList bandNo="1" useSrcNoData="0"/>
+      </noData>
+      <map-layer-style-manager current="">
+        <map-layer-style name=""/>
+      </map-layer-style-manager>
+      <pipe>
+        <rasterrenderer opacity="1" alphaBand="-1" band="1" type="singlebandcolordata">
+          <rasterTransparency/>
+        </rasterrenderer>
+        <brightnesscontrast brightness="0" contrast="0"/>
+        <huesaturation colorizeGreen="128" colorizeOn="0" colorizeRed="255" colorizeBlue="128" grayscaleMode="0" saturation="0" colorizeStrength="100"/>
+        <rasterresampler maxOversampling="2"/>
+      </pipe>
+      <blendMode>0</blendMode>
     </maplayer>
     <maplayer simplifyAlgorithm="0" minimumScale="-4.65661e-10" maximumScale="1e+08" simplifyDrawingHints="0" minLabelScale="0" maxLabelScale="1e+08" simplifyDrawingTol="1" readOnly="0" geometry="Point" simplifyMaxScale="1" type="vector" hasScaleBasedVisibilityFlag="0" simplifyLocal="1" scaleBasedLabelVisibilityFlag="0">
       <extent>
@@ -6329,6 +6327,9 @@ def my_form_open(dialog, layer, feature):
       <ColorRamp type="QString"></ColorRamp>
     </DefaultStyles>
     <WMSAccessConstraints type="QString">None</WMSAccessConstraints>
+    <quickfinder_plugin>
+      <refreshLastAsked type="QString">2018-03-15</refreshLastAsked>
+    </quickfinder_plugin>
     <WMSContactMail type="QString">info@3liz.com</WMSContactMail>
     <WMSImageQuality type="int">90</WMSImageQuality>
     <WFSLayersPrecision>

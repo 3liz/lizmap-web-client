@@ -227,8 +227,12 @@ class serviceCtrl extends jController {
     $request = strtolower($this->params['request']);
     if( $request == 'getfeature' )
       $layers = $this->params["typename"];
-    else
-      $layers = $this->params["layers"];
+    else{
+        if(array_key_exists('layers',$this->params))
+          $layers = $this->params["layers"];
+        else
+          $layers = array();
+    }
     $pConfig = $lproj->getFullCfg();
 
     // Filter only if needed
