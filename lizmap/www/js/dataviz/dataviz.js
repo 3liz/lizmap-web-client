@@ -14,7 +14,7 @@ var lizDataviz = function() {
         }
         lizMap.events.triggerEvent( "datavizplotcontainersadded" );
         for( var i in dv.config.layers) {
-            getPlot(i);
+            getPlot(i, null, 'dataviz_plot_' + i);
         }
 
         // Filter plot if needed
@@ -36,12 +36,12 @@ var lizDataviz = function() {
                 var layerId = lizMap.config.layers[featureType].id;
                 if( layerId == dvLayerId ){
                     if(filter === null){
-                        getPlot(i);
+                        getPlot(i, null, 'dataviz_plot_' + i);
                     }
                     else{
                         var pFilterSplit = filter.split(':');
                         if( pFilterSplit.length == 2){
-                            getPlot(i, pFilterSplit[1]);
+                            getPlot(i, pFilterSplit[1], 'dataviz_plot_' + i);
                         }
                     }
                 }
@@ -49,20 +49,29 @@ var lizDataviz = function() {
         }
     }
 
+    function buildPlotContainerHtml(title, abstract, target_id){
+        var html = '';
+        html+= '<div class="dataviz_plot_container"  id="'+target_id+'_container">'
+        html+= '<h3><span class="title">';
+        html+= '<span class="icon"></span>&nbsp;';
+        html+= '<span class="text">'+title+'</span>';
+        html+= '</span></h3>';
+        html+= '<div class="menu-content">';
+        html+= '  <p>'+abstract+'</p>';
+        html+= '  <div class="dataviz-waiter progress progress-striped active" style="margin:5px 5px;">';
+        html+= '    <div class="bar" style="width: 100%;"></div>';
+        html+= '  </div>';
+        html+= '  <div id="'+target_id+'"></div>';
+        html+= '</div>';
+        html+= '</div>';
+
+        return html;
+    }
+
     function addPlotContainer(plot_id){
         var dataviz_plot_id = 'dataviz_plot_' + plot_id;
         var plot_config = dv.config.layers[plot_id];
-        var html = '';
-        html+= '<div class="dataviz_plot_container"  id="'+dataviz_plot_id+'_container">'
-        html+= '<h3><span class="title">';
-        html+= '<span class="icon"></span>&nbsp;';
-        html+= '<span class="text">'+plot_config.title+'</span>';
-        html+= '</span></h3>';
-        html+= '<div class="menu-content">';
-        html+= '  <p>'+plot_config.abstract+'</p>';
-        html+= '  <div id="'+dataviz_plot_id+'"></div>';
-        html+= '</div>';
-        html+= '</div>';
+        var html = buildPlotContainerHtml(plot_config.title, plot_config.abstract, dataviz_plot_id);
 
         // Move plot at the end of the main container
         // to the corresponding place if id is referenced in the template
@@ -76,8 +85,9 @@ var lizDataviz = function() {
         }
     }
 
-    function getPlot(plot_id, exp_filter){
+    function getPlot(plot_id, exp_filter, target_id){
         exp_filter = typeof exp_filter !== 'undefined' ?  exp_filter : null;
+        target_id = typeof target_id !== 'undefined' ?  target_id : new Date().valueOf()+btoa(Math.random()).substring(0,12);
 
         var lparams = {
             'request': 'getPlot',
@@ -98,8 +108,9 @@ var lizDataviz = function() {
                     return null;
                 dv.plots.push(json);
 
-                var dataviz_plot_id = 'dataviz_plot_' + plot_id;
-                var plot = buildPlot(dataviz_plot_id, json);
+                var plot = buildPlot(target_id, json);
+
+                $('#'+target_id).prev('.dataviz-waiter:first').hide();
             }
         );
     }
@@ -137,8 +148,6 @@ var lizDataviz = function() {
                 resizePlot(id);
             }
         });
-
-        $('#dataviz-waiter').hide();
 
         lizMap.events.triggerEvent( "datavizplotloaded",
             {'id':id}
@@ -181,12 +190,16 @@ var lizDataviz = function() {
     });
 
     var obj = {
-        /**
-         * Method: addMessage
-         */
+
         buildPlot: function(id, conf) {
           return buildPlot(id, conf);
-        }
+        },
+        buildPlotContainerHtml: function(title, abstract, target_id) {
+          return buildPlotContainerHtml(title, abstract, target_id);
+        },
+        getPlot: function(plot_id, exp_filter, target_id) {
+          return getPlot(plot_id, exp_filter, target_id);
+        },
     }
 
     return obj;
