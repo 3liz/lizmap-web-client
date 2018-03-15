@@ -416,6 +416,13 @@ class configCtrl extends jController {
           // the list in the form may be empty, so no parameters
           $values = array();
         }
+        // Add the anonymous right if needed else remove it
+        if(in_array('__anonymous', $values)){
+          jAcl2DbManager::addRight('__anonymous', $id_aclsbj, $repository);
+        }
+        else {
+          $daoright->delete($id_aclsbj, '__anonymous', $repository);
+        }
         // Loop through the groups
         foreach($daogroup->findAllPublicGroup() as $group){
             // Add the right if needed else remove it
