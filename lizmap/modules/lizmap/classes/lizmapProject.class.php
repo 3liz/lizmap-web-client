@@ -478,6 +478,11 @@ class lizmapProject extends qgisProject {
         return false;
     }
 
+    public function getQgisServerPlugins(){
+        $qgisServer = jClasses::getService('lizmap~qgisServer');
+        return $qgisServer->plugins;
+    }
+
     public function hasTooltipLayers(){
         if ( property_exists($this->cfg,'tooltipLayers') ){
             $count = 0;
@@ -859,18 +864,16 @@ class lizmapProject extends qgisProject {
                             );
                         }
                     }
-                    
+
                     // Atlas
                     $Atlas = $composer->xpath('Atlas');
-                    jLog::log(json_encode($Atlas));
                     if( count($Atlas) == 1 ){
                         $Atlas = $Atlas[0];
                         $printTemplate['atlas'] = array(
                             'enabled' => (string)$Atlas['enabled'],
                             'coverageLayer' => (string)$Atlas['coverageLayer']
                         );
-                    }                    
-                    
+                    }
                     $printTemplates[] = $printTemplate;
                 }
             }
@@ -1159,6 +1162,10 @@ class lizmapProject extends qgisProject {
                 unset($configJson->datavizLayers);
             }
         }
+
+        // Get server plugins
+        $qplugins = $this->getQgisServerPlugins();
+        $configJson->qgisServerPlugins = $qplugins;
 
         $configRead = json_encode($configJson);
 

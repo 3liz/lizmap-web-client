@@ -4,6 +4,13 @@ lizMap.events.on({
 
     'lizmappopupdisplayed': function(e){
 
+        if( !('qgisServerPlugins' in lizMap.config) )
+            return;
+        if( !('atlasprint' in lizMap.config.qgisServerPlugins) )
+            return;
+        if( !('printTemplates' in lizMap.config) )
+            return;
+
         $('div.lizmapPopupDiv').each(function(){
             if($(this).find('a.lizmap-atlasprint-link').length == 0){
             var getLayerId = $(this).find('input.lizmap-popup-layer-feature-id:first').val().split('.');
