@@ -104,8 +104,10 @@ var lizDataviz = function() {
                     console.log(json.errors);
                     return false;
                 }
-                if( !json.data || json.data.length < 1)
-                    return null;
+                if( !json.data || json.data.length < 1){
+                    $('#'+target_id).prev('.dataviz-waiter:first').hide();
+                    return false;
+                }
                 dv.plots.push(json);
 
                 var plot = buildPlot(target_id, json);
@@ -122,12 +124,12 @@ var lizDataviz = function() {
         // Add events to resize plot when needed
         lizMap.events.on({
             dockopened: function(e) {
-                if ( e.id == 'dataviz' ) {
+                if ( $.inArray(e.id, ['dataviz', 'popup']) > -1 ) {
                     resizePlot(id);
                 }
             },
             rightdockopened: function(e) {
-                if ( e.id == 'dataviz' ) {
+                if ( $.inArray(e.id, ['dataviz', 'popup']) > -1 ) {
                     resizePlot(id);
                 }
             },
@@ -137,14 +139,14 @@ var lizDataviz = function() {
                 }
             },
             bottomdocksizechanged: function(e) {
-                if($('#mapmenu li.dataviz').hasClass('active')){
+                if($('#mapmenu li.dataviz').hasClass('active')  || $('#mapmenu li.popup').hasClass('active')){
                     resizePlot(id);
                 }
             }
 
         });
         $(window).resize(function() {
-            if($('#mapmenu li.dataviz').hasClass('active')){
+            if($('#mapmenu li.dataviz').hasClass('active') || $('#mapmenu li.popup').hasClass('active')){
                 resizePlot(id);
             }
         });
@@ -199,7 +201,7 @@ var lizDataviz = function() {
         },
         getPlot: function(plot_id, exp_filter, target_id) {
           return getPlot(plot_id, exp_filter, target_id);
-        },
+        }
     }
 
     return obj;
