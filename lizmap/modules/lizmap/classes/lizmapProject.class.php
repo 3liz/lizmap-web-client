@@ -679,6 +679,8 @@ class lizmapProject extends qgisProject {
             if( !empty($lc->color) ){
                 $plotConf['plot']['color'] = $lc->color;
             }
+            if(property_exists($lc, 'aggregation'))
+                $plotConf['plot']['aggregation'] = $lc->aggregation;
 
             // Add more layout config, written like:
             // layout_config=barmode:stack,bargap:0.5

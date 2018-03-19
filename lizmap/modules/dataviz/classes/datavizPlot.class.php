@@ -32,6 +32,8 @@ class datavizPlot {
 
     protected $x_field = null;
 
+    protected $aggregation = null;
+
     protected $y_fields = null;
 
     protected $x_fields = null;
@@ -44,7 +46,7 @@ class datavizPlot {
 
     protected $y_mandatory = array('scatter', 'box', 'bar', 'pie', 'histogram2d', 'polar');
 
-    function __construct( $repository, $project, $layerId, $x_field, $y_field, $colors=array(), $title='plot title', $layout=null, $data=null ){
+    function __construct( $repository, $project, $layerId, $x_field, $y_field, $colors=array(), $title='plot title', $layout=null, $aggregation=null, $data=null ){
 
         // Get the project data
         $lproj = $this->getProject($repository, $project);
@@ -58,6 +60,7 @@ class datavizPlot {
 
         $this->y_field = $y_field;
         $this->x_field = $x_field;
+        $this->aggregation = $aggregation;
         $this->colors = $colors;
 
         // Get the field(s) given by the user to build traces
@@ -152,7 +155,14 @@ class datavizPlot {
             ),
             'autosize'=> true,
             'plot_bgcolor'=> 'rgba(0,0,0,0)',
-            'paper_bgcolor'=> 'rgba(0,0,0,0)'
+            'paper_bgcolor'=> 'rgba(0,0,0,0)',
+            'margin'=> array(
+                'l'=> 0,
+                'r'=> 20,
+                //'b'=> 100,
+                't'=> 0,
+                'pad'=> 1
+            )
         );
 
         if($this->type == 'bar' and count($this->y_fields) > 1){
@@ -192,6 +202,18 @@ class datavizPlot {
 
     protected function getTraceTemplate(){
         return null;
+    }
+
+    protected function addTraceAggregation(){
+        $this->data[0]['transforms'] = array(
+            array(
+                'type'=> 'aggregate',
+                'groups'=> 'x',
+                'aggregations'=> array(
+                    array('target'=> 'y', 'func'=> $this->aggregation, 'enabled'=> true)
+                )
+            )
+        );
     }
 
     public function getData($format='raw'){
@@ -373,6 +395,10 @@ class datavizPlot {
 
             $this->traces = $traces;
             $this->data = $traces;
+            // add aggregation propert
+            if($this->aggregation){
+                $this->addTraceAggregation($data);
+            }
 
             return true;
 
