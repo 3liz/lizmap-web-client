@@ -201,6 +201,9 @@ var lizDataviz = function() {
         },
         getPlot: function(plot_id, exp_filter, target_id) {
           return getPlot(plot_id, exp_filter, target_id);
+        },
+        resizePlot: function(id) {
+          return getPlot(id);
         }
     }
 

@@ -73,6 +73,7 @@ class serviceCtrl extends jController {
         $title = $this->param('title');
         $type = $this->param('type');
         $x_field = $this->param('x_field');
+        $aggregation = $this->param('aggregation', null);
         $y_field = $this->param('y_field');
         $y2_field = $this->param('y2_field');
         $color = $this->param('color', null);
@@ -96,6 +97,8 @@ class serviceCtrl extends jController {
             if(!empty($y2_field)){
                 $y_field = $y_field . ',' . $y2_field;
             }
+            if(array_key_exists('aggregation', $plot['plot']))
+                $aggregation = $plot['plot']['aggregation'];
 
             // Colors
             $colors = array();
@@ -110,32 +113,31 @@ class serviceCtrl extends jController {
 
             if( array_key_exists('layout_config', $plot['plot']) )
                 $layout = $plot['plot']['layout_config'];
-
         }
 
         // Create plot
         jClasses::inc('dataviz~datavizPlot');
 
         if( $type == 'scatter'){
-            $dplot = new datavizPlotScatter(  $repository, $project, $layerId, $x_field, $y_field, $colors, $title, $layout );
+            $dplot = new datavizPlotScatter(  $repository, $project, $layerId, $x_field, $y_field, $colors, $title, $layout, $aggregation );
         }
         elseif( $type == 'box'){
-            $dplot = new datavizPlotBox(  $repository, $project, $layerId, $x_field, $y_field, $colors, $title, $layout );
+            $dplot = new datavizPlotBox(  $repository, $project, $layerId, $x_field, $y_field, $colors, $title, $layout, $aggregation );
         }
         elseif( $type == 'bar'){
-            $dplot = new datavizPlotBar(  $repository, $project, $layerId, $x_field, $y_field, $colors, $title, $layout );
+            $dplot = new datavizPlotBar(  $repository, $project, $layerId, $x_field, $y_field, $colors, $title, $layout, $aggregation );
         }
         elseif( $type == 'histogram'){
-            $dplot = new datavizPlotHistogram(  $repository, $project, $layerId, $x_field, $y_field, $colors, $title, $layout );
+            $dplot = new datavizPlotHistogram(  $repository, $project, $layerId, $x_field, $y_field, $colors, $title, $layout, $aggregation );
         }
         elseif( $type == 'pie'){
-            $dplot = new datavizPlotPie(  $repository, $project, $layerId, $x_field, $y_field, $colors, $title, $layout );
+            $dplot = new datavizPlotPie(  $repository, $project, $layerId, $x_field, $y_field, $colors, $title, $layout, $aggregation );
         }
         elseif( $type == 'histogram2d'){
-            $dplot = new datavizPlotHistogram2d(  $repository, $project, $layerId, $x_field, $y_field, $colors, $title, $layout );
+            $dplot = new datavizPlotHistogram2d(  $repository, $project, $layerId, $x_field, $y_field, $colors, $title, $layout, $aggregation );
         }
         elseif( $type == 'polar'){
-            $dplot = new datavizPlotPolar(  $repository, $project, $layerId, $x_field, $y_field, $colors, $title, $layout );
+            $dplot = new datavizPlotPolar(  $repository, $project, $layerId, $x_field, $y_field, $colors, $title, $layout, $aggregation );
         }
         else{
             $dplot = null;
