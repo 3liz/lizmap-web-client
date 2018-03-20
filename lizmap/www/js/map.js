@@ -3363,6 +3363,68 @@ var lizMap = function() {
       }
   }
 
+  function addDatavizChildrenPopup() {
+
+     $('div.lizmapPopupDiv').each(function(){
+
+            var getLayerId = $(this).find('input.lizmap-popup-layer-feature-id:first').val().split('.');
+            var popupId = getLayerId[0] + '_' + getLayerId[1];
+            var layerId = getLayerId[0];
+            var fid = getLayerId[1];
+            var layerName=getLayerId[0].split(/[0-9]/)[0];
+            //console.log($(e.this));
+
+            var getLayerConfig = lizMap.getLayerConfigById( layerId );
+            console.log(getLayerConfig);
+
+            // verifiying  related children objects
+            if ( !getLayerConfig )
+                return true;
+            var layerConfig = getLayerConfig[1];
+            var featureType = getLayerConfig[0];
+            if ( !('popupDisplayChildren' in layerConfig) || layerConfig.popupDisplayChildren != 'True')
+                return true;
+            if ( !('relations' in lizMap.config) || !(layerId in lizMap.config.relations) )
+                return true;
+
+            //If dataviz exists, get config
+            if( !('datavizLayers' in lizMap.config ))
+                return true;
+
+
+            lizMap.getLayerFeature(featureType, fid, function(feat) {
+
+                console.log(layerId);
+                // Id of the layer which is the child of layerId
+                var getChildrenId= lizMap.config.relations[layerId][0].referencingLayer;
+                // Where there is all plots
+                var plotLayers = lizMap.config.datavizLayers.layers;
+                // Field used for the relation child side
+                var referencingField = lizMap.config.relations[layerId][0].referencingField;
+                // Field used for the relation parent side
+                var referencedField = lizMap.config.relations[layerId][0].referencedField;
+                console.log(feat.properties[referencedField]);
+                // Filter of the plot
+                var filter = '"' + referencingField + '" IN (\''+feat.properties[referencedField]+'\')';
+                nbPlotByLayer=1;
+                for ( var i in plotLayers) {
+                    if(plotLayers[i].layer_id==getChildrenId)
+                    {
+                        plot_config=plotLayers[i];
+                        plot_id=plotLayers[i].plot_id;
+                        popupId = getLayerId[0] + '_' + getLayerId[1] + '_' + String(nbPlotByLayer);
+                        var html = lizDataviz.buildPlotContainerHtml(plot_config.title, plot_config.abstract, popupId);
+                        $('.lizmapPopupTable').after(html);
+                        lizDataviz.getPlot(plot_id, filter, popupId);
+                        nbPlotByLayer++;
+                    }
+            }
+
+
+            });
+        });
+  }
+
   function addChildrenFeatureInfo( popup ) {
       $('div.lizmapPopupContent input.lizmap-popup-layer-feature-id').each(function(){
         var self = $(this);
@@ -3436,7 +3498,6 @@ var lizMap = function() {
                     }
                 }
             }
-
         });
       });
   }
@@ -3541,6 +3602,8 @@ var lizMap = function() {
 
                     // Display related children objects
                     addChildrenFeatureInfo( popup );
+                    //if children dataviz combobox checked do the thing
+                    addDatavizChildrenPopup();
                     // Display geometries
                     addGeometryFeatureInfo( popup );
 

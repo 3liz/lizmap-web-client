@@ -34,6 +34,8 @@ class embedCtrl extends lizMapCtrl {
         // display tooltip at bottom
         $jsCode = "
         $( document ).ready( function() {
+
+
           lizMap.events.on({
             'uicreated':function(evt){
               // it's an embedded content
@@ -67,6 +69,8 @@ class embedCtrl extends lizMapCtrl {
                 $('#button-switcher').click();
               if ( $('#overview-toggle').hasClass('active') )
                 $('#overview-toggle').click();
+
+              $('#mapmenu .nav-list > li.permaLink a').attr('data-original-title', lizDict['embed.open.map']);
             },
             'dockopened': function(evt) {
                 // one tool at a time
@@ -87,6 +91,12 @@ class embedCtrl extends lizMapCtrl {
                   $('div.locate-layer select').hide();
                   $('span.custom-combobox').show();
                   $('#locate div.locate-layer input.custom-combobox-input').autocomplete('option', 'position', {my : 'left top', at: 'left bottom'});
+                }
+
+                if ( evt.id == 'permaLink' ) {
+                    window.open(window.location.href.replace('embed','map'));
+                    $('#mapmenu ul li.nav-minidock.active a').click();
+                    return false;
                 }
             }
           });
@@ -113,7 +123,7 @@ class embedCtrl extends lizMapCtrl {
 
   protected function getProjectDockables() {
     $assign = parent::getProjectDockables();
-    $available = array('switcher', 'metadata', 'locate', 'measure', 'tooltip-layer');//, 'print', 'permaLink'
+    $available = array('switcher', 'metadata', 'locate', 'measure', 'tooltip-layer', 'permaLink');//, 'print', 'permaLink'
     $dAssign = array();
     foreach ( $assign['dockable'] as $dock ) {
         if ( in_array( $dock->id, $available ) )
