@@ -120,7 +120,6 @@ var lizDataviz = function() {
     function buildPlot(id, conf){
         // Build plot with plotly
         Plotly.newPlot(id, conf.data, conf.layout, {displayModeBar: false});
-
         // Add events to resize plot when needed
         lizMap.events.on({
             dockopened: function(e) {
