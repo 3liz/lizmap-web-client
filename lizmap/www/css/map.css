@@ -882,6 +882,7 @@ div.modal h3 {
 div.modal h3 span.title {
   display : block;
   padding : 0.5em 0.5em 0.5em 0.7em;
+  background-color: #4A4A4A;
 }
 #toolbar h3 span.menu-content,
 #menu h3 span.ui-icon,
@@ -980,6 +981,7 @@ div.modal h3 .icon {
   background-repeat:no-repeat;
   width:20px;
   height:20px;
+  background-position: -25px 0px;
 }
 div.modal h3 .icon {
   background-position: 0px -20px;
@@ -1353,13 +1355,13 @@ div.modal h3 .text {
 }
 
 #mini-dock div.locate div.menu-content {
-	line-height: 10px;
+  line-height: 10px;
 }
 
 #mini-dock div.locate div.menu-content hr {
-	margin: 10px 0;
-	border-top: 1px solid #eeeeee;
-	border-bottom: 2px solid #4c4c4c;
+  margin: 10px 0;
+  border-top: 1px solid #eeeeee;
+  border-bottom: 2px solid #4c4c4c;
 }
 
 #menu .ui-accordion-content {
@@ -2080,7 +2082,7 @@ a.btn.btn-opacity-layer.active {
 
 .lizmapPopup.olPopup .lizmapPopupDiv .lizmapPopupChildren h4,
 #map-content .lizmapPopupDiv .lizmapPopupChildren h4,
-#popupcontent .lizmapPopupDiv .lizmapPopupChildren h4, 
+#popupcontent .lizmapPopupDiv .lizmapPopupChildren h4,
 .lizmapPopupChildren h4{
     margin: 0 10px;
     color: black !important;
