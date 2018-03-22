@@ -106,7 +106,7 @@ class serviceCtrl extends jController {
             if( array_key_exists('color', $plot['plot']) ){
                 $color = $plot['plot']['color'];
                 $colors[] = $color;
-            }            $colors = array();
+            }
             if( array_key_exists('colorfield', $plot['plot']) ){
                 $colorfield = $plot['plot']['colorfield'];
                 $colorfields[] = $colorfield;

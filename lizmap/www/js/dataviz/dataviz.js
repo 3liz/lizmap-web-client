@@ -49,13 +49,16 @@ var lizDataviz = function() {
         }
     }
 
-    function buildPlotContainerHtml(title, abstract, target_id){
+    function buildPlotContainerHtml(title, abstract, target_id, with_title){
+        with_title = typeof with_title !== 'undefined' ?  with_title : true;
         var html = '';
         html+= '<div class="dataviz_plot_container"  id="'+target_id+'_container">'
-        html+= '<h3><span class="title">';
-        html+= '<span class="icon"></span>&nbsp;';
-        html+= '<span class="text">'+title+'</span>';
-        html+= '</span></h3>';
+        if(with_title){
+            html+= '<h3><span class="title">';
+            html+= '<span class="icon"></span>&nbsp;';
+            html+= '<span class="text">'+title+'</span>';
+            html+= '</span></h3>';
+        }
         html+= '<div class="menu-content">';
         html+= '  <p>'+abstract+'</p>';
         html+= '  <div class="dataviz-waiter progress progress-striped active" style="margin:5px 5px;">';
@@ -106,6 +109,7 @@ var lizDataviz = function() {
                 }
                 if( !json.data || json.data.length < 1){
                     $('#'+target_id).prev('.dataviz-waiter:first').hide();
+                    $('#'+target_id).parents('div.lizmapPopupChildren:first').hide();
                     return false;
                 }
                 dv.plots.push(json);
@@ -195,8 +199,8 @@ var lizDataviz = function() {
         buildPlot: function(id, conf) {
           return buildPlot(id, conf);
         },
-        buildPlotContainerHtml: function(title, abstract, target_id) {
-          return buildPlotContainerHtml(title, abstract, target_id);
+        buildPlotContainerHtml: function(title, abstract, target_id, with_title) {
+          return buildPlotContainerHtml(title, abstract, target_id, with_title);
         },
         getPlot: function(plot_id, exp_filter, target_id) {
           return getPlot(plot_id, exp_filter, target_id);
