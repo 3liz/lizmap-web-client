@@ -40,13 +40,15 @@ class datavizPlot {
 
     protected $colors = array();
 
+    protected $colorfields = array();
+
     protected $layout = null;
 
     protected $x_mandatory = array('scatter', 'bar', 'histogram', 'histogram2d', 'polar');
 
     protected $y_mandatory = array('scatter', 'box', 'bar', 'pie', 'histogram2d', 'polar');
 
-    function __construct( $repository, $project, $layerId, $x_field, $y_field, $colors=array(), $title='plot title', $layout=null, $aggregation=null, $data=null ){
+    function __construct( $repository, $project, $layerId, $x_field, $y_field, $colors=array(), $colorfields=array(), $title='plot title', $layout=null, $aggregation=null, $data=null ){
 
         // Get the project data
         $lproj = $this->getProject($repository, $project);
@@ -62,6 +64,7 @@ class datavizPlot {
         $this->x_field = $x_field;
         $this->aggregation = $aggregation;
         $this->colors = $colors;
+        $this->colorfields = $colorfields;
 
         // Get the field(s) given by the user to build traces
         $x_fields = array_map('trim', explode(',', $this->x_field));
@@ -256,6 +259,8 @@ class datavizPlot {
                 'GEOMETRYNAME' => 'none',
                 'PROPERTYNAME' => implode(',', $this->x_fields) . ',' . implode(',', $this->y_fields)
             );
+            if(!empty($this->colorfields))
+                $wfsparams['PROPERTYNAME'] .= ',' . implode(',', $this->colorfields);
             if(!empty($exp_filter)){
                 // Add fields in PROPERTYNAME
                 // bug in QGIS SERVER 2.18: send no data if fields in exp_filter not in PROPERTYNAME
@@ -351,6 +356,10 @@ class datavizPlot {
                 if( count($this->y_fields) > 0 ){
                     $yf = $y_field;
                 }
+                $featcolor = Null;
+                if( count($this->colorfields) > 0 ){
+                    $featcolor = $this->colorfields[$yidx];
+                }
 
                 // Revert x and y for horizontal bar plot
                 if( array_key_exists('orientation', $trace) and $trace['orientation'] == 'h'){
@@ -363,10 +372,9 @@ class datavizPlot {
                     $trace['marker']['color'] = $this->colors[$yidx];
                     $yidx++;
                 }
-                //$featcolors = array();
+                $featcolors = array();
 
                 // Fill in the trace for each dimension
-                //$featcolor = 'color';
                 foreach($features as $feat){
                     if(count($this->x_fields) > 0){
                         $trace[$this->x_property_name][] = $feat->properties->$xf;
@@ -375,16 +383,25 @@ class datavizPlot {
                         $trace[$this->y_property_name][] = $feat->properties->$yf;
                     }
 
-                    //if( property_exists($feat->properties, $featcolor)
-                        //and !empty($feat->properties->$featcolor)
-                    //){
-                        //$featcolors[] = $feat->properties->$featcolor;
-                    //}
+                    if( property_exists($feat->properties, $featcolor)
+                        and !empty($feat->properties->$featcolor)
+                    ){
+                        $featcolors[] = $feat->properties->$featcolor;
+                    }
                 }
-                //if(!empty($featcolors)){
-                    //$trace['marker']['colors'] = $featcolors;
-                    //unset($trace['marker']['color']);
-                //}
+
+                if(!empty($featcolors)){
+                    if( $this->type == 'bar'
+                        or $this->type == 'scatter'
+                    ){
+                        $trace['marker']['color'] = $featcolors;
+                    }
+                    if( $this->type == 'pie'
+                    ){
+                        $trace['marker']['colors'] = $featcolors;
+                        unset($trace['marker']['color']);
+                    }
+                }
 
                 if( count($trace[$this->x_property_name]) == 0 )
                     $trace[$this->x_property_name] = Null;
@@ -396,7 +413,9 @@ class datavizPlot {
             $this->traces = $traces;
             $this->data = $traces;
             // add aggregation propert
-            if($this->aggregation){
+            if($this->aggregation
+                and !array_key_exists($this->type, array('pie', 'histogram', 'histogram2d'))
+            ){
                 $this->addTraceAggregation($data);
             }
 
