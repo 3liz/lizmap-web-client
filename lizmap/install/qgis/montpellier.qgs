@@ -73,12 +73,12 @@
         <customproperties/>
       </layer-tree-layer>
     </layer-tree-group>
-    <layer-tree-group expanded="1" checked="Qt::Checked" mutually-exclusive="1" name="Hidden" mutually-exclusive-child="1">
+    <layer-tree-group expanded="1" checked="Qt::PartiallyChecked" mutually-exclusive="1" name="Hidden" mutually-exclusive-child="1">
       <customproperties/>
       <layer-tree-layer expanded="1" providerKey="wms" checked="Qt::Unchecked" id="osm_mapnik20180315181738526" source="crs=EPSG:3857&amp;format=&amp;type=xyz&amp;url=http://tile.openstreetmap.org/%7Bz%7D/%7Bx%7D/%7By%7D.png" name="osm-mapnik">
         <customproperties/>
       </layer-tree-layer>
-      <layer-tree-layer expanded="1" providerKey="wms" checked="Qt::Checked" id="osm_stamen_toner20180315181710198" source="crs=EPSG:3857&amp;format=&amp;type=xyz&amp;url=http://tile.stamen.com/toner-lite/%7Bz%7D/%7Bx%7D/%7By%7D.png" name="osm-stamen-toner">
+      <layer-tree-layer expanded="1" providerKey="wms" checked="Qt::PartiallyChecked" id="osm_stamen_toner20180315181710198" source="crs=EPSG:3857&amp;format=&amp;type=xyz&amp;url=http://tile.stamen.com/toner-lite/%7Bz%7D/%7Bx%7D/%7By%7D.png" name="osm-stamen-toner">
         <customproperties/>
       </layer-tree-layer>
     </layer-tree-group>
@@ -263,15 +263,15 @@
         </filegroup>
       </legendlayer>
     </legendgroup>
-    <legendgroup open="true" checked="Qt::Checked" name="Hidden">
+    <legendgroup open="true" checked="Qt::PartiallyChecked" name="Hidden">
       <legendlayer drawingOrder="-1" open="true" checked="Qt::Unchecked" name="osm-mapnik" showFeatureCount="0">
         <filegroup open="true" hidden="false">
           <legendlayerfile isInOverview="0" layerid="osm_mapnik20180315181738526" visible="0"/>
         </filegroup>
       </legendlayer>
-      <legendlayer drawingOrder="-1" open="true" checked="Qt::Checked" name="osm-stamen-toner" showFeatureCount="0">
+      <legendlayer drawingOrder="-1" open="true" checked="Qt::PartiallyChecked" name="osm-stamen-toner" showFeatureCount="0">
         <filegroup open="true" hidden="false">
-          <legendlayerfile isInOverview="0" layerid="osm_stamen_toner20180315181710198" visible="1"/>
+          <legendlayerfile isInOverview="0" layerid="osm_stamen_toner20180315181710198" visible="0"/>
         </filegroup>
       </legendlayer>
     </legendgroup>
