@@ -1,8 +1,7 @@
 <div id="auth" class="navbar-inner">
   <div class="pull-right">
-
     <form id="nominatim-search" class="navbar-search dropdown">
-	 <button id="locate-clear" class="btn-locate-clear btn btn-mini btn-link icon" type="button"></button>
+   <button id="locate-clear" class="btn-locate-clear btn btn-mini btn-link icon" type="button"></button>
       <input id="search-query" type="text" class="search-query" placeholder="{@view~map.search.nominatim.placeholder@}"></input>
       <span class="search-icon">
         <button class="icon nav-search" type="submit" tabindex="-1">
@@ -37,7 +36,7 @@
           <span class="text">{@view~default.header.connect@}</span>
         </a>
       </li>
-        {if isset($allowUserAccountRequests)}
+        {if isset($allowUserAccountRequests) and $allowUserAccountRequests == '1'}
         <li class="registered">
           <a href="{jurl 'jcommunity~registration:index'}">
           <span class="icon"></span>
