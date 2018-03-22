@@ -372,17 +372,22 @@ class datavizPlot {
                     $trace['marker']['color'] = $this->colors[$yidx];
                     $yidx++;
                 }
+                // Prepare an array to store features color (if any)
                 $featcolors = array();
 
                 // Fill in the trace for each dimension
                 foreach($features as $feat){
+                    // Fill in X field
                     if(count($this->x_fields) > 0){
                         $trace[$this->x_property_name][] = $feat->properties->$xf;
                     }
+
+                    // Fill in Y field
                     if(count($this->y_fields) > 0){
                         $trace[$this->y_property_name][] = $feat->properties->$yf;
                     }
 
+                    // Fill in feature colors
                     if( property_exists($feat->properties, $featcolor)
                         and !empty($feat->properties->$featcolor)
                     ){

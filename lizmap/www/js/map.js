@@ -3363,7 +3363,7 @@ var lizMap = function() {
       }
   }
 
-  function addDatavizChildrenPopup() {
+  function addChildrenDatavizFilteredByPopupFeature() {
 
      $('div.lizmapPopupDiv').each(function(){
 
@@ -3372,18 +3372,20 @@ var lizMap = function() {
             var layerId = getLayerId[0];
             var fid = getLayerId[1];
             var layerName=getLayerId[0].split(/[0-9]/)[0];
-            //console.log($(e.this));
 
             var getLayerConfig = lizMap.getLayerConfigById( layerId );
-            console.log(getLayerConfig);
+            //console.log(getLayerConfig);
 
             // verifiying  related children objects
             if ( !getLayerConfig )
                 return true;
             var layerConfig = getLayerConfig[1];
             var featureType = getLayerConfig[0];
-            if ( !('popupDisplayChildren' in layerConfig) || layerConfig.popupDisplayChildren != 'True')
-                return true;
+
+            // We do not want to deactivate the display of filtered children dataviz
+            // when children popup are not displayed : comment the 2 following lines
+            //if ( !('popupDisplayChildren' in layerConfig) || layerConfig.popupDisplayChildren != 'True')
+                //return true;
             if ( !('relations' in lizMap.config) || !(layerId in lizMap.config.relations) )
                 return true;
 
@@ -3391,33 +3393,41 @@ var lizMap = function() {
             if( !('datavizLayers' in lizMap.config ))
                 return true;
 
-
             lizMap.getLayerFeature(featureType, fid, function(feat) {
-
-                console.log(layerId);
-                // Id of the layer which is the child of layerId
-                var getChildrenId= lizMap.config.relations[layerId][0].referencingLayer;
                 // Where there is all plots
                 var plotLayers = lizMap.config.datavizLayers.layers;
-                // Field used for the relation child side
-                var referencingField = lizMap.config.relations[layerId][0].referencingField;
-                // Field used for the relation parent side
-                var referencedField = lizMap.config.relations[layerId][0].referencedField;
-                console.log(feat.properties[referencedField]);
-                // Filter of the plot
-                var filter = '"' + referencingField + '" IN (\''+feat.properties[referencedField]+'\')';
-                nbPlotByLayer=1;
-                for ( var i in plotLayers) {
-                    if(plotLayers[i].layer_id==getChildrenId)
-                    {
-                        plot_config=plotLayers[i];
-                        plot_id=plotLayers[i].plot_id;
-                        popupId = getLayerId[0] + '_' + getLayerId[1] + '_' + String(nbPlotByLayer);
-                        var html = lizDataviz.buildPlotContainerHtml(plot_config.title, plot_config.abstract, popupId);
-                        $('.lizmapPopupTable').after(html);
-                        lizDataviz.getPlot(plot_id, filter, popupId);
-                        nbPlotByLayer++;
-                    }
+                var lrelations = lizMap.config.relations[layerId];
+                nbPlotByLayer = 1;
+                for(var x in lrelations){
+                    var rel = lrelations[x];
+                    // Id of the layer which is the child of layerId
+                    var getChildrenId = rel.referencingLayer;
+
+                    // Filter of the plot
+                    var filter = '"' + rel.referencingField + '" IN (\''+feat.properties[rel.referencedField]+'\')';
+                    for ( var i in plotLayers) {
+                        if(plotLayers[i].layer_id==getChildrenId)
+                        {
+                            plot_config=plotLayers[i];
+                            if('popup_display_child_plot' in plot_config
+                              && plot_config.popup_display_child_plot == "True"
+                            ){
+                              plot_id=plotLayers[i].plot_id;
+                              popupId = getLayerId[0] + '_' + getLayerId[1] + '_' + String(nbPlotByLayer);
+                              var html = lizDataviz.buildPlotContainerHtml(
+                                  plot_config.title,
+                                  plot_config.abstract,
+                                  popupId,
+                                  false
+                              );
+                              html = '<div class="lizmapPopupChildren"><h4>'+plot_config.title+'</h4>' + html + '</div>';
+                              $('.lizmapPopupTable').after(html);
+                              lizDataviz.getPlot(plot_id, filter, popupId);
+                              nbPlotByLayer++;
+                            }
+                        }
+
+                }
             }
 
 
@@ -3636,8 +3646,8 @@ var lizMap = function() {
 
                     // Display related children objects
                     addChildrenFeatureInfo( popup );
-                    //if children dataviz combobox checked do the thing
-                    addDatavizChildrenPopup();
+                    // Display the plots of the children layers features filtered by popup item
+                    addChildrenDatavizFilteredByPopupFeature();
                     // Display geometries
                     addGeometryFeatureInfo( popup );
 
@@ -6747,7 +6757,7 @@ lizMap.events.on({
              "gmap", // the default
              {numZoomLevels: options.numZoomLevels, maxResolution: options.maxResolution, minZoomLevel:options.zoomOffset}
              );
-         console.log( gmap.mapObject );
+         //console.log( gmap.mapObject );
          gmap.maxExtent = maxExtent;
          var gmapCfg = {
               "name":"gmap"

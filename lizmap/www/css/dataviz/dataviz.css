@@ -4,10 +4,12 @@ Left Menu button
 
 #mapmenu .nav-list > li.dataviz .icon {
   background-image: url(dataviz-icon-white.png);
+  background-position: 0 0;
 }
 #mapmenu .nav-list > li.dataviz.active .icon,
 #mapmenu .nav-list > li.dataviz a:hover .icon {
   background-image: url(dataviz-icon-dark.png);
+  background-position: 0 0;
 }
 
 
@@ -17,6 +19,7 @@ Toolbar buttons
 
 #dataviz h3 .icon {
     background-image: url(dataviz-icon-white.png);
+    background-position: 0 0;
 }
 
 #dataviz-content {
