@@ -3365,74 +3365,85 @@ var lizMap = function() {
 
   function addChildrenDatavizFilteredByPopupFeature() {
 
-     $('div.lizmapPopupDiv').each(function(){
+     $('div.lizmapPopupContent > div.lizmapPopupDiv').each(function(){
+        var mydiv = $(this);
 
-            var getLayerId = $(this).find('input.lizmap-popup-layer-feature-id:first').val().split('.');
-            var popupId = getLayerId[0] + '_' + getLayerId[1];
-            var layerId = getLayerId[0];
-            var fid = getLayerId[1];
-            var layerName=getLayerId[0].split(/[0-9]/)[0];
+        // Do not add plots if already present
+        if( $(this).find('div.lizdataviz').length > 0 )
+            return true;
 
-            var getLayerConfig = lizMap.getLayerConfigById( layerId );
-            //console.log(getLayerConfig);
+        var getLayerId = $(this).find('input.lizmap-popup-layer-feature-id:first').val().split('.');
+        var popupId = getLayerId[0] + '_' + getLayerId[1];
+        var layerId = getLayerId[0];
+        var fid = getLayerId[1];
+        var layerName=getLayerId[0].split(/[0-9]/)[0];
 
-            // verifiying  related children objects
-            if ( !getLayerConfig )
-                return true;
-            var layerConfig = getLayerConfig[1];
-            var featureType = getLayerConfig[0];
+        var getLayerConfig = lizMap.getLayerConfigById( layerId );
+        //console.log(getLayerConfig);
 
-            // We do not want to deactivate the display of filtered children dataviz
-            // when children popup are not displayed : comment the 2 following lines
-            //if ( !('popupDisplayChildren' in layerConfig) || layerConfig.popupDisplayChildren != 'True')
-                //return true;
-            if ( !('relations' in lizMap.config) || !(layerId in lizMap.config.relations) )
-                return true;
+        // verifiying  related children objects
+        if ( !getLayerConfig )
+            return true;
+        var layerConfig = getLayerConfig[1];
+        var featureType = getLayerConfig[0];
 
-            //If dataviz exists, get config
-            if( !('datavizLayers' in lizMap.config ))
-                return true;
+        // We do not want to deactivate the display of filtered children dataviz
+        // when children popup are not displayed : comment the 2 following lines
+        //if ( !('popupDisplayChildren' in layerConfig) || layerConfig.popupDisplayChildren != 'True')
+            //return true;
+        if ( !('relations' in lizMap.config) || !(layerId in lizMap.config.relations) )
+            return true;
 
-            lizMap.getLayerFeature(featureType, fid, function(feat) {
-                // Where there is all plots
-                var plotLayers = lizMap.config.datavizLayers.layers;
-                var lrelations = lizMap.config.relations[layerId];
-                nbPlotByLayer = 1;
-                for(var x in lrelations){
-                    var rel = lrelations[x];
-                    // Id of the layer which is the child of layerId
-                    var getChildrenId = rel.referencingLayer;
+        //If dataviz exists, get config
+        if( !('datavizLayers' in lizMap.config ))
+            return true;
 
-                    // Filter of the plot
-                    var filter = '"' + rel.referencingField + '" IN (\''+feat.properties[rel.referencedField]+'\')';
-                    for ( var i in plotLayers) {
-                        if(plotLayers[i].layer_id==getChildrenId)
-                        {
-                            plot_config=plotLayers[i];
-                            if('popup_display_child_plot' in plot_config
-                              && plot_config.popup_display_child_plot == "True"
-                            ){
-                              plot_id=plotLayers[i].plot_id;
-                              popupId = getLayerId[0] + '_' + getLayerId[1] + '_' + String(nbPlotByLayer);
-                              var html = lizDataviz.buildPlotContainerHtml(
-                                  plot_config.title,
-                                  plot_config.abstract,
-                                  popupId,
-                                  false
-                              );
-                              html = '<div class="lizmapPopupChildren"><h4>'+plot_config.title+'</h4>' + html + '</div>';
-                              $('.lizmapPopupTable').after(html);
-                              lizDataviz.getPlot(plot_id, filter, popupId);
-                              nbPlotByLayer++;
-                            }
+        lizMap.getLayerFeature(featureType, fid, function(feat) {
+            // Where there is all plots
+            var plotLayers = lizMap.config.datavizLayers.layers;
+            var lrelations = lizMap.config.relations[layerId];
+            nbPlotByLayer = 1;
+            for(var x in lrelations){
+                var rel = lrelations[x];
+                // Id of the layer which is the child of layerId
+                var getChildrenId = rel.referencingLayer;
+
+                // Filter of the plot
+                var filter = '"' + rel.referencingField + '" IN (\''+feat.properties[rel.referencedField]+'\')';
+                for ( var i in plotLayers) {
+                    if(plotLayers[i].layer_id==getChildrenId)
+                    {
+                        plot_config=plotLayers[i];
+                        if('popup_display_child_plot' in plot_config
+                          && plot_config.popup_display_child_plot == "True"
+                        ){
+                          plot_id=plotLayers[i].plot_id;
+                          popupId = getLayerId[0] + '_' + getLayerId[1] + '_' + String(nbPlotByLayer);
+                          // Be sure the id is unique ( popup can be displayed in atlas tool too)
+                          popupId+= '_' + new Date().valueOf()+btoa(Math.random()).substring(0,12);
+                          var phtml = lizDataviz.buildPlotContainerHtml(
+                              plot_config.title,
+                              plot_config.abstract,
+                              popupId,
+                              false
+                          );
+                          html = '<div class="lizmapPopupChildren lizdataviz">';
+                          html+= '<h4>'+ plot_config.title+'</h4>';
+                          html+= phtml
+                          html+= '</div>';
+                          var haspc = $(mydiv).find('div.lizmapPopupChildren:first');
+                          if( haspc.length > 0 )
+                              $(haspc).before(html);
+                          else
+                              $(mydiv).append(html);
+                          lizDataviz.getPlot(plot_id, filter, popupId);
+                          nbPlotByLayer++;
                         }
-
+                    }
                 }
             }
-
-
-            });
         });
+    });
   }
 
   function addChildrenFeatureInfo( popup ) {
@@ -3646,10 +3657,10 @@ var lizMap = function() {
 
                     // Display related children objects
                     addChildrenFeatureInfo( popup );
-                    // Display the plots of the children layers features filtered by popup item
-                    addChildrenDatavizFilteredByPopupFeature();
                     // Display geometries
                     addGeometryFeatureInfo( popup );
+                    // Display the plots of the children layers features filtered by popup item
+                    addChildrenDatavizFilteredByPopupFeature();
 
                     // Trigger event
                     lizMap.events.triggerEvent("lizmappopupdisplayed",
