@@ -2390,7 +2390,12 @@ var lizAttributeTable = function() {
             function refreshTablesAfterEdition( featureType ){
                 // Loop through each datatable, and refresh if it corresponds to the layer edited
                 $('.attribute-table-table').each(function(){
+                    // get table id
                     var tableId = $(this).attr('id');
+                    // verifying the id
+                    if ( !tableId )
+                        return true;
+
                     var tableLayerName = $(this).parents('div.dataTables_wrapper:first').prev('input.attribute-table-hidden-layer').val()
 
                     if ( tableLayerName
