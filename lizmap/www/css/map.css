@@ -882,7 +882,6 @@ div.modal h3 {
 div.modal h3 span.title {
   display : block;
   padding : 0.5em 0.5em 0.5em 0.7em;
-  background-color: #4A4A4A;
 }
 #toolbar h3 span.menu-content,
 #menu h3 span.ui-icon,
@@ -907,7 +906,6 @@ div.modal div.menu-content {
   padding : 0.5em;
   background-color: #F0F0F0;
 }
-
 
 #dock div.menu-content,
 div.modal div.menu-content,
@@ -2401,6 +2399,10 @@ div.tooltip {
 /*
 atlas
 */
+#atlas > div.menu-content {
+  background-color: transparent; /* remove color for atlas */
+}
+
 #liz-atlas-item-detail{
   background-color:#F0F0F0;
   font-size:0.8em;

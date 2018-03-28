@@ -134,7 +134,7 @@ var lizAtlas = function() {
             home+= '</span>';
             home+= '</br>';
             home+= '</p>';
-            home+= '<div id="liz-atlas-item-detail">';
+            home+= '<div id="liz-atlas-item-detail" style="display:none;">';
             home+= '</div>';
 
             lizAtlasConfig.home = home;
@@ -326,7 +326,7 @@ var lizAtlas = function() {
                     // Remove <h4> with layer title
                     var titleReg = new RegExp('<h4>.+</h4>');
                     text = text.replace(titleReg, '');
-                    $('#liz-atlas-item-detail').html(text);
+                    $('#liz-atlas-item-detail').html(text).show();
 
                     // Trigger event ? a bit buggy
                     lizMap.events.triggerEvent("lizmappopupdisplayed", {'popup': null} );
@@ -385,6 +385,9 @@ var lizAtlas = function() {
                     { 'featureType': lizAtlasConfig.featureType}
                 );
             }
+
+            // Hide some containers
+            $('#liz-atlas-item-detail').hide();
         }
 
         // Launch Atlas feature
