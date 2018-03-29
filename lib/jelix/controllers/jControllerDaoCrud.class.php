@@ -7,7 +7,7 @@
 * @contributor  Thibault Piront (nuKs)
 * @contributor  Mickael Fradin, Brunto
 * @contributor  Vincent Morel
-* @copyright    2007-2009 Laurent Jouanneau
+* @copyright    2007-2018 Laurent Jouanneau
 * @copyright    2007 Thibault Piront
 * @copyright    2007,2008 Bastien Jaillot
 * @copyright    2009 Mickael Fradin, 2011 Brunto
@@ -72,6 +72,13 @@ class jControllerDaoCrud extends jController {
      * @var string
      */
     protected $viewTemplate = 'jelix~crud_view';
+
+    /**
+     * template to show error when a record is not found
+     * @var string
+     * @since 1.6.17
+     */
+    protected $viewErrorTemplate = 'jelix~404.html';
 
     /**
      * number of record to display in the list page
@@ -505,14 +512,25 @@ class jControllerDaoCrud extends jController {
             return $rep;
         }
         $rep = $this->_getResponse();
+        $tpl = new jTpl();
 
         // we're using a form to display a record, to have the portunity to have
         // labels with each values. We need also him to load easily values of some
         // of controls with initControlFromDao (to use in _view method).
         $form = $this->_createForm($id);
-        $form->initFromDao($this->dao, $id, $this->dbProfile);
+        try {
+            $form->initFromDao($this->dao, $id, $this->dbProfile);
+        }
+        catch(jExceptionForms $e) {
+            if ($this->viewErrorTemplate) {
+                $rep->body->assign($this->templateAssign, $tpl->fetch($this->viewErrorTemplate));
+                $rep->setHttpStatus('404', 'Not Found');
+                return $rep;
+            }
+            // for backward compatibility
+            throw $e;
+        }
 
-        $tpl = new jTpl();
         $tpl->assign('id', $id);
         $tpl->assign('form',$form);
         $tpl->assign('page',$page);

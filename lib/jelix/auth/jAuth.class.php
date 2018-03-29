@@ -70,7 +70,8 @@ class jAuth {
                     $config['persistant_cookie_path'] = '/';
             }
 
-            if (!isset($config['persistant_encryption_key'])) {
+            if (!isset($config['persistant_crypt_key']) || $config['persistant_crypt_key'] == '') {
+                // in the case of the use of a separate file, persistant_crypt_key may be into the localconfig.ini.php
                 if (isset(jApp::config()->coordplugin_auth) && isset(jApp::config()->coordplugin_auth['persistant_crypt_key'])) {
                     $config['persistant_crypt_key'] = trim(jApp::config()->coordplugin_auth['persistant_crypt_key']);
                 }
