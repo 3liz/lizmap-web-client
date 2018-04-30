@@ -17,13 +17,13 @@ class jcommunityModuleUpgrader_useprefandconf extends jInstallerModule {
         if ($this->getParameter('masteradmin')) {
             $this->config->setValue('loginResponse', 'htmlauth', 'jcommunity');
         }
-        if ($this->firstExec('acl2') && class_exists('jAcl2DbManager')) {
-            jAcl2DbManager::addSubjectGroup('jcommunity.admin', 'jcommunity~prefs.admin.jcommunity');
-            jAcl2DbManager::addSubject('jcommunity.prefs.change', 'jcommunity~prefs.admin.prefs.change', 'jprefs.prefs.management');
-            jAcl2DbManager::addRight('admins', 'jcommunity.prefs.change'); // for admin group
-        }
 
-        if ($this->firstExec('preferences')) {
+        if ($this->firstExec('preferences') && $this->getParameter('usejpref')) {
+            if ($this->firstExec('acl2') && class_exists('jAcl2DbManager')) {
+                jAcl2DbManager::addSubjectGroup('jcommunity.admin', 'jcommunity~prefs.admin.jcommunity');
+                jAcl2DbManager::addSubject('jcommunity.prefs.change', 'jcommunity~prefs.admin.prefs.change', 'jprefs.prefs.management');
+                jAcl2DbManager::addRight('admins', 'jcommunity.prefs.change'); // for admin group
+            }
             $prefIni = new jIniFileModifier(__DIR__.'/prefs.ini');
             $prefFile = jApp::configPath('preferences.ini.php');
             if (file_exists($prefFile)) {

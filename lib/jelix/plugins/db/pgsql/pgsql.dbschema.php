@@ -127,14 +127,14 @@ class pgsqlDbTable extends jDbTable {
                 }
                 $sql .= ')';
             }
-            else if ($new->length) {
+            else if ($new->length && $typeInfo[0] != 'text') {
                 $sql .= '('.$new->length.')';
             }
             $conn->exec($sql);
         }
 
         if ($new->hasDefault !== $old->hasDefault) {
-            if ($new->hasDefault) {
+            if ($new->hasDefault  && $new->default !== null) {
                 $sql = "ALTER TABLE ".$conn->encloseName($this->name).
                     " ALTER COLUMN ".$conn->encloseName($new->name).
                     " SET DEFAULT ".$new->default;
@@ -147,7 +147,7 @@ class pgsqlDbTable extends jDbTable {
                 $conn->exec($sql);
             }
         }
-        else if ($new->hasDefault && $new->default != $old->default) {
+        else if ($new->hasDefault && $new->default !== null && $new->default != $old->default) {
             $sql = "ALTER TABLE ".$conn->encloseName($this->name).
                 " ALTER COLUMN ".$conn->encloseName($new->name).
                 " SET DEFAULT ".$new->default;

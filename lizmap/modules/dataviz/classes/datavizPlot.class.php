@@ -375,26 +375,155 @@ class datavizPlot {
                 // Prepare an array to store features color (if any)
                 $featcolors = array();
 
+                // Creation of array who will be used to aggregate when tu type is pie
+                if ( $this->type == 'pie' )
+                    {
+
+                        $x_aggregate_sum = array();
+                        $x_aggregate_count = array();
+                        $x_aggregate_min = array();
+                        $x_aggregate_max = array();
+                        $x_aggregate_stddev = array();
+                        $x_aggregate_median = array();
+                    }
+
                 // Fill in the trace for each dimension
                 foreach($features as $feat){
-                    // Fill in X field
-                    if(count($this->x_fields) > 0){
-                        $trace[$this->x_property_name][] = $feat->properties->$xf;
-                    }
+                    if ( $this->type != 'pie' )
+                    {
+                        // Fill in X field
+                        if(count($this->x_fields) > 0)
+                            $trace[$this->x_property_name][] = $feat->properties->$xf;
 
-                    // Fill in Y field
-                    if(count($this->y_fields) > 0){
-                        $trace[$this->y_property_name][] = $feat->properties->$yf;
-                    }
+                        // Fill in Y field
+                        if(count($this->y_fields) > 0)
+                            $trace[$this->y_property_name][] = $feat->properties->$yf;
 
-                    // Fill in feature colors
-                    if( property_exists($feat->properties, $featcolor)
-                        and !empty($feat->properties->$featcolor)
-                    ){
-                        $featcolors[] = $feat->properties->$featcolor;
+                        // Fill in feature colors
+                        if( property_exists($feat->properties, $featcolor)
+                            and !empty($feat->properties->$featcolor)
+                            ){
+                                $featcolors[] = $feat->properties->$featcolor;
+                            }
+                    }
+                    else
+                    {
+                        if ( $feat->properties->$xf != Null ) {
+                            // Each time we find a new X, we initialize the value
+                            if ( !array_key_exists($feat->properties->$xf, $x_aggregate_sum) )
+                            {
+                                $x_aggregate_sum[$feat->properties->$xf] = 0;
+                                $x_aggregate_count[$feat->properties->$xf] = 0;
+                                $x_aggregate_min[$feat->properties->$xf] = $feat->properties->$yf;
+                                $x_aggregate_max[$feat->properties->$xf] = $feat->properties->$yf;
+                                $x_aggregate_first[$feat->properties->$xf] = $feat->properties->$yf;
+                                $x_aggregate_stddev[$feat->properties->$xf] = 0;
+                                $x_aggregate_median[$feat->properties->$xf] = array();
+
+                                if( property_exists($feat->properties, $featcolor)
+                                and !empty($feat->properties->$featcolor)
+                                ){
+                                    $featcolors[] = $feat->properties->$featcolor;
+                                }
+                            }
+                            // incrementation of the sum/count who will be used for other kind of aggregation
+                            $x_aggregate_sum[$feat->properties->$xf] += $feat->properties->$yf;
+                            $x_aggregate_count[$feat->properties->$xf] += 1;
+                            $x_aggregate_last[$feat->properties->$xf] = $feat->properties->$yf;
+                            array_push($x_aggregate_median[$feat->properties->$xf], $feat->properties->$yf);
+
+
+                            if ( $x_aggregate_min[$feat->properties->$xf] > $feat->properties->$yf )
+                                $x_aggregate_min[$feat->properties->$xf] = $feat->properties->$yf;
+
+                            if ( $x_aggregate_max[$feat->properties->$xf] < $feat->properties->$yf )
+                                $x_aggregate_max[$feat->properties->$xf] = $feat->properties->$yf;
+
+
+                        }
                     }
                 }
 
+                if( $this->type == 'pie'){
+
+                    if ( $this->aggregation == 'stddev' )
+                    {
+                        foreach($features as $feat){
+                            $x = $feat->properties->$xf;
+                            $x_aggregate_stddev[$x] += pow($feat->properties->$yf-($x_aggregate_sum[$x]/$x_aggregate_count[$x]), 2);
+                        }
+                    }
+
+                    if ($this->aggregation == 'median')
+                    {
+                        foreach($x_aggregate_median as $key => $value)
+                        {
+                            asort($x_aggregate_median[$key]);
+                        }
+                    }
+                    // Fill the data with the correct key => value
+                    foreach ($x_aggregate_sum as $key => $value) {
+                        if ( $this->aggregation == 'sum' or $this->aggregation == '' )
+                        {
+                            $trace[$this->x_property_name][] = $key;
+                            $trace[$this->y_property_name][] = $value;
+                        }
+                        else if ( $this->aggregation == 'avg' )
+                        {
+                            $trace[$this->x_property_name][] = $key;
+                            $trace[$this->y_property_name][] = $value/$x_aggregate_count[$key];
+                        }
+                        else if ($this->aggregation == 'count' )
+                        {
+                            $trace[$this->x_property_name][] = $key;
+                            $trace[$this->y_property_name][] = $x_aggregate_count[$key];
+
+                        }
+                        else if ($this->aggregation == 'min' )
+                        {
+                            $trace[$this->x_property_name][] = $key;
+                            $trace[$this->y_property_name][] = $x_aggregate_min[$key];
+                        }
+                        else if ($this->aggregation == 'max' )
+                        {
+                            $trace[$this->x_property_name][] = $key;
+                            $trace[$this->y_property_name][] = $x_aggregate_max[$key];
+                        }
+                        else if ($this->aggregation == 'first' )
+                        {
+                            $trace[$this->x_property_name][] = $key;
+                            $trace[$this->y_property_name][] = $x_aggregate_first[$key];
+                        }
+                        else if ($this->aggregation == 'last' )
+                        {
+                            $trace[$this->x_property_name][] = $key;
+                            $trace[$this->y_property_name][] = $x_aggregate_last[$key];
+                        }
+                        else if ($this->aggregation == 'stddev' )
+                        {
+                            $trace[$this->x_property_name][] = $key;
+                            $trace[$this->y_property_name][] = sqrt($x_aggregate_stddev[$key]/$x_aggregate_count[$key]);
+                        }
+                        else if ($this->aggregation == 'median' )
+                        {
+                            $trace[$this->x_property_name][] = $key;
+                            //if count is even
+                            if ( $x_aggregate_count[$key] % 2 == 0 )
+                            {
+                                $trace[$this->y_property_name][] = $x_aggregate_median[$key][$x_aggregate_count[$key] / 2];
+                            }
+                            //si count is odd
+                            else
+                            {
+                                 $mid = floor($x_aggregate_count[$key] / 2);
+                                 $trace[$this->y_property_name][] = ($x_aggregate_median[$key][$mid] + $x_aggregate_median[$key][$mid+1]) / 2 ;
+
+                            }
+                        }
+                    }
+                }
+
+                // set color
                 if(!empty($featcolors)){
                     if( $this->type == 'bar'
                         or $this->type == 'scatter'
@@ -417,11 +546,12 @@ class datavizPlot {
 
             $this->traces = $traces;
             $this->data = $traces;
-            // add aggregation propert
+
+            // add aggregation property if aggregation is done client side via dataplotly
             if($this->aggregation
-                and !array_key_exists($this->type, array('pie', 'histogram', 'histogram2d'))
+                and !in_array($this->type, array('pie', 'histogram', 'histogram2d'))
             ){
-                $this->addTraceAggregation($data);
+                $this->addTraceAggregation();
             }
 
             return true;
