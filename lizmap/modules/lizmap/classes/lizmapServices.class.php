@@ -166,6 +166,13 @@ class lizmapServices{
           $this->$prop = $readConfigPath['services'][$prop];
         }
       }
+
+      $sender = filter_var($globalConfig->mailer['webmasterEmail'], FILTER_VALIDATE_EMAIL);
+      if (!$sender) {
+          // if the sender email is not configured, deactivate features that
+          // need to send an email
+          $this->allowUserAccountRequests = false;
+      }
     }
 
     public function getProperties(){

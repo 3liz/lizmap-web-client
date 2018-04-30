@@ -5554,7 +5554,7 @@ OpenLayers.Control.HighlightFeature = OpenLayers.Class(OpenLayers.Control, {
                   aCallBack( aName, aFilter, data.features, aConfig['alias'] );
 
               $('body').css('cursor', 'auto');
-          } else
+          } else {
               var service = OpenLayers.Util.urlAppend(lizUrls.wms
                     ,OpenLayers.Util.getParameterString(lizUrls.params)
               );
@@ -5576,8 +5576,7 @@ OpenLayers.Control.HighlightFeature = OpenLayers.Class(OpenLayers.Control, {
                   $('body').css('cursor', 'auto');
 
               },'json');
-
-
+           }
 
       },'json');
 

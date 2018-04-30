@@ -218,8 +218,10 @@ class lizmapWFSRequest extends lizmapOGCRequest {
         // WHERE
         $sql.= ' WHERE True';
 
-        if( ! empty( trim( $this->datasource->sql ) ) )
-            $sql.= ' AND '. $this->datasource->sql;
+        $dtsql = trim($this->datasource->sql);
+        if( !empty( $dtsql ) ){
+            $sql.= ' AND '. $dtsql;
+        }
 
         // BBOX
         $bbox = '';
@@ -251,12 +253,21 @@ class lizmapWFSRequest extends lizmapOGCRequest {
         $exp_filter = '';
         if( array_key_exists( 'exp_filter', $this->params ) )
             $exp_filter = $this->params['exp_filter'];
-        if( ! empty( $exp_filter ) ){
+        if( !empty( $exp_filter ) ){
             $validFilter = $this->validateFilter($exp_filter);
             if(!$validFilter){
                 return $this->getfeatureQgis();
             }
-            $sql.= ' AND ' . $validFilter;
+            if(strpos($validFilter, '$id') !== false){
+                $key = $this->datasource->key;
+                if( count(explode(',', $key)) == 1 ){
+                    $sql.= ' AND ' . str_replace('$id ', '"' . $key . '" ', $validFilter);
+                }else{
+                    return $this->getfeatureQgis();
+                }
+            }else{
+                $sql.= ' AND ' . $validFilter;
+            }
         }
 
         // FEATUREID
@@ -396,6 +407,7 @@ class lizmapWFSRequest extends lizmapOGCRequest {
     }
 
     private function setGeojsonSql($sql){
+
         $sql = "
         WITH source AS (
         ".$sql. "
@@ -423,6 +435,7 @@ class lizmapWFSRequest extends lizmapOGCRequest {
             '.',
             ";
         $key = $this->datasource->key;
+
         if( count(explode(',', $key)) == 1 ){
             $sql.= '"' . $key . '"';
         }
@@ -430,7 +443,6 @@ class lizmapWFSRequest extends lizmapOGCRequest {
             $sql.= " row_number() OVER() ";
         }
         $sql.= ') AS id,';
-
 
         // Get geometryname param
         $geosql = '';

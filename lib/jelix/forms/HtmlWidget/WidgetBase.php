@@ -4,7 +4,7 @@
 * @subpackage  forms
 * @author      Laurent Jouanneau
 * @contributor Julien Issler, Dominique Papin, Claudio Bernardes
-* @copyright   2006-2012 Laurent Jouanneau
+* @copyright   2006-2018 Laurent Jouanneau
 * @copyright   2008-2011 Julien Issler, 2008 Dominique Papin
 * @copyright   2012 Claudio Bernardes
 * @link        http://www.jelix.org
@@ -195,12 +195,15 @@ abstract class WidgetBase implements WidgetInterface {
      * This function displays the blue question mark near the form field
      */
     public function outputHelp() {
-         if ($this->ctrl->help) {
+        if (method_exists($this->builder, 'outputControlHelp')) {
+            $this->builder->outputControlHelp($this->ctrl);
+        }
+        // deprecated. only for compatibility of plugins for jelix 1.6
+        else if ($this->ctrl->help) {
             // additionnal &nbsp, else background icon is not shown in webkit
             echo '<span class="jforms-help" id="'.$this->getId().'-help">&nbsp;<span>'.htmlspecialchars($this->ctrl->help).'</span></span>';
         }
     }
-
     /**
      * This function displays the form field label.
      */

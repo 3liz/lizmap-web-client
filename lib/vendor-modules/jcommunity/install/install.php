@@ -154,13 +154,13 @@ class jcommunityModuleInstaller extends jInstallerModule {
             }
         }
 
-        if ($this->firstExec('acl2') && class_exists('jAcl2DbManager')) {
-            jAcl2DbManager::addSubjectGroup('jcommunity.admin', 'jcommunity~prefs.admin.jcommunity');
-            jAcl2DbManager::addSubject('jcommunity.prefs.change', 'jcommunity~prefs.admin.prefs.change', 'jprefs.prefs.management');
-            jAcl2DbManager::addRight('admins', 'jcommunity.prefs.change'); // for admin group
-        }
 
         if ($this->firstExec('preferences') && $this->getParameter('usejpref')) {
+            if ($this->firstExec('acl2') && class_exists('jAcl2DbManager')) {
+                jAcl2DbManager::addSubjectGroup('jcommunity.admin', 'jcommunity~prefs.admin.jcommunity');
+                jAcl2DbManager::addSubject('jcommunity.prefs.change', 'jcommunity~prefs.admin.prefs.change', 'jprefs.prefs.management');
+                jAcl2DbManager::addRight('admins', 'jcommunity.prefs.change'); // for admin group
+            }
             if (!$this->config->getValue('disableJPref', 'jcommunity')) {
                 if ($this->isJelix17()) {
                     $prefIni = new \Jelix\IniFile\IniModifier(__DIR__.'/prefs.ini');

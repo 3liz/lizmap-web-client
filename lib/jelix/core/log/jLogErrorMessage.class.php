@@ -132,6 +132,7 @@ class jLogErrorMessage implements jILogMessage {
             '%file%' => $this->file,
             '%line%' => $this->line,
             '%trace%' => $traceLog,
+            '%http_method%' => isset($_SERVER['REQUEST_METHOD'])?$_SERVER['REQUEST_METHOD']:'Unknown method',
             '\t' =>"\t",
             '\n' => "\n"
         ));
