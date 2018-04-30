@@ -873,7 +873,7 @@ var lizAttributeTable = function() {
                             var tId = 'attribute-layer-table-' + lizMap.cleanName(parentLayerName) + '-' + lizMap.cleanName(childLayerName);
                             var tClass = 'attribute-table-table table table-hover table-condensed table-striped child-of-' + lizMap.cleanName(parentLayerName);
                             cDiv+= '    <input type="hidden" class="attribute-table-hidden-layer" value="'+lizMap.cleanName(childLayerName)+'">';
-                            cDiv+= '    <table id="' + tId  + '" class="' + tClass + '"></table>';
+                            cDiv+= '    <table id="' + tId  + '" class="' + tClass + '" width="100%"></table>';
                             cDiv+= '</div>';
                             childDiv.push(cDiv);
 
