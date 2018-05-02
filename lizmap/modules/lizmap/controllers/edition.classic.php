@@ -938,6 +938,7 @@ class editionCtrl extends jController {
               }
             break;
           case 'date':
+          case 'time':
           case 'datetime':
             $value = filter_var($value, FILTER_SANITIZE_STRING, FILTER_FLAG_NO_ENCODE_QUOTES);
             if ( !$value )
