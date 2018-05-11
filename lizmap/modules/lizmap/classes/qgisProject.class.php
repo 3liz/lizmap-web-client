@@ -554,12 +554,16 @@ class qgisProject{
                         }
                     } else {
                         $fieldconfigurations = $xmlLayer->xpath(".//fieldConfiguration/field");
-                        $field = (string) $fieldconfigurations->attributes()->name;
-                        if ( in_array($field, $fields) ) {
-                            continue; // QGIS sometimes stores them twice
+                        if ( $fieldconfigurations ) {
+                            foreach( $fieldconfigurations as $fieldconfiguration ) {
+                                $field = (string) $fieldconfiguration->attributes()->name;
+                                if ( in_array($field, $fields) ) {
+                                    continue; // QGIS sometimes stores them twice
+                                }
+                                $fields[] = $field;
+                                $wfsFields[] = $field;
+                            }
                         }
-                        $fields[] = $field;
-                        $wfsFields[] = $field;
                     }
                     foreach( $fields as $field ) {
                         $aliases[$field] = $field;
