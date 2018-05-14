@@ -886,6 +886,24 @@ var lizMap = function() {
       if (layerWmsParams.format != 'image/jpeg')
           layerWmsParams['transparent'] = true;
 
+      //Manage attribution
+      if (typeof layer.attribution == "object") {
+          console.log(layer.attribution);
+          // Update href if needed
+          if ( 'href' in layer.attribution &&
+               layer.attribution.href != '' &&
+               layer.attribution.href.indexOf('://') == -1) {
+            layer.attribution.href = 'http://'+layer.attribution.href;
+          }
+          // Update attribution
+          if ( !('title' in layer.attribution) || layer.attribution.title == '' ) {
+              layer.attribution.title = layer.attribution.href.split('://')[1];
+          } else
+          if ( !('href' in layer.attribution) || layer.attribution.href == '' ) {
+              layer.attribution = layer.attribution.title;
+          }
+      }
+
       var wmtsLayer = null;
       if ( layerConfig.cached == 'True' && wmtsCapabilities ) {
           $.each(wmtsCapabilities.contents.layers, function(i, l) {
