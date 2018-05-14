@@ -1,0 +1,14 @@
+lizMap.events.on({
+    'uicreated': function(e) {
+        // Group List to collapse
+        // Based on the group name in QGIS Project
+        var groups = ['Edition'];
+
+        for ( var i=0, len=groups.length; i<len; i++ ) {
+            var group = groups[i];
+            var groupExpander = $('#group-'+lizMap.cleanName(group)+' a.expander');
+            if ( groupExpander.length != 0 )
+                groupExpander.click();
+        }
+    }
+});
