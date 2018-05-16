@@ -108,7 +108,7 @@ abstract class jFormsControl {
         if(trim($value) == '') {
             if($this->required)
                 return $this->container->errors[$this->ref] = jForms::ERRDATA_REQUIRED;
-            if (!$this->datatype->allowWhitespace())  {
+            if (!$this->datatype->allowWhitespace()) {
                 $this->container->data[$this->ref] = trim($value);
             }
         }elseif(!$this->datatype->check($value)){

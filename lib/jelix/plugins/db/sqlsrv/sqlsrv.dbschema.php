@@ -59,7 +59,7 @@ class sqlsrvDbTable extends jDbTable {
             $col->autoIncrement = $autoIncrement;
 
             $typeinfo = $tools->getTypeInfo($type);
-            //$col->unifiedType = $typeinfo[1];
+            $col->nativeType = $typeinfo[0];
             $col->maxValue = $typeinfo[3];
             $col->minValue = $typeinfo[2];
             $col->maxLength = $typeinfo[5];

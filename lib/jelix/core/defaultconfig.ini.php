@@ -76,6 +76,7 @@ jacldb.access = 0
 
 [tplplugins]
 defaultJformsBuilder = html
+defaultJformsErrorDecorator =
 
 [responses]
 html = jResponseHtml
@@ -340,7 +341,39 @@ smtpPassword =
 ; SMTP server timeout in seconds
 smtpTimeout = 10
 
+; Copy all emails into files
 copyToFiles = off
+
+; enable the debug mode. debugReceivers should be filled.
+debugModeEnabled = off
+
+; type of receivers set into the email
+; 1: only addresses from  debugReceivers
+; 2: only email address of the authenticated user, or addresses from  debugReceivers
+;    if the user isn't authenticated
+; 3: both, addresses from debugReceivers and address of the authenticated user
+debugReceiversType = 1
+
+; email addresses that will replace receivers in all emails. debugModeEnabled should be on.
+debugReceivers =
+;debugReceivers[] =
+
+; Receivers for 'To' having these emails will not be replaced by debugReceivers
+; Receivers for 'Cc' and 'Bcc' having these emails will not be removed
+debugReceiversWhiteList =
+;debugReceiversWhiteList[] =
+
+; if set, it replace the address of From
+debugFrom =
+
+; if set, it replace the name in From (when debugFrom is set)
+debugFromName =
+
+; Prefix to add to subject of mails, in debug mode.
+debugSubjectPrefix =
+
+; Introduction inserted at the beginning of the messages in debug mode
+debugBodyIntroduction =
 
 [acl]
 ; exemple of driver: "db".
