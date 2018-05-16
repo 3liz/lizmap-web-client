@@ -2698,6 +2698,7 @@ var lizMap = function() {
           isBaseLayer:true
          ,gutter:5
          ,buffer:0
+         ,singleTile:true
         });
 
     if (config.options.hasOverview) {
