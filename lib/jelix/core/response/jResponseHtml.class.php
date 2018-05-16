@@ -479,6 +479,7 @@ class jResponseHtml extends jResponseBasicHtml {
     public function addMetaDescription ($content){
         $this->_MetaDescription[] = $content;
     }
+
     /**
      * add author(s) in a author meta tag
      * @author Olivier Demah
@@ -556,7 +557,7 @@ class jResponseHtml extends jResponseBasicHtml {
             $html .= $param_name.'="'. htmlspecialchars($param_value).'" ';
         }
 
-        echo '<meta ',$params,$this->_endTag;
+        echo '<meta ', $html, $this->_endTag;
     }
 
     /**

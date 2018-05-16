@@ -1,20 +1,20 @@
 <?php
 /**
-* jMailer : based on PHPMailer - PHP email class
-* Class for sending email using either
-* sendmail, PHP mail(), SMTP, or files for tests.  Methods are
-* based upon the standard AspEmail(tm) classes.
-*
-* @package     jelix
-* @subpackage  utils
-* @author      Laurent Jouanneau
-* @contributor Kévin Lepeltier, GeekBay, Julien Issler
-* @copyright   2006-2016 Laurent Jouanneau
-* @copyright   2008 Kévin Lepeltier, 2009 Geekbay
-* @copyright   2010-2015 Julien Issler
-* @link        http://jelix.org
-* @licence     GNU Lesser General Public Licence see LICENCE file or http://www.gnu.org/licenses/lgpl.html
-*/
+ * jMailer : based on PHPMailer - PHP email class
+ * Class for sending email using either
+ * sendmail, PHP mail(), SMTP, or files for tests.  Methods are
+ * based upon the standard AspEmail(tm) classes.
+ *
+ * @package     jelix
+ * @subpackage  utils
+ * @author      Laurent Jouanneau
+ * @contributor Kévin Lepeltier, GeekBay, Julien Issler
+ * @copyright   2006-2018 Laurent Jouanneau
+ * @copyright   2008 Kévin Lepeltier, 2009 Geekbay
+ * @copyright   2010-2015 Julien Issler
+ * @link        http://jelix.org
+ * @licence     GNU Lesser General Public Licence see LICENCE file or http://www.gnu.org/licenses/lgpl.html
+ */
 
 require(LIB_PATH.'phpMailer/class.phpmailer.php');
 require(LIB_PATH.'phpMailer/class.smtp.php');
@@ -50,7 +50,7 @@ class jMailer extends PHPMailer {
     /**
      * the path of the directory where to store mails
      * if mailer is file.
-    */
+     */
     public $filePath = '';
 
     /**
@@ -68,6 +68,16 @@ class jMailer extends PHPMailer {
      * @var bool
      */
     protected $debugModeEnabled = false;
+
+    /**
+     * @var string  replacement for the From header
+     */
+    protected $debugFrom = '';
+
+    /**
+     * @var string  replacement for the From header
+     */
+    protected $debugFromName = '';
 
     /**
      * @var int combination of DEBUG_RECEIVER_*
@@ -158,6 +168,12 @@ class jMailer extends PHPMailer {
             if ($this->debugReceivers) {
                 if (!is_array($this->debugReceivers)) {
                     $this->debugReceivers = array($this->debugReceivers);
+                }
+                if ($config->mailer['debugFrom']) {
+                    $this->debugFrom = $config->mailer['debugFrom'];
+                }
+                if ($config->mailer['debugFromName']) {
+                    $this->debugFromName = $config->mailer['debugFromName'];
                 }
                 if ($config->mailer['debugSubjectPrefix']) {
                     $this->debugSubjectPrefix = $config->mailer['debugSubjectPrefix'];
@@ -313,9 +329,17 @@ class jMailer extends PHPMailer {
     protected function debugOverrideReceivers() {
         $this->debugOriginalValues = array();
         foreach(array('to','cc','bcc','all_recipients','RecipientsQueue',
-                    'ReplyTo','ReplyToQueue', 'Subject', 'Body', 'AltBody') as $f) {
+                    'ReplyTo','ReplyToQueue', 'Subject', 'Body', 'AltBody',
+                    'From', 'Sender', 'FromName') as $f) {
             $this->debugOriginalValues[$f] = $this->$f;
         }
+
+        if ($this->debugFrom) {
+            $this->From = $this->debugFrom;
+            $this->FromName = $this->debugFromName;
+            $this->Sender = $this->debugFrom;
+        }
+
         $this->clearAllRecipients();
         $this->clearReplyTos();
 
@@ -362,6 +386,8 @@ class jMailer extends PHPMailer {
 
         $intro = $this->debugBodyIntroduction."\r\n\r\n";;
         $introHtml = '<p>'. $this->debugBodyIntroduction."</p>\r\n<ul>\r\n";
+        $intro .= ' - From: '.$this->debugOriginalValues['FromName']." <".$this->debugOriginalValues['From'].">\r\n";
+        $introHtml .= '<li>From: '.$this->debugOriginalValues['FromName']." &lt;".$this->debugOriginalValues['From']."&gt;</li>\r\n";
         foreach(array('to', 'cc', 'bcc', 'ReplyTo') as $f) {
             $val = $this->debugOriginalValues[$f];
             if (!is_array($val)) {
@@ -369,13 +395,13 @@ class jMailer extends PHPMailer {
             }
             foreach($val as $v) {
                 if ($v[1]) {
-                    $email = $v[1].' <'.$v[0].'>';
+                    $intro .= ' - '.$f.': '. $v[1].' <'.$v[0].">\r\n";
+                    $introHtml .= '<li>'.$f.': '.$v[1].' &lt;'.$v[0]."&gt;</li>\r\n";
                 }
                 else {
-                    $email = $v[0];
+                    $intro .= ' - '.$f.': '.$v[0]."\r\n";
+                    $introHtml .= '<li>'.$f.': '.$v[0]."</li>\r\n";
                 }
-                $intro .= ' - '.$f.': '.$email."\r\n";
-                $introHtml .= '<li>'.$f.': '.$email."</li>\r\n";
             }
         }
         $intro .= "\r\n-----------------------------------------------------------\r\n";
@@ -422,10 +448,10 @@ class jMailer extends PHPMailer {
     }
 
     protected function lang($key) {
-      if(count($this->language) < 1) {
-        $this->SetLanguage($this->defaultLang); // set the default language
-      }
-      return parent::lang($key);
+        if(count($this->language) < 1) {
+            $this->SetLanguage($this->defaultLang); // set the default language
+        }
+        return parent::lang($key);
     }
 
     protected function sendmailSend($header, $body) {
