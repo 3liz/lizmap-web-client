@@ -20,6 +20,13 @@ class jformsCtrl extends jController {
     * of values, depending of the value of an other control.
     */
     public function getListData() {
+
+        if (!$this->request->isPostMethod() || !$this->request->isAjax()) {
+            $rep = $this->getResponse('text', true);
+            $rep->setHttpStatus('405', 'Method Not Allowed');
+            return $rep;
+        }
+
         $rep = $this->getResponse('json', true);
 
         try {
@@ -29,28 +36,45 @@ class jformsCtrl extends jController {
             }
         }
         catch(Exception $e) {
-            throw new Exception ('invalid form selector');
+            $rep = $this->getResponse('text', true);
+            $rep->setHttpStatus('422', 'Unprocessable entity');
+            $rep->content = 'invalid form selector';
+            return $rep;
         }
 
         // check CSRF
         if ($form->securityLevel == jFormsBase::SECURITY_CSRF) {
-            if ($form->getContainer()->token !== $this->param('__JFORMS_TOKEN__'))
-                throw new jException("jelix~formserr.invalid.token");
+            if ($form->getContainer()->token !== $this->param('__JFORMS_TOKEN__')) {
+                $rep = $this->getResponse('text', true);
+                $rep->setHttpStatus('422', 'Unprocessable entity');
+                $rep->content = 'invalid token';
+                jLog::logEx(new jException("jelix~formserr.invalid.token"), "error");
+                return $rep;
+            }
         }
 
         // retrieve the control to fill
         $control = $form->getControl($this->param('__ref'));
         if (!$control || ! ($control instanceof jFormsControlDatasource)) {
-            throw new Exception('bad control');
+            $rep = $this->getResponse('text', true);
+            $rep->setHttpStatus('422', 'Unprocessable entity');
+            $rep->content = 'bad control';
+            return $rep;
         }
 
         if (!($control->datasource instanceof jIFormsDynamicDatasource)) {
-            throw new Exception('not supported datasource type');
+            $rep = $this->getResponse('text', true);
+            $rep->setHttpStatus('422', 'Unprocessable entity');
+            $rep->content = 'not supported datasource type';
+            return $rep;
         }
 
         $dependentControls = $control->datasource->getCriteriaControls();
         if (!$dependentControls) {
-            throw new Exception('no dependent controls');
+            $rep = $this->getResponse('text', true);
+            $rep->setHttpStatus('422', 'Unprocessable entity');
+            $rep->content = 'no dependent controls';
+            return $rep;
         }
 
         foreach ($dependentControls as $ctname) {

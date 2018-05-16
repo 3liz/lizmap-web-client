@@ -329,6 +329,19 @@ abstract class jRequest {
          return false;
    }
 
+    /**
+     * Says if the request method is POST
+     * @return bool
+     * @since 1.6.17
+     */
+    function isPostMethod() {
+        if (isset($_SERVER['REQUEST_METHOD'])) {
+            return ($_SERVER['REQUEST_METHOD'] === "POST");
+        } else {
+            return false;
+        }
+    }
+
    /**
     * return the application domain name
     * @return string
