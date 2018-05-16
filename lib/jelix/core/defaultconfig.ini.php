@@ -363,6 +363,12 @@ debugReceivers =
 debugReceiversWhiteList =
 ;debugReceiversWhiteList[] =
 
+; if set, it replace the address of From
+debugFrom =
+
+; if set, it replace the name in From (when debugFrom is set)
+debugFromName =
+
 ; Prefix to add to subject of mails, in debug mode.
 debugSubjectPrefix =
 
