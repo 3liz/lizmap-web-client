@@ -67,6 +67,10 @@ $locales = array(
         'module.bad.dependency.version'=>'The module %s needs another version of the module %s (%s - %s)',
         'module.installer.class.not.found'=>'The installation class %s for the module %s doesn\'t exist',
         'module.upgrader.class.not.found'=>'The upgrade class %s for the module %s doesn\'t exist',
+        'module.upgrader.missing.version'=>'Target version is missing for the upgrade script %s of the module %s',
+        'module.missing.version'=>'Version is missing from the module.xml file of the module %s',
+
+        'installer.ini.missing.version'=>'The previous version of the module %s is missing from the installer.ini.php file',
 
         'install.entrypoint.start'  =>'Installation starts for the entry point %s',
         'install.entrypoint.end'    =>'All modules are installed or upgraded for the entry point %s',

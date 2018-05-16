@@ -50,6 +50,7 @@ class jacl2dbModuleInstaller extends jInstallerModule {
         }
 
         if ($this->getParameter('defaultuser')) {
+            $this->insertDaoData('users.groups.json', jDbTools::IBD_IGNORE_IF_EXIST);
             $this->insertDaoData('users.json', jDbTools::IBD_INSERT_ONLY_IF_TABLE_IS_EMPTY);
         }
     }
