@@ -327,9 +327,9 @@ class editionCtrl extends jController {
       $tableAlone = $exp[1];
       $schema = $exp[0];
     }
-    $this->schema = $schema;
-
+    
     // Set some private properties
+    $this->schema = $schema;
     $this->table = $table;
     $this->tableName = $tableAlone;
     $this->whereClause = $sql;
@@ -392,7 +392,11 @@ class editionCtrl extends jController {
         // If postgresql, get real geometryType from geometry_columns (jelix prop gives 'geometry')
         if( $this->provider == 'postgres' and $this->geometryType == 'geometry' ){
           $cnx = jDb::getConnection($this->layerId);
-          $res = $cnx->query('SELECT type FROM geometry_columns WHERE f_table_name = '.$cnx->quote($this->tableName));
+          $sql = "SELECT type FROM geometry_columns";
+          $sql.= " WHERE 2>1";
+          $sql.= " AND f_table_schema = " . $cnx->quote($schema);
+          $sql.= " AND f_table_name = " . $cnx->quote($tableAlone);
+          $res = $cnx->query($sql);
           $res = $res->fetch();
           if( $res )
             $this->geometryType = strtolower($res->type);
