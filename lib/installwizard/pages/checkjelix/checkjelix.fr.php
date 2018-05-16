@@ -67,6 +67,10 @@ $locales = array(
         'module.bad.dependency.version'=>'Le module %s necessite une autre version du module %s (%s - %s)',
         'module.installer.class.not.found'=>'La classe d\'installation %s pour le module %s n\'existe pas',
         'module.upgrader.class.not.found'=>'La classe de mise à jour %s pour le module %s n\'existe pas',
+        'module.upgrader.missing.version'=>'La version cible est manquante pour le script de mise à jour %s du module %s',
+        'module.missing.version'=>'La version est manquante dans le fichier module.xml du module %s',
+
+        'installer.ini.missing.version'=>'La version précédente du module %s n\'est pas indiquée dans le fichier installer.ini.php',
 
         'install.entrypoint.start'  =>'Installation pour le point d\'entrée %s',
         'install.entrypoint.end'    =>'Tous les modules sont installés ou mis à jour pour le point d\'entrée %s',

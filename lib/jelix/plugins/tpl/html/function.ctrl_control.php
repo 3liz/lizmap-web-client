@@ -36,8 +36,14 @@ function jtpl_function_html_ctrl_control($tpl, $ctrlname='', $attributes = array
         $ctrl = $ctrls[$ctrlname];
     }
 
-    if ( $ctrl->type == 'submit' || $ctrl->type == 'reset' || $ctrl->type == 'hidden')
+    if ( $ctrl->type == 'submit' || $ctrl->type == 'reset' || $ctrl->type == 'hidden') {
         return;
+    }
+
+    if(!empty($attributes['placeholder']) && !empty($ctrl) && $attributes['placeholder'] === true) {
+        $attributes['placeholder'] = $ctrl->label;
+    }
+
     $tpl->_privateVars['__displayed_ctrl'][$ctrlname] = true;
     if($tpl->_privateVars['__form']->isActivated($ctrlname)) {
         $tpl->_privateVars['__formbuilder']->outputControl($ctrl, $attributes);

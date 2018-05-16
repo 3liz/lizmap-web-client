@@ -77,10 +77,10 @@ class jVersionComparator {
                 }
             }
             elseif ($pm){
-                throw new Exception ("bad version number :". $version2);
+                throw new Exception ("bad version number at right: '". $version2."'");
             }
             else
-                throw new Exception ("bad version number :".$version1);
+                throw new Exception ("bad version number at left:'". $version1."'");
         }
 
         return 0;
@@ -158,8 +158,9 @@ class jVersionComparator {
                     $sver.='.';
                 $sver.= $m[1].$m[2].$m[3].$m[4];
             }
-            else
-                throw new Exception ("bad version number");
+            else {
+                throw new Exception ("version number '" . $version . "' cannot be serialized");
+            }
         }
         for($i=$k+1; $i<$pad; $i++) {
             if ($i >0)

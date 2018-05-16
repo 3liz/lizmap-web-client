@@ -70,7 +70,8 @@ class jAuth {
                     $config['persistant_cookie_path'] = '/';
             }
 
-            if (!isset($config['persistant_encryption_key'])) {
+            if (!isset($config['persistant_crypt_key']) || $config['persistant_crypt_key'] == '') {
+                // in the case of the use of a separate file, persistant_crypt_key may be into the localconfig.ini.php
                 if (isset(jApp::config()->coordplugin_auth) && isset(jApp::config()->coordplugin_auth['persistant_crypt_key'])) {
                     $config['persistant_crypt_key'] = trim(jApp::config()->coordplugin_auth['persistant_crypt_key']);
                 }
@@ -297,6 +298,7 @@ class jAuth {
         $dr = self::getDriver();
         if($dr->changePassword($login, $newpassword)===false)
             return false;
+        jEvent::notify ('AuthChangePassword', array('login'=>$login, 'password'=>$newpassword));
         if(self::isConnected() && self::getUserSession()->login === $login){
             $config = self::loadConfig();
             $_SESSION[$config['session_name']] = self::getUser($login);

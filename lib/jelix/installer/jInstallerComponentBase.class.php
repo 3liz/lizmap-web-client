@@ -118,10 +118,15 @@ abstract class jInstallerComponentBase {
     }
 
     public function isUpgraded($epId) {
-        return ($this->isInstalled($epId) &&
-                (jVersionComparator::compareVersion($this->sourceVersion, $this->moduleInfos[$epId]->version) == 0));
+        if (!$this->isInstalled($epId)) {
+            return false;
+        }
+        if ($this->moduleInfos[$epId]->version == '') {
+            throw new jInstallerException("installer.ini.missing.version", array($this->name));
+        }
+        return jVersionComparator::compareVersion($this->sourceVersion, $this->moduleInfos[$epId]->version) == 0;
     }
-    
+
     public function getInstalledVersion($epId) {
         return $this->moduleInfos[$epId]->version;
     }
@@ -184,6 +189,7 @@ abstract class jInstallerComponentBase {
     
     /**
      * read the identity file
+     * @throws \Exception
      */
     protected function readIdentity() {
         $xmlDescriptor = new DOMDocument();
@@ -196,7 +202,13 @@ abstract class jInstallerComponentBase {
 
         if ($root->namespaceURI == $this->identityNamespace) {
             $xml = simplexml_import_dom($xmlDescriptor);
+            if (!isset($xml->info[0]->version[0])) {
+                throw new jInstallerException('module.missing.version', array($this->name));
+            }
             $this->sourceVersion = (string) $xml->info[0]->version[0];
+            if (trim($this->sourceVersion) == '') {
+                throw new jInstallerException('module.missing.version', array($this->name));
+            }
             if (isset($xml->info[0]->version['date']))
                 $this->sourceDate = (string) $xml->info[0]->version['date'];
             else
@@ -215,8 +227,8 @@ abstract class jInstallerComponentBase {
         <description lang="en_US" locale="" type="text/xhtml">Main module of jelix which contains some ressources needed by jelix classes</description>
         <license URL="http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html">LGPL 2.1</license>
         <copyright>2005-2008 Laurent Jouanneau and other contributors</copyright>
-        <creator name="Laurent Jouanneau" nickname="" email="" active="true"/>
-        <contributor name="hisname" email="hisemail@yoursite.undefined" active="true" since="" role=""/>
+        <creator name="Laurent Jouanneau" nickname="" email="" />
+        <contributor name="hisname" email="hisemail@yoursite.undefined"  since="" role=""/>
         <homepageURL>http://jelix.org</homepageURL>
         <updateURL>http://jelix.org</updateURL>
     </info>

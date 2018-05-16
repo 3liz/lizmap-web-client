@@ -2,7 +2,7 @@
 <suburls xmlns="http://jelix.org/ns/suburls/1.0">
     <url pathinfo="/404.html" action="error:notfound" />
     <url pathinfo="/403.html" action="error:badright" />
-    <url pathinfo="/forms/getdata" action="jforms:getlistdata" />
+    <url pathinfo="/forms/getdata" action="jforms:getListData" />
 
     <url pathinfo="/res/:targetmodule/:file" action="www:getfile">
         <param name="file" type="path" />
