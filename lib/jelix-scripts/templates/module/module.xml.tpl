@@ -6,8 +6,8 @@
         <description lang="%%default_locale%%" />
         <license URL="%%default_license_url%%">%%default_license%%</license>
         <copyright>%%default_copyright%%</copyright>
-        <creator name="%%default_creator_name%%" email="%%default_creator_email%%" active="true"/>
-        <!--<contributor name="hisname" email="hisemail@yoursite.undefined" active="true" since="" role=""/>-->
+        <creator name="%%default_creator_name%%" email="%%default_creator_email%%" />
+        <!--<contributor name="hisname" email="hisemail@yoursite.undefined"  since="" role=""/>-->
         <homepageURL>%%default_website%%</homepageURL>
     </info>
     <dependencies>

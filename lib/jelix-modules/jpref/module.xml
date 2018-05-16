@@ -5,7 +5,7 @@
         <label lang="en_US">jPref</label>
         <description lang="en_US">Module to manage preferences</description>
         <license URL="http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html">LGPL 2.1</license>
-        <copyright>2012 Laurent Jouanneau and 2012 Florian Lonqueu-Brochard</copyright>
+        <copyright>2012-2018 Laurent Jouanneau and 2012 Florian Lonqueu-Brochard</copyright>
         <creator name="Laurent Jouanneau" email="laurent@jelix.org"/>
         <contributor name=" Florian Lonqueu-Brochard" />
         <homepageURL>http://jelix.org</homepageURL>

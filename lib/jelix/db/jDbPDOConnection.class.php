@@ -61,10 +61,14 @@ class jDbPDOConnection extends PDO {
             }
         }
         else {
-            $this->dbms = $this->driverName = $profile['driver'];
-            if ($this->dbms == 'sqlite3') {
-                $this->dbms = $this->driverName = 'sqlite';
+            $this->dbms = $profile['driver'];
+            if ($this->dbms == 'mysqli') {
+                $this->dbms = 'mysql';
             }
+            else if ($this->dbms == 'sqlite3') {
+                $this->dbms = 'sqlite';
+            }
+            $this->driverName = $this->dbms;
             $db = $profile['database'];
             if ($this->dbms != 'sqlite') {
                 $dsn = $this->dbms.':host='.$profile['host'].';dbname='.$db;

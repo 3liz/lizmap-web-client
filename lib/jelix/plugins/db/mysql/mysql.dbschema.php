@@ -3,7 +3,7 @@
 * @package    jelix
 * @subpackage db
 * @author     Laurent Jouanneau
-* @copyright  2005-2017 Laurent Jouanneau
+* @copyright  2005-2018 Laurent Jouanneau
 * @link        http://www.jelix.org
 * @licence     http://www.gnu.org/licenses/lgpl.html GNU Lesser General Public Licence, see LICENCE file
 */
@@ -68,7 +68,7 @@ class mysqlDbTable extends jDbTable {
             $col = new jDbColumn($line->Field, $type, $length, $hasDefault, $default, $notNull);
             $col->autoIncrement = $autoIncrement;
 
-            //$col->unifiedType = $typeinfo[1];
+            $col->nativeType = $typeinfo[0];
             $col->maxValue = $typeinfo[3];
             $col->minValue = $typeinfo[2];
             $col->maxLength = $typeinfo[5];
