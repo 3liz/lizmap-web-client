@@ -13,13 +13,13 @@
         <property name="password" fieldname="usr_password" datatype="string"
                   maxlength="120" selectpattern="%s" updatepattern="" insertpattern="%s" />
 
-        <property name="firstname" fieldname="firstname" datatype="string" maxlength="100" required="true" default=""/>
-        <property name="lastname" fieldname="lastname" datatype="string" maxlength="100" required="true" default=""/>
-        <property name="organization" fieldname="organization" datatype="string" maxlength="100" required="true" default=""/>
+        <property name="firstname" fieldname="firstname" datatype="string" maxlength="100" default=""/>
+        <property name="lastname" fieldname="lastname" datatype="string" maxlength="100" default=""/>
+        <property name="organization" fieldname="organization" datatype="string" maxlength="100" default=""/>
         <property name="phonenumber" fieldname="phonenumber" datatype="string" maxlength="20" default=""/>
-        <property name="street" fieldname="street" datatype="string" maxlength="150" required="true" default=""/>
-        <property name="postcode" fieldname="postcode" datatype="string" maxlength="10" required="true" default=""/>
-        <property name="city" fieldname="city" datatype="string" maxlength="150" required="true" default=""/>
+        <property name="street" fieldname="street" datatype="string" maxlength="150" default=""/>
+        <property name="postcode" fieldname="postcode" datatype="string" maxlength="10" default=""/>
+        <property name="city" fieldname="city" datatype="string" maxlength="150" default=""/>
         <property name="country" fieldname="country" datatype="string" maxlength="100" default=""/>
         <property name="comment" fieldname="comment" datatype="text" maxlength="300" default=""/>
 
