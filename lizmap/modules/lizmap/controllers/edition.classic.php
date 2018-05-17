@@ -429,7 +429,7 @@ class editionCtrl extends jController {
           $sql.= " AND f_table_schema = " . $cnx->quote($schema);
           $sql.= " AND f_table_name = " . $cnx->quote($tableAlone);
           $res = $cnx->query($sql);
-	  $res = $res->fetch();
+          $res = $res->fetch();
           if( $res )
             $this->geometryType = strtolower($res->type);
         }
