@@ -426,7 +426,7 @@ class editionCtrl extends jController {
           $cnx = jDb::getConnection($this->layerId);
           $sql = "SELECT type FROM geometry_columns";
           $sql.= " WHERE 2>1";
-          $sql.= " AND t_table_schema = " . $cnx->quote($schema);
+          $sql.= " AND f_table_schema = " . $cnx->quote($schema);
           $sql.= " AND f_table_name = " . $cnx->quote($tableAlone);
           $res = $cnx->query($sql);
 	  $res = $res->fetch();
