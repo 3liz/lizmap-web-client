@@ -151,7 +151,7 @@ class mediaCtrl extends jController {
 
     // Get the mime type
     $mime = jFile::getMimeType($abspath);
-    if( $mime == 'text/plain' || $mime == '') {
+    if( $mime == 'text/plain' || $mime == '' || $mime == 'application/octet-stream') {
         $mime = jFile::getMimeTypeFromFilename($abspath);
     }
     $rep->mimeType = $mime;
