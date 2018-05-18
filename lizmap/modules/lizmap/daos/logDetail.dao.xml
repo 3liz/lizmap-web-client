@@ -6,7 +6,7 @@
     <record>
         <property name="id" fieldname="id" datatype="integer" autoincrement="true" default=""/>
         <property name="key" fieldname="log_key" datatype="string" required="true"/>
-        <property name="timestamp" fieldname="log_timestamp" datatype="datetime" insertpattern="DATETIME('now')"/>
+        <property name="timestamp" fieldname="log_timestamp" datatype="datetime" insertpattern="now"/>
         <property name="user" fieldname="log_user" datatype="string"/>
         <property name="content" fieldname="log_content" datatype="text"/>
         <property name="repository" fieldname="log_repository" datatype="string"/>
@@ -17,15 +17,15 @@
         updatepattern="" insertpattern="" selectpattern=""/>-->
     </record>
     <factory>
-    
+
         <method name="getDetailRange" type="select">
             <parameter name="offset"/>
             <parameter name="limit"/>
             <order>
                 <orderitem property="id" way="desc" />
-            </order>        
+            </order>
             <limit offset="$offset" count="$limit"/>
         </method>
-      
+
     </factory>
 </dao>
