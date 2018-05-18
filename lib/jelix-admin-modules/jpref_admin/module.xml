@@ -11,7 +11,7 @@
         <homepageURL>http://jelix.org</homepageURL>
     </info>
     <dependencies>
-       <jelix minversion="1.4pre.*" maxversion="1.6.17pre.*"/>
+       <jelix minversion="1.4pre.*" maxversion="1.6.*"/>
         <module name="jacl2db"/>
         <module name="jpref" />
     </dependencies>
