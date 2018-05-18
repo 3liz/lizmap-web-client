@@ -10,7 +10,7 @@
         <homepageURL>http://jelix.org</homepageURL>
     </info>
     <dependencies>
-       <jelix minversion="1.5a1.2500" maxversion="1.6.17pre.*"/>
+       <jelix minversion="1.5a1.2500" maxversion="1.6.*"/>
     </dependencies>
     <autoload>
         <class name="jAcl" file="classes/jAcl.class.php" />
