@@ -677,6 +677,8 @@ class lizmapProject extends qgisProject {
 
             if(property_exists($lc, 'popup_display_child_plot'))
                 $plotConf['popup_display_child_plot'] = $lc->popup_display_child_plot;
+            if(property_exists($lc, 'only_show_childs'))
+                $plotConf['only_show_childs'] = $lc->only_show_childs;
             if(property_exists($lc, 'y2_field'))
                 $plotConf['plot']['y2_field'] = $lc->y2_field;
             if( !empty($lc->color) ){
