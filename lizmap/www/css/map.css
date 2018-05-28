@@ -1234,9 +1234,9 @@ div.modal h3 .text {
 #mini-dock .menu-content .btn.btn-success,
 #right-dock .menu-content .btn.btn-success{
   background-color: #93C01F;
-  background-image: -webkit-linear-gradient(center top, #9BC144, #93C01F);
-  background-image:    -moz-linear-gradient(center top, #9BC144, #93C01F);
-  background-image:      -o-linear-gradient(center top, #9BC144, #93C01F);
+  background-image: -webkit-linear-gradient(top, #9BC144, #93C01F);
+  background-image:    -moz-linear-gradient(top, #9BC144, #93C01F);
+  background-image:      -o-linear-gradient(top, #9BC144, #93C01F);
   background-image:         linear-gradient(to bottom, #9BC144, #93C01F);
 }
 #dock .print .menu-content,
