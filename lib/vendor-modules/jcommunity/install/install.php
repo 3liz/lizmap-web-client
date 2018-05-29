@@ -100,10 +100,10 @@ class jcommunityModuleInstaller extends jInstallerModule {
 
         $this->setupFramework();
 
-        $localConfigIni = $this->entryPoint->localConfigIni;
-        $key = $localConfigIni->getValue('persistant_crypt_key', 'coordplugin_auth');
+        $configIni = isset($this->entryPoint->liveConfigIni)?$this->entryPoint->liveConfigIni : $this->entryPoint->localConfigIni;
+        $key = $configIni->getValue('persistant_crypt_key', 'coordplugin_auth');
         if ($key === 'exampleOfCryptKey' || $key == '') {
-            $localConfigIni->getMaster()->setValue('persistant_crypt_key', self::$key, 'coordplugin_auth');
+            $configIni->getMaster()->setValue('persistant_crypt_key', self::$key, 'coordplugin_auth');
         }
 
         $conf = $this->getAuthConf();

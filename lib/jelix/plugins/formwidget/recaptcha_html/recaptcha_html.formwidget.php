@@ -1,7 +1,7 @@
 <?php
 /**
 * @package     jelix
-* @subpackage  formwidgets
+* @subpackage  forms_widget_plugin
 * @author      Laurent Jouanneau
 * @copyright   2017 Laurent Jouanneau
 * @link        http://www.jelix.org
@@ -48,7 +48,7 @@
  *
  *
  * @package     jelix
- * @subpackage  jelix-plugins
+ * @subpackage  forms_widget_plugin
  */
 class recaptcha_htmlFormWidget extends  \jelix\forms\HtmlWidget\WidgetBase {
     public function outputMetaContent($resp) {

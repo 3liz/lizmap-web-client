@@ -1,7 +1,7 @@
 <?php
 /**
 * @package    jelix
-* @subpackage core
+* @subpackage core_log
 * @author     Laurent Jouanneau
 * @contributor F. Fernandez, Hadrien Lanneau
 * @copyright  2006-2012 Laurent Jouanneau, 2007 F. Fernandez, 2011 Hadrien Lanneau
@@ -60,7 +60,7 @@ require(JELIX_LIB_CORE_PATH.'log/jFileLogger.class.php');
 /**
  * utility class to log some message into a file into yourapp/var/log
  * @package    jelix
- * @subpackage utils
+ * @subpackage core_log
  * @static
  */
 class jLog {

@@ -14,7 +14,7 @@
 /**
  * HTML form builder
  * @package     jelix
- * @subpackage  jelix-plugins
+ * @subpackage  forms
  * @deprecated
  */
 class jFormsBuilderHtml extends jFormsBuilderBase {

@@ -1,7 +1,7 @@
 <?php
 /**
  * @package     jelix
- * @subpackage  kvdb
+ * @subpackage  kvdb_plugin
  * @author      Yannick Le Guédart
  * @contributor Laurent Jouanneau
  * @copyright   2009 Yannick Le Guédart, 2010-2016 Laurent Jouanneau
