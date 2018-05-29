@@ -490,7 +490,7 @@ class qgisVectorLayer extends qgisMapLayer{
 
       // Add login filter if needed
       if( $loginFilteredLayers and is_array( $loginFilteredLayers ) ){
-          $sql.= ' AND '.$loginFilteredLayers['where'];
+          $uwhere.= ' AND '.$loginFilteredLayers['where'];
       }
       $sql.= $uwhere;
 
