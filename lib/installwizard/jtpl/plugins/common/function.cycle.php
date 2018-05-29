@@ -22,8 +22,7 @@
  * {cycle 'name'}
  * {cycle}
  * </pre>
- * @paramm jTpl $tpl
- * @param $tpl
+ * @param jTpl $tpl
  * @param string $param
  * @throws jException
  * @internal param $string ,array $param the name of the cycle, or the list of values

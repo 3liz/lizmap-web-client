@@ -1,7 +1,7 @@
 <?php
 /**
 * @package     jelix
-* @subpackage  utils
+* @subpackage  feeds
 * @author      Sebastien Romieu
 * @author   Florian Lonqueu-Brochard
 * @copyright   2010 Sébastien Romieu

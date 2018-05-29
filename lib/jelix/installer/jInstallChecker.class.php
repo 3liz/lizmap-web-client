@@ -3,7 +3,7 @@
 * check a jelix installation
 *
 * @package  jelix
-* @subpackage core
+* @subpackage installer
 * @author   Laurent Jouanneau
 * @contributor Bastien Jaillot
 * @contributor Olivier Demah, Brice Tence, Julien Issler
@@ -16,7 +16,7 @@
 /**
  * check an installation of a jelix application
  * @package  jelix
- * @subpackage core
+ * @subpackage installer
  * @since 1.0b2
  */
 class jInstallCheck {

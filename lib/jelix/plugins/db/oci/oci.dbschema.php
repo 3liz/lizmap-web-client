@@ -1,7 +1,7 @@
 <?php
 /**
 * @package     jelix
-* @subpackage  db
+* @subpackage  db_driver
 * @author      Laurent Jouanneau
 * @contributor Gwendal Jouannic
 * @copyright   2008 Gwendal Jouannic, 2009-2018 Laurent Jouanneau

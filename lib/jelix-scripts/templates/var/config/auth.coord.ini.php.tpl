@@ -69,7 +69,7 @@ enable_after_logout_override = off
 persistant_enable=off
 
 ; key to use to crypt the password in the cookie
-; Warning: has been moved to localconfig.ini.php, section coordplugin_auth
+; Warning: has been moved to liveconfig.ini.php, section coordplugin_auth
 ;persistant_crypt_key=
 
 ; the name of the cookie which is used to store data for the authentification

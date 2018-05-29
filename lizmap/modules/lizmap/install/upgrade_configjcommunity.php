@@ -11,7 +11,7 @@ class lizmapModuleUpgrader_configjcommunity extends jInstallerModule {
         if( $this->firstExec('configchange') ) {
             $lzmIni = new jIniFileModifier(jApp::configPath('lizmapConfig.ini.php'));
 
-            $localIni = $this->entryPoint->localConfigIni->getMaster();
+            $liveIni = $this->entryPoint->liveConfigIni;
 
             $val = $lzmIni->getValue('allowUserAccountRequests', 'services');
             if ($val === null) {
@@ -20,7 +20,7 @@ class lizmapModuleUpgrader_configjcommunity extends jInstallerModule {
             else {
                 $lzmIni->removeValue('allowUserAccountRequests', 'services');
             }
-            $localIni->setValue('registrationEnabled', ($val?'on':'off'), 'jcommunity');
+            $liveIni->setValue('registrationEnabled', ($val?'on':'off'), 'jcommunity');
 
             $adminSenderEmail = $this->entryPoint->config->mailer['webmasterEmail'];
             if ($adminSenderEmail == 'root@localhost') {
@@ -29,10 +29,10 @@ class lizmapModuleUpgrader_configjcommunity extends jInstallerModule {
 
             $val = $lzmIni->getValue('adminContactEmail', 'services');
             if ($val !== null && $adminSenderEmail == '') {
-                $localIni->setValue('webmasterEmail', $val,  'mailer');
+                $liveIni->setValue('webmasterEmail', $val,  'mailer');
             }
             $lzmIni->save();
-            $localIni->save();
+            $liveIni->save();
         }
     }
 

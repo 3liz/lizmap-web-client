@@ -1,7 +1,7 @@
 <?php
 /**
-* @package    jelix
-* @subpackage core
+ * @package    jelix-modules
+ * @subpackage jelix-module
 * @author     Laurent Jouanneau
 * @copyright  2010 Laurent Jouanneau
 * @link       http://www.jelix.org

@@ -45,10 +45,10 @@ class jauthModuleInstaller extends jInstallerModule {
             }
         }
 
-        $localConfigIni = $this->entryPoint->localConfigIni;
-        $key = $localConfigIni->getValue('persistant_crypt_key', 'coordplugin_auth');
+        $liveConfigIni = $this->entryPoint->liveConfigIni;
+        $key = $liveConfigIni->getValue('persistant_crypt_key', 'coordplugin_auth');
         if ($key === 'exampleOfCryptKey' || $key == '') {
-            $localConfigIni->getMaster()->setValue('persistant_crypt_key', self::$key, 'coordplugin_auth');
+            $liveConfigIni->setValue('persistant_crypt_key', self::$key, 'coordplugin_auth');
         }
     }
 }

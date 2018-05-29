@@ -1,7 +1,7 @@
 <?php
 /**
 * @package    jelix-modules
-* @subpackage jelix
+* @subpackage jelix-module
 * @author     Laurent Jouanneau
 * @copyright  2006 Laurent Jouanneau
 * @licence    http://www.gnu.org/licenses/gpl.html GNU General Public Licence, see LICENCE file
@@ -9,7 +9,7 @@
 
 /**
  * @package    jelix-modules
- * @subpackage jelix
+ * @subpackage jelix-module
  */
 class errorCtrl extends jController {
 

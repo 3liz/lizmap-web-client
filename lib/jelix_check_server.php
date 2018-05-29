@@ -60,7 +60,7 @@ interface jIInstallReporter {
 /**
 * 
 * @package  jelix
-* @subpackage core
+* @subpackage installer
 * @author   Laurent Jouanneau
 * @contributor Bastien Jaillot
 * @copyright 2007-2009 Laurent Jouanneau, 2008 Bastien Jaillot
@@ -72,7 +72,7 @@ interface jIInstallReporter {
 /**
  * message provider for jInstallCheck and jInstaller
  * @package  jelix
- * @subpackage core
+ * @subpackage installer
  * @since 1.0b2
  */
 class jInstallerMessageProvider {
@@ -80,20 +80,20 @@ class jInstallerMessageProvider {
 
     protected $messages = array(
         'fr'=>array(
-     'checker.title'=>'Vérification de votre serveur pour Jelix 1.6.17',
+     'checker.title'=>'Vérification de votre serveur pour Jelix 1.6.18pre.3542',
         'number.errors'         =>' erreurs.',
         'number.error'          =>' erreur.',
         'number.warnings'       =>' avertissements.',
         'number.warning'        =>' avertissement.',
         'number.notices'        =>' remarques.',
         'number.notice'         =>' remarque.',
-    'conclusion.error'      =>'Vous devez corriger l\'erreur pour faire fonctionner correctement une application Jelix 1.6.17.',
-    'conclusion.errors'     =>'Vous devez corriger les erreurs pour faire fonctionner correctement une application Jelix 1.6.17.',
-    'conclusion.warning'    =>'Une application Jelix 1.6.17 peut à priori fonctionner, mais il est préférable de corriger l\'avertissement pour être sûr.',
-    'conclusion.warnings'   =>'Une application Jelix 1.6.17 peut à priori fonctionner, mais il est préférable de corriger les avertissements pour être sûr.',
-    'conclusion.notice'     =>'Aucun problème pour installer une application pour Jelix  1.6.17 malgré la remarque.',
-    'conclusion.notices'    =>'Aucun problème pour installer une application pour Jelix  1.6.17 malgré les remarques.',
-    'conclusion.ok'         =>'Vous pouvez installer une application avec Jelix 1.6.17',
+    'conclusion.error'      =>'Vous devez corriger l\'erreur pour faire fonctionner correctement une application Jelix 1.6.18pre.3542.',
+    'conclusion.errors'     =>'Vous devez corriger les erreurs pour faire fonctionner correctement une application Jelix 1.6.18pre.3542.',
+    'conclusion.warning'    =>'Une application Jelix 1.6.18pre.3542 peut à priori fonctionner, mais il est préférable de corriger l\'avertissement pour être sûr.',
+    'conclusion.warnings'   =>'Une application Jelix 1.6.18pre.3542 peut à priori fonctionner, mais il est préférable de corriger les avertissements pour être sûr.',
+    'conclusion.notice'     =>'Aucun problème pour installer une application pour Jelix  1.6.18pre.3542 malgré la remarque.',
+    'conclusion.notices'    =>'Aucun problème pour installer une application pour Jelix  1.6.18pre.3542 malgré les remarques.',
+    'conclusion.ok'         =>'Vous pouvez installer une application avec Jelix 1.6.18pre.3542',
         'cannot.continue'       =>'Les vérifications ne peuvent continuer : %s',
         'extension.not.installed'=>'L\'extension %s n\'est pas disponible',
         'extension.optional.not.installed'=>'L\'extension %s optionnelle n\'est pas disponible',
@@ -165,20 +165,20 @@ class jInstallerMessageProvider {
         ),
 
         'en'=>array(
-  'checker.title'   =>'Check your configuration server for Jelix 1.6.17',
+  'checker.title'   =>'Check your configuration server for Jelix 1.6.18pre.3542',
         'number.errors'     =>' errors.',
         'number.error'      =>' error.',
         'number.warnings'   =>' warnings.',
         'number.warning'    =>' warning.',
         'number.notices'    =>' notices.',
         'number.notice'     =>' notice.',
-      'conclusion.error'    =>'You must fix the error in order to run an application correctly with Jelix 1.6.17.',
-      'conclusion.errors'   =>'You must fix errors in order to run an application correctly with Jelix 1.6.17.',
-      'conclusion.warning'  =>'Your application for Jelix 1.6.17 may run without problems, but it is recommanded to fix the warning.',
-      'conclusion.warnings' =>'Your application for Jelix 1.6.17 may run without problems, but it is recommanded to fix warnings.',
-      'conclusion.notice'   =>'You can install an application for Jelix 1.6.17, although there is a notice.',
-      'conclusion.notices'  =>'You can install an application for Jelix 1.6.17, although there are notices.',
-      'conclusion.ok'       =>'You can install an application for Jelix 1.6.17.',
+      'conclusion.error'    =>'You must fix the error in order to run an application correctly with Jelix 1.6.18pre.3542.',
+      'conclusion.errors'   =>'You must fix errors in order to run an application correctly with Jelix 1.6.18pre.3542.',
+      'conclusion.warning'  =>'Your application for Jelix 1.6.18pre.3542 may run without problems, but it is recommanded to fix the warning.',
+      'conclusion.warnings' =>'Your application for Jelix 1.6.18pre.3542 may run without problems, but it is recommanded to fix warnings.',
+      'conclusion.notice'   =>'You can install an application for Jelix 1.6.18pre.3542, although there is a notice.',
+      'conclusion.notices'  =>'You can install an application for Jelix 1.6.18pre.3542, although there are notices.',
+      'conclusion.ok'       =>'You can install an application for Jelix 1.6.18pre.3542.',
         'cannot.continue'       =>'Cannot continue the checking: %s',
         'extension.not.installed'=>'The extension %s is not available',
         'extension.optional.not.installed'=>'the optional extension %s is not available',
@@ -292,7 +292,7 @@ class jInstallerMessageProvider {
 * check a jelix installation
 *
 * @package  jelix
-* @subpackage core
+* @subpackage installer
 * @author   Laurent Jouanneau
 * @contributor Bastien Jaillot
 * @contributor Olivier Demah, Brice Tence, Julien Issler
@@ -305,7 +305,7 @@ class jInstallerMessageProvider {
 /**
  * check an installation of a jelix application
  * @package  jelix
- * @subpackage core
+ * @subpackage installer
  * @since 1.0b2
  */
 class jInstallCheck {
