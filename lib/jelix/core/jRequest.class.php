@@ -1,7 +1,7 @@
 <?php
 /**
 * @package    jelix
-* @subpackage core
+* @subpackage core_request
 * @author     Laurent Jouanneau
 * @contributor Yannick Le Guédart, Julien Issler
 * @copyright  2005-2013 Laurent Jouanneau, 2010 Yannick Le Guédart, 2016 Julien Issler
@@ -15,7 +15,7 @@
  * process depends on the type of request (ex: xmlrpc..)
  *
  * @package  jelix
- * @subpackage core
+ * @subpackage core_request
  */
 abstract class jRequest {
 

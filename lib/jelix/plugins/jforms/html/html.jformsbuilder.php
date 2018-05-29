@@ -1,7 +1,7 @@
 <?php
 /**
 * @package     jelix
-* @subpackage  forms
+* @subpackage  forms_legacybuilder_plugin
 * @author      Laurent Jouanneau
 * @contributor Julien Issler, Dominique Papin, Olivier Demah
 * @copyright   2006-2015 Laurent Jouanneau
@@ -17,7 +17,7 @@ include_once(JELIX_LIB_PATH.'forms/legacy/jFormsBuilderHtml.class.php');
 /**
  * HTML form builder
  * @package     jelix
- * @subpackage  jelix-plugins
+ * @subpackage  forms_legacybuilder_plugin
  * @deprecated
  */
 class htmlJformsBuilder extends jFormsBuilderHtml {

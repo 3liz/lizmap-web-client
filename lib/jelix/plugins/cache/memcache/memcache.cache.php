@@ -1,7 +1,7 @@
 <?php
 /**
 * @package    jelix
-* @subpackage plugins_cache_memcached
+* @subpackage cache_plugin
 * @author     Tahina Ramaroson
 * @contributor Sylvain de Vathaire
 * @copyright  2009 Neov, 2010 Neov
@@ -13,7 +13,7 @@
 * cache driver for data stored in Memcached. Use the memcache extension of PHP.
 * This plugin should be used with version 3.0.1 or more of the memcache extension
 * @package jelix
-* @subpackage plugins_cache_memcached
+* @subpackage cache_plugin
 */
 class memcacheCacheDriver implements jICacheDriver {
 

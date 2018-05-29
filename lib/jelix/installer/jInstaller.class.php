@@ -223,6 +223,12 @@ class jInstaller {
     public $localConfig;
 
     /**
+     * liveconfig.ini.php
+     * @var jIniFileModifier
+     */
+    public $liveConfig;
+
+    /**
      * initialize the installation
      *
      * it reads configurations files of all entry points, and prepare object for
@@ -242,10 +248,15 @@ class jInstaller {
               copy($localConfigDist, $localConfig);
            }
            else {
-              file_put_contents($localConfig, ';<'.'?php die(\'\');?'.'>');
+              file_put_contents($localConfig, ';<'.'?php die(\'\');?'.'> static local configuration');
            }
         }
+        $liveConfig = jApp::configPath('liveconfig.ini.php');
+        if (!file_exists($liveConfig)) {
+            file_put_contents($liveConfig, ';<'.'?php die(\'\');?'.'> live configuration');
+        }
         $this->localConfig = new jIniMultiFilesModifier($this->mainConfig, $localConfig);
+        $this->liveConfig = new jIniFileModifier($liveConfig);
         $this->installerIni = $this->getInstallerIni();
         $this->readEntryPointData(simplexml_load_file(jApp::appPath('project.xml')));
         $this->installerIni->save();
@@ -296,8 +307,9 @@ class jInstaller {
 
             // we create an object corresponding to the entry point
             $ep = $this->getEntryPointObject($configFile, $file, $type);
-            // not to the constructor, to no break API. FIXME
+            // not to the constructor, to not break API. FIXME
             $ep->localConfigIni =  new jIniMultiFilesModifier($this->localConfig, $ep->getEpConfigIni());
+            $ep->liveConfigIni = $this->liveConfig;
             $epId = $ep->getEpId();
 
             $this->epId[$file] = $epId;
@@ -681,6 +693,7 @@ class jInstaller {
                 // we always save the configuration, so it invalidates the cache
                 $ep->configIni->save();
                 $ep->localConfigIni->save();
+                $ep->liveConfigIni->save();
 
                 // we re-load configuration file for each module because
                 // previous module installer could have modify it.
@@ -724,6 +737,7 @@ class jInstaller {
                 // we always save the configuration, so it invalidates the cache
                 $ep->configIni->save();
                 $ep->localConfigIni->save();
+                $ep->liveConfigIni->save();
 
                 // we re-load configuration file for each module because
                 // previous module installer could have modify it.

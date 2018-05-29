@@ -1,7 +1,7 @@
 <?php
 /**
 * @package     jelix-modules
-* @subpackage  jelix
+* @subpackage  jelix-module
 * @author      Loic Mathaud
 * @contributor Christophe Thiriot
 * @copyright   2006 Loic Mathaud
@@ -11,7 +11,7 @@
 
 /**
  * @package    jelix-modules
- * @subpackage jelix
+ * @subpackage jelix-module
  */
 class helpCtrl extends jControllerCmdLine {
     protected $allowed_options = array(

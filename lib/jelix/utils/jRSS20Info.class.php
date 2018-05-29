@@ -1,7 +1,7 @@
 <?php
 /**
 * @package     jelix
-* @subpackage  utils
+* @subpackage  feeds
 * @author      Loic Mathaud
 * @author      Yannick Le Guédart
 * @contributor Laurent Jouanneau

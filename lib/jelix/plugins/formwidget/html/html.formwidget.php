@@ -1,7 +1,7 @@
 <?php
 /**
 * @package     jelix
-* @subpackage  formwidgets
+* @subpackage  forms_widget_plugin
 * @author      Laurent Jouanneau
 * @contributor Julien Issler, Dominique Papin
 * @copyright   2006-2012 Laurent Jouanneau, 2008-2011 Julien Issler, 2008 Dominique Papin

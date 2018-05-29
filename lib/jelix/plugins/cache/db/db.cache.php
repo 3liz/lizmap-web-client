@@ -1,7 +1,7 @@
 <?php
 /**
 * @package    jelix
-* @subpackage plugins_cache_db
+* @subpackage cache_plugin
 * @author     Tahina Ramaroson
 * @contributor Sylvain de Vathaire, Laurent Jouanneau
 * @copyright  2009 Neov, 2009-2017 Laurent Jouanneau
@@ -15,7 +15,7 @@
 *   Beware about the time returned by the DBMS of the server and the server PHP client : possible asynchronous time (particulary
 *   in case of use of multiple servers, incoherent data can be involved).
 * @package jelix
-* @subpackage plugins_cache_db
+* @subpackage cache_plugin
 */
 class dbCacheDriver implements jICacheDriver {
 
