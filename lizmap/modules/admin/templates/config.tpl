@@ -110,6 +110,8 @@
   {/ifacl2}
 
 <!--Add a repository-->
+{if count($repositories)}
 {ifacl2 'lizmap.admin.repositories.create'}
 <a class="btn" href="{jurl 'admin~config:createSection'}">{@admin~admin.configuration.button.add.repository.label@}</a>
 {/ifacl2}
+{/if}
