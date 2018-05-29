@@ -78,6 +78,9 @@ interface jICacheDriver {
 
 /**
  * Global caching data provided from whatever sources
+ *
+ * @package     jelix
+ * @subpackage  cache
  * @since 1.2
  */
 class jCache {

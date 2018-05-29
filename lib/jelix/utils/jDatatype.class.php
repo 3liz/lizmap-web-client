@@ -1,7 +1,7 @@
 <?php
 /**
 * @package     jelix
-* @subpackage  utils
+* @subpackage  datatypes
 * @author      Laurent Jouanneau
 * @contributor Julien Issler, Hadrien Lanneau
 * @copyright   2006-2014 Laurent Jouanneau
@@ -13,7 +13,7 @@
 /**
  * interface for datatypes which can filter value
  * @package     jelix
- * @subpackage  utils
+ * @subpackage  datatypes
  * @since 1.1
  */
 interface jIFilteredDatatype {
@@ -27,7 +27,7 @@ interface jIFilteredDatatype {
 /**
  *
  * @package     jelix
- * @subpackage  utils
+ * @subpackage  datatypes
  */
 abstract class jDatatype {
 
@@ -87,7 +87,7 @@ abstract class jDatatype {
  *
  * Possible facets are: 'length','minLength','maxLength', 'pattern'
  * @package     jelix
- * @subpackage  utils
+ * @subpackage  datatypes
  */
 class jDatatypeString extends jDatatype {
     protected $length=null;
@@ -124,7 +124,7 @@ class jDatatypeString extends jDatatype {
  *
  * Possible facets are: 'length','minLength','maxLength'
  * @package     jelix
- * @subpackage  utils
+ * @subpackage  datatypes
  * @since 1.1
  */
 class jDatatypeHtml extends jDatatype implements jIFilteredDatatype {
@@ -171,7 +171,7 @@ class jDatatypeHtml extends jDatatype implements jIFilteredDatatype {
 /**
  * Datatype Booléen
  * @package     jelix
- * @subpackage  utils
+ * @subpackage  datatypes
  */
 class jDatatypeBoolean extends jDatatype {
     public function check($value) { return jFilter::isBool($value); }
@@ -182,7 +182,7 @@ class jDatatypeBoolean extends jDatatype {
  *
  * Possible facets are: 'maxValue', 'minValue'
  * @package     jelix
- * @subpackage  utils
+ * @subpackage  datatypes
  */
 class jDatatypeDecimal extends jDatatype {
     // xxxx.yyyyy
@@ -200,7 +200,7 @@ class jDatatypeDecimal extends jDatatype {
 /**
  * Datatype Integer
  * @package     jelix
- * @subpackage  utils
+ * @subpackage  datatypes
  */
 class jDatatypeInteger extends jDatatypeDecimal {
     public function check($value) { return jFilter::isInt($value, $this->minValue, $this->maxValue); }
@@ -215,7 +215,7 @@ class jDatatypeInteger extends jDatatypeDecimal {
 /**
  * Datatype Hexa
  * @package     jelix
- * @subpackage  utils
+ * @subpackage  datatypes
  */
 class jDatatypeHexadecimal extends jDatatypeDecimal {
     public function check($value) {
@@ -235,7 +235,7 @@ class jDatatypeHexadecimal extends jDatatypeDecimal {
  *
  * Possible facets are: 'maxValue', 'minValue'
  * @package     jelix
- * @subpackage  utils
+ * @subpackage  datatypes
  */
 class jDatatypeDateTime extends jDatatype {
     protected $facets = array('maxValue', 'minValue');
@@ -275,7 +275,7 @@ class jDatatypeDateTime extends jDatatype {
 /**
  * Datatype time
  * @package     jelix
- * @subpackage  utils
+ * @subpackage  datatypes
  */
 class jDatatypeTime extends jDatatypeDateTime {
     protected $format=22;
@@ -283,7 +283,7 @@ class jDatatypeTime extends jDatatypeDateTime {
 /**
  * Datatype date
  * @package     jelix
- * @subpackage  utils
+ * @subpackage  datatypes
  */
 class jDatatypeDate extends jDatatypeDateTime {
     protected $format=20;
@@ -293,7 +293,7 @@ class jDatatypeDate extends jDatatypeDateTime {
 /**
  * Datatype localedatetime
  * @package     jelix
- * @subpackage  utils
+ * @subpackage  datatypes
  */
 class jDatatypeLocaleDateTime extends jDatatypeDateTime {
     protected $format=11;
@@ -302,7 +302,7 @@ class jDatatypeLocaleDateTime extends jDatatypeDateTime {
 /**
  * Datatype localedate
  * @package     jelix
- * @subpackage  utils
+ * @subpackage  datatypes
  */
 class jDatatypeLocaleDate extends jDatatypeDateTime {
     protected $format=10;
@@ -311,7 +311,7 @@ class jDatatypeLocaleDate extends jDatatypeDateTime {
 /**
  * Datatype localetime
  * @package     jelix
- * @subpackage  utils
+ * @subpackage  datatypes
  */
 class jDatatypeLocaleTime extends jDatatypeDateTime {
     protected $format=12;
@@ -321,7 +321,7 @@ class jDatatypeLocaleTime extends jDatatypeDateTime {
 /**
  * Datatype localetime
  * @package     jelix
- * @subpackage  utils
+ * @subpackage  datatypes
  * @author dhughuet, time short
  */
 class jDatatypeLocaleTimeShort extends jDatatypeDateTime {
@@ -335,7 +335,7 @@ class jDatatypeLocaleTimeShort extends jDatatypeDateTime {
  * Possible facets are: 'schemeRequired','hostRequired','pathRequired', 'queryRequired'.
  * all are booleans.
  * @package     jelix
- * @subpackage  utils
+ * @subpackage  datatypes
  */
 class jDatatypeUrl extends jDatatype {
     protected $schemeRequired=true;
@@ -353,7 +353,7 @@ class jDatatypeUrl extends jDatatype {
 /**
  * Datatype ipv4
  * @package     jelix
- * @subpackage  utils
+ * @subpackage  datatypes
  */
 class jDatatypeIPv4 extends jDatatype {
     public function check($value){
@@ -364,7 +364,7 @@ class jDatatypeIPv4 extends jDatatype {
 /**
  * Datatype ipv6
  * @package     jelix
- * @subpackage  utils
+ * @subpackage  datatypes
  */
 class jDatatypeIPv6 extends jDatatype {
     public function check($value){
@@ -375,7 +375,7 @@ class jDatatypeIPv6 extends jDatatype {
 /**
  * Datatype mail
  * @package     jelix
- * @subpackage  utils
+ * @subpackage  datatypes
  */
 class jDatatypeEmail extends jDatatype {
     public function check($value){

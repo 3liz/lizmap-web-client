@@ -1,7 +1,7 @@
 <?php
 /**
 * @package     jelix
-* @subpackage  core
+* @subpackage  core_request
 * @author      Laurent Jouanneau
 * @contributor Julien Issler, Brice Tence
 * @contributor Florian Lonqueu-Brochard
@@ -16,7 +16,7 @@
 * base class for response object
 * A response object is responsible to generate a content in a specific format.
 * @package  jelix
-* @subpackage core
+* @subpackage core_request
 */
 abstract class jResponse {
 

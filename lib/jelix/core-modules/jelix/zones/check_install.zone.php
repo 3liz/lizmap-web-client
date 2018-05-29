@@ -1,7 +1,7 @@
 <?php
 /**
-* @package    jelix-modules
-* @subpackage jelix
+ * @package    jelix-modules
+ * @subpackage jelix-module
 * @author     Bastien Jaillot
 * @contributor Laurent Jouanneau, Julien Issler
 * @copyright  2008 Bastien Jaillot
@@ -15,7 +15,8 @@ include (JELIX_LIB_PATH.'installer/jIInstallReporter.iface.php');
 
 /**
  * an HTML reporter for jInstallChecker
- * @package jelix
+ * @package    jelix-modules
+ * @subpackage jelix-module
  */
 class checkZoneInstallReporter implements jIInstallReporter {
     public $trace = '';
@@ -62,7 +63,8 @@ class checkZoneInstallReporter implements jIInstallReporter {
 
 /**
  * a zone to display a default start page with results of the installation check
- * @package jelix
+ * @package    jelix-modules
+ * @subpackage jelix-module
  */
 class check_installZone extends jZone {
 

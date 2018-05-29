@@ -27,6 +27,9 @@ fi
 if [ -f $LIZMAP/var/config/localconfig.ini.php ]; then
     rm -f $LIZMAP/var/config/localconfig.ini.php
 fi
+if [ -f $LIZMAP/var/config/liveconfig.ini.php ]; then
+    rm -f $LIZMAP/var/config/liveconfig.ini.php
+fi
 if [ -f $LIZMAP/var/config/lizmapConfig.ini.php ]; then
     rm -f $LIZMAP/var/config/lizmapConfig.ini.php
 fi

@@ -14,7 +14,7 @@
 class jInstallerEntryPoint {
 
     /** @var StdObj   configuration parameters. compiled content of config files
-      *  result of the merge of entry point config, localconfig.ini.php,
+      *  result of the merge of entry point config, liveconfig.ini.php, localconfig.ini.php,
       *  mainconfig.ini.php and defaultconfig.ini.php
       *  @deprecated as public property
       */
@@ -43,8 +43,16 @@ class jInstallerEntryPoint {
     public $localConfigIni;
 
     /**
+     * liveconfig.ini.php
+     *
+     * @var jIniFileModifier
+     * @deprecated as public property
+     */
+    public $liveConfigIni;
+
+    /**
      * entrypoint config
-     * @var jIniFilesModifier
+     * @var jIniFileModifier
      */
     protected $epConfigIni;
 

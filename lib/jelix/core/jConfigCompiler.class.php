@@ -78,6 +78,10 @@ class jConfigCompiler {
                 throw new Exception("Syntax error in the configuration file -- $configFile", 6);
         }
 
+        if (file_exists($configPath.'liveconfig.ini.php')) {
+            @jelix_read_ini($configPath.'liveconfig.ini.php', $config);
+        }
+
         self::prepareConfig($config, $allModuleInfo, $isCli, $pseudoScriptName);
         self::$commonConfig = null;
         return $config;

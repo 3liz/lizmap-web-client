@@ -253,12 +253,12 @@ class lizmapServices{
     public function save( ){
       // Get access to the ini file
       $ini = new jIniFileModifier(jApp::configPath('lizmapConfig.ini.php'));
-      $localIni = new jIniFileModifier(jApp::configPath('localconfig.ini.php'));
+      $liveIni = new jIniFileModifier(jApp::configPath('liveconfig.ini.php'));
 
       foreach($this->properties as $prop) {
         if (isset($this->globalConfigProperties[$prop])) {
           list($key, $section) = $this->globalConfigProperties[$prop];
-          $localIni->setValue($key, $this->$prop, $section);
+            $liveIni->setValue($key, $this->$prop, $section);
         }
         else if ($this->$prop != '') {
           $ini->setValue($prop, $this->$prop, 'services');
@@ -268,11 +268,11 @@ class lizmapServices{
         }
       }
 
-      $modified = $ini->isModified() || $localIni->isModified();
+      $modified = $ini->isModified() || $liveIni->isModified();
 
       // Save the ini file
       $ini->save();
-      $localIni->save();
+      $liveIni->save();
       return $modified;
     }
 

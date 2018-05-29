@@ -1,7 +1,7 @@
 <?php
 /**
 * @package    jelix
-* @subpackage auth_driver
+* @subpackage auth
 * @author      Laurent Jouanneau
 * @contributor Florian Lonqueu-Brochard
 * @copyright   2011 Laurent Jouanneau, 2011 Florian Lonqueu-Brochard
