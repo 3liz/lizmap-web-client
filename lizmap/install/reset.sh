@@ -5,9 +5,12 @@ if [[ "$1" != "install" &&  "$1" != "reset" ]]; then
     echo ""
     echo "This script resets the installation of lizmap, destroying all references to projects"
     echo "and erasing logs, rights, and users..."
-    echo "Launch this script with a parameter:"
-    echo " - 'install' to confirm the reset and to launch the installer"
-    echo " - or 'reset' to only confirm the reset (if you want to launch the wizard)"
+    echo "Launch this script with one of these parameter:"
+    echo " - 'install' to confirm the reset and to launch the installer."
+    echo "    Add 'demo' as second parameter if you want to install/reset with the"
+    echo "    demo activated"
+    echo " - 'reset' to only confirm the reset (if you want to launch the wizard)"
+    echo ""
     exit 1
 fi
 
@@ -45,5 +48,9 @@ if [ "$1" == "install" ]; then
     cp $LIZMAP/var/config/localconfig.ini.php.dist $LIZMAP/var/config/localconfig.ini.php
     cp $LIZMAP/var/config/profiles.ini.php.dist $LIZMAP/var/config/profiles.ini.php
 
+    if [ "$2" == "demo" ]; then
+        echo "[modules]" >> $LIZMAP/var/config/localconfig.ini.php
+        echo "lizmap.installparam=demo" >> $LIZMAP/var/config/localconfig.ini.php
+    fi
     (cd $LIZMAP/install && php installer.php)
 fi
