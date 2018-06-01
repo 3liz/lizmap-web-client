@@ -33,9 +33,6 @@ class configCtrl extends jController {
   // Prefix of jacl2 subjects corresponding to lizmap web client view interface
   // used to get only non admin subjects
   protected $lizmapClientPrefix = 'lizmap.repositories|lizmap.tools';
-  // Black list some non wanted groups
-  protected $groupBlacklist = array('users');
-
 
   /**
   * Display a summary of the information taken from the ~ configuration file.
@@ -57,7 +54,7 @@ class configCtrl extends jController {
       $sql = " SELECT r.id_aclsbj, g.name AS group_name";
       $sql.= " FROM jacl2_rights r";
       $sql.= " INNER JOIN jacl2_group g ON r.id_aclgrp = g.id_aclgrp";
-      $sql.= " WHERE g.grouptype = 0 AND r.id_aclgrp NOT IN ('".implode("','", $this->groupBlacklist)."')";
+      $sql.= " WHERE (g.grouptype = 0 OR g.grouptype = 1)";
       $sql.= " AND id_aclres=".$cnx->quote($repo);
       //$sql.= " GROUP BY r.id_aclsbj;";
       $sql.= " ORDER BY g.name";
@@ -73,6 +70,7 @@ class configCtrl extends jController {
       foreach ($group_names as $k => $v) {
         $group_names[$k] = implode(' - ', $v);
       }
+
       $rights = (object) $group_names;
 
       $repositories[] = lizmap::getRepository($repo);
@@ -81,10 +79,13 @@ class configCtrl extends jController {
 
 
     // Subjects labels
+    $subjects = array();
     $labels = array();
     $daosubject = jDao::get('jacl2db~jacl2subject','jacl2_profile');
-    foreach($daosubject->findAllSubject() as $subject)
+    foreach($daosubject->findAllSubject() as $subject) {
+      $subjects[] = $subject->id_aclsbj;
       $labels[$subject->id_aclsbj] = $this->getLabel($subject->id_aclsbj, $subject->label_key);
+    }
 
     // Get Lizmap version from project.xml
     $xmlPath = jApp::appPath('project.xml');
@@ -120,6 +121,7 @@ class configCtrl extends jController {
     $tpl->assign('servicesForm',$form);
     $tpl->assign('repositories', $repositories);
     $tpl->assign('data', $data);
+    $tpl->assign('subjects', $subjects);
     $tpl->assign('labels', $labels);
     $tpl->assign('version', $version);
     $rep->body->assign('MAIN', $tpl->fetch('config'));
