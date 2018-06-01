@@ -359,7 +359,7 @@ class editionCtrl extends jController {
       $tableAlone = $exp[1];
       $schema = $exp[0];
     }
-    
+
     // Set some private properties
     $this->schema = $schema;
     $this->table = $table;
@@ -993,8 +993,16 @@ class editionCtrl extends jController {
               $value = 'NULL';
             break;
           case 'text':
+            if ( is_null($value) or strlen((string)$value) == 0)
+              $value = 'NULL';
+            else
+              $value = $cnx->quote($value);
           case 'boolean':
-            if ( !$value or empty($value))
+            $strVal = strtolower($value);
+            if($strVal != 'true' &&  $strVal !== 't' && intval($value) != 1 &&
+               $strVal !== 'on' && $value !== true &&
+               $strVal != 'false' &&  $strVal !== 'f' && intval($value) != 0 &&
+               $strVal !== 'off' && $value !== false)
               $value = 'NULL';
             else
               $value = $cnx->quote($value);
