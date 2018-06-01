@@ -1,6 +1,6 @@
-#!/bin/bash
+#!/bin/sh
 
-if [[ "$1" != "install" &&  "$1" != "reset" ]]; then
+if [ "$1" != "install" &&  "$1" != "reset" ]; then
     echo "Error: confirmation is missing"
     echo ""
     echo "This script resets the installation of lizmap, destroying all references to projects"
@@ -44,11 +44,11 @@ if [ -f $LIZMAP/var/config/profiles.ini.php ]; then
 fi
 
 
-if [ "$1" == "install" ]; then
+if [ "$1" = "install" ]; then
     cp $LIZMAP/var/config/localconfig.ini.php.dist $LIZMAP/var/config/localconfig.ini.php
     cp $LIZMAP/var/config/profiles.ini.php.dist $LIZMAP/var/config/profiles.ini.php
 
-    if [ "$2" == "demo" ]; then
+    if [ "$2" = "demo" ]; then
         echo "[modules]" >> $LIZMAP/var/config/localconfig.ini.php
         echo "lizmap.installparam=demo" >> $LIZMAP/var/config/localconfig.ini.php
     fi
