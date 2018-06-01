@@ -1,0 +1,6 @@
+
+- name: Create system user lizmap
+  user: name=lizmap system=yes
+
+- copy: dest=/home/vagrant/.bash_aliases src=bash_aliases mode=644
+
