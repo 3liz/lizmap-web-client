@@ -2047,7 +2047,6 @@ var lizAttributeTable = function() {
             }
 
             function emptyLayerFilter( featureType ) {
-
                 // Empty array
                 config.layers[featureType]['filteredFeatures'] = [];
 
@@ -2057,9 +2056,9 @@ var lizAttributeTable = function() {
                 var layer = lizMap.map.getLayersByName( lizMap.cleanName(featureType) )[0];
                 if( layer ) {
                     delete layer.params['FILTER'];
-                    config.layers[featureType]['request_params']['filter'] = null;
-                    config.layers[featureType]['request_params']['exp_filter'] = null;
                 }
+                config.layers[featureType]['request_params']['filter'] = null;
+                config.layers[featureType]['request_params']['exp_filter'] = null;
 
                 lizMap.events.triggerEvent(
                     "layerFilteredFeaturesChanged",
@@ -2069,8 +2068,6 @@ var lizAttributeTable = function() {
                         'updateDrawing': true
                     }
                 );
-
-
             }
 
             function filterLayerFromSelectedFeatures( featureType ) {
