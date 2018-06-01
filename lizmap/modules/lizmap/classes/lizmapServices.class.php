@@ -153,7 +153,7 @@ class lizmapServices{
               $conf = & $globalConfig->$section;
           }
           if (isset($conf[$key])) {
-            $this->$prop = $conf[$key];
+            $this->$prop = trim($conf[$key]);
           }
         }
         else if(isset($readConfigPath['services'][$prop])) {
@@ -167,12 +167,26 @@ class lizmapServices{
         }
       }
 
-      $sender = filter_var($globalConfig->mailer['webmasterEmail'], FILTER_VALIDATE_EMAIL);
-      if (!$sender) {
-          // if the sender email is not configured, deactivate features that
-          // need to send an email
-          $this->allowUserAccountRequests = false;
+      // check email address where to send notifications
+      if ($this->adminContactEmail == 'root@localhost' ||
+          $this->adminContactEmail == 'root@localhost.localdomain' ||
+          $this->adminContactEmail == '' ||
+          !filter_var($this->adminContactEmail, FILTER_VALIDATE_EMAIL)
+      ) {
+          $this->adminContactEmail = '';
       }
+
+        // check email address of the sender
+        if ($this->adminSenderEmail == 'root@localhost' ||
+            $this->adminSenderEmail == 'root@localhost.localdomain' ||
+            $this->adminSenderEmail == '' ||
+            !filter_var($this->adminSenderEmail, FILTER_VALIDATE_EMAIL)
+        ) {
+            // if the sender email is not configured, deactivate features that
+            // need to send an email
+            $this->allowUserAccountRequests = false;
+            $this->adminSenderEmail = '';
+        }
     }
 
     public function getProperties(){

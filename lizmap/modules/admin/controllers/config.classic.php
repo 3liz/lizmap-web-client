@@ -38,8 +38,6 @@ class configCtrl extends jController {
 
   /**
   * Display a summary of the information taken from the ~ configuration file.
-  *
-  * @return Administration backend for the repositories.
   */
   function index() {
     $rep = $this->getResponse('html');
