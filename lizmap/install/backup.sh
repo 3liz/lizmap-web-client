@@ -1,7 +1,8 @@
-#!/bin/bash
+#!/bin/sh
 
-if [ "$1" == "" ]; then
-    echo "Error: target directory is missing"
+if [ "$1" = "" ]; then
+    echo "Error: path to the target directory is missing"
+    exit 1
 fi
 BACKUPDIR="$1"
 SCRIPTDIR=$(dirname $0)

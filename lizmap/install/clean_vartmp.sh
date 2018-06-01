@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 SCRIPTDIR=$(dirname $0)
 
 DIRS="$SCRIPTDIR/../var/log $SCRIPTDIR/../var/mails $SCRIPTDIR/../var/uploads $SCRIPTDIR/../../temp/lizmap"
