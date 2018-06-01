@@ -1190,6 +1190,7 @@ div.modal h3 .text {
 #right-dock .title .btn.btn-locate-clear,
 #right-dock .title .btn.btn-tooltip-cancel {
   background-position : -875px 0px;
+  margin-top: 3px;
 }
 #toolbar .title .btn.btn-print-clear,
 #dock .title .btn.btn-print-clear,
