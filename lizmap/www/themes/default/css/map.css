@@ -12,6 +12,7 @@
 #headermenu #locate-clear.icon {
   background-color: transparent;
   background-position: -875px 0px;
+  margin-top: 5px;
 }
 #headermenu .dropdown-menu {
   background-color: #4A4A4A;
