@@ -965,6 +965,7 @@ class editionCtrl extends jController {
               $value = 'NULL';
             else
               $value = $cnx->quote($value);
+            break;
           case 'boolean':
             $strVal = strtolower($value);
             if($strVal != 'true' &&  $strVal !== 't' && intval($value) != 1 &&
