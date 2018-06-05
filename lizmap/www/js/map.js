@@ -2044,16 +2044,9 @@ var lizMap = function() {
             if (lname != '') {
               var locate = config.locateByLayer[lname];
               locate['crs'] = self.find('SRS').text();
-              if ( locate.crs in Proj4js.defs )
-                new OpenLayers.Projection(locate.crs);
-              else
-                $.get(service, {
-                  'REQUEST':'GetProj4'
-                 ,'authid': locate.crs
-                }, function ( aText ) {
-                  Proj4js.defs[locate.crs] = aText;
+              loadProjDefinition( locate.crs, function( aProj ) {
                   new OpenLayers.Projection(locate.crs);
-                }, 'text');
+              });
               var bbox = self.find('LatLongBoundingBox');
               locate['bbox'] = [
                 parseFloat(bbox.attr('minx'))
@@ -2598,16 +2591,9 @@ var lizMap = function() {
             if (lname != '') {
               var locate = config.locateByLayer[lname];
               locate['crs'] = self.find('SRS').text();
-              if ( locate.crs in Proj4js.defs )
-                new OpenLayers.Projection(locate.crs);
-              else
-                $.get(service, {
-                  'REQUEST':'GetProj4'
-                 ,'authid': locate.crs
-                }, function ( aText ) {
-                  Proj4js.defs[locate.crs] = aText;
+              loadProjDefinition( locate.crs, function( aProj ) {
                   new OpenLayers.Projection(locate.crs);
-                }, 'text');
+              });
               var bbox = self.find('LatLongBoundingBox');
               locate['bbox'] = [
                 parseFloat(bbox.attr('minx'))
