@@ -133,6 +133,12 @@ var lizMap = function() {
    */
   var shortNameMap = {
   };
+  /**
+   * PRIVATE Property: typeNameMap
+   *
+   */
+  var typeNameMap = {
+  };
 
   /**
    * Permalink args
@@ -198,6 +204,13 @@ var lizMap = function() {
     var name = null;
     if( shortName in shortNameMap )
       name = shortNameMap[shortName];
+    return name;
+  }
+
+  function getNameByTypeName( typeName ){
+    var name = null;
+    if( typeName in typeNameMap )
+      name = typeNameMap[typeName];
     return name;
   }
 
@@ -1531,6 +1544,8 @@ var lizMap = function() {
           getFeatureUrlData['options']['FEATUREID'] = val;
           // Get data
           $.get( getFeatureUrlData['url'], getFeatureUrlData['options'], function(data) {
+            if ( !data.features )
+              data = JSON.parse(data);
             if( data.features.length != 0) {
               feat = format.read(data.features[0])[0];
               feat.geometry.transform(proj, map.getProjection());
@@ -1593,6 +1608,8 @@ var lizMap = function() {
     $.get( getFeatureUrlData['url'], getFeatureUrlData['options'], function(data) {
       var lConfig = config.layers[aName];
       locate['features'] = {};
+      if ( !data.features )
+        data = JSON.parse(data);
       var features = data.features;
       if( locate.crs != 'EPSG:4326' && features.length != 0) {
           // load projection to be sure to have the definition
@@ -2031,9 +2048,9 @@ var lizMap = function() {
             var lname = '';
             if (typeName in config.locateByLayer)
               lname = typeName
-            else if ( typeName in shortNameMap ){
+            else if ( typeName in shortNameMap )
               lname = shortNameMap[typeName];
-            } else {
+            else {
               for (lbl in config.locateByLayer) {
                 if (lbl.split(' ').join('_') == typeName) {
                   lname = lbl;
@@ -2582,6 +2599,8 @@ var lizMap = function() {
             var lname = '';
             if (typeName in config.locateByLayer)
               lname = typeName
+            else if ( typeName in shortNameMap )
+              lname = shortNameMap[typeName];
             else {
               for (lbl in config.locateByLayer) {
                 if (lbl.split(' ').join('_') == typeName)
@@ -5621,6 +5640,13 @@ OpenLayers.Control.HighlightFeature = OpenLayers.Class(OpenLayers.Control, {
     },
 
     /**
+     * Method: getNameByTypeName
+     */
+    getNameByTypeName: function( typeName ) {
+      return getNameByTypeName( typeName );
+    },
+
+    /**
      * Method: getLayerNameByCleanName
      */
     getLayerNameByCleanName: function( cleanName ) {
@@ -5771,11 +5797,12 @@ OpenLayers.Control.HighlightFeature = OpenLayers.Class(OpenLayers.Control, {
                 layerIdMap[configLayer.id] = layerName;
             }
         }
-        // store shortnames
+        // store shortnames and shortnames
         for ( var layerName in config.layers ) {
             var configLayer = config.layers[layerName];
             if ( 'shortname' in configLayer && configLayer.shortname != '' )
                 shortNameMap[configLayer.shortname] = layerName;
+            configLayer.cleanname = cleanName(layerName);
         }
 
          //get capabilities
@@ -5807,6 +5834,28 @@ OpenLayers.Control.HighlightFeature = OpenLayers.Class(OpenLayers.Control, {
             }
 
             wfsCapabilities = $(wfsCapaData);
+            var featureTypes = getVectorLayerFeatureTypes();
+            featureTypes.each( function(){
+                var typeName = $(this).find('Name').text();
+                var layerName = '';
+                if (typeName in config.layers)
+                  layerName = typeName
+                else if ( typeName in shortNameMap ){
+                  layerName = shortNameMap[typeName];
+                } else {
+                  for (l in config.layers) {
+                    if (l.split(' ').join('_') == typeName) {
+                      layerName = l;
+                      break;
+                    }
+                  }
+                }
+                if ( layerName != '' ) {
+                    var configLayer = config.layers[layerName];
+                    configLayer.typename = typeName;
+                    typeNameMap[typeName] = layerName;
+                }
+            } );
 
           //set title and abstract coming from capabilities
 //          document.title = capabilities.title ? capabilities.title : capabilities.service.title;
