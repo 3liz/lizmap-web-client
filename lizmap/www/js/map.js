@@ -77,8 +77,8 @@ var lizMap = function() {
    */
   var externalBaselayersReplacement = {
     'osm': 'osm-mapnik',
-    'osm-stamen-toner': 'osm-stamen-toner',
-    'osm-cyclemap': 'osm-cyclemap',
+    'osm-toner': 'osm-stamen-toner',
+    'osm-cycle': 'osm-cyclemap',
     'gsat': 'google-satellite',
     'ghyb': 'google-hybrid',
     'gphy': 'google-terrain',
@@ -98,8 +98,8 @@ var lizMap = function() {
    */
   var startupBaselayersReplacement = {
     'osm-mapnik': 'osm',
-    'osm-stamen-toner': 'osm-stamen-toner',
-    'osm-cyclemap': 'osm-cyclemap',
+    'osm-stamen-toner': 'osm-toner',
+    'osm-cyclemap': 'osm-cycle',
     'google-satellite': 'gsat',
     'google-hybrid': 'ghyb',
     'google-terrain': 'gphy',
@@ -6307,7 +6307,7 @@ lizMap.events.on({
           options.numZoomLevels = lOptions.numZoomLevels;
         else
           options.numZoomLevels = options.numZoomLevels - lOptions.zoomOffset;
-        var stamenToner = new OpenLayers.Layer.OSM('osm-stamen-toner',
+        var stamenToner = new OpenLayers.Layer.OSM('osm-toner',
             ["https://stamen-tiles-a.a.ssl.fastly.net/toner-lite/${z}/${x}/${y}.png",
             "https://stamen-tiles-b.a.ssl.fastly.net/toner-lite/${z}/${x}/${y}.png",
             "https://stamen-tiles-c.a.ssl.fastly.net/toner-lite/${z}/${x}/${y}.png",
@@ -6316,11 +6316,11 @@ lizMap.events.on({
             );
         stamenToner.maxExtent = maxExtent;
         var stamenTonerCfg = {
-          "name":"osm-stamen-toner"
+          "name":"osm-toner"
             ,"title":"OSM Stamen Toner"
             ,"type":"baselayer"
         };
-        evt.config.layers['osm-stamen-toner'] = stamenTonerCfg;
+        evt.config.layers['osm-toner'] = stamenTonerCfg;
         evt.baselayers.push(stamenToner);
       }
 
@@ -6339,7 +6339,7 @@ lizMap.events.on({
           options.numZoomLevels = lOptions.numZoomLevels;
         else
           options.numZoomLevels = options.numZoomLevels - lOptions.zoomOffset;
-        var cyclemap = new OpenLayers.Layer.OSM('osm-cyclemap',
+        var cyclemap = new OpenLayers.Layer.OSM('osm-cycle',
             ["https://a.tile.opencyclemap.org/cycle/${z}/${x}/${y}.png",
             "https://b.tile.opencyclemap.org/cycle/${z}/${x}/${y}.png",
             "https://c.tile.opencyclemap.org/cycle/${z}/${x}/${y}.png"]
@@ -6347,11 +6347,11 @@ lizMap.events.on({
             );
         cyclemap.maxExtent = maxExtent;
         var cyclemapCfg = {
-             "name":"osm-cyclemap"
+             "name":"osm-cycle"
             ,"title":"OSM CycleMap"
             ,"type":"baselayer"
         };
-        evt.config.layers['osm-cyclemap'] = cyclemapCfg;
+        evt.config.layers['osm-cycle'] = cyclemapCfg;
         evt.baselayers.push(cyclemap);
       }
       try {
