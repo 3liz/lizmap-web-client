@@ -1,14 +1,14 @@
-#!/bin/bash
+#!/bin/sh
 SCRIPTDIR=$(dirname $0)
 
 USER="$1"
 GROUP="$2"
 
-if [ "$USER" == "" ]; then
+if [ "$USER" = "" ]; then
     USER="www-data"
 fi
 
-if [ "$GROUP" == "" ]; then
+if [ "$GROUP" = "" ]; then
     GROUP="www-data"
 fi
 

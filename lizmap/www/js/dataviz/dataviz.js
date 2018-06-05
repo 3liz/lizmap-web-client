@@ -76,6 +76,13 @@ var lizDataviz = function() {
         var plot_config = dv.config.layers[plot_id];
         var html = buildPlotContainerHtml(plot_config.title, plot_config.abstract, dataviz_plot_id);
 
+        //if we chose to hide the parent plot the html variable become empty
+        if(plot_config.only_show_childs=="True")
+        {
+            html='';
+        }
+
+
         // Move plot at the end of the main container
         // to the corresponding place if id is referenced in the template
         var pgetter = '#dataviz_plot_template_' + plot_id;
@@ -89,6 +96,8 @@ var lizDataviz = function() {
     }
 
     function getPlot(plot_id, exp_filter, target_id){
+        if ( $('#'+target_id).length == 0) return;
+
         exp_filter = typeof exp_filter !== 'undefined' ?  exp_filter : null;
         target_id = typeof target_id !== 'undefined' ?  target_id : new Date().valueOf()+btoa(Math.random()).substring(0,12);
 

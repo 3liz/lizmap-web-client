@@ -77,8 +77,8 @@ var lizMap = function() {
    */
   var externalBaselayersReplacement = {
     'osm': 'osm-mapnik',
-    'osm-stamen-toner': 'osm-stamen-toner',
-    'osm-cyclemap': 'osm-cyclemap',
+    'osm-toner': 'osm-stamen-toner',
+    'osm-cycle': 'osm-cyclemap',
     'gsat': 'google-satellite',
     'ghyb': 'google-hybrid',
     'gphy': 'google-terrain',
@@ -98,8 +98,8 @@ var lizMap = function() {
    */
   var startupBaselayersReplacement = {
     'osm-mapnik': 'osm',
-    'osm-stamen-toner': 'osm-stamen-toner',
-    'osm-cyclemap': 'osm-cyclemap',
+    'osm-stamen-toner': 'osm-toner',
+    'osm-cyclemap': 'osm-cycle',
     'google-satellite': 'gsat',
     'google-hybrid': 'ghyb',
     'google-terrain': 'gphy',
@@ -132,6 +132,12 @@ var lizMap = function() {
    *
    */
   var shortNameMap = {
+  };
+  /**
+   * PRIVATE Property: typeNameMap
+   *
+   */
+  var typeNameMap = {
   };
 
   /**
@@ -198,6 +204,13 @@ var lizMap = function() {
     var name = null;
     if( shortName in shortNameMap )
       name = shortNameMap[shortName];
+    return name;
+  }
+
+  function getNameByTypeName( typeName ){
+    var name = null;
+    if( typeName in typeNameMap )
+      name = typeNameMap[typeName];
     return name;
   }
 
@@ -1562,6 +1575,8 @@ var lizMap = function() {
             getFeatureUrlData['options']['FEATUREID'] = val;
             // Get data
             $.get( getFeatureUrlData['url'], getFeatureUrlData['options'], function(data) {
+              if ( !data.features )
+                data = JSON.parse(data);
               if( data.features.length != 0) {
                 feat = format.read(data.features[0])[0];
                 feat.geometry.transform(proj, map.getProjection());
@@ -1573,6 +1588,7 @@ var lizMap = function() {
         }
         //zoom to extent
         map.zoomToExtent(feat.geometry.getBounds());
+
       }
 
       var fid = val.split('.')[1];
@@ -1624,6 +1640,8 @@ var lizMap = function() {
     $.get( getFeatureUrlData['url'], getFeatureUrlData['options'], function(data) {
       var lConfig = config.layers[aName];
       locate['features'] = {};
+      if ( !data.features )
+        data = JSON.parse(data);
       var features = data.features;
       if( locate.crs != 'EPSG:4326' && features.length != 0) {
           // load projection to be sure to have the definition
@@ -2063,9 +2081,9 @@ var lizMap = function() {
             var lname = '';
             if (typeName in config.locateByLayer)
               lname = typeName
-            else if ( typeName in shortNameMap ){
+            else if ( typeName in shortNameMap )
               lname = shortNameMap[typeName];
-            } else {
+            else {
               for (lbl in config.locateByLayer) {
                 if (lbl.split(' ').join('_') == typeName) {
                   lname = lbl;
@@ -2076,16 +2094,9 @@ var lizMap = function() {
             if (lname != '') {
               var locate = config.locateByLayer[lname];
               locate['crs'] = self.find('SRS').text();
-              if ( locate.crs in Proj4js.defs )
-                new OpenLayers.Projection(locate.crs);
-              else
-                $.get(service, {
-                  'REQUEST':'GetProj4'
-                 ,'authid': locate.crs
-                }, function ( aText ) {
-                  Proj4js.defs[locate.crs] = aText;
+              loadProjDefinition( locate.crs, function( aProj ) {
                   new OpenLayers.Projection(locate.crs);
-                }, 'text');
+              });
               var bbox = self.find('LatLongBoundingBox');
               locate['bbox'] = [
                 parseFloat(bbox.attr('minx'))
@@ -2618,6 +2629,8 @@ var lizMap = function() {
             var lname = '';
             if (typeName in config.locateByLayer)
               lname = typeName
+            else if ( typeName in shortNameMap )
+              lname = shortNameMap[typeName];
             else {
               for (lbl in config.locateByLayer) {
                 if (lbl.split(' ').join('_') == typeName)
@@ -2627,16 +2640,9 @@ var lizMap = function() {
             if (lname != '') {
               var locate = config.locateByLayer[lname];
               locate['crs'] = self.find('SRS').text();
-              if ( locate.crs in Proj4js.defs )
-                new OpenLayers.Projection(locate.crs);
-              else
-                $.get(service, {
-                  'REQUEST':'GetProj4'
-                 ,'authid': locate.crs
-                }, function ( aText ) {
-                  Proj4js.defs[locate.crs] = aText;
+              loadProjDefinition( locate.crs, function( aProj ) {
                   new OpenLayers.Projection(locate.crs);
-                }, 'text');
+              });
               var bbox = self.find('LatLongBoundingBox');
               locate['bbox'] = [
                 parseFloat(bbox.attr('minx'))
@@ -5947,6 +5953,13 @@ OpenLayers.Control.HighlightFeature = OpenLayers.Class(OpenLayers.Control, {
     },
 
     /**
+     * Method: getNameByTypeName
+     */
+    getNameByTypeName: function( typeName ) {
+      return getNameByTypeName( typeName );
+    },
+
+    /**
      * Method: getLayerNameByCleanName
      */
     getLayerNameByCleanName: function( cleanName ) {
@@ -6140,11 +6153,12 @@ OpenLayers.Control.HighlightFeature = OpenLayers.Class(OpenLayers.Control, {
                 layerIdMap[configLayer.id] = layerName;
             }
         }
-        // store shortnames
+        // store shortnames and shortnames
         for ( var layerName in config.layers ) {
             var configLayer = config.layers[layerName];
             if ( 'shortname' in configLayer && configLayer.shortname != '' )
                 shortNameMap[configLayer.shortname] = layerName;
+            configLayer.cleanname = cleanName(layerName);
         }
 
          //get capabilities
@@ -6176,6 +6190,28 @@ OpenLayers.Control.HighlightFeature = OpenLayers.Class(OpenLayers.Control, {
             }
 
             wfsCapabilities = $(wfsCapaData);
+            var featureTypes = getVectorLayerFeatureTypes();
+            featureTypes.each( function(){
+                var typeName = $(this).find('Name').text();
+                var layerName = '';
+                if (typeName in config.layers)
+                  layerName = typeName
+                else if ( typeName in shortNameMap ){
+                  layerName = shortNameMap[typeName];
+                } else {
+                  for (l in config.layers) {
+                    if (l.split(' ').join('_') == typeName) {
+                      layerName = l;
+                      break;
+                    }
+                  }
+                }
+                if ( layerName != '' ) {
+                    var configLayer = config.layers[layerName];
+                    configLayer.typename = typeName;
+                    typeNameMap[typeName] = layerName;
+                }
+            } );
 
           //set title and abstract coming from capabilities
 //          document.title = capabilities.title ? capabilities.title : capabilities.service.title;
@@ -6664,7 +6700,7 @@ lizMap.events.on({
           options.numZoomLevels = lOptions.numZoomLevels;
         else
           options.numZoomLevels = options.numZoomLevels - lOptions.zoomOffset;
-        var stamenToner = new OpenLayers.Layer.OSM('osm-stamen-toner',
+        var stamenToner = new OpenLayers.Layer.OSM('osm-toner',
             ["https://stamen-tiles-a.a.ssl.fastly.net/toner-lite/${z}/${x}/${y}.png",
             "https://stamen-tiles-b.a.ssl.fastly.net/toner-lite/${z}/${x}/${y}.png",
             "https://stamen-tiles-c.a.ssl.fastly.net/toner-lite/${z}/${x}/${y}.png",
@@ -6673,11 +6709,11 @@ lizMap.events.on({
             );
         stamenToner.maxExtent = maxExtent;
         var stamenTonerCfg = {
-          "name":"osm-stamen-toner"
+          "name":"osm-toner"
             ,"title":"OSM Stamen Toner"
             ,"type":"baselayer"
         };
-        evt.config.layers['osm-stamen-toner'] = stamenTonerCfg;
+        evt.config.layers['osm-toner'] = stamenTonerCfg;
         evt.baselayers.push(stamenToner);
       }
 
@@ -6696,7 +6732,7 @@ lizMap.events.on({
           options.numZoomLevels = lOptions.numZoomLevels;
         else
           options.numZoomLevels = options.numZoomLevels - lOptions.zoomOffset;
-        var cyclemap = new OpenLayers.Layer.OSM('osm-cyclemap',
+        var cyclemap = new OpenLayers.Layer.OSM('osm-cycle',
             ["https://a.tile.opencyclemap.org/cycle/${z}/${x}/${y}.png",
             "https://b.tile.opencyclemap.org/cycle/${z}/${x}/${y}.png",
             "https://c.tile.opencyclemap.org/cycle/${z}/${x}/${y}.png"]
@@ -6704,11 +6740,11 @@ lizMap.events.on({
             );
         cyclemap.maxExtent = maxExtent;
         var cyclemapCfg = {
-             "name":"osm-cyclemap"
+             "name":"osm-cycle"
             ,"title":"OSM CycleMap"
             ,"type":"baselayer"
         };
-        evt.config.layers['osm-cyclemap'] = cyclemapCfg;
+        evt.config.layers['osm-cycle'] = cyclemapCfg;
         evt.baselayers.push(cyclemap);
       }
       try {

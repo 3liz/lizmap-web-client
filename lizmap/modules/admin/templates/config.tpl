@@ -78,10 +78,12 @@
     <dl><dt>{@admin~admin.form.admin_section.groups.label@}</dt>
       <dd>
         <table class="table">
-      {foreach $data[$repo->getKey()] as $k=>$v}
+      {foreach $subjects as $s}
+      {if property_exists($data[$repo->getKey()], $s)}
       <tr>
-        <th>{$labels[$k]}</th><td>{$v}</td>
+        <th>{$labels[$s]}</th><td>{$data[$repo->getKey()]->$s}</td>
       </tr>
+      {/if}
       {/foreach}
         </table>
       </dd>
