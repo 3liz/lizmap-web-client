@@ -535,11 +535,18 @@ class lizmapProject{
     }
 
     public function findLayerByTypeName( $typeName ){
+        // typeName is layerName
         if ( property_exists($this->cfg->layers, $typeName ) )
             return $this->cfg->layers->$typeName;
-        $layerName = str_replace('_', ' ', $typeName );
-        if ( property_exists($this->cfg->layers, $layerName ) )
-            return $this->cfg->layers->$layerName;
+        // typeName is cleanName or shortName
+        foreach ( $this->cfg->layers as $layer ) {
+            if ( str_replace(' ', '_', $layer->name) == $typeName )
+                return $layer;
+            if ( !property_exists( $layer, 'shortname' ) )
+                continue;
+            if ( $layer->shortname == $typeName )
+                return $layer;
+        }
         return null;
     }
 
