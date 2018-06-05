@@ -1095,7 +1095,7 @@ var lizAttributeTable = function() {
                     // Fill in the features object
                     // only when necessary : object is empty or is not child or (is child and no full features list in the object)
                     var refillFeatures = false;
-                    var dLen = config.layers[aName]['features'].length;
+                    var dLen = config.layers[aName]['features'] ? config.layers[aName]['features'].length : 0;
                     if( dLen == 0 ){
                         refillFeatures = true;
                         if( !isChild ){
