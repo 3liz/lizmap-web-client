@@ -437,11 +437,18 @@ class lizmapProject extends qgisProject {
     }
 
     public function findLayerByTypeName( $typeName ){
+        // typeName is layerName
         if ( property_exists($this->cfg->layers, $typeName ) )
             return $this->cfg->layers->$typeName;
-        $layerName = str_replace('_', ' ', $typeName );
-        if ( property_exists($this->cfg->layers, $layerName ) )
-            return $this->cfg->layers->$layerName;
+        // typeName is cleanName or shortName
+        foreach ( $this->cfg->layers as $layer ) {
+            if ( str_replace(' ', '_', $layer->name) == $typeName )
+                return $layer;
+            if ( !property_exists( $layer, 'shortname' ) )
+                continue;
+            if ( $layer->shortname == $typeName )
+                return $layer;
+        }
         return null;
     }
 
@@ -677,6 +684,8 @@ class lizmapProject extends qgisProject {
 
             if(property_exists($lc, 'popup_display_child_plot'))
                 $plotConf['popup_display_child_plot'] = $lc->popup_display_child_plot;
+            if(property_exists($lc, 'only_show_childs'))
+                $plotConf['only_show_childs'] = $lc->only_show_childs;
             if(property_exists($lc, 'y2_field'))
                 $plotConf['plot']['y2_field'] = $lc->y2_field;
             if( !empty($lc->color) ){

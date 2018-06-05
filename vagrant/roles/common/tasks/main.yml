@@ -9,7 +9,5 @@
   tags: supervisor
 - include: xvfb.yml
   tags: xvfb
-
-- name: Create system user lizmap
-  user: name=lizmap system=yes
-
+- include: users.yml
+  tags: users

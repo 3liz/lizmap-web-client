@@ -56,6 +56,9 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   # Run Ansible from the Vagrant VM
   config.vm.provision "ansible_local" do |ansible|
     ansible.playbook = "playbook.yml"
+    ansible.raw_arguments  = [
+      "-v"  #, "--tags="
+    ]
   end
 
 

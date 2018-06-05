@@ -463,8 +463,17 @@ class qgisForm {
                   $value = 'NULL';
                 break;
               case 'text':
+                if ( is_null($value) or strlen((string)$value) == 0)
+                  $value = 'NULL';
+                else
+                  $value = $cnx->quote($value);
+                break;
               case 'boolean':
-                if ( !$value or empty($value))
+                $strVal = strtolower($value);
+                if($strVal != 'true' &&  $strVal !== 't' && intval($value) != 1 &&
+                   $strVal !== 'on' && $value !== true &&
+                   $strVal != 'false' &&  $strVal !== 'f' && intval($value) != 0 &&
+                   $strVal !== 'off' && $value !== false)
                   $value = 'NULL';
                 else
                   $value = $cnx->quote($value);

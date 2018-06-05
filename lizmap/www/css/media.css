@@ -84,6 +84,7 @@ only screen and (                   max-device-height : 640px) {
   #headermenu.mobile #locate-clear.icon {
 	background-color: transparent;
 	background-position: -850px 0px;
+	margin-top: 3px;
   }
 
   .navbar-inner {

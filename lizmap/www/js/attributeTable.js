@@ -1095,7 +1095,7 @@ var lizAttributeTable = function() {
                     // Fill in the features object
                     // only when necessary : object is empty or is not child or (is child and no full features list in the object)
                     var refillFeatures = false;
-                    var dLen = config.layers[aName]['features'].length;
+                    var dLen = config.layers[aName]['features'] ? config.layers[aName]['features'].length : 0;
                     if( dLen == 0 ){
                         refillFeatures = true;
                         if( !isChild ){
@@ -1881,7 +1881,6 @@ var lizAttributeTable = function() {
             }
 
             function emptyLayerFilter( featureType ) {
-
                 // Empty array
                 config.layers[featureType]['filteredFeatures'] = [];
 
@@ -1891,9 +1890,9 @@ var lizAttributeTable = function() {
                 var layer = lizMap.map.getLayersByName( lizMap.cleanName(featureType) )[0];
                 if( layer ) {
                     delete layer.params['FILTER'];
-                    config.layers[featureType]['request_params']['filter'] = null;
-                    config.layers[featureType]['request_params']['exp_filter'] = null;
                 }
+                config.layers[featureType]['request_params']['filter'] = null;
+                config.layers[featureType]['request_params']['exp_filter'] = null;
 
                 lizMap.events.triggerEvent("layerFilteredFeaturesChanged",
                     {
@@ -1902,8 +1901,6 @@ var lizAttributeTable = function() {
                         'updateDrawing': true
                     }
                 );
-
-
             }
 
             function filterLayerFromSelectedFeatures( featureType ) {
