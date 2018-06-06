@@ -80,18 +80,18 @@ only screen and (                   max-device-height : 640px) {
     position: absolute;
     left:auto;
     right: 0px;
-  } 
-  #headermenu.mobile #locate-clear.icon {
-	background-color: transparent;
-	background-position: -850px 0px;
-	margin-top: 3px;
+  }
+  #headermenu.mobile .btn-locate-clear.icon {
+  background-color: transparent;
+  background-position: -850px 0px;
+  margin-top: 3px;
   }
 
   .navbar-inner {
     min-height:30px;
     padding: 0px 10px;
   }
-  
+
 
 
   /*  for ie*/
