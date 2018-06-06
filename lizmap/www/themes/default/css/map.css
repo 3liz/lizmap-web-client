@@ -9,7 +9,7 @@
   background-position: -400px 0px;
 }
 
-#headermenu #locate-clear.icon {
+#headermenu .btn-locate-clear.icon {
   background-color: transparent;
   background-position: -875px 0px;
   margin-top: 5px;
