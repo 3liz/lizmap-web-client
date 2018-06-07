@@ -217,8 +217,13 @@ class jAuth {
      */
     public static function saveNewUser($user){
         $dr = self::getDriver();
-        if($dr->saveNewUser($user))
-            jEvent::notify ('AuthNewUser', array('user'=>$user));
+        if ($dr->saveNewUser($user)) {
+            $eventResp = jEvent::notify('AuthNewUser', array('user' => $user));
+            $allResponses = array();
+            if ($eventResp->inResponse('doUpdate', true, $allResponses)) {
+                $dr->updateUser($user);
+            }
+        }
         return $user;
     }
 

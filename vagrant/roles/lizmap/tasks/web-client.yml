@@ -12,7 +12,6 @@
   with_items:
     - { src: '{{ lizmap_home }}/lizmap/var/config/lizmapConfig.ini.php.dist', dest: '{{ lizmap_home }}/lizmap/var/config/lizmapConfig.ini.php'}
     - { src: '{{ lizmap_home }}/lizmap/var/config/localconfig.ini.php.dist', dest: '{{ lizmap_home }}/lizmap/var/config/localconfig.ini.php'}
-    - { src: '{{ lizmap_home }}/lizmap/var/config/profiles.ini.php.dist', dest: '{{ lizmap_home }}/lizmap/var/config/profiles.ini.php'}
 
 
 - name: Setup localconfig.ini.php for debug mode
@@ -29,17 +28,27 @@
     - { section: "logger", option: "warning", value: "file" }
     - { section: "logger", option: "notice", value: "file" }
     - { section: "logger", option: "deprecated", value: "file" }
+    - { section: "logger", option: "auth", value: "file" }
 
-
-- name: Modifiy db profile for lizmap if PostgreSQL chosen for jauth
-  template: src=lizmap_profiles.j2 dest='{{ lizmap_home }}/lizmap/var/config/profiles.ini.php' force=no
-  when: lizmap_jauth_driver == 'pgsql'
-
-- name: Add option to create Demo project
-  shell: cd {{ lizmap_home }} && echo "{{ item.src }}" >> {{ item.dest }}
+- name: Setup localconfig.ini.php for ldap support
+  ini_file:
+    dest: "{{ lizmap_home }}/lizmap/var/config/localconfig.ini.php"
+    section: "{{ item.section }}"
+    option: "{{ item.option }}"
+    value: "{{ item.value }}"
   with_items:
-    - { src: '[modules]', dest: 'lizmap/var/config/localconfig.ini.php'}
-    - { src: 'lizmap.installparam=demo', dest: 'lizmap/var/config/localconfig.ini.php'}
+    - { section: "modules", option: "ldapdao.access", value: "1" }
+  when: lizmap_ldapdao_enabled
+
+- name: Setup localconfig.ini.php for ldap support
+  ini_file:
+    dest: "{{ lizmap_home }}/lizmap/var/config/localconfig.ini.php"
+    section: "modules"
+    option: "lizmap.installparam"
+    value: "demo"
+
+- name: Create the profiles.ini.php file
+  template: src=lizmap_profiles.j2 dest='{{ lizmap_home }}/lizmap/var/config/profiles.ini.php'
 
 - name: Change URL to QGIS Server
   lineinfile: dest='{{ lizmap_home }}/lizmap/var/config/lizmapConfig.ini.php'

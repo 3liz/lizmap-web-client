@@ -7,3 +7,10 @@
 ; chmod for files created by Lizmap and Jelix
 ;chmodFile=0664
 ;chmodDir=0775
+
+
+
+[modules]
+;; uncomment it if you want to use ldap for authentication
+;; see documentation to complete the ldap configuration
+;ldapdao.access=1
