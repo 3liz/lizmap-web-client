@@ -74,7 +74,6 @@ class configCtrl extends jController {
       $data[$repo] = $rights;
     }
 
-
     // Subjects labels
     $subjects = array();
     $labels = array();
@@ -100,6 +99,9 @@ class configCtrl extends jController {
     foreach($services->getProperties() as $ser){
       if ($ser == 'allowUserAccountRequests' || $ser == 'onlyMaps') {
         $form->setData($ser, $services->$ser ? 'on' : 'off');
+        if ($ser == 'allowUserAccountRequests') {
+            $form->setReadOnly('allowUserAccountRequests', $services->isLdapEnabled());
+        }
       }
       else {
         $form->setData($ser, $services->$ser);
@@ -145,6 +147,9 @@ class configCtrl extends jController {
     foreach($services->getProperties() as $ser){
       if ($ser == 'allowUserAccountRequests' || $ser == 'onlyMaps') {
         $form->setData($ser, $services->$ser ? 'on' : 'off');
+          if ($ser == 'allowUserAccountRequests') {
+              $form->setReadOnly('allowUserAccountRequests', $services->isLdapEnabled());
+          }
       }
       else {
         $form->setData($ser, $services->$ser);
@@ -182,6 +187,11 @@ class configCtrl extends jController {
     $form = jForms::get('admin~config_services');
 
     if ($form) {
+        if (lizmap::getServices()->isLdapEnabled()) {
+            $ctrl = $form->getControl('allowUserAccountRequests');
+            $ctrl->help = jLocale::get('admin~admin.configuration.services.allowUserAccountRequests.help.deactivated');
+        }
+
       // Display form
       $tpl = new jTpl();
       $tpl->assign('form', $form);
