@@ -16,10 +16,11 @@
 # lizmap_hostname: lizmap.local
 # lizmap_webserver_group: www-data
 
-# lizmap_jauth_driver: sqlite3
+# lizmap_postgresql_storage: false
 # driver can be sqlite3 (default) or pgsql. If pgsql, auth and acl configuration will be store in PostgreSQL database
 # only if postgresql has already been installed
 
+#lizmap_ldapdao_enabled: false
 
 # Qgis server
 # qgis_server_version: 2.18

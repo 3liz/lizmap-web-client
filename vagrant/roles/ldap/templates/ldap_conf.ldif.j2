@@ -1,0 +1,40 @@
+dn: ou=people,dc={{ ldap_cn }},dc=local
+objectClass: organizationalUnit
+ou: people
+
+dn: ou=groups,dc={{ ldap_cn }},dc=local
+objectClass: organizationalUnit
+ou: groups
+
+dn: uid=john,ou=people,dc={{ ldap_cn }},dc=local
+objectClass: inetOrgPerson
+uid: john
+givenName: John
+cn: John Doe
+sn: Doe
+displayName: John Doe
+userPassword: passjohn
+mail: john@jelix.org
+
+dn: uid=jane,ou=people,dc={{ ldap_cn }},dc=local
+objectClass: inetOrgPerson
+uid: jane
+givenName: Jane
+cn: Jane Doe
+sn: Doe
+displayName: Jane Doe
+userPassword: passjane
+mail: jane@jelix.org
+
+dn: cn=group1,ou=groups,dc={{ ldap_cn }},dc=local
+objectClass: groupOfNames
+cn: group1
+member: uid=john,ou=people,dc={{ ldap_cn }},dc=local
+member: uid=jane,ou=people,dc={{ ldap_cn }},dc=local
+
+dn: cn=group2,ou=groups,dc={{ ldap_cn }},dc=local
+objectClass: groupOfNames
+cn: group2
+member: uid=john,ou=people,dc={{ ldap_cn }},dc=local
+
+

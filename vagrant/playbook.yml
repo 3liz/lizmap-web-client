@@ -9,5 +9,6 @@
     - common
     - qgis
     - postgresql
+    - ldap
     - lizmap
 
