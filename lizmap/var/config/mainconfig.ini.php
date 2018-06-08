@@ -133,10 +133,10 @@ auth=
 
 [fileLogger]
 default=messages.log
-error=error.log
-warning=error.log
-notice=error.log
-strict=error.log
+error=errors.log
+warning=errors.log
+notice=errors.log
+strict=errors.log
 ;metric=time.log
 auth=messages.log
 

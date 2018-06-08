@@ -36,7 +36,7 @@ class logsCtrl extends jController {
     $detailNumber = $dao->countBy($conditions);
 
     // Get last error log
-    $logPath = jApp::varPath('log/error.log');
+    $logPath = jApp::varPath('log/errors.log');
     $errorLog = '';
     $lines = 50;
     if(is_file($logPath)){
@@ -223,7 +223,7 @@ class logsCtrl extends jController {
 
     // Erase the log file
     try{
-      $logPath = jApp::varPath('log/error.log');
+      $logPath = jApp::varPath('log/errors.log');
       jFile::write($logPath, '');
       jMessage::add(jLocale::get("admin~admin.logs.error.file.erase.ok", array('log_detail') ) );
     }catch(Exception $e){
