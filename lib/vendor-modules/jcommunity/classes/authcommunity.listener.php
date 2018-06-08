@@ -12,12 +12,11 @@ use \Jelix\JCommunity\Account;
 
 class authcommunityListener extends jEventListener{
 
-    /**
-     * @param jEvent $event
-     * @throws jException
-     */
-    function onAuthCanLogin ($event) {
+   /**
+   *
+   */
+   function onAuthCanLogin ($event) {
         $event->Add(array('canlogin'=>
             ($event->getParam('user')->status >= Account::STATUS_VALID)));
-    }
+   }
 }
