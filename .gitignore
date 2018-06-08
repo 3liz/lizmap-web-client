@@ -18,3 +18,4 @@ temp/lizmap/*
 !temp/lizmap/.empty
 vagrant/playbook.retry
 vagrant/.vagrant
+vagrant/vars/custom.yml
