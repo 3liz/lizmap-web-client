@@ -6452,7 +6452,7 @@ OpenLayers.Control.HighlightFeature = OpenLayers.Class(OpenLayers.Control, {
 
           // hide mini-dock if no tool is active
           if ( $('#mapmenu ul li.nav-minidock.active').length == 0 ) {
-              $('#mini-dock-content .tab-pane.active').removeClass('active');
+              $('#mini-dock-content > .tab-pane.active').removeClass('active');
               $('#mini-dock-tabs li.active').removeClass('active');
           }
 
