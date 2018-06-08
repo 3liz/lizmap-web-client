@@ -4,7 +4,7 @@
 * @subpackage auth
 * @author     Laurent Jouanneau
 * @contributor Frédéric Guillot, Antoine Detante, Julien Issler, Dominique Papin, Tahina Ramaroson, Sylvain de Vathaire, Vincent Viaud
-* @copyright  2001-2005 CopixTeam, 2005-2016 Laurent Jouanneau, 2007 Frédéric Guillot, 2007 Antoine Detante
+* @copyright  2001-2005 CopixTeam, 2005-2018 Laurent Jouanneau, 2007 Frédéric Guillot, 2007 Antoine Detante
 * @copyright  2007-2008 Julien Issler, 2008 Dominique Papin, 2010 NEOV, 2010 BP2I
 *
 * This classes were get originally from an experimental branch of the Copix project (Copix 2.3dev, http://www.copix.org)
@@ -56,6 +56,11 @@ class jAuth {
             }
             else {
                 $config = $newconfig;
+            }
+
+            // we allow to indicate the driver into the localconfig.ini or mainconfig.ini
+            if (isset(jApp::config()->coordplugin_auth) && isset(jApp::config()->coordplugin_auth['driver'])) {
+                $config['driver'] = trim(jApp::config()->coordplugin_auth['driver']);
             }
 
             if (!isset($config['session_name'])

@@ -38,9 +38,10 @@
     value: "{{ item.value }}"
   with_items:
     - { section: "modules", option: "ldapdao.access", value: "1" }
+    - { section: "coordplugin_auth", option: "driver", value: "ldapdao" }
   when: lizmap_ldapdao_enabled
 
-- name: Setup localconfig.ini.php for ldap support
+- name: Setup localconfig.ini.php to enable demo
   ini_file:
     dest: "{{ lizmap_home }}/lizmap/var/config/localconfig.ini.php"
     section: "modules"
