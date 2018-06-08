@@ -68,6 +68,8 @@ class jAppManager {
         if (!is_writeable($path))
             throw new Exception('given temp path does not exists', 4);
 
-        jFile::removeDir($path, false);
+        // do not erase .empty or .dummy files that are into the temp directory
+        // for source code repositories
+        jFile::removeDir($path, false, array('.dummy', '.empty', '.svn'));
     }
 }
