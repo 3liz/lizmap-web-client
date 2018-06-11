@@ -66,13 +66,17 @@ class lizmapProxy {
         $data = '';
         $mime = '';
         $http_code = null;
-
+        $content = explode('?', $url);
+        $purl = $content[0];
+        $content = $content[1];
         // Proxy method : use curl or file_get_contents
         if($proxyMethod == 'curl' and extension_loaded("curl")){
             # With curl
             $ch = curl_init();
             curl_setopt($ch, CURLOPT_HEADER, 0);
-            curl_setopt($ch, CURLOPT_URL, $url);
+            curl_setopt($ch, CURLOPT_URL, $purl);
+            curl_setopt($ch, CURLOPT_POST, 1);
+            curl_setopt($ch, CURLOPT_POSTFIELDS, $content);
             curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false );
             curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
             curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
@@ -90,7 +94,14 @@ class lizmapProxy {
         }
         else{
             # With file_get_contents
-            $data = file_get_contents($url);
+            $opts = array(
+              'http'=>array(
+                'method'=>"POST",
+                'content'=>'?'.$content
+              )
+            );
+            $context = stream_context_create($opts);
+            $data = file_get_contents($purl,false, $context);
             $mime = 'image/png';
             $matches = array();
             $info = $url . ' --> PHP: ';
