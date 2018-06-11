@@ -3925,16 +3925,16 @@ var lizMap = function() {
             && lConfig['request_params']['filter'] != "" ) {
               filter.push( lConfig['request_params']['filter'] );
           }
-          if ( ('selection' in lConfig['request_params'])
-            && lConfig['request_params']['selection'] != null
-            && lConfig['request_params']['selection'] != "" ) {
-              selection.push( lConfig['request_params']['selection'] );
+          if ( ('selectiontoken' in lConfig['request_params'])
+            && lConfig['request_params']['selectiontoken'] != null
+            && lConfig['request_params']['selectiontoken'] != "" ) {
+              selection.push( lConfig['request_params']['selectiontoken'] );
           }
       }
       if ( filter.length !=0 )
         url += '&FILTER='+ filter.join(';');
       if ( selection.length !=0 )
-        url += '&SELECTION='+ selection.join(';');
+        url += '&SELECTIONTOKEN='+ selection.join(';');
       window.open(url);
       return false;
     });
