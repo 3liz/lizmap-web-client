@@ -3,7 +3,7 @@
 
 ;============= Main parameters
 
-; driver name : "ldap", "Db", "Class" or "LDS" (respect the case of characters)
+; driver name: "Db" or "ldapdao"
 driver = "Db"
 
 ;============ Parameters for the plugin
@@ -110,44 +110,39 @@ userform = "lizmap~account"
 ; should be related to the var directory of the application
 uploadsDirectory= ""
 
-;------- parameters for the "Class" driver
-[Class]
-; selector of the class
-class = ""
 
-; name of the php function to crypt the password in the database
+[ldapdao]
+
+compatiblewithdb = on
+
+; name of the dao to get user data
+dao = "lizmap~user"
+
+; profile to use for jDb
+profile = "jauth"
+
+; profile to use for ldap
+ldapprofile = "lizmapldap"
+
+; ldap needs clear password to connect, this is useless for our plugin
+; except for the admin user.
+; even if password_hash_method is activated, we set it to allow
+; password storage migration
+; @deprecated
 password_crypt_function = sha1
-; if you want to use a salt with sha1:
-;password_crypt_function = "1:sha1WithSalt"
-;password_salt = "here_your_salt"
 
-; if you want to use bcrypt algorithm (more secured but time expensive)
-;password_crypt_function = "1:bcrypt"
-; salt for bcrypt algorithm, must be alphanumeric and 22 characters in length
-;password_salt = "salt_of_22_alphanumeric_characters_for_bcrypt_algo"
+; name of the form for the jauthdb_admin module
+form = "lizmap~account_admin"
+; name of the form for the user to modify its account data
+userform = "lizmap~account"
 
-;------- parameters for the "ldap" driver
-[ldap]
-; default "localhost"
-hostname=
-; default 389
-port=
+; path of the directory where to store files uploaded by the form (jauthdb_admin module)
+; should be related to the var directory of the application
+uploadsDirectory= ""
 
-; DOMAIN\user or user@DOMAIN to connect with LDAP (user who has at least search right)
-ldapUser=
-; password used to connect with LDAP
-ldapPassword=
+;--- ldap parameters
 
-; LDAP search params 
-; search base, example for Active Directory: "ou=ADAM users,o=Microsoft,c=US"
-searchBaseDN=
-; search filter, example for Active Directory: "(objectClass=user)"
-searchFilter=
-; attributes to retrieve for the search, example for Active Directory: "cn,distinguishedName,name"
-searchAttributes=
+; this is the jelix user that have admin rights. It will not be verified in the
+; ldap
+jelixAdminLogin="admin"
 
-; name of the php function to crypt the password in the database
-password_crypt_function = sha1
-; if you want to use a salt with sha1:
-;password_crypt_function = "1:sha1WithSalt"
-;password_salt = "here_your_salt"

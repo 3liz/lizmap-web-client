@@ -57,7 +57,7 @@
   height: 20px;
 }
 
-#mapmenu #locate-clear.icon {
+#mapmenu .btn-locate-clear.icon {
   background-color: transparent;
   background-position: -870px 0px;
   border: none;

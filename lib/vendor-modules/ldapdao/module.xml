@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module xmlns="http://jelix.org/ns/module/1.0">
+    <info id="ldapdao@3liz.com" name="ldapdao" createdate="2014-11-18">
+        <version date="2018-06-08">2.0.2</version>
+        <label lang="en_US">ldapdao</label>
+        <description lang="en_US" />
+        <license URL="http://www.mozilla.org/MPL/">Mozilla Public License</license>
+        <copyright>2014 3liz, 2017-2018 Innophi</copyright>
+    </info>
+    <dependencies>
+        <jelix minversion="1.5" maxversion="1.7.*"/>
+        <module name="jacl2"/>
+        <module name="jauth"/>
+        <!--module name="jauthdb" /-->
+    </dependencies>
+</module>

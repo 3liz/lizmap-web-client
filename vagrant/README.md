@@ -8,6 +8,9 @@ in this directory to setup a virtual machine using Vagrant.
 Here are steps:
 
 - install [Virtual box](https://www.virtualbox.org/) and [Vagrant](http://www.vagrantup.com/downloads.html)
+- copy vagrant/vars/custom.yml.dist to vagrant/vars/custom.yml and change some
+  settings if needed. You can enable postgresql storage for Lizmap data, or
+  enable ldap authentication for example.
 - go into the vagrant/ directory (where there is the README.md file you're reading),
  launch the vagrant virtual machine:
 
@@ -25,7 +28,8 @@ When the "Done" message appears, and if there are no errors, Lizmap is
 ready. Go in http://localhost:8130/ to see the app.
 
 You can authenticate yourself in the application with the login "admin" 
-and the password "admin".
+and the password "admin". If you did enable the ldap authentication, you can
+also try these users/password: john / passjohn and jane / passjane.
 
 You can now modify the source code of Lizmap, and see changes into your
 web browser.

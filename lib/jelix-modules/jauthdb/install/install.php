@@ -26,7 +26,13 @@ class jauthdbModuleInstaller extends jInstallerModule {
             // the module, else we ignore it
 
             $conf = new jIniFileModifier(jApp::configPath($authconfig));
-            $driver = $conf->getValue('driver');
+
+            if (isset($this->entryPoint->getConfigObj()->coordplugin_auth['driver'])) {
+                $driver = $this->entryPoint->getConfigObj()->coordplugin_auth['driver'];
+            }
+            else {
+                $driver = $conf->getValue('driver');
+            }
 
             if ($driver == '') {
                 $driver = 'Db';

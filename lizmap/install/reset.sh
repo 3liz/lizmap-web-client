@@ -1,6 +1,6 @@
 #!/bin/sh
 
-if [ "$1" != "install" &&  "$1" != "reset" ]; then
+if [ "$1" != "install" -a "$1" != "reset" ]; then
     echo "Error: confirmation is missing"
     echo ""
     echo "This script resets the installation of lizmap, destroying all references to projects"
@@ -9,7 +9,7 @@ if [ "$1" != "install" &&  "$1" != "reset" ]; then
     echo " - 'install' to confirm the reset and to launch the installer."
     echo "    Add 'demo' as second parameter if you want to install/reset with the"
     echo "    demo activated"
-    echo " - 'reset' to only confirm the reset (if you want to launch the wizard)"
+    echo " - 'reset' to only confirm the reset (in case you want to launch the wizard later)"
     echo ""
     exit 1
 fi
