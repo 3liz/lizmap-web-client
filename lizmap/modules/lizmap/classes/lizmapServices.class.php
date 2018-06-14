@@ -88,6 +88,7 @@ class lizmapServices{
         'adminSenderName' => array('webmasterName', 'mailer'),
     );
 
+    private $isUsingLdap = false;
 
     // Wms map server
     public $appName = 'Lizmap';
@@ -145,6 +146,8 @@ class lizmapServices{
       $this->data = $readConfigPath;
       $globalConfig = jApp::config();
 
+      $this->isUsingLdap = jApp::isModuleEnabled('ldapdao');
+
       // set generic parameters
       foreach($this->properties as $prop) {
         if (isset($this->globalConfigProperties[$prop])) {
@@ -187,6 +190,15 @@ class lizmapServices{
             $this->allowUserAccountRequests = false;
             $this->adminSenderEmail = '';
         }
+
+        if ($this->isUsingLdap) {
+           // as ldapdao cannot write to the ldap, a user cannot create an account
+           $this->allowUserAccountRequests = false;
+        }
+    }
+
+    public function isLdapEnabled() {
+        return $this->isUsingLdap;
     }
 
     public function getProperties(){
@@ -200,7 +212,7 @@ class lizmapServices{
     }
 
     public function getSensitiveProperties(){
-      return $this->sensitiveProperties;
+        return $this->sensitiveProperties;
     }
 
     public function getRootRepositories(){

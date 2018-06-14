@@ -1,0 +1,14 @@
+
+- name: copy ldap_delete.ldif
+  template: src=ldap_delete.ldif.j2 dest=/opt/ldap_delete.ldif
+
+- name: copy ldap_conf.ldif
+  template: src=ldap_conf.ldif.j2 dest=/opt/ldap_conf.ldif
+
+- name: remove all current ldap entries
+  shell: ldapdelete -x -c -D cn=admin,dc={{ ldap_cn }},dc=local -w {{ ldap_admin_pwd }} -f /opt/ldap_delete.ldif
+  ignore_errors: yes
+
+- name: setup ldap entries
+  shell: ldapadd -x -c -D cn=admin,dc={{ ldap_cn }},dc=local -w {{ ldap_admin_pwd }} -f /opt/ldap_conf.ldif
+  ignore_errors: yes

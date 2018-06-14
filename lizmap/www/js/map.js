@@ -2128,8 +2128,7 @@ var lizMap = function() {
           for (var lname in config.locateByLayer) {
             getLocateFeature(lname);
           }
-          $('#locate-clear').click(function() {
-
+          $('.btn-locate-clear').click(function() {
             var layer = map.getLayersByName('locatelayer')[0];
             layer.destroyFeatures();
             $('#locate select').val('-1');
@@ -2145,7 +2144,7 @@ var lizMap = function() {
 
           });
           $('#locate-close').click(function() {
-            $('#locate-clear').click(); // deactivate locate feature and filter
+            $('.btn-locate-clear').click(); // deactivate locate feature and filter
             $('#button-locate').click();
             return false;
           });
@@ -2681,7 +2680,8 @@ var lizMap = function() {
           for (var lname in config.locateByLayer) {
             getLocateFeature(lname);
           }
-          $('#locate-clear').click(function() {
+          $('.btn-locate-clear').click(function() {
+            console.log("test locate clear");
             var layer = map.getLayersByName('locatelayer')[0];
             layer.destroyFeatures();
             $('#locate select').val('-1');
@@ -2696,7 +2696,7 @@ var lizMap = function() {
 
           });
           $('#locate-close').click(function() {
-            $('#locate-clear').click(); // deactivate locate and filter
+            $('.btn-locate-clear').click(); // deactivate locate and filter
             $('#button-locate').click();
             return false;
           });

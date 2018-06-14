@@ -16,10 +16,9 @@ lizmap_fpm_socket: /var/run/php/php{{ php_version }}-fpm.sock
 lizmap_webserver_user: vagrant
 lizmap_webserver_group: vagrant
 
-lizmap_jauth_driver: sqlite3
-# or pgsql. If so, auth and acl configuration will be store in PostgreSQL database
-# only if postgresql has already been installed
+lizmap_postgresql_storage: false
 
+lizmap_ldapdao_enabled: false
 
 # the path should be equals to the vagrant mount point, see config.vm.synced_folder in Vagrantfile
 lizmap_home: /lizmap_web_client

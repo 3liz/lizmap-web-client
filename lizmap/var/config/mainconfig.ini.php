@@ -129,14 +129,16 @@ notice=file
 strict=file
 ;sql=syslog
 metric=syslog
+auth=
 
 [fileLogger]
 default=messages.log
-error=error.log
-warning=error.log
-notice=error.log
-strict=error.log
+error=errors.log
+warning=errors.log
+notice=errors.log
+strict=errors.log
 ;metric=time.log
+auth=messages.log
 
 [mailer]
 webmasterEmail="root@localhost"
@@ -253,6 +255,9 @@ dynamicLayers.access=1
 lizmap.access=1
 proj4php.access=1
 view.access=1
+
+ldapdao.installparam=noconfigfile
+
 
 [mailLogger]
 email="root@localhost"

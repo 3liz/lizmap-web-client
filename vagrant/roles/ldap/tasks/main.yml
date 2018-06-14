@@ -1,0 +1,5 @@
+- include: ldap.yml
+  tags: ldap
+
+- include: entries.yml
+  tags: ldap
