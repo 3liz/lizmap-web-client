@@ -97,7 +97,8 @@ class lizmapProxy {
             $opts = array(
               'http'=>array(
                 'method'=>"POST",
-                'content'=>'?'.$content
+                'header'=>"Connection: close\r\nContent-type: text/xml\r\n",
+                'content'=>$content
               )
             );
             $context = stream_context_create($opts);
