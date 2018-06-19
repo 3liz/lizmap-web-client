@@ -2059,7 +2059,8 @@ var lizMap = function() {
           fill: false,
           stroke: true,
           strokeWidth: 3,
-          strokeColor: 'yellow'
+          strokeColor: 'yellow',
+          strokeOpacity: 0.8
         })
       }));
 
@@ -2606,7 +2607,8 @@ var lizMap = function() {
           fill: false,
           stroke: true,
           strokeWidth: 3,
-          strokeColor: 'yellow'
+          strokeColor: 'yellow',
+          strokeOpacity: 0.8
         })
       }));
 
@@ -3347,7 +3349,7 @@ var lizMap = function() {
       layer.destroyFeatures();
       // get geometries and crs
       var geometries = [];
-      $('div.lizmapPopupContent input.lizmap-popup-layer-feature-geometry').each(function(){
+      $('div.lizmapPopupContent > div.lizmapPopupDiv > input.lizmap-popup-layer-feature-geometry').each(function(){
         var self = $(this);
         var val = self.val();
         if ( val == '' )
@@ -3387,7 +3389,8 @@ var lizMap = function() {
                       eHtml+= '" title="' + lizDict['attributeLayers.btn.zoom.title'] + '"><i class="icon-zoom-in"></i>&nbsp;</button>';
                       var popupButtonBar = fidInput.next('span.popupButtonBar');
                       if ( popupButtonBar.length != 0 ) {
-                          popupButtonBar.append(eHtml);
+                          if ( popupButtonBar.find('button.popup-layer-feature-bbox-zoom').length == 0 )
+                              popupButtonBar.append(eHtml);
                       } else {
                           eHtml = '<span class="popupButtonBar">' + eHtml + '</span></br>';
                           fidInput.after(eHtml);
@@ -3639,6 +3642,19 @@ var lizMap = function() {
                       var hasPopupContent = (!(!text || text == null || text == ''))
                       if( !$('#mapmenu .nav-list > li.popupcontent > a').length ){
                         addDock('popupcontent', 'Popup', config.options.popupLocation, pcontent, 'icon-comment');
+                        $('#button-popupcontent').click(function(){
+                          if($(this).parent().hasClass('active')) {
+                            // clean locate layer
+                            var locatelayer = map.getLayersByName('locatelayer');
+                            if ( locatelayer.length == 0 )
+                                return;
+                            locatelayer = locatelayer[0];
+                            locatelayer.destroyFeatures();
+                          } else {
+                            // Display geometries
+                            addGeometryFeatureInfo( popup );
+                          }
+                        });
                       }
                       else{
                         $('#popupcontent div.menu-content').html(pcontent);
@@ -3691,6 +3707,13 @@ var lizMap = function() {
                               $('#navbar').show();
                               $('#overview-box').show();
                             }
+
+                            // clean locate layer
+                            var locatelayer = map.getLayersByName('locatelayer');
+                            if ( locatelayer.length == 0 )
+                                return;
+                            locatelayer = locatelayer[0];
+                            locatelayer.destroyFeatures();
                             return false;
                           }
                       );
