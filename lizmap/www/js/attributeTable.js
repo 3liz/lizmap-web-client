@@ -2519,12 +2519,29 @@ var lizAttributeTable = function() {
                     && config.layers[featureType]['selectedFeatures']
                     && config.layers[featureType]['selectedFeatures'].length
                 ) {
-                    layer.params['SELECTION'] = layerN + ':' + config.layers[featureType]['selectedFeatures'].join();
+                    //layer.params['SELECTION'] = layerN + ':' + config.layers[featureType]['selectedFeatures'].join();
+
                     config.layers[featureType]['request_params']['selection'] = layer.params['SELECTION'];
+                    // Get selection token
+                    var surl = OpenLayers.Util.urlAppend(lizUrls.wms
+                        ,OpenLayers.Util.getParameterString(lizUrls.params)
+                    );
+                    var sdata = {
+                        service: 'WMS',
+                        request: 'GETSELECTIONTOKEN',
+                        typename: featureType,
+                        ids: config.layers[featureType]['selectedFeatures'].join()
+                    };
+                    $.post(surl, sdata, function(result){
+                        config.layers[featureType]['request_params']['selectiontoken'] = result.token;
+                        layer.params['SELECTIONTOKEN'] = result.token;
+                    });
                 }
                 else {
-                    delete layer.params['SELECTION'];
+                    //delete layer.params['SELECTION'];
+                    delete layer.params['SELECTIONTOKEN'];
                     config.layers[featureType]['request_params']['selection'] = null;
+                    config.layers[featureType]['request_params']['selectiontoken'] = null;
                 }
 
                 // Build data to update layer drawing and other components
@@ -2565,7 +2582,7 @@ var lizAttributeTable = function() {
                     };
                     $.post(surl, sdata, function(result){
                         config.layers[featureType]['request_params']['selectiontoken'] = result.token;
-                        layer.params['SELECTIONTOKEN'] = result.token
+                        layer.params['SELECTIONTOKEN'] = result.token;
                         // Redraw openlayers layer
                         if( config.layers[featureType]['geometryType'] != 'none'
                             && config.layers[featureType]['geometryType'] != 'unknown'
