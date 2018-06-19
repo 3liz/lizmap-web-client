@@ -489,16 +489,12 @@ var lizMap = function() {
       // the mini-dock menu-content visible
       var mdmcv = $('#mini-dock .tab-pane:visible h3 ~ .menu-content:first');
       mdmcv.css( 'max-height', '100%' )
-      console.log('updateMiniDockSize');
       var h = $('#mini-dock').height();
-      console.log('updateMiniDockSize: '+h);
       h -= $('#mini-dock .tab-pane:visible h3').height();
-      console.log('updateMiniDockSize: '+h);
       h -= (parseInt(mdmcv.css('margin-top')) ? parseInt(mdmcv.css('margin-top')) : 0 ) ;
       h -= (parseInt(mdmcv.css('margin-bottom')) ? parseInt(mdmcv.css('margin-bottom')) : 0 ) ;
       h -= (parseInt(mdmcv.css('padding-top')) ? parseInt(mdmcv.css('padding-top')) : 0 ) ;
       h -= (parseInt(mdmcv.css('padding-bottom')) ? parseInt(mdmcv.css('padding-bottom')) : 0 ) ;
-      console.log('updateMiniDockSize: '+h);
 
       mdmcv.css( 'max-height', h ).css('overflow-x', 'hidden').css('overflow-y', 'auto');
   }
@@ -2059,7 +2055,8 @@ var lizMap = function() {
           fill: false,
           stroke: true,
           strokeWidth: 3,
-          strokeColor: 'yellow'
+          strokeColor: 'yellow',
+          strokeOpacity: 0.8
         })
       }));
 
@@ -2606,7 +2603,8 @@ var lizMap = function() {
           fill: false,
           stroke: true,
           strokeWidth: 3,
-          strokeColor: 'yellow'
+          strokeColor: 'yellow',
+          strokeOpacity: 0.8
         })
       }));
 
@@ -3347,7 +3345,7 @@ var lizMap = function() {
       layer.destroyFeatures();
       // get geometries and crs
       var geometries = [];
-      $('div.lizmapPopupContent input.lizmap-popup-layer-feature-geometry').each(function(){
+      $('div.lizmapPopupContent > div.lizmapPopupDiv > input.lizmap-popup-layer-feature-geometry').each(function(){
         var self = $(this);
         var val = self.val();
         if ( val == '' )
@@ -3387,7 +3385,8 @@ var lizMap = function() {
                       eHtml+= '" title="' + lizDict['attributeLayers.btn.zoom.title'] + '"><i class="icon-zoom-in"></i>&nbsp;</button>';
                       var popupButtonBar = fidInput.next('span.popupButtonBar');
                       if ( popupButtonBar.length != 0 ) {
-                          popupButtonBar.append(eHtml);
+                          if ( popupButtonBar.find('button.popup-layer-feature-bbox-zoom').length == 0 )
+                              popupButtonBar.append(eHtml);
                       } else {
                           eHtml = '<span class="popupButtonBar">' + eHtml + '</span></br>';
                           fidInput.after(eHtml);
@@ -3639,6 +3638,19 @@ var lizMap = function() {
                       var hasPopupContent = (!(!text || text == null || text == ''))
                       if( !$('#mapmenu .nav-list > li.popupcontent > a').length ){
                         addDock('popupcontent', 'Popup', config.options.popupLocation, pcontent, 'icon-comment');
+                        $('#button-popupcontent').click(function(){
+                          if($(this).parent().hasClass('active')) {
+                            // clean locate layer
+                            var locatelayer = map.getLayersByName('locatelayer');
+                            if ( locatelayer.length == 0 )
+                                return;
+                            locatelayer = locatelayer[0];
+                            locatelayer.destroyFeatures();
+                          } else {
+                            // Display geometries
+                            addGeometryFeatureInfo( popup );
+                          }
+                        });
                       }
                       else{
                         $('#popupcontent div.menu-content').html(pcontent);
@@ -3691,6 +3703,13 @@ var lizMap = function() {
                               $('#navbar').show();
                               $('#overview-box').show();
                             }
+
+                            // clean locate layer
+                            var locatelayer = map.getLayersByName('locatelayer');
+                            if ( locatelayer.length == 0 )
+                                return;
+                            locatelayer = locatelayer[0];
+                            locatelayer.destroyFeatures();
                             return false;
                           }
                       );
@@ -4281,16 +4300,16 @@ var lizMap = function() {
             && lConfig['request_params']['filter'] != "" ) {
               filter.push( lConfig['request_params']['filter'] );
           }
-          if ( ('selection' in lConfig['request_params'])
-            && lConfig['request_params']['selection'] != null
-            && lConfig['request_params']['selection'] != "" ) {
-              selection.push( lConfig['request_params']['selection'] );
+          if ( ('selectiontoken' in lConfig['request_params'])
+            && lConfig['request_params']['selectiontoken'] != null
+            && lConfig['request_params']['selectiontoken'] != "" ) {
+              selection.push( lConfig['request_params']['selectiontoken'] );
           }
       }
       if ( filter.length !=0 )
         url += '&FILTER='+ filter.join(';');
       if ( selection.length !=0 )
-        url += '&SELECTION='+ selection.join(';');
+        url += '&SELECTIONTOKEN='+ selection.join(';');
       window.open(url);
       return false;
     });
@@ -5488,6 +5507,8 @@ OpenLayers.Control.HighlightFeature = OpenLayers.Class(OpenLayers.Control, {
       var typeName = aName.split(' ').join('_');
       if ( 'shortname' in configLayer && configLayer.shortname != '' )
         typeName = configLayer.shortname;
+      else if ( 'typename' in configLayer && configLayer.typename != '' )
+          typeName = configLayer.typename;
       var layerName = cleanName(aName);
 
       var wfsOptions = {
@@ -5526,7 +5547,7 @@ OpenLayers.Control.HighlightFeature = OpenLayers.Class(OpenLayers.Control, {
 
       // optionnal parameter filterid
       if( aFeatureId )
-          wfsOptions['FEATUREID'] = aFeatureId;
+          wfsOptions['FEATUREID'] = aFeatureId.replace( aName, typeName);
 
       // Calculate bbox from map extent if needed
       if( restrictToMapExtent ) {

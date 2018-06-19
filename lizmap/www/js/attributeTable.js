@@ -2385,19 +2385,41 @@ var lizAttributeTable = function() {
                     && config.layers[featureType]['selectedFeatures']
                     && config.layers[featureType]['selectedFeatures'].length
                 ) {
-                    layer.params['SELECTION'] = featureType + ':' + config.layers[featureType]['selectedFeatures'].join();
+                    //layer.params['SELECTION'] = featureType + ':' + config.layers[featureType]['selectedFeatures'].join();
                     config.layers[featureType]['request_params']['selection'] = layer.params['SELECTION'];
+
+                    // Get selection token
+                    var surl = OpenLayers.Util.urlAppend(lizUrls.wms
+                        ,OpenLayers.Util.getParameterString(lizUrls.params)
+                    );
+                    var sdata = {
+                        service: 'WMS',
+                        request: 'GETSELECTIONTOKEN',
+                        typename: featureType,
+                        ids: config.layers[featureType]['selectedFeatures'].join()
+                    };
+                    $.post(surl, sdata, function(result){
+                        config.layers[featureType]['request_params']['selectiontoken'] = result.token;
+                        layer.params['SELECTIONTOKEN'] = result.token
+                        // Redraw openlayers layer
+                        if( config.layers[featureType]['geometryType'] != 'none'
+                            && config.layers[featureType]['geometryType'] != 'unknown'
+                        ){
+                            layer.redraw(true);
+                        }
+                    });
                 }
                 else {
-                    delete layer.params['SELECTION'];
+                    //delete layer.params['SELECTION'];
+                    delete layer.params['SELECTIONTOKEN'];
                     config.layers[featureType]['request_params']['selection'] = null;
-                }
-
-                // Redraw openlayers layer
-                if( config.layers[featureType]['geometryType'] != 'none'
-                    && config.layers[featureType]['geometryType'] != 'unknown'
-                ){
-                    layer.redraw(true);
+                    config.layers[featureType]['request_params']['selectiontoken'] = null;
+                    // Redraw openlayers layer
+                    if( config.layers[featureType]['geometryType'] != 'none'
+                        && config.layers[featureType]['geometryType'] != 'unknown'
+                    ){
+                        layer.redraw(true);
+                    }
                 }
 
             }
@@ -2684,7 +2706,10 @@ var lizAttributeTable = function() {
                         }
 
                         // Zoom button
-                        var bboxZoomButton = self.next('span.popupButtonBar').find('button.popup-layer-feature-zoom');
+                        var popupButtonBar = self.next('span.popupButtonBar');
+                        var bboxZoomButton = popupButtonBar.find('button.popup-layer-feature-zoom');
+                        if ( bboxZoomButton.length == 0 )
+                            bboxZoomButton = popupButtonBar.find('button.popup-layer-feature-bbox-zoom');
                         if( aConfig && getLayerConfig && bboxZoomButton.length == 0) {
                             var layerConfig = getLayerConfig[1];
                             eHtml+= '<button class="btn btn-mini popup-layer-feature-zoom" value="';
@@ -2693,7 +2718,6 @@ var lizAttributeTable = function() {
                         }
 
                         if( eHtml != '' ){
-                            var popupButtonBar = self.next('span.popupButtonBar');
                             if ( popupButtonBar.length != 0 ) {
                                 if ( bboxZoomButton.length == 0 )
                                     popupButtonBar.append(eHtml);
