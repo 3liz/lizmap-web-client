@@ -489,16 +489,12 @@ var lizMap = function() {
       // the mini-dock menu-content visible
       var mdmcv = $('#mini-dock .tab-pane:visible h3 ~ .menu-content:first');
       mdmcv.css( 'max-height', '100%' )
-      console.log('updateMiniDockSize');
       var h = $('#mini-dock').height();
-      console.log('updateMiniDockSize: '+h);
       h -= $('#mini-dock .tab-pane:visible h3').height();
-      console.log('updateMiniDockSize: '+h);
       h -= (parseInt(mdmcv.css('margin-top')) ? parseInt(mdmcv.css('margin-top')) : 0 ) ;
       h -= (parseInt(mdmcv.css('margin-bottom')) ? parseInt(mdmcv.css('margin-bottom')) : 0 ) ;
       h -= (parseInt(mdmcv.css('padding-top')) ? parseInt(mdmcv.css('padding-top')) : 0 ) ;
       h -= (parseInt(mdmcv.css('padding-bottom')) ? parseInt(mdmcv.css('padding-bottom')) : 0 ) ;
-      console.log('updateMiniDockSize: '+h);
 
       mdmcv.css( 'max-height', h ).css('overflow-x', 'hidden').css('overflow-y', 'auto');
   }
