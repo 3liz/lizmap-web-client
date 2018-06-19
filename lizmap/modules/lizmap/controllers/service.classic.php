@@ -81,6 +81,8 @@ class serviceCtrl extends jController {
       return $this->GetTile();
     elseif ($request == "GETPROJ4")
       return $this->GetProj4();
+    elseif ($request == "GETSELECTIONTOKEN")
+      return $this->GetSelectionToken();
     else {
       global $HTTP_RAW_POST_DATA;
       if(isset($HTTP_RAW_POST_DATA)){
@@ -209,6 +211,25 @@ class serviceCtrl extends jController {
         and !jAcl2::check('lizmap.tools.loginFilteredLayers.override', $lrep->getKey() )
       ){
         $this->filterDataByLogin();
+      }
+    }
+
+    // Get the selection token
+    if(
+      isset($params['selectiontoken'])
+      and in_array($request, array('getmap', 'getfeature', 'getprint'))
+    ){
+      $token = $params['selectiontoken'];
+      $data = jCache::get($token);
+      if($data){
+        $data = json_decode($data);
+        if(
+          property_exists($data, 'typename')
+          and property_exists($data, 'ids')
+          and count($data->ids) > 0
+        ){
+          $this->params['SELECTION'] = $data->typename. ':' . implode(',', $data->ids);
+        }
       }
     }
 
@@ -1334,5 +1355,47 @@ class serviceCtrl extends jController {
         }
         lizmap::logMetric('LIZMAP_SERVICE_GETMAP');
         return $rep;
+  }
+
+  private function _getSelectionToken($repository, $project, $typename, $ids){
+    $token = md5($repository . $project . $typename . implode(',', $ids));
+
+    $data = jCache::get($token);
+    $incache = True;
+    if(!$data or true){
+      $data = array();
+      $data['token'] = $token;
+      $data['typename'] = $typename;
+      $data['ids'] = $ids;
+      $incache = False;
+      jCache::set($token, json_encode($data), 3600);
+    }else{
+      $data = json_decode($data);
+    }
+
+    return $data;
+  }
+
+  function getSelectionToken(){
+    // Get parameters
+    if(!$this->getServiceParameters())
+      return $this->serviceException();
+
+    // Prepare response
+    $rep = $this->getResponse('json');
+
+    // Get params
+    $typename = $this->params["typename"];
+    $ids = explode(',', $this->params["ids"]);
+    sort($ids);
+
+    // Token
+    $data = $this->_getSelectionToken($this->iParam('repository'), $this->iParam('project'), $typename, $ids);
+    $json = array();
+    $json['token'] = $data['token'];
+
+    $rep->data = $json;
+
+    return $rep;
   }
 }
