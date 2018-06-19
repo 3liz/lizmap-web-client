@@ -5381,6 +5381,8 @@ OpenLayers.Control.HighlightFeature = OpenLayers.Class(OpenLayers.Control, {
       var typeName = aName.split(' ').join('_');
       if ( 'shortname' in configLayer && configLayer.shortname != '' )
         typeName = configLayer.shortname;
+      else if ( 'typename' in configLayer && configLayer.typename != '' )
+          typeName = configLayer.typename;
       var layerName = cleanName(aName);
 
       var wfsOptions = {
@@ -5419,7 +5421,7 @@ OpenLayers.Control.HighlightFeature = OpenLayers.Class(OpenLayers.Control, {
 
       // optionnal parameter filterid
       if( aFeatureId )
-          wfsOptions['FEATUREID'] = aFeatureId;
+          wfsOptions['FEATUREID'] = aFeatureId.replace( aName, typeName);
 
       // Calculate bbox from map extent if needed
       if( restrictToMapExtent ) {
