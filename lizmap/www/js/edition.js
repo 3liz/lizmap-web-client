@@ -38,6 +38,9 @@ var lizEdition = function() {
         }
         if ( removableFeat )
             editionLayer['ol'].removeFeatures( [removableFeat] );
+        // Update form liz_wkt field from added geometry
+        if ( editionLayer['ol'].features.length !=0 )
+            updateGeometryColumnFromFeature( editionLayer['ol'].features[0] );
         $('#edition-geomtool-nodetool').click();
         return false;
     }

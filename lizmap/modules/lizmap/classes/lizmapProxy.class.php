@@ -96,6 +96,10 @@ class lizmapProxy {
             curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false );
             curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
             curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
+            curl_setopt($ch, CURLOPT_HTTPHEADER, array(
+                'Connection: close',
+                'Content-type: application/x-www-form-urlencoded'
+            ));
             $data = curl_exec($ch);
             $info = curl_getinfo($ch);
             $mime = $info['content_type'];
@@ -113,7 +117,7 @@ class lizmapProxy {
             $opts = array(
               'http'=>array(
                 'method'=>"POST",
-                'header'=>"Connection: close\r\nContent-type: text/xml\r\n",
+                'header'=>"Connection: close\r\nContent-type: application/x-www-form-urlencoded\r\n",
                 'content'=>$content
               )
             );
