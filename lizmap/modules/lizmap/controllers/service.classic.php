@@ -220,18 +220,24 @@ class serviceCtrl extends jController {
       isset($params['selectiontoken'])
       and in_array($request, array('getmap', 'getfeature', 'getprint'))
     ){
-      $token = $params['selectiontoken'];
-      $data = jCache::get($token);
-      if($data){
-        $data = json_decode($data);
-        if(
-          property_exists($data, 'typename')
-          and property_exists($data, 'ids')
-          and count($data->ids) > 0
-        ){
-          $this->params['SELECTION'] = $data->typename. ':' . implode(',', $data->ids);
+        $tokens = $params['selectiontoken'];
+        $tokens = explode(';', $tokens);
+        $selections = array();
+        foreach( $tokens as $token ) {
+            $data = jCache::get($token);
+            if($data){
+                $data = json_decode($data);
+                if(
+                  property_exists($data, 'typename')
+                  and property_exists($data, 'ids')
+                  and count($data->ids) > 0
+                ){
+                  $selections[] = $data->typename. ':' . implode(',', $data->ids);
+                }
+            }
         }
-      }
+        if( count( $selections ) > 0 )
+            $this->params['SELECTION'] = implode(';', $selections);
     }
 
     return true;
