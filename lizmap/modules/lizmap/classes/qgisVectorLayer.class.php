@@ -232,7 +232,7 @@ class qgisVectorLayer extends qgisMapLayer{
       }
 
       // For views : add key from datasource
-      if(!$primaryKeys and $dtParams->key){
+      if(count($primaryKeys) == 0 and $dtParams->key){
           // check if layer is a view
           if($this->provider == 'postgres'){
             $sql = " SELECT table_name FROM INFORMATION_SCHEMA.views";
@@ -246,7 +246,7 @@ class qgisVectorLayer extends qgisMapLayer{
           }
           $res = $cnx->query($sql);
           if($res->rowCount() > 0)
-            $this->primaryKeys[] = $dtParams->key;
+            $primaryKeys[] = $dtParams->key;
       }
 
       $this->dbFieldsInfo = (object) array(
