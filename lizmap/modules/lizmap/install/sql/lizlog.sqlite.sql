@@ -1,4 +1,4 @@
-CREATE TABLE "log_detail" (
+CREATE TABLE IF NOT EXISTS "log_detail" (
     "id" INTEGER PRIMARY KEY  AUTOINCREMENT  NOT NULL  UNIQUE ,
     "log_key" VARCHAR NOT NULL ,
     "log_timestamp" DATETIME DEFAULT CURRENT_TIMESTAMP,
@@ -8,7 +8,7 @@ CREATE TABLE "log_detail" (
     "log_project" VARCHAR,
     "log_ip" VARCHAR);
 
-CREATE TABLE "log_counter" (
+CREATE TABLE IF NOT EXISTS "log_counter" (
     "id" INTEGER PRIMARY KEY  AUTOINCREMENT  NOT NULL ,
     "key" VARCHAR NOT NULL ,
     "counter" INTEGER,
