@@ -60,7 +60,7 @@ class qgisFormControl{
       ),
       5 => array (
             'qgis'=>array('name'=>'Range', 'description'=>'Allow one to set numeric values from a specified range. the edit widget can be either a slider or a spin box'),
-            'jform'=>array('markup'=>'menulist')
+            'jform'=>array('markup'=>array('input','menulist'))
       ),
       2 => array (
             'qgis'=>array('name'=>'Unique values', 'description'=>'the user can select one of the values already used in the attribute. If editable, a line edit is shown with autocompletion support, otherwise a combo box is used'),
@@ -229,8 +229,17 @@ class qgisFormControl{
         $this->fieldEditType = 0;
 
       // Get jform control type
-      if($this->fieldEditType === 15){
+      if($this->fieldEditType === 5){
+        $markup = $this->qgisEdittypeMap[$this->fieldEditType]['jform']['markup'][0];
+      }
+      else if($this->fieldEditType === 15){
         $markup = $this->qgisEdittypeMap[$this->fieldEditType]['jform']['markup'][(int)$this->edittype[0]->attributes()->allowMulti];
+      }
+      else if($this->fieldEditType === 'Range' || $this->fieldEditType === 'EditRange' ){
+        $markup = $this->qgisEdittypeMap[$this->fieldEditType]['jform']['markup'][0];
+      }
+      else if($this->fieldEditType === 'SliderRange' || $this->fieldEditType === 'DialRange' ){
+        $markup = $this->qgisEdittypeMap[$this->fieldEditType]['jform']['markup'][1];
       }
       else if($this->fieldEditType === 'ValueRelation'){
         $markup = $this->qgisEdittypeMap[$this->fieldEditType]['jform']['markup'][(int)$this->edittype[0]->widgetv2config->attributes()->AllowMulti];
@@ -564,6 +573,7 @@ class qgisFormControl{
         $data[(string)$max] = $max;
         break;
 
+      case 'Range':
       case 'EditRange':
       case 'SliderRange':
       case 'DialRange':
