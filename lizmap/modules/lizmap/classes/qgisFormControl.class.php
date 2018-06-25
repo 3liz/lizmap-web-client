@@ -173,6 +173,7 @@ class qgisFormControl{
     $this->qgisEdittypeMap['UniqueValuesEditable'] = $this->qgisEdittypeMap[2];
     $this->qgisEdittypeMap['ValueMap'] = $this->qgisEdittypeMap[3];
     $this->qgisEdittypeMap['Classification'] = $this->qgisEdittypeMap[4];
+    $this->qgisEdittypeMap['Range'] = $this->qgisEdittypeMap[5];
     $this->qgisEdittypeMap['EditRange'] = $this->qgisEdittypeMap[5];
     $this->qgisEdittypeMap['SliderRange'] = $this->qgisEdittypeMap[5];
     $this->qgisEdittypeMap['CheckBox'] = $this->qgisEdittypeMap[7];
