@@ -73,10 +73,11 @@ class lizmapProxy {
     /**
     * Get remote data from URL, with curl or internal php functions.
     * @param string $url Url of the remote data to fetch.
-    * @param boolean $proxyMethod Method for the proxy : 'php' (default) or 'curl'.
+    * @param text $proxyMethod Method for the proxy : 'php' (default) or 'curl'.
+    * @param integer $debug 0 or 1 to get debug log.
     * @return array($data, $mime, $http_code) Array containing the data and the mime type.
     */
-    static public function getRemoteData($url, $proxyMethod='php', $debug=0){
+    static public function getRemoteData($url, $proxyMethod='php', $debug=0, $method='get'){
 
         // Initialize responses
         $data = '';
@@ -90,16 +91,23 @@ class lizmapProxy {
             # With curl
             $ch = curl_init();
             curl_setopt($ch, CURLOPT_HEADER, 0);
-            curl_setopt($ch, CURLOPT_URL, $purl);
-            curl_setopt($ch, CURLOPT_POST, 1);
-            curl_setopt($ch, CURLOPT_POSTFIELDS, $content);
             curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false );
             curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
             curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
-            curl_setopt($ch, CURLOPT_HTTPHEADER, array(
-                'Connection: close',
-                'Content-type: application/x-www-form-urlencoded'
-            ));
+            if ( $method === 'get' ) {
+                curl_setopt($ch, CURLOPT_URL, $url);
+                curl_setopt($ch, CURLOPT_HTTPHEADER, array(
+                    'Connection: close'
+                ));
+            } else {
+                curl_setopt($ch, CURLOPT_URL, $purl);
+                curl_setopt($ch, CURLOPT_POST, 1);
+                curl_setopt($ch, CURLOPT_POSTFIELDS, $content);
+                curl_setopt($ch, CURLOPT_HTTPHEADER, array(
+                    'Connection: close',
+                    'Content-type: application/x-www-form-urlencoded'
+                ));
+            }
             $data = curl_exec($ch);
             $info = curl_getinfo($ch);
             $mime = $info['content_type'];
@@ -114,15 +122,19 @@ class lizmapProxy {
         }
         else{
             # With file_get_contents
-            $opts = array(
-              'http'=>array(
-                'method'=>"POST",
-                'header'=>"Connection: close\r\nContent-type: application/x-www-form-urlencoded\r\n",
-                'content'=>$content
-              )
-            );
-            $context = stream_context_create($opts);
-            $data = file_get_contents($purl,false, $context);
+            if ( $method === 'get' ) {
+                $data = file_get_contents($url);
+            } else {
+                $opts = array(
+                  'http'=>array(
+                    'method'=>"POST",
+                    'header'=>"Connection: close\r\nContent-type: application/x-www-form-urlencoded\r\n",
+                    'content'=>$content
+                  )
+                );
+                $context = stream_context_create($opts);
+                $data = file_get_contents($purl,false, $context);
+            }
             $mime = 'image/png';
             $matches = array();
             $info = $url . ' --> PHP: ';
@@ -331,7 +343,7 @@ class lizmapProxy {
 
         // Get data from the map server
         $proxyMethod = $ser->proxyMethod;
-        $getRemoteData = lizmapProxy::getRemoteData($url . $builtParams, $proxyMethod, $debug);
+        $getRemoteData = lizmapProxy::getRemoteData($url . $builtParams, $proxyMethod, $debug, 'post');
         $data = $getRemoteData[0];
         $mime = $getRemoteData[1];
         $code = $getRemoteData[2];
