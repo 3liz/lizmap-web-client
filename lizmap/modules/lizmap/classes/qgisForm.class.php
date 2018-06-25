@@ -453,13 +453,13 @@ class qgisForm {
                   $value = $cnx->quote( $value );
                 break;
               case 'integer':
-                $value = filter_var($value, FILTER_SANITIZE_NUMBER_INT);
-                if ( !$value )
+                $value = (int)filter_var($value, FILTER_SANITIZE_NUMBER_INT);
+                if ( !$value && $value !== 0 )
                   $value = 'NULL';
                 break;
               case 'float':
                 $value = (float)$value;
-                if ( !$value )
+                if ( !$value && $value !== 0.0 )
                   $value = 'NULL';
                 break;
               case 'text':
