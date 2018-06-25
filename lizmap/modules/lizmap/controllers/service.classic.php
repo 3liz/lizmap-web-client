@@ -934,27 +934,16 @@ class serviceCtrl extends jController {
     }
     $querystring = $url . implode('&', $data);
 
-    // Get remote data from cache
-    /*
-    $getRemoteData = $this->lizmapCache->getRemoteData(
+    // Get remote data
+    $getRemoteData = lizmapProxy::getRemoteData(
       $querystring,
       $this->services->proxyMethod,
-      $this->services->debugMode
+      $this->services->debugMode,
+      'post'
     );
     $data = $getRemoteData[0];
     $mime = $getRemoteData[1];
-     */
-    // Get data form server
-    $ch = curl_init();
-    curl_setopt($ch, CURLOPT_HEADER, 0);
-    curl_setopt($ch, CURLOPT_URL, $querystring);
-    curl_setopt( $ch, CURLOPT_SSL_VERIFYPEER, false );
-    curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-    curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
-    $data = curl_exec($ch);
-    $info = curl_getinfo($ch);
-    $mime = $info['content_type'];
-    curl_close($ch);
+    $code = $getRemoteData[2];
 
     $rep = $this->getResponse('binary');
     $rep->mimeType = $mime;
@@ -1103,7 +1092,8 @@ class serviceCtrl extends jController {
     $getRemoteData = $this->lizmapCache->getRemoteData(
       $querystring,
       'php',
-      $this->services->debugMode
+      $this->services->debugMode,
+      'post'
     );
     $data = $getRemoteData[0];
     $mime = $getRemoteData[1];
