@@ -564,19 +564,37 @@ class qgisForm {
             $form = $this->form;
 
             // Check if a user is authenticated
-            if ( !jAuth::isConnected() )
+            if ( !jAuth::isConnected() ) {
+                $form->setData($attribute, 'all');
+                $form->setReadOnly($attribute, True);
                 return $form;
+            }
 
             $user = jAuth::getUserSession();
             if( !$this->loginFilteredOverride ){
                 if ( $type == 'login' ) {
+                    $oldCtrl = $form->getControl( $attribute );
+                    $userDS = array();
+                    $userDS['all'] = 'all';
                     $user = jAuth::getUserSession();
+                    $userDS[$user->login] = $user->login;
+                    $dataSource = new jFormsStaticDatasource();
+                    $dataSource->data = $userDS;
+                    $ctrl = new jFormsControlMenulist($attribute);
+                    $ctrl->required = true;
+                    if ( $oldCtrl != null )
+                        $ctrl->label = $oldCtrl->label;
+                    else
+                        $ctrl->label = $attribute;
+                    $ctrl->datasource = $dataSource;
+                    if ( $oldCtrl != null )
+                        $form->removeControl( $attribute );
+                    $form->addControl( $ctrl );
                     $form->setData($attribute, $user->login);
-                    $form->setReadOnly($attribute, True);
                 } else {
                     $oldCtrl = $form->getControl( $attribute );
                     $userGroups = jAcl2DbUserGroup::getGroups();
-                    $userGroups[] = 'all';
+                    $userGroups['all'] = 'all';
                     $uGroups = array();
                     foreach( $userGroups as $uGroup ) {
                         if ($uGroup != 'users' and substr( $uGroup, 0, 7 ) != "__priv_")
@@ -625,8 +643,8 @@ class qgisForm {
                         if ( $g->id_aclgrp != 'users' )
                             $data[$g->id_aclgrp] = $g->id_aclgrp;
                     }
-                    $data['all'] = 'all';
                 }
+                $data['all'] = 'all';
                 $dataSource = new jFormsStaticDatasource();
                 $dataSource->data = $data;
                 $ctrl = new jFormsControlMenulist($attribute);
