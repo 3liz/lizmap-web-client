@@ -269,6 +269,15 @@ class qgisFormControl{
     switch($markup){
       case 'input':
         $this->ctrl = new jFormsControlInput($this->ref);
+        if( $this->fieldEditType === 15 ) {
+            $this->ctrl->minvalue = (float)$this->edittype[0]->attributes()->min;
+            $this->ctrl->maxvalue = (float)$this->edittype[0]->attributes()->max;
+        }
+        else if( $this->fieldEditType === 'Range' ||
+                 $this->fieldEditType === 'EditRange' ) {
+            $this->ctrl->minvalue = (float)$this->edittype[0]->widgetv2config->attributes()->Min;
+            $this->ctrl->maxvalue = (float)$this->edittype[0]->widgetv2config->attributes()->Max;
+        }
         break;
 
       case 'menulist':
