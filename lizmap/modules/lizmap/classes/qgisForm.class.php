@@ -562,6 +562,9 @@ class qgisForm {
             $attribute = $loginFilteredLayers['attribute'];
 
             $form = $this->form;
+            $oldCtrl = $form->getControl( $attribute );
+            if ( !$oldCtrl )
+                return $form;
 
             // Check if a user is authenticated
             if ( !jAuth::isConnected() ) {
@@ -572,54 +575,36 @@ class qgisForm {
 
             $user = jAuth::getUserSession();
             if( !$this->loginFilteredOverride ){
+                $value = null;
+                if ( $oldCtrl != null )
+                    $value = $form->getData( $attribute );
+
+                $data = array();
+                $data['all'] = 'all';
                 if ( $type == 'login' ) {
-                    $oldCtrl = $form->getControl( $attribute );
-                    $userDS = array();
-                    $userDS['all'] = 'all';
-                    $user = jAuth::getUserSession();
-                    $userDS[$user->login] = $user->login;
-                    $dataSource = new jFormsStaticDatasource();
-                    $dataSource->data = $userDS;
-                    $ctrl = new jFormsControlMenulist($attribute);
-                    $ctrl->required = true;
-                    if ( $oldCtrl != null )
-                        $ctrl->label = $oldCtrl->label;
-                    else
-                        $ctrl->label = $attribute;
-                    $ctrl->datasource = $dataSource;
-                    if ( $oldCtrl != null )
-                        $form->removeControl( $attribute );
-                    $form->addControl( $ctrl );
-                    $form->setData($attribute, $user->login);
+                    $data[$user->login] = $user->login;
+                    $value = $user->login;
                 } else {
-                    $oldCtrl = $form->getControl( $attribute );
                     $userGroups = jAcl2DbUserGroup::getGroups();
-                    $userGroups['all'] = 'all';
-                    $uGroups = array();
                     foreach( $userGroups as $uGroup ) {
                         if ($uGroup != 'users' and substr( $uGroup, 0, 7 ) != "__priv_")
-                            $uGroups[$uGroup] = $uGroup;
+                            $data[$uGroup] = $uGroup;
                     }
-                    $dataSource = new jFormsStaticDatasource();
-                    $dataSource->data = $uGroups;
-                    $ctrl = new jFormsControlMenulist($attribute);
-                    $ctrl->required = true;
-                    if ( $oldCtrl != null )
-                        $ctrl->label = $oldCtrl->label;
-                    else
-                        $ctrl->label = $attribute;
-                    $ctrl->datasource = $dataSource;
-                    $value = null;
-                    if ( $oldCtrl != null ) {
-                        $value = $form->getData( $attribute );
-                        $form->removeControl( $attribute );
-                    }
-                    $form->addControl( $ctrl );
-                    if ( $value != null )
-                        $form->setData( $attribute, $value );
                 }
+                $dataSource = new jFormsStaticDatasource();
+                $dataSource->data = $data;
+                $ctrl = new jFormsControlMenulist($attribute);
+                $ctrl->required = true;
+                if ( $oldCtrl != null )
+                    $ctrl->label = $oldCtrl->label;
+                else
+                    $ctrl->label = $attribute;
+                $ctrl->datasource = $dataSource;
+                $form->removeControl( $attribute );
+                $form->addControl( $ctrl );
+                if ( $value != null )
+                    $form->setData( $attribute, $value );
             } else {
-                $oldCtrl = $form->getControl( $attribute );
                 $value = null;
                 if ( $oldCtrl != null )
                     $value = $form->getData( $attribute );
