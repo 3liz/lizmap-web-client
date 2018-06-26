@@ -245,7 +245,7 @@ class editionCtrl extends jController {
     // Get editLayer capabilities
     $eCapabilities = $this->layer->getEditionCapabilities();
     if ( $eCapabilities->capabilities->createFeature != 'True' ) {
-	jMessage::add(jLocale::get('view~edition.message.error.layer.editable.create'), 'LayerNotEditable');
+    jMessage::add(jLocale::get('view~edition.message.error.layer.editable.create'), 'LayerNotEditable');
         return $this->serviceAnswer();
     }
 
@@ -384,7 +384,8 @@ class editionCtrl extends jController {
       $form = $qgisForm->setFormDataFromFields($this->featureData->features[0]);
     else if ( $form->hasUpload() ) {
         $repPath = $this->repository->getPath();
-        $layerPath = realpath($repPath.'/media').'/upload/'.$this->project->getKey().'/'.$this->tableName;
+        $dtParams = $this->layer->getDatasourceParameters();
+        $layerPath = realpath($repPath.'/media').'/upload/'.$this->project->getKey().'/'.$dtParams->tablename;
         if ( !is_dir($layerPath) )
             jFile::createDir($layerPath);
         foreach( $form->getUploads() as $upload ) {
@@ -397,13 +398,13 @@ class editionCtrl extends jController {
                 $choiceCtrl->deactivateItem('delete');
             }
             if( !is_dir($layerPath) or !is_writable($layerPath) )
-                $form->setErrorOn($upload->ref, jLocale::get("view~edition.message.error.upload.layer", array($this->tableName) ) );
+                $form->setErrorOn($upload->ref, jLocale::get("view~edition.message.error.upload.layer", array($dtParams->tablename) ) );
             else {
                 $refPath = $layerPath.'/'.$upload->ref;
                 if ( !is_dir($refPath) )
                     jFile::createDir($refPath);
                 if( !is_dir($refPath) or !is_writable($refPath) )
-                    $form->setErrorOn($upload->ref, jLocale::get("view~edition.message.error.upload.layer.field", array($choiceCtrl->label, $this->tableName) ) );
+                    $form->setErrorOn($upload->ref, jLocale::get("view~edition.message.error.upload.layer.field", array($choiceCtrl->label, $dtParams->tablename) ) );
             }
         }
     }
