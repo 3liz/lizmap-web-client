@@ -453,13 +453,13 @@ class qgisForm {
                   $value = $cnx->quote( $value );
                 break;
               case 'integer':
-                $value = filter_var($value, FILTER_SANITIZE_NUMBER_INT);
-                if ( !$value )
+                $value = (int)filter_var($value, FILTER_SANITIZE_NUMBER_INT);
+                if ( !$value && $value !== 0 )
                   $value = 'NULL';
                 break;
               case 'float':
                 $value = (float)$value;
-                if ( !$value )
+                if ( !$value && $value !== 0.0 )
                   $value = 'NULL';
                 break;
               case 'text':
@@ -562,46 +562,49 @@ class qgisForm {
             $attribute = $loginFilteredLayers['attribute'];
 
             $form = $this->form;
+            $oldCtrl = $form->getControl( $attribute );
+            if ( !$oldCtrl )
+                return $form;
 
             // Check if a user is authenticated
-            if ( !jAuth::isConnected() )
+            if ( !jAuth::isConnected() ) {
+                $form->setData($attribute, 'all');
+                $form->setReadOnly($attribute, True);
                 return $form;
+            }
 
             $user = jAuth::getUserSession();
             if( !$this->loginFilteredOverride ){
+                $value = null;
+                if ( $oldCtrl != null )
+                    $value = $form->getData( $attribute );
+
+                $data = array();
+                $data['all'] = 'all';
                 if ( $type == 'login' ) {
-                    $user = jAuth::getUserSession();
-                    $form->setData($attribute, $user->login);
-                    $form->setReadOnly($attribute, True);
+                    $data[$user->login] = $user->login;
+                    $value = $user->login;
                 } else {
-                    $oldCtrl = $form->getControl( $attribute );
                     $userGroups = jAcl2DbUserGroup::getGroups();
-                    $userGroups[] = 'all';
-                    $uGroups = array();
                     foreach( $userGroups as $uGroup ) {
                         if ($uGroup != 'users' and substr( $uGroup, 0, 7 ) != "__priv_")
-                            $uGroups[$uGroup] = $uGroup;
+                            $data[$uGroup] = $uGroup;
                     }
-                    $dataSource = new jFormsStaticDatasource();
-                    $dataSource->data = $uGroups;
-                    $ctrl = new jFormsControlMenulist($attribute);
-                    $ctrl->required = true;
-                    if ( $oldCtrl != null )
-                        $ctrl->label = $oldCtrl->label;
-                    else
-                        $ctrl->label = $attribute;
-                    $ctrl->datasource = $dataSource;
-                    $value = null;
-                    if ( $oldCtrl != null ) {
-                        $value = $form->getData( $attribute );
-                        $form->removeControl( $attribute );
-                    }
-                    $form->addControl( $ctrl );
-                    if ( $value != null )
-                        $form->setData( $attribute, $value );
                 }
+                $dataSource = new jFormsStaticDatasource();
+                $dataSource->data = $data;
+                $ctrl = new jFormsControlMenulist($attribute);
+                $ctrl->required = true;
+                if ( $oldCtrl != null )
+                    $ctrl->label = $oldCtrl->label;
+                else
+                    $ctrl->label = $attribute;
+                $ctrl->datasource = $dataSource;
+                $form->removeControl( $attribute );
+                $form->addControl( $ctrl );
+                if ( $value != null )
+                    $form->setData( $attribute, $value );
             } else {
-                $oldCtrl = $form->getControl( $attribute );
                 $value = null;
                 if ( $oldCtrl != null )
                     $value = $form->getData( $attribute );
@@ -625,8 +628,8 @@ class qgisForm {
                         if ( $g->id_aclgrp != 'users' )
                             $data[$g->id_aclgrp] = $g->id_aclgrp;
                     }
-                    $data['all'] = 'all';
                 }
+                $data['all'] = 'all';
                 $dataSource = new jFormsStaticDatasource();
                 $dataSource->data = $data;
                 $ctrl = new jFormsControlMenulist($attribute);
