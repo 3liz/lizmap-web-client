@@ -276,7 +276,7 @@ var lizLayerActionButtons = function() {
 
         // Expand all of unfold all
         $('#layers-unfold-all').click(function(){
-            $('#switcher table.tree tr:not(.liz-layer.disabled) a.expander').click();
+            $('#switcher table.tree tr.collapsed:not(.liz-layer.disabled) a.expander').click();
             return false;
         });
         $('#layers-fold-all').click(function(){
