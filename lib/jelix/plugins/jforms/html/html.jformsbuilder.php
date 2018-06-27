@@ -108,14 +108,15 @@ jFormsJQ.declareForm(jFormsJQ.tForm);
             $this->jsContent .="c.readOnly = true;\n";
         }
 
-        if($ctrl->required){
-            $this->jsContent .="c.required = true;\n";
-            if($ctrl->alertRequired){
-                $this->jsContent .="c.errRequired=".$this->escJsStr($ctrl->alertRequired).";\n";
-            }
-            else {
-                $this->jsContent .="c.errRequired=".$this->escJsStr(jLocale::get('jelix~formserr.js.err.required', $ctrl->label)).";\n";
-            }
+        if($ctrl->required) {
+            $this->jsContent .= "c.required = true;\n";
+        }
+
+        if($ctrl->alertRequired){
+            $this->jsContent .="c.errRequired=".$this->escJsStr($ctrl->alertRequired).";\n";
+        }
+        else {
+            $this->jsContent .="c.errRequired=".$this->escJsStr(jLocale::get('jelix~formserr.js.err.required', $ctrl->label)).";\n";
         }
 
         if($ctrl->alertInvalid){
