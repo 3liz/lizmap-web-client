@@ -141,7 +141,12 @@ class pgsqlDbConnection extends jDbConnection {
             }
         }
         else {
-            throw new jException('jelix~db.error.connection',$this->profile['host']);
+            if (isset($this->profile['service'])) {
+                $uri = $this->profile['service'];
+            } else {
+                $uri = $this->profile['host'];
+            }
+            throw new jException('jelix~db.error.connection',$uri);
         }
 
         if (isset($this->profile['search_path']) && trim($this->profile['search_path']) != '') {

@@ -13,21 +13,30 @@ var ServiceConfiguration = {
         this.cacheTypeInp = $('#' + this.prefix + 'cacheStorageType');
         this.cacheTypeInp.change(this.onCacheStorageTypeChanged.bind(this));
         this.onCacheStorageTypeChanged();
+
+        var f = jFormsJQ.getForm("jforms_admin_config_services");
+        f.addSubmitHandler(function(event){
+            // set the adminSenderEmail field as required if allowUserAccountRequests
+            // or adminContactEmail are set. jFormsJQ will then check the requirement
+            // and will show errors
+            var accountRequestEnabled = (jFormsJQ.getValue(f.element.elements["allowUserAccountRequests"]) === 'on');
+            var notificationEnabled = (jFormsJQ.getValue(f.element.elements["adminContactEmail"]) != '');
+            f.getControl("adminSenderEmail").required = (accountRequestEnabled || notificationEnabled);
+            return true;
+        }, true);
     },
 
-    onCacheStorageTypeChanged: function (){
+    onCacheStorageTypeChanged: function () {
         var isRedis = ( this.cacheTypeInp.val() == 'redis' );
 
         // reset form inputs for other types than selected
-        for( var r in this.redisOptions ){
+        for (var r in this.redisOptions) {
             var inp = this.redisOptions[r];
             $('#' + this.prefix + inp).parents('div.control-group:first').toggle(isRedis);
         }
     }
 };
 
-$(document).ready(function(){
+$(document).ready(function() {
     ServiceConfiguration.init();
 });
-
-

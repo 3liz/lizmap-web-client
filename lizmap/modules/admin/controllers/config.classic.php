@@ -191,7 +191,11 @@ class configCtrl extends jController {
             $ctrl = $form->getControl('allowUserAccountRequests');
             $ctrl->help = jLocale::get('admin~admin.configuration.services.allowUserAccountRequests.help.deactivated');
         }
-
+        if ($form->getData('allowUserAccountRequests') == 'on' ||
+            $form->getData('adminContactEmail') != ''
+        ) {
+            $form->getControl('adminSenderEmail')->required = true;
+        }
       // Display form
       $tpl = new jTpl();
       $tpl->assign('form', $form);
@@ -242,6 +246,12 @@ class configCtrl extends jController {
         foreach($services->getSensitiveProperties() as $ser){
             $form->setData($ser, $services->$ser);
         }
+    }
+
+    if ($form->getData('allowUserAccountRequests') == 'on' ||
+        $form->getData('adminContactEmail') != ''
+    ) {
+        $form->getControl('adminSenderEmail')->required = true;
     }
 
     // Check the form
