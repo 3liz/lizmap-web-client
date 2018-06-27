@@ -1,4 +1,4 @@
-CREATE TABLE log_detail (
+CREATE TABLE IF NOT EXISTS log_detail (
     id SERIAL  PRIMARY KEY,
     log_key character varying(100) NOT NULL ,
     log_timestamp timestamp DEFAULT CURRENT_TIMESTAMP,
@@ -9,7 +9,7 @@ CREATE TABLE log_detail (
     log_ip character varying(15)
 );
 
-CREATE TABLE log_counter (
+CREATE TABLE IF NOT EXISTS log_counter (
     id SERIAL  PRIMARY KEY,
     key character varying(100) NOT NULL ,
     counter INTEGER,
