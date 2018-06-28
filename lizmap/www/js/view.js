@@ -38,12 +38,40 @@ resizeThumbnails = function(){
     });
 }
 
+searchProjets = function(){
+    var $rows = $("#content.container li h5");
+
+   $("#search-project").keyup(function() {
+       var val = $.trim(this.value).toUpperCase();
+       if (val === "")
+       {
+           $("#content.container li").show();
+           $( "#content.container h2" ).show();
+        }
+       else {
+           $("#content.container li").hide();
+           $( "#content.container h2" ).hide();
+
+           val = val.toUpperCase();
+           $rows.filter(function() {
+                return -1 != $(this).text().toUpperCase().indexOf(val);
+            }).closest('li').show();
+
+            $rows.filter(function() {
+                return -1 != $(this).text().toUpperCase().indexOf(val);
+            }).closest('ul').prev('h2').show();
+
+       }
+   });
+
+}
 
 
 
 $( window ).load(function() {
     addDescriptionSlider();
     resizeThumbnails();
+    searchProjets();
 });
 
 $(window).resize(function () {

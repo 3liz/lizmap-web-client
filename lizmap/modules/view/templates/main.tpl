@@ -32,6 +32,8 @@
             <span class="text">{@view~default.header.connect@}</span>
           </a>
         </li>
+        <input id="search-project" class="search-project" placeholder="Search" type="text">
+
           {if isset($allowUserAccountRequests) and $allowUserAccountRequests == '1'}
           <li class="registered">
             <a href="{jurl 'jcommunity~registration:index'}">
