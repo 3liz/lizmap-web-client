@@ -494,7 +494,7 @@ SubDock
 
 #bottom-dock.visible {
   opacity: 1;
-  height: 50%;
+  height: 48%;
 
 }#bottom-dock.half-transparent {
   opacity: 0.5;
