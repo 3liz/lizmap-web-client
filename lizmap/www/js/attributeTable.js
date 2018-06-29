@@ -438,6 +438,7 @@ var lizAttributeTable = function() {
                 html+= '</div>'; // 'attribute-layer-' + cleanName
 
                 $('#attribute-table-container').append(html);
+
                 $('#attribute-layer-' + cleanName + ' button').tooltip( {
                     placement: 'bottom'
                 } );
@@ -449,6 +450,16 @@ var lizAttributeTable = function() {
                     $('#attributeLayers-tabs a:last').tab('show'); // Select first tab
                     $(tabContentId).remove(); //remove respective tab content
                 });
+
+                if( childHtml ){
+
+                   // Bind adjust child columns when children tab visibility change
+                    $('#attribute-layer-' + cleanName + ' div.attribute-layer-child-content ul li a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
+                        var target = $(e.target).attr("href") // activated tab
+                        var dtable = $(target).find('table.dataTable');
+                        dtable.DataTable().tables().columns.adjust();
+                    });
+                }
 
                 if(limitDataToBbox){
                     $('#attribute-layer-'+ cleanName + ' button.btn-refresh-table')
@@ -504,6 +515,7 @@ var lizAttributeTable = function() {
                         function(){ $(this).addClass('btn-primary'); },
                         function(){ $(this).removeClass('btn-primary'); }
                     );
+
                 }
 
                 // Bind click on detail button
@@ -2533,8 +2545,6 @@ var lizAttributeTable = function() {
                             ;
 
                         }
-
-
                     }
 
                 });
