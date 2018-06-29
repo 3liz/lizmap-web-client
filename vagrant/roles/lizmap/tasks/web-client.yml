@@ -37,9 +37,35 @@
     option: "{{ item.option }}"
     value: "{{ item.value }}"
   with_items:
-    - { section: "modules", option: "ldapdao.access", value: "1" }
+    - { section: "modules", option: "ldapdao.access", value: "2" }
     - { section: "coordplugin_auth", option: "driver", value: "ldapdao" }
   when: lizmap_ldapdao_enabled
+
+- name: Setup localconfig.ini.php for classic auth support
+  ini_file:
+    dest: "{{ lizmap_home }}/lizmap/var/config/localconfig.ini.php"
+    section: "{{ item.section }}"
+    option: "{{ item.option }}"
+    value: "{{ item.value }}"
+  with_items:
+    - { section: "modules", option: "ldapdao.access", value: "0" }
+    - { section: "coordplugin_auth", option: "driver", value: "Db" }
+  when: not lizmap_ldapdao_enabled
+
+
+- name: Deactivate ldapdao from EP config for classic auth support
+  ini_file:
+    dest: "{{ lizmap_home }}/lizmap/var/config/{{ item }}"
+    section: "modules"
+    option: "ldapdao.access"
+    state: absent
+  with_items:
+    - "index/config.ini.php"
+    - "cmdline/script.ini.php"
+    - "admin/config.ini.php"
+  when: not lizmap_ldapdao_enabled
+
+
 
 - name: Setup localconfig.ini.php to enable demo
   ini_file:
