@@ -11,6 +11,9 @@
   <div id="headermenu" class="navbar navbar-fixed-top">
     <div id="auth" class="navbar-inner">
       <ul class="nav pull-right">
+        <li class="search-project">
+          <input id="search-project" class="search-query" placeholder="Search" type="text">
+        </li>
         {if $isConnected}
         <li class="user dropdown">
           <a class="dropdown-toggle" data-toggle="dropdown" href="#">
@@ -19,6 +22,9 @@
             <span class="caret"></span>
           </a>
           <ul class="dropdown-menu pull-right">
+        <li class="search-project">
+          <input id="search-project" class="search-query" placeholder="Search" type="text">
+        </li>
             {ifacl2 'auth.user.view'}
             <li><a href="{jurl 'jauthdb_admin~user:index', array('j_user_login'=>$user->login)}">{@master_admin~gui.header.your.account@}</a></li>
             {/ifacl2}
