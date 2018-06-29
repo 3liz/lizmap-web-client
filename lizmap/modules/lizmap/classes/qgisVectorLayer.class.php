@@ -217,16 +217,19 @@ class qgisVectorLayer extends qgisMapLayer{
           if(in_array( strtolower($prop->type), $this->geometryDatatypeMap)) {
               $geometryColumn = $fieldName;
               $geometryType = strtolower($prop->type);
-              // If postgresql, get real geometryType from geometry_columns (jelix prop gives 'geometry')
+              // If postgresql, get real geometryType from pg_attribute (jelix prop gives 'geometry')
+              // Issue #902, "geometry_columns" is not giving the Z value
               if( $this->provider == 'postgres' and $geometryType == 'geometry' ){
-                  $sql = "SELECT type FROM geometry_columns";
-                  $sql.= " WHERE 2>1";
-                  $sql.= " AND f_table_schema = " . $cnx->quote($dtParams->schema);
-                  $sql.= " AND f_table_name = " . $cnx->quote($dtParams->tablename);
+                  $tablename = $dtParams->schema . "." . $dtParams->tablename;
+                  $sql = "SELECT format_type(atttypid,atttypmod) AS type";
+                  $sql.= " FROM pg_attribute";
+                  $sql.= " WHERE attname = " . $cnx->quote($geometryColumn);
+                  $sql.= " AND attrelid = " . $cnx->quote($tablename) . "::regclass";
                   $res = $cnx->query($sql);
                   $res = $res->fetch();
                   if( $res )
-                      $geometryType = strtolower($res->type);
+                      # It returns something like "geometry(PointZ,32620)".
+                      $geometryType = explode(',', explode( '(', strtolower($res->type))[1])[0];
               }
           }
       }
@@ -360,8 +363,14 @@ class qgisVectorLayer extends qgisMapLayer{
       if ( !preg_match('/'.$dbFieldsInfo->geometryType.'/',strtolower($rs->geomtype)) )
           if ( preg_match('/'.str_replace('multi','',$dbFieldsInfo->geometryType).'/',strtolower($rs->geomtype)) )
               $nvalue = 'ST_Multi('.$nvalue.')';
-          else
-              throw new Exception('The geometry type does not match!');
+
+      if ( substr($dbFieldsInfo->geometryType, -2 ) == 'zm' )
+          $nvalue = 'ST_Force_4D('.$nvalue.')';
+      else if ( substr($dbFieldsInfo->geometryType, -1) == 'z' )
+          $nvalue = 'ST_Force_3DZ('.$nvalue.')';
+      else if ( substr($dbFieldsInfo->geometryType, -1) == 'm' )
+          $nvalue = 'ST_Force_3DM('.$nvalue.')';
+
       return $nvalue;
   }
 
