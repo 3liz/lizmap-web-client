@@ -38,16 +38,18 @@ resizeThumbnails = function(){
     });
 }
 
-searchProjets = function(){
+searchProjects = function(){
     var $rows = $("#content.container li h5");
 
    $("#search-project").keyup(function() {
        var val = $.trim(this.value).toUpperCase();
+       // If the search bar is empty, show everything
        if (val === "")
        {
            $("#content.container li").show();
            $( "#content.container h2" ).show();
         }
+        // Hide everything then show projects and titles corresponding to the search bar
        else {
            $("#content.container li").hide();
            $( "#content.container h2" ).hide();
@@ -71,7 +73,7 @@ searchProjets = function(){
 $( window ).load(function() {
     addDescriptionSlider();
     resizeThumbnails();
-    searchProjets();
+    searchProjects();
 });
 
 $(window).resize(function () {
