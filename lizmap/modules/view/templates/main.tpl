@@ -35,7 +35,6 @@
             <span class="text">{@view~default.header.connect@}</span>
           </a>
         </li>
-
           {if isset($allowUserAccountRequests) and $allowUserAccountRequests == '1'}
           <li class="registered">
             <a href="{jurl 'jcommunity~registration:index'}">
