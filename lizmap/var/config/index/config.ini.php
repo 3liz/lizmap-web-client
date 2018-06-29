@@ -18,6 +18,3 @@ view.access=2
 jacl2db_admin.access=1
 jauthdb_admin.access=1
 master_admin.access=1
-
-jauth.access=2
-ldapdao.access=2

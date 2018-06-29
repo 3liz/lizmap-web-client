@@ -10,7 +10,7 @@
     <dependencies>
         <jelix minversion="1.5" maxversion="1.7.*"/>
         <module name="jacl2"/>
-        <module name="jauth"/>
+        <!--module name="jauth"/-->
         <!--module name="jauthdb" /-->
     </dependencies>
 </module>
