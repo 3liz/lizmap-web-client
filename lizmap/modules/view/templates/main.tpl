@@ -26,13 +26,15 @@
           </ul>
         </li>
         {else}
+        <li class="search-project">
+          <input id="search-project" class="search-query" placeholder="Search" type="text">
+        </li>
         <li class="login">
           <a href="{jurl 'jcommunity~login:index', array('auth_url_return'=>$auth_url_return)}">
             <span class="icon"></span>
             <span class="text">{@view~default.header.connect@}</span>
           </a>
         </li>
-        <input id="search-project" class="search-project" placeholder="Search" type="text">
 
           {if isset($allowUserAccountRequests) and $allowUserAccountRequests == '1'}
           <li class="registered">
