@@ -216,6 +216,9 @@ class ldapdaoAuthDriver extends jAuthDriverBase implements jIAuthDriver
                 $dao->update($user);
             }
         }
+        else {
+            $user = $userDb;
+        }
 
         // retrieve the user group (if relevant)
         $userGroups = $this->searchUserGroups($connectAdmin, $userDn, $userLdapAttributes, $user->login);
