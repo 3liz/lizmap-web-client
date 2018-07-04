@@ -264,7 +264,7 @@ class lizmapProject{
         $a = '';
         foreach( $qgisProjectVersion as $k ){
             if( strlen($k) == 1 ){
-                $a.= $k . '0';
+                $a.=  '0' . $k;
             }
             else {
                 $a.= $k;
@@ -836,7 +836,7 @@ class lizmapProject{
 
         if( $updateDrawingOrder == 'false' ){
             // For QGIS >=2.4, new item layer-tree-canvas
-            if( $this->qgisProjectVersion >= 204000){
+            if( $this->qgisProjectVersion >= 20400){
                 $customeOrder = $qgsLoad->xpath('//layer-tree-canvas/custom-order');
                 $customeOrderZero = $customeOrder[0];
                 if( $customeOrderZero->attributes()->enabled == 1 ){
