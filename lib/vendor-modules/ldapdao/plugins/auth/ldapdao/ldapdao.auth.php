@@ -161,6 +161,11 @@ class ldapdaoAuthDriver extends jAuthDriverBase implements jIAuthDriver
 
     public function changePassword($login, $newpassword)
     {
+        if ($login == $this->_params['jelixAdminLogin']) {
+            $dao = jDao::get($this->_params['dao'], $this->_params['profile']);
+            return $dao->updatePassword($login, $this->cryptPassword($newpassword));
+        }
+
         throw new jException('ldapdao~errors.unsupported.password.change');
     }
 
@@ -215,6 +220,9 @@ class ldapdaoAuthDriver extends jAuthDriverBase implements jIAuthDriver
             if ($eventResp->inResponse('doUpdate', true, $allResponses)) {
                 $dao->update($user);
             }
+        }
+        else {
+            $user = $userDb;
         }
 
         // retrieve the user group (if relevant)

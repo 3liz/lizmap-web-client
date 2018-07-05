@@ -224,29 +224,31 @@ class lizmapWFSRequest extends lizmapOGCRequest {
         }
 
         // BBOX
-        $bbox = '';
-        if( array_key_exists( 'bbox', $this->params ) )
-            $bbox = $this->params['bbox'];
-        $bboxvalid = false;
-        if( !empty( $bbox ) ){
-          $bboxvalid = true;
-          $bboxitem = explode(",",$bbox);
-          if(count($bboxitem)==4){
-            foreach($bboxitem as $coord){
-              if(!is_numeric(trim($coord))){
-                $bboxvalid = false;
+        if( !empty($this->datasource->geocol) ) {
+            $bbox = '';
+            if( array_key_exists( 'bbox', $this->params ) )
+                $bbox = $this->params['bbox'];
+            $bboxvalid = false;
+            if( !empty( $bbox ) ){
+              $bboxvalid = true;
+              $bboxitem = explode(",",$bbox);
+              if(count($bboxitem)==4){
+                foreach($bboxitem as $coord){
+                  if(!is_numeric(trim($coord))){
+                    $bboxvalid = false;
+                  }
+                }
               }
             }
-          }
-        }
-        if($bboxvalid){
-            $xmin = trim($bboxitem[0]);
-            $ymin = trim($bboxitem[1]);
-            $xmax = trim($bboxitem[2]);
-            $ymax = trim($bboxitem[3]);
-            $sql.= ' AND ST_Intersects("';
-            $sql.= $this->datasource->geocol;
-            $sql.= '", ST_MakeEnvelope(' . $xmin . ',' . $ymin . ',' . $xmax . ',' . $ymax .', '. $this->qgisLayer->getSrid() . '))';
+            if($bboxvalid){
+                $xmin = trim($bboxitem[0]);
+                $ymin = trim($bboxitem[1]);
+                $xmax = trim($bboxitem[2]);
+                $ymax = trim($bboxitem[3]);
+                $sql.= ' AND ST_Intersects("';
+                $sql.= $this->datasource->geocol;
+                $sql.= '", ST_MakeEnvelope(' . $xmin . ',' . $ymin . ',' . $xmax . ',' . $ymax .', '. $this->qgisLayer->getSrid() . '))';
+            }
         }
 
         // EXP_FILTER

@@ -438,6 +438,7 @@ var lizAttributeTable = function() {
                 html+= '</div>'; // 'attribute-layer-' + cleanName
 
                 $('#attribute-table-container').append(html);
+
                 $('#attribute-layer-' + cleanName + ' button').tooltip( {
                     placement: 'bottom'
                 } );
@@ -449,6 +450,16 @@ var lizAttributeTable = function() {
                     $('#attributeLayers-tabs a:last').tab('show'); // Select first tab
                     $(tabContentId).remove(); //remove respective tab content
                 });
+
+                if( childHtml ){
+
+                   // Bind adjust child columns when children tab visibility change
+                    $('#attribute-layer-' + cleanName + ' div.attribute-layer-child-content ul li a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
+                        var target = $(e.target).attr("href") // activated tab
+                        var dtable = $(target).find('table.dataTable');
+                        dtable.DataTable().tables().columns.adjust();
+                    });
+                }
 
                 if(limitDataToBbox){
                     $('#attribute-layer-'+ cleanName + ' button.btn-refresh-table')
@@ -504,6 +515,7 @@ var lizAttributeTable = function() {
                         function(){ $(this).addClass('btn-primary'); },
                         function(){ $(this).removeClass('btn-primary'); }
                     );
+
                 }
 
                 // Bind click on detail button
@@ -1300,40 +1312,38 @@ var lizAttributeTable = function() {
 
                     // Check if we need to replace url or media by link
                     // Add function for any string cell
-                    if( typeof atFeatures[0].properties[idx] == 'string' ){
-                        // Check if the col is number
-                        if (idx in cTypes && cTypes[idx] == 'integer')
-                            colConf['mRender'] = function( data, type, full, meta ){
-                                return parseInt(data);
+                    // First check if the col is number
+                    if (idx in cTypes && cTypes[idx] == 'integer')
+                        colConf['mRender'] = function( data, type, full, meta ){
+                            return parseInt(data);
+                        }
+                    else if (idx in cTypes && cTypes[idx] == 'long')
+                        colConf['mRender'] = function( data, type, full, meta ){
+                            return parseInt(data);
+                        }
+                    else if (idx in cTypes && cTypes[idx] == 'double')
+                        colConf['mRender'] = function( data, type, full, meta ){
+                            return parseFloat(data);
+                        }
+                    else if (idx in cTypes && cTypes[idx] == 'string')
+                        colConf['mRender'] = function( data, type, full, meta ){
+                            if( !data || !( typeof data === 'string') )
+                                return data;
+                            if( data.substr(0,6) == 'media/' || data.substr(0,6) == '/media/' ){
+                                var rdata = data;
+                                if( data.substr(0,6) == '/media/' )
+                                    rdata = data.slice(1);
+                                return '<a href="' + mediaLinkPrefix + '&path=/' + rdata + '" target="_blank">' + columns[meta.col]['title'] + '</a>';
                             }
-                        else if (idx in cTypes && cTypes[idx] == 'long')
-                            colConf['mRender'] = function( data, type, full, meta ){
-                                return parseInt(data);
+                            else if( data.substr(0,4) == 'http' || data.substr(0,3) == 'www' ){
+                                var rdata = data;
+                                if(data.substr(0,3) == 'www')
+                                    rdata = 'http://' + data;
+                                return '<a href="' + rdata + '" target="_blank">' + data + '</a>';
                             }
-                        else if (idx in cTypes && cTypes[idx] == 'double')
-                            colConf['mRender'] = function( data, type, full, meta ){
-                                return parseFloat(data);
-                            }
-                        else
-                            colConf['mRender'] = function( data, type, full, meta ){
-                                if( !data || !( typeof data === 'string') )
-                                    return data;
-                                if( data.substr(0,6) == 'media/' || data.substr(0,6) == '/media/' ){
-                                    var rdata = data;
-                                    if( data.substr(0,6) == '/media/' )
-                                        rdata = data.slice(1);
-                                    return '<a href="' + mediaLinkPrefix + '&path=/' + rdata + '" target="_blank">' + columns[meta.col]['title'] + '</a>';
-                                }
-                                else if( data.substr(0,4) == 'http' || data.substr(0,3) == 'www' ){
-                                    var rdata = data;
-                                    if(data.substr(0,3) == 'www')
-                                        rdata = 'http://' + data;
-                                    return '<a href="' + rdata + '" target="_blank">' + data + '</a>';
-                                }
-                                else
-                                    return data;
-                            }
-                    }
+                            else
+                                return data;
+                        }
                     columns.push( colConf );
                 }
 
@@ -2533,8 +2543,6 @@ var lizAttributeTable = function() {
                             ;
 
                         }
-
-
                     }
 
                 });
