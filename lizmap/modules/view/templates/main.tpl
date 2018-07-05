@@ -22,9 +22,6 @@
             <span class="caret"></span>
           </a>
           <ul class="dropdown-menu pull-right">
-        <li class="search-project">
-          <input id="search-project" class="search-query" placeholder="{@view~map.search.nominatim.placeholder@}" type="text">
-        </li>
             {ifacl2 'auth.user.view'}
             <li><a href="{jurl 'jcommunity~account:show', array('user'=>$user->login)}">{@master_admin~gui.header.your.account@}</a></li>
             {/ifacl2}
