@@ -157,14 +157,15 @@ abstract class WidgetBase implements WidgetInterface {
             $jsContent .="c.readOnly = true;\n";
         }
 
-        if($this->ctrl->required){
+        if($this->ctrl->required) {
             $jsContent .= "c.required = true;\n";
-            if($this->ctrl->alertRequired){
-                $jsContent .= "c.errRequired=". $this->escJsStr($this->ctrl->alertRequired).";\n";
-            }
-            else {
-                $jsContent .= "c.errRequired=".$this->escJsStr(\jLocale::get('jelix~formserr.js.err.required', $this->ctrl->label)).";\n";
-            }
+        }
+
+        if($this->ctrl->alertRequired){
+            $jsContent .= "c.errRequired=". $this->escJsStr($this->ctrl->alertRequired).";\n";
+        }
+        else {
+            $jsContent .= "c.errRequired=".$this->escJsStr(\jLocale::get('jelix~formserr.js.err.required', $this->ctrl->label)).";\n";
         }
 
         if($this->ctrl->alertInvalid){

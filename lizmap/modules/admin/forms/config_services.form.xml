@@ -117,6 +117,7 @@
 <input ref="adminSenderEmail" type="email">
     <label locale="admin~admin.form.admin_services.adminSenderEmail.label"/>
     <help locale="admin~admin.form.admin_services.adminSenderEmail.help"/>
+    <alert type="required" locale="admin~admin.form.admin_services.adminSenderEmail.error.required"/>
 </input>
 
 <input ref="adminSenderName" maxlength="250">

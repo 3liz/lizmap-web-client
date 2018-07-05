@@ -61,10 +61,19 @@ class jInstallerComponentModule extends jInstallerComponentBase {
 
     /**
      * @param jIniMultiFilesModifier $config
+     * @param jIniMultiFilesModifier $localconfig
      */
-    protected function _setAccess($config) {
+    protected function _setAccess($config, $localconfig) {
+
+        $localAccess = $localconfig->getValue($this->name.'.access', 'modules');
         $access = $config->getValue($this->name.'.access', 'modules');
-        if ($access == 0 || $access == null) {
+        $config = $config->getOverrider();
+
+        if ($localAccess == 2) {
+            $config->removeValue($this->name . '.access', 'modules');
+            $config->save();
+        }
+        else if ($access == 0 || $access == null) {
             $config->setValue($this->name.'.access', 2, 'modules');
             $config->save();
         }
@@ -86,7 +95,7 @@ class jInstallerComponentModule extends jInstallerComponentBase {
      */
     function getInstaller($ep, $installWholeApp) {
 
-        $this->_setAccess($ep->configIni);
+        $this->_setAccess($ep->configIni, $ep->localConfigIni->getMaster());
 
         // false means that there isn't an installer for the module
         if ($this->moduleInstaller === false) {
