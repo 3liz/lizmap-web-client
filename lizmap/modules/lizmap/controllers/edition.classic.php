@@ -1001,7 +1001,9 @@ class editionCtrl extends jController {
             break;
           case 'boolean':
             $strVal = strtolower($value);
-            if($strVal != 'true' &&  $strVal !== 't' && intval($value) != 1 &&
+            if ( $strVal === '' )
+              $value = 'NULL';
+            else if($strVal != 'true' &&  $strVal !== 't' && intval($value) != 1 &&
                $strVal !== 'on' && $value !== true &&
                $strVal != 'false' &&  $strVal !== 'f' && intval($value) != 0 &&
                $strVal !== 'off' && $value !== false)
