@@ -48,7 +48,7 @@ Toolbar buttons
     background: none !important;
     border: none;
     color: white;
-    margin-top: 1px;
+    margin-top: 10px;
     font-weight: bold;
 }
 #dataviz-content > h3{
