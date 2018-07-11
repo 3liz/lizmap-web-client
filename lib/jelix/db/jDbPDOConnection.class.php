@@ -76,6 +76,14 @@ class jDbPDOConnection extends PDO {
             else {
                 $dsn = 'sqlite:'.$this->_parseSqlitePath($db);
             }
+
+            if ($this->dbms == 'pgsql' &&
+                isset($profile['pg_options']) &&
+                $profile['pg_options'] != ''
+            ) {
+                $dsn .= ';options='.$profile['pg_options'];
+            }
+
         }
         if(isset($prof['usepdo'])) {
             unset($prof['usepdo']);
