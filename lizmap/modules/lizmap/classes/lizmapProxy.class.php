@@ -184,7 +184,9 @@ class lizmapProxy {
         // Set or get tile from the parent project in case of embedded layers
         if( $configLayer
             and property_exists($configLayer, 'sourceRepository')
-            and property_exists($configLayer, 'sourceProject')
+            and $configLayer->sourceRepository != ''
+            and property_exists($configLayer, 'sourceProject'
+            and $configLayer->sourceProject != '')
         ){
             $newRepository = (string)$configLayer->sourceRepository;
             $newProject = (string)$configLayer->sourceProject;
@@ -193,19 +195,19 @@ class lizmapProxy {
             $lrep = lizmap::getRepository($repository);
             if (!$lrep) {
                 jMessage::add('The repository '.strtoupper($repository).' does not exist !', 'RepositoryNotDefined');
-                return array('error', 'text/plain', '404');
+                return array('error', 'text/plain', '404', False);
             }
             try {
                 $lproj = lizmap::getProject($repository.'~'.$project);
                 if(!$lproj){
                     jMessage::add('The lizmapProject '.strtoupper($project).' does not exist !', 'ProjectNotDefined');
-                    return array('error', 'text/plain', '404');
+                    return array('error', 'text/plain', '404', False);
                 }
             }
             catch(UnknownLizmapProjectException $e) {
                 jLog::logEx($e, 'error');
                 jMessage::add('The lizmapProject '.strtoupper($project).' does not exist !', 'ProjectNotDefined');
-                return array('error', 'text/plain', '404');
+                return array('error', 'text/plain', '404', False);
             }
         }
 
