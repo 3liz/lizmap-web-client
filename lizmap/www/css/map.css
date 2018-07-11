@@ -544,6 +544,9 @@ SubDock
   background:none;
   color:grey;
 }
+#bottom-dock.fullsize #attributeLayers-tabs > li > a {
+  margin-top:10px;
+}
 #attributeLayers-tabs > li.active > a, #attributeLayers-tabs > li > a:hover {
   border:none;
   background:none;
@@ -557,6 +560,9 @@ SubDock
 
 #attributeLayers .tab-content .attribute-content {
   top:50px;
+}
+#bottom-dock.fullsize #attributeLayers .tab-content .attribute-content {
+  top:60px;
 }
 #attributeLayers .tab-content .attribute-content .dataTables_wrapper .dataTables_info {
   padding-right:5px;

@@ -2078,7 +2078,7 @@ var lizMap = function() {
             var lname = '';
             if (typeName in config.locateByLayer)
               lname = typeName
-            else if ( typeName in shortNameMap )
+            else if ( (typeName in shortNameMap) && (shortNameMap[typeName] in config.locateByLayer))
               lname = shortNameMap[typeName];
             else {
               for (lbl in config.locateByLayer) {
@@ -2626,7 +2626,7 @@ var lizMap = function() {
             var lname = '';
             if (typeName in config.locateByLayer)
               lname = typeName
-            else if ( typeName in shortNameMap )
+            else if ( (typeName in shortNameMap) && (shortNameMap[typeName] in config.locateByLayer))
               lname = shortNameMap[typeName];
             else {
               for (lbl in config.locateByLayer) {
@@ -4362,9 +4362,9 @@ var lizMap = function() {
         var lname = '';
         if (typeName in config.locateByLayer)
           lname = typeName
-        else if ( typeName in shortNameMap ){
+        else if ( (typeName in shortNameMap) && (shortNameMap[typeName] in config.locateByLayer))
           lname = shortNameMap[typeName];
-        } else {
+        else {
           for (ttl in config.tooltipLayers) {
             if (ttl.split(' ').join('_') == typeName) {
               lname = ttl;
@@ -6217,9 +6217,9 @@ OpenLayers.Control.HighlightFeature = OpenLayers.Class(OpenLayers.Control, {
                 var layerName = '';
                 if (typeName in config.layers)
                   layerName = typeName
-                else if ( typeName in shortNameMap ){
+                else if ( (typeName in shortNameMap) && (shortNameMap[typeName] in config.layers))
                   layerName = shortNameMap[typeName];
-                } else {
+                else {
                   for (l in config.layers) {
                     if (l.split(' ').join('_') == typeName) {
                       layerName = l;
