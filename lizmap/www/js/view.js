@@ -40,6 +40,10 @@ resizeThumbnails = function(){
 
 searchProjects = function(){
     var $rows = $("#content.container li h5");
+    if ( $rows.length == 0 ) {
+        $("#search-project").hide();
+        return;
+    }
 
    $("#search-project").keyup(function() {
        var val = $.trim(this.value).toUpperCase();
