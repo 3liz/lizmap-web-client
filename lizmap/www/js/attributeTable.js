@@ -1257,7 +1257,7 @@ var lizAttributeTable = function() {
 
                 }
 
-                // Trigget event telling attribute table is ready
+                // Trigger event telling attribute table is ready
                 lizMap.events.triggerEvent("attributeLayerContentReady",
                     {
                         'featureType': aName
