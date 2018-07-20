@@ -39,7 +39,7 @@ resizeThumbnails = function(){
 }
 
 searchProjects = function(){
-    var $rows = $("#content.container li h5");
+    var $rows = $("#content.container li .liz-project-title");
     if ( $rows.length == 0 ) {
         $("#search-project").hide();
         return;
@@ -50,22 +50,22 @@ searchProjects = function(){
        // If the search bar is empty, show everything
        if (val === "")
        {
-           $("#content.container li").show();
-           $( "#content.container h2" ).show();
+           $("#content.container .liz-repository-project-item").show();
+           $( "#content.container .liz-repository-title" ).show();
         }
         // Hide everything then show projects and titles corresponding to the search bar
        else {
-           $("#content.container li").hide();
-           $( "#content.container h2" ).hide();
+           $("#content.container .liz-repository-project-item").hide();
+           $( "#content.container .liz-repository-title" ).hide();
 
            val = val.toUpperCase();
            $rows.filter(function() {
                 return -1 != $(this).text().toUpperCase().indexOf(val);
-            }).closest('li').show();
+            }).closest('.liz-repository-project-item').show();
 
             $rows.filter(function() {
                 return -1 != $(this).text().toUpperCase().indexOf(val);
-            }).closest('ul').prev('h2').show();
+            }).closest('.liz-repository-project-list').prev('.liz-repository-title').show();
 
        }
    });
