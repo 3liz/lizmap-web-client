@@ -6623,7 +6623,7 @@ lizMap.events.on({
      && evt.config.options.osmStamenToner == 'True') ||
     (('osmCyclemap' in evt.config.options)
      && evt.config.options.osmCyclemap == 'True'
-	 && ('OCMKey' in config.options)) ||
+	 && ('OCMKey' in evt.config.options)) ||
     (('googleStreets' in evt.config.options)
      && evt.config.options.googleStreets == 'True') ||
     (('googleSatellite' in evt.config.options)
@@ -6740,7 +6740,7 @@ lizMap.events.on({
         evt.baselayers.push(stamenToner);
       }
 
-      if (('osmCyclemap' in evt.config.options) && evt.config.options.osmCyclemap == 'True' && ('OCMKey' in config.options)) {
+      if (('osmCyclemap' in evt.config.options) && evt.config.options.osmCyclemap == 'True' && ('OCMKey' in evt.config.options)) {
         evt.map.allOverlays = false;
         var options = {
           zoomOffset: 0,
