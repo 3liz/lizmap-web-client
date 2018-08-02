@@ -705,7 +705,8 @@ var lizMap = function() {
        (('osmStamenToner' in config.options)
         && config.options.osmStamenToner == 'True') ||
        (('osmCyclemap' in config.options)
-        && config.options.osmCyclemap == 'True') ||
+        && config.options.osmCyclemap == 'True' 
+		&& ('OCMKey' in config.options)) ||
        (('googleStreets' in config.options)
         && config.options.googleStreets == 'True') ||
        (('googleSatellite' in config.options)
@@ -769,7 +770,7 @@ var lizMap = function() {
          // Specify zoom level number
          if ((('osmMapnik' in config.options) && config.options.osmMapnik == 'True') ||
              (('osmStamenToner' in config.options) && config.options.osmStamenToner == 'True') ||
-             (('osmCyclemap' in config.options) && config.options.osmCyclemap == 'True') ||
+             (('osmCyclemap' in config.options) && config.options.osmCyclemap == 'True' && ('OCMKey' in config.options)) ||
              (('bingStreets' in config.options) && config.options.bingStreets == 'True' && ('bingKey' in config.options)) ||
              (('bingSatellite' in config.options) && config.options.bingSatellite == 'True' && ('bingKey' in config.options)) ||
              (('bingHybrid' in config.options) && config.options.bingHybrid == 'True' && ('bingKey' in config.options)) ||
@@ -6621,7 +6622,8 @@ lizMap.events.on({
     (('osmStamenToner' in evt.config.options)
      && evt.config.options.osmStamenToner == 'True') ||
     (('osmCyclemap' in evt.config.options)
-     && evt.config.options.osmCyclemap == 'True') ||
+     && evt.config.options.osmCyclemap == 'True'
+	 && ('OCMKey' in evt.config.options)) ||
     (('googleStreets' in evt.config.options)
      && evt.config.options.googleStreets == 'True') ||
     (('googleSatellite' in evt.config.options)
@@ -6738,7 +6740,7 @@ lizMap.events.on({
         evt.baselayers.push(stamenToner);
       }
 
-      if (('osmCyclemap' in evt.config.options) && evt.config.options.osmCyclemap == 'True') {
+      if (('osmCyclemap' in evt.config.options) && evt.config.options.osmCyclemap == 'True' && ('OCMKey' in evt.config.options)) {
         evt.map.allOverlays = false;
         var options = {
           zoomOffset: 0,
@@ -6753,12 +6755,7 @@ lizMap.events.on({
           options.numZoomLevels = lOptions.numZoomLevels;
         else
           options.numZoomLevels = options.numZoomLevels - lOptions.zoomOffset;
-        var cyclemap = new OpenLayers.Layer.OSM('osm-cycle',
-            ["https://a.tile.opencyclemap.org/cycle/${z}/${x}/${y}.png",
-            "https://b.tile.opencyclemap.org/cycle/${z}/${x}/${y}.png",
-            "https://c.tile.opencyclemap.org/cycle/${z}/${x}/${y}.png"]
-            ,options
-            );
+        var cyclemap = new OpenLayers.Layer.OSM('osm-cyclemap','https://tile.thunderforest.com/cycle/${z}/${x}/${y}.png?apiKey='+evt.config.options.OCMKey,options); 
         cyclemap.maxExtent = maxExtent;
         var cyclemapCfg = {
              "name":"osm-cycle"
