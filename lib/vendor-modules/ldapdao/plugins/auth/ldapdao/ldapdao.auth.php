@@ -395,6 +395,14 @@ class ldapdaoAuthDriver extends jAuthDriverBase implements jIAuthDriver
             return '%%'.$val.'%%';
         }, $searchStr);
         $values = array_values($userLdapAttributes);
+        // escape parenthesis
+        $values = array_map(function ($val) {
+            return str_replace(
+                array('(', ')'),
+                array('\\(', '\\)'),
+                $val
+            );
+         }, $values);
         $values[] = $userDn;
         $values[] = $login;
         $values[] = $login;
