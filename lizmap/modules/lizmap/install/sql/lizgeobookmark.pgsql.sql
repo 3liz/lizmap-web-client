@@ -9,6 +9,7 @@ CREATE TABLE IF NOT EXISTS public.geobookmark(
 DROP INDEX IF EXISTS geobookmark_usr_login_idx;
 ALTER TABLE public.geobookmark
 DROP CONSTRAINT IF EXISTS geobookmark_usr_login_fkey
+;
 
 ALTER TABLE public.geobookmark
 ADD CONSTRAINT geobookmark_usr_login_fkey FOREIGN KEY (usr_login)
