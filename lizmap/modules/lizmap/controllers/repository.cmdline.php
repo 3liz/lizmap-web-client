@@ -64,6 +64,7 @@ class repositoryCtrl extends jControllerCmdLine {
             // Error message
             $rep->addContent("The repository already exists!\n");
             $rep->addContent("The repository can't be created!\n");
+            $rep->setExitCode(1);
             return $rep;
         }
 
@@ -88,6 +89,7 @@ class repositoryCtrl extends jControllerCmdLine {
                             // Error message
                             $rep->addContent("The path provided is not authorized!\n");
                             $rep->addContent("The repository can't be created!\n");
+                            $rep->setExitCode(1);
                             return $rep;
                         }
                         $path = $npath;
@@ -97,6 +99,7 @@ class repositoryCtrl extends jControllerCmdLine {
                     // Error message
                     $rep->addContent("The path provided doesn't exist or is not a directory!\n");
                     $rep->addContent("The repository can't be created!\n");
+                    $rep->setExitCode(1);
                     return $rep;
                 }
                 // Add a trailing / if needed
@@ -125,13 +128,15 @@ class repositoryCtrl extends jControllerCmdLine {
             // Error message
             $rep->addContent("The data is empty!\n");
             $rep->addContent("The repository can't be created!\n");
+            $rep->setExitCode(1);
             return $rep;
         }
 
         $lrep = lizmap::createRepository($key, $data);
-        if( !$rep )
+        if( !$rep ) {
             $rep->addContent("The repository can't be created!\n");
-        else
+            $rep->setExitCode(1);
+        } else
             $rep->addContent("The repository has been created!\n");
 
         return $rep;
