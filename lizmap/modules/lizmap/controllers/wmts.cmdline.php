@@ -107,11 +107,13 @@ class wmtsCtrl extends jControllerCmdLine {
             // Project not found
             if ( !$project ) {
                 $rep->addContent("The project has not be found!\n");
+                $rep->setExitCode(1);
                 return $rep;
             }
         }
         catch(UnknownLizmapProjectException $e) {
             $rep->addContent("The project has not be found!\n");
+            $rep->setExitCode(1);
             return $rep;
         }
         $repository = $project->getRepository();
@@ -127,6 +129,7 @@ class wmtsCtrl extends jControllerCmdLine {
             // Error message
             $rep->addContent("The cache is not available!\n");
             $rep->addContent($e->getMessage()."\n");
+            $rep->setExitCode(1);
             return $rep;
         }
 
@@ -136,6 +139,7 @@ class wmtsCtrl extends jControllerCmdLine {
             // Error message
             $rep->addContent("The cache is not available!\n");
             $rep->addContent("The WMTS Service can't be initialized!\n");
+            $rep->setExitCode(1);
             return $rep;
         }
 
@@ -144,6 +148,7 @@ class wmtsCtrl extends jControllerCmdLine {
 
         if ( count($tileCapabilities->layerTileInfoList) === 0 ) {
             $rep->addContent("No layers configured with cache!\n");
+            $rep->setExitCode(1);
             return $rep;
         }
 
@@ -188,11 +193,13 @@ class wmtsCtrl extends jControllerCmdLine {
             // Project not found
             if ( !$project ) {
                 $rep->addContent("The project has not be found!\n");
+                $rep->setExitCode(1);
                 return $rep;
             }
         }
         catch(UnknownLizmapProjectException $e) {
             $rep->addContent("The project has not be found!\n");
+            $rep->setExitCode(1);
             return $rep;
         }
         $repository = $project->getRepository();
@@ -208,6 +215,7 @@ class wmtsCtrl extends jControllerCmdLine {
             // Error message
             $rep->addContent("The cache is not available!\n");
             $rep->addContent($e->getMessage()."\n");
+            $rep->setExitCode(1);
             return $rep;
         }
 
@@ -218,11 +226,13 @@ class wmtsCtrl extends jControllerCmdLine {
             $rep->addContent("The cache is not available!\n");
             $rep->addContent("The WMTS Service has not be initialized!\n");
             $rep->addContent("If you have not run lizmap~wmts:capabilities, run it before, otherwise take a look at the error logs!\n");
+            $rep->setExitCode(1);
             return $rep;
         }
 
         if ( count($tileCapabilities->layerTileInfoList) === 0 ) {
             $rep->addContent("No layers configured with cache!\n");
+            $rep->setExitCode(1);
             return $rep;
         }
 
@@ -236,6 +246,7 @@ class wmtsCtrl extends jControllerCmdLine {
         // Layer not found
         if ( count( $selectedLayers ) === 0 ) {
             $rep->addContent("The layers '".implode( ',', $layerIds )."' have not be found!\n");
+            $rep->setExitCode(1);
             return $rep;
         }
 
@@ -252,6 +263,7 @@ class wmtsCtrl extends jControllerCmdLine {
         // TileMatrixSet not found
         if ( !$tileMatrixSet ) {
             $rep->addContent("The TileMatrixSet '".$TileMatrixSetId."' has not be found!\n");
+            $rep->setExitCode(1);
             return $rep;
         }
 
@@ -260,12 +272,14 @@ class wmtsCtrl extends jControllerCmdLine {
           $bbox = explode( ',', $bbox );
           if( count( $bbox ) != 4 ) {
             $rep->addContent("The optional bbox has to contain 4 numbers separated by comma!\n");
+            $rep->setExitCode(1);
             return $rep;
           }
           $nbbox = array();
           foreach( $bbox as $b ) {
               if( !is_numeric( $b ) ) {
                 $rep->addContent("The optional bbox has to contain 4 numbers separated by comma!\n");
+                $rep->setExitCode(1);
                 return $rep;
               }
               $nbbox[] = (float) $b;
