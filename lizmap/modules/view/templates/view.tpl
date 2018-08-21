@@ -5,12 +5,12 @@
 {assign $idm = 0}
 {foreach $mapitems as $mi}
 {if $mi->type == 'rep'}
-<h2>{$mi->title}</h2>
-<ul class="thumbnails">
+<h2 class="liz-repository-title">{$mi->title}</h2>
+<ul class="thumbnails liz-repository-project-list">
   {foreach $mi->childItems as $p}
   {assign $idm = $idm + 1}
   <a name="link-projet-{$idm}"></a>
-  <li class="span3">
+  <li class="span3 liz-repository-project-item">
     <div class="thumbnail">
       <div class="liz-project">
         <img src="{$p->img}" alt="project image" class="liz-project-img">
@@ -23,7 +23,7 @@
           <br/><b>{@default.project.bbox.label@}</b>&nbsp;: <span class="bbox">{$p->bbox}</span>
         </p>
       </div>
-      <h5>{$p->title}</h5>
+      <h5 class="liz-project-title">{$p->title}</h5>
       <p style="text-align:center;">
         <a class="btn liz-project-view" href="{$p->url}">{@default.project.open.map@}</a>
         <a class="btn liz-project-show-desc" href="#link-projet-{$idm}" onclick="$('#liz-project-modal-{$idm}').modal('show'); return false;">{@default.project.open.map.metadata@}</a>

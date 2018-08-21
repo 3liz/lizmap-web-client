@@ -287,7 +287,10 @@ class mediaCtrl extends jController {
     $ok = True;
     // Only allow files within the repository for safety reasons
     // and in the media/themes/ folder
-    if(!preg_match("#^".$n_repositoryPath."(/)?media/themes/#", $n_abspath)){
+    if(
+        !preg_match("#^".$n_repositoryPath."(/)?media/themes/#", $n_abspath)
+        and !preg_match("#^".$n_repositoryPath."(/)?media/js/#", $n_abspath)
+    ){
       $ok = False;
     }
 

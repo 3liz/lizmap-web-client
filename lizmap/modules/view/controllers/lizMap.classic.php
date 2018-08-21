@@ -318,8 +318,11 @@ class lizMapCtrl extends jController {
             if( $fileExtension == 'js' || $fileExtension == 'css' ){
               $jsPath = realpath( $filename );
               $jsRelPath = 'media/js/' . $dir . str_replace( $jsPathRoot, '', $jsPath);
+              $url = 'view~media:getMedia';
+              if($fileExtension == 'css')
+                $url = 'view~media:getCssFile';
               $jsUrl = jUrl::get(
-                'view~media:getMedia',
+                $url,
                 array(
                   'repository'=>$lrep->getKey(),
                   'project'=>$project,
