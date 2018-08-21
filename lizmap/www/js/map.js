@@ -705,8 +705,8 @@ var lizMap = function() {
        (('osmStamenToner' in config.options)
         && config.options.osmStamenToner == 'True') ||
        (('osmCyclemap' in config.options)
-        && config.options.osmCyclemap == 'True' 
-		&& ('OCMKey' in config.options)) ||
+        && config.options.osmCyclemap == 'True'
+        && ('OCMKey' in config.options)) ||
        (('googleStreets' in config.options)
         && config.options.googleStreets == 'True') ||
        (('googleSatellite' in config.options)
@@ -3522,7 +3522,8 @@ var lizMap = function() {
         var featureId = featureType + '.' + fid;
         var popupMaxFeatures = 10;
         if ( 'popupMaxFeatures' in layerConfig && !isNaN(parseInt(layerConfig.popupMaxFeatures)) )
-            popupMaxFeatures += parseInt(layerConfig.popupMaxFeatures);
+            popupMaxFeatures = parseInt(layerConfig.popupMaxFeatures);
+        popupMaxFeatures == 0 ? 10 : popupMaxFeatures;
         getLayerFeature(featureType, fid, function(feat) {
             var wmsOptions = {
                  'LAYERS': featureType
@@ -3549,6 +3550,11 @@ var lizMap = function() {
                     if ( rConfigLayer.popup == 'True' && self.parent().find('div.lizmapPopupChildren').length == 0) {
                         wmsOptions['LAYERS'] = rConfigLayer.name;
                         wmsOptions['QUERY_LAYERS'] = rConfigLayer.name;
+                        wmsOptions['FEATURE_COUNT'] = popupMaxFeatures;
+                        if ( 'popupMaxFeatures' in rConfigLayer && !isNaN(parseInt(rConfigLayer.popupMaxFeatures)) )
+                            wmsOptions['FEATURE_COUNT'] = parseInt(rConfigLayer.popupMaxFeatures);
+                        if ( wmsOptions['FEATURE_COUNT'] == 0 )
+                            wmsOptions['FEATURE_COUNT'] = popupMaxFeatures;
                         wmsOptions['FILTER'] = rConfigLayer.name+':"'+r.referencingField+'" = \''+feat.properties[r.referencedField]+'\'';
                         $.get(service, wmsOptions, function(data) {
                             var hasPopupContent = (!(!data || data == null || data == ''))
@@ -6623,7 +6629,7 @@ lizMap.events.on({
      && evt.config.options.osmStamenToner == 'True') ||
     (('osmCyclemap' in evt.config.options)
      && evt.config.options.osmCyclemap == 'True'
-	 && ('OCMKey' in evt.config.options)) ||
+     && ('OCMKey' in evt.config.options)) ||
     (('googleStreets' in evt.config.options)
      && evt.config.options.googleStreets == 'True') ||
     (('googleSatellite' in evt.config.options)
@@ -6755,7 +6761,7 @@ lizMap.events.on({
           options.numZoomLevels = lOptions.numZoomLevels;
         else
           options.numZoomLevels = options.numZoomLevels - lOptions.zoomOffset;
-        var cyclemap = new OpenLayers.Layer.OSM('osm-cyclemap','https://tile.thunderforest.com/cycle/${z}/${x}/${y}.png?apiKey='+evt.config.options.OCMKey,options); 
+        var cyclemap = new OpenLayers.Layer.OSM('osm-cyclemap','https://tile.thunderforest.com/cycle/${z}/${x}/${y}.png?apiKey='+evt.config.options.OCMKey,options);
         cyclemap.maxExtent = maxExtent;
         var cyclemapCfg = {
              "name":"osm-cycle"
