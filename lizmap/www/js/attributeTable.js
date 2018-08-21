@@ -1968,7 +1968,7 @@ var lizAttributeTable = function() {
 
                 var hasChanged = false;
                 // Add filtered featured
-                $('.attribute-table-table').each(function(){
+                $('.attribute-table-table[id]').each(function(){
                     var tableId = $(this).attr('id');
                     var tableLayerName = $(this).parents('div.dataTables_wrapper:first').prev('input.attribute-table-hidden-layer').val()
                     // Get parent table for the feature type
@@ -2645,8 +2645,8 @@ var lizAttributeTable = function() {
             }
 
             function redrawAttributeTableContent( featureType, featureIds ){
-                // Loo through all datatables to get the one concerning this featureType
-                $('.attribute-table-table').each(function(){
+                // Loop through all datatables to get the one concerning this featureType
+                $('.attribute-table-table[id]').each(function(){
                     var tableId = $(this).attr('id');
                     var tableLayerName = $(this).parents('div.dataTables_wrapper:first').prev('input.attribute-table-hidden-layer').val()
 
@@ -2709,7 +2709,7 @@ var lizAttributeTable = function() {
 
             function refreshTablesAfterEdition( featureType ){
                 // Loop through each datatable, and refresh if it corresponds to the layer edited
-                $('.attribute-table-table').each(function(){
+                $('.attribute-table-table[id]').each(function(){
                     // get table id
                     var tableId = $(this).attr('id');
                     // verifying the id
