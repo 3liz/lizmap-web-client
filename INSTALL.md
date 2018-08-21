@@ -75,6 +75,8 @@ lizmap/install/set_rights.sh www-data www-data
 ```
 and eventually restart apache.
 
+If you need to re-install lizmap on the same instance, you need to remove the file `lizmap/var/config/installer.ini.php`. This file is created by the installer.
+
 Using QGIS composer/layouts and PDF in Lizmap
 ----
 * If you plan to print PDF from Lizmap, you need a fake X Server.
@@ -86,6 +88,7 @@ Debug
 
 * Check Lizmap settings
 * Check logs in Apache/Nginx and QGIS Server.
+* Enable logs in your `lizmapConfig.ini.php` with the line `debugMode`.
 * Check `lizmap/var/log`.
 
 You can enable the Jelix debug toolbar to get some information:

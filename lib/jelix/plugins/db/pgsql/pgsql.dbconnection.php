@@ -8,7 +8,7 @@
 * @contributor Laurent Raufaste
 * @contributor Julien Issler
 * @contributor Alexandre Zanelli
-* @copyright  2001-2005 CopixTeam, 2005-2012 Laurent Jouanneau, 2007-2008 Laurent Raufaste
+* @copyright  2001-2005 CopixTeam, 2005-2018 Laurent Jouanneau, 2007-2008 Laurent Raufaste
 * @copyright  2009 Julien Issler
 * This class was get originally from the Copix project (CopixDBConnectionPostgreSQL, Copix 2.3dev20050901, http://www.copix.org)
 * Few lines of code are still copyrighted 2001-2005 CopixTeam (LGPL licence).
@@ -131,6 +131,10 @@ class pgsqlDbConnection extends jDbConnection {
 
         if (isset($this->profile['timeout']) && $this->profile['timeout'] != '') {
             $str .= ' connect_timeout=\''.$this->profile['timeout'].'\'';
+        }
+
+        if (isset($this->profile['pg_options']) && $this->profile['pg_options'] != '') {
+            $str .= ' options=\''.$this->profile['pg_options'].'\'';
         }
 
         // let's do the connection
