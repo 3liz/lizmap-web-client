@@ -8,7 +8,7 @@ lizMap.events.on({
             return;
         if( !('atlasprint' in lizMap.config.qgisServerPlugins) )
             return;
-        if( !('printTemplates' in lizMap.config) )
+        if( !('printTemplates' in lizMap.config) || lizMap.config.printTemplates.length == 0)
             return;
 
         $('div.lizmapPopupDiv').each(function(){
