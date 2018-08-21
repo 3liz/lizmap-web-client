@@ -3566,34 +3566,31 @@ var lizMap = function() {
                                 var childPopup = $('<div class="lizmapPopupChildren">'+data+'</div>');
 
                                 //Manage if the user choose to create a table for children
-                                if(rConfigLayer.popupSource=='qgis')
+                                if( rConfigLayer.popupSource == 'qgis' &&
+                                    childPopup.find('.lizmap_merged').length != 0 )
                                 {
-                                    if(childPopup.find('.lizmap_merged'))
-                                    {
-                                        childPopup.find("h4").each(function(i,e){
-                                            if(i != 0 )
-                                            $(e).remove();
-                                            });
+                                    childPopup.find("h4").each(function(i,e){
+                                        if(i != 0 )
+                                        $(e).remove();
+                                        });
 
-                                        childPopup.find(".lizmapPopupHeader").each(function(i,e){
-                                                   if(i != 0 )
-                                            $(e).remove();
-                                             });
+                                    childPopup.find(".lizmapPopupHeader").each(function(i,e){
+                                               if(i != 0 )
+                                        $(e).remove();
+                                         });
 
-                                        childPopup.find(".lizmapPopupDiv").contents().unwrap();
-                                        childPopup.find(".lizmap_merged").contents().unwrap();
-                                        childPopup.find(".lizmapPopupDiv").remove();
-                                        childPopup.find(".lizmap_merged").remove();
+                                    childPopup.find(".lizmapPopupDiv").contents().unwrap();
+                                    childPopup.find(".lizmap_merged").contents().unwrap();
+                                    childPopup.find(".lizmapPopupDiv").remove();
+                                    childPopup.find(".lizmap_merged").remove();
 
-                                        childPopup.find(".lizmapPopupHidden").hide();
+                                    childPopup.find(".lizmapPopupHidden").hide();
 
-                                        var tChildPopup = $("<table class='lizmap_merged'></table>");
-                                        childPopup.append(tChildPopup);
-                                        childPopup.find('tr').appendTo(tChildPopup);
+                                    var tChildPopup = $("<table class='lizmap_merged'></table>");
+                                    childPopup.append(tChildPopup);
+                                    childPopup.find('tr').appendTo(tChildPopup);
 
-                                        childPopup.children('tbody').remove();
-
-                                    }
+                                    childPopup.children('tbody').remove();
                                 }
 
                                 self.parent().append(childPopup);
