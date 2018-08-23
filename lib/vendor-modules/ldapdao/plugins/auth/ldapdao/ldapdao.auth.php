@@ -431,6 +431,15 @@ class ldapdaoAuthDriver extends jAuthDriverBase implements jIAuthDriver
                     }
                 } while ($entry = ldap_next_entry($connect, $entry));
             }
+            // Add default groups
+            $gplist = jDao::get('jacl2db~jacl2group', 'jacl2_profile')
+            ->getDefaultGroups();
+            foreach ($gplist as $group) {
+                $idx = array_search($group->name, $groups);
+                if ($idx === false) {
+                    $groups[] = $group->name;
+                }
+            }
         }
         return $groups;
     }
