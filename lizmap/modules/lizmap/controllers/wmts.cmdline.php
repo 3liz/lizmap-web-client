@@ -224,10 +224,32 @@ class wmtsCtrl extends jControllerCmdLine {
              $tileCapabilities->layerTileInfoList === null ) {
             // Error message
             $rep->addContent("The cache is not available!\n");
-            $rep->addContent("The WMTS Service has not be initialized!\n");
-            $rep->addContent("If you have not run lizmap~wmts:capabilities, run it before, otherwise take a look at the error logs!\n");
-            $rep->setExitCode(1);
-            return $rep;
+            $rep->addContent("The WMTS Service has not been initialized!\n");
+            try {
+                $tileCapabilities = lizmapTiler::getTileCapabilities( $project );
+            }
+            catch(Exception $e) {
+                // if default profile does not exist, or if there is an
+                // other error about the cache, let's log it
+                jLog::log($e->getMessage(), 'error');
+                // Error message
+                $rep->addContent("The cache is not available!\n");
+                $rep->addContent($e->getMessage()."\n");
+                $rep->setExitCode(1);
+                return $rep;
+            }
+
+            if ( $tileCapabilities === null ||
+                 $tileCapabilities->tileMatrixSetList === null ||
+                 $tileCapabilities->layerTileInfoList === null ) {
+                // Error message
+                $rep->addContent("The cache is not available!\n");
+                $rep->addContent("The WMTS Service can't be initialized!\n");
+                $rep->setExitCode(1);
+                return $rep;
+            } else {
+                $rep->addContent("The WMTS Service has been initialized!\n");
+            }
         }
 
         if ( count($tileCapabilities->layerTileInfoList) === 0 ) {

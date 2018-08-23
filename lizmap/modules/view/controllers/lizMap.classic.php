@@ -380,6 +380,7 @@ class lizMapCtrl extends jController {
       $rep->addStyle('#mapmenu', 'display:none !important; width:0px;');
       $rep->addStyle('#dock', 'left:0px; border-left:none;');
       $rep->addStyle('#map-content', 'margin-left:0px;');
+      $rep->addStyle('#content.mobile #mini-dock', 'left:0px;');
     }
 
     // legend = legend open at startup
