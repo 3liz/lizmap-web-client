@@ -189,6 +189,15 @@ var lizMap = function() {
         return aName;
 
     theCleanName = performCleanName( aName );
+    if ( (theCleanName in cleanNameMap) && cleanNameMap[theCleanName] != aName ){
+        i = 1;
+        nCleanName = theCleanName+i;
+        while( (nCleanName in cleanNameMap) && cleanNameMap[nCleanName] != aName ){
+          i += 1;
+          nCleanName = theCleanName+i;
+        }
+        theCleanName = nCleanName;
+    }
     cleanNameMap[theCleanName] = aName;
     return theCleanName;
   }
