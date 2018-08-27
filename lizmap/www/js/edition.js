@@ -734,6 +734,11 @@ OpenLayers.Geometry.pointOnSegment = function(point, segment) {
             launchEdition( parentLayerId, parentFeat.id.split('.').pop(), parentInfo['parent'], function(editionLayerId, editionFeatureId){
                 $('#bottom-dock').css('left',  lizMap.getDockRightPosition() );
             });
+        } else {
+            // trigger edition form closed
+            lizMap.events.triggerEvent(
+                'editionformclosed'
+            );
         }
     }
 
@@ -1081,6 +1086,7 @@ OpenLayers.Geometry.pointOnSegment = function(point, segment) {
 
             // Handle JS events on form (submit, etc.)
             handleEditionFormSubmit( form );
+
         }
 
         // Else it means no form has been sent back
@@ -1140,10 +1146,23 @@ OpenLayers.Geometry.pointOnSegment = function(point, segment) {
             launchEdition( parentLayerId, parentFeat.id.split('.').pop(), parentInfo['parent'], function(editionLayerId, editionFeatureId){
                 $('#bottom-dock').css('left',  lizMap.getDockRightPosition() );
             });
+        } else if ( form.length == 0 ) {
+            // trigger edition form closed
+            lizMap.events.triggerEvent(
+                'editionformclosed'
+            );
         }
 
         // Redraw bottom dock
         $('#bottom-dock').css('left',  lizMap.getDockRightPosition() );
+
+        // trigger edition form displayed
+        if ( form.length != 0 ) {
+            lizMap.events.triggerEvent(
+                'editionformdisplayed',
+                { 'layerId': layerId}
+            );
+        }
     }
 
     function handleEditionFormSubmit( form ){
