@@ -142,6 +142,7 @@ var lizAtlas = function() {
         }
 
         function launchAtlas(){
+            lizMap.events.triggerEvent("uiatlascreationlaunched", lizAtlasConfig);
             // Get Atlas home
             var home = getAtlasHome(lizAtlasConfig.featureType, lizAtlasConfig.features);
 
@@ -177,6 +178,8 @@ var lizAtlas = function() {
             if( lizAtlasConfig['autoPlay'] && !lizMap.checkMobile() ){
                 $('button.liz-atlas-run').click();
             }
+
+            lizMap.events.triggerEvent("uiatlascreated", lizAtlasConfig);
 
         }
 
