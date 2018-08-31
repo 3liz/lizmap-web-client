@@ -1771,6 +1771,11 @@ var lizAttributeTable = function() {
                                 bindTableUnlinkButton(aName, aTable);
                             }
 */
+                            // Display the first child table displayed
+                            if ( $(childTable).parents('.edition-children-content').children('ul.nav-tabs').children('li.active').length == 0 ) {
+                                var tabId = $(childTable).parents('.tab-pane.attribute-layer-child-content').attr('id');
+                                $(childTable).parents('.edition-children-content').find('ul.nav-tabs > li > a[href="#'+tabId+'"]').click();
+                            }
                             return false;
 
                         });
