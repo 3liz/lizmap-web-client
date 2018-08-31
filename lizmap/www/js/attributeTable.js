@@ -1755,6 +1755,16 @@ var lizAttributeTable = function() {
                             $(childTable +' tr td button.attribute-layer-feature-focus').remove();
                             // Unlink
                             $(childTable +' tr td button.attribute-layer-feature-unlink').remove();
+                            // Hide columns
+                            var dt = $(childTable).DataTable();
+                            for ( c = 2; c < 7; c++ ) {
+                                var dataSrc = dt.column(c).dataSrc();
+                                if ( dataSrc == 'unlink' ||
+                                     dataSrc == 'zoom' ||
+                                     dataSrc == 'center' )
+                                     dt.column(c).visible(false);
+
+                            }
 /*
                             // Bind event when users click anywhere on the table line to highlight
                             bindTableLineClick(aName, aTable);
