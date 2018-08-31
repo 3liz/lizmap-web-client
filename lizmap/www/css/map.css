@@ -1474,10 +1474,10 @@ div.modal h3 .text {
 }
 #switcher button.btn,
 #tmLayers button.btn,
-#dock button.checkbox,
-#right-dock button.checkbox,
-#bottomdock button.checkbox,
-#mini-dock button.checkbox
+#dock .tree button.checkbox,
+#right-dock .tree button.checkbox,
+#bottom-dock .tree button.checkbox,
+#mini-dock .tree button.checkbox
 {
   width:18px;
   height:18px;
@@ -1493,40 +1493,40 @@ div.modal h3 .text {
 #tmLayers button.btn.active{
   background-color : #0094D6;
 }
-#dock button.checkbox,
-#right-dock button.checkbox,
-#switcher button.checkbox,
-#dock button.checkbox,
-#right-dock button.checkbox,
-#bottomdock button.checkbox,
-#mini-dock button.checkbox
+#dock .tree button.checkbox,
+#right-dock .tree button.checkbox,
+#switcher .tree button.checkbox,
+#dock .tree button.checkbox,
+#right-dock .tree button.checkbox,
+#bottom-dock .tree button.checkbox,
+#mini-dock .tree button.checkbox
 {
   border: 1px solid #0094D6;
 }
 
-#switcher button.checkbox.checked,
-#dock button.checkbox.checked,
-#right-dock button.checkbox.checked,
-#bottomdock button.checkbox.checked,
-#mini-dock button.checkbox.checked,
-#tmLayers button.checkbox.checked
+#switcher .tree button.checkbox.checked,
+#dock .tree button.checkbox.checked,
+#right-dock .tree button.checkbox.checked,
+#bottom-dock .tree button.checkbox.checked,
+#mini-dock .tree button.checkbox.checked,
+#tmLayers .tree button.checkbox.checked
 {
   background-color : #0094D6;
   background-position : -48px -80px;
 }
-#switcher button.checkbox.disabled,
-#dock button.checkbox.disabled,
-#right-dock button.checkbox.disabled,
-#bottomdock button.checkbox.disabled,
-#mini-dock button.checkbox.disabled,
-#tmLayers button.checkbox.disabled {
+#switcher .tree button.checkbox.disabled,
+#dock .tree button.checkbox.disabled,
+#right-dock .tree button.checkbox.disabled,
+#bottom-dock .tree button.checkbox.disabled,
+#mini-dock .tree button.checkbox.disabled,
+#tmLayers .tree button.checkbox.disabled {
   background-color : #B3B3B3;
   border: 1px solid #B3B3B3;
 }
-#switcher button.checkbox.partial.checked{
+#switcher .tree button.checkbox.partial.checked{
   background-position: -32px -80px;
 }
-#switcher tr.liz-layer.mutually-exclusive button.checkbox {
+#switcher .tree tr.liz-layer.mutually-exclusive button.checkbox {
   border-radius: 9px;
 }
 #switcher button.link{
