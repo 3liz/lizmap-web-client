@@ -23,6 +23,7 @@ var lizAtlas = function() {
 
         var lizAtlasConfig = {
             'layername': featureType,
+            'layerId': layerConfig.id,
             'showAtStartup': lizMap.config.options['atlasShowAtStartup'] == 'True' ? true : false,
             'displayLayerDescription': lizMap.config.options['atlasDisplayLayerDescription'] == 'True' ? true : false,
             'primaryKey': primaryKey,
@@ -42,7 +43,7 @@ var lizAtlas = function() {
         function getAtlasData(featureType) {
 
             // Get data
-            lizMap.getAttributeFeatureData(featureType, null, null, 'geom', function(aName, aFilter, aFeatures, aAliases){
+            lizMap.getAttributeFeatureData(featureType, featureType+':', null, 'geom', function(aName, aFilter, aFeatures, aAliases){
                 if( aFeatures.length != 0 ) {
                     lizAtlasConfig['features'] = aFeatures;
                     lizAtlasConfig['featureType'] = featureType;
@@ -50,6 +51,35 @@ var lizAtlas = function() {
                     launchAtlas();
                 }
                 $('body').css('cursor', 'auto');
+                return false;
+            });
+        }
+
+        function updateAtlasData() {
+
+            // Get data
+            lizMap.getAttributeFeatureData(lizAtlasConfig['featureType'], lizAtlasConfig['featureType']+':', null, 'geom', function(aName, aFilter, aFeatures, aAliases){
+                lizAtlasConfig['features'] = aFeatures;
+                prepareFeatures();
+
+                var options = '<option value="-1"> --- </option>';
+                var pkey_field = lizAtlasConfig['primaryKey'];
+                for(var i in lizAtlasConfig['features_sorted']){
+                    var item = lizAtlasConfig['features_sorted'][i];
+
+                    // Add option
+                    options+= '<option value="'+i+'">';
+                    options+= item[lizAtlasConfig['titleField']];
+                    options+= '</option>';
+                }
+
+                var val = $('#liz-atlas-select').val();
+                $('#liz-atlas-select').html(options);
+                // reset val
+                $('#liz-atlas-select').val(val);
+                // get popup
+                $('#liz-atlas-select').change();
+
                 return false;
             });
         }
@@ -201,6 +231,21 @@ var lizAtlas = function() {
             }
 
             lizMap.events.triggerEvent("uiatlascreated", lizAtlasConfig);
+
+            lizMap.events.on({
+                lizmapeditionfeaturecreated: function(e) {
+                    if ( e.layerId == lizAtlasConfig.layerId )
+                        updateAtlasData();
+                },
+                lizmapeditionfeaturemodified: function(e) {
+                    if ( e.layerId == lizAtlasConfig.layerId )
+                        updateAtlasData();
+                },
+                lizmapeditionfeaturedeleted: function(e) {
+                    if ( e.layerId == lizAtlasConfig.layerId )
+                        updateAtlasData();
+                }
+            });
 
         }
 
