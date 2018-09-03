@@ -168,6 +168,18 @@ var lizAtlas = function() {
             // Limit dock size
             adaptAtlasSize();
 
+            // Activate filter
+            if ( lizAtlasConfig.triggerFilter && lizAtlasConfig.hideFeaturesAtStratup ) {
+                // Select feature
+                lizMap.events.triggerEvent('layerfeatureselected',
+                    {'featureType': lizAtlasConfig.featureType, 'fid': -99999, 'updateDrawing': false}
+                );
+                // Filter selected feature
+                lizMap.events.triggerEvent('layerfeaturefilterselected',
+                    {'featureType': lizAtlasConfig.featureType}
+                );
+            }
+
             // Show dock
             if( lizAtlasConfig['showAtStartup'] && !lizMap.checkMobile() ){
                 $('#mapmenu li.atlas:not(.active) a').click();
@@ -388,7 +400,7 @@ var lizAtlas = function() {
                 if ( lizAtlasConfig.hideFeaturesAtStratup ) {
                     // Select feature
                     lizMap.events.triggerEvent('layerfeatureselected',
-                        {'featureType': lizAtlasConfig.featureType, 'fid': deactivatedValue, 'updateDrawing': false}
+                        {'featureType': lizAtlasConfig.featureType, 'fid': -99999, 'updateDrawing': false}
                     );
                     // Filter selected feature
                     lizMap.events.triggerEvent('layerfeaturefilterselected',
