@@ -2257,6 +2257,8 @@ var lizAttributeTable = function() {
                         // only if typeName filter aFilter was originally set
                         if( aFilter && cData['parentValues'].length > 0 && cascade != 'removeChildrenFilter' )
                             cFilter = wmsCname + ':"' + cData['fieldToFilter'] + '" IN ( ' + cData['parentValues'].join() + ' )';
+                        else if( aFilter && cascade != 'removeChildrenFilter' )
+                            cFilter = wmsCname + ':"' + cData['fieldToFilter'] + '" IN ( -99999 )';
 
                         config.layers[cName]['request_params']['filter'] = cFilter;
 
