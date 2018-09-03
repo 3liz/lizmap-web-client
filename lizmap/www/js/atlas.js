@@ -61,6 +61,8 @@ var lizAtlas = function() {
             var items = [];
             var pkey_field = lizAtlasConfig['primaryKey'];
             var s_field = lizAtlasConfig['sortField'];
+            if ( !s_field )
+                s_field = pkey_field;
             for(var i in lizAtlasConfig.features){
 
                 // Get feature
@@ -78,9 +80,15 @@ var lizAtlas = function() {
             items.sort(function(a, b) {
                 var nameA = a[s_field];
                 var nameB = b[s_field];
-                if( typeof(a[s_field]) == 'string' || typeof(b[s_field]) == 'string' ){
-                    nameA = a[s_field].toUpperCase(); // ignore upper and lowercase
-                    nameB = b[s_field].toUpperCase(); // ignore upper and lowercase
+                if( typeof(nameA) == 'string' || typeof(nameB) == 'string' ){
+                    if (!nameA)
+                        nameA = '';
+                    else
+                        nameA = nameA.toUpperCase(); // ignore upper and lowercase
+                    if (!nameB)
+                        nameB = '';
+                    else
+                        nameB = nameB.toUpperCase(); // ignore upper and lowercase
                 }
                 if (nameA < nameB) {
                     return -1;
