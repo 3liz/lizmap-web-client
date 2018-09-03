@@ -34,6 +34,7 @@ var lizAtlas = function() {
             'drawFeatureGeom': lizMap.config.options['atlasHighlightGeometry'] == 'True' ? true : false,
             'atlasDisplayPopup': lizMap.config.options['atlasDisplayPopup'] == 'True' ? true : false,
             'triggerFilter': lizMap.config.options['atlasTriggerFilter'] == 'True' ? true : false,
+            'hideFeaturesAtStratup': lizMap.config.options['hideFeaturesAtStratup'] == 'True' ? true : false,
             'zoom': lizMap.config.options['atlasZoom'] == '' ? false : lizMap.config.options['atlasZoom']
         };
         var lizAtlasTimer;
@@ -384,9 +385,19 @@ var lizAtlas = function() {
 
             // Deactivate filter
             if ( lizAtlasConfig.triggerFilter && lizMap.lizmapLayerFilterActive ){
-                lizMap.events.triggerEvent( "layerfeatureremovefilter",
-                    { 'featureType': lizAtlasConfig.featureType}
-                );
+                if ( lizAtlasConfig.hideFeaturesAtStratup ) {
+                    // Select feature
+                    lizMap.events.triggerEvent('layerfeatureselected',
+                        {'featureType': lizAtlasConfig.featureType, 'fid': deactivatedValue, 'updateDrawing': false}
+                    );
+                    // Filter selected feature
+                    lizMap.events.triggerEvent('layerfeaturefilterselected',
+                        {'featureType': lizAtlasConfig.featureType}
+                    );
+                } else
+                    lizMap.events.triggerEvent( "layerfeatureremovefilter",
+                        { 'featureType': lizAtlasConfig.featureType}
+                    );
             }
 
             // Hide some containers
