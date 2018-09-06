@@ -41,7 +41,7 @@ class sqlite3DbTools extends jDbTools {
       'number'          =>array('real',             'decimal',  null,       null,       null,     null), //8bytes
       'binary_float'    =>array('double',           'float',    null,       null,       null,     null), //4bytes
       'binary_double'   =>array('double',           'decimal',  null,       null,       null,     null), //8bytes
-      
+
       'numeric'         =>array('numeric',          'numeric',  null,       null,       null,     null),
       'decimal'         =>array('real',             'decimal',  null,       null,       null,     null),
       'dec'             =>array('real',             'decimal',  null,       null,       null,     null),
@@ -83,7 +83,7 @@ class sqlite3DbTools extends jDbTools {
       'mediumblob'      =>array('blob',  'blob',       null,       null,       0,     null),
       'longblob'        =>array('blob',  'blob',       null,       null,       0,     0),
       'bfile'           =>array('blob',  'blob',       null,       null,       0,     0),
-      
+
       'bytea'           =>array('blob',  'varbinary',  null,       null,       0,     0),
       'binary'          =>array('blob',  'binary',     null,       null,       0,     255),
       'varbinary'       =>array('blob',  'varbinary',  null,       null,       0,     255),
@@ -155,7 +155,7 @@ class sqlite3DbTools extends jDbTools {
         // mysql -> time
         'current_time' => 'time(\'now\', \'localtime\')',
         // mysql,pgsql -> date+time
-        'now' => 'date(\'now\', \'localtime\')',
+        'now' => 'datetime(\'now\', \'localtime\')',
         // mysql date+time
         'current_timestamp' => 'date(\'now\', \'localtime\')',
         // mysql (datetime)->date, sqlite (timestring, modifier)->date
