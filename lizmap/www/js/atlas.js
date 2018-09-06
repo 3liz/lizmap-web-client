@@ -44,12 +44,12 @@ var lizAtlas = function() {
 
             // Get data
             lizMap.getAttributeFeatureData(featureType, featureType+':', null, 'geom', function(aName, aFilter, aFeatures, aAliases){
-                if( aFeatures.length != 0 ) {
-                    lizAtlasConfig['features'] = aFeatures;
-                    lizAtlasConfig['featureType'] = featureType;
-                    prepareFeatures();
-                    launchAtlas();
-                }
+
+                lizAtlasConfig['features'] = aFeatures;
+                lizAtlasConfig['featureType'] = featureType;
+                prepareFeatures();
+                launchAtlas();
+
                 $('body').css('cursor', 'auto');
                 return false;
             });
@@ -206,28 +206,31 @@ var lizAtlas = function() {
             // Limit dock size
             adaptAtlasSize();
 
-            // Activate filter
-            if ( lizAtlasConfig.triggerFilter && lizAtlasConfig.hideFeaturesAtStratup ) {
-                // Select feature
-                lizMap.events.triggerEvent('layerfeatureselected',
-                    {'featureType': lizAtlasConfig.featureType, 'fid': -99999, 'updateDrawing': false}
-                );
-                // Filter selected feature
-                lizMap.events.triggerEvent('layerfeaturefilterselected',
-                    {'featureType': lizAtlasConfig.featureType}
-                );
-            }
+            // Only if features in layer
+            if( lizAtlasConfig.features.length != 0 ) {
+                // Activate filter
+                if ( lizAtlasConfig.triggerFilter && lizAtlasConfig.hideFeaturesAtStratup ) {
+                    // Select feature
+                    lizMap.events.triggerEvent('layerfeatureselected',
+                        {'featureType': lizAtlasConfig.featureType, 'fid': -99999, 'updateDrawing': false}
+                    );
+                    // Filter selected feature
+                    lizMap.events.triggerEvent('layerfeaturefilterselected',
+                        {'featureType': lizAtlasConfig.featureType}
+                    );
+                }
 
-            // Show dock
-            if( lizAtlasConfig['showAtStartup'] && !lizMap.checkMobile() ){
-                $('#mapmenu li.atlas:not(.active) a').click();
-                // Hide legend
-                $('#mapmenu li.switcher.active a').click();
-            }
+                // Show dock
+                if( lizAtlasConfig['showAtStartup'] && !lizMap.checkMobile() ){
+                    $('#mapmenu li.atlas:not(.active) a').click();
+                    // Hide legend
+                    $('#mapmenu li.switcher.active a').click();
+                }
 
-            // Start animation
-            if( lizAtlasConfig['autoPlay'] && !lizMap.checkMobile() ){
-                $('button.liz-atlas-run').click();
+                // Start animation
+                if( lizAtlasConfig['autoPlay'] && !lizMap.checkMobile() ){
+                    $('button.liz-atlas-run').click();
+                }
             }
 
             lizMap.events.triggerEvent("uiatlascreated", lizAtlasConfig);
