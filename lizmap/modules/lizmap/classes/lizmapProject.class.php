@@ -336,6 +336,7 @@ class lizmapProject extends qgisProject {
         $this->locateByLayer = $this->readLocateByLayers($qgs_xml, $this->cfg);
         $this->editionLayers = $this->readEditionLayers($qgs_xml, $this->cfg);
         $this->attributeLayers = $this->readAttributeLayers($qgs_xml, $this->cfg);
+        $this->layersOrder = $this->readLayersOrder($qgs_xml, $this->cfg);
     }
 
     public function getQgisPath(){
@@ -1039,11 +1040,11 @@ class lizmapProject extends qgisProject {
         return $attributeLayers;
     }
 
-    protected function readLayersOrder($qgsLoad) {
+    protected function readLayersOrder($xml, $cfg) {
        $layersOrder = array();
         // For QGIS >=2.4, new item layer-tree-canvas
         if( $this->qgisProjectVersion >= 20400){
-            $customeOrder = $qgsLoad->xpath('//layer-tree-canvas/custom-order');
+            $customeOrder = $xml->xpath('//layer-tree-canvas/custom-order');
             if(count($customeOrder) == 0){
                 return $layersOrder;
             }
@@ -1060,7 +1061,7 @@ class lizmapProject extends qgisProject {
                     $lo+=1;
                 }
             } else {
-                $items = $qgsLoad->xpath('layer-tree-group//layer-tree-layer');
+                $items = $xml->xpath('layer-tree-group//layer-tree-layer');
                 $lo = 0;
                 foreach( $items as $layerTree ) {
                     # Get layer name from config instead of XML for possible embedded layers
@@ -1072,14 +1073,14 @@ class lizmapProject extends qgisProject {
                 }
             }
         } else {
-            $legend = $qgsLoad->xpath('//legend');
+            $legend = $xml->xpath('//legend');
             if(count($legend) == 0){
                 return $layersOrder;
             }
             $legendZero = $legend[0];
             $updateDrawingOrder = (string)$legendZero->attributes()->updateDrawingOrder;
             if( $updateDrawingOrder == 'false' ){
-                $layers =  $qgsLoad->xpath('//legendlayer');
+                $layers =  $xml->xpath('//legendlayer');
                 foreach( $layers as $layer ){
                     if( $layer->attributes()->drawingOrder and $layer->attributes()->drawingOrder >= 0 ){
                         $layersOrder[(string)$layer->attributes()->name] = (integer)$layer->attributes()->drawingOrder;
