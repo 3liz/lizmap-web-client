@@ -430,6 +430,9 @@ class lizmapProject{
                 if ( $excludeFields && count($excludeFields) > 0 ) {
                     foreach( $excludeFields as $eField ) {
                         $eField = (string) $eField;
+                        if ( !in_array($eField, $wfsFields) ) {
+                            continue; // QGIS sometimes stores them twice
+                        }
                         array_splice( $wfsFields, array_search( $eField, $wfsFields ), 1 );
                     }
                     $layer['wfsFields'] = $wfsFields;
