@@ -875,15 +875,6 @@ OpenLayers.Geometry.pointOnSegment = function(point, segment) {
             $('#edition-layer').hide();
             $('#edition-draw').addClass('disabled').hide();
 
-            // Send signal
-            lizMap.events.triggerEvent("lizmapeditionformdisplayed",
-                {
-                    'layerId': editionLayer['id'],
-                    'featureId': featureId,
-                    'editionConfig': editionLayer['config']
-                }
-            );
-
             if( aCallback )
                 aCallback( editionLayer['id'], featureId );
 
@@ -1086,6 +1077,15 @@ OpenLayers.Geometry.pointOnSegment = function(point, segment) {
 
             // Handle JS events on form (submit, etc.)
             handleEditionFormSubmit( form );
+
+            // Send signal
+            lizMap.events.triggerEvent("lizmapeditionformdisplayed",
+                {
+                    'layerId': editionLayer['id'],
+                    'featureId': formFeatureId,
+                    'editionConfig': editionLayer['config']
+                }
+            );
 
         }
 
