@@ -46,11 +46,6 @@ class qgisProject{
     protected $relations = array();
 
     /**
-     * @var array list of layer orders: layer name => order
-     */
-    protected $layersOrder = array();
-
-    /**
      * @var boolean
      */
     protected $useLayerIDs = false;
@@ -64,7 +59,7 @@ class qgisProject{
      * @var array List of cached properties
      */
     protected $cachedProperties = array('WMSInformation', 'canvasColor', 'allProj4',
-        'relations', 'layersOrder', 'useLayerIDs', 'layers', 'data', 'qgisProjectVersion');
+        'relations', 'useLayerIDs', 'layers', 'data', 'qgisProjectVersion');
 
     /**
      * constructor
@@ -355,7 +350,6 @@ class qgisProject{
         $this->canvasColor = $this->readCanvasColor($qgs_xml);
         $this->allProj4 = $this->readAllProj4($qgs_xml);
         $this->relations = $this->readRelations($qgs_xml);
-        $this->layersOrder = $this->readLayersOrder($qgs_xml);
         $this->useLayerIDs = $this->readUseLayerIDs($qgs_xml);
         $this->layers = $this->readLayers($qgs_xml);
     }
