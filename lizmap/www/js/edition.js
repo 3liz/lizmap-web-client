@@ -1155,14 +1155,6 @@ OpenLayers.Geometry.pointOnSegment = function(point, segment) {
 
         // Redraw bottom dock
         $('#bottom-dock').css('left',  lizMap.getDockRightPosition() );
-
-        // trigger edition form displayed
-        if ( form.length != 0 ) {
-            lizMap.events.triggerEvent(
-                'editionformdisplayed',
-                { 'layerId': layerId}
-            );
-        }
     }
 
     function handleEditionFormSubmit( form ){
