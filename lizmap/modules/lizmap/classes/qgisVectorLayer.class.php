@@ -220,7 +220,7 @@ class qgisVectorLayer extends qgisMapLayer{
               // If postgresql, get real geometryType from pg_attribute (jelix prop gives 'geometry')
               // Issue #902, "geometry_columns" is not giving the Z value
               if( $this->provider == 'postgres' and $geometryType == 'geometry' ){
-                  $tablename = $dtParams->schema . "." . $dtParams->tablename;
+                  $tablename = '"'. $dtParams->schema . '"."' . $dtParams->tablename .'"';
                   $sql = "SELECT format_type(atttypid,atttypmod) AS type";
                   $sql.= " FROM pg_attribute";
                   $sql.= " WHERE attname = " . $cnx->quote($geometryColumn);

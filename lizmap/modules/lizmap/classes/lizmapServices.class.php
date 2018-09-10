@@ -230,9 +230,8 @@ class lizmapServices{
     }
 
     public function isRelativeWMSPath(){
-      if ( $this->relativeWMSPath != '0')
-        return true;
-      return false;
+      // in the ini file, if the value is 'off' or 'false', the result is ''
+      return ($this->relativeWMSPath !== '' && $this->relativeWMSPath !== '0');
     }
 
     /**

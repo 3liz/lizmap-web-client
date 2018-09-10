@@ -336,6 +336,7 @@ class lizmapProject extends qgisProject {
         $this->locateByLayer = $this->readLocateByLayers($qgs_xml, $this->cfg);
         $this->editionLayers = $this->readEditionLayers($qgs_xml, $this->cfg);
         $this->attributeLayers = $this->readAttributeLayers($qgs_xml, $this->cfg);
+        $this->layersOrder = $this->readLayersOrder($qgs_xml, $this->cfg);
     }
 
     public function getQgisPath(){
@@ -1039,7 +1040,56 @@ class lizmapProject extends qgisProject {
         return $attributeLayers;
     }
 
-
+    protected function readLayersOrder($xml, $cfg) {
+       $layersOrder = array();
+        // For QGIS >=2.4, new item layer-tree-canvas
+        if( $this->qgisProjectVersion >= 20400){
+            $customeOrder = $xml->xpath('//layer-tree-canvas/custom-order');
+            if(count($customeOrder) == 0){
+                return $layersOrder;
+            }
+            $customeOrderZero = $customeOrder[0];
+            if( $customeOrderZero->attributes()->enabled == 1 ){
+                $items = $customeOrderZero->xpath('//item');
+                $lo = 0;
+                foreach( $items as $layerI ) {
+                    # Get layer name from config instead of XML for possible embedded layers
+                    $name = $this->getLayerNameByIdFromConfig($layerI);
+                    if( $name ){
+                        $layersOrder[$name] = $lo;
+                    }
+                    $lo+=1;
+                }
+            } else {
+                $items = $xml->xpath('layer-tree-group//layer-tree-layer');
+                $lo = 0;
+                foreach( $items as $layerTree ) {
+                    # Get layer name from config instead of XML for possible embedded layers
+                    $name = $this->getLayerNameByIdFromConfig($layerTree->attributes()->id);
+                    if( $name ){
+                        $layersOrder[$name] = $lo;
+                    }
+                    $lo+=1;
+                }
+            }
+        } else {
+            $legend = $xml->xpath('//legend');
+            if(count($legend) == 0){
+                return $layersOrder;
+            }
+            $legendZero = $legend[0];
+            $updateDrawingOrder = (string)$legendZero->attributes()->updateDrawingOrder;
+            if( $updateDrawingOrder == 'false' ){
+                $layers =  $xml->xpath('//legendlayer');
+                foreach( $layers as $layer ){
+                    if( $layer->attributes()->drawingOrder and $layer->attributes()->drawingOrder >= 0 ){
+                        $layersOrder[(string)$layer->attributes()->name] = (integer)$layer->attributes()->drawingOrder;
+                    }
+                }
+            }
+        }
+        return $layersOrder;
+    }
 
 
     public function getUpdatedConfig(){

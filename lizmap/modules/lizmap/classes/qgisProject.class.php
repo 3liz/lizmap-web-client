@@ -46,11 +46,6 @@ class qgisProject{
     protected $relations = array();
 
     /**
-     * @var array list of layer orders: layer name => order
-     */
-    protected $layersOrder = array();
-
-    /**
      * @var boolean
      */
     protected $useLayerIDs = false;
@@ -64,7 +59,7 @@ class qgisProject{
      * @var array List of cached properties
      */
     protected $cachedProperties = array('WMSInformation', 'canvasColor', 'allProj4',
-        'relations', 'layersOrder', 'useLayerIDs', 'layers', 'data', 'qgisProjectVersion');
+        'relations', 'useLayerIDs', 'layers', 'data', 'qgisProjectVersion');
 
     /**
      * constructor
@@ -355,7 +350,6 @@ class qgisProject{
         $this->canvasColor = $this->readCanvasColor($qgs_xml);
         $this->allProj4 = $this->readAllProj4($qgs_xml);
         $this->relations = $this->readRelations($qgs_xml);
-        $this->layersOrder = $this->readLayersOrder($qgs_xml);
         $this->useLayerIDs = $this->readUseLayerIDs($qgs_xml);
         $this->layers = $this->readLayers($qgs_xml);
     }
@@ -456,57 +450,6 @@ class qgisProject{
             return null;
     }
 
-    protected function readLayersOrder($qgsLoad) {
-       $layersOrder = array();
-        // For QGIS >=2.4, new item layer-tree-canvas
-        if( $this->qgisProjectVersion >= 20400){
-            $customeOrder = $qgsLoad->xpath('//layer-tree-canvas/custom-order');
-            if(count($customeOrder) == 0){
-                return $layersOrder;
-            }
-            $customeOrderZero = $customeOrder[0];
-            if( $customeOrderZero->attributes()->enabled == 1 ){
-                $items = $customeOrderZero->xpath('//item');
-                $lo = 0;
-                foreach( $items as $layerI ) {
-                    # Get layer name from config instead of XML for possible embedded layers
-                    $name = $this->getLayerNameByIdFromConfig($layerI);
-                    if( $name ){
-                        $layersOrder[$name] = $lo;
-                    }
-                    $lo+=1;
-                }
-            } else {
-                $items = $qgsLoad->xpath('layer-tree-group//layer-tree-layer');
-                $lo = 0;
-                foreach( $items as $layerTree ) {
-                    # Get layer name from config instead of XML for possible embedded layers
-                    $name = $this->getLayerNameByIdFromConfig($layerTree->attributes()->id);
-                    if( $name ){
-                        $layersOrder[$name] = $lo;
-                    }
-                    $lo+=1;
-                }
-            }
-        } else {
-            $legend = $qgsLoad->xpath('//legend');
-            if(count($legend) == 0){
-                return $layersOrder;
-            }
-            $legendZero = $legend[0];
-            $updateDrawingOrder = (string)$legendZero->attributes()->updateDrawingOrder;
-            if( $updateDrawingOrder == 'false' ){
-                $layers =  $qgsLoad->xpath('//legendlayer');
-                foreach( $layers as $layer ){
-                    if( $layer->attributes()->drawingOrder and $layer->attributes()->drawingOrder >= 0 ){
-                        $layersOrder[(string)$layer->attributes()->name] = (integer)$layer->attributes()->drawingOrder;
-                    }
-                }
-            }
-        }
-        return $layersOrder;
-    }
-
     protected function readUseLayerIDs($xml) {
         $WMSUseLayerIDs = $xml->xpath( "//properties/WMSUseLayerIDs" );
         return ( $WMSUseLayerIDs && count($WMSUseLayerIDs) > 0 && $WMSUseLayerIDs[0] == 'true' );
@@ -597,6 +540,9 @@ class qgisProject{
                     if ( $excludeFields && count($excludeFields) > 0 ) {
                         foreach( $excludeFields as $eField ) {
                             $eField = (string) $eField;
+                            if ( !in_array($eField, $wfsFields) ) {
+                                continue; // QGIS sometimes stores them twice
+                            }
                             array_splice( $wfsFields, array_search( $eField, $wfsFields ), 1 );
                         }
                         $layer['wfsFields'] = $wfsFields;
