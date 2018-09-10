@@ -737,7 +737,7 @@ OpenLayers.Geometry.pointOnSegment = function(point, segment) {
         } else {
             // trigger edition form closed
             lizMap.events.triggerEvent(
-                'editionformclosed'
+                'lizmapeditionformclosed'
             );
         }
     }
@@ -1149,7 +1149,7 @@ OpenLayers.Geometry.pointOnSegment = function(point, segment) {
         } else if ( form.length == 0 ) {
             // trigger edition form closed
             lizMap.events.triggerEvent(
-                'editionformclosed'
+                'lizmapeditionformclosed'
             );
         }
 
