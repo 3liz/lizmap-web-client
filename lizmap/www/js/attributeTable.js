@@ -1755,6 +1755,16 @@ var lizAttributeTable = function() {
                             $(childTable +' tr td button.attribute-layer-feature-focus').remove();
                             // Unlink
                             $(childTable +' tr td button.attribute-layer-feature-unlink').remove();
+                            // Hide columns
+                            var dt = $(childTable).DataTable();
+                            for ( c = 2; c < 7; c++ ) {
+                                var dataSrc = dt.column(c).dataSrc();
+                                if ( dataSrc == 'unlink' ||
+                                     dataSrc == 'zoom' ||
+                                     dataSrc == 'center' )
+                                     dt.column(c).visible(false);
+
+                            }
 /*
                             // Bind event when users click anywhere on the table line to highlight
                             bindTableLineClick(aName, aTable);
@@ -1771,6 +1781,11 @@ var lizAttributeTable = function() {
                                 bindTableUnlinkButton(aName, aTable);
                             }
 */
+                            // Display the first child table displayed
+                            if ( $(childTable).parents('.edition-children-content').children('ul.nav-tabs').children('li.active').length == 0 ) {
+                                var tabId = $(childTable).parents('.tab-pane.attribute-layer-child-content').attr('id');
+                                $(childTable).parents('.edition-children-content').find('ul.nav-tabs > li > a[href="#'+tabId+'"]').click();
+                            }
                             return false;
 
                         });
@@ -2242,6 +2257,8 @@ var lizAttributeTable = function() {
                         // only if typeName filter aFilter was originally set
                         if( aFilter && cData['parentValues'].length > 0 && cascade != 'removeChildrenFilter' )
                             cFilter = wmsCname + ':"' + cData['fieldToFilter'] + '" IN ( ' + cData['parentValues'].join() + ' )';
+                        else if( aFilter && cascade != 'removeChildrenFilter' )
+                            cFilter = wmsCname + ':"' + cData['fieldToFilter'] + '" IN ( -99999 )';
 
                         config.layers[cName]['request_params']['filter'] = cFilter;
 

@@ -23,6 +23,7 @@ var lizAtlas = function() {
 
         var lizAtlasConfig = {
             'layername': featureType,
+            'layerId': layerConfig.id,
             'showAtStartup': lizMap.config.options['atlasShowAtStartup'] == 'True' ? true : false,
             'displayLayerDescription': lizMap.config.options['atlasDisplayLayerDescription'] == 'True' ? true : false,
             'primaryKey': primaryKey,
@@ -34,6 +35,7 @@ var lizAtlas = function() {
             'drawFeatureGeom': lizMap.config.options['atlasHighlightGeometry'] == 'True' ? true : false,
             'atlasDisplayPopup': lizMap.config.options['atlasDisplayPopup'] == 'True' ? true : false,
             'triggerFilter': lizMap.config.options['atlasTriggerFilter'] == 'True' ? true : false,
+            'hideFeaturesAtStratup': lizMap.config.options['hideFeaturesAtStratup'] == 'True' ? true : false,
             'zoom': lizMap.config.options['atlasZoom'] == '' ? false : lizMap.config.options['atlasZoom']
         };
         var lizAtlasTimer;
@@ -41,14 +43,43 @@ var lizAtlas = function() {
         function getAtlasData(featureType) {
 
             // Get data
-            lizMap.getAttributeFeatureData(featureType, null, null, 'geom', function(aName, aFilter, aFeatures, aAliases){
-                if( aFeatures.length != 0 ) {
-                    lizAtlasConfig['features'] = aFeatures;
-                    lizAtlasConfig['featureType'] = featureType;
-                    prepareFeatures();
-                    launchAtlas();
-                }
+            lizMap.getAttributeFeatureData(featureType, featureType+':', null, 'geom', function(aName, aFilter, aFeatures, aAliases){
+
+                lizAtlasConfig['features'] = aFeatures;
+                lizAtlasConfig['featureType'] = featureType;
+                prepareFeatures();
+                launchAtlas();
+
                 $('body').css('cursor', 'auto');
+                return false;
+            });
+        }
+
+        function updateAtlasData() {
+
+            // Get data
+            lizMap.getAttributeFeatureData(lizAtlasConfig['featureType'], lizAtlasConfig['featureType']+':', null, 'geom', function(aName, aFilter, aFeatures, aAliases){
+                lizAtlasConfig['features'] = aFeatures;
+                prepareFeatures();
+
+                var options = '<option value="-1"> --- </option>';
+                var pkey_field = lizAtlasConfig['primaryKey'];
+                for(var i in lizAtlasConfig['features_sorted']){
+                    var item = lizAtlasConfig['features_sorted'][i];
+
+                    // Add option
+                    options+= '<option value="'+i+'">';
+                    options+= item[lizAtlasConfig['titleField']];
+                    options+= '</option>';
+                }
+
+                var val = $('#liz-atlas-select').val();
+                $('#liz-atlas-select').html(options);
+                // reset val
+                $('#liz-atlas-select').val(val);
+                // get popup
+                $('#liz-atlas-select').change();
+
                 return false;
             });
         }
@@ -60,6 +91,8 @@ var lizAtlas = function() {
             var items = [];
             var pkey_field = lizAtlasConfig['primaryKey'];
             var s_field = lizAtlasConfig['sortField'];
+            if ( !s_field )
+                s_field = pkey_field;
             for(var i in lizAtlasConfig.features){
 
                 // Get feature
@@ -77,9 +110,15 @@ var lizAtlas = function() {
             items.sort(function(a, b) {
                 var nameA = a[s_field];
                 var nameB = b[s_field];
-                if( typeof(a[s_field]) == 'string' || typeof(b[s_field]) == 'string' ){
-                    nameA = a[s_field].toUpperCase(); // ignore upper and lowercase
-                    nameB = b[s_field].toUpperCase(); // ignore upper and lowercase
+                if( typeof(nameA) == 'string' || typeof(nameB) == 'string' ){
+                    if (!nameA)
+                        nameA = '';
+                    else
+                        nameA = nameA.toUpperCase(); // ignore upper and lowercase
+                    if (!nameB)
+                        nameB = '';
+                    else
+                        nameB = nameB.toUpperCase(); // ignore upper and lowercase
                 }
                 if (nameA < nameB) {
                     return -1;
@@ -142,6 +181,7 @@ var lizAtlas = function() {
         }
 
         function launchAtlas(){
+            lizMap.events.triggerEvent("uiatlascreationlaunched", lizAtlasConfig);
             // Get Atlas home
             var home = getAtlasHome(lizAtlasConfig.featureType, lizAtlasConfig.features);
 
@@ -166,17 +206,49 @@ var lizAtlas = function() {
             // Limit dock size
             adaptAtlasSize();
 
-            // Show dock
-            if( lizAtlasConfig['showAtStartup'] && !lizMap.checkMobile() ){
-                $('#mapmenu li.atlas:not(.active) a').click();
-                // Hide legend
-                $('#mapmenu li.switcher.active a').click();
+            // Only if features in layer
+            if( lizAtlasConfig.features.length != 0 ) {
+                // Activate filter
+                if ( lizAtlasConfig.triggerFilter && lizAtlasConfig.hideFeaturesAtStratup ) {
+                    // Select feature
+                    lizMap.events.triggerEvent('layerfeatureselected',
+                        {'featureType': lizAtlasConfig.featureType, 'fid': -99999, 'updateDrawing': false}
+                    );
+                    // Filter selected feature
+                    lizMap.events.triggerEvent('layerfeaturefilterselected',
+                        {'featureType': lizAtlasConfig.featureType}
+                    );
+                }
+
+                // Show dock
+                if( lizAtlasConfig['showAtStartup'] && !lizMap.checkMobile() ){
+                    $('#mapmenu li.atlas:not(.active) a').click();
+                    // Hide legend
+                    $('#mapmenu li.switcher.active a').click();
+                }
+
+                // Start animation
+                if( lizAtlasConfig['autoPlay'] && !lizMap.checkMobile() ){
+                    $('button.liz-atlas-run').click();
+                }
             }
 
-            // Start animation
-            if( lizAtlasConfig['autoPlay'] && !lizMap.checkMobile() ){
-                $('button.liz-atlas-run').click();
-            }
+            lizMap.events.triggerEvent("uiatlascreated", lizAtlasConfig);
+
+            lizMap.events.on({
+                lizmapeditionfeaturecreated: function(e) {
+                    if ( e.layerId == lizAtlasConfig.layerId )
+                        updateAtlasData();
+                },
+                lizmapeditionfeaturemodified: function(e) {
+                    if ( e.layerId == lizAtlasConfig.layerId )
+                        updateAtlasData();
+                },
+                lizmapeditionfeaturedeleted: function(e) {
+                    if ( e.layerId == lizAtlasConfig.layerId )
+                        updateAtlasData();
+                }
+            });
 
         }
 
@@ -381,9 +453,19 @@ var lizAtlas = function() {
 
             // Deactivate filter
             if ( lizAtlasConfig.triggerFilter && lizMap.lizmapLayerFilterActive ){
-                lizMap.events.triggerEvent( "layerfeatureremovefilter",
-                    { 'featureType': lizAtlasConfig.featureType}
-                );
+                if ( lizAtlasConfig.hideFeaturesAtStratup ) {
+                    // Select feature
+                    lizMap.events.triggerEvent('layerfeatureselected',
+                        {'featureType': lizAtlasConfig.featureType, 'fid': -99999, 'updateDrawing': false}
+                    );
+                    // Filter selected feature
+                    lizMap.events.triggerEvent('layerfeaturefilterselected',
+                        {'featureType': lizAtlasConfig.featureType}
+                    );
+                } else
+                    lizMap.events.triggerEvent( "layerfeatureremovefilter",
+                        { 'featureType': lizAtlasConfig.featureType}
+                    );
             }
 
             // Hide some containers
