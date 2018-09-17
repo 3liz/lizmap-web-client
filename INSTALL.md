@@ -78,9 +78,7 @@ If you need to re-install lizmap on the same instance, you need to remove the fi
 
 Using QGIS composer/layouts and PDF in Lizmap
 ----
-* If you plan to print PDF from Lizmap, you need a fake X Server.
-  * https://www.itopen.it/qgis-server-setup-notes/
-  * Working with Apache and NGINX
+* If you plan to print PDF from Lizmap, you need a fake X Server. See `QGIS manual <https://docs.qgis.org/2.18/en/docs/training_manual/qgis_server/install.html#fa-http-server-configuration>`_ searching for `xvfb`. It works for Apache and NGINX
 
 Debug
 ----
