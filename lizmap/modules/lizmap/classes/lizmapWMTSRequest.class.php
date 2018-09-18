@@ -49,6 +49,7 @@ class lizmapWMTSRequest extends lizmapOGCRequest {
             "lizmap~service:index",
             array("repository"=>$this->repository->getKey(), "project"=>$this->project->getKey())
         );
+        $sUrl.= '&';
 
         $tpl = new jTpl();
         $tpl->assign( 'url', $sUrl );
