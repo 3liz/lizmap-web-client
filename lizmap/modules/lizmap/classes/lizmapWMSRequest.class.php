@@ -44,7 +44,7 @@ class lizmapWMSRequest extends lizmapOGCRequest {
           "lizmap~service:index",
           array("repository"=>$this->repository->getKey(), "project"=>$this->project->getKey())
         );
-        $sUrl = str_replace('&', '&amp;', $sUrl);
+        $sUrl = str_replace('&', '&amp;', $sUrl).'&amp;';
         preg_match('/<get>.*\n*.+xlink\:href="([^"]+)"/i', $data, $matches);
         if ( count( $matches ) < 2 )
             preg_match('/get onlineresource="([^"]+)"/i', $data, $matches);
