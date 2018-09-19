@@ -85,8 +85,8 @@ Debug
 
 * Check Lizmap settings
 * Check logs in Apache/Nginx and QGIS Server.
-* Enable logs in your `lizmapConfig.ini.php` with the line `debugMode`.
-* Check `lizmap/var/log`.
+* Enable logs in your `lizmapConfig.ini.php` with the line `debugMode` (*Administration-->Lizmap configuration-->Services-->Debugging On*)
+* Check `lizmap/var/log` (e.g. `tail -f lizmap/var/log/messages.log`). Check the addresses used, paste it in a browser, and check the error displayed.
 
 You can enable the Jelix debug toolbar to get some information:
 In `lizmap/var/config/localconfig.ini.php`, add:
