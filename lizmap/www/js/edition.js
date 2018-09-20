@@ -1183,13 +1183,16 @@ OpenLayers.Geometry.pointOnSegment = function(point, segment) {
 
         // Handle file uploads
         if ( form.attr('enctype') == 'multipart/form-data' ){
-            form.submit(function() {
-                // Additionnal checks
-                var msg = checkFormBeforeSubmit();
-                // Edition has been canceled
-                if(!msg){
+            form.submit(function(evt) {
+                // Jelix checks
+                var submitOk = jFormsJQ._submitListener(evt);
+                if (!submitOk)
                     return false;
-                }
+                // Additionnal checks
+                var msg = checkFormBeforeSubmit(evt);
+                // Edition has been canceled
+                if(!msg)
+                    return false;
                 // Some client side errors have been detected in form
                 if( msg != 'ok' ){
                     lizMap.addMessage( msg, 'info', true).attr('id','lizmap-edition-message');
@@ -1220,9 +1223,13 @@ OpenLayers.Geometry.pointOnSegment = function(point, segment) {
             });
         }
         else{
-            form.submit(function(e) {
+            form.submit(function(evt) {
+                // Jelix check
+                var submitOk = jFormsJQ._submitListener(evt);
+                if (!submitOk)
+                    return false;
                 // Additionnal checks
-                var msg = checkFormBeforeSubmit(e);
+                var msg = checkFormBeforeSubmit(evt);
                 // Edition has been canceled
                 if(!msg){
                     return false;
@@ -1528,3 +1535,50 @@ OpenLayers.Geometry.pointOnSegment = function(point, segment) {
 
 
 }();
+
+
+function lizEditionErrorDecorator(){
+    this.message = '';
+}
+
+lizEditionErrorDecorator.prototype = {
+    start : function(form){
+        this.message = '';
+        this.form = form;
+        $("#"+form.name+" .jforms-error").removeClass('jforms-error');
+        $('#'+form.name+'_errors').empty().hide();
+    },
+    addError : function(control, messageType){
+        var elt = this.form.element.elements[control.name];
+        if (elt && elt.nodeType) {
+            $(elt).addClass('jforms-error');
+        }
+        var name = control.name.replace(/\[\]/, '');
+        $("#"+this.form.name+"_"+name+"_label").addClass('jforms-error');
+
+        if(messageType == 1){
+            this.message  += '<p class="error"> '+control.errRequired + "</p>";
+        }else if(messageType == 2){
+            this.message  += '<p class="error"> ' +control.errInvalid + "</p>";
+        }else{
+            this.message  += '<p class="error"> Error on \''+control.label+"' </p>";
+        }
+    },
+    end : function(){
+        var errid = this.form.name+'_errors';
+        var div = document.getElementById(errid);
+        if(this.message != ''){
+            if (!div) {
+                div = document.createElement('div');
+                div.setAttribute('class', 'jforms-error-list alert alert-block alert-error');
+                div.setAttribute('id', errid);
+                $(this.form.element).first().before(div);
+            }
+            var jdiv = $(div);
+            jdiv.hide().html(this.message).fadeIn();
+        }
+        else if (div) {
+            $(div).hide();
+        }
+    }
+}

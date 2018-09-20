@@ -150,10 +150,10 @@ class qgisForm {
             }
         }
 
-        $template = '{formfull $form, "lizmap~edition:saveFeature", array(), "htmlbootstrap"}';
+        $template = '{formfull $form, "lizmap~edition:saveFeature", array(), "htmlbootstrap", array("errorDecorator"=>"lizEditionErrorDecorator")}';
 
         if ( $attributeEditorForm && property_exists($attributeEditorForm, 'children') ) {
-            $template = '{form $form, "lizmap~edition:saveFeature", array(), "htmlbootstrap"}';
+            $template = '{form $form, "lizmap~edition:saveFeature", array(), "htmlbootstrap", array("errorDecorator"=>"lizEditionErrorDecorator")}';
             $template.= $this->getEditorContainerHtmlContent( $attributeEditorForm, $this->form_name, 0 );
             $template.= '<div class="control-group">';
             $template.= '{ctrl_label "liz_future_action"}';
@@ -177,7 +177,7 @@ class qgisForm {
                      $fName = $fName.'_choice';
                 $fieldNames[] = '\''.$fName.'\'';
             }
-            $template = '{form $form, "lizmap~edition:saveFeature", array(), "htmlbootstrap"}';
+            $template = '{form $form, "lizmap~edition:saveFeature", array(), "htmlbootstrap", array("errorDecorator"=>"lizEditionErrorDecorator")}';
             $template.= '{formcontrols array('.implode(',',$fieldNames).')}';
             $template.= '<div class="control-group">';
             $template.= '{ctrl_label}';
