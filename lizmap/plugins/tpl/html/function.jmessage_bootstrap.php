@@ -32,7 +32,7 @@ function jtpl_function_html_jmessage_bootstrap($tpl, $type = '') {
                 $type_msg = 'info';
             elseif($type_msg == 'ok')
                 $type_msg = 'success';
-            echo '<div class="alert alert-block alert-'.$type_msg.' fade in" data-alert="alert"><a class="close" data-dismiss="alert" href="#">×</a>';
+            echo '<div class="alert alert-block alert-'.strtolower($type_msg).' fade in" data-alert="alert"><a class="close" data-dismiss="alert" href="#">×</a>';
             foreach ($all_msg as $msg) {
                 echo '<p>'.htmlspecialchars($msg).'</p>';
             }
@@ -51,5 +51,5 @@ function jtpl_function_html_jmessage_bootstrap($tpl, $type = '') {
     } else {
         jMessage::clear($type);
     }
-    
+
 }
