@@ -1110,7 +1110,8 @@ OpenLayers.Geometry.pointOnSegment = function(point, segment) {
             finishEdition();
 
             // Display message via JS
-            lizMap.addMessage( data, 'info', true).attr('id','lizmap-edition-message');
+            if ( data != '' )
+                lizMap.addMessage( data, 'info', true).attr('id','lizmap-edition-message');
 
         }
 
@@ -1159,16 +1160,22 @@ OpenLayers.Geometry.pointOnSegment = function(point, segment) {
 
     function handleEditionFormSubmit( form ){
 
+        console.log('handleEditionFormSubmit');
+
         // Detect click on submit buttons
         editionLayer['submitActor'] = 'submit';
-        form.find('input[type="submit"]').click(function(){
+        form.find('input[type="submit"]').click(function(evt){
             var subprefix = form.attr('id') + '_' + '_submit' + '_';
             var submitActor = $(this).attr('id').replace(subprefix, '')
             editionLayer['submitActor'] = submitActor;
 
             // Confirm the use of the cancel button
-            //if ( submitActor == 'cancel' && !confirm( lizDict['edition.confirm.cancel'] ) )
-                //return false;
+            if ( submitActor == 'cancel' ) {
+                evt.stopPropagation();
+                if ( confirm( lizDict['edition.confirm.cancel'] ) )
+                    displayEditionForm( '' );
+                return false;
+            }
         });
 
         // If needed, copy the geometry from the openlayer feature
