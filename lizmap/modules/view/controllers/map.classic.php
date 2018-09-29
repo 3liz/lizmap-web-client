@@ -44,7 +44,7 @@ class mapCtrl extends lizMapCtrl {
             return $rep;
         }
 
-        if ( $rep->getType() === 'redirect' && $rep->action === 'jauth~login:form' ) {
+        if ( $rep->getType() === 'redirect' && $rep->action === 'jcommunity~login:index' ) {
             $rep->params['auth_url_return'] = jUrl::get('view~map:index', $url_params);
         }
 

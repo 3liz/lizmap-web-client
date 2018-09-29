@@ -60,7 +60,7 @@ class lizMapCtrl extends jController {
     if(!$lrep or !jAcl2::check('lizmap.repositories.view', $lrep->getKey())){
       jMessage::add(jLocale::get('view~default.repository.access.denied'), 'error');
       if ( !jAuth::isConnected() ) {
-        $rep->action = 'jauth~login:form';
+        $rep->action = 'jcommunity~login:index';
       }
       return $rep;
     }
@@ -98,7 +98,7 @@ class lizMapCtrl extends jController {
     if (!$lproj->checkAcl()) {
       jMessage::add(jLocale::get('view~default.repository.access.denied'), 'error');
       if ( !jAuth::isConnected() ) {
-        $rep->action = 'jauth~login:form';
+        $rep->action = 'jcommunity~login:index';
       }
       return $rep;
     }

@@ -2424,12 +2424,17 @@ var lizAttributeTable = function() {
                 if( !layer )
                     return;
 
+                var lConfig = config.layers[featureType];
+                if( !lConfig )
+                    return;
+
                 // Build selection parameter from selectedFeatures
-                if( config.layers[featureType]
-                    && config.layers[featureType]['selectedFeatures']
-                    && config.layers[featureType]['selectedFeatures'].length
+                if( lConfig.selectedFeatures
+                    && lConfig.selectedFeatures.length
                 ) {
-                    config.layers[featureType]['request_params']['selection'] = featureType + ':' + config.layers[featureType]['selectedFeatures'].join();
+                    if ( !( 'request_params' in lConfig ) )
+                        lConfig['request_params'] = {};
+                    lConfig.request_params['selection'] = featureType + ':' + lConfig.selectedFeatures.join();
 
                     // Get selection token
                     var surl = OpenLayers.Util.urlAppend(lizUrls.wms
@@ -2439,15 +2444,16 @@ var lizAttributeTable = function() {
                         service: 'WMS',
                         request: 'GETSELECTIONTOKEN',
                         typename: featureType,
-                        ids: config.layers[featureType]['selectedFeatures'].join()
+                        ids: lConfig.selectedFeatures.join()
                     };
                     $.post(surl, sdata, function(result){
-                        config.layers[featureType]['request_params']['selectiontoken'] = result.token;
+                        lConfig.request_params['selectiontoken'] = result.token;
                         if ( layer )
                             layer.params['SELECTIONTOKEN'] = result.token;
                         // Redraw openlayers layer
-                        if( config.layers[featureType]['geometryType'] != 'none'
-                            && config.layers[featureType]['geometryType'] != 'unknown'
+                        if( lConfig['geometryType']
+                            && lConfig.geometryType != 'none'
+                            && lConfig.geometryType != 'unknown'
                         ){
                             layer.redraw(true);
                         }
@@ -2457,11 +2463,14 @@ var lizAttributeTable = function() {
                     //delete layer.params['SELECTION'];
                     if ( layer )
                         delete layer.params['SELECTIONTOKEN'];
-                    config.layers[featureType]['request_params']['selection'] = null;
-                    config.layers[featureType]['request_params']['selectiontoken'] = null;
+                    if ( !( 'request_params' in lConfig ) )
+                        lConfig['request_params'] = {};
+                    lConfig.request_params['selection'] = null;
+                    lConfig.request_params['selectiontoken'] = null;
                     // Redraw openlayers layer
-                    if( config.layers[featureType]['geometryType'] != 'none'
-                        && config.layers[featureType]['geometryType'] != 'unknown'
+                    if( lConfig['geometryType']
+                        && lConfig.geometryType != 'none'
+                        && lConfig.geometryType != 'unknown'
                     ){
                         layer.redraw(true);
                     }

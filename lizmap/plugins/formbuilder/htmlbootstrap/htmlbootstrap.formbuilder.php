@@ -652,6 +652,10 @@ jFormsJQ.declareForm(jFormsJQ.tForm);
         $attr['value'] = $ctrl->valueOnCheck;
         $attr['type'] = 'checkbox';
         echo '<input';
+        // attribute readonly is not enough to make checkboxes readonly. Note that value won't be sent by submit but it is not a problem as it is readonly
+        if(array_key_exists('readonly', $attr)){
+            echo ' disabled ';
+        }
         $this->_outputAttr($attr);
         echo $this->_endt;
 
