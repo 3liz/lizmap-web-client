@@ -6160,10 +6160,24 @@ OpenLayers.Control.HighlightFeature = OpenLayers.Class(OpenLayers.Control, {
     },
 
     /**
+     * Method: addGeometryFeatureInfo
+     */
+    addGeometryFeatureInfo: function(popup){
+      return addGeometryFeatureInfo(popup);
+    },
+
+    /**
      * Method: addChildrenFeatureInfo
      */
     addChildrenFeatureInfo: function(popup){
       return addChildrenFeatureInfo(popup);
+    },
+
+    /**
+     * Method: addChildrenDatavizFilteredByPopupFeature
+     */
+    addChildrenDatavizFilteredByPopupFeature: function(popup){
+      return addChildrenDatavizFilteredByPopupFeature(popup);
     },
 
     /**
