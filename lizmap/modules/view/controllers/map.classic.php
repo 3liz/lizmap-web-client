@@ -32,8 +32,12 @@ class mapCtrl extends lizMapCtrl {
             $url_params['bbox'] = $this->param('bbox');
         if ( $this->param('crs') )
             $url_params['crs'] = $this->param('crs');
+        if ( $this->param('filter') )
+            $url_params['filter'] = $this->param('filter');
         if ( $this->param('layerStyles') )
             $url_params['layerStyles'] = $this->param('layerStyles');
+        if ( $this->param('layerOpacities') )
+            $url_params['layerOpacities'] = $this->param('layerOpacities');
 
 
         if ( $rep->getType() === 'html' ) {
