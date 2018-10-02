@@ -46,8 +46,12 @@ var lizAttributeTable = function() {
                 var self = $(this);
                 // typename
                 var typeName = self.find('Name').text();
+                // layername
+                var layername = lizMap.getNameByTypeName( typeName );
+                if ( !layername )
+                    return;
                 // lizmap internal js cleaned name
-                var cleanName = lizMap.cleanName(typeName);
+                var cleanName = lizMap.cleanName(layername);
                 // lizmap config file layer name
                 var configLayerName = attributeLayersDic[cleanName];
                 // Add matching between wfs type name and clean name
@@ -98,17 +102,9 @@ var lizAttributeTable = function() {
                     }
 
                     config.layers[configLayerName]['crs'] = self.find('SRS').text();
-                    if ( config.layers[configLayerName].crs in Proj4js.defs ){
+                    lizMap.loadProjDefinition( config.layers[configLayerName].crs, function( aProj ) {
                         new OpenLayers.Projection(config.layers[configLayerName].crs);
-                    }
-                    else
-                        $.get(service, {
-                            'REQUEST':'GetProj4'
-                            ,'authid': config.layers[configLayerName].crs
-                        }, function ( aText ) {
-                            Proj4js.defs[config.layers[configLayerName].crs] = aText;
-                            new OpenLayers.Projection(config.layers[configLayerName].crs);
-                        }, 'text');
+                    });
                     var bbox = self.find('LatLongBoundingBox');
                     atConfig['bbox'] = [
                         parseFloat(bbox.attr('minx'))

@@ -2085,33 +2085,37 @@ var lizMap = function() {
           featureTypes.each( function(){
             var self = $(this);
             var typeName = self.find('Name').text();
-            var lname = '';
-            if (typeName in config.locateByLayer)
-              lname = typeName
-            else if ( (typeName in shortNameMap) && (shortNameMap[typeName] in config.locateByLayer))
-              lname = shortNameMap[typeName];
-            else {
-              for (lbl in config.locateByLayer) {
-                if (lbl.split(' ').join('_') == typeName) {
-                  lname = lbl;
-                  break;
+            var lname = lizMap.getNameByTypeName( typeName );
+            if ( !lname ) {
+                if (typeName in config.locateByLayer)
+                    lname = typeName
+                else if ( (typeName in shortNameMap) && (shortNameMap[typeName] in config.locateByLayer))
+                    lname = shortNameMap[typeName];
+                else {
+                    for (lbl in config.locateByLayer) {
+                        if (lbl.split(' ').join('_') == typeName) {
+                            lname = lbl;
+                            break;
+                        }
+                    }
                 }
-              }
             }
-            if (lname != '') {
-              var locate = config.locateByLayer[lname];
-              locate['crs'] = self.find('SRS').text();
-              loadProjDefinition( locate.crs, function( aProj ) {
+
+            if ( !(lname in config.locateByLayer) )
+                return;
+
+            var locate = config.locateByLayer[lname];
+            locate['crs'] = self.find('SRS').text();
+            loadProjDefinition( locate.crs, function( aProj ) {
                   new OpenLayers.Projection(locate.crs);
-              });
-              var bbox = self.find('LatLongBoundingBox');
-              locate['bbox'] = [
+            });
+            var bbox = self.find('LatLongBoundingBox');
+            locate['bbox'] = [
                 parseFloat(bbox.attr('minx'))
                ,parseFloat(bbox.attr('miny'))
                ,parseFloat(bbox.attr('maxx'))
                ,parseFloat(bbox.attr('maxy'))
-              ];
-            }
+            ];
           } );
 
           // get joins
@@ -2633,31 +2637,37 @@ var lizMap = function() {
           featureTypes.each( function(){
             var self = $(this);
             var typeName = self.find('Name').text();
-            var lname = '';
-            if (typeName in config.locateByLayer)
-              lname = typeName
-            else if ( (typeName in shortNameMap) && (shortNameMap[typeName] in config.locateByLayer))
-              lname = shortNameMap[typeName];
-            else {
-              for (lbl in config.locateByLayer) {
-                if (lbl.split(' ').join('_') == typeName)
-                  lname = lbl;
-              }
+            var lname = lizMap.getNameByTypeName( typeName );
+            if ( !lname ) {
+                if (typeName in config.locateByLayer)
+                    lname = typeName
+                else if ( (typeName in shortNameMap) && (shortNameMap[typeName] in config.locateByLayer))
+                    lname = shortNameMap[typeName];
+                else {
+                    for (lbl in config.locateByLayer) {
+                        if (lbl.split(' ').join('_') == typeName) {
+                            lname = lbl;
+                            break;
+                        }
+                    }
+                }
             }
-            if (lname != '') {
-              var locate = config.locateByLayer[lname];
-              locate['crs'] = self.find('SRS').text();
-              loadProjDefinition( locate.crs, function( aProj ) {
-                  new OpenLayers.Projection(locate.crs);
-              });
-              var bbox = self.find('LatLongBoundingBox');
-              locate['bbox'] = [
+
+            if ( !(lname in config.locateByLayer) )
+                return;
+
+            var locate = config.locateByLayer[lname];
+            locate['crs'] = self.find('SRS').text();
+            loadProjDefinition( locate.crs, function( aProj ) {
+                new OpenLayers.Projection(locate.crs);
+            });
+            var bbox = self.find('LatLongBoundingBox');
+            locate['bbox'] = [
                 parseFloat(bbox.attr('minx'))
                ,parseFloat(bbox.attr('miny'))
                ,parseFloat(bbox.attr('maxx'))
                ,parseFloat(bbox.attr('maxy'))
-              ];
-            }
+            ];
           } );
 
           // get joins
@@ -4375,21 +4385,25 @@ var lizMap = function() {
     featureTypes.each( function(){
         var self = $(this);
         var typeName = self.find('Name').text();
-        var lname = '';
-        if (typeName in config.locateByLayer)
-          lname = typeName
-        else if ( (typeName in shortNameMap) && (shortNameMap[typeName] in config.locateByLayer))
-          lname = shortNameMap[typeName];
-        else {
-          for (ttl in config.tooltipLayers) {
-            if (ttl.split(' ').join('_') == typeName) {
-              lname = ttl;
-              break;
+        var lname = lizMap.getNameByTypeName( typeName );
+        if ( !lname ) {
+            if (typeName in config.locateByLayer)
+                lname = typeName
+            else if ( (typeName in shortNameMap) && (shortNameMap[typeName] in config.locateByLayer))
+                lname = shortNameMap[typeName];
+            else {
+                for (ttl in config.tooltipLayers) {
+                    if (ttl.split(' ').join('_') == typeName) {
+                        lname = ttl;
+                        break;
+                    }
+                }
             }
-          }
         }
-        if ( lname == '' )
+
+        if ( !(lname in config.tooltipLayers) )
             return;
+
         if ( (lname in config.tooltipLayers) && (lname in config.layers) ) {
             var lConfig = config.layers[lname];
             $('#tooltip-layer-list').append('<option value="'+lname+'">'+lConfig.title+'</option>');
@@ -6244,24 +6258,28 @@ OpenLayers.Control.HighlightFeature = OpenLayers.Class(OpenLayers.Control, {
             var featureTypes = getVectorLayerFeatureTypes();
             featureTypes.each( function(){
                 var typeName = $(this).find('Name').text();
-                var layerName = '';
-                if (typeName in config.layers)
-                  layerName = typeName
-                else if ( (typeName in shortNameMap) && (shortNameMap[typeName] in config.layers))
-                  layerName = shortNameMap[typeName];
-                else {
-                  for (l in config.layers) {
-                    if (l.split(' ').join('_') == typeName) {
-                      layerName = l;
-                      break;
+                var layerName = lizMap.getNameByTypeName( typeName );
+                if ( !layerName ) {
+                    if (typeName in config.layers)
+                      layerName = typeName
+                    else if ( (typeName in shortNameMap) && (shortNameMap[typeName] in config.layers))
+                      layerName = shortNameMap[typeName];
+                    else {
+                      for (l in config.layers) {
+                        if (l.split(' ').join('_') == typeName) {
+                          layerName = l;
+                          break;
+                        }
+                      }
                     }
-                  }
                 }
-                if ( layerName != '' ) {
-                    var configLayer = config.layers[layerName];
-                    configLayer.typename = typeName;
-                    typeNameMap[typeName] = layerName;
-                }
+
+                if ( !(layerName in config.layers) )
+                    return;
+
+                var configLayer = config.layers[layerName];
+                configLayer.typename = typeName;
+                typeNameMap[typeName] = layerName;
             } );
 
           //set title and abstract coming from capabilities
