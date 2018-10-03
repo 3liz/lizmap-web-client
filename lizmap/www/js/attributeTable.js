@@ -38,8 +38,17 @@ var lizAttributeTable = function() {
                 return -1;
 
             $('body').css('cursor', 'wait');
+
+            // Sort attribute layers as given by creation order in Lizmap plugin
+            var attributeLayersSorted = [];
+
             for (var lname in config.attributeLayers) {
-                attributeLayersDic[lizMap.cleanName(lname)] = lname;
+                var al = config.attributeLayers[lname];
+                attributeLayersSorted[al.order] = lname;
+            }
+
+            for (var i = 0; i < attributeLayersSorted.length; i++) {
+                attributeLayersDic[lizMap.cleanName(attributeLayersSorted[i])] = attributeLayersSorted[i];
             }
 
             featureTypes.each( function(){
