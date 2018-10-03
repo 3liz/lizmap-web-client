@@ -4381,6 +4381,8 @@ var lizMap = function() {
     for (var lname in config.tooltipLayers) {
         tooltipLayersDic[lizMap.cleanName(lname)] = lname;
     }
+    
+    var tooltipLayersSorted = [];
 
     featureTypes.each( function(){
         var self = $(this);
@@ -4406,9 +4408,15 @@ var lizMap = function() {
 
         if ( (lname in config.tooltipLayers) && (lname in config.layers) ) {
             var lConfig = config.layers[lname];
-            $('#tooltip-layer-list').append('<option value="'+lname+'">'+lConfig.title+'</option>');
+            tooltipLayersSorted[config.tooltipLayers[lname].order] = '<option value="'+lname+'">'+lConfig.title+'</option>';
         }
     });
+    
+    // Display layers order as declared in plugin
+    for (var i = 0; i < tooltipLayersSorted.length; i++) {
+      $('#tooltip-layer-list').append(tooltipLayersSorted[i]);
+    }
+    
     if ( $('#tooltip-layer-list').find('option').length == 1 ) {
       $('#button-tooltip-layer').parent().remove();
       return false;
