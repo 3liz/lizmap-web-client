@@ -3111,6 +3111,7 @@ var lizAttributeTable = function() {
     }
 
     var options = '';
+    var selectionLayersSorted = [];
     featureTypes.each( function(){
         var self = $(this);
         var lname = self.find('Name').text();
@@ -3121,16 +3122,19 @@ var lizAttributeTable = function() {
             && config.layers[lname]['geometryType'] != 'none'
             && config.layers[lname]['geometryType'] != 'unknown') {
             var lConfig = config.layers[lname];
-            options += '<option value="'+lname+'">'+lConfig.title+'</option>';
-        }
+            selectionLayersSorted[config.attributeLayers[lname].order] = '<option value="'+lname+'">'+lConfig.title+'</option>';        }
     });
+      
+    for (var i = 0; i < selectionLayersSorted.length; i++) {
+        options += selectionLayersSorted[i];
+    }
+      
     if ( options == '' ) {
       $('#button-selectiontool').parent().remove();
       return false;
     }
 
     $('#selectiontool-layer-list').html(options);
-
 
     // List of WFS format
     var exportFormats = lizMap.getVectorLayerResultFormat();
