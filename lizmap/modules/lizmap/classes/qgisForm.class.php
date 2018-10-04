@@ -993,6 +993,8 @@ class qgisForm {
      * as configured in the plugin for login filtered layers.
      */
     protected function filterDataByLogin($layername) {
+        if ( $this->loginFilteredOverride )
+            return null;
 
         // Optionnaly add a filter parameter
         $lproj = $this->layer->getProject();
