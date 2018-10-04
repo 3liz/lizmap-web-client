@@ -2958,6 +2958,8 @@ var lizAttributeTable = function() {
                 },
 
                 lizmapeditionformdisplayed: function(e) {
+                    $('#edition-children-container').hide().html('');
+
                     var fid =  e.featureId;
                     // Do not disply child if it's a creation
                     if (fid == null)
