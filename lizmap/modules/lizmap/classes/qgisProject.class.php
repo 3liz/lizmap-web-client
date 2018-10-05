@@ -169,7 +169,7 @@ class qgisProject{
         return null;
     }
 
-    public function getLayer( $layerId ){
+    public function getLayer( $layerId ) {
         $layers = array_filter($this->layers, function($layer) use ($layerId) {
            return $layer['id'] ==  $layerId;
         });
@@ -239,7 +239,7 @@ class qgisProject{
      */
     public function getXmlLayer( $layerId ){
         $layer = $this->getLayerDefinition( $layerId );
-        if ( array_key_exists('embedded', $layer) && $layer['embedded'] == 1 ) {
+        if ( $layer && array_key_exists('embedded', $layer) && $layer['embedded'] == 1 ) {
             $qgsProj = new qgisProject(realpath(dirname($this->path). DIRECTORY_SEPARATOR .$layer['projectPath']));
             return $qgsProj->getXml()->xpath( "//maplayer[id='$layerId']" );
         }
@@ -292,12 +292,12 @@ class qgisProject{
      */
     protected function readXmlProject($qgs_path) {
         if ( !file_exists($qgs_path) ) {
-            throw new Exception('The QGIS project '.$file.' does not exist!');
+            throw new Exception('The QGIS project '.basename($qgs_path).' does not exist!');
         }
 
         $qgs_xml = simplexml_load_file($qgs_path);
         if ($qgs_xml === false) {
-            throw new Exception('The QGIS project '.$file.' has invalid content!');
+            throw new Exception('The QGIS project '.basename($qgs_path).' has invalid content!');
         }
         $this->path = $qgs_path;
         $this->xml = $qgs_xml;
