@@ -30,5 +30,6 @@
         <class name="qgisVectorLayer" file="classes/qgisVectorLayer.class.php" />
         <class name="qgisForm" file="classes/qgisForm.class.php" />
         <class name="qgisFormControl" file="classes/qgisFormControl.class.php" />
+        <namespacePathMap name="Lizmap" dir="lib" />
     </autoload>
 </module>
