@@ -54,7 +54,7 @@ class lizmapProxy {
     }
 
 
-    public function constructUrl ( $params ) {
+    public static function constructUrl ( $params ) {
         $ser = lizmap::getServices();
         $url = $ser->wmsServerURL.'?';
 
