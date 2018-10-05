@@ -4,7 +4,7 @@
 * @subpackage  forms
 * @author      Laurent Jouanneau
 * @contributor Dominique Papin, Olivier Demah
-* @copyright   2006-2008 Laurent Jouanneau, 2008 Dominique Papin
+* @copyright   2006-2018 Laurent Jouanneau, 2008 Dominique Papin
 * @copyright   2009 Olivier Demah
 * @link        http://www.jelix.org
 * @licence     http://www.gnu.org/licenses/lgpl.html GNU Lesser General Public Licence, see LICENCE file
@@ -59,6 +59,9 @@ abstract class jFormsControl {
 
     /** @var jFormsDataContainer  content all values of the form */
     protected $container;
+
+    /** @var array miscellaneous values attached to the control */
+    protected $attributes = array();
 
     /**
      * @param string $ref the identifiant of the control
@@ -171,6 +174,17 @@ abstract class jFormsControl {
      */
     public function isReadOnly() {
         return $this->container->isReadOnly($this->ref);
+    }
+
+    public function setAttribute($name, $value) {
+        $this->attributes[$name] = $value;
+    }
+
+    public function getAttribute($name) {
+        if (isset($this->attributes[$name])) {
+            return $this->attributes[$name];
+        }
+        return null;
     }
 }
 
