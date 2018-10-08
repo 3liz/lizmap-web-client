@@ -526,7 +526,7 @@ class qgisProject{
                     }
                     foreach( $fields as $field ) {
                         $aliases[$field] = $field;
-                        $alias = $xmlLayer->xpath('aliases/alias[@field="'.$field.'"]"');
+                        $alias = $xmlLayer->xpath("aliases/alias[@field='".$field."']");
                         if( $alias && count($alias) != 0 ) {
                             $alias = $alias[0];
                             $aliases[$field] = (string)$alias['name'];
