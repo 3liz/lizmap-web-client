@@ -3516,6 +3516,67 @@ var lizMap = function() {
     });
   }
 
+  function getChildrenFeatureInfo( rConfigLayer, wmsOptions, aCallback ) {
+        if ( rConfigLayer.popup != 'True' )
+            return false;
+        // Query the server
+        var service = OpenLayers.Util.urlAppend(lizUrls.wms
+            ,OpenLayers.Util.getParameterString(lizUrls.params)
+        );
+        $.get(service, wmsOptions, function(data) {
+            var hasPopupContent = (!(!data || data == null || data == ''))
+            if ( hasPopupContent ) {
+                var popupReg = new RegExp('lizmapPopupTable', 'g');
+                data = data.replace(popupReg, 'table table-condensed table-striped lizmapPopupTable');
+
+                var childPopup = $('<div class="lizmapPopupChildren">'+data+'</div>');
+
+                //Manage if the user choose to create a table for children
+                if( rConfigLayer.popupSource == 'qgis' &&
+                    childPopup.find('.lizmap_merged').length != 0 )
+                {
+                    // save inputs
+                    childPopup.find(".lizmapPopupDiv").each(function(i,e){
+                        var popupDiv = $(e);
+                        if ( popupDiv.find(".lizmapPopupHeader").prop("tagName") == 'TR' ) {
+                            popupDiv.find(".lizmapPopupHeader").prepend("<th></th>");
+                            popupDiv.find(".lizmapPopupHeader").next().prepend("<td></td>");
+                        } else {
+                            popupDiv.find(".lizmapPopupHeader").next().prepend("<span></span>");
+                        }
+                        popupDiv.find(".lizmapPopupHeader").next().children().first().append(popupDiv.find("input"));
+                    });
+
+                    childPopup.find("h4").each(function(i,e){
+                        if(i != 0 )
+                            $(e).remove();
+                    });
+
+                    childPopup.find(".lizmapPopupHeader").each(function(i,e){
+                        if(i != 0 )
+                            $(e).remove();
+                    });
+
+                    childPopup.find(".lizmapPopupDiv").contents().unwrap();
+                    childPopup.find(".lizmap_merged").contents().unwrap();
+                    childPopup.find(".lizmapPopupDiv").remove();
+                    childPopup.find(".lizmap_merged").remove();
+
+                    childPopup.find(".lizmapPopupHidden").hide();
+
+                    var tChildPopup = $("<table class='lizmap_merged'></table>");
+                    childPopup.append(tChildPopup);
+                    childPopup.find('tr').appendTo(tChildPopup);
+
+                    childPopup.children('tbody').remove();
+                }
+
+                if ( aCallback )
+                    aCallback( childPopup );
+            }
+        });
+  }
+
   function addChildrenFeatureInfo( popup ) {
       $('div.lizmapPopupContent input.lizmap-popup-layer-feature-id').each(function(){
         var self = $(this);
@@ -3544,22 +3605,6 @@ var lizMap = function() {
             popupMaxFeatures = parseInt(layerConfig.popupMaxFeatures);
         popupMaxFeatures == 0 ? 10 : popupMaxFeatures;
         getLayerFeature(featureType, fid, function(feat) {
-            var wmsOptions = {
-                 'LAYERS': featureType
-                ,'QUERY_LAYERS': featureType
-                ,'STYLES': ''
-                ,'SERVICE': 'WMS'
-                ,'VERSION': '1.3.0'
-                ,'REQUEST': 'GetFeatureInfo'
-                ,'EXCEPTIONS': 'application/vnd.ogc.se_inimage'
-                ,'FEATURE_COUNT': popupMaxFeatures
-                ,'INFO_FORMAT': 'text/html'
-            };
-
-            // Query the server
-            var service = OpenLayers.Util.urlAppend(lizUrls.wms
-                ,OpenLayers.Util.getParameterString(lizUrls.params)
-            );
             for ( var i=0, len=relations.length; i<len; i++ ){
                 var r = relations[i];
                 var rLayerId = r.referencingLayer;
@@ -3567,9 +3612,18 @@ var lizMap = function() {
                 if ( rGetLayerConfig ) {
                     var rConfigLayer = rGetLayerConfig[1];
                     if ( rConfigLayer.popup == 'True' && self.parent().find('div.lizmapPopupChildren').length == 0) {
-                        wmsOptions['LAYERS'] = rConfigLayer.name;
-                        wmsOptions['QUERY_LAYERS'] = rConfigLayer.name;
-                        wmsOptions['FEATURE_COUNT'] = popupMaxFeatures;
+                        var wmsOptions = {
+                             'LAYERS': rConfigLayer.name
+                            ,'QUERY_LAYERS': rConfigLayer.name
+                            ,'STYLES': ''
+                            ,'SERVICE': 'WMS'
+                            ,'VERSION': '1.3.0'
+                            ,'REQUEST': 'GetFeatureInfo'
+                            ,'EXCEPTIONS': 'application/vnd.ogc.se_inimage'
+                            ,'FEATURE_COUNT': popupMaxFeatures
+                            ,'INFO_FORMAT': 'text/html'
+                        };
+
                         if ( 'popupMaxFeatures' in rConfigLayer && !isNaN(parseInt(rConfigLayer.popupMaxFeatures)) )
                             wmsOptions['FEATURE_COUNT'] = parseInt(rConfigLayer.popupMaxFeatures);
                         if ( wmsOptions['FEATURE_COUNT'] == 0 )
@@ -3578,53 +3632,16 @@ var lizMap = function() {
                             wmsOptions['FILTER'] = rConfigLayer.request_params.filter+' AND "'+r.referencingField+'" = \''+feat.properties[r.referencedField]+'\'';
                         else
                             wmsOptions['FILTER'] = rConfigLayer.name+':"'+r.referencingField+'" = \''+feat.properties[r.referencedField]+'\'';
-                        $.get(service, wmsOptions, function(data) {
-                            var hasPopupContent = (!(!data || data == null || data == ''))
-                            if ( hasPopupContent ) {
-                                //console.log(data);
-                                var popupReg = new RegExp('lizmapPopupTable', 'g');
-                                data = data.replace(popupReg, 'table table-condensed table-striped lizmapPopupTable');
+                        getChildrenFeatureInfo( rConfigLayer, wmsOptions, function(childPopup){
+                            self.parent().append(childPopup);
+                            if ( popup && typeof popup.verifySize === "function" )
+                                popup.verifySize();
 
-                                var childPopup = $('<div class="lizmapPopupChildren">'+data+'</div>');
-
-                                //Manage if the user choose to create a table for children
-                                if( rConfigLayer.popupSource == 'qgis' &&
-                                    childPopup.find('.lizmap_merged').length != 0 )
-                                {
-                                    childPopup.find("h4").each(function(i,e){
-                                        if(i != 0 )
-                                        $(e).remove();
-                                        });
-
-                                    childPopup.find(".lizmapPopupHeader").each(function(i,e){
-                                               if(i != 0 )
-                                        $(e).remove();
-                                         });
-
-                                    childPopup.find(".lizmapPopupDiv").contents().unwrap();
-                                    childPopup.find(".lizmap_merged").contents().unwrap();
-                                    childPopup.find(".lizmapPopupDiv").remove();
-                                    childPopup.find(".lizmap_merged").remove();
-
-                                    childPopup.find(".lizmapPopupHidden").hide();
-
-                                    var tChildPopup = $("<table class='lizmap_merged'></table>");
-                                    childPopup.append(tChildPopup);
-                                    childPopup.find('tr').appendTo(tChildPopup);
-
-                                    childPopup.children('tbody').remove();
-                                }
-
-                                self.parent().append(childPopup);
-                                if ( popup && typeof popup.verifySize === "function" )
-                                    popup.verifySize();
-
-                                // Trigger event
-                                lizMap.events.triggerEvent(
-                                    "lizmappopupchildrendisplayed",
-                                    {'html': childPopup.html()}
-                                );
-                            }
+                            // Trigger event
+                            lizMap.events.triggerEvent(
+                                "lizmappopupchildrendisplayed",
+                                {'html': childPopup.html()}
+                            );
                         });
                     }
                 }
@@ -4381,7 +4398,7 @@ var lizMap = function() {
     for (var lname in config.tooltipLayers) {
         tooltipLayersDic[lizMap.cleanName(lname)] = lname;
     }
-    
+
     var tooltipLayersSorted = [];
 
     featureTypes.each( function(){
@@ -4411,12 +4428,12 @@ var lizMap = function() {
             tooltipLayersSorted[config.tooltipLayers[lname].order] = '<option value="'+lname+'">'+lConfig.title+'</option>';
         }
     });
-    
+
     // Display layers order as declared in plugin
     for (var i = 0; i < tooltipLayersSorted.length; i++) {
       $('#tooltip-layer-list').append(tooltipLayersSorted[i]);
     }
-    
+
     if ( $('#tooltip-layer-list').find('option').length == 1 ) {
       $('#button-tooltip-layer').parent().remove();
       return false;
