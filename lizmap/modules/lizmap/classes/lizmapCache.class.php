@@ -55,62 +55,10 @@ class lizmapCache {
     * @param string $url Url of the remote data to fetch.
     * @param boolean $proxyMethod Method for the proxy : 'php' (default) or 'curl'.
     * @return array($data, $mime) Array containing the data and the mime type.
+     * @deprecated
     */
-    static public function getRemoteData($url, $proxyMethod='php', $debug=0){
-
-        // Initialize responses
-        $data = '';
-        $mime = '';
-        $http_code = null;
-
-        // Proxy method : use curl or file_get_contents
-        if($proxyMethod == 'curl' and extension_loaded("curl")){
-            # With curl
-            $ch = curl_init();
-            curl_setopt($ch, CURLOPT_HEADER, 0);
-            curl_setopt($ch, CURLOPT_URL, $url);
-            curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false );
-            curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-            curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
-            $data = curl_exec($ch);
-            $info = curl_getinfo($ch);
-            $mime = $info['content_type'];
-            $http_code = (int) $info['http_code'];
-            // Optionnal debug
-            if($debug or curl_errno($ch))
-            {
-                jLog::log('--> CURL: ' .json_encode($info));
-            }
-
-            curl_close($ch);
-        }
-        else{
-            # With file_get_contents
-            $data = file_get_contents($url);
-            $mime = 'image/png';
-            $matches = array();
-            $info = $url . ' --> PHP: ';
-            foreach ($http_response_header as $header){
-                if ( preg_match( '#^Content-Type:\s+([\w/\.+]+)(;\s+charset=(\S+))?#i', $header, $matches ) ){
-                    $mime = $matches[1];
-                    if ( count( $matches ) > 3 )
-                $mime .= '; charset='.$matches[3];
-                } else if ('HTTP/' === substr($header, 0, 5)) {
-                    list($version, $code, $phrase) = explode(' ', $header, 3) + array('', FALSE, '');
-            $http_code = (int) $code;
-                }
-                // optional debug
-                if($debug){
-                    $info.= ' '.$header;
-                }
-            }
-            if($debug)
-            {
-                jLog::log(json_encode($info));
-            }
-        }
-
-        return array($data, $mime, $http_code);
+    static public function getRemoteData($url, $proxyMethod=null, $debug=null){
+        return lizmapProxy::getRemoteData($url);
     }
 
 
@@ -247,10 +195,7 @@ class lizmapCache {
         $builtParams = str_replace($a, $b, $builtParams);
 
         // Get data from the map server
-        $proxyMethod = $ser->proxyMethod;
-        $getRemoteData = lizmapCache::getRemoteData($url . $builtParams, $proxyMethod, $debug);
-        $data = $getRemoteData[0];
-        $mime = $getRemoteData[1];
+        list($data, $mime, $code) = lizmapProxy::getRemoteData($url . $builtParams);
 
         if ( $useCache && !preg_match('/^image/',$mime) )
             $useCache = False;
