@@ -139,11 +139,6 @@ class lizmapProxy {
             'Connection'=>'close',
         ), $options['headers']);
 
-        $headers = array();
-        foreach($options['headers'] as $hname => $hvalue) {
-            $headers[] = $hname.': '.$hvalue;
-        }
-
         // Initialize responses
         $http_code = null;
 
@@ -155,8 +150,27 @@ class lizmapProxy {
             curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false );
             curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
             curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
-            curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+            curl_setopt($ch, CURLOPT_HTTPHEADER, self::encodeHttpHeaders($options['headers']));
             curl_setopt($ch, CURLOPT_URL, $url);
+
+            if ($services->requestProxyHost != '') {
+                $proxy = $services->requestProxyHost;
+                if ($services->requestProxyPort) {
+                    $proxy .= ':'.$services->requestProxyPort;
+                }
+                curl_setopt($ch, CURLOPT_PROXY, $proxy);
+                if ($services->requestProxyType) {
+                    curl_setopt($ch, CURLOPT_PROXYTYPE, $services->requestProxyType);
+                }
+                if ($services->requestProxyNotForDomain) {
+                    curl_setopt($ch, CURLOPT_NOPROXY, $services->requestProxyNotForDomain);
+                }
+                if ($services->requestProxyUser) {
+                    curl_setopt($ch, CURLOPT_PROXYAUTH, CURLAUTH_BASIC);
+                    curl_setopt($ch, CURLOPT_PROXYUSERPWD, $services->requestProxyUser.':'.$services->requestProxyPassword);
+                }
+            }
+
             if ($options['referer']) {
                 curl_setopt($ch, CURLOPT_REFERER, $options['referer']);
             }
@@ -176,21 +190,51 @@ class lizmapProxy {
 
             curl_close($ch);
         }
-        else{
+        else {
             // With file_get_contents
-            if ( $options['method'] === 'get' ) {
-                $data = file_get_contents($url);
-            } else {
-                $opts = array(
-                  'http'=>array(
-                    'method'=>"POST",
-                    'header'=>implode("\r\n", $headers)."\r\n",
-                    'content'=>$options['body']
-                  )
-                );
-                $context = stream_context_create($opts);
-                $data = file_get_contents($url, false, $context);
+            $urlInfo = parse_url($url);
+            $scheme = isset($urlInfo['scheme']) ?$urlInfo['scheme']:'http';
+
+            $opts = array(
+                'method'=>strtoupper($options['method'])
+            );
+
+            if ($services->requestProxyHost != '') {
+                $okproxy = true;
+                if ($services->requestProxyNotForDomain) {
+                    $noProxy = preg_split('/\s*,\s*/', $services->requestProxyNotForDomain);
+                    $host = isset($urlInfo['host']) ?$urlInfo['host']:'localhost';
+                    if (in_array($host, $noProxy)) {
+                        $okproxy = false;
+                    }
+                }
+                if ($okproxy) {
+                    $proxy = 'tcp://'.$services->requestProxyHost;
+                    if ($services->requestProxyPort) {
+                        $proxy .= ':'.$services->requestProxyPort;
+                    }
+                    $opts['proxy'] = $proxy;
+                    $opts['request_fulluri'] = true;
+
+                    if ($services->requestProxyUser) {
+                        $options['headers']['Proxy-Authorization'] =
+                            'Basic '.base64_encode($services->requestProxyUser.':'.$services->requestProxyPassword);
+                    }
+                }
             }
+            if ($options['referer']) {
+                $options['headers']['Referer'] = $options['referer'];
+            }
+            if ( $options['method'] != 'get' && $options['body'] != '') {
+                $opts['content'] = $options['body'];
+            }
+            else {
+                unset($options['headers']['Connection']);
+            }
+            $opts['header'] = implode("\r\n", self::encodeHttpHeaders($options['headers']))."\r\n";
+
+            $context = stream_context_create(array($scheme => $opts));
+            $data = file_get_contents($url, false, $context);
             $mime = 'image/png';
             $matches = array();
             $info = $url . ' --> PHP: ';
@@ -205,7 +249,7 @@ class lizmapProxy {
                 }
                 // optional debug
                 if($options["debug"] and $http_code == 500){
-                    $info.= ' '.$header;
+                    $info .= ' '.$header;
                 }
             }
             if($options["debug"] and $http_code == 500)
@@ -217,7 +261,13 @@ class lizmapProxy {
         return array($data, $mime, $http_code);
     }
 
-
+    static protected function encodeHttpHeaders($optionHeaders) {
+        $headers = array();
+        foreach($optionHeaders as $hname => $hvalue) {
+            $headers[] = $hname.': '.$hvalue;
+        }
+        return $headers;
+    }
     /**
     * Get data from map service or from the cache.
     * @param lizmapProject $project The project.
