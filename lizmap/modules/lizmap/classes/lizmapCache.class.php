@@ -58,7 +58,7 @@ class lizmapCache {
      * @deprecated
     */
     static public function getRemoteData($url, $proxyMethod=null, $debug=null){
-        return lizmapProxy::getRemoteData($url);
+        return lizmapProxy::getRemoteData($url, $proxyMethod, $debug);
     }
 
 

@@ -596,14 +596,7 @@ class serviceCtrl extends jController {
       $querystring = $url . implode('&', $keyValueParameters);
 
       // Query external WMS layers
-      $ch = curl_init();
-      curl_setopt($ch, CURLOPT_HEADER, 0);
-      curl_setopt($ch, CURLOPT_URL, $querystring);
-      curl_setopt( $ch, CURLOPT_SSL_VERIFYPEER, false );
-      curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-      curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
-      $data = curl_exec($ch);
-      curl_close($ch);
+      list($data, $mime, $code) = lizmapProxy::getRemoteData($querystring);
 
       $xml = simplexml_load_string($data);
 
@@ -963,7 +956,7 @@ class serviceCtrl extends jController {
     $querystring = $url . implode('&', $data);
 
     // Get remote data
-    list($data, $mime, $code) = lizmapProxy::getRemoteData($querystring, null, null, 'post');
+    list($data, $mime, $code) = lizmapProxy::getRemoteData($querystring, array('method'=>'post'));
 
     $rep = $this->getResponse('binary');
     $rep->mimeType = $mime;
@@ -1015,7 +1008,7 @@ class serviceCtrl extends jController {
     $querystring = $url . implode('&', $data);
 
     // Get remote data
-    list($data, $mime, $code) = lizmapProxy::getRemoteData($querystring, null, null, 'post');
+    list($data, $mime, $code) = lizmapProxy::getRemoteData($querystring, array('method'=>'post'));
 
     $rep = $this->getResponse('binary');
     $rep->mimeType = $mime;
@@ -1110,19 +1103,11 @@ class serviceCtrl extends jController {
     $querystring = $url . implode('&', $data);
 
     // Get data form server
-    $ch = curl_init();
-    curl_setopt($ch, CURLOPT_HEADER, 0);
-    curl_setopt($ch, CURLOPT_URL, $querystring);
-    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false );
-    curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-    curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
-    curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: text/xml'));
-    curl_setopt($ch, CURLOPT_POST, 1);
-    curl_setopt($ch, CURLOPT_POSTFIELDS, $xml_post);
-    $data = curl_exec($ch);
-    $info = curl_getinfo($ch);
-    $mime = $info['content_type'];
-    curl_close($ch);
+    list($data, $mime, $code) = lizmapProxy::getRemoteData($querystring , array(
+        "method" => "post",
+        "headers" => array('Content-Type' => 'text/xml'),
+        "body" => $xml_post
+    ));
 
     $rep = $this->getResponse('binary');
     $rep->mimeType = $mime;
