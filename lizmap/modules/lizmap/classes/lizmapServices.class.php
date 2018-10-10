@@ -280,7 +280,16 @@ class lizmapServices{
       $ini = new jIniFileModifier(jApp::configPath('lizmapConfig.ini.php'));
       $liveIni = new jIniFileModifier(jApp::configPath('liveconfig.ini.php'));
 
+      $dontSaveSensitiveProps = $this->hideSensitiveProperties();
+      $hiddenProps = array();
+      if ($dontSaveSensitiveProps) {
+          $hiddenProps = array_combine($this->sensitiveProperties, array_fill(0, count($this->sensitiveProperties), true));
+      }
+
       foreach($this->properties as $prop) {
+        if ($dontSaveSensitiveProps && isset($hiddenProps[$prop])) {
+          continue;
+        }
         if (isset($this->globalConfigProperties[$prop])) {
           list($key, $section) = $this->globalConfigProperties[$prop];
             $liveIni->setValue($key, $this->$prop, $section);
