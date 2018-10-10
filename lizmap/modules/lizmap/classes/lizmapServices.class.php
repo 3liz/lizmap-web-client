@@ -38,6 +38,12 @@ class lizmapServices{
       'rootRepositories',
       'relativeWMSPath',
       'proxyMethod',
+      'requestProxyHost',
+      'requestProxyPort',
+      'requestProxyUser',
+      'requestProxyPassword',
+      'requestProxyType',
+      'requestProxyNotForDomain',
       'debugMode',
       'cacheRootDirectory',
       'cacheRedisHost',
@@ -63,6 +69,12 @@ class lizmapServices{
       'rootRepositories',
       'relativeWMSPath',
       'proxyMethod',
+      'requestProxyHost',
+      'requestProxyPort',
+      'requestProxyUser',
+      'requestProxyPassword',
+      'requestProxyType',
+      'requestProxyNotForDomain',
       'debugMode',
       'cacheRootDirectory',
       'cacheRedisHost',
@@ -114,8 +126,18 @@ class lizmapServices{
     public $rootRepositories = '';
     // Does the server use relative Path from root folder?
     public $relativeWMSPath = '0';
-    // proxy method : use curl or file_get_contents
+    // proxy method : use curl ('curl') or file_get_contents ('php')
     public $proxyMethod = '';
+
+    public $requestProxyHost = '';
+    public $requestProxyPort = '';
+    public $requestProxyUser = '';
+    public $requestProxyPassword = '';
+    // proxy type: 'http' or 'socks5'. Only used with the curl proxyMethod
+    public $requestProxyType = 'http';
+    // list of domains separated by a comma, to which the proxy is not used
+    public $requestProxyNotForDomain = 'localhost';
+
     // debug mode : none or log
     public $debugMode = '';
     // Cache root directory
