@@ -4949,14 +4949,15 @@ OpenLayers.Control.HighlightFeature = OpenLayers.Class(OpenLayers.Control, {
             selectionLayer = aName;
         var featureid = getVectorLayerSelectionFeatureIdsString( selectionLayer );
 
-        getAttributeFeatureData( aName, null, featureid, null, function(fName, fFilter, fFeatures, fAliases ){
+        getFeatureData( aName, null, featureid, null, false, null, null,
+            function(fName, fFilter, fFeatures, fAliases ){
               // get layer name for config
               if ( !(fName in config.layers) ) {
                   var qgisName = lizMap.getNameByCleanName(aName);
                   if ( qgisName && (qgisName in config.layers)) {
                       fName = qgisName;
                   } else {
-                      console.log('getAttributeFeatureData: "'+fName+'" and "'+qgisName+'" not found in config');
+                      console.log('getFeatureData: "'+fName+'" and "'+qgisName+'" not found in config');
                       return false;
                   }
               }
@@ -5551,6 +5552,10 @@ OpenLayers.Control.HighlightFeature = OpenLayers.Class(OpenLayers.Control, {
       // Build WFS request parameters
       if ( !(aName in config.layers) ) {
           var qgisName = lizMap.getNameByCleanName(aName);
+          if ( !qgisName || !(qgisName in config.layers))
+            qgisName = lizMap.getNameByShortName(aName);
+          if ( !qgisName || !(qgisName in config.layers))
+            qgisName = lizMap.getNameByTypeName(aName);
           if ( qgisName && (qgisName in config.layers)) {
               aName = qgisName;
           } else {
@@ -5585,7 +5590,8 @@ OpenLayers.Control.HighlightFeature = OpenLayers.Class(OpenLayers.Control, {
       if( aFilter ){
           // Remove layerName followed by :
           aFilter = aFilter.replace( aName + ':', '');
-          filterParam.push( aFilter );
+          if ( aFilter != '' )
+            filterParam.push( aFilter );
       }else{
           // If not filter passed, check if a filter does not exists for the layer
           if( 'request_params' in config.layers[aName] && 'filter' in config.layers[aName]['request_params'] ){
@@ -5628,35 +5634,33 @@ OpenLayers.Control.HighlightFeature = OpenLayers.Class(OpenLayers.Control, {
       return getFeatureUrlData;
   }
 
-  function getAttributeFeatureData(aName, aFilter, aFeatureID, aGeometryName, aCallBack){
-
+  function getFeatureData(aName, aFilter, aFeatureID, aGeometryName, restrictToMapExtent, startIndex, maxFeatures, aCallBack) {
+      // Set function parameters if not given
       aFilter = typeof aFilter !== 'undefined' ?  aFilter : null;
-      aFeatureID = typeof aFeatureID !== 'undefined' ?  aFeatureID : null;
-      aGeometryName  = typeof aGeometryName !== 'undefined' ?  aGeometryName : 'extent';
-      aCallBack = typeof aCallBack !== 'undefined' ?  aCallBack : null;
+      aFeatureId = typeof aFeatureId !== 'undefined' ?  aFeatureId : null;
+      geometryName = typeof geometryName !== 'undefined' ?  geometryName : null;
+      restrictToMapExtent = typeof restrictToMapExtent !== 'undefined' ?  restrictToMapExtent : false;
+      startIndex = typeof startIndex !== 'undefined' ?  startIndex : null;
+      maxFeatures = typeof maxFeatures !== 'undefined' ?  maxFeatures : null;
 
       // get layer configs
       if ( !(aName in config.layers) ) {
           var qgisName = lizMap.getNameByCleanName(aName);
+          if ( !qgisName || !(qgisName in config.layers))
+            qgisName = lizMap.getNameByShortName(aName);
+          if ( !qgisName || !(qgisName in config.layers))
+            qgisName = lizMap.getNameByTypeName(aName);
           if ( qgisName && (qgisName in config.layers)) {
               aName = qgisName;
           } else {
-              console.log('getAttributeFeatureData: "'+aName+'" and "'+qgisName+'" not found in config');
+              console.log('getFeatureData: "'+aName+'" and "'+qgisName+'" not found in config');
               return false;
           }
       }
       var aConfig = config.layers[aName];
-      var atConfig = null;
-      if( aName in config.attributeLayers )
-          atConfig = config.attributeLayers[aName];
-
-      var limitDataToBbox = false;
-      if ( 'limitDataToBbox' in config.options && config.options.limitDataToBbox == 'True'){
-          limitDataToBbox = true;
-      }
 
       $('body').css('cursor', 'wait');
-      var getFeatureUrlData = lizMap.getVectorLayerWfsUrl( aName, aFilter, aFeatureID, aGeometryName, limitDataToBbox );
+      var getFeatureUrlData = lizMap.getVectorLayerWfsUrl( aName, aFilter, aFeatureID, aGeometryName, restrictToMapExtent, startIndex, maxFeatures );
       $.get( getFeatureUrlData['url'], getFeatureUrlData['options'], function(data) {
           if( !('featureCrs' in aConfig) )
               aConfig['featureCrs'] = null;
@@ -5707,8 +5711,37 @@ OpenLayers.Control.HighlightFeature = OpenLayers.Class(OpenLayers.Control, {
 
       },'json');
 
-      return false;
+      return true;
+  }
 
+  function getAttributeFeatureData(aName, aFilter, aFeatureID, aGeometryName, aCallBack){
+
+      aFilter = typeof aFilter !== 'undefined' ?  aFilter : null;
+      aFeatureID = typeof aFeatureID !== 'undefined' ?  aFeatureID : null;
+      aGeometryName  = typeof aGeometryName !== 'undefined' ?  aGeometryName : 'extent';
+      aCallBack = typeof aCallBack !== 'undefined' ?  aCallBack : null;
+
+      // get layer configs
+      if ( !(aName in config.layers) ) {
+          var qgisName = lizMap.getNameByCleanName(aName);
+          if ( qgisName && (qgisName in config.layers)) {
+              aName = qgisName;
+          } else {
+              console.log('getAttributeFeatureData: "'+aName+'" and "'+qgisName+'" not found in config');
+              return false;
+          }
+      }
+      var aConfig = config.layers[aName];
+      var atConfig = null;
+      if( aName in config.attributeLayers )
+          atConfig = config.attributeLayers[aName];
+
+      var limitDataToBbox = false;
+      if ( 'limitDataToBbox' in config.options && config.options.limitDataToBbox == 'True'){
+          limitDataToBbox = true;
+      }
+      getFeatureData(aName, aFilter, aFeatureID, aGeometryName, limitDataToBbox, null, null, aCallBack);
+      return true;
   }
 
   function zoomToOlFeature( feature, proj, zoomAction ){
@@ -5758,7 +5791,8 @@ OpenLayers.Control.HighlightFeature = OpenLayers.Class(OpenLayers.Control, {
       }
       // Or get the feature via WFS in needed
       else{
-          getAttributeFeatureData(featureType, null, featureId, 'extent', function( aName, aFilter, cFeatures, cAliases ){
+          getFeatureData(featureType, null, featureId, 'extent', false, null, null,
+            function( aName, aFilter, cFeatures, cAliases ){
               if( cFeatures.length == 1 ){
                   var feat = cFeatures[0];
                   if( !layerConfig['features'] )
@@ -6091,6 +6125,13 @@ OpenLayers.Control.HighlightFeature = OpenLayers.Class(OpenLayers.Control, {
      */
     getLayerFeature: function( featureType, fid, aCallback ) {
       getLayerFeature( featureType, fid, aCallback );
+    },
+
+    /**
+     * Method: getFeatureData
+     */
+    getFeatureData(aName, aFilter, aFeatureID, aGeometryName, restrictToMapExtent, startIndex, maxFeatures, aCallBack) {
+      getFeatureData(aName, aFilter, aFeatureID, aGeometryName, restrictToMapExtent, startIndex, maxFeatures, aCallBack);
     },
 
     /**
