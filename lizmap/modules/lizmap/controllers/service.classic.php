@@ -121,14 +121,14 @@ class serviceCtrl extends jController {
 
   /**
   * Send an OGC service Exception
-  * @param $SERVICE the OGC service
-  * @return XML OGC Service Exception.
+  * @return jResponseXml XML OGC Service Exception.
   */
   protected function serviceException(){
     $messages = jMessage::getAll();
     if (!$messages) {
         $messages = array();
     }
+    /** @var jResponseXml $rep */
     $rep = $this->getResponse('xml');
     $rep->contentTpl = 'lizmap~wms_exception';
     $rep->content->assign('messages', $messages);
@@ -405,7 +405,7 @@ class serviceCtrl extends jController {
   * GetContext
   * @param string $repository Lizmap Repository
   * @param string $project Name of the project : mandatory.
-  * @return text/xml Web Map Context.
+  * @return jResponse text/xml Web Map Context.
   */
   function GetContext(){
 
@@ -419,18 +419,15 @@ class serviceCtrl extends jController {
     $querystring = $url . $bparams;
 
     // Get remote data
-    $getRemoteData = lizmapProxy::getRemoteData(
-      $querystring,
-      $this->services->proxyMethod,
-      $this->services->debugMode
-    );
-    $data = $getRemoteData[0];
-    $mime = $getRemoteData[1];
+    list($data, $mime, $code) = lizmapProxy::getRemoteData($querystring);
 
     // Replace qgis server url in the XML (hide real location)
     $sUrl = jUrl::getFull(
       "lizmap~service:index",
-      array("repository"=>$this->repository->getKey(), "project"=>$this->project->getKey()),
+      array(
+          "repository"=>$this->repository->getKey(),
+          "project"=>$this->project->getKey()
+      ),
       0,
       $_SERVER['SERVER_NAME']
     );
@@ -648,13 +645,7 @@ class serviceCtrl extends jController {
        $querystring = $url . $bparams;
 
        // Get remote data
-       $getRemoteData = lizmapProxy::getRemoteData(
-         $querystring,
-         $this->services->proxyMethod,
-         $this->services->debugMode
-       );
-       $data = $getRemoteData[0];
-       $mime = $getRemoteData[1];
+       list($data, $mime, $code) = lizmapProxy::getRemoteData($querystring);
 
        // Get HTML content if needed
        if($toHtml and preg_match('#/xml#', $mime)){
@@ -972,15 +963,7 @@ class serviceCtrl extends jController {
     $querystring = $url . implode('&', $data);
 
     // Get remote data
-    $getRemoteData = lizmapProxy::getRemoteData(
-      $querystring,
-      $this->services->proxyMethod,
-      $this->services->debugMode,
-      'post'
-    );
-    $data = $getRemoteData[0];
-    $mime = $getRemoteData[1];
-    $code = $getRemoteData[2];
+    list($data, $mime, $code) = lizmapProxy::getRemoteData($querystring, null, null, 'post');
 
     $rep = $this->getResponse('binary');
     $rep->mimeType = $mime;
@@ -1032,15 +1015,7 @@ class serviceCtrl extends jController {
     $querystring = $url . implode('&', $data);
 
     // Get remote data
-    $getRemoteData = lizmapProxy::getRemoteData(
-      $querystring,
-      $this->services->proxyMethod,
-      $this->services->debugMode,
-      'post'
-    );
-    $data = $getRemoteData[0];
-    $mime = $getRemoteData[1];
-    $code = $getRemoteData[2];
+    list($data, $mime, $code) = lizmapProxy::getRemoteData($querystring, null, null, 'post');
 
     $rep = $this->getResponse('binary');
     $rep->mimeType = $mime;
@@ -1081,13 +1056,7 @@ class serviceCtrl extends jController {
     $querystring = $url . $bparams;
 
     // Get remote data
-    $getRemoteData = lizmapProxy::getRemoteData(
-      $querystring,
-      $this->services->proxyMethod,
-      $this->services->debugMode
-    );
-    $data = $getRemoteData[0];
-    $mime = $getRemoteData[1];
+    list($data, $mime, $code) = lizmapProxy::getRemoteData($querystring);
 
     // Return response
     $rep = $this->getResponse('binary');
@@ -1233,13 +1202,7 @@ class serviceCtrl extends jController {
     $querystring = $url . $bparams;
 
     // Get remote data
-    $getRemoteData = lizmapProxy::getRemoteData(
-      $querystring,
-      $this->services->proxyMethod,
-      $this->services->debugMode
-    );
-    $data = $getRemoteData[0];
-    $mime = $getRemoteData[1];
+    list($data, $mime, $code) = lizmapProxy::getRemoteData($querystring);
 
     if( $returnJson ) {
         $jsonData = array();

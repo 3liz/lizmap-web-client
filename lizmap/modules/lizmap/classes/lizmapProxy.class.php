@@ -71,13 +71,23 @@ class lizmapProxy {
 
 
     /**
-    * Get remote data from URL, with curl or internal php functions.
-    * @param string $url Url of the remote data to fetch.
-    * @param text $proxyMethod Method for the proxy : 'php' (default) or 'curl'.
-    * @param integer $debug 0 or 1 to get debug log.
-    * @return array($data, $mime, $http_code) Array containing the data and the mime type.
-    */
-    static public function getRemoteData($url, $proxyMethod='php', $debug=0, $method='get'){
+     * Get remote data from URL, with curl or internal php functions.
+     * @param string $url Url of the remote data to fetch.
+     * @param string|null $proxyMethod Method for the proxy : 'php' (default) or 'curl'.
+     *                  if null, it uses the method indicated into lizmapService
+     * @param integer|null $debug 0 or 1 to get debug log.
+     *                  if null, it uses the method indicated into lizmapService
+     * @return array($data, $mime, $http_code) Array containing the data and the mime type.
+     */
+    static public function getRemoteData($url, $proxyMethod=null, $debug=null, $method='get'){
+
+        if ($proxyMethod === null) {
+            $proxyMethod = lizmap::getServices()->proxyMethod;
+        }
+
+        if ($debug === null) {
+            $debug = lizmap::getServices()->debugMode;
+        }
 
         // Initialize responses
         $data = '';
@@ -344,14 +354,11 @@ class lizmapProxy {
         $builtParams = str_replace($a, $b, $builtParams);
 
         // Get data from the map server
-        $proxyMethod = $ser->proxyMethod;
-        $getRemoteData = lizmapProxy::getRemoteData($url . $builtParams, $proxyMethod, $debug, 'post');
-        $data = $getRemoteData[0];
-        $mime = $getRemoteData[1];
-        $code = $getRemoteData[2];
+        list($data, $mime, $code) = lizmapProxy::getRemoteData($url . $builtParams, null, null, 'post');
 
-        if($debug)
+        if ($debug) {
             lizmap::logMetric('LIZMAP_PROXY_REQUEST_QGIS_MAP');
+        }
 
         if ( $useCache && !preg_match('/^image/',$mime) )
             $useCache = False;
