@@ -63,13 +63,11 @@ class ignCtrl extends jController {
     );
 
     $url .= http_build_query($params);
-    $curl_handle = curl_init();
-    curl_setopt($curl_handle, CURLOPT_URL, $url);
-    curl_setopt($curl_handle, CURLOPT_RETURNTRANSFER, TRUE);
-    curl_setopt($curl_handle, CURLOPT_HTTPHEADER, array('Expect:'));
-    curl_setopt($curl_handle, CURLOPT_REFERER, jUrl::getFull('lizmap~ign:address'));
-    $content = curl_exec($curl_handle);
-    curl_close($curl_handle);
+    list($content, $mime, $code) = lizmapProxy::getRemoteData($url, array(
+        "method" => 'get',
+        "referer" => jUrl::getFull('lizmap~ign:address'),
+        "headers" => array('Expect'=>'')
+    ));
 
     $rep->content = $content;
 
