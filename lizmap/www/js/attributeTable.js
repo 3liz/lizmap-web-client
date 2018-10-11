@@ -889,6 +889,7 @@ var lizAttributeTable = function() {
                             var cDiv = '<div class="tab-pane attribute-layer-child-content '+childActive+'" id="'+ tabId +'" >';
                             var tId = 'attribute-layer-table-' + lizMap.cleanName(parentLayerName) + '-' + lizMap.cleanName(childLayerName);
                             var tClass = 'attribute-table-table table table-hover table-condensed table-striped child-of-' + lizMap.cleanName(parentLayerName);
+                            cDiv+= '    <input type="hidden" class="attribute-table-hidden-parent-layer" value="'+lizMap.cleanName(parentLayerName)+'">';
                             cDiv+= '    <input type="hidden" class="attribute-table-hidden-layer" value="'+lizMap.cleanName(childLayerName)+'">';
                             cDiv+= '    <table id="' + tId  + '" class="' + tClass + '" width="100%"></table>';
                             cDiv+= '</div>';
@@ -1719,10 +1720,13 @@ var lizAttributeTable = function() {
                     buildLayerAttributeDatatable( chName, childTable, chFeatures, chAliases, function() {
 
                         // Check edition capabilities
+                        var canCreate = false;
                         var canEdit = false;
                         var canDelete = false;
                         if( 'editionLayers' in config && chName in config.editionLayers ) {
                             var al = config.editionLayers[chName];
+                            if( al.capabilities.createFeature == "True" )
+                                canCreate = true;
                             if( al.capabilities.modifyAttribute == "True" || al.capabilities.modifyGeometry == "True" )
                                 canEdit = true;
                             if( al.capabilities.deleteFeature == "True" )
@@ -1768,7 +1772,31 @@ var lizAttributeTable = function() {
                                      dataSrc == 'zoom' ||
                                      dataSrc == 'center' )
                                      dt.column(c).visible(false);
-
+                                if ( dataSrc == 'edit' && canCreate ) {
+                                    var createHeader = $(dt.column(c).header());
+                                    if ( createHeader.find('button.attribute-layer-feature-create').length == 0 ) {
+                                        createHeader
+                                            .append('<button class="btn btn-mini attribute-layer-feature-create" value="-1" title="'+lizDict['attributeLayers.toolbar.btn.data.createFeature.title']+'"><i class="icon-plus"></i></button>')
+                                            .css('padding', '10px 5px');
+                                        createHeader
+                                            .children('button.attribute-layer-feature-create')
+                                            .click(function(){
+                                var tabPane = $(this).parents('div.tab-pane.attribute-layer-child-content');
+                                var parentFeatId = tabPane.find('input.attribute-table-hidden-parent-feature-id').val();
+                                var parentLayerName = tabPane.find('input.attribute-table-hidden-parent-layer').val();
+                                var layerName = tabPane.find('input.attribute-table-hidden-layer').val();
+                                lizMap.getLayerFeature(parentLayerName, parentFeatId, function(feat) {
+                                    var parentFeat = feat;
+                                    var parentLayerId = config.layers[lizMap.getLayerNameByCleanName(parentLayerName)]['id'];
+                                    var lid = config.layers[lizMap.getLayerNameByCleanName(layerName)]['id'];
+                                    lizMap.launchEdition( lid, null, {layerId:parentLayerId,feature:parentFeat}, function(editionLayerId, editionFeatureId){
+                                        $('#bottom-dock').css('left',  lizMap.getDockRightPosition() );
+                                    });
+                                });
+                                return false;
+                                            });
+                                    }
+                                }
                             }
 /*
                             // Bind event when users click anywhere on the table line to highlight
@@ -3006,6 +3034,9 @@ var lizAttributeTable = function() {
                                 html+= '</div>'; // tabbable
                             }
                             $('#edition-children-container').show().append(html);
+                            $('#edition-children-container div.tabbable div.tab-pane input.attribute-table-hidden-parent-layer').after(
+                                '<input class="attribute-table-hidden-parent-feature-id" value="'+fid+'" type="hidden">'
+                            );
                             $('#edition-children-container div.tabbable ul.nav-tabs li').each(function() {
                                 $(this).attr('id', $(this).attr('id').replace(/nav-tab-attribute-child-tab-/g, 'nav-tab-edition-child-tab-'));
                             });
