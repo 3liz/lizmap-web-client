@@ -2800,6 +2800,7 @@ var lizAttributeTable = function() {
 
                         // select
                         $('div.lizmapPopupContent button.popup-layer-feature-select')
+                        .unbind('click')
                         .click(function(){
                             var fid = $(this).val().split('.').pop();
                             var featureType = $(this).val().replace( '.' + fid, '' );
@@ -2827,6 +2828,7 @@ var lizAttributeTable = function() {
 
                         // Zoom
                         $('div.lizmapPopupContent button.popup-layer-feature-zoom')
+                        .unbind('click')
                         .click(function(){
                             var fid = $(this).val().split('.').pop();
                             var featureType = $(this).val().replace( '.' + fid, '' );
@@ -2848,6 +2850,7 @@ var lizAttributeTable = function() {
                         // filter
                         if( !startupFilter ){
                             $('div.lizmapPopupContent button.popup-layer-feature-filter')
+                            .unbind('click')
                             .click(function(){
                                 var fid = $(this).val().split('.').pop();
                                 var featureType = $(this).val().replace( '.' + fid, '' );
@@ -3126,11 +3129,11 @@ var lizAttributeTable = function() {
             var lConfig = config.layers[lname];
             selectionLayersSorted[config.attributeLayers[lname].order] = '<option value="'+lname+'">'+lConfig.title+'</option>';        }
     });
-      
+
     for (var i = 0; i < selectionLayersSorted.length; i++) {
         options += selectionLayersSorted[i];
     }
-      
+
     if ( options == '' ) {
       $('#button-selectiontool').parent().remove();
       return false;
