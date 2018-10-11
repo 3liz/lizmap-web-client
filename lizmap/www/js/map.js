@@ -3419,6 +3419,7 @@ var lizMap = function() {
 
                   // Zoom
                   $('div.lizmapPopupContent button.popup-layer-feature-bbox-zoom')
+                  .unbind('click')
                   .click(function(){
                       var bbox = OpenLayers.Bounds.fromString($(this).val());
                       map.zoomToExtent(bbox);
