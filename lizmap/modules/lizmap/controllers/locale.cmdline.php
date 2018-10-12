@@ -2,14 +2,15 @@
 /**
 * @package   lizmap
 * @subpackage lizmap
-* @author    your name
-* @copyright 2011 3liz
+* @copyright 2011-2018 3liz
 * @link      http://3liz.com
-* @license    All rights reserved
+* @license   MPL-2.0
 */
-//require (JELIX_LIB_CORE_PATH.'selector/jSelectorModule.class.php');
-class mySelectorModule extends jSelectorModule {
-}
+
+use \Gettext\Translations;
+use \Jelix\PropertiesFile\Parser;
+use \Jelix\PropertiesFile\Writer;
+use \Jelix\PropertiesFile\Properties;
 
 class localeCtrl extends jControllerCmdLine {
 
@@ -37,10 +38,10 @@ class localeCtrl extends jControllerCmdLine {
             'locale'=>True, // locale
             'output'=>True  // output po file full path
         ),
-        'localize' => array(
-            'module'=>True, // module name
+        'importpo' => array(
             'input'=>True,  // po file full path
-            'output'=>True  // output directory full path
+            'module'=>True, // module name
+            'locale'=>True, // locale
         )
     );
 
@@ -69,96 +70,136 @@ class localeCtrl extends jControllerCmdLine {
         php lizmap/scripts/script.php lizmap~locale:po view fr_FR /tmp/fr_FR/
         ',
 
-        'localize' => 'Generate a Jelix locale file for a module and a locale.
+        'importpo' => 'Generate a Jelix locale file for a module and a locale.
 
         Use :
-        php lizmap/scripts/script.php lizmap~locale:localize module input_path output_path
+        php lizmap/scripts/script.php lizmap~locale:importpo input_path module locale 
 
         Example :
-        php lizmap/scripts/script.php lizmap~locale:localize view /tmp/fr_FR/view.po /tmp/lizmap/view/locales/fr_FR/
+        php lizmap/scripts/script.php lizmap~locale:importpo /tmp/fr_FR/view.po view fr_FR 
         '
-
     );
+
+    /**
+     * construct the list of all properties files of the module
+     * @param string $module
+     * @param string $moduleLocalePath
+     * @return string[]
+     */
+    protected function getModuleLocaleFiles($module, $moduleLocalePath) {
+        $files = Array();
+        if ( $dh = opendir( $moduleLocalePath ) ) {
+            while( ($file = readdir($dh)) !== false ) {
+                if (substr($file, -17) == '.UTF-8.properties' &&
+                    !($module == 'jelix' && $file == 'format.UTF-8.properties'))
+                {
+                    $files[] = $file;
+                }
+            }
+            closedir($dh);
+        }
+        return $files;
+    }
+
+    protected function getModulePath($lang = 'en_US') {
+        if (!file_exists(jApp::appPath('vendor/autoload.php'))) {
+            throw new Exception("Error: locales commands needs some package. Install packages with Composer: run 'composer install' into the lizmap directory");
+        }
+        require_once(jApp::appPath('vendor/autoload.php'));
+
+        $module = $this->param('module');
+
+        if (!isset(jApp::config()->_modulesPathList[$module])) {
+            if ($module == 'jelix') {
+                throw new Exception('jelix module is not enabled !!');
+            }
+            throw new jExceptionSelector('jelix~errors.selector.module.unknown', $module);
+        }
+
+        $modulePath = jApp::config()->_modulesPathList[$module];
+        $originalModulePath = $modulePath.'locales/'.$lang.'/';
+        if (strpos($modulePath, LIB_PATH) === 0) {
+            // this is a module in lib/ so not developed for Lizmap: we
+            // don't want to store languages files it into lib/
+            if (file_exists(jApp::varPath('locales'))) {
+                $localesPath = jApp::varPath('locales/'.$lang.'/'.$module.'/locales/');
+            }
+            else {
+                $localesPath = jApp::varPath('overloads/'.$module.'/locales/'.$lang.'/');
+            }
+        }
+        else {
+            $localesPath = $originalModulePath;
+        }
+
+        return array($module, $modulePath, $localesPath, $originalModulePath, $modulePath.'locales/en_US/');
+    }
+
+    protected function getOutputFile($module, $extension) {
+        $output = $this->param('output');
+        if ( is_dir( $output ) ) {
+            $dir = $output;
+            if ( substr($dir, -1) == '/' )
+                $output = $dir.$module.'.'.$extension;
+            else
+                $output = $dir.'/'.$module.'.'.$extension;
+        }
+        else {
+            $dir = dirname( $output );
+        }
+        if (!file_exists( $dir )) {
+            jFile::createDir($dir);
+        }
+        return $output;
+    }
 
     /**
      * Generate POT file for a module
      */
     function pot() {
         $rep = $this->getResponse(); // cmdline response by default
+        list($module, $modulePath, $localesPath, $originalModulePath, $enLocalesPath) = $this->getModulePath();
 
-        //$module = new mySelectorModule( $this->param('module') );
-        $module = $this->param('module');
-
-        if (!isset(jApp::config()->_modulesPathList[$module])) {
-            if ($module == 'jelix')
-                throw new Exception('jelix module is not enabled !!');
-            throw new jExceptionSelector('jelix~errors.selector.module.unknown', $module);
-        }
-
-        $path = jApp::config()->_modulesPathList[$module].'locales/en_US/';
-
-        $files = Array();
-        if ( $dh = opendir( $path ) ) {
-            while( ($file = readdir($dh)) !== false ) {
-                if (substr($file, -17) == '.UTF-8.properties' && $file != 'format.UTF-8.properties')
-                    $files[] = $file;
-            }
-            closedir($dh);
-        }
+        $files = $this->getModuleLocaleFiles($module, $enLocalesPath);
 
         $rep->addContent("================\n");
         $rep->addContent( $module ."\n" );
-        $rep->addContent( jApp::config()->_modulesPathList[$module] ."\n" );
-        $rep->addContent( $path ."\n" );
+        $rep->addContent( $modulePath ."\n" );
+        $rep->addContent( $enLocalesPath ."\n" );
 
         $dt= new DateTime('NOW');
         $xml = simplexml_load_file(jApp::appPath('project.xml'));
+        $projectId = (string)$xml->info->label.' '.$module.' '.(string)$xml->info->version;
 
-        $str = "#\n";
-        $str.= 'msgid ""'."\n";
-        $str.= 'msgstr ""'."\n";
-        $str.= '"Project-Id-Version: '.(string)$xml->info->label.' '.$module.' '.(string)$xml->info->version.'\n"'."\n";
-        $str.= '"Report-Msgid-Bugs-To:\n"'."\n";
-        $str.= '"POT-Creation-Date: '.$dt->format('Y-m-d H:i+O').'\n"'."\n";
-        $str.= '"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"'."\n";
-        $str.= '"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"'."\n";
-        $str.= '"MIME-Version: 1.0\n"'."\n";
-        $str.= '"Content-Type: text/plain; charset=UTF-8\n"'."\n";
-        $str.= '"Content-Transfer-Encoding: 8bit\n"'."\n";
+        $translations = new Translations();
+        $translations->setHeader('Project-Id-Version', $projectId);
+        $translations->setHeader('Report-Msgid-Bugs-To', '');
+        $translations->setHeader('POT-Creation-Date', $dt->format('Y-m-d H:i+O'));
+        $translations->setHeader('PO-Revision-Date', $dt->format('Y-m-d H:i+O'));
+        $translations->setHeader('Last-Translator', 'FULL NAME <EMAIL@ADDRESS>');
+        $translations->setHeader('MIME-Version', '1.0');
+        $translations->setHeader('Content-Type', 'text/plain; charset=UTF-8');
+        $translations->setHeader('Content-Transfer-Encoding', '8bit');
 
+        $propertiesReader = new Parser();
         foreach( $files as $f ) {
             $rep->addContent( $f ."\n" );
-
-            $lines = file( $path.$f );
-            foreach ($lines as $lineNumber => $lineContent){
-                if(!empty($lineContent) and $lineContent != '\n'){
-                    $exp = explode('=', trim($lineContent), 2);
-                    if( count($exp) == 2 && !empty($exp[0]) ) {
-                        $str.= "\n";
-                        $msgctxt = $module.'~'.str_replace('.UTF-8.properties','',$f).'.'.trim($exp[0]);
-                        $str.= "#: ".$msgctxt."\n";
-                        $str.= 'msgctxt "'.$msgctxt.'"'."\n";
-                        $msgid = jLocale::get($msgctxt, array(), 'en_US');
-                        $msgid = str_replace( '"', '\"', $msgid );
-                        $str.= 'msgid "'.$msgid.'"'."\n";
-                        $str.= 'msgstr ""'."\n";
-                    }
-                }
+            $fileId = str_replace('.UTF-8.properties','',$f);
+            $properties = new \Jelix\PropertiesFile\Properties();
+            $propertiesReader->parseFromFile($enLocalesPath.$f, $properties);
+            $msgctxtPrefix = $module.'~'.$fileId.'.';
+            foreach($properties->getIterator() as $key=>$value) {
+                $msgctxt = $msgctxtPrefix.$key;
+                $translation = $translations->insert($msgctxt, $value);
+                $translation->addReference($msgctxt);
+                $translation->setTranslation("");
             }
+        }
 
-        }
-        $output = $this->param('output');
-        $dir = dirname( $output );
-        if ( is_dir( $output ) ) {
-            $dir = $output;
-            if ( substr($output, -1) == '/' )
-                $output = $dir.$module.'.pot';
-            else
-                $output = $dir.'/'.$module.'.pot';
-        }
-        if ( !file_exists( $dir ) )
-            jFile::createDir( $dir );
-        jFile::write( $output, $str);
+        $targetFile = $this->getOutputFile($module, 'pot');
+        $rep->addContent("save to: $targetFile\n");
+        \Gettext\Generators\Po::toFile($translations, $targetFile);
+
         $rep->addContent("================\n");
         return $rep;
     }
@@ -169,449 +210,154 @@ class localeCtrl extends jControllerCmdLine {
     function po() {
         $rep = $this->getResponse(); // cmdline response by default
 
-        //$module = new mySelectorModule( $this->param('module') );
-        $module = $this->param('module');
         $locale = $this->param('locale');
+        list($module, $modulePath, $localesPath, $originalModulePath, $enLocalesPath) = $this->getModulePath($locale);
 
-        if (!isset(jApp::config()->_modulesPathList[$module])) {
-            if ($module == 'jelix')
-                throw new Exception('jelix module is not enabled !!');
-            throw new jExceptionSelector('jelix~errors.selector.module.unknown', $module);
-        }
 
-        $path = jApp::config()->_modulesPathList[$module].'locales/en_US/';
-
-        $files = Array();
-        if ( $dh = opendir( $path ) ) {
-            while( ($file = readdir($dh)) !== false ) {
-                if (substr($file, -17) == '.UTF-8.properties' && $file != 'format.UTF-8.properties')
-                    $files[] = $file;
-            }
-            closedir($dh);
-        }
+        $files = $this->getModuleLocaleFiles($module, $enLocalesPath);
 
         $rep->addContent("================\n");
         $rep->addContent( $module ."\n" );
-        $rep->addContent( jApp::config()->_modulesPathList[$module] ."\n" );
-        $rep->addContent( $path ."\n" );
+        $rep->addContent( $modulePath ."\n" );
+        $rep->addContent( $enLocalesPath ."\n" );
 
-        $dt = new DateTime();
+        $dt= new DateTime('NOW');
         $xml = simplexml_load_file(jApp::appPath('project.xml'));
+        $projectId = (string)$xml->info->label.' '.$module.' '.(string)$xml->info->version;
 
-        $str = "#\n";
-        $str.= 'msgid ""'."\n";
-        $str.= 'msgstr ""'."\n";
-        $str.= '"Project-Id-Version: '.(string)$xml->info->label.' '.$module.' '.(string)$xml->info->version.'\n"'."\n";
-        $str.= '"Report-Msgid-Bugs-To:\n"'."\n";
-        $str.= '"POT-Creation-Date: '.$dt->format('Y-m-d H:iO').'\n"'."\n";
-        $str.= '"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"'."\n";
-        $str.= '"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"'."\n";
-        $str.= '"Language: '.$locale.'\n"'."\n";
-        $str.= '"MIME-Version: 1.0\n"'."\n";
-        $str.= '"Content-Type: text/plain; charset=UTF-8\n"'."\n";
-        $str.= '"Content-Transfer-Encoding: 8bit\n"'."\n";
+        $translations = new Translations();
+        $translations->setHeader('Project-Id-Version', $projectId);
+        $translations->setHeader('Report-Msgid-Bugs-To', '');
+        $translations->setHeader('POT-Creation-Date', $dt->format('Y-m-d H:i+O'));
+        $translations->setHeader('PO-Revision-Date', $dt->format('Y-m-d H:i+O'));
+        $translations->setHeader('Last-Translator', 'FULL NAME <EMAIL@ADDRESS>');
+        $translations->setHeader('MIME-Version', '1.0');
+        $translations->setHeader('Content-Type', 'text/plain; charset=UTF-8');
+        $translations->setHeader('Content-Transfer-Encoding', '8bit');
+
+        $propertiesReader = new Parser();
 
         foreach( $files as $f ) {
             $rep->addContent( $f ."\n" );
 
-            $thePath = '';
-
-            // check if the locale has been overloaded
-            $overloadedPath = jApp::varPath('overloads/'.$module.'/locales/'.$locale.'/'.$f);
-            if (is_readable ($overloadedPath)){
-                $rep->addContent( $overloadedPath ."\n" );
-                $thePath = $overloadedPath;
+            // read locale file
+            $localeProperties = new \Jelix\PropertiesFile\Properties();
+            if (file_exists($localesPath.$f)) {
+                $propertiesReader->parseFromFile($localesPath . $f, $localeProperties);
             }
 
-            // check if the locale is available in the locales directory
-            $localesPath = jApp::varPath('locales/'.$locale.'/'.$module.'/locales/'.$f);
-            if ($thePath == '' && is_readable ($localesPath)){
-                $rep->addContent( $localesPath ."\n" );
-                $thePath = $localesPath;
+            // if the locale file is not the original one in the module,
+            // let's read the original one
+            $originalProperties = new \Jelix\PropertiesFile\Properties();
+            if ($originalModulePath !== $localesPath && file_exists($originalModulePath.$f)) {
+                $propertiesReader->parseFromFile($originalModulePath.$f, $originalProperties);
             }
 
-            // else check for the original locale file in the module
-            $modulePath = jApp::config()->_modulesPathList[$module].'locales/'.$locale.'/'.$f;
-            if ($thePath == '' && is_readable ($modulePath)){
-                $rep->addContent( $modulePath ."\n" );
-                $thePath = $modulePath;
-            }
+            // read the en_US properties file.
+            $USProperties = new \Jelix\PropertiesFile\Properties();
+            $propertiesReader->parseFromFile($enLocalesPath.$f, $USProperties);
 
-            $keys = Array();
-            $lines = file( $thePath );
-            foreach ($lines as $lineNumber => $lineContent){
-                if(!empty($lineContent) and $lineContent != '\n'){
-                    $exp = explode('=', trim($lineContent), 2);
-                    if( count($exp) == 2 && !empty($exp[0]) )
-                        $keys[] = trim($exp[0]);
+            $fileId = str_replace('.UTF-8.properties','',$f);
+            $msgctxtPrefix = $module.'~'.$fileId.'.';
+
+            foreach($USProperties->getIterator() as $key=>$value) {
+                $msgctxt = $msgctxtPrefix.$key;
+                $translation = $translations->insert($msgctxt, $value);
+                $translation->addReference($msgctxt);
+                $localeValue = $localeProperties[$key];
+                if ($localeValue === null) {
+                    $localeValue = $originalProperties[$key];
+                }
+                if ($localeValue !== null && $localeValue != $value) {
+                    $translation->setTranslation($value);
+                }
+                else {
+                    $translation->setTranslation("");
                 }
             }
-
-            $lines = file( $path.$f );
-            foreach ($lines as $lineNumber => $lineContent){
-                if(!empty($lineContent) and $lineContent != '\n'){
-                    $exp = explode('=', trim($lineContent), 2);
-                    if( count($exp) == 2 && !empty($exp[0]) ) {
-                        $str.= "\n";
-                        $msgctxt = $module.'~'.str_replace('.UTF-8.properties','',$f).'.'.trim($exp[0]);
-                        $str.= "#: ".$msgctxt."\n";
-                        $str.= 'msgctxt "'.$msgctxt.'"'."\n";
-
-                        $msgid = jLocale::get($msgctxt, array(), 'en_US');
-                        $msgid = str_replace( '"', '\"', $msgid );
-                        $str.= 'msgid "'.$msgid.'"'."\n";
-
-                        $msgstr = '';
-                        if ( in_array( trim($exp[0]), $keys ) )
-                            $msgstr = jLocale::get($msgctxt, array(), $locale);
-                        $msgstr = str_replace( '"', '\"', $msgstr );
-                        if ( $msgstr != $msgid )
-                            $str.= 'msgstr "'.$msgstr.'"'."\n";
-                        else
-                            $str.= 'msgstr ""'."\n";
-                    }
-                }
-            }
-
         }
-        $output = $this->param('output');
-        $dir = dirname( $output );
-        if ( is_dir( $output ) ) {
-            $dir = $output;
-            if ( substr($output, -1) == '/' )
-                $output = $dir.$module.'.po';
-            else
-                $output = $dir.'/'.$module.'.po';
-        }
-        if ( !file_exists( $dir ) )
-            jFile::createDir( $dir );
-        jFile::write( $output, $str);
+
+        $targetFile = $this->getOutputFile($module, 'po');
+        $rep->addContent("save to: $targetFile\n");
+        \Gettext\Generators\Po::toFile($translations, $targetFile);
+
         $rep->addContent("================\n");
         return $rep;
     }
 
     /**
-     * Generate Jelix local file for a module based on a PO file
+     * Generate Jelix locale file for a module, from a PO file
      */
-    function localize() {
+    function importpo() {
         $rep = $this->getResponse(); // cmdline response by default
 
-        $module = $this->param('module');
-
-        if (!isset(jApp::config()->_modulesPathList[$module])) {
-            if ($module == 'jelix')
-                throw new Exception('jelix module is not enabled !!');
-            throw new jExceptionSelector('jelix~errors.selector.module.unknown', $module);
+        $locale = $this->param('locale');
+        list($module, $modulePath, $localesPath, $originalModulePath, $enLocalesPath) = $this->getModulePath($locale);
+        if (!is_dir($localesPath)) {
+            jFile::createDir($localesPath);
         }
 
-        $path = jApp::config()->_modulesPathList[$module].'locales/en_US/';
-
-        $files = Array();
-        if ( $dh = opendir( $path ) ) {
-            while( ($file = readdir($dh)) !== false ) {
-                if (substr($file, -17) == '.UTF-8.properties' && $file != 'format.UTF-8.properties')
-                    $files[] = $file;
-            }
-            closedir($dh);
-        }
-
-        $input = $this->param('input');
-        if ( !is_readable( $input ) )
-            throw new Exception($input.' is not readable !!');
-
-        $output = $this->param('output');
-        if ( !is_dir( $output ) )
-            throw new Exception($output.' is not a directory !!');
+        $files = $this->getModuleLocaleFiles($module, $enLocalesPath);
 
         $rep->addContent("================\n");
 
-        // Inspired by PoParser
-        $hash            = array();
-        $entry           = array();
-        $justNewEntry    = false; // A new entry has been just inserted.
-        $firstLine       = false;
-        $lastPreviousKey = null; // Used to remember last key in a multiline previous entry.
-        $state           = null;
-        $lineNumber      = 0;
-
-        $lines = file( $input );
-        foreach ($lines as $num => $line){
-            $split = preg_split('/\s+/ ', $line, 2);
-            $key   = $split[0];
-
-            // If a blank line is found, or a new msgid when already got one
-            if ($line === '' || ($key=='msgid' && isset($entry['msgid'])) || ($key=='msgctxt' && isset($entry['msgid']))) {
-                // Two consecutive blank lines
-                if ($justNewEntry) {
-                    $lineNumber++;
-                    continue;
-                }
-                if ($firstLine) {
-                    $firstLine = false;
-                    /*
-                    if (self::isHeader($entry)) {
-                        array_shift($entry['msgstr']);
-                        $headers = $entry['msgstr'];
-                    } else {
-                        $hash[] = $entry;
-                    }
-                    **/
-                } else {
-                    // A new entry is found!
-                    $hash[] = $entry;
-                }
-                $entry           = array();
-                $state           = null;
-                $justNewEntry    = true;
-                $lastPreviousKey = null;
-                if ($line==='') {
-                    $lineNumber++;
-                    continue;
-                }
-            }
-
-            $justNewEntry = false;
-            $data         = isset($split[1]) ? $split[1] : null;
-
-            switch ($key) {
-                // Flagged translation
-                case '#,':
-                    $entry['flags'] = preg_split('/,\s*/', $data);
-                    break;
-                // # Translator comments
-                case '#':
-                    $entry['tcomment'] = !isset($entry['tcomment']) ? array() : $entry['tcomment'];
-                    $entry['tcomment'][] = $data;
-                    break;
-                // #. Comments extracted from source code
-                case '#.':
-                    $entry['ccomment'] = !isset($entry['ccomment']) ? array() : $entry['ccomment'];
-                    $entry['ccomment'][] = $data;
-                    break;
-                // Reference
-                case '#:':
-                    $entry['reference'][] = $data;
-                    break;
-
-
-
-                case '#|':      // #| Previous untranslated string
-                case '#~':      // #~ Old entry
-                case '#~|':     // #~| Previous-Old untranslated string. Reported by @Cellard
-                    switch ($key) {
-                        case '#|':  $key = 'previous';
-                                    break;
-                        case '#~':  $key = 'obsolete';
-                                    break;
-                        case '#~|': $key = 'previous-obsolete';
-                                    break;
-                    }
-                    $tmpParts = explode(' ', $data);
-                    $tmpKey   = $tmpParts[0];
-                    if (!in_array($tmpKey, array('msgid','msgid_plural','msgstr','msgctxt'))) {
-                        $tmpKey = $lastPreviousKey; // If there is a multiline previous string we must remember what key was first line.
-                        $str = $data;
-                    } else {
-                        $str = implode(' ', array_slice($tmpParts, 1));
-                    }
-                    $entry[$key] = isset($entry[$key])? $entry[$key]:array('msgid'=>array(),'msgstr'=>array());
-                    if (strpos($key, 'obsolete')!==false) {
-                        $entry['obsolete'] = true;
-                        switch ($tmpKey) {
-                            case 'msgid':
-                                $entry['msgid'][] = $str;
-                                $lastPreviousKey = $tmpKey;
-                                break;
-                            case 'msgstr':
-                                if ($str == "\"\"") {
-                                    $entry['msgstr'][] = trim($str, '"');
-                                } else {
-                                    $entry['msgstr'][] = $str;
-                                }
-                                $lastPreviousKey = $tmpKey;
-                                break;
-                            default:
-                                break;
-                        }
-                    }
-                    if ($key!=='obsolete') {
-                        switch ($tmpKey) {
-                            case 'msgid':
-                            case 'msgid_plural':
-                            case 'msgstr':
-                                $entry[$key][$tmpKey][] = $str;
-                                $lastPreviousKey = $tmpKey;
-                                break;
-                            default:
-                                $entry[$key][$tmpKey] = $str;
-                                break;
-                        }
-                    }
-                    break;
-
-
-                // context
-                // Allows disambiguations of different messages that have same msgid.
-                // Example:
-                //
-                // #: tools/observinglist.cpp:700
-                // msgctxt "First letter in 'Scope'"
-                // msgid "S"
-                // msgstr ""
-                //
-                // #: skycomponents/horizoncomponent.cpp:429
-                // msgctxt "South"
-                // msgid "S"
-                // msgstr ""
-                case 'msgctxt':
-                    // untranslated-string
-                case 'msgid':
-                    // untranslated-string-plural
-                case 'msgid_plural':
-                    $state = $key;
-                    $entry[$state][] = $data;
-                    break;
-                // translated-string
-                case 'msgstr':
-                    $state = 'msgstr';
-                    $entry[$state][] = $data;
-                    break;
-
-                default:
-                    if (strpos($key, 'msgstr[') !== false) {
-                        // translated-string-case-n
-                        $state = $key;
-                        $entry[$state][] = $data;
-                    } else {
-                        // "multiline" lines
-                        switch ($state) {
-                            case 'msgctxt':
-                            case 'msgid':
-                            case 'msgid_plural':
-                            case (strpos($state, 'msgstr[') !== false):
-                                if (is_string($entry[$state])) {
-                                    // Convert it to array
-                                    $entry[$state] = array($entry[$state]);
-                                }
-                                $entry[$state][] = $line;
-                                break;
-                            case 'msgstr':
-                                // Special fix where msgid is ""
-                                if ($entry['msgid'] == "\"\"") {
-                                    $entry['msgstr'][] = trim($line, '"');
-                                } else {
-                                    $entry['msgstr'][] = $line;
-                                }
-                                break;
-                            default:
-                                throw new Exception(
-                                    'PoParser: Parse error! Unknown key "' . $key . '" on line ' . ($lineNumber+1)
-                                );
-                        }
-                    }
-                    break;
-            }
-
-            $lineNumber++;
-        }
-        if (isset($entry['msgid'])) {
-            // last entry
-            $hash[] = $entry;
+        // read the PO file
+        $input = $this->param('input');
+        if ( !is_readable( $input ) ) {
+            throw new Exception($input . ' is not readable !!');
         }
 
-        // - Cleanup data,
-        // - merge multiline entries
-        // - Reindex hash for ksort
-        $temp = $hash;
-        $entries = array();
-        $contexts = array();
-        foreach ($temp as $entry) {
-            foreach ($entry as &$v) {
-                $or = $v;
-                $v = $this->clean($v);
-                if ($v === false) {
-                    // parse error
-                    throw new Exception(
-                        'PoParser: Parse error! poparser::clean returned false on "' . htmlspecialchars($or) . '"'
-                    );
-                }
-            }
-            // check if msgid and a key starting with msgstr exists
-            if (isset($entry['msgid']) && count(preg_grep('/^msgstr/', array_keys($entry)))) {
-                $id = trim( implode(' ', (array)$entry['msgid'] ) );
-                $entries[$id] = $entry;
-            }
-            // check if msgctxt and a key starting with msgstr exists
-            if (isset($entry['msgctxt']) && count(preg_grep('/^msgstr/', array_keys($entry)))) {
-                $id = trim( implode(' ', (array)$entry['msgctxt'] ) );
-                $contexts[$id] = $entry;
-            }
-        }
+        $translations = new Gettext\Translations();
+        \Gettext\Extractors\Po::fromFile($input, $translations);
+
+        $propertiesReader = new Parser();
+        $propertiesWriter = new Writer();
 
         foreach( $files as $f ) {
-            $str = '';
             $rep->addContent( $f ."\n" );
 
-            $lines = file( $path.$f );
-            foreach ($lines as $lineNumber => $lineContent){
-                if(!empty($lineContent) and $lineContent != '\n'){
-                    $exp = explode('=', trim($lineContent), 2);
-                    if( count($exp) == 2 && !empty($exp[0]) ) {
-                        $str.= trim($exp[0]).'=';
-                        $msgctxt = $module.'~'.str_replace('.UTF-8.properties','',$f).'.'.trim($exp[0]);
-                        $msgid = jLocale::get($msgctxt,array(),'en_US');
-                        $msgstr = '';
-                        if ( array_key_exists( $msgctxt, $contexts ) && array_key_exists( 'msgstr', $contexts[$msgctxt] ))
-                            $msgstr = trim(implode(' ', (array)$contexts[$msgctxt]['msgstr']) );
-                        else if ( array_key_exists( $msgid, $entries ) && array_key_exists( 'msgstr', $entries[$msgid] ))
-                            $msgstr = trim(implode(' ', (array)$entries[$msgid]['msgstr']) );
-                        if ( $msgstr != '' )
-                            $str.= $msgstr;
-                        else {
-                            $str.= $msgid;
-                            //$rep->addContent("'".$msgid."'\n");
-                        }
-                        $str.="\n";
-                    }
-                }
-            }
+            $localeProperties = new \Jelix\PropertiesFile\Properties();
+            $USProperties = new \Jelix\PropertiesFile\Properties();
+            $propertiesReader->parseFromFile($enLocalesPath.$f, $USProperties);
 
-            if ( substr($output, -1) == '/' )
-                $outputFile = $output.$f;
-            else
-                $outputFile = $output.'/'.$f;
-            jFile::write( $outputFile, $str);
+            $fileId = str_replace('.UTF-8.properties','',$f);
+            $msgctxtPrefix = $module.'~'.$fileId.'.';
+
+            $sameAsUs = true;
+            foreach($USProperties->getIterator() as $key => $usString) {
+                $msgctxt = $msgctxtPrefix.$key;
+                $translation = $translations->find($msgctxt, $usString);
+                if ($translation === false) {
+                    $localeString = '';
+                }
+                else {
+                    $localeString = $translation->getTranslation();
+                }
+                if (trim($localeString) == '') {
+                    $localeString = $usString;
+                }
+                if ($localeString != $usString) {
+                    $sameAsUs = false;
+                }
+                $localeProperties[$key] = $localeString;
+            }
+            if (!$sameAsUs) {
+                $propertiesWriter->writeToFile(
+                    $localeProperties, $localesPath.$f,
+                    array(
+                        "lineLength"=>500,
+                        "spaceAroundEqual"=>false,
+                        "removeTrailingSpace" => true,
+                        "headerComment"=> "Please don't modify this file.\nTo contribute on translations, go to https://www.transifex.com/3liz-1/lizmap-locales/."
+                    )
+                );
+            }
+            else if (file_exists($localesPath.$f)) {
+                unlink ($localesPath.$f);
+            }
         }
 
         $rep->addContent("================\n");
         return $rep;
-    }
-
-
-    /**
-     * Undos `cleanExport` actions on a string.
-     *
-     * @param string|array $x
-     * @return string|array.
-     */
-    protected function clean($x)
-    {
-        if (is_array($x)) {
-            foreach ($x as $k => $v) {
-                $x[$k] = $this->clean($v);
-            }
-        } else {
-            // Remove double quotes from start and end of string
-            if ($x == '') {
-                return '';
-            }
-            if ($x[0] == '"') {
-                $x = substr($x, 1, -1);
-                $x = trim( $x, '"' );
-            }
-            // Escapes C-style escape sequences (\a,\b,\f,\n,\r,\t,\v) and converts them to their actual meaning
-            $x = stripcslashes($x);
-        }
-        return $x;
     }
 }

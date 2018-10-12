@@ -51,13 +51,12 @@ http://docs.3liz.com/
 
 Documentation source: https://github.com/3liz/lizmap-documentation/
 
-Internationalization
----------------------
+Internationalization and code contributions
+--------------------------------------------
 
-Transifex: https://www.transifex.com/3liz-1/lizmap-locales/
+To contribute on the code, and propose enhancements or bug fixes, see CONTRIBUTING.md. 
 
-Locales source: https://github.com/3liz/lizmap-locales/
-
+To help us on translations, go on [our project on Transifex](https://www.transifex.com/3liz-1/lizmap-locales/).
 
 License
 -------
