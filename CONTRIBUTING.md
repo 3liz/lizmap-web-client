@@ -47,3 +47,15 @@ Go to https://github.com/3liz/lizmap-web-client/issues and post issues you find.
 You can test your changes by running a Vagrant machine. It allows to create
 quickly a virtual machine with all softwares needed by Lizmap (Postgresql, QGis server...).
 See vagrant/README.md for details and to learn how to launch this VM.
+
+## localization
+
+The locale files are stored in the modules' locales directory.
+The files are *.properties. You can find documentation about localizing Jelix
+application here : https://docs.jelix.org/en/manual-1.6/locales
+
+However, only modifications on en_US locales are accepted in Pull Requests.
+All other locales are translated with Transifex. So to help us to translate, 
+please go on Transifex:  https://www.transifex.com/3liz-1/lizmap-locales/
+
+For core developers, see the repository https://github.com/3liz/lizmap-locales/.
