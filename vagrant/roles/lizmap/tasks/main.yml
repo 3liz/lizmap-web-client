@@ -1,6 +1,8 @@
 ---
 - include: php.yml
   tags: php
+- include: composer.yml
+  tags: php
 - include: web-client.yml
   tags: lizmap
 - include: redis.yml
