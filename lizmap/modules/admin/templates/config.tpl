@@ -18,8 +18,19 @@
     <table class="table services-table">
       {formcontrols }
         <tr>
+        {ifctrl 'requestProxyEnabled'}
+          {ifctrl_value '0'}
+            <th>{ctrl_label}</th><td>{ctrl_value}</td>
+          {else}
+            <td colspan="2">
+              {ctrl_value}
+            </td>
+          {/ifctrl_value}
+        {else}
         <th>{ctrl_label}</th><td>{ctrl_value}</td>
+        {/ifctrl}
       </tr>
+
       {/formcontrols}
     </table>
     {/formdata}
