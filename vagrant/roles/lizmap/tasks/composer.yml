@@ -1,0 +1,22 @@
+
+- name: Download Composer
+  get_url:
+    url: "https://getcomposer.org/download/{{ php_composer_version }}/composer.phar"
+    dest: /usr/local/bin/composer
+    #checksum: 'sha256:http://getcomposer.org/download/{{ php_composer_version }}/composer.phar.sha256sum'
+  tags: composer
+
+- name: Make composer executable
+  file: path=/usr/local/bin/composer mode=a+x state=file
+  tags: composer
+
+- stat: path=/usr/local/bin/composer
+  register: bin_composer
+
+- name: get date minus 30 days
+  command: date -d 'now -25 days' '+%s'
+  register: thirty_days
+
+- name: Update Composer
+  shell: /usr/local/bin/composer self-update
+  when: bin_composer.stat.mtime < thirty_days|int
