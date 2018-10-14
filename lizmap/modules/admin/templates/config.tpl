@@ -14,14 +14,15 @@
   <!--Services-->
   <div>
     <h2>{@admin~admin.configuration.services.label@}</h2>
-    <table class="table">
-      {formcontrols $servicesForm}
-      <tr>
+    {formdata $servicesForm ,'htmlbootstrap', array()}
+    <table class="table services-table">
+      {formcontrols }
+        <tr>
         <th>{ctrl_label}</th><td>{ctrl_value}</td>
       </tr>
       {/formcontrols}
     </table>
-
+    {/formdata}
     <!-- Modify -->
     {ifacl2 'lizmap.admin.services.update'}
     <div class="form-actions">

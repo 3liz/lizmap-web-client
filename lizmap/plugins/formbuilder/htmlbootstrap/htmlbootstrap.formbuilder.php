@@ -51,22 +51,22 @@ class htmlbootstrapFormBuilder extends \jelix\forms\Builder\HtmlBuilder {
 
     public function outputAllControls() {
         $modal = $this->getOption('local');
-
         echo '<div class="jforms-table">';
         foreach( $this->_form->getRootControls() as $ctrlref=>$ctrl){
             if($ctrl->type == 'submit' || $ctrl->type == 'reset' || $ctrl->type == 'hidden') continue;
             if(!$this->_form->isActivated($ctrlref)) continue;
+            echo '<div class="control-group">';
             if($ctrl->type == 'group') {
                 $this->outputControl($ctrl);
             }
             else {
-                echo '<div class="control-group">';
+
                 $this->outputControlLabel($ctrl);
                 echo '<div class="controls">';
                 $this->outputControl($ctrl);
                 echo "</div>\n";
-                echo "</div>\n";
             }
+            echo "</div>\n";
         }
         echo "</div>\n";
 
