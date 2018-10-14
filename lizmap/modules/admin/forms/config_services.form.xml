@@ -92,10 +92,37 @@
 </menulist>
 
 <menulist ref="proxyMethod" required="true">
-  <label locale="admin~admin.form.admin_services.proxyMethod.label"/>
-  <item value="php" selected="true" locale="admin~admin.form.admin_services.proxyMethod.php.label"/>
-  <item value="curl" locale="admin~admin.form.admin_services.proxyMethod.curl.label"/>
+    <label locale="admin~admin.form.admin_services.proxyMethod.label"/>
+    <item value="php" selected="true" locale="admin~admin.form.admin_services.proxyMethod.php.label"/>
+    <item value="curl" locale="admin~admin.form.admin_services.proxyMethod.curl.label"/>
 </menulist>
+
+<group ref="requestProxyEnabled" withcheckbox="true">
+    <oncheckvalue locale="admin~admin.form.admin_services.requestProxy.enabled" value="1"/>
+    <onuncheckvalue locale="admin~admin.form.admin_services.requestProxy.disabled" value="0" />
+    <label locale="admin~admin.form.admin_services.requestProxy.label"/>
+    <input ref="requestProxyHost" required="true">
+        <label locale="admin~admin.form.admin_services.requestProxyHost.label"/>
+    </input>
+    <input  type="integer" ref="requestProxyPort" required="true">
+        <label locale="admin~admin.form.admin_services.requestProxyPort.label"/>
+    </input>
+    <radiobuttons ref="requestProxyType">
+        <label locale="admin~admin.form.admin_services.requestProxyType.label"/>
+        <item value="http">http</item>
+        <item value="socks5">socks5</item>
+    </radiobuttons>
+    <input ref="requestProxyUser">
+        <label locale="admin~admin.form.admin_services.requestProxyUser.label"/>
+    </input>
+    <secret ref="requestProxyPassword">
+        <label locale="admin~admin.form.admin_services.requestProxyPassword.label"/>
+    </secret>
+    <input ref="requestProxyNotForDomain">
+        <label locale="admin~admin.form.admin_services.requestProxyNotForDomain.label"/>
+    </input>
+</group>
+
 
 <menulist ref="debugMode" required="true">
   <label locale="admin~admin.form.admin_services.debugMode.label"/>

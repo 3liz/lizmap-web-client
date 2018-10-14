@@ -153,7 +153,7 @@ class lizmapProxy {
             curl_setopt($ch, CURLOPT_HTTPHEADER, self::encodeHttpHeaders($options['headers']));
             curl_setopt($ch, CURLOPT_URL, $url);
 
-            if ($services->requestProxyHost != '') {
+            if ($services->requestProxyEnabled && $services->requestProxyHost != '') {
                 $proxy = $services->requestProxyHost;
                 if ($services->requestProxyPort) {
                     $proxy .= ':'.$services->requestProxyPort;
@@ -199,7 +199,7 @@ class lizmapProxy {
                 'method'=>strtoupper($options['method'])
             );
 
-            if ($services->requestProxyHost != '') {
+            if ($services->requestProxyEnabled && $services->requestProxyHost != '') {
                 $okproxy = true;
                 if ($services->requestProxyNotForDomain) {
                     $noProxy = preg_split('/\s*,\s*/', $services->requestProxyNotForDomain);

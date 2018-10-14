@@ -38,6 +38,7 @@ class lizmapServices{
       'rootRepositories',
       'relativeWMSPath',
       'proxyMethod',
+      'requestProxyEnabled',
       'requestProxyHost',
       'requestProxyPort',
       'requestProxyUser',
@@ -69,6 +70,7 @@ class lizmapServices{
       'rootRepositories',
       'relativeWMSPath',
       'proxyMethod',
+      'requestProxyEnabled',
       'requestProxyHost',
       'requestProxyPort',
       'requestProxyUser',
@@ -129,6 +131,7 @@ class lizmapServices{
     // proxy method : use curl ('curl') or file_get_contents ('php')
     public $proxyMethod = '';
 
+    public $requestProxyEnabled = false;
     public $requestProxyHost = '';
     public $requestProxyPort = '';
     public $requestProxyUser = '';
@@ -228,8 +231,12 @@ class lizmapServices{
     }
 
     public function hideSensitiveProperties(){
-      if ( isset($this->data['hideSensitiveServicesProperties']) && $this->data['hideSensitiveServicesProperties'] != '0')
-        return true;
+      if ( isset($this->data['hideSensitiveServicesProperties'])
+          && $this->data['hideSensitiveServicesProperties'] != '0'
+      ) {
+          return true;
+      }
+
       return false;
     }
 
