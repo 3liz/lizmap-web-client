@@ -28,3 +28,39 @@
     list-style: none;
     color: #FFF;
 }
+
+
+fieldset legend {
+    width:auto;
+    padding-left: 0.5em;
+    padding-right: 0.5em;
+    border-bottom: 0px;
+    font-size:14px;
+}
+
+fieldset legend label {
+    display:inline-block;
+}
+
+fieldset {
+    border: 1px solid #c5c5c5;
+    padding: 1em;
+    margin-bottom: 1em;
+}
+
+.services-table th {
+    width: 30%;
+    min-width: 10em;
+}
+
+.form-horizontal .control-label {
+    width: 240px;
+}
+
+.form-horizontal .controls {
+    margin-left: 250px;
+}
+
+.table .table {
+    background-color:transparent;
+}
