@@ -25,13 +25,34 @@ class configCtrl extends jController {
     'removeSection' => array( 'jacl2.right'=>'lizmap.admin.repositories.delete'),
     'removeCache' => array( 'jacl2.right'=>'lizmap.admin.repositories.delete'),
     'removeLayerCache' => array( 'jacl2.right'=>'lizmap.admin.repositories.delete')
-
   );
 
 
   // Prefix of jacl2 subjects corresponding to lizmap web client view interface
   // used to get only non admin subjects
   protected $lizmapClientPrefix = 'lizmap.repositories|lizmap.tools';
+
+  protected function prepareServicesForm (jFormsBase $form, LizmapServices $services) {
+      // Set form data values
+      foreach($services->getProperties() as $ser){
+          switch($ser) {
+              case 'allowUserAccountRequests':
+                  $form->setReadOnly('allowUserAccountRequests', $services->isLdapEnabled());
+              case 'onlyMaps':
+                  $form->setData($ser, $services->$ser ? 'on' : 'off');
+                  break;
+              default:
+                  $form->setData($ser, $services->$ser);
+          }
+      }
+
+      // hide sensitive services properties
+      if ($services->hideSensitiveProperties()) {
+          foreach($services->getSensitiveProperties() as $ser){
+              $form->deactivate($ser);
+          }
+      }
+  }
 
   /**
   * Display a summary of the information taken from the ~ configuration file.
@@ -87,33 +108,14 @@ class configCtrl extends jController {
     $xmlPath = jApp::appPath('project.xml');
     $xmlLoad = simplexml_load_file($xmlPath);
     $version = (string)$xmlLoad->info->version;
-
-
+    
     // Get the data
     $services = lizmap::getServices();
 
     // Create the form
     $form = jForms::create('admin~config_services');
 
-    // Set form data values
-    foreach($services->getProperties() as $ser){
-      if ($ser == 'allowUserAccountRequests' || $ser == 'onlyMaps') {
-        $form->setData($ser, $services->$ser ? 'on' : 'off');
-        if ($ser == 'allowUserAccountRequests') {
-            $form->setReadOnly('allowUserAccountRequests', $services->isLdapEnabled());
-        }
-      }
-      else {
-        $form->setData($ser, $services->$ser);
-      }
-    }
-
-    // hide sensitive services properties
-    if ($services->hideSensitiveProperties()) {
-        foreach($services->getSensitiveProperties() as $ser){
-            $form->deactivate($ser);
-        }
-    }
+    $this->prepareServicesForm($form, $services);
 
     $tpl = new jTpl();
     $tpl->assign('services',lizmap::getServices());
@@ -143,30 +145,12 @@ class configCtrl extends jController {
     // Create the form
     $form = jForms::create('admin~config_services');
 
-    // Set form data values
-    foreach($services->getProperties() as $ser){
-      if ($ser == 'allowUserAccountRequests' || $ser == 'onlyMaps') {
-        $form->setData($ser, $services->$ser ? 'on' : 'off');
-          if ($ser == 'allowUserAccountRequests') {
-              $form->setReadOnly('allowUserAccountRequests', $services->isLdapEnabled());
-          }
-      }
-      else {
-        $form->setData($ser, $services->$ser);
-      }
-    }
+    $this->prepareServicesForm($form, $services);
 
     // If wrong cacheRootDirectory, use the system temporary directory
     $cacheRootDirectory = $form->getData('cacheRootDirectory');
     if(!is_dir($cacheRootDirectory) or !is_writable($cacheRootDirectory)){
       $form->setData('cacheRootDirectory', sys_get_temp_dir());
-    }
-
-    // hide sensitive services properties
-    if ($services->hideSensitiveProperties()) {
-        foreach($services->getSensitiveProperties() as $ser){
-            $form->deactivate($ser);
-        }
     }
 
     // redirect to the form display action
@@ -178,7 +162,7 @@ class configCtrl extends jController {
 
   /**
   * Display the form to modify the services.
-  * @return Display the form.
+  * @return jResponse Display the form.
   */
   public function editServices(){
     $rep = $this->getResponse('html');
@@ -214,7 +198,7 @@ class configCtrl extends jController {
 
   /**
   * Save the data for the services section.
-  * @return Redirect to the index.
+  * @return jResponse Redirect to the index.
   */
   function saveServices(){
 
