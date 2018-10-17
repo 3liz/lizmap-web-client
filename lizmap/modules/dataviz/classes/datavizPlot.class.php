@@ -376,7 +376,8 @@ class datavizPlot {
 
                 // Set color
                 if( array_key_exists('marker', $trace) and !empty($this->colors)) {
-                    $trace['marker']['color'] = $this->colors[$yidx];
+                    if ( $yidx < count($this->colors) )
+                        $trace['marker']['color'] = $this->colors[$yidx];
                     $yidx++;
                 }
                 // Prepare an array to store features color (if any)
