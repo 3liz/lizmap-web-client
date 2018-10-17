@@ -1,0 +1,21 @@
+{
+  "name": "lizmap/lizmap-web-client",
+  "type": "project",
+  "description": "",
+  "license": "MPL-2.0",
+  "authors": [
+  ],
+  "require": {
+    "php": ">=5.6",
+    "jelix/properties-file": "^1.1.0",
+    "gettext/gettext": "^4.6.1"
+  },
+  "require-dev": {
+  },
+  "minimum-stability": "stable",
+  "config": {
+    "preferred-install": {
+      "*": "dist"
+    }
+  }
+}

@@ -43,45 +43,47 @@ var lizAtlas = function() {
         function getAtlasData(featureType) {
 
             // Get data
-            lizMap.getAttributeFeatureData(featureType, featureType+':', null, 'geom', function(aName, aFilter, aFeatures, aAliases){
+            lizMap.getFeatureData(featureType, featureType+':', null, 'geom', false, null, null,
+                function(aName, aFilter, aFeatures, aAliases) {
 
-                lizAtlasConfig['features'] = aFeatures;
-                lizAtlasConfig['featureType'] = featureType;
-                prepareFeatures();
-                launchAtlas();
+                    lizAtlasConfig['features'] = aFeatures;
+                    lizAtlasConfig['featureType'] = featureType;
+                    prepareFeatures();
+                    launchAtlas();
 
-                $('body').css('cursor', 'auto');
-                return false;
-            });
+                    $('body').css('cursor', 'auto');
+                    return false;
+                });
         }
 
         function updateAtlasData() {
 
             // Get data
-            lizMap.getAttributeFeatureData(lizAtlasConfig['featureType'], lizAtlasConfig['featureType']+':', null, 'geom', function(aName, aFilter, aFeatures, aAliases){
-                lizAtlasConfig['features'] = aFeatures;
-                prepareFeatures();
+            lizMap.getFeatureData(lizAtlasConfig['featureType'], lizAtlasConfig['featureType']+':', null, 'geom', false, null, null,
+                function(aName, aFilter, aFeatures, aAliases){
+                    lizAtlasConfig['features'] = aFeatures;
+                    prepareFeatures();
 
-                var options = '<option value="-1"> --- </option>';
-                var pkey_field = lizAtlasConfig['primaryKey'];
-                for(var i in lizAtlasConfig['features_sorted']){
-                    var item = lizAtlasConfig['features_sorted'][i];
+                    var options = '<option value="-1"> --- </option>';
+                    var pkey_field = lizAtlasConfig['primaryKey'];
+                    for(var i in lizAtlasConfig['features_sorted']){
+                        var item = lizAtlasConfig['features_sorted'][i];
 
-                    // Add option
-                    options+= '<option value="'+i+'">';
-                    options+= item[lizAtlasConfig['titleField']];
-                    options+= '</option>';
-                }
+                        // Add option
+                        options+= '<option value="'+i+'">';
+                        options+= item[lizAtlasConfig['titleField']];
+                        options+= '</option>';
+                    }
 
-                var val = $('#liz-atlas-select').val();
-                $('#liz-atlas-select').html(options);
-                // reset val
-                $('#liz-atlas-select').val(val);
-                // get popup
-                $('#liz-atlas-select').change();
+                    var val = $('#liz-atlas-select').val();
+                    $('#liz-atlas-select').html(options);
+                    // reset val
+                    $('#liz-atlas-select').val(val);
+                    // get popup
+                    $('#liz-atlas-select').change();
 
-                return false;
-            });
+                    return false;
+                });
         }
 
         function prepareFeatures(){

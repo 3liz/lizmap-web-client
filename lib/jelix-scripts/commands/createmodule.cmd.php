@@ -143,7 +143,7 @@ class createmoduleCommand extends JelixScriptCommand {
             $this->createDir($path.'install/');
             if ($this->verbose())
                 echo "Sub directories have been created in the new module $module.\n";
-            $this->createFile($path.'install/install.php','module/install.tpl',$param);
+            $this->createFile($path.'install/install_1_6.php','module/install.tpl',$param);
             $this->createFile($path.'urls.xml', 'module/urls.xml.tpl', array());
         }
 

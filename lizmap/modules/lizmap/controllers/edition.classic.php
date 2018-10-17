@@ -4,7 +4,7 @@
 * @package   lizmap
 * @subpackage lizmap
 * @author    3liz
-* @copyright 2011 3liz
+* @copyright 2011-2018 3liz
 * @link      http://3liz.com
 * @license Mozilla Public License : http://www.mozilla.org/MPL/
 */
@@ -138,7 +138,11 @@ class editionCtrl extends jController {
     }
 
     $layer = $lproj->getLayer( $layerId );
-    $layerXml = $lproj->getXmlLayer( $layerId );
+    if (!$layer) {
+        jMessage::add(jLocale::get('view~edition.message.error.layer.editable'), 'LayerNotEditable');
+        return false;
+    }
+    $layerXml = $layer->getXmlLayer( $layerId );
     $layerName = $layer->getName();
 
     // Verifying if the layer is editable

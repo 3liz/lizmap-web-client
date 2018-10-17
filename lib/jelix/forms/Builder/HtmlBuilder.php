@@ -13,6 +13,7 @@
 namespace jelix\forms\Builder;
 
 use \jelix\forms\HtmlWidget\ParentWidgetInterface;
+use \jelix\forms\HtmlWidget\WidgetBase;
 
 /**
  * Main HTML form builder
@@ -25,9 +26,49 @@ class HtmlBuilder extends BuilderBase {
     protected $jFormsJsVarName = 'jForms';
 
     /**
-     * @var array containing the formwidget for the current builder
+     * @var array define default plugins for each formwidget
+     */
+    protected $defaultPluginsConf = array(
+        //'root' => 'html',
+        //'button' => 'button_html',
+        //'captcha' => 'captcha_html',
+        //'checkbox' => 'checkbox_html',
+        //'checkboxes' => 'checkboxes_html',
+        //'choice' => 'choice_html',
+        //'date' => 'date_html',
+        //'datetime' => 'datetime_html',
+        //'group' => 'group_html',
+        //'htmleditor' => 'htmleditor_html',
+        //'input' => 'input_html',
+        //'listbox' => 'listbox_html',
+        //'menulist' => 'menulist_html',
+        //'output' => 'output_html',
+        //'radiobuttons' => 'radiobuttons_html',
+        //'recaptcha' => 'recaptcha_html',
+        //'reset' => 'reset_html',
+        //'secret' => 'secret_html',
+        //'secretconfirm' => 'secretconfirm_html',
+        //'submit' => 'submit_html',
+        //'textarea' => 'textarea_html',
+        //'upload' => 'upload_html',
+        //'wikieditor' => 'wikieditor_html',
+    );
+
+    /**
+     * @var array define plugins for each formwidget for the current builder
      */
     protected $pluginsConf = array();
+
+    /**
+     * @var array list of default html attributes to set on the form element
+     */
+    protected $htmlFormAttributes = array();
+
+    /**
+     * @var array list of attributes for each type of widgets. Keys are
+     *     widgets type.
+     */
+    protected $htmlWidgetsAttributes = array();
 
     /**
      * @var \jelix\forms\HtmlWidget\RootWidget
@@ -56,6 +97,7 @@ class HtmlBuilder extends BuilderBase {
      * @param array $options some parameters <ul>
      *      <li>"errDecorator"=>"name of your javascript object for error listener"</li>
      *      <li>"method" => "post" or "get". default is "post"</li>
+     *      <li>"plugins" => list of class names for widget. keys are controls refs</li>
      *      </ul>
      */
     public function setOptions($options) {
@@ -139,10 +181,11 @@ class HtmlBuilder extends BuilderBase {
      */
     public function outputHeader(){
 
-        if (isset($this->options['attributes']))
-            $attrs = $this->options['attributes'];
-        else
-            $attrs = array();
+        if (isset($this->options['attributes'])) {
+            $attrs = array_merge($this->htmlFormAttributes, $this->options['attributes']);
+        } else {
+            $attrs = $this->htmlFormAttributes;
+        }
 
         echo '<form';
         if (preg_match('#^https?://#',$this->_action)) {
@@ -191,7 +234,7 @@ class HtmlBuilder extends BuilderBase {
             $ctrls = $this->_form->getControls();
             echo '<ul id="' . $this->_name . '_errors" class="jforms-error-list">';
             foreach ($errors as $cname => $err) {
-                if (!$this->_form->isActivated($ctrls[$cname]->ref)) continue;
+                if (!array_key_exists( $cname, $ctrls ) || !$this->_form->isActivated($ctrls[$cname]->ref)) continue;
                 if ($err === \jForms::ERRDATA_REQUIRED) {
                     if ($ctrls[$cname]->alertRequired) {
                         echo '<li>', $ctrls[$cname]->alertRequired, '</li>';
@@ -225,6 +268,12 @@ class HtmlBuilder extends BuilderBase {
 
     protected $widgets = array();
 
+    /**
+     * @param \jFormsControl $ctrl
+     * @param ParentWidgetInterface|null $parentWidget
+     * @return WidgetBase
+     * @throws \Exception
+     */
     public function getWidget($ctrl, ParentWidgetInterface $parentWidget = null) {
         if (isset($this->widgets[$ctrl->ref])) {
             return $this->widgets[$ctrl->ref];
@@ -241,6 +290,9 @@ class HtmlBuilder extends BuilderBase {
         elseif (isset($config[$ctrl->type])) {
             $pluginName = $config[$ctrl->type];
         }
+        elseif (isset($this->defaultPluginsConf[$ctrl->type])) {
+            $pluginName = $this->defaultPluginsConf[$ctrl->type];
+        }
         // else get the plugin name from the control
         else {
             $pluginName = $ctrl->getWidgetType(). '_'. $this->formType;
@@ -252,6 +304,11 @@ class HtmlBuilder extends BuilderBase {
         if (!$plugin)
             throw new \Exception('Widget '.$pluginName.' not found');
         $this->widgets[$ctrl->ref] = $plugin;
+
+        if (isset($this->htmlWidgetsAttributes[$ctrl->getWidgetType()])) {
+            $plugin->setDefaultAttributes($this->htmlWidgetsAttributes[$ctrl->getWidgetType()]);
+        }
+
         return $plugin;
     }
 

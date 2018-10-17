@@ -6,7 +6,7 @@
 * @author      Claudio Bernardes
 * @contributor Laurent Jouanneau, Julien Issler, Dominique Papin
 * @copyright   2012 Claudio Bernardes
-* @copyright   2006-2012 Laurent Jouanneau, 2008-2011 Julien Issler, 2008 Dominique Papin
+* @copyright   2006-2018 Laurent Jouanneau, 2008-2011 Julien Issler, 2008 Dominique Papin
 * @link        http://www.jelix.org
 * @licence     http://www.gnu.org/licenses/lgpl.html GNU Lesser General Public Licence, see LICENCE file
 */
@@ -73,13 +73,17 @@ class choice_htmlFormWidget extends \jelix\forms\HtmlWidget\WidgetBase
         $value = $this->getValue();
         $jFormsJsVarName = $this->builder->getjFormsJsVarName();
 
-        echo '<ul class="jforms-choice jforms-ctl-'.$ctrl->ref.'" >',"\n";
+        $class = $this->ctrl->getAttribute('class');
+        echo '<ul class="jforms-choice jforms-ctl-'.$ctrl->ref.($class?' '.$class:'').'" >',"\n";
         if(is_array($value)){
             if(isset($value[0]))
                 $value = $value[0];
             else
                 $value='';
         }
+
+        $itemLabelClass = (isset($attr['itemLabelClass'])? ' class="'.$attr['itemLabelClass'].'"':'');
+        unset($attr['itemLabelClass']);
 
         $i=0;
         $attr['name'] = $ctrl->ref;
@@ -93,7 +97,7 @@ class choice_htmlFormWidget extends \jelix\forms\HtmlWidget\WidgetBase
         foreach( $ctrl->items as $itemName=>$listctrl){
             if (!$ctrl->isItemActivated($itemName))
                 continue;
-            echo '<li id="'.$id.$itemName.'_item"><label><input';
+            echo '<li id="'.$id.$itemName.'_item"><label'.$itemLabelClass.'><input';
             $attr['id'] = $id.$i;
             $attr['value'] = $itemName;
             if ($itemName==$value)

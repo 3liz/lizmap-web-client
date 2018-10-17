@@ -105,11 +105,21 @@ class jInstallerComponentModule extends jInstallerComponentBase {
         $epId = $ep->getEpId();
 
         if ($this->moduleInstaller === null) {
-            if (!file_exists($this->path.'install/install.php') || $this->moduleInfos[$epId]->skipInstaller) {
+            if ($this->moduleInfos[$epId]->skipInstaller) {
                 $this->moduleInstaller = false;
                 return null;
             }
-            require_once($this->path.'install/install.php');
+            // script name for modules that provide install.php for Jelix 1.7
+            // and install_1_6.php for Jelix 1.6
+            $script = 'install_1_6.php';
+            if (!file_exists($this->path.'install/'.$script)) {
+                $script = 'install.php'; // deprecated script name for Jelix 1.6
+                if (!file_exists($this->path.'install/'.$script)) {
+                    $this->moduleInstaller = false;
+                    return null;
+                }
+            }
+            require_once($this->path.'install/'.$script);
             $cname = $this->name.'ModuleInstaller';
             if (!class_exists($cname))
                 throw new jInstallerException("module.installer.class.not.found",array($cname,$this->name));

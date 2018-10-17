@@ -4,7 +4,7 @@
 * @subpackage  forms
 * @author      Laurent Jouanneau
 * @contributor Julien Issler, Dominique Papin
-* @copyright   2006-2012 Laurent Jouanneau
+* @copyright   2006-2018 Laurent Jouanneau
 * @copyright   2008-2011 Julien Issler, 2008 Dominique Papin
 * @link        http://www.jelix.org
 * @licence     http://www.gnu.org/licenses/lgpl.html GNU Lesser General Public Licence, see LICENCE file
@@ -173,7 +173,7 @@ class jFormsBuilderHtml extends jFormsBuilderBase {
             $ctrls = $this->_form->getControls();
             echo '<ul id="'.$this->_name.'_errors" class="jforms-error-list">';
             foreach($errors as $cname => $err){
-                if(!$this->_form->isActivated($ctrls[$cname]->ref)) continue;
+                if(!array_key_exists( $cname, $ctrls ) || !$this->_form->isActivated($ctrls[$cname]->ref)) continue;
                 if ($err === jForms::ERRDATA_REQUIRED) {
                     if ($ctrls[$cname]->alertRequired){
                         echo '<li>', $ctrls[$cname]->alertRequired,'</li>';

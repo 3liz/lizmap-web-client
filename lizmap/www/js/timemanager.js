@@ -65,20 +65,24 @@ var lizTimemanager = function() {
                     var self = $(this);
                     var lname = self.find('Name').text();
                     var typeName = self.find('Name').text();
-                    var lname = '';
-                    if (typeName in config.timemanagerLayers)
-                        lname = typeName
-                    else if ( lizMap.getNameByShortName(typeName) ){
-                        lname = lizMap.getNameByShortName(typeName);
-                    } else {
-                        for (ltl in config.timemanagerLayers) {
-                            if (ltl.split(' ').join('_') == typeName) {
-                                lname = ltl;
-                                break;
+                    var lname = lizMap.getNameByTypeName( typeName );
+                    if ( !lname ) {
+                        if (typeName in config.timemanagerLayers)
+                            lname = typeName
+                        else if ( lizMap.getNameByShortName(typeName) ){
+                            lname = lizMap.getNameByShortName(typeName);
+                        } else {
+                            for (ltl in config.timemanagerLayers) {
+                                if (ltl.split(' ').join('_') == typeName) {
+                                    lname = ltl;
+                                    break;
+                                }
                             }
                         }
                     }
-                  if (lname in config.timemanagerLayers) {
+                    if ( !(lname in config.timemanagerLayers) )
+                        return;
+
                     // Get layers timemanager config information
                     tmLayerConfig = config.timemanagerLayers[lname];
                     var bbox = self.find('LatLongBoundingBox');
@@ -90,35 +94,17 @@ var lizTimemanager = function() {
                     ];
                     tmLayerConfig['title'] = self.find('Title').text();
                     tmLayerConfig['crs'] = self.find('SRS').text();
-                    if ( tmLayerConfig.crs in Proj4js.defs ) {
+                    lizMap.loadProjDefinition( tmLayerConfig.crs, function( aProj ) {
                         new OpenLayers.Projection(tmLayerConfig.crs);
-
                         // in QGIS server > 2.14 GeoJSON is in EPSG:4326
                         if ( 'qgisServerVersion' in config.options && config.options.qgisServerVersion != '2.14' ) {
-                            tmLayerConfig['crs'] = 'EPSG:4326';
                             var bbox = tmLayerConfig['bbox'];
                             var extent = new OpenLayers.Bounds(Number(bbox[0]),Number(bbox[1]),Number(bbox[2]),Number(bbox[3]));
                             extent.transform(tmLayerConfig.crs, 'EPSG:4326');
                             tmLayerConfig['bbox'] = extent.toArray();
+                            tmLayerConfig['crs'] = 'EPSG:4326';
                         }
-                    } else
-                        $.get(service, {
-                            'REQUEST':'GetProj4'
-                           ,'authid': tmLayerConfig.crs
-                        }, function ( aText ) {
-                            Proj4js.defs[tmLayerConfig.crs] = aText;
-                            new OpenLayers.Projection(tmLayerConfig.crs);
-
-                            // in QGIS server > 2.14 GeoJSON is in EPSG:4326
-                            if ( 'qgisServerVersion' in config.options && config.options.qgisServerVersion != '2.14' ) {
-                                tmLayerConfig['crs'] = 'EPSG:4326';
-                                var bbox = tmLayerConfig['bbox'];
-                                var extent = new OpenLayers.Bounds(Number(bbox[0]),Number(bbox[1]),Number(bbox[2]),Number(bbox[3]));
-                                extent.transform(tmLayerConfig.crs, 'EPSG:4326');
-                                tmLayerConfig['bbox'] = extent.toArray();
-                            }
-                        }, 'text');
-                  }
+                    });
                 });
               }
 

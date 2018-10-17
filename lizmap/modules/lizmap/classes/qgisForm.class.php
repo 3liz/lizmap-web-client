@@ -656,10 +656,10 @@ class qgisForm {
 
 
     /**
-     * Get the values for a "Unqiue Values" layer's field and fill the form control for a specific field.
-     * @param string $fieldName Name of QGIS field
+     * Get the values for a "Unique Values" layer's field and fill the form control for a specific field.
      *
-     * @return Modified form control
+     * @param string $fieldName Name of QGIS field
+     * @param qgisFormControl $formControl
      */
     private function fillControlFromUniqueValues( $fieldName, $formControl ) {
         $values = $this->layer->getDbFieldDistinctValues( $fieldName );
@@ -682,7 +682,7 @@ class qgisForm {
         if ( array_key_exists('editable', $formControl->uniqueValuesData)
              and strtolower( $formControl->uniqueValuesData['editable'] ) == '1'
         ){
-            $formControl->ctrl->class = 'autocomplete';
+            $formControl->ctrl->setAttribute('class', 'autocomplete');
         }
 
         // Add default empty value for required fields
@@ -698,9 +698,9 @@ class qgisForm {
 
     /**
      * Get WFS data from a "Value Relation" layer and fill the form control for a specific field.
-     * @param string $fieldName Name of QGIS field
      *
-     * @return Modified form control
+     * @param string $fieldName Name of QGIS field
+     * @param qgisFormControl $formControl
      */
     private function fillControlFromValueRelationLayer( $fieldName, $formControl ) {
         $wfsData = null;
@@ -801,7 +801,7 @@ class qgisForm {
             if ( array_key_exists('useCompleter', $formControl->valueRelationData)
                  and $formControl->valueRelationData['useCompleter'] == '1'
             ){
-                $formControl->ctrl->class = 'combobox';
+                $formControl->ctrl->setAttribute('class', 'combobox');
             }
 
             // Add default empty value for required fields
@@ -833,9 +833,9 @@ class qgisForm {
 
     /**
      * Get WFS data from a "Relation Reference" and fill the form control for a specific field.
-     * @param string $fieldName Name of QGIS field
      *
-     * @return Modified form control
+     * @param string $fieldName Name of QGIS field
+     * @param qgisFormControl $formControl
      */
     private function fillControlFromRelationReference( $fieldName, $formControl ) {
         $wfsData = null;
@@ -993,6 +993,8 @@ class qgisForm {
      * as configured in the plugin for login filtered layers.
      */
     protected function filterDataByLogin($layername) {
+        if ( $this->loginFilteredOverride )
+            return null;
 
         // Optionnaly add a filter parameter
         $lproj = $this->layer->getProject();

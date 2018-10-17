@@ -12,6 +12,7 @@
 #php_apt_key_id: AC0E47584A7A714D
 #php_version: "5.6"
 #php_repository: https://packages.sury.org/php
+#php_composer_version: 1.7.2
 
 # lizmap_hostname: lizmap.local
 # lizmap_webserver_group: www-data
