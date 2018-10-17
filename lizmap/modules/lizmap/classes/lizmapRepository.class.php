@@ -138,6 +138,9 @@ class lizmapRepository{
                         catch(UnknownLizmapProjectException $e) {
                             jLog::logEx($e, 'error');
                         }
+                        catch(Exception $e) {
+                            jLog::logEx($e, 'error');
+                        }
                 }
             }
         }
