@@ -1,4 +1,4 @@
-[![logo](icon.png "3Liz")][3liz]Lizmap Web Application 3.2rc5
+[![logo](icon.png "3Liz")][3liz]Lizmap Web Application 3.2rc6
 =================================================================
 
 Lizmap web application, by 3LIZ.
@@ -54,7 +54,7 @@ Documentation source: https://github.com/3liz/lizmap-documentation/
 Internationalization and code contributions
 --------------------------------------------
 
-To contribute on the code, and propose enhancements or bug fixes, see CONTRIBUTING.md. 
+To contribute on the code, and propose enhancements or bug fixes, see CONTRIBUTING.md.
 
 To help us on translations, go on [our project on Transifex](https://www.transifex.com/3liz-1/lizmap-locales/).
 
