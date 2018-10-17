@@ -40,10 +40,8 @@ class qgisServer {
             'request'=>'GetCapabilitiesAtlas'
         );
         $url = lizmapProxy::constructUrl($params);
-        $getRemoteData = lizmapProxy::getRemoteData($url);
-        $data = $getRemoteData[0];
-        $mime = $getRemoteData[1];
-        if($mime=='text/json'){
+        list($data, $mime, $code) = lizmapProxy::getRemoteData($url);
+        if ($mime=='text/json') {
             $json = json_decode($data);
             $metadata = $json->metadata;
             $plugins[$metadata->name] = array('version' => $metadata->version);

@@ -38,16 +38,29 @@ var lizAttributeTable = function() {
                 return -1;
 
             $('body').css('cursor', 'wait');
+
+            // Sort attribute layers as given by creation order in Lizmap plugin
+            var attributeLayersSorted = [];
+
             for (var lname in config.attributeLayers) {
-                attributeLayersDic[lizMap.cleanName(lname)] = lname;
+                var al = config.attributeLayers[lname];
+                attributeLayersSorted[al.order] = lname;
+            }
+
+            for (var i = 0; i < attributeLayersSorted.length; i++) {
+                attributeLayersDic[lizMap.cleanName(attributeLayersSorted[i])] = attributeLayersSorted[i];
             }
 
             featureTypes.each( function(){
                 var self = $(this);
                 // typename
                 var typeName = self.find('Name').text();
+                // layername
+                var layername = lizMap.getNameByTypeName( typeName );
+                if ( !layername )
+                    return;
                 // lizmap internal js cleaned name
-                var cleanName = lizMap.cleanName(typeName);
+                var cleanName = lizMap.cleanName(layername);
                 // lizmap config file layer name
                 var configLayerName = attributeLayersDic[cleanName];
                 // Add matching between wfs type name and clean name
@@ -98,17 +111,9 @@ var lizAttributeTable = function() {
                     }
 
                     config.layers[configLayerName]['crs'] = self.find('SRS').text();
-                    if ( config.layers[configLayerName].crs in Proj4js.defs ){
+                    lizMap.loadProjDefinition( config.layers[configLayerName].crs, function( aProj ) {
                         new OpenLayers.Projection(config.layers[configLayerName].crs);
-                    }
-                    else
-                        $.get(service, {
-                            'REQUEST':'GetProj4'
-                            ,'authid': config.layers[configLayerName].crs
-                        }, function ( aText ) {
-                            Proj4js.defs[config.layers[configLayerName].crs] = aText;
-                            new OpenLayers.Projection(config.layers[configLayerName].crs);
-                        }, 'text');
+                    });
                     var bbox = self.find('LatLongBoundingBox');
                     atConfig['bbox'] = [
                         parseFloat(bbox.attr('minx'))
@@ -884,6 +889,7 @@ var lizAttributeTable = function() {
                             var cDiv = '<div class="tab-pane attribute-layer-child-content '+childActive+'" id="'+ tabId +'" >';
                             var tId = 'attribute-layer-table-' + lizMap.cleanName(parentLayerName) + '-' + lizMap.cleanName(childLayerName);
                             var tClass = 'attribute-table-table table table-hover table-condensed table-striped child-of-' + lizMap.cleanName(parentLayerName);
+                            cDiv+= '    <input type="hidden" class="attribute-table-hidden-parent-layer" value="'+lizMap.cleanName(parentLayerName)+'">';
                             cDiv+= '    <input type="hidden" class="attribute-table-hidden-layer" value="'+lizMap.cleanName(childLayerName)+'">';
                             cDiv+= '    <table id="' + tId  + '" class="' + tClass + '" width="100%"></table>';
                             cDiv+= '</div>';
@@ -1714,10 +1720,13 @@ var lizAttributeTable = function() {
                     buildLayerAttributeDatatable( chName, childTable, chFeatures, chAliases, function() {
 
                         // Check edition capabilities
+                        var canCreate = false;
                         var canEdit = false;
                         var canDelete = false;
                         if( 'editionLayers' in config && chName in config.editionLayers ) {
                             var al = config.editionLayers[chName];
+                            if( al.capabilities.createFeature == "True" )
+                                canCreate = true;
                             if( al.capabilities.modifyAttribute == "True" || al.capabilities.modifyGeometry == "True" )
                                 canEdit = true;
                             if( al.capabilities.deleteFeature == "True" )
@@ -1763,7 +1772,31 @@ var lizAttributeTable = function() {
                                      dataSrc == 'zoom' ||
                                      dataSrc == 'center' )
                                      dt.column(c).visible(false);
-
+                                if ( dataSrc == 'edit' && canCreate ) {
+                                    var createHeader = $(dt.column(c).header());
+                                    if ( createHeader.find('button.attribute-layer-feature-create').length == 0 ) {
+                                        createHeader
+                                            .append('<button class="btn btn-mini attribute-layer-feature-create" value="-1" title="'+lizDict['attributeLayers.toolbar.btn.data.createFeature.title']+'"><i class="icon-plus"></i></button>')
+                                            .css('padding', '10px 5px');
+                                        createHeader
+                                            .children('button.attribute-layer-feature-create')
+                                            .click(function(){
+                                var tabPane = $(this).parents('div.tab-pane.attribute-layer-child-content');
+                                var parentFeatId = tabPane.find('input.attribute-table-hidden-parent-feature-id').val();
+                                var parentLayerName = tabPane.find('input.attribute-table-hidden-parent-layer').val();
+                                var layerName = tabPane.find('input.attribute-table-hidden-layer').val();
+                                lizMap.getLayerFeature(parentLayerName, parentFeatId, function(feat) {
+                                    var parentFeat = feat;
+                                    var parentLayerId = config.layers[lizMap.getLayerNameByCleanName(parentLayerName)]['id'];
+                                    var lid = config.layers[lizMap.getLayerNameByCleanName(layerName)]['id'];
+                                    lizMap.launchEdition( lid, null, {layerId:parentLayerId,feature:parentFeat}, function(editionLayerId, editionFeatureId){
+                                        $('#bottom-dock').css('left',  lizMap.getDockRightPosition() );
+                                    });
+                                });
+                                return false;
+                                            });
+                                    }
+                                }
                             }
 /*
                             // Bind event when users click anywhere on the table line to highlight
@@ -2795,6 +2828,7 @@ var lizAttributeTable = function() {
 
                         // select
                         $('div.lizmapPopupContent button.popup-layer-feature-select')
+                        .unbind('click')
                         .click(function(){
                             var fid = $(this).val().split('.').pop();
                             var featureType = $(this).val().replace( '.' + fid, '' );
@@ -2822,6 +2856,7 @@ var lizAttributeTable = function() {
 
                         // Zoom
                         $('div.lizmapPopupContent button.popup-layer-feature-zoom')
+                        .unbind('click')
                         .click(function(){
                             var fid = $(this).val().split('.').pop();
                             var featureType = $(this).val().replace( '.' + fid, '' );
@@ -2843,6 +2878,7 @@ var lizAttributeTable = function() {
                         // filter
                         if( !startupFilter ){
                             $('div.lizmapPopupContent button.popup-layer-feature-filter')
+                            .unbind('click')
                             .click(function(){
                                 var fid = $(this).val().split('.').pop();
                                 var featureType = $(this).val().replace( '.' + fid, '' );
@@ -2953,6 +2989,8 @@ var lizAttributeTable = function() {
                 },
 
                 lizmapeditionformdisplayed: function(e) {
+                    $('#edition-children-container').hide().html('');
+
                     var fid =  e.featureId;
                     // Do not disply child if it's a creation
                     if (fid == null)
@@ -2996,6 +3034,9 @@ var lizAttributeTable = function() {
                                 html+= '</div>'; // tabbable
                             }
                             $('#edition-children-container').show().append(html);
+                            $('#edition-children-container div.tabbable div.tab-pane input.attribute-table-hidden-parent-layer').after(
+                                '<input class="attribute-table-hidden-parent-feature-id" value="'+fid+'" type="hidden">'
+                            );
                             $('#edition-children-container div.tabbable ul.nav-tabs li').each(function() {
                                 $(this).attr('id', $(this).attr('id').replace(/nav-tab-attribute-child-tab-/g, 'nav-tab-edition-child-tab-'));
                             });
@@ -3106,6 +3147,7 @@ var lizAttributeTable = function() {
     }
 
     var options = '';
+    var selectionLayersSorted = [];
     featureTypes.each( function(){
         var self = $(this);
         var lname = self.find('Name').text();
@@ -3116,16 +3158,19 @@ var lizAttributeTable = function() {
             && config.layers[lname]['geometryType'] != 'none'
             && config.layers[lname]['geometryType'] != 'unknown') {
             var lConfig = config.layers[lname];
-            options += '<option value="'+lname+'">'+lConfig.title+'</option>';
-        }
+            selectionLayersSorted[config.attributeLayers[lname].order] = '<option value="'+lname+'">'+lConfig.title+'</option>';        }
     });
+
+    for (var i = 0; i < selectionLayersSorted.length; i++) {
+        options += selectionLayersSorted[i];
+    }
+
     if ( options == '' ) {
       $('#button-selectiontool').parent().remove();
       return false;
     }
 
     $('#selectiontool-layer-list').html(options);
-
 
     // List of WFS format
     var exportFormats = lizMap.getVectorLayerResultFormat();

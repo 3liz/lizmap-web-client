@@ -174,7 +174,7 @@ class createentrypointCommand extends JelixScriptCommand {
 
         if (!$ep->length) {
             $ep = $this->projectXml->createElementNS(JELIX_NAMESPACE_BASE.'project/1.0', 'entrypoints');
-            $doc->documentElement->appendChild($ep);
+            $this->projectXml->documentElement->appendChild($ep);
             $ep->appendChild($elem);
         }
         else

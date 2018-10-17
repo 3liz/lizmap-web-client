@@ -6,6 +6,8 @@ php_version: "5.6"
 php_repository: https://packages.sury.org/php
 php_fpm_config_file: /etc/php/{{ php_version }}/fpm/pool.d/www.conf
 
+php_composer_version: 1.7.2
+
 # Lizmap nginx frontal
 lizmap_port: 80
 lizmap_hostname: lizmap.local

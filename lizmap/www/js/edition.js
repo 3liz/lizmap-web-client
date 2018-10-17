@@ -1452,18 +1452,18 @@ OpenLayers.Geometry.pointOnSegment = function(point, segment) {
                             ( eConfig[1].capabilities.modifyAttribute == "True" || eConfig[1].capabilities.modifyGeometry == "True" )
                             && self.next('span.popupButtonBar').find('button.popup-layer-feature-edit').length == 0
                         ) {
-                            eHtml+= '<button class="btn btn-mini popup-layer-feature-edit" value="';
-                            eHtml+= $(this).val();
-                            eHtml+= '" title="' + lizDict['attributeLayers.btn.edit.title'] + '"><i class="icon-pencil"></i>&nbsp;</button>';
+                            eHtml+= '<button class="btn btn-mini popup-layer-feature-edit"';
+                            eHtml+= ' value="'+val+'"';
+                            eHtml+= ' title="' + lizDict['attributeLayers.btn.edit.title'] + '"><i class="icon-pencil"></i>&nbsp;</button>';
                         }
 
                         // Delete feature button
                         if( eConfig && eConfig[1].capabilities.deleteFeature == "True"
                             && self.next('span.popupButtonBar').find('button.popup-layer-feature-delete').length == 0
                         ) {
-                            eHtml+= '<button class="btn btn-mini popup-layer-feature-delete" value="';
-                            eHtml+= $(this).val();
-                            eHtml+= '" title="' + lizDict['attributeLayers.btn.delete.title'] + '"><i class="icon-remove"></i>&nbsp;</button>';
+                            eHtml+= '<button class="btn btn-mini popup-layer-feature-delete"';
+                            eHtml+= ' value="'+val+'"';
+                            eHtml+= ' title="' + lizDict['attributeLayers.btn.delete.title'] + '"><i class="icon-remove"></i>&nbsp;</button>';
                         }
 
                         if( eHtml != '' ){
@@ -1488,6 +1488,7 @@ OpenLayers.Geometry.pointOnSegment = function(point, segment) {
 
                         // edit
                         $('div.lizmapPopupContent button.popup-layer-feature-edit')
+                        .unbind('click')
                         .click(function(){
                             var fid = $(this).val().split('.').pop();
                             var layerId = $(this).val().replace( '.' + fid, '' );
@@ -1507,7 +1508,9 @@ OpenLayers.Geometry.pointOnSegment = function(point, segment) {
                         .tooltip();
 
                         // delete
-                        $('div.lizmapPopupContent button.popup-layer-feature-delete').click(function(){
+                        $('div.lizmapPopupContent button.popup-layer-feature-delete')
+                        .unbind('click')
+                        .click(function(){
                             var fid = $(this).val().split('.').pop();
                             var layerId = $(this).val().replace( '.' + fid, '' );
 

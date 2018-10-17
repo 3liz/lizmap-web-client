@@ -54,7 +54,7 @@ class lizmapProxy {
     }
 
 
-    public function constructUrl ( $params ) {
+    public static function constructUrl ( $params ) {
         $ser = lizmap::getServices();
         $url = $ser->wmsServerURL.'?';
 
@@ -71,70 +71,170 @@ class lizmapProxy {
 
 
     /**
-    * Get remote data from URL, with curl or internal php functions.
-    * @param string $url Url of the remote data to fetch.
-    * @param text $proxyMethod Method for the proxy : 'php' (default) or 'curl'.
-    * @param integer $debug 0 or 1 to get debug log.
-    * @return array($data, $mime, $http_code) Array containing the data and the mime type.
-    */
-    static public function getRemoteData($url, $proxyMethod='php', $debug=0, $method='get'){
+     * Get remote data from URL, with curl or internal php functions.
+     *
+     *
+     *
+     *
+     * @param string $url Url of the remote data to fetch.
+     * @param array|null|string $options list of options for the http request.
+     *        Option items can be: "method", "referer", "proxyMethod",
+     *          "headers" (array of headers strings), "body", "debug".
+     *        If $options is a string, this should be the proxy method
+     *        for compatibility to old calls.
+     *        proxyMethod: method for the proxy : 'php' or 'curl'.
+     *        by default, it is the proxy method indicated into lizmapService
+     * @param integer|null $debug deprecated. 0 or 1 to get debug log.
+     *              if null, it uses the method indicated into lizmapService.
+     *              it is ignored if $options is an array.
+     * @param string|string[] $method deprecated. the http method.
+     *              it is ignored if $options is an array.
+     * @return array($data, $mime, $http_code) Array containing the data and the mime type.
+     */
+    static public function getRemoteData($url, $options=null, $debug=null, $method = 'get'){
+
+        if (!is_array($options)) {
+            // support of deprecated parameters
+            if ($options !== null) {
+                $options = array(
+                    "method"=>$method,
+                    "proxyMethod" => $options
+                );
+            }
+            else {
+                $options = array("method"=>$method);
+            }
+            if ($debug !== null) {
+                $options["debug"] = $debug;
+            }
+        }
+
+        $services = lizmap::getServices();
+        $options = array_merge(array(
+            "method"=>"get",
+            "referer"=>"",
+            "headers"=> array(),
+            "proxyMethod" => $services->proxyMethod,
+            "debug" => $services->debugMode,
+            "body" =>''
+        ), $options);
+
+        $options['method'] = strtolower($options['method']);
+
+        if ($options['method'] == 'post' || $options['method'] == 'put') {
+            if ($options['body'] == '') {
+                $options['headers']['Content-type'] = 'application/x-www-form-urlencoded';
+                $content = explode('?', $url);
+                if (count($content) > 1) {
+                    $url = $content[0];
+                    $options['body'] = $content[1];
+                }
+            }
+            else if (!isset($options['headers']['Content-type'])) {
+                $options['headers']['Content-type'] = 'application/x-www-form-urlencoded';
+            }
+        }
+
+        $options['headers'] = array_merge(array(
+            'Connection'=>'close',
+        ), $options['headers']);
 
         // Initialize responses
-        $data = '';
-        $mime = '';
         $http_code = null;
-        $content = explode('?', $url);
-        $purl = $content[0];
-        $content = $content[1];
+
         // Proxy method : use curl or file_get_contents
-        if($proxyMethod == 'curl' and extension_loaded("curl")){
-            # With curl
+        if ($options['proxyMethod'] == 'curl' && extension_loaded("curl")) {
+            // With curl
             $ch = curl_init();
             curl_setopt($ch, CURLOPT_HEADER, 0);
             curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false );
             curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
             curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
-            if ( $method === 'get' ) {
-                curl_setopt($ch, CURLOPT_URL, $url);
-                curl_setopt($ch, CURLOPT_HTTPHEADER, array(
-                    'Connection: close'
-                ));
-            } else {
-                curl_setopt($ch, CURLOPT_URL, $purl);
+            curl_setopt($ch, CURLOPT_HTTPHEADER, self::encodeHttpHeaders($options['headers']));
+            curl_setopt($ch, CURLOPT_URL, $url);
+
+            if ($services->requestProxyEnabled && $services->requestProxyHost != '') {
+                $proxy = $services->requestProxyHost;
+                if ($services->requestProxyPort) {
+                    $proxy .= ':'.$services->requestProxyPort;
+                }
+                curl_setopt($ch, CURLOPT_PROXY, $proxy);
+                if ($services->requestProxyType) {
+                    curl_setopt($ch, CURLOPT_PROXYTYPE, $services->requestProxyType);
+                }
+                if ($services->requestProxyNotForDomain) {
+                    curl_setopt($ch, CURLOPT_NOPROXY, $services->requestProxyNotForDomain);
+                }
+                if ($services->requestProxyUser) {
+                    curl_setopt($ch, CURLOPT_PROXYAUTH, CURLAUTH_BASIC);
+                    curl_setopt($ch, CURLOPT_PROXYUSERPWD, $services->requestProxyUser.':'.$services->requestProxyPassword);
+                }
+            }
+
+            if ($options['referer']) {
+                curl_setopt($ch, CURLOPT_REFERER, $options['referer']);
+            }
+            if ( $options['method'] === 'post' ) {
                 curl_setopt($ch, CURLOPT_POST, 1);
-                curl_setopt($ch, CURLOPT_POSTFIELDS, $content);
-                curl_setopt($ch, CURLOPT_HTTPHEADER, array(
-                    'Connection: close',
-                    'Content-type: application/x-www-form-urlencoded'
-                ));
+                curl_setopt($ch, CURLOPT_POSTFIELDS, $options['body']);
             }
             $data = curl_exec($ch);
             $info = curl_getinfo($ch);
             $mime = $info['content_type'];
             $http_code = (int) $info['http_code'];
             // Optionnal debug
-            if($debug and curl_errno($ch))
+            if($options["debug"] and curl_errno($ch))
             {
                 jLog::log('--> CURL: ' .json_encode($info));
             }
 
             curl_close($ch);
         }
-        else{
-            # With file_get_contents
-            if ( $method === 'get' ) {
-                $data = file_get_contents($url);
-            } else {
-                $opts = array(
-                  'http'=>array(
-                    'method'=>"POST",
-                    'header'=>"Connection: close\r\nContent-type: application/x-www-form-urlencoded\r\n",
-                    'content'=>$content
-                  )
-                );
-                $context = stream_context_create($opts);
-                $data = file_get_contents($purl,false, $context);
+        else {
+            // With file_get_contents
+            $urlInfo = parse_url($url);
+            $scheme = isset($urlInfo['scheme']) ?$urlInfo['scheme']:'http';
+
+            $opts = array(
+                'method'=>strtoupper($options['method'])
+            );
+
+            if ($services->requestProxyEnabled && $services->requestProxyHost != '') {
+                $okproxy = true;
+                if ($services->requestProxyNotForDomain) {
+                    $noProxy = preg_split('/\s*,\s*/', $services->requestProxyNotForDomain);
+                    $host = isset($urlInfo['host']) ?$urlInfo['host']:'localhost';
+                    if (in_array($host, $noProxy)) {
+                        $okproxy = false;
+                    }
+                }
+                if ($okproxy) {
+                    $proxy = 'tcp://'.$services->requestProxyHost;
+                    if ($services->requestProxyPort) {
+                        $proxy .= ':'.$services->requestProxyPort;
+                    }
+                    $opts['proxy'] = $proxy;
+                    $opts['request_fulluri'] = true;
+
+                    if ($services->requestProxyUser) {
+                        $options['headers']['Proxy-Authorization'] =
+                            'Basic '.base64_encode($services->requestProxyUser.':'.$services->requestProxyPassword);
+                    }
+                }
             }
+            if ($options['referer']) {
+                $options['headers']['Referer'] = $options['referer'];
+            }
+            if ( $options['method'] != 'get' && $options['body'] != '') {
+                $opts['content'] = $options['body'];
+            }
+            else {
+                unset($options['headers']['Connection']);
+            }
+            $opts['header'] = implode("\r\n", self::encodeHttpHeaders($options['headers']))."\r\n";
+
+            $context = stream_context_create(array($scheme => $opts));
+            $data = file_get_contents($url, false, $context);
             $mime = 'image/png';
             $matches = array();
             $info = $url . ' --> PHP: ';
@@ -148,11 +248,11 @@ class lizmapProxy {
                     $http_code = (int) $code;
                 }
                 // optional debug
-                if($debug and $http_code == 500){
-                    $info.= ' '.$header;
+                if($options["debug"] and $http_code == 500){
+                    $info .= ' '.$header;
                 }
             }
-            if($debug and $http_code == 500)
+            if($options["debug"] and $http_code == 500)
             {
                 jLog::log(json_encode($info));
             }
@@ -161,7 +261,13 @@ class lizmapProxy {
         return array($data, $mime, $http_code);
     }
 
-
+    static protected function encodeHttpHeaders($optionHeaders) {
+        $headers = array();
+        foreach($optionHeaders as $hname => $hvalue) {
+            $headers[] = $hname.': '.$hvalue;
+        }
+        return $headers;
+    }
     /**
     * Get data from map service or from the cache.
     * @param lizmapProject $project The project.
@@ -344,14 +450,14 @@ class lizmapProxy {
         $builtParams = str_replace($a, $b, $builtParams);
 
         // Get data from the map server
-        $proxyMethod = $ser->proxyMethod;
-        $getRemoteData = lizmapProxy::getRemoteData($url . $builtParams, $proxyMethod, $debug, 'post');
-        $data = $getRemoteData[0];
-        $mime = $getRemoteData[1];
-        $code = $getRemoteData[2];
+        list($data, $mime, $code) = lizmapProxy::getRemoteData(
+            $url . $builtParams,
+            array('method'=>'post')
+        );
 
-        if($debug)
+        if ($debug) {
             lizmap::logMetric('LIZMAP_PROXY_REQUEST_QGIS_MAP');
+        }
 
         if ( $useCache && !preg_match('/^image/',$mime) )
             $useCache = False;

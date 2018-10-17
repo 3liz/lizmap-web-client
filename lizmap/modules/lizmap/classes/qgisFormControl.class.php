@@ -4,7 +4,7 @@
 * @package   lizmap
 * @subpackage lizmap
 * @author    3liz
-* @copyright 2012 3liz
+* @copyright 2012-2018 3liz
 * @link      http://3liz.com
 * @license Mozilla Public License : http://www.mozilla.org/MPL/
 */
@@ -14,11 +14,16 @@ class qgisFormControl{
 
     public $ref = '';
 
-    // JForm control object
-    public $ctrl = '';
+    /**
+     * @var jFormsControl
+     */
+    public $ctrl;
 
-    // Qgis edittype as a simpleXml object
-    public $edittype = '';
+    /**
+     * Qgis edittype as a simpleXml object
+     * @var SimpleXMLElement
+     */
+    public $edittype;
 
     // Qgis field name
     public $fieldName = '';
@@ -160,7 +165,7 @@ class qgisFormControl{
   * Create an jForms control object based on a qgis edit widget.
   * And add it to the passed form.
   * @param string $ref Name of the control.
-  * @param object $edittype simplexml object corresponding to the QGIS edittype for this field.
+  * @param SimpleXMLElement $edittype simplexml object corresponding to the QGIS edittype for this field.
   * @param object $aliasXml simplexml object corresponding to the QGIS alias for this field.
   * @param object $rendererCategories simplexml object corresponding to the QGIS categories of the renderer.
   * @param object $prop Jelix object with field properties (datatype, required, etc.)

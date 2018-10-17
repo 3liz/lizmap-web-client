@@ -72,14 +72,7 @@ class lizmapWFSRequest extends lizmapOGCRequest {
         $querystring = $this->constructUrl();
 
         // Get remote data
-        $getRemoteData = lizmapProxy::getRemoteData(
-          $querystring,
-          $this->services->proxyMethod,
-          $this->services->debugMode
-        );
-        $data = $getRemoteData[0];
-        $mime = $getRemoteData[1];
-        $code = $getRemoteData[2];
+        list($data, $mime, $code) = lizmapProxy::getRemoteData($querystring);
 
         return (object) array(
             'code' => $code,
@@ -131,14 +124,7 @@ class lizmapWFSRequest extends lizmapOGCRequest {
         $querystring = $this->constructUrl();
 
         // Get remote data
-        $getRemoteData = lizmapProxy::getRemoteData(
-            $querystring,
-            $this->services->proxyMethod,
-            $this->services->debugMode
-        );
-        $data = $getRemoteData[0];
-        $mime = $getRemoteData[1];
-        $code = $getRemoteData[2];
+        list($data, $mime, $code) = lizmapProxy::getRemoteData($querystring);
 
         if ( $mime == 'text/plain' && strtolower( $this->param('outputformat') ) == 'geojson' ) {
             $mime = 'text/json';

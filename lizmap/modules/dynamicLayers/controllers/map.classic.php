@@ -47,14 +47,7 @@ class mapCtrl extends jController {
         $querystring = $url . $rparams;
 
         // Get remote data
-        $lizmapCache = jClasses::getService('lizmap~lizmapCache');
-        $getRemoteData = $lizmapCache->getRemoteData(
-          $querystring,
-          $this->services->proxyMethod,
-          $this->services->debugMode
-        );
-        $data = $getRemoteData[0];
-        $mime = $getRemoteData[1];
+        list($data, $mime, $code) = lizmapProxy::getRemoteData($querystring);
 
         // Get returned response and redirect to appropriate project page
         $json = json_decode( $data );

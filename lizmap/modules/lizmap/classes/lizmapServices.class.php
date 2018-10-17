@@ -38,6 +38,13 @@ class lizmapServices{
       'rootRepositories',
       'relativeWMSPath',
       'proxyMethod',
+      'requestProxyEnabled',
+      'requestProxyHost',
+      'requestProxyPort',
+      'requestProxyUser',
+      'requestProxyPassword',
+      'requestProxyType',
+      'requestProxyNotForDomain',
       'debugMode',
       'cacheRootDirectory',
       'cacheRedisHost',
@@ -63,6 +70,13 @@ class lizmapServices{
       'rootRepositories',
       'relativeWMSPath',
       'proxyMethod',
+      'requestProxyEnabled',
+      'requestProxyHost',
+      'requestProxyPort',
+      'requestProxyUser',
+      'requestProxyPassword',
+      'requestProxyType',
+      'requestProxyNotForDomain',
       'debugMode',
       'cacheRootDirectory',
       'cacheRedisHost',
@@ -114,8 +128,19 @@ class lizmapServices{
     public $rootRepositories = '';
     // Does the server use relative Path from root folder?
     public $relativeWMSPath = '0';
-    // proxy method : use curl or file_get_contents
+    // proxy method : use curl ('curl') or file_get_contents ('php')
     public $proxyMethod = '';
+
+    public $requestProxyEnabled = false;
+    public $requestProxyHost = '';
+    public $requestProxyPort = '';
+    public $requestProxyUser = '';
+    public $requestProxyPassword = '';
+    // proxy type: 'http' or 'socks5'. Only used with the curl proxyMethod
+    public $requestProxyType = 'http';
+    // list of domains separated by a comma, to which the proxy is not used
+    public $requestProxyNotForDomain = 'localhost';
+
     // debug mode : none or log
     public $debugMode = '';
     // Cache root directory
@@ -206,8 +231,12 @@ class lizmapServices{
     }
 
     public function hideSensitiveProperties(){
-      if ( isset($this->data['hideSensitiveServicesProperties']) && $this->data['hideSensitiveServicesProperties'] != '0')
-        return true;
+      if ( isset($this->data['hideSensitiveServicesProperties'])
+          && $this->data['hideSensitiveServicesProperties'] != '0'
+      ) {
+          return true;
+      }
+
       return false;
     }
 
@@ -280,7 +309,16 @@ class lizmapServices{
       $ini = new jIniFileModifier(jApp::configPath('lizmapConfig.ini.php'));
       $liveIni = new jIniFileModifier(jApp::configPath('liveconfig.ini.php'));
 
+      $dontSaveSensitiveProps = $this->hideSensitiveProperties();
+      $hiddenProps = array();
+      if ($dontSaveSensitiveProps) {
+          $hiddenProps = array_combine($this->sensitiveProperties, array_fill(0, count($this->sensitiveProperties), true));
+      }
+
       foreach($this->properties as $prop) {
+        if ($dontSaveSensitiveProps && isset($hiddenProps[$prop])) {
+          continue;
+        }
         if (isset($this->globalConfigProperties[$prop])) {
           list($key, $section) = $this->globalConfigProperties[$prop];
             $liveIni->setValue($key, $this->$prop, $section);

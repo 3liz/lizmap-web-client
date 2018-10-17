@@ -34,10 +34,22 @@ abstract class WidgetBase implements WidgetInterface {
     protected $ctrl;
 
     /**
-     * attributes
+     * default html attributes for the control
+     * @var array
+     */
+    protected $defaultAttributes = array();
+
+    /**
+     * html attributes for the control
      * @var array
      */
     protected $attributes = array();
+
+    /**
+     * html attributes for the control label
+     * @var array
+     */
+    protected $labelAttributes = array();
 
     protected $valuesSeparator = ' ';
 
@@ -80,21 +92,33 @@ abstract class WidgetBase implements WidgetInterface {
         $class .= (isset($this->builder->getForm()->getContainer()->errors[$this->ctrl->ref]) ?' jforms-error':'');
         $class .= ($ro && $this->ctrl->type != 'captcha'?' jforms-readonly':'');
 
+        $attrClass = $this->ctrl->getAttribute('class');
+        if ($attrClass) {
+            $class .= ' '.$attrClass;
+        }
+
         return $class;
     }
 
     public function getValue() {
         return $this->builder->getForm()->getData($this->ctrl->ref);
     }
-    
+
+    public function setDefaultAttributes($attr) {
+        $this->defaultAttributes = $attr;
+    }
+
     public function setAttributes($attr) {
         if (isset($attr['separator'])) {
             $this->valuesSeparator = $attr['separator'];
             unset($attr['separator']);
         }
-        $this->attributes = $attr;
+        $this->attributes = array_merge($this->defaultAttributes, $attr);
     }
 
+    public function setLabelAttributes($attributes) {
+        $this->labelAttributes = $attributes;
+    }
 
     public function outputMetaContent($resp) { /* do nothing */ }
     
@@ -102,7 +126,7 @@ abstract class WidgetBase implements WidgetInterface {
      * Retrieve the label attributes
      */
     protected function getLabelAttributes($editMode) {
-        $attr = array();
+        $attr = $this->labelAttributes;
         
         $attr['hint'] = ($this->ctrl->hint == '' ? '' : ' title="'.htmlspecialchars($this->ctrl->hint).'"');
         $attr['idLabel'] = ' id="'.$this->getId().'_label"';
@@ -114,7 +138,13 @@ abstract class WidgetBase implements WidgetInterface {
         else {
             $attr['reqHtml'] = '';
         }
-        $attr['class'] = 'jforms-label';
+        if (!isset($attr['class'])) {
+            $attr['class'] = '';
+        }
+        else {
+            $attr['class'] .= ' ';
+        }
+        $attr['class'] .= 'jforms-label';
         $attr['class'] .= (isset($this->builder->getForm()->getContainer()->errors[$this->ctrl->ref]) ?' jforms-error':'');
         if ($editMode) {
             $attr['class'] .= ($this->ctrl->required == false || $this->ctrl->isReadOnly()?'':' jforms-required');
@@ -131,9 +161,12 @@ abstract class WidgetBase implements WidgetInterface {
         $attr['id'] = $this->getId();
         if ($this->ctrl->isReadOnly())
             $attr['readonly'] = 'readonly';
-        if ($this->ctrl->hint)
+        else {
+            unset($attr['readonly']);
+        }
+        if ($this->ctrl->hint) {
             $attr['title'] = $this->ctrl->hint;
-
+        }
         $attr['class'] = $this->getCSSClass();
 
         return $attr;
@@ -205,6 +238,7 @@ abstract class WidgetBase implements WidgetInterface {
             echo '<span class="jforms-help" id="'.$this->getId().'-help">&nbsp;<span>'.htmlspecialchars($this->ctrl->help).'</span></span>';
         }
     }
+
     /**
      * This function displays the form field label.
      */

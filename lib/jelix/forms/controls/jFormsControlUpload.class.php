@@ -4,7 +4,7 @@
 * @subpackage  forms
 * @author      Laurent Jouanneau
 * @contributor Julien Issler
-* @copyright   2006-2008 Laurent Jouanneau
+* @copyright   2006-2018 Laurent Jouanneau
 * @copyright   2009 Julien Issler
 * @link        http://www.jelix.org
 * @licence     http://www.gnu.org/licenses/lgpl.html GNU Lesser General Public Licence, see LICENCE file
@@ -16,9 +16,16 @@
  * @subpackage  forms
  */
 class jFormsControlUpload extends jFormsControl {
+
     public $type='upload';
+
     public $mimetype=array();
+
     public $maxsize=0;
+
+    public $accept = '';
+
+    public $capture = '';
 
     public $fileInfo = array();
 
@@ -26,7 +33,7 @@ class jFormsControlUpload extends jFormsControl {
         if(isset($_FILES[$this->ref]))
             $this->fileInfo = $_FILES[$this->ref];
         else
-            $this->fileInfo = array('name'=>'','type'=>'','size'=>0,'tmp_name'=>'', 'error'=>UPLOAD_ERR_NO_FILE);
+            $this->fileInfo = array('name'=>'','type'=>'','size'=>0, 'tmp_name'=>'', 'error'=>UPLOAD_ERR_NO_FILE);
 
         if($this->fileInfo['error'] == UPLOAD_ERR_NO_FILE) {
             if($this->required)
