@@ -193,13 +193,13 @@ class lizmapProject extends qgisProject {
 
         if (!file_exists($qgs_path) ||
             !file_exists($qgs_path.'.cfg') ) {
-            throw new Exception("Files of project $key does not exists");
+            throw new UnknownLizmapProjectException("Files of project $key does not exists");
         }
 
         $config = jFile::read($qgs_path.'.cfg');
         $this->cfg = json_decode($config);
         if ($this->cfg === null) {
-            throw new Exception(".qgs.cfg File of project $key has invalid content");
+            throw new UnknownLizmapProjectException(".qgs.cfg File of project $key has invalid content");
         }
 
         $configOptions = $this->cfg->options;

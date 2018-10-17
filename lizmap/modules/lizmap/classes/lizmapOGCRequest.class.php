@@ -95,6 +95,7 @@ class lizmapOGCRequest {
             $tpl->assign('messages', $messages);
             $data = $tpl->fetch( $this->tplExceptions );
         }
+        jMessage::clearAll();
 
         return (object) array(
             'code' => 200,

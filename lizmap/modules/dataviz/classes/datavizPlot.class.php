@@ -250,6 +250,13 @@ class datavizPlot {
         if($method == 'wfs'){
 
             $typename = str_replace(' ', '_', $layerName);
+            $propertyname = array();
+            if( count($this->x_fields) > 0 ){
+                $propertyname = array_merge($propertyname, $this->x_fields);
+            }
+            if( count($this->y_fields) > 0 ){
+                $propertyname = array_merge($propertyname, $this->y_fields);
+            }
             $wfsparams = array(
                 'SERVICE' => 'WFS',
                 'VERSION' => '1.0.0',
@@ -257,7 +264,7 @@ class datavizPlot {
                 'TYPENAME' => $typename,
                 'OUTPUTFORMAT' => 'GeoJSON',
                 'GEOMETRYNAME' => 'none',
-                'PROPERTYNAME' => implode(',', $this->x_fields) . ',' . implode(',', $this->y_fields)
+                'PROPERTYNAME' => implode(',', $propertyname)
             );
             if(!empty($this->colorfields))
                 $wfsparams['PROPERTYNAME'] .= ',' . implode(',', $this->colorfields);
@@ -369,7 +376,8 @@ class datavizPlot {
 
                 // Set color
                 if( array_key_exists('marker', $trace) and !empty($this->colors)) {
-                    $trace['marker']['color'] = $this->colors[$yidx];
+                    if ( $yidx < count($this->colors) )
+                        $trace['marker']['color'] = $this->colors[$yidx];
                     $yidx++;
                 }
                 // Prepare an array to store features color (if any)
