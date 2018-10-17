@@ -38,6 +38,10 @@ class lizmapWFSRequest extends lizmapOGCRequest {
 
         $data = $result->data;
         if ( empty( $data ) or floor( $result->code / 100 ) >= 4 ) {
+            if ( empty( $data ) )
+                jLog::log('GetCapabilities empty data', 'error');
+            else
+                jLog::log('GetCapabilities result code: '.$result->code, 'error');
             jMessage::add('Server Error !', 'Error');
             return $this->serviceException();
         }
