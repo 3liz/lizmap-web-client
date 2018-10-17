@@ -24,24 +24,49 @@ class htmlbootstrapFormBuilder extends \jelix\forms\Builder\HtmlBuilder {
         'choice' => array( 'class' => 'form-inline', 'itemLabelClass'=>'radio')
     );
 
+    public function outputMetaContent($t) {
+        $resp= jApp::coord()->response;
+        if($resp === null || $resp->getType() !='html'){
+            return;
+        }
+
+        $confUrlEngine = &jApp::config()->urlengine;
+        $www = $confUrlEngine['jelixWWWPath'];
+        $jq = $confUrlEngine['jqueryPath'];
+        $resp->addJSLink($jq.'jquery.js');
+        $resp->addJSLink($jq.'include/jquery.include.js');
+        $resp->addJSLink($www.'js/jforms_jquery.js');
+        $resp->addCSSLink($www.'design/jform.css');
+
+        //we loop on root control has they fill call the outputMetaContent recursively
+        foreach( $this->_form->getRootControls() as $ctrlref=>$ctrl) {
+            if($ctrl->type == 'hidden') continue;
+            if(!$this->_form->isActivated($ctrlref)) continue;
+
+            $widget = $this->getWidget($ctrl, $this->rootWidget);
+            $widget->outputMetaContent($resp);
+        }
+    }
+
+
     public function outputAllControls() {
         $modal = $this->getOption('local');
-
         echo '<div class="jforms-table">';
         foreach( $this->_form->getRootControls() as $ctrlref=>$ctrl){
             if($ctrl->type == 'submit' || $ctrl->type == 'reset' || $ctrl->type == 'hidden') continue;
             if(!$this->_form->isActivated($ctrlref)) continue;
+            echo '<div class="control-group">';
             if($ctrl->type == 'group') {
                 $this->outputControl($ctrl);
             }
             else {
-                echo '<div class="control-group">';
+
                 $this->outputControlLabel($ctrl);
                 echo '<div class="controls">';
                 $this->outputControl($ctrl);
                 echo "</div>\n";
-                echo "</div>\n";
             }
+            echo "</div>\n";
         }
         echo "</div>\n";
 

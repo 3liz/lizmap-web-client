@@ -14,6 +14,19 @@ require_once(JELIX_LIB_PATH.'plugins/formwidget/group_html/group_html.formwidget
 class group_htmlbootstrapFormWidget extends group_htmlFormWidget {
     use \Lizmap\Form\WidgetTrait;
 
+    public function outputLabel($format='', $editMode=true) {
+        if ($editMode || !$this->ctrl->hasCheckbox) {
+            return;
+        }
+
+        $attr = $this->getLabelAttributes($editMode);
+        if ($format)
+            $label = sprintf($format, $this->ctrl->label);
+        else
+            $label = $this->ctrl->label;
+        $this->outputLabelAsTitle($label, $attr);
+    }
+
     function outputControl() {
         $attr = $this->getControlAttributes();
         $value = $this->getValue();
@@ -48,6 +61,7 @@ class group_htmlbootstrapFormWidget extends group_htmlFormWidget {
                 continue;
             }
             $widget = $this->builder->getWidget($c, $this);
+            $widget->setLabelAttributes(array('class'=>'control-label'));
             echo '<div class="control-group">';
             $widget->outputLabel();
             echo "<div class=\"controls\">";
@@ -65,31 +79,38 @@ class group_htmlbootstrapFormWidget extends group_htmlFormWidget {
     }
 
     public function outputControlValue(){
-
         $attr = $this->getValueAttributes();
+        $value = $this->getValue();
+
+        if ($this->ctrl->hasCheckbox && $this->getValue() != $this->ctrl->valueOnCheck) {
+            echo '<span ';
+            $this->_outputAttr($attr);
+            echo '>';
+            echo htmlspecialchars($this->ctrl->getDisplayValue($value));
+            echo '</span>';
+            return;
+        }
+
 
         echo '<fieldset id="',$attr['id'],'"><legend>',htmlspecialchars($this->ctrl->label),"</legend>\n";
-        if ($this->ctrl->hasCheckbox && $this->getValue() != $this->ctrl->valueOnCheck) {
-            parent::outputControlValue();
-        }
-        else {
-            echo '<div class="jforms-table-group">',"\n";
-            foreach( $this->ctrl->getChildControls() as $ctrlref=>$c){
-                if($c->type == 'submit' || $c->type == 'reset' || $c->type == 'hidden') {
-                    continue;
-                }
-                if(!$this->builder->getForm()->isActivated($ctrlref)) {
-                    continue;
-                }
-                $widget = $this->builder->getWidget($c, $this);
-                echo '<div class="control-group">';
-                $widget->outputLabel('', false);
-                echo "<div class=\"controls\">";
-                $widget->outputControlValue();
-                echo "</div>\n</div>\n";
+        echo '<table class="table">',"\n";
+        foreach( $this->ctrl->getChildControls() as $ctrlref=>$c){
+            if($c->type == 'submit' || $c->type == 'reset' || $c->type == 'hidden') {
+                continue;
             }
-            echo "</div>";
+            if(!$this->builder->getForm()->isActivated($ctrlref)) {
+                continue;
+            }
+            $widget = $this->builder->getWidget($c, $this);
+            $widget->setLabelAttributes(array('class'=>'control-label'));
+            echo '<tr><th>';
+            $widget->outputLabel('', false);
+            echo "</th><td>";
+            $widget->outputControlValue();
+            echo "</td></tr>\n";
         }
+        echo "</table>";
         echo "</fieldset>\n";
+
     }
 }
