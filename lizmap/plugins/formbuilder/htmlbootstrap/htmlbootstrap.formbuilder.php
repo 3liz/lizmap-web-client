@@ -31,9 +31,11 @@ class htmlbootstrapFormBuilder extends \jelix\forms\Builder\HtmlBuilder {
         }
 
         $confUrlEngine = &jApp::config()->urlengine;
+        $bp = $confUrlEngine['basePath'];
         $www = $confUrlEngine['jelixWWWPath'];
         $jq = $confUrlEngine['jqueryPath'];
-        $resp->addJSLink($jq.'jquery.js');
+        //$resp->addJSLink($jq.'jquery.js'); Do not use the default jelix jquery file
+        $resp->addJSLink($bp.'js/jquery-1.12.4.min.js');
         $resp->addJSLink($jq.'include/jquery.include.js');
         $resp->addJSLink($www.'js/jforms_jquery.js');
         $resp->addCSSLink($www.'design/jform.css');
