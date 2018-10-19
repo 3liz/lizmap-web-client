@@ -3629,7 +3629,8 @@ var lizMap = function() {
                             wmsOptions['FEATURE_COUNT'] = parseInt(rConfigLayer.popupMaxFeatures);
                         if ( wmsOptions['FEATURE_COUNT'] == 0 )
                             wmsOptions['FEATURE_COUNT'] = popupMaxFeatures;
-                        if ( rConfigLayer.request_params.filter && rConfigLayer.request_params.filter !== '' )
+                        if ( rConfigLayer.request_params && rConfigLayer.request_params.filter &&
+                             rConfigLayer.request_params.filter !== '' )
                             wmsOptions['FILTER'] = rConfigLayer.request_params.filter+' AND "'+r.referencingField+'" = \''+feat.properties[r.referencedField]+'\'';
                         else
                             wmsOptions['FILTER'] = rConfigLayer.name+':"'+r.referencingField+'" = \''+feat.properties[r.referencedField]+'\'';
