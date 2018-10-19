@@ -25,7 +25,7 @@ postgresql, postgis, redis, nginx, php, QGIS server...
 It can take time the first time. It depends of your internet connection.
 
 When the "Done" message appears, and if there are no errors, Lizmap is
-ready. Go in http://localhost:8130/ to see the app.
+ready. Go in `http://localhost:8130/` to see the app.
 
 You can authenticate yourself in the application with the login "admin" 
 and the password "admin". If you did enable the ldap authentication, you can
@@ -33,6 +33,10 @@ also try these users/password: john / passjohn and jane / passjane.
 
 You can now modify the source code of Lizmap, and see changes into your
 web browser.
+
+If you want to do requests directly to QGIS, the address is `http://localhost:8131/`.
+If you want to connect to the postgresql database, the address is localhost
+and the port is 8132.
 
 To enter into the virtual machine, type:
 
