@@ -3356,16 +3356,20 @@ var lizMap = function() {
     );
   }
 
-  function addGeometryFeatureInfo( popup ) {
+  function addGeometryFeatureInfo( popup, containerId ) {
       // clean locate layer
       var layer = map.getLayersByName('locatelayer');
       if ( layer.length == 0 )
         return;
       layer = layer[0];
       layer.destroyFeatures();
+      // build selector
+      var selector = 'div.lizmapPopupContent > div.lizmapPopupDiv > input.lizmap-popup-layer-feature-geometry';
+      if ( containerId )
+        selector = '#'+ containerId +' '+ selector;
       // get geometries and crs
       var geometries = [];
-      $('div.lizmapPopupContent > div.lizmapPopupDiv > input.lizmap-popup-layer-feature-geometry').each(function(){
+      $(selector).each(function(){
         var self = $(this);
         var val = self.val();
         if ( val == '' )
@@ -3434,9 +3438,13 @@ var lizMap = function() {
       }
   }
 
-  function addChildrenDatavizFilteredByPopupFeature() {
+  function addChildrenDatavizFilteredByPopupFeature(popup, containerId) {
+      // build selector
+      var selector = 'div.lizmapPopupContent > div.lizmapPopupDiv';
+      if ( containerId )
+        selector = '#'+ containerId +' '+ selector;
 
-     $('div.lizmapPopupContent > div.lizmapPopupDiv').each(function(){
+     $(selector).each(function(){
         var mydiv = $(this);
 
         // Do not add plots if already present
@@ -3578,8 +3586,11 @@ var lizMap = function() {
         });
   }
 
-  function addChildrenFeatureInfo( popup ) {
-      $('div.lizmapPopupContent input.lizmap-popup-layer-feature-id').each(function(){
+  function addChildrenFeatureInfo( popup, containerId ) {
+      var selector = 'div.lizmapPopupContent input.lizmap-popup-layer-feature-id';
+      if ( containerId )
+        selector = '#'+ containerId +' '+ selector;
+      $(selector).each(function(){
         var self = $(this);
         var val = self.val();
         var eHtml = '';
@@ -3674,6 +3685,7 @@ var lizMap = function() {
                         map.removePopup(map.popups[0]);
 
                     var popup = null;
+                    var popupContainerId = null;
                     if( 'popupLocation' in config.options && config.options.popupLocation != 'map' ){
 
                       // create content
@@ -3682,7 +3694,8 @@ var lizMap = function() {
                       var pcontent = '<div class="lizmapPopupContent">'+text+'</div>';
                       var hasPopupContent = (!(!text || text == null || text == ''))
                       if( !$('#mapmenu .nav-list > li.popupcontent > a').length ){
-                        addDock('popupcontent', 'Popup', config.options.popupLocation, pcontent, 'icon-comment');
+                        popupContainerId = 'popupcontent';
+                        addDock(popupContainerId, 'Popup', config.options.popupLocation, pcontent, 'icon-comment');
                         $('#button-popupcontent').click(function(){
                           if($(this).parent().hasClass('active')) {
                             // clean locate layer
@@ -3693,7 +3706,7 @@ var lizMap = function() {
                             locatelayer.destroyFeatures();
                           } else {
                             // Display geometries
-                            addGeometryFeatureInfo( popup );
+                            addGeometryFeatureInfo( popup, popupContainerId );
                           }
                         });
                       }
@@ -3735,8 +3748,9 @@ var lizMap = function() {
                       if (!text || text == null || text == '')
                           return false;
                       // Use openlayers map popup anchored
+                      popupContainerId = "liz_layer_popup";
                       popup = new OpenLayers.Popup.LizmapAnchored(
-                          "liz_layer_popup",
+                          popupContainerId,
                           eventLonLatInfo,
                           null,
                           text,
@@ -3771,15 +3785,15 @@ var lizMap = function() {
                     lastLonLatInfo = eventLonLatInfo;
 
                     // Display related children objects
-                    addChildrenFeatureInfo( popup );
+                    addChildrenFeatureInfo( popup, popupContainerId );
                     // Display geometries
-                    addGeometryFeatureInfo( popup );
+                    addGeometryFeatureInfo( popup, popupContainerId );
                     // Display the plots of the children layers features filtered by popup item
-                    addChildrenDatavizFilteredByPopupFeature();
+                    addChildrenDatavizFilteredByPopupFeature( popup, popupContainerId );
 
                     // Trigger event
                     lizMap.events.triggerEvent("lizmappopupdisplayed",
-                        {'popup': popup}
+                        {'popup': popup, 'containerId': popupContainerId}
                     );
                 }
             }
@@ -6244,22 +6258,22 @@ OpenLayers.Control.HighlightFeature = OpenLayers.Class(OpenLayers.Control, {
     /**
      * Method: addGeometryFeatureInfo
      */
-    addGeometryFeatureInfo: function(popup){
-      return addGeometryFeatureInfo(popup);
+    addGeometryFeatureInfo: function(popup, containerId){
+      return addGeometryFeatureInfo(popup, containerId);
     },
 
     /**
      * Method: addChildrenFeatureInfo
      */
-    addChildrenFeatureInfo: function(popup){
-      return addChildrenFeatureInfo(popup);
+    addChildrenFeatureInfo: function(popup, containerId){
+      return addChildrenFeatureInfo(popup, containerId);
     },
 
     /**
      * Method: addChildrenDatavizFilteredByPopupFeature
      */
-    addChildrenDatavizFilteredByPopupFeature: function(popup){
-      return addChildrenDatavizFilteredByPopupFeature(popup);
+    addChildrenDatavizFilteredByPopupFeature: function(popup, containerId){
+      return addChildrenDatavizFilteredByPopupFeature(popup, containerId);
     },
 
     /**
