@@ -3,7 +3,7 @@
 * @package    jelix
 * @subpackage db
 * @author      Laurent Jouanneau
-* @copyright  2005-2010 Laurent Jouanneau
+* @copyright  2005-2018 Laurent Jouanneau
 * @link      http://www.jelix.org
 * @licence    http://www.gnu.org/licenses/lgpl.html GNU Lesser General Public Licence, see LICENCE file
 */
@@ -77,35 +77,44 @@ abstract class jDbResultSet implements Iterator {
     public function fetch(){
         $result = $this->_fetch ();
 
-        if (!$result)
+        if (!$result) {
             return $result;
-
-        if (count($this->modifier)) {
-            foreach($this->modifier as $m)
-                call_user_func_array($m, array($result, $this));
         }
 
-        if ($this->_fetchMode == jDbConnection::FETCH_OBJ)
+        if ($this->_fetchMode == jDbConnection::FETCH_OBJ) {
+            $this->applyModifiers($result);
             return $result;
+        }
 
         if ($this->_fetchMode == jDbConnection::FETCH_CLASS) {
-            if ($result instanceof $this->_fetchModeParam)
+            if ($result instanceof $this->_fetchModeParam) {
+                $this->applyModifiers($result);
                 return $result;
+            }
             $values = get_object_vars ($result);
             $o = $this->_fetchModeParam;
             $result = new $o();
-            foreach ( $values as $k=>$value){
+            foreach ($values as $k=>$value) {
                 $result->$k = $value;
             }
         }
         else if ($this->_fetchMode == jDbConnection::FETCH_INTO) {
             $values = get_object_vars ($result);
             $result = $this->_fetchModeParam;
-            foreach ( $values as $k=>$value){
+            foreach ($values as $k=>$value) {
                 $result->$k = $value;
             }
         }
+        $this->applyModifiers($result);
         return $result;
+    }
+
+    protected function applyModifiers($result) {
+        if (count($this->modifier)) {
+            foreach($this->modifier as $m) {
+                call_user_func_array($m, array($result, $this));
+            }
+        }
     }
 
     /**
