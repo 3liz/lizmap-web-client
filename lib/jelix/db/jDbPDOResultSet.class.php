@@ -30,9 +30,8 @@ class jDbPDOResultSet extends PDOStatement {
             $rec = parent::fetch();
         }
 
-        if ($rec && count($this->modifier)) {
-            foreach($this->modifier as $m)
-                call_user_func_array($m, array($rec, $this));
+        if ($rec) {
+            $this->applyModifiers($rec);
         }
         return $rec;
     }
@@ -63,11 +62,19 @@ class jDbPDOResultSet extends PDOStatement {
         }
 
         if (count($this->modifier)) {
-            foreach ($records as $rec)
-                foreach($this->modifier as $m)
-                    call_user_func_array($m, array($rec, $this));
+            foreach ($records as $rec) {
+                $this->applyModifiers($rec);
+            }
         }
         return $records;
+    }
+
+    protected function applyModifiers($result) {
+        if (count($this->modifier)) {
+            foreach($this->modifier as $m) {
+                call_user_func_array($m, array($result, $this));
+            }
+        }
     }
 
     /**

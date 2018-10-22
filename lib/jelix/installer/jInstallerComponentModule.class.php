@@ -3,7 +3,7 @@
 * @package     jelix
 * @subpackage  installer
 * @author      Laurent Jouanneau
-* @copyright   2008-2011 Laurent Jouanneau
+* @copyright   2008-2018 Laurent Jouanneau
 * @link        http://www.jelix.org
 * @licence     GNU Lesser General Public Licence see LICENCE file or http://www.gnu.org/licenses/lgpl.html
 */
@@ -40,6 +40,11 @@ class jInstallerComponentModule extends jInstallerComponentBase {
      * @var jInstallerBase[]
      */
     protected $moduleUpgraders = null;
+
+    /**
+     * @var jInstallerModule
+     */
+    protected $moduleMainUpgrader = null;
 
     /**
      * list of sessions Id of the component
@@ -170,6 +175,32 @@ class jInstallerComponentModule extends jInstallerComponentBase {
 
         $epId = $ep->getEpId();
 
+
+        if ($this->moduleMainUpgrader === null) {
+            if (!file_exists($this->path . 'install/upgrade.php') ||
+                $this->moduleInfos[$epId]->skipInstaller
+            ) {
+                $this->moduleMainUpgrader = false;
+            }
+            else {
+                require_once($this->path.'install/upgrade.php');
+
+                $cname = $this->name.'ModuleUpgrader';
+                if (!class_exists($cname)) {
+                    throw new Exception("module.upgrader.class.not.found", array($cname, $this->name));
+                }
+
+                $this->moduleMainUpgrader = new $cname($this->name,
+                    $this->name,
+                    $this->path,
+                    $this->moduleInfos[$epId]->version,
+                    false
+                );
+
+                $this->moduleMainUpgrader->targetVersions= array($this->moduleInfos[$epId]->version);
+            }
+        }
+
         if ($this->moduleUpgraders === null) {
 
             $this->moduleUpgraders = array();
@@ -195,10 +226,6 @@ class jInstallerComponentModule extends jInstallerComponentBase {
                 closedir($handle);
             }
 
-            if (!count($fileList)) {
-                return array();
-            }
-
             // now we order the list of file
             foreach($fileList as $fileInfo) {
                 require_once($p.$fileInfo[0]);
@@ -222,7 +249,7 @@ class jInstallerComponentModule extends jInstallerComponentBase {
             }
         }
 
-        if (count($this->moduleUpgraders) && $this->moduleInfos[$epId]->version == '') {
+        if ((count($this->moduleUpgraders) || $this->moduleMainUpgrader) && $this->moduleInfos[$epId]->version == '') {
             throw new jInstallerException("installer.ini.missing.version", array($this->name));
         }
 
@@ -291,6 +318,20 @@ class jInstallerComponentModule extends jInstallerComponentBase {
         usort($list, function ($upgA, $upgB) {
                 return jVersionComparator::compareVersion($upgA->version, $upgB->version);
         });
+
+        if ($this->moduleMainUpgrader && jVersionComparator::compareVersion($this->moduleInfos[$epId]->version, $this->sourceVersion) < 0 ) {
+            $list[] = $this->moduleMainUpgrader;
+            $class = $this->name.'ModuleUpgrader';
+            if (!isset($this->upgradersContexts[$class])) {
+                $this->upgradersContexts[$class] = array();
+            }
+
+            $this->moduleMainUpgrader->setEntryPoint($ep,
+                $ep->configIni,
+                $this->moduleInfos[$epId]->dbProfile,
+                $this->upgradersContexts[$class]);
+        }
+
         return $list;
     }
 
