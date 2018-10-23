@@ -25,9 +25,10 @@ class adminModuleInstaller extends jInstallerModule {
             jAcl2DbManager::addSubject("lizmap.admin.repositories.create",  "admin~jacl2.lizmap.admin.repositories.create", "lizmap.admin.grp");
             jAcl2DbManager::addSubject("lizmap.admin.repositories.update",  "admin~jacl2.lizmap.admin.repositories.update", "lizmap.admin.grp");
             jAcl2DbManager::addSubject("lizmap.admin.repositories.delete",  "admin~jacl2.lizmap.admin.repositories.delete", "lizmap.admin.grp");
-            jAcl2DbManager::addSubject("lizmap.repositories.view",          "admin~jacl2.lizmap.repositories.view",         "lizmap.grp");
             jAcl2DbManager::addSubject("lizmap.admin.repositories.view",    "admin~jacl2.lizmap.admin.repositories.view",   "lizmap.admin.grp");
             jAcl2DbManager::addSubject("lizmap.admin.services.view",        "admin~jacl2.lizmap.admin.services.view",       "lizmap.admin.grp");
+
+            jAcl2DbManager::addSubject("lizmap.repositories.view",          "admin~jacl2.lizmap.repositories.view",         "lizmap.grp"); // the right code could be lizmap.view.repository.projects
             jAcl2DbManager::addSubject("lizmap.tools.edition.use",          "admin~jacl2.lizmap.tools.edition.use",         "lizmap.grp");
             jAcl2DbManager::addSubject("lizmap.tools.loginFilteredLayers.override","admin~jacl2.lizmap.tools.loginFilteredLayers.override","lizmap.grp");
             jAcl2DbManager::addSubject("lizmap.tools.displayGetCapabilitiesLinks","admin~jacl2.lizmap.tools.displayGetCapabilitiesLinks","lizmap.grp");
