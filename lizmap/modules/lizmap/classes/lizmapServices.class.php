@@ -139,7 +139,7 @@ class lizmapServices{
     // proxy type: 'http' or 'socks5'. Only used with the curl proxyMethod
     public $requestProxyType = 'http';
     // list of domains separated by a comma, to which the proxy is not used
-    public $requestProxyNotForDomain = 'localhost';
+    public $requestProxyNotForDomain = 'localhost,127.0.0.1';
 
     // debug mode : none or log
     public $debugMode = '';

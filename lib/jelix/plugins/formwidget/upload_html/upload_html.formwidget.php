@@ -37,8 +37,15 @@ class upload_htmlFormWidget extends \jelix\forms\HtmlWidget\WidgetBase {
         if ( property_exists( $this->ctrl, 'accept' ) && $this->ctrl->accept != '') {
             $attr['accept'] = $this->ctrl->accept;
         }
-        if ( property_exists( $this->ctrl, 'capture' ) && $this->ctrl->capture != '') {
-            $attr['capture'] = $this->ctrl->capture;
+        if ( property_exists( $this->ctrl, 'capture' ) && $this->ctrl->capture) {
+            if (is_bool($this->ctrl->capture)) {
+                if ($this->ctrl->capture) {
+                    $attr['capture'] = 'true';
+                }
+            }
+            else {
+                $attr['capture'] = $this->ctrl->capture;
+            }
         }
         echo '<input';
         $this->_outputAttr($attr);

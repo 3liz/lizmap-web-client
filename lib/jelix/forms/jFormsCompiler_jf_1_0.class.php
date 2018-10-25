@@ -327,6 +327,22 @@ class jFormsCompiler_jf_1_0  {
             unset($attributes['maxsize']);
         }
 
+        if(isset($attributes['accept'])){
+            $source[]='$ctrl->accept=\''.str_replace("'","\\'",$attributes['accept']).'\';';
+            unset($attributes['accept']);
+        }
+
+        if(isset($attributes['capture'])) {
+            if ($attributes['capture'] == "true" || $attributes['capture'] == "false") {
+                $source[]='$ctrl->capture='.$attributes['capture'].';';
+            }
+            else {
+                $source[]='$ctrl->capture=\''.str_replace("'","\\'",$attributes['capture']).'\';';
+            }
+
+            unset($attributes['capture']);
+        }
+
         if(isset($attributes['mimetype'])){
             $mime = preg_split('/[,; ]/',$attributes['mimetype']);
             $mime = array_diff($mime, array('')); // we remove all ''

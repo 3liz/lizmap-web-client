@@ -52,9 +52,8 @@ class sqlsrvDbResultSet extends jDbResultSet {
             $res = sqlsrv_fetch_object ($this->_idResult, null, array(), $this->nextFetchRow);
         }
         $this->nextFetchRow = SQLSRV_SCROLL_NEXT;
-        if ($res && count($this->modifier)) {
-            foreach($this->modifier as $m)
-                call_user_func_array($m, array($res, $this));
+        if ($res) {
+            $this->applyModifiers($res);
         }
         return $res;
     }

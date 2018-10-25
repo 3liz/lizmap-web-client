@@ -336,33 +336,8 @@ abstract class jInstallerBase {
      * @param string $targetPath the full path where to copy the content
      */
     final protected function copyDirectoryContent($relativeSourcePath, $targetPath, $overwrite = false) {
-        $targetPath = $this->expandPath($targetPath);
-        $this->_copyDirectoryContent ($this->path.'install/'.$relativeSourcePath, $targetPath, $overwrite);
+        jFile::copyDirectoryContent($this->path.'install/'.$relativeSourcePath, $this->expandPath($targetPath), $overwrite);
     }
-
-    /**
-     * private function which copy the content of a directory to an other
-     *
-     * @param string $sourcePath 
-     * @param string $targetPath
-     */
-    private function _copyDirectoryContent($sourcePath, $targetPath, $overwrite) {
-        jFile::createDir($targetPath);
-        $dir = new DirectoryIterator($sourcePath);
-        foreach ($dir as $dirContent) {
-            if ($dirContent->isFile()) {
-                $p = $targetPath.substr($dirContent->getPathName(), strlen($dirContent->getPath()));
-                if ($overwrite || !file_exists($p))
-                    copy($dirContent->getPathName(), $p);
-            } else {
-                if (!$dirContent->isDot() && $dirContent->isDir()) {
-                    $newTarget = $targetPath.substr($dirContent->getPathName(), strlen($dirContent->getPath()));
-                    $this->_copyDirectoryContent($dirContent->getPathName(),$newTarget, $overwrite);
-                }
-            }
-        }
-    }
-
 
     /**
      * copy a file from the install/ directory to an other
