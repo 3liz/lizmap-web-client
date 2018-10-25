@@ -4,7 +4,7 @@
 * @subpackage db_driver
 * @author     Gérald Croes, Laurent Jouanneau
 * @contributor Laurent Jouanneau
-* @copyright  2001-2005 CopixTeam, 2005-2010 Laurent Jouanneau
+* @copyright  2001-2005 CopixTeam, 2005-2018 Laurent Jouanneau
 * This class was get originally from the Copix project (CopixDBResultSetPostgreSQL, Copix 2.3dev20050901, http://www.copix.org)
 * Few lines of code are still copyrighted 2001-2005 CopixTeam (LGPL licence).
 * Initial authors of this Copix class are Gerald Croes and Laurent Jouanneau,
@@ -47,9 +47,8 @@ class pgsqlDbResultSet extends jDbResultSet {
             $res = pg_fetch_object ($this->_idResult);
         }
 
-        if ($res && count($this->modifier)) {
-            foreach($this->modifier as $m)
-                call_user_func_array($m, array($res, $this));
+        if ($res) {
+            $this->applyModifiers($res);
          }
         return $res;
     }

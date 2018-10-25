@@ -393,6 +393,7 @@ var lizAtlas = function() {
             // Display popup
             if( lizAtlasConfig['atlasDisplayPopup'] ){
                 lizMap.getFeaturePopupContent(lizAtlasConfig.featureType, feature, function(data){
+                    var popupContainerId = 'liz-atlas-item-detail';
                     // Add class to table
                     var popupReg = new RegExp('lizmapPopupTable', 'g');
                     text = data.replace( popupReg, 'table table-condensed lizmapPopupTable');
@@ -400,13 +401,15 @@ var lizAtlas = function() {
                     // Remove <h4> with layer title
                     var titleReg = new RegExp('<h4>.+</h4>');
                     text = text.replace(titleReg, '');
-                    $('#liz-atlas-item-detail').html(text).show();
+                    $('#'+popupContainerId).html(text).show();
 
                     // Trigger event ? a bit buggy
-                    lizMap.events.triggerEvent("lizmappopupdisplayed", {'popup': null} );
+                    lizMap.events.triggerEvent("lizmappopupdisplayed", {'popup': null, 'containerId': popupContainerId} );
 
                     // Add children
-                    lizMap.addChildrenFeatureInfo(data);
+                    lizMap.addChildrenFeatureInfo( data, popupContainerId );
+                    // Display the plots of the children layers features filtered by popup item
+                    lizMap.addChildrenDatavizFilteredByPopupFeature( data, popupContainerId );
 
                 });
             }

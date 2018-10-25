@@ -3,10 +3,14 @@
 * @package     jelix
 * @subpackage  utils
 * @author      Laurent Jouanneau
-* @copyright   2008-2009 Laurent Jouanneau
+* @copyright   2008-2018 Laurent Jouanneau
 * @link        http://www.jelix.org
 * @licence     GNU Lesser General Public Licence see LICENCE file or http://www.gnu.org/licenses/lgpl.html
 */
+
+require_once (__DIR__.'/Version/Parser.php');
+require_once (__DIR__.'/Version/Version.php');
+require_once (__DIR__.'/Version/VersionComparator.php');
 
 /**
  * class to compare version numbers. it supports the following keywords:
@@ -24,69 +28,38 @@ class jVersionComparator {
      * @throws Exception
      */
     static function compareVersion($version1, $version2) {
-
-        if ($version1 == $version2)
-            return 0;
-
-        $v1 = explode('.', $version1);
-        $v2 = explode('.', $version2);
-
-        if (count($v1) > count($v2) ) {
-            $v2 = array_pad($v2, count($v1), ($v2[count($v2)-1] == '*'?'*':'0'));
+        $hasWildcard1 = (strpos($version1, '*') !== false);
+        $hasWildcard2 = (strpos($version2, '*') !== false);
+        if ($hasWildcard1 && $hasWildcard2) {
+            $version1 = str_replace('*', '0', $version1);
+            $hasWildcard1 = false;
         }
-        elseif (count($v1) < count($v2) ) {
-            $v1 = array_pad($v1, count($v2), ($v1[count($v1)-1] == '*'?'*':'0'));
-        }
-
-        $r = '/^([0-9]+)([a-zA-Z]*|pre|-?dev)([0-9]*)(pre|-?dev)?$/';
-
-        foreach ($v1 as $k=>$v) {
-
-            if ($v == $v2[$k] || $v == '*' || $v2[$k] == '*')
-                continue;
-
-            $pm = preg_match($r, $v, $m1);
-            $pm2 = preg_match($r, $v2[$k], $m2);
-
-            if ($pm && $pm2) {
-                if ($m1[1] != $m2[1]) {
-                    return ($m1[1] < $m2[1] ? -1: 1);
-                }
-
-                self::normalizeVersionNumber($m1);
-                self::normalizeVersionNumber($m2);
-
-                if ($m1[2] != $m2[2]) {
-                    return ($m1[2] < $m2[2] ? -1: 1);
-                }
-                if ($m1[3] != $m2[3]) {
-                    return ($m1[3] < $m2[3] ? -1: 1);
-                }
-
-                $v1pre = ($m1[4] == 'dev');
-                $v2pre = ($m2[4] == 'dev');
-                
-                if ($v1pre && !$v2pre) {
-                    return -1;
-                }
-                elseif ($v2pre && !$v1pre) {
-                    return 1;
-                }
-                else if (!isset($v1[$k+1]) && !isset($v2[$k+1])) {
-                    return 0;
-                }
+        if ($hasWildcard1) {
+            $result = Jelix\Version\VersionComparator::compareVersionRange($version2, $version1);
+            if ($result) {
+                return 0;
             }
-            elseif ($pm){
-                throw new Exception ("bad version number at right: '". $version2."'");
-            }
-            else
-                throw new Exception ("bad version number at left:'". $version1."'");
+            $version1 = str_replace('*', '0', $version1);
         }
-
-        return 0;
+        else if ($hasWildcard2) {
+            $result = Jelix\Version\VersionComparator::compareVersionRange($version1, $version2);
+            if ($result) {
+                return 0;
+            }
+            $version2 = str_replace('*', '0', $version2);
+        }
+        $v1 = Jelix\Version\Parser::parse($version1);
+        $v2 = Jelix\Version\Parser::parse($version2);
+        return Jelix\Version\VersionComparator::compare($v1,$v2);
     }
 
-    static protected function normalizeVersionNumber(&$n) {
+    static public function getBranchVersion($version) {
+        $v1 = Jelix\Version\Parser::parse($version);
+        return $v1->getBranchVersion();
+    }
+
+    static protected function normalizeVersionNumber(&$n)
+    {
         $n[2] = strtolower($n[2]);
         if ($n[2] == 'pre' || $n[2] == 'dev' || $n[2] == '-dev') {
             $n[2] = '_';
@@ -97,31 +70,12 @@ class jVersionComparator {
             $n[4] = '';
         else {
             $n[4] = strtolower($n[4]);
-            if ($n[4] == 'pre' || $n[4] == '-dev' ) $n[4] = 'dev';
+            if ($n[4] == 'pre' || $n[4] == '-dev') $n[4] = 'dev';
         }
 
         if ($n[2] == 'a') $n[2] = 'alpha';
-        elseif($n[2] == 'b') $n[2] = 'beta';
-        elseif($n[2] == '') $n[2] = 'zzz';
-    }
-
-    static public function getBranchVersion($version) {
-      $v = explode('.', $version);
-      $r = '/^([0-9]+)([a-zA-Z]*|pre|-?dev)([0-9]*)(pre|-?dev)?$/';
-      if (count($v) < 2)
-        $v[1] = '0';
-
-      if (!preg_match($r, $v[0], $m)) {
-        return $version;
-      }
-
-      $version = $m[1];
-
-      if (!preg_match($r, $v[1], $m)) {
-        return $version.'.0';
-      }
-
-      return $version.'.'.$m[1];
+        elseif ($n[2] == 'b') $n[2] = 'beta';
+        elseif ($n[2] == '') $n[2] = 'zzz';
     }
 
     /**

@@ -3,13 +3,13 @@
 * @package     jelix
 * @subpackage  installer
 * @author      Laurent Jouanneau
-* @copyright   2009-2010 Laurent Jouanneau
+* @copyright   2009-2018 Laurent Jouanneau
 * @link        http://jelix.org
 * @licence     GNU Lesser General Public Licence see LICENCE file or http://www.gnu.org/licenses/lgpl.html
 */
 
 /**
- * container for module properties
+ * Properties of a module, and values about its installation status
  */
 class jInstallerModuleInfos {
     /**
@@ -28,7 +28,13 @@ class jInstallerModuleInfos {
      * @var string
      */
     public $isInstalled;
+
     /**
+     * version that have been installed
+     *
+     * It could be different from the version of sources when the upgrade of the
+     * module has not been done yet.
+     *
      * @var string
      */
     public $version;
