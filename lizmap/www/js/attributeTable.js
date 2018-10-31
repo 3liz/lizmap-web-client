@@ -181,7 +181,7 @@ var lizAttributeTable = function() {
 
                     // Get data and fill attribute table
                     var dFilter = null;
-                    lizMap.getAttributeFeatureData( lname, dFilter, null, 'extent', function(someName, someNameFilter, someNameFeatures, someNameAliases){
+                    getAttributeFeatureData( lname, dFilter, null, 'extent', function(someName, someNameFilter, someNameFeatures, someNameAliases){
                         buildLayerAttributeDatatable( someName, aTable, someNameFeatures, someNameAliases );
                     });
 
@@ -493,7 +493,7 @@ var lizAttributeTable = function() {
                         var aTable = '#attribute-layer-table-'+cleanName;
                         var dFilter = null;
                         $('#attribute-layer-main-'+cleanName+' > div.attribute-layer-content').hide();
-                        lizMap.getAttributeFeatureData( lname, dFilter, null, 'extent', function(someName, someNameFilter, someNameFeatures, someNameAliases){
+                        getAttributeFeatureData( lname, dFilter, null, 'extent', function(someName, someNameFilter, someNameFeatures, someNameAliases){
                             buildLayerAttributeDatatable( someName, aTable, someNameFeatures, someNameAliases );
                             $('#attribute-layer-main-'+cleanName+' > div.attribute-layer-content').show();
                         });
@@ -1021,7 +1021,7 @@ var lizAttributeTable = function() {
 
             function getDirectChildData( childLayerName, filter, childTable ){
                 // Get features
-                lizMap.getAttributeFeatureData(childLayerName, filter, null, 'extent', function(chName, chFilter, chFeatures, chAliases){
+                getAttributeFeatureData(childLayerName, filter, null, 'extent', function(chName, chFilter, chFeatures, chAliases){
                     buildLayerAttributeDatatable( chName, childTable, chFeatures, chAliases );
                 });
             }
@@ -1716,7 +1716,7 @@ var lizAttributeTable = function() {
 
             function getEditionChildData( childLayerName, filter, childTable ){
                 // Get features
-                lizMap.getAttributeFeatureData(childLayerName, filter, null, 'extent', function(chName, chFilter, chFeatures, chAliases){
+                getAttributeFeatureData(childLayerName, filter, null, 'extent', function(chName, chFilter, chFeatures, chAliases){
                     buildLayerAttributeDatatable( chName, childTable, chFeatures, chAliases, function() {
 
                         // Check edition capabilities
@@ -1826,6 +1826,36 @@ var lizAttributeTable = function() {
                 });
             }
 
+
+            function getAttributeFeatureData(aName, aFilter, aFeatureID, aGeometryName, aCallBack){
+
+              aFilter = typeof aFilter !== 'undefined' ?  aFilter : null;
+              aFeatureID = typeof aFeatureID !== 'undefined' ?  aFeatureID : null;
+              aGeometryName  = typeof aGeometryName !== 'undefined' ?  aGeometryName : 'extent';
+              aCallBack = typeof aCallBack !== 'undefined' ?  aCallBack : null;
+
+              // get layer configs
+              if ( !(aName in config.layers) ) {
+                  var qgisName = lizMap.getNameByCleanName(aName);
+                  if ( qgisName && (qgisName in config.layers)) {
+                      aName = qgisName;
+                  } else {
+                      console.log('getAttributeFeatureData: "'+aName+'" and "'+qgisName+'" not found in config');
+                      return false;
+                  }
+              }
+              var aConfig = config.layers[aName];
+              var atConfig = null;
+              if( aName in config.attributeLayers )
+                  atConfig = config.attributeLayers[aName];
+
+              var limitDataToBbox = false;
+              if ( 'limitDataToBbox' in config.options && config.options.limitDataToBbox == 'True'){
+                  limitDataToBbox = true;
+              }
+              lizMap.getFeatureData(aName, aFilter, aFeatureID, aGeometryName, limitDataToBbox, null, null, aCallBack);
+              return true;
+            }
 
             function refreshLayerSelection( featureType, featId, rupdateDrawing ) {
                 // Set function parameters if not given
@@ -2022,9 +2052,7 @@ var lizAttributeTable = function() {
 
             // Get features to refresh attribute table AND build children filters
             var geometryName = 'extent';
-            var getFeatureUrlData = lizMap.getVectorLayerWfsUrl( typeName, aFilter, null, geometryName, limitDataToBbox );
-
-            lizMap.getAttributeFeatureData(typeName, aFilter, null, 'extent', function(aName, aNameFilter, aNameFeatures, aNameAliases ){
+            lizMap.getFeatureData(typeName, aFilter, null, geometryName, false, null, null, function(aName, aNameFilter, aNameFeatures, aNameAliases ){
 
                 // **0** Prepare some variable. e.g. reset features stored in the layer config
                 var layerConfig = config.layers[typeName];
@@ -2669,7 +2697,7 @@ var lizAttributeTable = function() {
                         else{
                             // If not pivot
                             var dFilter = null;
-                            lizMap.getAttributeFeatureData( featureType, dFilter, null, 'extent', function(someName, someNameFilter, someNameFeatures){
+                            getAttributeFeatureData( featureType, dFilter, null, 'extent', function(someName, someNameFilter, someNameFeatures){
                                 buildLayerAttributeDatatable( someName, zTable, someNameFeatures );
                             });
                         }
@@ -3558,7 +3586,8 @@ var lizAttributeTable = function() {
             });
         }
   }
-
+            // Extend lizMap API
+            lizMap.getAttributeFeatureData = getAttributeFeatureData;
 
         } // uicreated
     });
