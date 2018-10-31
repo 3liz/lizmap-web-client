@@ -2775,6 +2775,8 @@ var lizAttributeTable = function() {
 
                     // Update layer
                     var cascadeToChildren = $('#jforms_view_attribute_layers_option_cascade_label input[name="cascade"]').prop('checked');
+                    if ( 'cascade' in e )
+                        cascadeToChildren = e.cascade;
                     updateMapLayerDrawing( e.featureType, cascadeToChildren );
 
                 },
