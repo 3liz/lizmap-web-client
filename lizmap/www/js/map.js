@@ -5619,12 +5619,12 @@ OpenLayers.Control.HighlightFeature = OpenLayers.Class(OpenLayers.Control, {
           }
       }
 
-      if( filterParam.length )
-          wfsOptions['EXP_FILTER'] = filterParam.join( ' AND ' );
-
-      // optionnal parameter filterid
+      // optionnal parameter filterid or EXP_FILTER
       if( aFeatureId )
           wfsOptions['FEATUREID'] = aFeatureId.replace( aName, typeName);
+      else if( filterParam.length )
+          wfsOptions['EXP_FILTER'] = filterParam.join( ' AND ' );
+
 
       // Calculate bbox from map extent if needed
       if( restrictToMapExtent ) {
