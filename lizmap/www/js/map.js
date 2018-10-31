@@ -5730,36 +5730,6 @@ OpenLayers.Control.HighlightFeature = OpenLayers.Class(OpenLayers.Control, {
       return true;
   }
 
-  function getAttributeFeatureData(aName, aFilter, aFeatureID, aGeometryName, aCallBack){
-
-      aFilter = typeof aFilter !== 'undefined' ?  aFilter : null;
-      aFeatureID = typeof aFeatureID !== 'undefined' ?  aFeatureID : null;
-      aGeometryName  = typeof aGeometryName !== 'undefined' ?  aGeometryName : 'extent';
-      aCallBack = typeof aCallBack !== 'undefined' ?  aCallBack : null;
-
-      // get layer configs
-      if ( !(aName in config.layers) ) {
-          var qgisName = lizMap.getNameByCleanName(aName);
-          if ( qgisName && (qgisName in config.layers)) {
-              aName = qgisName;
-          } else {
-              console.log('getAttributeFeatureData: "'+aName+'" and "'+qgisName+'" not found in config');
-              return false;
-          }
-      }
-      var aConfig = config.layers[aName];
-      var atConfig = null;
-      if( aName in config.attributeLayers )
-          atConfig = config.attributeLayers[aName];
-
-      var limitDataToBbox = false;
-      if ( 'limitDataToBbox' in config.options && config.options.limitDataToBbox == 'True'){
-          limitDataToBbox = true;
-      }
-      getFeatureData(aName, aFilter, aFeatureID, aGeometryName, limitDataToBbox, null, null, aCallBack);
-      return true;
-  }
-
   function zoomToOlFeature( feature, proj, zoomAction ){
       zoomAction = typeof zoomAction !== 'undefined' ?  zoomAction : 'zoom';
       var format = new OpenLayers.Format.GeoJSON();
@@ -6148,13 +6118,6 @@ OpenLayers.Control.HighlightFeature = OpenLayers.Class(OpenLayers.Control, {
      */
     getFeatureData: function(aName, aFilter, aFeatureID, aGeometryName, restrictToMapExtent, startIndex, maxFeatures, aCallBack) {
       getFeatureData(aName, aFilter, aFeatureID, aGeometryName, restrictToMapExtent, startIndex, maxFeatures, aCallBack);
-    },
-
-    /**
-     * Method: getAttributeFeatureData
-     */
-    getAttributeFeatureData: function(aName, aFilter, aFeatureID, aGeometryName, aCallBack) {
-      getAttributeFeatureData(aName, aFilter, aFeatureID, aGeometryName, aCallBack);
     },
 
     /**
