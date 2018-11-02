@@ -2399,7 +2399,7 @@ div.tooltip {
 #selectiontool-export-formats{
   left: auto;
   right: 0px;
-  max-height: 140px;
+  max-height: 110px;
   overflow-y: auto;
 }
 
