@@ -5621,7 +5621,7 @@ OpenLayers.Control.HighlightFeature = OpenLayers.Class(OpenLayers.Control, {
 
       // optionnal parameter filterid or EXP_FILTER
       if( aFeatureId )
-          wfsOptions['FEATUREID'] = aFeatureId.replace( aName, typeName);
+          wfsOptions['FEATUREID'] = aFeatureId.replace(new RegExp(aName, 'g'), typeName);
       else if( filterParam.length )
           wfsOptions['EXP_FILTER'] = filterParam.join( ' AND ' );
 
