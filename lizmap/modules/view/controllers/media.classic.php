@@ -110,7 +110,7 @@ class mediaCtrl extends jController {
     $n_keys = array_keys($n_abspath, '..');
     foreach($n_keys AS $keypos => $key)
     {
-        array_splice($address, $key - ($keypos * 2 + 1), 2);
+        array_splice($n_abspath, $key - ($keypos * 2 + 1), 2);
     }
     $n_abspath = implode('/', $n_abspath);
     $n_abspath = str_replace('./', '', $n_abspath);
@@ -118,7 +118,14 @@ class mediaCtrl extends jController {
     $ok = True;
     // Only allow files within the repository for safety reasons
     // and in the media folder
-    if(!preg_match("#^".$n_repositoryPath."(/)?media/#", $n_abspath)){
+    // accept ../media folder to centralize medias
+    $repex = explode('/',$n_repositoryPath);
+    $pop = array_pop($repex);
+    $reptest = implode('/', $repex);
+    if(
+      !preg_match("#^".$n_repositoryPath."(/)?media/#", $n_abspath)
+      and !preg_match("#^".$reptest."(/)?media/#", $n_abspath)
+    ){
       $ok = False;
     }
 
