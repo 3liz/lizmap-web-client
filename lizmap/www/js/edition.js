@@ -1428,8 +1428,11 @@ OpenLayers.Geometry.pointOnSegment = function(point, segment) {
                 lizmappopupdisplayed: function(e) {
                     var hasButton = false;
                     var popup = e.popup;
+                    var selector = 'div.lizmapPopupContent input.lizmap-popup-layer-feature-id';
+                    if ( e.containerId )
+                        selector = '#'+ e.containerId +' '+ selector;
                     // Add action buttons if needed
-                    $('div.lizmapPopupContent input.lizmap-popup-layer-feature-id').each(function(){
+                    $(selector).each(function(){
                         var self = $(this);
                         var val = self.val();
                         var eHtml = '';
