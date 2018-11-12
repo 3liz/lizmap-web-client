@@ -16,21 +16,7 @@ class lizmapFts {
 
     protected function setSql() {
 
-        // The database admin must create a table, view or materialized view called "lizmap_fts"
-        // It must be accessible in the search_path.
-        // lizmap_fts must contain the following columns:
-        // * item_layer (text). Name of the layer. For example "Countries"
-        // * item_label (text). Label to display AND to search among. Ex: "France" or "John Doe - Australia". You can build it from a concatenation.
-        // * item_project (text). List of Lizmap projects separated by commas. Optionnal. When set, the search will be done only for specified projects
-        // * item_filter (text). Username or group name. When given, the results will be filtered by authenticated user login and groups.
-        // * geom (geometry). We advise to store all the geometries with the same SRID and to create a spatial index on it.
-        // Optimisations:
-        // * We advise to add a trigram index on the item_label field, to speed up the search query
-        // CREATE EXTENSION IF NOT EXISTS pg_trgm;
-        // * You should also install the extension unaccent, available with PostgreSQL contrib tools.
-        // CREATE EXTENSION IF NOT EXISTS unaccent;
-        // * Then create the index on the item_label column:
-        // CREATE INDEX lizmap_search_idx ON lizmap_fts USING GIN(unaccent(item_label) gin_trgm_ops);
+        // Build search query.
 
         // SELECT
         $sql = "
@@ -52,7 +38,7 @@ class lizmapFts {
         // We need to create a search array
         // a blue car ->  {%a%,%blue%,%car%}
         $sql.= "
-        AND unaccent(item_label) ILIKE ALL (
+        AND item_label ILIKE ALL (
             string_to_array(
                 '%' || regexp_replace( unaccent( trim( $1 ) ), '[^0-9a-zA-Z]+', '%,%', 'g') || '%',
                 ',',
