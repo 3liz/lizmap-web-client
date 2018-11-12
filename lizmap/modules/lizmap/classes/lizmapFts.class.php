@@ -35,12 +35,13 @@ class lizmapFts {
         WHERE True";
 
         // Filter by given terms
-        // We need to create a search array
+        // We need to create a search array for the ILIKE ALL filter:
         // a blue car ->  {%a%,%blue%,%car%}
+        // We compare the unaccentuated terms with the unaccentuated item_label
         $sql.= "
-        AND item_label ILIKE ALL (
+        AND f_unaccent(item_label) ILIKE ALL (
             string_to_array(
-                '%' || regexp_replace( unaccent( trim( $1 ) ), '[^0-9a-zA-Z]+', '%,%', 'g') || '%',
+                '%' || regexp_replace( f_unaccent( trim( $1 ) ), '[^0-9a-zA-Z]+', '%,%', 'g') || '%',
                 ',',
                 ' '
             )
