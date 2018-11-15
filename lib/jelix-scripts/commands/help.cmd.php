@@ -85,11 +85,12 @@ List of available commands:\n\t",
             }else{
                 $this->disp($command->help);
             }
-            if (isset($this->commonOptionsHelp[$this->config->helpLang])) {
-                $this->disp("\n".$this->commonOptionsHelp[$this->config->helpLang]);
+            if (isset($command->commonOptionsHelp[$this->config->helpLang])) {
+                $this->disp("\n".$command->commonOptionsHelp[$this->config->helpLang]);
             }
-            else
-                $this->disp("\n".$this->commonOptionsHelp['en']);
+            else {
+                $this->disp("\n" . $command->commonOptionsHelp['en']);
+            }
             $this->disp("\n\n");
         }else{
           if(isset($this->mainhelp[$this->config->helpLang])){

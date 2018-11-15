@@ -1,21 +1,80 @@
 #!/bin/sh
 
-if [ "$1" != "install" -a "$1" != "reset" ]; then
-    echo "Error: confirmation is missing"
+usage()
+{
+    echo "$0 [options] (install|reset)"
     echo ""
     echo "This script resets the installation of lizmap, destroying all references to projects"
     echo "and erasing logs, rights, and users..."
     echo "Launch this script with one of these parameter:"
-    echo " - 'install' to confirm the reset and to launch the installer."
-    echo "    Add 'demo' as second parameter if you want to install/reset with the"
+    echo " - 'reset' to reset the installation (in case you want to launch the wizard later)"
+    echo " - 'install' to reset the installation and to launch the installer."
+    echo "    Add '--demo' as second parameter if you want to install/reset with the"
     echo "    demo activated"
-    echo " - 'reset' to only confirm the reset (in case you want to launch the wizard later)"
     echo ""
-    exit 1
-fi
+    echo "Options:"
+    echo "   --demo         configure the demo during the 'install' action "
+    echo "   --keep-config  do not erase configuration files (localconfig, profiles, lizmapConfig...)"
+    echo "   "
+
+}
 
 SCRIPTDIR=$(dirname $0)
 LIZMAP=$SCRIPTDIR/..
+
+ACTION=""
+WITH_DEMO="N"
+KEEP_CONFIG="N"
+
+for i in $*
+do
+case $i in
+    -h|--help)
+    usage
+    exit 0
+    ;;
+    --demo)
+    WITH_DEMO="Y"
+    ;;
+    --keep-config)
+    KEEP_CONFIG="Y"
+    ;;
+    -*)
+      echo "ERROR: Unknown option: $i"
+      echo ""
+      usage
+      exit 1
+    ;;
+    *)
+    if [ "$ACTION" = "" ]; then
+        ACTION="$i"
+        if [ "$ACTION" != "install" -a "$ACTION" != "reset" ]; then
+            echo "ERROR: action parameter has not an expected value"
+            usage
+            exit 2
+        fi
+    else
+        if [ "$i" = "demo" ]; then
+            #compatibility with previous version
+            WITH_DEMO="Y"
+        else
+            echo "ERROR: Two many arguments"
+            usage
+            exit 3
+        fi
+    fi
+    ;;
+esac
+done
+
+
+if [ "$ACTION" = "" ]; then
+    echo "ERROR: action 'install' or 'reset' is missing"
+    usage
+    exit 4
+fi
+
+
 
 $SCRIPTDIR/clean_vartmp.sh
 
@@ -23,34 +82,42 @@ $SCRIPTDIR/clean_vartmp.sh
 if [ -f $LIZMAP/var/db/jauth.db ]; then
     rm -f $LIZMAP/var/db/jauth.db
 fi
+
 if [ -f $LIZMAP/var/db/logs.db ]; then
     rm -f $LIZMAP/var/db/logs.db
 fi
 
-if [ -f $LIZMAP/var/config/localconfig.ini.php ]; then
-    rm -f $LIZMAP/var/config/localconfig.ini.php
-fi
-if [ -f $LIZMAP/var/config/liveconfig.ini.php ]; then
-    rm -f $LIZMAP/var/config/liveconfig.ini.php
-fi
-if [ -f $LIZMAP/var/config/lizmapConfig.ini.php ]; then
-    rm -f $LIZMAP/var/config/lizmapConfig.ini.php
-fi
 if [ -f $LIZMAP/var/config/installer.ini.php ]; then
     rm -f $LIZMAP/var/config/installer.ini.php
 fi
-if [ -f $LIZMAP/var/config/profiles.ini.php ]; then
-    rm -f $LIZMAP/var/config/profiles.ini.php
+
+if [ "$KEEP_CONFIG" = "N" ]; then
+    if [ -f $LIZMAP/var/config/profiles.ini.php ]; then
+        rm -f $LIZMAP/var/config/profiles.ini.php
+    fi
+    if [ -f $LIZMAP/var/config/liveconfig.ini.php ]; then
+        rm -f $LIZMAP/var/config/liveconfig.ini.php
+    fi
+    if [ -f $LIZMAP/var/config/lizmapConfig.ini.php ]; then
+        rm -f $LIZMAP/var/config/lizmapConfig.ini.php
+    fi
+    if [ -f $LIZMAP/var/config/localconfig.ini.php ]; then
+        rm -f $LIZMAP/var/config/localconfig.ini.php
+    fi
 fi
 
+if [ "$ACTION" = "install" ]; then
+    if [ ! -f $LIZMAP/var/config/localconfig.ini.php ]; then
+        cp $LIZMAP/var/config/localconfig.ini.php.dist $LIZMAP/var/config/localconfig.ini.php
+    fi
+    if [ ! -f $LIZMAP/var/config/profiles.ini.php ]; then
+        cp $LIZMAP/var/config/profiles.ini.php.dist $LIZMAP/var/config/profiles.ini.php
+    fi
 
-if [ "$1" = "install" ]; then
-    cp $LIZMAP/var/config/localconfig.ini.php.dist $LIZMAP/var/config/localconfig.ini.php
-    cp $LIZMAP/var/config/profiles.ini.php.dist $LIZMAP/var/config/profiles.ini.php
-
-    if [ "$2" = "demo" ]; then
-        echo "[modules]" >> $LIZMAP/var/config/localconfig.ini.php
-        echo "lizmap.installparam=demo" >> $LIZMAP/var/config/localconfig.ini.php
+    if [ "$WITH_DEMO" = "Y" ]; then
+        php $SCRIPTDIR/../../lib/jelix-scripts/inifile.php $LIZMAP/var/config/localconfig.ini.php lizmap.installparam demo modules
+    else
+        php $SCRIPTDIR/../../lib/jelix-scripts/inifile.php $LIZMAP/var/config/localconfig.ini.php lizmap.installparam "" modules
     fi
     (cd $LIZMAP/install && php installer.php)
 fi

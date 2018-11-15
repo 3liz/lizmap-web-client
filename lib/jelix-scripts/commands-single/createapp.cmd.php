@@ -14,9 +14,7 @@
 * @licence     GNU General Public Licence see LICENCE file or http://www.gnu.org/licenses/gpl.html
 */
 
-class createappCommand extends JelixScriptCommand {
-
-   protected $commonOptions = array('-v'=>false);
+class createappCommand extends JelixScriptSingleCommand {
 
     public  $name = 'createapp';
     public  $allowed_options=array('-nodefaultmodule'=>false,
@@ -25,18 +23,7 @@ class createappCommand extends JelixScriptCommand {
     public  $allowed_parameters=array('path'=>true);
 
     public  $syntaxhelp = "[-nodefaultmodule] [-withcmdline] [-wwwpath a_path]";
-    public  $help='';
-    public $commonSyntaxOptions = '[-v] ';
-    public $commonOptionsHelp = array(
-        'en'=>"
-    Other options:
-    -v: verbose mode
-",
-        'fr'=>"
-    Autres options:
-    -v: mode verbeux. Affiche plus d'informations.
-"
-    );
+
 
     public $applicationRequirement = 1;
 
