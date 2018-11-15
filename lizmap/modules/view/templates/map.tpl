@@ -81,7 +81,7 @@
 
     <div id="attribution-box">
       <span id="attribution"></span>
-      {image $j_themepath.'css/img/logo_footer.png'}
+      <img src="{$j_themepath.'css/img/logo_footer.png'}" alt=""/>
     </div>
 
     <div id="message" class="span6">{jmessage_bootstrap}</div>

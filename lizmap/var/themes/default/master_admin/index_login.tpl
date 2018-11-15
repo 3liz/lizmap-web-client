@@ -42,7 +42,7 @@
   </div>
   <footer class="footer">
     <p class="pull-right">
-      {image $j_themepath.'css/img/logo_footer.png'}
+      <img src="{$j_themepath.'css/img/logo_footer.png'}" alt=""/>
     </p>
   </footer>
 </div>
