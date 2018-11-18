@@ -629,3 +629,28 @@ abstract class JelixScriptCommand {
       return $prefix.implode($sep, $newPath);
    }
 }
+
+
+/**
+ * base class for single commands implementation
+ */
+abstract class JelixScriptSingleCommand extends JelixScriptCommand {
+
+    protected $commonOptions = array('-v'=>false);
+
+    public $commonSyntaxOptions = '[-v] ';
+    public $commonOptionsHelp = array(
+        'en'=>"
+    Other options:
+    -v: verbose mode
+",
+        'fr'=>"
+    Autres options:
+    -v: mode verbeux. Affiche plus d'informations.
+"
+    );
+
+    public $applicationRequirement = 1;
+    public  $help='';
+}
+

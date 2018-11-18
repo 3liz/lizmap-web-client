@@ -3026,7 +3026,7 @@ var lizAttributeTable = function() {
 
                     var fid =  e.featureId;
                     // Do not disply child if it's a creation
-                    if (fid == null)
+                    if ( !fid || fid == '' )
                         return;
 
                     var layerId = e.layerId;

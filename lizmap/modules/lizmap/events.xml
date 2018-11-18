@@ -1,4 +1,7 @@
 <events xmlns="http://jelix.org/ns/events/1.0">
+   <listener name="lizmapFtsSearch">
+       <event name="searchServiceItem" />
+   </listener>
    <listener name="lizmapLog">
        <event name="LizLogItem" />
        <event name="AuthCanLogin" />
