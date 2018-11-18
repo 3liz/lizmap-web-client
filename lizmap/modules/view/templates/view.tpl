@@ -17,7 +17,7 @@
         <p class="liz-project-desc" style="display:none;">
           <b>{$p->title}</b>
           <br/>
-          <br/><b>{@default.project.abstract.label@}</b>&nbsp;: {$p->abstract|truncate:100}
+          <br/><b>{@default.project.abstract.label@}</b>&nbsp;: {$p->abstract|strip_tags|truncate:100}
           <br/>
           <br/><b>{@default.project.projection.label@}</b>&nbsp;: <span class="proj">{$p->proj}</span>
           <br/><b>{@default.project.bbox.label@}</b>&nbsp;: <span class="bbox">{$p->bbox}</span>
