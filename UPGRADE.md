@@ -42,7 +42,7 @@ Restore rights and owner on some directories. Here is an example where "myuser" 
 user owning the application file, and "www-data", the group of the web server.
 
 ```
-sudo lizmap/install/set_rights.sh laurent www-data
+sudo lizmap/install/set_rights.sh laurent www-data #replace `laurent` with your name
 sudo lizmap/install/clean_vartmp.sh
 ```
 
