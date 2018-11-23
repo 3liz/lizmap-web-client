@@ -220,6 +220,16 @@ class lizmapServices{
            // as ldapdao cannot write to the ldap, a user cannot create an account
            $this->allowUserAccountRequests = false;
         }
+
+        // set it for external requests, needed for file_get_contents
+        $userAgent = 'Lizmap';
+        if (isset($readConfigPath['services']['userAgent'])) {
+            // may be set to false if already set in the php.ini
+            $userAgent = $readConfigPath['services']['userAgent'];
+        }
+        if ($userAgent) {
+            ini_set('user_agent', 'Lizmap');
+        }
     }
 
     public function isLdapEnabled() {
