@@ -6636,7 +6636,7 @@ lizMap.events.on({
             options.numZoomLevels = options.numZoomLevels - lOptions.zoomOffset;
           var ignmap = new OpenLayers.Layer.WMTS({
             name: "ignmap",
-            url: "https://gpp3-wxs.ign.fr/"+evt.config.options.ignKey+"/wmts",
+            url: "https://wxs.ign.fr/"+evt.config.options.ignKey+"/wmts",
             layer: "GEOGRAPHICALGRIDSYSTEMS.MAPS",
             matrixSet: "PM",
             style: "normal",
@@ -6672,7 +6672,7 @@ lizMap.events.on({
             options.numZoomLevels = options.numZoomLevels - lOptions.zoomOffset;
           var ignplan = new OpenLayers.Layer.WMTS({
             name: "ignplan",
-            url: "https://gpp3-wxs.ign.fr/"+evt.config.options.ignKey+"/wmts",
+            url: "https://wxs.ign.fr/"+evt.config.options.ignKey+"/wmts",
             layer: "GEOGRAPHICALGRIDSYSTEMS.PLANIGN",
             matrixSet: "PM",
             style: "normal",
@@ -6708,7 +6708,7 @@ lizMap.events.on({
             options.numZoomLevels = options.numZoomLevels - lOptions.zoomOffset;
           var ignphoto = new OpenLayers.Layer.WMTS({
             name: "ignphoto",
-            url: "https://gpp3-wxs.ign.fr/"+evt.config.options.ignKey+"/wmts",
+            url: "https://wxs.ign.fr/"+evt.config.options.ignKey+"/wmts",
             layer: "ORTHOIMAGERY.ORTHOPHOTOS",
             matrixSet: "PM",
             style: "normal",
@@ -6744,7 +6744,7 @@ lizMap.events.on({
             options.numZoomLevels = options.numZoomLevels - lOptions.zoomOffset;
           var igncadastral = new OpenLayers.Layer.WMTS({
             name: "igncadastral",
-            url: "https://gpp3-wxs.ign.fr/"+evt.config.options.ignKey+"/wmts",
+            url: "https://wxs.ign.fr/"+evt.config.options.ignKey+"/wmts",
             layer: "CADASTRALPARCELS.PARCELS",
             matrixSet: "PM",
             style: "normal",
