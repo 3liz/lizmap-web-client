@@ -74,7 +74,7 @@ class ignCtrl extends jController {
     $http_code = (int) $info['http_code'];
     curl_close($curl_handle);
 
-    if ( $http_code > 400 ) {
+    if ( $http_code >= 400 ) {
         jLog::log(json_encode($info));
         return $rep;
     }
