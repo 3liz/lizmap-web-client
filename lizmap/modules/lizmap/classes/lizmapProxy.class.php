@@ -92,7 +92,6 @@ class lizmapProxy {
      * @return array($data, $mime, $http_code) Array containing the data and the mime type.
      */
     static public function getRemoteData($url, $options=null, $debug=null, $method = 'get'){
-
         if (!is_array($options)) {
             // support of deprecated parameters
             if ($options !== null) {
@@ -137,6 +136,8 @@ class lizmapProxy {
 
         $options['headers'] = array_merge(array(
             'Connection'=>'close',
+            'User-Agent' => ini_get('user_agent') ?: "Lizmap",
+            'Accept'=> "*/*"
         ), $options['headers']);
 
         // Initialize responses
@@ -196,6 +197,7 @@ class lizmapProxy {
             $scheme = isset($urlInfo['scheme']) ?$urlInfo['scheme']:'http';
 
             $opts = array(
+                'protocol_version' => '1.1',
                 'method'=>strtoupper($options['method'])
             );
 
@@ -231,13 +233,17 @@ class lizmapProxy {
             else {
                 unset($options['headers']['Connection']);
             }
-            $opts['header'] = implode("\r\n", self::encodeHttpHeaders($options['headers']))."\r\n";
+            $opts['header'] = self::encodeHttpHeaders($options['headers']);
 
             $context = stream_context_create(array($scheme => $opts));
+            // for debug, uncomment it and uncomment  the lizmap_stream_notification_callback function below
+            //use stream_context_set_params($context, array("notification" => "lizmap_stream_notification_callback"));
+
             $data = file_get_contents($url, false, $context);
             $mime = 'image/png';
             $matches = array();
-            $info = $url . ' --> PHP: ';
+            $http_code = 0;
+            // $http_response_header is created by file_get_contents
             foreach ($http_response_header as $header){
                 if ( preg_match( '#^Content-Type:\s+([\w/\.+]+)(;\s+charset=(\S+))?#i', $header, $matches ) ){
                     $mime = $matches[1];
@@ -247,14 +253,13 @@ class lizmapProxy {
                     list($version, $code, $phrase) = explode(' ', $header, 3) + array('', FALSE, '');
                     $http_code = (int) $code;
                 }
-                // optional debug
-                if($options["debug"] and $http_code == 500){
-                    $info .= ' '.$header;
-                }
             }
-            if($options["debug"] and $http_code == 500)
+            // optional debug
+            if($options["debug"] && ($http_code >= 400))
             {
-                jLog::log(json_encode($info));
+                jLog::log('getRemoteData, bad response for '.$url);
+                jLog::dump($opts, 'getRemoteData, bad response, options');
+                jLog::dump($http_response_header, 'getRemoteData, bad response, response headers');
             }
         }
 
@@ -754,3 +759,46 @@ class lizmapProxy {
         jEvent::notify('lizmapProxyClearLayerCache', array('repository'=>$repository, 'project'=>$project, 'layer'=>$layer));
     }
 }
+
+/*
+
+function lizmap_stream_notification_callback($notification_code, $severity, $message, $message_code, $bytes_transferred, $bytes_max) {
+
+    switch($notification_code) {
+        case STREAM_NOTIFY_RESOLVE:
+        case STREAM_NOTIFY_AUTH_REQUIRED:
+        case STREAM_NOTIFY_COMPLETED:
+        case STREAM_NOTIFY_FAILURE:
+        case STREAM_NOTIFY_AUTH_RESULT:
+            jLog::dump(array(
+                "notification_code"=>$notification_code,
+                "severity"=>$severity,
+                "message"=>$message,
+                "message_code"=>$message_code,
+                "bytes_transferred"=>$bytes_transferred,
+                "bytes_max"=>$bytes_max),
+                "notification_callback");
+            break;
+
+        case STREAM_NOTIFY_REDIRECTED:
+            jLog::log("notification_callback - Being redirected to: ".$message);
+            break;
+
+        case STREAM_NOTIFY_CONNECT:
+            jLog::log("notification_callback - Connected...");
+            break;
+
+        case STREAM_NOTIFY_FILE_SIZE_IS:
+            jLog::log( "notification_callback - Got the filesize: ". $bytes_max);
+            break;
+
+        case STREAM_NOTIFY_MIME_TYPE_IS:
+            jLog::log( "notification_callback - Found the mime-type: ". $message);
+            break;
+
+        case STREAM_NOTIFY_PROGRESS:
+            jLog::log( "notification_callback - Made some progress, downloaded ". $bytes_transferred. " so far");
+            break;
+    }
+}
+*/

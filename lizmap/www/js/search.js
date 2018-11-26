@@ -156,7 +156,9 @@ var lizSearch = function() {
             case 'nominatim':
             case 'ign':
                 if ( 'url' in searchConfig )
-                    service = searchConfig.url;
+                    service = OpenLayers.Util.urlAppend(searchConfig.url
+                                ,OpenLayers.Util.getParameterString(lizUrls.params)
+                              );
                 break;
             case 'google':
                 if ( google && 'maps' in google && 'Geocoder' in google.maps )
