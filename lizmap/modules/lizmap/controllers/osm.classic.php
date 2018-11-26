@@ -38,11 +38,9 @@ class osmCtrl extends jController {
       $params['viewbox'] = $bbox;
 
     $url .= http_build_query($params);
-
     list($content, $mime, $code) = lizmapProxy::getRemoteData($url, array(
         "method" => 'get',
         "referer" => jUrl::getFull("view~default:index"),
-        "headers" => array('Expect'=>'')
     ));
 
     $rep->content = $content;

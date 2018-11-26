@@ -1,0 +1,5 @@
+.gitattributes export-ignore
+.gitignore export-ignore
+.github export-ignore
+vagrant/* export-ignore
+Makefile  export-ignore
