@@ -69,7 +69,15 @@ class ignCtrl extends jController {
     curl_setopt($curl_handle, CURLOPT_HTTPHEADER, array('Expect:'));
     curl_setopt($curl_handle, CURLOPT_REFERER, jUrl::getFull('lizmap~ign:address'));
     $content = curl_exec($curl_handle);
+    $info = curl_getinfo($curl_handle);
+    $mime = $info['content_type'];
+    $http_code = (int) $info['http_code'];
     curl_close($curl_handle);
+
+    if ( $http_code > 400 ) {
+        jLog::log(json_encode($info));
+        return $rep;
+    }
 
     $rep->content = $content;
 
@@ -82,9 +90,7 @@ class ignCtrl extends jController {
       $result = array();
       $address = array();
 
-      /*
-       * bug with gml:*
-       */
+      // bug with gml:*
       $Point = $GeocodedAddress->xpath('Point/pos');
       if ( count($Point) != 0 ) {
         $Point = $Point[0];
