@@ -4085,7 +4085,8 @@ var lizMap = function() {
         "rotation": false,
         "template": pTemplate,
         "mapId": pMap.id,
-        "overviewId": pOverview != null ? pOverview.id : null
+        "overviewId": pOverview != null ? pOverview.id : null,
+        "grid": (('grid' in pMap) && pMap.grid == "True")
       });
     }
 
@@ -4228,7 +4229,7 @@ var lizMap = function() {
       //url += '&'+dragCtrl.layout.mapId+':rotation=0';
       var scale = $('#print-scale').val();
       url += '&'+dragCtrl.layout.mapId+':scale='+scale;
-      if ( 'grid' in pTemplate && pTemplate.grid == 'True' ) {
+      if ( 'grid' in dragCtrl.layout && dragCtrl.layout.grid ) {
           var gridInterval = getPrintGridInterval( dragCtrl.layout, parseFloat(scale), printCapabilities.scales );
           url += '&'+dragCtrl.layout.mapId+':grid_interval_x='+gridInterval;
           url += '&'+dragCtrl.layout.mapId+':grid_interval_y='+gridInterval;
