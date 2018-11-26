@@ -70,7 +70,7 @@ class ignCtrl extends jController {
     ));
 
     if ( $code >= 400 ) {
-        jLog::log('bad response for requesting '.$xls.' on '.$url);
+        jLog::log('bad response for '.$url);
         return $rep;
     }
 
