@@ -65,8 +65,10 @@ class ignCtrl extends jController {
     $url .= http_build_query($params);
     $curl_handle = curl_init();
     curl_setopt($curl_handle, CURLOPT_URL, $url);
-    curl_setopt($curl_handle, CURLOPT_RETURNTRANSFER, TRUE);
-    curl_setopt($curl_handle, CURLOPT_HTTPHEADER, array('Expect:'));
+    curl_setopt($curl_handle, CURLOPT_SSL_VERIFYPEER, false );
+    curl_setopt($curl_handle, CURLOPT_RETURNTRANSFER, 1);
+    curl_setopt($curl_handle, CURLOPT_FOLLOWLOCATION, true);
+    curl_setopt($curl_handle, CURLOPT_HTTPHEADER, array('Connection: close','Accept: */*','User-Agent: Lizmap','Expect:'));
     curl_setopt($curl_handle, CURLOPT_REFERER, jUrl::getFull('lizmap~ign:address'));
     $content = curl_exec($curl_handle);
     $info = curl_getinfo($curl_handle);
@@ -84,6 +86,11 @@ class ignCtrl extends jController {
     $content = str_replace('xmlns=', 'ns=', $content);
     $content = str_replace('gml:', '', $content);
     $xml = simplexml_load_string( $content );
+    if ( !$xml ) {
+        jLog::log(json_encode($info));
+        jLog::log('Content not xml '.$content);
+        return $rep;
+    }
     $results = array();
     $GeocodedAddresses = $xml->xpath('//GeocodedAddress');
     foreach( $GeocodedAddresses as $GeocodedAddress ) {
