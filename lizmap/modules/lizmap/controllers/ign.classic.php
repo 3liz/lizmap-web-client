@@ -52,7 +52,7 @@ class ignCtrl extends jController {
       || $configOptions->ignKey == '')
       return $rep;
 
-    $url = 'http://gpp3-wxs.ign.fr/'.$configOptions->ignKey.'/geoportail/ols?';
+    $url = 'https://wxs.ign.fr/'.$configOptions->ignKey.'/geoportail/ols?';
     $xls = '<XLS xmlns:xls="http://www.opengis.net/xls" xmlns:gml="http://www.opengis.net/gml" xmlns="http://www.opengis.net/xls" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="1.2" xsi:schemaLocation="http://www.opengis.net/xls http://schemas.opengis.net/ols/1.2/olsAll.xsd">';
     $xls .= '<RequestHeader/><Request requestID="1" version="1.2" methodName="LocationUtilityService"><GeocodeRequest returnFreeForm="false"><Address countryCode="StreetAddress">';
     $xls .= '<freeFormAddress>'.$query.'</freeFormAddress>';
