@@ -14,6 +14,15 @@ lizmap/var/config/profiles.ini.php
 lizmap/var/config/installer.ini.php
 lizmap/var/db/*.db
 lizmap/var/lizmap-theme-config/*
+!lizmap/var/lizmap-theme-config/.empty
+lizmap/var/mails/*
+!lizmap/var/mails/.empty
+lizmap/var/sessions/*
+!lizmap/var/sessions/.empty
+lizmap/var/uploads/*
+!lizmap/var/uploads/.empty
+lizmap/www/cache/images/*
+!lizmap/www/cache/images/.empty
 temp/lizmap/*
 !temp/lizmap/.empty
 vagrant/playbook.retry
