@@ -10,11 +10,15 @@ var lizDataviz = function() {
         if(!dv.config.layers)
             return false;
         for( var i in dv.config.layers) {
-            addPlotContainer(i);
+            if( dv.config.layers[i]['only_show_child'] != "True" ){
+                addPlotContainer(i);
+            }
         }
         lizMap.events.triggerEvent( "datavizplotcontainersadded" );
         for( var i in dv.config.layers) {
-            getPlot(i, null, 'dataviz_plot_' + i);
+            if( dv.config.layers[i]['only_show_child'] != "True" ){
+                getPlot(i, null, 'dataviz_plot_' + i);
+            }
         }
 
         // Filter plot if needed
@@ -74,14 +78,12 @@ var lizDataviz = function() {
     function addPlotContainer(plot_id){
         var dataviz_plot_id = 'dataviz_plot_' + plot_id;
         var plot_config = dv.config.layers[plot_id];
-        var html = buildPlotContainerHtml(plot_config.title, plot_config.abstract, dataviz_plot_id);
-
         //if we chose to hide the parent plot the html variable become empty
-        if(plot_config.only_show_childs=="True")
+        var html = '';
+        if(plot_config.only_show_child != "True")
         {
-            html='';
+            html = buildPlotContainerHtml(plot_config.title, plot_config.abstract, dataviz_plot_id);
         }
-
 
         // Move plot at the end of the main container
         // to the corresponding place if id is referenced in the template
