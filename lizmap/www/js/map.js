@@ -1580,7 +1580,7 @@ var lizMap = function() {
             getFeatureUrlData['options']['PROPERTYNAME'] = ['geometry',locate.fieldName].join(',');
             getFeatureUrlData['options']['FEATUREID'] = val;
             // Get data
-            $.get( getFeatureUrlData['url'], getFeatureUrlData['options'], function(data) {
+            $.post( getFeatureUrlData['url'], getFeatureUrlData['options'], function(data) {
               if ( !data.features )
                 data = JSON.parse(data);
               if( data.features.length != 0) {
@@ -1643,7 +1643,7 @@ var lizMap = function() {
     var layerName = cleanName(aName);
 
     // Get data
-    $.get( getFeatureUrlData['url'], getFeatureUrlData['options'], function(data) {
+    $.post( getFeatureUrlData['url'], getFeatureUrlData['options'], function(data) {
       var lConfig = config.layers[aName];
       locate['features'] = {};
       if ( !data.features )
@@ -3090,7 +3090,7 @@ var lizMap = function() {
         var afilter = lizMap.lizmapLayerFilterActive + ':' + config.layers[lizMap.lizmapLayerFilterActive]['filteredFeatures'].join();
         gbparams['filter'] =  afilter;
       }
-      $.get(gburl,
+      $.post(gburl,
         gbparams,
         function(data) {
           setGeobookmarkContent(data);
@@ -3903,11 +3903,25 @@ var lizMap = function() {
                 if ( ('filter' in lConfig['request_params'])
                   && lConfig['request_params']['filter'] != null
                   && lConfig['request_params']['filter'] != "" ) {
-                    filter.push( lConfig['request_params']['filter'] );
+
+                    // Get filter token
+                    var surl = OpenLayers.Util.urlAppend(lizUrls.wms
+                        ,OpenLayers.Util.getParameterString(lizUrls.params)
+                    );
+                    var sdata = {
+                        service: 'WMS',
+                        request: 'GETFILTERTOKEN',
+                        typename: lName,
+                        filter: lConfig['request_params']['filter']
+                    };
+                    $.post(surl, sdata, function(result){
+                        filter.push(result.token);
+                        info.vendorParams['filtertoken'] = filter.join(';');
+                        info.vendorParams['filter'] = null;
+                        refreshGetFeatureInfo(evt);
+                    });
                 }
             }
-            info.vendorParams['filter'] = filter.join(';');
-            refreshGetFeatureInfo(evt);
         },
         "layerSelectionChanged": function( evt ) {
             refreshGetFeatureInfo(evt);
@@ -4355,10 +4369,10 @@ var lizMap = function() {
             || lConfig['request_params'] == null )
               continue;
           var requestParams = lConfig['request_params'];
-          if ( ('filter' in lConfig['request_params'])
-            && lConfig['request_params']['filter'] != null
-            && lConfig['request_params']['filter'] != "" ) {
-              filter.push( lConfig['request_params']['filter'] );
+          if ( ('filtertoken' in lConfig['request_params'])
+            && lConfig['request_params']['filtertoken'] != null
+            && lConfig['request_params']['filtertoken'] != "" ) {
+              filter.push( lConfig['request_params']['filtertoken'] );
           }
           if ( ('selectiontoken' in lConfig['request_params'])
             && lConfig['request_params']['selectiontoken'] != null
@@ -4366,8 +4380,9 @@ var lizMap = function() {
               selection.push( lConfig['request_params']['selectiontoken'] );
           }
       }
-      if ( filter.length !=0 )
-        url += '&FILTER='+ filter.join(';');
+      if ( filter.length !=0 ){
+        url += '&FILTERTOKEN='+ filter.join(';');
+      }
       if ( selection.length !=0 )
         url += '&SELECTIONTOKEN='+ selection.join(';');
       window.open(url);
@@ -5678,7 +5693,7 @@ OpenLayers.Control.HighlightFeature = OpenLayers.Class(OpenLayers.Control, {
 
       $('body').css('cursor', 'wait');
       var getFeatureUrlData = lizMap.getVectorLayerWfsUrl( aName, aFilter, aFeatureID, aGeometryName, restrictToMapExtent, startIndex, maxFeatures );
-      $.get( getFeatureUrlData['url'], getFeatureUrlData['options'], function(data) {
+      $.post( getFeatureUrlData['url'], getFeatureUrlData['options'], function(data) {
           if( !('featureCrs' in aConfig) )
               aConfig['featureCrs'] = null;
           if( aConfig.crs == 'EPSG:4326' )
@@ -5706,7 +5721,7 @@ OpenLayers.Control.HighlightFeature = OpenLayers.Class(OpenLayers.Control, {
               var service = OpenLayers.Util.urlAppend(lizUrls.wms
                     ,OpenLayers.Util.getParameterString(lizUrls.params)
               );
-              $.get(service, {
+              $.post(service, {
                   'SERVICE':'WFS'
                  ,'VERSION':'1.0.0'
                  ,'REQUEST':'DescribeFeatureType'
