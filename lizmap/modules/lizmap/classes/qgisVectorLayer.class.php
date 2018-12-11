@@ -393,7 +393,7 @@ class qgisVectorLayer extends qgisMapLayer{
             // For log
             if ( in_array( $ref, $primaryKeys ) ) {
                 $val = $value;
-                if( $dataFields[$key]->unifiedType != 'integer' )
+                if( $dataFields[$ref]->unifiedType != 'integer' )
                     $val = $cnx->quote($val);
                 $dataLogInfo[] = '"' . $ref . '"' . ' = ' . $val;
             }
