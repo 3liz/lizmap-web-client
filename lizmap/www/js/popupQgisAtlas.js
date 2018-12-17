@@ -34,6 +34,7 @@ lizMap.events.on({
                         url += '&EXCEPTIONS=application/vnd.ogc.se_inimage&TRANSPARENT=true';
                         url += '&DPI=100';
                         url += '&TEMPLATE='+t.title;
+                        url += '&LAYER='+layerName;
                         url += '&EXP_FILTER=$id IN ('+fid+')';
                         $(this).append('<a class="lizmap-atlasprint-link" href="'+url+'" target="_blank" title="' + lizDict['attributeLayers.toolbar.btn.data.export.title'] + ' ' + t.title + '"><span class="icon"></span>'+t.title+'</a></br>');
                         $(this).find('a.lizmap-atlasprint-link').tooltip();

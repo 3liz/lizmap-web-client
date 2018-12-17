@@ -1034,6 +1034,15 @@ class serviceCtrl extends jController {
     }
     $querystring = $url . implode('&', $data);
 
+    // Trigger optional actions by other modules
+    // For example, cadastre module can create a file
+    $eventParams = array(
+     'params' => $this->params,
+     'repository' => $this->repository->getKey(),
+     'project' => $this->project->getKey()
+    );
+    jEvent::notify('BeforePdfCreation', $eventParams);
+
     // Get remote data
     list($data, $mime, $code) = lizmapProxy::getRemoteData($querystring, array('method'=>'post'));
 
