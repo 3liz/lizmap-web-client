@@ -1335,9 +1335,9 @@ var lizAttributeTable = function() {
                         colConf['mRender'] = function( data, type, full, meta ){
                             if( !data || !( typeof data === 'string') )
                                 return data;
-                            if( data.substr(0,6) == 'media/' || data.substr(0,6) == '/media/' ){
+                            if( data.substr(0,6) == 'media/' || data.substr(0,7) == '/media/' ){
                                 var rdata = data;
-                                if( data.substr(0,6) == '/media/' )
+                                if( data.substr(0,7) == '/media/' )
                                     rdata = data.slice(1);
                                 return '<a href="' + mediaLinkPrefix + '&path=/' + rdata + '" target="_blank">' + columns[meta.col]['title'] + '</a>';
                             }
