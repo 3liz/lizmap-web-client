@@ -9,7 +9,34 @@
 */
 
 /**
- * hook plugin :  
+ * hook plugin
+ *
+ * It allows to retrieve HTML content, coming from responses
+ * of an event, and inserting at the place of the hook tag.
+ *
+ * Example:
+ *
+ * <code>
+ * <div id="hook-content">
+ * {hook 'myevent'}
+ * </div>
+ * </code>
+ *
+ * In a Jelix Event listener:
+ *
+ * <code>
+ * function onmyevent($event) {
+ *    $event->add('<div>html content</div>');
+ * }
+ * </code>
+ *
+ * Result:
+ *
+ * <code>
+ * <div id="hook-content">
+ * <div>html content</div>
+ * </div>
+ * </code>
  *
  * @param jTpl $tpl template engine
  * @param string $event the event name to call
