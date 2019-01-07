@@ -1,3 +1,4 @@
+{hook 'LizTopMenuHtmlItems'}
 {ifuserconnected}
     <li class="user dropdown">
         <a class="dropdown-toggle" data-toggle="dropdown" href="#" id="info-user">
@@ -13,6 +14,7 @@
             {ifacl2 'auth.user.view'}
                 <li><a href="{jurl 'jcommunity~account:show', array('user'=>$user->login)}">{@master_admin~gui.header.your.account@}</a></li>
             {/ifacl2}
+            {hook 'LizAccountMenuHtmlItems'}
             <li><a href="{jurl 'jcommunity~login:out'}?auth_url_return={jurl 'view~default:index'}">{@view~default.header.disconnect@}</a></li>
         </ul>
     </li>
