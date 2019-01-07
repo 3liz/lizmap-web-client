@@ -14,36 +14,7 @@
         <li class="search-project">
           <input id="search-project" class="search-query" placeholder="{@view~map.search.nominatim.placeholder@}" type="text">
         </li>
-        {if $isConnected}
-        <li class="user dropdown">
-          <a class="dropdown-toggle" data-toggle="dropdown" href="#">
-            <span class="icon"></span>
-            <span id="info-user-login" class="text">{$user->login|eschtml}</span>
-            <span class="caret"></span>
-          </a>
-          <ul class="dropdown-menu pull-right">
-            {ifacl2 'auth.user.view'}
-            <li><a href="{jurl 'jcommunity~account:show', array('user'=>$user->login)}">{@master_admin~gui.header.your.account@}</a></li>
-            {/ifacl2}
-            <li><a href="{jurl 'jcommunity~login:out'}?auth_url_return={jurl 'view~default:index'}">{@view~default.header.disconnect@}</a></li>
-          </ul>
-        </li>
-        {else}
-        <li class="login">
-          <a href="{jurl 'jcommunity~login:index', array('auth_url_return'=>$auth_url_return)}">
-            <span class="icon"></span>
-            <span class="text">{@view~default.header.connect@}</span>
-          </a>
-        </li>
-          {if isset($allowUserAccountRequests) and $allowUserAccountRequests == '1'}
-          <li class="registered">
-            <a href="{jurl 'jcommunity~registration:index'}">
-              <span class="icon"></span>
-              <span class="text">{@view~default.header.createAccount@}</span>
-            </a>
-          </li>
-          {/if}
-        {/if}
+        {include 'lizmap~user_menu'}
       </ul>
     </div>
   </div>
