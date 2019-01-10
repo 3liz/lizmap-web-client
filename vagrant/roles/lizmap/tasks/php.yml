@@ -2,8 +2,8 @@
 
 - name: Import PHP repository key
   apt_key:
-     keyserver: "{{ php_apt_key_server }}"
-     id: "{{ php_apt_key_id }}"
+     url: "{{ php_apt_key_url }}"
+     state: present
 
 - name: Add PHP repository
   apt_repository: repo='deb {{ php_repository }} {{ ansible_distribution_release }} main' state=present
