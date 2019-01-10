@@ -9,7 +9,7 @@
 
 # PHP
 #php_apt_key_url: https://packages.sury.org/php/apt.gpg
-#php_version: "5.6"
+#php_version: "7.2"
 #php_repository: https://packages.sury.org/php
 #php_composer_version: 1.7.2
 
