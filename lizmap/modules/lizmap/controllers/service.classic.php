@@ -661,6 +661,11 @@ class serviceCtrl extends jController {
          $QGISLayersParams['info_format'] = 'text/xml';
        }
 
+       // Always request maptip to QGIS server so we can decide if to use it later
+       $QGISLayersParams['with_maptip'] = 'true';
+       // Always request geometry to QGIS server so we can decide if to use it later
+       $QGISLayersParams['with_geometry'] = 'true';
+
        $bparams = http_build_query($QGISLayersParams);
        $querystring = $url . $bparams;
 
