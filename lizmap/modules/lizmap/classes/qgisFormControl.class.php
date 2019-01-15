@@ -53,6 +53,8 @@ class qgisFormControl{
 
     public $uniqueValuesData = Null;
 
+    public $DefaultRoot = Null;
+
     // Table mapping QGIS and jelix forms
     public $qgisEdittypeMap = array(
       0 => array (
@@ -386,6 +388,24 @@ class qgisFormControl{
                 }
                 $upload->capture = 'camera';
             }
+            if( property_exists($this->edittype[0]->widgetv2config->attributes(), 'DefaultRoot')
+                and (
+                  preg_match(
+                    '#^../media(/)?#',
+                    $this->edittype[0]->widgetv2config->attributes()->DefaultRoot
+                  )
+                  or
+                  preg_match(
+                    '#^media(/)?#',
+                    $this->edittype[0]->widgetv2config->attributes()->DefaultRoot
+                  )
+                )
+            ){
+                $this->DefaultRoot = $this->edittype[0]->widgetv2config->attributes()->DefaultRoot . '/';
+            }else{
+                $this->DefaultRoot = '';
+            }
+
         }
         $choice->addChildControl($upload, 'update');
         $choice->createItem('delete','delete');
