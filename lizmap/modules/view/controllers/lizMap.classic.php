@@ -319,31 +319,38 @@ class lizMapCtrl extends jController {
       foreach( $jsDirArray as $dir ){
         $jsUrls = array();
         $cssUrls = array();
-        $jsPathRoot = realpath($repositoryPath . '/' . 'media/js/' . $dir);
-        if( is_dir( $jsPathRoot ) ) {
-          foreach (new RecursiveIteratorIterator(new RecursiveDirectoryIterator($jsPathRoot)) as $filename){
-            $fileExtension = pathinfo($filename,  PATHINFO_EXTENSION);
-            if( $fileExtension == 'js' || $fileExtension == 'css' ){
-              $jsPath = realpath( $filename );
-              $jsRelPath = 'media/js/' . $dir . str_replace( $jsPathRoot, '', $jsPath);
-              $url = 'view~media:getMedia';
-              if($fileExtension == 'css')
-                $url = 'view~media:getCssFile';
-              $jsUrl = jUrl::get(
-                $url,
-                array(
-                  'repository'=>$lrep->getKey(),
-                  'project'=>$project,
-                  'path'=>$jsRelPath
-                )
-              );
-              if($fileExtension == 'js')
-                $jsUrls[] = $jsUrl;
-              else
-                $cssUrls[] = $jsUrl;
+        $items = array(
+            'media/js/',
+            '../media/js/'
+        );
+        foreach($items as $item){
+            $jsPathRoot = realpath($repositoryPath . $item . $dir);
+            if( is_dir( $jsPathRoot ) ) {
+              foreach (new RecursiveIteratorIterator(new RecursiveDirectoryIterator($jsPathRoot)) as $filename){
+                $fileExtension = pathinfo($filename,  PATHINFO_EXTENSION);
+                if( $fileExtension == 'js' || $fileExtension == 'css' ){
+                  $jsPath = realpath( $filename );
+                  $jsRelPath = $item . $dir . str_replace( $jsPathRoot, '', $jsPath);
+                  $url = 'view~media:getMedia';
+                  if($fileExtension == 'css')
+                    $url = 'view~media:getCssFile';
+                  $jsUrl = jUrl::get(
+                    $url,
+                    array(
+                      'repository'=>$lrep->getKey(),
+                      'project'=>$project,
+                      'path'=>$jsRelPath
+                    )
+                  );
+                  if($fileExtension == 'js')
+                    $jsUrls[] = $jsUrl;
+                  else
+                    $cssUrls[] = $jsUrl;
+                }
+              }
             }
-          }
         }
+
 
         // Add CSS and JS files orderd by name
         sort($cssUrls);

@@ -33,7 +33,7 @@ class popup{
     $urlRegex = '/^(ftp|http|https):\/\/(\w+:{0,1}\w*@)?(\S+)(:[0-9]+)?(\/|\/([\w#!:.?+=&%@!\-\/]))?$/';
     $emailRegex = '/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/';
     $imageRegex = '/\.(jpg|jpeg|png|gif|bmp)$/i';
-    $mediaRegex = '/^(\/)?media\//';
+    $mediaRegex = '/^(..\/|\/)?media\//';
     $mediaTextRegex = '/\.(txt|htm|html)$/i';
 
     // Remote urls and images
