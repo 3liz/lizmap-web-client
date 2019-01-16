@@ -389,10 +389,28 @@ class editionCtrl extends jController {
     else if ( $form->hasUpload() ) {
         $repPath = $this->repository->getPath();
         $dtParams = $this->layer->getDatasourceParameters();
-        $layerPath = realpath($repPath.'/media').'/upload/'.$this->project->getKey().'/'.$dtParams->tablename;
-        if ( !is_dir($layerPath) )
-            jFile::createDir($layerPath);
+        $qgisFormControls = $qgisForm->getFormControls();
         foreach( $form->getUploads() as $upload ) {
+            $DefaultRoot = $qgisFormControls[$upload->ref]->DefaultRoot;
+            // If not default root is set, the use old method media/upload/projectname/tablename/
+            $targetPath = 'media/upload/'.$this->project->getKey().'/'.$dtParams->tablename.'/'.$upload->ref .'/';
+            $targetFullPath = $repPath . $targetPath;
+            // Else use given root, but only if it is a child or brother of the repository path
+            if(!empty($DefaultRoot) ){
+                jFile::createDir($repPath . $DefaultRoot); // Need to create it to then make the realpath checks
+                if(
+                    (substr(realpath($repPath . $DefaultRoot), 0, strlen(realpath($repPath))) === realpath($repPath))
+                    or
+                    (substr(realpath($repPath . $DefaultRoot), 0, strlen(realpath($repPath.'/../'))) === realpath($repPath.'/../'))
+                ){
+                    $targetPath = $DefaultRoot;
+                    $targetFullPath = realpath($repPath . $DefaultRoot);
+                }
+            }
+
+            if ( !is_dir($targetFullPath) )
+                $createDir = jFile::createDir($targetFullPath);
+
             $choiceRef = $upload->ref.'_choice';
             $choiceCtrl = $form->getControl( $choiceRef );
             if ( $choiceCtrl ) {
@@ -401,10 +419,10 @@ class editionCtrl extends jController {
                 $choiceCtrl->deactivateItem('keep');
                 $choiceCtrl->deactivateItem('delete');
             }
-            if( !is_dir($layerPath) or !is_writable($layerPath) )
+            if( !is_dir($targetFullPath) or !is_writable($targetFullPath) )
                 $form->setErrorOn($upload->ref, jLocale::get("view~edition.message.error.upload.layer", array($dtParams->tablename) ) );
             else {
-                $refPath = $layerPath.'/'.$upload->ref;
+                $refPath = $targetFullPath;
                 if ( !is_dir($refPath) )
                     jFile::createDir($refPath);
                 if( !is_dir($refPath) or !is_writable($refPath) )
@@ -698,8 +716,9 @@ class editionCtrl extends jController {
             $value = $form->getData( $upload->ref );
             $hiddenValue = $form->getData( $upload->ref.'_hidden' );
             $repPath = $this->repository->getPath();
-            if ( $hiddenValue && file_exists( realPath( $repPath ).'/'.$hiddenValue ) )
+            if ( $hiddenValue && file_exists( realPath( $repPath ).'/'.$hiddenValue ) ){
                 $deleteFiles[] = realPath( $repPath ).'/'.$hiddenValue;
+            }
         }
     }
 
