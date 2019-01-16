@@ -1058,20 +1058,20 @@ class lizmapProject{
             // And remove ONLY spatialite layers if no extension found
             $spatial = false;
             if ( class_exists('SQLite3') ) {
-                // Try with libspatialite
+                // Try with mod_spatialite
                 try{
                     $db = new SQLite3(':memory:');
-                    $spatial = @$db->loadExtension('libspatialite.so'); # loading SpatiaLite as an extension
+                    $spatial = @$db->loadExtension('mod_spatialite.so'); # loading SpatiaLite as an extension
                 }catch(Exception $e){
+                    //jLog::log($e->getMessage(), 'error');
                     $spatial = False;
                 }
-                // Try with mod_spatialite
+                // Try with libspatialite
                 if( !$spatial )
                     try{
                         $db = new SQLite3(':memory:');
-                        $spatial = @$db->loadExtension('mod_spatialite.so'); # loading SpatiaLite as an extension
+                        $spatial = @$db->loadExtension('libspatialite.so'); # loading SpatiaLite as an extension
                     }catch(Exception $e){
-                        //jLog::log($e->getMessage(), 'error');
                         $spatial = False;
                     }
             }
