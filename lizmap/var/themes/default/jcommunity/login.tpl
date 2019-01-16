@@ -34,7 +34,7 @@
                 <input type="hidden" name="auth_url_return" value="{$url_return|eschtml}" />
             {/if}
             <div class="form-actions">{*formsubmit*}
-                <input type="submit" value="connecter" class="btn"/>
+                <input type="submit" value="{@jcommunity~login.startpage.login@}" class="btn"/>
             </div>
         </fieldset>
     {/form}

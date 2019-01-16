@@ -583,7 +583,7 @@ class datavizPlotScatter extends datavizPlot {
 
     protected function getTraceTemplate(){
         $data = array(
-            'type'=> 'scatter',
+            'type'=> 'scattergl',
             'name'=> '',
             'y'=> array(),
             'x'=> array(),
@@ -603,7 +603,7 @@ class datavizPlotScatter extends datavizPlot {
                     'width'=>Null
                 )
             ),
-            'mode'=> 'markers',
+            'mode'=> 'lines',
             'textinfo'=> 'none',
             'opacity'=>Null
         );
@@ -788,7 +788,7 @@ class datavizPlotPolar extends datavizPlot {
 
     protected function getTraceTemplate(){
         $data = array(
-            'type'=> 'scatter',
+            'type'=> 'scattergl',
             'name'=> '',
             'r'=> array(),
             't'=> array(),

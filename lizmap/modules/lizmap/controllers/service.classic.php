@@ -83,6 +83,8 @@ class serviceCtrl extends jController {
       return $this->GetProj4();
     elseif ($request == "GETSELECTIONTOKEN")
       return $this->GetSelectionToken();
+    elseif ($request == "GETFILTERTOKEN")
+      return $this->GetFilterToken();
     else {
       global $HTTP_RAW_POST_DATA;
       if(isset($HTTP_RAW_POST_DATA)){
@@ -202,6 +204,31 @@ class serviceCtrl extends jController {
     $this->repository = $lrep;
     $this->services = lizmap::getServices();
     $this->params = $params;
+
+    // Get the optionnal filter token
+    if(
+      isset($params['filtertoken'])
+      and isset($params['request'])
+      and in_array(strtolower($params['request']), array('getmap', 'getfeature', 'getprint', 'getfeatureinfo'))
+    ){
+        $tokens = $params['filtertoken'];
+        $tokens = explode(';', $tokens);
+        $filters = array();
+        foreach( $tokens as $token ) {
+            $data = jCache::get($token);
+            if($data){
+                $data = json_decode($data);
+                if(
+                  property_exists($data, 'filter')
+                  and trim($data->filter) != ''
+                ){
+                  $filters[] = $data->filter;
+                }
+            }
+        }
+        if( count( $filters ) > 0 )
+            $this->params['filter'] = implode(';', $filters);
+    }
 
     // Optionnaly filter data by login
     if(isset($params['request'])){
@@ -634,6 +661,11 @@ class serviceCtrl extends jController {
          $QGISLayersParams['info_format'] = 'text/xml';
        }
 
+       // Always request maptip to QGIS server so we can decide if to use it later
+       $QGISLayersParams['with_maptip'] = 'true';
+       // Always request geometry to QGIS server so we can decide if to use it later
+       $QGISLayersParams['with_geometry'] = 'true';
+
        $bparams = http_build_query($QGISLayersParams);
        $querystring = $url . $bparams;
 
@@ -771,7 +803,7 @@ class serviceCtrl extends jController {
           $templateConfigured = True;
           // first replace all "media/bla/bla/llkjk.ext" by full url
           $popupTemplate = preg_replace_callback(
-            '#(["\']){1}(media/.+\.\w{3,10})(["\']){1}#',
+            '#(["\']){1}((\.\./)?media/.+\.\w{3,10})(["\']){1}#',
             Array($this, 'replaceMediaPathByMediaUrl'),
             $popupTemplate
           );
@@ -851,7 +883,7 @@ class serviceCtrl extends jController {
         if($hasMaptip){
           // first replace all "media/bla/bla/llkjk.ext" by full url
           $maptipValue = preg_replace_callback(
-            '#(["\']){1}(media/.+\.\w{3,10})(["\']){1}#',
+            '#(["\']){1}((\.\./)?media/.+\.\w{3,10})(["\']){1}#',
             Array($this, 'replaceMediaPathByMediaUrl'),
             $maptipValue
           );
@@ -1006,6 +1038,15 @@ class serviceCtrl extends jController {
       }
     }
     $querystring = $url . implode('&', $data);
+
+    // Trigger optional actions by other modules
+    // For example, cadastre module can create a file
+    $eventParams = array(
+     'params' => $this->params,
+     'repository' => $this->repository->getKey(),
+     'project' => $this->project->getKey()
+    );
+    jEvent::notify('BeforePdfCreation', $eventParams);
 
     // Get remote data
     list($data, $mime, $code) = lizmapProxy::getRemoteData($querystring, array('method'=>'post'));
@@ -1333,6 +1374,47 @@ class serviceCtrl extends jController {
 
     // Token
     $data = $this->_getSelectionToken($this->iParam('repository'), $this->iParam('project'), $typename, $ids);
+    $json = array();
+    $json['token'] = $data['token'];
+
+    $rep->data = $json;
+
+    return $rep;
+  }
+
+  private function _getFilterToken($repository, $project, $typename, $filter){
+    $token = md5($repository . $project . $typename . $filter);
+
+    $data = jCache::get($token);
+    $incache = True;
+    if(!$data or true){
+      $data = array();
+      $data['token'] = $token;
+      $data['typename'] = $typename;
+      $data['filter'] = $filter;
+      $incache = False;
+      jCache::set($token, json_encode($data), 3600);
+    }else{
+      $data = json_decode($data);
+    }
+
+    return $data;
+  }
+
+  function getFilterToken(){
+    // Get parameters
+    if(!$this->getServiceParameters())
+      return $this->serviceException();
+
+    // Prepare response
+    $rep = $this->getResponse('json');
+
+    // Get params
+    $typename = $this->params["typename"];
+    $filter = $this->params["filter"];
+
+    // Token
+    $data = $this->_getFilterToken($this->iParam('repository'), $this->iParam('project'), $typename, $filter);
     $json = array();
     $json['token'] = $data['token'];
 

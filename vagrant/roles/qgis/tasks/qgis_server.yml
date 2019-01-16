@@ -28,7 +28,7 @@
 # Debian : Install QGIS from repository
 
 - name: Add QGIS repository key - 1
-  shell: wget -O - {{ qgis_repository_debian_key_url }} | gpg --import
+  shell: wget -O - {{ qgis_repository_debian_key_url }} | gpg --no-tty --import
   when: qgis_install_source == 'repository'
 
 - name: Add QGIS repository key - 2

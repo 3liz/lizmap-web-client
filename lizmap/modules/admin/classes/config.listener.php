@@ -5,7 +5,7 @@ class configListener extends jEventListener{
 
     if( jAcl2::check("lizmap.admin.access")){
       // Create the "lizmap" parent menu item
-      $bloc = new masterAdminMenuItem('lizmap', 'LizMap', '', 100);
+      $bloc = new masterAdminMenuItem('lizmap', 'LizMap', '', 50);
 
       // Child for the configuration of lizmap repositories
       $bloc->childItems[] = new masterAdminMenuItem(
