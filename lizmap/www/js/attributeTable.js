@@ -749,7 +749,7 @@ var lizAttributeTable = function() {
                         var service = OpenLayers.Util.urlAppend(lizUrls.edition
                             ,OpenLayers.Util.getParameterString(lizUrls.params)
                         );
-                        $.get(service.replace('getFeature','linkFeatures'),{
+                        $.post(service.replace('getFeature','linkFeatures'),{
                           features1: p[0]['id'] + ':' + p[0]['fkey'] + ':' + p[0]['selected'].join(),
                           features2: p[1]['id'] + ':' + p[1]['fkey'] + ':' + p[1]['selected'].join(),
                           pivot: cId
@@ -1335,11 +1335,11 @@ var lizAttributeTable = function() {
                         colConf['mRender'] = function( data, type, full, meta ){
                             if( !data || !( typeof data === 'string') )
                                 return data;
-                            if( data.substr(0,6) == 'media/' || data.substr(0,6) == '/media/' ){
+                            if( data.substr(0,6) == 'media/' || data.substr(0,7) == '/media/' || data.substr(0,9) == '../media/'){
                                 var rdata = data;
-                                if( data.substr(0,6) == '/media/' )
+                                if( data.substr(0,7) == '/media/' )
                                     rdata = data.slice(1);
-                                return '<a href="' + mediaLinkPrefix + '&path=/' + rdata + '" target="_blank">' + columns[meta.col]['title'] + '</a>';
+                                return '<a href="' + mediaLinkPrefix + '&path=' + rdata + '" target="_blank">' + columns[meta.col]['title'] + '</a>';
                             }
                             else if( data.substr(0,4) == 'http' || data.substr(0,3) == 'www' ){
                                 var rdata = data;
@@ -1658,7 +1658,7 @@ var lizAttributeTable = function() {
                         ,OpenLayers.Util.getParameterString(lizUrls.params)
                     );
 
-                    $.get(eService.replace('getFeature','unlinkChild'),{
+                    $.post(eService.replace('getFeature','unlinkChild'),{
                       lid: cId,
                       pkey: primaryKey,
                       pkeyval: cPkeyVal,
@@ -2271,10 +2271,37 @@ var lizAttributeTable = function() {
                 if( layer
                     && layer.params
                 ){
-                    if( aFilter )
-                        layer.params['FILTER'] = lFilter;
-                    else
+                    if( aFilter ){
+                        //layer.params['FILTER'] = lFilter;
+                        // Get filter token
+                        var surl = OpenLayers.Util.urlAppend(lizUrls.wms
+                            ,OpenLayers.Util.getParameterString(lizUrls.params)
+                        );
+                        var sdata = {
+                            service: 'WMS',
+                            request: 'GETFILTERTOKEN',
+                            typename: typeName,
+                            filter: lFilter
+                        };
+                        $.post(surl, sdata, function(result){
+                            layer.params['FILTERTOKEN'] = result.token;
+                            delete layer.params['FILTER'];
+                            layerConfig['request_params']['filtertoken'] = result.token;
+                            // Redraw openlayers layer
+                            if( layerConfig['geometryType']
+                                && layerConfig.geometryType != 'none'
+                                && layerConfig.geometryType != 'unknown'
+                            ){
+                                layer.redraw(true);
+                            }
+                        });
+
+                    }
+                    else{
                         delete layer.params['FILTER'];
+                        delete layer.params['FILTERTOKEN'];
+                        layerConfig['request_params']['filtertoken'] = null;
+                    }
                 }
 
                 // Redraw openlayers layer
