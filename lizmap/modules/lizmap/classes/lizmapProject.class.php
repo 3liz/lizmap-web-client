@@ -973,6 +973,7 @@ class lizmapProject extends qgisProject {
                     $db = new SQLite3(':memory:');
                     $spatial = @$db->loadExtension('libspatialite.so'); # loading SpatiaLite as an extension
                 }catch(Exception $e){
+                    //jLog::logEx($e);
                     $spatial = False;
                 }
                 // Try with mod_spatialite
@@ -981,7 +982,7 @@ class lizmapProject extends qgisProject {
                         $db = new SQLite3(':memory:');
                         $spatial = @$db->loadExtension('mod_spatialite.so'); # loading SpatiaLite as an extension
                     }catch(Exception $e){
-                        //jLog::log($e->getMessage(), 'error');
+                        //jLog::logEx($e);
                         $spatial = False;
                     }
             }

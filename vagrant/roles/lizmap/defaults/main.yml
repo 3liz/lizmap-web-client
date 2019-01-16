@@ -4,6 +4,7 @@ php_apt_key_url: https://packages.sury.org/php/apt.gpg
 php_version: "5.6"
 php_repository: https://packages.sury.org/php
 php_fpm_config_file: /etc/php/{{ php_version }}/fpm/pool.d/www.conf
+php_fpm_conf_path: /etc/php/{{ php_version }}/fpm/
 
 php_composer_version: 1.7.2
 
@@ -24,3 +25,5 @@ lizmap_ldapdao_enabled: false
 # the path should be equals to the vagrant mount point, see config.vm.synced_folder in Vagrantfile
 lizmap_home: /lizmap_web_client
 lizmap_data_directory: /lizmap_web_client/data/
+
+libspatialite_path: /usr/lib/x86_64-linux-gnu/mod_spatialite.so.7.1.0
