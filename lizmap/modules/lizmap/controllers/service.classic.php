@@ -803,7 +803,7 @@ class serviceCtrl extends jController {
           $templateConfigured = True;
           // first replace all "media/bla/bla/llkjk.ext" by full url
           $popupTemplate = preg_replace_callback(
-            '#(["\']){1}(media/.+\.\w{3,10})(["\']){1}#',
+            '#(["\']){1}((\.\./)?media/.+\.\w{3,10})(["\']){1}#',
             Array($this, 'replaceMediaPathByMediaUrl'),
             $popupTemplate
           );
@@ -883,7 +883,7 @@ class serviceCtrl extends jController {
         if($hasMaptip){
           // first replace all "media/bla/bla/llkjk.ext" by full url
           $maptipValue = preg_replace_callback(
-            '#(["\']){1}(media/.+\.\w{3,10})(["\']){1}#',
+            '#(["\']){1}((\.\./)?media/.+\.\w{3,10})(["\']){1}#',
             Array($this, 'replaceMediaPathByMediaUrl'),
             $maptipValue
           );
