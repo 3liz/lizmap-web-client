@@ -25,6 +25,7 @@ jFormsJQ.selectFillUrl=\''.jUrl::get('jelix~jforms:getListData').'\';
 jFormsJQ.config = {locale:'.$builder->escJsStr(jApp::config()->locale).
             ',basePath:'.$builder->escJsStr($conf['basePath']).
             ',jqueryPath:'.$builder->escJsStr($conf['jqueryPath']).
+            ',jqueryFile:'.$builder->escJsStr(jApp::config()->jquery['jquery']).
             ',jelixWWWPath:'.$builder->escJsStr($conf['jelixWWWPath']).'};
 jFormsJQ.tForm = new jFormsJQForm(\''.$builder->getName().'\',\''.$builder->getForm()->getSelector().'\',\''.$builder->getForm()->getContainer()->formId.'\');
 jFormsJQ.tForm.setErrorDecorator(new '.$builder->getOption('errorDecorator').'());

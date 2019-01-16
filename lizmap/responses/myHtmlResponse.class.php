@@ -28,7 +28,10 @@ class myHtmlResponse extends jResponseHtml {
     $this->addHttpHeader('x-ua-compatible', 'ie=edge');
 
     // CSS
-    $this->addCSSLink($bp.'css/jquery-ui-1.8.23.custom.css');
+    $css = jApp::config()->jquery['jqueryui.css'];
+    foreach($css as $file) {
+      $this->addCSSLink($file);
+    }
     $this->addCSSLink($bp.'css/bootstrap.css');
     $this->addCSSLink($bp.'css/bootstrap-responsive.css');
     $this->addCSSLink($bp.'css/main.css');
@@ -44,8 +47,11 @@ class myHtmlResponse extends jResponseHtml {
     $this->addHeadContent('<meta name="Distribution" content="global" />');
     $this->addHeadContent('<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />');
 
-    $this->addJSLink($bp.'js/jquery-1.12.4.min.js');
-    $this->addJSLink($bp.'js/jquery-ui-1.11.2.custom.min.js');
+    $this->addJSLink(jApp::config()->jquery['jquery']);
+    $js = jApp::config()->jquery['jqueryui.js'];
+    foreach($js as $file) {
+      $this->addJSLink($file);
+    }
     $this->addJSLink($bp.'js/bootstrap.js');
 
   }
