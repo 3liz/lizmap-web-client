@@ -131,7 +131,7 @@ class qgisVectorLayer extends qgisMapLayer{
           $jdbParams = array(
             "driver" => 'sqlite3',
             "database" => realpath($repository->getPath().$dtParams->dbname),
-            "extensions"=>"libspatialite.so,mod_spatialite.so"
+            "extensions"=>"mod_spatialite.so,libspatialite.so"
           );
         } else if( $this->provider == 'postgres' ){
           if(!empty($dtParams->service)){
