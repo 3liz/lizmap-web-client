@@ -35,10 +35,10 @@ class htmlJformsBuilder extends jFormsBuilderHtml {
         $confDate = &jApp::config()->datepickers;
         $confWikiEditor = &jApp::config()->wikieditors;
         $www = $confUrlEngine['jelixWWWPath'];
-        $jq = $confUrlEngine['jqueryPath'];
         $bp = $confUrlEngine['basePath'];
-        $resp->addJSLink($jq.'jquery.js');
-        $resp->addJSLink($jq.'include/jquery.include.js');
+
+        $resp->addJSLink(jApp::config()->jquery['jquery']);
+        $resp->addJSLink($www.'jquery/include/jquery.include.js');
         $resp->addJSLink($www.'js/jforms_jquery.js');
         $resp->addCSSLink($www.'design/jform.css');
         foreach($t->_vars as $k=>$v){
@@ -95,6 +95,7 @@ jFormsJQ.selectFillUrl=\''.jUrl::get('jelix~jforms:getListData').'\';
 jFormsJQ.config = {locale:'.$this->escJsStr(jApp::config()->locale).
     ',basePath:'.$this->escJsStr($conf['basePath']).
     ',jqueryPath:'.$this->escJsStr($conf['jqueryPath']).
+    ',jqueryFile:'.$this->escJsStr(jApp::config()->jquery['jquery']).
     ',jelixWWWPath:'.$this->escJsStr($conf['jelixWWWPath']).'};
 jFormsJQ.tForm = new jFormsJQForm(\''.$this->_name.'\',\''.$this->_form->getSelector().'\',\''.$this->_form->getContainer()->formId.'\');
 jFormsJQ.tForm.setErrorDecorator(new '.$this->options['errorDecorator'].'());

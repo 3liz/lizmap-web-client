@@ -105,26 +105,40 @@ function jtpl_meta_html_html($tpl, $method, $param=null, $params=array())
             $resp->addMetaGenerator($param);
             break;
         case 'jquery':
-            $resp->addJSLink(jApp::config()->urlengine['jqueryPath'].'jquery.js');
+            $resp->addJSLink(jApp::config()->jquery['jquery']);
             break;
         case 'jquery_ui':
             $base = jApp::config()->urlengine['jqueryPath'];
             switch($param){
+                case 'default':
+                    $resp->addJSLink(jApp::config()->jquery['jquery']);
+                    $js = jApp::config()->jquery['jqueryui.js'];
+                    foreach($js as $file) {
+                        $resp->addJSLink($file);
+                    }
+                    $css = jApp::config()->jquery['jqueryui.css'];
+                    foreach($css as $file) {
+                        $resp->addCSSLink($file);
+                    }
+                    break;
                 case 'components':
-                    $resp->addJSLink($base.'jquery.js');
+                    $resp->addJSLink(jApp::config()->jquery['jquery']);
                     $resp->addJSLink($base.'ui/jquery.ui.core.min.js');
                     foreach($params as $f)
                         $resp->addJSLink($base.'ui/jquery.ui.'.$f.'.min.js');
                     break;
                 case 'effects':
-                    $resp->addJSLink($base.'jquery.js');
+                    $resp->addJSLink(jApp::config()->jquery['jquery']);
                     $resp->addJSLink($base.'ui/jquery.ui.core.min.js');
                     $resp->addJSLink($base.'ui/jquery.ui.effect.min.js');
                     foreach($params as $f)
                         $resp->addJSLink($base.'ui/jquery.ui.effect-'.$f.'.min.js');
                     break;
                 case 'theme':
-                    $resp->addCSSLink($base.'themes/base/jquery.ui.all.css');
+                    $css = jApp::config()->jquery['jqueryui.css'];
+                    foreach($css as $file) {
+                        $resp->addCSSLink($file);
+                    }
                     break;
             }
             break;
