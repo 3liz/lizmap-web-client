@@ -6547,7 +6547,7 @@ lizMap.events.on({
             options.numZoomLevels = options.numZoomLevels - lOptions.zoomOffset;
           var bmap = new OpenLayers.Layer.Bing({
              key: evt.config.options.bingKey,
-             type: "bmap",
+             type: "RoadOnDemand",
              name: "Bing Road", // the default
              numZoomLevels: options.numZoomLevels, maxResolution: options.maxResolution, minZoomLevel:options.zoomOffset
           });
@@ -6577,7 +6577,7 @@ lizMap.events.on({
             options.numZoomLevels = options.numZoomLevels - lOptions.zoomOffset;
           var baerial = new OpenLayers.Layer.Bing({
              key: evt.config.options.bingKey,
-             type: "baerial",
+             type: "Aerial",
              name: "Bing Aerial", // the default
              numZoomLevels: options.numZoomLevels, maxResolution: options.maxResolution, minZoomLevel:options.zoomOffset
           });
@@ -6607,7 +6607,7 @@ lizMap.events.on({
             options.numZoomLevels = options.numZoomLevels - lOptions.zoomOffset;
           var bhybrid = new OpenLayers.Layer.Bing({
              key: evt.config.options.bingKey,
-             type: "bhybrid",
+             type: "AerialWithLabelsOnDemand",
              name: "Bing Hybrid", // the default
              numZoomLevels: options.numZoomLevels, maxResolution: options.maxResolution, minZoomLevel:options.zoomOffset
           });
