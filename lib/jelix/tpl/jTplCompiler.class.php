@@ -100,7 +100,7 @@ class jTplCompiler
             'escxml'=>'htmlspecialchars', 'eschtml'=>'htmlspecialchars',
             'strip_tags'=>'strip_tags', 'escurl'=>'rawurlencode',
             'capitalize'=>'ucwords', 'stripslashes'=>'stripslashes',
-            'upperfirst'=>'ucfirst', 'json_encode');
+            'upperfirst'=>'ucfirst', 'json_encode'=>'json_encode');
 
     /**
      * stack of founded blocks

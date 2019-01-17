@@ -19,12 +19,31 @@
 
 class date_htmlFormWidget extends \jelix\forms\HtmlWidget\WidgetBase {
     public function outputMetaContent($resp) {
-        $bp = jApp::urlBasePath();
+
         $confDate = &jApp::config()->datepickers;
         $datepicker_default_config = jApp::config()->forms['datepicker'];
 
         $config = isset($this->ctrl->datepickerConfig) ? $this->ctrl->datepickerConfig : $datepicker_default_config;
-        $resp->addJSLink($bp.$confDate[$config]);
+
+        if (isset($confDate[$config.'.js'])) {
+            $js = $confDate[$config.'.js'];
+            foreach($js as $file) {
+                $file = str_replace('$lang', jLocale::getCurrentLang(), $file);
+                if (strpos($file, 'jquery.ui.datepicker-en.js') !== false) {
+                    continue;
+                }
+                $resp->addJSLink($file);
+            }
+        }
+
+        $resp->addJSLink($confDate[$config]);
+
+        if (isset($confDate[$config.'.css'])) {
+            $css = $confDate[$config.'.css'];
+            foreach($css as $file) {
+                $resp->addCSSLink($file);
+            }
+        }
     }
 
     protected function outputJs() {

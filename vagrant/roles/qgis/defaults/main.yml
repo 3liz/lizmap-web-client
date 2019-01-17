@@ -23,4 +23,4 @@ qgis_server_config_directory: /srv/qgis/config
 qgis_install_source: repository
 qgis_repository_debian: 'http://qgis.org/debian-ltr'
 qgis_repository_debian_key: 'CAEB3DC3BDF7FB45'
-qgis_repository_debian_key_url: 'http://qgis.org/downloads/qgis-2017.gpg.key'
+qgis_repository_debian_key_url: 'https://qgis.org/downloads/qgis-2017.gpg.key'
