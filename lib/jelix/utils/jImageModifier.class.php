@@ -116,8 +116,10 @@ class jImageModifier {
         //    $params['background'] = '#ffffff';
         //}
 
-        // parse params
+        // attributes for the img tag
+        $att = array();
         $chaine = $src;
+        // parse params
         foreach($params as $key => $value) {
             if( in_array($key, jImageModifier::$transformParams)) {
                 $chaine .= $key.$value;

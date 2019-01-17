@@ -208,7 +208,7 @@ checkHttpsOnParsing = on
 ; because the jelix-www directory is outside the yourapp/www/ directory, you should create a link to
 ; jelix-www, or copy its content in yourapp/www/ (with a name like 'jelix' for example)
 ; so you should indicate the relative path of this link/directory to the basePath, or an absolute path.
-; if you change it, change also all pathes in [htmleditors]
+; if you change it, change also all paths in [htmleditors]
 ; at runtime, it contains the absolute path (basePath+the value) if you give a relative path
 jelixWWWPath = "jelix/"
 jqueryPath="jelix/jquery/"
@@ -425,6 +425,7 @@ controls.datetime.input = "menulists"
 controls.datetime.months.labels = "names"
 ; define the default config for datepickers in jforms
 datepicker = default
+datetimepicker = default
 
 ; default captcha type
 captcha = simple
@@ -438,46 +439,62 @@ captcha.recaptcha.widgettype=recaptcha
 [jforms_builder_html]
 ;control type = plugin name
 
+[jquery]
+jquery = $jqueryPath/jquery.js
+jqueryui.js[] = $jqueryPath/ui/jquery-ui-core-widg-mous-posi.custom.min.js
+jqueryui.css[] = $jqueryPath/themes/base/jquery.ui.all.css
 
 [datepickers]
-default = jelix/js/jforms/datepickers/default/init.js
+default = $jelix/js/jforms/datepickers/default/init.js
+default.js[]=$jqueryPath/ui/jquery-ui-core-widg-mous-posi.custom.min.js
+default.js[]=$jqueryPath/ui/jquery.ui.datepicker.min.js
+default.js[]=$jelix/js/jforms/datepickers/default/ui.$lang.js
+default.js[]=$jqueryPath/ui/i18n/jquery.ui.datepicker-$lang.js
+default.css[]=$jqueryPath/themes/base/jquery.ui.all.css
+
+[datetimepickers]
+default = $jelix/js/jforms/datepickers/default/init.js
+default.js[]=$jqueryPath/ui/jquery-ui-core-widg-mous-posi.custom.min.js
+default.js[]=$jqueryPath/ui/jquery.ui.datepicker.min.js
+default.js[]=$jelix/js/jforms/datepickers/default/ui.$lang.js
+default.js[]=$jqueryPath/ui/i18n/jquery.ui.datepicker-$lang.js
+default.css[]=$jqueryPath/themes/base/jquery.ui.all.css
 
 [htmleditors]
 default.engine.name = wymeditor
-default.engine.file[] = jelix/jquery/jquery.js
-default.engine.file[] = jelix/wymeditor/jquery.wymeditor.js
-default.config = jelix/js/jforms/htmleditors/wymeditor_default.js
-default.skin.default = jelix/wymeditor/skins/default/skin.css
+default.engine.file[] = $jqueryPath/jquery.js
+default.engine.file[] = $jelix/wymeditor/jquery.wymeditor.js
+default.config = $jelix/js/jforms/htmleditors/wymeditor_default.js
+default.skin.default = $jelix/wymeditor/skins/default/skin.css
 
 wymbasic.engine.name = wymeditor
-wymbasic.engine.file[] = jelix/jquery/jquery.js
-wymbasic.engine.file[] = jelix/wymeditor/jquery.wymeditor.js
-wymbasic.config = jelix/js/jforms/htmleditors/wymeditor_basic.js
-wymbasic.skin.default = jelix/wymeditor/skins/default/skin.css
+wymbasic.engine.file[] = $jqueryPath/jquery.js
+wymbasic.engine.file[] = $jelix/wymeditor/jquery.wymeditor.js
+wymbasic.config = $jelix/js/jforms/htmleditors/wymeditor_basic.js
+wymbasic.skin.default = $jelix/wymeditor/skins/default/skin.css
 
 ckdefault.engine.name = ckeditor
-ckdefault.engine.file[] = jelix/ckeditor/ckeditor.js
-ckdefault.config = jelix/js/jforms/htmleditors/ckeditor_default.js
+ckdefault.engine.file[] = $jelix/ckeditor/ckeditor.js
+ckdefault.config = $jelix/js/jforms/htmleditors/ckeditor_default.js
 
 ckfull.engine.name = ckeditor
-ckfull.engine.file[] = jelix/ckeditor/ckeditor.js
-ckfull.config = jelix/js/jforms/htmleditors/ckeditor_full.js
+ckfull.engine.file[] = $jelix/ckeditor/ckeditor.js
+ckfull.config = $jelix/js/jforms/htmleditors/ckeditor_full.js
 
 ckbasic.engine.name = ckeditor
-ckbasic.engine.file[] = jelix/ckeditor/ckeditor.js
-ckbasic.config = jelix/js/jforms/htmleditors/ckeditor_basic.js
-
+ckbasic.engine.file[] = $jelix/ckeditor/ckeditor.js
+ckbasic.config = $jelix/js/jforms/htmleditors/ckeditor_basic.js
 
 [wikieditors]
 default.engine.name = wr3
 default.wiki.rules = wr3_to_xhtml
 ; path to the engine file
-default.engine.file = jelix/markitup/jquery.markitup.js
+default.engine.file = $jelix/markitup/jquery.markitup.js
 ; define the path to the "internationalized" file to translate the label of each button
-default.config.path = jelix/markitup/sets/wr3/
+default.config.path = $jelix/markitup/sets/wr3/
 ; define the path to the image of buttons of the toolbar
-default.image.path = jelix/markitup/sets/wr3/images/
-default.skin = jelix/markitup/skins/simple/style.css
+default.image.path = $jelix/markitup/sets/wr3/images/
+default.skin = $jelix/markitup/skins/simple/style.css
 
 
 

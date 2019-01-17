@@ -19,12 +19,43 @@
 
 class datetime_htmlFormWidget extends \jelix\forms\HtmlWidget\WidgetBase {
     public function outputMetaContent($resp) {
-        $bp = jApp::urlBasePath();
-        $confDate = &jApp::config()->datepickers;
-        $datepicker_default_config = jApp::config()->forms['datepicker'];
+        $confDate = &jApp::config()->datetimepickers;
 
-        $config = isset($this->ctrl->datepickerConfig) ? $this->ctrl->datepickerConfig : $datepicker_default_config;
-        $resp->addJSLink($bp.$confDate[$config]);
+        if (isset($this->ctrl->datepickerConfig) && $this->ctrl->datepickerConfig) {
+            $config = $this->ctrl->datepickerConfig;
+            if (!isset($confDate[$config])) {
+                // compatibility with 1.6.19-
+                $confDate = &jApp::config()->datepickers;
+            }
+        }
+        else {
+            $config = jApp::config()->forms['datetimepicker'];
+            if (!isset($confDate[$config])) {
+                // compatibility with 1.6.19-
+                $confDate = &jApp::config()->datepickers;
+                $config = jApp::config()->forms['datepicker'];
+            }
+        }
+
+        $resp->addJSLink($confDate[$config]);
+
+        if (isset($confDate[$config.'.js'])) {
+            $js = $confDate[$config.'.js'];
+            foreach($js as $file) {
+                $file = str_replace('$lang', jLocale::getCurrentLang(), $file);
+                if (strpos($file, 'jquery.ui.datepicker-en.js') !== false) {
+                    continue;
+                }
+                $resp->addJSLink($file);
+            }
+        }
+        $resp->addJSLink($confDate[$config]);
+        if (isset($confDate[$config.'.css'])) {
+            $css = $confDate[$config.'.css'];
+            foreach($css as $file) {
+                $resp->addCSSLink($file);
+            }
+        }
     }
 
     protected function outputJs() {

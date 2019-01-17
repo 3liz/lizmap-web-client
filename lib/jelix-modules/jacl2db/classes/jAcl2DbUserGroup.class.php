@@ -91,7 +91,11 @@ class jAcl2DbUserGroup {
                 return null;
             $login = jAuth::getUserSession()->login;
         }
-        return jDao::get('jacl2db~jacl2group', 'jacl2_profile')->getPrivateGroup($login)->id_aclgrp;
+        $privateGroup = jDao::get('jacl2db~jacl2group', 'jacl2_profile')->getPrivateGroup($login);
+        if (!$privateGroup) {
+            return null;
+        }
+        return $privateGroup->id_aclgrp;
     }
 
     /**

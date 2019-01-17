@@ -1,4 +1,4 @@
-{meta_html css $j_basepath.'css/jquery-ui-1.8.23.custom.css'}
+{meta_html jquery_ui 'default'}
 {meta_html css $j_basepath.'css/bootstrap.css'}
 {meta_html css $j_basepath.'css/bootstrap-responsive.css'}
 
@@ -10,8 +10,6 @@
 {meta_html csstheme 'css/admin.css'}
 {meta_html csstheme 'css/media.css'}
 
-{meta_html js $j_basepath.'js/jquery-1.12.4.min.js'}
-{meta_html js $j_basepath.'js/jquery-ui-1.11.2.custom.min.js'}
 {meta_html js $j_basepath.'js/bootstrap.js'}
 
 <div id="header">
