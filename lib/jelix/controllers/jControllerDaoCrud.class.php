@@ -135,6 +135,8 @@ class jControllerDaoCrud extends jController {
      * Typically, you call jForms::create and then you can call addControl or whatever.
      * Don't do a jForms::get or jForms::fill in this method !
      * called in methods: index, precreate, create, preupdate, view
+     *
+     * @param string|integer $formId
      * @return jFormsBase the form
      * @since 1.1
      */
@@ -147,6 +149,8 @@ class jControllerDaoCrud extends jController {
      * Typically, you call jForms::get and then you can call addControl or whatever.
      * Don't do a jForms::create or jForms::fill in this method !
      * called in methods: create, savecreate, editupdate, saveupdate
+     *
+     * @param string|integer $formId
      * @return jFormsBase the form
      * @since 1.1
      */
@@ -328,6 +332,10 @@ class jControllerDaoCrud extends jController {
 
         if($form->check() && $this->_checkData($form, false)){
             $results = $form->prepareDaoFromControls($this->dao,null,$this->dbProfile);
+            /** @var \jDaoRecordBase $form_daorec
+             * @var \jDaoFactoryBase $form_dao
+             * @var boolean $form_toInsert
+             */
             extract($results, EXTR_PREFIX_ALL, "form");//use a temp variable to avoid notices
             $this->_beforeSaveCreate($form, $form_daorec);
             $form_dao->insert($form_daorec);
@@ -471,6 +479,10 @@ class jControllerDaoCrud extends jController {
         $rep->params[$this->offsetParameterName] = $page;
         if($form->check() && $this->_checkData($form, true)){
             $results = $form->prepareDaoFromControls($this->dao,$id,$this->dbProfile);
+            /** @var \jDaoRecordBase $form_daorec
+             * @var \jDaoFactoryBase $form_dao
+             * @var boolean $form_toInsert
+             */
             extract($results, EXTR_PREFIX_ALL, "form");//use a temp variable to avoid notices
             $this->_beforeSaveUpdate($form, $form_daorec, $id);
             $form_dao->update($form_daorec);
@@ -519,7 +531,7 @@ class jControllerDaoCrud extends jController {
         // of controls with initControlFromDao (to use in _view method).
         $form = $this->_createForm($id);
         try {
-            $form->initFromDao($this->dao, $id, $this->dbProfile);
+            $rec = $form->initFromDao($this->dao, $id, $this->dbProfile);
         }
         catch(jExceptionForms $e) {
             if ($this->viewErrorTemplate) {
@@ -534,6 +546,7 @@ class jControllerDaoCrud extends jController {
         $tpl->assign('id', $id);
         $tpl->assign('form',$form);
         $tpl->assign('page',$page);
+        $tpl->assign('record', $rec);
         $tpl->assign('offsetParameterName',$this->offsetParameterName);
         $tpl->assign('editAction' , $this->_getAction('preupdate'));
         $tpl->assign('deleteAction' , $this->_getAction('delete'));

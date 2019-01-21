@@ -5746,6 +5746,11 @@ OpenLayers.Control.HighlightFeature = OpenLayers.Class(OpenLayers.Control, {
       return true;
   }
 
+  function translateWfsFieldValues(aName, fieldName, fieldValue, translation_dict){
+    translation_dict = typeof translation_dict !== 'undefined' ?  translation_dict : null;
+    return fieldValue;
+  }
+
   function zoomToOlFeature( feature, proj, zoomAction ){
       zoomAction = typeof zoomAction !== 'undefined' ?  zoomAction : 'zoom';
       var format = new OpenLayers.Format.GeoJSON();
@@ -6134,6 +6139,13 @@ OpenLayers.Control.HighlightFeature = OpenLayers.Class(OpenLayers.Control, {
      */
     getFeatureData: function(aName, aFilter, aFeatureID, aGeometryName, restrictToMapExtent, startIndex, maxFeatures, aCallBack) {
       getFeatureData(aName, aFilter, aFeatureID, aGeometryName, restrictToMapExtent, startIndex, maxFeatures, aCallBack);
+    },
+
+    /**
+     * Method: translateWfsFieldValues
+     */
+    translateWfsFieldValues: function(aName, fieldName, fieldValue, translation_dict) {
+      return translateWfsFieldValues(aName, fieldName, fieldValue, translation_dict);
     },
 
     /**

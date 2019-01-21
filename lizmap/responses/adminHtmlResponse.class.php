@@ -21,9 +21,17 @@ class adminHtmlResponse extends jResponseHtml {
         // Header
         $this->addHttpHeader('x-ua-compatible', 'ie=edge');
 
+        $this->addJSLink(jApp::config()->jquery['jquery']);
+        $js = jApp::config()->jquery['jqueryui.js'];
+        foreach($js as $file) {
+            $this->addJSLink($file);
+        }
+        $css = jApp::config()->jquery['jqueryui.css'];
+        foreach($css as $file) {
+            $this->addCSSLink($file);
+        }
+
         $bp = jApp::config()->urlengine['basePath'];
-        $this->addJSLink($bp.'js/jquery-1.12.4.min.js');
-        $this->addJSLink($bp.'js/jquery-ui-1.11.2.custom.min.js');
         $this->addJSLink($bp.'js/bootstrap.js');
 
         $this->addHeadContent('<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />');

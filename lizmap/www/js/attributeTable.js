@@ -1331,24 +1331,35 @@ var lizAttributeTable = function() {
                         colConf['mRender'] = function( data, type, full, meta ){
                             return parseFloat(data);
                         }
-                    else if (idx in cTypes && cTypes[idx] == 'string')
+                    else
                         colConf['mRender'] = function( data, type, full, meta ){
-                            if( !data || !( typeof data === 'string') )
-                                return data;
-                            if( data.substr(0,6) == 'media/' || data.substr(0,7) == '/media/' || data.substr(0,9) == '../media/'){
-                                var rdata = data;
-                                if( data.substr(0,7) == '/media/' )
-                                    rdata = data.slice(1);
+                            // Translate field ( language translation OR code->label translation )
+                            var colMeta = meta.settings.aoColumns[meta.col];
+                            var colName = colMeta.mData
+                            var translation_dict = null;
+                            var tdata = data;
+                            if(data)
+                                tdata = lizMap.translateWfsFieldValues(aName, colName, data.toString(), translation_dict);
+                            if( tdata === null )
+                                tdata = data;
+
+                            // Replace media and URL with links
+                            if( !tdata || !( typeof tdata === 'string') )
+                                return tdata;
+                            if( tdata.substr(0,6) == 'media/' || tdata.substr(0,7) == '/media/' || tdata.substr(0,9) == '../media/'){
+                                var rdata = tdata;
+                                if( tdata.substr(0,7) == '/media/' )
+                                    rdata = tdata.slice(1);
                                 return '<a href="' + mediaLinkPrefix + '&path=' + rdata + '" target="_blank">' + columns[meta.col]['title'] + '</a>';
                             }
-                            else if( data.substr(0,4) == 'http' || data.substr(0,3) == 'www' ){
-                                var rdata = data;
-                                if(data.substr(0,3) == 'www')
-                                    rdata = 'http://' + data;
-                                return '<a href="' + rdata + '" target="_blank">' + data + '</a>';
+                            else if( tdata.substr(0,4) == 'http' || tdata.substr(0,3) == 'www' ){
+                                var rdata = tdata;
+                                if(tdata.substr(0,3) == 'www')
+                                    rdata = 'http://' + tdata;
+                                return '<a href="' + rdata + '" target="_blank">' + tdata + '</a>';
                             }
                             else
-                                return data;
+                                return tdata;
                         }
                     columns.push( colConf );
                 }
