@@ -508,6 +508,9 @@ class jDaoGenerator {
                             $result .= $varMatches[0][$k][0];
                         }
                     }
+                    if ($len < strlen($expression)) {
+                        $result .= substr($expression, $len);
+                    }
                     $expression = $result;
                 }
                 $sqlSet.= ', '.$this->_encloseName($updatefields[$propname]->fieldName). '= '. $expression;

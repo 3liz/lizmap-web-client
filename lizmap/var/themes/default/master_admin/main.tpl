@@ -1,4 +1,4 @@
-{meta_html css $j_basepath.'css/jquery-ui-1.8.23.custom.css'}
+{meta_html jquery_ui 'theme'}
 {meta_html css $j_basepath.'css/bootstrap.css'}
 {meta_html css $j_basepath.'css/bootstrap-responsive.css'}
 

@@ -42,6 +42,12 @@ var lizSearch = function() {
             }
 
             $('#lizmap-search, #lizmap-search-close').removeClass('open');
+            // trigger event containing selected feature
+            lizMap.events.triggerEvent('lizmapexternalsearchitemselected',
+                {
+                    'feature': feat
+                }
+            );
             return false;
         });
         $('#lizmap-search-close button').click(function() {
