@@ -30,7 +30,7 @@ class htmlFormBuilder extends \jelix\forms\Builder\HtmlBuilder {
         $www = $confUrlEngine['jelixWWWPath'];
 
         $resp->addJSLink(jApp::config()->jquery['jquery']);
-        $resp->addJSLink($www.'jquery/include/jquery.include.js');
+        $resp->addJSLink($www.'/jquery/include/jquery.include.js');
         $resp->addJSLink($www.'js/jforms_jquery.js');
         $resp->addCSSLink($www.'design/jform.css');
 
