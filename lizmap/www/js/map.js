@@ -705,6 +705,9 @@ var lizMap = function() {
         && ('ignKey' in config.options)) ||
        (('ignSatellite' in config.options)
         && config.options.ignSatellite == 'True'
+        && ('ignKey' in config.options)) ||
+       (('ignCadastral' in config.options)
+        && config.options.ignCadastral == 'True'
         && ('ignKey' in config.options))
        ) {
          Proj4js.defs['EPSG:3857'] = Proj4js.defs['EPSG:900913'];
@@ -752,9 +755,10 @@ var lizMap = function() {
            config.options.zoomLevelNumber = 19;
          if ((('googleStreets' in config.options) && config.options.googleStreets == 'True') ||
              (('googleHybrid' in config.options) && config.options.googleHybrid == 'True') ||
-             (('ignSatellite' in config.options) && config.options.ignSatellite == 'True') && ('ignKey' in config.options))
+             (('ignCadastral' in config.options) && config.options.ignCadastral == 'True' && ('ignKey' in config.options)))
            config.options.zoomLevelNumber = 20;
-         if ((('googleSatellite' in config.options) && config.options.googleSatellite == 'True'))
+         if ((('googleSatellite' in config.options) && config.options.googleSatellite == 'True') ||
+             ((('ignSatellite' in config.options) && config.options.ignSatellite == 'True') && ('ignKey' in config.options)))
            config.options.zoomLevelNumber = 21;
          config.options.maxScale = 591659030.3224756;
          config.options.minScale = 2257.0000851534865;
@@ -6289,6 +6293,9 @@ lizMap.events.on({
      && ('ignKey' in evt.config.options)) ||
     (('ignSatellite' in evt.config.options)
      && evt.config.options.ignSatellite == 'True'
+     && ('ignKey' in evt.config.options)) ||
+    (('ignCadastral' in evt.config.options)
+     && evt.config.options.ignCadastral == 'True'
      && ('ignKey' in evt.config.options))
     ) {
       //adding baselayers
