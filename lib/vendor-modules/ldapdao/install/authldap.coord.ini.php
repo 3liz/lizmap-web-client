@@ -150,9 +150,14 @@ searchAttributes="uid:login,givenName:firstname,sn:lastname,mail:email"
 ; ldap groups.
 ; !!! IMPORTANT !!! : if searchGroupFilter is not empty,
 ; the plugin will remove the user from all existing jelix groups
+; (except default groups if searchGroupKeepUserInDefaultGroups is set to on)
 ; and only keep the relation between the user and the group retrieved from LDAP
 ;searchGroupFilter="(&(objectClass=posixGroup)(cn=XYZ*)(memberUid=%%LOGIN%%))"
 searchGroupFilter=
+
+; if set to on, users are set in default groups during groups synchronization
+; default is on.
+searchGroupKeepUserInDefaultGroups = on
 
 ; the property in the ldap entry corresponding to a group, that indicate the
 ; the group name

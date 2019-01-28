@@ -22,9 +22,18 @@ class ldapdaoModuleInstaller extends jInstallerModule {
             // allow the admin user to change his right
             $confIni = parse_ini_file($this->getAuthConfFile(), true);
             $authConfig = jAuth::loadConfig($confIni);
-            $jelixAdminUser = $authConfig['ldapdao']['jelixAdminLogin'];
-            $userGroup = jAcl2DbUserGroup::getPrivateGroup($jelixAdminUser);
-            jAcl2DbManager::addRight($userGroup, 'auth.user.change.password');
+            if (isset($authConfig['ldapdao'])) {
+                // authldap.coord.ini.php was already installed, we can take
+                // the admin user indicated into it
+                $jelixAdminUser = $authConfig['ldapdao']['jelixAdminLogin'];
+            }
+            else {
+                $jelixAdminUser = 'admin';
+            }
+            $userGroup = jDao::get('jacl2db~jacl2group', 'jacl2_profile')->getPrivateGroup($jelixAdminUser);
+            if ($userGroup) {
+                jAcl2DbManager::addRight($userGroup, 'auth.user.change.password');
+            }
         }
     }
 

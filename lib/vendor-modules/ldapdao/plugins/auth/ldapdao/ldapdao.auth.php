@@ -5,8 +5,13 @@
 /**
  * LDAP authentification driver for authentification information stored in LDAP server
  * and manage user locally with a dao
+ *
+ *
+ *
  * @package    jelix
  * @subpackage auth_driver
+ *
+ * @internal see https://tools.ietf.org/html/rfc4510
  */
 class ldapdaoAuthDriver extends jAuthDriverBase implements jIAuthDriver
 {
@@ -44,6 +49,7 @@ class ldapdaoAuthDriver extends jAuthDriverBase implements jIAuthDriver
             'protocolVersion'   =>  3,
             'searchUserBaseDN' => '',
             'searchGroupFilter' => '',
+            'searchGroupKeepUserInDefaultGroups' => true,
             'searchGroupProperty' => '',
             'searchGroupBaseDN' => ''
         );
@@ -178,6 +184,13 @@ class ldapdaoAuthDriver extends jAuthDriverBase implements jIAuthDriver
             return $this->checkAdminLogin($user, $dao, $password);
         }
 
+        if (trim($password) == '' || trim($login) == '') {
+            // we don't want Unauthenticated Authentication
+            // and Anonymous Authentication
+            // https://tools.ietf.org/html/rfc4513#section-5.1
+            return false;
+        }
+
         $connectAdmin = $this->_bindLdapAdminUser();
         if (!$connectAdmin) {
             return false;
@@ -238,6 +251,18 @@ class ldapdaoAuthDriver extends jAuthDriverBase implements jIAuthDriver
 
     protected function synchronizeAclGroups($login, $userGroups)
     {
+        if ($this->_params['searchGroupKeepUserInDefaultGroups']) {
+            // Add default groups
+            $gplist = jDao::get('jacl2db~jacl2group', 'jacl2_profile')
+                ->getDefaultGroups();
+            foreach ($gplist as $group) {
+                $idx = array_search($group->name, $userGroups);
+                if ($idx === false) {
+                    $userGroups[] = $group->name;
+                }
+            }
+        }
+
         // we know the user group: we should be sure it is the same in jAcl2
         $gplist = jDao::get('jacl2db~jacl2groupsofuser', 'jacl2_profile')
             ->getGroupsUser($login);
@@ -323,6 +348,7 @@ class ldapdaoAuthDriver extends jAuthDriverBase implements jIAuthDriver
             if ($bind) {
                 break;
             } else {
+                jLog::log('ldapdao: error when trying to connect with '.$realDn.': '.ldap_errno($connect).':'.ldap_error($connect), 'auth');
                 $this->bindUserDnTries[] = $realDn;
             }
         }
@@ -415,7 +441,7 @@ class ldapdaoAuthDriver extends jAuthDriverBase implements jIAuthDriver
         $grpProp = $this->_params['searchGroupProperty'];
 
         $groups = array();
-        $search = ldap_search(
+        $search = ldap_search (
             $connect,
             $this->_params['searchGroupBaseDN'],
             $filter,
@@ -430,15 +456,6 @@ class ldapdaoAuthDriver extends jAuthDriverBase implements jIAuthDriver
                         $groups[] = $attributes[$grpProp][0];
                     }
                 } while ($entry = ldap_next_entry($connect, $entry));
-            }
-            // Add default groups
-            $gplist = jDao::get('jacl2db~jacl2group', 'jacl2_profile')
-            ->getDefaultGroups();
-            foreach ($gplist as $group) {
-                $idx = array_search($group->name, $groups);
-                if ($idx === false) {
-                    $groups[] = $group->name;
-                }
             }
         }
         return $groups;
