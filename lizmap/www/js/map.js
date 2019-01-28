@@ -6697,7 +6697,7 @@ lizMap.events.on({
           var options = {
             zoomOffset: 0,
             maxResolution:156543.03390625,
-            numZoomLevels:19
+            numZoomLevels:21
           };
           if (lOptions.zoomOffset != 0) {
             options.zoomOffset = lOptions.zoomOffset;
@@ -6733,7 +6733,7 @@ lizMap.events.on({
           var options = {
             zoomOffset: 0,
             maxResolution:156543.03390625,
-            numZoomLevels:19
+            numZoomLevels:20
           };
           if (lOptions.zoomOffset != 0) {
             options.zoomOffset = lOptions.zoomOffset;
