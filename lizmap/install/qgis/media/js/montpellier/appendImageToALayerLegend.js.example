@@ -11,7 +11,7 @@ lizMap.events.on({
         // Open legend at startup ?
         var openLegend = true;
 
-        // Check is image is a media
+        // Check if image is a media
         var mediaRegex = /^(\/)?media\//;
         if( mediaRegex.test( imageUrl ) ){
             var mediaLink = OpenLayers.Util.urlAppend(
