@@ -81,7 +81,7 @@ abstract class jDbSchema {
     protected $tables = null;
 
     /**
-     * @return array of jDbTable
+     * @return jDbTable[]
      */
     public function getTables() {
         if ($this->tables === null) {
@@ -141,7 +141,7 @@ abstract class jDbSchema {
     /**
      * create the given table into the database
      * @param string $name the table name
-     * @param array $columns list of jDbColumn
+     * @param jDbColumn[] $columns
      * @param string|array $primaryKey the name of the column which contains the primary key
      * @param array $attributes
      * @return jDbTable the object corresponding to the created table

@@ -159,7 +159,7 @@ abstract class jInstallerBase {
 
         // we check if it is an alias
         if (file_exists(jApp::configPath('profiles.ini.php'))) {
-            $dbprofiles = parse_ini_file(jApp::configPath('profiles.ini.php'));
+            $dbprofiles = parse_ini_file(jApp::configPath('profiles.ini.php'), true);
             if (isset($dbprofiles['jdb'][$dbProfile]))
                 $this->dbProfile = $dbprofiles['jdb'][$dbProfile];
         }

@@ -177,13 +177,23 @@ class jInstallerComponentModule extends jInstallerComponentBase {
 
 
         if ($this->moduleMainUpgrader === null) {
-            if (!file_exists($this->path . 'install/upgrade.php') ||
-                $this->moduleInfos[$epId]->skipInstaller
-            ) {
+            // script name for Jelix 1.6 in modules compatibles with both Jelix 1.7 and 1.6
+            if (file_exists($this->path . 'install/upgrade_1_6.php')) {
+                $file = $this->path . 'install/upgrade_1_6.php';
+            }
+            // script name for modules compatible with Jelix <=1.6
+            else if (file_exists($this->path . 'install/upgrade.php')) {
+                $file = $this->path . 'install/upgrade.php';
+            }
+            else {
+                $file = '';
+            }
+
+            if ($file == '' || $this->moduleInfos[$epId]->skipInstaller) {
                 $this->moduleMainUpgrader = false;
             }
             else {
-                require_once($this->path.'install/upgrade.php');
+                require_once($file);
 
                 $cname = $this->name.'ModuleUpgrader';
                 if (!class_exists($cname)) {
