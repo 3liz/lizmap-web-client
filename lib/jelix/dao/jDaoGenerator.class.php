@@ -695,7 +695,7 @@ class jDaoGenerator {
     * @param string   $beetween string to add between each info
     * @param jDaoProperty[]    $using     list of jDaoProperty object. if null, get default fields list
     * @see  jDaoProperty
-     * @return string list of field names seperated by the $between character
+     * @return string list of field names separated by the $between character
     */
     protected function _writeFieldsInfoWith ($info, $start = '', $end='', $beetween = '', $using = null){
         $result = array();
@@ -810,7 +810,7 @@ class jDaoGenerator {
      * the variable name is the name of the property, made with an optional prefix
      * given in $fieldPrefix parameter.
      * This method is called to generate WHERE clause for primary keys.
-     * @param array $fields  list of jDaoPropery objects
+     * @param jDaoProperty[] $fields
      * @param string $fieldPrefix  an optional prefix to prefix variable names
      * @param boolean $forSelect  if true, the table name or table alias will prefix
      *                            the field name in the query
@@ -875,10 +875,10 @@ class jDaoGenerator {
     /**
      * build 'where' clause from conditions declared with condition tag in a user method
      * @param jDaoConditions $cond the condition object which contains conditions data
-     * @param array $fields  array of jDaoProperty
-     * @param array $params  list of parameters name of the method
+     * @param jDaoProperty[] $fields
+     * @param string[] $params  list of parameters name of the method
      * @param boolean $withPrefix true if the field name should be preceded by the table name/table alias
-     * @param array $groupby  list of properties to use in a groupby
+     * @param string[] $groupby  list of properties to use in a groupby
      * @return string a WHERE clause (without the WHERE keyword) with eventually an ORDER clause
      * @internal
      */
@@ -932,8 +932,8 @@ class jDaoGenerator {
      * build a condition for the SQL WHERE clause.
      * this method call itself recursively.
      * @param jDaoCondition $cond a condition object which contains conditions data
-     * @param array $fields  array of jDaoProperty
-     * @param array $params  list of parameters name of the method
+     * @param jDaoProperty[] $fields
+     * @param string[] $params  list of parameters name of the method
      * @param boolean $withPrefix true if the field name should be preceded by the table name/table alias
      * @param boolean $principal  should be true for the first call, and false for recursive call
      * @return string a WHERE clause (without the WHERE keyword)

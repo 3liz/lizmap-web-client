@@ -27,7 +27,7 @@ class jInstallerApplication {
     protected $projectXmlFilename = 'project.xml';
 
     /**
-     * @var array list of entry point (jInstallerEntryPoint)
+     * @var jInstallerEntryPoint[] list of entry points
      */
     protected $entryPointList = null;
 

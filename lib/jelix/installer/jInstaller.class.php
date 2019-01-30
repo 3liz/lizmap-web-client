@@ -163,7 +163,7 @@ class jInstaller {
     
     /**
      * list of entry point and their properties
-     * @var array of jInstallerEntryPoint. keys are entry point id.
+     * @var jInstallerEntryPoint[]. keys are entry point id.
      */
     protected $entryPoints = array();
 
@@ -499,7 +499,7 @@ class jInstaller {
 
     /**
      * install given modules even if they don't have an access property > 0
-     * @param array $modulesList array of module names
+     * @param string[] $modulesList array of module names
      * @param string $entrypoint the entrypoint name as it appears in project.xml
      *               or null if modules should be installed for all entry points
      * @return bool true if the installation is ok
