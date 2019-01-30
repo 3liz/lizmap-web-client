@@ -3,10 +3,14 @@
  * @author       Laurent Jouanneau <laurent@xulfr.org>
  * @contributor
  *
- * @copyright    2007-2018 Laurent Jouanneau
+ * @copyright    2007-2019 Laurent Jouanneau
  *
  * @link         http://jelix.org
  * @licence      http://www.gnu.org/licenses/gpl.html GNU General Public Licence, see LICENCE file
+ */
+
+/**
+ * controller allowing the authenticated user to change his own password
  */
 class passwordCtrl extends \Jelix\JCommunity\AbstractController
 {
@@ -18,6 +22,25 @@ class passwordCtrl extends \Jelix\JCommunity\AbstractController
     protected $checkIsConnected = false;
     protected $responseId = 'html';
 
+    protected function _check()
+    {
+        $rep = parent::_check();
+        if ($rep !== null) {
+            return $rep;
+        }
+        $user = jAuth::getUserSession();
+
+        if ($this->param('user') != $user->login) {
+            return $this->noaccess('no_access_wronguser');
+        }
+
+        if (!jAuth::canChangePassword($user->login)) {
+            return $this->notavailable();
+        }
+        return null;
+    }
+
+
     /**
      * form to change a password.
      */
@@ -26,11 +49,6 @@ class passwordCtrl extends \Jelix\JCommunity\AbstractController
         $repError = $this->_check();
         if ($repError) {
             return $repError;
-        }
-        $user = jAuth::getUserSession();
-
-        if ($this->param('user') != $user->login) {
-            return $this->noaccess('no_access_wronguser');
         }
 
         $rep = $this->getResponse('html');
@@ -67,10 +85,6 @@ class passwordCtrl extends \Jelix\JCommunity\AbstractController
             return $repError;
         }
         $user = jAuth::getUserSession();
-
-        if ($this->param('user') != $user->login) {
-            return $this->noaccess('no_access_wronguser');
-        }
 
         $rep = $this->getResponse('redirect');
         $rep->action = 'password:index';

@@ -61,9 +61,6 @@ enable_after_logout_override = off
 ; enable the persistance of the authentification between two sessions
 persistant_enable=on
 
-; key to use to crypt the password in the cookie. replace it by your own words !
-persistant_crypt_key= exampleOfCryptKey
-
 ; the name of the cookie which is used to store data for the authentification
 persistant_cookie_name=jelixAuthentificationCookie
 

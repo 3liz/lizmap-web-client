@@ -66,7 +66,7 @@ class Config
             }
         }
 
-        if ((!isset($config['disableJPref']) || $config['disableJPref'] == true) &&
+        if ((!isset($config['disableJPref']) || $config['disableJPref'] == false) &&
             class_exists('jPref')
         ) {
             $pref = \jPref::get('jcommunity_registrationEnabled');

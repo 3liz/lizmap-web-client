@@ -32,7 +32,7 @@
     <secret ref="reg_password"  required="true" minlength="8" maxlength="120">
         <label locale="jcommunity~account.form.password"/>
         <help locale="jcommunity~account.form.password.help"/>
-        <confirm locale="jcommunity~account.form.password" />
+        <confirm locale="jcommunity~account.form.password.confirm" />
     </secret>
 
     <textarea ref="comment" required="true" maxlength="300">
