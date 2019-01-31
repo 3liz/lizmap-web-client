@@ -145,3 +145,40 @@ uploadsDirectory= ""
 jelixAdminLogin="admin"
 
 
+
+[multiauth]
+compatiblewithdb = on
+
+; name of the dao to get user data
+dao = "lizmap~user"
+
+; profile to use for jDb
+profile = "jauth"
+
+
+providers[]=ldap:multiauth_ldap
+providers[]=dbaccounts
+
+
+; name of the form for the jauthdb_admin module
+form = "lizmap~account_admin"
+; name of the form for the user to modify its account data
+userform = "lizmap~account"
+
+; path of the directory where to store files uploaded by the form (jauthdb_admin module)
+; should be related to the var directory of the application
+uploadsDirectory= ""
+
+
+; if password_hash_method is activated, we set it to allow
+; password storage migration
+; @deprecated
+password_crypt_function = sha1
+
+automaticAccountCreation = on
+
+;------- parameters for the multiauth ldap plugin
+
+[multiauth_ldap]
+; profile to use for ldap
+ldapprofile = "lizmapldap"
