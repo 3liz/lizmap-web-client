@@ -23,6 +23,8 @@ class qgisVectorLayer extends qgisMapLayer{
   // to avoid multiple request
   protected $dtParams = null;
   protected $connection = null;
+
+  /** @var jDbFieldProperties[] */
   protected $dbFieldList = null;
   protected $dbFieldsInfo = null;
 
@@ -160,6 +162,9 @@ class qgisVectorLayer extends qgisMapLayer{
     return $cnx;
   }
 
+    /**
+     * @return jDbFieldProperties[]
+     */
   public function getDbFieldList() {
       if ( $this->dbFieldList )
         return $this->dbFieldList;
@@ -179,6 +184,9 @@ class qgisVectorLayer extends qgisMapLayer{
       return $this->dbFieldList;
   }
 
+  /**
+   * @return qgisLayerDbFieldsInfo|null
+   */
   public function getDbFieldsInfo() {
       if ( $this->dbFieldsInfo )
         return $this->dbFieldsInfo;
@@ -198,44 +206,44 @@ class qgisVectorLayer extends qgisMapLayer{
       $fields = $this->getDbFieldList();
       $wfsFields = $this->getWfsFields();
 
-      $dataFields = array();
+      $dbInfo = new qgisLayerDbFieldsInfo();
+      $dbInfo->dataFields = array();
       foreach($fields as $fieldName=>$prop){
           if( in_array($fieldName, $wfsFields) || in_array( strtolower($prop->type), $this->geometryDatatypeMap ) )
-              $dataFields[$fieldName] = $prop;
+              $dbInfo->dataFields[$fieldName] = $prop;
       }
 
-      $primaryKeys = array();
-      $geometryColumn = '';
-      $geometryType = '';
-      foreach($dataFields as $fieldName=>$prop){
+
+      $dbInfo->primaryKeys = array();
+      foreach($dbInfo->dataFields as $fieldName=>$prop){
           // Detect primary key column
-          if($prop->primary && !in_array($fieldName, $primaryKeys)){
-              $primaryKeys[] = $fieldName;
+          if($prop->primary && !in_array($fieldName, $dbInfo->primaryKeys)){
+              $dbInfo->primaryKeys[] = $fieldName;
           }
 
           // Detect geometry column
           if(in_array( strtolower($prop->type), $this->geometryDatatypeMap)) {
-              $geometryColumn = $fieldName;
-              $geometryType = strtolower($prop->type);
+              $dbInfo->geometryColumn = $fieldName;
+              $dbInfo->geometryType = strtolower($prop->type);
               // If postgresql, get real geometryType from pg_attribute (jelix prop gives 'geometry')
               // Issue #902, "geometry_columns" is not giving the Z value
-              if( $this->provider == 'postgres' and $geometryType == 'geometry' ){
+              if( $this->provider == 'postgres' and $dbInfo->geometryType == 'geometry' ){
                   $tablename = '"'. $dtParams->schema . '"."' . $dtParams->tablename .'"';
                   $sql = "SELECT format_type(atttypid,atttypmod) AS type";
                   $sql.= " FROM pg_attribute";
-                  $sql.= " WHERE attname = " . $cnx->quote($geometryColumn);
+                  $sql.= " WHERE attname = " . $cnx->quote($dbInfo->geometryColumn);
                   $sql.= " AND attrelid = " . $cnx->quote($tablename) . "::regclass";
                   $res = $cnx->query($sql);
                   $res = $res->fetch();
                   if( $res )
                       # It returns something like "geometry(PointZ,32620)".
-                      $geometryType = explode(',', explode( '(', strtolower($res->type))[1])[0];
+                      $dbInfo->geometryType = explode(',', explode( '(', strtolower($res->type))[1])[0];
               }
           }
       }
 
       // For views : add key from datasource
-      if(count($primaryKeys) == 0 and $dtParams->key){
+      if(count($dbInfo->primaryKeys) == 0 and $dtParams->key){
           // check if layer is a view
           if($this->provider == 'postgres'){
             $sql = " SELECT table_name FROM INFORMATION_SCHEMA.views";
@@ -249,15 +257,10 @@ class qgisVectorLayer extends qgisMapLayer{
           }
           $res = $cnx->query($sql);
           if($res->rowCount() > 0)
-            $primaryKeys[] = $dtParams->key;
+            $dbInfo->primaryKeys[] = $dtParams->key;
       }
 
-      $this->dbFieldsInfo = (object) array(
-          'dataFields'=> $dataFields,
-          'primaryKeys'=> $primaryKeys,
-          'geometryColumn'=> $geometryColumn,
-          'geometryType'=> $geometryType
-      );
+      $this->dbFieldsInfo = $dbInfo;
       return $this->dbFieldsInfo;
   }
 
@@ -269,9 +272,8 @@ class qgisVectorLayer extends qgisMapLayer{
       if ( $provider == 'postgres' )
             $cnx = $this->getDatasourceConnection();
 
-      $dataFields = $dbFieldsInfo->dataFields;
       $defaultValues = array();
-      foreach ( $dataFields as $ref=>$prop ) {
+      foreach ( $dbFieldsInfo->dataFields as $ref=>$prop ) {
           if ( !$prop->hasDefault )
             continue;
           if ( $prop->default == '' )
@@ -324,9 +326,8 @@ class qgisVectorLayer extends qgisMapLayer{
       $sql.= ' FROM '.$dtParams->table;
 
       $sqlw = array();
-      $primaryKeys = $dbFieldsInfo->primaryKeys;
       $dataFields = $dbFieldsInfo->dataFields;
-      foreach($primaryKeys as $key){
+      foreach($dbFieldsInfo->primaryKeys as $key){
           $val = $feature->properties->$key;
           if( $dataFields[$key]->unifiedType != 'integer' )
               $val = $cnx->quote($val);
@@ -575,10 +576,9 @@ class qgisVectorLayer extends qgisMapLayer{
 
       // Add where clause with primary keys
       $sqlw = array();
-      $primaryKeys = $dbFieldsInfo->primaryKeys;
       $dataFields = $dbFieldsInfo->dataFields;
       $pkLogInfo = array();
-      foreach($primaryKeys as $key){
+      foreach($dbFieldsInfo->primaryKeys as $key){
           $val = $feature->properties->$key;
           if( $dataFields[$key]->unifiedType != 'integer' )
               $val = $cnx->quote($val);
