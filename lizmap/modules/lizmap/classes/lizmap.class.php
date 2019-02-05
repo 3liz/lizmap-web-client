@@ -17,11 +17,19 @@ class lizmap{
     protected static $lizmapConfig = 'config/lizmapConfig.ini.php';
     protected static $lizmapLogConfig = 'config/lizmapLogConfig.ini.php';
 
-    // repositories
+    /**
+     * @var string[] List of repositories names
+     */
     protected static $repositories = array();
+
+    /**
+     * @var lizmapRepository[] list of repository instances. keys are repository names
+     */
     protected static $repositoryInstances = array();
 
-    // projects
+    /**
+     * @var lizmapProject[] list of projects. keys are projects names
+     */
     protected static $projectInstances = array();
 
     // log items
@@ -40,7 +48,7 @@ class lizmap{
     }
 
     /**
-     *
+     * @return lizmapTheme
      */
     public static function getTheme (){
       return jClasses::getService('lizmap~lizmapTheme');
@@ -48,7 +56,7 @@ class lizmap{
 
     /**
      * Get a list of repository names.
-     *
+     * @return string[] List of repositories names
      */
     public static function getRepositoryList(){
       // read the lizmap configuration file
@@ -81,7 +89,9 @@ class lizmap{
 
     /**
      * Get the jForm for a repository.
-     *
+     * @param lizmapRepository $rep
+     * @param jFormsBase $form
+     * @return jFormsBase
      */
     public static function constructRepositoryForm( $rep, $form ){
         $services = lizmap::getServices();
@@ -157,7 +167,7 @@ class lizmap{
     /**
      * Get a repository
      * @param string $key Key of the repository to get
-     *
+     * @return lizmapRepository
      */
     public static function getRepository ($key){
       if ( !in_array($key, self::$repositories) ) {
@@ -177,6 +187,9 @@ class lizmap{
 
     /**
      * Create a repository
+     * @param string $key  the repository name
+     * @param array $data list of properties for the repository
+     * @return lizmapRepository
      */
     public static function createRepository ($key, $data){
       if ( in_array($key, self::$repositories)
@@ -192,6 +205,8 @@ class lizmap{
 
     /**
      * Removes a repository
+     * @param string $key the repository name
+     * @return bool true if the repository was known
      */
     public static function removeRepository ($key){
       if ( !in_array($key, self::$repositories) )
@@ -217,7 +232,8 @@ class lizmap{
 
     /**
      * Get a project
-     * @return lizmapProject (null if it does not exist)
+     * @param string $key the project name
+     * @return lizmapProject|null null if it does not exist
      * @FIXME all calls to getProject construct $key. Why not to
      * deliver directly $rep and $project? It could avoid
      * a preg_match
@@ -250,15 +266,16 @@ class lizmap{
 
 
     /**
-    * Get global configuration for logs
-    */
+     * Get global configuration for logs
+     * @return lizmapLogConfig
+     */
     public static function getLogConfig(){
       return jClasses::getService('lizmap~lizmapLogConfig');
     }
 
     /**
      * Get a list of log items names.
-     *
+     * @return string[] list of names
      */
     public static function getLogItemList(){
       // read the lizmap log configuration file
@@ -275,7 +292,7 @@ class lizmap{
 
     /**
      * Get the list of properties for a generic log item.
-     *
+     * @return string[] list of properties name
      */
     public static function getLogItemProperties(){
       return lizmapLogItem::getSProperties();
@@ -284,7 +301,7 @@ class lizmap{
     /**
      * Get a log item
      * @param string $key Key of the log item to get
-     *
+     * @return lizmapLogItem
      */
     public static function getLogItem ($key){
       if ( !in_array($key, self::$logItems) )

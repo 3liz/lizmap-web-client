@@ -11,22 +11,31 @@
 
 class qgisProject{
 
-    // QGIS project path
+    /**
+     * @var string QGIS project path
+     */
     protected $path = null;
 
-    // QGIS project XML
-    protected $xml = null;
+    /**
+     * @var SimpleXMLElement  QGIS project XML
+     */
+    protected $xml;
 
-    // QGIS project data
+    /**
+     * @var array QGIS project data
+     */
     protected $data = array();
 
-    // Version of QGIS which wrote the project
-    protected $qgisProjectVersion = null;
+    /**
+     * Version of QGIS which wrote the project
+     * @var integer
+     */
+    protected $qgisProjectVersion;
 
     /**
      * @var array contains WMS info
      */
-    protected $WMSInformation = null;
+    protected $WMSInformation;
 
     /**
      * @var string
@@ -51,7 +60,7 @@ class qgisProject{
     protected $useLayerIDs = false;
 
     /**
-     * @var array
+     * @var  array[]  list of layers. Each item is a list of layer properties
      */
     protected $layers = array();
 
@@ -131,6 +140,9 @@ class qgisProject{
         return $this->data[$key];
     }
 
+    /**
+     * @return null
+     */
     public function getQgisProjectVersion(){
         return $this->qgisProjectVersion;
     }
@@ -157,6 +169,10 @@ class qgisProject{
         return $this->relations;
     }
 
+    /**
+     * @param $layerId
+     * @return int|string|null
+     */
     public function getLayerDefinition( $layerId ){
         $layers = array_filter($this->layers, function($layer) use ($layerId) {
            return $layer['id'] ==  $layerId;
@@ -169,6 +185,10 @@ class qgisProject{
         return null;
     }
 
+    /**
+     * @param $layerId
+     * @return qgisMapLayer|qgisVectorLayer|null
+     */
     public function getLayer( $layerId ) {
         $layers = array_filter($this->layers, function($layer) use ($layerId) {
            return $layer['id'] ==  $layerId;
@@ -186,6 +206,10 @@ class qgisProject{
         return null;
     }
 
+    /**
+     * @param string $key
+     * @return qgisMapLayer|qgisVectorLayer|null
+     */
     public function getLayerByKeyword( $key ){
         $layers = array_filter($this->layers, function($layer) use ($key) {
            return in_array($key, $layer['keywords']);
@@ -203,6 +227,10 @@ class qgisProject{
         return null;
     }
 
+    /**
+     * @param string $key
+     * @return qgisMapLayer[]|qgisVectorLayer[]
+     */
     public function findLayersByKeyword( $key ){
         $foundLayers = array_filter($this->layers, function($layer) use ($key) {
            return in_array($key, $layer['keywords']);
@@ -225,6 +253,7 @@ class qgisProject{
      * @FIXME: remove this method. Be sure it is not used in other projects.
      * Data provided by the returned xml element should be extracted and encapsulated
      * into an object. Xml should not be used by callers
+     * @return SimpleXMLElement[]
      * @deprecated
      */
     public function getXmlLayers(){
@@ -235,6 +264,7 @@ class qgisProject{
      * @FIXME: remove this method. Be sure it is not used in other projects.
      * Data provided by the returned xml element should be extracted and encapsulated
      * into an object. Xml should not be used by callers
+     * @return SimpleXMLElement[]
      * @deprecated
      */
     public function getXmlLayer( $layerId ){
@@ -250,6 +280,7 @@ class qgisProject{
      * @FIXME: remove this method. Be sure it is not used in other projects
      * Data provided by the returned xml element should be extracted and encapsulated
      * into an object. Xml should not be used by callers
+     * @return SimpleXMLElement[]
      * @deprecated
      */
     public function getXmlLayerByKeyword( $key ){
@@ -260,6 +291,7 @@ class qgisProject{
      * @FIXME: remove this method. Be sure it is not used in other projects.
      * Data provided by the returned xml element should be extracted and encapsulated
      * into an object. Xml should not be used by callers
+     * @return SimpleXMLElement[]
      * @deprecated
      */
     public function getXmlRelation( $relationId ){
@@ -269,6 +301,7 @@ class qgisProject{
     /**
      * temporary function to read xml for some methods that relies on
      * xml data that are not yet stored in the cache
+     * @return SimpleXMLElement
      * @deprecated
      */
     protected function getXml() {
@@ -395,6 +428,10 @@ class qgisProject{
         );
     }
 
+    /**
+     * @param SimpleXMLElement $xml
+     * @return string
+     */
     protected function readCanvasColor($xml) {
         $red = $xml->xpath( "//properties/Gui/CanvasColorRedPart" );
         $green = $xml->xpath( "//properties/Gui/CanvasColorGreenPart" );
@@ -402,6 +439,10 @@ class qgisProject{
         return 'rgb('.$red[0].','.$green[0].','.$blue[0].')';
     }
 
+    /**
+     * @param SimpleXMLElement $xml
+     * @return array
+     */
     protected function readAllProj4($xml) {
         $srsList = array();
         $spatialrefsys = $xml->xpath( "//spatialrefsys" );
@@ -411,6 +452,10 @@ class qgisProject{
         return $srsList;
     }
 
+    /**
+     * @param SimpleXMLElement $xml
+     * @return array[]|null
+     */
     protected function readRelations($xml) {
         $xmlRelations = $xml->xpath( "//relations" );
         $relations = array();
@@ -450,11 +495,20 @@ class qgisProject{
             return null;
     }
 
+    /**
+     * @param SimpleXMLElement $xml
+     * @return bool
+     */
     protected function readUseLayerIDs($xml) {
         $WMSUseLayerIDs = $xml->xpath( "//properties/WMSUseLayerIDs" );
         return ( $WMSUseLayerIDs && count($WMSUseLayerIDs) > 0 && $WMSUseLayerIDs[0] == 'true' );
     }
 
+    /**
+     * @param SimpleXMLElement $xml
+     * @return array[]  list of layers. Each item is a list of layer properties
+     * @throws Exception
+     */
     protected function readLayers($xml) {
         $xmlLayers = $xml->xpath( "//maplayer" );
         $layers = array();
