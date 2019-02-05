@@ -698,7 +698,7 @@ class qgisVectorLayer extends qgisMapLayer{
       $dataFields = $dbFieldsInfo->dataFields;
 
       // Build SQL
-      $val = (int) $val;
+      $val = (int) $pval;
       if( $dataFields[$pkey]->unifiedType != 'integer' )
           $val = $cnx->quote( $val );
 

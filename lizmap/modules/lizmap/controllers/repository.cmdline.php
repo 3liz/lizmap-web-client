@@ -59,7 +59,7 @@ class repositoryCtrl extends jControllerCmdLine {
 
         $key = $this->param('key');
 
-        $lrep = lizmap::getRepository($kay);
+        $lrep = lizmap::getRepository($key);
         if ($lrep) {
             // Error message
             $rep->addContent("The repository already exists!\n");
@@ -133,7 +133,7 @@ class repositoryCtrl extends jControllerCmdLine {
         }
 
         $lrep = lizmap::createRepository($key, $data);
-        if( !$rep ) {
+        if( !$lrep ) {
             $rep->addContent("The repository can't be created!\n");
             $rep->setExitCode(1);
         } else
