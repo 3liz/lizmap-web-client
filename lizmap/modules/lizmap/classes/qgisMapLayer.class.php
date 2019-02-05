@@ -10,7 +10,7 @@
 */
 
 
-class qgisMapLayer{
+class qgisMapLayer {
   // layer id in the QGIS project file
   protected $id = '';
 
@@ -112,6 +112,9 @@ class qgisMapLayer{
     return $this->project;
   }
 
+  /**
+   * @return SimpleXMLElement|null
+   */
   public function getXmlLayer(){
     $xmlLayers = $this->project->getXmlLayer($this->id);
     if (count($xmlLayers) == 0 )

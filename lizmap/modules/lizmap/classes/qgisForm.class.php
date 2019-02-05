@@ -12,15 +12,47 @@
 
 class qgisForm {
 
-    protected $layer = null;
-    protected $form = null;
-    protected $form_name = null;
-    protected $featureId = null;
+    /**
+     * @var qgisMapLayer|qgisVectorLayer
+     */
+    protected $layer;
+
+    /**
+     * @var jFormsBase
+     */
+    protected $form;
+
+    /**
+     * @var string the form id into the HTML
+     */
+    protected $form_name;
+
+    /**
+     * @var string
+     */
+    protected $featureId;
+
+    /**
+     * @var bool
+     */
     protected $loginFilteredOverride = False;
 
+    /**
+     * @var qgisLayerDbFieldsInfo|null
+     */
     protected $dbFieldsInfo = null;
+
+    /** @var qgisFormControl[] */
     protected $formControls = array();
 
+    /**
+     * qgisForm constructor.
+     * @param qgisVectorLayer|qgisMapLayer $layer
+     * @param jFormsBase $form
+     * @param string $featureId
+     * @param boolean $loginFilteredOverride
+     * @throws Exception
+     */
     public function __construct ( $layer, $form, $featureId, $loginFilteredOverride ){
         if ( $layer->getType() != 'vector' )
             throw new Exception('The layer "'.$layer->getName().'" is not a vector layer!');
