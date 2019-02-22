@@ -1,7 +1,7 @@
 <?php
 /**
 * @author       Laurent Jouanneau <laurent@jelix.org>
-* @copyright    2015 Laurent Jouanneau
+* @copyright    2015-2019 Laurent Jouanneau
 *
 * @link         http://jelix.org
 * @licence      http://www.gnu.org/licenses/gpl.html GNU General Public Licence, see LICENCE file
@@ -25,6 +25,13 @@ class AbstractController extends \jController
         $this->config = new Config();
     }
 
+    /**
+     * verify that the user is allowed to access to the controller
+     *
+     * Called by actions
+     *
+     * @return \jResponse|null null if it is ok, else a response to redirect to an error page
+     */
     protected function _check()
     {
         if ($this->configMethodCheck) {

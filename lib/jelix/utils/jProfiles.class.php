@@ -24,7 +24,7 @@ class jProfiles {
 
     /**
      * pool of objects loaded for profiles
-     * @var array   array of object
+     * @var object[]
      */
     protected static $_objectPool = array();
 

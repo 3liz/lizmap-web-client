@@ -43,7 +43,7 @@ class jControllerDaoCrud extends jController {
      * list of properties to show in the list page
      * if empty list (default), it shows all properties.
      * this property is only usefull when you use the default "list" template
-     * @var array
+     * @var string[]
      */
     protected $propertiesForList = array();
 
@@ -51,7 +51,7 @@ class jControllerDaoCrud extends jController {
      * list of properties which serve to order the record list.
      * if empty list (default), the list is in a natural order.
      * keys are properties name, and values are "asc" or "desc".
-     * @var array
+     * @var string[]
      */
     protected $propertiesForRecordsOrder = array();
 

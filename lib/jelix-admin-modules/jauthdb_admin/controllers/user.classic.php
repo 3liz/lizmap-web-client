@@ -3,7 +3,7 @@
 * @package   admin
 * @subpackage jauthdb_admin
 * @author    Laurent Jouanneau
-* @copyright 2009 Laurent Jouanneau
+* @copyright 2009-2019 Laurent Jouanneau
 * @link      http://jelix.org
 * @license   http://www.gnu.org/licenses/old-licenses/gpl-2.0.html GNU Public Licence
 */
@@ -190,12 +190,17 @@ class userCtrl extends jController {
         }
 
         $form = jForms::get($this->form, $id);
-        $form->initFromRequest();
 
         if( $form === null || $id === null){
             $rep->action = 'master_admin~default:index';
             return $rep;
         }
+
+        jEvent::notify('jauthdbAdminBeforeCheckUpdateForm',
+            array('form'=>$form, 'himself'=>true));
+
+        $form->initFromRequest();
+
         $evresp = array();
         if($form->check() && !jEvent::notify('jauthdbAdminCheckUpdateForm', array('form'=>$form, 'himself'=>true))->inResponse('check', false, $evresp)){
             $results = $form->prepareDaoFromControls($this->dao,$id,$this->dbProfile);

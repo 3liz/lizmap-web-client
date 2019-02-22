@@ -311,6 +311,9 @@ abstract class jRequest {
      */
    function isHttps() {
        if (jApp::config()->urlengine['forceProxyProtocol'] == 'https') {
+           if (trim(jApp::config()->forceHTTPSPort) === '') {
+               jApp::config()->forceHTTPSPort = true;
+           }
            return true;
        }
 
@@ -395,7 +398,7 @@ abstract class jRequest {
          $https = $forceHttps;
 
       $forcePort = ($https ? jApp::config()->forceHTTPSPort : jApp::config()->forceHTTPPort);
-      if ($forcePort === true) {
+      if ($forcePort === true || $forcePort === '1') {
          return '';
       }
       else if ($forcePort) { // a number

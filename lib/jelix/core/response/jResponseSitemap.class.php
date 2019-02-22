@@ -50,14 +50,14 @@ class jResponseSitemap extends jResponse {
 
     /**
     * List of URLs for a sitemap index file
-    * @var array()
+    * @var jSitemapIndex[]
     */
     protected $urlSitemap = array();
 
     /**
-    * List of URLs for a sitemap file
-    * @var array()
-    */
+     * List of URLs for a sitemap file
+     * @var jSitemapUrl[]
+     */
     protected $urlList = array();
 
     /**
