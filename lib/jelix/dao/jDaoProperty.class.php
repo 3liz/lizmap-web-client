@@ -93,7 +93,7 @@ class jDaoProperty {
 
     /**
      * constructor.
-     * @param $aAttributes
+     * @param array $aAttributes
      * @param jDaoParser $parser the parser on the dao file
      * @param jDbTools $tools
      * @throws jDaoXmlException

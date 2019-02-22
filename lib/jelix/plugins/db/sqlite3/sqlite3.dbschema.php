@@ -582,7 +582,7 @@ class sqlite3DbSchema extends jDbSchema {
      * Then it drops the old table and rename the new table with the old name.
      *
      * @param sqlite3DbTable $table
-     * @param array $newColumns  list of
+     * @param jDbColumn[] $newColumns
      * @param string $sqlOldTableColumns list of columns for the SELECT
      * @param string $sqlNewTableColumns list of columns for the INSERT
      * @return boolean true if it is ok

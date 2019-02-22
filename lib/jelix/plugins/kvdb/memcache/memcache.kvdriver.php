@@ -18,7 +18,7 @@ class memcacheKVDriver extends jKVDriver implements jIKVttl {
      * Array of StdClass objects that contains host/port attributes for the
      * memcache servers. Used only during _connection.
      *
-     * @var array
+     * @var object[]
      */
     private $_servers = array();
 

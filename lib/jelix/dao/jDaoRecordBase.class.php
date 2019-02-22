@@ -58,7 +58,7 @@ abstract class jDaoRecordBase {
     abstract public function getProperties();
 
     /**
-     * @return array list of properties name which contains primary keys
+     * @return string[] list of properties name which contains primary keys
      * @see jDaoFactoryBase::getPrimaryKeyNames()
      * @since 1.0b3
      */

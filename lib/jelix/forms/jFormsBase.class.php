@@ -42,65 +42,50 @@ abstract class jFormsBase {
 
     /**
      * List of all form controls
-     * array of jFormsControl objects
-     * @var array
-     * @see jFormsControl
+     * @var jFormsControl[]
      */
     protected $controls = array();
 
     /**
      * List of top controls
-     * array of jFormsControl objects
-     * @var array
-     * @see jFormsControl
+     * @var jFormsControl[]
      */
     protected $rootControls = array();
 
     /**
      * List of submit buttons
-     * array of jFormsControl objects
-     * @var array
-     * @see jFormsControl
+     * @var jFormsControlSubmit[]
      */
     protected $submits = array();
 
     /**
      * Reset button
-     * @var jFormsControl
-     * @see jFormsControl
+     * @var jFormsControlReset
      * @since 1.0
      */
     protected $reset = null;
 
     /**
      * List of uploads controls
-     * array of jFormsControl objects
-     * @var array
-     * @see jFormsControl
+     * @var jFormsControlUpload[]
      */
     protected $uploads = array();
 
     /**
      * List of hidden controls
-     * array of jFormsControl objects
-     * @var array
-     * @see jFormsControl
+     * @var jFormsControlHidden[]
      */
     protected $hiddens = array();
 
     /**
      * List of htmleditorcontrols
-     * array of jFormsControl objects
-     * @var array
-     * @see jFormsControl
+     * @var jFormsControlHtmlEditor[]
      */
     protected $htmleditors = array();
 
     /**
      * List of wikieditorcontrols
-     * array of jFormsControl objects
-     * @var array
-     * @see jFormsControl
+     * @var jFormsControlWikiEditor[]
      * @since 1.2
      */
     protected $wikieditors = array();
@@ -137,6 +122,9 @@ abstract class jFormsBase {
         $this->sel = $sel;
     }
 
+    /**
+     * @return string
+     */
     public function getSelector() {
         return $this->sel;
     }
@@ -283,7 +271,7 @@ abstract class jFormsBase {
      * @param string $daoSelector the selector of a dao file
      * @param string $key the primary key for the dao. if null, takes the form ID as primary key
      * @param string $dbProfile the jDb profile to use with the dao
-     * @return mixed return three vars : $daorec, $dao, $toInsert which have to be extracted
+     * @return array return three vars : $daorec, $dao, $toInsert which have to be extracted
      * @see jDao
      */
     public function prepareDaoFromControls($daoSelector, $key = null, $dbProfile=''){
@@ -315,6 +303,11 @@ abstract class jFormsBase {
      */
     public function saveToDao($daoSelector, $key = null, $dbProfile=''){
         $results = $this->prepareDaoFromControls($daoSelector,$key,$dbProfile);
+        /**
+         * @var  boolean $toInsert
+         * @var jDaoRecordBase $daorec
+         * @var jDaoFactoryBase $dao
+         */
         extract($results); //use a temp variable to avoid notices
         if($toInsert){
             // todo : what about updating the formId with the Pk ?
@@ -555,12 +548,12 @@ abstract class jFormsBase {
 
 
     /**
-     * @return array of jFormsControl objects
+     * @return jFormsControl[]
      */
     public function getRootControls(){ return $this->rootControls; }
 
     /**
-     * @return array of jFormsControl objects
+     * @return jFormsControl[]
      */
     public function getControls(){ return $this->controls; }
 
@@ -576,36 +569,36 @@ abstract class jFormsBase {
     }
 
     /**
-     * @return array of jFormsControl objects
+     * @return jFormsControlSubmit[]
      */
     public function getSubmits(){ return $this->submits; }
 
      /**
-     * @return array of jFormsControl objects
+     * @return jFormsControlHidden[]
      * @since 1.1
      */
     public function getHiddens(){ return $this->hiddens; }
 
      /**
-     * @return array of jFormsControl objects
+     * @return jFormsControlHtmlEditor[]
      * @since 1.1
      */
     public function getHtmlEditors(){ return $this->htmleditors; }
 
      /**
-     * @return array of jFormsControl objects
+     * @return jFormsControlWikiEditor[]
      * @since 1.2
      */
     public function getWikiEditors(){ return $this->wikieditors; }
 
     /**
-     * @return array of jFormsControl objects
+     * @return jFormsControlUpload[]
      * @since 1.2
      */
     public function getUploads(){ return $this->uploads; }
 
     /**
-     * call this method after initilization of the form, in order to track
+     * call this method after initialization of the form, in order to track
      * modified controls
      * @since 1.1
      */
@@ -665,7 +658,7 @@ abstract class jFormsBase {
     }
 
     /**
-     * @return jFormsControl the reset object
+     * @return jFormsControlReset the reset object
      */
     public function getReset(){ return $this->reset; }
 

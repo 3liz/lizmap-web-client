@@ -49,14 +49,14 @@ interface jIAuthDriverClass {
 
     /**
     * gets all users
-    * @return array list of users
+    * @return object[] list of users
     */
     public function findAll();
 
     /**
     * gets all users for which the login corresponds to the given pattern
     * @param string $pattern the pattern
-    * @return array list of users
+    * @return object[] list of users
     */
     public function findByLoginPattern($pattern);
 

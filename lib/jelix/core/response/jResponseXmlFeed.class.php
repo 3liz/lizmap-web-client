@@ -37,8 +37,9 @@ abstract class jResponseXMLFeed extends jResponse {
     public $infos = null;
 
     /**
-    * array of channel item
-    */
+     * array of channel item
+     * @var jXMLFeedItem[]
+     */
     public $itemList = array ();
 
     /**

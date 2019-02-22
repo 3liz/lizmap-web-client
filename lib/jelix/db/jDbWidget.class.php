@@ -62,7 +62,7 @@ class jDbWidget {
     * @param  string   $query   SQL query
     * @param  integer  $limitOffset  the first number of the results or null
     * @param  integer  $limitCount  number of results you want, or null
-    * @return  array    array of objects which contains results values
+    * @return  object[]    array of objects which contains results values
     */
     public function fetchAll($query, $limitOffset=null, $limitCount=null){
         if($limitOffset===null || $limitCount===null){
@@ -79,7 +79,7 @@ class jDbWidget {
     * @param   string  $classname class name of future objects
     * @param  integer  $limitOffset  the first number of the results or null
     * @param  integer  $limitCount  number of results you want, or null
-    * @return  array    array of objects which contains results values
+    * @return  object[]    array of objects which contains results values
     */
     public function fetchAllInto($query, $className, $limitOffset=null, $limitCount=null){
         if($limitOffset===null || $limitCount===null){
