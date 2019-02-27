@@ -186,8 +186,6 @@ class qgisForm {
             }
         }
 
-        $template = '{formfull $form, "lizmap~edition:saveFeature", array(), "htmlbootstrap", array("errorDecorator"=>"lizEditionErrorDecorator")}';
-
         if ( $attributeEditorForm && property_exists($attributeEditorForm, 'children') ) {
             $template = '{form $form, "lizmap~edition:saveFeature", array(), "htmlbootstrap", array("errorDecorator"=>"lizEditionErrorDecorator")}';
             $template.= $this->getEditorContainerHtmlContent( $attributeEditorForm, $this->form_name, 0 );
@@ -609,7 +607,7 @@ class qgisForm {
     /**
      * Dynamically update form by modifying the filter by login control
      *
-     * @return modified form.
+     * @return jFormsBase modified form.
      */
     public function updateFormByLogin() {
         $loginFilteredLayers = $this->filterDataByLogin($this->layer->getName());
@@ -1046,6 +1044,11 @@ class qgisForm {
     /**
      * Filter data by login if necessary
      * as configured in the plugin for login filtered layers.
+     * @param string $layername
+     * @return null|array array with these keys:
+     *    - where: SQL WHERE statement
+     *    - type: 'groups' or 'login'
+     *    - attribute: filter attribute from the layer
      */
     protected function filterDataByLogin($layername) {
         if ( $this->loginFilteredOverride )

@@ -237,7 +237,7 @@ class editionCtrl extends jController {
    * @param string $repository Lizmap Repository
    * @param string $project Name of the project
    * @param string $layerId Qgis id of the layer
-   * @return redirect to the display action.
+   * @return jResponseRedirect|jResponseHtmlFragment redirect to the display action.
    */
   public function createFeature(){
 
@@ -278,7 +278,7 @@ class editionCtrl extends jController {
    * @param string $project Name of the project
    * @param string $layerId Qgis id of the layer
    * @param integer $featureId Id of the feature.
-   * @return redirect to the display action.
+   * @return jResponseRedirect|jResponseHtmlFragment redirect to the display action.
    */
   public function modifyFeature(){
 
@@ -319,7 +319,7 @@ class editionCtrl extends jController {
   /**
    * Display the edition form (output as html fragment)
    *
-   * @return HTML code containing the form.
+   * @return jResponseHtmlFragment HTML code containing the form.
    */
   public function editFeature(){
 
@@ -477,7 +477,7 @@ class editionCtrl extends jController {
    * @param string $project Name of the project
    * @param string $layerId Qgis id of the layer
    * @param integer $featureId Id of the feature.
-   * @return Redirect to the validation action.
+   * @return jResponseHtmlFragment|jResponseRedirect Redirect to the validation action.
    */
   public function saveFeature(){
 
@@ -631,7 +631,7 @@ class editionCtrl extends jController {
   * @param string $project Name of the project
   * @param string $layerId Qgis id of the layer
   * @param integer $featureId Id of the feature.
-  * @return Confirmation message that the form has been saved.
+  * @return jResponseHtmlFragment Confirmation message that the form has been saved.
   */
   public function closeFeature(){
 
@@ -659,7 +659,7 @@ class editionCtrl extends jController {
    * @param string $project Name of the project
    * @param string $layerId Qgis id of the layer
    * @param integer $featureId Id of the feature.
-   * @return Redirect to the validation action.
+   * @return jResponseHtmlFragment
    */
   public function deleteFeature(){
     if( !$this->getEditionParameters() )
@@ -750,7 +750,7 @@ class editionCtrl extends jController {
    * @param string $features1 Layer id + features. Example : mylayer456:1,2
    * @param string $features2 Layer id + features. Example : otherlayer789:5
    * @param integer $featureId Id of the feature.
-   * @return Redirect to the validation action.
+   * @return jResponseHtmlFragment
    */
     public function linkFeatures(){
 
@@ -901,7 +901,7 @@ class editionCtrl extends jController {
    * @param string $layerId Child layer id.
    * @param string $pkey Child layer primary key value -> id of the line to update
    * @param string $fkey Child layer foreign key column (pointing to the parent layer primary key)
-   * @return Redirect to the validation action.
+   * @return jResponseHtmlFragment
    */
     function unlinkChild(){
         $lid = $this->param('lid');
