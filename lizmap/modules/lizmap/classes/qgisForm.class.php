@@ -106,30 +106,22 @@ class qgisForm {
 
             $formControl = new qgisFormControl($fieldName, $edittype, $alias, $categoriesXml, $prop);
 
-            if ( $formControl->fieldEditType === 2
-                 or $formControl->fieldEditType === 'UniqueValues'
-                 or $formControl->fieldEditType === 'UniqueValuesEditable' ) {
+            if ( $formControl->isUniqueValue()) {
                 $this->fillControlFromUniqueValues( $fieldName, $formControl );
-            } else if( ( $formControl->fieldEditType === 15
-                  or $formControl->fieldEditType === 'ValueRelation')
-                and $formControl->valueRelationData ) {
+            } else if($formControl->isValueRelation()) {
                 // Fill comboboxes of editType "Value relation" from relation layer
                 // Query QGIS Server via WFS
                 $this->fillControlFromValueRelationLayer( $fieldName, $formControl );
-            } else if ( $formControl->fieldEditType === 'RelationReference'
-                        and $formControl->relationReferenceData ) {
+            } else if ($formControl->isRelationReference()) {
                 // Fill comboboxes of editType "Relation reference" from relation layer
                 // Query QGIS Server via WFS
                 $this->fillControlFromRelationReference( $fieldName, $formControl );
-            } else if ( $formControl->fieldEditType === 8
-                        or $formControl->fieldEditType === 'FileName'
-                        or $formControl->fieldEditType === 'Photo'
-                        or $formControl->fieldEditType === 'ExternalResource' ) {
+            } else if ( $formControl->isUploadControl()) {
                 // Add Hidden Control for upload
                 // help to retrieve file path
                 $hiddenCtrl = new jFormsControlHidden($fieldName.'_hidden');
                 $form->addControl($hiddenCtrl);
-                $toDeactivate[] = $fieldName.'_choice';
+                $toDeactivate[] = $formControl->getControlName();
             }
 
             // Add the control to the form
@@ -171,7 +163,6 @@ class qgisForm {
     /**
      * get the html content
      *
-     * @return string the Html content for the form
      */
     public function getHtmlForm() {
         $this->form_name = self::generateFormName($this->form->getSelector());
@@ -199,16 +190,9 @@ class qgisForm {
             $template.= '{/form}';
         } else {
             $fieldNames = array();
-            foreach( array_keys($this->formControls) as $k ) {
-                // Get field name
-                $fName = $k;
-                $formControl =  $this->formControls[$fName];
+            foreach($this->formControls as $fName =>  $formControl) {
                 // Change field name to choice for files upoad control
-                if ( $formControl->fieldEditType === 8
-                     or $formControl->fieldEditType === 'FileName'
-                     or $formControl->fieldEditType === 'Photo'
-                     or $formControl->fieldEditType === 'ExternalResource' )
-                     $fName = $fName.'_choice';
+                $fName = $formControl->getControlName();
                 $fieldNames[] = '\''.$fName.'\'';
             }
             $template = '{form $form, "lizmap~edition:saveFeature", array(), "htmlbootstrap", array("errorDecorator"=>"lizEditionErrorDecorator")}';
@@ -234,6 +218,7 @@ class qgisForm {
         $tpl->assign( 'form', $this->form );
         return $tpl->fetchFromString( $template, 'html' );
     }
+
     private function xml2obj( $node ) {
         $jsnode = array(
             'name'=>$node->getName()
@@ -336,13 +321,9 @@ class qgisForm {
         // Verifying that the field is defined
         if ( !array_key_exists( $fName, $this->formControls ) )
             return $html;
-        $formControl =  $this->formControls[$fName];
-        // Change field name to choice for files upoad control
-        if ( $formControl->fieldEditType === 8
-             or $formControl->fieldEditType === 'FileName'
-             or $formControl->fieldEditType === 'Photo'
-             or $formControl->fieldEditType === 'ExternalResource' )
-             $fName = $fName.'_choice';
+
+        $fName = $this->formControls[$fName]->getControlName();
+
         // generate the template
         $html.= '<div class="control-group">';
         $html.= '{ctrl_label "'.$fName.'"}';
@@ -390,18 +371,14 @@ class qgisForm {
         foreach ( $values as $ref=>$value ) {
             $form->setData($ref, $value);
             // ValueRelation can be an array (i.e. {1,2,3})
-            if( $this->formControls[$ref]->fieldEditType === 15
-                or $this->formControls[$ref]->fieldEditType === 'ValueRelation' ){
+            if( $this->formControls[$ref]->isValueRelation()){
                 if($value[0] == '{'){
                     $arrayValue = explode(",",trim($value, "{}"));
                     $form->setData($ref, $arrayValue);
                 }
             }
-            if ( $this->formControls[$ref]->fieldEditType === 8
-                or $this->formControls[$ref]->fieldEditType === 'FileName'
-                or $this->formControls[$ref]->fieldEditType === 'Photo'
-                or $this->formControls[$ref]->fieldEditType === 'ExternalResource' ) {
-                $ctrl = $form->getControl($ref.'_choice');
+            if ($this->formControls[$ref]->isUploadControl()) {
+                $ctrl = $form->getControl($this->formControls[$ref]->getControlName());
                 if ($ctrl && $ctrl->type == 'choice' ) {
                     $path = explode( '/', $value );
                     $filename = array_pop($path);
