@@ -164,7 +164,7 @@ abstract class jInstallerComponentBase {
      * 
      * @param jInstallerEntryPoint $ep the entry point
      * @throw jInstallerException  if an error occurs during the install.
-     * @return array   array of jIInstallerComponent
+     * @return jIInstallerComponent[]
      */
     abstract function getUpgraders($ep);
 
@@ -244,6 +244,12 @@ abstract class jInstallerComponentBase {
 
         if (isset($xml->dependencies)) {
             foreach ($xml->dependencies->children() as $type=>$dependency) {
+
+                if ($type != 'jelix' && $type != 'module' && $type != 'plugin') {
+                    // lets ignore tags introduced for jelix 1.7, like <choice> or <conflicts>
+                    continue;
+                }
+
                 $minversion = isset($dependency['minversion'])?(string)$dependency['minversion']:'*';
                 if (trim($minversion) == '')
                     $minversion = '*';

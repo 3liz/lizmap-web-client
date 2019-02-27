@@ -279,7 +279,7 @@ proj4php.access=1
 view.access=1
 
 ldapdao.installparam=noconfigfile
-
+multiauth.installparam="noconfigfile;localconfig"
 
 [mailLogger]
 email="root@localhost"

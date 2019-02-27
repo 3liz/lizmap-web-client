@@ -20,6 +20,28 @@ var lizEdition = function() {
     // Edition type : createFeature or modifyFeature
     var editionType = null;
 
+    // Edition message management
+    var editionMessageTimeoutId = null;
+    function cleanEditionMessage() {
+        var $EditionMessage = $('#lizmap-edition-message');
+        if ( $EditionMessage.length != 0 ) {
+            $EditionMessage.remove();
+        }
+        editionMessageTimeoutId = null;
+    }
+    function addEditionMessage(aMessage, aType, aClose){
+        if ( editionMessageTimeoutId ) {
+            window.clearTimeout(editionMessageTimeoutId);
+            editionMessageTimeoutId = null;
+        }
+        var $EditionMessage = $('#lizmap-edition-message');
+        if ( $EditionMessage.length != 0 ) {
+            $EditionMessage.remove();
+        }
+        lizMap.addMessage(aMessage, aType, aClose).attr('id','lizmap-edition-message');
+        editionMessageTimeoutId = window.setTimeout(cleanEditionMessage, 5000);
+    }
+
     function afterSpliting(evt) {
         var splitFeatures = evt.features;
         var geometryType = editionLayer['config'].geometryType;
@@ -463,8 +485,7 @@ OpenLayers.Geometry.pointOnSegment = function(point, segment) {
                     }
 
                     // Inform user he can now modify
-                    $('#lizmap-edition-message').remove();
-                    lizMap.addMessage(lizDict['edition.select.modify.activate'],'info',true).attr('id','lizmap-edition-message');
+                    addEditionMessage(lizDict['edition.select.modify.activate'],'info',true);
 
                     var btn = $('#button-edition');
                     var dockVisible = btn.parent().hasClass('active');
@@ -1042,8 +1063,7 @@ OpenLayers.Geometry.pointOnSegment = function(point, segment) {
                         } else {
                             ctrl.activate();
 
-                            $('#lizmap-edition-message').remove();
-                            lizMap.addMessage(lizDict['edition.draw.activate'],'info',true).attr('id','lizmap-edition-message');
+                            addEditionMessage(lizDict['edition.draw.activate'],'info',true);
                         }
                     }
                 }
@@ -1065,8 +1085,7 @@ OpenLayers.Geometry.pointOnSegment = function(point, segment) {
                         }
                     }
 
-                    $('#lizmap-edition-message').remove();
-                    lizMap.addMessage(lizDict['edition.select.modify.activate'],'info',true).attr('id','lizmap-edition-message');
+                    addEditionMessage(lizDict['edition.select.modify.activate'],'info',true);
                 }
             }
 
@@ -1111,7 +1130,7 @@ OpenLayers.Geometry.pointOnSegment = function(point, segment) {
 
             // Display message via JS
             if ( data != '' )
-                lizMap.addMessage( data, 'info', true).attr('id','lizmap-edition-message');
+                addEditionMessage( data, 'info', true);
 
         }
 
@@ -1202,7 +1221,7 @@ OpenLayers.Geometry.pointOnSegment = function(point, segment) {
                     return false;
                 // Some client side errors have been detected in form
                 if( msg != 'ok' ){
-                    lizMap.addMessage( msg, 'info', true).attr('id','lizmap-edition-message');
+                    addEditionMessage( msg, 'info', true)
                     return false;
                 }
 
@@ -1243,7 +1262,7 @@ OpenLayers.Geometry.pointOnSegment = function(point, segment) {
                 }
                 // Some client side errors have been detected in form
                 if( msg != 'ok' ){
-                    lizMap.addMessage( msg, 'info', true).attr('id','lizmap-edition-message');
+                    addEditionMessage( msg, 'info', true);
                     return false;
                 }
                 $('#edition-waiter').show();
@@ -1383,8 +1402,7 @@ OpenLayers.Geometry.pointOnSegment = function(point, segment) {
             layerId: aLayerId,
             featureId: aFeatureId
         }, function(data){
-
-            lizMap.addMessage( data, 'info', true).attr('id','lizmap-edition-message');
+            addEditionMessage( data, 'info', true);
 
             if ( aCallback )
                 aCallback( aLayerId, aFeatureId );

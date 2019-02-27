@@ -440,7 +440,7 @@ abstract class jDbTools {
 
     /**
      * returns the list of tables
-     * @return array list of table names
+     * @return string[] list of table names
      * @throws jException
      */
     public function getTableList () {

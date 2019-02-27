@@ -48,6 +48,7 @@ abstract class jController{
      * List of names of parameters that can have sensitive values like password etc.
      * This list is used by the logger for example, to replace values by a dummy value.
      * See also sensitiveParameters into error_handling section of the configuration.
+     * @var string[]
      * @since 1.6.16
      */
     public $sensitiveParameters = array();

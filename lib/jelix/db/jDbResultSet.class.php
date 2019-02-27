@@ -44,13 +44,13 @@ abstract class jDbResultSet implements Iterator {
 
     /**
      * a callback function which will modify on the fly record's value
-     * @var array of callback
+     * @var callable[]
      * @since 1.1.6
      */
     protected $modifier = array();
 
     /**
-     * @param callback $function a callback function
+     * @param callable $function a callback function
      *     the function should accept in parameter the record,
      *     and the resulset object
      * @since 1.1.6
@@ -119,7 +119,7 @@ abstract class jDbResultSet implements Iterator {
 
     /**
      * Return all results in an array. Each result is an object.
-     * @return array
+     * @return object[]
      */
     public function fetchAll(){
         $result=array();

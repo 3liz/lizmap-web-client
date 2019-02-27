@@ -3529,7 +3529,7 @@ var lizMap = function() {
     });
   }
 
-  function getChildrenFeatureInfo( rConfigLayer, wmsOptions, aCallback ) {
+  function getChildrenFeatureInfo( rConfigLayer, wmsOptions, parentDiv, aCallback ) {
         if ( rConfigLayer.popup != 'True' )
             return false;
         // Query the server
@@ -3542,7 +3542,12 @@ var lizMap = function() {
                 var popupReg = new RegExp('lizmapPopupTable', 'g');
                 data = data.replace(popupReg, 'table table-condensed table-striped lizmapPopupTable');
 
-                var childPopup = $('<div class="lizmapPopupChildren">'+data+'</div>');
+                var clname = rConfigLayer.cleanname;
+                if ( clname === undefined ) {
+                    clname = cleanName(configLayer.name);
+                    rConfigLayer.cleanname = clname;
+                }
+                var childPopup = $('<div class="lizmapPopupChildren '+clname+'">'+data+'</div>');
 
                 //Manage if the user choose to create a table for children
                 if( rConfigLayer.popupSource == 'qgis' &&
@@ -3583,6 +3588,11 @@ var lizMap = function() {
 
                     childPopup.children('tbody').remove();
                 }
+
+                var oldPopupChild = parentDiv.find('div.lizmapPopupChildren.'+clname);
+                if ( oldPopupChild.length != 0 )
+                    oldPopupChild.remove();
+                parentDiv.append(childPopup);
 
                 if ( aCallback )
                     aCallback( childPopup );
@@ -3649,8 +3659,7 @@ var lizMap = function() {
                             wmsOptions['FILTER'] = rConfigLayer.request_params.filter+' AND "'+r.referencingField+'" = \''+feat.properties[r.referencedField]+'\'';
                         else
                             wmsOptions['FILTER'] = rConfigLayer.name+':"'+r.referencingField+'" = \''+feat.properties[r.referencedField]+'\'';
-                        getChildrenFeatureInfo( rConfigLayer, wmsOptions, function(childPopup){
-                            self.parent().append(childPopup);
+                        getChildrenFeatureInfo( rConfigLayer, wmsOptions, self.parent(), function(childPopup){
                             if ( popup && typeof popup.verifySize === "function" )
                                 popup.verifySize();
 
@@ -3691,6 +3700,7 @@ var lizMap = function() {
                     var popup = null;
                     var popupContainerId = null;
                     if( 'popupLocation' in config.options && config.options.popupLocation != 'map' ){
+                      popupContainerId = 'popupcontent';
 
                       // create content
                       var popupReg = new RegExp('lizmapPopupTable', 'g');
@@ -3698,7 +3708,6 @@ var lizMap = function() {
                       var pcontent = '<div class="lizmapPopupContent">'+text+'</div>';
                       var hasPopupContent = (!(!text || text == null || text == ''))
                       if( !$('#mapmenu .nav-list > li.popupcontent > a').length ){
-                        popupContainerId = 'popupcontent';
                         addDock(popupContainerId, 'Popup', config.options.popupLocation, pcontent, 'icon-comment');
                         $('#button-popupcontent').click(function(){
                           if($(this).parent().hasClass('active')) {
@@ -3873,9 +3882,13 @@ var lizMap = function() {
           && $('#popupcontent div.menu-content div.lizmapPopupContent').length < 1)
             return;
 
+        var popupContainerId = "liz_layer_popup";
+        if ( $('#'+popupContainerId+' div.lizmapPopupContent input.lizmap-popup-layer-feature-id').length == 0 )
+            popupContainerId = 'popupcontent';
+
         // Refresh if needed
         var refreshInfo = false;
-        $('div.lizmapPopupContent input.lizmap-popup-layer-feature-id').each(function(){
+        $('#'+popupContainerId+' div.lizmapPopupContent input.lizmap-popup-layer-feature-id').each(function(){
             var self = $(this);
             var val = self.val();
             var eHtml = '';
@@ -3888,7 +3901,8 @@ var lizMap = function() {
             }
         });
         if ( refreshInfo  ) {
-            $('div.lizmapPopupContent input.lizmap-popup-layer-feature-id[value="'+evt.layerId+'.'+evt.featureId+'"]').parent().remove();
+            //lastLonLatInfo = null;
+            $('#'+popupContainerId+' div.lizmapPopupContent input.lizmap-popup-layer-feature-id[value="'+evt.layerId+'.'+evt.featureId+'"]').parent().remove();
             info.request( lastPx, {} );
         }
         return;

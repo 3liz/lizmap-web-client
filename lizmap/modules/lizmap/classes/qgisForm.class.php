@@ -12,15 +12,47 @@
 
 class qgisForm {
 
-    protected $layer = null;
-    protected $form = null;
-    protected $form_name = null;
-    protected $featureId = null;
+    /**
+     * @var qgisMapLayer|qgisVectorLayer
+     */
+    protected $layer;
+
+    /**
+     * @var jFormsBase
+     */
+    protected $form;
+
+    /**
+     * @var string the form id into the HTML
+     */
+    protected $form_name;
+
+    /**
+     * @var string
+     */
+    protected $featureId;
+
+    /**
+     * @var bool
+     */
     protected $loginFilteredOverride = False;
 
+    /**
+     * @var qgisLayerDbFieldsInfo|null
+     */
     protected $dbFieldsInfo = null;
+
+    /** @var qgisFormControl[] */
     protected $formControls = array();
 
+    /**
+     * qgisForm constructor.
+     * @param qgisVectorLayer|qgisMapLayer $layer
+     * @param jFormsBase $form
+     * @param string $featureId
+     * @param boolean $loginFilteredOverride
+     * @throws Exception
+     */
     public function __construct ( $layer, $form, $featureId, $loginFilteredOverride ){
         if ( $layer->getType() != 'vector' )
             throw new Exception('The layer "'.$layer->getName().'" is not a vector layer!');
@@ -153,8 +185,6 @@ class qgisForm {
                 $attributeEditorForm = $this->xml2obj( $_attributeEditorForm[0] );
             }
         }
-
-        $template = '{formfull $form, "lizmap~edition:saveFeature", array(), "htmlbootstrap", array("errorDecorator"=>"lizEditionErrorDecorator")}';
 
         if ( $attributeEditorForm && property_exists($attributeEditorForm, 'children') ) {
             $template = '{form $form, "lizmap~edition:saveFeature", array(), "htmlbootstrap", array("errorDecorator"=>"lizEditionErrorDecorator")}';
@@ -577,7 +607,7 @@ class qgisForm {
     /**
      * Dynamically update form by modifying the filter by login control
      *
-     * @return modified form.
+     * @return jFormsBase modified form.
      */
     public function updateFormByLogin() {
         $loginFilteredLayers = $this->filterDataByLogin($this->layer->getName());
@@ -1014,6 +1044,11 @@ class qgisForm {
     /**
      * Filter data by login if necessary
      * as configured in the plugin for login filtered layers.
+     * @param string $layername
+     * @return null|array array with these keys:
+     *    - where: SQL WHERE statement
+     *    - type: 'groups' or 'login'
+     *    - attribute: filter attribute from the layer
      */
     protected function filterDataByLogin($layername) {
         if ( $this->loginFilteredOverride )

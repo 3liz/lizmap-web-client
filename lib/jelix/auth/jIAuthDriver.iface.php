@@ -63,7 +63,7 @@ interface jIAuthDriver {
     /**
      * construct the user list
      * @param string $pattern '' for all users
-     * @return array array of user object
+     * @return object[] array of objects representing the users
      */
     public function getUserList($pattern);
 
@@ -72,6 +72,7 @@ interface jIAuthDriver {
      *
      * @param string $login the login of the user
      * @param string $newpassword
+     * @return boolean true if the password has been changed
      */
     public function changePassword($login, $newpassword);
 
@@ -79,7 +80,7 @@ interface jIAuthDriver {
      * verify that the password correspond to the login
      * @param string $login the login of the user
      * @param string $password the password to test
-     * @return object|false
+     * @return object|false returns the object representing the user
      */
     public function verifyPassword($login, $password);
 }

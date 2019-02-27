@@ -1,7 +1,7 @@
 <?php
 /**
  * @author       Laurent Jouanneau <laurent@jelix.org>
- * @copyright    2018 Laurent Jouanneau
+ * @copyright    2018-2019 Laurent Jouanneau
  *
  * @link         http://jelix.org
  * @licence      http://www.gnu.org/licenses/gpl.html GNU General Public Licence, see LICENCE file
@@ -15,6 +15,10 @@ class PasswordReset {
         $user = \jAuth::getUser($login);
         if (!$user || $user->email == '' || $user->email != $email) {
             return self::RESET_BAD_LOGIN_EMAIL;
+        }
+
+        if (!\jAuth::canChangePassword($login)) {
+            return self::RESET_BAD_STATUS;
         }
 
         if ($user->status != Account::STATUS_VALID && $user->status != Account::STATUS_PWD_CHANGED) {
@@ -76,6 +80,10 @@ class PasswordReset {
             if ($user->status != Account::STATUS_VALID) {
                 return self::RESET_ALREADY_DONE;
             }
+            return self::RESET_BAD_STATUS;
+        }
+
+        if (!\jAuth::canChangePassword($login)) {
             return self::RESET_BAD_STATUS;
         }
 
