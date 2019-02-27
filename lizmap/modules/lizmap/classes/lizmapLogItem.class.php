@@ -81,19 +81,22 @@ class lizmapLogItem{
     }
 
     /**
-    * Return the array of properties
+    * @return string[] list of properties name
     */
     public function getProperties(){
       return self::$properties;
     }
 
+    /**
+     * @return string[] list of properties name
+     */
     public static function getSProperties(){
         return self::$properties;
     }
 
 
     /**
-    * Return the array of record keys
+    * @return string[] list of record keys
     */
     public function getRecordKeys(){
       return self::$recordKeys;
@@ -102,7 +105,7 @@ class lizmapLogItem{
     /**
     * Return data for a log item
     * @param string $key Key of the log item
-    *
+    * @return mixed
     */
     public function getData( $key ) {
       if ( !array_key_exists($key, $this->data) )
@@ -112,6 +115,7 @@ class lizmapLogItem{
 
     /**
     * Update the data for the log item in the ini file
+     * @return bool true if there were some modifications
     */
     public function update( $data ) {
       // Get access to the ini file
@@ -121,7 +125,6 @@ class lizmapLogItem{
       // Set section
       $section = 'item:'.$this->key;
 
-      $modified = false;
       // Modify the ini data for the repository
       foreach($data as $k=>$v){
         if(in_array($k, self::$properties)){
@@ -129,20 +132,21 @@ class lizmapLogItem{
           $ini->setValue($k, $v, $section);
           // Modify lizmapConfigData
           $this->data[$k] = $v;
-          $modified = true;
         }
       }
-
+      $modified = $ini->isModified();
       // Save the ini file
-      if($modified)
-        $ini->save();
+      if ($modified) {
+          $ini->save();
+      }
       return $modified;
     }
 
 
     /**
-    * Insert a new line of log for this item
-    */
+     * Insert a new line of log for this item
+     * @param array $data list of details to save
+     */
     public function insertLogDetail( $data, $profile='lizlog'){
 
       $dao = jDao::get('lizmap~logDetail', $profile);

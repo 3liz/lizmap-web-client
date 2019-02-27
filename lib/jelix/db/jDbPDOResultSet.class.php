@@ -41,7 +41,7 @@ class jDbPDOResultSet extends PDOStatement {
      * @param integer $fetch_style
      * @param integer $fetch_argument
      * @param array $ctor_arg
-     * @return array list of object which contain all rows
+     * @return object[] list of object which contain all rows
      */
     public function fetchAll ($fetch_style = null, $fetch_argument=null, $ctor_arg=null) {
         // if the user requested to override the style set with setFetchMode, use it
@@ -106,13 +106,13 @@ class jDbPDOResultSet extends PDOStatement {
 
     /**
      * a callback function which will modify on the fly record's value
-     * @var array of callback
+     * @var callable[]
      * @since 1.1.6
      */
     protected $modifier = array();
 
     /**
-     * @param callback $function a callback function
+     * @param callable $function a callback function
      *     the function should accept in parameter the record,
      *     and the resulset object
      * @since 1.1.6

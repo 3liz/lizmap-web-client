@@ -88,54 +88,55 @@ class jResponseHtml extends jResponseBasicHtml {
 
     /**
      * list of css stylesheet
-     * @var array  key = url, value=link attributes
+     * @var array[]  key = url, value=link attributes
      */
     protected $_CSSLink = array ();
 
     /**
      * list of css stylesheet for IE
-     * @var array  key = url, value=link attributes + optional parameter _iecondition
+     * @var array[]  key = url, value=link attributes + optional parameter _iecondition
      */
     protected $_CSSIELink = array ();
 
     /**
      * list of CSS code
+     * @var string[]
      */
     protected $_Styles  = array ();
 
     /**
      * list of js script
-     * @var array  key = url, value=link attributes
+     * @var array[]  key = url, value=link attributes
      */
     protected $_JSLink  = array ();
 
     /**
      * list of js script for IE
-     * @var array  key = url, value=link attributes + optional parameter _iecondition
+     * @var array[]  key = url, value=link attributes + optional parameter _iecondition
      */
     protected $_JSIELink  = array ();
 
     /**
      * inline js code to insert before js links
-     * @var array list of js source code
+     * @var string[] list of js source code
      */
     protected $_JSCodeBefore  = array ();
 
     /**
      * inline js code to insert after js links
-     * @var array list of js source code
+     * @var string[] list of js source code
      */
     protected $_JSCode  = array ();
 
     /**
      * list of keywords to add into a meta keyword tag
-     * @var array  array of strings
+     * @var string[]
      */
     protected $_MetaKeywords = array();
 
     /**
      * list of descriptions to add into a meta description tag
-     * @var array  array of strings
+     * @var string[]
      */
     protected $_MetaDescription = array();
 

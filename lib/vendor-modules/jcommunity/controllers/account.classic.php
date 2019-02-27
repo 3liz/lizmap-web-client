@@ -3,11 +3,15 @@
 * @author       Laurent Jouanneau <laurent@xulfr.org>
 * @contributor
 *
-* @copyright    2008-2018 Laurent Jouanneau
+* @copyright    2008-2019 Laurent Jouanneau
 *
 * @link         http://jelix.org
 * @licence      http://www.gnu.org/licenses/gpl.html GNU General Public Licence, see LICENCE file
 */
+
+/**
+ * controller allowing the user to change his profile properties
+ */
 class accountCtrl extends jController
 {
     public $pluginParams = array(
@@ -85,7 +89,8 @@ class accountCtrl extends jController
         $tpl->assign('user', $user);
         $tpl->assign('form', $form);
         $tpl->assign('publicProperties',        $this->config->getPublicUserProperties());
-        $tpl->assign('passwordChangeAllowed',   $this->config->isPasswordChangeEnabled());
+        $tpl->assign('passwordChangeAllowed',   $this->config->isPasswordChangeEnabled()
+                                                && jAuth::canChangePassword($login));
         $tpl->assign('changeAllowed',           $this->config->isAccountChangeEnabled());
         $tpl->assign('destroyAllowed',          $this->config->isAccountDestroyEnabled());
         $tpl->assign('himself', $himself);

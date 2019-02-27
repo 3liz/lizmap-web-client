@@ -11,37 +11,37 @@
 
 class editionCtrl extends jController {
 
-  // lizmapProject
+  /** @var lizmapProject|null */
   private $project = null;
 
-  // lizmapRepository
+  /** @var lizmapRepository */
   private $repository = null;
 
-  // layer id in the QGIS project file
+  /** @var string layer id in the QGIS project file */
   private $layerId = '';
 
-  // layer name (<layername> in QGIS project)
+  /** @var string layer name (<layername> in QGIS project) */
   private $layerName = '';
 
-  // featureIdParam : featureId parameter from the request
+  /** @var string featureId parameter from the request */
   private $featureIdParam = Null;
 
-  // featureId : an integer or a string whith coma separated integers
+  /** @var integer|string  an integer or a string with coma separated integers */
   private $featureId = Null;
 
-  // featureData : feature data as a PHP object from GeoJSON via json_decode
+  /** @var object feature data as a PHP object from GeoJSON via json_decode */
   private $featureData = Null;
 
-  // Layer data as simpleXml object
+  /** @var SimpleXMLElement Layer data as simpleXml object */
   private $layerXml = '';
 
-  // Layer data as qgisVectorLayer
+  /** @var qgisVectorLayer|qgisMapLayer  Layer data */
   private $layer = '';
 
-  // Primary key for getWfsFeature
+  /** @var string[] Primary key for getWfsFeature */
   private $primaryKeys = array();
 
-  // Geometry column for form
+  /** @var string  Geometry column for form */
   private $geometryColumn = '';
 
   // Geometry srid for form
@@ -50,13 +50,12 @@ class editionCtrl extends jController {
   // Geometry proj4 string for form
   private $proj4 = '';
 
-  // Filter override flag
+  /** @var boolean Filter override flag  */
   private $loginFilteredOverride = False;
-
 
   /**
   * Send an answer
-  * @return HTML fragment.
+  * @return jResponseHtmlFragment HTML fragment.
   */
   function serviceAnswer(){
 
@@ -83,9 +82,9 @@ class editionCtrl extends jController {
   * Get parameters and set classes for the project and repository given.
   *
   * @param boolean $save If true, we have to save the form. So take liz_repository and others instead of repository from request parameters.
-  * @return array List of needed variables : $params, $lizmapRepository, lizmapProject, etc.
+  * @return boolean
   */
-  private function getEditionParameters($save=Null){
+  private function getEditionParameters($save=false){
 
     // Get the project
     $project = $this->param('project');
@@ -142,7 +141,7 @@ class editionCtrl extends jController {
         jMessage::add(jLocale::get('view~edition.message.error.layer.editable'), 'LayerNotEditable');
         return false;
     }
-    $layerXml = $layer->getXmlLayer( $layerId );
+    $layerXml = $layer->getXmlLayer();
     $layerName = $layer->getName();
 
     // Verifying if the layer is editable
@@ -238,7 +237,7 @@ class editionCtrl extends jController {
    * @param string $repository Lizmap Repository
    * @param string $project Name of the project
    * @param string $layerId Qgis id of the layer
-   * @return redirect to the display action.
+   * @return jResponseRedirect|jResponseHtmlFragment redirect to the display action.
    */
   public function createFeature(){
 
@@ -279,7 +278,7 @@ class editionCtrl extends jController {
    * @param string $project Name of the project
    * @param string $layerId Qgis id of the layer
    * @param integer $featureId Id of the feature.
-   * @return redirect to the display action.
+   * @return jResponseRedirect|jResponseHtmlFragment redirect to the display action.
    */
   public function modifyFeature(){
 
@@ -320,7 +319,7 @@ class editionCtrl extends jController {
   /**
    * Display the edition form (output as html fragment)
    *
-   * @return HTML code containing the form.
+   * @return jResponseHtmlFragment HTML code containing the form.
    */
   public function editFeature(){
 
@@ -478,7 +477,7 @@ class editionCtrl extends jController {
    * @param string $project Name of the project
    * @param string $layerId Qgis id of the layer
    * @param integer $featureId Id of the feature.
-   * @return Redirect to the validation action.
+   * @return jResponseHtmlFragment|jResponseRedirect Redirect to the validation action.
    */
   public function saveFeature(){
 
@@ -632,7 +631,7 @@ class editionCtrl extends jController {
   * @param string $project Name of the project
   * @param string $layerId Qgis id of the layer
   * @param integer $featureId Id of the feature.
-  * @return Confirmation message that the form has been saved.
+  * @return jResponseHtmlFragment Confirmation message that the form has been saved.
   */
   public function closeFeature(){
 
@@ -660,7 +659,7 @@ class editionCtrl extends jController {
    * @param string $project Name of the project
    * @param string $layerId Qgis id of the layer
    * @param integer $featureId Id of the feature.
-   * @return Redirect to the validation action.
+   * @return jResponseHtmlFragment
    */
   public function deleteFeature(){
     if( !$this->getEditionParameters() )
@@ -751,7 +750,7 @@ class editionCtrl extends jController {
    * @param string $features1 Layer id + features. Example : mylayer456:1,2
    * @param string $features2 Layer id + features. Example : otherlayer789:5
    * @param integer $featureId Id of the feature.
-   * @return Redirect to the validation action.
+   * @return jResponseHtmlFragment
    */
     public function linkFeatures(){
 
@@ -902,7 +901,7 @@ class editionCtrl extends jController {
    * @param string $layerId Child layer id.
    * @param string $pkey Child layer primary key value -> id of the line to update
    * @param string $fkey Child layer foreign key column (pointing to the parent layer primary key)
-   * @return Redirect to the validation action.
+   * @return jResponseHtmlFragment
    */
     function unlinkChild(){
         $lid = $this->param('lid');

@@ -217,8 +217,9 @@ var lizDataviz = function() {
           return getPlot(plot_id, exp_filter, target_id);
         },
         resizePlot: function(id) {
-          return getPlot(id);
-        }
+          return resizePlot(id);
+        },
+        data: dv
     }
 
     return obj;

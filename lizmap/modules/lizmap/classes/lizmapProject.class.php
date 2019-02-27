@@ -11,14 +11,22 @@
 
 class lizmapProject extends qgisProject {
 
-    // lizmapRepository
+    /**
+     * @var lizmapRepository
+     */
     protected $repository = null;
-    // QGIS project XML
+    /**
+     * @var SimpleXMLElement QGIS project XML
+     */
     protected $xml = null;
-    // CFG project JSON
+    /**
+     * @var object CFG project JSON
+     */
     protected $cfg = null;
 
-    // services properties
+    /**
+     * @var array services properties
+     */
     protected $properties = array(
         'repository',
         'id',
@@ -27,11 +35,22 @@ class lizmapProject extends qgisProject {
         'proj',
         'bbox'
     );
-    // Lizmap repository key
+
+    /**
+     * Lizmap repository key
+     * @var string
+     */
     protected $key = '';
-    // Lizmap repository configuration data
+
+    /**
+     * @var array Lizmap repository configuration data
+     */
     protected $data = array();
-    // Version of QGIS which wrote the project
+
+    /**
+     * Version of QGIS which wrote the project
+     * @var int|null
+     */
     protected $qgisProjectVersion = null;
 
     /**
@@ -96,7 +115,7 @@ class lizmapProject extends qgisProject {
     /**
      * constructor
      * @param string $key : the project name
-     * @param lizmapRepository $ rep : the repository
+     * @param lizmapRepository $rep : the repository
      */
     public function __construct ( $key, $rep ) {
         $this->key = $key;
@@ -166,6 +185,7 @@ class lizmapProject extends qgisProject {
     /**
      * temporary function to read xml for some methods that relies on
      * xml data that are not yet stored in the cache
+     * @return SimpleXMLElement
      * @deprecated
      */
     protected function getXml() {
@@ -486,6 +506,9 @@ class lizmapProject extends qgisProject {
         return false;
     }
 
+    /**
+     * @return mixed
+     */
     public function getQgisServerPlugins(){
         $qgisServer = jClasses::getService('lizmap~qgisServer');
         return $qgisServer->plugins;
@@ -628,6 +651,10 @@ class lizmapProject extends qgisProject {
         return null;
     }
 
+    /**
+     * @param $layerId
+     * @return array|null
+     */
     public function findEditionLayerByLayerId( $layerId ){
         if ( !$this->hasEditionLayers() )
             return null;
@@ -641,6 +668,9 @@ class lizmapProject extends qgisProject {
         return null;
     }
 
+    /**
+     * @return bool
+     */
     public function hasLoginFilteredLayers(){
         if ( property_exists($this->cfg,'loginFilteredLayers') ){
             $count = 0;
@@ -654,6 +684,9 @@ class lizmapProject extends qgisProject {
         return false;
     }
 
+    /**
+     * @return array|bool
+     */
     public function getDatavizLayersConfig(){
         if(!property_exists($this->cfg, 'datavizLayers')){
             return false;
@@ -738,6 +771,9 @@ class lizmapProject extends qgisProject {
         return $config;
     }
 
+    /**
+     * @return bool
+     */
     public function needsGoogle(){
         $configOptions = $this->cfg->options;
         return (
@@ -764,6 +800,9 @@ class lizmapProject extends qgisProject {
         );
     }
 
+    /**
+     * @return string
+     */
     public function getGoogleKey(){
         $configOptions = $this->cfg->options;
         $gkey = '';
@@ -773,6 +812,10 @@ class lizmapProject extends qgisProject {
         return $gkey;
     }
 
+    /**
+     * @param string $layerId
+     * @return string|null
+     */
     public function getLayerNameByIdFromConfig( $layerId ){
         $layers = $this->getLayers();
         $name = null;
@@ -900,6 +943,11 @@ class lizmapProject extends qgisProject {
         return $printTemplates;
     }
 
+    /**
+     * @param SimpleXMLElement $xml
+     * @param string $layerId
+     * @return SimpleXMLElement[]
+     */
     protected function getXmlLayer2($xml, $layerId ){
         return $xml->xpath( "//maplayer[id='$layerId']" );
     }
@@ -1041,6 +1089,11 @@ class lizmapProject extends qgisProject {
         return $attributeLayers;
     }
 
+    /**
+     * @param SimpleXMLElement $xml
+     * @param $cfg
+     * @return int[]
+     */
     protected function readLayersOrder($xml, $cfg) {
        $layersOrder = array();
         // For QGIS >=2.4, new item layer-tree-canvas
@@ -1092,7 +1145,9 @@ class lizmapProject extends qgisProject {
         return $layersOrder;
     }
 
-
+    /**
+     * @return false|string  the JSON object corresponding to the configuration
+     */
     public function getUpdatedConfig(){
 
         //FIXME: it's better to use clone keyword, isn't it?
@@ -1241,6 +1296,9 @@ class lizmapProject extends qgisProject {
         return $configRead;
     }
 
+    /**
+     * @return object
+     */
     public function getFullCfg(){
         return $this->cfg;
     }
@@ -1249,6 +1307,7 @@ class lizmapProject extends qgisProject {
      * @FIXME: remove this method. Be sure it is not used in other projects
      * Data provided by the returned xml element should be extracted and encapsulated
      * into an object. Xml should not be used by callers
+     * @return SimpleXMLElement|null
      * @deprecated
      */
     public function getComposer( $title ){
@@ -1259,6 +1318,10 @@ class lizmapProject extends qgisProject {
             return null;
     }
 
+    /**
+     * @return lizmapMapDockItem[]
+     * @throws jExceptionSelector
+     */
     public function getDefaultDockable() {
         $dockable = array();
         $bp = jApp::config()->urlengine['basePath'];
@@ -1334,6 +1397,11 @@ class lizmapProject extends qgisProject {
         return $dockable;
     }
 
+    /**
+     * @return lizmapMapDockItem[]
+     * @throws jException
+     * @throws jExceptionSelector
+     */
     public function getDefaultMiniDockable() {
         $dockable = array();
         $configOptions = $this->getOptions();
@@ -1462,6 +1530,10 @@ class lizmapProject extends qgisProject {
         return $dockable;
     }
 
+    /**
+     * @return lizmapMapDockItem[]
+     * @throws jExceptionSelector
+     */
     public function getDefaultBottomDockable() {
         $dockable = array();
         $configOptions = $this->getOptions();
@@ -1486,6 +1558,7 @@ class lizmapProject extends qgisProject {
 
     /**
      * Check acl rights on the project
+     * @return boolean true if the current user as rights on the project
      */
     public function checkAcl () {
 
