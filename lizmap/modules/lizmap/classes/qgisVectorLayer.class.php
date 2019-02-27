@@ -375,6 +375,11 @@ class qgisVectorLayer extends qgisMapLayer{
       return $nvalue;
   }
 
+    /**
+     * @param array $values
+     * @return array list of primary keys with their values
+     * @throws Exception
+     */
   public function insertFeature( $values ) {
       // Get database connection object
       $dtParams = $this->getDatasourceParameters();
@@ -467,6 +472,16 @@ class qgisVectorLayer extends qgisMapLayer{
       }
   }
 
+    /**
+     * @param object $feature
+     * @param array $values
+     * @param null|array $loginFilteredLayers array with these keys:
+     *    - where: SQL WHERE statement
+     *    - type: 'groups' or 'login'
+     *    - attribute: filter attribute from the layer
+     * @return array list of primary keys with their values
+     * @throws Exception
+     */
   public function updateFeature( $feature, $values, $loginFilteredLayers ) {
       // Get database connection object
       $dtParams = $this->getDatasourceParameters();
@@ -565,6 +580,15 @@ class qgisVectorLayer extends qgisMapLayer{
       }
   }
 
+    /**
+     * @param object $feature
+     * @param null|array $loginFilteredLayers array with these keys:
+     *    - where: SQL WHERE statement
+     *    - type: 'groups' or 'login'
+     *    - attribute: filter attribute from the layer
+     * @return int
+     * @throws Exception
+     */
   public function deleteFeature( $feature, $loginFilteredLayers ) {
       // Get database connection object
       $dtParams = $this->getDatasourceParameters();
