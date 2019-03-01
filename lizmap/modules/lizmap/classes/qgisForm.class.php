@@ -173,11 +173,11 @@ class qgisForm {
         if ($_editorlayout && $_editorlayout[0] == 'tablayout') {
             $_attributeEditorForm = $layerXml->xpath('attributeEditorForm');
             if ($_attributeEditorForm && count($_attributeEditorForm)) {
-                $attributeEditorForm = $this->xml2obj( $_attributeEditorForm[0] );
+                $attributeEditorForm = new qgisAttributeEditorElement($_attributeEditorForm[0]);
             }
         }
 
-        if ( $attributeEditorForm && property_exists($attributeEditorForm, 'children') ) {
+        if ( $attributeEditorForm && $attributeEditorForm->hasChildren()) {
             $template = '{form $form, "lizmap~edition:saveFeature", array(), "htmlbootstrap", array("errorDecorator"=>"lizEditionErrorDecorator")}';
             $template.= $this->getEditorContainerHtmlContent( $attributeEditorForm, $this->form_name, 0 );
             $template.= '<div class="control-group">';
@@ -219,65 +219,46 @@ class qgisForm {
         return $tpl->fetchFromString( $template, 'html' );
     }
 
-    private function xml2obj( $node ) {
-        $jsnode = array(
-            'name'=>$node->getName()
-        );
-        $attributesObj = json_decode(
-                str_replace(
-                    '@',
-                    '',
-                    json_encode( $node->attributes() )
-                )
-            );
-        if ( property_exists( $attributesObj, 'attributes' ) )
-            $jsnode['attributes'] = $attributesObj->attributes;
-        $children = array();
-        foreach ( $node->children() as $child ) {
-            $children[] = $this->xml2obj( $child );
+    private function getEditorContainerHtmlContent(qgisAttributeEditorElement $container, $parent_id, $depth ) {
+
+        $name = $container->getName();
+        if (!$container->hasChildren() || $name == '') {
+            return '';
         }
-        if ( count( $children ) > 0 )
-          $jsnode['children'] = $children;
-        return (object) $jsnode;
-    }
-    private function getEditorContainerHtmlContent( $container, $parent_id, $depth ) {
-        // a container has children
-        if ( !property_exists($container, 'children') )
-            return '';
-        // a container has a name
-        if ( !property_exists($container, 'name') )
-            return '';
+
         // a container can be the root
-        if ( $container->name != 'attributeEditorContainer' && $container->name != 'attributeEditorForm' )
+        if ($name != 'attributeEditorContainer' && $name != 'attributeEditorForm') {
             return '';
+        }
 
         $htmlBeforeTab = '';
         $htmlTabNav = '';
         $htmlTabContent = '';
         $htmlAfterTab = '';
         $idx = 0;
-        foreach ( $container->children as $c ) {
-            if ( $c->name === 'attributeEditorField' ) {
+        foreach ( $container->getChildren() as $c ) {
+            $childName = $c->getName();
+            if ( $childName === 'attributeEditorField' ) {
                 $html = $this->getEditorFieldHtmlContent( $c );
                 if ( $htmlTabNav === '' )
                     $htmlBeforeTab.= $html;
                 else
                     $htmlAfterTab.= $html;
             }
-            else if ( $c->name === 'attributeEditorContainer' ) {
-                $groupBox = False;
-                if ( property_exists( $c->attributes, 'groupBox' ) ) {
-                    $groupBox = ( $c->attributes->groupBox === '1' );
+            else if ( $childName === 'attributeEditorContainer' ) {
+                $groupBox = $c->getAttribute('groupBox');
+                if ( $groupBox !== null ) {
+                  $hasGroupBox = ( $groupBox === '1' );
                 } else {
-                    $groupBox = (($depth % 2) == 1);
+                  $hasGroupBox = (($depth % 2) == 1);
                 }
-                if ( $groupBox ) {
+                if ( $hasGroupBox ) {
                     $html= '<fieldset>';
                     $html.= '<legend style="font-weight:bold;">';
-                    $html.= $c->attributes->name;
+                    $html.= $c->getAttribute('name');
                     $html.= '</legend>';
                     $html.= '<div class="jforms-table-group" border="0" id="'.$parent_id.'-group'.$idx.'">';
-                    $html.= $this->getEditorContainerHtmlContent( $c, $parent_id.'-group'.$idx, $depth+1 );
+                    $html.= $this->getEditorContainerHtmlContent($c, $parent_id.'-group'.$idx, $depth+1 );
                     $html.= '</div>';
                     $html.= '</fieldset>';
                     if ( $htmlTabNav === '' )
@@ -286,11 +267,11 @@ class qgisForm {
                         $htmlAfterTab.= $html;
                 } else {
                     $htmlTabNav.= '<li><a href="#'.$parent_id.'-tab'.$idx.'" data-toggle="tab">';
-                    $htmlTabNav.= $c->attributes->name;
+                    $htmlTabNav.= $c->getAttribute('name');
                     $htmlTabNav.= '</a></li>';
 
                     $htmlTabContent.= '<div class="tab-pane" id="'.$parent_id.'-tab'.$idx.'">';
-                    $htmlTabContent.= $this->getEditorContainerHtmlContent( $c, $parent_id.'-tab'.$idx, $depth+1 );
+                    $htmlTabContent.= $this->getEditorContainerHtmlContent($c, $parent_id.'-tab'.$idx, $depth+1 );
                     $htmlTabContent.= '</div>';
                 }
             }
@@ -310,14 +291,15 @@ class qgisForm {
         $html.= $htmlAfterTab;
         return $html;
     }
-    private function getEditorFieldHtmlContent( $field ) {
+    private function getEditorFieldHtmlContent(qgisAttributeEditorElement $field ) {
         // field node is named attributeEditorField
-        if ( !property_exists($field, 'name') && $field->name != 'attributeEditorField')
+
+        if ( $field->getName() != 'attributeEditorField')
             return '';
 
         $html = '';
         // Get field name
-        $fName = $field->attributes->name;
+        $fName = $field->getAttribute('name');
         // Verifying that the field is defined
         if ( !array_key_exists( $fName, $this->formControls ) )
             return $html;
