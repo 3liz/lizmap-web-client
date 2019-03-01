@@ -192,7 +192,7 @@ var lizDataviz = function() {
                     datavizTemplate = lizMap.config.options.datavizTemplate;
                     // Replace $N by container divs
                     dv.template = datavizTemplate.replace(
-                        new RegExp('\\$([0-9])+','gm'),
+                        new RegExp('\\$([0-9]+)','gm'),
                         '<div id="dataviz_plot_template_$1"></div>'
                     )
                     $('#dataviz-content').append(dv.template);
