@@ -69,6 +69,14 @@ class qgisVectorLayer extends qgisMapLayer{
       $dt
     );
 
+    if( $dt[13] == '' ){
+      // if table not found, try again for complex tables, such as table="(SELECT count(*) FROM table WHERE bla)"
+      $datasourceMatch = preg_match(
+        "#(?:dbname='([^ ]+)' )?(?:service='([^ ]+)' )?(?:host=([^ ]+) )?(?:port=([0-9]+) )?(?:user='([^ ]+)' )?(?:password='([^ ]+)' )?(?:sslmode=([^ ]+) )?(?:key='([^ ]+)' )?(?:estimatedmetadata=([^ ]+) )?(?:selectatid=([^ ]+) )?(?:srid=([0-9]+) )?(?:type=([a-zA-Z]+) )?(?:table=\"(.+)\" )?(?:\()?(?:([^ ]+)\) )?(?:sql=(.*))?#s",
+        $this->datasource,
+        $dt
+      );
+    }
     $ds = array(
       "dbname" => $dt[1],
       "service" => $dt[2],
