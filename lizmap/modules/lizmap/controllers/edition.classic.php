@@ -403,9 +403,8 @@ class editionCtrl extends jController {
     else if ( $form->hasUpload() ) {
         $repPath = $this->repository->getPath();
         $dtParams = $this->layer->getDatasourceParameters();
-        $qgisFormControls = $qgisForm->getFormControls();
         foreach( $form->getUploads() as $upload ) {
-            $DefaultRoot = $qgisFormControls[$upload->ref]->DefaultRoot;
+            $DefaultRoot = $qgisForm->getQgisControl($upload->ref)->DefaultRoot;
             // If not default root is set, the use old method media/upload/projectname/tablename/
             $targetPath = 'media/upload/'.$this->project->getKey().'/'.$dtParams->tablename.'/'.$upload->ref .'/';
             $targetFullPath = $repPath . $targetPath;
@@ -464,25 +463,20 @@ class editionCtrl extends jController {
     if ( !$title or $title == '' )
         $title = 'No title';
 
-    // Get form layout
-    $_layerXmlZero = $this->layerXml;
-    $layerXmlZero = $_layerXmlZero[0];
-    $_editorlayout = $layerXmlZero->xpath('editorlayout');
-    $attributeEditorFormTemplate = $qgisForm->getHtmlForm();
 
     // Use template to create html form content
     $tpl = new jTpl();
-    $tpl->assign(array(
-      'title'=>$title,
-      'attributeEditorFormTemplate'=>$attributeEditorFormTemplate
-    ));
+    $tpl->assign('attributeEditorForm', $qgisForm->getAttributesEditorForm());
+    $tpl->assign('fieldNames', $qgisForm->getFieldNames());
+    $tpl->assign('title', $title);
+    $tpl->assign('form', $qgisForm->getForm());
+
     $content = $tpl->fetch('view~edition_form');
 
     // Return html fragment response
     $rep = $this->getResponse('htmlfragment');
     $rep->addContent($content);
     return $rep;
-
   }
 
   /**

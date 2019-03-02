@@ -10,50 +10,181 @@
  */
 
 
-class qgisAttributeEditorElement {
+class qgisAttributeEditorElement
+{
 
-  protected $name;
+    protected $ctrlRef;
 
-  protected $attributes = array();
+    protected $parentId;
 
-  protected $children = array();
 
-  function __construct(SimpleXMLElement $node) {
-    $this->name = $node->getName();
+    protected $htmlId = '';
 
-    foreach($node->attributes() as $name=>$attr) {
-      $this->attributes[$name] = (string)$attr;
+    protected $_isContainer = false;
+    protected $_isGroupBox = false;
+    protected $_isTabPanel = false;
+
+    protected $attributes = array();
+
+    protected $childrenBeforeTab = array();
+    protected $tabChildren = array();
+    protected $childrenAfterTab = array();
+
+    function __construct(qgisFormControlsInterface $formControls,
+                         SimpleXMLElement $node, $parentId, $idx = 0, $depth = 0
+    )
+    {
+        $this->parentId = $parentId;
+
+        foreach ($node->attributes() as $name => $attr) {
+            $this->attributes[$name] = (string)$attr;
+        }
+
+        $formControlName = $formControls->getFormControlName($this->getName());
+        if ($formControlName !== null) {
+            $this->ctrlRef = $formControlName;
+        }
+
+
+        $name = $node->getName();
+        $this->_isContainer = ($name != 'attributeEditorField');
+        if (!$this->_isContainer) {
+            $this->htmlId = $parentId . '-' . $idx;
+        } else {
+            if ($name == 'attributeEditorForm') {
+                $this->htmlId = $parentId;
+            }
+            else {
+                $groupBox = $this->getAttribute('groupBox');
+                if ($groupBox !== null) {
+                    $this->_isGroupBox = ($groupBox === '1');
+
+                } else {
+                    $this->_isGroupBox = (($depth % 2) == 1);
+
+                }
+                if ($this->_isGroupBox) {
+                    $this->htmlId = $parentId . '-group' . $idx;
+                } else {
+                    $this->_isTabPanel = true;
+                    $this->htmlId = $parentId . '-tab' . $idx;
+                }
+            }
+
+            $childIdx = 0;
+            foreach ($node->children() as $child) {
+                $name = $child->getName();
+                if ($name != 'attributeEditorContainer' &&
+                    $name != 'attributeEditorForm' &&
+                    $name != 'attributeEditorField'
+                ) {
+                    $childIdx++;
+                    continue;
+                }
+                $child = new qgisAttributeEditorElement($formControls, $child, $this->htmlId, $childIdx, $depth + 1);
+
+                if (!$child->isContainer()) {
+                    if ($child->getCtrlRef() !== null) {
+                        if (count($this->tabChildren)) {
+                            $this->childrenAfterTab[] = $child;
+                        }
+                        else {
+                            $this->childrenBeforeTab[] = $child;
+                        }
+                    }
+                }
+                else {
+                    if ($child->isGroupBox()) {
+                        if (count($this->tabChildren)) {
+                            $this->childrenAfterTab[] = $child;
+                        }
+                        else {
+                            $this->childrenBeforeTab[] = $child;
+                        }
+                    }
+                    else {
+                        $this->tabChildren[] = $child;
+                    }
+                }
+                $childIdx++;
+            }
+        }
     }
 
-    foreach ($node->children() as $child ) {
-      $this->children[] = new qgisAttributeEditorElement($child);
+    public function getName() {
+        return $this->getAttribute('name');
     }
-  }
 
-  public function getName() {
-    return $this->name;
-  }
-
-  public function getAttribute($name) {
-    if (isset($this->attributes[$name])) {
-      return $this->attributes[$name];
+    public function getHtmlId() {
+        return $this->htmlId;
     }
-    return null;
-  }
 
-  /**
-   * @return qgisAttributeEditorForm[]
-   */
-  public function getChildren() {
-    return $this->children;
-  }
+    public function getParentId() {
+        return $this->parentId;
+    }
 
-  public function hasChildren() {
-    return count($this->children) > 0;
-  }
+    public function getCtrlRef() {
+        return $this->ctrlRef;
+    }
 
-  public function hasGroupBox() {
-    return ($this->getAttribute('groupBox') === '1');
-  }
+    public function getAttribute($name)
+    {
+        if (isset($this->attributes[$name])) {
+            return $this->attributes[$name];
+        }
+        return null;
+    }
+
+    function isContainer()
+    {
+        return $this->_isContainer;
+    }
+
+    public function isGroupBox()
+    {
+        return $this->_isGroupBox;
+    }
+
+    public function isTabPanel()
+    {
+        return $this->_isTabPanel;
+    }
+
+    /**
+     * @return qgisAttributeEditorElement[]
+     */
+    public function getChildrenBeforeTab()
+    {
+        return $this->childrenBeforeTab;
+    }
+
+    /**
+     * @return qgisAttributeEditorElement[]
+     */
+    public function getChildrenAfterTab()
+    {
+        return $this->childrenAfterTab;
+    }
+
+    /**
+     * @return qgisAttributeEditorElement[]
+     */
+    public function getTabChildren()
+    {
+        return $this->tabChildren;
+    }
+
+    public function hasTabChildren()
+    {
+        return count($this->tabChildren) > 0;
+    }
+
+    public function hasChildren()
+    {
+        return (count($this->tabChildren)+
+            count($this->childrenBeforeTab) +
+            count($this->childrenAfterTab)) > 0;
+    }
+
 
 }

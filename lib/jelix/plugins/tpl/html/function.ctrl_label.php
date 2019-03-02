@@ -34,11 +34,13 @@ function jtpl_function_html_ctrl_label($tpl, $ctrlname='', $format='')
         }
         $ctrl = $ctrls[$ctrlname];
     }
-
-    if ($ctrl->type == 'hidden')
+    if ($ctrl->type == 'hidden') {
         return;
+    }
 
-    if(!$tpl->_privateVars['__form']->isActivated($ctrl->ref)) return;
+    if (!$tpl->_privateVars['__form']->isActivated($ctrl->ref)) {
+        return;
+    };
 
     $editMode = !(isset ($tpl->_privateVars['__formViewMode']) && $tpl->_privateVars['__formViewMode']);
 
