@@ -747,7 +747,7 @@ class qgisFormControl {
   }
 
   public function getControlName() {
-    // Change field name to choice for files upoad control
+    // Change field name to choice for files upload control
     return ($this->isUploadControl()?$this->ref.'_choice':$this->ref);
   }
 }

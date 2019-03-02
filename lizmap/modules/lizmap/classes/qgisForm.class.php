@@ -9,8 +9,7 @@
 * @license Mozilla Public License : http://www.mozilla.org/MPL/
 */
 
-
-class qgisForm {
+class qgisForm implements qgisFormControlsInterface {
 
     /**
      * @var qgisMapLayer|qgisVectorLayer
@@ -156,15 +155,29 @@ class qgisForm {
 
     }
 
-    public function getFormControls(){
+    public function getQgisControls(){
         return $this->formControls;
     }
 
+    public function getQgisControl($name){
+        if (!array_key_exists($name, $this->formControls)) {
+            return null;
+        }
+        return $this->formControls[$name];
+    }
+
+    public function getFormControlName($name) {
+        $ctrl = $this->getQgisControl($name);
+        if ($ctrl) {
+            return $ctrl->getControlName();
+        }
+        return null;
+    }
+
     /**
-     * get the html content
-     *
+     * @return qgisAttributeEditorElement|null
      */
-    public function getHtmlForm() {
+    public function getAttributesEditorForm() {
         $this->form_name = self::generateFormName($this->form->getSelector());
 
         $layerXml = $this->layer->getXmlLayer();
@@ -173,147 +186,32 @@ class qgisForm {
         if ($_editorlayout && $_editorlayout[0] == 'tablayout') {
             $_attributeEditorForm = $layerXml->xpath('attributeEditorForm');
             if ($_attributeEditorForm && count($_attributeEditorForm)) {
-                $attributeEditorForm = new qgisAttributeEditorElement($_attributeEditorForm[0]);
+                $attributeEditorForm = new qgisAttributeEditorElement($this, $_attributeEditorForm[0], $this->form_name);
             }
         }
 
-        if ( $attributeEditorForm && $attributeEditorForm->hasChildren()) {
-            $template = '{form $form, "lizmap~edition:saveFeature", array(), "htmlbootstrap", array("errorDecorator"=>"lizEditionErrorDecorator")}';
-            $template.= $this->getEditorContainerHtmlContent( $attributeEditorForm, $this->form_name, 0 );
-            $template.= '<div class="control-group">';
-            $template.= '{ctrl_label "liz_future_action"}';
-            $template.= '<div class="controls">';
-            $template.= '{ctrl_control "liz_future_action"}';
-            $template.= '</div>';
-            $template.= '</div>';
-            $template.= '<div class="jforms-submit-buttons form-actions">{formreset}{formsubmit}</div>';
-            $template.= '{/form}';
-        } else {
-            $fieldNames = array();
-            foreach($this->formControls as $fName =>  $formControl) {
-                // Change field name to choice for files upoad control
-                $fName = $formControl->getControlName();
-                $fieldNames[] = '\''.$fName.'\'';
-            }
-            $template = '{form $form, "lizmap~edition:saveFeature", array(), "htmlbootstrap", array("errorDecorator"=>"lizEditionErrorDecorator")}';
-            $template.= '{formcontrols array('.implode(',',$fieldNames).')}';
-            $template.= '<div class="control-group">';
-            $template.= '{ctrl_label}';
-            $template.= '<div class="controls">';
-            $template.= '{ctrl_control}';
-            $template.= '</div>';
-            $template.= '</div>';
-            $template.= '{/formcontrols}';
-            $template.= '<div class="control-group">';
-            $template.= '{ctrl_label "liz_future_action"}';
-            $template.= '<div class="controls">';
-            $template.= '{ctrl_control "liz_future_action"}';
-            $template.= '</div>';
-            $template.= '</div>';
-            $template.= '<div class="jforms-submit-buttons form-actions">{formreset}{formsubmit}</div>';
-            $template.= '{/form}';
+        if ($attributeEditorForm && $attributeEditorForm->hasChildren()) {
+            return $attributeEditorForm;
         }
-
-        $tpl = new jTpl();
-        $tpl->assign( 'form', $this->form );
-        return $tpl->fetchFromString( $template, 'html' );
+        return null;
     }
 
-    private function getEditorContainerHtmlContent(qgisAttributeEditorElement $container, $parent_id, $depth ) {
-
-        $name = $container->getName();
-        if (!$container->hasChildren() || $name == '') {
-            return '';
-        }
-
-        // a container can be the root
-        if ($name != 'attributeEditorContainer' && $name != 'attributeEditorForm') {
-            return '';
-        }
-
-        $htmlBeforeTab = '';
-        $htmlTabNav = '';
-        $htmlTabContent = '';
-        $htmlAfterTab = '';
-        $idx = 0;
-        foreach ( $container->getChildren() as $c ) {
-            $childName = $c->getName();
-            if ( $childName === 'attributeEditorField' ) {
-                $html = $this->getEditorFieldHtmlContent( $c );
-                if ( $htmlTabNav === '' )
-                    $htmlBeforeTab.= $html;
-                else
-                    $htmlAfterTab.= $html;
-            }
-            else if ( $childName === 'attributeEditorContainer' ) {
-                $groupBox = $c->getAttribute('groupBox');
-                if ( $groupBox !== null ) {
-                  $hasGroupBox = ( $groupBox === '1' );
-                } else {
-                  $hasGroupBox = (($depth % 2) == 1);
-                }
-                if ( $hasGroupBox ) {
-                    $html= '<fieldset>';
-                    $html.= '<legend style="font-weight:bold;">';
-                    $html.= $c->getAttribute('name');
-                    $html.= '</legend>';
-                    $html.= '<div class="jforms-table-group" border="0" id="'.$parent_id.'-group'.$idx.'">';
-                    $html.= $this->getEditorContainerHtmlContent($c, $parent_id.'-group'.$idx, $depth+1 );
-                    $html.= '</div>';
-                    $html.= '</fieldset>';
-                    if ( $htmlTabNav === '' )
-                        $htmlBeforeTab.= $html;
-                    else
-                        $htmlAfterTab.= $html;
-                } else {
-                    $htmlTabNav.= '<li><a href="#'.$parent_id.'-tab'.$idx.'" data-toggle="tab">';
-                    $htmlTabNav.= $c->getAttribute('name');
-                    $htmlTabNav.= '</a></li>';
-
-                    $htmlTabContent.= '<div class="tab-pane" id="'.$parent_id.'-tab'.$idx.'">';
-                    $htmlTabContent.= $this->getEditorContainerHtmlContent($c, $parent_id.'-tab'.$idx, $depth+1 );
-                    $htmlTabContent.= '</div>';
-                }
-            }
-            $idx += 1;
-        }
-
-        if ( $htmlTabNav === '' )
-            return $htmlBeforeTab;
-
-        $html = $htmlBeforeTab;
-        $html.= '<ul id="'.$parent_id.'-tabs" class="nav nav-tabs">';
-        $html.= $htmlTabNav;
-        $html.= '</ul>';
-        $html.= '<div id="'.$parent_id.'-tab-content" class="tab-content">';
-        $html.= $htmlTabContent;
-        $html.= '</div>';
-        $html.= $htmlAfterTab;
-        return $html;
+    /**
+     * List of field name for a jForms form
+     *
+     * @return string[]
+     */
+    public function getFieldNames() {
+        return array_map(function($formControl) {
+            return $formControl->getControlName();
+        }, $this->formControls);
     }
-    private function getEditorFieldHtmlContent(qgisAttributeEditorElement $field ) {
-        // field node is named attributeEditorField
 
-        if ( $field->getName() != 'attributeEditorField')
-            return '';
-
-        $html = '';
-        // Get field name
-        $fName = $field->getAttribute('name');
-        // Verifying that the field is defined
-        if ( !array_key_exists( $fName, $this->formControls ) )
-            return $html;
-
-        $fName = $this->formControls[$fName]->getControlName();
-
-        // generate the template
-        $html.= '<div class="control-group">';
-        $html.= '{ctrl_label "'.$fName.'"}';
-        $html.= '<div class="controls">';
-        $html.= '{ctrl_control "'.$fName.'"}';
-        $html.= '</div>';
-        $html.= '</div>';
-        return $html;
+    /**
+     * @return jFormsBase
+     */
+    public function getForm() {
+        return $this->form;
     }
 
     /**

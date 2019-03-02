@@ -32,6 +32,7 @@
         <class name="qgisFormControl" file="classes/qgisFormControl.class.php" />
         <class name="qgisAttributeEditorElement" file="classes/qgisAttributeEditorElement.class.php" />
         <class name="qgisLayerDbFieldsInfo" file="classes/qgisLayerDbFieldsInfo.class.php" />
+        <class name="qgisFormControlsInterface" file="classes/qgisFormControlsInterface.php" />
         <namespacePathMap name="Lizmap" dir="lib" />
     </autoload>
 </module>
