@@ -123,7 +123,7 @@ class qgisVectorLayer extends qgisMapLayer{
         return $this->connection;
 
     if( $this->provider != 'spatialite' && $this->provider != 'postgres') {
-        jLog::log('Unkown provider "'.$this->provider.'" to get connection!','error');
+        jLog::log('Unknown provider "'.$this->provider.'" to get connection!','error');
         return null;
     }
 
@@ -137,11 +137,12 @@ class qgisVectorLayer extends qgisMapLayer{
         $dtParams = $this->getDatasourceParameters();
         $jdbParams = array();
         if( $this->provider == 'spatialite' ){
+          $spatialiteExt = $this->project->getSpatialiteExtension();
           $repository = $this->project->getRepository();
           $jdbParams = array(
             "driver" => 'sqlite3',
             "database" => realpath($repository->getPath().$dtParams->dbname),
-            "extensions"=>"mod_spatialite.so,libspatialite.so"
+            "extensions"=>$spatialiteExt
           );
         } else if( $this->provider == 'postgres' ){
           if(!empty($dtParams->service)){
