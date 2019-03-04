@@ -23,10 +23,10 @@ class editionCtrl extends jController {
   /** @var string layer name (<layername> in QGIS project) */
   private $layerName = '';
 
-  /** @var string featureId parameter from the request */
+  /** @var string featureId parameter from the request, an integer or a string with coma separated integers */
   private $featureIdParam = Null;
 
-  /** @var integer|string  an integer or a string with coma separated integers */
+  /** @var integer|string  an integer or an array of integers */
   private $featureId = Null;
 
   /** @var object feature data as a PHP object from GeoJSON via json_decode */
@@ -87,16 +87,17 @@ class editionCtrl extends jController {
   private function getEditionParameters($save=false){
 
     // Get the project
-    $project = $this->param('project');
-    $repository = $this->param('repository');
-    $layerId = $this->param('layerId');
-    $featureIdParam = $this->param('featureId');
-
-    if($save){
+    if ($save) {
       $project = $this->param('liz_project');
       $repository = $this->param('liz_repository');
       $layerId = $this->param('liz_layerId');
       $featureIdParam = $this->param('liz_featureId');
+    }
+    else {
+        $project = $this->param('project');
+        $repository = $this->param('repository');
+        $layerId = $this->param('layerId');
+        $featureIdParam = $this->param('featureId');
     }
 
     if(!$project){
@@ -168,7 +169,7 @@ class editionCtrl extends jController {
 
 
     // feature Id (optional, only for edition and save)
-    if(preg_match('#,#', $featureIdParam))
+    if (strpos($featureIdParam, ',') !== false)
       $featureId = preg_split('#,#', $featureIdParam);
     else
       $featureId = $featureIdParam;
@@ -201,8 +202,17 @@ class editionCtrl extends jController {
     // Get features primary key field values corresponding to featureId(s)
     if( !empty($featureId) ){
         $typename = $this->layer->getShortName();
-        if ( !$typename or $typename == '' )
+        if ( !$typename or $typename == '' ) {
             $typename = str_replace(' ', '_', $this->layer->getName());
+        }
+        if (is_array($featureId)) {
+            $featureId = implode(',', array_map(function($id) use($typename) {
+                return $typename . '.' . $id;
+            }, $featureId));
+        }
+        else {
+            $featureId = $typename . '.' . $featureId;
+        }
         $wfsparams = array(
             'SERVICE' => 'WFS',
             'VERSION' => '1.0.0',
@@ -211,7 +221,7 @@ class editionCtrl extends jController {
             'OUTPUTFORMAT' => 'GeoJSON',
             'GEOMETRYNAME' => 'none',
             'PROPERTYNAME' => implode(',',$this->primaryKeys),
-            'FEATUREID' => $typename . '.' . $featureId
+            'FEATUREID' => $featureId
         );
 
         $wfsrequest = new lizmapWFSRequest( $this->project, $wfsparams );
@@ -248,7 +258,7 @@ class editionCtrl extends jController {
     // Get editLayer capabilities
     $eCapabilities = $this->layer->getEditionCapabilities();
     if ( $eCapabilities->capabilities->createFeature != 'True' ) {
-    jMessage::add(jLocale::get('view~edition.message.error.layer.editable.create'), 'LayerNotEditable');
+        jMessage::add(jLocale::get('view~edition.message.error.layer.editable.create'), 'LayerNotEditable');
         return $this->serviceAnswer();
     }
 
@@ -344,7 +354,7 @@ class editionCtrl extends jController {
     $form->setData('liz_repository', $this->repository->getKey());
     $form->setData('liz_project', $this->project->getKey());
     $form->setData('liz_layerId', $this->layerId);
-    $form->setData('liz_featureId', $this->featureId);
+    $form->setData('liz_featureId', $this->featureIdParam);
 
     // Dynamically add form controls based on QGIS layer information
     $qgisForm = null;
@@ -679,17 +689,13 @@ class editionCtrl extends jController {
       return $this->serviceAnswer();
     }
 
-    $featureId = $this->param('featureId');
-    if( !$featureId ) {
+    if( !$this->featureId ) {
       jMessage::add(jLocale::get('view~edition.message.error.parameter.featureId'), 'error');
       return $this->serviceAnswer();
     }
 
-    if(ctype_digit($this->featureId))
-      $featureId = array($this->featureId);
-
     // Create form instance to get uploads file
-    $form = jForms::create('view~edition', $featureId);
+    $form = jForms::create('view~edition', $this->featureId);
     if(!$form){
       jMessage::add('An error has been raised when creating the form', 'formNotDefined');
       return $this->serviceAnswer();
