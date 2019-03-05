@@ -206,9 +206,9 @@ class editionCtrl extends jController {
             $typename = str_replace(' ', '_', $this->layer->getName());
         }
         if (is_array($featureId)) {
-            $featureId = implode(',', array_map(function($id) use($typename) {
-                return $typename . '.' . $id;
-            }, $featureId));
+            // QGIS3 (at least <=3.4) doesn't support pk with multiple fields
+            // but 2.18 supports it.
+            $featureId = $typename . '.'.implode('@@', $featureId);
         }
         else {
             $featureId = $typename . '.' . $featureId;
