@@ -129,6 +129,93 @@ class jEvent {
     }
 
     /**
+     * get all responses value for the given key
+     *
+     * @param string $responseKey
+     * @return array|null list of values or null if no responses for the given item
+     * @since 1.6.22
+     */
+    public function getResponseByKey($responseKey){
+        $response = array ();
+
+        foreach ($this->_responses as $key=>$listenerResponse){
+            if (is_array($listenerResponse) &&
+                isset ($listenerResponse[$responseKey])
+            ) {
+                $response[] = & $listenerResponse[$responseKey];
+            }
+        }
+        if (count($response))
+            return $response;
+        return null;
+    }
+
+    const RESPONSE_AND_OPERATOR = 0;
+
+    const RESPONSE_OR_OPERATOR = 1;
+
+    /**
+     * get a response value as boolean
+     *
+     * if there are multiple response for the same key, a OR or a AND operation
+     * is made between all of response values.
+     *
+     * @param string $responseKey
+     * @param int $operator const RESPONSE_AND_OPERATOR or RESPONSE_OR_OPERATOR
+     * @return null|boolean
+     * @since 1.6.22
+     */
+    protected function getBoolResponseByKey($responseKey, $operator = 0){
+        $response = null;
+
+        foreach ($this->_responses as $key=>$listenerResponse){
+            if (is_array($listenerResponse) &&
+                isset ($listenerResponse[$responseKey])
+            ) {
+                $value = (bool) $listenerResponse[$responseKey];
+                if ($response === null) {
+                    $response = $value;
+                }
+                else if ($operator === self::RESPONSE_AND_OPERATOR) {
+                    $response = $response && $value;
+                }
+                else if ($operator === self::RESPONSE_OR_OPERATOR) {
+                    $response = $response || $value;
+                }
+            }
+        }
+
+        return $response;
+    }
+
+    /**
+     * says if all responses items for the given key, are equals to true
+     *
+     * @param string $responseKey
+     * @return null|boolean  null if there are no responses
+     * @since 1.6.22
+     */
+    public function allResponsesByKeyAreTrue($responseKey) {
+        return $this->getBoolResponseByKey($responseKey, self::RESPONSE_AND_OPERATOR);
+    }
+
+    /**
+     * says if all responses items for the given key, are equals to false
+     *
+     * @param string $responseKey
+     * @return null|boolean  null if there are no responses
+     * @since 1.6.22
+     */
+    public function allResponsesByKeyAreFalse($responseKey) {
+        $res = $this->getBoolResponseByKey($responseKey, self::RESPONSE_OR_OPERATOR);
+        if ($res === null) {
+            return $res;
+        }
+        return !$res;
+    }
+
+
+    /**
     * gets all the responses
     * @return mixed[][]  associative array
     */
@@ -178,7 +265,7 @@ class jEvent {
     /**
     * hash table for event listened.
     * $_hash['eventName'] = array of events (by reference)
-    * @var object[] array of object
+    * @var jEventListener[]
     */
     protected static $hashListened = array ();
 
