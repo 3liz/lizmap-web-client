@@ -3644,6 +3644,7 @@ var lizMap = function() {
                             ,'STYLES': ''
                             ,'SERVICE': 'WMS'
                             ,'VERSION': '1.3.0'
+                            ,'CRS': 'EPSG:3857'
                             ,'REQUEST': 'GetFeatureInfo'
                             ,'EXCEPTIONS': 'application/vnd.ogc.se_inimage'
                             ,'FEATURE_COUNT': popupMaxFeatures
