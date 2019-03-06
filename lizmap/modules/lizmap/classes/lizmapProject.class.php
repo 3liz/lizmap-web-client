@@ -1014,27 +1014,11 @@ class lizmapProject extends qgisProject {
 
             // Check ability to load spatialite extension
             // And remove ONLY spatialite layers if no extension found
-            $spatial = false;
+            $spatialiteExt = '';
             if ( class_exists('SQLite3') ) {
-                // Try with mod_spatialite
-                try{
-                    $db = new SQLite3(':memory:');
-                    $spatial = @$db->loadExtension('mod_spatialite.so'); # loading SpatiaLite as an extension
-                }catch(Exception $e){
-                    //jLog::logEx($e);
-                    $spatial = False;
-                }
-                // Try with libspatialite
-                if( !$spatial )
-                    try{
-                        $db = new SQLite3(':memory:');
-                        $spatial = @$db->loadExtension('libspatialite.so'); # loading SpatiaLite as an extension
-                    }catch(Exception $e){
-                        //jLog::logEx($e);
-                        $spatial = False;
-                    }
+                $spatialiteExt = $this->getSpatialiteExtension();
             }
-            if(!$spatial){
+            if (!$spatialiteExt) {
                 jLog::log('Spatialite is not available', 'error');
                 foreach( $editionLayers as $key=>$obj ){
                     $layerXml = $this->getXmlLayer2($xml, $obj->layerId );
@@ -1592,4 +1576,39 @@ class lizmapProject extends qgisProject {
         return False;
     }
 
+    private $spatialiteExt = null;
+
+    public function getSpatialiteExtension() {
+        if ($this->spatialiteExt !== null) {
+            return $this->spatialiteExt;
+        }
+
+        // Try with mod_spatialite
+        try{
+            $db = new SQLite3(':memory:');
+            $this->spatialiteExt = 'mod_spatialite.so';
+            $spatial = @$db->loadExtension($this->spatialiteExt); # loading SpatiaLite as an extension
+            if ($spatial) {
+                return $this->spatialiteExt;
+            }
+        }catch(Exception $e){
+            //jLog::logEx($e);
+            $spatial = False;
+        }
+        // Try with libspatialite
+        if( !$spatial ) {
+            try{
+                $db = new SQLite3(':memory:');
+                $this->spatialiteExt = 'libspatialite.so';
+                $spatial = @$db->loadExtension($this->spatialiteExt); # loading SpatiaLite as an extension
+                if ($spatial) {
+                    return $this->spatialiteExt;
+                }
+            }catch(Exception $e){
+                //jLog::logEx($e);
+            }
+        }
+        $this->spatialiteExt = '';
+        return '';
+    }
 }
