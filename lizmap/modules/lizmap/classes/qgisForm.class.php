@@ -275,7 +275,7 @@ class qgisForm implements qgisFormControlsInterface {
 
     /**
      * Save the form to the database
-     *
+     * @return int|array|false value of primary key or false if an error occured
      */
     public function saveToDb( $feature = null ){
         if ( !$this->dbFieldsInfo )
@@ -435,18 +435,40 @@ class qgisForm implements qgisFormControlsInterface {
         }
 
         try {
-            if( $updateAction ) {
-                $loginFilteredLayers = $this->filterDataByLogin($this->layer->getName());
-                return $this->layer->updateFeature( $feature, $values, $loginFilteredLayers );
-            } else {
-                return $this->layer->insertFeature( $values );
+            $dtParams = $this->layer->getDatasourceParameters();
+            // event to add or modify some values before the update
+            $eventParams = array(
+                'form'=>$this->form,
+                "action"=>($updateAction?'update':'insert'),
+                "layer"=>$this->layer,
+                "featureId"=>$this->featureId,
+                "tablename"=>$dtParams->tablename,
+                "schema"=>$dtParams->schema
+            );
+            $event = jEvent::notify('LizmapEditionFeaturePreUpdateInsert', $eventParams);
+            $additionnalValues = $event->getResponseByKey('values');
+            if ($additionnalValues !== null) {
+                foreach ($additionnalValues as $additionnalValue) {
+                    $values = array_merge($values, $additionnalValue);
+                }
             }
+
+            if ($updateAction) {
+                $loginFilteredLayers = $this->filterDataByLogin($this->layer->getName());
+                $pkVal = $this->layer->updateFeature( $feature, $values, $loginFilteredLayers );
+            } else {
+                $pkVal = $this->layer->insertFeature( $values );
+            }
+
+            // event to execute additional process on updated/inserted data
+            $eventParams['pkVal'] = $pkVal;
+            jEvent::notify('LizmapEditionFeaturePostUpdateInsert', $eventParams);
+            return $pkVal;
         } catch (Exception $e) {
             $form->setErrorOn($geometryColumn, jLocale::get('view~edition.message.error.save'));
             jLog::log("An error has been raised when saving form data edition to db : ".$e->getMessage() ,'error');
-            return false;
         }
-        return 0;
+        return false;
     }
 
     /**
@@ -458,7 +480,27 @@ class qgisForm implements qgisFormControlsInterface {
             throw new Exception('Delete from database can\'t be done for the layer "'.$this->layer->getName().'"!');
 
         $loginFilteredLayers = $this->filterDataByLogin($this->layer->getName());
-        return $this->layer->deleteFeature( $feature, $loginFilteredLayers );
+
+        // event to process data before the deletion
+        $dtParams = $this->layer->getDatasourceParameters();
+        $eventParams = array(
+            'form'=>$this->form,
+            "layer"=>$this->layer,
+            "featureId"=>$this->featureId,
+            "tablename"=>$dtParams->tablename,
+            "schema"=>$dtParams->schema,
+            "loginFilteredLayers" => $loginFilteredLayers
+        );
+        $event = jEvent::notify('LizmapEditionFeaturePreDelete', $eventParams);
+        if ($event->allResponsesByKeyAreTrue('deleteIsAlreadyDone')) {
+            return 1;
+        }
+        if ($event->allResponsesByKeyAreFalse('cancelDelete') === false) {
+            return 0;
+        }
+        $result = $this->layer->deleteFeature( $feature, $loginFilteredLayers );
+        jEvent::notify('LizmapEditionFeaturePostDelete', $eventParams);
+        return $result;
     }
 
     /**
