@@ -69,6 +69,14 @@ class qgisVectorLayer extends qgisMapLayer{
       $dt
     );
 
+    if( $dt[13] == '' ){
+      // if table not found, try again for complex tables, such as table="(SELECT count(*) FROM table WHERE bla)"
+      $datasourceMatch = preg_match(
+        "#(?:dbname='([^ ]+)' )?(?:service='([^ ]+)' )?(?:host=([^ ]+) )?(?:port=([0-9]+) )?(?:user='([^ ]+)' )?(?:password='([^ ]+)' )?(?:sslmode=([^ ]+) )?(?:key='([^ ]+)' )?(?:estimatedmetadata=([^ ]+) )?(?:selectatid=([^ ]+) )?(?:srid=([0-9]+) )?(?:type=([a-zA-Z]+) )?(?:table=\"(.+)\" )?(?:\()?(?:([^ ]+)\) )?(?:sql=(.*))?#s",
+        $this->datasource,
+        $dt
+      );
+    }
     $ds = array(
       "dbname" => $dt[1],
       "service" => $dt[2],
@@ -115,7 +123,7 @@ class qgisVectorLayer extends qgisMapLayer{
         return $this->connection;
 
     if( $this->provider != 'spatialite' && $this->provider != 'postgres') {
-        jLog::log('Unkown provider "'.$this->provider.'" to get connection!','error');
+        jLog::log('Unknown provider "'.$this->provider.'" to get connection!','error');
         return null;
     }
 
@@ -129,11 +137,12 @@ class qgisVectorLayer extends qgisMapLayer{
         $dtParams = $this->getDatasourceParameters();
         $jdbParams = array();
         if( $this->provider == 'spatialite' ){
+          $spatialiteExt = $this->project->getSpatialiteExtension();
           $repository = $this->project->getRepository();
           $jdbParams = array(
             "driver" => 'sqlite3',
             "database" => realpath($repository->getPath().$dtParams->dbname),
-            "extensions"=>"mod_spatialite.so,libspatialite.so"
+            "extensions"=>$spatialiteExt
           );
         } else if( $this->provider == 'postgres' ){
           if(!empty($dtParams->service)){
@@ -525,7 +534,7 @@ class qgisVectorLayer extends qgisMapLayer{
           $returnKeys[] = '"' . $key . '"';
       }
       $returnKeysString = implode(', ', $returnKeys);
-      // For spatialite, we will run a complentary query to retrieve the pkeys
+      // For spatialite, we will run a complementary query to retrieve the pkeys
       if( $this->provider == 'postgres' ){
           $sql.= '  RETURNING '. $returnKeysString;
       }
@@ -547,7 +556,7 @@ class qgisVectorLayer extends qgisMapLayer{
               }
           } else {
               // Exec the request
-              $rs = $cnx->exec($sql);
+              $cnx->exec($sql);
               $sqlpk = 'SELECT ' . $returnKeysString . ' FROM '.$dtParams->table.$uwhere;
               $rspk = $cnx->query($sqlpk);
               foreach($rspk as $line){
