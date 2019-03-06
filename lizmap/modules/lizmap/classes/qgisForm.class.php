@@ -489,7 +489,8 @@ class qgisForm implements qgisFormControlsInterface {
             "featureId"=>$this->featureId,
             "tablename"=>$dtParams->tablename,
             "schema"=>$dtParams->schema,
-            "loginFilteredLayers" => $loginFilteredLayers
+            "loginFilteredLayers" => $loginFilteredLayers,
+            'pkVal'=>$this->layer->getPrimaryKeyValues($feature)
         );
         $event = jEvent::notify('LizmapEditionFeaturePreDelete', $eventParams);
         if ($event->allResponsesByKeyAreTrue('deleteIsAlreadyDone')) {
