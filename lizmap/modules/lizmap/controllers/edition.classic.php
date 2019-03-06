@@ -169,10 +169,15 @@ class editionCtrl extends jController {
 
 
     // feature Id (optional, only for edition and save)
-    if (strpos($featureIdParam, ',') !== false)
-      $featureId = preg_split('#,#', $featureIdParam);
-    else
-      $featureId = $featureIdParam;
+    if (strpos($featureIdParam, ',') !== false) {
+        $featureId = preg_split('#,#', $featureIdParam);
+    }
+    else if (strpos($featureIdParam, '@@') !== false) {
+        $featureId = preg_split('#@@#', $featureIdParam);
+    }
+    else {
+        $featureId = $featureIdParam;
+    }
 
     // Define class private properties
     $this->project = $lproj;
