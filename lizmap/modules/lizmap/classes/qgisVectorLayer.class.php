@@ -534,7 +534,7 @@ class qgisVectorLayer extends qgisMapLayer{
           $returnKeys[] = '"' . $key . '"';
       }
       $returnKeysString = implode(', ', $returnKeys);
-      // For spatialite, we will run a complentary query to retrieve the pkeys
+      // For spatialite, we will run a complementary query to retrieve the pkeys
       if( $this->provider == 'postgres' ){
           $sql.= '  RETURNING '. $returnKeysString;
       }
@@ -556,7 +556,7 @@ class qgisVectorLayer extends qgisMapLayer{
               }
           } else {
               // Exec the request
-              $rs = $cnx->exec($sql);
+              $cnx->exec($sql);
               $sqlpk = 'SELECT ' . $returnKeysString . ' FROM '.$dtParams->table.$uwhere;
               $rspk = $cnx->query($sqlpk);
               foreach($rspk as $line){
