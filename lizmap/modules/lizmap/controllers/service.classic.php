@@ -405,9 +405,14 @@ class serviceCtrl extends jController {
                 )
             );
         } else if( $service == 'wfs' ) {
+            $version = '1.0.0';
+            if ( array_key_exists( 'version', $this->params ) ) {
+                $version = $this->params['version'];
+            }
             $request = new lizmapWFSRequest( $this->project, array(
                     'service'=>'WFS',
-                    'request'=>'GetCapabilities'
+                    'request'=>'GetCapabilities',
+                    'version'=>$version
                 )
             );
         } else if( $service == 'wmts' ) {
