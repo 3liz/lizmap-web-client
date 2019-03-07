@@ -3644,6 +3644,7 @@ var lizMap = function() {
                             ,'STYLES': ''
                             ,'SERVICE': 'WMS'
                             ,'VERSION': '1.3.0'
+                            ,'CRS': (('crs' in rConfigLayer) && rConfigLayer.crs != '') ? rConfigLayer.crs : 'EPSG:4326' 
                             ,'REQUEST': 'GetFeatureInfo'
                             ,'EXCEPTIONS': 'application/vnd.ogc.se_inimage'
                             ,'FEATURE_COUNT': popupMaxFeatures
