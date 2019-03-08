@@ -190,6 +190,7 @@ class qgisProject{
      * @return qgisMapLayer|qgisVectorLayer|null
      */
     public function getLayer( $layerId ) {
+        /** @var array[] $layers */
         $layers = array_filter($this->layers, function($layer) use ($layerId) {
            return $layer['id'] ==  $layerId;
         });
@@ -211,6 +212,7 @@ class qgisProject{
      * @return qgisMapLayer|qgisVectorLayer|null
      */
     public function getLayerByKeyword( $key ){
+        /** @var array[] $layers */
         $layers = array_filter($this->layers, function($layer) use ($key) {
            return in_array($key, $layer['keywords']);
         });
@@ -232,6 +234,7 @@ class qgisProject{
      * @return qgisMapLayer[]|qgisVectorLayer[]
      */
     public function findLayersByKeyword( $key ){
+        /** @var array[] $foundLayers */
         $foundLayers = array_filter($this->layers, function($layer) use ($key) {
            return in_array($key, $layer['keywords']);
         });

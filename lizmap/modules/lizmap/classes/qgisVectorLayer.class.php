@@ -20,8 +20,14 @@ class qgisVectorLayer extends qgisMapLayer{
 
   protected $wfsFields = array();
 
-  // to avoid multiple request
+  /**
+   * @var object|null connection parameters
+   */
   protected $dtParams = null;
+
+  /**
+   * @var jDbConnection|null
+   */
   protected $connection = null;
 
   /** @var jDbFieldProperties[] */
@@ -36,7 +42,7 @@ class qgisVectorLayer extends qgisMapLayer{
 
   /**
    * constructor
-   * @param lizmapProject $project
+   * @param lizmapProject|qgisProject $project
    * @param array $propLayer  list of properties values
    */
   public function __construct ( $project, $propLayer ) {
@@ -58,6 +64,9 @@ class qgisVectorLayer extends qgisMapLayer{
       return $this->wfsFields;
   }
 
+  /**
+   * @return object
+   */
   public function getDatasourceParameters() {
       if ( $this->dtParams )
           return $this->dtParams;
@@ -118,6 +127,10 @@ class qgisVectorLayer extends qgisMapLayer{
     return $this->dtParams;
   }
 
+  /**
+   * @return jDbConnection
+   * @throws jException
+   */
   public function getDatasourceConnection() {
     if ( $this->connection )
         return $this->connection;
