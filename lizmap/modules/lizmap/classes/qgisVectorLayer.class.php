@@ -244,7 +244,7 @@ class qgisVectorLayer extends qgisMapLayer{
                   $sql.= " AND attrelid = " . $cnx->quote($tablename) . "::regclass";
                   $res = $cnx->query($sql);
                   $res = $res->fetch();
-                  if( $res )
+                  if($res && strpos($res->type, '(') !== false)
                       # It returns something like "geometry(PointZ,32620)".
                       $dbInfo->geometryType = explode(',', explode( '(', strtolower($res->type))[1])[0];
               }
