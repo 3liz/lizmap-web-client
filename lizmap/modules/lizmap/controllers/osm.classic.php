@@ -4,7 +4,7 @@
 * @package   lizmap
 * @subpackage lizmap
 * @author    3liz
-* @copyright 2011 3liz
+* @copyright 2011-2019 3liz
 * @link      http://3liz.com
 * @license Mozilla Public License : http://www.mozilla.org/MPL/
 */
@@ -13,9 +13,9 @@ class osmCtrl extends jController {
 
   /**
   * Query the OpenStreetMap Nominatim API
-  * @param text $query A query on OpenStreetMap object
-  * @param text $bbox A bounding box in EPSG:4326
-  * @return XML.
+  * @urlparam text $query A query on OpenStreetMap object
+  * @urlparam text $bbox A bounding box in EPSG:4326
+  * @return jResponseBinary  JSON content
   */
   function nominatim() {
     $rep = $this->getResponse('binary');

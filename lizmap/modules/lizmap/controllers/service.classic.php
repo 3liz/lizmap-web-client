@@ -4,7 +4,7 @@
 * @package   lizmap
 * @subpackage lizmap
 * @author    3liz
-* @copyright 2011 3liz
+* @copyright 2011-2019 3liz
 * @link      http://3liz.com
 * @license Mozilla Public License : http://www.mozilla.org/MPL/
 */
@@ -15,17 +15,26 @@ class serviceCtrl extends jController {
   /**
    * @var lizmapProject
    */
-  protected $project = '';
-  protected $repository = '';
+  protected $project;
+
+  /**
+   * @var lizmapRepository
+   */
+  protected $repository;
+
+  /**
+   * @var lizmapServices
+   */
   protected $services = '';
-  protected $params = '';
+
+  protected $params = array();
 
 
   /**
   * Redirect to the appropriate action depending on the REQUEST parameter.
-  * @param $PROJECT Name of the project
-  * @param $REQUEST Request type
-  * @return Redirect to the corresponding action depending on the request parameters
+  * @urlparam $PROJECT Name of the project
+  * @urlparam $REQUEST Request type
+  * @return jResponse Redirect to the corresponding action depending on the request parameters
   */
   function index() {
 
@@ -107,8 +116,8 @@ class serviceCtrl extends jController {
   * Get a request parameter
   * whatever its case
   * and returns its value.
-  * @param $param request parameter.
-  * @return Request parameter value.
+  * @param string $param request parameter.
+  * @return string Request parameter value.
   */
   protected function iParam($param){
 
@@ -152,7 +161,7 @@ class serviceCtrl extends jController {
   /**
   * Get parameters and set classes for the project and repository given.
   *
-  * @return array List of needed variables : $params, $lizmapProject, $lizmapRepository.
+  * @return array|false List of needed variables : $params, $lizmapProject, $lizmapRepository.
   */
   protected function getServiceParameters(){
 
@@ -386,9 +395,9 @@ class serviceCtrl extends jController {
 
   /**
   * GetCapabilities
-  * @param string $repository Lizmap Repository
-  * @param string $project Name of the project : mandatory.
-  * @return JSON configuration file for the specified project.
+  * @urlparam string $repository Lizmap Repository
+  * @urlparam string $project Name of the project : mandatory.
+  * @return jResponseBinary JSON configuration file for the specified project.
   */
   function GetCapabilities(){
         $service = strtolower($this->params['service']);
@@ -435,9 +444,9 @@ class serviceCtrl extends jController {
 
   /**
   * GetContext
-  * @param string $repository Lizmap Repository
-  * @param string $project Name of the project : mandatory.
-  * @return jResponse text/xml Web Map Context.
+  * @urlparam string $repository Lizmap Repository
+  * @urlparam string $project Name of the project : mandatory.
+  * @return jResponseBinary text/xml Web Map Context.
   */
   function GetContext(){
 
@@ -478,9 +487,9 @@ class serviceCtrl extends jController {
 
   /**
   * GetSchemaExtension
-  * @param string $SERVICE mandatory, has to be WMS
-  * @param string $REQUEST mandatory, has to be GetSchemaExtension
-  * @return text/xml the WMS GEtCapabilities 1.3.0 Schema Extension.
+  * @urlparam string $SERVICE mandatory, has to be WMS
+  * @urlparam string $REQUEST mandatory, has to be GetSchemaExtension
+  * @return jResponseBinary text/xml the WMS GEtCapabilities 1.3.0 Schema Extension.
   */
   function GetSchemaExtension(){
     $data = '<?xml version="1.0" encoding="UTF-8"?>
@@ -501,9 +510,9 @@ class serviceCtrl extends jController {
 
   /**
   * GetMap
-  * @param string $repository Lizmap Repository
-  * @param string $project Name of the project : mandatory
-  * @return Image rendered by the Map Server.
+  * @urlparam string $repository Lizmap Repository
+  * @urlparam string $project Name of the project : mandatory
+  * @return jResponseBinary Image rendered by the Map Server.
   */
   function GetMap(){
 
@@ -548,9 +557,9 @@ class serviceCtrl extends jController {
 
   /**
   * GetLegendGraphics
-  * @param string $repository Lizmap Repository
-  * @param string $project Name of the project : mandatory
-  * @return Image of the legend for 1 to n layers, returned by the Map Server
+  * @urlparam string $repository Lizmap Repository
+  * @urlparam string $project Name of the project : mandatory
+  * @return jResponseBinary Image of the legend for 1 to n layers, returned by the Map Server
   */
   function GetLegendGraphics(){
 
@@ -573,9 +582,9 @@ class serviceCtrl extends jController {
 
   /**
   * GetFeatureInfo
-  * @param string $repository Lizmap Repository
-  * @param string $project Name of the project : mandatory
-  * @return Feature Info.
+  * @urlparam string $repository Lizmap Repository
+  * @urlparam string $project Name of the project : mandatory
+  * @return jResponseBinary Feature Info.
   */
   function GetFeatureInfo(){
 
@@ -708,7 +717,7 @@ class serviceCtrl extends jController {
   * replaceMediaPathByMediaUrl : replace all "/media/bla" in a text by the getMedia corresponding URL.
   * This method is used as callback in GetFeatureInfoHtml method for the preg_replace_callback
   * @param array $matches Array containing the preg matches
-  * @return Replaced text.
+  * @return string Replaced text.
   */
   protected function replaceMediaPathByMediaUrl($matches){
     $req = jApp::coord()->request;
@@ -733,9 +742,9 @@ class serviceCtrl extends jController {
   * GetFeatureInfoHtml : return HTML for the getFeatureInfo.
   * @param array $params Array of parameters
   * @param string $xmldata XML data from getFeatureInfo
-  * @return Feature Info in HTML format.
+  * @return string Feature Info in HTML format.
   */
-  function getFeatureInfoHtml($params, $xmldata){
+  protected function getFeatureInfoHtml($params, $xmldata){
 
     // Get data from XML
     $use_errors = libxml_use_internal_errors(true);
@@ -766,7 +775,6 @@ class serviceCtrl extends jController {
 
     // Loop through the layers
     $content = array();
-    $ptemplate = 'view~popup';
     $popupClass = jClasses::getService('view~popup');
 
     foreach($xml->Layer as $layer){
@@ -955,9 +963,9 @@ class serviceCtrl extends jController {
 
   /**
   * GetPrint
-  * @param string $repository Lizmap Repository
-  * @param string $project Name of the project : mandatory
-  * @return Image rendered by the Map Server.
+  * @urlparam string $repository Lizmap Repository
+  * @urlparam string $project Name of the project : mandatory
+  * @return jResponseBinary Image rendered by the Map Server.
   */
   function GetPrint(){
 
@@ -1021,9 +1029,9 @@ class serviceCtrl extends jController {
 
   /**
   * GetPrintAtlas
-  * @param string $repository Lizmap Repository
-  * @param string $project Name of the project : mandatory
-  * @return Image rendered by the Map Server.
+  * @urlparam string $repository Lizmap Repository
+  * @urlparam string $project Name of the project : mandatory
+  * @return jResponseBinary  Image rendered by the Map Server.
   */
   function GetPrintAtlas(){
 
@@ -1079,9 +1087,9 @@ class serviceCtrl extends jController {
 
   /**
   * GetStyles
-  * @param string $repository Lizmap Repository
-  * @param string $project Name of the project : mandatory
-  * @return SLD Style XML
+  * @urlparam string $repository Lizmap Repository
+  * @urlparam string $project Name of the project : mandatory
+  * @return jResponseBinary  SLD Style XML
   */
   function GetStyles(){
 
@@ -1110,9 +1118,9 @@ class serviceCtrl extends jController {
 
   /**
   * Send the JSON configuration file for a specified project
-  * @param string $repository Lizmap Repository
-  * @param string $project Name of the project
-  * @return JSON configuration file for the specified project.
+  * @urlparam string $repository Lizmap Repository
+  * @urlparam string $project Name of the project
+  * @return jResponseText JSON configuration file for the specified project.
   */
   function getProjectConfig(){
 
@@ -1129,7 +1137,7 @@ class serviceCtrl extends jController {
   /**
   * PostRequest
   * @param string $xml_post
-  * @return request.
+  * @return jResponseBinary response data.
   */
   protected function PostRequest( $xml_post ){
     // Get parameters
@@ -1165,9 +1173,9 @@ class serviceCtrl extends jController {
 
   /**
   * GetFeature
-  * @param string $repository Lizmap Repository
-  * @param string $project Name of the project : mandatory
-  * @return Image rendered by the Map Server.
+  * @urlparam string $repository Lizmap Repository
+  * @urlparam string $project Name of the project : mandatory
+  * @return jResponseBinary Image rendered by the Map Server.
   */
   function GetFeature(){
 
@@ -1210,9 +1218,9 @@ class serviceCtrl extends jController {
 
   /**
   * DescribeFeatureType
-  * @param string $repository Lizmap Repository
-  * @param string $project Name of the project : mandatory
-  * @return Image rendered by the Map Server.
+  * @urlparam string $repository Lizmap Repository
+  * @urlparam string $project Name of the project : mandatory
+  * @return jResponseBinary  JSON content
   */
   function DescribeFeatureType(){
 
@@ -1296,10 +1304,10 @@ class serviceCtrl extends jController {
 
   /**
   * GetProj4
-  * @param string $repository Lizmap Repository
-  * @param string $project Name of the project : mandatory
-  * @param string $authid SRS or CRS authid like USER:*
-  * @return Image rendered by the Map Server.
+  * @urlparam string $repository Lizmap Repository
+  * @urlparam string $project Name of the project : mandatory
+  * @urlparam string $authid SRS or CRS authid like USER:*
+  * @return jResponseText
   */
   function GetProj4(){
 
@@ -1316,6 +1324,9 @@ class serviceCtrl extends jController {
     return $rep;
   }
 
+    /**
+     * @return jResponseBinary
+     */
   function GetTile(){
         $wmsRequest = new lizmapWMTSRequest( $this->project, $this->params );
         $result = $wmsRequest->process();
@@ -1364,6 +1375,9 @@ class serviceCtrl extends jController {
     return $data;
   }
 
+  /**
+   * @return jResponseJson
+   */
   function getSelectionToken(){
     // Get parameters
     if(!$this->getServiceParameters())

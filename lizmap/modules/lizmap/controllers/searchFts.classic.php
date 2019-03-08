@@ -4,7 +4,7 @@
 * @package   lizmap
 * @subpackage lizmap
 * @author    3liz
-* @copyright 2018 3liz
+* @copyright 2018-2019 3liz
 * @link      http://3liz.com
 * @license Mozilla Public License : http://www.mozilla.org/MPL/
 */
@@ -13,9 +13,9 @@ class searchFtsCtrl extends jController {
 
     /**
     * Query a database
-    * @param text $query A SQL query on objects
-    * @param text $bbox A bounding box in EPSG:4326 Optionnal
-    * @return GeoJSON.
+    * @urlparam text $query A SQL query on objects
+    * @urlparam text $bbox A bounding box in EPSG:4326 Optionnal
+    * @return jResponseJson GeoJSON.
     */
     function get() {
         $rep = $this->getResponse('json');
