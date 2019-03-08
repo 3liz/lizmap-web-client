@@ -4,7 +4,7 @@
 * @package   lizmap
 * @subpackage lizmap
 * @author    3liz
-* @copyright 2012-2018 3liz
+* @copyright 2012-2019 3liz
 * @link      http://3liz.com
 * @license Mozilla Public License : http://www.mozilla.org/MPL/
 */
@@ -682,7 +682,7 @@ class qgisFormControl{
         $filters = array();
         if ( property_exists($this->edittype[0]->widgetv2config, 'FilterFields') ) {
             foreach($this->edittype[0]->widgetv2config->FilterFields->children('field') as $f) {
-                $filters[] = (string)$f->attrbutes()->name;
+                $filters[] = (string)$f->attributes()->name;
             }
             $chainFilters = (string)$this->edittype[0]->widgetv2config->FilterFields->attributes()->ChainFilters;
         }
