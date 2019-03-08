@@ -10,6 +10,9 @@
 
 class datavizPlot {
 
+    /**
+     * @var bool|lizmapProject|null
+     */
     protected $lproj = null;
 
     public $title = null;
@@ -48,7 +51,23 @@ class datavizPlot {
 
     protected $y_mandatory = array('scatter', 'box', 'bar', 'pie', 'histogram2d', 'polar');
 
-    function __construct( $repository, $project, $layerId, $x_field, $y_field, $colors=array(), $colorfields=array(), $title='plot title', $layout=null, $aggregation=null, $data=null ){
+    /**
+     * datavizPlot constructor.
+     * @param string $repository
+     * @param string $project
+     * @param string $layerId
+     * @param string $x_field
+     * @param string $y_field
+     * @param array $colors
+     * @param array $colorfields
+     * @param string $title
+     * @param null $layout
+     * @param null $aggregation
+     * @param null $data
+     * @throws jExceptionSelector
+     */
+    function __construct( $repository, $project, $layerId, $x_field, $y_field, $colors=array(),
+                          $colorfields=array(), $title='plot title', $layout=null, $aggregation=null, $data=null ){
 
         // Get the project data
         $lproj = $this->getProject($repository, $project);
@@ -83,6 +102,12 @@ class datavizPlot {
 
     }
 
+    /**
+     * @param string $repository
+     * @param string $project
+     * @return bool|lizmapProject|null
+     * @throws jExceptionSelector
+     */
     public function getProject($repository, $project){
         $lproj = null;
         try {

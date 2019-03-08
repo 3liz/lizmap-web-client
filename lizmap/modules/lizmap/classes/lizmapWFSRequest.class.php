@@ -13,8 +13,14 @@ class lizmapWFSRequest extends lizmapOGCRequest {
 
     protected $tplExceptions = 'lizmap~wfs_exception';
 
+    /**
+     * @var qgisMapLayer|qgisVectorLayer
+     */
     protected $qgisLayer = Null;
 
+    /**
+     * @var object datasource parameters
+     */
     protected $datasource = Null;
 
     protected $selectFields = array();
@@ -155,17 +161,14 @@ class lizmapWFSRequest extends lizmapOGCRequest {
         // Get database connexion for this layer
         $cnx = $this->qgisLayer->getDatasourceConnection();
         // Get datasource
-        $ds = $this->qgisLayer->getDatasourceParameters();
-        $this->datasource = $ds;
+        $this->datasource = $this->qgisLayer->getDatasourceParameters();
 
         // Get fields
         $wfsFields = $this->qgisLayer->getWfsFields();
 
         // Build SQL
-        $sql = '';
-
         // SELECT
-        $sql.= ' SELECT ';
+        $sql = ' SELECT ';
         $propertyname = '';
         if( array_key_exists( 'propertyname', $this->params ) )
             $propertyname = $this->params['propertyname'];
@@ -200,7 +203,6 @@ class lizmapWFSRequest extends lizmapOGCRequest {
             $geocolalias = 'geosource';
             $sql.= ', "' . $geocol . '" AS "' . $geocolalias . '"';
         }
-
 
         // FROM
         $sql.= ' FROM ' . $this->datasource->table ;
@@ -348,7 +350,7 @@ class lizmapWFSRequest extends lizmapOGCRequest {
         try{
             $q = $cnx->query( $sql );
         }catch(Exception $e){
-            jLog::log($e->getMessage(), 'error');
+            jLog::log($e->getMessage(), 'notice');
             return $this->getfeatureQgis();
         }
 

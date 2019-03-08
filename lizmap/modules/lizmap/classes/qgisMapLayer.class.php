@@ -11,44 +11,64 @@
 
 
 class qgisMapLayer {
-  // layer id in the QGIS project file
+  /**
+   * layer id in the QGIS project file
+   */
   protected $id = '';
 
-  // layer type
+  /**
+   * layer type
+   */
   protected $type = '';
 
-  // layer name
+  /**
+   * layer name
+   */
   protected $name = '';
 
-  // layer short name
+  /**
+   * layer short name
+   */
   protected $shortname = '';
 
-  // layer title
+  /**
+   * layer title
+   */
   protected $title = '';
 
-  // layer abstract
+  /**
+   * layer abstract
+   */
   protected $abstract = '';
 
-  // layer proj4
+  /**
+   * layer proj4
+   */
   protected $proj4 = '';
 
-  // layer srid
+  /**
+   * layer srid
+   */
   protected $srid = 0;
 
-  // layer datasource
+  /**
+   * layer datasource
+   */
   protected $datasource = '';
 
-  // layer provider
+  /**
+   * layer provider
+   */
   protected $provider = '';
 
   /**
-   * @var lizmapProject
+   * @var lizmapProject|qgisProject
    */
   protected $project = null;
 
   /**
    * constructor
-   * @param lizmapProject $project
+   * @param lizmapProject|qgisProject $project
    * @param array $propLayer  list of properties values
    */
   public function __construct ( $project, $propLayer ) {
@@ -108,6 +128,9 @@ class qgisMapLayer {
     return $this->provider;
   }
 
+  /**
+   * @return lizmapProject|qgisProject
+   */
   public function getProject(){
     return $this->project;
   }

@@ -5882,12 +5882,18 @@ OpenLayers.Control.HighlightFeature = OpenLayers.Class(OpenLayers.Control, {
       var pkVal = feat.properties[pkey];
       filter = qgisName + ':"' + pkey + '" = ' + "'" + pkVal + "'" ;
 
+      var crs = 'EPSG:4326';
+      if(('crs' in lizMap.config.layers[qgisName]) && lizMap.config.layers[qgisName].crs != ''){
+          crs = lizMap.config.layers[qgisName].crs;
+      }
+
       wmsOptions = {
            'LAYERS': aName
           ,'QUERY_LAYERS': aName
           ,'STYLES': ''
           ,'SERVICE': 'WMS'
           ,'VERSION': '1.3.0'
+          ,'CRS': crs
           ,'REQUEST': 'GetFeatureInfo'
           ,'EXCEPTIONS': 'application/vnd.ogc.se_inimage'
           ,'INFO_FORMAT': 'text/html'

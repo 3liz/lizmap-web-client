@@ -13,9 +13,9 @@ class searchCtrl extends jController {
 
   /**
   * Query a QuickFinder database
-  * @param text $query A query on OpenStreetMap object
-  * @param text $bbox A bounding box in EPSG:4326 Optionnal
-  * @return GeoJSON.
+  * @urlparam text $query A query on OpenStreetMap object
+  * @urlparam text $bbox A bounding box in EPSG:4326 Optionnal
+  * @return jResponseBinary GeoJSON content.
   */
   function get() {
     $rep = $this->getResponse('binary');

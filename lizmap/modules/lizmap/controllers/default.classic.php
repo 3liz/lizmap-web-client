@@ -4,7 +4,7 @@
 * @package   lizmap
 * @subpackage lizmap
 * @author    3liz
-* @copyright 2011 3liz
+* @copyright 2011-2019 3liz
 * @link      http://3liz.com
 * @license Mozilla Public License : http://www.mozilla.org/MPL/
 */
@@ -14,7 +14,7 @@ class defaultCtrl extends jController {
   /**
   * Redirect to the default repository project list.
   * 
-  * @return Redirection to the default repository list
+  * @return jResponseRedirect Redirection to the default repository list
   */
   function index() {
     $rep = $this->getResponse('redirect');

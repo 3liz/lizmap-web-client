@@ -11,6 +11,9 @@
 
 class lizmapOGCRequest {
 
+    /**
+     * @var lizmapProject
+     */
     protected $project = null;
 
     protected $repository = null;
@@ -23,8 +26,8 @@ class lizmapOGCRequest {
 
     /**
      * constructor
-     * project : the project has a lizmapProject Class
-     * params : the params array
+     * @param lizmapProject $project the project has a lizmapProject Class
+     * @param array $params the params array
      */
     public function __construct ( $project, $params ) {
         //print_r( $project != null );

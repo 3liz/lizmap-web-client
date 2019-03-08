@@ -4,7 +4,7 @@
 * @package   lizmap
 * @subpackage lizmap
 * @author    3liz
-* @copyright 2011-2018 3liz
+* @copyright 2011-2019 3liz
 * @link      http://3liz.com
 * @license Mozilla Public License : http://www.mozilla.org/MPL/
 */
@@ -249,9 +249,9 @@ class editionCtrl extends jController {
 
   /**
    * Create a feature form based on the edition layer.
-   * @param string $repository Lizmap Repository
-   * @param string $project Name of the project
-   * @param string $layerId Qgis id of the layer
+   * @urlparam string $repository Lizmap Repository
+   * @urlparam string $project Name of the project
+   * @urlparam string $layerId Qgis id of the layer
    * @return jResponseRedirect|jResponseHtmlFragment redirect to the display action.
    */
   public function createFeature(){
@@ -289,10 +289,10 @@ class editionCtrl extends jController {
 
   /**
    * Modify a feature.
-   * @param string $repository Lizmap Repository
-   * @param string $project Name of the project
-   * @param string $layerId Qgis id of the layer
-   * @param integer $featureId Id of the feature.
+   * @urlparam string $repository Lizmap Repository
+   * @urlparam string $project Name of the project
+   * @urlparam string $layerId Qgis id of the layer
+   * @urlparam integer $featureId Id of the feature.
    * @return jResponseRedirect|jResponseHtmlFragment redirect to the display action.
    */
   public function modifyFeature(){
@@ -488,10 +488,10 @@ class editionCtrl extends jController {
   /**
    * Save the edition form (output as html fragment)
    *
-   * @param string $repository Lizmap Repository
-   * @param string $project Name of the project
-   * @param string $layerId Qgis id of the layer
-   * @param integer $featureId Id of the feature.
+   * @urlparam string $repository Lizmap Repository
+   * @urlparam string $project Name of the project
+   * @urlparam string $layerId Qgis id of the layer
+   * @urlparam integer $featureId Id of the feature.
    * @return jResponseHtmlFragment|jResponseRedirect Redirect to the validation action.
    */
   public function saveFeature(){
@@ -642,10 +642,10 @@ class editionCtrl extends jController {
   /**
   * Form close : destroy it and display a message
   *
-  * @param string $repository Lizmap Repository
-  * @param string $project Name of the project
-  * @param string $layerId Qgis id of the layer
-  * @param integer $featureId Id of the feature.
+  * @urlparam string $repository Lizmap Repository
+  * @urlparam string $project Name of the project
+  * @urlparam string $layerId Qgis id of the layer
+  * @urlparam integer $featureId Id of the feature.
   * @return jResponseHtmlFragment Confirmation message that the form has been saved.
   */
   public function closeFeature(){
@@ -670,10 +670,10 @@ class editionCtrl extends jController {
   /**
    * Delete Feature (output as html fragment)
    *
-   * @param string $repository Lizmap Repository
-   * @param string $project Name of the project
-   * @param string $layerId Qgis id of the layer
-   * @param integer $featureId Id of the feature.
+   * @urlparam string $repository Lizmap Repository
+   * @urlparam string $project Name of the project
+   * @urlparam string $layerId Qgis id of the layer
+   * @urlparam integer $featureId Id of the feature.
    * @return jResponseHtmlFragment
    */
   public function deleteFeature(){
@@ -755,12 +755,12 @@ class editionCtrl extends jController {
   /**
    * Link features between 2 tables via pivot table
    *
-   * @param string $repository Lizmap Repository
-   * @param string $project Name of the project
-   * @param string $pivot Pivot layer id. Example : mypivot1234
-   * @param string $features1 Layer id + features. Example : mylayer456:1,2
-   * @param string $features2 Layer id + features. Example : otherlayer789:5
-   * @param integer $featureId Id of the feature.
+   * @urlparam string $repository Lizmap Repository
+   * @urlparam string $project Name of the project
+   * @urlparam string $pivot Pivot layer id. Example : mypivot1234
+   * @urlparam string $features1 Layer id + features. Example : mylayer456:1,2
+   * @urlparam string $features2 Layer id + features. Example : otherlayer789:5
+   * @urlparam integer $featureId Id of the feature.
    * @return jResponseHtmlFragment
    */
     public function linkFeatures(){
@@ -907,11 +907,11 @@ class editionCtrl extends jController {
    * Unlink child feature from their parent ( 1:n ) relation
    * by setting the foreign key to NULL
    *
-   * @param string $repository Lizmap Repository
-   * @param string $project Name of the project
-   * @param string $layerId Child layer id.
-   * @param string $pkey Child layer primary key value -> id of the line to update
-   * @param string $fkey Child layer foreign key column (pointing to the parent layer primary key)
+   * @urlparam string $repository Lizmap Repository
+   * @urlparam string $project Name of the project
+   * @urlparam string $layerId Child layer id.
+   * @urlparam string $pkey Child layer primary key value -> id of the line to update
+   * @urlparam string $fkey Child layer foreign key column (pointing to the parent layer primary key)
    * @return jResponseHtmlFragment
    */
     function unlinkChild(){

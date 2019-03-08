@@ -4,7 +4,7 @@
 * @package   lizmap
 * @subpackage lizmap
 * @author    3liz
-* @copyright 2011 3liz
+* @copyright 2011-2019 3liz
 * @link      http://3liz.com
 * @license Mozilla Public License : http://www.mozilla.org/MPL/
 */
@@ -13,9 +13,9 @@ class ignCtrl extends jController {
 
   /**
   * Query the IGN Geoportal API
-  * @param text $query A query on IGN BD adresse object
-  * @param text $bbox A bounding box in EPSG:4326
-  * @return XML.
+  * @urlparam text $query A query on IGN BD adresse object
+  * @urlparam text $bbox A bounding box in EPSG:4326
+  * @return jResponseJson XML.
   */
   function address() {
     $rep = $this->getResponse('json');
