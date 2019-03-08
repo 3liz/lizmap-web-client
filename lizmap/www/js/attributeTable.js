@@ -1509,10 +1509,7 @@ var lizAttributeTable = function() {
 
                     // Display popup for the feature
                     var lConfig = config.layers[aName];
-                    if( lConfig && lConfig['popup'] == 'True'
-                        && lConfig['geometryType'] != 'none'
-                        && lConfig['geometryType'] != 'unknown'
-                    ) {
+                    if( lConfig && lConfig['popup'] == 'True' ){
                         var feat = config.layers[aName]['features'][featId];
 
                         var parentLayerCleanName = aTable.replace('#attribute-layer-table-', '').split('-');
