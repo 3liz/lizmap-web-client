@@ -10,7 +10,7 @@
 */
 
 
-class qgisFormControl{
+class qgisFormControl {
 
     public $ref = '';
 
@@ -23,7 +23,7 @@ class qgisFormControl{
      * Qgis edittype as a simpleXml object
      * @var SimpleXMLElement
      */
-    public $edittype;
+    protected $edittype;
 
     // Qgis field name
     public $fieldName = '';
@@ -56,7 +56,7 @@ class qgisFormControl{
     public $DefaultRoot = Null;
 
     // Table mapping QGIS and jelix forms
-    public $qgisEdittypeMap = array(
+    protected $qgisEdittypeMap = array(
       0 => array (
             'qgis'=>array('name'=>'Line edit', 'description'=>'Simple edit box'),
             'jform'=>array('markup'=>'input')
@@ -160,7 +160,10 @@ class qgisFormControl{
       'time'=>'time'
     );
 
-
+    /**
+     * @var SimpleXMLElement  attributes on the widgetv2config element
+     */
+  protected $widgetv2configAttr;
 
 
   /**
@@ -219,17 +222,18 @@ class qgisFormControl{
       // Get qgis edittype data
       if($this->edittype){
         // New QGIS 2.4 edittypes : use widgetv2type property
-        if( property_exists($this->edittype[0]->attributes(), 'widgetv2type') ){
-          $this->fieldEditType = (string)$this->edittype[0]->attributes()->widgetv2type;
+        if( property_exists($this->edittype->attributes(), 'widgetv2type') ){
+          $this->widgetv2configAttr = $this->edittype->widgetv2config->attributes();
+          $this->fieldEditType = (string)$this->edittype->attributes()->widgetv2type;
 
           // no more line edit. Since 2.4, textedit with multiline attribute = 0
-          if ( (string)$this->edittype[0]->widgetv2config->attributes()->IsMultiline == '0'){
+          if ( (string)$this->widgetv2configAttr->IsMultiline == '0'){
             $this->fieldEditType = 0;
           }
         }
         // Before QGIS 2.4
         else {
-          $this->fieldEditType = (integer)$this->edittype[0]->attributes()->type;
+          $this->fieldEditType = (integer)$this->edittype->attributes()->type;
         }
       }
       else
@@ -240,7 +244,7 @@ class qgisFormControl{
         $markup = $this->qgisEdittypeMap[$this->fieldEditType]['jform']['markup'][0];
       }
       else if($this->fieldEditType === 15){
-        $markup = $this->qgisEdittypeMap[$this->fieldEditType]['jform']['markup'][(int)$this->edittype[0]->attributes()->allowMulti];
+        $markup = $this->qgisEdittypeMap[$this->fieldEditType]['jform']['markup'][(int)$this->edittype->attributes()->allowMulti];
       }
       else if($this->fieldEditType === 'Range' || $this->fieldEditType === 'EditRange' ){
         $markup = $this->qgisEdittypeMap[$this->fieldEditType]['jform']['markup'][0];
@@ -249,11 +253,11 @@ class qgisFormControl{
         $markup = $this->qgisEdittypeMap[$this->fieldEditType]['jform']['markup'][1];
       }
       else if($this->fieldEditType === 'ValueRelation'){
-        $markup = $this->qgisEdittypeMap[$this->fieldEditType]['jform']['markup'][(int)$this->edittype[0]->widgetv2config->attributes()->AllowMulti];
+        $markup = $this->qgisEdittypeMap[$this->fieldEditType]['jform']['markup'][(int)$this->widgetv2configAttr->AllowMulti];
       }
       else if($this->fieldEditType === 'DateTime'){
         $markup = 'date';
-        $display_format = $this->edittype[0]->widgetv2config->attributes()->display_format;
+        $display_format = $this->widgetv2configAttr->display_format;
         // Use date AND time widget id type is DateTime and we find HH
         if( preg_match('#HH#i', $display_format) ){
           $markup = 'datetime';
@@ -262,7 +266,6 @@ class qgisFormControl{
         if( preg_match('#HH#i', $display_format) and !preg_match('#YY#i', $display_format)){
           $markup = 'time';
         }
-
       }
       else{
         $markup = $this->qgisEdittypeMap[$this->fieldEditType]['jform']['markup'];
@@ -277,13 +280,13 @@ class qgisFormControl{
       case 'input':
         $this->ctrl = new jFormsControlInput($this->ref);
         if( $this->fieldEditType === 15 ) {
-            $this->ctrl->minvalue = (float)$this->edittype[0]->attributes()->min;
-            $this->ctrl->maxvalue = (float)$this->edittype[0]->attributes()->max;
+            $this->ctrl->minvalue = (float)$this->edittype->attributes()->min;
+            $this->ctrl->maxvalue = (float)$this->edittype->attributes()->max;
         }
         else if( $this->fieldEditType === 'Range' ||
                  $this->fieldEditType === 'EditRange' ) {
-            $this->ctrl->minvalue = (float)$this->edittype[0]->widgetv2config->attributes()->Min;
-            $this->ctrl->maxvalue = (float)$this->edittype[0]->widgetv2config->attributes()->Max;
+            $this->ctrl->minvalue = (float)$this->widgetv2configAttr->Min;
+            $this->ctrl->maxvalue = (float)$this->widgetv2configAttr->Max;
         }
         break;
 
@@ -335,9 +338,9 @@ class qgisFormControl{
         }
         else if( $this->fieldEditType === 'ExternalResource' ) {
             $upload->accept = '';
-            if( property_exists($this->edittype[0]->widgetv2config->attributes(), 'FileWidgetFilter') ){
+            if( property_exists($this->widgetv2configAttr, 'FileWidgetFilter') ){
                 //QFileDialog::getOpenFileName filter
-                $FileWidgetFilter = $this->edittype[0]->widgetv2config->attributes()->FileWidgetFilter;
+                $FileWidgetFilter = $this->widgetv2configAttr->FileWidgetFilter;
                 $FileWidgetFilter = explode( ';;', $FileWidgetFilter );
                 $accepts = array();
                 $re = '/(\*\.\w{3,6})/';
@@ -352,8 +355,8 @@ class qgisFormControl{
                 if ( count( $accepts ) > 0 )
                     $upload->accept = implode( ', ', array_unique( $accepts ) );
             }
-            if( property_exists($this->edittype[0]->widgetv2config->attributes(), 'DocumentViewer')
-                and $this->edittype[0]->widgetv2config->attributes()->DocumentViewer == '1'){
+            if( property_exists($this->widgetv2configAttr, 'DocumentViewer')
+                and $this->widgetv2configAttr->DocumentViewer == '1'){
                 if ( $upload->accept != '' ) {
                     $mimetypes = array();
                     $accepts = explode( ', ', $upload->accept );
@@ -388,20 +391,20 @@ class qgisFormControl{
                 }
                 $upload->capture = 'camera';
             }
-            if( property_exists($this->edittype[0]->widgetv2config->attributes(), 'DefaultRoot')
+            if( property_exists($this->widgetv2configAttr, 'DefaultRoot')
                 and (
                   preg_match(
                     '#^../media(/)?#',
-                    $this->edittype[0]->widgetv2config->attributes()->DefaultRoot
+                    $this->widgetv2configAttr->DefaultRoot
                   )
                   or
                   preg_match(
                     '#^media(/)?#',
-                    $this->edittype[0]->widgetv2config->attributes()->DefaultRoot
+                    $this->widgetv2configAttr->DefaultRoot
                   )
                 )
             ){
-                $this->DefaultRoot = $this->edittype[0]->widgetv2config->attributes()->DefaultRoot . '/';
+                $this->DefaultRoot = $this->widgetv2configAttr->DefaultRoot . '/';
             }else{
                 $this->DefaultRoot = '';
             }
@@ -429,7 +432,7 @@ class qgisFormControl{
   * Create an jForms control object based on a qgis edit widget.
   * @return object Jforms control object
   */
-  public function setControlMainProperties(){
+  protected function setControlMainProperties(){
 
     // Label
     if($this->fieldAlias)
@@ -478,16 +481,16 @@ class qgisFormControl{
         $this->isReadOnly = True;
       }
       // Also use "editable" property
-      if( $this->edittype and property_exists($this->edittype[0]->attributes(), 'editable') ) {
-        $editable = (integer)$this->edittype[0]->attributes()->editable;
+      if( $this->edittype and property_exists($this->edittype->attributes(), 'editable') ) {
+        $editable = (integer)$this->edittype->attributes()->editable;
         if ( $editable == 0 ) {
           $this->isReadOnly = True;
         }
       }
       // Also use "fieldEditable" property
-      else if( $this->edittype and property_exists($this->edittype[0]->attributes(), 'widgetv2type')
-       and property_exists($this->edittype[0]->widgetv2config->attributes(), 'fieldEditable') ) {
-        $editable = (integer)$this->edittype[0]->widgetv2config->attributes()->fieldEditable;
+      else if( $this->edittype and property_exists($this->edittype->attributes(), 'widgetv2type')
+       and property_exists($this->widgetv2configAttr, 'fieldEditable') ) {
+        $editable = (integer)$this->widgetv2configAttr->fieldEditable;
         if ( $editable == 0 ) {
           $this->isReadOnly = True;
         }
@@ -505,15 +508,15 @@ class qgisFormControl{
   * Define checked and unchecked values for a jForms control checkbox, based on Qgis edittype
   * @return object Modified jForms control.
   */
-  public function fillCheckboxValues(){
+  protected function fillCheckboxValues(){
     $checked = null;
     $unchecked = null;
     if ( $this->fieldEditType === 'CheckBox'){
-      $checked = (string)$this->edittype[0]->widgetv2config->attributes()->CheckedState;
-      $unchecked = (string)$this->edittype[0]->widgetv2config->attributes()->UncheckedState;
+      $checked = (string)$this->widgetv2configAttr->CheckedState;
+      $unchecked = (string)$this->widgetv2configAttr->UncheckedState;
     } else {
-      $checked = (string)$this->edittype[0]->attributes()->checked;
-      $unchecked = (string)$this->edittype[0]->attributes()->unchecked;
+      $checked = (string)$this->edittype->attributes()->checked;
+      $unchecked = (string)$this->edittype->attributes()->unchecked;
     }
     $this->ctrl->valueOnCheck = $checked;
     $this->ctrl->valueOnUncheck = $unchecked;
@@ -524,7 +527,7 @@ class qgisFormControl{
   * Create and populate a datasource for a jForms control based on Qgis edittype
   * @return object Modified jForms control.
   */
-  public function fillControlDatasource(){
+  protected function fillControlDatasource(){
 
     // Create a datasource for some types : menulist
     $dataSource = new jFormsStaticDatasource();
@@ -555,22 +558,22 @@ class qgisFormControl{
         );
         if ( $this->fieldEditType === 'UniqueValuesEditable' )
             $this->uniqueValuesData['editable'] = '1';
-        if ( $this->edittype[0]->widgetv2config ) {
-            $this->uniqueValuesData['notNull'] = (string)$this->edittype[0]->widgetv2config->attributes()->notNull;
-            $this->uniqueValuesData['editable'] = (string)$this->edittype[0]->widgetv2config->attributes()->Editable;
+        if ( $this->edittype->widgetv2config ) {
+            $this->uniqueValuesData['notNull'] = (string)$this->widgetv2configAttr->notNull;
+            $this->uniqueValuesData['editable'] = (string)$this->widgetv2configAttr->Editable;
         }
         break;
 
       // Value map
       case 3:
-        foreach($this->edittype[0]->xpath('valuepair') as $valuepair){
+        foreach($this->edittype->xpath('valuepair') as $valuepair){
           $k = (string)$valuepair->attributes()->key;
           $v = (string)$valuepair->attributes()->value;
           $data[$v] = $k;
         }
         break;
       case 'ValueMap':
-        foreach($this->edittype[0]->widgetv2config->xpath('value') as $value){
+        foreach($this->edittype->widgetv2config->xpath('value') as $value){
           $k = (string)$value->attributes()->key;
           $v = (string)$value->attributes()->value;
           $data[$v] = $k;
@@ -592,13 +595,13 @@ class qgisFormControl{
       case 5:
         // Get range of data
         if($this->fieldDataType == 'float'){
-          $min = (float)$this->edittype[0]->attributes()->min;
-          $max = (float)$this->edittype[0]->attributes()->max;
-          $step = (float)$this->edittype[0]->attributes()->step;
+          $min = (float)$this->edittype->attributes()->min;
+          $max = (float)$this->edittype->attributes()->max;
+          $step = (float)$this->edittype->attributes()->step;
         }else{
-          $min = (integer)$this->edittype[0]->attributes()->min;
-          $max = (integer)$this->edittype[0]->attributes()->max;
-          $step = (integer)$this->edittype[0]->attributes()->step;
+          $min = (integer)$this->edittype->attributes()->min;
+          $max = (integer)$this->edittype->attributes()->max;
+          $step = (integer)$this->edittype->attributes()->step;
         }
         $data[(string)$min] = $min;
         for($i = $min; $i <= $max; $i+=$step){
@@ -613,13 +616,13 @@ class qgisFormControl{
       case 'DialRange':
         // Get range of data
         if($this->fieldDataType == 'float'){
-          $min = (float)$this->edittype[0]->widgetv2config->attributes()->Min;
-          $max = (float)$this->edittype[0]->widgetv2config->attributes()->Max;
-          $step = (float)$this->edittype[0]->widgetv2config->attributes()->Step;
+          $min = (float)$this->widgetv2configAttr->Min;
+          $max = (float)$this->widgetv2configAttr->Max;
+          $step = (float)$this->widgetv2configAttr->Step;
         }else{
-          $min = (integer)$this->edittype[0]->widgetv2config->attributes()->Min;
-          $max = (integer)$this->edittype[0]->widgetv2config->attributes()->Max;
-          $step = (integer)$this->edittype[0]->widgetv2config->attributes()->Step;
+          $min = (integer)$this->widgetv2configAttr->Min;
+          $max = (integer)$this->widgetv2configAttr->Max;
+          $step = (integer)$this->widgetv2configAttr->Step;
         }
         $data[(string)$min] = $min;
         for($i = $min; $i <= $max; $i+=$step){
@@ -631,13 +634,13 @@ class qgisFormControl{
 
       // Value relation
       case 15:
-        $allowNull = (string)$this->edittype[0]->attributes()->allowNull;
-        $orderByValue = (string)$this->edittype[0]->attributes()->orderByValue;
-        $layer = (string)$this->edittype[0]->attributes()->layer;
-        $key = (string)$this->edittype[0]->attributes()->key;
-        $value = (string)$this->edittype[0]->attributes()->value;
-        $allowMulti = (string)$this->edittype[0]->attributes()->allowMulti;
-        $filterExpression = (string)$this->edittype[0]->attributes()->filterExpression;
+        $allowNull = (string)$this->edittype->attributes()->allowNull;
+        $orderByValue = (string)$this->edittype->attributes()->orderByValue;
+        $layer = (string)$this->edittype->attributes()->layer;
+        $key = (string)$this->edittype->attributes()->key;
+        $value = (string)$this->edittype->attributes()->value;
+        $allowMulti = (string)$this->edittype->attributes()->allowMulti;
+        $filterExpression = (string)$this->edittype->attributes()->filterExpression;
         $this->valueRelationData = array(
           "allowNull" => $allowNull,
           "orderByValue" => $orderByValue,
@@ -650,15 +653,15 @@ class qgisFormControl{
         break;
 
       case 'ValueRelation':
-        $allowNull = (string)$this->edittype[0]->widgetv2config->attributes()->AllowNull;
-        $orderByValue = (string)$this->edittype[0]->widgetv2config->attributes()->OrderByValue;
-        $layer = (string)$this->edittype[0]->widgetv2config->attributes()->Layer;
-        $key = (string)$this->edittype[0]->widgetv2config->attributes()->Key;
-        $value = (string)$this->edittype[0]->widgetv2config->attributes()->Value;
-        $allowMulti = (string)$this->edittype[0]->widgetv2config->attributes()->AllowMulti;
-        $filterExpression = (string)$this->edittype[0]->widgetv2config->attributes()->FilterExpression;
-        $useCompleter = (string)$this->edittype[0]->widgetv2config->attributes()->UseCompleter;
-        $fieldEditable = (string)$this->edittype[0]->widgetv2config->attributes()->fieldEditable;
+        $allowNull = (string)$this->widgetv2configAttr->AllowNull;
+        $orderByValue = (string)$this->widgetv2configAttr->OrderByValue;
+        $layer = (string)$this->widgetv2configAttr->Layer;
+        $key = (string)$this->widgetv2configAttr->Key;
+        $value = (string)$this->widgetv2configAttr->Value;
+        $allowMulti = (string)$this->widgetv2configAttr->AllowMulti;
+        $filterExpression = (string)$this->widgetv2configAttr->FilterExpression;
+        $useCompleter = (string)$this->widgetv2configAttr->UseCompleter;
+        $fieldEditable = (string)$this->widgetv2configAttr->fieldEditable;
         $this->valueRelationData = array(
           "allowNull" => $allowNull,
           "orderByValue" => $orderByValue,
@@ -674,17 +677,17 @@ class qgisFormControl{
         break;
 
       case 'RelationReference':
-        $allowNull = (string)$this->edittype[0]->widgetv2config->attributes()->AllowNULL;
-        $orderByValue = (string)$this->edittype[0]->widgetv2config->attributes()->OrderByValue;
-        $Relation = (string)$this->edittype[0]->widgetv2config->attributes()->Relation;
-        $MapIdentification = (string)$this->edittype[0]->widgetv2config->attributes()->MapIdentification;
+        $allowNull = (string)$this->widgetv2configAttr->AllowNULL;
+        $orderByValue = (string)$this->widgetv2configAttr->OrderByValue;
+        $Relation = (string)$this->widgetv2configAttr->Relation;
+        $MapIdentification = (string)$this->widgetv2configAttr->MapIdentification;
         $chainFilters = '0';
         $filters = array();
-        if ( property_exists($this->edittype[0]->widgetv2config, 'FilterFields') ) {
-            foreach($this->edittype[0]->widgetv2config->FilterFields->children('field') as $f) {
+        if ( property_exists($this->edittype->widgetv2config, 'FilterFields') ) {
+            foreach($this->edittype->widgetv2config->FilterFields->children('field') as $f) {
                 $filters[] = (string)$f->attributes()->name;
             }
-            $chainFilters = (string)$this->edittype[0]->widgetv2config->FilterFields->attributes()->ChainFilters;
+            $chainFilters = (string)$this->edittype->widgetv2config->FilterFields->attributes()->ChainFilters;
         }
         $this->relationReferenceData = array(
           "allowNull" => $allowNull,
