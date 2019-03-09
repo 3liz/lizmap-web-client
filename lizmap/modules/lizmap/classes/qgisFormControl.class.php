@@ -99,7 +99,7 @@ class qgisFormControl {
       ),
       12 => array (
             'qgis'=>array('name'=>'Text edit', 'description'=>'A text edit field that accepts multiple lines will be used'),
-            'jform'=>array('markup'=>'textarea')
+            'jform'=>array('markup'=>array('textarea', 'htmleditor'))
       ),
       13 => array (
             'qgis'=>array('name'=>'Calendar', 'description'=>'A calendar widget to enter a date'),
@@ -240,7 +240,23 @@ class qgisFormControl {
         $this->fieldEditType = 0;
 
       // Get jform control type
-      if($this->fieldEditType === 5){
+      if($this->fieldEditType === 12) {
+        if (property_exists($this->edittype->attributes(), 'UseHtml')) {
+          $markup = $this->qgisEdittypeMap[$this->fieldEditType]['jform']['markup'][(int)$this->edittype->attributes()->UseHtml];
+        }
+        else {
+          $markup = $this->qgisEdittypeMap[$this->fieldEditType]['jform']['markup'][0];
+        }
+      }
+      else if($this->fieldEditType === 'TextEdit') {
+        if (property_exists($this->widgetv2configAttr, 'UseHtml')) {
+          $markup = $this->qgisEdittypeMap[$this->fieldEditType]['jform']['markup'][(int)$this->widgetv2configAttr->UseHtml];
+        }
+        else {
+          $markup = $this->qgisEdittypeMap[$this->fieldEditType]['jform']['markup'][0];
+        }
+      }
+      else if($this->fieldEditType === 5){
         $markup = $this->qgisEdittypeMap[$this->fieldEditType]['jform']['markup'][0];
       }
       else if($this->fieldEditType === 15){
@@ -311,6 +327,10 @@ class qgisFormControl {
 
       case 'textarea':
         $this->ctrl = new jFormsControlTextarea($this->ref);
+        break;
+
+      case 'htmleditor':
+        $this->ctrl = new jFormsControlHtmlEditor($this->ref);
         break;
 
       case 'date':
@@ -441,38 +461,32 @@ class qgisFormControl {
       $this->ctrl->label = $this->fieldName;
 
     // Data type
-    if(property_exists($this->ctrl, 'datatype')){
+    if ($this->ctrl->datatype instanceof jDatatypeString) {
+      // let's change datatype when control has the default one, jDatatypeString
+      // we don't want to change datatype that are specific to a control type, like in jFormsControlHtmlEditor,
+      // jFormsControlDate etc..
 
       switch($this->fieldDataType){
-
-        case 'text':
-          $datatype = new jDatatypeString();
-          break;
-
         case 'integer':
-          $datatype = new jDatatypeInteger();
+          $this->ctrl->datatype = new jDatatypeInteger();
           break;
 
         case 'float':
-          $datatype = new jDatatypeDecimal();
+          $this->ctrl->datatype = new jDatatypeDecimal();
           break;
 
         case 'date':
-          $datatype = new jDatatypeDate();
+          $this->ctrl->datatype = new jDatatypeDate();
           break;
 
         case 'datetime':
-          $datatype = new jDatatypeDateTime();
+          $this->ctrl->datatype = new jDatatypeDateTime();
           break;
 
         case 'time':
-          $datatype = new jDatatypeTime();
+          $this->ctrl->datatype = new jDatatypeTime();
           break;
-
-        default:
-          $datatype = new jDatatypeString();
       }
-      $this->ctrl->datatype = $datatype;
     }
 
     // Read-only
