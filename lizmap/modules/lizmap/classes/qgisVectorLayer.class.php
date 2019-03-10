@@ -162,7 +162,8 @@ class qgisVectorLayer extends qgisMapLayer {
           if (!empty($dtParams->service)) {
               $jdbParams = array(
                   "driver" => 'pgsql',
-                  "service" => $dtParams->service
+                  "service" => $dtParams->service,
+                  "persistent" => true
               );
           } else {
               $jdbParams = array(
@@ -171,7 +172,8 @@ class qgisVectorLayer extends qgisMapLayer {
                   "port" => (integer)$dtParams->port,
                   "database" => $dtParams->dbname,
                   "user" => $dtParams->user,
-                  "password" => $dtParams->password
+                  "password" => $dtParams->password,
+                  "persistent" => true
               );
           }
       }
