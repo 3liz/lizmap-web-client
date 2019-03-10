@@ -4,13 +4,14 @@
 * @package   lizmap
 * @subpackage lizmap
 * @author    3liz
-* @copyright 2013 3liz
+* @copyright 2013-2019 3liz
 * @link      http://3liz.com
 * @license Mozilla Public License : http://www.mozilla.org/MPL/
 */
 
 
-class qgisVectorLayer extends qgisMapLayer{
+class qgisVectorLayer extends qgisMapLayer {
+
   // layer type
   protected $type = 'vector';
 
@@ -30,8 +31,14 @@ class qgisVectorLayer extends qgisMapLayer{
    */
   protected $connection = null;
 
+  /**
+   * @var string the jDb profile to use for the connection
+   */
+  protected $dbProfile = null;
+
   /** @var jDbFieldProperties[] */
   protected $dbFieldList = null;
+
   protected $dbFieldsInfo = null;
 
   // Map data type as geometry type
@@ -128,11 +135,73 @@ class qgisVectorLayer extends qgisMapLayer{
   }
 
   /**
+   * Give the jDb profile name for the database connection
+   *
+   * This method is public so it can be used by custom modules. Sometimes
+   * getDatasourceConnection() is not useful, as we could need the profile
+   * to give to jDao or other components that need a profile, not a connection
+   *
+   * @return string|null  null if there is an issue or no connection parameters
+   * @throws jException
+   */
+  public function getDatasourceProfile() {
+      if ($this->dbProfile !== null) {
+          return $this->dbProfile;
+      }
+
+      $dtParams = $this->getDatasourceParameters();
+      if ($this->provider == 'spatialite') {
+          $spatialiteExt = $this->project->getSpatialiteExtension();
+          $repository = $this->project->getRepository();
+          $jdbParams = array(
+              "driver" => 'sqlite3',
+              "database" => realpath($repository->getPath().$dtParams->dbname),
+              "extensions"=>$spatialiteExt
+          );
+      } else if ($this->provider == 'postgres') {
+          if (!empty($dtParams->service)) {
+              $jdbParams = array(
+                  "driver" => 'pgsql',
+                  "service" => $dtParams->service
+              );
+          } else {
+              $jdbParams = array(
+                  "driver" => 'pgsql',
+                  "host" => $dtParams->host,
+                  "port" => (integer)$dtParams->port,
+                  "database" => $dtParams->dbname,
+                  "user" => $dtParams->user,
+                  "password" => $dtParams->password
+              );
+          }
+      }
+      else {
+          return null;
+      }
+
+      // construct the profile name from a sha1 of parameters, so the profile
+      // may be the same as an other layer it this other layer has same db
+      // parameters. So we can share the profile (and so share the same connection)
+      // instead of creating a new one for each layer
+      $this->dbProfile = 'layerdb_'.sha1(json_encode($jdbParams));
+      try {
+          // try to get the profile, it may be already created for an other layer
+          jProfiles::get('jdb', $this->dbProfile, true);
+      }
+      catch(Exception $e) {
+          // create the profile
+          jProfiles::createVirtualProfile('jdb', $this->dbProfile, $jdbParams);
+      }
+
+      return $this->dbProfile;
+  }
+
+  /**
    * @return jDbConnection
    * @throws jException
    */
   public function getDatasourceConnection() {
-    if ( $this->connection )
+    if ($this->connection)
         return $this->connection;
 
     if( $this->provider != 'spatialite' && $this->provider != 'postgres') {
@@ -140,45 +209,7 @@ class qgisVectorLayer extends qgisMapLayer{
         return null;
     }
 
-    // get or create profile
-    $profile = $this->id;
-    try {
-        // try to get the profile to do not rebuild it
-        jProfiles::get('jdb', $profile, true);
-    } catch (Exception $e) {
-        // transform datasource params to jDb params
-        $dtParams = $this->getDatasourceParameters();
-        $jdbParams = array();
-        if( $this->provider == 'spatialite' ){
-          $spatialiteExt = $this->project->getSpatialiteExtension();
-          $repository = $this->project->getRepository();
-          $jdbParams = array(
-            "driver" => 'sqlite3',
-            "database" => realpath($repository->getPath().$dtParams->dbname),
-            "extensions"=>$spatialiteExt
-          );
-        } else if( $this->provider == 'postgres' ){
-          if(!empty($dtParams->service)){
-            $jdbParams = array(
-              "driver" => 'pgsql',
-              "service" => $dtParams->service
-            );
-          }else{
-            $jdbParams = array(
-              "driver" => 'pgsql',
-              "host" => $dtParams->host,
-              "port" => (integer)$dtParams->port,
-              "database" => $dtParams->dbname,
-              "user" => $dtParams->user,
-              "password" => $dtParams->password
-            );
-          }
-        } else
-          return null;
-
-        // create profile
-        jProfiles::createVirtualProfile('jdb', $profile, $jdbParams);
-    }
+    $profile = $this->getDatasourceProfile();
     $cnx = jDb::getConnection($profile);
     $this->connection = $cnx;
     return $cnx;
@@ -286,6 +317,15 @@ class qgisVectorLayer extends qgisMapLayer{
       return $this->dbFieldsInfo;
   }
 
+  public function getPrimaryKeyValues($feature) {
+      $dbFieldsInfo = $this->getDbFieldsInfo();
+      $pkVal = array();
+      foreach ($dbFieldsInfo->primaryKeys as $key) {
+          $pkVal[$key] = $feature->properties->$key;
+      }
+      return $pkVal;
+  }
+
   public function getDbFieldDefaultValues() {
       $dbFieldsInfo = $this->getDbFieldsInfo();
 
@@ -347,14 +387,8 @@ class qgisVectorLayer extends qgisMapLayer{
           $sql.= ', ST_AsText('.$geometryColumn.') AS astext';
       $sql.= ' FROM '.$dtParams->table;
 
-      $sqlw = array();
+      list($sqlw, $pk) = $this->getPkWhereClause($cnx, $dbFieldsInfo, $feature);
       $dataFields = $dbFieldsInfo->dataFields;
-      foreach($dbFieldsInfo->primaryKeys as $key){
-          $val = $feature->properties->$key;
-          if( $dataFields[$key]->unifiedType != 'integer' )
-              $val = $cnx->quote($val);
-          $sqlw[] = '"' . $key . '"' . ' = ' . $val;
-      }
       $sql.= ' WHERE ';
       $sql.= implode(' AND ', $sqlw );
 
@@ -398,6 +432,27 @@ class qgisVectorLayer extends qgisMapLayer{
   }
 
     /**
+     * @param jDbConnection $cnx
+     * @param qgisLayerDbFieldsInfo $dbFieldsInfo
+     * @param object $feature
+     */
+  protected function getPkWhereClause($cnx, $dbFieldsInfo, $feature) {
+      $sqlw = array();
+      $dataFields = $dbFieldsInfo->dataFields;
+      $pk = array();
+      foreach($dbFieldsInfo->primaryKeys as $key){
+          $val = $feature->properties->$key;
+          if( $dataFields[$key]->unifiedType != 'integer' ) {
+              $val = $cnx->quote($val);
+          }
+          $key = $cnx->encloseName($key);
+          $sqlw[] = $key . ' = ' . $val;
+          $pk[$key] = $val;
+      }
+      return array($sqlw, $pk);
+  }
+
+    /**
      * @param array $values
      * @return array list of primary keys with their values
      * @throws Exception
@@ -416,14 +471,14 @@ class qgisVectorLayer extends qgisMapLayer{
       foreach ( $values as $ref=>$value ) {
           // For insert, only for not NULL values to allow serial and default values to work
           if( $value != 'NULL' ){
-            $insert[]=$value;
-            $refs[]='"'.$ref.'"';
+            $insert[]= $value; //FIXME no $cnx->quote($value) ?
+            $refs[] = $cnx->encloseName($ref);
             // For log
             if ( in_array( $ref, $primaryKeys ) ) {
                 $val = $value;
                 if( $dataFields[$ref]->unifiedType != 'integer' )
                     $val = $cnx->quote($val);
-                $dataLogInfo[] = '"' . $ref . '"' . ' = ' . $val;
+                $dataLogInfo[] = $cnx->encloseName($ref) . ' = ' . $val;
             }
           }
       }
@@ -437,7 +492,7 @@ class qgisVectorLayer extends qgisMapLayer{
       // Get select clause for primary keys (used when inserting data in postgresql)
       $returnKeys = array();
       foreach($primaryKeys as $key){
-          $returnKeys[] = '"' . $key . '"';
+          $returnKeys[] = $cnx->encloseName($key);
       }
       $returnKeysString = implode(', ', $returnKeys);
       // For spatialite, we will run a complentary query to retrieve the pkeys
@@ -521,15 +576,8 @@ class qgisVectorLayer extends qgisMapLayer{
       $sql.= implode(', ', $update);
 
       // Add where clause with primary keys
-      $sqlw = array();
-      $primaryKeys = $dbFieldsInfo->primaryKeys;
-      $dataFields = $dbFieldsInfo->dataFields;
-      foreach($primaryKeys as $key){
-          $val = $feature->properties->$key;
-          if( $dataFields[$key]->unifiedType != 'integer' )
-              $val = $cnx->quote($val);
-          $sqlw[] = '"' . $key . '"' . ' = ' . $val;
-      }
+      list($sqlw, $pk) = $this->getPkWhereClause($cnx, $dbFieldsInfo, $feature);
+
       // Store WHere clause to retrieve primary keys in spatialite
       $uwhere = '';
       $uwhere.= ' WHERE ';
@@ -542,10 +590,8 @@ class qgisVectorLayer extends qgisMapLayer{
       $sql.= $uwhere;
 
       // Get select clause for primary keys (used when inserting data in postgresql)
-      $returnKeys = array();
-      foreach($primaryKeys as $key){
-          $returnKeys[] = '"' . $key . '"';
-      }
+      $returnKeys = array_keys($pk);
+
       $returnKeysString = implode(', ', $returnKeys);
       // For spatialite, we will run a complementary query to retrieve the pkeys
       if( $this->provider == 'postgres' ){
@@ -562,7 +608,7 @@ class qgisVectorLayer extends qgisMapLayer{
               // Query the request
               $rs = $cnx->query($sql);
               foreach($rs as $line){
-                  foreach($primaryKeys as $key){
+                  foreach($dbFieldsInfo->primaryKeys as $key){
                       $pkvals[$key] = $line->$key;
                   }
                   break;
@@ -573,7 +619,7 @@ class qgisVectorLayer extends qgisMapLayer{
               $sqlpk = 'SELECT ' . $returnKeysString . ' FROM '.$dtParams->table.$uwhere;
               $rspk = $cnx->query($sqlpk);
               foreach($rspk as $line){
-                  foreach($primaryKeys as $key){
+                  foreach($dbFieldsInfo->primaryKeys as $key){
                       $pkvals[$key] = $line->$key;
                   }
                   break;
@@ -621,16 +667,7 @@ class qgisVectorLayer extends qgisMapLayer{
       $sql = ' DELETE FROM '.$dtParams->table;
 
       // Add where clause with primary keys
-      $sqlw = array();
-      $dataFields = $dbFieldsInfo->dataFields;
-      $pkLogInfo = array();
-      foreach($dbFieldsInfo->primaryKeys as $key){
-          $val = $feature->properties->$key;
-          if( $dataFields[$key]->unifiedType != 'integer' )
-              $val = $cnx->quote($val);
-          $sqlw[] = '"' . $key . '"' . ' = ' . $val;
-          $pkLogInfo[] = $val;
-      }
+      list($sqlw, $pkLogInfo) = $this->getPkWhereClause($cnx, $dbFieldsInfo, $feature);
       $sql.= ' WHERE ';
       $sql.= implode(' AND ', $sqlw );
 
