@@ -143,10 +143,12 @@ class lizMapCtrl extends jController {
     $rep->addJSLink($www.'js/jforms/datepickers/default/init.js');
     $rep->addJSLink($www.'js/jforms/datepickers/default/ui.en.js');
     $rep->addJSLink($www.'js/jforms/datepickers/default/ui.'.$lang.'.js');
+    $rep->addJSLink($bp.'js/ckeditor5/ckeditor.js');
+    $rep->addJSLink($bp.'js/ckeditor5/ckeditor_default.js');
     $rep->addJSLink($bp.'js/fileUpload/jquery.fileupload.js');
     $rep->addJSLink($bp.'js/bootstrapErrorDecoratorHtml.js');
 
-    // Add botom dock js
+    // Add bottom dock js
     $rep->addJSLink($bp.'js/bottom-dock.js');
 
     // Pass some configuration options to the web page through javascript var

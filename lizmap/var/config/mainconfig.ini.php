@@ -43,7 +43,7 @@ minifyJS=0
 ; liste des fichiers CSS qui ne doivent pas être compressé
 minifyExcludeCSS="OpenLayers-2.13/theme/default/style.css,js/jquery/ui-1.11.4/jquery-ui.min.css,js/jquery/ui-1.11.4/jquery-ui.structure.min.css,js/jquery/ui-1.11.4/jquery-ui.theme.min.css"
 ; liste des fichiers JS qui ne doivent pas être compressé
-minifyExcludeJS="index.php/view/translate/,OpenLayers-2.13/OpenLayers.js,js/jquery/jquery-1.12.4.min.js,js/jquery/ui-1.11.4/jquery-ui.min.js"
+minifyExcludeJS="index.php/view/translate/,OpenLayers-2.13/OpenLayers.js,js/jquery/jquery-1.12.4.min.js,js/jquery/ui-1.11.4/jquery-ui.min.js,js/ckeditor5/ckeditor.js"
 ; chemin du point d'entrée de Minify, relatif au basePath
 minifyEntryPoint=minify.php
 
@@ -247,9 +247,22 @@ default.js[]=$jelix/js/jforms/datepickers/default/ui.$lang.js
 default.css[]=js/jquery/ui-1.11.4/jquery-ui.min.css
 
 [htmleditors]
-default.engine.file[] = $jelix/wymeditor/jquery.wymeditor.js
+default.engine.name = ckeditor
+default.engine.file[] = js/ckeditor5/ckeditor.js
+default.config = js/ckeditor5/ckeditor_default.js
+default.skin.default =
 
-wymbasic.engine.file[] = $jelix/wymeditor/jquery.wymeditor.js
+ckdefault.engine.name = ckeditor
+ckdefault.engine.file[] = js/ckeditor5/ckeditor.js
+ckdefault.config = js/ckeditor5/ckeditor_ckdefault.js
+
+ckfull.engine.name = ckeditor
+ckfull.engine.file[] = js/ckeditor5/ckeditor.js
+ckfull.config = js/ckeditor5/ckeditor_ckfull.js
+
+ckbasic.engine.name = ckeditor
+ckbasic.engine.file[] = js/ckeditor5/ckeditor.js
+ckbasic.config = js/ckeditor5/ckeditor_ckbasic.js
 
 [modules]
 jelix.access=1
