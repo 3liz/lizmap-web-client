@@ -937,7 +937,7 @@ var lizMap = function() {
 
       //Manage attribution
       if (typeof layer.attribution == "object") {
-          console.log(layer.attribution);
+          //console.log(layer.attribution);
           // Update href if needed
           if ( 'href' in layer.attribution &&
                layer.attribution.href != '' &&
@@ -3644,7 +3644,7 @@ var lizMap = function() {
                             ,'STYLES': ''
                             ,'SERVICE': 'WMS'
                             ,'VERSION': '1.3.0'
-                            ,'CRS': (('crs' in rConfigLayer) && rConfigLayer.crs != '') ? rConfigLayer.crs : 'EPSG:4326' 
+                            ,'CRS': (('crs' in rConfigLayer) && rConfigLayer.crs != '') ? rConfigLayer.crs : 'EPSG:4326'
                             ,'REQUEST': 'GetFeatureInfo'
                             ,'EXCEPTIONS': 'application/vnd.ogc.se_inimage'
                             ,'FEATURE_COUNT': popupMaxFeatures
@@ -4388,7 +4388,7 @@ var lizMap = function() {
             || lConfig['request_params'] == null )
               continue;
           var requestParams = lConfig['request_params'];
-          if ( ('filtertoken' in lConfig['request_params'])
+            if ( ('filtertoken' in lConfig['request_params'])
             && lConfig['request_params']['filtertoken'] != null
             && lConfig['request_params']['filtertoken'] != "" ) {
               filter.push( lConfig['request_params']['filtertoken'] );
