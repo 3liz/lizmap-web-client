@@ -190,6 +190,9 @@ class lizmapWFSRequest extends lizmapOGCRequest {
             if( !in_array($k, $sfields) )
                 $sfields[] = $k;
         }
+        // deduplicate columns to avoid SQL errors
+        $sfields = array_values(array_unique($sfields));
+
         $this->selectFields = $sfields;
         $sql.= '"' . implode( '", "', $sfields ) . '"';
 
