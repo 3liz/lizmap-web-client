@@ -3939,6 +3939,9 @@ var lizMap = function() {
                         info.vendorParams['filter'] = null;
                         refreshGetFeatureInfo(evt);
                     });
+                }else{
+                      info.vendorParams['filtertoken'] = requestParams['filtertoken'];
+                      info.vendorParams['filter'] = requestParams['filter'];
                 }
             }
         },
