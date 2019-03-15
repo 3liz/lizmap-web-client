@@ -1314,11 +1314,11 @@ class lizmapProject extends qgisProject {
         $services = lizmap::getServices();
 
         // only maps
-        if($services->onlyMaps) {
+        if(1){//$services->onlyMaps) {
                 $projectsTpl = new jTpl();
                 $projectsTpl->assign('excludedProject', $this->repository->getKey().'~'.$this->getKey());
                 $dockable[] = new lizmapMapDockItem(
-                    'home',
+                    'projects',
                     jLocale::get('view~default.repository.list.title'),
                     $projectsTpl->fetch('view~map_projects'),
                     0
