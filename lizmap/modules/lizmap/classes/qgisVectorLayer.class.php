@@ -124,37 +124,70 @@ class qgisVectorLayer extends qgisMapLayer
         }
 
         // Get datasource information from QGIS
-        $datasourceMatch = preg_match(
-            "#(?:dbname='([^ ]+)' )?(?:service='([^ ]+)' )?(?:host=([^ ]+) )?(?:port=([0-9]+) )?(?:user='([^ ]+)' )?(?:password='([^ ]+)' )?(?:sslmode=([^ ]+) )?(?:key='([^ ]+)' )?(?:estimatedmetadata=([^ ]+) )?(?:selectatid=([^ ]+) )?(?:srid=([0-9]+) )?(?:type=([a-zA-Z]+) )?(?:table=\"([^ ]+)\" )?(?:\\()?(?:([^ ]+)\\) )?(?:sql=(.*))?#s",
-            $this->datasource,
-            $dt
-        );
 
-        if ($dt[13] == '') {
-            // if table not found, try again for complex tables, such as table="(SELECT count(*) FROM table WHERE bla)"
+        // Provider ogr AND layername given -> the layer is Spatialite or GPKG
+        if( $this->provider == 'ogr' and preg_match('#layername=#', $this->datasource ) ){
+            $split = explode('|', $this->datasource);
+            $dbname = $split[0];
+            $table = str_replace('layername=', '', $split[1]);
+            $sql = '';
+            if( count($split) == 3 ){
+                $sql = str_replace('subset=', '', $split[1]);
+            }
+            $table = str_replace('layername=', '', $split[1]);
+            $ds = array (
+                'dbname' => $dbname,
+                'service' => '',
+                'host' => '',
+                'port' => '',
+                'user' => '',
+                'password' => '',
+                'sslmode' => '',
+                'key' => '',
+                'estimatedmetadata' => '',
+                'selectatid' => '',
+                'srid' => '',
+                'type' => '',
+                'table' => $table,
+                'geocol' => 'geom',
+                'sql' => $sql
+            );
+        }else {
+            // Else this is a regular database layer: provider = postgres or spatialite
             $datasourceMatch = preg_match(
-                "#(?:dbname='([^ ]+)' )?(?:service='([^ ]+)' )?(?:host=([^ ]+) )?(?:port=([0-9]+) )?(?:user='([^ ]+)' )?(?:password='([^ ]+)' )?(?:sslmode=([^ ]+) )?(?:key='([^ ]+)' )?(?:estimatedmetadata=([^ ]+) )?(?:selectatid=([^ ]+) )?(?:srid=([0-9]+) )?(?:type=([a-zA-Z]+) )?(?:table=\"(.+)\" )?(?:\\()?(?:([^ ]+)\\) )?(?:sql=(.*))?#s",
+                "#(?:dbname='([^ ]+)' )?(?:service='([^ ]+)' )?(?:host=([^ ]+) )?(?:port=([0-9]+) )?(?:user='([^ ]+)' )?(?:password='([^ ]+)' )?(?:sslmode=([^ ]+) )?(?:key='([^ ]+)' )?(?:estimatedmetadata=([^ ]+) )?(?:selectatid=([^ ]+) )?(?:srid=([0-9]+) )?(?:type=([a-zA-Z]+) )?(?:table=\"([^ ]+)\" )?(?:\\()?(?:([^ ]+)\\) )?(?:sql=(.*))?#s",
                 $this->datasource,
                 $dt
             );
+
+            if ($dt[13] == '') {
+                // if table not found, try again for complex tables, such as table="(SELECT count(*) FROM table WHERE bla)"
+                $datasourceMatch = preg_match(
+                    "#(?:dbname='([^ ]+)' )?(?:service='([^ ]+)' )?(?:host=([^ ]+) )?(?:port=([0-9]+) )?(?:user='([^ ]+)' )?(?:password='([^ ]+)' )?(?:sslmode=([^ ]+) )?(?:key='([^ ]+)' )?(?:estimatedmetadata=([^ ]+) )?(?:selectatid=([^ ]+) )?(?:srid=([0-9]+) )?(?:type=([a-zA-Z]+) )?(?:table=\"(.+)\" )?(?:\\()?(?:([^ ]+)\\) )?(?:sql=(.*))?#s",
+                    $this->datasource,
+                    $dt
+                );
+            }
+
+            $ds = array(
+                'dbname' => $dt[1],
+                'service' => $dt[2],
+                'host' => $dt[3],
+                'port' => $dt[4],
+                'user' => $dt[5],
+                'password' => $dt[6],
+                'sslmode' => $dt[7],
+                'key' => $dt[8],
+                'estimatedmetadata' => $dt[9],
+                'selectatid' => $dt[10],
+                'srid' => $dt[11],
+                'type' => $dt[12],
+                'table' => $dt[13],
+                'geocol' => $dt[14],
+                'sql' => $dt[15],
+            );
         }
-        $ds = array(
-            'dbname' => $dt[1],
-            'service' => $dt[2],
-            'host' => $dt[3],
-            'port' => $dt[4],
-            'user' => $dt[5],
-            'password' => $dt[6],
-            'sslmode' => $dt[7],
-            'key' => $dt[8],
-            'estimatedmetadata' => $dt[9],
-            'selectatid' => $dt[10],
-            'srid' => $dt[11],
-            'type' => $dt[12],
-            'table' => $dt[13],
-            'geocol' => $dt[14],
-            'sql' => $dt[15],
-        );
+
 
         $table = $ds['table'];
         $tableAlone = $table;
@@ -224,6 +257,15 @@ class qgisVectorLayer extends qgisMapLayer
                     'persistent' => true,
                 );
             }
+        } elseif ($this->provider == 'ogr'
+            and preg_match('#(gpkg|sqlite)$#', $dtParams->dbname ) ) {
+                $spatialiteExt = $this->project->getSpatialiteExtension();
+                $repository = $this->project->getRepository();
+                $jdbParams = array(
+                    'driver' => 'sqlite3',
+                    'database' => realpath($repository->getPath().$dtParams->dbname),
+                    'extensions' => $spatialiteExt
+                );
         } else {
             return null;
         }
@@ -256,7 +298,7 @@ class qgisVectorLayer extends qgisMapLayer
             return $this->connection;
         }
 
-        if ($this->provider != 'spatialite' && $this->provider != 'postgres') {
+        if ($this->provider != 'spatialite' && $this->provider != 'postgres' and !( preg_match('#layername=#', $this->datasource ) ) ) {
             jLog::log('Unknown provider "'.$this->provider.'" to get connection!', 'error');
 
             return null;

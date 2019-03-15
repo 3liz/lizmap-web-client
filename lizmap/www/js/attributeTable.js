@@ -3284,6 +3284,15 @@ var lizAttributeTable = function() {
                     spatialFilter = rFilter +' AND '+ spatialFilter;
                 }
             }
+            if( 'request_params' in lConfig && 'exp_filter' in lConfig['request_params'] ){
+                // Add exp_filter, for example if set by another tool( filter module )
+                // Often 'filter' is not set because filtertoken is set instead
+                // But in this case, exp_filter must also been set and must be added
+                var eFilter = lConfig['request_params']['exp_filter'];
+                if( eFilter ){
+                    spatialFilter = eFilter +' AND '+ spatialFilter;
+                }
+            }
 
             var getFeatureUrlData = lizMap.getVectorLayerWfsUrl( featureType, spatialFilter, null, null, limitDataToBbox );
             // add BBox to restrict to geom bbox
