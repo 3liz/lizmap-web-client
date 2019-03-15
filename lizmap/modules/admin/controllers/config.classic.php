@@ -41,6 +41,9 @@ class configCtrl extends jController {
               case 'onlyMaps':
                   $form->setData($ser, $services->$ser ? 'on' : 'off');
                   break;
+              case 'projectSwitcher':
+                  $form->setData($ser, $services->$ser ? 'on' : 'off');
+                  break;
               default:
                   $form->setData($ser, $services->$ser);
           }
