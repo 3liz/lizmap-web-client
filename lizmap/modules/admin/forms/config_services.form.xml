@@ -34,7 +34,7 @@
 </menulist>
 
 <menulist ref="projectSwitcher" required="true">
-  <label locale="admin~admin.form.admin_services.onlyMaps.label"/>
+  <label locale="admin~admin.form.admin_services.projectSwitcher.label"/>
   <item value="off" selected="true" locale="admin~admin.form.admin_services.off.label"/>
   <item value="on" locale="admin~admin.form.admin_services.on.label"/>
 </menulist>
