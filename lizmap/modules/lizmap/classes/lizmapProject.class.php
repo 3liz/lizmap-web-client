@@ -1315,7 +1315,7 @@ class lizmapProject extends qgisProject {
         
         // only maps
         if($services->onlyMaps or $services->projectSwitcher) {
-            $dockableName = 'projects';
+            $dockableName = 'progetti';
             if($services->onlyMaps) {$dockableName = 'home';}
                 $projectsTpl = new jTpl();
                 $projectsTpl->assign('excludedProject', $this->repository->getKey().'~'.$this->getKey());
@@ -1335,7 +1335,7 @@ class lizmapProject extends qgisProject {
             'switcher',
             jLocale::get('view~map.switchermenu.title'),
             $switcherTpl->fetch('view~map_switcher'),
-            1
+            1map_switcher
         );
         //$legendTpl = new jTpl();
         //$dockable[] = new lizmapMapDockItem('legend', 'Légende', $switcherTpl->fetch('map_legend'), 2);
