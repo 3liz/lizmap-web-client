@@ -1312,9 +1312,9 @@ class lizmapProject extends qgisProject {
 
         // Get lizmap services
         $services = lizmap::getServices();
-        $mapProjectSwitcher = 1;
+        
         // only maps
-        if($services->onlyMaps or $mapProjectSwitcher) {
+        if($services->onlyMaps or $services->projectSwitcher) {
             $dockableName = 'projects';
             if($services->onlyMaps) {$dockableName = 'home';}
                 $projectsTpl = new jTpl();
