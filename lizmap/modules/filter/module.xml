@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module xmlns="http://jelix.org/ns/module/1.0">
+    <info id="info@3liz.com" name="filter" createdate="2019-03-12">
+        <version date="2019-03-12">3.2.2</version>
+        <label lang="en_US">filter</label>
+        <description lang="en_US" />
+        <license URL="http://www.mozilla.org/MPL/">Mozilla Public License</license>
+        <copyright>2017-2018 3liz</copyright>
+        <creator name="3liz" email="info@3liz.com"/>
+        <homepageURL>http://www.3liz.com</homepageURL>
+    </info>
+    <dependencies>
+        <jelix minversion="1.6.14" maxversion="1.6.*"/>
+        <module name="lizmap" />
+        <module name="view" />
+    </dependencies>
+</module>

@@ -95,6 +95,11 @@ class lizmapProject extends qgisProject
     /**
      * @var array
      */
+    protected $formFilterLayers = array();
+
+    /**
+     * @var array
+     */
     protected $editionLayers = array();
 
     /**
@@ -111,7 +116,7 @@ class lizmapProject extends qgisProject
      * @var array List of cached properties
      */
     protected $cachedProperties = array('WMSInformation', 'canvasColor', 'allProj4',
-        'relations', 'layersOrder', 'printCapabilities', 'locateByLayer',
+        'relations', 'layersOrder', 'printCapabilities', 'locateByLayer', 'formFilterLayers',
         'editionLayers', 'attributeLayers', 'useLayerIDs', 'layers', 'data', 'cfg', 'qgisProjectVersion', );
 
 
@@ -393,6 +398,7 @@ class lizmapProject extends qgisProject
 
         $this->printCapabilities = $this->readPrintCapabilities($qgs_xml, $this->cfg);
         $this->locateByLayer = $this->readLocateByLayers($qgs_xml, $this->cfg);
+        $this->formFilterLayers = $this->readFormFilterLayers($qgs_xml, $this->cfg);
         $this->editionLayers = $this->readEditionLayers($qgs_xml, $this->cfg);
         $this->attributeLayers = $this->readAttributeLayers($qgs_xml, $this->cfg);
         $this->layersOrder = $this->readLayersOrder($qgs_xml, $this->cfg);
@@ -564,6 +570,28 @@ class lizmapProject extends qgisProject
         }
 
         return false;
+    }
+
+    public function hasFormFilterLayers()
+    {
+        if (property_exists($this->cfg, 'formFilterLayers')) {
+            $count = 0;
+            foreach ($this->cfg->formFilterLayers as $key => $obj) {
+                ++$count;
+            }
+            if ($count != 0) {
+                return true;
+            }
+
+            return false;
+        }
+
+        return false;
+    }
+
+    public function getFormFilterLayersConfig()
+    {
+        return $this->cfg->formFilterLayers;
     }
 
     public function hasTimemanagerLayers()
@@ -1282,6 +1310,20 @@ class lizmapProject extends qgisProject
         return $locateByLayer;
     }
 
+    protected function readFormFilterLayers($xml, $cfg)
+    {
+        $formFilterLayers = array();
+
+        if (property_exists($cfg, 'formFilterLayers')) {
+
+            // Add data into formFilterLayers from configuration
+            $formFilterLayers = $cfg->formFilterLayers;
+
+        }
+
+        return $formFilterLayers;
+    }
+
     protected function readEditionLayers($xml, $cfg)
     {
         $editionLayers = array();
@@ -1435,6 +1477,9 @@ class lizmapProject extends qgisProject
 
         // Update locate by layer with vecctorjoins
         $configJson->locateByLayer = $this->locateByLayer;
+
+        // Update filter form layers with vecctorjoins
+        $configJson->formFilterLayers = $this->formFilterLayers;
 
         // Update attributeLayesr with attributetableconfig
         $configJson->attributeLayers = $this->attributeLayers;

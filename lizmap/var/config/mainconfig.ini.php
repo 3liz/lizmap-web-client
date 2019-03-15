@@ -288,6 +288,7 @@ jcommunity.installparam="defaultusers=lizmap~defaultusers.json;manualconfig"
 
 admin.access=1
 dataviz.access=1
+filter.access=1
 dynamicLayers.access=1
 lizmap.access=1
 proj4php.access=1

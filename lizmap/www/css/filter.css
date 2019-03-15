@@ -1,0 +1,68 @@
+/*
+Left Menu button
+*/
+
+#mapmenu .nav-list > li.filter .icon {
+  background-image: url(filter-icon-white.png);
+}
+#mapmenu .nav-list > li.filter.active .icon,
+#mapmenu .nav-list > li.filter a:hover .icon {
+  background-image: url(filter-icon-dark.png);
+}
+
+
+/*
+Toolbar buttons
+*/
+
+#filter h3 .icon {
+    background-image: url(filter-icon-white.png);
+}
+
+#filter-content {
+    overflow: auto;
+    height: 100%;
+}
+
+#filter-content div.menu-content {
+    margin-bottom:10px !important;
+}
+
+#filter-main.bottom-content {
+    background:none !important;
+    border:none !important;
+}
+
+#filter-main.bottom-content div.menu-content{
+    background-color: #F0F0F0 !important;
+    border:none !important;
+}
+
+#filter-main.bottom-content div.menu-content p{
+    padding: 5px;
+}
+#nav-tab-filter-main > a{
+    background: none !important;
+    border: none;
+    color: white;
+    margin-top: 1px;
+    font-weight: bold;
+}
+#filter-content > h3{
+    margin-left:0px;
+    border:none;
+}
+#filter-content > h3 > span.title{
+    padding-left: 0px;
+}
+
+
+#filter span.disabled {
+  color: grey;
+  pointer-events: none;
+}
+
+
+ul.ui-autocomplete.ui-menu {
+    z-index: 3000 !important;
+}
