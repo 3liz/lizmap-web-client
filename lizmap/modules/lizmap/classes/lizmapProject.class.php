@@ -1316,10 +1316,10 @@ class lizmapProject extends qgisProject {
         // only maps and show project switcher
         if($services->onlyMaps or $services->projectSwitcher) {
             $dockableName = 'projects';
-            $dockableTitle = jLocale::get('view~default.repository.list.title');
+            $dockableTitle = jLocale::get('view~default.home.title');
             if($services->onlyMaps) {
                 $dockableName = 'home';
-                $dockableTitle = jLocale::get('view~default.home.title');
+                $dockableTitle = jLocale::get('view~default.repository.list.title');
             }
         
             $projectsTpl = new jTpl();
