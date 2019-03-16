@@ -104,7 +104,7 @@ body {
 }
 
 /*
-CSS Sprite positions calculated via http://instantsprite.com/ or https://draeton.github.io/stitches/
+CSS Sprite positions calculated via http://instantsprite.com/ using 20px images and 5px offset or https://draeton.github.io/stitches/
 */
 #mapmenu .nav-list > li.home .icon {
   background-position: -25px 0px;
