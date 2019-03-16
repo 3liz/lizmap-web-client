@@ -1315,7 +1315,7 @@ class lizmapProject extends qgisProject {
         
         // only maps
         if($services->onlyMaps or $services->projectSwitcher) {
-            $dockableName = 'progetti';
+            $dockableName = 'projects';
             if($services->onlyMaps) {$dockableName = 'home';}
                 $projectsTpl = new jTpl();
                 $projectsTpl->assign('excludedProject', $this->repository->getKey().'~'.$this->getKey());
