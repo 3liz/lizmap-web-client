@@ -115,11 +115,11 @@ CSS Sprite positions calculated via http://instantsprite.com/ or https://draeton
 }
 
 #mapmenu .nav-list > li.projects .icon {
-  background-position: -125px 0px;
+  background-position: -925px 0px;
 }
 #mapmenu .nav-list > li.projects.active .icon,
 #mapmenu .nav-list > li.projects a:hover .icon {
-  background-position: -100px 0px;
+  background-position: -900px 0px;
 }
 
 #mapmenu .nav-list > li.metadata .icon {
