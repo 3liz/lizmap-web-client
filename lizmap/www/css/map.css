@@ -113,6 +113,15 @@ CSS Sprite positions calculated via http://instantsprite.com/ or https://draeton
 #mapmenu .nav-list > li.home a:hover .icon {
   background-position: -0px 0px;
 }
+
+#mapmenu .nav-list > li.projects .icon {
+  background-position: -125px 0px;
+}
+#mapmenu .nav-list > li.projects.active .icon,
+#mapmenu .nav-list > li.projects a:hover .icon {
+  background-position: -100px 0px;
+}
+
 #mapmenu .nav-list > li.metadata .icon {
   background-position: -125px 0px;
 }
@@ -127,7 +136,7 @@ CSS Sprite positions calculated via http://instantsprite.com/ or https://draeton
 #mapmenu .nav-list > li.map.active .icon,
 #mapmenu .nav-list > li.map a:hover .icon {
   background-position: -40px -60px;
-}
+}li.geololi.geolo
 #mapmenu .nav-list > li.legend .icon {
   background-position: -40px -80px;
 }
