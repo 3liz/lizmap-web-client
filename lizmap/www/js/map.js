@@ -1728,6 +1728,7 @@ var lizMap = function() {
         $('#locate-layer-'+layerName+'-'+locate.filterFieldName+' ~ span > input').attr('placeholder', filterPlaceHolder).val('');
         $('#locate-layer-'+layerName+'-'+locate.filterFieldName+' ~ span > input').autocomplete('close');
         updateSwitcherSize();
+        updateMiniDockSize();
       }
 
       // create combobox for the layer
@@ -3536,7 +3537,7 @@ var lizMap = function() {
         var service = OpenLayers.Util.urlAppend(lizUrls.wms
             ,OpenLayers.Util.getParameterString(lizUrls.params)
         );
-        $.get(service, wmsOptions, function(data) {
+        $.post(service, wmsOptions, function(data) {
             var hasPopupContent = (!(!data || data == null || data == ''))
             if ( hasPopupContent ) {
                 var popupReg = new RegExp('lizmapPopupTable', 'g');
@@ -5908,12 +5909,83 @@ OpenLayers.Control.HighlightFeature = OpenLayers.Class(OpenLayers.Control, {
       var service = OpenLayers.Util.urlAppend(lizUrls.wms
           ,OpenLayers.Util.getParameterString(lizUrls.params)
       );
-      $.get(service, wmsOptions, function(data) {
+      $.post(service, wmsOptions, function(data) {
           aCallback(data);
       });
 
   }
 
+
+  // Get the popup content for a layer given a feature
+  function getFeaturePopupContentByFeatureIntersection(aName, feat, aCallback) {
+
+    // Calculate fake bbox around the feature
+    var units = lizMap.map.getUnits();
+    var lConfig = lizMap.config.layers[aName];
+    if( lizMap.map.maxScale == 'auto' )
+      var scale = lConfig.minScale;
+    else
+      var scale = Math.max( lizMap.map.maxScale, lConfig.minScale );
+    scale = scale * 2;
+    var res = OpenLayers.Util.getResolutionFromScale(scale, units);
+
+    var geomType = feat.geometry.CLASS_NAME;
+    if (
+      geomType == 'OpenLayers.Geometry.Polygon'
+      || geomType == 'OpenLayers.Geometry.MultiPolygon'
+      || geomType == 'OpenLayers.Geometry.Point'
+    ) {
+      var lonlat = feat.geometry.getBounds().getCenterLonLat()
+    }
+    else {
+      var vert = feat.geometry.getVertices();
+      var middlePoint = vert[Math.floor(vert.length/2)];
+      var lonlat = new OpenLayers.LonLat(middlePoint.x, middlePoint.y);
+    }
+
+    // Calculate fake bbox
+    var bbox = new OpenLayers.Bounds(
+      lonlat.lon - 5 * res,
+      lonlat.lat - 5 * res,
+      lonlat.lon + 5 * res,
+      lonlat.lat + 5 * res
+    );
+
+    var gfiCrs = lizMap.map.getProjectionObject().toString();
+    if ( gfiCrs == 'EPSG:900913' )
+      gfiCrs = 'EPSG:3857';
+
+    var wmsOptions = {
+       'LAYERS': aName
+      ,'QUERY_LAYERS': aName
+      ,'STYLES': ''
+      ,'SERVICE': 'WMS'
+      ,'VERSION': '1.3.0'
+      ,'REQUEST': 'GetFeatureInfo'
+      ,'EXCEPTIONS': 'application/vnd.ogc.se_inimage'
+      ,'BBOX': bbox.toBBOX()
+      ,'FEATURE_COUNT': 10
+      ,'HEIGHT': 100
+      ,'WIDTH': 100
+      ,'INFO_FORMAT': 'text/html'
+      ,'CRS': gfiCrs
+      ,'I': 50
+      ,'J': 50
+    };
+
+    // Query the server
+    var service = OpenLayers.Util.urlAppend(lizUrls.wms
+      ,OpenLayers.Util.getParameterString(lizUrls.params)
+    );
+    $.post(service, wmsOptions, function(data) {
+      //console.log(data);
+      if(aCallback){
+        aCallback(service, wmsOptions, data);
+      }
+    });
+
+
+  }
 
 
   // Create new dock or minidock
@@ -6272,6 +6344,13 @@ OpenLayers.Control.HighlightFeature = OpenLayers.Class(OpenLayers.Control, {
      */
     getFeaturePopupContent: function( aName, feat, aCallback) {
       return getFeaturePopupContent(aName, feat, aCallback);
+    },
+
+    /**
+     * Method: getFeaturePopupContentByFeatureIntersection
+     */
+    getFeaturePopupContentByFeatureIntersection: function( aName, feat, aCallback) {
+      return getFeaturePopupContentByFeatureIntersection(aName, feat, aCallback);
     },
 
     /**

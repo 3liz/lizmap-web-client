@@ -1,0 +1,42 @@
+var popup_layer_source = 'Quartiers';
+lizMap.events.on({
+
+    lizmapexternalsearchitemselected: function(e) {
+        if(!e.feature)
+            return true;
+        lizMap.getFeaturePopupContentByFeatureIntersection(popup_layer_source, e.feature, function(ser, opt, data){
+            var popupContainerId = 'popupcontent';
+            // Add class to table
+            var popupReg = new RegExp('lizmapPopupTable', 'g');
+            var text = data.replace( popupReg, 'table table-condensed table-striped table-bordered lizmapPopupTable');
+            var hasPopupContent = (!(!text || text == null || text == ''))
+            var pcontent = '<div class="lizmapPopupContent">'+text+'</div>';
+            if( !$('#mapmenu .nav-list > li.popupcontent > a').length ){
+                    lizMap.addDock(popupContainerId, 'Information', lizMap.config.options.popupLocation, pcontent, 'icon-comment');
+            }else{
+                    $('#popupcontent div.menu-content').html(pcontent);
+            }
+            if ( !$('#mapmenu .nav-list > li.popupcontent').is(':visible') )
+                    $('#mapmenu .nav-list > li.popupcontent').show();
+
+            // Trigger event ? a bit buggy
+            lizMap.events.triggerEvent("lizmappopupdisplayed", {'popup': null, 'containerId': popupContainerId} );
+
+            // Display dock if needed
+            if(
+            !$('#mapmenu .nav-list > li.popupcontent').hasClass('active')
+             && (!lizMap.checkMobile() || ( lizMap.checkMobile() && hasPopupContent ) )
+            ){
+              $('#button-popupcontent').click();
+            }
+            else if(
+            $('#mapmenu .nav-list > li.popupcontent').hasClass('active')
+             && ( lizMap.checkMobile() && hasPopupContent )
+            ){
+              $('#button-popupcontent').click();
+            }
+        });
+
+    }
+
+});
