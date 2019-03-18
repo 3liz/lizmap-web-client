@@ -136,7 +136,7 @@ CSS Sprite positions calculated via http://instantsprite.com/ using 20px images 
 #mapmenu .nav-list > li.map.active .icon,
 #mapmenu .nav-list > li.map a:hover .icon {
   background-position: -40px -60px;
-}li.geololi.geolo
+}
 #mapmenu .nav-list > li.legend .icon {
   background-position: -40px -80px;
 }
