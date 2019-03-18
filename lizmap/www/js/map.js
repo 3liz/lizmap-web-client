@@ -3638,7 +3638,12 @@ var lizMap = function() {
                 var rGetLayerConfig = getLayerConfigById( rLayerId );
                 if ( rGetLayerConfig ) {
                     var rConfigLayer = rGetLayerConfig[1];
-                    if ( rConfigLayer.popup == 'True' && self.parent().find('div.lizmapPopupChildren').length == 0) {
+                    var clname = rConfigLayer.cleanname;
+                    if ( clname === undefined ) {
+                        clname = cleanName(configLayer.name);
+                        rConfigLayer.cleanname = clname;
+                    }
+                    if ( rConfigLayer.popup == 'True' && self.parent().find('div.lizmapPopupChildren.'+clname).length == 0) {
                         var wmsOptions = {
                              'LAYERS': rConfigLayer.name
                             ,'QUERY_LAYERS': rConfigLayer.name
