@@ -2888,8 +2888,9 @@ var lizMap = function() {
       navCtrl.zoomBox.handler.keyMask = navCtrl.zoomBoxKeyMask;
       navCtrl.zoomBox.handler.dragHandler.keyMask = navCtrl.zoomBoxKeyMask;
       navCtrl.handlers.wheel.activate();
-      if( !('edition' in controls) || !controls.edition.active )
-        controls['featureInfo'].activate();
+      if ( ( !('edition' in controls) || !controls.edition.active )
+           && ('featureInfo' in controls) && controls.featureInfo !== null )
+          controls.featureInfo.activate();
     });
     $('#navbar button.zoom').click(function(){
       var self = $(this);
@@ -2897,7 +2898,8 @@ var lizMap = function() {
         return false;
       $('#navbar button.pan').removeClass('active');
       self.addClass('active');
-      controls['featureInfo'].deactivate();
+      if ( ('featureInfo' in controls) && controls.featureInfo !== null )
+            controls.featureInfo.deactivate();
       var navCtrl = map.getControlsByClass('OpenLayers.Control.Navigation')[0];
       navCtrl.handlers.wheel.deactivate();
       navCtrl.zoomBox.keyMask = null;
@@ -3684,6 +3686,50 @@ var lizMap = function() {
   }
 
   function addFeatureInfo() {
+      // Verifying layers
+      var popupsAvailable = false;
+      for ( var l in config.layers ) {
+          var configLayer = config.layers[l];
+          var editionLayer = null;
+          if ( ('editionLayers' in config) && (l in config.editionLayers) )
+              editionLayer = config.editionLayers[l];
+          if( (configLayer && configLayer.popup && configLayer.popup == 'True')
+           || (editionLayer && ( editionLayer.capabilities.modifyGeometry == 'True'
+                              || editionLayer.capabilities.modifyAttribute == 'True'
+                              || editionLayer.capabilities.deleteFeature == 'True') ) ){
+              popupsAvailable = true;
+              break;
+          }
+      }
+      if ( !popupsAvailable )
+        return null;
+
+      // Create the dock if needed
+      if( 'popupLocation' in config.options &&
+          config.options.popupLocation != 'map' &&
+          !$('#mapmenu .nav-list > li.popupcontent > a').length ) {
+          // Verifying the message
+          if ( !('popup.msg.start' in lizDict) )
+            lizDict['popup.msg.start'] = 'Click to the map to get informations.';
+          // Initialize dock
+          var popupContainerId = 'popupcontent';
+          var pcontent = '<div class="lizmapPopupContent"><h4>'+lizDict['popup.msg.start']+'</h4></div>';
+          addDock(popupContainerId, 'Popup', config.options.popupLocation, pcontent, 'icon-comment');
+          $('#button-popupcontent').click(function(){
+              if($(this).parent().hasClass('active')) {
+                  // clean locate layer
+                  var locatelayer = map.getLayersByName('locatelayer');
+                  if ( locatelayer.length == 0 )
+                      return;
+                  locatelayer = locatelayer[0];
+                  locatelayer.destroyFeatures();
+                  // remove information
+                  $('#popupcontent div.menu-content').html('<div class="lizmapPopupContent"><h4>'+lizDict['popup.msg.start']+'</h4></div>');
+              }
+          });
+
+      }
+
       var fiurl = OpenLayers.Util.urlAppend(
         lizUrls.wms,
         OpenLayers.Util.getParameterString(lizUrls.params)
@@ -3713,26 +3759,8 @@ var lizMap = function() {
                       var popupReg = new RegExp('lizmapPopupTable', 'g');
                       text = text.replace( popupReg, 'table table-condensed table-striped table-bordered lizmapPopupTable');
                       var pcontent = '<div class="lizmapPopupContent">'+text+'</div>';
-                      var hasPopupContent = (!(!text || text == null || text == ''))
-                      if( !$('#mapmenu .nav-list > li.popupcontent > a').length ){
-                        addDock(popupContainerId, 'Popup', config.options.popupLocation, pcontent, 'icon-comment');
-                        $('#button-popupcontent').click(function(){
-                          if($(this).parent().hasClass('active')) {
-                            // clean locate layer
-                            var locatelayer = map.getLayersByName('locatelayer');
-                            if ( locatelayer.length == 0 )
-                                return;
-                            locatelayer = locatelayer[0];
-                            locatelayer.destroyFeatures();
-                          } else {
-                            // Display geometries
-                            addGeometryFeatureInfo( popup, popupContainerId );
-                          }
-                        });
-                      }
-                      else{
-                        $('#popupcontent div.menu-content').html(pcontent);
-                      }
+                      var hasPopupContent = (!(!text || text == null || text == ''));
+                      $('#popupcontent div.menu-content').html(pcontent);
                       if ( !$('#mapmenu .nav-list > li.popupcontent').is(':visible') )
                         $('#mapmenu .nav-list > li.popupcontent').show();
 
@@ -3743,9 +3771,7 @@ var lizMap = function() {
                         window.setTimeout(function(){
                             if ( $('#mapmenu .nav-list > li.popupcontent').hasClass('active') && config.options.popupLocation != 'right-dock')
                                 $('#button-popupcontent').click();
-                            if ( !$('#mapmenu .nav-list > li.popupcontent').hasClass('active') && config.options.popupLocation != 'right-dock' )
-                                $('#mapmenu .nav-list > li.popupcontent').hide();
-                        },1000);
+                        },2000);
                       }
 
                       // Display dock if needed
@@ -3762,6 +3788,9 @@ var lizMap = function() {
                       ){
                           $('#button-popupcontent').click();
                       }
+                      // Resize minidock if displayed
+                      if ( $('#mapmenu .nav-list > li.popupcontent').hasClass('active') && config.options.popupLocation == 'minidock' )
+                          updateMiniDockSize();
 
                     }
                     else{
