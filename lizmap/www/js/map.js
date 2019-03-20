@@ -5685,6 +5685,25 @@ OpenLayers.Control.HighlightFeature = OpenLayers.Class(OpenLayers.Control, {
       return getFeatureUrlData;
   }
 
+    /**
+     * storage for callbacks given to getFeatureData
+     *
+     * used to avoid multiple request for the same feature
+     * @type {{}}
+     */
+  var featureDataPool = {};
+
+  function callFeatureDataCallBacks(poolId, features) {
+      var callbacksData = featureDataPool[poolId];
+      delete featureDataPool[poolId];
+      callbacksData.callbacks.forEach(function(callback) {
+          if (callback) {
+              console.log("callFeatureDataCallBacks");
+              callback(callbacksData.layerName, callbacksData.filter, features, callbacksData.alias);
+          }
+      });
+  }
+
   function getFeatureData(aName, aFilter, aFeatureID, aGeometryName, restrictToMapExtent, startIndex, maxFeatures, aCallBack) {
       // Set function parameters if not given
       aFilter = typeof aFilter !== 'undefined' ?  aFilter : null;
@@ -5711,8 +5730,28 @@ OpenLayers.Control.HighlightFeature = OpenLayers.Class(OpenLayers.Control, {
       var aConfig = config.layers[aName];
 
       $('body').css('cursor', 'wait');
+
       var getFeatureUrlData = lizMap.getVectorLayerWfsUrl( aName, aFilter, aFeatureID, aGeometryName, restrictToMapExtent, startIndex, maxFeatures );
+
+      // see if a request for the same feature is not already made
+      var poolId = getFeatureUrlData['url'] + "|" + JSON.stringify(getFeatureUrlData['options']);
+      if (poolId in featureDataPool) {
+          // there is already a request, let's store our callback and wait...
+          if (aCallBack) {
+              featureDataPool[poolId].callbacks.push(aCallBack);
+          }
+          return;
+      }
+      // no request yet, let's do it and store the callback and its parameters
+      featureDataPool[poolId] = {
+          callbacks: [ aCallBack ],
+          layerName: aName,
+          filter: aFilter,
+          alias: aConfig['alias']
+      };
+
       $.post( getFeatureUrlData['url'], getFeatureUrlData['options'], function(data) {
+
           if( !('featureCrs' in aConfig) )
               aConfig['featureCrs'] = null;
           if( aConfig.crs == 'EPSG:4326' )
@@ -5732,9 +5771,7 @@ OpenLayers.Control.HighlightFeature = OpenLayers.Class(OpenLayers.Control, {
           }
 
           if ('alias' in aConfig && aConfig['alias']) {
-              if( aCallBack)
-                  aCallBack( aName, aFilter, data.features, aConfig['alias'] );
-
+              callFeatureDataCallBacks(poolId, data.features);
               $('body').css('cursor', 'auto');
           } else {
               var service = OpenLayers.Util.urlAppend(lizUrls.wms
@@ -5752,8 +5789,7 @@ OpenLayers.Control.HighlightFeature = OpenLayers.Class(OpenLayers.Control, {
                   if ('types' in describe)
                       aConfig['types'] = describe.types;
 
-                  if( aCallBack)
-                      aCallBack( aName, aFilter, data.features, aConfig['alias'] );
+                  callFeatureDataCallBacks(poolId, data.features);
 
                   $('body').css('cursor', 'auto');
 
