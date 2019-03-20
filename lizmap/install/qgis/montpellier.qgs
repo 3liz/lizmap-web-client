@@ -6375,7 +6375,7 @@ def my_form_open(dialog, layer, feature):
     <Macros>
       <pythonCode type="QString"></pythonCode>
     </Macros>
-    <WMSAddWktGeometry type="bool">false</WMSAddWktGeometry>
+    <WMSAddWktGeometry type="bool">true</WMSAddWktGeometry>
     <WCSUrl type="QString"></WCSUrl>
     <WMSOnlineResource type="QString">http://www.3liz.com/lizmap.html</WMSOnlineResource>
     <WMSPrecision type="QString">8</WMSPrecision>

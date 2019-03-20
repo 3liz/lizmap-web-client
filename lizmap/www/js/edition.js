@@ -402,14 +402,16 @@ OpenLayers.Geometry.pointOnSegment = function(point, segment) {
                     eventListeners: {
                         activate: function( evt ) {
                             lizMap.deactivateToolControls( evt );
-                            lizMap.controls.featureInfo.deactivate();
+                            if ( lizMap.controls.featureInfo !== null )
+                                lizMap.controls.featureInfo.deactivate();
                         },
                         deactivate: function( evt ) {
                             for ( var c in editCtrls ) {
                                 if ( c != 'panel' && editCtrls[c].active )
                                     editCtrls[c].deactivate();
                             }
-                            lizMap.controls.featureInfo.activate();
+                            if ( lizMap.controls.featureInfo !== null )
+                                lizMap.controls.featureInfo.activate();
                         }
                     }
                 }),
