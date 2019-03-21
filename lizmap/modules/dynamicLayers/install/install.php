@@ -1,17 +1,16 @@
 <?php
 /**
-* @package   lizmap
-* @subpackage dynamicLayers
-* @author    your name
-* @copyright 2011 3liz
-* @link      http://3liz.com
-* @license    All rights reserved
-*/
-
-
-class dynamicLayersModuleInstaller extends jInstallerModule {
-
-    function install() {
+ * @author    your name
+ * @copyright 2011 3liz
+ *
+ * @see      http://3liz.com
+ *
+ * @license    All rights reserved
+ */
+class dynamicLayersModuleInstaller extends jInstallerModule
+{
+    public function install()
+    {
         //if ($this->firstDbExec())
         //    $this->execSQLScript('sql/install');
 

@@ -1,153 +1,172 @@
 <?php
 /**
-* Php proxy to access OpenStreetMap services
-* @package   lizmap
-* @subpackage lizmap
-* @author    3liz
-* @copyright 2011 3liz
-* @link      http://3liz.com
-* @license Mozilla Public License : http://www.mozilla.org/MPL/
-*/
+ * Php proxy to access OpenStreetMap services.
+ *
+ * @author    3liz
+ * @copyright 2011 3liz
+ *
+ * @see      http://3liz.com
+ *
+ * @license Mozilla Public License : http://www.mozilla.org/MPL/
+ */
+class ignCtrl extends jController
+{
+    /**
+     * Query the IGN Geoportal API.
+     *
+     * @param text $query A query on IGN BD adresse object
+     * @param text $bbox  A bounding box in EPSG:4326
+     *
+     * @return XML
+     */
+    public function address()
+    {
+        $rep = $this->getResponse('json');
+        $rep->data = array();
 
-class ignCtrl extends jController {
-
-  /**
-  * Query the IGN Geoportal API
-  * @param text $query A query on IGN BD adresse object
-  * @param text $bbox A bounding box in EPSG:4326
-  * @return XML.
-  */
-  function address() {
-    $rep = $this->getResponse('json');
-    $rep->data = array();
-
-    $query = $this->param('query');
-    if ( !$query )
-      return $rep;
-
-    // Get the project
-    $project = filter_var($this->param('project'), FILTER_SANITIZE_STRING);
-    if(!$project)
-      return $rep;
-
-    // Get repository data
-    $repository = $this->param('repository');
-    if(!$repository)
-      return $rep;
-
-    // Get the project object
-    $lproj = null;
-    try {
-        $lproj = lizmap::getProject($repository.'~'.$project);
-        if(!$lproj)
+        $query = $this->param('query');
+        if (!$query) {
             return $rep;
-    }
-    catch(UnknownLizmapProjectException $e) {
-        jLog::logEx($e, 'error');
+        }
+
+        // Get the project
+        $project = filter_var($this->param('project'), FILTER_SANITIZE_STRING);
+        if (!$project) {
+            return $rep;
+        }
+
+        // Get repository data
+        $repository = $this->param('repository');
+        if (!$repository) {
+            return $rep;
+        }
+
+        // Get the project object
+        $lproj = null;
+
+        try {
+            $lproj = lizmap::getProject($repository.'~'.$project);
+            if (!$lproj) {
+                return $rep;
+            }
+        } catch (UnknownLizmapProjectException $e) {
+            jLog::logEx($e, 'error');
+
+            return $rep;
+        }
+
+        $configOptions = $lproj->getOptions();
+        if (!property_exists($configOptions, 'ignKey')
+            || $configOptions->ignKey == ''
+        ) {
+            return $rep;
+        }
+
+        $url = 'https://wxs.ign.fr/'.$configOptions->ignKey.'/geoportail/ols?';
+        $xls = '<XLS xmlns:xls="http://www.opengis.net/xls" xmlns:gml="http://www.opengis.net/gml" xmlns="http://www.opengis.net/xls" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="1.2" xsi:schemaLocation="http://www.opengis.net/xls http://schemas.opengis.net/ols/1.2/olsAll.xsd">';
+        $xls .= '<RequestHeader/><Request requestID="1" version="1.2" methodName="LocationUtilityService"><GeocodeRequest returnFreeForm="false"><Address countryCode="StreetAddress">';
+        $xls .= '<freeFormAddress>'.$query.'</freeFormAddress>';
+        $xls .= '</Address></GeocodeRequest></Request></XLS>';
+        $params = array(
+            'xls' => $xls,
+            'output' => 'xml',
+        );
+
+        $url .= http_build_query($params);
+        $curl_handle = curl_init();
+        curl_setopt($curl_handle, CURLOPT_URL, $url);
+        curl_setopt($curl_handle, CURLOPT_SSL_VERIFYPEER, false);
+        curl_setopt($curl_handle, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($curl_handle, CURLOPT_FOLLOWLOCATION, true);
+        curl_setopt($curl_handle, CURLOPT_HTTPHEADER, array('Connection: close', 'Accept: */*', 'User-Agent: Lizmap', 'Expect:'));
+        curl_setopt($curl_handle, CURLOPT_REFERER, jUrl::getFull('lizmap~ign:address'));
+        $content = curl_exec($curl_handle);
+        $info = curl_getinfo($curl_handle);
+        $mime = $info['content_type'];
+        $http_code = (int) $info['http_code'];
+        curl_close($curl_handle);
+
+        if ($http_code >= 400) {
+            jLog::log(json_encode($info));
+
+            return $rep;
+        }
+
+        $rep->content = $content;
+
+        $content = str_replace('xmlns=', 'ns=', $content);
+        $content = str_replace('gml:', '', $content);
+        $xml = simplexml_load_string($content);
+        if (!$xml) {
+            jLog::log(json_encode($info));
+            jLog::log('Content not xml '.$content);
+
+            return $rep;
+        }
+        $results = array();
+        $GeocodedAddresses = $xml->xpath('//GeocodedAddress');
+        foreach ($GeocodedAddresses as $GeocodedAddress) {
+            $result = array();
+            $address = array();
+
+            // bug with gml:*
+            $Point = $GeocodedAddress->xpath('Point/pos');
+            if (count($Point) != 0) {
+                $Point = $Point[0];
+                $point = explode(' ', (string) $Point);
+                $result['point'] = array($point[1], $point[0]);
+            }
+
+            $Address = $GeocodedAddress->xpath('Address');
+            if (count($Address) == 0) {
+                continue;
+            }
+            $Address = $Address[0];
+
+            $Building = $Address->xpath('StreetAddress/Building');
+            if (count($Building) != 0) {
+                $Building = $Building[0];
+                $address['number'] = (string) $Building['number'];
+            }
+
+            $Street = $Address->xpath('StreetAddress/Street');
+            if (count($Street) != 0) {
+                $Street = $Street[0];
+                $address['street'] = (string) $Street;
+            }
+
+            $Places = $Address->xpath('Place');
+            foreach ($Places as $Place) {
+                $PlaceType = (string) $Place['type'];
+                if ($PlaceType == 'Municipality') {
+                    $address['municipality'] = (string) $Place;
+                } elseif ($PlaceType == 'Departement') {
+                    $address['departement'] = (string) $Place;
+                } elseif ($PlaceType == 'Bbox') {
+                    $result['bbox'] = explode(';', (string) $Place);
+                }
+            }
+
+            $formatted_address = '';
+            if (array_key_exists('number', $address)) {
+                $formatted_address = $address['number'].' ';
+            }
+            if (array_key_exists('street', $address) && $address['street'] != '') {
+                $formatted_address .= $address['street'].', ';
+            }
+            if (array_key_exists('municipality', $address)) {
+                $formatted_address .= $address['municipality'].', ';
+            }
+            if (array_key_exists('departement', $address)) {
+                $formatted_address .= $address['departement'];
+            }
+            $result['formatted_address'] = $formatted_address;
+
+            $results[] = $result;
+        }
+
+        $rep->data = $results;
+
         return $rep;
     }
-
-    $configOptions = $lproj->getOptions();
-    if( !property_exists($configOptions, 'ignKey')
-      || $configOptions->ignKey == '')
-      return $rep;
-
-    $url = 'https://wxs.ign.fr/'.$configOptions->ignKey.'/geoportail/ols?';
-    $xls = '<XLS xmlns:xls="http://www.opengis.net/xls" xmlns:gml="http://www.opengis.net/gml" xmlns="http://www.opengis.net/xls" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="1.2" xsi:schemaLocation="http://www.opengis.net/xls http://schemas.opengis.net/ols/1.2/olsAll.xsd">';
-    $xls .= '<RequestHeader/><Request requestID="1" version="1.2" methodName="LocationUtilityService"><GeocodeRequest returnFreeForm="false"><Address countryCode="StreetAddress">';
-    $xls .= '<freeFormAddress>'.$query.'</freeFormAddress>';
-    $xls .= '</Address></GeocodeRequest></Request></XLS>';
-    $params = array(
-      "xls"=>$xls,
-      "output"=>'xml'
-    );
-
-    $url .= http_build_query($params);
-    $curl_handle = curl_init();
-    curl_setopt($curl_handle, CURLOPT_URL, $url);
-    curl_setopt($curl_handle, CURLOPT_SSL_VERIFYPEER, false );
-    curl_setopt($curl_handle, CURLOPT_RETURNTRANSFER, 1);
-    curl_setopt($curl_handle, CURLOPT_FOLLOWLOCATION, true);
-    curl_setopt($curl_handle, CURLOPT_HTTPHEADER, array('Connection: close','Accept: */*','User-Agent: Lizmap','Expect:'));
-    curl_setopt($curl_handle, CURLOPT_REFERER, jUrl::getFull('lizmap~ign:address'));
-    $content = curl_exec($curl_handle);
-    $info = curl_getinfo($curl_handle);
-    $mime = $info['content_type'];
-    $http_code = (int) $info['http_code'];
-    curl_close($curl_handle);
-
-    if ( $http_code >= 400 ) {
-        jLog::log(json_encode($info));
-        return $rep;
-    }
-
-    $rep->content = $content;
-
-    $content = str_replace('xmlns=', 'ns=', $content);
-    $content = str_replace('gml:', '', $content);
-    $xml = simplexml_load_string( $content );
-    if ( !$xml ) {
-        jLog::log(json_encode($info));
-        jLog::log('Content not xml '.$content);
-        return $rep;
-    }
-    $results = array();
-    $GeocodedAddresses = $xml->xpath('//GeocodedAddress');
-    foreach( $GeocodedAddresses as $GeocodedAddress ) {
-      $result = array();
-      $address = array();
-
-      // bug with gml:*
-      $Point = $GeocodedAddress->xpath('Point/pos');
-      if ( count($Point) != 0 ) {
-        $Point = $Point[0];
-        $point = explode(' ',(string)$Point);
-        $result['point'] = array($point[1],$point[0]);
-      }
-
-      $Address = $GeocodedAddress->xpath('Address');
-      if ( count($Address) == 0 )
-        continue;
-      $Address = $Address[0];
-
-      $Building = $Address->xpath('StreetAddress/Building');
-      if ( count($Building) != 0 ) {
-        $Building = $Building[0];
-        $address['number'] = (string)$Building['number'];
-      }
-
-      $Street = $Address->xpath('StreetAddress/Street');
-      if ( count($Street) != 0 ) {
-        $Street = $Street[0];
-        $address['street'] = (string)$Street;
-      }
-
-      $Places = $Address->xpath('Place');
-      foreach($Places as $Place) {
-        $PlaceType = (string)$Place['type'];
-        if ($PlaceType == 'Municipality')
-          $address['municipality'] = (string)$Place;
-        else if ($PlaceType == 'Departement')
-          $address['departement'] = (string)$Place;
-        else if ($PlaceType == 'Bbox')
-          $result['bbox'] = explode(';',(string)$Place);
-      }
-
-      $formatted_address = '';
-      if( array_key_exists('number', $address) )
-        $formatted_address = $address['number'].' ';
-      if( array_key_exists('street', $address) && $address['street'] != '' )
-        $formatted_address .= $address['street'].', ';
-      if( array_key_exists('municipality', $address) )
-        $formatted_address .= $address['municipality'].', ';
-      if( array_key_exists('departement', $address) )
-        $formatted_address .= $address['departement'];
-      $result['formatted_address'] = $formatted_address;
-
-      $results[] = $result;
-    }
-
-    $rep->data = $results;
-    return $rep;
-  }
 }

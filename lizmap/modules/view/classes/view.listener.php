@@ -1,15 +1,16 @@
 <?php
-class viewListener extends jEventListener{
 
-   function onmasteradminGetInfoBoxContent ($event) {
-
-        $home = new masterAdminMenuItem('home', jLocale::get("view~default.repository.list.title"), jUrl::get('view~default:index'));
-        $home->icon = True;
+class viewListener extends jEventListener
+{
+    public function onmasteradminGetInfoBoxContent($event)
+    {
+        $home = new masterAdminMenuItem('home', jLocale::get('view~default.repository.list.title'), jUrl::get('view~default:index'));
+        $home->icon = true;
         $event->add($home);
+    }
 
-   }
-
-    function ongetMapAdditions ($event) {
+    public function ongetMapAdditions($event)
+    {
         $bp = jApp::config()->urlengine['basePath'];
 
         /*
@@ -34,10 +35,8 @@ class viewListener extends jEventListener{
             array(
                 'js' => $js,
                 'jscode' => $jscode,
-                'css' => $css
+                'css' => $css,
             )
         );
     }
-
 }
-?>

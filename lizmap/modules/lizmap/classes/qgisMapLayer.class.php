@@ -1,98 +1,110 @@
 <?php
 /**
-* Give access to qgis mapLayer configuration.
-* @package   lizmap
-* @subpackage lizmap
-* @author    3liz
-* @copyright 2013 3liz
-* @link      http://3liz.com
-* @license Mozilla Public License : http://www.mozilla.org/MPL/
-*/
+ * Give access to qgis mapLayer configuration.
+ *
+ * @author    3liz
+ * @copyright 2013 3liz
+ *
+ * @see      http://3liz.com
+ *
+ * @license Mozilla Public License : http://www.mozilla.org/MPL/
+ */
+class qgisMapLayer
+{
+    // layer id in the QGIS project file
+    protected $id = '';
 
+    // layer type
+    protected $type = '';
 
-class qgisMapLayer{
-  // layer id in the QGIS project file
-  protected $id = '';
+    // layer name
+    protected $name = '';
 
-  // layer type
-  protected $type = '';
+    // layer title
+    protected $title = '';
 
-  // layer name
-  protected $name = '';
+    // layer abstract
+    protected $abstract = '';
 
-  // layer title
-  protected $title = '';
+    // layer proj4
+    protected $proj4 = '';
 
-  // layer abstract
-  protected $abstract = '';
+    // layer srid
+    protected $srid = 0;
 
-  // layer proj4
-  protected $proj4 = '';
+    // layer provider
+    protected $provider = '';
 
-  // layer srid
-  protected $srid = 0;
+    /**
+     * @var lizmapProject
+     */
+    protected $project;
 
-  // layer provider
-  protected $provider = '';
+    /**
+     * constructor.
+     *
+     * @param lizmapProject $project
+     * @param array         $propLayer list of properties values
+     */
+    public function __construct($project, $propLayer)
+    {
+        $this->type = $propLayer['type'];
+        $this->id = $propLayer['id'];
 
-  /**
-   * @var lizmapProject
-   */
-  protected $project = null;
+        $this->name = $propLayer['name'];
+        $this->title = $propLayer['title'];
+        $this->abstract = $propLayer['abstract'];
 
-  /**
-   * constructor
-   * @param lizmapProject $project
-   * @param array $propLayer  list of properties values
-   */
-  public function __construct ( $project, $propLayer ) {
-    $this->type = $propLayer['type'];
-    $this->id = $propLayer['id'];
+        $this->proj4 = $propLayer['proj4'];
+        $this->srid = $propLayer['srid'];
 
-    $this->name = $propLayer['name'];
-    $this->title = $propLayer['title'];
-    $this->abstract = $propLayer['abstract'];
+        $this->datasource = $propLayer['datasource'];
+        $this->provider = $propLayer['provider'];
+        $this->project = $project;
+    }
 
-    $this->proj4 = $propLayer['proj4'];
-    $this->srid = $propLayer['srid'];
+    public function getId()
+    {
+        return $this->id;
+    }
 
-    $this->datasource = $propLayer['datasource'];
-    $this->provider = $propLayer['provider'];
-    $this->project = $project;
-  }
+    public function getType()
+    {
+        return $this->type;
+    }
 
-  public function getId(){
-    return $this->id;
-  }
+    public function getName()
+    {
+        return $this->name;
+    }
 
-  public function getType(){
-    return $this->type;
-  }
+    public function getTitle()
+    {
+        return $this->title;
+    }
 
-  public function getName(){
-    return $this->name;
-  }
+    public function getAbstract()
+    {
+        return $this->abstract;
+    }
 
-  public function getTitle(){
-    return $this->title;
-  }
+    public function getDatasource()
+    {
+        return $this->datasource;
+    }
 
-  public function getAbstract(){
-    return $this->abstract;
-  }
+    public function getProvider()
+    {
+        return $this->provider;
+    }
 
-  public function getDatasource(){
-    return $this->datasource;
-  }
+    public function getXmlLayer()
+    {
+        $xmlLayers = $this->project->getXmlLayer($this->id);
+        if (count($xmlLayers) == 0) {
+            return null;
+        }
 
-  public function getProvider(){
-    return $this->provider;
-  }
-
-  public function getXmlLayer(){
-    $xmlLayers = $this->project->getXmlLayer($this->id);
-    if (count($xmlLayers) == 0 )
-        return null;
-    return $xmlLayers[0];
-  }
+        return $xmlLayers[0];
+    }
 }

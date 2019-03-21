@@ -1,6 +1,7 @@
 <?php
-class lizmapModuleUpgrader_geobookmark extends jInstallerModule {
 
+class lizmapModuleUpgrader_geobookmark extends jInstallerModule
+{
     public $targetVersions = array(
         '2.10.0',
         '2.10.1',
@@ -23,17 +24,17 @@ class lizmapModuleUpgrader_geobookmark extends jInstallerModule {
         '2.12.5',
         '2.12.6',
         '3.0pre',
-        '3.0beta1'
+        '3.0beta1',
     );
     public $date = '2015-09-16';
 
-    function install() {
+    public function install()
+    {
         // Ajout de la table geobookmark
-        if( $this->firstDbExec() ) {
+        if ($this->firstDbExec()) {
             // Add geobookmark table
             $this->useDbProfile('jauth');
             $this->execSQLScript('sql/lizgeobookmark');
         }
     }
-
 }
