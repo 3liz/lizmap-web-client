@@ -1,28 +1,25 @@
 <?php
 /**
-* @package   lizmap
-* @subpackage dataviz
-* @author    3liz
-* @copyright 2017 3liz
-* @link      http://3liz.com
-* @license    Mozilla Public License
-*/
+ * @author    3liz
+ * @copyright 2017 3liz
+ *
+ * @see      http://3liz.com
+ *
+ * @license    Mozilla Public License
+ */
+class serviceCtrl extends jController
+{
+    private $repository;
+    private $project;
+    private $config;
 
-class serviceCtrl extends jController {
-
-
-    private $repository = null;
-    private $project = null;
-    private $config = null;
-
-    function __construct( $request ){
-
-        parent::__construct( $request );
-
+    public function __construct($request)
+    {
+        parent::__construct($request);
     }
 
-    public function index(){
-
+    public function index()
+    {
         $rep = $this->getResponse('json');
 
         // Check project
@@ -32,11 +29,11 @@ class serviceCtrl extends jController {
         // Check dataviz config
         jClasses::inc('dataviz~datavizConfig');
         $dv = new datavizConfig($repository, $project);
-        if(!$dv->getStatus()){
+        if (!$dv->getStatus()) {
             return $this->error($dv->getErrors());
         }
         $config = $dv->getConfig();
-        if( empty($config) ){
+        if (empty($config)) {
             return $this->error($dv->getErrors());
         }
         $this->repository = $repository;
@@ -45,19 +42,21 @@ class serviceCtrl extends jController {
 
         // Redirect to method corresponding on REQUEST param
         $request = $this->param('request', 'getPlot');
-        if($request == 'getPlot')
+        if ($request == 'getPlot') {
             return $this->getPlot();
-
+        }
     }
 
-    public function error($errors){
+    public function error($errors)
+    {
         $rep = $this->getResponse('json');
-        $rep->data = array( 'errors' => $errors);
+        $rep->data = array('errors' => $errors);
+
         return $rep;
     }
 
-    public function getPlot() {
-
+    public function getPlot()
+    {
         $rep = $this->getResponse('json');
 
         // Get params
@@ -82,7 +81,7 @@ class serviceCtrl extends jController {
         $layerId = null;
 
         // Fins layer by id
-        if( array_key_exists($plot_id, $this->config['layers']) ){
+        if (array_key_exists($plot_id, $this->config['layers'])) {
             $plot = $this->config['layers'][$plot_id];
             $layerId = $plot['layer_id'];
             $title = $plot['title'];
@@ -91,85 +90,79 @@ class serviceCtrl extends jController {
             $x_field = $plot['plot']['x_field'];
             $y_field = $plot['plot']['y_field'];
 
-            $y2_field = Null;
-            if(array_key_exists('y2_field', $plot['plot']))
+            $y2_field = null;
+            if (array_key_exists('y2_field', $plot['plot'])) {
                 $y2_field = $plot['plot']['y2_field'];
-            if(!empty($y2_field)){
-                $y_field = $y_field . ',' . $y2_field;
             }
-            if(array_key_exists('aggregation', $plot['plot']))
+            if (!empty($y2_field)) {
+                $y_field = $y_field.','.$y2_field;
+            }
+            if (array_key_exists('aggregation', $plot['plot'])) {
                 $aggregation = $plot['plot']['aggregation'];
+            }
 
             // Colors
             $colors = array();
             $colorfields = array();
-            if( array_key_exists('color', $plot['plot']) ){
+            if (array_key_exists('color', $plot['plot'])) {
                 $color = $plot['plot']['color'];
                 $colors[] = $color;
             }
-            if( array_key_exists('colorfield', $plot['plot']) ){
+            if (array_key_exists('colorfield', $plot['plot'])) {
                 $colorfield = $plot['plot']['colorfield'];
                 $colorfields[] = $colorfield;
             }
-            if( array_key_exists('color2', $plot['plot']) ){
+            if (array_key_exists('color2', $plot['plot'])) {
                 $color2 = $plot['plot']['color2'];
                 $colors[] = $color2;
             }
-            if( array_key_exists('colorfield2', $plot['plot']) ){
+            if (array_key_exists('colorfield2', $plot['plot'])) {
                 $colorfield2 = $plot['plot']['colorfield2'];
                 $colorfields[] = $colorfield2;
             }
-            if( array_key_exists('layout_config', $plot['plot']) )
+            if (array_key_exists('layout_config', $plot['plot'])) {
                 $layout = $plot['plot']['layout_config'];
+            }
         }
 
         // Create plot
         jClasses::inc('dataviz~datavizPlot');
 
-        if( $type == 'scatter'){
-            $dplot = new datavizPlotScatter(  $repository, $project, $layerId, $x_field, $y_field, $colors, $colorfields, $title, $layout, $aggregation );
-        }
-        elseif( $type == 'box'){
-            $dplot = new datavizPlotBox(  $repository, $project, $layerId, $x_field, $y_field, $colors, $colorfields, $title, $layout, $aggregation );
-        }
-        elseif( $type == 'bar'){
-            $dplot = new datavizPlotBar(  $repository, $project, $layerId, $x_field, $y_field, $colors, $colorfields, $title, $layout, $aggregation );
-        }
-        elseif( $type == 'histogram'){
-            $dplot = new datavizPlotHistogram(  $repository, $project, $layerId, $x_field, $y_field, $colors, $colorfields, $title, $layout, $aggregation );
-        }
-        elseif( $type == 'pie'){
-            $dplot = new datavizPlotPie(  $repository, $project, $layerId, $x_field, $y_field, $colors, $colorfields, $title, $layout, $aggregation );
-        }
-        elseif( $type == 'histogram2d'){
-            $dplot = new datavizPlotHistogram2d(  $repository, $project, $layerId, $x_field, $y_field, $colors, $colorfields, $title, $layout, $aggregation );
-        }
-        elseif( $type == 'polar'){
-            $dplot = new datavizPlotPolar(  $repository, $project, $layerId, $x_field, $y_field, $colors, $colorfields, $title, $layout, $aggregation );
-        }
-        else{
+        if ($type == 'scatter') {
+            $dplot = new datavizPlotScatter($repository, $project, $layerId, $x_field, $y_field, $colors, $colorfields, $title, $layout, $aggregation);
+        } elseif ($type == 'box') {
+            $dplot = new datavizPlotBox($repository, $project, $layerId, $x_field, $y_field, $colors, $colorfields, $title, $layout, $aggregation);
+        } elseif ($type == 'bar') {
+            $dplot = new datavizPlotBar($repository, $project, $layerId, $x_field, $y_field, $colors, $colorfields, $title, $layout, $aggregation);
+        } elseif ($type == 'histogram') {
+            $dplot = new datavizPlotHistogram($repository, $project, $layerId, $x_field, $y_field, $colors, $colorfields, $title, $layout, $aggregation);
+        } elseif ($type == 'pie') {
+            $dplot = new datavizPlotPie($repository, $project, $layerId, $x_field, $y_field, $colors, $colorfields, $title, $layout, $aggregation);
+        } elseif ($type == 'histogram2d') {
+            $dplot = new datavizPlotHistogram2d($repository, $project, $layerId, $x_field, $y_field, $colors, $colorfields, $title, $layout, $aggregation);
+        } elseif ($type == 'polar') {
+            $dplot = new datavizPlotPolar($repository, $project, $layerId, $x_field, $y_field, $colors, $colorfields, $title, $layout, $aggregation);
+        } else {
             $dplot = null;
         }
-        if(!$dplot){
-            $plot = array(
+        if (!$dplot) {
+            return array(
                 'errors' => array(
-                    'title'=>'No corresponding plot',
-                    'detail'=>'No plot could be created for this request'
-                )
+                    'title' => 'No corresponding plot',
+                    'detail' => 'No plot could be created for this request',
+                ),
             );
-            return $plot;
         }
 
         $fd = $dplot->fetchData('wfs', $exp_filter);
         $plot = array(
             'title' => $dplot->title,
             'data' => $dplot->getData(),
-            'layout' => $dplot->getLayout()
+            'layout' => $dplot->getLayout(),
         );
 
         $rep->data = $plot;
+
         return $rep;
-
     }
-
 }

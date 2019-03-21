@@ -1,99 +1,99 @@
 <?php
 /**
-* Manage and give access to lizmap configuration.
-* @package   lizmap
-* @subpackage lizmap
-* @author    3liz
-* @copyright 2012 3liz
-* @link      http://3liz.com
-* @license Mozilla Public License : http://www.mozilla.org/MPL/
-*/
-
-
-class lizmapServices{
-
+ * Manage and give access to lizmap configuration.
+ *
+ * @author    3liz
+ * @copyright 2012 3liz
+ *
+ * @see      http://3liz.com
+ *
+ * @license Mozilla Public License : http://www.mozilla.org/MPL/
+ */
+class lizmapServices
+{
     /**
      * Lizmap configuration data from lizmapConfig.ini.php
      * This allow to access to configuration properties that are not exposed
-     * via properties member for this class
+     * via properties member for this class.
      */
     private $data = array();
 
     /**
      * List of all properties of lizmapServices that should be retrieved
-     * from lizmapConfig.ini.php or from the main configuration
+     * from lizmapConfig.ini.php or from the main configuration.
      */
     private $properties = array(
-      'appName',
-      'qgisServerVersion',
-      'wmsServerURL',
-      'wmsPublicUrlList',
-      'wmsMaxWidth',
-      'wmsMaxHeight',
-      'cacheStorageType',
-      'cacheExpiration',
-      'defaultRepository',
-      'defaultProject',
-      'onlyMaps',
-      'projectSwitcher',
-      'rootRepositories',
-      'relativeWMSPath',
-      'proxyMethod',
-      'requestProxyEnabled',
-      'requestProxyHost',
-      'requestProxyPort',
-      'requestProxyUser',
-      'requestProxyPassword',
-      'requestProxyType',
-      'requestProxyNotForDomain',
-      'debugMode',
-      'cacheRootDirectory',
-      'cacheRedisHost',
-      'cacheRedisPort',
-      'cacheRedisDb',
-      'cacheRedisKeyPrefix',
-      'allowUserAccountRequests',
-      'adminContactEmail',
-      'adminSenderEmail',
-      'adminSenderName',
-      'googleAnalyticsID'
+        'appName',
+        'qgisServerVersion',
+        'wmsServerURL',
+        'wmsPublicUrlList',
+        'wmsMaxWidth',
+        'wmsMaxHeight',
+        'cacheStorageType',
+        'cacheExpiration',
+        'defaultRepository',
+        'defaultProject',
+        'onlyMaps',
+        'projectSwitcher',
+        'rootRepositories',
+        'relativeWMSPath',
+        'proxyMethod',
+        'requestProxyEnabled',
+        'requestProxyHost',
+        'requestProxyPort',
+        'requestProxyUser',
+        'requestProxyPassword',
+        'requestProxyType',
+        'requestProxyNotForDomain',
+        'debugMode',
+        'cacheRootDirectory',
+        'cacheRedisHost',
+        'cacheRedisPort',
+        'cacheRedisDb',
+        'cacheRedisKeyPrefix',
+        'allowUserAccountRequests',
+        'adminContactEmail',
+        'adminSenderEmail',
+        'adminSenderName',
+        'googleAnalyticsID',
     );
 
     // services properties
     private $sensitiveProperties = array(
-      'qgisServerVersion',
-      'wmsServerURL',
-      'wmsPublicUrlList',
-      'wmsMaxWidth',
-      'wmsMaxHeight',
-      'cacheStorageType',
-      'cacheExpiration',
-      'rootRepositories',
-      'relativeWMSPath',
-      'proxyMethod',
-      'requestProxyEnabled',
-      'requestProxyHost',
-      'requestProxyPort',
-      'requestProxyUser',
-      'requestProxyPassword',
-      'requestProxyType',
-      'requestProxyNotForDomain',
-      'debugMode',
-      'cacheRootDirectory',
-      'cacheRedisHost',
-      'cacheRedisPort',
-      'cacheRedisDb',
-      'cacheRedisKeyPrefix',
-      'adminSenderEmail',
-      'adminSenderName',
+        'qgisServerVersion',
+        'wmsServerURL',
+        'wmsPublicUrlList',
+        'wmsMaxWidth',
+        'wmsMaxHeight',
+        'cacheStorageType',
+        'cacheExpiration',
+        'rootRepositories',
+        'relativeWMSPath',
+        'proxyMethod',
+        'requestProxyEnabled',
+        'requestProxyHost',
+        'requestProxyPort',
+        'requestProxyUser',
+        'requestProxyPassword',
+        'requestProxyType',
+        'requestProxyNotForDomain',
+        'debugMode',
+        'cacheRootDirectory',
+        'cacheRedisHost',
+        'cacheRedisPort',
+        'cacheRedisDb',
+        'cacheRedisKeyPrefix',
+        'adminSenderEmail',
+        'adminSenderName',
     );
 
     private $notEditableProperties = array(
-        'cacheRedisKeyPrefixFlushMethod'
+        'cacheRedisKeyPrefixFlushMethod',
     );
 
     /**
-     * List of properties mapped to a parameter of the main configuration of Jelix
+     * List of properties mapped to a parameter of the main configuration of Jelix.
+     *
      * @var array
      */
     private $globalConfigProperties = array(
@@ -166,44 +166,44 @@ class lizmapServices{
     // application id for google analytics
     public $googleAnalyticsID = '';
 
-    public function __construct () {
-      // read the lizmap configuration file
-      $readConfigPath = parse_ini_file(jApp::configPath('lizmapConfig.ini.php'), True);
-      $this->data = $readConfigPath;
-      $globalConfig = jApp::config();
+    public function __construct()
+    {
+        // read the lizmap configuration file
+        $readConfigPath = parse_ini_file(jApp::configPath('lizmapConfig.ini.php'), true);
+        $this->data = $readConfigPath;
+        $globalConfig = jApp::config();
 
-      $this->isUsingLdap = jApp::isModuleEnabled('ldapdao');
+        $this->isUsingLdap = jApp::isModuleEnabled('ldapdao');
 
-      // set generic parameters
-      foreach($this->properties as $prop) {
-        if (isset($this->globalConfigProperties[$prop])) {
-          list($key, $section) = $this->globalConfigProperties[$prop];
-          if (isset($globalConfig->$section)) {
-              $conf = & $globalConfig->$section;
-          }
-          if (isset($conf[$key])) {
-            $this->$prop = trim($conf[$key]);
-          }
+        // set generic parameters
+        foreach ($this->properties as $prop) {
+            if (isset($this->globalConfigProperties[$prop])) {
+                list($key, $section) = $this->globalConfigProperties[$prop];
+                if (isset($globalConfig->{$section})) {
+                    $conf = &$globalConfig->{$section};
+                }
+                if (isset($conf[$key])) {
+                    $this->{$prop} = trim($conf[$key]);
+                }
+            } elseif (isset($readConfigPath['services'][$prop])) {
+                $this->{$prop} = $readConfigPath['services'][$prop];
+            }
         }
-        else if(isset($readConfigPath['services'][$prop])) {
-          $this->$prop = $readConfigPath['services'][$prop];
-        }
-      }
 
-      foreach($this->notEditableProperties as $prop) {
-        if(isset($readConfigPath['services'][$prop])) {
-          $this->$prop = $readConfigPath['services'][$prop];
+        foreach ($this->notEditableProperties as $prop) {
+            if (isset($readConfigPath['services'][$prop])) {
+                $this->{$prop} = $readConfigPath['services'][$prop];
+            }
         }
-      }
 
-      // check email address where to send notifications
-      if ($this->adminContactEmail == 'root@localhost' ||
+        // check email address where to send notifications
+        if ($this->adminContactEmail == 'root@localhost' ||
           $this->adminContactEmail == 'root@localhost.localdomain' ||
           $this->adminContactEmail == '' ||
           !filter_var($this->adminContactEmail, FILTER_VALIDATE_EMAIL)
       ) {
-          $this->adminContactEmail = '';
-      }
+            $this->adminContactEmail = '';
+        }
 
         // check email address of the sender
         if ($this->adminSenderEmail == 'root@localhost' ||
@@ -218,8 +218,8 @@ class lizmapServices{
         }
 
         if ($this->isUsingLdap) {
-           // as ldapdao cannot write to the ldap, a user cannot create an account
-           $this->allowUserAccountRequests = false;
+            // as ldapdao cannot write to the ldap, a user cannot create an account
+            $this->allowUserAccountRequests = false;
         }
 
         // set it for external requests, needed for file_get_contents
@@ -233,146 +233,159 @@ class lizmapServices{
         }
     }
 
-    public function isLdapEnabled() {
+    public function isLdapEnabled()
+    {
         return $this->isUsingLdap;
     }
 
-    public function getProperties(){
-      return $this->properties;
+    public function getProperties()
+    {
+        return $this->properties;
     }
 
-    public function hideSensitiveProperties(){
-      if ( isset($this->data['hideSensitiveServicesProperties'])
+    public function hideSensitiveProperties()
+    {
+        if (isset($this->data['hideSensitiveServicesProperties'])
           && $this->data['hideSensitiveServicesProperties'] != '0'
       ) {
-          return true;
-      }
+            return true;
+        }
 
-      return false;
+        return false;
     }
 
-    public function getSensitiveProperties(){
+    public function getSensitiveProperties()
+    {
         return $this->sensitiveProperties;
     }
 
-    public function getRootRepositories(){
+    public function getRootRepositories()
+    {
         $rootRepositories = $this->rootRepositories;
 
-        if ( $rootRepositories != '' ) {
+        if ($rootRepositories != '') {
             // if path is relative, get full path
-            if ($rootRepositories[0] != '/' and $rootRepositories[1] != ':')
-                $rootRepositories = realpath( jApp::varPath().$rootRepositories );
+            if ($rootRepositories[0] != '/' and $rootRepositories[1] != ':') {
+                $rootRepositories = realpath(jApp::varPath().$rootRepositories);
+            }
             // add a trailing slash if needed
-            if( !preg_match('#/$#', $rootRepositories ))
+            if (!preg_match('#/$#', $rootRepositories)) {
                 $rootRepositories .= '/';
+            }
         }
+
         return $rootRepositories;
     }
 
-    public function isRelativeWMSPath(){
-      // in the ini file, if the value is 'off' or 'false', the result is ''
-      return ($this->relativeWMSPath !== '' && $this->relativeWMSPath !== '0');
+    public function isRelativeWMSPath()
+    {
+        // in the ini file, if the value is 'off' or 'false', the result is ''
+        return $this->relativeWMSPath !== '' && $this->relativeWMSPath !== '0';
     }
 
     /**
      * Modify the services.
-     * @param array $data Array containing the data of the services.
+     *
+     * @param array $data array containing the data of the services
      */
-    public function modify( $data ){
-      $modified = false;
-      $globalConfig = jApp::config();
-      foreach($data as $k=>$v){
-        if (isset($this->globalConfigProperties[$k])) {
-          list($key, $section) = $this->globalConfigProperties[$k];
-          if (!isset($globalConfig->$section)) {
-            $globalConfig->$section = array();
-          }
-          $conf = & $globalConfig->$section;
-          $conf[$key] = $v;
-          $this->$k = $v;
-          $modified = true;
+    public function modify($data)
+    {
+        $modified = false;
+        $globalConfig = jApp::config();
+        foreach ($data as $k => $v) {
+            if (isset($this->globalConfigProperties[$k])) {
+                list($key, $section) = $this->globalConfigProperties[$k];
+                if (!isset($globalConfig->{$section})) {
+                    $globalConfig->{$section} = array();
+                }
+                $conf = &$globalConfig->{$section};
+                $conf[$key] = $v;
+                $this->{$k} = $v;
+                $modified = true;
+            } elseif (in_array($k, $this->properties)) {
+                $this->data['services'][$k] = $v;
+                $this->{$k} = $v;
+                $modified = true;
+            }
         }
-        else if(in_array($k, $this->properties)){
-          $this->data['services'][$k] = $v;
-          $this->$k = $v;
-          $modified = true;
-        }
-      }
-      return $modified;
+
+        return $modified;
     }
 
     /**
-     * Update the services. (modify and save)
-     * @param array $data Array containing the data of the services.
+     * Update the services. (modify and save).
+     *
+     * @param array $data array containing the data of the services
      */
-    public function update( $data ){
-      $modified = $this->modify( $data );
-      if ($modified)
-        $modified = $this->save();
-      return $modified;
+    public function update($data)
+    {
+        $modified = $this->modify($data);
+        if ($modified) {
+            $modified = $this->save();
+        }
+
+        return $modified;
     }
 
     /**
      * save the services.
      */
-    public function save( ){
-      // Get access to the ini file
-      $ini = new jIniFileModifier(jApp::configPath('lizmapConfig.ini.php'));
-      $liveIni = new jIniFileModifier(jApp::configPath('liveconfig.ini.php'));
+    public function save()
+    {
+        // Get access to the ini file
+        $ini = new jIniFileModifier(jApp::configPath('lizmapConfig.ini.php'));
+        $liveIni = new jIniFileModifier(jApp::configPath('liveconfig.ini.php'));
 
-      $dontSaveSensitiveProps = $this->hideSensitiveProperties();
-      $hiddenProps = array();
-      if ($dontSaveSensitiveProps) {
-          $hiddenProps = array_combine($this->sensitiveProperties, array_fill(0, count($this->sensitiveProperties), true));
-      }
+        $dontSaveSensitiveProps = $this->hideSensitiveProperties();
+        $hiddenProps = array();
+        if ($dontSaveSensitiveProps) {
+            $hiddenProps = array_combine($this->sensitiveProperties, array_fill(0, count($this->sensitiveProperties), true));
+        }
 
-      foreach($this->properties as $prop) {
-        if ($dontSaveSensitiveProps && isset($hiddenProps[$prop])) {
-          continue;
+        foreach ($this->properties as $prop) {
+            if ($dontSaveSensitiveProps && isset($hiddenProps[$prop])) {
+                continue;
+            }
+            if (isset($this->globalConfigProperties[$prop])) {
+                list($key, $section) = $this->globalConfigProperties[$prop];
+                $liveIni->setValue($key, $this->{$prop}, $section);
+            } elseif ($this->{$prop} != '') {
+                $ini->setValue($prop, $this->{$prop}, 'services');
+            } else {
+                $ini->removeValue($prop, 'services');
+            }
         }
-        if (isset($this->globalConfigProperties[$prop])) {
-          list($key, $section) = $this->globalConfigProperties[$prop];
-            $liveIni->setValue($key, $this->$prop, $section);
-        }
-        else if ($this->$prop != '') {
-          $ini->setValue($prop, $this->$prop, 'services');
-        }
-        else {
-          $ini->removeValue($prop, 'services');
-        }
-      }
 
-      $modified = $ini->isModified() || $liveIni->isModified();
+        $modified = $ini->isModified() || $liveIni->isModified();
 
-      // Save the ini file
-      $ini->save();
-      $liveIni->save();
-      return $modified;
+        // Save the ini file
+        $ini->save();
+        $liveIni->save();
+
+        return $modified;
     }
 
-    function sendNotificationEmail($subject, $body) {
+    public function sendNotificationEmail($subject, $body)
+    {
         $email = filter_var($this->adminContactEmail, FILTER_VALIDATE_EMAIL);
         $sender = filter_var($this->adminSenderEmail, FILTER_VALIDATE_EMAIL);
         if ($email && $sender) {
             $mail = new jMailer();
             $mail->Subject = $subject;
             $mail->Body = $body;
-            $mail->AddAddress( $email, 'Lizmap Notifications');
-            try{
+            $mail->AddAddress($email, 'Lizmap Notifications');
+
+            try {
                 $mail->Send();
+            } catch (Exception $e) {
+                jLog::log('error while sending email to admin: '.$e->getMessage(), 'error');
             }
-            catch(Exception $e){
-                jLog::log('error while sending email to admin: '. $e->getMessage(), 'error');
-            }
-        }
-        else {
+        } else {
             if (!$sender && !$email) {
                 jLog::log('Notification cannot be send: no sender email nor notification email have been configured', 'warning');
-            }
-            else if (!$email) {
+            } elseif (!$email) {
                 jLog::log('Notification cannot be send: no notification email has been configured', 'warning');
-            }
-            else if (!$sender) {
+            } elseif (!$sender) {
                 jLog::log('Notification cannot be send: no sender email has been configured', 'warning');
             }
         }

@@ -1,31 +1,36 @@
 <?php
 /**
-* Plugin modifier for the popup templates
-* @package   lizmap
-* @subpackage view
-* @author    3liz
-* @copyright 2011 3liz
-* @link      http://3liz.com
-* @license    Mozilla Public License : http://www.mozilla.org/MPL/
-*/
+ * Plugin modifier for the popup templates.
+ *
+ * @author    3liz
+ * @copyright 2011 3liz
+ *
+ * @see      http://3liz.com
+ *
+ * @license    Mozilla Public License : http://www.mozilla.org/MPL/
+ *
+ * @param mixed $attributeName
+ * @param mixed $attributeValue
+ * @param mixed $repository
+ * @param mixed $project
+ */
 
 /**
-* modifier plugin : text replace a feature attribute value by html content based on value.
-* <pre>
-*  {$attribute['name']|featurepopup:$attribute['value'],$repository,$project}
-* </pre>
-* @param string $attributeName Feature Attribute name.
-* @param string $attributeValue Feature Attribute value.
-* @param string $repository Lizmap Repository.
-* @param string $project Name of the project.
-* @return html string
-*/
+ * modifier plugin : text replace a feature attribute value by html content based on value.
+ * <pre>
+ *  {$attribute['name']|featurepopup:$attribute['value'],$repository,$project}
+ * </pre>.
+ *
+ * @param string $attributeName  feature Attribute name
+ * @param string $attributeValue feature Attribute value
+ * @param string $repository     lizmap Repository
+ * @param string $project        name of the project
+ *
+ * @return html string
+ */
+function jtpl_modifier_common_featurepopup($attributeName, $attributeValue, $repository, $project)
+{
+    $popupClass = jClasses::getService('view~popup');
 
-function jtpl_modifier_common_featurepopup($attributeName, $attributeValue, $repository, $project) {
-
-	$popupClass = jClasses::getService("view~popup");
-	$result = $popupClass->getHtmlFeatureAttribute($attributeName, $attributeValue, $repository, $project, Null);
-
-	return $result;
-
+    return $popupClass->getHtmlFeatureAttribute($attributeName, $attributeValue, $repository, $project, null);
 }

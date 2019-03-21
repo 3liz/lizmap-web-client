@@ -1,25 +1,22 @@
 <?php
 /**
-* @package   lizmap
-* @subpackage lizmap
-* @author    3liz
-* @copyright 2011 3liz
-* @link      http://3liz.com
-* @license Mozilla Public License : http://www.mozilla.org/MPL/
-*/
-
-
-class lizmapModuleInstaller extends jInstallerModule {
-
-    function install() {
-
+ * @author    3liz
+ * @copyright 2011 3liz
+ *
+ * @see      http://3liz.com
+ *
+ * @license Mozilla Public License : http://www.mozilla.org/MPL/
+ */
+class lizmapModuleInstaller extends jInstallerModule
+{
+    public function install()
+    {
         $lizmapConfFile = jApp::configPath('lizmapConfig.ini.php');
         if (!file_exists($lizmapConfFile)) {
             $lizmapConfFileDist = jApp::configPath('lizmapConfig.ini.php.dist');
             if (file_exists($lizmapConfFileDist)) {
                 copy($lizmapConfFileDist, $lizmapConfFile);
-            }
-            else {
+            } else {
                 $this->copyFile('config/lizmapConfig.ini.php', $lizmapConfFile);
             }
         }
@@ -29,8 +26,7 @@ class lizmapModuleInstaller extends jInstallerModule {
             $localConfigDist = jApp::configPath('localconfig.ini.php.dist');
             if (file_exists($localConfigDist)) {
                 copy($localConfigDist, $localConfig);
-            }
-            else {
+            } else {
                 file_put_contents($localConfig, ';<'.'?php die(\'\');?'.'>');
             }
         }
@@ -57,10 +53,10 @@ class lizmapModuleInstaller extends jInstallerModule {
             jAcl2DbUserGroup:: createGroup('Intranet demos group', 'intranet');
 
             // create user in jAuth
-            require_once(JELIX_LIB_PATH.'auth/jAuth.class.php');
-            require_once(JELIX_LIB_PATH.'plugins/auth/db/db.auth.php');
+            require_once JELIX_LIB_PATH.'auth/jAuth.class.php';
+            require_once JELIX_LIB_PATH.'plugins/auth/db/db.auth.php';
 
-            $authconfig = $this->config->getValue('auth','coordplugins');
+            $authconfig = $this->config->getValue('auth', 'coordplugins');
             $confIni = parse_ini_file(jApp::configPath($authconfig), true);
             $authConfig = jAuth::loadConfig($confIni);
             $driverConfig = $authConfig[$authConfig['driver']];
@@ -105,13 +101,13 @@ class lizmapModuleInstaller extends jInstallerModule {
             jAcl2DbUserGroup::addUserToGroup('logintranet', 'intranet');
 
             jAcl2DbManager::setRightsOnGroup('lizadmins', array(
-                'lizmap.admin.access'=>true,
-                'lizmap.admin.services.update'=>true,
-                'lizmap.admin.repositories.create'=>true,
-                'lizmap.admin.repositories.delete'=>true,
-                'lizmap.admin.repositories.update'=>true,
-                'lizmap.admin.repositories.view'=>true,
-                'lizmap.admin.services.view'=>true
+                'lizmap.admin.access' => true,
+                'lizmap.admin.services.update' => true,
+                'lizmap.admin.repositories.create' => true,
+                'lizmap.admin.repositories.delete' => true,
+                'lizmap.admin.repositories.update' => true,
+                'lizmap.admin.repositories.view' => true,
+                'lizmap.admin.services.view' => true,
             ));
 
             // admins
@@ -162,15 +158,15 @@ class lizmapModuleInstaller extends jInstallerModule {
             // declare the repositories of demo in the configuration
             $ini = new jIniFileModifier($lizmapConfFile);
             $ini->setValues(array(
-                'label'=>'Demo',
-                'path'=>'../install/qgis/',
-                'allowUserDefinedThemes'=>1
-                ), 'repository:montpellier');
+                'label' => 'Demo',
+                'path' => '../install/qgis/',
+                'allowUserDefinedThemes' => 1,
+            ), 'repository:montpellier');
             $ini->setValues(array(
-                'label'=>'Demo - Intranet',
-                'path'=>'../install/qgis_intranet/',
-                'allowUserDefinedThemes'=>''
-                ), 'repository:intranet');
+                'label' => 'Demo - Intranet',
+                'path' => '../install/qgis_intranet/',
+                'allowUserDefinedThemes' => '',
+            ), 'repository:intranet');
             $ini->setValue('defaultRepository', 'montpellier', 'services');
             $ini->save();
         }

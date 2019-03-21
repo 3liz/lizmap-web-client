@@ -1,24 +1,23 @@
 <?php
 /**
-* @package   lizmap
-* @subpackage lizmap
-* @copyright 2011-2018 3liz
-* @link      http://3liz.com
-* @license   MPL-2.0
-*/
+ * @copyright 2011-2018 3liz
+ *
+ * @see      http://3liz.com
+ *
+ * @license   MPL-2.0
+ */
+use Gettext\Translations;
+use Jelix\PropertiesFile\Parser;
+use Jelix\PropertiesFile\Properties;
+use Jelix\PropertiesFile\Writer;
 
-use \Gettext\Translations;
-use \Jelix\PropertiesFile\Parser;
-use \Jelix\PropertiesFile\Writer;
-use \Jelix\PropertiesFile\Properties;
-
-class localeCtrl extends jControllerCmdLine {
-
+class localeCtrl extends jControllerCmdLine
+{
     /**
-    * Options to the command line
-    *  'method_name' => array('-option_name' => true/false)
-    * true means that a value should be provided for the option on the command line
-    */
+     * Options to the command line
+     *  'method_name' => array('-option_name' => true/false)
+     * true means that a value should be provided for the option on the command line.
+     */
     protected $allowed_options = array(
     );
 
@@ -26,29 +25,27 @@ class localeCtrl extends jControllerCmdLine {
      * Parameters for the command line
      * 'method_name' => array('parameter_name' => true/false)
      * false means that the parameter is optional. All parameters which follow an optional parameter
-     * is optional
+     * is optional.
      */
     protected $allowed_parameters = array(
         'pot' => array(
-            'module'=>True, // module name
-            'output'=>True  // output pot file full path
+            'module' => true, // module name
+            'output' => true,  // output pot file full path
         ),
         'po' => array(
-            'module'=>True, // module name
-            'locale'=>True, // locale
-            'output'=>True  // output po file full path
+            'module' => true, // module name
+            'locale' => true, // locale
+            'output' => true,  // output po file full path
         ),
         'importpo' => array(
-            'input'=>True,  // po file full path
-            'module'=>True, // module name
-            'locale'=>True, // locale
-        )
+            'input' => true,  // po file full path
+            'module' => true, // module name
+            'locale' => true, // locale
+        ),
     );
 
     /**
-     * Help
-     *
-     *
+     * Help.
      */
     public $help = array(
 
@@ -77,35 +74,39 @@ class localeCtrl extends jControllerCmdLine {
 
         Example :
         php lizmap/scripts/script.php lizmap~locale:importpo /tmp/fr_FR/view.po view fr_FR 
-        '
+        ',
     );
 
     /**
-     * construct the list of all properties files of the module
+     * construct the list of all properties files of the module.
+     *
      * @param string $module
      * @param string $moduleLocalePath
+     *
      * @return string[]
      */
-    protected function getModuleLocaleFiles($module, $moduleLocalePath) {
-        $files = Array();
-        if ( $dh = opendir( $moduleLocalePath ) ) {
-            while( ($file = readdir($dh)) !== false ) {
+    protected function getModuleLocaleFiles($module, $moduleLocalePath)
+    {
+        $files = array();
+        if ($dh = opendir($moduleLocalePath)) {
+            while (($file = readdir($dh)) !== false) {
                 if (substr($file, -17) == '.UTF-8.properties' &&
-                    !($module == 'jelix' && $file == 'format.UTF-8.properties'))
-                {
+                    !($module == 'jelix' && $file == 'format.UTF-8.properties')) {
                     $files[] = $file;
                 }
             }
             closedir($dh);
         }
+
         return $files;
     }
 
-    protected function getModulePath($lang = 'en_US') {
+    protected function getModulePath($lang = 'en_US')
+    {
         if (!file_exists(jApp::appPath('vendor/autoload.php'))) {
             throw new Exception("Error: locales commands needs some package. Install packages with Composer: run 'composer install' into the lizmap directory");
         }
-        require_once(jApp::appPath('vendor/autoload.php'));
+        require_once jApp::appPath('vendor/autoload.php');
 
         $module = $this->param('module');
 
@@ -113,6 +114,7 @@ class localeCtrl extends jControllerCmdLine {
             if ($module == 'jelix') {
                 throw new Exception('jelix module is not enabled !!');
             }
+
             throw new jExceptionSelector('jelix~errors.selector.module.unknown', $module);
         }
 
@@ -123,53 +125,54 @@ class localeCtrl extends jControllerCmdLine {
             // don't want to store languages files it into lib/
             if (file_exists(jApp::varPath('locales'))) {
                 $localesPath = jApp::varPath('locales/'.$lang.'/'.$module.'/locales/');
-            }
-            else {
+            } else {
                 $localesPath = jApp::varPath('overloads/'.$module.'/locales/'.$lang.'/');
             }
-        }
-        else {
+        } else {
             $localesPath = $originalModulePath;
         }
 
         return array($module, $modulePath, $localesPath, $originalModulePath, $modulePath.'locales/en_US/');
     }
 
-    protected function getOutputFile($module, $extension) {
+    protected function getOutputFile($module, $extension)
+    {
         $output = $this->param('output');
-        if ( is_dir( $output ) ) {
+        if (is_dir($output)) {
             $dir = $output;
-            if ( substr($dir, -1) == '/' )
+            if (substr($dir, -1) == '/') {
                 $output = $dir.$module.'.'.$extension;
-            else
+            } else {
                 $output = $dir.'/'.$module.'.'.$extension;
+            }
+        } else {
+            $dir = dirname($output);
         }
-        else {
-            $dir = dirname( $output );
-        }
-        if (!file_exists( $dir )) {
+        if (!file_exists($dir)) {
             jFile::createDir($dir);
         }
+
         return $output;
     }
 
     /**
-     * Generate POT file for a module
+     * Generate POT file for a module.
      */
-    function pot() {
+    public function pot()
+    {
         $rep = $this->getResponse(); // cmdline response by default
         list($module, $modulePath, $localesPath, $originalModulePath, $enLocalesPath) = $this->getModulePath();
 
         $files = $this->getModuleLocaleFiles($module, $enLocalesPath);
 
         $rep->addContent("================\n");
-        $rep->addContent( $module ."\n" );
-        $rep->addContent( $modulePath ."\n" );
-        $rep->addContent( $enLocalesPath ."\n" );
+        $rep->addContent($module."\n");
+        $rep->addContent($modulePath."\n");
+        $rep->addContent($enLocalesPath."\n");
 
-        $dt= new DateTime('NOW');
+        $dt = new DateTime('NOW');
         $xml = simplexml_load_file(jApp::appPath('project.xml'));
-        $projectId = (string)$xml->info->label.' '.$module.' '.(string)$xml->info->version;
+        $projectId = (string) $xml->info->label.' '.$module.' '.(string) $xml->info->version;
 
         $translations = new Translations();
         $translations->setHeader('Project-Id-Version', $projectId);
@@ -182,48 +185,49 @@ class localeCtrl extends jControllerCmdLine {
         $translations->setHeader('Content-Transfer-Encoding', '8bit');
 
         $propertiesReader = new Parser();
-        foreach( $files as $f ) {
-            $rep->addContent( $f ."\n" );
-            $fileId = str_replace('.UTF-8.properties','',$f);
+        foreach ($files as $f) {
+            $rep->addContent($f."\n");
+            $fileId = str_replace('.UTF-8.properties', '', $f);
             $properties = new \Jelix\PropertiesFile\Properties();
             $propertiesReader->parseFromFile($enLocalesPath.$f, $properties);
             $msgctxtPrefix = $module.'~'.$fileId.'.';
-            foreach($properties->getIterator() as $key=>$value) {
+            foreach ($properties->getIterator() as $key => $value) {
                 $msgctxt = $msgctxtPrefix.$key;
                 $translation = $translations->insert($msgctxt, $value);
                 $translation->addReference($msgctxt);
-                $translation->setTranslation("");
+                $translation->setTranslation('');
             }
         }
 
         $targetFile = $this->getOutputFile($module, 'pot');
-        $rep->addContent("save to: $targetFile\n");
+        $rep->addContent("save to: ${targetFile}\n");
         \Gettext\Generators\Po::toFile($translations, $targetFile);
 
         $rep->addContent("================\n");
+
         return $rep;
     }
 
     /**
-     * Generate PO file for a module and a local
+     * Generate PO file for a module and a local.
      */
-    function po() {
+    public function po()
+    {
         $rep = $this->getResponse(); // cmdline response by default
 
         $locale = $this->param('locale');
         list($module, $modulePath, $localesPath, $originalModulePath, $enLocalesPath) = $this->getModulePath($locale);
 
-
         $files = $this->getModuleLocaleFiles($module, $enLocalesPath);
 
         $rep->addContent("================\n");
-        $rep->addContent( $module ."\n" );
-        $rep->addContent( $modulePath ."\n" );
-        $rep->addContent( $enLocalesPath ."\n" );
+        $rep->addContent($module."\n");
+        $rep->addContent($modulePath."\n");
+        $rep->addContent($enLocalesPath."\n");
 
-        $dt= new DateTime('NOW');
+        $dt = new DateTime('NOW');
         $xml = simplexml_load_file(jApp::appPath('project.xml'));
-        $projectId = (string)$xml->info->label.' '.$module.' '.(string)$xml->info->version;
+        $projectId = (string) $xml->info->label.' '.$module.' '.(string) $xml->info->version;
 
         $translations = new Translations();
         $translations->setHeader('Project-Id-Version', $projectId);
@@ -237,13 +241,13 @@ class localeCtrl extends jControllerCmdLine {
 
         $propertiesReader = new Parser();
 
-        foreach( $files as $f ) {
-            $rep->addContent( $f ."\n" );
+        foreach ($files as $f) {
+            $rep->addContent($f."\n");
 
             // read locale file
             $localeProperties = new \Jelix\PropertiesFile\Properties();
             if (file_exists($localesPath.$f)) {
-                $propertiesReader->parseFromFile($localesPath . $f, $localeProperties);
+                $propertiesReader->parseFromFile($localesPath.$f, $localeProperties);
             }
 
             // if the locale file is not the original one in the module,
@@ -257,10 +261,10 @@ class localeCtrl extends jControllerCmdLine {
             $USProperties = new \Jelix\PropertiesFile\Properties();
             $propertiesReader->parseFromFile($enLocalesPath.$f, $USProperties);
 
-            $fileId = str_replace('.UTF-8.properties','',$f);
+            $fileId = str_replace('.UTF-8.properties', '', $f);
             $msgctxtPrefix = $module.'~'.$fileId.'.';
 
-            foreach($USProperties->getIterator() as $key=>$value) {
+            foreach ($USProperties->getIterator() as $key => $value) {
                 $msgctxt = $msgctxtPrefix.$key;
                 $translation = $translations->insert($msgctxt, $value);
                 $translation->addReference($msgctxt);
@@ -270,25 +274,26 @@ class localeCtrl extends jControllerCmdLine {
                 }
                 if ($localeValue !== null && $localeValue != $value) {
                     $translation->setTranslation($value);
-                }
-                else {
-                    $translation->setTranslation("");
+                } else {
+                    $translation->setTranslation('');
                 }
             }
         }
 
         $targetFile = $this->getOutputFile($module, 'po');
-        $rep->addContent("save to: $targetFile\n");
+        $rep->addContent("save to: ${targetFile}\n");
         \Gettext\Generators\Po::toFile($translations, $targetFile);
 
         $rep->addContent("================\n");
+
         return $rep;
     }
 
     /**
-     * Generate Jelix locale file for a module, from a PO file
+     * Generate Jelix locale file for a module, from a PO file.
      */
-    function importpo() {
+    public function importpo()
+    {
         $rep = $this->getResponse(); // cmdline response by default
 
         $locale = $this->param('locale');
@@ -303,8 +308,8 @@ class localeCtrl extends jControllerCmdLine {
 
         // read the PO file
         $input = $this->param('input');
-        if ( !is_readable( $input ) ) {
-            throw new Exception($input . ' is not readable !!');
+        if (!is_readable($input)) {
+            throw new Exception($input.' is not readable !!');
         }
 
         $translations = new Gettext\Translations();
@@ -313,24 +318,23 @@ class localeCtrl extends jControllerCmdLine {
         $propertiesReader = new Parser();
         $propertiesWriter = new Writer();
 
-        foreach( $files as $f ) {
-            $rep->addContent( $f ."\n" );
+        foreach ($files as $f) {
+            $rep->addContent($f."\n");
 
             $localeProperties = new \Jelix\PropertiesFile\Properties();
             $USProperties = new \Jelix\PropertiesFile\Properties();
             $propertiesReader->parseFromFile($enLocalesPath.$f, $USProperties);
 
-            $fileId = str_replace('.UTF-8.properties','',$f);
+            $fileId = str_replace('.UTF-8.properties', '', $f);
             $msgctxtPrefix = $module.'~'.$fileId.'.';
 
             $sameAsUs = true;
-            foreach($USProperties->getIterator() as $key => $usString) {
+            foreach ($USProperties->getIterator() as $key => $usString) {
                 $msgctxt = $msgctxtPrefix.$key;
                 $translation = $translations->find($msgctxt, $usString);
                 if ($translation === false) {
                     $localeString = '';
-                }
-                else {
+                } else {
                     $localeString = $translation->getTranslation();
                 }
                 if (trim($localeString) == '') {
@@ -343,21 +347,22 @@ class localeCtrl extends jControllerCmdLine {
             }
             if (!$sameAsUs) {
                 $propertiesWriter->writeToFile(
-                    $localeProperties, $localesPath.$f,
+                    $localeProperties,
+                    $localesPath.$f,
                     array(
-                        "lineLength"=>500,
-                        "spaceAroundEqual"=>false,
-                        "removeTrailingSpace" => true,
-                        "headerComment"=> "Please don't modify this file.\nTo contribute on translations, go to https://www.transifex.com/3liz-1/lizmap-locales/."
+                        'lineLength' => 500,
+                        'spaceAroundEqual' => false,
+                        'removeTrailingSpace' => true,
+                        'headerComment' => "Please don't modify this file.\nTo contribute on translations, go to https://www.transifex.com/3liz-1/lizmap-locales/.",
                     )
                 );
-            }
-            else if (file_exists($localesPath.$f)) {
-                unlink ($localesPath.$f);
+            } elseif (file_exists($localesPath.$f)) {
+                unlink($localesPath.$f);
             }
         }
 
         $rep->addContent("================\n");
+
         return $rep;
     }
 }

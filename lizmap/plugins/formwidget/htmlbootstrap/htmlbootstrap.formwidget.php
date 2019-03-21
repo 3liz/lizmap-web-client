@@ -1,22 +1,22 @@
 <?php
 /**
- * @package     lizmap
- * @subpackage  forms_widget_plugin
  * @author      Laurent Jouanneau
  * @contributor Julien Issler, Dominique Papin
+ *
  * @copyright   2006-2018 Laurent Jouanneau, 2008-2011 Julien Issler, 2008 Dominique Papin
- * @link        http://www.jelix.org
+ *
+ * @see        http://www.jelix.org
  * @licence     http://www.gnu.org/licenses/lgpl.html GNU Lesser General Public Licence, see LICENCE file
  */
-
-class htmlbootstrapFormWidget extends \jelix\forms\HtmlWidget\RootWidget {
-
+class htmlbootstrapFormWidget extends \jelix\forms\HtmlWidget\RootWidget
+{
     /**
      * @var \jelix\forms\Builder\HtmlBuilder
      */
     protected $builder;
 
-    public function outputHeader($builder) {
+    public function outputHeader($builder)
+    {
         $conf = jApp::config()->urlengine;
         // no scope into an anonymous js function, because jFormsJQ.tForm is used by other generated source code
         echo '<script type="text/javascript">
@@ -38,12 +38,11 @@ jFormsJQ.declareForm(jFormsJQ.tForm);
         $this->builder = $builder;
     }
 
-    public function outputFooter() {
+    public function outputFooter()
+    {
         if ($this->builder->getOption('modal')) {
             echo '</div>';
         }
         parent::outputFooter();
     }
-
-
 }

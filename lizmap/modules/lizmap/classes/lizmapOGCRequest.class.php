@@ -1,35 +1,37 @@
 <?php
 /**
-* Manage OGC request.
-* @package   lizmap
-* @subpackage lizmap
-* @author    3liz
-* @copyright 2015 3liz
-* @link      http://3liz.com
-* @license Mozilla Public License : http://www.mozilla.org/MPL/
-*/
-
-class lizmapOGCRequest {
-
+ * Manage OGC request.
+ *
+ * @author    3liz
+ * @copyright 2015 3liz
+ *
+ * @see      http://3liz.com
+ *
+ * @license Mozilla Public License : http://www.mozilla.org/MPL/
+ */
+class lizmapOGCRequest
+{
     /**
      * @var lizmapProject
      */
-    protected $project = null;
+    protected $project;
 
-    protected $repository = null;
+    protected $repository;
 
-    protected $params = null;
+    protected $params;
 
-    protected $services = null;
+    protected $services;
 
-    protected $tplExceptions = null;
+    protected $tplExceptions;
 
     /**
-     * constructor
+     * constructor.
+     *
      * @param lizmapProject $project the project has a lizmapProject Class
-     * @param array $params the params array
+     * @param array         $params  the params array
      */
-    public function __construct ( $project, $params ) {
+    public function __construct($project, $params)
+    {
         //print_r( $project != null );
         $this->project = $project;
 
@@ -38,34 +40,39 @@ class lizmapOGCRequest {
         $this->services = lizmap::getServices();
 
         $params['map'] = $project->getRelativeQgisPath();
-        $this->params = lizmapProxy::normalizeParams( $params );
+        $this->params = lizmapProxy::normalizeParams($params);
     }
 
     /**
-    * Gets the value of a request parameter. If not defined, gets its default value.
-    * @param string  $name           the name of the request parameter
-    * @param mixed   $defaultValue   the default returned value if the parameter doesn't exists
-    * @param boolean $useDefaultIfEmpty true: says to return the default value if the parameter value is ""
-    * @return mixed the request parameter value
-    */
-    public function param($name, $defaultValue=null, $useDefaultIfEmpty=false){
-        $name = strtolower( $name );
-        if(isset($this->params[$name])){
-            if($useDefaultIfEmpty && trim($this->params[$name]) == ''){
+     * Gets the value of a request parameter. If not defined, gets its default value.
+     *
+     * @param string $name              the name of the request parameter
+     * @param mixed  $defaultValue      the default returned value if the parameter doesn't exists
+     * @param bool   $useDefaultIfEmpty true: says to return the default value if the parameter value is ""
+     *
+     * @return mixed the request parameter value
+     */
+    public function param($name, $defaultValue = null, $useDefaultIfEmpty = false)
+    {
+        $name = strtolower($name);
+        if (isset($this->params[$name])) {
+            if ($useDefaultIfEmpty && trim($this->params[$name]) == '') {
                 return $defaultValue;
-            }else{
-                return $this->params[$name];
             }
-        }else{
-            return $defaultValue;
+
+            return $this->params[$name];
         }
+
+        return $defaultValue;
     }
 
-    public function process ( ) {
+    public function process()
+    {
         return $this->{$this->param('request')}();
     }
 
-    protected function constructUrl ( ) {
+    protected function constructUrl()
+    {
         $url = $this->services->wmsServerURL.'?';
 
         $bparams = http_build_query($this->params);
@@ -75,28 +82,28 @@ class lizmapOGCRequest {
         $b = array('%20', '%5F', '%2E', '%2D');
         $bparams = str_replace($a, $b, $bparams);
 
-        $querystring = $url . $bparams;
-        return $querystring;
+        return $url.$bparams;
     }
 
-    protected function serviceException ( ) {
+    protected function serviceException()
+    {
         $messages = jMessage::getAll();
         $mime = 'text/plain';
         if (!$messages) {
-            $data = "";
-        }
-        else {
-            if(is_array($messages))
-                $data = "";
-            else
+            $data = '';
+        } else {
+            if (is_array($messages)) {
+                $data = '';
+            } else {
                 $data = implode('\n', $messages);
+            }
         }
 
-        if ( $this->tplExceptions !== null ) {
+        if ($this->tplExceptions !== null) {
             $mime = 'text/xml';
             $tpl = new jTpl();
             $tpl->assign('messages', $messages);
-            $data = $tpl->fetch( $this->tplExceptions );
+            $data = $tpl->fetch($this->tplExceptions);
         }
         jMessage::clearAll();
 
@@ -104,19 +111,20 @@ class lizmapOGCRequest {
             'code' => 200,
             'mime' => $mime,
             'data' => $data,
-            'cached' => False
+            'cached' => false,
         );
     }
 
-    protected function getcapabilities ( ) {
+    protected function getcapabilities()
+    {
         $querystring = $this->constructUrl();
 
         // Get remote data
         list($data, $mime, $code) = lizmapProxy::getRemoteData($querystring);
 
         // Retry if 500 error ( hackish, but QGIS Server segfault sometimes with cache issue )
-        if( $code == 500 ){
-          // Get remote data
+        if ($code == 500) {
+            // Get remote data
             list($data, $mime, $code) = lizmapProxy::getRemoteData($querystring);
         }
 
@@ -124,9 +132,7 @@ class lizmapOGCRequest {
             'code' => $code,
             'mime' => $mime,
             'data' => $data,
-            'cached' => False
+            'cached' => false,
         );
-
     }
-
 }

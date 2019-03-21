@@ -1,50 +1,55 @@
 <?php
 /**
-* Php proxy to access OpenStreetMap services
-* @package   lizmap
-* @subpackage lizmap
-* @author    3liz
-* @copyright 2011-2019 3liz
-* @link      http://3liz.com
-* @license Mozilla Public License : http://www.mozilla.org/MPL/
-*/
+ * Php proxy to access OpenStreetMap services.
+ *
+ * @author    3liz
+ * @copyright 2011-2019 3liz
+ *
+ * @see      http://3liz.com
+ *
+ * @license Mozilla Public License : http://www.mozilla.org/MPL/
+ */
+class osmCtrl extends jController
+{
+    /**
+     * Query the OpenStreetMap Nominatim API.
+     *
+     * @urlparam text $query A query on OpenStreetMap object
+     * @urlparam text $bbox A bounding box in EPSG:4326
+     *
+     * @return jResponseBinary JSON content
+     */
+    public function nominatim()
+    {
+        $rep = $this->getResponse('binary');
+        $rep->outputFileName = 'nominatim.json';
+        $rep->mimeType = 'application/json';
 
-class osmCtrl extends jController {
+        $query = $this->param('query');
+        if (!$query) {
+            $rep->content = '[]';
 
-  /**
-  * Query the OpenStreetMap Nominatim API
-  * @urlparam text $query A query on OpenStreetMap object
-  * @urlparam text $bbox A bounding box in EPSG:4326
-  * @return jResponseBinary  JSON content
-  */
-  function nominatim() {
-    $rep = $this->getResponse('binary');
-    $rep->outputFileName = 'nominatim.json';
-    $rep->mimeType = 'application/json';
+            return $rep;
+        }
 
-    $query = $this->param('query');
-    if ( !$query ) {
-      $rep->content = '[]';
-      return $rep;
+        $url = 'https://nominatim.openstreetmap.org/search.php?';
+        $params = array(
+            'q' => $query,
+            'format' => 'json',
+        );
+        $bbox = $this->param('bbox');
+        if (preg_match('/\d+(\.\d+)?,\d+(\.\d+)?,\d+(\.\d+)?,\d+(\.\d+)?/', $bbox)) {
+            $params['viewbox'] = $bbox;
+        }
+
+        $url .= http_build_query($params);
+        list($content, $mime, $code) = lizmapProxy::getRemoteData($url, array(
+            'method' => 'get',
+            'referer' => jUrl::getFull('view~default:index'),
+        ));
+
+        $rep->content = $content;
+
+        return $rep;
     }
-
-    $url = 'https://nominatim.openstreetmap.org/search.php?';
-    $params = array(
-      'q'=>$query,
-      'format'=>'json',
-    );
-    $bbox = $this->param('bbox');
-    if( preg_match('/\d+(\.\d+)?,\d+(\.\d+)?,\d+(\.\d+)?,\d+(\.\d+)?/',$bbox) )
-      $params['viewbox'] = $bbox;
-
-    $url .= http_build_query($params);
-    list($content, $mime, $code) = lizmapProxy::getRemoteData($url, array(
-        "method" => 'get',
-        "referer" => jUrl::getFull("view~default:index"),
-    ));
-
-    $rep->content = $content;
-
-    return $rep;
-  }
 }
