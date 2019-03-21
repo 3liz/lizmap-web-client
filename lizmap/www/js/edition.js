@@ -1475,7 +1475,7 @@ OpenLayers.Geometry.pointOnSegment = function(point, segment) {
                         var fid = val.split('.').pop();
                         var layerId = val.replace( '.' + fid, '' );
 
-                        var getLayerConfig = lizMap.getLayerConfigById( layerId );
+                        var layerConfig = lizMap.getLayerConfigById( layerId );
 
                         // Edit button
                         var eConfig = null;
@@ -1520,6 +1520,18 @@ OpenLayers.Geometry.pointOnSegment = function(point, segment) {
                             if( popup )
                                 popup.verifySize();
                         }
+
+                        lizMap.events.triggerEvent("lizmappopuplayerfeaturedisplayed",
+                            {
+                                popup: popup,
+                                fid: fid,
+                                layerId: layerId,
+                                eConfig: eConfig,
+                                layerName : layerConfig[0],
+                                layerConfig: layerConfig[1],
+                                div : self.parent()
+                            }
+                        );
 
                     });
                     // Add interaction buttons
