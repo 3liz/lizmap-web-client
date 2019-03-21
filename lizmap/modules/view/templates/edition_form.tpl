@@ -8,4 +8,30 @@
 
 {jmessage_bootstrap}
 
-{$attributeEditorFormTemplate}
+{form $form, "lizmap~edition:saveFeature", array(), "htmlbootstrap", 
+        array("errorDecorator"=>"lizEditionErrorDecorator")}
+
+{if $attributeEditorForm}
+
+    {fetchtpl 'view~edition_form_container', array('container'=>$attributeEditorForm)}
+    
+{else}
+    {formcontrols $fieldNames}
+    <div class="control-group">
+        {ctrl_label}
+        <div class="controls">
+            {ctrl_control}
+        </div>
+    </div>
+    {/formcontrols}
+{/if}
+
+
+    <div class="control-group">
+        {ctrl_label "liz_future_action"}
+        <div class="controls">
+            {ctrl_control "liz_future_action"}
+        </div>
+    </div>
+    <div class="jforms-submit-buttons form-actions">{formreset}{formsubmit}</div>
+{/form}

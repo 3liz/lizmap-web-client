@@ -31,3 +31,5 @@ vagrant/vars/custom.yml
 lizmap/vendor/
 lizmap/composer.lock
 
+tests/vendor/
+tests/composer.lock

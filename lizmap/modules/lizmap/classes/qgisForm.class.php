@@ -9,8 +9,7 @@
 * @license Mozilla Public License : http://www.mozilla.org/MPL/
 */
 
-
-class qgisForm {
+class qgisForm implements qgisFormControlsInterface {
 
     /**
      * @var qgisMapLayer|qgisVectorLayer
@@ -106,30 +105,22 @@ class qgisForm {
 
             $formControl = new qgisFormControl($fieldName, $edittype, $alias, $categoriesXml, $prop);
 
-            if ( $formControl->fieldEditType === 2
-                 or $formControl->fieldEditType === 'UniqueValues'
-                 or $formControl->fieldEditType === 'UniqueValuesEditable' ) {
+            if ( $formControl->isUniqueValue()) {
                 $this->fillControlFromUniqueValues( $fieldName, $formControl );
-            } else if( ( $formControl->fieldEditType === 15
-                  or $formControl->fieldEditType === 'ValueRelation')
-                and $formControl->valueRelationData ) {
+            } else if($formControl->isValueRelation()) {
                 // Fill comboboxes of editType "Value relation" from relation layer
                 // Query QGIS Server via WFS
                 $this->fillControlFromValueRelationLayer( $fieldName, $formControl );
-            } else if ( $formControl->fieldEditType === 'RelationReference'
-                        and $formControl->relationReferenceData ) {
+            } else if ($formControl->isRelationReference()) {
                 // Fill comboboxes of editType "Relation reference" from relation layer
                 // Query QGIS Server via WFS
                 $this->fillControlFromRelationReference( $fieldName, $formControl );
-            } else if ( $formControl->fieldEditType === 8
-                        or $formControl->fieldEditType === 'FileName'
-                        or $formControl->fieldEditType === 'Photo'
-                        or $formControl->fieldEditType === 'ExternalResource' ) {
+            } else if ( $formControl->isUploadControl()) {
                 // Add Hidden Control for upload
                 // help to retrieve file path
                 $hiddenCtrl = new jFormsControlHidden($fieldName.'_hidden');
                 $form->addControl($hiddenCtrl);
-                $toDeactivate[] = $fieldName.'_choice';
+                $toDeactivate[] = $formControl->getControlName();
             }
 
             // Add the control to the form
@@ -164,16 +155,29 @@ class qgisForm {
 
     }
 
-    public function getFormControls(){
+    public function getQgisControls(){
         return $this->formControls;
     }
 
+    public function getQgisControl($name){
+        if (!array_key_exists($name, $this->formControls)) {
+            return null;
+        }
+        return $this->formControls[$name];
+    }
+
+    public function getFormControlName($name) {
+        $ctrl = $this->getQgisControl($name);
+        if ($ctrl) {
+            return $ctrl->getControlName();
+        }
+        return null;
+    }
+
     /**
-     * get the html content
-     *
-     * @return string the Html content for the form
+     * @return qgisAttributeEditorElement|null
      */
-    public function getHtmlForm() {
+    public function getAttributesEditorForm() {
         $this->form_name = self::generateFormName($this->form->getSelector());
 
         $layerXml = $this->layer->getXmlLayer();
@@ -182,175 +186,32 @@ class qgisForm {
         if ($_editorlayout && $_editorlayout[0] == 'tablayout') {
             $_attributeEditorForm = $layerXml->xpath('attributeEditorForm');
             if ($_attributeEditorForm && count($_attributeEditorForm)) {
-                $attributeEditorForm = $this->xml2obj( $_attributeEditorForm[0] );
+                $attributeEditorForm = new qgisAttributeEditorElement($this, $_attributeEditorForm[0], $this->form_name);
             }
         }
 
-        if ( $attributeEditorForm && property_exists($attributeEditorForm, 'children') ) {
-            $template = '{form $form, "lizmap~edition:saveFeature", array(), "htmlbootstrap", array("errorDecorator"=>"lizEditionErrorDecorator")}';
-            $template.= $this->getEditorContainerHtmlContent( $attributeEditorForm, $this->form_name, 0 );
-            $template.= '<div class="control-group">';
-            $template.= '{ctrl_label "liz_future_action"}';
-            $template.= '<div class="controls">';
-            $template.= '{ctrl_control "liz_future_action"}';
-            $template.= '</div>';
-            $template.= '</div>';
-            $template.= '<div class="jforms-submit-buttons form-actions">{formreset}{formsubmit}</div>';
-            $template.= '{/form}';
-        } else {
-            $fieldNames = array();
-            foreach( array_keys($this->formControls) as $k ) {
-                // Get field name
-                $fName = $k;
-                $formControl =  $this->formControls[$fName];
-                // Change field name to choice for files upoad control
-                if ( $formControl->fieldEditType === 8
-                     or $formControl->fieldEditType === 'FileName'
-                     or $formControl->fieldEditType === 'Photo'
-                     or $formControl->fieldEditType === 'ExternalResource' )
-                     $fName = $fName.'_choice';
-                $fieldNames[] = '\''.$fName.'\'';
-            }
-            $template = '{form $form, "lizmap~edition:saveFeature", array(), "htmlbootstrap", array("errorDecorator"=>"lizEditionErrorDecorator")}';
-            $template.= '{formcontrols array('.implode(',',$fieldNames).')}';
-            $template.= '<div class="control-group">';
-            $template.= '{ctrl_label}';
-            $template.= '<div class="controls">';
-            $template.= '{ctrl_control}';
-            $template.= '</div>';
-            $template.= '</div>';
-            $template.= '{/formcontrols}';
-            $template.= '<div class="control-group">';
-            $template.= '{ctrl_label "liz_future_action"}';
-            $template.= '<div class="controls">';
-            $template.= '{ctrl_control "liz_future_action"}';
-            $template.= '</div>';
-            $template.= '</div>';
-            $template.= '<div class="jforms-submit-buttons form-actions">{formreset}{formsubmit}</div>';
-            $template.= '{/form}';
+        if ($attributeEditorForm && $attributeEditorForm->hasChildren()) {
+            return $attributeEditorForm;
         }
-
-        $tpl = new jTpl();
-        $tpl->assign( 'form', $this->form );
-        return $tpl->fetchFromString( $template, 'html' );
+        return null;
     }
-    private function xml2obj( $node ) {
-        $jsnode = array(
-            'name'=>$node->getName()
-        );
-        $attributesObj = json_decode(
-                str_replace(
-                    '@',
-                    '',
-                    json_encode( $node->attributes() )
-                )
-            );
-        if ( property_exists( $attributesObj, 'attributes' ) )
-            $jsnode['attributes'] = $attributesObj->attributes;
-        $children = array();
-        foreach ( $node->children() as $child ) {
-            $children[] = $this->xml2obj( $child );
-        }
-        if ( count( $children ) > 0 )
-          $jsnode['children'] = $children;
-        return (object) $jsnode;
+
+    /**
+     * List of field name for a jForms form
+     *
+     * @return string[]
+     */
+    public function getFieldNames() {
+        return array_map(function($formControl) {
+            return $formControl->getControlName();
+        }, $this->formControls);
     }
-    private function getEditorContainerHtmlContent( $container, $parent_id, $depth ) {
-        // a container has children
-        if ( !property_exists($container, 'children') )
-            return '';
-        // a container has a name
-        if ( !property_exists($container, 'name') )
-            return '';
-        // a container can be the root
-        if ( $container->name != 'attributeEditorContainer' && $container->name != 'attributeEditorForm' )
-            return '';
 
-        $htmlBeforeTab = '';
-        $htmlTabNav = '';
-        $htmlTabContent = '';
-        $htmlAfterTab = '';
-        $idx = 0;
-        foreach ( $container->children as $c ) {
-            if ( $c->name === 'attributeEditorField' ) {
-                $html = $this->getEditorFieldHtmlContent( $c );
-                if ( $htmlTabNav === '' )
-                    $htmlBeforeTab.= $html;
-                else
-                    $htmlAfterTab.= $html;
-            }
-            else if ( $c->name === 'attributeEditorContainer' ) {
-                $groupBox = False;
-                if ( property_exists( $c->attributes, 'groupBox' ) ) {
-                    $groupBox = ( $c->attributes->groupBox === '1' );
-                } else {
-                    $groupBox = (($depth % 2) == 1);
-                }
-                if ( $groupBox ) {
-                    $html= '<fieldset>';
-                    $html.= '<legend style="font-weight:bold;">';
-                    $html.= $c->attributes->name;
-                    $html.= '</legend>';
-                    $html.= '<div class="jforms-table-group" border="0" id="'.$parent_id.'-group'.$idx.'">';
-                    $html.= $this->getEditorContainerHtmlContent( $c, $parent_id.'-group'.$idx, $depth+1 );
-                    $html.= '</div>';
-                    $html.= '</fieldset>';
-                    if ( $htmlTabNav === '' )
-                        $htmlBeforeTab.= $html;
-                    else
-                        $htmlAfterTab.= $html;
-                } else {
-                    $htmlTabNav.= '<li><a href="#'.$parent_id.'-tab'.$idx.'" data-toggle="tab">';
-                    $htmlTabNav.= $c->attributes->name;
-                    $htmlTabNav.= '</a></li>';
-
-                    $htmlTabContent.= '<div class="tab-pane" id="'.$parent_id.'-tab'.$idx.'">';
-                    $htmlTabContent.= $this->getEditorContainerHtmlContent( $c, $parent_id.'-tab'.$idx, $depth+1 );
-                    $htmlTabContent.= '</div>';
-                }
-            }
-            $idx += 1;
-        }
-
-        if ( $htmlTabNav === '' )
-            return $htmlBeforeTab;
-
-        $html = $htmlBeforeTab;
-        $html.= '<ul id="'.$parent_id.'-tabs" class="nav nav-tabs">';
-        $html.= $htmlTabNav;
-        $html.= '</ul>';
-        $html.= '<div id="'.$parent_id.'-tab-content" class="tab-content">';
-        $html.= $htmlTabContent;
-        $html.= '</div>';
-        $html.= $htmlAfterTab;
-        return $html;
-    }
-    private function getEditorFieldHtmlContent( $field ) {
-        // field node is named attributeEditorField
-        if ( !property_exists($field, 'name') && $field->name != 'attributeEditorField')
-            return '';
-
-        $html = '';
-        // Get field name
-        $fName = $field->attributes->name;
-        // Verifying that the field is defined
-        if ( !array_key_exists( $fName, $this->formControls ) )
-            return $html;
-        $formControl =  $this->formControls[$fName];
-        // Change field name to choice for files upoad control
-        if ( $formControl->fieldEditType === 8
-             or $formControl->fieldEditType === 'FileName'
-             or $formControl->fieldEditType === 'Photo'
-             or $formControl->fieldEditType === 'ExternalResource' )
-             $fName = $fName.'_choice';
-        // generate the template
-        $html.= '<div class="control-group">';
-        $html.= '{ctrl_label "'.$fName.'"}';
-        $html.= '<div class="controls">';
-        $html.= '{ctrl_control "'.$fName.'"}';
-        $html.= '</div>';
-        $html.= '</div>';
-        return $html;
+    /**
+     * @return jFormsBase
+     */
+    public function getForm() {
+        return $this->form;
     }
 
     /**
@@ -390,18 +251,14 @@ class qgisForm {
         foreach ( $values as $ref=>$value ) {
             $form->setData($ref, $value);
             // ValueRelation can be an array (i.e. {1,2,3})
-            if( $this->formControls[$ref]->fieldEditType === 15
-                or $this->formControls[$ref]->fieldEditType === 'ValueRelation' ){
+            if( $this->formControls[$ref]->isValueRelation()){
                 if($value[0] == '{'){
                     $arrayValue = explode(",",trim($value, "{}"));
                     $form->setData($ref, $arrayValue);
                 }
             }
-            if ( $this->formControls[$ref]->fieldEditType === 8
-                or $this->formControls[$ref]->fieldEditType === 'FileName'
-                or $this->formControls[$ref]->fieldEditType === 'Photo'
-                or $this->formControls[$ref]->fieldEditType === 'ExternalResource' ) {
-                $ctrl = $form->getControl($ref.'_choice');
+            if ($this->formControls[$ref]->isUploadControl()) {
+                $ctrl = $form->getControl($this->formControls[$ref]->getControlName());
                 if ($ctrl && $ctrl->type == 'choice' ) {
                     $path = explode( '/', $value );
                     $filename = array_pop($path);
@@ -418,7 +275,7 @@ class qgisForm {
 
     /**
      * Save the form to the database
-     *
+     * @return int|array|false value of primary key or false if an error occured
      */
     public function saveToDb( $feature = null ){
         if ( !$this->dbFieldsInfo )
@@ -578,18 +435,40 @@ class qgisForm {
         }
 
         try {
-            if( $updateAction ) {
-                $loginFilteredLayers = $this->filterDataByLogin($this->layer->getName());
-                return $this->layer->updateFeature( $feature, $values, $loginFilteredLayers );
-            } else {
-                return $this->layer->insertFeature( $values );
+            $dtParams = $this->layer->getDatasourceParameters();
+            // event to add or modify some values before the update
+            $eventParams = array(
+                'form'=>$this->form,
+                "action"=>($updateAction?'update':'insert'),
+                "layer"=>$this->layer,
+                "featureId"=>$this->featureId,
+                "tablename"=>$dtParams->tablename,
+                "schema"=>$dtParams->schema
+            );
+            $event = jEvent::notify('LizmapEditionFeaturePreUpdateInsert', $eventParams);
+            $additionnalValues = $event->getResponseByKey('values');
+            if ($additionnalValues !== null) {
+                foreach ($additionnalValues as $additionnalValue) {
+                    $values = array_merge($values, $additionnalValue);
+                }
             }
+
+            if ($updateAction) {
+                $loginFilteredLayers = $this->filterDataByLogin($this->layer->getName());
+                $pkVal = $this->layer->updateFeature( $feature, $values, $loginFilteredLayers );
+            } else {
+                $pkVal = $this->layer->insertFeature( $values );
+            }
+
+            // event to execute additional process on updated/inserted data
+            $eventParams['pkVal'] = $pkVal;
+            jEvent::notify('LizmapEditionFeaturePostUpdateInsert', $eventParams);
+            return $pkVal;
         } catch (Exception $e) {
             $form->setErrorOn($geometryColumn, jLocale::get('view~edition.message.error.save'));
             jLog::log("An error has been raised when saving form data edition to db : ".$e->getMessage() ,'error');
-            return false;
         }
-        return 0;
+        return false;
     }
 
     /**
@@ -601,7 +480,28 @@ class qgisForm {
             throw new Exception('Delete from database can\'t be done for the layer "'.$this->layer->getName().'"!');
 
         $loginFilteredLayers = $this->filterDataByLogin($this->layer->getName());
-        return $this->layer->deleteFeature( $feature, $loginFilteredLayers );
+
+        // event to process data before the deletion
+        $dtParams = $this->layer->getDatasourceParameters();
+        $eventParams = array(
+            'form'=>$this->form,
+            "layer"=>$this->layer,
+            "featureId"=>$this->featureId,
+            "tablename"=>$dtParams->tablename,
+            "schema"=>$dtParams->schema,
+            "loginFilteredLayers" => $loginFilteredLayers,
+            'pkVal'=>$this->layer->getPrimaryKeyValues($feature)
+        );
+        $event = jEvent::notify('LizmapEditionFeaturePreDelete', $eventParams);
+        if ($event->allResponsesByKeyAreTrue('deleteIsAlreadyDone')) {
+            return 1;
+        }
+        if ($event->allResponsesByKeyAreFalse('cancelDelete') === false) {
+            return 0;
+        }
+        $result = $this->layer->deleteFeature( $feature, $loginFilteredLayers );
+        jEvent::notify('LizmapEditionFeaturePostDelete', $eventParams);
+        return $result;
     }
 
     /**
