@@ -1,17 +1,16 @@
 <?php
 /**
-* Manage and give access to lizmap theme configuration
-* @package   lizmap
-* @subpackage lizmap
-* @author    3liz
-* @copyright 2016 3liz
-* @link      http://3liz.com
-* @license Mozilla Public License : http://www.mozilla.org/MPL/
-*/
-
-
-class lizmapTheme{
-
+ * Manage and give access to lizmap theme configuration.
+ *
+ * @author    3liz
+ * @copyright 2016 3liz
+ *
+ * @see      http://3liz.com
+ *
+ * @license Mozilla Public License : http://www.mozilla.org/MPL/
+ */
+class lizmapTheme
+{
     // Lizmap configuration file path (relative to the path folder)
     private $config = 'config/lizmapConfig.ini.php';
 
@@ -20,16 +19,16 @@ class lizmapTheme{
 
     // theme properties
     private $properties = array(
-      'headerLogo',
-      'headerLogoWidth',
-      'headerBackgroundImage',
-      'headerBackgroundColor',
-      'headerTitleColor',
-      'headerSubtitleColor',
-      'menuBackgroundColor',
-      'dockBackgroundColor',
-      'navbarColor',
-      'additionalCss'
+        'headerLogo',
+        'headerLogoWidth',
+        'headerBackgroundImage',
+        'headerBackgroundColor',
+        'headerTitleColor',
+        'headerSubtitleColor',
+        'menuBackgroundColor',
+        'dockBackgroundColor',
+        'navbarColor',
+        'additionalCss',
     );
 
     // header logo image
@@ -62,125 +61,135 @@ class lizmapTheme{
     // additional CSS properties
     public $additionalCss = '';
 
-    public function __construct () {
-      // read the lizmap configuration file
-      $readConfigPath = parse_ini_file(jApp::varPath().$this->config, True);
-      $this->data = $readConfigPath;
+    public function __construct()
+    {
+        // read the lizmap configuration file
+        $readConfigPath = parse_ini_file(jApp::varPath().$this->config, true);
+        $this->data = $readConfigPath;
 
-      // set generic parameters
-      foreach($this->properties as $prop) {
-        if(isset($readConfigPath['theme'][$prop])) {
-          $this->$prop = $readConfigPath['theme'][$prop];
+        // set generic parameters
+        foreach ($this->properties as $prop) {
+            if (isset($readConfigPath['theme'][$prop])) {
+                $this->{$prop} = $readConfigPath['theme'][$prop];
+            }
         }
-      }
     }
 
     /**
-     * Get theme properties
+     * Get theme properties.
      */
-    public function getProperties(){
-      return $this->properties;
+    public function getProperties()
+    {
+        return $this->properties;
     }
 
     /**
-     * Modify the theme
-     * @param array $data Array containing the data of the theme.
+     * Modify the theme.
+     *
+     * @param array $data array containing the data of the theme
      */
-    public function modify( $data ){
-      $modified = false;
-      foreach($data as $k=>$v){
-        if(in_array($k, $this->properties)){
-          $this->data['theme'][$k] = $v;
-          $this->$k = $v;
-          $modified = true;
+    public function modify($data)
+    {
+        $modified = false;
+        foreach ($data as $k => $v) {
+            if (in_array($k, $this->properties)) {
+                $this->data['theme'][$k] = $v;
+                $this->{$k} = $v;
+                $modified = true;
+            }
         }
-      }
-      return $modified;
+
+        return $modified;
     }
 
     /**
-     * Update the theme. (modify and save)
-     * @param array $data Array containing the data of the theme.
+     * Update the theme. (modify and save).
+     *
+     * @param array $data array containing the data of the theme
      */
-    public function update( $data ){
-      $modified = $this->modify( $data );
-      if ( $modified )
-        $modified = $this->save();
-      return $modified;
+    public function update($data)
+    {
+        $modified = $this->modify($data);
+        if ($modified) {
+            $modified = $this->save();
+        }
+
+        return $modified;
     }
 
     /**
      * Save the theme.
      */
-    public function save( ){
-      // Get access to the ini file
-      $iniFile = jApp::configPath('lizmapConfig.ini.php');
-      $ini = new jIniFileModifier($iniFile);
+    public function save()
+    {
+        // Get access to the ini file
+        $iniFile = jApp::configPath('lizmapConfig.ini.php');
+        $ini = new jIniFileModifier($iniFile);
 
-      foreach($this->properties as $prop) {
-        if($this->$prop != '')
-          $ini->setValue($prop, $this->$prop, 'theme');
-        else
-          $ini->removeValue($prop, 'theme');
-      }
+        foreach ($this->properties as $prop) {
+            if ($this->{$prop} != '') {
+                $ini->setValue($prop, $this->{$prop}, 'theme');
+            } else {
+                $ini->removeValue($prop, 'theme');
+            }
+        }
 
-      // Save the ini file
-      $ini->save();
+        // Save the ini file
+        $ini->save();
 
-      // Save the CSS theme file configured via this controller
-      $this->writeThemeCssFile();
+        // Save the CSS theme file configured via this controller
+        $this->writeThemeCssFile();
 
-      return $ini->isModified();
-
+        return $ini->isModified();
     }
-
 
     /**
      * Build the theme main css content
-     * based one the properties saved
+     * based one the properties saved.
      */
-    private function buildCssThemeContent(){
-      $css = '';
+    private function buildCssThemeContent()
+    {
+        $css = '';
 
-      // MAIN css
-      if( !empty($this->headerBackgroundColor) ){
-        $css.= '
+        // MAIN css
+        if (!empty($this->headerBackgroundColor)) {
+            $css .= '
         #header {
           background: '.$this->headerBackgroundColor.';
         }
         ';
-      }
+        }
 
-      // Header logo image and size
-      if( !empty($this->headerLogo) and file_exists(jApp::varPath('lizmap-theme-config/') . $this->headerLogo) ){
-        $logoUrl = jUrl::get('view~media:themeImage', array('key'=>'headerLogo'));
-        $css.= '
+        // Header logo image and size
+        if (!empty($this->headerLogo) and file_exists(jApp::varPath('lizmap-theme-config/').$this->headerLogo)) {
+            $logoUrl = jUrl::get('view~media:themeImage', array('key' => 'headerLogo'));
+            $css .= '
         #logo {
           background : url("'.$logoUrl.'") no-repeat left center;
           background-size:contain;
         ';
-        if( !empty($this->headerLogoWidth) ){
-          $css.= '
+            if (!empty($this->headerLogoWidth)) {
+                $css .= '
           width: '.$this->headerLogoWidth.'px;
           text-align: right;
           ';
-        }
-        $css.= '
+            }
+            $css .= '
         }
         ';
 
-        $css.= '
+            $css .= '
         #title {
           top: 40%;
           transform: translateY(-60%);
         }
         ';
-      }
+        }
 
-      // Header background image
-      if( !empty($this->headerBackgroundImage) and file_exists(jApp::varPath('lizmap-theme-config/') . $this->headerBackgroundImage) ){
-        $logoUrl = jUrl::get('view~media:themeImage', array('key'=>'headerBackgroundImage'));
-        $css.= '
+        // Header background image
+        if (!empty($this->headerBackgroundImage) and file_exists(jApp::varPath('lizmap-theme-config/').$this->headerBackgroundImage)) {
+            $logoUrl = jUrl::get('view~media:themeImage', array('key' => 'headerBackgroundImage'));
+            $css .= '
         #header {
           background-image : url("'.$logoUrl.'");
           background-repeat: no-repeat;
@@ -190,11 +199,10 @@ class lizmapTheme{
           background: none;
         }
         ';
-      }
+        }
 
-
-      if( !empty($this->headerTitleColor) ){
-        $css.= '
+        if (!empty($this->headerTitleColor)) {
+            $css .= '
         #title h1{
           color: '.$this->headerTitleColor.';
         }
@@ -202,34 +210,34 @@ class lizmapTheme{
           color: '.$this->headerTitleColor.';
         }
         ';
-      }
-      if( !empty($this->headerSubtitleColor) ){
-        $css.= '
+        }
+        if (!empty($this->headerSubtitleColor)) {
+            $css .= '
         #title h2{
           color: '.$this->headerSubtitleColor.';
         }
         ';
-      }
+        }
 
-      // MAP css
-      if( !empty($this->menuBackgroundColor) ){
-        $css.= '
+        // MAP css
+        if (!empty($this->menuBackgroundColor)) {
+            $css .= '
         #mapmenu{
           background: '.$this->menuBackgroundColor.';
         }
         ';
-      }
-      if( !empty($this->dockBackgroundColor) ){
-        $css.= '
+        }
+        if (!empty($this->dockBackgroundColor)) {
+            $css .= '
         #dock, #mini-dock, #bottom-dock, #right-dock, #sub-dock,
         .lizmapPopup.olPopup, #map-content .lizmapPopup{
           background-color: '.$this->dockBackgroundColor.' !important;
         }
         ';
-      }
+        }
 
-      if( !empty($this->navbarColor) ){
-        $css.= '
+        if (!empty($this->navbarColor)) {
+            $css .= '
         #navbar button.btn{
           background-color: '.$this->navbarColor.';
         }
@@ -238,27 +246,24 @@ class lizmapTheme{
           background: '.$this->navbarColor.';
         }
         ';
-      }
+        }
 
-      if( !empty($this->additionalCss)){
-        $css.= $this->additionalCss;
-      }
+        if (!empty($this->additionalCss)) {
+            $css .= $this->additionalCss;
+        }
 
-      return $css;
+        return $css;
     }
-
 
     /**
      * Write the theme css file
-     * based one the properties saved
+     * based one the properties saved.
      */
-    private function writeThemeCssFile(){
+    private function writeThemeCssFile()
+    {
+        $cssPath = jApp::varPath('lizmap-theme-config/').'theme.css';
+        $css = $this->buildCssThemeContent();
 
-      $cssPath = jApp::varPath('lizmap-theme-config/') . 'theme.css';
-      $css = $this->buildCssThemeContent();
-      $file = jFile::write($cssPath, $css);
-      return $file;
+        return jFile::write($cssPath, $css);
     }
-
-
 }

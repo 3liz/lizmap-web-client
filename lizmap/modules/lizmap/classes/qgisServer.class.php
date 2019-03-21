@@ -1,53 +1,49 @@
 <?php
 /**
-* Get information about QGIS Server.
-* @package   lizmap
-* @subpackage lizmap
-* @author    3liz
-* @copyright 2012 3liz
-* @link      http://3liz.com
-* @license Mozilla Public License : http://www.mozilla.org/MPL/
-*/
-
-class qgisServer {
-
+ * Get information about QGIS Server.
+ *
+ * @author    3liz
+ * @copyright 2012 3liz
+ *
+ * @see      http://3liz.com
+ *
+ * @license Mozilla Public License : http://www.mozilla.org/MPL/
+ */
+class qgisServer
+{
     // QGIS Server version
-    public $qgisServerVersion = null;
+    public $qgisServerVersion;
 
     // List of activated server plugins
     public $plugins = array();
 
-
-    /*
-     * constructor
-     */
-    public function __construct () {
+    // constructor
+    public function __construct()
+    {
         $services = lizmap::getServices();
 
         $this->qgisServerVersion = $services->qgisServerVersion;
 
         $this->getPlugins();
-
     }
 
-    protected function getPlugins(){
-
+    protected function getPlugins()
+    {
         $plugins = array();
 
         // Check for atlasprint plugin
-        $params =  array(
-            'service'=>'WMS',
-            'request'=>'GetCapabilitiesAtlas'
+        $params = array(
+            'service' => 'WMS',
+            'request' => 'GetCapabilitiesAtlas',
         );
         $url = lizmapProxy::constructUrl($params);
         list($data, $mime, $code) = lizmapProxy::getRemoteData($url);
-        if ($mime=='text/json') {
+        if ($mime == 'text/json') {
             $json = json_decode($data);
             $metadata = $json->metadata;
             $plugins[$metadata->name] = array('version' => $metadata->version);
         }
 
         $this->plugins = $plugins;
-
     }
 }

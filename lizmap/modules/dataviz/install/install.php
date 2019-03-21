@@ -1,17 +1,16 @@
 <?php
 /**
-* @package   lizmap
-* @subpackage dataviz
-* @author    3liz
-* @copyright 2017 3liz
-* @link      http://3liz.com
-* @license    Mozilla Public License
-*/
-
-
-class datavizModuleInstaller extends jInstallerModule {
-
-    function install() {
+ * @author    3liz
+ * @copyright 2017 3liz
+ *
+ * @see      http://3liz.com
+ *
+ * @license    Mozilla Public License
+ */
+class datavizModuleInstaller extends jInstallerModule
+{
+    public function install()
+    {
 
         // Copy www content
         //$this->copyDirectoryContent('www', jApp::wwwPath());

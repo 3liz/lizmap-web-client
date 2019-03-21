@@ -1,14 +1,15 @@
 <?php
-class lizmapModuleUpgrader_configjcommunity extends jInstallerModule {
 
+class lizmapModuleUpgrader_configjcommunity extends jInstallerModule
+{
     public $targetVersions = array(
-        '3.2pre.180212'
+        '3.2pre.180212',
     );
     public $date = '2018-02-12';
 
-    function install() {
-
-        if( $this->firstExec('configchange') ) {
+    public function install()
+    {
+        if ($this->firstExec('configchange')) {
             $lzmIni = new jIniFileModifier(jApp::configPath('lizmapConfig.ini.php'));
 
             $liveIni = $this->entryPoint->liveConfigIni;
@@ -16,24 +17,22 @@ class lizmapModuleUpgrader_configjcommunity extends jInstallerModule {
             $val = $lzmIni->getValue('allowUserAccountRequests', 'services');
             if ($val === null) {
                 $val = false;
-            }
-            else {
+            } else {
                 $lzmIni->removeValue('allowUserAccountRequests', 'services');
             }
-            $liveIni->setValue('registrationEnabled', ($val?'on':'off'), 'jcommunity');
+            $liveIni->setValue('registrationEnabled', ($val ? 'on' : 'off'), 'jcommunity');
 
             $adminSenderEmail = $this->entryPoint->config->mailer['webmasterEmail'];
-            if ($adminSenderEmail == 'root@localhost'|| $adminSenderEmail == 'root@localhost.localdomain') {
+            if ($adminSenderEmail == 'root@localhost' || $adminSenderEmail == 'root@localhost.localdomain') {
                 $adminSenderEmail = '';
             }
 
             $val = $lzmIni->getValue('adminContactEmail', 'services');
             if ($val !== null && $adminSenderEmail == '') {
-                $liveIni->setValue('webmasterEmail', $val,  'mailer');
+                $liveIni->setValue('webmasterEmail', $val, 'mailer');
             }
             $lzmIni->save();
             $liveIni->save();
         }
     }
-
 }

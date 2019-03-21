@@ -1,60 +1,62 @@
 <?php
 /**
-* Manage and give access to lizmap configuration.
-* @package   lizmap
-* @subpackage dataviz
-* @author    3liz
-* @copyright 2017 3liz
-* @link      http://3liz.com
-* @license Mozilla Public License : http://www.mozilla.org/MPL/
-*/
-
-class datavizConfig {
-
-
+ * Manage and give access to lizmap configuration.
+ *
+ * @author    3liz
+ * @copyright 2017 3liz
+ *
+ * @see      http://3liz.com
+ *
+ * @license Mozilla Public License : http://www.mozilla.org/MPL/
+ */
+class datavizConfig
+{
     private $status = false;
     private $errors = array();
-    private $repository = null;
-    private $project = null;
-    private $lproj = null;
-    private $config = null;
+    private $repository;
+    private $project;
+    private $lproj;
+    private $config;
 
-    function __construct( $repository, $project ){
-
+    public function __construct($repository, $project)
+    {
         try {
             $lproj = lizmap::getProject($repository.'~'.$project);
-            if(!$lproj){
+            if (!$lproj) {
                 $this->errors = array(
-                    'title'=>'Invalid Query Parameter',
-                    'detail'=>'The lizmapProject '.strtoupper($project).' does not exist !'
+                    'title' => 'Invalid Query Parameter',
+                    'detail' => 'The lizmapProject '.strtoupper($project).' does not exist !',
                 );
+
                 return false;
             }
-        }
-        catch(UnknownLizmapProjectException $e) {
+        } catch (UnknownLizmapProjectException $e) {
             $this->errors = array(
-                'title'=>'Invalid Query Parameter',
-                'detail'=>'The lizmapProject '.strtoupper($project).' does not exist !'
+                'title' => 'Invalid Query Parameter',
+                'detail' => 'The lizmapProject '.strtoupper($project).' does not exist !',
             );
+
             return false;
         }
 
         // Check acl
-        if ( !$lproj->checkAcl() ){
+        if (!$lproj->checkAcl()) {
             $this->errors = array(
-                'title'=>'Access Denied',
-                'detail'=>jLocale::get('view~default.repository.access.denied')
+                'title' => 'Access Denied',
+                'detail' => jLocale::get('view~default.repository.access.denied'),
             );
+
             return false;
         }
 
         // Get config
         $datavizConfig = $lproj->getDatavizLayersConfig();
-        if ( !$datavizConfig ){
+        if (!$datavizConfig) {
             $this->errors = array(
-                'title'=>'Dataviz Configuration not found',
-                'detail'=> 'No dataviz configuration has been found for this project'
+                'title' => 'Dataviz Configuration not found',
+                'detail' => 'No dataviz configuration has been found for this project',
             );
+
             return false;
         }
 
@@ -65,16 +67,18 @@ class datavizConfig {
         $this->config = $datavizConfig;
     }
 
-    public function getConfig(){
+    public function getConfig()
+    {
         return $this->config;
     }
 
-    public function getStatus(){
+    public function getStatus()
+    {
         return $this->status;
     }
 
-    public function getErrors(){
+    public function getErrors()
+    {
         return $this->errors;
     }
-
 }
