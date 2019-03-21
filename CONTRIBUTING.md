@@ -38,6 +38,17 @@ This allows the user to request coffea:
 * long or regular
 ```
 
+## Coding style
+
+Use [php-cs-fixer](https://cs.symfony.com/) to follow our coding style in PHP sources.
+Launch it at the root of the repository.
+
+```bash
+php-cs-fixer fix
+```
+
+Configuration of php-cs-fixer has been setup into .php-cs.dist.
+
 ## Issues
 
 Go to https://github.com/3liz/lizmap-web-client/issues and post issues you find.

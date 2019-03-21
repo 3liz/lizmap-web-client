@@ -17,3 +17,5 @@ temp/lizmap/*
 !temp/lizmap/.empty
 vagrant/playbook.retry
 vagrant/.vagrant
+.php_cs
+.php_cs.cache

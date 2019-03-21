@@ -1,15 +1,16 @@
 <?php
 /**
-* Class for items in the main view list
-* @package   lizmap
-* @subpackage view
-* @author    3liz
-* @copyright 2011 3liz
-* @link      http://3liz.com
-* @license    Mozilla Public License : http://www.mozilla.org/MPL/
-*/
-
-class lizmapMapDockItem {
+ * Class for items in the main view list.
+ *
+ * @author    3liz
+ * @copyright 2011 3liz
+ *
+ * @see      http://3liz.com
+ *
+ * @license    Mozilla Public License : http://www.mozilla.org/MPL/
+ */
+class lizmapMapDockItem
+{
     public $id = '';
     public $title = '';
     public $content = '';
@@ -19,7 +20,8 @@ class lizmapMapDockItem {
     public $icon = '';
     public $menuIconClasses = '';
 
-    public function __construct($id, $title, $content, $order=0, $css='', $js='') {
+    public function __construct($id, $title, $content, $order = 0, $css = '', $js = '')
+    {
         $this->id = $id;
         $this->title = $title;
         $this->content = $content;
@@ -29,7 +31,8 @@ class lizmapMapDockItem {
         $this->js = $js;
     }
 
-    public function copyFrom($item) {
+    public function copyFrom($item)
+    {
         $this->title = $item->title;
         $this->content = $item->content;
         $this->order = $item->order;
@@ -39,44 +42,49 @@ class lizmapMapDockItem {
         $this->menuIconClasses = $item->menuIconClasses;
     }
 
-    public function fetchContent() {
+    public function fetchContent()
+    {
         $content = $this->content;
-        if( is_string( $content ) ) {
+        if (is_string($content)) {
             return $content;
         }
-        elseif ( is_array( $content ) ) {
+        if (is_array($content)) {
             $tpl = new jTpl();
             $tplName = $content[0];
-            if ( count( $content ) > 1 ) {
-                $tpl->assign( $content[1] );
+            if (count($content) > 1) {
+                $tpl->assign($content[1]);
             }
-            return $tpl->fetch( $tplName );
+
+            return $tpl->fetch($tplName);
         }
+
         return '';
     }
 }
 
 function mapDockItemSort($itemA, $itemB)
 {
-    if ($itemA->order == $itemB->order)
-      return strcmp($itemA->id, $itemB->id);
-    return ($itemA->order - $itemB->order);
-}
+    if ($itemA->order == $itemB->order) {
+        return strcmp($itemA->id, $itemB->id);
+    }
 
+    return $itemA->order - $itemB->order;
+}
 
 function mapDockItemsMerge($itemsA, $itemsB)
 {
     $maps = array();
-    foreach( $itemsA as $item ) {
+    foreach ($itemsA as $item) {
         $maps[$item->id] = $item;
     }
-    foreach( $itemsB as $item ) {
+    foreach ($itemsB as $item) {
         $maps[$item->id] = $item;
     }
     $items = array();
-    foreach( $maps as $id=>$item ) {
+    foreach ($maps as $id => $item) {
         $items[] = $item;
     }
-    usort($items, "mapDockItemSort");
+    usort($items, 'mapDockItemSort');
+
     return $items;
 }
