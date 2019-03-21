@@ -272,6 +272,16 @@ class editionCtrl extends jController {
     $form = jForms::create('view~edition');
     $form->setData( 'liz_future_action', $this->param('liz_future_action', 'close') );
 
+    // event to add custom field in the jForms form
+    jEvent::notify('LizmapEditionCreateForm', array(
+        'form'=>$form,
+        'action'=>'create',
+        "project"=>$this->project,
+        "repository"=>$this->repository,
+        "layer"=>$this->layer,
+        "status"=>$this->param('status', 0)
+    ));
+
     // Redirect to the display action
     $rep = $this->getResponse('redirect');
     $rep->params = array(
@@ -315,6 +325,17 @@ class editionCtrl extends jController {
       return $this->serviceAnswer();
     }
     $form->setData( 'liz_future_action', $this->param('liz_future_action', 'close') );
+    // event to add custom field in the jForms form
+    jEvent::notify('LizmapEditionCreateForm', array(
+        'form'=>$form,
+        'action'=>'modify',
+        "project"=>$this->project,
+        "repository"=>$this->repository,
+        "layer"=>$this->layer,
+        "featureId"=>$this->featureId,
+        "featureData"=>$this->featureData,
+        "status"=>$this->param('status', 0)
+    ));
 
     // Redirect to the display action
     $rep = $this->getResponse('redirect');
@@ -334,7 +355,7 @@ class editionCtrl extends jController {
   /**
    * Display the edition form (output as html fragment)
    *
-   * @return jResponseHtmlFragment HTML code containing the form.
+   * @return jResponseHtmlFragment|jResponseRedirect HTML code containing the form.
    */
   public function editFeature(){
 
@@ -360,6 +381,18 @@ class editionCtrl extends jController {
     $form->setData('liz_project', $this->project->getKey());
     $form->setData('liz_layerId', $this->layerId);
     $form->setData('liz_featureId', $this->featureIdParam);
+
+    // event to add custom field into the jForms form before setting data in it
+    $eventParams = array(
+        'form'=>$form,
+        "project"=>$this->project,
+        "repository"=>$this->repository,
+        "layer"=>$this->layer,
+        "featureId"=>$this->featureId,
+        "featureData"=>$this->featureData,
+        "status"=>$this->param('status', 0)
+    );
+    jEvent::notify('LizmapEditionEditGetForm', $eventParams);
 
     // Dynamically add form controls based on QGIS layer information
     $qgisForm = null;
@@ -403,9 +436,8 @@ class editionCtrl extends jController {
     else if ( $form->hasUpload() ) {
         $repPath = $this->repository->getPath();
         $dtParams = $this->layer->getDatasourceParameters();
-        $qgisFormControls = $qgisForm->getFormControls();
         foreach( $form->getUploads() as $upload ) {
-            $DefaultRoot = $qgisFormControls[$upload->ref]->DefaultRoot;
+            $DefaultRoot = $qgisForm->getQgisControl($upload->ref)->DefaultRoot;
             // If not default root is set, the use old method media/upload/projectname/tablename/
             $targetPath = 'media/upload/'.$this->project->getKey().'/'.$dtParams->tablename.'/'.$upload->ref .'/';
             $targetFullPath = $repPath . $targetPath;
@@ -464,25 +496,27 @@ class editionCtrl extends jController {
     if ( !$title or $title == '' )
         $title = 'No title';
 
-    // Get form layout
-    $_layerXmlZero = $this->layerXml;
-    $layerXmlZero = $_layerXmlZero[0];
-    $_editorlayout = $layerXmlZero->xpath('editorlayout');
-    $attributeEditorFormTemplate = $qgisForm->getHtmlForm();
 
     // Use template to create html form content
     $tpl = new jTpl();
-    $tpl->assign(array(
-      'title'=>$title,
-      'attributeEditorFormTemplate'=>$attributeEditorFormTemplate
-    ));
+    $tpl->assign('attributeEditorForm', $qgisForm->getAttributesEditorForm());
+    $tpl->assign('fieldNames', $qgisForm->getFieldNames());
+    $tpl->assign('title', $title);
+    $tpl->assign('form', $qgisForm->getForm());
+
+    // event to add custom fields into the jForms form, or to modify those that
+    // have been added by QgisForm, and to inject custom data into the template
+    // useful if the template has been redefined in a theme
+    $eventParams['qgisForm'] = $qgisForm;
+    $eventParams["tpl"] = $tpl;
+    jEvent::notify('LizmapEditionEditQgisForm', $eventParams);
+
     $content = $tpl->fetch('view~edition_form');
 
     // Return html fragment response
     $rep = $this->getResponse('htmlfragment');
     $rep->addContent($content);
     return $rep;
-
   }
 
   /**
@@ -509,6 +543,20 @@ class editionCtrl extends jController {
       return $this->serviceAnswer();
     }
 
+    $this->getWfsFeature();
+
+    // event to add custom field into the jForms form before setting data in it
+    $eventParams = array(
+        'form'=>$form,
+        "project"=>$this->project,
+        "repository"=>$this->repository,
+        "layer"=>$this->layer,
+        "featureId"=>$this->featureId,
+        "featureData"=>$this->featureData,
+        "status"=>$this->param('status', 0)
+    );
+    jEvent::notify('LizmapEditionSaveGetForm', $eventParams);
+
     // Dynamically add form controls based on QGIS layer information
     // And save data into the edition table (insert or update line)
     $save =True;
@@ -521,8 +569,11 @@ class editionCtrl extends jController {
         return $this->serviceAnswer();
     }
 
+    // event to add or modify some control after QgisForm has added its own controls
+    $eventParams['qgisForm']  = $qgisForm;
+    jEvent::notify('LizmapEditionSaveGetQgisForm', $eventParams);
+
     // Get data from the request and set the form controls data accordingly
-    $this->getWfsFeature();
     $form->initFromRequest();
 
     // Check the form data and redirect if needed
@@ -530,6 +581,12 @@ class editionCtrl extends jController {
     if ( $this->geometryColumn != '' && $form->getData( $this->geometryColumn ) == '' ) {
       $check = False;
       $form->setErrorOn($this->geometryColumn, jLocale::get('view~edition.message.error.no.geometry') );
+    }
+
+    // event to add additionnal checks
+    $event = jEvent::notify('LizmapEditionSaveCheckForm', $eventParams);
+    if ($event->allResponsesByKeyAreTrue('check') === false) {
+        $check = false;
     }
 
     $rep = $this->getResponse('redirect');
@@ -732,23 +789,39 @@ class editionCtrl extends jController {
         }
     }
 
+    // event to add additionnal checks
+    $eventParams = array(
+        'form'=>$form,
+        'qgisForm' => $qgisForm,
+        "project"=>$this->project,
+        "repository"=>$this->repository,
+        "layer"=>$this->layer,
+        "featureId"=>$this->featureId,
+        "featureData"=>$this->featureData
+    );
+    jEvent::notify('LizmapEditionPreDelete', $eventParams);
+
     try {
       $rs = $qgisForm->deleteFromDb( $feature );
       if ( $rs ) {
-        jMessage::add( jLocale::get('view~edition.message.success.delete'), 'success');
-
+          jMessage::add( jLocale::get('view~edition.message.success.delete'), 'success');
+          $eventParams["deleteFiles"] = $deleteFiles;
+          $eventParams["success"] = true;
           foreach( $deleteFiles as $path ) {
               if ( file_exists( $path ) )
                 unlink( $path );
           }
       } else {
         jMessage::add( jLocale::get('view~edition.message.error.delete'), 'error');
+        $eventParams["success"] = false;
       }
 
     } catch (Exception $e) {
       jLog::log("An error has been raised when saving form data edition to db : ".$e->getMessage() ,'error');
       jMessage::add( jLocale::get('view~edition.message.error.delete'), 'error');
+      $eventParams["success"] = false;
     }
+    jEvent::notify('LizmapEditionPostDelete', $eventParams);
     return $this->serviceAnswer();
   }
 

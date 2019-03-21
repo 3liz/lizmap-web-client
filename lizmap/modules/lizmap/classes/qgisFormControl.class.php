@@ -722,4 +722,32 @@ class qgisFormControl {
     $this->ctrl->datasource = $dataSource;
   }
 
+  public function isUniqueValue() {
+    return $this->fieldEditType === 2 ||
+           $this->fieldEditType === 'UniqueValues'  ||
+           $this->fieldEditType === 'UniqueValuesEditable';
+  }
+
+  public function isValueRelation() {
+    return ($this->fieldEditType === 15 ||
+            $this->fieldEditType === 'ValueRelation') &&
+            $this->valueRelationData;
+  }
+
+  public function isRelationReference() {
+    return $this->fieldEditType === 'RelationReference' &&
+           $this->relationReferenceData;
+  }
+
+  public function isUploadControl() {
+    return $this->fieldEditType === 8 ||
+        $this->fieldEditType === 'FileName' ||
+        $this->fieldEditType === 'Photo' ||
+        $this->fieldEditType === 'ExternalResource';
+  }
+
+  public function getControlName() {
+    // Change field name to choice for files upload control
+    return ($this->isUploadControl()?$this->ref.'_choice':$this->ref);
+  }
 }
