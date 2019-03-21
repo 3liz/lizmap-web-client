@@ -104,7 +104,7 @@ body {
 }
 
 /*
-CSS Sprite positions calculated via http://instantsprite.com/ or https://draeton.github.io/stitches/
+CSS Sprite positions calculated via http://instantsprite.com/ using 20px images and 5px offset or https://draeton.github.io/stitches/
 */
 #mapmenu .nav-list > li.home .icon {
   background-position: -25px 0px;
@@ -113,6 +113,15 @@ CSS Sprite positions calculated via http://instantsprite.com/ or https://draeton
 #mapmenu .nav-list > li.home a:hover .icon {
   background-position: -0px 0px;
 }
+
+#mapmenu .nav-list > li.projects .icon {
+  background-position: -925px 0px;
+}
+#mapmenu .nav-list > li.projects.active .icon,
+#mapmenu .nav-list > li.projects a:hover .icon {
+  background-position: -900px 0px;
+}
+
 #mapmenu .nav-list > li.metadata .icon {
   background-position: -125px 0px;
 }

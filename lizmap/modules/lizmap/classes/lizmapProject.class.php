@@ -1312,17 +1312,22 @@ class lizmapProject extends qgisProject {
 
         // Get lizmap services
         $services = lizmap::getServices();
-
-        // only maps
-        if($services->onlyMaps) {
-                $projectsTpl = new jTpl();
-                $projectsTpl->assign('excludedProject', $this->repository->getKey().'~'.$this->getKey());
-                $dockable[] = new lizmapMapDockItem(
-                    'home',
-                    jLocale::get('view~default.repository.list.title'),
-                    $projectsTpl->fetch('view~map_projects'),
-                    0
-                );
+        
+        // only maps and show project switcher
+        if($services->onlyMaps or $services->projectSwitcher) {
+            $dockableName = 'projects';
+            if($services->onlyMaps) {
+                $dockableName = 'home';
+            }
+        
+            $projectsTpl = new jTpl();
+            $projectsTpl->assign('excludedProject', $this->repository->getKey().'~'.$this->getKey());
+            $dockable[] = new lizmapMapDockItem(
+                $dockableName,
+                jLocale::get('view~default.repository.list.title'),
+                $projectsTpl->fetch('view~map_projects'),
+                0
+            );
         }
 
         $switcherTpl = new jTpl();
