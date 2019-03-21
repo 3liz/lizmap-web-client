@@ -94,11 +94,8 @@ var lizAtlas = function() {
             var s_field = lizAtlasConfig['sortField'];
             if ( !s_field )
                 s_field = pkey_field;
-            for(var i in lizAtlasConfig.features){
-
+            lizAtlasConfig.features.forEach(function(feat){
                 // Get feature
-                var feat = lizAtlasConfig.features[i];
-                var fid = feat.id.split('.').pop();
                 var pk_val = feat.properties[pkey_field];
 
                 // Add feature in dictionary for further ref
@@ -106,7 +103,7 @@ var lizAtlas = function() {
 
                 // Add feature to sorted oject
                 items.push(feat.properties);
-            }
+            });
 
             items.sort(function(a, b) {
                 var nameA = a[s_field];

@@ -73,7 +73,7 @@ var lizAttributeTable = function() {
                     var atConfig = config.attributeLayers[configLayerName];
 
                     // Add some properties to the lizMap.config
-                    config.layers[configLayerName]['features'] = [];
+                    config.layers[configLayerName]['features'] = {};
                     config.layers[configLayerName]['featureCrs'] = null;
                     config.layers[configLayerName]['featuresFullSet'] = false;
                     config.layers[configLayerName]['selectedFeatures'] = [];
@@ -181,8 +181,9 @@ var lizAttributeTable = function() {
 
                     // Get data and fill attribute table
                     var dFilter = null;
-                    getAttributeFeatureData( lname, dFilter, null, 'extent', function(someName, someNameFilter, someNameFeatures, someNameAliases){
-                        buildLayerAttributeDatatable( someName, aTable, someNameFeatures, someNameAliases );
+                    getAttributeFeatureData( lname, dFilter, null, 'extent',
+                        function(someName, someNameFilter, someNameFeatures, someNameAliases){
+                            buildLayerAttributeDatatable( someName, aTable, someNameFeatures, someNameAliases );
                     });
 
                     $('#nav-tab-attribute-layer-' + cleanName + ' a' ).tab('show');
@@ -826,7 +827,7 @@ var lizAttributeTable = function() {
                 // Get corresponding values of parent primary key column for these ids
                 var fi = [];
                 var features = config.layers[ getP[0] ]['features'];
-                if ( !features || features.length <= 0 )
+                if ( !features || Object.keys(features).length <= 0 )
                     return false;
 
                 var primaryKey = getP[1]['primaryKey'];
@@ -1038,8 +1039,14 @@ var lizAttributeTable = function() {
 
                 cFeatures = typeof cFeatures !== 'undefined' ?  cFeatures : null;
                 if( !cFeatures ){
-                    cFeatures = config.layers[aName]['features'];
+                    // features is an object, let's transform it to an array
+                    // XXX IE compat: Object.values is not available on IE...
+                    var features = config.layers[aName]['features'];
+                    cFeatures = Object.keys(features).map(function (key) {
+                        return features[key];
+                    });
                 }
+
                 cAliases = typeof cAliases !== 'undefined' ?  cAliases : null;
                 if( !cAliases ){
                     cAliases = config.layers[aName]['alias'];
@@ -1053,9 +1060,8 @@ var lizAttributeTable = function() {
                 if( 'types' in config.layers[aName] )
                     cTypes = config.layers[aName]['types'];
 
-                var dataLength = 0;
                 var atFeatures = cFeatures;
-                dataLength = atFeatures.length;
+                var dataLength = atFeatures.length;
 
                 // Get config
                 var lConfig = config.layers[aName];
@@ -1113,7 +1119,7 @@ var lizAttributeTable = function() {
                     // Fill in the features object
                     // only when necessary : object is empty or is not child or (is child and no full features list in the object)
                     var refillFeatures = false;
-                    var dLen = config.layers[aName]['features'] ? config.layers[aName]['features'].length : 0;
+                    var dLen = config.layers[aName]['features'] ? Object.keys(config.layers[aName]['features']).length : 0;
                     if( dLen == 0 ){
                         refillFeatures = true;
                         if( !isChild ){
@@ -1421,11 +1427,10 @@ var lizAttributeTable = function() {
             function formatDatatableFeatures(atFeatures, geometryType, canEdit, canDelete, isChild, isPivot, hiddenFields, selectedFeatures){
                 var dataSet = [];
                 var foundFeatures = {};
-                for (var x in atFeatures) {
+                atFeatures.forEach(function(feat) {
                     var line = {};
 
                     // add feature to layer global data
-                    var feat = atFeatures[x];
                     var fid = feat.id.split('.')[1];
                     foundFeatures[fid] = feat;
 
@@ -1486,7 +1491,7 @@ var lizAttributeTable = function() {
 
 
                     dataSet.push( line );
-                }
+                });
                 return {
                     'dataSet': dataSet,
                     'foundFeatures': foundFeatures
@@ -1510,7 +1515,7 @@ var lizAttributeTable = function() {
                     // Display popup for the feature
                     var lConfig = config.layers[aName];
                     if( lConfig && lConfig['popup'] == 'True' ){
-                        var feat = config.layers[aName]['features'][featId];
+                        var feat = lConfig['features'][featId];
 
                         var parentLayerCleanName = aTable.replace('#attribute-layer-table-', '').split('-');
                         parentLayerCleanName = parentLayerCleanName[0];
@@ -1641,7 +1646,7 @@ var lizAttributeTable = function() {
 
                     // Get features for the child layer
                     var features = config.layers[aName]['features'];
-                    if ( !features || features.length <= 0 )
+                    if ( !features || Object.keys(features).length <= 0 )
                         return false;
 
                     // Get primary key value for clicked child item
@@ -2060,11 +2065,12 @@ var lizAttributeTable = function() {
 
             // Get features to refresh attribute table AND build children filters
             var geometryName = 'extent';
-            lizMap.getFeatureData(typeName, aFilter, null, geometryName, false, null, null, function(aName, aNameFilter, aNameFeatures, aNameAliases ){
+            lizMap.getFeatureData(typeName, aFilter, null, geometryName, false, null, null,
+                function(aName, aNameFilter, aNameFeatures, aNameAliases ){
 
                 // **0** Prepare some variable. e.g. reset features stored in the layer config
                 var layerConfig = config.layers[typeName];
-                layerConfig['features'] = [];
+                layerConfig['features'] = {};
                 var foundFeatures = {};
 
                 // **1** Get children info
@@ -2199,10 +2205,9 @@ var lizAttributeTable = function() {
                 // **2** Loop through features && get children filter values
                 var filteredFeatures = [];
 
-                for (var x in cFeatures) {
+                cFeatures.forEach(function(feat) {
 
                     // Add feature to layer config data
-                    var feat = cFeatures[x];
                     var fid = feat.id.split('.')[1];
                     foundFeatures[fid] = feat;
 
@@ -2237,9 +2242,7 @@ var lizAttributeTable = function() {
                         var referencingField = pivotParam['otherParentRelation'].referencingField;
                         pivotParam['otherParentValues'].push( "'" + feat.properties[ referencingField ] + "'" );
                     }
-
-
-                }
+                });
 
                 // **3** Apply filter to the typeName and redraw if necessary
                 layerConfig['features'] = foundFeatures;
@@ -2257,7 +2260,7 @@ var lizAttributeTable = function() {
                     typeNamePkeyValues.push('-99999');
 
                 if( aFilter ){
-                    var lFilter = layerN + ':"' + typeNamePkey + '" IN ( ' + typeNamePkeyValues.join( ' , ' ) + ' ) ';
+                    lFilter = layerN + ':"' + typeNamePkey + '" IN ( ' + typeNamePkeyValues.join( ' , ' ) + ' ) ';
 
                     // Try to use the simple filter ( for example myforeignkey = 4 )
                     // instead of the full list of pkeys we got from wfs
