@@ -190,6 +190,9 @@ class lizmapWFSRequest extends lizmapOGCRequest {
             if( !in_array($k, $sfields) )
                 $sfields[] = $k;
         }
+        // deduplicate columns to avoid SQL errors
+        $sfields = array_values(array_unique($sfields));
+
         $this->selectFields = $sfields;
         $sql.= '"' . implode( '", "', $sfields ) . '"';
 
@@ -464,8 +467,7 @@ class lizmapWFSRequest extends lizmapOGCRequest {
         if( !empty($geosql) ){
             // For new QGIS versions, export into EPSG:4326
             $lizservices = lizmap::getServices();
-            $qgisServerVersion = (integer)str_replace('.', '', $lizservices->qgisServerVersion);
-            if( $qgisServerVersion >= 218 ){
+            if( version_compare( $lizservices->qgisServerVersion, '2.18', '>=' ) ){
                 $geosql = 'ST_Transform(' . $geosql . ', 4326)';
             }
 

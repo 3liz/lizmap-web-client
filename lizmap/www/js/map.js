@@ -937,7 +937,7 @@ var lizMap = function() {
 
       //Manage attribution
       if (typeof layer.attribution == "object") {
-          console.log(layer.attribution);
+          //console.log(layer.attribution);
           // Update href if needed
           if ( 'href' in layer.attribution &&
                layer.attribution.href != '' &&
@@ -1728,6 +1728,7 @@ var lizMap = function() {
         $('#locate-layer-'+layerName+'-'+locate.filterFieldName+' ~ span > input').attr('placeholder', filterPlaceHolder).val('');
         $('#locate-layer-'+layerName+'-'+locate.filterFieldName+' ~ span > input').autocomplete('close');
         updateSwitcherSize();
+        updateMiniDockSize();
       }
 
       // create combobox for the layer
@@ -2887,8 +2888,9 @@ var lizMap = function() {
       navCtrl.zoomBox.handler.keyMask = navCtrl.zoomBoxKeyMask;
       navCtrl.zoomBox.handler.dragHandler.keyMask = navCtrl.zoomBoxKeyMask;
       navCtrl.handlers.wheel.activate();
-      if( !('edition' in controls) || !controls.edition.active )
-        controls['featureInfo'].activate();
+      if ( ( !('edition' in controls) || !controls.edition.active )
+           && ('featureInfo' in controls) && controls.featureInfo !== null )
+          controls.featureInfo.activate();
     });
     $('#navbar button.zoom').click(function(){
       var self = $(this);
@@ -2896,7 +2898,8 @@ var lizMap = function() {
         return false;
       $('#navbar button.pan').removeClass('active');
       self.addClass('active');
-      controls['featureInfo'].deactivate();
+      if ( ('featureInfo' in controls) && controls.featureInfo !== null )
+            controls.featureInfo.deactivate();
       var navCtrl = map.getControlsByClass('OpenLayers.Control.Navigation')[0];
       navCtrl.handlers.wheel.deactivate();
       navCtrl.zoomBox.keyMask = null;
@@ -3536,7 +3539,7 @@ var lizMap = function() {
         var service = OpenLayers.Util.urlAppend(lizUrls.wms
             ,OpenLayers.Util.getParameterString(lizUrls.params)
         );
-        $.get(service, wmsOptions, function(data) {
+        $.post(service, wmsOptions, function(data) {
             var hasPopupContent = (!(!data || data == null || data == ''))
             if ( hasPopupContent ) {
                 var popupReg = new RegExp('lizmapPopupTable', 'g');
@@ -3637,14 +3640,19 @@ var lizMap = function() {
                 var rGetLayerConfig = getLayerConfigById( rLayerId );
                 if ( rGetLayerConfig ) {
                     var rConfigLayer = rGetLayerConfig[1];
-                    if ( rConfigLayer.popup == 'True' && self.parent().find('div.lizmapPopupChildren').length == 0) {
+                    var clname = rConfigLayer.cleanname;
+                    if ( clname === undefined ) {
+                        clname = cleanName(configLayer.name);
+                        rConfigLayer.cleanname = clname;
+                    }
+                    if ( rConfigLayer.popup == 'True' && self.parent().find('div.lizmapPopupChildren.'+clname).length == 0) {
                         var wmsOptions = {
                              'LAYERS': rConfigLayer.name
                             ,'QUERY_LAYERS': rConfigLayer.name
                             ,'STYLES': ''
                             ,'SERVICE': 'WMS'
                             ,'VERSION': '1.3.0'
-                            ,'CRS': (('crs' in rConfigLayer) && rConfigLayer.crs != '') ? rConfigLayer.crs : 'EPSG:4326' 
+                            ,'CRS': (('crs' in rConfigLayer) && rConfigLayer.crs != '') ? rConfigLayer.crs : 'EPSG:4326'
                             ,'REQUEST': 'GetFeatureInfo'
                             ,'EXCEPTIONS': 'application/vnd.ogc.se_inimage'
                             ,'FEATURE_COUNT': popupMaxFeatures
@@ -3678,6 +3686,50 @@ var lizMap = function() {
   }
 
   function addFeatureInfo() {
+      // Verifying layers
+      var popupsAvailable = false;
+      for ( var l in config.layers ) {
+          var configLayer = config.layers[l];
+          var editionLayer = null;
+          if ( ('editionLayers' in config) && (l in config.editionLayers) )
+              editionLayer = config.editionLayers[l];
+          if( (configLayer && configLayer.popup && configLayer.popup == 'True')
+           || (editionLayer && ( editionLayer.capabilities.modifyGeometry == 'True'
+                              || editionLayer.capabilities.modifyAttribute == 'True'
+                              || editionLayer.capabilities.deleteFeature == 'True') ) ){
+              popupsAvailable = true;
+              break;
+          }
+      }
+      if ( !popupsAvailable )
+        return null;
+
+      // Create the dock if needed
+      if( 'popupLocation' in config.options &&
+          config.options.popupLocation != 'map' &&
+          !$('#mapmenu .nav-list > li.popupcontent > a').length ) {
+          // Verifying the message
+          if ( !('popup.msg.start' in lizDict) )
+            lizDict['popup.msg.start'] = 'Click to the map to get informations.';
+          // Initialize dock
+          var popupContainerId = 'popupcontent';
+          var pcontent = '<div class="lizmapPopupContent"><h4>'+lizDict['popup.msg.start']+'</h4></div>';
+          addDock(popupContainerId, 'Popup', config.options.popupLocation, pcontent, 'icon-comment');
+          $('#button-popupcontent').click(function(){
+              if($(this).parent().hasClass('active')) {
+                  // clean locate layer
+                  var locatelayer = map.getLayersByName('locatelayer');
+                  if ( locatelayer.length == 0 )
+                      return;
+                  locatelayer = locatelayer[0];
+                  locatelayer.destroyFeatures();
+                  // remove information
+                  $('#popupcontent div.menu-content').html('<div class="lizmapPopupContent"><h4>'+lizDict['popup.msg.start']+'</h4></div>');
+              }
+          });
+
+      }
+
       var fiurl = OpenLayers.Util.urlAppend(
         lizUrls.wms,
         OpenLayers.Util.getParameterString(lizUrls.params)
@@ -3707,26 +3759,8 @@ var lizMap = function() {
                       var popupReg = new RegExp('lizmapPopupTable', 'g');
                       text = text.replace( popupReg, 'table table-condensed table-striped table-bordered lizmapPopupTable');
                       var pcontent = '<div class="lizmapPopupContent">'+text+'</div>';
-                      var hasPopupContent = (!(!text || text == null || text == ''))
-                      if( !$('#mapmenu .nav-list > li.popupcontent > a').length ){
-                        addDock(popupContainerId, 'Popup', config.options.popupLocation, pcontent, 'icon-comment');
-                        $('#button-popupcontent').click(function(){
-                          if($(this).parent().hasClass('active')) {
-                            // clean locate layer
-                            var locatelayer = map.getLayersByName('locatelayer');
-                            if ( locatelayer.length == 0 )
-                                return;
-                            locatelayer = locatelayer[0];
-                            locatelayer.destroyFeatures();
-                          } else {
-                            // Display geometries
-                            addGeometryFeatureInfo( popup, popupContainerId );
-                          }
-                        });
-                      }
-                      else{
-                        $('#popupcontent div.menu-content').html(pcontent);
-                      }
+                      var hasPopupContent = (!(!text || text == null || text == ''));
+                      $('#popupcontent div.menu-content').html(pcontent);
                       if ( !$('#mapmenu .nav-list > li.popupcontent').is(':visible') )
                         $('#mapmenu .nav-list > li.popupcontent').show();
 
@@ -3737,9 +3771,7 @@ var lizMap = function() {
                         window.setTimeout(function(){
                             if ( $('#mapmenu .nav-list > li.popupcontent').hasClass('active') && config.options.popupLocation != 'right-dock')
                                 $('#button-popupcontent').click();
-                            if ( !$('#mapmenu .nav-list > li.popupcontent').hasClass('active') && config.options.popupLocation != 'right-dock' )
-                                $('#mapmenu .nav-list > li.popupcontent').hide();
-                        },1000);
+                        },2000);
                       }
 
                       // Display dock if needed
@@ -3756,6 +3788,9 @@ var lizMap = function() {
                       ){
                           $('#button-popupcontent').click();
                       }
+                      // Resize minidock if displayed
+                      if ( $('#mapmenu .nav-list > li.popupcontent').hasClass('active') && config.options.popupLocation == 'minidock' )
+                          updateMiniDockSize();
 
                     }
                     else{
@@ -3939,6 +3974,9 @@ var lizMap = function() {
                         info.vendorParams['filter'] = null;
                         refreshGetFeatureInfo(evt);
                     });
+                }else{
+                      info.vendorParams['filtertoken'] = requestParams['filtertoken'];
+                      info.vendorParams['filter'] = requestParams['filter'];
                 }
             }
         },
@@ -4388,7 +4426,7 @@ var lizMap = function() {
             || lConfig['request_params'] == null )
               continue;
           var requestParams = lConfig['request_params'];
-          if ( ('filtertoken' in lConfig['request_params'])
+            if ( ('filtertoken' in lConfig['request_params'])
             && lConfig['request_params']['filtertoken'] != null
             && lConfig['request_params']['filtertoken'] != "" ) {
               filter.push( lConfig['request_params']['filtertoken'] );
@@ -5941,12 +5979,83 @@ OpenLayers.Control.HighlightFeature = OpenLayers.Class(OpenLayers.Control, {
       var service = OpenLayers.Util.urlAppend(lizUrls.wms
           ,OpenLayers.Util.getParameterString(lizUrls.params)
       );
-      $.get(service, wmsOptions, function(data) {
+      $.post(service, wmsOptions, function(data) {
           aCallback(data);
       });
 
   }
 
+
+  // Get the popup content for a layer given a feature
+  function getFeaturePopupContentByFeatureIntersection(aName, feat, aCallback) {
+
+    // Calculate fake bbox around the feature
+    var units = lizMap.map.getUnits();
+    var lConfig = lizMap.config.layers[aName];
+    if( lizMap.map.maxScale == 'auto' )
+      var scale = lConfig.minScale;
+    else
+      var scale = Math.max( lizMap.map.maxScale, lConfig.minScale );
+    scale = scale * 2;
+    var res = OpenLayers.Util.getResolutionFromScale(scale, units);
+
+    var geomType = feat.geometry.CLASS_NAME;
+    if (
+      geomType == 'OpenLayers.Geometry.Polygon'
+      || geomType == 'OpenLayers.Geometry.MultiPolygon'
+      || geomType == 'OpenLayers.Geometry.Point'
+    ) {
+      var lonlat = feat.geometry.getBounds().getCenterLonLat()
+    }
+    else {
+      var vert = feat.geometry.getVertices();
+      var middlePoint = vert[Math.floor(vert.length/2)];
+      var lonlat = new OpenLayers.LonLat(middlePoint.x, middlePoint.y);
+    }
+
+    // Calculate fake bbox
+    var bbox = new OpenLayers.Bounds(
+      lonlat.lon - 5 * res,
+      lonlat.lat - 5 * res,
+      lonlat.lon + 5 * res,
+      lonlat.lat + 5 * res
+    );
+
+    var gfiCrs = lizMap.map.getProjectionObject().toString();
+    if ( gfiCrs == 'EPSG:900913' )
+      gfiCrs = 'EPSG:3857';
+
+    var wmsOptions = {
+       'LAYERS': aName
+      ,'QUERY_LAYERS': aName
+      ,'STYLES': ''
+      ,'SERVICE': 'WMS'
+      ,'VERSION': '1.3.0'
+      ,'REQUEST': 'GetFeatureInfo'
+      ,'EXCEPTIONS': 'application/vnd.ogc.se_inimage'
+      ,'BBOX': bbox.toBBOX()
+      ,'FEATURE_COUNT': 10
+      ,'HEIGHT': 100
+      ,'WIDTH': 100
+      ,'INFO_FORMAT': 'text/html'
+      ,'CRS': gfiCrs
+      ,'I': 50
+      ,'J': 50
+    };
+
+    // Query the server
+    var service = OpenLayers.Util.urlAppend(lizUrls.wms
+      ,OpenLayers.Util.getParameterString(lizUrls.params)
+    );
+    $.post(service, wmsOptions, function(data) {
+      //console.log(data);
+      if(aCallback){
+        aCallback(service, wmsOptions, data);
+      }
+    });
+
+
+  }
 
 
   // Create new dock or minidock
@@ -6305,6 +6414,13 @@ OpenLayers.Control.HighlightFeature = OpenLayers.Class(OpenLayers.Control, {
      */
     getFeaturePopupContent: function( aName, feat, aCallback) {
       return getFeaturePopupContent(aName, feat, aCallback);
+    },
+
+    /**
+     * Method: getFeaturePopupContentByFeatureIntersection
+     */
+    getFeaturePopupContentByFeatureIntersection: function( aName, feat, aCallback) {
+      return getFeaturePopupContentByFeatureIntersection(aName, feat, aCallback);
     },
 
     /**

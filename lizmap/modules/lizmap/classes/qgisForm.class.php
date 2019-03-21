@@ -318,11 +318,23 @@ class qgisForm implements qgisFormControlsInterface {
         $values = array();
         // Loop though the fields and filter the form posted values
         foreach($fields as $ref){
+            if ($form->getControl($ref) instanceof jFormsControlUpload) {
+                $values[ $ref ] = $this->processUploadedFile($form, $ref, $cnx);
+                continue;
+            }
+
           // Get and filter the posted data foreach form control
           $value = $form->getData($ref);
 
           if(is_array($value)){
             $value = '{'.implode(',',$value).'}';
+          }
+
+          if (($value === '' || $value === null) &&
+              !$this->formControls[$ref]->required
+          ) {
+              $values[ $ref ] = 'NULL';
+              continue;
           }
 
           switch($this->formControls[$ref]->fieldDataType){
@@ -354,22 +366,20 @@ class qgisForm implements qgisFormControlsInterface {
                   $value = 'NULL';
                 break;
               case 'text':
-                if ( is_null($value) or strlen((string)$value) == 0)
-                  $value = 'NULL';
-                else
-                  $value = $cnx->quote($value);
+                $value = $cnx->quote($value);
                 break;
               case 'boolean':
                 $strVal = strtolower($value);
-                if ( $strVal === '' )
-                  $value = 'NULL';
-                else if($strVal != 'true' &&  $strVal !== 't' && intval($value) != 1 &&
+                if($strVal != 'true' &&  $strVal !== 't' && intval($value) != 1 &&
                    $strVal !== 'on' && $value !== true &&
                    $strVal != 'false' &&  $strVal !== 'f' && intval($value) != 0 &&
-                   $strVal !== 'off' && $value !== false)
-                  $value = 'NULL';
-                else
-                  $value = $cnx->quote($value);
+                   $strVal !== 'off' && $value !== false
+                ) {
+                    $value = 'NULL';
+                }
+                else {
+                    $value = $cnx->quote($value);
+                }
                 break;
               default:
                 $value = $cnx->quote(
@@ -377,60 +387,6 @@ class qgisForm implements qgisFormControlsInterface {
                 );
                 break;
           }
-          if ( $form->hasUpload() && array_key_exists( $ref, $form->getUploads() ) ) {
-            $project = $this->layer->getProject();
-            $dtParams = $this->layer->getDatasourceParameters();
-            $value = $form->getData( $ref );
-            $choiceValue = $form->getData( $ref.'_choice' );
-            $hiddenValue = $form->getData( $ref.'_hidden' );
-            $repPath = $project->getRepository()->getPath();
-
-            $targetPath = 'media/upload/'.$project->getKey().'/'.$dtParams->tablename.'/'.$ref;
-            $targetFullPath = $repPath . $targetPath;
-            // Else use given root, but only if it is a child or brother of the repository path
-            if(!empty($this->formControls[$ref]->DefaultRoot) ){
-                jFile::createDir($repPath . $this->formControls[$ref]->DefaultRoot);// Need to create it to then make the realpath checks
-                if(
-                    (substr(realpath($repPath . $this->formControls[$ref]->DefaultRoot), 0, strlen(realpath($repPath))) === realpath($repPath))
-                    or
-                    (substr(realpath($repPath . $this->formControls[$ref]->DefaultRoot), 0, strlen(realpath($repPath.'/../'))) === realpath($repPath.'/../'))
-                ){
-                    $targetPath = $this->formControls[$ref]->DefaultRoot;
-                    $targetFullPath = realpath($repPath . $this->formControls[$ref]->DefaultRoot);
-                }
-            }
-
-            // update
-            if ( $choiceValue == 'update' && $value != '') {
-                $alreadyValueIdx = 0;
-                while ( file_exists( $targetFullPath.'/'.$value ) ) {
-                    $alreadyValueIdx += 1;
-                    $splitValue = explode('.', $value);
-                    $splitValue[0] = $splitValue[0].$alreadyValueIdx;
-                    $value = implode('.', $splitValue);
-                }
-                $form->saveFile( $ref, $targetFullPath, $value );
-                $value = $targetPath.'/'.$value;
-                if ( $hiddenValue && file_exists( realPath( $repPath .'/'.$hiddenValue ) ) )
-                    unlink( realPath( $repPath .'/'.$hiddenValue ) );
-            }
-            // delete
-            else if ( $choiceValue == 'delete' ) {
-                if ( $hiddenValue && file_exists( realPath( $repPath .'/'.$hiddenValue ) ) )
-                    unlink( realPath( $repPath .'/'.$hiddenValue ) );
-                $value = 'NULL';
-            } else {
-                $value = $hiddenValue;
-            }
-            if ( empty($value) )
-                $value = 'NULL';
-            else if ( $value != 'NULL' )
-                $value = $cnx->quote(
-                  filter_var($value, FILTER_SANITIZE_STRING, FILTER_FLAG_NO_ENCODE_QUOTES)
-                );
-            $value = preg_replace('#/{2,3}#', '/', $value);
-          }
-
           $values[ $ref ] = $value;
         }
 
@@ -469,6 +425,66 @@ class qgisForm implements qgisFormControlsInterface {
             jLog::log("An error has been raised when saving form data edition to db : ".$e->getMessage() ,'error');
         }
         return false;
+    }
+
+    /**
+     * @param jFormsBase $form
+     * @param string $ref
+     * @param jDbConnection $cnx
+     */
+    protected function processUploadedFile($form, $ref, $cnx) {
+        $project = $this->layer->getProject();
+        $dtParams = $this->layer->getDatasourceParameters();
+        $value = $form->getData( $ref );
+        $choiceValue = $form->getData( $ref.'_choice' );
+        $hiddenValue = $form->getData( $ref.'_hidden' );
+        $repPath = $project->getRepository()->getPath();
+
+        $targetPath = 'media/upload/'.$project->getKey().'/'.$dtParams->tablename.'/'.$ref;
+        $targetFullPath = $repPath . $targetPath;
+        // Else use given root, but only if it is a child or brother of the repository path
+        if(!empty($this->formControls[$ref]->DefaultRoot) ){
+            jFile::createDir($repPath . $this->formControls[$ref]->DefaultRoot);// Need to create it to then make the realpath checks
+            if(
+                (substr(realpath($repPath . $this->formControls[$ref]->DefaultRoot), 0, strlen(realpath($repPath))) === realpath($repPath))
+                or
+                (substr(realpath($repPath . $this->formControls[$ref]->DefaultRoot), 0, strlen(realpath($repPath.'/../'))) === realpath($repPath.'/../'))
+            ){
+                $targetPath = $this->formControls[$ref]->DefaultRoot;
+                $targetFullPath = realpath($repPath . $this->formControls[$ref]->DefaultRoot);
+            }
+        }
+
+        // update
+        if ( $choiceValue == 'update' && $value != '') {
+            $alreadyValueIdx = 0;
+            while ( file_exists( $targetFullPath.'/'.$value ) ) {
+                $alreadyValueIdx += 1;
+                $splitValue = explode('.', $value);
+                $splitValue[0] = $splitValue[0].$alreadyValueIdx;
+                $value = implode('.', $splitValue);
+            }
+            $form->saveFile( $ref, $targetFullPath, $value );
+            $value = $targetPath.'/'.$value;
+            if ( $hiddenValue && file_exists( realPath( $repPath .'/'.$hiddenValue ) ) )
+                unlink( realPath( $repPath .'/'.$hiddenValue ) );
+        }
+        // delete
+        else if ( $choiceValue == 'delete' ) {
+            if ( $hiddenValue && file_exists( realPath( $repPath .'/'.$hiddenValue ) ) )
+                unlink( realPath( $repPath .'/'.$hiddenValue ) );
+            $value = 'NULL';
+        } else {
+            $value = $hiddenValue;
+        }
+        if ( empty($value) )
+            $value = 'NULL';
+        else if ( $value != 'NULL' )
+            $value = $cnx->quote(
+                filter_var($value, FILTER_SANITIZE_STRING, FILTER_FLAG_NO_ENCODE_QUOTES)
+            );
+        $value = preg_replace('#/{2,3}#', '/', $value);
+        return $value;
     }
 
     /**

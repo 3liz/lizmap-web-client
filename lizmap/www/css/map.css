@@ -2103,6 +2103,7 @@ a.btn.btn-opacity-layer.active {
 #map-content .lizmapPopupTable td,
 #popupcontent .lizmapPopupTable td{
   padding-left: 5px;
+  word-break: break-word;
 }
 .lizmapPopup.olPopup .lizmapPopupTable thead th,
 #map-content .lizmapPopupTable thead th,

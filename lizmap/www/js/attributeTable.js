@@ -1350,7 +1350,7 @@ var lizAttributeTable = function() {
                                 var rdata = tdata;
                                 if( tdata.substr(0,7) == '/media/' )
                                     rdata = tdata.slice(1);
-                                return '<a href="' + mediaLinkPrefix + '&path=' + rdata + '" target="_blank">' + columns[meta.col]['title'] + '</a>';
+                                return '<a href="' + mediaLinkPrefix + '&path=' + rdata + '" target="_blank">' + colMeta.title + '</a>';
                             }
                             else if( tdata.substr(0,4) == 'http' || tdata.substr(0,3) == 'www' ){
                                 var rdata = tdata;
