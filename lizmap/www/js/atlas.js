@@ -57,7 +57,6 @@ var lizAtlas = function() {
         }
 
         function updateAtlasData() {
-
             // Get data
             lizMap.getFeatureData(lizAtlasConfig['featureType'], lizAtlasConfig['featureType']+':', null, 'geom', false, null, null,
                 function(aName, aFilter, aFeatures, aAliases){

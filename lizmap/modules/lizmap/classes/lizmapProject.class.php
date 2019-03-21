@@ -893,7 +893,13 @@ class lizmapProject extends qgisProject {
                                     $ptMap['grid'] = 'True';
                                 }
                             }
-
+                            $services = lizmap::getServices();
+                            // In QGIS 3.*
+                            // Layout maps now use a string UUID as "id", let's assume that the first map
+                            // has id 0 and so on ...
+                            if( version_compare( $services->qgisServerVersion, '3.0', '>=') ) {
+                                $ptMap['id'] = 'map'.(string)count($printTemplate['maps']);
+                            }
                             $printTemplate['maps'][] = $ptMap;
                         }
                     }

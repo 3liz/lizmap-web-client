@@ -9,6 +9,7 @@
   <label locale="admin~admin.form.admin_services.qgisServerVersion.label"/>
   <item value="2.14" locale="admin~admin.form.admin_services.qgisServerVersion.214.label"/>
   <item value="2.18" selected="true" locale="admin~admin.form.admin_services.qgisServerVersion.218.label"/>
+  <item value="3.0" locale="admin~admin.form.admin_services.qgisServerVersion.300.label"/>
 </menulist>
 
 <input ref="wmsServerURL" type="string" required="true" defaultvalue="http://127.0.0.1/cgi-bin/qgis_mapserv.fcgi">
