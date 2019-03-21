@@ -1,18 +1,16 @@
 <?php
 /**
- * @package   lizmap
- * @subpackage lizmap
  * @author    3liz
  * @copyright 2019 3liz
- * @link      http://3liz.com
+ *
+ * @see      http://3liz.com
+ *
  * @license Mozilla Public License : http://www.mozilla.org/MPL/
  */
-
-
-class qgisLayerDbFieldsInfo {
-
+class qgisLayerDbFieldsInfo
+{
     /**
-     * @var jDbFieldProperties[] $dataFields
+     * @var jDbFieldProperties[]
      */
     public $dataFields = array();
 
@@ -30,7 +28,4 @@ class qgisLayerDbFieldsInfo {
      * @var string name of the geometry type
      */
     public $geometryType = '';
-
-
-
 }

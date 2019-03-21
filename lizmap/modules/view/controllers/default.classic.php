@@ -1,132 +1,132 @@
 <?php
 /**
-* Displays a list of project for a given repository.
-* @package   lizmap
-* @subpackage view
-* @author    3liz
-* @copyright 2012 3liz
-* @link      http://3liz.com
-* @license    Mozilla Public License : http://www.mozilla.org/MPL/
-*/
+ * Displays a list of project for a given repository.
+ *
+ * @author    3liz
+ * @copyright 2012 3liz
+ *
+ * @see      http://3liz.com
+ *
+ * @license    Mozilla Public License : http://www.mozilla.org/MPL/
+ */
+class defaultCtrl extends jController
+{
+    /**
+     * Displays a list of project for a given repository.
+     *
+     * @param string $repository. Name of the repository.
+     *
+     * @return Html page with a list of projects
+     */
+    public function index()
+    {
+        if ($this->param('theme')) {
+            jApp::config()->theme = $this->param('theme');
+        }
 
-class defaultCtrl extends jController {
+        $rep = $this->getResponse('html');
 
-  /**
-  * Displays a list of project for a given repository.
-  *
-  * @param string $repository. Name of the repository.
-  * @return Html page with a list of projects.
-  */
-  function index() {
+        // Get lizmap services
+        $services = lizmap::getServices();
 
-    if ($this->param('theme')) {
-      jApp::config()->theme = $this->param('theme');
-    }
+        // only maps
+        if ($services->onlyMaps) {
+            $repository = lizmap::getRepository($services->defaultRepository);
+            if ($repository && jAcl2::check('lizmap.repositories.view', $repository->getKey())) {
+                try {
+                    $project = lizmap::getProject($repository->getKey().'~'.$services->defaultProject);
+                    if ($project) {
+                        // test redirection to an other controller
+                        $items = jEvent::notify('mainviewGetMaps')->getResponse();
+                        foreach ($items as $item) {
+                            if ($item->parentId == $repository->getKey() && $item->id == $services->defaultProject) {
+                                $rep = $this->getResponse('redirectUrl');
+                                $rep->url = $item->url;
 
-    $rep = $this->getResponse('html');
-
-    // Get lizmap services
-    $services = lizmap::getServices();
-
-    // only maps
-    if($services->onlyMaps) {
-        $repository = lizmap::getRepository($services->defaultRepository);
-        if ($repository && jAcl2::check('lizmap.repositories.view', $repository->getKey())) {
-            try {
-                $project = lizmap::getProject($repository->getKey().'~'.$services->defaultProject);
-                if ($project) {
-                    // test redirection to an other controller
-                    $items = jEvent::notify('mainviewGetMaps')->getResponse();
-                    foreach ($items as $item) {
-                        if($item->parentId == $repository->getKey() && $item->id == $services->defaultProject ) {
-                            $rep = $this->getResponse('redirectUrl');
-                            $rep->url = $item->url;
-                            return $rep;
+                                return $rep;
+                            }
                         }
+                        // redirection to default controller
+                        $rep = $this->getResponse('redirect');
+                        $rep->action = 'view~map:index';
+
+                        return $rep;
                     }
-                    // redirection to default controller
-                    $rep = $this->getResponse('redirect');
-                    $rep->action = 'view~map:index';
-                    return $rep;
+                } catch (UnknownLizmapProjectException $e) {
+                    jMessage::add('The \'only maps\' option is not well configured!', 'error');
+                    jLog::logEx($e, 'error');
                 }
             }
-            catch(UnknownLizmapProjectException $e) {
-                jMessage::add('The \'only maps\' option is not well configured!', 'error');
-                jLog::logEx($e, 'error');
+        }
+
+        // Get repository data
+        $repository = $this->param('repository');
+
+        $repositoryList = array();
+        if ($repository) {
+            if (!jAcl2::check('lizmap.repositories.view', $repository)) {
+                $rep = $this->getResponse('redirect');
+                $rep->action = 'view~default:index';
+                jMessage::add(jLocale::get('view~default.repository.access.denied'), 'error');
+
+                return $rep;
             }
-      }
-    }
+        }
 
-    // Get repository data
-    $repository = $this->param('repository');
+        $title = jLocale::get('view~default.repository.list.title').' - '.$services->appName;
 
-    $repositoryList = Array();
-    if ( $repository ) {
-      if( !jAcl2::check('lizmap.repositories.view', $repository )){
-        $rep = $this->getResponse('redirect');
-        $rep->action = 'view~default:index';
-        jMessage::add(jLocale::get('view~default.repository.access.denied'), 'error');
-        return $rep;
-      }
-    }
+        if ($repository) {
+            $lrep = lizmap::getRepository($repository);
+            $title = $lrep->getData('label').' - '.$title;
+        }
+        $rep->title = $title;
 
-    $title = jLocale::get("view~default.repository.list.title").' - '.$services->appName;
+        $rep->body->assign('repositoryLabel', $title);
 
-    if ( $repository ) {
-      $lrep = lizmap::getRepository($repository);
-      $title = $lrep->getData('label') .' - '. $title;
-    }
-    $rep->title = $title;
+        $auth_url_return = jUrl::get('view~default:index');
+        if ($repository) {
+            $auth_url_return = jUrl::get('view~default:index', array('repository' => $repository));
+        }
+        $rep->body->assign('auth_url_return', $auth_url_return);
 
-    $rep->body->assign('repositoryLabel', $title);
+        $rep->body->assign('isConnected', jAuth::isConnected());
+        $rep->body->assign('user', jAuth::getUserSession());
+        $rep->body->assign('allowUserAccountRequests', $services->allowUserAccountRequests);
 
-    $auth_url_return = jUrl::get('view~default:index');
-    if ( $repository )
-        $auth_url_return = jUrl::get('view~default:index', array('repository'=>$repository));
-    $rep->body->assign('auth_url_return', $auth_url_return);
+        // Add Google Analytics ID
+        if ($services->googleAnalyticsID != '' && preg_match('/^UA-\\d+-\\d+$/', $services->googleAnalyticsID) == 1) {
+            $rep->body->assign('googleAnalyticsID', $services->googleAnalyticsID);
+        }
 
-    $rep->body->assign('isConnected', jAuth::isConnected());
-    $rep->body->assign('user', jAuth::getUserSession());
-    $rep->body->assign('allowUserAccountRequests', $services->allowUserAccountRequests);
+        $rep->body->assignZone('MAIN', 'main_view', array('repository' => $repository, 'auth_url_return' => $auth_url_return));
 
-    // Add Google Analytics ID
-    if($services->googleAnalyticsID != '' && preg_match("/^UA-\d+-\d+$/", $services->googleAnalyticsID) == 1 ) {
-        $rep->body->assign('googleAnalyticsID', $services->googleAnalyticsID);
-    }
+        // JS code
+        // Click on thumbnails
+        // and hack to normalize the height of the project thumbnails to avoid line breaks with long project titles
+        $bp = jApp::config()->urlengine['basePath'];
+        $rep->addJSLink($bp.'js/view.js');
 
-
-    $rep->body->assignZone('MAIN', 'main_view', array('repository'=>$repository, 'auth_url_return'=>$auth_url_return));
-
-    // JS code
-    // Click on thumbnails
-    // and hack to normalize the height of the project thumbnails to avoid line breaks with long project titles
-    $bp = jApp::config()->urlengine['basePath'];
-    $rep->addJSLink($bp.'js/view.js');
-
-    // Override default theme with color set in admin panel
-    if($cssContent = jFile::read(jApp::varPath('lizmap-theme-config/') . 'theme.css') ){
-      $css = '<style type="text/css">' . $cssContent . '</style>
+        // Override default theme with color set in admin panel
+        if ($cssContent = jFile::read(jApp::varPath('lizmap-theme-config/').'theme.css')) {
+            $css = '<style type="text/css">'.$cssContent.'</style>
       ';
-      $rep->addHeadContent($css);
+            $rep->addHeadContent($css);
+        }
+
+        return $rep;
     }
-
-
-    return $rep;
-  }
 
     /**
-      * Displays an error.
-      *
-      * @return Html page with the error message.
-      */
-  function error() {
+     * Displays an error.
+     *
+     * @return Html page with the error message
+     */
+    public function error()
+    {
+        $rep = $this->getResponse('html');
+        $tpl = new jTpl();
+        $rep->body->assign('MAIN', '');
 
-    $rep = $this->getResponse('html');
-    $tpl = new jTpl();
-    $rep->body->assign('MAIN', '');
-    return $rep;
-
-  }
-
-
+        return $rep;
+    }
 }

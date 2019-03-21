@@ -1,18 +1,19 @@
 <?php
 /**
-* Construct the subdock content.
-* @package   lizmap
-* @subpackage view
-* @author    3liz
-* @copyright 2014 3liz
-* @link      http://3liz.com
-* @license    Mozilla Public License : http://www.mozilla.org/MPL/
+ * Construct the subdock content.
+ *
+ * @author    3liz
+ * @copyright 2014 3liz
+ *
+ * @see      http://3liz.com
+ *
+ * @license    Mozilla Public License : http://www.mozilla.org/MPL/
  */
+class map_bottomdockZone extends jZone
+{
+    protected $_tplname = 'map_bottomdock';
 
-class map_bottomdockZone extends jZone {
-
-   protected $_tplname='map_bottomdock';
-
-   protected function _prepareTpl(){
-   }
+    protected function _prepareTpl()
+    {
+    }
 }

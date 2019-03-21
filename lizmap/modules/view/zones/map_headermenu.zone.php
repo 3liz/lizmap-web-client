@@ -1,53 +1,57 @@
 <?php
 /**
-* Construct the toolbar content.
-* @package   lizmap
-* @subpackage view
-* @author    3liz
-* @copyright 2011 3liz
-* @link      http://3liz.com
-* @license    Mozilla Public License : http://www.mozilla.org/MPL/
+ * Construct the toolbar content.
+ *
+ * @author    3liz
+ * @copyright 2011 3liz
+ *
+ * @see      http://3liz.com
+ *
+ * @license    Mozilla Public License : http://www.mozilla.org/MPL/
  */
+class map_headermenuZone extends jZone
+{
+    protected $_tplname = 'map_headermenu';
 
-class map_headermenuZone extends jZone {
-
-    protected $_tplname='map_headermenu';
-
-    protected function _prepareTpl(){
+    protected function _prepareTpl()
+    {
         // Get the project and repository params
         $project = $this->param('project');
         $repository = $this->param('repository');
         $auth_url_return = $this->param('auth_url_return');
-        if ( !$auth_url_return )
-            $auth_url_return = jUrl::get('view~map:index',
+        if (!$auth_url_return) {
+            $auth_url_return = jUrl::get(
+                'view~map:index',
                 array(
-                    "repository"=>$repository,
-                    "project"=>$project,
-                ));
+                    'repository' => $repository,
+                    'project' => $project,
+                )
+            );
+        }
 
         // Get lizmapProject class
         $assign = array(
-            'isConnected'=>jAuth::isConnected(),
-            'user'=>jAuth::getUserSession(),
-            'auth_url_return'=>$auth_url_return,
-            "externalSearch"=>"",
-            "edition"=>false,
-            "measure"=>false,
-            "locate"=>false,
-            "geolocation"=>false,
-            "timemanager"=>false,
-            "print"=>false,
-            "attributeLayers"=>false
+            'isConnected' => jAuth::isConnected(),
+            'user' => jAuth::getUserSession(),
+            'auth_url_return' => $auth_url_return,
+            'externalSearch' => '',
+            'edition' => false,
+            'measure' => false,
+            'locate' => false,
+            'geolocation' => false,
+            'timemanager' => false,
+            'print' => false,
+            'attributeLayers' => false,
         );
 
         try {
             $lproj = lizmap::getProject($repository.'~'.$project);
             $configOptions = $lproj->getOptions();
 
-            if ( property_exists($configOptions,'externalSearch') )
+            if (property_exists($configOptions, 'externalSearch')) {
                 $assign['externalSearch'] = $configOptions->externalSearch;
-        }
-        catch(UnknownLizmapProjectException $e) {
+            }
+        } catch (UnknownLizmapProjectException $e) {
             jLog::logEx($e, 'error');
         }
 

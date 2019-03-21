@@ -1,7 +1,9 @@
 <?php
-class datavizListener extends jEventListener{
 
-    function ongetMapAdditions ($event) {
+class datavizListener extends jEventListener
+{
+    public function ongetMapAdditions($event)
+    {
         $bp = jApp::config()->urlengine['basePath'];
 
         // Add JS and CSS for dataviz module
@@ -13,28 +15,27 @@ class datavizListener extends jEventListener{
         jClasses::inc('dataviz~datavizConfig');
         $dv = new datavizConfig($event->repository, $event->project);
 
-        if($dv->getStatus()){
+        if ($dv->getStatus()) {
             $js = array(
                 $bp.'js/dataviz/plotly-latest.min.js',
-                $bp.'js/dataviz/dataviz.js'
+                $bp.'js/dataviz/dataviz.js',
             );
             $datavizConfig = array(
-                'url' => jUrl::get('dataviz~service:index', array('repository'=>$event->repository, 'project'=>$event->project )),
+                'url' => jUrl::get('dataviz~service:index', array('repository' => $event->repository, 'project' => $event->project)),
             );
             $jscode = array(
-                'var datavizConfig = ' . json_encode($datavizConfig)
+                'var datavizConfig = '.json_encode($datavizConfig),
             );
             $css = array(
-                $bp.'css/dataviz/dataviz.css'
+                $bp.'css/dataviz/dataviz.css',
             );
         }
         $event->add(
             array(
                 'js' => $js,
                 'jscode' => $jscode,
-                'css' => $css
+                'css' => $css,
             )
         );
     }
 }
-?>
