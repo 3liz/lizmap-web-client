@@ -1,19 +1,18 @@
 <?php
 /**
-* Lizmap administration
-* @package   lizmap
-* @subpackage lizmap
-* @author    3liz
-* @copyright 2012 3liz
-* @link      http://3liz.com
-* @license Mozilla Public License : http://www.mozilla.org/MPL/
-*/
-
-class geobookmarkCtrl extends jController {
-
-
-    function __construct($request){
-
+ * Lizmap administration.
+ *
+ * @author    3liz
+ * @copyright 2012 3liz
+ *
+ * @see      http://3liz.com
+ *
+ * @license Mozilla Public License : http://www.mozilla.org/MPL/
+ */
+class geobookmarkCtrl extends jController
+{
+    public function __construct($request)
+    {
         $this->whiteParams = array(
             'repository',
             'project',
@@ -21,95 +20,89 @@ class geobookmarkCtrl extends jController {
             'layers',
             'crs',
             'layerStyles',
-            'filter'
+            'filter',
         );
 
         parent::__construct($request);
     }
 
-
-    function index()
+    public function index()
     {
         if (!jAuth::isConnected()) {
             jMessage::add('Geobookmarks - User is not connected', 'error');
+
             return $this->error();
         }
 
         if ($this->param('q') == 'add') {
             return $this->add();
-        } else if ( $this->param('q') == 'del' ) {
+        }
+        if ($this->param('q') == 'del') {
             return $this->delete();
-        } else if ( $this->param('q') == 'get' ) {
+        }
+        if ($this->param('q') == 'get') {
             return $this->getBookmarkParams();
         }
 
         jMessage::add('Geobookmarks - Wrong parameters given', 'error');
+
         return $this->error();
     }
 
-
-    /*
-     * Handle errors
-     *
-     */
-    function error(){
-
+    // Handle errors
+    public function error()
+    {
         $messages = jMessage::getAll();
         jMessage::clearAll();
 
         $rep = $this->getResponse('json');
         $rep->data = $messages;
+
         return $rep;
     }
 
-
-    /*
-     * Add a geobookmark
-     *
-     */
-    function add(){
-        $ok = True;
+    // Add a geobookmark
+    public function add()
+    {
+        $ok = true;
 
         // Check name
-        $name = filter_var( $this->param('name'), FILTER_SANITIZE_STRING );
-        if( empty($name) ){
-            $ok = False;
+        $name = filter_var($this->param('name'), FILTER_SANITIZE_STRING);
+        if (empty($name)) {
+            $ok = false;
             jMessage::add('Please give a name', 'error');
         }
 
-        if( $ok ){
+        if ($ok) {
             $dao = jDao::get('lizmap~geobookmark');
             $record = jDao::createRecord('lizmap~geobookmark');
             $record->name = $name;
             $params = array();
-            foreach( $this->whiteParams as $param ){
-                $val = filter_var( $this->param($param), FILTER_SANITIZE_STRING );
+            foreach ($this->whiteParams as $param) {
+                $val = filter_var($this->param($param), FILTER_SANITIZE_STRING);
                 $params[$param] = $val;
             }
-            $record->map = $params['repository'] . ':' . $params['project'];
-            $record->params = json_encode( $params );
+            $record->map = $params['repository'].':'.$params['project'];
+            $record->params = json_encode($params);
             $record->login = jAuth::getUserSession()->login;
             // Save the new bookmark
-            $id = Null;
-            try{
+            $id = null;
+
+            try {
                 $id = $dao->insert($record);
-            }catch(Exception $e){
-                jLog::log( 'Error while inserting the bookmark');
-                jLog::log( $e->getMessage());
-                jMessage::add( 'Error while inserting the bookmark', 'error' );
+            } catch (Exception $e) {
+                jLog::log('Error while inserting the bookmark');
+                jLog::log($e->getMessage());
+                jMessage::add('Error while inserting the bookmark', 'error');
             }
         }
 
-        return $this->getGeoBookmarks( $params['repository'], $params['project'] );
+        return $this->getGeoBookmarks($params['repository'], $params['project']);
     }
 
-
-    /*
-     * Get bookmark content from templates
-     *
-     */
-    function getGeoBookmarks( $repository=Null, $project=Null ){
-
+    // Get bookmark content from templates
+    public function getGeoBookmarks($repository = null, $project = null)
+    {
         $rep = $this->getResponse('htmlfragment');
 
         $tpl = new jTpl();
@@ -118,37 +111,37 @@ class geobookmarkCtrl extends jController {
         $juser = jAuth::getUserSession();
         $usr_login = $juser->login;
 
-        if( !$repository)
+        if (!$repository) {
             $repository = $this->param('repository');
-        if( !$project)
+        }
+        if (!$project) {
             $project = $this->param('project');
+        }
 
         // Get user geobookmarks
         $daogb = jDao::get('lizmap~geobookmark');
         $conditions = jDao::createConditions();
-        $conditions->addCondition('login','=',$usr_login);
-        $conditions->addCondition('map','=',$repository.':'.$project);
+        $conditions->addCondition('login', '=', $usr_login);
+        $conditions->addCondition('map', '=', $repository.':'.$project);
         $gbList = $daogb->findBy($conditions);
         $gbCount = $daogb->countBy($conditions);
 
         // Get html content
-        $tpl->assign( 'gbCount', $gbCount );
-        $tpl->assign( 'gbList', $gbList );
+        $tpl->assign('gbCount', $gbCount);
+        $tpl->assign('gbList', $gbList);
         $html = $tpl->fetch('view~map_geobookmark');
 
         jMessage::clearAll();
 
-        $rep->addContent( $html );
+        $rep->addContent($html);
+
         return $rep;
     }
 
-
-    /*
-     * Delete bookmark by id
-     *
-     */
-    function delete(){
-        $ok = True;
+    // Delete bookmark by id
+    public function delete()
+    {
+        $ok = true;
 
         // Get user
         $juser = jAuth::getUserSession();
@@ -160,35 +153,32 @@ class geobookmarkCtrl extends jController {
         // Conditions to get the bookmark
         $daogb = jDao::get('lizmap~geobookmark');
         $conditions = jDao::createConditions();
-        $conditions->addCondition('login','=',$usr_login);
-        $conditions->addCondition('id','=',$id);
+        $conditions->addCondition('login', '=', $usr_login);
+        $conditions->addCondition('id', '=', $id);
         $gbCount = $daogb->countBy($conditions);
 
-        if( $gbCount != 1 ){
-            $ok = False;
+        if ($gbCount != 1) {
+            $ok = false;
             jMessage::add('Wrong id given', 'error');
         }
 
-        if( $ok ){
-            try{
+        if ($ok) {
+            try {
                 $daogb->delete($id);
-            }catch(Exception $e){
-                jLog::log( 'Error while deleting the bookmark');
-                jLog::log( $e->getMessage());
-                jMessage::add( 'Error while deleting the bookmark', 'error' );
+            } catch (Exception $e) {
+                jLog::log('Error while deleting the bookmark');
+                jLog::log($e->getMessage());
+                jMessage::add('Error while deleting the bookmark', 'error');
             }
         }
 
-        return $this->getGeoBookmarks( $this->param('repository'), $this->param('project'));
+        return $this->getGeoBookmarks($this->param('repository'), $this->param('project'));
     }
 
-    /*
-     * Get bookmark params
-     *
-     */
-    function getBookmarkParams(){
-
-        $ok = True;
+    // Get bookmark params
+    public function getBookmarkParams()
+    {
+        $ok = true;
 
         // Get user
         $juser = jAuth::getUserSession();
@@ -200,27 +190,24 @@ class geobookmarkCtrl extends jController {
         // Conditions to get the bookmark
         $daogb = jDao::get('lizmap~geobookmark');
         $conditions = jDao::createConditions();
-        $conditions->addCondition('login','=',$usr_login);
-        $conditions->addCondition('id','=',$id);
+        $conditions->addCondition('login', '=', $usr_login);
+        $conditions->addCondition('id', '=', $id);
         $gbCount = $daogb->countBy($conditions);
 
-        if( $gbCount != 1 ){
-            $ok = False;
+        if ($gbCount != 1) {
+            $ok = false;
             jMessage::add('Wrong id given', 'error');
+
             return $this->error();
-        }else{
-            $gbList = $daogb->findBy($conditions);
-            $gbParams = array();
-            foreach( $gbList as $gb ){
-                $gbParams = json_decode(htmlspecialchars_decode($gb->params,ENT_QUOTES ));
-            }
-            $rep = $this->getResponse('json');
-            $rep->data = $gbParams;
-            return $rep;
         }
+        $gbList = $daogb->findBy($conditions);
+        $gbParams = array();
+        foreach ($gbList as $gb) {
+            $gbParams = json_decode(htmlspecialchars_decode($gb->params, ENT_QUOTES));
+        }
+        $rep = $this->getResponse('json');
+        $rep->data = $gbParams;
 
+        return $rep;
     }
-
-
-
 }

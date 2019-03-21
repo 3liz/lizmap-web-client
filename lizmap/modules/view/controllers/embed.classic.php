@@ -1,27 +1,29 @@
 <?php
 /**
-* Displays an embedded map based on one Qgis project.
-* @package   lizmap
-* @subpackage view
-* @author    3liz
-* @copyright 2011 3liz
-* @link      http://3liz.com
-* @license    Mozilla Public License : http://www.mozilla.org/MPL/
-*/
-
+ * Displays an embedded map based on one Qgis project.
+ *
+ * @author    3liz
+ * @copyright 2011 3liz
+ *
+ * @see      http://3liz.com
+ *
+ * @license    Mozilla Public License : http://www.mozilla.org/MPL/
+ */
 include jApp::getModulePath('view').'controllers/lizMap.classic.php';
 
-class embedCtrl extends lizMapCtrl {
-
-    function index() {
+class embedCtrl extends lizMapCtrl
+{
+    public function index()
+    {
         $req = jApp::coord()->request;
         $req->params['h'] = 0;
         $req->params['l'] = 0;
 
         $rep = parent::index();
 
-        if ( $rep->getType() != 'html' )
+        if ($rep->getType() != 'html') {
             return $rep;
+        }
 
         // add embed specific css
         $bp = jApp::config()->urlengine['basePath'];
@@ -29,7 +31,7 @@ class embedCtrl extends lizMapCtrl {
         $themePath = $bp.'themes/'.jApp::config()->theme.'/';
         $rep->addCSSLink($themePath.'css/embed.css');
         // force undisplay home
-        $rep->addStyle('#mapmenu li.home','display:none;');
+        $rep->addStyle('#mapmenu li.home', 'display:none;');
         // do not display locate by layer
         // display tooltip at bottom
         $jsCode = "
@@ -109,45 +111,53 @@ class embedCtrl extends lizMapCtrl {
         // Get the project key
         $project = $this->projectKey;
 
-        $rep->body->assign('auth_url_return',
-            jUrl::get('view~map:index',
+        $rep->body->assign(
+            'auth_url_return',
+            jUrl::get(
+                'view~map:index',
                 array(
-                    "repository"=>$repository,
-                    "project"=>$project,
+                    'repository' => $repository,
+                    'project' => $project,
                 )
             )
         );
 
         return $rep;
-  }
+    }
 
-  protected function getProjectDockables() {
-    $assign = parent::getProjectDockables();
-    $available = array('switcher', 'metadata', 'locate', 'measure', 'tooltip-layer', 'permaLink');//, 'print', 'permaLink'
-    $dAssign = array();
-    foreach ( $assign['dockable'] as $dock ) {
-        if ( in_array( $dock->id, $available ) )
-            $dAssign[] = $dock;
+    protected function getProjectDockables()
+    {
+        $assign = parent::getProjectDockables();
+        $available = array('switcher', 'metadata', 'locate', 'measure', 'tooltip-layer', 'permaLink'); //, 'print', 'permaLink'
+        $dAssign = array();
+        foreach ($assign['dockable'] as $dock) {
+            if (in_array($dock->id, $available)) {
+                $dAssign[] = $dock;
+            }
+        }
+        $assign['dockable'] = $dAssign;
+        $mdAssign = array();
+        foreach ($assign['minidockable'] as $dock) {
+            if (in_array($dock->id, $available)) {
+                $mdAssign[] = $dock;
+            }
+        }
+        $assign['minidockable'] = $mdAssign;
+        $bdAssign = array();
+        foreach ($assign['bottomdockable'] as $dock) {
+            if (in_array($dock->id, $available)) {
+                $bdAssign[] = $dock;
+            }
+        }
+        $assign['bottomdockable'] = $bdAssign;
+        $rdAssign = array();
+        foreach ($assign['rightdockable'] as $dock) {
+            if (in_array($dock->id, $available)) {
+                $rdAssign[] = $dock;
+            }
+        }
+        $assign['rightdockable'] = $rdAssign;
+
+        return $assign;
     }
-    $assign['dockable'] = $dAssign;
-    $mdAssign = array();
-    foreach ( $assign['minidockable'] as $dock ) {
-        if ( in_array( $dock->id, $available ) )
-            $mdAssign[] = $dock;
-    }
-    $assign['minidockable'] = $mdAssign;
-    $bdAssign = array();
-    foreach ( $assign['bottomdockable'] as $dock ) {
-        if ( in_array( $dock->id, $available ) )
-            $bdAssign[] = $dock;
-    }
-    $assign['bottomdockable'] = $bdAssign;
-    $rdAssign = array();
-    foreach ( $assign['rightdockable'] as $dock ) {
-        if ( in_array( $dock->id, $available ) )
-            $rdAssign[] = $dock;
-    }
-    $assign['rightdockable'] = $rdAssign;
-    return $assign;
-  }
 }
