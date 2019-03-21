@@ -35,6 +35,7 @@ class lizmapServices{
       'defaultRepository',
       'defaultProject',
       'onlyMaps',
+      'projectSwitcher',
       'rootRepositories',
       'relativeWMSPath',
       'proxyMethod',
