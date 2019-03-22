@@ -311,10 +311,13 @@ OpenLayers.Geometry.pointOnSegment = function(point, segment) {
         $('#edition-form-container').hide().html('');
         $('#edition-waiter').hide();
 
-        // Display create tools back
+        // Display create tools back if there are eligible layers
         if( $('#edition-layer').html().trim() != '' ){
             $('#edition-layer').show();
             $('#edition-draw').removeClass('disabled').show();
+        }else{
+            $('#dock-close').click();
+            $('#button-edition').hide();
         }
 
         // Redraw bottom dock
@@ -364,11 +367,12 @@ OpenLayers.Geometry.pointOnSegment = function(point, segment) {
                 $('#edition-layer').append('<option value="'+alConfig.id+'">'+alConfig.title+'</option>');
             }
             if( hasCreateLayers ){
-                $('#edition-layer').removeAttr('disabled').show();
+                $('#edition-layer').prop("disabled", false).show();
                 $('#edition-draw').removeClass('disabled').show();
             }
             else{
-                $('#edition-layer').hide();
+                $('#button-edition').hide();
+                $('#edition-layer').prop("disabled", true).hide();
                 $('#edition-draw').addClass('disabled').hide();
             }
 
@@ -744,9 +748,6 @@ OpenLayers.Geometry.pointOnSegment = function(point, segment) {
 
     function cancelEdition(){
         // Deactivate previous edition
-        //if ( !confirm( lizDict['edition.confirm.cancel'] ) )
-            //return false;
-
         finishEdition();
 
         // back to parent
@@ -854,7 +855,6 @@ OpenLayers.Geometry.pointOnSegment = function(point, segment) {
         return true;
     }
 
-
     /*
      * Get edition form from service
      * @param featureId Feature id to edit : in null-> create feature
@@ -902,7 +902,6 @@ OpenLayers.Geometry.pointOnSegment = function(point, segment) {
                 aCallback( editionLayer['id'], featureId );
 
         });
-
     }
 
     /*
@@ -1142,12 +1141,16 @@ OpenLayers.Geometry.pointOnSegment = function(point, segment) {
         // Show the dock if needed
         var btn = $('#button-edition');
         var dockVisible = btn.parent().hasClass('active');
-        if( !lizMap.checkMobile() ){
-            if ( !dockVisible )
-                btn.click();
-        }else{
-            if ( dockVisible )
-                btn.click();
+
+        if (form.length != 0) {
+            $('#button-edition').show();
+            if( !lizMap.checkMobile() ){
+                if ( !dockVisible )
+                    btn.click();
+            }else{
+                if ( dockVisible )
+                    btn.click();
+            }
         }
 
         // Hide popup
@@ -1561,7 +1564,6 @@ OpenLayers.Geometry.pointOnSegment = function(point, segment) {
                     }
                 }
             });
-
 
         } // uicreated
     });

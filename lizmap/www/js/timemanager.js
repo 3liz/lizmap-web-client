@@ -20,7 +20,6 @@ var lizTimemanager = function() {
             lizMap.events.on({
                 minidockopened: function(e) {
                     if ( e.id == 'timemanager' ) {
-                        //~ console.log('timemanager dock set visible');
                         if (!tmActive){
                             $('#timemanager-menu').show();
                             activateTimemanager();
@@ -30,7 +29,6 @@ var lizTimemanager = function() {
                 },
                 minidockclosed: function(e) {
                     if ( e.id == 'timemanager' ) {
-                        //~ console.log('timemanager dock closed');
                         if(tmActive)
                             deactivateTimemanager();
                     }
@@ -340,7 +338,6 @@ var lizTimemanager = function() {
                     aName = 'tm@' + id;
                     var layer = lizMap.map.getLayersByName(aName)[0];
                     layer.setVisibility(false);
-                    //~ lizMap.map.removeLayer(layer);
 
                 }
                 $('#tmLayers button.checkbox').removeClass('checked');

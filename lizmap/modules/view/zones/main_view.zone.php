@@ -48,18 +48,17 @@ class main_viewZone extends jZone
 
                 // WMS GetCapabilities Url
                 $wmsGetCapabilitiesUrl = jAcl2::check(
-                'lizmap.tools.displayGetCapabilitiesLinks',
-                $lrep->getKey()
-            );
+                    'lizmap.tools.displayGetCapabilitiesLinks',
+                    $lrep->getKey()
+                );
                 $wmtsGetCapabilitiesUrl = $wmsGetCapabilitiesUrl;
 
                 foreach ($lprojects as $p) {
                     $pOptions = $p->getOptions();
                     // Hide project with option "hideProject"
-                    if (
-                property_exists($pOptions, 'hideProject')
-                && $pOptions->hideProject == 'True'
-              ) {
+                    if (property_exists($pOptions, 'hideProject') &&
+                        $pOptions->hideProject == 'True'
+                    ) {
                         continue;
                     }
 
@@ -75,19 +74,19 @@ class main_viewZone extends jZone
                     }
                     if ($lrep->getKey().'~'.$p->getData('id') != $excludedProject) {
                         $mrep->childItems[] = new lizmapMainViewItem(
-                    $p->getData('id'),
-                    $p->getData('title'),
-                    $p->getData('abstract'),
-                    $p->getData('proj'),
-                    $p->getData('bbox'),
-                    jUrl::get('view~map:index', array('repository' => $p->getData('repository'), 'project' => $p->getData('id'))),
-                    jUrl::get('view~media:illustration', array('repository' => $p->getData('repository'), 'project' => $p->getData('id'))),
-                    0,
-                    $r,
-                    'map',
-                    $wmsGetCapabilitiesUrl,
-                    $wmtsGetCapabilitiesUrl
-                );
+                            $p->getData('id'),
+                            $p->getData('title'),
+                            $p->getData('abstract'),
+                            $p->getData('proj'),
+                            $p->getData('bbox'),
+                            jUrl::get('view~map:index', array('repository' => $p->getData('repository'), 'project' => $p->getData('id'))),
+                            jUrl::get('view~media:illustration', array('repository' => $p->getData('repository'), 'project' => $p->getData('id'))),
+                            0,
+                            $r,
+                            'map',
+                            $wmsGetCapabilitiesUrl,
+                            $wmtsGetCapabilitiesUrl
+                        );
                         /*} else {
                           $this->_tpl->assign('auth_url_return', jUrl::get('view~map:index',
                             array(

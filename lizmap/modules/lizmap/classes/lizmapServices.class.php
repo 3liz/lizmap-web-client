@@ -198,10 +198,10 @@ class lizmapServices
 
         // check email address where to send notifications
         if ($this->adminContactEmail == 'root@localhost' ||
-          $this->adminContactEmail == 'root@localhost.localdomain' ||
-          $this->adminContactEmail == '' ||
-          !filter_var($this->adminContactEmail, FILTER_VALIDATE_EMAIL)
-      ) {
+            $this->adminContactEmail == 'root@localhost.localdomain' ||
+            $this->adminContactEmail == '' ||
+            !filter_var($this->adminContactEmail, FILTER_VALIDATE_EMAIL)
+        ) {
             $this->adminContactEmail = '';
         }
 

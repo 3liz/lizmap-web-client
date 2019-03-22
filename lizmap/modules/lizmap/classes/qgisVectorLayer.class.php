@@ -86,18 +86,18 @@ class qgisVectorLayer extends qgisMapLayer
 
         // Get datasource information from QGIS
         $datasourceMatch = preg_match(
-        "#(?:dbname='([^ ]+)' )?(?:service='([^ ]+)' )?(?:host=([^ ]+) )?(?:port=([0-9]+) )?(?:user='([^ ]+)' )?(?:password='([^ ]+)' )?(?:sslmode=([^ ]+) )?(?:key='([^ ]+)' )?(?:estimatedmetadata=([^ ]+) )?(?:selectatid=([^ ]+) )?(?:srid=([0-9]+) )?(?:type=([a-zA-Z]+) )?(?:table=\"([^ ]+)\" )?(?:\\()?(?:([^ ]+)\\) )?(?:sql=(.*))?#s",
-        $this->datasource,
-        $dt
-    );
+            "#(?:dbname='([^ ]+)' )?(?:service='([^ ]+)' )?(?:host=([^ ]+) )?(?:port=([0-9]+) )?(?:user='([^ ]+)' )?(?:password='([^ ]+)' )?(?:sslmode=([^ ]+) )?(?:key='([^ ]+)' )?(?:estimatedmetadata=([^ ]+) )?(?:selectatid=([^ ]+) )?(?:srid=([0-9]+) )?(?:type=([a-zA-Z]+) )?(?:table=\"([^ ]+)\" )?(?:\\()?(?:([^ ]+)\\) )?(?:sql=(.*))?#s",
+            $this->datasource,
+            $dt
+        );
 
         if ($dt[13] == '') {
             // if table not found, try again for complex tables, such as table="(SELECT count(*) FROM table WHERE bla)"
             $datasourceMatch = preg_match(
-          "#(?:dbname='([^ ]+)' )?(?:service='([^ ]+)' )?(?:host=([^ ]+) )?(?:port=([0-9]+) )?(?:user='([^ ]+)' )?(?:password='([^ ]+)' )?(?:sslmode=([^ ]+) )?(?:key='([^ ]+)' )?(?:estimatedmetadata=([^ ]+) )?(?:selectatid=([^ ]+) )?(?:srid=([0-9]+) )?(?:type=([a-zA-Z]+) )?(?:table=\"(.+)\" )?(?:\\()?(?:([^ ]+)\\) )?(?:sql=(.*))?#s",
-          $this->datasource,
-          $dt
-      );
+                "#(?:dbname='([^ ]+)' )?(?:service='([^ ]+)' )?(?:host=([^ ]+) )?(?:port=([0-9]+) )?(?:user='([^ ]+)' )?(?:password='([^ ]+)' )?(?:sslmode=([^ ]+) )?(?:key='([^ ]+)' )?(?:estimatedmetadata=([^ ]+) )?(?:selectatid=([^ ]+) )?(?:srid=([0-9]+) )?(?:type=([a-zA-Z]+) )?(?:table=\"(.+)\" )?(?:\\()?(?:([^ ]+)\\) )?(?:sql=(.*))?#s",
+                $this->datasource,
+                $dt
+            );
         }
         $ds = array(
             'dbname' => $dt[1],
@@ -888,7 +888,8 @@ class qgisVectorLayer extends qgisMapLayer
         if ($eLayer->capabilities->modifyGeometry != 'True'
            && $eLayer->capabilities->modifyAttribute != 'True'
            && $eLayer->capabilities->deleteFeature != 'True'
-           && $eLayer->capabilities->createFeature != 'True') {
+           && $eLayer->capabilities->createFeature != 'True'
+        ) {
             return false;
         }
 
