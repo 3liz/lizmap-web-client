@@ -220,7 +220,8 @@ class qgisForm
                 if ($formControl->fieldEditType === 8
                      or $formControl->fieldEditType === 'FileName'
                      or $formControl->fieldEditType === 'Photo'
-                     or $formControl->fieldEditType === 'ExternalResource') {
+                     or $formControl->fieldEditType === 'ExternalResource'
+                ) {
                     $fName = $fName.'_choice';
                 }
                 $fieldNames[] = '\''.$fName.'\'';
@@ -257,11 +258,11 @@ class qgisForm
         );
         $attributesObj = json_decode(
             str_replace(
-                    '@',
-                    '',
-                    json_encode($node->attributes())
-                )
-            );
+                '@',
+                '',
+                json_encode($node->attributes())
+            )
+        );
         if (property_exists($attributesObj, 'attributes')) {
             $jsnode['attributes'] = $attributesObj->attributes;
         }

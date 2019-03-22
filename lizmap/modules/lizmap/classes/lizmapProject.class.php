@@ -151,7 +151,8 @@ class lizmapProject extends qgisProject
             $data['qgsmtime'] < filemtime($file) ||
             !array_key_exists('cfg', $data) ||
             !array_key_exists('attributeLayers', $data) || // to force cache invalidation for this new feature
-            $data['qgscfgmtime'] < filemtime($file.'.cfg')) {
+            $data['qgscfgmtime'] < filemtime($file.'.cfg')
+        ) {
             // FIXME reading XML could take time, so many process could
             // read it and construct the cache at the same time. We should
             // have a kind of lock to avoid this issue.
@@ -371,7 +372,9 @@ class lizmapProject extends qgisProject
         //unset displayInLegend for geometryType none or unknown
         foreach ($this->cfg->layers as $key => $obj) {
             if (property_exists($this->cfg->layers->{$key}, 'geometryType') &&
-                 ($this->cfg->layers->{$key}->geometryType == 'none' || $this->cfg->layers->{$key}->geometryType == 'unknown')) {
+                 ($this->cfg->layers->{$key}->geometryType == 'none' ||
+                     $this->cfg->layers->{$key}->geometryType == 'unknown')
+            ) {
                 $this->cfg->layers->{$key}->displayInLegend = 'False';
             }
         }

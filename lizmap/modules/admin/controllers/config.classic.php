@@ -209,7 +209,7 @@ class configCtrl extends jController
     public function saveServices()
     {
 
-    // If the section does exists in the ini file : get the data
+        // If the section does exists in the ini file : get the data
         $services = lizmap::getServices();
         $form = jForms::get('admin~config_services');
 
@@ -242,8 +242,8 @@ class configCtrl extends jController
         }
 
         if ($form->getData('allowUserAccountRequests') == 'on' ||
-        $form->getData('adminContactEmail') != ''
-    ) {
+            $form->getData('adminContactEmail') != ''
+        ) {
             $form->getControl('adminSenderEmail')->required = true;
         }
 
@@ -260,9 +260,9 @@ class configCtrl extends jController
             if (!is_dir($cacheRootDirectory) or !is_writable($cacheRootDirectory)) {
                 $ok = false;
                 $form->setErrorOn(
-                'cacheRootDirectory',
-                jLocale::get('admin~admin.form.admin_services.message.cacheRootDirectory.wrong', array(sys_get_temp_dir()))
-            );
+                    'cacheRootDirectory',
+                    jLocale::get('admin~admin.form.admin_services.message.cacheRootDirectory.wrong', array(sys_get_temp_dir()))
+                );
             }
         }
 
@@ -830,6 +830,7 @@ class configCtrl extends jController
         }
 
         $project = $this->param('project');
+
         try {
             $lproj = lizmap::getProject($lrep->getKey().'~'.$project);
             if (!$lproj) {

@@ -16,12 +16,12 @@ class lizmapFtsSearchListener extends jEventListener
         // Check if needed table lizmap_fts is queryable
         if ($this->checkLizmapFts()) {
             $event->add(
-                    array(
-                        'type' => 'Fts',
-                        'service' => 'lizmapFts',
-                        'url' => jUrl::get('lizmap~searchFts:get'),
-                    )
-                );
+                array(
+                    'type' => 'Fts',
+                    'service' => 'lizmapFts',
+                    'url' => jUrl::get('lizmap~searchFts:get'),
+                )
+            );
         }
     }
 

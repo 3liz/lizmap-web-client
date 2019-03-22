@@ -190,7 +190,7 @@ class serviceCtrl extends jController
     protected function getServiceParameters()
     {
 
-    // Get the project
+        // Get the project
         $project = $this->iParam('project');
 
         if (!$project) {
@@ -245,11 +245,10 @@ class serviceCtrl extends jController
         $this->params = $params;
 
         // Get the optionnal filter token
-        if (
-      isset($params['filtertoken'])
-      and isset($params['request'])
-      and in_array(strtolower($params['request']), array('getmap', 'getfeature', 'getprint', 'getfeatureinfo'))
-    ) {
+        if (isset($params['filtertoken']) &&
+            isset($params['request']) &&
+            in_array(strtolower($params['request']), array('getmap', 'getfeature', 'getprint', 'getfeatureinfo'))
+        ) {
             $tokens = $params['filtertoken'];
             $tokens = explode(';', $tokens);
             $filters = array();

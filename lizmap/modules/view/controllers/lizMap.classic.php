@@ -307,13 +307,13 @@ class lizMapCtrl extends jController
                     $cssPath = $lrep->getPath().'/'.$cssRelPath;
                     if (file_exists($cssPath)) {
                         $cssUrl = jUrl::get(
-                'view~media:getCssFile',
-                array(
-                    'repository' => $lrep->getKey(),
-                    'project' => $project,
-                    'path' => $cssRelPath,
-                )
-            );
+                            'view~media:getCssFile',
+                            array(
+                                'repository' => $lrep->getKey(),
+                                'project' => $project,
+                                'path' => $cssRelPath,
+                            )
+                        );
                         //~ $rep->addCssLink( $cssUrl );
                         // Use addHeadContent and not addCssLink to be sure it will be loaded after minified code
                         $rep->addHeadContent('<link type="text/css" href="'.$cssUrl.'" rel="stylesheet" />');
@@ -343,13 +343,13 @@ class lizMapCtrl extends jController
                                     $url = 'view~media:getCssFile';
                                 }
                                 $jsUrl = jUrl::get(
-                      $url,
-                      array(
-                          'repository' => $lrep->getKey(),
-                          'project' => $project,
-                          'path' => $jsRelPath,
-                      )
-                  );
+                                    $url,
+                                    array(
+                                        'repository' => $lrep->getKey(),
+                                        'project' => $project,
+                                        'path' => $jsRelPath,
+                                    )
+                                );
                                 if ($fileExtension == 'js') {
                                     $jsUrls[] = $jsUrl;
                                 } else {
@@ -405,13 +405,12 @@ class lizMapCtrl extends jController
 
         // legend = legend open at startup
         $l = $this->intParam('l', 1);
-        if (
-      $l == 0 or
-      (
-        property_exists($pOptions, 'hideLegend')
-        && $pOptions->hideLegend == 'True'
-      )
-    ) {
+        if ($l == 0  ||
+            (
+                property_exists($pOptions, 'hideLegend')
+                && $pOptions->hideLegend == 'True'
+            )
+        ) {
             $l = 0;
             //~ $rep->addStyle('#dock', 'display:none;');
             $jsCode .= "
@@ -427,25 +426,23 @@ class lizMapCtrl extends jController
 
         // navbar
         $n = $this->intParam('n', 1);
-        if (
-      $n == 0 or
-      (
-        property_exists($pOptions, 'hideNavbar')
-        && $pOptions->hideNavbar == 'True'
-      )
-    ) {
+        if ($n == 0 or
+            (
+                property_exists($pOptions, 'hideNavbar')
+                && $pOptions->hideNavbar == 'True'
+            )
+        ) {
             $rep->addStyle('#navbar', 'display:none !important;');
         }
 
         // overview-box = scale & overview
         $o = $this->intParam('o', 1);
-        if (
-      $o == 0 or
-      (
-        property_exists($pOptions, 'hideOverview')
-        && $pOptions->hideOverview == 'True'
-      )
-    ) {
+        if ($o == 0 ||
+            (
+                property_exists($pOptions, 'hideOverview')
+                && $pOptions->hideOverview == 'True'
+            )
+        ) {
             $rep->addStyle('#overview-box', 'display:none !important;');
         }
 
@@ -455,9 +452,9 @@ class lizMapCtrl extends jController
         }
 
         // Hide groups checkboxes
-        if (property_exists($pOptions, 'hideGroupCheckbox')
-        && $pOptions->hideGroupCheckbox == 'True'
-    ) {
+        if (property_exists($pOptions, 'hideGroupCheckbox') &&
+            $pOptions->hideGroupCheckbox == 'True'
+        ) {
             $rep->addStyle('#switcher-layers button[name="group"]', 'display:none !important;');
         }
 

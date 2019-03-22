@@ -850,7 +850,8 @@ class qgisVectorLayer extends qgisMapLayer
         if ($eLayer->capabilities->modifyGeometry != 'True'
            && $eLayer->capabilities->modifyAttribute != 'True'
            && $eLayer->capabilities->deleteFeature != 'True'
-           && $eLayer->capabilities->createFeature != 'True') {
+           && $eLayer->capabilities->createFeature != 'True'
+        ) {
             return false;
         }
 
