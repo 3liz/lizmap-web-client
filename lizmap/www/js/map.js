@@ -320,11 +320,9 @@ var lizMap = function() {
     // calculate height height
     var h = $(window).innerHeight();
     h = h - $('#header').height();
-    //h = h - $('#headermenu').height();
     $('#map').height(h);
 
     // Update body padding top by summing up header+headermenu
-    //$('body').css('padding-top', $('#header').outerHeight() + $('#headermenu').outerHeight() );
     $('body').css('padding-top', $('#header').outerHeight() );
 
     // calculate map width depending on theme configuration
@@ -432,7 +430,6 @@ var lizMap = function() {
 
     // Set the switcher content a max-height
     $('#switcher-layers-container').css( 'height', 'auto' );
-    //var mh = $('#dock').height() - 2*$('#dock-tabs').height() - $('#switcher-layers-container h3').height() - $('#switcher-layers-actions').height() - $('#switcher-baselayer').height() ;
     var mh = $('#dock').height() - ($('#dock-tabs').height()+1) - $('#switcher-layers-container h3').height() - ($('#switcher-layers-actions').height()+1);
     mh -= parseInt($('#switcher-layers-container .menu-content').css( 'padding-top' ));
     mh -= parseInt($('#switcher-layers-container .menu-content').css( 'padding-bottom' ));
@@ -446,12 +443,7 @@ var lizMap = function() {
     // depending on element in #menu div
     if ($('#close-menu').is(':visible'))
       h -= $('#close-menu').outerHeight(true);
-    /*
-    if ($('#locate-menu').is(':visible') && $('#menu #locate-menu').length != 0) {
-      h -= $('#locate-menu').children().first().outerHeight(true);
-      h -= $('#locate-menu').children().last().outerHeight(true);
-    }
-    */
+
     if ( $('#menu #toolbar').length != 0 ) {
       $('#toolbar').children().each(function(){
         var self = $(this);
@@ -798,7 +790,6 @@ var lizMap = function() {
            config.options.zoomLevelNumber = 21;
          config.options.maxScale = 591659030.3224756;
          config.options.minScale = 2257.0000851534865;
-         //config.options.mapScales = [];
          var hasBaselayers = (('emptyBaselayer' in config.options) && config.options.emptyBaselayer == "True");
          if ( !hasBaselayers ) {
            for ( var l in config.layers ) {
@@ -828,8 +819,6 @@ var lizMap = function() {
            while ( res > minRes && n < config.options.zoomLevelNumber) {
              if ( res < maxRes ) {
                //Add extra scale
-               //if (resolutions.length == 0 && res != 156543.03390625)
-               //  resolutions.push(res*2);
                resolutions.push(res);
              }
              res = res/2;
@@ -838,8 +827,6 @@ var lizMap = function() {
            maxRes = resolutions[0];
            minRes = resolutions[resolutions.length-1];
            //Add extra scale
-           //minRes = res;
-           //resolutions.push(res);
            var maxScale = OpenLayers.Util.getScaleFromResolution(maxRes, projOSM.proj.units);
            var minScale = OpenLayers.Util.getScaleFromResolution(minRes, projOSM.proj.units);
          }
@@ -937,7 +924,6 @@ var lizMap = function() {
 
       //Manage attribution
       if (typeof layer.attribution == "object") {
-          //console.log(layer.attribution);
           // Update href if needed
           if ( 'href' in layer.attribution &&
                layer.attribution.href != '' &&
@@ -986,9 +972,7 @@ var lizMap = function() {
                 wmtsOptions['minZoomLevel'] = zoomOffset;
                 wmtsOptions['resolutions'] = resolutions;
             }
-            //console.log( layer.name +' '+ config.options.projection.ref );
             wmtsLayer = wmtsFormat.createLayer(wmtsCapabilities, wmtsOptions);
-            // console.log( wmtsLayer );
             wmtsLayer.yx = {};
             wmtsLayer.reverseAxisOrder = function() {
                 var projCode = this.projection.getCode();
@@ -1071,13 +1055,6 @@ var lizMap = function() {
                ,ratio:1
                ,order:getLayerOrder(layer)
                ,attribution:layer.attribution
-               //~ ,tileOptions: {
-                  //~ eventListeners: {
-                    //~ 'loaderror': function(evt) {
-                      //~ console.log('Tile load error');
-                    //~ }
-                  //~ }
-                //~ }
               });
           if ( layer.nestedLayers.length != 0 ) {
               var scales = getLayerScale(layer,null,null);
@@ -1395,41 +1372,7 @@ var lizMap = function() {
            for (var i=0,len=layers.length; i<len; i++) {
              var layer = layers[i];
              var b = $('#switcher button[name="layer"][value="'+layer.name+'"]').first();
-             /*
-             if (layer.inRange && b.button('option','disabled')) {
-               var tr = b.parents('tr').first();
-               tr.removeClass('disabled').find('button').button('enable');
-               var ancestors = ancestorsOf(tr);
-               $.each(ancestors,function(i,a) {
-                 $(a).removeClass('disabled').find('button').button('enable');
-               });
-               if (tr.find('button[name="layer"]').button('option','icons').primary == 'liz-icon-check')
-                 layer.setVisibility(true);
-             } else if (!layer.inRange && !b.button('option','disabled')) {
-               var tr = b.parents('tr').first();
-               tr.addClass('disabled').find('button').first().button('disable');
-               if (tr.hasClass('liz-layer'))
-                 tr.collapse();
-               var ancestors = ancestorsOf(tr);
-               $.each(ancestors,function(i,a) {
-        a = $(a);
-        var count = 0;
-        var checked = 0;
-        var aDesc = childrenOf(a);
-        $.each(aDesc,function(j,trd) {
-          $(trd).find('button.checkbox').each(function(i,b){
-            if ($(b).button('option','disabled'))
-              checked++;
-            count++;
-          });
-        });
-                 if (count == checked)
-                   a.addClass('disabled').find('button').first().button('disable');
-                 else
-                   a.removeClass('disabled').find('button').button('enable');
-               });
-             }
-             * */
+             
              if (layer.inRange && b.hasClass('disabled')) {
                var tr = b.parents('tr').first();
                tr.removeClass('disabled').find('button').removeClass('disabled');
@@ -1559,10 +1502,6 @@ var lizMap = function() {
     var proj = new OpenLayers.Projection(locate.crs);
     var val = $('#locate-layer-'+layerName).val();
     if (val == '-1') {
-
-      //var bbox = new OpenLayers.Bounds(locate.bbox);
-      //bbox.transform(proj, map.getProjection());
-      //map.zoomToExtent(bbox);
 
       // Trigger event
       lizMap.events.triggerEvent('lizmaplocatefeaturecanceled',
@@ -1844,51 +1783,13 @@ var lizMap = function() {
   function getSwitcherLi(aNode, aLevel) {
     var nodeConfig = aNode.config;
     var html = '<li id="'+nodeConfig.type+'-'+aNode.name+'">';
-    /*
-    html += ' class="liz-'+nodeConfig.type;
-    if (aParent)
-      html += ' child-of-group-'+aParent.name;
-    if (('children' in aNode) && aNode['children'].length!=0)
-      html += ' expanded parent';
-    if ( 'displayInLegend' in nodeConfig && nodeConfig.displayInLegend == 'False' )
-      html += ' liz-hidden';
-    html += '">';
-    */
+
     // add checkbox to display children or legend image
     html += '<input type="checkbox" id="open'+nodeConfig.type+aNode.name+'" name="open'+nodeConfig.type+aNode.name+'" checked="checked"></input><label for="open'+nodeConfig.type+aNode.name+'">&nbsp;</label>';
     // add button to manage visibility
     html += '<button class="checkbox" name="'+nodeConfig.type+'-'+aNode.name+'-visibility" value="0" title="'+lizDict['tree.button.checkbox']+'"></button>';
     // add layer title
     html += '<span class="label" title="'+nodeConfig.abstract+'">'+nodeConfig.title+'</span>';
-    /*
-    html += '<td><button class="checkbox" name="'+nodeConfig.type+'" value="'+aNode.name+'" title="'+lizDict['tree.button.checkbox']+'"></button>';
-    html += '<span class="label" title="'+nodeConfig.abstract+'">'+nodeConfig.title+'</span>';
-    html += '</td>';
-    */
-    /*
-    html += '<td>';
-    if (nodeConfig.type == 'layer')
-      html += '<span class="loading">&nbsp;</span>';
-    html += '</td>';
-    */
-    /*
-    var legendLink = '';
-    if (nodeConfig.link)
-      legendLink = nodeConfig.link;
-    if (legendLink != '' )
-      html += '<td><button class="link" name="link" title="'+lizDict['tree.button.link']+'" value="'+legendLink+'"/></td>';
-    else
-      html += '<td></td>';
-    */
-    /*
-    var removeCache = '';
-    if (nodeConfig.cached && nodeConfig.cached == 'True' && nodeConfig.type == 'layer' && ('removeCache' in config.options))
-      html += '<td><button class="removeCache" name="removeCache" title="'+lizDict['tree.button.removeCache']+'" value="'+aNode.name+'"/></td>';
-    else
-      html += '<td></td>';
-    */
-
-    //html += '</tr>';
 
     if (('children' in aNode) && aNode['children'].length!=0) {
       html += getSwitcherUl(aNode, aLevel+1);
@@ -1911,12 +1812,6 @@ var lizMap = function() {
     for (var i=0, len=children.length; i<len; i++) {
       var child = children[i];
       html += getSwitcherLi(child,aLevel);
-      /*
-      if (aLevel == 0)
-        html += getSwitcherLi(child);
-      else
-        html += getSwitcherLi(child,aNode);
-      */
     }
     html += '</ul>';
     return html;
@@ -1940,7 +1835,6 @@ var lizMap = function() {
 
     // get the baselayer select content
     // and adding baselayers to the map
-    //var select = '<select class="baselayers">';
     var select = [];
     baselayers.reverse();
     for (var i=0,len=baselayers.length; i<len; i++) {
@@ -1956,12 +1850,7 @@ var lizMap = function() {
             select += '<option value="'+blConfig.name+'">'+blConfig.title+'</option>';
           else
             select += '<option value="'+baselayer.name+'">'+baselayer.name+'</option>';
-          /*
-          if (blConfig)
-            select.push('<input type="radio" name="baselayers" value="'+blConfig.name+'"><span class="baselayer-radio-label">'+blConfig.title+'</span></input>');
-          else
-            select.push('<input type="radio" name="baselayers" value="'+baselayer.name+'"><span class="baselayer-radio-label">'+baselayer.name+'</span></input>');
-            */
+
       } catch(e) {
           var qgisName = baselayer.name;
           if ( baselayer.name in cleanNameMap )
@@ -1969,8 +1858,6 @@ var lizMap = function() {
           console.log(qgisName+" can't be added to the map!");
       }
     }
-    //select += '</select>';
-    //select = select.join('<br/>');
 
     if (baselayers.length!=0) {
       // active the select element for baselayers
@@ -2015,16 +1902,7 @@ var lizMap = function() {
     for (var i=0,len=layers.length; i<len; i++) {
       var l = layers[i];
       l.units = projection.proj.units;
-      /*
-      l.events.on({
-        loadstart: function(evt) {
-          $('#layer-'+evt.object.name+' span.loading').addClass('loadstart');
-        },
-        loadend: function(evt) {
-          $('#layer-'+evt.object.name+' span.loading').removeClass('loadstart');
-        }
-      });
-      */
+
       // Add only layers with geometry
       var qgisName = null;
       if ( l.name in cleanNameMap )
@@ -2044,10 +1922,6 @@ var lizMap = function() {
         continue;
       }
       map.addLayer(l);
-      /*
-      if (l.isVisible)
-        $('#switcher button.checkbox[name="layer"][value="'+l.name+'"]').click();
-      */
     }
 
     // Add Locate by layer
@@ -2165,8 +2039,6 @@ var lizMap = function() {
             return false;
           });
         }
-
-      //$('#locate-menu').show();
     }
 
     $('#switcher span.label').tooltip({
@@ -2467,7 +2339,6 @@ var lizMap = function() {
 
     // get the baselayer select content
     // and adding baselayers to the map
-    //var select = '<select class="baselayers">';
     var select = [];
     baselayers.reverse();
     for (var i=0,len=baselayers.length; i<len; i++) {
@@ -2487,12 +2358,7 @@ var lizMap = function() {
             select += '<option value="'+baselayer.name+'">'+blConfig.title+'</option>';
           else
             select += '<option value="'+baselayer.name+'">'+baselayer.name+'</option>';
-          /*
-          if (blConfig)
-            select.push('<input type="radio" name="baselayers" value="'+blConfig.name+'"><span class="baselayer-radio-label">'+blConfig.title+'</span></input>');
-          else
-            select.push('<input type="radio" name="baselayers" value="'+baselayer.name+'"><span class="baselayer-radio-label">'+baselayer.name+'</span></input>');
-            */
+
       } catch(e) {
           var qgisName = baselayer.name;
           if ( baselayer.name in cleanNameMap )
@@ -2500,8 +2366,6 @@ var lizMap = function() {
           console.log(qgisName+" can't be added to the map!");
       }
     }
-    //select += '</select>';
-    //select = select.join('<br/>');
 
     if (baselayers.length!=0) {
       // active the select element for baselayers
@@ -2589,9 +2453,6 @@ var lizMap = function() {
       }
       map.addLayer(l);
 
-      // remove this and do it afterwards after line 5075
-      //if (l.isVisible)
-        //$('#switcher button.checkbox[name="layer"][value="'+l.name+'"]');
     }
 
     // Add Locate by layer
@@ -2724,8 +2585,6 @@ var lizMap = function() {
             return false;
           });
         }
-
-      //$('#locate-menu').show();
     }
 
     $('#switcher span.label').tooltip({
@@ -2773,8 +2632,6 @@ var lizMap = function() {
          mapOptions:{maxExtent:map.maxExtent
                   ,maxResolution:"auto"
                   ,minResolution:"auto"
-        //mieux calculé le coef 64 pour units == "m" et 8 sinon ???
-                  //,scales: map.scales == null ? [map.minScale*64] : [Math.max.apply(Math,map.scales)*8]
                   ,scales: [OpenLayers.Util.getScaleFromResolution(res, map.projection.proj.units)]
                   ,projection:map.projection
                   ,units:map.projection.proj.units
@@ -2789,34 +2646,14 @@ var lizMap = function() {
       $('#overview-toggle').hide().removeClass('active');
     }
 
-    /*
-    $('#overview-map .ui-dialog-titlebar-close').button({
-      text:false,
-      icons:{primary: "ui-icon-closethick"}
-    }).click(function(){
-      $('#overview-map').toggle();
-      return false;
-    });
-    */
-    $('#overview-toggle')/*.button({
-      text:false,
-      icons:{primary: "ui-icon-triangle-1-n"}
-    })
-    .removeClass( "ui-corner-all" )*/
+    $('#overview-toggle')
     .click(function(){
       var self = $(this);
       if ( self.hasClass('active') )
         self.removeClass('active');
       else
         self.addClass('active');
-        /*
-      var self = $(this);
-      var icons = self.button('option','icons');
-      if (icons.primary == 'ui-icon-triangle-1-n')
-        self.button('option','icons',{primary:'ui-icon-triangle-1-s'});
-      else
-        self.button('option','icons',{primary:'ui-icon-triangle-1-n'});
-        * */
+
       $('#overview-map').toggle();
       return false;
     });
@@ -3300,7 +3137,6 @@ var lizMap = function() {
       }
     }
 
-
     // Filter
     if( 'filter' in pparams && pparams.filter != '' ){
         var sp = pparams.filter.split(':');
@@ -3465,7 +3301,6 @@ var lizMap = function() {
         var layerName=getLayerId[0].split(/[0-9]/)[0];
 
         var getLayerConfig = lizMap.getLayerConfigById( layerId );
-        //console.log(getLayerConfig);
 
         // verifiying  related children objects
         if ( !getLayerConfig )
@@ -3475,8 +3310,6 @@ var lizMap = function() {
 
         // We do not want to deactivate the display of filtered children dataviz
         // when children popup are not displayed : comment the 2 following lines
-        //if ( !('popupDisplayChildren' in layerConfig) || layerConfig.popupDisplayChildren != 'True')
-            //return true;
         if ( !('relations' in lizMap.config) || !(layerId in lizMap.config.relations) )
             return true;
 
@@ -4072,10 +3905,8 @@ var lizMap = function() {
       }
       newScales.sort(function(a,b){return b-a;});
       var theScale = newScales[0];
-      //~ console.log( 'theScale: '+theScale );
       for ( var i=0, len=newScales.length; i<len; i++ ) {
           var s = newScales[i];
-          //~ console.log( 's: '+s );
           if ( s > refScale )
             theScale = s;
           if ( s < refScale )
@@ -4289,7 +4120,6 @@ var lizMap = function() {
           ,OpenLayers.Util.getParameterString(lizUrls.params)
           );
       url += '&SERVICE=WMS';
-      //url += '&VERSION='+capabilities.version+'&REQUEST=GetPrint';
       url += '&VERSION=1.3.0&REQUEST=GetPrint';
       url += '&FORMAT='+$('#print-format').val();
       url += '&EXCEPTIONS=application/vnd.ogc.se_inimage&TRANSPARENT=true';
@@ -4297,7 +4127,6 @@ var lizMap = function() {
       url += '&DPI='+$('#print-dpi').val();
       url += '&TEMPLATE='+pTemplate.title;
       url += '&'+dragCtrl.layout.mapId+':extent='+extent.toBBOX(null, reverseAxisOrder);
-      //url += '&'+dragCtrl.layout.mapId+':rotation=0';
       var scale = $('#print-scale').val();
       url += '&'+dragCtrl.layout.mapId+':scale='+scale;
       if ( 'grid' in dragCtrl.layout && dragCtrl.layout.grid ) {
@@ -4322,27 +4151,6 @@ var lizMap = function() {
                 lst = l.params['STYLES'];
               styleLayers.push( lst );
               opacityLayers.push(parseInt(255*l.opacity));
-            /*} else {
-                var qgisName = null;
-                if ( layer.name in cleanNameMap )
-                    qgisName = getLayerNameByCleanName(name);
-                var configLayer = null;
-                if ( qgisName )
-                    configLayer = config.layers[qgisName];
-                if ( !configLayer )
-                    configLayer = config.layers[layer.params['LAYERS']];
-                if ( !configLayer )
-                    configLayer = config.layers[layer.name];
-                if ( configLayer && pTableVectorLayers.indexOf( configLayer.layerId ) != -1 ) {
-                  // Add layer to the list of printed layers
-                  printLayers.push(l.params['LAYERS']);
-                  // Optionnaly add layer style if needed (same order as layers )
-                  var lst = 'default';
-                  if( 'STYLES' in l.params && l.params['STYLES'].length > 0 )
-                    lst = l.params['STYLES'];
-                  styleLayers.push( lst );
-                  opacityLayers.push(parseInt(255*l.opacity));
-                }*/
             }
         }
       });
@@ -4618,7 +4426,6 @@ OpenLayers.Control.HighlightFeature = OpenLayers.Class(OpenLayers.Control, {
 
         this.handler = new OpenLayers.Handler.Hover(
             this, {
-                //'pause': this.onPause,
                 'move': this.onMove
             },
             this.handlerOptions
@@ -4691,20 +4498,16 @@ OpenLayers.Control.HighlightFeature = OpenLayers.Class(OpenLayers.Control, {
      */
     setLayer: function(layers) {
         var isActive = this.active;
-        //this.unselectAll();
         this.deactivate();
         if(this.layers) {
             this.layer.destroy();
             this.layers = null;
         }
         this.initLayer(layers);
-        //this.handlers.feature.layer = this.layer;
         if (isActive) {
             this.activate();
         }
     },
-
-    //onPause: function(evt) {},
 
     /**
     * Method: onMove
@@ -4847,8 +4650,6 @@ OpenLayers.Control.HighlightFeature = OpenLayers.Class(OpenLayers.Control, {
             "chicken",
             oPopupPos,
             this.popupSize,
-            //new OpenLayers.Size(200,325),
-            //null,
             szHTML,
             null, null, null);
         feature.popup = oPopup;
@@ -4964,7 +4765,6 @@ OpenLayers.Control.HighlightFeature = OpenLayers.Class(OpenLayers.Control, {
         }
     });
     tooltipControl.addInfoPopup = function(feature, evt) {
-        //~ console.log( "tooltip activated");
         var lname = $('#tooltip-layer-list').val();//feature.layer.name.split("@")[1];
         var lconfig = lizMap.config.layers[lname];
         if( !(lname in lizMap.config.layers) )
@@ -5100,7 +4900,6 @@ OpenLayers.Control.HighlightFeature = OpenLayers.Class(OpenLayers.Control, {
 
   }
 
-
   function getLayerConfigById( aLayerId, aConfObjet, aIdAttribute ) {
     // Set function parameters if not given
     aConfObjet = typeof aConfObjet !== 'undefined' ?  aConfObjet : config.layers;
@@ -5191,7 +4990,6 @@ OpenLayers.Control.HighlightFeature = OpenLayers.Class(OpenLayers.Control, {
     };
     measureControls.length.events.on({
       activate: function(evt) {
-        /*deactivateToolControls(evt);*/
         mAddMessage(lizDict['measure.activate.length'],'info',true).attr('id','lizmap-measure-message');
       },
       deactivate: function(evt) {
@@ -5200,7 +4998,6 @@ OpenLayers.Control.HighlightFeature = OpenLayers.Class(OpenLayers.Control, {
     });
     measureControls.area.events.on({
       activate: function(evt) {
-        /*deactivateToolControls(evt);*/
         mAddMessage(lizDict['measure.activate.area'],'info',true).attr('id','lizmap-measure-message');
       },
       deactivate: function(evt) {
@@ -5225,7 +5022,6 @@ OpenLayers.Control.HighlightFeature = OpenLayers.Class(OpenLayers.Control, {
     };
     measureControls.perimeter.events.on({
       activate: function(evt) {
-        /*deactivateToolControls(evt);*/
         mAddMessage(lizDict['measure.activate.perimeter'],'info',true).attr('id','lizmap-measure-message');
       },
       deactivate: function(evt) {
@@ -5258,7 +5054,6 @@ OpenLayers.Control.HighlightFeature = OpenLayers.Class(OpenLayers.Control, {
         "measure": handleMeasurements,
         "measurepartial": handleMeasurements,
         "activate": function(evt) {
-          //deactivateToolControls(evt);
         }
       });
       map.addControl(control);
@@ -5325,7 +5120,6 @@ OpenLayers.Control.HighlightFeature = OpenLayers.Class(OpenLayers.Control, {
     var firstGeolocation = true;
     geolocate.events.on({
       "locationupdated": function(evt) {
-        //this.layer.destroyFeatures();
         if ( this.layer.features.length == 0 ) {
             var circle = new OpenLayers.Feature.Vector(
               OpenLayers.Geometry.Polygon.createRegularPolygon(
@@ -5374,7 +5168,6 @@ OpenLayers.Control.HighlightFeature = OpenLayers.Class(OpenLayers.Control, {
         }
         if (firstGeolocation) {
           map.zoomToExtent(vector.getDataExtent());
-          //pulsate(circle);
           firstGeolocation = false;
           if ( $('#geolocate-menu-bind').hasClass('active') )
             this.bind = true;
@@ -5516,10 +5309,6 @@ OpenLayers.Control.HighlightFeature = OpenLayers.Class(OpenLayers.Control, {
   function mCheckMobile() {
     var minMapSize = 450;
     var w = $('body').parent()[0].offsetWidth;
-    /*
-    if($.browser.msie)
-      w = $('body').width();
-      */
     var leftW = w - minMapSize;
     if(leftW < minMapSize || w < minMapSize)
       return true;
@@ -5949,7 +5738,6 @@ OpenLayers.Control.HighlightFeature = OpenLayers.Class(OpenLayers.Control, {
 
   }
 
-
   // Get the popup content for a layer given a feature
   function getFeaturePopupContentByFeatureIntersection(aName, feat, aCallback) {
 
@@ -6012,15 +5800,11 @@ OpenLayers.Control.HighlightFeature = OpenLayers.Class(OpenLayers.Control, {
       ,OpenLayers.Util.getParameterString(lizUrls.params)
     );
     $.post(service, wmsOptions, function(data) {
-      //console.log(data);
       if(aCallback){
         aCallback(service, wmsOptions, data);
       }
     });
-
-
   }
-
 
   // Create new dock or minidock
   // Example : lizMap.addDock('mydock', 'My dock title', 'dock', 'Some content', 'icon-pencil');
@@ -6497,9 +6281,6 @@ OpenLayers.Control.HighlightFeature = OpenLayers.Class(OpenLayers.Control, {
             } );
 
           //set title and abstract coming from capabilities
-//          document.title = capabilities.title ? capabilities.title : capabilities.service.title;
-//          $('#title').html('<h1>'+(capabilities.title ? capabilities.title : capabilities.service.title)+'</h1>');
-          //$('#abstract').html(capabilities.abstract ? capabilities.abstract : capabilities.service.abstract);
           $('#abstract').html(capabilities.abstract ? capabilities.abstract : '');
 
           // get and analyse tree
@@ -6536,18 +6317,7 @@ OpenLayers.Control.HighlightFeature = OpenLayers.Class(OpenLayers.Control, {
           }
 
           // initialize the map
-          //$('#switcher').height(0);
           // Set map extent depending on options
-          /*
-          if(lizPosition['lon']!=null){
-            map.setCenter(
-              new OpenLayers.LonLat(lizPosition['lon'], lizPosition['lat']),
-              lizPosition['zoom']
-            );
-          }else{
-            map.zoomToExtent(map.initialExtent);
-          }
-          */
           var verifyingVisibility = true;
           var hrefParam = OpenLayers.Util.getParameters(window.location.href);
           if (!map.getCenter()) {
@@ -6711,7 +6481,6 @@ OpenLayers.Control.HighlightFeature = OpenLayers.Class(OpenLayers.Control, {
                 parent.removeClass('active');
                 lizMap.events.triggerEvent( "minidockclosed", {'id':id} );
             } else {
-              //self.parents('#mapmenu').find('.nav-minidock.active a').click();
                 var oldActive = $('#mapmenu li.nav-minidock.active');
                 if ( oldActive.length != 0 ) {
                     oldActive.removeClass('active');
@@ -6849,10 +6618,8 @@ OpenLayers.Control.HighlightFeature = OpenLayers.Class(OpenLayers.Control, {
  */
 lizMap.events.on({
     'treecreated':function(evt){
-       //console.log('treecreated');
     }
     ,'mapcreated':function(evt){
-      //console.log('mapcreated');
       // Add empty baselayer to the map
       if ( ('emptyBaselayer' in evt.config.options)
          && evt.config.options.emptyBaselayer == 'True') {
@@ -7138,7 +6905,6 @@ lizMap.events.on({
              "gmap", // the default
              {numZoomLevels: options.numZoomLevels, maxResolution: options.maxResolution, minZoomLevel:options.zoomOffset}
              );
-         //console.log( gmap.mapObject );
          gmap.maxExtent = maxExtent;
          var gmapCfg = {
               "name":"gmap"
@@ -7388,7 +7154,6 @@ lizMap.events.on({
       } catch(e) {
          //problems with google
          var myError = e;
-         //console.log(myError);
        }
      }
 
@@ -7458,7 +7223,6 @@ lizMap.events.on({
     }
    ,
    'uicreated': function(evt){
-      //~ console.log('uicreated');
      var map = evt.map;
      if ( map.id in OpenLayers.Layer.Google.cache ) {
         google.maps.event.addListenerOnce(OpenLayers.Layer.Google.cache[map.id].mapObject, 'tilesloaded', function() {
@@ -7468,7 +7232,6 @@ lizMap.events.on({
                 var layer = olLayers[i];
                 if (layer instanceof OpenLayers.Layer.Google &&
                             layer.visibility === true && layer.inRange === true) {
-                    //type = layer.type;
                     layer.redraw(true);
                     gVisibility = true;
                     break;
@@ -7494,7 +7257,6 @@ lizMap.events.on({
 
       // Update legend if mobile
       if( lizMap.checkMobile() ){
-        //~ lizMap.updateContentSize();
         if( $('#button-switcher').parent().hasClass('active') )
           $('#button-switcher').click();
       }
