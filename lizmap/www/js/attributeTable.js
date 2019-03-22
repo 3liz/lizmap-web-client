@@ -3137,23 +3137,12 @@ var lizAttributeTable = function() {
       return false;
     }
 
-    var selectionLayersDic = {};
-    for (var lname in config.attributeLayers) {
-        //if( 'hideLayer' in config.attributeLayers[lname]
-           //&& config.attributeLayers[lname]['hideLayer'] == 'True'){
-            //continue;
-        //}
-        selectionLayersDic[lizMap.cleanName(lname)] = lname;
-    }
-
     var options = '';
     var selectionLayersSorted = [];
     featureTypes.each( function(){
         var self = $(this);
-        var lname = self.find('Name').text();
-        if ( !(lname in selectionLayersDic) )
-            return;
-        lname = selectionLayersDic[lname];
+        var lname = lizMap.getNameByTypeName( self.find('Name').text() );
+
         if( lname in config.layers
             && config.layers[lname]['geometryType'] != 'none'
             && config.layers[lname]['geometryType'] != 'unknown') {
