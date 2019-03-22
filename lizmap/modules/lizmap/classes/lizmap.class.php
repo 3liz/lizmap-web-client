@@ -215,8 +215,9 @@ class lizmap
      */
     public static function createRepository($key, $data)
     {
-        if (in_array($key, self::$repositories)
-        || in_array($key, self::getRepositoryList())) {
+        if (in_array($key, self::$repositories) ||
+            in_array($key, self::getRepositoryList())
+        ) {
             return null;
         }
 

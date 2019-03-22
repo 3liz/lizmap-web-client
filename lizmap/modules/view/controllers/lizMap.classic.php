@@ -112,10 +112,9 @@ class lizMapCtrl extends jController
         $pOptions = $lproj->getOptions();
         // Redirect if project is hidden (lizmap plugin option)
         if (!$this->forceHiddenProjectVisible) {
-            if (
-          property_exists($pOptions, 'hideProject')
-          && $pOptions->hideProject == 'True'
-      ) {
+            if (property_exists($pOptions, 'hideProject') &&
+                $pOptions->hideProject == 'True'
+            ) {
                 jMessage::add(jLocale::get('view~default.project.access.denied'), 'error');
 
                 return $rep;
@@ -237,9 +236,9 @@ class lizMapCtrl extends jController
 
         // WMS GetCapabilities Url
         $wmsGetCapabilitiesUrl = jAcl2::check(
-        'lizmap.tools.displayGetCapabilitiesLinks',
-        $lrep->getKey()
-    );
+            'lizmap.tools.displayGetCapabilitiesLinks',
+            $lrep->getKey()
+        );
         if ($wmsGetCapabilitiesUrl) {
             $wmsGetCapabilitiesUrl = $lproj->getData('wmsGetCapabilitiesUrl');
         }
@@ -379,13 +378,11 @@ class lizMapCtrl extends jController
         $jsCode = '';
         $mapMenuCss = '';
         $h = $this->intParam('h', 1);
-        if (
-      $h == 0 or
-      (
-        property_exists($pOptions, 'hideHeader')
-        && $pOptions->hideHeader == 'True'
-      )
-    ) {
+        if ($h == 0 or
+            (property_exists($pOptions, 'hideHeader') &&
+                $pOptions->hideHeader == 'True'
+            )
+        ) {
             $h = 0;
             $rep->addStyle('#body', 'padding-top:0px;');
             $rep->addStyle('#header', 'display:none; height:0px;');
@@ -393,13 +390,12 @@ class lizMapCtrl extends jController
 
         // menu = left vertical menu with icons
         $m = $this->intParam('m', 1);
-        if (
-      $m == 0 or
-      (
-        property_exists($pOptions, 'hideMenu')
-        && $pOptions->hideMenu == 'True'
-      )
-    ) {
+        if ($m == 0 or
+            (
+              property_exists($pOptions, 'hideMenu')
+              && $pOptions->hideMenu == 'True'
+            )
+        ) {
             $m = 0;
             $rep->addStyle('#mapmenu', 'display:none !important; width:0px;');
             $rep->addStyle('#dock', 'left:0px; border-left:none;');
@@ -525,7 +521,7 @@ class lizMapCtrl extends jController
     protected function getProjectDockables()
     {
 
-    // Get repository key
+        // Get repository key
         $repository = $this->repositoryKey;
         // Get the project key
         $project = $this->projectKey;
