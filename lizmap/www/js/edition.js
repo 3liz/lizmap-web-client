@@ -748,9 +748,6 @@ OpenLayers.Geometry.pointOnSegment = function(point, segment) {
 
     function cancelEdition(){
         // Deactivate previous edition
-        //if ( !confirm( lizDict['edition.confirm.cancel'] ) )
-            //return false;
-
         finishEdition();
 
         // back to parent
@@ -858,7 +855,6 @@ OpenLayers.Geometry.pointOnSegment = function(point, segment) {
         return true;
     }
 
-
     /*
      * Get edition form from service
      * @param featureId Feature id to edit : in null-> create feature
@@ -906,7 +902,6 @@ OpenLayers.Geometry.pointOnSegment = function(point, segment) {
                 aCallback( editionLayer['id'], featureId );
 
         });
-
     }
 
     /*
@@ -1569,7 +1564,6 @@ OpenLayers.Geometry.pointOnSegment = function(point, segment) {
                     }
                 }
             });
-
 
         } // uicreated
     });

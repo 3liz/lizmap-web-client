@@ -133,15 +133,14 @@ var lizAtlas = function() {
             });
 
             lizAtlasConfig['features_sorted'] = items;
-            //console.log(lizAtlasConfig['features_with_pkey']);
         }
 
         function getAtlasHome(){
 
 
             var home = '';
-            // Add description
 
+            // Add description
             if( lizAtlasConfig['displayLayerDescription'] ){
                 var labstract = lizMap.config.layers[lizAtlasConfig.layername]['abstract'];
                 if(labstract != ''){
@@ -200,7 +199,6 @@ var lizAtlas = function() {
             title+= '</h3>';
             $('#atlas').prepend(title);
 
-
             // Add events
             activateAtlasTrigger();
 
@@ -250,34 +248,31 @@ var lizAtlas = function() {
                         updateAtlasData();
                 }
             });
-
         }
 
         function adaptAtlasSize(){
             lizMap.events.on({
-            // Adapt dock size to display metadata
-            rightdockopened: function(e) {
-                if ( e.id == 'atlas') {
-                    // Size : add class to content to enabled specific css to be applied
-                    $('#content').addClass('atlas-visible');
-                    lizMap.updateContentSize();
+                // Adapt dock size to display metadata
+                rightdockopened: function(e) {
+                    if ( e.id == 'atlas') {
+                        // Size : add class to content to enabled specific css to be applied
+                        $('#content').addClass('atlas-visible');
+                        lizMap.updateContentSize();
 
+                    }
+                },
+                rightdockclosed: function(e) {
+                    if ( e.id == 'atlas' ) {
+
+                        // Set right-dock default size by removing #content class
+                        $('#content').removeClass('atlas-visible');
+                        lizMap.updateContentSize();
+
+                        // Deactivate atlas and stop animation
+                        deactivateAtlas();
+                    }
                 }
-            },
-            rightdockclosed: function(e) {
-                if ( e.id == 'atlas' ) {
-
-                    // Set right-dock default size by removing #content class
-                    $('#content').removeClass('atlas-visible');
-                    lizMap.updateContentSize();
-
-                    // Deactivate atlas and stop animation
-                    deactivateAtlas();
-
-                }
-            }
             });
-
         }
 
         function activateAtlasTrigger(){
@@ -302,10 +297,8 @@ var lizAtlas = function() {
                     }else{
                         console.log("no feature found");
                     }
-
                 }
                 return false;
-
             });
 
             $('#atlas div.menu-content')
@@ -413,7 +406,6 @@ var lizAtlas = function() {
                 });
             }
 
-
             // Trigger Filter
             if( lizAtlasConfig['triggerFilter'] ){
 
@@ -428,10 +420,7 @@ var lizAtlas = function() {
                     {'featureType': lizAtlasConfig.featureType}
                 );
             }
-
-
         }
-
 
         function deactivateAtlas(){
             // Stop animation
@@ -471,17 +460,12 @@ var lizAtlas = function() {
                         { 'featureType': lizAtlasConfig.featureType}
                     );
             }
-
             // Hide some containers
             $('#liz-atlas-item-detail').hide();
         }
-
         // Launch Atlas feature
         getAtlasData(lizAtlasConfig.layername);
 
-
         } // uicreated
     });
-
-
 }();
