@@ -503,6 +503,5 @@ var lizLayerActionButtons = function() {
     }
 
     });
-        //console.log($('#layers-unfold-all').length);
 
 }();

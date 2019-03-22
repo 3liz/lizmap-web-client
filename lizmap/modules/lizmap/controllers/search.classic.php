@@ -102,7 +102,7 @@ class searchCtrl extends jController
         $data = array();
         foreach ($searches as $skey => $sval) {
 
-        // Add filter to get only data for given search key
+            // Add filter to get only data for given search key
             $sql_search = $sql.' AND search_id = '.$cnx->quote($skey);
             $limit = $limit_search;
             $sql_search .= ' LIMIT '.$limit;

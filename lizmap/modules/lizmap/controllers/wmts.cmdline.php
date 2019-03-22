@@ -140,7 +140,8 @@ class wmtsCtrl extends jControllerCmdLine
 
         if ($tileCapabilities === null ||
              $tileCapabilities->tileMatrixSetList === null ||
-             $tileCapabilities->layerTileInfoList === null) {
+             $tileCapabilities->layerTileInfoList === null
+        ) {
             // Error message
             $rep->addContent("The cache is not available!\n");
             $rep->addContent("The WMTS Service can't be initialized!\n");

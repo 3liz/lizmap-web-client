@@ -68,13 +68,13 @@ class lizmapLogListener extends jEventListener
     public function addLog($key, $data)
     {
 
-    // Get log item properties
+        // Get log item properties
         $logItem = lizmap::getLogItem($key);
 
         // Optionnaly log detail
         if ($logItem->getData('logDetail')) {
 
-      // user who modified the line
+            // user who modified the line
             if (!array_key_exists('user', $data)) {
                 $juser = jAuth::getUserSession();
                 $data['user'] = $juser->login;
@@ -89,10 +89,9 @@ class lizmapLogListener extends jEventListener
             $logItem->insertLogDetail($data);
 
             // Send an email
-            if (
-        $logItem->getData('logEmail')
-        and in_array($key, array('editionSaveFeature', 'editionDeleteFeature'))
-      ) {
+            if ($logItem->getData('logEmail') &&
+                in_array($key, array('editionSaveFeature', 'editionDeleteFeature'))
+            ) {
                 $this->sendEmail($key, $data);
             }
         }

@@ -569,10 +569,10 @@ class lizmapTiler
         $tileMatrix = $tileMatrixSet->tileMatrixList[(int) $tileMatrixId];
 
         $res = $tileMatrix->resolution;
-        $minx = $tileMatrix->left + ((int) $TileCol) * ($tileWidth * $res);
-        $miny = $tileMatrix->top - ((int) $TileRow) * ($tileHeight * $res);
-        $maxx = $tileMatrix->left + ((int) $TileCol + 1) * ($tileWidth * $res);
-        $maxy = $tileMatrix->top - ((int) $TileRow + 1) * ($tileHeight * $res);
+        $minx = $tileMatrix->left + ((int) $tileCol) * ($tileWidth * $res);
+        $miny = $tileMatrix->top - ((int) $tileRow) * ($tileHeight * $res);
+        $maxx = $tileMatrix->left + ((int) $tileCol + 1) * ($tileWidth * $res);
+        $maxy = $tileMatrix->top - ((int) $tileRow + 1) * ($tileHeight * $res);
 
         return (string) $minx.','.(string) $miny.','.(string) $maxx.','.(string) $maxy;
     }
