@@ -25,7 +25,7 @@ class popup
     public function getHtmlFeatureAttribute($attributeName, $attributeValue, $repository, $project, $popupFeatureContent = null)
     {
 
-    // Force $attributeValue to be a string
+        // Force $attributeValue to be a string
         $attributeName = (string) $attributeName;
         $attributeValue = (string) $attributeValue;
         if ($attributeValue == 'NULL') {
@@ -68,11 +68,11 @@ class popup
             }
             $req = jApp::coord()->request;
             $mediaUrl = jUrl::getFull(
-          'view~media:getMedia',
-          array('repository' => $repository, 'project' => $project, 'path' => $pathVal),
-          0,
-          $req->getDomainName().$req->getPort()
-      );
+                'view~media:getMedia',
+                array('repository' => $repository, 'project' => $project, 'path' => $pathVal),
+                0,
+                $req->getDomainName().$req->getPort()
+            );
             if ($sharp) {
                 $mediaUrl .= '#'.$sharp;
             }
@@ -111,14 +111,14 @@ class popup
 
                 // Replace images src by full path
                 $iUrl = jUrl::get(
-            'view~media:getMedia',
-            array('repository' => $repository, 'project' => $project)
-        );
+                    'view~media:getMedia',
+                    array('repository' => $repository, 'project' => $project)
+                );
                 $data = preg_replace(
-            '#src="(.+(jpg|jpeg|gif|png))"?#i',
-            'src="'.$iUrl.'&path=$1"',
-            $data
-        );
+                    '#src="(.+(jpg|jpeg|gif|png))"?#i',
+                    'src="'.$iUrl.'&path=$1"',
+                    $data
+                );
                 $attributeValue = $data;
             }
 
@@ -140,10 +140,10 @@ class popup
         if ($popupFeatureContent) {
             // Replace {$mycol} by the processed column value
             return preg_replace(
-          '#\{\$'.$attributeName.'\}#i',
-          $attributeValue,
-          $popupFeatureContent
-      );
+                '#\{\$'.$attributeName.'\}#i',
+                $attributeValue,
+                $popupFeatureContent
+            );
         }
         // Return the modified attributeValue
         return $attributeValue;

@@ -131,10 +131,10 @@ class lizmapOGCRequest
         if ($code == 500) {
             // Get remote data
             $getRemoteData = lizmapProxy::getRemoteData(
-              $querystring,
-              $this->services->proxyMethod,
-              $this->services->debugMode
-          );
+                $querystring,
+                $this->services->proxyMethod,
+                $this->services->debugMode
+            );
             $data = $getRemoteData[0];
             $mime = $getRemoteData[1];
             $code = $getRemoteData[2];

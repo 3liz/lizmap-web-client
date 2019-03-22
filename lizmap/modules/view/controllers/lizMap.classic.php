@@ -112,10 +112,9 @@ class lizMapCtrl extends jController
         $pOptions = $lproj->getOptions();
         // Redirect if project is hidden (lizmap plugin option)
         if (!$this->forceHiddenProjectVisible) {
-            if (
-          property_exists($pOptions, 'hideProject')
-          && $pOptions->hideProject == 'True'
-      ) {
+            if (property_exists($pOptions, 'hideProject') &&
+                $pOptions->hideProject == 'True'
+            ) {
                 jMessage::add(jLocale::get('view~default.project.access.denied'), 'error');
 
                 return $rep;
@@ -215,9 +214,9 @@ class lizMapCtrl extends jController
 
         // WMS GetCapabilities Url
         $wmsGetCapabilitiesUrl = jAcl2::check(
-        'lizmap.tools.displayGetCapabilitiesLinks',
-        $lrep->getKey()
-    );
+            'lizmap.tools.displayGetCapabilitiesLinks',
+            $lrep->getKey()
+        );
         if ($wmsGetCapabilitiesUrl) {
             $wmsGetCapabilitiesUrl = $lproj->getData('wmsGetCapabilitiesUrl');
         }
@@ -348,7 +347,7 @@ class lizMapCtrl extends jController
         $mapMenuCss = '';
         $h = $this->intParam('h', 1);
         if ($h == 0 or
-            ( property_exists($pOptions, 'hideHeader') &&
+            (property_exists($pOptions, 'hideHeader') &&
                 $pOptions->hideHeader == 'True'
             )
         ) {
@@ -482,7 +481,7 @@ class lizMapCtrl extends jController
     protected function getProjectDockables()
     {
 
-    // Get repository key
+        // Get repository key
         $repository = $this->repositoryKey;
         // Get the project key
         $project = $this->projectKey;

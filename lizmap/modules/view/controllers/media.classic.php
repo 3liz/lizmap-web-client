@@ -322,7 +322,8 @@ class mediaCtrl extends jController
         // Check if file is CSS
         $path_parts = pathinfo($abspath);
         if (!isset($path_parts['extension']) ||
-        strtolower($path_parts['extension']) != 'css') {
+            strtolower($path_parts['extension']) != 'css'
+        ) {
             $ok = false;
         }
 
@@ -353,13 +354,13 @@ class mediaCtrl extends jController
         // Replace relative images URL with getMedia URL
         $newPath = preg_replace('#'.$path_parts['basename'].'$#', '', $path);
         $baseUrl = jUrl::get(
-        'view~media:getMedia',
-        array(
-            'repository' => $lrep->getKey(),
-            'project' => $project,
-            'path' => $newPath,
-        )
-    );
+            'view~media:getMedia',
+            array(
+                'repository' => $lrep->getKey(),
+                'project' => $project,
+                'path' => $newPath,
+            )
+        );
         $pattern = 'url\((.+)\)';
         $replacement = 'url('.$baseUrl.'/\1)';
         $content = preg_replace("#${pattern}#", $replacement, $content);

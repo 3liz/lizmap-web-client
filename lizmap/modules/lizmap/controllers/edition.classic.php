@@ -127,7 +127,7 @@ class editionCtrl extends jController
     private function getEditionParameters($save = null)
     {
 
-    // Get the project
+        // Get the project
         $project = $this->param('project');
         $repository = $this->param('repository');
         $layerId = $this->param('layerId');
@@ -200,7 +200,8 @@ class editionCtrl extends jController
         if ($eLayer->capabilities->modifyGeometry != 'True'
          && $eLayer->capabilities->modifyAttribute != 'True'
          && $eLayer->capabilities->deleteFeature != 'True'
-         && $eLayer->capabilities->createFeature != 'True') {
+         && $eLayer->capabilities->createFeature != 'True'
+        ) {
             jMessage::add(jLocale::get('view~edition.message.error.layer.editable'), 'LayerNotEditable');
 
             return false;
@@ -290,13 +291,13 @@ class editionCtrl extends jController
     protected function filterDataByLogin($layername)
     {
 
-    // Optionnaly add a filter parameter
+        // Optionnaly add a filter parameter
         $lproj = $this->project;
         $pConfig = $lproj->getFullCfg();
 
-        if ($lproj->hasLoginFilteredLayers()
-      and $pConfig->loginFilteredLayers
-    ) {
+        if ($lproj->hasLoginFilteredLayers() &&
+            $pConfig->loginFilteredLayers
+        ) {
             if (property_exists($pConfig->loginFilteredLayers, $layername)) {
                 $v = '';
                 $where = '';
@@ -351,7 +352,7 @@ class editionCtrl extends jController
     private function getDataFields($datasource)
     {
 
-    // Get datasource information from QGIS
+        // Get datasource information from QGIS
         $datasourceMatch = preg_match(
             "#(?:dbname='([^ ]+)' )?(?:service='([^ ]+)' )?(?:host=([^ ]+) )?(?:port=([0-9]+) )?(?:user='([^ ]+)' )?(?:password='([^ ]+)' )?(?:sslmode=([^ ]+) )?(?:key='([^ ]+)' )?(?:estimatedmetadata=([^ ]+) )?(?:selectatid=([^ ]+) )?(?:srid=([0-9]+) )?(?:type=([a-zA-Z]+) )?(?:table=\"(.+)?\" )?(?:\\()?(?:([^ ]+)\\) )?(?:sql=(.*))?#s",
             $datasource,
@@ -495,7 +496,7 @@ class editionCtrl extends jController
     private function addFormControls($form)
     {
 
-    // Get fields data from the edition database
+        // Get fields data from the edition database
         $layerXmlZero = $this->layerXml[0];
         $_datasource = $layerXmlZero->xpath('datasource');
         $datasource = (string) $_datasource[0];
@@ -530,7 +531,7 @@ class editionCtrl extends jController
         $toSetReadOnly = array();
         foreach ($this->dataFields as $fieldName => $prop) {
 
-      // Create new control from qgis edit type
+            // Create new control from qgis edit type
             $aliasXml = null;
             if ($layerXmlZero->aliases) {
                 $aliasesZero = $layerXmlZero->aliases[0];
@@ -786,10 +787,10 @@ class editionCtrl extends jController
         // Get remote data
         $lizmapCache = jClasses::getService('lizmap~lizmapCache');
         $getRemoteData = $lizmapCache->getRemoteData(
-        $querystring,
-        $lizmapServices->proxyMethod,
-        $lizmapServices->debugMode
-    );
+            $querystring,
+            $lizmapServices->proxyMethod,
+            $lizmapServices->debugMode
+        );
         $wfsData = $getRemoteData[0];
         $mime = $getRemoteData[1];
 
@@ -1022,75 +1023,75 @@ class editionCtrl extends jController
             }
 
             switch ($this->formControls[$ref]->fieldDataType) {
-          case 'geometry':
-            $value = "ST_GeomFromText('".filter_var($value, FILTER_SANITIZE_STRING, FILTER_FLAG_NO_ENCODE_QUOTES)."', ".$this->srid.')';
-            $rs = $cnx->query('SELECT GeometryType('.$value.') as geomtype');
-            $rs = $rs->fetch();
-            if (!preg_match('/'.$this->geometryType.'/', strtolower($rs->geomtype))) {
-                if (preg_match('/'.str_replace('multi', '', $this->geometryType).'/', strtolower($rs->geomtype))) {
-                    $value = 'ST_Multi('.$value.')';
-                } else {
-                    $form->setErrorOn($this->geometryColumn, 'The geometry type does not match!');
+                case 'geometry':
+                    $value = "ST_GeomFromText('".filter_var($value, FILTER_SANITIZE_STRING, FILTER_FLAG_NO_ENCODE_QUOTES)."', ".$this->srid.')';
+                    $rs = $cnx->query('SELECT GeometryType('.$value.') as geomtype');
+                    $rs = $rs->fetch();
+                    if (!preg_match('/'.$this->geometryType.'/', strtolower($rs->geomtype))) {
+                        if (preg_match('/'.str_replace('multi', '', $this->geometryType).'/', strtolower($rs->geomtype))) {
+                            $value = 'ST_Multi('.$value.')';
+                        } else {
+                            $form->setErrorOn($this->geometryColumn, 'The geometry type does not match!');
 
-                    return false;
-                }
+                            return false;
+                        }
+                    }
+
+                    break;
+                case 'date':
+                case 'time':
+                case 'datetime':
+                    $value = filter_var($value, FILTER_SANITIZE_STRING, FILTER_FLAG_NO_ENCODE_QUOTES);
+                    if (!$value) {
+                        $value = 'NULL';
+                    } else {
+                        $value = $cnx->quote($value);
+                    }
+
+                    break;
+                case 'integer':
+                    $value = filter_var($value, FILTER_SANITIZE_NUMBER_INT);
+                    if (!$value) {
+                        $value = 'NULL';
+                    }
+
+                    break;
+                case 'float':
+                    $value = (float) $value;
+                    if (!$value) {
+                        $value = 'NULL';
+                    }
+
+                    break;
+                case 'text':
+                    if (is_null($value) or strlen((string) $value) == 0) {
+                        $value = 'NULL';
+                    } else {
+                        $value = $cnx->quote($value);
+                    }
+
+                    break;
+                case 'boolean':
+                    $strVal = strtolower($value);
+                    if ($strVal === '') {
+                        $value = 'NULL';
+                    } elseif ($strVal != 'true' && $strVal !== 't' && intval($value) != 1 &&
+                       $strVal !== 'on' && $value !== true &&
+                       $strVal != 'false' && $strVal !== 'f' && intval($value) != 0 &&
+                       $strVal !== 'off' && $value !== false) {
+                        $value = 'NULL';
+                    } else {
+                        $value = $cnx->quote($value);
+                    }
+
+                    break;
+                default:
+                    $value = $cnx->quote(
+                        filter_var($value, FILTER_SANITIZE_STRING, FILTER_FLAG_NO_ENCODE_QUOTES)
+                    );
+
+                    break;
             }
-
-            break;
-          case 'date':
-          case 'time':
-          case 'datetime':
-            $value = filter_var($value, FILTER_SANITIZE_STRING, FILTER_FLAG_NO_ENCODE_QUOTES);
-            if (!$value) {
-                $value = 'NULL';
-            } else {
-                $value = $cnx->quote($value);
-            }
-
-            break;
-          case 'integer':
-            $value = filter_var($value, FILTER_SANITIZE_NUMBER_INT);
-            if (!$value) {
-                $value = 'NULL';
-            }
-
-            break;
-          case 'float':
-            $value = (float) $value;
-            if (!$value) {
-                $value = 'NULL';
-            }
-
-            break;
-          case 'text':
-            if (is_null($value) or strlen((string) $value) == 0) {
-                $value = 'NULL';
-            } else {
-                $value = $cnx->quote($value);
-            }
-
-            break;
-          case 'boolean':
-            $strVal = strtolower($value);
-            if ($strVal === '') {
-                $value = 'NULL';
-            } elseif ($strVal != 'true' && $strVal !== 't' && intval($value) != 1 &&
-               $strVal !== 'on' && $value !== true &&
-               $strVal != 'false' && $strVal !== 'f' && intval($value) != 0 &&
-               $strVal !== 'off' && $value !== false) {
-                $value = 'NULL';
-            } else {
-                $value = $cnx->quote($value);
-            }
-
-            break;
-          default:
-            $value = $cnx->quote(
-                filter_var($value, FILTER_SANITIZE_STRING, FILTER_FLAG_NO_ENCODE_QUOTES)
-            );
-
-            break;
-      }
             if ($form->hasUpload() && array_key_exists($ref, $form->getUploads())) {
                 $value = $form->getData($ref);
                 $choiceValue = $form->getData($ref.'_choice');
@@ -1122,8 +1123,8 @@ class editionCtrl extends jController
                     $value = 'NULL';
                 } elseif ($value != 'NULL') {
                     $value = $cnx->quote(
-                filter_var($value, FILTER_SANITIZE_STRING, FILTER_FLAG_NO_ENCODE_QUOTES)
-            );
+                        filter_var($value, FILTER_SANITIZE_STRING, FILTER_FLAG_NO_ENCODE_QUOTES)
+                    );
                 }
             }
 
@@ -1214,7 +1215,7 @@ class editionCtrl extends jController
     public function createFeature()
     {
 
-    // Get repository, project data and do some right checking
+        // Get repository, project data and do some right checking
         if (!$this->getEditionParameters()) {
             return $this->serviceAnswer();
         }
@@ -1258,7 +1259,7 @@ class editionCtrl extends jController
     public function modifyFeature()
     {
 
-    // Get repository, project data and do some right checking
+        // Get repository, project data and do some right checking
         if (!$this->getEditionParameters()) {
             return $this->serviceAnswer();
         }
@@ -1306,7 +1307,7 @@ class editionCtrl extends jController
     public function editFeature()
     {
 
-    // Get repository, project data and do some right checking
+        // Get repository, project data and do some right checking
         if (!$this->getEditionParameters()) {
             return $this->serviceAnswer();
         }
@@ -1441,7 +1442,7 @@ class editionCtrl extends jController
     public function saveFeature()
     {
 
-    // Get repository, project data and do some right checking
+        // Get repository, project data and do some right checking
         $save = true;
         if (!$this->getEditionParameters($save)) {
             return $this->serviceAnswer();
@@ -1532,7 +1533,7 @@ class editionCtrl extends jController
     public function validateFeature()
     {
 
-    // Get repository, project data and do some right checking
+        // Get repository, project data and do some right checking
         if (!$this->getEditionParameters()) {
             return $this->serviceAnswer();
         }
