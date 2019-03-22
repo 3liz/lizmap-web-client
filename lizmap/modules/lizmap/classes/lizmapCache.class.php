@@ -107,9 +107,9 @@ class lizmapCache
         }
 
         // Set or get tile from the parent project in case of embedded layers
-        if ($configLayer
-            and property_exists($configLayer, 'sourceRepository')
-            and property_exists($configLayer, 'sourceProject')
+        if ($configLayer &&
+            property_exists($configLayer, 'sourceRepository') &&
+            property_exists($configLayer, 'sourceProject')
         ) {
             $newRepository = (string) $configLayer->sourceRepository;
             $newProject = (string) $configLayer->sourceProject;
@@ -171,8 +171,9 @@ class lizmapCache
         $metatileBuffer = 5;
 
         // Also checks if gd is installed
-        if ($metatileSize and $useCache and $wmsClient == 'web'
-        and extension_loaded('gd') && function_exists('gd_info')) {
+        if ($metatileSize and $useCache and $wmsClient == 'web' &&
+            extension_loaded('gd') && function_exists('gd_info')
+        ) {
             // Metatile Size
             $metatileSizeExp = explode(',', $metatileSize);
             $metatileSizeX = (int) $metatileSizeExp[0];
@@ -216,8 +217,9 @@ class lizmapCache
 
         // Metatile : if needed, crop the metatile into a single tile
         // Also checks if gd is installed
-        if ($metatileSize and $useCache and $wmsClient == 'web'
-        and extension_loaded('gd') && function_exists('gd_info')) {
+        if ($metatileSize && $useCache && $wmsClient == 'web' &&
+            extension_loaded('gd') && function_exists('gd_info')
+        ) {
 
             // Save original content into an image var
             $original = imagecreatefromstring($data);

@@ -90,7 +90,7 @@ class editionCtrl extends jController
     private function getEditionParameters($save = false)
     {
 
-    // Get the project
+        // Get the project
         if ($save) {
             $project = $this->param('liz_project');
             $repository = $this->param('liz_repository');
@@ -267,7 +267,7 @@ class editionCtrl extends jController
     public function createFeature()
     {
 
-    // Get repository, project data and do some right checking
+        // Get repository, project data and do some right checking
         if (!$this->getEditionParameters()) {
             return $this->serviceAnswer();
         }
@@ -311,7 +311,7 @@ class editionCtrl extends jController
     public function modifyFeature()
     {
 
-    // Get repository, project data and do some right checking
+        // Get repository, project data and do some right checking
         if (!$this->getEditionParameters()) {
             return $this->serviceAnswer();
         }
@@ -356,7 +356,7 @@ class editionCtrl extends jController
     public function editFeature()
     {
 
-    // Get repository, project data and do some right checking
+        // Get repository, project data and do some right checking
         if (!$this->getEditionParameters()) {
             return $this->serviceAnswer();
         }
@@ -435,10 +435,10 @@ class editionCtrl extends jController
                 if (!empty($DefaultRoot)) {
                     jFile::createDir($repPath.$DefaultRoot); // Need to create it to then make the realpath checks
                     if (
-                    (substr(realpath($repPath.$DefaultRoot), 0, strlen(realpath($repPath))) === realpath($repPath))
-                    or
-                    (substr(realpath($repPath.$DefaultRoot), 0, strlen(realpath($repPath.'/../'))) === realpath($repPath.'/../'))
-                ) {
+                        (substr(realpath($repPath.$DefaultRoot), 0, strlen(realpath($repPath))) === realpath($repPath))
+                        or
+                        (substr(realpath($repPath.$DefaultRoot), 0, strlen(realpath($repPath.'/../'))) === realpath($repPath.'/../'))
+                    ) {
                         $targetPath = $DefaultRoot;
                         $targetFullPath = realpath($repPath.$DefaultRoot);
                     }
@@ -523,7 +523,7 @@ class editionCtrl extends jController
     public function saveFeature()
     {
 
-    // Get repository, project data and do some right checking
+        // Get repository, project data and do some right checking
         $save = true;
         if (!$this->getEditionParameters($save)) {
             return $this->serviceAnswer();
@@ -614,10 +614,9 @@ class editionCtrl extends jController
         $eCapabilities = $this->layer->getEditionCapabilities();
 
         // CREATE NEW FEATURE
-        if (
-      $next_action == 'create'
-      and $eCapabilities->capabilities->createFeature == 'True'
-    ) {
+        if ($next_action == 'create' &&
+            $eCapabilities->capabilities->createFeature == 'True'
+        ) {
             jMessage::add(jLocale::get('view~edition.form.data.saved'), 'success');
             $rep->params = array(
                 'project' => $this->project->getKey(),
@@ -637,13 +636,12 @@ class editionCtrl extends jController
         // If there is a single integer primary key
         // This is the featureid, we can redirect to the edition form
         // for the newly created or the updated feature
-        if (
-      $next_action == 'edit'
-      // and if capabilities is ok for attribute modification
-      and $eCapabilities->capabilities->modifyAttribute == 'True'
-      // if we have retrieved the pkeys only one integer pkey
-      and is_array($pkvals) and count($pkvals) == 1
-    ) {
+        if ($next_action == 'edit' &&
+            // and if capabilities is ok for attribute modification
+            $eCapabilities->capabilities->modifyAttribute == 'True' &&
+            // if we have retrieved the pkeys only one integer pkey
+            is_array($pkvals) and count($pkvals) == 1
+        ) {
             //Get the fields info
             $dbFieldsInfo = $this->layer->getDbFieldsInfo();
             foreach ($dbFieldsInfo->primaryKeys as $key) {
@@ -688,7 +686,7 @@ class editionCtrl extends jController
     public function closeFeature()
     {
 
-    // Get repository, project data and do some right checking
+        // Get repository, project data and do some right checking
         if (!$this->getEditionParameters()) {
             return $this->serviceAnswer();
         }

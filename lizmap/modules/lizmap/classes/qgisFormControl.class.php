@@ -267,161 +267,159 @@ class qgisFormControl
 
         // Create the control
         switch ($markup) {
-      case 'input':
-        $this->ctrl = new jFormsControlInput($this->ref);
-        if ($this->fieldEditType === 15) {
-            $this->ctrl->minvalue = (float) $this->edittype[0]->attributes()->min;
-            $this->ctrl->maxvalue = (float) $this->edittype[0]->attributes()->max;
-        } elseif ($this->fieldEditType === 'Range' ||
-                 $this->fieldEditType === 'EditRange') {
-            $this->ctrl->minvalue = (float) $this->edittype[0]->widgetv2config->attributes()->Min;
-            $this->ctrl->maxvalue = (float) $this->edittype[0]->widgetv2config->attributes()->Max;
-        }
-
-        break;
-
-      case 'menulist':
-        $this->ctrl = new jFormsControlMenulist($this->ref);
-        $this->fillControlDatasource();
-
-        break;
-
-      case 'checkboxes':
-        $this->ctrl = new jFormsControlCheckboxes($this->ref);
-        $this->fillControlDatasource();
-
-        break;
-
-      case 'hidden':
-        $this->ctrl = new jFormsControlHidden($this->ref);
-
-        break;
-
-      case 'checkbox':
-        $this->ctrl = new jFormsControlCheckbox($this->ref);
-        $this->fillCheckboxValues();
-
-        break;
-
-      case 'textarea':
-        $this->ctrl = new jFormsControlTextarea($this->ref);
-
-        break;
-
-      case 'date':
-        $this->ctrl = new jFormsControlDate($this->ref);
-
-        break;
-
-      case 'datetime':
-        $this->ctrl = new jFormsControlDatetime($this->ref);
-
-        break;
-
-      case 'time':
-        //$this->ctrl = new jFormsControlDatetime($this->ref);
-        $this->ctrl = new jFormsControlInput($this->ref);
-
-        break;
-
-      case 'upload':
-        $choice = new jFormsControlChoice($this->ref.'_choice');
-        $choice->createItem('keep', 'keep');
-        $choice->createItem('update', 'update');
-        $upload = new jFormsControlUpload($this->ref);
-        if ($this->fieldEditType === 'Photo') {
-            $upload->mimetype = array('image/jpg', 'image/jpeg', 'image/pjpeg', 'image/png', 'image/gif');
-            $upload->accept = 'image/jpg, image/jpeg, image/pjpeg, image/png, image/gif';
-            $upload->capture = 'camera';
-        } elseif ($this->fieldEditType === 'ExternalResource') {
-            $upload->accept = '';
-            if (property_exists($this->edittype[0]->widgetv2config->attributes(), 'FileWidgetFilter')) {
-                //QFileDialog::getOpenFileName filter
-                $FileWidgetFilter = $this->edittype[0]->widgetv2config->attributes()->FileWidgetFilter;
-                $FileWidgetFilter = explode(';;', $FileWidgetFilter);
-                $accepts = array();
-                $re = '/(\*\.\w{3,6})/';
-                foreach ($FileWidgetFilter as $FileFilter) {
-                    $matches = array();
-                    if (preg_match_all($re, $FileFilter, $matches) == 1) {
-                        foreach (array_slice($matches, 1) as $m) {
-                            $accepts[] = substr($m, 1);
-                        }
-                    }
+            case 'input':
+                $this->ctrl = new jFormsControlInput($this->ref);
+                if ($this->fieldEditType === 15) {
+                    $this->ctrl->minvalue = (float) $this->edittype[0]->attributes()->min;
+                    $this->ctrl->maxvalue = (float) $this->edittype[0]->attributes()->max;
+                } elseif ($this->fieldEditType === 'Range' ||
+                         $this->fieldEditType === 'EditRange') {
+                    $this->ctrl->minvalue = (float) $this->edittype[0]->widgetv2config->attributes()->Min;
+                    $this->ctrl->maxvalue = (float) $this->edittype[0]->widgetv2config->attributes()->Max;
                 }
-                if (count($accepts) > 0) {
-                    $upload->accept = implode(', ', array_unique($accepts));
-                }
-            }
-            if (property_exists($this->edittype[0]->widgetv2config->attributes(), 'DocumentViewer')
-                and $this->edittype[0]->widgetv2config->attributes()->DocumentViewer == '1') {
-                if ($upload->accept != '') {
-                    $mimetypes = array();
-                    $accepts = explode(', ', $upload->accept);
-                    foreach ($accepts as $a) {
-                        if ($a == '.gif') {
-                            $mimetypes[] = 'image/gif';
-                        } elseif ($a == '.png') {
-                            $mimetypes[] = 'image/png';
-                        } elseif ($a == '.jpg' or $a == '.jpeg') {
-                            if (!in_array('image/jpg', $mimetypes)) {
-                                $mimetypes = array_merge($mimetypes, array('image/jpg', 'image/jpeg', 'image/pjpeg'));
-                            } elseif ($a == '.bm' or $a == '.bmp') {
-                                if (!in_array('image/bmp', $mimetypes)) {
-                                    $mimetypes = array_merge($mimetypes, array('image/bmp', 'image/x-windows-bmp'));
-                                } elseif ($a == '.pbm') {
-                                    $mimetypes[] = 'image/x-portable-bitmap';
-                                } elseif ($a == '.pgm') {
-                                    $mimetypes = array_merge($mimetypes, array('image/x-portable-graymap', 'image/x-portable-greymap'));
-                                } elseif ($a == '.ppm') {
-                                    $mimetypes[] = 'image/x-portable-pixmap';
-                                } elseif ($a == '.xbm') {
-                                    $mimetypes = array_merge($mimetypes, array('image/xbm', 'image/x-xbm', 'image/x-xbitmap'));
-                                } elseif ($a == '.xpm') {
-                                    $mimetypes = array_merge($mimetypes, array('image/xpm', 'image/x-xpixmap'));
-                                } elseif ($a == '.svg') {
-                                    $mimetypes[] = 'image/svg+xml';
+                break;
+
+            case 'menulist':
+                $this->ctrl = new jFormsControlMenulist($this->ref);
+                $this->fillControlDatasource();
+
+                break;
+
+            case 'checkboxes':
+                $this->ctrl = new jFormsControlCheckboxes($this->ref);
+                $this->fillControlDatasource();
+
+                break;
+
+            case 'hidden':
+                $this->ctrl = new jFormsControlHidden($this->ref);
+
+                break;
+
+            case 'checkbox':
+                $this->ctrl = new jFormsControlCheckbox($this->ref);
+                $this->fillCheckboxValues();
+
+                break;
+
+            case 'textarea':
+                $this->ctrl = new jFormsControlTextarea($this->ref);
+
+                break;
+
+            case 'date':
+                $this->ctrl = new jFormsControlDate($this->ref);
+
+                break;
+
+            case 'datetime':
+                $this->ctrl = new jFormsControlDatetime($this->ref);
+
+                break;
+
+            case 'time':
+                //$this->ctrl = new jFormsControlDatetime($this->ref);
+                $this->ctrl = new jFormsControlInput($this->ref);
+
+                break;
+
+            case 'upload':
+                $choice = new jFormsControlChoice($this->ref.'_choice');
+                $choice->createItem('keep', 'keep');
+                $choice->createItem('update', 'update');
+                $upload = new jFormsControlUpload($this->ref);
+                if ($this->fieldEditType === 'Photo') {
+                    $upload->mimetype = array('image/jpg', 'image/jpeg', 'image/pjpeg', 'image/png', 'image/gif');
+                    $upload->accept = 'image/jpg, image/jpeg, image/pjpeg, image/png, image/gif';
+                    $upload->capture = 'camera';
+                } elseif ($this->fieldEditType === 'ExternalResource') {
+                    $upload->accept = '';
+                    if (property_exists($this->edittype[0]->widgetv2config->attributes(), 'FileWidgetFilter')) {
+                        //QFileDialog::getOpenFileName filter
+                        $FileWidgetFilter = $this->edittype[0]->widgetv2config->attributes()->FileWidgetFilter;
+                        $FileWidgetFilter = explode(';;', $FileWidgetFilter);
+                        $accepts = array();
+                        $re = '/(\*\.\w{3,6})/';
+                        foreach ($FileWidgetFilter as $FileFilter) {
+                            $matches = array();
+                            if (preg_match_all($re, $FileFilter, $matches) == 1) {
+                                foreach (array_slice($matches, 1) as $m) {
+                                    $accepts[] = substr($m, 1);
                                 }
                             }
                         }
+                        if (count($accepts) > 0) {
+                            $upload->accept = implode(', ', array_unique($accepts));
+                        }
                     }
-                    $upload->mimetype = array_unique($mimetypes);
-                } else {
-                    $upload->mimetype = array('image/jpg', 'image/jpeg', 'image/pjpeg', 'image/png', 'image/gif');
-                    $upload->accept = 'image/jpg, image/jpeg, image/pjpeg, image/png, image/gif';
+                    if (property_exists($this->edittype[0]->widgetv2config->attributes(), 'DocumentViewer')
+                        and $this->edittype[0]->widgetv2config->attributes()->DocumentViewer == '1') {
+                        if ($upload->accept != '') {
+                            $mimetypes = array();
+                            $accepts = explode(', ', $upload->accept);
+                            foreach ($accepts as $a) {
+                                if ($a == '.gif') {
+                                    $mimetypes[] = 'image/gif';
+                                } elseif ($a == '.png') {
+                                    $mimetypes[] = 'image/png';
+                                } elseif ($a == '.jpg' or $a == '.jpeg') {
+                                    if (!in_array('image/jpg', $mimetypes)) {
+                                        $mimetypes = array_merge($mimetypes, array('image/jpg', 'image/jpeg', 'image/pjpeg'));
+                                    } elseif ($a == '.bm' or $a == '.bmp') {
+                                        if (!in_array('image/bmp', $mimetypes)) {
+                                            $mimetypes = array_merge($mimetypes, array('image/bmp', 'image/x-windows-bmp'));
+                                        } elseif ($a == '.pbm') {
+                                            $mimetypes[] = 'image/x-portable-bitmap';
+                                        } elseif ($a == '.pgm') {
+                                            $mimetypes = array_merge($mimetypes, array('image/x-portable-graymap', 'image/x-portable-greymap'));
+                                        } elseif ($a == '.ppm') {
+                                            $mimetypes[] = 'image/x-portable-pixmap';
+                                        } elseif ($a == '.xbm') {
+                                            $mimetypes = array_merge($mimetypes, array('image/xbm', 'image/x-xbm', 'image/x-xbitmap'));
+                                        } elseif ($a == '.xpm') {
+                                            $mimetypes = array_merge($mimetypes, array('image/xpm', 'image/x-xpixmap'));
+                                        } elseif ($a == '.svg') {
+                                            $mimetypes[] = 'image/svg+xml';
+                                        }
+                                    }
+                                }
+                            }
+                            $upload->mimetype = array_unique($mimetypes);
+                        } else {
+                            $upload->mimetype = array('image/jpg', 'image/jpeg', 'image/pjpeg', 'image/png', 'image/gif');
+                            $upload->accept = 'image/jpg, image/jpeg, image/pjpeg, image/png, image/gif';
+                        }
+                        $upload->capture = 'camera';
+                    }
+                    if (property_exists($this->edittype[0]->widgetv2config->attributes(), 'DefaultRoot')
+                        and (
+                          preg_match(
+                              '#^../media(/)?#',
+                              $this->edittype[0]->widgetv2config->attributes()->DefaultRoot
+                          )
+                          or
+                          preg_match(
+                              '#^media(/)?#',
+                              $this->edittype[0]->widgetv2config->attributes()->DefaultRoot
+                          )
+                        )
+                    ) {
+                        $this->DefaultRoot = $this->edittype[0]->widgetv2config->attributes()->DefaultRoot.'/';
+                    } else {
+                        $this->DefaultRoot = '';
+                    }
                 }
-                $upload->capture = 'camera';
-            }
-            if (property_exists($this->edittype[0]->widgetv2config->attributes(), 'DefaultRoot')
-                and (
-                  preg_match(
-                      '#^../media(/)?#',
-                      $this->edittype[0]->widgetv2config->attributes()->DefaultRoot
-                  )
-                  or
-                  preg_match(
-                      '#^media(/)?#',
-                      $this->edittype[0]->widgetv2config->attributes()->DefaultRoot
-                  )
-                )
-            ) {
-                $this->DefaultRoot = $this->edittype[0]->widgetv2config->attributes()->DefaultRoot.'/';
-            } else {
-                $this->DefaultRoot = '';
-            }
+                $choice->addChildControl($upload, 'update');
+                $choice->createItem('delete', 'delete');
+                $choice->defaultValue = 'keep';
+                $this->ctrl = $choice;
+                break;
+
+            default:
+                $this->ctrl = new jFormsControlInput($this->ref);
+
+                break;
         }
-        $choice->addChildControl($upload, 'update');
-        $choice->createItem('delete', 'delete');
-        $choice->defaultValue = 'keep';
-        $this->ctrl = $choice;
-
-        break;
-
-      default:
-        $this->ctrl = new jFormsControlInput($this->ref);
-
-        break;
-    }
 
         // Set control main properties
         $this->setControlMainProperties();
@@ -434,7 +432,7 @@ class qgisFormControl
     public function setControlMainProperties()
     {
 
-    // Label
+        // Label
         if ($this->fieldAlias) {
             $this->ctrl->label = $this->fieldAlias;
         } else {
@@ -445,39 +443,39 @@ class qgisFormControl
         if (property_exists($this->ctrl, 'datatype')) {
             switch ($this->fieldDataType) {
 
-        case 'text':
-          $datatype = new jDatatypeString();
+                case 'text':
+                    $datatype = new jDatatypeString();
 
-          break;
+                    break;
 
-        case 'integer':
-          $datatype = new jDatatypeInteger();
+                case 'integer':
+                    $datatype = new jDatatypeInteger();
 
-          break;
+                    break;
 
-        case 'float':
-          $datatype = new jDatatypeDecimal();
+                case 'float':
+                    $datatype = new jDatatypeDecimal();
 
-          break;
+                    break;
 
-        case 'date':
-          $datatype = new jDatatypeDate();
+                case 'date':
+                    $datatype = new jDatatypeDate();
 
-          break;
+                    break;
 
-        case 'datetime':
-          $datatype = new jDatatypeDateTime();
+                case 'datetime':
+                    $datatype = new jDatatypeDateTime();
 
-          break;
+                    break;
 
-        case 'time':
-          $datatype = new jDatatypeTime();
+                case 'time':
+                    $datatype = new jDatatypeTime();
 
-          break;
+                    break;
 
-        default:
-          $datatype = new jDatatypeString();
-      }
+                default:
+                    $datatype = new jDatatypeString();
+            }
             $this->ctrl->datatype = $datatype;
         }
 
@@ -494,8 +492,10 @@ class qgisFormControl
                 }
             }
             // Also use "fieldEditable" property
-            elseif ($this->edittype and property_exists($this->edittype[0]->attributes(), 'widgetv2type')
-       and property_exists($this->edittype[0]->widgetv2config->attributes(), 'fieldEditable')) {
+            elseif ($this->edittype &&
+                property_exists($this->edittype[0]->attributes(), 'widgetv2type') &&
+                property_exists($this->edittype[0]->widgetv2config->attributes(), 'fieldEditable')
+            ) {
                 $editable = (int) $this->edittype[0]->widgetv2config->attributes()->fieldEditable;
                 if ($editable == 0) {
                     $this->isReadOnly = true;
@@ -536,7 +536,7 @@ class qgisFormControl
     public function fillControlDatasource()
     {
 
-    // Create a datasource for some types : menulist
+        // Create a datasource for some types : menulist
         $dataSource = new jFormsStaticDatasource();
 
         // Create an array of data specific for the qgis edittype
@@ -550,172 +550,170 @@ class qgisFormControl
 
         switch ($this->fieldEditType) {
 
-      // Enumeration
-      case -1:
-      case 'Enumeration':
-        $data[0] = '--qgis edit type not supported yet--';
+            // Enumeration
+            case -1:
+            case 'Enumeration':
+                $data[0] = '--qgis edit type not supported yet--';
 
-        break;
+                break;
 
-      // Unique Values
-      case 2:
-      case 'UniqueValuesEditable':
-      case 'UniqueValues':
-        $this->uniqueValuesData = array(
-            'notNull' => '0',
-            'editable' => '0',
-        );
-        if ($this->fieldEditType === 'UniqueValuesEditable') {
-            $this->uniqueValuesData['editable'] = '1';
+            // Unique Values
+            case 2:
+            case 'UniqueValuesEditable':
+            case 'UniqueValues':
+                $this->uniqueValuesData = array(
+                    'notNull' => '0',
+                    'editable' => '0',
+                );
+                if ($this->fieldEditType === 'UniqueValuesEditable') {
+                    $this->uniqueValuesData['editable'] = '1';
+                }
+                if ($this->edittype[0]->widgetv2config) {
+                    $this->uniqueValuesData['notNull'] = (string) $this->edittype[0]->widgetv2config->attributes()->notNull;
+                    $this->uniqueValuesData['editable'] = (string) $this->edittype[0]->widgetv2config->attributes()->Editable;
+                }
+
+                break;
+
+            // Value map
+            case 3:
+                foreach ($this->edittype[0]->xpath('valuepair') as $valuepair) {
+                    $k = (string) $valuepair->attributes()->key;
+                    $v = (string) $valuepair->attributes()->value;
+                    $data[$v] = $k;
+                }
+
+                break;
+            case 'ValueMap':
+                foreach ($this->edittype[0]->widgetv2config->xpath('value') as $value) {
+                    $k = (string) $value->attributes()->key;
+                    $v = (string) $value->attributes()->value;
+                    $data[$v] = $k;
+                }
+
+                break;
+
+            // Classification
+            case 4:
+            case 'Classification':
+                foreach ($this->rendererCategories as $category) {
+                    $k = (string) $category->attributes()->label;
+                    $v = (string) $category->attributes()->value;
+                    $data[$v] = $k;
+                }
+
+                break;
+
+            // Range
+            case 5:
+                // Get range of data
+                if ($this->fieldDataType == 'float') {
+                    $min = (float) $this->edittype[0]->attributes()->min;
+                    $max = (float) $this->edittype[0]->attributes()->max;
+                    $step = (float) $this->edittype[0]->attributes()->step;
+                } else {
+                    $min = (int) $this->edittype[0]->attributes()->min;
+                    $max = (int) $this->edittype[0]->attributes()->max;
+                    $step = (int) $this->edittype[0]->attributes()->step;
+                }
+                $data[(string) $min] = $min;
+                for ($i = $min; $i <= $max; $i += $step) {
+                    $data[(string) $i] = $i;
+                }
+                $data[(string) $max] = $max;
+
+                break;
+
+            case 'Range':
+            case 'EditRange':
+            case 'SliderRange':
+            case 'DialRange':
+                // Get range of data
+                if ($this->fieldDataType == 'float') {
+                    $min = (float) $this->edittype[0]->widgetv2config->attributes()->Min;
+                    $max = (float) $this->edittype[0]->widgetv2config->attributes()->Max;
+                    $step = (float) $this->edittype[0]->widgetv2config->attributes()->Step;
+                } else {
+                    $min = (int) $this->edittype[0]->widgetv2config->attributes()->Min;
+                    $max = (int) $this->edittype[0]->widgetv2config->attributes()->Max;
+                    $step = (int) $this->edittype[0]->widgetv2config->attributes()->Step;
+                }
+                $data[(string) $min] = $min;
+                for ($i = $min; $i <= $max; $i += $step) {
+                    $data[(string) $i] = $i;
+                }
+                $data[(string) $max] = $max;
+
+                break;
+
+            // Value relation
+            case 15:
+                $allowNull = (string) $this->edittype[0]->attributes()->allowNull;
+                $orderByValue = (string) $this->edittype[0]->attributes()->orderByValue;
+                $layer = (string) $this->edittype[0]->attributes()->layer;
+                $key = (string) $this->edittype[0]->attributes()->key;
+                $value = (string) $this->edittype[0]->attributes()->value;
+                $allowMulti = (string) $this->edittype[0]->attributes()->allowMulti;
+                $filterExpression = (string) $this->edittype[0]->attributes()->filterExpression;
+                $this->valueRelationData = array(
+                    'allowNull' => $allowNull,
+                    'orderByValue' => $orderByValue,
+                    'layer' => $layer,
+                    'key' => $key,
+                    'value' => $value,
+                    'allowMulti' => $allowMulti,
+                    'filterExpression' => $filterExpression,
+                );
+
+                break;
+
+            case 'ValueRelation':
+                $allowNull = (string) $this->edittype[0]->widgetv2config->attributes()->AllowNull;
+                $orderByValue = (string) $this->edittype[0]->widgetv2config->attributes()->OrderByValue;
+                $layer = (string) $this->edittype[0]->widgetv2config->attributes()->Layer;
+                $key = (string) $this->edittype[0]->widgetv2config->attributes()->Key;
+                $value = (string) $this->edittype[0]->widgetv2config->attributes()->Value;
+                $allowMulti = (string) $this->edittype[0]->widgetv2config->attributes()->AllowMulti;
+                $filterExpression = (string) $this->edittype[0]->widgetv2config->attributes()->FilterExpression;
+                $useCompleter = (string) $this->edittype[0]->widgetv2config->attributes()->UseCompleter;
+                $fieldEditable = (string) $this->edittype[0]->widgetv2config->attributes()->fieldEditable;
+                $this->valueRelationData = array(
+                    'allowNull' => $allowNull,
+                    'orderByValue' => $orderByValue,
+                    'layer' => $layer,
+                    'key' => $key,
+                    'value' => $value,
+                    'allowMulti' => $allowMulti,
+                    'filterExpression' => $filterExpression,
+                    'useCompleter' => $useCompleter,
+                    'fieldEditable' => $fieldEditable,
+                );
+
+                break;
+            case 'RelationReference':
+                $allowNull = (string) $this->edittype[0]->widgetv2config->attributes()->AllowNULL;
+                $orderByValue = (string) $this->edittype[0]->widgetv2config->attributes()->OrderByValue;
+                $Relation = (string) $this->edittype[0]->widgetv2config->attributes()->Relation;
+                $MapIdentification = (string) $this->edittype[0]->widgetv2config->attributes()->MapIdentification;
+                $chainFilters = '0';
+                $filters = array();
+                if (property_exists($this->edittype[0]->widgetv2config, 'FilterFields')) {
+                    foreach ($this->edittype[0]->widgetv2config->FilterFields->children('field') as $f) {
+                        $filters[] = (string) $f->attributes()->name;
+                    }
+                    $chainFilters = (string) $this->edittype[0]->widgetv2config->FilterFields->attributes()->ChainFilters;
+                }
+                $this->relationReferenceData = array(
+                    'allowNull' => $allowNull,
+                    'orderByValue' => $orderByValue,
+                    'relation' => $Relation,
+                    'mapIdentification' => $MapIdentification,
+                    'filters' => $filters,
+                    'chainFilters' => $chainFilters,
+                );
+
+                break;
         }
-        if ($this->edittype[0]->widgetv2config) {
-            $this->uniqueValuesData['notNull'] = (string) $this->edittype[0]->widgetv2config->attributes()->notNull;
-            $this->uniqueValuesData['editable'] = (string) $this->edittype[0]->widgetv2config->attributes()->Editable;
-        }
-
-        break;
-
-      // Value map
-      case 3:
-        foreach ($this->edittype[0]->xpath('valuepair') as $valuepair) {
-            $k = (string) $valuepair->attributes()->key;
-            $v = (string) $valuepair->attributes()->value;
-            $data[$v] = $k;
-        }
-
-        break;
-      case 'ValueMap':
-        foreach ($this->edittype[0]->widgetv2config->xpath('value') as $value) {
-            $k = (string) $value->attributes()->key;
-            $v = (string) $value->attributes()->value;
-            $data[$v] = $k;
-        }
-
-        break;
-
-      // Classification
-      case 4:
-      case 'Classification':
-        foreach ($this->rendererCategories as $category) {
-            $k = (string) $category->attributes()->label;
-            $v = (string) $category->attributes()->value;
-            $data[$v] = $k;
-        }
-
-        break;
-
-      // Range
-      case 5:
-        // Get range of data
-        if ($this->fieldDataType == 'float') {
-            $min = (float) $this->edittype[0]->attributes()->min;
-            $max = (float) $this->edittype[0]->attributes()->max;
-            $step = (float) $this->edittype[0]->attributes()->step;
-        } else {
-            $min = (int) $this->edittype[0]->attributes()->min;
-            $max = (int) $this->edittype[0]->attributes()->max;
-            $step = (int) $this->edittype[0]->attributes()->step;
-        }
-        $data[(string) $min] = $min;
-        for ($i = $min; $i <= $max; $i += $step) {
-            $data[(string) $i] = $i;
-        }
-        $data[(string) $max] = $max;
-
-        break;
-
-      case 'Range':
-      case 'EditRange':
-      case 'SliderRange':
-      case 'DialRange':
-        // Get range of data
-        if ($this->fieldDataType == 'float') {
-            $min = (float) $this->edittype[0]->widgetv2config->attributes()->Min;
-            $max = (float) $this->edittype[0]->widgetv2config->attributes()->Max;
-            $step = (float) $this->edittype[0]->widgetv2config->attributes()->Step;
-        } else {
-            $min = (int) $this->edittype[0]->widgetv2config->attributes()->Min;
-            $max = (int) $this->edittype[0]->widgetv2config->attributes()->Max;
-            $step = (int) $this->edittype[0]->widgetv2config->attributes()->Step;
-        }
-        $data[(string) $min] = $min;
-        for ($i = $min; $i <= $max; $i += $step) {
-            $data[(string) $i] = $i;
-        }
-        $data[(string) $max] = $max;
-
-        break;
-
-      // Value relation
-      case 15:
-        $allowNull = (string) $this->edittype[0]->attributes()->allowNull;
-        $orderByValue = (string) $this->edittype[0]->attributes()->orderByValue;
-        $layer = (string) $this->edittype[0]->attributes()->layer;
-        $key = (string) $this->edittype[0]->attributes()->key;
-        $value = (string) $this->edittype[0]->attributes()->value;
-        $allowMulti = (string) $this->edittype[0]->attributes()->allowMulti;
-        $filterExpression = (string) $this->edittype[0]->attributes()->filterExpression;
-        $this->valueRelationData = array(
-            'allowNull' => $allowNull,
-            'orderByValue' => $orderByValue,
-            'layer' => $layer,
-            'key' => $key,
-            'value' => $value,
-            'allowMulti' => $allowMulti,
-            'filterExpression' => $filterExpression,
-        );
-
-        break;
-
-      case 'ValueRelation':
-        $allowNull = (string) $this->edittype[0]->widgetv2config->attributes()->AllowNull;
-        $orderByValue = (string) $this->edittype[0]->widgetv2config->attributes()->OrderByValue;
-        $layer = (string) $this->edittype[0]->widgetv2config->attributes()->Layer;
-        $key = (string) $this->edittype[0]->widgetv2config->attributes()->Key;
-        $value = (string) $this->edittype[0]->widgetv2config->attributes()->Value;
-        $allowMulti = (string) $this->edittype[0]->widgetv2config->attributes()->AllowMulti;
-        $filterExpression = (string) $this->edittype[0]->widgetv2config->attributes()->FilterExpression;
-        $useCompleter = (string) $this->edittype[0]->widgetv2config->attributes()->UseCompleter;
-        $fieldEditable = (string) $this->edittype[0]->widgetv2config->attributes()->fieldEditable;
-        $this->valueRelationData = array(
-            'allowNull' => $allowNull,
-            'orderByValue' => $orderByValue,
-            'layer' => $layer,
-            'key' => $key,
-            'value' => $value,
-            'allowMulti' => $allowMulti,
-            'filterExpression' => $filterExpression,
-            'useCompleter' => $useCompleter,
-            'fieldEditable' => $fieldEditable,
-        );
-
-        break;
-
-      case 'RelationReference':
-        $allowNull = (string) $this->edittype[0]->widgetv2config->attributes()->AllowNULL;
-        $orderByValue = (string) $this->edittype[0]->widgetv2config->attributes()->OrderByValue;
-        $Relation = (string) $this->edittype[0]->widgetv2config->attributes()->Relation;
-        $MapIdentification = (string) $this->edittype[0]->widgetv2config->attributes()->MapIdentification;
-        $chainFilters = '0';
-        $filters = array();
-        if (property_exists($this->edittype[0]->widgetv2config, 'FilterFields')) {
-            foreach ($this->edittype[0]->widgetv2config->FilterFields->children('field') as $f) {
-                $filters[] = (string) $f->attributes()->name;
-            }
-            $chainFilters = (string) $this->edittype[0]->widgetv2config->FilterFields->attributes()->ChainFilters;
-        }
-        $this->relationReferenceData = array(
-            'allowNull' => $allowNull,
-            'orderByValue' => $orderByValue,
-            'relation' => $Relation,
-            'mapIdentification' => $MapIdentification,
-            'filters' => $filters,
-            'chainFilters' => $chainFilters,
-        );
-
-        break;
-
-    }
 
         asort($data);
         $dataSource->data = $data;

@@ -951,8 +951,9 @@ class lizmapProject extends qgisProject
     {
         $printTemplates = array();
 
-        if (property_exists($cfg->options, 'print')
-            && $cfg->options->print == 'True') {
+        if (property_exists($cfg->options, 'print') &&
+            $cfg->options->print == 'True'
+        ) {
             // get restricted composers
             $rComposers = array();
             $restrictedComposers = $qgsLoad->xpath('//properties/WMSRestrictedComposers/value');
@@ -1471,11 +1472,11 @@ class lizmapProject extends qgisProject
             $projectsTpl = new jTpl();
             $projectsTpl->assign('excludedProject', $this->repository->getKey().'~'.$this->getKey());
             $dockable[] = new lizmapMapDockItem(
-                    'home',
-                    jLocale::get('view~default.repository.list.title'),
-                    $projectsTpl->fetch('view~map_projects'),
-                    0
-                );
+                'home',
+                jLocale::get('view~default.repository.list.title'),
+                $projectsTpl->fetch('view~map_projects'),
+                0
+            );
         }
 
         $switcherTpl = new jTpl();
