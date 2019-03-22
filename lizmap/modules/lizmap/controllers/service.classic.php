@@ -31,7 +31,7 @@ class serviceCtrl extends jController
     public function index()
     {
 
-    // Variable stored to log lizmap metrics
+        // Variable stored to log lizmap metrics
         $_SERVER['LIZMAP_BEGIN_TIME'] = microtime(true);
 
         if (isset($_SERVER['PHP_AUTH_USER'])) {
@@ -236,19 +236,17 @@ class serviceCtrl extends jController
         // Optionnaly filter data by login
         if (isset($params['request'])) {
             $request = strtolower($params['request']);
-            if (
-        in_array($request, array('getmap', 'getfeatureinfo', 'getfeature', 'getprint'))
-        and !jAcl2::check('lizmap.tools.loginFilteredLayers.override', $lrep->getKey())
-      ) {
+            if (in_array($request, array('getmap', 'getfeatureinfo', 'getfeature', 'getprint')) &&
+                !jAcl2::check('lizmap.tools.loginFilteredLayers.override', $lrep->getKey())
+            ) {
                 $this->filterDataByLogin();
             }
         }
 
         // Get the selection token
-        if (
-      isset($params['selectiontoken'])
-      and in_array($request, array('getmap', 'getfeature', 'getprint'))
-    ) {
+        if (isset($params['selectiontoken']) &&
+            in_array($request, array('getmap', 'getfeature', 'getprint'))
+        ) {
             $tokens = $params['selectiontoken'];
             $tokens = explode(';', $tokens);
             $selections = array();
@@ -256,11 +254,10 @@ class serviceCtrl extends jController
                 $data = jCache::get($token);
                 if ($data) {
                     $data = json_decode($data);
-                    if (
-                  property_exists($data, 'typename')
-                  and property_exists($data, 'ids')
-                  and count($data->ids) > 0
-                ) {
+                    if (property_exists($data, 'typename') &&
+                        property_exists($data, 'ids') &&
+                        count($data->ids) > 0
+                    ) {
                         $selections[] = $data->typename.':'.implode(',', $data->ids);
                     }
                 }
@@ -292,9 +289,9 @@ class serviceCtrl extends jController
         $pConfig = $lproj->getFullCfg();
 
         // Filter only if needed
-        if ($lproj->hasLoginFilteredLayers()
-      and $pConfig->loginFilteredLayers
-    ) {
+        if ($lproj->hasLoginFilteredLayers() &&
+            $pConfig->loginFilteredLayers
+        ) {
             // Add client side filter before changing it server side
             $clientExpFilter = null;
             if (array_key_exists('exp_filter', $this->params)) {
@@ -318,8 +315,9 @@ class serviceCtrl extends jController
                     if ($isConnected) {
                         $user = jAuth::getUserSession();
                         $login = $user->login;
-                        if (property_exists($pConfig->loginFilteredLayers->{$layername}, 'filterPrivate')
-             && $pConfig->loginFilteredLayers->{$layername}->filterPrivate == 'True') {
+                        if (property_exists($pConfig->loginFilteredLayers->{$layername}, 'filterPrivate') &&
+                            $pConfig->loginFilteredLayers->{$layername}->filterPrivate == 'True'
+                        ) {
                             $serverFilterArray[$layername] = "\"${attribute}\" IN ( '".$login."' , 'all' )";
                         } else {
                             $userGroups = jAcl2DbUserGroup::getGroups();
@@ -336,7 +334,7 @@ class serviceCtrl extends jController
             // Set filter if needed
             if (count($serverFilterArray) > 0) {
 
-        // WFS : EXP_FILTER
+                // WFS : EXP_FILTER
                 if ($request == 'getfeature') {
                     $filter = '';
                     $s = '';
@@ -451,7 +449,7 @@ class serviceCtrl extends jController
     public function GetContext()
     {
 
-    // Get parameters
+        // Get parameters
         if (!$this->getServiceParameters()) {
             return $this->serviceException();
         }
@@ -463,20 +461,20 @@ class serviceCtrl extends jController
 
         // Get remote data
         $getRemoteData = $this->lizmapCache->getRemoteData(
-        $querystring,
-        $this->services->proxyMethod,
-        $this->services->debugMode
-    );
+            $querystring,
+            $this->services->proxyMethod,
+            $this->services->debugMode
+        );
         $data = $getRemoteData[0];
         $mime = $getRemoteData[1];
 
         // Replace qgis server url in the XML (hide real location)
         $sUrl = jUrl::getFull(
-        'lizmap~service:index',
-        array('repository' => $this->repository->getKey(), 'project' => $this->project->getKey()),
-        0,
-        $_SERVER['SERVER_NAME']
-    );
+            'lizmap~service:index',
+            array('repository' => $this->repository->getKey(), 'project' => $this->project->getKey()),
+            0,
+            $_SERVER['SERVER_NAME']
+        );
         $sUrl = str_replace('&', '&amp;', $sUrl);
         $data = preg_replace('/xlink\:href=".*"/', 'xlink:href="'.$sUrl.'&amp;"', $data);
 
@@ -619,9 +617,10 @@ class serviceCtrl extends jController
 
         // We split layers in two groups. First contains exernal WMS, second contains QGIS layers
         foreach ($queryLayers as $queryLayer) {
-            if (property_exists($pConfig->layers, $queryLayer)
-       && property_exists($pConfig->layers->{$queryLayer}, 'externalAccess')
-       && $pConfig->layers->{$queryLayer}->externalAccess == 'True') {
+            if (property_exists($pConfig->layers, $queryLayer) &&
+                property_exists($pConfig->layers->{$queryLayer}, 'externalAccess') &&
+                $pConfig->layers->{$queryLayer}->externalAccess == 'True'
+            ) {
                 $externalWMSLayers[] = $queryLayer;
             } else {
                 $QGISLayers[] = $queryLayer;
@@ -703,10 +702,10 @@ class serviceCtrl extends jController
 
             // Get remote data
             $getRemoteData = $this->lizmapCache->getRemoteData(
-           $querystring,
-           $this->services->proxyMethod,
-           $this->services->debugMode
-       );
+                $querystring,
+                $this->services->proxyMethod,
+                $this->services->debugMode
+            );
             $data = $getRemoteData[0];
             $mime = $getRemoteData[1];
 
@@ -751,15 +750,15 @@ class serviceCtrl extends jController
         $return = '';
         $return .= '"';
         $return .= jUrl::getFull(
-        'view~media:getMedia',
-        array(
-            'repository' => $this->repository->getKey(),
-            'project' => $this->project->getKey(),
-            'path' => $matches[2],
-        ),
-        0,
-        $req->getDomainName().$req->getPort()
-    );
+            'view~media:getMedia',
+            array(
+                'repository' => $this->repository->getKey(),
+                'project' => $this->project->getKey(),
+                'path' => $matches[2],
+            ),
+            0,
+            $req->getDomainName().$req->getPort()
+        );
         $return .= '"';
 
         return $return;
@@ -776,7 +775,7 @@ class serviceCtrl extends jController
     public function getFeatureInfoHtml($params, $xmldata)
     {
 
-    // Get data from XML
+        // Get data from XML
         $use_errors = libxml_use_internal_errors(true);
         $go = true;
         $errorlist = array();
@@ -826,9 +825,11 @@ class serviceCtrl extends jController
 
             if (!$returnPopup) {
                 $editionLayer = $this->project->findEditionLayerByLayerId($configLayer->id);
-                if ($editionLayer != null && ($editionLayer->capabilities->modifyGeometry == 'True'
+                if ($editionLayer != null &&
+                    ($editionLayer->capabilities->modifyGeometry == 'True'
                                      || $editionLayer->capabilities->modifyAttribute == 'True'
-                                     || $editionLayer->capabilities->deleteFeature == 'True')) {
+                                     || $editionLayer->capabilities->deleteFeature == 'True')
+                ) {
                     $returnPopup = true;
                 }
             }
@@ -851,10 +852,10 @@ class serviceCtrl extends jController
                     $templateConfigured = true;
                     // first replace all "media/bla/bla/llkjk.ext" by full url
                     $popupTemplate = preg_replace_callback(
-              '#(["\']){1}(media/.+\.\w{3,10})(["\']){1}#',
-              array($this, 'replaceMediaPathByMediaUrl'),
-              $popupTemplate
-          );
+                        '#(["\']){1}(media/.+\.\w{3,10})(["\']){1}#',
+                        array($this, 'replaceMediaPathByMediaUrl'),
+                        $popupTemplate
+                    );
                     // Replace : html encoded chars to let further regexp_replace find attributes
                     $popupTemplate = str_replace(array('%24', '%7B', '%7D'), array('$', '{', '}'), $popupTemplate);
                 }
@@ -865,8 +866,9 @@ class serviceCtrl extends jController
                 $id = $feature['id'];
                 // Optionnally filter by feature id
                 if ($filterFid &&
-            isset($filterFid[$configLayer->name]) &&
-            $filterFid[$configLayer->name] != $id) {
+                    isset($filterFid[$configLayer->name]) &&
+                    $filterFid[$configLayer->name] != $id
+                ) {
                     continue;
                 }
 
@@ -890,12 +892,12 @@ class serviceCtrl extends jController
                     foreach ($feature->Attribute as $attribute) {
                         // Replace #col and $col by colomn name and value
                         $popupFeatureContent = $popupClass->getHtmlFeatureAttribute(
-                $attribute['name'],
-                $attribute['value'],
-                $this->repository->getKey(),
-                $this->project->getKey(),
-                $popupFeatureContent
-            );
+                            $attribute['name'],
+                            $attribute['value'],
+                            $this->repository->getKey(),
+                            $this->project->getKey(),
+                            $popupFeatureContent
+                        );
                     }
                     $lizmapContent = $popupFeatureContent;
                 }
@@ -914,10 +916,10 @@ class serviceCtrl extends jController
                 if ($hasMaptip) {
                     // first replace all "media/bla/bla/llkjk.ext" by full url
                     $maptipValue = preg_replace_callback(
-              '#(["\']){1}(media/.+\.\w{3,10})(["\']){1}#',
-              array($this, 'replaceMediaPathByMediaUrl'),
-              $maptipValue
-          );
+                        '#(["\']){1}(media/.+\.\w{3,10})(["\']){1}#',
+                        array($this, 'replaceMediaPathByMediaUrl'),
+                        $maptipValue
+                    );
                     // Replace : html encoded chars to let further regexp_replace find attributes
                     $maptipValue = str_replace(array('%24', '%7B', '%7D'), array('$', '{', '}'), $maptipValue);
                     $qgisContent = $maptipValue;
@@ -1005,11 +1007,11 @@ class serviceCtrl extends jController
 
         // Get remote data
         $getRemoteData = lizmapProxy::getRemoteData(
-        $querystring,
-        $this->services->proxyMethod,
-        $this->services->debugMode,
-        'post'
-    );
+            $querystring,
+            $this->services->proxyMethod,
+            $this->services->debugMode,
+            'post'
+        );
         $data = $getRemoteData[0];
         $mime = $getRemoteData[1];
         $code = $getRemoteData[2];
@@ -1058,10 +1060,10 @@ class serviceCtrl extends jController
 
         // Get remote data
         $getRemoteData = $this->lizmapCache->getRemoteData(
-        $querystring,
-        $this->services->proxyMethod,
-        $this->services->debugMode
-    );
+            $querystring,
+            $this->services->proxyMethod,
+            $this->services->debugMode
+        );
         $data = $getRemoteData[0];
         $mime = $getRemoteData[1];
 
@@ -1086,7 +1088,7 @@ class serviceCtrl extends jController
     public function getProjectConfig()
     {
 
-    // Get parameters
+        // Get parameters
         if (!$this->getServiceParameters()) {
             return $this->serviceException();
         }
@@ -1158,7 +1160,7 @@ class serviceCtrl extends jController
     public function GetFeature()
     {
 
-    // Get parameters
+        // Get parameters
         if (!$this->getServiceParameters()) {
             return $this->serviceException();
         }
@@ -1176,11 +1178,11 @@ class serviceCtrl extends jController
 
         // Get remote data
         $getRemoteData = $this->lizmapCache->getRemoteData(
-        $querystring,
-        'php',
-        $this->services->debugMode,
-        'post'
-    );
+            $querystring,
+            'php',
+            $this->services->debugMode,
+            'post'
+        );
         $data = $getRemoteData[0];
         $mime = $getRemoteData[1];
 
@@ -1224,7 +1226,7 @@ class serviceCtrl extends jController
     public function DescribeFeatureType()
     {
 
-    // Get parameters
+        // Get parameters
         if (!$this->getServiceParameters()) {
             return $this->serviceException();
         }
@@ -1243,10 +1245,10 @@ class serviceCtrl extends jController
 
         // Get remote data
         $getRemoteData = $this->lizmapCache->getRemoteData(
-        $querystring,
-        $this->services->proxyMethod,
-        $this->services->debugMode
-    );
+            $querystring,
+            $this->services->proxyMethod,
+            $this->services->debugMode
+        );
         $data = $getRemoteData[0];
         $mime = $getRemoteData[1];
 
@@ -1256,7 +1258,7 @@ class serviceCtrl extends jController
             $layer = $this->project->findLayerByAnyName($this->params['typename']);
             if ($layer != null) {
 
-            // Get data from XML
+                // Get data from XML
                 $use_errors = libxml_use_internal_errors(true);
                 $go = true;
                 $errorlist = array();
@@ -1319,7 +1321,7 @@ class serviceCtrl extends jController
     public function GetProj4()
     {
 
-    // Get parameters
+        // Get parameters
         if (!$this->getServiceParameters()) {
             return $this->serviceException();
         }

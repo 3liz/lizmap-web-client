@@ -177,9 +177,9 @@ class userCtrl extends jController
             $sanitize = array('login', 'firstname', 'lastname', 'organization', 'phonenumber', 'street', 'postcode', 'city', 'country', 'comment');
             foreach ($sanitize as $field) {
                 $form->setData(
-            $field,
-            filter_var($form->getData($field), FILTER_SANITIZE_STRING, FILTER_FLAG_NO_ENCODE_QUOTES)
-        );
+                    $field,
+                    filter_var($form->getData($field), FILTER_SANITIZE_STRING, FILTER_FLAG_NO_ENCODE_QUOTES)
+                );
             }
             // Add user to database via jAuth methods
             try {
@@ -236,7 +236,7 @@ class userCtrl extends jController
     public function validateAccount()
     {
 
-    // Destroy the form
+        // Destroy the form
         if ($form = jForms::get('view~lizmap_user')) {
             jForms::destroy('view~lizmap_user');
         }
