@@ -42,17 +42,17 @@ class ajax_viewZone extends jZone
                         continue;
                     }
                     $mrep->childItems[] = new lizmapMainViewItem(
-                  $p->getData('id'),
-                  $p->getData('title'),
-                  $p->getData('abstract'),
-                  $p->getData('proj'),
-                  $p->getData('bbox'),
-                  jUrl::getFull('view~map:index', array('repository' => $p->getData('repository'), 'project' => $p->getData('id'))),
-                  jUrl::getFull('view~media:illustration', array('repository' => $p->getData('repository'), 'project' => $p->getData('id'))),
-                  0,
-                  $r,
-                  'map'
-              );
+                        $p->getData('id'),
+                        $p->getData('title'),
+                        $p->getData('abstract'),
+                        $p->getData('proj'),
+                        $p->getData('bbox'),
+                        jUrl::getFull('view~map:index', array('repository' => $p->getData('repository'), 'project' => $p->getData('id'))),
+                        jUrl::getFull('view~media:illustration', array('repository' => $p->getData('repository'), 'project' => $p->getData('id'))),
+                        0,
+                        $r,
+                        'map'
+                    );
                 }
                 $maps[$r] = $mrep;
             }

@@ -277,6 +277,7 @@ class qgisFormControl
                     $this->ctrl->minvalue = (float) $this->edittype[0]->widgetv2config->attributes()->Min;
                     $this->ctrl->maxvalue = (float) $this->edittype[0]->widgetv2config->attributes()->Max;
                 }
+
                 break;
 
             case 'menulist':
@@ -413,6 +414,7 @@ class qgisFormControl
                 $choice->createItem('delete', 'delete');
                 $choice->defaultValue = 'keep';
                 $this->ctrl = $choice;
+
                 break;
 
             default:

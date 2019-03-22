@@ -116,7 +116,7 @@ class themeCtrl extends jController
     public function save()
     {
 
-    // If the section does exists in the ini file : get the data
+        // If the section does exists in the ini file : get the data
         $theme = lizmap::getTheme();
         $form = jForms::get('theme');
 
@@ -164,9 +164,9 @@ class themeCtrl extends jController
                 $hl = $form->getData($prop);
                 if (!empty($hl)) {
                     // Remove previous theme image file
-                    if (file_exists(jApp::varPath('lizmap-theme-config/').$theme->{$prop})
-            and is_file(jApp::varPath('lizmap-theme-config/').$theme->{$prop})
-          ) {
+                    if (file_exists(jApp::varPath('lizmap-theme-config/').$theme->{$prop}) &&
+                        is_file(jApp::varPath('lizmap-theme-config/').$theme->{$prop})
+                    ) {
                         unlink(jApp::varPath('lizmap-theme-config/').$theme->{$prop});
                     }
                     // Save new file in theme folder
