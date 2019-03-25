@@ -1219,7 +1219,7 @@ var lizAttributeTable = function() {
 
                             // Refresh size
                             var mycontainerId = $('#bottom-dock div.bottom-content.active div.attribute-layer-main').attr('id');
- 
+
                             refreshDatatableSize('#' + mycontainerId);
 
                             return false;
@@ -3142,6 +3142,7 @@ var lizAttributeTable = function() {
 
     var options = '';
     var selectionLayersSorted = [];
+    var selectionLayersNotSorted = [];
     featureTypes.each( function(){
         var self = $(this);
         var lname = lizMap.getNameByTypeName( self.find('Name').text() );
@@ -3150,12 +3151,24 @@ var lizAttributeTable = function() {
             && config.layers[lname]['geometryType'] != 'none'
             && config.layers[lname]['geometryType'] != 'unknown') {
             var lConfig = config.layers[lname];
-            selectionLayersSorted[config.attributeLayers[lname].order] = '<option value="'+lname+'">'+lConfig.title+'</option>';        }
+            var selectionOption = '<option value="'+lname+'">'+lConfig.title+'</option>';
+
+            if(lname in config.attributeLayers){
+                selectionLayersSorted[config.attributeLayers[lname].order] = selectionOption;
+            }else{
+                selectionLayersNotSorted.push(selectionOption);
+            }
+        }
     });
 
+    // We put selection layers which are also set in attribute table tool first then others
     for (var i = 0; i < selectionLayersSorted.length; i++) {
         options += selectionLayersSorted[i];
     }
+    // Selection can't be yet performed without attribute table configuration
+    /*for (var i = 0; i < selectionLayersNotSorted.length; i++) {
+        options += selectionLayersNotSorted[i];
+    }*/
 
     if ( options == '' ) {
       $('#button-selectiontool').parent().remove();
