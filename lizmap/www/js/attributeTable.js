@@ -1213,7 +1213,7 @@ var lizAttributeTable = function() {
 
                             // Refresh size
                             var mycontainerId = $('#bottom-dock div.bottom-content.active div.attribute-layer-main').attr('id');
- 
+
                             refreshDatatableSize('#' + mycontainerId);
 
                             return false;
@@ -3162,9 +3162,10 @@ var lizAttributeTable = function() {
     for (var i = 0; i < selectionLayersSorted.length; i++) {
         options += selectionLayersSorted[i];
     }
-    for (var i = 0; i < selectionLayersNotSorted.length; i++) {
+    // Selection can't be yet performed without attribute table configuration
+    /*for (var i = 0; i < selectionLayersNotSorted.length; i++) {
         options += selectionLayersNotSorted[i];
-    }
+    }*/
 
     if ( options == '' ) {
       $('#button-selectiontool').parent().remove();
