@@ -6052,8 +6052,8 @@ OpenLayers.Control.HighlightFeature = OpenLayers.Class(OpenLayers.Control, {
     /**
      * Method: getLayerFeature
      */
-    getLayerFeature: function( featureType, fid, aCallback ) {
-      getLayerFeature( featureType, fid, aCallback );
+    getLayerFeature: function( featureType, fid, aCallback, aCallbackNotfound, forceToLoad ) {
+      getLayerFeature( featureType, fid, aCallback, aCallbackNotfound, forceToLoad );
     },
 
     /**
