@@ -843,7 +843,7 @@ class serviceCtrl extends jController
         $popupClass = jClasses::getService('view~popup');
 
         foreach ($xml->Layer as $layer) {
-            $layername = $layer['name'];
+            $layername = (string) $layer['name'];
             $configLayer = $this->project->findLayerByAnyName($layername);
             if ($configLayer == null) {
                 continue;
@@ -902,7 +902,7 @@ class serviceCtrl extends jController
             }
             $layerFeaturesCounter = 0;
             foreach ($layer->Feature as $feature) {
-                $id = $feature['id'];
+                $id = (string) $feature['id'];
                 // Optionnally filter by feature id
                 if ($filterFid &&
                     isset($filterFid[$configLayer->name]) &&
@@ -922,10 +922,14 @@ class serviceCtrl extends jController
 
                 // First get default template
                 $tpl = new jTpl();
+                $tpl->assign('layerName', $layername);
+                $tpl->assign('layerId', $layerId);
+                $tpl->assign('layerTitle', $layerTitle);
+                $tpl->assign('featureId', $id);
                 $tpl->assign('attributes', $feature->Attribute);
                 $tpl->assign('repository', $this->repository->getKey());
                 $tpl->assign('project', $this->project->getKey());
-                $popupFeatureContent = $tpl->fetch('view~popupDefaultContent');
+                $popupFeatureContent = $tpl->fetch('view~popupDefaultContent', 'html');
                 $autoContent = $popupFeatureContent;
 
                 // Get specific template for the layer has been configured
@@ -1006,22 +1010,29 @@ class serviceCtrl extends jController
 
                 $tpl = new jTpl();
                 $tpl->assign('layerTitle', $layerTitle);
+                $tpl->assign('layerName', $layername);
+                $tpl->assign('layerId', $layerId);
+                $tpl->assign('featureId', $id);
                 $tpl->assign('popupContent', $hiddenFeatureId.$hiddenGeometry.$finalContent);
-                $content[] = $tpl->fetch('view~popup');
+                $content[] = $tpl->fetch('view~popup', 'html');
             } // loop features
 
             // Raster Popup
             if (count($layer->Attribute) > 0) {
                 $tpl = new jTpl();
+                $tpl->assign('layerName', $layername);
+                $tpl->assign('layerId', $layerId);
                 $tpl->assign('attributes', $layer->Attribute);
                 $tpl->assign('repository', $this->repository->getKey());
                 $tpl->assign('project', $this->project->getKey());
-                $popupRasterContent = $tpl->fetch('view~popupRasterContent');
+                $popupRasterContent = $tpl->fetch('view~popupRasterContent', 'html');
 
                 $tpl = new jTpl();
                 $tpl->assign('layerTitle', $layerTitle);
+                $tpl->assign('layerName', $layername);
+                $tpl->assign('layerId', $layerId);
                 $tpl->assign('popupContent', $popupRasterContent);
-                $content[] = $tpl->fetch('view~popup');
+                $content[] = $tpl->fetch('view~popup', 'html');
             }
         } // loop layers
 
