@@ -965,7 +965,7 @@ class lizmapProject extends qgisProject
                     $rComposers[] = (string) $restrictedComposer;
                 }
             }
-            // get composer
+            // get composer qg project version < 3
             $composers = $qgsLoad->xpath('//Composer');
             if ($composers && count($composers) > 0) {
                 foreach ($composers as $composer) {
@@ -1066,6 +1066,126 @@ class lizmapProject extends qgisProject
 
                     // Atlas
                     $Atlas = $composer->xpath('Atlas');
+                    if (count($Atlas) == 1) {
+                        $Atlas = $Atlas[0];
+                        $printTemplate['atlas'] = array(
+                            'enabled' => (string) $Atlas['enabled'],
+                            'coverageLayer' => (string) $Atlas['coverageLayer'],
+                        );
+                    }
+                    $printTemplates[] = $printTemplate;
+                }
+            }
+            // get layout qgs project version >= 3
+            $layouts = $qgsLoad->xpath('//Layout');
+            if ($layouts && count($layouts) > 0) {
+                foreach ($layouts as $layout) {
+                    // test restriction
+                    if (in_array((string) $layout['name'], $rComposers)) {
+                        continue;
+                    }
+                    // get page element
+                    $page = $layout->xpath('PageCollection/LayoutItem[@type="65638"]');
+                    if (!$page || count($page) == 0) {
+                        continue;
+                    }
+                    $page = $page[0];
+
+                    $pageSize = explode(',', $page['size']);
+                    // init print template element
+                    $printTemplate = array(
+                        'title' => (string) $layout['name'],
+                        'width' => (int) $pageSize[0],
+                        'height' => (int) $pageSize[1],
+                        'maps' => array(),
+                        'labels' => array(),
+                    );
+
+                    // store mapping between uuid and id
+                    $mapUuidId = [];
+                    // get layout maps
+                    $lMaps = $layout->xpath('LayoutItem[@type="65639"]');
+                    if ($lMaps && count($lMaps) > 0) {
+                        // Convert xml to json config
+                        foreach ($lMaps as $lMap) {
+                            $lMapSize = explode(',', $lMap['size']);
+                            $ptMap = array(
+                                'id' => 'map'.(string) count($printTemplate['maps']),
+                                'uuid' => (string)$lMap['uuid'],
+                                'width' => (int) $lMapSize[0],
+                                'height' => (int) $lMapSize[1],
+                            );
+                            // store mapping between uuid and id
+                            $mapUuidId[(string) $lMap['uuid']] = 'map'.(string) count($printTemplate['maps']);
+
+                            // Overview
+                            $cMapOverviews = $lMap->xpath('ComposerMapOverview');
+                            foreach ($cMapOverviews as $cMapOverview) {
+                                if ($cMapOverview and (string) $cMapOverview->attributes()->show !== '0' and (string) $cMapOverview->attributes()->frameMap != '-1') {
+                                    // frameMap is an uuid
+                                    $ptMap['overviewMap'] = (string) $cMapOverview->attributes()->frameMap;
+                                }
+                            }
+                            // Grid
+                            $cMapGrids = $lMap->xpath('ComposerMapGrid');
+                            foreach ($cMapGrids as $cMapGrid) {
+                                if ($cMapGrid and (string) $cMapGrid->attributes()->show !== '0') {
+                                    $ptMap['grid'] = 'True';
+                                }
+                            }
+
+                            $printTemplate['maps'][] = $ptMap;
+                        }
+                        // Modifying overviewMap to id instead of uuid
+                        foreach ($printTemplate['maps'] as $ptMap) {
+                            if (!array_key_exists('overviewMap', $ptMap))
+                                continue;
+                            if (!array_key_exists($ptMap['overviewMap'], $mapUuidId)) {
+                                unset($ptMap['overviewMap']);
+                                continue;
+                            }
+                            $ptMap['overviewMap'] = $mapUuidId[$ptMap['overviewMap']];
+                        }
+                    }
+
+                    // get layout labels
+                    $lLabels = $layout->xpath('LayoutItem[@type="65641"]');
+                    if ($lLabels && count($lLabels) > 0) {
+                        foreach ($lLabels as $lLabel) {
+                            if ((string) $lLabel['id'] == '') {
+                                continue;
+                            }
+                            $printTemplate['labels'][] = array(
+                                'id' => (string) $lLabel['id'],
+                                'htmlState' => (int) $lLabel['htmlState'],
+                                'text' => (string) $lLabel['labelText'],
+                            );
+                        }
+                    }
+
+                    // get layout attribute tables
+                    $lTables = $layout->xpath('LayoutMultiFrame[@type="65649"]');
+                    if ($lTables && count($lTables) > 0) {
+                        foreach ($lTables as $lTable) {
+                            $composerMap = -1;
+                            if (isset($lTable['mapUuid'])) {
+                                $mapUuid = (string) $lTable['mapUuid'];
+                                if (!array_key_exists($mapUuid, $mapUuidId)) {
+                                    $mapId = $mapUuidId[$mapUuid];
+                                    $composerMap = (string) str_replace('map', '', $mapId);
+                                }
+                            }
+
+                            $printTemplate['tables'][] = array(
+                                'composerMap' => $composerMap,
+                                'vectorLayer' => (string) $lTable['vectorLayer'],
+                                'vectorLayerName' => (string) $lTable['vectorLayerName'],
+                            );
+                        }
+                    }
+
+                    // Atlas
+                    $Atlas = $layout->xpath('Atlas');
                     if (count($Atlas) == 1) {
                         $Atlas = $Atlas[0];
                         $printTemplate['atlas'] = array(
