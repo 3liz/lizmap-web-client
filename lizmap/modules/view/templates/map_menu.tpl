@@ -10,7 +10,10 @@
           {assign $hometitle=@view~default.home.title@}
         {/if}
       {/foreach}
-      {if !$onlyMaps}
+      {if $onlyMaps }
+        {assign $hometitle="Reload"}
+      {/if}
+      {if !$onlyMaps }
       <li class="home">
         <a href="{jurl 'view~default:index'}" rel="tooltip" data-original-title="{$hometitle}" data-placement="right" data-container="#content">
           <span class="icon"></span>
