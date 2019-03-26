@@ -62,7 +62,7 @@ class lizmapTiler
         } catch (Exception $e) {
             // if default profile does not exist, or if there is an
             // other error about the cache, let's log it
-            jLog::log($e->getMessage(), 'error');
+            jLog::logEx($e, 'error');
         }
 
         if (!is_array($tileMatrixSetList) || !is_array($layers) || !is_array($hash) ||
@@ -127,7 +127,7 @@ class lizmapTiler
         } catch (Exception $e) {
             // if default profile does not exist, or if there is an
             // other error about the cache, let's log it
-            jLog::log($e->getMessage(), 'error');
+            jLog::logEx($e, 'error');
         }
 
         $tileCapabilities = (object) array(
@@ -485,14 +485,14 @@ class lizmapTiler
             try {
                 $destMinPt = $proj4->transform($sourceProj, $destProj, $sourceMinPt);
             } catch (Exception $e) {
-                jLog::log($e->getMessage(), 'error');
+                jLog::logEx($e, 'error');
                 $destMinPt = new proj4phpPoint($destMaxExtent[0], $destMaxExtent[1]);
             }
 
             try {
                 $destMaxPt = $proj4->transform($sourceProj, $destProj, $sourceMaxPt);
             } catch (Exception $e) {
-                jLog::log($e->getMessage(), 'error');
+                jLog::logEx($e, 'error');
                 $destMaxPt = new proj4phpPoint($destMaxExtent[2], $destMaxExtent[3]);
             }
 

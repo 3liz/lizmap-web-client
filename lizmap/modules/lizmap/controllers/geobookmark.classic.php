@@ -91,8 +91,8 @@ class geobookmarkCtrl extends jController
             try {
                 $id = $dao->insert($record);
             } catch (Exception $e) {
-                jLog::log('Error while inserting the bookmark');
-                jLog::log($e->getMessage());
+                jLog::log('Error while inserting the bookmark', 'error');
+                jLog::logEx($e, 'error');
                 jMessage::add('Error while inserting the bookmark', 'error');
             }
         }
@@ -166,8 +166,8 @@ class geobookmarkCtrl extends jController
             try {
                 $daogb->delete($id);
             } catch (Exception $e) {
-                jLog::log('Error while deleting the bookmark');
-                jLog::log($e->getMessage());
+                jLog::log('Error while deleting the bookmark', 'error');
+                jLog::logEx($e, 'error');
                 jMessage::add('Error while deleting the bookmark', 'error');
             }
         }
