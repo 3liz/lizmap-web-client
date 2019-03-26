@@ -34,7 +34,7 @@ class lizmapWMTSRequest extends lizmapOGCRequest
         } catch (Exception $e) {
             // if default profile does not exist, or if there is an
             // other error about the cache, let's log it
-            jLog::log($e->getMessage(), 'error');
+            jLog::logEx($e, 'error');
             // Error message
             jMessage::add('The WMTS Service can\'t be initialized!', 'ServiceError');
 
@@ -128,7 +128,7 @@ class lizmapWMTSRequest extends lizmapOGCRequest
         } catch (Exception $e) {
             // if default profile does not exist, or if there is an
             // other error about the cache, let's log it
-            jLog::log($e->getMessage(), 'error');
+            jLog::logEx($e, 'error');
             // Error message
             jMessage::add('The WMTS Service can\'t be initialized!', 'ServiceError');
 
