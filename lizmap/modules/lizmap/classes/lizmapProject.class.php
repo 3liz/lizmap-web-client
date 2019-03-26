@@ -1591,7 +1591,7 @@ class lizmapProject extends qgisProject
         $services = lizmap::getServices();
 
         // only maps and show project switcher
-        if ($services->onlyMaps or $services->projectSwitcher) {
+        if ($services->projectSwitcher) {
             $dockableName = 'projects';
             if ($services->onlyMaps) {
                 $dockableName = 'home';
