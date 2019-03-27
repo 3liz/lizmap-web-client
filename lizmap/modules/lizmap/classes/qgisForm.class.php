@@ -473,7 +473,8 @@ class qgisForm implements qgisFormControlsInterface
             return $pkVal;
         } catch (Exception $e) {
             $form->setErrorOn($geometryColumn, jLocale::get('view~edition.message.error.save'));
-            jLog::log('An error has been raised when saving form data edition to db : '.$e->getMessage(), 'error');
+            jLog::log('An error has been raised when saving form data edition to db : ', 'error');
+            jLog::logEx($e, 'error');
         }
 
         return false;
