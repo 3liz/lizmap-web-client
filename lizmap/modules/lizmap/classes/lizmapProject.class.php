@@ -114,6 +114,17 @@ class lizmapProject extends qgisProject
         'relations', 'layersOrder', 'printCapabilities', 'locateByLayer',
         'editionLayers', 'attributeLayers', 'useLayerIDs', 'layers', 'data', 'cfg', 'qgisProjectVersion', );
 
+
+    /**
+     * version of the format of data stored in the cache.
+     *
+     * This number should be increased each time you change the structure of the
+     * properties of qgisProject (ex: adding some new data properties into the $layers).
+     * So you'll be sure that the cache will be updated when Lizmap code source
+     * is updated on a server
+     */
+    const CACHE_FORMAT_VERSION = 1;
+
     /**
      * constructor.
      *
@@ -149,9 +160,9 @@ class lizmapProject extends qgisProject
 
         if ($data === false ||
             $data['qgsmtime'] < filemtime($file) ||
-            !array_key_exists('cfg', $data) ||
-            !array_key_exists('attributeLayers', $data) || // to force cache invalidation for this new feature
-            $data['qgscfgmtime'] < filemtime($file.'.cfg')
+            $data['qgscfgmtime'] < filemtime($file.'.cfg') ||
+            !isset($data['format_version']) ||
+            $data['format_version'] != self::CACHE_FORMAT_VERSION
         ) {
             // FIXME reading XML could take time, so many process could
             // read it and construct the cache at the same time. We should
@@ -159,6 +170,7 @@ class lizmapProject extends qgisProject
             $this->readProject($key, $rep);
             $data['qgsmtime'] = filemtime($file);
             $data['qgscfgmtime'] = filemtime($file.'.cfg');
+            $data['format_version'] = self::CACHE_FORMAT_VERSION;
             foreach ($this->cachedProperties as $prop) {
                 $data[$prop] = $this->{$prop};
             }
