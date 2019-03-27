@@ -5525,7 +5525,6 @@ OpenLayers.Control.HighlightFeature = OpenLayers.Class(OpenLayers.Control, {
       delete featureDataPool[poolId];
       callbacksData.callbacks.forEach(function(callback) {
           if (callback) {
-              console.log("callFeatureDataCallBacks");
               callback(callbacksData.layerName, callbacksData.filter, features, callbacksData.alias);
           }
       });
