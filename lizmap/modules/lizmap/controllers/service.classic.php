@@ -1381,6 +1381,7 @@ class serviceCtrl extends jController
                 $layer = $this->project->getLayer($layer->id);
                 $aliases = $layer->getAliasFields();
                 $jsonData['aliases'] = (object) $aliases;
+                $jsonData['defaults'] = (object) $layer->getDefaultValues();
             }
             $jsonData = json_encode((object) $jsonData);
 
