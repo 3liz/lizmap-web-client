@@ -863,7 +863,8 @@ class editionCtrl extends jController
                 $eventParams['success'] = false;
             }
         } catch (Exception $e) {
-            jLog::log('An error has been raised when saving form data edition to db : '.$e->getMessage(), 'error');
+            jLog::log('An error has been raised when saving form data edition to db:', 'error');
+            jLog::logEx($e, 'error');
             jMessage::add(jLocale::get('view~edition.message.error.delete'), 'error');
             $eventParams['success'] = false;
         }
@@ -1019,7 +1020,8 @@ class editionCtrl extends jController
                 $results = $layer->linkChildren($key2, $ids2[0], $key1, $ids1);
                 jMessage::add(jLocale::get('view~edition.link.success'), 'success');
             } catch (Exception $e) {
-                jLog::log('An error has been raised when modifiying data : '.$e->getMessage(), 'error');
+                jLog::log('An error has been raised when create linked data:', 'error');
+                jLog::logEx($e, 'error');
                 jMessage::add(jLocale::get('view~edition.link.error.sql'), 'error');
             }
         } else {
@@ -1028,7 +1030,8 @@ class editionCtrl extends jController
                 $results = $layer->insertRelations($key2, $ids2, $key1, $ids1);
                 jMessage::add(jLocale::get('view~edition.link.success'), 'success');
             } catch (Exception $e) {
-                jLog::log('An error has been raised when modifiying data : '.$e->getMessage(), 'error');
+                jLog::log('An error has been raised when create linked data:', 'error');
+                jLog::logEx($e, 'error');
                 jMessage::add(jLocale::get('view~edition.link.error.sql'), 'error');
             }
         }
@@ -1119,7 +1122,8 @@ class editionCtrl extends jController
             $layer->unlinkChild($fkey, $pkey, $pkeyval);
             jMessage::add(jLocale::get('view~edition.unlink.success'), 'success');
         } catch (Exception $e) {
-            jLog::log('An error has been raised when modifiying data : '.$e->getMessage(), 'error');
+            jLog::log('An error has been raised when unlink child: ', 'error');
+            jLog::logEx($e, 'error');
             jMessage::add(jLocale::get('view~edition.unlink.error.sql'), 'error');
         }
 

@@ -171,7 +171,7 @@ class qgisFormControl
      *
      * @param string           $ref                name of the control
      * @param SimpleXMLElement $edittype           simplexml object corresponding to the QGIS edittype for this field
-     * @param object           $aliasXml           simplexml object corresponding to the QGIS alias for this field
+     * @param object|array|string $aliasXml        simplexml object corresponding to the QGIS alias for this field
      * @param object           $rendererCategories simplexml object corresponding to the QGIS categories of the renderer
      * @param object           $prop               Jelix object with field properties (datatype, required, etc.)
      */
@@ -207,7 +207,9 @@ class qgisFormControl
         // Set class attributes
         $this->ref = $ref;
         $this->fieldName = $ref;
-        if ($aliasXml and is_array($aliasXml) and count($aliasXml) != 0) {
+        if (is_string($aliasXml)) {
+            $this->fieldAlias = $aliasXml;
+        } elseif ($aliasXml and is_array($aliasXml) and count($aliasXml) != 0) {
             $this->fieldAlias = (string) $aliasXml[0]->attributes()->name;
         } elseif ($aliasXml and count($aliasXml) != 0) {
             $this->fieldAlias = $aliasXml;

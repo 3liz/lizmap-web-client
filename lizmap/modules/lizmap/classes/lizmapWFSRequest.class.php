@@ -373,7 +373,7 @@ class lizmapWFSRequest extends lizmapOGCRequest
         try {
             $q = $cnx->query($sql);
         } catch (Exception $e) {
-            jLog::log($e->getMessage(), 'notice');
+            jLog::logEx($e, 'error');
 
             return $this->getfeatureQgis();
         }

@@ -5664,10 +5664,9 @@ OpenLayers.Control.HighlightFeature = OpenLayers.Class(OpenLayers.Control, {
       });
   }
 
-  function getLayerFeature( featureType, fid, aCallback ){
+  function getLayerFeature( featureType, fid, aCallback, aCallbackNotfound, forceToLoad ){
       if ( !aCallback )
           return;
-
       if ( !(featureType in config.layers) )
           return;
 
@@ -5675,19 +5674,24 @@ OpenLayers.Control.HighlightFeature = OpenLayers.Class(OpenLayers.Control, {
       var featureId = featureType + '.' + fid;
 
       // Use already retrieved feature
-      if( layerConfig['features'] && fid in layerConfig['features'] ){
+      if(!forceToLoad && layerConfig['features'] && fid in layerConfig['features'] ){
           aCallback(layerConfig['features'][fid]);
       }
       // Or get the feature via WFS in needed
       else{
           getFeatureData(featureType, null, featureId, 'extent', false, null, null,
-            function( aName, aFilter, cFeatures, cAliases ){
-              if( cFeatures.length == 1 ){
+              function( aName, aFilter, cFeatures, cAliases ){
+
+              if (cFeatures.length == 1) {
                   var feat = cFeatures[0];
-                  if( !layerConfig['features'] )
+                  if( !layerConfig['features'] ) {
                       layerConfig['features'] = {};
+                  }
                   layerConfig['features'][fid] = feat;
                   aCallback(feat);
+              }
+              else if(aCallbackNotfound) {
+                  aCallbackNotfound(featureType, fid);
               }
           });
       }
@@ -5750,7 +5754,7 @@ OpenLayers.Control.HighlightFeature = OpenLayers.Class(OpenLayers.Control, {
           crs = lizMap.config.layers[qgisName].crs;
       }
 
-      wmsOptions = {
+      var wmsOptions = {
            'LAYERS': aName
           ,'QUERY_LAYERS': aName
           ,'STYLES': ''
@@ -5762,7 +5766,7 @@ OpenLayers.Control.HighlightFeature = OpenLayers.Class(OpenLayers.Control, {
           ,'INFO_FORMAT': 'text/html'
           ,'FEATURE_COUNT': 1
           ,'FILTER': filter
-      }
+      };
 
       // Query the server
       var service = OpenLayers.Util.urlAppend(lizUrls.wms
@@ -6084,8 +6088,8 @@ OpenLayers.Control.HighlightFeature = OpenLayers.Class(OpenLayers.Control, {
     /**
      * Method: getLayerFeature
      */
-    getLayerFeature: function( featureType, fid, aCallback ) {
-      getLayerFeature( featureType, fid, aCallback );
+    getLayerFeature: function( featureType, fid, aCallback, aCallbackNotfound, forceToLoad ) {
+      getLayerFeature( featureType, fid, aCallback, aCallbackNotfound, forceToLoad );
     },
 
     /**

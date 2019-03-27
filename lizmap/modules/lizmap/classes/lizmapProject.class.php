@@ -144,7 +144,7 @@ class lizmapProject extends qgisProject
         } catch (Exception $e) {
             // if qgisprojects profile does not exist, or if there is an
             // other error about the cache, let's log it
-            jLog::log($e->getMessage(), 'error');
+            jLog::logEx($e, 'error');
         }
 
         if ($data === false ||
@@ -166,7 +166,7 @@ class lizmapProject extends qgisProject
             try {
                 jCache::set($file, $data, null, 'qgisprojects');
             } catch (Exception $e) {
-                jLog::log($e->getMessage(), 'error');
+                jLog::logEx($e, 'error');
             }
         } else {
             foreach ($this->cachedProperties as $prop) {
@@ -186,7 +186,7 @@ class lizmapProject extends qgisProject
         } catch (Exception $e) {
             // if qgisprojects profile does not exist, or if there is an
             // other error about the cache, let's log it
-            jLog::log($e->getMessage(), 'error');
+            jLog::logEx($e, 'error');
         }
     }
 

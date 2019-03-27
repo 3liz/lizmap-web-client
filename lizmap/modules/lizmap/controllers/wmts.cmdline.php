@@ -129,7 +129,7 @@ class wmtsCtrl extends jControllerCmdLine
         } catch (Exception $e) {
             // if default profile does not exist, or if there is an
             // other error about the cache, let's log it
-            jLog::log($e->getMessage(), 'error');
+            jLog::logEx($e, 'error');
             // Error message
             $rep->addContent("The cache is not available!\n");
             $rep->addContent($e->getMessage()."\n");
@@ -221,7 +221,7 @@ class wmtsCtrl extends jControllerCmdLine
         } catch (Exception $e) {
             // if default profile does not exist, or if there is an
             // other error about the cache, let's log it
-            jLog::log($e->getMessage(), 'error');
+            jLog::logEx($e, 'error');
             // Error message
             $rep->addContent("The cache is not available!\n");
             $rep->addContent($e->getMessage()."\n");
@@ -242,7 +242,7 @@ class wmtsCtrl extends jControllerCmdLine
             } catch (Exception $e) {
                 // if default profile does not exist, or if there is an
                 // other error about the cache, let's log it
-                jLog::log($e->getMessage(), 'error');
+                jLog::logEx($e, 'error');
                 // Error message
                 $rep->addContent("The cache is not available!\n");
                 $rep->addContent($e->getMessage()."\n");
