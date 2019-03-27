@@ -113,7 +113,9 @@ class qgisForm implements qgisFormControlsInterface
                 $alias = $aliases[$fieldName];
             }
 
-            $formControl = new qgisFormControl($fieldName, $edittype, $alias, $categoriesXml, $prop);
+            $defaultValue = $this->getDefaultValue($fieldName);
+
+            $formControl = new qgisFormControl($fieldName, $edittype, $prop, $alias, $defaultValue, $categoriesXml);
 
             if ($formControl->isUniqueValue()) {
                 $this->fillControlFromUniqueValues($fieldName, $formControl);
@@ -165,6 +167,35 @@ class qgisForm implements qgisFormControlsInterface
                 }
             }
         }
+    }
+
+    /**
+     * Get the default value of a QGIS field, if this is
+     * a simple raw value
+     *
+     * @param string $fieldName
+     * @return string|null return null if this is not a number or a string
+     */
+    protected function getDefaultValue($fieldName) {
+        $expression = $this->layer->getDefaultValue($fieldName);
+        if ($expression === null) {
+            return null;
+        }
+        if (is_numeric($expression)) {
+            return $expression;
+        }
+        else if (preg_match("/^'.*'$/", $expression)) {
+            // it seems this is a simple string
+            $expression = trim($expression, "'");
+            // if there are some ' without a \, then probably we have a
+            // true expression, not a single string.
+            if (!preg_match("/(?<!\\\\)'/", $expression)) {
+                return str_replace("\\'", "'", $expression);
+            }
+        }
+        // TODO implement a true QGIS expression parser or add the possibility
+        // to evaluate the expression by qgis
+        return null;
     }
 
     public function getQgisControls()

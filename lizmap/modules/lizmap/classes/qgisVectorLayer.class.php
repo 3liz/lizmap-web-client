@@ -16,7 +16,15 @@ class qgisVectorLayer extends qgisMapLayer
 
     protected $fields = array();
 
+    /**
+     * @var string[]  list of aliases name for each fields
+     */
     protected $aliases = array();
+
+    /**
+     * @var string[]  list of default value (as QGIS expressions) for each fields
+     */
+    protected $defaultValues = array();
 
     protected $wfsFields = array();
 
@@ -57,6 +65,7 @@ class qgisVectorLayer extends qgisMapLayer
         parent::__construct($project, $propLayer);
         $this->fields = $propLayer['fields'];
         $this->aliases = $propLayer['aliases'];
+        $this->defaultValues = $propLayer['defaults'];
         $this->wfsFields = $propLayer['wfsFields'];
     }
 
@@ -65,9 +74,39 @@ class qgisVectorLayer extends qgisMapLayer
         return $this->fields;
     }
 
+    /**
+     * list of aliases
+     * @return string[]
+     */
     public function getAliasFields()
     {
         return $this->aliases;
+    }
+
+    /**
+     * List of default values for each fields
+     *
+     * Values are QGIS expressions or may be null when no default value is given
+     *
+     * @return string[]
+     */
+    public function getDefaultValues()
+    {
+        return $this->defaultValues;
+    }
+
+    /**
+     * Get the QGIS expression of the default value of the given field
+     *
+     * @param string $fieldName
+     * @return string|null null if there is no default value
+     */
+    public function getDefaultValue($fieldName)
+    {
+        if (isset($this->defaultValues[$fieldName])) {
+            return $this->defaultValues[$fieldName];
+        }
+        return null;
     }
 
     public function getWfsFields()
