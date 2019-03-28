@@ -1372,7 +1372,7 @@ var lizMap = function() {
            for (var i=0,len=layers.length; i<len; i++) {
              var layer = layers[i];
              var b = $('#switcher button[name="layer"][value="'+layer.name+'"]').first();
-             
+
              if (layer.inRange && b.hasClass('disabled')) {
                var tr = b.parents('tr').first();
                tr.removeClass('disabled').find('button').removeClass('disabled');
@@ -3919,6 +3919,21 @@ var lizMap = function() {
       $('#button-print').parent().remove();
       return false;
     }
+
+    // Filtering print tamplates by removing atlas one
+    var pTemplates = [];
+    for( var i=0, len=config.printTemplates.length; i<len; i++ ){
+        var pTemplate = config.printTemplates[i];
+        if('atlas' in pTemplate)
+            continue;
+        pTemplates.push(pTemplate);
+    }
+    // remove print tool if only atlas print configured
+    if ( pTemplates.length == 0 ) {
+      $('#button-print').parent().remove();
+      return false;
+    }
+
     var ptTomm = 0.35277; //conversion pt to mm
 
     var scales = map.scales;
@@ -3955,7 +3970,6 @@ var lizMap = function() {
     $('#print-scale').html(scaleOptions);
 
     // creating printCapabilities layouts
-    var pTemplates = config.printTemplates;
     for( var i=0, len=pTemplates.length; i<len; i++ ){
       var pTemplate = pTemplates[i];
       var pMap = null;
