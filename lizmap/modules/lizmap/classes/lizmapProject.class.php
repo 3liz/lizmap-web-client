@@ -977,6 +977,8 @@ class lizmapProject extends qgisProject
                     $rComposers[] = (string) $restrictedComposer;
                 }
             }
+
+            $services = lizmap::getServices();
             // get composer qg project version < 3
             $composers = $qgsLoad->xpath('//Composer');
             if ($composers && count($composers) > 0) {
@@ -1034,7 +1036,6 @@ class lizmapProject extends qgisProject
                                     $ptMap['grid'] = 'True';
                                 }
                             }
-                            $services = lizmap::getServices();
                             // In QGIS 3.*
                             // Layout maps now use a string UUID as "id", let's assume that the first map
                             // has id 0 and so on ...
@@ -1090,7 +1091,8 @@ class lizmapProject extends qgisProject
             }
             // get layout qgs project version >= 3
             $layouts = $qgsLoad->xpath('//Layout');
-            if ($layouts && count($layouts) > 0) {
+            if ($layouts && count($layouts) > 0 &&
+                version_compare($services->qgisServerVersion, '3.0', '>=')) {
                 foreach ($layouts as $layout) {
                     // test restriction
                     if (in_array((string) $layout['name'], $rComposers)) {
