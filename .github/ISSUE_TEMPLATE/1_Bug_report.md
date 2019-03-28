@@ -29,7 +29,8 @@ WARNING: obfuscate all sensible data (IP, passwords, domain name...) -->
 <!-- please complete the following information -->
 
  - Lizmap version: 
- - QGis version:
+ - QGIS Server version:
+ - QGIS Project version:
  - OS (windows, linux, macOS, android..): 
  - Browser (Firefox, Chrome...):
  - Lizmap data stored into Sqlite (default)? Postgresql? Mysql? 
