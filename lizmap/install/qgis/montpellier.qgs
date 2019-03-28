@@ -1,5 +1,5 @@
 <!DOCTYPE qgis PUBLIC 'http://mrcc.com/qgis.dtd' 'SYSTEM'>
-<qgis projectname="Montpellier - Transports" version="2.18.17">
+<qgis projectname="Montpellier - Transports" version="2.18.16">
   <title>Montpellier - Transports</title>
   <autotransaction active="0"/>
   <evaluateDefaultValues active="0"/>
@@ -7,13 +7,13 @@
     <customproperties/>
     <layer-tree-group expanded="1" checked="Qt::PartiallyChecked" name="Edition">
       <customproperties/>
-      <layer-tree-layer expanded="0" providerKey="spatialite" checked="Qt::Checked" id="edition_point20130118171631518" source="dbname='/var/www/LIZMAP/master/lizmap/install/qgis/edition/edition_db.sqlite' table=&quot;edition_point&quot; (geometry) sql=" name="points of interest">
+      <layer-tree-layer expanded="0" providerKey="spatialite" checked="Qt::Checked" id="edition_point20130118171631518" source="dbname='/home/dhont/public_html/lizmap/lizmap/install/qgis/edition/edition_db.sqlite' table=&quot;edition_point&quot; (geometry) sql=" name="points of interest">
         <customproperties/>
       </layer-tree-layer>
-      <layer-tree-layer expanded="0" providerKey="spatialite" checked="Qt::Unchecked" id="edition_line20130409161630329" source="dbname='/var/www/LIZMAP/master/lizmap/install/qgis/edition/edition_db.sqlite' table=&quot;edition_line&quot; (geom) sql=" name="edition_line">
+      <layer-tree-layer expanded="0" providerKey="spatialite" checked="Qt::Unchecked" id="edition_line20130409161630329" source="dbname='/home/dhont/public_html/lizmap/lizmap/install/qgis/edition/edition_db.sqlite' table=&quot;edition_line&quot; (geom) sql=" name="edition_line">
         <customproperties/>
       </layer-tree-layer>
-      <layer-tree-layer expanded="0" providerKey="spatialite" checked="Qt::Checked" id="edition_polygon20130409114333776" source="dbname='/var/www/LIZMAP/master/lizmap/install/qgis/edition/edition_db.sqlite' table=&quot;edition_polygon&quot; (geom) sql=" name="areas_of_interest">
+      <layer-tree-layer expanded="0" providerKey="spatialite" checked="Qt::Checked" id="edition_polygon20130409114333776" source="dbname='/home/dhont/public_html/lizmap/lizmap/install/qgis/edition/edition_db.sqlite' table=&quot;edition_polygon&quot; (geom) sql=" name="areas_of_interest">
         <customproperties/>
       </layer-tree-layer>
     </layer-tree-group>
@@ -21,28 +21,28 @@
       <customproperties/>
       <layer-tree-group expanded="1" checked="Qt::Checked" name="Bus">
         <customproperties/>
-        <layer-tree-layer expanded="0" providerKey="ogr" checked="Qt::Checked" id="bus_stops20121106170806413" source="/var/www/LIZMAP/master/lizmap/install/qgis/data/vector/bus_stops.shp" name="bus_stops">
+        <layer-tree-layer expanded="0" providerKey="ogr" checked="Qt::Checked" id="bus_stops20121106170806413" source="/home/dhont/public_html/lizmap/lizmap/install/qgis/data/vector/bus_stops.shp" name="bus_stops">
           <customproperties/>
         </layer-tree-layer>
-        <layer-tree-layer expanded="0" providerKey="ogr" checked="Qt::Checked" id="bus20121102133611751" source="/var/www/LIZMAP/master/lizmap/install/qgis/data/vector/bus.shp" name="bus">
+        <layer-tree-layer expanded="0" providerKey="ogr" checked="Qt::Checked" id="bus20121102133611751" source="/home/dhont/public_html/lizmap/lizmap/install/qgis/data/vector/bus.shp" name="bus">
           <customproperties/>
         </layer-tree-layer>
       </layer-tree-group>
       <layer-tree-group expanded="1" checked="Qt::Checked" name="Tramway">
         <customproperties/>
-        <layer-tree-layer expanded="1" providerKey="spatialite" checked="Qt::Checked" id="tramway_ref20150612171109044" source="dbname='/var/www/LIZMAP/master/lizmap/install/qgis/edition/transport.sqlite' table=&quot;tramway_ref&quot; sql=" name="tramway_ref">
+        <layer-tree-layer expanded="1" providerKey="spatialite" checked="Qt::Checked" id="tramway_ref20150612171109044" source="dbname='/home/dhont/public_html/lizmap/lizmap/install/qgis/edition/transport.sqlite' table=&quot;tramway_ref&quot; sql=" name="tramway_ref">
           <customproperties/>
         </layer-tree-layer>
-        <layer-tree-layer expanded="1" providerKey="spatialite" checked="Qt::Checked" id="jointure_tram_stop20150328114216806" source="dbname='/var/www/LIZMAP/master/lizmap/install/qgis/edition/transport.sqlite' table=&quot;jointure_tram_stop&quot; sql=" name="tramway_pivot">
+        <layer-tree-layer expanded="1" providerKey="spatialite" checked="Qt::Checked" id="jointure_tram_stop20150328114216806" source="dbname='/home/dhont/public_html/lizmap/lizmap/install/qgis/edition/transport.sqlite' table=&quot;jointure_tram_stop&quot; sql=" name="tramway_pivot">
           <customproperties/>
         </layer-tree-layer>
-        <layer-tree-layer expanded="1" providerKey="spatialite" checked="Qt::Checked" id="tram_stop_work20150416102656130" source="dbname='/var/www/LIZMAP/master/lizmap/install/qgis/edition/transport.sqlite' table=&quot;tram_stop_work&quot; sql=" name="tram_stop_work">
+        <layer-tree-layer expanded="1" providerKey="spatialite" checked="Qt::Checked" id="tram_stop_work20150416102656130" source="dbname='/home/dhont/public_html/lizmap/lizmap/install/qgis/edition/transport.sqlite' table=&quot;tram_stop_work&quot; sql=" name="tram_stop_work">
           <customproperties/>
         </layer-tree-layer>
-        <layer-tree-layer expanded="1" providerKey="spatialite" checked="Qt::Checked" id="tramstop20150328114203878" source="dbname='/var/www/LIZMAP/master/lizmap/install/qgis/edition/transport.sqlite' table=&quot;tramstop&quot; (geometry) sql=" name="tramstop">
+        <layer-tree-layer expanded="1" providerKey="spatialite" checked="Qt::Checked" id="tramstop20150328114203878" source="dbname='/home/dhont/public_html/lizmap/lizmap/install/qgis/edition/transport.sqlite' table=&quot;tramstop&quot; (geometry) sql=" name="tramstop">
           <customproperties/>
         </layer-tree-layer>
-        <layer-tree-layer expanded="1" providerKey="spatialite" checked="Qt::Checked" id="tramway20150328114206278" source="dbname='/var/www/LIZMAP/master/lizmap/install/qgis/edition/transport.sqlite' table=&quot;tramway&quot; (geometry) sql=" name="tramway">
+        <layer-tree-layer expanded="1" providerKey="spatialite" checked="Qt::Checked" id="tramway20150328114206278" source="dbname='/home/dhont/public_html/lizmap/lizmap/install/qgis/edition/transport.sqlite' table=&quot;tramway&quot; (geometry) sql=" name="tramway">
           <customproperties>
             <property key="showFeatureCount" value="1"/>
           </customproperties>
@@ -50,35 +50,35 @@
       </layer-tree-group>
       <layer-tree-group expanded="1" checked="Qt::PartiallyChecked" name="Buildings">
         <customproperties/>
-        <layer-tree-layer expanded="1" providerKey="spatialite" checked="Qt::Checked" id="publicbuildings20150420100958543" source="dbname='/var/www/LIZMAP/master/lizmap/install/qgis/edition/transport.sqlite' table=&quot;publicbuildings&quot; (geom) sql=" name="publicbuildings">
+        <layer-tree-layer expanded="1" providerKey="spatialite" checked="Qt::Checked" id="publicbuildings20150420100958543" source="dbname='/home/dhont/public_html/lizmap/lizmap/install/qgis/edition/transport.sqlite' table=&quot;publicbuildings&quot; (geom) sql=" name="publicbuildings">
           <customproperties/>
         </layer-tree-layer>
-        <layer-tree-layer expanded="1" providerKey="spatialite" checked="Qt::Unchecked" id="publicbuildings_tramstop20150420095614071" source="dbname='/var/www/LIZMAP/master/lizmap/install/qgis/edition/transport.sqlite' table=&quot;publicbuildings_tramstop&quot; sql=" name="publicbuildings_tramstop">
+        <layer-tree-layer expanded="1" providerKey="spatialite" checked="Qt::Unchecked" id="publicbuildings_tramstop20150420095614071" source="dbname='/home/dhont/public_html/lizmap/lizmap/install/qgis/edition/transport.sqlite' table=&quot;publicbuildings_tramstop&quot; sql=" name="publicbuildings_tramstop">
           <customproperties/>
         </layer-tree-layer>
       </layer-tree-group>
     </layer-tree-group>
-    <layer-tree-layer expanded="1" providerKey="ogr" checked="Qt::Checked" id="donnes_sociodemo_sous_quartiers20160121144525075" source="/var/www/LIZMAP/master/lizmap/install/qgis/data/vector/donnes_sociodemo_sous_quartiers.csv" name="donnes_sociodemo_sous_quartiers">
+    <layer-tree-layer expanded="1" providerKey="ogr" checked="Qt::Checked" id="donnes_sociodemo_sous_quartiers20160121144525075" source="/home/dhont/public_html/lizmap/lizmap/install/qgis/data/vector/donnes_sociodemo_sous_quartiers.csv" name="donnes_sociodemo_sous_quartiers">
       <customproperties/>
     </layer-tree-layer>
-    <layer-tree-layer expanded="1" providerKey="ogr" checked="Qt::Checked" id="SousQuartiers20160121124316563" source="/var/www/LIZMAP/master/lizmap/install/qgis/data/vector/VilleMTP_MTP_SousQuartiers_2011.shp" name="SousQuartiers">
+    <layer-tree-layer expanded="1" providerKey="ogr" checked="Qt::Checked" id="SousQuartiers20160121124316563" source="/home/dhont/public_html/lizmap/lizmap/install/qgis/data/vector/VilleMTP_MTP_SousQuartiers_2011.shp" name="SousQuartiers">
       <customproperties/>
     </layer-tree-layer>
-    <layer-tree-layer expanded="0" providerKey="ogr" checked="Qt::Checked" id="VilleMTP_MTP_Quartiers_2011_432620130116112610876" source="/var/www/LIZMAP/master/lizmap/install/qgis/data/vector/VilleMTP_MTP_Quartiers_2011_4326.shp" name="Quartiers">
+    <layer-tree-layer expanded="0" providerKey="ogr" checked="Qt::Checked" id="VilleMTP_MTP_Quartiers_2011_432620130116112610876" source="/home/dhont/public_html/lizmap/lizmap/install/qgis/data/vector/VilleMTP_MTP_Quartiers_2011_4326.shp" name="Quartiers">
       <customproperties/>
     </layer-tree-layer>
     <layer-tree-group expanded="1" checked="Qt::Unchecked" name="Overview">
       <customproperties/>
-      <layer-tree-layer expanded="0" providerKey="ogr" checked="Qt::Unchecked" id="VilleMTP_MTP_Quartiers_2011_432620130116112351546" source="/var/www/LIZMAP/master/lizmap/install/qgis/data/vector/VilleMTP_MTP_Quartiers_2011_4326.shp" name="VilleMTP_MTP_Quartiers_2011_4326">
+      <layer-tree-layer expanded="0" providerKey="ogr" checked="Qt::Unchecked" id="VilleMTP_MTP_Quartiers_2011_432620130116112351546" source="/home/dhont/public_html/lizmap/lizmap/install/qgis/data/vector/VilleMTP_MTP_Quartiers_2011_4326.shp" name="VilleMTP_MTP_Quartiers_2011_4326">
         <customproperties/>
       </layer-tree-layer>
     </layer-tree-group>
-    <layer-tree-group expanded="1" checked="Qt::PartiallyChecked" mutually-exclusive="1" name="Hidden" mutually-exclusive-child="1">
+    <layer-tree-group expanded="1" checked="Qt::Unchecked" mutually-exclusive="1" name="Hidden" mutually-exclusive-child="1">
       <customproperties/>
       <layer-tree-layer expanded="1" providerKey="wms" checked="Qt::Unchecked" id="osm_mapnik20180315181738526" source="crs=EPSG:3857&amp;format=&amp;type=xyz&amp;url=http://tile.openstreetmap.org/%7Bz%7D/%7Bx%7D/%7By%7D.png" name="osm-mapnik">
         <customproperties/>
       </layer-tree-layer>
-      <layer-tree-layer expanded="1" providerKey="wms" checked="Qt::PartiallyChecked" id="osm_stamen_toner20180315181710198" source="crs=EPSG:3857&amp;format=&amp;type=xyz&amp;url=http://tile.stamen.com/toner-lite/%7Bz%7D/%7Bx%7D/%7By%7D.png" name="osm-stamen-toner">
+      <layer-tree-layer expanded="1" providerKey="wms" checked="Qt::Unchecked" id="osm_stamen_toner20180315181710198" source="crs=EPSG:3857&amp;format=&amp;type=xyz&amp;url=http://tile.stamen.com/toner-lite/%7Bz%7D/%7Bx%7D/%7By%7D.png" name="osm-stamen-toner">
         <customproperties/>
       </layer-tree-layer>
     </layer-tree-group>
@@ -118,7 +118,7 @@
     <projections>1</projections>
     <destinationsrs>
       <spatialrefsys>
-        <proj4>+proj=merc +a=6378137 +b=6378137 +lat_ts=0.0 +lon_0=0.0 +x_0=0.0 +y_0=0 +k=1.0 +units=m +nadgrids=@null +wktext +no_defs</proj4>
+        <proj4>+proj=merc +a=6378137 +b=6378137 +lat_ts=0.0 +lon_0=0.0 +x_0=0.0 +y_0=0 +k=1.0 +units=m +nadgrids=@null +wktext  +no_defs</proj4>
         <srsid>3857</srsid>
         <srid>3857</srid>
         <authid>EPSG:3857</authid>
@@ -263,13 +263,13 @@
         </filegroup>
       </legendlayer>
     </legendgroup>
-    <legendgroup open="true" checked="Qt::PartiallyChecked" name="Hidden">
+    <legendgroup open="true" checked="Qt::Unchecked" name="Hidden">
       <legendlayer drawingOrder="-1" open="true" checked="Qt::Unchecked" name="osm-mapnik" showFeatureCount="0">
         <filegroup open="true" hidden="false">
           <legendlayerfile isInOverview="0" layerid="osm_mapnik20180315181738526" visible="0"/>
         </filegroup>
       </legendlayer>
-      <legendlayer drawingOrder="-1" open="true" checked="Qt::PartiallyChecked" name="osm-stamen-toner" showFeatureCount="0">
+      <legendlayer drawingOrder="-1" open="true" checked="Qt::Unchecked" name="osm-stamen-toner" showFeatureCount="0">
         <filegroup open="true" hidden="false">
           <legendlayerfile isInOverview="0" layerid="osm_stamen_toner20180315181710198" visible="0"/>
         </filegroup>
@@ -313,17 +313,17 @@
         </styles>
         <layer-tree-group expanded="1" checked="Qt::Checked" name="">
           <customproperties/>
-          <layer-tree-layer expanded="1" providerKey="spatialite" checked="Qt::Checked" id="edition_polygon20130409114333776" source="dbname='/var/www/LIZMAP/master/lizmap/install/qgis/edition/edition_db.sqlite' table=&quot;edition_polygon&quot; (geom) sql=" name="areas_of_interest">
+          <layer-tree-layer expanded="1" providerKey="spatialite" checked="Qt::Checked" id="edition_polygon20130409114333776" source="dbname='/home/dhont/public_html/lizmap/lizmap/install/qgis/edition/edition_db.sqlite' table=&quot;edition_polygon&quot; (geom) sql=" name="areas_of_interest">
             <customproperties>
               <property key="legend/title-style" value="subgroup"/>
             </customproperties>
           </layer-tree-layer>
-          <layer-tree-layer expanded="1" providerKey="spatialite" checked="Qt::Checked" id="edition_point20130118171631518" source="dbname='/var/www/LIZMAP/master/lizmap/install/qgis/edition/edition_db.sqlite' table=&quot;edition_point&quot; (geometry) sql=" name="points of interest">
+          <layer-tree-layer expanded="1" providerKey="spatialite" checked="Qt::Checked" id="edition_point20130118171631518" source="dbname='/home/dhont/public_html/lizmap/lizmap/install/qgis/edition/edition_db.sqlite' table=&quot;edition_point&quot; (geometry) sql=" name="points of interest">
             <customproperties>
               <property key="legend/title-style" value="subgroup"/>
             </customproperties>
           </layer-tree-layer>
-          <layer-tree-layer expanded="1" providerKey="spatialite" checked="Qt::Checked" id="edition_line20130409161630329" source="dbname='/var/www/LIZMAP/master/lizmap/install/qgis/edition/edition_db.sqlite' table=&quot;edition_line&quot; (geom) sql=" name="edition_line">
+          <layer-tree-layer expanded="1" providerKey="spatialite" checked="Qt::Checked" id="edition_line20130409161630329" source="dbname='/home/dhont/public_html/lizmap/lizmap/install/qgis/edition/edition_db.sqlite' table=&quot;edition_line&quot; (geom) sql=" name="edition_line">
             <customproperties>
               <property key="legend/title-style" value="subgroup"/>
             </customproperties>
@@ -471,15 +471,6 @@
           <prop k="style" v="solid"/>
         </layer>
       </symbol>
-      <ComposerLabel valign="128" marginX="1" marginY="1" labelText="[%CASE &#xa;&#x9;WHEN  @atlas_featureid = $id &#xa;&#x9;THEN 'District : ' || &quot;LIBQUART&quot;&#xa;END%]" htmlState="0" halign="4">
-        <LabelFont description="Ubuntu,16,-1,5,50,0,0,0,0,0" style="Regular"/>
-        <FontColor red="0" blue="0" green="0"/>
-        <ComposerItem pagey="0" page="1" id="" lastValidViewScaleFactor="-1" positionMode="0" positionLock="false" x="122.9" y="0" visibility="1" zValue="9" background="false" transparency="0" frameJoinStyle="miter" blendMode="0" width="114.45" outlineWidth="0.3" excludeFromExports="0" uuid="{4954581d-288a-475a-8e82-db03a837782d}" height="17.85" itemRotation="0" frame="false" pagex="122.9">
-          <FrameColor alpha="255" red="0" blue="0" green="0"/>
-          <BackgroundColor alpha="255" red="255" blue="255" green="255"/>
-          <customproperties/>
-        </ComposerItem>
-      </ComposerLabel>
       <ComposerScaleBar lineCapStyle="square" style="Numeric" numMapUnitsPerScaleBarUnit="1" segmentSizeMode="0" alignment="0" numSegments="4" segmentMillimeters="0.000108332" lineJoinStyle="miter" minBarWidth="50" numUnitsPerSegment="0.01" units="1" labelBarSpace="3" outlineWidth="1" numSegmentsLeft="2" maxBarWidth="150" height="3" boxContentSpace="1" mapId="0" unitLabel=" m">
         <scaleBarFont description="Ubuntu,12,-1,5,50,0,0,0,0,0" style=""/>
         <fillColor alpha="255" red="0" blue="0" green="0"/>
@@ -512,7 +503,7 @@
       <ComposerLabel valign="128" marginX="0" marginY="0" labelText="Map's title" htmlState="0" halign="4">
         <LabelFont description="Ubuntu,20,-1,5,75,0,0,0,0,0" style=""/>
         <FontColor red="0" blue="0" green="0"/>
-        <ComposerItem pagey="0" page="1" id="title" lastValidViewScaleFactor="3.44841" positionMode="0" positionLock="false" x="0" y="0" visibility="1" zValue="4" background="true" transparency="0" frameJoinStyle="miter" blendMode="0" width="122.9" outlineWidth="0.3" excludeFromExports="0" uuid="{6307d78b-68bd-47ff-b870-f451e5e4e5eb}" height="18" itemRotation="0" frame="false" pagex="0">
+        <ComposerItem pagey="0" page="1" id="title" lastValidViewScaleFactor="3.44841" positionMode="0" positionLock="false" x="0" y="0" visibility="1" zValue="4" background="true" transparency="0" frameJoinStyle="miter" blendMode="0" width="237.35" outlineWidth="0.3" excludeFromExports="0" uuid="{6307d78b-68bd-47ff-b870-f451e5e4e5eb}" height="18" itemRotation="0" frame="false" pagex="0">
           <FrameColor alpha="255" red="0" blue="0" green="0"/>
           <BackgroundColor alpha="255" red="255" blue="255" green="255"/>
           <customproperties/>
@@ -521,7 +512,7 @@
       <ComposerMap followPreset="false" mapRotation="0" keepLayerSet="true" followPresetName="" id="1" previewMode="Cache" drawCanvasItems="true">
         <Extent ymin="43.55700000000000216" xmin="3.78988000000000014" ymax="43.69059872847996928" xmax="3.96975999999999996"/>
         <LayerSet>
-          <Layer provider="ogr" source="/var/www/LIZMAP/master/lizmap/install/qgis/data/vector/VilleMTP_MTP_Quartiers_2011_4326.shp" name="VilleMTP_MTP_Quartiers_2011_4326">VilleMTP_MTP_Quartiers_2011_432620130116112351546</Layer>
+          <Layer provider="ogr" source="/home/dhont/public_html/lizmap/lizmap/install/qgis/data/vector/VilleMTP_MTP_Quartiers_2011_4326.shp" name="VilleMTP_MTP_Quartiers_2011_4326">VilleMTP_MTP_Quartiers_2011_432620130116112351546</Layer>
         </LayerSet>
         <Grid/>
         <ComposerMapGrid rightAnnotationDirection="0" gridFramePenColor="0,0,0,255" show="0" bottomAnnotationPosition="1" annotationPrecision="3" showAnnotation="0" topFrameDivisions="0" uuid="{79ab9045-ef71-4cf1-83f1-f90bfe64ad9f}" leftAnnotationDirection="0" topAnnotationPosition="1" rightAnnotationDisplay="0" offsetX="0" offsetY="0" rightFrameDivisions="0" gridStyle="0" annotationFontColor="0,0,0,255" intervalX="0" gridFrameSideFlags="15" intervalY="0" bottomAnnotationDirection="0" leftAnnotationDisplay="0" leftFrameDivisions="0" frameFillColor1="255,255,255,255" annotationExpression="" frameFillColor2="0,0,0,255" crossLength="3" gridFramePenThickness="0.5" bottomAnnotationDisplay="0" unit="0" topAnnotationDisplay="0" leftAnnotationPosition="1" blendMode="0" gridFrameStyle="0" rightAnnotationPosition="1" gridFrameWidth="2" name="Grille 1" annotationFormat="0" bottomFrameDivisions="0" topAnnotationDirection="0" frameAnnotationDistance="1">
@@ -590,7 +581,7 @@
           </symbol>
         </ComposerMapOverview>
         <AtlasMap scalingMode="2" atlasDriven="0" margin="0.10000000000000001"/>
-        <ComposerItem pagey="162.072" page="1" id="" lastValidViewScaleFactor="1.42425" positionMode="0" positionLock="false" x="237.35" y="162.072" visibility="1" zValue="3" background="true" transparency="0" frameJoinStyle="miter" blendMode="0" width="60.5889" outlineWidth="0.3" excludeFromExports="0" uuid="{2ebf76e3-6f6b-4c34-95f1-3d642932cfb3}" height="45" itemRotation="0" frame="false" pagex="237.35">
+        <ComposerItem pagey="162.072" page="1" id="" lastValidViewScaleFactor="1.03719" positionMode="0" positionLock="false" x="237.35" y="162.072" visibility="1" zValue="3" background="true" transparency="0" frameJoinStyle="miter" blendMode="0" width="60.5889" outlineWidth="0.3" excludeFromExports="0" uuid="{2ebf76e3-6f6b-4c34-95f1-3d642932cfb3}" height="45" itemRotation="0" frame="false" pagex="237.35">
           <FrameColor alpha="255" red="0" blue="0" green="0"/>
           <BackgroundColor alpha="255" red="255" blue="255" green="255"/>
           <customproperties/>
@@ -616,29 +607,29 @@
         </styles>
         <layer-tree-group expanded="1" checked="Qt::Checked" name="">
           <customproperties/>
-          <layer-tree-layer expanded="1" providerKey="spatialite" checked="Qt::Checked" id="edition_point20130118171631518" source="dbname='/var/www/LIZMAP/master/lizmap/install/qgis/edition/edition_db.sqlite' table=&quot;edition_point&quot; (geometry) sql=" name="points of interest">
+          <layer-tree-layer expanded="1" providerKey="spatialite" checked="Qt::Checked" id="edition_point20130118171631518" source="dbname='/home/dhont/public_html/lizmap/lizmap/install/qgis/edition/edition_db.sqlite' table=&quot;edition_point&quot; (geometry) sql=" name="points of interest">
             <customproperties>
               <property key="legend/title-label" value="Points of interest"/>
               <property key="legend/title-style" value="subgroup"/>
             </customproperties>
           </layer-tree-layer>
-          <layer-tree-layer expanded="1" providerKey="spatialite" checked="Qt::Checked" id="edition_line20130409161630329" source="dbname='/var/www/LIZMAP/master/lizmap/install/qgis/edition/edition_db.sqlite' table=&quot;edition_line&quot; (geom) sql=" name="edition_line">
+          <layer-tree-layer expanded="1" providerKey="spatialite" checked="Qt::Checked" id="edition_line20130409161630329" source="dbname='/home/dhont/public_html/lizmap/lizmap/install/qgis/edition/edition_db.sqlite' table=&quot;edition_line&quot; (geom) sql=" name="edition_line">
             <customproperties>
               <property key="legend/title-label" value="Bicycle rides"/>
               <property key="legend/title-style" value="subgroup"/>
             </customproperties>
           </layer-tree-layer>
-          <layer-tree-layer expanded="1" providerKey="spatialite" checked="Qt::Checked" id="edition_polygon20130409114333776" source="dbname='/var/www/LIZMAP/master/lizmap/install/qgis/edition/edition_db.sqlite' table=&quot;edition_polygon&quot; (geom) sql=" name="areas_of_interest">
+          <layer-tree-layer expanded="1" providerKey="spatialite" checked="Qt::Checked" id="edition_polygon20130409114333776" source="dbname='/home/dhont/public_html/lizmap/lizmap/install/qgis/edition/edition_db.sqlite' table=&quot;edition_polygon&quot; (geom) sql=" name="areas_of_interest">
             <customproperties>
               <property key="legend/title-style" value="subgroup"/>
             </customproperties>
           </layer-tree-layer>
-          <layer-tree-layer expanded="1" providerKey="ogr" checked="Qt::Checked" id="bus_stops20121106170806413" source="/var/www/LIZMAP/master/lizmap/install/qgis/data/vector/bus_stops.shp" name="bus_stops">
+          <layer-tree-layer expanded="1" providerKey="ogr" checked="Qt::Checked" id="bus_stops20121106170806413" source="/home/dhont/public_html/lizmap/lizmap/install/qgis/data/vector/bus_stops.shp" name="bus_stops">
             <customproperties>
               <property key="legend/title-style" value="hidden"/>
             </customproperties>
           </layer-tree-layer>
-          <layer-tree-layer expanded="1" providerKey="ogr" checked="Qt::Checked" id="VilleMTP_MTP_Quartiers_2011_432620130116112610876" source="/var/www/LIZMAP/master/lizmap/install/qgis/data/vector/VilleMTP_MTP_Quartiers_2011_4326.shp" name="Quartiers">
+          <layer-tree-layer expanded="1" providerKey="ogr" checked="Qt::Checked" id="VilleMTP_MTP_Quartiers_2011_432620130116112610876" source="/home/dhont/public_html/lizmap/lizmap/install/qgis/data/vector/VilleMTP_MTP_Quartiers_2011_4326.shp" name="Quartiers">
             <customproperties>
               <property key="legend/title-style" value="subgroup"/>
             </customproperties>
@@ -650,7 +641,337 @@
             </customproperties>
           </layer-tree-layer>
         </layer-tree-group>
-        <ComposerItem pagey="0" page="1" id="" lastValidViewScaleFactor="1.43937" positionMode="0" positionLock="false" x="237.35" y="0" visibility="1" zValue="2" background="true" transparency="0" frameJoinStyle="miter" blendMode="0" width="45.7234" outlineWidth="0.3" excludeFromExports="0" uuid="{e5857829-a6bb-42db-aed6-70473177b9da}" height="164" itemRotation="0" frame="false" pagex="237.35">
+        <ComposerItem pagey="0" page="1" id="" lastValidViewScaleFactor="1.43937" positionMode="0" positionLock="false" x="237.35" y="0" visibility="1" zValue="2" background="true" transparency="0" frameJoinStyle="miter" blendMode="0" width="48.2016" outlineWidth="0.3" excludeFromExports="0" uuid="{e5857829-a6bb-42db-aed6-70473177b9da}" height="146.5" itemRotation="0" frame="false" pagex="237.35">
+          <FrameColor alpha="255" red="0" blue="0" green="0"/>
+          <BackgroundColor alpha="150" red="255" blue="255" green="255"/>
+          <customproperties/>
+        </ComposerItem>
+      </ComposerLegend>
+      <ComposerMap followPreset="false" mapRotation="0" keepLayerSet="false" followPresetName="" id="0" previewMode="Cache" drawCanvasItems="true">
+        <Extent ymin="5392684.25967966020107269" xmin="417006.61373760335845873" ymax="5417071.07602880522608757" xmax="447158.04891100589884445"/>
+        <LayerSet/>
+        <Grid/>
+        <ComposerMapGrid rightAnnotationDirection="0" gridFramePenColor="0,0,0,255" show="0" bottomAnnotationPosition="1" annotationPrecision="3" showAnnotation="0" topFrameDivisions="0" uuid="{6e0cb54d-dd79-43cd-8dd0-c8c92632e8e3}" leftAnnotationDirection="0" topAnnotationPosition="1" rightAnnotationDisplay="0" offsetX="0" offsetY="0" rightFrameDivisions="0" gridStyle="0" annotationFontColor="0,0,0,255" intervalX="0" gridFrameSideFlags="15" intervalY="0" bottomAnnotationDirection="0" leftAnnotationDisplay="0" leftFrameDivisions="0" frameFillColor1="255,255,255,255" annotationExpression="" frameFillColor2="0,0,0,255" crossLength="3" gridFramePenThickness="0.5" bottomAnnotationDisplay="0" unit="0" topAnnotationDisplay="0" leftAnnotationPosition="1" blendMode="0" gridFrameStyle="0" rightAnnotationPosition="1" gridFrameWidth="2" name="Grille 1" annotationFormat="0" bottomFrameDivisions="0" topAnnotationDirection="0" frameAnnotationDistance="1">
+          <lineStyle>
+            <symbol alpha="1" clip_to_extent="1" type="line" name="">
+              <layer pass="0" class="SimpleLine" locked="0">
+                <prop k="capstyle" v="flat"/>
+                <prop k="customdash" v="5;2"/>
+                <prop k="customdash_map_unit_scale" v="0,0,0,0,0,0"/>
+                <prop k="customdash_unit" v="MM"/>
+                <prop k="draw_inside_polygon" v="0"/>
+                <prop k="joinstyle" v="bevel"/>
+                <prop k="line_color" v="0,0,0,255"/>
+                <prop k="line_style" v="solid"/>
+                <prop k="line_width" v="0.3"/>
+                <prop k="line_width_unit" v="MM"/>
+                <prop k="offset" v="0"/>
+                <prop k="offset_map_unit_scale" v="0,0,0,0,0,0"/>
+                <prop k="offset_unit" v="MM"/>
+                <prop k="use_custom_dash" v="0"/>
+                <prop k="width_map_unit_scale" v="0,0,0,0,0,0"/>
+              </layer>
+            </symbol>
+          </lineStyle>
+          <markerStyle>
+            <symbol alpha="1" clip_to_extent="1" type="marker" name="">
+              <layer pass="0" class="SimpleMarker" locked="0">
+                <prop k="angle" v="0"/>
+                <prop k="color" v="0,0,0,255"/>
+                <prop k="horizontal_anchor_point" v="1"/>
+                <prop k="joinstyle" v="bevel"/>
+                <prop k="name" v="circle"/>
+                <prop k="offset" v="0,0"/>
+                <prop k="offset_map_unit_scale" v="0,0,0,0,0,0"/>
+                <prop k="offset_unit" v="MM"/>
+                <prop k="outline_color" v="0,0,0,255"/>
+                <prop k="outline_style" v="solid"/>
+                <prop k="outline_width" v="0"/>
+                <prop k="outline_width_map_unit_scale" v="0,0,0,0,0,0"/>
+                <prop k="outline_width_unit" v="MM"/>
+                <prop k="scale_method" v="area"/>
+                <prop k="size" v="2"/>
+                <prop k="size_map_unit_scale" v="0,0,0,0,0,0"/>
+                <prop k="size_unit" v="MM"/>
+                <prop k="vertical_anchor_point" v="1"/>
+              </layer>
+            </symbol>
+          </markerStyle>
+          <annotationFontProperties description="Cantarell,11,-1,5,50,0,0,0,0,0" style=""/>
+        </ComposerMapGrid>
+        <ComposerMapOverview frameMap="-1" centered="0" inverted="0" uuid="{19bef0f7-9e7f-476e-b31b-d9a995d1f1a4}" name="Aperçu 1" show="1" blendMode="0">
+          <symbol alpha="0.3" clip_to_extent="1" type="fill" name="">
+            <layer pass="0" class="SimpleFill" locked="0">
+              <prop k="border_width_map_unit_scale" v="0,0,0,0,0,0"/>
+              <prop k="color" v="255,0,0,255"/>
+              <prop k="joinstyle" v="bevel"/>
+              <prop k="offset" v="0,0"/>
+              <prop k="offset_map_unit_scale" v="0,0,0,0,0,0"/>
+              <prop k="offset_unit" v="MM"/>
+              <prop k="outline_color" v="0,0,0,255"/>
+              <prop k="outline_style" v="no"/>
+              <prop k="outline_width" v="0.26"/>
+              <prop k="outline_width_unit" v="MM"/>
+              <prop k="style" v="solid"/>
+            </layer>
+          </symbol>
+        </ComposerMapOverview>
+        <AtlasMap scalingMode="1" atlasDriven="0" margin="0.10000000000000001"/>
+        <ComposerItem pagey="18" page="1" id="" lastValidViewScaleFactor="1.03719" positionMode="0" positionLock="false" x="0" y="18" visibility="1" zValue="1" background="true" transparency="0" frameJoinStyle="miter" blendMode="0" width="237.2" outlineWidth="0.3" excludeFromExports="0" uuid="{2835ecbd-6089-4454-b22e-707b558ecef1}" height="191.85" itemRotation="0" frame="true" pagex="0">
+          <FrameColor alpha="255" red="0" blue="0" green="0"/>
+          <BackgroundColor alpha="255" red="255" blue="255" green="255"/>
+          <customproperties/>
+        </ComposerItem>
+      </ComposerMap>
+      <ComposerAttributeTableV2 vectorLayerName="tram_stop_work" source="0" showGrid="1" maxFeatures="30" resizeMode="0" filterFeatures="false" featureFilter="" emptyTableMode="0" wrapString="" wrapBehaviour="0" headerMode="0" backgroundColor="255,255,255,255" showEmptyRows="0" emptyTableMessage="" showOnlyVisibleFeatures="1" vectorLayer="tram_stop_work20150416102656130" vectorLayerSource="dbname='/home/dhont/public_html/lizmap/lizmap/install/qgis/edition/transport.sqlite' table=&quot;tram_stop_work&quot; sql=" composerMap="0" headerHAlignment="0" contentFontColor="0,0,0,255" headerFontColor="0,0,0,255" cellMargin="1" filterToAtlasIntersection="0" relationId="" gridStrokeWidth="0.5" gridColor="0,0,0,255" showUniqueRowsOnly="0" vectorLayerProvider="spatialite">
+        <headerFontProperties description="Ubuntu,11,-1,5,50,0,0,0,0,0" style=""/>
+        <contentFontProperties description="Ubuntu,11,-1,5,50,0,0,0,0,0" style=""/>
+        <displayColumns>
+          <column width="0" vAlignment="128" attribute="work_id" sortByRank="0" hAlignment="1" heading="Id" sortOrder="0">
+            <backgroundColor alpha="0" red="0" blue="0" green="0"/>
+          </column>
+          <column width="0" vAlignment="128" attribute="work_date" sortByRank="1" hAlignment="1" heading="Date" sortOrder="1">
+            <backgroundColor alpha="0" red="0" blue="0" green="0"/>
+          </column>
+          <column width="0" vAlignment="128" attribute="work_title" sortByRank="0" hAlignment="1" heading="Title" sortOrder="0">
+            <backgroundColor alpha="0" red="0" blue="0" green="0"/>
+          </column>
+          <column width="0" vAlignment="128" attribute="work_description" sortByRank="0" hAlignment="1" heading="Description" sortOrder="0">
+            <backgroundColor alpha="0" red="0" blue="0" green="0"/>
+          </column>
+          <column width="0" vAlignment="128" attribute="tram_stop_id" sortByRank="0" hAlignment="1" heading="Stop id" sortOrder="0">
+            <backgroundColor alpha="0" red="0" blue="0" green="0"/>
+          </column>
+        </displayColumns>
+        <cellStyles>
+          <oddColumns enabled="0" cellBackgroundColor="255,255,255,255"/>
+          <evenColumns enabled="0" cellBackgroundColor="255,255,255,255"/>
+          <oddRows enabled="0" cellBackgroundColor="255,255,255,255"/>
+          <evenRows enabled="0" cellBackgroundColor="255,255,255,255"/>
+          <firstColumn enabled="0" cellBackgroundColor="255,255,255,255"/>
+          <lastColumn enabled="0" cellBackgroundColor="255,255,255,255"/>
+          <headerRow enabled="0" cellBackgroundColor="255,255,255,255"/>
+          <firstRow enabled="0" cellBackgroundColor="255,255,255,255"/>
+          <lastRow enabled="0" cellBackgroundColor="255,255,255,255"/>
+        </cellStyles>
+        <ComposerFrame sectionWidth="220.673" sectionHeight="197.439" hideBackgroundIfEmpty="0" hidePageIfEmpty="0" sectionX="0" sectionY="0">
+          <ComposerItem pagey="4.18073" page="2" id="" lastValidViewScaleFactor="-1" positionMode="0" positionLock="false" x="2.22844" y="224.181" visibility="1" zValue="8" background="false" transparency="0" frameJoinStyle="miter" blendMode="0" width="220.673" outlineWidth="0.3" excludeFromExports="0" uuid="{3dac7fb6-a4be-4daf-89b1-c1617d1d20c3}" height="197.439" itemRotation="0" frame="false" pagex="2.22844">
+            <FrameColor alpha="255" red="0" blue="0" green="0"/>
+            <BackgroundColor alpha="255" red="255" blue="255" green="255"/>
+            <customproperties/>
+          </ComposerItem>
+        </ComposerFrame>
+        <customproperties/>
+      </ComposerAttributeTableV2>
+      <customproperties/>
+    </Composition>
+  </Composer>
+  <Composer title="District card" visible="0">
+    <Composition resizeToContentsMarginLeft="0" snapping="0" showPages="1" guidesVisible="1" resizeToContentsMarginTop="0" worldFileMap="" alignmentSnap="1" printResolution="300" paperWidth="297" gridVisible="0" snapGridOffsetX="0" smartGuides="1" snapGridOffsetY="0" resizeToContentsMarginRight="0" snapTolerancePixels="10" printAsRaster="0" generateWorldFile="0" paperHeight="210" numPages="3" snapGridResolution="10" resizeToContentsMarginBottom="0">
+      <symbol alpha="1" clip_to_extent="1" type="fill" name="">
+        <layer pass="0" class="SimpleFill" locked="0">
+          <prop k="border_width_map_unit_scale" v="0,0,0,0,0,0"/>
+          <prop k="color" v="255,255,255,255"/>
+          <prop k="joinstyle" v="bevel"/>
+          <prop k="offset" v="0,0"/>
+          <prop k="offset_map_unit_scale" v="0,0,0,0,0,0"/>
+          <prop k="offset_unit" v="MM"/>
+          <prop k="outline_color" v="0,0,0,255"/>
+          <prop k="outline_style" v="no"/>
+          <prop k="outline_width" v="0.26"/>
+          <prop k="outline_width_unit" v="MM"/>
+          <prop k="style" v="solid"/>
+        </layer>
+      </symbol>
+      <ComposerLabel valign="32" marginX="1" marginY="1" labelText="Tram stops in the district" htmlState="0" halign="1">
+        <LabelFont description="Bitstream Vera Sans,16,-1,5,50,2,0,0,0,0" style=""/>
+        <FontColor red="0" blue="0" green="0"/>
+        <ComposerItem pagey="83.1213" page="2" id="" lastValidViewScaleFactor="-1" positionMode="0" positionLock="false" x="8.10892" y="303.121" visibility="1" zValue="24" background="false" transparency="0" frameJoinStyle="miter" blendMode="0" width="278.374" outlineWidth="0.3" excludeFromExports="0" uuid="{1882e5b6-7d46-4bbc-af77-e0c6ab1681f6}" height="7.59424" itemRotation="0" frame="false" pagex="8.10892">
+          <FrameColor alpha="255" red="0" blue="0" green="0"/>
+          <BackgroundColor alpha="255" red="255" blue="255" green="255"/>
+          <customproperties/>
+        </ComposerItem>
+      </ComposerLabel>
+      <ComposerLabel valign="32" marginX="1" marginY="1" labelText="Sub-districts" htmlState="0" halign="1">
+        <LabelFont description="Bitstream Vera Sans,16,-1,5,50,2,0,0,0,0" style="Oblique"/>
+        <FontColor red="0" blue="0" green="0"/>
+        <ComposerItem pagey="1.75219" page="2" id="" lastValidViewScaleFactor="-1" positionMode="0" positionLock="false" x="8.10892" y="221.752" visibility="1" zValue="12" background="false" transparency="0" frameJoinStyle="miter" blendMode="0" width="281.133" outlineWidth="0.3" excludeFromExports="0" uuid="{70f96bb4-c794-43f1-8d56-5e9d18a4e5e6}" height="7.59424" itemRotation="0" frame="false" pagex="8.10892">
+          <FrameColor alpha="255" red="0" blue="0" green="0"/>
+          <BackgroundColor alpha="255" red="255" blue="255" green="255"/>
+          <customproperties/>
+        </ComposerItem>
+      </ComposerLabel>
+      <ComposerLabel valign="128" marginX="1" marginY="1" labelText="[%CASE WHEN  @atlas_featureid = $id THEN 'District : ' || &quot;LIBQUART&quot; ELSE 'No district' END%]" htmlState="0" halign="4">
+        <LabelFont description="Bitstream Vera Sans,24,-1,5,50,2,0,0,0,0" style="Oblique"/>
+        <FontColor red="0" blue="0" green="0"/>
+        <ComposerItem pagey="-1.50509e-14" page="1" id="" lastValidViewScaleFactor="-1" positionMode="0" positionLock="false" x="0" y="-1.50509e-14" visibility="1" zValue="9" background="false" transparency="0" frameJoinStyle="miter" blendMode="0" width="237.35" outlineWidth="0.3" excludeFromExports="0" uuid="{6e11b61b-5cdc-4b0a-a1b9-3552f564d3ee}" height="17.85" itemRotation="0" frame="false" pagex="0">
+          <FrameColor alpha="255" red="0" blue="0" green="0"/>
+          <BackgroundColor alpha="255" red="255" blue="255" green="255"/>
+          <customproperties/>
+        </ComposerItem>
+      </ComposerLabel>
+      <ComposerScaleBar lineCapStyle="square" style="Numeric" numMapUnitsPerScaleBarUnit="1" segmentSizeMode="0" alignment="0" numSegments="4" segmentMillimeters="0.00055192" lineJoinStyle="miter" minBarWidth="50" numUnitsPerSegment="0.01" units="1" labelBarSpace="3" outlineWidth="1" numSegmentsLeft="2" maxBarWidth="150" height="3" boxContentSpace="1" mapId="0" unitLabel=" m">
+        <scaleBarFont description="Ubuntu,12,-1,5,50,0,0,0,0,0" style=""/>
+        <fillColor alpha="255" red="0" blue="0" green="0"/>
+        <fillColor2 alpha="255" red="255" blue="255" green="255"/>
+        <strokeColor alpha="255" red="0" blue="0" green="0"/>
+        <textColor alpha="255" red="0" blue="0" green="0"/>
+        <ComposerItem pagey="195.486" page="1" id="" lastValidViewScaleFactor="3.44841" positionMode="0" positionLock="false" x="182.834" y="195.486" visibility="1" zValue="7" background="true" transparency="0" frameJoinStyle="miter" blendMode="0" width="34.092" outlineWidth="0.3" excludeFromExports="0" uuid="{b2df3140-8939-4713-bd6c-062c42863c9f}" height="7.76667" itemRotation="0" frame="false" pagex="182.834">
+          <FrameColor alpha="255" red="0" blue="0" green="0"/>
+          <BackgroundColor alpha="150" red="255" blue="255" green="255"/>
+          <customproperties/>
+        </ComposerItem>
+      </ComposerScaleBar>
+      <ComposerPicture resizeMode="0" svgBorderWidth="0.2" pictureRotation="0" pictureWidth="14.2361" svgFillColor="255,255,255,255" svgBorderColor="0,0,0,255" northMode="0" file="/usr/share/qgis/svg/arrows/Arrow_05.svg" northOffset="0" pictureHeight="14.2361" mapId="0" anchorPoint="4">
+        <ComposerItem pagey="191.227" page="1" id="" lastValidViewScaleFactor="3.66844" positionMode="0" positionLock="false" x="216.926" y="191.227" visibility="1" zValue="6" background="true" transparency="0" frameJoinStyle="miter" blendMode="0" width="14.2361" outlineWidth="0.3" excludeFromExports="0" uuid="{3d36198c-b71f-4be4-9dc0-e540e737e3ce}" height="16.2837" itemRotation="0" frame="false" pagex="216.926">
+          <FrameColor alpha="255" red="0" blue="0" green="0"/>
+          <BackgroundColor alpha="255" red="255" blue="255" green="255"/>
+          <dataDefinedSource expr="" field="" active="false" useExpr="true"/>
+          <customproperties/>
+        </ComposerItem>
+      </ComposerPicture>
+      <ComposerLabel valign="32" marginX="0" marginY="0" labelText="Description" htmlState="0" halign="1">
+        <LabelFont description="Cantarell,10,-1,5,50,0,0,0,0,0" style=""/>
+        <FontColor red="0" blue="0" green="0"/>
+        <ComposerItem pagey="165" page="1" id="description" lastValidViewScaleFactor="3.44841" positionMode="0" positionLock="false" x="8.10892" y="165" visibility="1" zValue="5" background="true" transparency="0" frameJoinStyle="miter" blendMode="0" width="160.345" outlineWidth="0.3" excludeFromExports="0" uuid="{370ffed0-dfde-40b2-9f68-c2bf847b6435}" height="39.1449" itemRotation="0" frame="false" pagex="8.10892">
+          <FrameColor alpha="255" red="0" blue="0" green="0"/>
+          <BackgroundColor alpha="150" red="255" blue="255" green="255"/>
+          <customproperties/>
+        </ComposerItem>
+      </ComposerLabel>
+      <ComposerMap followPreset="false" mapRotation="0" keepLayerSet="true" followPresetName="" id="1" previewMode="Cache" drawCanvasItems="true">
+        <Extent ymin="43.55700000000000216" xmin="3.78988000000000014" ymax="43.69059872847996928" xmax="3.96975999999999996"/>
+        <LayerSet>
+          <Layer provider="ogr" source="/home/dhont/public_html/lizmap/lizmap/install/qgis/data/vector/VilleMTP_MTP_Quartiers_2011_4326.shp" name="VilleMTP_MTP_Quartiers_2011_4326">VilleMTP_MTP_Quartiers_2011_432620130116112351546</Layer>
+        </LayerSet>
+        <Grid/>
+        <ComposerMapGrid rightAnnotationDirection="0" gridFramePenColor="0,0,0,255" show="0" bottomAnnotationPosition="1" annotationPrecision="3" showAnnotation="0" topFrameDivisions="0" uuid="{79ab9045-ef71-4cf1-83f1-f90bfe64ad9f}" leftAnnotationDirection="0" topAnnotationPosition="1" rightAnnotationDisplay="0" offsetX="0" offsetY="0" rightFrameDivisions="0" gridStyle="0" annotationFontColor="0,0,0,255" intervalX="0" gridFrameSideFlags="15" intervalY="0" bottomAnnotationDirection="0" leftAnnotationDisplay="0" leftFrameDivisions="0" frameFillColor1="255,255,255,255" annotationExpression="" frameFillColor2="0,0,0,255" crossLength="3" gridFramePenThickness="0.5" bottomAnnotationDisplay="0" unit="0" topAnnotationDisplay="0" leftAnnotationPosition="1" blendMode="0" gridFrameStyle="0" rightAnnotationPosition="1" gridFrameWidth="2" name="Grille 1" annotationFormat="0" bottomFrameDivisions="0" topAnnotationDirection="0" frameAnnotationDistance="1">
+          <lineStyle>
+            <symbol alpha="1" clip_to_extent="1" type="line" name="">
+              <layer pass="0" class="SimpleLine" locked="0">
+                <prop k="capstyle" v="flat"/>
+                <prop k="customdash" v="5;2"/>
+                <prop k="customdash_map_unit_scale" v="0,0,0,0,0,0"/>
+                <prop k="customdash_unit" v="MM"/>
+                <prop k="draw_inside_polygon" v="0"/>
+                <prop k="joinstyle" v="bevel"/>
+                <prop k="line_color" v="0,0,0,255"/>
+                <prop k="line_style" v="solid"/>
+                <prop k="line_width" v="0.3"/>
+                <prop k="line_width_unit" v="MM"/>
+                <prop k="offset" v="0"/>
+                <prop k="offset_map_unit_scale" v="0,0,0,0,0,0"/>
+                <prop k="offset_unit" v="MM"/>
+                <prop k="use_custom_dash" v="0"/>
+                <prop k="width_map_unit_scale" v="0,0,0,0,0,0"/>
+              </layer>
+            </symbol>
+          </lineStyle>
+          <markerStyle>
+            <symbol alpha="1" clip_to_extent="1" type="marker" name="">
+              <layer pass="0" class="SimpleMarker" locked="0">
+                <prop k="angle" v="0"/>
+                <prop k="color" v="0,0,0,255"/>
+                <prop k="horizontal_anchor_point" v="1"/>
+                <prop k="joinstyle" v="bevel"/>
+                <prop k="name" v="circle"/>
+                <prop k="offset" v="0,0"/>
+                <prop k="offset_map_unit_scale" v="0,0,0,0,0,0"/>
+                <prop k="offset_unit" v="MM"/>
+                <prop k="outline_color" v="0,0,0,255"/>
+                <prop k="outline_style" v="solid"/>
+                <prop k="outline_width" v="0"/>
+                <prop k="outline_width_map_unit_scale" v="0,0,0,0,0,0"/>
+                <prop k="outline_width_unit" v="MM"/>
+                <prop k="scale_method" v="area"/>
+                <prop k="size" v="2"/>
+                <prop k="size_map_unit_scale" v="0,0,0,0,0,0"/>
+                <prop k="size_unit" v="MM"/>
+                <prop k="vertical_anchor_point" v="1"/>
+              </layer>
+            </symbol>
+          </markerStyle>
+          <annotationFontProperties description="Cantarell,11,-1,5,50,0,0,0,0,0" style=""/>
+        </ComposerMapGrid>
+        <ComposerMapOverview frameMap="0" centered="0" inverted="0" uuid="{78b57275-366a-45f4-89d0-0f0161d156c5}" name="Aperçu 1" show="1" blendMode="0">
+          <symbol alpha="1" clip_to_extent="1" type="fill" name="">
+            <layer pass="0" class="SimpleFill" locked="0">
+              <prop k="border_width_map_unit_scale" v="0,0,0,0,0,0"/>
+              <prop k="color" v="255,0,0,70"/>
+              <prop k="joinstyle" v="bevel"/>
+              <prop k="offset" v="0,0"/>
+              <prop k="offset_map_unit_scale" v="0,0,0,0,0,0"/>
+              <prop k="offset_unit" v="MM"/>
+              <prop k="outline_color" v="255,0,0,255"/>
+              <prop k="outline_style" v="solid"/>
+              <prop k="outline_width" v="0.46"/>
+              <prop k="outline_width_unit" v="MM"/>
+              <prop k="style" v="solid"/>
+            </layer>
+          </symbol>
+        </ComposerMapOverview>
+        <AtlasMap scalingMode="2" atlasDriven="0" margin="0.10000000000000001"/>
+        <ComposerItem pagey="162.072" page="1" id="" lastValidViewScaleFactor="1.03719" positionMode="0" positionLock="false" x="237.35" y="162.072" visibility="1" zValue="3" background="true" transparency="0" frameJoinStyle="miter" blendMode="0" width="60.5889" outlineWidth="0.3" excludeFromExports="0" uuid="{a50537f9-5e73-4610-955e-31b092d81b94}" height="45" itemRotation="0" frame="false" pagex="237.35">
+          <FrameColor alpha="255" red="0" blue="0" green="0"/>
+          <BackgroundColor alpha="255" red="255" blue="255" green="255"/>
+          <customproperties/>
+        </ComposerItem>
+      </ComposerMap>
+      <ComposerLegend symbolWidth="6" title="Légende" rasterBorderWidth="0" titleAlignment="1" map="0" wmsLegendWidth="50" rasterBorderColor="0,0,0,255" wrapChar="" fontColor="#000000" legendFilterByAtlas="0" columnCount="1" wmsLegendHeight="25" columnSpace="2" symbolHeight="3" equalColumnWidth="1" resizeToContents="1" splitLayer="1" boxSpace="2" rasterBorder="1">
+        <styles>
+          <style marginBottom="2" name="title">
+            <styleFont description="Ubuntu,14,-1,5,50,0,0,0,0,0" style=""/>
+          </style>
+          <style marginTop="2" name="group">
+            <styleFont description="Ubuntu,12,-1,5,50,0,0,0,0,0" style=""/>
+          </style>
+          <style marginTop="2" name="subgroup">
+            <styleFont description="Ubuntu,11,-1,5,50,0,0,0,0,0" style=""/>
+          </style>
+          <style marginTop="2" name="symbol">
+            <styleFont description="Cantarell,11,-1,5,50,0,0,0,0,0" style=""/>
+          </style>
+          <style marginTop="2" marginLeft="2" name="symbolLabel">
+            <styleFont description="Ubuntu,9,-1,5,50,0,0,0,0,0" style=""/>
+          </style>
+        </styles>
+        <layer-tree-group expanded="1" checked="Qt::Checked" name="">
+          <customproperties/>
+          <layer-tree-layer expanded="1" providerKey="spatialite" checked="Qt::Checked" id="edition_point20130118171631518" source="dbname='/home/dhont/public_html/lizmap/lizmap/install/qgis/edition/edition_db.sqlite' table=&quot;edition_point&quot; (geometry) sql=" name="points of interest">
+            <customproperties>
+              <property key="legend/title-label" value="Points of interest"/>
+              <property key="legend/title-style" value="subgroup"/>
+            </customproperties>
+          </layer-tree-layer>
+          <layer-tree-layer expanded="1" providerKey="spatialite" checked="Qt::Checked" id="edition_line20130409161630329" source="dbname='/home/dhont/public_html/lizmap/lizmap/install/qgis/edition/edition_db.sqlite' table=&quot;edition_line&quot; (geom) sql=" name="edition_line">
+            <customproperties>
+              <property key="legend/title-label" value="Bicycle rides"/>
+              <property key="legend/title-style" value="subgroup"/>
+            </customproperties>
+          </layer-tree-layer>
+          <layer-tree-layer expanded="1" providerKey="spatialite" checked="Qt::Checked" id="edition_polygon20130409114333776" source="dbname='/home/dhont/public_html/lizmap/lizmap/install/qgis/edition/edition_db.sqlite' table=&quot;edition_polygon&quot; (geom) sql=" name="areas_of_interest">
+            <customproperties>
+              <property key="legend/title-style" value="subgroup"/>
+            </customproperties>
+          </layer-tree-layer>
+          <layer-tree-layer expanded="1" providerKey="ogr" checked="Qt::Checked" id="bus_stops20121106170806413" source="/home/dhont/public_html/lizmap/lizmap/install/qgis/data/vector/bus_stops.shp" name="bus_stops">
+            <customproperties>
+              <property key="legend/title-style" value="hidden"/>
+            </customproperties>
+          </layer-tree-layer>
+          <layer-tree-layer expanded="1" providerKey="ogr" checked="Qt::Checked" id="VilleMTP_MTP_Quartiers_2011_432620130116112610876" source="/home/dhont/public_html/lizmap/lizmap/install/qgis/data/vector/VilleMTP_MTP_Quartiers_2011_4326.shp" name="Quartiers">
+            <customproperties>
+              <property key="legend/title-style" value="subgroup"/>
+            </customproperties>
+          </layer-tree-layer>
+          <layer-tree-layer expanded="1" checked="Qt::Checked" id="VilleMTP_MTP_SousQuartiers_201120130929113137811" name="SousQuartiers">
+            <customproperties>
+              <property key="legend/title-label" value="Sous-Quartiers"/>
+              <property key="legend/title-style" value="hidden"/>
+            </customproperties>
+          </layer-tree-layer>
+        </layer-tree-group>
+        <ComposerItem pagey="0" page="1" id="" lastValidViewScaleFactor="1.43937" positionMode="0" positionLock="false" x="237.35" y="0" visibility="1" zValue="2" background="true" transparency="0" frameJoinStyle="miter" blendMode="0" width="48.2016" outlineWidth="0.3" excludeFromExports="0" uuid="{c63c2fc5-19e6-4fbf-a0b9-be5900bd4a45}" height="146.5" itemRotation="0" frame="false" pagex="237.35">
           <FrameColor alpha="255" red="0" blue="0" green="0"/>
           <BackgroundColor alpha="150" red="255" blue="255" green="255"/>
           <customproperties/>
@@ -726,29 +1047,35 @@
           </symbol>
         </ComposerMapOverview>
         <AtlasMap scalingMode="1" atlasDriven="1" margin="0.10000000000000001"/>
-        <ComposerItem pagey="18" page="1" id="" lastValidViewScaleFactor="1.42425" positionMode="0" positionLock="false" x="0" y="18" visibility="1" zValue="1" background="true" transparency="0" frameJoinStyle="miter" blendMode="0" width="237.2" outlineWidth="0.3" excludeFromExports="0" uuid="{2835ecbd-6089-4454-b22e-707b558ecef1}" height="191.85" itemRotation="0" frame="true" pagex="0">
+        <ComposerItem pagey="18" page="1" id="" lastValidViewScaleFactor="1.03719" positionMode="0" positionLock="false" x="0" y="18" visibility="1" zValue="1" background="true" transparency="0" frameJoinStyle="miter" blendMode="0" width="237.2" outlineWidth="0.3" excludeFromExports="0" uuid="{a228885d-4d7a-4ae0-af9b-02a4fe7cd814}" height="191.85" itemRotation="0" frame="true" pagex="0">
           <FrameColor alpha="255" red="0" blue="0" green="0"/>
           <BackgroundColor alpha="255" red="255" blue="255" green="255"/>
           <customproperties/>
         </ComposerItem>
       </ComposerMap>
-      <ComposerAttributeTableV2 vectorLayerName="tram_stop_work" source="0" showGrid="1" maxFeatures="30" resizeMode="0" filterFeatures="false" featureFilter="" emptyTableMode="0" wrapString="" wrapBehaviour="0" headerMode="0" backgroundColor="255,255,255,255" showEmptyRows="0" emptyTableMessage="" showOnlyVisibleFeatures="1" vectorLayer="tram_stop_work20150416102656130" vectorLayerSource="dbname='/var/www/LIZMAP/master/lizmap/install/qgis/edition/transport.sqlite' table=&quot;tram_stop_work&quot; sql=" composerMap="0" headerHAlignment="0" contentFontColor="0,0,0,255" headerFontColor="0,0,0,255" cellMargin="1" filterToAtlasIntersection="0" relationId="" gridStrokeWidth="0.5" gridColor="0,0,0,255" showUniqueRowsOnly="0" vectorLayerProvider="spatialite">
+      <ComposerAttributeTableV2 vectorLayerName="SousQuartiers" source="0" showGrid="1" maxFeatures="30" resizeMode="0" filterFeatures="true" featureFilter=" &quot;QUARTMNO&quot; = attribute(  @atlas_feature , 'QUARTMNO' )" emptyTableMode="0" wrapString="" wrapBehaviour="0" headerMode="0" backgroundColor="255,255,255,255" showEmptyRows="0" emptyTableMessage="" showOnlyVisibleFeatures="0" vectorLayer="SousQuartiers20160121124316563" vectorLayerSource="/home/dhont/public_html/lizmap/lizmap/install/qgis/data/vector/VilleMTP_MTP_SousQuartiers_2011.shp" composerMap="1" headerHAlignment="0" contentFontColor="0,0,0,255" headerFontColor="0,0,0,255" cellMargin="1" filterToAtlasIntersection="0" relationId="" gridStrokeWidth="0.5" gridColor="0,0,0,255" showUniqueRowsOnly="0" vectorLayerProvider="ogr">
         <headerFontProperties description="Ubuntu,11,-1,5,50,0,0,0,0,0" style=""/>
         <contentFontProperties description="Ubuntu,11,-1,5,50,0,0,0,0,0" style=""/>
         <displayColumns>
-          <column width="0" vAlignment="128" attribute="work_id" sortByRank="0" hAlignment="1" heading="Id" sortOrder="0">
+          <column width="0" vAlignment="128" attribute="LIBSQUART" sortByRank="0" hAlignment="1" heading="Name" sortOrder="0">
             <backgroundColor alpha="0" red="0" blue="0" green="0"/>
           </column>
-          <column width="0" vAlignment="128" attribute="work_date" sortByRank="1" hAlignment="1" heading="Date" sortOrder="1">
+          <column width="0" vAlignment="128" attribute="socio_population_2009" sortByRank="0" hAlignment="2" heading="Population (2009)" sortOrder="0">
             <backgroundColor alpha="0" red="0" blue="0" green="0"/>
           </column>
-          <column width="0" vAlignment="128" attribute="work_title" sortByRank="0" hAlignment="1" heading="Title" sortOrder="0">
+          <column width="0" vAlignment="128" attribute="socio_population_percentage" sortByRank="0" hAlignment="2" heading="% population Montpellier" sortOrder="0">
             <backgroundColor alpha="0" red="0" blue="0" green="0"/>
           </column>
-          <column width="0" vAlignment="128" attribute="work_description" sortByRank="0" hAlignment="1" heading="Description" sortOrder="0">
+          <column width="0" vAlignment="128" attribute="socio_average_income" sortByRank="0" hAlignment="2" heading="Average income (€)" sortOrder="0">
             <backgroundColor alpha="0" red="0" blue="0" green="0"/>
           </column>
-          <column width="0" vAlignment="128" attribute="tram_stop_id" sortByRank="0" hAlignment="1" heading="Stop id" sortOrder="0">
+          <column width="0" vAlignment="128" attribute="socio_prop_percentage" sortByRank="0" hAlignment="2" heading="Owners (%)" sortOrder="0">
+            <backgroundColor alpha="0" red="0" blue="0" green="0"/>
+          </column>
+          <column width="0" vAlignment="128" attribute="socio_loc_percentage" sortByRank="0" hAlignment="2" heading="Tenants (%)" sortOrder="0">
+            <backgroundColor alpha="0" red="0" blue="0" green="0"/>
+          </column>
+          <column width="0" vAlignment="128" attribute="popdensity" sortByRank="0" hAlignment="2" heading="Density ( inhabitants / km2 )" sortOrder="0">
             <backgroundColor alpha="0" red="0" blue="0" green="0"/>
           </column>
         </displayColumns>
@@ -763,8 +1090,55 @@
           <firstRow enabled="0" cellBackgroundColor="255,255,255,255"/>
           <lastRow enabled="0" cellBackgroundColor="255,255,255,255"/>
         </cellStyles>
-        <ComposerFrame sectionWidth="198.455" sectionHeight="197.439" hideBackgroundIfEmpty="0" hidePageIfEmpty="0" sectionX="0" sectionY="0">
-          <ComposerItem pagey="4.18073" page="2" id="" lastValidViewScaleFactor="-1" positionMode="0" positionLock="false" x="2.22844" y="224.181" visibility="1" zValue="8" background="false" transparency="0" frameJoinStyle="miter" blendMode="0" width="198.455" outlineWidth="0.3" excludeFromExports="0" uuid="{3dac7fb6-a4be-4daf-89b1-c1617d1d20c3}" height="197.439" itemRotation="0" frame="false" pagex="2.22844">
+        <ComposerFrame sectionWidth="275.616" sectionHeight="73.7749" hideBackgroundIfEmpty="0" hidePageIfEmpty="0" sectionX="0" sectionY="0">
+          <ComposerItem pagey="9.34643" page="2" id="" lastValidViewScaleFactor="-1" positionMode="0" positionLock="false" x="8.10892" y="229.346" visibility="1" zValue="11" background="false" transparency="0" frameJoinStyle="miter" blendMode="0" width="275.616" outlineWidth="0.3" excludeFromExports="0" uuid="{01c30beb-689e-4062-8d01-f18b54f75b86}" height="73.7749" itemRotation="0" frame="false" pagex="8.10892">
+            <FrameColor alpha="255" red="0" blue="0" green="0"/>
+            <BackgroundColor alpha="255" red="255" blue="255" green="255"/>
+            <customproperties/>
+          </ComposerItem>
+        </ComposerFrame>
+        <customproperties/>
+      </ComposerAttributeTableV2>
+      <ComposerAttributeTableV2 vectorLayerName="tramstop" source="0" showGrid="1" maxFeatures="30" resizeMode="0" filterFeatures="false" featureFilter="" emptyTableMode="0" wrapString="" wrapBehaviour="0" headerMode="1" backgroundColor="255,255,255,255" showEmptyRows="0" emptyTableMessage="" showOnlyVisibleFeatures="0" vectorLayer="tramstop20150328114203878" vectorLayerSource="dbname='/home/dhont/public_html/lizmap/lizmap/install/qgis/edition/transport.sqlite' table=&quot;tramstop&quot; (geometry) sql=" composerMap="0" headerHAlignment="0" contentFontColor="0,0,0,255" headerFontColor="0,0,0,255" cellMargin="1" filterToAtlasIntersection="1" relationId="" gridStrokeWidth="0.5" gridColor="0,0,0,255" showUniqueRowsOnly="0" vectorLayerProvider="spatialite">
+        <headerFontProperties description="Ubuntu,11,-1,5,50,0,0,0,0,0" style=""/>
+        <contentFontProperties description="Ubuntu,11,-1,5,50,0,0,0,0,0" style=""/>
+        <displayColumns>
+          <column width="0" vAlignment="128" attribute="OGC_FID" sortByRank="0" hAlignment="1" heading="Id" sortOrder="0">
+            <backgroundColor alpha="0" red="0" blue="0" green="0"/>
+          </column>
+          <column width="0" vAlignment="128" attribute="osm_id" sortByRank="0" hAlignment="1" heading="Id OSM" sortOrder="0">
+            <backgroundColor alpha="0" red="0" blue="0" green="0"/>
+          </column>
+          <column width="0" vAlignment="128" attribute="name" sortByRank="0" hAlignment="1" heading="Stop name" sortOrder="0">
+            <backgroundColor alpha="0" red="0" blue="0" green="0"/>
+          </column>
+          <column width="0" vAlignment="128" attribute="wkt" sortByRank="0" hAlignment="1" heading="wkt" sortOrder="0">
+            <backgroundColor alpha="0" red="0" blue="0" green="0"/>
+          </column>
+          <column width="0" vAlignment="128" attribute="unique_name" sortByRank="0" hAlignment="1" heading="Unique name" sortOrder="0">
+            <backgroundColor alpha="0" red="0" blue="0" green="0"/>
+          </column>
+        </displayColumns>
+        <cellStyles>
+          <oddColumns enabled="0" cellBackgroundColor="255,255,255,255"/>
+          <evenColumns enabled="0" cellBackgroundColor="255,255,255,255"/>
+          <oddRows enabled="0" cellBackgroundColor="255,255,255,255"/>
+          <evenRows enabled="0" cellBackgroundColor="255,255,255,255"/>
+          <firstColumn enabled="0" cellBackgroundColor="255,255,255,255"/>
+          <lastColumn enabled="0" cellBackgroundColor="255,255,255,255"/>
+          <headerRow enabled="0" cellBackgroundColor="255,255,255,255"/>
+          <firstRow enabled="0" cellBackgroundColor="255,255,255,255"/>
+          <lastRow enabled="0" cellBackgroundColor="255,255,255,255"/>
+        </cellStyles>
+        <ComposerFrame sectionWidth="230.377" sectionHeight="119.284" hideBackgroundIfEmpty="0" hidePageIfEmpty="0" sectionX="0" sectionY="0">
+          <ComposerItem pagey="90.7156" page="2" id="" lastValidViewScaleFactor="-1" positionMode="0" positionLock="false" x="8.10892" y="310.716" visibility="1" zValue="8" background="false" transparency="0" frameJoinStyle="miter" blendMode="0" width="230.377" outlineWidth="0.3" excludeFromExports="0" uuid="{13115e2d-3dda-4c17-b2f6-ae6e09766183}" height="119.284" itemRotation="0" frame="false" pagex="8.10892">
+            <FrameColor alpha="255" red="0" blue="0" green="0"/>
+            <BackgroundColor alpha="255" red="255" blue="255" green="255"/>
+            <customproperties/>
+          </ComposerItem>
+        </ComposerFrame>
+        <ComposerFrame sectionWidth="230.377" sectionHeight="197.439" hideBackgroundIfEmpty="0" hidePageIfEmpty="1" sectionX="0" sectionY="119.284">
+          <ComposerItem pagey="0" page="3" id="" lastValidViewScaleFactor="-1" positionMode="0" positionLock="false" x="8.10892" y="440" visibility="1" zValue="10" background="false" transparency="0" frameJoinStyle="miter" blendMode="0" width="230.377" outlineWidth="0.3" excludeFromExports="0" uuid="{0ca22a63-0559-4361-be91-4b2cd4443a9e}" height="197.439" itemRotation="0" frame="false" pagex="8.10892">
             <FrameColor alpha="255" red="0" blue="0" green="0"/>
             <BackgroundColor alpha="255" red="255" blue="255" green="255"/>
             <customproperties/>
@@ -774,7 +1148,7 @@
       </ComposerAttributeTableV2>
       <customproperties/>
     </Composition>
-    <Atlas hideCoverage="false" coverageLayer="VilleMTP_MTP_Quartiers_2011_432620130116112610876" singleFile="false" filenamePattern="'output_'||@atlas_featurenumber" enabled="true" coverageLayerName="Quartiers" filterFeatures="false" coverageLayerProvider="ogr" sortFeatures="false" pageNameExpression="" coverageLayerSource="/var/www/LIZMAP/master/lizmap/install/qgis/data/vector/VilleMTP_MTP_Quartiers_2011_4326.shp"/>
+    <Atlas hideCoverage="false" coverageLayer="VilleMTP_MTP_Quartiers_2011_432620130116112610876" singleFile="false" filenamePattern="'output_'||@atlas_featurenumber" enabled="true" coverageLayerName="Quartiers" filterFeatures="false" coverageLayerProvider="ogr" sortFeatures="false" pageNameExpression="" coverageLayerSource="/home/dhont/public_html/lizmap/lizmap/install/qgis/data/vector/VilleMTP_MTP_Quartiers_2011_4326.shp"/>
   </Composer>
   <projectlayers>
     <maplayer simplifyAlgorithm="0" minimumScale="-4.65661e-10" maximumScale="1e+08" simplifyDrawingHints="1" minLabelScale="0" maxLabelScale="1e+08" simplifyDrawingTol="1" readOnly="0" geometry="Polygon" simplifyMaxScale="1" type="vector" hasScaleBasedVisibilityFlag="0" simplifyLocal="1" scaleBasedLabelVisibilityFlag="0">
@@ -1101,7 +1475,7 @@
         <attribute>QUARTMNO</attribute>
       </excludeAttributesWMS>
       <excludeAttributesWFS/>
-      <attributeactions default="0"/>
+      <attributeactions default="-1"/>
       <attributetableconfig actionWidgetStyle="dropDown" sortExpression="" sortOrder="0">
         <columns/>
       </attributetableconfig>
@@ -1849,7 +2223,7 @@ def my_form_open(dialog, layer, feature):
       </aliases>
       <excludeAttributesWMS/>
       <excludeAttributesWFS/>
-      <attributeactions default="0"/>
+      <attributeactions default="-1"/>
       <attributetableconfig actionWidgetStyle="dropDown" sortExpression="" sortOrder="0">
         <columns>
           <column width="-1" hidden="1" type="field" name="QUARTIER"/>
@@ -4493,7 +4867,7 @@ def my_form_open(dialog, layer, feature):
       <layername>osm-mapnik</layername>
       <srs>
         <spatialrefsys>
-          <proj4>+proj=merc +a=6378137 +b=6378137 +lat_ts=0.0 +lon_0=0.0 +x_0=0.0 +y_0=0 +k=1.0 +units=m +nadgrids=@null +wktext +no_defs</proj4>
+          <proj4>+proj=merc +a=6378137 +b=6378137 +lat_ts=0.0 +lon_0=0.0 +x_0=0.0 +y_0=0 +k=1.0 +units=m +nadgrids=@null +wktext  +no_defs</proj4>
           <srsid>3857</srsid>
           <srid>3857</srid>
           <authid>EPSG:3857</authid>
@@ -4538,7 +4912,7 @@ def my_form_open(dialog, layer, feature):
       <layername>osm-stamen-toner</layername>
       <srs>
         <spatialrefsys>
-          <proj4>+proj=merc +a=6378137 +b=6378137 +lat_ts=0.0 +lon_0=0.0 +x_0=0.0 +y_0=0 +k=1.0 +units=m +nadgrids=@null +wktext +no_defs</proj4>
+          <proj4>+proj=merc +a=6378137 +b=6378137 +lat_ts=0.0 +lon_0=0.0 +x_0=0.0 +y_0=0 +k=1.0 +units=m +nadgrids=@null +wktext  +no_defs</proj4>
           <srsid>3857</srsid>
           <srid>3857</srid>
           <authid>EPSG:3857</authid>
@@ -4584,7 +4958,7 @@ def my_form_open(dialog, layer, feature):
       <layername>publicbuildings</layername>
       <srs>
         <spatialrefsys>
-          <proj4>+proj=merc +a=6378137 +b=6378137 +lat_ts=0.0 +lon_0=0.0 +x_0=0.0 +y_0=0 +k=1.0 +units=m +nadgrids=@null +wktext +no_defs</proj4>
+          <proj4>+proj=merc +a=6378137 +b=6378137 +lat_ts=0.0 +lon_0=0.0 +x_0=0.0 +y_0=0 +k=1.0 +units=m +nadgrids=@null +wktext  +no_defs</proj4>
           <srsid>3857</srsid>
           <srid>3857</srid>
           <authid>EPSG:3857</authid>
