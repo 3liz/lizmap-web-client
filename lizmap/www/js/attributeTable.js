@@ -1149,6 +1149,15 @@ var lizAttributeTable = function() {
                         $( aTable ).dataTable( {
                              data: dataSet
                             ,columns: columns
+                            ,initComplete: function(settings, json) {
+                                var featureType = $(this).selector.split('#attribute-layer-table-')[1];
+                                // Trigger event telling attribute table is ready
+                                lizMap.events.triggerEvent("attributeLayerContentReady",
+                                    {
+                                        'featureType': featureType
+                                    }
+                                );
+                            }
                             ,order: [[ firstDisplayedColIndex, "asc" ]]
                             ,language: { url:lizUrls["dataTableLanguage"] }
                             ,deferRender: true
@@ -1244,12 +1253,6 @@ var lizAttributeTable = function() {
 
                 }
 
-                // Trigger event telling attribute table is ready
-                lizMap.events.triggerEvent("attributeLayerContentReady",
-                    {
-                        'featureType': aName
-                    }
-                );
                 if (aCallback)
                     aCallback(aName,aTable);
 
