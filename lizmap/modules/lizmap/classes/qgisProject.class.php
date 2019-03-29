@@ -574,7 +574,7 @@ class qgisProject
     {
         $WMSUseLayerIDs = $xml->xpath('//properties/WMSUseLayerIDs');
 
-        return  $WMSUseLayerIDs && count($WMSUseLayerIDs) > 0 && $WMSUseLayerIDs[0] == 'true';
+        return $WMSUseLayerIDs && count($WMSUseLayerIDs) > 0 && $WMSUseLayerIDs[0] == 'true';
     }
 
     /**
@@ -624,7 +624,6 @@ class qgisProject
                     }
                 }
 
-                $items = $xmlLayer->xpath('//item');
                 if ($layer['title'] == '') {
                     $layer['title'] = $layer['name'];
                 }
@@ -632,6 +631,7 @@ class qgisProject
                     $fields = array();
                     $wfsFields = array();
                     $aliases = array();
+                    $defaults = array();
                     $edittypes = $xmlLayer->xpath('.//edittype');
                     if ($edittypes) {
                         foreach ($edittypes as $edittype) {
@@ -641,6 +641,8 @@ class qgisProject
                             }
                             $fields[] = $field;
                             $wfsFields[] = $field;
+                            $aliases[$field] = $field;
+                            $defaults[$field] = null;
                         }
                     } else {
                         $fieldconfigurations = $xmlLayer->xpath('.//fieldConfiguration/field');
@@ -652,19 +654,27 @@ class qgisProject
                                 }
                                 $fields[] = $field;
                                 $wfsFields[] = $field;
+                                $aliases[$field] = $field;
+                                $defaults[$field] = null;
                             }
                         }
                     }
-                    foreach ($fields as $field) {
-                        $aliases[$field] = $field;
-                        $alias = $xmlLayer->xpath("aliases/alias[@field='".$field."']");
-                        if ($alias && count($alias) != 0) {
-                            $alias = $alias[0];
-                            $aliases[$field] = (string) $alias['name'];
+
+                    if (isset($xmlLayer->aliases->alias)) {
+                        foreach($xmlLayer->aliases->alias as $alias) {
+                            $aliases[(string) $alias['field']] = (string) $alias['name'];
                         }
                     }
+
+                    if (isset($xmlLayer->defaults->default)) {
+                        foreach($xmlLayer->defaults->default as $default) {
+                            $defaults[(string) $default['field']] = (string) $default['expression'];
+                        }
+                    }
+
                     $layer['fields'] = $fields;
                     $layer['aliases'] = $aliases;
+                    $layer['defaults'] = $defaults;
                     $layer['wfsFields'] = $wfsFields;
 
                     $excludeFields = $xmlLayer->xpath('.//excludeAttributesWFS/attribute');
