@@ -3920,11 +3920,13 @@ var lizMap = function() {
       return false;
     }
 
-    // Filtering print tamplates by removing atlas one
+    // Filtering print templates by removing atlas ones
     var pTemplates = [];
     for( var i=0, len=config.printTemplates.length; i<len; i++ ){
         var pTemplate = config.printTemplates[i];
-        if('atlas' in pTemplate)
+        if('atlas' in pTemplate 
+          && 'enabled' in pTemplate.atlas
+          && pTemplate.atlas.enabled === '1')
             continue;
         pTemplates.push(pTemplate);
     }
