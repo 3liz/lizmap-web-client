@@ -28,6 +28,9 @@ class qgisFormControl
     // Qgis field name
     public $fieldName = '';
 
+    // QGIS default value
+    public $defaultValue = null;
+
     // Qgis field type
     public $fieldEditType = '';
 
@@ -171,11 +174,12 @@ class qgisFormControl
      *
      * @param string           $ref                name of the control
      * @param SimpleXMLElement $edittype           simplexml object corresponding to the QGIS edittype for this field
-     * @param object|array|string $aliasXml        simplexml object corresponding to the QGIS alias for this field
-     * @param object           $rendererCategories simplexml object corresponding to the QGIS categories of the renderer
      * @param object           $prop               Jelix object with field properties (datatype, required, etc.)
+     * @param object|array|string $aliasXml        simplexml object corresponding to the QGIS alias for this field
+     * @param string           $defaultValue       the QGIS expression of the default value
+     * @param object           $rendererCategories simplexml object corresponding to the QGIS categories of the renderer
      */
-    public function __construct($ref, $edittype, $aliasXml = null, $rendererCategories = null, $prop)
+    public function __construct($ref, $edittype, $prop, $aliasXml = null, $defaultValue=null, $rendererCategories = null)
     {
 
     // Add new editTypes naming convention since QGIS 2.4
@@ -215,6 +219,8 @@ class qgisFormControl
             $this->fieldAlias = $aliasXml;
         }
         $this->fieldDataType = $this->castDataType[strtolower($prop->type)];
+
+        $this->defaultValue = $defaultValue;
 
         if ($prop->notNull && !$prop->autoIncrement) {
             $this->required = true;
@@ -526,6 +532,10 @@ class qgisFormControl
         // Required
         if ($this->required) {
             $this->ctrl->required = true;
+        }
+
+        if ($this->defaultValue !== null) {
+            $this->ctrl->defaultValue = $this->defaultValue;
         }
     }
 
