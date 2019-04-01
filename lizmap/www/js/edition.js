@@ -1183,14 +1183,11 @@ OpenLayers.Geometry.pointOnSegment = function(point, segment) {
     }
 
     function handleEditionFormSubmit( form ){
-
-        console.log('handleEditionFormSubmit');
-
         // Detect click on submit buttons
         editionLayer['submitActor'] = 'submit';
         form.find('input[type="submit"]').click(function(evt){
             var subprefix = form.attr('id') + '_' + '_submit' + '_';
-            var submitActor = $(this).attr('id').replace(subprefix, '')
+            var submitActor = $(this).attr('id').replace(subprefix, '');
             editionLayer['submitActor'] = submitActor;
 
             // Confirm the use of the cancel button
@@ -1226,7 +1223,7 @@ OpenLayers.Geometry.pointOnSegment = function(point, segment) {
                     return false;
                 // Some client side errors have been detected in form
                 if( msg != 'ok' ){
-                    addEditionMessage( msg, 'info', true)
+                    addEditionMessage( msg, 'info', true);
                     return false;
                 }
 
