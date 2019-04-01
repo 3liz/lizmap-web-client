@@ -3924,7 +3924,7 @@ var lizMap = function() {
     var pTemplates = [];
     for( var i=0, len=config.printTemplates.length; i<len; i++ ){
         var pTemplate = config.printTemplates[i];
-        if('atlas' in pTemplate 
+        if('atlas' in pTemplate
           && 'enabled' in pTemplate.atlas
           && (pTemplate.atlas.enabled === '1' || pTemplate.atlas.enabled === 'true'))
             continue;
@@ -4093,6 +4093,7 @@ var lizMap = function() {
         $('#print .print-labels').html('');
         $('#print .print-labels').hide();
       }
+      updateMiniDockSize();
       if (dragCtrl.active) {
         dragCtrl.deactivate();
         dragCtrl.layout = layout;
