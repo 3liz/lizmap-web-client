@@ -363,6 +363,32 @@ class qgisVectorLayer extends qgisMapLayer
             $values[] = $record->{$field};
         }
 
+        // Add default value
+        $dbFieldsInfo = $this->getDbFieldsInfo();
+        $dataFields = $dbFieldsInfo->dataFields;
+        if (array_key_exists($field, $dataFields)) {
+            $prop = $dataFields[$field];
+            if ($prop->hasDefault && $prop->default != '' &&
+                !in_array($prop->default, $values)) {
+
+                $provider = $this->getProvider();
+                $cnx = null;
+                if ($provider == 'postgres') {
+                    $cnx = $this->getDatasourceConnection();
+                }
+                // if provider is postgres evaluate default value
+                if ($provider == 'postgres') {
+                    $ds = $cnx->query('SELECT '.$prop->default.' AS v;');
+                    $d = $ds->fetch();
+                    if ($d && !in_array($d->v, $values)) {
+                        array_unshift($values, $d->v);
+                    }
+                } else {
+                    array_unshift($values, $prop->default);
+                }
+            }
+        }
+
         return $values;
     }
 
