@@ -179,6 +179,14 @@ class lizmapWFSRequest extends lizmapOGCRequest
 
         // Get fields
         $wfsFields = $this->qgisLayer->getWfsFields();
+        // Get Db fields
+        $dbFields = $this->qgisLayer->getDbFieldList();
+        // Verifying that every wfs fields are db fields
+        // if not return getfeatureQgis
+        foreach ($wfsFields as $field) {
+            if (!array_key_exists($field, $dbFields))
+                return $this->getfeatureQgis();
+        }
 
         // Build SQL
         // SELECT
