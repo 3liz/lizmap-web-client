@@ -555,15 +555,25 @@ class qgisForm
 
                 break;
               case 'integer':
-                $value = (int) filter_var($value, FILTER_SANITIZE_NUMBER_INT);
-                if (!$value && $value !== 0) {
+                if (is_numeric($value)) {
+                    $value = (int) filter_var($value, FILTER_SANITIZE_NUMBER_INT);
+                    if (!$value && $value !== 0) {
+                        $value = 'NULL';
+                    }
+                }
+                else {
                     $value = 'NULL';
                 }
 
                 break;
               case 'float':
-                $value = (float) $value;
-                if (!$value && $value !== 0.0) {
+                if (is_numeric($value)) {
+                    $value = (float) $value;
+                    if (!$value && $value !== 0.0) {
+                        $value = 'NULL';
+                    }
+                }
+                else {
                     $value = 'NULL';
                 }
 
