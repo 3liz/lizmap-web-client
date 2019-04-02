@@ -1050,15 +1050,26 @@ class editionCtrl extends jController
 
                     break;
                 case 'integer':
-                    $value = filter_var($value, FILTER_SANITIZE_NUMBER_INT);
-                    if (!$value) {
+                    if (is_numeric($value)) {
+                        $value = filter_var($value, FILTER_SANITIZE_NUMBER_INT);
+                            if (!$value) {
+                                $value = 'NULL';
+                            }
+                        }
+                    }
+                    else {
                         $value = 'NULL';
                     }
 
                     break;
                 case 'float':
-                    $value = (float) $value;
-                    if (!$value) {
+                    if (is_numeric($value)) {
+                        $value = (float) $value;
+                        if (!$value) {
+                            $value = 'NULL';
+                        }
+                    }
+                    else {
                         $value = 'NULL';
                     }
 
