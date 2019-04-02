@@ -3924,7 +3924,7 @@ var lizMap = function() {
     var pTemplates = [];
     for( var i=0, len=config.printTemplates.length; i<len; i++ ){
         var pTemplate = config.printTemplates[i];
-        if('atlas' in pTemplate 
+        if('atlas' in pTemplate
           && 'enabled' in pTemplate.atlas
           && (pTemplate.atlas.enabled === '1' || pTemplate.atlas.enabled === 'true'))
             continue;
@@ -4093,6 +4093,7 @@ var lizMap = function() {
         $('#print .print-labels').html('');
         $('#print .print-labels').hide();
       }
+      updateMiniDockSize();
       if (dragCtrl.active) {
         dragCtrl.deactivate();
         dragCtrl.layout = layout;
@@ -6987,7 +6988,7 @@ lizMap.events.on({
             options.numZoomLevels = options.numZoomLevels - lOptions.zoomOffset;
           var bmap = new OpenLayers.Layer.Bing({
              key: evt.config.options.bingKey,
-             type: "RoadOnDemand",
+             type: "Road",
              name: "Bing Road", // the default
              numZoomLevels: options.numZoomLevels, maxResolution: options.maxResolution, minZoomLevel:options.zoomOffset
           });
@@ -7047,7 +7048,7 @@ lizMap.events.on({
             options.numZoomLevels = options.numZoomLevels - lOptions.zoomOffset;
           var bhybrid = new OpenLayers.Layer.Bing({
              key: evt.config.options.bingKey,
-             type: "AerialWithLabelsOnDemand",
+             type: "AerialWithLabels",
              name: "Bing Hybrid", // the default
              numZoomLevels: options.numZoomLevels, maxResolution: options.maxResolution, minZoomLevel:options.zoomOffset
           });
