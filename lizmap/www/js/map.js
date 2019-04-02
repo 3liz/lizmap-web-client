@@ -6554,7 +6554,7 @@ lizMap.events.on({
             options.numZoomLevels = options.numZoomLevels - lOptions.zoomOffset;
           var bmap = new OpenLayers.Layer.Bing({
              key: evt.config.options.bingKey,
-             type: "RoadOnDemand",
+             type: "Road",
              name: "Bing Road", // the default
              numZoomLevels: options.numZoomLevels, maxResolution: options.maxResolution, minZoomLevel:options.zoomOffset
           });
@@ -6614,7 +6614,7 @@ lizMap.events.on({
             options.numZoomLevels = options.numZoomLevels - lOptions.zoomOffset;
           var bhybrid = new OpenLayers.Layer.Bing({
              key: evt.config.options.bingKey,
-             type: "AerialWithLabelsOnDemand",
+             type: "AerialWithLabels",
              name: "Bing Hybrid", // the default
              numZoomLevels: options.numZoomLevels, maxResolution: options.maxResolution, minZoomLevel:options.zoomOffset
           });
