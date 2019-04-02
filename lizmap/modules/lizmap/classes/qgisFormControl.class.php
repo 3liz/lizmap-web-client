@@ -368,23 +368,23 @@ class qgisFormControl
                                 } elseif ($a == '.jpg' or $a == '.jpeg') {
                                     if (!in_array('image/jpg', $mimetypes)) {
                                         $mimetypes = array_merge($mimetypes, array('image/jpg', 'image/jpeg', 'image/pjpeg'));
-                                    } elseif ($a == '.bm' or $a == '.bmp') {
-                                        if (!in_array('image/bmp', $mimetypes)) {
-                                            $mimetypes = array_merge($mimetypes, array('image/bmp', 'image/x-windows-bmp'));
-                                        } elseif ($a == '.pbm') {
-                                            $mimetypes[] = 'image/x-portable-bitmap';
-                                        } elseif ($a == '.pgm') {
-                                            $mimetypes = array_merge($mimetypes, array('image/x-portable-graymap', 'image/x-portable-greymap'));
-                                        } elseif ($a == '.ppm') {
-                                            $mimetypes[] = 'image/x-portable-pixmap';
-                                        } elseif ($a == '.xbm') {
-                                            $mimetypes = array_merge($mimetypes, array('image/xbm', 'image/x-xbm', 'image/x-xbitmap'));
-                                        } elseif ($a == '.xpm') {
-                                            $mimetypes = array_merge($mimetypes, array('image/xpm', 'image/x-xpixmap'));
-                                        } elseif ($a == '.svg') {
-                                            $mimetypes[] = 'image/svg+xml';
-                                        }
                                     }
+                                } elseif ($a == '.bm' or $a == '.bmp') {
+                                    if (!in_array('image/bmp', $mimetypes)) {
+                                        $mimetypes = array_merge($mimetypes, array('image/bmp', 'image/x-windows-bmp'));
+                                    }
+                                } elseif ($a == '.pbm') {
+                                    $mimetypes[] = 'image/x-portable-bitmap';
+                                } elseif ($a == '.pgm') {
+                                    $mimetypes = array_merge($mimetypes, array('image/x-portable-graymap', 'image/x-portable-greymap'));
+                                } elseif ($a == '.ppm') {
+                                    $mimetypes[] = 'image/x-portable-pixmap';
+                                } elseif ($a == '.xbm') {
+                                    $mimetypes = array_merge($mimetypes, array('image/xbm', 'image/x-xbm', 'image/x-xbitmap'));
+                                } elseif ($a == '.xpm') {
+                                    $mimetypes = array_merge($mimetypes, array('image/xpm', 'image/x-xpixmap'));
+                                } elseif ($a == '.svg') {
+                                    $mimetypes[] = 'image/svg+xml';
                                 }
                             }
                             $upload->mimetype = array_unique($mimetypes);
