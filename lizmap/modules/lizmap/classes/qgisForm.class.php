@@ -655,9 +655,10 @@ class qgisForm
         // update
         if ($choiceValue == 'update' && $value != '') {
             $alreadyValueIdx = 0;
+            $originalValue = $value;
             while (file_exists($targetFullPath.'/'.$value)) {
                 ++$alreadyValueIdx;
-                $splitValue = explode('.', $value);
+                $splitValue = explode('.', $originalValue);
                 $splitValue[0] = $splitValue[0].$alreadyValueIdx;
                 $value = implode('.', $splitValue);
             }
