@@ -1297,48 +1297,55 @@ var lizAttributeTable = function() {
                     // Check if we need to replace url or media by link
                     // Add function for any string cell
                     // First check if the col is number
-                    if (idx in cTypes && cTypes[idx] == 'integer')
-                        colConf['mRender'] = function( data, type, full, meta ){
-                            return parseInt(data);
-                        }
-                    else if (idx in cTypes && cTypes[idx] == 'long')
-                        colConf['mRender'] = function( data, type, full, meta ){
-                            return parseInt(data);
-                        }
-                    else if (idx in cTypes && cTypes[idx] == 'double')
-                        colConf['mRender'] = function( data, type, full, meta ){
-                            return parseFloat(data);
-                        }
-                    else
-                        colConf['mRender'] = function( data, type, full, meta ){
-                            // Translate field ( language translation OR code->label translation )
-                            var colMeta = meta.settings.aoColumns[meta.col];
-                            var colName = colMeta.mData
-                            var translation_dict = null;
-                            var tdata = data;
-                            if(data)
-                                tdata = lizMap.translateWfsFieldValues(aName, colName, data.toString(), translation_dict);
-                            if( tdata === null )
-                                tdata = data;
+                    if (idx in cTypes){
+                        switch (cTypes[idx]) {
+                            case 'integer':
+                            case 'int':
+                            case 'unsignedInt':
+                            case 'long':
+                            case 'unsignedLong':
+                                colConf['mRender'] = function( data, type, full, meta ){
+                                    return parseInt(data);
+                                }
+                                break;
+                            case 'decimal':
+                            case 'double':
+                                colConf['mRender'] = function( data, type, full, meta ){
+                                    return parseFloat(data);
+                                }
+                                break;
+                            default:
+                                colConf['mRender'] = function( data, type, full, meta ){
+                                    // Translate field ( language translation OR code->label translation )
+                                    var colMeta = meta.settings.aoColumns[meta.col];
+                                    var colName = colMeta.mData
+                                    var translation_dict = null;
+                                    var tdata = data;
+                                    if(data)
+                                        tdata = lizMap.translateWfsFieldValues(aName, colName, data.toString(), translation_dict);
+                                    if( tdata === null )
+                                        tdata = data;
 
-                            // Replace media and URL with links
-                            if( !tdata || !( typeof tdata === 'string') )
-                                return tdata;
-                            if( tdata.substr(0,6) == 'media/' || tdata.substr(0,7) == '/media/' || tdata.substr(0,9) == '../media/'){
-                                var rdata = tdata;
-                                if( tdata.substr(0,7) == '/media/' )
-                                    rdata = tdata.slice(1);
-                                return '<a href="' + mediaLinkPrefix + '&path=' + rdata + '" target="_blank">' + colMeta.title + '</a>';
-                            }
-                            else if( tdata.substr(0,4) == 'http' || tdata.substr(0,3) == 'www' ){
-                                var rdata = tdata;
-                                if(tdata.substr(0,3) == 'www')
-                                    rdata = 'http://' + tdata;
-                                return '<a href="' + rdata + '" target="_blank">' + tdata + '</a>';
-                            }
-                            else
-                                return tdata;
+                                    // Replace media and URL with links
+                                    if( !tdata || !( typeof tdata === 'string') )
+                                        return tdata;
+                                    if( tdata.substr(0,6) == 'media/' || tdata.substr(0,7) == '/media/' || tdata.substr(0,9) == '../media/'){
+                                        var rdata = tdata;
+                                        if( tdata.substr(0,7) == '/media/' )
+                                            rdata = tdata.slice(1);
+                                        return '<a href="' + mediaLinkPrefix + '&path=' + rdata + '" target="_blank">' + colMeta.title + '</a>';
+                                    }
+                                    else if( tdata.substr(0,4) == 'http' || tdata.substr(0,3) == 'www' ){
+                                        var rdata = tdata;
+                                        if(tdata.substr(0,3) == 'www')
+                                            rdata = 'http://' + tdata;
+                                        return '<a href="' + rdata + '" target="_blank">' + tdata + '</a>';
+                                    }
+                                    else
+                                        return tdata;
+                                }
                         }
+                    }
                     columns.push( colConf );
                 }
 
