@@ -526,7 +526,7 @@ class qgisForm
 
             if (($value === '' || $value === null) &&
               !$this->formControls[$ref]->required
-          ) {
+            ) {
                 $values[$ref] = 'NULL';
 
                 continue;
@@ -654,18 +654,29 @@ class qgisForm
 
         // update
         if ($choiceValue == 'update' && $value != '') {
-            $alreadyValueIdx = 0;
-            $originalValue = $value;
-            while (file_exists($targetFullPath.'/'.$value)) {
-                ++$alreadyValueIdx;
-                $splitValue = explode('.', $originalValue);
-                $splitValue[0] = $splitValue[0].$alreadyValueIdx;
-                $value = implode('.', $splitValue);
-            }
-            $form->saveFile($ref, $targetFullPath, $value);
-            $value = $targetPath.'/'.$value;
-            if ($hiddenValue && file_exists(realpath($repPath.'/'.$hiddenValue))) {
-                unlink(realpath($repPath.'/'.$hiddenValue));
+            // if the new file and the old file have the same name...
+            if ($hiddenValue == preg_replace('#/{2,3}#', '/', $targetPath.'/'.$value)) {
+                // overwrite the old file by the new one, and don't delete old file
+                $form->saveFile($ref, $targetFullPath, $value);
+                $value = $targetPath.'/'.$value;
+            } else {
+                $alreadyValueIdx = 0;
+                $originalValue = $value;
+                while (file_exists($targetFullPath.'/'.$value)) {
+                    ++$alreadyValueIdx;
+                    $splitValue = explode('.', $originalValue);
+                    $splitValue[0] = $splitValue[0].$alreadyValueIdx;
+                    $value = implode('.', $splitValue);
+                }
+                if ($form->saveFile($ref, $targetFullPath, $value)) {
+                    $value = $targetPath.'/'.$value;
+                    if ($hiddenValue && file_exists(realpath($repPath.'/'.$hiddenValue))) {
+                        unlink(realpath($repPath.'/'.$hiddenValue));
+                    }
+                } else {
+                    // something wrong did happen, let's keep the old file
+                    $value = $hiddenValue;
+                }
             }
         }
         // delete
