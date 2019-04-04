@@ -1,6 +1,6 @@
 ---
-name: Bug Report
-about: Report errors and problems
+name: 🐞 Bug Report
+about: Report errors and problems. The more precise is your bug report, the more quickly it will be fixed.
 
 ---
 
@@ -34,4 +34,4 @@ WARNING: obfuscate all sensible data (IP, passwords, domain name...) -->
  - QGIS Project version:
  - OS (Windows, Linux, MacOS, Android…): 
  - Browser (Firefox, Chrome…):
- - Lizmap data stored into Sqlite (default)? PostgreSQL? MySQL? 
+ - Lizmap data stored into SQLite (default)? PostgreSQL? MySQL? 

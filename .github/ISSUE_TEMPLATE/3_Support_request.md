@@ -1,5 +1,5 @@
 ---
-name: Support Question
+name: ❓ Support/Questions
 about: Questions about using or installing Lizmap.  
 
 ---
