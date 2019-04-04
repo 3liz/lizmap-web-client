@@ -1366,10 +1366,9 @@ class serviceCtrl extends jController
                     $go = false;
                 }
                 if ($go && $xml->complexType) {
-                    $layername = $layer->name;
                     $typename = (string) $xml->complexType->attributes()->name;
-                    if ($typename == $layername.'Type') {
-                        $jsonData['name'] = $layername;
+                    if ($typename == $this->params['typename'].'Type') {
+                        $jsonData['name'] = $layer->name;
                         $types = array();
                         $elements = $xml->complexType->complexContent->extension->sequence->element;
                         foreach ($elements as $element) {
