@@ -20,7 +20,8 @@ about: Report errors and problems
 
 
 ### Screenshots and logs
-<!-- optional. If applicable, add screenshots and/or logs to help explain your problem 
+<!-- optional. If applicable, add screenshots and/or logs to help explain your problem.
+Open developer console (F12 or Ctrl + Shift + I) and copy paste or make a screenshot of error messages in red if any.
 WARNING: obfuscate all sensible data (IP, passwords, domain name...) -->
 
 
@@ -31,9 +32,6 @@ WARNING: obfuscate all sensible data (IP, passwords, domain name...) -->
  - Lizmap version: 
  - QGIS Server version:
  - QGIS Project version:
- - OS (windows, linux, macOS, android..): 
- - Browser (Firefox, Chrome...):
- - Lizmap data stored into Sqlite (default)? Postgresql? Mysql? 
- 
-
-
+ - OS (Windows, Linux, MacOS, Android…): 
+ - Browser (Firefox, Chrome…):
+ - Lizmap data stored into Sqlite (default)? PostgreSQL? MySQL? 
