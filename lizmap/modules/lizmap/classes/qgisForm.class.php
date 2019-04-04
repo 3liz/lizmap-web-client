@@ -526,82 +526,80 @@ class qgisForm
 
             if (($value === '' || $value === null) &&
               !$this->formControls[$ref]->required
-          ) {
+            ) {
                 $values[$ref] = 'NULL';
 
                 continue;
             }
 
             switch ($this->formControls[$ref]->fieldDataType) {
-              case 'geometry':
-                try {
-                    $value = $this->layer->getGeometryAsSql($value);
-                } catch (Exception $e) {
-                    $form->setErrorOn($geometryColumn, $e->getMessage());
+                case 'geometry':
+                    try {
+                        $value = $this->layer->getGeometryAsSql($value);
+                    } catch (Exception $e) {
+                        $form->setErrorOn($geometryColumn, $e->getMessage());
 
-                    return false;
-                }
+                        return false;
+                    }
 
-                break;
-              case 'date':
-              case 'time':
-              case 'datetime':
-                $value = filter_var($value, FILTER_SANITIZE_STRING, FILTER_FLAG_NO_ENCODE_QUOTES);
-                if (!$value) {
-                    $value = 'NULL';
-                } else {
-                    $value = $cnx->quote($value);
-                }
+                    break;
+                case 'date':
+                case 'time':
+                case 'datetime':
+                    $value = filter_var($value, FILTER_SANITIZE_STRING, FILTER_FLAG_NO_ENCODE_QUOTES);
+                    if (!$value) {
+                        $value = 'NULL';
+                    } else {
+                        $value = $cnx->quote($value);
+                    }
 
-                break;
-              case 'integer':
-                if (is_numeric($value)) {
-                    $value = (int) filter_var($value, FILTER_SANITIZE_NUMBER_INT);
-                    if (!$value && $value !== 0) {
+                    break;
+                case 'integer':
+                    if (is_numeric($value)) {
+                        $value = (int) filter_var($value, FILTER_SANITIZE_NUMBER_INT);
+                        if (!$value && $value !== 0) {
+                            $value = 'NULL';
+                        }
+                    } else {
                         $value = 'NULL';
                     }
-                }
-                else {
-                    $value = 'NULL';
-                }
 
-                break;
-              case 'float':
-                if (is_numeric($value)) {
-                    $value = (float) $value;
-                    if (!$value && $value !== 0.0) {
+                    break;
+                case 'float':
+                    if (is_numeric($value)) {
+                        $value = (float) $value;
+                        if (!$value && $value !== 0.0) {
+                            $value = 'NULL';
+                        }
+                    } else {
                         $value = 'NULL';
                     }
-                }
-                else {
-                    $value = 'NULL';
-                }
 
-                break;
-              case 'text':
-                $value = $cnx->quote($value);
-
-                break;
-              case 'boolean':
-                $strVal = strtolower($value);
-                if ($strVal != 'true' && $strVal !== 't' && intval($value) != 1 &&
-                   $strVal !== 'on' && $value !== true &&
-                   $strVal != 'false' && $strVal !== 'f' && intval($value) != 0 &&
-                   $strVal !== 'off' && $value !== false
-                ) {
-                    $value = 'NULL';
-                } else {
+                    break;
+                case 'text':
                     $value = $cnx->quote($value);
-                }
 
-                break;
-              default:
-                $value = $cnx->quote(
-                    filter_var($value, FILTER_SANITIZE_STRING, FILTER_FLAG_NO_ENCODE_QUOTES)
-                );
+                    break;
+                case 'boolean':
+                    $strVal = strtolower($value);
+                    if ($strVal != 'true' && $strVal !== 't' && intval($value) != 1 &&
+                       $strVal !== 'on' && $value !== true &&
+                       $strVal != 'false' && $strVal !== 'f' && intval($value) != 0 &&
+                       $strVal !== 'off' && $value !== false
+                    ) {
+                        $value = 'NULL';
+                    } else {
+                        $value = $cnx->quote($value);
+                    }
 
-                break;
-          }
+                    break;
+                default:
+                    $value = $cnx->quote(
+                        filter_var($value, FILTER_SANITIZE_STRING, FILTER_FLAG_NO_ENCODE_QUOTES)
+                    );
+
+                    break;
+            }
             $values[$ref] = $value;
         }
 
@@ -617,6 +615,7 @@ class qgisForm
             $form->setErrorOn($geometryColumn, jLocale::get('view~edition.message.error.save'));
             jLog::log('An error has been raised when saving form data edition to db : ', 'error');
             jLog::logEx($e, 'error');
+
             return false;
         }
 
@@ -654,17 +653,29 @@ class qgisForm
 
         // update
         if ($choiceValue == 'update' && $value != '') {
-            $alreadyValueIdx = 0;
-            while (file_exists($targetFullPath.'/'.$value)) {
-                ++$alreadyValueIdx;
-                $splitValue = explode('.', $value);
-                $splitValue[0] = $splitValue[0].$alreadyValueIdx;
-                $value = implode('.', $splitValue);
-            }
-            $form->saveFile($ref, $targetFullPath, $value);
-            $value = $targetPath.'/'.$value;
-            if ($hiddenValue && file_exists(realpath($repPath.'/'.$hiddenValue))) {
-                unlink(realpath($repPath.'/'.$hiddenValue));
+            // if the new file and the old file have the same name...
+            if ($hiddenValue == preg_replace('#/{2,3}#', '/', $targetPath.'/'.$value)) {
+                // overwrite the old file by the new one, and don't delete old file
+                $form->saveFile($ref, $targetFullPath, $value);
+                $value = $targetPath.'/'.$value;
+            } else {
+                $alreadyValueIdx = 0;
+                $originalValue = $value;
+                while (file_exists($targetFullPath.'/'.$value)) {
+                    ++$alreadyValueIdx;
+                    $splitValue = explode('.', $originalValue);
+                    $splitValue[0] = $splitValue[0].$alreadyValueIdx;
+                    $value = implode('.', $splitValue);
+                }
+                if ($form->saveFile($ref, $targetFullPath, $value)) {
+                    $value = $targetPath.'/'.$value;
+                    if ($hiddenValue && file_exists(realpath($repPath.'/'.$hiddenValue))) {
+                        unlink(realpath($repPath.'/'.$hiddenValue));
+                    }
+                } else {
+                    // something wrong did happen, let's keep the old file
+                    $value = $hiddenValue;
+                }
             }
         }
         // delete
