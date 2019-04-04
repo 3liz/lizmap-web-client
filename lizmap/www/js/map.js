@@ -5588,7 +5588,7 @@ OpenLayers.Control.HighlightFeature = OpenLayers.Class(OpenLayers.Control, {
                   'SERVICE':'WFS'
                  ,'VERSION':'1.0.0'
                  ,'REQUEST':'DescribeFeatureType'
-                 ,'TYPENAME':aName
+                 ,'TYPENAME': ('typename' in aConfig) ? aConfig.typename : aName
                  ,'OUTPUTFORMAT':'JSON'
               }, function(describe) {
 
