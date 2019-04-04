@@ -34,4 +34,4 @@ WARNING: obfuscate all sensible data (IP, passwords, domain name...) -->
  - QGIS Project version:
  - OS (Windows, Linux, MacOS, Android…): 
  - Browser (Firefox, Chrome…):
- - Lizmap data stored into SQLite (default)? PostgreSQL? MySQL? 
+ - Lizmap admin information (users, logs…) stored into Sqlite (default)? PostgreSQL? MySQL? 
