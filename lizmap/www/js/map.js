@@ -1128,28 +1128,37 @@ var lizMap = function() {
     var html = '';
     var nodeConfig = aNode.config;
     var parentConfig = null;
-    if( aParent ) parentConfig = aParent.config;
+
+    if( aParent ){
+      parentConfig = aParent.config;
+    }
 
     if( 'geometryType' in nodeConfig &&
         ( nodeConfig.geometryType == "none" || nodeConfig.geometryType == "unknown" || nodeConfig.geometryType == "" )
-    )
-        nodeConfig.displayInLegend = 'False';
+    ){
+      nodeConfig.displayInLegend = 'False';
+    }
 
     html += '<tr id="'+nodeConfig.type+'-'+aNode.name+'"';
     html += ' class="liz-'+nodeConfig.type;
-    if (aParent)
+    if (aParent){
       html += ' child-of-group-'+aParent.name;
-    if (('children' in aNode) && aNode['children'].length!=0)
+    }
+    if (('children' in aNode) && aNode['children'].length!=0){
       html += ' expanded parent';
-    if ( 'displayInLegend' in nodeConfig && nodeConfig.displayInLegend == 'False' )
+    }
+    if (('displayInLegend' in nodeConfig && nodeConfig.displayInLegend == 'False') || 
+        (parentConfig && 'displayInLegend' in parentConfig && parentConfig.displayInLegend == 'False')){
       html += ' liz-hidden';
-    if ( parentConfig && 'mutuallyExclusive' in parentConfig && parentConfig.mutuallyExclusive == 'True' )
+    }
+    if ( parentConfig && 'mutuallyExclusive' in parentConfig && parentConfig.mutuallyExclusive == 'True' ){
       html += ' mutually-exclusive';
+    }
 
     html += '">';
 
     function truncateWithEllipsis(str,n){
-          return (str.length > n) ? str.substr(0,n-1)+'&hellip;' : str;
+      return (str.length > n) ? str.substr(0,n-1)+'&hellip;' : str;
     };
 
     html += '<td><button class="btn checkbox" name="'+nodeConfig.type+'" value="'+aNode.name+'" title="'+lizDict['tree.button.checkbox']+'"></button>';
@@ -1157,23 +1166,29 @@ var lizMap = function() {
     html += '</td>';
 
     html += '<td>';
-    if (nodeConfig.type == 'layer')
+    if (nodeConfig.type == 'layer'){
       html += '<span class="loading">&nbsp;</span>';
+    }
     html += '</td>';
 
     var legendLink = '';
-    if (nodeConfig.link)
+    if (nodeConfig.link){
       legendLink = nodeConfig.link;
-    if (legendLink != '' )
+    }
+    if (legendLink != '' ){
       html += '<td><button class="btn link" name="link" title="'+lizDict['tree.button.link']+'" value="'+legendLink+'"/></td>';
-    else
+    }
+    else{
       html += '<td></td>';
+    }
 
     var removeCache = '';
-    if (nodeConfig.cached && nodeConfig.cached == 'True' && nodeConfig.type == 'layer' && ('removeCache' in config.options))
+    if (nodeConfig.cached && nodeConfig.cached == 'True' && nodeConfig.type == 'layer' && ('removeCache' in config.options)){
       html += '<td><button class="btn removeCache" name="removeCache" title="'+lizDict['tree.button.removeCache']+'" value="'+aNode.name+'"/></td>';
-    else
+    }
+    else{
       html += '<td></td>';
+    }
 
     html += '</tr>';
 
@@ -1182,11 +1197,11 @@ var lizMap = function() {
     && ('displayInLegend' in nodeConfig && nodeConfig.displayInLegend == 'True')) {
       var url = getLayerLegendGraphicUrl(aNode.name, false);
       if ( url != null && url != '' ) {
-          html += '<tr id="legend-'+aNode.name+'" class="child-of-layer-'+aNode.name+' legendGraphics">';
-          html += '<td colspan="2"><div class="legendGraphics">';
-          html += '<img data-src="'+url+'" src="'+lizUrls.basepath + 'css/images/download_layer.gif' + '"/>';
-          html += '</div></td>';
-          html += '</tr>';
+        html += '<tr id="legend-'+aNode.name+'" class="child-of-layer-'+aNode.name+' legendGraphics">';
+        html += '<td colspan="2"><div class="legendGraphics">';
+        html += '<img data-src="'+url+'" src="'+lizUrls.basepath + 'css/images/download_layer.gif' + '"/>';
+        html += '</div></td>';
+        html += '</tr>';
       }
     }
 
