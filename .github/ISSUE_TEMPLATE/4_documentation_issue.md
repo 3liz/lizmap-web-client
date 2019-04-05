@@ -1,6 +1,6 @@
 ---
-name: 📖 Documentation issue ❗️ See [https://github.com/3liz/lizmap-documentation](https://github.com/3liz/lizmap-documentation) instead
-about: 
+name: 📖 Documentation issue
+about: ❗️ See [https://github.com/3liz/lizmap-documentation](https://github.com/3liz/lizmap-documentation) instead
 
 ---
 
