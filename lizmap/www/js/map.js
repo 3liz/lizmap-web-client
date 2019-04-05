@@ -2085,21 +2085,23 @@ var lizMap = function() {
         self.removeClass('visible');
       }
     });
-    $("#switcher table.tree tbody").on("mousedown", "tr td span", function() {
-      var wasSelected = $(this).parents('tr:first').hasClass('selected');
-      var isSelected = !wasSelected;
-      $("#switcher table.tree tbody tr").removeClass('selected');
-      $(this).parents('tr:first').toggleClass("selected", isSelected);
-      $('#switcher-layers-actions').toggleClass('active', isSelected);
+    $("#switcher table.tree tbody").on("mousedown", "tr td span", function(event) {
+      // Only act on left button click
+      if(event.which === 1){
+        var wasSelected = $(this).parents('tr:first').hasClass('selected');
+        var isSelected = !wasSelected;
+        $("#switcher table.tree tbody tr").removeClass('selected');
+        $(this).parents('tr:first').toggleClass("selected", isSelected);
+        $('#switcher-layers-actions').toggleClass('active', isSelected);
 
-      // Trigger event
-      var id = $(this).parents('tr:first').attr('id');
-      var itemType = id.split('-')[0];
-      var itemName = id.split('-')[1];
-      lizMap.events.triggerEvent("lizmapswitcheritemselected",
-        { 'name': itemName, 'type': itemType, 'selected': isSelected}
-      );
-
+        // Trigger event
+        var id = $(this).parents('tr:first').attr('id');
+        var itemType = id.split('-')[0];
+        var itemName = id.split('-')[1];
+        lizMap.events.triggerEvent("lizmapswitcheritemselected",
+          { 'name': itemName, 'type': itemType, 'selected': isSelected}
+        );
+      }
     });
 
     lizMap.events.on({
