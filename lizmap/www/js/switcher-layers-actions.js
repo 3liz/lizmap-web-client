@@ -118,7 +118,7 @@ var lizLayerActionButtons = function() {
                 // Styles
                 if( metadatas.styles ){
                     var selectedStyle = '';
-                    var oLayer = lizMap.map.getLayersByName( aName )[0];
+                    var oLayer = lizMap.map.getLayersByName( lizMap.cleanName(aName) )[0];
                     if( oLayer && 'STYLES' in oLayer.params) {
                         selectedStyle = oLayer.params['STYLES'];
                     }
