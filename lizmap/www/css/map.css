@@ -2435,3 +2435,7 @@ a.lizmap-atlasprint-link span.icon{
   margin-right:7px;
 }
 
+/* Use exif to rotate images automatically */
+img {
+ image-orientation: from-image; 
+}
