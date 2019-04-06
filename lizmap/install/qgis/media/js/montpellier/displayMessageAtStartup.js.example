@@ -8,9 +8,15 @@ lizMap.events.on({
     html+= $('#metadata').html();
     html+= '</div>';
 
-    html+= '<div class="modal-footer"><button type="button" class="btn btn-default" data-dismiss="modal">Ok</button></div>';
+    html+= '<div class="modal-footer"><button id="button_OK" type="button" class="btn btn-default" data-dismiss="modal">Ok (&#9166;)</button></div>';
 
     $('#lizmap-modal').html(html).modal('show');
+
+    $('#lizmap-modal').keypress(function(e) {
+        if(e.which == 13) { //for key up use 13 - Touche Entrée
+            $('#button_OK').click();
+        }
+    });
 
   }
 
