@@ -83,9 +83,12 @@ class jIniFile {
             foreach($value as $v)
                 $res.=self::_iniValue($key.'[]', $v);
             return $res;
-        } else if ($value == ''
-                  || is_numeric($value)
-                  || (preg_match("/^[\w-.]*$/", $value) && strpos("\n",$value) === false)) {
+        } elseif ($value == ''
+            || is_numeric($value)
+            || (is_string($value) &&
+                preg_match("/^[\w\\-\\.]*$/", $value) &&
+                strpos("\n", $value) === false)
+        ) {
             return $key.'='.$value."\n";
         } else if($value === false) {
             return $key."=0\n";
