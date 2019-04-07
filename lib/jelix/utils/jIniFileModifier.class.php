@@ -530,7 +530,11 @@ class jIniFileModifier {
                 return "on";
             }
         }
-        if ($value === '' || is_numeric(trim($value)) || (preg_match("/^[\w-.]*$/", $value) && strpos("\n",$value) === false) ) {
+        if ($value === '' ||
+            is_numeric(trim($value)) ||
+            (is_string($value) && preg_match('/^[\\w\\-\\.]*$/u', $value) &&
+                strpos("\n", $value) === false)
+        ) {
             return $value;
         }else {
             $value='"'.$value.'"';

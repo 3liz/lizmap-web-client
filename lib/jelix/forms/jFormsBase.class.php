@@ -732,19 +732,8 @@ abstract class jFormsBase {
         if(!isset($this->controls[$controlName]) || $this->controls[$controlName]->type != 'upload')
             throw new jExceptionForms('jelix~formserr.invalid.upload.control.name', array($controlName, $this->sel));
 
-        if(!isset($_FILES[$controlName]) || $_FILES[$controlName]['error']!= UPLOAD_ERR_OK)
-            return false;
-
-        if($this->controls[$controlName]->maxsize && $_FILES[$controlName]['size'] > $this->controls[$controlName]->maxsize){
-            return false;
-        }
         jFile::createDir($path);
-        if ($alternateName == '') {
-            $path.= $_FILES[$controlName]['name'];
-        } else {
-            $path.= $alternateName;
-        }
-        return move_uploaded_file($_FILES[$controlName]['tmp_name'], $path);
+        return $this->controls[$controlName]->saveFile($path, $alternateName);
     }
 
     /**
@@ -756,20 +745,15 @@ abstract class jFormsBase {
         if ($path == '') {
             $path = jApp::varPath('uploads/'.$this->sel.'/');
         } else if (substr($path, -1, 1) != '/') {
-            $path.='/';
+            $path .= '/';
         }
 
-        if(count($this->uploads))
+        if (count($this->uploads)) {
             jFile::createDir($path);
+        }
 
         foreach($this->uploads as $ref=>$ctrl){
-
-            if(!isset($_FILES[$ref]) || $_FILES[$ref]['error']!= UPLOAD_ERR_OK)
-                continue;
-            if($ctrl->maxsize && $_FILES[$ref]['size'] > $ctrl->maxsize)
-                continue;
-
-            move_uploaded_file($_FILES[$ref]['tmp_name'], $path.$_FILES[$ref]['name']);
+            $ctrl->saveFile($path);
         }
     }
 
