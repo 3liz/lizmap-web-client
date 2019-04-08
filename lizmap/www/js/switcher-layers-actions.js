@@ -73,7 +73,7 @@ var lizLayerActionButtons = function() {
                 metadatas.abstract = layerConfig.abstract;
             if( layerConfig.link  )
                 metadatas.link = layerConfig.link;
-            if( layerConfig.styles  )
+            if( layerConfig.styles && layerConfig.styles.length > 1 )
                 metadatas.styles = layerConfig.styles
         }
         if( lizMap.map.baseLayer && lizMap.map.baseLayer.name == aName ){
