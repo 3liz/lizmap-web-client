@@ -11,7 +11,7 @@ you should do a pull request in Github.
 
 * New features are developped in **master** branch
 * **release_X_Y** branches are created for each stable version, for example release_3_1 for Lizmap 3.1
-* Bug fixes must land on the ***last release branch**, for example **release_3_1**. We regularly merge the last release branch in the master branch. No cherry-pick must be done from master into the release branch
+* Bug fixes must land on the **last release branch**, for example **release_3_1**. We regularly merge the last release branch in the master branch. No cherry-pick must be done from master into the release branch
 
 ## Commits
 
@@ -24,7 +24,7 @@ You should create commits in a new branch based on the target branch (see above)
 git checkout -b fix-something release_3_1 
 ```
 
-* Commit messages must be written with care. First line of the message is short and allows a quick comprehension. A description can be written after a line break if more text is needed..
+* Commit messages must be written with care. First line of the message is short and allows a quick comprehension. A description can be written after a line break if more text is needed.
 * Related issues must be written in the commit message. Be aware Github can close related issues when using some words: https://help.github.com/articles/closing-issues-via-commit-messages/
 * A keyword can be used to prefix the commit and describe the type of commit, between brackets like [FEATURE] or [BUGFIX]
 
@@ -56,10 +56,13 @@ Go to https://github.com/3liz/lizmap-web-client/issues and post issues you find.
 ## Testing your changes
 
 You can test your changes by running a Vagrant machine. It allows to create
-quickly a virtual machine with all softwares needed by Lizmap (Postgresql, QGis server...).
+quickly a virtual machine with all softwares needed by Lizmap (PostgreSQL, QGIS Server...).
 See vagrant/README.md for details and to learn how to launch this VM.
 
-## localization
+You can test with Android browsers in your Ubuntu Desktop thanks to [Anbox](https://docs.anbox.io/userguide/install.html#install-anbox).
+For example, you can [download a x86 version of Firefox Mobile](https://ftp.mozilla.org/pub/mobile/) then [install it](https://docs.anbox.io/userguide/install_apps.html#install-applications).
+
+## Localization
 
 The locale files are stored in the modules' locales directory.
 The files are *.properties. You can find documentation about localizing Jelix
