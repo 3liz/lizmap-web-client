@@ -36,9 +36,9 @@ class datavizPlot
 
     protected $aggregation;
 
-    protected $y_fields;
+    protected $y_fields = array();
 
-    protected $x_fields;
+    protected $x_fields = array();
 
     protected $colors = array();
 
