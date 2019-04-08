@@ -55,6 +55,15 @@ a:hover {
 .navbar .navbar-inner .icon {
   background-image:url(images/sprite_20_tools.png);
 }
+
+.navbar .nav .dashboard-item .icon {
+    background-position: -975px 0px;
+}
+.navbar .nav .dashboard-item a:hover .icon,
+.navbar .nav .dashboard-item.active a .icon {
+    background-position: -950px 0px;
+}
+
 .navbar .nav .login .icon {
   background-position: -225px 0px;
 }

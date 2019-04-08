@@ -1,5 +1,9 @@
 {hook 'LizTopMenuHtmlItems'}
+
 {ifuserconnected}
+    <li class="dashboard-item"><a href="{jurl 'master_admin~default:index'}">
+            <span class="icon dashboard-icon"></span> <span class="text hidden-phone">{@view~default.header.menuitem.admin.label@}</span></a>
+    </li>
     <li class="user dropdown">
         <a class="dropdown-toggle" data-toggle="dropdown" href="#" id="info-user">
             <span class="icon"></span>
