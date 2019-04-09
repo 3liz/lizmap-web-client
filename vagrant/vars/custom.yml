@@ -35,7 +35,7 @@
 #   wfsOutputExtension:
 #     repository: https://github.com/3liz/qgis-wfsOutputExtension
 #     version: master
-# qgis_repository_debian: http://qgis.org/debian-ltr
+#qgis_repository_debian: http://qgis.org/debian-ltr-2.18
 #qgis_repository_debian_key: 'CAEB3DC3BDF7FB45'
 #qgis_repository_debian_key_url: 'http://qgis.org/downloads/qgis-2017.gpg.key'
 
