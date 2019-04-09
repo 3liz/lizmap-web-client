@@ -73,4 +73,22 @@ class jFormsControlUpload extends jFormsControl {
             $this->setData('');
         }
     }
+
+    function saveFile($directoryPath, $alternateName='') {
+
+        if (!isset($_FILES[$this->ref]) || $_FILES[$this->ref]['error']!= UPLOAD_ERR_OK) {
+            return false;
+        }
+
+        if ($this->maxsize && $_FILES[$this->ref]['size'] > $this->maxsize) {
+            return false;
+        }
+
+        if ($alternateName == '') {
+            $directoryPath .= $_FILES[$this->ref]['name'];
+        } else {
+            $directoryPath .= $alternateName;
+        }
+        return move_uploaded_file($_FILES[$this->ref]['tmp_name'], $directoryPath);
+    }
 }

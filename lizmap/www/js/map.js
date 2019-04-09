@@ -901,6 +901,16 @@ var lizMap = function() {
       if ( layerConfig.groupAsLayer == 'True' )
         layerConfig.type = 'layer';
 
+      var wmsStyles = $.map(layer.styles, function( s, i ){
+          return s.name;
+      });
+      if ( wmsStyles.length != 0 ) {
+          layerConfig.styles = wmsStyles;
+      } else if ( 'qgisServerVersion' in config.options && config.options.qgisServerVersion.startsWith('3.') ) {
+          layerConfig.styles = [''];
+      } else {
+          layerConfig.styles = ['default'];
+      }
       // if the layer is not the Overview and had a config
       // creating the {<OpenLayers.Layer.WMS>} and the tree node
       var node = {name:layerName,config:layerConfig,parent:pNode};
@@ -3010,7 +3020,8 @@ var lizMap = function() {
     // Layers style
     for (var i=0,len=layers.length; i<len; i++) {
       var layer = layers[i];
-      if( layer.isVisible && layer.params['STYLES'] != 'default'){
+      if( layer.isVisible &&
+         (layer.params['STYLES'] != 'default' || layer.params['STYLES'] != '') ){
         style.push( layer.name + ':' + layer.params['STYLES'] );
       }
       if( layer.opacity && layer.opacity != 1 ){
@@ -4181,6 +4192,9 @@ var lizMap = function() {
               printLayers.push(l.params['LAYERS']);
               // Optionnaly add layer style if needed (same order as layers )
               var lst = 'default';
+              if ( 'qgisServerVersion' in config.options && config.options.qgisServerVersion.startsWith('3.') ) {
+                  lst = '';
+              }
               if( 'STYLES' in l.params && l.params['STYLES'].length > 0 )
                 lst = l.params['STYLES'];
               styleLayers.push( lst );
@@ -4205,7 +4219,11 @@ var lizMap = function() {
             else{
                 printLayers.push(exbl);
             }
-            styleLayers.push('default');
+            if ( 'qgisServerVersion' in config.options && config.options.qgisServerVersion.startsWith('3.') ) {
+                styleLayers.push('');
+            } else {
+                styleLayers.push('default');
+            }
             opacityLayers.push(255);
         }
       }
@@ -4222,7 +4240,12 @@ var lizMap = function() {
                           printLayers.push(layerConfig.shortname);
                       else
                           printLayers.push(layerConfig.name);
-                      styleLayers.push('default');
+                      if ( 'qgisServerVersion' in config.options &&
+                           config.options.qgisServerVersion.startsWith('3.') ) {
+                        styleLayers.push('');
+                      } else {
+                        styleLayers.push('default');
+                      }
                       opacityLayers.push(255);
                   }
               }
@@ -4246,7 +4269,11 @@ var lizMap = function() {
         url += '&'+dragCtrl.layout.overviewId+':LAYERS=Overview';
         if ( 'qgisServerVersion' in config.options && config.options.qgisServerVersion != '2.14' ) {
             printLayers.push('Overview');
-            styleLayers.push('default');
+            if ( config.options.qgisServerVersion.startsWith('3.') ) {
+                styleLayers.push('');
+            } else {
+                styleLayers.push('default');
+            }
             opacityLayers.push(255);
         } else {
             printLayers.unshift('Overview');

@@ -193,6 +193,9 @@
      <optional>
         <ref name="alert" />
      </optional>
+      <optional>
+          <attribute name="controlclass" />
+      </optional>
   </define>
   
   <define name="UI.attr.readonly">
