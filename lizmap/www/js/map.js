@@ -4295,10 +4295,18 @@ var lizMap = function() {
             || lConfig['request_params'] == null )
               continue;
           var requestParams = lConfig['request_params'];
-            if ( ('filtertoken' in lConfig['request_params'])
+          var hasFilterToken = false;
+          if ( ('filtertoken' in lConfig['request_params'])
             && lConfig['request_params']['filtertoken'] != null
             && lConfig['request_params']['filtertoken'] != "" ) {
               filter.push( lConfig['request_params']['filtertoken'] );
+              hasFilterToken = true;
+          }
+          if ( !hasFilterToken
+            && ('filter' in lConfig['request_params'])
+            && lConfig['request_params']['filter'] != null
+            && lConfig['request_params']['filter'] != "" ) {
+              filter.push( lConfig['request_params']['filter'] );
           }
           if ( ('selectiontoken' in lConfig['request_params'])
             && lConfig['request_params']['selectiontoken'] != null
