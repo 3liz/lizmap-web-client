@@ -96,7 +96,10 @@ class jEvent {
     }
 
     /**
-    * adds data in the responses list
+     * Adds data in the responses list
+     *
+     * if it is an array, specific items can be retrieved with getResponseByKey()
+     * getBoolResponseByKey(), or inResponse()
     * @param mixed $response a single response
     */
     public function add ($response) {
@@ -104,21 +107,26 @@ class jEvent {
     }
 
     /**
-    * look in all the responses if we have a parameter having value as its answer
-    * eg, we want to know if we have failed = true, we do
-    * @param string $responseName the param we're looking for
-    * @param mixed $value the value we're looking for
-    * @param mixed[] $response the response that have this value
-    * @return boolean whether or not we have founded the response value
-    */
-    public function inResponse ($responseName, $value, & $response){
+     * look in all the responses if we have a parameter having value as its answer
+     *
+     * eg, we want to know if we have failed = true in some responses, we call
+     * inResponse('failed', true, $results), and we have into $results all
+     * responses that have an item 'failed' equals to true.
+     *
+     * @param string $responseKey the response item we're looking for
+     * @param mixed $value the value we're looking for
+     * @param mixed[] $response returned array : all full responses arrays that have
+     *   the given value
+     * @return boolean whether or not we have founded the response value
+     */
+    public function inResponse ($responseKey, $value, & $response){
         $founded  = false;
         $response = array ();
 
         foreach ($this->_responses as $key=>$listenerResponse){
             if (is_array($listenerResponse) &&
-                isset ($listenerResponse[$responseName]) &&
-                $listenerResponse[$responseName] == $value
+                isset ($listenerResponse[$responseKey]) &&
+                $listenerResponse[$responseKey] == $value
             ) {
                 $founded = true;
                 $response[] = & $this->_responses[$key];
@@ -214,7 +222,6 @@ class jEvent {
         return !$res;
     }
 
-
     /**
     * gets all the responses
     * @return mixed[][]  associative array
@@ -258,14 +265,14 @@ class jEvent {
     * because a listener can listen several events, we should
     * create only one instancy of a listener for performance, and
     * $hashListened will contains only reference to this listener.
-    * @var jEventListener[]
+    * @var jEventListener[][]
     */
     protected static $listenersSingleton = array ();
 
     /**
     * hash table for event listened.
-    * $_hash['eventName'] = array of events (by reference)
-    * @var jEventListener[]
+    * $hashListened['eventName'] = array of events (by reference)
+    * @var jEventListener[][]
     */
     protected static $hashListened = array ();
 
