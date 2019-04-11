@@ -6,7 +6,7 @@
 {if ! $isLogged}
 
 <form action="{formurl 'jauth~login:in'}" method="post" id="loginForm">
-      <fieldset>
+      <f<div class="container">
       <table>
        <tr>
            <th><label for="login">{@jauth~auth.login@}</label></th>
@@ -28,7 +28,7 @@
        <input type="hidden" name="auth_url_return" value="{$auth_url_return|eschtml}" />
        {/if}
        <input type="submit" value="{@jauth~auth.buttons.login@}"/>
-       </fieldset>
+       </div>
    </form>
 {else}
     <p>{$user->login} | <a href="{jurl 'jauth~login:out'}" >{@jauth~auth.buttons.logout@}</a></p>
