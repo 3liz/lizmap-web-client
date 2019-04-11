@@ -2435,6 +2435,10 @@ a.lizmap-atlasprint-link span.icon{
   margin-right:7px;
 }
 
+input[type="file"].jforms-ctrl-upload {
+  height:auto;
+}
+
 /* Use exif to rotate images automatically */
 img {
  image-orientation: from-image; 
