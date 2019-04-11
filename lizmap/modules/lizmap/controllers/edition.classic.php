@@ -845,8 +845,12 @@ class editionCtrl extends jController
             'layer' => $this->layer,
             'featureId' => $this->featureId,
             'featureData' => $this->featureData,
+            'filesToDelete' => $deleteFiles
         );
-        jEvent::notify('LizmapEditionPreDelete', $eventParams);
+        $event = jEvent::notify('LizmapEditionPreDelete', $eventParams);
+        if ($event->allResponsesByKeyAreTrue('filesDeleted')) {
+            $deleteFiles = array();
+        }
 
         try {
             $rs = $qgisForm->deleteFromDb($feature);
