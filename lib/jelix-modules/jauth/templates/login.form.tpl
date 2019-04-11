@@ -6,7 +6,7 @@
 {if ! $isLogged}
 
 <form action="{formurl 'jauth~login:in'}" method="post" id="loginForm">
-      <f<div class="container">
+      <div class="container">
       <table>
        <tr>
            <th><label for="login">{@jauth~auth.login@}</label></th>
