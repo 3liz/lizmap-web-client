@@ -2886,10 +2886,14 @@ var lizMap = function() {
   function deactivateToolControls( evt ) {
     for (var id in controls) {
       var ctrl = controls[id];
-      if (evt && ('object' in evt) && ctrl == evt.object)
-        continue;
-      if (ctrl.type == OpenLayers.Control.TYPE_TOOL)
-        ctrl.deactivate();
+      if(ctrl){
+        if (evt && ('object' in evt) && ctrl == evt.object){
+          continue;
+        }
+        if (ctrl.type == OpenLayers.Control.TYPE_TOOL){
+          ctrl.deactivate();
+        }
+      }
     }
     return true;
   }
