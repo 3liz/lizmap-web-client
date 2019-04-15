@@ -231,7 +231,7 @@ class qgisFormControl
             $this->rendererCategories = $rendererCategories;
 
             // Get qgis edittype data
-            if ($this->edittype) {
+            if ($this->edittype && ($this->edittype instanceof SimpleXMLElement)) {
                 // New QGIS 2.4 edittypes : use widgetv2type property
                 if (property_exists($this->edittype->attributes(), 'widgetv2type')) {
                     $this->widgetv2configAttr = $this->edittype->widgetv2config->attributes();
@@ -246,6 +246,9 @@ class qgisFormControl
                 else {
                     $this->fieldEditType = (int) $this->edittype->attributes()->type;
                 }
+            } else if ($this->edittype && is_object($this->edittype)) {
+                $this->widgetv2configAttr = $this->edittype->options;
+                $this->fieldEditType = $this->edittype->type;
             } else {
                 $this->fieldEditType = 0;
             }
@@ -258,7 +261,11 @@ class qgisFormControl
                     $markup = $this->qgisEdittypeMap[$this->fieldEditType]['jform']['markup'][0];
                 }
             } elseif ($this->fieldEditType === 'TextEdit') {
-                if (property_exists($this->widgetv2configAttr, 'UseHtml')) {
+                if (property_exists($this->widgetv2configAttr, 'IsMultiline')
+                    && ($this->widgetv2configAttr->IsMultiline === '0' || $this->widgetv2configAttr->IsMultiline === 'false')) {
+                    $this->fieldEditType = 'LineEdit';
+                    $markup = $this->qgisEdittypeMap[$this->fieldEditType]['jform']['markup'];
+                } else if (property_exists($this->widgetv2configAttr, 'UseHtml')) {
                     $markup = $this->qgisEdittypeMap[$this->fieldEditType]['jform']['markup'][(int) $this->widgetv2configAttr->UseHtml];
                 } else {
                     $markup = $this->qgisEdittypeMap[$this->fieldEditType]['jform']['markup'][0];
@@ -385,7 +392,7 @@ class qgisFormControl
                         }
                     }
                     if (property_exists($this->widgetv2configAttr, 'DocumentViewer')
-                        and $this->widgetv2configAttr->DocumentViewer == '1') {
+                        && ($this->widgetv2configAttr->DocumentViewer === '1' || $this->widgetv2configAttr->DocumentViewer === 'true')) {
                         if ($upload->accept != '') {
                             $mimetypes = array();
                             $accepts = explode(', ', $upload->accept);
@@ -511,21 +518,25 @@ class qgisFormControl
             if (array_key_exists('readonly', $this->qgisEdittypeMap[$this->fieldEditType]['jform'])) {
                 $this->isReadOnly = true;
             }
-            // Also use "editable" property
-            if ($this->edittype and property_exists($this->edittype->attributes(), 'editable')) {
-                $editable = (int) $this->edittype->attributes()->editable;
-                if ($editable == 0) {
-                    $this->isReadOnly = true;
+            if ($this->edittype && ($this->edittype instanceof SimpleXMLElement)) {
+                // Also use "editable" property
+                if (property_exists($this->edittype->attributes(), 'editable')) {
+                    $editable = (int) $this->edittype->attributes()->editable;
+                    if ($editable == 0) {
+                        $this->isReadOnly = true;
+                    }
                 }
-            }
-            // Also use "fieldEditable" property
-            elseif ($this->edittype && property_exists($this->edittype->attributes(), 'widgetv2type') &&
-                    property_exists($this->widgetv2configAttr, 'fieldEditable')
-            ) {
-                $editable = (int) $this->widgetv2configAttr->fieldEditable;
-                if ($editable == 0) {
-                    $this->isReadOnly = true;
+                // Also use "fieldEditable" property
+                else if (property_exists($this->edittype->attributes(), 'widgetv2type') &&
+                        property_exists($this->widgetv2configAttr, 'fieldEditable')
+                ) {
+                    $editable = (int) $this->widgetv2configAttr->fieldEditable;
+                    if ($editable == 0) {
+                        $this->isReadOnly = true;
+                    }
                 }
+            } else if ($this->edittype && is_object($this->edittype) && $this->edittype->editable === 0) {
+                $this->isReadOnly = true;
             }
         }
 
@@ -598,9 +609,16 @@ class qgisFormControl
                 if ($this->fieldEditType === 'UniqueValuesEditable') {
                     $this->uniqueValuesData['editable'] = '1';
                 }
-                if ($this->edittype->widgetv2config) {
+                if (($this->edittype instanceof SimpleXMLElement) && $this->edittype->widgetv2config) {
                     $this->uniqueValuesData['notNull'] = (string) $this->widgetv2configAttr->notNull;
                     $this->uniqueValuesData['editable'] = (string) $this->widgetv2configAttr->Editable;
+                } else if (is_object($this->edittype)) {
+                    if (property_exists($this->widgetv2configAttr, 'notNull')) {
+                        $this->uniqueValuesData['notNull'] = (string) $this->widgetv2configAttr->notNull;
+                    }
+                    if (property_exists($this->widgetv2configAttr, 'Editable')) {
+                        $this->uniqueValuesData['editable'] = (string) $this->widgetv2configAttr->Editable;
+                    }
                 }
 
                 break;
@@ -615,10 +633,18 @@ class qgisFormControl
 
                 break;
             case 'ValueMap':
-                foreach ($this->edittype->widgetv2config->xpath('value') as $value) {
-                    $k = (string) $value->attributes()->key;
-                    $v = (string) $value->attributes()->value;
-                    $data[$v] = $k;
+                if ($this->edittype instanceof SimpleXMLElement) {
+                    foreach ($this->edittype->widgetv2config->xpath('value') as $value) {
+                        $k = (string) $value->attributes()->key;
+                        $v = (string) $value->attributes()->value;
+                        $data[$v] = $k;
+                    }
+                } else if (is_object($this->edittype)) {
+                    foreach ($this->widgetv2configAttr->map as $value) {
+                        $k = (string) $value->key;
+                        $v = (string) $value->value;
+                        $data[$v] = $k;
+                    }
                 }
 
                 break;
@@ -634,118 +660,133 @@ class qgisFormControl
 
                 break;
 
-      // Range
-      case 5:
-        // Get range of data
-        if ($this->fieldDataType == 'float') {
-            $min = (float) $this->edittype->attributes()->min;
-            $max = (float) $this->edittype->attributes()->max;
-            $step = (float) $this->edittype->attributes()->step;
-        } else {
-            $min = (int) $this->edittype->attributes()->min;
-            $max = (int) $this->edittype->attributes()->max;
-            $step = (int) $this->edittype->attributes()->step;
+            // Range
+            case 5:
+                // Get range of data
+                if ($this->fieldDataType == 'float') {
+                    $min = (float) $this->edittype->attributes()->min;
+                    $max = (float) $this->edittype->attributes()->max;
+                    $step = (float) $this->edittype->attributes()->step;
+                } else {
+                    $min = (int) $this->edittype->attributes()->min;
+                    $max = (int) $this->edittype->attributes()->max;
+                    $step = (int) $this->edittype->attributes()->step;
+                }
+                $data[(string) $min] = $min;
+                for ($i = $min; $i <= $max; $i += $step) {
+                    $data[(string) $i] = $i;
+                }
+                $data[(string) $max] = $max;
+
+                break;
+
+            case 'Range':
+            case 'EditRange':
+            case 'SliderRange':
+            case 'DialRange':
+                // Get range of data
+                if ($this->fieldDataType == 'float') {
+                    $min = (float) $this->widgetv2configAttr->Min;
+                    $max = (float) $this->widgetv2configAttr->Max;
+                    $step = (float) $this->widgetv2configAttr->Step;
+                } else {
+                    $min = (int) $this->widgetv2configAttr->Min;
+                    $max = (int) $this->widgetv2configAttr->Max;
+                    $step = (int) $this->widgetv2configAttr->Step;
+                }
+                $data[(string) $min] = $min;
+                for ($i = $min; $i <= $max; $i += $step) {
+                    $data[(string) $i] = $i;
+                }
+                $data[(string) $max] = $max;
+
+                break;
+
+            // Value relation
+            case 15:
+                $allowNull = (string) $this->edittype->attributes()->allowNull;
+                $orderByValue = (string) $this->edittype->attributes()->orderByValue;
+                $layer = (string) $this->edittype->attributes()->layer;
+                $key = (string) $this->edittype->attributes()->key;
+                $value = (string) $this->edittype->attributes()->value;
+                $allowMulti = (string) $this->edittype->attributes()->allowMulti;
+                $filterExpression = (string) $this->edittype->attributes()->filterExpression;
+                $this->valueRelationData = array(
+                    'allowNull' => $allowNull,
+                    'orderByValue' => $orderByValue,
+                    'layer' => $layer,
+                    'key' => $key,
+                    'value' => $value,
+                    'allowMulti' => $allowMulti,
+                    'filterExpression' => $filterExpression,
+                );
+
+                break;
+
+            case 'ValueRelation':
+                $allowNull = (string) $this->widgetv2configAttr->AllowNull;
+                $orderByValue = (string) $this->widgetv2configAttr->OrderByValue;
+                $layer = (string) $this->widgetv2configAttr->Layer;
+                $key = (string) $this->widgetv2configAttr->Key;
+                $value = (string) $this->widgetv2configAttr->Value;
+                $allowMulti = (string) $this->widgetv2configAttr->AllowMulti;
+                $filterExpression = (string) $this->widgetv2configAttr->FilterExpression;
+                $useCompleter = (string) $this->widgetv2configAttr->UseCompleter;
+                $fieldEditable = '1';
+                if (($this->edittype instanceof SimpleXMLElement) && property_exists($this->widgetv2configAttr, 'fieldEditable')) {
+                    $fieldEditable = (string) $this->widgetv2configAttr->fieldEditable;
+                } else if (is_object($this->edittype) && property_exists($this->edittype, 'editable')) {
+                    $fieldEditable = (string) $this->edittype->editable;
+                }
+
+                $this->valueRelationData = array(
+                    'allowNull' => $allowNull,
+                    'orderByValue' => $orderByValue,
+                    'layer' => $layer,
+                    'key' => $key,
+                    'value' => $value,
+                    'allowMulti' => $allowMulti,
+                    'filterExpression' => $filterExpression,
+                    'useCompleter' => $useCompleter,
+                    'fieldEditable' => $fieldEditable,
+                );
+
+                break;
+
+            case 'RelationReference':
+                $allowNull = (string) $this->widgetv2configAttr->AllowNULL;
+                $orderByValue = (string) $this->widgetv2configAttr->OrderByValue;
+                $Relation = (string) $this->widgetv2configAttr->Relation;
+                $MapIdentification = (string) $this->widgetv2configAttr->MapIdentification;
+                $chainFilters = '0';
+                $filters = array();
+                if (($this->edittype instanceof SimpleXMLElement)) {
+                    if (property_exists($this->edittype->widgetv2config, 'FilterFields')) {
+                        foreach ($this->edittype->widgetv2config->FilterFields->children('field') as $f) {
+                            $filters[] = (string) $f->attributes()->name;
+                        }
+                        $chainFilters = (string) $this->edittype->widgetv2config->FilterFields->attributes()->ChainFilters;
+                    }
+                } else if (is_object($this->edittype)) {
+                    if (property_exists($this->widgetv2configAttr, 'FilterFields')) {
+                        $filters = $this->widgetv2configAttr->FilterFields;
+                    }
+                    if (property_exists($this->widgetv2configAttr, 'ChainFilters')) {
+                        $chainFilters = $this->widgetv2configAttr->ChainFilters;
+                    }
+                }
+                $this->relationReferenceData = array(
+                    'allowNull' => $allowNull,
+                    'orderByValue' => $orderByValue,
+                    'relation' => $Relation,
+                    'mapIdentification' => $MapIdentification,
+                    'filters' => $filters,
+                    'chainFilters' => $chainFilters,
+                );
+
+                break;
+
         }
-        $data[(string) $min] = $min;
-        for ($i = $min; $i <= $max; $i += $step) {
-            $data[(string) $i] = $i;
-        }
-        $data[(string) $max] = $max;
-
-        break;
-
-      case 'Range':
-      case 'EditRange':
-      case 'SliderRange':
-      case 'DialRange':
-        // Get range of data
-        if ($this->fieldDataType == 'float') {
-            $min = (float) $this->widgetv2configAttr->Min;
-            $max = (float) $this->widgetv2configAttr->Max;
-            $step = (float) $this->widgetv2configAttr->Step;
-        } else {
-            $min = (int) $this->widgetv2configAttr->Min;
-            $max = (int) $this->widgetv2configAttr->Max;
-            $step = (int) $this->widgetv2configAttr->Step;
-        }
-        $data[(string) $min] = $min;
-        for ($i = $min; $i <= $max; $i += $step) {
-            $data[(string) $i] = $i;
-        }
-        $data[(string) $max] = $max;
-
-        break;
-
-      // Value relation
-      case 15:
-        $allowNull = (string) $this->edittype->attributes()->allowNull;
-        $orderByValue = (string) $this->edittype->attributes()->orderByValue;
-        $layer = (string) $this->edittype->attributes()->layer;
-        $key = (string) $this->edittype->attributes()->key;
-        $value = (string) $this->edittype->attributes()->value;
-        $allowMulti = (string) $this->edittype->attributes()->allowMulti;
-        $filterExpression = (string) $this->edittype->attributes()->filterExpression;
-        $this->valueRelationData = array(
-            'allowNull' => $allowNull,
-            'orderByValue' => $orderByValue,
-            'layer' => $layer,
-            'key' => $key,
-            'value' => $value,
-            'allowMulti' => $allowMulti,
-            'filterExpression' => $filterExpression,
-        );
-
-        break;
-
-      case 'ValueRelation':
-        $allowNull = (string) $this->widgetv2configAttr->AllowNull;
-        $orderByValue = (string) $this->widgetv2configAttr->OrderByValue;
-        $layer = (string) $this->widgetv2configAttr->Layer;
-        $key = (string) $this->widgetv2configAttr->Key;
-        $value = (string) $this->widgetv2configAttr->Value;
-        $allowMulti = (string) $this->widgetv2configAttr->AllowMulti;
-        $filterExpression = (string) $this->widgetv2configAttr->FilterExpression;
-        $useCompleter = (string) $this->widgetv2configAttr->UseCompleter;
-        $fieldEditable = (string) $this->widgetv2configAttr->fieldEditable;
-        $this->valueRelationData = array(
-            'allowNull' => $allowNull,
-            'orderByValue' => $orderByValue,
-            'layer' => $layer,
-            'key' => $key,
-            'value' => $value,
-            'allowMulti' => $allowMulti,
-            'filterExpression' => $filterExpression,
-            'useCompleter' => $useCompleter,
-            'fieldEditable' => $fieldEditable,
-        );
-
-        break;
-
-      case 'RelationReference':
-        $allowNull = (string) $this->widgetv2configAttr->AllowNULL;
-        $orderByValue = (string) $this->widgetv2configAttr->OrderByValue;
-        $Relation = (string) $this->widgetv2configAttr->Relation;
-        $MapIdentification = (string) $this->widgetv2configAttr->MapIdentification;
-        $chainFilters = '0';
-        $filters = array();
-        if (property_exists($this->edittype->widgetv2config, 'FilterFields')) {
-            foreach ($this->edittype->widgetv2config->FilterFields->children('field') as $f) {
-                $filters[] = (string) $f->attributes()->name;
-            }
-            $chainFilters = (string) $this->edittype->widgetv2config->FilterFields->attributes()->ChainFilters;
-        }
-        $this->relationReferenceData = array(
-            'allowNull' => $allowNull,
-            'orderByValue' => $orderByValue,
-            'relation' => $Relation,
-            'mapIdentification' => $MapIdentification,
-            'filters' => $filters,
-            'chainFilters' => $chainFilters,
-        );
-
-        break;
-
-    }
 
         asort($data);
         $dataSource->data = $data;
