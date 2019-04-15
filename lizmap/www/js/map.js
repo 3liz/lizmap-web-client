@@ -772,22 +772,28 @@ var lizMap = function() {
          }
 
          // Specify zoom level number
-         if ((('osmMapnik' in config.options) && config.options.osmMapnik == 'True') ||
+         if (
+             (('osmMapnik' in config.options) && config.options.osmMapnik == 'True') ||
              (('osmStamenToner' in config.options) && config.options.osmStamenToner == 'True') ||
              (('osmCyclemap' in config.options) && config.options.osmCyclemap == 'True' && ('OCMKey' in config.options)) ||
              (('bingStreets' in config.options) && config.options.bingStreets == 'True' && ('bingKey' in config.options)) ||
              (('bingSatellite' in config.options) && config.options.bingSatellite == 'True' && ('bingKey' in config.options)) ||
              (('bingHybrid' in config.options) && config.options.bingHybrid == 'True' && ('bingKey' in config.options)) ||
              (('ignTerrain' in config.options) && config.options.ignTerrain == 'True' && ('ignKey' in config.options)) ||
-             (('ignStreets' in config.options) && config.options.ignStreets == 'True') && ('ignKey' in config.options))
+             (('ignStreets' in config.options) && config.options.ignStreets == 'True') && ('ignKey' in config.options)) {
            config.options.zoomLevelNumber = 19;
+         }
          if ((('googleStreets' in config.options) && config.options.googleStreets == 'True') ||
              (('googleHybrid' in config.options) && config.options.googleHybrid == 'True') ||
-             (('ignCadastral' in config.options) && config.options.ignCadastral == 'True' && ('ignKey' in config.options)))
+             (('ignCadastral' in config.options) && config.options.ignCadastral == 'True' && ('ignKey' in config.options))) {
            config.options.zoomLevelNumber = 20;
-         if ((('googleSatellite' in config.options) && config.options.googleSatellite == 'True') ||
-             ((('ignSatellite' in config.options) && config.options.ignSatellite == 'True') && ('ignKey' in config.options)))
+         }
+         if ( 'googleSatellite' in config.options && config.options.googleSatellite == 'True'){
            config.options.zoomLevelNumber = 21;
+         }
+         if ( 'ignSatellite' in config.options && config.options.ignSatellite == 'True' && 'ignKey' in config.options ) {
+           config.options.zoomLevelNumber = 22;
+         }
          config.options.maxScale = 591659030.3224756;
          config.options.minScale = 2257.0000851534865;
          var hasBaselayers = (('emptyBaselayer' in config.options) && config.options.emptyBaselayer == "True");
@@ -2886,10 +2892,14 @@ var lizMap = function() {
   function deactivateToolControls( evt ) {
     for (var id in controls) {
       var ctrl = controls[id];
-      if (evt && ('object' in evt) && ctrl == evt.object)
-        continue;
-      if (ctrl.type == OpenLayers.Control.TYPE_TOOL)
-        ctrl.deactivate();
+      if(ctrl){
+        if (evt && ('object' in evt) && ctrl == evt.object){
+          continue;
+        }
+        if (ctrl.type == OpenLayers.Control.TYPE_TOOL){
+          ctrl.deactivate();
+        }
+      }
     }
     return true;
   }
@@ -7182,7 +7192,7 @@ lizMap.events.on({
           var options = {
             zoomOffset: 0,
             maxResolution:156543.03390625,
-            numZoomLevels:21
+            numZoomLevels:22
           };
           if (lOptions.zoomOffset != 0) {
             options.zoomOffset = lOptions.zoomOffset;

@@ -146,10 +146,22 @@ class lizMapCtrl extends jController
         $www = $confUrlEngine['jelixWWWPath'];
         $rep->addJSLink($www.'jquery/include/jquery.include.js');
         $rep->addJSLink($www.'js/jforms_jquery.js');
-        $rep->addJSLink($www.'jquery/ui/i18n/jquery.ui.datepicker-'.$lang.'.js');
-        $rep->addJSLink($www.'js/jforms/datepickers/default/init.js');
-        $rep->addJSLink($www.'js/jforms/datepickers/default/ui.en.js');
-        $rep->addJSLink($www.'js/jforms/datepickers/default/ui.'.$lang.'.js');
+	
+        // Add datepickers jForms js
+        $confDate = &jApp::config()->datepickers;
+        $rep->addJSLink($confDate['default']);
+        if (isset($confDate['default.js'])) {
+            $js = $confDate['default.js'];
+            foreach($js as $file) {
+                $file = str_replace('$lang', jLocale::getCurrentLang(), $file);
+                if (strpos($file, 'jquery.ui.datepicker-en.js') !== false) {
+                    continue;
+                }
+                $rep->addJSLink($file);
+            }
+        }
+	
+        // Add other jForms js
         $rep->addJSLink($bp.'js/ckeditor5/ckeditor.js');
         $rep->addJSLink($bp.'js/ckeditor5/ckeditor_default.js');
         $rep->addJSLink($bp.'js/fileUpload/jquery.fileupload.js');
