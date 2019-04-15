@@ -9,7 +9,7 @@
 
 # PHP
 #php_apt_key_url: https://packages.sury.org/php/apt.gpg
-#php_version: "5.6"
+#php_version: "7.2"
 #php_repository: https://packages.sury.org/php
 #php_composer_version: 1.7.2
 
@@ -36,18 +36,18 @@
 #   wfsOutputExtension:
 #     repository: https://github.com/3liz/qgis-wfsOutputExtension
 #     version: master
-#qgis_repository_debian: http://qgis.org/debian-ltr-2.18
+# qgis_repository_debian: http://qgis.org/debian-ltr
 #qgis_repository_debian_key: 'CAEB3DC3BDF7FB45'
 #qgis_repository_debian_key_url: 'http://qgis.org/downloads/qgis-2017.gpg.key'
 
 # postgresql_install: true
 # postgresql_apt_key_url: 'https://www.postgresql.org/media/keys/ACCC4CF8.asc'
-# postgresql_version: 9.6
+# postgresql_version: 11
 # postgresql_encoding: UTF-8
 # postgresql_locale: fr_FR.UTF-8
 # postgresql_database: lizmap
 # postgresql_lizmap_user: lizmap
-# postgresql_postgis_version: 2.3
+# postgresql_postgis_version: 2.5
 # postgresql_postgres_password: "lizmap1234!"
 # postgresql_lizmap_password: "lizmap1234!"
 

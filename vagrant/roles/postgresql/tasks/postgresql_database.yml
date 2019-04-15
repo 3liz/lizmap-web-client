@@ -26,6 +26,7 @@
                     state=present
                     priv=ALL
                     password={{ postgresql_lizmap_password }}
+                    encrypted=yes
   #when: createdb.changed
 
 - name: PostgreSQL - apply user privileges on database
