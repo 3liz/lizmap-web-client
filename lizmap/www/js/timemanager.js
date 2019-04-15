@@ -425,15 +425,15 @@ var lizTimemanager = function() {
 
                 for (var fid in features) {
                     var feat = features[fid];
-                    var featTime = Date.parse( feat.attributes[startAttribute].toString()  );
+                    var featTime = moment( feat.attributes[startAttribute].toString()  );
 
                     feat.attributes[startAttribute] = featTime;
                     if (featTime && featTime < minTime) minTime = featTime;
                     if (featTime && featTime > maxTime) maxTime = featTime;
                 }
-                tmStartDate = new Date( minTime.getTime() );
-                tmEndDate = new Date( maxTime.getTime() );
-                tmCurrentDate = new Date( tmStartDate.getTime() );
+                tmStartDate = moment( minTime );
+                tmEndDate = moment( maxTime );
+                tmCurrentDate = moment( tmStartDate );
 
                 config.timemanagerLayers[wmsLayer]['filter'] = new OpenLayers.Filter.Comparison({
                     type: OpenLayers.Filter.Comparison.BETWEEN,
@@ -448,9 +448,9 @@ var lizTimemanager = function() {
 
                 $('#tmCurrentValue').html(setDisplayedDate(tmStartDate));
                 $("#tmSlider").slider({
-                    min: tmStartDate.getTime(),
-                    max: tmEndDate.getTime(),
-                    value: tmStartDate.getTime()
+                    min: tmStartDate.valueOf(),
+                    max: tmEndDate.valueOf(),
+                    value: tmStartDate.valueOf()
                 });
             }
 
@@ -474,20 +474,10 @@ var lizTimemanager = function() {
 
 
             function getSideDate(curDate, timeFrameSize, timeFrameType, factor, fDirection){
-                var returnVal = new Date(curDate.getTime());
+                var returnVal = moment(curDate);
                 var addValue = factor * tmTimeFrameSize * fDirection;
-                switch(timeFrameType){
-                    case 'milliseconds': returnVal = returnVal.addMilliseconds(addValue);break;
-                    case 'seconds': returnVal = returnVal.addSeconds(addValue);break;
-                    case 'minutes': returnVal = returnVal.addMinutes(addValue);break;
-                    case 'hours': returnVal = returnVal.addHours(addValue);break;
-                    case 'days': returnVal = returnVal.addDays(addValue);break;
-                    case 'weeks': returnVal = returnVal.addWeeks(addValue);break;
-                    case 'months': returnVal = returnVal.addMonths(addValue);break;
-                    case 'years': returnVal = returnVal.addYears(addValue);break;
-                }
+                returnVal.add(addValue, timeFrameType);
                 return returnVal;
-
             }
 
             function startAnimation() {
@@ -514,7 +504,7 @@ var lizTimemanager = function() {
             function setLayersFilterBoundaries(lowerBoundary, upperBoundary){
                 // shift upperBoundary for 1 millisecond to have strict <
                 // lowerBoundary <= attribute < upperBoundary
-                upperBoundary = new Date(upperBoundary.getTime() - 1);
+                upperBoundary.subtract(1, 'milliseconds');
                 // Set filter for each vector layer
                 for (id in config.timemanagerLayers){
                     filter = config.timemanagerLayers[id]['filter'];
@@ -555,7 +545,7 @@ var lizTimemanager = function() {
                         tmCurrentDate, tmTimeFrameSize, tmTimeFrameType, 1, -1
                     );
                     // Change upper boundary
-                    upperBoundary = new Date(tmCurrentDate.getTime());
+                    upperBoundary = moment(tmCurrentDate);
 
                     updateStep(lowerBoundary, upperBoundary);
 
@@ -568,10 +558,10 @@ var lizTimemanager = function() {
                 // Set layers filter
                 setLayersFilterBoundaries(lowerBoundary, upperBoundary);
                 // Change global values
-                tmCurrentDate = new Date(lowerBoundary.getTime());
+                tmCurrentDate = moment(lowerBoundary);
                 // Display
                 $('#tmCurrentValue').html(setDisplayedDate(tmCurrentDate));
-                $("#tmSlider").slider( "option", "value", tmCurrentDate.getTime() );
+                $("#tmSlider").slider( "option", "value", tmCurrentDate.valueOf() );
             }
 
             function onSliderUpdate() {
@@ -579,14 +569,14 @@ var lizTimemanager = function() {
             }
 
             function setSliderStep(sliderDate, type){
-                if (type == 'seconds') sliderDate = sliderDate.set( {millisecond : 0} );
-                if (type == 'minutes') sliderDate = sliderDate.set( {second : 0});
-                if (type == 'hours') sliderDate = sliderDate.set( {minute : 0});
-                if (type == 'days') sliderDate = sliderDate.set( {hour : 0});
-                if (type == 'weeks') sliderDate = sliderDate.monday();
-                if (type == 'months') sliderDate = sliderDate.set( {day : 1});
+                if (type == 'seconds') sliderDate = sliderDate.set( {'millisecond' : 0} );
+                if (type == 'minutes') sliderDate = sliderDate.set( {'second' : 0});
+                if (type == 'hours') sliderDate = sliderDate.set( {'minute' : 0});
+                if (type == 'days') sliderDate = sliderDate.set( {'hour' : 0});
+                if (type == 'weeks') sliderDate = sliderDate.day(1); // Monday ( TODO : make it locale aware ?)
+                if (type == 'months') sliderDate = sliderDate.set( {'day' : 1});
                 if (type == 'years') {
-                    sliderDate.set( {month : 0});
+                    sliderDate.set( {'month' : 0});
                 }
                 return sliderDate;
             }
@@ -594,7 +584,7 @@ var lizTimemanager = function() {
             function onSliderStop() {
                 // Get slider data
                 var sliderVal = $("#tmSlider").slider( "option", "value" );
-                var sliderDate = new Date(sliderVal);
+                var sliderDate = moment(sliderVal);
                 // Get nearest step depending on frame type (hour, year, etc.)
                 var tmTypes = ['milliseconds', 'seconds', 'minutes', 'hours', 'days', 'weeks', 'months', 'years'];
                 for (id in tmTypes) {
@@ -603,7 +593,7 @@ var lizTimemanager = function() {
                         break;
                 }
                 // set new boundaries
-                var lowerBoundary = new Date(sliderDate.getTime());
+                var lowerBoundary = moment(sliderDate);
                 var upperBoundary = getSideDate(
                     lowerBoundary, tmTimeFrameSize, tmTimeFrameType, 1, 1
                 );
@@ -623,9 +613,9 @@ var lizTimemanager = function() {
                     highlightControl.activate();
                 // Reset current date to startDate if reset asked
                 if (reset === true) {
-                    tmCurrentDate = new Date( new Date(tmStartDate).getTime() );
+                    tmCurrentDate = moment( tmStartDate );
                     $('#tmCurrentValue').html(setDisplayedDate(tmCurrentDate));
-                    $("#tmSlider").slider( "option", "value", tmCurrentDate.getTime() );
+                    $("#tmSlider").slider( "option", "value", tmCurrentDate.valueOf() );
                     var upperBoundary = getSideDate(
                         tmCurrentDate, tmTimeFrameSize, tmTimeFrameType, 1, 1
                         );
@@ -634,19 +624,19 @@ var lizTimemanager = function() {
             }
 
             function setDisplayedDate(mytime){
-                myDate = new Date(mytime);
+                myDate = moment(mytime);
                 var dString = null;
                 switch(tmTimeFrameType){
-                    case 'milliseconds': dString = 'yyyy-MM-dd HH:mm:ss';break;
-                    case 'seconds': dString = 'yyyy-MM-dd HH:mm:ss';break;
-                    case 'minutes': dString = 'yyyy-MM-dd HH:mm:00';break;
-                    case 'hours': dString = 'yyyy-MM-dd HH:00';break;
-                    case 'days': dString = 'yyyy-MM-dd';break;
-                    case 'weeks': dString = 'yyyy-MM-dd';break;
-                    case 'months': dString = 'yyyy-MM';break;
-                    case 'years': dString = 'yyyy';break;
+                    case 'milliseconds': dString = 'YYYY-MM-DD HH:mm:ss';break;
+                    case 'seconds': dString = 'YYYY-MM-DD HH:mm:ss';break;
+                    case 'minutes': dString = 'YYYY-MM-DD HH:mm:00';break;
+                    case 'hours': dString = 'YYYY-MM-DD HH:00';break;
+                    case 'days': dString = 'YYYY-MM-DD';break;
+                    case 'weeks': dString = 'YYYY-MM-DD';break;
+                    case 'months': dString = 'YYYY-MM';break;
+                    case 'years': dString = 'YYYY';break;
                 }
-                return myDate.toString(dString);
+                return myDate.format(dString);
             }
 
         }

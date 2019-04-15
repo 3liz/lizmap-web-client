@@ -218,7 +218,7 @@ class lizMapCtrl extends jController
 
         // Add date.js for timemanager
         if ($lproj->hasTimemanagerLayers()) {
-            $rep->addJSLink($bp.'js/date.js');
+            $rep->addJSLink($bp.'js/moment.js');
         }
 
         // Add atlas.js for atlas feature and additionnal CSS for right-dock max-width
