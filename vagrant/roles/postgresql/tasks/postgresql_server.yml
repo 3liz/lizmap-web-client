@@ -40,4 +40,5 @@
   become_user: postgres
   postgresql_user:  name=postgres
                     password={{ postgresql_postgres_password }}
+                    encrypted=yes
 

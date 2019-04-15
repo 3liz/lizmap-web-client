@@ -8,9 +8,9 @@ in this directory to setup a virtual machine using Vagrant.
 Here are steps:
 
 - install [Virtual box](https://www.virtualbox.org/) and [Vagrant](http://www.vagrantup.com/downloads.html)
-- copy vagrant/vars/custom.yml.dist to vagrant/vars/custom.yml and change some
+- copy `vagrant/vars/custom.yml.dist` to `vagrant/vars/custom.yml` and change some
   settings if needed. You can enable postgresql storage for Lizmap data, or
-  enable ldap authentication for example.
+  enable ldap authentication for example. *NB* If you need bleeding edge softwares, you can copy instead `vagrant/vars/custom.yml.latest` to `vagrant/vars/custom.yml` and make the changes.
 - go into the vagrant/ directory (where there is the README.md file you're reading),
  launch the vagrant virtual machine:
 
