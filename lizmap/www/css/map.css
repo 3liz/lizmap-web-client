@@ -1267,6 +1267,13 @@ div.modal h3 .text {
   text-align:right;
 }
 
+#print-template{max-width: 125px;}
+
+#print-parameters td, #print-parameters td select{
+  padding-left: 1px;
+  padding-right: 1px;
+}
+
 #baselayer-menu div.baselayer-select,
 #switcher div.baselayer-select,
 #locate div.locate-layer {
