@@ -1286,6 +1286,7 @@ class serviceCtrl extends jController
 
         if (property_exists($result, 'file') and $result->file and is_file($result->data)) {
             $rep->fileName = $result->data;
+            $rep->deleteFileAfterSending = true;
         } else {
             $rep->content = $result->data; // causes memory_limit for big content
         }
@@ -1298,9 +1299,7 @@ class serviceCtrl extends jController
             // force download
             $rep->doDownload = true;
 
-            if (property_exists($result, 'file') and $result->file and is_file($result->data)) {
-                $rep->fileName = $result->data;
-            } else {
+            if ($rep->fileName == '' && $rep->content != '') {
                 // debug 1st line blank from QGIS Server
                 $rep->content = preg_replace('/^[\n\r]/', '', $result->data);
             }
