@@ -871,14 +871,14 @@ class qgisForm implements qgisFormControlsInterface
 
         // required
         if (array_key_exists('notNull', $formControl->uniqueValuesData)
-            and strtolower($formControl->uniqueValuesData['notNull']) == '1'
+            and $formControl->uniqueValuesData['notNull']
         ) {
             jLog::log('notNull '.$formControl->uniqueValuesData['notNull'], 'error');
             $formControl->ctrl->required = true;
         }
         // combobox
         if (array_key_exists('editable', $formControl->uniqueValuesData)
-             and strtolower($formControl->uniqueValuesData['editable']) == '1'
+             and $formControl->uniqueValuesData['editable']
         ) {
             $formControl->ctrl->setAttribute('class', 'autocomplete');
         }
@@ -993,16 +993,12 @@ class qgisForm implements qgisFormControlsInterface
             $dataSource = new jFormsStaticDatasource();
 
             // required
-            if (
-                strtolower($formControl->valueRelationData['allowNull']) == 'false'
-                or
-                strtolower($formControl->valueRelationData['allowNull']) == '0'
-            ) {
+            if (!$formControl->valueRelationData['allowNull']) {
                 $formControl->ctrl->required = true;
             }
             // combobox
             if (array_key_exists('useCompleter', $formControl->valueRelationData)
-                 && ($formControl->valueRelationData['useCompleter'] === '1' || $formControl->valueRelationData['useCompleter'] === 'true')
+                 && $formControl->valueRelationData['useCompleter']
             ) {
                 $formControl->ctrl->setAttribute('class', 'combobox');
             }
@@ -1014,11 +1010,7 @@ class qgisForm implements qgisFormControlsInterface
             }
 
             // orderByValue
-            if (
-                strtolower($formControl->valueRelationData['orderByValue']) == 'true'
-                or
-                strtolower($formControl->valueRelationData['orderByValue']) == '1'
-            ) {
+            if ($formControl->valueRelationData['orderByValue']) {
                 asort($data);
             }
 
@@ -1163,11 +1155,7 @@ class qgisForm implements qgisFormControlsInterface
             $dataSource = new jFormsStaticDatasource();
 
             // required
-            if (
-                strtolower($formControl->relationReferenceData['allowNull']) == 'false'
-                or
-                strtolower($formControl->relationReferenceData['allowNull']) == '0'
-            ) {
+            if (!$formControl->relationReferenceData['allowNull']) {
                 $formControl->ctrl->required = true;
             }
 
@@ -1178,11 +1166,7 @@ class qgisForm implements qgisFormControlsInterface
             }
 
             // orderByValue
-            if (
-                strtolower($formControl->relationReferenceData['orderByValue']) == 'true'
-                or
-                strtolower($formControl->relationReferenceData['orderByValue']) == '1'
-            ) {
+            if ($formControl->relationReferenceData['orderByValue']) {
                 asort($data);
             }
 
