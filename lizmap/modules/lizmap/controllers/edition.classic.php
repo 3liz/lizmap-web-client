@@ -527,6 +527,7 @@ class editionCtrl extends jController
         $tpl->assign('fieldNames', $qgisForm->getFieldNames());
         $tpl->assign('title', $title);
         $tpl->assign('form', $qgisForm->getForm());
+        $tpl->assign('formPlugins', $qgisForm->getFormPlugins());
 
         // event to add custom fields into the jForms form, or to modify those that
         // have been added by QgisForm, and to inject custom data into the template

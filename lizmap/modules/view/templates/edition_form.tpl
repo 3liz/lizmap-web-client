@@ -8,13 +8,14 @@
 
 {jmessage_bootstrap}
 
-{form $form, "lizmap~edition:saveFeature", array(), "htmlbootstrap", 
-        array("errorDecorator"=>"lizEditionErrorDecorator")}
+{form $form, "lizmap~edition:saveFeature", array(), "htmlbootstrap",
+        array("errorDecorator"=>"lizEditionErrorDecorator",
+              "plugins"=>$formPlugins)}
 
 {if $attributeEditorForm}
 
     {fetchtpl 'view~edition_form_container', array('container'=>$attributeEditorForm)}
-    
+
 {else}
     {formcontrols $fieldNames}
     <div class="control-group">
