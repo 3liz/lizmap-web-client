@@ -905,6 +905,63 @@ OpenLayers.Geometry.pointOnSegment = function(point, segment) {
     }
 
     /*
+     * Activate combobox widget
+     *
+     */
+    function activateCombobox( selectCombobox ){
+        selectCombobox.combobox({
+            "minLength": 1,
+            "position": { my : "left bottom", position: "flip" },
+            "selected": function(evt, ui){
+              if ( ui.item ) {
+                var self = $(this);
+                var uiItem = $(ui.item);
+                window.setTimeout(function(){
+                  self.val(uiItem.val()).change();
+                }, 1);
+              }
+            }
+        });
+        selectCombobox.parent().find('span > input')
+            .removeClass('label ui-corner-left ui-state-default ui-widget-content ui-widget');
+    }
+
+    /*
+     * Activate autocomplete widget
+     *
+     */
+    function activateAutocomplete( selectAutocomplete ){
+        var wrapper = $( "<span>" )
+            .addClass( "custom-autocomplete" )
+            .insertAfter( selectAutocomplete );
+        var selected = selectAutocomplete.children( ":selected" ),
+            value = selected.val() ? selected.text() : "";
+        var input = $( "<input>" )
+            .appendTo( wrapper )
+            .val( value )
+            .attr( "title", "" )
+            .addClass( "custom-autocomplete-input" )
+            .autocomplete({
+              source: function( request, response ) {
+                  var matcher = new RegExp( $.ui.autocomplete.escapeRegex(request.term), "i" );
+                  response( selectAutocomplete.children( "option" ).map(function() {
+                    var text = $( this ).text();
+                    if ( this.value && ( !request.term || matcher.test(text) ) )
+                      return {
+                        label: text,
+                        value: text,
+                        option: this
+                      };
+                  }) );
+                }
+            });
+        input.autocomplete( "widget" ).css("z-index","1050");
+        input.attr('name', selectAutocomplete.attr('name'));
+        selectAutocomplete.attr('name', input.attr('name')+'_source');
+        selectAutocomplete.hide();
+    }
+
+    /*
      * Display the edition form
      *
      */
@@ -976,53 +1033,12 @@ OpenLayers.Geometry.pointOnSegment = function(point, segment) {
             var selectComboboxes = $('#edition-form-container form select.combobox');
             for( var i=0, len=selectComboboxes.length; i<len; i++ ) {
                 var selectCombobox = $(selectComboboxes[i]);
-                selectCombobox.combobox({
-                    "minLength": 1,
-                    "position": { my : "left bottom", position: "flip" },
-                    "selected": function(evt, ui){
-                      if ( ui.item ) {
-                        var self = $(this);
-                        var uiItem = $(ui.item);
-                        window.setTimeout(function(){
-                          self.val(uiItem.val()).change();
-                        }, 1);
-                      }
-                    }
-                });
-                selectCombobox.parent().find('span > input')
-                    .removeClass('label ui-corner-left ui-state-default ui-widget-content ui-widget');
+                activateCombobox(selectCombobox);
             }
             var selectAutocompletes = $('#edition-form-container form select.autocomplete');
             for( var i=0, len=selectAutocompletes.length; i<len; i++ ) {
                 var selectAutocomplete = $(selectAutocompletes[i]);
-                var wrapper = $( "<span>" )
-                    .addClass( "custom-autocomplete" )
-                    .insertAfter( selectAutocomplete );
-                var selected = selectAutocomplete.children( ":selected" ),
-                    value = selected.val() ? selected.text() : "";
-                var input = $( "<input>" )
-                    .appendTo( wrapper )
-                    .val( value )
-                    .attr( "title", "" )
-                    .addClass( "custom-autocomplete-input" )
-                    .autocomplete({
-                      source: function( request, response ) {
-                          var matcher = new RegExp( $.ui.autocomplete.escapeRegex(request.term), "i" );
-                          response( selectAutocomplete.children( "option" ).map(function() {
-                            var text = $( this ).text();
-                            if ( this.value && ( !request.term || matcher.test(text) ) )
-                              return {
-                                label: text,
-                                value: text,
-                                option: this
-                              };
-                          }) );
-                        }
-                    });
-                input.autocomplete( "widget" ).css("z-index","1050");
-                input.attr('name', selectAutocomplete.attr('name'));
-                selectAutocomplete.attr('name', input.attr('name')+'_source');
-                selectAutocomplete.hide();
+                activateAutocomplete(selectAutocomplete);
             }
 
             // If the form has been reopened after a successful save, refresh data
