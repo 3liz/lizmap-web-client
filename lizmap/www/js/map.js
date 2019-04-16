@@ -4119,9 +4119,9 @@ var lizMap = function() {
           var tLabel = layout.template.labels[i];
           var label = '';
           if (tLabel.htmlState == 0) {
-            label = '<input name="'+tLabel.id+'" class="print-label" placeholder="'+tLabel.text+'" value="'+tLabel.text+'"  style="width:90%;align:center;"></input></br>'
+            label = '<input type="text" name="'+tLabel.id+'" class="print-label" placeholder="'+tLabel.text+'" value="'+tLabel.text+'"><br>'
           } else {
-            label = '<textarea name="'+tLabel.id+'" class="print-label" placeholder="'+tLabel.text+'" style="width:90%;align:center;">'+tLabel.text+'</textarea></br>'
+            label = '<textarea name="'+tLabel.id+'" class="print-label" placeholder="'+tLabel.text+'">'+tLabel.text+'</textarea><br>'
           }
           labels += label;
         }
