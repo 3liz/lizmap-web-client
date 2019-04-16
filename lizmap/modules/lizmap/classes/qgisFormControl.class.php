@@ -279,7 +279,8 @@ class qgisFormControl
             } elseif ($this->fieldEditType === 'SliderRange' || $this->fieldEditType === 'DialRange') {
                 $markup = $this->qgisEdittypeMap[$this->fieldEditType]['jform']['markup'][1];
             } elseif ($this->fieldEditType === 'ValueRelation') {
-                $markup = $this->qgisEdittypeMap[$this->fieldEditType]['jform']['markup'][(int) $this->widgetv2configAttr->AllowMulti];
+                $allowMulti = (int) filter_var($this->widgetv2configAttr->AllowMulti, FILTER_VALIDATE_BOOLEAN);
+                $markup = $this->qgisEdittypeMap[$this->fieldEditType]['jform']['markup'][$allowMulti];
             } elseif ($this->fieldEditType === 'DateTime') {
                 $markup = 'date';
                 $display_format = $this->widgetv2configAttr->display_format;
