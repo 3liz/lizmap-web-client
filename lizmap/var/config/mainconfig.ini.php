@@ -235,6 +235,7 @@ jqueryui.css[] = css/jquery-ui-1.8.23.custom.css
 [datepickers]
 default = $jelix/js/jforms/datepickers/default/init.js
 default.js[]=js/jquery-ui-1.11.2.custom.min.js
+default.js[]=$jelix/js/jforms/datepickers/default/ui.en.js
 default.js[]=$jqueryPath/ui/i18n/jquery.ui.datepicker-$lang.js
 default.js[]=$jelix/js/jforms/datepickers/default/ui.$lang.js
 default.css[]=css/jquery-ui-1.8.23.custom.css
@@ -242,6 +243,7 @@ default.css[]=css/jquery-ui-1.8.23.custom.css
 [datetimepickers]
 default = $jelix/js/jforms/datepickers/default/init.js
 default.js[]=js/jquery-ui-1.11.2.custom.min.js
+default.js[]=$jelix/js/jforms/datepickers/default/ui.en.js
 default.js[]=$jqueryPath/ui/i18n/jquery.ui.datepicker-$lang.js
 default.js[]=$jelix/js/jforms/datepickers/default/ui.$lang.js
 default.css[]=css/jquery-ui-1.8.23.custom.css
