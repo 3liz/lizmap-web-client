@@ -389,7 +389,7 @@ class lizmapWFSRequest extends lizmapOGCRequest
         // To avoid memory issues, we do not ask PostgreSQL for a unique big line containing the geojson
         // but asked for a feature in JSON per line
         // the we store the data into a file
-        $path = sys_get_temp_dir().'/'.time().session_id().'_wfs'.'.csv';
+        $path = tempnam(sys_get_temp_dir(), 'wfs_'.session_id().'_');
         $fd = fopen($path, 'w');
         fwrite($fd, '
 {
