@@ -604,21 +604,21 @@ class qgisFormControl
             case 'UniqueValuesEditable':
             case 'UniqueValues':
                 $this->uniqueValuesData = array(
-                    'notNull' => '0',
-                    'editable' => '0',
+                    'notNull' => False,
+                    'editable' => False,
                 );
                 if ($this->fieldEditType === 'UniqueValuesEditable') {
-                    $this->uniqueValuesData['editable'] = '1';
+                    $this->uniqueValuesData['editable'] = True;
                 }
                 if (($this->edittype instanceof SimpleXMLElement) && $this->edittype->widgetv2config) {
-                    $this->uniqueValuesData['notNull'] = (string) $this->widgetv2configAttr->notNull;
-                    $this->uniqueValuesData['editable'] = (string) $this->widgetv2configAttr->Editable;
+                    $this->uniqueValuesData['notNull'] = filter_var($this->widgetv2configAttr->notNull, FILTER_VALIDATE_BOOLEAN);
+                    $this->uniqueValuesData['editable'] = filter_var($this->widgetv2configAttr->Editable, FILTER_VALIDATE_BOOLEAN);
                 } else if (is_object($this->edittype)) {
                     if (property_exists($this->widgetv2configAttr, 'notNull')) {
-                        $this->uniqueValuesData['notNull'] = (string) $this->widgetv2configAttr->notNull;
+                        $this->uniqueValuesData['notNull'] = filter_var($this->widgetv2configAttr->notNull, FILTER_VALIDATE_BOOLEAN);
                     }
                     if (property_exists($this->widgetv2configAttr, 'Editable')) {
-                        $this->uniqueValuesData['editable'] = (string) $this->widgetv2configAttr->Editable;
+                        $this->uniqueValuesData['editable'] = filter_var($this->widgetv2configAttr->Editable, FILTER_VALIDATE_BOOLEAN);
                     }
                 }
 
@@ -705,12 +705,12 @@ class qgisFormControl
 
             // Value relation
             case 15:
-                $allowNull = (string) $this->edittype->attributes()->allowNull;
+                $allowNull = filter_var($this->edittype->attributes()->allowNull, FILTER_VALIDATE_BOOLEAN);
                 $orderByValue = (string) $this->edittype->attributes()->orderByValue;
                 $layer = (string) $this->edittype->attributes()->layer;
                 $key = (string) $this->edittype->attributes()->key;
                 $value = (string) $this->edittype->attributes()->value;
-                $allowMulti = (string) $this->edittype->attributes()->allowMulti;
+                $allowMulti = filter_var($this->edittype->attributes()->allowMulti, FILTER_VALIDATE_BOOLEAN);
                 $filterExpression = (string) $this->edittype->attributes()->filterExpression;
                 $this->valueRelationData = array(
                     'allowNull' => $allowNull,
@@ -725,19 +725,19 @@ class qgisFormControl
                 break;
 
             case 'ValueRelation':
-                $allowNull = (string) $this->widgetv2configAttr->AllowNull;
+                $allowNull = filter_var($this->widgetv2configAttr->AllowNull, FILTER_VALIDATE_BOOLEAN);
                 $orderByValue = (string) $this->widgetv2configAttr->OrderByValue;
                 $layer = (string) $this->widgetv2configAttr->Layer;
                 $key = (string) $this->widgetv2configAttr->Key;
                 $value = (string) $this->widgetv2configAttr->Value;
-                $allowMulti = (string) $this->widgetv2configAttr->AllowMulti;
+                $allowMulti = filter_var($this->widgetv2configAttr->AllowMulti, FILTER_VALIDATE_BOOLEAN);
                 $filterExpression = (string) $this->widgetv2configAttr->FilterExpression;
-                $useCompleter = (string) $this->widgetv2configAttr->UseCompleter;
-                $fieldEditable = '1';
+                $useCompleter = filter_var($this->widgetv2configAttr->UseCompleter, FILTER_VALIDATE_BOOLEAN);
+                $fieldEditable = True;
                 if (($this->edittype instanceof SimpleXMLElement) && property_exists($this->widgetv2configAttr, 'fieldEditable')) {
-                    $fieldEditable = (string) $this->widgetv2configAttr->fieldEditable;
+                    $fieldEditable = filter_var($this->widgetv2configAttr->fieldEditable, FILTER_VALIDATE_BOOLEAN);
                 } else if (is_object($this->edittype) && property_exists($this->edittype, 'editable')) {
-                    $fieldEditable = (string) $this->edittype->editable;
+                    $fieldEditable = filter_var($this->edittype->editable, FILTER_VALIDATE_BOOLEAN);
                 }
 
                 $this->valueRelationData = array(
@@ -755,25 +755,25 @@ class qgisFormControl
                 break;
 
             case 'RelationReference':
-                $allowNull = (string) $this->widgetv2configAttr->AllowNULL;
-                $orderByValue = (string) $this->widgetv2configAttr->OrderByValue;
+                $allowNull = filter_var($this->widgetv2configAttr->AllowNULL, FILTER_VALIDATE_BOOLEAN);
+                $orderByValue = filter_var($this->widgetv2configAttr->OrderByValue, FILTER_VALIDATE_BOOLEAN);
                 $Relation = (string) $this->widgetv2configAttr->Relation;
-                $MapIdentification = (string) $this->widgetv2configAttr->MapIdentification;
-                $chainFilters = '0';
+                $MapIdentification = filter_var($this->widgetv2configAttr->MapIdentification, FILTER_VALIDATE_BOOLEAN);
+                $chainFilters = False;
                 $filters = array();
                 if (($this->edittype instanceof SimpleXMLElement)) {
                     if (property_exists($this->edittype->widgetv2config, 'FilterFields')) {
                         foreach ($this->edittype->widgetv2config->FilterFields->children('field') as $f) {
                             $filters[] = (string) $f->attributes()->name;
                         }
-                        $chainFilters = (string) $this->edittype->widgetv2config->FilterFields->attributes()->ChainFilters;
+                        $chainFilters = filter_var($this->edittype->widgetv2config->FilterFields->attributes()->ChainFilters, FILTER_VALIDATE_BOOLEAN);
                     }
                 } else if (is_object($this->edittype)) {
                     if (property_exists($this->widgetv2configAttr, 'FilterFields')) {
                         $filters = $this->widgetv2configAttr->FilterFields;
                     }
                     if (property_exists($this->widgetv2configAttr, 'ChainFilters')) {
-                        $chainFilters = $this->widgetv2configAttr->ChainFilters;
+                        $chainFilters = filter_var($this->widgetv2configAttr->ChainFilters, FILTER_VALIDATE_BOOLEAN);
                     }
                 }
                 $this->relationReferenceData = array(
