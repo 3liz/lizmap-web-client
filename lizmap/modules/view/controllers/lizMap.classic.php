@@ -159,6 +159,7 @@ class lizMapCtrl extends jController
                 $rep->addJSLink($file);
             }
         }
+
         // Add other jForms js
         $rep->addJSLink($bp.'js/fileUpload/jquery.fileupload.js');
         $rep->addJSLink($bp.'js/bootstrapErrorDecoratorHtml.js');
