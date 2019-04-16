@@ -154,6 +154,16 @@ class qgisForm implements qgisFormControlsInterface
                                             }
                                         }
                                         $fieldEditOptions[(string) $opt->attributes()->name] = $values;
+                                    // Option with list of values as Map
+                                    } else if ((string) $opt->attributes()->type === 'Map') {
+                                        $values = array();
+                                        foreach( $opt->Option as $v ) {
+                                            $values[] = (object) array(
+                                                'key'=>(string) $v->attributes()->name,
+                                                'value'=>(string) $v->attributes()->value
+                                            );
+                                        }
+                                        $fieldEditOptions[(string) $opt->attributes()->name] = $values;
                                     // Option with string list of values
                                     } else if ((string) $opt->attributes()->type === 'StringList') {
                                         $values = array();
