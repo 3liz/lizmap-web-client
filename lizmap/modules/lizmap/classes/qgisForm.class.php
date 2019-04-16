@@ -44,6 +44,10 @@ class qgisForm
     /** @var qgisFormControl[] */
     protected $formControls = array();
 
+    /** @var jFormsPlugin[] */
+    protected $formPlugins = array();
+
+
     /**
      * qgisForm constructor.
      *
@@ -139,6 +143,8 @@ class qgisForm
                 $hiddenCtrl = new jFormsControlHidden($fieldName.'_hidden');
                 $form->addControl($hiddenCtrl);
                 $toDeactivate[] = $fieldName.'_choice';
+            } elseif ($formControl->fieldEditType === 'Color') {
+                $this->formPlugins[$fieldName] = 'color_html';
             }
 
             // Add the control to the form
@@ -199,8 +205,13 @@ class qgisForm
             }
         }
 
+        $formPlugins = array();
+        foreach ($this->formPlugins as $fName => $pName) {
+            $formPlugins[] = '\''.$fName.'\'=>\''.$pName.'\'';
+        }
+
         if ($attributeEditorForm && property_exists($attributeEditorForm, 'children')) {
-            $template = '{form $form, "lizmap~edition:saveFeature", array(), "htmlbootstrap", array("errorDecorator"=>"lizEditionErrorDecorator")}';
+            $template = '{form $form, "lizmap~edition:saveFeature", array(), "htmlbootstrap", array("errorDecorator"=>"lizEditionErrorDecorator","plugins"=>array('.implode(',', $formPlugins).'))}';
             $template .= $this->getEditorContainerHtmlContent($attributeEditorForm, $this->form_name, 0);
             $template .= '<div class="control-group">';
             $template .= '{ctrl_label "liz_future_action"}';
@@ -226,7 +237,7 @@ class qgisForm
                 }
                 $fieldNames[] = '\''.$fName.'\'';
             }
-            $template = '{form $form, "lizmap~edition:saveFeature", array(), "htmlbootstrap", array("errorDecorator"=>"lizEditionErrorDecorator")}';
+            $template = '{form $form, "lizmap~edition:saveFeature", array(), "htmlbootstrap", array("errorDecorator"=>"lizEditionErrorDecorator","plugins"=>array('.implode(',', $formPlugins).'))}';
             $template .= '{formcontrols array('.implode(',', $fieldNames).')}';
             $template .= '<div class="control-group">';
             $template .= '{ctrl_label}';
