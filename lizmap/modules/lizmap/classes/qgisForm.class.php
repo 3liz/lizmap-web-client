@@ -86,7 +86,21 @@ class qgisForm implements qgisFormControlsInterface
         $this->dbFieldsInfo = $dbFieldsInfo;
 
         $layerXml = $layer->getXmlLayer();
-        $edittypesXml = $layerXml->edittypes[0];
+
+        $edittypesXml = $layerXml->edittypes;
+        if ($edittypesXml && count($edittypesXml) !== 0) {
+            $edittypesXml = $edittypesXml[0];
+        } else {
+            $edittypesXml = null;
+        }
+
+        $fieldConfigurationXml = $layerXml->fieldConfiguration;
+        if ($fieldConfigurationXml && count($fieldConfigurationXml) !== 0) {
+            $fieldConfigurationXml = $fieldConfigurationXml[0];
+        } else {
+            $fieldConfigurationXml = null;
+        }
+
         $categoriesXml = $layerXml->xpath('renderer-v2/categories');
         if ($categoriesXml && count($categoriesXml) != 0) {
             $categoriesXml = $categoriesXml[0];
@@ -107,6 +121,81 @@ class qgisForm implements qgisFormControlsInterface
                 $edittype = $edittypesXml->xpath("edittype[@name='${fieldName}']");
                 if ($edittype && count($edittype) != 0) {
                     $edittype = $edittype[0];
+                } else {
+                    $edittype = null;
+                }
+            } else if ($fieldConfigurationXml) {
+                $fieldConfiguration = $fieldConfigurationXml->xpath("field[@name='${fieldName}']");
+                if ($fieldConfiguration && count($fieldConfiguration) !== 0) {
+                    $fieldConfiguration = $fieldConfiguration[0];
+                    $editWidgetXml = $fieldConfiguration->editWidget;
+                    if ($editWidgetXml && count($editWidgetXml) !== 0) {
+                        $editWidgetXml = $editWidgetXml[0];
+                        // type
+                        $fieldEditType = (string) $editWidgetXml->attributes()->type;
+                        // options
+                        $fieldEditOptions = array();
+                        foreach( $editWidgetXml->config as $config ) {
+                            foreach( $config->Option as $option ) {
+                                foreach( $option->Option as $opt ) {
+                                    // Option with list of values
+                                    if ((string) $opt->attributes()->type === 'List') {
+                                        $values = array();
+                                        foreach( $opt->Option as $l ) {
+                                            if ((string) $l->attributes()->type === 'Map') {
+                                                foreach( $l->Option as $v ) {
+                                                    $values[] = (object) array(
+                                                        'key'=>(string) $v->attributes()->name,
+                                                        'value'=>(string) $v->attributes()->value
+                                                    );
+                                                }
+                                            } else {
+                                                $values[] = (string) $v->attributes()->value;
+                                            }
+                                        }
+                                        $fieldEditOptions[(string) $opt->attributes()->name] = $values;
+                                    // Option with list of values as Map
+                                    } else if ((string) $opt->attributes()->type === 'Map') {
+                                        $values = array();
+                                        foreach( $opt->Option as $v ) {
+                                            $values[] = (object) array(
+                                                'key'=>(string) $v->attributes()->name,
+                                                'value'=>(string) $v->attributes()->value
+                                            );
+                                        }
+                                        $fieldEditOptions[(string) $opt->attributes()->name] = $values;
+                                    // Option with string list of values
+                                    } else if ((string) $opt->attributes()->type === 'StringList') {
+                                        $values = array();
+                                        foreach( $opt->Option as $v ) {
+                                            $values[] = (string) $v->attributes()->value;
+                                        }
+                                        $fieldEditOptions[(string) $opt->attributes()->name] = $values;
+                                    // Simple option
+                                    } else {
+                                        $fieldEditOptions[(string) $opt->attributes()->name] = (string) $opt->attributes()->value;
+                                    }
+                                }
+                            }
+                        }
+
+
+                        $edittype = array(
+                            "type"=>$fieldEditType,
+                            "options"=>(object) $fieldEditOptions
+                        );
+
+                        // editable
+                        $editableFieldXml = $layerXml->xpath("editable/field[@name='${fieldName}']");
+                        if ($editableFieldXml && count($editableFieldXml) !== 0) {
+                            $editableFieldXml = $editableFieldXml[0];
+                            $edittype['editable'] = (int) $editableFieldXml->attributes()->editable;
+                        } else {
+                            $edittype['editable'] = 1;
+                        }
+
+                        $edittype = (object) $edittype;
+                    }
                 } else {
                     $edittype = null;
                 }
@@ -782,14 +871,14 @@ class qgisForm implements qgisFormControlsInterface
 
         // required
         if (array_key_exists('notNull', $formControl->uniqueValuesData)
-            and strtolower($formControl->uniqueValuesData['notNull']) == '1'
+            and $formControl->uniqueValuesData['notNull']
         ) {
             jLog::log('notNull '.$formControl->uniqueValuesData['notNull'], 'error');
             $formControl->ctrl->required = true;
         }
         // combobox
         if (array_key_exists('editable', $formControl->uniqueValuesData)
-             and strtolower($formControl->uniqueValuesData['editable']) == '1'
+             and $formControl->uniqueValuesData['editable']
         ) {
             $formControl->ctrl->setAttribute('class', 'autocomplete');
         }
@@ -904,16 +993,12 @@ class qgisForm implements qgisFormControlsInterface
             $dataSource = new jFormsStaticDatasource();
 
             // required
-            if (
-                strtolower($formControl->valueRelationData['allowNull']) == 'false'
-                or
-                strtolower($formControl->valueRelationData['allowNull']) == '0'
-            ) {
+            if (!$formControl->valueRelationData['allowNull']) {
                 $formControl->ctrl->required = true;
             }
             // combobox
             if (array_key_exists('useCompleter', $formControl->valueRelationData)
-                 and $formControl->valueRelationData['useCompleter'] == '1'
+                 && $formControl->valueRelationData['useCompleter']
             ) {
                 $formControl->ctrl->setAttribute('class', 'combobox');
             }
@@ -925,11 +1010,7 @@ class qgisForm implements qgisFormControlsInterface
             }
 
             // orderByValue
-            if (
-                strtolower($formControl->valueRelationData['orderByValue']) == 'true'
-                or
-                strtolower($formControl->valueRelationData['orderByValue']) == '1'
-            ) {
+            if ($formControl->valueRelationData['orderByValue']) {
                 asort($data);
             }
 
@@ -1074,11 +1155,7 @@ class qgisForm implements qgisFormControlsInterface
             $dataSource = new jFormsStaticDatasource();
 
             // required
-            if (
-                strtolower($formControl->relationReferenceData['allowNull']) == 'false'
-                or
-                strtolower($formControl->relationReferenceData['allowNull']) == '0'
-            ) {
+            if (!$formControl->relationReferenceData['allowNull']) {
                 $formControl->ctrl->required = true;
             }
 
@@ -1089,11 +1166,7 @@ class qgisForm implements qgisFormControlsInterface
             }
 
             // orderByValue
-            if (
-                strtolower($formControl->relationReferenceData['orderByValue']) == 'true'
-                or
-                strtolower($formControl->relationReferenceData['orderByValue']) == '1'
-            ) {
+            if ($formControl->relationReferenceData['orderByValue']) {
                 asort($data);
             }
 
