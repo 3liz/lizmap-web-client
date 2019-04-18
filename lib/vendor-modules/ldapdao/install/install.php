@@ -32,7 +32,7 @@ class ldapdaoModuleInstaller extends jInstallerModule {
             }
             $userGroup = jDao::get('jacl2db~jacl2group', 'jacl2_profile')->getPrivateGroup($jelixAdminUser);
             if ($userGroup) {
-                jAcl2DbManager::addRight($userGroup, 'auth.user.change.password');
+                jAcl2DbManager::addRight($userGroup->id_aclgrp, 'auth.user.change.password');
             }
         }
     }
