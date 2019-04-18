@@ -149,7 +149,10 @@ var lizLayerActionButtons = function() {
                     currentOpacity = opacityLayers[aName];
                 }
                 html+= '<input type="hidden" class="opacityLayer '+isBaselayer+'" value="'+aName+'">';
-                var opacities = [0.2, 0.4, 0.6, 0.8, 1];
+                var opacities = lizMap.config.options.layersOpacities;
+                if(typeof opacities === 'undefined') {
+                    opacities = [0.2, 0.4, 0.6, 0.8, 1];
+                    }
                 for ( var i=0, len=opacities.length; i<len; i++ ) {
                     var oactive = '';
                     if(currentOpacity == opacities[i])
