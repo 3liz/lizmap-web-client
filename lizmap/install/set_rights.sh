@@ -13,7 +13,7 @@ if [ "$GROUP" = "" ]; then
 fi
 
 
-DIRS="$SCRIPTDIR/../var/config $SCRIPTDIR/../var/db $SCRIPTDIR/../var/log $SCRIPTDIR/../var/mails $SCRIPTDIR/../var/uploads $SCRIPTDIR/../var/lizmap-theme-config $SCRIPTDIR/../../temp/lizmap"
+DIRS="$SCRIPTDIR/../install/qgis/edition $SCRIPTDIR/../install/qgis/media/upload  $SCRIPTDIR/../var/config $SCRIPTDIR/../var/db $SCRIPTDIR/../var/log $SCRIPTDIR/../var/mails $SCRIPTDIR/../var/uploads $SCRIPTDIR/../var/lizmap-theme-config $SCRIPTDIR/../../temp/lizmap"
 
 chown -R $USER:$GROUP $DIRS
 chmod -R ug+w $DIRS
