@@ -123,6 +123,10 @@ class lizmapServices
     public $defaultRepository = '';
     // default project in default repository
     public $defaultProject = '';
+    // Do not display Lizmap projects page
+    public $onlyMaps = '';
+    // Show projects switcher in maps page
+    public $projectSwitcher = '';
     // display all project in maps
     public $allInMap = '';
     // Root folder of repositories
