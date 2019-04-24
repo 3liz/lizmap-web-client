@@ -589,9 +589,14 @@ class qgisVectorLayer extends qgisMapLayer
         $dtParams = $this->getDatasourceParameters();
         $cnx = $this->getDatasourceConnection();
         $dbFieldsInfo = $this->getDbFieldsInfo();
+        $primaryKeys = $dbFieldsInfo->primaryKeys;
 
         $update = array();
         foreach ($values as $ref => $value) {
+            // For update, do not update primary keys
+            if (in_array($ref, $primaryKeys)) {
+                continue;
+            }
             // For update, keep fields with NULL to allow deletion of values
             $update[] = '"'.$ref.'"='.$value;
         }
@@ -602,7 +607,6 @@ class qgisVectorLayer extends qgisMapLayer
 
         // Add where clause with primary keys
         $sqlw = array();
-        $primaryKeys = $dbFieldsInfo->primaryKeys;
         $dataFields = $dbFieldsInfo->dataFields;
         foreach ($primaryKeys as $key) {
             $val = $feature->properties->{$key};
