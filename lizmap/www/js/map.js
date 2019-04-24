@@ -1163,7 +1163,7 @@ var lizMap = function() {
     if (('children' in aNode) && aNode['children'].length!=0){
       html += ' expanded parent';
     }
-    if (('displayInLegend' in nodeConfig && nodeConfig.displayInLegend == 'False') || 
+    if (('displayInLegend' in nodeConfig && nodeConfig.displayInLegend == 'False') ||
         (parentConfig && 'displayInLegend' in parentConfig && parentConfig.displayInLegend == 'False')){
       html += ' liz-hidden';
     }
@@ -2956,6 +2956,11 @@ var lizMap = function() {
     });
 
     bindGeobookmarkEvents();
+
+    $('#permalink-box ul.permalink-tabs a[data-toggle="tab"]').on('shown', function(e){
+        if($(e.target).attr('href') == '#tab-embed-permalink')
+            updateMiniDockSize();
+    });
 
     $('#geobookmark-form').submit(function(){
       var bname = $('#geobookmark-form input[name="bname"]').val();
