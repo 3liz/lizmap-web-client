@@ -15,12 +15,17 @@ class map_menuZone extends jZone
 
     protected function _prepareTpl()
     {
+
+        // Get lizmap services
+        $services = lizmap::getServices();
+
         // Get the project and repository params
         $project = $this->param('project');
         $repository = $this->param('repository');
 
         // Get lizmapProject class
         $assign = array(
+            'display_home'=> !$services->onlyMaps,
             'edition' => false,
             'measure' => false,
             'locate' => false,
