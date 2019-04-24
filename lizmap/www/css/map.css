@@ -1910,6 +1910,12 @@ a.btn.btn-opacity-layer.active {
   border: 1px solid lightgrey;
   padding: 10px;
 }
+#permalink-box div.permalink-tab-content div.permalink-tab-pane-share {
+  min-width: 243px;
+}
+#permalink-box div.permalink-tab-content div.permalink-tab-pane-embed {
+  min-height: 80px;
+}
 #permalink-box span.permalink-personalized {
   display: inline-block;
 }
@@ -2448,5 +2454,5 @@ input[type="file"].jforms-ctrl-upload {
 
 /* Use exif to rotate images automatically */
 img {
- image-orientation: from-image; 
+ image-orientation: from-image;
 }
