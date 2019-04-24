@@ -594,7 +594,10 @@ class qgisVectorLayer extends qgisMapLayer
         $pk = array();
         foreach ($dbFieldsInfo->primaryKeys as $key) {
             $val = $feature->properties->{$key};
-            if ($dataFields[$key]->unifiedType != 'integer') {
+            if ($dataFields[$key]->unifiedType != 'integer'
+                && $dataFields[$key]->unifiedType !== 'numeric'
+                && $dataFields[$key]->unifiedType !== 'float'
+                && $dataFields[$key]->unifiedType !== 'decimal') {
                 $val = $cnx->quote($val);
             }
             $key = $cnx->encloseName($key);
@@ -728,9 +731,14 @@ class qgisVectorLayer extends qgisMapLayer
         $dtParams = $this->getDatasourceParameters();
         $cnx = $this->getDatasourceConnection();
         $dbFieldsInfo = $this->getDbFieldsInfo();
+        $primaryKeys = $dbFieldsInfo->primaryKeys;
 
         $update = array();
         foreach ($values as $ref => $value) {
+            // For update, do not update primary keys
+            if (in_array($ref, $primaryKeys)) {
+                continue;
+            }
             // For update, keep fields with NULL to allow deletion of values
             $update[] = '"'.$ref.'"='.$value;
         }
