@@ -610,7 +610,10 @@ class qgisVectorLayer extends qgisMapLayer
         $dataFields = $dbFieldsInfo->dataFields;
         foreach ($primaryKeys as $key) {
             $val = $feature->properties->{$key};
-            if ($dataFields[$key]->unifiedType != 'integer') {
+            if ($dataFields[$key]->unifiedType !== 'integer'
+                && $dataFields[$key]->unifiedType !== 'numeric'
+                && $dataFields[$key]->unifiedType !== 'float'
+                && $dataFields[$key]->unifiedType !== 'decimal') {
                 $val = $cnx->quote($val);
             }
             $sqlw[] = '"'.$key.'"'.' = '.$val;
@@ -718,7 +721,10 @@ class qgisVectorLayer extends qgisMapLayer
         $pkLogInfo = array();
         foreach ($dbFieldsInfo->primaryKeys as $key) {
             $val = $feature->properties->{$key};
-            if ($dataFields[$key]->unifiedType != 'integer') {
+            if ($dataFields[$key]->unifiedType !== 'integer'
+                && $dataFields[$key]->unifiedType !== 'numeric'
+                && $dataFields[$key]->unifiedType !== 'float'
+                && $dataFields[$key]->unifiedType !== 'decimal') {
                 $val = $cnx->quote($val);
             }
             $sqlw[] = '"'.$key.'"'.' = '.$val;
