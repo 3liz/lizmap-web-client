@@ -1649,17 +1649,11 @@ class lizmapProject extends qgisProject
         // Get lizmap services
         $services = lizmap::getServices();
 
-        // only maps and show project switcher
-        if ($services->onlyMaps or $services->projectSwitcher) {
-            $dockableName = 'projects';
-            if ($services->onlyMaps) {
-                $dockableName = 'home';
-            }
-
+        if ($services->projectSwitcher) {
             $projectsTpl = new jTpl();
             $projectsTpl->assign('excludedProject', $this->repository->getKey().'~'.$this->getKey());
             $dockable[] = new lizmapMapDockItem(
-                $dockableName,
+                'projects',
                 jLocale::get('view~default.repository.list.title'),
                 $projectsTpl->fetch('view~map_projects'),
                 0
