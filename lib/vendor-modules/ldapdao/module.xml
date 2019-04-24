@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <module xmlns="http://jelix.org/ns/module/1.0">
     <info id="ldapdao@3liz.com" name="ldapdao" createdate="2014-11-18">
-        <version date="2019-01-28">2.0.6</version>
+        <version date="2019-04-18">2.0.7</version>
         <label lang="en_US">ldapdao</label>
         <description lang="en_US" />
         <license URL="http://www.mozilla.org/MPL/">Mozilla Public License</license>

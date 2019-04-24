@@ -96,7 +96,6 @@ final class jResponseBinary  extends jResponse {
                 readfile ($this->fileName);
                 flush();
                 if ($this->deleteFileAfterSending) {
-                    ob_clean();
                     unlink($this->fileName);
                 }
             }
