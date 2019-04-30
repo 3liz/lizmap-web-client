@@ -587,7 +587,7 @@ class lizmapProject extends qgisProject
     {
         $qgisServer = jClasses::getService('lizmap~qgisServer');
 
-        return $qgisServer->plugins;
+        return $qgisServer->getPlugins($this);
     }
 
     public function hasTooltipLayers()

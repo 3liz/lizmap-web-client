@@ -24,10 +24,10 @@ class qgisServer
 
         $this->qgisServerVersion = $services->qgisServerVersion;
 
-        $this->getPlugins();
+        //$this->getPlugins();
     }
 
-    protected function getPlugins()
+    public function getPlugins($project)
     {
         $plugins = array();
 
@@ -35,6 +35,7 @@ class qgisServer
         $params = array(
             'service' => 'WMS',
             'request' => 'GetCapabilitiesAtlas',
+            'map' => $project->getRelativeQgisPath()
         );
         $url = lizmapProxy::constructUrl($params);
         list($data, $mime, $code) = lizmapProxy::getRemoteData($url);
@@ -44,6 +45,6 @@ class qgisServer
             $plugins[$metadata->name] = array('version' => $metadata->version);
         }
 
-        $this->plugins = $plugins;
+        return $plugins;
     }
 }
