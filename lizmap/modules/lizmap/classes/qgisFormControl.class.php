@@ -817,9 +817,9 @@ class qgisFormControl
     public function isUploadControl()
     {
         return $this->fieldEditType === 8 ||
-        $this->fieldEditType === 'FileName' ||
-        $this->fieldEditType === 'Photo' ||
-        $this->fieldEditType === 'ExternalResource';
+            $this->fieldEditType === 'FileName' ||
+            $this->fieldEditType === 'Photo' ||
+            $this->fieldEditType === 'ExternalResource';
     }
 
     public function getControlName()
