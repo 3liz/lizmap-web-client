@@ -251,7 +251,7 @@ default.css[]=js/jquery/ui-1.11.4/jquery-ui.min.css
 [htmleditors]
 default.engine.name = ckeditor
 default.engine.file[] = js/ckeditor5/ckeditor.js
-default.config = js/ckeditor5/ckeditor_default.js
+default.config = js/ckeditor5/ckeditor_lizmap.js
 default.skin.default =
 
 ckdefault.engine.name = ckeditor
