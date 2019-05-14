@@ -1052,9 +1052,8 @@ class editionCtrl extends jController
                 case 'integer':
                     if (is_numeric($value)) {
                         $value = filter_var($value, FILTER_SANITIZE_NUMBER_INT);
-                            if (!$value) {
-                                $value = 'NULL';
-                            }
+                        if (!$value) {
+                            $value = 'NULL';
                         }
                     }
                     else {
