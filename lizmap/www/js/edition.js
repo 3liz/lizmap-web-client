@@ -1310,7 +1310,7 @@ OpenLayers.Geometry.pointOnSegment = function(point, segment) {
         $('#' + submit_hidden_id).val(editionLayer['submitActor']);
 
         var msg = 'ok';
-        if( editionLayer['spatial'] ){
+        if( editionLayer['spatial'] && editionLayer['config'].capabilities.modifyGeometry == 'True'){
 
             var gColumn = form.find('input[name="liz_geometryColumn"]').val();
             var formGeom = form.find('input[name="'+gColumn+'"]').val();
