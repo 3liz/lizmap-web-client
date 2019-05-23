@@ -607,18 +607,21 @@ class lizmapProject extends qgisProject
         return false;
     }
 
-    public function hasAttributeLayers()
+    public function hasAttributeLayers($onlyDisplayedLayers = false)
     {
         if (property_exists($this->cfg, 'attributeLayers')) {
             $count = 0;
+            $hasDisplayedLayer = !$onlyDisplayedLayers;
             foreach ($this->cfg->attributeLayers as $key => $obj) {
                 ++$count;
+                if ($onlyDisplayedLayers && !property_exists($obj, 'hideLayer') ||
+                    strtolower($obj->hideLayer) != 'true') {
+                    $hasDisplayedLayer = true;
+                }
             }
-            if ($count != 0) {
+            if ($count != 0 && $hasDisplayedLayer) {
                 return true;
             }
-
-            return false;
         }
 
         return false;
@@ -1302,7 +1305,7 @@ class lizmapProject extends qgisProject
         // Update locate by layer with vecctorjoins
         $configJson->locateByLayer = $this->locateByLayer;
 
-        // Update attributeLayesr with attributetableconfig
+        // Update attributeLayers with attributetableconfig
         $configJson->attributeLayers = $this->attributeLayers;
 
         // Remove FTP remote directory
@@ -1557,7 +1560,9 @@ class lizmapProject extends qgisProject
                 'selectiontool',
                 jLocale::get('view~map.selectiontool.navbar.title'),
                 $tpl->fetch('view~map_selectiontool'),
-                1
+                1,
+                '',
+                $bp.'js/attributeTable.js'
             );
             $dock->icon = '<span class="icon-white icon-star" style="margin-left:2px; margin-top:2px;"></span>';
             $dockable[] = $dock;
@@ -1682,13 +1687,11 @@ class lizmapProject extends qgisProject
     public function getDefaultBottomDockable()
     {
         $dockable = array();
-        $configOptions = $this->getOptions();
         $bp = jApp::config()->urlengine['basePath'];
 
-        if ($this->hasAttributeLayers()) {
+        if ($this->hasAttributeLayers(true)) {
             $form = jForms::create('view~attribute_layers_option');
             $assign = array('form' => $form);
-            $tpl = new jTpl();
             $dockable[] = new lizmapMapDockItem(
                 'attributeLayers',
                 jLocale::get('view~map.attributeLayers.navbar.title'),
