@@ -609,7 +609,8 @@ class editionCtrl extends jController
 
         // Check the form data and redirect if needed
         $check = $form->check();
-        if ($this->geometryColumn != '' && $form->getData($this->geometryColumn) == '') {
+        $modifyGeometry = $this->layer->getEditionCapabilities()->capabilities->modifyGeometry;
+        if (strtolower($modifyGeometry) == 'true' && $this->geometryColumn != '' && $form->getData($this->geometryColumn) == '') {
             $check = false;
             $form->setErrorOn($this->geometryColumn, jLocale::get('view~edition.message.error.no.geometry'));
         }
