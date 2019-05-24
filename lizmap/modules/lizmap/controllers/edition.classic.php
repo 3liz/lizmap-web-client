@@ -215,7 +215,7 @@ class editionCtrl extends jController
         $featureId = $this->featureId;
 
         // Get features primary key field values corresponding to featureId(s)
-        if (!empty($featureId)) {
+        if (!empty($featureId) or $featureId == 0) {
             $typename = $this->layer->getShortName();
             if (!$typename or $typename == '') {
                 $typename = str_replace(' ', '_', $this->layer->getName());
@@ -609,7 +609,8 @@ class editionCtrl extends jController
 
         // Check the form data and redirect if needed
         $check = $form->check();
-        if ($this->geometryColumn != '' && $form->getData($this->geometryColumn) == '') {
+        $modifyGeometry = $this->layer->getEditionCapabilities()->capabilities->modifyGeometry;
+        if (strtolower($modifyGeometry) == 'true' && $this->geometryColumn != '' && $form->getData($this->geometryColumn) == '') {
             $check = false;
             $form->setErrorOn($this->geometryColumn, jLocale::get('view~edition.message.error.no.geometry'));
         }
@@ -845,8 +846,12 @@ class editionCtrl extends jController
             'layer' => $this->layer,
             'featureId' => $this->featureId,
             'featureData' => $this->featureData,
+            'filesToDelete' => $deleteFiles
         );
-        jEvent::notify('LizmapEditionPreDelete', $eventParams);
+        $event = jEvent::notify('LizmapEditionPreDelete', $eventParams);
+        if ($event->allResponsesByKeyAreTrue('filesDeleted')) {
+            $deleteFiles = array();
+        }
 
         try {
             $rs = $qgisForm->deleteFromDb($feature);
