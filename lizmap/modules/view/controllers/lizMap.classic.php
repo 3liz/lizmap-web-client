@@ -15,7 +15,11 @@ class lizMapCtrl extends jController
     protected $repositoryKey;
     // projectKey: Used to pass project key
     protected $projectKey;
-    // projectObj: Used to pass project Object (no need to rebuild it)
+
+    /**
+     * Used to pass project Object (no need to rebuild it)
+     * @var lizmapProject
+     */
     protected $projectObj;
 
     // forceHiddenProjectVisible: Used to override plugin configuration hideProject
@@ -163,7 +167,7 @@ class lizMapCtrl extends jController
 	
         // Add other jForms js
         $rep->addJSLink($bp.'js/ckeditor5/ckeditor.js');
-        $rep->addJSLink($bp.'js/ckeditor5/ckeditor_default.js');
+        $rep->addJSLink($bp.'js/ckeditor5/ckeditor_lizmap.js');
         $rep->addJSLink($bp.'js/fileUpload/jquery.fileupload.js');
         $rep->addJSLink($bp.'js/bootstrapErrorDecoratorHtml.js');
 
