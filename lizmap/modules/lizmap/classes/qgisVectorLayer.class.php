@@ -148,6 +148,7 @@ class qgisVectorLayer extends qgisMapLayer
                 'selectatid' => '',
                 'srid' => '',
                 'type' => '',
+                'checkPrimaryKeyUnicity' => '',
                 'table' => $table,
                 'geocol' => 'geom',
                 'sql' => $sql
@@ -155,15 +156,16 @@ class qgisVectorLayer extends qgisMapLayer
         }else {
             // Else this is a regular database layer: provider = postgres or spatialite
             $datasourceMatch = preg_match(
-                "#(?:dbname='([^ ]+)' )?(?:service='([^ ]+)' )?(?:host=([^ ]+) )?(?:port=([0-9]+) )?(?:user='([^ ]+)' )?(?:password='([^ ]+)' )?(?:sslmode=([^ ]+) )?(?:key='([^ ]+)' )?(?:estimatedmetadata=([^ ]+) )?(?:selectatid=([^ ]+) )?(?:srid=([0-9]+) )?(?:type=([a-zA-Z]+) )?(?:table=\"([^ ]+)\" )?(?:\\()?(?:([^ ]+)\\) )?(?:sql=(.*))?#s",
+                "#(?:dbname='([^ ]+)' )?(?:service='([^ ]+)' )?(?:host=([^ ]+) )?(?:port=([0-9]+) )?(?:user='([^ ]+)' )?(?:password='([^ ]+)' )?(?:sslmode=([^ ]+) )?(?:key='([^ ]+)' )?(?:estimatedmetadata=([^ ]+) )?(?:selectatid=([^ ]+) )?(?:srid=([0-9]+) )?(?:type=([a-zA-Z]+) )?(?:checkPrimaryKeyUnicity='([0-1]+)' )?(?:table=\"([^ ]+)\" )?(?:\\()?(?:([^ ]+)\\) )?(?:sql=(.*))?#s",
+
                 $this->datasource,
                 $dt
             );
 
-            if ($dt[13] == '') {
+            if (count($dt) < 14 or $dt[14] == '') {
                 // if table not found, try again for complex tables, such as table="(SELECT count(*) FROM table WHERE bla)"
                 $datasourceMatch = preg_match(
-                    "#(?:dbname='([^ ]+)' )?(?:service='([^ ]+)' )?(?:host=([^ ]+) )?(?:port=([0-9]+) )?(?:user='([^ ]+)' )?(?:password='([^ ]+)' )?(?:sslmode=([^ ]+) )?(?:key='([^ ]+)' )?(?:estimatedmetadata=([^ ]+) )?(?:selectatid=([^ ]+) )?(?:srid=([0-9]+) )?(?:type=([a-zA-Z]+) )?(?:table=\"(.+)\" )?(?:\\()?(?:([^ ]+)\\) )?(?:sql=(.*))?#s",
+                    "#(?:dbname='([^ ]+)' )?(?:service='([^ ]+)' )?(?:host=([^ ]+) )?(?:port=([0-9]+) )?(?:user='([^ ]+)' )?(?:password='([^ ]+)' )?(?:sslmode=([^ ]+) )?(?:key='([^ ]+)' )?(?:estimatedmetadata=([^ ]+) )?(?:selectatid=([^ ]+) )?(?:srid=([0-9]+) )?(?:type=([a-zA-Z]+) )?(?:checkPrimaryKeyUnicity='([0-1]+)' )?(?:table=\"(.+)\" )?(?:\\()?(?:([^ ]+)\\) )?(?:sql=(.*))?#s",
                     $this->datasource,
                     $dt
                 );
@@ -182,12 +184,12 @@ class qgisVectorLayer extends qgisMapLayer
                 'selectatid' => $dt[10],
                 'srid' => $dt[11],
                 'type' => $dt[12],
-                'table' => $dt[13],
-                'geocol' => $dt[14],
-                'sql' => $dt[15],
+                'checkPrimaryKeyUnicity' => $dt[13],
+                'table' => $dt[14],
+                'geocol' => $dt[15],
+                'sql' => $dt[16],
             );
         }
-
 
         $table = $ds['table'];
         $tableAlone = $table;
