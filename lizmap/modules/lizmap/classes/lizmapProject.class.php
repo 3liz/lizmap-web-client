@@ -37,11 +37,25 @@ class lizmapProject extends qgisProject
     );
 
     /**
-     * Lizmap repository key.
+     * Lizmap project key.
      *
      * @var string
      */
     protected $key = '';
+
+    /**
+     * QGIS project filemtime.
+     *
+     * @var string
+     */
+    protected $qgsmtime = '';
+
+    /**
+     * Lizmap config filemtime.
+     *
+     * @var string
+     */
+    protected $qgscfgmtime = '';
 
     /**
      * @var array Lizmap repository configuration data
@@ -190,6 +204,8 @@ class lizmapProject extends qgisProject
                 $this->{$prop} = $data[$prop];
             }
         }
+        $this->qgsmtime = $data['qgsmtime'];
+        $this->qgscfgmtime = $data['qgscfgmtime'];
 
         $this->path = $file;
     }
@@ -435,6 +451,16 @@ class lizmapProject extends qgisProject
     public function getRepository()
     {
         return $this->repository;
+    }
+
+    public function getFileTime()
+    {
+        return $this->qgsmtime;
+    }
+
+    public function getCfgFileTime()
+    {
+        return $this->qgscfgmtime;
     }
 
     public function getProperties()
