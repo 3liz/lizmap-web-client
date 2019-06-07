@@ -79,8 +79,8 @@ final class jResponseBinary  extends jResponse {
 
         $this->addHttpHeader('Content-Type' ,$this->mimeType, $this->doDownload);
 
-        if($this->doDownload)
-              $this->_downloadHeader();
+        if ($this->doDownload)
+            $this->_downloadHeader();
         else
             $this->addHttpHeader ('Content-Disposition', 'inline; filename="'.str_replace('"','\"',$this->outputFileName).'"', false);
 

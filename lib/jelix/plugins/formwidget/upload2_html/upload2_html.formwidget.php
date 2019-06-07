@@ -162,7 +162,7 @@ class upload2_htmlFormWidget extends \jelix\forms\HtmlWidget\WidgetBase
             echo "/>",
             "</li>\n";
             $this->parentWidget->addJs("c = new " . $jFormsJsVarName . "ControlString('" . $this->ctrl->ref . "', " . $this->escJsStr($this->ctrl->label) . ");\n");
-            $this->commonJs();
+            $this->parentWidget->addJs($this->commonGetJsConstraints());
             $this->parentWidget->addJs("c2.addControl(c, 'new');\n");
         } else {
             echo '<input type="hidden" name="' . $this->ctrl->ref . '_jf_action" value="new" />';
