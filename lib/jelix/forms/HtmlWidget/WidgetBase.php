@@ -184,6 +184,16 @@ abstract class WidgetBase implements WidgetInterface {
     }
 
     protected function commonJs() {
+        $jsContent = $this->commonGetJsConstraints();
+
+        if (!$this->parentWidget->controlJsChild()) {
+            $jsContent .= $this->builder->getJFormsJsVarName().".tForm.addControl(c);\n";
+        }
+
+        $this->parentWidget->addJs($jsContent);
+    }
+
+    protected function commonGetJsConstraints() {
         $jsContent = '';
 
         if ($this->ctrl->isReadOnly()) {
@@ -207,14 +217,9 @@ abstract class WidgetBase implements WidgetInterface {
         else {
             $jsContent .= "c.errInvalid=".$this->escJsStr(\jLocale::get('jelix~formserr.js.err.invalid', $this->ctrl->label)).";\n";
         }
-
-        if (!$this->parentWidget->controlJsChild()) {
-            $jsContent .= $this->builder->getJFormsJsVarName().".tForm.addControl(c);\n";
-        }
-
-        $this->parentWidget->addJs($jsContent);
+        return $jsContent;
     }
-    
+
     protected function escJsStr($str) {
         return '\''.str_replace(array("'","\n"),array("\\'", "\\n"), $str).'\'';
     }
