@@ -7,9 +7,6 @@ lizMap.events.on({
         // Click on the layer to select it in the legend
         $('#layer-' + layername + ' td span.label').trigger({type: 'mousedown', which: 1 });
 
-        // Click on the (i) button to open metadata panel
-        $('#layerActionMetadata').click();
-
     }
 
 });
