@@ -1,3 +1,4 @@
+{if false}
 <div id="header">
   <div id="logo">
   </div>
@@ -109,7 +110,7 @@
 
 <div id="lizmap-modal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" data-show="false" data-keyboard="false" data-backdrop="static">
 </div>
-
+{/if}
 
 {if $googleAnalyticsID && $googleAnalyticsID != ''}
 <!-- Google Analytics -->

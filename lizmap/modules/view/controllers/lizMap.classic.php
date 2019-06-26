@@ -166,13 +166,13 @@ class lizMapCtrl extends jController
         }
 	
         // Add other jForms js
-        $rep->addJSLink($bp.'js/ckeditor5/ckeditor.js');
-        $rep->addJSLink($bp.'js/ckeditor5/ckeditor_lizmap.js');
-        $rep->addJSLink($bp.'js/fileUpload/jquery.fileupload.js');
+        // $rep->addJSLink($bp.'js/ckeditor5/ckeditor.js');
+        // $rep->addJSLink($bp.'js/ckeditor5/ckeditor_lizmap.js');
+        // $rep->addJSLink($bp.'js/fileUpload/jquery.fileupload.js');
         $rep->addJSLink($bp.'js/bootstrapErrorDecoratorHtml.js');
 
         // Add bottom dock js
-        $rep->addJSLink($bp.'js/bottom-dock.js');
+        // $rep->addJSLink($bp.'js/bottom-dock.js');
 
         // Pass some configuration options to the web page through javascript var
         $lizUrls = array(
@@ -222,7 +222,7 @@ class lizMapCtrl extends jController
         $rep->title = $title;
 
         // Add search js
-        $rep->addJSLink($bp.'js/search.js');
+        // $rep->addJSLink($bp.'js/search.js');
 
         // Add moment.js for timemanager
         if ($lproj->hasTimemanagerLayers()) {
@@ -245,7 +245,7 @@ class lizMapCtrl extends jController
         }
 
         // Add qgis popup atlas JS
-        $rep->addJSLink($bp.'js/popupQgisAtlas.js');
+        // $rep->addJSLink($bp.'js/popupQgisAtlas.js');
 
         // Assign variables to template
         $assign = array_merge(array(
@@ -514,7 +514,7 @@ class lizMapCtrl extends jController
         //$assign['auth_url_return'] = jUrl::get('view~default:index');
 
         // switcher-layers-actions javascript
-        $rep->addJSLink($bp.'js/switcher-layers-actions.js');
+        // $rep->addJSLink($bp.'js/switcher-layers-actions.js');
 
         // Add Google Analytics ID
         $assign['googleAnalyticsID'] = '';
