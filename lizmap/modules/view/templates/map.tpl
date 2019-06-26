@@ -1,3 +1,5 @@
+
+<lizmap-map></lizmap-map>
 {if false}
 <div id="header">
   <div id="logo">

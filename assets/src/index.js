@@ -1,0 +1,1 @@
+import LizmapMap from './modules/LizmapMap.js';
