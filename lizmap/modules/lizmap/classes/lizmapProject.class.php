@@ -1592,6 +1592,12 @@ class lizmapProject extends qgisProject
                 $externalSearch['url'] = jUrl::get('lizmap~osm:nominatim');
             } elseif ($configJson->options->externalSearch == 'ign') {
                 $externalSearch['url'] = jUrl::get('lizmap~ign:address');
+            } elseif ($configJson->options->externalSearch == 'ban') {
+                $externalSearch = array(
+                    'type' => 'BAN',
+                    'service' => 'lizmapBan',
+                    'url' => jUrl::get('lizmap~ban:search')
+                );
             }
             $configJson->options->searches[] = (object) $externalSearch;
             unset($configJson->options->externalSearch);
