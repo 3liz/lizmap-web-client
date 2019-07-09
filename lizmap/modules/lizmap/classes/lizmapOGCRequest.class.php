@@ -117,6 +117,38 @@ class lizmapOGCRequest
 
     protected function getcapabilities()
     {
+        // Get cached session
+        $key = session_id().'-'.
+               $this->project->getRepository()->getKey().'-'.
+               $this->project->getKey().'-'.
+               $this->param('service').'-getcapabilities';
+        if (jAuth::isConnected()) {
+            $juser = jAuth::getUserSession();
+            $key .= '-'.$juser->login;
+        }
+        $key = sha1($key);
+        $cached = false;
+        try {
+            $cached = jCache::get($key, 'qgisprojects');
+        } catch (Exception $e) {
+            // if qgisprojects profile does not exist, or if there is an
+            // other error about the cache, let's log it
+            jLog::logEx($e, 'error');
+        }
+        // invalid cache
+        if ($cached !== false && $cached['mtime'] < $this->project->getFileTime() ) {
+            $cached = false;
+        }
+        // return cached data
+        if ($cached !== false) {
+            return (object) array(
+                'code' => $cached['code'],
+                'mime' => $cached['mime'],
+                'data' => $cached['data'],
+                'cached' => true,
+            );
+        }
+
         $querystring = $this->constructUrl();
 
         // Get remote data
@@ -128,11 +160,21 @@ class lizmapOGCRequest
             list($data, $mime, $code) = lizmapProxy::getRemoteData($querystring);
         }
 
+        if ($code == 200) {
+            $cached = array(
+                'mtime' => $this->project->getFileTime(),
+                'code' => $code,
+                'mime' => $mime,
+                'data' => $data,
+            );
+            $cached = jCache::set($key, $cached, 3600, 'qgisprojects');
+        }
+
         return (object) array(
             'code' => $code,
             'mime' => $mime,
             'data' => $data,
-            'cached' => false,
+            'cached' => $cached,
         );
     }
 }

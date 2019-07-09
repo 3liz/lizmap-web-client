@@ -20,11 +20,16 @@ var lizLayerFilterTool = function() {
                 if( !(conf.layerId in flayers) ){
                     // Get layer
                     var layerId = conf.layerId;
-                    var getConfig = lizMap.getLayerConfigById(layerId);
-                    if( !getConfig)
+                    var lconfig_get = lizMap.getLayerConfigById(layerId);
+                    if( !lconfig_get)
                         continue;
-                    var layerName = getConfig[0];
-                    html+= '<option value="'+layerId+'">'+layerName+'</option>';
+                    var lname = lconfig_get[0];
+                    var lconf = lconfig_get[1];
+                    var displayName = lname;
+                    if( 'title' in lconf && lconf.title != '' ){
+                        displayName = lconf.title;
+                    }
+                    html+= '<option value="'+layerId+'">'+displayName+'</option>';
                     flayers[layerId] = true;
                 }
             }
