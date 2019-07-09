@@ -1,5 +1,14 @@
+<lizmap-map id="mainmap"></lizmap-map>
 
-<lizmap-map></lizmap-map>
+<div id="baselayers-example">
+
+  <lizmap-baselayers-element map-selector="#mainmap"></lizmap-baselayers-element>
+
+</div>
+
+
+
+
 {if false}
 <div id="header">
   <div id="logo">

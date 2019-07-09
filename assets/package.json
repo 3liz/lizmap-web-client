@@ -7,11 +7,12 @@
     "watch": "webpack --watch --config webpack.dev.js"
   },
   "devDependencies": {
-    "ol": "^5.3.3",
-    "webpack": "^4.34.0",
-    "webpack-cli": "^3.3.2",
     "css-loader": "^3.0.0",
-    "style-loader": "^0.23.1"
+    "html-loader": "^0.5.5",
+    "ol": "^5.3.3",
+    "style-loader": "^0.23.1",
+    "webpack": "^4.34.0",
+    "webpack-cli": "^3.3.2"
   },
   "keywords": [],
   "author": "",
