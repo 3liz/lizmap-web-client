@@ -1,6 +1,6 @@
 import LizmapLayerGroup from './LizmapLayerGroup.js';
 
-export class LizmapBaseLayersElement extends HTMLElement {
+export default class LizmapBaseLayersElement extends HTMLElement {
     constructor() {
         super();
 
@@ -66,4 +66,3 @@ export class LizmapBaseLayersElement extends HTMLElement {
     }
 }
 
-window.customElements.define('lizmap-baselayers-element', LizmapBaseLayersElement);

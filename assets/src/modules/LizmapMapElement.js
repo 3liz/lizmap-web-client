@@ -8,7 +8,7 @@ import OSM from 'ol/source/OSM.js';
 
 import LizmapLayerGroup from './LizmapLayerGroup.js';
 
-export default class LizmapMap extends HTMLElement {
+export default class LizmapMapElement extends HTMLElement {
     constructor() {
         super();
 
@@ -59,5 +59,3 @@ export default class LizmapMap extends HTMLElement {
         ]);
     }
 }
-
-window.customElements.define('lizmap-map', LizmapMap);

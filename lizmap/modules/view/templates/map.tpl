@@ -2,7 +2,7 @@
 
 <div id="baselayers-example">
 
-  <lizmap-baselayers-element map-selector="#mainmap"></lizmap-baselayers-element>
+  <lizmap-baselayers map-selector="#mainmap"></lizmap-baselayers>
 
 </div>
 
