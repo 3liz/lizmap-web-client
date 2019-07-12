@@ -1453,7 +1453,7 @@ var lizMap = function() {
        ,scales: scales.length == 0 ? null : scales
        ,resolutions: resolutions.length == 0 ? null : resolutions
        ,projection:projection
-       ,units:projection.proj.units
+       ,units:projection.proj.units !== null ? projection.proj.units : "degrees"
        ,allOverlays:(baselayers.length == 0)
     });
     map.addControl(new OpenLayers.Control.Attribution({div:document.getElementById('attribution')}));
