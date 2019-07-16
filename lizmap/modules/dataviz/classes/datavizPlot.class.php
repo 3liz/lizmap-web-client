@@ -214,13 +214,18 @@ class datavizPlot
             'margin' => array(
                 'l' => 0,
                 'r' => 20,
-                //'b'=> 100,
+                //'b'=> 150,
                 't' => 0,
                 'pad' => 1,
             ),
         );
 
+        if($this->type == 'pie'){
+            $layout['legend']['y'] = '-5';
+        }
+
         if ($this->type == 'bar' and count($this->y_fields) > 1) {
+            $layout['margin']['l'] = 150;
             $layout['barmode'] = 'stack';
         }
 
@@ -777,7 +782,7 @@ class datavizPlotPie extends datavizPlot
             'values' => array(),
             'labels' => array(),
             'hoverinfo' => 'label+value+percent',
-            'textinfo' => 'label',
+            'textinfo' => 'value',
             'opacity' => null,
         );
     }
