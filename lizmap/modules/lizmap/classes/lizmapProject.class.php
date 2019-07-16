@@ -1590,8 +1590,6 @@ class lizmapProject extends qgisProject
             );
             if ($configJson->options->externalSearch == 'nominatim') {
                 $externalSearch['url'] = jUrl::get('lizmap~osm:nominatim');
-            } elseif ($configJson->options->externalSearch == 'ign') {
-                $externalSearch['url'] = jUrl::get('lizmap~ign:address');
             } elseif ($configJson->options->externalSearch == 'ban') {
                 $externalSearch = array(
                     'type' => 'BAN',

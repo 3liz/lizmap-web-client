@@ -14,10 +14,12 @@ var lizSearch = function() {
         var wgs84 = new OpenLayers.Projection('EPSG:4326');
 
         $('#lizmap-search .items li > a').unbind('click');
-        if ( $('#lizmap-search .items li.start').length != 0 )
+        if ( $('#lizmap-search .items li.start').length != 0 ){
             $('#lizmap-search .items').html( aHTML );
-        else
+        }
+        else{
             $('#lizmap-search .items').append( aHTML );
+        }
         $('#lizmap-search, #lizmap-search-close').addClass('open');
         $('#lizmap-search .items li > a').click(function() {
             var bbox = $(this).attr('href').replace('#','');
@@ -64,7 +66,9 @@ var lizSearch = function() {
         var sqrex = '(';
         for(var i in sqvals){
             var sqi = sqvals[i].trim();
-            if( sqi == '' ){continue;}
+            if( sqi == '' ){
+                continue;
+            }
             sqvalsn.push(sqi);
             if(sqi != lizMap.cleanName(sqi)){
                 sqvalsn.push(lizMap.cleanName(sqi));
@@ -83,10 +87,12 @@ var lizSearch = function() {
      * {Boolean} external search is in the user interface
      */
     function addSearch( searchConfig ) {
-        if ( searchConfig.type == 'externalSearch' )
+        if ( searchConfig.type == 'externalSearch' ){
             return false;
-        if ( !'url' in searchConfig )
+        }
+        if ( !'url' in searchConfig ){
             return false;
+        }
 
         // define max extent for searches
         var wgs84 = new OpenLayers.Projection('EPSG:4326');
@@ -117,8 +123,9 @@ var lizSearch = function() {
                         for ( var i=0, len=ftsLayerResult.features.length; i<len; i++){
                             var ftsFeat = ftsLayerResult.features[i];
                             var ftsGeometry = OpenLayers.Geometry.fromWKT(ftsFeat.geometry);
-                            if ( ftsLayerResult.srid != 'EPSG:4326' )
+                            if ( ftsLayerResult.srid != 'EPSG:4326' ){
                                 ftsGeometry.transform(ftsLayerResult.srid, 'EPSG:4326');
+                            }
                             var bbox = ftsGeometry.getBounds();
                             if ( extent.intersectsBounds(bbox) ) {
                               var lab = ftsFeat.label.replace(labrex,'<b style="color:#0094D6;">$1</b>');
@@ -129,10 +136,12 @@ var lizSearch = function() {
                         text += '</ul></li>';
                     }
 
-                    if (count != 0 && text != '')
+                    if (count != 0 && text != ''){
                         updateExternalSearch( text );
-                    else
+                    }
+                    else{
                         updateExternalSearch( '<li><b>'+lizDict['externalsearch.mapdata']+'</b><ul><li>'+lizDict['externalsearch.notfound']+'</li></ul></li>' );
+                    }
                 }, 'json');
             return false;
         });
@@ -148,8 +157,9 @@ var lizSearch = function() {
      * {Boolean} external search is in the user interface
      */
     function addExternalSearch( searchConfig ) {
-        if ( searchConfig.type != 'externalSearch' )
+        if ( searchConfig.type != 'externalSearch' ){
             return false;
+        }
 
         // define max extent for searches
         var wgs84 = new OpenLayers.Projection('EPSG:4326');
@@ -160,20 +170,29 @@ var lizSearch = function() {
         var service = null;
         switch (searchConfig.service) {
             case 'nominatim':
-            case 'ign':
-                if ( 'url' in searchConfig )
+                if ( 'url' in searchConfig ){
                     service = OpenLayers.Util.urlAppend(searchConfig.url
                                 ,OpenLayers.Util.getParameterString(lizUrls.params)
                               );
+                }
                 break;
+            case 'ign':
+                service = 'https://wxs.ign.fr/choisirgeoportail/geoportail/ols?';
+
+                if('ignKey' in lizMap.config.options){
+                    service = 'https://wxs.ign.fr/'+lizMap.config.options.ignKey+'/geoportail/ols?';
+                }
+            break;
             case 'google':
-                if ( google && 'maps' in google && 'Geocoder' in google.maps )
+                if ( google && 'maps' in google && 'Geocoder' in google.maps ){
                     service = new google.maps.Geocoder();
+                }
                 break;
         }
 
-        if ( service == null )
+        if ( service == null ){
             return false;
+        }
 
         $('#nominatim-search').submit(function(){
             startExternalSearch();
@@ -188,10 +207,12 @@ var lizSearch = function() {
                             var text = '';
                             var count = 0;
                             $.each(data, function(i, e){
-                                if (count > 9)
+                                if (count > 9){
                                     return false;
-                                if ( !e.boundingbox )
+                                }
+                                if ( !e.boundingbox ){
                                     return true;
+                                }
 
                                 var bbox = [
                                     e.boundingbox[2],
@@ -206,37 +227,74 @@ var lizSearch = function() {
                                     count++;
                                 }
                             });
-                            if (count == 0 || text == '')
+                            if (count == 0 || text == ''){
                                 text = '<li>'+lizDict['externalsearch.notfound']+'</li>';
+                            }
                             updateExternalSearch( '<li><b>OpenStreetMap</b><ul>'+text+'</ul></li>' );
                         }, 'json');
                     break;
                 case 'ign':
-                    $.get(service
-                        ,{"query":$('#search-query').val(),"bbox":extent.toBBOX()}
-                        ,function(results) {
+                    var xmlIGN = '<?xml version="1.0" encoding="UTF-8"?>';
+                        xmlIGN +=   '<XLS ';
+                        xmlIGN +=       'xmlns:gml="http://www.opengis.net/gml" ';
+                        xmlIGN +=       'xmlns="http://www.opengis.net/xls" ';
+                        xmlIGN +=       'xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="1.2" ';
+                        xmlIGN +=        'xsi:schemaLocation="http://www.opengis.net/xls http://schemas.opengis.net/ols/1.2/olsAll.xsd">';
+                        xmlIGN +=           '<RequestHeader srsName="epsg:4326"/>';
+                        xmlIGN +=           '<Request maximumResponses="10" methodName="GeocodeRequest" requestID="uid42" version="1.2">';
+                        xmlIGN +=               '<GeocodeRequest returnFreeForm="false">';
+                        xmlIGN +=                   '<Address countryCode="StreetAddress">';
+                        xmlIGN +=                      '<freeFormAddress>'+$('#search-query').val()+'</freeFormAddress>';
+                        xmlIGN +=                   '</Address>';
+                        xmlIGN +=                '</GeocodeRequest>';
+                        xmlIGN +=           '</Request>';
+                        xmlIGN +=    '</XLS>';
+
+                    $.get(
+                        encodeURI(service+'xls='+xmlIGN)
+                        ,function(xml) {
                             var text = '';
                             var count = 0;
-                            $.each(results, function(i, e){
-                                if (count > 9)
+
+                            $(xml).find("GeocodedAddress").each(function () {
+                                if (count > 9){
                                     return false;
-                                var bbox = [
-                                    e.bbox[0],
-                                    e.bbox[1],
-                                    e.bbox[2],
-                                    e.bbox[3]
-                                ];
+                                }
+                                var bbox = $(this).find("Place[type=Bbox]").text().split(';');
+
+                                var number = $(this).find("Building").attr('number');
+                                var street = $(this).find("Street").text();
+                                var municipality = $(this).find("Place[type=Municipality]").text();
+                                var departement = $(this).find("Place[type=Departement]").text();
+
+                                var formatted_address = '';
+
+                                if(number && number !== ''){
+                                    formatted_address += number + ' ';
+                                }
+                                if(street !== ''){
+                                    formatted_address += street + ', ';
+                                }
+                                if(municipality !== ''){
+                                    formatted_address += municipality + ', ';
+                                }
+                                if(departement !== ''){
+                                    formatted_address += departement;
+                                }
+
                                 bbox = new OpenLayers.Bounds(bbox);
                                 if ( extent.intersectsBounds(bbox) ) {
-                                    var lab = e.formatted_address.replace(labrex,'<b style="color:#0094D6;">$1</b>');
+                                    var lab = formatted_address.replace(labrex,'<b style="color:#0094D6;">$1</b>');
                                     text += '<li><a href="#'+bbox.toBBOX()+'">'+lab+'</a></li>';
                                     count++;
                                 }
-                            });
-                            if (count == 0 || text == '')
+
+                             });
+                            if (count == 0 || text == ''){
                                 text = '<li>'+lizDict['externalsearch.notfound']+'</li>';
+                            }
                             updateExternalSearch( '<li><b>IGN</b><ul>'+text+'</ul></li>' );
-                        }, 'json');
+                    });
                     break;
                 case 'google':
                     service.geocode( {
@@ -250,8 +308,9 @@ var lizSearch = function() {
                             var text = '';
                             var count = 0;
                             $.each(results, function(i, e){
-                                if (count > 9)
+                                if (count > 9){
                                     return false;
+                                }
                                 var bbox = [];
                                 if (e.geometry.viewport) {
                                     bbox = [
@@ -268,8 +327,9 @@ var lizSearch = function() {
                                         e.geometry.bounds.getNorthEast().lat()
                                     ];
                                 }
-                                if ( bbox.length != 4 )
+                                if ( bbox.length != 4 ){
                                     return false;
+                                }
                                 bbox = new OpenLayers.Bounds(bbox);
                                 if ( extent.intersectsBounds(bbox) ) {
                                     var lab = e.formatted_address.replace(labrex,'<b style="color:#0094D6;">$1</b>');
@@ -277,8 +337,9 @@ var lizSearch = function() {
                                     count++;
                                 }
                             });
-                            if (count == 0 || text == '')
+                            if (count == 0 || text == ''){
                                 text = '<li>'+lizDict['externalsearch.notfound']+'</li>';
+                            }
                             updateExternalSearch( '<li><b>Google</b><ul>'+text+'</ul></li>' );
                         } else
                             updateExternalSearch( '<li><b>Google</b><ul><li>'+lizDict['externalsearch.notfound']+'</li></ul></li>' );
@@ -300,18 +361,21 @@ var lizSearch = function() {
      */
     function addSearches() {
         var configOptions = config.options;
-        if ( !( 'searches' in configOptions ) || ( configOptions.searches.length == 0 ) )
+        if ( !( 'searches' in configOptions ) || ( configOptions.searches.length == 0 ) ){
             return;
+        }
 
         var searchOptions = config.options.searches;
         var searchAdded = false;
         for( var i=0, len=searchOptions.length; i<len; i++ ){
             var searchOption = searchOptions[i];
             var searchAddedResult = false;
-            if ( searchOption.type == 'externalSearch' )
+            if ( searchOption.type == 'externalSearch' ){
                 searchAddedResult = addExternalSearch( searchOption );
-            else
+            }
+            else{
                 searchAddedResult = addSearch( searchOption );
+            }
             searchAdded = searchAdded || searchAddedResult;
         }
         if ( !searchAdded ){
@@ -327,10 +391,11 @@ var lizSearch = function() {
             config = lizMap.config;
             map = lizMap.map;
 
-            // Add or remove seaches!
+            // Add or remove searches!
             var configOptions = config.options;
-            if ( ( 'searches' in configOptions ) && ( configOptions.searches.length > 0 ) )
+            if ( ( 'searches' in configOptions ) && ( configOptions.searches.length > 0 ) ){
                 addSearches();
+            }
             else {
                 $('#nominatim-search').remove();
                 $('#lizmap-search, #lizmap-search-close').remove();
