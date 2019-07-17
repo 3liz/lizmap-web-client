@@ -603,7 +603,9 @@ class serviceCtrl extends jController
         }
 
         // log metric
-        lizmap::logMetric('LIZMAP_SERVICE_GETMAP');
+        if ($debug) {
+            lizmap::logMetric('LIZMAP_SERVICE_GETMAP');
+        }
 
         return $rep;
     }
@@ -1459,7 +1461,10 @@ class serviceCtrl extends jController
                 $rep->setExpires('+'.$clientCacheExpiration.' seconds');
             }
         }
-        lizmap::logMetric('LIZMAP_SERVICE_GETMAP');
+
+        if ($debug) {
+            lizmap::logMetric('LIZMAP_SERVICE_GETMAP');
+        }
 
         return $rep;
     }
