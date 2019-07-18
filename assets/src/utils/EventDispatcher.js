@@ -11,8 +11,11 @@
 /**
  * Dispatch some application events to listeners
  */
-const EventDispatcher = {
-    _listeners : {},
+export default class EventDispatcher {
+
+    constructor () {
+        this._listeners = {};
+    }
 
     /**
      * add a listener that will be called for one or several given events
@@ -21,7 +24,7 @@ const EventDispatcher = {
      * @param {Array|String|Object} supportedEvents events on which the listener will
      *                       be called. if undefined or "*", it will be called for any events
      */
-    addListener : function (listener, supportedEvents ) {
+    addListener (listener, supportedEvents ) {
 
         if (supportedEvents === undefined) {
             supportedEvents = "*"
@@ -50,8 +53,7 @@ const EventDispatcher = {
         else {
             append(supportedEvents);
         }
-
-    },
+    }
 
     /**
      * remove a listener that is associated for one or several given events
@@ -60,7 +62,7 @@ const EventDispatcher = {
      *                       will be removed. if undefined or "*", it will be removed from any events
      * @param {Function} listener
      */
-    removeListener : function (supportedEvents, listener) {
+    removeListener (supportedEvents, listener) {
 
         if (supportedEvents === undefined) {
             supportedEvents = "*"
@@ -98,7 +100,7 @@ const EventDispatcher = {
         else {
             remove(supportedEvents);
         }
-    },
+    }
 
     /**
      * Call listeners associated with the given event
@@ -108,7 +110,7 @@ const EventDispatcher = {
      *                               case other properties are parameters for
      *                               listeners.
      */
-    notify : function (event) {
+    dispatch (event) {
         if ('string' == typeof event ) {
             event = {
                 type: event
@@ -139,8 +141,6 @@ const EventDispatcher = {
         if ("*" in this._listeners) {
             this._listeners["*"].forEach((listener) => listener(event));
         }
-
     }
 };
 
-export {EventDispatcher as default};
