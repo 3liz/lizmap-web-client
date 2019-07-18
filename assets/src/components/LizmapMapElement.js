@@ -6,7 +6,7 @@ import View from 'ol/View.js';
 import TileLayer from 'ol/layer/Tile.js';
 import OSM from 'ol/source/OSM.js';
 
-import LizmapLayerGroup from './LizmapLayerGroup.js';
+import LizmapLayerGroup from '../modules/LizmapLayerGroup.js';
 
 export default class LizmapMapElement extends HTMLElement {
     constructor() {

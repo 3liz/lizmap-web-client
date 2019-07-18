@@ -1,4 +1,4 @@
-import LizmapLayerGroup from './LizmapLayerGroup.js';
+import LizmapLayerGroup from '../modules/LizmapLayerGroup.js';
 
 export default class LizmapBaseLayersElement extends HTMLElement {
     constructor() {
