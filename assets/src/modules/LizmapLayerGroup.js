@@ -3,21 +3,16 @@ import LayerGroup from 'ol/layer/Group';
 
 // attribut selected
 export default class LizmapLayerGroup {
-    constructor(opt_options) {
+    /**
+     *
+     * @param {LizmapLayer} layers
+     * @param {Object} opt_options
+     */
+    constructor(layers, opt_options) {
 
         this._mutuallyExclusive = opt_options.mutuallyExclusive;
 
-        this._lizmapLayers = [];
-
-        for (let [layerId, config] of opt_options.layersList) {
-            const lizmapLayer = new LizmapLayer(layerId, config.visible);
-
-            this._lizmapLayers.push(lizmapLayer);
-        }
-
-        this._OLlayerGroup = new LayerGroup({
-            layers: this.OLLayers()
-        });
+        this._lizmapLayers = layers;
     }
 
     // Make class iterable
@@ -29,8 +24,8 @@ export default class LizmapLayerGroup {
         };
     };
 
-    get OLlayerGroup() {
-        return this._OLlayerGroup;
+    get layers () {
+        return this._lizmapLayers;
     }
 
     set layerVisible(layerId) {
@@ -43,16 +38,5 @@ export default class LizmapLayerGroup {
                 this._lizmapLayers[i].layerVisible = true;
             }
         }
-    }
-
-    // TODO : utiliser map()
-    OLLayers() {
-        let OLLayers = [];
-
-        for (let i = 0; i < this._lizmapLayers.length; i++) {
-            OLLayers.push(this._lizmapLayers[i].OLlayer);
-        }
-
-        return OLLayers;
     }
 }
