@@ -1,15 +1,16 @@
 import LizmapLayer from './LizmapLayer.js';
 import LayerGroup from 'ol/layer/Group';
+import {MainEventDispatcher} from "./LizmapGlobals";
 
 // attribut selected
 export default class LizmapLayerGroup {
     /**
-     *
-     * @param {LizmapLayer} layers
+     * @param {String} mapId
+     * @param {LizmapLayer[]} layers
      * @param {Object} opt_options
      */
-    constructor(layers, opt_options) {
-
+    constructor(mapId, layers, opt_options) {
+        this._mapId = mapId;
         this._mutuallyExclusive = opt_options.mutuallyExclusive;
 
         this._lizmapLayers = layers;
@@ -32,11 +33,16 @@ export default class LizmapLayerGroup {
         for (let i = 0; i < this._lizmapLayers.length; i++) {
             // Set visibility to false when mutually exclusive
             if (this._mutuallyExclusive) {
-                this._lizmapLayers[i].layerVisible = false;
+                this._lizmapLayers[i].visible = false;
             }
             if (this._lizmapLayers[i].layerId === layerId) {
-                this._lizmapLayers[i].layerVisible = true;
+                this._lizmapLayers[i].visible = true;
             }
         }
+        MainEventDispatcher.dispatch({
+            type: 'map-base-layers-visibility',
+            mapId : this._mapId,
+            layers : this._lizmapLayers
+        })
     }
 }

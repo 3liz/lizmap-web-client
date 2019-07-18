@@ -4,6 +4,7 @@ body{margin: 0}
 
 #baselayers-example{
   position: absolute;
-  top: 80px;
+  top: 100px;
+    width:200px;
   background-color: white;
 }

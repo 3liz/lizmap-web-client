@@ -1,68 +1,54 @@
-import LizmapLayerGroup from '../modules/LizmapLayerGroup.js';
+
+import {LizmapMapManager, MainEventDispatcher} from "../modules/LizmapGlobals";
 
 export default class LizmapBaseLayersElement extends HTMLElement {
     constructor() {
         super();
 
         const shadowRoot = this.attachShadow({ mode: 'open' });
+        this._select = document.createElement('select');
+        shadowRoot.appendChild(this._select);
 
-        this._mapElement;
+        this._select.addEventListener('change', (event) => {
+            LizmapMapManager.getMap(this.mapId).baseLayerGroup.layerVisible = event.target.value;
+        });
+        this._layers = [];
+        this._mapId = '';
+    }
+
+    get mapId () {
+        return this._mapId;
     }
 
     connectedCallback() {
+        this._mapId = this.getAttribute('map-id');
+        MainEventDispatcher.addListener(this.onLoadedBaseLayers.bind(this),
+            { type: 'map-base-layers-loaded', mapId : this.mapId});
+    }
 
-        const self = this;
+    disconnectedCallback() {
+        MainEventDispatcher.removeListener(this.onLoadedBaseLayers.bind(this),
+            { type: 'map-base-layers-loaded', mapId : this.mapId});
 
-        // TODO addeventlistener
-        window.onload = function() {
-            const mapSelector = self.getAttribute('map-selector');
+    }
 
-            if (mapSelector) {
-                const mapElement = document.querySelector(mapSelector);
-
-                if (mapElement) {
-                    if (mapElement.nodeName === "LIZMAP-MAP") {
-                        self._mapElement = mapElement;
-                        const baseLayerGroup = new LizmapLayerGroup({
-                            mutuallyExclusive: true,
-                            layersList: mapElement.baseLayers
-                        });
-
-                        mapElement.baseLayerGroup = baseLayerGroup;
-
-                        self.render();
-                    } else {
-                        console.warn("Element is not a lizmap-map element.");
-                    }
-                } else {
-                    console.warn("map-selector does not reference an element.");
-                }
-            } else {
-                console.warn("map-selector undefined.");
-            }
-        };
+    onLoadedBaseLayers(event) {
+        this._layers = event.baseLayerGroup.layers;
+        this.render();
     }
 
     render() {
-        let newSelect = document.createElement('select');
-
-        for (let [layerId, config] of this._mapElement.baseLayers) {
+        this._select.textContent = '';
+        this._layers.forEach((layer) => {
             let newNode = document.createElement('option');
-            newNode.setAttribute('value', layerId);
-            if (config.visible) {
+            newNode.setAttribute('value', layer.layerId);
+            if (layer.visible) {
                 newNode.setAttribute('selected', 'selected');
             }
-            newNode.innerText = config.name;
+            newNode.innerText = layer.layerName;
 
-            newSelect.appendChild(newNode);
-        }
-
-        // Event change
-        newSelect.onchange = (event) => {
-            this._mapElement.baseLayerVisible = event.target.value;
-        };
-
-        this.shadowRoot.appendChild(newSelect);
+            this._select.appendChild(newNode);
+        });
     }
 }
 

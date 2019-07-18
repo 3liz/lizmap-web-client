@@ -58,11 +58,11 @@ export default class EventDispatcher {
     /**
      * remove a listener that is associated for one or several given events
      *
+     * @param {Function} listener
      * @param {Array|String} supportedEvents list of events from which the listener
      *                       will be removed. if undefined or "*", it will be removed from any events
-     * @param {Function} listener
      */
-    removeListener (supportedEvents, listener) {
+    removeListener (listener, supportedEvents) {
 
         if (supportedEvents === undefined) {
             supportedEvents = "*"

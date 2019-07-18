@@ -15,16 +15,21 @@ export default class LizmapMap {
         MainEventDispatcher.dispatch({ type: "map-config-loaded", mapId: this._mapId});
 
         let baseLayers = [];
-        for (let [layerId, layerConfig] in config.baseLayers) {
-            baseLayers.push(new LizmapLayer(layerId, layerConfig.visible));
+        for (let layerId in  config.baseLayers) {
+            let layerConf = config.baseLayers[layerId];
+            baseLayers.push(new LizmapLayer(layerId, layerConf.name, layerConf.visible));
         }
 
-        this._baseLayerGroup = new LizmapLayerGroup(baseLayers, {mutuallyExclusive: true});
+        this._baseLayerGroup = new LizmapLayerGroup(this._mapId, baseLayers, {mutuallyExclusive: true});
 
         MainEventDispatcher.dispatch({
             type: "map-base-layers-loaded",
             mapId: this._mapId,
             baseLayerGroup: this._baseLayerGroup
         });
+    }
+
+    get baseLayerGroup () {
+        return this._baseLayerGroup;
     }
 }

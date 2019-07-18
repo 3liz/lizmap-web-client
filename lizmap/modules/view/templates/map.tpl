@@ -1,11 +1,12 @@
-<lizmap-map id="mainmap"></lizmap-map>
+
+
+<lizmap-map id="mainmap" map-id="mainmap"></lizmap-map>
 
 <div id="baselayers-example">
-
-  <lizmap-baselayers map-selector="#mainmap"></lizmap-baselayers>
+    <button id="map-load-button">Load</button> <br>
+  <lizmap-baselayers map-id="mainmap"></lizmap-baselayers>
 
 </div>
-
 
 
 
