@@ -18,7 +18,9 @@
   }
 }
 @media screen and (max-device-width: 640px){
-  /* some CSS here */
+  #attributeLayers-tabs > li > a {
+    padding: 2px;
+  }
 
   /* Hide text for login links */
   #headermenu.mobile #auth ul.nav a span.text {
