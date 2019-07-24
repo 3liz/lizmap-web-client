@@ -147,7 +147,7 @@ abstract class jDbTools {
      * Get informations about the given SQL type
      * @param string $nativeType the SQL type
      * @return array an array which contains characteristics of the type
-     *        array ( 'nativetype', 'corresponding unifiedtype', minvalue, maxvalue, minlength, maxlength)
+     *        array ( 'nativetype', 'corresponding unifiedtype', minvalue, maxvalue, minlength, maxlength, autoincrement)
      * minvalue, maxvalue, minlength, maxlength can be null.
      * @since 1.2
     */

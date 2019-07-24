@@ -199,6 +199,13 @@ class sqlsrvDbTools extends jDbTools {
 
 
     /**
+     * @inheritdoc
+     */
+    public function encloseName ($fieldName) {
+        return '['.$fieldName.']';
+    }
+
+    /**
     * retrieve the list of fields of a table
     * @param string $tableName the name of the table
     * @param string $sequence  the sequence used to auto increment the primary key (not supported here)

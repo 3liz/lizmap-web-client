@@ -25,7 +25,7 @@ class Registration
         if (\jAuth::getUser($login)) {
             throw new \LogicException("User $login already exists");
         }
-        $key = sha1(crypt($login.'/'.$password, microtime()));
+        $key = sha1(password_hash($login.$password.microtime(),PASSWORD_DEFAULT));
 
         $user = \jAuth::createUserObject($login, $password);
         $user->email = $email;
@@ -92,7 +92,7 @@ class Registration
         }
 
         // FIXME verify the date of the request to not accept a confirmation after X days
-
+        $user->keyactivate = '';
         $user->status = Account::STATUS_VALID;
         \jEvent::notify('jcommunity_registration_confirm', array('user' => $user));
         \jAuth::updateUser($user);

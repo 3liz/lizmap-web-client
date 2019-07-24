@@ -87,8 +87,10 @@ class jDao {
             jIncluder::inc($sel);
         }
         $c = $sel->getDaoRecordClass();
-        $obj = new $c();
-        return $obj;
+        /** @var jDaoRecordBase $rec */
+        $rec = new $c();
+        $rec->setDbProfile($profile);
+        return $rec;
     }
 
     /**

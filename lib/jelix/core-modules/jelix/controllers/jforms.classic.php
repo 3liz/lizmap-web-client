@@ -91,7 +91,7 @@ class jformsCtrl extends jController {
                 $rep->data[] = array('items'=>$data,'label'=>$k);
             }
         }
-        else{
+        else {
             foreach($control->datasource->getData($form) as $k=>$v) {
                 $rep->data[] = array('value'=>$k,'label'=>$v);
             }
