@@ -4,7 +4,7 @@
 <form action="{formurl 'jauthdb_admin~default:view'}" method="get" class="form-inline">
     <div>
         <label>{@jauthdb_admin~crud.title.view@}</label>
-        <input name="j_user_login"></input>
+        <input name="j_user_login">
         <button type="submit" class="btn btn-small">{@jauthdb_admin~crud.link.view.record@}</button>
     </div>
 </form>
@@ -23,7 +23,7 @@
     <td>{$record->login|eschtml}</td>
     <td>
         {if $canview}
-        <a href="{jurl 'jauthdb_admin~default:view',array('j_user_login'=>$record->$primarykey)}" class="btn btn-small">{@jauthdb_admin~crud.link.view.record@}</a>
+        <a href="{jurl 'jauthdb_admin~default:view',array('j_user_login'=>$record->login)}" class="btn btn-small">{@jauthdb_admin~crud.link.view.record@}</a>
         {/if}
     </td>
 </tr>
