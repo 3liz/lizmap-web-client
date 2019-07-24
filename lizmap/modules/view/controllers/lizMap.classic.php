@@ -438,7 +438,7 @@ class lizMapCtrl extends jController
       $( document ).ready( function() {
         lizMap.events.on({
           'uicreated':function(evt){
-            $('#button-switcher').click();
+            $('li.switcher.active #button-switcher').click();
           }
         });
       });

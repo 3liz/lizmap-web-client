@@ -150,6 +150,10 @@ class jDbPDOConnection extends PDO {
         }
     }
 
+    public function getProfileName() {
+        return $this->profile['_name'];
+    }
+
     /**
      * @internal the implementation of Iterator on PDOStatement doesn't call
      * fetch method of classes which inherit of PDOStatement.
