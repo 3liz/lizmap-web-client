@@ -7,7 +7,7 @@
     <li class="user dropdown">
         <a class="dropdown-toggle" data-toggle="dropdown" href="#" id="info-user">
             <span class="icon"></span>
-            <span class="text">
+            <span class="text hidden-phone">
                 <span id="info-user-login" title="{$user->firstname} {$user->lastname}">{$user->login|eschtml}</span>
                 <span style="display:none" id="info-user-firstname">{$user->firstname}</span>
                 <span style="display:none" id="info-user-lastname">{$user->lastname}</span>
