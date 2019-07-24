@@ -9,6 +9,9 @@
     {if $canUpdate}<li><a href="{jurl 'jauthdb_admin~default:preupdate', array('j_user_login'=>$id)}" class="crud-link">{@jauthdb_admin~crud.link.edit.record@}</a></li>{/if}
     {if $canChangePass}<li><a href="{jurl 'jauthdb_admin~password:index', array('j_user_login'=>$id)}" class="crud-link">{@jauthdb_admin~crud.link.change.password@}</a></li>{/if}
     {if $canDelete}<li><a href="{jurl 'jauthdb_admin~default:confirmdelete', array('j_user_login'=>$id)}" class="crud-link">{@jauthdb_admin~crud.link.delete.record@}</a></li>{/if}
+    {foreach $otherLinks as $link}
+        <li><a href="{$link['url']}" class="crud-link">{$link['label']}</a></li>
+    {/foreach}
 </ul>
 
 {if count($otherInfo)}
