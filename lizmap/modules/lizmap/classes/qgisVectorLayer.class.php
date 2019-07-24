@@ -488,7 +488,7 @@ class qgisVectorLayer extends qgisMapLayer
         $dataLogInfo = array();
         foreach ($values as $ref => $value) {
             // For insert, only for not NULL values to allow serial and default values to work
-            if ($value != 'NULL') {
+            if ($value !== 'NULL') {
                 $insert[] = $value;
                 $refs[] = '"'.$ref.'"';
                 // For log
