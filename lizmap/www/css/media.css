@@ -10,7 +10,25 @@
 
 /* #### Mobile Phones Portrait or Landscape #### */
 @media screen and (max-device-width: 480px){
-  /* some CSS here */
+  #search-project{
+    width: 75px;
+  }
+
+  #search-query{
+    width: 85px;
+  }
+
+  #search-project, #search-query{
+    padding-left: 8px;
+    padding-right: 8px;
+    -webkit-transition: all .5s;
+    -moz-transition: all .5s;
+    transition: all .5s;
+  }
+
+  #search-project:focus, #search-query:focus{
+    width: 206px;
+  }
 
   /* Adapt form */
   #dock .form-horizontal .controls, div.modal .form-horizontal .controls {
@@ -18,7 +36,9 @@
   }
 }
 @media screen and (max-device-width: 640px){
-  /* some CSS here */
+  #attributeLayers-tabs > li > a {
+    padding: 2px;
+  }
 
   /* Hide text for login links */
   #headermenu.mobile #auth ul.nav a span.text {

@@ -25,7 +25,7 @@ class PasswordReset {
             return self::RESET_BAD_STATUS;
         }
 
-        $key = sha1(crypt($login.'/'.$email, microtime()));
+        $key = sha1(password_hash($login.$email.microtime(),PASSWORD_DEFAULT));
         $user->status = Account::STATUS_PWD_CHANGED;
         $user->request_date = date('Y-m-d H:i:s');
         $user->keyactivate = $key;
