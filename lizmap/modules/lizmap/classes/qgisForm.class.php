@@ -150,7 +150,7 @@ class qgisForm implements qgisFormControlsInterface
                                                     );
                                                 }
                                             } else {
-                                                $values[] = (string) $v->attributes()->value;
+                                                $values[] = (string) $l->attributes()->value;
                                             }
                                         }
                                         $fieldEditOptions[(string) $opt->attributes()->name] = $values;
