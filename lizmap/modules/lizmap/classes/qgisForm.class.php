@@ -412,15 +412,22 @@ class qgisForm
 
         $form = $this->form;
 
-        // Get dafult values
+        // Get default values
         $defaultValues = $this->layer->getDbFieldDefaultValues();
-        foreach ($defaultValues as $ref => $val) {
+        foreach ($defaultValues as $ref => $value) {
             $ctrl = $form->getControl($ref);
             // only set default value for non hidden field
             if ($ctrl->type == 'hidden') {
                 continue;
             }
-            $form->setData($ref, $val);
+
+            if (($this->formControls[$ref]->fieldEditType === 7
+                or $this->formControls[$ref]->fieldEditType === 'CheckBox')
+                and $this->formControls[$ref]->fieldDataType === 'boolean') {
+                $ctrl->setDataFromDao($value, 'boolean');
+            }else{
+                $form->setData($ref, $value);
+            }
         }
 
         return $form;
@@ -442,7 +449,6 @@ class qgisForm
         $form = $this->form;
         $values = $this->layer->getDbFieldValues($feature);
         foreach ($values as $ref => $value) {
-            $form->setData($ref, $value);
             if (($this->formControls[$ref]->fieldEditType === 7
                 or $this->formControls[$ref]->fieldEditType === 'CheckBox')
                 and $this->formControls[$ref]->fieldDataType === 'boolean') {
@@ -470,6 +476,8 @@ class qgisForm
                     $ctrl->itemsNames['delete'] = jLocale::get('view~edition.upload.choice.delete').' '.$filename;
                 }
                 $form->setData($ref.'_hidden', $value);
+            }else{
+                $form->setData($ref, $value);
             }
         }
 
