@@ -443,15 +443,20 @@ class qgisForm
         $values = $this->layer->getDbFieldValues($feature);
         foreach ($values as $ref => $value) {
             $form->setData($ref, $value);
+            if (($this->formControls[$ref]->fieldEditType === 7
+                or $this->formControls[$ref]->fieldEditType === 'CheckBox')
+                and $this->formControls[$ref]->fieldDataType === 'boolean') {
+                $form->getControl($ref)->setDataFromDao($value, 'boolean');
+            }
             // ValueRelation can be an array (i.e. {1,2,3})
-            if ($this->formControls[$ref]->fieldEditType === 15
+            elseif ($this->formControls[$ref]->fieldEditType === 15
                 or $this->formControls[$ref]->fieldEditType === 'ValueRelation') {
                 if ($value[0] == '{') {
                     $arrayValue = explode(',', trim($value, '{}'));
                     $form->setData($ref, $arrayValue);
                 }
             }
-            if ($this->formControls[$ref]->fieldEditType === 8
+            elseif ($this->formControls[$ref]->fieldEditType === 8
                 or $this->formControls[$ref]->fieldEditType === 'FileName'
                 or $this->formControls[$ref]->fieldEditType === 'Photo'
                 or $this->formControls[$ref]->fieldEditType === 'ExternalResource') {
