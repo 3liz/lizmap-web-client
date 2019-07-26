@@ -86,7 +86,7 @@ class datetime_htmlFormWidget extends \jelix\forms\HtmlWidget\WidgetBase {
 
         $attr['id'] = $this->builder->getName().'_'.$this->ctrl->ref.'_';
         $v = array('year'=>'','month'=>'','day'=>'','hour'=>'','minutes'=>'','seconds'=>'');
-        if(preg_match('#^(\d{4})?-(\d{2})?-(\d{2})? (\d{2})?:(\d{2})?(:(\d{2})?)?$#',$value,$matches)){
+        if (preg_match('#^(\d{4})?-(\d{2})?-(\d{2})?(?: |T)(\d{2})?:(\d{2})?(:(\d{2})?)?(?:$|\\s|\\.)#',$value,$matches)){
             if(isset($matches[1]))
                 $v['year'] = $matches[1];
             if(isset($matches[2]))
@@ -99,6 +99,17 @@ class datetime_htmlFormWidget extends \jelix\forms\HtmlWidget\WidgetBase {
                 $v['minutes'] = $matches[5];
             if(isset($matches[7]))
                 $v['seconds'] = $matches[7];
+        }
+        else if (preg_match('#^(\d{4})?-(\d{2})?-(\d{2})?($|\\s)#',$value,$matches)){
+            if(isset($matches[1]))
+                $v['year'] = $matches[1];
+            if(isset($matches[2]))
+                $v['month'] = $matches[2];
+            if(isset($matches[3]))
+                $v['day'] = $matches[3];
+            $v['hour'] = "00";
+            $v['minutes'] = "00";
+            $v['seconds'] = "00";
         }
         $f = jLocale::get('jelix~format.datetime');
         for($i=0;$i<strlen($f);$i++){
@@ -117,6 +128,7 @@ class datetime_htmlFormWidget extends \jelix\forms\HtmlWidget\WidgetBase {
             else
                 echo ' ';
         }
+        echo "\n";
         $this->outputJs();
     }
 
