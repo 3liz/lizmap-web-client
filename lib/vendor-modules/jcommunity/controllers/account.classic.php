@@ -72,9 +72,16 @@ class accountCtrl extends jController
         $tpl->assign('username', $login);
         $rep->title = jLocale::get('account.profile.of', array($login));
 
+        $dao = jDao::create($this->getDaoName(), $this->getProfileName());
+        $daoUser = $dao->getByLogin($login);
+        if (!$daoUser) {
+            $rep->body->assign('MAIN', $tpl->fetch('account_unknown'));
+            return $rep;
+        }
+
         try {
             $form = jForms::create($this->getAccountForm(), $login);
-            $user = $form->initFromDao($this->getDaoName(), $login, $this->getProfileName());
+            $user = $form->initFromDao($daoUser, null, $this->getProfileName());
         } catch (Exception $e) {
             $rep->body->assign('MAIN', $tpl->fetch('account_unknown'));
             return $rep;
@@ -124,12 +131,18 @@ class accountCtrl extends jController
             return $rep;
         }
 
+        $dao = jDao::create($this->getDaoName(), $this->getProfileName());
+        $daoUser = $dao->getByLogin($login);
+        if (!$daoUser) {
+            return $rep;
+        }
+
         $form = jForms::create($this->getAccountForm(), $login);
 
         jEvent::notify('jcommunity_init_edit_form_account', array('login' => $login, 'form' => $form));
 
         try {
-            $form->initFromDao($this->getDaoName(), null, $this->getProfileName());
+            $form->initFromDao($daoUser, null, $this->getProfileName());
         } catch (Exception $e) {
             return $rep;
         }
@@ -155,6 +168,17 @@ class accountCtrl extends jController
 
             return $rep;
         }
+
+        $dao = jDao::create($this->getDaoName(), $this->getProfileName());
+        $daoUser = $dao->getByLogin($login);
+        if (!$daoUser) {
+            $rep = $this->getResponse('redirect');
+            $rep->action = 'jcommunity~account:show';
+            $rep->params = array('user' => $login);
+
+            return $rep;
+        }
+
 
         $form = jForms::get($this->getAccountForm(), $login);
         if (!$form) {
@@ -197,6 +221,12 @@ class accountCtrl extends jController
             return $rep;
         }
 
+        $accountFact = jDao::create($this->getDaoName(), $this->getProfileName());
+        $daoUser = $accountFact->getByLogin($login);
+        if (!$daoUser) {
+            return $rep;
+        }
+
         $form = jForms::get($this->getAccountForm(), $login);
         if (!$form) {
             return $rep;
@@ -205,7 +235,6 @@ class accountCtrl extends jController
 
         $form->initFromRequest();
         $form->check();
-        $accountFact = jDao::get($this->getDaoName(), $this->getProfileName());
 
         if ($config->verifyNickname() &&
             $form->getControl('nickname') !== null &&
@@ -218,19 +247,17 @@ class accountCtrl extends jController
         if (count($form->getErrors())) {
             $rep->action = 'jcommunity~account:edit';
         } else {
-            $objects = $form->prepareDaoFromControls($this->getDaoName(), null, $this->getProfileName());
+            $form->prepareObjectFromControls($daoUser, $daoUser->getProperties());
+
             jEvent::notify('jcommunity_save_account', array(
                 'login' => $login,
                 'form' => $form,
-                'factory' => $objects['dao'],
-                'record' => $objects['daorec'],
-                'to_insert' => $objects['toInsert'])
+                'factory' => $accountFact,
+                'record' => $daoUser,
+                'to_insert' => false)
             );
-            if ($objects['toInsert']) {
-                $objects['dao']->insert($objects['daorec']);
-            } else {
-                $objects['dao']->update($objects['daorec']);
-            }
+            $accountFact->update($daoUser);
+
             jForms::destroy($this->getAccountForm(), $login);
         }
 

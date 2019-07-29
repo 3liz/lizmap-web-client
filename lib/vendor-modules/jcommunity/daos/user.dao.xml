@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="iso-8859-1"?>
 <dao xmlns="http://jelix.org/ns/dao/1.0">
    <datasources>
-      <primarytable name="usr" realname="community_users" primarykey="login" />
+      <primarytable name="usr" realname="community_users" primarykey="id" />
    </datasources>
    <record>
       <property name="id" fieldname="id" datatype="autoincrement"/>
@@ -9,10 +9,10 @@
       <property name="login" fieldname="login"
           required="yes" datatype="string"  maxlength="50" />
 
-      <property name="password" fieldname="password" datatype="string"
+      <property name="password" fieldname="password" datatype="string" required="yes"
                 maxlength="120" selectpattern="%s" updatepattern="" insertpattern="%s" />
       
-      <property name="status" fieldname="status" datatype="integer" />
+      <property name="status" fieldname="status" datatype="integer" required="yes"/>
       <!-- status :
            -2 deleted
            -1 deactivate

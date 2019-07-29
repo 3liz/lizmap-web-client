@@ -37,6 +37,22 @@ class Registration
     }
 
     /**
+     * @param \jFormsBase $form
+     */
+    public function createUserByAdmin($user) {
+        $config = new \Jelix\JCommunity\Config();
+        if ($config->isResetAdminPasswordEnabledForAdmin()) {
+            $key = sha1(password_hash($user->login.$user->password.microtime(),PASSWORD_DEFAULT));
+            $user->status = Account::STATUS_NEW;
+            $user->request_date = date('Y-m-d H:i:s');
+            $user->keyactivate = $key;
+            \jAuth::updateUser($user);
+            $this->sendRegistrationMail($user, 'jcommunity~mail.registration.admin.body.html', 'jcommunity~password_confirm_registration:resetform');
+        }
+    }
+
+
+    /**
      * Create the user account and send an email.
      *
      * @param object $user the user created with createUser()
@@ -44,24 +60,33 @@ class Registration
     public function createAccount($user)
     {
         \jAuth::saveNewUser($user);
+        $this->sendRegistrationMail($user);
+    }
 
+    protected function sendRegistrationMail($user,
+                                            $tplLocaleId = 'jcommunity~mail.registration.body.html',
+                                            $mailLinkAction = 'jcommunity~registration:confirm'
+    ) {
         $domain = \jApp::coord()->request->getDomainName();
         $mail = new \jMailer();
         $mail->From = \jApp::config()->mailer['webmasterEmail'];
         $mail->FromName = \jApp::config()->mailer['webmasterName'];
         $mail->Sender = \jApp::config()->mailer['webmasterEmail'];
-        $mail->Subject = \jLocale::get('register.mail.new.subject', $domain);
+        $mail->Subject = \jLocale::get('jcommunity~mail.registration.subject', $domain);
+        $mail->AddAddress($user->email);
+        $mail->isHtml(true);
 
-        $tpl = $mail->Tpl('mail_registration', true);
+        $tpl = new \jTpl();
         $tpl->assign('user', $user);
         $tpl->assign('domain_name', $domain);
         $tpl->assign('website_uri', \jApp::coord()->request->getServerURI());
         $tpl->assign('confirmation_link', \jUrl::getFull(
-            'jcommunity~registration:confirm',
+            $mailLinkAction,
             array('login' => $user->login, 'key' => $user->keyactivate)
         ));
 
-        $mail->AddAddress($user->email);
+        $body = $tpl->fetchFromString(\jLocale::get($tplLocaleId), 'html');
+        $mail->msgHTML($body, '', array($mail, 'html2textKeepLinkSafe'));
         $mail->Send();
     }
 
@@ -70,6 +95,7 @@ class Registration
     const CONFIRMATION_DONE = "ok";
     const CONFIRMATION_BAD_KEY = "badkey";
     const CONFIRMATION_BAD_STATUS = "badstatus";
+    const CONFIRMATION_EXPIRED_KEY = "expiredkey";
 
     /**
      * @return string one of CONFIRMATION_* const
@@ -91,7 +117,13 @@ class Registration
             return self::CONFIRMATION_BAD_KEY;
         }
 
-        // FIXME verify the date of the request to not accept a confirmation after X days
+        $dt = new \DateTime($user->request_date);
+        $dtNow = new \DateTime();
+        $dt->add(new \DateInterval('P2D')); // 48h
+        if ($dt < $dtNow ) {
+            return self::CONFIRMATION_EXPIRED_KEY;
+        }
+
         $user->keyactivate = '';
         $user->status = Account::STATUS_VALID;
         \jEvent::notify('jcommunity_registration_confirm', array('user' => $user));

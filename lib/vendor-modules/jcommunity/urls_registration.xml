@@ -1,14 +1,26 @@
 <?xml version="1.0" encoding="utf-8"?>
 <suburls xmlns="http://jelix.org/ns/suburls/1.0">
-    <url pathinfo="/"                    action="registration:index" optionalTrailingSlash="true"/>
+    <url pathinfo="/"                   action="registration:index" optionalTrailingSlash="true"/>
     <url pathinfo="/save"               action="registration:save"/>
-    <url pathinfo="/saved"               action="registration:saved"/>
+    <url pathinfo="/saved"              action="registration:saved"/>
     <url pathinfo="/confirm"            action="registration:confirm"/>
 
-    <url pathinfo="/password-reset/"         action="password_reset:index" />
+    <url pathinfo="/confirm/password"         action="password_confirm_registration:resetform"/>
+    <url pathinfo="/confirm/password-save"    action="password_confirm_registration:save"/>
+    <url pathinfo="/confirm/password-changed" action="password_confirm_registration:changed"/>
+
+    <url pathinfo="/password-reset/"          action="password_reset:index" />
     <url pathinfo="/password-reset/send"      action="password_reset:send"/>
     <url pathinfo="/password-reset/sent"      action="password_reset:sent"/>
-    <url pathinfo="/password-reset/resetform" action="password_reset:resetform"/>
+    <url pathinfo="/password-reset/reset"     action="password_reset:resetform"/>
     <url pathinfo="/password-reset/save"      action="password_reset:save"/>
     <url pathinfo="/password-reset/changed"   action="password_reset:changed"/>
+
+    <url pathinfo="/admin-password-reset/"          action="password_reset_admin:index" />
+    <url pathinfo="/admin-password-reset/send"      action="password_reset_admin:send"/>
+    <url pathinfo="/admin-password-reset/sent"      action="password_reset_admin:sent"/>
+    <url pathinfo="/admin-password-reset/reset"     action="password_reset_admin:resetform"/>
+    <url pathinfo="/admin-password-reset/save"      action="password_reset_admin:save"/>
+    <url pathinfo="/admin-password-reset/changed"   action="password_reset_admin:changed"/>
+
 </suburls>

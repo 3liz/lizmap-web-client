@@ -17,6 +17,8 @@ class Config
 
     protected $resetPasswordEnabled = true;
 
+    protected $resetAdminPasswordEnabled = true;
+
     protected $passwordChangeEnabled = true;
 
     protected $accountDestroyEnabled = true;
@@ -77,6 +79,10 @@ class Config
             if ($pref !== null) {
                 $this->resetPasswordEnabled = $pref;
             }
+            $pref = \jPref::get('jcommunity_resetAdminPasswordEnabled');
+            if ($pref !== null) {
+                $this->resetAdminPasswordEnabled = $pref;
+            }
         } else {
             if (isset($config['registrationEnabled'])) {
                 $this->registrationEnabled = (bool) $config['registrationEnabled'];
@@ -84,12 +90,16 @@ class Config
             if (isset($config['resetPasswordEnabled'])) {
                 $this->resetPasswordEnabled = (bool) $config['resetPasswordEnabled'];
             }
+            if (isset($config['resetAdminPasswordEnabled'])) {
+                $this->resetAdminPasswordEnabled = (bool) $config['resetAdminPasswordEnabled'];
+            }
         }
         $sender = filter_var(\jApp::config()->mailer['webmasterEmail'], FILTER_VALIDATE_EMAIL);
         if (!$sender) {
             // if the sender email is not configured, deactivate features that
             // need to send an email
             $this->resetPasswordEnabled = false;
+            $this->resetAdminPasswordEnabled = false;
             $this->registrationEnabled = false;
         }
     }
@@ -107,6 +117,20 @@ class Config
     public function isResetPasswordEnabled()
     {
         return $this->resetPasswordEnabled;
+    }
+
+    public function isResetAdminPasswordEnabled()
+    {
+        return $this->resetAdminPasswordEnabled;
+    }
+
+    public function isResetAdminPasswordEnabledForAdmin()
+    {
+        if ($this->useJAuthDbAdminRights) {
+            return $this->resetAdminPasswordEnabled &&
+                \jAcl2::check('auth.users.change.password');
+        }
+        return $this->resetAdminPasswordEnabled;
     }
 
     public function isPasswordChangeEnabled()
