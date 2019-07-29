@@ -3,18 +3,18 @@
 * @author       Laurent Jouanneau <laurent@xulfr.org>
 * @contributor
 *
-* @copyright    2007-2018 Laurent Jouanneau
+* @copyright    2007-2019 Laurent Jouanneau
 *
 * @link         http://jelix.org
 * @licence      http://www.gnu.org/licenses/gpl.html GNU General Public Licence, see LICENCE file
 */
-class password_resetCtrl extends \Jelix\JCommunity\AbstractController
-{
-    public $pluginParams = array(
-      '*' => array('auth.required' => false),
-    );
 
-    protected $configMethodCheck = 'isResetPasswordEnabled';
+/**
+ * controller for the reset password process, when a user has forgotten his
+ * password, and want to change it
+ */
+class password_resetCtrl extends \Jelix\JCommunity\AbstractPasswordController
+{
 
     /**
      * form to request a reset password.
@@ -89,100 +89,6 @@ class password_resetCtrl extends \Jelix\JCommunity\AbstractController
     }
 
 
-    /**
-     * form to confirm and change the password
-     */
-    public function resetform()
-    {
-        $repError = $this->_check();
-        if ($repError) {
-            return $repError;
-        }
+    // see other actions into AbstractPasswordController
 
-        $rep = $this->_getjCommunityResponse();
-        $rep->title = jLocale::get('password.form.change.title');
-
-        $passReset = new \Jelix\JCommunity\PasswordReset();
-        $tpl = new jTpl();
-
-        $form = jForms::get('password_reset_change');
-        if ($form == null) {
-            $login = $this->param('login');
-            $key = $this->param('key');
-
-            $user = $passReset->checkKey($login, $key);
-            if (is_string($user)) {
-                $status = $user;
-                $tpl->assign('error_status', $status);
-                $rep->body->assign('MAIN', $tpl->fetch('password_reset_change'));
-                return $rep;
-            }
-
-            $form = jForms::create('password_reset_change');
-            $form->setData('pchg_login', $login);
-            $form->setData('pchg_key', $key);
-        }
-        $tpl->assign('error_status', '');
-        $tpl->assign('form', $form);
-
-        $rep->body->assign('MAIN', $tpl->fetch('password_reset_change'));
-
-        return $rep;
-    }
-
-    /**
-     * Save a new password after a reset request
-     */
-    public function save()
-    {
-        $repError = $this->_check();
-        if ($repError) {
-            return $repError;
-        }
-
-        $rep = $this->getResponse('redirect');
-        $rep->action = 'password_reset:resetform';
-
-        if ($_SERVER['REQUEST_METHOD'] != 'POST') {
-            return $rep;
-        }
-
-        $form = jForms::fill('password_reset_change');
-        if ($form == null) {
-            return $rep;
-        }
-
-        if (!$form->check()) {
-            return $rep;
-        }
-
-        $passReset = new \Jelix\JCommunity\PasswordReset();
-        $login = $form->getData('pchg_login');
-        $key = $form->getData('pchg_key');
-        $passwd = $form->getData('pchg_password');
-        jForms::destroy('password_reset_change');
-
-        $user = $passReset->checkKey($login, $key);
-        if (is_string($user)) {
-            $rep->params = array('login'=>$login, 'key'=>$key);
-            return $rep;
-        }
-        $passReset->changePassword($user, $passwd);
-
-        $rep->action = 'password_reset:changed';
-        return $rep;
-    }
-
-    /**
-     * Page which confirm that the password has changed.
-     */
-    public function changed()
-    {
-        $rep = $this->_getjCommunityResponse();
-        $rep->title = jLocale::get('password.form.change.title');
-        $tpl = new jTpl();
-        $rep->body->assign('MAIN', $tpl->fetch('password_reset_ok'));
-
-        return $rep;
-    }
 }
