@@ -13,7 +13,7 @@ use jForms;
 use jLocale;
 use jTpl;
 
-class AbstractPasswordController extends AbstractController
+abstract class AbstractPasswordController extends AbstractController
 {
     public $pluginParams = array(
         '*' => array('auth.required' => false),
@@ -25,9 +25,9 @@ class AbstractPasswordController extends AbstractController
 
     protected $formPasswordTpl = 'password_reset_change';
 
-    protected $forRegistrationByAdmin = false;
-
     protected $actionController = 'password_reset';
+
+    protected $forRegistration = false;
 
     /**
      * form to confirm and change the password
@@ -42,7 +42,7 @@ class AbstractPasswordController extends AbstractController
         $rep = $this->_getjCommunityResponse();
         $rep->title = jLocale::get($this->formPasswordTitle);
 
-        $passReset = new \Jelix\JCommunity\PasswordReset();
+        $passReset = new \Jelix\JCommunity\PasswordReset($this->forRegistration);
         $tpl = new jTpl();
 
         $form = jForms::get('password_reset_change');
@@ -50,8 +50,7 @@ class AbstractPasswordController extends AbstractController
             $login = $this->param('login');
             $key = $this->param('key');
 
-            $user = $passReset->checkKey($login, $key,
-                $this->forRegistrationByAdmin ? Account::STATUS_NEW: Account::STATUS_PWD_CHANGED);
+            $user = $passReset->checkKey($login, $key);
             if (is_string($user)) {
                 $status = $user;
                 $tpl->assign('error_status', $status);
@@ -98,14 +97,13 @@ class AbstractPasswordController extends AbstractController
             return $rep;
         }
 
-        $passReset = new \Jelix\JCommunity\PasswordReset();
+        $passReset = new \Jelix\JCommunity\PasswordReset($this->forRegistration);
         $login = $form->getData('pchg_login');
         $key = $form->getData('pchg_key');
         $passwd = $form->getData('pchg_password');
         jForms::destroy('password_reset_change');
 
-        $user = $passReset->checkKey($login, $key,
-            $this->forRegistrationByAdmin ? Account::STATUS_NEW: Account::STATUS_PWD_CHANGED);
+        $user = $passReset->checkKey($login, $key);
         if (is_string($user)) {
             $rep->params = array('login'=>$login, 'key'=>$key);
             return $rep;
