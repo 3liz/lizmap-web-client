@@ -10,7 +10,7 @@
  */
 
 /**
- * controller for the reset password process, initiated by an administrator
+ * controller for the password reset process, initiated by an administrator
  */
 class password_confirm_registrationCtrl extends \Jelix\JCommunity\AbstractPasswordController
 {
@@ -21,7 +21,7 @@ class password_confirm_registrationCtrl extends \Jelix\JCommunity\AbstractPasswo
 
     protected $formPasswordTpl = 'password_reset_create';
 
-    protected $forRegistrationByAdmin = true;
-
     protected $actionController = 'password_confirm_registration';
+
+    protected $forRegistration = true;
 }

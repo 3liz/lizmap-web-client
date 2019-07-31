@@ -32,10 +32,19 @@ class authadmincommunityListener extends jEventListener{
             $tpl = $event->tpl;
             $tpl->assign('canChangePass', false);
             $links = $tpl->get('otherLinks');
-            $links[] = array(
-                'url' => jUrl::get('jcommunity~password_reset_admin:index', array('login'=>$tpl->get('id'))),
-                'label' => jLocale::get('jcommunity~account.admin.link.account.reset.password'),
-            );
+            $status = $form->getData('status');
+            if ($status == \Jelix\JCommunity\Account::STATUS_NEW) {
+                $links[] = array(
+                    'url' => jUrl::get('jcommunity~registration_admin_resend:index', array('login'=>$tpl->get('id'))),
+                    'label' => jLocale::get('jcommunity~account.admin.link.account.resent.validation.email'),
+                );
+            }
+            else {
+                $links[] = array(
+                    'url' => jUrl::get('jcommunity~password_reset_admin:index', array('login'=>$tpl->get('id'))),
+                    'label' => jLocale::get('jcommunity~account.admin.link.account.reset.password'),
+                );
+            }
             $tpl->assign('otherLinks', $links);
         }
     }

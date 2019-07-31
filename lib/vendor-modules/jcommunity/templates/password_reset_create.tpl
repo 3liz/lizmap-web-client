@@ -4,7 +4,7 @@
     <p>{@jcommunity~password.form.create.error.$error_status@}</p>
 {else}
 
-    {@jcommunity~password.form.change.text.html@}
+    {@jcommunity~password.form.create.text.html@}
 
     {formfull $form,'jcommunity~password_confirm_registration:save', array()}
 

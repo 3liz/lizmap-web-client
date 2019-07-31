@@ -1,18 +1,19 @@
 <?php
 /**
- * @author       Laurent Jouanneau <laurent@xulfr.org>
+ * @author       Laurent Jouanneau <laurent@jelix.org>
  * @contributor
  *
- * @copyright    2007-2019 Laurent Jouanneau
+ * @copyright    2019 Laurent Jouanneau
  *
  * @link         http://jelix.org
  * @licence      http://www.gnu.org/licenses/gpl.html GNU General Public Licence, see LICENCE file
  */
 
 /**
- * controller for the password reset process, initiated by an admin
+ * controller for an admin to resend the email + new validation key, when the user has
+ * created an account
  */
-class password_reset_adminCtrl extends \Jelix\JCommunity\AbstractController
+class registration_admin_resendCtrl extends \Jelix\JCommunity\AbstractController
 {
 
     public $pluginParams = array(
@@ -29,7 +30,7 @@ class password_reset_adminCtrl extends \Jelix\JCommunity\AbstractController
 
 
     /**
-     * form to confirm the password reset
+     * form to confirm to resend the email + new validation key
      */
     public function index()
     {
@@ -39,7 +40,7 @@ class password_reset_adminCtrl extends \Jelix\JCommunity\AbstractController
         }
 
         $rep = $this->_getjCommunityResponse();
-        $rep->title = jLocale::get('password.form.title');
+        $rep->title = jLocale::get('register.admin.resend.email.title');
 
         $login = $this->param('login');
         $user = \jAuth::getUser($login);
@@ -47,15 +48,19 @@ class password_reset_adminCtrl extends \Jelix\JCommunity\AbstractController
             return $this->showError($rep, 'no_access_wronguser');
         }
 
+        if ($user->status != \Jelix\JCommunity\Account::STATUS_NEW) {
+            return $this->showError($rep, 'no_access_badstatus');
+        }
+
         $tpl = new jTpl();
         $tpl->assign('login', $login);
-        $rep->body->assign('MAIN', $tpl->fetch('password_reset_admin'));
+        $rep->body->assign('MAIN', $tpl->fetch('registration_admin_resend'));
 
         return $rep;
     }
 
     /**
-     * send an email to reset the password.
+     * send an email with a new validation key
      */
     public function send()
     {
@@ -68,35 +73,24 @@ class password_reset_adminCtrl extends \Jelix\JCommunity\AbstractController
         $user = \jAuth::getUser($login);
         if (!$user || $user->email == '') {
             $rep = $this->_getjCommunityResponse();
-            $rep->title = jLocale::get('password.form.title');
+            $rep->title = jLocale::get('register.admin.resend.email.title');
             return $this->showError($rep, 'no_access_wronguser');
         }
 
-        $rep = $this->getResponse('redirect');
-        $rep->action = 'password_reset_admin:index';
-
-        if ($user->status == \Jelix\JCommunity\Account::STATUS_VALID ||
-            $user->status == \Jelix\JCommunity\Account::STATUS_PWD_CHANGED
-        ) {
-            $passReset = new \Jelix\JCommunity\PasswordReset(true, true);
-            $result = $passReset->sendEmail($login, $user->email);
-        }
-        else {
-            $result = \Jelix\JCommunity\PasswordReset::RESET_BAD_STATUS;
-        }
-
-        if ($result != \Jelix\JCommunity\PasswordReset::RESET_OK) {
+        if ($user->status != \Jelix\JCommunity\Account::STATUS_NEW) {
             $rep = $this->_getjCommunityResponse();
-            $rep->title = jLocale::get('password.form.title');
-
-            $tpl = new \jTpl();
-            $tpl->assign('login', $login);
-            $tpl->assign('error', jLocale::get('jcommunity~password.form.change.error.admin.'.$result));
-            $rep->body->assign('MAIN', $tpl->fetch('jcommunity~password_reset_admin_error'));
-            return $rep;
+            $rep->title = jLocale::get('register.admin.resend.email.title');
+            return $this->showError($rep, 'no_access_badstatus');
         }
 
-        $rep->action = 'password_reset_admin:sent';
+
+        $rep = $this->getResponse('redirect');
+        $rep->action = 'registration_admin_resend:index';
+
+        $registration = new \Jelix\JCommunity\Registration();
+        $registration->resendRegistrationMail($user);
+
+        $rep->action = 'registration_admin_resend:sent';
         $rep->params = array('login'=>$login);
 
         return $rep;
@@ -116,10 +110,10 @@ class password_reset_adminCtrl extends \Jelix\JCommunity\AbstractController
         }
 
         $rep = $this->_getjCommunityResponse();
-        $rep->title = jLocale::get('password.form.title');
+        $rep->title = jLocale::get('register.admin.resend.email.title');
         $tpl = new jTpl();
         $tpl->assign('login', $this->param('login'));
-        $rep->body->assign('MAIN', $tpl->fetch('password_reset_admin_waiting'));
+        $rep->body->assign('MAIN', $tpl->fetch('registration_admin_resend_done'));
 
         return $rep;
     }

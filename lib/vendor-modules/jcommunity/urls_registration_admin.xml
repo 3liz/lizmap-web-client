@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<suburls xmlns="http://jelix.org/ns/suburls/1.0">
+
+    <url pathinfo="/password-reset/"          action="password_reset_admin:index" />
+    <url pathinfo="/password-reset/send"      action="password_reset_admin:send"/>
+    <url pathinfo="/password-reset/sent"      action="password_reset_admin:sent"/>
+
+    <url pathinfo="/resend-validation/"  action="registration_admin_resend:index" />
+    <url pathinfo="/resend-validation/send"  action="registration_admin_resend:send" />
+    <url pathinfo="/resend-validation/sent"  action="registration_admin_resend:sent" />
+
+</suburls>

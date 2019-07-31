@@ -10,14 +10,14 @@
 */
 
 /**
- * controller for the reset password process, when a user has forgotten his
+ * controller for the password reset process, when a user has forgotten his
  * password, and want to change it
  */
 class password_resetCtrl extends \Jelix\JCommunity\AbstractPasswordController
 {
 
     /**
-     * form to request a reset password.
+     * form to request a password reset.
      */
     public function index()
     {
@@ -56,7 +56,7 @@ class password_resetCtrl extends \Jelix\JCommunity\AbstractPasswordController
 
         $passReset = new \Jelix\JCommunity\PasswordReset();
         $result = $passReset->sendEmail($login, $email);
-        if ($result != $passReset::RESET_OK) {
+        if ($result != $passReset::RESET_OK && $result != $passReset::RESET_BAD_LOGIN_EMAIL) {
             $form->setErrorOn('pass_login', jLocale::get('password.form.change.error.'.$result));
             return $rep;
         }
