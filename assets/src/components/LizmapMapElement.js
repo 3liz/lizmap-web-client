@@ -3,12 +3,12 @@ import 'ol/ol.css';
 // OLMap and not Map to avoid collision with global object Map
 import OLMap from 'ol/Map.js';
 import View from 'ol/View.js';
+import LayerGroup from "ol/layer/Group";
 import TileLayer from 'ol/layer/Tile.js';
 import OSM from 'ol/source/OSM.js';
-
-import {MainEventDispatcher} from "../modules/LizmapGlobals";
-import LayerGroup from "ol/layer/Group";
 import Stamen from "ol/source/Stamen";
+
+import { MainEventDispatcher } from "../modules/LizmapGlobals";
 
 export default class LizmapMapElement extends HTMLElement {
     constructor() {
@@ -19,36 +19,55 @@ export default class LizmapMapElement extends HTMLElement {
         this._mapId = '';
     }
 
-    get mapId () {
+    get mapId() {
         return this._mapId;
     }
 
     connectedCallback() {
         this._mapId = this.getAttribute('map-id');
+
+        MainEventDispatcher.addListener(this.onLoadedMapConfig.bind(this),
+            { type: 'map-config-loaded', mapId: this.mapId });
+
+        MainEventDispatcher.addListener(this.onLoadedBaseLayers.bind(this),
+            { type: 'map-base-layers-loaded', mapId: this.mapId });
+
+        MainEventDispatcher.addListener(this.onBaseLayerVisibility.bind(this),
+            { type: 'map-base-layers-visibility', mapId: this.mapId });
+
+        MainEventDispatcher.addListener(this.onZoomSet.bind(this),
+            { type: 'map-zoom-set', mapId: this.mapId });
+    }
+
+    disconnectedCallback() {
+        MainEventDispatcher.removeListener(this.onLoadedMapConfig.bind(this),
+            { type: 'map-config-loaded', mapId: this.mapId });
+
+        MainEventDispatcher.removeListener(this.onLoadedBaseLayers.bind(this),
+            { type: 'map-base-layers-loaded', mapId: this.mapId });
+
+        MainEventDispatcher.removeListener(this.onBaseLayerVisibility.bind(this),
+            { type: 'map-base-layers-visibility', mapId: this.mapId });
+
+        MainEventDispatcher.removeListener(this.onZoomSet.bind(this),
+            { type: 'map-zoom-set', mapId: this.mapId });
+
+    }
+
+    onLoadedMapConfig(event) {
+        this._mapId = event.mapId;
+
         this._OLMap = new OLMap({
             target: this,
             view: new View({
                 center: [0, 0],
-                zoom: 2
+                zoom: this._zoom
             })
         });
 
-        MainEventDispatcher.addListener(this.onLoadedBaseLayers.bind(this),
-            { type: 'map-base-layers-loaded', mapId : this.mapId});
-
-        MainEventDispatcher.addListener(this.onBaseLayerVisibility.bind(this),
-            { type: 'map-base-layers-visibility', mapId : this.mapId});
-    }
-
-    disconnectedCallback() {
-        MainEventDispatcher.removeListener(this.onLoadedBaseLayers.bind(this),
-            { type: 'map-base-layers-loaded', mapId : this.mapId});
-
-        MainEventDispatcher.removeListener(this.onBaseLayerVisibility.bind(this),
-            { type: 'map-base-layers-visibility', mapId : this.mapId});
+        this._OLMap.getView().fit(event.config.options.initialExtent);
 
     }
-
 
     onLoadedBaseLayers(event) {
         let OLLayers = event.baseLayerGroup.layers.map((layer) => {
@@ -83,5 +102,9 @@ export default class LizmapMapElement extends HTMLElement {
         event.layers.forEach((lzmLayer, idx) => {
             olLayers.item(idx).setVisible(lzmLayer.visible);
         });
+    }
+
+    onZoomSet(event) {
+        this._OLMap.getView().setZoom(event.zoom);
     }
 }

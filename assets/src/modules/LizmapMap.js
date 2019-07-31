@@ -12,12 +12,20 @@ export default class LizmapMap {
 
     setConfig(config) {
         this._config = config;
-        MainEventDispatcher.dispatch({ type: "map-config-loaded", mapId: this._mapId});
+        MainEventDispatcher.dispatch({
+             type: "map-config-loaded",
+             mapId: this._mapId,
+             config: this._config
+            });
 
         let baseLayers = [];
-        for (let layerId in  config.baseLayers) {
-            let layerConf = config.baseLayers[layerId];
-            baseLayers.push(new LizmapLayer(layerId, layerConf.name, layerConf.visible));
+        for (let option in config.options) {
+            if(option === 'osmMapnik'){
+                baseLayers.push(new LizmapLayer(option, 'OSM', config.options.startupBaselayer === "osm-mapnik"));
+            }
+            if(option === 'osmStamenToner'){
+                baseLayers.push(new LizmapLayer(option, 'OSM Toner', config.options.startupBaselayer === "osm-stamen-toner"));
+            }
         }
 
         this._baseLayerGroup = new LizmapLayerGroup(this._mapId, baseLayers, {mutuallyExclusive: true});
@@ -27,6 +35,11 @@ export default class LizmapMap {
             mapId: this._mapId,
             baseLayerGroup: this._baseLayerGroup
         });
+
+    }
+
+    get zoom () {
+        return this._zoom;
     }
 
     get baseLayerGroup () {
