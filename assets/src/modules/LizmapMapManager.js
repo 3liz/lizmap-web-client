@@ -16,7 +16,7 @@ async function loadMapConfig(configURL, repository, project) {
 
 const maps = {};
 
-const LimapMapManager = {
+const LizmapMapManager = {
 
     createMap: async function (mapId, configURL, repository, project) {
         if (mapId in maps) {
@@ -36,5 +36,5 @@ const LimapMapManager = {
     }
 };
 
-export { LimapMapManager as default };
+export { LizmapMapManager as default };
 
