@@ -1,6 +1,6 @@
 import LizmapMapElement from './components/LizmapMapElement.js';
 import LizmapBaseLayersElement from './components/LizmapBaseLayersElement.js';
-import { LizmapMapManager } from "./modules/LizmapGlobals";
+import { LizmapMapManager, MainEventDispatcher } from "./modules/LizmapGlobals";
 
 
 window.customElements.define('lizmap-map', LizmapMapElement);
@@ -12,3 +12,12 @@ window.addEventListener('load', function (event) {
 
 }, false);
 
+/**
+ * Object that export API for external scripts.
+ */
+const main = {
+    manager: LizmapMapManager,
+    dispatcher: MainEventDispatcher
+};
+
+export { main as default };

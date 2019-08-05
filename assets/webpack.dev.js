@@ -9,7 +9,10 @@ module.exports = {
 	output: {
 		filename: '../../lizmap/www/js/[name].js',
 		chunkFilename: '[name].bundle.js',
-		path: path.resolve(__dirname, 'dist')
+		path: path.resolve(__dirname, 'dist'),
+		libraryExport: 'default', // put the default export of index.js...
+		libraryTarget: 'var', //  ... into a variable...
+		library: 'Lizmap' //  ... which has the name Lizmap
 	},
 	module: {
 	    rules: [
