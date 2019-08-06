@@ -63,7 +63,7 @@ export default class LizmapOlMapElement extends HTMLElement {
             target: this,
             view: new View({
                 center: [0, 0],
-                zoom: this._zoom
+                zoom: 2
             })
         });
 

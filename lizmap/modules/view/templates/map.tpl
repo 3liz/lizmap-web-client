@@ -1,4 +1,5 @@
 
+<lizmap-zoom map-id="mainmap"></lizmap-zoom>
 
 <lizmap-olmap id="mainmap" map-id="mainmap"></lizmap-olmap>
 
@@ -7,6 +8,8 @@
   <lizmap-baselayers map-id="mainmap"></lizmap-baselayers>
 
 </div>
+
+
 
 
 

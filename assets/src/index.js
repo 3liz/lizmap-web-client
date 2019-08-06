@@ -1,10 +1,12 @@
 import LizmapOlMapElement from './components/LizmapOlMapElement.js';
 import LizmapBaseLayersElement from './components/LizmapBaseLayersElement.js';
+import LizmapZoomElement from './components/LizmapZoomElement.js';
 import { LizmapMapManager, MainEventDispatcher } from "./modules/LizmapGlobals";
 
 
 window.customElements.define('lizmap-olmap', LizmapOlMapElement);
 window.customElements.define('lizmap-baselayers', LizmapBaseLayersElement);
+window.customElements.define('lizmap-zoom', LizmapZoomElement);
 
 window.addEventListener('load', function (event) {
 
