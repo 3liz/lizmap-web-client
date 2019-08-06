@@ -774,7 +774,19 @@ table.attribute-table-table tr.selected a:hover{
 table.attribute-table-table tr td {
     font-size: 0.85em;
     white-space: nowrap;
+    /* NOT SURE WE SHOULD NOT REMOVE THIS NOWRAP */
     padding: 1px 5px;
+}
+
+/* Override bootstrap td alignement to use datatable className column property */
+td.text-right {
+    text-align: right !important;
+}
+td.text-left {
+    text-align: left !important;
+}
+td.text-center {
+    text-align: center !important;
 }
 
 /*
