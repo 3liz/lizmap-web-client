@@ -1,9 +1,9 @@
-import LizmapMapElement from './components/LizmapMapElement.js';
+import LizmapOlMapElement from './components/LizmapOlMapElement.js';
 import LizmapBaseLayersElement from './components/LizmapBaseLayersElement.js';
 import { LizmapMapManager, MainEventDispatcher } from "./modules/LizmapGlobals";
 
 
-window.customElements.define('lizmap-map', LizmapMapElement);
+window.customElements.define('lizmap-olmap', LizmapOlMapElement);
 window.customElements.define('lizmap-baselayers', LizmapBaseLayersElement);
 
 window.addEventListener('load', function (event) {

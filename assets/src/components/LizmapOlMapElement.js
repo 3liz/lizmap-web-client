@@ -10,7 +10,7 @@ import Stamen from "ol/source/Stamen";
 
 import { MainEventDispatcher } from "../modules/LizmapGlobals";
 
-export default class LizmapMapElement extends HTMLElement {
+export default class LizmapOlMapElement extends HTMLElement {
     constructor() {
         super();
 

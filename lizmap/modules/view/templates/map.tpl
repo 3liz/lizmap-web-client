@@ -1,6 +1,6 @@
 
 
-<lizmap-map id="mainmap" map-id="mainmap"></lizmap-map>
+<lizmap-olmap id="mainmap" map-id="mainmap"></lizmap-olmap>
 
 <div id="baselayers-example">
     <button id="map-load-button">Load</button> <br>

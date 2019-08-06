@@ -1,5 +1,5 @@
-html, body, lizmap-map {width: 100%; height: 100%;}
-lizmap-map{display: block;}
+html, body, lizmap-olmap {width: 100%; height: 100%;}
+lizmap-olmap{display: block;}
 body{margin: 0}
 
 #baselayers-example{
