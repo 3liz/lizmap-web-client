@@ -3,6 +3,7 @@ import 'ol/ol.css';
 // OLMap and not Map to avoid collision with global object Map
 import OLMap from 'ol/Map.js';
 import View from 'ol/View.js';
+import {defaults as defaultControls} from 'ol/control.js';
 import LayerGroup from "ol/layer/Group";
 import TileLayer from 'ol/layer/Tile.js';
 import OSM from 'ol/source/OSM.js';
@@ -58,6 +59,7 @@ export default class LizmapOlMapElement extends HTMLElement {
         this._mapId = event.mapId;
 
         this._OLMap = new OLMap({
+            controls: defaultControls({zoom: false}),
             target: this,
             view: new View({
                 center: [0, 0],
