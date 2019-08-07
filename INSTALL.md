@@ -61,6 +61,8 @@ Then you can launch the installer
 php lizmap/install/installer.php
 ```
 
+Assets (JS) building read [README.md](./assets#building-assets)
+
 Test
 ----
 
