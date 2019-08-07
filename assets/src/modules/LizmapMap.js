@@ -1,4 +1,4 @@
-import { MainEventDispatcher } from "./LizmapGlobals";
+import { INCHTOMM, MainEventDispatcher } from "./LizmapGlobals";
 import LizmapLayerGroup from "./LizmapLayerGroup";
 import LizmapLayer from "./LizmapLayer";
 
@@ -10,6 +10,13 @@ export default class LizmapMap {
         this._projectName = project;
 
         this._zoom = 13;
+        this._minResolution;
+        this._maxResolution;
+
+        // FIXME : Set with LizmapOlMapElement.js.
+        // Is it possible to set them directly in this class ?
+        this._minZoom;
+        this._maxZoom;
     }
 
     setConfig(config) {
@@ -38,6 +45,17 @@ export default class LizmapMap {
             baseLayerGroup: this._baseLayerGroup
         });
 
+        if (config.options.hasOwnProperty('minScale') && config.options.hasOwnProperty('maxScale')) {
+            this._minResolution = config.options.minScale * INCHTOMM / (1000 * 90 * window.devicePixelRatio);
+            this._maxResolution = config.options.maxScale * INCHTOMM / (1000 * 90 * window.devicePixelRatio);
+
+            MainEventDispatcher.dispatch({
+                type: "map-min-max-resolution-set",
+                mapId: this._mapId,
+                minResolution: this._minResolution,
+                maxResolution: this._maxResolution
+            });
+        }
     }
 
     get zoom() {
@@ -46,7 +64,7 @@ export default class LizmapMap {
 
     set zoom(zoom) {
         // Avoid infinite loop
-        if(this._zoom !== zoom){
+        if (this._zoom !== zoom) {
             this._zoom = zoom;
 
             MainEventDispatcher.dispatch({
@@ -57,15 +75,33 @@ export default class LizmapMap {
         }
     }
 
+    /**
+     * @param {Integer} minZoom
+     */
+    set minZoom(minZoom) {
+        this._minZoom = minZoom;
+    }
+
+    /**
+     * @param {Integer} maxZoom
+     */
+    set maxZoom(maxZoom) {
+        this._maxZoom = maxZoom;
+    }
+
     get baseLayerGroup() {
         return this._baseLayerGroup;
     }
 
     zoomIn() {
-        this.zoom = this.zoom + 1;
+        if (this.zoom < this._maxZoom) {
+            this.zoom = this.zoom + 1;
+        }
     }
 
     zoomOut() {
-        this.zoom = this.zoom - 1;
+        if (this.zoom > this._minZoom) {
+            this.zoom = this.zoom - 1;
+        }
     }
 }
