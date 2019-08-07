@@ -9,7 +9,7 @@ export default class LizmapMap {
         this._repositoryName = repository;
         this._projectName = project;
 
-        this._zoom = 13;
+        this._zoom;
         this._minResolution;
         this._maxResolution;
 
@@ -80,6 +80,12 @@ export default class LizmapMap {
      */
     set minZoom(minZoom) {
         this._minZoom = minZoom;
+
+        MainEventDispatcher.dispatch({
+            type: "map-min-zoom-set",
+            mapId: this._mapId,
+            minZoom: this._minZoom
+        });
     }
 
     /**
@@ -87,6 +93,12 @@ export default class LizmapMap {
      */
     set maxZoom(maxZoom) {
         this._maxZoom = maxZoom;
+
+        MainEventDispatcher.dispatch({
+            type: "map-max-zoom-set",
+            mapId: this._mapId,
+            maxZoom: this._maxZoom
+        });
     }
 
     get baseLayerGroup() {

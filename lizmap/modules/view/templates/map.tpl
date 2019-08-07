@@ -1,6 +1,8 @@
 
 <lizmap-zoom map-id="mainmap"></lizmap-zoom>
 
+<lizmap-zoom-slider map-id="mainmap"></lizmap-zoom-slider>
+
 <lizmap-olmap id="mainmap" map-id="mainmap"></lizmap-olmap>
 
 <div id="baselayers-example">

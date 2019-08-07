@@ -67,13 +67,16 @@ export default class LizmapOlMapElement extends HTMLElement {
         this._OLMap = new OLMap({
             controls: defaultControls({ zoom: false }),
             target: this,
-            view: new View({
-                center: [0, 0],
-                zoom: 2
-            })
+            view: new View()
         });
 
         this._OLMap.getView().fit(event.config.options.initialExtent);
+
+        // Set zoom
+        LizmapMapManager.getMap(this.mapId).zoom = this._OLMap.getView().getZoom();
+
+        // Detect zoom changes
+        this._OLMap.on('moveend', () => LizmapMapManager.getMap(this.mapId).zoom = this._OLMap.getView().getZoom());
 
     }
 
