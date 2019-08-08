@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://jelix.org/ns/project/1.0">
     <info id="info@3liz.com" name="lizmap" createdate="2011-08-01">
-        <version date="2019-07-26">3.2.4</version>
+        <version date="2019-08-08">3.2.5</version>
         <label lang="en_US">Lizmap Web Client</label>
         <description lang="en_US"/>
         <license URL="http://www.mozilla.org/MPL/">Mozilla Public Licence</license>
