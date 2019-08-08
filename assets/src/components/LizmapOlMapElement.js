@@ -3,13 +3,13 @@ import 'ol/ol.css';
 // OLMap and not Map to avoid collision with global object Map
 import OLMap from 'ol/Map.js';
 import View from 'ol/View.js';
-import {defaults as defaultControls} from 'ol/control.js';
+import { defaults as defaultControls } from 'ol/control.js';
 import LayerGroup from "ol/layer/Group";
 import TileLayer from 'ol/layer/Tile.js';
 import OSM from 'ol/source/OSM.js';
 import Stamen from "ol/source/Stamen";
 
-import { MainEventDispatcher } from "../modules/LizmapGlobals";
+import { LizmapMapManager, MainEventDispatcher } from "../modules/LizmapGlobals";
 
 export default class LizmapOlMapElement extends HTMLElement {
     constructor() {
@@ -38,6 +38,9 @@ export default class LizmapOlMapElement extends HTMLElement {
 
         MainEventDispatcher.addListener(this.onZoomSet.bind(this),
             { type: 'map-zoom-set', mapId: this.mapId });
+
+        MainEventDispatcher.addListener(this.onMinMaxResolutionSet.bind(this),
+            { type: 'map-min-max-resolution-set', mapId: this.mapId });
     }
 
     disconnectedCallback() {
@@ -53,21 +56,27 @@ export default class LizmapOlMapElement extends HTMLElement {
         MainEventDispatcher.removeListener(this.onZoomSet.bind(this),
             { type: 'map-zoom-set', mapId: this.mapId });
 
+        MainEventDispatcher.removeListener(this.onMinMaxResolutionSet.bind(this),
+            { type: 'map-min-max-resolution-set', mapId: this.mapId });
+
     }
 
     onLoadedMapConfig(event) {
         this._mapId = event.mapId;
 
         this._OLMap = new OLMap({
-            controls: defaultControls({zoom: false}),
+            controls: defaultControls({ zoom: false }),
             target: this,
-            view: new View({
-                center: [0, 0],
-                zoom: 2
-            })
+            view: new View()
         });
 
         this._OLMap.getView().fit(event.config.options.initialExtent);
+
+        // Set zoom
+        LizmapMapManager.getMap(this.mapId).zoom = this._OLMap.getView().getZoom();
+
+        // Detect zoom changes
+        this._OLMap.on('moveend', () => LizmapMapManager.getMap(this.mapId).zoom = this._OLMap.getView().getZoom());
 
     }
 
@@ -108,5 +117,15 @@ export default class LizmapOlMapElement extends HTMLElement {
 
     onZoomSet(event) {
         this._OLMap.getView().setZoom(event.zoom);
+    }
+
+    onMinMaxResolutionSet(event) {
+        const maxZoom = Math.round(this._OLMap.getView().getZoomForResolution(event.minResolution));
+        const minZoom = Math.round(this._OLMap.getView().getZoomForResolution(event.maxResolution));
+
+        this._OLMap.getView().setMinZoom(minZoom);
+        this._OLMap.getView().setMaxZoom(maxZoom);
+
+        LizmapMapManager.getMap(this.mapId).setMinMaxZoom(minZoom, maxZoom);
     }
 }

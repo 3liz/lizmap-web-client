@@ -1,4 +1,4 @@
-import { LizmapMapManager, MainEventDispatcher } from "../modules/LizmapGlobals";
+import { LizmapMapManager } from "../modules/LizmapGlobals";
 
 export default class LizmapZoomElement extends HTMLElement {
     constructor() {
