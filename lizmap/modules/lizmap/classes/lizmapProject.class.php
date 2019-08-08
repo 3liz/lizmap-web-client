@@ -1710,8 +1710,7 @@ class lizmapProject extends qgisProject
                 jLocale::get('view~edition.navbar.title'),
                 $tpl->fetch('view~map_edition'),
                 3,
-                '',
-                $bp.'js/edition.js'
+                ''
             );
         }
 
@@ -1739,8 +1738,7 @@ class lizmapProject extends qgisProject
                 jLocale::get('view~map.selectiontool.navbar.title'),
                 $tpl->fetch('view~map_selectiontool'),
                 1,
-                '',
-                $bp.'js/attributeTable.js'
+                ''
             );
             $dock->icon = '<span class="icon-white icon-star" style="margin-left:2px; margin-top:2px;"></span>';
             $dockable[] = $dock;
@@ -1875,8 +1873,7 @@ class lizmapProject extends qgisProject
                 jLocale::get('view~map.attributeLayers.navbar.title'),
                 array('view~map_attributeLayers', $assign),
                 1,
-                '',
-                $bp.'js/attributeTable.js'
+                ''
             );
         }
 

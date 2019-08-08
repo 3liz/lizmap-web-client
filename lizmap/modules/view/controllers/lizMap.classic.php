@@ -164,15 +164,6 @@ class lizMapCtrl extends jController
                 $rep->addJSLink($file);
             }
         }
-	
-        // Add other jForms js
-        // $rep->addJSLink($bp.'js/ckeditor5/ckeditor.js');
-        // $rep->addJSLink($bp.'js/ckeditor5/ckeditor_lizmap.js');
-        // $rep->addJSLink($bp.'js/fileUpload/jquery.fileupload.js');
-        $rep->addJSLink($bp.'js/bootstrapErrorDecoratorHtml.js');
-
-        // Add bottom dock js
-        // $rep->addJSLink($bp.'js/bottom-dock.js');
 
         // Pass some configuration options to the web page through javascript var
         $lizUrls = array(
@@ -221,32 +212,6 @@ class lizMapCtrl extends jController
         $title .= ' - '.$lser->appName;
         $rep->title = $title;
 
-        // Add search js
-        // $rep->addJSLink($bp.'js/search.js');
-
-        // Add moment.js for timemanager
-        if ($lproj->hasTimemanagerLayers()) {
-            $rep->addJSLink($bp.'js/moment.js');
-        }
-
-        // Add atlas.js for atlas feature and additionnal CSS for right-dock max-width
-        if ($lproj->hasAtlasEnabled()) {
-            // Add JS
-            $rep->addJSLink($bp.'js/atlas.js');
-
-            // Add CSS
-            $options = $lproj->getOptions();
-            $atlasWidth = $options->atlasMaxWidth;
-            $cssContent = '';
-            $cssContent .= "#content.atlas-visible:not(.mobile) #right-dock {width: ${atlasWidth}%; max-width: ${atlasWidth}%;}";
-            $cssContent .= "#content.atlas-visible:not(.mobile) #map-content {margin-right: ${atlasWidth}%;}";
-            $css = '<style type="text/css">'.$cssContent.'</style>';
-            $rep->addHeadContent($css);
-        }
-
-        // Add qgis popup atlas JS
-        // $rep->addJSLink($bp.'js/popupQgisAtlas.js');
-
         // Assign variables to template
         $assign = array_merge(array(
             'repositoryLabel' => $lrep->getData('label'),
@@ -284,28 +249,6 @@ class lizMapCtrl extends jController
         foreach (array_merge($assign['dockable'], $assign['minidockable'], $assign['bottomdockable'], $assign['rightdockable']) as $d) {
             if ($d->css != '') {
                 $rep->addCssLink($d->css);
-            }
-        }
-
-        // Get additionnal JS and CSS from modules
-        $additions = jEvent::notify('getMapAdditions', array('repository' => $repository, 'project' => $project))->getResponse();
-        foreach ($additions as $addition) {
-            if (is_array($addition)) {
-                if (array_key_exists('js', $addition)) {
-                    foreach ($addition['js'] as $js) {
-                        $rep->addJSLink($js);
-                    }
-                }
-                if (array_key_exists('jscode', $addition)) {
-                    foreach ($addition['jscode'] as $jscode) {
-                        $rep->addJSCode($jscode);
-                    }
-                }
-                if (array_key_exists('css', $addition)) {
-                    foreach ($addition['css'] as $css) {
-                        $rep->addCssLink($css);
-                    }
-                }
             }
         }
 
@@ -510,11 +453,6 @@ class lizMapCtrl extends jController
                 $rep->addJSCode('var lizLayerStyles = '.json_encode($styles).';');
             }
         }
-
-        //$assign['auth_url_return'] = jUrl::get('view~default:index');
-
-        // switcher-layers-actions javascript
-        // $rep->addJSLink($bp.'js/switcher-layers-actions.js');
 
         // Add Google Analytics ID
         $assign['googleAnalyticsID'] = '';
