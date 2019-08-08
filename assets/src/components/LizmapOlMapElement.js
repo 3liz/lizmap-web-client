@@ -126,7 +126,6 @@ export default class LizmapOlMapElement extends HTMLElement {
         this._OLMap.getView().setMinZoom(minZoom);
         this._OLMap.getView().setMaxZoom(maxZoom);
 
-        LizmapMapManager.getMap(this.mapId).minZoom = minZoom;
-        LizmapMapManager.getMap(this.mapId).maxZoom = maxZoom;
+        LizmapMapManager.getMap(this.mapId).setMinMaxZoom(minZoom, maxZoom);
     }
 }

@@ -35,22 +35,16 @@ export default class LizmapZoomSliderElement extends HTMLElement {
         MainEventDispatcher.addListener(this.onZoomSet.bind(this),
             { type: 'map-zoom-set', mapId: this.mapId });
 
-        MainEventDispatcher.addListener(this.onMinZoomSet.bind(this),
-            { type: 'map-min-zoom-set', mapId: this.mapId });
-
-        MainEventDispatcher.addListener(this.onMaxZoomSet.bind(this),
-            { type: 'map-max-zoom-set', mapId: this.mapId });
+        MainEventDispatcher.addListener(this.onMinMaxZoomSet.bind(this),
+            { type: 'map-min-max-zoom-set', mapId: this.mapId });
     }
 
     disconnectedCallback() {
         MainEventDispatcher.removeListener(this.onZoomSet.bind(this),
             { type: 'map-zoom-set', mapId: this.mapId });
 
-        MainEventDispatcher.removeListener(this.onMinZoomSet.bind(this),
-            { type: 'map-min-zoom-set', mapId: this.mapId });
-
-        MainEventDispatcher.removeListener(this.onMaxZoomSet.bind(this),
-            { type: 'map-max-zoom-set', mapId: this.mapId });
+        MainEventDispatcher.removeListener(this.onMinMaxZoomSet.bind(this),
+            { type: 'map-map-min-max-zoom-set', mapId: this.mapId });
     }
 
     get mapId() {
@@ -67,11 +61,8 @@ export default class LizmapZoomSliderElement extends HTMLElement {
         }
     }
 
-    onMinZoomSet(event) {
+    onMinMaxZoomSet(event) {
         this._inputRange.min = event.minZoom;
-    }
-
-    onMaxZoomSet(event) {
         this._inputRange.max = event.maxZoom;
     }
 }

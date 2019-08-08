@@ -76,27 +76,17 @@ export default class LizmapMap {
     }
 
     /**
-     * @param {Integer} minZoom
+     * @param {number} minZoom
+     * @param {number} maxZoom
      */
-    set minZoom(minZoom) {
-        this._minZoom = minZoom;
+    setMinMaxZoom(minZoom, maxZoom) {
+        this._minZoom = minZoom !== undefined ? minZoom : this._minZoom;
+        this._maxZoom = maxZoom !== undefined ? maxZoom : this._maxZoom;
 
         MainEventDispatcher.dispatch({
-            type: "map-min-zoom-set",
+            type: "map-min-max-zoom-set",
             mapId: this._mapId,
-            minZoom: this._minZoom
-        });
-    }
-
-    /**
-     * @param {Integer} maxZoom
-     */
-    set maxZoom(maxZoom) {
-        this._maxZoom = maxZoom;
-
-        MainEventDispatcher.dispatch({
-            type: "map-max-zoom-set",
-            mapId: this._mapId,
+            minZoom: this._minZoom,
             maxZoom: this._maxZoom
         });
     }
