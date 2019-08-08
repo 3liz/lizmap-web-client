@@ -460,6 +460,8 @@ class qgisForm
                 if ($value[0] == '{') {
                     $arrayValue = explode(',', trim($value, '{}'));
                     $form->setData($ref, $arrayValue);
+                }else{
+                    $form->setData($ref, $value);
                 }
             }
             elseif ($this->formControls[$ref]->fieldEditType === 8
