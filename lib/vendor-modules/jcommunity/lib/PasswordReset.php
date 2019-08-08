@@ -11,9 +11,35 @@ namespace Jelix\JCommunity;
 
 class PasswordReset {
 
-    function sendEmail($login, $email) {
+    protected $forRegistration = false;
+
+    protected $byAdmin = false;
+
+    protected $subjectLocaleId = '';
+
+    protected $tplLocaleId = '';
+
+
+    function __construct($forRegistration = false, $byAdmin = false) {
+        $this->forRegistration = $forRegistration;
+        $this->byAdmin = $byAdmin;
+
+        if ($byAdmin) {
+            $this->subjectLocaleId = 'jcommunity~mail.password.admin.reset.subject';
+            $this->tplLocaleId = 'jcommunity~mail.password.admin.reset.body.html';
+        }
+        else {
+            $this->subjectLocaleId = 'jcommunity~mail.password.reset.subject';
+            $this->tplLocaleId = 'jcommunity~mail.password.reset.body.html';
+        }
+    }
+
+
+    function sendEmail($login, $email)
+    {
         $user = \jAuth::getUser($login);
         if (!$user || $user->email == '' || $user->email != $email) {
+            \jLog::log('A password reset is attempted for unknown user "'.$login.'" and/or unknown email  "'.$email.'"', 'warning');
             return self::RESET_BAD_LOGIN_EMAIL;
         }
 
@@ -21,14 +47,19 @@ class PasswordReset {
             return self::RESET_BAD_STATUS;
         }
 
-        if ($user->status != Account::STATUS_VALID && $user->status != Account::STATUS_PWD_CHANGED) {
+        if ($user->status != Account::STATUS_VALID &&
+            $user->status != Account::STATUS_PWD_CHANGED &&
+            $user->status != Account::STATUS_NEW
+        ) {
             return self::RESET_BAD_STATUS;
         }
 
         $key = sha1(password_hash($login.$email.microtime(),PASSWORD_DEFAULT));
-        $user->status = Account::STATUS_PWD_CHANGED;
+        if ($user->status != Account::STATUS_NEW) {
+            $user->status = Account::STATUS_PWD_CHANGED;
+        }
         $user->request_date = date('Y-m-d H:i:s');
-        $user->keyactivate = $key;
+        $user->keyactivate = ($this->byAdmin?'A:':'U:').$key;
         \jAuth::updateUser($user);
 
         $domain = \jApp::coord()->request->getDomainName();
@@ -36,18 +67,23 @@ class PasswordReset {
         $mail->From = \jApp::config()->mailer['webmasterEmail'];
         $mail->FromName = \jApp::config()->mailer['webmasterName'];
         $mail->Sender = \jApp::config()->mailer['webmasterEmail'];
-        $mail->Subject = \jLocale::get('password.mail.pwd.change.subject', $domain);
+        $mail->Subject = \jLocale::get($this->subjectLocaleId, $domain);
+        $mail->AddAddress($user->email);
+        $mail->isHtml(true);
 
-        $tpl = $mail->Tpl('mail_password_change', true);
+        $tpl = new \jTpl();
         $tpl->assign('user', $user);
         $tpl->assign('domain_name', $domain);
         $tpl->assign('website_uri', \jApp::coord()->request->getServerURI());
         $tpl->assign('confirmation_link', \jUrl::getFull(
             'jcommunity~password_reset:resetform',
-            array('login' => $user->login, 'key' => $user->keyactivate)
+            array('login' => $user->login, 'key' => $key)
         ));
+        $config = new Config();
+        $tpl->assign('validationKeyTTL', $config->getValidationKeyTTLAsString());
 
-        $mail->AddAddress($user->email);
+        $body = $tpl->fetchFromString(\jLocale::get($this->tplLocaleId), 'html');
+        $mail->msgHTML($body, '', array($mail, 'html2textKeepLinkSafe'));
         $mail->Send();
 
         return self::RESET_OK;
@@ -76,8 +112,25 @@ class PasswordReset {
         if (!$user) {
             return self::RESET_BAD_KEY;
         }
-        if ($user->status != Account::STATUS_PWD_CHANGED) {
-            if ($user->status != Account::STATUS_VALID) {
+
+        if ($user->keyactivate == '' ||
+            $user->request_date == ''
+        ) {
+            return self::RESET_BAD_KEY;
+        }
+        $keyactivate = $user->keyactivate;
+
+        if (preg_match('/^([AU]:)(.+)$/', $keyactivate , $m)) {
+            $keyactivate = $m[2];
+        }
+
+        if ($keyactivate != $key) {
+            return self::RESET_BAD_KEY;
+        }
+
+        $expectedStatus = ($this->forRegistration? Account::STATUS_NEW : Account::STATUS_PWD_CHANGED);
+        if ($user->status != $expectedStatus) {
+            if ($user->status == Account::STATUS_VALID) {
                 return self::RESET_ALREADY_DONE;
             }
             return self::RESET_BAD_STATUS;
@@ -87,16 +140,10 @@ class PasswordReset {
             return self::RESET_BAD_STATUS;
         }
 
-        if ($user->keyactivate == '' ||
-            $user->request_date == '' ||
-            $user->keyactivate != $key
-        ) {
-            return self::RESET_BAD_KEY;
-        }
-
+        $config = new Config();
         $dt = new \DateTime($user->request_date);
         $dtNow = new \DateTime();
-        $dt->add(new \DateInterval('P2D')); // 48h
+        $dt->add($config->getValidationKeyTTL());
         if ($dt < $dtNow ) {
             return self::RESET_EXPIRED_KEY;
         }
@@ -109,6 +156,5 @@ class PasswordReset {
         \jAuth::updateUser($user);
         \jAuth::changePassword($user->login, $newPassword);
     }
-
 
 }

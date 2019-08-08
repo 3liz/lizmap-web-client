@@ -17,6 +17,8 @@ class jcommunityModuleConfigurator extends \Jelix\Installer\Module\Configurator 
             'masteradmin' => false,
             'migratejauthdbusers' => true,
             'usejpref' => false,
+            'defaultusers'=> '', // selector of a json file in an install/ of a module
+            'defaultuser' => true, // install users from defaultusers.json
             'eps'=>array()
         );
     }
@@ -26,7 +28,7 @@ class jcommunityModuleConfigurator extends \Jelix\Installer\Module\Configurator 
         $cli = $helpers->cli();
         $this->parameters['eps'] = $cli->askEntryPoints(
             'Select entry points on which to setup authentication plugins.',
-            'classic',
+            $helpers->getEntryPointsByType('classic'),
             true
         );
 
@@ -45,9 +47,10 @@ class jcommunityModuleConfigurator extends \Jelix\Installer\Module\Configurator 
             $this->parameters['manualconfig'] = false;
         }
 
-        $this->parameters['migratejauthdbusers'] = $cli->askConfirmation('Do you want to migrate users from the jlx_user table to the jcommunity table?', true);
-        $this->parameters['masteradmin'] = $cli->askConfirmation('Do you use jCommunity with the master_admin module?', false);
-        $this->parameters['usejpref'] = $cli->askConfirmation('Do you want to use jPref to manage some parameters?', false);
+        $this->parameters['migratejauthdbusers'] = $cli->askConfirmation('Do you want to migrate users from the jlx_user table to the jcommunity table?', $this->parameters['migratejauthdbusers']);
+        $this->parameters['defaultuser'] = $cli->askConfirmation('Do you want to create default users into the jcommunity table?', $this->parameters['defaultuser']);
+        $this->parameters['masteradmin'] = $cli->askConfirmation('Do you use jCommunity with the master_admin module?', $this->parameters['masteradmin']);
+        $this->parameters['usejpref'] = $cli->askConfirmation('Do you want to use jPref to manage some parameters?', $this->parameters['usejpref']);
 
 
         // retrieve current jcommunity section
@@ -59,6 +62,7 @@ class jcommunityModuleConfigurator extends \Jelix\Installer\Module\Configurator 
             'useJAuthDbAdminRights' =>false,
             'registrationEnabled' =>true,
             'resetPasswordEnabled' =>true,
+            'resetPasswordAdminEnabled' =>true,
             'disableJPref' =>true,
             'publicProperties' =>array('login', 'nickname', 'create_date')
         );
@@ -72,6 +76,7 @@ class jcommunityModuleConfigurator extends \Jelix\Installer\Module\Configurator 
 
         $defaultConfig['registrationEnabled'] = $cli->askConfirmation('Is the registration enabled?', $defaultConfig['registrationEnabled']);
         $defaultConfig['resetPasswordEnabled'] = $cli->askConfirmation('Can the user reset his password when he forgot it?', $defaultConfig['resetPasswordEnabled']);
+        $defaultConfig['resetPasswordAdminEnabled'] = $cli->askConfirmation('Can administrators reset user password instead of setting a password himself?', $defaultConfig['resetPasswordAdminEnabled']);
         $defaultConfig['passwordChangeEnabled'] = $cli->askConfirmation('Can the user change his password?', $defaultConfig['passwordChangeEnabled']);
         $defaultConfig['accountDestroyEnabled'] = $cli->askConfirmation('Can the user destroy his account?', $defaultConfig['accountDestroyEnabled']);
         $helpers->getConfigIni()->setValues($defaultConfig, 'jcommunity');
@@ -97,7 +102,7 @@ class jcommunityModuleConfigurator extends \Jelix\Installer\Module\Configurator 
             $helpers->copyFile('var/config/'.$pluginIni, 'config:'.$pluginIni);
         }
         else {
-            list($conf, $section) = $entryPoint->getCoordPluginConf('auth');
+            list($conf, $section) = $entryPoint->getCoordPluginConfig('auth');
 
             if (!$this->getParameter('manualconfig')) {
                 $conf->setValue('driver', 'Db');
@@ -120,14 +125,14 @@ class jcommunityModuleConfigurator extends \Jelix\Installer\Module\Configurator 
                 }
 
                 if ($daoSelector == 'jcommunity~user') {
-                    $conf->setValue('form','jcommunity~account_admin', 'Db');
+                    $conf->setValue('form', 'jcommunity~account_admin', 'Db');
                 }
                 $conf->save();
             }
         }
 
         if ($this->getParameter('masteradmin')) {
-            list($conf, $section) = $entryPoint->getCoordPluginConf('auth');
+            list($conf, $section) = $entryPoint->getCoordPluginConfig('auth');
             $conf->setValue('after_login', 'master_admin~default:index');
             $conf->save();
             $configIni->setValue('loginResponse', 'htmlauth', 'jcommunity');

@@ -10,7 +10,7 @@
     {if $canChangePass}<li><a href="{jurl 'jauthdb_admin~password:index', array('j_user_login'=>$id)}" class="crud-link btn">{@jauthdb_admin~crud.link.change.password@}</a></li>{/if}
     {if $canDelete}<li><a href="{jurl 'jauthdb_admin~default:confirmdelete', array('j_user_login'=>$id)}" class="crud-link btn">{@jauthdb_admin~crud.link.delete.record@}</a></li>{/if}
     {foreach $otherLinks as $link}
-        <li><a href="{$link['url']}" class="crud-link">{$link['label']}</a></li>
+        <li><a href="{$link['url']}" class="crud-link btn">{$link['label']}</a></li>
     {/foreach}
 </ul>
 

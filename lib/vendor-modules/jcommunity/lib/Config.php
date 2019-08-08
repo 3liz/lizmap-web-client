@@ -17,6 +17,8 @@ class Config
 
     protected $resetPasswordEnabled = true;
 
+    protected $resetAdminPasswordEnabled = true;
+
     protected $passwordChangeEnabled = true;
 
     protected $accountDestroyEnabled = true;
@@ -24,6 +26,11 @@ class Config
     protected $verifyNickname = true;
 
     protected $publicProperties = array('login', 'nickname', 'create_date');
+
+    /**
+     * @var integer  TTL in minutes
+     */
+    protected $validationKeyTTL = 1440; // 24h
 
     /**
      * Indicate if jcommunity should take care of this following rights:
@@ -38,24 +45,20 @@ class Config
     public function __construct()
     {
         $config = (isset(\jApp::config()->jcommunity) ? \jApp::config()->jcommunity : array());
-        if (isset($config['loginResponse'])) {
-            $this->responseType = $config['loginResponse'];
+
+        foreach(array(
+            'responseType' => 'loginResponse',
+            'verifyNickname' => 'verifyNickname',
+            'passwordChangeEnabled' => 'passwordChangeEnabled',
+            'accountDestroyEnabled' => 'accountDestroyEnabled',
+            'useJAuthDbAdminRights' => 'useJAuthDbAdminRights',
+            'validationKeyTTL' => 'validationKeyTTL',
+                ) as $prop => $param) {
+            if (isset($config[$param])) {
+                $this->$prop = $config[$param];
+            }
         }
 
-        if (isset($config['verifyNickname'])) {
-            $this->verifyNickname = $config['verifyNickname'];
-        }
-
-        if (isset($config['passwordChangeEnabled'])) {
-            $this->passwordChangeEnabled = $config['passwordChangeEnabled'];
-        }
-        if (isset($config['accountDestroyEnabled'])) {
-            $this->accountDestroyEnabled = $config['accountDestroyEnabled'];
-        }
-
-        if (isset($config['useJAuthDbAdminRights'])) {
-            $this->useJAuthDbAdminRights = $config['useJAuthDbAdminRights'];
-        }
 
         if (isset($config['publicProperties'])) {
             if (!is_array($config['publicProperties'])) {
@@ -77,6 +80,10 @@ class Config
             if ($pref !== null) {
                 $this->resetPasswordEnabled = $pref;
             }
+            $pref = \jPref::get('jcommunity_resetAdminPasswordEnabled');
+            if ($pref !== null) {
+                $this->resetAdminPasswordEnabled = $pref;
+            }
         } else {
             if (isset($config['registrationEnabled'])) {
                 $this->registrationEnabled = (bool) $config['registrationEnabled'];
@@ -84,12 +91,16 @@ class Config
             if (isset($config['resetPasswordEnabled'])) {
                 $this->resetPasswordEnabled = (bool) $config['resetPasswordEnabled'];
             }
+            if (isset($config['resetAdminPasswordEnabled'])) {
+                $this->resetAdminPasswordEnabled = (bool) $config['resetAdminPasswordEnabled'];
+            }
         }
         $sender = filter_var(\jApp::config()->mailer['webmasterEmail'], FILTER_VALIDATE_EMAIL);
         if (!$sender) {
             // if the sender email is not configured, deactivate features that
             // need to send an email
             $this->resetPasswordEnabled = false;
+            $this->resetAdminPasswordEnabled = false;
             $this->registrationEnabled = false;
         }
     }
@@ -107,6 +118,20 @@ class Config
     public function isResetPasswordEnabled()
     {
         return $this->resetPasswordEnabled;
+    }
+
+    public function isResetAdminPasswordEnabled()
+    {
+        return $this->resetAdminPasswordEnabled;
+    }
+
+    public function isResetAdminPasswordEnabledForAdmin()
+    {
+        if ($this->useJAuthDbAdminRights) {
+            return $this->resetAdminPasswordEnabled &&
+                \jAcl2::check('auth.users.change.password');
+        }
+        return $this->resetAdminPasswordEnabled;
     }
 
     public function isPasswordChangeEnabled()
@@ -132,6 +157,45 @@ class Config
     public function verifyNickname()
     {
         return $this->verifyNickname;
+    }
+
+    /**
+     * @return \DateInterval
+     * @throws \Exception
+     */
+    public function getValidationKeyTTL()
+    {
+        $ttl = intval($this->validationKeyTTL);
+        if ($ttl < 5) {
+            $ttl = 5;
+        }
+        else if ($ttl > 10080) {
+            $ttl = 10080;
+        }
+        $dt = new \DateInterval('PT'.$ttl.'M');
+        return $dt;
+    }
+
+    public function getValidationKeyTTLAsString()
+    {
+        $dt = $this->getValidationKeyTTL();
+        $from = new \DateTime();
+        $to = clone $from;
+        $to = $to->add($dt);
+        $ttl = $from->diff($to);
+
+        $str = '';
+        if ($ttl->d > 0) {
+            $str .= $ttl->d . ' '.\jLocale::get('jcommunity~account.duration.day'.($ttl->d > 1?'s':''));
+        }
+        if ($ttl->h > 0) {
+            $str .= ' ' . $ttl->h . ' '.\jLocale::get('jcommunity~account.duration.hour'.($ttl->h > 1?'s':''));
+        }
+        if ($ttl->i > 0) {
+            $str .= ' ' . $ttl->i . ' '.\jLocale::get('jcommunity~account.duration.minute'.($ttl->i > 1?'s':''));
+        }
+
+        return trim($str);
     }
 
     public function getPublicUserProperties()

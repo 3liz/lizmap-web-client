@@ -10,5 +10,6 @@
       <event name="jauthdbAdminPrepareCreate"/>
       <event name="jauthdbAdminEditCreate"/>
       <event name="jauthdbAdminCheckCreateForm"/>
+      <event name="jauthdbAdminAfterCreate"/>
    </listener>
 </events>
