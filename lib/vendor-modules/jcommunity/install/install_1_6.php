@@ -112,8 +112,18 @@ class jcommunityModuleInstaller extends jInstallerModule {
         if ($this->firstDbExec()) {
             $daoSelector = $conf->getValue('dao', 'Db');
 
-            $mapper = new jDaoDbMapper($dbProfile);
-            $table = $mapper->createTableFromDao($daoSelector);
+            // if the dao from jcommunity is used, lets use our own sql script
+            // because we need to create a unique constraint, that is not
+            // handle by jDaoMapper.
+            if ($daoSelector == 'jcommunity~user') {
+
+                $this->execSQLScript('sql/install');
+            }
+            // for any other dao file, let's use jDaoMapper.
+            else {
+                $mapper = new jDaoDbMapper($dbProfile);
+                $mapper->createTableFromDao($daoSelector);
+            }
 
             if ($this->getParameter('migratejauthdbusers')) {
                 $this->migrateUsers($daoSelector);

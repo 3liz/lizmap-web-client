@@ -405,7 +405,7 @@ var lizAttributeTable = function() {
                     alc= ' showChildren';
                 html+= '<div class="attribute-layer-content'+alc+'">';
                 html+= '    <input type="hidden" class="attribute-table-hidden-layer" value="'+cleanName+'">';
-                html+= '    <table id="attribute-layer-table-' + cleanName + '" class="attribute-table-table table table-hover table-condensed table-striped order-column" width="100%"></table>';
+                html+= '    <table id="attribute-layer-table-' + cleanName + '" class="attribute-table-table table table-hover table-condensed table-striped order-column cell-border" width="100%"></table>';
 
                 html+= '</div>';  // attribute-layer-content
 
@@ -878,7 +878,7 @@ var lizAttributeTable = function() {
                             // Build Div content for tab
                             var cDiv = '<div class="tab-pane attribute-layer-child-content '+childActive+'" id="'+ tabId +'" >';
                             var tId = 'attribute-layer-table-' + lizMap.cleanName(parentLayerName) + '-' + lizMap.cleanName(childLayerName);
-                            var tClass = 'attribute-table-table table table-hover table-condensed table-striped child-of-' + lizMap.cleanName(parentLayerName);
+                            var tClass = 'attribute-table-table table table-hover table-condensed table-striped cell-border child-of-' + lizMap.cleanName(parentLayerName);
                             cDiv+= '    <input type="hidden" class="attribute-table-hidden-parent-layer" value="'+lizMap.cleanName(parentLayerName)+'">';
                             cDiv+= '    <input type="hidden" class="attribute-table-hidden-layer" value="'+lizMap.cleanName(childLayerName)+'">';
                             cDiv+= '    <table id="' + tId  + '" class="' + tClass + '" width="100%"></table>';
@@ -1313,12 +1313,17 @@ var lizAttributeTable = function() {
                                 colConf['mRender'] = function( data, type, full, meta ){
                                     return parseInt(data);
                                 }
+                                colConf['className'] = 'text-right';
                                 break;
                             case 'decimal':
                             case 'double':
                                 colConf['mRender'] = function( data, type, full, meta ){
                                     return parseFloat(data);
                                 }
+                                colConf['className'] = 'text-right';
+                                break;
+                            case 'date':
+                                colConf['className'] = 'text-center';
                                 break;
                             default:
                                 colConf['mRender'] = function( data, type, full, meta ){

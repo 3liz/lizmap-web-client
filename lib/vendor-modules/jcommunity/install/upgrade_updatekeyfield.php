@@ -26,7 +26,7 @@ class jcommunityModuleUpgrader_updatekeyfield extends jInstallerModule {
     protected function getAuthConf() {
         $authconfig = $this->config->getValue('auth','coordplugins');
         if ($this->isJelix17()) {
-            $confPath = jApp::appConfigPath($authconfig);
+            $confPath = jApp::appSystemPath($authconfig);
             $conf = new \Jelix\IniFile\IniModifier($confPath);
         }
         else {
@@ -37,6 +37,6 @@ class jcommunityModuleUpgrader_updatekeyfield extends jInstallerModule {
     }
 
     protected function isJelix17() {
-        return method_exists('jApp', 'appConfigPath');
+        return method_exists('jApp', 'appSystemPath');
     }
 }

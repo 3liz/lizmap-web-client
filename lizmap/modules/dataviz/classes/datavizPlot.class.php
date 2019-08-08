@@ -212,7 +212,7 @@ class datavizPlot
             'plot_bgcolor' => 'rgba(0,0,0,0)',
             'paper_bgcolor' => 'rgba(0,0,0,0)',
             'margin' => array(
-                'l' => 0,
+                'l' => 2,
                 'r' => 20,
                 //'b'=> 150,
                 't' => 0,
@@ -221,6 +221,7 @@ class datavizPlot
         );
 
         if($this->type == 'pie'){
+            $layout['legend']['orientation'] = 'h';
             $layout['legend']['y'] = '-5';
         }
 

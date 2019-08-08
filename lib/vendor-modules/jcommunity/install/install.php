@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package     jcommunity
  * @author      Laurent Jouanneau
@@ -8,38 +9,43 @@
  * @license  http://www.gnu.org/licenses/lgpl.html GNU Lesser General Public Licence, see LICENCE file
  */
 
+use Jelix\IniFile\IniModifierInterface;
+use Jelix\IniFile\IniModifier;
+use Jelix\Installer\Module\API\DatabaseHelpers;
+use Jelix\Installer\Module\API\InstallHelpers;
+use Jelix\Installer\EntryPoint;
+
 
 class jcommunityModuleInstaller extends \Jelix\Installer\Module\Installer {
 
-    protected function getAuthConf($configIni) {
+    protected function getAuthConf(IniModifierInterface $configIni) {
         $authconfig = $configIni->getValue('auth','coordplugins');
-        $confPath = jApp::appConfigPath($authconfig);
-        $conf = new \Jelix\IniFile\IniModifier($confPath);
+        $confPath = jApp::appSystemPath($authconfig);
+        $conf = new IniModifier($confPath);
         return $conf;
     }
 
     protected $daoProcessed = array();
 
-    function install()
+    function install(InstallHelpers $helpers)
     {
         // create random key for persistant authentication
-        $configIni = $this->getLiveConfigIni();
+        $configIni = $helpers->getLiveConfigIni();
         $currentKey = $configIni->getValue('persistant_crypt_key', 'coordplugin_auth');
         if ($currentKey === 'exampleOfCryptKey' || $currentKey == '') {
             $cryptokey = \Defuse\Crypto\Key::createNewRandomKey();
             $key = $cryptokey->saveToAsciiSafeString();
-
             $configIni->setValue('persistant_crypt_key', $key, 'coordplugin_auth');
         }
 
         foreach ($this->getParameter('eps') as $epId) {
-            $entryPoint = $this->getEntryPointsById($epId);
+            $entryPoint = $helpers->getEntryPointsById($epId);
             $configIni = $entryPoint->getConfigIni();
             $conf = $this->getAuthConf($configIni);
             $daoSelector = $conf->getValue('dao', 'Db');
             if (!isset($this->daoProcessed[$daoSelector])) {
                 $this->daoProcessed[$daoSelector] = true;
-                $this->_installForEntrypoint($conf);
+                $this->_installForEntrypoint($helpers, $entryPoint, $conf);
             }
         }
 
@@ -52,21 +58,31 @@ class jcommunityModuleInstaller extends \Jelix\Installer\Module\Installer {
         }
     }
 
-    protected function _installForEntrypoint(jInstallerEntryPoint2 $entryPoint, $authConf) {
+    protected function _installForEntrypoint(InstallHelpers $helpers, EntryPoint $entryPoint, IniModifier $authConf) {
 
         $dbProfile = $authConf->getValue('profile', 'Db');
-        $this->useDbProfile($dbProfile);
+        $database = $helpers->database();
+        $database->useDbProfile($dbProfile);
 
         $daoSelector = $authConf->getValue('dao', 'Db');
 
-        $mapper = new jDaoDbMapper($dbProfile);
-        $table = $mapper->createTableFromDao($daoSelector);
+        // if the dao from jcommunity is used, lets use our own sql script
+        // because we need to create a unique constraint, that is not
+        // handle by jDaoMapper.
+        if ($daoSelector == 'jcommunity~user') {
+            $helpers->database()->execSQLScript('sql/install');
+        }
+        // for any other dao file, let's use jDaoMapper.
+        else {
+            $mapper = new jDaoDbMapper($dbProfile);
+            $mapper->createTableFromDao($daoSelector);
+        }
 
         if ($this->getParameter('migratejauthdbusers')) {
-            $this->migrateUsers($daoSelector);
+            $this->migrateUsers($database, $daoSelector);
         }
         else {
-            $this->fillDefaultValues($daoSelector);
+            $this->fillDefaultValues($database, $daoSelector);
 
             $sourceUserDataModule = null;
             $sourceUserDataFile = '';
@@ -79,7 +95,7 @@ class jcommunityModuleInstaller extends \Jelix\Installer\Module\Installer {
                 list(,$sourceUserDataModule,$sourceUserDataFile) = $m;
             }
             else if ($this->getParameter('defaultuser')) {
-                $sourceUserDataFile = 'defaultuser.json';
+                $sourceUserDataFile = 'defaultusers.json';
             }
 
             if ($sourceUserDataFile) {
@@ -93,7 +109,7 @@ class jcommunityModuleInstaller extends \Jelix\Installer\Module\Installer {
                 ) {
                     require_once(JELIX_LIB_PATH.'plugins/auth/db/db.auth.php');
                     $driver = new dbAuthDriver($driverConfig);
-                    $this->insertUsers($entryPoint, $driver, $daoSelector, $dbProfile, $sourceUserDataModule, $sourceUserDataFile);
+                    $this->insertUsers($helpers, $entryPoint, $driver, $daoSelector, $dbProfile, $sourceUserDataModule, $sourceUserDataFile);
                 }
             }
         }
@@ -105,7 +121,7 @@ class jcommunityModuleInstaller extends \Jelix\Installer\Module\Installer {
      * @param string $daoSelectorStr dao selector of the jcommunity table
      * @throws jException
      */
-    protected function migrateUsers($daoSelectorStr) {
+    protected function migrateUsers(DatabaseHelpers $database, $daoSelectorStr) {
         $dao = jDao::get($daoSelectorStr);
         $tableProp = $dao->getTables()[$dao->getPrimaryTable()];
 
@@ -113,7 +129,7 @@ class jcommunityModuleInstaller extends \Jelix\Installer\Module\Installer {
             return;
         }
 
-        $cn = $this->dbConnection();
+        $cn = $database->dbConnection();
         $targetFields = array();
         $properties = array('login', 'password', 'status', 'email', 'create_date');
         $daoProperties = $dao->getProperties();
@@ -151,12 +167,12 @@ class jcommunityModuleInstaller extends \Jelix\Installer\Module\Installer {
         $cn->exec($sql);
     }
 
-    protected function fillDefaultValues($daoSelector) {
+    protected function fillDefaultValues(DatabaseHelpers $helpers, $daoSelector) {
         $dao = jDao::get($daoSelector);
 
         $daoProperties = $dao->getProperties();
         $tableProp = $dao->getTables()[$dao->getPrimaryTable()];
-        $cn = $this->dbConnection();
+        $cn = $helpers->dbConnection();
 
         if (isset($daoProperties['status'])) {
             $statusField = $cn->encloseName($daoProperties['status']['fieldName']);
@@ -178,7 +194,7 @@ class jcommunityModuleInstaller extends \Jelix\Installer\Module\Installer {
         }
     }
 
-    protected function insertUsers(jInstallerEntryPoint2 $entryPoint, $driver, $daoSelector, $dbProfile, $module, $relativeSourcePath) {
+    protected function insertUsers(InstallHelpers $helpers, EntryPoint $entryPoint, $driver, $daoSelector, $dbProfile, $module, $relativeSourcePath) {
 
         if ($module) {
             $conf = $entryPoint->getConfigObj()->_modulesPathList;
@@ -188,7 +204,7 @@ class jcommunityModuleInstaller extends \Jelix\Installer\Module\Installer {
             $path = $conf[$module];
         }
         else {
-            $path = $this->path;
+            $path = $this->getPath();
         }
 
         $file = $path.'install/'.$relativeSourcePath;
