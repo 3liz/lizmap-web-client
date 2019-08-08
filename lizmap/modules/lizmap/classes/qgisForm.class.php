@@ -429,6 +429,8 @@ class qgisForm implements qgisFormControlsInterface
                 if ($value[0] == '{') {
                     $arrayValue = explode(',', trim($value, '{}'));
                     $form->setData($ref, $arrayValue);
+                }else{
+                    $form->setData($ref, $value);
                 }
             }
             if ($this->formControls[$ref]->isUploadControl()) {
