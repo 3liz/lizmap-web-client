@@ -3,15 +3,13 @@
 
 <lizmap-zoom-slider map-id="mainmap"></lizmap-zoom-slider>
 
+<lizmap-initial-extent map-id="mainmap"></lizmap-initial-extent>
+
 <lizmap-olmap id="mainmap" map-id="mainmap"></lizmap-olmap>
 
 <div id="baselayers-example">
-    <button id="map-load-button">Load</button> <br>
   <lizmap-baselayers map-id="mainmap"></lizmap-baselayers>
-
 </div>
-
-
 
 
 
