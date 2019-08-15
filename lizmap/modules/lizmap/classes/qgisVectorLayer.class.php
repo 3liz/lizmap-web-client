@@ -85,7 +85,7 @@ class qgisVectorLayer extends qgisMapLayer
             $dt
         );
 
-        if (count($dt) < 14 or $dt[14] == '') {
+        if (count($dt) < 15 or $dt[14] == '') {
             // if table not found, try again for complex tables, such as table="(SELECT count(*) FROM table WHERE bla)"
             $datasourceMatch = preg_match(
                 "#(?:dbname='([^ ]+)' )?(?:service='([^ ]+)' )?(?:host=([^ ]+) )?(?:port=([0-9]+) )?(?:user='([^ ]+)' )?(?:password='([^ ]+)' )?(?:sslmode=([^ ]+) )?(?:key='([^ ]+)' )?(?:estimatedmetadata=([^ ]+) )?(?:selectatid=([^ ]+) )?(?:srid=([0-9]+) )?(?:type=([a-zA-Z]+) )?(?:checkPrimaryKeyUnicity='([0-1]+)' )?(?:table=\"(.+)\" )?(?:\\()?(?:([^ ]+)\\) )?(?:sql=(.*))?#s",

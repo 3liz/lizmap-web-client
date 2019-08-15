@@ -127,12 +127,17 @@ class lizmapWFSRequest extends lizmapOGCRequest
             $filter = $this->params['filter'];
         }
 
+        if($provider == 'postgres'){
+            $dtparams = $qgisLayer->getDatasourceParameters();
+        }
         // Use direct SQL query to improve performance for PostgreSQL layer
         // but only of not OGC filter is passed (complex to implement)
         // and only for GeoJSON (specific to Lizmap)
+        // and only if it is not a complex query like table="(SELECT ...)"
         if ($provider == 'postgres'
             and empty($filter)
             and strtolower($output) == 'geojson'
+            and $dtparams->table[0] != '('
         ) {
             return $this->getfeaturePostgres();
         }
@@ -179,8 +184,14 @@ class lizmapWFSRequest extends lizmapOGCRequest
 
         // Get fields
         $wfsFields = $this->qgisLayer->getWfsFields();
+
         // Get Db fields
-        $dbFields = $this->qgisLayer->getDbFieldList();
+        try {
+            $dbFields = $this->qgisLayer->getDbFieldList();
+        } catch (Exception $e) {
+            return $this->getfeatureQgis();
+        }
+
         // Verifying that every wfs fields are db fields
         // if not return getfeatureQgis
         foreach ($wfsFields as $field) {
