@@ -4960,9 +4960,9 @@ OpenLayers.Control.HighlightFeature = OpenLayers.Class(OpenLayers.Control, {
 
     lizMap.events.on({
         minidockopened: function(e) {
-            if ( e.id == 'tooltip-layer' ) {
-              // Load first layer automatically
-                $('#tooltip-layer-list').val($("#tooltip-layer-list option:nth-child(2)").val()).change();
+            // Load layer automatically when there is only one
+            if (e.id == 'tooltip-layer' && $("#tooltip-layer-list option").length === 2) {
+              $('#tooltip-layer-list').val($("#tooltip-layer-list option:nth-child(2)").val()).change();
             }
         },
         minidockclosed: function(e) {
