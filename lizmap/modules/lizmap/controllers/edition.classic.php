@@ -215,7 +215,7 @@ class editionCtrl extends jController
         $featureId = $this->featureId;
 
         // Get features primary key field values corresponding to featureId(s)
-        if (!empty($featureId) or $featureId == 0) {
+        if (!empty($featureId) || $featureId === 0 || $featureId === '0') {
             $typename = $this->layer->getShortName();
             if (!$typename or $typename == '') {
                 $typename = str_replace(' ', '_', $this->layer->getName());
