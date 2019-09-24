@@ -314,8 +314,8 @@ class lizmapProxy
         if ($configLayer
             and property_exists($configLayer, 'sourceRepository')
             and $configLayer->sourceRepository != ''
-            and property_exists($configLayer, 'sourceProject'
-            and $configLayer->sourceProject != '')
+            and property_exists($configLayer, 'sourceProject')
+            and $configLayer->sourceProject != ''
         ) {
             $newRepository = (string) $configLayer->sourceRepository;
             $newProject = (string) $configLayer->sourceProject;
