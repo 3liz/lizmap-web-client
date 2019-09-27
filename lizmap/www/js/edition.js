@@ -1225,29 +1225,42 @@ OpenLayers.Geometry.pointOnSegment = function(point, segment) {
             updateGeometryColumnFromFeature( feat );
         }
 
-        // Handle file uploads
-        if ( form.attr('enctype') == 'multipart/form-data' ){
-            form.submit(function(evt) {
-                // Jelix checks
-                var submitOk = jFormsJQ._submitListener(evt);
-                if (!submitOk)
-                    return false;
-                // Additionnal checks
-                var msg = checkFormBeforeSubmit(evt);
-                // Edition has been canceled
-                if(!msg)
-                    return false;
-                // Some client side errors have been detected in form
-                if( msg != 'ok' ){
-                    addEditionMessage( msg, 'info', true);
-                    return false;
-                }
 
+        form.submit(function(evt) {
+
+            // Cancel edition if this submit button has been used
+            if(editionLayer['submitActor'] == 'cancel'){
+                cancelEdition();
+                return false;
+            }
+
+            //  check form
+            var msg = checkFormBeforeSubmit(form, evt);
+
+            // save has been canceled because of some errors in the form
+            if (msg === false) {
+                return false;
+            }
+
+            // Some client side errors have been detected in form
+            if( msg != 'ok' ){
+                addEditionMessage( msg, 'info', true);
+                return false;
+            }
+
+            // Set submit button value
+            var submit_hidden_id = form.attr('id') + '_' + '_submit';
+            $('#' + submit_hidden_id).val(editionLayer['submitActor']);
+
+            // send values
+            $('#edition-waiter').show();
+            if (form.attr('enctype') == 'multipart/form-data') {
+                // Handle file uploads if needed
                 var fileInputs = form.find('input[type="file"]');
                 fileInputs = fileInputs.filter( function( i, e ) {
                     return $(e).val() != "";
                 });
-                $('#edition-waiter').show();
+
                 if ( fileInputs.length != 0 ) {
                     form.fileupload({
                         dataType: 'html',
@@ -1256,61 +1269,35 @@ OpenLayers.Geometry.pointOnSegment = function(point, segment) {
                         }
                     });
                     form.fileupload('send', {fileInput:fileInputs});
-                } else {
-                    $.post(form.attr('action'),
-                        form.serialize(),
-                        function(data) {
-                            displayEditionForm( data );
-                        });
-                }
-                return false;
-            });
-        }
-        else{
-            form.submit(function(evt) {
-                // Jelix check
-                var submitOk = jFormsJQ._submitListener(evt);
-                if (!submitOk)
-                    return false;
-                // Additionnal checks
-                var msg = checkFormBeforeSubmit(evt);
-                // Edition has been canceled
-                if(!msg){
                     return false;
                 }
-                // Some client side errors have been detected in form
-                if( msg != 'ok' ){
-                    addEditionMessage( msg, 'info', true);
-                    return false;
-                }
-                $('#edition-waiter').show();
-                var formser =
-                $.post(form.attr('action'),
-                    form.serialize(),
-                    function(data) {
-                        displayEditionForm( data );
-                    });
-                return false;
-            });
-        }
+            }
+
+            $.post(form.attr('action'),
+                form.serialize(),
+                function(data) {
+                    displayEditionForm( data );
+                });
+            return false;
+        });
     }
 
-    // Perform some additionnal checking on form
-    function checkFormBeforeSubmit(){
-        var form = $('#edition-form-container form');
 
-        // Cancel edition if this submit button has been used
-        if(editionLayer['submitActor'] == 'cancel'){
-            cancelEdition();
+    /**
+     * Check the content of the form
+     * @param {jQuery} form
+     * @param {DOMEvent} evt
+     * @returns {string|boolean}
+     */
+    function checkFormBeforeSubmit(form, evt){
+
+        // Jelix checks
+        if (!jFormsJQ._submitListener(evt)) {
             return false;
         }
 
-        // Set submit button value
-        var submit_hidden_id = form.attr('id') + '_' + '_submit';
-        $('#' + submit_hidden_id).val(editionLayer['submitActor']);
-
         var msg = 'ok';
-        if( editionLayer['spatial'] && editionLayer['config'].capabilities.modifyGeometry == 'True'){
+        if (editionLayer['spatial'] && editionLayer['config'].capabilities.modifyGeometry == 'True') {
 
             var gColumn = form.find('input[name="liz_geometryColumn"]').val();
             var formGeom = form.find('input[name="'+gColumn+'"]').val();
