@@ -231,7 +231,7 @@ var lizEdition = function() {
 
     function afterReshapeSpliting(evt) {
         var splitFeatures = evt.features;
-        var geometryType = editionLayer['config'].geometryType;
+        var geometryType = editionLayer.geometryType;
         var removableFeat = null;
         if ( geometryType == 'line' ) {
             if ( splitFeatures[0].geometry.getLength() < splitFeatures[1].geometry.getLength() )
@@ -245,11 +245,14 @@ var lizEdition = function() {
             else
                 removableFeat = splitFeatures[1];
         }
-        if ( removableFeat )
-            editionLayer['ol'].removeFeatures( [removableFeat] );
-        // Update form liz_wkt field from added geometry
-        if ( editionLayer['ol'].features.length !=0 )
-            updateGeometryColumnFromFeature( editionLayer['ol'].features[0] );
+        if (removableFeat) {
+            editionLayer.removeEditedFeature(removableFeat);
+        }
+        // Update form geometry field from added geometry
+        var feat = editionLayer.getFeature();
+        if (feat) {
+            updateGeometryColumnFromFeature(feat);
+        }
         $('#edition-geomtool-nodetool').click();
         return false;
     }
@@ -275,7 +278,7 @@ var lizEdition = function() {
 
         // determine the two new geometry
         var splitFeatures = evt.features;
-        var geometryType = editionLayer['config'].geometryType;
+        var geometryType = editionLayer.geometryType;
         var newFeature = null;
         if ( geometryType == 'line' ) {
             if ( splitFeatures[0].geometry.getLength() < splitFeatures[1].geometry.getLength() )
@@ -292,9 +295,6 @@ var lizEdition = function() {
 
         // store one of the new geometry (the most little one), as a new feature
         if (newFeature) {
-            // move new feature into the temporary layer
-            editionLayer['ol'].removeFeatures([newFeature]);
-            editionLayer['splitOl'].addFeatures([newFeature]);
             var form = $('#edition-form-container form');
             // Get edition datasource geometry column name
             var gColumn = form.find('input[name="liz_geometryColumn"]').val();
@@ -310,7 +310,7 @@ var lizEdition = function() {
                 }
             }
             else {
-                // IE/Edge workaround
+                // IE/Edge<12 workaround - no support of FormData.set()
                 var featureIdField = form.find('input[name="liz_featureId"]');
                 var geomField = form.find('input[name="'+gColumn+'"]');
                 var tokenField = form.find('input[name="__JFORMS_TOKEN__"]');
@@ -328,13 +328,14 @@ var lizEdition = function() {
                 geomField.val(oldGeom);
                 tokenField.val(oldToken)
             }
-
-            editionLayer['newfeatures'].push(data);
+            // move new feature into the temporary layer
+            editionLayer.moveEditedFeatureToSplitLayer(newFeature, data);
         }
 
         // Update geometry column with the other geometry
-        if ( editionLayer['ol'].features.length !=0 ) {
-            updateGeometryColumnFromFeature(editionLayer['ol'].features[0]);
+        var feat = editionLayer.getFeature();
+        if (feat) {
+            updateGeometryColumnFromFeature( feat );
         }
         $('#edition-geomtool-nodetool').click();
         return false;
@@ -413,12 +414,11 @@ OpenLayers.Geometry.pointOnSegment = function(point, segment) {
             Proj4js.defs['EPSG:'+srid] = eform.find('input[name="liz_proj4"]').val();
         $('#edition-point-coord-crs-layer').html(lizDict['edition.point.coord.crs.layer']+' - EPSG:'+srid).val(srid).show();
 
-        var mapProjCode = editionLayer['ol'].projection.projCode;
+        var mapProjCode = editionLayer.projCode;
         var mapSrid = mapProjCode.replace('EPSG:','');
         $('#edition-point-coord-crs-map').html(lizDict['edition.point.coord.crs.map']+' - EPSG:'+mapSrid).val(mapSrid).show();
 
-        var geometryType = editionLayer['config'].geometryType;
-        if ( geometryType == 'point' )
+        if ( editionLayer.geometryType == 'point' )
             $('#edition-point-coord-add').hide();
         else
             $('#edition-point-coord-add').show();
@@ -446,7 +446,7 @@ OpenLayers.Geometry.pointOnSegment = function(point, segment) {
             // Get SRID and transform geometry
             var srid = $('#edition-point-coord-crs').val();
             vertex.transform( 'EPSG:'+srid, editionLayer['ol'].projection );
-            var geometryType = editionLayer['config'].geometryType;
+            var geometryType = editionLayer.geometryType;
             if ( !editCtrls[geometryType].handler.point ) {
                 var px = editCtrls[geometryType].handler.layer.getViewPortPxFromLonLat({lon:vertex.x,lat:vertex.y});
                 editCtrls[geometryType].handler.createFeature(px);
@@ -557,8 +557,7 @@ OpenLayers.Geometry.pointOnSegment = function(point, segment) {
 
         // Deactivate edition map controls
         if( editCtrls ){
-            if( editionLayer['drawControl'] && editionLayer['drawControl'].active )
-                editionLayer['drawControl'].deactivate();
+            editionLayer.deactivateControl();
             $('#edition-geomtool-container button i').removeClass('line');
             $('#edition-geomtool-container').hide();
             editCtrls.modify.mode = OpenLayers.Control.ModifyFeature.RESHAPE;
@@ -716,13 +715,13 @@ OpenLayers.Geometry.pointOnSegment = function(point, segment) {
                     // Deactivate draw control
                     if( !editCtrls )
                         return false;
-                    var geometryType = editionLayer['config'].geometryType;
+                    var geometryType = editionLayer.geometryType;
                     var drawWasActivated = editCtrls[geometryType].active;
                     if (drawWasActivated)
                         editCtrls[geometryType].deactivate();
 
                     // Get feature
-                    var feat = editionLayer['ol'].features[0];
+                    var feat = editLayer.features[0];
 
                     // Update form geometry field from added geometry
                     updateGeometryColumnFromFeature( feat );
@@ -823,8 +822,7 @@ OpenLayers.Geometry.pointOnSegment = function(point, segment) {
                 return false;
             });
             $('#edition-point-coord-crs').change(function(){
-                var geometryType = editionLayer['config'].geometryType;
-                var vertex = editCtrls[geometryType].handler.point.geometry.clone();
+                var vertex = editCtrls[editionLayer.geometryType].handler.point.geometry.clone();
                 // Get SRID and transform geometry
                 var srid = $(this).val();
                 vertex.transform( editionLayer['ol'].projection,'EPSG:'+srid );
@@ -838,7 +836,7 @@ OpenLayers.Geometry.pointOnSegment = function(point, segment) {
                     $('#edition-point-coord-x').attr('disabled','disabled');
                     $('#edition-point-coord-y').attr('disabled','disabled');
                     if ( lizMap.controls.geolocation.layer.features.length != 0 ) {
-                        var geometryType = editionLayer['config'].geometryType;
+                        var geometryType = editionLayer.geometryType;
                         var vertex = lizMap.controls.geolocation.layer.features[0].geometry;
                         var px = editCtrls[geometryType].handler.layer.getViewPortPxFromLonLat({lon:vertex.x,lat:vertex.y});
                         editCtrls[geometryType].handler.modifyFeature(px);
@@ -849,14 +847,14 @@ OpenLayers.Geometry.pointOnSegment = function(point, segment) {
                 }
             });
             $('#edition-point-coord-add').click(function(){
-                var geometryType = editionLayer['config'].geometryType;
+                var geometryType = editionLayer.geometryType;
                 if ( geometryType != 'point' ) {
                     var node = editCtrls[geometryType].handler.point.geometry;
                     editCtrls[geometryType].handler.insertXY(node.x, node.y);
                 }
             });
             $('#edition-point-coord-submit').click(function(){
-                var geometryType = editionLayer['config'].geometryType;
+                var geometryType = editionLayer.geometryType;
                 if ( geometryType == 'point' ) {
                     editCtrls[geometryType].handler.finalize();
                 } else {
@@ -870,8 +868,9 @@ OpenLayers.Geometry.pointOnSegment = function(point, segment) {
                 editCtrls.modify.mode = OpenLayers.Control.ModifyFeature.RESHAPE;
                 editCtrls.modify.createVertices = true;
                 editCtrls.modify.activate();
-                if ( editionLayer['ol'].features.length != 0 ) {
-                    var feat = editionLayer['ol'].features[0];
+                var feat = editionLayer.getFeature();
+                if (feat) {
+                    // we unselect then select, to trigger corresponding events
                     if ( editCtrls.modify.feature )
                         editCtrls.modify.unselectFeature( feat );
                     editCtrls.modify.selectFeature( feat );
@@ -883,8 +882,9 @@ OpenLayers.Geometry.pointOnSegment = function(point, segment) {
                 editCtrls.modify.mode = OpenLayers.Control.ModifyFeature.DRAG;
                 editCtrls.modify.createVertices = false;
                 editCtrls.modify.activate();
-                if ( editionLayer['ol'].features.length != 0 ) {
-                    var feat = editionLayer['ol'].features[0];
+                var feat = editionLayer.getFeature();
+                if (feat) {
+                    // we unselect then select, to trigger corresponding events
                     if ( editCtrls.modify.feature )
                         editCtrls.modify.unselectFeature( feat );
                     editCtrls.modify.selectFeature( feat );
@@ -896,18 +896,18 @@ OpenLayers.Geometry.pointOnSegment = function(point, segment) {
                 editCtrls.modify.mode = OpenLayers.Control.ModifyFeature.ROTATE;
                 editCtrls.modify.createVertices = false;
                 editCtrls.modify.activate();
-                if ( editionLayer['ol'].features.length != 0 ) {
-                    var feat = editionLayer['ol'].features[0];
+                var feat = editionLayer.getFeature();
+                if (feat) {
+                    // we unselect then select, to trigger corresponding events
                     if ( editCtrls.modify.feature )
                         editCtrls.modify.unselectFeature( feat );
                     editCtrls.modify.selectFeature( feat );
                 }
             });
             $('#edition-geomtool-reshape').click(function(){
-                if ( editionLayer['ol'].features.length != 0 ) {
-                    var feat = editionLayer['ol'].features[0];
-                    if ( editCtrls.modify.feature )
-                        editCtrls.modify.unselectFeature( feat );
+                var feat = editionLayer.getFeature();
+                if (feat && editCtrls.modify.feature) {
+                    editCtrls.modify.unselectFeature(feat);
                 }
                 editCtrls.modify.deactivate();
                 editCtrls.featsplit.deactivate();
@@ -915,11 +915,9 @@ OpenLayers.Geometry.pointOnSegment = function(point, segment) {
             });
 
             $('#edition-geomtool-split').click(function(){
-                var feat = null;
-                if ( editionLayer['ol'].features.length != 0 ) {
-                    feat = editionLayer['ol'].features[0];
-                    if ( editCtrls.modify.feature )
-                        editCtrls.modify.unselectFeature( feat );
+                var feat = editionLayer.getFeature();
+                if (feat && editCtrls.modify.feature) {
+                    editCtrls.modify.unselectFeature(feat);
                 }
                 editCtrls.modify.deactivate();
                 editCtrls.reshape.deactivate();
@@ -937,7 +935,7 @@ OpenLayers.Geometry.pointOnSegment = function(point, segment) {
                     "locationupdated": function(evt) {
                         if ( editionLayer.config ) {
                             $('#edition-point-coord-geolocation').removeAttr('disabled');
-                            var geometryType = editionLayer['config'].geometryType;
+                            var geometryType = editionLayer.geometryType;
                             if ( $('#edition-point-coord-geolocation').is(':checked') ) {
                                 if ( editCtrls[geometryType].active ) {
                                     var vertex = evt.point;
@@ -1122,7 +1120,7 @@ OpenLayers.Geometry.pointOnSegment = function(point, segment) {
         editionLayer.currentFeature = editedFeature;
 
         // Check if layer is spatial
-        var geometryType = editionLayer['config'].geometryType;
+        var geometryType = editedFeature.geometryType;
         if( geometryType in editCtrls ){
             editionLayer.setDrawControl(editCtrls[geometryType]);
         }
@@ -1350,7 +1348,7 @@ OpenLayers.Geometry.pointOnSegment = function(point, segment) {
                     redrawLayers( layerId );
                 }
 
-                var geometryType = editionLayer['config'].geometryType;
+                var geometryType = editionLayer.geometryType;
                 // Creation
                 if( editionType == 'createFeature' ){
 
@@ -1503,12 +1501,8 @@ OpenLayers.Geometry.pointOnSegment = function(point, segment) {
         });
 
         // If needed, copy the geometry from the openlayer feature
-        if(
-            editionLayer['spatial']
-            && editionLayer['ol']
-            && editionLayer['ol'].features.length != 0
-        ){
-            var feat = editionLayer['ol'].features[0];
+        var feat = editionLayer.getFeature();
+        if (feat) {
             updateGeometryColumnFromFeature( feat );
         }
 
