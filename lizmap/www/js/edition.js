@@ -441,7 +441,7 @@ OpenLayers.Geometry.pointOnSegment = function(point, segment) {
                         }
                      }),
                 modify: new OpenLayers.Control.ModifyFeature(editLayer),
-                split: new OpenLayers.Control.Split({layer:editLayer,eventListeners: {aftersplit:afterSpliting}})
+                reshape: new OpenLayers.Control.Split({layer:editLayer,eventListeners: {aftersplit:afterSpliting}})
             };
             for ( var ctrl in editCtrls ) {
                 if ( ctrl != 'panel' )
@@ -618,7 +618,7 @@ OpenLayers.Geometry.pointOnSegment = function(point, segment) {
             });
 
             $('#edition-geomtool-nodetool').click(function(){
-                editCtrls.split.deactivate();
+                editCtrls.reshape.deactivate();
                 editCtrls.modify.mode = OpenLayers.Control.ModifyFeature.RESHAPE;
                 editCtrls.modify.createVertices = true;
                 editCtrls.modify.activate();
@@ -630,7 +630,7 @@ OpenLayers.Geometry.pointOnSegment = function(point, segment) {
                 }
             });
             $('#edition-geomtool-drag').click(function(){
-                editCtrls.split.deactivate();
+                editCtrls.reshape.deactivate();
                 editCtrls.modify.mode = OpenLayers.Control.ModifyFeature.DRAG;
                 editCtrls.modify.createVertices = false;
                 editCtrls.modify.activate();
@@ -642,7 +642,7 @@ OpenLayers.Geometry.pointOnSegment = function(point, segment) {
                 }
             });
             $('#edition-geomtool-rotate').click(function(){
-                editCtrls.split.deactivate();
+                editCtrls.reshape.deactivate();
                 editCtrls.modify.mode = OpenLayers.Control.ModifyFeature.ROTATE;
                 editCtrls.modify.createVertices = false;
                 editCtrls.modify.activate();
@@ -660,7 +660,7 @@ OpenLayers.Geometry.pointOnSegment = function(point, segment) {
                         editCtrls.modify.unselectFeature( feat );
                 }
                 editCtrls.modify.deactivate();
-                editCtrls.split.activate();
+                editCtrls.reshape.activate();
             });
 
             $('#edition-geomtool-container button').tooltip( {
