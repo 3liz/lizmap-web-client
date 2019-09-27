@@ -75,7 +75,7 @@ class editionCtrl extends jController
      *
      * @return jResponseHtmlFragment HTML fragment
      */
-    public function serviceAnswer()
+    protected function serviceAnswer()
     {
         if ($this->errorMessage !== '') {
             jMessage::add($this->errorMessage, $this->errorType);
@@ -548,6 +548,7 @@ class editionCtrl extends jController
         $tpl->assign('title', $title);
         $tpl->assign('form', $qgisForm->getForm());
         $tpl->assign('formPlugins', $qgisForm->getFormPlugins());
+        $tpl->assign('ajaxNewFeatureUrl', jUrl::get('lizmap~edition:saveNewFeature'));
 
         // event to add custom fields into the jForms form, or to modify those that
         // have been added by QgisForm, and to inject custom data into the template
@@ -898,6 +899,107 @@ class editionCtrl extends jController
 
         return $this->serviceAnswer();
     }
+
+
+    /**
+     * Save a new feature, without redirecting to an HTML response
+     *
+     * @urlparam string $repository Lizmap Repository
+     * @urlparam string $project Name of the project
+     * @urlparam string $layerId Qgis id of the layer
+     * @urlparam integer $featureId Id of the feature.
+     *
+     * @return jResponseJson
+     */
+    public function saveNewFeature()
+    {
+        /** @var jResponseJson $rep */
+        $rep = $this->getResponse('json');
+        $rep->data = array('success' => true );
+
+        // Get repository, project data and do some right checking
+        if (!$this->getEditionParameters(true)) {
+            $rep->data['success'] = false;
+            $rep->data['message'] = $this->errorMessage;
+            return $rep;
+        }
+
+        // Get the form instance
+        $form = jForms::create('view~edition', '____new__feature___');
+        if (!$form) {
+            $rep->data['success'] = false;
+            $rep->data['message'] = jLocale::get('view~edition.message.error.form.get');
+            return $rep;
+        }
+
+        // event to add custom field into the jForms form before setting data in it
+        $eventParams = array(
+            'form' => $form,
+            'project' => $this->project,
+            'repository' => $this->repository,
+            'layer' => $this->layer,
+            'featureId' => $this->featureId,
+            'featureData' => $this->featureData,
+            'status' => $this->param('status', 0),
+        );
+        jEvent::notify('LizmapEditionSaveGetForm', $eventParams);
+
+        // Dynamically add form controls based on QGIS layer information
+        // And save data into the edition table (insert or update line)
+        $qgisForm = null;
+
+        try {
+            $qgisForm = new qgisForm($this->layer, $form, $this->featureId, $this->loginFilteredOverride);
+        } catch (Exception $e) {
+            $rep->data['success'] = false;
+            $rep->data['message'] = $e->getMessage();
+            return $rep;
+        }
+
+        // event to add or modify some control after QgisForm has added its own controls
+        $eventParams['qgisForm'] = $qgisForm;
+        jEvent::notify('LizmapEditionSaveGetQgisForm', $eventParams);
+
+        // Get data from the request and set the form controls data accordingly
+        $form->initFromRequest();
+
+        // Check the form data and redirect if needed
+        $check = $form->check();
+        $modifyGeometry = $this->layer->getEditionCapabilities()->capabilities->modifyGeometry;
+        if (strtolower($modifyGeometry) == 'true' && $this->geometryColumn != '' && $form->getData($this->geometryColumn) == '') {
+            $rep->data['success'] = false;
+            $rep->data['message'] = jLocale::get('view~edition.message.error.no.geometry');
+            return $rep;
+        }
+
+        // event to add additionnal checks
+        $event = jEvent::notify('LizmapEditionSaveCheckForm', $eventParams);
+        if ($event->allResponsesByKeyAreTrue('check') === false) {
+            $rep->data['success'] = false;
+            $rep->data['message'] = "There are some errors in the form";
+            return $rep;
+        }
+
+        // Save data into database
+        // And get returned primary key values
+        $feature = null;
+        if ($this->featureId) {
+            $feature = $this->featureData->features[0];
+        }
+        $pkvals = $qgisForm->saveToDb($feature);
+
+        jForms::destroy('view~edition', '____new__feature___');
+
+        // Some errors where encoutered
+        if (!$check or !$pkvals) {
+            $rep->data['success'] = false;
+            $rep->data['message'] = "Error during the save of the feature";
+            return $rep;
+        }
+
+        return $rep;
+    }
+
 
     /**
      * Link features between 2 tables via pivot table.

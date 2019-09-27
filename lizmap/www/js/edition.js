@@ -11,10 +11,15 @@ var lizEdition = function() {
     // Edition layer data
     var editionLayer = {
         'id': null // QGIS layer id
-        ,'config': null // QGIS layer name
+        ,'config': null // QGIS layer config
         ,'spatial': null // If the layer is spatial or not
         ,'drawControl': null // draw control
         ,'submitActor': 'submit' // Which submit button has been clicked
+        , 'ol' : null // OL layer for edition
+        ,'parent': null //
+        ,'newfeatures': [] // new features to save on submit (features created after a split)
+                            // this is an array of FormData
+        ,'splitOl': null // layer to stores temporary geometry of new features
     };
 
     // Edition type : createFeature or modifyFeature
@@ -70,11 +75,86 @@ var lizEdition = function() {
 
     function beforeFeatureSpliting(evt) {
 
+        var form = $('#edition-form-container form');
+        if (checkFormBeforeSubmit(form) !== 'ok') {
+            // content of the form is not good, we couldn't create a new feature
+            addEditionMessage(lizDict['edition.splitfeat.form.error'],'error',true);
+            return false;
+        }
+        if (!form.attr('data-new-feature-action')) {
+            addEditionMessage(lizDict['edition.splitfeat.tech.error'],'error',true);
+            return false;
+        }
+        return true;
     }
 
 
     function afterFeatureSpliting(evt) {
 
+        // determine the two new geometry
+        var splitFeatures = evt.features;
+        var geometryType = editionLayer['config'].geometryType;
+        var newFeature = null;
+        if ( geometryType == 'line' ) {
+            if ( splitFeatures[0].geometry.getLength() < splitFeatures[1].geometry.getLength() )
+                newFeature = splitFeatures[0];
+            else
+                newFeature = splitFeatures[1];
+        }
+        else if ( geometryType == 'polygon' ) {
+            if ( splitFeatures[0].geometry.getArea() < splitFeatures[1].geometry.getArea() )
+                newFeature = splitFeatures[0];
+            else
+                newFeature = splitFeatures[1];
+        }
+
+        // store one of the new geometry (the most little one), as a new feature
+        if (newFeature) {
+            // move new feature into the temporary layer
+            editionLayer['ol'].removeFeatures([newFeature]);
+            editionLayer['splitOl'].addFeatures([newFeature]);
+            var form = $('#edition-form-container form');
+            // Get edition datasource geometry column name
+            var gColumn = form.find('input[name="liz_geometryColumn"]').val();
+            var geom = '';
+            // create a new form that will be used to store the new feature
+            var data = new FormData(form.get(0));
+            if ('set' in data) {
+                data.set('liz_featureId', '');
+                data.set('__JFORMS_TOKEN__', '');
+                if (gColumn) {
+                    geom = calculateGeometryColumnFromFeature(newFeature);
+                    data.set(gColumn, geom);
+                }
+            }
+            else {
+                // IE/Edge workaround
+                var featureIdField = form.find('input[name="liz_featureId"]');
+                var geomField = form.find('input[name="'+gColumn+'"]');
+                var tokenField = form.find('input[name="__JFORMS_TOKEN__"]');
+                var oldFeatureId = featureIdField.val();
+                var oldGeom = geomField.val();
+                var oldToken = tokenField.val();
+                featureIdField.val('');
+                tokenField.val('');
+                if (gColumn) {
+                    geom = calculateGeometryColumnFromFeature(newFeature);
+                    geomField.val(geom);
+                }
+                data = new FormData(form.get(0));
+                featureIdField.val(oldFeatureId);
+                geomField.val(oldGeom);
+                tokenField.val(oldToken)
+            }
+
+            editionLayer['newfeatures'].push(data);
+        }
+
+        // Update geometry column with the other geometry
+        if ( editionLayer['ol'].features.length !=0 ) {
+            updateGeometryColumnFromFeature(editionLayer['ol'].features[0]);
+        }
+        $('#edition-geomtool-nodetool').click();
         return false;
     }
 
@@ -307,11 +387,16 @@ OpenLayers.Geometry.pointOnSegment = function(point, segment) {
         if( editionLayer['ol'] )
             editionLayer['ol'].destroyFeatures();
 
+        if (editionLayer['splitOl']) {
+            editionLayer['splitOl'].destroyFeatures();
+        }
+
         // Set global object to default
         editionLayer['id'] = null;
         editionLayer['config'] = null;
         editionLayer['spatial'] = null;
         editionLayer['drawControl'] = null;
+        editionLayer['newfeatures'] = [];
 
         // Remove messages
         $('#lizmap-edition-message').remove();
@@ -388,25 +473,46 @@ OpenLayers.Geometry.pointOnSegment = function(point, segment) {
                 $('#edition-draw').addClass('disabled').hide();
             }
 
-            // initiatlize layer
-            // style the sketch fancy
-            var sketchSymbolizers = {
-                "Point": {
-                    pointRadius: 6
-                },
-                "Line": {
-                    strokeWidth: 4
-                },
-                "Polygon": {
-                    strokeWidth: 2
-                }
-            };
+            // Initialize layer for features created after a split
             var style = new OpenLayers.Style();
             style.addRules([
-                new OpenLayers.Rule({symbolizer: sketchSymbolizers})
+                new OpenLayers.Rule({symbolizer:  {
+                        "Point": {
+                            pointRadius: 6
+                        },
+                        "Line": {
+                            strokeWidth: 4,
+                            fillColor: "#1353ac",
+                            strokeColor: "#d6eeff"
+                        },
+                        "Polygon": {
+                            strokeWidth: 2
+                        }
+                    }})
             ]);
             var styleMap = new OpenLayers.StyleMap({"default": style});
-            var editLayer = new OpenLayers.Layer.Vector('editLayer',{styleMap:styleMap});
+            var splitLayer = new OpenLayers.Layer.Vector('editSplitLayer',{styleMap:styleMap});
+
+            editionLayer['splitOl'] = splitLayer;
+            map.addLayer(splitLayer);
+
+            // initialize layer
+            style = new OpenLayers.Style();
+            style.addRules([
+                new OpenLayers.Rule({symbolizer:  {
+                        "Point": {
+                            pointRadius: 6
+                        },
+                        "Line": {
+                            strokeWidth: 4,
+                        },
+                        "Polygon": {
+                            strokeWidth: 2
+                        }
+                    }})
+            ]);
+            styleMap = new OpenLayers.StyleMap({"default": style});
+            editLayer = new OpenLayers.Layer.Vector('editLayer',{styleMap:styleMap});
 
             editionLayer['ol'] = editLayer;
             map.addLayer(editLayer);
@@ -686,8 +792,9 @@ OpenLayers.Geometry.pointOnSegment = function(point, segment) {
             });
 
             $('#edition-geomtool-split').click(function(){
+                var feat = null;
                 if ( editionLayer['ol'].features.length != 0 ) {
-                    var feat = editionLayer['ol'].features[0];
+                    feat = editionLayer['ol'].features[0];
                     if ( editCtrls.modify.feature )
                         editCtrls.modify.unselectFeature( feat );
                 }
@@ -844,6 +951,8 @@ OpenLayers.Geometry.pointOnSegment = function(point, segment) {
         editionLayer['spatial'] = null;
         editionLayer['drawControl'] = null;
         editionLayer['ol'] = null;
+        editionLayer['splitOl'] = null;
+        editionLayer['newfeatures'] = [];
         editionLayer['parent'] = null;
 
         // Check if edition is configured in lizmap
@@ -857,6 +966,14 @@ OpenLayers.Geometry.pointOnSegment = function(point, segment) {
         editLayer = editLayer[0];
         editLayer.destroyFeatures();
         editionLayer['ol'] = editLayer;
+
+        var splitLayer = map.getLayersByName('editSplitLayer');
+        if (splitLayer.length == 0) {
+            return false;
+        }
+        splitLayer = splitLayer[0];
+        splitLayer.destroyFeatures();
+        editionLayer['splitOl'] = splitLayer;
 
         // Get edition map controls
         if( !editCtrls )
@@ -1107,6 +1224,8 @@ OpenLayers.Geometry.pointOnSegment = function(point, segment) {
                         editCtrls.modify.createVertices = true;
                         editCtrls.modify.deactivate();
                         editionLayer['ol'].destroyFeatures();
+                        editionLayer['splitOl'].destroyFeatures();
+                        editionLayer['newfeatures'] = [];
                         var ctrl = editCtrls[geometryType];
                         if ( ctrl.active ) {
                             return false;
@@ -1287,46 +1406,67 @@ OpenLayers.Geometry.pointOnSegment = function(point, segment) {
 
             // send values
             $('#edition-waiter').show();
-            if (form.attr('enctype') == 'multipart/form-data') {
-                // Handle file uploads if needed
-                var fileInputs = form.find('input[type="file"]');
-                fileInputs = fileInputs.filter( function( i, e ) {
-                    return $(e).val() != "";
-                });
 
-                if ( fileInputs.length != 0 ) {
-                    form.fileupload({
-                        dataType: 'html',
-                        done: function (e, data) {
-                            displayEditionForm( data.result );
-                        }
-                    });
-                    form.fileupload('send', {fileInput:fileInputs});
-                    return false;
-                }
-            }
+            var newFeatureUrl = form.attr('data-new-feature-action');
+            var url = form.attr('action');
+            var featureData = new FormData(form.get(0));
+            var formResult = '';
 
-            $.post(form.attr('action'),
-                form.serialize(),
-                function(data) {
-                    displayEditionForm( data );
-                });
+            var sendFormPromise = sendNewFeatureForm(url, featureData);
+            sendFormPromise.then(function(data) {
+                formResult = data;
+            });
+            editionLayer['newfeatures'].forEach(function(newFeatForm) {
+                sendFormPromise = sendFormPromise.then(() => sendNewFeatureForm(newFeatureUrl, newFeatForm));
+            });
+            sendFormPromise.then(() => {
+                displayEditionForm( formResult );
+            });
             return false;
         });
     }
 
 
     /**
+     *
+     * @param {FormData} formData
+     * @return {Promise}
+     */
+    function sendNewFeatureForm(url, formData) {
+        return new Promise(function(resolve, reject) {
+
+            var request = new XMLHttpRequest();
+            request.open("POST", url);
+            request.onload = function(oEvent) {
+                if (request.status == 200) {
+                    resolve(request.responseText);
+                } else {
+                    reject();
+                }
+            };
+            request.send(formData);
+        });
+    }
+
+    /**
      * Check the content of the form
      * @param {jQuery} form
-     * @param {DOMEvent} evt
+     * @param {DOMEvent|null} evt
      * @returns {string|boolean}
      */
     function checkFormBeforeSubmit(form, evt){
 
         // Jelix checks
-        if (!jFormsJQ._submitListener(evt)) {
-            return false;
+        if (evt) {
+            if (!jFormsJQ._submitListener(evt)) {
+                return false;
+            }
+        }
+        else {
+            form.trigger('jFormsUpdateFields');
+            if (!jFormsJQ.verifyForm(form.get(0))) {
+                return false;
+            }
         }
 
         var msg = 'ok';
@@ -1342,15 +1482,15 @@ OpenLayers.Geometry.pointOnSegment = function(point, segment) {
         return msg;
     }
 
-    function updateGeometryColumnFromFeature( feat ){
+    function calculateGeometryColumnFromFeature(feat) {
+        if (feat.geometry == null) {
+            return '';
+        }
 
-        if( feat.geometry == null  )
-            return false;
-
-        // Get editLayer
         var editLayer = editionLayer['ol'];
-        if ( !editLayer )
-            return false;
+        if (!editLayer) {
+            return '';
+        }
 
         // Clone passed geometry
         var geom = feat.geometry.clone();
@@ -1358,16 +1498,30 @@ OpenLayers.Geometry.pointOnSegment = function(point, segment) {
         // Get SRID and transform geometry
         var eform = $('#edition-form-container form');
         var srid = eform.find('input[name="liz_srid"]').val();
-        if ( srid != '' && !('EPSG:'+srid in Proj4js.defs) )
+        if (srid != '' && !('EPSG:'+srid in Proj4js.defs)) {
             Proj4js.defs['EPSG:'+srid] = eform.find('input[name="liz_proj4"]').val();
-        geom.transform( editionLayer['ol'].projection,'EPSG:'+srid );
+        }
+        geom.transform(editionLayer['ol'].projection, 'EPSG:'+srid);
+        return geom;
+    }
+
+
+    function updateGeometryColumnFromFeature( feat ){
+
+        var geom = calculateGeometryColumnFromFeature(feat);
+        if (geom === '') {
+            return false;
+        }
+
+        var eform = $('#edition-form-container form');
 
         // Get edition datasource geometry column name
+
         var gColumn = eform.find('input[name="liz_geometryColumn"]').val();
 
         // Set hidden geometry field
         eform.find('input[name="'+gColumn+'"]').val(geom);
-
+        return true;
     }
 
     function updateFeatureFromGeometryColumn(){
@@ -1401,6 +1555,8 @@ OpenLayers.Geometry.pointOnSegment = function(point, segment) {
             feat = new OpenLayers.Feature.Vector( );
         feat.fid = eform.find('input[name="liz_featureId"]').val();
         editionLayer['ol'].destroyFeatures();
+        editionLayer['splitOl'].destroyFeatures();
+        editionLayer['newfeatures'] = [];
         editionLayer['ol'].addFeatures([feat]);
 
         return feat;
