@@ -597,7 +597,7 @@ OpenLayers.Geometry.pointOnSegment = function(point, segment) {
                     // Get feature
                     var feat = editionLayer['ol'].features[0];
 
-                    // Update form liz_wkt field from added geometry
+                    // Update form geometry field from added geometry
                     updateGeometryColumnFromFeature( feat );
 
                     // Activate modify control
@@ -628,7 +628,7 @@ OpenLayers.Geometry.pointOnSegment = function(point, segment) {
                 featuremodified: function(evt) {
                     if ( evt.feature.geometry == null )
                         return;
-                    // Update form liz_wkt field from added geometry
+                    // Update form geometry field from added geometry
                     updateGeometryColumnFromFeature( evt.feature );
 
                 },
@@ -1015,10 +1015,10 @@ OpenLayers.Geometry.pointOnSegment = function(point, segment) {
         $('#edition-form-container').hide();
 
         // Get edition type
-        var action = 'modifyFeature';
-        if( !featureId )
-            action = 'createFeature';
-        editionType = action;
+        editionType = 'modifyFeature';
+        if (!featureId) {
+            editionType = 'createFeature';
+        }
 
         // Deactivate previous form
         var originalForm = $('#edition-form-container form');
@@ -1030,7 +1030,7 @@ OpenLayers.Geometry.pointOnSegment = function(point, segment) {
         var service = OpenLayers.Util.urlAppend(lizUrls.edition
             ,OpenLayers.Util.getParameterString(lizUrls.params)
         );
-        $.get(service.replace('getFeature', action),{
+        $.get(service.replace('getFeature', editionType),{
             layerId: editionLayer['id'],
             featureId: featureId
         }, function(data){
@@ -1113,19 +1113,21 @@ OpenLayers.Geometry.pointOnSegment = function(point, segment) {
 
     /*
      * Display the edition form
-     *
+     * @param {string} data  html corresponding to the form or the result of a submit
      */
-    function displayEditionForm( data ){
+    function displayEditionForm (data) {
         // Firstly does the edition-form-container already has a form ?
         var oldSerializeArray = $('#edition-form-container form').serializeArray();
 
-        // Add data
-        $('#edition-form-container').html(data);
+        // Add data, erase the current form
+        var formContainer = $('#edition-form-container');
+        formContainer.html(data);
+        // the new form
         var form = $('#edition-form-container form');
 
         // Response contains a form
         if ( form.length != 0 ) {
-            var newSerializeArray = $('#edition-form-container form').serializeArray();
+            var newSerializeArray = form.serializeArray();
 
             // Get edition type from form data
             var formFeatureId = form.find('input[name="liz_featureId"]').val();
@@ -1139,6 +1141,7 @@ OpenLayers.Geometry.pointOnSegment = function(point, segment) {
                 var gColumn = form.find('input[name="liz_geometryColumn"]').val();
                 if( gColumn != '' ){
                     var originalGeom = form.find('input[name="'+gColumn+'"]').val();
+                    // XXX: liz_wkt is not used. remove it?
                     $('#edition-hidden-form input[name="liz_wkt"]').val( originalGeom );
                 }
             }
@@ -1146,46 +1149,49 @@ OpenLayers.Geometry.pointOnSegment = function(point, segment) {
             // Manage child form
             if ( editionLayer['parent'] != null ){
                 var parentInfo = editionLayer['parent'];
-                var parentFeat = parentInfo['feature'];
-                var relation = parentInfo['relation'];
-                var select = $('#edition-form-container form select[name="'+relation.referencingField+'"]');
+                var relationRefField = parentInfo['relation'].referencingField;
+                var parentFeatProp = parentInfo['feature'].properties[relationRefField];
+
+                var select = form.find('select[name="'+relationRefField+'"]');
                 if( select.length == 1 ){
-                    select.val(parentFeat.properties[relation.referencedField])
+                    select.val(parentFeatProp)
                           .attr('disabled','disabled');
+                    // XXX this hidden field is not used anywhere. What is its purpose?
                     var hiddenInput = $('<input type="hidden"></input>')
                         .attr('id', select.attr('id')+'_hidden')
-                        .attr('name', relation.referencingField)
-                        .attr('value', parentFeat.properties[relation.referencedField]);
-                    $('#edition-form-container form div.jforms-hiddens').append(hiddenInput);
-                    jFormsJQ.getForm($('#edition-form-container form').attr('id'))
-                        .getControl(relation.referencingField)
+                        .attr('name', relationRefField)
+                        .attr('value', parentFeatProp);
+                    form.find('div.jforms-hiddens').append(hiddenInput);
+                    jFormsJQ.getForm(form.attr('id'))
+                        .getControl(relationRefField)
                         .required=false;
                 } else {
-                    var input = $('#edition-form-container form input[name="'+relation.referencingField+'"]');
+                    var input = form.find('input[name="'+relationRefField+'"]');
                     if( input.length == 1 && input.attr('type') != 'hidden'){
-                        input.val(parentFeat.properties[relation.referencedField])
+                        input.val(parentFeatProp)
                               .attr('disabled','disabled');
+                        // XXX this hidden field is not used anywhere. What is its purpose?
                         var hiddenInput = $('<input type="hidden"></input>')
                             .attr('id', input.attr('id')+'_hidden')
-                            .attr('name', relation.referencingField)
-                            .attr('value', parentFeat.properties[relation.referencedField]);
-                        $('#edition-form-container form div.jforms-hiddens').append(hiddenInput);
+                            .attr('name', relationRefField)
+                            .attr('value', parentFeatProp);
+                        form.find('div.jforms-hiddens').append(hiddenInput);
                         jFormsJQ.getForm($('#edition-form-container form').attr('id'))
-                            .getControl(relation.referencingField)
+                            .getControl(relationRefField)
                             .required=false;
                     }
                     else
-                        input.val(parentFeat.properties[relation.referencedField]);
+                        input.val(parentFeatProp);
                 }
             }
 
             // Create combobox based on RelationValue with fieldEditable
-            var selectComboboxes = $('#edition-form-container form select.combobox');
+            var selectComboboxes = form.find('select.combobox');
             for( var i=0, len=selectComboboxes.length; i<len; i++ ) {
                 var selectCombobox = $(selectComboboxes[i]);
                 activateCombobox(selectCombobox);
             }
-            var selectAutocompletes = $('#edition-form-container form select.autocomplete');
+            var selectAutocompletes = form.find('select.autocomplete');
             for( var i=0, len=selectAutocompletes.length; i<len; i++ ) {
                 var selectAutocomplete = $(selectAutocompletes[i]);
                 activateAutocomplete(selectAutocomplete);
@@ -1261,7 +1267,7 @@ OpenLayers.Geometry.pointOnSegment = function(point, segment) {
 
             // Activate form tabs based on QGIS drag&drop form layout mode
             $('#edition-form-container form > ul.nav-tabs li:first a').click().blur();
-            $('#'+$('#edition-form-container form').attr('id')+'_liz_future_action_label').removeClass('control-label');
+            $('#'+form.attr('id')+'_liz_future_action_label').removeClass('control-label');
 
             // Handle JS events on form (submit, etc.)
             handleEditionFormSubmit( form );
@@ -1303,7 +1309,7 @@ OpenLayers.Geometry.pointOnSegment = function(point, segment) {
 
         }
 
-        $('#edition-form-container').show();
+        formContainer.show();
         $('#edition-waiter').hide();
 
         // Show the dock if needed
@@ -1526,11 +1532,7 @@ OpenLayers.Geometry.pointOnSegment = function(point, segment) {
 
     function updateFeatureFromGeometryColumn(){
 
-        var feat = null;
-
-        // Get editLayer
-        var editLayer = editionLayer['ol'];
-        if ( !editLayer )
+        if ( !editionLayer['ol'] )
             return false;
 
         // Get form
@@ -1560,7 +1562,6 @@ OpenLayers.Geometry.pointOnSegment = function(point, segment) {
         editionLayer['ol'].addFeatures([feat]);
 
         return feat;
-
     }
 
 
@@ -1817,4 +1818,4 @@ lizEditionErrorDecorator.prototype = {
             $(div).hide();
         }
     }
-}
+};

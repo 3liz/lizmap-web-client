@@ -630,8 +630,7 @@ var lizAttributeTable = function() {
                     var parentLayerName = attributeLayersDic[ cleanName ];
                     var parentLayerId = config.layers[parentLayerName]['id'];
                     var aName = attributeLayersDic[ $(this).val() ];
-                    lizMap.getLayerFeature(parentLayerName, parentFeatId, function(feat) {
-                        var parentFeat = feat;
+                    lizMap.getLayerFeature(parentLayerName, parentFeatId, function(parentFeat) {
                         var lid = config.layers[aName]['id'];
                         lizMap.launchEdition( lid, null, {layerId:parentLayerId,feature:parentFeat}, function(editionLayerId, editionFeatureId){
                             $('#bottom-dock').css('left',  lizMap.getDockRightPosition() );
@@ -657,8 +656,7 @@ var lizAttributeTable = function() {
                     var parentLayerId = config.layers[parentLayerName]['id'];
                     var selectedValue = $(this).attr('href').replace('#', '');
                     var aName = attributeLayersDic[ selectedValue ];
-                    lizMap.getLayerFeature(parentLayerName, parentFeatId, function(feat) {
-                        var parentFeat = feat;
+                    lizMap.getLayerFeature(parentLayerName, parentFeatId, function(parentFeat) {
                         var lid = config.layers[aName]['id'];
                         lizMap.launchEdition( lid, null, {layerId:parentLayerId,feature:parentFeat}, function(editionLayerId, editionFeatureId){
                             $('#bottom-dock').css('left',  lizMap.getDockRightPosition() );
@@ -1786,8 +1784,7 @@ var lizAttributeTable = function() {
                                 var parentFeatId = tabPane.find('input.attribute-table-hidden-parent-feature-id').val();
                                 var parentLayerName = tabPane.find('input.attribute-table-hidden-parent-layer').val();
                                 var layerName = tabPane.find('input.attribute-table-hidden-layer').val();
-                                lizMap.getLayerFeature(parentLayerName, parentFeatId, function(feat) {
-                                    var parentFeat = feat;
+                                lizMap.getLayerFeature(parentLayerName, parentFeatId, function(parentFeat) {
                                     var parentLayerId = config.layers[lizMap.getLayerNameByCleanName(parentLayerName)]['id'];
                                     var lid = config.layers[lizMap.getLayerNameByCleanName(layerName)]['id'];
                                     lizMap.launchEdition( lid, null, {layerId:parentLayerId,feature:parentFeat}, function(editionLayerId, editionFeatureId){
@@ -3079,8 +3076,7 @@ var lizAttributeTable = function() {
                                 var parentLayerName = featureType;
                                 var parentLayerId = layerId;
                                 var aName = attributeLayersDic[ $(this).val() ];
-                                lizMap.getLayerFeature(featureType, fid, function(feat) {
-                                    var parentFeat = feat;
+                                lizMap.getLayerFeature(featureType, fid, function(parentFeat) {
                                     var lid = config.layers[aName]['id'];
                                     lizMap.launchEdition( lid, null, {layerId:parentLayerId,feature:parentFeat}, function(editionLayerId, editionFeatureId){
                                         $('#bottom-dock').css('left',  lizMap.getDockRightPosition() );
@@ -3101,8 +3097,7 @@ var lizAttributeTable = function() {
                                 var parentLayerId = layerId;
                                 var selectedValue = $(this).attr('href').replace('#', '');
                                 var aName = attributeLayersDic[ selectedValue ];
-                                lizMap.getLayerFeature(featureType, fid, function(feat) {
-                                    var parentFeat = feat;
+                                lizMap.getLayerFeature(featureType, fid, function(parentFeat) {
                                     var lid = config.layers[aName]['id'];
                                     lizMap.launchEdition( lid, null, {layerId:parentLayerId,feature:parentFeat}, function(editionLayerId, editionFeatureId){
                                         $('#bottom-dock').css('left',  lizMap.getDockRightPosition() );
