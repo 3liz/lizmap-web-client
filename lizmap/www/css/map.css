@@ -2375,6 +2375,7 @@ div.tooltip {
 .qgis_sprite.mActionSelectedToTop { background-position: -442px 0; }
 .qgis_sprite.mActionSelectPolygon { background-position: -476px 0; }
 .qgis_sprite.mIconDeselected { background-position: -510px 0; }
+.qgis_sprite.mActionSplitFeatures { background-position: -534px 0; }
 
 #lizmap-search{
   top: 1px;
