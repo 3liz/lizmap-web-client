@@ -33,6 +33,9 @@
         <button id="edition-geomtool-reshape" class="btn btn-small" data-original-title="{@view~edition.geomtool.reshape.title@}">
             <i class="icon-none qgis_sprite mActionReshape"></i>
         </button>
+        <button id="edition-geomtool-split" class="btn btn-small" data-original-title="{@view~edition.geomtool.splitfeatures.title@}">
+            <i class="icon-none qgis_sprite mActionSplitFeatures"></i>
+        </button>
     </div>
     <form id="edition-point-coord-form" class="form-horizontal" style="display:none;">
         <fieldset>

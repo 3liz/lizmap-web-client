@@ -42,7 +42,7 @@ var lizEdition = function() {
         editionMessageTimeoutId = window.setTimeout(cleanEditionMessage, 5000);
     }
 
-    function afterSpliting(evt) {
+    function afterReshapeSpliting(evt) {
         var splitFeatures = evt.features;
         var geometryType = editionLayer['config'].geometryType;
         var removableFeat = null;
@@ -66,6 +66,18 @@ var lizEdition = function() {
         $('#edition-geomtool-nodetool').click();
         return false;
     }
+
+
+    function beforeFeatureSpliting(evt) {
+
+    }
+
+
+    function afterFeatureSpliting(evt) {
+
+        return false;
+    }
+
 
 /**
  * Function: OpenLayers.Geometry.pointOnSegment
@@ -441,7 +453,13 @@ OpenLayers.Geometry.pointOnSegment = function(point, segment) {
                         }
                      }),
                 modify: new OpenLayers.Control.ModifyFeature(editLayer),
-                reshape: new OpenLayers.Control.Split({layer:editLayer,eventListeners: {aftersplit:afterSpliting}})
+                reshape: new OpenLayers.Control.Split({layer:editLayer,eventListeners: {aftersplit:afterReshapeSpliting}}),
+                featsplit: new OpenLayers.Control.Split({
+                    layer:editLayer,
+                    eventListeners: {
+                        beforesplit:beforeFeatureSpliting,
+                        aftersplit:afterFeatureSpliting
+                    }})
             };
             for ( var ctrl in editCtrls ) {
                 if ( ctrl != 'panel' )
@@ -619,6 +637,7 @@ OpenLayers.Geometry.pointOnSegment = function(point, segment) {
 
             $('#edition-geomtool-nodetool').click(function(){
                 editCtrls.reshape.deactivate();
+                editCtrls.featsplit.deactivate();
                 editCtrls.modify.mode = OpenLayers.Control.ModifyFeature.RESHAPE;
                 editCtrls.modify.createVertices = true;
                 editCtrls.modify.activate();
@@ -631,6 +650,7 @@ OpenLayers.Geometry.pointOnSegment = function(point, segment) {
             });
             $('#edition-geomtool-drag').click(function(){
                 editCtrls.reshape.deactivate();
+                editCtrls.featsplit.deactivate();
                 editCtrls.modify.mode = OpenLayers.Control.ModifyFeature.DRAG;
                 editCtrls.modify.createVertices = false;
                 editCtrls.modify.activate();
@@ -643,6 +663,7 @@ OpenLayers.Geometry.pointOnSegment = function(point, segment) {
             });
             $('#edition-geomtool-rotate').click(function(){
                 editCtrls.reshape.deactivate();
+                editCtrls.featsplit.deactivate();
                 editCtrls.modify.mode = OpenLayers.Control.ModifyFeature.ROTATE;
                 editCtrls.modify.createVertices = false;
                 editCtrls.modify.activate();
@@ -660,7 +681,19 @@ OpenLayers.Geometry.pointOnSegment = function(point, segment) {
                         editCtrls.modify.unselectFeature( feat );
                 }
                 editCtrls.modify.deactivate();
+                editCtrls.featsplit.deactivate();
                 editCtrls.reshape.activate();
+            });
+
+            $('#edition-geomtool-split').click(function(){
+                if ( editionLayer['ol'].features.length != 0 ) {
+                    var feat = editionLayer['ol'].features[0];
+                    if ( editCtrls.modify.feature )
+                        editCtrls.modify.unselectFeature( feat );
+                }
+                editCtrls.modify.deactivate();
+                editCtrls.reshape.deactivate();
+                editCtrls.featsplit.activate();
             });
 
             $('#edition-geomtool-container button').tooltip( {
