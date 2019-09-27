@@ -1,5 +1,198 @@
 var lizEdition = function() {
 
+    function FeatureEditionData(layerID, feature, relation) {
+        /** @var {string} QGIS layer id */
+        this.layerId = layerID;
+        /** @var {Object} QGIS layer config */
+        this.config = null;
+        /** @var {} */
+        this.feature = feature;
+        /** @var {} */
+        this.relation = relation;
+        /** @var {FeatureEditionData}  parent feature */
+        this.parent = null;
+        /** @var {boolean} backToParent tell if we can edit the parent after a save */
+        this.backToParent = false;
+        /** @var {[Feature, FormData][]} new features to save on submit (features created after a split) */
+        this.newfeatures = [];
+    }
+    FeatureEditionData.prototype = {
+        setParentToEditAfterSave: function (parent) {
+            this.backToParent = (!!parent);
+            this.parent = parent;
+        },
+        get geometryType () {
+            if (this.config) {
+                return this.config.geometryType;
+            }
+            return '';
+        },
+    };
+
+    function EditionLayerData() {
+        /** @var {boolean} If the layer is spatial or not */
+        this.spatial = false;
+        /** @var {Object} draw control */
+        this.drawControl = null;
+        /** @var {string} Which submit button has been clicked */
+        this.submitActor = 'submit';
+        /** @var {OpenLayers.Layer.Vector} OL layer for edition */
+        this.ol = null;
+        /** @var {FeatureEditionData}  the current data about the edited feature */
+        this.currentFeature = null;
+        /** @var {OpenLayers.Layer.Vector}  layer to stores temporary geometry of new features */
+        this.splitOl = null;
+    }
+    EditionLayerData.prototype = {
+        get config () {
+            return this.currentFeature.config;
+        },
+
+        get geometryType () {
+            if (this.currentFeature && this.currentFeature.config) {
+                return this.currentFeature.config.geometryType;
+            }
+            return '';
+        },
+
+        get newfeatures () {
+            return this.currentFeature.newfeatures
+        },
+
+        get id () {
+            return this.currentFeature.layerId
+        },
+
+        get parent() {
+            return this.currentFeature.parent;
+        },
+
+        get projCode() {
+            return this.ol.projection.projCode;
+        },
+
+        deactivateControl : function() {
+            if (this.drawControl && this.drawControl.active) {
+                this.drawControl.deactivate();
+            }
+        },
+
+        clearLayers: function() {
+            if (this.ol) {
+                this.ol.destroyFeatures();
+            }
+
+            if (this.splitOl) {
+                this.splitOl.destroyFeatures();
+            }
+        },
+
+        clear: function() {
+            this.currentFeature = null;
+            this.spatial = false;
+            this.drawControl = null;
+            this.submitActor = 'submit';
+            this.clearLayers();
+        },
+
+        createLayers : function() {
+            // Initialize layer for features created after a split
+            var style, styleMap;
+            var splitLayer = map.getLayersByName('editSplitLayer');
+            if (splitLayer.length == 0) {
+                style = new OpenLayers.Style();
+                style.addRules([
+                    new OpenLayers.Rule({
+                        symbolizer: {
+                            "Point": {
+                                pointRadius: 6
+                            },
+                            "Line": {
+                                strokeWidth: 4,
+                                fillColor: "#1353ac",
+                                strokeColor: "#d6eeff"
+                            },
+                            "Polygon": {
+                                strokeWidth: 2
+                            }
+                        }
+                    })
+                ]);
+
+                styleMap = new OpenLayers.StyleMap({"default": style});
+                this.splitOl = new OpenLayers.Layer.Vector('editSplitLayer', {styleMap: styleMap});
+                map.addLayer(this.splitOl);
+            }
+
+            // initialize layer
+            var editLayer = map.getLayersByName( 'editLayer' );
+            if (editLayer.length == 0) {
+                style = new OpenLayers.Style();
+                style.addRules([
+                    new OpenLayers.Rule({symbolizer:  {
+                            "Point": {
+                                pointRadius: 6
+                            },
+                            "Line": {
+                                strokeWidth: 4,
+                            },
+                            "Polygon": {
+                                strokeWidth: 2
+                            }
+                        }})
+                ]);
+                styleMap = new OpenLayers.StyleMap({"default": style});
+                this.ol = new OpenLayers.Layer.Vector('editLayer',{styleMap:styleMap});
+                map.addLayer(this.ol);
+            }
+        },
+
+        getFeature : function() {
+            if (this.spatial && this.ol && this.ol.features.length != 0) {
+                return this.ol.features[0];
+            }
+            return null;
+        },
+
+        removeEditedFeature : function(feat) {
+            this.ol.removeFeatures( [feat]);
+        },
+
+        /**
+         *
+         * @param {object} feat
+         * @param {FormData} formData
+         */
+        moveEditedFeatureToSplitLayer : function(feat, formData) {
+            this.ol.removeFeatures( [feat]);
+            this.splitOl.addFeatures([feat]);
+            this.currentFeature.newfeatures.push([feat, formData]);
+        },
+
+        setDrawControl: function(drawControl) {
+            this.drawControl = drawControl;
+            this.spatial = true;
+        },
+
+        replaceFeature: function (newFeature) {
+            this.clearLayers();
+            this.ol.addFeatures([newFeature]);
+        },
+
+        canEditParentFeature : function() {
+            return (this.currentFeature.parent != null && this.currentFeature.backToParent);
+        },
+
+        restoreSplitFeatures : function() {
+            var layer = this.splitOl;
+            layer.destroyFeatures();
+            var featList = this.currentFeature.newfeatures.map(function(newFeat){ return newFeat[0]; });
+            if (featList.length) {
+                layer.addFeatures(featList);
+            }
+        }
+    };
+
     var config = null;
     var layers = null;
     var map = null;
@@ -9,18 +202,7 @@ var lizEdition = function() {
     var editCtrls = null;
 
     // Edition layer data
-    var editionLayer = {
-        'id': null // QGIS layer id
-        ,'config': null // QGIS layer config
-        ,'spatial': null // If the layer is spatial or not
-        ,'drawControl': null // draw control
-        ,'submitActor': 'submit' // Which submit button has been clicked
-        , 'ol' : null // OL layer for edition
-        ,'parent': null //
-        ,'newfeatures': [] // new features to save on submit (features created after a split)
-                            // this is an array of FormData
-        ,'splitOl': null // layer to stores temporary geometry of new features
-    };
+    var editionLayer = new EditionLayerData();
 
     // Edition type : createFeature or modifyFeature
     var editionType = null;
@@ -383,20 +565,6 @@ OpenLayers.Geometry.pointOnSegment = function(point, segment) {
             editCtrls.modify.createVertices = true;
             editCtrls.panel.deactivate();
         }
-        // Destroy edition layer features
-        if( editionLayer['ol'] )
-            editionLayer['ol'].destroyFeatures();
-
-        if (editionLayer['splitOl']) {
-            editionLayer['splitOl'].destroyFeatures();
-        }
-
-        // Set global object to default
-        editionLayer['id'] = null;
-        editionLayer['config'] = null;
-        editionLayer['spatial'] = null;
-        editionLayer['drawControl'] = null;
-        editionLayer['newfeatures'] = [];
 
         // Remove messages
         $('#lizmap-edition-message').remove();
@@ -473,49 +641,8 @@ OpenLayers.Geometry.pointOnSegment = function(point, segment) {
                 $('#edition-draw').addClass('disabled').hide();
             }
 
-            // Initialize layer for features created after a split
-            var style = new OpenLayers.Style();
-            style.addRules([
-                new OpenLayers.Rule({symbolizer:  {
-                        "Point": {
-                            pointRadius: 6
-                        },
-                        "Line": {
-                            strokeWidth: 4,
-                            fillColor: "#1353ac",
-                            strokeColor: "#d6eeff"
-                        },
-                        "Polygon": {
-                            strokeWidth: 2
-                        }
-                    }})
-            ]);
-            var styleMap = new OpenLayers.StyleMap({"default": style});
-            var splitLayer = new OpenLayers.Layer.Vector('editSplitLayer',{styleMap:styleMap});
-
-            editionLayer['splitOl'] = splitLayer;
-            map.addLayer(splitLayer);
-
-            // initialize layer
-            style = new OpenLayers.Style();
-            style.addRules([
-                new OpenLayers.Rule({symbolizer:  {
-                        "Point": {
-                            pointRadius: 6
-                        },
-                        "Line": {
-                            strokeWidth: 4,
-                        },
-                        "Polygon": {
-                            strokeWidth: 2
-                        }
-                    }})
-            ]);
-            styleMap = new OpenLayers.StyleMap({"default": style});
-            editLayer = new OpenLayers.Layer.Vector('editLayer',{styleMap:styleMap});
-
-            editionLayer['ol'] = editLayer;
-            map.addLayer(editLayer);
+            editionLayer.createLayers();
+            var editLayer = editionLayer.ol;
 
             // initialize controls
             editCtrls = {
@@ -669,19 +796,15 @@ OpenLayers.Geometry.pointOnSegment = function(point, segment) {
                     if ( !confirm( lizDict['edition.confirm.cancel'] ) )
                         return false;
                     finishEdition();
+                    editionLayer.clear();
                 }
 
                 // activate edition
                 editCtrls.panel.activate();
-                // Get layer id and set global property
-                editionLayer['id'] = $('#edition-layer').val();
 
                 // Launch edition to gather edition layer info
-                // Use callback to activate draw control only when form displayed
-                launchEdition( editionLayer['id'], null);
-                if( !editionLayer['id'] )
-                    return false;
 
+                launchEdition( $('#edition-layer').val(), null);
                 return false;
             });
 
@@ -891,14 +1014,10 @@ OpenLayers.Geometry.pointOnSegment = function(point, segment) {
         finishEdition();
 
         // back to parent
-        if ( editionLayer['parent'] != null && editionLayer['parent']['backToParent']) {
-            var parentInfo = editionLayer['parent'];
-            var parentLayerId = parentInfo['layerId'];
-            var parentFeat = parentInfo['feature'];
-            launchEdition( parentLayerId, parentFeat.id.split('.').pop(), parentInfo['parent'], function(editionLayerId, editionFeatureId){
-                $('#bottom-dock').css('left',  lizMap.getDockRightPosition() );
-            });
+        if ( editionLayer.canEditParentFeature()) {
+            launchEditionOfParent();
         } else {
+            editionLayer.clear();
             // trigger edition form closed
             lizMap.events.triggerEvent(
                 'lizmapeditionformclosed'
@@ -908,96 +1027,110 @@ OpenLayers.Geometry.pointOnSegment = function(point, segment) {
 
     // Start edition of a new feature or an existing one
     function launchEdition( aLayerId, aFid, aParent, aCallback ) {
+
+        var editedFeature = new FeatureEditionData(aLayerId, null, null);
+
         // Get parent relation
         var parentInfo = null;
-        if ( aParent != null && ('layerId' in aParent) && ('feature' in aParent) ) {
+        if (aParent != null && ('layerId' in aParent) && ('feature' in aParent)) {
             var parentLayerId = aParent['layerId'];
             var parentFeat = aParent['feature'];
-            if( 'relations' in config &&
-                parentLayerId in config.relations ) {
-                var relation = getRelationInfo(parentLayerId,aLayerId);
+            if ('relations' in config &&
+                parentLayerId in config.relations) {
+                var relation = getRelationInfo(parentLayerId, aLayerId);
                 if (relation != null &&
-                    relation.referencingLayer == aLayerId) {
-                        parentInfo = {
-                            'layerId': parentLayerId,
-                            'feature': parentFeat,
-                            'relation': relation,
-                            'backToParent': false,
-                            'parent': null
-                        }
-                    if ( lizMap.editionPending && editionLayer['id'] == parentLayerId ) {
+                    relation.referencingLayer == aLayerId
+                ) {
+                    // the given parent information corresponds to a real parent
+                    // of the feature we want to edit, we take care about it
+
+                    if (lizMap.editionPending && editionLayer['id'] == parentLayerId) {
                         var formFeatureId = $('#edition-form-container form input[name="liz_featureId"]').val();
                         var formLayerId = $('#edition-form-container form input[name="liz_layerId"]').val();
                         if (formLayerId == parentLayerId && formFeatureId == parentFeat.id.split('.').pop()) {
-                            parentInfo['backToParent'] = true;
-                            parentInfo['parent'] = editionLayer['parent'];
+                            // the current edited feature is the parent of the
+                            // feature we want to edit, let's retrieve its current data
+                            parentInfo = editionLayer.currentFeature;
+                            parentInfo.relation = relation;
+                            parentInfo.feature = parentFeat;
+                            editedFeature.setParentToEditAfterSave(parentInfo);
+                            // and clear edition context
                             finishEdition();
                         }
+                    }
+
+                    if (!parentInfo) {
+                        // let's store parent data into a FeatureEditionData
+                        parentInfo = new FeatureEditionData(parentLayerId, parentFeat, relation);
+                        editedFeature.parent = parentInfo;
                     }
                 }
             }
         }
 
-        // Deactivate previous edition
-        if( lizMap.editionPending ){
+        return internalLaunchEdition(editedFeature, aFid, aCallback);
+    }
+
+    function launchEditionOfParent() {
+        var parentInfo = editionLayer['parent'];
+        var parentFeat = parentInfo.feature;
+
+        return internalLaunchEdition(parentInfo, parentFeat.id.split('.').pop(), function(editionLayerId, editionFeatureId){
+            $('#bottom-dock').css('left', lizMap.getDockRightPosition());
+        });
+    }
+
+    /**
+     *
+     * @param {FeatureEditionData} editedFeature
+     * @param aFid
+     * @param {Function} aCallback
+     * @returns {boolean}
+     */
+    function internalLaunchEdition(editedFeature, aFid, aCallback) {
+
+        // Deactivate previous edition when the feature to edit has no
+        // relation to the current edited feature
+        if (lizMap.editionPending) {
             if ( !confirm( lizDict['edition.confirm.cancel'] ) )
                 return false;
             finishEdition();
         }
-        lizMap.editionPending = true;
 
-        editionLayer['id'] = null;
-        editionLayer['config'] = null;
-        editionLayer['spatial'] = null;
-        editionLayer['drawControl'] = null;
-        editionLayer['ol'] = null;
-        editionLayer['splitOl'] = null;
-        editionLayer['newfeatures'] = [];
-        editionLayer['parent'] = null;
+
+        editionLayer.clear();
 
         // Check if edition is configured in lizmap
         if ( !('editionLayers' in config) )
                 return false;
 
-        // Get OpenLayers edition layer
-        var editLayer = map.getLayersByName( 'editLayer' );
-        if ( editLayer.length == 0 )
-                return false;
-        editLayer = editLayer[0];
-        editLayer.destroyFeatures();
-        editionLayer['ol'] = editLayer;
-
-        var splitLayer = map.getLayersByName('editSplitLayer');
-        if (splitLayer.length == 0) {
-            return false;
-        }
-        splitLayer = splitLayer[0];
-        splitLayer.destroyFeatures();
-        editionLayer['splitOl'] = splitLayer;
-
         // Get edition map controls
         if( !editCtrls )
             return false;
 
+        lizMap.editionPending = true;
+
+        // check that layers for edition are there
+        editionLayer.createLayers();
+
         // Initialize edition data
-        var getLayer = lizMap.getLayerConfigById( aLayerId, config.editionLayers, 'layerId' );
+        var getLayer = lizMap.getLayerConfigById( editedFeature.layerId, config.editionLayers, 'layerId' );
         if( !getLayer )
             return false;
-        editionLayer['id'] = aLayerId;
-        editionLayer['config'] = getLayer[1];
+        editedFeature.config = getLayer[1];
+
+        editionLayer.currentFeature = editedFeature;
 
         // Check if layer is spatial
         var geometryType = editionLayer['config'].geometryType;
         if( geometryType in editCtrls ){
-            editionLayer['spatial'] = true;
-            editionLayer['drawControl'] = editCtrls[geometryType];
+            editionLayer.setDrawControl(editCtrls[geometryType]);
         }
-
-        // save parent info even if it's null
-        editionLayer['parent'] = parentInfo;
 
         // Get form and display it
         getEditionForm( aFid, aCallback );
+
+        editionLayer.restoreSplitFeatures();
 
         // Hide bottom dock
         $('#bottom-dock').trigger('mouseleave');
@@ -1229,9 +1362,7 @@ OpenLayers.Geometry.pointOnSegment = function(point, segment) {
                         editCtrls.modify.mode = OpenLayers.Control.ModifyFeature.RESHAPE;
                         editCtrls.modify.createVertices = true;
                         editCtrls.modify.deactivate();
-                        editionLayer['ol'].destroyFeatures();
-                        editionLayer['splitOl'].destroyFeatures();
-                        editionLayer['newfeatures'] = [];
+                        editionLayer.clearLayers();
                         var ctrl = editCtrls[geometryType];
                         if ( ctrl.active ) {
                             return false;
@@ -1337,19 +1468,17 @@ OpenLayers.Geometry.pointOnSegment = function(point, segment) {
             }
         }
 
-        // back to parent
-        if ( form.length == 0 && editionLayer['parent'] != null && editionLayer['parent']['backToParent']) {
-            var parentInfo = editionLayer['parent'];
-            var parentLayerId = parentInfo['layerId'];
-            var parentFeat = parentInfo['feature'];
-            launchEdition( parentLayerId, parentFeat.id.split('.').pop(), parentInfo['parent'], function(editionLayerId, editionFeatureId){
-                $('#bottom-dock').css('left',  lizMap.getDockRightPosition() );
-            });
-        } else if ( form.length == 0 ) {
-            // trigger edition form closed
-            lizMap.events.triggerEvent(
-                'lizmapeditionformclosed'
-            );
+        if (form.length == 0) {
+            if (editionLayer.canEditParentFeature()) {
+                // back to parent
+                launchEditionOfParent();
+            } else {
+                editionLayer.clear();
+                // trigger edition form closed
+                lizMap.events.triggerEvent(
+                    'lizmapeditionformclosed'
+                );
+            }
         }
 
         // Redraw bottom dock
@@ -1422,8 +1551,8 @@ OpenLayers.Geometry.pointOnSegment = function(point, segment) {
             sendFormPromise.then(function(data) {
                 formResult = data;
             });
-            editionLayer['newfeatures'].forEach(function(newFeatForm) {
-                sendFormPromise = sendFormPromise.then(() => sendNewFeatureForm(newFeatureUrl, newFeatForm));
+            editionLayer.newfeatures.forEach(function(newFeatForm) {
+                sendFormPromise = sendFormPromise.then(() => sendNewFeatureForm(newFeatureUrl, newFeatForm[1]));
             });
             sendFormPromise.then(() => {
                 displayEditionForm( formResult );
@@ -1493,8 +1622,7 @@ OpenLayers.Geometry.pointOnSegment = function(point, segment) {
             return '';
         }
 
-        var editLayer = editionLayer['ol'];
-        if (!editLayer) {
+        if (!editionLayer['ol']) {
             return '';
         }
 
@@ -1556,11 +1684,7 @@ OpenLayers.Geometry.pointOnSegment = function(point, segment) {
         } else
             feat = new OpenLayers.Feature.Vector( );
         feat.fid = eform.find('input[name="liz_featureId"]').val();
-        editionLayer['ol'].destroyFeatures();
-        editionLayer['splitOl'].destroyFeatures();
-        editionLayer['newfeatures'] = [];
-        editionLayer['ol'].addFeatures([feat]);
-
+        editionLayer.replaceFeature(feat);
         return feat;
     }
 
