@@ -53,6 +53,23 @@ class editionCtrl extends jController
     /** @var bool Filter override flag */
     private $loginFilteredOverride = false;
 
+
+    /**
+     * @var string error message during responses processing
+     */
+    private $errorMessage = '';
+
+    /**
+     * @var string error type during responses processing
+     */
+    private $errorType = 'default';
+
+
+    protected function setErrorMessage($message, $type='default') {
+        $this->errorMessage = $message;
+        $this->errorType = $type;
+    }
+
     /**
      * Send an answer.
      *
@@ -60,6 +77,9 @@ class editionCtrl extends jController
      */
     public function serviceAnswer()
     {
+        if ($this->errorMessage !== '') {
+            jMessage::add($this->errorMessage, $this->errorType);
+        }
         $title = jLocale::get('view~edition.modal.title.default');
 
         // Get title layer
@@ -104,7 +124,7 @@ class editionCtrl extends jController
         }
 
         if (!$project) {
-            jMessage::add(jLocale::get('view~edition.message.error.parameter.project'), 'ProjectNotDefined');
+            $this->setErrorMessage(jLocale::get('view~edition.message.error.parameter.project'), 'ProjectNotDefined');
 
             return false;
         }
@@ -112,7 +132,7 @@ class editionCtrl extends jController
         // Get repository data
         $lrep = lizmap::getRepository($repository);
         if (!$lrep) {
-            jMessage::add('The repository '.strtoupper($repository).' does not exist !', 'RepositoryNotDefined');
+            $this->setErrorMessage('The repository '.strtoupper($repository).' does not exist !', 'RepositoryNotDefined');
 
             return false;
         }
@@ -122,33 +142,33 @@ class editionCtrl extends jController
         try {
             $lproj = lizmap::getProject($repository.'~'.$project);
             if (!$lproj) {
-                jMessage::add('The lizmapProject '.strtoupper($project).' does not exist !', 'ProjectNotDefined');
+                $this->setErrorMessage('The lizmapProject '.strtoupper($project).' does not exist !', 'ProjectNotDefined');
 
                 return false;
             }
         } catch (UnknownLizmapProjectException $e) {
-            jMessage::add('The lizmapProject '.strtoupper($project).' does not exist !', 'ProjectNotDefined');
+            $this->setErrorMessage('The lizmapProject '.strtoupper($project).' does not exist !', 'ProjectNotDefined');
 
             return false;
         }
 
         // Redirect if no rights to access this repository
         if (!$lproj->checkAcl()) {
-            jMessage::add(jLocale::get('view~default.repository.access.denied'), 'AuthorizationRequired');
+            $this->setErrorMessage(jLocale::get('view~default.repository.access.denied'), 'AuthorizationRequired');
 
             return false;
         }
 
         // Redirect if no rights to use the edition tool
         if (!jAcl2::check('lizmap.tools.edition.use', $lrep->getKey())) {
-            jMessage::add(jLocale::get('view~edition.access.denied'), 'AuthorizationRequired');
+            $this->setErrorMessage(jLocale::get('view~edition.access.denied'), 'AuthorizationRequired');
 
             return false;
         }
 
         $layer = $lproj->getLayer($layerId);
         if (!$layer) {
-            jMessage::add(jLocale::get('view~edition.message.error.layer.editable'), 'LayerNotEditable');
+            $this->setErrorMessage(jLocale::get('view~edition.message.error.layer.editable'), 'LayerNotEditable');
 
             return false;
         }
@@ -157,7 +177,7 @@ class editionCtrl extends jController
 
         // Verifying if the layer is editable
         if (!$layer->isEditable()) {
-            jMessage::add(jLocale::get('view~edition.message.error.layer.editable'), 'LayerNotEditable');
+            $this->setErrorMessage(jLocale::get('view~edition.message.error.layer.editable'), 'LayerNotEditable');
 
             return false;
         }
@@ -172,7 +192,7 @@ class editionCtrl extends jController
             if (is_array($editionGroups) and count($editionGroups) > 0) {
                 $userGroups = jAcl2DbUserGroup::getGroups();
                 if (!array_intersect($editionGroups, $userGroups)) {
-                    jMessage::add(jLocale::get('view~edition.access.denied'), 'AuthorizationRequired');
+                    $this->setErrorMessage(jLocale::get('view~edition.access.denied'), 'AuthorizationRequired');
 
                     return false;
                 }
