@@ -171,7 +171,19 @@ class serviceCtrl extends jController
 
         foreach ($messages as $code => $msg) {
             if ($code == 'AuthorizationRequired') {
+                // 401 : AuthorizationRequired
                 $rep->setHttpStatus(401, $code);
+
+                // Add WWW-Authenticate header only for external clients
+                // To avoid web browser to ask for login/password when session expires
+                $referer = $_SERVER['HTTP_REFERER'];
+                $referer_parse = parse_url($referer);
+                $referer_domain = $referer_parse['host'];
+                $domain = jApp::coord()->request->getDomainName();
+                if ($referer == '' || $referer_domain != $domain){
+                    $rep->addHttpHeader('WWW-Authenticate', 'Basic realm="LizmapWebClient", charset="UTF-8"');
+                }
+
             } elseif ($code == 'ProjectNotDefined') {
                 $rep->setHttpStatus(404, 'Not Found');
             } elseif ($code == 'RepositoryNotDefined') {
