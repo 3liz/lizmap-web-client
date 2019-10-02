@@ -425,15 +425,11 @@ class qgisForm implements qgisFormControlsInterface
                 $form->getControl($ref)->setDataFromDao($value, 'boolean');
             }
             // ValueRelation can be an array (i.e. {1,2,3})
-            if ($this->formControls[$ref]->isValueRelation()) {
-                if ($value[0] == '{') {
-                    $arrayValue = explode(',', trim($value, '{}'));
-                    $form->setData($ref, $arrayValue);
-                }else{
-                    $form->setData($ref, $value);
-                }
+            elseif ($this->formControls[$ref]->isValueRelation() && $value[0] === '{') {
+                $arrayValue = array_map('intval', explode(',', trim($value, '{}')));
+                $form->setData($ref, $arrayValue);
             }
-            if ($this->formControls[$ref]->isUploadControl()) {
+            elseif ($this->formControls[$ref]->isUploadControl()) {
                 $ctrl = $form->getControl($this->formControls[$ref]->getControlName());
                 if ($ctrl && $ctrl->type == 'choice') {
                     $path = explode('/', $value);
