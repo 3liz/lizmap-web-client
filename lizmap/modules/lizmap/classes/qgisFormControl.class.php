@@ -560,8 +560,8 @@ class qgisFormControl
         $checked = null;
         $unchecked = null;
         if ($this->fieldEditType === 'CheckBox') {
-            $checked = (string) $this->widgetv2configAttr->CheckedState;
-            $unchecked = (string) $this->widgetv2configAttr->UncheckedState;
+            $checked = (string) ($this->widgetv2configAttr->CheckedState === '' ? 't' : $this->widgetv2configAttr->CheckedState);
+            $unchecked = (string) ($this->widgetv2configAttr->UncheckedState === '' ? 'f' : $this->widgetv2configAttr->UncheckedState);
         } else {
             $checked = (string) $this->edittype->attributes()->checked;
             $unchecked = (string) $this->edittype->attributes()->unchecked;
