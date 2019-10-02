@@ -53,13 +53,33 @@ class editionCtrl extends jController
     /** @var bool Filter override flag */
     private $loginFilteredOverride = false;
 
+
+    /**
+     * @var string error message during responses processing
+     */
+    private $errorMessage = '';
+
+    /**
+     * @var string error type during responses processing
+     */
+    private $errorType = 'default';
+
+
+    protected function setErrorMessage($message, $type='default') {
+        $this->errorMessage = $message;
+        $this->errorType = $type;
+    }
+
     /**
      * Send an answer.
      *
      * @return jResponseHtmlFragment HTML fragment
      */
-    public function serviceAnswer()
+    protected function serviceAnswer()
     {
+        if ($this->errorMessage !== '') {
+            jMessage::add($this->errorMessage, $this->errorType);
+        }
         $title = jLocale::get('view~edition.modal.title.default');
 
         // Get title layer
@@ -104,7 +124,7 @@ class editionCtrl extends jController
         }
 
         if (!$project) {
-            jMessage::add(jLocale::get('view~edition.message.error.parameter.project'), 'ProjectNotDefined');
+            $this->setErrorMessage(jLocale::get('view~edition.message.error.parameter.project'), 'ProjectNotDefined');
 
             return false;
         }
@@ -112,7 +132,7 @@ class editionCtrl extends jController
         // Get repository data
         $lrep = lizmap::getRepository($repository);
         if (!$lrep) {
-            jMessage::add('The repository '.strtoupper($repository).' does not exist !', 'RepositoryNotDefined');
+            $this->setErrorMessage('The repository '.strtoupper($repository).' does not exist !', 'RepositoryNotDefined');
 
             return false;
         }
@@ -122,33 +142,33 @@ class editionCtrl extends jController
         try {
             $lproj = lizmap::getProject($repository.'~'.$project);
             if (!$lproj) {
-                jMessage::add('The lizmapProject '.strtoupper($project).' does not exist !', 'ProjectNotDefined');
+                $this->setErrorMessage('The lizmapProject '.strtoupper($project).' does not exist !', 'ProjectNotDefined');
 
                 return false;
             }
         } catch (UnknownLizmapProjectException $e) {
-            jMessage::add('The lizmapProject '.strtoupper($project).' does not exist !', 'ProjectNotDefined');
+            $this->setErrorMessage('The lizmapProject '.strtoupper($project).' does not exist !', 'ProjectNotDefined');
 
             return false;
         }
 
         // Redirect if no rights to access this repository
         if (!$lproj->checkAcl()) {
-            jMessage::add(jLocale::get('view~default.repository.access.denied'), 'AuthorizationRequired');
+            $this->setErrorMessage(jLocale::get('view~default.repository.access.denied'), 'AuthorizationRequired');
 
             return false;
         }
 
         // Redirect if no rights to use the edition tool
         if (!jAcl2::check('lizmap.tools.edition.use', $lrep->getKey())) {
-            jMessage::add(jLocale::get('view~edition.access.denied'), 'AuthorizationRequired');
+            $this->setErrorMessage(jLocale::get('view~edition.access.denied'), 'AuthorizationRequired');
 
             return false;
         }
 
         $layer = $lproj->getLayer($layerId);
         if (!$layer) {
-            jMessage::add(jLocale::get('view~edition.message.error.layer.editable'), 'LayerNotEditable');
+            $this->setErrorMessage(jLocale::get('view~edition.message.error.layer.editable'), 'LayerNotEditable');
 
             return false;
         }
@@ -157,7 +177,7 @@ class editionCtrl extends jController
 
         // Verifying if the layer is editable
         if (!$layer->isEditable()) {
-            jMessage::add(jLocale::get('view~edition.message.error.layer.editable'), 'LayerNotEditable');
+            $this->setErrorMessage(jLocale::get('view~edition.message.error.layer.editable'), 'LayerNotEditable');
 
             return false;
         }
@@ -172,7 +192,7 @@ class editionCtrl extends jController
             if (is_array($editionGroups) and count($editionGroups) > 0) {
                 $userGroups = jAcl2DbUserGroup::getGroups();
                 if (!array_intersect($editionGroups, $userGroups)) {
-                    jMessage::add(jLocale::get('view~edition.access.denied'), 'AuthorizationRequired');
+                    $this->setErrorMessage(jLocale::get('view~edition.access.denied'), 'AuthorizationRequired');
 
                     return false;
                 }
@@ -528,6 +548,7 @@ class editionCtrl extends jController
         $tpl->assign('title', $title);
         $tpl->assign('form', $qgisForm->getForm());
         $tpl->assign('formPlugins', $qgisForm->getFormPlugins());
+        $tpl->assign('ajaxNewFeatureUrl', jUrl::get('lizmap~edition:saveNewFeature'));
 
         // event to add custom fields into the jForms form, or to modify those that
         // have been added by QgisForm, and to inject custom data into the template
@@ -878,6 +899,107 @@ class editionCtrl extends jController
 
         return $this->serviceAnswer();
     }
+
+
+    /**
+     * Save a new feature, without redirecting to an HTML response
+     *
+     * @urlparam string $repository Lizmap Repository
+     * @urlparam string $project Name of the project
+     * @urlparam string $layerId Qgis id of the layer
+     * @urlparam integer $featureId Id of the feature.
+     *
+     * @return jResponseJson
+     */
+    public function saveNewFeature()
+    {
+        /** @var jResponseJson $rep */
+        $rep = $this->getResponse('json');
+        $rep->data = array('success' => true );
+
+        // Get repository, project data and do some right checking
+        if (!$this->getEditionParameters(true)) {
+            $rep->data['success'] = false;
+            $rep->data['message'] = $this->errorMessage;
+            return $rep;
+        }
+
+        // Get the form instance
+        $form = jForms::create('view~edition', '____new__feature___');
+        if (!$form) {
+            $rep->data['success'] = false;
+            $rep->data['message'] = jLocale::get('view~edition.message.error.form.get');
+            return $rep;
+        }
+
+        // event to add custom field into the jForms form before setting data in it
+        $eventParams = array(
+            'form' => $form,
+            'project' => $this->project,
+            'repository' => $this->repository,
+            'layer' => $this->layer,
+            'featureId' => $this->featureId,
+            'featureData' => $this->featureData,
+            'status' => $this->param('status', 0),
+        );
+        jEvent::notify('LizmapEditionSaveGetForm', $eventParams);
+
+        // Dynamically add form controls based on QGIS layer information
+        // And save data into the edition table (insert or update line)
+        $qgisForm = null;
+
+        try {
+            $qgisForm = new qgisForm($this->layer, $form, $this->featureId, $this->loginFilteredOverride);
+        } catch (Exception $e) {
+            $rep->data['success'] = false;
+            $rep->data['message'] = $e->getMessage();
+            return $rep;
+        }
+
+        // event to add or modify some control after QgisForm has added its own controls
+        $eventParams['qgisForm'] = $qgisForm;
+        jEvent::notify('LizmapEditionSaveGetQgisForm', $eventParams);
+
+        // Get data from the request and set the form controls data accordingly
+        $form->initFromRequest();
+
+        // Check the form data and redirect if needed
+        $check = $form->check();
+        $modifyGeometry = $this->layer->getEditionCapabilities()->capabilities->modifyGeometry;
+        if (strtolower($modifyGeometry) == 'true' && $this->geometryColumn != '' && $form->getData($this->geometryColumn) == '') {
+            $rep->data['success'] = false;
+            $rep->data['message'] = jLocale::get('view~edition.message.error.no.geometry');
+            return $rep;
+        }
+
+        // event to add additionnal checks
+        $event = jEvent::notify('LizmapEditionSaveCheckForm', $eventParams);
+        if ($event->allResponsesByKeyAreTrue('check') === false) {
+            $rep->data['success'] = false;
+            $rep->data['message'] = "There are some errors in the form";
+            return $rep;
+        }
+
+        // Save data into database
+        // And get returned primary key values
+        $feature = null;
+        if ($this->featureId) {
+            $feature = $this->featureData->features[0];
+        }
+        $pkvals = $qgisForm->saveToDb($feature);
+
+        jForms::destroy('view~edition', '____new__feature___');
+
+        // Some errors where encoutered
+        if (!$check or !$pkvals) {
+            $rep->data['success'] = false;
+            $rep->data['message'] = "Error during the save of the feature";
+            return $rep;
+        }
+
+        return $rep;
+    }
+
 
     /**
      * Link features between 2 tables via pivot table.
