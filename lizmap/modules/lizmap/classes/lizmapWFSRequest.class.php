@@ -311,23 +311,31 @@ class lizmapWFSRequest extends lizmapOGCRequest
             $featureid = $this->params['featureid'];
         }
         if (!empty($featureid)) {
-            $exp = explode('.', $featureid);
-            if (count($exp) == 2 and $exp[0] == $typename) {
-                $sql .= ' AND ';
-                $pks = explode(',', $exp[1]);
-                $i = 0;
-                $v = '';
-                foreach ($keys as $key) {
-                    $sql .= $v.'"'.$key.'" = ';
-                    if (ctype_digit($pks[$i])) {
-                        $sql .= $pks[$i];
-                    } else {
-                        $sql .= $cnx->quote($pks[$i]);
+            $fids = explode(',', $featureid);
+            $fidsSql = array();
+            foreach( $fids as $fid ) {
+                $exp = explode('.', $fid);
+                if (count($exp) == 2 and $exp[0] == $typename) {
+                    $fidSql = '(';
+                    $pks = explode('@@', $exp[1]);
+                    $i = 0;
+                    $v = '';
+                    foreach ($keys as $key) {
+                        $fidSql .= $v.'"'.$key.'" = ';
+                        if (ctype_digit($pks[$i])) {
+                            $fidSql .= $pks[$i];
+                        } else {
+                            $fidSql .= $cnx->quote($pks[$i]);
+                        }
+                        $v = ' AND ';
+                        ++$i;
                     }
-                    $v = ' AND ';
-                    ++$i;
+                    $fidSql.= ')';
+                    $fidsSql[] = $fidSql;
                 }
             }
+            jLog::log(implode(' OR ', $fidsSql), 'error');
+            $sql.= ' AND '.implode(' OR ', $fidsSql);
         }
 
         // ORDER BY
