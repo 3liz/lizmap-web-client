@@ -294,7 +294,7 @@ class serviceCtrl extends jController
             }
         }
 
-        // Optionnaly filter data by login
+        // Optionally filter data by login
         if (isset($params['request'])) {
             $request = strtolower($params['request']);
             if (in_array($request, array('getmap', 'getfeatureinfo', 'getfeature', 'getprint', 'getprintatlas')) &&
@@ -338,7 +338,7 @@ class serviceCtrl extends jController
     protected function filterDataByLogin()
     {
 
-    // Optionnaly add a filter parameter
+    // Optionally add a filter parameter
         $lproj = $this->project;
 
         $request = strtolower($this->params['request']);
@@ -373,6 +373,10 @@ class serviceCtrl extends jController
             // Check need for filter foreach layer
             $serverFilterArray = array();
             foreach (explode(',', $layers) as $layername) {
+                $layerByTypeName = $this->project->findLayerByTypeName($layername);
+                if($layerByTypeName){
+                    $layername = $layerByTypeName->name;
+                }
                 if (property_exists($pConfig->loginFilteredLayers, $layername)) {
                     $oAttribute = $pConfig->loginFilteredLayers->{$layername}->filterAttribute;
                     $attribute = strtolower($oAttribute);
