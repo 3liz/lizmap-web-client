@@ -1720,11 +1720,15 @@ var lizMap = function() {
             }
       });
       var placeHolder = '';
-      if ( 'fieldAlias' in locate && locate.fieldAlias!='' )
-        placeHolder += locate.fieldAlias+' ';
-      else
-        placeHolder += locate.fieldName+' ';
-      placeHolder += '('+lConfig.title+')';
+      if ('filterFieldName' in locate) {
+          if ( 'fieldAlias' in locate && locate.fieldAlias!='' )
+              placeHolder += locate.fieldAlias+' ';
+          else
+              placeHolder += locate.fieldName+' ';
+          placeHolder += '('+lConfig.title+')';
+      } else {
+          placeHolder = lConfig.title;
+      }
       var options = '<option value="-1"></option>';
       for (var i=0, len=features.length; i<len; i++) {
         var feat = features[i];
