@@ -1,7 +1,11 @@
-CKEditor 5 classic editor build v11.2.0
-=======================================
+CKEditor 5 classic editor custom build v12.4.0
+==============================================
 
-In order to start using CKEditor 5 Builds, configure or customize them, please visit http://docs.ckeditor.com/ckeditor5/latest/builds/index.html
+See the branch "jelix" on the fork https://github.com/jelix/ckeditor5-build-classic/.
+
+packages.json and src/ckeditor.js have been changed to include missing
+plugins from the basic-style package, and to include alignment and indent plugins.
+
 
 ## License
 
