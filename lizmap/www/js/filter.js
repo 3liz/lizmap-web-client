@@ -538,7 +538,7 @@ var lizLayerFilterTool = function() {
                         var cval = clist[i];
                         filter+= sep + '"' + field + '"' + " " + lk + " '%" + cval + "%' ";
                         // if postgresql use ILIKE instead for WMS filtered requests
-                        sep = ' OR ';
+                        sep = ' AND ';
                     }
                     filter+= ' ) ';
                 } else {
