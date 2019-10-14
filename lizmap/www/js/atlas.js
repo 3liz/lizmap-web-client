@@ -56,9 +56,15 @@ var lizAtlas = function() {
                 });
         }
 
-        function updateAtlasData() {
-            // Get data
-            lizMap.getFeatureData(lizAtlasConfig['featureType'], lizAtlasConfig['featureType']+':', null, 'geom', false, null, null,
+            function updateAtlasData(featureIds) {
+                var featureIdsList = null;
+                if (featureIds && featureIds.length !== 0){
+                    featureIdsList = lizAtlasConfig['featureType'] + '.';
+                    featureIdsList += featureIds.join(',' + lizAtlasConfig['featureType'] + '.');
+                }
+
+                // Get data
+                lizMap.getFeatureData(lizAtlasConfig['featureType'], lizAtlasConfig['featureType'] + ':', featureIdsList, 'geom', false, null, null,
                 function(aName, aFilter, aFeatures, aAliases){
                     lizAtlasConfig['features'] = aFeatures;
                     prepareFeatures();
@@ -76,10 +82,13 @@ var lizAtlas = function() {
 
                     var val = $('#liz-atlas-select').val();
                     $('#liz-atlas-select').html(options);
-                    // reset val
-                    $('#liz-atlas-select').val(val);
-                    // get popup
-                    $('#liz-atlas-select').change();
+
+                    if (!featureIds){
+                        // reset val
+                        $('#liz-atlas-select').val(val);
+                        // get popup
+                        $('#liz-atlas-select').change();
+                    }
 
                     return false;
                 });
@@ -243,6 +252,10 @@ var lizAtlas = function() {
                 lizmapeditionfeaturedeleted: function(e) {
                     if ( e.layerId == lizAtlasConfig.layerId )
                         updateAtlasData();
+                },
+                layerFilteredFeaturesChanged: function (e) {
+                    if ( e.featureType == lizAtlasConfig.featureType )
+                        updateAtlasData(e.featureIds);
                 }
             });
         }
