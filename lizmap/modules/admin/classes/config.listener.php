@@ -17,12 +17,21 @@ class configListener extends jEventListener
                 'lizmap'
             );
 
+            // Child for the configuration of lizmap landing page content
+            $bloc->childItems[] = new masterAdminMenuItem(
+                'lizmap_landing_page_content',
+                jLocale::get('admin~admin.menu.lizmap.landingPageContent.label'),
+                jUrl::get('admin~landing_page_content:index'),
+                115,
+                'lizmap'
+            );
+
             // Child for lizmap theme
             $bloc->childItems[] = new masterAdminMenuItem(
                 'lizmap_theme',
                 jLocale::get('admin~admin.menu.lizmap.theme.label'),
                 jUrl::get('admin~theme:index'),
-                115,
+                120,
                 'lizmap'
             );
 
@@ -31,7 +40,7 @@ class configListener extends jEventListener
                 'lizmap_logs',
                 jLocale::get('admin~admin.menu.lizmap.logs.label'),
                 jUrl::get('admin~logs:index'),
-                120,
+                125,
                 'lizmap'
             );
 

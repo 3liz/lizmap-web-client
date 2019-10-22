@@ -22,13 +22,18 @@
 
 
 <div id="content" class="container">
-{jmessage_bootstrap}
-{$MAIN}
-<footer class="footer">
-  <p class="pull-right">
-    <img src="{$j_themepath.'css/img/logo_footer.png'}" alt=""/>
-  </p>
-</footer>
+  {jmessage_bootstrap}
+
+  <div id="landingPageContent">
+    {$landing_page_content}
+  </div>
+
+  {$MAIN}
+  <footer class="footer">
+    <p class="pull-right">
+      <img src="{$j_themepath.'css/img/logo_footer.png'}" alt=""/>
+    </p>
+  </footer>
 </div>
 
 {if $googleAnalyticsID && $googleAnalyticsID != ''}
