@@ -266,6 +266,10 @@ ckbasic.engine.name = ckeditor
 ckbasic.engine.file[] = js/ckeditor5/ckeditor.js
 ckbasic.config = js/ckeditor5/ckeditor_ckbasic.js
 
+ckfullandmedia.engine.name = ckeditor
+ckfullandmedia.engine.file[] = js/ckeditor5/ckeditor.js
+ckfullandmedia.config = js/ckeditor5/ckeditor_ckfullandmedia.js
+
 [modules]
 jelix.access=1
 
