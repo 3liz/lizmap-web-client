@@ -302,6 +302,20 @@ class lizmapProject extends qgisProject
             }
         }
 
+        $layerWithOpacities = $qgs_xml->xpath('//maplayer/layerOpacity[.!=1]/parent::*');
+        if ($layerWithOpacities && count($layerWithOpacities) > 0) {
+            jLog::log('Layers with opacities', 'error');
+            foreach( $layerWithOpacities as $layerWithOpacitiy ) {
+                $name = (string) $layerWithOpacitiy->layername;
+                jLog::log('Layer with opacity: '.$name, 'error');
+                if (property_exists($this->cfg->layers, $name)) {
+                    $opacity = (float) $layerWithOpacitiy->layerOpacity;
+                    jLog::log('Layer with opacity: '.$name.' '.$opacity, 'error');
+                    $this->cfg->layers->{$name}->opacity = $opacity;
+                }
+            }
+        }
+
         $groupsWithShortName = $qgs_xml->xpath("//layer-tree-group/customproperties/property[@key='wmsShortName']/parent::*/parent::*");
         if ($groupsWithShortName && count($groupsWithShortName) > 0) {
             foreach ($groupsWithShortName as $group) {
