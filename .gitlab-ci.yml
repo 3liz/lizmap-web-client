@@ -69,6 +69,7 @@ deploy_stable:
   script:
     - make deploy_download_stable
     - make saas_release
+    - make trigger_ci
   environment:
     name: production
   dependencies:
