@@ -259,6 +259,9 @@ class qgisVectorLayer extends qgisMapLayer
                     'password' => $dtParams->password,
                     'persistent' => true,
                 );
+                if (!empty($dtParams->schema)) {
+                    $jdbParams['search_path'] = $dtParams->schema . ',public';
+                }
             }
         } elseif ($this->provider == 'ogr'
             and preg_match('#(gpkg|sqlite)$#', $dtParams->dbname ) ) {
