@@ -4217,7 +4217,22 @@ var lizMap = function() {
               if( 'STYLES' in l.params && l.params['STYLES'].length > 0 )
                 lst = l.params['STYLES'];
               styleLayers.push( lst );
-              opacityLayers.push(parseInt(255*l.opacity));
+
+              // Get config to get qgis layer opacity
+              var qgisName = null;
+              if ( l.name in cleanNameMap )
+                  qgisName = getLayerNameByCleanName(layer.name);
+              var configLayer = null;
+              if ( qgisName )
+                  configLayer = config.layers[qgisName];
+              if ( !configLayer )
+                  configLayer = config.layers[l.params['LAYERS']];
+              if ( !configLayer )
+                  configLayer = config.layers[l.name];
+              if ( configLayer && ('opacity' in configLayer) )
+                opacityLayers.push(parseInt(255*l.opacity*configLayer.opacity));
+              else
+                opacityLayers.push(parseInt(255*l.opacity));
             }
         }
       });
