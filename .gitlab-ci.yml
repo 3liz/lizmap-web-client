@@ -44,6 +44,7 @@ package:
       - "build/*.zip"
   only:
     - /^release_.*$/
+    - master
     - tags
   tags:
     - fabric
@@ -59,6 +60,7 @@ deploy_unstable:
     - package
   only:
     - /^release_.*$/
+    - master
   except:
     - tags
   tags:
