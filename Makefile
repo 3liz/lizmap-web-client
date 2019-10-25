@@ -62,8 +62,6 @@ deploy_download_stable:
 	upload_to_packages_server $(STAGE)/$(PACKAGE_NAME).zip pub/lizmap/release/$(SHORT_VERSION)/
 
 saas_package:
-	rm -rf $(DIST)/lizmap/vendor # vendor dir is not needed because provided by lizmap-saas
-	cp lizmap/composer.json $(DIST)/lizmap/  # copy again composer.json, needed by lizmap-saas
 	mv $(STAGE)/$(PACKAGE_NAME) $(STAGE)/lizmap_web_client
 	saasv2_register_package $(SAAS_PACKAGE) $(LIZMAP_VERSION) lizmap_web_client $(STAGE)
 

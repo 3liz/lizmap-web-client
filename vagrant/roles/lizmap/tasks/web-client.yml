@@ -7,6 +7,9 @@
 - name: Set rights on dirs
   shell: cd {{ lizmap_home }} && lizmap/install/set_rights.sh {{ lizmap_webserver_group }} {{ lizmap_webserver_group }}
 
+- name: Install packages from Composer
+  shell: composer install --working-dir={{ lizmap_home }}/lizmap/ --no-ansi --no-interaction --no-suggest --no-progress
+
 - name: Create lizmap configuration files
   copy: remote_src=True src={{ item.src }} dest={{ item.dest }} force=no
   with_items:
