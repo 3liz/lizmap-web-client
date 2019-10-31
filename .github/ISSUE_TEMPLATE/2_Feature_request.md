@@ -1,6 +1,7 @@
 ---
 name: ☝️ Feature request
 about: Suggest an idea for a new feature or an improvement.
+labels: 'enhancement'
 
 ---
 

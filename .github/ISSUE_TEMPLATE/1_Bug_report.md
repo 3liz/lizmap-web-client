@@ -1,6 +1,7 @@
 ---
 name: 🐞 Bug Report
 about: Report errors and problems. The more precise is your bug report, the more quickly it will be fixed.
+labels: 'bug'
 
 ---
 

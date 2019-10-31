@@ -1,6 +1,8 @@
 ---
 name: ❓ Support/Questions
-about: Questions about using or installing Lizmap.  
+about: Questions about using or installing Lizmap.
+labels: 'question'
+
 
 ---
 
