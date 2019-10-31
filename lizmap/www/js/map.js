@@ -342,6 +342,9 @@ var lizMap = function() {
     if ( $('#dock-tabs').is(':visible') )
         $('#dock-content').css( 'max-height', $('#dock').height() - $('#dock-tabs').height() );
 
+    if ( $('#right-dock-tabs').is(':visible') )
+        $('#right-dock-content').css( 'max-height', $('#right-dock').height() - $('#right-dock-tabs').height() );
+
     $('#dock').css('overflow-y', 'hidden');
 
     if(map)
