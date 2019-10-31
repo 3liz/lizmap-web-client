@@ -404,6 +404,17 @@ class qgisProject
             $this->data['abstract'] = (string) $qgs_xml->properties->WMSServiceAbstract;
         }
 
+        // get keyword list from WMS properties
+        if (property_exists($qgs_xml->properties, 'WMSKeywordList')) {
+            $values = array();
+            foreach ($qgs_xml->properties->WMSKeywordList->value as $value) {
+                if ((string) $value !== '') {
+                    $values[] = (string) $value;
+                }
+            }
+            $this->data['keywordList'] = implode(', ', $values);
+        }
+
         // get WMS max width
         if (property_exists($qgs_xml->properties, 'WMSMaxWidth')) {
             $this->data['wmsMaxWidth'] = (int) $qgs_xml->properties->WMSMaxWidth;
@@ -452,6 +463,7 @@ class qgisProject
         // Default metadata
         $WMSServiceTitle = '';
         $WMSServiceAbstract = '';
+        $WMSKeywordList = '';
         $WMSExtent = '';
         $ProjectCrs = '';
         $WMSOnlineResource = '';
@@ -462,6 +474,15 @@ class qgisProject
         if ($qgsLoad) {
             $WMSServiceTitle = (string) $qgsLoad->properties->WMSServiceTitle;
             $WMSServiceAbstract = (string) $qgsLoad->properties->WMSServiceAbstract;
+
+            $values = array();
+            foreach ($qgsLoad->properties->WMSKeywordList->value as $value) {
+                if ((string) $value !== '') {
+                    $values[] = (string) $value;
+                }
+            }
+            $WMSKeywordList = implode(', ', $values);
+            
             $WMSExtent = $qgsLoad->properties->WMSExtent->value[0];
             $WMSExtent .= ', '.$qgsLoad->properties->WMSExtent->value[1];
             $WMSExtent .= ', '.$qgsLoad->properties->WMSExtent->value[2];
@@ -479,6 +500,7 @@ class qgisProject
         return array(
             'WMSServiceTitle' => $WMSServiceTitle,
             'WMSServiceAbstract' => $WMSServiceAbstract,
+            'WMSKeywordList' => $WMSKeywordList,
             'WMSExtent' => $WMSExtent,
             'ProjectCrs' => $ProjectCrs,
             'WMSOnlineResource' => $WMSOnlineResource,
