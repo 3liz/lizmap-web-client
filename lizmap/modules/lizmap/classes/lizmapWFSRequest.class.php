@@ -129,6 +129,24 @@ class lizmapWFSRequest extends lizmapOGCRequest
 
         if($provider == 'postgres'){
             $dtparams = $qgisLayer->getDatasourceParameters();
+            // Add key if not present ( WFS need to export id = typename.id for each feature)
+            // To be sure to get the primary keys even if there is an issue in QGIS Server
+            $propertyname = '';
+            if (array_key_exists('propertyname', $this->params)) {
+                $propertyname = $this->params['propertyname'];
+            }
+            if (!empty($propertyname)) {
+                $pfields = explode(',', $propertyname);
+                $key = $dtparams->key;
+                $keys = explode(',', $key);
+                foreach ($keys as $k) {
+                    if (!in_array($k, $pfields)) {
+                        // prepend primary keys
+                        array_unshift($pfields, $k);
+                    }
+                }
+                $this->params['propertyname'] = implode(',', $pfields);
+            }
         }
         // Use direct SQL query to improve performance for PostgreSQL layer
         // but only of not OGC filter is passed (complex to implement)
