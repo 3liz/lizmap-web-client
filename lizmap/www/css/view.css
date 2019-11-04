@@ -33,6 +33,53 @@
   margin:0px;
 }
 
+#headermenu .input-prepend {
+  margin: 0;
+}
+
+#toggle-search{
+  font-weight: bold;
+  font-family: serif;
+}
+
+#search-project-keywords {
+  position: absolute;
+}
+
+#search-project-result .project-keyword, #search-project-keywords-selected .remove-keyword{
+  cursor: pointer;
+}
+
+#search-project-keywords-selected .project-keyword {
+  background-color: #ccc;
+  color: black;
+}
+
+#search-project-keywords-selected .remove-keyword{
+  margin-left: 10px;
+  font-size: smaller;
+  border: black 1px solid;
+  padding: 0px 4px 1px 4px;
+  border-radius: 3px;
+}
+
+.project-keyword {
+  background-color: #97C517;
+  padding: 0px 4px;
+  border-radius: 5px;
+  margin-right: 5px;
+  display: inline-block;
+}
+
+.project-keyword.hide {
+  display: none;
+}
+
+.project-keyword .highlight{
+  font-weight: bold;
+  font-size: 1.1em;
+}
+
 @media (max-height: 500px) {
   .modal.fade.in {
     top:30px;

@@ -2,6 +2,7 @@
 {meta_html csstheme 'css/view.css'}
 {meta_html csstheme 'css/media.css'}
 
+<span id="anchor-top-projects"></span>
 {assign $idm = 0}
 {foreach $mapitems as $mi}
 {if $mi->type == 'rep'}
