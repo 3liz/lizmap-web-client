@@ -77,6 +77,7 @@ class main_viewZone extends jZone
                             $p->getData('id'),
                             $p->getData('title'),
                             $p->getData('abstract'),
+                            $p->getData('keywordList'),
                             $p->getData('proj'),
                             $p->getData('bbox'),
                             jUrl::get('view~map:index', array('repository' => $p->getData('repository'), 'project' => $p->getData('id'))),

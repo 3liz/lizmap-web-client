@@ -19,6 +19,8 @@
           <br/>
           <br/><b>{@default.project.abstract.label@}</b>&nbsp;: {$p->abstract|strip_tags|truncate:100}
           <br/>
+          <br/><b>{@default.project.keywordList.label@}</b>&nbsp;: <span class="keywordList">{$p->keywordList}</span>
+          <br/>
           <br/><b>{@default.project.projection.label@}</b>&nbsp;: <span class="proj">{$p->proj}</span>
           <br/><b>{@default.project.bbox.label@}</b>&nbsp;: <span class="bbox">{$p->bbox}</span>
         </p>

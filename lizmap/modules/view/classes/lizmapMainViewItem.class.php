@@ -15,6 +15,7 @@ class lizmapMainViewItem
     public $parentId = '';
     public $title = '';
     public $abstract = '';
+    public $keywordList = '';
     public $proj = '';
     public $bbox = '';
     public $url = '';
@@ -26,12 +27,13 @@ class lizmapMainViewItem
 
     public $childItems = array();
 
-    public function __construct($id, $title, $abstract = '', $proj = '', $bbox = '', $url = '', $img = '', $order = 0, $parentId = '', $type = 'rep', $wmsGetCapabilitiesUrl = '', $wmtsGetCapabilitiesUrl = '')
+    public function __construct($id, $title, $abstract = '', $keywordList = '', $proj = '', $bbox = '', $url = '', $img = '', $order = 0, $parentId = '', $type = 'rep', $wmsGetCapabilitiesUrl = '', $wmtsGetCapabilitiesUrl = '')
     {
         $this->id = $id;
         $this->parentId = $parentId;
         $this->title = $title;
         $this->abstract = $abstract;
+        $this->keywordList = $keywordList;
         $this->proj = $proj;
         $this->bbox = $bbox;
         $this->url = $url;
@@ -46,6 +48,7 @@ class lizmapMainViewItem
     {
         $this->title = $item->title;
         $this->abstract = $item->abstract;
+        $this->keywordList = $item->keywordList;
         $this->proj = $item->proj;
         $this->bbox = $item->bbox;
         $this->url = $item->url;
