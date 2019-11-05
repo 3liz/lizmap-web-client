@@ -1444,15 +1444,34 @@ class lizmapProject extends qgisProject
     protected function readLayersOrder($xml, $cfg)
     {
         $layersOrder = array();
-        // For QGIS >=2.4, new item layer-tree-canvas
-        if ($this->qgisProjectVersion >= 20400) {
-            $customeOrder = $xml->xpath('//layer-tree-canvas/custom-order');
-            if (count($customeOrder) == 0) {
+        if ($this->qgisProjectVersion >= 30000) { // For QGIS >=3.0, custom-order is in layer-tree-group
+            $customOrder = $xml->xpath('layer-tree-group/custom-order');
+            if (count($customOrder) == 0) {
                 return $layersOrder;
             }
-            $customeOrderZero = $customeOrder[0];
-            if ($customeOrderZero->attributes()->enabled == 1) {
-                $items = $customeOrderZero->xpath('//item');
+            $customOrderZero = $customOrder[0];
+            if ($customOrderZero->attributes()->enabled == 1) {
+                $items = $customOrderZero->xpath('//item');
+                $lo = 0;
+                foreach  ($items as $layerI) {
+                    // Get layer name from config instead of XML for possible embedded layers
+                    $name = $this->getLayerNameByIdFromConfig($layerI);
+                    if ($name) {
+                        $layersOrder[$name] = $lo;
+                    }
+                    ++$lo;
+                }
+            } else {
+                return $layersOrder;
+            }
+        } else if ($this->qgisProjectVersion >= 20400) { // For QGIS >=2.4, new item layer-tree-canvas
+            $customOrder = $xml->xpath('//layer-tree-canvas/custom-order');
+            if (count($customOrder) == 0) {
+                return $layersOrder;
+            }
+            $customOrderZero = $customOrder[0];
+            if ($customOrderZero->attributes()->enabled == 1) {
+                $items = $customOrderZero->xpath('//item');
                 $lo = 0;
                 foreach ($items as $layerI) {
                     // Get layer name from config instead of XML for possible embedded layers
