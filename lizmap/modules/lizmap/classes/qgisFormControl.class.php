@@ -177,9 +177,10 @@ class qgisFormControl
      * @param object           $prop               Jelix object with field properties (datatype, required, etc.)
      * @param object|array|string $aliasXml        simplexml object corresponding to the QGIS alias for this field
      * @param string           $defaultValue       the QGIS expression of the default value
+     * @param array            $constraints        the QGIS constraints
      * @param object           $rendererCategories simplexml object corresponding to the QGIS categories of the renderer
      */
-    public function __construct($ref, $edittype, $prop, $aliasXml = null, $defaultValue=null, $rendererCategories = null)
+    public function __construct($ref, $edittype, $prop, $aliasXml = null, $defaultValue=null, $constraints=null, $rendererCategories = null)
     {
 
     // Add new editTypes naming convention since QGIS 2.4
@@ -223,6 +224,11 @@ class qgisFormControl
         $this->defaultValue = $defaultValue;
 
         if ($prop->notNull && !$prop->autoIncrement) {
+            $this->required = true;
+        }
+
+        if ($constraints !== null && !$prop->notNull &&
+            $constraints['constraints'] > 0 && $constraints['notNull']) {
             $this->required = true;
         }
 

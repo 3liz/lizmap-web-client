@@ -632,6 +632,7 @@ class qgisProject
                     $wfsFields = array();
                     $aliases = array();
                     $defaults = array();
+                    $constraints = array();
                     $edittypes = $xmlLayer->xpath('.//edittype');
                     if ($edittypes) {
                         foreach ($edittypes as $edittype) {
@@ -643,6 +644,7 @@ class qgisProject
                             $wfsFields[] = $field;
                             $aliases[$field] = $field;
                             $defaults[$field] = null;
+                            $constraints[$field] = null;
                         }
                     } else {
                         $fieldconfigurations = $xmlLayer->xpath('.//fieldConfiguration/field');
@@ -656,6 +658,7 @@ class qgisProject
                                 $wfsFields[] = $field;
                                 $aliases[$field] = $field;
                                 $defaults[$field] = null;
+                                $constraints[$field] = null;
                             }
                         }
                     }
@@ -672,9 +675,28 @@ class qgisProject
                         }
                     }
 
+                    if (isset($xmlLayer->constraints->constraint)) {
+                        foreach($xmlLayer->constraints->constraint as $constraint) {
+                            $c = array(
+                                'constraints' => 0,
+                                'notNull' => false,
+                                'unique' => false,
+                                'exp' => false
+                            );
+                            $c['constraints'] = (int) $constraint['constraints'];
+                            if ( $c['constraints'] > 0 ) {
+                                $c['notNull'] = ((int) $constraint['notnull_strength'] > 0);
+                                $c['unique'] = ((int) $constraint['unique_strength'] > 0);
+                                $c['exp'] = ((int) $constraint['exp_strength'] > 0);
+                            }
+                            $constraints[(string) $constraint['field']] = $c;
+                        }
+                    }
+
                     $layer['fields'] = $fields;
                     $layer['aliases'] = $aliases;
                     $layer['defaults'] = $defaults;
+                    $layer['constraints'] = $constraints;
                     $layer['wfsFields'] = $wfsFields;
 
                     $excludeFields = $xmlLayer->xpath('.//excludeAttributesWFS/attribute');

@@ -26,6 +26,11 @@ class qgisVectorLayer extends qgisMapLayer
      */
     protected $defaultValues = array();
 
+    /**
+     * @var string[]  list of constraints for each fields (type of contraints and if it is notNull, unique and/or expression contraint)
+     */
+    protected $constraints = array();
+
     protected $wfsFields = array();
 
     /**
@@ -66,6 +71,7 @@ class qgisVectorLayer extends qgisMapLayer
         $this->fields = $propLayer['fields'];
         $this->aliases = $propLayer['aliases'];
         $this->defaultValues = $propLayer['defaults'];
+        $this->constraints = $propLayer['constraints'];
         $this->wfsFields = $propLayer['wfsFields'];
     }
 
@@ -107,6 +113,34 @@ class qgisVectorLayer extends qgisMapLayer
             return $this->defaultValues[$fieldName];
         }
         return null;
+    }
+
+    /**
+     * list of constraints
+     * @return string[]
+     */
+    public function getConstraintsList()
+    {
+        return $this->constraints;
+    }
+
+    /**
+     * Get the QGIS constraints of the given field
+     *
+     * @param string $fieldName
+     * @return string[] the constraints of the field
+     */
+    public function getConstraints($fieldName)
+    {
+        if (isset($this->constraints[$fieldName])) {
+            return $this->constraints[$fieldName];
+        }
+        return array(
+                    'constraints' => 0,
+                    'notNull' => false,
+                    'unique' => false,
+                    'exp' => false
+                );
     }
 
     public function getWfsFields()

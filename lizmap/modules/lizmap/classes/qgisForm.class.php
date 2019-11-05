@@ -208,7 +208,9 @@ class qgisForm implements qgisFormControlsInterface
 
             $defaultValue = $this->getDefaultValue($fieldName);
 
-            $formControl = new qgisFormControl($fieldName, $edittype, $prop, $alias, $defaultValue, $categoriesXml);
+            $constraints = $this->getConstraints($fieldName);
+
+            $formControl = new qgisFormControl($fieldName, $edittype, $prop, $alias, $defaultValue, $constraints, $categoriesXml);
 
             if ($formControl->isUniqueValue()) {
                 $this->fillControlFromUniqueValues($fieldName, $formControl);
@@ -291,6 +293,10 @@ class qgisForm implements qgisFormControlsInterface
         // TODO implement a true QGIS expression parser or add the possibility
         // to evaluate the expression by qgis
         return null;
+    }
+
+    protected function getConstraints($fieldName) {
+        return $this->layer->getConstraints($fieldName);
     }
 
     public function getQgisControls()
