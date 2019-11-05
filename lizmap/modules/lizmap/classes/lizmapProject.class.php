@@ -1480,7 +1480,9 @@ class lizmapProject extends qgisProject
     public function getDefaultDockable()
     {
         $dockable = array();
-        $bp = jApp::config()->urlengine['basePath'];
+        $confUrlEngine = &jApp::config()->urlengine;
+        $bp = $confUrlEngine['basePath'];
+        $jwp = $confUrlEngine['jelixWWWPath'];
 
         // Get lizmap services
         $services = lizmap::getServices();
@@ -1544,7 +1546,7 @@ class lizmapProject extends qgisProject
                 jLocale::get('view~edition.navbar.title'),
                 $tpl->fetch('view~map_edition'),
                 3,
-                '',
+                $jwp.'design/jform.css',
                 $bp.'js/edition.js'
             );
         }
