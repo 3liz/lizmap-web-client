@@ -152,5 +152,7 @@ only screen and (                   max-device-height : 640px) {
 
 /* #### Desktops #### */
 @media screen and (min-width: 1024px){
-  /* some CSS here */
+  #auth{
+    text-align: center;
+  }
 }

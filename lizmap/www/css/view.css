@@ -37,6 +37,14 @@
   margin: 0;
 }
 
+#auth{
+  text-align: right;
+}
+
+#search{
+  display: inline-block;
+}
+
 #toggle-search{
   font-weight: bold;
   font-family: serif;
