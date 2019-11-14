@@ -41,7 +41,7 @@ var resizeThumbnails = function(){
 var searchProjects = function(){
     // Hide search if there are no projects
     if ($("#content.container li .liz-project-title").length === 0) {
-        $("#search-project").hide();
+        $("#search").hide();
         return;
     }
 
