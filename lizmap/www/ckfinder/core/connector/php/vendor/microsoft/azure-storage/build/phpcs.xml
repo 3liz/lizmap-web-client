@@ -1,0 +1,40 @@
+<?xml version="1.0"?>
+<ruleset name="Basic">
+ <description>Azure Storage SDK for PHP rules</description>
+ 
+ <rule ref="Ecg.PHP.Goto.Found"/>
+ <rule ref="Ecg.Strings.StringPosition.ImproperValueTesting"/>
+ <rule ref="Ecg.Security.Superglobal.SuperglobalUsage"/>
+
+ <rule ref="Generic.CodeAnalysis.ForLoopShouldBeWhileLoop"/>
+ <rule ref="Generic.CodeAnalysis.ForLoopWithTestFunctionCall"/>
+ <rule ref="Generic.CodeAnalysis.JumbledIncrementer"/>
+ <rule ref="Generic.CodeAnalysis.UnconditionalIfStatement"/>
+ <rule ref="Generic.CodeAnalysis.UnnecessaryFinalModifier"/>
+
+ <rule ref="Generic.Files.LineLength"/>
+ 
+ <rule ref="Generic.Formatting.DisallowMultipleStatements"/>
+ <rule ref="Generic.Formatting.MultipleStatementAlignment"/>
+
+ <rule ref="Generic.Metrics.CyclomaticComplexity"/>
+ <rule ref="Generic.Metrics.NestingLevel"/>
+ 
+ <rule ref="Generic.NamingConventions.ConstructorName"/>
+ <rule ref="Generic.NamingConventions.UpperCaseConstantName"/>
+ 
+ <rule ref="Generic.PHP.CharacterBeforePHPOpeningTag.Found"/>
+ <rule ref="Generic.PHP.DeprecatedFunctions.Deprecated"/>
+ <rule ref="Generic.PHP.DisallowShortOpenTag"/>
+ <rule ref="Generic.PHP.NoSilencedErrors"/>
+ <rule ref="Generic.PHP.Syntax"/>
+ 
+ <rule ref="Generic.WhiteSpace.DisallowTabIndent"/>
+ 
+ <rule ref="Squiz.PHP.Eval.Discouraged"/>
+ 
+ <rule ref="Zend.Files.ClosingTag.NotAllowed">
+
+ <rule ref="PEAR"/>
+ 
+ </ruleset>

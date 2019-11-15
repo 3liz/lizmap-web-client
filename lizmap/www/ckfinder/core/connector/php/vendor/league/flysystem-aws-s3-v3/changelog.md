@@ -1,0 +1,79 @@
+# Changelog
+
+## 1.0.13 - 2016-06-21
+
+### Fixed
+
+* Uploading a remote stream no longer results in an unexpected exception.
+
+## 1.0.12 - 2016-06-06
+
+### Improved
+
+* Responses are now streamed instead of downloaded fully.
+
+## 1.0.11 - 2016-05-03
+
+### Fixed
+
+* [::has] A regression introduced in 1.0.10 is addressed.
+
+## 1.0.10 - 2016-04-19
+
+### Fixed
+
+* [::has] The `has` method now also respects implicit directories.
+
+## 1.0.9 - 2015-11-19
+
+### Fixed
+
+* [#49] Large listings only returned the last page of the listing.
+
+## 1.0.8 - 2015-11-06
+
+### Improved
+
+* Non-recursive listings now retrieve a shallow listing for better performance.
+
+## 1.0.7 - 2015-11-06
+
+### Fixed
+
+* The `copy` operation now `urlencode`'s the `CopySource` to allow characters like `+`.
+
+## 1.0.6 - 2015-09-25
+
+### Fixed
+
+* The `has` operation now respects path prefix, bug introduced in 1.0.5.
+
+## 1.0.5 - 2015-09-22
+
+### Fixed
+
+* `has` calls now use `doesObjectExist` rather than retrieving metadata.
+
+## 1.0.4 - 2015-07-06
+
+### Fixed
+
+* Fixed delete return value.
+
+## 1.0.3 - 2015-06-16
+
+### Fixed
+
+* Use an iterator for contents listing to break through the 1000 objects limit.
+
+## 1.0.2 - 2015-06-06
+
+### Fixed
+
+* Exception due to misconfiguration no longer causes a fatal error but are properly rethrown.
+
+## 1.0.1 - 2015-05-31
+
+### Fixed
+
+* Stable release depending in the first v3 release of the AWS SDK.

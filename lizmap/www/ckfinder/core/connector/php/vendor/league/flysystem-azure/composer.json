@@ -1,0 +1,33 @@
+{
+    "name": "league/flysystem-azure",
+    "description": "Flysystem adapter for Windows Azure",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Frank de Jonge",
+            "email": "info@frenky.net"
+        }
+    ],
+    "require": {
+        "php": ">=5.5.0",
+        "league/flysystem": "~1.0",
+        "microsoft/azure-storage": "~0.10.1"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "~4.8.36",
+        "mockery/mockery": "~0.9"
+    },
+    "autoload": {
+        "psr-4": {
+            "League\\Flysystem\\Azure\\": "src/"
+        }
+    },
+    "config": {
+        "bin-dir": "bin"
+    },
+    "extra": {
+        "branch-alias": {
+            "dev-master": "1.0-dev"
+        }
+    }
+}

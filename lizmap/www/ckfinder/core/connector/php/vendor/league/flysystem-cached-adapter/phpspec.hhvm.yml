@@ -1,0 +1,6 @@
+---
+suites:
+      event_suite:
+        namespace: League\Flysystem\Cached
+        psr4_prefix: League\Flysystem\Cached
+formatter.name: pretty

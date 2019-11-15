@@ -1,0 +1,365 @@
+body {
+    color: #484848;
+}
+div.title {
+    font-size:22px;
+}
+h1 {
+    font-size:22px;
+}
+h2 {
+    font-size:19px;
+}
+h3 {
+    font-size:17px;
+}
+h4 {
+    font-size:15px;
+}
+
+code {
+    color: #008000;
+    font-family: monospace,fixed;
+    font-size:0.95em;
+}
+
+table.command-desc {
+    width: 100%;
+}
+
+table.command-desc td:first-child {
+    width: 150px;
+    text-align: right;
+    vertical-align: top;
+    padding-right: 15px;
+    text-transform: uppercase;
+    font-size: 0.8em;
+    font-weight: bold;
+    color: #888;
+    white-space: nowrap;
+}
+
+div.fragment {
+    padding:10px;
+}
+span.lineno {
+    display:none;
+}
+div.image {
+    text-align: left;
+}
+div.caption {
+    font-weight:normal;
+    color: #666;
+}
+pre {
+    white-space: pre-wrap;
+    word-wrap: break-word;
+}
+
+/* Unify with JavaScript documentation */
+
+.contents a,
+.contents a:hover
+{
+    color: #0C7FCC;
+}
+
+#titlearea {
+    background: #87C71D;
+    background-image: -ms-linear-gradient(top, #87C71D 0%, #C5DC78 100%);
+    background-image: -moz-linear-gradient(top, #87C71D 0%, #C5DC78 100%);
+    background-image: -o-linear-gradient(top, #87C71D 0%, #C5DC78 100%);
+    background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0, #87C71D), color-stop(1, #C5DC78));
+    background-image: -webkit-linear-gradient(top, #87C71D 0%, #C5DC78 100%);
+    background-image: linear-gradient(to bottom, #87C71D 0%, #C5DC78 100%);
+    padding-bottom:13px;
+    border-bottom: 0;
+}
+
+#projectname {
+    background-attachment: scroll;
+    background-clip: border-box;
+    background-color: transparent;
+    background-image: url("ckfinder-logo.png");
+    background-origin: padding-box;
+    background-position: 0% 50%;
+    background-repeat: no-repeat;
+    background-size: auto auto;
+    box-sizing: border-box;
+    color: #FFF;
+    font-family: "Helvetica Neue", "Helvetica", "Arial", "Lucida Grande", sans-serif;
+    font-feature-settings: normal;
+    font-kerning: auto;
+    font-language-override: normal;
+    font-size: 18px;
+    font-size-adjust: none;
+    font-stretch: normal;
+    font-style: normal;
+    font-synthesis: weight style;
+    font-variant: normal;
+    font-variant-alternates: normal;
+    font-variant-caps: normal;
+    font-variant-east-asian: normal;
+    font-variant-ligatures: normal;
+    font-variant-numeric: normal;
+    font-variant-position: normal;
+    font-weight: 700;
+    height: 50px;
+    line-height: 50px;
+    margin-bottom: 0px;
+    margin-left: 20px;
+    margin-right: 0px;
+    margin-top: 10px;
+    padding-bottom: 0px;
+    padding-left: 48px;
+    padding-right: 0px;
+    padding-top: 0px;
+    text-shadow: none;
+    white-space: nowrap;
+}
+
+div.title {
+    background-attachment: scroll;
+    background-clip: border-box;
+    background-color: transparent;
+    background-image: url("doc-m.png");
+    background-origin: padding-box;
+    background-position: -5px -5px;
+    background-repeat: no-repeat;
+    background-size: auto auto;
+    border-bottom-color: #F1F1F1;
+    border-bottom-style: none;
+    border-bottom-width: 0px;
+    box-sizing: border-box;
+    color: #66AB16;
+    font-family: "Exo",sans-serif;
+    font-feature-settings: normal;
+    font-kerning: auto;
+    font-language-override: normal;
+    font-size: 26px;
+    font-size-adjust: none;
+    font-stretch: normal;
+    font-style: normal;
+    font-synthesis: weight style;
+    font-variant: normal;
+    font-variant-alternates: normal;
+    font-variant-caps: normal;
+    font-variant-east-asian: normal;
+    font-variant-ligatures: normal;
+    font-variant-numeric: normal;
+    font-variant-position: normal;
+    font-weight: 400;
+    line-height: 19.5px;
+    margin-bottom: 8px;
+    margin-left: 0px;
+    margin-right: 0px;
+    margin-top: 8px;
+    padding-bottom: 10px;
+    padding-left: 55px;
+    padding-right: 0px;
+    padding-top: 10px;
+}
+
+.contents h1, .contents h2, .contents h3 {
+    box-sizing: border-box;
+    color: #314E64;
+    font-family: "Helvetica Neue","Helvetica","Arial","Lucida Grande",sans-serif;
+    font-feature-settings: normal;
+    font-kerning: auto;
+    font-language-override: normal;
+    font-size: 24px;
+    font-size-adjust: none;
+    font-stretch: normal;
+    font-style: normal;
+    font-synthesis: weight style;
+    font-variant: normal;
+    font-variant-alternates: normal;
+    font-variant-caps: normal;
+    font-variant-east-asian: normal;
+    font-variant-ligatures: normal;
+    font-variant-numeric: normal;
+    font-variant-position: normal;
+    font-weight: 700;
+    letter-spacing: -1px;
+    line-height: 20px;
+    margin-bottom: 15px;
+    margin-left: 0px;
+    margin-right: 0px;
+    margin-top: 30px;
+    padding-bottom: 5px;
+    padding-left: 0px;
+    padding-right: 0px;
+    padding-top: 0px;
+}
+
+.contents h1, .contents h2 {
+    border-bottom-color: #F1F1F1;
+    border-bottom-style: solid;
+    border-bottom-width: 1px;
+}
+
+.contents h2 {
+    font-size: 20px;
+}
+
+.contents h3, .contents h4 {
+    font-size: 16px;
+    line-height: 16px;
+    margin-bottom: 4px;
+    margin-left: 0px;
+    margin-right: 0px;
+    margin-top: 8px;
+    padding-bottom: 2px;
+    padding-left: 0px;
+    padding-right: 0px;
+    padding-top: 16px;
+}
+
+.contents h4 {
+    box-sizing: border-box;
+    color: #314E64;
+    font-kerning: auto;
+    font-size: 14px;
+    font-weight: 700;
+    line-height: 14px;
+    margin-bottom: 4px;
+    margin-left: 0px;
+    margin-right: 0px;
+    margin-top: 7px;
+    padding-bottom: 0px;
+    padding-left: 0px;
+    padding-right: 0px;
+    padding-top: 12px;
+}
+
+.contents .toc h3 {
+    letter-spacing:normal;
+}
+.contents p, .contents li, .contents td, .contents ol {
+    box-sizing: border-box;
+    color: #242424;
+    font-family: HelveticaNeue,helvetica,arial,clean,sans-serif;
+    font-feature-settings: normal;
+    font-kerning: auto;
+    font-language-override: normal;
+    font-size: 13px;
+    font-size-adjust: none;
+    font-stretch: normal;
+    font-style: normal;
+    font-synthesis: weight style;
+    font-variant: normal;
+    font-variant-alternates: normal;
+    font-variant-caps: normal;
+    font-variant-east-asian: normal;
+    font-variant-ligatures: normal;
+    font-variant-numeric: normal;
+    font-variant-position: normal;
+    font-weight: 400;
+}
+
+.contents pre, .contents pre code {
+    font-size: 12px;
+    line-height: 19px;
+}
+
+.contents .textblock {
+    max-width: 900px;
+}
+/* Overwrite defaults */
+#nav-tree {
+    padding-left:10px;
+    background: #F8F8F8;
+}
+#nav-tree .item span + .label {
+    padding-left: 18px;
+    min-height:18px;
+    background: url(icons.png) no-repeat 0 -360px;
+}
+#nav-tree .item > a[href*='javascript:void(0)']:first-child {
+    padding-right: 20px;
+    background: url(icons.png) no-repeat right -360px;
+}
+#nav-tree ul > li:first-child > .item > a[href*='javascript:void(0)']:first-child {
+    background: url(icons.png) no-repeat right 0;
+}
+#nav-tree .children_ul .children_ul .item span + .label {
+    background-position: 0 -320px;
+}
+#nav-tree .children_ul .children_ul .item > a[href*='javascript:void(0)']:first-child{
+    background-position: right -320px;
+}
+#nav-tree a {
+    color: #000;
+}
+#nav-tree .selected {
+    background: #D9E8FB;
+    text-shadow: none;
+}
+#nav-tree .selected a {
+    color: #000;
+}
+.ui-resizable-e {
+    background: #F8F8F8;
+    border-image: none;
+    border: 0px solid #EBEBEB;
+    border-right-width: 1px;
+}
+.ui-resizable-e:hover {
+    border-color: #BBB;
+}
+div.header {
+    border-bottom: 0;
+    background-position: 0 -1px;
+}
+.navpath ul {
+    background: none;
+    border: none;
+}
+.navpath li.footer {
+    color: #808080;
+}
+.navpath ul a {
+    color: #085585;
+}
+.contents p, .contents li, .contents td, .contents ol {
+    color: #484848;
+}
+div.toc li.level1 {
+    margin-left: 0px;
+}
+div.toc li.level2 {
+    margin-left: 10px;
+}
+div.toc li.level3 {
+    margin-left: 10px;
+}
+div.toc li.level4 {
+    margin-left: 10px;
+}
+
+#MSearchBox {
+    width: 240px;
+}
+#MSearchField {
+    width: 175px;
+}
+
+.label {
+    display: inline;
+    padding: .1em .4em .2em;
+    font-size: 75%;
+    font-weight: 700;
+    color: #fff;
+    text-align: center;
+    white-space: nowrap;
+    border-radius: .25em;
+}
+
+.label-since {
+    background: #0C7FCC;
+}
+
+.label-optional {
+    background: #AAA;
+}
