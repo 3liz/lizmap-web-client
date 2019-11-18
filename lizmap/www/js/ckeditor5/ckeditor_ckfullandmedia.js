@@ -1,4 +1,6 @@
 function jelix_ckeditor_ckfullandmedia(textarea_id, form_id, skin, config) {
+    var basePath = (typeof config !== "undefined" && config.hasOwnProperty("basePath")) ? config.basePath : '/';
+
     var ckConfig = {
         toolbar: [
             'heading', '|',
@@ -6,9 +8,12 @@ function jelix_ckeditor_ckfullandmedia(textarea_id, form_id, skin, config) {
             'outdent', 'indent', 'alignment', 'bulletedList', 'numberedList', 'blockQuote', '|',
             'undo', 'redo', '|',
             "insertTable", "tableColumn", "tableRow", "mergeTableCells", '|',
-            "mediaEmbed"
+            "mediaEmbed", "imageUpload"
         ],
-
+        ckfinder: {
+            // Upload the images to the server using the CKFinder QuickUpload command.
+            uploadUrl: basePath + 'ckfinder/core/connector/php/connector.php?command=QuickUpload&type=Images&responseType=json'
+        },
         heading: {
             options: [
                 { model: 'paragraph', title: 'Paragraphe', class: 'ck-heading_paragraph' },

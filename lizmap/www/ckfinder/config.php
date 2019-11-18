@@ -25,8 +25,9 @@ $config = array();
 /*============================ Enable PHP Connector HERE ==============================*/
 // https://ckeditor.com/docs/ckfinder/ckfinder3-php/configuration.html#configuration_options_authentication
 
+session_start();
 $config['authentication'] = function () {
-    return false;
+    return isset($_SESSION['canUpload']) && $_SESSION['canUpload'];
 };
 
 /*============================ License Key ============================================*/
@@ -50,7 +51,7 @@ $config['privateDir'] = array(
 // https://ckeditor.com/docs/ckfinder/ckfinder3-php/configuration.html#configuration_options_images
 
 $config['images'] = array(
-    'maxWidth'  => 1600,
+    'maxWidth'  => 1200,
     'maxHeight' => 1200,
     'quality'   => 80,
     'sizes' => array(
@@ -90,9 +91,8 @@ $config['resourceTypes'][] = array(
 $config['resourceTypes'][] = array(
     'name'              => 'Images',
     'directory'         => 'images',
-    'maxSize'           => 0,
+    'maxSize'           => '512K',
     'allowedExtensions' => 'bmp,gif,jpeg,jpg,png',
-    'deniedExtensions'  => '',
     'backend'           => 'default'
 );
 
@@ -104,21 +104,21 @@ $config['roleSessionVar'] = 'CKFinder_UserRole';
 // https://ckeditor.com/docs/ckfinder/ckfinder3-php/configuration.html#configuration_options_accessControl
 $config['accessControl'][] = array(
     'role'                => '*',
-    'resourceType'        => '*',
+    'resourceType'        => 'Images',
     'folder'              => '/',
 
-    'FOLDER_VIEW'         => true,
-    'FOLDER_CREATE'       => true,
-    'FOLDER_RENAME'       => true,
-    'FOLDER_DELETE'       => true,
+    'FOLDER_VIEW'         => false,
+    'FOLDER_CREATE'       => false,
+    'FOLDER_RENAME'       => false,
+    'FOLDER_DELETE'       => false,
 
-    'FILE_VIEW'           => true,
+    'FILE_VIEW'           => false,
     'FILE_CREATE'         => true,
-    'FILE_RENAME'         => true,
-    'FILE_DELETE'         => true,
+    'FILE_RENAME'         => false,
+    'FILE_DELETE'         => false,
 
-    'IMAGE_RESIZE'        => true,
-    'IMAGE_RESIZE_CUSTOM' => true
+    'IMAGE_RESIZE'        => false,
+    'IMAGE_RESIZE_CUSTOM' => false
 );
 
 
@@ -127,7 +127,7 @@ $config['accessControl'][] = array(
 
 $config['overwriteOnUpload'] = false;
 $config['checkDoubleExtension'] = true;
-$config['disallowUnsafeCharacters'] = false;
+$config['disallowUnsafeCharacters'] = true;
 $config['secureImageUploads'] = true;
 $config['checkSizeAfterScaling'] = true;
 $config['htmlExtensions'] = array('html', 'htm', 'xml', 'js');

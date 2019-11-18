@@ -23,6 +23,10 @@ class landing_page_contentCtrl extends jController
     {
         $rep = $this->getResponse('html');
 
+        // Authorize ckfinder image upload
+        session_start();
+        $_SESSION['canUpload'] = true;
+
         // Create the form
         $form = jForms::create('admin~landing_page_content');
 
