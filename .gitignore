@@ -32,4 +32,5 @@ lizmap/vendor/
 lizmap/composer.lock
 .php_cs
 .php_cs.cache
+build
 
