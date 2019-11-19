@@ -72,3 +72,5 @@ trigger_ci:
 
 saas_release:
 	saasv2_release_package $(SAAS_PACKAGE)
+
+local_saas_package: clean stage saas_package
