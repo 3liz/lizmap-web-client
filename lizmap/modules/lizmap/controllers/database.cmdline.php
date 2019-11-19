@@ -8,7 +8,7 @@
  */
 
 
-class configCtrl extends jControllerCmdLine
+class databaseCtrl extends jControllerCmdLine
 {
     /**
      * Options to the command line
@@ -39,13 +39,13 @@ class configCtrl extends jControllerCmdLine
         'migratelog' => 'Migrate log data from a sqlite database to the current database
 
         Use :
-        php lizmap/scripts/script.php lizmap~config:migratelog
+        php lizmap/scripts/script.php lizmap~database:migratelog
 
         ',
         'migrateusers' => 'Migrate users data from a sqlite database to the current database (experimental)
 
         Use :
-        php lizmap/scripts/script.php lizmap~config:migrateusers
+        php lizmap/scripts/script.php lizmap~database:migrateusers
 
         ',
     );
@@ -83,7 +83,6 @@ class configCtrl extends jControllerCmdLine
         }
         return $rep;
     }
-
 
     /**
      * Migrate users data from a sqlite database to the current database
