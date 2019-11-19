@@ -2,6 +2,8 @@
 Testing Lizmap with Vagrant
 ===========================
 
+**If you download Lizmap Web Client as an archive, vagrant directory will be empty. Use `git clone` instead.**
+
 To contribute to the project, and to test Lizmap, there is a configuration 
 in this directory to setup a virtual machine using Vagrant. 
 
