@@ -25,6 +25,8 @@ class ldapdaoAuthDriver extends jAuthDriverBase implements jIAuthDriver
         "name"=>"firstname"
     );
 
+    protected $uriConnect = '';
+
     public function __construct($params)
     {
         if (!extension_loaded('ldap')) {
@@ -43,6 +45,7 @@ class ldapdaoAuthDriver extends jAuthDriverBase implements jIAuthDriver
         // default ldap parameters
         $_default_params = array(
             'hostname'      =>  'localhost',
+            'tlsMode'       => '',
             'port'          =>  389,
             'adminUserDn'      =>  null,
             'adminPassword'      =>  null,
@@ -93,6 +96,38 @@ class ldapdaoAuthDriver extends jAuthDriverBase implements jIAuthDriver
         }
         if (!is_array($this->_params['bindUserDN'])) {
             $this->_params['bindUserDN'] = array($this->_params['bindUserDN']);
+        }
+
+        $uri = $this->_params['hostname'];
+
+        if (preg_match('!^ldap(s?)://!', $uri, $m)) { // old way to specify ldaps protocol
+            $predefinedPort = '';
+            if (preg_match('!:(\d+)/?!', $uri, $mp)) {
+                $predefinedPort = $mp[1];
+            }
+            if (isset($m[1]) && $m[1] == 's') {
+                $this->_params['tlsMode'] = 'ldaps';
+            }
+            elseif ($this->_params['tlsMode'] == 'ldaps') {
+                $this->_params['tlsMode'] = 'starttls';
+            }
+            if ($predefinedPort == '') {
+                $uri .= ':'.$this->_params['port'];
+            }
+            else {
+                $this->_params['port'] = $predefinedPort;
+            }
+            $this->uriConnect = $uri;
+        }
+        else {
+            $uri .= ':'.$this->_params['port'];
+            if ($this->_params['tlsMode'] == 'ldaps' || $this->_params['port'] == 636 ) {
+                $this->uriConnect = 'ldaps://'.$uri;
+                $this->_params['tlsMode'] = 'ldaps';
+            }
+            else {
+                $this->uriConnect = 'ldap://'.$uri;
+            }
         }
     }
 
@@ -466,9 +501,18 @@ class ldapdaoAuthDriver extends jAuthDriverBase implements jIAuthDriver
      */
     protected function _getLinkId()
     {
-        if ($connect = ldap_connect($this->_params['hostname'], $this->_params['port'])) {
+
+        if ($connect = ldap_connect($this->uriConnect)) {
+            //ldap_set_option(NULL, LDAP_OPT_DEBUG_LEVEL, 7);
             ldap_set_option($connect, LDAP_OPT_PROTOCOL_VERSION, $this->_params['protocolVersion']);
             ldap_set_option($connect, LDAP_OPT_REFERRALS, 0);
+
+            if ($this->_params['tlsMode'] == 'starttls') {
+                if (!ldap_start_tls($connect)) {
+                    jLog::log('ldapdao: connection error: impossible to start TLS connection: '.ldap_errno($connect).':'.ldap_error($connect), 'auth');
+                    return false;
+                }
+            }
             return $connect;
         }
         return false;

@@ -260,7 +260,7 @@ jsonrpc = on
 
 [logger]
 ; list of loggers for each categories of log messages
-; available loggers : file, syslog, firebug, mail, memory. see plugins for others
+; available loggers : file, syslog, stderr, stdout, mail, memory. see plugins for others
 
 ; _all category is the category containing loggers executed for any categories
 _all =
@@ -305,6 +305,12 @@ emailHeaders = "Content-Type: text/plain; charset=UTF-8\nFrom: webmaster@yoursit
 [syslogLogger]
 facility=LOG_LOCAL7
 ident="php-%sapi%-%domain%[%pid%]"
+
+[stderrLogger]
+; <type> = %D% %T% %ip% [%type%] %msg%  ; formated string, default is %type% - %msg%
+
+[stdoutLogger]
+; <type> = %D% %T% %ip% [%type%] %msg%  ; formated string, default is %type% - %msg%
 
 
 [mailer]

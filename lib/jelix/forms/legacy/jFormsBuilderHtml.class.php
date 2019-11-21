@@ -80,7 +80,6 @@ class jFormsBuilderHtml extends jFormsBuilderBase {
         }
         $config = jApp::config();
         $www = $config->urlengine['jelixWWWPath'];
-        $bp = $config->urlengine['basePath'];
         $resp->addJSLink($www.'js/jforms_light.js');
         $resp->addCSSLink($www.'design/jform.css');
         $heConf = &$config->htmleditors;
@@ -89,21 +88,26 @@ class jFormsBuilderHtml extends jFormsBuilderBase {
                 foreach($edlist as $ed) {
 
                     if(isset($heConf[$ed->config.'.engine.file'])){
-                        $file = $heConf[$ed->config.'.engine.file'];
-                        if(is_array($file)){
-                            foreach($file as $url) {
-                                $resp->addJSLink($bp.$url);
-                            }
-                        }else
-                            $resp->addJSLink($bp.$file);
+                        $lang = jLocale::getCurrentLang();
+                        $urls = $heConf[$ed->config.'.engine.file'];
+                        if (!is_array($urls)) {
+                            $urls =array($urls);
+                        }
+
+                        foreach($urls as $url) {
+                            $url = str_replace('$lang', $lang, $url);
+                            $resp->addJSLink($url);
+                        }
                     }
 
-                    if(isset($heConf[$ed->config.'.config']))
-                        $resp->addJSLink($bp.$heConf[$ed->config.'.config']);
+                    if (isset($heConf[$ed->config.'.config'])) {
+                        $resp->addJSLink($heConf[$ed->config . '.config']);
+                    }
 
                     $skin = $ed->config.'.skin.'.$ed->skin;
-                    if(isset($heConf[$skin]) && $heConf[$skin] != '')
-                        $resp->addCSSLink($bp.$heConf[$skin]);
+                    if (isset($heConf[$skin]) && $heConf[$skin] != '') {
+                        $resp->addCSSLink($heConf[$skin]);
+                    }
                 }
             }
         }
@@ -343,7 +347,7 @@ class jFormsBuilderHtml extends jFormsBuilderBase {
         }
 
         if ($this->isRootControl) $this->jsContent .= $this->jFormsJsVarName.".tForm.addControl(c);\n";
-        
+
     }
 
     protected function outputInput($ctrl, &$attr) {
