@@ -653,7 +653,9 @@ class lizmapProject extends qgisProject
 
     public function hasAtlasEnabled()
     {
-        if (property_exists($this->cfg->options, 'atlasEnabled') and $this->cfg->options->atlasEnabled == 'True') {
+        if ((property_exists($this->cfg->options, 'atlasEnabled') and $this->cfg->options->atlasEnabled == 'True') // Legacy LWC < 3.4 (only one layer)
+            or
+            (property_exists($this->cfg, 'atlas') and is_array($this->cfg->atlas) and count($this->cfg->atlas) > 0)) { // Multiple atlas
             return true;
         }
 
