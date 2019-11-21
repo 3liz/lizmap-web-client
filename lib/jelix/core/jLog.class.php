@@ -184,6 +184,14 @@ class jLog {
                     require(JELIX_LIB_CORE_PATH.'log/jMailLogger.class.php');
                     self::$loggers[$loggername] = new jMailLogger();
                 }
+                elseif ($loggername == 'stderr') {
+                    require(JELIX_LIB_CORE_PATH.'log/jStderrLogger.class.php');
+                    self::$loggers[$loggername] = new jStderrLogger();
+                }
+                elseif ($loggername == 'stdout') {
+                    require(JELIX_LIB_CORE_PATH.'log/jStdoutLogger.class.php');
+                    self::$loggers[$loggername] = new jStdoutLogger();
+                }
                 else {
                     $l = jApp::loadPlugin($loggername, 'logger', '.logger.php', $loggername.'Logger');
                     if (is_null($l))
