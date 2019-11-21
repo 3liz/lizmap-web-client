@@ -67,7 +67,7 @@ class jRedis extends \Redis
                 }
             }
             foreach($keysToDelete as $key => $v) {
-                $this->delete($key);
+                $this->del($key);
             }
         }
     }

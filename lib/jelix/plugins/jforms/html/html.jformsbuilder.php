@@ -35,7 +35,6 @@ class htmlJformsBuilder extends jFormsBuilderHtml {
         $confDate = &jApp::config()->datepickers;
         $confWikiEditor = &jApp::config()->wikieditors;
         $www = $confUrlEngine['jelixWWWPath'];
-        $bp = $confUrlEngine['basePath'];
 
         $resp->addJSLink(jApp::config()->jquery['jquery']);
         $resp->addJSLink($www.'jquery/include/jquery.include.js');
@@ -45,22 +44,28 @@ class htmlJformsBuilder extends jFormsBuilderHtml {
             if(!$v instanceof jFormsBase)
                 continue;
             foreach($v->getHtmlEditors() as $ed) {
-                if(isset($confHtmlEditor[$ed->config.'.engine.file'])){
-                    if(is_array($confHtmlEditor[$ed->config.'.engine.file'])){
-                        foreach($confHtmlEditor[$ed->config.'.engine.file'] as $url) {
-                            $resp->addJSLink($bp.$url);
-                        }
-                    }else
-                        $resp->addJSLink($bp.$confHtmlEditor[$ed->config.'.engine.file']);
+                if (isset($confHtmlEditor[$ed->config.'.engine.file'])) {
+                    $lang = jLocale::getCurrentLang();
+                    $urls = $confHtmlEditor[$ed->config.'.engine.file'];
+                    if (!is_array($urls)) {
+                        $urls =array($urls);
+                    }
+
+                    foreach($urls as $url) {
+                        $url = str_replace('$lang', $lang, $url);
+                        $resp->addJSLink($url);
+                    }
                 }
 
-                if(isset($confHtmlEditor[$ed->config.'.config']))
-                    $resp->addJSLink($bp.$confHtmlEditor[$ed->config.'.config']);
+                if (isset($confHtmlEditor[$ed->config.'.config'])) {
+                    $resp->addJSLink($confHtmlEditor[$ed->config.'.config']);
+                }
 
                 $skin = $ed->config.'.skin.'.$ed->skin;
 
-                if(isset($confHtmlEditor[$skin]) && $confHtmlEditor[$skin] != '')
-                    $resp->addCSSLink($bp.$confHtmlEditor[$skin]);
+                if (isset($confHtmlEditor[$skin]) && $confHtmlEditor[$skin] != '') {
+                    $resp->addCSSLink($confHtmlEditor[$skin]);
+                }
             }
 
             $datepicker_default_config = jApp::config()->forms['datepicker'];
@@ -68,20 +73,20 @@ class htmlJformsBuilder extends jFormsBuilderHtml {
             foreach($v->getControls() as $ctrl){
                 if($ctrl instanceof jFormsControlDate || get_class($ctrl->datatype) == 'jDatatypeDate' || get_class($ctrl->datatype) == 'jDatatypeLocaleDate'){
                     $config = isset($ctrl->datepickerConfig)?$ctrl->datepickerConfig:$datepicker_default_config;
-                    $resp->addJSLink($bp.$confDate[$config]);
+                    $resp->addJSLink($confDate[$config]);
                 }
             }
 
             foreach($v->getWikiEditors() as $ed) {
                 if(isset($confWikiEditor[$ed->config.'.engine.file']))
-                    $resp->addJSLink($bp.$confWikiEditor[$ed->config.'.engine.file']);
+                    $resp->addJSLink($confWikiEditor[$ed->config.'.engine.file']);
                 if(isset($confWikiEditor[$ed->config.'.config.path'])) {
-                    $p = $bp.$confWikiEditor[$ed->config.'.config.path'];
+                    $p = $confWikiEditor[$ed->config.'.config.path'];
                     $resp->addJSLink($p.jApp::config()->locale.'.js');
                     $resp->addCSSLink($p.'style.css');
                 }
                 if(isset($confWikiEditor[$ed->config.'.skin']))
-                    $resp->addCSSLink($bp.$confWikiEditor[$ed->config.'.skin']);
+                    $resp->addCSSLink($confWikiEditor[$ed->config.'.skin']);
             }
         }
     }
