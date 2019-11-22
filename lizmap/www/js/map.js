@@ -1546,7 +1546,9 @@ var lizMap = function() {
     } else {
       // zoom to val
       var feat = locate.features[val];
-      var format = new OpenLayers.Format.GeoJSON();
+      var format = new OpenLayers.Format.GeoJSON({
+          ignoreExtraDims: true
+      });
       feat = format.read(feat)[0];
 
       if( feat.geometry != null){
@@ -4953,6 +4955,7 @@ OpenLayers.Control.HighlightFeature = OpenLayers.Class(OpenLayers.Control, {
               var tconfig = config.tooltipLayers[fName];
 
               var gFormat = new OpenLayers.Format.GeoJSON({
+                  ignoreExtraDims: true,
                   externalProjection: lConfig['featureCrs'],
                   internalProjection: lizMap.map.getProjection()
               });
@@ -5752,7 +5755,9 @@ OpenLayers.Control.HighlightFeature = OpenLayers.Class(OpenLayers.Control, {
 
   function zoomToOlFeature( feature, proj, zoomAction ){
       zoomAction = typeof zoomAction !== 'undefined' ?  zoomAction : 'zoom';
-      var format = new OpenLayers.Format.GeoJSON();
+      var format = new OpenLayers.Format.GeoJSON({
+          ignoreExtraDims: true
+      });
       var feat = format.read(feature)[0];
       if( feat && 'geometry' in feat ){
           feat.geometry.transform( proj, lizMap.map.getProjection() );

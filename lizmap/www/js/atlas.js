@@ -355,7 +355,9 @@ var lizAtlas = function() {
         function runAtlasItem(feature){
 
             // Use OL tools to reproject feature geometry
-            var format = new OpenLayers.Format.GeoJSON();
+            var format = new OpenLayers.Format.GeoJSON({
+                ignoreExtraDims: true
+            });
             var feat = format.read(feature)[0];
             var f = feat.clone();
             var proj = lizMap.config.layers[lizAtlasConfig.layername]['featureCrs'];
