@@ -159,7 +159,9 @@ var lizTimemanager = function() {
                     var protocol = new OpenLayers.Protocol.HTTP({
                         url:  service,
                         params: wfsOptions,
-                        format: new OpenLayers.Format.GeoJSON()
+                        format: new OpenLayers.Format.GeoJSON({
+                            ignoreExtraDims: true
+                        })
                     });
                     tmLayerConfig['protocol'] = protocol;
 
