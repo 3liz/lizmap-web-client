@@ -295,7 +295,7 @@ class qgisVectorLayer extends qgisMapLayer
                 );
             }
             if (!empty($dtParams->schema)) {
-                $jdbParams['search_path'] = $dtParams->schema . ',public';
+                $jdbParams['search_path'] = '"'.$dtParams->schema . '",public';
             }
         } elseif ($this->provider == 'ogr'
             and preg_match('#(gpkg|sqlite)$#', $dtParams->dbname ) ) {
