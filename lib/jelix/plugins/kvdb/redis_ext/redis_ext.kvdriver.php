@@ -142,7 +142,7 @@ class redis_extKVDriver extends jKVDriver implements jIKVSet, jIKVttl {
     }
 
     public function delete($key) {
-        return ($this->_connection->delete($this->getUsedKey($key)) > 0);
+        return ($this->_connection->del($this->getUsedKey($key)) > 0);
     }
 
     public function flush() {

@@ -139,7 +139,7 @@ class upload2_htmlFormWidget extends \jelix\forms\HtmlWidget\WidgetBase
             $action = 'keep';
         } else {
             if (!$required) {
-                $choices['keep'] = 'no file';
+                $choices['keep'] = '';
                 $action = 'keep';
             }
         }
@@ -179,10 +179,16 @@ class upload2_htmlFormWidget extends \jelix\forms\HtmlWidget\WidgetBase
             echo '<li id="' . $idItem . 'keep_item">',
                 '<label>
                     <input ' . $attrRadio . 'keep' . $attrRadioSuffix . '  id="' . $idChoice . '_jf_action_keep" value="keep" ' .
-                ($action == 'keep' ? 'checked' : '') . '/>'.
-                jLocale::get("jelix~jforms.upload.choice.keep").
-                '</label>';
-            $this->_outputControlValue($choices['keep'], 'original');
+                ($action == 'keep' ? 'checked' : '') . '/> ';
+            if ($choices['keep'] === '') {
+                echo jLocale::get('jelix~jforms.upload.choice.keep.empty').
+                    '</label> ';
+            }
+            else {
+                echo jLocale::get('jelix~jforms.upload.choice.keep').
+                    '</label> ';
+                $this->_outputControlValue($choices['keep'], 'original');
+            }
             echo "</li>\n";
             $this->parentWidget->addJs("c2.items['keep']=[];\n");
         }
@@ -192,9 +198,9 @@ class upload2_htmlFormWidget extends \jelix\forms\HtmlWidget\WidgetBase
                 '<label>
                     <input ' . $attrRadio . 'keepnew' . $attrRadioSuffix . ' id="' . $idChoice . '_jf_action_keepnew" value="keepnew" ' .
                 ($action == 'keepnew' ? 'checked' : '') .
-                '/>'.
+                '/> '.
                 jLocale::get("jelix~jforms.upload.choice.keepnew").
-                '</label>';
+                '</label> ';
             $this->_outputControlValue($choices['keepnew'], 'new');
             echo "</li>\n";
             $this->parentWidget->addJs("c2.items['keepnew']=[];\n");
@@ -202,7 +208,7 @@ class upload2_htmlFormWidget extends \jelix\forms\HtmlWidget\WidgetBase
 
         if (count($choices) > 1) {
             echo '<li id="' . $idItem . 'new_item">',
-                '<label><input ' . $attrRadio . 'new' . $attrRadioSuffix . '  id="' . $idChoice . '_jf_action_new" value="new"/>'.
+                '<label><input ' . $attrRadio . 'new' . $attrRadioSuffix . '  id="' . $idChoice . '_jf_action_new" value="new"/> '.
                 jLocale::get("jelix~jforms.upload.choice.new").
                 '</label> ';
             echo '<input';
@@ -223,7 +229,7 @@ class upload2_htmlFormWidget extends \jelix\forms\HtmlWidget\WidgetBase
             echo '<li id="' . $idItem . 'del_item">',
                 '<label>
                     <input ' . $attrRadio . 'del' . $attrRadioSuffix . '  id="' . $idChoice . '_jf_action_del" value="del" ' .
-                ($action == 'del' ? 'checked' : '') . '/>'.
+                ($action == 'del' ? 'checked' : '') . '/> '.
                 jLocale::get("jelix~jforms.upload.choice.del").
                 '</label>';
             echo "</li>\n";
