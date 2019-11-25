@@ -1,4 +1,4 @@
-CREATE TABLE `log_detail` (
+CREATE TABLE IF NOT EXISTS `log_detail` (
     `id` INTEGER  AUTO_INCREMENT NOT NULL,
     `log_key` VARCHAR(100) NOT NULL ,
     `log_timestamp` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -10,7 +10,7 @@ CREATE TABLE `log_detail` (
     PRIMARY KEY (`id`)
 );
 
-CREATE TABLE `log_counter` (
+CREATE TABLE IF NOT EXISTS `log_counter` (
     `id` INTEGER AUTO_INCREMENT  NOT NULL ,
     `key` VARCHAR(100) NOT NULL ,
     `counter` INTEGER,

@@ -251,19 +251,23 @@ default.css[]=js/jquery/ui-1.11.4/jquery-ui.min.css
 [htmleditors]
 default.engine.name = ckeditor
 default.engine.file[] = js/ckeditor5/ckeditor.js
+default.engine.file[] = js/ckeditor5/translations/$lang.js
 default.config = js/ckeditor5/ckeditor_lizmap.js
 default.skin.default =
 
 ckdefault.engine.name = ckeditor
 ckdefault.engine.file[] = js/ckeditor5/ckeditor.js
+default.engine.file[] = js/ckeditor5/translations/$lang.js
 ckdefault.config = js/ckeditor5/ckeditor_ckdefault.js
 
 ckfull.engine.name = ckeditor
 ckfull.engine.file[] = js/ckeditor5/ckeditor.js
+default.engine.file[] = js/ckeditor5/translations/$lang.js
 ckfull.config = js/ckeditor5/ckeditor_ckfull.js
 
 ckbasic.engine.name = ckeditor
 ckbasic.engine.file[] = js/ckeditor5/ckeditor.js
+default.engine.file[] = js/ckeditor5/translations/$lang.js
 ckbasic.config = js/ckeditor5/ckeditor_ckbasic.js
 
 ckfullandmedia.engine.name = ckeditor
