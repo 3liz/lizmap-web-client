@@ -3311,6 +3311,7 @@ var lizAttributeTable = function() {
             // get features
             $.post( getFeatureUrlData['url'], getFeatureUrlData['options'], function(result) {
                     var gFormat = new OpenLayers.Format.GeoJSON({
+                        ignoreExtraDims: true,
                         externalProjection: lConfig.crs,
                         internalProjection: lizMap.map.getProjection()
                     });
