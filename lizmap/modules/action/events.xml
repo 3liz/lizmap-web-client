@@ -1,0 +1,11 @@
+<events xmlns="http://jelix.org/ns/events/1.0">
+<!--
+    <listener name="actionDockable">
+        <event name="mapDockable" />
+    </listener>
+-->
+   <listener name="action">
+       <event name="getMapAdditions" />
+   </listener>
+</events>
+
