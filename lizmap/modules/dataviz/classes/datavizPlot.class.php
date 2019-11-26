@@ -329,6 +329,7 @@ class datavizPlot
                 'OUTPUTFORMAT' => 'GeoJSON',
                 'GEOMETRYNAME' => 'none',
                 'PROPERTYNAME' => implode(',', $propertyname),
+                'SORTBY' => implode(',', $$this->x_fields),
             );
             if (!empty($this->colorfields)) {
                 $wfsparams['PROPERTYNAME'] .= ','.implode(',', $this->colorfields);
