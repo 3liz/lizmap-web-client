@@ -15,6 +15,7 @@ jelix.access=2
 lizmap.access=2
 view.access=2
 filter.access=2
+action.access=2
 
 jacl2db_admin.access=1
 jauthdb_admin.access=1
