@@ -10,14 +10,19 @@ in this directory to setup a virtual machine using Vagrant.
 Here are steps:
 
 - install [Virtual box](https://www.virtualbox.org/) and [Vagrant](http://www.vagrantup.com/downloads.html)
-- copy `vagrant/vars/custom.yml.dist` to `vagrant/vars/custom.yml` and change some
-  settings if needed. You can enable postgresql storage for Lizmap data, or
-  enable ldap authentication for example. *NB* If you need bleeding edge softwares, you can copy instead `vagrant/vars/custom.yml.latest` to `vagrant/vars/custom.yml` and make the changes.
-- go into the vagrant/ directory (where there is the README.md file you're reading),
- launch the vagrant virtual machine:
+- go into the vagrant/ directory (where there is the README.md file you're reading)
 
 ```
 cd vagrant/
+```
+
+- copy `vagrant/vars/custom.yml.dist` to `vagrant/vars/custom.yml` and change some
+  settings if needed. You can enable postgresql storage for Lizmap data, or
+  enable ldap authentication for example.
+  *NB* If you need bleeding edge softwares, you can copy instead `vagrant/vars/custom.yml.latest` to `vagrant/vars/custom.yml` and make the changes.
+- launch the vagrant virtual machine:
+
+```
 vagrant up
 ```
 
@@ -25,6 +30,20 @@ It will create a virtual machine with all needed software:
 postgresql, postgis, redis, nginx, php, QGIS server... 
 
 It can take time the first time. It depends of your internet connection.
+
+If you have an error like
+
+```
+GuestAdditions versions on your host (Y.Y.Y) and guest (Y.Y.Y) do not match.
+...
+E: Unable to locate package linux-headers-x.x.x-amd64
+E: Couldn't find any package by glob 'linux-headers-x.x.x-amd64'
+E: Couldn't find any package by regex 'linux-headers-x.x.x-amd64'
+```
+
+Enter in the virtual machine, `vagrant ssh`, and then launch `sudo apt-get update`,
+then `sudo apt-get dist-upgrade`. When the upgrade is finished, type `exit`.
+Then stop and restart the VM: `vagrant halt && vagrant up && vagrant provision`.
 
 When the "Done" message appears, and if there are no errors, Lizmap is
 ready. Go in `http://localhost:8130/` to see the app.

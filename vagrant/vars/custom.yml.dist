@@ -1,13 +1,13 @@
 ---
 # Define custom variables to overrides defaults for roles
 
-# Local configuration
+## Local configuration
 # local_timezone: Europe/Paris
 # local_locale: fr_FR.UTF-8
 # local_locale_left: fr_FR
 # local_locale_right: UTF-8
 
-# PHP
+## PHP
 #php_apt_key_url: https://packages.sury.org/php/apt.gpg
 #php_version: "5.6"
 #php_repository: https://packages.sury.org/php
@@ -22,24 +22,30 @@
 # Enable to check the authentication against an ldap directory
 #lizmap_ldapdao_enabled: false
 
-# Qgis server
-# qgis_server_version: 3.4
-# qgis_server_name: qgis
-# qgis_server_port: 8200
-# qgis_set_real_ip: 127.0.0.1
-# qgis_fcgi_socket: 127.0.0.1:7200
+## Qgis server
+# qgis_server_version: "3.4"
 # qgis_num_workers: 4
 # qgis_server_log_level: 1
-# qgis_server_plugin_directory: /srv/qgis/plugins
-# qgis_install_source: repository
-# qgis_server_plugins:
-#   wfsOutputExtension:
-#     repository: https://github.com/3liz/qgis-wfsOutputExtension
-#     version: master
-#qgis_repository_debian: http://qgis.org/debian-ltr-2.18
-#qgis_repository_debian_key: 'CAEB3DC3BDF7FB45'
-#qgis_repository_debian_key_url: 'http://qgis.org/downloads/qgis-2017.gpg.key'
 
+#qgis2_server_plugins:
+#  wfsOutputExtension:
+#    repository: https://github.com/3liz/qgis-wfsOutputExtension
+#    version: v1.0.2
+#  atlasprint:
+#    repository: https://github.com/3liz/qgis-atlasprint
+#    version: v1.1.1
+
+#qgis3_server_plugins:
+#  wfsOutputExtension:
+#    repository: https://github.com/3liz/qgis-wfsOutputExtension
+#    version: v1.2.2
+#  atlasprint:
+#    repository: https://github.com/3liz/qgis-atlasprint
+#    version: v1.2.2
+
+#qgis_repository_debian_key: '51F523511C7028C3'
+
+## Postgresql
 # postgresql_install: true
 # postgresql_apt_key_url: 'https://www.postgresql.org/media/keys/ACCC4CF8.asc'
 # postgresql_version: 9.6
@@ -50,8 +56,3 @@
 # postgresql_postgis_version: 2.3
 # postgresql_postgres_password: "lizmap1234!"
 # postgresql_lizmap_password: "lizmap1234!"
-
-
-
-# xvfb_install: true
-# xvfb_port: 99

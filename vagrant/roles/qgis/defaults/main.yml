@@ -1,26 +1,68 @@
 ---
 # Qgis server
-qgis_server_version: 2.18
+qgis_server_version: "2.18"
 qgis_server_name: qgis
 qgis_server_port: 8200
 qgis_set_real_ip: 127.0.0.1
 qgis_fcgi_socket: 127.0.0.1:7200
+qgis_server_user: lizmap
+qgis_server_group: lizmap
 
 # debian
 qgis_server_fcgi_path: /usr/lib/cgi-bin/qgis_mapserv.fcgi
 
 qgis_num_workers: 4
 qgis_server_log_level: 1
-qgis_server_plugin_directory: /srv/qgis/plugins
-qgis_server_plugins:
+qgis_server_dir: /srv/qgis
+qgis_server_home: "{{ qgis_server_dir }}/home"
+qgis_server_plugin_directory: "{{ qgis_server_dir }}/plugins"
+qgis_server_plugin_owner: "root"
+qgis_server_plugin_group: "lizmap"
+qgis_server_plugin_mode: "0755"
+
+qgis2_server_plugins:
   wfsOutputExtension:
     repository: https://github.com/3liz/qgis-wfsOutputExtension
-    version: master
+    version: v1.0.2
+  atlasprint:
+    repository: https://github.com/3liz/qgis-atlasprint
+    version: v1.1.1
 
-qgis_server_config_directory: /srv/qgis/config
+qgis3_server_plugins:
+  wfsOutputExtension:
+    repository: https://github.com/3liz/qgis-wfsOutputExtension
+    version: v1.2.2
+  atlasprint:
+    repository: https://github.com/3liz/qgis-atlasprint
+    version: v1.2.2
 
-# source: package or repository
+qgis_server_config_directory: "{{ qgis_server_dir }}/config"
+
+# source: deb, repository, or none
 qgis_install_source: repository
-qgis_repository_debian: 'http://qgis.org/debian-ltr-2.18'
-qgis_repository_debian_key: 'CAEB3DC3BDF7FB45'
-qgis_repository_debian_key_url: 'https://qgis.org/downloads/qgis-2017.gpg.key'
+
+# deb file should be in the files/ directory at top directory of lizmap-box
+qgis_deb: "qgis.deb"
+qgis_repository_debian: 'http://qgis.org/debian-ltr'
+qgis_repository_debian_key: "51F523511C7028C3"
+qgis_repository_debian_key_url: "https://qgis.org/downloads/qgis-2019.gpg.key"
+
+qgis_config_simplifyLocal: 'false'  # default in qgis:  true
+qgis_config_warnOldProjectVersion: 'false'  # default in qgis: true
+qgis_config_networkTimeout: '10000'  # default in qgis: 60000
+qgis_config_defaultTileExpiry: '168'  # default in qgis: 24
+qgis_config_defaultTileMaxRetry: '2'  # default in qgis: 3
+qgis_config_defaultCapabilitiesExpiry: '24'  # default in qgis: 24
+qgis_config_compileExpressions: 'true'  # default in qgis: true
+qgis_config_enable_render_caching: 'true'  # default in qgis: true
+qgis_config_parallel_rendering: 'true'  # default in qgis: false
+qgis_config_max_threads: '2'  # default in qgis: -1
+
+qgis_internet_proxy_enabled: false
+qgis_internet_proxy_host: ""
+qgis_internet_proxy_port: ""
+qgis_internet_proxy_user: ""
+qgis_internet_proxy_password: ""
+
+
+
