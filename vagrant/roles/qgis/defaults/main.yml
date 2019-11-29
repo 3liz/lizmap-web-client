@@ -1,6 +1,6 @@
 ---
 # Qgis server
-qgis_server_version: "2.18"
+qgis_server_version: "3.4"
 qgis_server_name: qgis
 qgis_server_port: 8200
 qgis_set_real_ip: 127.0.0.1
