@@ -6,7 +6,7 @@ CREATE TABLE IF NOT EXISTS log_detail (
     log_content TEXT,
     log_repository character varying(100),
     log_project character varying(100),
-    log_ip character varying(15)
+    log_ip character varying(40)
 );
 
 CREATE TABLE IF NOT EXISTS log_counter (
