@@ -6,7 +6,7 @@ php_repository: https://packages.sury.org/php
 php_fpm_config_file: /etc/php/{{ php_version }}/fpm/pool.d/www.conf
 php_fpm_conf_path: /etc/php/{{ php_version }}/fpm/
 
-php_composer_version: 1.7.2
+php_composer_version: 1.9.1
 
 # Lizmap nginx frontal
 lizmap_port: 80

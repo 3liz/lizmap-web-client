@@ -6,10 +6,6 @@
 # This is a POSIX shell fragment
 #
 
-#
-# Deployed by PUPPET / DO NOT EDIT DIRECTLY
-#
-
 # Additional options that are passed to the Daemon.
 DAEMON_OPTS=""
 #ulimit -Hn 8192
