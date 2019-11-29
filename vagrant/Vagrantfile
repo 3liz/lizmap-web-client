@@ -58,6 +58,9 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   # Run Ansible from the Vagrant VM
   config.vm.provision "ansible_local" do |ansible|
     ansible.playbook = "playbook.yml"
+    ansible.install_mode = "pip"
+    ansible.version = "2.7.15"
+    ansible.pip_install_cmd = "sudo apt-get install -y python-pip"
     ansible.raw_arguments  = [
       "-v" #, "--tags=lizmap"
     ]

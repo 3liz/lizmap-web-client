@@ -1,61 +1,85 @@
 ---
+
+- name: Add QGIS HOME directory
+  file: path={{ qgis_server_home }} state=directory owner="{{ qgis_server_user }}" group="{{ qgis_server_group }}" mode="0775"
+  tags: qgis
+
 # Qgis server config
 # log directory
 - name: Add log directory
-  file: path=/var/log/qgis state=directory mode=0755 owner=lizmap group=lizmap
+  file: path=/var/log/qgis state=directory mode=0755 owner={{ qgis_server_user }} group={{ qgis_server_group }}
+  tags: qgis
 
 # qgis server logrotate
 - name: Set Server logrotate
   copy: dest=/etc/logrotate.d/qgis-server src=qgis_server_logrotate mode=0644
+  tags: qgis
+
+# add qgis server config directory
+- name: Add qgis server config directory
+  file: path={{ qgis_server_home }}/.qgis2 mode=0775  state=directory group={{ qgis_server_group }}
+  tags: qgis
 
 # supervisor config
 - name: Add supervisor config
   template: src=qgis_supervisor_conf.j2 dest='{{ supervisor_config_directory }}/qgis-server.conf' mode=0644
   notify:
     - restart supervisor
+  tags: qgis
 
 # Debian : Install qgis-server from local package
 - name: Copy QGIS local package
-  copy: dest=/tmp/  src={{ qgis_package }}
-  when: qgis_install_source == 'package'
+  copy: dest=/tmp/  src=../../files/{{ qgis_deb }}
+  when: qgis_install_source == 'deb'
+  tags: qgis
 
 - name: Install QGIS - Debian
-  apt: deb=/tmp/{{ qgis_package }}
+  apt: deb=/tmp/{{ qgis_deb }}
   notify:
     - restart supervisor
-  when: qgis_install_source == 'package'
+  when: qgis_install_source == 'deb'
+  tags: qgis
 
 # Debian : Install QGIS from repository
 
-- name: Add QGIS repository key - 1
-  shell: wget -O - {{ qgis_repository_debian_key_url }} | gpg --no-tty --import
+- name: Add QGIS repository key
+  apt_key:
+    id: "{{ qgis_repository_debian_key }}"
+    keyserver: keyserver.ubuntu.com
+    state: present
+    #url: "{{ qgis_repository_debian_key_url }}"
   when: qgis_install_source == 'repository'
+  tags: qgis
 
-- name: Add QGIS repository key - 2
-  shell: gpg --fingerprint {{ qgis_repository_debian_key }}
-  when: qgis_install_source == 'repository'
-
-- name: Add QGIS repository key - 3
-  shell: gpg --export --armor {{ qgis_repository_debian_key }} | apt-key add -
-  when: qgis_install_source == 'repository'
+- set_fact:
+    qgis_repository_debian: "http://qgis.org/debian-ltr-2.18"
+  when: qgis_server_version == "2.18" and qgis_install_source == 'repository'
+  tags: qgis
 
 - name: Add QGIS repository
   apt_repository: repo='deb {{ qgis_repository_debian }} {{ ansible_distribution_release|lower }} main' state=present
   when: qgis_install_source == 'repository'
+  tags: qgis
 
-- name: Install QGIS from repository - Debian
-  apt: pkg={{ item }} state=latest update_cache=yes allow_unauthenticated=yes
+- name: Install QGIS from repository
+  apt: pkg="qgis-server" state=latest update_cache=yes allow_unauthenticated=yes
   when: qgis_install_source == 'repository'
-  with_items:
-    - qgis-server
   notify:
     - restart supervisor
+  tags: qgis
 
 - name: Add QGIS config directory
   file: path={{ qgis_server_config_directory }}/QGIS state=directory
+  tags: qgis
 
 - name: Add QGIS config file
   template: src=qgis_config.j2 dest='{{ qgis_server_config_directory }}/QGIS/QGIS2.ini' mode=0644
+  when: qgis_server_version == "2.18"
+  tags: qgis
 
+- name: Add QGIS config file
+  template: src=qgis3_config.j2 dest='{{ qgis_server_config_directory }}/QGIS/QGIS3.ini' mode=0644
+  when: qgis_server_version != "2.18"
+  tags: qgis
 
 

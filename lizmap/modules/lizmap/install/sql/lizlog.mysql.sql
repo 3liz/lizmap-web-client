@@ -6,7 +6,7 @@ CREATE TABLE IF NOT EXISTS `log_detail` (
     `log_content` TEXT,
     `log_repository` VARCHAR(100),
     `log_project` VARCHAR(100),
-    `log_ip` VARCHAR(15),
+    `log_ip` VARCHAR(40),
     PRIMARY KEY (`id`)
 );
 
