@@ -552,6 +552,7 @@ class serviceCtrl extends jController
 
         // Return response
         $rep = $this->getResponse('binary');
+        $rep->setHttpStatus($code, '');
         $rep->mimeType = $mime;
         $rep->content = $data;
         $rep->doDownload = false;
@@ -1121,6 +1122,7 @@ class serviceCtrl extends jController
         list($data, $mime, $code) = lizmapProxy::getRemoteData($querystring, array('method' => 'post'));
 
         $rep = $this->getResponse('binary');
+        $rep->setHttpStatus($code, '');
         $rep->mimeType = $mime;
         $rep->content = $data;
         $rep->doDownload = false;
@@ -1183,6 +1185,7 @@ class serviceCtrl extends jController
         list($data, $mime, $code) = lizmapProxy::getRemoteData($querystring, array('method' => 'post'));
 
         $rep = $this->getResponse('binary');
+        $rep->setHttpStatus($code, '');
         $rep->mimeType = $mime;
         $rep->content = $data;
         $rep->doDownload = false;
@@ -1229,7 +1232,8 @@ class serviceCtrl extends jController
 
         // Return response
         $rep = $this->getResponse('binary');
-        $rep->mimeType = 'text/xml';
+        $rep->setHttpStatus($code, '');
+        $rep->mimeType = $mime;
         $rep->content = $data;
         $rep->doDownload = false;
         $rep->outputFileName = 'qgis_style';
@@ -1293,6 +1297,7 @@ class serviceCtrl extends jController
         ));
 
         $rep = $this->getResponse('binary');
+        $rep->setHttpStatus($code, '');
         $rep->mimeType = $mime;
         $rep->content = $data;
         $rep->doDownload = false;
@@ -1379,7 +1384,7 @@ class serviceCtrl extends jController
         // Get remote data
         list($data, $mime, $code) = lizmapProxy::getRemoteData($querystring);
 
-        if ($returnJson) {
+        if ($code/100 < 4 && $returnJson) {
             $jsonData = array();
 
             $layer = $this->project->findLayerByAnyName($this->params['typename']);
@@ -1418,6 +1423,7 @@ class serviceCtrl extends jController
 
             // Return response
             $rep = $this->getResponse('binary');
+            $rep->setHttpStatus($code, '');
             $rep->mimeType = 'text/json; charset=utf-8';
             $rep->content = $jsonData;
             $rep->doDownload = false;
@@ -1428,6 +1434,7 @@ class serviceCtrl extends jController
 
         // Return response
         $rep = $this->getResponse('binary');
+        $rep->setHttpStatus($code, '');
         $rep->mimeType = $mime;
         $rep->content = $data;
         $rep->doDownload = false;
