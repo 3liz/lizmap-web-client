@@ -1384,7 +1384,7 @@ class serviceCtrl extends jController
         // Get remote data
         list($data, $mime, $code) = lizmapProxy::getRemoteData($querystring);
 
-        if ($code/100 < 4 && $returnJson) {
+        if ($code < 400 && $returnJson) {
             $jsonData = array();
 
             $layer = $this->project->findLayerByAnyName($this->params['typename']);
