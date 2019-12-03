@@ -23,8 +23,6 @@ class qgisServer
         $services = lizmap::getServices();
 
         $this->qgisServerVersion = $services->qgisServerVersion;
-
-        //$this->getPlugins();
     }
 
     public function getPlugins($project)
@@ -39,7 +37,7 @@ class qgisServer
         );
         $url = lizmapProxy::constructUrl($params);
         list($data, $mime, $code) = lizmapProxy::getRemoteData($url);
-        if ($mime == 'text/json') {
+        if (strpos($mime, 'text/json') === 0 || strpos($mime, 'application/json') === 0) {
             $json = json_decode($data);
             $metadata = $json->metadata;
             $plugins[$metadata->name] = array('version' => $metadata->version);
