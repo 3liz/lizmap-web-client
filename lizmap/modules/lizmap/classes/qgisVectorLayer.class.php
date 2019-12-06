@@ -450,8 +450,8 @@ class qgisVectorLayer extends qgisMapLayer
         // test type
         $rs = $cnx->query('SELECT GeometryType('.$nvalue.') as geomtype');
         $rs = $rs->fetch();
-        if (!preg_match('/'.$dbFieldsInfo->geometryType.'/', strtolower($rs->geomtype))) {
-            if (preg_match('/'.str_replace('multi', '', $dbFieldsInfo->geometryType).'/', strtolower($rs->geomtype))) {
+        if (!preg_match('/'.preg_quote($dbFieldsInfo->geometryType).'/', strtolower($rs->geomtype))) {
+            if (preg_match('/'.preg_quote(str_replace('multi', '', $dbFieldsInfo->geometryType)).'/', strtolower($rs->geomtype))) {
                 $nvalue = 'ST_Multi('.$nvalue.')';
             }
         }
