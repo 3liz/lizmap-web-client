@@ -161,11 +161,8 @@ class filterDatasource {
             }
         }
         $split = False;
-        if(!empty($splitter)){
-            $splitter = $this->validateFilter($splitter);
-            if(strlen($splitter) <= 3){
-                $split = True;
-            }
+        if(!empty($splitter) && strlen($splitter) > 0 && strlen($splitter) <= 3){
+            $split = True;
         }
 
         // SQL
