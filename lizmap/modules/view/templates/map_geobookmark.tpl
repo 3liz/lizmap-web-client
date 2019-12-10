@@ -1,6 +1,8 @@
     {jmessage}
     {if $gbList }
-    {@view~map.permalink.geobookmark.title@}
+      <div id="geobookmark-title">
+      {@view~map.permalink.geobookmark.title@}
+      </div>
       <div>
         {if $gbCount > 0 }
 
@@ -17,7 +19,9 @@
         </table>
 
         {else}
+          <div id="geobookmark-none">
           {@view~map.permalink.geobookmark.none@}
+          </div>
         {/if}
 
       </div>
