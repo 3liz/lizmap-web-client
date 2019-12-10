@@ -66,7 +66,7 @@ class Proj4phpProjOrtho {
         $cosphi = cos( $lat );
 
         $coslon = cos( $dlon );
-        $g = $this->sin_p14 * sinphi + $this->cos_p14 * $cosphi * $coslon;
+        $g = $this->sin_p14 * $sinphi + $this->cos_p14 * $cosphi * $coslon;
         $ksp = 1.0;
         
         if( ($g > 0) || (abs( $g ) <= Proj4php::$common->EPSLN) ) {
@@ -119,7 +119,7 @@ class Proj4phpProjOrtho {
         }
         $lat = Proj4php::$common->asinz( $cosz * $this->sin_p14 + ($p->y * $sinz * $this->cos_p14) / $rh );
         $con = abs( $this->lat0 ) - Proj4php::$common->HALF_PI;
-        if( abs( con ) <= Proj4php::$common->EPSLN ) {
+        if( abs( $con ) <= Proj4php::$common->EPSLN ) {
             if( $this->lat0 >= 0 ) {
                 $lon = Proj4php::$common->adjust_lon( $this->long0 + atan2( $p->x, -$p->y ) );
             } else {

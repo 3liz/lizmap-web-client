@@ -122,12 +122,12 @@ class Proj4phpProjLaea {
                 case $this->OBLIQ:
                 case $this->EQUIT:
                     $y = ($this->mode == $this->EQUIT) ? 1. + $cosphi * $coslam : 1. + $this->sinph0 * $sinphi + $this->cosph0 * $cosphi * $coslam;
-                    if( y <= Proj4php::$common->EPSLN ) {
+                    if( $y <= Proj4php::$common->EPSLN ) {
                         Proj4php::reportError( "laea:fwd:y less than eps" );
                         return null;
                     }
                     $y = sqrt( 2. / $y );
-                    $x = $y * cosphi * sin( $lam );
+                    $x = $y * $cosphi * sin( $lam );
                     $y *= ($this->mode == $this->EQUIT) ? $sinphi : $this->cosph0 * $sinphi - $this->sinph0 * $cosphi * $coslam;
                     break;
                 case $this->N_POLE:
@@ -195,7 +195,7 @@ class Proj4phpProjLaea {
                     break;
                 case $this->N_POLE:
                 case $this->S_POLE:
-                    if( q >= 0. ) {
+                    if( $q >= 0. ) {
                         $x = ($b = sqrt( $q )) * $sinlam;
                         $y = $coslam * (($this->mode == $this->S_POLE) ? $b : -$b);
                     } else {

@@ -202,7 +202,7 @@ class Proj4phpProjOmerc {
             $t = .5 * ($q + 1.0 / $q);
             $ul = ($s * $this->singam - $vl * $this->cosgam) / $t;
             $con = cos( $this->bl * $dlon );
-            if( abs( con ) < .0000001 ) {
+            if( abs( $con ) < .0000001 ) {
                 $us = $this->al * $this->bl * $dlon;
             } else {
                 $us = $this->al * atan( ($s * $this->cosgam + $vl * $this->singam) / $con ) / $this->bl;
@@ -276,7 +276,7 @@ class Proj4phpProjOmerc {
         $ul = ($vl * $this->cosgam + $s * $this->singam) / $t;
         if( abs( abs( $ul ) - 1.0 ) <= Proj4php::$common->EPSLN ) {
             $lon = $this->longc;
-            if( ul >= 0.0 ) {
+            if( $ul >= 0.0 ) {
                 $lat = Proj4php::$common->HALF_PI;
             } else {
                 $lat = -Proj4php::$common->HALF_PI;

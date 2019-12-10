@@ -90,7 +90,7 @@ class Proj4phpProjAea {
         $qs = Proj4php::$common->qsfnz( $this->e3, $this->sin_phi, $this->cos_phi );
         $rh1 = $this->a * sqrt( $this->c - $this->ns0 * $qs ) / $this->ns0;
         $theta = $this->ns0 * Proj4php::$common->adjust_lon( $lon - $this->long0 );
-        $x = rh1 * sin( $theta ) + $this->x0;
+        $x = $rh1 * sin( $theta ) + $this->x0;
         $y = $this->rh - $rh1 * cos( $theta ) + $this->y0;
 
         $p->x = $x;

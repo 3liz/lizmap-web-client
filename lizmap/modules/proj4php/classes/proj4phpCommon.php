@@ -332,7 +332,7 @@ class Proj4phpCommon {
 
         $en = array( );
         $en[0] = $this->C00 - $es * ($this->C02 + $es * ($this->C04 + $es * ($this->C06 + $es * $this->C08)));
-        $en[1] = es * ($this->C22 - $es * ($this->C04 + $es * ($this->C06 + $es * $this->C08)));
+        $en[1] = $es * ($this->C22 - $es * ($this->C04 + $es * ($this->C06 + $es * $this->C08)));
         $t = $es * $es;
         $en[2] = $t * ($this->C44 - $es * ($this->C46 + $es * $this->C48));
         $t *= $es;
