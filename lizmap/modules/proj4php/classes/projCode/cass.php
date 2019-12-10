@@ -65,7 +65,7 @@ class Proj4phpProjCass {
             //ellipsoid
             $this->n = sin( $phi );
             $this->c = cos( $phi );
-            $y = $this->pj_mlfn( $phi, $this->n, $this->c, $this->en );
+            $y = Proj4php::$common->pj_mlfn( $phi, $this->n, $this->c, $this->en );
             $this->n = 1. / sqrt( 1. - $this->es * $this->n * $this->n );
             $this->tn = tan( $phi );
             $this->t = $this->tn * $this->tn;

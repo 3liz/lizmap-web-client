@@ -84,7 +84,7 @@ class Proj4phpProjMerc {
                 $x = $this->x0 + $this->a * $this->k0 * Proj4php::$common->adjust_lon( $lon - $this->long0 );
                 $y = $this->y0 + $this->a * $this->k0 * log( tan( Proj4php::$common->FORTPI + 0.5 * $lat ) );
             } else {
-                $sinphi = sin( lat );
+                $sinphi = sin( $lat );
                 $ts = Proj4php::$common->tsfnz( $this->e, $lat, $sinphi );
                 $x = $this->x0 + $this->a * $this->k0 * Proj4php::$common->adjust_lon( $lon - $this->long0 );
                 $y = $this->y0 - $this->a * $this->k0 * log( $ts );
