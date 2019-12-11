@@ -56,6 +56,11 @@ class qgisProject
     protected $relations = array();
 
     /**
+     * @var array list of themes
+     */
+    protected $themes = array();
+
+    /**
      * @var bool
      */
     protected $useLayerIDs = false;
@@ -69,7 +74,7 @@ class qgisProject
      * @var array List of cached properties
      */
     protected $cachedProperties = array('WMSInformation', 'canvasColor', 'allProj4',
-        'relations', 'useLayerIDs', 'layers', 'data', 'qgisProjectVersion', );
+        'relations', 'themes', 'useLayerIDs', 'layers', 'data', 'qgisProjectVersion', );
 
     /**
      * constructor.
@@ -180,6 +185,11 @@ class qgisProject
     public function getRelations()
     {
         return $this->relations;
+    }
+
+    public function getThemes()
+    {
+        return $this->themes;
     }
 
     /**
@@ -453,6 +463,7 @@ class qgisProject
         $this->canvasColor = $this->readCanvasColor($qgs_xml);
         $this->allProj4 = $this->readAllProj4($qgs_xml);
         $this->relations = $this->readRelations($qgs_xml);
+        $this->themes = $this->readThemes($qgs_xml);
         $this->useLayerIDs = $this->readUseLayerIDs($qgs_xml);
         $this->layers = $this->readLayers($qgs_xml);
     }
@@ -539,6 +550,44 @@ class qgisProject
         }
 
         return $srsList;
+    }
+
+    /**
+     * @param SimpleXMLElement $xml
+     *
+     * @return null|array[]
+     */
+    protected function readThemes($xml)
+    {
+        $xmlThemes = $xml->xpath('//visibility-presets');
+        $themes = array();
+
+        if($xmlThemes){
+            foreach ($xmlThemes[0] as $theme) {
+                $themeObj = $theme->attributes();
+                if (!array_key_exists((string) $themeObj->name, $themes)) {
+                    $themes[(string) $themeObj->name] = array();
+                }
+
+                // Copy layers and their attributes
+                foreach ($theme->layer as $layer) {
+                    $layerObj = $layer->attributes();
+                    $themes[(string) $themeObj->name]['layers'][(string) $layerObj->id] = array(
+                        'style' => (string) $layerObj->style,
+                        'expanded' => (string) $layerObj->expanded
+                    );
+                }
+
+                // Copy expanded group nodes
+                foreach ($theme->{'expanded-group-nodes'}->{'expanded-group-node'} as $expandedGroupNode) {
+                    $expandedGroupNodeObj = $expandedGroupNode->attributes();
+                    $themes[(string) $themeObj->name]['expandedGroupNode'][] = (string) $expandedGroupNodeObj->id;
+                }
+            }
+            return $themes;
+        }
+
+        return null;
     }
 
     /**

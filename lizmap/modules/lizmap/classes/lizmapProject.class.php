@@ -92,6 +92,11 @@ class lizmapProject extends qgisProject
     protected $relations = array();
 
     /**
+     * @var array list of themes
+     */
+    protected $themes = array();
+
+    /**
      * @var array list of layer orders: layer name => order
      */
     protected $layersOrder = array();
@@ -130,7 +135,7 @@ class lizmapProject extends qgisProject
      * @var array List of cached properties
      */
     protected $cachedProperties = array('WMSInformation', 'canvasColor', 'allProj4',
-        'relations', 'layersOrder', 'printCapabilities', 'locateByLayer', 'formFilterLayers',
+        'relations', 'themes', 'layersOrder', 'printCapabilities', 'locateByLayer', 'formFilterLayers',
         'editionLayers', 'attributeLayers', 'useLayerIDs', 'layers', 'data', 'cfg', 'qgisProjectVersion', );
 
 
@@ -201,7 +206,9 @@ class lizmapProject extends qgisProject
             }
         } else {
             foreach ($this->cachedProperties as $prop) {
-                $this->{$prop} = $data[$prop];
+                if(array_key_exists($prop, $data)){
+                    $this->{$prop} = $data[$prop];
+                }
             }
         }
         $this->qgsmtime = $data['qgsmtime'];
@@ -1608,6 +1615,12 @@ class lizmapProject extends qgisProject
         $relations = $this->getRelations();
         if ($relations) {
             $configJson->relations = $relations;
+        }
+
+        // Update config with project themes
+        $themes = $this->getThemes();
+        if ($themes) {
+            $configJson->themes = $themes;
         }
 
         if ($this->useLayerIDs) {
