@@ -17,7 +17,7 @@ var lizLayerActionButtons = function() {
             $(this).css('text-shadow', 'none');
             if( parseInt(v) > 60 )
                 $(this).css('color', 'lightgrey');
-        })
+        });
 
         // activate link buttons
         $('div.sub-metadata button.link')
@@ -265,16 +265,106 @@ var lizLayerActionButtons = function() {
 
     lizMap.events.on({
 
-    'uicreated': function(evt){
+    'uicreated': function(){
+
+        // Display theme switcher if any
+        if ('themes' in lizMap.config){
+            var themes = lizMap.config.themes;
+            var themeSelector = '<div id="theme-selector" class="btn-group" role="group">';
+            themeSelector += '<button class="btn btn-mini dropdown-toggle" data-toggle="dropdown" type="button" title="' + lizDict['switcherLayersActions.themeSelector.title'] +'" href="#"><i class="icon-none qgis_sprite mActionShowAllLayers"></i><span class="caret"></span></button>';
+            themeSelector += '<ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu">';
+
+            for (var themeName in themes) {
+                themeSelector += '<li class="theme"><a href="#">' + themeName + '</a></li>';
+            }
+
+            themeSelector += '</ul>';
+            themeSelector += '</div>';
+
+            $('#switcher-layers-actions').prepend(themeSelector);
+
+            // Handle theme switching
+            $('#theme-selector').on('click', '.theme:not(.selected)', function () {
+                // Set theme as selected
+                $('#theme-selector .theme').removeClass('selected');
+                $(this).addClass('selected');
+
+                var themeNameSelected = $(this).text();
+
+                if (themeNameSelected in lizMap.config.themes){
+                    var themeSelected = lizMap.config.themes[themeNameSelected];
+
+                    // Uncheck every layers then if a layer is present in theme, check it
+                    $('#switcher-layers .liz-layer a.expander ~ button.checked').click();
+
+                    // Handle layers visibility, style and expanded states.
+                    if ('layers' in themeSelected){
+                        for (var layerId in themeSelected.layers) {
+
+                            var getLayerConfig = lizMap.getLayerConfigById(layerId);
+                            if (getLayerConfig) {
+                                var featureType = getLayerConfig[0];
+                                var layerConfig = getLayerConfig[1];
+                                if ('typename' in layerConfig){
+                                    featureType = layerConfig.typename;
+                                }
+
+                                // Visibility
+                                $('#switcher-layers #layer-' + featureType + ' a.expander ~ button').click();
+
+                                // Style
+                                if ('style' in themeSelected.layers[layerId]) {
+                                    var layerStyle = themeSelected.layers[layerId]['style'];
+                                    var layer = lizMap.map.getLayersByName(layerConfig.cleanname)[0];
+
+                                    if (layer && layer.params) {
+                                        layer.params['STYLES'] = layerStyle;
+                                        layer.redraw(true);
+
+                                        lizMap.events.triggerEvent("layerstylechanged",
+                                            { 'featureType': featureType }
+                                        );
+                                    }
+                                }
+
+                                // Expanded
+                                if ('expanded' in themeSelected.layers[layerId]) {
+                                    var layerExpanded = themeSelected.layers[layerId]['expanded'];
+
+                                    if (layerExpanded === '0') {
+                                        $('#switcher-layers #layer-' + featureType + '.expanded a.expander').click();
+                                    }
+                                    else if (layerExpanded === '1') {
+                                        $('#switcher-layers #layer-' + featureType + '.collapsed a.expander').click();
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    // Groups in expandedGroupNode are expanded, others are collapsed
+                    var expandedGroupNode = [];
+                    if ('expandedGroupNode' in themeSelected){
+                        expandedGroupNode = themeSelected.expandedGroupNode;
+                    }
+                    $('#switcher-layers .liz-group').each(function () {
+                        var groupName = $(this).attr('id').split('group-')[1];
+                        if ($.inArray(groupName, expandedGroupNode) !== -1){
+                            $('#switcher-layers #group-' + groupName + '.collapsed a.expander').click();
+                        }else{
+                            $('#switcher-layers #group-' + groupName + '.expanded a.expander').click();
+                        }
+                    });
+                }
+            });
+        }
 
         featureTypes = lizMap.getVectorLayerFeatureTypes();
 
         // title tooltip
-        $('#switcher-layers-actions .btn, #get-baselayer-metadata').tooltip( {
+        $('#switcher-layers-actions .btn, #get-baselayer-metadata').tooltip({
             placement: 'bottom'
 
-        } );
-
+        });
 
         // Expand all of unfold all
         $('#layers-unfold-all').click(function(){
@@ -285,8 +375,6 @@ var lizLayerActionButtons = function() {
             $('#switcher table.tree').collapseAll();
             return false;
         });
-
-
 
         // Activate get-baselayer-metadata button
         $('#get-baselayer-metadata').click(function(){
