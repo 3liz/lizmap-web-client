@@ -389,7 +389,7 @@ SubDock
   left:30px;
   top:0px;
   max-height:100%;
-  z-index:1000;
+  z-index:1001;
   overflow:auto;
   background-color:#4A4A4A;
   background-color:rgba(0,0,0,0.7);
