@@ -2376,6 +2376,7 @@ div.tooltip {
 .qgis_sprite.mActionSelectPolygon { background-position: -476px 0; }
 .qgis_sprite.mIconDeselected { background-position: -510px 0; }
 .qgis_sprite.mActionSplitFeatures { background-position: -534px 0; }
+.qgis_sprite.mActionShowAllLayers { background-position: -563px 0; }
 
 #lizmap-search{
   top: 1px;
@@ -2477,4 +2478,32 @@ input[type="file"].jforms-ctrl-upload {
 /* Use exif to rotate images automatically */
 img {
  image-orientation: from-image;
+}
+
+/* Theme switcher */
+#theme-selector button.dropdown-toggle{
+  width: 30px;
+}
+
+#theme-selector .mActionShowAllLayers{
+  width: 18px;
+  height: 18px;
+  background-size: auto 18px;
+  background-position: -422px -5px;
+}
+
+#theme-selector .dropdown-menu{
+  min-width: 100px;
+}
+
+#theme-selector .dropdown-menu > li > a{
+  padding: 3px 10px;
+}
+
+#theme-selector li.selected a {
+  font-weight: bold;
+}
+
+#switcher-layers-actions #theme-selector.btn-group > ul {
+  left: 0;
 }
