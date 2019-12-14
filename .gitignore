@@ -16,3 +16,4 @@ temp/lizmap/*
 !temp/lizmap/.empty
 vagrant/playbook.retry
 vagrant/.vagrant
+build/
