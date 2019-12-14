@@ -14,8 +14,9 @@ build:
     name: "lizmap-web-client-${CI_COMMIT_SHA}"
     paths:
       - "build/*.zip"
+      - "build/MANIFEST"
   cache:
-    key: "$CI_COMMIT_REF_SLUG"
+    key: "$CI_COMMIT_REF_NAME"
     paths:
       - lizmap/vendor/
   tags:
