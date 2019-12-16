@@ -74,7 +74,7 @@ saas_package:
 	mv $(STAGE)/$(PACKAGE_NAME) $(STAGE)/lizmap_web_client
 	saasv2_register_package $(SAAS_PACKAGE) $(LIZMAP_VERSION) lizmap_web_client $(STAGE)
 
-trigger_ci:
+trigger_ci: debug
 	trigger-ci $(SAAS_PROJ_ID) $(SAAS_PROJ_TOKEN) $(MAJOR_VERSION).$(MINOR_VERSION).x -F variables[SAAS_LZMPACK_VERSION]=$(SAAS_LZMPACK_VERSION)
 
 saas_release:
