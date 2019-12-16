@@ -11,6 +11,14 @@ BRANCH:=$(shell git rev-parse --abbrev-ref HEAD)
 SHORT_VERSION_NAME=$(MAJOR_VERSION)_$(MINOR_VERSION)
 SAAS_PACKAGE=lizmap_web_client_$(SHORT_VERSION_NAME)
 
+MANIFEST_EXISTS=$(shell [ -f build/MANIFEST ] && echo 1 || echo 0 )
+ifeq ($(MANIFEST_EXISTS), 1)
+    SAAS_LZMPACK_VERSION=$(shell sed -n 's:version=\(.*\):\1:p' build/MANIFEST)
+else
+    SAAS_LZMPACK_VERSION=
+endif
+
+
 PACKAGE_NAME=lizmap-web-client-$(LIZMAP_VERSION)
 DIST=$(STAGE)/$(PACKAGE_NAME)
 
@@ -18,6 +26,7 @@ FILES=lib lizmap CONTRIBUTING.md icon.png INSTALL.md license.txt README.md UPGRA
 
 FORBIDDEN_CONFIG_FILES := installer.ini.php liveconfig.ini.php lizmapConfig.ini.php localconfig.ini.php profiles.ini.php
 EMPTY_DIRS := var/db var/log var/mails var/uploads var/sessions
+
 
 .PHONY: package clean stage build tests debug deploy_download deploy_download_stable saas_package saas_release trigger_ci
 
@@ -29,6 +38,7 @@ debug:
 	@echo "BRANCH="$(BRANCH)
 	@echo "PACKAGE_NAME="$(PACKAGE_NAME)
 	@echo "SAAS_PACKAGE="$(SAAS_PACKAGE)
+	@echo "SAAS_LZMPACK_VERSION="$(SAAS_LZMPACK_VERSION)
 
 build: debug
 	composer update --working-dir=lizmap/ --prefer-dist --no-ansi --no-interaction --ignore-platform-reqs --no-dev --no-suggest --no-progress
@@ -65,8 +75,8 @@ saas_package:
 	mv $(STAGE)/$(PACKAGE_NAME) $(STAGE)/lizmap_web_client
 	saasv2_register_package $(SAAS_PACKAGE) $(LIZMAP_VERSION) lizmap_web_client $(STAGE)
 
-trigger_ci:
-	trigger-ci $(SAAS_PROJ_ID) $(SAAS_PROJ_TOKEN) $(MAJOR_VERSION).$(MINOR_VERSION).x
+trigger_ci: debug
+	trigger-ci $(SAAS_PROJ_ID) $(SAAS_PROJ_TOKEN) $(MAJOR_VERSION).$(MINOR_VERSION).x -F variables[SAAS_LZMPACK_VERSION]=$(SAAS_LZMPACK_VERSION)
 
 saas_release:
 	saasv2_release_package $(SAAS_PACKAGE)

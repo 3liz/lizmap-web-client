@@ -290,14 +290,14 @@ class proj4phpDatum {
         } else {
             if( $Y > 0 ) {
                 $Longitude = Proj4php::$common->HALF_PI;
-            } else if( Y < 0 ) {
+            } else if( $Y < 0 ) {
                 $Longitude = -Proj4php::$common->HALF_PI;
             } else {
                 $At_Pole = true;
                 $Longitude = 0.0;
                 if( $Z > 0.0 ) { /* north pole */
                     $Latitude = Proj4php::$common->HALF_PI;
-                } else if( Z < 0.0 ) { /* south pole */
+                } else if( $Z < 0.0 ) { /* south pole */
                     $Latitude = -Proj4php::$common->HALF_PI;
                 } else { /* center of earth */
                     $Latitude = Proj4php::$common->HALF_PI;

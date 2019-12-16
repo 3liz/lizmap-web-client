@@ -116,7 +116,7 @@ class Proj4phpProjStere {
             switch( $this->mode ) {
                 case $this->EQUIT:
                     $y = 1. + $cosphi * $coslam;
-                    if( y <= Proj4php::$common->EPSLN ) {
+                    if( $y <= Proj4php::$common->EPSLN ) {
                         Proj4php::reportError("stere:forward:Equit");
                     }
                     $y = $this->akm1 / $y;
@@ -286,7 +286,7 @@ class Proj4phpProjStere {
             for( $i = $this->NITER; $i--; $phi_l = $lat ) { //check this
                 $sinphi = $this->e * sin( $phi_l );
                 $lat = 2. * atan( $tp * pow( (1. + $sinphi) / (1. - $sinphi), $halfe ) ) - $pi2;
-                if( abs( phi_l - lat ) < $this->CONV ) {
+                if( abs( $phi_l - $lat ) < $this->CONV ) {
                     if( $this->mode == $this->S_POLE )
                         $lat = -$lat;
                     $lon = ($x == 0. && $y == 0.) ? 0. : atan2( $x, $y );
