@@ -21,7 +21,7 @@ class MigratorFromSqlite {
     const MIGRATE_RES_OK = 1;
     const MIGRATE_RES_ALREADY_MIGRATED = 2;
 
-    function migrateUsersAndRights() {
+    function migrateUsersAndRights($resetBefore = false) {
 
         $sqliteFile = \jApp::varPath('db/jauth.db');
         if (!file_exists($sqliteFile)) {
@@ -42,7 +42,19 @@ class MigratorFromSqlite {
         $daoUsersNew = \jDao::create($daoUserSelector, $profile);
         $daoGeoBkmNew = \jDao::get('lizmap~geobookmark', $profile);
 
-        if ($daoUsersNew->countAll() > 0 || $daoGeoBkmNew->countAll() > 0) {
+        if ($resetBefore) {
+            $db = \jDb::getConnection($profile);
+            $table = $daoUsersNew->getTables()[$daoUsersNew->getPrimaryTable()]['realname'];
+            $db->exec('DELETE FROM '.$db->prefixTable($table));
+            $table = $daoGeoBkmNew->getTables()[$daoGeoBkmNew->getPrimaryTable()]['realname'];
+            $db->exec('DELETE FROM '.$db->prefixTable($table));
+            $db->exec('DELETE FROM '.$db->prefixTable("jacl2_group"));
+            $db->exec('DELETE FROM '.$db->prefixTable("jacl2_subject_group"));
+            $db->exec('DELETE FROM '.$db->prefixTable("jacl2_subject"));
+            $db->exec('DELETE FROM '.$db->prefixTable("jacl2_user_group"));
+            $db->exec('DELETE FROM '.$db->prefixTable("jacl2_rights"));
+        }
+        else if ($daoUsersNew->countAll() > 0 || $daoGeoBkmNew->countAll() > 0) {
             return self::MIGRATE_RES_ALREADY_MIGRATED;
         }
 
@@ -84,9 +96,9 @@ class MigratorFromSqlite {
 
         // retrieve the dao selector from the driver configuration
         $daoSelector = $config[$config['driver']]['dao'];
-        $profile = $config[$config['driver']]['profile'];
+        $profileName = $config[$config['driver']]['profile'];
 
-        $profile = \jProfiles::get('jdb', $profile);
+        $profile = \jProfiles::get('jdb', $profileName);
         if (!$profile) {
             throw new \UnexpectedValueException("No $profile profile defined into profiles.ini.php", 1);
         }
@@ -96,15 +108,15 @@ class MigratorFromSqlite {
         }
 
         // verify that the table already exists or not
-        $db = \jDb::getConnection($profile);
+        $db = \jDb::getConnection($profileName);
         $schema = $db->schema();
         $table = $schema->getTable('jlx_users');
         if ($table) {
-            return array($daoSelector, $profile);
+            return array($daoSelector, $profileName);
         }
 
         // the table does not exists, let's create it
-        $mapper = new \jDaoDbMapper($profile);
+        $mapper = new \jDaoDbMapper($profileName);
         $mapper->createTableFromDao($daoSelector);
 
         $tools = $db->tools();
@@ -118,14 +130,14 @@ class MigratorFromSqlite {
             $db->rollback();
             throw $e;
         }
-        return array($daoSelector, $profile);
+        return array($daoSelector, $profileName);
     }
 
     protected function createAclTables($profile) {
 
         $db = \jDb::getConnection($profile);
         $tools = $db->tools();
-        $file = \jApp::getModulePath('jacl2db').'/install/sql/install_jacl2.schema.'.$db->dbms.'.sql';
+        $file = \jApp::getModulePath('jacl2db').'/install/install_jacl2.schema.'.$db->dbms.'.sql';
         $db->beginTransaction();
         try {
             $tools->execSQLScript($file);
