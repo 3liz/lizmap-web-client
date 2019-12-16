@@ -42,6 +42,7 @@ package:
     name: "lizmap-web-client-${CI_COMMIT_SHA}"
     paths:
       - "build/*.zip"
+      - "build/MANIFEST"
   only:
     - /^release_.*$/
     - tags
