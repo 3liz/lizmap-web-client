@@ -517,7 +517,7 @@ class Proj4phpProj {
                 case "b": $this->b = floatval( $paramVal );
                     break;  // semi-minor radius
                 // DGR 2007-11-20
-                case "rf": $this->rf = floatval( paramVal );
+                case "rf": $this->rf = floatval( $paramVal );
                     break; // inverse flattening rf= a/(a-b)
                 case "lat_0": $this->lat0 = $paramVal * Proj4php::$common->D2R;
                     break;        // phi0, central latitude
@@ -531,7 +531,7 @@ class Proj4phpProj {
                     break;       // lam0, central longitude
                 case "alpha": $this->alpha = floatval( $paramVal ) * Proj4php::$common->D2R;
                     break;  //for somerc projection
-                case "lonc": $this->longc = paramVal * Proj4php::$common->D2R;
+                case "lonc": $this->longc = $paramVal * Proj4php::$common->D2R;
                     break;       //for somerc projection
                 case "x_0": $this->x0 = floatval( $paramVal );
                     break;  // false easting
@@ -562,7 +562,7 @@ class Proj4phpProj {
                 // DGR 2010-11-12: axis
                 case "axis": $paramVal = trim( $paramVal );
                     $legalAxis = "ewnsud";
-                    if( strlen( paramVal ) == 3 &&
+                    if( strlen( $paramVal ) == 3 &&
                         strpos( $legalAxis, substr( $paramVal, 0, 1 ) ) !== false &&
                         strpos( $legalAxis, substr( $paramVal, 1, 1 ) ) !== false &&
                         strpos( $legalAxis, substr( $paramVal, 2, 1 ) ) !== false ) {

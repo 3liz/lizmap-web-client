@@ -284,12 +284,12 @@ class Proj4phpProjNzmg {
             $num_re = $z_re;
             $num_im = $z_im;
             for( $n = 2; $n <= 6; $n++ ) {
-                $th_n_re1 = $th_n_re * th_re - $th_n_im * $th_im;
+                $th_n_re1 = $th_n_re * $th_re - $th_n_im * $th_im;
                 $th_n_im1 = $th_n_im * $th_re + $th_n_re * $th_im;
                 $th_n_re = $th_n_re1;
                 $th_n_im = $th_n_im1;
                 $num_re = $num_re + ($n - 1) * ($this->B_re[$n] * $th_n_re - $this->B_im[$n] * $th_n_im);
-                $num_im = $num_im + (n - 1) * ($this->B_im[$n] * $th_n_re + $this->B_re[$n] * $th_n_im);
+                $num_im = $num_im + ($n - 1) * ($this->B_im[$n] * $th_n_re + $this->B_re[$n] * $th_n_im);
             }
 
             $th_n_re = 1;
@@ -302,7 +302,7 @@ class Proj4phpProjNzmg {
                 $th_n_re = $th_n_re1;
                 $th_n_im = $th_n_im1;
                 $den_re = $den_re + $n * ($this->B_re[$n] * $th_n_re - $this->B_im[$n] * $th_n_im);
-                $den_im = $den_im + $n * ($this->B_im[n] * $th_n_re + $this->B_re[$n] * $th_n_im);
+                $den_im = $den_im + $n * ($this->B_im[$n] * $th_n_re + $this->B_re[$n] * $th_n_im);
             }
 
             // Complex division

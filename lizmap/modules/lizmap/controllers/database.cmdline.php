@@ -16,6 +16,9 @@ class databaseCtrl extends jControllerCmdLine
      * true means that a value should be provided for the option on the command line.
      */
     protected $allowed_options = array(
+        'migrateusers' => array(
+            '-resetbefore' => false
+        ),
     );
 
     /**
@@ -93,7 +96,7 @@ class databaseCtrl extends jControllerCmdLine
         $rep = $this->getResponse();
         $logMigrator = new \Lizmap\Users\MigratorFromSqlite();
         try {
-            $res = $logMigrator->migrateUsersAndRights();
+            $res = $logMigrator->migrateUsersAndRights($this->option('-resetbefore'));
         }
         catch(\UnexpectedValueException $e) {
             $rep->addContent("Error during the migration: ".$e->getMessage()."\n");

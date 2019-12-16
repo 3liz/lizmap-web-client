@@ -27,7 +27,7 @@ class Proj4phpProjAeqd {
 
         $sinphi = sin( $p->y );
         $cosphi = cos( $p->y );
-        $dlon = Proj4php::$common->adjust_lon( lon - $this->long0 );
+        $dlon = Proj4php::$common->adjust_lon($p->x - $this->long0 );
         $coslon = cos( $dlon );
         $g = $this->sin_p12 * $sinphi + $this->cos_p12 * $cosphi * $coslon;
         if( abs( abs( $g ) - 1.0 ) < Proj4php::$common->EPSLN ) {

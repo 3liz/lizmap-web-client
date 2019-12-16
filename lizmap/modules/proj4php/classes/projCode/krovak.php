@@ -123,7 +123,7 @@ class Proj4phpProjKrovak {
         $eps = atan2( $p->y, $p->x );
         $d = $eps / sin( $this->s0 );
         $s = 2. * (atan( pow( $this->ro0 / $ro, 1. / $this->n ) * tan( $this->s0 / 2. + $this->s45 ) ) - $this->s45);
-        $u = asin( cos( $this->ad ) * sin( s ) - sin( $this->ad ) * cos( s ) * cos( d ) );
+        $u = asin( cos( $this->ad ) * sin( $s ) - sin( $this->ad ) * cos( $s ) * cos( $d ) );
         $deltav = asin( cos( $s ) * sin( $d ) / cos( $u ) );
         $p->x = $this->long0 - $deltav / $this->alfa;
         
