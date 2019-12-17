@@ -230,3 +230,26 @@ div.form-horizontal .control-label {
   color: #F00;
   border: 1px solid #F00;
 }
+
+#landingPageContent .image-style-align-left,
+#landingPageContent .image-style-align-center,
+#landingPageContent .image-style-align-right {
+  max-width: 50%;
+}
+
+#landingPageContent .image-style-align-left {
+  float: left;
+  margin-right: 1.5em;
+}
+
+#landingPageContent .image-style-align-center {
+  margin-left: auto;
+  margin-right: auto;
+  display: table;
+  clear: both;
+}
+
+#landingPageContent .image-style-align-right {
+  float: right;
+  margin-left: 1.5em;
+}

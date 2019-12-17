@@ -23,6 +23,8 @@ lizmap/var/uploads/*
 !lizmap/var/uploads/.empty
 lizmap/www/cache/images/*
 !lizmap/www/cache/images/.empty
+lizmap/www/live/images/home/*
+!lizmap/www/live/images/home/.empty
 temp/lizmap/*
 !temp/lizmap/.empty
 vagrant/playbook.retry

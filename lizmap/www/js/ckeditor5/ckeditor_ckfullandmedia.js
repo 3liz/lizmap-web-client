@@ -1,4 +1,5 @@
 function jelix_ckeditor_ckfullandmedia(textarea_id, form_id, skin, config) {
+    var basePath = (typeof config !== "undefined" && config.hasOwnProperty("basePath")) ? config.basePath : '/';
     var ckConfig = {
         toolbar: [
             'heading', '|',
@@ -6,9 +7,23 @@ function jelix_ckeditor_ckfullandmedia(textarea_id, form_id, skin, config) {
             'outdent', 'indent', 'alignment', 'bulletedList', 'numberedList', 'blockQuote', '|',
             'undo', 'redo', '|',
             "insertTable", "tableColumn", "tableRow", "mergeTableCells", '|',
-            "mediaEmbed"
+            "mediaEmbed", "imageUpload"
         ],
+        image: {
+            toolbar: ['imageTextAlternative', '|', 'imageStyle:full', 'imageStyle:alignLeft', 'imageStyle:alignCenter', 'imageStyle:alignRight'],
 
+            styles: [
+                // This option is equal to a situation where no style is applied.
+                'full',
+                'alignLeft',
+                'alignCenter',
+                'alignRight'
+            ]
+        },
+        simpleUpload: {
+            // The URL that the images are uploaded to.
+            uploadUrl: basePath + 'admin.php/admin/upload_image/uploadfile'
+        },
         heading: {
             options: [
                 { model: 'paragraph', title: 'Paragraphe', class: 'ck-heading_paragraph' },
