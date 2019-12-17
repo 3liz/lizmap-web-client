@@ -1,24 +1,20 @@
 stages:
 - build
 - tests
+- package
 - deploy
+
+cache:
+  key: "$CI_COMMIT_REF_SLUG"
+  paths:
+    - lizmap/vendor/
 
 build:
   stage: build
   script:
-    - make package
-    - make saas_package
+    - make build
   environment:
     name: snap
-  artifacts:
-    name: "lizmap-web-client-${CI_COMMIT_SHA}"
-    paths:
-      - "build/*.zip"
-      - "build/MANIFEST"
-  cache:
-    key: "$CI_COMMIT_REF_NAME"
-    paths:
-      - lizmap/vendor/
   tags:
     - fabric
 
@@ -37,6 +33,28 @@ tests:
   tags:
     - fabric
 
+
+package:
+  stage: package
+  script:
+    - make package
+    - make saas_package
+  environment:
+    name: snap
+  dependencies:
+    - tests
+  artifacts:
+    name: "lizmap-web-client-${CI_COMMIT_SHA}"
+    paths:
+      - "build/*.zip"
+      - "build/MANIFEST"
+  only:
+    - /^release_.*$/
+    - tags
+  tags:
+    - fabric
+
+
 deploy_unstable:
   stage: deploy
   script:
@@ -45,21 +63,24 @@ deploy_unstable:
   environment:
     name: snap
   dependencies:
-    - build
-  tags:
-    - fabric
+    - package
+  only:
+    - /^release_.*$/
   except:
     - tags
+  tags:
+    - fabric
 
 deploy_stable:
   stage: deploy
   script:
     - make deploy_download_stable
     - make saas_release
+    - make trigger_ci
   environment:
     name: production
   dependencies:
-    - build
+    - package
   tags:
     - fabric
   only:
