@@ -37,8 +37,7 @@ tests:
 package:
   stage: package
   script:
-    - make package
-    - make saas_package
+    - make clean package saas_package
   environment:
     name: snap
   dependencies:
