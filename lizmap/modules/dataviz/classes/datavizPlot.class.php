@@ -328,9 +328,12 @@ class datavizPlot
                 'TYPENAME' => $typename,
                 'OUTPUTFORMAT' => 'GeoJSON',
                 'GEOMETRYNAME' => 'none',
-                'PROPERTYNAME' => implode(',', $propertyname),
-                'SORTBY' => implode(',', $this->x_fields),
+                'PROPERTYNAME' => implode(',', $propertyname)
             );
+            // Sort by x fields when scatter plot is used
+            if($this->type == 'scatter'){
+                $wfsparams['SORTBY'] = ','.implode(',', $this->x_fields);
+            }
             if (!empty($this->colorfields)) {
                 $wfsparams['PROPERTYNAME'] .= ','.implode(',', $this->colorfields);
             }
