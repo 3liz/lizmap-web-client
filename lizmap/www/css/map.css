@@ -2507,3 +2507,10 @@ img {
 #switcher-layers-actions #theme-selector.btn-group > ul {
   left: 0;
 }
+
+#theme-selector ul.dropdown-menu.dropdown-menu-right{
+  left: auto !important;
+  right: 0px;
+  max-height: 250px;
+  overflow-y: auto;
+}

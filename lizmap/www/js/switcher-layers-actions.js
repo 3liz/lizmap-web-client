@@ -272,7 +272,7 @@ var lizLayerActionButtons = function() {
             var themes = lizMap.config.themes;
             var themeSelector = '<div id="theme-selector" class="btn-group" role="group">';
             themeSelector += '<button class="btn btn-mini dropdown-toggle" data-toggle="dropdown" type="button" title="' + lizDict['switcherLayersActions.themeSelector.title'] +'" href="#"><i class="icon-none qgis_sprite mActionShowAllLayers"></i><span class="caret"></span></button>';
-            themeSelector += '<ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu">';
+            themeSelector += '<ul class="dropdown-menu dropdown-menu-right" role="menu" aria-labelledby="dropdownMenu">';
 
             for (var themeName in themes) {
                 themeSelector += '<li class="theme"><a href="#">' + themeName + '</a></li>';
@@ -293,7 +293,6 @@ var lizLayerActionButtons = function() {
 
                 if (themeNameSelected in lizMap.config.themes){
                     var themeSelected = lizMap.config.themes[themeNameSelected];
-
                     // Uncheck every layers then if a layer is present in theme, check it
                     $('#switcher-layers .liz-layer a.expander ~ button.checked').click();
 
@@ -303,20 +302,25 @@ var lizLayerActionButtons = function() {
 
                             var getLayerConfig = lizMap.getLayerConfigById(layerId);
                             if (getLayerConfig) {
-                                var featureType = getLayerConfig[0];
+                                var layerName = getLayerConfig[0];
+                                var featureType = layerName;
                                 var layerConfig = getLayerConfig[1];
+
                                 if ('typename' in layerConfig){
                                     featureType = layerConfig.typename;
                                 }
 
                                 // Visibility
-                                $('#switcher-layers #layer-' + featureType + ' a.expander ~ button').click();
+                                $('#switcher-layers #layer-' + layerConfig.cleanname + ' a.expander ~ button').click();
 
                                 // Style
                                 if ('style' in themeSelected.layers[layerId]) {
                                     var layerStyle = themeSelected.layers[layerId]['style'];
-                                    var layer = lizMap.map.getLayersByName(layerConfig.cleanname)[0];
-
+                                    var layers = lizMap.map.getLayersByName(layerName);
+                                    if (layers.length == 0) {
+                                        continue;
+                                    }
+                                    var layer = layers[0];
                                     if (layer && layer.params) {
                                         layer.params['STYLES'] = layerStyle;
                                         layer.redraw(true);
@@ -332,10 +336,10 @@ var lizLayerActionButtons = function() {
                                     var layerExpanded = themeSelected.layers[layerId]['expanded'];
 
                                     if (layerExpanded === '0') {
-                                        $('#switcher-layers #layer-' + featureType + '.expanded a.expander').click();
+                                        $('#switcher-layers #layer-' + layerConfig.cleanname + '.expanded a.expander').click();
                                     }
                                     else if (layerExpanded === '1') {
-                                        $('#switcher-layers #layer-' + featureType + '.collapsed a.expander').click();
+                                        $('#switcher-layers #layer-' + layerConfig.cleanname + '.collapsed a.expander').click();
                                     }
                                 }
                             }
