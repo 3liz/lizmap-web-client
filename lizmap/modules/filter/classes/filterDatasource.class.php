@@ -135,9 +135,18 @@ class filterDatasource {
     public function getUniqueValues($fieldname, $filter=null){
 
         // Check fieldname
-        $dbFieldsInfo = $this->layer->getDbFieldsInfo();
-        $dataFields = $dbFieldsInfo->dataFields;
-        if( !array_key_exists( $fieldname, $dataFields ) ){
+        try{
+            $dbFieldsInfo = $this->layer->getDbFieldsInfo();
+            $dataFields = $dbFieldsInfo->dataFields;
+            $lfields = array();
+            foreach($dataFields as $k=>$v){
+                $lfields[] = $k;
+            }
+        } catch(Exception $e){
+            $lfields = $this->layer->getWfsFields();
+        }
+
+        if( !in_array( $fieldname, $lfields ) ){
             $this->errors = array(
                 'status'=>'error',
                 'title'=>'The field does not exists in the table: ',
@@ -192,49 +201,59 @@ class filterDatasource {
                 $sql.= '     FROM ' . $this->datasource->table;
                 $sql.= '     WHERE 2>1';
                 if($filter){
-                    $sql.= "    AND ( " . $filter ." )";
+                    $sql.= "     AND ( " . $filter ." )";
                 }
-                $sql.= ') t';
+                $sql.= ' ) t';
                 $sql.= ' GROUP BY v';
                 $sql.= ' ORDER BY v';
 
             } else {
                 // For Spatialite and GeoPackage
                 // With need a much more complex query
-                $dbFieldsInfo = $this->layer->getDbFieldsInfo();
-                $pkfields = array();
-                foreach ($dbFieldsInfo->primaryKeys as $key) {
-                    $pkfields[] = '"' . $key . '"';
+                try{
+                    $pkfields = array();
+                    $dbFieldsInfo = $this->layer->getDbFieldsInfo();
+                    foreach ($dbFieldsInfo->primaryKeys as $key) {
+                        $pkfields[] = '"' . $key . '"';
+                    }
+                } catch(Exception $e){
+                    $pkfields = array();
+                    $key = $this->datasource->key;
+                    foreach(explode(',', $key) as $k){
+                        $pkfields[] = '"' . $k . '"';
+                    }
                 }
+
+
                 $sql = '';
                 $sql.= ' WITH x( id, first_item, rest) AS';
                 $sql.= ' (';
-                $sql.= '    SELECT ' . implode(' || ', $pkfields) . ' AS id,';
-                $sql.= '        substr("' . $fieldname . '", 1, instr("' . $fieldname . '", ' . $this->cnx->quote($splitter). ')-1) as first_item,';
-                $sql.= '        substr("' . $fieldname . '", instr("' . $fieldname . '", ' . $this->cnx->quote($splitter). ')+1) as rest';
-                $sql.= '    FROM events';
-                $sql.= '    WHERE "' . $fieldname . '" LIKE ' . $this->cnx->quote('%' . $splitter . '%' );
-                $sql.= '    UNION ALL';
-                $sql.= '    SELECT id,';
-                $sql.= '        substr(rest, 1, instr(rest, ' . $this->cnx->quote($splitter) .')-1) AS first_item,';
-                $sql.= '        substr(rest, instr(rest, ' . $this->cnx->quote($splitter) . ')+1) AS rest';
-                $sql.= '    FROM x';
-                $sql.= '    WHERE rest LIKE ' . $this->cnx->quote('%' . $splitter . '%' );
-                $sql.= '    LIMIT 200';
+                $sql.= ' SELECT ' . implode(' || ', $pkfields) . ' AS id,';
+                $sql.= ' substr("' . $fieldname . '", 1, instr("' . $fieldname . '", ' . $this->cnx->quote($splitter). ')-1) as first_item,';
+                $sql.= ' substr("' . $fieldname . '", instr("' . $fieldname . '", ' . $this->cnx->quote($splitter). ')+1) as rest';
+                $sql.= ' FROM events';
+                $sql.= ' WHERE "' . $fieldname . '" LIKE ' . $this->cnx->quote('%' . $splitter . '%' );
+                $sql.= ' UNION ALL';
+                $sql.= ' SELECT id,';
+                $sql.= ' substr(rest, 1, instr(rest, ' . $this->cnx->quote($splitter) .')-1) AS first_item,';
+                $sql.= ' substr(rest, instr(rest, ' . $this->cnx->quote($splitter) . ')+1) AS rest';
+                $sql.= ' FROM x';
+                $sql.= ' WHERE rest LIKE ' . $this->cnx->quote('%' . $splitter . '%' );
+                $sql.= ' LIMIT 200';
                 $sql.= ' ),';
                 $sql.= ' source AS (';
-                $sql.= '    SELECT trim(first_item) AS cat, count(id) AS nb';
-                $sql.= '    FROM x';
-                $sql.= '    GROUP BY first_item';
-                $sql.= '    UNION ALL';
-                $sql.= '    SELECT trim(rest) AS cat, count(id) AS nb';
-                $sql.= '    FROM x';
-                $sql.= '    WHERE rest NOT LIKE ' . $this->cnx->quote('%' . $splitter . '%' );
-                $sql.= '    GROUP BY rest';
-                $sql.= '    UNION ALL';
-                $sql.= '    SELECT \'NULL\' AS cat, count(' . implode(' || ', $pkfields) . ') AS nb';
-                $sql.= '    FROM events';
-                $sql.= '    WHERE "' . $fieldname . '" IS NULL';
+                $sql.= ' SELECT trim(first_item) AS cat, count(id) AS nb';
+                $sql.= ' FROM x';
+                $sql.= ' GROUP BY first_item';
+                $sql.= ' UNION ALL';
+                $sql.= ' SELECT trim(rest) AS cat, count(id) AS nb';
+                $sql.= ' FROM x';
+                $sql.= ' WHERE rest NOT LIKE ' . $this->cnx->quote('%' . $splitter . '%' );
+                $sql.= ' GROUP BY rest';
+                $sql.= ' UNION ALL';
+                $sql.= ' SELECT \'NULL\' AS cat, count(' . implode(' || ', $pkfields) . ') AS nb';
+                $sql.= ' FROM events';
+                $sql.= ' WHERE "' . $fieldname . '" IS NULL';
                 $sql.= ' )';
                 $sql.= ' SELECT cat AS v, sum(nb) AS c';
                 $sql.= ' FROM source';
@@ -252,11 +271,19 @@ class filterDatasource {
 
     public function getMinAndMaxValues($fieldname, $filter=null){
         // Check fieldname
-        $dbFieldsInfo = $this->layer->getDbFieldsInfo();
-        $dataFields = $dbFieldsInfo->dataFields;
+        try{
+            $dbFieldsInfo = $this->layer->getDbFieldsInfo();
+            $dataFields = $dbFieldsInfo->dataFields;
+            $lfields = array();
+            foreach($dataFields as $k=>$v){
+                $lfields[] = $k;
+            }
+        } catch(Exception $e){
+            $lfields = $this->layer->getWfsFields();
+        }
         $fields = explode(',', $fieldname);
         foreach($fields as $field){
-            if( !array_key_exists( $field, $dataFields ) ){
+            if( !in_array( $field, $lfields ) ){
                 $this->errors = array(
                     'status'=>'error',
                     'title'=>'The field does not exists in the table: ',
@@ -288,8 +315,7 @@ class filterDatasource {
 
     public function getExtent($crs, $filter=null){
         // Get geometry column
-        $dbFieldsInfo = $this->layer->getDbFieldsInfo();
-        $geom = $dbFieldsInfo->geometryColumn;
+        $geom = $this->datasource->geocol;
 
         // validate filter
         $filter = $this->validateFilter($filter);

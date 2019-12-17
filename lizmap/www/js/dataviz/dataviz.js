@@ -27,6 +27,7 @@ var lizDataviz = function() {
                 refreshPlotsOnFilter(e.featureType, e.filter);
             },
             layerfeatureremovefilter: function(e) {
+
                 refreshPlotsOnFilter(e.featureType, null);
             }
         });
@@ -38,14 +39,15 @@ var lizDataviz = function() {
             var dvLayerId = dv.config.layers[i]['layer_id']
             if( featureType in lizMap.config.layers ){
                 var layerId = lizMap.config.layers[featureType].id;
+
                 if( layerId == dvLayerId ){
                     if(filter === null){
                         getPlot(i, null, 'dataviz_plot_' + i);
                     }
                     else{
-                        var pFilterSplit = filter.split(':');
-                        if( pFilterSplit.length == 2){
-                            getPlot(i, pFilterSplit[1], 'dataviz_plot_' + i);
+                        var pFilter = filter.replace(featureType+':', '');
+                        if( pFilter.length > 5){
+                            getPlot(i, pFilter, 'dataviz_plot_' + i);
                         }
                     }
                 }
