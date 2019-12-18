@@ -23,7 +23,6 @@ fallbackLocale = en_US
 
 [coordplugins]
 ;name = file_ini_name or 1
-;magicquotes = 1
 autolocale=1
 
 [tplplugins]
