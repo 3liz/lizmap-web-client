@@ -30,9 +30,11 @@
 
 <div id="content" class="container">
   {jmessage_bootstrap}
+  {if isset($landing_page_content)}
   <div id="landingPageContent">
     {$landing_page_content}
   </div>
+  {/if}
   {$MAIN}
   <footer class="footer">
     <p class="pull-right">
