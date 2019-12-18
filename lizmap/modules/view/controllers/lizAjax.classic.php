@@ -180,7 +180,7 @@ class lizAjaxCtrl extends jController
         }
 
         if (jAcl2::check('lizmap.admin.repositories.delete')) {
-            $lizUrls['removeCache'] = jUrl::getFull('admin~config:removeLayerCache');
+            $lizUrls['removeCache'] = jUrl::getFull('admin~maps:removeLayerCache');
         }
 
         $content = '<script type="text/javascript" src="'.jUrl::getFull('view~translate:index').'"/>'."\n";
