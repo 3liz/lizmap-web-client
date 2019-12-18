@@ -182,10 +182,10 @@ var searchProjects = function(){
             scrollTop: $("#anchor-top-projects").offset().top - $('#header').height()
         }, 500);
 
+        var searchedTerm = this.value.trim().toUpperCase();
+
         // Search by keywords
         if ($('#toggle-search').text() === '#'){
-            var searchedTerm = this.value.trim().toUpperCase();
-
             displayRemainingKeywords();
             if (searchedTerm === '' && getSelectedKeywords().length === 0) {
                 $('#search-project-result .project-keyword').addClass('hide');
@@ -203,9 +203,8 @@ var searchProjects = function(){
                 });
             }
         }else{ // Search by title
-            var val = $.trim(this.value).toUpperCase();
             // If the search bar is empty, show everything
-            if (val === "") {
+            if (searchedTerm === "") {
                 $("#content.container .liz-repository-project-item").show();
                 $("#content.container .liz-repository-title").show();
             }
@@ -214,13 +213,12 @@ var searchProjects = function(){
                 $("#content.container .liz-repository-project-item").hide();
                 $("#content.container .liz-repository-title").hide();
 
-                val = val.toUpperCase();
                 $("#content.container li .liz-project-title").filter(function () {
-                    return -1 != $(this).text().toUpperCase().indexOf(val);
+                    return -1 != $(this).text().toUpperCase().indexOf(searchedTerm);
                 }).closest('.liz-repository-project-item').show();
 
                 $("#content.container li .liz-project-title").filter(function () {
-                    return -1 != $(this).text().toUpperCase().indexOf(val);
+                    return -1 != $(this).text().toUpperCase().indexOf(searchedTerm);
                 }).closest('.liz-repository-project-list').prev('.liz-repository-title').show();
 
             }
