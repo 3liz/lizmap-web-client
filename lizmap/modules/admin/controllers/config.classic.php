@@ -70,7 +70,7 @@ class configCtrl extends jController
         $this->prepareServicesForm($form, $services);
 
         $tpl = new jTpl();
-        $tpl->assign('services', lizmap::getServices());
+        $tpl->assign('showSystem', !lizmap::getServices()->hideSensitiveProperties());
         $tpl->assign('servicesForm', $form);
         $tpl->assign('version', $version);
         $rep->body->assign('MAIN', $tpl->fetch('config'));
@@ -126,13 +126,14 @@ class configCtrl extends jController
                 $ctrl->help = jLocale::get('admin~admin.configuration.services.allowUserAccountRequests.help.deactivated');
             }
             if ($form->getData('allowUserAccountRequests') == 'on' ||
-            $form->getData('adminContactEmail') != ''
-        ) {
+                $form->getData('adminContactEmail') != ''
+            ) {
                 $form->getControl('adminSenderEmail')->required = true;
             }
             // Display form
             $tpl = new jTpl();
             $tpl->assign('form', $form);
+            $tpl->assign('showSystem', !lizmap::getServices()->hideSensitiveProperties());
             $rep->body->assign('MAIN', $tpl->fetch('admin~config_services'));
             $rep->body->assign('selectedMenuItem', 'lizmap_configuration');
 
