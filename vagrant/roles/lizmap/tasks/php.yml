@@ -24,6 +24,7 @@
     - "php{{ php_version }}-xml"
     - "php{{ php_version }}-ldap"
     - "php{{ php_version }}-zip"
+    - "php{{ php_version }}-curl"
     - "php-redis"
 
 - name: setup user into php fpm pool
