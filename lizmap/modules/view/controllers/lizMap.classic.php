@@ -150,7 +150,7 @@ class lizMapCtrl extends jController
         $www = $confUrlEngine['jelixWWWPath'];
         $rep->addJSLink($www.'jquery/include/jquery.include.js');
         $rep->addJSLink($www.'js/jforms_jquery.js');
-	
+
         // Add datepickers jForms js
         $confDate = &jApp::config()->datepickers;
         $rep->addJSLink($confDate['default']);
@@ -164,7 +164,7 @@ class lizMapCtrl extends jController
                 $rep->addJSLink($file);
             }
         }
-	
+
         // Add other jForms js
         $rep->addJSLink($bp.'js/ckeditor5/ckeditor.js');
         $rep->addJSLink($bp.'js/ckeditor5/ckeditor_lizmap.js');
@@ -202,7 +202,7 @@ class lizMapCtrl extends jController
         }
 
         if (jAcl2::check('lizmap.admin.repositories.delete')) {
-            $lizUrls['removeCache'] = jUrl::get('admin~config:removeLayerCache');
+            $lizUrls['removeCache'] = jUrl::get('admin~maps:removeLayerCache');
         }
 
         $rep->addJSCode('var lizUrls = '.json_encode($lizUrls).';');

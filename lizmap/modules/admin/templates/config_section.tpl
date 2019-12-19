@@ -4,8 +4,8 @@
 {else}
 <h1>{@admin~admin.form.admin_section.h1.modify@}</h1>
 {/if}
-{formfull $form, 'admin~config:saveSection', array(), 'htmlbootstrap'}
+{formfull $form, 'admin~maps:saveSection', array(), 'htmlbootstrap'}
 
 <div>
-  <a class="btn" href="{jurl 'admin~config:index'}">{@admin~admin.configuration.button.back.label@}</a>
+  <a class="btn" href="{jurl 'admin~maps:index'}">{@admin~admin.configuration.button.back.label@}</a>
 </div>
