@@ -35,17 +35,6 @@ htmlmap=myHtmlMapResponse
 htmlsimple=simpleHtmlResponse
 
 [jResponseHtml]
-plugins=minify
-;concatene et compress les fichier CSS
-minifyCSS=0
-;concatene et compress les fichier JS
-minifyJS=0
-; liste des fichiers CSS qui ne doivent pas être compressé
-minifyExcludeCSS="OpenLayers-2.13/theme/default/style.css,js/jquery/ui-1.11.4/jquery-ui.min.css,js/jquery/ui-1.11.4/jquery-ui.structure.min.css,js/jquery/ui-1.11.4/jquery-ui.theme.min.css"
-; liste des fichiers JS qui ne doivent pas être compressé
-minifyExcludeJS="index.php/view/translate/,OpenLayers-2.13/OpenLayers.js,js/jquery/jquery-1.12.4.min.js,js/jquery/ui-1.11.4/jquery-ui.min.js,js/ckeditor5/ckeditor.js"
-; chemin du point d'entrée de Minify, relatif au basePath
-minifyEntryPoint=minify.php
 
 [error_handling]
 messageLogFormat="%date%\t[%code%]\t%msg%\t%file%\t%line%\n"
