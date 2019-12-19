@@ -4,28 +4,28 @@
     <url pathinfo="/services"            action="config:modifyServices"/>
     <url pathinfo="/services/edit"       action="config:editServices"/>
     <url pathinfo="/services/save"       action="config:saveServices"/>
-    <url pathinfo="/section/:repository/create"       action="config:createSection">
+    <url pathinfo="/section/:repository/create"       action="maps:createSection">
         <param name="repository"/>
     </url>
-    <url pathinfo="/section/:repository/modify"       action="config:modifySection">
+    <url pathinfo="/section/:repository/modify"       action="maps:modifySection">
         <param name="repository"/>
     </url>
-    <url pathinfo="/section/:repository/edit"       action="config:editSection">
+    <url pathinfo="/section/:repository/edit"       action="maps:editSection">
         <param name="repository"/>
     </url>
-    <url pathinfo="/section/:repository/save"       action="config:saveSection">
+    <url pathinfo="/section/:repository/save"       action="maps:saveSection">
         <param name="repository"/>
     </url>
-    <url pathinfo="/section/:repository/validate"       action="config:validateSection">
+    <url pathinfo="/section/:repository/validate"       action="maps:validateSection">
         <param name="repository"/>
     </url>
-    <url pathinfo="/section/:repository/remove"       action="config:removeSection">
+    <url pathinfo="/section/:repository/remove"       action="maps:removeSection">
         <param name="repository"/>
     </url>
-    <url pathinfo="/section/:repository/remove-cache"       action="config:removeCache">
+    <url pathinfo="/section/:repository/remove-cache"       action="maps:removeCache">
         <param name="repository"/>
     </url>
-    <url pathinfo="/section/:repository/remove-layer-cache"       action="config:removeLayerCache">
+    <url pathinfo="/section/:repository/remove-layer-cache"       action="maps:removeLayerCache">
         <param name="repository"/>
     </url>
 

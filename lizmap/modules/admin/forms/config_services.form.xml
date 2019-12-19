@@ -1,168 +1,177 @@
 <?xml version="1.0" encoding="utf-8"?>
 <form xmlns="http://jelix.org/ns/forms/1.1">
 
-<input ref="appName" type="string" required="true" defaultvalue="Lizmap">
-  <label locale="admin~admin.form.admin_services.appName.label"/>
-</input>
-
-<menulist ref="qgisServerVersion" required="true">
-  <label locale="admin~admin.form.admin_services.qgisServerVersion.label"/>
-  <item value="2.14" locale="admin~admin.form.admin_services.qgisServerVersion.214.label"/>
-  <item value="2.18" selected="true" locale="admin~admin.form.admin_services.qgisServerVersion.218.label"/>
-  <item value="3.0" locale="admin~admin.form.admin_services.qgisServerVersion.300.label"/>
-</menulist>
-
-<input ref="wmsServerURL" type="string" required="true" defaultvalue="http://127.0.0.1/cgi-bin/qgis_mapserv.fcgi">
-  <label locale="admin~admin.form.admin_services.wmsServerURL.label"/>
-</input>
-
-<input ref="wmsPublicUrlList" type="string" required="false" defaultvalue="">
-  <label locale="admin~admin.form.admin_services.wmsPublicUrlList.label"/>
-</input>
-
-<input ref="wmsMaxWidth" type="integer" required="false" defaultvalue="3000" minvalue="256" maxvalue="256000">
-  <label locale="admin~admin.form.admin_services.wmsMaxWidth.label"/>
-</input>
-
-<input ref="wmsMaxHeight" type="integer" required="false" defaultvalue="3000" minvalue="256" maxvalue="256000">
-  <label locale="admin~admin.form.admin_services.wmsMaxHeight.label"/>
-</input>
-
-<menulist ref="onlyMaps" required="true">
-  <label locale="admin~admin.form.admin_services.onlyMaps.label"/>
-  <item value="off" selected="true" locale="admin~admin.form.admin_services.off.label"/>
-  <item value="on" locale="admin~admin.form.admin_services.on.label"/>
-</menulist>
-
-<menulist ref="projectSwitcher" required="true">
-  <label locale="admin~admin.form.admin_services.projectSwitcher.label"/>
-  <item value="off" selected="true" locale="admin~admin.form.admin_services.off.label"/>
-  <item value="on" locale="admin~admin.form.admin_services.on.label"/>
-</menulist>
-
-<menulist ref="defaultRepository">
-  <label locale="admin~admin.form.admin_services.defaultRepository.label"/>
-  <datasource class="admin~listRepositoryDatasource" />
-</menulist>
-
-<menulist ref="defaultProject">
-  <label locale="admin~admin.form.admin_services.defaultProject.label"/>
-  <datasource class="admin~listProjectDatasource" criteriafrom="defaultRepository"/>
-</menulist>
-
-<menulist ref="cacheStorageType" required="true">
-  <label locale="admin~admin.form.admin_services.cacheStorageType.label"/>
-  <item value="sqlite" selected="true" locale="admin~admin.form.admin_services.cacheStorageType.sqlite.label"/>
-  <item value="file" locale="admin~admin.form.admin_services.cacheStorageType.file.label"/>
-  <item value="redis" locale="admin~admin.form.admin_services.cacheStorageType.redis.label"/>
-</menulist>
-
-<input ref="cacheRootDirectory" type="string" required="true">
-    <label locale="admin~admin.form.admin_services.cacheRootDirectory.label"/>
-    <help locale="admin~admin.form.admin_services.cacheRootDirectory.help"/>
-</input>
-
-<input ref="cacheRedisHost" type="string" defaultvalue="localhost">
-    <label locale="admin~admin.form.admin_services.cacheRedisHost.label"/>
-    <help locale="admin~admin.form.admin_services.cacheRedisHost.help"/>
-</input>
-
-<input ref="cacheRedisPort" type="integer" defaultvalue="6379" minvalue="1">
-    <label locale="admin~admin.form.admin_services.cacheRedisPort.label"/>
-    <help locale="admin~admin.form.admin_services.cacheRedisPort.help"/>
-</input>
-
-<input ref="cacheRedisDb" type="integer" defaultvalue="0" minvalue="0">
-    <label locale="admin~admin.form.admin_services.cacheRedisDb.label"/>
-    <help locale="admin~admin.form.admin_services.cacheRedisDb.help"/>
-</input>
-
-<input ref="cacheRedisKeyPrefix" type="string">
-    <label locale="admin~admin.form.admin_services.cacheRedisKeyPrefix.label"/>
-    <help locale="admin~admin.form.admin_services.cacheRedisKeyPrefix.help"/>
-</input>
-
-<input ref="cacheExpiration" type="integer" required="true" defaultvalue="2592000">
-    <label locale="admin~admin.form.admin_services.cacheExpiration.label"/>
-    <help locale="admin~admin.form.admin_services.cacheExpiration.help"/>
-</input>
-
-<input ref="rootRepositories">
-  <label locale="admin~admin.form.admin_services.rootRepositories.label"/>
-  <help locale="admin~admin.form.admin_services.rootRepositories.help"/>
-</input>
-
-<menulist ref="relativeWMSPath">
-  <label locale="admin~admin.form.admin_services.relativeWMSPath.label"/>
-  <item value="0" selected="true" locale="admin~admin.form.admin_services.no.label"/>
-  <item value="1" locale="admin~admin.form.admin_services.yes.label"/>
-</menulist>
-
-<menulist ref="proxyMethod" required="true">
-    <label locale="admin~admin.form.admin_services.proxyMethod.label"/>
-    <item value="php" selected="true" locale="admin~admin.form.admin_services.proxyMethod.php.label"/>
-    <item value="curl" locale="admin~admin.form.admin_services.proxyMethod.curl.label"/>
-</menulist>
-
-<group ref="requestProxyEnabled" withcheckbox="true">
-    <oncheckvalue locale="admin~admin.form.admin_services.requestProxy.enabled" value="1"/>
-    <onuncheckvalue locale="admin~admin.form.admin_services.requestProxy.disabled" value="0" />
-    <label locale="admin~admin.form.admin_services.requestProxy.label"/>
-    <input ref="requestProxyHost" required="true">
-        <label locale="admin~admin.form.admin_services.requestProxyHost.label"/>
+    <!-- interface -->
+    <input ref="appName" type="string" required="true" defaultvalue="Lizmap">
+      <label locale="admin~admin.form.admin_services.appName.label"/>
     </input>
-    <input  type="integer" ref="requestProxyPort" required="true">
-        <label locale="admin~admin.form.admin_services.requestProxyPort.label"/>
+
+    <menulist ref="onlyMaps" required="true">
+        <label locale="admin~admin.form.admin_services.onlyMaps.label"/>
+        <item value="off" selected="true" locale="admin~admin.form.admin_services.off.label"/>
+        <item value="on" locale="admin~admin.form.admin_services.on.label"/>
+    </menulist>
+
+    <menulist ref="projectSwitcher" required="true">
+        <label locale="admin~admin.form.admin_services.projectSwitcher.label"/>
+        <item value="off" selected="true" locale="admin~admin.form.admin_services.off.label"/>
+        <item value="on" locale="admin~admin.form.admin_services.on.label"/>
+    </menulist>
+
+    <input ref="googleAnalyticsID" type="string" pattern="/^UA-\d+-\d+$/">
+        <label locale="admin~admin.form.admin_services.googleAnalyticsID.label"/>
+        <help locale="admin~admin.form.admin_services.googleAnalyticsID.help"/>
     </input>
-    <radiobuttons ref="requestProxyType">
-        <label locale="admin~admin.form.admin_services.requestProxyType.label"/>
-        <item value="http">http</item>
-        <item value="socks5">socks5</item>
-    </radiobuttons>
-    <input ref="requestProxyUser">
-        <label locale="admin~admin.form.admin_services.requestProxyUser.label"/>
+
+    <!-- projects -->
+    <input ref="rootRepositories">
+        <label locale="admin~admin.form.admin_services.rootRepositories.label"/>
+        <help locale="admin~admin.form.admin_services.rootRepositories.help"/>
     </input>
-    <secret ref="requestProxyPassword">
-        <label locale="admin~admin.form.admin_services.requestProxyPassword.label"/>
-    </secret>
-    <input ref="requestProxyNotForDomain">
-        <label locale="admin~admin.form.admin_services.requestProxyNotForDomain.label"/>
+
+    <menulist ref="defaultRepository">
+        <label locale="admin~admin.form.admin_services.defaultRepository.label"/>
+        <datasource class="admin~listRepositoryDatasource" />
+    </menulist>
+
+    <menulist ref="defaultProject">
+        <label locale="admin~admin.form.admin_services.defaultProject.label"/>
+        <datasource class="admin~listProjectDatasource" criteriafrom="defaultRepository"/>
+    </menulist>
+
+    <!-- Qgis -->
+    <menulist ref="qgisServerVersion" required="true">
+      <label locale="admin~admin.form.admin_services.qgisServerVersion.label"/>
+      <item value="2.14" locale="admin~admin.form.admin_services.qgisServerVersion.214.label"/>
+      <item value="2.18" selected="true" locale="admin~admin.form.admin_services.qgisServerVersion.218.label"/>
+      <item value="3.0" locale="admin~admin.form.admin_services.qgisServerVersion.300.label"/>
+    </menulist>
+
+    <input ref="wmsServerURL" type="string" required="true" defaultvalue="http://127.0.0.1/cgi-bin/qgis_mapserv.fcgi">
+      <label locale="admin~admin.form.admin_services.wmsServerURL.label"/>
     </input>
-</group>
+
+    <input ref="wmsPublicUrlList" type="string" required="false" defaultvalue="">
+      <label locale="admin~admin.form.admin_services.wmsPublicUrlList.label"/>
+    </input>
+
+    <menulist ref="relativeWMSPath">
+        <label locale="admin~admin.form.admin_services.relativeWMSPath.label"/>
+        <item value="0" selected="true" locale="admin~admin.form.admin_services.no.label"/>
+        <item value="1" locale="admin~admin.form.admin_services.yes.label"/>
+    </menulist>
+
+    <input ref="wmsMaxWidth" type="integer" required="false" defaultvalue="3000" minvalue="256" maxvalue="256000">
+      <label locale="admin~admin.form.admin_services.wmsMaxWidth.label"/>
+    </input>
+
+    <input ref="wmsMaxHeight" type="integer" required="false" defaultvalue="3000" minvalue="256" maxvalue="256000">
+      <label locale="admin~admin.form.admin_services.wmsMaxHeight.label"/>
+    </input>
+
+    <!-- cache -->
+
+    <menulist ref="cacheStorageType" required="true">
+      <label locale="admin~admin.form.admin_services.cacheStorageType.label"/>
+      <item value="sqlite" selected="true" locale="admin~admin.form.admin_services.cacheStorageType.sqlite.label"/>
+      <item value="file" locale="admin~admin.form.admin_services.cacheStorageType.file.label"/>
+      <item value="redis" locale="admin~admin.form.admin_services.cacheStorageType.redis.label"/>
+    </menulist>
+
+    <input ref="cacheRootDirectory" type="string" required="true">
+        <label locale="admin~admin.form.admin_services.cacheRootDirectory.label"/>
+        <help locale="admin~admin.form.admin_services.cacheRootDirectory.help"/>
+    </input>
+
+    <input ref="cacheRedisHost" type="string" defaultvalue="localhost">
+        <label locale="admin~admin.form.admin_services.cacheRedisHost.label"/>
+        <help locale="admin~admin.form.admin_services.cacheRedisHost.help"/>
+    </input>
+
+    <input ref="cacheRedisPort" type="integer" defaultvalue="6379" minvalue="1">
+        <label locale="admin~admin.form.admin_services.cacheRedisPort.label"/>
+        <help locale="admin~admin.form.admin_services.cacheRedisPort.help"/>
+    </input>
+
+    <input ref="cacheRedisDb" type="integer" defaultvalue="0" minvalue="0">
+        <label locale="admin~admin.form.admin_services.cacheRedisDb.label"/>
+        <help locale="admin~admin.form.admin_services.cacheRedisDb.help"/>
+    </input>
+
+    <input ref="cacheRedisKeyPrefix" type="string">
+        <label locale="admin~admin.form.admin_services.cacheRedisKeyPrefix.label"/>
+        <help locale="admin~admin.form.admin_services.cacheRedisKeyPrefix.help"/>
+    </input>
+
+    <input ref="cacheExpiration" type="integer" required="true" defaultvalue="2592000">
+        <label locale="admin~admin.form.admin_services.cacheExpiration.label"/>
+        <help locale="admin~admin.form.admin_services.cacheExpiration.help"/>
+    </input>
+
+    <!-- system -->
+
+    <menulist ref="proxyMethod" required="true">
+        <label locale="admin~admin.form.admin_services.proxyMethod.label"/>
+        <item value="php" selected="true" locale="admin~admin.form.admin_services.proxyMethod.php.label"/>
+        <item value="curl" locale="admin~admin.form.admin_services.proxyMethod.curl.label"/>
+    </menulist>
+
+    <menulist ref="debugMode" required="true">
+        <label locale="admin~admin.form.admin_services.debugMode.label"/>
+        <item value="0" selected="true" locale="admin~admin.form.admin_services.debugMode.0.label"/>
+        <item value="1" locale="admin~admin.form.admin_services.debugMode.1.label"/>
+    </menulist>
+
+    <group ref="requestProxyEnabled" withcheckbox="true">
+        <oncheckvalue locale="admin~admin.form.admin_services.requestProxy.enabled" value="1"/>
+        <onuncheckvalue locale="admin~admin.form.admin_services.requestProxy.disabled" value="0" />
+        <label locale="admin~admin.form.admin_services.requestProxy.label"/>
+        <input ref="requestProxyHost" required="true">
+            <label locale="admin~admin.form.admin_services.requestProxyHost.label"/>
+        </input>
+        <input  type="integer" ref="requestProxyPort" required="true">
+            <label locale="admin~admin.form.admin_services.requestProxyPort.label"/>
+        </input>
+        <radiobuttons ref="requestProxyType">
+            <label locale="admin~admin.form.admin_services.requestProxyType.label"/>
+            <item value="http">http</item>
+            <item value="socks5">socks5</item>
+        </radiobuttons>
+        <input ref="requestProxyUser">
+            <label locale="admin~admin.form.admin_services.requestProxyUser.label"/>
+        </input>
+        <secret ref="requestProxyPassword">
+            <label locale="admin~admin.form.admin_services.requestProxyPassword.label"/>
+        </secret>
+        <input ref="requestProxyNotForDomain">
+            <label locale="admin~admin.form.admin_services.requestProxyNotForDomain.label"/>
+        </input>
+    </group>
 
 
-<menulist ref="debugMode" required="true">
-  <label locale="admin~admin.form.admin_services.debugMode.label"/>
-  <item value="0" selected="true" locale="admin~admin.form.admin_services.debugMode.0.label"/>
-  <item value="1" locale="admin~admin.form.admin_services.debugMode.1.label"/>
-</menulist>
+    <!-- emails -->
 
-<menulist ref="allowUserAccountRequests">
-  <label locale="admin~admin.form.admin_services.allowUserAccountRequests.label"/>
-  <item value="off" selected="true" locale="admin~admin.form.admin_services.off.label"/>
-  <item value="on" locale="admin~admin.form.admin_services.on.label"/>
-</menulist>
+    <menulist ref="allowUserAccountRequests">
+      <label locale="admin~admin.form.admin_services.allowUserAccountRequests.label"/>
+      <item value="off" selected="true" locale="admin~admin.form.admin_services.off.label"/>
+      <item value="on" locale="admin~admin.form.admin_services.on.label"/>
+    </menulist>
 
-<input ref="adminContactEmail" type="email">
-    <label locale="admin~admin.form.admin_services.adminContactEmail.label"/>
-    <help locale="admin~admin.form.admin_services.adminContactEmail.help"/>
-</input>
+    <input ref="adminContactEmail" type="email">
+        <label locale="admin~admin.form.admin_services.adminContactEmail.label"/>
+        <help locale="admin~admin.form.admin_services.adminContactEmail.help"/>
+    </input>
 
-<input ref="adminSenderEmail" type="email">
-    <label locale="admin~admin.form.admin_services.adminSenderEmail.label"/>
-    <help locale="admin~admin.form.admin_services.adminSenderEmail.help"/>
-    <alert type="required" locale="admin~admin.form.admin_services.adminSenderEmail.error.required"/>
-</input>
+    <input ref="adminSenderEmail" type="email">
+        <label locale="admin~admin.form.admin_services.adminSenderEmail.label"/>
+        <help locale="admin~admin.form.admin_services.adminSenderEmail.help"/>
+        <alert type="required" locale="admin~admin.form.admin_services.adminSenderEmail.error.required"/>
+    </input>
 
-<input ref="adminSenderName" maxlength="250">
-    <label locale="admin~admin.form.admin_services.adminSenderName.label"/>
-    <help locale="admin~admin.form.admin_services.adminSenderName.help"/>
-</input>
-
-<input ref="googleAnalyticsID" type="string" pattern="/^UA-\d+-\d+$/">
-  <label locale="admin~admin.form.admin_services.googleAnalyticsID.label"/>
-    <help locale="admin~admin.form.admin_services.googleAnalyticsID.help"/>
-</input>
+    <input ref="adminSenderName" maxlength="250">
+        <label locale="admin~admin.form.admin_services.adminSenderName.label"/>
+        <help locale="admin~admin.form.admin_services.adminSenderName.help"/>
+    </input>
 
 <submit ref="_submit">
     <label locale="admin~admin.form.admin_services.submit.label"/>
