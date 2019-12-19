@@ -50,11 +50,6 @@ var searchProjects = function(){
 
     // Handle keywords/title toggle
     $('#toggle-search').click(function(){
-        // Reboot search
-        $('#search-project').val('');
-        $("#content.container .liz-repository-project-item").show();
-        $("#content.container .liz-repository-title").show();
-
         if ($(this).text() === '#'){
             $(this).text('T');
 
@@ -62,7 +57,14 @@ var searchProjects = function(){
             $('#search-project-keywords-selected').text('');
         }else{
             $(this).text('#');
+
+            $('.project-keyword').removeClass('hide');
         }
+
+        // Relaunch search
+        $("#content.container .liz-repository-project-item").show();
+        $("#content.container .liz-repository-title").show();
+        $("#search-project").keyup();
     });
 
     var onlyUnique = function (value, index, self) {
