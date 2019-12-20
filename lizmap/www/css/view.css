@@ -44,6 +44,9 @@
 
 #search{
   display: inline-block;
+  position: fixed;
+  top: 76px;
+  z-index: 1;
 }
 
 #toggle-search{
@@ -53,6 +56,7 @@
 
 #search-project-keywords {
   position: absolute;
+  min-width: 270px;
 }
 
 #search-project-result .project-keyword, #search-project-keywords-selected .remove-keyword{

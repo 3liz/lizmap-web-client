@@ -10,15 +10,11 @@
 
 /* #### Mobile Phones Portrait or Landscape #### */
 @media screen and (max-device-width: 480px){
-  #search-project{
-    width: 75px;
-  }
-
   #search-query{
     width: 85px;
   }
 
-  #search-project, #search-query{
+  #search-query{
     padding-left: 8px;
     padding-right: 8px;
     -webkit-transition: all .5s;
@@ -26,7 +22,7 @@
     transition: all .5s;
   }
 
-  #search-project:focus, #search-query:focus{
+  #search-query:focus{
     width: 206px;
   }
 
@@ -112,12 +108,9 @@ only screen and (                   max-device-height : 640px) {
     padding: 0px 10px;
   }
 
-
-
-  /*  for ie*/
-/*  .navbar-inner ul {*/
-/*    height:30px\9;*/
-/*  }*/
+  #search{
+    top: 30px;
+  }
 
   /*  for ie*/
   .navbar-inner ul li{
