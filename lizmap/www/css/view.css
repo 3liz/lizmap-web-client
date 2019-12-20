@@ -58,21 +58,22 @@
   cursor: pointer;
 }
 
-#search-project-keywords-selected .project-keyword {
-  background-color: #ccc;
-  color: black;
+#search-project-keywords-selected .project-keyword, .project-keyword:hover {
+  background-color: #97C517;
+  color: white;
 }
 
 #search-project-keywords-selected .remove-keyword{
   margin-left: 10px;
   font-size: smaller;
-  border: black 1px solid;
+  border: white 1px solid;
   padding: 0px 4px 1px 4px;
   border-radius: 3px;
 }
 
 .project-keyword {
-  background-color: #97C517;
+  background-color: #ccc;
+  color: black;
   padding: 0px 4px;
   border-radius: 5px;
   margin-right: 5px;
