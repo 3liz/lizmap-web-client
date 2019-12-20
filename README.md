@@ -1,5 +1,5 @@
 [![logo](icon.png "3Liz")][3liz]Lizmap Web Application 3.4.0pre
-================================================================
+----------------------------------------------------------------
 
 Lizmap web application, by 3LIZ.
 
@@ -9,13 +9,46 @@ Lizmap web application, by 3LIZ.
     email       : info@3liz.com
     website     : http://www.3liz.com
 
-Lizmap Web Application generates dynamically a web map application (php/html/css/js) with the help of QGIS Server ( [QGIS as OGC Data Server] ).
-You can configure one web map per QGIS project with the QGIS LizMap Plugin.
+![demo](demo.png "3Liz")
+
+Lizmap Web Application generates dynamically a web map application (php/html/css/js) with the help of QGIS Server ( [QGIS as OGC Data Server] ). You can visit [some examples projects on the demo](https://demo.lizmap.com/lizmap/).
+You can configure one web map per QGIS project with the QGIS Lizmap plugin. From this plugin, you can enable some tools such as attribute table, dataviz, printing ...
 The Lizmap web application must be installed on the server.
 
 The Original Code is [3liz](https://3liz.com) code.
 
 You can find help and news by subscribing to the mailing list: https://lists.osgeo.org/mailman/listinfo/lizmap.
+
+Versions
+--------
+
+We recommend using QGIS Server LTR. You can follow the [QGIS Release schedule](https://www.qgis.org/en/site/getinvolved/development/roadmap.html#release-schedule).
+
+| Lizmap | QGIS Server          | IE    |
+|--------|----------------------|-------|
+| 3.1    | 2.18                 | IE 11 |
+| 3.2    | 2.18 (3.4 partially) |       |
+| 3.3    | 3.4                  |       |
+| 3.4    | 3.4                  |       |
+
+Documentation and customization
+--------------
+
+https://docs.lizmap.com/
+
+Documentation source: https://github.com/3liz/lizmap-documentation/
+
+You can add your custom Javascript, check your [Javascript library](https://github.com/3liz/lizmap-javascript-scripts/)
+
+Some plugins can be added to your Lizmap:
+* https://github.com/3liz/lizmap-cadastre-module
+
+Internationalization
+---------------------
+
+Transifex: https://www.transifex.com/3liz-1/lizmap-locales/
+
+Locales source: https://github.com/3liz/lizmap-locales/
 
 Authors
 -------
@@ -49,21 +82,6 @@ Contributors
 * Xan Vieiro
 * Rasmus Johansson
 * Jankó J A
-
-Documentation
---------------
-
-http://docs.3liz.com/
-
-Documentation source: https://github.com/3liz/lizmap-documentation/
-
-Internationalization
----------------------
-
-Transifex: https://www.transifex.com/3liz-1/lizmap-locales/
-
-Locales source: https://github.com/3liz/lizmap-locales/
-
 
 License
 -------
