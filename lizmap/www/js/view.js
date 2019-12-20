@@ -147,33 +147,38 @@ var searchProjects = function(){
 
     var uniqueKeywordList = getProjectsKeywords();
 
-    var keywordsHTML = '';
-    for (var index = 0; index < uniqueKeywordList.length; index++) {
-        keywordsHTML += '<span class="project-keyword hide">' + uniqueKeywordList[index].toLowerCase() + '</span>';
-    }
-    $('#search-project-result').html(keywordsHTML);
+    // Activate keywords search if any
+    if (uniqueKeywordList.length > 0){
+        var keywordsHTML = '';
+        for (var index = 0; index < uniqueKeywordList.length; index++) {
+            keywordsHTML += '<span class="project-keyword hide">' + uniqueKeywordList[index].toLowerCase() + '</span>';
+        }
+        $('#search-project-result').html(keywordsHTML);
 
-    // Add click handler on project keywords
-    $('.project-keyword').click(function(){
-        // Move keyword in #search-project-keywords-selected
-        $('#search-project-keywords-selected').append('<span class="project-keyword"><span class="keyword-label">' + $(this).text() +'</span><span class="remove-keyword">x</span></span>');
-        // Add close event
-        $('#search-project-keywords-selected .remove-keyword').click(function(){
-            $(this).parent().remove();
+        // Add click handler on project keywords
+        $('.project-keyword').click(function () {
+            // Move keyword in #search-project-keywords-selected
+            $('#search-project-keywords-selected').append('<span class="project-keyword"><span class="keyword-label">' + $(this).text() + '</span><span class="remove-keyword">x</span></span>');
+            // Add close event
+            $('#search-project-keywords-selected .remove-keyword').click(function () {
+                $(this).parent().remove();
+                filterProjectsBySelectedKeywords();
+                if ($('#search-project-keywords-selected .remove-keyword').length === 0) {
+                    $('#search-project-result .project-keyword').addClass('hide');
+                } else {
+                    displayRemainingKeywords();
+                }
+            });
+            // Hide projects then display projects with selected keyword
             filterProjectsBySelectedKeywords();
-            if ($('#search-project-keywords-selected .remove-keyword').length === 0){
-                $('#search-project-result .project-keyword').addClass('hide');
-            }else{
-                displayRemainingKeywords();
-            }
+            // Empty search input
+            $('#search-project').val('')
+            // Display remaining keywords for visible projects not yet selected
+            displayRemainingKeywords();
         });
-        // Hide projects then display projects with selected keyword
-        filterProjectsBySelectedKeywords();
-        // Empty search input
-        $('#search-project').val('')
-        // Display remaining keywords for visible projects not yet selected
-        displayRemainingKeywords();
-    });
+    }else{
+        $('#toggle-search').hide().parent().removeClass('input-prepend');
+    }
 
     // Handle search
     $("#search-project").keyup(function () {
