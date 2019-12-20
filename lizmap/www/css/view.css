@@ -31,6 +31,7 @@
   background-color: rgba(0, 0, 0, 0.5);
   padding:5px;
   margin:0px;
+  overflow-wrap: break-word;
 }
 
 #headermenu .input-prepend {
