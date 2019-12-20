@@ -37,7 +37,7 @@ class lizmapServices
         'projectSwitcher',
         'rootRepositories',
         'relativeWMSPath',
-        'proxyMethod',
+        'proxyHttpBackend',
         'requestProxyEnabled',
         'requestProxyHost',
         'requestProxyPort',
@@ -58,7 +58,9 @@ class lizmapServices
         'googleAnalyticsID',
     );
 
-    // services properties
+    /**
+     * services properties to not display into the configuration form
+     */
     private $sensitiveProperties = array(
         'qgisServerVersion',
         'wmsServerURL',
@@ -69,7 +71,6 @@ class lizmapServices
         'cacheExpiration',
         'rootRepositories',
         'relativeWMSPath',
-        'proxyMethod',
         'requestProxyEnabled',
         'requestProxyHost',
         'requestProxyPort',
@@ -85,6 +86,7 @@ class lizmapServices
         'cacheRedisKeyPrefix',
         'adminSenderEmail',
         'adminSenderName',
+        'proxyHttpBackend',
     );
 
     private $notEditableProperties = array(
@@ -133,15 +135,21 @@ class lizmapServices
     public $rootRepositories = '';
     // Does the server use relative Path from root folder?
     public $relativeWMSPath = '0';
-    // proxy method : use curl ('curl') or file_get_contents ('php')
-    public $proxyMethod = '';
+
+    /**
+     * backend to use to do http request : use curl ('curl') or file_get_contents ('php').
+     * leave empty to have automatic selection (it will use curl if the curl extension is installed).
+     * Fill it only for tests
+     * @var string
+     */
+    public $proxyHttpBackend = '';
 
     public $requestProxyEnabled = false;
     public $requestProxyHost = '';
     public $requestProxyPort = '';
     public $requestProxyUser = '';
     public $requestProxyPassword = '';
-    // proxy type: 'http' or 'socks5'. Only used with the curl proxyMethod
+    // proxy type: 'http' or 'socks5'. Only used with the curl proxyHttpBackend
     public $requestProxyType = 'http';
     // list of domains separated by a comma, to which the proxy is not used
     public $requestProxyNotForDomain = 'localhost,127.0.0.1';

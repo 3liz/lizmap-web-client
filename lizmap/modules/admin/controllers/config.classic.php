@@ -37,14 +37,18 @@ class configCtrl extends jController
 
                   break;
               default:
-                  $form->setData($ser, $services->{$ser});
+                  if ($form->getControl($ser)) {
+                      $form->setData($ser, $services->{$ser});
+                  }
           }
         }
 
         // hide sensitive services properties
         if ($services->hideSensitiveProperties()) {
             foreach ($services->getSensitiveProperties() as $ser) {
-                $form->deactivate($ser);
+                if ($form->getControl($ser)) {
+                    $form->deactivate($ser);
+                }
             }
         }
     }
@@ -183,7 +187,9 @@ class configCtrl extends jController
         // force sensitive services properties
         if ($services->hideSensitiveProperties()) {
             foreach ($services->getSensitiveProperties() as $ser) {
-                $form->setData($ser, $services->{$ser});
+                if ($form->getControl($ser)) {
+                    $form->setData($ser, $services->{$ser});
+                }
             }
         }
 
@@ -253,7 +259,9 @@ class configCtrl extends jController
         // Save the data
         $data = array();
         foreach ($services->getProperties() as $prop) {
-            $data[$prop] = $form->getData($prop);
+            if ($form->getControl($prop)) {
+                $data[$prop] = $form->getData($prop);
+            }
         }
 
         $modifyServices = $services->update($data);

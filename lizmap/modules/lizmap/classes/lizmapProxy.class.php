@@ -75,11 +75,11 @@ class lizmapProxy
      *
      * @param string            $url     url of the remote data to fetch
      * @param null|array|string $options list of options for the http request.
-     *                                   Option items can be: "method", "referer", "proxyMethod",
+     *                                   Option items can be: "method", "referer", "proxyHttpBackend",
      *                                   "headers" (array of headers strings), "body", "debug".
      *                                   If $options is a string, this should be the proxy method
      *                                   for compatibility to old calls.
-     *                                   proxyMethod: method for the proxy : 'php' or 'curl'.
+     *                                   $proxyHttpBackend: method for the proxy : 'php' or 'curl', or ''.
      *                                   by default, it is the proxy method indicated into lizmapService
      * @param null|int          $debug   deprecated. 0 or 1 to get debug log.
      *                                   if null, it uses the method indicated into lizmapService.
@@ -96,7 +96,7 @@ class lizmapProxy
             if ($options !== null) {
                 $options = array(
                     'method' => $method,
-                    'proxyMethod' => $options,
+                    'proxyHttpBackend' => $options,
                 );
             } else {
                 $options = array('method' => $method);
@@ -111,7 +111,7 @@ class lizmapProxy
             'method' => 'get',
             'referer' => '',
             'headers' => array(),
-            'proxyMethod' => $services->proxyMethod,
+            'proxyHttpBackend' => $services->proxyHttpBackend,
             'debug' => $services->debugMode,
             'body' => '',
         ), $options);
@@ -144,8 +144,8 @@ class lizmapProxy
         // Initialize responses
         $http_code = null;
 
-        // Proxy method : use curl or file_get_contents
-        if ($options['proxyMethod'] == 'curl' && extension_loaded('curl')) {
+        // Proxy http backend : use curl or file_get_contents
+        if (extension_loaded('curl') && $options['proxyHttpBackend'] != 'php') {
             // With curl
             $ch = curl_init();
             curl_setopt($ch, CURLOPT_HEADER, 0);
