@@ -1,0 +1,13 @@
+{
+  "name": "assets",
+  "version": "1.0.0",
+  "description": "",
+  "scripts": {
+    "build": "webpack --config webpack.prod.js",
+    "watch": "webpack --watch --config webpack.dev.js",
+    "pretest": "eslint src"
+  },
+  "devDependencies": {},
+  "author": "3Liz",
+  "license": "ISC"
+}
