@@ -40,5 +40,6 @@
       </li>
       {/foreach}
 
+      <li><lizmap-geolocation></lizmap-geolocation></li>
     </ul>
 </div>
