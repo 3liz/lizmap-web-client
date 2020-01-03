@@ -13,12 +13,12 @@ export default class Geolocation extends HTMLElement {
         });
 
         // Display
-        const myTemplate = (isTracking) => html`
+        const myTemplate = () => html`
         <div class="menu-content">
             <div class="button-bar">
-            <button id="geolocation-center" class="btn btn-small btn-primary" @click=${ () => mainLizmap.geolocation.center()} ?disabled=${!isTracking}><span class="icon"></span>Center</button>
-            <button id="geolocation-bind" class="btn btn-small btn-primary" ?disabled=${!isTracking}><span class="icon"></span>Stay centered</button>
-            <button id="geolocation-stop" class="btn btn-small btn-primary" ?disabled=${!isTracking}><span class="icon"></span>Stop</button>
+                <button id="geolocation-center" class="btn btn-small btn-primary" @click=${ () => mainLizmap.geolocation.center()} ?disabled=${!mainLizmap.geolocation.isTracking | mainLizmap.geolocation.isBind}><span class="icon"></span>Center</button>
+                <button id="geolocation-bind" class="btn btn-small btn-primary ${mainLizmap.geolocation.isBind ? 'active' : ''}" @click=${ () => mainLizmap.geolocation.toggleBind()} ?disabled=${!mainLizmap.geolocation.isTracking}><span class="icon"></span>Stay centered</button>
+                <button id="geolocation-stop" class="btn btn-small btn-primary" ?disabled=${!mainLizmap.geolocation.isTracking}><span class="icon"></span>Stop</button>
             </div>
             <div id="geolocation-edition-group" style="display:none; margin-top:5px;">
                 <table>
@@ -37,10 +37,17 @@ export default class Geolocation extends HTMLElement {
         </div>`;
 
         mainEventDispatcher.addListener(
-            (event) => {
-                render(myTemplate(event.isTracking), this);
+            () => {
+                render(myTemplate(), this);
             },
-            { type: 'geolocation.isTracking'}
+            'geolocation.isTracking'
+        );
+
+        mainEventDispatcher.addListener(
+            () => {
+                render(myTemplate(), this);
+            },
+            'geolocation.isBind'
         );
 
     }
