@@ -1,10 +1,11 @@
 import olGeolocation from 'ol/Geolocation.js';
-import { mainLizmap } from '../modules/Globals.js';
+import { mainLizmap, mainEventDispatcher } from '../modules/Globals.js';
 
 export default class Geolocation {
 
     constructor() {
         this._firstGeolocation = true;
+        this._isTracking = false;
     }
 
     moveGeolocationPointAndCircle(coordinates) {
@@ -97,6 +98,19 @@ export default class Geolocation {
             });
         }
 
-        this._geolocation.setTracking(!this._geolocation.getTracking());
+        this.isTracking = !this._geolocation.getTracking();
+    }
+
+    /**
+     * @param {boolean} isTracking
+     */
+    set isTracking(isTracking){
+        this._isTracking = isTracking;
+        this._geolocation.setTracking(isTracking);
+
+        mainEventDispatcher.dispatch({
+            type: 'geolocation.isTracking',
+            isTracking: this._isTracking
+        });
     }
 }

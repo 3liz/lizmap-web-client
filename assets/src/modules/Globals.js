@@ -4,9 +4,12 @@
  */
 
 import Lizmap from './Lizmap.js';
+import EventDispatcher from '../utils/EventDispatcher.js';
 
 const mainLizmap = new Lizmap();
+const mainEventDispatcher = new EventDispatcher();
 
 export {
-    mainLizmap
+    mainLizmap,
+    mainEventDispatcher
 };

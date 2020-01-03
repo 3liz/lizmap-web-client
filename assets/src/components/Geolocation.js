@@ -1,4 +1,4 @@
-import { mainLizmap } from '../modules/Globals.js';
+import { mainLizmap, mainEventDispatcher } from '../modules/Globals.js';
 
 import { library, findIconDefinition, icon } from '@fortawesome/fontawesome-svg-core';
 import { faDotCircle } from '@fortawesome/free-regular-svg-icons';
@@ -29,6 +29,14 @@ export default class Geolocation extends HTMLElement {
         geolocationButton.appendChild(i.node[0]);
 
         this.appendChild(geolocationButton);
+
+        // Display
+        mainEventDispatcher.addListener(
+            (event) => {
+                console.log(event.isTracking);
+            },
+            { type: 'geolocation.isTracking'}
+        );
 
     }
 
