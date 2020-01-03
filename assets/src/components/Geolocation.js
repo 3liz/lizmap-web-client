@@ -13,12 +13,12 @@ export default class Geolocation extends HTMLElement {
         });
 
         // Display
-        const myTemplate = () => html`
+        const myTemplate = (isTracking) => html`
         <div class="menu-content">
             <div class="button-bar">
-            <button id="geolocation-center" class="btn btn-small btn-primary" disabled="disabled"><span class="icon"></span></button>
-            <button id="geolocation-bind" class="btn btn-small btn-primary" disabled="disabled"><span class="icon"></span></button>
-            <button id="geolocation-stop" class="btn btn-small btn-primary" disabled="disabled"><span class="icon"></span></button>
+            <button id="geolocation-center" class="btn btn-small btn-primary" ?disabled=${!isTracking}><span class="icon"></span>Center</button>
+            <button id="geolocation-bind" class="btn btn-small btn-primary" ?disabled=${!isTracking}><span class="icon"></span>Stay centered</button>
+            <button id="geolocation-stop" class="btn btn-small btn-primary" ?disabled=${!isTracking}><span class="icon"></span>Stop</button>
             </div>
             <div id="geolocation-edition-group" style="display:none; margin-top:5px;">
                 <table>
@@ -36,22 +36,12 @@ export default class Geolocation extends HTMLElement {
             </div>
         </div>`;
 
-        render(myTemplate(), this);
-
-        // mainEventDispatcher.addListener(
-        //     (event) => {
-        //         if (event.isTracking){
-        //             document.querySelectorAll('#mini-dock-content .tab-pane').forEach(function (tab) {
-        //                 tab.classList.remove('active');
-        //             });
-        //             document.querySelectorAll('#mini-dock-content #geolocation')[0].classList.add('active');
-        //         }else{
-        //             document.querySelectorAll('#mini-dock-content #geolocation')[0].classList.remove('active');
-        //         }
-
-        //     },
-        //     { type: 'geolocation.isTracking'}
-        // );
+        mainEventDispatcher.addListener(
+            (event) => {
+                render(myTemplate(event.isTracking), this);
+            },
+            { type: 'geolocation.isTracking'}
+        );
 
     }
 
