@@ -6,7 +6,8 @@
       <span class="text">&nbsp;{@view~map.geolocate.toolbar.title@}&nbsp;</span>
     </span>
   </h3>
-  <div class="menu-content">
+  <lizmap-geolocation></lizmap-geolocation>
+  <!-- <div class="menu-content">
     <div class="button-bar">
       <button id="geolocation-center" class="btn btn-small btn-primary" disabled="disabled"><span class="icon"></span>&nbsp;{@view~map.geolocate.toolbar.center@}</button>
       <button id="geolocation-bind" class="btn btn-small btn-primary" disabled="disabled"><span class="icon"></span>&nbsp;{@view~map.geolocate.toolbar.bind@}</button>
@@ -28,5 +29,5 @@
       </table>
     </div>
     {/if}
-  </div>
+  </div> -->
 </div>

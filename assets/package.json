@@ -7,7 +7,13 @@
     "watch": "webpack --watch --config webpack.dev.js",
     "pretest": "eslint src"
   },
-  "devDependencies": {},
+  "devDependencies": {
+    "lit-html": "^1.1.2",
+    "ol": "^6.1.1",
+    "webpack": "^4.41.5",
+    "webpack-cli": "^3.3.10",
+    "webpack-merge": "^4.2.2"
+  },
   "author": "3Liz",
   "license": "ISC"
 }
