@@ -6,11 +6,16 @@ export default class Geolocation {
     constructor() {
         this._firstGeolocation = true;
         this._isTracking = false;
+        this._isBind = false;
     }
 
     center() {
         mainLizmap.center = this._geolocation.getPosition();
     };
+
+    toggleBind(){
+        this.isBind = !this._isBind;
+    }
 
     moveGeolocationPointAndCircle(coordinates) {
         // TODO : change newGeolocation to geolocation after old code removed
@@ -90,6 +95,10 @@ export default class Geolocation {
             this._geolocation.on('change:position', () => {
                 const coordinates = this._geolocation.getPosition();
                 this.moveGeolocationPointAndCircle(coordinates);
+
+                if(this._isBind){
+                    this.center();
+                }
             });
 
             this._geolocation.on('change:accuracyGeometry', () => {
@@ -105,6 +114,10 @@ export default class Geolocation {
         this.isTracking = !this._geolocation.getTracking();
     }
 
+    get isTracking(){
+        return this._isTracking;
+    }
+
     /**
      * @param {boolean} isTracking
      */
@@ -112,9 +125,19 @@ export default class Geolocation {
         this._isTracking = isTracking;
         this._geolocation.setTracking(isTracking);
 
-        mainEventDispatcher.dispatch({
-            type: 'geolocation.isTracking',
-            isTracking: this._isTracking
-        });
+        mainEventDispatcher.dispatch('geolocation.isTracking');
+    }
+
+    get isBind (){
+        return this._isBind;
+    }
+
+    /**
+     * @param {boolean} isBind
+     */
+    set isBind(isBind) {
+        this._isBind = isBind;
+
+        mainEventDispatcher.dispatch('geolocation.isBind');
     }
 }
