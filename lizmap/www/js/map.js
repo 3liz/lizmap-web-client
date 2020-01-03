@@ -2877,12 +2877,6 @@ var lizMap = function() {
     else
       $('#button-tooltip-layer').parent().remove();
 
-    if ( ('geolocation' in configOptions)
-        && configOptions['geolocation'] == 'True')
-      addGeolocationControl();
-    else
-      $('#button-geolocation').parent().remove();
-
     if ( ('measure' in configOptions)
         && configOptions['measure'] == 'True')
       addMeasureControls();
@@ -5197,152 +5191,152 @@ OpenLayers.Control.HighlightFeature = OpenLayers.Class(OpenLayers.Control, {
     return measureControls;
   }
 
-  function addGeolocationControl() {
-    var style = {
-      fillColor: '#0395D6',
-      fillOpacity: 0.1,
-      strokeColor: '#0395D6',
-      strokeWidth: 1
-    };
-    var vector = new OpenLayers.Layer.Vector('geolocation');
-    map.addLayer(vector);
-    var geolocate = new OpenLayers.Control.Geolocate({
-      type: OpenLayers.Control.TYPE_TOGGLE,
-      bind: false,
-      watch: true,
-      layer: vector,
-      geolocationOptions: {
-        enableHighAccuracy: true,
-        maximumAge: 5000,
-        timeout: 30000
-      }
-    });
-    map.addControl(geolocate);
-    var firstGeolocation = true;
-    geolocate.events.on({
-      "locationupdated": function(evt) {
-        if ( this.layer.features.length == 0 ) {
-            var circle = new OpenLayers.Feature.Vector(
-              OpenLayers.Geometry.Polygon.createRegularPolygon(
-                evt.point.clone(),
-                evt.position.coords.accuracy/2,
-                40,
-                0
-              ),
-              {},
-              style
-            );
-            this.layer.addFeatures([
-              new OpenLayers.Feature.Vector(
-                evt.point,
-                {},
-                {
-                  graphicName: 'circle',
-                  strokeColor: '#0395D6',
-                  strokeWidth: 1,
-                  fillOpacity: 1,
-                  fillColor: '#0395D6',
-                  pointRadius: 3
-                }
-              ),
-              circle
-            ]);
-        } else {
-            var point = this.layer.features[0];
-            point.geometry.x = evt.point.x;
-            point.geometry.y = evt.point.y;
-            point.geometry.clearBounds();
-            this.layer.drawFeature(point);
-            var circle = this.layer.features[1];
-            this.layer.destroyFeatures([circle]);
-            circle = new OpenLayers.Feature.Vector(
-              OpenLayers.Geometry.Polygon.createRegularPolygon(
-                evt.point.clone(),
-                evt.position.coords.accuracy/2,
-                40,
-                0
-              ),
-              {},
-              style
-            );
-            this.layer.addFeatures([circle]);
-        }
-        if (firstGeolocation) {
-          map.zoomToExtent(vector.getDataExtent());
-          firstGeolocation = false;
-          if ( $('#geolocate-menu-bind').hasClass('active') )
-            this.bind = true;
-        }
-        $('#geolocation .button-bar button').removeAttr('disabled');
-      },
-      "locationfailed": function(evt) {
-        if ( this.layer.features.length == 0 && $('#geolocation-locationfailed').length != 0)
-          mAddMessage('<span id="geolocation-locationfailed">'+lizDict['geolocation.failed']+'</span>','error',true);
-      },
-      "activate": function(evt) {
-          $('#geolocation-stop').removeAttr('disabled');
-      },
-      "deactivate": function(evt) {
-        firstGeolocation = true;
-        this.bind = false;
-        $('#geolocation .button-bar button').attr('disabled','disabled').removeClass('active');
-        this.layer.destroyFeatures();
-      }
-    });
-    controls['geolocation'] = geolocate;
-    lizMap.events.on({
-        minidockopened: function(e) {
-            if ( e.id == 'geolocation' ) {
-                if (!geolocate.active)
-                    geolocate.activate();
-            }
-        },
+  // function addGeolocationControl() {
+  //   var style = {
+  //     fillColor: '#0395D6',
+  //     fillOpacity: 0.1,
+  //     strokeColor: '#0395D6',
+  //     strokeWidth: 1
+  //   };
+  //   var vector = new OpenLayers.Layer.Vector('geolocation');
+  //   map.addLayer(vector);
+  //   var geolocate = new OpenLayers.Control.Geolocate({
+  //     type: OpenLayers.Control.TYPE_TOGGLE,
+  //     bind: false,
+  //     watch: true,
+  //     layer: vector,
+  //     geolocationOptions: {
+  //       enableHighAccuracy: true,
+  //       maximumAge: 5000,
+  //       timeout: 30000
+  //     }
+  //   });
+  //   map.addControl(geolocate);
+  //   var firstGeolocation = true;
+  //   geolocate.events.on({
+  //     "locationupdated": function(evt) {
+  //       if ( this.layer.features.length == 0 ) {
+  //           var circle = new OpenLayers.Feature.Vector(
+  //             OpenLayers.Geometry.Polygon.createRegularPolygon(
+  //               evt.point.clone(),
+  //               evt.position.coords.accuracy/2,
+  //               40,
+  //               0
+  //             ),
+  //             {},
+  //             style
+  //           );
+  //           this.layer.addFeatures([
+  //             new OpenLayers.Feature.Vector(
+  //               evt.point,
+  //               {},
+  //               {
+  //                 graphicName: 'circle',
+  //                 strokeColor: '#0395D6',
+  //                 strokeWidth: 1,
+  //                 fillOpacity: 1,
+  //                 fillColor: '#0395D6',
+  //                 pointRadius: 3
+  //               }
+  //             ),
+  //             circle
+  //           ]);
+  //       } else {
+  //           var point = this.layer.features[0];
+  //           point.geometry.x = evt.point.x;
+  //           point.geometry.y = evt.point.y;
+  //           point.geometry.clearBounds();
+  //           this.layer.drawFeature(point);
+  //           var circle = this.layer.features[1];
+  //           this.layer.destroyFeatures([circle]);
+  //           circle = new OpenLayers.Feature.Vector(
+  //             OpenLayers.Geometry.Polygon.createRegularPolygon(
+  //               evt.point.clone(),
+  //               evt.position.coords.accuracy/2,
+  //               40,
+  //               0
+  //             ),
+  //             {},
+  //             style
+  //           );
+  //           this.layer.addFeatures([circle]);
+  //       }
+  //       if (firstGeolocation) {
+  //         map.zoomToExtent(vector.getDataExtent());
+  //         firstGeolocation = false;
+  //         if ( $('#geolocate-menu-bind').hasClass('active') )
+  //           this.bind = true;
+  //       }
+  //       $('#geolocation .button-bar button').removeAttr('disabled');
+  //     },
+  //     "locationfailed": function(evt) {
+  //       if ( this.layer.features.length == 0 && $('#geolocation-locationfailed').length != 0)
+  //         mAddMessage('<span id="geolocation-locationfailed">'+lizDict['geolocation.failed']+'</span>','error',true);
+  //     },
+  //     "activate": function(evt) {
+  //         $('#geolocation-stop').removeAttr('disabled');
+  //     },
+  //     "deactivate": function(evt) {
+  //       firstGeolocation = true;
+  //       this.bind = false;
+  //       $('#geolocation .button-bar button').attr('disabled','disabled').removeClass('active');
+  //       this.layer.destroyFeatures();
+  //     }
+  //   });
+  //   controls['geolocation'] = geolocate;
+  //   lizMap.events.on({
+  //       minidockopened: function(e) {
+  //           if ( e.id == 'geolocation' ) {
+  //               if (!geolocate.active)
+  //                   geolocate.activate();
+  //           }
+  //       },
 
-        minidockclosed: function(e) {
-            if ( e.id == 'geolocation' ) {
-                if (geolocate.active && vector.features.length == 0 )
-                    geolocate.deactivate();
-            }
-        }
-    });
-    $('#geolocation-center').click(function(){
-      if ( !geolocate.active )
-        return false;
+  //       minidockclosed: function(e) {
+  //           if ( e.id == 'geolocation' ) {
+  //               if (geolocate.active && vector.features.length == 0 )
+  //                   geolocate.deactivate();
+  //           }
+  //       }
+  //   });
+  //   $('#geolocation-center').click(function(){
+  //     if ( !geolocate.active )
+  //       return false;
 
-      if (vector.features.length != 0 )
-        map.setCenter(vector.getDataExtent().getCenterLonLat());
-      return false;
-    });
-    $('#geolocation-bind').click(function(){
-      if ( !geolocate.active )
-        return false;
-      var self = $(this);
-      if ( self.hasClass('active') ) {
-        $('#geolocation-center').removeAttr('disabled');
-        self.removeClass('active');
-        geolocate.bind = false;
-      } else {
-        self.addClass('active');
-        $('#geolocation-center').attr('disabled','disabled');
-        geolocate.bind = true;
-      }
-      return false;
-    });
-    function stopGeolocation(){
-      if ( geolocate.active )
-        geolocate.deactivate();
-      $('#button-geolocation').click();
-      return false;
-    }
-    $('#geolocation-stop').click(function(){
-      stopGeolocation();
-      return false;
-    });
-    $('#geolocation button.btn-geolocation-close').click(function(){
-      $('#button-geolocation').click();
-      return false;
-    });
-  }
+  //     if (vector.features.length != 0 )
+  //       map.setCenter(vector.getDataExtent().getCenterLonLat());
+  //     return false;
+  //   });
+  //   $('#geolocation-bind').click(function(){
+  //     if ( !geolocate.active )
+  //       return false;
+  //     var self = $(this);
+  //     if ( self.hasClass('active') ) {
+  //       $('#geolocation-center').removeAttr('disabled');
+  //       self.removeClass('active');
+  //       geolocate.bind = false;
+  //     } else {
+  //       self.addClass('active');
+  //       $('#geolocation-center').attr('disabled','disabled');
+  //       geolocate.bind = true;
+  //     }
+  //     return false;
+  //   });
+  //   function stopGeolocation(){
+  //     if ( geolocate.active )
+  //       geolocate.deactivate();
+  //     $('#button-geolocation').click();
+  //     return false;
+  //   }
+  //   $('#geolocation-stop').click(function(){
+  //     stopGeolocation();
+  //     return false;
+  //   });
+  //   $('#geolocation button.btn-geolocation-close').click(function(){
+  //     $('#button-geolocation').click();
+  //     return false;
+  //   });
+  // }
 
   /**
    * PRIVATE function: parseData

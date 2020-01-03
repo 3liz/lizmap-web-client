@@ -1,4 +1,4 @@
-<div style="">
+<div>
     <ul class="nav nav-list">
       {if $display_home}
       <li class="home">
@@ -40,6 +40,6 @@
       </li>
       {/foreach}
 
-      <li><lizmap-geolocation></lizmap-geolocation></li>
+      <!-- <li></li> -->
     </ul>
 </div>
