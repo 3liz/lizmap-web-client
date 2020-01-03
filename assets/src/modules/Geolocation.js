@@ -8,6 +8,10 @@ export default class Geolocation {
         this._isTracking = false;
     }
 
+    center() {
+        mainLizmap.center = this._geolocation.getPosition();
+    };
+
     moveGeolocationPointAndCircle(coordinates) {
         // TODO : change newGeolocation to geolocation after old code removed
         let geolocationLayer = mainLizmap._lizmap3.map.getLayersByName('newGeolocation')[0];
@@ -92,7 +96,7 @@ export default class Geolocation {
                 // Zoom on accuracy geometry extent when geolocation is activated for the first time
                 if (this._firstGeolocation) {
                     mainLizmap.extent = this._geolocation.getAccuracyGeometry();
-                    mainLizmap.center = this._geolocation.getPosition();
+                    this.center();
                     this._firstGeolocation = false;
                 }
             });

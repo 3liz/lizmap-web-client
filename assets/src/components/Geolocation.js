@@ -16,7 +16,7 @@ export default class Geolocation extends HTMLElement {
         const myTemplate = (isTracking) => html`
         <div class="menu-content">
             <div class="button-bar">
-            <button id="geolocation-center" class="btn btn-small btn-primary" ?disabled=${!isTracking}><span class="icon"></span>Center</button>
+            <button id="geolocation-center" class="btn btn-small btn-primary" @click=${ () => mainLizmap.geolocation.center()} ?disabled=${!isTracking}><span class="icon"></span>Center</button>
             <button id="geolocation-bind" class="btn btn-small btn-primary" ?disabled=${!isTracking}><span class="icon"></span>Stay centered</button>
             <button id="geolocation-stop" class="btn btn-small btn-primary" ?disabled=${!isTracking}><span class="icon"></span>Stop</button>
             </div>
