@@ -13,6 +13,10 @@ export default class Lizmap {
         this.geolocation = new Geolocation();
     }
 
+    get hasEditionLayers(){
+        return 'editionLayers' in this._lizmap3.config;
+    }
+
     get projection(){
         return this._lizmap3.map.getProjection();
     }
