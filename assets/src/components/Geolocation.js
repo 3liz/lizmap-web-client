@@ -9,16 +9,16 @@ export default class Geolocation extends HTMLElement {
     connectedCallback() {
         // Listen click event
         document.querySelectorAll('#button-geolocation')[0].addEventListener('click', () => {
-            mainLizmap.geolocation.toggleGeolocation();
+            mainLizmap.geolocation.startGeolocation();
         });
 
         // Display
         const myTemplate = () => html`
         <div class="menu-content">
             <div class="button-bar">
+                <button id="geolocation-stop" class="btn btn-small btn-primary" @click=${ () => mainLizmap.geolocation.toggleTracking()}><span class="icon"></span>${mainLizmap.geolocation.isTracking ? 'Stop' : 'Start'}</button>
                 <button id="geolocation-center" class="btn btn-small btn-primary" @click=${ () => mainLizmap.geolocation.center()} ?disabled=${!mainLizmap.geolocation.isTracking | mainLizmap.geolocation.isBind}><span class="icon"></span>Center</button>
                 <button id="geolocation-bind" class="btn btn-small btn-primary ${mainLizmap.geolocation.isBind ? 'active' : ''}" @click=${ () => mainLizmap.geolocation.toggleBind()} ?disabled=${!mainLizmap.geolocation.isTracking}><span class="icon"></span>Stay centered</button>
-                <button id="geolocation-stop" class="btn btn-small btn-primary" ?disabled=${!mainLizmap.geolocation.isTracking}><span class="icon"></span>Stop</button>
             </div>
             <div id="geolocation-edition-group" style="display:none; margin-top:5px;">
                 <table>
@@ -55,5 +55,4 @@ export default class Geolocation extends HTMLElement {
     disconnectedCallback() {
 
     }
-
 }

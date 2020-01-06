@@ -5,7 +5,6 @@ export default class Geolocation {
 
     constructor() {
         this._firstGeolocation = true;
-        this._isTracking = false;
         this._isBind = false;
     }
 
@@ -15,6 +14,10 @@ export default class Geolocation {
 
     toggleBind(){
         this.isBind = !this._isBind;
+    }
+
+    toggleTracking(){
+        this.isTracking = !this._geolocation.getTracking();
     }
 
     moveGeolocationPointAndCircle(coordinates) {
@@ -82,7 +85,7 @@ export default class Geolocation {
         }
     }
 
-    toggleGeolocation() {
+    startGeolocation() {
         if (this._geolocation === undefined) {
             this._geolocation = new olGeolocation({
                 // enableHighAccuracy must be set to true to have the heading value.
@@ -109,21 +112,26 @@ export default class Geolocation {
                     this._firstGeolocation = false;
                 }
             });
-        }
 
-        this.isTracking = !this._geolocation.getTracking();
+            this.isTracking = true;
+        }
     }
 
     get isTracking(){
-        return this._isTracking;
+        return this._geolocation.getTracking();
     }
 
     /**
      * @param {boolean} isTracking
      */
     set isTracking(isTracking){
-        this._isTracking = isTracking;
         this._geolocation.setTracking(isTracking);
+
+        // FIXME : later we'll need an object listening to 'geolocation.isTracking' event and setting visibility accordingly
+        const geolocationLayer = mainLizmap._lizmap3.map.getLayersByName('newGeolocation')[0];
+        if(geolocationLayer){
+            geolocationLayer.setVisibility(isTracking);
+        }
 
         mainEventDispatcher.dispatch('geolocation.isTracking');
     }
