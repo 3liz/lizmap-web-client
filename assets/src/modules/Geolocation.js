@@ -102,6 +102,8 @@ export default class Geolocation {
                 if(this._isBind){
                     this.center();
                 }
+
+                mainEventDispatcher.dispatch('geolocation.position');
             });
 
             this._geolocation.on('change:accuracyGeometry', () => {
@@ -115,6 +117,10 @@ export default class Geolocation {
 
             this.isTracking = true;
         }
+    }
+
+    get position() {
+        return this._geolocation.getPosition();
     }
 
     get isTracking(){
