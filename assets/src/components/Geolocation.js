@@ -15,6 +15,7 @@ export default class Geolocation extends HTMLElement {
         // Display
         const myTemplate = () => html`
         <div class="menu-content">
+    <div id=geolocation-coords><small>${mainLizmap.geolocation.position ? mainLizmap.geolocation.position[0].toString() + ', ' + mainLizmap.geolocation.position[1].toString() : ''}</small></div>
             <div class="button-bar">
                 <button id="geolocation-stop" class="btn btn-small btn-primary" @click=${ () => mainLizmap.geolocation.toggleTracking()}><span class="icon"></span>${mainLizmap.geolocation.isTracking ? 'Stop' : 'Start'}</button>
                 <button id="geolocation-center" class="btn btn-small btn-primary" @click=${ () => mainLizmap.geolocation.center()} ?disabled=${!mainLizmap.geolocation.isTracking | mainLizmap.geolocation.isBind}><span class="icon"></span>Center</button>
@@ -48,6 +49,13 @@ export default class Geolocation extends HTMLElement {
                 render(myTemplate(), this);
             },
             'geolocation.isBind'
+        );
+
+        mainEventDispatcher.addListener(
+            () => {
+                render(myTemplate(), this);
+            },
+            'geolocation.position'
         );
 
     }
