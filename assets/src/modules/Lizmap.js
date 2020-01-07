@@ -1,16 +1,14 @@
-import Geolocation from '../modules/Geolocation.js';
 import { mainEventDispatcher } from '../modules/Globals.js';
+import Geolocation from '../modules/Geolocation.js';
 
 export default class Lizmap {
 
     constructor() {
-
-        this.geolocation = new Geolocation();
-        this.lizmapEditionDrawFeatureActivated = false;
-
         lizMap.events.on({
             uicreated: () => {
                 this._lizmap3 = lizMap;
+                this.geolocation = new Geolocation();
+                this.lizmapEditionDrawFeatureActivated = false;
             },
             lizmapeditiondrawfeatureactivated: () => {
                 this.lizmapEditionDrawFeatureActivated = true;

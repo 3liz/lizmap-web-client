@@ -1,12 +1,72 @@
+import { mainLizmap, mainEventDispatcher } from '../modules/Globals.js';
 import olGeolocation from 'ol/Geolocation.js';
 import {transform} from 'ol/proj';
-import { mainLizmap, mainEventDispatcher } from '../modules/Globals.js';
 
 export default class Geolocation {
 
     constructor() {
         this._firstGeolocation = true;
         this._isBind = false;
+
+        this._geolocation = new olGeolocation({
+            // enableHighAccuracy must be set to true to have the heading value.
+            trackingOptions: {
+                enableHighAccuracy: true
+            },
+            projection: mainLizmap.projection
+        });
+
+        this._geolocation.on('change:position', () => {
+            const coordinates = this._geolocation.getPosition();
+            this.moveGeolocationPointAndCircle(coordinates);
+
+            if (this._isBind) {
+                this.center();
+            }
+
+            mainEventDispatcher.dispatch('geolocation.position');
+        });
+
+        this._geolocation.on('change:accuracyGeometry', () => {
+            // Zoom on accuracy geometry extent when geolocation is activated for the first time
+            if (this._firstGeolocation) {
+                mainLizmap.extent = this._geolocation.getAccuracyGeometry();
+                this.center();
+                this._firstGeolocation = false;
+            }
+        });
+    }
+
+    initGeolocation() {
+        if (this._geolocation === undefined) {
+            this._geolocation = new olGeolocation({
+                // enableHighAccuracy must be set to true to have the heading value.
+                trackingOptions: {
+                    enableHighAccuracy: true
+                },
+                projection: mainLizmap.projection
+            });
+
+            this._geolocation.on('change:position', () => {
+                const coordinates = this._geolocation.getPosition();
+                this.moveGeolocationPointAndCircle(coordinates);
+
+                if (this._isBind) {
+                    this.center();
+                }
+
+                mainEventDispatcher.dispatch('geolocation.position');
+            });
+
+            this._geolocation.on('change:accuracyGeometry', () => {
+                // Zoom on accuracy geometry extent when geolocation is activated for the first time
+                if (this._firstGeolocation) {
+                    mainLizmap.extent = this._geolocation.getAccuracyGeometry();
+                    this.center();
+                    this._firstGeolocation = false;
+                }
+            });
+        }
     }
 
     center() {
@@ -83,40 +143,6 @@ export default class Geolocation {
                 circleStyle
             );
             geolocationLayer.addFeatures([geolocationCircle]);
-        }
-    }
-
-    startGeolocation() {
-        if (this._geolocation === undefined) {
-            this._geolocation = new olGeolocation({
-                // enableHighAccuracy must be set to true to have the heading value.
-                trackingOptions: {
-                    enableHighAccuracy: true
-                },
-                projection: mainLizmap.projection
-            });
-
-            this._geolocation.on('change:position', () => {
-                const coordinates = this._geolocation.getPosition();
-                this.moveGeolocationPointAndCircle(coordinates);
-
-                if(this._isBind){
-                    this.center();
-                }
-
-                mainEventDispatcher.dispatch('geolocation.position');
-            });
-
-            this._geolocation.on('change:accuracyGeometry', () => {
-                // Zoom on accuracy geometry extent when geolocation is activated for the first time
-                if (this._firstGeolocation) {
-                    mainLizmap.extent = this._geolocation.getAccuracyGeometry();
-                    this.center();
-                    this._firstGeolocation = false;
-                }
-            });
-
-            this.isTracking = true;
         }
     }
 

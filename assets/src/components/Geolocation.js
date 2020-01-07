@@ -7,11 +7,6 @@ export default class Geolocation extends HTMLElement {
     }
 
     connectedCallback() {
-        // Listen click event
-        document.querySelectorAll('#button-geolocation')[0].addEventListener('click', () => {
-            mainLizmap.geolocation.startGeolocation();
-        });
-
         // Display
         const positionTemplate = () => html`
         <small>${mainLizmap.geolocation.position ? mainLizmap.geolocation.position[0].toString() + ', ' + mainLizmap.geolocation.position[1].toString() : ''}</small>`;
@@ -42,6 +37,8 @@ export default class Geolocation extends HTMLElement {
                 : ''
             }
         </div>`;
+
+        render(mainTemplate(), this);
 
         mainEventDispatcher.addListener(
             () => {
