@@ -1,4 +1,5 @@
 import olGeolocation from 'ol/Geolocation.js';
+import {transform} from 'ol/proj';
 import { mainLizmap, mainEventDispatcher } from '../modules/Globals.js';
 
 export default class Geolocation {
@@ -119,8 +120,13 @@ export default class Geolocation {
         }
     }
 
+    // Get position in GPS coordinates (ESPG:4326)
     get position() {
-        return this._geolocation.getPosition();
+        const position = this._geolocation.getPosition();
+        if (position){
+            return transform(position, mainLizmap.projection, 'EPSG:4326');
+        }
+        return undefined;
     }
 
     get isTracking(){
