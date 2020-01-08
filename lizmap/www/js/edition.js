@@ -393,11 +393,11 @@ OpenLayers.Geometry.pointOnSegment = function(point, segment) {
         $('#edition-point-coord-form-expander i').removeClass('icon-chevron-down').addClass('icon-chevron-right');
         $('#edition-point-coord-form-group').hide();
 
-        if ( $('#geolocation-edition-group').length != 0 ) {
-            $('#geolocation-edition-group input').attr('disabled','disabled').removeClass('active');
-            $('#geolocation-edition-group button').attr('disabled','disabled').removeClass('active');
-            $('#geolocation-edition-group').hide();
-        }
+        // if ( $('#geolocation-edition-group').length != 0 ) {
+        //     $('#geolocation-edition-group input').attr('disabled','disabled').removeClass('active');
+        //     $('#geolocation-edition-group button').attr('disabled','disabled').removeClass('active');
+        //     $('#geolocation-edition-group').hide();
+        // }
 
         lizMap.events.triggerEvent("lizmapeditiondrawfeaturedeactivated",
             {
@@ -424,11 +424,11 @@ OpenLayers.Geometry.pointOnSegment = function(point, segment) {
             $('#edition-point-coord-add').show();
         $('#edition-point-coord-form').show();
 
-        if ( $('#geolocation-edition-group').length != 0 ) {
-            $('#geolocation-edition-group').show();
-            if ( !$('#geolocation-center').attr('disabled') )
-                $('#geolocation-edition-group input').removeAttr('disabled');
-        }
+        // if ( $('#geolocation-edition-group').length != 0 ) {
+        //     $('#geolocation-edition-group').show();
+        //     if ( !$('#geolocation-center').attr('disabled') )
+        //         $('#geolocation-edition-group input').removeAttr('disabled');
+        // }
 
         lizMap.events.triggerEvent("lizmapeditiondrawfeatureactivated",
             {
