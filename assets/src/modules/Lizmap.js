@@ -9,9 +9,11 @@ export default class Lizmap {
                 this._lizmap3 = lizMap;
                 this.geolocation = new Geolocation();
                 this.lizmapEditionDrawFeatureActivated = false;
+                this.lizmapEditionLayerGeometry = "";
             },
-            lizmapeditiondrawfeatureactivated: () => {
+            lizmapeditiondrawfeatureactivated: (properties) => {
                 this.lizmapEditionDrawFeatureActivated = true;
+                this.lizmapEditionLayerGeometry = properties.editionConfig.geometryType;
                 mainEventDispatcher.dispatch('lizmapEditionDrawFeatureChanged');
             },
             lizmapeditiondrawfeaturedeactivated: () => {
