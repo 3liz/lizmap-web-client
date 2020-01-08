@@ -25,9 +25,9 @@ export default class Geolocation extends HTMLElement {
                 <div>
                     <strong style="vertical-align: top;">Edition&nbsp;:</strong>
                     <div style="display:inline-block">
-                        <button class="btn btn-small btn-primary ${mainLizmap.geolocation.hasEditionLinked ? 'active' : ''}" @click=${() => mainLizmap.geolocation.toggleEditionLinked()}>Linked</button>
+                        <button class="btn btn-small btn-primary ${mainLizmap.geolocation.hasEditionLinked ? 'active' : ''}" @click=${() => mainLizmap.geolocation.toggleEditionLinked()} ?disabled=${!mainLizmap.geolocation.isTracking}>Linked</button>
                         <div style="padding-top: 5px;">
-                            <button id="geolocation-edition-add" class="btn btn-small btn-primary" ?disabled=${!mainLizmap.geolocation.hasEditionLinked}><span class="icon"></span>Add</button>
+                            <button id="geolocation-edition-add" class="btn btn-small btn-primary ${mainLizmap.lizmapEditionLayerGeometry === "point" ? 'hide' : ''}" ?disabled=${!mainLizmap.geolocation.hasEditionLinked}><span class="icon"></span>Add</button>
                             <button id="geolocation-edition-submit" class="btn btn-small btn-primary" ?disabled=${!mainLizmap.geolocation.hasEditionLinked}><span class="icon"></span>Finalize</button>
                         </div>
                     </div>
