@@ -20,21 +20,20 @@ export default class Geolocation extends HTMLElement {
                 <button id="geolocation-bind" class="btn btn-small btn-primary ${mainLizmap.geolocation.isBind ? 'active' : ''}" @click=${ () => mainLizmap.geolocation.toggleBind()} ?disabled=${!mainLizmap.geolocation.isTracking}><span class="icon"></span>Stay centered</button>
             </div>
             ${mainLizmap.hasEditionLayers
-            ? html`<div id="geolocation-edition-group" class="${mainLizmap.lizmapEditionDrawFeatureActivated ? '' : 'hide'}" style="margin-top:5px;">
-                    <table>
-                        <tr>
-                            <td style="vertical-align: top;">
-                                <span id="geolocation-edition-title" style="font-weight:bold">Edition</span>
-                            </td>
-                            <td>
-                                <label id="geolocation-edition-linked-label" class="checkbox"><input id="geolocation-edition-linked" type="checkbox" value="1" disabled="disabled">linked to geolocation</label>
-                                <button id="geolocation-edition-add" class="btn btn-small btn-primary" disabled="disabled"><span class="icon"></span>Add</button>
-                                <button id="geolocation-edition-submit" class="btn btn-small btn-primary" disabled="disabled"><span class="icon"></span>Finalize</button>
-                            </td>
-                        </tr>
-                    </table>
-                </div>`
-                : ''
+            ? html`
+            <div id="geolocation-edition-group" class="${mainLizmap.lizmapEditionDrawFeatureActivated ? '' : 'hide'}" style="margin-top:5px;">
+                <div>
+                    <strong style="vertical-align: top;">Edition&nbsp;:</strong>
+                    <div style="display:inline-block">
+                        <button class="btn btn-small btn-primary ${mainLizmap.geolocation.hasEditionLinked ? 'active' : ''}" @click=${() => mainLizmap.geolocation.toggleEditionLinked()}>Linked</button>
+                        <div style="padding-top: 5px;">
+                            <button id="geolocation-edition-add" class="btn btn-small btn-primary" ?disabled=${!mainLizmap.geolocation.hasEditionLinked}><span class="icon"></span>Add</button>
+                            <button id="geolocation-edition-submit" class="btn btn-small btn-primary" ?disabled=${!mainLizmap.geolocation.hasEditionLinked}><span class="icon"></span>Finalize</button>
+                        </div>
+                    </div>
+                </div>
+            </div>`
+            : ''
             }
         </div>`;
 
@@ -66,6 +65,13 @@ export default class Geolocation extends HTMLElement {
                 render(mainTemplate(), this);
             },
             'lizmapEditionDrawFeatureChanged'
+        );
+
+        mainEventDispatcher.addListener(
+            () => {
+                render(mainTemplate(), this);
+            },
+            'geolocation.hasEditionLinked'
         );
     }
 
