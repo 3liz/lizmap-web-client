@@ -242,6 +242,13 @@ var lizLayerFilterTool = function() {
 
             for(var a in result){
                 var feat = result[a];
+                // Add minutes to time zone offset when not present (needed for Firefox).
+                if (feat['min'][feat['min'].length - 3] === '+'){
+                    feat['min'] = feat['min'] + ':00';
+                }
+                if (feat['max'][feat['max'].length - 3] === '+') {
+                    feat['max'] = feat['max'] + ':00';
+                }
                 var dmin = formatDT(new Date(feat['min']), 'yy-mm-dd');
                 var dmax = formatDT(new Date(feat['max']), 'yy-mm-dd');
                 filterConfig[field_item.order]['min'] = dmin;

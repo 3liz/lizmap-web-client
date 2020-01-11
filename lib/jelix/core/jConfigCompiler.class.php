@@ -101,12 +101,10 @@ class jConfigCompiler {
             $isCli = jServer::isCLI();
 
         $config = self::read($configFile, false, $isCli, $pseudoScriptName);
-        $tempPath = jApp::tempPath();
-        jFile::createDir($tempPath, $config->chmodDir);
-        $filename = $tempPath.str_replace('/','~',$configFile);
+        jFile::createDir(jApp::tempPath(), $config->chmodDir);
+        $filename = self::getCacheFilename($configFile);
 
         if(BYTECODE_CACHE_EXISTS){
-            $filename .= '.conf.php';
             if ($f = @fopen($filename, 'wb')) {
                 fwrite($f, '<?php $config = '.var_export(get_object_vars($config),true).";\n?>");
                 fclose($f);
@@ -115,9 +113,34 @@ class jConfigCompiler {
                 throw new Exception('Error while writing configuration cache file -- '.$filename);
             }
         }else{
-            jIniFile::write(get_object_vars($config), $filename.'.resultini.php', ";<?php die('');?>\n", $config->chmodFile);
+            jIniFile::write(get_object_vars($config), $filename, ";<?php die('');?>\n", $config->chmodFile);
         }
         return $config;
+    }
+
+    /**
+     * return the path of file where to store the cache of the configuration
+     * @param string $configFile the name of the configuration file of the entry
+     * point into var/config/
+     * @return string the full path of the cache
+     * @since 1.6.26
+     */
+    static public function getCacheFilename($configFile)
+    {
+        $filename = jApp::tempPath().str_replace('/','~',$configFile);
+        if (isset($_SERVER['HTTP_HOST'])) {
+            $filename .= '.'.str_replace(':', '-', $_SERVER['HTTP_HOST']);
+        }
+        elseif (isset($_SERVER['SERVER_NAME'])) {
+            $filename .= '.'.$_SERVER['SERVER_NAME'];
+        }
+        if (BYTECODE_CACHE_EXISTS) {
+            $filename .= '.conf.php';
+        }
+        else {
+            $filename .= '.resultini.php';
+        }
+        return $filename;
     }
 
     /**
