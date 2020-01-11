@@ -136,7 +136,7 @@ class jDb {
      * @param array  $profile  profile properties
      * @return boolean  true if properties are ok
      */
-    public function testProfile ($profile) {
+    public static function testProfile ($profile) {
         try {
             self::_createConnector ($profile);
             $ok = true;

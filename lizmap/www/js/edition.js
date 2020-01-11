@@ -362,7 +362,11 @@ OpenLayers.Geometry.pointOnSegment = function(point, segment) {
                     elk.push(al.order);
                 }
             }
-            for (var i in elk.sort()) {
+            // Sort by order (int)
+            elk.sort(function (a, b) {
+                return a - b;
+            });
+            for ( var i in elk ) {
                 var alConfig = elconfig[elk[i]];
                 $('#edition-layer').append('<option value="'+alConfig.id+'">'+alConfig.title+'</option>');
             }
