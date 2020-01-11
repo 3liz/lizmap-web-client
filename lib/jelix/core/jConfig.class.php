@@ -39,12 +39,7 @@ class jConfig {
      */
     static public function load($configFile){
         $config=array();
-        $file = jApp::tempPath().str_replace('/','~',$configFile);
-
-        if (BYTECODE_CACHE_EXISTS)
-            $file .= '.conf.php';
-        else
-            $file .= '.resultini.php';
+        $file = jConfigCompiler::getCacheFilename($configFile);
 
         self::$fromCache = true;
         if (!file_exists($file)) {

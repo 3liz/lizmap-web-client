@@ -71,8 +71,7 @@ class lizmap
         $readConfigPath = parse_ini_file(jApp::varPath().self::$lizmapConfig, true);
         $repositoryList = array();
         foreach ($readConfigPath as $section => $data) {
-            $match = preg_match('#(^repository:)#', $section, $matches);
-            if (isset($matches[0])) {
+            if (preg_match('#^(repository:)#', $section, $matches)) {
                 $repositoryList[] = str_replace($matches[0], '', $section);
             }
         }

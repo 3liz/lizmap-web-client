@@ -1321,6 +1321,14 @@ class serviceCtrl extends jController
 
         $rep = $this->getResponse('binary');
         $rep->mimeType = $result->mime;
+        $rep->doDownload = false;
+        $rep->outputFileName = 'qgis_server_wfs';
+        $rep->setHttpStatus($result->code, '');
+
+        if ($result->code >= 400) {
+            $rep->content = $result->data;
+            return $rep;
+        }
 
         if (property_exists($result, 'file') and $result->file and is_file($result->data)) {
             $rep->fileName = $result->data;
@@ -1328,8 +1336,15 @@ class serviceCtrl extends jController
         } else {
             $rep->content = $result->data; // causes memory_limit for big content
         }
-        $rep->doDownload = false;
-        $rep->outputFileName = 'qgis_server_wfs';
+
+        // Define file name
+        $typenames = implode('_', array_map('trim', explode(',', $this->params['typename'])));
+        $zipped_files = array('shp', 'mif', 'tab');
+        if (in_array(strtolower($this->params['outputformat']), $zipped_files)) {
+            $rep->outputFileName = $typenames.'.zip';
+        } else {
+            $rep->outputFileName = $typenames.'.'.strtolower($this->params['outputformat']);
+        }
 
         // Export
         $dl = $this->param('dl');
@@ -1342,7 +1357,6 @@ class serviceCtrl extends jController
                 $rep->content = preg_replace('/^[\n\r]/', '', $result->data);
             }
             // Change file name
-            $zipped_files = array('shp', 'mif', 'tab');
             if (in_array(strtolower($this->params['outputformat']), $zipped_files)) {
                 $rep->outputFileName = 'export_'.$this->params['typename'].'.zip';
             } else {

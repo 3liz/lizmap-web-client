@@ -433,9 +433,9 @@ class qgisVectorLayer extends qgisMapLayer
                     $sql .= ' AND attrelid = '.$cnx->quote($tablename).'::regclass';
                     $res = $cnx->query($sql);
                     $res = $res->fetch();
-                    if ($res && strpos($res->type, '(') !== false) {
-                        // It returns something like "geometry(PointZ,32620)".
-                        $dbInfo->geometryType = explode(',', explode('(', strtolower($res->type))[1])[0];
+                    // It returns something like "geometry(PointZ,32620) as type"
+                    if ($res && preg_match('/^geometry\\(([^,\\)]*)/', $res->type, $m)) {
+                        $dbInfo->geometryType = $m[1];
                     }
                 }
             }
@@ -605,8 +605,8 @@ class qgisVectorLayer extends qgisMapLayer
         // test type
         $rs = $cnx->query('SELECT GeometryType('.$nvalue.') as geomtype');
         $rs = $rs->fetch();
-        if (!preg_match('/'.$dbFieldsInfo->geometryType.'/', strtolower($rs->geomtype))) {
-            if (preg_match('/'.str_replace('multi', '', $dbFieldsInfo->geometryType).'/', strtolower($rs->geomtype))) {
+        if (!preg_match('/'.preg_quote($dbFieldsInfo->geometryType).'/', strtolower($rs->geomtype))) {
+            if (preg_match('/'.preg_quote(str_replace('multi', '', $dbFieldsInfo->geometryType)).'/', strtolower($rs->geomtype))) {
                 $nvalue = 'ST_Multi('.$nvalue.')';
             }
         }
