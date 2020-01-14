@@ -17,9 +17,6 @@ cacheRedisPort=6379
 cacheExpiration=0
 ; default cache expiration : the default time to live of data, in seconds.
 ; 0 means no expiration, max : 2592000 seconds (30 days)
-proxyMethod=php
-; php -> use the built in file_get_contents method
-; curl-> use curl. It must be installed.
 debugMode=0
 ; debug mode
 ; on = print debug messages in lizmap/var/log/messages.log

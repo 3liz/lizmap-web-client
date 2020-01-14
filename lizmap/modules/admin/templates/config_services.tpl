@@ -62,7 +62,7 @@
     <div>
         <h2>{@admin~admin.configuration.services.section.system.label@}</h2>
         <table class="table services-table">
-            {formcontrols array('proxyMethod', 'debugMode', 'requestProxyEnabled')}
+            {formcontrols array('debugMode', 'requestProxyEnabled')}
                 <tr>
                     {ifctrl 'requestProxyEnabled'}
                         <td colspan="2">{ctrl_control}</td>
