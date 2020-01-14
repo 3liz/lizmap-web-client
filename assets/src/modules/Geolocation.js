@@ -7,7 +7,6 @@ export default class Geolocation {
     constructor() {
         this._firstGeolocation = true;
         this._isBind = false;
-        this._hasEditionLinked = false;
 
         this._geolocation = new olGeolocation({
             // enableHighAccuracy must be set to true to have the heading value.
@@ -50,10 +49,6 @@ export default class Geolocation {
         this.isTracking = !this._geolocation.getTracking();
     }
 
-    toggleEditionLinked() {
-        this.hasEditionLinked = !this._hasEditionLinked;
-    }
-
     // Get position in GPS coordinates (ESPG:4326)
     get position() {
         const position = this._geolocation.getPosition();
@@ -93,19 +88,6 @@ export default class Geolocation {
         this._isBind = isBind;
 
         mainEventDispatcher.dispatch('geolocation.isBind');
-    }
-
-    get hasEditionLinked(){
-        return this._hasEditionLinked;
-    }
-
-    /**
-    * @param {boolean} hasEditionLinked
-    */
-    set hasEditionLinked(hasEditionLinked) {
-        this._hasEditionLinked = hasEditionLinked;
-
-        mainEventDispatcher.dispatch('geolocation.hasEditionLinked');
     }
 
     moveGeolocationPointAndCircle(coordinates) {
