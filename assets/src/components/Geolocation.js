@@ -10,11 +10,11 @@ export default class Geolocation extends HTMLElement {
         // Display
         // Render positionTemplate and accuracyTemplate apart because their values might change a lot
         const positionTemplate = () => html`
-            X : ${mainLizmap.geolocation.position ? mainLizmap.geolocation.position[0].toString() : ''}<br>
-            Y : ${mainLizmap.geolocation.position ? mainLizmap.geolocation.position[1].toString() : ''}`;
+            <div>X : ${mainLizmap.geolocation.position ? mainLizmap.geolocation.position[0].toString() : ''}</div>
+            <div>Y : ${mainLizmap.geolocation.position ? mainLizmap.geolocation.position[1].toString() : ''}</div>`;
 
         const accuracyTemplate = () => html`
-            Accuracy (m) : ${mainLizmap.geolocation.accuracy}`;
+            <div>Accuracy (m) : ${mainLizmap.geolocation.accuracy}</div>`;
 
         const mainTemplate = () => html`
         <div class="menu-content">
