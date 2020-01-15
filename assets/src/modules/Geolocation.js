@@ -49,6 +49,11 @@ export default class Geolocation {
         this.isTracking = !this._geolocation.getTracking();
     }
 
+    getPositionInCRS(crs){
+        const position = this._geolocation.getPosition();
+        return transform(position, mainLizmap.projection, crs);
+    }
+
     // Get position in GPS coordinates (ESPG:4326)
     get position() {
         const position = this._geolocation.getPosition();
