@@ -938,7 +938,7 @@ OpenLayers.Geometry.pointOnSegment = function(point, segment) {
             // Make modifyFeature follow geolocation when active
             lizMap.mainEventDispatcher.addListener(
                 () => {
-                    if ( editionLayer.config ) {
+                    if (editionLayer && config in editionLayer ) {
                         $('#edition-point-coord-geolocation').removeAttr('disabled');
                         var geometryType = editionLayer.geometryType;
                         if ($('#edition-point-coord-geolocation').is(':checked') && editCtrls[geometryType].active ) {

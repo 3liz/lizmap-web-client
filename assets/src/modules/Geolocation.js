@@ -27,6 +27,10 @@ export default class Geolocation {
             mainEventDispatcher.dispatch('geolocation.position');
         });
 
+        this._geolocation.on('change:accuracy', () => {
+            mainEventDispatcher.dispatch('geolocation.accuracy');
+        });
+
         this._geolocation.on('change:accuracyGeometry', () => {
             // Zoom on accuracy geometry extent when geolocation is activated for the first time
             if (this._firstGeolocation) {
@@ -61,6 +65,10 @@ export default class Geolocation {
             return transform(position, mainLizmap.projection, 'EPSG:4326');
         }
         return undefined;
+    }
+
+    get accuracy() {
+        return this._geolocation.getAccuracy();
     }
 
     get isTracking(){

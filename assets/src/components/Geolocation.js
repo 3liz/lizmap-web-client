@@ -8,17 +8,26 @@ export default class Geolocation extends HTMLElement {
 
     connectedCallback() {
         // Display
+        // Render positionTemplate and accuracyTemplate apart because their values might change a lot
         const positionTemplate = () => html`
-        <small>${mainLizmap.geolocation.position ? mainLizmap.geolocation.position[0].toString() + ', ' + mainLizmap.geolocation.position[1].toString() : ''}</small>`;
+            X : ${mainLizmap.geolocation.position ? mainLizmap.geolocation.position[0].toString() : ''}<br>
+            Y : ${mainLizmap.geolocation.position ? mainLizmap.geolocation.position[1].toString() : ''}`;
+
+        const accuracyTemplate = () => html`
+            Accuracy (m) : ${mainLizmap.geolocation.accuracy}`;
 
         const mainTemplate = () => html`
         <div class="menu-content">
-            <div id=geolocation-coords>${positionTemplate()}</div>
             <div class="button-bar">
-                <button id="geolocation-stop" class="btn btn-small btn-primary" @click=${ () => mainLizmap.geolocation.toggleTracking()}><span class="icon"></span>${mainLizmap.geolocation.isTracking ? 'Stop' : 'Start'}</button>
-                <button id="geolocation-center" class="btn btn-small btn-primary" @click=${ () => mainLizmap.geolocation.center()} ?disabled=${!mainLizmap.geolocation.isTracking | mainLizmap.geolocation.isBind}><span class="icon"></span>Center</button>
-                <button id="geolocation-bind" class="btn btn-small btn-primary ${mainLizmap.geolocation.isBind ? 'active' : ''}" @click=${ () => mainLizmap.geolocation.toggleBind()} ?disabled=${!mainLizmap.geolocation.isTracking}><span class="icon"></span>Stay centered</button>
+                <button class="btn btn-small btn-primary" @click=${ () => mainLizmap.geolocation.toggleTracking()}><span class="icon"></span>${mainLizmap.geolocation.isTracking ? 'Stop' : 'Start'}</button>
+                <button class="btn btn-small btn-primary" @click=${ () => mainLizmap.geolocation.center()} ?disabled=${!mainLizmap.geolocation.isTracking | mainLizmap.geolocation.isBind}><span class="icon"></span>Center</button>
+                <button class="btn btn-small btn-primary ${mainLizmap.geolocation.isBind ? 'active' : ''}" @click=${ () => mainLizmap.geolocation.toggleBind()} ?disabled=${!mainLizmap.geolocation.isTracking}><span class="icon"></span>Stay centered</button>
             </div>
+            ${mainLizmap.geolocation.isTracking ? html`
+            <div><small class="geolocation-coords">${positionTemplate()}</small></div>
+            <div><small class="geolocation-accuracy">${accuracyTemplate()}</small></div>`
+             : ''
+            }
         </div>`;
 
         render(mainTemplate(), this);
@@ -39,9 +48,16 @@ export default class Geolocation extends HTMLElement {
 
         mainEventDispatcher.addListener(
             () => {
-                render(positionTemplate(), document.getElementById('geolocation-coords'));
+                render(positionTemplate(), this.querySelector('.geolocation-coords'));
             },
             'geolocation.position'
+        );
+
+        mainEventDispatcher.addListener(
+            () => {
+                render(accuracyTemplate(), this.querySelector('.geolocation-accuracy'));
+            },
+            'geolocation.accuracy'
         );
     }
 
