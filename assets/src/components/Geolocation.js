@@ -23,11 +23,8 @@ export default class Geolocation extends HTMLElement {
                 <button class="btn btn-small btn-primary" @click=${ () => mainLizmap.geolocation.center()} ?disabled=${!mainLizmap.geolocation.isTracking | mainLizmap.geolocation.isBind}><span class="icon"></span>Center</button>
                 <button class="btn btn-small btn-primary ${mainLizmap.geolocation.isBind ? 'active' : ''}" @click=${ () => mainLizmap.geolocation.toggleBind()} ?disabled=${!mainLizmap.geolocation.isTracking}><span class="icon"></span>Stay centered</button>
             </div>
-            ${mainLizmap.geolocation.isTracking ? html`
             <div><small class="geolocation-coords">${positionTemplate()}</small></div>
-            <div><small class="geolocation-accuracy">${accuracyTemplate()}</small></div>`
-             : ''
-            }
+            <div><small class="geolocation-accuracy">${accuracyTemplate()}</small></div>
         </div>`;
 
         render(mainTemplate(), this);

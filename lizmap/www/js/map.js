@@ -338,10 +338,6 @@ var lizMap = function() {
     }
     $('#map').width(w);
 
-    // Set the tab-content max-height
-    if ( $('#dock-tabs').is(':visible') )
-        $('#dock-content').css( 'max-height', $('#dock').height() - $('#dock-tabs').height() );
-
     if ( $('#right-dock-tabs').is(':visible') )
         $('#right-dock-content').css( 'max-height', $('#right-dock').height() - $('#right-dock-tabs').height() );
 
@@ -1857,235 +1853,6 @@ var lizMap = function() {
     return html;
   }
 
-  function createSwitcherNew() {
-    $('#switcher-layers').html(getSwitcherUl(tree,0));
-
-    lizMap.events.on({
-        dockopened: function(e) {
-            // Set the tab-content max-height
-            if ( $('#dock-tabs').is(':visible') )
-                $('#dock-content').css( 'max-height', $('#dock').height() - $('#dock-tabs').height() );
-            if ( e.id == 'switcher' ) {
-                updateSwitcherSize();
-            }
-        }
-    });
-
-    var projection = map.projection;
-
-    // get the baselayer select content
-    // and adding baselayers to the map
-    var select = [];
-    baselayers.reverse();
-    for (var i=0,len=baselayers.length; i<len; i++) {
-      var baselayer = baselayers[i]
-      baselayer.units = projection.proj.units;
-      try{ // because google maps layer can be created but not added
-          map.addLayer(baselayer);
-          var qgisName = baselayer.name;
-          if ( baselayer.name in cleanNameMap )
-              qgisName = getLayerNameByCleanName(baselayer.name);
-          var blConfig = config.layers[qgisName];
-          if (blConfig)
-            select += '<option value="'+blConfig.name+'">'+blConfig.title+'</option>';
-          else
-            select += '<option value="'+baselayer.name+'">'+baselayer.name+'</option>';
-
-      } catch(e) {
-          var qgisName = baselayer.name;
-          if ( baselayer.name in cleanNameMap )
-              qgisName = getLayerNameByCleanName(baselayer.name);
-          console.log(qgisName+" can't be added to the map!");
-      }
-    }
-
-    if (baselayers.length!=0) {
-      // active the select element for baselayers
-      $('#switcher-baselayer-select').append(select);
-      $('#switcher-baselayer-select')
-        .change(function() {
-          var val = $(this).val();
-          var blName = map.getLayersByName(val)[0];
-          map.setBaseLayer( blName );
-
-          // Trigger event
-          lizMap.events.triggerEvent("lizmapbaselayerchanged",
-            { 'layer': blName}
-          );
-
-          $(this).blur();
-        });
-      // Hide switcher-baselayer if only one base layer inside
-      if (baselayers.length==1)
-        $('#switcher-baselayer').hide();
-    } else {
-      // hide elements for baselayers
-      $('#switcher-baselayer').hide();
-      map.addLayer(new OpenLayers.Layer.Vector('baselayer',{
-        maxExtent:map.maxExtent
-       ,maxScale: map.maxScale
-       ,minScale: map.minScale
-       ,numZoomLevels: map.numZoomLevels
-       ,scales: map.scales
-       ,projection: map.projection
-       ,units: map.projection.proj.units
-      }));
-    }
-
-    // adding layers to the map
-    layers.sort(function(a, b) {
-      if (a.order == b.order)
-        return 0;
-      return a.order > b.order ? 1 : -1;
-    });
-    layers.reverse();
-    for (var i=0,len=layers.length; i<len; i++) {
-      var l = layers[i];
-      l.units = projection.proj.units;
-
-      // Add only layers with geometry
-      var qgisName = null;
-      if ( l.name in cleanNameMap )
-          qgisName = getLayerNameByCleanName(l.name);
-      var aConfig = null;
-      if ( qgisName )
-          aConfig = config.layers[qgisName];
-      if ( !aConfig )
-          aConfig = config.layers[l.params['LAYERS']];
-      if ( !aConfig )
-          aConfig = config.layers[l.name];
-      if ( !aConfig )
-          continue;
-      if( 'geometryType' in aConfig &&
-        ( aConfig.geometryType == "none" || aConfig.geometryType == "unknown" || aConfig.geometryType == "" )
-      ){
-        continue;
-      }
-      map.addLayer(l);
-    }
-
-    // Add Locate by layer
-    if ('locateByLayer' in config) {
-      var locateContent = [];
-      for (var lname in config.locateByLayer) {
-        var lConfig = config.layers[lname];
-        var html = '<div class="locate-layer">';
-        html += '<select id="locate-layer-'+cleanName(lname)+'" class="label">';
-        html += '<option>'+lConfig.title+'...</option>';
-        html += '</select>';
-        html += '</div>';
-        //constructing the select
-        locateContent.push(html);
-      }
-      $('#locate .menu-content').html(locateContent.join('<br/>'));
-      map.addLayer(new OpenLayers.Layer.Vector('locatelayer',{
-        styleMap: new OpenLayers.StyleMap({
-          pointRadius: 6,
-          fill: false,
-          stroke: true,
-          strokeWidth: 3,
-          strokeColor: 'yellow',
-          strokeOpacity: 0.8
-        })
-      }));
-
-        // Lizmap URL
-        var service = OpenLayers.Util.urlAppend(lizUrls.wms
-                ,OpenLayers.Util.getParameterString(lizUrls.params)
-        );
-
-        var featureTypes = getVectorLayerFeatureTypes();
-        if (featureTypes.length == 0 ){
-          config.locateByLayer = {};
-          $('#button-locate').parent().remove();
-          $('#locate-menu').remove();
-          updateSwitcherSize();
-        } else {
-          featureTypes.each( function(){
-            var self = $(this);
-            var typeName = self.find('Name').text();
-            var lname = lizMap.getNameByTypeName( typeName );
-            if ( !lname ) {
-                if (typeName in config.locateByLayer)
-                    lname = typeName
-                else if ( (typeName in shortNameMap) && (shortNameMap[typeName] in config.locateByLayer))
-                    lname = shortNameMap[typeName];
-                else {
-                    for (lbl in config.locateByLayer) {
-                        if (lbl.split(' ').join('_') == typeName) {
-                            lname = lbl;
-                            break;
-                        }
-                    }
-                }
-            }
-
-            if ( !(lname in config.locateByLayer) )
-                return;
-
-            var locate = config.locateByLayer[lname];
-            locate['crs'] = self.find('SRS').text();
-            loadProjDefinition( locate.crs, function( aProj ) {
-                  new OpenLayers.Projection(locate.crs);
-            });
-            var bbox = self.find('LatLongBoundingBox');
-            locate['bbox'] = [
-                parseFloat(bbox.attr('minx'))
-               ,parseFloat(bbox.attr('miny'))
-               ,parseFloat(bbox.attr('maxx'))
-               ,parseFloat(bbox.attr('maxy'))
-            ];
-          } );
-
-          // get joins
-          for (var lName in config.locateByLayer) {
-            var locate = config.locateByLayer[lName];
-            if ('vectorjoins' in locate) {
-              var vectorjoins = locate['vectorjoins'];
-              locate['joinFieldName'] = vectorjoins['targetFieldName'];
-              for (var jName in config.locateByLayer) {
-                var jLocate = config.locateByLayer[jName];
-                if (jLocate.layerId == vectorjoins.joinLayerId) {
-                  locate['joinLayer'] = jName;
-                  jLocate['joinFieldName'] = vectorjoins['joinFieldName'];
-                  jLocate['joinLayer'] = lName;
-                }
-              }
-            }
-          }
-
-          // get features
-          for (var lname in config.locateByLayer) {
-            getLocateFeature(lname);
-          }
-          $('.btn-locate-clear').click(function() {
-            var layer = map.getLayersByName('locatelayer')[0];
-            layer.destroyFeatures();
-            $('#locate select').val('-1');
-            $('div.locate-layer span > input').val('');
-
-            if( lizMap.lizmapLayerFilterActive ){
-                lizMap.events.triggerEvent('lizmaplocatefeaturecanceled',
-                  {'featureType': lizMap.lizmapLayerFilterActive}
-                );
-            }
-
-            return false;
-
-          });
-          $('#locate-close').click(function() {
-            $('.btn-locate-clear').click(); // deactivate locate feature and filter
-            $('#button-locate').click();
-            return false;
-          });
-        }
-    }
-
-    $('#switcher span.label').tooltip({
-      viewport: '#dock'
-    });
-  }
-
   function createSwitcher() {
     // set the switcher content
     $('#switcher-layers').html(getSwitcherNode(tree,0));
@@ -2131,15 +1898,11 @@ var lizMap = function() {
 
     lizMap.events.on({
         dockopened: function(e) {
-            // Set the tab-content max-height
-            if ( $('#dock-tabs').is(':visible') )
-                $('#dock-content').css( 'max-height', $('#dock').height() - $('#dock-tabs').height() );
             if ( e.id == 'switcher' ) {
                 updateSwitcherSize();
             }
         }
     });
-
 
   // === Private functions
   var options = {
@@ -2882,6 +2645,19 @@ var lizMap = function() {
       $('#geolocation button.btn-geolocation-close').click(function () {
         $('#button-geolocation').click();
         return false;
+      });
+
+      lizMap.events.on({
+        minidockopened: function (e) {
+          if (e.id == 'geolocation') {
+            $('body').addClass('geolocation-minidock-active');
+          }
+        },
+        minidockclosed: function (e) {
+          if (e.id == 'geolocation') {
+            $('body').removeClass('geolocation-minidock-active');
+          }
+        }
       });
     }
 
@@ -6627,20 +6403,20 @@ OpenLayers.Control.HighlightFeature = OpenLayers.Class(OpenLayers.Control, {
             var id = self.attr('href').substr(1);
             var tab = $('#nav-tab-'+id);
             if ( parent.hasClass('active') ) {
-                $('#'+id).removeClass('active');
-                tab.removeClass('active');
-                parent.removeClass('active');
-                lizMap.events.triggerEvent( "minidockclosed", {'id':id} );
+              $('#'+id).removeClass('active');
+              tab.removeClass('active');
+              parent.removeClass('active');
+              lizMap.events.triggerEvent( "minidockclosed", {'id':id} );
             } else {
-                var oldActive = $('#mapmenu li.nav-minidock.active');
-                if ( oldActive.length != 0 ) {
-                    oldActive.removeClass('active');
-                    lizMap.events.triggerEvent( "minidockclosed", {'id': oldActive.children('a').first().attr('href').substr(1) } );
-                }
-                tab.children('a').first().click();
-                parent.addClass('active');
-                lizMap.events.triggerEvent( "minidockopened", {'id':id} );
-                updateMiniDockSize();
+              var oldActive = $('#mapmenu li.nav-minidock.active');
+              if ( oldActive.length != 0 ) {
+                  oldActive.removeClass('active');
+                  lizMap.events.triggerEvent( "minidockclosed", {'id': oldActive.children('a').first().attr('href').substr(1) } );
+              }
+              tab.children('a').first().click();
+              parent.addClass('active');
+              lizMap.events.triggerEvent( "minidockopened", {'id':id} );
+              updateMiniDockSize();
             }
             self.blur();
 

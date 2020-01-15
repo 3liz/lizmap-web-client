@@ -297,24 +297,28 @@ CSS Sprite positions calculated via http://instantsprite.com/ using 20px images 
   left:30px;
   top:0px;
   bottom:0px;
-  /*max-width:30%;
-  max-height:90%;*/
+
   z-index:1040;
   overflow:auto;
-  /*background-color: #F0F0F0;*/
   background-color:#4A4A4A;
   background-color:rgba(0,0,0,0.7);
   padding:5px;
   border-left: 1px solid #F0F0F0;
   max-width:30%;
   right:auto;
+  padding-bottom: 20px;
 }
+
 #content.mobile #dock{
   max-width:100%;
   bottom:0px;
   right:0px;
   background-color:#4A4A4A;
   z-index:1100;
+}
+
+body.geolocation-minidock-active #content.mobile #dock{
+  height: calc(100% - 160px);
 }
 
 #dock.half {
