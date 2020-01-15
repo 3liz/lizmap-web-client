@@ -942,9 +942,15 @@ OpenLayers.Geometry.pointOnSegment = function(point, segment) {
                         $('#edition-point-coord-geolocation').removeAttr('disabled');
                         var geometryType = editionLayer.geometryType;
                         if ($('#edition-point-coord-geolocation').is(':checked') && editCtrls[geometryType].active ) {
+                            // Move point
                             var [lon, lat] = lizMap.mainLizmap.geolocation.getPositionInCRS(editionLayer['ol'].projection);
                             var px = editCtrls[geometryType].handler.layer.getViewPortPxFromLonLat({ lon: lon, lat: lat});
                             editCtrls[geometryType].handler.modifyFeature(px);
+                            // Set X and Y input with geolocation position value as it is more precise than position given by edit controls
+                            var srid = $('#edition-point-coord-crs').val();
+                            var [lon, lat] = lizMap.mainLizmap.geolocation.getPositionInCRS('EPSG:' + srid);
+                            $('#edition-point-coord-x').val(lon);
+                            $('#edition-point-coord-y').val(lat);
                         }
                     }
                 },
