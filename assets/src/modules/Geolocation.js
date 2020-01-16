@@ -39,6 +39,11 @@ export default class Geolocation {
                 this._firstGeolocation = false;
             }
         });
+
+        // Handle geolocation error
+        this._geolocation.on('error', function (error) {
+            mainLizmap.displayMessage(error.message, 'error', true);
+        });
     }
 
     center() {
@@ -92,7 +97,7 @@ export default class Geolocation {
         this._geolocation.setTracking(isTracking);
 
         // FIXME : later we'll need an object listening to 'geolocation.isTracking' event and setting visibility accordingly
-        const geolocationLayer = mainLizmap._lizmap3.map.getLayersByName('newGeolocation')[0];
+        const geolocationLayer = mainLizmap._lizmap3.map.getLayersByName('geolocation')[0];
         if(geolocationLayer){
             geolocationLayer.setVisibility(isTracking);
         }
@@ -114,8 +119,7 @@ export default class Geolocation {
     }
 
     moveGeolocationPointAndCircle(coordinates) {
-        // TODO : change newGeolocation to geolocation after old code removed
-        let geolocationLayer = mainLizmap._lizmap3.map.getLayersByName('newGeolocation')[0];
+        let geolocationLayer = mainLizmap._lizmap3.map.getLayersByName('geolocation')[0];
         const circleStyle = {
             fillColor: '#0395D6',
             fillOpacity: 0.1,
@@ -125,7 +129,7 @@ export default class Geolocation {
 
         // Create layer if it does not exist
         if (geolocationLayer === undefined) {
-            geolocationLayer = new OpenLayers.Layer.Vector('newGeolocation');
+            geolocationLayer = new OpenLayers.Layer.Vector('geolocation');
 
             geolocationLayer.addFeatures([
                 new OpenLayers.Feature.Vector(

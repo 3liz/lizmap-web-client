@@ -318,7 +318,7 @@ CSS Sprite positions calculated via http://instantsprite.com/ using 20px images 
 }
 
 body.geolocation-minidock-active #content.mobile #dock{
-  height: calc(100% - 160px);
+  height: calc(100% - 180px);
 }
 
 #dock.half {
