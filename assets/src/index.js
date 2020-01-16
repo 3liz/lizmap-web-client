@@ -1,5 +1,5 @@
 import Geolocation from './components/Geolocation.js';
-import { mainLizmap, mainEventDispatcher } from './modules/Globals.js';
+import {mainLizmap, mainEventDispatcher} from './modules/Globals.js';
 
 lizMap.events.on({
     uicreated: () => {
