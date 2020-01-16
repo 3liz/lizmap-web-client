@@ -47,6 +47,11 @@ export default class Geolocation {
 
     toggleBind(){
         this.isBind = !this._isBind;
+
+        // Center when binding
+        if (this.isBind){
+            this.center();
+        }
     }
 
     toggleTracking(){
