@@ -44,4 +44,9 @@ export default class Lizmap {
     set extent(coordinates) {
         this._lizmap3.map.zoomToExtent(coordinates);
     }
+
+    // Display message on screen for users
+    displayMessage(message, type, close) {
+        this._lizmap3.addMessage(message, type, close);
+    }
 }
