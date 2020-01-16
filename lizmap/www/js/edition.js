@@ -764,10 +764,13 @@ OpenLayers.Geometry.pointOnSegment = function(point, segment) {
                     // Get SRID and transform geometry
                     var srid = $('#edition-point-coord-crs').val();
                     vertex.transform( editionLayer['ol'].projection,'EPSG:'+srid );
-                    if ( !$('#edition-point-coord-x').attr('disabled') )
+                    if (srid === "4326"){
+                        $('#edition-point-coord-x').val(vertex.x.toFixed(6));
+                        $('#edition-point-coord-y').val(vertex.y.toFixed(6));
+                    }else{
                         $('#edition-point-coord-x').val(vertex.x);
-                    if ( !$('#edition-point-coord-y').attr('disabled') )
                         $('#edition-point-coord-y').val(vertex.y);
+                    }
                 },
 
                 vertexmodified: function(evt) {
@@ -938,7 +941,7 @@ OpenLayers.Geometry.pointOnSegment = function(point, segment) {
             // Make modifyFeature follow geolocation when active
             lizMap.mainEventDispatcher.addListener(
                 () => {
-                    if (editionLayer && config in editionLayer ) {
+                    if (editionLayer && ('config' in editionLayer) ) {
                         $('#edition-point-coord-geolocation').removeAttr('disabled');
                         var geometryType = editionLayer.geometryType;
                         if ($('#edition-point-coord-geolocation').is(':checked') && editCtrls[geometryType].active ) {
@@ -946,11 +949,6 @@ OpenLayers.Geometry.pointOnSegment = function(point, segment) {
                             var [lon, lat] = lizMap.mainLizmap.geolocation.getPositionInCRS(editionLayer['ol'].projection);
                             var px = editCtrls[geometryType].handler.layer.getViewPortPxFromLonLat({ lon: lon, lat: lat});
                             editCtrls[geometryType].handler.modifyFeature(px);
-                            // Set X and Y input with geolocation position value as it is more precise than position given by edit controls
-                            var srid = $('#edition-point-coord-crs').val();
-                            var [lon, lat] = lizMap.mainLizmap.geolocation.getPositionInCRS('EPSG:' + srid);
-                            $('#edition-point-coord-x').val(lon);
-                            $('#edition-point-coord-y').val(lat);
                         }
                     }
                 },
