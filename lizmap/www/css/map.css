@@ -2518,3 +2518,11 @@ img {
   max-height: 250px;
   overflow-y: auto;
 }
+
+/* Geolocation */
+lizmap-geolocation .geolocation-infos {
+    background-color: lightgray;
+    border-radius: 5px;
+    padding: 5px;
+    margin-top: 5px;
+}
