@@ -40,6 +40,5 @@
       </li>
       {/foreach}
 
-      <!-- <li></li> -->
     </ul>
 </div>
