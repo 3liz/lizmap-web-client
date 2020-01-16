@@ -54,15 +54,20 @@ export default class Geolocation {
     }
 
     getPositionInCRS(crs){
-        const position = this._geolocation.getPosition();
-        return transform(position, mainLizmap.projection, crs);
+        if (crs === "ESPG:4326"){
+            return this.position;
+        }else{
+            const position = this._geolocation.getPosition();
+            return transform(position, mainLizmap.projection, crs);
+        }
     }
 
-    // Get position in GPS coordinates (ESPG:4326)
+    // Get position in GPS coordinates (ESPG:4326) with 6 decimals
     get position() {
         const position = this._geolocation.getPosition();
         if (position){
-            return transform(position, mainLizmap.projection, 'EPSG:4326');
+            const position4326 = transform(position, mainLizmap.projection, 'EPSG:4326');
+            return [position4326[0].toFixed(6), position4326[1].toFixed(6)];
         }
         return undefined;
     }
