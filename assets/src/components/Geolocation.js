@@ -14,14 +14,14 @@ export default class Geolocation extends HTMLElement {
             <div>Y : ${mainLizmap.geolocation.position ? mainLizmap.geolocation.position[1].toString() : ''}</div>`;
 
         const accuracyTemplate = () => html`
-            <div>Accuracy (m) : ${mainLizmap.geolocation.accuracy}</div>`;
+            <div>${lizDict['geolocate.infos.accuracy']} : ${mainLizmap.geolocation.accuracy}</div>`;
 
         const mainTemplate = () => html`
         <div class="menu-content">
             <div class="button-bar">
-                <button class="btn btn-small btn-primary" @click=${ () => mainLizmap.geolocation.toggleTracking()}><span class="icon"></span>${mainLizmap.geolocation.isTracking ? 'Stop' : 'Start'}</button>
-                <button class="btn btn-small btn-primary" @click=${ () => mainLizmap.geolocation.center()} ?disabled=${!mainLizmap.geolocation.isTracking | mainLizmap.geolocation.isBind}><span class="icon"></span>Center</button>
-                <button class="btn btn-small btn-primary ${mainLizmap.geolocation.isBind ? 'active' : ''}" @click=${ () => mainLizmap.geolocation.toggleBind()} ?disabled=${!mainLizmap.geolocation.isTracking}><span class="icon"></span>Stay centered</button>
+                <button class="btn btn-small btn-primary" @click=${ () => mainLizmap.geolocation.toggleTracking()}><span class="icon"></span>${mainLizmap.geolocation.isTracking ? lizDict['geolocate.toolbar.stop'] : lizDict['geolocate.toolbar.start']}</button>
+                <button class="btn btn-small btn-primary" @click=${ () => mainLizmap.geolocation.center()} ?disabled=${!mainLizmap.geolocation.isTracking | mainLizmap.geolocation.isBind}><span class="icon"></span>${lizDict['geolocate.toolbar.center']}</button>
+                <button class="btn btn-small btn-primary ${mainLizmap.geolocation.isBind ? 'active' : ''}" @click=${() => mainLizmap.geolocation.toggleBind()} ?disabled=${!mainLizmap.geolocation.isTracking}><span class="icon"></span>${lizDict['geolocate.toolbar.bind']}</button>
             </div>
             <div class="geolocation-infos">
                 <div><small class="geolocation-coords">${positionTemplate()}</small></div>
