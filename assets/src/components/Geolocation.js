@@ -1,5 +1,5 @@
-import { mainLizmap, mainEventDispatcher } from '../modules/Globals.js';
-import { html, render } from 'lit-html';
+import {mainLizmap, mainEventDispatcher} from '../modules/Globals.js';
+import {html, render} from 'lit-html';
 
 export default class Geolocation extends HTMLElement {
     constructor() {

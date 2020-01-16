@@ -1,4 +1,4 @@
-import { mainLizmap, mainEventDispatcher } from '../modules/Globals.js';
+import {mainLizmap, mainEventDispatcher} from '../modules/Globals.js';
 import olGeolocation from 'ol/Geolocation.js';
 import {transform} from 'ol/proj';
 
@@ -34,39 +34,39 @@ export default class Geolocation {
         this._geolocation.on('change:accuracyGeometry', () => {
             // Zoom on accuracy geometry extent when geolocation is activated for the first time
             if (this._firstGeolocation) {
-                mainLizmap.extent = this._geolocation.getAccuracyGeometry();
+                mainLizmap.extent = this._geolocation.getAccuracyGeometry().getExtent();
                 this.center();
                 this._firstGeolocation = false;
             }
         });
 
         // Handle geolocation error
-        this._geolocation.on('error', function (error) {
+        this._geolocation.on('error', function(error) {
             mainLizmap.displayMessage(error.message, 'error', true);
         });
     }
 
     center() {
         mainLizmap.center = this._geolocation.getPosition();
-    };
+    }
 
-    toggleBind(){
+    toggleBind() {
         this.isBind = !this._isBind;
 
         // Center when binding
-        if (this.isBind){
+        if (this.isBind) {
             this.center();
         }
     }
 
-    toggleTracking(){
+    toggleTracking() {
         this.isTracking = !this._geolocation.getTracking();
     }
 
-    getPositionInCRS(crs){
-        if (crs === "ESPG:4326"){
+    getPositionInCRS(crs) {
+        if (crs === 'ESPG:4326') {
             return this.position;
-        }else{
+        } else {
             const position = this._geolocation.getPosition();
             return transform(position, mainLizmap.projection, crs);
         }
@@ -75,7 +75,7 @@ export default class Geolocation {
     // Get position in GPS coordinates (ESPG:4326) with 6 decimals
     get position() {
         const position = this._geolocation.getPosition();
-        if (position){
+        if (position) {
             const position4326 = transform(position, mainLizmap.projection, 'EPSG:4326');
             return [position4326[0].toFixed(6), position4326[1].toFixed(6)];
         }
@@ -86,31 +86,31 @@ export default class Geolocation {
         return this._geolocation.getAccuracy();
     }
 
-    get isTracking(){
+    get isTracking() {
         return this._geolocation.getTracking();
     }
 
     /**
-     * @param {boolean} isTracking
+     * @param {boolean} isTracking - Enable tracking.
      */
-    set isTracking(isTracking){
+    set isTracking(isTracking) {
         this._geolocation.setTracking(isTracking);
 
         // FIXME : later we'll need an object listening to 'geolocation.isTracking' event and setting visibility accordingly
         const geolocationLayer = mainLizmap._lizmap3.map.getLayersByName('geolocation')[0];
-        if(geolocationLayer){
+        if (geolocationLayer) {
             geolocationLayer.setVisibility(isTracking);
         }
 
         mainEventDispatcher.dispatch('geolocation.isTracking');
     }
 
-    get isBind (){
+    get isBind() {
         return this._isBind;
     }
 
     /**
-     * @param {boolean} isBind
+     * @param {boolean} isBind - Enable map view always centered on current position.
      */
     set isBind(isBind) {
         this._isBind = isBind;

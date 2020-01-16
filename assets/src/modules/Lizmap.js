@@ -1,4 +1,4 @@
-import { mainEventDispatcher } from '../modules/Globals.js';
+import {mainEventDispatcher} from '../modules/Globals.js';
 import Geolocation from '../modules/Geolocation.js';
 
 export default class Lizmap {
@@ -9,7 +9,7 @@ export default class Lizmap {
                 this._lizmap3 = lizMap;
                 this.geolocation = new Geolocation();
                 this.lizmapEditionDrawFeatureActivated = false;
-                this.lizmapEditionLayerGeometry = "";
+                this.lizmapEditionLayerGeometry = '';
             },
             lizmapeditiondrawfeatureactivated: (properties) => {
                 this.lizmapEditionDrawFeatureActivated = true;
@@ -23,26 +23,26 @@ export default class Lizmap {
         });
     }
 
-    get hasEditionLayers(){
+    get hasEditionLayers() {
         return 'editionLayers' in this._lizmap3.config;
     }
 
-    get projection(){
+    get projection() {
         return this._lizmap3.map.getProjection();
     }
 
     /**
-     * @param {Array} coordinates
+     * @param {Array} coordinates - Point coordinates to center to.
      */
-    set center(coordinates){
+    set center(coordinates) {
         this._lizmap3.map.setCenter(coordinates);
     }
 
     /**
-     * @param {Array} coordinates
+     * @param {Array} bounds - Left, bottom, right, top
      */
-    set extent(coordinates) {
-        this._lizmap3.map.zoomToExtent(coordinates);
+    set extent(bounds) {
+        this._lizmap3.map.zoomToExtent(bounds);
     }
 
     // Display message on screen for users

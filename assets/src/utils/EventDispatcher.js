@@ -20,7 +20,7 @@ export default class EventDispatcher {
     /**
      * add a listener that will be called for one or several given events
      *
-     * @param {Function} listener
+     * @param {Function} listener - Callback
      * @param {Array|String|Object} supportedEvents events on which the listener will
      *                       be called. if undefined or "*", it will be called for any events
      */
@@ -57,7 +57,7 @@ export default class EventDispatcher {
     /**
      * remove a listener that is associated for one or several given events
      *
-     * @param {Function} listener
+     * @param {Function} listener - Callback
      * @param {Array|String} supportedEvents list of events from which the listener
      *                       will be removed. if undefined or "*", it will be removed from any events
      */
