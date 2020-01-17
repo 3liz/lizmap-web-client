@@ -27,6 +27,16 @@ export default class Geolocation {
             mainEventDispatcher.dispatch('geolocation.position');
         });
 
+        this._geolocation.on('change:tracking', () => {
+            // FIXME : later we'll need an object listening to 'geolocation.isTracking' event and setting visibility accordingly
+            const geolocationLayer = mainLizmap._lizmap3.map.getLayersByName('geolocation')[0];
+            if (geolocationLayer) {
+                geolocationLayer.setVisibility(this.isTracking);
+            }
+
+            mainEventDispatcher.dispatch('geolocation.isTracking');
+        });
+
         this._geolocation.on('change:accuracy', () => {
             mainEventDispatcher.dispatch('geolocation.accuracy');
         });
@@ -37,6 +47,8 @@ export default class Geolocation {
                 mainLizmap.extent = this._geolocation.getAccuracyGeometry().getExtent();
                 this.center();
                 this._firstGeolocation = false;
+
+                mainEventDispatcher.dispatch('geolocation.firstGeolocation');
             }
         });
 
@@ -72,6 +84,10 @@ export default class Geolocation {
         }
     }
 
+    get firstGeolocation(){
+        return this._firstGeolocation;
+    }
+
     // Get position in GPS coordinates (ESPG:4326) with 6 decimals
     get position() {
         const position = this._geolocation.getPosition();
@@ -95,14 +111,6 @@ export default class Geolocation {
      */
     set isTracking(isTracking) {
         this._geolocation.setTracking(isTracking);
-
-        // FIXME : later we'll need an object listening to 'geolocation.isTracking' event and setting visibility accordingly
-        const geolocationLayer = mainLizmap._lizmap3.map.getLayersByName('geolocation')[0];
-        if (geolocationLayer) {
-            geolocationLayer.setVisibility(isTracking);
-        }
-
-        mainEventDispatcher.dispatch('geolocation.isTracking');
     }
 
     get isBind() {

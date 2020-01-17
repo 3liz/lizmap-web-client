@@ -19,9 +19,9 @@ export default class Geolocation extends HTMLElement {
         const mainTemplate = () => html`
         <div class="menu-content">
             <div class="button-bar">
-                <button class="btn btn-small btn-primary" @click=${ () => mainLizmap.geolocation.toggleTracking()}><span class="icon"></span>${mainLizmap.geolocation.isTracking ? lizDict['geolocate.toolbar.stop'] : lizDict['geolocate.toolbar.start']}</button>
-                <button class="btn btn-small btn-primary" @click=${ () => mainLizmap.geolocation.center()} ?disabled=${!mainLizmap.geolocation.isTracking | mainLizmap.geolocation.isBind}><span class="icon"></span>${lizDict['geolocate.toolbar.center']}</button>
-                <button class="btn btn-small btn-primary ${mainLizmap.geolocation.isBind ? 'active' : ''}" @click=${() => mainLizmap.geolocation.toggleBind()} ?disabled=${!mainLizmap.geolocation.isTracking}><span class="icon"></span>${lizDict['geolocate.toolbar.bind']}</button>
+                <button class="btn btn-small btn-primary" @click=${ () => mainLizmap.geolocation.toggleTracking()} ?disabled=${mainLizmap.geolocation.isTracking && mainLizmap.geolocation.firstGeolocation}><span class="icon"></span>${mainLizmap.geolocation.isTracking ? (mainLizmap.geolocation.firstGeolocation ? lizDict['geolocate.toolbar.waiting'] : lizDict['geolocate.toolbar.stop']) : lizDict['geolocate.toolbar.start']}</button>
+                <button class="btn btn-small btn-primary" @click=${ () => mainLizmap.geolocation.center()} ?disabled=${!mainLizmap.geolocation.isTracking | mainLizmap.geolocation.isBind | mainLizmap.geolocation.firstGeolocation}><span class="icon"></span>${lizDict['geolocate.toolbar.center']}</button>
+                <button class="btn btn-small btn-primary ${mainLizmap.geolocation.isBind ? 'active' : ''}" @click=${() => mainLizmap.geolocation.toggleBind()} ?disabled=${!mainLizmap.geolocation.isTracking | mainLizmap.geolocation.firstGeolocation}><span class="icon"></span>${lizDict['geolocate.toolbar.bind']}</button>
             </div>
             <div class="geolocation-infos">
                 <div><small class="geolocation-coords">${positionTemplate()}</small></div>
@@ -36,6 +36,13 @@ export default class Geolocation extends HTMLElement {
                 render(mainTemplate(), this);
             },
             'geolocation.isTracking'
+        );
+
+        mainEventDispatcher.addListener(
+            () => {
+                render(mainTemplate(), this);
+            },
+            'geolocation.firstGeolocation'
         );
 
         mainEventDispatcher.addListener(
