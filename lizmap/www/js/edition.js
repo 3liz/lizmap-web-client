@@ -834,10 +834,14 @@ OpenLayers.Geometry.pointOnSegment = function(point, segment) {
                     $('#edition-point-coord-x').attr('disabled','disabled');
                     $('#edition-point-coord-y').attr('disabled','disabled');
 
-                    var geometryType = editionLayer.geometryType;
-                    var [lon, lat] = lizMap.mainLizmap.geolocation.getPositionInCRS(editionLayer['ol'].projection);
-                    var px = editCtrls[geometryType].handler.layer.getViewPortPxFromLonLat({ lon: lon,lat:lat});
-                    editCtrls[geometryType].handler.modifyFeature(px);
+                    if (lizMap.mainLizmap.geolocation.isTracking){
+                        var geometryType = editionLayer.geometryType;
+                        var [lon, lat] = lizMap.mainLizmap.geolocation.getPositionInCRS(editionLayer['ol'].projection);
+                        if (lon && lat){
+                            var px = editCtrls[geometryType].handler.layer.getViewPortPxFromLonLat({ lon: lon, lat: lat });
+                            editCtrls[geometryType].handler.modifyFeature(px);
+                        }
+                    }
                 } else {
                     $('#edition-point-coord-x').removeAttr('disabled');
                     $('#edition-point-coord-y').removeAttr('disabled');
