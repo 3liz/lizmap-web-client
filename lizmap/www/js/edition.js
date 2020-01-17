@@ -760,17 +760,14 @@ OpenLayers.Geometry.pointOnSegment = function(point, segment) {
                 },
 
                 sketchmodified: function(evt) {
-                    var vertex = evt.vertex.clone();
-                    // Get SRID and transform geometry
-                    var srid = $('#edition-point-coord-crs').val();
-                    var displayProj = new OpenLayers.Projection('EPSG:' + srid);
-                    vertex.transform(editionLayer['ol'].projection, displayProj);
-                    if (displayProj.getUnits() === 'degrees'){
-                        $('#edition-point-coord-x').val(vertex.x.toFixed(6));
-                        $('#edition-point-coord-y').val(vertex.y.toFixed(6));
+                    // Force drawing point on geolocation position
+                    if ($('#edition-point-coord-geolocation').is(':checked')){
+                        var [lon, lat] = lizMap.mainLizmap.geolocation.getPositionInCRS(editionLayer['ol'].projection);
+                        evt.vertex.x = lon;
+                        evt.vertex.y = lat;
                     }else{
-                        $('#edition-point-coord-x').val(vertex.x.toFixed(3));
-                        $('#edition-point-coord-y').val(vertex.y.toFixed(3));
+                        var vertex = evt.vertex.clone();
+                        displayCoordinates(vertex);
                     }
                 },
 
@@ -815,17 +812,7 @@ OpenLayers.Geometry.pointOnSegment = function(point, segment) {
             });
             $('#edition-point-coord-crs').change(function(){
                 var vertex = editCtrls[editionLayer.geometryType].handler.point.geometry.clone();
-                // Get SRID and transform geometry
-                var srid = $(this).val();
-                var displayProj = new OpenLayers.Projection('EPSG:' + srid);
-                vertex.transform(editionLayer['ol'].projection, displayProj);
-                if (displayProj.getUnits() === 'degrees') {
-                    $('#edition-point-coord-x').val(vertex.x.toFixed(6));
-                    $('#edition-point-coord-y').val(vertex.y.toFixed(6));
-                } else {
-                    $('#edition-point-coord-x').val(vertex.x.toFixed(3));
-                    $('#edition-point-coord-y').val(vertex.y.toFixed(3));
-                }
+                displayCoordinates(vertex);
             });
             $('#edition-point-coord-x').keyup(keyUpPointCoord);
             $('#edition-point-coord-y').keyup(keyUpPointCoord);
@@ -840,6 +827,9 @@ OpenLayers.Geometry.pointOnSegment = function(point, segment) {
                         if (lon && lat){
                             var px = editCtrls[geometryType].handler.layer.getViewPortPxFromLonLat({ lon: lon, lat: lat });
                             editCtrls[geometryType].handler.modifyFeature(px);
+
+                            // Set X and Y input with geolocation position value as it is more precise than position given by edit controls
+                            displayCoordinates(new OpenLayers.Geometry.Point(lon, lat));
                         }
                     }
                 } else {
@@ -849,17 +839,21 @@ OpenLayers.Geometry.pointOnSegment = function(point, segment) {
             });
             $('#edition-point-coord-add').click(function(){
                 var geometryType = editionLayer.geometryType;
-                if ( geometryType != 'point' ) {
+                if (geometryType != 'point' && editCtrls[geometryType].handler.point) {
                     var node = editCtrls[geometryType].handler.point.geometry;
                     editCtrls[geometryType].handler.insertXY(node.x, node.y);
                 }
             });
             $('#edition-point-coord-submit').click(function(){
                 var geometryType = editionLayer.geometryType;
-                if ( geometryType == 'point' ) {
-                    editCtrls[geometryType].handler.finalize();
-                } else {
-                    editCtrls[geometryType].handler.finishGeometry();
+
+                // Assert we have a geometry
+                if (editCtrls[geometryType].handler.getGeometry()){
+                    if (geometryType === 'point') {
+                        editCtrls[geometryType].handler.finalize();
+                    } else {
+                        editCtrls[geometryType].handler.finishGeometry();
+                    }
                 }
             });
 
@@ -870,7 +864,7 @@ OpenLayers.Geometry.pointOnSegment = function(point, segment) {
                 editCtrls.modify.createVertices = true;
                 editCtrls.modify.activate();
                 var feat = editionLayer.getFeature();
-                if (feat) {
+                if (feat.geometry) {
                     // we unselect then select, to trigger corresponding events
                     if ( editCtrls.modify.feature )
                         editCtrls.modify.unselectFeature( feat );
@@ -960,6 +954,8 @@ OpenLayers.Geometry.pointOnSegment = function(point, segment) {
                             var [lon, lat] = lizMap.mainLizmap.geolocation.getPositionInCRS(editionLayer['ol'].projection);
                             var px = editCtrls[geometryType].handler.layer.getViewPortPxFromLonLat({ lon: lon, lat: lat});
                             editCtrls[geometryType].handler.modifyFeature(px);
+
+                            displayCoordinates(new OpenLayers.Geometry.Point(lon, lat));
                         }
                     }
                 },
@@ -969,6 +965,22 @@ OpenLayers.Geometry.pointOnSegment = function(point, segment) {
             $('#edition').parent().remove();
             $('#button-edition').remove();
             $('#edition-form-container').hide();
+        }
+    }
+
+    // Display coordinates. Vertex is in map projection
+    function displayCoordinates(vertex){
+        // Get SRID and transform geometry
+        var srid = $('#edition-point-coord-crs').val();
+        var displayProj = new OpenLayers.Projection('EPSG:' + srid);
+        vertex.transform(editionLayer['ol'].projection, displayProj);
+
+        if (displayProj.getUnits() === 'degrees') {
+            $('#edition-point-coord-x').val(vertex.x.toFixed(6));
+            $('#edition-point-coord-y').val(vertex.y.toFixed(6));
+        } else {
+            $('#edition-point-coord-x').val(vertex.x.toFixed(3));
+            $('#edition-point-coord-y').val(vertex.y.toFixed(3));
         }
     }
 
