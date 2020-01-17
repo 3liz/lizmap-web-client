@@ -763,13 +763,14 @@ OpenLayers.Geometry.pointOnSegment = function(point, segment) {
                     var vertex = evt.vertex.clone();
                     // Get SRID and transform geometry
                     var srid = $('#edition-point-coord-crs').val();
-                    vertex.transform( editionLayer['ol'].projection,'EPSG:'+srid );
-                    if (srid === "4326"){
+                    var displayProj = new OpenLayers.Projection('EPSG:' + srid);
+                    vertex.transform(editionLayer['ol'].projection, displayProj);
+                    if (displayProj.getUnits() === 'degrees'){
                         $('#edition-point-coord-x').val(vertex.x.toFixed(6));
                         $('#edition-point-coord-y').val(vertex.y.toFixed(6));
                     }else{
-                        $('#edition-point-coord-x').val(vertex.x);
-                        $('#edition-point-coord-y').val(vertex.y);
+                        $('#edition-point-coord-x').val(vertex.x.toFixed(3));
+                        $('#edition-point-coord-y').val(vertex.y.toFixed(3));
                     }
                 },
 
@@ -816,9 +817,15 @@ OpenLayers.Geometry.pointOnSegment = function(point, segment) {
                 var vertex = editCtrls[editionLayer.geometryType].handler.point.geometry.clone();
                 // Get SRID and transform geometry
                 var srid = $(this).val();
-                vertex.transform( editionLayer['ol'].projection,'EPSG:'+srid );
-                $('#edition-point-coord-x').val(vertex.x);
-                $('#edition-point-coord-y').val(vertex.y);
+                var displayProj = new OpenLayers.Projection('EPSG:' + srid);
+                vertex.transform(editionLayer['ol'].projection, displayProj);
+                if (displayProj.getUnits() === 'degrees') {
+                    $('#edition-point-coord-x').val(vertex.x.toFixed(6));
+                    $('#edition-point-coord-y').val(vertex.y.toFixed(6));
+                } else {
+                    $('#edition-point-coord-x').val(vertex.x.toFixed(3));
+                    $('#edition-point-coord-y').val(vertex.y.toFixed(3));
+                }
             });
             $('#edition-point-coord-x').keyup(keyUpPointCoord);
             $('#edition-point-coord-y').keyup(keyUpPointCoord);
