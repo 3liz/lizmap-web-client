@@ -393,12 +393,6 @@ OpenLayers.Geometry.pointOnSegment = function(point, segment) {
         $('#edition-point-coord-form-expander i').removeClass('icon-chevron-down').addClass('icon-chevron-right');
         $('#edition-point-coord-form-group').hide();
 
-        if ( $('#geolocation-edition-group').length != 0 ) {
-            $('#geolocation-edition-group input').attr('disabled','disabled').removeClass('active');
-            $('#geolocation-edition-group button').attr('disabled','disabled').removeClass('active');
-            $('#geolocation-edition-group').hide();
-        }
-
         lizMap.events.triggerEvent("lizmapeditiondrawfeaturedeactivated",
             {
                 'layerId': editionLayer['id'],
@@ -423,12 +417,6 @@ OpenLayers.Geometry.pointOnSegment = function(point, segment) {
         else
             $('#edition-point-coord-add').show();
         $('#edition-point-coord-form').show();
-
-        if ( $('#geolocation-edition-group').length != 0 ) {
-            $('#geolocation-edition-group').show();
-            if ( !$('#geolocation-center').attr('disabled') )
-                $('#geolocation-edition-group input').removeAttr('disabled');
-        }
 
         lizMap.events.triggerEvent("lizmapeditiondrawfeatureactivated",
             {
@@ -776,14 +764,15 @@ OpenLayers.Geometry.pointOnSegment = function(point, segment) {
                 },
 
                 sketchmodified: function(evt) {
-                    var vertex = evt.vertex.clone();
-                    // Get SRID and transform geometry
-                    var srid = $('#edition-point-coord-crs').val();
-                    vertex.transform( editionLayer['ol'].projection,'EPSG:'+srid );
-                    if ( !$('#edition-point-coord-x').attr('disabled') )
-                        $('#edition-point-coord-x').val(vertex.x);
-                    if ( !$('#edition-point-coord-y').attr('disabled') )
-                        $('#edition-point-coord-y').val(vertex.y);
+                    // Force drawing point on geolocation position
+                    if ($('#edition-point-coord-geolocation').is(':checked')){
+                        var [lon, lat] = lizMap.mainLizmap.geolocation.getPositionInCRS(editionLayer['ol'].projection);
+                        evt.vertex.x = lon;
+                        evt.vertex.y = lat;
+                    }else{
+                        var vertex = evt.vertex.clone();
+                        displayCoordinates(vertex);
+                    }
                 },
 
                 vertexmodified: function(evt) {
@@ -827,11 +816,7 @@ OpenLayers.Geometry.pointOnSegment = function(point, segment) {
             });
             $('#edition-point-coord-crs').change(function(){
                 var vertex = editCtrls[editionLayer.geometryType].handler.point.geometry.clone();
-                // Get SRID and transform geometry
-                var srid = $(this).val();
-                vertex.transform( editionLayer['ol'].projection,'EPSG:'+srid );
-                $('#edition-point-coord-x').val(vertex.x);
-                $('#edition-point-coord-y').val(vertex.y);
+                displayCoordinates(vertex);
             });
             $('#edition-point-coord-x').keyup(keyUpPointCoord);
             $('#edition-point-coord-y').keyup(keyUpPointCoord);
@@ -839,11 +824,17 @@ OpenLayers.Geometry.pointOnSegment = function(point, segment) {
                 if ( $(this).is(':checked') ) {
                     $('#edition-point-coord-x').attr('disabled','disabled');
                     $('#edition-point-coord-y').attr('disabled','disabled');
-                    if ( lizMap.controls.geolocation.layer.features.length != 0 ) {
+
+                    if (lizMap.mainLizmap.geolocation.isTracking){
                         var geometryType = editionLayer.geometryType;
-                        var vertex = lizMap.controls.geolocation.layer.features[0].geometry;
-                        var px = editCtrls[geometryType].handler.layer.getViewPortPxFromLonLat({lon:vertex.x,lat:vertex.y});
-                        editCtrls[geometryType].handler.modifyFeature(px);
+                        var [lon, lat] = lizMap.mainLizmap.geolocation.getPositionInCRS(editionLayer['ol'].projection);
+                        if (lon && lat){
+                            var px = editCtrls[geometryType].handler.layer.getViewPortPxFromLonLat({ lon: lon, lat: lat });
+                            editCtrls[geometryType].handler.modifyFeature(px);
+
+                            // Set X and Y input with geolocation position value as it is more precise than position given by edit controls
+                            displayCoordinates(new OpenLayers.Geometry.Point(lon, lat));
+                        }
                     }
                 } else {
                     $('#edition-point-coord-x').removeAttr('disabled');
@@ -852,17 +843,21 @@ OpenLayers.Geometry.pointOnSegment = function(point, segment) {
             });
             $('#edition-point-coord-add').click(function(){
                 var geometryType = editionLayer.geometryType;
-                if ( geometryType != 'point' ) {
+                if (geometryType != 'point' && editCtrls[geometryType].handler.point) {
                     var node = editCtrls[geometryType].handler.point.geometry;
                     editCtrls[geometryType].handler.insertXY(node.x, node.y);
                 }
             });
             $('#edition-point-coord-submit').click(function(){
                 var geometryType = editionLayer.geometryType;
-                if ( geometryType == 'point' ) {
-                    editCtrls[geometryType].handler.finalize();
-                } else {
-                    editCtrls[geometryType].handler.finishGeometry();
+
+                // Assert we have a geometry
+                if (editCtrls[geometryType].handler.getGeometry()){
+                    if (geometryType === 'point') {
+                        editCtrls[geometryType].handler.finalize();
+                    } else {
+                        editCtrls[geometryType].handler.finishGeometry();
+                    }
                 }
             });
 
@@ -873,7 +868,7 @@ OpenLayers.Geometry.pointOnSegment = function(point, segment) {
                 editCtrls.modify.createVertices = true;
                 editCtrls.modify.activate();
                 var feat = editionLayer.getFeature();
-                if (feat) {
+                if (feat.geometry) {
                     // we unselect then select, to trigger corresponding events
                     if ( editCtrls.modify.feature )
                         editCtrls.modify.unselectFeature( feat );
@@ -932,82 +927,64 @@ OpenLayers.Geometry.pointOnSegment = function(point, segment) {
                 placement: 'top'
             } );
 
-            //geolocation
-            if ( 'geolocation' in lizMap.controls ) {
-                $('#edition-point-coord-geolocation').attr('disabled','disabled');
-                lizMap.controls.geolocation.events.on({
-                    "locationupdated": function(evt) {
-                        if ( editionLayer.config ) {
-                            $('#edition-point-coord-geolocation').removeAttr('disabled');
-                            var geometryType = editionLayer.geometryType;
-                            if ( $('#edition-point-coord-geolocation').is(':checked') ) {
-                                if ( editCtrls[geometryType].active ) {
-                                    var vertex = evt.point;
-                                    var px = editCtrls[geometryType].handler.layer.getViewPortPxFromLonLat({lon:vertex.x,lat:vertex.y});
-                                    editCtrls[geometryType].handler.modifyFeature(px);
-                                }
-                            }
-                            if ( $('#geolocation-edition-group').length != 0 ) {
-                                $('#geolocation-edition-group').show();
-                                $('#geolocation-edition-group input').removeAttr('disabled');
-                                if ( geometryType == 'point' )
-                                    $('#geolocation-edition-add').hide();
-                                else
-                                    $('#geolocation-edition-add').show();
-                            }
-                        } else if ( $('#geolocation-edition-group').length != 0 ) {
-                            $('#geolocation-edition-group input').attr('disabled','disabled').removeClass('active');
-                            $('#geolocation-edition-group button').attr('disabled','disabled').removeClass('active');
-                            $('#geolocation-edition-group').hide();
+            // Geolocation
+
+            // Toggle geolocation UI part based on tracking state
+            lizMap.mainEventDispatcher.addListener(
+                () => {
+                    const geolocationIsTracking = lizMap.mainLizmap.geolocation.isTracking;
+                    $('#edition-point-coord-geolocation-group').toggle(geolocationIsTracking);
+                    if (geolocationIsTracking){
+                        if ($('#edition-point-coord-geolocation').is(':checked')){
+                            $('#edition-point-coord-x').attr('disabled', 'disabled');
+                            $('#edition-point-coord-y').attr('disabled', 'disabled');
                         }
-                    },
-                    "activate": function(evt) {
-                        $('#edition-point-coord-geolocation-group').show();
-                        if ( $('#geolocation-edition-group').length != 0 && editionLayer.config )
-                            $('#geolocation-edition-group').show();
-                    },
-                    "deactivate": function(evt) {
-                        if ( $('#edition-point-coord-geolocation').is(':checked') )
-                            $('#edition-point-coord-geolocation').click();
-                        $('#edition-point-coord-geolocation').attr('disabled','disabled');
-                        $('#edition-point-coord-geolocation-group').hide();
-                        if ( $('#geolocation-edition-group').length != 0 ) {
-                            $('#geolocation-edition-group input').attr('disabled','disabled').removeClass('active');
-                            $('#geolocation-edition-group button').attr('disabled','disabled').removeClass('active');
-                            $('#geolocation-edition-group').hide();
+                    }else{
+                        $('#edition-point-coord-x').removeAttr('disabled');
+                        $('#edition-point-coord-y').removeAttr('disabled');
+                    }
+                },
+                'geolocation.isTracking'
+            );
+
+            // Make modifyFeature follow geolocation when active
+            lizMap.mainEventDispatcher.addListener(
+                () => {
+                    if (editionLayer && ('config' in editionLayer) ) {
+                        $('#edition-point-coord-geolocation').removeAttr('disabled');
+                        var geometryType = editionLayer.geometryType;
+                        if ($('#edition-point-coord-geolocation').is(':checked') && editCtrls[geometryType].active ) {
+                            // Move point
+                            var [lon, lat] = lizMap.mainLizmap.geolocation.getPositionInCRS(editionLayer['ol'].projection);
+                            var px = editCtrls[geometryType].handler.layer.getViewPortPxFromLonLat({ lon: lon, lat: lat});
+                            editCtrls[geometryType].handler.modifyFeature(px);
+
+                            displayCoordinates(new OpenLayers.Geometry.Point(lon, lat));
                         }
                     }
-                });
-
-                if ( $('#geolocation-edition-group').length != 0 ) {
-                    $('#geolocation-edition-linked').change(function(){
-                        if ( $(this).is(':checked') ) {
-                            if ( !$('#edition-point-coord-geolocation').is(':checked') )
-                                $('#edition-point-coord-geolocation').click();
-                            $('#geolocation-edition-group button').removeAttr('disabled');
-                        } else {
-                            if ( $('#edition-point-coord-geolocation').is(':checked') )
-                                $('#edition-point-coord-geolocation').click();
-                            $('#geolocation-edition-group button').attr('disabled','disabled').removeClass('active');
-                        }
-                    });
-                    $('#edition-point-coord-geolocation').change(function(){
-                        if ( $(this).is(':checked') != $('#geolocation-edition-linked').is(':checked') )
-                            $('#geolocation-edition-linked').click();
-                    });
-                    $('#geolocation-edition-add').click(function() {
-                        $('#edition-point-coord-add').click();
-                    });
-                    $('#geolocation-edition-submit').click(function() {
-                        $('#edition-point-coord-submit').click();
-                    });
-                }
-            }
-
+                },
+                'geolocation.position'
+            );
         } else {
             $('#edition').parent().remove();
             $('#button-edition').remove();
             $('#edition-form-container').hide();
+        }
+    }
+
+    // Display coordinates. Vertex is in map projection
+    function displayCoordinates(vertex){
+        // Get SRID and transform geometry
+        var srid = $('#edition-point-coord-crs').val();
+        var displayProj = new OpenLayers.Projection('EPSG:' + srid);
+        vertex.transform(editionLayer['ol'].projection, displayProj);
+
+        if (displayProj.getUnits() === 'degrees') {
+            $('#edition-point-coord-x').val(vertex.x.toFixed(6));
+            $('#edition-point-coord-y').val(vertex.y.toFixed(6));
+        } else {
+            $('#edition-point-coord-x').val(vertex.x.toFixed(3));
+            $('#edition-point-coord-y').val(vertex.y.toFixed(3));
         }
     }
 
