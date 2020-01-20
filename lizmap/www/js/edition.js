@@ -392,6 +392,7 @@ OpenLayers.Geometry.pointOnSegment = function(point, segment) {
         $('#edition-point-coord-form').hide();
         $('#edition-point-coord-form-expander i').removeClass('icon-chevron-down').addClass('icon-chevron-right');
         $('#edition-point-coord-form-group').hide();
+        $('#edition-segment-length').parents('.control-group').addClass('hidden');
 
         lizMap.events.triggerEvent("lizmapeditiondrawfeaturedeactivated",
             {
@@ -445,6 +446,25 @@ OpenLayers.Geometry.pointOnSegment = function(point, segment) {
                 editCtrls[geometryType].handler.point.geometry.x = vertex.x;
                 editCtrls[geometryType].handler.point.geometry.y = vertex.y;
                 editCtrls[geometryType].handler.point.geometry.clearBounds();
+
+                // Display drawing segment length
+                if (editCtrls[geometryType].handler.point.geometry.parent.CLASS_NAME === "OpenLayers.Geometry.LineString"
+                && editCtrls[geometryType].handler.point.geometry.parent.components.length === 2){
+                    displaySegmentsLength(
+                        editCtrls[geometryType].handler.layer.features[0].geometry.components,
+                        editionLayer['ol'].projection,
+                        true
+                    );
+                } else if (editCtrls[geometryType].handler.point.geometry.parent.CLASS_NAME === "OpenLayers.Geometry.LinearRing"
+                && editCtrls[geometryType].handler.point.geometry.parent.components.length > 2){
+                    const clonedComponents = editCtrls[geometryType].handler.point.geometry.clone().parent.components;
+                    clonedComponents.pop();
+                    displaySegmentsLength(
+                        clonedComponents,
+                        editionLayer['ol'].projection,
+                        false
+                    );
+                }
             }
             editCtrls[geometryType].handler.drawFeature();
         }
@@ -773,6 +793,18 @@ OpenLayers.Geometry.pointOnSegment = function(point, segment) {
                         var vertex = evt.vertex.clone();
                         displayCoordinates(vertex);
                     }
+
+                    // Display drawing segment length
+                    if (evt.feature.geometry.CLASS_NAME === "OpenLayers.Geometry.LineString"
+                    && evt.feature.geometry.components && evt.feature.geometry.components.length > 1){
+                        displaySegmentsLength(evt.feature.geometry.components, evt.feature.layer.projection, true);
+                    } else if (evt.feature.geometry.CLASS_NAME === "OpenLayers.Geometry.Polygon"
+                    && evt.feature.geometry.components[0].components 
+                    && evt.feature.geometry.components[0].components.length > 2){
+                        let clonedComponents = evt.feature.geometry.clone().components[0].components;
+                        clonedComponents.pop();
+                        displaySegmentsLength(clonedComponents, evt.feature.layer.projection, false);
+                    }
                 },
 
                 vertexmodified: function(evt) {
@@ -985,6 +1017,30 @@ OpenLayers.Geometry.pointOnSegment = function(point, segment) {
         } else {
             $('#edition-point-coord-x').val(vertex.x.toFixed(3));
             $('#edition-point-coord-y').val(vertex.y.toFixed(3));
+        }
+    }
+
+    function displaySegmentsLength(components, projection, showTotal){
+        $('#edition-segment-length').parents('.control-group').removeClass('hidden');
+
+        const componentsCount = components.length;
+        const lastSegmentLength = (new OpenLayers.Geometry.LineString([components[componentsCount - 2], components[componentsCount - 1]])).getGeodesicLength(projection);
+
+        if (showTotal){
+            let allSegmentsLength = 0;
+
+            if (componentsCount > 1) {
+                for (let index = 0; index < componentsCount - 1; index++) {
+                    let line = new OpenLayers.Geometry.LineString([components[index], components[index + 1]]);
+                    allSegmentsLength += line.getGeodesicLength(projection);
+                }
+            } else {
+                allSegmentsLength = lastSegmentLength;
+            }
+            $('#edition-segment-length').text(lastSegmentLength.toFixed(3) + ' / ' + allSegmentsLength.toFixed(3));
+        }else{
+            $('#edition-segment-length').text(lastSegmentLength.toFixed(3));
+
         }
     }
 

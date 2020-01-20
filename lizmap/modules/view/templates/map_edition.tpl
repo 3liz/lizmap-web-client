@@ -63,6 +63,12 @@
                         <input name="coord-y" id="edition-point-coord-y" class="jforms-ctrl-input" value="" type="text">
                     </div>
                 </div>
+                <div class="control-group hidden">
+                    <label class="jforms-label control-label">{@view~edition.segment.length.label@}</label>
+                    <div class="controls">
+                        <label id="edition-segment-length"></label>
+                    </div>
+                </div>
                 <div class="control-group" id="edition-point-coord-geolocation-group" style="display:none;">
                     <div class="controls">
                         <label class="jforms-label checkbox" for="edition-point-coord-geolocation" id="edition-point-coord-geolocation-label">
