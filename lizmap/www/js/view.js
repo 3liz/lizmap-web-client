@@ -72,17 +72,44 @@ var searchProjects = function(){
     }
 
     // Get unique keywords for visible projects
-    var getProjectsKeywords = function() {
+    var getVisibleProjectsKeywords = function() {
         var keywordList = [];
         var selector = '.liz-repository-project-item :visible .keywordList';
 
         $(selector).each(function () {
             if ($(this).text() !== '') {
-                keywordList = keywordList.concat($(this).text().toUpperCase().split(', '));
+                var keywordsSplitByComma = $(this).text().toUpperCase().split(', ');
+                if (isGraph) {
+                    for (var index = 0; index < keywordsSplitByComma.length; index++) {
+                        keywordList = keywordList.concat(keywordsSplitByComma[index].split('/'));
+                    }
+                }else{
+                    keywordList = keywordList.concat(keywordsSplitByComma);
+                }
             }
         });
 
         return keywordList.filter(onlyUnique);
+    }
+
+    // For graph
+    var getEdges = function () {
+        var edgeList = [];
+
+        $('.liz-repository-project-item :visible .keywordList').each(function () {
+            if ($(this).text() !== '') {
+                var keywordsSplitByComma = $(this).text().toUpperCase().split(', ');
+                for (var index = 0; index < keywordsSplitByComma.length; index++) {
+                    var keywordsInGraph = keywordsSplitByComma[index].split('/');
+
+                    // Get edges
+                    for (var i = 0; i < keywordsInGraph.length - 1; i++) {
+                        edgeList.push([keywordsInGraph[i], keywordsInGraph[i + 1]]);
+                    }
+                }
+            }
+        });
+        return edgeList;
     }
 
     // Function to show only projects with selected keywords
@@ -99,11 +126,23 @@ var searchProjects = function(){
 
             // Show project when its keywords match all keywords in selectedKeywords
             $('.keywordList').each(function () {
-                var keywordList = $(this).text().toUpperCase().split(', ');
+                var showProject = false;
+                var keywordListSplitByComma = $(this).text().toUpperCase().split(', ');
 
-                var showProject = selectedKeywords.every(function (currentValue) {
-                    return (keywordList.indexOf(currentValue) !== -1);
-                });
+                // Graph
+                if (isGraph) {
+                    var path = selectedKeywords.join('/');
+                    for (var index = 0; index < keywordListSplitByComma.length; index++) {
+                        if (keywordListSplitByComma[index].indexOf(path) !== -1) {
+                            showProject = true;
+                            break;
+                        }
+                    }
+                } else {
+                    showProject = selectedKeywords.every(function (currentValue) {
+                        return (keywordListSplitByComma.indexOf(currentValue) !== -1);
+                    });
+                }
 
                 if (showProject) {
                     $(this).closest('.liz-repository-project-item').show();
@@ -129,66 +168,63 @@ var searchProjects = function(){
         });
     }
 
-    // Display keywords based on displayed projects
-    var displayRemainingKeywords = function () {
-        var projectKeywords = getProjectsKeywords();
+    // Display possible keywords to choose based on displayed projects and previous keywords selection
+    var displayKeywordChoices = function () {
         var selectedKeywords = getSelectedKeywords();
 
-        // Hide all keywords
-        $('#search-project-result .project-keyword').addClass('hide');
+        if (selectedKeywords.length === 0) {
+            // Display all keywords
+            $('#search-project-result .project-keyword').removeClass('hide');
+        } else {
+            // Hide all keywords
+            $('#search-project-result .project-keyword').addClass('hide');
 
-        for (var index = 0; index < projectKeywords.length; index++) {
-            if (selectedKeywords.indexOf(projectKeywords[index]) === -1) {
-                $('#search-project-result .project-keyword').filter(function () {
-                    return $(this).text().toUpperCase() === projectKeywords[index];
-                }).removeClass('hide');
+            var visibleProjectKeywords = getVisibleProjectsKeywords();
+
+            for (var index = 0; index < visibleProjectKeywords.length; index++) {
+                if (selectedKeywords.indexOf(visibleProjectKeywords[index]) === -1) {
+                    $('#search-project-result .project-keyword.hide').filter(function () {
+                        return ($(this).text().toUpperCase() === visibleProjectKeywords[index]);
+                    }).removeClass('hide');
+                }
+            }
+
+            if (isGraph) {
+                // Hide all keywords
+                $('#search-project-result .project-keyword').addClass('hide');
+                var visibleProjectEdges = getEdges();
+                var selectedKeywords = getSelectedKeywords();
+                var lastSelectedKeyword = selectedKeywords[selectedKeywords.length - 1];
+
+                var hiddenKeywords = $('#search-project-result .project-keyword.hide');
+
+                for (var index = 0; index < hiddenKeywords.length; index++) {
+                    var hiddenKeyword = hiddenKeywords.eq(index);
+
+                    for (var i = 0; i < visibleProjectEdges.length; i++) {
+                        if (visibleProjectEdges[i][0] === lastSelectedKeyword
+                            && visibleProjectEdges[i][1] === hiddenKeyword.text().toUpperCase()) {
+                            hiddenKeyword.removeClass('hide');
+                        }
+                    }
+                }
             }
         }
         unHighlightkeywords();
     }
 
-    var uniqueKeywordList = getProjectsKeywords();
-
-    var keywordsHTML = '';
-    for (var index = 0; index < uniqueKeywordList.length; index++) {
-        keywordsHTML += '<span class="project-keyword hide">' + uniqueKeywordList[index].toLowerCase() + '</span>';
-    }
-    $('#search-project-result').html(keywordsHTML);
-
-    // Add click handler on project keywords
-    $('.project-keyword').click(function(){
-        // Move keyword in #search-project-keywords-selected
-        $('#search-project-keywords-selected').append('<span class="project-keyword"><span class="keyword-label">' + $(this).text() +'</span><span class="remove-keyword">x</span></span>');
-        // Add close event
-        $('#search-project-keywords-selected .remove-keyword').click(function(){
-            $(this).parent().remove();
-            filterProjectsBySelectedKeywords();
-            if ($('#search-project-keywords-selected .remove-keyword').length === 0){
-                $('#search-project-result .project-keyword').addClass('hide');
-            }else{
-                displayRemainingKeywords();
-            }
-        });
-        // Hide projects then display projects with selected keyword
-        filterProjectsBySelectedKeywords();
-        // Empty search input
-        $('#search-project').val('')
-        // Display remaining keywords for visible projects not yet selected
-        displayRemainingKeywords();
-    });
-
-    // Handle search
+    // Search when user type in
     $("#search-project").keyup(function () {
         // Scroll to projects
         $('html').animate({
             scrollTop: $("#anchor-top-projects").offset().top - $('#header').height()
         }, 500);
 
-        // Search by keywords
-        if ($('#toggle-search').text() === '#'){
-            var searchedTerm = this.value.trim().toUpperCase();
+        var searchedTerm = this.value.trim().toUpperCase();
 
-            displayRemainingKeywords();
+        // Search by keywords
+        if ($('#toggle-search').text() === '#') {
+            displayKeywordChoices();
             if (searchedTerm === '' && getSelectedKeywords().length === 0) {
                 $('#search-project-result .project-keyword').addClass('hide');
             } else {
@@ -204,10 +240,9 @@ var searchProjects = function(){
                     }
                 });
             }
-        }else{ // Search by title
-            var val = $.trim(this.value).toUpperCase();
+        } else { // Search by title
             // If the search bar is empty, show everything
-            if (val === "") {
+            if (searchedTerm === "") {
                 $("#content.container .liz-repository-project-item").show();
                 $("#content.container .liz-repository-title").show();
             }
@@ -216,18 +251,65 @@ var searchProjects = function(){
                 $("#content.container .liz-repository-project-item").hide();
                 $("#content.container .liz-repository-title").hide();
 
-                val = val.toUpperCase();
                 $("#content.container li .liz-project-title").filter(function () {
-                    return -1 != $(this).text().toUpperCase().indexOf(val);
+                    return -1 != $(this).text().toUpperCase().indexOf(searchedTerm);
                 }).closest('.liz-repository-project-item').show();
 
                 $("#content.container li .liz-project-title").filter(function () {
-                    return -1 != $(this).text().toUpperCase().indexOf(val);
+                    return -1 != $(this).text().toUpperCase().indexOf(searchedTerm);
                 }).closest('.liz-repository-project-list').prev('.liz-repository-title').show();
 
             }
         }
     });
+
+    // Init
+    var isGraph = false;
+    var uniqueKeywordList = getVisibleProjectsKeywords();
+
+    // Activate keywords search if any
+    if (uniqueKeywordList.length > 0){
+        // If at least one keyword contains a slash, we toggle to graph search mode
+        for (var index = 0; index < uniqueKeywordList.length; index++) {
+            var keyword = uniqueKeywordList[index];
+            if (keyword.indexOf('/') !== -1) {
+                isGraph = true;
+                // Get unique keywords in graph mode
+                uniqueKeywordList = getVisibleProjectsKeywords();
+                break;
+            }
+        }
+
+        var keywordsHTML = '';
+        for (var index = 0; index < uniqueKeywordList.length; index++) {
+            keywordsHTML += '<span class="project-keyword hide">' + uniqueKeywordList[index].toLowerCase() + '</span>';
+        }
+        $('#search-project-result').html(keywordsHTML);
+
+        // Add click handler on project keywords
+        $('.project-keyword').click(function () {
+            // Move keyword in #search-project-keywords-selected
+            $('#search-project-keywords-selected').append('<span class="project-keyword"><span class="keyword-label">' + $(this).text() + '</span><span class="remove-keyword">x</span></span>');
+            // Add close event
+            $('#search-project-keywords-selected .remove-keyword').click(function () {
+                $(this).parent().remove();
+                filterProjectsBySelectedKeywords();
+                if ($('#search-project-keywords-selected .remove-keyword').length === 0) {
+                    $('#search-project-result .project-keyword').addClass('hide');
+                } else {
+                    displayKeywordChoices();
+                }
+            });
+            // Hide projects then display projects with selected keyword
+            filterProjectsBySelectedKeywords();
+            // Empty search input
+            $('#search-project').val('')
+            // Display remaining keywords for visible projects not yet selected
+            displayKeywordChoices();
+        });
+    }else{
+        $('#toggle-search').hide().parent().removeClass('input-prepend');
+    }
 }
 
 $( window ).load(function() {
