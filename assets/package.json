@@ -1,0 +1,21 @@
+{
+  "name": "assets",
+  "version": "1.0.0",
+  "description": "",
+  "scripts": {
+    "build": "webpack --config webpack.prod.js",
+    "watch": "webpack --watch --config webpack.dev.js",
+    "pretest": "eslint src"
+  },
+  "devDependencies": {
+    "eslint": "^6.8.0",
+    "eslint-config-openlayers": "^13.0.0",
+    "lit-html": "^1.1.2",
+    "ol": "^6.1.1",
+    "webpack": "^4.41.5",
+    "webpack-cli": "^3.3.10",
+    "webpack-merge": "^4.2.2"
+  },
+  "author": "3Liz",
+  "license": "ISC"
+}

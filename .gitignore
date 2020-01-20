@@ -25,6 +25,7 @@ lizmap/www/cache/images/*
 !lizmap/www/cache/images/.empty
 lizmap/www/live/images/home/*
 !lizmap/www/live/images/home/.empty
+lizmap/www/js/lizmap.js
 temp/lizmap/*
 !temp/lizmap/.empty
 vagrant/playbook.retry
@@ -38,3 +39,5 @@ build
 
 tests/vendor/
 tests/composer.lock
+
+assets/node_modules/
