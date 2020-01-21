@@ -923,6 +923,10 @@ class lizmapProject extends qgisProject
                 ),
             );
 
+            if (property_exists($lc, 'z_field')) {
+                $plotConf['plot']['z_field'] = $lc->z_field;
+            }
+
             if (property_exists($lc, 'popup_display_child_plot')) {
                 $plotConf['popup_display_child_plot'] = $lc->popup_display_child_plot;
             }
