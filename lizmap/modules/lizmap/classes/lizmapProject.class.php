@@ -979,11 +979,17 @@ class lizmapProject extends qgisProject
 
         $config['dataviz'] = array(
             'location' => 'dock',
+            'theme' => 'dark'
         );
         if (property_exists($this->cfg->options, 'datavizLocation')
             and in_array($this->cfg->options->datavizLocation, array('dock', 'bottomdock', 'right-dock'))
         ) {
             $config['dataviz']['location'] = $this->cfg->options->datavizLocation;
+        }
+        if (property_exists($this->cfg->options, 'datavizTheme')
+            and in_array($this->cfg->options->datavizTheme, array('dark', 'light'))
+        ) {
+            $config['dataviz']['theme'] = $this->cfg->options->datavizTheme;
         }
 
         return $config;

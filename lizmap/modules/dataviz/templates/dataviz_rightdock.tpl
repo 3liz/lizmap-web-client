@@ -3,7 +3,7 @@
 
     <div class="tab-pane active bottom-content" id="dataviz-main" >
 
-        <div id="dataviz-content">
+        <div id="dataviz-content" class="{$theme}">
         </div>
 
     </div>

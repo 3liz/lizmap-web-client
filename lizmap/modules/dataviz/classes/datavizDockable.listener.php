@@ -13,9 +13,10 @@
                 // Use appropriate dock
                 $config = $dv->getConfig();
                 $location = $config['dataviz']['location'];
+                $theme = $config['dataviz']['theme'];
                 if ($location == 'dock') {
                     // Use template dataviz-dock
-                    $assign = array();
+                    $assign = array('theme' => $theme);
                     $content = array('dataviz~dataviz_dock', $assign);
                     $dock = new lizmapMapDockItem(
                         'dataviz',
@@ -42,9 +43,10 @@
                 // Use appropriate dock
                 $config = $dv->getConfig();
                 $location = $config['dataviz']['location'];
+                $theme = $config['dataviz']['theme'];
                 if ($location == 'bottomdock') {
                     // Use template dataviz-dock
-                    $assign = array();
+                    $assign = array('theme' => $theme);
                     $content = array('dataviz~dataviz_bottomdock', $assign);
                     $dock = new lizmapMapDockItem(
                         'dataviz',
@@ -71,9 +73,10 @@
                 // Use appropriate dock
                 $config = $dv->getConfig();
                 $location = $config['dataviz']['location'];
+                $theme = $config['dataviz']['theme'];
                 if ($location == 'right-dock') {
                     // Use template dataviz-dock
-                    $assign = array();
+                    $assign = array('theme' => $theme);
                     $content = array('dataviz~dataviz_rightdock', $assign);
                     $dock = new lizmapMapDockItem(
                         'dataviz',
