@@ -393,6 +393,7 @@ OpenLayers.Geometry.pointOnSegment = function(point, segment) {
         $('#edition-point-coord-form-expander i').removeClass('icon-chevron-down').addClass('icon-chevron-right');
         $('#edition-point-coord-form-group').hide();
         $('#edition-segment-length').parents('.control-group').addClass('hidden');
+        $('#edition-segment-angle').parents('.control-group').addClass('hidden');
 
         lizMap.events.triggerEvent("lizmapeditiondrawfeaturedeactivated",
             {
@@ -447,24 +448,7 @@ OpenLayers.Geometry.pointOnSegment = function(point, segment) {
                 editCtrls[geometryType].handler.point.geometry.y = vertex.y;
                 editCtrls[geometryType].handler.point.geometry.clearBounds();
 
-                // Display drawing segment length
-                if (editCtrls[geometryType].handler.point.geometry.parent.CLASS_NAME === "OpenLayers.Geometry.LineString"
-                && editCtrls[geometryType].handler.point.geometry.parent.components.length === 2){
-                    displaySegmentsLength(
-                        editCtrls[geometryType].handler.layer.features[0].geometry.components,
-                        editionLayer['ol'].projection,
-                        true
-                    );
-                } else if (editCtrls[geometryType].handler.point.geometry.parent.CLASS_NAME === "OpenLayers.Geometry.LinearRing"
-                && editCtrls[geometryType].handler.point.geometry.parent.components.length > 2){
-                    const clonedComponents = editCtrls[geometryType].handler.point.geometry.clone().parent.components;
-                    clonedComponents.pop();
-                    displaySegmentsLength(
-                        clonedComponents,
-                        editionLayer['ol'].projection,
-                        false
-                    );
-                }
+                displaySegmentsLengthAndAngle(editCtrls[geometryType].handler.layer.features[0].geometry);
             }
             editCtrls[geometryType].handler.drawFeature();
         }
@@ -794,17 +778,7 @@ OpenLayers.Geometry.pointOnSegment = function(point, segment) {
                         displayCoordinates(vertex);
                     }
 
-                    // Display drawing segment length
-                    if (evt.feature.geometry.CLASS_NAME === "OpenLayers.Geometry.LineString"
-                    && evt.feature.geometry.components && evt.feature.geometry.components.length > 1){
-                        displaySegmentsLength(evt.feature.geometry.components, evt.feature.layer.projection, true);
-                    } else if (evt.feature.geometry.CLASS_NAME === "OpenLayers.Geometry.Polygon"
-                    && evt.feature.geometry.components[0].components 
-                    && evt.feature.geometry.components[0].components.length > 2){
-                        let clonedComponents = evt.feature.geometry.clone().components[0].components;
-                        clonedComponents.pop();
-                        displaySegmentsLength(clonedComponents, evt.feature.layer.projection, false);
-                    }
+                    displaySegmentsLengthAndAngle(evt.feature.geometry);
                 },
 
                 vertexmodified: function(evt) {
@@ -1041,6 +1015,64 @@ OpenLayers.Geometry.pointOnSegment = function(point, segment) {
         }else{
             $('#edition-segment-length').text(lastSegmentLength.toFixed(3));
 
+        }
+    }
+
+    /*
+    * Display the angle ABC between three points (in degrees)
+    *
+    * A first point, ex: {x: 0, y: 0}
+    * B center point
+    * C second point
+    */
+    function displayAngleBetweenThreePoints(A, B, C){
+        $('#edition-segment-angle').parents('.control-group').removeClass('hidden');
+
+        const AB = Math.sqrt(Math.pow(B.x - A.x, 2) + Math.pow(B.y - A.y, 2));
+        const BC = Math.sqrt(Math.pow(B.x - C.x, 2) + Math.pow(B.y - C.y, 2));
+        const AC = Math.sqrt(Math.pow(C.x - A.x, 2) + Math.pow(C.y - A.y, 2));
+        let angleInDegrees = (Math.acos((BC * BC + AB * AB - AC * AC) / (2 * BC * AB)) * 180)/Math.PI;
+
+        if (isNaN(angleInDegrees)){
+            angleInDegrees = 0;
+        }
+
+        $('#edition-segment-angle').text(angleInDegrees.toFixed(2));
+    }
+
+    // Display drawing segment length and angle when eligible
+    function displaySegmentsLengthAndAngle(drawingGeom){
+        if (drawingGeom.CLASS_NAME === "OpenLayers.Geometry.LineString"
+            && drawingGeom.components
+            && drawingGeom.components.length > 1) {
+            const components = drawingGeom.components;
+            const componentsLength = components.length;
+
+            displaySegmentsLength(
+                components,
+                editionLayer['ol'].projection,
+                true
+            );
+
+            if (componentsLength > 2) {
+                displayAngleBetweenThreePoints(components[componentsLength - 1], components[componentsLength - 2], components[componentsLength - 3]);
+            }
+        } else if (drawingGeom.CLASS_NAME === "OpenLayers.Geometry.Polygon"
+            && drawingGeom.components
+            && drawingGeom.components[0].components.length > 2) {
+            const clonedComponents = drawingGeom.clone().components[0].components;
+            clonedComponents.pop();
+            const clonedComponentsLength = clonedComponents.length;
+
+            displaySegmentsLength(
+                clonedComponents,
+                editionLayer['ol'].projection,
+                false
+            );
+
+            if (clonedComponentsLength > 2) {
+                displayAngleBetweenThreePoints(clonedComponents[clonedComponentsLength - 1], clonedComponents[clonedComponentsLength - 2], clonedComponents[clonedComponentsLength - 3])
+            }
         }
     }
 

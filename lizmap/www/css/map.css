@@ -2240,7 +2240,7 @@ a.btn.btn-opacity-layer.active {
   width:0px;
 }
 
-#edition-segment-length {
+#edition-segment-length, #edition-segment-angle {
   line-height: 30px;
 }
 
