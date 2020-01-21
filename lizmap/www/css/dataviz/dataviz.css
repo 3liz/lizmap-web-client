@@ -43,6 +43,7 @@ Toolbar buttons
 
 #dataviz-main.bottom-content div.menu-content p{
     padding: 5px;
+    font-size: 0.8em;
 }
 #nav-tab-dataviz-main > a{
     background: none !important;
@@ -59,3 +60,20 @@ Toolbar buttons
     padding-left: 0px;
 }
 
+
+/*
+DARK THEME
+*/
+#dataviz-content.dark div.menu-content {
+    background: rgb(74, 74, 74) !important;
+    color: white;
+}
+#dataviz-content.dark h3 {
+    font-weight: bold !important;
+}
+
+#dataviz-content.dark g text.legendtext,
+#dataviz-content.dark g.xtick text,
+#dataviz-content.dark g.ytick text{
+    fill: white !important;
+}
