@@ -1,4 +1,7 @@
 #
+# expected variables in the CI environment
+# - FACTORY_SCRIPTS = path to scripts of the factory
+# - REGISTRY_URL = url of the docker registry
 
 STAGE=build
 
@@ -9,6 +12,23 @@ MAJOR_VERSION=$(firstword $(subst ., ,$(LIZMAP_VERSION)))
 MINOR_VERSION=$(word 2,$(subst ., ,$(LIZMAP_VERSION)))
 SHORT_VERSION=$(MAJOR_VERSION).$(MINOR_VERSION)
 SHORT_VERSION_NAME=$(MAJOR_VERSION)_$(MINOR_VERSION)
+LATEST_RELEASE=$(shell git branch -a | grep -Po "(release_\\d+_\\d+)" | sort | tail -n1 | cut -d'_' -f 2,3)
+
+ifdef DO_RELEASE
+    RELEASE_VERSION_TAG=$(SHORT_VERSION)
+    ifeq ($(SHORT_VERSION_NAME), $(LATEST_RELEASE))
+        RELEASE_LATEST_TAG=latest
+    endif
+
+    ifneq ($(LTR),)
+        RELEASE_LTR_TAG=ltr-$(MAJOR_VERSION)-$(MINOR_VERSION)
+    endif
+else
+    RELEASE_VERSION_TAG=$(SHORT_VERSION)-nightly
+    ifneq ($(LTR),)
+        RELEASE_LTR_TAG=ltr-$(MAJOR_VERSION)-$(MINOR_VERSION)-nightly
+    endif
+endif
 
 MANIFEST_EXISTS=$(shell [ -f build/MANIFEST ] && echo 1 || echo 0 )
 ifeq ($(MANIFEST_EXISTS), 1)
@@ -26,7 +46,35 @@ COMMITID=$(shell git rev-parse --short HEAD)
 PACKAGE_NAME=lizmap-web-client-$(LIZMAP_VERSION)
 SAAS_PACKAGE=lizmap_web_client_$(SHORT_VERSION_NAME)
 ZIP_PACKAGE=$(STAGE)/$(PACKAGE_NAME).zip
-SAAS_PACKAGE_DIR=$(STAGE)/lizmap_web_client
+GENERIC_DIR_NAME=lizmap_web_client
+GENERIC_PACKAGE_DIR=$(STAGE)/$(GENERIC_DIR_NAME)
+GENERIC_PACKAGE_ZIP=$(GENERIC_DIR_NAME).zip
+GENERIC_PACKAGE_PATH=$(STAGE)/$(GENERIC_PACKAGE_ZIP)
+
+#-------- WPS
+LIZMAP_WPS_BRANCH:=master
+
+#-------- Docker
+DOCKER_NAME=lizmap-web-client
+DOCKER_BUILDIMAGE=$(DOCKER_NAME):$(LIZMAP_VERSION)-$(COMMITID)
+DOCKER_ARCHIVENAME=$(shell echo $(DOCKER_NAME):$(LIZMAP_VERSION)|tr '[:./]' '_')
+DOCKER_BUILD_ARGS=--build-arg lizmap_version=$(LIZMAP_VERSION) \
+--build-arg lizmap_wps_version=$(LIZMAP_WPS_BRANCH)
+DOCKER_MANIFEST=docker/factory.manifest
+
+ifeq ($(LTR),)
+    DOCKER_RELEASE_PACKAGE_NAME=$(DOCKER_NAME)
+else
+    DOCKER_RELEASE_PACKAGE_NAME=$(DOCKER_NAME)-ltr
+endif
+
+
+ifdef REGISTRY_URL
+REGISTRY_PREFIX=$(REGISTRY_URL)/
+DOCKER_BUILD_ARGS += --build-arg REGISTRY_PREFIX=$(REGISTRY_PREFIX)
+endif
+
+
 
 #-------- build
 DIST=$(STAGE)/$(PACKAGE_NAME)
@@ -43,9 +91,15 @@ debug:
 	@echo "SHORT_VERSION="$(SHORT_VERSION)
 	@echo "MAJOR_VERSION="$(MAJOR_VERSION)
 	@echo "MINOR_VERSION="$(MINOR_VERSION)
+	@echo "SHORT_VERSION="$(SHORT_VERSION)
+	@echo "LTR="$(LTR)
+	@echo "LATEST_RELEASE="$(LATEST_RELEASE)
+	@echo "RELEASE_TAG="$(RELEASE_TAG)
+	@echo "SHORT_VERSION_NAME="$(SHORT_VERSION_NAME)
 	@echo "SAAS_LZMPACK_VERSION="$(SAAS_LZMPACK_VERSION)
 	@echo "PACKAGE_NAME="$(PACKAGE_NAME)
 	@echo "SAAS_PACKAGE="$(SAAS_PACKAGE)
+	@echo "GENERIC_PACKAGE_PATH="$(GENERIC_PACKAGE_PATH)
 	@echo "BRANCH="$(BRANCH)
 	@echo "BUILDID="$(BUILDID)
 	@echo "COMMITID="$(COMMITID)
@@ -58,6 +112,8 @@ tests: debug
 
 clean:
 	rm -rf $(STAGE)
+	rm -f docker/factory.manifest docker/$(GENERIC_PACKAGE_ZIP)
+
 
 $(DIST):
 	mkdir -p $(DIST)
@@ -71,15 +127,45 @@ $(DIST):
 	rm -rf $(DIST)/lizmap/www/document/* && touch $(DIST)/lizmap/www/document/.empty
 	echo $(LIZMAP_VERSION) > $(DIST)/VERSION
 
+$(GENERIC_PACKAGE_DIR): $(DIST)
+	mkdir -p $(GENERIC_PACKAGE_DIR)
+	cp -a $(DIST)/* $(GENERIC_PACKAGE_DIR)
+
 $(ZIP_PACKAGE): $(DIST)
 	cd $(STAGE) && zip -r $(PACKAGE_NAME).zip  $(PACKAGE_NAME)/
 
-$(SAAS_PACKAGE_DIR): $(DIST)
-	mv $(DIST) $(SAAS_PACKAGE_DIR)
+$(GENERIC_PACKAGE_PATH): $(GENERIC_PACKAGE_DIR)
+	cd $(STAGE) && zip -r $(GENERIC_PACKAGE_ZIP) $(GENERIC_DIR_NAME)/
+
+$(DOCKER_MANIFEST):
+	echo name=$(DOCKER_NAME) > $(DOCKER_MANIFEST) && \
+echo version=$(LIZMAP_VERSION)   >> $(DOCKER_MANIFEST) && \
+echo buildid=$(BUILDID)   >> $(DOCKER_MANIFEST) && \
+echo commitid=$(COMMITID) >> $(DOCKER_MANIFEST) && \
+echo archive=$(DOCKER_ARCHIVENAME) >> $(DOCKER_MANIFEST) && \
+echo version_short=$(SHORT_VERSION) >> $(DOCKER_MANIFEST)
+ifdef RELEASE_TAG
+	echo release_tag=$(RELEASE_TAG) >> $(DOCKER_MANIFEST)
+endif
+
+check-release:
+ifndef DO_RELEASE
+	$(error DO_RELEASE is undefined, cannot do a release)
+endif
+
+check-registry:
+ifndef REGISTRY_URL
+	$(error REGISTRY_URL is undefined)
+endif
+
+check-factory:
+ifndef FACTORY_SCRIPTS
+	$(error FACTORY_SCRIPTS is undefined)
+endif
 
 stage: $(DIST)
 
-package: $(ZIP_PACKAGE)
+package: $(ZIP_PACKAGE) $(GENERIC_PACKAGE_PATH)
 
 deploy_download: $(ZIP_PACKAGE)
 	upload_to_packages_server $(ZIP_PACKAGE) pub/lizmap/unstable/$(SHORT_VERSION)/
@@ -87,13 +173,73 @@ deploy_download: $(ZIP_PACKAGE)
 deploy_download_stable: $(ZIP_PACKAGE)
 	upload_to_packages_server $(ZIP_PACKAGE) pub/lizmap/release/$(SHORT_VERSION)/
 
-saas_package: $(SAAS_PACKAGE_DIR)
-	saasv2_register_package $(SAAS_PACKAGE) $(LIZMAP_VERSION) lizmap_web_client $(STAGE)
+saas_package: $(GENERIC_PACKAGE_DIR)
+	saasv2_register_package $(SAAS_PACKAGE) $(LIZMAP_VERSION) $(GENERIC_DIR_NAME) $(STAGE)
 
 trigger_ci:
 	trigger-ci $(SAAS_PROJ_ID) $(SAAS_PROJ_TOKEN) $(MAJOR_VERSION).$(MINOR_VERSION).x -F variables[SAAS_LZMPACK_VERSION]=$(SAAS_LZMPACK_VERSION)
 
-saas_release:
+saas_release: check-release
 	saasv2_release_package $(SAAS_PACKAGE)
 
 local_saas_package: clean stage saas_package
+
+
+docker-build: debug $(GENERIC_PACKAGE_PATH) docker-build-ci
+
+docker-build-ci: debug $(DOCKER_MANIFEST)
+	cp $(GENERIC_PACKAGE_PATH) docker/
+	docker build --rm --force-rm --no-cache $(DOCKER_BUILD_ARGS) -t $(DOCKER_BUILDIMAGE) docker/
+
+docker-tag: check-registry
+	docker tag $(DOCKER_BUILDIMAGE) $(REGISTRY_PREFIX)$(DOCKER_NAME):$(LIZMAP_VERSION)
+ifdef RELEASE_VERSION_TAG
+	docker tag $(DOCKER_BUILDIMAGE) $(REGISTRY_PREFIX)$(DOCKER_NAME):$(RELEASE_VERSION_TAG)
+endif
+ifdef RELEASE_LATEST_TAG
+	docker tag $(DOCKER_BUILDIMAGE) $(REGISTRY_PREFIX)$(DOCKER_NAME):$(RELEASE_LATEST_TAG)
+endif
+ifdef RELEASE_LTR_TAG
+	docker tag $(DOCKER_BUILDIMAGE) $(REGISTRY_PREFIX)$(DOCKER_NAME):$(RELEASE_LTR_TAG)
+endif
+
+docker-deliver: docker-tag
+	docker push $(REGISTRY_URL)/$(DOCKER_NAME):$(LIZMAP_VERSION)
+ifdef RELEASE_VERSION_TAG
+	docker push $(REGISTRY_URL)/$(DOCKER_NAME):$(RELEASE_VERSION_TAG)
+endif
+ifdef RELEASE_LATEST_TAG
+	docker push $(REGISTRY_URL)/$(DOCKER_NAME):$(RELEASE_LATEST_TAG)
+endif
+ifdef RELEASE_LTR_TAG
+	docker push $(REGISTRY_URL)/$(DOCKER_NAME):$(RELEASE_LTR_TAG)
+endif
+
+docker-clean:
+	docker rmi -f $(DOCKER_BUILDIMAGE) || true
+
+docker-clean-all:
+	docker rmi -f $(shell docker images $(DOCKER_BUILDIMAGE) -q) || true
+
+docker-release: check-factory
+	$(FACTORY_SCRIPTS)/release-image.sh $(DOCKER_RELEASE_PACKAGE_NAME)
+	$(FACTORY_SCRIPTS)/push-to-docker-hub.sh --clean
+
+
+docker-hub:
+	cd docker && $(FACTORY_SCRIPTS)/push-to-docker-hub.sh --clean
+
+LIZMAP_USER:=$(shell id -u)
+
+docker-run:
+	rm -rf $(shell pwd)/docker/.run
+	docker run -it --rm -p 9000:9000 \
+    -v $(shell pwd)/.run/config:/www/lizmap/var/config \
+    -v $(shell pwd)/.run/web:/www/lizmap/www \
+    -v $(shell pwd)/.run/log:/usr/local/var/log \
+    -v $(shell pwd)/.run/lizmap-theme-config:/www/lizmap/var/lizmap-theme-config \
+    -e LIZMAP_WMSSERVERURL=$(LIZMAP_WMSSERVERURL) \
+    -e LIZMAP_CACHEREDISHOST=$(LIZMAP_CACHEREDISHOST) \
+    -e LIZMAP_USER=$(LIZMAP_USER) \
+    -e LIZMAP_HOME=/srv/lizmap \
+    $(DOCKER_BUILDIMAGE) php-fpm
