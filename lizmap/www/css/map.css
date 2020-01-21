@@ -2240,6 +2240,9 @@ a.btn.btn-opacity-layer.active {
   width:0px;
 }
 
+#edition-segment-length, #edition-segment-angle {
+  line-height: 30px;
+}
 
 @media (max-height: 500px) {
   .modal.fade.in {
