@@ -69,6 +69,12 @@
                         <label id="edition-segment-length"></label>
                     </div>
                 </div>
+                <div class="control-group hidden">
+                    <label class="jforms-label control-label">{@view~edition.segment.angle.label@}</label>
+                    <div class="controls">
+                        <label id="edition-segment-angle"></label>
+                    </div>
+                </div>
                 <div class="control-group" id="edition-point-coord-geolocation-group" style="display:none;">
                     <div class="controls">
                         <label class="jforms-label checkbox" for="edition-point-coord-geolocation" id="edition-point-coord-geolocation-label">
