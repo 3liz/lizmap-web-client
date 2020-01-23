@@ -40,8 +40,10 @@ Documentation source: https://github.com/3liz/lizmap-documentation/
 
 You can add your custom Javascript, check your [Javascript library](https://github.com/3liz/lizmap-javascript-scripts/)
 
-Some plugins can be added to your Lizmap:
-* https://github.com/3liz/lizmap-cadastre-module
+Some modules can be added to Lizmap:
+* Map Builder https://github.com/3liz/lizmap-mapbuilder-module
+* French Cadastre https://github.com/3liz/lizmap-cadastre-module
+* Naturaliz https://github.com/3liz/lizmap-naturaliz-module
 
 Internationalization
 ---------------------
