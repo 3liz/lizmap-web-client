@@ -1249,10 +1249,7 @@ var lizLayerFilterTool = function() {
 
 }();
 
-var todo = `
-
-* Print get filtertoken if not yet set
-* Updata attribute table if displayed: display the Orange button to refresh
-* Update dataviz on filter
-
-`;
+var todo = '</br>'+
+'* Print get filtertoken if not yet set</br>'+
+'* Updata attribute table if displayed: display the Orange button to refresh</br>'+
+'* Update dataviz on filter</br>';
