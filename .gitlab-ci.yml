@@ -56,18 +56,16 @@ package:
   tags:
     - fabric
 
-docker-image-snap:
+docker-image-unstable:
   stage: docker-image
   script:
     - make docker-build-ci docker-deliver docker-clean
-    - make docker-hub
+    #- make docker-hub
   environment:
     name: snap
   artifacts:
     paths:
-      - "build/*.zip"
-      - "build/MANIFEST"
-      - factory.manifest
+      - docker/factory.manifest
   dependencies:
     - package
   only:
@@ -81,12 +79,12 @@ docker-image-snap:
 docker-image-release:
   stage: docker-image
   script:
-    - make docker-build docker-deliver docker-clean-all DO_RELEASE=y
+    - make docker-build-ci docker-deliver docker-clean-all DO_RELEASE=y
   environment:
-    name: production
+    name: snap
   artifacts:
     paths:
-      - factory.manifest
+      - docker/factory.manifest
   dependencies:
     - package
   only:
@@ -94,7 +92,7 @@ docker-image-release:
   tags:
     - infrav3
 
-deploy_unstable:
+deploy-package-unstable:
   stage: deploy
   script:
     - make deploy_download
@@ -111,14 +109,14 @@ deploy_unstable:
   tags:
     - fabric
 
-deploy_docker_unstable:
+deploy-docker-unstable:
   stage: deploy
   script:
     - $HOME/bin/lzmservicectl update -C MUTU lizmap  --annotate="Updated image ($CI_COMMIT_SHORT_SHA)"
   environment:
     name: snap
   dependencies:
-    - docker-image-snap
+    - docker-image-unstable
   only:
     - /^release_.*$/
     - master
@@ -127,12 +125,11 @@ deploy_docker_unstable:
   tags:
     - infrav3
 
-
-deploy_stable:
+deploy-release:
   stage: release
   script:
     - make deploy_download_stable
-    - make saas_release
+    - make saas_release DO_RELEASE=y
     - make trigger_ci
   environment:
     name: production
@@ -144,7 +141,6 @@ deploy_stable:
     - tags
   when: manual
 
-
 docker-release:
   stage: release
   script:
@@ -154,6 +150,8 @@ docker-release:
   dependencies:
     - docker-image-release
   when: manual
+  only:
+    - tags
   tags:
     - infrav3
 
