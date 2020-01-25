@@ -412,7 +412,7 @@ class lizmapWFSRequest extends lizmapOGCRequest
 
         //jLog::log($sql);
         // Use PostgreSQL method to export geojson
-        $sql = $this->setGeojsonSql($sql);
+        $sql = $this->setGeojsonSql($sql, $cnx);
         //jLog::log($sql);
         // Run query
         try {
@@ -468,7 +468,7 @@ class lizmapWFSRequest extends lizmapOGCRequest
         return str_replace('$geometry', '"'.$this->datasource->geocol.'"', $filter);
     }
 
-    private function setGeojsonSql($sql)
+    private function setGeojsonSql($sql, $cnx)
     {
         $sql = '
         WITH source AS (
@@ -493,7 +493,7 @@ class lizmapWFSRequest extends lizmapOGCRequest
         // this means some Lizmap features won't work with multiple keys or string ids
         // for example when using a filter clause in this query, row_number() will be false
         $sql .= " Concat(
-            '".$this->params['typename']."',
+            '".$cnx->quote($this->params['typename'])."',
             '.',
             ";
         $key = $this->datasource->key;
