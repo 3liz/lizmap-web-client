@@ -39,7 +39,7 @@
     </div>
     <form id="edition-point-coord-form" class="form-horizontal" style="display:none;">
         <fieldset>
-            <legend style="font-weight:bold;"><a id="edition-point-coord-form-expander" style=""><i class="icon-chevron-right"></i>{@view~edition.point.coord.title@}</a></legend>
+            <legend style="font-weight:bold;"><a id="edition-point-coord-form-expander" class="btn"><i class="icon-chevron-right"></i>{@view~edition.point.coord.title@}</a></legend>
             <div id="edition-point-coord-form-group" class="jforms-table-group" style="display:none;">
                 <div class="control-group">
                     <label class="jforms-label control-label" for="edition-point-coord-crs" id="edition-point-coord-crs-label">{@view~edition.point.coord.crs.label@}</label>
