@@ -68,6 +68,19 @@ OpenLayers.Format.WKT = OpenLayers.Class(OpenLayers.Format, {
             type = matches[1].toLowerCase();
             dim = matches[2];
             str = matches[3];
+            if (type.endsWith('zm')) {
+                dim = type.substring(type.length-2)
+                type = type.substring(0, type.length-2)
+            } else if (type.endsWith('mz')) {
+                dim = type.substring(type.length-2)
+                type = type.substring(0, type.length-2)
+            } else if (type.endsWith('z')) {
+                dim = type.substring(type.length-1)
+                type = type.substring(0, type.length-1)
+            } else if (type.endsWith('m')) {
+                dim = type.substring(type.length-1)
+                type = type.substring(0, type.length-1)
+            }
             if(this.parse[type]) {
                 features = this.parse[type].apply(this, [str]);
             }
