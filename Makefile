@@ -42,6 +42,8 @@ debug:
 
 build: debug
 	composer update --working-dir=lizmap/ --prefer-dist --no-ansi --no-interaction --ignore-platform-reqs --no-dev --no-suggest --no-progress
+	cd assets/ && npm install
+	cd assets/ && npm run build
 
 tests: debug build
 	@echo "No tests yet. All is ok."
