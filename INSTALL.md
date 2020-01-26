@@ -1,7 +1,6 @@
 Installing Lizmap
 =================
 
-
 Requirements
 ------------
 
