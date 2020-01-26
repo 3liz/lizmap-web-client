@@ -8,6 +8,7 @@ cache:
   key: "$CI_COMMIT_REF_SLUG"
   paths:
     - lizmap/vendor/
+    - assets/node_modules/
 
 build:
   stage: build
