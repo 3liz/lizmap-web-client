@@ -246,8 +246,11 @@ class lizmapWFSRequest extends lizmapOGCRequest
         // deduplicate columns to avoid SQL errors
         $sfields = array_values(array_unique($sfields));
 
-        $this->selectFields = $sfields;
-        $sql .= '"'.implode('", "', $sfields).'"';
+        $this->selectFields = array_map(function($item) use($cnx) {
+            return $cnx->encloseName($item);
+        }, $sfields);
+
+        $sql .= implode(', ', $this->selectFields);
 
         // Get spatial field
         $geometryname = '';
@@ -257,11 +260,11 @@ class lizmapWFSRequest extends lizmapOGCRequest
         $geocol = $this->datasource->geocol;
         if (!empty($geocol) && $geometryname !== 'none') {
             $geocolalias = 'geosource';
-            $sql .= ', "'.$geocol.'" AS "'.$geocolalias.'"';
+            $sql .= ', '.$cnx->encloseName($geocol).' AS '.$cnx->encloseName($geocolalias);
         }
 
         // FROM
-        $sql .= ' FROM '.$this->datasource->table;
+        $sql .= ' FROM '.$cnx->encloseName($this->datasource->table);
 
         // WHERE
         $sql .= ' WHERE True';
@@ -313,7 +316,7 @@ class lizmapWFSRequest extends lizmapOGCRequest
             if (strpos($validFilter, '$id') !== false) {
                 $key = $this->datasource->key;
                 if (count(explode(',', $key)) == 1) {
-                    $sql .= ' AND '.str_replace('$id ', '"'.$key.'" ', $validFilter);
+                    $sql .= ' AND '.str_replace('$id ', $cnx->encloseName($key).' ', $validFilter);
                 } else {
                     return $this->getfeatureQgis();
                 }
@@ -339,7 +342,7 @@ class lizmapWFSRequest extends lizmapOGCRequest
                     $i = 0;
                     $v = '';
                     foreach ($keys as $key) {
-                        $fidSql .= $v.'"'.$key.'" = ';
+                        $fidSql .= $v.$cnx->encloseName($key).' = ';
                         if (ctype_digit($pks[$i])) {
                             $fidSql .= $pks[$i];
                         } else {
@@ -352,7 +355,7 @@ class lizmapWFSRequest extends lizmapOGCRequest
                     $fidsSql[] = $fidSql;
                 }
             }
-            jLog::log(implode(' OR ', $fidsSql), 'error');
+            //jLog::log(implode(' OR ', $fidsSql), 'error');
             $sql.= ' AND '.implode(' OR ', $fidsSql);
         }
 
@@ -382,7 +385,7 @@ class lizmapWFSRequest extends lizmapOGCRequest
                 $sql .= ' ORDER BY ';
                 $sep = '';
                 foreach ($sort_items as $f => $o) {
-                    $sql .= $sep.'"'.$f.'" '.$o;
+                    $sql .= $sep.$cnx->encloseName($f).' '.$o;
                     $sep = ', ';
                 }
             }
@@ -468,6 +471,11 @@ class lizmapWFSRequest extends lizmapOGCRequest
         return str_replace('$geometry', '"'.$this->datasource->geocol.'"', $filter);
     }
 
+    /**
+     * @param string $sql
+     * @param jDbConnection $cnx
+     * @return string
+     */
     private function setGeojsonSql($sql, $cnx)
     {
         $sql = '
@@ -493,13 +501,13 @@ class lizmapWFSRequest extends lizmapOGCRequest
         // this means some Lizmap features won't work with multiple keys or string ids
         // for example when using a filter clause in this query, row_number() will be false
         $sql .= " Concat(
-            '".$cnx->quote($this->params['typename'])."',
+            ".$cnx->quote($this->params['typename']).",
             '.',
             ";
         $key = $this->datasource->key;
 
         if (count(explode(',', $key)) == 1) {
-            $sql .= '"'.$key.'"';
+            $sql .= $cnx->encloseName($key);
         } else {
             $sql .= ' row_number() OVER() ';
         }
@@ -553,7 +561,7 @@ class lizmapWFSRequest extends lizmapOGCRequest
                             (
                                 SELECT ';
 
-        $sql .= '"'.implode('", "', $this->selectFields).'"';
+        $sql .= implode(', ', $this->selectFields);
         $sql .= '
                             ) As l
                         )

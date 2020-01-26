@@ -417,7 +417,7 @@ class qgisVectorLayer extends qgisMapLayer
             if ($dataFields[$key]->unifiedType != 'integer') {
                 $val = $cnx->quote($val);
             }
-            $sqlw[] = '"'.$key.'"'.' = '.$val;
+            $sqlw[] = $cnx->encloseName($key).' = '.$val;
         }
         $sql .= ' WHERE ';
         $sql .= implode(' AND ', $sqlw);
@@ -490,14 +490,14 @@ class qgisVectorLayer extends qgisMapLayer
             // For insert, only for not NULL values to allow serial and default values to work
             if ($value !== 'NULL') {
                 $insert[] = $value;
-                $refs[] = '"'.$ref.'"';
+                $refs[] = $cnx->encloseName($ref);
                 // For log
                 if (in_array($ref, $primaryKeys)) {
                     $val = $value;
                     if ($dataFields[$ref]->unifiedType != 'integer') {
                         $val = $cnx->quote($val);
                     }
-                    $dataLogInfo[] = '"'.$ref.'"'.' = '.$val;
+                    $dataLogInfo[] = $cnx->encloseName($ref).' = '.$val;
                 }
             }
         }
@@ -511,7 +511,7 @@ class qgisVectorLayer extends qgisMapLayer
         // Get select clause for primary keys (used when inserting data in postgresql)
         $returnKeys = array();
         foreach ($primaryKeys as $key) {
-            $returnKeys[] = '"'.$key.'"';
+            $returnKeys[] = $cnx->encloseName($key);
         }
         $returnKeysString = implode(', ', $returnKeys);
         // For spatialite, we will run a complentary query to retrieve the pkeys
@@ -599,7 +599,7 @@ class qgisVectorLayer extends qgisMapLayer
                 continue;
             }
             // For update, keep fields with NULL to allow deletion of values
-            $update[] = '"'.$ref.'"='.$value;
+            $update[] = $cnx->encloseName($ref).'='.$value;
         }
 
         // SQL for updating on line in the edition table
@@ -617,7 +617,7 @@ class qgisVectorLayer extends qgisMapLayer
                 && $dataFields[$key]->unifiedType !== 'decimal') {
                 $val = $cnx->quote($val);
             }
-            $sqlw[] = '"'.$key.'"'.' = '.$val;
+            $sqlw[] = $cnx->encloseName($key).' = '.$val;
         }
         // Store WHere clause to retrieve primary keys in spatialite
         $uwhere = '';
@@ -633,7 +633,7 @@ class qgisVectorLayer extends qgisMapLayer
         // Get select clause for primary keys (used when inserting data in postgresql)
         $returnKeys = array();
         foreach ($primaryKeys as $key) {
-            $returnKeys[] = '"'.$key.'"';
+            $returnKeys[] = $cnx->encloseName($key);
         }
         $returnKeysString = implode(', ', $returnKeys);
         // For spatialite, we will run a complementary query to retrieve the pkeys
@@ -728,7 +728,7 @@ class qgisVectorLayer extends qgisMapLayer
                 && $dataFields[$key]->unifiedType !== 'decimal') {
                 $val = $cnx->quote($val);
             }
-            $sqlw[] = '"'.$key.'"'.' = '.$val;
+            $sqlw[] = $cnx->encloseName($key).' = '.$val;
             $pkLogInfo[] = $val;
         }
         $sql .= ' WHERE ';
@@ -785,8 +785,8 @@ class qgisVectorLayer extends qgisMapLayer
 
             // Build SQL
             $sql = ' UPDATE '.$dtParams->table;
-            $sql .= ' SET "'.$fkey.'" = '.$one;
-            $sql .= ' WHERE "'.$pkey.'" = '.$two;
+            $sql .= ' SET '.$cnx->encloseName($fkey).' = '.$one;
+            $sql .= ' WHERE '.$cnx->encloseName($pkey).' = '.$two;
             $sql .= ';';
 
             try {
@@ -823,16 +823,16 @@ class qgisVectorLayer extends qgisMapLayer
 
                 // Build SQL
                 $sql = ' INSERT INTO '.$dtParams->table.' (';
-                $sql .= ' "'.$fkey.'" , ';
-                $sql .= ' "'.$pkey.'" )';
+                $sql .= ' '.$cnx->encloseName($fkey).' , ';
+                $sql .= ' '.$cnx->encloseName($pkey).' )';
                 $sql .= ' SELECT '.$one.', '.$two;
                 $sql .= ' WHERE NOT EXISTS';
                 $sql .= ' ( SELECT ';
-                $sql .= ' "'.$fkey.'" , ';
-                $sql .= ' "'.$pkey.'" ';
+                $sql .= ' '.$cnx->encloseName($fkey).' , ';
+                $sql .= ' '.$cnx->encloseName($pkey).' ';
                 $sql .= ' FROM '.$dtParams->table;
-                $sql .= ' WHERE "'.$fkey.'" = '.$one;
-                $sql .= ' AND "'.$pkey.'" = '.$two.')';
+                $sql .= ' WHERE '.$cnx->encloseName($fkey).' = '.$one;
+                $sql .= ' AND '.$cnx->encloseName($pkey).' = '.$two.')';
                 $sql .= ';';
 
                 try {
@@ -863,8 +863,8 @@ class qgisVectorLayer extends qgisMapLayer
         }
 
         $sql = ' UPDATE '.$dtParams->table;
-        $sql .= ' SET "'.$fkey.'" = NULL';
-        $sql .= ' WHERE "'.$pkey.'" = '.$val;
+        $sql .= ' SET '.$cnx->encloseName($fkey).' = NULL';
+        $sql .= ' WHERE '.$cnx->encloseName($pkey).' = '.$val;
         $sql .= ';';
 
         try {
