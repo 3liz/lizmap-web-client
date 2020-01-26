@@ -20,3 +20,7 @@ vagrant/.vagrant
 .php_cs
 .php_cs.cache
 build/
+.drafts
+docker/factory.manifest
+docker/.run
+docker/*.zip
