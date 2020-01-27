@@ -38,7 +38,14 @@ This allows the user to request coffea:
 * long or regular
 ```
 
+## Building JavaScript
+
+Since Lizmap Web Client 3.4, some JavaScript has to be built from `assets/` directory.
+Follow those [instructions](assets/README.md).
+
 ## Coding style
+
+### PHP
 
 Use [php-cs-fixer](https://cs.symfony.com/) to follow our coding style in PHP sources.
 Launch it at the root of the repository.
@@ -48,6 +55,10 @@ php-cs-fixer fix
 ```
 
 Configuration of php-cs-fixer has been setup into .php-cs.dist.
+
+### JavaScript
+
+Please run `npm run pretest` in `assets/` directory and fix errors before any commit.
 
 ## Issues
 
