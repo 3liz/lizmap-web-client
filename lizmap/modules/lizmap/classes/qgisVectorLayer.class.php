@@ -277,11 +277,12 @@ class qgisVectorLayer extends qgisMapLayer
                 'extensions' => $spatialiteExt,
             );
         } elseif ($this->provider == 'postgres') {
+            // no persistent connexions, it may reach max connections to pgsql if
+            // they are not closed correctly, and then reopened
             if (!empty($dtParams->service)) {
                 $jdbParams = array(
                     'driver' => 'pgsql',
                     'service' => $dtParams->service,
-                    'persistent' => true,
                 );
             } else {
                 $jdbParams = array(
@@ -291,7 +292,6 @@ class qgisVectorLayer extends qgisMapLayer
                     'database' => $dtParams->dbname,
                     'user' => $dtParams->user,
                     'password' => $dtParams->password,
-                    'persistent' => true,
                 );
             }
             if (!empty($dtParams->schema)) {
