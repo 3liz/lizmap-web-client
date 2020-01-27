@@ -43,6 +43,14 @@ This allows the user to request coffea:
 Since Lizmap Web Client 3.4, some JavaScript has to be built from `assets/` directory.
 Follow those [instructions](assets/README.md).
 
+## Installing PHP dependencies
+
+You have to install [Composer](http://getcomposer.org), and then run `composer install`
+into the `lizmap/` directory.
+
+It will download some packages and install them into `lizmap/vendor/`. 
+Don't commit this directory into the git repository!
+
 ## Coding style
 
 ### PHP
