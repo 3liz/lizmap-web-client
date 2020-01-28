@@ -422,7 +422,7 @@ class lizmapProject extends qgisProject
         }
 
         $rootRepositories = $services->getRootRepositories();
-        if (strpos($mapParam, $rootRepositories) === 0) {
+        if ($rootRepositories != '' && strpos($mapParam, $rootRepositories) === 0) {
             $mapParam = str_replace($rootRepositories, '', $mapParam);
             $mapParam = ltrim($mapParam, '/');
         }
