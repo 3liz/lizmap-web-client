@@ -2,7 +2,9 @@ stages:
 - build
 - tests
 - package
+- docker-image
 - deploy
+- release
 
 cache:
   key: "$CI_COMMIT_REF_SLUG"
@@ -32,8 +34,7 @@ tests:
 package:
   stage: package
   script:
-    - make package
-    - make saas_package
+    - make clean package saas_package
   environment:
     name: snap
   dependencies:
@@ -45,11 +46,48 @@ package:
       - "build/MANIFEST"
   only:
     - /^release_.*$/
+    - master
     - tags
   tags:
     - fabric
 
-deploy_unstable:
+docker-image-unstable:
+  stage: docker-image
+  script:
+    - make docker-build-ci docker-deliver docker-clean
+    #- make docker-hub
+  environment:
+    name: snap
+  artifacts:
+    paths:
+      - docker/factory.manifest
+  dependencies:
+    - package
+  only:
+    - /^release_.*$/
+    - master
+  except:
+    - tags
+  tags:
+    - infrav3
+
+docker-image-release:
+  stage: docker-image
+  script:
+    - make docker-build-ci docker-deliver docker-clean-all DO_RELEASE=y
+  environment:
+    name: snap
+  artifacts:
+    paths:
+      - docker/factory.manifest
+  dependencies:
+    - package
+  only:
+    - tags
+  tags:
+    - infrav3
+
+deploy-package-unstable:
   stage: deploy
   script:
     - make deploy_download
@@ -60,16 +98,33 @@ deploy_unstable:
     - package
   only:
     - /^release_.*$/
+    - master
   except:
     - tags
   tags:
     - fabric
 
-deploy_stable:
+deploy-docker-unstable:
   stage: deploy
   script:
+    - $HOME/bin/lzmservicectl update -C MUTU lizmap  --annotate="Updated image ($CI_COMMIT_SHORT_SHA)"
+  environment:
+    name: snap
+  dependencies:
+    - docker-image-unstable
+  only:
+    - /^release_.*$/
+    - master
+  except:
+    - tags
+  tags:
+    - infrav3
+
+deploy-release:
+  stage: release
+  script:
     - make deploy_download_stable
-    - make saas_release
+    - make saas_release DO_RELEASE=y
     - make trigger_ci
   environment:
     name: production
@@ -80,3 +135,20 @@ deploy_stable:
   only:
     - tags
   when: manual
+
+docker-release:
+  stage: release
+  script:
+    - make docker-release
+  environment:
+    name: production
+  dependencies:
+    - docker-image-release
+  when: manual
+  only:
+    - tags
+  tags:
+    - infrav3
+
+
+
