@@ -264,7 +264,7 @@ class lizmapWFSRequest extends lizmapOGCRequest
         }
 
         // FROM
-        $sql .= ' FROM '.$cnx->encloseName($this->datasource->table);
+        $sql .= ' FROM '.$this->datasource->table;
 
         // WHERE
         $sql .= ' WHERE True';
