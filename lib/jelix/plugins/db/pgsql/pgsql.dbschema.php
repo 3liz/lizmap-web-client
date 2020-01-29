@@ -10,7 +10,7 @@
 */
 
 /**
- * 
+ *
  * @package    jelix
  * @subpackage db_driver
  */
@@ -26,10 +26,12 @@ class pgsqlDbTable extends jDbTable {
     protected function _loadColumns(){
         $conn = $this->schema->getConn();
         $tools = $conn->tools();
+        $version = $conn->getServerMajorVersion();
+        $adColName = ($version < 12 ? 'adsrc' : 'adbin');
 
         $sql = "SELECT a.attname, a.attnotnull, a.atthasdef, a.attlen, a.atttypmod,
                 FORMAT_TYPE(a.atttypid, a.atttypmod) AS type,
-                d.adsrc, co.contype AS primary, co.conname
+                d.$adColName, co.contype AS primary, co.conname
             FROM pg_attribute AS a
             JOIN pg_class AS c ON a.attrelid = c.oid
             LEFT OUTER JOIN pg_constraint AS co
@@ -43,7 +45,7 @@ class pgsqlDbTable extends jDbTable {
             $name = $line->attname;
             list($type, $length, $precision, $scale) = $tools->parseSQLType($line->type);
             $notNull = ($line->attnotnull == 't');
-            $default = $line->adsrc;
+            $default = $line->$adColName;
             $hasDefault = ($line->atthasdef == 't');
             if ($type == 'boolean' && $hasDefault) {
                 $default = (strtolower($default) === 'true');
@@ -333,7 +335,7 @@ class pgsqlDbTable extends jDbTable {
 }
 
 /**
- * 
+ *
  * @package    jelix
  * @subpackage db_driver
  */

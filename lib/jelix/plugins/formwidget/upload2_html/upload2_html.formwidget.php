@@ -272,10 +272,10 @@ class upload2_htmlFormWidget extends \jelix\forms\HtmlWidget\WidgetBase
             }
             $style = '';
             if ($this->imgMaxHeight) {
-                $style .= 'max-height:'.$this->imgMaxHeight.'px';
+                $style .= 'max-height:'.$this->imgMaxHeight.'px;';
             }
             if ($this->imgMaxWidth) {
-                $style .= 'max-width:'.$this->imgMaxWidth.'px';
+                $style .= 'max-width:'.$this->imgMaxWidth.'px;';
             }
             echo '<a href="'.$url.'"><img src="'.$url.'" alt="'.$value.($style?'" style="'.$style.'"':'"').' /></a>';
         }

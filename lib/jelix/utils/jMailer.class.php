@@ -9,7 +9,7 @@
  * @subpackage  utils
  * @author      Laurent Jouanneau
  * @contributor Kévin Lepeltier, GeekBay, Julien Issler
- * @copyright   2006-2018 Laurent Jouanneau
+ * @copyright   2006-2020 Laurent Jouanneau
  * @copyright   2008 Kévin Lepeltier, 2009 Geekbay
  * @copyright   2010-2015 Julien Issler
  * @link        http://jelix.org
@@ -64,10 +64,16 @@ class jMailer extends PHPMailer {
     protected $html2textConverter = false;
 
     /**
-     * Debug mode. If activated, debugReceivers should be filled
+     * Debug mode.
      * @var bool
      */
     protected $debugModeEnabled = false;
+
+    /**
+     * Debug mode for receivers. If activated, debugReceivers should be filled
+     * @var bool
+     */
+    protected $debugReceiversEnabled = false;
 
     /**
      * @var string  replacement for the From header
@@ -116,8 +122,13 @@ class jMailer extends PHPMailer {
         }
         $this->Hostname = $config->mailer['hostname'];
         $this->Sendmail = $config->mailer['sendmailPath'];
+        $this->debugModeEnabled = $config->mailer['debugModeEnabled'];
+        $this->Debugoutput = array($this, 'debugOutputCallback');
 
         if (strtolower($this->Mailer) == 'smtp') {
+            if ($this->debugModeEnabled) {
+                $this->SMTPDebug = $config->mailer['debugSmtpLevel'];
+            }
             if (isset($config->mailer['smtpProfile']) &&
                 $config->mailer['smtpProfile'] != ''
             ) {
@@ -162,10 +173,11 @@ class jMailer extends PHPMailer {
 
         $this->copyToFiles = $config->mailer['copyToFiles'];
 
-        $this->debugModeEnabled = $config->mailer['debugModeEnabled'];
+
         if ($this->debugModeEnabled) {
             $this->debugReceivers = $config->mailer['debugReceivers'];
             if ($this->debugReceivers) {
+                $this->debugReceiversEnabled = true;
                 if (!is_array($this->debugReceivers)) {
                     $this->debugReceivers = array($this->debugReceivers);
                 }
@@ -186,9 +198,6 @@ class jMailer extends PHPMailer {
                 if (!is_array($this->debugReceiversWhiteList)) {
                     $this->debugReceiversWhiteList = array($this->debugReceiversWhiteList);
                 }
-            }
-            else {
-                $this->debugModeEnabled = false;
             }
         }
 
@@ -310,13 +319,13 @@ class jMailer extends PHPMailer {
                 $this->Body = $mailtpl->fetch( $this->bodyTpl, 'text');
         }
 
-        if ($this->debugModeEnabled) {
+        if ($this->debugReceiversEnabled) {
             $this->debugOverrideReceivers();
         }
 
         $result = parent::Send();
 
-        if ($this->debugModeEnabled) {
+        if ($this->debugReceiversEnabled) {
             foreach($this->debugOriginalValues as $f => $val) {
                 $this->$f = $val;
             }
@@ -511,5 +520,15 @@ class jMailer extends PHPMailer {
             ENT_QUOTES,
             $this->CharSet
         );
+    }
+
+    protected function setError($msg)
+    {
+        parent::setError($msg);
+        \jLog::log("jMailer error:\n".$this->ErrorInfo, 'error');
+    }
+
+    public function debugOutputCallback($msg, $smtpDebugLevel) {
+        \jLog::log("jMailer debug:\n".$msg);
     }
 }
