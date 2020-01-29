@@ -252,10 +252,11 @@ class pgsqlDbTools extends jDbTools {
 
         // get field informations
         $version = $this->_conn->getServerMajorVersion();
-        $adColName = ($version < 12 ? 'adsrc' : 'adbin');
+        // pg_get_expr on adbin, not compatible with pgsql < 9
+        $adColName = ($version < 12 ? 'd.adsrc' : 'pg_get_expr(d.adbin,d.adrelid) AS adsrc');
 
         $sql_get_fields = "SELECT t.typname, a.attname, a.attnotnull, a.attnum, a.attlen, a.atttypmod,
-        a.atthasdef, d.$adColName
+        a.atthasdef, $adColName
         FROM pg_type t, pg_attribute a LEFT JOIN pg_attrdef d ON (d.adrelid=a.attrelid AND d.adnum=a.attnum)
         WHERE
           a.attnum > 0 AND a.attrelid = ".$table->oid." AND a.atttypid = t.oid
@@ -269,7 +270,7 @@ class pgsqlDbTools extends jDbTools {
             $field->type = preg_replace('/(\D*)\d*/','\\1',$line->typname);
             $field->notNull = ($line->attnotnull=='t');
             $field->hasDefault = ($line->atthasdef == 't');
-            $field->default = $line->$adColName;
+            $field->default = $line->adsrc;
 
             $typeinfo = $this->getTypeInfo($field->type);
             $field->unifiedType = $typeinfo[1];
@@ -278,7 +279,7 @@ class pgsqlDbTools extends jDbTools {
             $field->maxLength = $typeinfo[5];
             $field->minLength = $typeinfo[4];
 
-            if(preg_match('/^nextval\(.*\)$/', $line->$adColName) || $typeinfo[6]){
+            if(preg_match('/^nextval\(.*\)$/', $line->adsrc) || $typeinfo[6]){
                 $field->autoIncrement=true;
                 $field->default = '';
             }
