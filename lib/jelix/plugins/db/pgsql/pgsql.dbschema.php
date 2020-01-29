@@ -27,11 +27,12 @@ class pgsqlDbTable extends jDbTable {
         $conn = $this->schema->getConn();
         $tools = $conn->tools();
         $version = $conn->getServerMajorVersion();
-        $adColName = ($version < 12 ? 'adsrc' : 'adbin');
+        // pg_get_expr on adbin, not compatible with pgsql < 9
+        $adColName = ($version < 12 ? 'd.adsrc' : 'pg_get_expr(d.adbin,d.adrelid) AS adsrc');
 
         $sql = "SELECT a.attname, a.attnotnull, a.atthasdef, a.attlen, a.atttypmod,
                 FORMAT_TYPE(a.atttypid, a.atttypmod) AS type,
-                d.$adColName, co.contype AS primary, co.conname
+                $adColName, co.contype AS primary, co.conname
             FROM pg_attribute AS a
             JOIN pg_class AS c ON a.attrelid = c.oid
             LEFT OUTER JOIN pg_constraint AS co
@@ -45,7 +46,7 @@ class pgsqlDbTable extends jDbTable {
             $name = $line->attname;
             list($type, $length, $precision, $scale) = $tools->parseSQLType($line->type);
             $notNull = ($line->attnotnull == 't');
-            $default = $line->$adColName;
+            $default = $line->adsrc;
             $hasDefault = ($line->atthasdef == 't');
             if ($type == 'boolean' && $hasDefault) {
                 $default = (strtolower($default) === 'true');
