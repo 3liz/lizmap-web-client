@@ -18,7 +18,7 @@
 class pgsqlDbTools extends jDbTools {
 
     public $trueValue = 'TRUE';
-    
+
     public $falseValue = 'FALSE';
 
     protected $typesInfo = array(
@@ -46,7 +46,7 @@ class pgsqlDbTools extends jDbTools {
       'number'          =>array('double',           'decimal',  null,       null,       null,     null), //8bytes
       'binary_float'    =>array('real',             'float',    null,       null,       null,     null), //4bytes
       'binary_double'   =>array('double',           'decimal',  null,       null,       null,     null), //8bytes
-      
+
       'numeric'         =>array('numeric',          'numeric',  null,       null,       null,     null),
       'decimal'         =>array('decimal',          'decimal',  null,       null,       null,     null),
       'dec'             =>array('decimal',          'decimal',  null,       null,       null,     null),
@@ -88,7 +88,7 @@ class pgsqlDbTools extends jDbTools {
       'mediumblob'      =>array('bytea',   'blob',       null,       null,       0,     16777215),
       'longblob'        =>array('bytea',   'blob',       null,       null,       0,     0),
       'bfile'           =>array('bytea',   'blob',       null,       null,       0,     0),
-      
+
       'bytea'           =>array('bytea',  'varbinary',   null,       null,       0,     0),
       'binary'          =>array('bytea',  'binary',      null,       null,       0,     255),
       'varbinary'       =>array('bytea',  'varbinary',   null,       null,       0,     255),
@@ -251,8 +251,11 @@ class pgsqlDbTools extends jDbTools {
         }
 
         // get field informations
+        $version = $this->_conn->getServerMajorVersion();
+        $adColName = ($version < 12 ? 'adsrc' : 'adbin');
+
         $sql_get_fields = "SELECT t.typname, a.attname, a.attnotnull, a.attnum, a.attlen, a.atttypmod,
-        a.atthasdef, d.adsrc
+        a.atthasdef, d.$adColName
         FROM pg_type t, pg_attribute a LEFT JOIN pg_attrdef d ON (d.adrelid=a.attrelid AND d.adnum=a.attnum)
         WHERE
           a.attnum > 0 AND a.attrelid = ".$table->oid." AND a.atttypid = t.oid
@@ -266,7 +269,7 @@ class pgsqlDbTools extends jDbTools {
             $field->type = preg_replace('/(\D*)\d*/','\\1',$line->typname);
             $field->notNull = ($line->attnotnull=='t');
             $field->hasDefault = ($line->atthasdef == 't');
-            $field->default = $line->adsrc;
+            $field->default = $line->$adColName;
 
             $typeinfo = $this->getTypeInfo($field->type);
             $field->unifiedType = $typeinfo[1];
@@ -275,7 +278,7 @@ class pgsqlDbTools extends jDbTools {
             $field->maxLength = $typeinfo[5];
             $field->minLength = $typeinfo[4];
 
-            if(preg_match('/^nextval\(.*\)$/', $line->adsrc) || $typeinfo[6]){
+            if(preg_match('/^nextval\(.*\)$/', $line->$adColName) || $typeinfo[6]){
                 $field->autoIncrement=true;
                 $field->default = '';
             }
