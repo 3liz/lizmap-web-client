@@ -919,9 +919,7 @@ var lizLayerFilterTool = function() {
 
     // Removes the getFeatureInfo geometry
     function removeFeatureInfoGeometry(){
-        var layer = lizMap.map.getLayersByName('locatelayer');
-        if ( layer.length == 1 )
-            layer[0].destroyFeatures();
+        lizMap.clearDrawLayer('locatelayer');
     }
 
     // Adapt the size of the dock
