@@ -1182,8 +1182,11 @@ OpenLayers.Geometry.pointOnSegment = function(point, segment) {
 
         // Initialize edition data
         var getLayer = lizMap.getLayerConfigById( editedFeature.layerId, config.editionLayers, 'layerId' );
-        if( !getLayer )
+        if (!getLayer) {
+            lizMap.editionPending = false;
             return false;
+        }
+
         editedFeature.config = getLayer[1];
 
         editionLayer.currentFeature = editedFeature;
