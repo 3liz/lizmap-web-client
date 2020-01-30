@@ -552,10 +552,8 @@ var lizAtlas = function () {
                 }
 
                 // Deactivate highlight
-                var layer = lizMap.map.getLayersByName('locatelayer');
-                if (lizAtlasConfig.drawFeatureGeom && layer.length > 0) {
-                    layer = layer[0];
-                    layer.destroyFeatures();
+                if (lizAtlasConfig.drawFeatureGeom) {
+                    lizMap.clearDrawLayer('locatelayer');
                 }
 
                 // Deactivate filter
