@@ -1527,11 +1527,7 @@ var lizMap = function() {
    */
   function zoomToLocateFeature(aName) {
     // clean locate layer
-    var layer = map.getLayersByName('locatelayer');
-    if ( layer.length == 0 )
-      return;
-    layer = layer[0];
-    layer.destroyFeatures();
+    clearDrawLayer('locatelayer');
 
     // get locate by layer val
     var locate = config.locateByLayer[aName];
@@ -1558,6 +1554,7 @@ var lizMap = function() {
         feat.geometry.transform(proj, map.getProjection());
         // Show geometry if asked
         if (locate.displayGeom == 'True') {
+            var layer = map.getLayersByName('locatelayer');
             var getFeatureUrlData = getVectorLayerWfsUrl( aName, null, null, null );
             getFeatureUrlData['options']['PROPERTYNAME'] = ['geometry',locate.fieldName].join(',');
             getFeatureUrlData['options']['FEATUREID'] = val;
@@ -2377,9 +2374,7 @@ var lizMap = function() {
             getLocateFeature(lname);
           }
           $('.btn-locate-clear').click(function() {
-            console.log("test locate clear");
-            var layer = map.getLayersByName('locatelayer')[0];
-            layer.destroyFeatures();
+            clearDrawLayer('locatelayer');
             $('#locate select').val('-1');
             $('div.locate-layer span > input').val('');
 
@@ -3038,11 +3033,8 @@ var lizMap = function() {
 
   function addGeometryFeatureInfo( popup, containerId ) {
       // clean locate layer
-      var layer = map.getLayersByName('locatelayer');
-      if ( layer.length == 0 )
-        return;
-      layer = layer[0];
-      layer.destroyFeatures();
+      clearDrawLayer('locatelayer');
+
       // build selector
       var selector = 'div.lizmapPopupContent > div.lizmapPopupDiv > input.lizmap-popup-layer-feature-geometry';
       if ( containerId )
@@ -3064,6 +3056,8 @@ var lizMap = function() {
         var maxy = self.parent().find('input.lizmap-popup-layer-feature-bbox-maxy').val();
         geometries.push( { fid: fid, geom: val, crs: crs, bbox:[minx,miny,maxx,maxy] } );
       });
+
+      var layer = map.getLayersByName('locatelayer');
       // load proj and build features from popup
       var projLoaded = [];
       for ( var i=0, len=geometries.length; i<len; i++ ) {
@@ -3388,11 +3382,7 @@ var lizMap = function() {
           $('#button-popupcontent').click(function(){
               if($(this).parent().hasClass('active')) {
                   // clean locate layer
-                  var locatelayer = map.getLayersByName('locatelayer');
-                  if ( locatelayer.length == 0 )
-                      return;
-                  locatelayer = locatelayer[0];
-                  locatelayer.destroyFeatures();
+                  clearDrawLayer('locatelayer');
                   // remove information
                   $('#popupcontent div.menu-content').html('<div class="lizmapPopupContent"><h4>'+lizDict['popup.msg.start']+'</h4></div>');
               }
@@ -3483,11 +3473,7 @@ var lizMap = function() {
                             }
 
                             // clean locate layer
-                            var locatelayer = map.getLayersByName('locatelayer');
-                            if ( locatelayer.length == 0 )
-                                return;
-                            locatelayer = locatelayer[0];
-                            locatelayer.destroyFeatures();
+                            clearDrawLayer('locatelayer');
                             return false;
                           }
                       );
