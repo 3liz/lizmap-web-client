@@ -1544,6 +1544,7 @@ OpenLayers.Geometry.pointOnSegment = function(point, segment) {
                 launchEditionOfParent();
             } else {
                 editionLayer.clear();
+                lizMap.clearDrawLayer('locatelayer');
                 // trigger edition form closed
                 lizMap.events.triggerEvent(
                     'lizmapeditionformclosed'
