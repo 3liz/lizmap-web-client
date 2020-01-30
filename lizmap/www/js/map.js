@@ -1514,6 +1514,13 @@ var lizMap = function() {
     $('#locate-layer-'+cleanName(aName)).html(options);
   }
 
+    function clearDrawLayer(layer_name) {
+      var layer = map.getLayersByName(layer_name);
+      if (layer.length == 0) {
+          return;
+      }
+      layer[0].destroyFeatures();
+    }
 
   /**
    * Zoom to locate feature
@@ -5964,6 +5971,12 @@ OpenLayers.Control.HighlightFeature = OpenLayers.Class(OpenLayers.Control, {
       return updateContentSize();
     },
 
+    /**
+     * Method: clearDrawLayer
+     */
+    clearDrawLayer: function(layerName) {
+      return clearDrawLayer(layerName);
+    },
 
     /**
      * Method: getLayerFeature
