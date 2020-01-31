@@ -5516,12 +5516,26 @@ OpenLayers.Control.HighlightFeature = OpenLayers.Class(OpenLayers.Control, {
       }
 
       // Test if primary key is set in the atlas tool
+      // Atlas config with one layer (legacy)
       if( !pkey && 'atlasLayer' in lizMap.config.options && 'atlasPrimaryKey' in lizMap.config.options ){
         var layerConfig = lizMap.config.layers[qgisName];
         if( layerConfig.id == lizMap.config.options['atlasLayer'] && lizMap.config.options['atlasPrimaryKey'] != '' ){
           pkey = lizMap.config.options['atlasPrimaryKey'];
         }
       }
+
+      // Atlas config with several layers (LWC >= 3.4)
+      if (!pkey && 'atlas' in lizMap.config && 'layers' in lizMap.config.atlas && Array.isArray(lizMap.config.atlas['layers']) && lizMap.config.atlas['layers'].length > 0) {
+        const layerConfig = lizMap.config.layers[qgisName];
+        for (let index = 0; index < lizMap.config.atlas.layers.length; index++) {
+          const layer = lizMap.config.atlas.layers[index];
+          if (layerConfig.id === layer.layer){
+            pkey = layer.primaryKey;
+            break;
+          }
+        }
+      }
+
       if( !pkey )
           return false;
 

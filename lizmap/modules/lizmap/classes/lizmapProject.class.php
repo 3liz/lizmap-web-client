@@ -669,7 +669,7 @@ class lizmapProject extends qgisProject
     {
         if ((property_exists($this->cfg->options, 'atlasEnabled') and $this->cfg->options->atlasEnabled == 'True') // Legacy LWC < 3.4 (only one layer)
             or
-            (property_exists($this->cfg, 'atlas') and is_array($this->cfg->atlas) and count($this->cfg->atlas) > 0)) { // Multiple atlas
+            (property_exists($this->cfg, 'atlas') and property_exists($this->cfg->atlas, 'layers') and is_array($this->cfg->atlas->layers) and count($this->cfg->atlas->layers) > 0)) { // Multiple atlas
             return true;
         }
 
