@@ -31,10 +31,10 @@ var lizAtlas = function () {
                 }
             }
             // Multiple atlas layer
-            else if ('atlas' in lizMap.config && Array.isArray(lizMap.config['atlas']) && lizMap.config['atlas'].length > 0){
+            else if ('atlas' in lizMap.config && 'layers' in lizMap.config.atlas && Array.isArray(lizMap.config.atlas['layers']) && lizMap.config.atlas['layers'].length > 0){
                 var atlasLayers = {};
-                for (var index = 0; index < lizMap.config.atlas.length; index++) {
-                    var layerConfig = lizMap.config.atlas[index];
+                for (var index = 0; index < lizMap.config.atlas.layers.length; index++) {
+                    var layerConfig = lizMap.config.atlas.layers[index];
 
                     atlasLayers[layerConfig.layer] = {
                         atlasDuration: layerConfig.duration,
