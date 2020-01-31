@@ -36,12 +36,18 @@ var lizEdition = function() {
         this.drawControl = null;
         /** @var {string} Which submit button has been clicked */
         this.submitActor = 'submit';
-        /** @var {OpenLayers.Layer.Vector} OL layer for edition */
+        /** @var {OpenLayers.Layer.Vector} OL layer editLayer for edition */
         this.ol = null;
         /** @var {FeatureEditionData}  the current data about the edited feature */
         this.currentFeature = null;
-        /** @var {OpenLayers.Layer.Vector}  layer to stores temporary geometry of new features */
+        /** @var {OpenLayers.Layer.Vector}  layer editSplitLayer to stores temporary geometry of new features */
         this.splitOl = null;
+
+        /** @var {OpenLayers.Rule[]} custom rules for the editLayer */
+        this.olStyleCustomRules = [];
+        /** @var {OpenLayers.Rule[]} custom rules for the editSplitLayer */
+        this.splitOlStyleCustomRules = [];
+
     }
     EditionLayerData.prototype = {
         get config () {
@@ -119,6 +125,10 @@ var lizEdition = function() {
                     })
                 ]);
 
+                if (this.splitOlStyleCustomRules.length) {
+                    style.addRules(this.splitOlStyleCustomRules);
+                }
+
                 styleMap = new OpenLayers.StyleMap({"default": style});
                 this.splitOl = new OpenLayers.Layer.Vector('editSplitLayer', {styleMap: styleMap});
                 map.addLayer(this.splitOl);
@@ -141,6 +151,11 @@ var lizEdition = function() {
                             }
                         }})
                 ]);
+
+                if (this.olStyleCustomRules.length) {
+                    style.addRules(this.olStyleCustomRules);
+                }
+
                 styleMap = new OpenLayers.StyleMap({"default": style});
                 this.ol = new OpenLayers.Layer.Vector('editLayer',{styleMap:styleMap});
                 map.addLayer(this.ol);
@@ -1842,6 +1857,20 @@ OpenLayers.Geometry.pointOnSegment = function(point, segment) {
             map = lizMap.map;
             controls = lizMap.controls;
 
+            var editionOptions = {
+                addStyleRulesToSplitLayers : function(rules) {
+                    editionLayer.splitOlStyleCustomRules = editionLayer.splitOlStyleCustomRules.concat(rules);
+                },
+                addStyleRulesToEditLayers : function(rules) {
+                    editionLayer.olStyleCustomRules = editionLayer.olStyleCustomRules.concat(rules);
+                },
+            };
+            lizMap.events.triggerEvent(
+                'lizmapeditionfeatureinit',
+                {
+                    "editorOptions" : editionOptions
+                }
+            );
 
             addEditionControls();
 
