@@ -280,7 +280,7 @@ var lizLayerFilterTool = function() {
                 dateFormat: 'yy-mm-dd',
                 changeMonth: true,
                 changeYear: true,
-                maxDate: "+0D"
+                maxDate:  new Date(feat['max'])
             });
 
             addFieldEvents(field_item);
