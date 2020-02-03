@@ -26,6 +26,7 @@ lizmap/www/cache/images/*
 lizmap/www/live/images/home/*
 !lizmap/www/live/images/home/.empty
 lizmap/www/js/lizmap.js
+lizmap/www/js/lizmap.js.map
 temp/lizmap/*
 !temp/lizmap/.empty
 vagrant/playbook.retry
