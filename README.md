@@ -9,7 +9,7 @@ Lizmap web application, by 3LIZ.
     email       : info@3liz.com
     website     : http://www.3liz.com
 
-![demo](demo.png "3Liz")
+![demo](demo.jpg "3Liz")
 
 Lizmap Web Application generates dynamically a web map application (php/html/css/js) with the help of QGIS Server ( [QGIS as OGC Data Server] ). You can visit [some examples projects on the demo](https://demo.lizmap.com/lizmap/).
 You can configure one web map per QGIS project with the QGIS Lizmap plugin. From this plugin, you can enable some tools such as attribute table, dataviz, printing ...
