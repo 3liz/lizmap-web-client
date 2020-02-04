@@ -359,6 +359,7 @@ var lizLayerFilterTool = function() {
                     delay: 200,
                     minLength: 2,
                     select: function( event, ui ) {
+                        $(this).val(ui.item.value);
                         $(this).change();
                     }
                 });
