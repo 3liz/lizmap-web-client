@@ -349,7 +349,7 @@ var lizLayerFilterTool = function() {
                 var autocompleteData = [];
                 for(var a in result){
                     var feat = result[a];
-                    if( feat['v'] === null || !feat['v'] || feat['v'].trim() == '' )
+                    if (feat['v'] === null || !feat['v'] || (typeof feat['v'] === 'string' && feat['v'].trim() === '') )
                         continue;
                     autocompleteData.push(feat['v']);
                 }
