@@ -39,16 +39,9 @@ function resetApp() {
         chown $APP_USER:$APP_GROUP $APPDIR/var/log
     fi
 
-    if [ -f $APPDIR/var/config/profiles.ini.php.dist ]; then
-        cp $APPDIR/var/config/profiles.ini.php.dist $APPDIR/var/config/profiles.ini.php
-    fi
-    if [ -f $APPDIR/var/config/localconfig.ini.php.dist ]; then
-        cp $APPDIR/var/config/localconfig.ini.php.dist $APPDIR/var/config/localconfig.ini.php
-    fi
-
-    if [ -f $APPDIR/var/config/lizmapConfig.ini.php.dist ]; then
-        cp $APPDIR/var/config/lizmapConfig.ini.php.dist $APPDIR/var/config/lizmapConfig.ini.php
-    fi
+    cp $ROOTDIR/tests/docker-conf/phpfpm/profiles.ini.php $APPDIR/var/config/profiles.ini.php
+    cp $ROOTDIR/tests/docker-conf/phpfpm/localconfig.ini.php $APPDIR/var/config/localconfig.ini.php
+    cp $ROOTDIR/tests/docker-conf/phpfpm/lizmapConfig.ini.php $APPDIR/var/config/lizmapConfig.ini.php
 
     chown -R $APP_USER:$APP_GROUP $APPDIR/var/config/profiles.ini.php $APPDIR/var/config/localconfig.ini.php $APPDIR/var/config/lizmapConfig.ini.php
 
@@ -106,16 +99,16 @@ function composerInstall() {
     if [ -f $ROOTDIR/tests/composer.lock ]; then
         rm -f $ROOTDIR/tests/composer.lock
     fi
-    composer install --prefer-dist --no-progress --no-ansi --no-interaction --working-dir=$ROOTDIR/tests/
-    chown -R $APP_USER:$APP_GROUP $ROOTDIR/tests/vendor $ROOTDIR/tests/composer.lock
+    composer install --prefer-dist --no-progress --no-ansi --no-interaction --working-dir=$ROOTDIR/tests/units/
+    chown -R $APP_USER:$APP_GROUP $ROOTDIR/tests/units/vendor $ROOTDIR/tests/units/composer.lock
 }
 
 function composerUpdate() {
     composer update --prefer-dist --no-progress --no-ansi --no-interaction --working-dir=$APPDIR
     chown -R $APP_USER:$APP_GROUP $APPDIR/vendor $APPDIR/composer.lock
 
-    composer update --prefer-dist --no-progress --no-ansi --no-interaction --working-dir=$ROOTDIR/tests/
-    chown -R $APP_USER:$APP_GROUP $ROOTDIR/tests/vendor $ROOTDIR/tests/composer.lock
+    composer update --prefer-dist --no-progress --no-ansi --no-interaction --working-dir=$ROOTDIR/tests/units/
+    chown -R $APP_USER:$APP_GROUP $ROOTDIR/tests/units/vendor $ROOTDIR/tests/units/composer.lock
 }
 
 function launch() {
@@ -123,7 +116,7 @@ function launch() {
         cp $ROOTDIR/tests/docker-conf/phpfpm/profiles.ini.php $APPDIR/var/config/profiles.ini.php
     fi
     if [ ! -f $APPDIR/var/config/localconfig.ini.php ]; then
-        cp $$ROOTDIR/tests/docker-conf/phpfpm/localconfig.ini.php $APPDIR/var/config/localconfig.ini.php
+        cp $ROOTDIR/tests/docker-conf/phpfpm/localconfig.ini.php $APPDIR/var/config/localconfig.ini.php
     fi
     if [ ! -f $APPDIR/var/config/lizmapConfig.ini.php ]; then
         cp $ROOTDIR/tests/docker-conf/phpfpm/lizmapConfig.ini.php $APPDIR/var/config/lizmapConfig.ini.php
@@ -141,7 +134,7 @@ function launch() {
 }
 
 function launchUnitTests() {
-    su $APP_USER -c "cd $ROOTDIR/tests/ && ../vendor/bin/phpunit"
+    su $APP_USER -c "cd $ROOTDIR/tests/units/ && vendor/bin/phpunit"
 }
 
 

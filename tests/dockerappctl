@@ -5,7 +5,8 @@ shift
 
 if [ "$COMMAND" == "" ]; then
     echo "Error: command is missing"
-    echo "Possible commands: clean_tmp, reset, install, rights, composer_install, composer_update"
+    echo "Possible commands: clean_tmp, reset, install, rights, composer_install, "
+    echo "composer_update, unittests, shell, shellroot, ldapreset, ldapusers"
     exit 1;
 fi
 
