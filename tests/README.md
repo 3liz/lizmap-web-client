@@ -6,13 +6,26 @@ A docker configuration is provided to launch Lizmap into a container.
 To launch containers the first time:
 
 ```
-./run-docker
+./run-docker build
 ```
+
+Then:
+
+```
+./run-docker 
+```
+
+To stop containers:
+
+```
+./run-docker stop 
+```
+
 
 You can execute some commands into the php container, by using this command:
 
 ```
-./dockerappctl.sh <command>
+./dockerappctl <command>
 ```
 
 Available commands:
@@ -30,6 +43,6 @@ This directory contains some unit tests.
 To launch tests:
 
 - Launch the lizmap application as indicated above.
-- launch `./dockerappctl.sh phpunit`
+- launch `./dockerappctl unittests`
 
 
