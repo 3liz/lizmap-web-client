@@ -1,0 +1,42 @@
+#!/usr/bin/env bash
+
+COMMAND="$1"
+shift
+
+if [ "$COMMAND" == "" ]; then
+    echo "Error: command is missing"
+    echo "Possible commands: clean_tmp, reset, install, rights, composer_install, composer_update"
+    exit 1;
+fi
+
+case $COMMAND in
+    clean_tmp)
+        docker exec -t -i lizmap_test_php appctl.sh clean_tmp;;
+    reset)
+        docker exec -t -i lizmap_test_php appctl.sh reset;;
+    install)
+        docker exec -t -i lizmap_test_php appctl.sh install;;
+    rights)
+        docker exec -t -i lizmap_test_php appctl.sh rights;;
+    composer_install)
+        docker exec -t -i lizmap_test_php appctl.sh composer_install;;
+    composer_update)
+        docker exec -t -i lizmap_test_php appctl.sh composer_update;;
+    unittests)
+        docker exec -t -i lizmap_test_php appctl.sh unittests;;
+    shell)
+       docker exec -it --user usertest lizmap_test_php  /bin/sh -l;;
+    shellroot)
+       docker exec -it lizmap_test_php  /bin/sh  -l;;
+    ldapreset)
+      docker exec -it lizmap_test_ldap /bin/ctl.sh reset
+      ;;
+    ldapusers)
+       docker exec -it lizmap_test_ldap /bin/ctl.sh showusers
+       ;;
+    *)
+        echo "wrong command"
+        exit 2
+        ;;
+esac
+

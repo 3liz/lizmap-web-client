@@ -1,0 +1,7 @@
+uid=testldap,ou=people,dc=tests,dc=lizmap
+uid=john,ou=people,dc=tests,dc=lizmap
+uid=jane,ou=people,dc=tests,dc=lizmap
+cn=group1,ou=groups,dc=tests,dc=lizmap
+cn=group2,ou=groups,dc=tests,dc=lizmap
+ou=groups,dc=tests,dc=lizmap
+ou=people,dc=tests,dc=lizmap
