@@ -75,6 +75,7 @@
                         <label id="edition-segment-angle"></label>
                     </div>
                 </div>
+                <lizmap-geolocation-survey></lizmap-geolocation-survey>
                 <div class="control-group" id="edition-point-coord-geolocation-group" style="display:none;">
                     <div class="controls">
                         <label class="jforms-label checkbox" for="edition-point-coord-geolocation" id="edition-point-coord-geolocation-label">

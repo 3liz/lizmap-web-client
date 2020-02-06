@@ -7,6 +7,7 @@ export default class Geolocation {
     constructor() {
         this._firstGeolocation = true;
         this._isBind = false;
+        this._isLinkedToEdition = false;
 
         this._geolocation = new olGeolocation({
             // enableHighAccuracy must be set to true to have the heading value.
@@ -124,6 +125,19 @@ export default class Geolocation {
         this._isBind = isBind;
 
         mainEventDispatcher.dispatch('geolocation.isBind');
+    }
+
+    get isLinkedToEdition() {
+        return this._isLinkedToEdition;
+    }
+
+    /**
+     * @param {boolean} isLinkedToEdition - Link edition and geolocation to draw features based on GPS position
+     */
+    set isLinkedToEdition(isLinkedToEdition) {
+        this._isLinkedToEdition = isLinkedToEdition;
+
+        mainEventDispatcher.dispatch('geolocation.isLinkedToEdition');
     }
 
     moveGeolocationPointAndCircle(coordinates) {
