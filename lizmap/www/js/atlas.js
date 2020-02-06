@@ -31,10 +31,10 @@ var lizAtlas = function () {
                 }
             }
             // Multiple atlas layer
-            else if ('atlas' in lizMap.config && Array.isArray(lizMap.config['atlas']) && lizMap.config['atlas'].length > 0){
+            else if ('atlas' in lizMap.config && 'layers' in lizMap.config.atlas && Array.isArray(lizMap.config.atlas['layers']) && lizMap.config.atlas['layers'].length > 0){
                 var atlasLayers = {};
-                for (var index = 0; index < lizMap.config.atlas.length; index++) {
-                    var layerConfig = lizMap.config.atlas[index];
+                for (var index = 0; index < lizMap.config.atlas.layers.length; index++) {
+                    var layerConfig = lizMap.config.atlas.layers[index];
 
                     atlasLayers[layerConfig.layer] = {
                         atlasDuration: layerConfig.duration,
@@ -263,90 +263,66 @@ var lizAtlas = function () {
             }
 
             function launchAtlas(lizAtlasConfigArray, lizAtlasGlobalConfig) {
-                // Build select to choose between atlas layers
-                var select = '<select id="select-atlas-layer">';
-                for (var i = 0; i < lizAtlasConfigArray.length; i++) {
-                    select += '<option value="' + lizAtlasConfigArray[i].layerId + '">' + lizMap.config.layers[lizAtlasConfigArray[i].layername]['title'] + '</option>';
+
+                let atlasHTML = '';
+
+                // Multiple atlas
+                if (lizAtlasConfigArray.length > 1){
+                    // Build select to choose between atlas layers
+                    atlasHTML = '<i class="icon-globe icon-white" style="margin-right: 4px;vertical-align: baseline;"></i><select id="select-atlas-layer">';
+                    for (let i = 0; i < lizAtlasConfigArray.length; i++) {
+                        atlasHTML += '<option value="' + lizAtlasConfigArray[i].layerId + '">' + lizMap.config.layers[lizAtlasConfigArray[i].layername]['title'] + '</option>';
+                    }
+
+                    atlasHTML += '</select>';
+
+                }else{ // Single atlas
+                    atlasHTML += '<h3><i class="icon-globe icon-white" style="margin-right: 4px;"></i>' + lizMap.config.layers[lizAtlasConfigArray[0].layername]['title'] + '</h3>';
                 }
 
-                select += '</select>';
-
-                select += '<div id="atlas-content" style="border-top: #F0F0F0 dashed 1px;padding-top: 5px;"></div>';
+                atlasHTML += '<div id="atlas-content" style="border-top: #F0F0F0 dashed 1px;padding-top: 5px;"></div>';
 
                 // Add dock
                 lizMap.addDock(
                     'atlas',
                     lizDict['atlas.toolbar.title'],
                     'right-dock',
-                    select,
+                    atlasHTML,
                     'icon-globe'
                 );
 
-                $('#select-atlas-layer')
-                    .change(function () {
-                        // deactivate current atlas
-                        deactivateAtlas();
+                // Multiple atlas
+                if (lizAtlasConfigArray.length > 1) {
+                    $('#select-atlas-layer')
+                        .change(function () {
+                            // deactivate current atlas
+                            deactivateAtlas();
 
-                        var layerId = $(this).val();
+                            var layerId = $(this).val();
 
-                        for (var i = 0; i < lizAtlasConfigArray.length; i++) {
-                            if (layerId === lizAtlasConfigArray[i].layerId) {
-                                lizAtlasConfig = lizAtlasConfigArray[i];
-
-                                // Get Atlas home
-                                var home = getAtlasHome(lizAtlasConfig);
-
-                                $("#atlas-content").html(home);
-
-                                // Add events
-                                activateAtlasTrigger(lizAtlasConfig);
-
-                                // Only if features in layer
-                                if (lizAtlasConfig.features.length != 0) {
-                                    // Activate filter
-                                    if (lizAtlasConfig.triggerFilter && lizAtlasConfig.hideFeaturesAtStratup) {
-                                        // Select feature
-                                        lizMap.events.triggerEvent('layerfeatureselected',
-                                            { 'featureType': lizAtlasConfig.featureType, 'fid': -99999, 'updateDrawing': false }
-                                        );
-                                        // Filter selected feature
-                                        lizMap.events.triggerEvent('layerfeaturefilterselected',
-                                            { 'featureType': lizAtlasConfig.featureType }
-                                        );
-                                    }
+                            for (var i = 0; i < lizAtlasConfigArray.length; i++) {
+                                if (layerId === lizAtlasConfigArray[i].layerId) {
+                                    lizAtlasConfig = lizAtlasConfigArray[i];
+                                    displayAtlasContent();
                                 }
-
-                                lizMap.events.triggerEvent("uiatlascreated", lizAtlasConfig);
-
-                                lizMap.events.on({
-                                    lizmapeditionfeaturecreated: function (e) {
-                                        if (e.layerId == lizAtlasConfig.layerId)
-                                            updateAtlasData();
-                                    },
-                                    lizmapeditionfeaturemodified: function (e) {
-                                        if (e.layerId == lizAtlasConfig.layerId)
-                                            updateAtlasData();
-                                    },
-                                    lizmapeditionfeaturedeleted: function (e) {
-                                        if (e.layerId == lizAtlasConfig.layerId)
-                                            updateAtlasData();
-                                    }
-                                });
-
-                                // Start animation for first layer if set
-                                if (i === 0 && lizAtlasGlobalConfig['autoPlay'] && !lizMap.checkMobile()) {
-                                    $('button.liz-atlas-run').click();
-                                }
-
                             }
-                        }
 
-                        lizMap.events.triggerEvent("atlasready", lizAtlasConfig);
-                        return false;
-                    });
+                            lizMap.events.triggerEvent("atlasready", lizAtlasConfig);
 
-                // Display first atlas layer
-                $('#select-atlas-layer').change();
+                            return false;
+                        });
+
+                    // Display first atlas layer
+                    $('#select-atlas-layer').change();
+                }else{
+                    lizAtlasConfig = lizAtlasConfigArray[0];
+                    displayAtlasContent();
+                }
+
+                // Start animation for first layer if set
+                if (lizAtlasGlobalConfig['autoPlay'] && !lizMap.checkMobile()) {
+                    $('button.liz-atlas-run').click();
+                }
 
                 // Show dock
                 if (lizAtlasGlobalConfig['showAtStartup'] && !lizMap.checkMobile()) {
@@ -357,7 +333,48 @@ var lizAtlas = function () {
 
                 // Limit dock size
                 adaptAtlasSize();
+            }
 
+            function displayAtlasContent(){
+                // Get Atlas home
+                var home = getAtlasHome(lizAtlasConfig);
+
+                $("#atlas-content").html(home);
+
+                // Add events
+                activateAtlasTrigger(lizAtlasConfig);
+
+                // Only if features in layer
+                if (lizAtlasConfig.features.length != 0) {
+                    // Activate filter
+                    if (lizAtlasConfig.triggerFilter && lizAtlasConfig.hideFeaturesAtStratup) {
+                        // Select feature
+                        lizMap.events.triggerEvent('layerfeatureselected',
+                            { 'featureType': lizAtlasConfig.featureType, 'fid': -99999, 'updateDrawing': false }
+                        );
+                        // Filter selected feature
+                        lizMap.events.triggerEvent('layerfeaturefilterselected',
+                            { 'featureType': lizAtlasConfig.featureType }
+                        );
+                    }
+                }
+
+                lizMap.events.triggerEvent("uiatlascreated", lizAtlasConfig);
+
+                lizMap.events.on({
+                    lizmapeditionfeaturecreated: function (e) {
+                        if (e.layerId == lizAtlasConfig.layerId)
+                            updateAtlasData();
+                    },
+                    lizmapeditionfeaturemodified: function (e) {
+                        if (e.layerId == lizAtlasConfig.layerId)
+                            updateAtlasData();
+                    },
+                    lizmapeditionfeaturedeleted: function (e) {
+                        if (e.layerId == lizAtlasConfig.layerId)
+                            updateAtlasData();
+                    }
+                });
             }
 
             function adaptAtlasSize() {
