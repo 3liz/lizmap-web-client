@@ -20,6 +20,7 @@ class main_viewZone extends jZone
         $domain = jApp::coord()->request->getDomainName();
         $this->_tpl->assign('domain', $domain);
         $this->_tpl->assign('auth_url_return', $this->param('auth_url_return'));
+        $this->_tpl->assign('hide_header', $this->param('hide_header'));
         $this->_tpl->assign('isConnected', jAuth::isConnected());
 
         // Get lizmap services

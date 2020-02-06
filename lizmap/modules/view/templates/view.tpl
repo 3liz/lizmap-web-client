@@ -28,7 +28,7 @@
       </div>
       <h5 class="liz-project-title">{$p->title}</h5>
       <p style="text-align:center;">
-        <a class="btn liz-project-view" href="{$p->url}">{@default.project.open.map@}</a>
+        <a class="btn liz-project-view" href="{$p->url}{if $hide_header}&h=0{/if}">{@default.project.open.map@}</a>
         <a class="btn liz-project-show-desc" href="#link-projet-{$idm}" onclick="$('#liz-project-modal-{$idm}').modal('show'); return false;">{@default.project.open.map.metadata@}</a>
       </p>
     </div>
@@ -59,7 +59,7 @@
         </dl>
       </div>
       <div class="modal-footer">
-        <a class="btn liz-project-view" href="{$p->url}">{@default.project.open.map@}</a>
+        <a class="btn liz-project-view" href="{$p->url}{if $hide_header}&h=0{/if}">{@default.project.open.map@}</a>
         <a href="#" class="btn" data-dismiss="modal">{@default.project.close.map.metadata@}</a>
       </div>
     </div>

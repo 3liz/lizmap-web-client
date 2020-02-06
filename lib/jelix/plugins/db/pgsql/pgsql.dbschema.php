@@ -10,7 +10,7 @@
 */
 
 /**
- * 
+ *
  * @package    jelix
  * @subpackage db_driver
  */
@@ -26,10 +26,13 @@ class pgsqlDbTable extends jDbTable {
     protected function _loadColumns(){
         $conn = $this->schema->getConn();
         $tools = $conn->tools();
+        $version = $conn->getServerMajorVersion();
+        // pg_get_expr on adbin, not compatible with pgsql < 9
+        $adColName = ($version < 12 ? 'd.adsrc' : 'pg_get_expr(d.adbin,d.adrelid) AS adsrc');
 
         $sql = "SELECT a.attname, a.attnotnull, a.atthasdef, a.attlen, a.atttypmod,
                 FORMAT_TYPE(a.atttypid, a.atttypmod) AS type,
-                d.adsrc, co.contype AS primary, co.conname
+                $adColName, co.contype AS primary, co.conname
             FROM pg_attribute AS a
             JOIN pg_class AS c ON a.attrelid = c.oid
             LEFT OUTER JOIN pg_constraint AS co
@@ -333,7 +336,7 @@ class pgsqlDbTable extends jDbTable {
 }
 
 /**
- * 
+ *
  * @package    jelix
  * @subpackage db_driver
  */
