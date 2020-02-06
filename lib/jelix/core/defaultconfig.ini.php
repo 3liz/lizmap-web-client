@@ -350,7 +350,7 @@ smtpTimeout = 10
 ; Copy all emails into files
 copyToFiles = off
 
-; enable the debug mode. debugReceivers should be filled.
+; enable the debug mode.
 debugModeEnabled = off
 
 ; type of receivers set into the email
@@ -380,6 +380,14 @@ debugSubjectPrefix =
 
 ; Introduction inserted at the beginning of the messages in debug mode
 debugBodyIntroduction =
+
+; smtp debug level. debugModeEnabled should be set to on
+; - `0` No output
+; - `1` Commands
+; - `2` Data and commands
+; - `3` As 2 plus connection status
+; - `4` Low-level data output
+debugSmtpLevel = 0
 
 [acl]
 ; exemple of driver: "db".

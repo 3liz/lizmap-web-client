@@ -109,21 +109,21 @@ class pgsqlDbConnection extends jDbConnection {
             // we do a distinction because if the host is given == TCP/IP connection else unix socket
             if($this->profile['host'] != '')
                 $str = 'host=\''.$this->profile['host'].'\''.$str;
-    
+
             if (isset($this->profile['port'])) {
                 $str .= ' port=\''.$this->profile['port'].'\'';
             }
-    
+
             if ($this->profile['database'] != '') {
                 $str .= ' dbname=\''.$this->profile['database'].'\'';
             }
-    
+
             // we do isset instead of equality test against an empty string, to allow to specify
             // that we want to use configuration set in environment variables
             if (isset($this->profile['user'])) {
                 $str .= ' user=\''.$this->profile['user'].'\'';
             }
-    
+
             if (isset($this->profile['password'])) {
                 $str .= ' password=\''.$this->profile['password'].'\'';
             }
@@ -227,7 +227,7 @@ class pgsqlDbConnection extends jDbConnection {
 
     /**
      *
-     * @param integer $id the attribut id
+     * @param integer $id the attribute id
      * @return string the attribute value
      * @see PDO::getAttribute()
      */
@@ -235,7 +235,7 @@ class pgsqlDbConnection extends jDbConnection {
         switch($id) {
             case self::ATTR_CLIENT_VERSION:
                 $v = pg_version($this->_connection);
-                return (array_key_exists($v['client']) ? $v['client'] : '');
+                return (array_key_exists('client', $v) ? $v['client'] : '');
             case self::ATTR_SERVER_VERSION:
                 return pg_parameter_status($this->_connection, "server_version");
                 break;
@@ -252,5 +252,18 @@ class pgsqlDbConnection extends jDbConnection {
     public function setAttribute($id, $value) {
     }
 
+
+    protected $serverVersion = 0;
+
+    public function getServerMajorVersion() {
+        if ($this->serverVersion === 0) {
+            $version = $this->getAttribute($this::ATTR_SERVER_VERSION);
+            if ($version != '') {
+                $version = explode('.', $version);
+                $this->serverVersion = intval($version[0]);
+            }
+        }
+        return $this->serverVersion;
+    }
 }
 
