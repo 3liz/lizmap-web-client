@@ -1,11 +1,10 @@
 var lizLayerFilterTool = function() {
 
     lizMap.events.on({
-        'uicreated':function(evt){
+        'uicreated':function(){
 
         if (typeof variable != "undefined")
             return true;
-
 
         // Compute the HTML container for the form
         function getLayerFilterDockRoot(){
@@ -67,10 +66,6 @@ var lizLayerFilterTool = function() {
             var layerId = filterConfig[0]['layerId'];
             filterConfigData.layerId = layerId;
 
-            //if( filterConfig['showAtStartup'] == 'true' ){
-                //$('#mapmenu li.filter:not(.active) a').click();
-            //}
-
             // Activate the unfilter link
             $('#liz-filter-unfilter').click(function(){
                 // Remove filter
@@ -124,11 +119,7 @@ var lizLayerFilterTool = function() {
             if( $('#liz-filter-zoom').is(":visible") ){
                 setZoomExtent();
             }
-
         }
-
-
-
 
         // Get the HTML form
         // By getting form element for each field
@@ -149,9 +140,7 @@ var lizLayerFilterTool = function() {
                 var field_item = formFilterLayersSorted[conf];
                 getFormFieldInput(field_item);
             }
-
         }
-
 
         // Get the HTML form elemnt for a specific field
         function getFormFieldInput(field_item){
@@ -182,8 +171,6 @@ var lizLayerFilterTool = function() {
         }
 
         function getFormFieldHeader(field_item){
-            var field_config = filterConfig[field_item.order]
-
             var html = '';
             html+= '<div class="liz-filter-field-box" id="liz-filter-box-';
             html+= lizMap.cleanName(field_item.title);
@@ -196,7 +183,7 @@ var lizLayerFilterTool = function() {
             return html;
         }
 
-        function getFormFieldFooter(field_item){
+        function getFormFieldFooter(){
             var html = '';
             html+= '</p>';
             html+= '</div>';
@@ -206,7 +193,6 @@ var lizLayerFilterTool = function() {
 
         // Get the HTML form element for the date field type
         function dateFormInput(field_item){
-            var field_config = filterConfig[field_item.order]
 
             var sdata = {
                 request: 'getMinAndMaxValues',
@@ -241,7 +227,6 @@ var lizLayerFilterTool = function() {
                 html+= getFormFieldHeader(field_item);
                 html+= '<span style="white-space:nowrap">';
                 html+= '<input id="liz-filter-field-min-date' + lizMap.cleanName(field_item.title) + '" class="liz-filter-field-date" value="'+field_item['min']+'" style="width:100px;">';
-                //html+= '&nbsp;-&nbsp;';
                 html+= '<input id="liz-filter-field-max-date' + lizMap.cleanName(field_item.title) + '" class="liz-filter-field-date" value="'+field_item['max']+'" style="width:100px;">';
                 html+= '</span>';
 
@@ -257,8 +242,6 @@ var lizLayerFilterTool = function() {
 
                 $("#filter div.tree").append(html);
                 $("#filter input.liz-filter-field-date").datepicker({
-                    //showOn: "button",
-                    //buttonText: "Select date",
                     dateFormat: 'yy-mm-dd',
                     changeMonth: true,
                     changeYear: true,
@@ -273,7 +256,6 @@ var lizLayerFilterTool = function() {
 
         // Get the HTML form element for the numeric field type
         function numericFormInput(field_item){
-            var field_config = filterConfig[field_item.order]
             var sdata = {
                 request: 'getMinAndMaxValues',
                 layerId: field_item.layerId,
@@ -297,7 +279,6 @@ var lizLayerFilterTool = function() {
                 html+= getFormFieldHeader(field_item);
                 html+= '<span style="white-space:nowrap">';
                 html+= '<input id="liz-filter-field-min-numeric' + lizMap.cleanName(field_item.title) + '" type="number" value="'+field_item['min']+'" step="' + 1 + '" min="'+field_item['min']+'" max="'+field_item['max']+'" class="liz-filter-field-numeric" style="width:100px;">';
-                //html+= '&nbsp;-&nbsp;';
                 html+= '<input id="liz-filter-field-max-numeric' + lizMap.cleanName(field_item.title) + '" type="number" value="'+field_item['max']+'" step="'+field_item['step']+'" min="'+field_item['min']+'" max="'+field_item['max']+'" class="liz-filter-field-numeric" style="width:100px;">';
                 html+= '</span>';
 
@@ -313,14 +294,12 @@ var lizLayerFilterTool = function() {
 
                 addFieldEvents(field_item);
 
-
             }, 'json');
 
         }
 
         // Get the HTML form element for the text field type
         function textFormInput(field_item){
-            var field_config = filterConfig[field_item.order]
             var html = '';
             html+= getFormFieldHeader(field_item);
             html+= '<div style="width: 100%;">'
@@ -349,7 +328,7 @@ var lizLayerFilterTool = function() {
                 var autocompleteData = [];
                 for(var a in result){
                     var feat = result[a];
-                    if( feat['v'] === null || !feat['v'] || feat['v'].trim() == '' )
+                    if (feat['v'] === null || !feat['v'] || (typeof feat['v'] === 'string' && feat['v'].trim() === '') )
                         continue;
                     autocompleteData.push(feat['v']);
                 }
@@ -359,6 +338,7 @@ var lizLayerFilterTool = function() {
                     delay: 200,
                     minLength: 2,
                     select: function( event, ui ) {
+                        $(this).val(ui.item.value);
                         $(this).change();
                     }
                 });
@@ -372,8 +352,6 @@ var lizLayerFilterTool = function() {
             var html = '';
             html+= getFormFieldHeader(field_item);
             var lconfig_get = lizMap.getLayerConfigById(field_item.layerId);
-            var lname = lconfig_get[0];
-            var lconf = lconfig_get[1];
 
             if ( field_item.format == 'select' ) {
                 html+= '<select id="liz-filter-field-' + lizMap.cleanName(field_item.title) + '" class="liz-filter-field-select">';
@@ -429,11 +407,6 @@ var lizLayerFilterTool = function() {
                     }
                     dhtml+= '&nbsp;' + label;
 
-                    // Add counter
-                    //dhtml+= '&nbsp;(' + '<span class="liz-filter-field-counter">';
-                    //dhtml+= filterConfig[field_item.order]['items'][f_val];
-                    //dhtml+= '</span>' + ')';
-
                     // close item
                     if ( field_item.format == 'select' ) {
                         dhtml+= '</option>';
@@ -451,9 +424,7 @@ var lizLayerFilterTool = function() {
 
                 addFieldEvents(field_item);
             }, 'json');
-
         }
-
 
         // Generate filter string for a field
         // Depending on the selected inputs
@@ -552,14 +523,12 @@ var lizLayerFilterTool = function() {
                     filter = '"' + field + '"' + " IN ( '" + clist.join("' , '") + "' ) ";
                 }
             }
-//console.log(filter);
             filterConfig[field_item.order]['filter'] = filter;
 
         }
 
         // Set the filter for the Date type
         function setDateFilter(field_item){
-            var field_config = filterConfig[field_item.order]
             var filters = [];
 
             // get input values
@@ -608,7 +577,6 @@ var lizLayerFilterTool = function() {
 
         // Set the filter for the Numeric type
         function setNumericFilter(field_item){
-            var field_config = filterConfig[field_item.order]
             var filters = [];
 
             // get input values
@@ -657,7 +625,6 @@ var lizLayerFilterTool = function() {
         // Set the filter for a text field_item
         function setTextFilter(field_item){
 
-            var field_config = filterConfig[field_item.order]
             var id = '#liz-filter-field-text' + lizMap.cleanName(field_item.title);
             var val = $(id).val().trim().replace("'", "''");
 
@@ -775,31 +742,10 @@ var lizLayerFilterTool = function() {
                         'updateDrawing': false
                     }
                 );
-
             });
-
-
-
-
-
-
-            // Refresh attributable table if displayed
-            // Need to publish method buildLayerAttributeDatatable
-            //var cleanName = lizMap.cleanName(layername);
-            //if( $('#attribute-layer-main-' + cleanName).length ){
-
-                //var aTable = '#attribute-layer-table-' + cleanName;
-                //var dFilter = filter;
-                //$('#attribute-layer-main-' + cleanName + ' > div.attribute-layer-content').hide();
-                //lizMap.getAttributeFeatureData( layerN, dFilter, null, 'extent', function(someName, someNameFilter, someNameFeatures, someNameAliases){
-                    //buildLayerAttributeDatatable( someName, aTable, someNameFeatures, someNameAliases );
-                    //$('#attribute-layer-main-' + cleanName + ' > div.attribute-layer-content').show();
-                //});
-            //}
 
             return true;
         }
-
 
         // Deactivate the layer filter
         // And display all features
@@ -893,9 +839,7 @@ var lizLayerFilterTool = function() {
             lizMap.config.layers[layername]['request_params']['filtertoken'] = null;
             lizMap.config.layers[layername]['request_params']['filter'] = null;
             layer.redraw();
-
         }
-
 
         // Removes the getFeatureInfo geometry
         function removeFeatureInfoGeometry(){
@@ -913,11 +857,11 @@ var lizLayerFilterTool = function() {
                         lizMap.updateContentSize();
                     }
                 },
-                rightdockclosed: function(e) {
+                rightdockclosed: function() {
                 },
-                minidockclosed: function(e) {
+                minidockclosed: function() {
                 },
-                layerfeatureremovefilter: function(e){
+                layerfeatureremovefilter: function(){
                     var layerId = filterConfigData.layerId;;
 
                     // We need to reset the form
@@ -1225,11 +1169,6 @@ var lizLayerFilterTool = function() {
             var extent = new OpenLayers.Bounds(abounds[0], abounds[1], abounds[2], abounds[3]);
             lizMap.map.zoomToExtent(extent);
             return false;
-        }
-
-        function removeFieldEvents(field_item){
-            var container = lizMap.cleanName(field_item.title);
-            var field_config = filterConfig[field_item.order]
         }
 
         // Launch LayerFilter feature
