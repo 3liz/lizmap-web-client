@@ -4858,24 +4858,56 @@ OpenLayers.Control.HighlightFeature = OpenLayers.Class(OpenLayers.Control, {
           },
           type:OpenLayers.Control.TYPE_TOOL
         }
+      ),
+      angle: new OpenLayers.Control.Measure(
+        OpenLayers.Handler.Path, {
+        id: 'angleMeasure',
+        persist: true,
+        geodesic: true,
+        immediate: true,
+        handlerOptions: {
+          maxVertices: 3,
+          layerOptions: {
+            styleMap: styleMap
+          }
+        },
+        type: OpenLayers.Control.TYPE_TOOL
+        }
       )
     };
     measureControls.length.events.on({
-      activate: function(evt) {
+      activate: function() {
         mAddMessage(lizDict['measure.activate.length'],'info',true).attr('id','lizmap-measure-message');
       },
-      deactivate: function(evt) {
+      deactivate: function() {
         $('#lizmap-measure-message').remove();
       }
     });
     measureControls.area.events.on({
-      activate: function(evt) {
+      activate: function() {
         mAddMessage(lizDict['measure.activate.area'],'info',true).attr('id','lizmap-measure-message');
       },
-      deactivate: function(evt) {
+      deactivate: function() {
         $('#lizmap-measure-message').remove();
       }
     });
+    measureControls.perimeter.events.on({
+      activate: function () {
+        mAddMessage(lizDict['measure.activate.perimeter'], 'info', true).attr('id', 'lizmap-measure-message');
+      },
+      deactivate: function () {
+        $('#lizmap-measure-message').remove();
+      }
+    });
+    measureControls.angle.events.on({
+      activate: function () {
+        mAddMessage(lizDict['measure.activate.angle'], 'info', true).attr('id', 'lizmap-measure-message');
+      },
+      deactivate: function () {
+        $('#lizmap-measure-message').remove();
+      }
+    });
+
     measureControls.perimeter.measure = function(geometry, eventType) {
         var stat, order;
         if( OpenLayers.Util.indexOf( geometry.CLASS_NAME, 'LineString' ) > -1) {
@@ -4892,26 +4924,57 @@ OpenLayers.Control.HighlightFeature = OpenLayers.Class(OpenLayers.Control, {
             geometry: geometry
         });
     };
-    measureControls.perimeter.events.on({
-      activate: function(evt) {
-        mAddMessage(lizDict['measure.activate.perimeter'],'info',true).attr('id','lizmap-measure-message');
-      },
-      deactivate: function(evt) {
-        $('#lizmap-measure-message').remove();
-      }
-    });
 
     function handleMeasurements(evt) {
-      var geometry = evt.geometry;
       var units = evt.units;
       var order = evt.order;
       var measure = evt.measure;
       var out = "";
-      if(order == 1) {
-        out += lizDict['measure.handle']+" " + measure.toFixed(3) + " " + units;
-      } else {
-        out += lizDict['measure.handle']+" " + measure.toFixed(3) + " " + units + "<sup>2</" + "sup>";
+
+      // Angle
+      if (evt.object.id === "angleMeasure") {
+
+        out = lizDict['measure.handle'] + " 0°";
+
+        // Three points are needed to measure an angle
+        if (evt.geometry.components.length === 3){
+          // Invert first and second points and use a flag to make this change occurs once until next measurement
+          if(evt.object.invert === undefined){
+            const firstComponent = evt.geometry.components[0].clone();
+            const secondComponent = evt.geometry.components[1].clone();
+            evt.geometry.components[0].move(secondComponent.x - firstComponent.x, secondComponent.y - firstComponent.y);
+            evt.geometry.components[1].move(firstComponent.x - secondComponent.x, firstComponent.y - secondComponent.y);
+
+            evt.object.invert = true;
+          } else if (evt.type === "measure"){
+            evt.object.invert = undefined;
+          }
+
+          // Display angle ABC between three points. B is center
+          const A = evt.geometry.components[0];
+          const B = evt.geometry.components[1];
+          const C = evt.geometry.components[2];
+
+          const AB = Math.sqrt(Math.pow(B.x - A.x, 2) + Math.pow(B.y - A.y, 2));
+          const BC = Math.sqrt(Math.pow(B.x - C.x, 2) + Math.pow(B.y - C.y, 2));
+          const AC = Math.sqrt(Math.pow(C.x - A.x, 2) + Math.pow(C.y - A.y, 2));
+          let angleInDegrees = (Math.acos((BC * BC + AB * AB - AC * AC) / (2 * BC * AB)) * 180) / Math.PI;
+
+          if (isNaN(angleInDegrees)) {
+            angleInDegrees = 0;
+          }
+
+          out = lizDict['measure.handle'] + " " + angleInDegrees.toFixed(2) + "°";
+        }
+        // Other measurement tools
+      }else{
+        if (order == 1) {
+          out += lizDict['measure.handle'] + " " + measure.toFixed(3) + " " + units;
+        } else {
+          out += lizDict['measure.handle'] + " " + measure.toFixed(3) + " " + units + "<sup>2</" + "sup>";
+        }
       }
+
       var element = $('#lizmap-measure-message');
       if ( element.length == 0 ) {
         element = mAddMessage(out);
@@ -4920,13 +4983,12 @@ OpenLayers.Control.HighlightFeature = OpenLayers.Class(OpenLayers.Control, {
         element.html('<p>'+out+'</p>');
       }
     }
+
     for(var key in measureControls) {
       var control = measureControls[key];
       control.events.on({
         "measure": handleMeasurements,
-        "measurepartial": handleMeasurements,
-        "activate": function(evt) {
-        }
+        "measurepartial": handleMeasurements
       });
       map.addControl(control);
       controls[key+'Measure'] = control;

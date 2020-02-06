@@ -5,6 +5,7 @@
       <option value="length">{@view~map.measure.toolbar.length@}</option>
       <option value="area">{@view~map.measure.toolbar.area@}</option>
       <option value="perimeter">{@view~map.measure.toolbar.perimeter@}</option>
+      <option value="angle">{@view~map.measure.toolbar.angle@}</option>
     </select>
   </div>
 </div>
