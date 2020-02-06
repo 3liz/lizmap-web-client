@@ -8,7 +8,7 @@ export default class GeolocationSurvey extends HTMLElement {
 
     connectedCallback() {
         const mainTemplate = () => html`
-        <div class="control-group ${mainLizmap.geolocation.isLinkedToEdition ? '' : 'hide'}">
+        <div class="control-group ${mainLizmap.geolocation.isLinkedToEdition && ['line', 'polygon'].includes(mainLizmap.lizmapEditionLayerGeometry)  ? '' : 'hide'}">
             <label class="jforms-label control-label" for="geolocation-survey-distance">Distance :</label>
             <div class="controls">
                 <input id="geolocation-survey-distance" class="jforms-ctrl-input" value="" type="text">
