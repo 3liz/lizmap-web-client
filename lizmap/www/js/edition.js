@@ -846,6 +846,7 @@ OpenLayers.Geometry.pointOnSegment = function(point, segment) {
                     $('#edition-point-coord-x').removeAttr('disabled');
                     $('#edition-point-coord-y').removeAttr('disabled');
                 }
+                lizMap.mainLizmap.geolocation.isLinkedToEdition = $(this).is(':checked');
             });
             $('#edition-point-coord-add').click(function(){
                 var geometryType = editionLayer.geometryType;
