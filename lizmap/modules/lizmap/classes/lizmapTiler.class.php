@@ -77,6 +77,10 @@ class lizmapTiler
             );
             $wmsResult = $wmsRequest->process();
             $wms = $wmsResult->data;
+            // service exception, WMS not available
+            if( preg_match('/ServiceExceptionReport/', $wms) ) {
+                return null;
+            }
 
             $wms_xml = simplexml_load_string($wms);
             $wms_xml->registerXPathNamespace('wms', 'http://www.opengis.net/wms');
