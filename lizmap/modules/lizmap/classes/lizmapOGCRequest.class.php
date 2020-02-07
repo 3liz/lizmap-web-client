@@ -108,7 +108,7 @@ class lizmapOGCRequest
         jMessage::clearAll();
 
         return (object) array(
-            'code' => 200,
+            'code' => 400,
             'mime' => $mime,
             'data' => $data,
             'cached' => false,
