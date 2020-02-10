@@ -1351,7 +1351,18 @@ OpenLayers.Geometry.pointOnSegment = function(point, segment) {
 
         // Set hidden geometry field
         eform.find('input[name="'+gColumn+'"]').val(geom);
-
+        // dispatch event
+        var formFeatureId = eform.find('input[name="liz_featureId"]').val();
+        var formLayerId = eform.find('input[name="liz_layerId"]').val();
+        lizMap.events.triggerEvent("lizmapeditiongeometryupdated",
+            {
+                'layerId': formLayerId,
+                'featureId': formLayerId,
+                'geometry': geom,
+                'srid': srid
+            }
+        );
+        return true;
     }
 
     function updateFeatureFromGeometryColumn(){
