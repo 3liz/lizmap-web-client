@@ -267,7 +267,7 @@ class lizmapProject extends qgisProject
             $this->data['abstract'] = '';
         }
         $this->data['proj'] = $configOptions->projection->ref;
-        $this->data['bbox'] = join($configOptions->bbox, ', ');
+        $this->data['bbox'] = implode(', ', $configOptions->bbox);
 
         // Update WMSInformation
         $this->WMSInformation['ProjectCrs'] = $this->data['proj'];
