@@ -825,7 +825,7 @@ class lizmapProject extends qgisProject
             'dataviz' => array(),
         );
         foreach ($this->cfg->datavizLayers as $order => $lc) {
-            if (!array_key_exists('layerId', $lc)) {
+            if (!property_exists($lc, 'layerId')) {
                 continue;
             }
             $layer = $this->findLayerByAnyName($lc->layerId);
