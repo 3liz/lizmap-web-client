@@ -223,13 +223,18 @@ class qgisFormControl
 
         $this->defaultValue = $defaultValue;
 
-        if ($prop->notNull && !$prop->autoIncrement) {
-            $this->required = true;
-        }
+        // An auto-increment field cannot be required!
+        if ( !$prop->autoIncrement ) {
+            if ($prop->notNull) {
+                $this->required = true;
+            }
 
-        if ($constraints !== null && !$prop->notNull &&
-            $constraints['constraints'] > 0 && $constraints['notNull']) {
-            $this->required = true;
+            if ($constraints !== null && !$prop->notNull &&
+                $constraints['constraints'] > 0 && $constraints['notNull']) {
+                $this->required = true;
+            }
+        } else {
+            $this->required = false;
         }
 
         if ($this->fieldDataType != 'geometry') {
