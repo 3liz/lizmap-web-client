@@ -59,6 +59,8 @@ sed -i "/^pm.max_spare_servers =/c\pm.max_spare_servers = ${PM_MAX_SPARE_SERVERS
 # Enable status path
 sed -i "/^;pm.status_path /c\pm.status_path = /status" /etc/php7/php-fpm.d/www.conf
 
+sed -i "/^session.cookie_httponly =/c\session.cookie_httponly = 1" /etc/php7/php.ini
+
 # first arg is `-f` or `--some-option`
 if [ "${1#-}" != "$1" ]; then
 	set -- php-fpm7 -F -O "$@"
