@@ -300,7 +300,7 @@ class lizmapProject extends qgisProject
             $this->data['abstract'] = '';
         }
         $this->data['proj'] = $configOptions->projection->ref;
-        $this->data['bbox'] = join($configOptions->bbox, ', ');
+        $this->data['bbox'] = implode(', ', $configOptions->bbox);
 
         // Update WMSInformation
         $this->WMSInformation['ProjectCrs'] = $this->data['proj'];
@@ -891,7 +891,7 @@ class lizmapProject extends qgisProject
             'dataviz' => array(),
         );
         foreach ($this->cfg->datavizLayers as $order => $lc) {
-            if (!array_key_exists('layerId', $lc)) {
+            if (!property_exists($lc, 'layerId')) {
                 continue;
             }
             $layer = $this->findLayerByAnyName($lc->layerId);
