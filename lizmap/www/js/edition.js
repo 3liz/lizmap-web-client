@@ -423,7 +423,8 @@ OpenLayers.Geometry.pointOnSegment = function(point, segment) {
         lizMap.events.triggerEvent("lizmapeditiondrawfeatureactivated",
             {
                 'layerId': editionLayer['id'],
-                'editionConfig': editionLayer['config']
+                'editionConfig': editionLayer['config'],
+                'drawControl': editionLayer['drawControl']
             }
         );
     }
@@ -1017,6 +1018,8 @@ OpenLayers.Geometry.pointOnSegment = function(point, segment) {
             $('#edition-segment-length').text(lastSegmentLength.toFixed(3));
 
         }
+
+        lizMap.mainLizmap.edition.lastSegmentLength = lastSegmentLength;
     }
 
     /*

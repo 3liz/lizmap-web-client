@@ -1,5 +1,6 @@
-import {mainEventDispatcher} from '../modules/Globals.js';
+import Edition from '../modules/Edition.js';
 import Geolocation from '../modules/Geolocation.js';
+import GeolocationSurvey from '../modules/GeolocationSurvey.js';
 
 export default class Lizmap {
 
@@ -7,24 +8,15 @@ export default class Lizmap {
         lizMap.events.on({
             uicreated: () => {
                 this._lizmap3 = lizMap;
+                this.edition = new Edition();
                 this.geolocation = new Geolocation();
-                this.lizmapEditionDrawFeatureActivated = false;
-                this.lizmapEditionLayerGeometry = '';
-            },
-            lizmapeditiondrawfeatureactivated: (properties) => {
-                this.lizmapEditionDrawFeatureActivated = true;
-                this.lizmapEditionLayerGeometry = properties.editionConfig.geometryType;
-                mainEventDispatcher.dispatch('lizmapEditionDrawFeatureChanged');
-            },
-            lizmapeditiondrawfeaturedeactivated: () => {
-                this.lizmapEditionDrawFeatureActivated = false;
-                mainEventDispatcher.dispatch('lizmapEditionDrawFeatureChanged');
+                this.geolocationSurvey = new GeolocationSurvey();
             }
         });
     }
 
-    get hasEditionLayers() {
-        return 'editionLayers' in this._lizmap3.config;
+    get lizmap3() {
+        return this._lizmap3;
     }
 
     get projection() {
