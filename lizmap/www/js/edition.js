@@ -1715,6 +1715,10 @@ OpenLayers.Geometry.pointOnSegment = function(point, segment) {
         }
 
         var eform = $('#edition-form-container form');
+        var srid = eform.find('input[name="liz_srid"]').val();
+        if (srid != '' && !('EPSG:'+srid in Proj4js.defs)) {
+            Proj4js.defs['EPSG:'+srid] = eform.find('input[name="liz_proj4"]').val();
+        }
 
         // Get edition datasource geometry column name
 
@@ -1728,7 +1732,7 @@ OpenLayers.Geometry.pointOnSegment = function(point, segment) {
         lizMap.events.triggerEvent("lizmapeditiongeometryupdated",
             {
                 'layerId': formLayerId,
-                'featureId': formLayerId,
+                'featureId': formFeatureId,
                 'geometry': geom,
                 'srid': srid
             }
