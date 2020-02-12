@@ -1357,7 +1357,7 @@ OpenLayers.Geometry.pointOnSegment = function(point, segment) {
         lizMap.events.triggerEvent("lizmapeditiongeometryupdated",
             {
                 'layerId': formLayerId,
-                'featureId': formLayerId,
+                'featureId': formFeatureId,
                 'geometry': geom,
                 'srid': srid
             }
