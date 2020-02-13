@@ -100,7 +100,10 @@ export default class Geolocation {
     }
 
     get accuracy() {
-        return this._geolocation.getAccuracy();
+        if(this._geolocation.getAccuracy()){
+            return this._geolocation.getAccuracy().toFixed(3);
+        }
+        return undefined;
     }
 
     get isTracking() {

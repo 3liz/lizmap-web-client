@@ -1019,7 +1019,7 @@ OpenLayers.Geometry.pointOnSegment = function(point, segment) {
 
         }
 
-        lizMap.mainLizmap.edition.lastSegmentLength = lastSegmentLength;
+        lizMap.mainLizmap.edition.lastSegmentLength = lastSegmentLength.toFixed(3);
     }
 
     /*

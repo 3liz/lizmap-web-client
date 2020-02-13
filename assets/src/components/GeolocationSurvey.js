@@ -8,19 +8,19 @@ export default class GeolocationSurvey extends HTMLElement {
 
     connectedCallback() {
         const mainTemplate = () => html`
-        <div class="${mainLizmap.geolocation.isLinkedToEdition && ['line', 'polygon'].includes(mainLizmap.edition.layerGeometry) ? '' : 'hide'}">
+        <div class="${mainLizmap.geolocation.isTracking && mainLizmap.geolocation.isLinkedToEdition && ['line', 'polygon'].includes(mainLizmap.edition.layerGeometry) ? '' : 'hide'}">
             <div class="control-group">
                 <label class="jforms-label control-label"><button class="btn btn-primary ${mainLizmap.geolocationSurvey.distanceMode ? 'active' : ''}" @click=${() => mainLizmap.geolocationSurvey.toggleDistanceMode()}>Distance</button></label>
                 <div class="controls">
                     <input class="jforms-ctrl-input input-small" type="number" min="0" @change=${ (event) => mainLizmap.geolocationSurvey.distanceLimit = parseInt(event.target.value)} ?disabled=${!mainLizmap.geolocationSurvey.distanceMode}>
-                    ${mainLizmap.edition.lastSegmentLength}
+                    ${mainLizmap.geolocationSurvey.distanceMode ? html`${mainLizmap.edition.lastSegmentLength}` : ''}
                 </div>
             </div>
             <div class="control-group">
                 <label class="jforms-label control-label"><button class="btn btn-primary ${mainLizmap.geolocationSurvey.accuracyMode ? 'active' : ''}" @click=${() => mainLizmap.geolocationSurvey.toggleAccuracyMode()}>Accuracy</button></label>
                 <div class="controls">
                     <input class="jforms-ctrl-input input-small" type="number" min="0" @change=${ (event) => mainLizmap.geolocationSurvey.accuracyLimit = parseInt(event.target.value)} ?disabled=${!mainLizmap.geolocationSurvey.accuracyMode}>
-                    ${mainLizmap.geolocation.accuracy}
+                    ${mainLizmap.geolocationSurvey.accuracyMode ? html`${mainLizmap.geolocation.accuracy}` : ''}
                 </div>
             </div>
         </div>`;
@@ -36,11 +36,27 @@ export default class GeolocationSurvey extends HTMLElement {
 
         mainEventDispatcher.addListener(
             () => {
+                render(mainTemplate(), this);
+            },
+            'geolocation.isTracking'
+        );
+
+        mainEventDispatcher.addListener(
+            () => {
                 if (mainLizmap.geolocationSurvey.distanceMode){
                     render(mainTemplate(), this);
                 }
             },
             'edition.lastSegmentLength'
+        );
+
+        mainEventDispatcher.addListener(
+            () => {
+                if (mainLizmap.geolocationSurvey.accuracyMode) {
+                    render(mainTemplate(), this);
+                }
+            },
+            'geolocation.accuracy'
         );
 
         mainEventDispatcher.addListener(

@@ -9,18 +9,19 @@ export default class GeolocationSurvey {
         this._distanceMode = false;
         this._accuracyMode = false;
 
-        this._beep = new AudioContext();
-
         // Draw automatically a point and beep when lastSegmentLength >= distanceLimit
         mainEventDispatcher.addListener(
             () => {
-                if (!this.accuracyMode || (this.accuracyMode && mainLizmap.geolocation.accuracy <= this.accuracyLimit)){
+                if (mainLizmap.geolocation.isTracking &&  (!this.accuracyMode || (this.accuracyMode && mainLizmap.geolocation.accuracy <= this.accuracyLimit))){
                     if (this.distanceMode && mainLizmap.edition.lastSegmentLength >= this.distanceLimit) {
                         // Draw
                         const node = mainLizmap.edition.drawControl.handler.point.geometry;
                         mainLizmap.edition.drawControl.handler.insertXY(node.x, node.y);
 
                         // Beep
+                        if (!this.hasOwnProperty('_beep')){
+                            this._beep = new AudioContext();
+                        }
                         const freq = 520;
                         const duration = 0.2;
                         const volume = 1;
