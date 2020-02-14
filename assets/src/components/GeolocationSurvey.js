@@ -9,6 +9,12 @@ export default class GeolocationSurvey extends HTMLElement {
     connectedCallback() {
         const mainTemplate = () => html`
         <div class="${mainLizmap.geolocation.isTracking && mainLizmap.geolocation.isLinkedToEdition && ['line', 'polygon'].includes(mainLizmap.edition.layerGeometry) ? '' : 'hide'}">
+            <div class="control-group" style="text-align:center">
+                <div class="btn-group">
+                    <button class="btn btn-primary ${mainLizmap.geolocationSurvey.beepMode ? 'active' : ''}" @click=${() => mainLizmap.geolocationSurvey.toggleBeepMode()}><i class="icon-music icon-white"></i></button>
+                    <button class="btn btn-primary ${mainLizmap.geolocationSurvey.vibrateMode ? 'active' : ''}" @click=${() => mainLizmap.geolocationSurvey.toggleVibrateMode()}>📳</button>
+                </div>
+            </div>
             <div class="control-group">
                 <label class="jforms-label control-label"><button class="btn btn-primary ${mainLizmap.geolocationSurvey.distanceMode ? 'active' : ''}" @click=${() => mainLizmap.geolocationSurvey.toggleDistanceMode()}>Distance</button></label>
                 <div class="controls">
@@ -71,6 +77,20 @@ export default class GeolocationSurvey extends HTMLElement {
                 render(mainTemplate(), this);
             },
             'geolocationSurvey.accuracyMode'
+        );
+
+        mainEventDispatcher.addListener(
+            () => {
+                render(mainTemplate(), this);
+            },
+            'geolocationSurvey.beepMode'
+        );
+
+        mainEventDispatcher.addListener(
+            () => {
+                render(mainTemplate(), this);
+            },
+            'geolocationSurvey.vibrateMode'
         );
     }
 
