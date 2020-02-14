@@ -8,6 +8,8 @@ export default class GeolocationSurvey {
         this.accuracyLimit = 0;
         this._distanceMode = false;
         this._accuracyMode = false;
+        this._beepMode = false;
+        this._vibrateMode = false;
 
         // Draw automatically a point and beep when lastSegmentLength >= distanceLimit
         mainEventDispatcher.addListener(
@@ -19,22 +21,29 @@ export default class GeolocationSurvey {
                         mainLizmap.edition.drawControl.handler.insertXY(node.x, node.y);
 
                         // Beep
-                        if (!this.hasOwnProperty('_beep')){
-                            this._beep = new AudioContext();
-                        }
-                        const freq = 520;
-                        const duration = 0.2;
-                        const volume = 1;
+                        if(this.beepMode){
+                            if (!this.hasOwnProperty('_beep')) {
+                                this._beep = new AudioContext();
+                            }
+                            const freq = 520;
+                            const duration = 0.2;
+                            const volume = 1;
 
-                        const v = this._beep.createOscillator();
-                        const u = this._beep.createGain();
-                        v.connect(u);
-                        v.frequency.value = freq;
-                        v.type = "square";
-                        u.connect(this._beep.destination);
-                        u.gain.value = volume;
-                        v.start(this._beep.currentTime);
-                        v.stop(this._beep.currentTime + duration);
+                            const v = this._beep.createOscillator();
+                            const u = this._beep.createGain();
+                            v.connect(u);
+                            v.frequency.value = freq;
+                            v.type = "square";
+                            u.connect(this._beep.destination);
+                            u.gain.value = volume;
+                            v.start(this._beep.currentTime);
+                            v.stop(this._beep.currentTime + duration);
+                        }
+
+                        // Vibrate
+                        if (this.vibrateMode) {
+                            window.navigator.vibrate(200);
+                        }
                     }
                 }
 
@@ -61,5 +70,25 @@ export default class GeolocationSurvey {
         this._accuracyMode = !this._accuracyMode;
 
         mainEventDispatcher.dispatch('geolocationSurvey.accuracyMode');
+    }
+
+    get beepMode() {
+        return this._beepMode;
+    }
+
+    toggleBeepMode() {
+        this._beepMode = !this._beepMode;
+
+        mainEventDispatcher.dispatch('geolocationSurvey.beepMode');
+    }
+
+    get vibrateMode() {
+        return this._vibrateMode;
+    }
+
+    toggleVibrateMode() {
+        this._vibrateMode = !this._vibrateMode;
+
+        mainEventDispatcher.dispatch('geolocationSurvey.vibrateMode');
     }
 }
