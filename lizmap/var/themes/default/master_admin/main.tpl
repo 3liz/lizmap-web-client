@@ -1,6 +1,6 @@
 {meta_html jquery_ui 'theme'}
-{meta_html css $j_basepath.'css/bootstrap.css'}
-{meta_html css $j_basepath.'css/bootstrap-responsive.css'}
+{meta_html css $j_basepath.'assets/css/bootstrap.css'}
+{meta_html css $j_basepath.'assets/css/bootstrap-responsive.css'}
 
 {meta_html css $j_basepath.'css/main.css'}
 {meta_html css $j_basepath.'css/admin.css'}

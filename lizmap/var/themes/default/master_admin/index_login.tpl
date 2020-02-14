@@ -1,6 +1,6 @@
 {meta_html jquery_ui 'default'}
-{meta_html css $j_basepath.'css/bootstrap.css'}
-{meta_html css $j_basepath.'css/bootstrap-responsive.css'}
+{meta_html css $j_basepath.'assets/css/bootstrap.css'}
+{meta_html css $j_basepath.'assets/css/bootstrap-responsive.css'}
 
 {meta_html css $j_basepath.'css/main.css'}
 {meta_html css $j_basepath.'css/admin.css'}
@@ -10,7 +10,7 @@
 {meta_html csstheme 'css/admin.css'}
 {meta_html csstheme 'css/media.css'}
 
-{meta_html js $j_basepath.'js/bootstrap.js'}
+{meta_html js $j_basepath.'assets/js/bootstrap.js'}
 
 <div id="header">
   <div id="logo">
