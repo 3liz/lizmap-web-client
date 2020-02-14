@@ -166,8 +166,8 @@ class lizMapCtrl extends jController
         }
 
         // Add other jForms js
-        $rep->addJSLink($bp.'js/ckeditor5/ckeditor.js');
-        $rep->addJSLink($bp.'js/ckeditor5/ckeditor_lizmap.js');
+        $rep->addJSLink($bp.'assets/js/ckeditor5/ckeditor.js');
+        $rep->addJSLink($bp.'assets/js/ckeditor5/ckeditor_lizmap.js');
         $rep->addJSLink($bp.'js/fileUpload/jquery.fileupload.js');
         $rep->addJSLink($bp.'js/bootstrapErrorDecoratorHtml.js');
 
@@ -184,7 +184,7 @@ class lizMapCtrl extends jController
             'ign' => jUrl::get('lizmap~ign:address'),
             'edition' => jUrl::get('lizmap~edition:getFeature'),
             'permalink' => jUrl::getFull('view~map:index'),
-            'dataTableLanguage' => $bp.'js/dataTables/'.jApp::config()->locale.'.json',
+            'dataTableLanguage' => $bp.'assets/js/dataTables/'.jApp::config()->locale.'.json',
             'basepath' => $bp,
             'geobookmark' => jUrl::get('lizmap~geobookmark:index'),
         );
