@@ -85,7 +85,7 @@ export default class Geolocation {
         }
     }
 
-    get firstGeolocation(){
+    get firstGeolocation() {
         return this._firstGeolocation;
     }
 
@@ -100,7 +100,7 @@ export default class Geolocation {
     }
 
     get accuracy() {
-        if(this._geolocation.getAccuracy()){
+        if (this._geolocation.getAccuracy()) {
             return this._geolocation.getAccuracy().toFixed(3);
         }
         return undefined;

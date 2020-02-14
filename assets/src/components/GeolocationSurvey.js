@@ -1,5 +1,5 @@
-import { mainLizmap, mainEventDispatcher } from '../modules/Globals.js';
-import { html, render } from 'lit-html';
+import {mainLizmap, mainEventDispatcher} from '../modules/Globals.js';
+import {html, render} from 'lit-html';
 
 export default class GeolocationSurvey extends HTMLElement {
     constructor() {
@@ -16,16 +16,23 @@ export default class GeolocationSurvey extends HTMLElement {
                 </div>
             </div>
             <div class="control-group">
-                <label class="jforms-label control-label"><button class="btn btn-primary ${mainLizmap.geolocationSurvey.distanceMode ? 'active' : ''}" @click=${() => mainLizmap.geolocationSurvey.toggleDistanceMode()}>Distance</button></label>
+                <label class="jforms-label control-label"><button class="btn btn-primary ${mainLizmap.geolocationSurvey.distanceMode ? 'active' : ''}" @click=${() => mainLizmap.geolocationSurvey.toggleDistanceMode()}>Distance&nbsp;(m)</button></label>
                 <div class="controls">
-                    <input class="jforms-ctrl-input input-small" type="number" min="0" @change=${ (event) => mainLizmap.geolocationSurvey.distanceLimit = parseInt(event.target.value)} ?disabled=${!mainLizmap.geolocationSurvey.distanceMode}>
+                    <input class="jforms-ctrl-input input-small" type="number" min="0" @change=${ (event) => mainLizmap.geolocationSurvey.distanceLimit = parseInt(event.target.value)}>
                     ${mainLizmap.geolocationSurvey.distanceMode ? html`${mainLizmap.edition.lastSegmentLength}` : ''}
                 </div>
             </div>
             <div class="control-group">
-                <label class="jforms-label control-label"><button class="btn btn-primary ${mainLizmap.geolocationSurvey.accuracyMode ? 'active' : ''}" @click=${() => mainLizmap.geolocationSurvey.toggleAccuracyMode()}>Accuracy</button></label>
+                <label class="jforms-label control-label"><button class="btn btn-primary ${mainLizmap.geolocationSurvey.timeMode ? 'active' : ''}" @click=${() => mainLizmap.geolocationSurvey.toggleTimeMode()}>Temps&nbsp;(s)</button></label>
                 <div class="controls">
-                    <input class="jforms-ctrl-input input-small" type="number" min="0" @change=${ (event) => mainLizmap.geolocationSurvey.accuracyLimit = parseInt(event.target.value)} ?disabled=${!mainLizmap.geolocationSurvey.accuracyMode}>
+                    <input class="jforms-ctrl-input input-small" type="number" min="0" @change=${ (event) => mainLizmap.geolocationSurvey.timeLimit = parseInt(event.target.value)}>
+                    ${mainLizmap.geolocationSurvey.timeMode ? html`${mainLizmap.geolocationSurvey.timeCount}` : ''}
+                </div>
+            </div>
+            <div class="control-group">
+                <label class="jforms-label control-label"><button class="btn btn-primary ${mainLizmap.geolocationSurvey.accuracyMode ? 'active' : ''}" @click=${() => mainLizmap.geolocationSurvey.toggleAccuracyMode()}>Accuracy&nbsp;(m)</button></label>
+                <div class="controls">
+                    <input class="jforms-ctrl-input input-small" type="number" min="0" @change=${ (event) => mainLizmap.geolocationSurvey.accuracyLimit = parseInt(event.target.value)}>
                     ${mainLizmap.geolocationSurvey.accuracyMode ? html`${mainLizmap.geolocation.accuracy}` : ''}
                 </div>
             </div>
@@ -49,7 +56,7 @@ export default class GeolocationSurvey extends HTMLElement {
 
         mainEventDispatcher.addListener(
             () => {
-                if (mainLizmap.geolocationSurvey.distanceMode){
+                if (mainLizmap.geolocationSurvey.distanceMode) {
                     render(mainTemplate(), this);
                 }
             },
@@ -70,6 +77,20 @@ export default class GeolocationSurvey extends HTMLElement {
                 render(mainTemplate(), this);
             },
             'geolocationSurvey.distanceMode'
+        );
+
+        mainEventDispatcher.addListener(
+            () => {
+                render(mainTemplate(), this);
+            },
+            'geolocationSurvey.timeMode'
+        );
+
+        mainEventDispatcher.addListener(
+            () => {
+                render(mainTemplate(), this);
+            },
+            'geolocationSurvey.timeCount'
         );
 
         mainEventDispatcher.addListener(
