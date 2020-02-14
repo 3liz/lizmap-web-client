@@ -1,4 +1,4 @@
-import { mainLizmap, mainEventDispatcher } from '../modules/Globals.js';
+import {mainLizmap, mainEventDispatcher} from '../modules/Globals.js';
 
 export default class Lizmap {
 
@@ -38,12 +38,12 @@ export default class Lizmap {
         }
     }
 
-    get lastSegmentLength(){
+    get lastSegmentLength() {
         return this._lastSegmentLength;
     }
 
-    set lastSegmentLength(lastSegmentLength){
-        if (this._lastSegmentLength !== lastSegmentLength){
+    set lastSegmentLength(lastSegmentLength) {
+        if (this._lastSegmentLength !== lastSegmentLength) {
             this._lastSegmentLength = lastSegmentLength;
 
             mainEventDispatcher.dispatch('edition.lastSegmentLength');
