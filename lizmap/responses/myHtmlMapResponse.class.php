@@ -31,8 +31,8 @@ class myHtmlMapResponse extends jResponseHtml
         foreach ($css as $file) {
             $this->addCSSLink($file);
         }
-        $this->addCSSLink($bp.'css/bootstrap.css');
-        $this->addCSSLink($bp.'css/bootstrap-responsive.css');
+        $this->addCSSLink($bp.'assets/css/bootstrap.css');
+        $this->addCSSLink($bp.'assets/css/bootstrap-responsive.css');
         $this->addCSSLink($bp.'assets/css/jquery.dataTables.css');
         $this->addCSSLink($bp.'assets/css/jquery.dataTables.bootstrap.css');
         $this->addCSSLink($bp.'assets/js/TreeTable/stylesheets/jquery.treeTable.css');
@@ -67,7 +67,7 @@ class myHtmlMapResponse extends jResponseHtml
             $this->addJSLink($file);
         }
         $this->addJSLink($bp.'js/jquery.combobox.js');
-        $this->addJSLink($bp.'js/bootstrap.js');
+        $this->addJSLink($bp.'assets/js/bootstrap.js');
         $this->addJSLink($bp.'assets/js/TreeTable/javascripts/jquery.treeTable.js');
         $this->addJSLink($bp.'assets/js/jquery.dataTables.min.js');
         $this->addJSLink($bp.'assets/js/jquery.dataTables.bootstrap.js');
