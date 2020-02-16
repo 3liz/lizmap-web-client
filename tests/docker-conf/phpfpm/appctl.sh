@@ -67,6 +67,7 @@ function resetApp() {
 
 
 function launchInstaller() {
+    php /srv/lzm/tests/docker-conf/phpfpm/initdb.php
     su $APP_USER -c "php $APPDIR/install/installer.php"
 }
 

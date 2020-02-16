@@ -7,6 +7,7 @@ if [ "$COMMAND" == "" ]; then
     echo "Error: command is missing"
     echo "Possible commands: clean_tmp, reset, install, rights, composer_install, "
     echo "composer_update, unittests, shell, shellroot, ldapreset, ldapusers"
+    echo "pgsql"
     exit 1;
 fi
 
@@ -34,6 +35,9 @@ case $COMMAND in
       ;;
     ldapusers)
        docker exec -it lizmap_test_ldap /bin/ctl.sh showusers
+       ;;
+    pgsql)
+       docker exec -it --user postgres -e PGPASSWORD="lizmap1234!" lizmap_test_pgsql psql --username=lizmap lizmap
        ;;
     *)
         echo "wrong command"

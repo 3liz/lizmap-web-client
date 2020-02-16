@@ -6,14 +6,22 @@
 ; name of the default profile to use for any connection
 default=jauth
 jacl2_profile=jauth
+lizlog=jauth
 
 [jdb:jauth]
-driver=sqlite3
-database="var:db/jauth.db"
+;driver=sqlite3
+;database="var:db/jauth.db"
 
-[jdb:lizlog]
-driver=sqlite3
-database="var:db/logs.db"
+driver=pgsql
+host=pgsql
+database=lizmap
+user=lizmap
+password="lizmap1234!"
+search_path=lizmap,public
+
+;[jdb:lizlog]
+;driver=sqlite3
+;database="var:db/logs.db"
 
 ; when you have charset issues, enable force_encoding so the connection will be
 ; made with the charset indicated in jelix config
