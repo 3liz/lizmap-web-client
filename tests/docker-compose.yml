@@ -1,5 +1,39 @@
 version: '3'
 services:
+  pgsql:
+    image: mdillon/postgis:11
+    container_name: lizmap_test_pgsql
+    restart: always
+    environment:
+      POSTGRES_DB: lizmap
+      POSTGRES_PASSWORD: lizmap1234!
+      POSTGRES_USER: lizmap
+    volumes:
+      - pg_data:/var/lib/postgresql
+    ports:
+      - "8131:5432"
+  redis:
+    image: redis:5
+    container_name: lizmap_test_redis
+  openldap:
+    build: ./docker-conf/openldap
+    container_name: lizmap_test_ldap
+    environment:
+      #SLAPD_FORCE_RECONFIGURE: false
+      SLAPD_PASSWORD: "passlizmap"
+      SLAPD_ORGANISATION: "Lizmap"
+      SLAPD_DOMAIN: "tests.lizmap"
+    volumes:
+      - "./docker-conf/openldap/ldif:/customldif"
+  lizmap:
+    build: ./docker-conf/phpfpm
+    container_name: lizmap_test_php
+    volumes:
+      - "../:/srv/lzm/"
+    depends_on:
+      - pgsql
+      - redis
+      - openldap
   web:
     image: nginx:alpine
     container_name: lizmap_test_nginx
@@ -11,21 +45,6 @@ services:
       - "8130:80"
     depends_on:
       - lizmap
-  lizmap:
-    build: ./docker-conf/phpfpm
-    container_name: lizmap_test_php
-    volumes:
-      - "../:/srv/lzm/"
-  openldap:
-    build: ./docker-conf/openldap
-    container_name: lizmap_test_ldap
-    environment:
-      #SLAPD_FORCE_RECONFIGURE: false
-      SLAPD_PASSWORD: "passlizmap"
-      SLAPD_ORGANISATION: "Lizmap"
-      SLAPD_DOMAIN: "tests.lizmap"
-    volumes:
-      - "./docker-conf/openldap/ldif:/customldif"
   map:
     container_name: lizmap_test_qgis
     image: 3liz/qgis-map-server:3.4
@@ -40,6 +59,5 @@ services:
     volumes:
       - ../lizmap/install/:/srv/projects
       - ./wps-data:/srv/data
-  redis:
-    image: redis:5
-    container_name: lizmap_test_redis
+volumes:
+  pg_data: {}
