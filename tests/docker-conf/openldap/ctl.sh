@@ -16,7 +16,7 @@ case $COMMAND in
       #ldapsearch -x -D cn=admin,dc=tests,dc=lizmap -w passlizmap -b "dc=tests,dc=jelix" "(objectClass=*)"
       ;;
     showusers)
-      ldapsearch -x -D cn=admin,dc=tests,dc=lizmap -w passlizmap -b "dc=tests,dc=jelix" "(objectClass=*)"
+      ldapsearch -x -D cn=admin,dc=tests,dc=lizmap -w passlizmap -b "dc=tests,dc=lizmap" "(objectClass=*)"
       ;;
     *)
         echo "wrong command"

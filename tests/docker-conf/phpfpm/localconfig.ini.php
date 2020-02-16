@@ -8,14 +8,17 @@
 ;chmodDir=0775
 
 [modules]
-;; uncomment it if you want to use ldap for authentication
-;; see documentation to complete the ldap configuration
-ldapdao.access = 0
 lizmap.installparam = demo
 
+;; to use ldap for authentication
+;; 1. set ldapdao.access=2
+;; 2. set driver=ldapdao below
+;; 3. launch `lizmap-ctl  install`
+ldapdao.access = 0
+
+
 [coordplugin_auth]
-;; uncomment it if you want to use ldap for authentication
-;; see documentation to complete the ldap configuration
+;; change it to ldapdao if you want to use ldap for authentication
 driver = Db
 
 

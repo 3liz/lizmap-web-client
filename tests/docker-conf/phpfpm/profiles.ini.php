@@ -41,21 +41,20 @@ search_path=lizmap,public
 
 ; ldap configuration. See documentation
 [ldap:lizmapldap]
-hostname=localhost
+hostname=openldap
 port=389
-adminUserDn="cn=admin,ou=lizmap,dc=com"
-adminPassword=""
+adminUserDn="cn=admin,dc=tests,dc=lizmap"
+adminPassword="passlizmap"
 
 ; base dn to search users. Used to search a user using the filter from searchUserFilter
 ; example for Active Directory: "ou=ADAM users,o=Microsoft,c=US", or "OU=Town,DC=my-town,DC=com"
-searchUserBaseDN="dc=XY,dc=fr"
+searchUserBaseDN="ou=people,dc=tests,dc=lizmap"
 
 ; filter to get user information, with the given login name
 ; example for Active Directory: "(sAMAccountName=%%LOGIN%%)"
-searchUserFilter="(&(objectClass=posixAccount)(uid=%%LOGIN%%))"
-; it can be a list:
-;searchUserFilter[]=...
-;searchUserFilter[]=...
+searchUserFilter[]="(&(objectClass=inetOrgPerson)(uid=%%LOGIN%%))"
+searchUserFilter[]="(&(objectClass=simpleSecurityObject)(cn=%%LOGIN%%))"
+
 
 ; the dn to bind the user to login.
 ; The value can contain a `?` that will be replaced by the corresponding
@@ -63,7 +62,7 @@ searchUserFilter="(&(objectClass=posixAccount)(uid=%%LOGIN%%))"
 ; Or it can contain  `%%LOGIN%%`, replaced by the given login
 ; Or it can contain only an attribute name, starting with a `$`: the
 ; attribute should then contain a full DN.
-bindUserDN="uid=%?%,ou=users,dc=XY,dc=fr"
+bindUserDN="uid=%?%,ou=people,dc=tests,dc=lizmap"
 ;It can be a list of DN template:
 ;bindUserDN[]= ...
 ;bindUserDN[]= ...
