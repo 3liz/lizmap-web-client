@@ -146,5 +146,20 @@ cache_file_umask=
 
 [jcache:qgisprojects]
 enabled=1
-driver=file
 ttl=0
+driver=file
+
+;driver=redis_ext
+;host=redis
+;port=6379
+;db=1
+
+;[jcache:acl2db]
+;enabled=1
+;driver=redis_ext
+;host=redis
+;port=6379
+;db=2
+;ttl=0
+
+
