@@ -4,7 +4,7 @@ hideSensitiveServicesProperties=0
 ;Services
 ;list the different map services (servers, generic parameters, etc.)
 [services]
-wmsServerURL="http://map:8200"
+wmsServerURL="http://map:8080/ows/"
 ;List of URL available for the web client
 onlyMaps=off
 defaultRepository=montpellier
@@ -34,7 +34,8 @@ qgisServerVersion=3.0
 wmsMaxWidth=3000
 wmsMaxHeight=3000
 projectSwitcher=off
-relativeWMSPath=0
+relativeWMSPath=on
+rootRepositories="/srv/lzm/lizmap/install/"
 requestProxyEnabled=0
 requestProxyType=http
 requestProxyNotForDomain="localhost,127.0.0.1"

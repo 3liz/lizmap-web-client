@@ -36,8 +36,9 @@ services:
       QGSRV_LOGGING_LEVEL: DEBUG
       QGSRV_USER: ${LIZMAP_USER_ID}:${LIZMAP_GROUP_ID}
       ROUTER_HOST: map
+      QGSRV_SERVER_WORKERS: 4
     volumes:
-      - ./qgis-projects:/srv/projects
+      - ../lizmap/install/:/srv/projects
       - ./wps-data:/srv/data
   redis:
     image: redis:5
