@@ -74,8 +74,13 @@ Go to https://github.com/3liz/lizmap-web-client/issues and post issues you find.
 
 ## Testing your changes
 
-You can test your changes by running a Vagrant machine. It allows to create
-quickly a virtual machine with all softwares needed by Lizmap (PostgreSQL, QGIS Server...).
+You can test your changes, or you can launch unit tests, by running some 
+Docker containers. Go into tests/ and read the README.md file. 
+A docker-compose.yml file is provided, launching a full stack of softwares to 
+run Lizmap (nginx, php-fpm, qgis, postgresql...). 
+
+You can also use a Vagrant machine (although it is deprecated). It allows to 
+create a virtual machine with all softwares needed by Lizmap (PostgreSQL, QGIS Server...).
 See vagrant/README.md for details and to learn how to launch this VM.
 
 You can test with Android browsers in your Ubuntu Desktop thanks to [Anbox](https://docs.anbox.io/userguide/install.html#install-anbox).

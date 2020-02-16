@@ -2,6 +2,8 @@ Testing Lizmap
 ===============
 
 A docker configuration is provided to launch Lizmap into a container.
+You must install Docker on your machine first. Then you should execute
+the run-docker script.
 
 To launch containers the first time:
 
