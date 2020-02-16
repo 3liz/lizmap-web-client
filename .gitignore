@@ -41,7 +41,7 @@ build/
 docker/factory.manifest
 docker/.run
 docker/*.zip
-tests/vendor/
-tests/composer.lock
+tests/units/vendor/
+tests/units/composer.lock
 
 assets/node_modules/
