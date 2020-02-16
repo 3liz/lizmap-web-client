@@ -32,6 +32,7 @@ RUN apk --no-cache add git fcgi php7 php7-fpm \
     php7-gettext \
     php7-ctype \
     php7-ldap \
+    php7-pdo \
     openssl \
     wget
 
