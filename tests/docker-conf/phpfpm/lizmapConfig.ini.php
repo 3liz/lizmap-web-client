@@ -11,8 +11,10 @@ defaultRepository=montpellier
 cacheStorageType=file
 ;cacheStorageType=sqlite => store cached images in one sqlite file per repo/project/layer
 ;cacheStorageType=file => store cached images in one folder per repo/project/layer. The root folder is /tmp/
-cacheRedisHost=localhost
+;cacheStorageType=redis => store cached images into the redis database
+cacheRedisHost=redis
 cacheRedisPort=6379
+cacheRedisDb=0
 cacheExpiration=0
 ; default cache expiration : the default time to live of data, in seconds.
 ; 0 means no expiration, max : 2592000 seconds (30 days)

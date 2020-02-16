@@ -60,4 +60,14 @@ show a list of users (Jane and John). If there are not present, launch `lizmap-c
 You should then be able to connect yourself into lizmap with login jane (password: passjane) or
 login john (password: passjohn).
 
+Using Redis for cache
+=====================
 
+Into `lizmap/var/config/lizmapConfig.ini.php`, set `cacheStorageType=redis`
+into the `services` section.
+
+Into `lizmap/var/config/profiles.ini.php`, uncomment parameters into the `jcache:qgisprojects`
+section.
+
+You can inspect the content of Redis with `lizmap-ctl redis-cli`.
+ 
