@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+
+set -e
+
+export LIZMAP_USER_ID=${LIZMAP_USER_ID:-$(id -u)}
+export LIZMAP_GROUP_ID=${LIZMAP_GROUP_ID:-$(id -g)}
+
+CMD=$1
+
+if [ "$CMD" == "" ]; then
+    CMD="up -d"
+fi
+
+docker-compose $CMD
