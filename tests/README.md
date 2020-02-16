@@ -25,7 +25,7 @@ To stop containers:
 You can execute some commands into the php container, by using this command:
 
 ```
-./dockerappctl <command>
+./lizmap-ctl <command>
 ```
 
 Available commands:
@@ -43,6 +43,6 @@ This directory contains some unit tests.
 To launch tests:
 
 - Launch the lizmap application as indicated above.
-- launch `./dockerappctl unittests`
+- launch `./lizmap-ctl unittests`
 
 
