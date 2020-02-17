@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module xmlns="http://jelix.org/ns/module/1.0">
+    <info id="lizmapdemo@3liz.com" name="lizmapdemo" createdate="2020-02-17">
+        <version date="2020-02-17">3.4.0a1</version>
+        <label lang="en_US">lizmap demo</label>
+        <description lang="en_US" />
+        <license URL="http://www.mozilla.org/MPL/">Mozilla Public License</license>
+        <copyright>2011-2020 3liz</copyright>
+        <creator name="3liz" email="info@3liz.com"/>
+        <homepageURL>https://3liz.com</homepageURL>
+    </info>
+    <dependencies>
+        <jelix minversion="1.5" maxversion="1.6.*"/>
+        <module name="lizmap" />
+    </dependencies>
+</module>
