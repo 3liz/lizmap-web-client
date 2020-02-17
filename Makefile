@@ -107,7 +107,8 @@ build: debug
 	cd assets/ && npm run build
 
 tests: debug build
-	@echo "No tests yet. All is ok."
+	composer install --working-dir=tests/units/ --prefer-dist --no-ansi --no-interaction --ignore-platform-reqs --no-dev --no-suggest --no-progress
+	cd tests/units/ && php vendor/bin/phpunit
 
 clean:
 	rm -rf $(STAGE)

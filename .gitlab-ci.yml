@@ -32,6 +32,11 @@ tests:
     - make tests
   environment:
     name: snap
+  cache:
+    key: "tests-$CI_COMMIT_REF_SLUG"
+    paths:
+      - tests/units/vendor/
+      - tests/units/composer.lock
   dependencies:
     - build
   tags:
