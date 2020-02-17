@@ -66,7 +66,7 @@ class myHtmlMapResponse extends jResponseHtml
         foreach ($js as $file) {
             $this->addJSLink($file);
         }
-        $this->addJSLink($bp.'js/jquery.combobox.js');
+        $this->addJSLink($bp.'assets/js/jquery.combobox.js');
         $this->addJSLink($bp.'assets/js/bootstrap.js');
         $this->addJSLink($bp.'assets/js/TreeTable/javascripts/jquery.treeTable.js');
         $this->addJSLink($bp.'assets/js/jquery.dataTables.min.js');
