@@ -166,13 +166,13 @@ class lizMapCtrl extends jController
         }
 
         // Add other jForms js
-        $rep->addJSLink($bp.'js/ckeditor5/ckeditor.js');
-        $rep->addJSLink($bp.'js/ckeditor5/ckeditor_lizmap.js');
-        $rep->addJSLink($bp.'js/fileUpload/jquery.fileupload.js');
-        $rep->addJSLink($bp.'js/bootstrapErrorDecoratorHtml.js');
+        $rep->addJSLink($bp.'assets/js/ckeditor5/ckeditor.js');
+        $rep->addJSLink($bp.'assets/js/ckeditor5/ckeditor_lizmap.js');
+        $rep->addJSLink($bp.'assets/js/fileUpload/jquery.fileupload.js');
+        $rep->addJSLink($bp.'assets/js/bootstrapErrorDecoratorHtml.js');
 
         // Add bottom dock js
-        $rep->addJSLink($bp.'js/bottom-dock.js');
+        $rep->addJSLink($bp.'assets/js/bottom-dock.js');
 
         // Pass some configuration options to the web page through javascript var
         $lizUrls = array(
@@ -184,7 +184,7 @@ class lizMapCtrl extends jController
             'ign' => jUrl::get('lizmap~ign:address'),
             'edition' => jUrl::get('lizmap~edition:getFeature'),
             'permalink' => jUrl::getFull('view~map:index'),
-            'dataTableLanguage' => $bp.'js/dataTables/'.jApp::config()->locale.'.json',
+            'dataTableLanguage' => $bp.'assets/js/dataTables/'.jApp::config()->locale.'.json',
             'basepath' => $bp,
             'geobookmark' => jUrl::get('lizmap~geobookmark:index'),
         );
@@ -222,18 +222,18 @@ class lizMapCtrl extends jController
         $rep->title = $title;
 
         // Add search js
-        $rep->addJSLink($bp.'js/search.js');
+        $rep->addJSLink($bp.'assets/js/search.js');
 
         // Add moment.js for timemanager
         if ($lproj->hasTimemanagerLayers()) {
-            $rep->addJSLink($bp.'js/moment.js');
-            $rep->addJSLink($bp.'js/filter.js');
+            $rep->addJSLink($bp.'assets/js/moment.js');
+            $rep->addJSLink($bp.'assets/js/filter.js');
         }
 
         // Add atlas.js for atlas feature and additionnal CSS for right-dock max-width
         if ($lproj->hasAtlasEnabled()) {
             // Add JS
-            $rep->addJSLink($bp.'js/atlas.js');
+            $rep->addJSLink($bp.'assets/js/atlas.js');
 
             // Add CSS
             $options = $lproj->getOptions();
@@ -246,7 +246,7 @@ class lizMapCtrl extends jController
         }
 
         // Add qgis popup atlas JS
-        $rep->addJSLink($bp.'js/popupQgisAtlas.js');
+        $rep->addJSLink($bp.'assets/js/popupQgisAtlas.js');
 
         // Assign variables to template
         $assign = array_merge(array(
@@ -515,7 +515,7 @@ class lizMapCtrl extends jController
         //$assign['auth_url_return'] = jUrl::get('view~default:index');
 
         // switcher-layers-actions javascript
-        $rep->addJSLink($bp.'js/switcher-layers-actions.js');
+        $rep->addJSLink($bp.'assets/js/switcher-layers-actions.js');
 
         // Add Google Analytics ID
         $assign['googleAnalyticsID'] = '';

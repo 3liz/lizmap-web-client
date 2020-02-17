@@ -1,4 +1,4 @@
-{meta_html js $j_basepath.'js/services_configuration.js'}
+{meta_html js $j_basepath.'assets/js/services_configuration.js'}
 
 {jmessage_bootstrap}
 <h1>{@admin~admin.form.admin_services.h1@}</h1>
