@@ -51,8 +51,8 @@ engine=basic_significant
 ; because the jelix-www directory is outside the yourapp/www/ directory, you should create a link to
 ; jelix-www, or copy its content in yourapp/www/ (with a name like 'jelix' for example)
 ; so you should indicate the relative path of this link/directory to the basePath, or an absolute path.
-jelixWWWPath="jelix/"
-
+jelixWWWPath="assets/jelix/"
+jqueryPath="assets/jelix/jquery/"
 
 ; enable the parsing of the url. Set it to off if the url is already parsed by another program
 ; (like mod_rewrite in apache), if the rewrite of the url corresponds to a simple url, and if
