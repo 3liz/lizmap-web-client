@@ -29,7 +29,7 @@ class actionListener extends jEventListener{
                 'var actionConfigData = ' . json_encode($actionConfigData)
             );
             $css = array(
-                $bp.'css/action.css'
+                $bp.'assets/css/action.css'
             );
         }
         $event->add(

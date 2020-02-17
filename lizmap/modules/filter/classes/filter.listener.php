@@ -26,7 +26,7 @@ class filterListener extends jEventListener{
                 'var filterConfigData = ' . json_encode($filterConfigData)
             );
             $css = array(
-                $bp.'css/filter.css'
+                $bp.'assets/css/filter.css'
             );
         }
         $event->add(

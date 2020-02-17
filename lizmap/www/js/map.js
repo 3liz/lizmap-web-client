@@ -1214,7 +1214,7 @@ var lizMap = function() {
       if ( url != null && url != '' ) {
         html += '<tr id="legend-'+aNode.name+'" class="child-of-layer-'+aNode.name+' legendGraphics">';
         html += '<td colspan="2"><div class="legendGraphics">';
-        html += '<img data-src="'+url+'" src="'+lizUrls.basepath + 'css/images/download_layer.gif' + '"/>';
+        html += '<img data-src="'+url+'" src="'+lizUrls.basepath + 'assets/css/images/download_layer.gif' + '"/>';
         html += '</div></td>';
         html += '</tr>';
       }
@@ -1838,7 +1838,7 @@ var lizMap = function() {
       var url = getLayerLegendGraphicUrl(aNode.name, false);
       if ( url != null && url != '' ) {
           html += '<ul id="legend-layer-'+aNode.name+'">';
-          html += '<li><div><img data-src="'+url+'" src="'+lizUrls.basepath + 'css/images/download_layer.gif' + '"/></div></li>';
+          html += '<li><div><img data-src="'+url+'" src="'+lizUrls.basepath + 'assets/css/images/download_layer.gif' + '"/></div></li>';
           html += '</ul>';
       }
     }

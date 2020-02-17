@@ -27,7 +27,7 @@ class embedCtrl extends lizMapCtrl
 
         // add embed specific css
         $bp = jApp::config()->urlengine['basePath'];
-        $rep->addCSSLink($bp.'css/embed.css');
+        $rep->addCSSLink($bp.'assets/css/embed.css');
         $themePath = $bp.'themes/'.jApp::config()->theme.'/';
         $rep->addCSSLink($themePath.'css/embed.css');
         // force undisplay home

@@ -2,9 +2,9 @@
 {meta_html css $j_basepath.'assets/css/bootstrap.css'}
 {meta_html css $j_basepath.'assets/css/bootstrap-responsive.css'}
 
-{meta_html css $j_basepath.'css/main.css'}
-{meta_html css $j_basepath.'css/admin.css'}
-{meta_html css $j_basepath.'css/media.css'}
+{meta_html css $j_basepath.'assets/css/main.css'}
+{meta_html css $j_basepath.'assets/css/admin.css'}
+{meta_html css $j_basepath.'assets/css/media.css'}
 
 {meta_html csstheme 'css/main.css'}
 {meta_html csstheme 'css/admin.css'}
