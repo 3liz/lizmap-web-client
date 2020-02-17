@@ -14,7 +14,7 @@ class filterListener extends jEventListener{
         $dv = new filterConfig($event->repository, $event->project);
         if($dv->getStatus()){
             $js = array(
-                $bp.'js/filter.js'
+                $bp.'assets/js/filter.js'
             );
             $filterConfig = $dv->getConfig();
             $filterConfigData = array(
