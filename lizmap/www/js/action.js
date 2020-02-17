@@ -59,7 +59,7 @@ function getActionData(layerId, fid, name){
         }
     }
 
-    // Get data in parcours_reseau
+    // Request action and get data
     var url = actionConfigData.url;
     $.get( url, options, function(data) {
         // Report errors
@@ -72,6 +72,7 @@ function getActionData(layerId, fid, name){
         // Add returned features
         var features = addFeatures(layerId, item, data);
         //console.log(features);
+
         // Callbacks
         if( features.length > 0
             && 'callbacks' in item
@@ -117,7 +118,7 @@ function getActionData(layerId, fid, name){
             }
 
         }
-    });
+    }, 'json');
 
     action_current_object = layerId + '.' + fid + '.' + name;
 
