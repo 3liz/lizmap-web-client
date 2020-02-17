@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 ROOTDIR="/srv/lzm"
 APPDIR="$ROOTDIR/lizmap"
 APP_USER=usertest
