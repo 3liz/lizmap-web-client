@@ -71,8 +71,8 @@ class myHtmlMapResponse extends jResponseHtml
         $this->addJSLink($bp.'assets/js/TreeTable/javascripts/jquery.treeTable.js');
         $this->addJSLink($bp.'assets/js/jquery.dataTables.min.js');
         $this->addJSLink($bp.'assets/js/jquery.dataTables.bootstrap.js');
-        $this->addJSLink($bp.'js/map.js');
-        $this->addJSLink($bp.'js/lizmap.js');
+        $this->addJSLink($bp.'assets/js/map.js');
+        $this->addJSLink($bp.'assets/js/lizmap.js');
 
         $generalJSConfig = '
       Proj4js.libPath = "'.$bp.'assets/js/Proj4js/";
