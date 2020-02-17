@@ -28,6 +28,7 @@ RUN apt-get -y install \
     php${PHP_VERSION}-zip \
     php-redis \
     ldap-utils \
+    libsqlite3-mod-spatialite \
     ; apt-get clean
 
 ## Install Composer
@@ -41,7 +42,9 @@ RUN set -eux; \
     mkdir -p /etc/openldap/ /etc/ssl/ldap/; \
     chmod 755 /etc/openldap/ /etc/ssl/ldap/; \
     ln -s /usr/sbin/php-fpm7.3 /usr/sbin/php-fpm7; \
-    mkdir -p /run/php/
+    mkdir -p /run/php/ /srv/sqlite_ext; \
+    sed -i "/^;sqlite3.extension_dir =/c\sqlite3.extension_dir = \/srv\/sqlite_ext\/" /etc/php/${PHP_VERSION}/fpm/php.ini; \
+    cp /usr/lib/x86_64-linux-gnu/mod_spatialite.so /srv/sqlite_ext/mod_spatialite.so
 
 COPY ldap.conf /etc/openldap/ldap.conf
 COPY www.conf /etc/php/$PHP_VERSION/fpm/pool.d/www.conf

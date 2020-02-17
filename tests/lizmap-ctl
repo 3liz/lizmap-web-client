@@ -29,9 +29,9 @@ case $COMMAND in
     unittests)
         docker exec -t -i lizmap_test_php appctl.sh unittests;;
     shell)
-       docker exec -it --user usertest lizmap_test_php  /bin/sh -l;;
+       docker exec -it --user usertest lizmap_test_php  /bin/bash -l;;
     shellroot)
-       docker exec -it lizmap_test_php  /bin/sh  -l;;
+       docker exec -it lizmap_test_php  /bin/bash  -l;;
     ldapreset)
       docker exec -it lizmap_test_ldap /bin/ctl.sh reset
       ;;
