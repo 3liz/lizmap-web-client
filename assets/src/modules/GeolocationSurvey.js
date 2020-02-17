@@ -21,47 +21,6 @@ export default class GeolocationSurvey {
         this._intervalID = 0;
         // Geolocation position points for the last 'averageRecordLimit' seconds
         this._positionPointsRecord = {};
-
-        // Insert automatically a point when lastSegmentLength >= distanceLimit
-        // TODO : addListener when distanceMode activated, removeListener when distanceMode deactivated
-        mainEventDispatcher.addListener(
-            () => {
-                if (this.distanceMode && mainLizmap.edition.lastSegmentLength >= this.distanceLimit) {
-                    this._insertPoint();
-                }
-            },
-            'edition.lastSegmentLength'
-        );
-
-        // Record geolocation position points for the last 'averageRecordLimit' seconds
-        mainEventDispatcher.addListener(
-            () => {
-                if (this.averageRecordMode && this.averageRecordLimit > 0) {
-                    const now = Date.now();
-
-                    // Delete data older than averageRecordLimit
-                    for (const time in this._positionPointsRecord) {
-                        if (this._positionPointsRecord.hasOwnProperty(time)) {
-                            if ((now - parseInt(time)) >= this.averageRecordLimit * 1000) {
-                                delete this._positionPointsRecord[time];
-                            }
-                        }
-                    }
-                    this._positionPointsRecord[now] = mainLizmap.geolocation.position;
-                }
-            },
-            'geolocation.position'
-        );
-
-        // Disable time mode when edition ends
-        mainEventDispatcher.addListener(
-            () => {
-                if (!mainLizmap.edition.drawFeatureActivated){
-                    this.toggleTimeMode(false);
-                }
-            },
-            'edition.drawFeatureActivated'
-        );
     }
 
     // Private method to insert a point at current or average position
@@ -122,6 +81,27 @@ export default class GeolocationSurvey {
     toggleDistanceMode() {
         this._distanceMode = !this._distanceMode;
 
+        if (this._distanceModeCallback === undefined) {
+            this._distanceModeCallback = () => {
+                // Insert automatically a point when lastSegmentLength >= distanceLimit
+                if (this._distanceMode && parseFloat(mainLizmap.edition.lastSegmentLength) >= this.distanceLimit) {
+                    this._insertPoint();
+                }
+            };
+        }
+
+        if (this._distanceMode) {
+            mainEventDispatcher.addListener(
+                this._distanceModeCallback,
+                'edition.lastSegmentLength'
+            );
+        } else {
+            mainEventDispatcher.removeListener(
+                this._distanceModeCallback,
+                'edition.lastSegmentLength'
+            );
+        }
+
         mainEventDispatcher.dispatch('geolocationSurvey.distanceMode');
     }
 
@@ -131,6 +111,15 @@ export default class GeolocationSurvey {
 
     toggleTimeMode(mode) {
         this._timeMode = mode || !this._timeMode;
+
+        if (this._timeModeCallback === undefined) {
+            this._timeModeCallback = () => {
+                // Disable time mode when edition or geolocation end
+                if (!mainLizmap.edition.drawFeatureActivated || !mainLizmap.geolocation.isTracking) {
+                    this.toggleTimeMode(false);
+                }
+            };
+        }
 
         // Begin count
         if (this._timeMode) {
@@ -143,9 +132,29 @@ export default class GeolocationSurvey {
                     this._insertPoint();
                 }
             }, 1000);
+
+            mainEventDispatcher.addListener(
+                this._timeModeCallback,
+                'edition.drawFeatureActivated'
+            );
+
+            mainEventDispatcher.addListener(
+                this._timeModeCallback,
+                'geolocation.isTracking'
+            );
         } else {
             window.clearInterval(this._intervalID);
             this.timeCount = 0;
+
+            mainEventDispatcher.removeListener(
+                this._timeModeCallback,
+                'edition.drawFeatureActivated'
+            );
+
+            mainEventDispatcher.removeListener(
+                this._timeModeCallback,
+                'geolocation.isTracking'
+            );
         }
 
         mainEventDispatcher.dispatch('geolocationSurvey.timeMode');
@@ -178,8 +187,37 @@ export default class GeolocationSurvey {
     toggleAverageRecordMode() {
         this._averageRecordMode = !this._averageRecordMode;
 
-        // Empty record if mode is off
-        if (!this._averageRecordMode) {
+        if (this._averageRecordModeCallback === undefined) {
+            // Record geolocation position points for the last 'averageRecordLimit' seconds
+            this._averageRecordModeCallback = () => {
+                if (this._averageRecordMode && this.averageRecordLimit > 0) {
+                    const now = Date.now();
+
+                    // Delete data older than averageRecordLimit
+                    for (const time in this._positionPointsRecord) {
+                        if (this._positionPointsRecord.hasOwnProperty(time)) {
+                            if ((now - parseInt(time)) >= this.averageRecordLimit * 1000) {
+                                delete this._positionPointsRecord[time];
+                            }
+                        }
+                    }
+                    this._positionPointsRecord[now] = mainLizmap.geolocation.position;
+                }
+            };
+        }
+
+        if (this._averageRecordMode) {
+            mainEventDispatcher.addListener(
+                this._averageRecordModeCallback,
+                'geolocation.position'
+            );
+        } else {
+            mainEventDispatcher.removeListener(
+                this._averageRecordModeCallback,
+                'geolocation.position'
+            );
+
+            // Empty record
             this._positionPointsRecord = {};
         }
 
