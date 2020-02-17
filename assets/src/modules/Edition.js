@@ -1,6 +1,6 @@
 import {mainLizmap, mainEventDispatcher} from '../modules/Globals.js';
 
-export default class Lizmap {
+export default class Edition {
 
     constructor() {
         this.drawFeatureActivated = false;

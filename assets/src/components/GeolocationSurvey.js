@@ -36,6 +36,12 @@ export default class GeolocationSurvey extends HTMLElement {
                     ${mainLizmap.geolocationSurvey.accuracyMode ? html`${mainLizmap.geolocation.accuracy}` : ''}
                 </div>
             </div>
+            <div class="control-group">
+                <label class="jforms-label control-label"><button class="btn btn-primary ${mainLizmap.geolocationSurvey.averageRecordMode ? 'active' : ''}" @click=${() => mainLizmap.geolocationSurvey.toggleAverageRecordMode()}>Durée d'enregistrement&nbsp;(s)</button></label>
+                <div class="controls">
+                    <input class="jforms-ctrl-input input-small" type="number" min="0" @change=${ (event) => mainLizmap.geolocationSurvey.averageRecordLimit = parseInt(event.target.value)}>
+                </div>
+            </div>
         </div>`;
 
         render(mainTemplate(), this);
@@ -98,6 +104,13 @@ export default class GeolocationSurvey extends HTMLElement {
                 render(mainTemplate(), this);
             },
             'geolocationSurvey.accuracyMode'
+        );
+
+        mainEventDispatcher.addListener(
+            () => {
+                render(mainTemplate(), this);
+            },
+            'geolocationSurvey.averageRecordMode'
         );
 
         mainEventDispatcher.addListener(

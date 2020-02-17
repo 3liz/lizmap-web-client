@@ -1,4 +1,5 @@
 import {mainLizmap, mainEventDispatcher} from '../modules/Globals.js';
+import {transform} from 'ol/proj';
 
 export default class GeolocationSurvey {
 
@@ -7,17 +8,22 @@ export default class GeolocationSurvey {
         this.distanceLimit = 0;
         this.timeLimit = 0;
         this.accuracyLimit = 0;
+        this.averageRecordLimit = 0;
         this._distanceMode = false;
         this._timeMode = false;
         this._accuracyMode = false;
+        this._averageRecordMode = false;
         this._beepMode = false;
         this._vibrateMode = false;
 
         this._timeCount = 0;
         // Id we keep to later stop setInterval()
         this._intervalID = 0;
+        // Geolocation position points for the last 'averageRecordLimit' seconds
+        this._positionPointsRecord = {};
 
         // Insert automatically a point when lastSegmentLength >= distanceLimit
+        // TODO : addListener when distanceMode activated, removeListener when distanceMode deactivated
         mainEventDispatcher.addListener(
             () => {
                 if (this.distanceMode && mainLizmap.edition.lastSegmentLength >= this.distanceLimit) {
@@ -26,14 +32,61 @@ export default class GeolocationSurvey {
             },
             'edition.lastSegmentLength'
         );
+
+        // Record geolocation position points for the last 'averageRecordLimit' seconds
+        mainEventDispatcher.addListener(
+            () => {
+                if (this.averageRecordMode && this.averageRecordLimit > 0) {
+                    const now = Date.now();
+
+                    // Delete data older than averageRecordLimit
+                    for (const time in this._positionPointsRecord) {
+                        if (this._positionPointsRecord.hasOwnProperty(time)) {
+                            if ((now - parseInt(time)) >= this.averageRecordLimit * 1000) {
+                                delete this._positionPointsRecord[time];
+                            }
+                        }
+                    }
+                    this._positionPointsRecord[now] = mainLizmap.geolocation.position;
+                }
+            },
+            'geolocation.position'
+        );
+
+        // Disable time mode when edition ends
+        mainEventDispatcher.addListener(
+            () => {
+                if (!mainLizmap.edition.drawFeatureActivated){
+                    this.toggleTimeMode(false);
+                }
+            },
+            'edition.drawFeatureActivated'
+        );
     }
 
-    // Private method to insert a point at current position
+    // Private method to insert a point at current or average position
     _insertPoint() {
         if (mainLizmap.geolocation.isTracking && (!this.accuracyMode || (this.accuracyMode && mainLizmap.geolocation.accuracy <= this.accuracyLimit))) {
 
-            const node = mainLizmap.edition.drawControl.handler.point.geometry;
-            mainLizmap.edition.drawControl.handler.insertXY(node.x, node.y);
+            if (this.averageRecordMode && Object.keys(this._positionPointsRecord).length > 0) {
+                // Calculate average
+                let sumX = 0;
+                let sumY = 0;
+                let count = 0;
+                for (const time in this._positionPointsRecord) {
+                    if (this._positionPointsRecord.hasOwnProperty(time)) {
+                        sumX += parseFloat(this._positionPointsRecord[time][0]);
+                        sumY += parseFloat(this._positionPointsRecord[time][1]);
+                        count++;
+                    }
+                }
+
+                const averagePosition = transform([sumX / count, sumY / count], 'EPSG:4326', mainLizmap.projection);
+                mainLizmap.edition.drawControl.handler.insertXY(averagePosition[0], averagePosition[1]);
+            } else {
+                const node = mainLizmap.edition.drawControl.handler.point.geometry;
+                mainLizmap.edition.drawControl.handler.insertXY(node.x, node.y);
+            }
 
             // Beep
             if (this.beepMode) {
@@ -76,8 +129,8 @@ export default class GeolocationSurvey {
         return this._timeMode;
     }
 
-    toggleTimeMode() {
-        this._timeMode = !this._timeMode;
+    toggleTimeMode(mode) {
+        this._timeMode = mode || !this._timeMode;
 
         // Begin count
         if (this._timeMode) {
@@ -86,8 +139,8 @@ export default class GeolocationSurvey {
 
                 // Insert automatically a point when timeCount >= timeLimit
                 if (this.timeCount >= this.timeLimit) {
-                    this._insertPoint();
                     this.timeCount = 0;
+                    this._insertPoint();
                 }
             }, 1000);
         } else {
@@ -116,6 +169,21 @@ export default class GeolocationSurvey {
         this._accuracyMode = !this._accuracyMode;
 
         mainEventDispatcher.dispatch('geolocationSurvey.accuracyMode');
+    }
+
+    get averageRecordMode() {
+        return this._averageRecordMode;
+    }
+
+    toggleAverageRecordMode() {
+        this._averageRecordMode = !this._averageRecordMode;
+
+        // Empty record if mode is off
+        if (!this._averageRecordMode) {
+            this._positionPointsRecord = {};
+        }
+
+        mainEventDispatcher.dispatch('geolocationSurvey.averageRecordMode');
     }
 
     get beepMode() {
