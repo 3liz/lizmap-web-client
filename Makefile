@@ -126,6 +126,7 @@ $(DIST):
 	rm -rf $(DIST)/lizmap/www/cache/images/* && touch $(DIST)/lizmap/www/cache/images/.empty
 	rm -rf $(DIST)/lizmap/www/document/* && touch $(DIST)/lizmap/www/document/.empty
 	echo $(LIZMAP_VERSION) > $(DIST)/VERSION
+	chmod -R o-w $(DIST)/
 
 $(GENERIC_PACKAGE_DIR): $(DIST)
 	mkdir -p $(GENERIC_PACKAGE_DIR)
