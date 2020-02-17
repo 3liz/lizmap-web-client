@@ -61,7 +61,7 @@ export default class EventDispatcher {
      * @param {Array|String} supportedEvents list of events from which the listener
      *                       will be removed. if undefined or "*", it will be removed from any events
      */
-    removeListener(listener, supportedEvents) {
+    removeListener(listenerToRemove, supportedEvents) {
 
         if (supportedEvents === undefined) {
             supportedEvents = '*';
@@ -76,16 +76,23 @@ export default class EventDispatcher {
                 const properties = Object.getOwnPropertyNames(event);
                 this._listeners[event.type] = this._listeners[event.type].filter((item) => {
                     const [listener, expectedEvent] = item;
-                    let match = true;
+                    let matchEvent = true;
+                    // check if the event properties match the event to search
                     properties.forEach((propName) => {
-                        if (!match || propName == 'type') {
+                        if (!matchEvent || propName == 'type') {
                             return;
                         }
                         if (!(propName in expectedEvent) || event[propName] != expectedEvent[propName]) {
-                            match = false;
+                            matchEvent = false;
                         }
                     });
-                    return !match; // remove all events that match the given event
+
+                    if (matchEvent && listener === listenerToRemove) {
+                        // we found the listener, let's remove it from the list
+                        return false;
+                    }
+
+                    return true;
                 });
             }
         };
