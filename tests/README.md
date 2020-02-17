@@ -17,25 +17,51 @@ Then:
 ./run-docker 
 ```
 
+You must set lizmap.local into your /etc/hosts
+```
+127.0.0.1 lizmap.local
+```
+
+Then, in your browser, go to `http://lizmap.local:8130/`.
+
+If you want to use pgadmin or any other postgresql client, access credentials are:
+
+- host: `lizmap.local`
+- port: 8131
+- database: `lizmap`
+- user: `lizmap`
+- password: `lizmap1234!`
+
+
 To stop containers:
 
 ```
 ./run-docker stop 
 ```
 
+You may have to close connections to the postgresql database if you are using
+Pgadmin for example, before stopping containers. 
 
-You can execute some commands into the php container, by using this command:
+You can execute some commands into the php container or other containers, by using this command:
 
 ```
 ./lizmap-ctl <command>
 ```
 
+Note: Launch `reset` or `reset-sqlite` the first time you launch docker, if lizmap
+was already configured for the Vagrant machine.
+
 Available commands:
 
-* `reset`: to reinitialize the application 
+* `reset`: to reinitialize the application (with lizmap data stored into Postgresql) 
+* `reset-sqlite`: to reinitialize the application (with lizmap data stored into sqlite) 
 * `composer_update` and `composer_install`: to update PHP packages 
 * `clean_tmp`: to delete temp files 
 * `install`: to launch the Jelix installer
+* `shell` and `shellroot` : to enter into the php container
+* `ldapreset` to reset the ldap content, and `ldapusers` to store some users for tests
+* `pgsql` to enter into the interactive command line of postgresql (psql)
+* `redis-cli` to enter into the interactive command line of Redis (redis-cli)
 
 Launching unit-tests
 ====================

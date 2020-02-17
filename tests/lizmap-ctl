@@ -5,7 +5,7 @@ shift
 
 if [ "$COMMAND" == "" ]; then
     echo "Error: command is missing"
-    echo "Possible commands: clean_tmp, reset, install, rights, composer_install, "
+    echo "Possible commands: clean_tmp, reset, reset-sqlite, install, rights, composer_install, "
     echo "composer_update, unittests, shell, shellroot, ldapreset, ldapusers"
     echo "pgsql, redis-cli"
     exit 1;
@@ -16,6 +16,8 @@ case $COMMAND in
         docker exec -t -i lizmap_test_php appctl.sh clean_tmp;;
     reset)
         docker exec -t -i lizmap_test_php appctl.sh reset;;
+    reset-sqlite)
+        docker exec -t -i lizmap_test_php appctl.sh reset-sqlite;;
     install)
         docker exec -t -i lizmap_test_php appctl.sh install;;
     rights)
