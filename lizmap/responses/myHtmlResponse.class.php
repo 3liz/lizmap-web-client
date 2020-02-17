@@ -33,9 +33,9 @@ class myHtmlResponse extends jResponseHtml
         }
         $this->addCSSLink($bp.'assets/css/bootstrap.css');
         $this->addCSSLink($bp.'assets/css/bootstrap-responsive.css');
-        $this->addCSSLink($bp.'css/main.css');
-        $this->addCSSLink($bp.'css/view.css');
-        $this->addCSSLink($bp.'css/media.css');
+        $this->addCSSLink($bp.'assets/css/main.css');
+        $this->addCSSLink($bp.'assets/css/view.css');
+        $this->addCSSLink($bp.'assets/css/media.css');
 
         // META
         $this->addMetaDescription('');
