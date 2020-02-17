@@ -39,7 +39,14 @@ function resetApp() {
         chown $APP_USER:$APP_GROUP $APPDIR/var/log
     fi
 
-    cp $ROOTDIR/tests/docker-conf/phpfpm/profiles.ini.php $APPDIR/var/config/profiles.ini.php
+    echo "parametre resetApp: $1"
+
+    if [ "$1" == "sqlite" ]; then
+      cp $ROOTDIR/tests/docker-conf/phpfpm/profiles-sqlite.ini.php $APPDIR/var/config/profiles.ini.php
+    else
+      cp $ROOTDIR/tests/docker-conf/phpfpm/profiles.ini.php $APPDIR/var/config/profiles.ini.php
+    fi
+
     cp $ROOTDIR/tests/docker-conf/phpfpm/localconfig.ini.php $APPDIR/var/config/localconfig.ini.php
     cp $ROOTDIR/tests/docker-conf/phpfpm/lizmapConfig.ini.php $APPDIR/var/config/lizmapConfig.ini.php
 
@@ -60,6 +67,8 @@ function resetApp() {
     touch $APPDIR/var/mails/.empty && chown $APP_USER:$APP_GROUP $APPDIR/var/mails/.empty
     touch $APPDIR/var/uploads/.empty && chown $APP_USER:$APP_GROUP $APPDIR/var/uploads/.empty
 
+    php /srv/lzm/tests/docker-conf/phpfpm/resetpgsql.php
+
     cleanTmp
     setRights
     launchInstaller
@@ -67,7 +76,7 @@ function resetApp() {
 
 
 function launchInstaller() {
-    php /srv/lzm/tests/docker-conf/phpfpm/initdb.php
+    php /srv/lzm/tests/docker-conf/phpfpm/initpgsql.php
     su $APP_USER -c "php $APPDIR/install/installer.php"
 }
 
@@ -143,7 +152,9 @@ case $COMMAND in
     clean_tmp)
         cleanTmp;;
     reset)
-        resetApp;;
+        resetApp pgsql;;
+    reset-sqlite)
+        resetApp sqlite;;
     launch)
         launch;;
     install)
@@ -157,7 +168,7 @@ case $COMMAND in
     unittests)
         launchUnitTests;;
     *)
-        echo "wrong command"
+        echo "app-ctl.sh: wrong command"
         exit 2
         ;;
 esac
