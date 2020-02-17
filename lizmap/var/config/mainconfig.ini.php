@@ -51,8 +51,8 @@ engine=basic_significant
 ; because the jelix-www directory is outside the yourapp/www/ directory, you should create a link to
 ; jelix-www, or copy its content in yourapp/www/ (with a name like 'jelix' for example)
 ; so you should indicate the relative path of this link/directory to the basePath, or an absolute path.
-jelixWWWPath="jelix/"
-
+jelixWWWPath="assets/jelix/"
+jqueryPath="assets/jelix/jquery/"
 
 ; enable the parsing of the url. Set it to off if the url is already parsed by another program
 ; (like mod_rewrite in apache), if the rewrite of the url corresponds to a simple url, and if
@@ -216,51 +216,51 @@ datepicker=default
 datetimepicker=default
 
 [jquery]
-jquery = js/jquery/jquery-1.12.4.min.js
-jqueryui.js[] = js/jquery/ui-1.11.4/jquery-ui.min.js
-jqueryui.css[] = js/jquery/ui-1.11.4/jquery-ui.min.css
+jquery = assets/js/jquery/jquery-1.12.4.min.js
+jqueryui.js[] = assets/js/jquery/ui-1.11.4/jquery-ui.min.js
+jqueryui.css[] = assets/js/jquery/ui-1.11.4/jquery-ui.min.css
 
 [datepickers]
 default = $jelix/js/jforms/datepickers/default/init.js
-default.js[]=js/jquery/ui-1.11.4/jquery-ui.min.js
+default.js[]=assets/js/jquery/ui-1.11.4/jquery-ui.min.js
 default.js[]=$jelix/js/jforms/datepickers/default/ui.en.js
 default.js[]=$jqueryPath/ui/i18n/jquery.ui.datepicker-$lang.js
 default.js[]=$jelix/js/jforms/datepickers/default/ui.$lang.js
-default.css[]=js/jquery/ui-1.11.4/jquery-ui.min.css
+default.css[]=assets/js/jquery/ui-1.11.4/jquery-ui.min.css
 
 [datetimepickers]
 default = $jelix/js/jforms/datepickers/default/init.js
-default.js[]=js/jquery/ui-1.11.4/jquery-ui.min.js
+default.js[]=assets/js/jquery/ui-1.11.4/jquery-ui.min.js
 default.js[]=$jelix/js/jforms/datepickers/default/ui.en.js
 default.js[]=$jqueryPath/ui/i18n/jquery.ui.datepicker-$lang.js
 default.js[]=$jelix/js/jforms/datepickers/default/ui.$lang.js
-default.css[]=js/jquery/ui-1.11.4/jquery-ui.min.css
+default.css[]=assets/js/jquery/ui-1.11.4/jquery-ui.min.css
 
 [htmleditors]
 default.engine.name = ckeditor
-default.engine.file[] = js/ckeditor5/ckeditor.js
-default.engine.file[] = js/ckeditor5/translations/$lang.js
-default.config = js/ckeditor5/ckeditor_lizmap.js
+default.engine.file[] = assets/js/ckeditor5/ckeditor.js
+default.engine.file[] = assets/js/ckeditor5/translations/$lang.js
+default.config = assets/js/ckeditor5/ckeditor_lizmap.js
 default.skin.default =
 
 ckdefault.engine.name = ckeditor
-ckdefault.engine.file[] = js/ckeditor5/ckeditor.js
-default.engine.file[] = js/ckeditor5/translations/$lang.js
-ckdefault.config = js/ckeditor5/ckeditor_ckdefault.js
+ckdefault.engine.file[] = assets/js/ckeditor5/ckeditor.js
+default.engine.file[] = assets/js/ckeditor5/translations/$lang.js
+ckdefault.config = assets/js/ckeditor5/ckeditor_ckdefault.js
 
 ckfull.engine.name = ckeditor
-ckfull.engine.file[] = js/ckeditor5/ckeditor.js
-default.engine.file[] = js/ckeditor5/translations/$lang.js
-ckfull.config = js/ckeditor5/ckeditor_ckfull.js
+ckfull.engine.file[] = assets/js/ckeditor5/ckeditor.js
+default.engine.file[] = assets/js/ckeditor5/translations/$lang.js
+ckfull.config = assets/js/ckeditor5/ckeditor_ckfull.js
 
 ckbasic.engine.name = ckeditor
-ckbasic.engine.file[] = js/ckeditor5/ckeditor.js
-default.engine.file[] = js/ckeditor5/translations/$lang.js
-ckbasic.config = js/ckeditor5/ckeditor_ckbasic.js
+ckbasic.engine.file[] = assets/js/ckeditor5/ckeditor.js
+default.engine.file[] = assets/js/ckeditor5/translations/$lang.js
+ckbasic.config = assets/js/ckeditor5/ckeditor_ckbasic.js
 
 ckfullandmedia.engine.name = ckeditor
-ckfullandmedia.engine.file[] = js/ckeditor5/ckeditor.js
-ckfullandmedia.config = js/ckeditor5/ckeditor_ckfullandmedia.js
+ckfullandmedia.engine.file[] = assets/js/ckeditor5/ckeditor.js
+ckfullandmedia.config = assets/js/ckeditor5/ckeditor_ckfullandmedia.js
 
 [modules]
 jelix.access=1

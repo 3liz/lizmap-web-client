@@ -5,7 +5,7 @@ module.exports = {
         lizmap: './src/index.js'
     },
     output: {
-        filename: '../../lizmap/www/js/[name].js',
+        filename: '../../lizmap/www/assets/js/[name].js',
         chunkFilename: '[name].bundle.js',
         path: path.resolve(__dirname, 'dist')
     }

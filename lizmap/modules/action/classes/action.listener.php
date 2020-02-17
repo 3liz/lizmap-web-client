@@ -14,7 +14,7 @@ class actionListener extends jEventListener{
         $dv = new actionConfig($event->repository, $event->project);
         if($dv->getStatus()){
             $js = array(
-                $bp.'js/action.js'
+                $bp.'assets/js/action.js'
             );
             $actionConfig = $dv->getConfig();
             $actionConfigData = array(
@@ -29,7 +29,7 @@ class actionListener extends jEventListener{
                 'var actionConfigData = ' . json_encode($actionConfigData)
             );
             $css = array(
-                $bp.'css/action.css'
+                $bp.'assets/css/action.css'
             );
         }
         $event->add(

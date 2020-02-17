@@ -1808,7 +1808,7 @@ class lizmapProject extends qgisProject
                 $tpl->fetch('view~map_edition'),
                 3,
                 $jwp.'design/jform.css',
-                $bp.'js/edition.js'
+                $bp.'assets/js/edition.js'
             );
         }
 
@@ -1837,7 +1837,7 @@ class lizmapProject extends qgisProject
                 $tpl->fetch('view~map_selectiontool'),
                 1,
                 '',
-                $bp.'js/attributeTable.js'
+                $bp.'assets/js/attributeTable.js'
             );
             $dock->icon = '<span class="icon-white icon-star" style="margin-left:2px; margin-top:2px;"></span>';
             $dockable[] = $dock;
@@ -1907,7 +1907,7 @@ class lizmapProject extends qgisProject
                 $tpl->fetch('view~map_timemanager'),
                 7,
                 '',
-                $bp.'js/timemanager.js'
+                $bp.'assets/js/timemanager.js'
             );
         }
 
@@ -1973,7 +1973,7 @@ class lizmapProject extends qgisProject
                 array('view~map_attributeLayers', $assign),
                 1,
                 '',
-                $bp.'js/attributeTable.js'
+                $bp.'assets/js/attributeTable.js'
             );
         }
 
