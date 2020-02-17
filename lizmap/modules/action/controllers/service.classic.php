@@ -23,11 +23,38 @@ class serviceCtrl extends jController {
 
         $rep = $this->getResponse('json');
 
-        // Check project
+        // Get parameters
         $repository = $this->param('repository');
         $project = $this->param('project');
         $layerId = $this->param('layerId');
         $featureId = $this->intParam('featureId', 0);
+
+        // Check project, repository and acl
+        try {
+            $lproj = lizmap::getProject($repository.'~'.$project);
+            if (!$lproj) {
+                $errors = array(
+                    'title'=>'Wrong repository and project !',
+                    'detail'=>'The lizmapProject '.strtoupper($project).' does not exist !'
+                );
+                return $this->error($errors);
+            }
+        } catch (UnknownLizmapProjectException $e) {
+            $errors = array(
+                'title'=>'Wrong repository and project !',
+                'detail'=>'The lizmapProject '.strtoupper($project).' does not exist !'
+            );
+            return $this->error($errors);
+        }
+
+        // Redirect if no rights to access this repository
+        if (!$lproj->checkAcl()) {
+            $errors = array(
+                'title'=>'Access forbiden',
+                'detail'=>jLocale::get('view~default.repository.access.denied')
+            );
+            return $this->error($errors);
+        }
 
         if(!$featureId){
             $errors = array(
@@ -61,17 +88,17 @@ class serviceCtrl extends jController {
             return $this->error($errors);
         }
         $layerConf = $config->$layerId;
-        $item = null;
-        foreach($layerConf as $litem){
-            if( $name == $litem->name ){
-                $item = $litem;
+        $action = null;
+        foreach($layerConf as $layer_action){
+            if( $name == $layer_action->name ){
+                $action = $layer_action;
                 break;
             }
         }
-        if(!$item){
+        if(!$action){
             $errors = array(
-                'title'=>'Item unknown',
-                'detail'=>'The item named '.$name.' does not exist in the config file for this layer !'
+                'title'=>'Action unknown',
+                'detail'=>'The action named '.$name.' does not exist in the config file for this layer !'
             );
             return $this->error($errors);
         }
@@ -93,18 +120,20 @@ class serviceCtrl extends jController {
         $data = array();
         $layerName = $qgisLayer->getName();
         $lp = $qgisLayer->getDatasourceParameters();
-        $json = array(
+        $action_params = array(
             'layer_name'=> str_replace("'", "''", $layerName),
             'layer_schema'=> $lp->schema,
             'layer_table'=> $lp->tablename,
             'feature_id'=> $featureId,
             'action_name'=> $name
         );
-        foreach($item->options as $k=>$v){
-            $json[$k] = $v;
+        foreach($action->options as $k=>$v){
+            $action_params[$k] = $v;
         }
+
+        // Run action
         $sql = "SELECT lizmap_get_data('";
-        $sql.= json_encode($json);
+        $sql.= json_encode($action_params);
         $sql.= "') AS data";
         try{
             $res = $cnx->query($sql);
