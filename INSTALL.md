@@ -44,17 +44,13 @@ cp lizmapConfig.ini.php.dist lizmapConfig.ini.php
 cp localconfig.ini.php.dist localconfig.ini.php
 cp profiles.ini.php.dist profiles.ini.php
 ```
-In case you want to enable the demo repositories, just add to ``localconfig.ini.php`` the following:
 
-```
-[modules]
-lizmap.installparam=demo
-```
 then exit the directory:
 
 ```
 cd ../../..
 ```
+
 Set rights for Apache, so php scripts could write some temporary files or do changes.
 
 ```
@@ -82,9 +78,17 @@ and eventually restart apache.
 
 If you need to re-install lizmap on the same instance, you need to remove the file `lizmap/var/config/installer.ini.php`. This file is created by the installer.
 
+If you want to test lizmap with some demo qgis projects, you should launch
+`lizmap/install/reset.sh --keep-config --demo`. You must install some 
+tools : unzip and wget or curl.
+
+
 Using QGIS composer/layouts and PDF in Lizmap
-----
-* If you plan to print PDF from Lizmap, you need a fake X Server. See `QGIS manual <https://docs.qgis.org/2.18/en/docs/training_manual/qgis_server/install.html#fa-http-server-configuration>`_ searching for `xvfb`. It works for Apache and NGINX
+---------------------------------------------
+
+If you plan to print PDF from Lizmap, you need a fake X Server. 
+See `QGIS manual <https://docs.qgis.org/2.18/en/docs/training_manual/qgis_server/install.html#fa-http-server-configuration>`_ searching for `xvfb`. 
+It works for Apache and NGINX
 
 Debug
 ----
