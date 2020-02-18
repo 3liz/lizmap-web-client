@@ -127,14 +127,28 @@ class lizmapdemoModuleInstaller extends jInstallerModule
         // declare the repositories of demo in the configuration
         $lizmapConfFile = jApp::configPath('lizmapConfig.ini.php');
         $ini = new jIniFileModifier($lizmapConfFile);
+
+        $sourceDemo = realpath(__DIR__.'/../qgis-projects/').'/';
+
+        $rootRepo = $ini->getValue('rootRepositories', 'services');
+        if ($rootRepo) {
+            jFile::copyDirectoryContent($sourceDemo, $rootRepo, true);
+            $demoPath = $rootRepo.'/qgis';
+            $demoIntranetPath = $rootRepo.'/qgis_intranet';
+        }
+        else {
+            $demoPath = $sourceDemo.'qgis';
+            $demoIntranetPath = $sourceDemo.'qgis_intranet';
+        }
+
         $ini->setValues(array(
             'label' => 'Demo',
-            'path' => realpath(__DIR__.'/../qgis-projects/qgis/').'/',
+            'path' => $demoPath,
             'allowUserDefinedThemes' => 1,
         ), 'repository:montpellier');
         $ini->setValues(array(
             'label' => 'Demo - Intranet',
-            'path' => realpath(__DIR__.'/../qgis-projects/qgis_intranet/').'/',
+            'path' => $demoIntranetPath,
             'allowUserDefinedThemes' => '',
         ), 'repository:intranet');
         $ini->setValue('defaultRepository', 'montpellier', 'services');
