@@ -3370,8 +3370,26 @@ var lizAttributeTable = function() {
          * Polygon
          * @type @new;OpenLayers.Control.DrawFeature
          */
-        var queryPolygonLayerCtrl = new OpenLayers.Control.DrawFeature(queryLayer,
-            OpenLayers.Handler.Polygon, {'featureAdded': onQueryFeatureAdded, styleMap:drawStyleMap}
+        var queryPolygonLayerCtrl = new OpenLayers.Control.DrawFeature(
+            queryLayer,
+            OpenLayers.Handler.Polygon,
+            {
+                'featureAdded': onQueryFeatureAdded,
+                styleMap:drawStyleMap,
+                eventListeners: {
+                    // getFeatureInfo and polygon draw controls are mutually exclusive
+                    'activate': function () {
+                        if ('featureInfo' in lizMap.controls && lizMap.controls.featureInfo.active){
+                            lizMap.controls.featureInfo.deactivate();
+                        }
+                    },
+                    'deactivate': function () {
+                        if ('featureInfo' in lizMap.controls && !lizMap.controls.featureInfo.active) {
+                            lizMap.controls.featureInfo.activate();
+                        }
+                    }
+                }
+            }
         );
         lizMap.map.addControl(queryPolygonLayerCtrl);
         lizMap.controls['selectiontool']['queryPolygonLayerCtrl'] = queryPolygonLayerCtrl;
