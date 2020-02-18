@@ -37,7 +37,7 @@ wmsMaxWidth=3000
 wmsMaxHeight=3000
 projectSwitcher=off
 relativeWMSPath=on
-rootRepositories="/srv/lzm/lizmap/install/"
+rootRepositories="/srv/lzm/tests/qgis-projects"
 requestProxyEnabled=0
 requestProxyType=http
 requestProxyNotForDomain="localhost,127.0.0.1"
@@ -46,11 +46,12 @@ proxyHttpBackend=curl
 
 [repository:montpellier]
 label=Demo
-path="../install/qgis/"
+path="demoqgis/"
 allowUserDefinedThemes=1
+
 [repository:intranet]
 label="Demo - Intranet"
-path="../install/qgis_intranet/"
+path="demoqgis_intranet/"
 allowUserDefinedThemes=0
 
 
