@@ -43,8 +43,10 @@ endif
 
 #-------- Packages names
 PACKAGE_NAME=lizmap-web-client-$(LIZMAP_VERSION)
+DEMO_PACKAGE_NAME=lizmap-demo-$(MAJOR_VERSION).$(MINOR_VERSION)
 SAAS_PACKAGE=lizmap_web_client_$(SHORT_VERSION_NAME)
 ZIP_PACKAGE=$(STAGE)/$(PACKAGE_NAME).zip
+ZIP_DEMO_PACKAGE=$(DIST)/$(DEMO_PACKAGE_NAME).zip
 GENERIC_DIR_NAME=lizmap_web_client
 GENERIC_PACKAGE_DIR=$(STAGE)/$(GENERIC_DIR_NAME)
 GENERIC_PACKAGE_ZIP=$(GENERIC_DIR_NAME).zip
@@ -129,6 +131,9 @@ $(DIST):
 	echo $(LIZMAP_VERSION) > $(DIST)/VERSION
 	chmod -R o-w $(DIST)/
 
+$(STAGE)/lizmapdemo:
+	cp -aR extra-modules/lizmapdemo $(STAGE)/
+
 $(GENERIC_PACKAGE_DIR): $(DIST)
 	mkdir -p $(GENERIC_PACKAGE_DIR)
 	cp -a $(DIST)/* $(GENERIC_PACKAGE_DIR)
@@ -138,6 +143,9 @@ $(ZIP_PACKAGE): $(DIST)
 
 $(GENERIC_PACKAGE_PATH): $(GENERIC_PACKAGE_DIR)
 	cd $(STAGE) && zip -r $(GENERIC_PACKAGE_ZIP) $(GENERIC_DIR_NAME)/
+
+$(ZIP_DEMO_PACKAGE): $(STAGE)/lizmapdemo
+	cd $(STAGE) && zip -r $(DEMO_PACKAGE_NAME).zip  lizmapdemo/
 
 $(DOCKER_MANIFEST):
 	echo name=$(DOCKER_NAME) > $(DOCKER_MANIFEST) && \
@@ -169,13 +177,15 @@ endif
 
 stage: $(DIST)
 
-package: $(ZIP_PACKAGE) $(GENERIC_PACKAGE_PATH)
+package: $(ZIP_PACKAGE) $(GENERIC_PACKAGE_PATH) $(ZIP_DEMO_PACKAGE)
 
 deploy_download:
 	upload_to_packages_server $(ZIP_PACKAGE) pub/lizmap/unstable/$(SHORT_VERSION)/
+	upload_to_packages_server $(ZIP_DEMO_PACKAGE) pub/lizmap/unstable/$(SHORT_VERSION)/
 
 deploy_download_stable:
 	upload_to_packages_server $(ZIP_PACKAGE) pub/lizmap/release/$(SHORT_VERSION)/
+	upload_to_packages_server $(ZIP_DEMO_PACKAGE) pub/lizmap/release/$(SHORT_VERSION)/
 
 saas_package: $(GENERIC_PACKAGE_DIR)
 	mv $(STAGE)/$(PACKAGE_NAME) $(STAGE)/lizmap_web_client

@@ -99,3 +99,9 @@ section.
 
 You can inspect the content of Redis with `lizmap-ctl redis-cli`.
  
+Testing qgis projects
+======================
+
+Put your projects into `tests/qgis_projects/rep1/` (replace `rep1` by the name 
+of your choice), and then you can declare `rep1` projects into the admin page
+of Lizmap, or in its `var/config/lizmapConfig.ini.php`

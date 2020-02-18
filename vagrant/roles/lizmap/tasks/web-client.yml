@@ -70,12 +70,19 @@
 
 
 
-- name: Setup localconfig.ini.php to enable demo
+- name: Setup localconfig.ini.php to enable demo 1)
   ini_file:
     dest: "{{ lizmap_home }}/lizmap/var/config/localconfig.ini.php"
     section: "modules"
-    option: "lizmap.installparam"
-    value: "demo"
+    option: "lizmapdemo.path"
+    value: "app:../extra_modules/lizmapdemo/"
+
+- name: Setup localconfig.ini.php to enable demo 2)
+  ini_file:
+    dest: "{{ lizmap_home }}/lizmap/var/config/localconfig.ini.php"
+    section: "modules"
+    option: "lizmapdemo.access"
+    value: "2"
 
 - name: Create the profiles.ini.php file
   template: src=lizmap_profiles.j2 dest='{{ lizmap_home }}/lizmap/var/config/profiles.ini.php'

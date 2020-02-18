@@ -57,7 +57,7 @@ services:
       ROUTER_HOST: map
       QGSRV_SERVER_WORKERS: 4
     volumes:
-      - ../lizmap/install/:/srv/projects
+      - ./qgis-projects:/srv/projects
       - ./wps-data:/srv/data
 volumes:
   pg_data: {}
