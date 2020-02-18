@@ -128,10 +128,11 @@ if [ "$ACTION" = "install" ]; then
               MINOR_VERSION=$(echo $LZM_VERSION | cut -d'.' -f 2)
               STABILITY=$(echo $LZM_VERSION | cut -d'-' -f 2)
               if [ "$STABILITY" = "$LZM_VERSION" ]; then
-                URL="https://packages.3liz.org/pub/lizmap/release/"${MAJOR_VERSION}.${MINOR_VERSION}/lizmapdemo-module-${MAJOR_VERSION}.${MINOR_VERSION}.zip
+                URL="https://packages.3liz.org/pub/lizmap/release"
               else
-                URL="https://packages.3liz.org/pub/lizmap/unstable/"${MAJOR_VERSION}.${MINOR_VERSION}/lizmapdemo-module-${MAJOR_VERSION}.${MINOR_VERSION}-pre.zip
+                URL="https://packages.3liz.org/pub/lizmap/unstable"
               fi
+              URL=$URL/${MAJOR_VERSION}.${MINOR_VERSION}/lizmapdemo-module-${MAJOR_VERSION}.${MINOR_VERSION}.zip
               if [ ! -f lizmapdemo.zip ]; then
                 HAS_WGET=$(command -v wget)
                 HAS_CURL=$(command -v curl)
