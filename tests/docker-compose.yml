@@ -11,7 +11,7 @@ services:
     volumes:
       - pg_data:/var/lib/postgresql
     ports:
-      - "8131:5432"
+      - "8132:5432"
   redis:
     image: redis:5
     container_name: lizmap_test_redis
