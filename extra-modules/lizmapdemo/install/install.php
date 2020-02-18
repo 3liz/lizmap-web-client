@@ -133,12 +133,12 @@ class lizmapdemoModuleInstaller extends jInstallerModule
         $rootRepo = $ini->getValue('rootRepositories', 'services');
         if ($rootRepo) {
             jFile::copyDirectoryContent($sourceDemo, $rootRepo, true);
-            $demoPath = $rootRepo.'/qgis';
-            $demoIntranetPath = $rootRepo.'/qgis_intranet';
+            $demoPath = $rootRepo.'/demoqgis';
+            $demoIntranetPath = $rootRepo.'/demoqgis_intranet';
         }
         else {
-            $demoPath = $sourceDemo.'qgis';
-            $demoIntranetPath = $sourceDemo.'qgis_intranet';
+            $demoPath = $sourceDemo.'demoqgis';
+            $demoIntranetPath = $sourceDemo.'demoqgis_intranet';
         }
 
         $ini->setValues(array(

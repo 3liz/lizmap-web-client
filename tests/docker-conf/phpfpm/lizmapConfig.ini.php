@@ -46,11 +46,12 @@ proxyHttpBackend=curl
 
 [repository:montpellier]
 label=Demo
-path="../install/qgis/"
+path="demoqgis/"
 allowUserDefinedThemes=1
+
 [repository:intranet]
 label="Demo - Intranet"
-path="../install/qgis_intranet/"
+path="demoqgis_intranet/"
 allowUserDefinedThemes=0
 
 
