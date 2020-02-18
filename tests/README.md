@@ -27,7 +27,7 @@ Then, in your browser, go to `http://lizmap.local:8130/`.
 If you want to use pgadmin or any other postgresql client, access credentials are:
 
 - host: `lizmap.local`
-- port: 8131
+- port: 8132
 - database: `lizmap`
 - user: `lizmap`
 - password: `lizmap1234!`
