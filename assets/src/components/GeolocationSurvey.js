@@ -11,12 +11,12 @@ export default class GeolocationSurvey extends HTMLElement {
         <div class="${mainLizmap.geolocation.isTracking && mainLizmap.geolocation.isLinkedToEdition && ['line', 'polygon'].includes(mainLizmap.edition.layerGeometry) ? '' : 'hide'}">
             <div class="control-group" style="text-align:center">
                 <div class="btn-group">
-                    <button class="btn btn-primary ${mainLizmap.geolocationSurvey.beepMode ? 'active' : ''}" @click=${() => mainLizmap.geolocationSurvey.toggleBeepMode()}><i class="icon-music icon-white"></i></button>
-                    <button class="btn btn-primary ${mainLizmap.geolocationSurvey.vibrateMode ? 'active' : ''}" @click=${() => mainLizmap.geolocationSurvey.toggleVibrateMode()}>📳</button>
+                    <button class="btn ${mainLizmap.geolocationSurvey.beepMode ? 'active btn-success' : ''}" @click=${() => mainLizmap.geolocationSurvey.toggleBeepMode()}><i class="icon-music"></i></button>
+                    <button class="btn ${mainLizmap.geolocationSurvey.vibrateMode ? 'active btn-success' : ''}" @click=${() => mainLizmap.geolocationSurvey.toggleVibrateMode()}>📳</button>
                 </div>
             </div>
             <div class="control-group">
-                <label class="jforms-label control-label"><button class="btn btn-primary ${mainLizmap.geolocationSurvey.distanceMode ? 'active' : ''}" @click=${() => mainLizmap.geolocationSurvey.toggleDistanceMode()}>Distance</button></label>
+                <label class="jforms-label control-label"><button class="btn ${mainLizmap.geolocationSurvey.distanceMode ? 'active btn-success' : ''}" @click=${() => mainLizmap.geolocationSurvey.toggleDistanceMode()}>Distance</button></label>
                 <div class="controls">
                     <div class="input-append">
                         <input class="jforms-ctrl-input input-mini" type="number" min="0" @change=${ (event) => mainLizmap.geolocationSurvey.distanceLimit = parseInt(event.target.value)}><span class="add-on">m</span>
@@ -25,7 +25,7 @@ export default class GeolocationSurvey extends HTMLElement {
                 </div>
             </div>
             <div class="control-group">
-                <label class="jforms-label control-label"><button class="btn btn-primary ${mainLizmap.geolocationSurvey.timeMode ? 'active' : ''}" @click=${() => mainLizmap.geolocationSurvey.toggleTimeMode()}>Time</button></label>
+                <label class="jforms-label control-label"><button class="btn ${mainLizmap.geolocationSurvey.timeMode ? 'active btn-success' : ''}" @click=${() => mainLizmap.geolocationSurvey.toggleTimeMode()}>Time</button></label>
                 <div class="controls">
                     <div class="input-append">
                         <input class="jforms-ctrl-input input-mini" type="number" min="0" @change=${ (event) => mainLizmap.geolocationSurvey.timeLimit = parseInt(event.target.value)}><span class="add-on">s</span>
@@ -34,7 +34,7 @@ export default class GeolocationSurvey extends HTMLElement {
                 </div>
             </div>
             <div class="control-group">
-                <label class="jforms-label control-label"><button class="btn btn-primary ${mainLizmap.geolocationSurvey.accuracyMode ? 'active' : ''}" @click=${() => mainLizmap.geolocationSurvey.toggleAccuracyMode()}>Accuracy</button></label>
+                <label class="jforms-label control-label"><button class="btn ${mainLizmap.geolocationSurvey.accuracyMode ? 'active btn-success' : ''}" @click=${() => mainLizmap.geolocationSurvey.toggleAccuracyMode()}>Accuracy</button></label>
                 <div class="controls">
                     <div class="input-append">
                         <input class="jforms-ctrl-input input-mini" type="number" min="0" @change=${ (event) => mainLizmap.geolocationSurvey.accuracyLimit = parseInt(event.target.value)}><span class="add-on">m</span>
@@ -43,7 +43,7 @@ export default class GeolocationSurvey extends HTMLElement {
                 </div>
             </div>
             <div class="control-group">
-                <label class="jforms-label control-label"><button class="btn btn-primary ${mainLizmap.geolocationSurvey.averageRecordMode ? 'active' : ''}" @click=${() => mainLizmap.geolocationSurvey.toggleAverageRecordMode()}>Average</button></label>
+                <label class="jforms-label control-label"><button class="btn ${mainLizmap.geolocationSurvey.averageRecordMode ? 'active btn-success' : ''}" @click=${() => mainLizmap.geolocationSurvey.toggleAverageRecordMode()}>Average</button></label>
                 <div class="controls">
                     <div class="input-append">
                         <input class="jforms-ctrl-input input-mini" type="number" min="0" @change=${ (event) => mainLizmap.geolocationSurvey.averageRecordLimit = parseInt(event.target.value)}><span class="add-on">s</span>
