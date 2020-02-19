@@ -25,7 +25,7 @@ export default class GeolocationSurvey {
 
     // Private method to insert a point at current or average position
     _insertPoint() {
-        if (mainLizmap.geolocation.isTracking && (!this.accuracyMode || (this.accuracyMode && mainLizmap.geolocation.accuracy <= this.accuracyLimit))) {
+        if (mainLizmap.geolocation.isTracking && (!this.accuracyMode || (mainLizmap.geolocation.accuracy <= this.accuracyLimit))) {
 
             if (this.averageRecordMode && Object.keys(this._positionPointsRecord).length > 0) {
                 // Calculate average
@@ -125,7 +125,7 @@ export default class GeolocationSurvey {
         if (this._timeMode) {
             this._intervalID = window.setInterval(() => {
                 // Count taking care of accuracy if mode is active
-                if (!this.accuracyMode || (this.accuracyMode && mainLizmap.geolocation.accuracy <= this.accuracyLimit)){
+                if (!this.accuracyMode || (mainLizmap.geolocation.accuracy <= this.accuracyLimit)){
                     this.timeCount = this.timeCount + 1;
 
                     // Insert automatically a point when timeCount >= timeLimit
@@ -204,7 +204,11 @@ export default class GeolocationSurvey {
                             }
                         }
                     }
-                    this._positionPointsRecord[now] = mainLizmap.geolocation.position;
+
+                    // Record point taking care of accuracy if mode is active
+                    if (!this.accuracyMode || (mainLizmap.geolocation.accuracy <= this.accuracyLimit)){
+                        this._positionPointsRecord[now] = mainLizmap.geolocation.position;
+                    }
                 }
             };
         }
