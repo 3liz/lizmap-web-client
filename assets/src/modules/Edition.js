@@ -43,6 +43,7 @@ export default class Edition {
     }
 
     set lastSegmentLength(lastSegmentLength) {
+        lastSegmentLength = parseFloat(lastSegmentLength);
         if (this._lastSegmentLength !== lastSegmentLength) {
             this._lastSegmentLength = lastSegmentLength;
 
