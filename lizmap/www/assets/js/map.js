@@ -4743,7 +4743,7 @@ OpenLayers.Control.HighlightFeature = OpenLayers.Class(OpenLayers.Control, {
                       tooltipControl.style.strokeColor = 'cyan';
               else
                   tooltipControl.style.strokeColor = 'transparent';
-              if ( tfeatures.length != 0 && tfeatures[0].geometry.id.startsWith('OpenLayers_Geometry_LineString') )
+              if (tfeatures.length != 0 && tfeatures[0].geometry && tfeatures[0].geometry.id.startsWith('OpenLayers_Geometry_LineString') )
                   tooltipControl.style.strokeWidth = 10;
               else
                   tooltipControl.style.strokeWidth = 3;
