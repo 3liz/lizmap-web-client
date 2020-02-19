@@ -34,8 +34,8 @@ export default class GeolocationSurvey {
                 let count = 0;
                 for (const time in this._positionPointsRecord) {
                     if (this._positionPointsRecord.hasOwnProperty(time)) {
-                        sumX += parseFloat(this._positionPointsRecord[time][0]);
-                        sumY += parseFloat(this._positionPointsRecord[time][1]);
+                        sumX += this._positionPointsRecord[time][0];
+                        sumY += this._positionPointsRecord[time][1];
                         count++;
                     }
                 }
@@ -84,7 +84,7 @@ export default class GeolocationSurvey {
         if (this._distanceModeCallback === undefined) {
             this._distanceModeCallback = () => {
                 // Insert automatically a point when lastSegmentLength >= distanceLimit
-                if (this._distanceMode && parseFloat(mainLizmap.edition.lastSegmentLength) >= this.distanceLimit) {
+                if (this._distanceMode && mainLizmap.edition.lastSegmentLength >= this.distanceLimit) {
                     this._insertPoint();
                 }
             };
@@ -124,12 +124,15 @@ export default class GeolocationSurvey {
         // Begin count
         if (this._timeMode) {
             this._intervalID = window.setInterval(() => {
-                this.timeCount = this.timeCount + 1;
+                // Count taking care of accuracy if mode is active
+                if (!this.accuracyMode || (this.accuracyMode && mainLizmap.geolocation.accuracy <= this.accuracyLimit)){
+                    this.timeCount = this.timeCount + 1;
 
-                // Insert automatically a point when timeCount >= timeLimit
-                if (this.timeCount >= this.timeLimit) {
-                    this.timeCount = 0;
-                    this._insertPoint();
+                    // Insert automatically a point when timeCount >= timeLimit
+                    if (this.timeCount >= this.timeLimit) {
+                        this.timeCount = 0;
+                        this._insertPoint();
+                    }
                 }
             }, 1000);
 

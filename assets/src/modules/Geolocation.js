@@ -94,14 +94,14 @@ export default class Geolocation {
         const position = this._geolocation.getPosition();
         if (position) {
             const position4326 = transform(position, mainLizmap.projection, 'EPSG:4326');
-            return [position4326[0].toFixed(6), position4326[1].toFixed(6)];
+            return [parseFloat(position4326[0].toFixed(6)), parseFloat(position4326[1].toFixed(6))];
         }
         return undefined;
     }
 
     get accuracy() {
         if (this._geolocation.getAccuracy()) {
-            return this._geolocation.getAccuracy().toFixed(3);
+            return parseFloat(this._geolocation.getAccuracy().toFixed(3));
         }
         return undefined;
     }
