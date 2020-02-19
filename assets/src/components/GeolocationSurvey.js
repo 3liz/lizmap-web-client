@@ -30,7 +30,12 @@ export default class GeolocationSurvey extends HTMLElement {
                     <div class="input-append">
                         <input class="jforms-ctrl-input input-mini" type="number" min="0" @change=${ (event) => mainLizmap.geolocationSurvey.timeLimit = parseInt(event.target.value)}><span class="add-on">s</span>
                     </div>
-                    ${mainLizmap.geolocationSurvey.timeMode ? html`${mainLizmap.geolocationSurvey.timeCount}` : ''}
+                    ${mainLizmap.geolocationSurvey.timeMode ? 
+                        html`<div class="input-append">
+                                <input class="input-mini" type="text" disabled="disabled" value="${mainLizmap.geolocationSurvey.timeCount}">
+                                <button class="btn ${mainLizmap.geolocationSurvey.timePauseMode ? 'active btn-success' : ''}" @click=${() => mainLizmap.geolocationSurvey.toggleTimePauseMode()}><i class="icon-pause"></i></button>
+                            </div>` : ''
+                    }
                 </div>
             </div>
             <div class="control-group">
@@ -98,6 +103,13 @@ export default class GeolocationSurvey extends HTMLElement {
                 render(mainTemplate(), this);
             },
             'geolocationSurvey.timeMode'
+        );
+
+        mainEventDispatcher.addListener(
+            () => {
+                render(mainTemplate(), this);
+            },
+            'geolocationSurvey.timePauseMode'
         );
 
         mainEventDispatcher.addListener(
