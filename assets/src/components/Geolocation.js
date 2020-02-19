@@ -35,23 +35,14 @@ export default class Geolocation extends HTMLElement {
             () => {
                 render(mainTemplate(), this);
             },
-            'geolocation.isTracking'
+            [
+                'geolocation.isTracking'
+                , 'geolocation.firstGeolocation'
+                , 'geolocation.isBind'
+            ]
         );
 
-        mainEventDispatcher.addListener(
-            () => {
-                render(mainTemplate(), this);
-            },
-            'geolocation.firstGeolocation'
-        );
-
-        mainEventDispatcher.addListener(
-            () => {
-                render(mainTemplate(), this);
-            },
-            'geolocation.isBind'
-        );
-
+        // Handle apart listeners to events which occur often to avoid too much render() 
         mainEventDispatcher.addListener(
             () => {
                 render(positionTemplate(), this.querySelector('.geolocation-coords'));
