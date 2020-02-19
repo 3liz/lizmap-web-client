@@ -19,16 +19,16 @@ export default class GeolocationSurvey extends HTMLElement {
                 <label class="jforms-label control-label"><button class="btn btn-primary ${mainLizmap.geolocationSurvey.distanceMode ? 'active' : ''}" @click=${() => mainLizmap.geolocationSurvey.toggleDistanceMode()}>Distance</button></label>
                 <div class="controls">
                     <div class="input-append">
-                        <input class="jforms-ctrl-input input-small" type="number" min="0" @change=${ (event) => mainLizmap.geolocationSurvey.distanceLimit = parseInt(event.target.value)}><span class="add-on">m</span>
+                        <input class="jforms-ctrl-input input-mini" type="number" min="0" @change=${ (event) => mainLizmap.geolocationSurvey.distanceLimit = parseInt(event.target.value)}><span class="add-on">m</span>
                     </div>
                     ${mainLizmap.geolocationSurvey.distanceMode ? html`${mainLizmap.edition.lastSegmentLength}` : ''}
                 </div>
             </div>
             <div class="control-group">
-                <label class="jforms-label control-label"><button class="btn btn-primary ${mainLizmap.geolocationSurvey.timeMode ? 'active' : ''}" @click=${() => mainLizmap.geolocationSurvey.toggleTimeMode()}>Temps</button></label>
+                <label class="jforms-label control-label"><button class="btn btn-primary ${mainLizmap.geolocationSurvey.timeMode ? 'active' : ''}" @click=${() => mainLizmap.geolocationSurvey.toggleTimeMode()}>Time</button></label>
                 <div class="controls">
                     <div class="input-append">
-                        <input class="jforms-ctrl-input input-small" type="number" min="0" @change=${ (event) => mainLizmap.geolocationSurvey.timeLimit = parseInt(event.target.value)}><span class="add-on">s</span>
+                        <input class="jforms-ctrl-input input-mini" type="number" min="0" @change=${ (event) => mainLizmap.geolocationSurvey.timeLimit = parseInt(event.target.value)}><span class="add-on">s</span>
                     </div>
                     ${mainLizmap.geolocationSurvey.timeMode ? html`${mainLizmap.geolocationSurvey.timeCount}` : ''}
                 </div>
@@ -37,16 +37,16 @@ export default class GeolocationSurvey extends HTMLElement {
                 <label class="jforms-label control-label"><button class="btn btn-primary ${mainLizmap.geolocationSurvey.accuracyMode ? 'active' : ''}" @click=${() => mainLizmap.geolocationSurvey.toggleAccuracyMode()}>Accuracy</button></label>
                 <div class="controls">
                     <div class="input-append">
-                        <input class="jforms-ctrl-input input-small" type="number" min="0" @change=${ (event) => mainLizmap.geolocationSurvey.accuracyLimit = parseInt(event.target.value)}><span class="add-on">m</span>
+                        <input class="jforms-ctrl-input input-mini" type="number" min="0" @change=${ (event) => mainLizmap.geolocationSurvey.accuracyLimit = parseInt(event.target.value)}><span class="add-on">m</span>
                     </div>
                     ${mainLizmap.geolocationSurvey.accuracyMode ? html`${mainLizmap.geolocation.accuracy}` : ''}
                 </div>
             </div>
             <div class="control-group">
-                <label class="jforms-label control-label"><button class="btn btn-primary ${mainLizmap.geolocationSurvey.averageRecordMode ? 'active' : ''}" @click=${() => mainLizmap.geolocationSurvey.toggleAverageRecordMode()}>Durée d'enregistrement</button></label>
+                <label class="jforms-label control-label"><button class="btn btn-primary ${mainLizmap.geolocationSurvey.averageRecordMode ? 'active' : ''}" @click=${() => mainLizmap.geolocationSurvey.toggleAverageRecordMode()}>Average</button></label>
                 <div class="controls">
                     <div class="input-append">
-                        <input class="jforms-ctrl-input input-small" type="number" min="0" @change=${ (event) => mainLizmap.geolocationSurvey.averageRecordLimit = parseInt(event.target.value)}><span class="add-on">s</span>
+                        <input class="jforms-ctrl-input input-mini" type="number" min="0" @change=${ (event) => mainLizmap.geolocationSurvey.averageRecordLimit = parseInt(event.target.value)}><span class="add-on">s</span>
                     </div>
                 </div>
             </div>
