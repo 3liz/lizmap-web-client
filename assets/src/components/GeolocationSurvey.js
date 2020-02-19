@@ -63,16 +63,21 @@ export default class GeolocationSurvey extends HTMLElement {
             () => {
                 render(mainTemplate(), this);
             },
-            'geolocation.isLinkedToEdition'
+            [
+                'geolocation.isLinkedToEdition'
+                , 'geolocation.isTracking'
+                , 'geolocationSurvey.distanceMode'
+                , 'geolocationSurvey.timeMode'
+                , 'geolocationSurvey.timePauseMode'
+                , 'geolocationSurvey.timeCount'
+                , 'geolocationSurvey.accuracyMode'
+                , 'geolocationSurvey.averageRecordMode'
+                , 'geolocationSurvey.beepMode'
+                , 'geolocationSurvey.vibrateMode'
+            ]
         );
 
-        mainEventDispatcher.addListener(
-            () => {
-                render(mainTemplate(), this);
-            },
-            'geolocation.isTracking'
-        );
-
+        // Handle apart listeners to events which occur often to avoid too much render() 
         mainEventDispatcher.addListener(
             () => {
                 if (mainLizmap.geolocationSurvey.distanceMode) {
@@ -89,62 +94,6 @@ export default class GeolocationSurvey extends HTMLElement {
                 }
             },
             'geolocation.accuracy'
-        );
-
-        mainEventDispatcher.addListener(
-            () => {
-                render(mainTemplate(), this);
-            },
-            'geolocationSurvey.distanceMode'
-        );
-
-        mainEventDispatcher.addListener(
-            () => {
-                render(mainTemplate(), this);
-            },
-            'geolocationSurvey.timeMode'
-        );
-
-        mainEventDispatcher.addListener(
-            () => {
-                render(mainTemplate(), this);
-            },
-            'geolocationSurvey.timePauseMode'
-        );
-
-        mainEventDispatcher.addListener(
-            () => {
-                render(mainTemplate(), this);
-            },
-            'geolocationSurvey.timeCount'
-        );
-
-        mainEventDispatcher.addListener(
-            () => {
-                render(mainTemplate(), this);
-            },
-            'geolocationSurvey.accuracyMode'
-        );
-
-        mainEventDispatcher.addListener(
-            () => {
-                render(mainTemplate(), this);
-            },
-            'geolocationSurvey.averageRecordMode'
-        );
-
-        mainEventDispatcher.addListener(
-            () => {
-                render(mainTemplate(), this);
-            },
-            'geolocationSurvey.beepMode'
-        );
-
-        mainEventDispatcher.addListener(
-            () => {
-                render(mainTemplate(), this);
-            },
-            'geolocationSurvey.vibrateMode'
         );
     }
 
