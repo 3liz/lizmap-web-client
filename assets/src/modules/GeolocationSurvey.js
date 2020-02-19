@@ -11,6 +11,7 @@ export default class GeolocationSurvey {
         this.averageRecordLimit = 0;
         this._distanceMode = false;
         this._timeMode = false;
+        this._timePauseMode = false;
         this._accuracyMode = false;
         this._averageRecordMode = false;
         this._beepMode = false;
@@ -124,8 +125,8 @@ export default class GeolocationSurvey {
         // Begin count
         if (this._timeMode) {
             this._intervalID = window.setInterval(() => {
-                // Count taking care of accuracy if mode is active
-                if (!this.accuracyMode || (mainLizmap.geolocation.accuracy <= this.accuracyLimit)){
+                // Count taking care of accuracy if mode is active and pause mode
+                if (!this.timePauseMode && (!this.accuracyMode || (mainLizmap.geolocation.accuracy <= this.accuracyLimit))){
                     this.timeCount = this.timeCount + 1;
 
                     // Insert automatically a point when timeCount >= timeLimit
@@ -146,8 +147,12 @@ export default class GeolocationSurvey {
                 'geolocation.isTracking'
             );
         } else {
+            // Reset count
             window.clearInterval(this._intervalID);
             this.timeCount = 0;
+
+            // Disable pause mode
+            this._timePauseMode = false;
 
             mainEventDispatcher.removeListener(
                 this._timeModeCallback,
@@ -161,6 +166,16 @@ export default class GeolocationSurvey {
         }
 
         mainEventDispatcher.dispatch('geolocationSurvey.timeMode');
+    }
+
+    get timePauseMode() {
+        return this._timePauseMode;
+    }
+
+    toggleTimePauseMode() {
+        this._timePauseMode = !this._timePauseMode;
+
+        mainEventDispatcher.dispatch('geolocationSurvey.timePauseMode');
     }
 
     get timeCount() {
