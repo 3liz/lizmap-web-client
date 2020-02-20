@@ -232,6 +232,11 @@ class qgisForm implements qgisFormControlsInterface
                 $this->formPlugins[$fieldName] = 'color_html';
             }
 
+            // Force readonly to not be required
+            if ($formControl->isReadOnly && $formControl->ctrl->required) {
+                $formControl->required = false;
+                $formControl->ctrl->required = false;
+            }
             // Add the control to the form
             $form->addControl($formControl->ctrl);
             // Set readonly if needed
