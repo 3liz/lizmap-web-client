@@ -2529,3 +2529,16 @@ lizmap-geolocation .geolocation-infos {
     padding: 5px;
     margin-top: 5px;
 }
+
+lizmap-geolocation-survey .control-group div{
+  display: inline-block;
+  text-align: right;
+}
+
+lizmap-geolocation-survey .control-group > div:first-child{
+  width: 120px;
+}
+
+#dock .form-horizontal lizmap-geolocation-survey .controls{
+  margin-left: 10px;
+}
