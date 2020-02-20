@@ -28,21 +28,8 @@ export default class GeolocationSurvey {
     _insertPoint() {
         if (mainLizmap.geolocation.isTracking && (!this.accuracyMode || (mainLizmap.geolocation.accuracy <= this.accuracyLimit))) {
 
-            if (this.averageRecordMode && Object.keys(this._positionPointsRecord).length > 0) {
-                // Calculate average
-                let sumX = 0;
-                let sumY = 0;
-                let count = 0;
-                for (const time in this._positionPointsRecord) {
-                    if (this._positionPointsRecord.hasOwnProperty(time)) {
-                        sumX += this._positionPointsRecord[time][0];
-                        sumY += this._positionPointsRecord[time][1];
-                        count++;
-                    }
-                }
-
-                const averagePosition = transform([sumX / count, sumY / count], 'EPSG:4326', mainLizmap.projection);
-                mainLizmap.edition.drawControl.handler.insertXY(averagePosition[0], averagePosition[1]);
+            if (this.averageRecordMode && this.positionAverageInMapCRS !== undefined) {
+                mainLizmap.edition.drawControl.handler.insertXY(this.positionAverageInMapCRS);
             } else {
                 const node = mainLizmap.edition.drawControl.handler.point.geometry;
                 mainLizmap.edition.drawControl.handler.insertXY(node.x, node.y);
@@ -126,7 +113,7 @@ export default class GeolocationSurvey {
         if (this._timeMode) {
             this._intervalID = window.setInterval(() => {
                 // Count taking care of accuracy if mode is active and pause mode
-                if (!this.timePauseMode && (!this.accuracyMode || (mainLizmap.geolocation.accuracy <= this.accuracyLimit))){
+                if (!this.timePauseMode && (!this.accuracyMode || (mainLizmap.geolocation.accuracy <= this.accuracyLimit))) {
                     this.timeCount = this.timeCount + 1;
 
                     // Insert automatically a point when timeCount >= timeLimit
@@ -202,6 +189,27 @@ export default class GeolocationSurvey {
         return this._averageRecordMode;
     }
 
+    // Calculate average for every points in _positionPointsRecord in map CRS
+    get positionAverageInMapCRS() {
+        if (this.averageRecordMode && Object.keys(this._positionPointsRecord).length > 0) {
+            let sumX = 0;
+            let sumY = 0;
+            let count = 0;
+
+            for (const time in this._positionPointsRecord) {
+                if (this._positionPointsRecord.hasOwnProperty(time)) {
+                    sumX += this._positionPointsRecord[time][0];
+                    sumY += this._positionPointsRecord[time][1];
+                    count++;
+                }
+            }
+
+            return transform([sumX / count, sumY / count], 'EPSG:4326', mainLizmap.projection);
+        } else {
+            return undefined;
+        }
+    }
+
     toggleAverageRecordMode() {
         this._averageRecordMode = !this._averageRecordMode;
 
@@ -221,7 +229,7 @@ export default class GeolocationSurvey {
                     }
 
                     // Record point taking care of accuracy if mode is active
-                    if (!this.accuracyMode || (mainLizmap.geolocation.accuracy <= this.accuracyLimit)){
+                    if (!this.accuracyMode || (mainLizmap.geolocation.accuracy <= this.accuracyLimit)) {
                         this._positionPointsRecord[now] = mainLizmap.geolocation.position;
                     }
                 }

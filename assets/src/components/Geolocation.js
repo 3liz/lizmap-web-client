@@ -36,13 +36,13 @@ export default class Geolocation extends HTMLElement {
                 render(mainTemplate(), this);
             },
             [
-                'geolocation.isTracking'
-                , 'geolocation.firstGeolocation'
-                , 'geolocation.isBind'
+                'geolocation.isTracking',
+                'geolocation.firstGeolocation',
+                'geolocation.isBind'
             ]
         );
 
-        // Handle apart listeners to events which occur often to avoid too much render() 
+        // Handle apart listeners to events which occur often to avoid too much render()
         mainEventDispatcher.addListener(
             () => {
                 render(positionTemplate(), this.querySelector('.geolocation-coords'));
