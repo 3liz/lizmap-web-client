@@ -862,6 +862,12 @@ OpenLayers.Geometry.pointOnSegment = function(point, segment) {
                 // Assert we have a geometry
                 if (editCtrls[geometryType].handler.getGeometry()){
                     if (geometryType === 'point') {
+                        // Take average point if mode is enabled
+                        if (lizMap.mainLizmap.geolocationSurvey.averageRecordMode && lizMap.mainLizmap.geolocationSurvey.positionAverageInMapCRS !== undefined){
+                            editCtrls[geometryType].handler.point.geometry.x = lizMap.mainLizmap.geolocationSurvey.positionAverageInMapCRS[0];
+                            editCtrls[geometryType].handler.point.geometry.y = lizMap.mainLizmap.geolocationSurvey.positionAverageInMapCRS[1];
+                            editCtrls[geometryType].handler.drawFeature();
+                        }
                         editCtrls[geometryType].handler.finalize();
                     } else {
                         editCtrls[geometryType].handler.finishGeometry();
