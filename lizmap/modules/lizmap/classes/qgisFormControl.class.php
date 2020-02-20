@@ -552,6 +552,11 @@ class qgisFormControl
             }
         }
 
+        // Read-only can't be required
+        if ($this->isReadOnly && $this->required) {
+            $this->required = false;
+        }
+
         // Required
         if ($this->required) {
             $this->ctrl->required = true;
