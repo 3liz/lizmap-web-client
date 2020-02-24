@@ -1,6 +1,7 @@
 import Edition from '../modules/Edition.js';
 import Geolocation from '../modules/Geolocation.js';
 import GeolocationSurvey from '../modules/GeolocationSurvey.js';
+import SelectionTool from '../modules/SelectionTool.js';
 
 export default class Lizmap {
 
@@ -11,6 +12,7 @@ export default class Lizmap {
                 this.edition = new Edition();
                 this.geolocation = new Geolocation();
                 this.geolocationSurvey = new GeolocationSurvey();
+                this.selectionTool = new SelectionTool();
             }
         });
     }
