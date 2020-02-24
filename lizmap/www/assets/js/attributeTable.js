@@ -232,7 +232,7 @@ var lizAttributeTable = function() {
                   {'layers': attributeLayersDic}
                 );
 
-                addSelectionToolControl();
+                // addSelectionToolControl();
 
                 // Bind click on tabs to resize datatable tables
                 $('#attributeLayers-tabs li').click(function(){

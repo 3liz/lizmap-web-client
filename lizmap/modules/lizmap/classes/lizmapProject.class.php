@@ -1834,7 +1834,7 @@ class lizmapProject extends qgisProject
             $dock = new lizmapMapDockItem(
                 'selectiontool',
                 jLocale::get('view~map.selectiontool.navbar.title'),
-                $tpl->fetch('view~map_selectiontool'),
+                '<lizmap-selection-tool></lizmap-selection-tool>',
                 1,
                 '',
                 $bp.'assets/js/attributeTable.js'
