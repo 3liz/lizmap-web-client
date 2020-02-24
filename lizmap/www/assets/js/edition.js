@@ -423,7 +423,8 @@ OpenLayers.Geometry.pointOnSegment = function(point, segment) {
         lizMap.events.triggerEvent("lizmapeditiondrawfeatureactivated",
             {
                 'layerId': editionLayer['id'],
-                'editionConfig': editionLayer['config']
+                'editionConfig': editionLayer['config'],
+                'drawControl': editionLayer['drawControl']
             }
         );
     }
@@ -846,6 +847,7 @@ OpenLayers.Geometry.pointOnSegment = function(point, segment) {
                     $('#edition-point-coord-x').removeAttr('disabled');
                     $('#edition-point-coord-y').removeAttr('disabled');
                 }
+                lizMap.mainLizmap.geolocation.isLinkedToEdition = $(this).is(':checked');
             });
             $('#edition-point-coord-add').click(function(){
                 var geometryType = editionLayer.geometryType;
@@ -860,6 +862,12 @@ OpenLayers.Geometry.pointOnSegment = function(point, segment) {
                 // Assert we have a geometry
                 if (editCtrls[geometryType].handler.getGeometry()){
                     if (geometryType === 'point') {
+                        // Take average point if mode is enabled
+                        if (lizMap.mainLizmap.geolocationSurvey.averageRecordMode && lizMap.mainLizmap.geolocationSurvey.positionAverageInMapCRS !== undefined){
+                            editCtrls[geometryType].handler.point.geometry.x = lizMap.mainLizmap.geolocationSurvey.positionAverageInMapCRS[0];
+                            editCtrls[geometryType].handler.point.geometry.y = lizMap.mainLizmap.geolocationSurvey.positionAverageInMapCRS[1];
+                            editCtrls[geometryType].handler.drawFeature();
+                        }
                         editCtrls[geometryType].handler.finalize();
                     } else {
                         editCtrls[geometryType].handler.finishGeometry();
@@ -1016,6 +1024,8 @@ OpenLayers.Geometry.pointOnSegment = function(point, segment) {
             $('#edition-segment-length').text(lastSegmentLength.toFixed(3));
 
         }
+
+        lizMap.mainLizmap.edition.lastSegmentLength = lastSegmentLength.toFixed(3);
     }
 
     /*
