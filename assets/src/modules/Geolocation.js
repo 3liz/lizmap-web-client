@@ -7,6 +7,7 @@ export default class Geolocation {
     constructor() {
         this._firstGeolocation = true;
         this._isBind = false;
+        this._isLinkedToEdition = false;
 
         this._geolocation = new olGeolocation({
             // enableHighAccuracy must be set to true to have the heading value.
@@ -84,7 +85,7 @@ export default class Geolocation {
         }
     }
 
-    get firstGeolocation(){
+    get firstGeolocation() {
         return this._firstGeolocation;
     }
 
@@ -93,13 +94,16 @@ export default class Geolocation {
         const position = this._geolocation.getPosition();
         if (position) {
             const position4326 = transform(position, mainLizmap.projection, 'EPSG:4326');
-            return [position4326[0].toFixed(6), position4326[1].toFixed(6)];
+            return [parseFloat(position4326[0].toFixed(6)), parseFloat(position4326[1].toFixed(6))];
         }
         return undefined;
     }
 
     get accuracy() {
-        return this._geolocation.getAccuracy();
+        if (this._geolocation.getAccuracy()) {
+            return parseFloat(this._geolocation.getAccuracy().toFixed(3));
+        }
+        return undefined;
     }
 
     get isTracking() {
@@ -124,6 +128,19 @@ export default class Geolocation {
         this._isBind = isBind;
 
         mainEventDispatcher.dispatch('geolocation.isBind');
+    }
+
+    get isLinkedToEdition() {
+        return this._isLinkedToEdition;
+    }
+
+    /**
+     * @param {boolean} isLinkedToEdition - Link edition and geolocation to draw features based on GPS position
+     */
+    set isLinkedToEdition(isLinkedToEdition) {
+        this._isLinkedToEdition = isLinkedToEdition;
+
+        mainEventDispatcher.dispatch('geolocation.isLinkedToEdition');
     }
 
     moveGeolocationPointAndCircle(coordinates) {

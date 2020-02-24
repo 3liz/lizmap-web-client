@@ -318,7 +318,7 @@ CSS Sprite positions calculated via http://instantsprite.com/ using 20px images 
 }
 
 body.geolocation-minidock-active #content.mobile #dock{
-  height: calc(100% - 180px);
+  height: 40%;
 }
 
 #dock.half {
@@ -2528,4 +2528,17 @@ lizmap-geolocation .geolocation-infos {
     border-radius: 5px;
     padding: 5px;
     margin-top: 5px;
+}
+
+lizmap-geolocation-survey .control-group div{
+  display: inline-block;
+  text-align: right;
+}
+
+lizmap-geolocation-survey .control-group > div:first-child{
+  width: 120px;
+}
+
+#dock .form-horizontal lizmap-geolocation-survey .controls{
+  margin-left: 10px;
 }

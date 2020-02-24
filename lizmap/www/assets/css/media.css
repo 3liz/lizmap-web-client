@@ -30,6 +30,37 @@
   #dock .form-horizontal .controls, div.modal .form-horizontal .controls {
     margin-left: 10px;
   }
+
+  #edition #edition-point-coord-form-group.jforms-table-group {
+    padding-left: 5px;
+  }
+
+  #edition-point-coord-form-group .control-group label.control-label{
+    width: 80px;
+    display: inline-block;
+  }
+
+  #edition-point-coord-form-group .control-group div {
+    display: inline-block;
+    text-align: right;
+  }
+
+  #edition-point-coord-form-group .control-group input.jforms-ctrl-input{
+    width: 85px;
+  }
+
+  #edition-point-coord-form-group .control-group select {
+    width: auto;
+  }
+
+  lizmap-geolocation-survey .control-group > div:first-child{
+    width: 80px;
+  }
+
+  lizmap-geolocation-survey input.input-mini{
+    width: 40px;
+  }
+
 }
 @media screen and (max-device-width: 640px){
   #attributeLayers-tabs > li > a {

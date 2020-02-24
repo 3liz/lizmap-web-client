@@ -54,13 +54,13 @@
                 <div class="control-group">
                     <label class="jforms-label control-label" for="edition-point-coord-x" id="edition-point-coord-x-label">{@view~edition.point.coord.x.label@}</label>
                     <div class="controls">
-                        <input name="coord-x" id="edition-point-coord-x" class="jforms-ctrl-input" value="" type="text">
+                        <input name="coord-x" id="edition-point-coord-x" class="jforms-ctrl-input input-small" value="" type="text">
                     </div>
                 </div>
                 <div class="control-group">
                     <label class="jforms-label control-label" for="edition-point-coord-y" id="edition-point-coord-y-label">{@view~edition.point.coord.y.label@}</label>
                     <div class="controls">
-                        <input name="coord-y" id="edition-point-coord-y" class="jforms-ctrl-input" value="" type="text">
+                        <input name="coord-y" id="edition-point-coord-y" class="jforms-ctrl-input input-small" value="" type="text">
                     </div>
                 </div>
                 <div class="control-group hidden">
@@ -75,20 +75,23 @@
                         <label id="edition-segment-angle"></label>
                     </div>
                 </div>
-                <div class="control-group" id="edition-point-coord-geolocation-group" style="display:none;">
-                    <div class="controls">
-                        <label class="jforms-label checkbox" for="edition-point-coord-geolocation" id="edition-point-coord-geolocation-label">
-                            <input name="checked" id="edition-point-coord-geolocation" class="jforms-ctrl-checkbox" value="1" type="checkbox">
-                            {@view~edition.point.coord.geolocation.label@}
-                        </label>
-                    </div>
-                </div>
                 <div class="control-group">
                     <div class="controls">
                         <button name="submit" id="edition-point-coord-add" class="btn btn-small">{@view~edition.point.coord.add.label@}</button>
                         <button name="submit" id="edition-point-coord-submit" class="btn btn-small">{@view~edition.point.coord.finalize.label@}</button>
                     </div>
                 </div>
+                <div class="control-group" id="edition-point-coord-geolocation-group" style="display:none;">
+                    <div class="controls">
+                        <label class="jforms-label checkbox" for="edition-point-coord-geolocation"
+                            id="edition-point-coord-geolocation-label">
+                            <input name="checked" id="edition-point-coord-geolocation" class="jforms-ctrl-checkbox" value="1"
+                                type="checkbox">
+                            {@view~edition.point.coord.geolocation.label@}
+                        </label>
+                    </div>
+                </div>
+                <lizmap-geolocation-survey></lizmap-geolocation-survey>
             </div>
         </fieldset>
     </form>
