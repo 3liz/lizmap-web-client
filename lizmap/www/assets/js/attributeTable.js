@@ -3162,7 +3162,6 @@ var lizAttributeTable = function() {
 
     var options = '';
     var selectionLayersSorted = [];
-    var selectionLayersNotSorted = [];
     featureTypes.each( function(){
         var self = $(this);
         var lname = lizMap.getNameByTypeName( self.find('Name').text() );
@@ -3175,8 +3174,6 @@ var lizAttributeTable = function() {
 
             if(lname in config.attributeLayers){
                 selectionLayersSorted[config.attributeLayers[lname].order] = selectionOption;
-            }else{
-                selectionLayersNotSorted.push(selectionOption);
             }
         }
     });
@@ -3185,10 +3182,6 @@ var lizAttributeTable = function() {
     for (var i = 0; i < selectionLayersSorted.length; i++) {
         options += selectionLayersSorted[i];
     }
-    // Selection can't be yet performed without attribute table configuration
-    /*for (var i = 0; i < selectionLayersNotSorted.length; i++) {
-        options += selectionLayersNotSorted[i];
-    }*/
 
     if ( options == '' ) {
       $('#button-selectiontool').parent().remove();
@@ -3251,8 +3244,7 @@ var lizAttributeTable = function() {
 
     lizMap.controls['selectiontool'] = {};
 
-
-    function onQueryFeatureAdded(feature, callback) {
+    function onQueryFeatureAdded(feature) {
         /**
          * @todo Ne gère que si il ya a seulement 1 géométrie
          */
@@ -3261,8 +3253,7 @@ var lizAttributeTable = function() {
                 feature.layer.destroyFeatures( feature.layer.features.shift() );
             }
         }
-        //var theLayer = feature.layer;
-        //theLayer.drawFeature( feature );
+
         var featureType = $('#selectiontool-layer-list').val();
         lizMap.selectLayerFeaturesFromSelectionFeature(featureType, feature);
 
