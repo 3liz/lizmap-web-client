@@ -21,8 +21,20 @@ export default class Lizmap {
         return this._lizmap3;
     }
 
+    get config() {
+        return this._lizmap3.config;
+    }
+
     get projection() {
         return this._lizmap3.map.getProjection();
+    }
+
+    get vectorLayerFeatureTypes() {
+        return this._lizmap3.getVectorLayerFeatureTypes();
+    }
+
+    get vectorLayerResultFormat () {
+        return this._lizmap3.getVectorLayerResultFormat().toArray();
     }
 
     /**
@@ -37,6 +49,10 @@ export default class Lizmap {
      */
     set extent(bounds) {
         this._lizmap3.map.zoomToExtent(bounds);
+    }
+
+    getNameByTypeName(typeName) {
+        return this._lizmap3.getNameByTypeName(typeName);
     }
 
     // Display message on screen for users
