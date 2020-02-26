@@ -2447,6 +2447,10 @@ div.tooltip {
   overflow-y: auto;
 }
 
+#selectiontool-filter.active {
+  background-color: rgba(255, 171, 0, 0.4);
+}
+
 /*
 atlas
 */
