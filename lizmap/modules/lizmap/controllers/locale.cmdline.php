@@ -98,6 +98,7 @@ class localeCtrl extends jControllerCmdLine
             closedir($dh);
         }
 
+        sort($files);
         return $files;
     }
 
@@ -191,7 +192,12 @@ class localeCtrl extends jControllerCmdLine
             $properties = new \Jelix\PropertiesFile\Properties();
             $propertiesReader->parseFromFile($enLocalesPath.$f, $properties);
             $msgctxtPrefix = $module.'~'.$fileId.'.';
+            $propertiesArray = array();
             foreach ($properties->getIterator() as $key => $value) {
+                $propertiesArray[$key] = $value;
+            }
+            ksort($propertiesArray);
+            foreach ($propertiesArray as $key => $value) {
                 $msgctxt = $msgctxtPrefix.$key;
                 $translation = $translations->insert($msgctxt, $value);
                 $translation->addReference($msgctxt);
