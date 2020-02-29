@@ -437,7 +437,8 @@ class jImageModifier {
                     $suma += $alpha * $coeffs[$flou][$k];
                 }
                 $alpha = 127 - ((127 - ($suma / $sum)) / (100 / $opac));
-                $c = imagecolorallocatealpha($temp2, $rgb[0], $rgb[1], $rgb[2], $alpha < 0 ? 0 : $alpha > 127 ? 127 : $alpha);
+                $c = imagecolorallocatealpha($temp2, $rgb[0], $rgb[1], $rgb[2],
+                    $alpha < 0 ? 0 : ($alpha > 127 ? 127 : $alpha));
                 imagesetpixel($temp2, $i + $x1, $j + $y1, $c);
             }
         }

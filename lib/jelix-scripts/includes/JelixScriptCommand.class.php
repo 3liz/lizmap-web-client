@@ -128,7 +128,7 @@ abstract class JelixScriptCommand {
       $this->_parameters = array();
 
       //---------- get the switches
-      while (count($argv) && $argv[0]{0} == '-') {
+      while (count($argv) && $argv[0][0] == '-') {
 
          if (!array_key_exists($argv[0], $this->allowed_options)) {
             if (!array_key_exists($argv[0], $this->commonOptions)) {
@@ -141,7 +141,7 @@ abstract class JelixScriptCommand {
          }
 
          if ($needArgument) {
-            if (isset($argv[1]) && $argv[1]{0} != '-') {
+            if (isset($argv[1]) && $argv[1][0] != '-') {
                $sw = array_shift($argv);
                $this->_options[$sw] = array_shift($argv);
             }
