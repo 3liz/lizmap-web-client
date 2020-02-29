@@ -235,13 +235,11 @@ class ldapdaoAuthDriver extends jAuthDriverBase implements jIAuthDriver
         $user = $this->createUserObject($login, '');
         $userLdapAttributes = $this->searchLdapUserAttributes($connectAdmin, $login, $user);
         if ($userLdapAttributes === false) {
-            jLog::log('ldapdao: user '.$login.' not found into the ldap', 'auth');
             return false;
         }
 
         $connect = $this->_getLinkId();
         if (!$connect) {
-            jLog::log('ldapdao: impossible to connect to ldap', 'auth');
             return false;
         }
         // authenticate user. let's try with all configured DN
@@ -249,9 +247,9 @@ class ldapdaoAuthDriver extends jAuthDriverBase implements jIAuthDriver
         ldap_close($connect);
 
         if ($userDn === false) {
-            jLog::log('ldapdao: cannot authenticate to ldap with given bindUserDN for the login ' . $login. '. Wrong DN or password', 'auth');
+            jLog::log('ldapdao error: cannot authenticate to ldap with given bindUserDN for the login "' . $login. '". Wrong DN or password', 'auth');
             foreach ($this->bindUserDnTries as $dn) {
-                jLog::log('ldapdao:  tried to connect with bindUserDN=' . $dn, 'auth');
+                jLog::log('ldapdao: tried to connect with bindUserDN=' . $dn, 'auth');
             }
             return false;
         }
@@ -329,23 +327,31 @@ class ldapdaoAuthDriver extends jAuthDriverBase implements jIAuthDriver
     protected function searchLdapUserAttributes($connect, $login, $user)
     {
         $searchAttributes = array_keys($this->_params['searchAttributes']);
+        $filters = array();
         foreach ($this->_params['searchUserFilter'] as $searchUserFilter) {
             $filter = str_replace(
                 array('%%LOGIN%%', '%%USERNAME%%'), // USERNAME deprecated
                 $login,
                 $searchUserFilter
             );
-            $search = ldap_search(
+            $search = @ldap_search(
                 $connect,
                 $this->_params['searchUserBaseDN'],
                 $filter,
                 $searchAttributes
             );
-            if ($search && ($entry = ldap_first_entry($connect, $search))) {
+            if (!$search) {
+                $this->logLdapError($connect, 'ldap error during search of the user "'.$login.'" with the filter "'.$filter.'"');
+            }
+            else if (($entry = @ldap_first_entry($connect, $search))) {
                 $attributes = ldap_get_attributes($connect, $entry);
                 return $this->readLdapAttributes($attributes, $user);
             }
+            else {
+                $filters[] = $filter;
+            }
         }
+        jLog::log('ldapdao error: ldap user "'.$login.'" not found with the filters :"'.implode('", "', $filters).'"', 'auth');
         return false;
     }
 
@@ -383,8 +389,7 @@ class ldapdaoAuthDriver extends jAuthDriverBase implements jIAuthDriver
             if ($bind) {
                 break;
             } else {
-                jLog::log('ldapdao: error when trying to connect with '.$realDn.': '.ldap_errno($connect).':'.ldap_error($connect), 'auth');
-                $this->bindUserDnTries[] = $realDn;
+                $this->bindUserDnTries[] = $this->getLdapError($connect, 'tried to connect with "'.$realDn.'"');
             }
         }
         return ($bind ? $realDn : false);
@@ -399,6 +404,7 @@ class ldapdaoAuthDriver extends jAuthDriverBase implements jIAuthDriver
         $result = $this->checkPassword($password, $user->password);
 
         if ($result === false) {
+            jLog::log('ldapdao: given admin user password is wrong', 'auth');
             return false;
         }
 
@@ -476,14 +482,14 @@ class ldapdaoAuthDriver extends jAuthDriverBase implements jIAuthDriver
         $grpProp = $this->_params['searchGroupProperty'];
 
         $groups = array();
-        $search = ldap_search (
+        $search = @ldap_search (
             $connect,
             $this->_params['searchGroupBaseDN'],
             $filter,
             array($grpProp)
         );
         if ($search) {
-            $entry = ldap_first_entry($connect, $search);
+            $entry = @ldap_first_entry($connect, $search);
             if ($entry) {
                 do {
                     $attributes = ldap_get_attributes($connect, $entry);
@@ -492,6 +498,12 @@ class ldapdaoAuthDriver extends jAuthDriverBase implements jIAuthDriver
                     }
                 } while ($entry = ldap_next_entry($connect, $entry));
             }
+            else {
+                jLog::log('ldapdao: no groups found for the user  "'.$login.'", with the searchGroupFilter query "'.$filter.'"', 'auth');
+            }
+        }
+        else {
+            $this->logLdapError($connect, 'ldap error during group search for "'.$login.'", with the searchGroupFilter query "'.$filter.'"');
         }
         return $groups;
     }
@@ -501,20 +513,20 @@ class ldapdaoAuthDriver extends jAuthDriverBase implements jIAuthDriver
      */
     protected function _getLinkId()
     {
-
-        if ($connect = ldap_connect($this->uriConnect)) {
+        if ($connect = @ldap_connect($this->uriConnect)) {
             //ldap_set_option(NULL, LDAP_OPT_DEBUG_LEVEL, 7);
             ldap_set_option($connect, LDAP_OPT_PROTOCOL_VERSION, $this->_params['protocolVersion']);
             ldap_set_option($connect, LDAP_OPT_REFERRALS, 0);
 
             if ($this->_params['tlsMode'] == 'starttls') {
-                if (!ldap_start_tls($connect)) {
-                    jLog::log('ldapdao: connection error: impossible to start TLS connection: '.ldap_errno($connect).':'.ldap_error($connect), 'auth');
+                if (!@ldap_start_tls($connect)) {
+                    $this->logLdapError($connect, 'connection error: impossible to start TLS connection');
                     return false;
                 }
             }
             return $connect;
         }
+        jLog::log('ldapdao error: ldap error, bad syntax in the given uri "'.$this->uriConnect.'"', 'auth');
         return false;
     }
 
@@ -527,24 +539,39 @@ class ldapdaoAuthDriver extends jAuthDriverBase implements jIAuthDriver
     {
         $connect = $this->_getLinkId();
         if (!$connect) {
-            jLog::log('ldapdao: impossible to connect to ldap', 'auth');
             return false;
         }
 
         if ($this->_params['adminUserDn'] == '') {
-            $bind = ldap_bind($connect);
+            $bind = @ldap_bind($connect);
         } else {
-            $bind = ldap_bind($connect, $this->_params['adminUserDn'], $this->_params['adminPassword']);
+            $bind = @ldap_bind($connect, $this->_params['adminUserDn'], $this->_params['adminPassword']);
         }
         if (!$bind) {
             if ($this->_params['adminUserDn'] == '') {
-                jLog::log('ldapdao: impossible to authenticate to ldap as anonymous admin user', 'auth');
+                jLog::log('ldapdao error: authenticating to the ldap with an anonymous admin user is not supported', 'auth');
             } else {
-                jLog::log('ldapdao: impossible to authenticate to ldap with admin user '.$this->_params['adminUserDn'], 'auth');
+                jLog::log('ldapdao error: impossible to authenticate to ldap with the admin user '.$this->_params['adminUserDn'], 'auth');
             }
             ldap_close($connect);
             return false;
         }
         return $connect;
     }
+
+    protected function getLdapError($connect, $contextMessage)
+    {
+        $message = "ldapdao error: $contextMessage \n";
+        $message .= "\tldap error " . ldap_errno($connect) . ':' . ldap_error($connect);
+        if (@ldap_get_option($connect, LDAP_OPT_DIAGNOSTIC_MESSAGE, $diagnostic)) {
+            $message .= "\n\t" . $diagnostic;
+        }
+        return $message;
+    }
+
+    protected function logLdapError($connect, $contextMessage)
+    {
+        jLog::log($this->getLdapError($connect, $contextMessage), 'auth');
+    }
+
 }
