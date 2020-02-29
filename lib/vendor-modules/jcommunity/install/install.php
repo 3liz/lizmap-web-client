@@ -68,15 +68,14 @@ class jcommunityModuleInstaller extends \Jelix\Installer\Module\Installer {
 
         // if the dao from jcommunity is used, lets use our own sql script
         // because we need to create a unique constraint, that is not
-        // handle by jDaoMapper.
+        // handle by jDaoMapper. Then we can use jDaoMapper to create
+        // missing fields indicated into the dao (if overloaded)
         if ($daoSelector == 'jcommunity~user') {
             $helpers->database()->execSQLScript('sql/install');
         }
-        // for any other dao file, let's use jDaoMapper.
-        else {
-            $mapper = new jDaoDbMapper($dbProfile);
-            $mapper->createTableFromDao($daoSelector);
-        }
+
+        $mapper = new jDaoDbMapper($dbProfile);
+        $mapper->createTableFromDao($daoSelector);
 
         if ($this->getParameter('migratejauthdbusers')) {
             $this->migrateUsers($database, $daoSelector);
@@ -124,12 +123,12 @@ class jcommunityModuleInstaller extends \Jelix\Installer\Module\Installer {
     protected function migrateUsers(DatabaseHelpers $database, $daoSelectorStr) {
         $dao = jDao::get($daoSelectorStr);
         $tableProp = $dao->getTables()[$dao->getPrimaryTable()];
+        $cn = $database->dbConnection();
 
-        if ($tableProp['realname'] == 'jlx_user') {
+        if ($tableProp['realname'] == $cn->prefixTable('jlx_user')) {
             return;
         }
 
-        $cn = $database->dbConnection();
         $targetFields = array();
         $properties = array('login', 'password', 'status', 'email', 'create_date');
         $daoProperties = $dao->getProperties();
@@ -161,7 +160,7 @@ class jcommunityModuleInstaller extends \Jelix\Installer\Module\Installer {
             $sourceFields[] = "'".date('Y-m-d H:i:s')."'";
         }
 
-        $sql = "INSERT INTO ".$cn->prefixTable($tableProp['realname']);
+        $sql = "INSERT INTO ".$tableProp['realname'];
         $sql .= '('.implode(',', $targetFields).')';
         $sql .= ' SELECT '.implode(',', $sourceFields) . ' FROM '.$cn->prefixTable('jlx_user');
         $cn->exec($sql);
@@ -177,7 +176,7 @@ class jcommunityModuleInstaller extends \Jelix\Installer\Module\Installer {
         if (isset($daoProperties['status'])) {
             $statusField = $cn->encloseName($daoProperties['status']['fieldName']);
 
-            $sql = "UPDATE ".$cn->prefixTable($tableProp['realname']).
+            $sql = "UPDATE ".$tableProp['realname'].
                 " SET ".$statusField." = ".\Jelix\JCommunity\Account::STATUS_VALID.
                 " WHERE ".$statusField." IS NULL";
             $cn->exec($sql);
@@ -187,13 +186,23 @@ class jcommunityModuleInstaller extends \Jelix\Installer\Module\Installer {
             $loginField = $cn->encloseName($daoProperties['login']['fieldName']);
             $nicknameField = $cn->encloseName($daoProperties['nickname']['fieldName']);
 
-            $sql = "UPDATE ".$cn->prefixTable($tableProp['realname']).
+            $sql = "UPDATE ".$tableProp['realname'].
                 " SET ".$nicknameField." = ".$loginField.
                 " WHERE ".$nicknameField." IS NULL or ".$nicknameField." = ''";
             $cn->exec($sql);
         }
     }
 
+    /**
+     * @param InstallHelpers $helpers
+     * @param EntryPoint $entryPoint
+     * @param dbAuthDriver $driver
+     * @param string $daoSelector
+     * @param string $dbProfile
+     * @param string $module
+     * @param string $relativeSourcePath
+     * @throws Exception
+     */
     protected function insertUsers(InstallHelpers $helpers, EntryPoint $entryPoint, $driver, $daoSelector, $dbProfile, $module, $relativeSourcePath) {
 
         if ($module) {
