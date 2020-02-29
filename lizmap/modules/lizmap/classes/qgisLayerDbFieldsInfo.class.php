@@ -9,6 +9,9 @@
  */
 class qgisLayerDbFieldsInfo
 {
+    /** @var  jDbConnection */
+    protected $cnx;
+
     /**
      * @var jDbFieldProperties[]
      */
@@ -28,4 +31,29 @@ class qgisLayerDbFieldsInfo
      * @var string name of the geometry type
      */
     public $geometryType = '';
+
+    /**
+     * @param jDbConnection $cnx
+     */
+    public function __construct($cnx)
+    {
+        $this->cnx = $cnx;
+    }
+
+    public function getQuotedValue($ref, $value)
+    {
+        $ut = $this->dataFields[$ref]->unifiedType;
+        if ($ut != 'integer'
+            && $ut != 'numeric'
+            && $ut != 'float'
+            && $ut != 'decimal') {
+            return $this->cnx->quote($value);
+        }
+        return $value;
+    }
+
+    public function getSQLRefEquality($ref, $value)
+    {
+        return $this->cnx->encloseName($ref).' = '.$this->getQuotedValue($ref, $value);
+    }
 }

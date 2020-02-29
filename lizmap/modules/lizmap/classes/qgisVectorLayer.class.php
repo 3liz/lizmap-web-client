@@ -404,7 +404,7 @@ class qgisVectorLayer extends qgisMapLayer
         $fields = $this->getDbFieldList();
         $wfsFields = $this->getWfsFields();
 
-        $dbInfo = new qgisLayerDbFieldsInfo();
+        $dbInfo = new qgisLayerDbFieldsInfo($cnx);
         $dbInfo->dataFields = array();
         foreach ($fields as $fieldName => $prop) {
             if (in_array($fieldName, $wfsFields) || in_array(strtolower($prop->type), $this->geometryDatatypeMap)) {
@@ -572,7 +572,7 @@ class qgisVectorLayer extends qgisMapLayer
         }
         $sql .= ' FROM '.$dtParams->table;
 
-        list($sqlw, $pk) = $this->getPkWhereClause($cnx, $dbFieldsInfo, $feature);
+        list($sqlw, $pk) = $this->getPkWhereClause($dbFieldsInfo, $feature);
         $dataFields = $dbFieldsInfo->dataFields;
         $sql .= ' WHERE ';
         $sql .= implode(' AND ', $sqlw);
@@ -624,25 +624,16 @@ class qgisVectorLayer extends qgisMapLayer
     }
 
     /**
-     * @param jDbConnection         $cnx
      * @param qgisLayerDbFieldsInfo $dbFieldsInfo
      * @param object                $feature
      */
-    protected function getPkWhereClause($cnx, $dbFieldsInfo, $feature)
+    protected function getPkWhereClause($dbFieldsInfo, $feature)
     {
         $sqlw = array();
-        $dataFields = $dbFieldsInfo->dataFields;
         $pk = array();
         foreach ($dbFieldsInfo->primaryKeys as $key) {
             $val = $feature->properties->{$key};
-            if ($dataFields[$key]->unifiedType != 'integer'
-                && $dataFields[$key]->unifiedType !== 'numeric'
-                && $dataFields[$key]->unifiedType !== 'float'
-                && $dataFields[$key]->unifiedType !== 'decimal') {
-                $val = $cnx->quote($val);
-            }
-            $key = $cnx->encloseName($key);
-            $sqlw[] = $key.' = '.$val;
+            $sqlw[] = $dbFieldsInfo->getSQLRefEquality($key, $val);
             $pk[$key] = $val;
         }
 
@@ -666,7 +657,6 @@ class qgisVectorLayer extends qgisMapLayer
         $refs = array();
         $insert = array();
         $primaryKeys = $dbFieldsInfo->primaryKeys;
-        $dataFields = $dbFieldsInfo->dataFields;
         $dataLogInfo = array();
         foreach ($values as $ref => $value) {
             // For insert, only for not NULL values to allow serial and default values to work
@@ -676,10 +666,7 @@ class qgisVectorLayer extends qgisMapLayer
                 // For log
                 if (in_array($ref, $primaryKeys)) {
                     $val = $value;
-                    if ($dataFields[$ref]->unifiedType != 'integer') {
-                        $val = $cnx->quote($val);
-                    }
-                    $dataLogInfo[] = $cnx->encloseName($ref).' = '.$val;
+                    $dataLogInfo[] = $dbFieldsInfo->getSQLRefEquality($ref, $val);
                 }
             }
         }
@@ -789,7 +776,7 @@ class qgisVectorLayer extends qgisMapLayer
         $sql .= implode(', ', $update);
 
         // Add where clause with primary keys
-        list($sqlw, $pk) = $this->getPkWhereClause($cnx, $dbFieldsInfo, $feature);
+        list($sqlw, $pk) = $this->getPkWhereClause($dbFieldsInfo, $feature);
         // Store WHere clause to retrieve primary keys in spatialite
         $uwhere = '';
         $uwhere .= ' WHERE ';
@@ -886,7 +873,7 @@ class qgisVectorLayer extends qgisMapLayer
         $sql = ' DELETE FROM '.$dtParams->table;
 
         // Add where clause with primary keys
-        list($sqlw, $pkLogInfo) = $this->getPkWhereClause($cnx, $dbFieldsInfo, $feature);
+        list($sqlw, $pkLogInfo) = $this->getPkWhereClause($dbFieldsInfo, $feature);
         $sql .= ' WHERE ';
         $sql .= implode(' AND ', $sqlw);
 
@@ -926,23 +913,16 @@ class qgisVectorLayer extends qgisMapLayer
         $dtParams = $this->getDatasourceParameters();
         $cnx = $this->getDatasourceConnection();
         $dbFieldsInfo = $this->getDbFieldsInfo();
-        $dataFields = $dbFieldsInfo->dataFields;
 
         $results = array();
-        $one = (int) $fval;
-        if ($dataFields[$fkey]->unifiedType != 'integer') {
-            $one = $cnx->quote($one);
-        }
+        $one = $dbFieldsInfo->getSQLRefEquality($fkey,(int) $fval);
         foreach ($pvals as $pval) {
-            $two = (int) $pval;
-            if ($dataFields[$pkey]->unifiedType != 'integer') {
-                $two = $cnx->quote($two);
-            }
+            $two = $dbFieldsInfo->getSQLRefEquality($pkey, (int) $pval);
 
             // Build SQL
             $sql = ' UPDATE '.$dtParams->table;
-            $sql .= ' SET '.$cnx->encloseName($fkey).' = '.$one;
-            $sql .= ' WHERE '.$cnx->encloseName($pkey).' = '.$two;
+            $sql .= ' SET '.$one;
+            $sql .= ' WHERE '.$two;
             $sql .= ';';
 
             try {
@@ -963,19 +943,12 @@ class qgisVectorLayer extends qgisMapLayer
         $dtParams = $this->getDatasourceParameters();
         $cnx = $this->getDatasourceConnection();
         $dbFieldsInfo = $this->getDbFieldsInfo();
-        $dataFields = $dbFieldsInfo->dataFields;
 
         $results = array();
         foreach ($fvals as $fval) {
-            $one = (int) $fval;
-            if ($dataFields[$fkey]->unifiedType != 'integer') {
-                $one = $cnx->quote($one);
-            }
+            $one = $dbFieldsInfo->getQuotedValue($fkey, (int) $fval);
             foreach ($pvals as $pval) {
-                $two = (int) $pval;
-                if ($dataFields[$pkey]->unifiedType != 'integer') {
-                    $two = $cnx->quote($two);
-                }
+                $two = $dbFieldsInfo->getQuotedValue($pkey, (int) $pval);
 
                 // Build SQL
                 $sql = ' INSERT INTO '.$dtParams->table.' (';
@@ -1010,17 +983,13 @@ class qgisVectorLayer extends qgisMapLayer
         $dtParams = $this->getDatasourceParameters();
         $cnx = $this->getDatasourceConnection();
         $dbFieldsInfo = $this->getDbFieldsInfo();
-        $dataFields = $dbFieldsInfo->dataFields;
 
         // Build SQL
-        $val = (int) $pval;
-        if ($dataFields[$pkey]->unifiedType != 'integer') {
-            $val = $cnx->quote($val);
-        }
+        $valSQL = $dbFieldsInfo->getSQLRefEquality($pkey, (int) $pval);
 
         $sql = ' UPDATE '.$dtParams->table;
         $sql .= ' SET '.$cnx->encloseName($fkey).' = NULL';
-        $sql .= ' WHERE '.$cnx->encloseName($pkey).' = '.$val;
+        $sql .= ' WHERE '.$valSQL;
         $sql .= ';';
 
         try {
