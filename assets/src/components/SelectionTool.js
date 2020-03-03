@@ -72,22 +72,23 @@ export default class SelectionTool extends HTMLElement {
                                 <button class="selectiontool-unselect btn btn-mini" ?disabled=${mainLizmap.selectionTool.selectedFeaturesCount === 0} @click=${ () => mainLizmap.selectionTool.unselect()}  data-original-title="${lizDict['selectiontool.toolbar.action.unselect']}">
                                     <i class="icon-star-empty"></i>
                                 </button>
-                                <button id="selectiontool-filter" class="btn btn-mini ${mainLizmap.selectionTool.filteredFeaturesCount !== 0 ? 'active' : ''}" ?disabled=${mainLizmap.selectionTool.filteredFeaturesCount === 0} @click=${ () => mainLizmap.selectionTool.filter()}  data-original-title="${lizDict['selectiontool.toolbar.action.filter']}">
+                                <button class="selectiontool-filter btn btn-mini ${mainLizmap.selectionTool.filteredFeaturesCount !== 0 ? 'active' : ''}" ?disabled=${mainLizmap.selectionTool.filteredFeaturesCount === 0} @click=${ () => mainLizmap.selectionTool.filter()}  data-original-title="${lizDict['selectiontool.toolbar.action.filter']}">
                                     <i class="icon-filter"></i>
                                 </button>
-                                <!-- {if $layerExport} -->
-                                <!-- <div class="btn-group dropup" role="group" >
-                                    <button id="selectiontool-export" type="button" class="btn btn-mini dropdown-toggle" ?disabled=${mainLizmap.selectionTool.selectedFeaturesCount === 0} data-toggle="dropdown" aria-expanded="false" title="${lizDict['switcher.layer.export.title']}">
-                                        ${lizDict['switcher.layer.export.title']}
-                                    <span class="caret"></span>
-                                    </button>
-                                    <ul class="selectiontool-export-formats dropdown-menu dropdown-menu-right" role="menu">
-                                        <li><a href="#" class="btn-export-selection">GeoJSON</a></li>
-                                        <li><a href="#" class="btn-export-selection">GML</a></li>
-                                        ${mainLizmap.selectionTool.exportFormats.map((format) => html`<li><a href="#" class="btn-export-selection">${format.tagName}</a></li>`)}
-                                    </ul>
-                                </div> -->
-                                <!-- {/if} -->
+                                ${this.hasAttribute('layer-export') ?
+                                    html`
+                                        <div class="btn-group dropup" role="group" >
+                                        <button id="selectiontool-export" type="button" class="btn btn-mini dropdown-toggle" ?disabled=${mainLizmap.selectionTool.selectedFeaturesCount === 0} data-toggle="dropdown" aria-expanded="false" title="${lizDict['switcher.layer.export.title']}">
+                                            ${lizDict['switcher.layer.export.title']}
+                                        <span class="caret"></span>
+                                        </button>
+                                        <ul class="selectiontool-export-formats dropdown-menu dropdown-menu-right" role="menu">
+                                            <li><a href="#" class="btn-export-selection">GeoJSON</a></li>
+                                            <li><a href="#" class="btn-export-selection">GML</a></li>
+                                            ${mainLizmap.selectionTool.exportFormats.map((format) => html`<li><a href="#" class="btn-export-selection">${format.tagName}</a></li>`)}
+                                        </ul>
+                                    </div>`:''
+                                }
                             </div>
                         </td>
                     </tr>

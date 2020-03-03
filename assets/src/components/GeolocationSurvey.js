@@ -10,7 +10,7 @@ export default class GeolocationSurvey extends HTMLElement {
         const mainTemplate = () => html`
         <div class="${mainLizmap.geolocation.isTracking && mainLizmap.geolocation.isLinkedToEdition ? '' : 'hide'}">
             ${ ['line', 'polygon'].includes(mainLizmap.edition.layerGeometry) ?
-        html`
+                html`
                 <div class="control-group" style="text-align:center">
                     <div class="btn-group">
                         <button class="btn ${mainLizmap.geolocationSurvey.beepMode ? 'active btn-success' : ''}" @click=${() => mainLizmap.geolocationSurvey.toggleBeepMode()}><i class="icon-music"></i></button>
@@ -33,11 +33,10 @@ export default class GeolocationSurvey extends HTMLElement {
                             <input class="input-mini" type="number" min="0" @change=${ (event) => mainLizmap.geolocationSurvey.timeLimit = parseInt(event.target.value)}><span class="add-on">s</span>
                         </div>
                         ${mainLizmap.geolocationSurvey.timeMode ?
-        html`<div class="input-append">
+                            html`<div class="input-append">
                                     <input class="input-mini" type="text" disabled="disabled" value="${mainLizmap.geolocationSurvey.timeCount}">
                                     <button class="btn ${mainLizmap.geolocationSurvey.timePauseMode ? 'active btn-success' : ''}" @click=${() => mainLizmap.geolocationSurvey.toggleTimePauseMode()}><i class="icon-pause"></i></button>
-                                </div>` : ''
-}
+                                </div>` : ''}
                     </div>
                 </div>
                 <div class="control-group">
@@ -49,8 +48,7 @@ export default class GeolocationSurvey extends HTMLElement {
                         ${mainLizmap.geolocationSurvey.accuracyMode ? html`${mainLizmap.geolocation.accuracy}` : ''}
                     </div>
                 </div>
-            ` : ''
-}
+            ` : ''}
             <div class="control-group">
                 <div><button class="btn ${mainLizmap.geolocationSurvey.averageRecordMode ? 'active btn-success' : ''}" @click=${() => mainLizmap.geolocationSurvey.toggleAverageRecordMode()}>${lizDict['geolocation.survey.average']}</button></div>
                 <div class="controls">
