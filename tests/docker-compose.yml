@@ -1,4 +1,4 @@
-version: '3'
+version: '3.4'
 services:
   pgsql:
     image: mdillon/postgis:11
@@ -60,4 +60,5 @@ services:
       - ./qgis-projects:/srv/projects
       - ./wps-data:/srv/data
 volumes:
-  pg_data: {}
+  pg_data:
+    name: lizmap_pg_data
