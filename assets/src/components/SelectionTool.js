@@ -57,7 +57,7 @@ export default class SelectionTool extends HTMLElement {
                     <button class="selectiontool-unselect btn btn-mini" ?disabled=${mainLizmap.selectionTool.selectedFeaturesCount === 0} @click=${ () => mainLizmap.selectionTool.unselect()}  data-original-title="${lizDict['selectiontool.toolbar.action.unselect']}">
                         <i class="icon-star-empty"></i>
                     </button>
-                    <button class="selectiontool-filter btn btn-mini ${mainLizmap.selectionTool.filteredFeaturesCount !== 0 ? 'active' : ''}" ?disabled=${mainLizmap.selectionTool.filteredFeaturesCount === 0} @click=${ () => mainLizmap.selectionTool.filter()}  data-original-title="${lizDict['selectiontool.toolbar.action.filter']}">
+                    <button class="selectiontool-filter btn btn-mini ${mainLizmap.selectionTool.filteredFeaturesCount !== 0 ? 'active' : ''}" ?disabled=${mainLizmap.selectionTool.selectedFeaturesCount === 0 && mainLizmap.selectionTool.filteredFeaturesCount === 0} @click=${ () => mainLizmap.selectionTool.filter()}  data-original-title="${lizDict['selectiontool.toolbar.action.filter']}">
                         <i class="icon-filter"></i>
                     </button>
                     ${this.hasAttribute('layer-export') ?
