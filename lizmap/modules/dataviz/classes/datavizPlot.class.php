@@ -45,6 +45,9 @@ class datavizPlot
     protected $y_mandatory = array('scatter', 'box', 'bar', 'pie', 'histogram2d', 'polar', 'sunburst');
 
     protected $aggregation;
+    protected $display_legend;
+    protected $stacked;
+    protected $horizontal;
 
     /**
      * datavizPlot constructor.
@@ -155,6 +158,15 @@ class datavizPlot
             $aggregation = $plotConfig['plot']['aggregation'];
         }
         $this->aggregation = $aggregation;
+
+        // Show legend
+        $this->display_legend = $plotConfig['plot']['display_legend'];
+
+        // Stacked
+        $this->stacked = $plotConfig['plot']['stacked'];
+
+        // horizontal
+        $this->horizontal = $plotConfig['plot']['horizontal'];
     }
 
     /**
@@ -240,7 +252,7 @@ class datavizPlot
     {
         $layout = array(
             //'title' => $this->title,
-            'showlegend' => true,
+            'showlegend' => $this->display_legend,
             'legend' => array(
                 'orientation' => 'h',
                 'x' => '-0.1',
@@ -263,10 +275,10 @@ class datavizPlot
             $layout['legend']['y'] = '-5';
         }
 
-        if ($this->type == 'bar' and count($this->y_fields) > 1) {
+        if ($this->type == 'bar' and $this->horizontal ) {
             $layout['margin']['l'] = 150;
         }
-        if ($this->type == 'bar' and count($this->y_fields) > 1) {
+        if ($this->type == 'bar'and count($this->y_fields) > 1 and $this->stacked) {
             $layout['barmode'] = 'stack';
         }
 
@@ -821,7 +833,7 @@ class datavizPlotBar extends datavizPlot
             'textinfo' => 'none',
             'orientation' => 'v',
         );
-        if ($this->type == 'bar' and count($this->y_fields) > 1) {
+        if ($this->horizontal) {
             $data['orientation'] = 'h';
         }
 
