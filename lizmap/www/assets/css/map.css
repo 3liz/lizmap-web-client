@@ -2440,7 +2440,7 @@ div.tooltip {
   display:block;
 }
 
-#selectiontool-export-formats{
+.selectiontool-export-formats{
   left: auto;
   right: 0px;
   max-height: 110px;
