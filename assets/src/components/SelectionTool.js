@@ -58,14 +58,14 @@ export default class SelectionTool extends HTMLElement {
                     <tr>
                         <td>
                             <div class="selectiontool-actions">
-                                <div id="selectiontool-type-buttons" class="btn-group" data-toggle="buttons-radio">
-                                    <button id="selectiontool-type-refresh" class="btn btn-mini active"  data-original-title="${lizDict['selectiontool.toolbar.action.type.refresh']}" value="refresh">
+                                <div id="selectiontool-type-buttons" class="btn-group">
+                                    <button id="selectiontool-type-refresh" class="btn btn-mini ${mainLizmap.selectionTool.newAddRemoveSelected === "new" ? 'active' : ''}" @click=${() => mainLizmap.selectionTool.newAddRemoveSelected = "new"} data-original-title="${lizDict['selectiontool.toolbar.action.type.refresh']}" value="refresh">
                                         <i class="icon-refresh"></i>
                                     </button>
-                                    <button id="selectiontool-type-plus" class="btn btn-mini"  data-original-title="${lizDict['selectiontool.toolbar.action.type.plus']}" value="plus">
+                                    <button id="selectiontool-type-plus" class="btn btn-mini ${mainLizmap.selectionTool.newAddRemoveSelected === "add" ? 'active' : ''}" @click=${() => mainLizmap.selectionTool.newAddRemoveSelected = "add"} data-original-title="${lizDict['selectiontool.toolbar.action.type.plus']}" value="plus">
                                         <i class="icon-plus"></i>
                                     </button>
-                                    <button id="selectiontool-type-minus" class="btn btn-mini"  data-original-title="${lizDict['selectiontool.toolbar.action.type.minus']}" value="minus">
+                                    <button id="selectiontool-type-minus" class="btn btn-mini ${mainLizmap.selectionTool.newAddRemoveSelected === "remove" ? 'active' : ''}" @click=${() => mainLizmap.selectionTool.newAddRemoveSelected = "remove"} data-original-title="${lizDict['selectiontool.toolbar.action.type.minus']}" value="minus">
                                         <i class="icon-minus"></i>
                                     </button>
                                 </div>
@@ -113,7 +113,7 @@ export default class SelectionTool extends HTMLElement {
             () => {
                 render(mainTemplate(), this);
             },
-            ['selectionTool.toolSelected', 'selectionTool.featureTypeSelected', 'selectionTool.selectionChanged', 'selectionTool.filteredFeaturesChanged']
+            ['selectionTool.toolSelected', 'selectionTool.newAddRemoveSelected','selectionTool.featureTypeSelected', 'selectionTool.selectionChanged', 'selectionTool.filteredFeaturesChanged']
         );
     }
 
