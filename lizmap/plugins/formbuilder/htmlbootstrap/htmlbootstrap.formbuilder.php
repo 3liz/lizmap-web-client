@@ -150,7 +150,12 @@ class htmlbootstrapFormBuilder extends \jelix\forms\Builder\HtmlBuilder
      */
     public function outputControlLabel($ctrl, $format = '', $editMode = true)
     {
-        if ($ctrl->type == 'hidden' || $ctrl->type == 'button' || $ctrl->type == 'checkbox') {
+        if ($ctrl->type == 'hidden' || $ctrl->type == 'button') {
+            return;
+        }
+        else if ($ctrl->type == 'checkbox' &&
+            $ctrl->valueLabelOnCheck === '' &&
+            $ctrl->valueLabelOnUncheck === '') {
             return;
         }
         $widget = $this->getWidget($ctrl, $this->rootWidget);

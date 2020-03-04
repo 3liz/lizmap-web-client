@@ -473,6 +473,30 @@ class qgisFormControl
                 break;
         }
 
+        // Rework for boolean
+        if ($this->fieldDataType == 'boolean' &&
+            in_array($markup, array('menulist', 'checkboxes'))) {
+            // Get data list, to use label
+            $data = $this->ctrl->datasource->data;
+            // Set control
+            $this->ctrl = new jFormsControlCheckbox($this->ref);
+            // Check data list
+            foreach ($data as $k=>$v) {
+                $strK = strtolower($k);
+                if ($strK === 'true' || $strK === 't' ||
+                    intval($k) === 1 || $strK === 'on') {
+                    // Check info
+                    $this->ctrl->valueOnCheck = $k;
+                    $this->ctrl->valueLabelOnCheck = $v;
+                } else if ($strK === 'false' || $strK === 'f' ||
+                    intval($k) === 0 || $strK === 'off') {
+                    // Uncheck info
+                    $this->ctrl->valueOnCheck = $k;
+                    $this->ctrl->valueLabelOnUncheck = $v;
+                }
+            }
+        }
+
         // Set control main properties
         $this->setControlMainProperties();
     }
@@ -520,6 +544,11 @@ class qgisFormControl
 
                 case 'time':
                     $this->ctrl->datatype = new jDatatypeTime();
+
+                    break;
+
+                case 'boolean':
+                    $this->ctrl->datatype = new jDatatypeBoolean();
 
                     break;
             }
