@@ -10,6 +10,9 @@ export default class SelectionTool {
         this._tools = ["deactivate", "box", "circle", "polygon", "freehand"] ;
         this._toolSelected = this._tools[0];
 
+        this._newAddRemove = ["new", "add", "remove"];
+        this._newAddRemoveSelected = this._newAddRemove[0];
+
         // Verifying WFS layers
         const featureTypes = mainLizmap.vectorLayerFeatureTypes;
         if (featureTypes.length === 0) {
@@ -269,6 +272,18 @@ export default class SelectionTool {
 
             this._toolSelected = tool;
             mainEventDispatcher.dispatch('selectionTool.toolSelected');
+        }
+    }
+
+    get newAddRemoveSelected() {
+        return this._newAddRemoveSelected;
+    }
+
+    set newAddRemoveSelected(newAddRemove) {
+        if (this._newAddRemove.includes(newAddRemove)) {
+            this._newAddRemoveSelected = newAddRemove;
+
+            mainEventDispatcher.dispatch('selectionTool.newAddRemoveSelected');
         }
     }
 

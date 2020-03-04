@@ -5760,8 +5760,8 @@ OpenLayers.Control.HighlightFeature = OpenLayers.Class(OpenLayers.Control, {
                   var sfIds = $.map(tfeatures, function(feat){
                       return feat.fid.split('.')[1];
                   });
-                  var stType = $('#selectiontool-type-buttons button.btn.active').val();
-                  if( stType == 'plus' ) {
+
+                  if (lizMap.mainLizmap.selectionTool.newAddRemoveSelected === 'add' ) {
                       sfIds = config.layers[targetFeatureType]['selectedFeatures'].concat(sfIds);
                       for(var i=0; i<sfIds.length; ++i) {
                           for(var j=i+1; j<sfIds.length; ++j) {
@@ -5769,7 +5769,7 @@ OpenLayers.Control.HighlightFeature = OpenLayers.Class(OpenLayers.Control, {
                                   sfIds.splice(j--, 1);
                           }
                       }
-                  } else if( stType == 'minus' ) {
+                  } else if (lizMap.mainLizmap.selectionTool.newAddRemoveSelected === 'remove' ) {
                       var asfIds = config.layers[targetFeatureType]['selectedFeatures'].concat([]);
                       for(var i=0; i<sfIds.length; ++i) {
                           var asfIdIdx = asfIds.indexOf( sfIds[i] );
@@ -5790,7 +5790,7 @@ OpenLayers.Control.HighlightFeature = OpenLayers.Class(OpenLayers.Control, {
                   // Remove features from selection layer
                   var queryLayer = lizMap.layers['selectionQueryLayer'];
                   queryLayer.destroyFeatures();
-                  $('#selectiontool-query-deactivate').click();
+                  lizMap.mainLizmap.selectionTool.toolSelected = "deactivate";
           });
       });
   }
