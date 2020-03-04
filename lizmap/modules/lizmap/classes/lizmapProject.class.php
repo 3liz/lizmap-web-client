@@ -887,6 +887,14 @@ class lizmapProject extends qgisProject
         return false;
     }
 
+    private function optionToBoolean($config_string) {
+        $ret = false;
+        if (strtolower((string)$config_string) == 'true') {
+            $ret = true;
+        }
+        return $ret;
+    }
+
     /**
      * @return array|bool
      */
@@ -915,17 +923,18 @@ class lizmapProject extends qgisProject
                 'plot_id' => $lc->order,
                 'layer_id' => $layer->id,
                 'title' => $title,
-                'abstract' => $layer->abstract,
                 'plot' => array(
                     'type' => $lc->type,
                     'x_field' => $lc->x_field,
                     'y_field' => $lc->y_field,
                 ),
             );
-
             if (property_exists($lc, 'z_field')) {
                 $plotConf['plot']['z_field'] = $lc->z_field;
             }
+
+            $abstract = $layer->abstract;
+            $plotConf['abstract'] = $abstract;
 
             if (property_exists($lc, 'popup_display_child_plot')) {
                 $plotConf['popup_display_child_plot'] = $lc->popup_display_child_plot;
@@ -938,6 +947,9 @@ class lizmapProject extends qgisProject
             }
             if (!empty($lc->color)) {
                 $plotConf['plot']['color'] = $lc->color;
+            }
+            if (property_exists($lc, 'color2') and !empty($lc->color2) ) {
+                $plotConf['plot']['color2'] = $lc->color2;
             }
             if (property_exists($lc, 'aggregation')) {
                 $plotConf['plot']['aggregation'] = $lc->aggregation;
@@ -1639,7 +1651,6 @@ class lizmapProject extends qgisProject
         if ($themes) {
             $configJson->themes = $themes;
         }
-
         if ($this->useLayerIDs) {
             $configJson->options->useLayerIDs = 'True';
         }

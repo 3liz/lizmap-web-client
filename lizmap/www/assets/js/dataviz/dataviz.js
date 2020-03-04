@@ -6,17 +6,27 @@ var lizDataviz = function() {
         'template': null
     };
 
+    function optionToBoolean(string){
+        var ret = false;
+        if (string.toString().toLowerCase() == "true"){
+            ret = true;
+        }else{
+            ret = false;
+        }
+        return ret;
+    }
+
     function getPlots(){
         if(!dv.config.layers)
             return false;
         for( var i in dv.config.layers) {
-            if( dv.config.layers[i]['only_show_child'] != "True" ){
+            if (!( optionToBoolean(dv.config.layers[i]['only_show_child']) )) {
                 addPlotContainer(i);
             }
         }
         lizMap.events.triggerEvent( "datavizplotcontainersadded" );
         for( var i in dv.config.layers) {
-            if( dv.config.layers[i]['only_show_child'] != "True" ){
+            if (!( optionToBoolean(dv.config.layers[i]['only_show_child']) )){
                 getPlot(i, null, 'dataviz_plot_' + i);
             }
         }
@@ -82,7 +92,7 @@ var lizDataviz = function() {
         var plot_config = dv.config.layers[plot_id];
         //if we chose to hide the parent plot the html variable become empty
         var html = '';
-        if(plot_config.only_show_child != "True")
+        if( !(optionToBoolean(plot_config.only_show_child)) )
         {
             html = buildPlotContainerHtml(plot_config.title, plot_config.abstract, dataviz_plot_id);
         }
