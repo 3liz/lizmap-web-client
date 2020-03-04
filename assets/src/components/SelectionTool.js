@@ -12,7 +12,7 @@ export default class SelectionTool extends HTMLElement {
         <div class="selectiontool">
             <h3>
                 <span class="title">
-                    <button class="btn-selectiontool-clear btn btn-mini btn-error btn-link" @click=${() => mainLizmap.selectionTool.disable()} title="${lizDict['toolbar.content.stop']}">×</button>
+                    <button class="btn-selectiontool-clear btn btn-mini btn-error btn-link" type="button" @click=${() => mainLizmap.selectionTool.disable()} title="${lizDict['toolbar.content.stop']}">×</button>
                     <span class="icon-star icon-white"></span>
                     <span class="text">&nbsp;${lizDict['selectiontool.toolbar.title']}&nbsp;</span>
                 </span>
@@ -25,45 +25,45 @@ export default class SelectionTool extends HTMLElement {
                     </select>
                 </div>
                 <div class="selectiontool-query-buttons btn-group">
-                    <button id="selectiontool-query-deactivate" class="btn btn-small ${mainLizmap.selectionTool.toolSelected === "deactivate" ? 'active' : ''}" @click=${() => mainLizmap.selectionTool.toolSelected = "deactivate"} data-original-title="${lizDict['selectiontool.toolbar.query.deactivate']}">
+                    <button type="button" class="selectiontool-query-deactivate btn btn-small ${mainLizmap.selectionTool.toolSelected === "deactivate" ? 'active' : ''}" @click=${() => mainLizmap.selectionTool.toolSelected = "deactivate"} data-original-title="${lizDict['selectiontool.toolbar.query.deactivate']}">
                         <i class="icon-none qgis_sprite mIconDeselected"></i>
                     </button>
-                    <button id="selectiontool-query-box" class="btn btn-small ${mainLizmap.selectionTool.toolSelected === "box" ? 'active' : ''}" @click=${() => mainLizmap.selectionTool.toolSelected = "box"} data-original-title="${lizDict['selectiontool.toolbar.query.box']}">
+                    <button type="button" class="selectiontool-query-box btn btn-small ${mainLizmap.selectionTool.toolSelected === "box" ? 'active' : ''}" @click=${() => mainLizmap.selectionTool.toolSelected = "box"} data-original-title="${lizDict['selectiontool.toolbar.query.box']}">
                         <i class="icon-none qgis_sprite mActionSelectRectangle"></i>
                     </button>
-                    <button id="selectiontool-query-circle" class="btn btn-small ${mainLizmap.selectionTool.toolSelected === "circle" ? 'active' : ''}" @click=${() => mainLizmap.selectionTool.toolSelected = "circle"} data-original-title="${lizDict['selectiontool.toolbar.query.circle']}">
+                    <button type="button" class="selectiontool-query-circle btn btn-small ${mainLizmap.selectionTool.toolSelected === "circle" ? 'active' : ''}" @click=${() => mainLizmap.selectionTool.toolSelected = "circle"} data-original-title="${lizDict['selectiontool.toolbar.query.circle']}">
                         <i class="icon-none qgis_sprite mActionSelectRadius"></i>
                     </button>
-                    <button id="selectiontool-query-polygon" class="btn btn-small ${mainLizmap.selectionTool.toolSelected === "polygon" ? 'active' : ''}" @click=${() => mainLizmap.selectionTool.toolSelected = "polygon"} data-original-title="${lizDict['selectiontool.toolbar.query.polygon']}">
+                    <button type="button" class="selectiontool-query-polygon btn btn-small ${mainLizmap.selectionTool.toolSelected === "polygon" ? 'active' : ''}" @click=${() => mainLizmap.selectionTool.toolSelected = "polygon"} data-original-title="${lizDict['selectiontool.toolbar.query.polygon']}">
                         <i class="icon-none qgis_sprite mActionSelectPolygon"></i>
                     </button>
-                    <button id="selectiontool-query-freehand" class="btn btn-small ${mainLizmap.selectionTool.toolSelected === "freehand" ? 'active' : ''}" @click=${() => mainLizmap.selectionTool.toolSelected = "freehand"} data-original-title="${lizDict['selectiontool.toolbar.query.freehand']}">
+                    <button type="button" class="selectiontool-query-freehand btn btn-small ${mainLizmap.selectionTool.toolSelected === "freehand" ? 'active' : ''}" @click=${() => mainLizmap.selectionTool.toolSelected = "freehand"} data-original-title="${lizDict['selectiontool.toolbar.query.freehand']}">
                         <i class="icon-none qgis_sprite mActionSelectFreehand"></i>
                     </button>
                 </div>
-                <div id="selectiontool-results" style="padding:2px">${mainLizmap.selectionTool.selectedFeaturesCount > 1 ? lizDict['selectiontool.results.more'].replace('%s', mainLizmap.selectionTool.selectedFeaturesCount) : mainLizmap.selectionTool.selectedFeaturesCount === 1 ? lizDict['selectiontool.results.one'] : lizDict['selectiontool.results.none']}</div>
+                <div class="selectiontool-results" style="padding:2px">${mainLizmap.selectionTool.selectedFeaturesCount > 1 ? lizDict['selectiontool.results.more'].replace('%s', mainLizmap.selectionTool.selectedFeaturesCount) : mainLizmap.selectionTool.selectedFeaturesCount === 1 ? lizDict['selectiontool.results.one'] : lizDict['selectiontool.results.none']}</div>
                 <div class="selectiontool-actions">
-                    <div id="selectiontool-type-buttons" class="btn-group">
-                        <button id="selectiontool-type-refresh" class="btn btn-mini ${mainLizmap.selectionTool.newAddRemoveSelected === "new" ? 'active' : ''}" @click=${() => mainLizmap.selectionTool.newAddRemoveSelected = "new"} data-original-title="${lizDict['selectiontool.toolbar.action.type.refresh']}" value="refresh">
+                    <div class="selectiontool-type-buttons btn-group">
+                        <button type="button" class="selectiontool-type-refresh btn btn-mini ${mainLizmap.selectionTool.newAddRemoveSelected === "new" ? 'active' : ''}" @click=${() => mainLizmap.selectionTool.newAddRemoveSelected = "new"} data-original-title="${lizDict['selectiontool.toolbar.action.type.refresh']}" value="refresh">
                             <i class="icon-refresh"></i>
                         </button>
-                        <button id="selectiontool-type-plus" class="btn btn-mini ${mainLizmap.selectionTool.newAddRemoveSelected === "add" ? 'active' : ''}" @click=${() => mainLizmap.selectionTool.newAddRemoveSelected = "add"} data-original-title="${lizDict['selectiontool.toolbar.action.type.plus']}" value="plus">
+                        <button type="button" class="selectiontool-type-plus btn btn-mini ${mainLizmap.selectionTool.newAddRemoveSelected === "add" ? 'active' : ''}" @click=${() => mainLizmap.selectionTool.newAddRemoveSelected = "add"} data-original-title="${lizDict['selectiontool.toolbar.action.type.plus']}" value="plus">
                             <i class="icon-plus"></i>
                         </button>
-                        <button id="selectiontool-type-minus" class="btn btn-mini ${mainLizmap.selectionTool.newAddRemoveSelected === "remove" ? 'active' : ''}" @click=${() => mainLizmap.selectionTool.newAddRemoveSelected = "remove"} data-original-title="${lizDict['selectiontool.toolbar.action.type.minus']}" value="minus">
+                        <button type="button" class="selectiontool-type-minus btn btn-mini ${mainLizmap.selectionTool.newAddRemoveSelected === "remove" ? 'active' : ''}" @click=${() => mainLizmap.selectionTool.newAddRemoveSelected = "remove"} data-original-title="${lizDict['selectiontool.toolbar.action.type.minus']}" value="minus">
                             <i class="icon-minus"></i>
                         </button>
                     </div>
-                    <button class="selectiontool-unselect btn btn-mini" ?disabled=${mainLizmap.selectionTool.selectedFeaturesCount === 0} @click=${ () => mainLizmap.selectionTool.unselect()}  data-original-title="${lizDict['selectiontool.toolbar.action.unselect']}">
+                    <button type="button" class="selectiontool-unselect btn btn-mini" ?disabled=${mainLizmap.selectionTool.selectedFeaturesCount === 0} @click=${ () => mainLizmap.selectionTool.unselect()}  data-original-title="${lizDict['selectiontool.toolbar.action.unselect']}">
                         <i class="icon-star-empty"></i>
                     </button>
-                    <button class="selectiontool-filter btn btn-mini ${mainLizmap.selectionTool.filteredFeaturesCount !== 0 ? 'active' : ''}" ?disabled=${mainLizmap.selectionTool.selectedFeaturesCount === 0 && mainLizmap.selectionTool.filteredFeaturesCount === 0} @click=${ () => mainLizmap.selectionTool.filter()}  data-original-title="${lizDict['selectiontool.toolbar.action.filter']}">
+                    <button type="button" class="selectiontool-filter btn btn-mini ${mainLizmap.selectionTool.filteredFeaturesCount !== 0 ? 'active' : ''}" ?disabled=${mainLizmap.selectionTool.selectedFeaturesCount === 0 && mainLizmap.selectionTool.filteredFeaturesCount === 0} @click=${ () => mainLizmap.selectionTool.filter()}  data-original-title="${lizDict['selectiontool.toolbar.action.filter']}">
                         <i class="icon-filter"></i>
                     </button>
                     ${this.hasAttribute('layer-export') ?
                         html`
                             <div class="btn-group dropup" role="group" >
-                            <button id="selectiontool-export" type="button" class="btn btn-mini dropdown-toggle" ?disabled=${mainLizmap.selectionTool.selectedFeaturesCount === 0} data-toggle="dropdown" aria-expanded="false" title="${lizDict['switcher.layer.export.title']}">
+                            <button type="button" class="selectiontool-export btn btn-mini dropdown-toggle" ?disabled=${mainLizmap.selectionTool.selectedFeaturesCount === 0} data-toggle="dropdown" aria-expanded="false" title="${lizDict['switcher.layer.export.title']}">
                                 ${lizDict['switcher.layer.export.title']}
                             <span class="caret"></span>
                             </button>
