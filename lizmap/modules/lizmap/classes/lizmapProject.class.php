@@ -934,6 +934,9 @@ class lizmapProject extends qgisProject
             }
 
             $abstract = $layer->abstract;
+            if (property_exists($lc, 'description')) {
+                $abstract = $lc->description;
+            }
             $plotConf['abstract'] = $abstract;
 
             if (property_exists($lc, 'popup_display_child_plot')) {
@@ -960,6 +963,24 @@ class lizmapProject extends qgisProject
             if (property_exists($lc, 'colorfield2')) {
                 $plotConf['plot']['colorfield2'] = $lc->colorfield2;
             }
+
+            $display_legend = True;
+            if (property_exists($lc, 'display_legend')) {
+                $display_legend = $this->optionToBoolean($lc->display_legend);
+            }
+            $plotConf['plot']['display_legend'] = $display_legend;
+
+            $stacked = False;
+            if (property_exists($lc, 'stacked')) {
+                $stacked = $this->optionToBoolean($lc->stacked);
+            }
+            $plotConf['plot']['stacked'] = $stacked;
+
+            $horizontal = False;
+            if (property_exists($lc, 'horizontal')) {
+                $horizontal = $this->optionToBoolean($lc->horizontal);
+            }
+            $plotConf['plot']['horizontal'] = $horizontal;
 
             // Add more layout config, written like:
             // layout_config=barmode:stack,bargap:0.5
