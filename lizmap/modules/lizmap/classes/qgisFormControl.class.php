@@ -491,7 +491,7 @@ class qgisFormControl
                 } else if ($strK === 'false' || $strK === 'f' ||
                     intval($k) === 0 || $strK === 'off') {
                     // Uncheck info
-                    $this->ctrl->valueOnCheck = $k;
+                    $this->ctrl->valueOnUncheck = $k;
                     $this->ctrl->valueLabelOnUncheck = $v;
                 }
             }
