@@ -101,6 +101,9 @@ Debug
 You can enable the Jelix debug toolbar to get some information:
 In `lizmap/var/config/localconfig.ini.php`, add:
 ```
+[jResponseHtml]
+plugins = debugbar
+
 [debugbar]
 plugins = sqllog,sessiondata,defaultlog
 defaultPosition = right
