@@ -117,7 +117,7 @@ clean:
 	rm -f $(DOCKER_MANIFEST) docker/$(GENERIC_PACKAGE_ZIP)
 
 
-$(DIST):
+$(DIST): lizmap/www/assets/js/lizmap.js lizmap/vendor
 	mkdir -p $(DIST)
 	cp -aR $(FILES) $(DIST)/
 	mkdir -p $(DIST)/temp/lizmap/
@@ -177,7 +177,9 @@ endif
 
 stage: $(DIST)
 
-package: $(ZIP_PACKAGE) $(GENERIC_PACKAGE_PATH) $(ZIP_DEMO_PACKAGE)
+ci_package: $(ZIP_PACKAGE) $(GENERIC_PACKAGE_PATH) $(ZIP_DEMO_PACKAGE)
+
+package: clean build ci_package
 
 deploy_download:
 	upload_to_packages_server $(ZIP_PACKAGE) pub/lizmap/unstable/$(SHORT_VERSION)/
