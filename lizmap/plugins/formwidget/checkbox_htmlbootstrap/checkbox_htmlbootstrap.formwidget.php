@@ -13,6 +13,15 @@ class checkbox_htmlbootstrapFormWidget extends checkbox_htmlFormWidget
 {
     use \Lizmap\Form\WidgetTrait;
 
+    protected function outputJs() {
+        $js = "c = new ".$this->builder->getjFormsJsVarName()."ControlBoolean('".$this->ctrl->ref."', ".$this->escJsStr($this->ctrl->label).");\n";
+        if($this->ctrl->valueLabelOnCheck !== '' or $this->ctrl->valueLabelOnUncheck !== '') {
+            $js = "c = new ".$this->builder->getjFormsJsVarName()."ControlString('".$this->ctrl->ref."', ".$this->escJsStr($this->ctrl->label).");\n";
+        }
+        $this->parentWidget->addJs($js);
+        $this->commonJs();
+    }
+
     public function outputControl()
     {
 
