@@ -480,6 +480,8 @@ class qgisFormControl
             $data = $this->ctrl->datasource->data;
             // Set edit type
             $this->fieldEditType = 'CheckBox';
+            // Checkbox should not be required
+            $this->required = false;
             // Set control
             $this->ctrl = new jFormsControlCheckbox($this->ref);
             // Check data list
