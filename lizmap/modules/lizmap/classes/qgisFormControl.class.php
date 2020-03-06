@@ -478,6 +478,8 @@ class qgisFormControl
             in_array($markup, array('menulist', 'checkboxes'))) {
             // Get data list, to use label
             $data = $this->ctrl->datasource->data;
+            // Set edit type
+            $this->fieldEditType = 'CheckBox';
             // Set control
             $this->ctrl = new jFormsControlCheckbox($this->ref);
             // Check data list
