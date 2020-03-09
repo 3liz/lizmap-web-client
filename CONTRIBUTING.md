@@ -38,12 +38,24 @@ This allows the user to request coffea:
 * long or regular
 ```
 
-## Building JavaScript
+## Build and install dependencies
 
-Since Lizmap Web Client 3.4, some JavaScript has to be built from `assets/` directory.
-Follow those [instructions](assets/README.md).
+**Since Lizmap 3.4, the source code in the repository is not usable directly**, you must build the application first.
 
-## Installing PHP dependencies
+### Building a zip with Javascript and PHP
+
+- Install [Composer](http://getcomposer.org), [Npm](https://www.npmjs.com/), `Make` and `zip`.
+- Run `make package` in your terminal.
+- You'll have 3 packages in the `build` directory:
+  - `lizmap-web-client` and `lizmap-web-client-X.Y` are identical.
+  - Each folder has its own zip file too.
+  - `lizmapdemo` is the Jelix module for the Lizmap demo.
+
+### Building JavaScript only
+
+Follow those [instructions](assets/README.md) in the `assets/` directory.
+
+### Installing PHP dependencies only
 
 You have to install [Composer](http://getcomposer.org), and then run `composer install`
 into the `lizmap/` directory.
