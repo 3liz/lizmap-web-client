@@ -53,7 +53,7 @@ This allows the user to request coffea:
 
 ### Building JavaScript only
 
-## Requirements
+#### Requirements
 
 * Install nodejs :
     * with [binaries](https://nodejs.org/en/download/)
@@ -65,7 +65,7 @@ This allows the user to request coffea:
 It creates a `assets/node_modules/` directory. Don't commit it into the git repository!
 
 
-## Installation
+#### Installation
 
 * Build for production (minified JS files) :
 `npm run build`
