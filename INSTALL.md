@@ -18,17 +18,12 @@ and [its documentation about QGIS Server](https://docs.qgis.org/2.18/en/docs/use
 Get the source
 --------------
 
-Download the Lizmap archive from [the release page](https://github.com/3liz/lizmap-web-client/releases)
-or get files from [the git repository](https://github.com/3liz/lizmap-web-client/).
-
-**Since Lizmap 3.4, the sources in the repository are not usable directly**. If 
-you get the source code directly from git, you have to build Lizmap:
-
-- install [Composer](http://getcomposer.org), `Make` and `zip`
-- run `make package`
-- you'll have a package `build/lizmap-web-client-X.Y.zip`. 
-
-Copy files from the package you retrieved or you built, to a directory for apache/Nginx, let's say  /var/www/mylizmap/.
+- Download the Lizmap ZIP archive from:
+  - [the release page on GitHub](https://github.com/3liz/lizmap-web-client/releases) for stable releases.
+  - [3liz website](https://packages.3liz.org/pub/lizmap/unstable/) for unstable releases.
+  - GitHub source code from [the git repository](https://github.com/3liz/lizmap-web-client/).
+**Since Lizmap 3.4, the source code in the repository is not usable directly**, you must build the application. Read [how to contribute](./CONTRIBUTING.md) to build your own package.
+- Copy files from the ZIP package to a directory for apache/Nginx, let's say  /var/www/mylizmap/.
 
 Installation
 ------------
