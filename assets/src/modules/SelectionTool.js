@@ -5,7 +5,7 @@ export default class SelectionTool {
     constructor() {
 
         this._layers = [];
-        this._featureTypeSelected = undefined;
+        this._allFeatureTypeSelected = [];
 
         this._tools = ["deactivate", "box", "circle", "polygon", "freehand"] ;
         this._toolSelected = this._tools[0];
@@ -20,32 +20,33 @@ export default class SelectionTool {
             return false;
         }
 
-        const _this = this;
+        const config = mainLizmap.config;
 
-        featureTypes.each(function () {
-            var self = $(this);
-            var lname = mainLizmap.getNameByTypeName(self.find('Name').text());
+        for (const attributeLayerName in config.attributeLayers) {
+            if (config.attributeLayers.hasOwnProperty(attributeLayerName)) {
+                featureTypes.each((index, featureType) => {
+                    const lname = mainLizmap.getNameByTypeName($(featureType).find('Name').text());
 
-            const config = mainLizmap.config;
+                    if (attributeLayerName === lname
+                        && lname in config.layers
+                        && config.layers[lname]['geometryType'] != 'none'
+                        && config.layers[lname]['geometryType'] != 'unknown') {
 
-            if (lname in config.layers
-                && config.layers[lname]['geometryType'] != 'none'
-                && config.layers[lname]['geometryType'] != 'unknown'
-                && lname in config.attributeLayers) {
+                        this._layers.push({
+                            name: lname,
+                            title: config.layers[lname].title
+                        });
 
-                _this._layers[config.attributeLayers[lname].order] = {
-                    name : lname,
-                    title: config.layers[lname].title
-                };
+                        this._allFeatureTypeSelected.push(lname);
+                    }
+                });
             }
-        });
+        }
 
         if (this._layers.length === 0) {
             document.getElementById('button-selectiontool').parentNode.remove();
             return false;
         }
-
-        this._featureTypeSelected = this._layers[0].name;
 
         // List of WFS format
         this._exportFormats = mainLizmap.vectorLayerResultFormat.filter(
@@ -102,7 +103,9 @@ export default class SelectionTool {
                 }
             }
 
-            mainLizmap.lizmap3.selectLayerFeaturesFromSelectionFeature(this.featureTypeSelected, feature);
+            for (const featureType of this.allFeatureTypeSelected) {
+                mainLizmap.lizmap3.selectLayerFeaturesFromSelectionFeature(featureType, feature);
+            }
         }
 
         /**
@@ -174,8 +177,6 @@ export default class SelectionTool {
                     this.toolSelected = "deactivate";
                     mainLizmap.lizmap3.layers['selectionQueryLayer'].destroyFeatures();
                     mainLizmap.lizmap3.layers['selectionQueryLayer'].setVisibility(true);
-                    // TODO
-                    // $('#selectiontool-layer-list').change();
                 }
             },
             "minidockclosed": (mdcEvt) => {
@@ -187,13 +188,13 @@ export default class SelectionTool {
             },
             "layerSelectionChanged": (lscEvt) => {
                 if ($('#mapmenu li.selectiontool').hasClass('active') &&
-                    lscEvt.featureType === this._featureTypeSelected) {
+                    this.allFeatureTypeSelected.includes(lscEvt.featureType)) {
                     mainEventDispatcher.dispatch('selectionTool.selectionChanged');
                 }
             },
             "layerFilteredFeaturesChanged": (lffcEvt) => {
                 if ($('#mapmenu li.selectiontool').hasClass('active') &&
-                    lffcEvt.featureType === this._featureTypeSelected) {
+                    this.allFeatureTypeSelected.includes(lffcEvt.featureType)) {
                     mainEventDispatcher.dispatch('selectionTool.filteredFeaturesChanged');
                 }
             }
@@ -209,15 +210,21 @@ export default class SelectionTool {
     }
 
     get selectedFeaturesCount() {
-        if (this._featureTypeSelected in mainLizmap.config.layers &&
-            'selectedFeatures' in mainLizmap.config.layers[this._featureTypeSelected]) {
-            return mainLizmap.config.layers[this._featureTypeSelected]['selectedFeatures'].length;
+        let count = 0;
+
+        for (const featureType of this.allFeatureTypeSelected) {
+            if (featureType in mainLizmap.config.layers &&
+                'selectedFeatures' in mainLizmap.config.layers[featureType]
+                && mainLizmap.config.layers[featureType]['selectedFeatures'].length){
+                count += mainLizmap.config.layers[featureType]['selectedFeatures'].length;
+            }
         }
-        return 0;
+
+        return count;
     }
 
     get filterActive() {
-        return mainLizmap.lizmap3.lizmapLayerFilterActive !== null;
+        return mainLizmap.lizmap3.lizmapLayerFilterActive;
     }
 
     set filterActive(active) {
@@ -225,22 +232,43 @@ export default class SelectionTool {
     }
 
     get filteredFeaturesCount() {
-        if (this._featureTypeSelected in mainLizmap.config.layers &&
-            'filteredFeatures' in mainLizmap.config.layers[this._featureTypeSelected]) {
-            return mainLizmap.config.layers[this._featureTypeSelected]['filteredFeatures'].length;
+        let count = 0;
+
+        for (const featureType of this.allFeatureTypeSelected) {
+            if (featureType in mainLizmap.config.layers &&
+                'filteredFeatures' in mainLizmap.config.layers[featureType]) {
+                count += mainLizmap.config.layers[featureType]['filteredFeatures'].length;
+            }
         }
-        return 0;
+
+        return count;
     }
 
-    get featureTypeSelected(){
-        return this._featureTypeSelected;
+    get allFeatureTypeSelected(){
+        return this._allFeatureTypeSelected;
     }
 
-    set featureTypeSelected(featureType){
-        if (this._featureTypeSelected !== featureType){
-            this._featureTypeSelected = featureType;
+    set allFeatureTypeSelected(featureType){
+        if (this._allFeatureTypeSelected !== featureType){
+            if (featureType === "selectable-layers"){
+                this._allFeatureTypeSelected = this.layers.map(layer => layer.name);
+            }
+            else if (featureType === "selectable-visible-layers") {
+                this._allFeatureTypeSelected = this.layers.map(layer => layer.name).filter(layerName => {
+                    for (let index = 0; index < mainLizmap.lizmap3.map.layers.length; index++) {
+                        if (mainLizmap.lizmap3.map.layers[index].visibility
+                            && mainLizmap.lizmap3.map.layers[index].name === layerName){
+                            return true;
+                        }
+                    }
+                });
+                console.log(this.allFeatureTypeSelected);
+            }else{
+                this._allFeatureTypeSelected = [featureType];
 
-            mainEventDispatcher.dispatch('selectionTool.featureTypeSelected');
+            }
+
+            mainEventDispatcher.dispatch('selectionTool.allFeatureTypeSelected');
         }
     }
 
@@ -296,23 +324,33 @@ export default class SelectionTool {
     }
 
     unselect() {
-        // Send signal
-        mainLizmap.lizmap3.events.triggerEvent("layerfeatureunselectall",
-            { 'featureType': this.featureTypeSelected, 'updateDrawing': true }
-        );
+        for (const featureType of this.allFeatureTypeSelected) {
+            mainLizmap.lizmap3.events.triggerEvent("layerfeatureunselectall",
+                { 'featureType': featureType, 'updateDrawing': true }
+            );
+        }
     }
 
     filter() {
-        if (this.filterActive) {
-            mainLizmap.lizmap3.events.triggerEvent("layerfeatureremovefilter",
-                { 'featureType': this.featureTypeSelected }
-            );
+        if (this.filteredFeaturesCount) {
+            for (const featureType of this.allFeatureTypeSelected) {
+                mainLizmap.lizmap3.events.triggerEvent("layerfeatureremovefilter",
+                    { 'featureType': featureType }
+                );
+            }
             this.filterActive = null;
         } else {
-            mainLizmap.lizmap3.events.triggerEvent("layerfeaturefilterselected",
-                { 'featureType': this.featureTypeSelected }
-            );
-            this.filterActive = this.featureTypeSelected;
+            for (const featureType of this.allFeatureTypeSelected) {
+                if (featureType in mainLizmap.config.layers &&
+                    'selectedFeatures' in mainLizmap.config.layers[featureType]
+                    && mainLizmap.config.layers[featureType]['selectedFeatures'].length) {
+                    this.filterActive = featureType;
+
+                    mainLizmap.lizmap3.events.triggerEvent("layerfeaturefilterselected",
+                        { 'featureType': featureType }
+                    );
+                }
+            }
         }
     }
 
@@ -320,6 +358,6 @@ export default class SelectionTool {
         if (format == 'GML'){
             format = 'GML3';
         }
-        mainLizmap.lizmap3.exportVectorLayer(this.featureTypeSelected, format, false);
+        mainLizmap.lizmap3.exportVectorLayer(this.allFeatureTypeSelected, format, false);
     }
 }

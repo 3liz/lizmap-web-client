@@ -1939,8 +1939,6 @@ var lizAttributeTable = function() {
                 arefresh = typeof arefresh !== 'undefined' ?  arefresh : true;
 
                 // Empty array
-                if( !config.layers[featureType]['selectedFeatures'] )
-                    config.layers[featureType]['selectedFeatures'] = [];
                 config.layers[featureType]['selectedFeatures'] = [];
 
                 lizMap.events.triggerEvent("layerSelectionChanged",

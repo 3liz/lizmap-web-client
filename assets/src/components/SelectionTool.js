@@ -20,8 +20,14 @@ export default class SelectionTool extends HTMLElement {
             <div class="menu-content">
                 <div>${lizDict['selectiontool.toolbar.layer']}</div>
                 <div>
-                    <select class="selectiontool-layer-list" @change=${ (event) => mainLizmap.selectionTool.featureTypeSelected = event.target.value}>
-                        ${mainLizmap.selectionTool.layers.map((layer) => html`<option value="${layer.name}">${layer.title}</option>`)}
+                    <select class="selectiontool-layer-list" @change=${ (event) => mainLizmap.selectionTool.allFeatureTypeSelected = event.target.value}>
+                        <optgroup label="Single layers">
+                            ${mainLizmap.selectionTool.layers.map((layer) => html`<option value="${layer.name}">${layer.title}</option>`)}
+                        </optgroup>
+                        <optgroup label="Multiple layers">
+                            <option value="selectable-visible-layers">Selectable and visible layers</option>
+                            <option selected value="selectable-layers">Selectable layers</option>
+                        </optgroup>
                     </select>
                 </div>
                 <div class="selectiontool-query-buttons btn-group">
@@ -95,7 +101,7 @@ export default class SelectionTool extends HTMLElement {
             () => {
                 render(mainTemplate(), this);
             },
-            ['selectionTool.toolSelected', 'selectionTool.newAddRemoveSelected','selectionTool.featureTypeSelected', 'selectionTool.selectionChanged', 'selectionTool.filteredFeaturesChanged']
+            ['selectionTool.toolSelected', 'selectionTool.newAddRemoveSelected','selectionTool.allFeatureTypeSelected', 'selectionTool.selectionChanged', 'selectionTool.filteredFeaturesChanged']
         );
     }
 
