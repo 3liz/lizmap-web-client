@@ -262,10 +262,8 @@ export default class SelectionTool {
                         }
                     }
                 });
-                console.log(this.allFeatureTypeSelected);
             }else{
                 this._allFeatureTypeSelected = [featureType];
-
             }
 
             mainEventDispatcher.dispatch('selectionTool.allFeatureTypeSelected');
@@ -351,6 +349,39 @@ export default class SelectionTool {
                     );
                 }
             }
+        }
+    }
+
+    // Invert selection on for single layers
+    invert() {
+        const featureType = this.allFeatureTypeSelected[0];
+
+        if (featureType in mainLizmap.config.layers &&
+            'selectedFeatures' in mainLizmap.config.layers[featureType]
+            && mainLizmap.config.layers[featureType]['selectedFeatures'].length) {
+
+            // Get all features
+            mainLizmap.lizmap3.getFeatureData(featureType, null, null, 'extent', false, null, null,
+            (aName, aFilter, cFeatures, cAliases) => {
+                let invertSelectionIds = [];
+                for (const feat of cFeatures) {
+                    const fid = feat.id.split('.')[1];
+
+                    if (!mainLizmap.config.layers[aName]['selectedFeatures'].includes(fid)){
+                        invertSelectionIds.push(fid);
+                    }
+                }
+
+                mainLizmap.config.layers[featureType]['selectedFeatures'] = invertSelectionIds;
+
+                mainLizmap.lizmap3.events.triggerEvent("layerSelectionChanged",
+                    {
+                        'featureType': featureType,
+                        'featureIds': "40",
+                        'updateDrawing': true
+                    }
+                );
+            });
         }
     }
 
