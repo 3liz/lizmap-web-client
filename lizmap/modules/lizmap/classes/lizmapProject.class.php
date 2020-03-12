@@ -982,6 +982,10 @@ class lizmapProject extends qgisProject
             }
             $plotConf['plot']['horizontal'] = $horizontal;
 
+            if (property_exists($lc, 'html_template') and !empty($lc->html_template) ) {
+                $plotConf['plot']['html_template'] = $lc->html_template;
+            }
+
             // Add more layout config, written like:
             // layout_config=barmode:stack,bargap:0.5
             if (!empty($lc->layout_config)) {
