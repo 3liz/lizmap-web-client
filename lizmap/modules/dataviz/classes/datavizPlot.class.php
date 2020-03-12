@@ -40,9 +40,9 @@ class datavizPlot
 
     protected $layout;
 
-    protected $x_mandatory = array('scatter', 'bar', 'histogram', 'histogram2d', 'polar', 'sunburst');
+    protected $x_mandatory = array('scatter', 'bar', 'histogram', 'histogram2d', 'polar', 'sunburst', 'html');
 
-    protected $y_mandatory = array('scatter', 'box', 'bar', 'pie', 'histogram2d', 'polar', 'sunburst');
+    protected $y_mandatory = array('scatter', 'box', 'bar', 'pie', 'histogram2d', 'polar', 'sunburst', 'html');
 
     protected $aggregation;
     protected $display_legend;
@@ -512,7 +512,7 @@ class datavizPlot
                 $featcolors = array();
 
                 // Creation of array who will be used to aggregate when the type is pie or sunburst
-                if ($this->type == 'pie' or $this->type == 'sunburst') {
+                if ($this->type == 'pie' or $this->type == 'sunburst' or $this->type == 'html') {
                     $x_aggregate_sum = array();
                     $x_aggregate_count = array();
                     $x_aggregate_min = array();
@@ -528,7 +528,7 @@ class datavizPlot
                     $parents_distinct_colors = array();
                 }
                 foreach ($features as $feat) {
-                    if ($this->type != 'pie' and $this->type != 'sunburst') {
+                    if ($this->type != 'pie' and $this->type != 'sunburst' and $this->type != 'html') {
                         // Fill in X field
                         if (count($this->x_fields) == 1) {
                             $trace[$this->x_property_name][] = $feat->properties->{$xf};
@@ -608,7 +608,7 @@ class datavizPlot
                     }
                 }
 
-                if ($this->type == 'pie' or $this->type == 'sunburst') {
+                if ($this->type == 'pie' or $this->type == 'sunburst' or $this->type == 'html') {
                     if ($this->aggregation == 'stddev') {
                         foreach ($features as $feat) {
                             $x = $feat->properties->{$xf};
@@ -690,7 +690,7 @@ class datavizPlot
                     ) {
                         $trace['marker']['color'] = $featcolors;
                     }
-                    if ($this->type == 'pie' or $this->type == 'sunburst'
+                    if ($this->type == 'pie' or $this->type == 'sunburst' or $this->type == 'html'
                     ) {
                         $trace['marker']['colors'] = $featcolors;
                         unset($trace['marker']['color']);
@@ -985,6 +985,34 @@ class datavizPlotSunburst extends datavizPlot
             'hoverinfo' => "label+value+percent",
             //'textinfo' => 'value',
             'texttemplate' => '%{value:.0f}',
+            'opacity' => null,
+        );
+    }
+}
+
+
+class datavizPlotHtml extends datavizPlot
+{
+    public $type = 'html';
+
+    protected $x_property_name = 'x';
+    protected $y_property_name = 'y';
+    protected $z_property_name = null;
+
+    protected function getTraceTemplate()
+    {
+        return array(
+            'type' => 'html',
+            'name' => '',
+            'x' => array(),
+            'y' => array(),
+            'marker' => array(
+                'color' => 'orange',
+                'line' => array(
+                    'color' => null,
+                    'width' => null,
+                ),
+            ),
             'opacity' => null,
         );
     }

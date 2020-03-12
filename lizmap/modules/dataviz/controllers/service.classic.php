@@ -102,6 +102,8 @@ class serviceCtrl extends jController
             $dplot = new datavizPlotPolar($repository, $project, $layerId, $plotConfig);
         } elseif ($type == 'sunburst') {
             $dplot = new datavizPlotSunburst($repository, $project, $layerId, $plotConfig);
+        } elseif ($type == 'html') {
+            $dplot = new datavizPlotHtml($repository, $project, $layerId, $plotConfig);
         } else {
             $dplot = null;
         }

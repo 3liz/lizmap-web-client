@@ -68,7 +68,7 @@ var lizDataviz = function() {
     function buildPlotContainerHtml(title, abstract, target_id, with_title){
         with_title = typeof with_title !== 'undefined' ?  with_title : true;
         var html = '';
-        html+= '<div class="dataviz_plot_container"  id="'+target_id+'_container">'
+        html+= '<div class="dataviz_plot_container"  id="'+target_id+'_container">';
         if(with_title){
             html+= '<h3><span class="title">';
             html+= '<span class="icon"></span>&nbsp;';
@@ -144,9 +144,90 @@ var lizDataviz = function() {
         );
     }
 
+    function buildHtmlPlot(id, data, layout) {
+        if (!data) {
+            return;
+        }
+        var a = parseInt(id.replace('dataviz_plot_', ''));
+        var plot_config = dv.config.layers[a];
+        var plot = plot_config.plot;
+        if('html_template' not in plot){
+            return;
+        }
+        var template = plot.html_template;
+
+        // data has as many item as traces
+        // First get number of x distinct values of 1st trace
+        var nb_traces = data.length;
+
+        var htmls = {};
+        var max_distinct_x = 500;
+        var distinct_x = [];
+        for (var x in data[0]['x']) {
+            // Keep only N first x values
+            // For performance
+            if (x > max_distinct_x) {
+                break;
+            }
+            var html = template;
+            var x_val = data[0]['x'][x];
+            distinct_x.push(x_val);
+            var x_search = '{$x}';
+            var x_replacement = x_val;
+            html = html.split(x_search).join(x_replacement);
+            // Loop over traces
+            for (var i = 0; i < nb_traces; i++ ) {
+                var trace = data[i];
+                // Y value
+                var y_val = trace.y[x];
+                var y_search = '{$yi}'.replace('i', i+1);
+                var y_replacement = y_val;
+                html = html.split(y_search).join(y_replacement);
+
+                // Colors
+                if ('color' in trace.marker) {
+                    var y_color = trace.marker.color;
+                    var y_csearch = '{$colori}'.replace('i', i+1);
+                    var y_creplacement = y_color;
+                }
+                if ('colors' in trace.marker) {
+                    var y_color = trace.marker.colors[x];
+                    var y_csearch = '{$colori}'.replace('i', i+1);
+                    var y_creplacement = y_color;
+                }
+                html = html.split(y_csearch).join(y_creplacement);
+            }
+            htmls[x_val] = html;
+        }
+
+        // Sort by X
+        distinct_x.sort();
+
+        // Empty previous html
+        $('#'+id).html('');
+        for (var x in distinct_x) {
+            var x_val = distinct_x[x];
+            var html = '<div style="padding:5px;">' + htmls[x_val] + '</div>';
+            $('#'+id).append(html);
+        }
+    }
+
     function buildPlot(id, conf){
-        // Build plot with plotly
-        Plotly.newPlot(id, conf.data, conf.layout, {displayModeBar: false});
+        // Build plot with plotly or lizmap
+        if(conf.data.length && conf.data[0]['type'] == 'html'){
+            buildHtmlPlot(id, conf.data, conf.layout);
+        }else{
+            Plotly.newPlot(
+                id,
+                conf.data,
+                conf.layout,
+                {
+                    displayModeBar: false,
+                    locale: 'fr'
+                }
+            );
+        }
+
         // Add events to resize plot when needed
         lizMap.events.on({
             dockopened: function(e) {
