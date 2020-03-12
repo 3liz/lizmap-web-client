@@ -33,7 +33,7 @@ export default class Lizmap {
         return this._lizmap3.getVectorLayerFeatureTypes();
     }
 
-    get vectorLayerResultFormat () {
+    get vectorLayerResultFormat() {
         return this._lizmap3.getVectorLayerResultFormat().toArray();
     }
 
