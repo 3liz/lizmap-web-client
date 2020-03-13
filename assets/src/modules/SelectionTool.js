@@ -16,7 +16,9 @@ export default class SelectionTool {
         // Verifying WFS layers
         const featureTypes = mainLizmap.vectorLayerFeatureTypes;
         if (featureTypes.length === 0) {
-            document.getElementById('button-selectiontool').parentNode.remove();
+            if (document.getElementById('button-selectiontool')){
+                document.getElementById('button-selectiontool').parentNode.remove();
+            }
             return false;
         }
 
