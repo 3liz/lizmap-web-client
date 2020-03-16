@@ -2452,14 +2452,6 @@ div.tooltip {
   background-color: rgba(255, 171, 0, 0.4);
 }
 
-.selectiontool-actions button {
-  height: 33px;
-}
-
-.selectiontool-actions > button {
-  width: 40px;
-}
-
 /*
 atlas
 */

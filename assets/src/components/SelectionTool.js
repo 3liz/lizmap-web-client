@@ -66,9 +66,7 @@ export default class SelectionTool extends HTMLElement {
                     <button type="button" class="selectiontool-filter btn btn-mini ${mainLizmap.selectionTool.filteredFeaturesCount !== 0 ? 'active' : ''}" ?disabled=${mainLizmap.selectionTool.selectedFeaturesCount === 0 && mainLizmap.selectionTool.filteredFeaturesCount === 0} @click=${ () => mainLizmap.selectionTool.filter()}  data-original-title="${lizDict['selectiontool.toolbar.action.filter']}">
                         <i class="icon-filter"></i>
                     </button>
-                    <button type="button" class="selectiontool-invert btn btn-mini" ?disabled=${mainLizmap.selectionTool.selectedFeaturesCount === 0 || mainLizmap.selectionTool.allFeatureTypeSelected.length > 1} @click=${() => mainLizmap.selectionTool.invert()}  data-original-title="${lizDict['selectiontool.toolbar.action.invert']}">
-                        <i class="icon-none qgis_sprite mActionInvertSelection"></i>
-                    </button>
+                    <lizmap-selection-invert></lizmap-selection-invert>
                     ${this.hasAttribute('layer-export') ?
                         html`
                             <div class="btn-group dropup" role="group" >
