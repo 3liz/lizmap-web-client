@@ -188,11 +188,8 @@ export default class SelectionTool {
                     mainLizmap.lizmap3.layers['selectionQueryLayer'].setVisibility(false);
                 }
             },
-            'layerSelectionChanged': (lscEvt) => {
-                if ($('#mapmenu li.selectiontool').hasClass('active') &&
-                    this.allFeatureTypeSelected.includes(lscEvt.featureType)) {
-                    mainEventDispatcher.dispatch('selectionTool.selectionChanged');
-                }
+            'layerSelectionChanged': () => {
+                mainEventDispatcher.dispatch('selectionTool.selectionChanged');
             },
             'layerFilteredFeaturesChanged': (lffcEvt) => {
                 if ($('#mapmenu li.selectiontool').hasClass('active') &&
@@ -354,8 +351,8 @@ export default class SelectionTool {
     }
 
     // Invert selection on for single layers
-    invert() {
-        const featureType = this.allFeatureTypeSelected[0];
+    invert(mfeatureType) {
+        const featureType = mfeatureType ? mfeatureType : this.allFeatureTypeSelected[0];
 
         if (featureType in mainLizmap.config.layers &&
             'selectedFeatures' in mainLizmap.config.layers[featureType]

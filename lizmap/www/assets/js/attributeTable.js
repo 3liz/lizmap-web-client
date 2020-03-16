@@ -350,6 +350,9 @@ var lizAttributeTable = function() {
                     html+= '    <button class="btn-filter-attributeTable btn btn-mini' + filClass + '" value="' + cleanName + '" title="'+lizDict['attributeLayers.toolbar.btn.data.filter.title']+'"><i class="icon-filter"></i></button>';
                 }
 
+                // Invert selection
+                html += '<lizmap-selection-invert tooltip-placement="bottom" feature-type="' + cleanName +'"></lizmap-selection-invert>'
+
                 // Detail button
                 var canPopup = false
                 if( config.layers[lname]
