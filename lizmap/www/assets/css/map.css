@@ -2384,7 +2384,6 @@ div.tooltip {
 .qgis_sprite.mIconDeselected { background-position: -510px 0; }
 .qgis_sprite.mActionSplitFeatures { background-position: -534px 0; }
 .qgis_sprite.mActionShowAllLayers { background-position: -563px 0; }
-.qgis_sprite.mActionInvertSelection { background-position: -597px 0; }
 
 #lizmap-search{
   top: 1px;
@@ -2450,6 +2449,11 @@ div.tooltip {
 
 .selectiontool-filter.active {
   background-color: rgba(255, 171, 0, 0.4);
+}
+
+lizmap-selection-invert svg {
+  width: 14px;
+  height: 14px;
 }
 
 /*
