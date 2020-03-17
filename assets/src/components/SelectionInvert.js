@@ -1,7 +1,7 @@
 import { mainLizmap, mainEventDispatcher } from '../modules/Globals.js';
 import { html, render } from 'lit-html';
 
-import symbol from '../images/svg/mActionInvertSelection.svg';
+import '../images/svg/mActionInvertSelection.svg';
 
 /**
  * Webcomponent used to invert selection on layer selection defined by 'feature-type' attribute
