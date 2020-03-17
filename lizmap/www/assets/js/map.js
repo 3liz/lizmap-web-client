@@ -1958,6 +1958,7 @@ var lizMap = function() {
       var self = $(this);
       if (self.hasClass('disabled'))
         return false;
+
       // get tr of the button
       var selfTr = self.parents('tr').first();
       // get the parent of the tr of the button
@@ -2726,7 +2727,7 @@ var lizMap = function() {
             $('#switcher-baselayer-select').val( map.baseLayer.name ).change();
         },
         'moveend': updatePermalinkInputs,
-        'changelayer': updatePermalinkInputs,
+        'changelayer': onMapChangelayer,
         'changebaselayer': updatePermalinkInputs
     });
     $('#select-embed-permalink').change(function(){
@@ -2880,6 +2881,23 @@ var lizMap = function() {
         pIframe = '<iframe width="'+w+'" height="'+h+'" frameborder="0" style="border:0" src="'+pHref+'" allowfullscreen></iframe>';
     }
     $('#input-embed-permalink').val(pIframe);
+  }
+
+  function onMapChangelayer(event) {
+    // Update permalink
+    updatePermalinkInputs()
+
+    // Trigger lizmap event
+    if (event.property == 'visibility'){
+      var lname = getLayerNameByCleanName(event.layer.name);
+      var lconfig = config.layers[lname]
+      lizMap.events.triggerEvent("lizmaplayerchangevisibility",
+      {
+        'name': lname,
+        'config': lconfig,
+        'visibility': event.layer.visibility
+      });
+    }
   }
 
   function bindGeobookmarkEvents(){
