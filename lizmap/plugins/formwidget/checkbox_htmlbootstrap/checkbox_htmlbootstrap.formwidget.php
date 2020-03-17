@@ -13,6 +13,15 @@ class checkbox_htmlbootstrapFormWidget extends checkbox_htmlFormWidget
 {
     use \Lizmap\Form\WidgetTrait;
 
+    protected function outputJs() {
+        $js = "c = new ".$this->builder->getjFormsJsVarName()."ControlBoolean('".$this->ctrl->ref."', ".$this->escJsStr($this->ctrl->label).");\n";
+        if($this->ctrl->valueLabelOnCheck !== '' or $this->ctrl->valueLabelOnUncheck !== '') {
+            $js = "c = new ".$this->builder->getjFormsJsVarName()."ControlString('".$this->ctrl->ref."', ".$this->escJsStr($this->ctrl->label).");\n";
+        }
+        $this->parentWidget->addJs($js);
+        $this->commonJs();
+    }
+
     public function outputControl()
     {
 
@@ -27,13 +36,17 @@ class checkbox_htmlbootstrapFormWidget extends checkbox_htmlFormWidget
 
         if($this->ctrl->valueLabelOnCheck !== '' or $this->ctrl->valueLabelOnUncheck !== '') {
 
-            echo '<label class="',$attrLabel['class'],'" ',$attrLabel['idLabel'],$attrLabel['hint'],'>';
+            echo '<label class="',$attrLabel['class'],'" ',$attrLabel['hint'],'>';
 
+            $attrid = ''.$attr['id'];
+
+            $attr['type'] = 'radio';
             if($this->ctrl->valueOnCheck == $this->getValue()){
                 $attr['checked'] = "checked";
             }
             $attr['value'] = $this->ctrl->valueOnCheck;
-            $attr['type'] = 'radio';
+            $attr['id'] = $attrid.'_'.$this->ctrl->valueOnCheck;
+
             // attribute readonly is not enough to make checkboxes readonly. Note that value won't be sent by submit but it is not a problem as it is readonly
             if (array_key_exists('readonly', $attr)) {
                 $attr['disabled'] = 'disabled';
@@ -46,7 +59,7 @@ class checkbox_htmlbootstrapFormWidget extends checkbox_htmlFormWidget
             echo "</label>\n";
 
 
-            echo '<label class="',$attrLabel['class'],'" ',$attrLabel['idLabel'],$attrLabel['hint'],'>';
+            echo '<label class="',$attrLabel['class'],'" ',$attrLabel['hint'],'>';
 
             if($this->ctrl->valueOnCheck == $this->getValue()){
                 unset($attr['checked']);
@@ -54,7 +67,8 @@ class checkbox_htmlbootstrapFormWidget extends checkbox_htmlFormWidget
             else if($this->ctrl->valueOnUncheck == $this->getValue()){
                 $attr['checked'] = "checked";
             }
-            $attr['value'] = $this->ctrl->valueOnUncheck;
+            $attr['value'] = ''; //In the HTML form uncheck is equal to no value $this->ctrl->valueOnUncheck;
+            $attr['id'] = $attrid.'_'.$this->ctrl->valueOnUncheck;
 
             echo '<input';
             $this->_outputAttr($attr);
