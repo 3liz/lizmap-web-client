@@ -293,6 +293,15 @@ var lizLayerActionButtons = function() {
 
                 if (themeNameSelected in lizMap.config.themes){
                     var themeSelected = lizMap.config.themes[themeNameSelected];
+
+                    // Trigger map theme event
+                    lizMap.events.triggerEvent("mapthemechanged",
+                        {
+                            'name': themeNameSelected,
+                            'config': themeSelected
+                        }
+                    );
+
                     // Uncheck every layers then if a layer is present in theme, check it
                     $('#switcher-layers .liz-layer a.expander ~ button.checked').click();
 
@@ -360,6 +369,19 @@ var lizLayerActionButtons = function() {
                     });
                 }
             });
+
+            // Trigger event with the list of mapThemes
+            lizMap.events.triggerEvent("mapthemesadded",
+                {
+                    'themes': themes
+                }
+            );
+
+            // Activate first map them on load
+            if ('activateFirstMapTheme' in lizMap.config.options && lizMap.config.options.activateFirstMapTheme == 'True') {
+                $('#theme-selector li.theme:nth-child(1)').click();
+            }
+
         }
 
         featureTypes = lizMap.getVectorLayerFeatureTypes();
