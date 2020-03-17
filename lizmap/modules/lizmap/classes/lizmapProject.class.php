@@ -986,6 +986,10 @@ class lizmapProject extends qgisProject
                 $plotConf['plot']['html_template'] = $lc->html_template;
             }
 
+            if (property_exists($lc, 'display_when_layer_visible') and !empty($lc->display_when_layer_visible) ) {
+                $plotConf['plot']['display_when_layer_visible'] = $lc->display_when_layer_visible;
+            }
+
             // Add more layout config, written like:
             // layout_config=barmode:stack,bargap:0.5
             if (!empty($lc->layout_config)) {

@@ -151,7 +151,7 @@ var lizDataviz = function() {
         var a = parseInt(id.replace('dataviz_plot_', ''));
         var plot_config = dv.config.layers[a];
         var plot = plot_config.plot;
-        if('html_template' not in plot){
+        if (!('html_template' in plot)) {
             return;
         }
         var template = plot.html_template;
@@ -258,9 +258,63 @@ var lizDataviz = function() {
             }
         });
 
+        // Add event to hide/show plots if needed
+        lizMap.events.on({
+            'lizmaplayerchangevisibility': function(e) {
+                if( 'datavizLayers' in lizMap.config ){
+                    // Get layer info
+                    var name = e.name;
+                    var config = e.config;
+                    var layerId = config.id;
+
+                    // Get plot id and layer id
+                    var pid = parseInt(id.replace('dataviz_plot_', ''));
+                    var plot_config = dv.config.layers[pid];
+                    if(!('display_when_layer_visible' in plot_config.plot)){
+                        return;
+                    }
+
+                    // Check correspondance
+                    var pLayerId = plot_config['layer_id'];
+                    if (pLayerId == layerId){
+                        // Set plot visibility depending on layer visibility
+                        var ltoggle = optionToBoolean(plot_config.plot.display_when_layer_visible);
+                        if( ltoggle ){
+                            $('#' + id + '_container').toggle(e.visibility);
+                            if(e.visibility){
+                                resizePlot(id);
+                            }
+                        }
+                    }
+                }
+            }
+        });
+
+        // Hide plot when layer not shown
+        // Todo: we should not refresh plot or even load it if not visible
+        var pid = parseInt(id.replace('dataviz_plot_', ''));
+        var plot_config = dv.config.layers[pid];
+        if('display_when_layer_visible' in plot_config.plot && optionToBoolean(plot_config.plot.display_when_layer_visible)) {
+            var getLayerConfig = lizMap.getLayerConfigById( plot_config['layer_id'] );
+            if (getLayerConfig) {
+                var layerConfig = getLayerConfig[1];
+                var featureType = getLayerConfig[0];
+                var oLayers = lizMap.map.getLayersByName(layerConfig.cleanname);
+                if(oLayers.length == 1){
+                    var oLayer = oLayers[0];
+                    var lvisibility = oLayer.visibility;
+                    $('#' + id + '_container').toggle(lvisibility);
+                    if(lvisibility){
+                        resizePlot(id);
+                    }
+                }
+            }
+        }
+
         lizMap.events.triggerEvent( "datavizplotloaded",
             {'id':id}
         );
+
     }
 
     function resizePlot(id){
