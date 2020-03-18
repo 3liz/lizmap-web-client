@@ -5702,7 +5702,7 @@ OpenLayers.Control.HighlightFeature = OpenLayers.Class(OpenLayers.Control, {
   }
 
 
-  function selectLayerFeaturesFromSelectionFeature(targetFeatureType, selectionFeature){
+  function selectLayerFeaturesFromSelectionFeature(targetFeatureType, selectionFeature, geomOperator = 'intersects'){
 
       var lConfig = config.layers[targetFeatureType];
       lizMap.loadProjDefinition( lConfig.crs, function( aProj ) {
@@ -5718,7 +5718,7 @@ OpenLayers.Control.HighlightFeature = OpenLayers.Class(OpenLayers.Control, {
               'feature:_geometry',
               selectionFeature.geometry
           );
-          var spatialFilter = "intersects($geometry, geom_from_gml('" ;
+        var spatialFilter = geomOperator+"($geometry, geom_from_gml('" ;
           spatialFilter+= OpenLayers.Format.XML.prototype.write.apply(
               gml3,
               gml.children
@@ -5746,9 +5746,13 @@ OpenLayers.Control.HighlightFeature = OpenLayers.Class(OpenLayers.Control, {
               limitDataToBbox = true;
           }
           var getFeatureUrlData = lizMap.getVectorLayerWfsUrl( targetFeatureType, spatialFilter, null, null, limitDataToBbox );
-          // add BBox to restrict to geom bbox
-          var geomBounds = selectionFeature.geometry.clone().transform(lizMap.map.getProjection(),aProj).getBounds();
-          getFeatureUrlData['options']['BBOX'] = geomBounds.toBBOX();
+
+          // add BBox to restrict to geom bbox but not with some geometry operator
+          if (geomOperator !== 'disjoint'){
+            var geomBounds = selectionFeature.geometry.clone().transform(lizMap.map.getProjection(), aProj).getBounds();
+            getFeatureUrlData['options']['BBOX'] = geomBounds.toBBOX();
+          }
+
           // get features
           $.post( getFeatureUrlData['url'], getFeatureUrlData['options'], function(result) {
                   var gFormat = new OpenLayers.Format.GeoJSON({
@@ -6169,8 +6173,8 @@ OpenLayers.Control.HighlightFeature = OpenLayers.Class(OpenLayers.Control, {
     /**
      * Method: selectLayerFeaturesFromSelectionFeature
      */
-    selectLayerFeaturesFromSelectionFeature: function( targetFeatureType, selectionFeature) {
-      return selectLayerFeaturesFromSelectionFeature(targetFeatureType, selectionFeature);
+    selectLayerFeaturesFromSelectionFeature: function (targetFeatureType, selectionFeature, geomOperator = 'intersects') {
+      return selectLayerFeaturesFromSelectionFeature(targetFeatureType, selectionFeature, geomOperator);
     },
 
     /**
