@@ -47,6 +47,17 @@ export default class SelectionTool extends HTMLElement {
                         <i class="icon-none qgis_sprite mActionSelectFreehand"></i>
                     </button>
                 </div>
+                <div>
+                    <select class="selection-geom-operator" @change=${ (event) => mainLizmap.selectionTool.geomOperator = event.target.value} data-original-title="${lizDict['selectiontool.toolbar.geomOperator']}">
+                        <option value="intersects">Interects</option>
+                        <option value="within">Within</option>
+                        <option value="overlaps">Overlaps</option>
+                        <option value="contains">Contains</option>
+                        <option value="crosses">Crosses</option>
+                        <option value="disjoint">Disjoint</option>
+                        <option value="touches">Touches</option>
+                    </select>
+                </div>
                 <div class="selectiontool-results" style="padding:2px">${mainLizmap.selectionTool.selectedFeaturesCount > 1 ? lizDict['selectiontool.results.more'].replace('%s', mainLizmap.selectionTool.selectedFeaturesCount) : mainLizmap.selectionTool.selectedFeaturesCount === 1 ? lizDict['selectiontool.results.one'] : lizDict['selectiontool.results.none']}</div>
                 <div class="selectiontool-actions">
                     <div class="selectiontool-type-buttons btn-group">
@@ -89,7 +100,7 @@ export default class SelectionTool extends HTMLElement {
 
         // Add tooltip on buttons
         // TODO allow tooltip on disabled buttons : https://stackoverflow.com/a/19938049/2000654
-        $('.menu-content button', this).tooltip({
+        $('.menu-content button, .selection-geom-operator', this).tooltip({
             placement: 'top'
         });
 

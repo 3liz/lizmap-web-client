@@ -2451,6 +2451,10 @@ div.tooltip {
   background-color: rgba(255, 171, 0, 0.4);
 }
 
+.selectiontool-query-buttons {
+  margin-bottom: 10px;
+}
+
 lizmap-selection-invert svg {
   width: 14px;
   height: 14px;
