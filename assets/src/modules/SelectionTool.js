@@ -15,6 +15,8 @@ export default class SelectionTool {
         this._newAddRemove = ['new', 'add', 'remove'];
         this._newAddRemoveSelected = this._newAddRemove[0];
 
+        this._toogleSelectionLayerVisibility = true;
+
         // Verifying WFS layers
         const featureTypes = mainLizmap.vectorLayerFeatureTypes;
         if (featureTypes.length === 0) {
@@ -61,10 +63,10 @@ export default class SelectionTool {
         const drawStyle = new OpenLayers.Style({
             pointRadius: 7,
             fillColor: '#94EF05',
-            fillOpacity: 0.3,
+            fillOpacity: 0.2,
             strokeColor: 'yellow',
             strokeOpacity: 1,
-            strokeWidth: 3
+            strokeWidth: 2
         });
 
         const drawStyleTemp = new OpenLayers.Style({
@@ -91,7 +93,12 @@ export default class SelectionTool {
             'select': drawStyleSelect
         });
 
-        const queryLayer = new OpenLayers.Layer.Vector('selectionQueryLayer', {styleMap: drawStyleMap});
+        const queryLayer = new OpenLayers.Layer.Vector(
+            'selectionQueryLayer',{
+                styleMap: drawStyleMap
+            }
+        );
+
         mainLizmap.lizmap3.map.addLayers([queryLayer]);
         mainLizmap.lizmap3.layers['selectionQueryLayer'] = queryLayer;
 
@@ -110,6 +117,8 @@ export default class SelectionTool {
             for (const featureType of this.allFeatureTypeSelected) {
                 mainLizmap.lizmap3.selectLayerFeaturesFromSelectionFeature(featureType, feature, this._geomOperator);
             }
+
+            this.toolSelected = "deactivate";
         };
 
         /**
@@ -327,12 +336,21 @@ export default class SelectionTool {
         }
     }
 
+    toggleVisibility() {
+        this._toogleSelectionLayerVisibility = !this._toogleSelectionLayerVisibility;
+
+        mainLizmap.lizmap3.layers['selectionQueryLayer'].setVisibility(this._toogleSelectionLayerVisibility);
+
+        mainEventDispatcher.dispatch('selectionTool.toogleSelectionLayerVisibility');
+    }
+
     unselect() {
         for (const featureType of this.allFeatureTypeSelected) {
             mainLizmap.lizmap3.events.triggerEvent('layerfeatureunselectall',
                 {'featureType': featureType, 'updateDrawing': true}
             );
         }
+        mainLizmap.lizmap3.layers['selectionQueryLayer'].destroyFeatures();
     }
 
     filter() {

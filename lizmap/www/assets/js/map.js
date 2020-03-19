@@ -5790,11 +5790,6 @@ OpenLayers.Control.HighlightFeature = OpenLayers.Class(OpenLayers.Control, {
                           'updateDrawing': true
                       }
                   );
-
-                  // Remove features from selection layer
-                  var queryLayer = lizMap.layers['selectionQueryLayer'];
-                  queryLayer.destroyFeatures();
-                  lizMap.mainLizmap.selectionTool.toolSelected = "deactivate";
           });
       });
   }
