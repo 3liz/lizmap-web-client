@@ -71,6 +71,9 @@ export default class SelectionTool extends HTMLElement {
                             <i class="icon-minus"></i>
                         </button>
                     </div>
+                    <button type="button" class="selectiontool-toggle-visibilty btn btn-mini" @click=${() => mainLizmap.selectionTool.toggleVisibility()}  data-original-title="${lizDict['tree.button.checkbox']}">
+                        <i class="icon-eye-${mainLizmap.selectionTool._toogleSelectionLayerVisibility ? 'open' : 'close'}"></i>
+                    </button>
                     <button type="button" class="selectiontool-unselect btn btn-mini" ?disabled=${mainLizmap.selectionTool.selectedFeaturesCount === 0} @click=${ () => mainLizmap.selectionTool.unselect()}  data-original-title="${lizDict['selectiontool.toolbar.action.unselect']}">
                         <i class="icon-star-empty"></i>
                     </button>
@@ -113,7 +116,7 @@ export default class SelectionTool extends HTMLElement {
             () => {
                 render(mainTemplate(), this);
             },
-            ['selectionTool.toolSelected', 'selectionTool.newAddRemoveSelected', 'selectionTool.allFeatureTypeSelected', 'selectionTool.selectionChanged', 'selectionTool.filteredFeaturesChanged']
+            ['selectionTool.toolSelected', 'selectionTool.newAddRemoveSelected', 'selectionTool.allFeatureTypeSelected', 'selectionTool.selectionChanged', 'selectionTool.filteredFeaturesChanged', 'selectionTool.toogleSelectionLayerVisibility']
         );
     }
 
