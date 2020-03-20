@@ -1,4 +1,7 @@
 import {mainLizmap, mainEventDispatcher} from '../modules/Globals.js';
+import GeoJSONReader from 'jsts/org/locationtech/jts/io/GeoJSONReader.js';
+import GeoJSONWriter from 'jsts/org/locationtech/jts/io/GeoJSONWriter.js';
+import BufferOp from 'jsts/org/locationtech/jts/operation/buffer/BufferOp.js';
 
 export default class SelectionTool {
 
@@ -9,6 +12,8 @@ export default class SelectionTool {
 
         this._tools = ['deactivate', 'box', 'circle', 'polygon', 'freehand'];
         this._toolSelected = this._tools[0];
+
+        this._bufferValue = 0;
 
         this._geomOperator = 'intersects';
 
@@ -112,6 +117,21 @@ export default class SelectionTool {
                 if (feature.layer.features.length > 1) {
                     feature.layer.destroyFeatures(feature.layer.features.shift());
                 }
+            }
+
+            // Handle buffer if any
+            if (this._bufferValue > 0){
+                const geoJSONParser = new OpenLayers.Format.GeoJSON();
+                const selectionGeoJSON = geoJSONParser.write(feature.geometry);
+                const jstsGeoJSONReader = new GeoJSONReader();
+                const jstsGeoJSONWriter = new GeoJSONWriter();
+                const jstsGeom = jstsGeoJSONReader.read(selectionGeoJSON);
+                const jstsbBufferedGeom = BufferOp.bufferOp(jstsGeom, this._bufferValue);
+                const bufferedSelection = geoJSONParser.read(jstsGeoJSONWriter.write(jstsbBufferedGeom), "Geometry");
+
+                feature.geometry.removeComponents(feature.geometry.components);
+                feature.geometry.addComponents(bufferedSelection.components);
+                feature.layer.redraw(true);
             }
 
             for (const featureType of this.allFeatureTypeSelected) {
