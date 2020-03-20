@@ -48,6 +48,12 @@ export default class SelectionTool extends HTMLElement {
                     </button>
                 </div>
                 <div>
+                    Buffer&nbsp;:&nbsp;
+                    <div class="input-append">
+                        <input class="input-mini" type="number" min="0" value="0" @change=${ (event) => mainLizmap.selectionTool._bufferValue = parseInt(event.target.value)}><span class="add-on">m</span>
+                    </div>
+                </div>
+                <div>
                     <select class="selection-geom-operator" @change=${ (event) => mainLizmap.selectionTool.geomOperator = event.target.value} data-original-title="${lizDict['selectiontool.toolbar.geomOperator']}">
                         <option value="intersects">Interects</option>
                         <option value="within">Within</option>
