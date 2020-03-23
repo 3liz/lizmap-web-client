@@ -193,7 +193,7 @@ docker-build-ci: debug $(DOCKER_MANIFEST)
 	cp $(GENERIC_PACKAGE_PATH) docker/
 	docker build --rm --force-rm --no-cache $(DOCKER_BUILD_ARGS) -t $(DOCKER_BUILDIMAGE) docker/
 
-docker-tag: check-registry
+docker-tag:
 	docker tag $(DOCKER_BUILDIMAGE) $(REGISTRY_PREFIX)$(DOCKER_NAME):$(DOCKER_MANIFEST_VERSION)
 ifdef DOCKER_MANIFEST_VERSION_SHORT
 	docker tag $(DOCKER_BUILDIMAGE) $(REGISTRY_PREFIX)$(DOCKER_NAME):$(DOCKER_MANIFEST_VERSION_SHORT)
@@ -202,7 +202,7 @@ ifdef DOCKER_MANIFEST_RELEASE_TAG
 	docker tag $(DOCKER_BUILDIMAGE) $(REGISTRY_PREFIX)$(DOCKER_NAME):$(DOCKER_MANIFEST_RELEASE_TAG)
 endif
 
-docker-deliver: docker-tag
+docker-deliver: check-registry  docker-tag
 	docker push $(REGISTRY_URL)/$(DOCKER_NAME):$(DOCKER_MANIFEST_VERSION)
 ifdef DOCKER_MANIFEST_VERSION_SHORT
 	docker push $(REGISTRY_URL)/$(DOCKER_NAME):$(DOCKER_MANIFEST_VERSION_SHORT)

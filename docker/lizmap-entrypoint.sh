@@ -61,6 +61,9 @@ sed -i "/^;pm.status_path /c\pm.status_path = /status" /etc/php7/php-fpm.d/www.c
 
 sed -i "/^session.cookie_httponly =/c\session.cookie_httponly = 1" /etc/php7/php.ini
 
+# Enable environment
+sed -i "/^;clear_env =/c\clear_env = no" /etc/php7/php-fpm.d/www.conf
+
 # first arg is `-f` or `--some-option`
 if [ "${1#-}" != "$1" ]; then
 	set -- php-fpm7 -F -O "$@"
