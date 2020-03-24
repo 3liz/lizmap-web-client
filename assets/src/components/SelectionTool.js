@@ -49,6 +49,7 @@ export default class SelectionTool extends HTMLElement {
                     <button type="button" class="selectiontool-query-polygon btn btn-small ${mainLizmap.selectionTool.toolSelected === 'polygon' ? 'active' : ''}" @click=${() => mainLizmap.selectionTool.toolSelected = 'polygon'} data-original-title="${lizDict['selectiontool.toolbar.query.polygon']}">
                         <i class="icon-none qgis_sprite mActionSelectPolygon"></i>
                     </button>
+                    <br>
                     <button type="button" class="selectiontool-query-box btn btn-small ${mainLizmap.selectionTool.toolSelected === 'box' ? 'active' : ''}" @click=${() => mainLizmap.selectionTool.toolSelected = 'box'} data-original-title="${lizDict['selectiontool.toolbar.query.box']}">
                         <i class="icon-none qgis_sprite mActionSelectRectangle"></i>
                     </button>
