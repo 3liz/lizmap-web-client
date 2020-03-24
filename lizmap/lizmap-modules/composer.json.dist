@@ -1,0 +1,14 @@
+{
+  "name": "lizmap/my-modules",
+  "type": "library",
+  "description": "You can add your own PHP packages in this file. Rename it to composer.json, add your packages in require, and run `composer install`.",
+  "require": {
+
+  },
+  "minimum-stability": "stable",
+  "config": {
+    "preferred-install": {
+      "*": "dist"
+    }
+  }
+}
