@@ -2465,6 +2465,10 @@ div.tooltip {
   height: 24px;
 }
 
+.selectiontool-query-box {
+  margin-left: 46px;
+}
+
 lizmap-selection-invert svg {
   width: 14px;
   height: 14px;
