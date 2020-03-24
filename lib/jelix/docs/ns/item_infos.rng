@@ -112,7 +112,7 @@
                <data type="anyURI"/>
             </element>
          </optional>
-      </element>      
+      </element>
    </define>
 
    <define name="notes">
@@ -128,9 +128,11 @@
             <attribute name="minversion" />
             <optional>
                <attribute name="edition">
-                  <value>dev</value>
-                  <value>opt</value>
-                  <value>gold</value>
+                  <choice>
+                     <value>dev</value>
+                     <value>opt</value>
+                     <value>gold</value>
+                  </choice>
                </attribute>
             </optional>
          </element>
@@ -141,6 +143,9 @@
                   <attribute name="name" />
                   <optional><attribute name="maxversion" /></optional>
                   <optional><attribute name="minversion" /></optional>
+                  <optional><attribute name="optional">
+                     <data type="boolean" />
+                  </attribute></optional>
                </element>
                <element name="plugin">
                   <attribute name="id" />

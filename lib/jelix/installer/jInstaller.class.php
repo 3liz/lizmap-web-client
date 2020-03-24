@@ -32,11 +32,11 @@ class textInstallReporter implements jIInstallReporter {
      * @var string error, notice or warning
      */
     protected $level;
-    
+
     function __construct($level= 'notice') {
-       $this->level = $level; 
+       $this->level = $level;
     }
-    
+
     function start() {
         if ($this->level == 'notice')
             echo "Installation start..\n";
@@ -160,7 +160,7 @@ class jInstaller {
      *  @var jIniFileModifier it represents the installer.ini.php file.
      */
     public $installerIni = null;
-    
+
     /**
      * list of entry point and their properties
      * @var jInstallerEntryPoint[]. keys are entry point id.
@@ -180,7 +180,7 @@ class jInstaller {
      * @var jInstallerComponentModule[][] first key: entry point id, second key: module name, value = jInstallerComponentModule
      */
     protected $modules = array();
-    
+
     /**
      * list of all modules of the application
      * @var array key=path of the module, value = jInstallerComponentModule
@@ -345,7 +345,7 @@ class jInstaller {
             }
         }
     }
-    
+
     /**
      * @internal for tests
      */
@@ -836,10 +836,16 @@ class jInstaller {
                 continue;
             $name = $compInfo['name'];
             $comp = null;
-            if (isset($this->modules[$epId][$name]))
+
+            if (isset($this->modules[$epId][$name])) {
                 $comp = $this->modules[$epId][$name];
-            if (!$comp)
-                $compNeeded .= $name.', ';
+            }
+
+            if (!$comp) {
+                if ( ! $compInfo['optional']) {
+                    $compNeeded .= $name.', ';
+                }
+            }
             else {
                 if (!isset($this->_checkedComponents[$comp->getName()])) {
                     $comp->init();
@@ -876,7 +882,7 @@ class jInstaller {
             throw new jInstallerException ('module.needed', array($component->getName(), $compNeeded));
         }
     }
-    
+
     protected function startMessage () {
         $this->nbError = 0;
         $this->nbOk = 0;
@@ -884,7 +890,7 @@ class jInstaller {
         $this->nbNotice = 0;
         $this->reporter->start();
     }
-    
+
     protected function endMessage() {
         $this->reporter->end(array('error'=>$this->nbError, 'warning'=>$this->nbWarning, 'ok'=>$this->nbOk,'notice'=>$this->nbNotice));
     }
