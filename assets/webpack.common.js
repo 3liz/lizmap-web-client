@@ -8,5 +8,16 @@ module.exports = {
         filename: '../../lizmap/www/assets/js/[name].js',
         chunkFilename: '[name].bundle.js',
         path: path.resolve(__dirname, 'dist')
+    },
+    module: {
+        rules: [
+            {
+                test: /\.svg$/,
+                use: [
+                    'svg-sprite-loader',
+                    'svgo-loader'
+                ]
+            }
+        ]
     }
 };

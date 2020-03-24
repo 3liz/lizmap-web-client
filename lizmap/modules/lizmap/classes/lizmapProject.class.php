@@ -1869,12 +1869,12 @@ class lizmapProject extends qgisProject
 
         if ($this->hasAttributeLayers()) {
             $tpl = new jTpl();
-            $layerExport = jAcl2::check('lizmap.tools.layer.export', $this->repository->getKey());
-            $tpl->assign('layerExport', $layerExport);
+            // Add layer-export attribute to lizmap-selection-tool component if allowed
+            $layerExport = jAcl2::check('lizmap.tools.layer.export', $this->repository->getKey()) ? "layer-export" : "";
             $dock = new lizmapMapDockItem(
                 'selectiontool',
                 jLocale::get('view~map.selectiontool.navbar.title'),
-                $tpl->fetch('view~map_selectiontool'),
+                '<lizmap-selection-tool '.$layerExport.'></lizmap-selection-tool>',
                 1,
                 '',
                 $bp.'assets/js/attributeTable.js'

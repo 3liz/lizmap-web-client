@@ -5720,7 +5720,7 @@ OpenLayers.Control.HighlightFeature = OpenLayers.Class(OpenLayers.Control, {
   }
 
 
-  function selectLayerFeaturesFromSelectionFeature(targetFeatureType, selectionFeature){
+  function selectLayerFeaturesFromSelectionFeature(targetFeatureType, selectionFeature, geomOperator = 'intersects'){
 
       var lConfig = config.layers[targetFeatureType];
       lizMap.loadProjDefinition( lConfig.crs, function( aProj ) {
@@ -5736,7 +5736,7 @@ OpenLayers.Control.HighlightFeature = OpenLayers.Class(OpenLayers.Control, {
               'feature:_geometry',
               selectionFeature.geometry
           );
-          var spatialFilter = "intersects($geometry, geom_from_gml('" ;
+        var spatialFilter = geomOperator+"($geometry, geom_from_gml('" ;
           spatialFilter+= OpenLayers.Format.XML.prototype.write.apply(
               gml3,
               gml.children
@@ -5764,9 +5764,13 @@ OpenLayers.Control.HighlightFeature = OpenLayers.Class(OpenLayers.Control, {
               limitDataToBbox = true;
           }
           var getFeatureUrlData = lizMap.getVectorLayerWfsUrl( targetFeatureType, spatialFilter, null, null, limitDataToBbox );
-          // add BBox to restrict to geom bbox
-          var geomBounds = selectionFeature.geometry.clone().transform(lizMap.map.getProjection(),aProj).getBounds();
-          getFeatureUrlData['options']['BBOX'] = geomBounds.toBBOX();
+
+          // add BBox to restrict to geom bbox but not with some geometry operator
+          if (geomOperator !== 'disjoint'){
+            var geomBounds = selectionFeature.geometry.clone().transform(lizMap.map.getProjection(), aProj).getBounds();
+            getFeatureUrlData['options']['BBOX'] = geomBounds.toBBOX();
+          }
+
           // get features
           $.post( getFeatureUrlData['url'], getFeatureUrlData['options'], function(result) {
                   var gFormat = new OpenLayers.Format.GeoJSON({
@@ -5778,8 +5782,8 @@ OpenLayers.Control.HighlightFeature = OpenLayers.Class(OpenLayers.Control, {
                   var sfIds = $.map(tfeatures, function(feat){
                       return feat.fid.split('.')[1];
                   });
-                  var stType = $('#selectiontool-type-buttons button.btn.active').val();
-                  if( stType == 'plus' ) {
+
+                  if (lizMap.mainLizmap.selectionTool.newAddRemoveSelected === 'add' ) {
                       sfIds = config.layers[targetFeatureType]['selectedFeatures'].concat(sfIds);
                       for(var i=0; i<sfIds.length; ++i) {
                           for(var j=i+1; j<sfIds.length; ++j) {
@@ -5787,7 +5791,7 @@ OpenLayers.Control.HighlightFeature = OpenLayers.Class(OpenLayers.Control, {
                                   sfIds.splice(j--, 1);
                           }
                       }
-                  } else if( stType == 'minus' ) {
+                  } else if (lizMap.mainLizmap.selectionTool.newAddRemoveSelected === 'remove' ) {
                       var asfIds = config.layers[targetFeatureType]['selectedFeatures'].concat([]);
                       for(var i=0; i<sfIds.length; ++i) {
                           var asfIdIdx = asfIds.indexOf( sfIds[i] );
@@ -5804,11 +5808,6 @@ OpenLayers.Control.HighlightFeature = OpenLayers.Class(OpenLayers.Control, {
                           'updateDrawing': true
                       }
                   );
-
-                  // Remove features from selection layer
-                  var queryLayer = lizMap.layers['selectionQueryLayer'];
-                  queryLayer.destroyFeatures();
-                  $('#selectiontool-query-deactivate').click();
           });
       });
   }
@@ -6187,8 +6186,8 @@ OpenLayers.Control.HighlightFeature = OpenLayers.Class(OpenLayers.Control, {
     /**
      * Method: selectLayerFeaturesFromSelectionFeature
      */
-    selectLayerFeaturesFromSelectionFeature: function( targetFeatureType, selectionFeature) {
-      return selectLayerFeaturesFromSelectionFeature(targetFeatureType, selectionFeature);
+    selectLayerFeaturesFromSelectionFeature: function (targetFeatureType, selectionFeature, geomOperator = 'intersects') {
+      return selectLayerFeaturesFromSelectionFeature(targetFeatureType, selectionFeature, geomOperator);
     },
 
     /**
