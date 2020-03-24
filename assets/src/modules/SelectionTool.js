@@ -10,7 +10,7 @@ export default class SelectionTool {
         this._layers = [];
         this._allFeatureTypeSelected = [];
 
-        this._tools = ['deactivate', 'box', 'circle', 'polygon', 'freehand'];
+        this._tools = ['deactivate', 'point', 'line', 'polygon', 'box', 'circle', 'freehand'];
         this._toolSelected = this._tools[0];
 
         this._bufferValue = 0;
@@ -104,8 +104,15 @@ export default class SelectionTool {
             }
         );
 
-        mainLizmap.lizmap3.map.addLayers([queryLayer]);
+        const bufferLayer = new OpenLayers.Layer.Vector(
+            'selectionBufferLayer', {
+            styleMap: drawStyleMap
+        }
+        );
+
+        mainLizmap.lizmap3.map.addLayers([queryLayer, bufferLayer]);
         mainLizmap.lizmap3.layers['selectionQueryLayer'] = queryLayer;
+        mainLizmap.lizmap3.layers['selectionBufferLayer'] = bufferLayer;
 
         mainLizmap.lizmap3.controls['selectiontool'] = {};
 
@@ -119,6 +126,8 @@ export default class SelectionTool {
                 }
             }
 
+            let featureToRequest = feature;
+
             // Handle buffer if any
             if (this._bufferValue > 0){
                 const geoJSONParser = new OpenLayers.Format.GeoJSON();
@@ -127,15 +136,18 @@ export default class SelectionTool {
                 const jstsGeoJSONWriter = new GeoJSONWriter();
                 const jstsGeom = jstsGeoJSONReader.read(selectionGeoJSON);
                 const jstsbBufferedGeom = BufferOp.bufferOp(jstsGeom, this._bufferValue);
-                const bufferedSelection = geoJSONParser.read(jstsGeoJSONWriter.write(jstsbBufferedGeom), "Geometry");
+                const bufferedSelection = geoJSONParser.read(jstsGeoJSONWriter.write(jstsbBufferedGeom));
 
-                feature.geometry.removeComponents(feature.geometry.components);
-                feature.geometry.addComponents(bufferedSelection.components);
-                feature.layer.redraw(true);
+                // Draw buffer
+                mainLizmap.lizmap3.layers['selectionBufferLayer'].destroyFeatures();
+                mainLizmap.lizmap3.layers['selectionBufferLayer'].addFeatures(bufferedSelection);
+                mainLizmap.lizmap3.layers['selectionBufferLayer'].redraw(true);
+
+                featureToRequest = bufferedSelection[0];
             }
 
             for (const featureType of this.allFeatureTypeSelected) {
-                mainLizmap.lizmap3.selectLayerFeaturesFromSelectionFeature(featureType, feature, this._geomOperator);
+                mainLizmap.lizmap3.selectLayerFeaturesFromSelectionFeature(featureType, featureToRequest, this._geomOperator);
             }
 
             this.toolSelected = "deactivate";
@@ -157,6 +169,58 @@ export default class SelectionTool {
         const queryCircleLayerCtrl = new OpenLayers.Control.DrawFeature(queryLayer,
             OpenLayers.Handler.RegularPolygon,
             {handlerOptions: {sides: 40}, 'featureAdded': onQueryFeatureAdded}
+        );
+
+        /**
+         * Point
+         * @type @new;OpenLayers.Control.DrawFeature
+         */
+        const queryPointLayerCtrl = new OpenLayers.Control.DrawFeature(
+            queryLayer,
+            OpenLayers.Handler.Point,
+            {
+                'featureAdded': onQueryFeatureAdded,
+                styleMap: drawStyleMap,
+                eventListeners: {
+                    // getFeatureInfo and point draw controls are mutually exclusive
+                    'activate': function () {
+                        if ('featureInfo' in lizMap.controls && lizMap.controls.featureInfo && lizMap.controls.featureInfo.active) {
+                            lizMap.controls.featureInfo.deactivate();
+                        }
+                    },
+                    'deactivate': function () {
+                        if ('featureInfo' in lizMap.controls && lizMap.controls.featureInfo && !lizMap.controls.featureInfo.active) {
+                            lizMap.controls.featureInfo.activate();
+                        }
+                    }
+                }
+            }
+        );
+
+        /**
+         * Line
+         * @type @new;OpenLayers.Control.DrawFeature
+         */
+        const queryLineLayerCtrl = new OpenLayers.Control.DrawFeature(
+            queryLayer,
+            OpenLayers.Handler.Path,
+            {
+                'featureAdded': onQueryFeatureAdded,
+                styleMap: drawStyleMap,
+                eventListeners: {
+                    // getFeatureInfo and point draw controls are mutually exclusive
+                    'activate': function () {
+                        if ('featureInfo' in lizMap.controls && lizMap.controls.featureInfo && lizMap.controls.featureInfo.active) {
+                            lizMap.controls.featureInfo.deactivate();
+                        }
+                    },
+                    'deactivate': function () {
+                        if ('featureInfo' in lizMap.controls && lizMap.controls.featureInfo && !lizMap.controls.featureInfo.active) {
+                            lizMap.controls.featureInfo.activate();
+                        }
+                    }
+                }
+            }
         );
 
         /**
@@ -197,11 +261,13 @@ export default class SelectionTool {
         );
 
         // TODO : keep reference to controls in this class
-        mainLizmap.lizmap3.map.addControls([queryBoxLayerCtrl, queryCircleLayerCtrl, queryPolygonLayerCtrl, queryFreehandLayerCtrl]);
+        mainLizmap.lizmap3.map.addControls([queryPointLayerCtrl, queryLineLayerCtrl, queryPolygonLayerCtrl, queryBoxLayerCtrl, queryCircleLayerCtrl, queryFreehandLayerCtrl]);
 
+        mainLizmap.lizmap3.controls['selectiontool']['queryPointLayerCtrl'] = queryPointLayerCtrl;
+        mainLizmap.lizmap3.controls['selectiontool']['queryLineLayerCtrl'] = queryLineLayerCtrl;
+        mainLizmap.lizmap3.controls['selectiontool']['queryPolygonLayerCtrl'] = queryPolygonLayerCtrl;
         mainLizmap.lizmap3.controls['selectiontool']['queryBoxLayerCtrl'] = queryBoxLayerCtrl;
         mainLizmap.lizmap3.controls['selectiontool']['queryCircleLayerCtrl'] = queryCircleLayerCtrl;
-        mainLizmap.lizmap3.controls['selectiontool']['queryPolygonLayerCtrl'] = queryPolygonLayerCtrl;
         mainLizmap.lizmap3.controls['selectiontool']['queryFreehandLayerCtrl'] = queryFreehandLayerCtrl;
 
         mainLizmap.lizmap3.events.on({
@@ -209,14 +275,14 @@ export default class SelectionTool {
                 if (mdoEvt.id == 'selectiontool') {
                     this.toolSelected = 'deactivate';
                     mainLizmap.lizmap3.layers['selectionQueryLayer'].destroyFeatures();
-                    mainLizmap.lizmap3.layers['selectionQueryLayer'].setVisibility(true);
+                    mainLizmap.lizmap3.layers['selectionBufferLayer'].destroyFeatures();
                 }
             },
             'minidockclosed': (mdcEvt) => {
                 if (mdcEvt.id == 'selectiontool') {
                     this.toolSelected = 'deactivate';
                     mainLizmap.lizmap3.layers['selectionQueryLayer'].destroyFeatures();
-                    mainLizmap.lizmap3.layers['selectionQueryLayer'].setVisibility(false);
+                    mainLizmap.lizmap3.layers['selectionBufferLayer'].destroyFeatures();
                 }
             },
             'layerSelectionChanged': () => {
@@ -311,18 +377,24 @@ export default class SelectionTool {
             }
 
             switch (tool) {
-            case this._tools[1]:
-                mainLizmap.lizmap3.controls.selectiontool.queryBoxLayerCtrl.activate();
-                break;
-            case this._tools[2]:
-                mainLizmap.lizmap3.controls.selectiontool.queryCircleLayerCtrl.activate();
-                break;
-            case this._tools[3]:
-                mainLizmap.lizmap3.controls.selectiontool.queryPolygonLayerCtrl.activate();
-                break;
-            case this._tools[4]:
-                mainLizmap.lizmap3.controls.selectiontool.queryFreehandLayerCtrl.activate();
-                break;
+                case this._tools[1]:
+                    mainLizmap.lizmap3.controls.selectiontool.queryPointLayerCtrl.activate();
+                    break;
+                case this._tools[2]:
+                    mainLizmap.lizmap3.controls.selectiontool.queryLineLayerCtrl.activate();
+                    break;
+                case this._tools[3]:
+                    mainLizmap.lizmap3.controls.selectiontool.queryPolygonLayerCtrl.activate();
+                    break;
+                case this._tools[4]:
+                    mainLizmap.lizmap3.controls.selectiontool.queryBoxLayerCtrl.activate();
+                    break;
+                case this._tools[5]:
+                    mainLizmap.lizmap3.controls.selectiontool.queryCircleLayerCtrl.activate();
+                    break;
+                case this._tools[6]:
+                    mainLizmap.lizmap3.controls.selectiontool.queryFreehandLayerCtrl.activate();
+                    break;
             }
 
             this._toolSelected = tool;
@@ -360,6 +432,7 @@ export default class SelectionTool {
         this._toogleSelectionLayerVisibility = !this._toogleSelectionLayerVisibility;
 
         mainLizmap.lizmap3.layers['selectionQueryLayer'].setVisibility(this._toogleSelectionLayerVisibility);
+        mainLizmap.lizmap3.layers['selectionBufferLayer'].setVisibility(this._toogleSelectionLayerVisibility);
 
         mainEventDispatcher.dispatch('selectionTool.toogleSelectionLayerVisibility');
     }
@@ -371,6 +444,7 @@ export default class SelectionTool {
             );
         }
         mainLizmap.lizmap3.layers['selectionQueryLayer'].destroyFeatures();
+        mainLizmap.lizmap3.layers['selectionBufferLayer'].destroyFeatures();
     }
 
     filter() {
