@@ -98,6 +98,7 @@ abstract class jDbConnection {
     function __destruct() {
         if ($this->_connection !== null) {
             $this->_disconnect ();
+            $this->_connection = null;
         }
     }
 
@@ -105,6 +106,7 @@ abstract class jDbConnection {
     function disconnect() {
         if ($this->_connection !== null) {
             $this->_disconnect ();
+            $this->_connection = null;
         }
     }
 
@@ -319,7 +321,7 @@ abstract class jDbConnection {
     abstract public function getAttribute($id);
 
     /**
-     * 
+     *
      * @param integer $id the attribut id
      * @param string $value the attribute value
      * @see PDO::setAttribute()
@@ -386,13 +388,13 @@ abstract class jDbConnection {
     protected function _quote($text, $binary){
         return addslashes($text);
     }
-    
+
     /**
      * @var jDbTools
      * @since 1.2
      */
     protected $_tools = null;
-    
+
     /**
      * @return jDbTools
      * @since 1.2
@@ -413,7 +415,7 @@ abstract class jDbConnection {
      * @since 1.2
      */
     protected $_schema = null;
-    
+
     /**
      * @return jDbSchema
      * @since 1.2
