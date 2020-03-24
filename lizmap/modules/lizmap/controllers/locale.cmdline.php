@@ -104,11 +104,6 @@ class localeCtrl extends jControllerCmdLine
 
     protected function getModulePath($lang = 'en_US')
     {
-        if (!file_exists(jApp::appPath('vendor/autoload.php'))) {
-            throw new Exception("Error: locales commands needs some package. Install packages with Composer: run 'composer install' into the lizmap directory");
-        }
-        require_once jApp::appPath('vendor/autoload.php');
-
         $module = $this->param('module');
 
         if (!isset(jApp::config()->_modulesPathList[$module])) {
@@ -121,8 +116,8 @@ class localeCtrl extends jControllerCmdLine
 
         $modulePath = jApp::config()->_modulesPathList[$module];
         $originalModulePath = $modulePath.'locales/'.$lang.'/';
-        if (strpos($modulePath, LIB_PATH) === 0) {
-            // this is a module in lib/ so not developed for Lizmap: we
+        if (strpos($modulePath, LIB_PATH) === 0 || strpos($modulePath, jApp::appPath('vendor/')) === 0 ) {
+            // this is a module in lib/ or in the lizmap/vendor/ directory so not developed for Lizmap: we
             // don't want to store languages files it into lib/
             if (file_exists(jApp::varPath('locales'))) {
                 $localesPath = jApp::varPath('locales/'.$lang.'/'.$module.'/locales/');
