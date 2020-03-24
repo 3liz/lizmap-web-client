@@ -129,6 +129,7 @@ export default class SelectionTool {
             let featureToRequest = feature;
 
             // Handle buffer if any
+            mainLizmap.lizmap3.layers['selectionBufferLayer'].destroyFeatures();
             if (this._bufferValue > 0){
                 const geoJSONParser = new OpenLayers.Format.GeoJSON();
                 const selectionGeoJSON = geoJSONParser.write(feature.geometry);
@@ -139,7 +140,6 @@ export default class SelectionTool {
                 const bufferedSelection = geoJSONParser.read(jstsGeoJSONWriter.write(jstsbBufferedGeom));
 
                 // Draw buffer
-                mainLizmap.lizmap3.layers['selectionBufferLayer'].destroyFeatures();
                 mainLizmap.lizmap3.layers['selectionBufferLayer'].addFeatures(bufferedSelection);
                 mainLizmap.lizmap3.layers['selectionBufferLayer'].redraw(true);
 
