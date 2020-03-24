@@ -2455,6 +2455,16 @@ div.tooltip {
   margin-bottom: 10px;
 }
 
+.selectiontool-query-buttons button {
+  width: 46px;
+  height: 33px;
+}
+
+.selectiontool-query-buttons button svg {
+  width: 24px;
+  height: 24px;
+}
+
 lizmap-selection-invert svg {
   width: 14px;
   height: 14px;
