@@ -1,6 +1,7 @@
 import Edition from '../modules/Edition.js';
 import Geolocation from '../modules/Geolocation.js';
 import GeolocationSurvey from '../modules/GeolocationSurvey.js';
+import SelectionTool from '../modules/SelectionTool.js';
 
 export default class Lizmap {
 
@@ -11,6 +12,7 @@ export default class Lizmap {
                 this.edition = new Edition();
                 this.geolocation = new Geolocation();
                 this.geolocationSurvey = new GeolocationSurvey();
+                this.selectionTool = new SelectionTool();
             }
         });
     }
@@ -19,8 +21,20 @@ export default class Lizmap {
         return this._lizmap3;
     }
 
+    get config() {
+        return this._lizmap3.config;
+    }
+
     get projection() {
         return this._lizmap3.map.getProjection();
+    }
+
+    get vectorLayerFeatureTypes() {
+        return this._lizmap3.getVectorLayerFeatureTypes();
+    }
+
+    get vectorLayerResultFormat() {
+        return this._lizmap3.getVectorLayerResultFormat().toArray();
     }
 
     /**
@@ -35,6 +49,10 @@ export default class Lizmap {
      */
     set extent(bounds) {
         this._lizmap3.map.zoomToExtent(bounds);
+    }
+
+    getNameByTypeName(typeName) {
+        return this._lizmap3.getNameByTypeName(typeName);
     }
 
     // Display message on screen for users
