@@ -112,12 +112,12 @@ function composerInstall() {
     composer install --prefer-dist --no-progress --no-ansi --no-interaction --working-dir=$ROOTDIR/tests/units/
     chown -R $APP_USER:$APP_GROUP $ROOTDIR/tests/units/vendor $ROOTDIR/tests/units/composer.lock
 
-    if [ -f $APPDIR/lizmap-modules/composer.json ]; then
-      if [ -f $APPDIR/lizmap-modules/composer.lock ]; then
-          rm -f $APPDIR/lizmap-modules/composer.lock
+    if [ -f $APPDIR/my-packages/composer.json ]; then
+      if [ -f $APPDIR/my-packages/composer.lock ]; then
+          rm -f $APPDIR/my-packages/composer.lock
       fi
-      composer install --prefer-dist --no-progress --no-ansi --no-interaction --working-dir=$APPDIR/lizmap-modules/
-      chown -R $APP_USER:$APP_GROUP $APPDIR/lizmap-modules/vendor $APPDIR/lizmap-modules/composer.lock
+      composer install --prefer-dist --no-progress --no-ansi --no-interaction --working-dir=$APPDIR/my-packages/
+      chown -R $APP_USER:$APP_GROUP $APPDIR/my-packages/vendor $APPDIR/my-packages/composer.lock
     fi
 
 }
@@ -129,9 +129,9 @@ function composerUpdate() {
     composer update --prefer-dist --no-progress --no-ansi --no-interaction --working-dir=$ROOTDIR/tests/units/
     chown -R $APP_USER:$APP_GROUP $ROOTDIR/tests/units/vendor $ROOTDIR/tests/units/composer.lock
 
-    if [ -f $APPDIR/lizmap-modules/composer.json ]; then
-      composer update --prefer-dist --no-progress --no-ansi --no-interaction --working-dir=$APPDIR/lizmap-modules/
-      chown -R $APP_USER:$APP_GROUP $APPDIR/lizmap-modules/vendor $APPDIR/lizmap-modules/composer.lock
+    if [ -f $APPDIR/my-packages/composer.json ]; then
+      composer update --prefer-dist --no-progress --no-ansi --no-interaction --working-dir=$APPDIR/my-packages/
+      chown -R $APP_USER:$APP_GROUP $APPDIR/my-packages/vendor $APPDIR/my-packages/composer.lock
     fi
 }
 

@@ -116,9 +116,10 @@ class localeCtrl extends jControllerCmdLine
 
         $modulePath = jApp::config()->_modulesPathList[$module];
         $originalModulePath = $modulePath.'locales/'.$lang.'/';
-        if (strpos($modulePath, LIB_PATH) === 0 || strpos($modulePath, jApp::appPath('vendor/')) === 0 ) {
-            // this is a module in lib/ or in the lizmap/vendor/ directory so not developed for Lizmap: we
-            // don't want to store languages files it into lib/
+        if (strpos($modulePath, LIB_PATH) === 0 || strpos($modulePath, '/vendor/') !== false ) {
+            // this is a module in lib/ or in a vendor/ directory, so it is not
+            // developed into Lizmap: we don't want to store languages files into
+            // these directories
             if (file_exists(jApp::varPath('locales'))) {
                 $localesPath = jApp::varPath('locales/'.$lang.'/'.$module.'/locales/');
             } else {
