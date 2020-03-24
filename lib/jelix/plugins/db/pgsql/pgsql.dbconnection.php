@@ -76,7 +76,7 @@ class pgsqlDbConnection extends jDbConnection {
     }
 
     public function prepare ($query){
-        $id=(string)mktime();
+        $id = microtime();
         $res = pg_prepare($this->_connection, $id, $query);
         if($res){
             $rs= new pgsqlDbResultSet ($res, $id, $this->_connection );
@@ -163,7 +163,7 @@ class pgsqlDbConnection extends jDbConnection {
     }
 
     protected function _disconnect () {
-        return pg_close ($this->_connection);
+        return @pg_close ($this->_connection);
     }
 
     protected function _doQuery ($queryString){
