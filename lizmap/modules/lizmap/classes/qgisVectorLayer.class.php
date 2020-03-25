@@ -613,11 +613,11 @@ class qgisVectorLayer extends qgisMapLayer
         }
 
         if (substr($dbFieldsInfo->geometryType, -2) == 'zm') {
-            $nvalue = 'ST_Force_4D('.$nvalue.')';
+            $nvalue = 'ST_Force4D('.$nvalue.')';
         } elseif (substr($dbFieldsInfo->geometryType, -1) == 'z') {
-            $nvalue = 'ST_Force_3DZ('.$nvalue.')';
+            $nvalue = 'ST_Force3DZ('.$nvalue.')';
         } elseif (substr($dbFieldsInfo->geometryType, -1) == 'm') {
-            $nvalue = 'ST_Force_3DM('.$nvalue.')';
+            $nvalue = 'ST_Force3DM('.$nvalue.')';
         }
 
         return $nvalue;
