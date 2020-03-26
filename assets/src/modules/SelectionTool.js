@@ -25,13 +25,14 @@ export default class SelectionTool {
         // Verifying WFS layers
         const featureTypes = mainLizmap.vectorLayerFeatureTypes;
         if (featureTypes.length === 0) {
-            if (document.getElementById('button-selectiontool')){
+            if (document.getElementById('button-selectiontool')) {
                 document.getElementById('button-selectiontool').parentNode.remove();
             }
             return false;
         }
 
         const config = mainLizmap.config;
+        const layersSorted = [];
 
         for (const attributeLayerName in config.attributeLayers) {
             if (config.attributeLayers.hasOwnProperty(attributeLayerName)) {
@@ -43,14 +44,19 @@ export default class SelectionTool {
                         && config.layers[lname]['geometryType'] != 'none'
                         && config.layers[lname]['geometryType'] != 'unknown') {
 
-                        this._layers.push({
+                        layersSorted[config.attributeLayers[attributeLayerName].order] = {
                             name: lname,
                             title: config.layers[lname].title
-                        });
-
-                        this._allFeatureTypeSelected.push(lname);
+                        };
                     }
                 });
+            }
+        }
+
+        for (const params of layersSorted) {
+            if (params !== undefined) {
+                this._layers.push(params);
+                this._allFeatureTypeSelected.push(params.lname);
             }
         }
 
@@ -99,15 +105,15 @@ export default class SelectionTool {
         });
 
         const queryLayer = new OpenLayers.Layer.Vector(
-            'selectionQueryLayer',{
+            'selectionQueryLayer', {
                 styleMap: drawStyleMap
             }
         );
 
         const bufferLayer = new OpenLayers.Layer.Vector(
             'selectionBufferLayer', {
-            styleMap: drawStyleMap
-        }
+                styleMap: drawStyleMap
+            }
         );
 
         mainLizmap.lizmap3.map.addLayers([queryLayer, bufferLayer]);
@@ -130,7 +136,7 @@ export default class SelectionTool {
 
             // Handle buffer if any
             mainLizmap.lizmap3.layers['selectionBufferLayer'].destroyFeatures();
-            if (this._bufferValue > 0){
+            if (this._bufferValue > 0) {
                 const geoJSONParser = new OpenLayers.Format.GeoJSON();
                 const selectionGeoJSON = geoJSONParser.write(feature.geometry);
                 const jstsGeoJSONReader = new GeoJSONReader();
@@ -150,7 +156,7 @@ export default class SelectionTool {
                 mainLizmap.lizmap3.selectLayerFeaturesFromSelectionFeature(featureType, featureToRequest, this._geomOperator);
             }
 
-            this.toolSelected = "deactivate";
+            this.toolSelected = 'deactivate';
         };
 
         /**
@@ -183,12 +189,12 @@ export default class SelectionTool {
                 styleMap: drawStyleMap,
                 eventListeners: {
                     // getFeatureInfo and point draw controls are mutually exclusive
-                    'activate': function () {
+                    'activate': function() {
                         if ('featureInfo' in lizMap.controls && lizMap.controls.featureInfo && lizMap.controls.featureInfo.active) {
                             lizMap.controls.featureInfo.deactivate();
                         }
                     },
-                    'deactivate': function () {
+                    'deactivate': function() {
                         if ('featureInfo' in lizMap.controls && lizMap.controls.featureInfo && !lizMap.controls.featureInfo.active) {
                             lizMap.controls.featureInfo.activate();
                         }
@@ -209,12 +215,12 @@ export default class SelectionTool {
                 styleMap: drawStyleMap,
                 eventListeners: {
                     // getFeatureInfo and point draw controls are mutually exclusive
-                    'activate': function () {
+                    'activate': function() {
                         if ('featureInfo' in lizMap.controls && lizMap.controls.featureInfo && lizMap.controls.featureInfo.active) {
                             lizMap.controls.featureInfo.deactivate();
                         }
                     },
-                    'deactivate': function () {
+                    'deactivate': function() {
                         if ('featureInfo' in lizMap.controls && lizMap.controls.featureInfo && !lizMap.controls.featureInfo.active) {
                             lizMap.controls.featureInfo.activate();
                         }
@@ -377,24 +383,24 @@ export default class SelectionTool {
             }
 
             switch (tool) {
-                case this._tools[1]:
-                    mainLizmap.lizmap3.controls.selectiontool.queryPointLayerCtrl.activate();
-                    break;
-                case this._tools[2]:
-                    mainLizmap.lizmap3.controls.selectiontool.queryLineLayerCtrl.activate();
-                    break;
-                case this._tools[3]:
-                    mainLizmap.lizmap3.controls.selectiontool.queryPolygonLayerCtrl.activate();
-                    break;
-                case this._tools[4]:
-                    mainLizmap.lizmap3.controls.selectiontool.queryBoxLayerCtrl.activate();
-                    break;
-                case this._tools[5]:
-                    mainLizmap.lizmap3.controls.selectiontool.queryCircleLayerCtrl.activate();
-                    break;
-                case this._tools[6]:
-                    mainLizmap.lizmap3.controls.selectiontool.queryFreehandLayerCtrl.activate();
-                    break;
+            case this._tools[1]:
+                mainLizmap.lizmap3.controls.selectiontool.queryPointLayerCtrl.activate();
+                break;
+            case this._tools[2]:
+                mainLizmap.lizmap3.controls.selectiontool.queryLineLayerCtrl.activate();
+                break;
+            case this._tools[3]:
+                mainLizmap.lizmap3.controls.selectiontool.queryPolygonLayerCtrl.activate();
+                break;
+            case this._tools[4]:
+                mainLizmap.lizmap3.controls.selectiontool.queryBoxLayerCtrl.activate();
+                break;
+            case this._tools[5]:
+                mainLizmap.lizmap3.controls.selectiontool.queryCircleLayerCtrl.activate();
+                break;
+            case this._tools[6]:
+                mainLizmap.lizmap3.controls.selectiontool.queryFreehandLayerCtrl.activate();
+                break;
             }
 
             this._toolSelected = tool;
@@ -403,7 +409,7 @@ export default class SelectionTool {
     }
 
     set geomOperator(geomOperator) {
-        if (this._geomOperator !== geomOperator){
+        if (this._geomOperator !== geomOperator) {
             this._geomOperator = geomOperator;
         }
     }

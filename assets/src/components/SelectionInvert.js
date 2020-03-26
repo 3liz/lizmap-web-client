@@ -1,5 +1,5 @@
-import { mainLizmap, mainEventDispatcher } from '../modules/Globals.js';
-import { html, render } from 'lit-html';
+import {mainLizmap, mainEventDispatcher} from '../modules/Globals.js';
+import {html, render} from 'lit-html';
 
 import '../images/svg/mActionInvertSelection.svg';
 
