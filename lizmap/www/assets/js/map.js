@@ -3075,7 +3075,7 @@ var lizMap = function() {
         geometries.push( { fid: fid, geom: val, crs: crs, bbox:[minx,miny,maxx,maxy] } );
       });
 
-      var layer = map.getLayersByName('locatelayer');
+      var layer = map.getLayersByName('locatelayer')[0];
       // load proj and build features from popup
       var projLoaded = [];
       for ( var i=0, len=geometries.length; i<len; i++ ) {
