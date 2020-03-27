@@ -2,6 +2,7 @@ import Edition from '../modules/Edition.js';
 import Geolocation from '../modules/Geolocation.js';
 import GeolocationSurvey from '../modules/GeolocationSurvey.js';
 import SelectionTool from '../modules/SelectionTool.js';
+import Snapping from '../modules/Snapping.js';
 
 export default class Lizmap {
 
@@ -13,6 +14,7 @@ export default class Lizmap {
                 this.geolocation = new Geolocation();
                 this.geolocationSurvey = new GeolocationSurvey();
                 this.selectionTool = new SelectionTool();
+                this.snapping = new Snapping();
             }
         });
     }
