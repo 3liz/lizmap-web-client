@@ -44,7 +44,10 @@ export default class Snapping {
                                     'snap_layers': editionLayerConfig.snap_layers.split(','),
                                     'snap_vertices': editionLayerConfig.snap_vertices === 'True' ? true : false,
                                     'snap_segments': editionLayerConfig.snap_segments === 'True' ? true : false,
-                                    'snap_intersections': editionLayerConfig.snap_intersections === 'True' ? true : false
+                                    'snap_intersections': editionLayerConfig.snap_intersections === 'True' ? true : false,
+                                    'snap_vertices_tolerance': editionLayerConfig.snap_vertices_tolerance,
+                                    'snap_segments_tolerance': editionLayerConfig.snap_segments_tolerance,
+                                    'snap_intersections_tolerance': editionLayerConfig.snap_intersections_tolerance
                                 };
                             }
                         }
@@ -93,6 +96,9 @@ export default class Snapping {
                     snapControl.targets[0].node = this._config.snap_vertices;
                     snapControl.targets[0].vertex = this._config.snap_intersections;
                     snapControl.targets[0].edge = this._config.snap_segments;
+                    snapControl.targets[0].nodeTolerance = this._config.snap_vertices_tolerance;
+                    snapControl.targets[0].vertexTolerance = this._config.snap_intersections_tolerance;
+                    snapControl.targets[0].edgeTolerance = this._config.snap_segments_tolerance;
                     snapControl.activate();
                 }
             },
