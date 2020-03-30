@@ -11,4 +11,4 @@ if [ "$CMD" == "" ]; then
     CMD="up -d"
 fi
 
-docker-compose $CMD
+docker-compose -p lizmap-tests $CMD
