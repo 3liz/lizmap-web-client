@@ -2244,6 +2244,22 @@ a.btn.btn-opacity-layer.active {
   line-height: 30px;
 }
 
+#edition h3 span.title {
+  display: none;
+}
+
+#nav-tab-edition a::before {
+  content: " ";
+  display: inline-block;
+  background-image: url(images/sprite_20_tools.png);
+  background-repeat: no-repeat;
+  width: 20px;
+  height: 20px;
+  background-position: -475px 0px;
+  margin-right: 4px;
+  vertical-align: text-bottom;
+}
+
 @media (max-height: 500px) {
   .modal.fade.in {
     top:30px;
