@@ -92,6 +92,11 @@
                     </div>
                 </div>
                 <lizmap-geolocation-survey></lizmap-geolocation-survey>
+                <div class="control-group">
+                    <div class="controls">
+                        <lizmap-snapping></lizmap-snapping>
+                    </div>
+                </div>
             </div>
         </fieldset>
     </form>
