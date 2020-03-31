@@ -44,12 +44,12 @@ export default class Snapping {
                             if (editionLayerConfig.hasOwnProperty('snap_layers')){
                                 this.config = {
                                     'snap_layers': editionLayerConfig.snap_layers.split(','),
-                                    'snap_vertices': editionLayerConfig.snap_vertices === 'True' ? true : false,
-                                    'snap_segments': editionLayerConfig.snap_segments === 'True' ? true : false,
-                                    'snap_intersections': editionLayerConfig.snap_intersections === 'True' ? true : false,
-                                    'snap_vertices_tolerance': editionLayerConfig.snap_vertices_tolerance,
-                                    'snap_segments_tolerance': editionLayerConfig.snap_segments_tolerance,
-                                    'snap_intersections_tolerance': editionLayerConfig.snap_intersections_tolerance
+                                    'snap_vertices': (editionLayerConfig.hasOwnProperty('snap_vertices') && editionLayerConfig.snap_vertices === 'True') ? true : false,
+                                    'snap_segments': (editionLayerConfig.hasOwnProperty('snap_segments') && editionLayerConfig.snap_segments === 'True') ? true : false,
+                                    'snap_intersections': (editionLayerConfig.hasOwnProperty('snap_intersections') && editionLayerConfig.snap_intersections === 'True') ? true : false,
+                                    'snap_vertices_tolerance': editionLayerConfig.hasOwnProperty('snap_vertices_tolerance') ? editionLayerConfig.snap_vertices_tolerance : 10,
+                                    'snap_segments_tolerance': editionLayerConfig.hasOwnProperty('snap_segments_tolerance') ? editionLayerConfig.snap_segments_tolerance : 10,
+                                    'snap_intersections_tolerance': editionLayerConfig.hasOwnProperty('snap_intersections_tolerance') ? editionLayerConfig.snap_intersections_tolerance : 10
                                 };
                             }
                         }
