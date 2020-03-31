@@ -9,11 +9,22 @@ export default class Snapping extends HTMLElement {
     connectedCallback() {
         // Display
         const mainTemplate = () => html`
-        <div>
+        <div class="btn-group">
+            <button class="btn ${mainLizmap.snapping.config !== undefined ? '' : 'hide'} ${mainLizmap.snapping.active ? 'active btn-success' : ''}" @click=${ () => mainLizmap.snapping.toggle() }>Snapping</button>
+            <button class="btn">R</button>
         </div>`;
 
         render(mainTemplate(), this);
 
+        mainEventDispatcher.addListener(
+            () => {
+                render(mainTemplate(), this);
+            },
+            [
+                'snapping.config',
+                'snapping.active'
+            ]
+        );
     }
 
     disconnectedCallback() {

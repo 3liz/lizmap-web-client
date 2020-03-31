@@ -4,12 +4,14 @@ export default class Snapping {
 
     constructor() {
 
+        this._active = false;
         this._maxFeatures = 1000;
         this._restrictToMapExtent = true;
         this._config = undefined;
 
         // Create layer to store snap features
         const snapLayer = new OpenLayers.Layer.Vector('snaplayer', {
+            visibility: false,
             styleMap: new OpenLayers.StyleMap({
                 pointRadius: 2,
                 fill: false,
@@ -40,7 +42,7 @@ export default class Snapping {
                         if (mainLizmap.config.editionLayers[editionLayer].layerId === mainLizmap.edition.layerId){
                             const editionLayerConfig = mainLizmap.config.editionLayers[editionLayer];
                             if (editionLayerConfig.hasOwnProperty('snap_layers')){
-                                this._config = {
+                                this.config = {
                                     'snap_layers': editionLayerConfig.snap_layers.split(','),
                                     'snap_vertices': editionLayerConfig.snap_vertices === 'True' ? true : false,
                                     'snap_segments': editionLayerConfig.snap_segments === 'True' ? true : false,
@@ -87,7 +89,7 @@ export default class Snapping {
                             });
                     }
 
-                    // Activate snapping
+                    // Configure snapping
                     const snapControl = mainLizmap.lizmap3.controls.snapControl;
 
                     // Set edition layer as
@@ -99,19 +101,53 @@ export default class Snapping {
                     snapControl.targets[0].nodeTolerance = this._config.snap_vertices_tolerance;
                     snapControl.targets[0].vertexTolerance = this._config.snap_intersections_tolerance;
                     snapControl.targets[0].edgeTolerance = this._config.snap_segments_tolerance;
-                    snapControl.activate();
                 }
             },
             'edition.formDisplayed'
         );
 
-        // deactivate snap when edition ends
+        // Clean snap when edition ends
         mainEventDispatcher.addListener(
             () => {
-                mainLizmap.lizmap3.controls.snapControl.deactivate();
+                this.active = false;
                 mainLizmap.lizmap3.map.getLayersByName('snaplayer')[0].destroyFeatures();
+                this.config = undefined;
             },
             'edition.formClosed'
         );
+    }
+
+    toggle(){
+        this.active = !this._active;
+    }
+
+    get active() {
+        return this._active;
+    }
+
+    set active(active) {
+        this._active = active;
+
+        // (de)activate snap control
+        if (this._active) {
+            mainLizmap.lizmap3.controls.snapControl.activate();
+        } else {
+            mainLizmap.lizmap3.controls.snapControl.deactivate();
+        }
+
+        // Set snap layer visibility
+        mainLizmap.lizmap3.map.getLayersByName('snaplayer')[0].setVisibility(this._active);
+
+        mainEventDispatcher.dispatch('snapping.active');
+    }
+
+    get config() {
+        return this._config;
+    }
+
+    set config(config) {
+        this._config = config;
+
+        mainEventDispatcher.dispatch('snapping.config');
     }
 }
