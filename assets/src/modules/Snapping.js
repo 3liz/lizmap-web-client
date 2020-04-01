@@ -5,6 +5,8 @@ export default class Snapping {
     constructor() {
 
         this._active = false;
+        this._snapLayersRefreshable = false;
+
         this._maxFeatures = 1000;
         this._restrictToMapExtent = true;
         this._config = undefined;
@@ -33,6 +35,12 @@ export default class Snapping {
         mainLizmap.lizmap3.map.addControls([snapControl]);
         mainLizmap.lizmap3.controls['snapControl'] = snapControl;
 
+        this._setSnapLayersRefreshable = () => {
+            if(this._active){
+                this.snapLayersRefreshable = true;
+            }
+        }
+
         // Activate snap when a layer is edited
         mainEventDispatcher.addListener(
             () => {
@@ -57,42 +65,10 @@ export default class Snapping {
                 }
 
                 if (this._config !== undefined){
-                    // Empty snapping layer first
-                    mainLizmap.lizmap3.map.getLayersByName('snaplayer')[0].destroyFeatures();
-
-                    for (const snapLayer of this._config.snap_layers) {
-
-                        lizMap.getFeatureData(mainLizmap.lizmap3.getLayerConfigById(snapLayer)[0], null, null, 'geom', this._restrictToMapExtent, null, this._maxFeatures,
-                            (fName, fFilter, fFeatures, fAliases) => {
-
-                                // Transform features
-                                const snapLayerConfig = lizMap.config.layers[fName];
-                                let snapLayerCrs = snapLayerConfig['featureCrs'];
-                                if (!snapLayerCrs){
-                                    snapLayerCrs = snapLayerConfig['crs'];
-                                }
-
-                                // TODO : use OL 6 instead ?
-                                const gFormat = new OpenLayers.Format.GeoJSON({
-                                    ignoreExtraDims: true,
-                                    externalProjection: snapLayerCrs,
-                                    internalProjection: mainLizmap.projection
-                                });
-
-                                const tfeatures = gFormat.read({
-                                    type: 'FeatureCollection',
-                                    features: fFeatures
-                                });
-
-                                // Add features
-                                mainLizmap.lizmap3.map.getLayersByName('snaplayer')[0].addFeatures(tfeatures);
-                            });
-                    }
-
                     // Configure snapping
                     const snapControl = mainLizmap.lizmap3.controls.snapControl;
 
-                    // Set edition layer as
+                    // Set edition layer as main layer
                     snapControl.setLayer(mainLizmap.edition.editLayer);
 
                     snapControl.targets[0].node = this._config.snap_vertices;
@@ -101,6 +77,12 @@ export default class Snapping {
                     snapControl.targets[0].nodeTolerance = this._config.snap_vertices_tolerance;
                     snapControl.targets[0].vertexTolerance = this._config.snap_intersections_tolerance;
                     snapControl.targets[0].edgeTolerance = this._config.snap_segments_tolerance;
+
+                    // Listen to moveend event to able data refreshing
+                    mainEventDispatcher.addListener(
+                        this._setSnapLayersRefreshable,
+                        'map.moveend'
+                    );
                 }
             },
             'edition.formDisplayed'
@@ -112,13 +94,65 @@ export default class Snapping {
                 this.active = false;
                 mainLizmap.lizmap3.map.getLayersByName('snaplayer')[0].destroyFeatures();
                 this.config = undefined;
+
+                // Remove listener to moveend event
+                mainEventDispatcher.removeListener(
+                    this._setSnapLayersRefreshable,
+                    'map.moveend'
+                );
             },
             'edition.formClosed'
         );
     }
 
+    getSnappingData () {
+        // Empty snapping layer first
+        mainLizmap.lizmap3.map.getLayersByName('snaplayer')[0].destroyFeatures();
+
+        // TODO : group aync calls with Promises
+        for (const snapLayer of this._config.snap_layers) {
+
+            lizMap.getFeatureData(mainLizmap.lizmap3.getLayerConfigById(snapLayer)[0], null, null, 'geom', this._restrictToMapExtent, null, this._maxFeatures,
+                (fName, fFilter, fFeatures, fAliases) => {
+
+                    // Transform features
+                    const snapLayerConfig = lizMap.config.layers[fName];
+                    let snapLayerCrs = snapLayerConfig['featureCrs'];
+                    if (!snapLayerCrs) {
+                        snapLayerCrs = snapLayerConfig['crs'];
+                    }
+
+                    // TODO : use OL 6 instead ?
+                    const gFormat = new OpenLayers.Format.GeoJSON({
+                        ignoreExtraDims: true,
+                        externalProjection: snapLayerCrs,
+                        internalProjection: mainLizmap.projection
+                    });
+
+                    const tfeatures = gFormat.read({
+                        type: 'FeatureCollection',
+                        features: fFeatures
+                    });
+
+                    // Add features
+                    mainLizmap.lizmap3.map.getLayersByName('snaplayer')[0].addFeatures(tfeatures);
+                });
+        }
+
+        this.snapLayersRefreshable = false;
+    }
+
     toggle(){
         this.active = !this._active;
+    }
+
+    get snapLayersRefreshable(){
+        return this._snapLayersRefreshable;
+    }
+
+    set snapLayersRefreshable(refreshable) {
+            this._snapLayersRefreshable = refreshable;
+            mainEventDispatcher.dispatch('snapping.refreshable');
     }
 
     get active() {
@@ -130,8 +164,11 @@ export default class Snapping {
 
         // (de)activate snap control
         if (this._active) {
+            this.getSnappingData();
             mainLizmap.lizmap3.controls.snapControl.activate();
         } else {
+            // Disable refresh button when snapping is inactive
+            this.snapLayersRefreshable = false;
             mainLizmap.lizmap3.controls.snapControl.deactivate();
         }
 
