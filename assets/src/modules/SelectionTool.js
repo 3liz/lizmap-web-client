@@ -61,7 +61,9 @@ export default class SelectionTool {
         }
 
         if (this._layers.length === 0) {
-            document.getElementById('button-selectiontool').parentNode.remove();
+            if (document.getElementById('button-selectiontool')) {
+                document.getElementById('button-selectiontool').parentNode.remove();
+            }
             return false;
         }
 
