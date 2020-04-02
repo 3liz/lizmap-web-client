@@ -249,7 +249,8 @@ class qgisFormControl
                     $this->fieldEditType = (string) $this->edittype->attributes()->widgetv2type;
 
                     // no more line edit. Since 2.4, textedit with multiline attribute = 0
-                    if ((string) $this->widgetv2configAttr->IsMultiline == '0') {
+                    $isMultiLine = filter_var($this->widgetv2configAttr->IsMultiline, FILTER_VALIDATE_BOOLEAN);
+                    if (!$isMultiLine) {
                         $this->fieldEditType = 0;
                     }
                 }
@@ -266,25 +267,32 @@ class qgisFormControl
 
             // Get jform control type
             if ($this->fieldEditType === 12) {
+                $useHtml = 0;
                 if (property_exists($this->edittype->attributes(), 'UseHtml')) {
-                    $markup = $this->qgisEdittypeMap[$this->fieldEditType]['jform']['markup'][(int) $this->edittype->attributes()->UseHtml];
-                } else {
-                    $markup = $this->qgisEdittypeMap[$this->fieldEditType]['jform']['markup'][0];
+                    $useHtml =(int) filter_var($this->edittype->attributes(), FILTER_VALIDATE_BOOLEAN);
                 }
+                $markup = $this->qgisEdittypeMap[$this->fieldEditType]['jform']['markup'][$useHtml];
             } elseif ($this->fieldEditType === 'TextEdit') {
-                if (property_exists($this->widgetv2configAttr, 'IsMultiline')
-                    && ($this->widgetv2configAttr->IsMultiline === '0' || $this->widgetv2configAttr->IsMultiline === 'false')) {
+                $isMultiLine = false;
+                if (property_exists($this->widgetv2configAttr, 'IsMultiline')) {
+                    $isMultiLine = filter_var($this->widgetv2configAttr->IsMultiline, FILTER_VALIDATE_BOOLEAN);
+                }
+
+                if (!$isMultiLine) {
                     $this->fieldEditType = 'LineEdit';
                     $markup = $this->qgisEdittypeMap[$this->fieldEditType]['jform']['markup'];
-                } else if (property_exists($this->widgetv2configAttr, 'UseHtml')) {
-                    $markup = $this->qgisEdittypeMap[$this->fieldEditType]['jform']['markup'][(int) $this->widgetv2configAttr->UseHtml];
                 } else {
-                    $markup = $this->qgisEdittypeMap[$this->fieldEditType]['jform']['markup'][0];
+                    $useHtml = 0;
+                    if (property_exists($this->widgetv2configAttr, 'UseHtml')) {
+                        $useHtml = (int) filter_var($this->widgetv2configAttr->UseHtml, FILTER_VALIDATE_BOOLEAN);
+                    }
+                    $markup = $this->qgisEdittypeMap[$this->fieldEditType]['jform']['markup'][$useHtml];
                 }
             } elseif ($this->fieldEditType === 5) {
                 $markup = $this->qgisEdittypeMap[$this->fieldEditType]['jform']['markup'][0];
             } elseif ($this->fieldEditType === 15) {
-                $markup = $this->qgisEdittypeMap[$this->fieldEditType]['jform']['markup'][(int) $this->edittype->attributes()->allowMulti];
+                $allowMulti = (int) filter_var($this->edittype->attributes()->allowMulti, FILTER_VALIDATE_BOOLEAN);
+                $markup = $this->qgisEdittypeMap[$this->fieldEditType]['jform']['markup'][$allowMulti];
             } elseif ($this->fieldEditType === 'Range' || $this->fieldEditType === 'EditRange') {
                 $markup = $this->qgisEdittypeMap[$this->fieldEditType]['jform']['markup'][0];
             } elseif ($this->fieldEditType === 'SliderRange' || $this->fieldEditType === 'DialRange') {
@@ -564,21 +572,19 @@ class qgisFormControl
                 $this->isReadOnly = true;
             }
             if ($this->edittype && ($this->edittype instanceof SimpleXMLElement)) {
+                $isEditable = true;
                 // Also use "editable" property
                 if (property_exists($this->edittype->attributes(), 'editable')) {
-                    $editable = (int) $this->edittype->attributes()->editable;
-                    if ($editable == 0) {
-                        $this->isReadOnly = true;
-                    }
+                    $isEditable = filter_var($this->edittype->attributes()->editable, FILTER_VALIDATE_BOOLEAN);
                 }
                 // Also use "fieldEditable" property
                 else if (property_exists($this->edittype->attributes(), 'widgetv2type') &&
                         property_exists($this->widgetv2configAttr, 'fieldEditable')
                 ) {
-                    $editable = (int) $this->widgetv2configAttr->fieldEditable;
-                    if ($editable == 0) {
-                        $this->isReadOnly = true;
-                    }
+                    $isEditable = filter_var($this->widgetv2configAttr->fieldEditable, FILTER_VALIDATE_BOOLEAN);
+                }
+                if (!$isEditable) {
+                    $this->isReadOnly = true;
                 }
             } else if ($this->edittype && is_object($this->edittype) && $this->edittype->editable === 0) {
                 $this->isReadOnly = true;
