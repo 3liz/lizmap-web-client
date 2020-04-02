@@ -12,7 +12,7 @@ export default class Snapping extends HTMLElement {
         const mainTemplate = () => html`
         <div class="btn-group ${mainLizmap.snapping.config !== undefined ? '' : 'hide'}">
             <button class="btn ${mainLizmap.snapping.active ? 'active btn-success' : ''}" @click=${ () => mainLizmap.snapping.toggle() }>Snapping</button>
-            <button class="btn" ?disabled=${!mainLizmap.snapping._snapLayersRefreshable} @click=${() => mainLizmap.snapping.getSnappingData() }>
+            <button class="btn ${mainLizmap.snapping._snapLayersRefreshable ? 'btn-warning' : ''}" ?disabled=${!mainLizmap.snapping._snapLayersRefreshable} @click=${() => mainLizmap.snapping.getSnappingData() }>
                 <svg width="14" height="14">
                     <use xlink:href="#refresh"/>
                 </svg>
