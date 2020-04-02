@@ -405,8 +405,6 @@ OpenLayers.Geometry.pointOnSegment = function(point, segment) {
             $('#edition-point-coord-geolocation').click();
         $('#edition-point-coord-add').hide();
         $('#edition-point-coord-form').hide();
-        $('#edition-point-coord-form-expander i').removeClass('icon-chevron-down').addClass('icon-chevron-right');
-        $('#edition-point-coord-form-group').hide();
         $('#edition-segment-length').parents('.control-group').addClass('hidden');
         $('#edition-segment-angle').parents('.control-group').addClass('hidden');
 
@@ -591,6 +589,9 @@ OpenLayers.Geometry.pointOnSegment = function(point, segment) {
             $('#dock-close').click();
             $('#button-edition').hide();
         }
+
+        // Hide edition tabs
+        $('.edition-tabs').hide();
 
         // Redraw bottom dock
         $('#bottom-dock').css('left',  lizMap.getDockRightPosition() );
@@ -823,17 +824,6 @@ OpenLayers.Geometry.pointOnSegment = function(point, segment) {
             });
 
             $('#edition-point-coord-form').submit(function(){
-                return false;
-            });
-            $('#edition-point-coord-form-expander').click(function(){
-                var chevron = $('#edition-point-coord-form-expander i');
-                if ( chevron.hasClass('icon-chevron-right') ) {
-                    chevron.removeClass('icon-chevron-right').addClass('icon-chevron-down');
-                    $('#edition-point-coord-form-group').show();
-                } else {
-                    chevron.removeClass('icon-chevron-down').addClass('icon-chevron-right');
-                    $('#edition-point-coord-form-group').hide();
-                }
                 return false;
             });
             $('#edition-point-coord-crs').change(function(){
@@ -1275,6 +1265,9 @@ OpenLayers.Geometry.pointOnSegment = function(point, segment) {
             // Hide drawfeature controls : they will go back when finishing edition or canceling
             $('#edition-layer').hide();
             $('#edition-draw').addClass('disabled').hide();
+
+            // Show edition tabs
+            $('.edition-tabs').show();
 
             if( aCallback )
                 aCallback( editionLayer['id'], featureId );
