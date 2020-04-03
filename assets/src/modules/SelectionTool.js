@@ -56,7 +56,7 @@ export default class SelectionTool {
         for (const params of layersSorted) {
             if (params !== undefined) {
                 this._layers.push(params);
-                this._allFeatureTypeSelected.push(params.lname);
+                this._allFeatureTypeSelected.push(params.name);
             }
         }
 
