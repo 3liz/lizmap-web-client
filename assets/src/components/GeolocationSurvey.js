@@ -9,6 +9,7 @@ export default class GeolocationSurvey extends HTMLElement {
     connectedCallback() {
         const mainTemplate = () => html`
         <div class="${mainLizmap.geolocation.isTracking && mainLizmap.geolocation.isLinkedToEdition ? '' : 'hide'}">
+            <h3>${lizDict['geolocation.survey.title']}</h3>
             ${ ['line', 'polygon'].includes(mainLizmap.edition.layerGeometry) ?
                 html`
                 <div class="control-group" style="text-align:center">

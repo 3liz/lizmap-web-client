@@ -15,8 +15,8 @@
 
         <div class="tabbable edition-tabs" style="display: none;">
             <ul class="nav nav-tabs">
-                <li class="active"><a href="#tabform" data-toggle="tab">Form</a></li>
-                <li><a href="#tabdigitization" data-toggle="tab">Digitization</a></li>
+                <li class="active"><a href="#tabform" data-toggle="tab">{@view~edition.tab.form.title@}</a></li>
+                <li><a href="#tabdigitization" data-toggle="tab">{@view~edition.tab.digitization.title@}</a></li>
             </ul>
             <div class="tab-content">
                 <div class="tab-pane active" id="tabform">
@@ -52,6 +52,7 @@
                     <form id="edition-point-coord-form" class="form-horizontal" style="display:none;">
                         <fieldset>
                             <div id="edition-point-coord-form-group" class="jforms-table-group">
+                                <h3>{@view~edition.point.coord.title@}</h3>
                                 <div class="control-group">
                                     <label class="jforms-label control-label" for="edition-point-coord-crs"
                                         id="edition-point-coord-crs-label">{@view~edition.point.coord.crs.label@}</label>
@@ -116,11 +117,7 @@
                                     </div>
                                 </div>
                                 <lizmap-geolocation-survey></lizmap-geolocation-survey>
-                                <div class="control-group">
-                                    <div class="controls">
-                                        <lizmap-snapping></lizmap-snapping>
-                                    </div>
-                                </div>
+                                <lizmap-snapping></lizmap-snapping>
                             </div>
                         </fieldset>
                     </form>
