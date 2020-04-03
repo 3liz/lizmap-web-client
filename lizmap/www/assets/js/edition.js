@@ -747,10 +747,18 @@ OpenLayers.Geometry.pointOnSegment = function(point, segment) {
                         editCtrls.modify.activate();
                         $('#edition-geomtool-nodetool').click();
                         editCtrls.modify.selectFeature( feat );
-                        if (geometryType == 'line')
+                        if (geometryType === 'line'){
                             $('#edition-geomtool-container button i').addClass('line');
-                        if (geometryType != 'point')
+                        }
+                        if (geometryType !== 'point'){
                             $('#edition-geomtool-container').show();
+                        }
+                    }
+
+                    // Display form tab and hide digitization tab for point geometry
+                    if (geometryType === 'point') {
+                        $('.edition-tabs a[href="#tabform"]').tab('show');
+                        $('.edition-tabs a[href="#tabdigitization"]').hide();
                     }
 
                     // Inform user he can now modify
@@ -814,11 +822,13 @@ OpenLayers.Geometry.pointOnSegment = function(point, segment) {
                     editionLayer.clear();
                 }
 
-                // activate edition
+                // Activate edition
                 editCtrls.panel.activate();
 
-                // Launch edition to gather edition layer info
+                // Display digitization tab
+                $('.edition-tabs a[href="#tabdigitization"]').show();
 
+                // Launch edition to gather edition layer info
                 launchEdition( $('#edition-layer').val(), null);
                 return false;
             });
