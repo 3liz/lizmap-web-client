@@ -2373,6 +2373,14 @@ div.tooltip {
   margin-bottom: 5px;
 }
 
+#edition-point-coord-form-group h3{
+  color: black;
+  padding-left: 5%;
+  background-color: #f0f0f0;
+  line-height:2em;
+  margin: 10px;
+}
+
 .qgis_sprite { background: url('images/qgis_sprite.png') no-repeat top left; width: 24px; height: 24px;  }
 .qgis_sprite.mActionMoveFeature { background-position: 0 0; }
 .qgis_sprite.mActionReshapeLine { background-position: -34px 0; }
