@@ -2582,7 +2582,7 @@ lizmap-geolocation-survey .control-group div{
 }
 
 lizmap-geolocation-survey .control-group > div:first-child{
-  width: 120px;
+  width: 90px;
 }
 
 #dock .form-horizontal lizmap-geolocation-survey .controls{
