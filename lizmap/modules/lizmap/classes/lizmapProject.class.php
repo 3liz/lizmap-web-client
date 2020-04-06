@@ -906,6 +906,7 @@ class lizmapProject extends qgisProject
         $config = array(
             'layers' => array(),
             'dataviz' => array(),
+            'locale' => jApp::config()->locale
         );
         foreach ($this->cfg->datavizLayers as $order => $lc) {
             if (!property_exists($lc, 'layerId')) {

@@ -180,7 +180,8 @@ var lizDataviz = function() {
                 // Y value
                 var y_val = trace.y[x];
                 var y_search = '{$yi}'.replace('i', i+1);
-                var y_replacement = y_val;
+                var localeString = dv.config.locale.replace('_', '-')
+                var y_replacement = y_val.toLocaleString(localeString);;
                 html = html.split(y_search).join(y_replacement);
 
                 // Colors
@@ -216,13 +217,14 @@ var lizDataviz = function() {
         if(conf.data.length && conf.data[0]['type'] == 'html'){
             buildHtmlPlot(id, conf.data, conf.layout);
         }else{
+            var plotLocale = dv.config.locale.substring(0, 2)
             Plotly.newPlot(
                 id,
                 conf.data,
                 conf.layout,
                 {
                     displayModeBar: false,
-                    locale: 'fr'
+                    locale: plotLocale
                 }
             );
         }

@@ -564,11 +564,11 @@ class datavizPlot
                             $featcolors[] = $feat->properties->{$featcolor};
                         }
                     } else {
-                        // For pie and sunburst chart, we need to manually
+                        // For pie, sunburst, html chart, we need to manually
                         // sum and aggregate values per distinct x values
                         // because plotly cannot use aggregations transforms
                         // -> store values in an array to aggregate them afterwards
-                        if ($feat->properties->{$xf} != null) {
+                        if ($feat->properties->{$xf} != null or $feat->properties->{$xf} == 0) {
                             // Aggregate - Each time we find a new X, we initialize the value for this x key
                             if (!array_key_exists($feat->properties->{$xf}, $x_aggregate_sum)) {
                                 $x_aggregate_sum[$feat->properties->{$xf}] = 0;
@@ -727,7 +727,7 @@ class datavizPlot
                 // add aggregation property if aggregation is done client side via dataplotly
                 // Not available for pie, histogram and histogram2d, we have done it manually beforehand in php
                 if ($this->aggregation
-                    and !in_array($this->type, array('pie', 'histogram', 'histogram2d'))
+                    and !in_array($this->type, array('pie', 'histogram', 'histogram2d', 'html', 'sunburst'))
                 ) {
                     $trace['transforms'] = array(
                         array(
