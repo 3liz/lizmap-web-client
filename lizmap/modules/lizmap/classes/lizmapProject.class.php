@@ -926,9 +926,11 @@ class lizmapProject extends qgisProject
                 'plot' => array(
                     'type' => $lc->type,
                     'x_field' => $lc->x_field,
-                    'y_field' => $lc->y_field,
                 ),
             );
+            if (property_exists($lc, 'y_field')) {
+                $plotConf['plot']['y_field'] = $lc->y_field;
+            }
             if (property_exists($lc, 'z_field')) {
                 $plotConf['plot']['z_field'] = $lc->z_field;
             }
@@ -988,6 +990,10 @@ class lizmapProject extends qgisProject
 
             if (property_exists($lc, 'display_when_layer_visible') and !empty($lc->display_when_layer_visible) ) {
                 $plotConf['plot']['display_when_layer_visible'] = $lc->display_when_layer_visible;
+            }
+
+            if (property_exists($lc, 'traces')) {
+                $plotConf['plot']['traces'] = $lc->traces;
             }
 
             // Add more layout config, written like:

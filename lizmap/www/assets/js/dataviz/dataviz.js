@@ -138,7 +138,6 @@ var lizDataviz = function() {
                 dv.plots.push(json);
 
                 var plot = buildPlot(target_id, json);
-
                 $('#'+target_id).prev('.dataviz-waiter:first').hide();
             }
         );
@@ -292,20 +291,24 @@ var lizDataviz = function() {
 
         // Hide plot when layer not shown
         // Todo: we should not refresh plot or even load it if not visible
-        var pid = parseInt(id.replace('dataviz_plot_', ''));
-        var plot_config = dv.config.layers[pid];
-        if('display_when_layer_visible' in plot_config.plot && optionToBoolean(plot_config.plot.display_when_layer_visible)) {
-            var getLayerConfig = lizMap.getLayerConfigById( plot_config['layer_id'] );
-            if (getLayerConfig) {
-                var layerConfig = getLayerConfig[1];
-                var featureType = getLayerConfig[0];
-                var oLayers = lizMap.map.getLayersByName(layerConfig.cleanname);
-                if(oLayers.length == 1){
-                    var oLayer = oLayers[0];
-                    var lvisibility = oLayer.visibility;
-                    $('#' + id + '_container').toggle(lvisibility);
-                    if(lvisibility){
-                        resizePlot(id);
+        // First check if id begins with dataviz_plot -> main panel
+        // or not -> popup child dataviz: do nothing
+        if (id.substring(0, 13) == 'dataviz_plot_') {
+            var pid = parseInt(id.replace('dataviz_plot_', ''));
+            var plot_config = dv.config.layers[pid];
+            if('display_when_layer_visible' in plot_config.plot && optionToBoolean(plot_config.plot.display_when_layer_visible)) {
+                var getLayerConfig = lizMap.getLayerConfigById( plot_config['layer_id'] );
+                if (getLayerConfig) {
+                    var layerConfig = getLayerConfig[1];
+                    var featureType = getLayerConfig[0];
+                    var oLayers = lizMap.map.getLayersByName(layerConfig.cleanname);
+                    if(oLayers.length == 1){
+                        var oLayer = oLayers[0];
+                        var lvisibility = oLayer.visibility;
+                        $('#' + id + '_container').toggle(lvisibility);
+                        if(lvisibility){
+                            resizePlot(id);
+                        }
                     }
                 }
             }

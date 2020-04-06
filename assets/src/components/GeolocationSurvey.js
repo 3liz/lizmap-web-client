@@ -1,5 +1,6 @@
 import {mainLizmap, mainEventDispatcher} from '../modules/Globals.js';
 import {html, render} from 'lit-html';
+import '../images/svg/device-mobile-vibration.svg';
 
 export default class GeolocationSurvey extends HTMLElement {
     constructor() {
@@ -15,7 +16,11 @@ export default class GeolocationSurvey extends HTMLElement {
                 <div class="control-group" style="text-align:center">
                     <div class="btn-group">
                         <button class="btn ${mainLizmap.geolocationSurvey.beepMode ? 'active btn-success' : ''}" @click=${() => mainLizmap.geolocationSurvey.toggleBeepMode()}><i class="icon-music"></i></button>
-                        <button class="btn ${mainLizmap.geolocationSurvey.vibrateMode ? 'active btn-success' : ''}" @click=${() => mainLizmap.geolocationSurvey.toggleVibrateMode()}>📳</button>
+                        <button class="btn ${mainLizmap.geolocationSurvey.vibrateMode ? 'active btn-success' : ''}" @click=${() => mainLizmap.geolocationSurvey.toggleVibrateMode()}>
+                            <svg width="14" height="14">
+                                <use xlink:href="#device-mobile-vibration"/>
+                            </svg>
+                        </button>
                     </div>
                 </div>
                 <div class="control-group">

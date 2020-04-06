@@ -56,12 +56,14 @@ export default class SelectionTool {
         for (const params of layersSorted) {
             if (params !== undefined) {
                 this._layers.push(params);
-                this._allFeatureTypeSelected.push(params.lname);
+                this._allFeatureTypeSelected.push(params.name);
             }
         }
 
         if (this._layers.length === 0) {
-            document.getElementById('button-selectiontool').parentNode.remove();
+            if (document.getElementById('button-selectiontool')) {
+                document.getElementById('button-selectiontool').parentNode.remove();
+            }
             return false;
         }
 
