@@ -1554,7 +1554,9 @@ var lizMap = function() {
         feat.geometry.transform(proj, map.getProjection());
         // Show geometry if asked
         if (locate.displayGeom == 'True') {
-            var layer = map.getLayersByName('locatelayer');
+            var layer = map.getLayersByName('locatelayer')[0];
+            if( typeof layer === 'undefined' )
+              return;
             var getFeatureUrlData = getVectorLayerWfsUrl( aName, null, null, null );
             getFeatureUrlData['options']['PROPERTYNAME'] = ['geometry',locate.fieldName].join(',');
             getFeatureUrlData['options']['FEATUREID'] = val;
@@ -3052,6 +3054,9 @@ var lizMap = function() {
   function addGeometryFeatureInfo( popup, containerId ) {
       // clean locate layer
       clearDrawLayer('locatelayer');
+      var layer = map.getLayersByName('locatelayer')[0];
+      if( typeof layer === 'undefined' )
+        return;
 
       // build selector
       var selector = 'div.lizmapPopupContent > div.lizmapPopupDiv > input.lizmap-popup-layer-feature-geometry';
@@ -3075,7 +3080,6 @@ var lizMap = function() {
         geometries.push( { fid: fid, geom: val, crs: crs, bbox:[minx,miny,maxx,maxy] } );
       });
 
-      var layer = map.getLayersByName('locatelayer');
       // load proj and build features from popup
       var projLoaded = [];
       for ( var i=0, len=geometries.length; i<len; i++ ) {
