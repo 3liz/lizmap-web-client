@@ -1,7 +1,9 @@
+import Map from '../modules/Map.js';
 import Edition from '../modules/Edition.js';
 import Geolocation from '../modules/Geolocation.js';
 import GeolocationSurvey from '../modules/GeolocationSurvey.js';
 import SelectionTool from '../modules/SelectionTool.js';
+import Snapping from '../modules/Snapping.js';
 
 export default class Lizmap {
 
@@ -9,10 +11,12 @@ export default class Lizmap {
         lizMap.events.on({
             uicreated: () => {
                 this._lizmap3 = lizMap;
+                this.map = new Map();
                 this.edition = new Edition();
                 this.geolocation = new Geolocation();
                 this.geolocationSurvey = new GeolocationSurvey();
                 this.selectionTool = new SelectionTool();
+                this.snapping = new Snapping();
             }
         });
     }

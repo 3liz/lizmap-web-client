@@ -405,8 +405,6 @@ OpenLayers.Geometry.pointOnSegment = function(point, segment) {
             $('#edition-point-coord-geolocation').click();
         $('#edition-point-coord-add').hide();
         $('#edition-point-coord-form').hide();
-        $('#edition-point-coord-form-expander i').removeClass('icon-chevron-down').addClass('icon-chevron-right');
-        $('#edition-point-coord-form-group').hide();
         $('#edition-segment-length').parents('.control-group').addClass('hidden');
         $('#edition-segment-angle').parents('.control-group').addClass('hidden');
 
@@ -592,6 +590,9 @@ OpenLayers.Geometry.pointOnSegment = function(point, segment) {
             $('#button-edition').hide();
         }
 
+        // Hide edition tabs
+        $('.edition-tabs').hide();
+
         // Redraw bottom dock
         $('#bottom-dock').css('left',  lizMap.getDockRightPosition() );
     }
@@ -746,10 +747,18 @@ OpenLayers.Geometry.pointOnSegment = function(point, segment) {
                         editCtrls.modify.activate();
                         $('#edition-geomtool-nodetool').click();
                         editCtrls.modify.selectFeature( feat );
-                        if (geometryType == 'line')
+                        if (geometryType === 'line'){
                             $('#edition-geomtool-container button i').addClass('line');
-                        if (geometryType != 'point')
+                        }
+                        if (geometryType !== 'point'){
                             $('#edition-geomtool-container').show();
+                        }
+                    }
+
+                    // Display form tab and hide digitization tab for point geometry
+                    if (geometryType === 'point') {
+                        $('.edition-tabs a[href="#tabform"]').tab('show');
+                        $('.edition-tabs a[href="#tabdigitization"]').hide();
                     }
 
                     // Inform user he can now modify
@@ -813,27 +822,18 @@ OpenLayers.Geometry.pointOnSegment = function(point, segment) {
                     editionLayer.clear();
                 }
 
-                // activate edition
+                // Activate edition
                 editCtrls.panel.activate();
 
-                // Launch edition to gather edition layer info
+                // Display digitization tab
+                $('.edition-tabs a[href="#tabdigitization"]').show();
 
+                // Launch edition to gather edition layer info
                 launchEdition( $('#edition-layer').val(), null);
                 return false;
             });
 
             $('#edition-point-coord-form').submit(function(){
-                return false;
-            });
-            $('#edition-point-coord-form-expander').click(function(){
-                var chevron = $('#edition-point-coord-form-expander i');
-                if ( chevron.hasClass('icon-chevron-right') ) {
-                    chevron.removeClass('icon-chevron-right').addClass('icon-chevron-down');
-                    $('#edition-point-coord-form-group').show();
-                } else {
-                    chevron.removeClass('icon-chevron-down').addClass('icon-chevron-right');
-                    $('#edition-point-coord-form-group').hide();
-                }
                 return false;
             });
             $('#edition-point-coord-crs').change(function(){
@@ -1275,6 +1275,9 @@ OpenLayers.Geometry.pointOnSegment = function(point, segment) {
             // Hide drawfeature controls : they will go back when finishing edition or canceling
             $('#edition-layer').hide();
             $('#edition-draw').addClass('disabled').hide();
+
+            // Show edition tabs
+            $('.edition-tabs').show();
 
             if( aCallback )
                 aCallback( editionLayer['id'], featureId );

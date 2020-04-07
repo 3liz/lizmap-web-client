@@ -2244,6 +2244,22 @@ a.btn.btn-opacity-layer.active {
   line-height: 30px;
 }
 
+#edition h3 span.title {
+  display: none;
+}
+
+#nav-tab-edition a::before {
+  content: " ";
+  display: inline-block;
+  background-image: url(images/sprite_20_tools.png);
+  background-repeat: no-repeat;
+  width: 20px;
+  height: 20px;
+  background-position: -475px 0px;
+  margin-right: 4px;
+  vertical-align: text-bottom;
+}
+
 @media (max-height: 500px) {
   .modal.fade.in {
     top:30px;
@@ -2356,10 +2372,13 @@ div.tooltip {
 #dock #edition-point-coord-form{
   margin-bottom: 5px;
 }
-#edition-point-coord-form-expander{
-  color: inherit;
-  text-decoration: inherit;
-  cursor: pointer;
+
+#edition-point-coord-form-group h3{
+  color: black;
+  padding-left: 5%;
+  background-color: #f0f0f0;
+  line-height:2em;
+  margin: 10px;
 }
 
 .qgis_sprite { background: url('images/qgis_sprite.png') no-repeat top left; width: 24px; height: 24px;  }
@@ -2563,7 +2582,7 @@ lizmap-geolocation-survey .control-group div{
 }
 
 lizmap-geolocation-survey .control-group > div:first-child{
-  width: 120px;
+  width: 90px;
 }
 
 #dock .form-horizontal lizmap-geolocation-survey .controls{
