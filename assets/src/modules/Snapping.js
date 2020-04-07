@@ -49,9 +49,9 @@ export default class Snapping {
                     if (mainLizmap.config.editionLayers.hasOwnProperty(editionLayer)) {
                         if (mainLizmap.config.editionLayers[editionLayer].layerId === mainLizmap.edition.layerId){
                             const editionLayerConfig = mainLizmap.config.editionLayers[editionLayer];
-                            if (editionLayerConfig.hasOwnProperty('snap_layers')){
+                            if (editionLayerConfig.hasOwnProperty('snap_layers') && editionLayerConfig.snap_layers.length > 0){
                                 this.config = {
-                                    'snap_layers': editionLayerConfig.snap_layers.split(','),
+                                    'snap_layers': editionLayerConfig.snap_layers,
                                     'snap_vertices': (editionLayerConfig.hasOwnProperty('snap_vertices') && editionLayerConfig.snap_vertices === 'True') ? true : false,
                                     'snap_segments': (editionLayerConfig.hasOwnProperty('snap_segments') && editionLayerConfig.snap_segments === 'True') ? true : false,
                                     'snap_intersections': (editionLayerConfig.hasOwnProperty('snap_intersections') && editionLayerConfig.snap_intersections === 'True') ? true : false,
