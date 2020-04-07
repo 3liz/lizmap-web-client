@@ -4,6 +4,7 @@ export default class Edition {
 
     constructor() {
         this.drawFeatureActivated = false;
+        this._layerId = undefined;
         this.layerGeometry = undefined;
         this.drawControl = undefined;
         this._lastSegmentLength = undefined;
@@ -21,8 +22,19 @@ export default class Edition {
                 this.drawControl = undefined;
                 this.lastSegmentLength = undefined;
                 mainEventDispatcher.dispatch('edition.drawFeatureActivated');
+            },
+            lizmapeditionformdisplayed: (evt) => {
+                this._layerId = (evt['layerId']);
+                mainEventDispatcher.dispatch('edition.formDisplayed');
+            },
+            lizmapeditionformclosed: () => {
+                mainEventDispatcher.dispatch('edition.formClosed');
             }
         });
+    }
+
+    get layerId() {
+        return this._layerId;
     }
 
     get hasEditionLayers() {
