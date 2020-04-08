@@ -27,9 +27,9 @@ We recommend using QGIS Server LTR. You can follow the [QGIS Release schedule](h
 | Lizmap | QGIS Server          | IE    |
 |--------|----------------------|-------|
 | 3.1    | 2.18                 | IE 11 |
-| 3.2    | 2.18 (3.4 partially) |       |
-| 3.3    | 3.4                  |       |
-| 3.4    | 3.4                  |       |
+| 3.2    | 2.18 (3.4 partially) | IE 11 |
+| 3.3    | 3.4                  | IE 11 |
+| 3.4    | 3.4                  |  No   |
 
 Documentation and customization
 --------------
