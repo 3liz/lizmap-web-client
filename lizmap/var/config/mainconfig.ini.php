@@ -13,8 +13,8 @@ timeZone="Europe/Paris"
 
 theme=default
 
-pluginsPath="app:plugins/,lib:jelix-plugins/,module:jacl2db/plugins"
-modulesPath="lib:jelix-admin-modules/,lib:jelix-modules/,lib:vendor-modules/,app:modules/,app:lizmap-modules"
+pluginsPath="app:plugins,lib:jelix-plugins,module:jacl2db/plugins"
+modulesPath="lib:jelix-admin-modules,lib:jelix-modules,app:modules,app:lizmap-modules,app:vendor/jelix/jcommunity-module/modules"
 
 ; the locales available in the application
 availableLocales="cs_CZ,de_DE,el_GR,en_US,es_ES,eu_ES,fi_FI,fr_FR,gl_ES,hu_HU,it_IT,nl_NL,pl_PL,pt_BR,pt_PT,ro_RO,ru_RU,sl_SL,sv_SE"
@@ -294,6 +294,7 @@ view.access=1
 ldapdao.installparam=noconfigfile
 multiauth.installparam="noconfigfile;localconfig"
 
+ldapdao.path="app:vendor/jelix/ldapdao-module/ldapdao"
 [mailLogger]
 email="root@localhost"
 emailHeaders="Content-Type: text/plain; charset=UTF-8\nFrom: webmaster@yoursite.com\nX-Mailer: Jelix\nX-Priority: 1 (Highest)\n"
