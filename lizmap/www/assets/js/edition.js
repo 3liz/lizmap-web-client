@@ -1487,6 +1487,8 @@ OpenLayers.Geometry.pointOnSegment = function(point, segment) {
                             if (geometryType != 'point')
                                 $('#edition-geomtool-container').show();
                         }
+                    }else{
+                        $('.edition-tabs a[href="#tabdigitization"]').hide();
                     }
 
                     addEditionMessage(lizDict['edition.select.modify.activate'],'info',true);
