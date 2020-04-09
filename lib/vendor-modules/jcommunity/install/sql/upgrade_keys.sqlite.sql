@@ -1,1 +1,0 @@
--- nothing to do, as jcommunity didn't work on sqlite until 1.3.0
