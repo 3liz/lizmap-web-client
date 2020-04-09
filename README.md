@@ -22,14 +22,7 @@ You can find help and news by subscribing to the mailing list: https://lists.osg
 Versions
 --------
 
-We recommend using QGIS Server LTR. You can follow the [QGIS Release schedule](https://www.qgis.org/en/site/getinvolved/development/roadmap.html#release-schedule).
-
-| Lizmap | QGIS Server          | IE    |
-|--------|----------------------|-------|
-| 3.1    | 2.18                 | IE 11 |
-| 3.2    | 2.18 (3.4 partially) | IE 11 |
-| 3.3    | 3.4                  | IE 11 |
-| 3.4    | 3.4                  |  No   |
+We recommend you reading the [versions](VERSIONS.md) page about QGIS Server, webbrowsers etc.
 
 Documentation and customization
 --------------
@@ -42,8 +35,9 @@ You can add your custom Javascript, check your [Javascript library](https://gith
 
 Some modules can be added to Lizmap:
 * Map Builder https://github.com/3liz/lizmap-mapbuilder-module
-* French Cadastre https://github.com/3liz/lizmap-cadastre-module
 * Naturaliz https://github.com/3liz/lizmap-naturaliz-module
+* French Cadastre https://github.com/3liz/lizmap-cadastre-module
+* French Adresse https://github.com/3liz/lizmap-adresse-module
 
 Internationalization
 ---------------------
