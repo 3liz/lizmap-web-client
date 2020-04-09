@@ -2236,7 +2236,7 @@ a.btn.btn-opacity-layer.active {
   padding: 1px 5px;
   margin-bottom: 4px;
 }
-#edition-form-container .form-horizontal .jforms-choice .jforms-item-controls  .control-label{
+#edition-form-container .form-horizontal .jforms-choice .jforms-item-controls .control-label{
   width:0px;
 }
 
@@ -2258,6 +2258,20 @@ a.btn.btn-opacity-layer.active {
   background-position: -475px 0px;
   margin-right: 4px;
   vertical-align: text-bottom;
+}
+
+.edition-tabs .nav-pills {
+  margin-bottom: 10px;
+}
+
+.edition-tabs .nav-pills a {
+  color: black;
+}
+
+.edition-tabs .nav-pills > .active > a, .edition-tabs .nav-pills > .active > a:hover, .edition-tabs .nav-pills > .active > a:focus{
+  background-color: #93C01F;
+  background-image: linear-gradient(to bottom, #9BC144, #93C01F);
+  color: white;
 }
 
 @media (max-height: 500px) {

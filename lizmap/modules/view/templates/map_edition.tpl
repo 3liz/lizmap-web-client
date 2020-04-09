@@ -14,7 +14,7 @@
         </form>
 
         <div class="tabbable edition-tabs" style="display: none;">
-            <ul class="nav nav-tabs">
+            <ul class="nav nav-pills">
                 <li class="active"><a href="#tabform" data-toggle="tab">{@view~edition.tab.form.title@}</a></li>
                 <li><a href="#tabdigitization" data-toggle="tab">{@view~edition.tab.digitization.title@}</a></li>
             </ul>
