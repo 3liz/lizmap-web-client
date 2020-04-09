@@ -6227,400 +6227,410 @@ OpenLayers.Control.HighlightFeature = OpenLayers.Class(OpenLayers.Control, {
      */
     init: function() {
       var self = this;
-      //get config
-      $.getJSON(lizUrls.config,lizUrls.params,function(cfgData) {
-        config = cfgData;
+
+      var service = OpenLayers.Util.urlAppend(lizUrls.wms
+        , OpenLayers.Util.getParameterString(lizUrls.params)
+      );
+
+      // Get config
+      const configRequest = fetch(OpenLayers.Util.urlAppend(lizUrls.config, OpenLayers.Util.getParameterString(lizUrls.params))).then(function (response) {
+        return response.json()
+      });
+
+      // Get WMS, WMTS, WFS capabilities
+      const WMSRequest = fetch(OpenLayers.Util.urlAppend(service, OpenLayers.Util.getParameterString({ SERVICE: 'WMS', REQUEST: 'GetCapabilities', VERSION: '1.3.0' }))).then(function (response) {
+        return response.text()
+      });
+      const WMTSRequest = fetch(OpenLayers.Util.urlAppend(service, OpenLayers.Util.getParameterString({ SERVICE: 'WMTS', REQUEST: 'GetCapabilities', VERSION: '1.0.0' }))).then(function (response) {
+        return response.text()
+      });
+      const WFSRequest = fetch(OpenLayers.Util.urlAppend(service, OpenLayers.Util.getParameterString({ SERVICE: 'WFS', REQUEST: 'GetCapabilities', VERSION: '1.0.0' }))).then(function (response) {
+        return response.text()
+      });
+
+      // Request config and capabilities in parallel
+      Promise.all([configRequest, WMSRequest, WMTSRequest, WFSRequest]).then(responses => {
+        // config is defined globally
+        config = responses[0];
+
+        const wmsCapaData = responses[1];
+        const wmtsCapaData = responses[2];
+        const wfsCapaData = responses[3];
+
         config.options.hasOverview = false;
 
         // store layerIDs
-        if ( 'useLayerIDs' in config.options && config.options.useLayerIDs == 'True' ) {
-            for ( var layerName in config.layers ) {
-                var configLayer = config.layers[layerName];
-                layerIdMap[configLayer.id] = layerName;
-            }
+        if ('useLayerIDs' in config.options && config.options.useLayerIDs == 'True') {
+          for (var layerName in config.layers) {
+            var configLayer = config.layers[layerName];
+            layerIdMap[configLayer.id] = layerName;
+          }
         }
         // store shortnames and shortnames
-        for ( var layerName in config.layers ) {
-            var configLayer = config.layers[layerName];
-            if ( 'shortname' in configLayer && configLayer.shortname != '' )
-                shortNameMap[configLayer.shortname] = layerName;
-            configLayer.cleanname = cleanName(layerName);
+        for (var layerName in config.layers) {
+          var configLayer = config.layers[layerName];
+          if ('shortname' in configLayer && configLayer.shortname != '')
+            shortNameMap[configLayer.shortname] = layerName;
+          configLayer.cleanname = cleanName(layerName);
         }
 
-         //get capabilities
-        var service = OpenLayers.Util.urlAppend(lizUrls.wms
-          ,OpenLayers.Util.getParameterString(lizUrls.params)
-        );
-        $.get(service
-          ,{SERVICE:'WMS',REQUEST:'GetCapabilities',VERSION:'1.3.0'}
-          ,function(data) {
-        $.get(service
-          ,{SERVICE:'WMTS',REQUEST:'GetCapabilities',VERSION:'1.0.0'}
-          ,function(wmtsCapaData) {
-        $.get(service
-          ,{SERVICE:'WFS',REQUEST:'GetCapabilities',VERSION:'1.0.0'}
-          ,function(wfsCapaData) {
+        //parse capabilities
+        if (!parseData(wmsCapaData))
+          return true;
 
-            //parse capabilities
-            if (!parseData(data))
-                return true;
-
-            var wmtsFormat = new OpenLayers.Format.WMTSCapabilities({});
-            wmtsCapabilities = wmtsFormat.read( wmtsCapaData );
-            if ( 'exceptionReport' in wmtsCapabilities ) {
-                wmtsElem = $('#metadata-wmts-getcapabilities-url');
-                if ( wmtsElem.length != 0 ) {
-                    wmtsElem.before('<i title="'+wmtsCapabilities.exceptionReport.exceptions[0].texts[0]+'" class="icon-warning-sign"></i>&nbsp;');
-                }
-                wmtsCapabilities = null;
-            }
-
-            wfsCapabilities = $(wfsCapaData);
-            var featureTypes = getVectorLayerFeatureTypes();
-            featureTypes.each( function(){
-                var typeName = $(this).find('Name').text();
-                var layerName = lizMap.getNameByTypeName( typeName );
-                if ( !layerName ) {
-                    if (typeName in config.layers)
-                      layerName = typeName
-                    else if ( (typeName in shortNameMap) && (shortNameMap[typeName] in config.layers))
-                      layerName = shortNameMap[typeName];
-                    else {
-                      for (l in config.layers) {
-                        if (l.split(' ').join('_') == typeName) {
-                          layerName = l;
-                          break;
-                        }
-                      }
-                    }
-                }
-
-                if ( !(layerName in config.layers) )
-                    return;
-
-                var configLayer = config.layers[layerName];
-                configLayer.typename = typeName;
-                typeNameMap[typeName] = layerName;
-            } );
-
-          //set title and abstract coming from capabilities
-          $('#abstract').html(capabilities.abstract ? capabilities.abstract : '');
-
-          // get and analyse tree
-          var capability = capabilities.capability;
-          beforeLayerTreeCreated();
-          var firstLayer = capability.nestedLayers[0];
-          getLayerTree(firstLayer,tree);
-          analyseNode(tree);
-          self.config = config;
-          self.tree = tree;
-          self.events.triggerEvent("treecreated", self);
-
-          // create the map
-          initProjections(firstLayer);
-          createMap();
-          self.map = map;
-          self.layers = layers;
-          self.baselayers = baselayers;
-          self.controls = controls;
-          self.events.triggerEvent("mapcreated", self);
-
-          // create the switcher
-          createSwitcher();
-          self.events.triggerEvent("layersadded", self);
-
-
-          // Verifying z-index
-          var lastLayerZIndex = map.layers[map.layers.length-1].getZIndex();
-          if ( lastLayerZIndex > map.Z_INDEX_BASE['Feature'] - 100 ) {
-            map.Z_INDEX_BASE['Feature'] = lastLayerZIndex + 100;
-            map.Z_INDEX_BASE['Popup'] = map.Z_INDEX_BASE['Feature'] + 25;
-            if ( map.Z_INDEX_BASE['Popup'] > map.Z_INDEX_BASE['Control'] - 25 )
-                map.Z_INDEX_BASE['Control'] = map.Z_INDEX_BASE['Popup'] + 25;
+        var wmtsFormat = new OpenLayers.Format.WMTSCapabilities({});
+        wmtsCapabilities = wmtsFormat.read(wmtsCapaData);
+        if ('exceptionReport' in wmtsCapabilities) {
+          wmtsElem = $('#metadata-wmts-getcapabilities-url');
+          if (wmtsElem.length != 0) {
+            wmtsElem.before('<i title="' + wmtsCapabilities.exceptionReport.exceptions[0].texts[0] + '" class="icon-warning-sign"></i>&nbsp;');
           }
+          wmtsCapabilities = null;
+        }
 
-          // initialize the map
-          // Set map extent depending on options
-          var verifyingVisibility = true;
-          var hrefParam = OpenLayers.Util.getParameters(window.location.href);
-          if (!map.getCenter()) {
-            if ( hrefParam.bbox || hrefParam.BBOX ) {
-                var hrefBbox = null;
-                if ( hrefParam.bbox )
-                  hrefBbox = OpenLayers.Bounds.fromArray( hrefParam.bbox );
-                if ( hrefParam.BBOX )
-                  hrefBbox = OpenLayers.Bounds.fromArray( hrefParam.BBOX );
-
-                if ( hrefParam.crs && hrefParam.crs != map.getProjection() )
-                  hrefBbox.transform( hrefParam.crs, map.getProjection() )
-                if ( hrefParam.CRS && hrefParam.CRS != map.getProjection() )
-                  hrefBbox.transform( hrefParam.CRS, map.getProjection() )
-                if( map.restrictedExtent.containsBounds( hrefBbox ) )
-                  map.zoomToExtent( hrefBbox, true );
-                else {
-                  var projBbox = $('#metadata .bbox').text();
-                  projBbox = OpenLayers.Bounds.fromString(projBbox);
-                  if( projBbox.containsBounds( hrefBbox ) ) {
-                      var projProj = $('#metadata .proj').text();
-                      loadProjDefinition( projProj, function( aProj ) {
-                          hrefBbox.transform( aProj, map.getProjection() );
-                          map.zoomToExtent( hrefBbox, true );
-                      });
-                  } else {
-                    map.zoomToExtent(map.initialExtent);
-                  }
-                }
-            } else {
-              map.zoomToExtent(map.initialExtent);
-            }
-            verifyingVisibility = false;
-          }
-
-          updateContentSize();
-          map.events.triggerEvent("zoomend",{"zoomChanged": true});
-
-          // create overview if 'Overview' layer
-          createOverview();
-
-          // create navigation and toolbar
-          createNavbar();
-          createToolbar();
-          self.events.triggerEvent("toolbarcreated", self);
-
-          // create permalink
-          createPermalink();
-
-          // Toggle OpenLayers visibility to true for legend checkboxes
-          // 1/ Check permalink is used or not
-          var layersHaveBeenActivatedByPermalink = false;
-          var uparams = getUrlParameters();
-          if( 'layers' in uparams ) {
-            var players = uparams.layers;
-            for( var i=0; i < map.layers.length; i++){
-              var l = map.layers[i];
-              var lbase = l.isBaseLayer;
-              if( !lbase ){
-                if ( players[i] == 'T' ){
-                  layersHaveBeenActivatedByPermalink = true;
-                  l.setVisibility(true);
+        wfsCapabilities = $(wfsCapaData);
+        var featureTypes = getVectorLayerFeatureTypes();
+        featureTypes.each(function () {
+          var typeName = $(this).find('Name').text();
+          var layerName = lizMap.getNameByTypeName(typeName);
+          if (!layerName) {
+            if (typeName in config.layers)
+              layerName = typeName
+            else if ((typeName in shortNameMap) && (shortNameMap[typeName] in config.layers))
+              layerName = shortNameMap[typeName];
+            else {
+              for (l in config.layers) {
+                if (l.split(' ').join('_') == typeName) {
+                  layerName = l;
+                  break;
                 }
               }
             }
-            runPermalink( uparams );
           }
 
-          // 2/ Toggle checkboxes
-          $('#switcher button.checkbox[name="layer"]').each(function(){
-            var cb = $(this);
-            var cleanName = cb.val();
-            var oLayer = map.getLayersByName(cleanName)[0];
-            if( oLayer ){
-              // toggle checked class for permalink layers
-              // because OL has already drawn them in map
-              cb.toggleClass('checked', oLayer.visibility);
+          if (!(layerName in config.layers))
+            return;
 
-              // Check layers wich are not yet checked but need to ( for normal behaviour outside permalink )
-              // This will trigger layers to be drawn
-              if( !cb.hasClass('checked') && oLayer.isVisible && !layersHaveBeenActivatedByPermalink){
-                cb.click();
+          var configLayer = config.layers[layerName];
+          configLayer.typename = typeName;
+          typeNameMap[typeName] = layerName;
+        });
+
+        //set title and abstract coming from capabilities
+        $('#abstract').html(capabilities.abstract ? capabilities.abstract : '');
+
+        // get and analyse tree
+        var capability = capabilities.capability;
+        beforeLayerTreeCreated();
+        var firstLayer = capability.nestedLayers[0];
+        getLayerTree(firstLayer, tree);
+        analyseNode(tree);
+        self.config = config;
+        self.tree = tree;
+        self.events.triggerEvent("treecreated", self);
+
+        // create the map
+        initProjections(firstLayer);
+        createMap();
+        self.map = map;
+        self.layers = layers;
+        self.baselayers = baselayers;
+        self.controls = controls;
+        self.events.triggerEvent("mapcreated", self);
+
+        // create the switcher
+        createSwitcher();
+        self.events.triggerEvent("layersadded", self);
+
+
+        // Verifying z-index
+        var lastLayerZIndex = map.layers[map.layers.length - 1].getZIndex();
+        if (lastLayerZIndex > map.Z_INDEX_BASE['Feature'] - 100) {
+          map.Z_INDEX_BASE['Feature'] = lastLayerZIndex + 100;
+          map.Z_INDEX_BASE['Popup'] = map.Z_INDEX_BASE['Feature'] + 25;
+          if (map.Z_INDEX_BASE['Popup'] > map.Z_INDEX_BASE['Control'] - 25)
+            map.Z_INDEX_BASE['Control'] = map.Z_INDEX_BASE['Popup'] + 25;
+        }
+
+        // initialize the map
+        // Set map extent depending on options
+        var verifyingVisibility = true;
+        var hrefParam = OpenLayers.Util.getParameters(window.location.href);
+        if (!map.getCenter()) {
+          if (hrefParam.bbox || hrefParam.BBOX) {
+            var hrefBbox = null;
+            if (hrefParam.bbox)
+              hrefBbox = OpenLayers.Bounds.fromArray(hrefParam.bbox);
+            if (hrefParam.BBOX)
+              hrefBbox = OpenLayers.Bounds.fromArray(hrefParam.BBOX);
+
+            if (hrefParam.crs && hrefParam.crs != map.getProjection())
+              hrefBbox.transform(hrefParam.crs, map.getProjection())
+            if (hrefParam.CRS && hrefParam.CRS != map.getProjection())
+              hrefBbox.transform(hrefParam.CRS, map.getProjection())
+            if (map.restrictedExtent.containsBounds(hrefBbox))
+              map.zoomToExtent(hrefBbox, true);
+            else {
+              var projBbox = $('#metadata .bbox').text();
+              projBbox = OpenLayers.Bounds.fromString(projBbox);
+              if (projBbox.containsBounds(hrefBbox)) {
+                var projProj = $('#metadata .proj').text();
+                loadProjDefinition(projProj, function (aProj) {
+                  hrefBbox.transform(aProj, map.getProjection());
+                  map.zoomToExtent(hrefBbox, true);
+                });
+              } else {
+                map.zoomToExtent(map.initialExtent);
               }
             }
+          } else {
+            map.zoomToExtent(map.initialExtent);
+          }
+          verifyingVisibility = false;
+        }
 
-          });
+        updateContentSize();
+        map.events.triggerEvent("zoomend", { "zoomChanged": true });
 
-          // verifying the layer visibility for permalink
-          if (verifyingVisibility) {
-            map.getControlsByClass('OpenLayers.Control.ArgParser')[0].configureLayers();
-            for (var i=0,len=layers.length; i<len; i++) {
-              var l = layers[i];
-              var btn = $('#switcher button.checkbox[name="layer"][value="'+l.name+'"]');
-              if ( (hrefParam.layers && l.getVisibility() != btn.hasClass('checked') ) )
-                $('#switcher button.checkbox[name="layer"][value="'+l.name+'"]').click();
+        // create overview if 'Overview' layer
+        createOverview();
+
+        // create navigation and toolbar
+        createNavbar();
+        createToolbar();
+        self.events.triggerEvent("toolbarcreated", self);
+
+        // create permalink
+        createPermalink();
+
+        // Toggle OpenLayers visibility to true for legend checkboxes
+        // 1/ Check permalink is used or not
+        var layersHaveBeenActivatedByPermalink = false;
+        var uparams = getUrlParameters();
+        if ('layers' in uparams) {
+          var players = uparams.layers;
+          for (var i = 0; i < map.layers.length; i++) {
+            var l = map.layers[i];
+            var lbase = l.isBaseLayer;
+            if (!lbase) {
+              if (players[i] == 'T') {
+                layersHaveBeenActivatedByPermalink = true;
+                l.setVisibility(true);
+              }
+            }
+          }
+          runPermalink(uparams);
+        }
+
+        // 2/ Toggle checkboxes
+        $('#switcher button.checkbox[name="layer"]').each(function () {
+          var cb = $(this);
+          var cleanName = cb.val();
+          var oLayer = map.getLayersByName(cleanName)[0];
+          if (oLayer) {
+            // toggle checked class for permalink layers
+            // because OL has already drawn them in map
+            cb.toggleClass('checked', oLayer.visibility);
+
+            // Check layers wich are not yet checked but need to ( for normal behaviour outside permalink )
+            // This will trigger layers to be drawn
+            if (!cb.hasClass('checked') && oLayer.isVisible && !layersHaveBeenActivatedByPermalink) {
+              cb.click();
             }
           }
 
-          // checked all toggled layer
-          $('#switcher button.checkbox.disabled[name="layer"]:not(.checked)').each(function(){
-            var cb = $(this);
-            var cleanName = cb.val();
-            var name = cleanName;
-            if ( cleanName in cleanNameMap )
-                name = getLayerNameByCleanName(cleanName);
-            if ( name in config.layers ) {
-                var layerConfig = config.layers[name];
-                if ( layerConfig.toggled == "True" )
-                    cb.addClass('checked');
-            }
-          });
+        });
 
-          // finalize slider
-          $('#navbar div.slider').slider("value",map.getZoom());
-          map.events.on({
-            zoomend : function() {
-              // Update legends
-              $('#switcher table.tree tr.legendGraphics.initialized').each(function() {
-                var self = $(this);
-                var name = self.attr('id').replace('legend-','');
-                var url = getLayerLegendGraphicUrl(name, true);
-                if ( url != null && url != '' ) {
-                    // Change image attribute data-src
-                    self.find('div.legendGraphics img').attr( 'data-src', url );
-                    // Only change image attribute src if legend is displayed
-                    if( self.hasClass('visible') ){
-                        self.find('div.legendGraphics img').attr( 'src', url );
-                    }
-                }
-              });
-              // update slider position
-              $('#navbar div.slider').slider("value", this.getZoom());
-            }
-          });
+        // verifying the layer visibility for permalink
+        if (verifyingVisibility) {
+          map.getControlsByClass('OpenLayers.Control.ArgParser')[0].configureLayers();
+          for (var i = 0, len = layers.length; i < len; i++) {
+            var l = layers[i];
+            var btn = $('#switcher button.checkbox[name="layer"][value="' + l.name + '"]');
+            if ((hrefParam.layers && l.getVisibility() != btn.hasClass('checked')))
+              $('#switcher button.checkbox[name="layer"][value="' + l.name + '"]').click();
+          }
+        }
 
-          // Connect signal/slot when layer style is changed
-          lizMap.events.on({
-            'layerstylechanged': function(evt){
+        // checked all toggled layer
+        $('#switcher button.checkbox.disabled[name="layer"]:not(.checked)').each(function () {
+          var cb = $(this);
+          var cleanName = cb.val();
+          var name = cleanName;
+          if (cleanName in cleanNameMap)
+            name = getLayerNameByCleanName(cleanName);
+          if (name in config.layers) {
+            var layerConfig = config.layers[name];
+            if (layerConfig.toggled == "True")
+              cb.addClass('checked');
+          }
+        });
 
-              // Change legend data-src and legend src if legend is visible
-              var name = evt.featureType;
+        // finalize slider
+        $('#navbar div.slider').slider("value", map.getZoom());
+        map.events.on({
+          zoomend: function () {
+            // Update legends
+            $('#switcher table.tree tr.legendGraphics.initialized').each(function () {
+              var self = $(this);
+              var name = self.attr('id').replace('legend-', '');
               var url = getLayerLegendGraphicUrl(name, true);
-              if ( url != null && url != '' ) {
-                  var lSel = '#switcher table.tree tr#legend-' + name + ' div.legendGraphics img' ;
-                  $(lSel).attr('data-src',url);
-                  if( $('#switcher table.tree tr#legend-' + name).hasClass('visible') )
-                      $(lSel).attr('src',url);
+              if (url != null && url != '') {
+                // Change image attribute data-src
+                self.find('div.legendGraphics img').attr('data-src', url);
+                // Only change image attribute src if legend is displayed
+                if (self.hasClass('visible')) {
+                  self.find('div.legendGraphics img').attr('src', url);
+                }
               }
+            });
+            // update slider position
+            $('#navbar div.slider').slider("value", this.getZoom());
+          }
+        });
+
+        // Connect signal/slot when layer style is changed
+        lizMap.events.on({
+          'layerstylechanged': function (evt) {
+
+            // Change legend data-src and legend src if legend is visible
+            var name = evt.featureType;
+            var url = getLayerLegendGraphicUrl(name, true);
+            if (url != null && url != '') {
+              var lSel = '#switcher table.tree tr#legend-' + name + ' div.legendGraphics img';
+              $(lSel).attr('data-src', url);
+              if ($('#switcher table.tree tr#legend-' + name).hasClass('visible'))
+                $(lSel).attr('src', url);
             }
-          });
+          }
+        });
 
-          // Toggle locate
-          $('#mapmenu ul').on('click', 'li.nav-minidock > a', function(){
-            var self = $(this);
-            var parent = self.parent();
-            var id = self.attr('href').substr(1);
-            var tab = $('#nav-tab-'+id);
-            if ( parent.hasClass('active') ) {
-              $('#'+id).removeClass('active');
-              tab.removeClass('active');
-              parent.removeClass('active');
-              lizMap.events.triggerEvent( "minidockclosed", {'id':id} );
-            } else {
-              var oldActive = $('#mapmenu li.nav-minidock.active');
-              if ( oldActive.length != 0 ) {
-                  oldActive.removeClass('active');
-                  lizMap.events.triggerEvent( "minidockclosed", {'id': oldActive.children('a').first().attr('href').substr(1) } );
-              }
-              tab.children('a').first().click();
-              parent.addClass('active');
-              lizMap.events.triggerEvent( "minidockopened", {'id':id} );
-              updateMiniDockSize();
+        // Toggle locate
+        $('#mapmenu ul').on('click', 'li.nav-minidock > a', function () {
+          var self = $(this);
+          var parent = self.parent();
+          var id = self.attr('href').substr(1);
+          var tab = $('#nav-tab-' + id);
+          if (parent.hasClass('active')) {
+            $('#' + id).removeClass('active');
+            tab.removeClass('active');
+            parent.removeClass('active');
+            lizMap.events.triggerEvent("minidockclosed", { 'id': id });
+          } else {
+            var oldActive = $('#mapmenu li.nav-minidock.active');
+            if (oldActive.length != 0) {
+              oldActive.removeClass('active');
+              lizMap.events.triggerEvent("minidockclosed", { 'id': oldActive.children('a').first().attr('href').substr(1) });
             }
-            self.blur();
+            tab.children('a').first().click();
+            parent.addClass('active');
+            lizMap.events.triggerEvent("minidockopened", { 'id': id });
+            updateMiniDockSize();
+          }
+          self.blur();
 
-            return false;
-          });
+          return false;
+        });
 
-          // Show locate by layer
-          if ( !('locateByLayer' in config) )
-            $('#button-locate').parent().hide();
-          else
-            $('#button-locate').click();
+        // Show locate by layer
+        if (!('locateByLayer' in config))
+          $('#button-locate').parent().hide();
+        else
+          $('#button-locate').click();
 
-          // hide mini-dock if no tool is active
-          if ( $('#mapmenu ul li.nav-minidock.active').length == 0 ) {
-              $('#mini-dock-content > .tab-pane.active').removeClass('active');
-              $('#mini-dock-tabs li.active').removeClass('active');
+        // hide mini-dock if no tool is active
+        if ($('#mapmenu ul li.nav-minidock.active').length == 0) {
+          $('#mini-dock-content > .tab-pane.active').removeClass('active');
+          $('#mini-dock-tabs li.active').removeClass('active');
+        }
+
+        $('#mapmenu ul').on('click', 'li.nav-dock > a', function () {
+          var self = $(this);
+          var parent = self.parent();
+          var id = self.attr('href').substr(1);
+          var tab = $('#nav-tab-' + id);
+          var lizmapEvent = '';
+          if (parent.hasClass('active')) {
+            $('#' + id).removeClass('active');
+            tab.removeClass('active');
+            parent.removeClass('active');
+            lizmapEvent = 'dockclosed';
+          } else {
+            var oldActive = $('#mapmenu li.nav-dock.active');
+            if (oldActive.length != 0) {
+              oldActive.removeClass('active');
+              lizMap.events.triggerEvent("dockclosed", { 'id': oldActive.children('a').first().attr('href').substr(1) });
+            }
+            tab.show();
+            tab.children('a').first().click();
+            parent.addClass('active');
+            lizmapEvent = 'dockopened';
+          }
+          self.blur();
+
+          var dock = $('#dock');
+          if ($('#dock-tabs .active').length == 0)
+            dock.hide();
+          else if (!dock.is(':visible'))
+            dock.show();
+
+          // trigger event
+          if (lizmapEvent != '')
+            lizMap.events.triggerEvent(lizmapEvent, { 'id': id });
+
+          return false;
+        });
+
+        $('#mapmenu ul').on('click', 'li.nav-right-dock > a', function () {
+          var self = $(this);
+          var parent = self.parent();
+          var id = self.attr('href').substr(1);
+          var tab = $('#nav-tab-' + id);
+          var lizmapEvent = '';
+          if (parent.hasClass('active')) {
+            $('#' + id).removeClass('active');
+            tab.removeClass('active');
+            parent.removeClass('active');
+            var lizmapEvent = 'rightdockclosed';
+          } else {
+            var oldActive = $('#mapmenu li.nav-right-dock.active');
+            if (oldActive.length != 0) {
+              oldActive.removeClass('active');
+              lizMap.events.triggerEvent("rightdockclosed", { 'id': oldActive.children('a').first().attr('href').substr(1) });
+            }
+            tab.show();
+            tab.children('a').first().click();
+            parent.addClass('active');
+            var lizmapEvent = 'rightdockopened';
+          }
+          self.blur();
+
+          var dock = $('#right-dock');
+          if ($('#right-dock-tabs .active').length == 0) {
+            dock.hide();
+            $('#content').removeClass('right-dock-visible');
+            updateContentSize();
+          } else if (!dock.is(':visible')) {
+            $('#content').addClass('right-dock-visible');
+            dock.show();
+            updateContentSize();
           }
 
-          $('#mapmenu ul').on('click', 'li.nav-dock > a', function(){
-            var self = $(this);
-            var parent = self.parent();
-            var id = self.attr('href').substr(1);
-            var tab = $('#nav-tab-'+id);
-            var lizmapEvent = '';
-            if ( parent.hasClass('active') ) {
-                $('#'+id).removeClass('active');
-                tab.removeClass('active');
-                parent.removeClass('active');
-                lizmapEvent = 'dockclosed';
-            } else {
-                var oldActive = $('#mapmenu li.nav-dock.active');
-                if ( oldActive.length != 0 ) {
-                    oldActive.removeClass('active');
-                    lizMap.events.triggerEvent( "dockclosed", {'id': oldActive.children('a').first().attr('href').substr(1) } );
-                }
-                tab.show();
-                tab.children('a').first().click();
-                parent.addClass('active');
-                lizmapEvent = 'dockopened';
-            }
-            self.blur();
+          // trigger event
+          if (lizmapEvent != '')
+            lizMap.events.triggerEvent(lizmapEvent, { 'id': id });
+          return false;
+        });
+        // Show layer switcher
+        $('#button-switcher').click();
+        updateContentSize();
 
-            var dock = $('#dock');
-            if ( $('#dock-tabs .active').length == 0 )
-              dock.hide();
-            else if ( !dock.is(':visible') )
-              dock.show();
+        $('#headermenu .navbar-inner .nav a[rel="tooltip"]').tooltip();
+        $('#mapmenu .nav a[rel="tooltip"]').tooltip();
+        self.events.triggerEvent("uicreated", self);
 
-            // trigger event
-            if ( lizmapEvent != '' )
-                lizMap.events.triggerEvent( lizmapEvent, {'id':id} );
-
-            return false;
-          });
-
-          $('#mapmenu ul').on('click', 'li.nav-right-dock > a', function(){
-            var self = $(this);
-            var parent = self.parent();
-            var id = self.attr('href').substr(1);
-            var tab = $('#nav-tab-'+id);
-            var lizmapEvent = '';
-            if ( parent.hasClass('active') ) {
-                $('#'+id).removeClass('active');
-                tab.removeClass('active');
-                parent.removeClass('active');
-                var lizmapEvent = 'rightdockclosed';
-            } else {
-                var oldActive = $('#mapmenu li.nav-right-dock.active');
-                if ( oldActive.length != 0 ) {
-                    oldActive.removeClass('active');
-                    lizMap.events.triggerEvent( "rightdockclosed", {'id': oldActive.children('a').first().attr('href').substr(1) } );
-                }
-                tab.show();
-                tab.children('a').first().click();
-                parent.addClass('active');
-                var lizmapEvent = 'rightdockopened';
-            }
-            self.blur();
-
-            var dock = $('#right-dock');
-            if ( $('#right-dock-tabs .active').length == 0 ) {
-              dock.hide();
-              $('#content').removeClass('right-dock-visible');
-              updateContentSize();
-            } else if ( !dock.is(':visible') ) {
-              $('#content').addClass('right-dock-visible');
-              dock.show();
-              updateContentSize();
-            }
-
-            // trigger event
-            if ( lizmapEvent != '' )
-                lizMap.events.triggerEvent( lizmapEvent, {'id':id} );
-            return false;
-          });
-          // Show layer switcher
-          $('#button-switcher').click();
-          updateContentSize();
-
-          $('#headermenu .navbar-inner .nav a[rel="tooltip"]').tooltip();
-          $('#mapmenu .nav a[rel="tooltip"]').tooltip();
-          self.events.triggerEvent("uicreated", self);
-
-          $('body').css('cursor', 'auto');
-          $('#loading').dialog('close');
-        }, "text");
-        }, "text");
-        }, "text");
+        $('body').css('cursor', 'auto');
+        $('#loading').dialog('close');
       });
     }
   };
