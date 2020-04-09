@@ -22,7 +22,7 @@ You can find help and news by subscribing to the mailing list: https://lists.osg
 Versions
 --------
 
-We recommend you reading the [versions](VERSIONS.md) page about QGIS Server, webbrowsers etc.
+We recommend you reading the [versions](https://github.com/3liz/lizmap-web-client/wiki/Versions) page about QGIS Server, webbrowsers etc.
 
 Documentation and customization
 --------------
