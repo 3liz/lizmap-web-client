@@ -13,13 +13,13 @@ timeZone="Europe/Paris"
 
 theme=default
 
-pluginsPath="app:plugins/,lib:jelix-plugins/,module:jacl2db/plugins"
-modulesPath="lib:jelix-admin-modules/,lib:jelix-modules/,lib:vendor-modules/,app:modules/,app:lizmap-modules"
+pluginsPath="app:plugins,lib:jelix-plugins,module:jacl2db/plugins"
+modulesPath="lib:jelix-admin-modules,lib:jelix-modules,app:modules,app:lizmap-modules,app:vendor/jelix/jcommunity-module/modules"
 
 ; the locales available in the application
 availableLocales="cs_CZ,de_DE,el_GR,en_US,es_ES,eu_ES,fi_FI,fr_FR,gl_ES,hu_HU,it_IT,nl_NL,pl_PL,pt_BR,pt_PT,ro_RO,ru_RU,sl_SL,sv_SE"
 ; the locale to fallback when the asked string doesn't exist in the current locale
-fallbackLocale = en_US
+fallbackLocale=en_US
 
 [coordplugins]
 ;name = file_ini_name or 1
@@ -77,7 +77,7 @@ entrypointExtension=.php
 
 ; leave empty to have jelix error messages
 ;notfoundAct=
-notfoundAct = "jelix~error:notfound"
+notfoundAct="jelix~error:notfound"
 
 ; list of actions which require https protocol for the simple url engine
 ; syntax of the list is the same as explained in the simple_urlengine_entrypoints
@@ -216,51 +216,51 @@ datepicker=default
 datetimepicker=default
 
 [jquery]
-jquery = assets/js/jquery/jquery-1.12.4.min.js
-jqueryui.js[] = assets/js/jquery/ui-1.11.4/jquery-ui.min.js
-jqueryui.css[] = assets/js/jquery/ui-1.11.4/jquery-ui.min.css
+jquery="assets/js/jquery/jquery-1.12.4.min.js"
+jqueryui.js[]="assets/js/jquery/ui-1.11.4/jquery-ui.min.js"
+jqueryui.css[]="assets/js/jquery/ui-1.11.4/jquery-ui.min.css"
 
 [datepickers]
-default = $jelix/js/jforms/datepickers/default/init.js
-default.js[]=assets/js/jquery/ui-1.11.4/jquery-ui.min.js
-default.js[]=$jelix/js/jforms/datepickers/default/ui.en.js
-default.js[]=$jqueryPath/ui/i18n/jquery.ui.datepicker-$lang.js
-default.js[]=$jelix/js/jforms/datepickers/default/ui.$lang.js
-default.css[]=assets/js/jquery/ui-1.11.4/jquery-ui.min.css
+default="$jelix/js/jforms/datepickers/default/init.js"
+default.js[]="assets/js/jquery/ui-1.11.4/jquery-ui.min.js"
+default.js[]="$jelix/js/jforms/datepickers/default/ui.en.js"
+default.js[]="$jqueryPath/ui/i18n/jquery.ui.datepicker-$lang.js"
+default.js[]="$jelix/js/jforms/datepickers/default/ui.$lang.js"
+default.css[]="assets/js/jquery/ui-1.11.4/jquery-ui.min.css"
 
 [datetimepickers]
-default = $jelix/js/jforms/datepickers/default/init.js
-default.js[]=assets/js/jquery/ui-1.11.4/jquery-ui.min.js
-default.js[]=$jelix/js/jforms/datepickers/default/ui.en.js
-default.js[]=$jqueryPath/ui/i18n/jquery.ui.datepicker-$lang.js
-default.js[]=$jelix/js/jforms/datepickers/default/ui.$lang.js
-default.css[]=assets/js/jquery/ui-1.11.4/jquery-ui.min.css
+default="$jelix/js/jforms/datepickers/default/init.js"
+default.js[]="assets/js/jquery/ui-1.11.4/jquery-ui.min.js"
+default.js[]="$jelix/js/jforms/datepickers/default/ui.en.js"
+default.js[]="$jqueryPath/ui/i18n/jquery.ui.datepicker-$lang.js"
+default.js[]="$jelix/js/jforms/datepickers/default/ui.$lang.js"
+default.css[]="assets/js/jquery/ui-1.11.4/jquery-ui.min.css"
 
 [htmleditors]
-default.engine.name = ckeditor
-default.engine.file[] = assets/js/ckeditor5/ckeditor.js
-default.engine.file[] = assets/js/ckeditor5/translations/$lang.js
-default.config = assets/js/ckeditor5/ckeditor_lizmap.js
-default.skin.default =
+default.engine.name=ckeditor
+default.engine.file[]="assets/js/ckeditor5/ckeditor.js"
+default.engine.file[]="assets/js/ckeditor5/translations/$lang.js"
+default.config="assets/js/ckeditor5/ckeditor_lizmap.js"
+default.skin.default=
 
-ckdefault.engine.name = ckeditor
-ckdefault.engine.file[] = assets/js/ckeditor5/ckeditor.js
-default.engine.file[] = assets/js/ckeditor5/translations/$lang.js
-ckdefault.config = assets/js/ckeditor5/ckeditor_ckdefault.js
+ckdefault.engine.name=ckeditor
+ckdefault.engine.file[]="assets/js/ckeditor5/ckeditor.js"
+default.engine.file[]="assets/js/ckeditor5/translations/$lang.js"
+ckdefault.config="assets/js/ckeditor5/ckeditor_ckdefault.js"
 
-ckfull.engine.name = ckeditor
-ckfull.engine.file[] = assets/js/ckeditor5/ckeditor.js
-default.engine.file[] = assets/js/ckeditor5/translations/$lang.js
-ckfull.config = assets/js/ckeditor5/ckeditor_ckfull.js
+ckfull.engine.name=ckeditor
+ckfull.engine.file[]="assets/js/ckeditor5/ckeditor.js"
+default.engine.file[]="assets/js/ckeditor5/translations/$lang.js"
+ckfull.config="assets/js/ckeditor5/ckeditor_ckfull.js"
 
-ckbasic.engine.name = ckeditor
-ckbasic.engine.file[] = assets/js/ckeditor5/ckeditor.js
-default.engine.file[] = assets/js/ckeditor5/translations/$lang.js
-ckbasic.config = assets/js/ckeditor5/ckeditor_ckbasic.js
+ckbasic.engine.name=ckeditor
+ckbasic.engine.file[]="assets/js/ckeditor5/ckeditor.js"
+default.engine.file[]="assets/js/ckeditor5/translations/$lang.js"
+ckbasic.config="assets/js/ckeditor5/ckeditor_ckbasic.js"
 
-ckfullandmedia.engine.name = ckeditor
-ckfullandmedia.engine.file[] = assets/js/ckeditor5/ckeditor.js
-ckfullandmedia.config = assets/js/ckeditor5/ckeditor_ckfullandmedia.js
+ckfullandmedia.engine.name=ckeditor
+ckfullandmedia.engine.file[]="assets/js/ckeditor5/ckeditor.js"
+ckfullandmedia.config="assets/js/ckeditor5/ckeditor_ckfullandmedia.js"
 
 [modules]
 jelix.access=1
@@ -294,16 +294,17 @@ view.access=1
 ldapdao.installparam=noconfigfile
 multiauth.installparam="noconfigfile;localconfig"
 
+ldapdao.path="app:vendor/jelix/ldapdao-module/ldapdao"
 [mailLogger]
 email="root@localhost"
 emailHeaders="Content-Type: text/plain; charset=UTF-8\nFrom: webmaster@yoursite.com\nX-Mailer: Jelix\nX-Priority: 1 (Highest)\n"
 
 [jcommunity]
-loginResponse = htmlauth
-registrationEnabled = off
-resetPasswordEnabled = on
-resetPasswordAdminEnabled = on
-verifyNickname = off
+loginResponse=htmlauth
+registrationEnabled=off
+resetPasswordEnabled=on
+resetPasswordAdminEnabled=on
+verifyNickname=off
 ;passwordChangeEnabled=on
 ;accountDestroyEnabled=on
 useJAuthDbAdminRights=on
