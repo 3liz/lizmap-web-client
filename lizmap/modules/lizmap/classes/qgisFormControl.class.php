@@ -247,12 +247,6 @@ class qgisFormControl
                 if (property_exists($this->edittype->attributes(), 'widgetv2type')) {
                     $this->widgetv2configAttr = $this->edittype->widgetv2config->attributes();
                     $this->fieldEditType = (string) $this->edittype->attributes()->widgetv2type;
-
-                    // no more line edit. Since 2.4, textedit with multiline attribute = 0
-                    $isMultiLine = filter_var((string)$this->widgetv2configAttr->IsMultiline, FILTER_VALIDATE_BOOLEAN);
-                    if (!$isMultiLine) {
-                        $this->fieldEditType = 0;
-                    }
                 }
                 // Before QGIS 2.4
                 else {
