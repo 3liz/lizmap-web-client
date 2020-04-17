@@ -55,17 +55,22 @@ class lizmapProxy
         return $data;
     }
 
-    public static function constructUrl($params)
+    public static function buildQuery($params)
     {
-        $ser = lizmap::getServices();
-        $url = $ser->wmsServerURL.'?';
-
         $bparams = http_build_query($params);
 
         // replace some chars (not needed in php 5.4, use the 4th parameter of http_build_query)
         $a = array('+', '_', '.', '-');
         $b = array('%20', '%5F', '%2E', '%2D');
-        $bparams = str_replace($a, $b, $bparams);
+        return str_replace($a, $b, $bparams);
+    }
+
+    public static function constructUrl($params)
+    {
+        $ser = lizmap::getServices();
+        $url = $ser->wmsServerURL.'?';
+
+        $bparams = self::buildQuery($params);
 
         return $url.$bparams;
     }
@@ -478,11 +483,7 @@ class lizmapProxy
         }
 
         // Build params before send the request to Qgis
-        $builtParams = http_build_query($params);
-        // Replace needed characters (not needed for php >= 5.4, just use the 4th parameter of the method http_build_query)
-        $a = array('+', '_', '.', '-');
-        $b = array('%20', '%5F', '%2E', '%2D');
-        $builtParams = str_replace($a, $b, $builtParams);
+        $builtParams = self::buildQuery($params);
 
         // Get data from the map server
         list($data, $mime, $code) = lizmapProxy::getRemoteData(

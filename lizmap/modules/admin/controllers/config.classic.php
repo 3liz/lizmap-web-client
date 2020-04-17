@@ -65,6 +65,10 @@ class configCtrl extends jController
         $xmlLoad = simplexml_load_file($xmlPath);
         $version = (string) $xmlLoad->info->version;
 
+        // Get QGIS Server info
+        $qgisServer = jClasses::getService('lizmap~qgisServer');
+        $qgis_server_info = $qgisServer->info();
+
         // Get the data
         $services = lizmap::getServices();
 
@@ -77,6 +81,7 @@ class configCtrl extends jController
         $tpl->assign('showSystem', !lizmap::getServices()->hideSensitiveProperties());
         $tpl->assign('servicesForm', $form);
         $tpl->assign('version', $version);
+        $tpl->assign('qgis_server_info', $qgis_server_info);
         $rep->body->assign('MAIN', $tpl->fetch('config'));
         $rep->body->assign('selectedMenuItem', 'lizmap_configuration');
 
@@ -203,6 +208,17 @@ class configCtrl extends jController
         $ok = true;
         if (!$form->check()) {
             $ok = false;
+        }
+
+        // Check the WMS Server URL
+        $wmsServerURL = $form->getData('wmsServerURL');
+        jClasses::inc('lizmap~qgisServer');
+        if (!qgisServer::checkUrl($wmsServerURL)) {
+            $ok = false;
+            $form->setErrorOn(
+                'wmsServerURL',
+                jLocale::get('admin~admin.form.admin_services.message.wmsServerURL.wrong')
+            );
         }
 
         // Check the cacheRootDirectory : must be writable
