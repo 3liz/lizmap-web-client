@@ -408,6 +408,13 @@ start = 1
 ; share the same php session
 shared_session = off
 
+; parameters for the session cookie
+cookieSecure=off
+cookieHttpOnly=on
+cookieExpires=0
+; only supported with php 7.3.0+. Possible values: None, Strict, Lax
+cookieSameSite=
+
 ; indicate a session name for each applications installed with the same
 ; domain and basePath, if their respective sessions shouldn't be shared
 name=

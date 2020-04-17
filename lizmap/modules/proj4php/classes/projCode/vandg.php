@@ -148,11 +148,11 @@ class Proj4phpProjVandg {
         if( $p->$y >= 0 ) {
             $lat = (-$m1 * cos( $th1 + Proj4php::$common->PI / 3.0 ) - $c2 / 3.0 / $c3) * Proj4php::$common->PI;
         } else {
-            $lat = -(-m1 * cos( $th1 + Proj4php::$common->PI / 3.0 ) - $c2 / 3.0 / $c3) * Proj4php::$common->PI;
+            $lat = -(-$m1 * cos( $th1 + Proj4php::$common->PI / 3.0 ) - $c2 / 3.0 / $c3) * Proj4php::$common->PI;
         }
 
         if( abs( $xx ) < Proj4php::$common->EPSLN ) {
-            $lon = $this->$long0;
+            $lon = $this->long0;
         }
         $lon = Proj4php::$common->adjust_lon( $this->long0 + Proj4php::$common->PI * ($xys - 1.0 + sqrt( 1.0 + 2.0 * ($xx * $xx - $yy * $yy) + $xys * $xys )) / 2.0 / $xx );
 

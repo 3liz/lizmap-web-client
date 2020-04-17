@@ -151,7 +151,7 @@ class Proj4phpProj {
             return;
         }
         //else check for def on the server
-        $filename = __DIR__ . '/defs/' . strtoupper( $this->srsAuth ) . $this->srsProjNumber . '.php';
+        $filename = dirname( __FILE__ ) . '/defs/' . strtoupper( $this->srsAuth ) . $this->srsProjNumber . '.php';
 
         try {
             Proj4php::loadScript( $filename );
@@ -227,7 +227,7 @@ class Proj4phpProj {
             return;
         }
         //the filename for the projection code
-        $filename = __DIR__ . '/projCode/' . $projName . '.php';
+        $filename = dirname( __FILE__ ) . '/projCode/' . $projName . '.php';
 
         try {
             Proj4php::loadScript( $filename );
@@ -519,19 +519,19 @@ class Proj4phpProj {
                 // DGR 2007-11-20
                 case "rf": $this->rf = floatval( $paramVal );
                     break; // inverse flattening rf= a/(a-b)
-                case "lat_0": $this->lat0 = $paramVal * Proj4php::$common->D2R;
+                case "lat_0": $this->lat0 = floatval( $paramVal ) * Proj4php::$common->D2R;
                     break;        // phi0, central latitude
-                case "lat_1": $this->lat1 = $paramVal * Proj4php::$common->D2R;
+                case "lat_1": $this->lat1 = floatval( $paramVal ) * Proj4php::$common->D2R;
                     break;        //standard parallel 1
-                case "lat_2": $this->lat2 = $paramVal * Proj4php::$common->D2R;
+                case "lat_2": $this->lat2 = floatval( $paramVal ) * Proj4php::$common->D2R;
                     break;        //standard parallel 2
-                case "lat_ts": $this->lat_ts = $paramVal * Proj4php::$common->D2R;
+                case "lat_ts": $this->lat_ts = floatval( $paramVal ) * Proj4php::$common->D2R;
                     break;      // used in merc and eqc
-                case "lon_0": $this->long0 = $paramVal * Proj4php::$common->D2R;
+                case "lon_0": $this->long0 = floatval( $paramVal ) * Proj4php::$common->D2R;
                     break;       // lam0, central longitude
                 case "alpha": $this->alpha = floatval( $paramVal ) * Proj4php::$common->D2R;
                     break;  //for somerc projection
-                case "lonc": $this->longc = $paramVal * Proj4php::$common->D2R;
+                case "lonc": $this->longc = floatval( $paramVal ) * Proj4php::$common->D2R;
                     break;       //for somerc projection
                 case "x_0": $this->x0 = floatval( $paramVal );
                     break;  // false easting
