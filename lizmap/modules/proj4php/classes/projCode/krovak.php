@@ -62,6 +62,7 @@ class Proj4phpProjKrovak {
         $this->n = sin( $this->s0 );
         $this->ro0 = $this->k1 * $this->n0 / tan( $this->s0 );
         $this->ad = $this->s90 - $this->uq;
+        $this->czech = true; /* Always use czech GIS coordinates -> negative ones */
     }
     
     /**

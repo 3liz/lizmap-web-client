@@ -174,9 +174,8 @@ deploy_download_stable:
 	upload_to_packages_server $(ZIP_PACKAGE) pub/lizmap/release/$(SHORT_VERSION)/
 
 saas_package: $(GENERIC_PACKAGE_DIR)
-	rm -rf $(DIST)/lizmap/vendor # vendor dir is not needed because provided by lizmap-saas
-	cp lizmap/composer.json $(DIST)/lizmap/  # copy again composer.json, needed by lizmap-saas
-	mv $(STAGE)/$(PACKAGE_NAME) $(STAGE)/lizmap_web_client
+	rm -rf $(GENERIC_PACKAGE_DIR)/lizmap/vendor # vendor dir is not needed because provided by lizmap-saas
+	cp lizmap/composer.json $(GENERIC_PACKAGE_DIR)/lizmap/  # copy again composer.json, needed by lizmap-saas
 	saasv2_register_package $(SAAS_PACKAGE) $(LIZMAP_VERSION) $(GENERIC_DIR_NAME) $(STAGE)
 
 trigger_ci:
