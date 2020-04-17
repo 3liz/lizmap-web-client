@@ -6,7 +6,7 @@
  *
  * License: LGPL as per: http://www.gnu.org/copyleft/lesser.html 
  */
-$dir = __DIR__;
+$dir = dirname( __FILE__ );
 
 require_once($dir . "/proj4phpProj.php");
 require_once($dir . "/proj4phpCommon.php");
