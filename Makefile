@@ -102,6 +102,9 @@ endif
 	@echo "BRANCH="$(BRANCH)
 	@echo "BUILDID="$(BUILDID)
 	@echo "COMMITID="$(COMMITID)
+	@echo "ZIP_PACKAGE="$(ZIP_PACKAGE)
+	@echo "GENERIC_PACKAGE_DIR="$(GENERIC_PACKAGE_DIR)
+	@echo "ZIP_DEMO_PACKAGE="$(ZIP_DEMO_PACKAGE)
 
 build: debug
 	composer update --working-dir=lizmap/ --prefer-dist --no-ansi --no-interaction --ignore-platform-reqs --no-dev --no-suggest --no-progress
@@ -139,13 +142,13 @@ $(GENERIC_PACKAGE_DIR): $(DIST)
 	cp -a $(DIST)/* $(GENERIC_PACKAGE_DIR)
 
 $(ZIP_PACKAGE): $(DIST)
-	cd $(STAGE) && zip -r $(PACKAGE_NAME).zip  $(PACKAGE_NAME)/
+	cd $(STAGE) && zip -rq $(PACKAGE_NAME).zip  $(PACKAGE_NAME)/
 
 $(GENERIC_PACKAGE_PATH): $(GENERIC_PACKAGE_DIR)
-	cd $(STAGE) && zip -r $(GENERIC_PACKAGE_ZIP) $(GENERIC_DIR_NAME)/
+	cd $(STAGE) && zip -rq $(GENERIC_PACKAGE_ZIP) $(GENERIC_DIR_NAME)/
 
 $(ZIP_DEMO_PACKAGE): $(STAGE)/lizmapdemo
-	cd $(STAGE) && zip -r $(DEMO_PACKAGE_NAME).zip  lizmapdemo/
+	cd $(STAGE) && zip -rq $(DEMO_PACKAGE_NAME).zip  lizmapdemo/
 
 $(DOCKER_MANIFEST):
 	echo name=$(DOCKER_NAME) > $(DOCKER_MANIFEST) && \
@@ -190,7 +193,6 @@ deploy_download_stable:
 	upload_to_packages_server $(ZIP_DEMO_PACKAGE) pub/lizmap/release/$(SHORT_VERSION)/
 
 saas_package: $(GENERIC_PACKAGE_DIR)
-	mv $(STAGE)/$(PACKAGE_NAME) $(STAGE)/lizmap_web_client
 	saasv2_register_package $(SAAS_PACKAGE) $(LIZMAP_VERSION) $(GENERIC_DIR_NAME) $(STAGE)
 
 trigger_ci:
