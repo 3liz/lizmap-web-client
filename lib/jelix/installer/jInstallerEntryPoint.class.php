@@ -147,4 +147,20 @@ class jInstallerEntryPoint {
     function setConfigObj($config) {
         $this->config = $config;
     }
+
+    /**
+     * Give only the content of mainconfig.ini.php
+     * @return jIniFileModifier
+     */
+    function getSingleMainConfigIni() {
+        return $this->localConfigIni->getMaster()->getMaster();
+    }
+
+    /**
+     * Give only the content of localconfig.ini.php
+     * @return jIniFileModifier
+     */
+    function getSingleLocalConfigIni() {
+        return $this->localConfigIni->getMaster();
+    }
 }

@@ -127,13 +127,21 @@ class jIniMultiFilesModifier {
     public function getMaster() {
         return $this->master;
     }
-    
+
     /**
      * @return jIniFileModifier the second ini file
      * @since 1.2
      */
     public function getOverrider() {
         return $this->overrider;
+    }
+
+    /**
+     * says if there is a section with the given name.
+     */
+    public function isSection($name)
+    {
+        return $this->overrider->isSection($name) || $this->master->isSection($name);
     }
 }
 
