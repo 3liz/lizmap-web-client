@@ -100,6 +100,9 @@ class loginCtrl extends jController {
                     $rep->url =  jUrl::get($conf['after_logout']);
                 }
             }
+            else {
+                $rep->url =  jUrl::get($conf['after_logout']);
+            }
         }
         else {
             // we are here because of an internal redirection (authentication missing)

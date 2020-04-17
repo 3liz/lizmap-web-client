@@ -29,35 +29,29 @@ class accountCtrl extends jController
     }
     protected function getDaoName()
     {
-        $plugin = jApp::coord()->getPlugin('auth');
-        if ($plugin === null) {
-            throw new jException('jelix~auth.error.plugin.missing');
+        $dao = jAuth::getDriverParam('dao');
+        if ($dao == '') {
+            throw new \Exception("dao parameter is missing from the configuration of authentication");
         }
-
-        return $plugin->config['Db']['dao'];
+        return $dao;
     }
 
     protected function getProfileName()
     {
-        $plugin = jApp::coord()->getPlugin('auth');
-        if ($plugin === null) {
-            throw new jException('jelix~auth.error.plugin.missing');
+        $profile = jAuth::getDriverParam('profile');
+        if ($profile === null) {
+            return '';
         }
-
-        return $plugin->config['Db']['profile'];
+        return $profile;
     }
 
     protected function getAccountForm()
     {
-        $plugin = jApp::coord()->getPlugin('auth');
-        if ($plugin === null) {
-            throw new jException('jelix~auth.error.plugin.missing');
+        $form = jAuth::getDriverParam('userform');
+        if ($form == '') {
+            return 'jcommunity~account';
         }
-
-        if (isset($plugin->config['Db']['userform'])) {
-            return $plugin->config['Db']['userform'];
-        }
-        return 'jcommunity~account';
+        return $form;
     }
 
     /**
