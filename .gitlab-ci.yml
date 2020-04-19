@@ -48,6 +48,7 @@ package:
     paths:
       - "build/*.zip"
       - "build/MANIFEST"
+      - "build/*.manifest"
   only:
     - /^release_.*$/
     - master
@@ -95,6 +96,7 @@ deploy-package-unstable:
   stage: deploy
   script:
     - make deploy_download
+    - make saas_deploy_snap
     - make trigger_ci
   environment:
     name: snap
