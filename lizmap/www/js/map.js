@@ -3531,9 +3531,12 @@ var lizMap = function() {
                         rConfigLayer.cleanname = clname;
                     }
                     if ( rConfigLayer.popup == 'True' && self.parent().find('div.lizmapPopupChildren.'+clname).length == 0) {
+                        var qLayerName = rConfigLayer.name;
+                        if ( 'useLayerIDs' in config.options && config.options.useLayerIDs == 'True' )
+                            qLayerName = layerIdMap[rConfigLayer.name];
                         var wmsOptions = {
-                             'LAYERS': rConfigLayer.name
-                            ,'QUERY_LAYERS': rConfigLayer.name
+                             'LAYERS': qLayerName
+                            ,'QUERY_LAYERS': qLayerName
                             ,'STYLES': ''
                             ,'SERVICE': 'WMS'
                             ,'VERSION': '1.3.0'
