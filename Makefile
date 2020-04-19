@@ -174,6 +174,10 @@ deploy_download_stable:
 
 saas_package: $(GENERIC_PACKAGE_DIR)
 	saasv2_register_package $(SAAS_PACKAGE) $(LIZMAP_VERSION) $(GENERIC_DIR_NAME) $(STAGE)
+	mv  $(STAGE)/MANIFEST $(STAGE)/LIZMAP_SAAS.manifest
+
+saas_deploy_snap:
+	saasv2_deploy_to_snap $(SAAS_PACKAGE) $(STAGE)/LIZMAP_SAAS.manifest
 
 trigger_ci:
 	trigger-ci $(SAAS_PROJ_ID) $(SAAS_PROJ_TOKEN) $(MAJOR_VERSION).$(MINOR_VERSION).x -F variables[SAAS_LZMPACK_VERSION]=$(SAAS_LZMPACK_VERSION)
