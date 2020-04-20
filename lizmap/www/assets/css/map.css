@@ -2159,6 +2159,14 @@ a.btn.btn-opacity-layer.active {
     font-size: 0.85em;
 }
 
+.lizmapPopupChildren .popupAllFeatures{
+  overflow: auto;
+}
+
+#popupcontent .popupAllFeatures .lizmapPopupTable td{
+  word-break: normal;
+}
+
 #tooltipPopupContent {
   background-color:#F0F0F0 !important;
   border: rgba(0,0,0,0.7) solid 4px;
