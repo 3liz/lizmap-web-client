@@ -104,7 +104,6 @@ simple_urlengine_https=
 ;   @r       -> for all actions for the request of type "r"
 
 index="@classic"
-index="jauth~*@classic"
 admin="jacl2db~*@classic, jacl2db_admin~*@classic, jauthdb_admin~*@classic, master_admin~*@classic, admin~*@classic, jauth~*@classic"
 
 
