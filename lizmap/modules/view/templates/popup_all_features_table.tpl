@@ -1,4 +1,4 @@
-<div class='popupAllFeatures' style="display: none;">
+<div class='popupAllFeaturesCompact' style="display: none;">
     <h4>{$layerTitle}</h4>
 
     <table class='table table-condensed table-striped table-bordered lizmapPopupTable'>
