@@ -2159,11 +2159,21 @@ a.btn.btn-opacity-layer.active {
     font-size: 0.85em;
 }
 
-.lizmapPopupChildren .popupAllFeatures{
+.lizmapPopupChildren .popupAllFeaturesCompact{
   overflow: auto;
 }
 
-#popupcontent .popupAllFeatures .lizmapPopupTable td{
+.lizmapPopupChildren{
+  border: solid lightgray 1px;
+  margin-top: 5px;
+}
+
+.lizmapPopupChildren .compact-tables, .lizmapPopupChildren .explode-tables{
+  margin-top: 3px;
+  margin-left: 10px;
+}
+
+#popupcontent .popupAllFeaturesCompact .lizmapPopupTable td{
   word-break: normal;
 }
 

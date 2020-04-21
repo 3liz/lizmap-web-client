@@ -3236,7 +3236,12 @@ var lizMap = function() {
                     clname = cleanName(configLayer.name);
                     rConfigLayer.cleanname = clname;
                 }
-                var childPopup = $('<div class="lizmapPopupChildren '+clname+'">'+data+'</div>');
+
+              var resizeTablesButtons = 
+                '<button class="compact-tables btn btn-small" data-original-title="' + lizDict['popup.table.compact'] + '"><i class="icon-resize-small"></i></button>'+
+                '<button class="explode-tables btn btn-small hide" data-original-title="' + lizDict['popup.table.explode'] + '"><i class="icon-resize-full"></i></button>';
+
+              var childPopup = $('<div class="lizmapPopupChildren ' + clname + '">' + resizeTablesButtons + data + '</div>');
 
                 //Manage if the user choose to create a table for children
                 if( rConfigLayer.popupSource == 'qgis' &&
@@ -3279,12 +3284,36 @@ var lizMap = function() {
                 }
 
                 var oldPopupChild = parentDiv.find('div.lizmapPopupChildren.'+clname);
-                if ( oldPopupChild.length != 0 )
-                    oldPopupChild.remove();
+                if ( oldPopupChild.length != 0 ){
+                  oldPopupChild.remove();
+                }
+
                 parentDiv.append(childPopup);
 
-                if ( aCallback )
-                    aCallback( childPopup );
+                // Handle compact-tables/explode-tables behaviour
+                $('.lizmapPopupChildren .compact-tables, .lizmapPopupChildren .explode-tables').tooltip();
+
+                $('.lizmapPopupChildren .compact-tables').click(function() {
+                  $(this)
+                    .addClass('hide')
+                    .siblings('.explode-tables').removeClass('hide');
+
+                  $('.lizmapPopupChildren .popupAllFeaturesCompact').toggle();
+                  $('.lizmapPopupChildren .lizmapPopupSingleFeature').toggle();
+                });
+
+                $('.lizmapPopupChildren .explode-tables').click(function () {
+                  $(this)
+                    .addClass('hide')
+                    .siblings('.compact-tables').removeClass('hide');
+
+                  $('.lizmapPopupChildren .popupAllFeaturesCompact').toggle();
+                  $('.lizmapPopupChildren .lizmapPopupSingleFeature').toggle();
+                });
+
+                if ( aCallback ){
+                  aCallback(childPopup);
+                }
             }
         });
   }
