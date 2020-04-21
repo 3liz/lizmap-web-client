@@ -359,8 +359,8 @@ ul.nav.nav-tabs {
 
 #right-dock-close{
   position: absolute;
-  bottom:5px;
-  left:5px;
+  top:5px;
+  right:5px;
 }
 
 #dock-tabs > li > a,
