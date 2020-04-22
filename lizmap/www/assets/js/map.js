@@ -3228,63 +3228,58 @@ var lizMap = function() {
         $.post(service, wmsOptions, function(data) {
             var hasPopupContent = (!(!data || data == null || data == ''))
             if ( hasPopupContent ) {
-                var popupReg = new RegExp('lizmapPopupTable', 'g');
-                data = data.replace(popupReg, 'table table-condensed table-striped lizmapPopupTable');
+              var popupReg = new RegExp('lizmapPopupTable', 'g');
+              data = data.replace(popupReg, 'table table-condensed table-striped lizmapPopupTable');
 
-                var clname = rConfigLayer.cleanname;
-                if ( clname === undefined ) {
-                    clname = cleanName(configLayer.name);
-                    rConfigLayer.cleanname = clname;
-                }
-                var childPopup = $('<div class="lizmapPopupChildren '+clname+'">'+data+'</div>');
+              var clname = rConfigLayer.cleanname;
+              if ( clname === undefined ) {
+                  clname = cleanName(configLayer.name);
+                  rConfigLayer.cleanname = clname;
+              }
 
-                //Manage if the user choose to create a table for children
-                if( rConfigLayer.popupSource == 'qgis' &&
-                    childPopup.find('.lizmap_merged').length != 0 )
-                {
-                    // save inputs
-                    childPopup.find(".lizmapPopupDiv").each(function(i,e){
-                        var popupDiv = $(e);
-                        if ( popupDiv.find(".lizmapPopupHeader").prop("tagName") == 'TR' ) {
-                            popupDiv.find(".lizmapPopupHeader").prepend("<th></th>");
-                            popupDiv.find(".lizmapPopupHeader").next().prepend("<td></td>");
-                        } else {
-                            popupDiv.find(".lizmapPopupHeader").next().prepend("<span></span>");
-                        }
-                        popupDiv.find(".lizmapPopupHeader").next().children().first().append(popupDiv.find("input"));
-                    });
+              var resizeTablesButtons = 
+                '<button class="compact-tables btn btn-small" data-original-title="' + lizDict['popup.table.compact'] + '"><i class="icon-resize-small"></i></button>'+
+                '<button class="explode-tables btn btn-small hide" data-original-title="' + lizDict['popup.table.explode'] + '"><i class="icon-resize-full"></i></button>';
 
-                    childPopup.find("h4").each(function(i,e){
-                        if(i != 0 )
-                            $(e).remove();
-                    });
+              var childPopup = $('<div class="lizmapPopupChildren ' + clname + '">' + resizeTablesButtons + data + '</div>');
 
-                    childPopup.find(".lizmapPopupHeader").each(function(i,e){
-                        if(i != 0 )
-                            $(e).remove();
-                    });
 
-                    childPopup.find(".lizmapPopupDiv").contents().unwrap();
-                    childPopup.find(".lizmap_merged").contents().unwrap();
-                    childPopup.find(".lizmapPopupDiv").remove();
-                    childPopup.find(".lizmap_merged").remove();
+              var oldPopupChild = parentDiv.find('div.lizmapPopupChildren.'+clname);
+              if ( oldPopupChild.length != 0 ){
+                oldPopupChild.remove();
+              }
 
-                    childPopup.find(".lizmapPopupHidden").hide();
+              parentDiv.append(childPopup);
 
-                    var tChildPopup = $("<table class='lizmap_merged'></table>");
-                    childPopup.append(tChildPopup);
-                    childPopup.find('tr').appendTo(tChildPopup);
+              // Handle compact-tables/explode-tables behaviour
+              $('.lizmapPopupChildren .popupAllFeaturesCompact table').DataTable({
+                  language: { url: lizUrls["dataTableLanguage"] }
+              });
 
-                    childPopup.children('tbody').remove();
-                }
+              $('.lizmapPopupChildren .compact-tables, .lizmapPopupChildren .explode-tables').tooltip();
 
-                var oldPopupChild = parentDiv.find('div.lizmapPopupChildren.'+clname);
-                if ( oldPopupChild.length != 0 )
-                    oldPopupChild.remove();
-                parentDiv.append(childPopup);
+              $('.lizmapPopupChildren .compact-tables').click(function() {
+                $(this)
+                  .addClass('hide')
+                  .siblings('.explode-tables').removeClass('hide');
 
-                if ( aCallback )
-                    aCallback( childPopup );
+                $('.lizmapPopupChildren .popupAllFeaturesCompact').toggle();
+                $('.lizmapPopupChildren .lizmapPopupSingleFeature').toggle();
+              });
+
+              $('.lizmapPopupChildren .explode-tables').click(function () {
+                $(this)
+                  .addClass('hide')
+                  .siblings('.compact-tables').removeClass('hide');
+
+                $('.lizmapPopupChildren .popupAllFeaturesCompact').toggle();
+                $('.lizmapPopupChildren .lizmapPopupSingleFeature').toggle();
+              });
+
+              // Run callback if any
+              if ( aCallback ){
+                aCallback(childPopup);
+              }
             }
         });
   }

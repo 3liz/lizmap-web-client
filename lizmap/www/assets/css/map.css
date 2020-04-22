@@ -2159,6 +2159,25 @@ a.btn.btn-opacity-layer.active {
     font-size: 0.85em;
 }
 
+.lizmapPopupChildren .popupAllFeaturesCompact{
+  overflow: auto;
+  padding-left: 20px;
+}
+
+.lizmapPopupChildren{
+  border: solid lightgray 1px;
+  margin-top: 5px;
+}
+
+.lizmapPopupChildren .compact-tables, .lizmapPopupChildren .explode-tables{
+  margin-top: 3px;
+  margin-left: 10px;
+}
+
+#popupcontent .popupAllFeaturesCompact .lizmapPopupTable td{
+  word-break: normal;
+}
+
 #tooltipPopupContent {
   background-color:#F0F0F0 !important;
   border: rgba(0,0,0,0.7) solid 4px;

@@ -935,6 +935,9 @@ class serviceCtrl extends jController
                 $popupMaxFeatures = $configLayer->popupMaxFeatures + 0;
             }
             $layerFeaturesCounter = 0;
+
+            $allFeatureAttributes = array();
+
             foreach ($layer->Feature as $feature) {
                 $id = (string) $feature['id'];
                 // Optionnally filter by feature id
@@ -951,8 +954,7 @@ class serviceCtrl extends jController
                 ++$layerFeaturesCounter;
 
                 // Hidden input containing layer id and feature id
-                $hiddenFeatureId = '<input type="hidden" value="'.$layerId.'.'.$id.'" class="lizmap-popup-layer-feature-id"/>
-        ';
+                $hiddenFeatureId = '<input type="hidden" value="'.$layerId.'.'.$id.'" class="lizmap-popup-layer-feature-id"/>';
 
                 // First get default template
                 $tpl = new jTpl();
@@ -1016,19 +1018,13 @@ class serviceCtrl extends jController
                 // Get the BoundingBox data
                 $hiddenGeometry = '';
                 if ($hasGeometry && $feature->BoundingBox) {
-                    $hiddenGeometry = '<input type="hidden" value="'.$geometryValue.'" class="lizmap-popup-layer-feature-geometry"/>
-        ';
+                    $hiddenGeometry = '<input type="hidden" value="'.$geometryValue.'" class="lizmap-popup-layer-feature-geometry"/>';
                     $bbox = $feature->BoundingBox[0];
-                    $hiddenGeometry .= '<input type="hidden" value="'.$bbox['CRS'].'" class="lizmap-popup-layer-feature-crs"/>
-        ';
-                    $hiddenGeometry .= '<input type="hidden" value="'.$bbox['minx'].'" class="lizmap-popup-layer-feature-bbox-minx"/>
-        ';
-                    $hiddenGeometry .= '<input type="hidden" value="'.$bbox['miny'].'" class="lizmap-popup-layer-feature-bbox-miny"/>
-        ';
-                    $hiddenGeometry .= '<input type="hidden" value="'.$bbox['maxx'].'" class="lizmap-popup-layer-feature-bbox-maxx"/>
-        ';
-                    $hiddenGeometry .= '<input type="hidden" value="'.$bbox['maxy'].'" class="lizmap-popup-layer-feature-bbox-maxy"/>
-        ';
+                    $hiddenGeometry .= '<input type="hidden" value="'.$bbox['CRS'].'" class="lizmap-popup-layer-feature-crs"/>';
+                    $hiddenGeometry .= '<input type="hidden" value="'.$bbox['minx'].'" class="lizmap-popup-layer-feature-bbox-minx"/>';
+                    $hiddenGeometry .= '<input type="hidden" value="'.$bbox['miny'].'" class="lizmap-popup-layer-feature-bbox-miny"/>';
+                    $hiddenGeometry .= '<input type="hidden" value="'.$bbox['maxx'].'" class="lizmap-popup-layer-feature-bbox-maxx"/>';
+                    $hiddenGeometry .= '<input type="hidden" value="'.$bbox['maxy'].'" class="lizmap-popup-layer-feature-bbox-maxy"/>';
                 }
 
                 // New option to choose the popup source : auto (=default), lizmap (=popupTemplate), qgis (=qgis maptip)
@@ -1040,6 +1036,9 @@ class serviceCtrl extends jController
                     if ($configLayer->popupSource == 'lizmap' and $templateConfigured) {
                         $finalContent = $lizmapContent;
                     }
+                    if ($configLayer->popupSource == 'auto'){
+                        $allFeatureAttributes[] = $feature->Attribute;
+                    }
                 }
 
                 $tpl = new jTpl();
@@ -1049,7 +1048,18 @@ class serviceCtrl extends jController
                 $tpl->assign('featureId', $id);
                 $tpl->assign('popupContent', $hiddenFeatureId.$hiddenGeometry.$finalContent);
                 $content[] = $tpl->fetch('view~popup', 'html');
+
             } // loop features
+
+            // Build hidden table containing all features
+            if(count($allFeatureAttributes) > 0){
+                $tpl = new jTpl();
+                $tpl->assign('layerTitle', $layerTitle);
+                $tpl->assign('repository', $this->repository->getKey());
+                $tpl->assign('project', $this->project->getKey());
+                $tpl->assign('allFeatureAttributes', array_reverse($allFeatureAttributes));
+                $content[] = $tpl->fetch('view~popup_all_features_table', 'html');
+            }
 
             // Raster Popup
             if (count($layer->Attribute) > 0) {
