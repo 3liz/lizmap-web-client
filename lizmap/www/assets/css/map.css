@@ -2161,6 +2161,7 @@ a.btn.btn-opacity-layer.active {
 
 .lizmapPopupChildren .popupAllFeaturesCompact{
   overflow: auto;
+  padding-left: 20px;
 }
 
 .lizmapPopupChildren{
