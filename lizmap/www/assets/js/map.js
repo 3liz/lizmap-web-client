@@ -3252,6 +3252,10 @@ var lizMap = function() {
               parentDiv.append(childPopup);
 
               // Handle compact-tables/explode-tables behaviour
+              $('.lizmapPopupChildren .popupAllFeaturesCompact table').DataTable({
+                  language: { url: lizUrls["dataTableLanguage"] }
+              });
+
               $('.lizmapPopupChildren .compact-tables, .lizmapPopupChildren .explode-tables').tooltip();
 
               $('.lizmapPopupChildren .compact-tables').click(function() {
@@ -3272,6 +3276,7 @@ var lizMap = function() {
                 $('.lizmapPopupChildren .lizmapPopupSingleFeature').toggle();
               });
 
+              // Run callback if any
               if ( aCallback ){
                 aCallback(childPopup);
               }
