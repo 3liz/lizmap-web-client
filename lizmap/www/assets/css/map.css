@@ -827,7 +827,6 @@ Timemanager
   background-position : -16px -80px;
   position : absolute;
   top : 0;
-  relative : 0;
   z-index : 1000;
   background-color : #F0F0F0;
   cursor : pointer;
@@ -1113,10 +1112,13 @@ div.modal h3 .text {
 }
 /* deactivate chrome effect */
 #map-content svg {
--webkit-transform: none !important;
+  transform: none !important;
+  -webkit-transform: none !important;
 }
 #map-content .olTileImage {
+backface-visibility: visible !important;
 -webkit-backface-visibility: visible !important;
+transform: none !important;
 -webkit-transform: none !important;
 }
 
@@ -1349,8 +1351,6 @@ div.modal h3 .text {
 #locate div.locate-layer .custom-combobox-input {
   background: none;
   color : rgb(51,51,51);
-  height: 20px;
-  width: 90%;
   border: 0;
   border-radius: 0;
   padding : 0em 0.5em;
@@ -1452,10 +1452,6 @@ div.modal h3 .text {
   background-color: #FFFFFF;
 }
 
-#switcher > div {
-  /*padding-left : 19px;
-  margin-bottom:25px;*/
-}
 #switcher-layers-container > div.menu-content {
   background-color:#F0F0F0;
 }
@@ -1665,10 +1661,6 @@ div.modal h3 .text {
   width: 20px;
   border:none;
   cursor:pointer;
-}
-
-a.btn.btn-opacity-layer {
-
 }
 
 a.btn.btn-opacity-layer.active {
@@ -2049,7 +2041,6 @@ a.btn.btn-opacity-layer.active {
 #popupcontent img{
   border:none;
   max-width: 300px;
-  width: expression(this.width > 300 ? "300px" : true);
 }
 
 #popupcontent img{
@@ -2485,8 +2476,6 @@ div.tooltip {
   top: 2px;
   position: absolute;
   z-index: 1041;
-}
-#content.mobile #lizmap-search-close{
 }
 #lizmap-search-close.open{
   display:block;
