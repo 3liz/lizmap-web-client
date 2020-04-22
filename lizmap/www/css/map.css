@@ -351,7 +351,9 @@ ul.nav.nav-tabs {
 
 #right-dock div.tabbable {
   height: 100%;
+  margin-top: 5px;
 }
+
 #right-dock-content {
   height: 100%;
   overflow-y: auto;
