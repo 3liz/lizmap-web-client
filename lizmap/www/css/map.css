@@ -342,7 +342,9 @@ ul.nav.nav-tabs {
 
 #right-dock div.tabbable {
   height: 100%;
+  margin-top: 5px;
 }
+
 #right-dock-content {
   height: 100%;
   overflow-y: auto;
@@ -350,8 +352,8 @@ ul.nav.nav-tabs {
 
 #right-dock-close{
   position: absolute;
-  bottom:5px;
-  left:5px;
+  top:5px;
+  right:5px;
 }
 
 #dock-tabs > li > a,
