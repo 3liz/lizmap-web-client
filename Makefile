@@ -188,7 +188,7 @@ trigger_ci:
 	trigger-ci $(SAAS_PROJ_ID) $(SAAS_PROJ_TOKEN) $(MAJOR_VERSION).$(MINOR_VERSION).x -F variables[SAAS_LZMPACK_VERSION]=$(SAAS_LZMPACK_VERSION)
 
 saas_release: check-release
-	saasv2_release_package $(SAAS_PACKAGE)
+	saasv2_release_package $(SAAS_PACKAGE) $(STAGE)/LIZMAP_SAAS.manifest
 
 local_saas_package: clean stage saas_package
 
