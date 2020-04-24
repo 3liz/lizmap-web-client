@@ -9,6 +9,7 @@ STAGE=build
 BRANCH:=$(shell git rev-parse --abbrev-ref HEAD)
 BUILDID=$(shell date +"%Y%m%d%H%M")
 COMMITID=$(shell git rev-parse --short HEAD)
+COMMIT_NUMBER=$(shell git rev-list --count HEAD)
 
 #------- versions
 LIZMAP_VERSION:=$(shell sed -n 's:.*<version[^>]*>\(.*\)</version>.*:\1:p' lizmap/project.xml)
@@ -34,12 +35,14 @@ else
 DOCKER_MANIFEST_VERSION=$(SHORT_VERSION)-dev
 endif
 
-PACKAGE_MANIFEST_EXISTS=$(shell [ -f build/MANIFEST ] && echo 1 || echo 0 )
+PACKAGE_MANIFEST_EXISTS=$(shell [ -f build/LIZMAP_SAAS.manifest ] && echo 1 || echo 0 )
 ifeq ($(PACKAGE_MANIFEST_EXISTS), 1)
-SAAS_LZMPACK_VERSION=$(shell sed -n 's:version=\(.*\):\1:p' build/MANIFEST)
+SAAS_LZMPACK_VERSION=$(shell sed -n 's:version=\(.*\):\1:p' build/LIZMAP_SAAS.manifest)
 else
 SAAS_LZMPACK_VERSION=
 endif
+SAAS_LIZMAP_VERSION=$(LIZMAP_VERSION).$(COMMIT_NUMBER)
+
 
 #-------- Packages names
 PACKAGE_NAME=lizmap-web-client-$(LIZMAP_VERSION)
@@ -93,6 +96,7 @@ endif
 ifdef DOCKER_MANIFEST_RELEASE_TAG
 	@echo "DOCKER_MANIFEST_RELEASE_TAG="$(DOCKER_MANIFEST_RELEASE_TAG)
 endif
+	@echo "SAAS_LIZMAP_VERSION="$(SAAS_LIZMAP_VERSION)
 	@echo "SAAS_LZMPACK_VERSION="$(SAAS_LZMPACK_VERSION)
 	@echo "PACKAGE_NAME="$(PACKAGE_NAME)
 	@echo "SAAS_PACKAGE="$(SAAS_PACKAGE)
@@ -100,6 +104,7 @@ endif
 	@echo "BRANCH="$(BRANCH)
 	@echo "BUILDID="$(BUILDID)
 	@echo "COMMITID="$(COMMITID)
+	@echo "COMMIT_NUMBER="$(COMMIT_NUMBER)
 
 build: debug
 	composer update --working-dir=lizmap/ --prefer-dist --no-ansi --no-interaction --ignore-platform-reqs --no-dev --no-suggest --no-progress
@@ -130,10 +135,10 @@ $(GENERIC_PACKAGE_DIR): $(DIST)
 	cp -a $(DIST)/* $(GENERIC_PACKAGE_DIR)
 
 $(ZIP_PACKAGE): $(DIST)
-	cd $(STAGE) && zip -r $(PACKAGE_NAME).zip  $(PACKAGE_NAME)/
+	cd $(STAGE) && zip -rq $(PACKAGE_NAME).zip  $(PACKAGE_NAME)/
 
 $(GENERIC_PACKAGE_PATH): $(GENERIC_PACKAGE_DIR)
-	cd $(STAGE) && zip -r $(GENERIC_PACKAGE_ZIP) $(GENERIC_DIR_NAME)/
+	cd $(STAGE) && zip -rq $(GENERIC_PACKAGE_ZIP) $(GENERIC_DIR_NAME)/
 
 $(DOCKER_MANIFEST):
 	echo name=$(DOCKER_NAME) > $(DOCKER_MANIFEST) && \
@@ -176,13 +181,17 @@ deploy_download_stable:
 saas_package: $(GENERIC_PACKAGE_DIR)
 	rm -rf $(GENERIC_PACKAGE_DIR)/lizmap/vendor # vendor dir is not needed because provided by lizmap-saas
 	cp lizmap/composer.json $(GENERIC_PACKAGE_DIR)/lizmap/  # copy again composer.json, needed by lizmap-saas
-	saasv2_register_package $(SAAS_PACKAGE) $(LIZMAP_VERSION) $(GENERIC_DIR_NAME) $(STAGE)
+	saasv2_register_package $(SAAS_PACKAGE) $(SAAS_LIZMAP_VERSION) $(GENERIC_DIR_NAME) $(STAGE)
+	mv  $(STAGE)/MANIFEST $(STAGE)/LIZMAP_SAAS.manifest
+
+saas_deploy_snap:
+	saasv2_deploy_to_snap $(SAAS_PACKAGE) $(STAGE)/LIZMAP_SAAS.manifest
 
 trigger_ci:
 	trigger-ci $(SAAS_PROJ_ID) $(SAAS_PROJ_TOKEN) $(MAJOR_VERSION).$(MINOR_VERSION).x -F variables[SAAS_LZMPACK_VERSION]=$(SAAS_LZMPACK_VERSION)
 
 saas_release: check-release
-	saasv2_release_package $(SAAS_PACKAGE)
+	saasv2_release_package $(SAAS_PACKAGE) $(STAGE)/LIZMAP_SAAS.manifest
 
 local_saas_package: clean stage saas_package
 
