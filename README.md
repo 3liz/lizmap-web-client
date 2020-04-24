@@ -1,10 +1,10 @@
-[![logo](icon.png "3Liz")][3liz]Lizmap Web Application 3.1.21-pre
-=================================================================
+[![logo](icon.png "3Liz")][3liz]Lizmap Web Application 3.1.21
+==============================================================
 
 Lizmap web application, by 3LIZ.
 
     begin       : 2011-11-01
-    copyright   : (C) 2011-2019 by 3liz
+    copyright   : (C) 2011-2020 by 3liz
     authors     : René-Luc D'Hont and Michaël Douchin
     email       : info@3liz.com
     website     : http://www.3liz.com
