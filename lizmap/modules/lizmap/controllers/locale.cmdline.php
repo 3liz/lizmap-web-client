@@ -120,7 +120,10 @@ class localeCtrl extends jControllerCmdLine
             // this is a module in lib/ or in a vendor/ directory, so it is not
             // developed into Lizmap: we don't want to store languages files into
             // these directories
-            if (file_exists(jApp::varPath('locales'))) {
+            if (file_exists(jApp::appPath('app/locales'))) {
+                $localesPath = jApp::appPath('app/locales/' . $lang . '/' . $module . '/locales/');
+            }
+            else if (file_exists(jApp::varPath('locales'))) {
                 $localesPath = jApp::varPath('locales/'.$lang.'/'.$module.'/locales/');
             } else {
                 $localesPath = jApp::varPath('overloads/'.$module.'/locales/'.$lang.'/');
