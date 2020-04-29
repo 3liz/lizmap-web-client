@@ -3,7 +3,7 @@
 * @package     jelix-scripts
 * @author      Florian Lonqueu-Brochard
 * @contributor Laurent Jouanneau
-* @copyright   2011 Florian Lonqueu-Brochard, 2011-2013 Laurent Jouanneau
+* @copyright   2011 Florian Lonqueu-Brochard, 2011-2020 Laurent Jouanneau
 * @link        http://www.jelix.org
 * @licence     GNU General Public Licence see LICENCE file or http://www.gnu.org/licenses/gpl.html
 */
@@ -12,7 +12,7 @@
 class createlangpackageCommand extends JelixScriptCommand {
 
     public  $name = 'createlangpackage';
-    public  $allowed_options=array('-to-overload'=>false);
+    public  $allowed_options=array('-to-overload'=>false, '-to-app'=>false);
     public  $allowed_parameters=array('lang'=>true, 'model_lang'=>false);
 
     public  $syntaxhelp = "LANG [MODEL_LANG]";
@@ -35,6 +35,9 @@ class createlangpackageCommand extends JelixScriptCommand {
 
             if ($this->getOption('-to-overload')) {
                 $target_dir = jApp::varPath('overloads/'.$module.'/locales/'.$lang.'/');
+            }
+            else if ($this->getOption('-to-app')) {
+                $target_dir = jApp::appPath('app/locales/'.$lang.'/'.$module.'/locales/');
             }
             else {
                 $target_dir = jApp::varPath('locales/'.$lang.'/'.$module.'/locales/');
