@@ -294,16 +294,14 @@ var lizLayerActionButtons = function() {
                 if (themeNameSelected in lizMap.config.themes){
                     var themeSelected = lizMap.config.themes[themeNameSelected];
 
-                    // Trigger map theme event
-                    lizMap.events.triggerEvent("mapthemechanged",
-                        {
-                            'name': themeNameSelected,
-                            'config': themeSelected
-                        }
-                    );
-
                     // Uncheck every layers then if a layer is present in theme, check it
-                    $('#switcher-layers .liz-layer a.expander ~ button.checked').click();
+                    $('#switcher-layers .liz-layer a.expander ~ button.checked').each(function(){
+                        if ($(this).hasClass('disabled')) {
+                            $(this).removeClass('partial').removeClass('checked');
+                        } else {
+                            $(this).click();
+                        }
+                    });
 
                     // Handle layers visibility, style and expanded states.
                     if ('layers' in themeSelected){
@@ -320,7 +318,12 @@ var lizLayerActionButtons = function() {
                                 }
 
                                 // Visibility
-                                $('#switcher-layers #layer-' + layerConfig.cleanname + ' a.expander ~ button').click();
+                                var layerButton = $('#switcher-layers #layer-' + layerConfig.cleanname + ' a.expander ~ button');
+                                if (layerButton.hasClass('disabled')) {
+                                    layerButton.removeClass('partial').addClass('checked');
+                                } else {
+                                    layerButton.click();
+                                }
 
                                 // Style
                                 if ('style' in themeSelected.layers[layerId]) {
@@ -367,6 +370,16 @@ var lizLayerActionButtons = function() {
                             $('#switcher-layers #group-' + groupName + '.expanded a.expander').click();
                         }
                     });
+
+
+                    // Trigger map theme event
+                    lizMap.events.triggerEvent("mapthemechanged",
+                        {
+                            'name': themeNameSelected,
+                            'config': themeSelected
+                        }
+                    );
+
                 }
             });
 
