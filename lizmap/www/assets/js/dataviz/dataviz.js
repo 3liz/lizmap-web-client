@@ -277,21 +277,21 @@ var lizDataviz = function() {
 
                     // Check correspondance
                     var pLayerId = plot_config['layer_id'];
-                    if (pLayerId == layerId){
+                    var ltoggle = optionToBoolean(plot_config.plot.display_when_layer_visible);
+                    if (pLayerId == layerId && ltoggle){
                         // Set plot visibility depending on layer visibility
-                        var ltoggle = optionToBoolean(plot_config.plot.display_when_layer_visible);
-                        if( ltoggle ){
-                            $('#' + id + '_container').toggle(e.visibility);
-                            if(e.visibility){
-                                resizePlot(id);
-                            }
+                        var layer = lizMap.map.getLayersByName(config.cleanname)[0]
+                        var showPlot = (layer.getVisibility() && layer.inRange);
+                        $('#' + id + '_container').toggle(showPlot);
+                        if(showPlot){
+                            resizePlot(id);
                         }
                     }
                 }
             }
         });
 
-        // Hide plot when layer not shown
+        // AT STARTUP : Hide plot when layer not shown
         // Todo: we should not refresh plot or even load it if not visible
         // First check if id begins with dataviz_plot -> main panel
         // or not -> popup child dataviz: do nothing
@@ -303,12 +303,15 @@ var lizDataviz = function() {
                 if (getLayerConfig) {
                     var layerConfig = getLayerConfig[1];
                     var featureType = getLayerConfig[0];
+
+                    // Use layer visibility
                     var oLayers = lizMap.map.getLayersByName(layerConfig.cleanname);
                     if(oLayers.length == 1){
                         var oLayer = oLayers[0];
                         var lvisibility = oLayer.visibility;
+                        var pvisibility = $('#' + id + '_container').is(":visible");
                         $('#' + id + '_container').toggle(lvisibility);
-                        if(lvisibility){
+                        if(lvisibility && !pvisibility){
                             resizePlot(id);
                         }
                     }
@@ -320,6 +323,40 @@ var lizDataviz = function() {
             {'id':id}
         );
 
+    }
+
+    // Find plots for non spatial layers wich are children of given plot id
+    function getChildTablePlots(id) {
+        var children = [];
+        var pid = parseInt(id.replace('dataviz_plot_', ''));
+        var plot_config = dv.config.layers[pid];
+        var layerId = plot_config['layer_id'];
+        if (!('relations' in lizMap.config) || !(layerId in lizMap.config.relations)) {
+            return children;
+        }
+        var getLayerConfig = lizMap.getLayerConfigById( plot_config['layer_id'] );
+        if (!getLayerConfig) {
+            return children;
+        }
+        var plotLayers = lizMap.config.datavizLayers.layers;
+        var lrelations = lizMap.config.relations[layerId];
+        for (var x in lrelations) {
+            var rel = lrelations[x];
+            // Id of the layer which is the child of layerId
+            var children_layer_id = rel.referencingLayer;
+            for ( var i in plotLayers) {
+                if (plotLayers[i].layer_id==children_layer_id) {
+                    var child_plot_config = plotLayers[i];
+                    var child_plot_id = child_plot_config.plot_id;
+                    // Check child layer is spatial
+                    var c_getLayerConfig = lizMap.getLayerConfigById( plot_config['layer_id'] );
+                    if (c_getLayerConfig && c_getLayerConfig[1].geometryType == 'none') {
+                        children.push(child_plot_id);
+                    }
+                }
+            }
+        }
+        return children;
     }
 
     function resizePlot(id){
