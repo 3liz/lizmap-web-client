@@ -168,7 +168,7 @@ class mediaCtrl extends jController
         // Get the name of the file
         $path_parts = pathinfo($abspath);
         if (isset($path_parts['filename'])) {
-            $rep->outputFileName = $path_parts['filename'];
+            $rep->outputFileName = $path_parts['filename'].'.'.$path_parts['extension'];
         } else {
             $rep->outputFileName = $path_parts['basename'];
         }
