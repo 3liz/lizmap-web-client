@@ -249,7 +249,7 @@ class lizmapTheme
         }
 
         if (!empty($this->additionalCss)) {
-            $css .= $this->additionalCss;
+            $css .= html_entity_decode($this->additionalCss);
         }
 
         return $css;
