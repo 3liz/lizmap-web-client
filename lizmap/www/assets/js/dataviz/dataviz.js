@@ -224,40 +224,21 @@ var lizDataviz = function() {
                 conf.layout,
                 {
                     displayModeBar: false,
-                    locale: plotLocale
+                    locale: plotLocale,
+                    responsive: true
                 }
             );
+
+            var pid = parseInt(id.replace('dataviz_plot_', ''));
+            var plot_config = dv.config.layers[pid];
+            if ('layout' in plot_config.plot && plot_config.plot.layout) {
+                var user_layout = plot_config.plot.layout;
+                //var json_layout = JSON.stringify(user_layout);
+                //var new_layout = JSON.parse(json_layout.replace('"False"', 'false').replace('"True"', 'true'));
+                var new_layout = user_layout;
+                Plotly.relayout(id, new_layout);
+            }
         }
-
-        // Add events to resize plot when needed
-        lizMap.events.on({
-            dockopened: function(e) {
-                if ( $.inArray(e.id, ['dataviz', 'popup']) > -1 ) {
-                    resizePlot(id);
-                }
-            },
-            rightdockopened: function(e) {
-                if ( $.inArray(e.id, ['dataviz', 'popup']) > -1 ) {
-                    resizePlot(id);
-                }
-            },
-            bottomdockopened: function(e) {
-                if ( e.id == 'dataviz' ) {
-                    resizePlot(id);
-                }
-            },
-            bottomdocksizechanged: function(e) {
-                if($('#mapmenu li.dataviz').hasClass('active')  || $('#mapmenu li.popup').hasClass('active')){
-                    resizePlot(id);
-                }
-            }
-
-        });
-        $(window).resize(function() {
-            if($('#mapmenu li.dataviz').hasClass('active') || $('#mapmenu li.popup').hasClass('active')){
-                resizePlot(id);
-            }
-        });
 
         // Add event to hide/show plots if needed
         lizMap.events.on({
@@ -283,9 +264,6 @@ var lizDataviz = function() {
                         var layer = lizMap.map.getLayersByName(config.cleanname)[0]
                         var showPlot = (layer.getVisibility() && layer.inRange);
                         $('#' + id + '_container').toggle(showPlot);
-                        if(showPlot){
-                            resizePlot(id);
-                        }
                     }
                 }
             }
@@ -311,9 +289,6 @@ var lizDataviz = function() {
                         var lvisibility = oLayer.visibility;
                         var pvisibility = $('#' + id + '_container').is(":visible");
                         $('#' + id + '_container').toggle(lvisibility);
-                        if(lvisibility && !pvisibility){
-                            resizePlot(id);
-                        }
                     }
                 }
             }
@@ -359,16 +334,6 @@ var lizDataviz = function() {
         return children;
     }
 
-    function resizePlot(id){
-        var d3 = Plotly.d3;
-        var gd = d3.select('#'+id)
-        .style({
-            width: '100%',
-            margin: '0px'
-        });
-        Plotly.Plots.resize(gd.node());
-    }
-
     lizMap.events.on({
         'uicreated':function(evt){
 
@@ -404,9 +369,6 @@ var lizDataviz = function() {
         },
         getPlot: function(plot_id, exp_filter, target_id) {
           return getPlot(plot_id, exp_filter, target_id);
-        },
-        resizePlot: function(id) {
-          return resizePlot(id);
         },
         data: dv
     }

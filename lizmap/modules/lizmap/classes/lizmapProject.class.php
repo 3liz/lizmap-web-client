@@ -1019,7 +1019,13 @@ class lizmapProject extends qgisProject
                     $plotConf['plot']['layout_config'] = $layout_config;
                 }
             }
+
+            if (property_exists($lc, 'layout')) {
+                $plotConf['plot']['layout'] = $lc->layout;
+            }
+
             $config['layers'][$order] = $plotConf;
+
         }
         if (empty($config['layers'])) {
             return false;
