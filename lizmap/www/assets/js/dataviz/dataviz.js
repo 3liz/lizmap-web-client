@@ -217,16 +217,34 @@ var lizDataviz = function() {
         if(conf.data.length && conf.data[0]['type'] == 'html'){
             buildHtmlPlot(id, conf.data, conf.layout);
         }else{
-            var plotLocale = dv.config.locale.substring(0, 2)
+            var plotLocale = dv.config.locale.substring(0, 2);
+            var plotConfig = {
+                showLink: false,
+                scrollZoom: false,
+                locale: plotLocale,
+                responsive: true,
+                toImageButtonOptions: {
+                    format: 'png', // one of png, svg, jpeg, webp
+                    height: 500,
+                    width: 700,
+                    scale: 1 // Multiply title/legend/axis/canvas sizes by this factor
+                },
+                editable: false,
+                modeBarButtonsToRemove: [
+                    'sendDataToCloud','editInChartStudio',
+                    'zoom2d','pan2d','select2d','lasso2d',
+                    'drawclosedpath','drawopenpath','drawline',
+                    'resetScale2d','toggleSpikelines','toggleHover',
+                    'hoverClosestCartesian','hoverCompareCartesian'
+                ],
+                displaylogo: false,
+                doubleClickDelay: 1000
+            };
             Plotly.newPlot(
                 id,
                 conf.data,
                 conf.layout,
-                {
-                    displayModeBar: false,
-                    locale: plotLocale,
-                    responsive: true
-                }
+                plotConfig
             );
 
             var pid = parseInt(id.replace('dataviz_plot_', ''));
