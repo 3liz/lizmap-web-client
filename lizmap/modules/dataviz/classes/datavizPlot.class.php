@@ -275,52 +275,68 @@ class datavizPlot
 
     protected function getLayoutTemplate()
     {
+
         $layout = array(
             //'title' => $this->title,
             'showlegend' => $this->display_legend,
             'legend' => array(
                 'orientation' => 'h',
                 'x' => '-0.1',
-                'y' => '1.15',
+                'y' => '1.15'
             ),
             'autosize' => true,
             'plot_bgcolor' => 'rgba(0,0,0,0)',
             'paper_bgcolor' => 'rgba(0,0,0,0)',
             'margin' => array(
+                't' => 10,
+                'b' => 30,
                 'l' => 30,
-                'r' => 20,
-                'b'=> 150,
-                't' => 0,
+                'r' => 30,
                 'pad' => 1,
             ),
+            'xaxis' => array(
+                'tickfont' => array(
+                    'size' => 10
+                ),
+                'automargin' => true
+            ),
+            'yaxis' => array(
+                'tickfont' => array(
+                    'size' => 10
+                ),
+                'automargin' => true
+            )
         );
 
-        if($this->type == 'pie' or $this->type == 'sunburst'){
+        if ($this->type == 'pie' or $this->type == 'sunburst'){
             $layout['legend']['orientation'] = 'h';
             $layout['legend']['y'] = '-5';
         }
 
-        if ($this->type == 'bar' and $this->horizontal ) {
-            $layout['margin']['l'] = 150;
-            $layout['margin']['b'] = 50;
-        }
         if ($this->type == 'bar'and count($this->y_fields) > 1 and $this->stacked) {
             $layout['barmode'] = 'stack';
         }
 
         if (!in_array($this->type, array('pie', 'bar'))) {
             if (count($this->x_fields) == 1) {
-                $layout['xaxis'] = array(
-                    'title' => $this->getFieldAlias($this->x_fields[0]),
-                );
+                if (!array_key_exists('xaxis',$layout)) {
+                    $layout['xaxis'] = array();
+                }
+                $layout['xaxis']['title'] = $this->getFieldAlias($this->x_fields[0]);
             }
         }
         if (!in_array($this->type, array('pie', 'bar'))) {
             if (count($this->y_fields) == 1) {
-                $layout['yaxis'] = array(
-                    'title' => $this->getFieldAlias($this->y_fields[0]),
-                );
+                if (!array_key_exists('yaxis',$layout)) {
+                    $layout['yaxis'] = array();
+                }
+                $layout['yaxis']['title'] = $this->getFieldAlias($this->y_fields[0]);
             }
+        }
+
+        // Change margin when no legend
+        if (($this->type == 'pie' and !$this->display_legend) or $this->type == 'sunburst') {
+            $layout['margin']['b'] = 10;
         }
 
         return $layout;
@@ -399,7 +415,7 @@ class datavizPlot
                 'PROPERTYNAME' => implode(',', $propertyname)
             );
             // Sort by x fields when scatter plot is used
-            if($this->type == 'scatter'){
+            if ($this->type == 'scatter' or $this->type == 'pie'){
                 $wfsparams['SORTBY'] = ','.implode(',', $this->x_fields);
             }
             if (!empty($this->colorfields)) {
@@ -940,9 +956,12 @@ class datavizPlotPie extends datavizPlot
             'values' => array(),
             'labels' => array(),
             'hoverinfo' => 'label+value+percent',
+            'hovertemplate' => "%{label}<br>%{value:.1f}<br>%{percent:,.0%}",
             'textinfo' => 'value',
             'opacity' => null,
-            'hole' => '0.4'
+            'hole' => '0.4',
+            'automargin' => true,
+            'sort' => false // slices will be sort by X data
         );
     }
 }
@@ -1014,8 +1033,8 @@ class datavizPlotSunburst extends datavizPlot
             'labels' => array(),
             'parents' => array(),
             'branchvalues'=> 'total',
-            //'hovertemplate' => "%{label} (%{value:.1f})",
-            'hoverinfo' => "label+value+percent",
+            //'hoverinfo' => "label+value",
+            'hovertemplate' => "%{label}<br>%{value:.1f}<br>%{percentEntry:,.0%}",
             //'textinfo' => 'value',
             'texttemplate' => '%{value:.0f}',
             'opacity' => null,

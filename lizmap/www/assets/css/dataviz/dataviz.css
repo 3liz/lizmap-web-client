@@ -77,3 +77,13 @@ DARK THEME
 #dataviz-content.dark g.ytick text{
     fill: white !important;
 }
+#dataviz-content.dark path.textline{
+    stroke: white !important;
+}
+
+/*
+Diagram height, 450px by default*/
+.js-plotly-plot,
+.plot-container {
+    height: 400px;
+}

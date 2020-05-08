@@ -911,6 +911,7 @@ div.modal h3 {
 #sub-dock h3 span.title,
 #mini-dock h3 span.title,
 #bottom-dock h3 span.title,
+#right-dock h3 span.title,
 div.modal h3 span.title {
   display : block;
   padding : 0.5em 0.5em 0.5em 0.7em;
@@ -1004,6 +1005,7 @@ div.modal .form-actions {
 #sub-dock h3 .icon,
 #mini-dock h3 .icon,
 #bottom-dock h3 .icon,
+#right-dock h3 .icon,
 div.modal h3 .icon {
   display:inline-block;
   vertical-align:middle;
@@ -1022,6 +1024,7 @@ div.modal h3 .icon {
 #sub-dock h3 .text,
 #mini-dock h3 .text,
 #bottom-dock h3 .text,
+#right-dock h3 .text,
 div.modal h3 .text {
   vertical-align : bottom;
 }
