@@ -212,6 +212,16 @@ var lizDataviz = function() {
         }
     }
 
+    function resizePlot(id){
+        var d3 = Plotly.d3;
+        var gd = d3.select('#'+id)
+        .style({
+            width: '100%',
+            margin: '0px'
+        });
+        Plotly.Plots.resize(gd.node());
+    }
+
     function buildPlot(id, conf){
         // Build plot with plotly or lizmap
         if(conf.data.length && conf.data[0]['type'] == 'html'){
@@ -258,6 +268,38 @@ var lizDataviz = function() {
             }
         }
 
+
+        // Add events to resize plot when needed
+        lizMap.events.on({
+            dockopened: function(e) {
+                if ( $.inArray(e.id, ['dataviz', 'popup']) > -1 ) {
+                    resizePlot(id);
+                }
+            },
+            rightdockopened: function(e) {
+                if ( $.inArray(e.id, ['dataviz', 'popup']) > -1 ) {
+                    resizePlot(id);
+                }
+            },
+            bottomdockopened: function(e) {
+                if ( e.id == 'dataviz' ) {
+                    resizePlot(id);
+                }
+            },
+            bottomdocksizechanged: function(e) {
+                if($('#mapmenu li.dataviz').hasClass('active')  || $('#mapmenu li.popup').hasClass('active')){
+                    resizePlot(id);
+                }
+            }
+
+        });
+        $(window).resize(function() {
+            if($('#mapmenu li.dataviz').hasClass('active') || $('#mapmenu li.popup').hasClass('active')){
+                resizePlot(id);
+            }
+        });
+
+
         // Add event to hide/show plots if needed
         lizMap.events.on({
             'lizmaplayerchangevisibility': function(e) {
@@ -282,6 +324,9 @@ var lizDataviz = function() {
                         var layer = lizMap.map.getLayersByName(config.cleanname)[0]
                         var showPlot = (layer.getVisibility() && layer.inRange);
                         $('#' + id + '_container').toggle(showPlot);
+                        if(showPlot){
+                            resizePlot(id);
+                        }
                     }
                 }
             }
@@ -307,6 +352,9 @@ var lizDataviz = function() {
                         var lvisibility = oLayer.visibility;
                         var pvisibility = $('#' + id + '_container').is(":visible");
                         $('#' + id + '_container').toggle(lvisibility);
+                        if(lvisibility && !pvisibility){
+                            resizePlot(id);
+                        }
                     }
                 }
             }
@@ -387,6 +435,9 @@ var lizDataviz = function() {
         },
         getPlot: function(plot_id, exp_filter, target_id) {
           return getPlot(plot_id, exp_filter, target_id);
+        },
+        resizePlot: function(id) {
+          return resizePlot(id);
         },
         data: dv
     }
