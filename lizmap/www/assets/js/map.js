@@ -3136,10 +3136,9 @@ var lizMap = function() {
 
   function addChildrenDatavizFilteredByPopupFeature(popup, containerId) {
       // build selector
-      var selector = 'div.lizmapPopupContent > div.lizmapPopupDiv';
+      var selector = 'div.lizmapPopupContent div.lizmapPopupDiv';
       if ( containerId )
         selector = '#'+ containerId +' '+ selector;
-
      $(selector).each(function(){
         var mydiv = $(this);
 
@@ -3237,7 +3236,7 @@ var lizMap = function() {
                   rConfigLayer.cleanname = clname;
               }
 
-              var resizeTablesButtons = 
+              var resizeTablesButtons =
                 '<button class="compact-tables btn btn-small" data-original-title="' + lizDict['popup.table.compact'] + '"><i class="icon-resize-small"></i></button>'+
                 '<button class="explode-tables btn btn-small hide" data-original-title="' + lizDict['popup.table.explode'] + '"><i class="icon-resize-full"></i></button>';
 

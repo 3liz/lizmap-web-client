@@ -222,6 +222,30 @@ var lizDataviz = function() {
         Plotly.Plots.resize(gd.node());
     }
 
+    function getPlotIdByContainerId(id){
+        var pid = null;
+        if (id.substring(0, 13) == 'dataviz_plot_') {
+            pid = parseInt(id.replace('dataviz_plot_', ''));
+        } else {
+            for( var i in dv.config.layers) {
+                var dvLayerId = dv.config.layers[i]['layer_id'];
+                // Remove layer id prefix
+                var temp_pid = id.replace(dvLayerId, '');
+                if (id == temp_pid) {
+                    continue;
+                }
+                // Remove fid
+                temp_pid = temp_pid.replace(/^_[0-9]+_/, '');
+                // Get plot id
+                temp_pid = parseInt(temp_pid.split('_')[0]);
+                if (temp_pid) {
+                    pid = temp_pid;
+                }
+            }
+        }
+        return pid;
+    }
+
     function buildPlot(id, conf){
         // Build plot with plotly or lizmap
         if(conf.data.length && conf.data[0]['type'] == 'html'){
@@ -257,7 +281,13 @@ var lizDataviz = function() {
                 plotConfig
             );
 
-            var pid = parseInt(id.replace('dataviz_plot_', ''));
+            // Apply user defined layout
+            // We need to get the plot Lizmap config from its container id
+            var pid = getPlotIdByContainerId(id);
+            // Do nothing if pid not found
+            if (!pid) {
+                return;
+            }
             var plot_config = dv.config.layers[pid];
             if ('layout' in plot_config.plot && plot_config.plot.layout) {
                 var user_layout = plot_config.plot.layout;
@@ -267,6 +297,8 @@ var lizDataviz = function() {
                 Plotly.relayout(id, new_layout);
             }
         }
+
+
 
 
         // Add events to resize plot when needed
@@ -310,7 +342,10 @@ var lizDataviz = function() {
                     var layerId = config.id;
 
                     // Get plot id and layer id
-                    var pid = parseInt(id.replace('dataviz_plot_', ''));
+                    var pid = getPlotIdByContainerId(id);
+                    if (!pid) {
+                        return;
+                    }
                     var plot_config = dv.config.layers[pid];
                     if(!('display_when_layer_visible' in plot_config.plot)){
                         return;
