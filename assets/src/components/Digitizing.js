@@ -16,9 +16,6 @@ export default class Digitizing extends HTMLElement {
                 <button type="button" class="digitizing-toggle-visibilty btn btn-mini" @click=${() => mainLizmap.digitizing.toggleFeatureDrawnVisibility()}  data-original-title="${lizDict['tree.button.checkbox']}">
                     <i class="icon-eye-${mainLizmap.digitizing._featureDrawnVisibility ? 'open' : 'close'}"></i>
                 </button>
-                <button type="button" class="digitizing-deactivate btn btn-small ${mainLizmap.digitizing.toolSelected === 'deactivate' ? 'active' : ''}" @click=${() => mainLizmap.digitizing.toolSelected = 'deactivate'} data-original-title="${lizDict['digitizing.toolbar.query.deactivate']}">
-                    <i class="icon-none qgis_sprite mIconDeselected"></i>
-                </button>
                 <button type="button" class="digitizing-point btn btn-small ${mainLizmap.digitizing.toolSelected === 'point' ? 'active' : ''}" @click=${() => mainLizmap.digitizing.toolSelected = 'point'} data-original-title="${lizDict['digitizing.toolbar.query.point']}">
                     <svg>
                         <use xlink:href="#mActionSelectPoint"></use>
