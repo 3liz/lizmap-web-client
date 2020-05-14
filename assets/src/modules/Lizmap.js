@@ -3,6 +3,7 @@ import Edition from '../modules/Edition.js';
 import Geolocation from '../modules/Geolocation.js';
 import GeolocationSurvey from '../modules/GeolocationSurvey.js';
 import SelectionTool from '../modules/SelectionTool.js';
+import Digitizing from '../modules/Digitizing.js';
 import Snapping from '../modules/Snapping.js';
 
 import { get as getProjection } from 'ol/proj';
@@ -30,6 +31,7 @@ export default class Lizmap {
                 this.geolocation = new Geolocation();
                 this.geolocationSurvey = new GeolocationSurvey();
                 this.selectionTool = new SelectionTool();
+                this.digitizing = new Digitizing();
                 this.snapping = new Snapping();
             }
         });

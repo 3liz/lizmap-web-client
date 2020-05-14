@@ -102,7 +102,7 @@ export default class SelectionTool extends HTMLElement {
             () => {
                 render(mainTemplate(), this);
             },
-            ['selectionTool.toolSelected', 'selectionTool.newAddRemoveSelected', 'selectionTool.allFeatureTypeSelected', 'selectionTool.selectionChanged', 'selectionTool.filteredFeaturesChanged', 'selectionTool.toogleSelectionLayerVisibility']
+            ['selectionTool.newAddRemoveSelected', 'selectionTool.allFeatureTypeSelected', 'selectionTool.selectionChanged', 'selectionTool.filteredFeaturesChanged', 'selectionTool.toogleSelectionLayerVisibility']
         );
     }
 
