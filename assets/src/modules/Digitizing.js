@@ -252,33 +252,39 @@ export default class Digitizing {
 
     set toolSelected(tool) {
         if (this._tools.includes(tool)) {
-            // Disable all tools then enable the chosen one
+            // Disable all tools
             for (const key in mainLizmap.lizmap3.controls.selectiontool) {
                 mainLizmap.lizmap3.controls.selectiontool[key].deactivate();
             }
 
-            switch (tool) {
-                case this._tools[1]:
-                    mainLizmap.lizmap3.controls.selectiontool.queryPointLayerCtrl.activate();
-                    break;
-                case this._tools[2]:
-                    mainLizmap.lizmap3.controls.selectiontool.queryLineLayerCtrl.activate();
-                    break;
-                case this._tools[3]:
-                    mainLizmap.lizmap3.controls.selectiontool.queryPolygonLayerCtrl.activate();
-                    break;
-                case this._tools[4]:
-                    mainLizmap.lizmap3.controls.selectiontool.queryBoxLayerCtrl.activate();
-                    break;
-                case this._tools[5]:
-                    mainLizmap.lizmap3.controls.selectiontool.queryCircleLayerCtrl.activate();
-                    break;
-                case this._tools[6]:
-                    mainLizmap.lizmap3.controls.selectiontool.queryFreehandLayerCtrl.activate();
-                    break;
+            // If current selected tool is selected again => unactivate
+            if(this._toolSelected === tool){
+                this._toolSelected = this._tools[0];
+            }else{
+                switch (tool) {
+                    case this._tools[1]:
+                        mainLizmap.lizmap3.controls.selectiontool.queryPointLayerCtrl.activate();
+                        break;
+                    case this._tools[2]:
+                        mainLizmap.lizmap3.controls.selectiontool.queryLineLayerCtrl.activate();
+                        break;
+                    case this._tools[3]:
+                        mainLizmap.lizmap3.controls.selectiontool.queryPolygonLayerCtrl.activate();
+                        break;
+                    case this._tools[4]:
+                        mainLizmap.lizmap3.controls.selectiontool.queryBoxLayerCtrl.activate();
+                        break;
+                    case this._tools[5]:
+                        mainLizmap.lizmap3.controls.selectiontool.queryCircleLayerCtrl.activate();
+                        break;
+                    case this._tools[6]:
+                        mainLizmap.lizmap3.controls.selectiontool.queryFreehandLayerCtrl.activate();
+                        break;
+                }
+
+                this._toolSelected = tool;
             }
 
-            this._toolSelected = tool;
             mainEventDispatcher.dispatch('digitizing.toolSelected');
         }
     }
