@@ -51,14 +51,21 @@ export default class Digitizing {
 
         const queryLayer = new OpenLayers.Layer.Vector(
             'selectionQueryLayer', {
-            styleMap: drawStyleMap
-        }
+                styleMap: drawStyleMap
+            }
         );
 
         const bufferLayer = new OpenLayers.Layer.Vector(
             'selectionBufferLayer', {
-            styleMap: drawStyleMap
-        }
+                styleMap: new OpenLayers.StyleMap({
+                    fillColor: 'blue',
+                    fillOpacity: 0.1,
+                    strokeColor: 'blue',
+                    strokeOpacity: 1,
+                    strokeWidth: 1,
+                    strokeDashstyle: 'longdash'
+                })
+            }
         );
 
         mainLizmap.lizmap3.map.addLayers([queryLayer, bufferLayer]);
