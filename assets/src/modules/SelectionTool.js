@@ -62,15 +62,29 @@ export default class SelectionTool {
             format => !['GML2', 'GML3', 'GEOJSON'].includes(format.tagName)
         );
 
-        // Listen to digitizing tool to query a selection when a feature is drawn
+        // Listen to digitizing tool to query a selection when tool is active and a feature is drawn
         mainEventDispatcher.addListener(
             () => {
-                for (const featureType of this.allFeatureTypeSelected) {
-                    mainLizmap.lizmap3.selectLayerFeaturesFromSelectionFeature(featureType, mainLizmap.digitizing.featureDrawn, this._geomOperator);
+                if(this.isActive){
+                    for (const featureType of this.allFeatureTypeSelected) {
+                        mainLizmap.lizmap3.selectLayerFeaturesFromSelectionFeature(featureType, mainLizmap.digitizing.featureDrawn, this._geomOperator);
+                    }
                 }
             },
             ['digitizing.featureDrawn']
         );
+    }
+
+    
+    /**
+     * Is selection tool active or not
+     * @todo active state should be set on UI's events
+     * @readonly
+     * @memberof SelectionTool
+     * @return {boolean}
+     */
+    get isActive() {
+        return document.getElementById('button-selectiontool').parentElement.classList.contains('active')
     }
 
     get layers() {
@@ -160,10 +174,8 @@ export default class SelectionTool {
     }
 
     disable() {
-        const btnSelectionTool = document.getElementById('button-selectiontool');
-
-        if (btnSelectionTool.parentElement.classList.contains('active')) {
-            btnSelectionTool.click();
+        if (this.isActive) {
+            document.getElementById('button-selectiontool').click();
         }
     }
 
