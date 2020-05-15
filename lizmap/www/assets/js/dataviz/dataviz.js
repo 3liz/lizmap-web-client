@@ -353,7 +353,6 @@ var lizDataviz = function() {
             'lizmaplayerchangevisibility': function(e) {
                 if (e.config !== undefined && 'datavizLayers' in lizMap.config ){
                     // Get layer info
-                    var name = e.name;
                     var config = e.config;
                     var layerId = config.id;
 
