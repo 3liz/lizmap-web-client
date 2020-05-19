@@ -7,7 +7,7 @@ jobs:
   stale:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/stale@v3.0.1
+    - uses: actions/stale@v3.0.3
       with:
         repo-token: ${{ secrets.GH_TOKEN }}
         days-before-stale: 365
@@ -16,7 +16,7 @@ jobs:
         stale-issue-message: |
           Hiya!
           This issue has gone quiet.  👻
-          We get a few questions in the bug tracker, so we currently closing issues slowly.
+          We get a few questions in the bug tracker, so we currently slowly closing issues.
           If we missed this issue or if you want to keep it open, please reply here.
           As a friendly reminder: the best way to see this issue, or any other, fixed is to open a Pull Request.
           Thanks for being a part of the Lizmap community! 🦎
