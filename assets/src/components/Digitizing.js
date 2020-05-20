@@ -43,7 +43,7 @@ export default class Digitizing extends HTMLElement {
             <div>
                 ${lizDict['digitizing.toolbar.buffer']}&nbsp;:&nbsp;
                 <div class="input-append">
-                    <input class="input-mini" type="number" min="0" value="0" @change=${ (event) => mainLizmap.digitizing._bufferValue = parseInt(event.target.value)}><span class="add-on">m</span>
+                    <input class="input-mini" type="number" min="0" .value="${mainLizmap.digitizing.bufferValue}" @input=${ (event) => mainLizmap.digitizing.bufferValue = parseInt(event.target.value)}><span class="add-on">m</span>
                 </div>
             </div>
         </div>`;
@@ -60,7 +60,7 @@ export default class Digitizing extends HTMLElement {
             () => {
                 render(mainTemplate(), this);
             },
-            ['digitizing.toolSelected']
+            ['digitizing.toolSelected', 'digitizing.bufferValue']
         );
     }
 

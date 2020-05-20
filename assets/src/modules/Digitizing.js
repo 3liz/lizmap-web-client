@@ -300,6 +300,12 @@ export default class Digitizing {
         return this._bufferValue;
     }
 
+    set bufferValue(bufferValue){
+        this._bufferValue = bufferValue;
+
+        mainEventDispatcher.dispatch('digitizing.bufferValue');
+    }
+
     get featureDrawn(){
         return this._featureDrawn;
     }
