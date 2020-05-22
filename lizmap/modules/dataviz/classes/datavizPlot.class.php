@@ -958,6 +958,7 @@ class datavizPlotPie extends datavizPlot
             'hoverinfo' => 'label+value+percent',
             'hovertemplate' => "%{label}<br>%{value:.1f}<br>%{percent:,.0%}",
             'textinfo' => 'value',
+            'texttemplate' => '%{value:.1f}',
             'opacity' => null,
             'hole' => '0.4',
             'automargin' => true,
@@ -1036,7 +1037,7 @@ class datavizPlotSunburst extends datavizPlot
             //'hoverinfo' => "label+value",
             'hovertemplate' => "%{label}<br>%{value:.1f}<br>%{percentEntry:,.0%}",
             //'textinfo' => 'value',
-            'texttemplate' => '%{value:.0f}',
+            'texttemplate' => '%{value:.1f}',
             'opacity' => null,
         );
     }
