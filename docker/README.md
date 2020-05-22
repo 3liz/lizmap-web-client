@@ -24,6 +24,16 @@ must be identical to the one given in the nginx *root* directive, ex:
 root <LIZMAP_HOME>/www
 ```
 
+### Tuning PHP Variables
+- PM_MAX_CHILDREN: Maximum number of child processes.
+- PM_START_SERVERS: The number of child processes created on startup.
+- PM_MIN_SPARE_SERVERS: The desired minimum number of idle server processes.
+- PM_MAX_SPARE_SERVERS: The desired maximum number of idle server processes.
+- PM_CHILD_PROCESS: Control the number of child processes values can be (static,dynamic,ondemand)
+- PM_MAX_REQUESTS: The number of requests each child process should execute before respawning
+- PM_PROCESS_IDLE_TIMEOUT: The number of seconds after which an idle process will be killed.
+
+For more information about these read [PHP](https://www.php.net/manual/en/install.fpm.configuration.php)
 ## Volumes
 
 The following volumes are used:
