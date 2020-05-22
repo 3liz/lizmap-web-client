@@ -55,6 +55,11 @@ sed -i "/^pm.max_children =/c\pm.max_children = ${PM_MAX_CHILDREN:-50}"   /etc/p
 sed -i "/^pm.start_servers =/c\pm.start_servers = ${PM_START_SERVERS:-5}" /etc/php7/php-fpm.d/www.conf
 sed -i "/^pm.min_spare_servers =/c\pm.min_spare_servers = ${PM_MIN_SPARE_SERVERS:-5}" /etc/php7/php-fpm.d/www.conf
 sed -i "/^pm.max_spare_servers =/c\pm.max_spare_servers = ${PM_MAX_SPARE_SERVERS:-35}" /etc/php7/php-fpm.d/www.conf
+# Add custom env variables
+sed -i "/^pm =/c\pm = ${PM_CHILD_PROCESS:-dynamic}" /etc/php7/php-fpm.d/www.conf
+sed -i "/^;pm.max_requests =/c\pm.max_requests = ${PM_MAX_REQUESTS:-100}" /etc/php7/php-fpm.d/www.conf
+sed -i "/^;pm.process_idle_timeout =/c\pm.process_idle_timeout = ${PM_PROCESS_IDLE_TIMEOUT:-10s}" /etc/php7/php-fpm.d/www.conf
+
 
 # Enable status path
 sed -i "/^;pm.status_path /c\pm.status_path = /status" /etc/php7/php-fpm.d/www.conf
