@@ -42,6 +42,12 @@ var lizDataviz = function() {
             }
         });
 
+        // Change style of outer text in dark mode
+        $('#dataviz-content.dark path.textline')
+        .parent()
+        .find('g.slicetext text')
+        .css('fill', 'white');
+
     }
 
     function refreshPlotsOnFilter(featureType, filter){
@@ -298,6 +304,13 @@ var lizDataviz = function() {
                 var new_layout = user_layout;
                 Plotly.relayout(id, new_layout);
             }
+
+            // Change style of outer text in dark mode
+            $('#dataviz-content.dark #'+id+' path.textline')
+            .parent()
+            .find('g.slicetext text')
+            .css('fill', 'white');
+
         }
 
 
