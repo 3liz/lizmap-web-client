@@ -76,7 +76,9 @@ var lizDataviz = function() {
             html+= '</span></h3>';
         }
         html+= '<div class="menu-content">';
-        html+= '  <p>'+abstract+'</p>';
+        if (abstract.trim() != '') {
+            html+= '  <p>'+abstract.trim()+'</p>';
+        }
         html+= '  <div class="dataviz-waiter progress progress-striped active" style="margin:5px 5px;">';
         html+= '    <div class="bar" style="width: 100%;"></div>';
         html+= '  </div>';
@@ -333,6 +335,7 @@ var lizDataviz = function() {
 
 
         // Add event to hide/show plots if needed
+        // We use the id variable for the plot: we are in the buildPlot function
         lizMap.events.on({
             'lizmaplayerchangevisibility': function(e) {
                 if( 'datavizLayers' in lizMap.config ){
@@ -402,15 +405,12 @@ var lizDataviz = function() {
     }
 
     // Find plots for non spatial layers wich are children of given plot id
-    function getChildTablePlots(id) {
+    function getChildTablePlots(layerId) {
         var children = [];
-        var pid = parseInt(id.replace('dataviz_plot_', ''));
-        var plot_config = dv.config.layers[pid];
-        var layerId = plot_config['layer_id'];
         if (!('relations' in lizMap.config) || !(layerId in lizMap.config.relations)) {
             return children;
         }
-        var getLayerConfig = lizMap.getLayerConfigById( plot_config['layer_id'] );
+        var getLayerConfig = lizMap.getLayerConfigById(layerId);
         if (!getLayerConfig) {
             return children;
         }
@@ -424,9 +424,14 @@ var lizDataviz = function() {
                 if (plotLayers[i].layer_id==children_layer_id) {
                     var child_plot_config = plotLayers[i];
                     var child_plot_id = child_plot_config.plot_id;
-                    // Check child layer is spatial
-                    var c_getLayerConfig = lizMap.getLayerConfigById( plot_config['layer_id'] );
-                    if (c_getLayerConfig && c_getLayerConfig[1].geometryType == 'none') {
+                    // Check child layer is non spatial
+                    // And if we must take the visibility into account
+                    var c_getLayerConfig = lizMap.getLayerConfigById(children_layer_id);
+                    if (
+                        c_getLayerConfig && c_getLayerConfig[1].geometryType == 'none'
+                        && 'display_when_layer_visible' in child_plot_config.plot
+                        && optionToBoolean(child_plot_config.plot.display_when_layer_visible)
+                    ) {
                         children.push(child_plot_id);
                     }
                 }
@@ -437,7 +442,6 @@ var lizDataviz = function() {
 
     lizMap.events.on({
         'uicreated':function(evt){
-
             if( 'datavizLayers' in lizMap.config ){
                 // Get config
                 dv.config = lizMap.config.datavizLayers;
@@ -452,11 +456,34 @@ var lizDataviz = function() {
                     )
                     $('#dataviz-content').append(dv.template);
                 }
-
                 // Build all plots
                 getPlots();
             }
+        },
 
+        // Set plot visibility for non spatial child layers
+        'lizmaplayerchangevisibility': function(e) {
+            if( 'datavizLayers' in lizMap.config ){
+                // Get layer info
+                var name = e.name;
+                var config = e.config;
+                var layerId = config.id;
+
+                // Test if layer is visible and in range (scales)
+                var layer = lizMap.map.getLayersByName(config.cleanname)[0]
+                var showPlot = (layer.getVisibility() && layer.inRange);
+
+                // Get non spatial children layers
+                var children = getChildTablePlots(layerId);
+                for (var c in children) {
+                    var child = children[c];
+                    var child_html_id = 'dataviz_plot_' + child;
+                    $('#' + child_html_id + '_container').toggle(showPlot);
+                    if(showPlot){
+                        resizePlot(child_html_id);
+                    }
+                }
+            }
         }
     });
 
