@@ -2489,6 +2489,10 @@ div.tooltip {
   background-color: rgba(255, 171, 0, 0.4);
 }
 
+.digitizing-toggle-visibility{
+  vertical-align: top;
+}
+
 .digitizing-buttons {
   margin-bottom: 10px;
 }
@@ -2503,8 +2507,8 @@ div.tooltip {
   height: 24px;
 }
 
-.digitizing-box {
-  margin-left: 46px;
+.digitizing-buffer > label > span {
+  vertical-align: text-bottom;
 }
 
 lizmap-selection-invert svg {

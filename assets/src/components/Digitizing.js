@@ -40,11 +40,12 @@ export default class Digitizing extends HTMLElement {
                     <i class="icon-none qgis_sprite mActionSelectFreehand"></i>
                 </button>
             </div>
-            <div>
-                ${lizDict['digitizing.toolbar.buffer']}&nbsp;:&nbsp;
-                <div class="input-append">
-                    <input class="input-mini" type="number" min="0" .value="${mainLizmap.digitizing.bufferValue}" @input=${ (event) => mainLizmap.digitizing.bufferValue = parseInt(event.target.value)}><span class="add-on">m</span>
-                </div>
+            <div class="digitizing-buffer">
+                <label><span>${lizDict['digitizing.toolbar.buffer']}</span>
+                    <div class="input-append">
+                        <input class="input-mini" type="number" min="0" .value="${mainLizmap.digitizing.bufferValue}" @input=${ (event) => mainLizmap.digitizing.bufferValue = parseInt(event.target.value)}><span class="add-on">m</span>
+                    </div>
+                </label>
             </div>
         </div>`;
 
