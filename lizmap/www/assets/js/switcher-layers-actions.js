@@ -220,7 +220,7 @@ var lizLayerActionButtons = function() {
 
             html+= '</div>';
             html+= '</div>';
-            html+= '<button id="hide-sub-dock" class="btn btn-mini pull-right" style="margin-top:5px;" name="close" title="'+lizDict['generic.btn.close.title']+'" value="'+aName+'">'+lizDict['generic.btn.close.title']+'</button>';
+            html+= '<button id="hide-sub-dock" class="btn btn-mini pull-right" name="close" title="'+lizDict['generic.btn.close.title']+'" value="'+aName+'">'+lizDict['generic.btn.close.title']+'</button>';
         }
 
         return html;
@@ -237,30 +237,8 @@ var lizLayerActionButtons = function() {
 
         var subDockVisible = ( $('#sub-dock').css('display') != 'none' );
         if( !subDockVisible ){
-            if( !lizMap.checkMobile() ){
-                var leftPos = lizMap.getDockRightPosition();
-                $('#sub-dock').css('left', leftPos).css('width', leftPos);
-            }
             $('#sub-dock').show();
-
-            var mh = $('#sub-dock').height();
-            mh -= parseInt($('#sub-dock').css('padding-top'));
-            mh -= parseInt($('#sub-dock').css('padding-bottom'));
-            mh -= $('#sub-dock > .sub-metadata > h3').outerHeight();
-            mh -= parseInt($('#sub-dock > .sub-metadata > h3').css('margin-bottom'));
-            mh -= $('#sub-dock > button').outerHeight();
-            mh -= parseInt($('#sub-dock > button').css('margin-top'));
-            mh -= parseInt($('#sub-dock > .sub-metadata > .menu-content').css('padding-top'));
-            mh -= parseInt($('#sub-dock > .sub-metadata > .menu-content').css('padding-bottom'));
-            $('#sub-dock > .sub-metadata > .menu-content')
-                .css('max-height', mh)
-                .css('overflow', 'auto');
-
-            $(this).addClass('active');
         }
-
-
-
     }
 
     lizMap.events.on({
@@ -629,7 +607,6 @@ var lizLayerActionButtons = function() {
 
         // Refresh sub-dock content
         toggleMetadataSubDock(itemName, itemSelected);
-
     }
 
     });

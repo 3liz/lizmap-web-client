@@ -395,9 +395,6 @@ SubDock
 */
 #sub-dock{
   display:none;
-  position:absolute;
-  left:30px;
-  top:0px;
   max-height:100%;
   z-index:1001;
   overflow:auto;
@@ -406,7 +403,8 @@ SubDock
   padding:5px;
   border-left: 1px solid #F0F0F0;
   max-width:30%;
-  right:auto;
+
+  align-self: flex-start;
 }
 #content.mobile #sub-dock{
   max-width:100%;
@@ -430,6 +428,10 @@ SubDock
 #sub-dock div.menu-content .btn-mini [class^="icon-"],
 #sub-dock div.menu-content .btn-mini [class*=" icon-"]{
   margin-top: 1px;
+}
+
+#hide-sub-dock{
+  margin-top:5px;
 }
 
 /* Mini-Dock */
