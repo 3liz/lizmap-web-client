@@ -1,7 +1,7 @@
 var bottomDockFunction = function() {
 
     lizMap.events.on({
-        'uicreated':function(evt){
+        'uicreated':function(){
 
         // Attributes
         var config = lizMap.config;
@@ -9,9 +9,6 @@ var bottomDockFunction = function() {
         var bottomDockActive = false;
         var bottomDockGlued = false;
         var bottomDockFullsize = false;
-
-        // Initialize bottom dock position
-        $('#bottom-dock').css('left',  lizMap.getDockRightPosition() );
 
         // Hide/show bottom dock on hover out/in (with small delay)
         $(function() {
@@ -92,7 +89,6 @@ var bottomDockFunction = function() {
             .html(lizDict['bottomdock.toolbar.btn.glue.glued.title']);
             lizMap.events.triggerEvent('bottomdockpinned', null );
           }
-          $('#bottom-dock').css('left',  lizMap.getDockRightPosition() );
           return false;
         })
         .hover(
@@ -154,7 +150,6 @@ var bottomDockFunction = function() {
             $('#bottom-dock').addClass('fullsize');
             lizMap.events.triggerEvent('bottomdocksizechanged', {'size': 'full'} );
           }
-          $('#bottom-dock').css('left',  lizMap.getDockRightPosition() );
           return false;
         })
         .hover(
@@ -222,7 +217,6 @@ var bottomDockFunction = function() {
               parent.addClass('active');
               bottomDockActive = true;
               lizMap.events.triggerEvent( "bottomdockopened", {'id':id} );
-              $('#bottom-dock').css('left',  lizMap.getDockRightPosition() );
               $('#bottom-dock').addClass('visible');
           }
           self.blur();
@@ -237,7 +231,6 @@ var bottomDockFunction = function() {
 
         function showBottomDockContent(){
           $('#bottom-dock').addClass('visible');
-          $('#bottom-dock').css('left',  lizMap.getDockRightPosition() );
           lizMap.events.triggerEvent('bottomdocksizechanged', {'size': 'unknown'} );
           return false;
         }
