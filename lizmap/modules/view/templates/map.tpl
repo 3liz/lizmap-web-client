@@ -18,25 +18,26 @@
 
 <div id="content">
 
-  <div id="mapmenu" style="">
+  <div id="mapmenu">
     {zone 'view~map_menu', array('repository'=>$repository,'project'=>$project,'dockable'=>$dockable,'minidockable'=>$minidockable, 'bottomdockable'=>$bottomdockable, 'rightdockable'=>$rightdockable)}
   </div>
 
-  <div id="dock">
+  <div id="docks-wrapper">
+    <div id="dock">
       {zone 'view~map_dock', array('repository'=>$repository,'project'=>$project,'dockable'=>$dockable)}
+    </div>
+    
+    <div id="sub-dock">
+    </div>
+    
+    <div id="bottom-dock" style="display:none;">
+      {zone 'view~map_bottomdock', array('repository'=>$repository,'project'=>$project,'dockable'=>$bottomdockable)}
+    </div>
+    
+    <div id="right-dock" style="display:none;">
+      {zone 'view~map_rightdock', array('repository'=>$repository,'project'=>$project,'dockable'=>$rightdockable)}
+    </div>
   </div>
-
-  <div id="sub-dock">
-  </div>
-
-  <div id="bottom-dock" style="display:none;">
-    {zone 'view~map_bottomdock', array('repository'=>$repository,'project'=>$project,'dockable'=>$bottomdockable)}
-  </div>
-
-  <div id="right-dock" style="display:none;">
-    {zone 'view~map_rightdock', array('repository'=>$repository,'project'=>$project,'dockable'=>$rightdockable)}
-  </div>
-
   <div id="map-content">
     <div id="map"></div>
 

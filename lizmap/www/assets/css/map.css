@@ -293,11 +293,7 @@ CSS Sprite positions calculated via http://instantsprite.com/ using 20px images 
 
 /* Dock */
 #dock {
-  position:absolute;
-  left:30px;
-  top:0px;
-  bottom:0px;
-
+  position: relative;
   z-index:1040;
   overflow:auto;
   background-color:#4A4A4A;
@@ -305,7 +301,6 @@ CSS Sprite positions calculated via http://instantsprite.com/ using 20px images 
   padding:5px;
   border-left: 1px solid #F0F0F0;
   max-width:30%;
-  right:auto;
   padding-bottom: 20px;
 }
 
@@ -1416,6 +1411,14 @@ transform: none !important;
 }
 
 #dock-content {
+  height: 100%;
+}
+
+#docks-wrapper{
+  display: flex;
+  position: absolute;
+  left: 30px;
+  width: calc(100% - 30px);
   height: 100%;
 }
 
