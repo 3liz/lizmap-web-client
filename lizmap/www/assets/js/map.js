@@ -7274,12 +7274,6 @@ lizMap.events.on({
         });
      }
 
-      // Make subdock always be at the left
-      $('#sub-dock').hover(function(){
-        var sLeft = lizMap.getDockRightPosition();
-        $(this).css( 'left', sLeft );
-      });
-
       // Update legend if mobile
       if( lizMap.checkMobile() ){
         if( $('#button-switcher').parent().hasClass('active') )
