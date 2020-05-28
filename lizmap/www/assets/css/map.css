@@ -460,21 +460,19 @@ SubDock
   display:none;
 }
 
-/* Dock */
+/* Bottom-dock */
 #bottom-dock {
   opacity:0.5;
-  position:absolute;
-  left:300px;
-  right:10px;
-  width:auto;
-  height:auto;
-  bottom:0px;
+  position:relative;
   z-index:5000;
   overflow:auto;
   background-color:#4A4A4A;
   background-color:rgba(0,0,0,0.7);
   padding:5px;
   border-left: 1px solid #F0F0F0;
+
+  flex-grow: 1;
+  align-self: flex-end;
 }
 #content.right-dock-visible #bottom-dock{
   right: 30.05%;
