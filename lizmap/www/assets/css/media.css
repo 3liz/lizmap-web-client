@@ -154,17 +154,11 @@ only screen and (                   max-device-height : 640px) {
   }
 
   #bottom-dock  {
-    width: auto;
-    height: auto;
-    right: 0px;
-  }
-  #bottom-dock.visible {
-    height: 100%;
     opacity: 1;
   }
-  #bottom-dock.half-transparent {
-    height: 100%;
-    opacity: 1;
+
+  #docks-wrapper{
+    flex-wrap: wrap;
   }
 
 }

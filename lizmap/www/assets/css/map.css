@@ -305,11 +305,10 @@ CSS Sprite positions calculated via http://instantsprite.com/ using 20px images 
 }
 
 #content.mobile #dock{
-  max-width:100%;
-  bottom:0px;
-  right:0px;
+  max-width:none;
   background-color:#4A4A4A;
   z-index:1100;
+  flex-grow: 1;
 }
 
 body.geolocation-minidock-active #content.mobile #dock{
@@ -477,16 +476,6 @@ SubDock
   transition-property: opacity;
   transition-duration: .4s;
 }
-
-#content.mobile #bottom-dock, #content.right-dock-visible.mobile #bottom-dock{
-  max-width:100%;
-  top:auto;
-  bottom:0px;
-  right:0px;
-  left:30px;
-  width:auto;
-}
-
 
 #bottom-dock-window-buttons {
   display:none;
@@ -1150,13 +1139,9 @@ transform: none !important;
 }
 
 #content.mobile #right-dock{
-  max-width:100%;
-  top:auto;
-  bottom:0px;
-  right:0px;
-  left:30px;
-  width:auto;
-  z-index:1100;
+  max-width:none;
+  width: auto;
+  z-index:1099;
 }
 
 #right-dock > .tabbable{
