@@ -473,6 +473,9 @@ SubDock
 
   flex-grow: 1;
   align-self: flex-end;
+
+  transition-property: opacity;
+  transition-duration: .4s;
 }
 #content.right-dock-visible #bottom-dock{
   right: 30.05%;
