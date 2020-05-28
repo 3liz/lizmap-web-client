@@ -4,51 +4,7 @@ var bottomDockFunction = function() {
         'uicreated':function(){
 
         // Attributes
-        var config = lizMap.config;
-        var layers = lizMap.layers;
-        var bottomDockActive = false;
-        var bottomDockGlued = false;
         var bottomDockFullsize = false;
-
-        // Hide/show bottom dock on hover out/in (with small delay)
-        $(function() {
-            var lizBottomDockTimer;
-            var lizBottomDockTimeHoverOut = 700;
-            var lizBottomDockTimeHoverIn = 50;
-            if( 'bottomDockTimeHoverOut' in lizMap.config.options )
-              lizBottomDockTimeHoverOut = lizMap.config.options.bottomDockTimeHoverOut;
-            if( 'bottomDockTimeHoverIn' in lizMap.config.options )
-              lizBottomDockTimeHoverIn = lizMap.config.options.bottomDockTimeHoverIn;
-
-            $('#bottom-dock').hover(
-              // hover in
-              function() {
-                if(lizBottomDockTimer) {
-                    clearTimeout(lizBottomDockTimer);
-                    lizBottomDockTimer = null;
-                }
-                $(this).removeClass('half-transparent');
-                lizBottomDockTimer = setTimeout(function() {
-                  showBottomDockContent();
-                  return false;
-                }, lizBottomDockTimeHoverIn);
-              },
-              // mouse out
-              function(){
-                if(lizBottomDockTimer) {
-                    clearTimeout(lizBottomDockTimer);
-                    lizBottomDockTimer = null;
-                }
-                $(this).addClass('half-transparent');
-                lizBottomDockTimer = setTimeout(function() {
-                  if ( !bottomDockGlued &&!lizMap.checkMobile()){
-                    hideBottomDockContent();
-                  }
-                  return false;
-                }, lizBottomDockTimeHoverOut);
-              }
-            );
-        });
 
         // Bind bottom dock buttons actions
 
@@ -61,67 +17,6 @@ var bottomDockFunction = function() {
         .hover(
           function(){ $(this).addClass('btn-danger'); },
           function(){ $(this).removeClass('btn-danger'); }
-        );
-
-        // Pin button
-        $('#bottom-dock .btn-bottomdock-glue')
-        .click(function() {
-          if ( bottomDockGlued ) {
-            bottomDockGlued = false;
-            $(this)
-            .removeClass('active')
-            .attr(
-              'title',
-              lizDict['bottomdock.toolbar.btn.glue.activate.title']
-            )
-            .html(lizDict['bottomdock.toolbar.btn.glue.activate.title']);
-            hideBottomDockContent();
-
-            lizMap.events.triggerEvent('bottomdockunpinned', null );
-          }
-          else {
-            bottomDockGlued = true;
-            $(this).addClass('active')
-            .attr(
-              'title',
-              lizDict['bottomdock.toolbar.btn.glue.deactivate.title']
-            )
-            .html(lizDict['bottomdock.toolbar.btn.glue.glued.title']);
-            lizMap.events.triggerEvent('bottomdockpinned', null );
-          }
-          return false;
-        })
-        .hover(
-          function(){
-            if( bottomDockGlued ){
-              $(this)
-              .removeClass('btn-primary')
-              .attr('title', lizDict['bottomdock.toolbar.btn.glue.deactivate.title'])
-              .html(lizDict['bottomdock.toolbar.btn.glue.deactivate.title']);
-            }
-            else{
-              $(this)
-              .addClass('btn-primary')
-              .attr('title', lizDict['bottomdock.toolbar.btn.glue.activate.title'])
-              .html(lizDict['bottomdock.toolbar.btn.glue.activate.title']);
-            }
-            return false;
-          },
-          function(){
-            if (bottomDockGlued ){
-              $(this)
-              .addClass('btn-primary')
-              .attr('title', lizDict['bottomdock.toolbar.btn.glue.deactivate.title'])
-              .html(lizDict['bottomdock.toolbar.btn.glue.deactivate.title']);
-            }
-            else{
-              $(this)
-              .removeClass('btn-primary')
-              .attr('title', lizDict['bottomdock.toolbar.btn.glue.activate.title'])
-              .html(lizDict['bottomdock.toolbar.btn.glue.activate.title']);
-            }
-            return false;
-          }
         );
 
         // Size button

@@ -505,11 +505,11 @@ SubDock
 }
 
 #bottom-dock.visible {
-  opacity: 1;
   height: 48%;
+}
 
-}#bottom-dock.half-transparent {
-  opacity: 0.5;
+#bottom-dock:hover {
+  opacity: 1;
 }
 
 #bottom-dock.fullsize {
@@ -533,7 +533,7 @@ SubDock
   float : right;
   margin-left: 5px;
 }
-#content.mobile .btn-bottomdock-glue,
+
 #content.mobile .btn-bottomdock-size {
   display:none;
 }
