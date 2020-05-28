@@ -10,7 +10,6 @@
       <div id="bottom-dock-window-buttons">
         <button class="btn-bottomdock-clear btn btn-mini" type="button" title="{@view~map.bottomdock.toolbar.btn.clear.title@}">{@view~map.bottomdock.toolbar.btn.clear.title@}</button>
         &nbsp;
-        <button class="btn-bottomdock-glue btn btn-mini" type="button" title="{@view~map.bottomdock.toolbar.btn.glue.activate.title@}">{@view~map.bottomdock.toolbar.btn.glue.activate.title@}</button>
         <button class="btn-bottomdock-size btn btn-mini" type="button" title="{@view~map.bottomdock.toolbar.btn.size.maximize.title@}">{@view~map.bottomdock.toolbar.btn.size.maximize.title@}</button>
       </div>
 
