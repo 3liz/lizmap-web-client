@@ -477,9 +477,7 @@ SubDock
   transition-property: opacity;
   transition-duration: .4s;
 }
-#content.right-dock-visible #bottom-dock{
-  right: 30.05%;
-}
+
 #content.mobile #bottom-dock, #content.right-dock-visible.mobile #bottom-dock{
   max-width:100%;
   top:auto;
@@ -1146,14 +1144,11 @@ transform: none !important;
 
 /* Right Dock */
 #right-dock {
-  position: absolute;
-  bottom: 0px;
-  right: 0px;
-  top:0px;
+  margin-left: auto;
   width:30%;
-  height:100%;
   background: #4A4A4A;
 }
+
 #content.mobile #right-dock{
   max-width:100%;
   top:auto;
