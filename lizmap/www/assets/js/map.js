@@ -439,20 +439,6 @@ var lizMap = function() {
   }
 
   /**
-   * PRIVATE function: getDockRightPosition
-   * Calculate the position on the right side of the dock
-   */
-  function getDockRightPosition() {
-    var right = $('#mapmenu').width();
-    if( $('#content').hasClass('embed') )
-        right+= 11;
-    else if( $('#dock').css('display') != 'none' && !lizMap.checkMobile() )
-        right+= $('#dock').width() + 11;
-    return right;
-  }
-
-
-  /**
    * PRIVATE function: getLayerLegendGraphicUrl
    * get the layer legend graphic
    *
@@ -5935,13 +5921,6 @@ OpenLayers.Control.HighlightFeature = OpenLayers.Class(OpenLayers.Control, {
      */
     getLayerNameByCleanName: function( cleanName ) {
       return getLayerNameByCleanName( cleanName );
-    },
-
-    /**
-     * Method: getDockRightPosition
-     */
-    getDockRightPosition: function( ) {
-      return getDockRightPosition( );
     },
 
     /**
