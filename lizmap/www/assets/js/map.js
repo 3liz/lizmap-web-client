@@ -415,67 +415,7 @@ var lizMap = function() {
     else if ( !slider.is(':visible') && $('#navbar').height()+200 < $('#map').height() && !mCheckMobile() )
       slider.show();
 
-    updateSwitcherSize();
-
     updateMiniDockSize();
-  }
-
-  /**
-   * PRIVATE function: updateSwitcherSize
-   * update the switcher size
-   */
-  function updateSwitcherSize(){
-
-    // // Set the switcher content a max-height
-    // $('#switcher-layers-container').css( 'height', 'auto' );
-    // var mh = $('#dock').height() - ($('#dock-tabs').height()+1) - $('#switcher-layers-container h3').height() - ($('#switcher-layers-actions').height()+1);
-    // mh -= parseInt($('#switcher-layers-container .menu-content').css( 'padding-top' ));
-    // mh -= parseInt($('#switcher-layers-container .menu-content').css( 'padding-bottom' ));
-    // if ( $('#switcher-baselayer').is(':visible') )
-    //     mh -= $('#switcher-baselayer').height();
-    // $('#switcher-layers-container .menu-content').css( 'max-height', mh ).css('overflow-x', 'hidden').css('overflow-y', 'auto');
-
-    // // calculate switcher height
-    // // based on map height
-    // h = $('#map').height();
-    // // depending on element in #menu div
-    // if ($('#close-menu').is(':visible'))
-    //   h -= $('#close-menu').outerHeight(true);
-
-    // if ( $('#menu #toolbar').length != 0 ) {
-    //   $('#toolbar').children().each(function(){
-    //     var self = $(this);
-    //     if ( self.is(':visible') ) {
-    //       var children = self.children();
-    //       h -= children.first().outerHeight(true);
-    //       if ( children.length > 1 )
-    //         h -= children.last().outerHeight(true);
-    //     }
-    //   });
-    // }
-    // if ($('#switcher-baselayer').is(':visible')) {
-    //   h -= $('#switcher-baselayer').children().first().outerHeight(true);
-    //   h -= $('#switcher-baselayer').children().last().outerHeight(true);
-    // }
-    // h -= $('#switcher-menu').children().first().outerHeight(true);
-
-    // var sw = $('#switcher');
-    // // depending on it's own css box parameters
-    // h -= (parseInt(sw.css('margin-top')) ? parseInt(sw.css('margin-top')) : 0 ) ;
-    // h -= (parseInt(sw.css('margin-bottom')) ? parseInt(sw.css('margin-bottom')) : 0 ) ;
-    // h -= (parseInt(sw.css('padding-top')) ? parseInt(sw.css('padding-top')) : 0 ) ;
-    // h -= (parseInt(sw.css('padding-bottom')) ? parseInt(sw.css('padding-bottom')) : 0 ) ;
-    // h -= (parseInt(sw.css('border-top-width')) ? parseInt(sw.css('border-top-width')) : 0 ) ;
-    // h -= (parseInt(sw.css('border-bottom-width')) ? parseInt(sw.css('border-bottom-width')) : 0 ) ;
-
-    // //depending on it's parent padding
-    // var swp = sw.parent();
-    // h -= (parseInt(swp.css('padding-top')) ? parseInt(swp.css('padding-top')) : 0 ) ;
-    // h -= (parseInt(swp.css('padding-bottom')) ? parseInt(swp.css('padding-bottom')) : 0 ) ;
-
-    // // If map if fullscreen, get #menu position : bottom or top
-    // h -= 2 * (parseInt($('#menu').css('bottom')) ? parseInt($('#menu').css('bottom')) : 0 ) ;
-
   }
 
   /**
@@ -1703,7 +1643,6 @@ var lizMap = function() {
         // add place holder to the filter combobox input
         $('#locate-layer-'+layerName+'-'+locate.filterFieldName+' ~ span > input').attr('placeholder', filterPlaceHolder).val('');
         $('#locate-layer-'+layerName+'-'+locate.filterFieldName+' ~ span > input').autocomplete('close');
-        updateSwitcherSize();
         updateMiniDockSize();
       }
 
@@ -1899,14 +1838,6 @@ var lizMap = function() {
           { 'name': itemName, 'type': itemType, 'selected': isSelected}
         );
       }
-    });
-
-    lizMap.events.on({
-        dockopened: function(e) {
-            if ( e.id == 'switcher' ) {
-                updateSwitcherSize();
-            }
-        }
     });
 
   // === Private functions
@@ -2309,7 +2240,6 @@ var lizMap = function() {
           config.locateByLayer = {};
           $('#button-locate').parent().remove();
           $('#locate-menu').remove();
-          updateSwitcherSize();
         } else {
           featureTypes.each( function(){
             var self = $(this);
@@ -6019,13 +5949,6 @@ OpenLayers.Control.HighlightFeature = OpenLayers.Class(OpenLayers.Control, {
      */
     addMessage: function( aMessage, aType, aClose ) {
       return mAddMessage( aMessage, aType, aClose );
-    },
-
-    /**
-     * Method: updateSwitcherSize
-     */
-    updateSwitcherSize: function() {
-      return updateSwitcherSize();
     },
 
     /**
