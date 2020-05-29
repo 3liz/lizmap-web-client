@@ -156,11 +156,6 @@ only screen and (                   max-device-height : 640px) {
   #bottom-dock  {
     opacity: 1;
   }
-
-  #docks-wrapper{
-    flex-wrap: wrap;
-  }
-
 }
 
 /* #### Tablets Portrait or Landscape #### */

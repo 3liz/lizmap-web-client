@@ -301,7 +301,10 @@ CSS Sprite positions calculated via http://instantsprite.com/ using 20px images 
   padding:5px;
   border-left: 1px solid #F0F0F0;
   max-width:30%;
-  padding-bottom: 20px;
+  padding-bottom: 5px;
+
+  height: 100%;
+  box-sizing: border-box;
 }
 
 #content.mobile #dock{
@@ -1391,10 +1394,13 @@ transform: none !important;
 
 #dock div.tabbable {
   height: 100%;
+  display: flex;
+  flex-direction: column;
 }
 
 #dock-content {
   height: 100%;
+  flex-grow: 1;
 }
 
 #docks-wrapper{
@@ -1406,14 +1412,10 @@ transform: none !important;
 }
 
 #switcher {
-  overflow : auto;
   height: 100%;
-/*
-  border : solid 1px #606060;
-*/
 }
 #switcher-layers {
-  padding-left: 19px;/**/
+  padding-left: 19px;
 }
 
 #switcher-layers-actions {
@@ -1443,8 +1445,15 @@ transform: none !important;
   background-color: #FFFFFF;
 }
 
+#switcher-layers-container{
+  max-height: calc(100% - 71px);
+  display: flex;
+  flex-direction: column;
+}
+
 #switcher-layers-container > div.menu-content {
   background-color:#F0F0F0;
+  overflow: hidden auto;
 }
 #switcher-layers ul {
   margin-left:10px;

@@ -338,14 +338,13 @@ var lizMap = function() {
     }
     $('#map').width(w);
 
-    if ( $('#right-dock-tabs').is(':visible') )
-        $('#right-dock-content').css( 'max-height', $('#right-dock').height() - $('#right-dock-tabs').height() );
+    if ( $('#right-dock-tabs').is(':visible') ){
+      $('#right-dock-content').css( 'max-height', $('#right-dock').height() - $('#right-dock-tabs').height() );
+    }
 
-    $('#dock').css('overflow-y', 'hidden');
-
-    if(map)
+    if(map){
       updateMapSize();
-
+    }
   }
 
 
@@ -427,55 +426,55 @@ var lizMap = function() {
    */
   function updateSwitcherSize(){
 
-    // Set the switcher content a max-height
-    $('#switcher-layers-container').css( 'height', 'auto' );
-    var mh = $('#dock').height() - ($('#dock-tabs').height()+1) - $('#switcher-layers-container h3').height() - ($('#switcher-layers-actions').height()+1);
-    mh -= parseInt($('#switcher-layers-container .menu-content').css( 'padding-top' ));
-    mh -= parseInt($('#switcher-layers-container .menu-content').css( 'padding-bottom' ));
-    if ( $('#switcher-baselayer').is(':visible') )
-        mh -= $('#switcher-baselayer').height();
-    $('#switcher-layers-container .menu-content').css( 'max-height', mh ).css('overflow-x', 'hidden').css('overflow-y', 'auto');
+    // // Set the switcher content a max-height
+    // $('#switcher-layers-container').css( 'height', 'auto' );
+    // var mh = $('#dock').height() - ($('#dock-tabs').height()+1) - $('#switcher-layers-container h3').height() - ($('#switcher-layers-actions').height()+1);
+    // mh -= parseInt($('#switcher-layers-container .menu-content').css( 'padding-top' ));
+    // mh -= parseInt($('#switcher-layers-container .menu-content').css( 'padding-bottom' ));
+    // if ( $('#switcher-baselayer').is(':visible') )
+    //     mh -= $('#switcher-baselayer').height();
+    // $('#switcher-layers-container .menu-content').css( 'max-height', mh ).css('overflow-x', 'hidden').css('overflow-y', 'auto');
 
-    // calculate switcher height
-    // based on map height
-    h = $('#map').height();
-    // depending on element in #menu div
-    if ($('#close-menu').is(':visible'))
-      h -= $('#close-menu').outerHeight(true);
+    // // calculate switcher height
+    // // based on map height
+    // h = $('#map').height();
+    // // depending on element in #menu div
+    // if ($('#close-menu').is(':visible'))
+    //   h -= $('#close-menu').outerHeight(true);
 
-    if ( $('#menu #toolbar').length != 0 ) {
-      $('#toolbar').children().each(function(){
-        var self = $(this);
-        if ( self.is(':visible') ) {
-          var children = self.children();
-          h -= children.first().outerHeight(true);
-          if ( children.length > 1 )
-            h -= children.last().outerHeight(true);
-        }
-      });
-    }
-    if ($('#switcher-baselayer').is(':visible')) {
-      h -= $('#switcher-baselayer').children().first().outerHeight(true);
-      h -= $('#switcher-baselayer').children().last().outerHeight(true);
-    }
-    h -= $('#switcher-menu').children().first().outerHeight(true);
+    // if ( $('#menu #toolbar').length != 0 ) {
+    //   $('#toolbar').children().each(function(){
+    //     var self = $(this);
+    //     if ( self.is(':visible') ) {
+    //       var children = self.children();
+    //       h -= children.first().outerHeight(true);
+    //       if ( children.length > 1 )
+    //         h -= children.last().outerHeight(true);
+    //     }
+    //   });
+    // }
+    // if ($('#switcher-baselayer').is(':visible')) {
+    //   h -= $('#switcher-baselayer').children().first().outerHeight(true);
+    //   h -= $('#switcher-baselayer').children().last().outerHeight(true);
+    // }
+    // h -= $('#switcher-menu').children().first().outerHeight(true);
 
-    var sw = $('#switcher');
-    // depending on it's own css box parameters
-    h -= (parseInt(sw.css('margin-top')) ? parseInt(sw.css('margin-top')) : 0 ) ;
-    h -= (parseInt(sw.css('margin-bottom')) ? parseInt(sw.css('margin-bottom')) : 0 ) ;
-    h -= (parseInt(sw.css('padding-top')) ? parseInt(sw.css('padding-top')) : 0 ) ;
-    h -= (parseInt(sw.css('padding-bottom')) ? parseInt(sw.css('padding-bottom')) : 0 ) ;
-    h -= (parseInt(sw.css('border-top-width')) ? parseInt(sw.css('border-top-width')) : 0 ) ;
-    h -= (parseInt(sw.css('border-bottom-width')) ? parseInt(sw.css('border-bottom-width')) : 0 ) ;
+    // var sw = $('#switcher');
+    // // depending on it's own css box parameters
+    // h -= (parseInt(sw.css('margin-top')) ? parseInt(sw.css('margin-top')) : 0 ) ;
+    // h -= (parseInt(sw.css('margin-bottom')) ? parseInt(sw.css('margin-bottom')) : 0 ) ;
+    // h -= (parseInt(sw.css('padding-top')) ? parseInt(sw.css('padding-top')) : 0 ) ;
+    // h -= (parseInt(sw.css('padding-bottom')) ? parseInt(sw.css('padding-bottom')) : 0 ) ;
+    // h -= (parseInt(sw.css('border-top-width')) ? parseInt(sw.css('border-top-width')) : 0 ) ;
+    // h -= (parseInt(sw.css('border-bottom-width')) ? parseInt(sw.css('border-bottom-width')) : 0 ) ;
 
-    //depending on it's parent padding
-    var swp = sw.parent();
-    h -= (parseInt(swp.css('padding-top')) ? parseInt(swp.css('padding-top')) : 0 ) ;
-    h -= (parseInt(swp.css('padding-bottom')) ? parseInt(swp.css('padding-bottom')) : 0 ) ;
+    // //depending on it's parent padding
+    // var swp = sw.parent();
+    // h -= (parseInt(swp.css('padding-top')) ? parseInt(swp.css('padding-top')) : 0 ) ;
+    // h -= (parseInt(swp.css('padding-bottom')) ? parseInt(swp.css('padding-bottom')) : 0 ) ;
 
-    // If map if fullscreen, get #menu position : bottom or top
-    h -= 2 * (parseInt($('#menu').css('bottom')) ? parseInt($('#menu').css('bottom')) : 0 ) ;
+    // // If map if fullscreen, get #menu position : bottom or top
+    // h -= 2 * (parseInt($('#menu').css('bottom')) ? parseInt($('#menu').css('bottom')) : 0 ) ;
 
   }
 
