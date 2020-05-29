@@ -270,7 +270,6 @@ var lizAttributeTable = function() {
                 if ( $('#locate-menu').is(':visible') && lizMap.checkMobile()){
                     $('#toggleLocate').parent().removeClass('active');
                     $('#locate-menu').toggle();
-                    //~ lizMap.updateSwitcherSize();
                 }
                 return false;
             }
