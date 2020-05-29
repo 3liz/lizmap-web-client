@@ -85,6 +85,11 @@
   display:none !important;
 }
 
+#docks-wrapper{
+  left:unset;
+  width: 100%;
+}
+
 #dock {
   top: 40px;
   left:10px;
