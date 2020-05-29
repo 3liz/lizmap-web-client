@@ -80,6 +80,7 @@ body {
   z-index:1030;
   background:#4A4A4A;
   background:rgba(0,0,0,0.7);
+  overflow: auto;
 }
 #mapmenu > div {
   width: 30px;
