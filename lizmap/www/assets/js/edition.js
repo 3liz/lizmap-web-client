@@ -592,9 +592,6 @@ OpenLayers.Geometry.pointOnSegment = function(point, segment) {
 
         // Hide edition tabs
         $('.edition-tabs').hide();
-
-        // Redraw bottom dock
-        $('#bottom-dock').css('left',  lizMap.getDockRightPosition() );
     }
 
     function addEditionControls() {
@@ -1167,9 +1164,7 @@ OpenLayers.Geometry.pointOnSegment = function(point, segment) {
         var parentInfo = editionLayer['parent'];
         var parentFeat = parentInfo.feature;
 
-        return internalLaunchEdition(parentInfo, parentFeat.id.split('.').pop(), function(editionLayerId, editionFeatureId){
-            $('#bottom-dock').css('left', lizMap.getDockRightPosition());
-        });
+        return internalLaunchEdition(parentInfo, parentFeat.id.split('.').pop());
     }
 
     /**
@@ -1581,9 +1576,6 @@ OpenLayers.Geometry.pointOnSegment = function(point, segment) {
                 );
             }
         }
-
-        // Redraw bottom dock
-        $('#bottom-dock').css('left',  lizMap.getDockRightPosition() );
     }
 
     function handleEditionFormSubmit( form ){
