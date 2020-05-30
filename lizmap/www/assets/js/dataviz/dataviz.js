@@ -351,7 +351,7 @@ var lizDataviz = function() {
         // We use the id variable for the plot: we are in the buildPlot function
         lizMap.events.on({
             'lizmaplayerchangevisibility': function(e) {
-                if( 'datavizLayers' in lizMap.config ){
+                if (e.config !== undefined && 'datavizLayers' in lizMap.config ){
                     // Get layer info
                     var name = e.name;
                     var config = e.config;
@@ -476,7 +476,7 @@ var lizDataviz = function() {
 
         // Set plot visibility for non spatial child layers
         'lizmaplayerchangevisibility': function(e) {
-            if( 'datavizLayers' in lizMap.config ){
+            if( e.config !== undefined && 'datavizLayers' in lizMap.config ){
                 // Get layer info
                 var name = e.name;
                 var config = e.config;
