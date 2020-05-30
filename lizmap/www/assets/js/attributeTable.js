@@ -1177,7 +1177,9 @@ var lizAttributeTable = function() {
                              data: dataSet
                             ,columns: columns
                             ,initComplete: function(settings, json) {
-                                var featureType = $(this).selector.split('#attribute-layer-table-')[1];
+                                const api = new $.fn.dataTable.Api(settings);
+                                const tableId = api.table().node().id;
+                                var featureType = tableId.split('attribute-layer-table-')[1];
                                 // Trigger event telling attribute table is ready
                                 lizMap.events.triggerEvent("attributeLayerContentReady",
                                     {
