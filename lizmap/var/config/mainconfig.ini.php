@@ -216,7 +216,7 @@ datepicker=default
 datetimepicker=default
 
 [jquery]
-jquery="assets/js/jquery/jquery-1.12.4.min.js"
+jquery="assets/js/jquery/jquery-3.5.1.min.js"
 jqueryui.js[]="assets/js/jquery/ui-1.11.4/jquery-ui.min.js"
 jqueryui.css[]="assets/js/jquery/ui-1.11.4/jquery-ui.min.css"
 
