@@ -1458,9 +1458,7 @@ var lizMap = function() {
     map.addControl(new OpenLayers.Control.Attribution({div:document.getElementById('attribution')}));
 
     // add handler to update the map size
-    $(window).resize(function() {
-      updateContentSize();
-    });
+    window.addEventListener('resize', updateContentSize);
   }
 
   /**
