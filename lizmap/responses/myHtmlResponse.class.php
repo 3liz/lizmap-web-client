@@ -68,6 +68,7 @@ class myHtmlResponse extends jResponseHtml
         $this->addHeadContent('<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />');
 
         $this->addJSLink(jApp::config()->jquery['jquery']);
+        $this->addJSLink($bp . 'assets/js/jquery/jquery-migrate-3.3.0.min.js');
         $js = jApp::config()->jquery['jqueryui.js'];
         foreach ($js as $file) {
             $this->addJSLink($file);

@@ -19,10 +19,13 @@ class adminHtmlResponse extends jResponseHtml
     {
         parent::__construct();
 
+        $bp = jApp::urlBasePath();
+
         // Header
         $this->addHttpHeader('x-ua-compatible', 'ie=edge');
 
         $this->addJSLink(jApp::config()->jquery['jquery']);
+        $this->addJSLink($bp . 'assets/js/jquery/jquery-migrate-3.3.0.min.js');
         $js = jApp::config()->jquery['jqueryui.js'];
         foreach ($js as $file) {
             $this->addJSLink($file);
@@ -32,7 +35,6 @@ class adminHtmlResponse extends jResponseHtml
             $this->addCSSLink($file);
         }
 
-        $bp = jApp::urlBasePath();
         $this->addJSLink($bp.'assets/js/bootstrap.js');
 
         // Favicon
