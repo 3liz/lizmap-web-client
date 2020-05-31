@@ -312,7 +312,7 @@ var searchProjects = function(){
     }
 }
 
-$( window ).load(function() {
+window.addEventListener('load', function () {
     addDescriptionSlider();
     resizeThumbnails();
     searchProjects();
