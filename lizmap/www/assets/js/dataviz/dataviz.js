@@ -340,12 +340,12 @@ var lizDataviz = function() {
             }
 
         });
-        $(window).resize(function() {
-            if($('#mapmenu li.dataviz').hasClass('active') || $('#mapmenu li.popup').hasClass('active')){
+
+        window.addEventListener('resize', function () {
+            if ($('#mapmenu li.dataviz').hasClass('active') || $('#mapmenu li.popup').hasClass('active')) {
                 resizePlot(id);
             }
         });
-
 
         // Add event to hide/show plots if needed
         // We use the id variable for the plot: we are in the buildPlot function

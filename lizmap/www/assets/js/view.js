@@ -318,6 +318,4 @@ $( window ).load(function() {
     searchProjects();
 });
 
-$(window).resize(function () {
-    resizeThumbnails();
-});
+window.addEventListener('resize', resizeThumbnails);
