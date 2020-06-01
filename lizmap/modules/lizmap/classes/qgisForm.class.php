@@ -537,9 +537,13 @@ class qgisForm
         $values = array();
         // Loop though the fields and filter the form posted values
         foreach ($fields as $ref) {
-            if ($form->getControl($ref) instanceof jFormsControlUpload) {
+            $jCtrl = $form->getControl($ref);
+            // Field not in form
+            if ($jCtrl === null) {
+                continue;
+            }
+            if ($jCtrl instanceof jFormsControlUpload) {
                 $values[$ref] = $this->processUploadedFile($form, $ref, $cnx);
-
                 continue;
             }
 
