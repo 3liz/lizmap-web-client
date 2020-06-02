@@ -127,6 +127,24 @@ class lizmapOGCRequest
         return $defaultValue;
     }
 
+    public function parameters()
+    {
+        // Check if a user is authenticated
+        if ( !jAuth::isConnected() ) {
+            // return empty header array
+            return array_merge($this->params, array(
+                'Lizmap_User' => '',
+                'Lizmap_User_Groups' => ''
+            ));
+        }
+        $user = jAuth::getUserSession();
+        $userGroups = jAcl2DbUserGroup::getGroups();
+        return array_merge($this->params, array(
+            'Lizmap_User' => $user->login,
+            'Lizmap_User_Groups' => implode(', ', $userGroups)
+        ));
+    }
+
     public function process()
     {
         $req = $this->param('request');
@@ -154,8 +172,9 @@ class lizmapOGCRequest
             $url.='&';
         }
 
-        return $url.$this->buildQuery($this->params);
+        return $url.$this->buildQuery($this->parameters());
     }
+
 
     protected function buildQuery($params)
     {

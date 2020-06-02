@@ -164,7 +164,7 @@ class lizmapWMSRequest extends lizmapOGCRequest
             return $this->serviceException();
         }
 
-        $getMap = lizmapProxy::getMap($this->project, $this->params, $this->forceRequest);
+        $getMap = lizmapProxy::getMap($this->project, $this->parameters(), $this->forceRequest);
 
         return (object) array(
             'code' => $getMap[2],
