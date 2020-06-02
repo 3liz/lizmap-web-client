@@ -846,7 +846,6 @@ class serviceCtrl extends jController
 
         // Get data from XML
         $use_errors = libxml_use_internal_errors(true);
-        $go = true;
         $errorlist = array();
         // Create a DOM instance
         $xml = simplexml_load_string($xmldata);
@@ -854,7 +853,20 @@ class serviceCtrl extends jController
             foreach (libxml_get_errors() as $error) {
                 $errorlist[] = $error;
             }
-            $go = false;
+            $errormsg = 'An error has been raised when loading GetFeatureInfoHtml:';
+            $errormsg.= '\n'.http_build_query($params);
+            $errormsg.= '\n'.$xmldata;
+            $errormsg.= '\n'.implode('\n', $errorlist);
+            jLog::log($errormsg, 'error');
+            // return empty html string
+            return '';
+        }
+
+        // Check layer children
+        if (!$xml->Layer) {
+            // No data found
+            // return empty html string
+            return '';
         }
 
         // Get json configuration for the project
