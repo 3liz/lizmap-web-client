@@ -228,6 +228,15 @@ class lizMapCtrl extends jController
         if ($lproj->hasTimemanagerLayers()) {
             $rep->addJSLink($bp.'assets/js/moment.js');
             $rep->addJSLink($bp.'assets/js/filter.js');
+            $filterConfigData = array(
+                'url'=>jUrl::get(
+                    'filter~service:index', array(
+                        'repository'=>$this->repositoryKey,
+                        'project'=>$this->projectKey
+                    )
+                )
+            );
+            $rep->addJSCode('var filterConfigData = ' . json_encode($filterConfigData));
         }
 
         // Add atlas.js for atlas feature and additionnal CSS for right-dock max-width

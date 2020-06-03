@@ -7,15 +7,17 @@ var lizLayerFilterTool = function() {
                 return true;
 
             // Launch LayerFilter feature
-            addLayerFilterToolInterface();
-            launchLayerFilterTool(filterConfigData.layerId);
+            if (typeof filterConfig != "undefined" && filterConfig.length) {
+                addLayerFilterToolInterface();
+                launchLayerFilterTool(filterConfigData.layerId);
 
-            // Listen to the layer selector changes
-            $('#liz-filter-layer-selector').change(function(){
-                deactivateFilter();
-                filterConfigData.layerId = $(this).val();
-                launchLayerFilterTool($(this).val());
-            });
+                // Listen to the layer selector changes
+                $('#liz-filter-layer-selector').change(function(){
+                    deactivateFilter();
+                    filterConfigData.layerId = $(this).val();
+                    launchLayerFilterTool($(this).val());
+                });
+            }
 
         } // uicreated
 
