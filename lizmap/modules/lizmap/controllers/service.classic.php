@@ -351,6 +351,9 @@ class serviceCtrl extends jController
                 $layers = array();
             }
         }
+        if (is_string($layers)) {
+            $layers = explode(',', $layers);
+        }
         $pConfig = $lproj->getFullCfg();
 
         // Filter only if needed
@@ -372,7 +375,7 @@ class serviceCtrl extends jController
 
             // Check need for filter foreach layer
             $serverFilterArray = array();
-            foreach (explode(',', $layers) as $layername) {
+            foreach ($layers as $layername) {
                 $layerByTypeName = $this->project->findLayerByTypeName($layername);
                 if($layerByTypeName){
                     $layername = $layerByTypeName->name;
