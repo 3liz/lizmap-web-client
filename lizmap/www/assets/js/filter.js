@@ -7,7 +7,7 @@ var lizLayerFilterTool = function() {
                 return true;
 
             // Launch LayerFilter feature
-            if (typeof filterConfig != "undefined" && filterConfig.length) {
+            if (typeof filterConfig != "undefined" && '0' in filterConfig) {
                 addLayerFilterToolInterface();
                 launchLayerFilterTool(filterConfigData.layerId);
 
