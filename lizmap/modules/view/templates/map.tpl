@@ -38,6 +38,7 @@
   </div>
 
   <div id="map-content">
+    <div id="newOlMap" style="width:1px;height:1px;position: absolute;"></div>
     <div id="map"></div>
 
     <div id="mini-dock">
@@ -78,6 +79,8 @@
         </select>
       </div>
     </div>
+
+    <lizmap-scaleline></lizmap-scaleline>
 
     <div id="attribution-box">
       <span id="attribution"></span>

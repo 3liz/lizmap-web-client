@@ -2615,3 +2615,8 @@ lizmap-geolocation-survey .control-group > div:first-child{
 #dock .form-horizontal lizmap-geolocation-survey .controls{
   margin-left: 10px;
 }
+
+/* Scaleline */
+lizmap-scaleline .ol-scale-line{
+  z-index: 750;
+}
