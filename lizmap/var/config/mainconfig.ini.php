@@ -84,8 +84,6 @@ basePath=
 
 defaultEntrypoint=index
 
-entrypointExtension=.php
-
 ; leave empty to have jelix error messages
 ;notfoundAct=
 notfoundAct = "jelix~error:notfound"
