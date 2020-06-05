@@ -210,4 +210,5 @@ class qgisAttributeEditorElement
         }
         return $fields;
     }
+
 }
