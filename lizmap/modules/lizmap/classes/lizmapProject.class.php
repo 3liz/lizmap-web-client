@@ -169,13 +169,7 @@ class lizmapProject extends qgisProject
         // to avoid collision in the cache engine
         $data = false;
 
-        if (jApp::config()->isWindows) {
-            // Cache backends don't support '\'
-            $fileKey = str_replace('\\', '/', $file);
-        }
-        else {
-            $fileKey = $file;
-        }
+        $fileKey = jCache::normalizeKey($file);
         try {
             $data = jCache::get($fileKey, 'qgisprojects');
         } catch (Exception $e) {
@@ -220,12 +214,9 @@ class lizmapProject extends qgisProject
     public function clearCache()
     {
         $file = $this->repository->getPath().$this->key.'.qgs';
-        if (jApp::config()->isWindows) {
-            // Cache backends don't support '\'
-            $file = str_replace('\\', '/', $file);
-        }
+        $fileKey = jCache::normalizeKey($file);
         try {
-            jCache::delete($file, 'qgisprojects');
+            jCache::delete($fileKey, 'qgisprojects');
         } catch (Exception $e) {
             // if qgisprojects profile does not exist, or if there is an
             // other error about the cache, let's log it

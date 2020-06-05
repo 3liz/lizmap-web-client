@@ -11,7 +11,9 @@
 class jacl2ModuleInstaller extends jInstallerModule {
     function install() {
         if ($this->firstConfExec()) {
-            if (null == $this->config->getValue('jacl2', 'coordplugins')) {
+            if (null == $this->config->getValue('jacl2', 'coordplugins') &&
+                $this->entryPoint->type != 'cmdline'
+            ) {
                 $this->config->setValue('jacl2', '1', 'coordplugins');
                 if ($this->entryPoint->type != 'classic')
                     $onerror = 1;
