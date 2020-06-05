@@ -24,6 +24,11 @@ export default class Map {
                 this.syncViews();
 
                 mainEventDispatcher.dispatch('map.moveend');
+            },
+            zoomend: () => {
+                this.syncViews();
+
+                mainEventDispatcher.dispatch('map.zoomend');
             }
         });
     }
