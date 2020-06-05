@@ -24,7 +24,11 @@
     </li>
 {else}
     <li class="login">
+        {if isset($auth_url_return)}
         <a href="{jurl 'jcommunity~login:index', array('auth_url_return'=>$auth_url_return)}">
+            {else}
+        <a href="{jurl 'jcommunity~login:index'}">
+        {/if}
             <span class="icon"></span>
             <span class="text hidden-phone">{@view~default.header.connect@}</span>
         </a>

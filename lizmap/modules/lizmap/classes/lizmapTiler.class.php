@@ -48,7 +48,7 @@ class lizmapTiler
     {
         $repository = $project->getRepository();
 
-        $cacheId = $repository->getKey().'_'.$project->getKey().'_WMTS';
+        $cacheId = jCache::normalizeKey($repository->getKey().'_'.$project->getKey().'_WMTS');
         $file = $repository->getPath().$project->getKey().'.qgs';
 
         $hash = false;
@@ -124,7 +124,7 @@ class lizmapTiler
     {
         $repository = $project->getRepository();
 
-        $cacheId = $repository->getKey().'_'.$project->getKey().'_WMTS';
+        $cacheId = jCache::normalizeKey($repository->getKey().'_'.$project->getKey().'_WMTS');
 
         $tileMatrixSetList = false;
         $layers = false;
