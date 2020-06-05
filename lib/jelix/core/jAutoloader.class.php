@@ -46,7 +46,7 @@ class jAutoloader {
     /**
      * register a namespace associated to a path. The full class path will be resolved
      * following psr0 rules
-     * 
+     *
      * example: registerNamespace('foo\bar','/my/path', '.php')
      * the resulting path for the class \foo\bar\baz\myclass is /my/path/foo/bar/baz/myclass.php
      */
@@ -65,7 +65,7 @@ class jAutoloader {
      *  - the part of the namespace of the class that match $namespace, is removed
      *  - the other part is then transformed following psr0 rules
      *  - the resulting path is then added to $includePath
-     * 
+     *
      * registerNamespacePathMap('foo\bar','/my/path', '.php');
      * the resulting path for the class \foo\bar\baz\myclass is /my/path/baz/myclass.php
      */
@@ -125,7 +125,7 @@ class jAutoloader {
         // namespace mapping
 
         foreach($this->nsPaths as $ns=>$info) {
-            if (strpos($className, $ns) === 0) {
+            if ($className == $ns || strpos($className, $ns.'\\') === 0) {
                 $path = '';
                 list($incPath, $ext, $psr0) = $info;
                 if ($lastNsPos !== false) {
