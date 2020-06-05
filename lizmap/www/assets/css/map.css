@@ -2617,6 +2617,8 @@ lizmap-geolocation-survey .control-group > div:first-child{
 }
 
 /* Scaleline */
-lizmap-scaleline .ol-scale-line{
+lizmap-scaleline .ol-scale-bar{
   z-index: 750;
+  left: unset;
+  right: 350px;
 }
