@@ -6,6 +6,7 @@ export default class Scaleline {
     constructor() {
         this._olScaleline = new ScaleLine({
             target: document.getElementsByTagName('lizmap-scaleline')[0],
+            minWidth: 76,
             bar: true,
             text: true
         });
