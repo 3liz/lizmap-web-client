@@ -21,7 +21,7 @@ class jcommunityModuleUpgrader_changepersistantkey extends jInstallerModule {
         }
 
         $conf = $this->config->getValue('auth', 'coordplugins');
-        if ($conf != '1') {
+        if ($conf != '1'&& $conf != '') {
             $conff = jApp::configPath($conf);
             if (file_exists($conff)) {
                 $ini = new jIniFileModifier($conff);

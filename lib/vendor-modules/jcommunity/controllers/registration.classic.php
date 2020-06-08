@@ -99,7 +99,14 @@ class registrationCtrl extends \Jelix\JCommunity\AbstractController
 
         jEvent::notify('jcommunity_registration_after_save', array('form' => $form, 'user' => $user));
 
-        $registration->createAccount($user);
+        try {
+            $registration->createAccount($user);
+        } catch(\phpmailerException $e) {
+            \jLog::logEx($e, 'error');
+            $error =  jLocale::get('jcommunity~password.form.change.error.smtperror');
+            jMessage::add($error, 'error');
+            return $rep;
+        }
 
         jForms::destroy('registration');
 

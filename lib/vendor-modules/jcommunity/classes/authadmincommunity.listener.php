@@ -117,7 +117,13 @@ class authadmincommunityListener extends jEventListener{
         $config = new \Jelix\JCommunity\Config();
         if ($config->isResetAdminPasswordEnabledForAdmin()) {
             $registration = new \Jelix\JCommunity\Registration();
-            $registration->createUserByAdmin($event->user);
+            try {
+                $registration->createUserByAdmin($event->user);
+            } catch(\phpmailerException $e) {
+                \jLog::logEx($e, 'error');
+                jMessage::add(jLocale::get('jcommunity~password.form.change.error.smtperror'), 'error');
+                return;
+            }
             jMessage::add(jLocale::get('jcommunity~account.form.admin.create.emailsent'));
         }
     }

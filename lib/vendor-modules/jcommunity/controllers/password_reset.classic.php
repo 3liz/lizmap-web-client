@@ -47,6 +47,9 @@ class password_resetCtrl extends \Jelix\JCommunity\AbstractPasswordController
         $rep->action = 'password_reset:index';
 
         $form = jForms::fill('password_reset');
+        if (!$form) {
+            return $this->badParameters();
+        }
         if (!$form->check()) {
             return $rep;
         }

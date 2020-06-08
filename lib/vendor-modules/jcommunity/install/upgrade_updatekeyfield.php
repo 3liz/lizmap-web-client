@@ -15,16 +15,20 @@ class jcommunityModuleUpgrader_updatekeyfield extends jInstallerModule {
     function install() {
 
         $conf = $this->getAuthConf();
-
-        $dbProfile = $conf->getValue('profile', 'Db');
-        $daoSelector = $conf->getValue('dao', 'Db');
-        $mapper = new jDaoDbMapper($dbProfile);
-        $mapper->createTableFromDao($daoSelector);
+        if ($conf) {
+            $dbProfile = $conf->getValue('profile', 'Db');
+            $daoSelector = $conf->getValue('dao', 'Db');
+            $mapper = new jDaoDbMapper($dbProfile);
+            $mapper->createTableFromDao($daoSelector);
+        }
     }
 
 
     protected function getAuthConf() {
         $authconfig = $this->config->getValue('auth','coordplugins');
+        if ($authconfig == '') {
+            return null;
+        }
         if ($this->isJelix17()) {
             $confPath = jApp::appSystemPath($authconfig);
             $conf = new \Jelix\IniFile\IniModifier($confPath);
