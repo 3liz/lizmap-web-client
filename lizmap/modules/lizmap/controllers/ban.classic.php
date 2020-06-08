@@ -49,8 +49,12 @@ class banCtrl extends jController
         ));
 
         $var = json_decode($content);
+        if ($var === null) {
+            $rep->content = '[]';
+            return $rep;
+        }
         $obj = $var->features;
-        $licence = 'Data © '.$obj->attribution.', '.$obj->licence;
+        //$licence = 'Data © '.$obj->attribution.', '.$obj->licence;
         $res = array();
         $res['search_name'] = 'BAN';
         $res['layer_name'] = 'ban';
