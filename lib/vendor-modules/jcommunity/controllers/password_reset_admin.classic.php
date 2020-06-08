@@ -91,7 +91,7 @@ class password_reset_adminCtrl extends \Jelix\JCommunity\AbstractController
 
             $tpl = new \jTpl();
             $tpl->assign('login', $login);
-            $tpl->assign('error', jLocale::get('jcommunity~password.form.change.error.admin.'.$result));
+            $tpl->assign('error_status', $result);
             $rep->body->assign('MAIN', $tpl->fetch('jcommunity~password_reset_admin_error'));
             return $rep;
         }

@@ -15,18 +15,22 @@ class jcommunityModuleUpgrader_updatekeyfield2019 extends jInstallerModule {
     function install() {
 
         $conf = $this->getAuthConf();
-
-        $dbProfile = $conf->getValue('profile', 'Db');
-        $daoSelector = $conf->getValue('dao', 'Db');
-        if ($daoSelector == 'jcommunity~user') {
-            $this->useDbProfile($dbProfile);
-            $this->execSQLScript('sql/upgrade_keys');
+        if ($conf) {
+            $dbProfile = $conf->getValue('profile', 'Db');
+            $daoSelector = $conf->getValue('dao', 'Db');
+            if ($daoSelector == 'jcommunity~user') {
+                $this->useDbProfile($dbProfile);
+                $this->execSQLScript('sql/upgrade_keys');
+            }
         }
     }
 
 
     protected function getAuthConf() {
         $authconfig = $this->config->getValue('auth','coordplugins');
+        if ($authconfig == '') {
+            return null;
+        }
         if ($this->isJelix17()) {
             $confPath = jApp::appSystemPath($authconfig);
             $conf = new \Jelix\IniFile\IniModifier($confPath);
