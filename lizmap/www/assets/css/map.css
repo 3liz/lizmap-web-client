@@ -1794,6 +1794,7 @@ a.btn.btn-opacity-layer.active {
   background : none repeat scroll 0% 0% rgb(240, 240, 240);
   border : solid 1px #606060;
   line-height : 12px;
+  height: 47px;
 }
 
 #overview-bar .label {
@@ -1818,11 +1819,11 @@ a.btn.btn-opacity-layer.active {
   margin : 0px;
   padding: 0px;
   border-radius: 0;
-  background : url('images/123_click.png') no-repeat scroll -1px 0px #DDD;
+  background : url('images/123_click.png') no-repeat scroll -1px 6px #DDD;
   transition: none;
 }
 #overview-toggle.active {
-  background-position : -1px -30px;
+  background-position : -1px -24px;
 }
 #overview-bar .ui-icon {
   background-image : url("images/sprite_menu.png");
@@ -1835,14 +1836,6 @@ a.btn.btn-opacity-layer.active {
   background-position : 0px 0px;
 }
 
-.olControlScaleLineBottom {
-  margin-bottom : 0.2em;
-  border-width : 2px 1px medium;
-}
-.olControlScaleLineTop {
-  margin-top : 0.2em;
-  border-width : medium 1px 2px;
-}
 /* Mouse position */
 #mouseposition-bar {
   font-size: 10px;
@@ -2619,6 +2612,10 @@ lizmap-geolocation-survey .control-group > div:first-child{
 /* Scaleline */
 lizmap-scaleline .ol-scale-bar{
   z-index: 750;
-  left: unset;
-  right: 350px;
+  bottom: 5px;
+  left: 5px;
+}
+
+lizmap-scaleline .ol-scale-text{
+  bottom: 28px;
 }
