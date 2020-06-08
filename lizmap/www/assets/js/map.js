@@ -2466,9 +2466,6 @@ var lizMap = function() {
       return false;
     });
 
-    map.addControl(new OpenLayers.Control.Scale(document.getElementById('scaletext')));
-    map.addControl(new OpenLayers.Control.ScaleLine({div:document.getElementById('scaleline')}));
-
     var mpUnitSelect = $('#mouseposition-bar > select');
     var mapUnits = map.projection.getUnits();
     if ( mapUnits == 'degrees' ) {
