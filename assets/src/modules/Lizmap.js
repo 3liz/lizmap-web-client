@@ -4,7 +4,6 @@ import Geolocation from '../modules/Geolocation.js';
 import GeolocationSurvey from '../modules/GeolocationSurvey.js';
 import SelectionTool from '../modules/SelectionTool.js';
 import Snapping from '../modules/Snapping.js';
-import Scaleline from '../modules/Scaleline.js';
 
 import { get as getProjection } from 'ol/proj';
 import { register } from 'ol/proj/proj4';
@@ -32,7 +31,6 @@ export default class Lizmap {
                 this.geolocationSurvey = new GeolocationSurvey();
                 this.selectionTool = new SelectionTool();
                 this.snapping = new Snapping();
-                this.scaleline = new Scaleline();
             }
         });
     }
