@@ -2618,4 +2618,6 @@ lizmap-scaleline .ol-scale-bar{
 
 lizmap-scaleline .ol-scale-text{
   bottom: 28px;
+  font-weight: bold;
+  font-size: 0.8em;
 }
