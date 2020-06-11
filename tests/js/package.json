@@ -5,7 +5,7 @@
   "main": "index.js",
   "dependencies": {},
   "devDependencies": {
-    "cypress": "^4.3.0"
+    "cypress": "^4.8.0"
   },
   "scripts": {
     "cypress:open": "cypress open"
