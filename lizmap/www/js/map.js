@@ -1184,7 +1184,7 @@ var lizMap = function() {
     html += '<span class="label" title="'+truncateWithEllipsis($('<div>'+nodeConfig.abstract+'</div>').text(),50)+'">'+nodeConfig.title+'</span>';
     html += '</td>';
 
-    html += '<td>';
+    html += '<td class="loading">';
     if (nodeConfig.type == 'layer'){
       html += '<span class="loading">&nbsp;</span>';
     }
