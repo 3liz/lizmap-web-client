@@ -526,38 +526,18 @@ class serviceCtrl extends jController
     public function GetContext()
     {
 
-        // Get parameters
-        if (!$this->getServiceParameters()) {
-            return $this->serviceException();
-        }
+        //Get parameters  DELETED HERE SINCE ALREADY DONE IN index method
+        //if(!$this->getServiceParameters())
+        //return $this->serviceException();
 
-        $url = $this->services->wmsServerURL.'?';
-
-        $bparams = http_build_query($this->params);
-        $querystring = $url.$bparams;
-
-        // Get remote data
-        list($data, $mime, $code) = lizmapProxy::getRemoteData($querystring);
-
-        // Replace qgis server url in the XML (hide real location)
-        $sUrl = jUrl::getFull(
-            'lizmap~service:index',
-            array(
-                'repository' => $this->repository->getKey(),
-                'project' => $this->project->getKey(),
-            ),
-            0,
-            $_SERVER['SERVER_NAME']
-        );
-
-        $sUrl = str_replace('&', '&amp;', $sUrl);
-        $data = preg_replace('/xlink\:href=".*"/', 'xlink:href="'.$sUrl.'&amp;"', $data);
+        $wmsRequest = new lizmapWMSRequest($this->project, $this->params);
+        $result = $wmsRequest->process();
 
         // Return response
         $rep = $this->getResponse('binary');
-        $rep->setHttpStatus($code, '');
-        $rep->mimeType = $mime;
-        $rep->content = $data;
+        $rep->setHttpStatus($result->code, '');
+        $rep->mimeType = $result->mime;
+        $rep->content = $result->data;
         $rep->doDownload = false;
         $rep->outputFileName = 'qgis_server_getContext';
 
