@@ -134,6 +134,24 @@ class lizmapWMSRequest extends lizmapOGCRequest
         );
     }
 
+    protected function getschemaextension()
+    {
+        $data = '<?xml version="1.0" encoding="UTF-8"?>
+<schema xmlns="http://www.w3.org/2001/XMLSchema" xmlns:wms="http://www.opengis.net/wms" xmlns:qgs="http://www.qgis.org/wms" targetNamespace="http://www.qgis.org/wms" elementFormDefault="qualified" version="1.0.0">
+  <import namespace="http://www.opengis.net/wms" schemaLocation="http://schemas.opengis.net/wms/1.3.0/capabilities_1_3_0.xsd"/>
+  <element name="GetPrint" type="wms:OperationType" substitutionGroup="wms:_ExtendedOperation" />
+  <element name="GetPrintAtlas" type="wms:OperationType" substitutionGroup="wms:_ExtendedOperation" />
+  <element name="GetStyles" type="wms:OperationType" substitutionGroup="wms:_ExtendedOperation" />
+</schema>';
+
+        return (object) array(
+            'code' => 200,
+            'mime' => 'text/xml',
+            'data' => $data,
+            'cached' => false,
+        );
+    }
+
     protected function getmap()
     {
         if (!$this->checkMaximumWidthHeight()) {
