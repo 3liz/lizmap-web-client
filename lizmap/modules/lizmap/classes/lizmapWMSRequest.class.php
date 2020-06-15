@@ -244,4 +244,28 @@ class lizmapWMSRequest extends lizmapOGCRequest
         );
     }
 
+    protected function getprintatlas()
+    {
+        $querystring = $this->constructUrl();
+
+        // Trigger optional actions by other modules
+        // For example, cadastre module can create a file
+        $eventParams = array(
+            'params' => $this->params,
+            'repository' => $this->repository->getKey(),
+            'project' => $this->project->getKey(),
+        );
+        jEvent::notify('BeforePdfCreation', $eventParams);
+
+        // Get remote data
+        list($data, $mime, $code) = lizmapProxy::getRemoteData($querystring, array('method' => 'post'));
+
+        return (object) array(
+            'code' => $code,
+            'mime' => $mime,
+            'data' => $data,
+            'cached' => false,
+        );
+    }
+
 }
