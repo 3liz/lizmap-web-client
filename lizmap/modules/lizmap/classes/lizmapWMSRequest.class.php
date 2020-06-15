@@ -228,4 +228,20 @@ class lizmapWMSRequest extends lizmapOGCRequest
             'cached' => false,
         );
     }
+
+    protected function getprint()
+    {
+        $querystring = $this->constructUrl();
+
+        // Get remote data
+        list($data, $mime, $code) = lizmapProxy::getRemoteData($querystring, array('method' => 'post'));
+
+        return (object) array(
+            'code' => $code,
+            'mime' => $mime,
+            'data' => $data,
+            'cached' => false,
+        );
+    }
+
 }
