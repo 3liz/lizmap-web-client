@@ -87,10 +87,59 @@ class lizmapWFSRequest extends lizmapOGCRequest
 
     public function describefeaturetype()
     {
+        // Extensions to get aliases and type
+        $returnJson = (strtolower($this->params['outputformat']) == 'json');
+        if ($returnJson) {
+            $this->params['outputformat'] = 'XMLSCHEMA';
+        }
+
         $querystring = $this->constructUrl();
 
         // Get remote data
         list($data, $mime, $code) = lizmapProxy::getRemoteData($querystring);
+
+        if ($code < 400 && $returnJson) {
+            $jsonData = array();
+
+            $layer = $this->project->findLayerByAnyName($this->params['typename']);
+            if ($layer != null) {
+
+                // Get data from XML
+                $use_errors = libxml_use_internal_errors(true);
+                $go = true;
+                // Create a DOM instance
+                $xml = simplexml_load_string($data);
+                if (!$xml) {
+                    $errorlist = array();
+                    foreach (libxml_get_errors() as $error) {
+                        $errorlist[] = $error;
+                    }
+                    $errormsg = 'An error has been raised when loading DescribeFeatureType:';
+                    $errormsg.= '\n'.http_build_query($this->params);
+                    $errormsg.= '\n'.$data;
+                    $errormsg.= '\n'.implode('\n', $errorlist);
+                    jLog::log($errormsg, 'error');
+                    $go = false;
+                }
+                if ($go && $xml->complexType) {
+                    $typename = (string) $xml->complexType->attributes()->name;
+                    if ($typename == $this->params['typename'].'Type') {
+                        $jsonData['name'] = $layer->name;
+                        $types = array();
+                        $elements = $xml->complexType->complexContent->extension->sequence->element;
+                        foreach ($elements as $element) {
+                            $types[(string) $element->attributes()->name] = (string) $element->attributes()->type;
+                        }
+                        $jsonData['types'] = (object) $types;
+                    }
+                }
+                $layer = $this->project->getLayer($layer->id);
+                $jsonData['aliases'] = (object) $layer->getAliasFields();
+                $jsonData['defaults'] = (object) $layer->getDefaultValues();
+            }
+            $data = json_encode((object) $jsonData);
+            $mime = 'text/json; charset=utf-8';
+        }
 
         return (object) array(
             'code' => $code,

@@ -1322,79 +1322,14 @@ class serviceCtrl extends jController
     public function DescribeFeatureType()
     {
 
-        // Get parameters
-        if (!$this->getServiceParameters()) {
-            return $this->serviceException();
-        }
-
-        // Extensions to get aliases and type
-        $returnJson = false;
-        if (strtolower($this->params['outputformat']) == 'json') {
-            $this->params['outputformat'] = 'XMLSCHEMA';
-            $returnJson = true;
-        }
-
-        // Construction of the request url : base url + parameters
-        $url = $this->services->wmsServerURL.'?';
-        $bparams = http_build_query($this->params);
-        $querystring = $url.$bparams;
-
-        // Get remote data
-        list($data, $mime, $code) = lizmapProxy::getRemoteData($querystring);
-
-        if ($code < 400 && $returnJson) {
-            $jsonData = array();
-
-            $layer = $this->project->findLayerByAnyName($this->params['typename']);
-            if ($layer != null) {
-
-                // Get data from XML
-                $use_errors = libxml_use_internal_errors(true);
-                $go = true;
-                $errorlist = array();
-                // Create a DOM instance
-                $xml = simplexml_load_string($data);
-                if (!$xml) {
-                    foreach (libxml_get_errors() as $error) {
-                        $errorlist[] = $error;
-                    }
-                    $go = false;
-                }
-                if ($go && $xml->complexType) {
-                    $typename = (string) $xml->complexType->attributes()->name;
-                    if ($typename == $this->params['typename'].'Type') {
-                        $jsonData['name'] = $layer->name;
-                        $types = array();
-                        $elements = $xml->complexType->complexContent->extension->sequence->element;
-                        foreach ($elements as $element) {
-                            $types[(string) $element->attributes()->name] = (string) $element->attributes()->type;
-                        }
-                        $jsonData['types'] = (object) $types;
-                    }
-                }
-                $layer = $this->project->getLayer($layer->id);
-                $aliases = $layer->getAliasFields();
-                $jsonData['aliases'] = (object) $aliases;
-                $jsonData['defaults'] = (object) $layer->getDefaultValues();
-            }
-            $jsonData = json_encode((object) $jsonData);
-
-            // Return response
-            $rep = $this->getResponse('binary');
-            $rep->setHttpStatus($code, '');
-            $rep->mimeType = 'text/json; charset=utf-8';
-            $rep->content = $jsonData;
-            $rep->doDownload = false;
-            $rep->outputFileName = 'qgis_server_wfs';
-
-            return $rep;
-        }
+        $wfsRequest = new lizmapWFSRequest($this->project, $this->params);
+        $result = $wfsRequest->process();
 
         // Return response
         $rep = $this->getResponse('binary');
-        $rep->setHttpStatus($code, '');
-        $rep->mimeType = $mime;
-        $rep->content = $data;
+        $rep->setHttpStatus($result->code, '');
+        $rep->mimeType = $result->mime;
+        $rep->content = $result->data;
         $rep->doDownload = false;
         $rep->outputFileName = 'qgis_server_wfs';
 
