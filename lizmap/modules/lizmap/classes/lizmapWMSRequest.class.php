@@ -229,6 +229,37 @@ class lizmapWMSRequest extends lizmapOGCRequest
         );
     }
 
+    protected function getfeatureinfo()
+    {
+        $toHtml = ($this->param('info_format') == 'text/html');
+        if ($toHtml) {
+            $this->params['info_format'] = 'text/xml';
+        }
+
+        // Always request maptip to QGIS server so we can decide if to use it later
+        $this->params['with_maptip'] = 'true';
+        // Always request geometry to QGIS server so we can decide if to use it later
+        $this->params['with_geometry'] = 'true';
+
+        $querystring = $this->constructUrl();
+
+        // Get remote data
+        list($data, $mime, $code) = lizmapProxy::getRemoteData($querystring);
+
+        // Get HTML content if needed
+        if ($toHtml and preg_match('#/xml#', $mime)) {
+            $data = $this->gfiXmlToHtml($data);
+            $mime = 'text/html';
+        }
+
+        return (object) array(
+            'code' => $code,
+            'mime' => $mime,
+            'data' => $data,
+            'cached' => false,
+        );
+    }
+
     protected function getprint()
     {
         $querystring = $this->constructUrl();
@@ -281,6 +312,326 @@ class lizmapWMSRequest extends lizmapOGCRequest
             'data' => $data,
             'cached' => false,
         );
+    }
+
+    /**
+     * gfiXmlToHtml : return HTML for the getFeatureInfo XML.
+     *
+     * @param string $xmldata XML data from getFeatureInfo
+     *
+     * @return string feature Info in HTML format
+     */
+    protected function gfiXmlToHtml($xmldata)
+    {
+        // Get data from XML
+        $use_errors = libxml_use_internal_errors(true);
+        $errorlist = array();
+        // Create a DOM instance
+        $xml = simplexml_load_string($xmldata);
+        if (!$xml) {
+            foreach (libxml_get_errors() as $error) {
+                $errorlist[] = $error;
+            }
+            $errormsg = 'An error has been raised when loading GetFeatureInfoHtml:';
+            $errormsg.= '\n'.http_build_query($gfiparams);
+            $errormsg.= '\n'.$xmldata;
+            $errormsg.= '\n'.implode('\n', $errorlist);
+            jLog::log($errormsg, 'error');
+            // return empty html string
+            return '';
+        }
+
+        // Check layer children
+        if (!$xml->Layer) {
+            // No data found
+            // return empty html string
+            return '';
+        }
+
+        // Get json configuration for the project
+        $configLayers = $this->project->getLayers();
+
+        // Get optional parameter fid
+        $filterFid = null;
+        $fid = $this->param('fid');
+        if ($fid) {
+            $expFid = explode('.', $fid);
+            if (count($expFid) == 2) {
+                $filterFid = array();
+                $filterFid[$expFid[0]] = $expFid[1];
+            }
+        }
+
+        // Loop through the layers
+        $content = array();
+
+        foreach ($xml->Layer as $layer) {
+            $layerName = (string) $layer['name'];
+            $configLayer = $this->project->findLayerByAnyName($layerName);
+            if ($configLayer == null) {
+                continue;
+            }
+
+            // Avoid layer if no popup asked by the user for it
+            // or if no popup property
+            // or if no edition
+            $returnPopup = false;
+            if (property_exists($configLayer, 'popup') && $configLayer->popup == 'True') {
+                $returnPopup = true;
+            }
+
+            if (!$returnPopup) {
+                $editionLayer = $this->project->findEditionLayerByLayerId($configLayer->id);
+                if ($editionLayer != null &&
+                    ($editionLayer->capabilities->modifyGeometry == 'True'
+                                     || $editionLayer->capabilities->modifyAttribute == 'True'
+                                     || $editionLayer->capabilities->deleteFeature == 'True')
+                ) {
+                    $returnPopup = true;
+                }
+            }
+
+            if (!$returnPopup) {
+                continue;
+            }
+
+            // Get layer title
+            $layerTitle = $configLayer->title;
+            $layerId = $configLayer->id;
+
+            if($layer->Feature && count($layer->Feature) > 0) {
+                $content = array_merge(
+                    $content,
+                    $this->gfiVectorXmlToHtml($layerId, $layerName, $layerTitle, $layer, $configLayer, $filterFid)
+                );
+            }
+
+            // Raster Popup
+            if ($layer->Attribute && count($layer->Attribute) > 0) {
+                $content[] = $this->gfiRasterXmlToHtml($layerId, $layerName, $layerTitle, $layer);
+            }
+        } // loop layers
+
+        $content = array_reverse($content);
+
+        return implode("\n", $content);
+    }
+
+    /**
+     * gfiVectorXmlToHtml : return Vector HTML for the getFeatureInfo XML.
+     *
+     * @param string $layerId
+     * @param string $layerName
+     * @param string $layerTitle
+     * @param SimpleXmlElement $layer
+     * @param Object $configLayer
+     * @param Array $filterFid
+     *
+     * @return array Vector features Info in HTML format
+     */
+    protected function gfiVectorXmlToHtml($layerId, $layerName, $layerTitle, $layer, $configLayer, $filterFid)
+    {
+        $content = array();
+        $popupClass = jClasses::getService('view~popup');
+
+        // Get the template for the popup content
+        $templateConfigured = false;
+        if (property_exists($configLayer, 'popupTemplate')) {
+            // Get template content
+            $popupTemplate = (string) trim($configLayer->popupTemplate);
+            // Use it if not empty
+            if (!empty($popupTemplate)) {
+                $templateConfigured = true;
+                // first replace all "media/bla/bla/llkjk.ext" by full url
+                $popupTemplate = preg_replace_callback(
+                    '#(["\']){1}((\.\./)?media/.+\.\w{3,10})(["\']){1}#',
+                    array($this, 'replaceMediaPathByMediaUrl'),
+                    $popupTemplate
+                );
+                // Replace : html encoded chars to let further regexp_replace find attributes
+                $popupTemplate = str_replace(array('%24', '%7B', '%7D'), array('$', '{', '}'), $popupTemplate);
+            }
+        }
+
+        // Loop through the features
+        $popupMaxFeatures = 10;
+        if (property_exists($configLayer, 'popupMaxFeatures') && is_numeric($configLayer->popupMaxFeatures)) {
+            $popupMaxFeatures = $configLayer->popupMaxFeatures + 0;
+        }
+        $layerFeaturesCounter = 0;
+        foreach ($layer->Feature as $feature) {
+            $id = (string) $feature['id'];
+            // Optionnally filter by feature id
+            if ($filterFid &&
+                isset($filterFid[$configLayer->name]) &&
+                $filterFid[$configLayer->name] != $id
+            ) {
+                continue;
+            }
+
+            if ($layerFeaturesCounter == $popupMaxFeatures) {
+                break;
+            }
+            ++$layerFeaturesCounter;
+
+            // Hidden input containing layer id and feature id
+            $hiddenFeatureId = '<input type="hidden" value="'.$layerId.'.'.$id.'" class="lizmap-popup-layer-feature-id"/>
+    ';
+
+            // First get default template
+            $tpl = new jTpl();
+            $tpl->assign('layerName', $layerName);
+            $tpl->assign('layerId', $layerId);
+            $tpl->assign('layerTitle', $layerTitle);
+            $tpl->assign('featureId', $id);
+            $tpl->assign('attributes', $feature->Attribute);
+            $tpl->assign('repository', $this->repository->getKey());
+            $tpl->assign('project', $this->project->getKey());
+            $popupFeatureContent = $tpl->fetch('view~popupDefaultContent', 'html');
+            $autoContent = $popupFeatureContent;
+
+            // Get specific template for the layer has been configured
+            if ($templateConfigured) {
+                $popupFeatureContent = $popupTemplate;
+
+                // then replace all column data by appropriate content
+                foreach ($feature->Attribute as $attribute) {
+                    // Replace #col and $col by colomn name and value
+                    $popupFeatureContent = $popupClass->getHtmlFeatureAttribute(
+                        $attribute['name'],
+                        $attribute['value'],
+                        $this->repository->getKey(),
+                        $this->project->getKey(),
+                        $popupFeatureContent
+                    );
+                }
+                $lizmapContent = $popupFeatureContent;
+            }
+
+            // Use default template if needed or maptip value if defined
+            $hasMaptip = false;
+            $maptipValue = '';
+            // Get geometry data
+            $hasGeometry = false;
+            $geometryValue = '';
+
+            foreach ($feature->Attribute as $attribute) {
+                if ($attribute['name'] == 'maptip') {
+                    $hasMaptip = true;
+                    $maptipValue = $attribute['value'];
+                } elseif ($attribute['name'] == 'geometry') {
+                    $hasGeometry = true;
+                    $geometryValue = $attribute['value'];
+                }
+            }
+            // If there is a maptip attribute we display its value
+            if ($hasMaptip) {
+                // first replace all "media/bla/bla/llkjk.ext" by full url
+                $maptipValue = preg_replace_callback(
+                    '#(["\']){1}((\.\./)?media/.+\.\w{3,10})(["\']){1}#',
+                    array($this, 'replaceMediaPathByMediaUrl'),
+                    $maptipValue
+                );
+                // Replace : html encoded chars to let further regexp_replace find attributes
+                $maptipValue = str_replace(array('%24', '%7B', '%7D'), array('$', '{', '}'), $maptipValue);
+                $qgisContent = $maptipValue;
+            }
+
+            // Get the BoundingBox data
+            $hiddenGeometry = '';
+            if ($hasGeometry && $feature->BoundingBox) {
+                $hiddenGeometry = '<input type="hidden" value="'.$geometryValue.'" class="lizmap-popup-layer-feature-geometry"/>
+        ';
+                $bbox = $feature->BoundingBox[0];
+                $hiddenGeometry .= '<input type="hidden" value="'.$bbox['CRS'].'" class="lizmap-popup-layer-feature-crs"/>
+        ';
+                $hiddenGeometry .= '<input type="hidden" value="'.$bbox['minx'].'" class="lizmap-popup-layer-feature-bbox-minx"/>
+        ';
+                $hiddenGeometry .= '<input type="hidden" value="'.$bbox['miny'].'" class="lizmap-popup-layer-feature-bbox-miny"/>
+        ';
+                $hiddenGeometry .= '<input type="hidden" value="'.$bbox['maxx'].'" class="lizmap-popup-layer-feature-bbox-maxx"/>
+        ';
+                $hiddenGeometry .= '<input type="hidden" value="'.$bbox['maxy'].'" class="lizmap-popup-layer-feature-bbox-maxy"/>
+        ';
+            }
+
+            // New option to choose the popup source : auto (=default), lizmap (=popupTemplate), qgis (=qgis maptip)
+            $finalContent = $autoContent;
+            if (property_exists($configLayer, 'popupSource')) {
+                if ($configLayer->popupSource == 'qgis' and $hasMaptip) {
+                    $finalContent = $qgisContent;
+                }
+                if ($configLayer->popupSource == 'lizmap' and $templateConfigured) {
+                    $finalContent = $lizmapContent;
+                }
+            }
+
+            $tpl = new jTpl();
+            $tpl->assign('layerTitle', $layerTitle);
+            $tpl->assign('layerName', $layerName);
+            $tpl->assign('layerId', $layerId);
+            $tpl->assign('featureId', $id);
+            $tpl->assign('popupContent', $hiddenFeatureId.$hiddenGeometry.$finalContent);
+            $content[] = $tpl->fetch('view~popup', 'html');
+        } // loop features
+        return $content;
+    }
+
+
+    /**
+     * gfiRasterXmlToHtml : return Raster HTML for the getFeatureInfo XML.
+     *
+     * @param string $layerId
+     * @param string $layerName
+     * @param string $layerTitle
+     * @param SimpleXmlElement $layer
+     *
+     * @return array Raster feature Info in HTML format
+     */
+    protected function gfiRasterXmlToHtml($layerId, $layerName, $layerTitle, $layer)
+    {
+        $tpl = new jTpl();
+        $tpl->assign('layerName', $layerName);
+        $tpl->assign('layerId', $layerId);
+        $tpl->assign('attributes', $layer->Attribute);
+        $tpl->assign('repository', $this->repository->getKey());
+        $tpl->assign('project', $this->project->getKey());
+        $popupRasterContent = $tpl->fetch('view~popupRasterContent', 'html');
+
+        $tpl = new jTpl();
+        $tpl->assign('layerTitle', $layerTitle);
+        $tpl->assign('layerName', $layerName);
+        $tpl->assign('layerId', $layerId);
+        $tpl->assign('popupContent', $popupRasterContent);
+        return $tpl->fetch('view~popup', 'html');
+    }
+
+    /**
+     * replaceMediaPathByMediaUrl : replace all "/media/bla" in a text by the getMedia corresponding URL.
+     * This method is used as callback in GetFeatureInfoHtml method for the preg_replace_callback.
+     *
+     * @param array $matches Array containing the preg matches
+     *
+     * @return string replaced text
+     */
+    protected function replaceMediaPathByMediaUrl($matches)
+    {
+        $req = jApp::coord()->request;
+        $return = '';
+        $return .= '"';
+        $return .= jUrl::getFull(
+            'view~media:getMedia',
+            array(
+                'repository' => $this->repository->getKey(),
+                'project' => $this->project->getKey(),
+                'path' => $matches[2],
+            ),
+            0,
+            $req->getDomainName().$req->getPort()
+        );
+        $return .= '"';
+
+        return $return;
     }
 
 }
