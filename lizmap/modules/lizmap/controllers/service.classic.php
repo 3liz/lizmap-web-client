@@ -1168,24 +1168,17 @@ class serviceCtrl extends jController
     public function GetStyles()
     {
 
-        // Get parameters
-        if (!$this->getServiceParameters()) {
-            return $this->serviceException();
-        }
+        //Get parameters  DELETED HERE SINCE ALREADY DONE IN index method
+        //if(!$this->getServiceParameters())
+        //return $this->serviceException();
 
-        // Construction of the request url : base url + parameters
-        $url = $this->services->wmsServerURL.'?';
-        $bparams = http_build_query($this->params);
-        $querystring = $url.$bparams;
+        $wmsRequest = new lizmapWMSRequest($this->project, $this->params);
+        $result = $wmsRequest->process();
 
-        // Get remote data
-        list($data, $mime, $code) = lizmapProxy::getRemoteData($querystring);
-
-        // Return response
         $rep = $this->getResponse('binary');
-        $rep->setHttpStatus($code, '');
-        $rep->mimeType = $mime;
-        $rep->content = $data;
+        $rep->setHttpStatus($result->code, '');
+        $rep->mimeType = $result->mime;
+        $rep->content = $result->data;
         $rep->doDownload = false;
         $rep->outputFileName = 'qgis_style';
 
