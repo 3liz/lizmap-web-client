@@ -1128,40 +1128,17 @@ class serviceCtrl extends jController
     public function GetPrintAtlas()
     {
 
-    // Get parameters
-        if (!$this->getServiceParameters()) {
-            return $this->serviceException();
-        }
+        //Get parameters  DELETED HERE SINCE ALREADY DONE IN index method
+        //if(!$this->getServiceParameters())
+        //return $this->serviceException();
 
-        $url = $this->services->wmsServerURL.'?';
-
-        // Filter the parameters of the request
-        // for querying GetPrint
-        $data = array();
-        $paramsBlacklist = array('module', 'action', 'C', 'repository', 'project');
-        foreach ($this->params as $key => $val) {
-            if (!in_array($key, $paramsBlacklist)) {
-                $data[] = strtolower($key).'='.urlencode($val);
-            }
-        }
-        $querystring = $url.implode('&', $data);
-
-        // Trigger optional actions by other modules
-        // For example, cadastre module can create a file
-        $eventParams = array(
-            'params' => $this->params,
-            'repository' => $this->repository->getKey(),
-            'project' => $this->project->getKey(),
-        );
-        jEvent::notify('BeforePdfCreation', $eventParams);
-
-        // Get remote data
-        list($data, $mime, $code) = lizmapProxy::getRemoteData($querystring, array('method' => 'post'));
+        $wmsRequest = new lizmapWMSRequest($this->project, $this->params);
+        $result = $wmsRequest->process();
 
         $rep = $this->getResponse('binary');
-        $rep->setHttpStatus($code, '');
-        $rep->mimeType = $mime;
-        $rep->content = $data;
+        $rep->setHttpStatus($result->code, '');
+        $rep->mimeType = $result->mime;
+        $rep->content = $result->data;
         $rep->doDownload = false;
         $rep->outputFileName = $this->project->getKey().'_'.preg_replace('#[\\W]+#', '_', $this->params['template']).'.'.$this->params['format'];
 
