@@ -268,4 +268,19 @@ class lizmapWMSRequest extends lizmapOGCRequest
         );
     }
 
+    protected function getstyles()
+    {
+        $querystring = $this->constructUrl();
+
+        // Get remote data
+        list($data, $mime, $code) = lizmapProxy::getRemoteData($querystring);
+
+        return (object) array(
+            'code' => $code,
+            'mime' => $mime,
+            'data' => $data,
+            'cached' => false,
+        );
+    }
+
 }
