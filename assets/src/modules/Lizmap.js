@@ -73,6 +73,10 @@ export default class Lizmap {
         return this._lizmap3.getNameByTypeName(typeName);
     }
 
+    getLayerNameByCleanName(cleanName) {
+        return this._lizmap3.getLayerNameByCleanName(cleanName);
+    }
+
     // Display message on screen for users
     displayMessage(message, type, close) {
         this._lizmap3.addMessage(message, type, close);

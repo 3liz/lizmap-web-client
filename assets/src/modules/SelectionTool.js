@@ -478,7 +478,7 @@ export default class SelectionTool {
         }
     }
 
-    // Invert selection on for single layers
+    // Invert selection on a single layer
     invert(mfeatureType) {
         const featureType = mfeatureType ? mfeatureType : this.allFeatureTypeSelected[0];
 
