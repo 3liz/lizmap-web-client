@@ -554,17 +554,14 @@ class serviceCtrl extends jController
      */
     public function GetSchemaExtension()
     {
-        $data = '<?xml version="1.0" encoding="UTF-8"?>
-<schema xmlns="http://www.w3.org/2001/XMLSchema" xmlns:wms="http://www.opengis.net/wms" xmlns:qgs="http://www.qgis.org/wms" targetNamespace="http://www.qgis.org/wms" elementFormDefault="qualified" version="1.0.0">
-  <import namespace="http://www.opengis.net/wms" schemaLocation="http://schemas.opengis.net/wms/1.3.0/capabilities_1_3_0.xsd"/>
-  <element name="GetPrint" type="wms:OperationType" substitutionGroup="wms:_ExtendedOperation" />
-  <element name="GetPrintAtlas" type="wms:OperationType" substitutionGroup="wms:_ExtendedOperation" />
-  <element name="GetStyles" type="wms:OperationType" substitutionGroup="wms:_ExtendedOperation" />
-</schema>';
+        $wmsRequest = new lizmapWMSRequest($this->project, $this->params);
+        $result = $wmsRequest->process();
+
         // Return response
         $rep = $this->getResponse('binary');
-        $rep->mimeType = 'text/xml';
-        $rep->content = $data;
+        $rep->setHttpStatus($result->code, '');
+        $rep->mimeType = $result->mime;
+        $rep->content = $result->data;
         $rep->doDownload = false;
         $rep->outputFileName = 'qgis_server_schema_extension';
 
