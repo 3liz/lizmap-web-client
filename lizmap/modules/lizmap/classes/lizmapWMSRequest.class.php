@@ -111,6 +111,29 @@ class lizmapWMSRequest extends lizmapOGCRequest
         );
     }
 
+    protected function getcontext()
+    {
+        $querystring = $this->constructUrl();
+
+        // Get remote data
+        list($data, $mime, $code) = lizmapProxy::getRemoteData($querystring);
+
+        // Replace qgis server url in the XML (hide real location)
+        $sUrl = jUrl::getFull(
+            'lizmap~service:index',
+            array('repository' => $this->repository->getKey(), 'project' => $this->project->getKey())
+        );
+        $sUrl = str_replace('&', '&amp;', $sUrl).'&amp;';
+        $data = preg_replace('/xlink\:href=".*"/', 'xlink:href="'.$sUrl.'&amp;"', $data);
+
+        return (object) array(
+            'code' => $code,
+            'mime' => $mime,
+            'data' => $data,
+            'cached' => false,
+        );
+    }
+
     protected function getmap()
     {
         if (!$this->checkMaximumWidthHeight()) {
