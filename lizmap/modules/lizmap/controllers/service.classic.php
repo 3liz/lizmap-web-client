@@ -465,7 +465,7 @@ class serviceCtrl extends jController
      *
      * @return jResponseBinary JSON configuration file for the specified project
      */
-    public function GetCapabilities()
+    protected function GetCapabilities()
     {
         $service = strtolower($this->params['service']);
         $request = null;
@@ -523,7 +523,7 @@ class serviceCtrl extends jController
      *
      * @return jResponseBinary text/xml Web Map Context
      */
-    public function GetContext()
+    protected function GetContext()
     {
 
         // Get parameters
@@ -571,7 +571,7 @@ class serviceCtrl extends jController
      *
      * @return jResponseBinary text/xml the WMS GEtCapabilities 1.3.0 Schema Extension.
      */
-    public function GetSchemaExtension()
+    protected function GetSchemaExtension()
     {
         $data = '<?xml version="1.0" encoding="UTF-8"?>
 <schema xmlns="http://www.w3.org/2001/XMLSchema" xmlns:wms="http://www.opengis.net/wms" xmlns:qgs="http://www.qgis.org/wms" targetNamespace="http://www.qgis.org/wms" elementFormDefault="qualified" version="1.0.0">
@@ -598,7 +598,7 @@ class serviceCtrl extends jController
      *
      * @return jResponseBinary image rendered by the Map Server
      */
-    public function GetMap()
+    protected function GetMap()
     {
 
         //Get parameters  DELETED HERE SINCE ALREADY DONE IN index method
@@ -652,7 +652,7 @@ class serviceCtrl extends jController
      *
      * @return jResponseBinary Image of the legend for 1 to n layers, returned by the Map Server
      */
-    public function GetLegendGraphics()
+    protected function GetLegendGraphics()
     {
 
         //Get parameters  DELETED HERE SINCE ALREADY DONE IN index method
@@ -679,7 +679,7 @@ class serviceCtrl extends jController
      *
      * @return jResponseBinary feature Info
      */
-    public function GetFeatureInfo()
+    protected function GetFeatureInfo()
     {
         $globalResponse = '';
 
@@ -1097,7 +1097,7 @@ class serviceCtrl extends jController
      *
      * @return jResponseBinary image rendered by the Map Server
      */
-    public function GetPrint()
+    protected function GetPrint()
     {
 
     /*
@@ -1164,7 +1164,7 @@ class serviceCtrl extends jController
      *
      * @return jResponseBinary image rendered by the Map Server
      */
-    public function GetPrintAtlas()
+    protected function GetPrintAtlas()
     {
 
     // Get parameters
@@ -1226,7 +1226,7 @@ class serviceCtrl extends jController
      *
      * @return jResponseBinary SLD Style XML
      */
-    public function GetStyles()
+    protected function GetStyles()
     {
 
         // Get parameters
@@ -1324,7 +1324,7 @@ class serviceCtrl extends jController
      *
      * @return jResponseBinary image rendered by the Map Server
      */
-    public function GetFeature()
+    protected function GetFeature()
     {
         $wfsRequest = new lizmapWFSRequest($this->project, $this->params);
         $result = $wfsRequest->process();
@@ -1385,7 +1385,7 @@ class serviceCtrl extends jController
      *
      * @return jResponseBinary JSON content
      */
-    public function DescribeFeatureType()
+    protected function DescribeFeatureType()
     {
 
         // Get parameters
@@ -1473,7 +1473,7 @@ class serviceCtrl extends jController
      *
      * @return jResponseText
      */
-    public function GetProj4()
+    protected function GetProj4()
     {
 
         // Get parameters
@@ -1494,7 +1494,7 @@ class serviceCtrl extends jController
     /**
      * @return jResponseBinary
      */
-    public function GetTile()
+    protected function GetTile()
     {
         $wmsRequest = new lizmapWMTSRequest($this->project, $this->params);
         $result = $wmsRequest->process();
@@ -1555,7 +1555,7 @@ class serviceCtrl extends jController
     /**
      * @return jResponseJson
      */
-    public function getSelectionToken()
+    protected function getSelectionToken()
     {
         // Get parameters
         if (!$this->getServiceParameters()) {
@@ -1600,7 +1600,7 @@ class serviceCtrl extends jController
         return $data;
     }
 
-    public function getFilterToken()
+    protected function getFilterToken()
     {
         // Get parameters
         if (!$this->getServiceParameters()) {
