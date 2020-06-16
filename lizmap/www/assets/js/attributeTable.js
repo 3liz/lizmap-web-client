@@ -51,10 +51,9 @@ var lizAttributeTable = function() {
                 attributeLayersDic[lizMap.cleanName(attributeLayersSorted[i])] = attributeLayersSorted[i];
             }
 
-            featureTypes.each( function(){
-                var self = $(this);
+            for(const featureType of featureTypes) {
                 // typename
-                var typeName = self.find('Name').text();
+                var typeName = featureType.getElementsByTagName('Name')[0].textContent;
                 // layername
                 var layername = lizMap.getNameByTypeName( typeName );
                 if ( !layername )
@@ -110,20 +109,19 @@ var lizAttributeTable = function() {
                         config.layers[configLayerName]['geometryType'] = 'unknown';
                     }
 
-                    config.layers[configLayerName]['crs'] = self.find('SRS').text();
-                    lizMap.loadProjDefinition( config.layers[configLayerName].crs, function( aProj ) {
+                    config.layers[configLayerName]['crs'] = featureType.getElementsByTagName('SRS')[0].textContent;
+                    lizMap.loadProjDefinition( config.layers[configLayerName].crs, function() {
                         new OpenLayers.Projection(config.layers[configLayerName].crs);
                     });
-                    var bbox = self.find('LatLongBoundingBox');
+                    var bbox = featureType.getElementsByTagName('LatLongBoundingBox')[0];
                     atConfig['bbox'] = [
-                        parseFloat(bbox.attr('minx'))
-                     ,parseFloat(bbox.attr('miny'))
-                     ,parseFloat(bbox.attr('maxx'))
-                     ,parseFloat(bbox.attr('maxy'))
+                        parseFloat(bbox.getAttribute('minx'))
+                        , parseFloat(bbox.getAttribute('miny'))
+                        , parseFloat(bbox.getAttribute('maxx'))
+                        , parseFloat(bbox.getAttribute('maxy'))
                     ];
-
                 }
-            });
+            }
 
             if (hasAttributeTableLayers) {
                 // Attribute table could be activated to get selection tool
@@ -418,8 +416,8 @@ var lizAttributeTable = function() {
                     html+= '        <li><a href="#" class="btn-export-attributeTable">GML</a></li>';
                     var exportFormats = lizMap.getVectorLayerResultFormat();
                     for ( var i=0, len=exportFormats.length; i<len; i++ ) {
-                        var format = exportFormats[i].tagName;
-                        if ( format != 'GML2' && format != 'GML3' && format != 'GEOJSON' ) {
+                        var format = exportFormats[i].toLowerCase();
+                        if ( format != 'gml2' && format != 'gml3' && format != 'geojson' ) {
                             html += '        <li><a href="#" class="btn-export-attributeTable">'+format+'</a></li>';
                         }
                     }
