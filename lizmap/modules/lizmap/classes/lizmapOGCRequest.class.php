@@ -68,7 +68,13 @@ class lizmapOGCRequest
 
     public function process()
     {
-        return $this->{$this->param('request')}();
+        $req = $this->param('request');
+        if($req && method_exists($this, $req)) {
+            return $this->{$req}();
+        }
+
+        jMessage::add('Please add or check the value of the REQUEST parameter', 'OGC_OperationNotSupported');
+        return $this->serviceException(501);
     }
 
     protected function constructUrl()
@@ -85,7 +91,7 @@ class lizmapOGCRequest
         return $url.$bparams;
     }
 
-    protected function serviceException()
+    protected function serviceException($code=400)
     {
         $messages = jMessage::getAll();
         $mime = 'text/plain';
@@ -108,7 +114,7 @@ class lizmapOGCRequest
         jMessage::clearAll();
 
         return (object) array(
-            'code' => 400,
+            'code' => $code,
             'mime' => $mime,
             'data' => $data,
             'cached' => false,
