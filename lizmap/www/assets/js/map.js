@@ -2225,9 +2225,8 @@ var lizMap = function() {
           $('#button-locate').parent().remove();
           $('#locate-menu').remove();
         } else {
-          featureTypes.each( function(){
-            var self = $(this);
-            var typeName = self.find('Name').text();
+          for (const featureType of featureTypes) {
+            var typeName = featureType.getElementsByTagName('Name')[0].textContent;
             var lname = lizMap.getNameByTypeName( typeName );
             if ( !lname ) {
                 if (typeName in config.locateByLayer)
@@ -2248,18 +2247,18 @@ var lizMap = function() {
                 return;
 
             var locate = config.locateByLayer[lname];
-            locate['crs'] = self.find('SRS').text();
+            locate['crs'] = featureType.getElementsByTagName('SRS')[0].textContent;
             loadProjDefinition( locate.crs, function( aProj ) {
                 new OpenLayers.Projection(locate.crs);
             });
-            var bbox = self.find('LatLongBoundingBox');
+            var bbox = featureType.getElementsByTagName('LatLongBoundingBox')[0];
             locate['bbox'] = [
-                parseFloat(bbox.attr('minx'))
-               ,parseFloat(bbox.attr('miny'))
-               ,parseFloat(bbox.attr('maxx'))
-               ,parseFloat(bbox.attr('maxy'))
+              parseFloat(bbox.getAttribute('minx'))
+              , parseFloat(bbox.getAttribute('miny'))
+              , parseFloat(bbox.getAttribute('maxx'))
+              , parseFloat(bbox.getAttribute('maxy'))
             ];
-          } );
+          }
 
           // get joins
           for (var lName in config.locateByLayer) {
@@ -4098,10 +4097,9 @@ var lizMap = function() {
 
     var tooltipLayersSorted = [];
 
-    featureTypes.each( function(){
-        var self = $(this);
-        var typeName = self.find('Name').text();
-        var lname = lizMap.getNameByTypeName( typeName );
+    for (const featureType of featureTypes) {
+      var typeName = featureType.getElementsByTagName('Name')[0].textContent;
+      var lname = lizMap.getNameByTypeName( typeName );
         if ( !lname ) {
             if (typeName in config.locateByLayer)
                 lname = typeName
@@ -4124,7 +4122,7 @@ var lizMap = function() {
             var lConfig = config.layers[lname];
             tooltipLayersSorted[config.tooltipLayers[lname].order] = '<option value="'+lname+'">'+lConfig.title+'</option>';
         }
-    });
+    }
 
     // Display layers order as declared in plugin
     for (var i = 0; i < tooltipLayersSorted.length; i++) {
@@ -5091,15 +5089,22 @@ var lizMap = function() {
   }
 
   function getVectorLayerFeatureTypes() {
-      if ( wfsCapabilities == null )
-          return [];
-      return wfsCapabilities.find('FeatureType');
+      if ( wfsCapabilities == null ){
+        return [];
+      }
+      return wfsCapabilities.getElementsByTagName('FeatureType');
   }
 
   function getVectorLayerResultFormat() {
-      if ( wfsCapabilities == null )
-          return [];
-      return wfsCapabilities.find('Capability > Request > GetFeature > ResultFormat > *');
+    let formats = [];
+    if ( wfsCapabilities == null ){
+      return formats;
+    }else{
+      for (const format of wfsCapabilities.getElementsByTagName('ResultFormat')[0].children) {
+        formats.push(format.tagName);
+      }
+      return formats;
+    }
   }
 
 
@@ -5670,6 +5675,7 @@ var lizMap = function() {
 
     /**
      * Method: getVectorLayerFeatureType
+     * @returns {Array} Array of FeatureType Elements
      */
     getVectorLayerFeatureTypes: function() {
       return getVectorLayerFeatureTypes();
@@ -5677,6 +5683,7 @@ var lizMap = function() {
 
     /**
      * Method: getVectorLayerResultFormat
+     * @returns {string[]} Array of format for file export
      */
     getVectorLayerResultFormat: function() {
       return getVectorLayerResultFormat();
@@ -5769,6 +5776,8 @@ var lizMap = function() {
         // config is defined globally
         config = responses[0];
 
+        const domparser = new DOMParser();
+
         const wmsCapaData = responses[1];
         const wmtsCapaData = responses[2];
         const wfsCapaData = responses[3];
@@ -5804,10 +5813,11 @@ var lizMap = function() {
           wmtsCapabilities = null;
         }
 
-        wfsCapabilities = $(wfsCapaData);
+        wfsCapabilities = domparser.parseFromString(wfsCapaData, "application/xml");
         var featureTypes = getVectorLayerFeatureTypes();
-        featureTypes.each(function () {
-          var typeName = $(this).find('Name').text();
+
+        for (const featureType of featureTypes) {
+          var typeName = featureType.getElementsByTagName('Name')[0].textContent;
           var layerName = lizMap.getNameByTypeName(typeName);
           if (!layerName) {
             if (typeName in config.layers)
@@ -5830,7 +5840,7 @@ var lizMap = function() {
           var configLayer = config.layers[layerName];
           configLayer.typename = typeName;
           typeNameMap[typeName] = layerName;
-        });
+        }
 
         //set title and abstract coming from capabilities
         $('#abstract').html(capabilities.abstract ? capabilities.abstract : '');

@@ -52,7 +52,7 @@ export default class Lizmap {
     }
 
     get vectorLayerResultFormat() {
-        return this._lizmap3.getVectorLayerResultFormat().toArray();
+        return this._lizmap3.getVectorLayerResultFormat();
     }
 
     /**

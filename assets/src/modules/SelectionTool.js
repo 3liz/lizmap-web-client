@@ -36,8 +36,8 @@ export default class SelectionTool {
 
         for (const attributeLayerName in config.attributeLayers) {
             if (config.attributeLayers.hasOwnProperty(attributeLayerName)) {
-                featureTypes.each((index, featureType) => {
-                    const lname = mainLizmap.getNameByTypeName($(featureType).find('Name').text());
+                for (const featureType of featureTypes) {
+                    const lname = mainLizmap.getNameByTypeName(featureType.getElementsByTagName('Name')[0].textContent);
 
                     if (attributeLayerName === lname
                         && lname in config.layers
@@ -49,7 +49,7 @@ export default class SelectionTool {
                             title: config.layers[lname].title
                         };
                     }
-                });
+                }
             }
         }
 
