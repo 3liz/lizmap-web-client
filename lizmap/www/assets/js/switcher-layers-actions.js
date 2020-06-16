@@ -169,24 +169,23 @@ var lizLayerActionButtons = function() {
                     var exportFormats = lizMap.getVectorLayerResultFormat();
                     var options = '';
                     for ( var i=0, len=exportFormats.length; i<len; i++ ) {
-                        var format = exportFormats[i].tagName;
+                        var format = exportFormats[i];
                         options += '<option value="'+format+'">'+format+'</option>';
                     }
                     // Export layer
                     // Only if layer is in attribute table
                     var showExport = false;
                     if( options != '' ) {
-                        featureTypes.each( function(){
-                            var self = $(this);
-                            var typeName = self.find('Name').text();
+                        for (const featureType of featureTypes) {
+                            var typeName = featureType.getElementsByTagName('Name')[0].textContent;
                             if ( typeName == aName ) {
                                 showExport = true;
-                                return false;
+                                break;
                             } else if (typeName == aName.split(' ').join('_') ) {
                                 showExport = true;
-                                return false;
+                                break;
                             }
-                        });
+                        }
                     }
                     if( showExport ) {
                         html+= '        <dt>'+lizDict['layer.metadata.export.title']+'</dt>';
@@ -349,7 +348,6 @@ var lizLayerActionButtons = function() {
                         }
                     });
 
-
                     // Trigger map theme event
                     lizMap.events.triggerEvent("mapthemechanged",
                         {
@@ -357,7 +355,6 @@ var lizLayerActionButtons = function() {
                             'config': themeSelected
                         }
                     );
-
                 }
             });
 
@@ -372,7 +369,6 @@ var lizLayerActionButtons = function() {
             if ('activateFirstMapTheme' in lizMap.config.options && lizMap.config.options.activateFirstMapTheme == 'True') {
                 $('#theme-selector li.theme:nth-child(1)').click();
             }
-
         }
 
         featureTypes = lizMap.getVectorLayerFeatureTypes();
@@ -380,7 +376,6 @@ var lizLayerActionButtons = function() {
         // title tooltip
         $('#switcher-layers-actions .btn, #get-baselayer-metadata').tooltip({
             placement: 'bottom'
-
         });
 
         // Expand all of unfold all
