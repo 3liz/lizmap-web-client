@@ -57,7 +57,7 @@ var lizAttributeTable = function() {
                 // layername
                 var layername = lizMap.getNameByTypeName( typeName );
                 if ( !layername )
-                    return;
+                    continue;
                 // lizmap internal js cleaned name
                 var cleanName = lizMap.cleanName(layername);
                 // lizmap config file layer name

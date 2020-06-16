@@ -180,10 +180,10 @@ var lizLayerActionButtons = function() {
                             var typeName = featureType.getElementsByTagName('Name')[0].textContent;
                             if ( typeName == aName ) {
                                 showExport = true;
-                                break;
+                                continue;
                             } else if (typeName == aName.split(' ').join('_') ) {
                                 showExport = true;
-                                break;
+                                continue;
                             }
                         }
                     }

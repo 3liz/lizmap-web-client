@@ -2244,7 +2244,7 @@ var lizMap = function() {
             }
 
             if ( !(lname in config.locateByLayer) )
-                return;
+                continue;
 
             var locate = config.locateByLayer[lname];
             locate['crs'] = featureType.getElementsByTagName('SRS')[0].textContent;
@@ -4116,7 +4116,7 @@ var lizMap = function() {
         }
 
         if ( !(lname in config.tooltipLayers) )
-            return;
+            continue;
 
         if ( (lname in config.tooltipLayers) && (lname in config.layers) ) {
             var lConfig = config.layers[lname];
@@ -5835,7 +5835,7 @@ var lizMap = function() {
           }
 
           if (!(layerName in config.layers))
-            return;
+            continue;
 
           var configLayer = config.layers[layerName];
           configLayer.typename = typeName;
