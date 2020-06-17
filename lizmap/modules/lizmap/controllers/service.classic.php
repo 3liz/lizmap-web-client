@@ -659,91 +659,13 @@ class serviceCtrl extends jController
      */
     protected function GetFeatureInfo()
     {
-        $globalResponse = '';
 
-        // Get parameters
-        if (!$this->getServiceParameters()) {
-            return $this->serviceException();
-        }
+        //Get parameters  DELETED HERE SINCE ALREADY DONE IN index method
+        //if(!$this->getServiceParameters())
+        //return $this->serviceException();
 
-        $lproj = $this->project;
-        $pConfig = $lproj->getFullCfg();
-
-        $externalWMSLayers = array();
-        $QGISLayers = array();
-        $queryLayers = explode(',', $this->iParam('QUERY_LAYERS'));
-
-        // We split layers in two groups. First contains exernal WMS, second contains QGIS layers
-        foreach ($queryLayers as $queryLayer) {
-            if (property_exists($pConfig->layers, $queryLayer) &&
-                property_exists($pConfig->layers->{$queryLayer}, 'externalAccess') &&
-                $pConfig->layers->{$queryLayer}->externalAccess == 'True'
-            ) {
-                $externalWMSLayers[] = $queryLayer;
-            } else {
-                $QGISLayers[] = $queryLayer;
-            }
-        }
-
-        // External WMS
-        foreach ($externalWMSLayers as $externalWMSLayer) {
-            $url = $pConfig->layers->{$externalWMSLayer}->externalAccess->url;
-
-            $externalWMSLayerParams = $this->params;
-
-            $externalWMSLayerParams['layers'] = $externalWMSLayer;
-            $externalWMSLayerParams['query_layers'] = $externalWMSLayer;
-
-            $keyValueParameters = array();
-            $paramsBlacklist = array('module', 'action', 'C', 'repository', 'project', 'exceptions', 'map');
-
-            // We force info_format application/vnd.ogc.gml as default value.
-            // TODO let user choose which format he wants in lizmap plugin
-            $externalWMSLayerParams['info_format'] = 'application/vnd.ogc.gml';
-
-            foreach ($externalWMSLayerParams as $key => $val) {
-                if (!in_array($key, $paramsBlacklist)) {
-                    $keyValueParameters[] = strtolower($key).'='.urlencode($val);
-                }
-            }
-
-            $querystring = $url.implode('&', $keyValueParameters);
-
-            // Query external WMS layers
-            list($data, $mime, $code) = lizmapProxy::getRemoteData($querystring);
-
-            $xml = simplexml_load_string($data);
-
-            // Create HTML response
-            if (count($xml->children())) {
-                $layerstring = $externalWMSLayer.'_layer';
-                $featurestring = $externalWMSLayer.'_feature';
-
-                $layerTitle = $pConfig->layers->{$externalWMSLayer}->title;
-
-                $HTMLResponse = "<h4>${layerTitle}</h4><div class='lizmapPopupDiv'><table class='lizmapPopupTable'>";
-
-                foreach ($xml->{$layerstring}->{$featurestring}->children() as $key => $value) {
-                    $HTMLResponse .= "<tr><td>${key}&nbsp;:&nbsp;</td><td>${value}</td></tr>";
-                }
-                $HTMLResponse .= '</table></div>';
-
-                $globalResponse .= $HTMLResponse;
-            }
-        }
-
-        // Query QGIS WMS layers
-        if (!empty($QGISLayers)) {
-            $QGISLayersParams = $this->params;
-
-            $QGISLayersParams['layers'] = implode(',', $QGISLayers);
-            $QGISLayersParams['query_layers'] = implode(',', $QGISLayers);
-
-            $wmsRequest = new lizmapWMSRequest($this->project, $QGISLayersParams);
-            $result = $wmsRequest->process();
-
-            $globalResponse .= $result->data;
-        }
+        $wmsRequest = new lizmapWMSRequest($this->project, $this->params);
+        $result = $wmsRequest->process();
 
         // Log
         $eventParams = array(
@@ -755,8 +677,9 @@ class serviceCtrl extends jController
         jEvent::notify('LizLogItem', $eventParams);
 
         $rep = $this->getResponse('binary');
-        $rep->mimeType = 'text/html';
-        $rep->content = $globalResponse;
+        $rep->setHttpStatus($result->code, '');
+        $rep->mimeType = $result->mime;
+        $rep->content = $result->data;
         $rep->doDownload = false;
         $rep->outputFileName = 'getFeatureInfo';
 

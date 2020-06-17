@@ -243,10 +243,78 @@ class lizmapWMSRequest extends lizmapOGCRequest
 
     protected function getfeatureinfo()
     {
+        $queryLayers =  $this->param('query_layers');
+        // QUERY_LAYERS is mandatory
+        if(!$queryLayers) {
+            jMessage::add('The QUERY_LAYERS parameter is missing.', 'MissingParameterValue');
+            return $this->serviceException();
+        }
+
+        // We split layers in two groups. First contains exernal WMS, second contains QGIS layers
+        $queryLayers = explode(',', $queryLayers);
+        $externalWMSConfigLayers = array();
+        $qgisQueryLayers = array();
+        foreach ($queryLayers as $queryLayer) {
+            $configLayer = $this->project->findLayerByAnyName($queryLayer);
+            if (property_exists($configLayer, 'externalAccess') &&
+                $configLayer->externalAccess != 'False' &&
+                property_exists($configLayer->externalAccess, 'url')
+            ) {
+                $externalWMSConfigLayers[] = $configLayer;
+            } else {
+                $qgisQueryLayers[] = $queryLayer;
+            }
+        }
+
+        $rep = '';
+
+        // External WMS
+        foreach ($externalWMSConfigLayers as $configLayer) {
+            $url = $configLayer->externalAccess->url;
+            if (!preg_match('/\?/', $url)) {
+                $url.='?';
+            }
+            else if (!preg_match('/&$/', $url)) {
+                $url.='&';
+            }
+
+            $externalWMSLayerParams = array_merge(array(), $this->params);
+            if(array_key_exists('map', $externalWMSLayerParams)) {
+                unset($externalWMSLayerParams['map']);
+            }
+            if(array_key_exists('filter', $externalWMSLayerParams)) {
+                unset($externalWMSLayerParams['filter']);
+            }
+            if(array_key_exists('selection', $externalWMSLayerParams)) {
+                unset($externalWMSLayerParams['selection']);
+            }
+
+            $externalWMSLayerParams['layers'] = $configLayer->name;
+            $externalWMSLayerParams['query_layers'] = $configLayer->name;
+
+            // We force info_format application/vnd.ogc.gml as default value.
+            // TODO let user choose which format he wants in lizmap plugin
+            $externalWMSLayerParams['info_format'] = 'application/vnd.ogc.gml';
+
+            // build Query string
+            $querystring = $url.$this->buildQuery($externalWMSLayerParams);
+
+            // Query external WMS layers
+            list($data, $mime, $code) = lizmapProxy::getRemoteData($querystring);
+
+            $rep .= $this->gfiGmlToHtml($data, $configLayer);
+        }
+
+
+
         $toHtml = ($this->param('info_format') == 'text/html');
         if ($toHtml) {
             $this->params['info_format'] = 'text/xml';
         }
+
+        // force layers
+        $this->params['query_layers'] = implode(',', $qgisQueryLayers);
+        $this->params['layers'] = implode(',', $qgisQueryLayers);
 
         // Always request maptip to QGIS server so we can decide if to use it later
         $this->params['with_maptip'] = 'true';
@@ -256,18 +324,18 @@ class lizmapWMSRequest extends lizmapOGCRequest
         $querystring = $this->constructUrl();
 
         // Get remote data
-        list($data, $mime, $code) = lizmapProxy::getRemoteData($querystring);
+        list($data, $mime, $code) = lizmapProxy::getRemoteData($querystring, array('method' => 'post'));
 
         // Get HTML content if needed
         if ($toHtml and preg_match('#/xml#', $mime)) {
-            $data = $this->gfiXmlToHtml($data);
+            $rep .= $this->gfiXmlToHtml($data);
             $mime = 'text/html';
         }
 
         return (object) array(
             'code' => $code,
             'mime' => $mime,
-            'data' => $data,
+            'data' => $rep,
             'cached' => false,
         );
     }
@@ -644,6 +712,67 @@ class lizmapWMSRequest extends lizmapOGCRequest
         $return .= '"';
 
         return $return;
+    }
+
+    /**
+     * gfiGmlToHtml : return HTML for the getFeatureInfo GML.
+     *
+     * @param string $gmldata GML data from getFeatureInfo
+     * @param Object $configLayer
+     *
+     * @return string feature Info in HTML format
+     */
+    protected function gfiGmlToHtml($gmldata, $configLayer)
+    {
+        // Get data from XML
+        $use_errors = libxml_use_internal_errors(true);
+        $errorlist = array();
+        // Create a DOM instance
+        $xml = simplexml_load_string($gmldata);
+        if (!$xml) {
+            foreach (libxml_get_errors() as $error) {
+                $errorlist[] = $error;
+            }
+            $errormsg = 'An error has been raised when loading GetFeatureInfoHtml:';
+            $errormsg.= '\n'.http_build_query($this->params);
+            $errormsg.= '\n'.$xmldata;
+            $errormsg.= '\n'.implode('\n', $errorlist);
+            jLog::log($errormsg, 'error');
+            // return empty html string
+            return '';
+        }
+
+        if (count($xml->children()) == 0) {
+            return '';
+        }
+
+        $layerstring = $configLayer->name.'_layer';
+        if (!property_exists($xml, $layerstring)) {
+            return '';
+        }
+        $xmlLayer = $xml->{$layerstring};
+
+        $featurestring = $configLayer->name.'_feature';
+        if (!property_exists($xmlLayer, $featurestring)) {
+            return '';
+        }
+        $xmlFeature = $xmlLayer->{$featurestring};
+
+        if (count($xmlFeature->children())) {
+            return '';
+        }
+
+        // Create HTML response
+        $layerTitle = $configLayer->title;
+
+        $HTMLResponse = "<h4>${layerTitle}</h4><div class='lizmapPopupDiv'><table class='lizmapPopupTable'>";
+
+        foreach ($xmlFeature->children() as $key => $value) {
+            $HTMLResponse .= "<tr><td>${key}&nbsp;:&nbsp;</td><td>${value}</td></tr>";
+        }
+        $HTMLResponse .= '</table></div>';
+
+        return $HTMLResponse;
     }
 
 }
