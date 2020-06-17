@@ -79,16 +79,25 @@ class lizmapOGCRequest
 
     protected function constructUrl()
     {
-        $url = $this->services->wmsServerURL.'?';
+        $url = $this->services->wmsServerURL.'';
+        if (!preg_match('/\?/', $url)) {
+            $url.='?';
+        }
+        else if (!preg_match('/&$/', $url)) {
+            $url.='&';
+        }
 
-        $bparams = http_build_query($this->params);
+        return $url.$this->buildQuery($this->params);
+    }
+
+    protected function buildQuery($params)
+    {
+        $bparams = http_build_query($params);
 
         // replace some chars (not needed in php 5.4, use the 4th parameter of http_build_query)
         $a = array('+', '_', '.', '-');
         $b = array('%20', '%5F', '%2E', '%2D');
-        $bparams = str_replace($a, $b, $bparams);
-
-        return $url.$bparams;
+        return str_replace($a, $b, $bparams);
     }
 
     protected function serviceException($code=400)
