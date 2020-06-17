@@ -179,7 +179,13 @@ class lizmapWMSRequest extends lizmapOGCRequest
         if (!$maxWidth) {
             $maxWidth = 3000;
         }
-        if ($this->params['width'] > $maxWidth) {
+        $width = $this->param('width');
+        if ($width == null || !is_numeric($width)) {
+            // raise exception
+            return false;
+        }
+        $width = intval($width);
+        if ($width > $maxWidth) {
             return false;
         }
         $maxHeight = $this->project->getData('wmsMaxHeight');
@@ -189,7 +195,13 @@ class lizmapWMSRequest extends lizmapOGCRequest
         if (!$maxHeight) {
             $maxHeight = 3000;
         }
-        if ($this->params['height'] > $maxHeight) {
+        $height = $this->param('height');
+        if ($height == null || !is_numeric($height)) {
+            // raise exception
+            return false;
+        }
+        $height = intval($height);
+        if ($height > $maxHeight) {
             return false;
         }
 
