@@ -907,14 +907,18 @@ class lizmapProject extends qgisProject
                 'title' => $title,
                 'plot' => array(
                     'type' => $lc->type,
-                    'x_field' => $lc->x_field,
-                    'y_field' => $lc->y_field,
                 ),
             );
 
             $abstract = $layer->abstract;
             $plotConf['abstract'] = $abstract;
 
+            if (property_exists($lc, 'x_field')) {
+                $plotConf['plot']['x_field'] = $lc->x_field;
+            }
+            if (property_exists($lc, 'y_field')) {
+                $plotConf['plot']['y_field'] = $lc->y_field;
+            }
             if (property_exists($lc, 'popup_display_child_plot')) {
                 $plotConf['popup_display_child_plot'] = $lc->popup_display_child_plot;
             }
