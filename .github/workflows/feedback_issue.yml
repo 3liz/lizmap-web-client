@@ -1,0 +1,20 @@
+name: "Close feedback issues"
+on:
+  schedule:
+  - cron: "0 4 * * 2,5"
+
+jobs:
+  stale:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/stale@v3.0.6
+      with:
+        repo-token: ${{ secrets.GH_TOKEN }}
+        days-before-stale: 30
+        days-before-close: 7
+        operations-per-run: 10
+        stale-issue-message: |
+          This issue is missing some feedbacks.  👻
+          Please have a look to the discussion, thanks. 🦎
+        stale-issue-label: 'stale'
+        only-labels: 'feedback'
