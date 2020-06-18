@@ -473,16 +473,16 @@ jqueryui.css[] = $jqueryPath/themes/base/jquery.ui.all.css
 default = $jelix/js/jforms/datepickers/default/init.js
 default.js[]=$jqueryPath/ui/jquery-ui-core-widg-mous-posi.custom.min.js
 default.js[]=$jqueryPath/ui/jquery.ui.datepicker.min.js
-default.js[]=$jelix/js/jforms/datepickers/default/ui.$lang.js
 default.js[]=$jqueryPath/ui/i18n/jquery.ui.datepicker-$lang.js
+default.js[]=$jelix/js/jforms/datepickers/default/ui.$lang.js
 default.css[]=$jqueryPath/themes/base/jquery.ui.all.css
 
 [datetimepickers]
 default = $jelix/js/jforms/datepickers/default/init.js
 default.js[]=$jqueryPath/ui/jquery-ui-core-widg-mous-posi.custom.min.js
 default.js[]=$jqueryPath/ui/jquery.ui.datepicker.min.js
-default.js[]=$jelix/js/jforms/datepickers/default/ui.$lang.js
 default.js[]=$jqueryPath/ui/i18n/jquery.ui.datepicker-$lang.js
+default.js[]=$jelix/js/jforms/datepickers/default/ui.$lang.js
 default.css[]=$jqueryPath/themes/base/jquery.ui.all.css
 
 [htmleditors]
