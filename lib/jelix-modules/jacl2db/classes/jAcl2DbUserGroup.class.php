@@ -4,7 +4,7 @@
 * @subpackage  acl
 * @author      Laurent Jouanneau
 * @contributor Julien Issler, Vincent Viaud
-* @copyright   2006-2017 Laurent Jouanneau
+* @copyright   2006-2020 Laurent Jouanneau
 * @copyright   2009 Julien Issler
 * @copyright   2011 Vincent Viaud
 * @link        http://www.jelix.org
@@ -77,6 +77,29 @@ class jAcl2DbUserGroup {
             }
         }
         return self::$groups;
+    }
+
+    /**
+     * Retrieve the list of group the given user is member of
+     *
+     * @param string $login The user's login
+     * @return array list of group id
+     * @since 1.6.29
+     */
+    public static function getGroupsIdByUser($login)
+    {
+        if ($login === '' || $login === null) {
+            return array();
+        }
+
+        $gp = jDao::get('jacl2db~jacl2usergroup', 'jacl2_profile')
+                ->getGroupsUser($login);
+        $groups = array();
+        foreach ($gp as $g) {
+            $groups[] = $g->id_aclgrp;
+        }
+
+        return $groups;
     }
 
     /**
