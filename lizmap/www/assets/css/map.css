@@ -2595,6 +2595,20 @@ lizmap-geolocation .geolocation-infos {
     margin-top: 5px;
 }
 
+lizmap-geolocation .input-append{
+  vertical-align: top;
+}
+
+lizmap-geolocation .input-mini{
+  width: 32px;
+  height: 16px;
+}
+
+lizmap-geolocation .input-prepend .add-on{
+  height: 16px;
+  line-height: 16px;
+}
+
 lizmap-geolocation-survey .control-group div{
   display: inline-block;
   text-align: right;

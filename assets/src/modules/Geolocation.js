@@ -7,6 +7,8 @@ export default class Geolocation {
     constructor() {
         this._firstGeolocation = true;
         this._isBind = false;
+        this._bindIntervalID = 0;
+        this._bindIntervalInSecond = 10;
         this._isLinkedToEdition = false;
 
         this._geolocation = new olGeolocation({
@@ -21,10 +23,6 @@ export default class Geolocation {
             const coordinates = this._geolocation.getPosition();
             this.moveGeolocationPointAndCircle(coordinates);
 
-            if (this._isBind) {
-                this.center();
-            }
-
             mainEventDispatcher.dispatch('geolocation.position');
         });
 
@@ -33,6 +31,14 @@ export default class Geolocation {
             const geolocationLayer = mainLizmap._lizmap3.map.getLayersByName('geolocation')[0];
             if (geolocationLayer) {
                 geolocationLayer.setVisibility(this.isTracking);
+            }
+
+            if(this.isBind){
+                if (this.isTracking) {
+                    this._startBindInterval();
+                } else {
+                    this._stopBindInterval();
+                }
             }
 
             mainEventDispatcher.dispatch('geolocation.isTracking');
@@ -69,7 +75,25 @@ export default class Geolocation {
         // Center when binding
         if (this.isBind) {
             this.center();
+
+            this._startBindInterval();
+        }else{
+            this._stopBindInterval();
         }
+    }
+
+    _startBindInterval(){
+        // First clear previous interval
+        this._stopBindInterval();
+
+        // Then set new interval
+        this._bindIntervalID = window.setInterval(() => {
+            this.center();
+        }, this.bindIntervalInSecond * 1000);
+    }
+
+    _stopBindInterval(){
+        window.clearInterval(this._bindIntervalID);
     }
 
     toggleTracking() {
@@ -141,6 +165,19 @@ export default class Geolocation {
         this._isLinkedToEdition = isLinkedToEdition;
 
         mainEventDispatcher.dispatch('geolocation.isLinkedToEdition');
+    }
+
+    get bindIntervalInSecond(){
+        return this._bindIntervalInSecond;
+    }
+
+    /**
+    * @param  {number} interval - Interval in second
+    */
+    set bindIntervalInSecond(interval) {
+        this._bindIntervalInSecond = interval;
+
+        this._startBindInterval();
     }
 
     moveGeolocationPointAndCircle(coordinates) {
