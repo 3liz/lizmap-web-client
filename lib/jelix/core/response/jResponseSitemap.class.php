@@ -4,7 +4,7 @@
 * @subpackage  core_response
 * @author      Baptiste Toinot
 * @contributor Laurent Jouanneau
-* @copyright   2008 Baptiste Toinot, 2011-2012 Laurent Jouanneau
+* @copyright   2008 Baptiste Toinot, 2011-2020 Laurent Jouanneau
 * @link        http://www.jelix.org
 * @licence     GNU Lesser General Public Licence see LICENCE file or http://www.gnu.org/licenses/lgpl.html
 */
@@ -72,6 +72,19 @@ class jResponseSitemap extends jResponse {
      */
     public $contentTpl;
 
+    /** @var string cache key */
+    protected $sitemapCacheId = '';
+
+    /**
+     * @var null|int TTL of the url cache
+     */
+    protected $sitemapCacheTtl = null;
+
+    /**
+     * @var string|false
+     */
+    protected $sitemapXmlContent = false;
+
     /**
      * Class constructor
      *
@@ -84,35 +97,63 @@ class jResponseSitemap extends jResponse {
     }
 
     /**
+     * Activate the cache system of url and indicate if the cache is still
+     * valid
+     *
+     * It the cache is still valid, you can return directly the response object.
+     *
+     * @param string $cacheName  the cache name. customize it if you have several sitemap
+     * @param int|null $ttl ttl of the cache in seconds. null = use default ttl
+     * @param boolean true if the content of sitemap is still in cache.
+     * @throws jException
+     */
+    function hasUrlInCache($cacheName="sitemap.xml", $ttl= null)
+    {
+        $this->sitemapCacheId = $cacheName;
+        $this->sitemapCacheTtl = $ttl;
+        $this->sitemapXmlContent = jCache::get($cacheName, 'sitemap');
+        if ($this->sitemapXmlContent === false) {
+            return false;
+        }
+        return true;
+    }
+
+    /**
      * Generate the content and send it
      * Errors are managed
      * @return boolean true if generation is ok, else false
      */
     final public function output() {
-        
+
         if($this->_outputOnlyHeaders){
             $this->sendHttpHeaders();
             return true;
         }
-        
+
         $this->_httpHeaders['Content-Type'] = 'application/xml;charset=UTF-8';
 
-        if (count($this->urlSitemap)) {
-            $head = '<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">' . "\n";
-            $foot = '</sitemapindex>';
-            $this->contentTpl = 'jelix~sitemapindex';
-            $this->content->assign('sitemaps', $this->urlSitemap);
-        } else {
-            $head = '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">' . "\n";
-            $foot = '</urlset>';
-            $this->content->assign('urls', $this->urlList);
+        if ($this->sitemapXmlContent === false) {
+            if (count($this->urlSitemap)) {
+                $head = '<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">' . "\n";
+                $foot = '</sitemapindex>';
+                $this->contentTpl = 'jelix~sitemapindex';
+                $this->content->assign('sitemaps', $this->urlSitemap);
+            } else {
+                $head = '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">' . "\n";
+                $foot = '</urlset>';
+                $this->content->assign('urls', $this->urlList);
+            }
+            $this->sitemapXmlContent = $head . $this->content->fetch($this->contentTpl) . $foot;
+
+            if ($this->sitemapCacheId != '') {
+                jCache::set($this->sitemapCacheId, $this->sitemapXmlContent, $this->sitemapCacheTtl, 'sitemap');
+            }
         }
-        $content = $this->content->fetch($this->contentTpl);
 
         // content is generated, no errors, we can send it
         $this->sendHttpHeaders();
         echo '<?xml version="1.0" encoding="UTF-8"?>', "\n";
-        echo $head, $content, $foot;
+        echo $this->sitemapXmlContent;
         return true;
     }
 

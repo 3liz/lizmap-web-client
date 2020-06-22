@@ -65,6 +65,7 @@ class serviceCtrl extends jController
         // Return the appropriate action
         $service = strtoupper($this->iParam('SERVICE'));
         $request = strtoupper($this->iParam('REQUEST'));
+
         if ($request == 'GETCAPABILITIES') {
             return $this->GetCapabilities();
         }
@@ -123,7 +124,12 @@ class serviceCtrl extends jController
         }
         $xml = simplexml_load_string($requestXml);
         if ($xml == false) {
-            jMessage::add('REQUEST '.$request.' not supported by Lizmap Web Client', 'InvalidRequest');
+
+            if(!$request) {
+                jMessage::add('Please add or check the value of the REQUEST parameter', 'OperationNotSupported');
+            } else {
+                jMessage::add('Request '.$request.' is not supported', 'OperationNotSupported');
+            }
 
             return $this->serviceException();
         }
@@ -201,6 +207,8 @@ class serviceCtrl extends jController
                 $rep->setHttpStatus(404, 'Not Found');
             } elseif ($code == 'RepositoryNotDefined') {
                 $rep->setHttpStatus(404, 'Not Found');
+            } elseif ($code == 'OperationNotSupported') {
+                $rep->setHttpStatus(501, 'Not Implemented');
             }
         }
 
