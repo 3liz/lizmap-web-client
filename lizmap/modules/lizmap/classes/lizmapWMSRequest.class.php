@@ -27,6 +27,11 @@ class lizmapWMSRequest extends lizmapOGCRequest
 
     protected function getcapabilities()
     {
+        $version = $this->param('version');
+        // force version if noy defined
+        if (!$version) {
+            $this->params['version'] = '1.3.0';
+        }
         $result = parent::getcapabilities();
 
         $data = $result->data;
@@ -113,10 +118,9 @@ class lizmapWMSRequest extends lizmapOGCRequest
 
     protected function getcontext()
     {
-        $querystring = $this->constructUrl();
 
         // Get remote data
-        list($data, $mime, $code) = lizmapProxy::getRemoteData($querystring);
+        $response = $this->request();
 
         // Replace qgis server url in the XML (hide real location)
         $sUrl = jUrl::getFull(
@@ -127,9 +131,9 @@ class lizmapWMSRequest extends lizmapOGCRequest
         $data = preg_replace('/xlink\:href=".*"/', 'xlink:href="'.$sUrl.'&amp;"', $data);
 
         return (object) array(
-            'code' => $code,
-            'mime' => $mime,
-            'data' => $data,
+            'code' => $response->code,
+            'mime' => $response->mime,
+            'data' => $response->data,
             'cached' => false,
         );
     }
@@ -228,15 +232,13 @@ class lizmapWMSRequest extends lizmapOGCRequest
             }
         }
 
-        $querystring = $this->constructUrl();
-
         // Get remote data
-        list($data, $mime, $code) = lizmapProxy::getRemoteData($querystring);
+        $response = $this->request(True);
 
         return (object) array(
-            'code' => $code,
-            'mime' => $mime,
-            'data' => $data,
+            'code' => $response->code,
+            'mime' => $response->mime,
+            'data' => $response->data,
             'cached' => false,
         );
     }
@@ -321,10 +323,11 @@ class lizmapWMSRequest extends lizmapOGCRequest
         // Always request geometry to QGIS server so we can decide if to use it later
         $this->params['with_geometry'] = 'true';
 
-        $querystring = $this->constructUrl();
-
         // Get remote data
-        list($data, $mime, $code) = lizmapProxy::getRemoteData($querystring, array('method' => 'post'));
+        $response = $this->request(True);
+        $code = $response->code;
+        $mime = $response->mime;
+        $data = $response->data;
 
         // Get HTML content if needed
         if ($toHtml and preg_match('#/xml#', $mime)) {
@@ -342,23 +345,20 @@ class lizmapWMSRequest extends lizmapOGCRequest
 
     protected function getprint()
     {
-        $querystring = $this->constructUrl();
 
         // Get remote data
-        list($data, $mime, $code) = lizmapProxy::getRemoteData($querystring, array('method' => 'post'));
+        $response = $this->request(True);
 
         return (object) array(
-            'code' => $code,
-            'mime' => $mime,
-            'data' => $data,
+            'code' => $response->code,
+            'mime' => $response->mime,
+            'data' => $response->data,
             'cached' => false,
         );
     }
 
     protected function getprintatlas()
     {
-        $querystring = $this->constructUrl();
-
         // Trigger optional actions by other modules
         // For example, cadastre module can create a file
         $eventParams = array(
@@ -369,27 +369,26 @@ class lizmapWMSRequest extends lizmapOGCRequest
         jEvent::notify('BeforePdfCreation', $eventParams);
 
         // Get remote data
-        list($data, $mime, $code) = lizmapProxy::getRemoteData($querystring, array('method' => 'post'));
+        $response = $this->request(True);
 
         return (object) array(
-            'code' => $code,
-            'mime' => $mime,
-            'data' => $data,
+            'code' => $response->code,
+            'mime' => $response->mime,
+            'data' => $response->data,
             'cached' => false,
         );
     }
 
     protected function getstyles()
     {
-        $querystring = $this->constructUrl();
 
         // Get remote data
-        list($data, $mime, $code) = lizmapProxy::getRemoteData($querystring);
+        $response = $this->request();
 
         return (object) array(
-            'code' => $code,
-            'mime' => $mime,
-            'data' => $data,
+            'code' => $response->code,
+            'mime' => $response->mime,
+            'data' => $response->data,
             'cached' => false,
         );
     }
