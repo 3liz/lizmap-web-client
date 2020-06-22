@@ -41,6 +41,12 @@ class lizmapWFSRequest extends lizmapOGCRequest
 
     protected function getcapabilities()
     {
+        $version = $this->param('version');
+        // force version if not defined
+        if (!$version) {
+            $this->params['version'] = '1.3.0';
+        }
+
         $result = parent::getcapabilities();
 
         $data = $result->data;
@@ -93,10 +99,11 @@ class lizmapWFSRequest extends lizmapOGCRequest
             $this->params['outputformat'] = 'XMLSCHEMA';
         }
 
-        $querystring = $this->constructUrl();
-
         // Get remote data
-        list($data, $mime, $code) = lizmapProxy::getRemoteData($querystring);
+        $response = $this->request();
+        $code = $response->code;
+        $mime = $response->mime;
+        $data = $response->data;
 
         if ($code < 400 && $returnJson) {
             $jsonData = array();
@@ -151,6 +158,9 @@ class lizmapWFSRequest extends lizmapOGCRequest
 
     public function getfeature()
     {
+        if ($this->requestXml !== Null) {
+            return $this->getfeatureQgis();
+        }
 
         // add outputformat if not provided
         $output = $this->param('outputformat');
@@ -216,10 +226,11 @@ class lizmapWFSRequest extends lizmapOGCRequest
     {
 
         // Else pass query to QGIS Server
-        $querystring = $this->constructUrl();
-
         // Get remote data
-        list($data, $mime, $code) = lizmapProxy::getRemoteData($querystring, array('method' => 'post'));
+        $response = $this->request(True);
+        $code = $response->code;
+        $mime = $response->mime;
+        $data = $response->data;
 
         if ($mime == 'text/plain' && strtolower($this->param('outputformat')) == 'geojson') {
             $mime = 'text/json';

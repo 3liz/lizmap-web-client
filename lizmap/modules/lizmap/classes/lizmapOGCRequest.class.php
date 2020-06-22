@@ -20,17 +20,75 @@ class lizmapOGCRequest
 
     protected $params;
 
+    protected $requestXml;
+
     protected $services;
 
     protected $tplExceptions;
 
+    static public function build($project, $params, $requestXml = Null)
+    {
+        $service = Null;
+        $request = Null;
+
+        // Check request XML
+        if ($requestXml && substr(trim($requestXml), 0, 1) == '<') {
+            $requestXml = trim($requestXml);
+        } else {
+            $requestXml = Null;
+        }
+
+        // Parse request XML
+        if ($requestXml) {
+            $xml = simplexml_load_string($requestXml);
+            if ($xml) {
+                $request = $xml->getName();
+                if (property_exists($xml->attributes(), 'service')) {
+                    $service = $xml['service'];
+                }
+            } else {
+                $requestXml = Null;
+            }
+        }
+
+        // Check parameters
+        if (!$requestXml && isset($params['service'])) {
+            $service = strtolower($params['service']);
+            if (isset($params['request'])) {
+                $request = strtolower($params['request']);
+            }
+        }
+
+        if ($service == Null) {
+            return Null;
+        }
+        $params['service'] = strtoupper($service);
+        if ($request !== Null) {
+            $params['request'] = $request;
+        }
+        if ($service == 'wms') {
+            return new lizmapWMSRequest($project, $params, $requestXml);
+        } else if ($service == 'wmts') {
+            return new lizmapWMTSRequest($project, $params, $requestXml);
+        } else if ($service == 'wfs') {
+            return new lizmapWFSRequest($project, $params, $requestXml);
+        // Not yet
+        //} else if ($service == 'wcs') {
+        //    return new lizmapWCSRequest($project, $params, $requestXml)
+        }
+
+        return Null;
+    }
+
     /**
      * constructor.
      *
-     * @param lizmapProject $project the project has a lizmapProject Class
-     * @param array         $params  the params array
+     * @param lizmapProject $project    the project has a lizmapProject Class
+     * @param array         $params     the params array
+     * @param string        $requestXml the params array
+     *
      */
-    public function __construct($project, $params)
+    public function __construct($project, $params, $requestXml=Null)
     {
         //print_r( $project != null );
         $this->project = $project;
@@ -41,6 +99,7 @@ class lizmapOGCRequest
 
         $params['map'] = $project->getRelativeQgisPath();
         $this->params = lizmapProxy::normalizeParams($params);
+        $this->requestXml = $requestXml;
     }
 
     /**
@@ -104,6 +163,31 @@ class lizmapOGCRequest
         $a = array('+', '_', '.', '-');
         $b = array('%20', '%5F', '%2E', '%2D');
         return str_replace($a, $b, $bparams);
+    }
+
+    protected function request($post=False)
+    {
+        $querystring = $this->constructUrl();
+
+        $options = array();
+        if ($this->requestXml !== Null) {
+            $options = array(
+                'method' => 'post',
+                'headers' => array('Content-Type' => 'text/xml'),
+                'body' => $this->requestXml,
+            );
+        }
+        else if ($post) {
+            $options = array('method' => 'post');
+        }
+
+        list($data, $mime, $code) = lizmapProxy::getRemoteData($querystring, $options);
+
+        return (object) array(
+            'code' => $code,
+            'mime' => $mime,
+            'data' => $data,
+        );
     }
 
     protected function serviceException($code=400)
@@ -170,32 +254,31 @@ class lizmapOGCRequest
             );
         }
 
-        $querystring = $this->constructUrl();
-
         // Get remote data
-        list($data, $mime, $code) = lizmapProxy::getRemoteData($querystring);
+        $response = $this->request();
 
         // Retry if 500 error ( hackish, but QGIS Server segfault sometimes with cache issue )
-        if ($code == 500) {
+        if ($response->code == 500) {
             // Get remote data
-            list($data, $mime, $code) = lizmapProxy::getRemoteData($querystring);
+            $response = $this->request();
         }
 
-        if ($code == 200) {
+        if ($response->code == 200) {
             $cached = array(
                 'mtime' => $this->project->getFileTime(),
-                'code' => $code,
-                'mime' => $mime,
-                'data' => $data,
+                'code' => $response->code,
+                'mime' => $response->mime,
+                'data' => $response->data,
             );
             $cached = jCache::set($key, $cached, 3600, 'qgisprojects');
         }
 
         return (object) array(
-            'code' => $code,
-            'mime' => $mime,
-            'data' => $data,
+            'code' => $response->code,
+            'mime' => $response->mime,
+            'data' => $response->data,
             'cached' => $cached,
         );
     }
+
 }
