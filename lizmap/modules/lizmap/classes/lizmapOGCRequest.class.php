@@ -73,7 +73,13 @@ class lizmapOGCRequest
             return $this->{$req}();
         }
 
-        jMessage::add('Please add or check the value of the REQUEST parameter', 'OGC_OperationNotSupported');
+        if(!$req) {
+            jMessage::add('Please add or check the value of the REQUEST parameter', 'OperationNotSupported');
+        }
+        else
+        {
+            jMessage::add('Request '.$req.' is not supported', 'OperationNotSupported');
+        }
         return $this->serviceException(501);
     }
 
