@@ -2,7 +2,7 @@ var lizDataviz = function() {
 
     var dv = {
         'config' : null,
-        'plots': [],
+        'plots': {},
         'template': null
     };
 
@@ -97,6 +97,7 @@ var lizDataviz = function() {
 
     function addPlotContainer(plot_id){
         var dataviz_plot_id = 'dataviz_plot_' + plot_id;
+        dv.plots[plot_id] = {'json': null, 'filter': null, 'show_plot': true, 'cache': null};
         var plot_config = dv.config.layers[plot_id];
         //if we chose to hide the parent plot the html variable become empty
         var html = '';
@@ -127,9 +128,31 @@ var lizDataviz = function() {
             'request': 'getPlot',
             'plot_id': plot_id
         };
-        if(exp_filter){
+        if (exp_filter) {
             lparams['exp_filter'] = exp_filter;
         }
+
+        // Use cache if exsits
+        if (!exp_filter && dv.plots[plot_id]['cache']
+            && 'data' in dv.plots[plot_id]['cache']
+            && dv.plots[plot_id]['cache'].data.length > 0
+        ) {
+            // Store filter
+            dv.plots[plot_id]['filter'] = null;
+
+            // Show container if needed
+            if (dv.plots[plot_id]['show_plot']) {
+                $('#' + target_id + '_container').show();
+            }
+
+            // Build plot
+            var plot = buildPlot(target_id, dv.plots[plot_id]['cache']);
+            $('#'+target_id).prev('.dataviz-waiter:first').hide();
+
+            return true;
+        }
+
+        // No cache -> get data
         $.getJSON(datavizConfig.url,
             lparams,
             function(json){
@@ -138,13 +161,38 @@ var lizDataviz = function() {
                     console.log(json.errors);
                     return false;
                 }
+                // Store json only if no filter
+                // Because we use cache for the full data
+                // and we do not want to override it
+                if (!exp_filter) {
+                    dv.plots[plot_id]['cache'] = json;
+                }
+                dv.plots[plot_id]['json'] = json;
+
+                // Store filter
+                dv.plots[plot_id]['filter'] = exp_filter;
+
+                // Hide container if no data
+console.log('*********' + plot_id + '*************')
+if(dv.plots[plot_id]['show_plot']){
+  console.log(plot_id + ' ' + dv.plots[plot_id]['show_plot'].toString())
+}
                 if( !json.data || json.data.length < 1){
+console.log(plot_id + ' - No data')
+                    // hide full container
+                    $('#' + target_id + '_container').hide();
                     $('#'+target_id).prev('.dataviz-waiter:first').hide();
-                    $('#'+target_id).parents('div.lizmapPopupChildren:first').hide();
+                    $('#'+target_id).parents('div.lizdataviz.lizmapPopupChildren:first').hide();
                     return false;
                 }
-                dv.plots.push(json);
+                // Show container if needed
+                if (dv.plots[plot_id]['show_plot']) {
+console.log(plot_id + ' Show !');
+console.log('#' + target_id + '_container');
+                    $('#' + target_id + '_container').show();
+                }
 
+                // Build plot
                 var plot = buildPlot(target_id, json);
                 $('#'+target_id).prev('.dataviz-waiter:first').hide();
             }
@@ -372,8 +420,14 @@ var lizDataviz = function() {
                     if (pLayerId == layerId && ltoggle){
                         // Set plot visibility depending on layer visibility
                         var layer = lizMap.map.getLayersByName(config.cleanname)[0]
-                        var showPlot = (layer.getVisibility() && layer.inRange);
+                        var showPlot = (
+                            layer.getVisibility() && layer.inRange
+                            && dv.plots[pid]['json']
+                            && 'data' in dv.plots[pid]['json']
+                            && dv.plots[pid]['json']['data'] && dv.plots[pid]['json']['data'].length > 0
+                        );
                         $('#' + id + '_container').toggle(showPlot);
+                        dv.plots[pid]['show_plot'] = showPlot;
                         if(showPlot){
                             resizePlot(id);
                         }
@@ -401,8 +455,15 @@ var lizDataviz = function() {
                         var oLayer = oLayers[0];
                         var lvisibility = oLayer.visibility;
                         var pvisibility = $('#' + id + '_container').is(":visible");
-                        $('#' + id + '_container').toggle(lvisibility);
-                        if(lvisibility && !pvisibility){
+                        var showPlot = (
+                            lvisibility
+                            && dv.plots[pid]['json']
+                            && 'data' in dv.plots[pid]['json']
+                            && dv.plots[pid]['json']['data'] && dv.plots[pid]['json']['data'].length > 0
+                        );
+                        $('#' + id + '_container').toggle(showPlot);
+                        dv.plots[pid]['show_plot'] = showPlot;
+                        if(showPlot && !pvisibility){
                             resizePlot(id);
                         }
                     }
@@ -483,13 +544,21 @@ var lizDataviz = function() {
 
                 // Test if layer is visible and in range (scales)
                 var layer = lizMap.map.getLayersByName(config.cleanname)[0]
-                var showPlot = (layer.getVisibility() && layer.inRange);
+                var showPlot = (
+                    layer.getVisibility() && layer.inRange
+                );
 
                 // Get non spatial children layers
                 var children = getChildTablePlots(layerId);
                 for (var c in children) {
-                    var child = children[c];
-                    var child_html_id = 'dataviz_plot_' + child;
+                    var child_id = children[c];
+                    var child_html_id = 'dataviz_plot_' + child_id;
+                    showPlot = (
+                        showPlot
+                        && dv.plots[child_id]['json']
+                        && 'data' in dv.plots[child_id]['json']
+                        && dv.plots[child_id]['json']['data'] && dv.plots[child_id]['json']['data'].length > 0
+                    );
                     $('#' + child_html_id + '_container').toggle(showPlot);
                     if(showPlot){
                         resizePlot(child_html_id);
