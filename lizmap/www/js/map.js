@@ -36,6 +36,11 @@ var lizMap = function() {
    */
   var map = null;
   /**
+   * PRIVATE Property: qgisProjectProjection
+   * {<OpenLayers.Projection>} The QGIS project's projection
+   */
+  var qgisProjectProjection = null;
+  /**
    * PRIVATE Property: baselayers
    * {Array(<OpenLayers.Layer>)} Ordered list of base layers
    */
@@ -742,10 +747,15 @@ var lizMap = function() {
         && ('ignKey' in config.options))
        ) {
          Proj4js.defs['EPSG:3857'] = Proj4js.defs['EPSG:900913'];
+
          var proj = config.options.projection;
          if ( !(proj.ref in Proj4js.defs) )
            Proj4js.defs[proj.ref]=proj.proj4;
          var projection = new OpenLayers.Projection(proj.ref);
+
+         // Copy QGIS project's projection
+         qgisProjectProjection = projection;
+
          var projOSM = new OpenLayers.Projection('EPSG:3857');
          proj.ref = 'EPSG:3857';
          proj.proj4 = Proj4js.defs['EPSG:3857'];
@@ -2714,6 +2724,7 @@ var lizMap = function() {
       mpUnitSelect.find('option[value="m"]').remove();
     }
     var mousePosition = new OpenLayers.Control.lizmapMousePosition({
+        displayProjection: qgisProjectProjection,
         displayUnit:mpUnitSelect.val(),
         numDigits: 0,
         prefix: '',
