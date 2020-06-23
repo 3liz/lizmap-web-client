@@ -5,6 +5,7 @@ import SelectionInvert from './components/SelectionInvert.js';
 import Snapping from './components/Snapping.js';
 import Scaleline from './components/Scaleline.js';
 
+import Digitizing from './components/Digitizing.js';
 import {mainLizmap, mainEventDispatcher} from './modules/Globals.js';
 
 lizMap.events.on({
@@ -16,6 +17,7 @@ lizMap.events.on({
         window.customElements.define('lizmap-snapping', Snapping);
         window.customElements.define('lizmap-scaleline', Scaleline);
 
+        window.customElements.define('lizmap-digitizing', Digitizing);
         lizMap.mainLizmap = mainLizmap;
         lizMap.mainEventDispatcher = mainEventDispatcher;
     }

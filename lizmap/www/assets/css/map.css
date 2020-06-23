@@ -2489,22 +2489,26 @@ div.tooltip {
   background-color: rgba(255, 171, 0, 0.4);
 }
 
-.selectiontool-query-buttons {
+.digitizing-toggle-visibility{
+  vertical-align: top;
+}
+
+.digitizing-buttons {
   margin-bottom: 10px;
 }
 
-.selectiontool-query-buttons button {
+.digitizing-buttons button {
   width: 46px;
   height: 33px;
 }
 
-.selectiontool-query-buttons button svg {
+.digitizing-buttons button svg {
   width: 24px;
   height: 24px;
 }
 
-.selectiontool-query-box {
-  margin-left: 46px;
+.digitizing-buffer > label > span {
+  vertical-align: text-bottom;
 }
 
 lizmap-selection-invert svg {
