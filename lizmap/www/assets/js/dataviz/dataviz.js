@@ -140,6 +140,9 @@ var lizDataviz = function() {
             // Store filter
             dv.plots[plot_id]['filter'] = null;
 
+            // Store json back
+            dv.plots[plot_id]['json'] = dv.plots[plot_id]['cache'];
+
             // Show container if needed
             if (dv.plots[plot_id]['show_plot']) {
                 $('#' + target_id + '_container').show();
@@ -173,12 +176,7 @@ var lizDataviz = function() {
                 dv.plots[plot_id]['filter'] = exp_filter;
 
                 // Hide container if no data
-console.log('*********' + plot_id + '*************')
-if(dv.plots[plot_id]['show_plot']){
-  console.log(plot_id + ' ' + dv.plots[plot_id]['show_plot'].toString())
-}
                 if( !json.data || json.data.length < 1){
-console.log(plot_id + ' - No data')
                     // hide full container
                     $('#' + target_id + '_container').hide();
                     $('#'+target_id).prev('.dataviz-waiter:first').hide();
@@ -187,8 +185,6 @@ console.log(plot_id + ' - No data')
                 }
                 // Show container if needed
                 if (dv.plots[plot_id]['show_plot']) {
-console.log(plot_id + ' Show !');
-console.log('#' + target_id + '_container');
                     $('#' + target_id + '_container').show();
                 }
 
