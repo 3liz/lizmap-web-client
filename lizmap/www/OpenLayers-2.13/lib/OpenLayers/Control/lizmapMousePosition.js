@@ -92,6 +92,13 @@ OpenLayers.Control.lizmapMousePosition = OpenLayers.Class(OpenLayers.Control, {
     lastXy: null,
 
     /**
+     * APIProperty: displayProjection
+     * {<OpenLayers.Projection>} The projection in which the mouse position is
+     *     displayed.
+     */
+    displayProjection: null,
+
+    /**
      * APIProperty: displayunit
      * {Strin} The unit in which the mouse position is
      *     displayed. it's can be m,d,dm,dms for map 
@@ -183,12 +190,12 @@ OpenLayers.Control.lizmapMousePosition = OpenLayers.Class(OpenLayers.Control, {
                 // map has not yet been properly initialized
                 return;
             }
-            /*
+            
             if (this.displayProjection) {
                 lonLat.transform(this.map.getProjectionObject(),
                                  this.displayProjection );
             }
-            */
+            
             this.lastXy = evt.xy;
 
         }
