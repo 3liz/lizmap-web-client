@@ -62,49 +62,28 @@ class serviceCtrl extends jController
             return $this->serviceException();
         }
 
-        // Return the appropriate action
-        $service = strtoupper($this->iParam('SERVICE'));
-        $request = strtoupper($this->iParam('REQUEST'));
 
-        if ($request == 'GETCAPABILITIES') {
-            return $this->GetCapabilities();
+        global $HTTP_RAW_POST_DATA;
+        if (isset($HTTP_RAW_POST_DATA)) {
+            $requestXml = $HTTP_RAW_POST_DATA;
+        } else {
+            $requestXml = file('php://input');
+            $requestXml = implode("\n", $requestXml);
         }
-        if ($request == 'GETCONTEXT') {
-            return $this->GetContext();
+
+        $ogcRequest = lizmapOGCRequest::build($this->project, $this->params, $requestXml);
+        if ($ogcRequest === Null) {
+            // Error message
+            jMessage::add('Service unknown or unsupported.', 'ServiceNotSupported');
+
+            return $this->serviceException();
         }
-        if ($request == 'GETSCHEMAEXTENSION') {
-            return $this->GetSchemaExtension();
-        }
-        if ($request == 'GETLEGENDGRAPHICS') {
-            return $this->GetLegendGraphics();
-        }
-        if ($request == 'GETLEGENDGRAPHIC') {
-            return $this->GetLegendGraphics();
-        }
-        if ($request == 'GETFEATUREINFO') {
-            return $this->GetFeatureInfo();
-        }
-        if ($request == 'GETPRINT') {
-            return $this->GetPrint();
-        }
-        if ($request == 'GETPRINTATLAS') {
-            return $this->GetPrintAtlas();
-        }
-        if ($request == 'GETSTYLES') {
-            return $this->GetStyles();
-        }
-        if ($request == 'GETMAP') {
-            return $this->GetMap();
-        }
-        if ($request == 'GETFEATURE') {
-            return $this->GetFeature();
-        }
-        if ($request == 'DESCRIBEFEATURETYPE') {
-            return $this->DescribeFeatureType();
-        }
-        if ($request == 'GETTILE') {
-            return $this->GetTile();
-        }
+
+        // Return the appropriate action
+        $service = strtoupper($ogcRequest->param('service'));
+        $request = strtoupper($ogcRequest->param('request'));
+
+        // Extra request
         if ($request == 'GETPROJ4') {
             return $this->GetProj4();
         }
@@ -115,26 +94,54 @@ class serviceCtrl extends jController
             return $this->GetFilterToken();
         }
 
-        global $HTTP_RAW_POST_DATA;
-        if (isset($HTTP_RAW_POST_DATA)) {
-            $requestXml = $HTTP_RAW_POST_DATA;
+        // Standard request
+        if ($request == 'GETCAPABILITIES') {
+            return $this->GetCapabilities($ogcRequest);
+        }
+        if ($request == 'GETCONTEXT') {
+            return $this->GetContext($ogcRequest);
+        }
+        if ($request == 'GETSCHEMAEXTENSION') {
+            return $this->GetSchemaExtension($ogcRequest);
+        }
+        if ($request == 'GETLEGENDGRAPHICS') {
+            return $this->GetLegendGraphics($ogcRequest);
+        }
+        if ($request == 'GETLEGENDGRAPHIC') {
+            return $this->GetLegendGraphics($ogcRequest);
+        }
+        if ($request == 'GETFEATUREINFO') {
+            return $this->GetFeatureInfo($ogcRequest);
+        }
+        if ($request == 'GETPRINT') {
+            return $this->GetPrint($ogcRequest);
+        }
+        if ($request == 'GETPRINTATLAS') {
+            return $this->GetPrintAtlas($ogcRequest);
+        }
+        if ($request == 'GETSTYLES') {
+            return $this->GetStyles($ogcRequest);
+        }
+        if ($request == 'GETMAP') {
+            return $this->GetMap($ogcRequest);
+        }
+        if ($request == 'GETFEATURE') {
+            return $this->GetFeature($ogcRequest);
+        }
+        if ($request == 'DESCRIBEFEATURETYPE') {
+            return $this->DescribeFeatureType($ogcRequest);
+        }
+        if ($request == 'GETTILE') {
+            return $this->GetTile($ogcRequest);
+        }
+
+        if(!$request) {
+            jMessage::add('Please add or check the value of the REQUEST parameter', 'OperationNotSupported');
         } else {
-            $requestXml = file('php://input');
-            $requestXml = implode("\n", $requestXml);
-        }
-        $xml = simplexml_load_string($requestXml);
-        if ($xml == false) {
-
-            if(!$request) {
-                jMessage::add('Please add or check the value of the REQUEST parameter', 'OperationNotSupported');
-            } else {
-                jMessage::add('Request '.$request.' is not supported', 'OperationNotSupported');
-            }
-
-            return $this->serviceException();
+            jMessage::add('Request '.$request.' is not supported', 'OperationNotSupported');
         }
 
-        return $this->PostRequest($requestXml);
+        return $this->serviceException();
     }
 
     /**
@@ -208,6 +215,8 @@ class serviceCtrl extends jController
             } elseif ($code == 'RepositoryNotDefined') {
                 $rep->setHttpStatus(404, 'Not Found');
             } elseif ($code == 'OperationNotSupported') {
+                $rep->setHttpStatus(501, 'Not Implemented');
+            } elseif ($code == 'ServiceNotSupported') {
                 $rep->setHttpStatus(501, 'Not Implemented');
             }
         }
@@ -473,48 +482,13 @@ class serviceCtrl extends jController
      *
      * @return jResponseBinary JSON configuration file for the specified project
      */
-    protected function GetCapabilities()
+    protected function GetCapabilities($ogcRequest)
     {
-        $service = strtolower($this->params['service']);
-        $request = null;
-        if ($service == 'wms') {
-            $version = '1.3.0';
-            if (array_key_exists('version', $this->params)) {
-                $version = $this->params['version'];
-            }
-            $request = new lizmapWMSRequest(
-                $this->project,
-                array(
-                    'service' => 'WMS',
-                    'request' => 'GetCapabilities',
-                    'version' => $version,
-                )
-            );
-        } elseif ($service == 'wfs') {
-            $version = '1.0.0';
-            if (array_key_exists('version', $this->params)) {
-                $version = $this->params['version'];
-            }
-            $request = new lizmapWFSRequest(
-                $this->project,
-                array(
-                    'service' => 'WFS',
-                    'request' => 'GetCapabilities',
-                    'version' => $version,
-                )
-            );
-        } elseif ($service == 'wmts') {
-            $request = new lizmapWMTSRequest(
-                $this->project,
-                array(
-                    'service' => 'WMTS',
-                    'request' => 'GetCapabilities',
-                )
-            );
-        }
-        $result = $request->process();
+        $service = $ogcRequest->param('service');
+        $result = $ogcRequest->process();
 
         $rep = $this->getResponse('binary');
+        $rep->setHttpStatus($result->code, '');
         $rep->mimeType = $result->mime;
         $rep->content = $result->data;
         $rep->doDownload = false;
@@ -531,14 +505,8 @@ class serviceCtrl extends jController
      *
      * @return jResponseBinary text/xml Web Map Context
      */
-    protected function GetContext()
+    protected function GetContext($wmsRequest)
     {
-
-        //Get parameters  DELETED HERE SINCE ALREADY DONE IN index method
-        //if(!$this->getServiceParameters())
-        //return $this->serviceException();
-
-        $wmsRequest = new lizmapWMSRequest($this->project, $this->params);
         $result = $wmsRequest->process();
 
         // Return response
@@ -558,11 +526,10 @@ class serviceCtrl extends jController
      * @urlparam string $SERVICE mandatory, has to be WMS
      * @urlparam string $REQUEST mandatory, has to be GetSchemaExtension
      *
-     * @return jResponseBinary text/xml the WMS GEtCapabilities 1.3.0 Schema Extension.
+     * @return jResponseBinary text/xml the WMS GetSchemaExtension 1.3.0 Schema Extension.
      */
-    protected function GetSchemaExtension()
+    protected function GetSchemaExtension($wmsRequest)
     {
-        $wmsRequest = new lizmapWMSRequest($this->project, $this->params);
         $result = $wmsRequest->process();
 
         // Return response
@@ -584,25 +551,19 @@ class serviceCtrl extends jController
      *
      * @return jResponseBinary image rendered by the Map Server
      */
-    protected function GetMap()
+    protected function GetMap($wmsRequest)
     {
-
-        //Get parameters  DELETED HERE SINCE ALREADY DONE IN index method
-        //if(!$this->getServiceParameters())
-        //return $this->serviceException();
-
-        $wmsRequest = new lizmapWMSRequest($this->project, $this->params);
         $result = $wmsRequest->process();
         if ($result->data == 'error') {
             return $this->serviceException();
         }
 
         $rep = $this->getResponse('binary');
+        $rep->setHttpStatus($result->code, '');
         $rep->mimeType = $result->mime;
         $rep->content = $result->data;
         $rep->doDownload = false;
         $rep->outputFileName = 'qgis_server_wms_map_'.$this->repository->getKey().'_'.$this->project->getKey();
-        $rep->setHttpStatus($result->code, '');
 
         if (!preg_match('/^image/', $result->mime)) {
             return $rep;
@@ -638,17 +599,12 @@ class serviceCtrl extends jController
      *
      * @return jResponseBinary Image of the legend for 1 to n layers, returned by the Map Server
      */
-    protected function GetLegendGraphics()
+    protected function GetLegendGraphics($wmsRequest)
     {
-
-        //Get parameters  DELETED HERE SINCE ALREADY DONE IN index method
-        //if(!$this->getServiceParameters())
-        //return $this->serviceException();
-
-        $wmsRequest = new lizmapWMSRequest($this->project, $this->params);
         $result = $wmsRequest->process();
 
         $rep = $this->getResponse('binary');
+        $rep->setHttpStatus($result->code, '');
         $rep->mimeType = $result->mime;
         $rep->content = $result->data;
         $rep->doDownload = false;
@@ -665,14 +621,8 @@ class serviceCtrl extends jController
      *
      * @return jResponseBinary feature Info
      */
-    protected function GetFeatureInfo()
+    protected function GetFeatureInfo($wmsRequest)
     {
-
-        //Get parameters  DELETED HERE SINCE ALREADY DONE IN index method
-        //if(!$this->getServiceParameters())
-        //return $this->serviceException();
-
-        $wmsRequest = new lizmapWMSRequest($this->project, $this->params);
         $result = $wmsRequest->process();
 
         // Log
@@ -702,14 +652,8 @@ class serviceCtrl extends jController
      *
      * @return jResponseBinary image rendered by the Map Server
      */
-    protected function GetPrint()
+    protected function GetPrint($wmsRequest)
     {
-
-        //Get parameters  DELETED HERE SINCE ALREADY DONE IN index method
-        //if(!$this->getServiceParameters())
-        //return $this->serviceException();
-
-        $wmsRequest = new lizmapWMSRequest($this->project, $this->params);
         $result = $wmsRequest->process();
 
         $rep = $this->getResponse('binary');
@@ -742,14 +686,8 @@ class serviceCtrl extends jController
      *
      * @return jResponseBinary image rendered by the Map Server
      */
-    protected function GetPrintAtlas()
+    protected function GetPrintAtlas($wmsRequest)
     {
-
-        //Get parameters  DELETED HERE SINCE ALREADY DONE IN index method
-        //if(!$this->getServiceParameters())
-        //return $this->serviceException();
-
-        $wmsRequest = new lizmapWMSRequest($this->project, $this->params);
         $result = $wmsRequest->process();
 
         $rep = $this->getResponse('binary');
@@ -782,14 +720,8 @@ class serviceCtrl extends jController
      *
      * @return jResponseBinary SLD Style XML
      */
-    protected function GetStyles()
+    protected function GetStyles($wmsRequest)
     {
-
-        //Get parameters  DELETED HERE SINCE ALREADY DONE IN index method
-        //if(!$this->getServiceParameters())
-        //return $this->serviceException();
-
-        $wmsRequest = new lizmapWMSRequest($this->project, $this->params);
         $result = $wmsRequest->process();
 
         $rep = $this->getResponse('binary');
@@ -825,49 +757,6 @@ class serviceCtrl extends jController
     }
 
     /**
-     * PostRequest.
-     *
-     * @param string $xml_post
-     *
-     * @return jResponseBinary response data
-     */
-    protected function PostRequest($xml_post)
-    {
-        // Get parameters
-        if (!$this->getServiceParameters()) {
-            return $this->serviceException();
-        }
-
-        $url = $this->services->wmsServerURL.'?';
-
-        // Filter the parameters of the request
-        $data = array();
-        $paramsBlacklist = array('module', 'action', 'C', 'repository', 'project');
-        foreach ($this->params as $key => $val) {
-            if (!in_array($key, $paramsBlacklist)) {
-                $data[] = strtolower($key).'='.urlencode($val);
-            }
-        }
-        $querystring = $url.implode('&', $data);
-
-        // Get data form server
-        list($data, $mime, $code) = lizmapProxy::getRemoteData($querystring, array(
-            'method' => 'post',
-            'headers' => array('Content-Type' => 'text/xml'),
-            'body' => $xml_post,
-        ));
-
-        $rep = $this->getResponse('binary');
-        $rep->setHttpStatus($code, '');
-        $rep->mimeType = $mime;
-        $rep->content = $data;
-        $rep->doDownload = false;
-        $rep->outputFileName = 'post_request';
-
-        return $rep;
-    }
-
-    /**
      * GetFeature.
      *
      * @urlparam string $repository Lizmap Repository
@@ -875,9 +764,8 @@ class serviceCtrl extends jController
      *
      * @return jResponseBinary image rendered by the Map Server
      */
-    protected function GetFeature()
+    protected function GetFeature($wfsRequest)
     {
-        $wfsRequest = new lizmapWFSRequest($this->project, $this->params);
         $result = $wfsRequest->process();
 
         $rep = $this->getResponse('binary');
@@ -936,10 +824,8 @@ class serviceCtrl extends jController
      *
      * @return jResponseBinary JSON content
      */
-    protected function DescribeFeatureType()
+    protected function DescribeFeatureType($wfsRequest)
     {
-
-        $wfsRequest = new lizmapWFSRequest($this->project, $this->params);
         $result = $wfsRequest->process();
 
         // Return response
@@ -986,10 +872,9 @@ class serviceCtrl extends jController
     /**
      * @return jResponseBinary
      */
-    protected function GetTile()
+    protected function GetTile($wmtsRequest)
     {
-        $wmsRequest = new lizmapWMTSRequest($this->project, $this->params);
-        $result = $wmsRequest->process();
+        $result = $wmtsRequest->process();
 
         $rep = $this->getResponse('binary');
         $rep->mimeType = $result->mime;
