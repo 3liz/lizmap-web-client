@@ -44,7 +44,8 @@ class lizmapOGCRequest
             if ($xml) {
                 $request = $xml->getName();
                 if (property_exists($xml->attributes(), 'service')) {
-                    $service = $xml['service'];
+                    // OGC service has to be upper case for QGIS Server
+                    $service = strtoupper($xml['service']);
                 }
             } else {
                 $requestXml = Null;
@@ -53,7 +54,8 @@ class lizmapOGCRequest
 
         // Check parameters
         if (!$requestXml && isset($params['service'])) {
-            $service = strtolower($params['service']);
+            // OGC service has to be upper case for QGIS Server
+            $service = strtoupper($params['service']);
             if (isset($params['request'])) {
                 $request = strtolower($params['request']);
             }
@@ -62,18 +64,18 @@ class lizmapOGCRequest
         if ($service == Null) {
             return Null;
         }
-        $params['service'] = strtoupper($service);
+        $params['service'] = $service;
         if ($request !== Null) {
             $params['request'] = $request;
         }
-        if ($service == 'wms') {
+        if ($service == 'WMS') {
             return new lizmapWMSRequest($project, $params, $requestXml);
-        } else if ($service == 'wmts') {
+        } else if ($service == 'WMTS') {
             return new lizmapWMTSRequest($project, $params, $requestXml);
-        } else if ($service == 'wfs') {
+        } else if ($service == 'WFS') {
             return new lizmapWFSRequest($project, $params, $requestXml);
         // Not yet
-        //} else if ($service == 'wcs') {
+        //} else if ($service == 'WCS') {
         //    return new lizmapWCSRequest($project, $params, $requestXml)
         }
 
