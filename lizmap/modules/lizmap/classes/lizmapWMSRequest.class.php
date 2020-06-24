@@ -25,6 +25,60 @@ class lizmapWMSRequest extends lizmapOGCRequest
         return $this->forceRequest = $forced;
     }
 
+    public function parameters()
+    {
+        $params = parent::parameters();
+
+        // Filter data by login for request: getmap, getfeatureinfo, getprint, getprintatlas
+        if (!in_array($this->param('request'), array('getmap', 'getfeatureinfo', 'getprint', 'getprintatlas'))) {
+            return $params;
+        }
+
+        // No filter data by login rights
+        if (jAcl2::check('lizmap.tools.loginFilteredLayers.override', $this->repository->getKey())) {
+            return $params;
+        }
+
+        // filter data by login
+        $layers = $this->param('layers');
+        if (is_string($layers)) {
+            $layers = explode(',', $layers);
+        }
+
+        // get login filters
+        $loginFilters = $this->project->getLoginFilters($layers);
+
+        // login filters array is empty
+        if (empty($loginFilters)) {
+            return $params;
+        }
+
+        // merge client filter parameter
+        $clientFilter = $this->param('filter');
+        if ($clientFilter != Null && !empty($clientFilter)) {
+            $cfexp = explode(';', $clientFilter);
+            foreach ($cfexp as $a) {
+                $b = explode(':', $a);
+                $lname = trim($b[0]);
+                $lfilter = trim($b[1]);
+                if (array_key_exists($lname, $loginFilters)) {
+                    $loginFilters[$lname]['filter'] .= ' AND '.$lfilter;
+                } else {
+                    $loginFilters[$lname] = array('filter' => $lfilter, 'layername' => $lname);
+                }
+            }
+        }
+
+        // update filter parameter
+        $filters = array();
+        foreach ($loginFilters as $layername => $lfilter) {
+            $filters[] = $layername.':'.$lfilter['filter'];
+        }
+        $params['filter'] = implode(';', $filters);
+
+        return $params;
+    }
+
     protected function getcapabilities()
     {
         $version = $this->param('version');

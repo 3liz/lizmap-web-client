@@ -912,6 +912,79 @@ class lizmapProject extends qgisProject
         return false;
     }
 
+    public function getLoginFilteredConfig($layername)
+    {
+        if (!$this->hasLoginFilteredLayers()) {
+            return Null;
+        }
+
+        $ln = $layername;
+        // In case $layername is a WFS TypeName
+        $layerByTypeName = $this->findLayerByTypeName($layername);
+        if($layerByTypeName){
+            $ln = $layerByTypeName->name;
+        }
+
+        if (!property_exists($this->cfg->loginFilteredLayers, $ln)) {
+            return Null;
+        }
+
+        return $pConfig->loginFilteredLayers->{$n};
+    }
+
+    public function getLoginFilters($layers)
+    {
+        $filters = array();
+
+        if (!$this->hasLoginFilteredLayers()) {
+            return $filters;
+        }
+
+        foreach ($layers as $layername) {
+            $lname = $layername;
+
+            // In case $layername is a WFS TypeName
+            $layerByTypeName = $this->findLayerByTypeName($layername);
+            if($layerByTypeName){
+                $lname = $layerByTypeName->name;
+            }
+
+            // Get config
+            $loginFilteredConfig = $this->getLoginFilteredConfig($lname);
+            if ($loginFilteredConfig == Null) {
+                continue;
+            }
+
+            // attribute to filter
+            $attribute = strtolower($loginFilteredConfig->filterAttribute);
+
+            // default no user connected
+            $filter = "\"${attribute}\" = 'all'";
+
+            // A user is connected
+            if (jAuth::isConnected()) {
+                $user = jAuth::getUserSession();
+                $login = $user->login;
+                if (property_exists($loginFilteredConfig, 'filterPrivate') &&
+                    $this>optionToBoolean($loginFilteredConfig->filterPrivate)
+                ) {
+                    $filter = "\"${attribute}\" IN ( '".$login."' , 'all' )";
+                } else {
+                    $userGroups = jAcl2DbUserGroup::getGroups();
+                    $flatGroups = implode("' , '", $userGroups);
+                    $filter = "\"${attribute}\" IN ( '".$flatGroups."' , 'all' )";
+                }
+            }
+
+            $filters[$layername] = array_merge(
+                $loginFilteredConfig,
+                array('filter' => $filter, 'layername' => $lname)
+            );
+        }
+
+        return $filters;
+    }
+
     private function optionToBoolean($config_string) {
         $ret = false;
         if (strtolower((string)$config_string) == 'true') {
