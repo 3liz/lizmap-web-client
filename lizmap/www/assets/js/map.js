@@ -668,6 +668,7 @@ var lizMap = function() {
         && ('ignKey' in config.options))
        ) {
          Proj4js.defs['EPSG:3857'] = Proj4js.defs['EPSG:900913'];
+
          var proj = config.options.projection;
          if ( !(proj.ref in Proj4js.defs) )
            Proj4js.defs[proj.ref]=proj.proj4;
