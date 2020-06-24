@@ -39,6 +39,62 @@ class lizmapWFSRequest extends lizmapOGCRequest
         'create',
     );
 
+    public function parameters()
+    {
+        $params = parent::parameters();
+
+        // Filter data by login for request: getfeature
+        if ($this->param('request') !== 'getfeature') {
+            return $params;
+        }
+
+        // No filter data by login rights
+        if (jAcl2::check('lizmap.tools.loginFilteredLayers.override', $this->repository->getKey())) {
+            return $params;
+        }
+
+        // filter data by login
+        $typenames = $this->param('typename');
+        if (is_string($typenames)) {
+            $typenames = explode(',', $typenames);
+        }
+
+        // get login filters
+        $loginFilters = $this->project->getLoginFilters($typenames);
+
+        // login filters array is empty
+        if (empty($loginFilters)) {
+            return $params;
+        }
+
+        $expFilters = array();
+
+        // Get client exp_filter parameter
+        $clientExpFilter = $this->param('exp_filter');
+        if ($clientExpFilter != Null && !empty($clientExpFilter)) {
+            $expFilters[] = $clientExpFilter;
+        }
+
+        // Merge login filter
+        $attribute = '';
+        foreach ($loginFilters as $typename => $lfilter) {
+            $expFilters[] = $lfilter['filter'];
+            $attribute = $lfilter['filterAttribute'];
+        }
+
+        // Update exp_filter parameter
+        $params['exp_filter'] = implode(' AND ', $expFilters);
+
+        // Update propertyname parameter
+        $propertyName = $this->param('propertyname');
+        if ($propertyName != Null && !empty($propertyName)) {
+            $propertyName = trim($propertyName).",${attribute}";
+            $params['propertyname'] = $propertyName;
+        }
+
+        return $params;
+    }
+
     protected function getcapabilities()
     {
         $version = $this->param('version');
@@ -258,7 +314,7 @@ class lizmapWFSRequest extends lizmapOGCRequest
 
     public function getfeaturePostgres()
     {
-        $params = $this->params;
+        $params = $this->parameters();
 
         // Get database connexion for this layer
         $cnx = $this->qgisLayer->getDatasourceConnection();
