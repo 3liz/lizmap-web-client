@@ -62,6 +62,7 @@ class filterDatasource {
         $layer = $this->lproj->getLayer( $layerId );
         $this->layer = $layer;
         $this->layername = $layer->getName();
+
         $this->datasource = $layer->getDatasourceParameters();
         $this->cnx = $layer->getDatasourceConnection();
 
@@ -262,9 +263,7 @@ class filterDatasource {
             }
 
         }
-
 //jLog::log($sql);
-
 
         return $this->getData($sql);
     }

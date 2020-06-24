@@ -48,17 +48,11 @@ class filterConfig {
             return false;
         }
 
-        // Get config
-        $filterConfig = null;
-        if ( !$lproj->hasFormFilterLayers() ){
-            $this->errors = array(
-                'title'=>'filter Configuration not found',
-                'detail'=> 'No filter configuration has been found for this project'
-            );
-            return false;
-        }
+        // Filter config may be an empty array
+        // This means no layers have been set up with the filter by form tool
+        // BUT : we still need to return data so that other tools can use the filter methods
+        // Ex: timemanager uses the getMinAndMaxValues method of the service controller
         $filterConfig = $lproj->getFormFilterLayersConfig();
-
         $this->repository = $repository;
         $this->project = $project;
         $this->lproj = $lproj;

@@ -7,7 +7,7 @@ var lizLayerFilterTool = function() {
                 return true;
 
             // Launch LayerFilter feature
-            if (typeof filterConfig != "undefined" && '0' in filterConfig) {
+            if (typeof filterConfig != "undefined" && filterConfig && '0' in filterConfig) {
                 addLayerFilterToolInterface();
                 launchLayerFilterTool(filterConfigData.layerId);
 
@@ -210,10 +210,14 @@ var lizLayerFilterTool = function() {
 
     // Get the HTML form element for the date field type
     function dateFormInput(field_item){
+        var fieldnames = field_item.min_date;
+        if (field_item.max_date && field_item.max_date != '' && field_item.max_date != field_item.min_date) {
+            fieldnames+= field_item.max_date;
+        }
         var sdata = {
             request: 'getMinAndMaxValues',
             layerId: field_item.layerId,
-            fieldname: field_item.min_date + ',' + field_item.max_date,
+            fieldname: fieldnames,
             filter: ''
         };
         $.get(filterConfigData.url, sdata, function(result){
@@ -563,6 +567,9 @@ var lizLayerFilterTool = function() {
         // fields
         var startField = field_item.min_date;
         var endField = field_item.max_date;
+        if (!endField || endField == '') {
+            endField = startField;
+        }
 
         // min date filter
         if(min_val && Date.parse(min_val)){
