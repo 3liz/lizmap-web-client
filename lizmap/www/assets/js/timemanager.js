@@ -55,6 +55,8 @@ var lizTimemanager = function() {
             var tmTimeFrameType = config.options['tmTimeFrameType'];
             // Length  for each frame (between each step)
             var tmAnimationFrameLength = config.options['tmAnimationFrameLength']
+            if (tmAnimationFrameLength < 1000)
+                tmAnimationFrameLength = 1000;
 
             // Activate timemanager
             function activateTimemanager(){
@@ -126,10 +128,24 @@ var lizTimemanager = function() {
 
                 // Get min and max timestamp from layer
                 var fieldnameContent = layerConfig.startAttribute;
-                if( layerConfig.endAttribute != ''
+                if( layerConfig.endAttribute && layerConfig.endAttribute != ''
                 && layerConfig.endAttribute != layerConfig.startAttribute) {
                     fieldnameContent+= ',' + layerConfig.endAttribute;
                 }
+
+                // Check if min and max are already in config
+                // Usefull for non SQL layers
+                if ('min_timestamp' in layerConfig && layerConfig.min_timestamp && layerConfig.min_timestamp != ''
+                    &&
+                    'max_timestamp' in layerConfig && layerConfig.max_timestamp && layerConfig.max_timestamp != ''
+                ) {
+                    var dmin = layerConfig.min_timestamp;
+                    var dmax = layerConfig.max_timestamp;
+                    aCallback(dmin, dmax);
+                    return true;
+                }
+
+                // Else query min and max timestamps via lizmap filter methods
                 var sdata = {
                     request: 'getMinAndMaxValues',
                     layerId: layerConfig.layerId,
@@ -230,7 +246,7 @@ var lizTimemanager = function() {
                 // min date filter
                 if(min_val && Date.parse(min_val)){
                     var f = '( "' + startField + '"' + " >= '" + formatDatetime(min_val, attributeResolution) + "'";
-                    if(endField != '' && endField != startField){
+                    if (endField && endField != '' && endField != startField){
                         f+= " OR " + ' "' + endField + '"' + " >= '" + formatDatetime(min_val, attributeResolution) + "'";
                     }
                     f+= " )";
@@ -242,7 +258,7 @@ var lizTimemanager = function() {
                 // max date filter
                 if(max_val && Date.parse(max_val)){
                     var f = '( "' + startField + '"' + " <= '" + formatDatetime(max_val, attributeResolution) + "'";
-                    if(endField != '' && endField != startField) {
+                    if(endField && endField != '' && endField != startField) {
                         f+= " OR " + ' "' + endField + '"' + " <= '" + formatDatetime(max_val, attributeResolution) + "'";
                     }
                     f+= " )";
