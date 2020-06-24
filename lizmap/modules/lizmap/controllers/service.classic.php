@@ -973,6 +973,9 @@ class serviceCtrl extends jController
         // Return response
         $rep = $this->getResponse('text');
         $content = $this->project->getProj4($this->iParam('authid'));
+        if (!$content) {
+            $rep->setHttpStatus(404, 'Not Found');
+        }
         $content = (string) $content[0];
         $rep->content = $content;
         $rep->setExpires('+300 seconds');
