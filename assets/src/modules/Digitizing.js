@@ -50,14 +50,14 @@ export default class Digitizing {
             'select': drawStyleSelect
         });
 
-        const queryLayer = new OpenLayers.Layer.Vector(
-            'selectionQueryLayer', {
+        this._drawLayer = new OpenLayers.Layer.Vector(
+            'drawLayer', {
                 styleMap: drawStyleMap
             }
         );
 
-        const bufferLayer = new OpenLayers.Layer.Vector(
-            'selectionBufferLayer', {
+        this._bufferLayer = new OpenLayers.Layer.Vector(
+            'drawBufferLayer', {
                 styleMap: new OpenLayers.StyleMap({
                     fillColor: 'blue',
                     fillOpacity: 0.1,
@@ -69,13 +69,11 @@ export default class Digitizing {
             }
         );
 
-        mainLizmap.lizmap3.map.addLayers([queryLayer, bufferLayer]);
-        mainLizmap.lizmap3.layers['selectionQueryLayer'] = queryLayer;
-        mainLizmap.lizmap3.layers['selectionBufferLayer'] = bufferLayer;
+        mainLizmap.lizmap3.map.addLayers([this._drawLayer, this._bufferLayer]);
 
         mainLizmap.lizmap3.controls['selectiontool'] = {};
 
-        const onQueryFeatureAdded = (feature) => {
+        const onDrawFeatureAdded = (feature) => {
             /**
              * @todo Ne gère que si il ya a seulement 1 géométrie
              */
@@ -88,7 +86,7 @@ export default class Digitizing {
             this._featureDrawn = feature;
 
             // Handle buffer if any
-            mainLizmap.lizmap3.layers['selectionBufferLayer'].destroyFeatures();
+            this._bufferLayer.destroyFeatures();
             if (this._bufferValue > 0) {
                 const geoJSONParser = new OpenLayers.Format.GeoJSON();
                 const selectionGeoJSON = geoJSONParser.write(feature.geometry);
@@ -99,8 +97,8 @@ export default class Digitizing {
                 const bufferedSelection = geoJSONParser.read(jstsGeoJSONWriter.write(jstsbBufferedGeom));
 
                 // Draw buffer
-                mainLizmap.lizmap3.layers['selectionBufferLayer'].addFeatures(bufferedSelection);
-                mainLizmap.lizmap3.layers['selectionBufferLayer'].redraw(true);
+                this._bufferLayer.addFeatures(bufferedSelection);
+                this._bufferLayer.redraw(true);
 
                 this._featureDrawn = bufferedSelection[0];
             }
@@ -114,29 +112,29 @@ export default class Digitizing {
          * Box
          * @type @new;OpenLayers.Control.DrawFeature
          */
-        const queryBoxLayerCtrl = new OpenLayers.Control.DrawFeature(queryLayer,
+        const drawBoxLayerCtrl = new OpenLayers.Control.DrawFeature(this._drawLayer,
             OpenLayers.Handler.RegularPolygon,
-            { handlerOptions: { sides: 4, irregular: true }, 'featureAdded': onQueryFeatureAdded }
+            { handlerOptions: { sides: 4, irregular: true }, 'featureAdded': onDrawFeatureAdded }
         );
 
         /**
          * Circle
          * @type @new;OpenLayers.Control.DrawFeature
          */
-        const queryCircleLayerCtrl = new OpenLayers.Control.DrawFeature(queryLayer,
+        const drawCircleLayerCtrl = new OpenLayers.Control.DrawFeature(this._drawLayer,
             OpenLayers.Handler.RegularPolygon,
-            { handlerOptions: { sides: 40 }, 'featureAdded': onQueryFeatureAdded }
+            { handlerOptions: { sides: 40 }, 'featureAdded': onDrawFeatureAdded }
         );
 
         /**
          * Point
          * @type @new;OpenLayers.Control.DrawFeature
          */
-        const queryPointLayerCtrl = new OpenLayers.Control.DrawFeature(
-            queryLayer,
+        const drawPointLayerCtrl = new OpenLayers.Control.DrawFeature(
+            this._drawLayer,
             OpenLayers.Handler.Point,
             {
-                'featureAdded': onQueryFeatureAdded,
+                'featureAdded': onDrawFeatureAdded,
                 styleMap: drawStyleMap,
                 eventListeners: {
                     // getFeatureInfo and point draw controls are mutually exclusive
@@ -158,11 +156,11 @@ export default class Digitizing {
          * Line
          * @type @new;OpenLayers.Control.DrawFeature
          */
-        const queryLineLayerCtrl = new OpenLayers.Control.DrawFeature(
-            queryLayer,
+        const drawLineLayerCtrl = new OpenLayers.Control.DrawFeature(
+            this._drawLayer,
             OpenLayers.Handler.Path,
             {
-                'featureAdded': onQueryFeatureAdded,
+                'featureAdded': onDrawFeatureAdded,
                 styleMap: drawStyleMap,
                 eventListeners: {
                     // getFeatureInfo and point draw controls are mutually exclusive
@@ -184,11 +182,11 @@ export default class Digitizing {
          * Polygon
          * @type @new;OpenLayers.Control.DrawFeature
          */
-        const queryPolygonLayerCtrl = new OpenLayers.Control.DrawFeature(
-            queryLayer,
+        const drawPolygonLayerCtrl = new OpenLayers.Control.DrawFeature(
+            this._drawLayer,
             OpenLayers.Handler.Polygon,
             {
-                'featureAdded': onQueryFeatureAdded,
+                'featureAdded': onDrawFeatureAdded,
                 styleMap: drawStyleMap,
                 eventListeners: {
                     // getFeatureInfo and polygon draw controls are mutually exclusive
@@ -210,36 +208,36 @@ export default class Digitizing {
          * Freehand
          * @type @new;OpenLayers.Control.DrawFeature
          */
-        const queryFreehandLayerCtrl = new OpenLayers.Control.DrawFeature(queryLayer,
+        const drawFreehandLayerCtrl = new OpenLayers.Control.DrawFeature(this._drawLayer,
             OpenLayers.Handler.Polygon, {
-            'featureAdded': onQueryFeatureAdded, styleMap: drawStyleMap,
+            'featureAdded': onDrawFeatureAdded, styleMap: drawStyleMap,
             handlerOptions: { freehand: true }
         }
         );
 
         // TODO : keep reference to controls in this class
-        mainLizmap.lizmap3.map.addControls([queryPointLayerCtrl, queryLineLayerCtrl, queryPolygonLayerCtrl, queryBoxLayerCtrl, queryCircleLayerCtrl, queryFreehandLayerCtrl]);
+        mainLizmap.lizmap3.map.addControls([drawPointLayerCtrl, drawLineLayerCtrl, drawPolygonLayerCtrl, drawBoxLayerCtrl, drawCircleLayerCtrl, drawFreehandLayerCtrl]);
 
-        mainLizmap.lizmap3.controls['selectiontool']['queryPointLayerCtrl'] = queryPointLayerCtrl;
-        mainLizmap.lizmap3.controls['selectiontool']['queryLineLayerCtrl'] = queryLineLayerCtrl;
-        mainLizmap.lizmap3.controls['selectiontool']['queryPolygonLayerCtrl'] = queryPolygonLayerCtrl;
-        mainLizmap.lizmap3.controls['selectiontool']['queryBoxLayerCtrl'] = queryBoxLayerCtrl;
-        mainLizmap.lizmap3.controls['selectiontool']['queryCircleLayerCtrl'] = queryCircleLayerCtrl;
-        mainLizmap.lizmap3.controls['selectiontool']['queryFreehandLayerCtrl'] = queryFreehandLayerCtrl;
+        mainLizmap.lizmap3.controls['selectiontool']['drawPointLayerCtrl'] = drawPointLayerCtrl;
+        mainLizmap.lizmap3.controls['selectiontool']['drawLineLayerCtrl'] = drawLineLayerCtrl;
+        mainLizmap.lizmap3.controls['selectiontool']['drawPolygonLayerCtrl'] = drawPolygonLayerCtrl;
+        mainLizmap.lizmap3.controls['selectiontool']['drawBoxLayerCtrl'] = drawBoxLayerCtrl;
+        mainLizmap.lizmap3.controls['selectiontool']['drawCircleLayerCtrl'] = drawCircleLayerCtrl;
+        mainLizmap.lizmap3.controls['selectiontool']['drawFreehandLayerCtrl'] = drawFreehandLayerCtrl;
 
         mainLizmap.lizmap3.events.on({
             'minidockopened': (mdoEvt) => {
                 if (mdoEvt.id == 'selectiontool') {
                     this.toolSelected = 'deactivate';
-                    mainLizmap.lizmap3.layers['selectionQueryLayer'].destroyFeatures();
-                    mainLizmap.lizmap3.layers['selectionBufferLayer'].destroyFeatures();
+                    this._drawLayer.destroyFeatures();
+                    this._bufferLayer.destroyFeatures();
                 }
             },
             'minidockclosed': (mdcEvt) => {
                 if (mdcEvt.id == 'selectiontool') {
                     this.toolSelected = 'deactivate';
-                    mainLizmap.lizmap3.layers['selectionQueryLayer'].destroyFeatures();
-                    mainLizmap.lizmap3.layers['selectionBufferLayer'].destroyFeatures();
+                    this._drawLayer.destroyFeatures();
+                    this._bufferLayer.destroyFeatures();
                 }
             },
             'layerSelectionChanged': () => {
@@ -252,6 +250,14 @@ export default class Digitizing {
                 }
             }
         });
+    }
+
+    get drawLayer(){
+        return this._drawLayer;
+    }
+
+    get bufferLayer() {
+        return this._bufferLayer;
     }
 
     get toolSelected() {
@@ -271,22 +277,22 @@ export default class Digitizing {
             }else{
                 switch (tool) {
                     case this._tools[1]:
-                        mainLizmap.lizmap3.controls.selectiontool.queryPointLayerCtrl.activate();
+                        mainLizmap.lizmap3.controls.selectiontool.drawPointLayerCtrl.activate();
                         break;
                     case this._tools[2]:
-                        mainLizmap.lizmap3.controls.selectiontool.queryLineLayerCtrl.activate();
+                        mainLizmap.lizmap3.controls.selectiontool.drawLineLayerCtrl.activate();
                         break;
                     case this._tools[3]:
-                        mainLizmap.lizmap3.controls.selectiontool.queryPolygonLayerCtrl.activate();
+                        mainLizmap.lizmap3.controls.selectiontool.drawPolygonLayerCtrl.activate();
                         break;
                     case this._tools[4]:
-                        mainLizmap.lizmap3.controls.selectiontool.queryBoxLayerCtrl.activate();
+                        mainLizmap.lizmap3.controls.selectiontool.drawBoxLayerCtrl.activate();
                         break;
                     case this._tools[5]:
-                        mainLizmap.lizmap3.controls.selectiontool.queryCircleLayerCtrl.activate();
+                        mainLizmap.lizmap3.controls.selectiontool.drawCircleLayerCtrl.activate();
                         break;
                     case this._tools[6]:
-                        mainLizmap.lizmap3.controls.selectiontool.queryFreehandLayerCtrl.activate();
+                        mainLizmap.lizmap3.controls.selectiontool.drawFreehandLayerCtrl.activate();
                         break;
                 }
 
@@ -305,7 +311,7 @@ export default class Digitizing {
         this._drawColor = color;
 
         // Update default and temporary draw styles
-        const drawStyles = mainLizmap.lizmap3.layers['selectionQueryLayer'].styleMap.styles;
+        const drawStyles = this._drawLayer.styleMap.styles;
 
         drawStyles.default.defaultStyle.fillColor = color;
         drawStyles.default.defaultStyle.strokeColor = color;
@@ -331,8 +337,8 @@ export default class Digitizing {
     toggleFeatureDrawnVisibility() {
         this._featureDrawnVisibility = !this._featureDrawnVisibility;
 
-        mainLizmap.lizmap3.layers['selectionQueryLayer'].setVisibility(this._featureDrawnVisibility);
-        mainLizmap.lizmap3.layers['selectionBufferLayer'].setVisibility(this._featureDrawnVisibility);
+        this._drawLayer.setVisibility(this._featureDrawnVisibility);
+        this._bufferLayer.setVisibility(this._featureDrawnVisibility);
 
         mainEventDispatcher.dispatch('digitizing.featureDrawnVisibility');
     }
