@@ -1362,7 +1362,7 @@ class serviceCtrl extends jController
         if (isset($this->params['outputformat'])) {
             $outputformat = strtolower($this->params['outputformat']);
         }
-        if (in_array(strtolower($outputformat), $zipped_files)) {
+        if (in_array($outputformat, $zipped_files)) {
             $rep->outputFileName = $typenames.'.zip';
         } else {
             $rep->outputFileName = $typenames.'.'.$outputformat;
@@ -1379,7 +1379,7 @@ class serviceCtrl extends jController
                 $rep->content = preg_replace('/^[\n\r]/', '', $result->data);
             }
             // Change file name
-            if (in_array($outputformat), $zipped_files)) {
+            if (in_array($outputformat, $zipped_files)) {
                 $rep->outputFileName = 'export_'.$this->params['typename'].'.zip';
             } else {
                 $rep->outputFileName = 'export_'.$this->params['typename'].'.'.$outputformat;
