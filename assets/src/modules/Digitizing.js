@@ -16,7 +16,7 @@ export default class Digitizing {
         this._featureDrawn = null;
         this._featureDrawnVisibility = true;
 
-        // Draw and selection tools style
+        // Draw tools style
         const drawStyle = new OpenLayers.Style({
             pointRadius: 7,
             fillColor: this._drawColor,
@@ -71,8 +71,6 @@ export default class Digitizing {
 
         mainLizmap.lizmap3.map.addLayers([this._drawLayer, this._bufferLayer]);
 
-        mainLizmap.lizmap3.controls['selectiontool'] = {};
-
         const onDrawFeatureAdded = (feature) => {
             /**
              * @todo Ne gère que si il ya a seulement 1 géométrie
@@ -89,18 +87,18 @@ export default class Digitizing {
             this._bufferLayer.destroyFeatures();
             if (this._bufferValue > 0) {
                 const geoJSONParser = new OpenLayers.Format.GeoJSON();
-                const selectionGeoJSON = geoJSONParser.write(feature.geometry);
+                const drawGeoJSON = geoJSONParser.write(feature.geometry);
                 const jstsGeoJSONReader = new GeoJSONReader();
                 const jstsGeoJSONWriter = new GeoJSONWriter();
-                const jstsGeom = jstsGeoJSONReader.read(selectionGeoJSON);
+                const jstsGeom = jstsGeoJSONReader.read(drawGeoJSON);
                 const jstsbBufferedGeom = BufferOp.bufferOp(jstsGeom, this._bufferValue);
-                const bufferedSelection = geoJSONParser.read(jstsGeoJSONWriter.write(jstsbBufferedGeom));
+                const bufferedDraw = geoJSONParser.read(jstsGeoJSONWriter.write(jstsbBufferedGeom));
 
                 // Draw buffer
-                this._bufferLayer.addFeatures(bufferedSelection);
+                this._bufferLayer.addFeatures(bufferedDraw);
                 this._bufferLayer.redraw(true);
 
-                this._featureDrawn = bufferedSelection[0];
+                this._featureDrawn = bufferedDraw[0];
             }
 
             mainEventDispatcher.dispatch('digitizing.featureDrawn');
@@ -109,28 +107,10 @@ export default class Digitizing {
         };
 
         /**
-         * Box
-         * @type @new;OpenLayers.Control.DrawFeature
-         */
-        const drawBoxLayerCtrl = new OpenLayers.Control.DrawFeature(this._drawLayer,
-            OpenLayers.Handler.RegularPolygon,
-            { handlerOptions: { sides: 4, irregular: true }, 'featureAdded': onDrawFeatureAdded }
-        );
-
-        /**
-         * Circle
-         * @type @new;OpenLayers.Control.DrawFeature
-         */
-        const drawCircleLayerCtrl = new OpenLayers.Control.DrawFeature(this._drawLayer,
-            OpenLayers.Handler.RegularPolygon,
-            { handlerOptions: { sides: 40 }, 'featureAdded': onDrawFeatureAdded }
-        );
-
-        /**
          * Point
          * @type @new;OpenLayers.Control.DrawFeature
          */
-        const drawPointLayerCtrl = new OpenLayers.Control.DrawFeature(
+        this._drawPointLayerCtrl = new OpenLayers.Control.DrawFeature(
             this._drawLayer,
             OpenLayers.Handler.Point,
             {
@@ -156,7 +136,7 @@ export default class Digitizing {
          * Line
          * @type @new;OpenLayers.Control.DrawFeature
          */
-        const drawLineLayerCtrl = new OpenLayers.Control.DrawFeature(
+        this._drawLineLayerCtrl = new OpenLayers.Control.DrawFeature(
             this._drawLayer,
             OpenLayers.Handler.Path,
             {
@@ -182,7 +162,7 @@ export default class Digitizing {
          * Polygon
          * @type @new;OpenLayers.Control.DrawFeature
          */
-        const drawPolygonLayerCtrl = new OpenLayers.Control.DrawFeature(
+        this._drawPolygonLayerCtrl = new OpenLayers.Control.DrawFeature(
             this._drawLayer,
             OpenLayers.Handler.Polygon,
             {
@@ -205,25 +185,37 @@ export default class Digitizing {
         );
 
         /**
+         * Box
+         * @type @new;OpenLayers.Control.DrawFeature
+         */
+        this._drawBoxLayerCtrl = new OpenLayers.Control.DrawFeature(this._drawLayer,
+            OpenLayers.Handler.RegularPolygon,
+            { handlerOptions: { sides: 4, irregular: true }, 'featureAdded': onDrawFeatureAdded }
+        );
+
+        /**
+         * Circle
+         * @type @new;OpenLayers.Control.DrawFeature
+         */
+        this._drawCircleLayerCtrl = new OpenLayers.Control.DrawFeature(this._drawLayer,
+            OpenLayers.Handler.RegularPolygon,
+            { handlerOptions: { sides: 40 }, 'featureAdded': onDrawFeatureAdded }
+        );
+
+        /**
          * Freehand
          * @type @new;OpenLayers.Control.DrawFeature
          */
-        const drawFreehandLayerCtrl = new OpenLayers.Control.DrawFeature(this._drawLayer,
+        this._drawFreehandLayerCtrl = new OpenLayers.Control.DrawFeature(this._drawLayer,
             OpenLayers.Handler.Polygon, {
             'featureAdded': onDrawFeatureAdded, styleMap: drawStyleMap,
             handlerOptions: { freehand: true }
-        }
-        );
+        });
 
-        // TODO : keep reference to controls in this class
-        mainLizmap.lizmap3.map.addControls([drawPointLayerCtrl, drawLineLayerCtrl, drawPolygonLayerCtrl, drawBoxLayerCtrl, drawCircleLayerCtrl, drawFreehandLayerCtrl]);
+        this._drawControls = [this._drawPointLayerCtrl, this._drawLineLayerCtrl, this._drawPolygonLayerCtrl, this._drawBoxLayerCtrl, this._drawCircleLayerCtrl, this._drawFreehandLayerCtrl];
 
-        mainLizmap.lizmap3.controls['selectiontool']['drawPointLayerCtrl'] = drawPointLayerCtrl;
-        mainLizmap.lizmap3.controls['selectiontool']['drawLineLayerCtrl'] = drawLineLayerCtrl;
-        mainLizmap.lizmap3.controls['selectiontool']['drawPolygonLayerCtrl'] = drawPolygonLayerCtrl;
-        mainLizmap.lizmap3.controls['selectiontool']['drawBoxLayerCtrl'] = drawBoxLayerCtrl;
-        mainLizmap.lizmap3.controls['selectiontool']['drawCircleLayerCtrl'] = drawCircleLayerCtrl;
-        mainLizmap.lizmap3.controls['selectiontool']['drawFreehandLayerCtrl'] = drawFreehandLayerCtrl;
+        // Add controls to map
+        mainLizmap.lizmap3.map.addControls(this._drawControls);
 
         mainLizmap.lizmap3.events.on({
             'minidockopened': (mdoEvt) => {
@@ -267,8 +259,8 @@ export default class Digitizing {
     set toolSelected(tool) {
         if (this._tools.includes(tool)) {
             // Disable all tools
-            for (const key in mainLizmap.lizmap3.controls.selectiontool) {
-                mainLizmap.lizmap3.controls.selectiontool[key].deactivate();
+            for (const drawControl of this._drawControls) {
+                drawControl.deactivate();
             }
 
             // If current selected tool is selected again => unactivate
@@ -277,22 +269,22 @@ export default class Digitizing {
             }else{
                 switch (tool) {
                     case this._tools[1]:
-                        mainLizmap.lizmap3.controls.selectiontool.drawPointLayerCtrl.activate();
+                        this._drawPointLayerCtrl.activate();
                         break;
                     case this._tools[2]:
-                        mainLizmap.lizmap3.controls.selectiontool.drawLineLayerCtrl.activate();
+                        this._drawLineLayerCtrl.activate();
                         break;
                     case this._tools[3]:
-                        mainLizmap.lizmap3.controls.selectiontool.drawPolygonLayerCtrl.activate();
+                        this._drawPolygonLayerCtrl.activate();
                         break;
                     case this._tools[4]:
-                        mainLizmap.lizmap3.controls.selectiontool.drawBoxLayerCtrl.activate();
+                        this._drawBoxLayerCtrl.activate();
                         break;
                     case this._tools[5]:
-                        mainLizmap.lizmap3.controls.selectiontool.drawCircleLayerCtrl.activate();
+                        this._drawCircleLayerCtrl.activate();
                         break;
                     case this._tools[6]:
-                        mainLizmap.lizmap3.controls.selectiontool.drawFreehandLayerCtrl.activate();
+                        this._drawFreehandLayerCtrl.activate();
                         break;
                 }
 
