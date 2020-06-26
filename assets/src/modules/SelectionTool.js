@@ -185,8 +185,8 @@ export default class SelectionTool {
                 {'featureType': featureType, 'updateDrawing': true}
             );
         }
-        mainLizmap.lizmap3.layers['selectionQueryLayer'].destroyFeatures();
-        mainLizmap.lizmap3.layers['selectionBufferLayer'].destroyFeatures();
+        mainLizmap.digitizing.drawLayer.destroyFeatures();
+        mainLizmap.digitizing.bufferLayer.destroyFeatures();
     }
 
     filter() {
