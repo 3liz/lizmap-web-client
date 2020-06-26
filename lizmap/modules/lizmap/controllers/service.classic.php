@@ -792,10 +792,14 @@ class serviceCtrl extends jController
         // Define file name
         $typenames = implode('_', array_map('trim', explode(',', $this->params['typename'])));
         $zipped_files = array('shp', 'mif', 'tab');
-        if (in_array(strtolower($this->params['outputformat']), $zipped_files)) {
+        $outputformat = 'gml2';
+        if (isset($this->params['outputformat'])) {
+            $outputformat = strtolower($this->params['outputformat']);
+        }
+        if (in_array($outputformat, $zipped_files)) {
             $rep->outputFileName = $typenames.'.zip';
         } else {
-            $rep->outputFileName = $typenames.'.'.strtolower($this->params['outputformat']);
+            $rep->outputFileName = $typenames.'.'.$outputformat;
         }
 
         // Export
@@ -809,10 +813,10 @@ class serviceCtrl extends jController
                 $rep->content = preg_replace('/^[\n\r]/', '', $result->data);
             }
             // Change file name
-            if (in_array(strtolower($this->params['outputformat']), $zipped_files)) {
+            if (in_array($outputformat, $zipped_files)) {
                 $rep->outputFileName = 'export_'.$this->params['typename'].'.zip';
             } else {
-                $rep->outputFileName = 'export_'.$this->params['typename'].'.'.strtolower($this->params['outputformat']);
+                $rep->outputFileName = 'export_'.$this->params['typename'].'.'.$outputformat;
             }
         }
 
