@@ -10,6 +10,7 @@ export default class Digitizing {
         this._tools = ['deactivate', 'point', 'line', 'polygon', 'box', 'circle', 'freehand'];
         this._toolSelected = this._tools[0];
 
+        this._drawColor = '#ff0000';
         this._bufferValue = 0;
 
         this._featureDrawn = null;
@@ -18,18 +19,18 @@ export default class Digitizing {
         // Draw and selection tools style
         const drawStyle = new OpenLayers.Style({
             pointRadius: 7,
-            fillColor: '#94EF05',
+            fillColor: this._drawColor,
             fillOpacity: 0.2,
-            strokeColor: 'yellow',
+            strokeColor: this._drawColor,
             strokeOpacity: 1,
             strokeWidth: 2
         });
 
         const drawStyleTemp = new OpenLayers.Style({
             pointRadius: 7,
-            fillColor: 'orange',
+            fillColor: this._drawColor,
             fillOpacity: 0.3,
-            strokeColor: 'blue',
+            strokeColor: this._drawColor,
             strokeOpacity: 1,
             strokeWidth: 3
         });
@@ -294,6 +295,23 @@ export default class Digitizing {
 
             mainEventDispatcher.dispatch('digitizing.toolSelected');
         }
+    }
+
+    get drawColor(){
+        return this._drawColor;
+    }
+
+    set drawColor(color){
+        this._drawColor = color;
+
+        // Update default and temporary draw styles
+        const drawStyles = mainLizmap.lizmap3.layers['selectionQueryLayer'].styleMap.styles;
+
+        drawStyles.default.defaultStyle.fillColor = color;
+        drawStyles.default.defaultStyle.strokeColor = color;
+
+        drawStyles.temporary.defaultStyle.fillColor = color;
+        drawStyles.temporary.defaultStyle.strokeColor = color;
     }
 
     get bufferValue(){
