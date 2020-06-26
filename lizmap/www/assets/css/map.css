@@ -2493,6 +2493,12 @@ div.tooltip {
   vertical-align: top;
 }
 
+input[type="color"].digitizing-color{
+  width: 26px;
+  vertical-align: top;
+  cursor: pointer;
+}
+
 .digitizing-buttons {
   margin-bottom: 10px;
 }
