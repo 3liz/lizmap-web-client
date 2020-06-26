@@ -317,7 +317,7 @@ export default class Digitizing {
     }
 
     set bufferValue(bufferValue){
-        this._bufferValue = bufferValue;
+        this._bufferValue = isNaN(bufferValue) ? 0 : bufferValue;
 
         mainEventDispatcher.dispatch('digitizing.bufferValue');
     }
