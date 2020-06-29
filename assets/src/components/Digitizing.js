@@ -3,6 +3,7 @@ import { html, render } from 'lit-html';
 import '../images/svg/mActionSelectPoint.svg';
 import '../images/svg/mActionSelectLine.svg';
 import '../images/svg/eraser.svg';
+import '../images/svg/pencil.svg';
 
 export default class Digitizing extends HTMLElement {
     constructor() {
@@ -16,31 +17,39 @@ export default class Digitizing extends HTMLElement {
             <button type="button" class="digitizing-toggle-visibility btn" @click=${() => mainLizmap.digitizing.toggleFeatureDrawnVisibility()}  data-original-title="${lizDict['tree.button.checkbox']}">
                 <i class="icon-eye-${mainLizmap.digitizing._featureDrawnVisibility ? 'open' : 'close'}"></i>
             </button>
-            <input type="color" class="digitizing-color" value="${mainLizmap.digitizing.drawColor}" @input=${(event) => mainLizmap.digitizing.drawColor = event.target.value}>
+            <input type="color" class="digitizing-color btn" value="${mainLizmap.digitizing.drawColor}" @input=${(event) => mainLizmap.digitizing.drawColor = event.target.value}>
             <div class="digitizing-buttons btn-group">
-                <button type="button" class="digitizing-point btn ${mainLizmap.digitizing.toolSelected === 'point' ? 'active' : ''}" @click=${() => mainLizmap.digitizing.toolSelected = 'point'} data-original-title="${lizDict['digitizing.toolbar.query.point']}">
+                <a class="btn dropdown-toggle" data-toggle="dropdown" href="#">
                     <svg>
-                        <use xlink:href="#mActionSelectPoint"></use>
+                        <use xlink:href="#pencil"></use>
                     </svg>
-                </button>
-                <button type="button" class="digitizing-line btn ${mainLizmap.digitizing.toolSelected === 'line' ? 'active' : ''}" @click=${() => mainLizmap.digitizing.toolSelected = 'line'} data-original-title="${lizDict['digitizing.toolbar.query.line']}">
-                    <svg>
-                        <use xlink:href="#mActionSelectLine"></use>
-                    </svg>
-                </button>
-                <button type="button" class="digitizing-polygon btn ${mainLizmap.digitizing.toolSelected === 'polygon' ? 'active' : ''}" @click=${() => mainLizmap.digitizing.toolSelected = 'polygon'} data-original-title="${lizDict['digitizing.toolbar.query.polygon']}">
-                    <i class="icon-none qgis_sprite mActionSelectPolygon"></i>
-                </button>
-                <br>
-                <button type="button" class="digitizing-box btn ${mainLizmap.digitizing.toolSelected === 'box' ? 'active' : ''}" @click=${() => mainLizmap.digitizing.toolSelected = 'box'} data-original-title="${lizDict['digitizing.toolbar.query.box']}">
-                    <i class="icon-none qgis_sprite mActionSelectRectangle"></i>
-                </button>
-                <button type="button" class="digitizing-circle btn ${mainLizmap.digitizing.toolSelected === 'circle' ? 'active' : ''}" @click=${() => mainLizmap.digitizing.toolSelected = 'circle'} data-original-title="${lizDict['digitizing.toolbar.query.circle']}">
-                    <i class="icon-none qgis_sprite mActionSelectRadius"></i>
-                </button>
-                <button type="button" class="digitizing-freehand btn ${mainLizmap.digitizing.toolSelected === 'freehand' ? 'active' : ''}" @click=${() => mainLizmap.digitizing.toolSelected = 'freehand'} data-original-title="${lizDict['digitizing.toolbar.query.freehand']}">
-                    <i class="icon-none qgis_sprite mActionSelectFreehand"></i>
-                </button>
+                    <span class="caret"></span>
+                </a>
+                <ul class="dropdown-menu pull-right">
+                    <li class="digitizing-point btn ${mainLizmap.digitizing.toolSelected === 'point' ? 'active' : ''}" @click=${() => mainLizmap.digitizing.toolSelected = 'point'} data-original-title="${lizDict['digitizing.toolbar.query.point']}">
+                        <svg>
+                            <use xlink:href="#mActionSelectPoint"></use>
+                        </svg>
+                    </li>
+                    <li class="digitizing-line btn ${mainLizmap.digitizing.toolSelected === 'line' ? 'active' : ''}" @click=${() => mainLizmap.digitizing.toolSelected = 'line'} data-original-title="${lizDict['digitizing.toolbar.query.line']}">
+                        <svg>
+                            <use xlink:href="#mActionSelectLine"></use>
+                        </svg>
+                    </li>
+                    <li class="digitizing-polygon btn ${mainLizmap.digitizing.toolSelected === 'polygon' ? 'active' : ''}" @click=${() => mainLizmap.digitizing.toolSelected = 'polygon'} data-original-title="${lizDict['digitizing.toolbar.query.polygon']}">
+                        <i class="icon-none qgis_sprite mActionSelectPolygon"></i>
+                    </li>
+                    <br>
+                    <li class="digitizing-box btn ${mainLizmap.digitizing.toolSelected === 'box' ? 'active' : ''}" @click=${() => mainLizmap.digitizing.toolSelected = 'box'} data-original-title="${lizDict['digitizing.toolbar.query.box']}">
+                        <i class="icon-none qgis_sprite mActionSelectRectangle"></i>
+                    </li>
+                    <li class="digitizing-circle btn ${mainLizmap.digitizing.toolSelected === 'circle' ? 'active' : ''}" @click=${() => mainLizmap.digitizing.toolSelected = 'circle'} data-original-title="${lizDict['digitizing.toolbar.query.circle']}">
+                        <i class="icon-none qgis_sprite mActionSelectRadius"></i>
+                    </li>
+                    <li class="digitizing-freehand btn ${mainLizmap.digitizing.toolSelected === 'freehand' ? 'active' : ''}" @click=${() => mainLizmap.digitizing.toolSelected = 'freehand'} data-original-title="${lizDict['digitizing.toolbar.query.freehand']}">
+                        <i class="icon-none qgis_sprite mActionSelectFreehand"></i>
+                    </li>
+                </ul>
             </div>
             <button type="button" class="digitizing-erase btn" @click=${() => mainLizmap.digitizing.erase()}>
                 <svg>
@@ -59,8 +68,7 @@ export default class Digitizing extends HTMLElement {
         render(mainTemplate(), this);
 
         // Add tooltip on buttons
-        // TODO allow tooltip on disabled buttons : https://stackoverflow.com/a/19938049/2000654
-        $('.digitizing button', this).tooltip({
+        $('.digitizing .btn', this).tooltip({
             placement: 'top'
         });
 

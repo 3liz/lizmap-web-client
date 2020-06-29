@@ -2489,28 +2489,30 @@ div.tooltip {
   background-color: rgba(255, 171, 0, 0.4);
 }
 
+/* Digitizing */
+
+.digitizing .btn {
+  width: 45px;
+  height: 40px;
+  box-sizing: border-box;
+}
+
+.digitizing .dropdown-toggle{
+  width: unset;
+}
+
+.digitizing svg {
+  width: 24px;
+  height: 24px;
+}
+
 .digitizing-toggle-visibility{
   vertical-align: top;
 }
 
 input[type="color"].digitizing-color{
-  width: 26px;
   vertical-align: top;
   cursor: pointer;
-}
-
-.digitizing-buttons {
-  margin-bottom: 10px;
-}
-
-.digitizing-buttons button {
-  width: 46px;
-  height: 33px;
-}
-
-.digitizing-buttons button svg, .digitizing-erase svg {
-  width: 24px;
-  height: 24px;
 }
 
 .digitizing-buffer > label > span {
