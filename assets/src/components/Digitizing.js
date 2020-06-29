@@ -2,6 +2,7 @@ import { mainLizmap, mainEventDispatcher } from '../modules/Globals.js';
 import { html, render } from 'lit-html';
 import '../images/svg/mActionSelectPoint.svg';
 import '../images/svg/mActionSelectLine.svg';
+import '../images/svg/eraser.svg';
 
 export default class Digitizing extends HTMLElement {
     constructor() {
@@ -41,6 +42,11 @@ export default class Digitizing extends HTMLElement {
                     <i class="icon-none qgis_sprite mActionSelectFreehand"></i>
                 </button>
             </div>
+            <button type="button" class="digitizing-erase btn" @click=${() => mainLizmap.digitizing.erase()}>
+                <svg>
+                    <use xlink:href="#eraser"/>
+                </svg>
+            </button>
             <div class="digitizing-buffer">
                 <label><span>${lizDict['digitizing.toolbar.buffer']}</span>
                     <div class="input-append">

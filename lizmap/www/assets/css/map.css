@@ -2508,7 +2508,7 @@ input[type="color"].digitizing-color{
   height: 33px;
 }
 
-.digitizing-buttons button svg {
+.digitizing-buttons button svg, .digitizing-erase svg {
   width: 24px;
   height: 24px;
 }
