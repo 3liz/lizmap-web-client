@@ -216,23 +216,6 @@ export default class Digitizing {
 
         // Add controls to map
         mainLizmap.lizmap3.map.addControls(this._drawControls);
-
-        mainLizmap.lizmap3.events.on({
-            'minidockopened': (mdoEvt) => {
-                if (mdoEvt.id == 'selectiontool') {
-                    this.toolSelected = 'deactivate';
-                    this._drawLayer.destroyFeatures();
-                    this._bufferLayer.destroyFeatures();
-                }
-            },
-            'minidockclosed': (mdcEvt) => {
-                if (mdcEvt.id == 'selectiontool') {
-                    this.toolSelected = 'deactivate';
-                    this._drawLayer.destroyFeatures();
-                    this._bufferLayer.destroyFeatures();
-                }
-            }
-        });
     }
 
     get drawLayer(){
@@ -324,5 +307,10 @@ export default class Digitizing {
         this._bufferLayer.setVisibility(this._featureDrawnVisibility);
 
         mainEventDispatcher.dispatch('digitizing.featureDrawnVisibility');
+    }
+
+    erase() {
+        this._drawLayer.destroyFeatures();
+        this._bufferLayer.destroyFeatures();
     }
 }
