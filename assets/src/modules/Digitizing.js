@@ -231,15 +231,6 @@ export default class Digitizing {
                     this._drawLayer.destroyFeatures();
                     this._bufferLayer.destroyFeatures();
                 }
-            },
-            'layerSelectionChanged': () => {
-                mainEventDispatcher.dispatch('selectionTool.selectionChanged');
-            },
-            'layerFilteredFeaturesChanged': (lffcEvt) => {
-                if ($('#mapmenu li.selectiontool').hasClass('active') &&
-                    this.allFeatureTypeSelected.includes(lffcEvt.featureType)) {
-                    mainEventDispatcher.dispatch('selectionTool.filteredFeaturesChanged');
-                }
             }
         });
     }
