@@ -43,6 +43,9 @@ class lizmapWFSRequest extends lizmapOGCRequest
     {
         $params = parent::parameters();
 
+        // Filter data by login if necessary
+        // as configured in the plugin for login filtered layers.
+
         // Filter data by login for request: getfeature
         if ($this->param('request') !== 'getfeature') {
             return $params;
