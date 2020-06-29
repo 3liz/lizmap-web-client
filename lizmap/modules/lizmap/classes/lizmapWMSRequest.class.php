@@ -29,6 +29,10 @@ class lizmapWMSRequest extends lizmapOGCRequest
     {
         $params = parent::parameters();
 
+
+        // Filter data by login if necessary
+        // as configured in the plugin for login filtered layers.
+
         // Filter data by login for request: getmap, getfeatureinfo, getprint, getprintatlas
         if (!in_array($this->param('request'), array('getmap', 'getfeatureinfo', 'getprint', 'getprintatlas'))) {
             return $params;
