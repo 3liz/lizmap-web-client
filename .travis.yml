@@ -1,0 +1,16 @@
+dist: bionic
+language: php
+
+services:
+  - docker
+
+branches:
+  only:
+    - master
+
+jobs:
+  include:
+    - stage: Run tests
+      name: Run tests
+      script:
+        - make tests
