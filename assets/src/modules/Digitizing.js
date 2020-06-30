@@ -14,7 +14,6 @@ export default class Digitizing {
         this._drawColor = localStorage.getItem('drawColor') || '#ff0000';
         this._bufferValue = 0;
 
-        this._featureDrawn = null;
         this._featureDrawnVisibility = true;
 
         // Draw tools style
@@ -82,8 +81,6 @@ export default class Digitizing {
                 }
             }
 
-            this._featureDrawn = feature;
-
             // Handle buffer if any
             this._bufferLayer.destroyFeatures();
             if (this._bufferValue > 0) {
@@ -98,8 +95,6 @@ export default class Digitizing {
                 // Draw buffer
                 this._bufferLayer.addFeatures(bufferedDraw);
                 this._bufferLayer.redraw(true);
-
-                this._featureDrawn = bufferedDraw[0];
             }
 
             // Save features drawn in localStorage
@@ -303,8 +298,18 @@ export default class Digitizing {
         mainEventDispatcher.dispatch('digitizing.bufferValue');
     }
 
-    get featureDrawn(){
-        return this._featureDrawn;
+    get featureDrawn() {
+        if (this._drawLayer.features.length){
+            return this._drawLayer.features[0];
+        }
+        return null;
+    }
+
+    get featureDrawnBuffered() {
+        if (this._bufferLayer.features.length) {
+            return this._bufferLayer.features[0];
+        }
+        return null;
     }
 
     toggleFeatureDrawnVisibility() {
@@ -328,11 +333,11 @@ export default class Digitizing {
         const formatWKT = new OpenLayers.Format.WKT();
 
         // Save features in WKT format
-        if (this._drawLayer.features.length){
-            localStorage.setItem('drawLayer', formatWKT.write(this._drawLayer.features[0]));
+        if (this.featureDrawn){
+            localStorage.setItem('drawLayer', formatWKT.write(this.featureDrawn));
         }
-        if (this._bufferLayer.length){
-            localStorage.setItem('bufferLayer', formatWKT.write(this._bufferLayer.features[0]));
+        if (this.featureDrawnBuffered){
+            localStorage.setItem('bufferLayer', formatWKT.write(this.featureDrawnBuffered));
         }
 
         // Save color
@@ -346,8 +351,7 @@ export default class Digitizing {
         const bufferLayerWKT = localStorage.getItem('bufferLayer');
 
         if (drawLayerWKT){
-            this._featureDrawn = formatWKT.read(drawLayerWKT);
-            this._drawLayer.addFeatures(this._featureDrawn);
+            this._drawLayer.addFeatures(formatWKT.read(drawLayerWKT));
             this._drawLayer.redraw(true);
         }
 
