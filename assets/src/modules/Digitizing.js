@@ -10,7 +10,8 @@ export default class Digitizing {
         this._tools = ['deactivate', 'point', 'line', 'polygon', 'box', 'circle', 'freehand'];
         this._toolSelected = this._tools[0];
 
-        this._drawColor = '#ff0000';
+        // Set draw color to value in local storage if any or default (red)
+        this._drawColor = localStorage.getItem('drawColor') || '#ff0000';
         this._bufferValue = 0;
 
         this._featureDrawn = null;
@@ -100,6 +101,9 @@ export default class Digitizing {
 
                 this._featureDrawn = bufferedDraw[0];
             }
+
+            // Save features drawn in localStorage
+            this.saveFeatureDrawn();
 
             mainEventDispatcher.dispatch('digitizing.featureDrawn');
 
@@ -216,6 +220,9 @@ export default class Digitizing {
 
         // Add controls to map
         mainLizmap.lizmap3.map.addControls(this._drawControls);
+
+        // Display saved feature if any
+        this.savedFeatureDrawnToMap();
     }
 
     get drawLayer(){
@@ -312,5 +319,41 @@ export default class Digitizing {
     erase() {
         this._drawLayer.destroyFeatures();
         this._bufferLayer.destroyFeatures();
+
+        localStorage.removeItem('drawLayer');
+        localStorage.removeItem('bufferLayer');
+    }
+
+    saveFeatureDrawn() {
+        const formatWKT = new OpenLayers.Format.WKT();
+
+        // Save features in WKT format
+        if (this._drawLayer.features.length){
+            localStorage.setItem('drawLayer', formatWKT.write(this._drawLayer.features[0]));
+        }
+        if (this._bufferLayer.length){
+            localStorage.setItem('bufferLayer', formatWKT.write(this._bufferLayer.features[0]));
+        }
+
+        // Save color
+        localStorage.setItem('drawColor', this._drawColor);
+    }
+
+    savedFeatureDrawnToMap() {
+        const formatWKT = new OpenLayers.Format.WKT();
+
+        const drawLayerWKT = localStorage.getItem('drawLayer');
+        const bufferLayerWKT = localStorage.getItem('bufferLayer');
+
+        if (drawLayerWKT){
+            this._featureDrawn = formatWKT.read(drawLayerWKT);
+            this._drawLayer.addFeatures(this._featureDrawn);
+            this._drawLayer.redraw(true);
+        }
+
+        if (bufferLayerWKT){
+            this._bufferLayer.addFeatures(formatWKT.read(bufferLayerWKT));
+            this._bufferLayer.redraw(true);
+        }
     }
 }
