@@ -62,12 +62,16 @@ export default class SelectionTool {
             format => !['GML2', 'GML3', 'GEOJSON'].includes(format.tagName)
         );
 
-        // Listen to digitizing tool to query a selection when tool is active and a feature is drawn
+        // Listen to digitizing tool to query a selection when tool is active and a feature (buffered or not) is drawn
         mainEventDispatcher.addListener(
             () => {
                 if(this.isActive){
-                    for (const featureType of this.allFeatureTypeSelected) {
-                        mainLizmap.lizmap3.selectLayerFeaturesFromSelectionFeature(featureType, mainLizmap.digitizing.featureDrawn, this._geomOperator);
+                    const selectionFeature = mainLizmap.digitizing.featureDrawnBuffered || mainLizmap.digitizing.featureDrawn;
+
+                    if (selectionFeature){
+                        for (const featureType of this.allFeatureTypeSelected) {
+                            mainLizmap.lizmap3.selectLayerFeaturesFromSelectionFeature(featureType, selectionFeature, this._geomOperator);
+                        }
                     }
                 }
             },
